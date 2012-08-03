@@ -204,8 +204,8 @@ namespace ICSharpCode.NRefactory.Demo
 		void ResolveButtonClick(object sender, EventArgs e)
 		{
 			IProjectContent project = new CSharpProjectContent();
-			var parsedFile = syntaxTree.ToTypeSystem();
-			project = project.UpdateProjectContent(null, parsedFile);
+			var unresolvedFile = syntaxTree.ToTypeSystem();
+			project = project.AddOrUpdateFiles(unresolvedFile);
 			project = project.AddAssemblyReferences(builtInLibs.Value);
 			
 			ICompilation compilation = project.CreateCompilation();
@@ -213,12 +213,12 @@ namespace ICSharpCode.NRefactory.Demo
 			ResolveResult result;
 			if (csharpTreeView.SelectedNode != null) {
 				var selectedNode = (AstNode)csharpTreeView.SelectedNode.Tag;
-				CSharpAstResolver resolver = new CSharpAstResolver(compilation, syntaxTree, parsedFile);
+				CSharpAstResolver resolver = new CSharpAstResolver(compilation, syntaxTree, unresolvedFile);
 				result = resolver.Resolve(selectedNode);
 				// CSharpAstResolver.Resolve() never returns null
 			} else {
 				TextLocation location = GetTextLocation(csharpCodeTextBox, csharpCodeTextBox.SelectionStart);
-				result = ResolveAtLocation.Resolve(compilation, parsedFile, syntaxTree, location);
+				result = ResolveAtLocation.Resolve(compilation, unresolvedFile, syntaxTree, location);
 				if (result == null) {
 					MessageBox.Show("Could not find a resolvable node at the caret location.");
 					return;
@@ -248,12 +248,12 @@ namespace ICSharpCode.NRefactory.Demo
 				return;
 			
 			IProjectContent project = new CSharpProjectContent();
-			var parsedFile = syntaxTree.ToTypeSystem();
-			project = project.UpdateProjectContent(null, parsedFile);
+			var unresolvedFile = syntaxTree.ToTypeSystem();
+			project = project.AddOrUpdateFiles(unresolvedFile);
 			project = project.AddAssemblyReferences(builtInLibs.Value);
 			
 			ICompilation compilation = project.CreateCompilation();
-			CSharpAstResolver resolver = new CSharpAstResolver(compilation, syntaxTree, parsedFile);
+			CSharpAstResolver resolver = new CSharpAstResolver(compilation, syntaxTree, unresolvedFile);
 			
 			AstNode node = (AstNode)csharpTreeView.SelectedNode.Tag;
 			IEntity entity;
@@ -276,7 +276,7 @@ namespace ICSharpCode.NRefactory.Demo
 			
 			var searchScopes = fr.GetSearchScopes(entity);
 			Debug.WriteLine("Find references to " + entity.ReflectionName);
-			fr.FindReferencesInFile(searchScopes, parsedFile, syntaxTree, compilation, callback, CancellationToken.None);
+			fr.FindReferencesInFile(searchScopes, unresolvedFile, syntaxTree, compilation, callback, CancellationToken.None);
 			
 			MessageBox.Show("Found " + referenceCount + " references to " + entity.FullName);
 		}

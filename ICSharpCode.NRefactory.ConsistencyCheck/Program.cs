@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			using (new Timer("Resolve unresolved members... ")) TypeSystemTests.ResolvedUnresolvedMembers(solution);
 			//RunTestOnAllFiles("Roundtripping test", RoundtripTest.RunTest);
 			RunTestOnAllFiles("Resolver test", ResolverTest.RunTest);
-			RunTestOnAllFiles("Resolver test (no parsed file)", ResolverTest.RunTestWithoutParsedFile);
+			RunTestOnAllFiles("Resolver test (no parsed file)", ResolverTest.RunTestWithoutUnresolvedFile);
 			RunTestOnAllFiles("Resolver test (randomized order)", RandomizedOrderResolverTest.RunTest);
 			new FindReferencesConsistencyCheck(solution).Run();
 			

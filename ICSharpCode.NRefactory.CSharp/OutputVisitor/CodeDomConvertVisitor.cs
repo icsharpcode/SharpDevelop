@@ -64,19 +64,19 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// </summary>
 		/// <param name="syntaxTree">The input syntax tree.</param>
 		/// <param name="compilation">The current compilation.</param>
-		/// <param name="parsedFile">CSharpParsedFile, used for resolving.</param>
+		/// <param name="unresolvedFile">CSharpUnresolvedFile, used for resolving.</param>
 		/// <returns>Converted CodeCompileUnit</returns>
 		/// <remarks>
 		/// This conversion process requires a resolver because it needs to distinguish field/property/event references etc.
 		/// </remarks>
-		public CodeCompileUnit Convert(ICompilation compilation, SyntaxTree syntaxTree, CSharpParsedFile parsedFile)
+		public CodeCompileUnit Convert(ICompilation compilation, SyntaxTree syntaxTree, CSharpUnresolvedFile unresolvedFile)
 		{
 			if (syntaxTree == null)
 				throw new ArgumentNullException("syntaxTree");
 			if (compilation == null)
 				throw new ArgumentNullException("compilation");
 			
-			CSharpAstResolver resolver = new CSharpAstResolver(compilation, syntaxTree, parsedFile);
+			CSharpAstResolver resolver = new CSharpAstResolver(compilation, syntaxTree, unresolvedFile);
 			return (CodeCompileUnit)Convert(syntaxTree, resolver);
 		}
 		

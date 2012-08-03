@@ -223,14 +223,14 @@ namespace ICSharpCode.NRefactory.GtkDemo
 			var parser = new CSharpParser ();
 			var unit = parser.Parse (textview1.Buffer.Text, "dummy.cs");
 			
-			var parsedFile = unit.ToTypeSystem();
+			var unresolvedFile = unit.ToTypeSystem();
 			
 			IProjectContent project = new CSharpProjectContent ();
-			project = project.UpdateProjectContent (null, parsedFile);
+			project = project.AddOrUpdateFiles (unresolvedFile);
 			project = project.AddAssemblyReferences (builtInLibs.Value);
 			
 			
-			CSharpAstResolver resolver = new CSharpAstResolver(project.CreateCompilation (), unit, parsedFile);
+			CSharpAstResolver resolver = new CSharpAstResolver(project.CreateCompilation (), unit, unresolvedFile);
 			ShowUnit (unit, resolver);
 			
 		}

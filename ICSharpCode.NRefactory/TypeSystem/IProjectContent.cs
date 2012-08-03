@@ -35,12 +35,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets a parsed file by its file name.
 		/// </summary>
-		IParsedFile GetFile(string fileName);
+		IUnresolvedFile GetFile(string fileName);
 		
 		/// <summary>
 		/// Gets the list of all parsed files in the project content.
 		/// </summary>
-		IEnumerable<IParsedFile> Files { get; }
+		IEnumerable<IUnresolvedFile> Files { get; }
 		
 		/// <summary>
 		/// Gets the referenced assemblies.
@@ -95,19 +95,53 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IProjectContent AddAssemblyReferences(IEnumerable<IAssemblyReference> references);
 		
 		/// <summary>
+		/// Add assembly references to this project content.
+		/// </summary>
+		IProjectContent AddAssemblyReferences(params IAssemblyReference[] references);
+		
+		/// <summary>
 		/// Removes assembly references from this project content.
 		/// </summary>
 		IProjectContent RemoveAssemblyReferences(IEnumerable<IAssemblyReference> references);
 		
 		/// <summary>
+		/// Removes assembly references from this project content.
+		/// </summary>
+		IProjectContent RemoveAssemblyReferences(params IAssemblyReference[] references);
+		
+		/// <summary>
+		/// Adds the specified files to the project content.
+		/// If a file with the same name already exists, updated the existing file.
+		/// </summary>
+		IProjectContent AddOrUpdateFiles(IEnumerable<IUnresolvedFile> newFiles);
+		
+		/// <summary>
+		/// Adds the specified files to the project content.
+		/// If a file with the same name already exists, this method updates the existing file.
+		/// </summary>
+		IProjectContent AddOrUpdateFiles(params IUnresolvedFile[] newFiles);
+		
+		/// <summary>
+		/// Removes the files with the specified names.
+		/// </summary>
+		IProjectContent RemoveFiles(IEnumerable<string> fileNames);
+		
+		/// <summary>
+		/// Removes the files with the specified names.
+		/// </summary>
+		IProjectContent RemoveFiles(params string[] fileNames);
+		
+		/// <summary>
 		/// Removes types and attributes from oldFile from the project, and adds those from newFile.
 		/// </summary>
-		IProjectContent UpdateProjectContent(IParsedFile oldFile, IParsedFile newFile);
+		[Obsolete("Use RemoveFiles()/AddOrUpdateFiles() instead")]
+		IProjectContent UpdateProjectContent(IUnresolvedFile oldFile, IUnresolvedFile newFile);
 		
 		/// <summary>
 		/// Removes types and attributes from oldFiles from the project, and adds those from newFiles.
 		/// </summary>
-		IProjectContent UpdateProjectContent(IEnumerable<IParsedFile> oldFiles, IEnumerable<IParsedFile> newFiles);
+		[Obsolete("Use RemoveFiles()/AddOrUpdateFiles() instead")]
+		IProjectContent UpdateProjectContent(IEnumerable<IUnresolvedFile> oldFiles, IEnumerable<IUnresolvedFile> newFiles);
 		
 		/// <summary>
 		/// Sets the compiler settings object.

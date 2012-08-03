@@ -91,13 +91,13 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			if (!hasSystemCore && FindAssembly(Program.AssemblySearchPaths, "System.Core") != null)
 				references.Add(Program.LoadAssembly(FindAssembly(Program.AssemblySearchPaths, "System.Core")));
 			foreach (var item in p.GetItems("ProjectReference")) {
-				references.Add(new ProjectReference(solution, item.GetMetadataValue("Name")));
+				references.Add(new ProjectReference(item.EvaluatedInclude));
 			}
 			this.ProjectContent = new CSharpProjectContent()
 				.SetAssemblyName(this.AssemblyName)
 				.SetCompilerSettings(this.CompilerSettings)
 				.AddAssemblyReferences(references)
-				.UpdateProjectContent(null, Files.Select(f => f.ParsedFile));
+				.AddOrUpdateFiles(Files.Select(f => f.UnresolvedFile));
 		}
 		
 		string FindAssembly(IEnumerable<string> assemblySearchPaths, string evaluatedInclude)
@@ -133,24 +133,6 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		}
 	}
 	
-	public class ProjectReference : IAssemblyReference
-	{
-		readonly Solution solution;
-		readonly string projectTitle;
-		
-		public ProjectReference(Solution solution, string projectTitle)
-		{
-			this.solution = solution;
-			this.projectTitle = projectTitle;
-		}
-		
-		public IAssembly Resolve(ITypeResolveContext context)
-		{
-			var project = solution.Projects.Single(p => string.Equals(p.Title, projectTitle, StringComparison.OrdinalIgnoreCase));
-			return project.ProjectContent.Resolve(context);
-		}
-	}
-	
 	public class CSharpFile
 	{
 		public readonly CSharpProject Project;
@@ -159,7 +141,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		public readonly ITextSource Content;
 		public readonly int LinesOfCode;
 		public SyntaxTree SyntaxTree;
-		public CSharpParsedFile ParsedFile;
+		public CSharpUnresolvedFile UnresolvedFile;
 		
 		public CSharpFile(CSharpProject project, string fileName)
 		{
@@ -176,7 +158,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 					Console.WriteLine("  " + error.Region + " " + error.Message);
 				}
 			}
-			this.ParsedFile = this.SyntaxTree.ToTypeSystem();
+			this.UnresolvedFile = this.SyntaxTree.ToTypeSystem();
 		}
 	}
 }

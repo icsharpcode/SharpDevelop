@@ -54,15 +54,15 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 				using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan)) {
 					syntaxTree = parser.Parse(fs, fileName);
 				}
-				var parsedFile = syntaxTree.ToTypeSystem();
-				foreach (var td in parsedFile.GetAllTypeDefinitions()) {
-					Assert.AreSame(parsedFile, td.ParsedFile);
+				var unresolvedFile = syntaxTree.ToTypeSystem();
+				foreach (var td in unresolvedFile.GetAllTypeDefinitions()) {
+					Assert.AreSame(unresolvedFile, td.UnresolvedFile);
 					foreach (var member in td.Members) {
-						Assert.AreSame(parsedFile, member.ParsedFile);
+						Assert.AreSame(unresolvedFile, member.UnresolvedFile);
 						Assert.AreSame(td, member.DeclaringTypeDefinition);
 					}
 				}
-				pc = pc.UpdateProjectContent(null, parsedFile);
+				pc = pc.AddOrUpdateFiles(unresolvedFile);
 			}
 		}
 		

@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 							}
 						}
 					);
-					var resolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.ParsedFile);
+					var resolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.UnresolvedFile);
 					resolver.ApplyNavigator(navigator);
 				}
 			}
@@ -102,9 +102,9 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				HashSet<AstNode> foundReferences = new HashSet<AstNode>();
 				var interestingFiles = new HashSet<CSharpFile>();
 				foreach (var searchScope in searchScopes) {
-					foreach (var parsedFile in fr.GetInterestingFiles(searchScope, project.Compilation)) {
-						var file = project.GetFile(parsedFile.FileName);
-						Debug.Assert(file.ParsedFile == parsedFile);
+					foreach (var unresolvedFile in fr.GetInterestingFiles(searchScope, project.Compilation)) {
+						var file = project.GetFile(unresolvedFile.FileName);
+						Debug.Assert(file.UnresolvedFile == unresolvedFile);
 						
 						// Skip file if it doesn't contain the search term
 						if (searchScope.SearchTerm != null && file.Content.IndexOf(searchScope.SearchTerm, 0, file.Content.TextLength, StringComparison.Ordinal) < 0)
@@ -114,7 +114,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 					}
 				}
 				foreach (var file in interestingFiles) {
-					fr.FindReferencesInFile(searchScopes, file.ParsedFile, file.SyntaxTree, project.Compilation,
+					fr.FindReferencesInFile(searchScopes, file.UnresolvedFile, file.SyntaxTree, project.Compilation,
 					                        delegate(AstNode node, ResolveResult result) {
 					                        	foundReferences.Add(node);
 					                        }, CancellationToken.None);

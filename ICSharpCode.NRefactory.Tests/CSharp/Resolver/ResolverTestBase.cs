@@ -168,11 +168,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			SetUp();
 			
-			CSharpParsedFile parsedFile = syntaxTree.ToTypeSystem();
-			project = project.UpdateProjectContent(null, parsedFile);
+			CSharpUnresolvedFile unresolvedFile = syntaxTree.ToTypeSystem();
+			project = project.AddOrUpdateFiles(unresolvedFile);
 			compilation = project.CreateCompilation();
 			
-			CSharpAstResolver resolver = new CSharpAstResolver(compilation, syntaxTree, parsedFile);
+			CSharpAstResolver resolver = new CSharpAstResolver(compilation, syntaxTree, unresolvedFile);
 			return Tuple.Create(resolver, FindNode(syntaxTree, dollars[0], dollars[1]));
 		}
 		
@@ -253,11 +253,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			SetUp();
 			
-			CSharpParsedFile parsedFile = syntaxTree.ToTypeSystem();
-			project = project.UpdateProjectContent(null, parsedFile);
+			CSharpUnresolvedFile unresolvedFile = syntaxTree.ToTypeSystem();
+			project = project.AddOrUpdateFiles(unresolvedFile);
 			compilation = project.CreateCompilation();
 			
-			ResolveResult rr = Resolver.ResolveAtLocation.Resolve(compilation, parsedFile, syntaxTree, dollars[0]);
+			ResolveResult rr = Resolver.ResolveAtLocation.Resolve(compilation, unresolvedFile, syntaxTree, dollars[0]);
 			return rr;
 		}
 		

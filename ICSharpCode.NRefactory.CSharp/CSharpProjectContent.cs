@@ -33,13 +33,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		string assemblyName;
 		string projectFileName;
 		string location;
-		Dictionary<string, IParsedFile> parsedFiles;
+		Dictionary<string, IUnresolvedFile> unresolvedFiles;
 		List<IAssemblyReference> assemblyReferences;
 		CompilerSettings compilerSettings;
 		
 		public CSharpProjectContent()
 		{
-			this.parsedFiles = new Dictionary<string, IParsedFile>(Platform.FileNameComparer);
+			this.unresolvedFiles = new Dictionary<string, IUnresolvedFile>(Platform.FileNameComparer);
 			this.assemblyReferences = new List<IAssemblyReference>();
 			this.compilerSettings = new CompilerSettings();
 			compilerSettings.Freeze();
@@ -50,13 +50,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.assemblyName = pc.assemblyName;
 			this.projectFileName = pc.projectFileName;
 			this.location = pc.location;
-			this.parsedFiles = new Dictionary<string, IParsedFile>(pc.parsedFiles, Platform.FileNameComparer);
+			this.unresolvedFiles = new Dictionary<string, IUnresolvedFile>(pc.unresolvedFiles, Platform.FileNameComparer);
 			this.assemblyReferences = new List<IAssemblyReference>(pc.assemblyReferences);
 			this.compilerSettings = pc.compilerSettings;
 		}
 		
-		public IEnumerable<IParsedFile> Files {
-			get { return parsedFiles.Values; }
+		public IEnumerable<IUnresolvedFile> Files {
+			get { return unresolvedFiles.Values; }
 		}
 		
 		public IEnumerable<IAssemblyReference> AssemblyReferences {
@@ -101,10 +101,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public IParsedFile GetFile(string fileName)
+		public IUnresolvedFile GetFile(string fileName)
 		{
-			IParsedFile file;
-			if (parsedFiles.TryGetValue(fileName, out file))
+			IUnresolvedFile file;
+			if (unresolvedFiles.TryGetValue(fileName, out file))
 				return file;
 			else
 				return null;
@@ -161,6 +161,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public IProjectContent AddAssemblyReferences(IEnumerable<IAssemblyReference> references)
 		{
+			return AddAssemblyReferences(references.ToArray());
+		}
+		
+		public IProjectContent AddAssemblyReferences(params IAssemblyReference[] references)
+		{
 			CSharpProjectContent pc = Clone();
 			pc.assemblyReferences.AddRange(references);
 			return pc;
@@ -168,12 +173,61 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public IProjectContent RemoveAssemblyReferences(IEnumerable<IAssemblyReference> references)
 		{
+			return RemoveAssemblyReferences(references.ToArray());
+		}
+		
+		public IProjectContent RemoveAssemblyReferences(params IAssemblyReference[] references)
+		{
 			CSharpProjectContent pc = Clone();
-			pc.assemblyReferences.RemoveAll(r => references.Contains(r));
+			foreach (var r in references)
+				pc.assemblyReferences.Remove(r);
 			return pc;
 		}
 		
-		public IProjectContent UpdateProjectContent(IParsedFile oldFile, IParsedFile newFile)
+		/// <summary>
+		/// Adds the specified files to the project content.
+		/// If a file with the same name already exists, updated the existing file.
+		/// </summary>
+		public IProjectContent AddOrUpdateFiles(IEnumerable<IUnresolvedFile> newFiles)
+		{
+			CSharpProjectContent pc = Clone();
+			foreach (var file in newFiles) {
+				pc.unresolvedFiles[file.FileName] = file;
+			}
+			return pc;
+		}
+		
+		/// <summary>
+		/// Adds the specified files to the project content.
+		/// If a file with the same name already exists, this method updates the existing file.
+		/// </summary>
+		public IProjectContent AddOrUpdateFiles(params IUnresolvedFile[] newFiles)
+		{
+			return AddOrUpdateFiles((IEnumerable<IUnresolvedFile>)newFiles);
+		}
+		
+		/// <summary>
+		/// Removes the files with the specified names.
+		/// </summary>
+		public IProjectContent RemoveFiles(IEnumerable<string> fileNames)
+		{
+			CSharpProjectContent pc = Clone();
+			foreach (var fileName in fileNames) {
+				pc.unresolvedFiles.Remove(fileName);
+			}
+			return pc;
+		}
+		
+		/// <summary>
+		/// Removes the files with the specified names.
+		/// </summary>
+		public IProjectContent RemoveFiles(params string[] fileNames)
+		{
+			return RemoveFiles((IEnumerable<string>)fileNames);
+		}
+		
+		[Obsolete("Use RemoveFiles/AddOrUpdateFiles instead")]
+		public IProjectContent UpdateProjectContent(IUnresolvedFile oldFile, IUnresolvedFile newFile)
 		{
 			if (oldFile == null && newFile == null)
 				return this;
@@ -183,23 +237,24 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			CSharpProjectContent pc = Clone();
 			if (newFile == null)
-				pc.parsedFiles.Remove(oldFile.FileName);
+				pc.unresolvedFiles.Remove(oldFile.FileName);
 			else
-				pc.parsedFiles[newFile.FileName] = newFile;
+				pc.unresolvedFiles[newFile.FileName] = newFile;
 			return pc;
 		}
 		
-		public IProjectContent UpdateProjectContent(IEnumerable<IParsedFile> oldFiles, IEnumerable<IParsedFile> newFiles)
+		[Obsolete("Use RemoveFiles/AddOrUpdateFiles instead")]
+		public IProjectContent UpdateProjectContent(IEnumerable<IUnresolvedFile> oldFiles, IEnumerable<IUnresolvedFile> newFiles)
 		{
 			CSharpProjectContent pc = Clone();
 			if (oldFiles != null) {
 				foreach (var oldFile in oldFiles) {
-					pc.parsedFiles.Remove(oldFile.FileName);
+					pc.unresolvedFiles.Remove(oldFile.FileName);
 				}
 			}
 			if (newFiles != null) {
 				foreach (var newFile in newFiles) {
-					pc.parsedFiles.Add(newFile.FileName, newFile);
+					pc.unresolvedFiles.Add(newFile.FileName, newFile);
 				}
 			}
 			return pc;

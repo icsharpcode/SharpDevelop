@@ -300,7 +300,7 @@
     <Compile Include="TypeSystem\CSharpAssembly.cs" />
     <Compile Include="TypeSystem\CSharpAttribute.cs" />
     <Compile Include="TypeSystem\CSharpDocumentationComment.cs" />
-    <Compile Include="TypeSystem\CSharpParsedFile.cs" />
+    <Compile Include="TypeSystem\CSharpUnresolvedFile.cs" />
     <Compile Include="TypeSystem\CSharpUnresolvedTypeDefinition.cs" />
     <Compile Include="TypeSystem\CSharpTypeResolveContext.cs" />
     <Compile Include="TypeSystem\ResolvedUsingScope.cs" />

@@ -206,7 +206,7 @@
     <Compile Include="TypeSystem\IntersectionType.cs" />
     <Compile Include="TypeSystem\IParameter.cs" />
     <Compile Include="TypeSystem\IParameterizedMember.cs" />
-    <Compile Include="TypeSystem\IParsedFile.cs" />
+    <Compile Include="TypeSystem\IUnresolvedFile.cs" />
     <Compile Include="TypeSystem\IProjectContent.cs" />
     <Compile Include="TypeSystem\IProperty.cs" />
     <Compile Include="TypeSystem\ISolutionSnapshot.cs" />
