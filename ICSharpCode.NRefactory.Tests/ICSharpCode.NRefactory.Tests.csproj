@@ -343,6 +343,7 @@
     <Compile Include="CSharp\CodeCompletion\BrowsableAttributeTests.cs" />
     <Compile Include="CSharp\CodeIssues\ExceptionRethrowTests.cs" />
     <Compile Include="CSharp\CodeIssues\ThreadStaticOnInstanceFieldTests.cs" />
+    <Compile Include="CSharp\CodeIssues\StaticFieldInGenericTypeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
