@@ -31,6 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class CSharpProjectContent : IProjectContent
 	{
 		string assemblyName;
+		string projectFileName;
 		string location;
 		Dictionary<string, IParsedFile> parsedFiles;
 		List<IAssemblyReference> assemblyReferences;
@@ -38,7 +39,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public CSharpProjectContent()
 		{
-			this.assemblyName = string.Empty;
 			this.parsedFiles = new Dictionary<string, IParsedFile>(Platform.FileNameComparer);
 			this.assemblyReferences = new List<IAssemblyReference>();
 			this.compilerSettings = new CompilerSettings();
@@ -48,6 +48,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		protected CSharpProjectContent(CSharpProjectContent pc)
 		{
 			this.assemblyName = pc.assemblyName;
+			this.projectFileName = pc.projectFileName;
 			this.location = pc.location;
 			this.parsedFiles = new Dictionary<string, IParsedFile>(pc.parsedFiles, Platform.FileNameComparer);
 			this.assemblyReferences = new List<IAssemblyReference>(pc.assemblyReferences);
@@ -60,6 +61,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public IEnumerable<IAssemblyReference> AssemblyReferences {
 			get { return assemblyReferences; }
+		}
+		
+		public string ProjectFileName {
+			get { return projectFileName; }
 		}
 		
 		public string AssemblyName {
@@ -129,11 +134,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			pc.assemblyName = newAssemblyName;
 			return pc;
 		}
-
-		public IProjectContent SetLocation(string location)
+		
+		public IProjectContent SetProjectFileName(string newProjectFileName)
 		{
 			CSharpProjectContent pc = Clone();
-			pc.location = location;
+			pc.projectFileName = newProjectFileName;
+			return pc;
+		}
+
+		public IProjectContent SetLocation(string newLocation)
+		{
+			CSharpProjectContent pc = Clone();
+			pc.location = newLocation;
 			return pc;
 		}
 		

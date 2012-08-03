@@ -28,6 +28,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	public interface IProjectContent : IUnresolvedAssembly
 	{
 		/// <summary>
+		/// Gets the path to the project file (e.g. .csproj).
+		/// </summary>
+		string ProjectFileName { get; }
+		
+		/// <summary>
 		/// Gets a parsed file by its file name.
 		/// </summary>
 		IParsedFile GetFile(string fileName);
@@ -52,7 +57,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Creates a new <see cref="ICompilation"/> that allows resolving within this project.
 		/// </summary>
 		/// <remarks>
-		/// An ICompilation is immutable, it operates on a snapshot of this project.
+		/// This method does not support <see cref="ProjectReference"/>s. When dealing with a solution
+		/// containing multiple projects, consider using <see cref="ISolutionSnapshot.GetCompilation"/> instead.
 		/// </remarks>
 		ICompilation CreateCompilation();
 		
@@ -61,7 +67,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <param name="solutionSnapshot">The parent solution snapshot to use for the compilation.</param>
 		/// <remarks>
-		/// An ICompilation is immutable, it operates on a snapshot of this project.
+		/// This method is intended to be called by ISolutionSnapshot implementations. Other code should
+		/// call <see cref="ISolutionSnapshot.GetCompilation"/> instead.
+		/// This method always creates a new compilation, even if the solution snapshot already contains
+		/// one for this project.
 		/// </remarks>
 		ICompilation CreateCompilation(ISolutionSnapshot solutionSnapshot);
 		
@@ -71,7 +80,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IProjectContent SetAssemblyName(string newAssemblyName);
 
 		/// <summary>
-		/// Changes the location of this project content.
+		/// Changes the project file name of this project content.
+		/// </summary>
+		IProjectContent SetProjectFileName(string newProjectFileName);
+		
+		/// <summary>
+		/// Changes the path to the assembly location (the output path where the project compiles to).
 		/// </summary>
 		IProjectContent SetLocation(string newLocation);
 
