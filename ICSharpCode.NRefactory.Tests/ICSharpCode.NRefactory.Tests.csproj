@@ -342,6 +342,7 @@
     <Compile Include="CSharp\CodeActions\ConvertToInitializer\ConvertInitializerToExplicitIntializationsTests.cs" />
     <Compile Include="CSharp\CodeCompletion\BrowsableAttributeTests.cs" />
     <Compile Include="CSharp\CodeIssues\ExceptionRethrowTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ThreadStaticOnInstanceFieldTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">

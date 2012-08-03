@@ -427,6 +427,7 @@
     <Compile Include="Refactoring\CodeIssues\FormatStringIssues\FormatStringHelper.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertToInitializer\ConvertInitializerToExplicitInitializationsAction.cs" />
     <Compile Include="Refactoring\CodeIssues\ExceptionRethrowIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\ThreadStaticOnInstanceFieldIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
