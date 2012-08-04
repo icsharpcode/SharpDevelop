@@ -638,7 +638,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				var highlighting = HighlightingManager.Instance.GetDefinition(language);
 				item = null;
 				if (def != null && highlighting != null) {
-					var color = def.Elements.OfType<XshdColor>().FirstOrDefault(i => i.Name == sdKey);
+					var visitor = new ColorVisitor(allSyntaxDefinitions);
+					def.AcceptElements(visitor);
+					var color = visitor.foundColors.FirstOrDefault(i => i.Name == sdKey);
 					if (color != null) {
 						item = new NamedColorHighlightingItem(defaultText, color) { ParentDefinition = highlighting };
 						item = new CustomizedHighlightingItem(customizationList, item, language);
@@ -746,8 +748,10 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{ "XML CData Section", "XML.CData" },
 			{ "XML Comment", "XML.Comment" },
 			{ "XML Delimiter", "" },
-			{ "XML Doc Comment", "" },
-			{ "XML Doc Tag", "" },
+			{ "XML Doc Comment", "C#.DocComment" },
+			{ "XML Doc Tag", "C#.KnownDocTags" },
+			{ "XML Doc Comment", "VBNET.DocComment" },
+			{ "XML Doc Tag", "VBNET.KnownDocTags" },
 			{ "XML Name", "" },
 			{ "XML Text", "" },
 		};
