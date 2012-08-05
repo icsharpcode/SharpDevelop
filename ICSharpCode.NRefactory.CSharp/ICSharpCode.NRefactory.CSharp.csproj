@@ -289,6 +289,7 @@
     <Compile Include="Refactoring\CodeIssues\AccessToClosureIssues\LocalVariableNamePicker.cs" />
     <Compile Include="Refactoring\CodeIssues\AssignmentMadeToSameVariableIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\BitwiseOperationOnNonFlagsEnumIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\CastExpressionOfIncompatibleTypeIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\CompareBooleanWithTrueOrFalseIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\CompareFloatWithEqualityOperatorIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ConstantConditionIssue.cs" />
@@ -326,6 +327,7 @@
     <Compile Include="Refactoring\RefactoringAstHelper.cs" />
     <Compile Include="Refactoring\RefactoringContext.cs" />
     <Compile Include="Refactoring\Script.cs" />
+    <Compile Include="Refactoring\TypeCompatibilityHelper.cs" />
     <Compile Include="Refactoring\TypeSystemAstBuilder.cs" />
     <Compile Include="Refactoring\VariableReferenceGraph.cs" />
     <Compile Include="Resolver\CompositeResolveVisitorNavigator.cs" />

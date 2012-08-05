@@ -56,7 +56,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var type = ctx.Resolve (isExpression.Expression).Type;
 				var providedType = ctx.ResolveType (isExpression.Type);
 
-				if (type.GetAllBaseTypes ().All (t => !t.Equals (providedType)))
+				if (TypeCompatibilityHelper.CheckTypeCompatibility (type, providedType) !=
+					TypeCompatibilityHelper.TypeCompatiblity.AlwaysOfProvidedType)
 					return;
 
 				var action = new CodeAction (ctx.TranslateString ("Compare with 'null'"), 

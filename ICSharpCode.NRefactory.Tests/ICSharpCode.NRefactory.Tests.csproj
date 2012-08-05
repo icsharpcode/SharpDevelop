@@ -147,6 +147,7 @@
     <Compile Include="CSharp\CodeIssues\AccessToModifiedClosureTests.cs" />
     <Compile Include="CSharp\CodeIssues\AssignmentMadeToSameVariableIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\BitwiseOperationOnNonFlagsEnumIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\CastExpressionOfIncompatibleTypeIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\CompareFloatWithEqualityOperatorIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ConstantConditionIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\DoubleNegationIssueTests.cs" />
@@ -392,14 +393,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CSharp\" />
-    <Folder Include="CSharp\Parser\" />
-    <Folder Include="CSharp\CodeIssues\" />
-    <Folder Include="CSharp\CodeActions\" />
-    <Folder Include="CSharp\Parser\Bugs\" />
-    <Folder Include="Editor" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>

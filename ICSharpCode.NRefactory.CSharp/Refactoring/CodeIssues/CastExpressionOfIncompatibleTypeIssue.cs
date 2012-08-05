@@ -1,5 +1,5 @@
 ﻿// 
-// ExpressionIsNeverOfProvidedTypeIssue.cs
+// CastExpressionOfIncompatibleTypeIssue.cs
 // 
 // Author:
 //      Mansheng Yang <lightyang0@gmail.com>
@@ -25,17 +25,16 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
-using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription ("CS0184:Given expression is never of the provided type",
-					   Description = "CS0184:Given expression is never of the provided type.",
-					   Category = IssueCategories.CompilerWarnings,
+	[IssueDescription ("Type cast expression of incompatible type",
+					   Description = "Type cast expression of incompatible type",
+					   Category = IssueCategories.CodeQualityIssues,
 					   Severity = Severity.Warning,
 					   IssueMarker = IssueMarker.Underline)]
-	public class ExpressionIsNeverOfProvidedTypeIssue : ICodeIssueProvider
+	public class CastExpressionOfIncompatibleTypeIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
 		{
@@ -49,16 +48,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 			}
 
-			public override void VisitIsExpression (IsExpression isExpression)
+			public override void VisitCastExpression (CastExpression castExpression)
 			{
-				base.VisitIsExpression (isExpression);
+				base.VisitCastExpression (castExpression);
 
-				var exprType = ctx.Resolve (isExpression.Expression).Type;
-				var providedType = ctx.ResolveType (isExpression.Type);
+				VisitTypeCastExpression (castExpression, ctx.Resolve (castExpression.Expression).Type,
+					ctx.ResolveType (castExpression.Type));
+			}
 
-				if (TypeCompatibilityHelper.CheckTypeCompatibility(exprType, providedType) == 
-					TypeCompatibilityHelper.TypeCompatiblity.NeverOfProvidedType)
-					AddIssue (isExpression, ctx.TranslateString ("Given expression is never of the provided type"));
+			public override void VisitAsExpression (AsExpression asExpression)
+			{
+				base.VisitAsExpression (asExpression);
+
+				VisitTypeCastExpression (asExpression, ctx.Resolve (asExpression.Expression).Type,
+					ctx.ResolveType (asExpression.Type));
+			}
+
+			void VisitTypeCastExpression (Expression expression, IType exprType, IType castToType)
+			{
+				if (TypeCompatibilityHelper.CheckTypeCompatibility (exprType, castToType) ==
+				    TypeCompatibilityHelper.TypeCompatiblity.NeverOfProvidedType)
+					AddIssue (expression, ctx.TranslateString ("Type cast expression of incompatible type"));
 			}
 		}
 	}
