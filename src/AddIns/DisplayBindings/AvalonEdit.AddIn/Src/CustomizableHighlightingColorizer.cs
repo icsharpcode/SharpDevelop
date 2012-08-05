@@ -116,7 +116,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 							continue;
 						assignedColumnRulerColor = true;
 						if (color.Foreground != null)
-							textEditor.TextArea.TextView.ColumnRulerPen = CreateFrozenPen(color.Foreground.Value); 
+							textEditor.TextArea.TextView.ColumnRulerPen = CreateFrozenPen(color.Foreground.Value);
 						break;
 				}
 			}
@@ -152,12 +152,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return new CustomizingHighlighter(textView, customizations, highlightingDefinition, base.CreateHighlighter(textView, document));
 		}
 		
-		sealed class CustomizingHighlighter : IHighlighter, ISyntaxHighlighter
+		internal sealed class CustomizingHighlighter : IHighlighter, ISyntaxHighlighter
 		{
 			readonly TextView textView;
 			readonly IEnumerable<CustomizedHighlightingColor> customizations;
 			readonly IHighlightingDefinition highlightingDefinition;
 			readonly IHighlighter baseHighlighter;
+			readonly IDocument document;
 			List<IHighlighter> additionalHighlighters = new List<IHighlighter>();
 			
 			public CustomizingHighlighter(TextView textView, IEnumerable<CustomizedHighlightingColor> customizations, IHighlightingDefinition highlightingDefinition, IHighlighter baseHighlighter)
@@ -168,6 +169,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				Debug.Assert(baseHighlighter != null);
 				
 				this.textView = textView;
+				this.document = textView.Document;
+				this.customizations = customizations;
+				this.highlightingDefinition = highlightingDefinition;
+				this.baseHighlighter = baseHighlighter;
+				baseHighlighter.HighlightingStateChanged += highlighter_HighlightingStateChanged;
+			}
+			
+			public CustomizingHighlighter(IDocument document, IEnumerable<CustomizedHighlightingColor> customizations, IHighlightingDefinition highlightingDefinition, IHighlighter baseHighlighter)
+			{
+				Debug.Assert(customizations != null);
+				Debug.Assert(highlightingDefinition != null);
+				Debug.Assert(baseHighlighter != null);
+				
+				this.document = document;
 				this.customizations = customizations;
 				this.highlightingDefinition = highlightingDefinition;
 				this.baseHighlighter = baseHighlighter;
@@ -250,11 +265,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 
 			public void InvalidateLine(IDocumentLine line)
 			{
+				if (textView == null)
+					throw new InvalidOperationException("ISyntaxHighlighter has no TextView assigned!");
 				textView.Redraw(line, DispatcherPriority.Background);
 			}
 			
 			public void InvalidateAll()
 			{
+				if (textView == null)
+					throw new InvalidOperationException("ISyntaxHighlighter has no TextView assigned!");
 				textView.Redraw(DispatcherPriority.Background);
 			}
 			
@@ -265,6 +284,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			public IEnumerable<IDocumentLine> GetVisibleDocumentLines()
 			{
+				if (textView == null)
+					throw new InvalidOperationException("ISyntaxHighlighter has no TextView assigned!");
 				List<IDocumentLine> result = new List<IDocumentLine>();
 				foreach (VisualLine line in textView.VisualLines) {
 					if (line.FirstDocumentLine == line.LastDocumentLine) {
@@ -288,6 +309,29 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			public HighlightingColor GetNamedColor(string name)
 			{
 				return CustomizeColor(name, CustomizedHighlightingColor.FetchCustomizations(highlightingDefinition.Name));
+			}
+			
+			public HighlightingColor DefaultTextColor {
+				get {
+					return GetNamedColor(CustomizableHighlightingColorizer.DefaultTextAndBackground);
+				}
+			}
+			
+			public HighlightedInlineBuilder BuildInlines(int lineNumber)
+			{
+				HighlightedInlineBuilder builder = new HighlightedInlineBuilder(document.GetText(document.GetLineByNumber(lineNumber)));
+				HighlightedLine highlightedLine = HighlightLine(lineNumber);
+				int startOffset = highlightedLine.DocumentLine.Offset;
+				// copy only the foreground and background colors
+				foreach (HighlightedSection section in highlightedLine.Sections) {
+					if (section.Color.Foreground != null) {
+						builder.SetForeground(section.Offset - startOffset, section.Length, section.Color.Foreground.GetBrush(null));
+					}
+					if (section.Color.Background != null) {
+						builder.SetBackground(section.Offset - startOffset, section.Length, section.Color.Background.GetBrush(null));
+					}
+				}
+				return builder;
 			}
 		}
 		

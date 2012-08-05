@@ -211,6 +211,7 @@
     <Compile Include="Highlighting\Xshd\XmlHighlightingDefinition.cs" />
     <Compile Include="Highlighting\Xshd\XshdColor.cs" />
     <Compile Include="Highlighting\Xshd\XshdImport.cs" />
+    <Compile Include="Highlighting\Xshd\XshdProperty.cs" />
     <Compile Include="Highlighting\Xshd\XshdReference.cs" />
     <Compile Include="Highlighting\Xshd\XshdElement.cs" />
     <Compile Include="Highlighting\Xshd\XshdKeywords.cs" />

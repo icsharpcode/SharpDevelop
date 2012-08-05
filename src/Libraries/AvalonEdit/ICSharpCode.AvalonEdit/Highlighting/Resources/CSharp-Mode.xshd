@@ -27,6 +27,8 @@
 	<Color name="TrueFalse" fontWeight="bold" foreground="DarkCyan" exampleText="b = false; a = true;" />
 	<Color name="TypeKeywords" fontWeight="bold" foreground="DarkCyan" exampleText="if (x is int) { a = x as int; type = typeof(int); size = sizeof(int); c = new object(); }"/>
 	
+	<Property name="DocCommentMarker" value="///" />
+	
 	<RuleSet name="CommentMarkerSet">
 		<Keywords fontWeight="bold" foreground="Red">
 			<Word>TODO</Word>

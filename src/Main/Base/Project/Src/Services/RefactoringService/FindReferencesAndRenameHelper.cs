@@ -359,24 +359,22 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (list == null) return;
 			List<SearchResultMatch> results = new List<SearchResultMatch>(list.Count);
 			TextDocument document = null;
+			ITextSource buffer = null;
 			FileName fileName = null;
-			IHighlighter highlighter = null;
+			ISyntaxHighlighter highlighter = null;
 			foreach (Reference r in list) {
 				if (document == null || fileName != r.FileName) {
-					document = new TextDocument(SD.FileService.GetFileContent(r.FileName));
-					fileName = r.FileName;
-					var def = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(r.FileName));
-					if (def != null)
-						highlighter = new DocumentHighlighter(document, def.MainRuleSet);
-					else
-						highlighter = null;
+					buffer = SD.FileService.GetFileContent(r.FileName);
+					document = new TextDocument(DocumentUtilitites.GetTextSource(buffer));
+					fileName = new FileName(r.FileName);
+					highlighter = SD.EditorControlService.CreateHighlighter(document, fileName);
 				}
 				var start = r.StartLocation;
 				var end = r.EndLocation;
 				var startOffset = document.GetOffset(start);
 				var endOffset = document.GetOffset(end);
 				var builder = SearchResultsPad.CreateInlineBuilder(start, end, document, highlighter);
-				SearchResultMatch res = new SearchResultMatch(fileName, start, end, startOffset, endOffset - startOffset, builder);
+				SearchResultMatch res = new SearchResultMatch(fileName, start, end, startOffset, endOffset - startOffset, builder, highlighter.DefaultTextColor);
 				results.Add(res);
 			}
 			SearchResultsPad.Instance.ShowSearchResults(title, results);

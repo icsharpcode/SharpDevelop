@@ -40,4 +40,15 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		IEnumerable<HighlightingColor> NamedHighlightingColors { get; }
 	}
+	
+	/// <summary>
+	/// Extension of IHighlightingDefinition to avoid breaking changes in the API.
+	/// </summary>
+	public interface IHighlightingDefinition2 : IHighlightingDefinition
+	{
+		/// <summary>
+		/// Gets the list of properties.
+		/// </summary>
+		IDictionary<string, string> Properties { get; }
+	}
 }

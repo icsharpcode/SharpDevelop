@@ -17,8 +17,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		ResolveResult resolveResult;
 		
-		public Reference(DomRegion region, ResolveResult resolveResult, int offset, int length, HighlightedInlineBuilder builder)
-			: base(FileName.Create(region.FileName), region.Begin, region.End, offset, length, builder)
+		public Reference(DomRegion region, ResolveResult resolveResult, int offset, int length, HighlightedInlineBuilder builder, HighlightingColor defaultTextColor)
+			: base(FileName.Create(region.FileName), region.Begin, region.End, offset, length, builder, defaultTextColor)
 		{
 			if (region.IsEmpty)
 				throw new ArgumentException("Region must not be empty");

@@ -67,6 +67,16 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Raised when the set of visible document lines has changed.
 		/// </summary>
 		event EventHandler VisibleDocumentLinesChanged;
+		
+		/// <summary>
+		/// Creates a <see cref="HighlightedInlineBuilder"/> for a specified line.
+		/// </summary>
+		HighlightedInlineBuilder BuildInlines(int lineNumber);
+		
+		/// <summary>
+		/// Gets the default text color.
+		/// </summary>
+		HighlightingColor DefaultTextColor { get; }
 	}
 	
 	public static class SyntaxHighligherKnownSpanNames

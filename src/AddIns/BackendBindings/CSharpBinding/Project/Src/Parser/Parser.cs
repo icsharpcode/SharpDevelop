@@ -137,24 +137,20 @@ namespace CSharpBinding.Parser
 				throw new ArgumentException("Parse info does not have CompilationUnit");
 			
 			ReadOnlyDocument document = null;
-			DocumentHighlighter highlighter = null;
+			ISyntaxHighlighter highlighter = null;
 			
 			new FindReferences().FindLocalReferences(
 				variable, csParseInfo.ParsedFile, csParseInfo.CompilationUnit, compilation,
 				delegate (AstNode node, ResolveResult result) {
 					if (document == null) {
 						document = new ReadOnlyDocument(fileContent);
-						var highlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(csParseInfo.FileName));
-						if (highlighting != null)
-							highlighter = new DocumentHighlighter(document, highlighting.MainRuleSet);
-						else
-							highlighter = null;
+						highlighter = SD.EditorControlService.CreateHighlighter(document, csParseInfo.FileName);
 					}
 					var region = new DomRegion(parseInfo.FileName, node.StartLocation, node.EndLocation);
 					int offset = document.GetOffset(node.StartLocation);
 					int length = document.GetOffset(node.EndLocation) - offset;
 					var builder = SearchResultsPad.CreateInlineBuilder(node.StartLocation, node.EndLocation, document, highlighter);
-					callback(new Reference(region, result, offset, length, builder));
+					callback(new Reference(region, result, offset, length, builder, highlighter.DefaultTextColor));
 				}, cancellationToken);
 		}
 		

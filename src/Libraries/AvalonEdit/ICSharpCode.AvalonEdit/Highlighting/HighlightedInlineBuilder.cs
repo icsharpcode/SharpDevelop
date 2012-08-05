@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -24,6 +25,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		sealed class HighlightingState
 		{
 			internal Brush Foreground;
+			internal Brush Background;
 			internal FontFamily Family;
 			internal FontWeight? Weight;
 			internal FontStyle? Style;
@@ -32,6 +34,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			{
 				return new HighlightingState {
 					Foreground = this.Foreground,
+					Background = this.Background,
 					Family = this.Family,
 					Weight = this.Weight,
 					Style = this.Style
@@ -70,6 +73,13 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			stateChanges.Add(new HighlightingState());
 		}
 		
+		HighlightedInlineBuilder(string text, int[] offsets, HighlightingState[] states)
+		{
+			this.text = text;
+			stateChangeOffsets.AddRange(offsets);
+			stateChanges.AddRange(states);
+		}
+		
 		/// <summary>
 		/// Gets the text.
 		/// </summary>
@@ -96,6 +106,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				HighlightingState state = stateChanges[i];
 				if (color.Foreground != null)
 					state.Foreground = color.Foreground.GetBrush(null);
+				if (color.Background != null)
+					state.Background = color.Background.GetBrush(null);
 				if (color.FontStyle != null)
 					state.Style = color.FontStyle;
 				if (color.FontWeight != null)
@@ -112,6 +124,18 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			int endIndex = GetIndexForOffset(offset + length);
 			for (int i = startIndex; i < endIndex; i++) {
 				stateChanges[i].Foreground = brush;
+			}
+		}
+		
+		/// <summary>
+		/// Sets the background brush on the specified text segment.
+		/// </summary>
+		public void SetBackground(int offset, int length, Brush brush)
+		{
+			int startIndex = GetIndexForOffset(offset);
+			int endIndex = GetIndexForOffset(offset + length);
+			for (int i = startIndex; i < endIndex; i++) {
+				stateChanges[i].Background = brush;
 			}
 		}
 		
@@ -164,6 +188,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				HighlightingState state = stateChanges[i];
 				if (state.Foreground != null)
 					r.Foreground = state.Foreground;
+				if (state.Background != null)
+					r.Background = state.Background;
 				if (state.Weight != null)
 					r.FontWeight = state.Weight.Value;
 				if (state.Family != null)
@@ -173,6 +199,16 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				runs[i] = r;
 			}
 			return runs;
+		}
+		
+		/// <summary>
+		/// Clones this HighlightedInlineBuilder.
+		/// </summary>
+		public HighlightedInlineBuilder Clone()
+		{
+			return new HighlightedInlineBuilder(this.text,
+			                                    stateChangeOffsets.ToArray(), 
+			                                    stateChanges.Select(sc => sc.Clone()).ToArray());
 		}
 	}
 }

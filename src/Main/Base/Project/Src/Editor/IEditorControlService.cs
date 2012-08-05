@@ -3,7 +3,9 @@
 
 using System;
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.SharpDevelop.Editor
@@ -16,6 +18,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 	{
 		ITextEditor CreateEditor(out object control);
 		ITextEditorOptions GlobalOptions { get; }
+		ISyntaxHighlighter CreateHighlighter(IDocument document, string fileName);
 	}
 	
 	// Fallback if AvalonEdit.AddIn is not available (e.g. some unit tests)
@@ -62,6 +65,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 			get {
 				return "Consolas";
 			}
+		}
+		
+		public ISyntaxHighlighter CreateHighlighter(IDocument document, string fileName)
+		{
+			return null;
 		}
 	}
 }

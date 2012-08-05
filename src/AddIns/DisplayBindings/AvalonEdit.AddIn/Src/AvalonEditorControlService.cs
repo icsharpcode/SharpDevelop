@@ -2,7 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.IO;
 using ICSharpCode.AvalonEdit.AddIn.Options;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
@@ -24,5 +28,19 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			control = editor;
 			return new CodeCompletionEditorAdapter(editor);
 		}
+		
+		public ISyntaxHighlighter CreateHighlighter(IDocument document, string fileName)
+		{
+			var def = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
+			var doc = document.GetService(typeof(TextDocument)) as TextDocument;
+			if (def == null || doc == null)
+				return null;
+			var baseHighlighter = new DocumentHighlighter(doc, def.MainRuleSet);
+			var highlighter = new CustomizableHighlightingColorizer.CustomizingHighlighter(document,
+					CustomizedHighlightingColor.FetchCustomizations(def.Name), def, baseHighlighter);
+			return new DocumentSyntaxHighlighter(document, highlighter, def.Name);
+		}
 	}
+	
+
 }

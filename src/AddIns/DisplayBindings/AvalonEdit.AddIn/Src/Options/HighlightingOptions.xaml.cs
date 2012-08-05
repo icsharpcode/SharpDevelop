@@ -171,7 +171,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 					from name in typeof(HighlightingManager).Assembly.GetManifestResourceNames().AsParallel()
 					where name.StartsWith(typeof(HighlightingManager).Namespace + ".Resources.", StringComparison.OrdinalIgnoreCase)
 					&& name.EndsWith(".xshd", StringComparison.OrdinalIgnoreCase)
-					&& !name.EndsWith("XmlDoc.xshd", StringComparison.OrdinalIgnoreCase)
 					select LoadBuiltinXshd(name)
 				).Concat(
 					ICSharpCode.Core.AddInTree.BuildItems<AddInTreeSyntaxMode>(SyntaxModeDoozer.Path, null, false).AsParallel()
@@ -187,7 +186,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			
 			languageComboBox.Items.Clear();
 			languageComboBox.Items.Add(new XshdSyntaxDefinition { Name = "All languages" });
-			foreach (XshdSyntaxDefinition def in allSyntaxDefinitions)
+			foreach (XshdSyntaxDefinition def in allSyntaxDefinitions.Where(d => !d.Name.Equals("XmlDoc", StringComparison.OrdinalIgnoreCase)))
 				languageComboBox.Items.Add(def);
 			if (allSyntaxDefinitions.Count > 0)
 				languageComboBox.SelectedIndex = 0;
@@ -210,7 +209,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 					if (def == null) {
 						throw new InvalidOperationException("Expected that all XSHDs are registered in default highlighting manager; but highlighting definition was not found");
 					} else {
-						foreach (XshdColor namedColor in xshd.Elements.OfType<XshdColor>()) {
+						var visitor = new ColorVisitor(allSyntaxDefinitions);
+						xshd.AcceptElements(visitor);
+						foreach (XshdColor namedColor in visitor.foundColors) {
 							if (namedColor.ExampleText != null) {
 								IHighlightingItem item = new NamedColorHighlightingItem(defaultText, namedColor) { ParentDefinition = def };
 								item = new CustomizedHighlightingItem(customizationList, item, xshd.Name);
@@ -222,6 +223,60 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				}
 				if (listBox.Items.Count > 0)
 					listBox.SelectedIndex = 0;
+			}
+		}
+		
+		class ColorVisitor : IXshdVisitor
+		{
+			internal readonly List<XshdColor> foundColors = new List<XshdColor>();
+			readonly HashSet<XshdSyntaxDefinition> visitedDefinitons = new HashSet<XshdSyntaxDefinition>();
+			IList<XshdSyntaxDefinition> allSyntaxDefinitions;
+			
+			public ColorVisitor(IList<XshdSyntaxDefinition> allSyntaxDefinitions)
+			{
+				this.allSyntaxDefinitions = allSyntaxDefinitions;
+			}
+			
+			public object VisitRuleSet(XshdRuleSet ruleSet)
+			{
+				ruleSet.AcceptElements(this);
+				return null;
+			}
+			
+			public object VisitColor(XshdColor color)
+			{
+				foundColors.Add(color);
+				return null;
+			}
+			
+			public object VisitKeywords(XshdKeywords keywords)
+			{
+				return keywords.ColorReference.AcceptVisitor(this);
+			}
+			
+			public object VisitSpan(XshdSpan span)
+			{
+				if (span.RuleSetReference.InlineElement != null)
+					return span.RuleSetReference.AcceptVisitor(this);
+				XshdSyntaxDefinition definition = allSyntaxDefinitions.SingleOrDefault(def => def.Name == span.RuleSetReference.ReferencedDefinition);
+				if (definition != null && visitedDefinitons.Add(definition))
+					foundColors.AddRange(definition.Elements.OfType<XshdColor>());
+				return null;
+			}
+			
+			public object VisitImport(XshdImport import)
+			{
+				if (import.RuleSetReference.InlineElement != null)
+					return import.RuleSetReference.AcceptVisitor(this);
+				XshdSyntaxDefinition definition = allSyntaxDefinitions.SingleOrDefault(def => def.Name == import.RuleSetReference.ReferencedDefinition);
+				if (definition != null && visitedDefinitons.Add(definition))
+					foundColors.AddRange(definition.Elements.OfType<XshdColor>());
+				return null;
+			}
+			
+			public object VisitRule(XshdRule rule)
+			{
+				return rule.ColorReference.AcceptVisitor(this);
 			}
 		}
 		
@@ -583,7 +638,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				var highlighting = HighlightingManager.Instance.GetDefinition(language);
 				item = null;
 				if (def != null && highlighting != null) {
-					var color = def.Elements.OfType<XshdColor>().FirstOrDefault(i => i.Name == sdKey);
+					var visitor = new ColorVisitor(allSyntaxDefinitions);
+					def.AcceptElements(visitor);
+					var color = visitor.foundColors.FirstOrDefault(i => i.Name == sdKey);
 					if (color != null) {
 						item = new NamedColorHighlightingItem(defaultText, color) { ParentDefinition = highlighting };
 						item = new CustomizedHighlightingItem(customizationList, item, language);
@@ -597,16 +654,15 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		static readonly MultiDictionary<string, string> mapping = new MultiDictionary<string, string>(StringComparer.Ordinal) {
 			{ "Brace Matching (Rectangle)", BracketHighlightRenderer.BracketHighlight },
 			{ "Collapsible Text", FoldingTextMarkers },
-			{ "Comment", "XML.Comment" },
 			{ "Comment", "VBNET.Comment" },
 			{ "Comment", "C#.Comment" },
 			{ "Compiler Error", ErrorPainter.ErrorColorName },
 			{ "CSS Comment", "CSS.Comment" },
 			{ "CSS Keyword", "" },
-			{ "CSS Property Name", "" },
-			{ "CSS Property Value", "" },
-			{ "CSS Selector", "" },
-			{ "CSS String Value", "" },
+			{ "CSS Property Name", "CSS.Property" },
+			{ "CSS Property Value", "CSS.Value" },
+			{ "CSS Selector", "CSS.Selector" },
+			{ "CSS String Value", "CSS.String" },
 			{ "Excluded Code", "" },
 			{ "HTML Attribute Value", "" },
 			{ "HTML Attribute", "" },
@@ -687,13 +743,15 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{ "XAML Name", "" },
 			{ "XAML Text", "" },
 			{ "XML Attribute Quotes", "" },
-			{ "XML Attribute Value", "XML." },
-			{ "XML Attribute", "" },
-			{ "XML CData Section", "" },
-			{ "XML Comment", "" },
+			{ "XML Attribute Value", "XML.AttributeValue" },
+			{ "XML Attribute", "XML.AttributeName" },
+			{ "XML CData Section", "XML.CData" },
+			{ "XML Comment", "XML.Comment" },
 			{ "XML Delimiter", "" },
-			{ "XML Doc Comment", "" },
-			{ "XML Doc Tag", "" },
+			{ "XML Doc Comment", "C#.DocComment" },
+			{ "XML Doc Tag", "C#.KnownDocTags" },
+			{ "XML Doc Comment", "VBNET.DocComment" },
+			{ "XML Doc Tag", "VBNET.KnownDocTags" },
 			{ "XML Name", "" },
 			{ "XML Text", "" },
 		};

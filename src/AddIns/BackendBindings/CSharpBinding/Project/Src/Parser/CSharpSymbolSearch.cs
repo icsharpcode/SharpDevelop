@@ -19,6 +19,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
@@ -97,24 +98,20 @@ namespace CSharpBinding
 			if (parseInfo == null)
 				return;
 			ReadOnlyDocument document = null;
-			DocumentHighlighter highlighter = null;
+			ISyntaxHighlighter highlighter = null;
 			List<Reference> results = new List<Reference>();
 			fr.FindReferencesInFile(
 				searchScope, parseInfo.ParsedFile, parseInfo.CompilationUnit, compilation,
 				delegate (AstNode node, ResolveResult result) {
 					if (document == null) {
 						document = new ReadOnlyDocument(textSource);
-						var highlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
-						if (highlighting != null)
-							highlighter = new DocumentHighlighter(document, highlighting.MainRuleSet);
-						else
-							highlighter = null;
+						highlighter = SD.EditorControlService.CreateHighlighter(document, fileName);
 					}
 					var region = new DomRegion(fileName, node.StartLocation, node.EndLocation);
 					int offset = document.GetOffset(node.StartLocation);
 					int length = document.GetOffset(node.EndLocation) - offset; 
 					var builder = SearchResultsPad.CreateInlineBuilder(node.StartLocation, node.EndLocation, document, highlighter);
-					results.Add(new Reference(region, result, offset, length, builder));
+					results.Add(new Reference(region, result, offset, length, builder, highlighter.DefaultTextColor));
 				}, cancellationToken);
 			callback(new SearchedFile(fileName, results));
 		}

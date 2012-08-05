@@ -14,6 +14,7 @@ using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
@@ -86,24 +87,20 @@ namespace ICSharpCode.XamlBinding
 			if (parseInfo == null)
 				return;
 			ReadOnlyDocument document = null;
-			DocumentHighlighter highlighter = null;
+			ISyntaxHighlighter highlighter = null;
 			List<Reference> results = new List<Reference>();
 			XamlResolver resolver = new XamlResolver();
 			do {
 				if (document == null) {
 					document = new ReadOnlyDocument(textSource);
-					var highlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
-					if (highlighting != null)
-						highlighter = new DocumentHighlighter(document, highlighting.MainRuleSet);
-					else
-						highlighter = null;
+					highlighter = SD.EditorControlService.CreateHighlighter(document, fileName);
 				}
 				var result = resolver.Resolve(parseInfo, document.GetLocation(offset + entity.Name.Length / 2 + 1), compilation, cancellationToken);
 				int length = entity.Name.Length;
 				if ((result is TypeResolveResult && ((TypeResolveResult)result).Type.Equals(entity)) || (result is MemberResolveResult && ((MemberResolveResult)result).Member.Equals(entity))) {
 					var region = new DomRegion(fileName, document.GetLocation(offset), document.GetLocation(offset + length));
 					var builder = SearchResultsPad.CreateInlineBuilder(region.Begin, region.End, document, highlighter);
-					results.Add(new Reference(region, result, offset, length, builder));
+					results.Add(new Reference(region, result, offset, length, builder, highlighter.DefaultTextColor));
 				}
 				offset = textSource.IndexOf(entity.Name, offset + length, textSource.TextLength - offset - length, StringComparison.OrdinalIgnoreCase);
 			} while (offset > 0);
