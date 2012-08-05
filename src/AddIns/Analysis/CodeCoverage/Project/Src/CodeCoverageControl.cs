@@ -3,12 +3,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.AddIn;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
@@ -316,12 +319,18 @@ namespace ICSharpCode.CodeCoverage
 		void OpenFile(string fileName, int line, int column)
 		{
 			if (fileName != textEditorFileName) {
-				textEditor.Load(fileName); 
+				textEditor.Load(fileName);
+				textEditor.SyntaxHighlighting = GetSyntaxHighlighting(fileName);
 			}
 			textEditor.ScrollToEnd();
-			textEditor.TextArea.Caret.Location = new ICSharpCode.AvalonEdit.Document.TextLocation(line, column);
+			textEditor.TextArea.Caret.Location = new TextLocation(line, column);
 			textEditor.ScrollToLine(line);
 			CodeCoverageService.ShowCodeCoverage(new AvalonEditTextEditorAdapter(textEditor), fileName);
+		}
+		
+		IHighlightingDefinition GetSyntaxHighlighting(string fileName)
+		{
+			return HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
 		}
 		
 		void CreateTreeView()
