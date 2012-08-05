@@ -12,9 +12,9 @@ namespace ICSharpCode.CodeCoverage.Tests.Utils
 		
 		public CodeCoverageMethodXElementBuilder(string methodSignature)
 		{
-			MethodElement = new XElement(XName.Get("Method"));
+			MethodElement = new XElement("Method");
 			
-			var nameElement = new XElement(XName.Get("Name"));
+			var nameElement = new XElement("Name");
 			nameElement.Value = methodSignature;
 			MethodElement.Add(nameElement);
 		}
@@ -31,7 +31,12 @@ namespace ICSharpCode.CodeCoverage.Tests.Utils
 		
 		void SetBooleanAttribute(string name, bool value)
 		{
-			MethodElement.SetAttributeValue(name, value.ToString().ToLowerInvariant());
+			SetAttributeValue(name, value.ToString().ToLowerInvariant());
+		}
+		
+		void SetAttributeValue(string name, object value)
+		{
+			MethodElement.SetAttributeValue(name, value);
 		}
 		
 		public void MakePropertySetter()
@@ -88,6 +93,18 @@ namespace ICSharpCode.CodeCoverage.Tests.Utils
 		public static XElement CreateIntegerPropertyGetter(string className, string propertyName)
 		{
 			return CreatePropertyGetter(className, propertyName, "System.Int32");
+		}
+		
+		public static XElement CreateMethod(string className, string methodName)
+		{
+			return CreateMethod(className, methodName, "System.Void");
+		}
+		
+		public static XElement CreateMethod(string className, string methodName, string returnType)
+		{
+			string methodSignature = String.Format("{0} {1}::{2}()", returnType, className, methodName);
+			var builder = new CodeCoverageMethodXElementBuilder(methodSignature);
+			return builder.MethodElement;
 		}
 	}
 }

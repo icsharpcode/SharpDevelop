@@ -63,6 +63,7 @@
     <Compile Include="Src\CodeCoverageControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Src\CodeCoverageMethodElement.cs" />
     <Compile Include="Src\CodeCoveragePad.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\CodeCoverageModule.cs" />
