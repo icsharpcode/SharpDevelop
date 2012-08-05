@@ -291,7 +291,6 @@ namespace ICSharpCode.CodeCoverage
 			foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
 				AddSequencePoint(sequencePoint);
 			}
-
 		}
 		
 		void AddSequencePoint(CodeCoverageSequencePoint sequencePoint)
@@ -570,6 +569,14 @@ namespace ICSharpCode.CodeCoverage
 				// Tree view will be moved to a different parent.
 				DisposeTreeView();
 			}
+		}
+		
+		protected override void Dispose(bool disposing)
+		{
+			if (textEditor != null) {
+				DisposeTextEditor();
+			}
+			base.Dispose(disposing);
 		}
 	}
 }
