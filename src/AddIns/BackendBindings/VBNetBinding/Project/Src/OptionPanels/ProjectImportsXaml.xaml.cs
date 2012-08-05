@@ -23,10 +23,10 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 	/// <summary>
 	/// Interaction logic for ProjectImportsOptions.xaml
 	/// </summary>
-	public partial class ProjectImportsXaml : ProjectOptionPanel	
+	public partial class ProjectImports : ProjectOptionPanel	
 	{
 		
-		public ProjectImportsXaml()
+		public ProjectImports()
 		{
 			InitializeComponent();
 		}

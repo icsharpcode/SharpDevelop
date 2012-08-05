@@ -94,7 +94,7 @@
 		
 		<OptionPanel id    = "ProjectImports1"
 		             label = "${res:Dialog.ProjectOptions.ProjectImports}"
-		             class = "ICSharpCode.VBNetBinding.OptionPanels.ProjectImportsXaml"/>
+		             class = "ICSharpCode.VBNetBinding.OptionPanels.ProjectImports"/>
 		
 		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
 	</Path>

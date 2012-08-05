@@ -1,13 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <optionpanels:ProjectOptionPanel
-	x:Class="ICSharpCode.VBNetBinding.OptionPanels.ProjectImportsXaml"
- xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
-xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels;assembly=ICSharpCode.SharpDevelop"
-xmlns:addin="clr-namespace:ICSharpCode.VBNetBinding.OptionPanels"
- xmlns:core="http://icsharpcode.net/sharpdevelop/core" 
-xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
- xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
- xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets">
+	x:Class="ICSharpCode.VBNetBinding.OptionPanels.ProjectImports"
+	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels;assembly=ICSharpCode.SharpDevelop"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	
 	<ScrollViewer VerticalScrollBarVisibility="Auto"
 	              HorizontalScrollBarVisibility="Auto" >
 		<GroupBox
@@ -24,9 +23,9 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 					ItemsSource="{Binding ProjectItems}"
 					SelectedItem="{Binding SelectedProjectItem}">
 				</ListBox>
-					
+				
 				<Grid Grid.Column="1" Grid.ColumnSpan="2" Margin="3,0,3,0"
-					HorizontalAlignment="Stretch">
+				      HorizontalAlignment="Stretch">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition></ColumnDefinition>
 						<ColumnDefinition></ColumnDefinition>
@@ -43,8 +42,8 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 					</Grid.RowDefinitions>
 					
 					<Label Grid.ColumnSpan="2"
-						HorizontalAlignment="Left" VerticalAlignment="Center"
-						Content="{core:Localize Dialog.ProjectOptions.ProjectImports.Namespace}" />
+					       HorizontalAlignment="Left" VerticalAlignment="Center"
+					       Content="{core:Localize Dialog.ProjectOptions.ProjectImports.Namespace}" />
 					
 					<ComboBox Grid.Row="1" Grid.ColumnSpan="2"
 					          VerticalAlignment="Center"
