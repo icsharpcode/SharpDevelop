@@ -16,19 +16,12 @@ namespace ICSharpCode.CodeCoverage
 		string className = String.Empty;
 		string fullClassName = String.Empty;
 		string classNamespace = String.Empty;
-		MethodAttributes methodAttributes;
 		List<CodeCoverageSequencePoint> sequencePoints = new List<CodeCoverageSequencePoint>();
 		
-		public CodeCoverageMethod(string name, string className) 
-			: this(name, className, MethodAttributes.Public)
-		{
-		}
-		
-		public CodeCoverageMethod(string name, string className, MethodAttributes methodAttributes)
+		public CodeCoverageMethod(string name, string className)
 		{
 			this.name = name;
 			this.fullClassName = className;
-			this.methodAttributes = methodAttributes;
 			
 			int index = fullClassName.LastIndexOf('.');
 			if (index > 0) {
@@ -45,20 +38,19 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		public CodeCoverageMethod(string className, CodeCoverageMethodElement element)
-			: this(element.MethodName, className, MethodAttributes.Public)
+			: this(element.MethodName, className)
 		{
 			IsProperty = element.IsProperty && IsPropertyMethodName();
+			IsGetter = element.IsGetter;
+			IsSetter = element.IsSetter;
 		}
 		
 		/// <summary>
 		/// Returns true if the method is a getter or setter method for a property.
 		/// </summary>
 		public bool IsProperty { get; private set; }
-		
-		bool IsSpecialMethodName()
-		{
-			return (methodAttributes & MethodAttributes.SpecialName) == MethodAttributes.SpecialName;
-		}
+		public bool IsGetter { get; private set; }
+		public bool IsSetter { get; private set; }
 		
 		bool IsPropertyMethodName()
 		{

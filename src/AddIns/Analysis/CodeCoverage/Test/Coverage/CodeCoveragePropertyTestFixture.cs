@@ -58,13 +58,17 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		[Test]
 		public void GetterMethodIsGetterProperty()
 		{
-			Assert.IsTrue(CodeCoverageProperty.IsGetter(getter));
+			bool result = getter.IsGetter;
+			
+			Assert.IsTrue(result);
 		}
 
 		[Test]
 		public void SetterMethodIsSetterProperty()
 		{
-			Assert.IsTrue(CodeCoverageProperty.IsSetter(setter));
+			bool result = setter.IsSetter;
+			
+			Assert.IsTrue(result);
 		}
 		
 		[Test]
