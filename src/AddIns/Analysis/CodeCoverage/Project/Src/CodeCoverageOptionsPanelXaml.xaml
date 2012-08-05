@@ -8,8 +8,6 @@
 	
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets">
 	
-<!--xmlns:local="clr-namespace:ICSharpCode.CodeCoverage"-->
-	
 	<GroupBox
 		Header="{core:Localize ICSharpCode.CodeCoverage.OptionsPanel.CodeCoverageColoursGroupBoxText}">
 		<Grid >

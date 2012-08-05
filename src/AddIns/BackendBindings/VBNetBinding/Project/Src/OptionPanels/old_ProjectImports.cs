@@ -12,7 +12,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.VBNetBinding.OptionPanels
 {
-	public class ProjectImports : AbstractXmlFormsProjectOptionPanel
+	public class old_ProjectImports : AbstractXmlFormsProjectOptionPanel
 	{
 		public override void LoadPanelContents()
 		{
