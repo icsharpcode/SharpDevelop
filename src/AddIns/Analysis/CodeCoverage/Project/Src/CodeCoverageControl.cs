@@ -232,9 +232,15 @@ namespace ICSharpCode.CodeCoverage
 		{
 			CodeCoverageClassTreeNode classNode = node as CodeCoverageClassTreeNode;
 			CodeCoverageMethodTreeNode methodNode = node as CodeCoverageMethodTreeNode;
+			CodeCoveragePropertyTreeNode propertyNode = node as CodeCoveragePropertyTreeNode;
 			if (classNode != null && classNode.Nodes.Count > 0) {
-				methodNode = (CodeCoverageMethodTreeNode)classNode.Nodes[0];
+				propertyNode = classNode.Nodes[0] as CodeCoveragePropertyTreeNode;
+				methodNode = classNode.Nodes[0] as CodeCoverageMethodTreeNode;
 			} 
+			
+			if (propertyNode != null && propertyNode.Nodes.Count > 0) {
+				methodNode = propertyNode.Nodes[0] as CodeCoverageMethodTreeNode;
+			}
 			
 			if (methodNode != null && methodNode.Method.SequencePoints.Count > 0) {
 				CodeCoverageSequencePoint sequencePoint = methodNode.Method.SequencePoints[0];
