@@ -30,14 +30,14 @@ namespace ICSharpCode.CodeCoverage.Tests.Gui
 		CodeCoverageMethod fooGetterMethod;
 		CodeCoverageMethod fooSetterMethod;
 		
-		XElement CreateSetterMethod(string methodSignature)
+		XElement CreateSetterElement(string className, string propertyName)
 		{
-			return CodeCoverageMethodXElementBuilder.CreateSetterMethod(methodSignature);
+			return CodeCoverageMethodXElementBuilder.CreateIntegerPropertySetter(className, propertyName);
 		}
 		
-		XElement CreateGetterMethod(string methodSignature)
+		XElement CreateGetterElement(string className, string propertyName)
 		{
-			return CodeCoverageMethodXElementBuilder.CreateGetterMethod(methodSignature);
+			return CodeCoverageMethodXElementBuilder.CreateIntegerPropertyGetter(className, propertyName);
 		}
 		
 		[TestFixtureSetUp]
@@ -46,12 +46,12 @@ namespace ICSharpCode.CodeCoverage.Tests.Gui
 			List<CodeCoverageModule> modules = new List<CodeCoverageModule>();
 			CodeCoverageModule fooModule = new CodeCoverageModule("Tests");
 			
-			XElement setterMethod = CreateSetterMethod("System.Void Tests.FooTest::set_Count(System.Int32)");
+			XElement setterMethod = CreateSetterElement("Tests.FooTest", "Count");
 			fooSetterMethod = new CodeCoverageMethod("Tests.FooTest", setterMethod);
 			fooSetterMethod.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTest.cs", 1, 2, 2, 3, 4, 2));
 			fooSetterMethod.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTest.cs", 0, 3, 4, 4, 4, 1));
 			
-			XElement getterMethod = CreateGetterMethod("System.Int32 Tests.FooTest::get_Count()");
+			XElement getterMethod = CreateGetterElement("Tests.FooTest", "Count");
 			fooGetterMethod = new CodeCoverageMethod("Tests.FooTest", getterMethod);
 			fooGetterMethod.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTest.cs", 1, 1, 0, 2, 1, 1));
 				

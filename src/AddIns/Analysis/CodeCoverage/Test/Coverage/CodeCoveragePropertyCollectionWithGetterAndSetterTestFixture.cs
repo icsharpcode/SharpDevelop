@@ -23,23 +23,23 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		CodeCoverageMethod setterMethod;
 		CodeCoverageProperty property;
 		
-		XElement CreateSetterMethod(string methodSignature)
+		XElement CreatePropertySetter(string className, string propertyName)
 		{
-			return CodeCoverageMethodXElementBuilder.CreateSetterMethod(methodSignature);
+			return CodeCoverageMethodXElementBuilder.CreatePropertySetter(className, propertyName, "System.Int32");
 		}
 		
-		XElement CreateGetterMethod(string methodSignature)
+		XElement CreatePropertyGetter(string className, string propertyName)
 		{
-			return CodeCoverageMethodXElementBuilder.CreateGetterMethod(methodSignature);
+			return CodeCoverageMethodXElementBuilder.CreatePropertyGetter(className, propertyName, "System.Int32");
 		}
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
 			properties = new CodeCoveragePropertyCollection();
-			XElement getterElement = CreateGetterMethod("System.Int32 MyTests::get_Count()");
+			XElement getterElement = CreatePropertyGetter("MyTests", "Count");
 			getterMethod = new CodeCoverageMethod("MyTests", getterElement);
-			XElement setterElement = CreateSetterMethod("System.Void MyTests::set_Count(System.Int32)");
+			XElement setterElement = CreatePropertySetter("MyTests", "Count");
 			setterMethod = new CodeCoverageMethod("MyTests", setterElement);
 			
 			properties.Add(getterMethod);

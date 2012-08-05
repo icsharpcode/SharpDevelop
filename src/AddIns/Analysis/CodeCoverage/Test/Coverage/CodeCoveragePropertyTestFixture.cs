@@ -20,20 +20,20 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		[SetUp]
 		public void Init()
 		{
-			XElement getterElement = CreateGetterElement("System.Int32 MyTest::get_Count()");
+			XElement getterElement = CreateGetterElement("MyTest", "Count");
 			getter = new CodeCoverageMethod("MyTest", getterElement);
-			XElement setterElement = CreateSetterElement("System.Void MyTest::set_Count(System.Int32)");
+			XElement setterElement = CreateSetterElement("MyTest", "Count");
 			setter = new CodeCoverageMethod("MyTest", setterElement);
 		}
 		
-		XElement CreateGetterElement(string methodSignature)
+		XElement CreateGetterElement(string className, string propertyName)
 		{
-			return CodeCoverageMethodXElementBuilder.CreateGetterMethod(methodSignature);
+			return CodeCoverageMethodXElementBuilder.CreateIntegerPropertyGetter(className, propertyName);
 		}
 		
-		XElement CreateSetterElement(string methodSignature)
+		XElement CreateSetterElement(string className, string propertyName)
 		{
-			return CodeCoverageMethodXElementBuilder.CreateSetterMethod(methodSignature);
+			return CodeCoverageMethodXElementBuilder.CreateIntegerPropertySetter(className, propertyName);
 		}
 		
 		[Test]
