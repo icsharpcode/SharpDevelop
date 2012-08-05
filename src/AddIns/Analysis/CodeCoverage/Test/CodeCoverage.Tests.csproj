@@ -93,6 +93,7 @@
     <Compile Include="Testing\CodeCoverageTestRunnerTests.cs" />
     <Compile Include="Testing\OpenCoverApplicationTests.cs" />
     <Compile Include="Testing\RunTestWithCodeCoverageCommandTests.cs" />
+    <Compile Include="Utils\CodeCoverageMethodXElementBuilder.cs" />
     <Compile Include="Utils\DerivedCodeCoverageTestRunner.cs" />
     <Compile Include="Utils\DerivedRunTestWithCodeCoverageCommand.cs" />
     <Compile Include="Gui\ClassWithNoNamespaceInTreeViewTestFixture.cs" />

@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Xml.Linq;
 using ICSharpCode.CodeCoverage;
+using ICSharpCode.CodeCoverage.Tests.Utils;
 using NUnit.Framework;
 
 namespace ICSharpCode.CodeCoverage.Tests.Coverage
@@ -18,8 +20,20 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		[SetUp]
 		public void Init()
 		{
-			getter = new CodeCoverageMethod("get_Count", "MyTest", MethodAttributes.SpecialName);
-			setter = new CodeCoverageMethod("set_Count", "MyTest", MethodAttributes.SpecialName);
+			XElement getterElement = CreateGetterElement("System.Int32 MyTest::get_Count()");
+			getter = new CodeCoverageMethod("MyTest", getterElement);
+			XElement setterElement = CreateSetterElement("System.Void MyTest::set_Count(System.Int32)");
+			setter = new CodeCoverageMethod("MyTest", setterElement);
+		}
+		
+		XElement CreateGetterElement(string methodSignature)
+		{
+			return CodeCoverageMethodXElementBuilder.CreateGetterMethod(methodSignature);
+		}
+		
+		XElement CreateSetterElement(string methodSignature)
+		{
+			return CodeCoverageMethodXElementBuilder.CreateSetterMethod(methodSignature);
 		}
 		
 		[Test]
@@ -94,6 +108,6 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 			expectedMethods.Add(getter);
 			expectedMethods.Add(setter);
 			Assert.AreEqual(expectedMethods, property.GetMethods());
-		}				
+		}
 	}
 }

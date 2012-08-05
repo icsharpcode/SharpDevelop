@@ -67,19 +67,26 @@ namespace ICSharpCode.CodeCoverage
 		public static string GetPropertyName(CodeCoverageMethod method)
 		{
 			if (IsGetter(method) || IsSetter(method)) {
-				return method.Name.Substring(4);
+				return GetMethodName(method).Substring(6);
 			}
 			return String.Empty;
 		}
 		
+		static string GetMethodName(CodeCoverageMethod method)
+		{
+			int startIndex = method.Name.IndexOf("::");
+			int endIndex = method.Name.IndexOf('(', startIndex);
+			return method.Name.Substring(startIndex, endIndex - startIndex);
+		}
+		
 		public static bool IsGetter(CodeCoverageMethod method)
 		{
-			return method.Name.StartsWith("get_");
+			return method.Name.Contains("::get_");
 		}
 
 		public static bool IsSetter(CodeCoverageMethod method)
 		{
-			return method.Name.StartsWith("set_");
+			return method.Name.Contains("::set_");
 		}
 	}
 }

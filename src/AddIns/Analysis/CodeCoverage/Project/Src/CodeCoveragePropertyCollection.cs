@@ -32,7 +32,7 @@ namespace ICSharpCode.CodeCoverage
 			foreach (CodeCoverageProperty property in properties) {
 				if (propertyName == property.Name) {
 					property.AddMethod(method);
-					added = true;				
+					added = true;
 				}
 			}
 			
