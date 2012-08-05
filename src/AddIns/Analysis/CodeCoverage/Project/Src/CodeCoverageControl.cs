@@ -5,11 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
+
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.CodeCoverage
@@ -494,8 +497,15 @@ namespace ICSharpCode.CodeCoverage
 			}
 			
 			textEditor = AvalonEditTextEditorAdapter.CreateAvalonEditInstance();
+			
 			textEditor.IsReadOnly = true;
 			textEditor.MouseDoubleClick += TextEditorDoubleClick;
+			
+			var adapter = new AvalonEditTextEditorAdapter(textEditor);
+			var textMarkerService = new TextMarkerService(adapter.TextEditor.Document);
+			adapter.TextEditor.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
+			adapter.TextEditor.TextArea.TextView.LineTransformers.Add(textMarkerService);
+			adapter.TextEditor.TextArea.TextView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
 			
 			textEditorHost = new ElementHost();
 			textEditorHost.Dock = DockStyle.Fill;
