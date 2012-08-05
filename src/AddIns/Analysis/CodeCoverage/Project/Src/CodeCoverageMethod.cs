@@ -16,7 +16,6 @@ namespace ICSharpCode.CodeCoverage
 		string className = String.Empty;
 		string fullClassName = String.Empty;
 		string classNamespace = String.Empty;
-		int methodBodySize;
 		MethodAttributes methodAttributes;
 		List<CodeCoverageSequencePoint> sequencePoints = new List<CodeCoverageSequencePoint>();
 		
@@ -41,39 +40,14 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		public CodeCoverageMethod(string className, XElement reader)
-			: this(GetMethodName(reader), className, GetMethodAttributes(reader))
+			: this(className, new CodeCoverageMethodElement(reader))
 		{
-			ReadMethodBodySize(reader);
-			XAttribute isGetter = reader.Attribute("isGetter");
-			XAttribute isSetter = reader.Attribute("isSetter");
-			if (isGetter != null && isSetter != null && IsPropertyMethodName()) {
-				try {
-					IsProperty = Convert.ToBoolean(isGetter.Value) || Convert.ToBoolean(isSetter.Value);
-				} catch (FormatException) {
-					IsProperty = false;
-				}
-			}
-			else {
-				IsProperty = false;
-			}
 		}
 		
-		static string GetMethodName(XElement reader)
+		public CodeCoverageMethod(string className, CodeCoverageMethodElement element)
+			: this(element.MethodName, className, MethodAttributes.Public)
 		{
-			return reader.Element("Name").Value;
-		}
-		
-		static MethodAttributes GetMethodAttributes(XElement reader)
-		{
-			return MethodAttributes.Public;
-		}
-		
-		void ReadMethodBodySize(XElement reader)
-		{
-			//string bodySizeAsString = reader.GetAttribute("bodysize");
-			//if (bodySizeAsString != null) {
-			//    methodBodySize = Int32.Parse(bodySizeAsString);
-			//}
+			IsProperty = element.IsProperty && IsPropertyMethodName();
 		}
 		
 		/// <summary>
@@ -86,9 +60,9 @@ namespace ICSharpCode.CodeCoverage
 			return (methodAttributes & MethodAttributes.SpecialName) == MethodAttributes.SpecialName;
 		}
 		
-		 bool IsPropertyMethodName()
+		bool IsPropertyMethodName()
 		{
-			return name.Contains("::get_") || name.Contains("::set_");
+			return name.Contains("get_") || name.Contains("set_");
 		}
 		
 		public string Name {
@@ -164,10 +138,6 @@ namespace ICSharpCode.CodeCoverage
 		
 		public int GetUnvisitedCodeLength()
 		{
-			if (sequencePoints.Count == 0) {
-				return methodBodySize;
-			}
-			
 			int total = 0;
 			foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
 				if (sequencePoint.VisitCount == 0) {

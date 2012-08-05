@@ -95,7 +95,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void MethodName_GetterMethod_ReturnsExpectedGetterName()
 		{
 			string name = GetterMethod.Name;
-			string expectedName = "System.Int32 MyTests.MyClass1::get_Count())";
+			string expectedName = "get_Count";
 			Assert.AreEqual(expectedName, name);
 		}
 		
@@ -114,7 +114,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void MethodName_NameOfMethodWithPropertyFlagsButInvalidName_ReturnsMethodName()
 		{
 			string name = MethodWithPropertyFlagsButInvalidName.Name;
-			string expectedName = "System.Void MyTests.Tests.MyClass::PropertyFlagsButJustAMethod()";
+			string expectedName = "PropertyFlagsButJustAMethod";
 			Assert.AreEqual(expectedName, name);
 		}
 		
@@ -126,7 +126,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void MethodName_SetterMethod_ReturnsSetterMethodName()
 		{
 			string name = SetterMethod.Name;
-			string expectedName = "System.Void MyTests.MyClass1::set_Count(System.Int32)";
+			string expectedName = "set_Count";
 			Assert.AreEqual(expectedName, name);
 		}
 		
@@ -145,7 +145,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void MethodName_OrdinaryMethod_ReturnsMethodName()
 		{
 			string name = OrdinaryMethod.Name;
-			string expectedName = "System.Void MyTests.MyClass1::get_NotAProperty())";
+			string expectedName = "get_NotAProperty";
 			Assert.AreEqual(expectedName, name);
 		}
 		

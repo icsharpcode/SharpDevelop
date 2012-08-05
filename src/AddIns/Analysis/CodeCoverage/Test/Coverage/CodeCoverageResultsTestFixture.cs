@@ -73,7 +73,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void MethodName_ModuleHasOneMethod_ReturnsExpectedMethodName()
 		{
 			string name = FirstModuleFirstMethod.Name;
-			string expectedName = "System.Void Foo.Tests.FooTestFixture::SimpleTest()";
+			string expectedName = "SimpleTest";
 			Assert.AreEqual(expectedName, name);
 		}
 		
