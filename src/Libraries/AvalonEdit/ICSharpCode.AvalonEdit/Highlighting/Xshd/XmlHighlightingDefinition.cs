@@ -13,7 +13,7 @@ using ICSharpCode.AvalonEdit.Utils;
 namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 {
 	[Serializable]
-	sealed class XmlHighlightingDefinition : IHighlightingDefinition2
+	sealed class XmlHighlightingDefinition : IHighlightingDefinition
 	{
 		public string Name { get; private set; }
 		
