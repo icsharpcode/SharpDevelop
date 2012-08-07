@@ -52,17 +52,17 @@ namespace ICSharpCode.CodeCoverage
 		
 		void SavePartCoverSettings()
 		{
-			PartCoverSettings settings = new PartCoverSettings();
+			OpenCoverSettings settings = new OpenCoverSettings();
 			settings.Include.AddRange(RemoveEmptyStrings(includeListTextBox.Lines));
 			settings.Exclude.AddRange(RemoveEmptyStrings(excludeListTextBox.Lines));
-			settings.Save(PartCoverSettings.GetFileName(project));
+			settings.Save(OpenCoverSettings.GetFileName(project));
 		}
 		
 		void ReadPartCoverSettings()
 		{
-			string settingsFileName = PartCoverSettings.GetFileName(project);
+			string settingsFileName = OpenCoverSettings.GetFileName(project);
 			if (File.Exists(settingsFileName)) {
-				PartCoverSettings settings = new PartCoverSettings(settingsFileName);
+				OpenCoverSettings settings = new OpenCoverSettings(settingsFileName);
 				includeListTextBox.Text = ConvertToMultLineString(settings.Include);
 				excludeListTextBox.Text = ConvertToMultLineString(settings.Exclude);
 			}

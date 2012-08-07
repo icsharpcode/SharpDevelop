@@ -14,8 +14,8 @@ namespace ICSharpCode.CodeCoverage
 	{
 		UnitTestingOptions options;
 		IFileSystem fileSystem;
-		PartCoverApplication partCoverApplication;
-		PartCoverSettingsFactory settingsFactory;
+		OpenCoverApplication partCoverApplication;
+		OpenCoverSettingsFactory settingsFactory;
 		
 		public CodeCoverageTestRunner()
 			: this(new CodeCoverageTestRunnerContext())
@@ -27,7 +27,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 			this.options = context.Options;
 			this.fileSystem = context.CodeCoverageFileSystem;
-			settingsFactory = new PartCoverSettingsFactory(fileSystem);
+			settingsFactory = new OpenCoverSettingsFactory(fileSystem);
 		}
 		
 		public bool HasCodeCoverageResults()
@@ -66,8 +66,8 @@ namespace ICSharpCode.CodeCoverage
 			NUnitConsoleApplication nunitConsoleApp = new NUnitConsoleApplication(selectedTests, options);
 			nunitConsoleApp.Results = base.TestResultsMonitor.FileName;
 			
-			PartCoverSettings settings = settingsFactory.CreatePartCoverSettings(selectedTests.Project);
-			partCoverApplication = new PartCoverApplication(nunitConsoleApp, settings);
+			OpenCoverSettings settings = settingsFactory.CreateOpenCoverSettings(selectedTests.Project);
+			partCoverApplication = new OpenCoverApplication(nunitConsoleApp, settings);
 		}
 		
 		void RemoveExistingCodeCoverageResultsFile()

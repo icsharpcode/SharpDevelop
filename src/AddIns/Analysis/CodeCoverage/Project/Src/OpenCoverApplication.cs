@@ -12,14 +12,14 @@ using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.CodeCoverage
 {
-	public class PartCoverApplication
+	public class OpenCoverApplication
 	{
 		string fileName = String.Empty;
 		NUnitConsoleApplication nunitConsoleApp;
-		PartCoverSettings settings;
+		OpenCoverSettings settings;
 		StringBuilder arguments;
 		
-		public PartCoverApplication(string fileName, NUnitConsoleApplication nunitConsoleApp, PartCoverSettings settings)
+		public OpenCoverApplication(string fileName, NUnitConsoleApplication nunitConsoleApp, OpenCoverSettings settings)
 		{
 			this.fileName = fileName;
 			this.nunitConsoleApp = nunitConsoleApp;
@@ -30,18 +30,18 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
-		public PartCoverApplication(NUnitConsoleApplication nunitConsoleApp, PartCoverSettings settings)
+		public OpenCoverApplication(NUnitConsoleApplication nunitConsoleApp, OpenCoverSettings settings)
 			: this(null, nunitConsoleApp, settings)
 		{
 		}
 		
 		void GetPartCoverApplicationFileName()
 		{
-			fileName = Path.Combine(FileUtility.ApplicationRootPath, @"bin\Tools\PartCover\PartCover.exe");
+			fileName = Path.Combine(FileUtility.ApplicationRootPath, @"bin\Tools\OpenCover\OpenCover.Console.exe");
 			fileName = Path.GetFullPath(fileName);
 		}
 		
-		public PartCoverSettings Settings {
+		public OpenCoverSettings Settings {
 			get { return settings; }
 		}
 		
@@ -76,7 +76,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		string GetOutputDirectory(IProject project)
 		{
-			return Path.Combine(project.Directory, "PartCover");
+			return Path.Combine(project.Directory, "OpenCover");
 		}
 		
 		public ProcessStartInfo GetProcessStartInfo()
@@ -89,37 +89,44 @@ namespace ICSharpCode.CodeCoverage
 		
 		string GetArguments()
 		{
-			arguments = new StringBuilder();
+			// IMPORTANT: https://github.com/sawilde/opencover/wiki/Usage
+			arguments = new StringBuilder("-register:user ");
 			
 			AppendTarget();
 			AppendTargetWorkingDirectory();
 			AppendTargetArguments();
 			AppendCodeCoverageResultsFileName();
-			AppendIncludedItems();
-			AppendExcludedItems();
-			
+			AppendFilter();
 			return arguments.ToString().Trim();
 		}
 		
 		void AppendTarget()
 		{
-			arguments.AppendFormat("--target \"{0}\" ", Target);
+			arguments.AppendFormat("-target:\"{0}\" ", Target);
 		}
 		
 		void AppendTargetWorkingDirectory()
 		{
-			arguments.AppendFormat("--target-work-dir \"{0}\" ", GetTargetWorkingDirectory());
+			arguments.AppendFormat("-targetdir:\"{0}\" ", GetTargetWorkingDirectory());
 		}
 		
 		void AppendTargetArguments()
 		{
 			string targetArguments = GetTargetArguments();
-			arguments.AppendFormat("--target-args \"{0}\" ", targetArguments.Replace("\"", "\\\""));
+			arguments.AppendFormat("-targetargs:\"{0}\" ", targetArguments.Replace("\"", "\\\""));
 		}
 		
 		void AppendCodeCoverageResultsFileName()
 		{
-			arguments.AppendFormat("--output \"{0}\" ", CodeCoverageResultsFileName);
+			arguments.AppendFormat("-output:\"{0}\" ", CodeCoverageResultsFileName);
+		}
+		
+		void AppendFilter()
+		{
+			arguments.Append("-filter:\"");
+			AppendIncludedItems();
+			AppendExcludedItems();
+			arguments.Append("\"");
 		}
 		
 		void AppendIncludedItems()
@@ -128,13 +135,13 @@ namespace ICSharpCode.CodeCoverage
 			if (includedItems.Count == 0) {
 				includedItems.Add("[*]*");
 			}
-			AppendItems("--include", includedItems);
+			AppendItems("+", includedItems);
 		}
 		
 		void AppendExcludedItems()
 		{
 			AppendEmptySpace();
-			AppendItems("--exclude", settings.Exclude);
+			AppendItems("-", settings.Exclude);
 		}
 		
 		void AppendEmptySpace()
@@ -152,7 +159,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 			StringBuilder itemArgs = new StringBuilder();
 			foreach (string item in items) {
-				itemArgs.AppendFormat("{0} {1} ", optionName, item);
+				itemArgs.AppendFormat("{0}{1} ", optionName, item);
 			}
 			return itemArgs.ToString().Trim();
 		}

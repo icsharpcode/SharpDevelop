@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
+using System.Xml.Linq;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.CodeCoverage
@@ -39,44 +40,46 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
-		public CodeCoverageMethod(string className, XmlReader reader)
+		public CodeCoverageMethod(string className, XElement reader)
 			: this(GetMethodName(reader), className, GetMethodAttributes(reader))
 		{
 			ReadMethodBodySize(reader);
-		}
-		
-		static string GetMethodName(XmlReader reader)
-		{
-			return reader.GetAttribute("name");
-		}
-		
-		static MethodAttributes GetMethodAttributes(XmlReader reader)
-		{
-			string flags = reader.GetAttribute("flags");
-			if (flags != null) {
+			XAttribute isGetter = reader.Attribute("isGetter");
+			XAttribute isSetter = reader.Attribute("isSetter");
+			if (isGetter != null && isSetter != null && IsPropertyMethodName()) {
 				try {
-					return (MethodAttributes)Enum.Parse(typeof(MethodAttributes), flags);
-				} catch (ArgumentException) { }
+					IsProperty = Convert.ToBoolean(isGetter.Value) || Convert.ToBoolean(isSetter.Value);
+				} catch (FormatException) {
+					IsProperty = false;
+				}
 			}
+			else {
+				IsProperty = false;
+			}
+		}
+		
+		static string GetMethodName(XElement reader)
+		{
+			return reader.Element("Name").Value;
+		}
+		
+		static MethodAttributes GetMethodAttributes(XElement reader)
+		{
 			return MethodAttributes.Public;
 		}
 		
-		void ReadMethodBodySize(XmlReader reader)
+		void ReadMethodBodySize(XElement reader)
 		{
-			string bodySizeAsString = reader.GetAttribute("bodysize");
-			if (bodySizeAsString != null) {
-				methodBodySize = Int32.Parse(bodySizeAsString);
-			}
+			//string bodySizeAsString = reader.GetAttribute("bodysize");
+			//if (bodySizeAsString != null) {
+			//    methodBodySize = Int32.Parse(bodySizeAsString);
+			//}
 		}
 		
 		/// <summary>
 		/// Returns true if the method is a getter or setter method for a property.
 		/// </summary>
-		public bool IsProperty {
-			get { 
-				return IsSpecialMethodName() && IsPropertyMethodName();
-			}
-		}
+		public bool IsProperty { get; private set; }
 		
 		bool IsSpecialMethodName()
 		{
@@ -85,7 +88,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		 bool IsPropertyMethodName()
 		{
-			return name.StartsWith("get_") || name.StartsWith("set_");
+			return name.Contains("::get_") || name.Contains("::set_");
 		}
 		
 		public string Name {

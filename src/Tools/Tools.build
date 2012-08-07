@@ -11,7 +11,9 @@
 		<NUnitConfigFiles Include="NUnit\*.config"/>
 		<NUnitLibFiles Include="NUnit\lib\*.dll"/>
 		<HelpToolFiles Include="Help\*"/>
-		<PartCoverFiles Include="PartCover\*"/>
+		<OpenCoverFiles Include="OpenCover\*"/>
+		<OpenCoverx64Files Include="OpenCover\x64\*"/>
+		<OpenCoverx86Files Include="OpenCover\x86\*"/>
 		<GraphSharpFiles Include="..\Libraries\GraphSharp\*"/>
 	
 		<LanguageResource Include="$(LanguageResourcePath)StringResources.*.resx"/>
@@ -31,7 +33,9 @@
 		<Copy SourceFiles="@(NUnitConfigFiles)" DestinationFolder="..\..\bin\Tools\NUnit" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(NUnitLibFiles)" DestinationFolder="..\..\bin\Tools\NUnit\lib" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(ToolFiles)" DestinationFolder="..\..\bin\Tools" SkipUnchangedFiles="true"/>
-		<Copy SourceFiles="@(PartCoverFiles)" DestinationFolder="..\..\bin\Tools\PartCover" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(OpenCoverFiles)" DestinationFolder="..\..\bin\Tools\OpenCover" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(OpenCoverx64Files)" DestinationFolder="..\..\bin\Tools\OpenCover\x64" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(OpenCoverx86Files)" DestinationFolder="..\..\bin\Tools\OpenCover\x86" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(GraphSharpFiles)" DestinationFolder="..\..\bin\" SkipUnchangedFiles="true"/>
 		
 		<!--

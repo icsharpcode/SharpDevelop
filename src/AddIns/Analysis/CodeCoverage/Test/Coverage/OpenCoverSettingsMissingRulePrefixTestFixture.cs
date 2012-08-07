@@ -13,19 +13,19 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 	/// range exception when the Rule elements are empty strings.
 	/// </summary>
 	[TestFixture]
-	public class PartCoverSettingsMissingRulePrefixTestFixture
+	public class OpenCoverSettingsMissingRulePrefixTestFixture
 	{
-		PartCoverSettings settings;
+		OpenCoverSettings settings;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			string xml = "<PartCoverSettings>\r\n" +
+			string xml = "<OpenCoverSettings>\r\n" +
 						"   <Rule/>\r\n" +
 						"   <Rule></Rule>\r\n" +
-						"</PartCoverSettings>";
+						"</OpenCoverSettings>";
 			
-			settings = new PartCoverSettings(new StringReader(xml));
+			settings = new OpenCoverSettings(new StringReader(xml));
 		}
 		
 		[Test]
