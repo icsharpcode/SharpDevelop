@@ -301,6 +301,7 @@
     <Compile Include="CSharp\CodeIssues\StaticFieldInGenericTypeTests.cs" />
     <Compile Include="CSharp\CodeActions\ConvertAnonymousDelegateToLambdaTests.cs" />
     <Compile Include="CSharp\CodeActions\ConvertLamdaToAnonymousDelegateTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\SupportsIndexingCriterionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">

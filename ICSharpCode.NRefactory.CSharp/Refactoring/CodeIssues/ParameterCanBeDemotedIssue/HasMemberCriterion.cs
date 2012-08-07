@@ -61,17 +61,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			var implementedInterfaceMembers = member.MemberDefinition.ImplementedInterfaceMembers;
 			if (implementedInterfaceMembers.Any()) {
-				return acceptableMembers.ContainsAny(implementedInterfaceMembers);
+				return ContainsAny(acceptableMembers, implementedInterfaceMembers);
 			}
 			else {
 				return acceptableMembers.Contains(member.MemberDefinition);
 			}
 		}
-	}
-	
-	static class IEnumerableExtensions
-	{
-		public static bool ContainsAny<T>(this IEnumerable<T> collection, IEnumerable<T> items)
+
+		static bool ContainsAny<T>(IEnumerable<T> collection, IEnumerable<T> items)
 		{
 			foreach (var item in items) {
 				if (collection.Contains(item))

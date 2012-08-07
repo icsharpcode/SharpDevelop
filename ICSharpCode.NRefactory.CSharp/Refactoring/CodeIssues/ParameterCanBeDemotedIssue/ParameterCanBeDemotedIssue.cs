@@ -28,6 +28,9 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using System.Linq;
 using System;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using System.Diagnostics;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -40,7 +43,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		#region ICodeIssueProvider implementation
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
-			return new GatherVisitor(context, this).GetIssues();
+			var sw = new Stopwatch();
+			sw.Start();
+			var gatherer = new GatherVisitor(context, this);
+			var issues = gatherer.GetIssues().ToList();
+			sw.Stop();
+			Console.WriteLine("Elapsed time for ParameterCanBeDemotedIssue: {0} (resolved {2} method bodies in file '{1}')", sw.Elapsed, context.ParsedFile.FileName, gatherer.MethodResolveCount);
+			return issues;
 		}
 		#endregion
 
@@ -68,40 +77,61 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				methodDeclaration.AcceptVisitor(collector);
 				
 				foreach (var parameter in methodDeclaration.Parameters) {
-					var localResolveResult = context.Resolve(parameter) as LocalResolveResult;
-					var variable = localResolveResult.Variable;
-					var currentType = localResolveResult.Type;
-					var candidateTypes = localResolveResult.Type.GetAllBaseTypes();
-					var typeCriterion = collector.GetCriterion(variable);
-					if (typeCriterion == null)
-						// No usages in body
-						return;
-					var possibleTypes = GetPossibleTypes(candidateTypes, typeCriterion);
-					var suggestedTypes = possibleTypes.Where(t => t != currentType);
-					if (suggestedTypes.Any()) {
-						AddIssue(parameter, context.TranslateString("Parameter can be demoted to base class"),
-						         GetActions(parameter, suggestedTypes));
-					}
+					ProcessParameter(parameter, methodDeclaration.Body, collector);
 				}
+			}
+
+			void ProcessParameter(ParameterDeclaration parameter, BlockStatement body, TypeCriteriaCollector collector)
+			{
+				var directionExpression = parameter.Parent as DirectionExpression;
+				if (directionExpression != null && directionExpression.FieldDirection != FieldDirection.None)
+					// That kind of dependency is out of our control. Better not mess with it.
+					return;
+
+				var localResolveResult = context.Resolve(parameter) as LocalResolveResult;
+				var currentType = localResolveResult.Type;
+				var candidateTypes = localResolveResult.Type.GetAllBaseTypes();
+				var criterion = collector.GetCriterion(localResolveResult.Variable);
+				if (criterion == null)
+					// No usages in body
+					return;
+
+				var possibleTypes = 
+					from type in candidateTypes
+					where criterion.SatisfiedBy(type) && TypeChangeResolvesCorrectly(parameter, body, type)
+					orderby GetInheritanceDepth(type) ascending
+					select type;
+
+				var suggestedTypes = possibleTypes.Where(type => !type.Equals(currentType));
+				if (suggestedTypes.Any()) {
+					AddIssue(parameter, context.TranslateString("Parameter can be demoted to base class"), GetActions(parameter, suggestedTypes));
+				}
+			}
+
+			internal int MethodResolveCount = 0;
+
+			bool TypeChangeResolvesCorrectly(ParameterDeclaration parameter, BlockStatement body, IType type)
+			{
+				MethodResolveCount++;
+				var resolver = context.GetResolverStateBefore(body);
+				resolver.AddVariable(new DefaultParameter(type, parameter.Name));
+				var astResolver = new CSharpAstResolver(resolver, body, context.ParsedFile);
+				var validator = new TypeChangeValidationNavigator();
+				astResolver.ApplyNavigator(validator, context.CancellationToken);
+				return !validator.FoundErrors;
 			}
 
 			IEnumerable<CodeAction> GetActions(ParameterDeclaration parameter, IEnumerable<IType> possibleTypes)
 			{
+				var csResolver = context.Resolver.GetResolverStateBefore(parameter);
+				var astBuilder = new TypeSystemAstBuilder(csResolver);
 				foreach (var type in possibleTypes) {
-					var typeName = type.Name;
-					var message = string.Format("{0} '{1}'", context.TranslateString("Demote parameter to "), typeName);
+					var localType = type;
+					var message = string.Format(context.TranslateString("Demote parameter to '{0}'"), type.FullName);
 					yield return new CodeAction(message, script => {
-						script.Replace(parameter.Type, new SimpleType(typeName));
+						script.Replace(parameter.Type, astBuilder.ConvertType(localType));
 					});
 				}
-			}
-			
-			IEnumerable<IType> GetPossibleTypes(IEnumerable<IType> types, ITypeCriterion criterion)
-			{
-				return from type in types
-					where criterion.SatisfiedBy(type)
-						orderby GetInheritanceDepth(type) ascending
-						select type;
 			}
 
 			int GetInheritanceDepth(IType declaringType)
@@ -113,6 +143,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 				return depth;
 			}
+		}
+
+		class TypeChangeValidationNavigator : IResolveVisitorNavigator
+		{
+			public bool FoundErrors { get; private set; }
+
+			#region IResolveVisitorNavigator implementation
+			public ResolveVisitorNavigationMode Scan(AstNode node)
+			{
+				return ResolveVisitorNavigationMode.Resolve;
+			}
+			public void Resolved(AstNode node, ResolveResult result)
+			{
+				FoundErrors |= result.IsError;
+			}
+			public void ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
+			{
+				// no-op
+			}
+			#endregion
+			
 		}
 	}
 }

@@ -27,6 +27,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -60,14 +61,52 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			base.VisitMemberReferenceExpression(memberReferenceExpression);
 
-			var memberResolveResult = context.Resolve(memberReferenceExpression) as MemberResolveResult;
-			if (memberResolveResult == null)
-				return;
-			var targetResolveResult = memberResolveResult.TargetResult as LocalResolveResult;
+			var targetResolveResult = context.Resolve(memberReferenceExpression.Target) as LocalResolveResult;
 			if (targetResolveResult == null)
 				return;
 			var variable = targetResolveResult.Variable;
-			AddCriterion(variable, new HasMemberCriterion(memberResolveResult.Member));
+			var conversion = context.GetConversion(memberReferenceExpression);
+			if (conversion.IsMethodGroupConversion) {
+				AddCriterion(variable, new HasMemberCriterion(conversion.Method));
+			} else {
+				var resolveResult = context.Resolve(memberReferenceExpression);
+				var memberResolveResult = resolveResult as MemberResolveResult;
+				if (memberResolveResult != null)
+					AddCriterion(variable, new HasMemberCriterion(memberResolveResult.Member));
+			}
+		}
+
+		public override void VisitIndexerExpression(IndexerExpression indexerExpression)
+		{
+			base.VisitIndexerExpression(indexerExpression);
+
+			var localResolveResult = context.Resolve(indexerExpression.Target) as LocalResolveResult;
+			if (localResolveResult == null)
+				return;
+			var resolveResult = context.Resolve(indexerExpression);
+			if (localResolveResult == null)
+				return;
+			var parent = indexerExpression.Parent;
+			while (parent is ParenthesizedExpression)
+				parent = parent.Parent;
+			if (parent is DirectionExpression) {
+				// The only types which are indexable and where the indexing expression
+				// results in a variable is an actual array type
+				AddCriterion(localResolveResult.Variable, new IsArrayTypeCriterion());
+			} else if (resolveResult is ArrayAccessResolveResult) {
+				var arrayResolveResult = (ArrayAccessResolveResult)resolveResult;
+				var parameterTypes = arrayResolveResult.Indexes.Select(index => index.Type);
+				var arrayType = arrayResolveResult.Array.Type as ArrayType;
+				if (arrayType == null)
+					return;
+				var criterion = new SupportsIndexingCriterion(arrayType.ElementType, parameterTypes, CSharpConversions.Get(context.Compilation));
+				AddCriterion(localResolveResult.Variable, criterion);
+			} else if (resolveResult is CSharpInvocationResolveResult) {
+				var invocationResolveResult = (CSharpInvocationResolveResult)resolveResult;
+				var parameterTypes = invocationResolveResult.Arguments.Select(arg => arg.Type);
+				var criterion = new SupportsIndexingCriterion(invocationResolveResult.Member.ReturnType, parameterTypes, CSharpConversions.Get(context.Compilation));
+				AddCriterion(localResolveResult.Variable, criterion);
+			}
 		}
 
 		public override void VisitInvocationExpression(InvocationExpression invocationExpression)
@@ -78,27 +117,35 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var invocationResolveResult = resolveResult as InvocationResolveResult;
 			if (invocationResolveResult == null)
 				return;
-			CollectRestrictionsFromNodes(invocationExpression.Arguments);
 
 			// invocationExpression.Target resolves to a method group and VisitMemberReferenceExpression
 			// only handles members, so handle method groups here
 			var targetResolveResult = invocationResolveResult.TargetResult as LocalResolveResult;
-			if (targetResolveResult == null)
-				return;
-			var variable = targetResolveResult.Variable;
-			AddCriterion(variable, new HasMemberCriterion(invocationResolveResult.Member));
+			if (targetResolveResult != null) {
+				var variable = targetResolveResult.Variable;
+				AddCriterion(variable, new HasMemberCriterion(invocationResolveResult.Member));
+			}
 		}
 
-		void CollectRestrictionsFromNodes(IEnumerable<Expression> expressions)
+		protected override void VisitChildren(AstNode node)
 		{
-			foreach (var expression in expressions) {
-				var resolveResult = context.Resolve(expression);
-				var argumentResolveResult = resolveResult as LocalResolveResult;
-				if (argumentResolveResult == null)
-					continue;
-				var expectedType = context.GetExpectedType(expression);
-				AddCriterion(argumentResolveResult.Variable, new IsTypeCriterion(expectedType));
+			if (node is Expression) {
+				CollectRestrictionsFromNodes((Expression)node);
 			}
+			base.VisitChildren(node);
+		}
+
+		void CollectRestrictionsFromNodes(Expression expression)
+		{
+			var role = expression.Role;
+			if (role != Roles.Expression && role != Roles.Argument)
+				return;
+			var resolveResult = context.Resolve(expression);
+			var localResolveResult = resolveResult as LocalResolveResult;
+			if (localResolveResult == null)
+				return;
+			var expectedType = context.GetExpectedType(expression);
+			AddCriterion(localResolveResult.Variable, new IsTypeCriterion(expectedType));
 		}
 
 		class ConjunctionCriteria : ITypeCriterion

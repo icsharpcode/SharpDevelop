@@ -366,49 +366,137 @@ class Test
 		}
 		
 		[Test]
-		public void RespectsOutgoingCallsTypeRestrictionsWhenPassingResultFromMember()
+		public void AccountsForNonInvocationMethodGroupUsageInMethodCall()
 		{
 			var input = @"
-interface IA
+delegate void FooDelegate (string s);
+interface IBase
+{
+	void Bar();
+}
+interface IDerived : IBase
 {
 	void Foo(string s);
-	string Property { get; }
-}
-class B : IA
-{
-	public virtual void Foo(string s) {}
-	public string Property { get; }
 }
 class TestClass
 {
-	public void F(B b)
+	public void Bar (IDerived derived)
 	{
-		b.Foo(b.Property);
+		derived.Bar();
+		Baz (derived.Foo);
+	}
+
+	void Baz (FooDelegate fd)
+	{
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void AccountsForNonInvocationMethodGroupUsageInVariableDeclaration()
+		{
+			var input = @"
+delegate void FooDelegate (string s);
+interface IBase
+{
+	void Bar();
+}
+interface IDerived : IBase
+{
+	void Foo(string s);
+}
+class TestClass
+{
+	public void Bar (IDerived derived)
+	{
+		derived.Bar();
+		FooDelegate d = derived.Foo;
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void AccountsForNonInvocationMethodGroupUsageInAssignmentExpression()
+		{
+			var input = @"
+delegate void FooDelegate (string s);
+interface IBase
+{
+	void Bar();
+}
+interface IDerived : IBase
+{
+	void Foo(string s);
+}
+class TestClass
+{
+	public void Bar (IDerived derived)
+	{
+		derived.Bar();
+		FooDelegate d;
+		d = derived.Foo;
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void AccountsForIndexers()
+		{
+			var input = @"
+class TestClass
+{
+	void Write(string[] s)
+	{
+		object.Equals(s, s);
+		var element = s[1];
 	}
 }";
 			TestRefactoringContext context;
 			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
 			Assert.AreEqual(1, issues.Count);
-			var issue = issues [0];
-			Assert.AreEqual(1, issue.Actions.Count);
+			var issue = issues[0];
+			// Suggested types: IList<T> and IReadOnlyList<T>
+			Assert.AreEqual(2, issue.Actions.Count);
+
 			CheckFix(context, issues [0], @"
-interface IA
-{
-	void Foo(string s);
-	string Property { get; }
-}
-class B : IA
-{
-	public virtual void Foo(string s) {}
-	public string Property { get; }
-}
 class TestClass
 {
-	public void F(IA b)
+	void Write(System.Collections.Generic.IList<string> s)
 	{
-		b.Foo(b.Property);
+		object.Equals(s, s);
+		var element = s[1];
 	}
 }");
+		}
+		
+		[Test]
+		public void AccountsForArrays()
+		{
+			var input = @"
+class TestClass
+{
+	void Write(string[] s)
+	{
+		var i = s.Length;
+		SetValue (out s[1]);
+	}
+
+	void SetValue (out string s)
+	{
+	} 
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
 		}
 	}
 }
