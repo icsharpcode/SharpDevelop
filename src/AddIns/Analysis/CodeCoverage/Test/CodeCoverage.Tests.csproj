@@ -51,12 +51,16 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Coverage\CodeCoverageMethodElementTests.cs" />
     <Compile Include="Coverage\CodeCoverageNamespaceTestFixture.cs" />
     <Compile Include="Coverage\CodeCoveragePropertyCollectionWithGetterAndSetterTestFixture.cs" />
     <Compile Include="Coverage\CodeCoveragePropertyTestFixture.cs" />
@@ -69,9 +73,9 @@
     <Compile Include="Coverage\InvalidSequencePointDataTestFixture.cs" />
     <Compile Include="Coverage\MethodHasNoNamespaceTestFixture.cs" />
     <Compile Include="Coverage\ModuleVisitedSequencePointsTestFixture.cs" />
-    <Compile Include="Coverage\PartCoverSettingsFactoryTests.cs" />
-    <Compile Include="Coverage\PartCoverSettingsMissingRulePrefixTestFixture.cs" />
-    <Compile Include="Coverage\PartCoverSettingsTestFixture.cs" />
+    <Compile Include="Coverage\OpenCoverSettingsFactoryTests.cs" />
+    <Compile Include="Coverage\OpenCoverSettingsMissingRulePrefixTestFixture.cs" />
+    <Compile Include="Coverage\OpenCoverSettingsTestFixture.cs" />
     <Compile Include="Coverage\RemoveTaskMarkerTests.cs" />
     <Compile Include="Coverage\SequencePointTests.cs" />
     <Compile Include="Coverage\SimilarRootNamespaceTestFixture.cs" />
@@ -88,17 +92,21 @@
     <Compile Include="Highlighting\CodeCoverageMarkersInvalidStartLineTestFixture.cs" />
     <Compile Include="Highlighting\RemoveCodeCoverageMarkersTestFixture.cs" />
     <Compile Include="Testing\CodeCoverageTestRunnerTests.cs" />
-    <Compile Include="Testing\PartCoverApplicationTests.cs" />
+    <Compile Include="Testing\OpenCoverApplicationTests.cs" />
     <Compile Include="Testing\RunTestWithCodeCoverageCommandTests.cs" />
+    <Compile Include="Utils\CodeCoverageMethodXElementBuilder.cs" />
     <Compile Include="Utils\DerivedCodeCoverageTestRunner.cs" />
     <Compile Include="Utils\DerivedRunTestWithCodeCoverageCommand.cs" />
     <Compile Include="Gui\ClassWithNoNamespaceInTreeViewTestFixture.cs" />
     <Compile Include="Gui\CodeCoverageTreeViewTestFixture.cs" />
     <Compile Include="Gui\ListViewSortingTestFixture.cs" />
     <Compile Include="Gui\TreeViewAfterSelectTestFixture.cs" />
-    <Compile Include="Utils\DerivedCodeCoverageTreeView.cs" />
+    <Compile Include="Utils\DerivedCodeCoverageTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Utils\MockCodeCoverageTestRunnerFactory.cs" />
     <Compile Include="Utils\MockFileSystem.cs" />
+    <Compile Include="Utils\XElementExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
@@ -135,13 +143,7 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Coverage" />
-    <Folder Include="Highlighting" />
-    <Folder Include="Testing" />
-    <Folder Include="Utils" />
-    <Folder Include="Gui" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="..\..\..\..\..\AddIns\Analysis\UnitTesting\UnitTesting.dll">
       <Link>UnitTesting.dll</Link>

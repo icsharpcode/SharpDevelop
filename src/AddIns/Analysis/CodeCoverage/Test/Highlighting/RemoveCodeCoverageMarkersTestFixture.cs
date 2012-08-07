@@ -33,17 +33,34 @@ namespace ICSharpCode.CodeCoverage.Tests.Highlighting
 				"\t\t}\r\n";
 			document.Text = code;
 			
-			string xml = "<PartCoverReport>\r\n" +
-				"\t<File id=\"1\" url=\"c:\\Projects\\Foo\\FooTestFixture.cs\"/>\r\n" +
-				"\t<Assembly id=\"1\" name=\"Foo.Tests\" module=\"C:\\Projects\\Test\\bin\\Foo.Tests.DLL\" domain=\"test-domain-Foo.Tests.dll\" domainIdx=\"1\" />\r\n" +
-				"\t<Type name=\"Foo.Tests.FooTestFixture\" asmref=\"1\">\r\n" +
-				"\t\t<Method name=\"SimpleTest\">\r\n" +
-				"\t\t\t<pt visit=\"1\" sl=\"1\" sc=\"3\" el=\"1\" ec=\"4\" fid=\"1\" />\r\n" +
-				"\t\t\t<pt visit=\"1\" sl=\"2\" sc=\"4\" el=\"2\" ec=\"18\" fid=\"1\" />\r\n" +
-				"\t\t\t<pt visit=\"0\" sl=\"3\" sc=\"3\" el=\"3\" ec=\"4\" fid=\"1\" />\r\n" +
-				"\t\t</Method>\r\n" +
-				"\t</Type>\r\n" +
-				"</PartCoverReport>";
+			string xml = "<CoverageSession xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n" +
+				"\t<Modules>\r\n" +
+				"\t\t<Module hash=\"44-54-B6-13-97-49-45-F8-6A-74-9E-49-0C-77-87-C6-9C-54-47-7A\">\r\n" +
+				"\t\t\t<FullName>C:\\Projects\\Test\\Foo.Tests\\bin\\Foo.Tests.DLL</FullName>\r\n" +
+				"\t\t\t<ModuleName>Foo.Tests</ModuleName>\r\n" +
+				"\t\t\t<Files>\r\n" +
+				"\t\t\t\t<File uid=\"1\" fullPath=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
+				"\t\t\t</Files>\r\n" +
+				"\t\t\t<Classes>\r\n" +
+				"\t\t\t\t<Class>\r\n" +
+				"\t\t\t\t\t<FullName>Foo.Tests.FooTestFixture</FullName>\r\n" +
+				"\t\t\t\t\t<Methods>\r\n" +
+				"\t\t\t\t\t\t<Method visited=\"true\" cyclomaticComplexity=\"1\" sequenceCoverage=\"100\" branchCoverage=\"100\" isConstructor=\"false\" isStatic=\"false\" isGetter=\"false\" isSetter=\"false\">\r\n" +
+				"\t\t\t\t\t\t\t<MetadataToken>100663297</MetadataToken>\r\n" +
+				"\t\t\t\t\t\t\t<Name>System.Void Foo.Tests.FooTestFixture::SimpleTest()</Name>\r\n" +
+				"\t\t\t\t\t\t\t<FileRef uid=\"1\" />\r\n" +
+				"\t\t\t\t\t\t\t<SequencePoints>\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"1\" sc=\"3\" el=\"1\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"2\" sc=\"4\" el=\"2\" ec=\"18\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"3\" sc=\"3\" el=\"3\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t</SequencePoints>\r\n" +
+				"\t\t\t\t\t\t</Method>\r\n" +
+				"\t\t\t\t\t</Methods>\r\n" +
+				"\t\t\t\t</Class>\r\n" +
+				"\t\t\t</Classes>\r\n" +
+				"\t\t</Module>\r\n" +
+				"\t</Modules>\r\n" +
+				"</CoverageSession>";
 			CodeCoverageResults results = new CodeCoverageResults(new StringReader(xml));
 			CodeCoverageMethod method = results.Modules[0].Methods[0];
 			CodeCoverageHighlighter highlighter = new CodeCoverageHighlighter();

@@ -3,7 +3,10 @@
 
 using System;
 using System.Reflection;
+using System.Xml.Linq;
+
 using ICSharpCode.CodeCoverage;
+using ICSharpCode.CodeCoverage.Tests.Utils;
 using NUnit.Framework;
 
 namespace ICSharpCode.CodeCoverage.Tests.Coverage
@@ -20,12 +23,24 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		CodeCoverageMethod setterMethod;
 		CodeCoverageProperty property;
 		
+		XElement CreatePropertySetter(string className, string propertyName)
+		{
+			return CodeCoverageMethodXElementBuilder.CreatePropertySetter(className, propertyName, "System.Int32");
+		}
+		
+		XElement CreatePropertyGetter(string className, string propertyName)
+		{
+			return CodeCoverageMethodXElementBuilder.CreatePropertyGetter(className, propertyName, "System.Int32");
+		}
+		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
 			properties = new CodeCoveragePropertyCollection();
-			getterMethod = new CodeCoverageMethod("get_Count", "MyTests", MethodAttributes.SpecialName);
-			setterMethod = new CodeCoverageMethod("set_Count", "MyTests", MethodAttributes.SpecialName);
+			XElement getterElement = CreatePropertyGetter("MyTests", "Count");
+			getterMethod = new CodeCoverageMethod("MyTests", getterElement);
+			XElement setterElement = CreatePropertySetter("MyTests", "Count");
+			setterMethod = new CodeCoverageMethod("MyTests", setterElement);
 			
 			properties.Add(getterMethod);
 			properties.Add(setterMethod);

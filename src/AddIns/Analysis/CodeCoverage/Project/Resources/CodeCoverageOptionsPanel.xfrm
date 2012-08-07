@@ -18,28 +18,11 @@
             <DrawMode value="OwnerDrawFixed" />
             <Location value="177, 91" />
             <Anchor value="Top, Left, Right" />
+            <MinimumSize value="116, 21" />
             <Size value="116, 21" />
             <FormattingEnabled value="True" />
             <DropDownStyle value="DropDownList" />
             <SelectedColor value="Color [Black]" />
-            <Items>
-              <System.Drawing.Color value="Color [Black]" />
-              <System.Drawing.Color value="Color [White]" />
-              <System.Drawing.Color value="Color [Maroon]" />
-              <System.Drawing.Color value="Color [Green]" />
-              <System.Drawing.Color value="Color [Olive]" />
-              <System.Drawing.Color value="Color [Navy]" />
-              <System.Drawing.Color value="Color [Purple]" />
-              <System.Drawing.Color value="Color [Teal]" />
-              <System.Drawing.Color value="Color [Silver]" />
-              <System.Drawing.Color value="Color [Gray]" />
-              <System.Drawing.Color value="Color [Red]" />
-              <System.Drawing.Color value="Color [Lime]" />
-              <System.Drawing.Color value="Color [Yellow]" />
-              <System.Drawing.Color value="Color [Blue]" />
-              <System.Drawing.Color value="Color [Magenta]" />
-              <System.Drawing.Color value="Color [Cyan]" />
-            </Items>
           </ICSharpCode.CodeCoverage.ColorPickerComboBox>
           <ICSharpCode.CodeCoverage.ColorPickerComboBox>
             <Name value="foregroundColorPickerComboBox" />
@@ -48,27 +31,10 @@
             <Location value="179, 44" />
             <Anchor value="Top, Left, Right" />
             <Size value="116, 21" />
+            <MinimumSize value="116, 21" />
             <FormattingEnabled value="True" />
             <DropDownStyle value="DropDownList" />
             <SelectedColor value="Color [Black]" />
-            <Items>
-              <System.Drawing.Color value="Color [Black]" />
-              <System.Drawing.Color value="Color [White]" />
-              <System.Drawing.Color value="Color [Maroon]" />
-              <System.Drawing.Color value="Color [Green]" />
-              <System.Drawing.Color value="Color [Olive]" />
-              <System.Drawing.Color value="Color [Navy]" />
-              <System.Drawing.Color value="Color [Purple]" />
-              <System.Drawing.Color value="Color [Teal]" />
-              <System.Drawing.Color value="Color [Silver]" />
-              <System.Drawing.Color value="Color [Gray]" />
-              <System.Drawing.Color value="Color [Red]" />
-              <System.Drawing.Color value="Color [Lime]" />
-              <System.Drawing.Color value="Color [Yellow]" />
-              <System.Drawing.Color value="Color [Blue]" />
-              <System.Drawing.Color value="Color [Magenta]" />
-              <System.Drawing.Color value="Color [Cyan]" />
-            </Items>
           </ICSharpCode.CodeCoverage.ColorPickerComboBox>
           <System.Windows.Forms.Label>
             <Name value="sampleTextLabel" />

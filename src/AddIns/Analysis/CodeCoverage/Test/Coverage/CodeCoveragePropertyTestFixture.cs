@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Xml.Linq;
 using ICSharpCode.CodeCoverage;
+using ICSharpCode.CodeCoverage.Tests.Utils;
 using NUnit.Framework;
 
 namespace ICSharpCode.CodeCoverage.Tests.Coverage
@@ -18,8 +20,20 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		[SetUp]
 		public void Init()
 		{
-			getter = new CodeCoverageMethod("get_Count", "MyTest", MethodAttributes.SpecialName);
-			setter = new CodeCoverageMethod("set_Count", "MyTest", MethodAttributes.SpecialName);
+			XElement getterElement = CreateGetterElement("MyTest", "Count");
+			getter = new CodeCoverageMethod("MyTest", getterElement);
+			XElement setterElement = CreateSetterElement("MyTest", "Count");
+			setter = new CodeCoverageMethod("MyTest", setterElement);
+		}
+		
+		XElement CreateGetterElement(string className, string propertyName)
+		{
+			return CodeCoverageMethodXElementBuilder.CreateIntegerPropertyGetter(className, propertyName);
+		}
+		
+		XElement CreateSetterElement(string className, string propertyName)
+		{
+			return CodeCoverageMethodXElementBuilder.CreateIntegerPropertySetter(className, propertyName);
 		}
 		
 		[Test]
@@ -44,13 +58,17 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		[Test]
 		public void GetterMethodIsGetterProperty()
 		{
-			Assert.IsTrue(CodeCoverageProperty.IsGetter(getter));
+			bool result = getter.IsGetter;
+			
+			Assert.IsTrue(result);
 		}
 
 		[Test]
 		public void SetterMethodIsSetterProperty()
 		{
-			Assert.IsTrue(CodeCoverageProperty.IsSetter(setter));
+			bool result = setter.IsSetter;
+			
+			Assert.IsTrue(result);
 		}
 		
 		[Test]
@@ -94,6 +112,6 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 			expectedMethods.Add(getter);
 			expectedMethods.Add(setter);
 			Assert.AreEqual(expectedMethods, property.GetMethods());
-		}				
+		}
 	}
 }
