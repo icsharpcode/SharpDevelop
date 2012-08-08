@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 	{
 		public static void RunTest(CSharpFile file)
 		{
-			string code = file.Content.Text.Replace("\r\n", "\n");
+			string code = file.OriginalText.Replace("\r\n", "\n");
 			Debug.Assert(code.IndexOf('\r') < 0);
 			if (code.Contains("#pragma"))
 				return; // skip code with preprocessor directives

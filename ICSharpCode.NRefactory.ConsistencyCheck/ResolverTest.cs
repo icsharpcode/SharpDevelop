@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 	{
 		public static void RunTest(CSharpFile file)
 		{
-			CSharpAstResolver resolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.UnresolvedFile);
+			CSharpAstResolver resolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.UnresolvedTypeSystemForFile);
 			var navigator = new ValidatingResolveAllNavigator(file.FileName);
 			resolver.ApplyNavigator(navigator, CancellationToken.None);
 			navigator.Validate(resolver, file.SyntaxTree);
@@ -109,7 +109,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			resolver.ApplyNavigator(navigator, CancellationToken.None);
 			navigator.Validate(resolver, file.SyntaxTree);
 			
-			CSharpAstResolver originalResolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.UnresolvedFile);
+			CSharpAstResolver originalResolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.UnresolvedTypeSystemForFile);
 			foreach (var node in file.SyntaxTree.DescendantsAndSelf) {
 				var originalResult = originalResolver.Resolve(node);
 				var result = resolver.Resolve(node);

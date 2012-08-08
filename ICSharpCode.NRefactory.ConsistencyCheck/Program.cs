@@ -52,8 +52,8 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			}
 			
 			Console.WriteLine("Loaded {0} lines of code ({1:f1} MB) in {2} files in {3} projects.",
-			                  solution.AllFiles.Sum(f => f.LinesOfCode),
-			                  solution.AllFiles.Sum(f => f.Content.TextLength) / 1024.0 / 1024.0,
+			                  solution.AllFiles.Sum(f => 1 + f.OriginalText.Count(c => c == '\n')),
+			                  solution.AllFiles.Sum(f => f.OriginalText.Length) / 1024.0 / 1024.0,
 			                  solution.AllFiles.Count(),
 			                  solution.Projects.Count);
 			

@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IUnresolvedFile GetFile(string fileName);
 		
 		/// <summary>
-		/// Gets the list of all parsed files in the project content.
+		/// Gets the list of all files in the project content.
 		/// </summary>
 		IEnumerable<IUnresolvedFile> Files { get; }
 		
@@ -113,12 +113,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Adds the specified files to the project content.
 		/// If a file with the same name already exists, updated the existing file.
 		/// </summary>
+		/// <remarks>
+		/// You can create an unresolved file by calling <c>ToTypeSystem()</c> on a syntax tree.
+		/// </remarks>
 		IProjectContent AddOrUpdateFiles(IEnumerable<IUnresolvedFile> newFiles);
 		
 		/// <summary>
 		/// Adds the specified files to the project content.
 		/// If a file with the same name already exists, this method updates the existing file.
 		/// </summary>
+		/// <remarks>
+		/// You can create an unresolved file by calling <c>ToTypeSystem()</c> on a syntax tree.
+		/// </remarks>
 		IProjectContent AddOrUpdateFiles(params IUnresolvedFile[] newFiles);
 		
 		/// <summary>

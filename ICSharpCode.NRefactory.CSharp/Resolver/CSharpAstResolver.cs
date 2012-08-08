@@ -42,11 +42,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Use this overload if you are resolving within a complete C# file.
 		/// </summary>
 		/// <param name="compilation">The current compilation.</param>
-		/// <param name="syntaxTree">The syntax tree corresponding to the specified parsed file.</param>
+		/// <param name="syntaxTree">The syntax tree to be resolved.</param>
 		/// <param name="unresolvedFile">
-		/// Optional: Result of the <see cref="TypeSystemConvertVisitor"/> for the file being resolved.
+		/// Optional: Result of <see cref="SyntaxTree.ToTypeSystem()"/> for the file being resolved.
 		/// <para>
-		/// This is used for setting up the context on the resolver. The parsed file must be registered in the compilation.
+		/// This is used for setting up the context on the resolver. The unresolved file must be registered in the compilation.
 		/// </para>
 		/// <para>
 		/// When a unresolvedFile is specified, the resolver will use the member's StartLocation/EndLocation to identify
@@ -72,11 +72,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Use this overload if you are resolving code snippets (not necessarily complete files).
 		/// </summary>
 		/// <param name="resolver">The resolver state at the root node (to be more precise: just outside the root node).</param>
-		/// <param name="rootNode">The root node of the resolved tree.</param>
+		/// <param name="rootNode">The root node of the tree to be resolved.</param>
 		/// <param name="unresolvedFile">
-		/// Optional: Result of the <see cref="TypeSystemConvertVisitor"/> for the file being resolved.
+		/// Optional: Result of <see cref="SyntaxTree.ToTypeSystem()"/> for the file being resolved.
 		/// <para>
-		/// This is used for setting up the context on the resolver. The parsed file must be registered in the compilation.
+		/// This is used for setting up the context on the resolver. The unresolved file must be registered in the compilation.
 		/// </para>
 		/// <para>
 		/// When a unresolvedFile is specified, the resolver will use the member's StartLocation/EndLocation to identify
@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		/// <summary>
-		/// Gets the parsed file used by this CSharpAstResolver.
+		/// Gets the unresolved file used by this CSharpAstResolver.
 		/// Can return null.
 		/// </summary>
 		public CSharpUnresolvedFile UnresolvedFile {

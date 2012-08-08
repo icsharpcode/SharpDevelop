@@ -59,8 +59,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 							}
 						}
 					);
-					var resolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.UnresolvedFile);
-					resolver.ApplyNavigator(navigator);
+					file.CreateResolver().ApplyNavigator(navigator);
 				}
 			}
 			Console.WriteLine("For each entity, find all references...");
@@ -103,18 +102,18 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				var interestingFiles = new HashSet<CSharpFile>();
 				foreach (var searchScope in searchScopes) {
 					foreach (var unresolvedFile in fr.GetInterestingFiles(searchScope, project.Compilation)) {
-						var file = project.GetFile(unresolvedFile.FileName);
-						Debug.Assert(file.UnresolvedFile == unresolvedFile);
+						var file = project.Files.Single(f => f.FileName == unresolvedFile.FileName);
+						Debug.Assert(file.UnresolvedTypeSystemForFile == unresolvedFile);
 						
 						// Skip file if it doesn't contain the search term
-						if (searchScope.SearchTerm != null && file.Content.IndexOf(searchScope.SearchTerm, 0, file.Content.TextLength, StringComparison.Ordinal) < 0)
+						if (searchScope.SearchTerm != null && file.OriginalText.IndexOf(searchScope.SearchTerm, StringComparison.Ordinal) < 0)
 							continue;
 						
 						interestingFiles.Add(file);
 					}
 				}
 				foreach (var file in interestingFiles) {
-					fr.FindReferencesInFile(searchScopes, file.UnresolvedFile, file.SyntaxTree, project.Compilation,
+					fr.FindReferencesInFile(searchScopes, file.UnresolvedTypeSystemForFile, file.SyntaxTree, project.Compilation,
 					                        delegate(AstNode node, ResolveResult result) {
 					                        	foundReferences.Add(node);
 					                        }, CancellationToken.None);
