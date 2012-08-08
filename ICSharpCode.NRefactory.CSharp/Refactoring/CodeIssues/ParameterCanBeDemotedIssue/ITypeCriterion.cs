@@ -29,6 +29,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public interface ITypeCriterion
 	{
+		/// <summary>
+		/// Checks if the given type satisfies the critrion.
+		/// </summary>
+		/// <returns>
+		/// <c>true</c>, if the type satisfies the criterion, <c>false</c> otherwise.
+		/// </returns>
+		/// <param name='type'>
+		/// The type to check.
+		/// </param>
 		bool SatisfiedBy(IType type);
 	}
 }

@@ -40,94 +40,120 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	                   Severity = Severity.Suggestion)]
 	public class ParameterCanBeDemotedIssue : ICodeIssueProvider
 	{
+		bool tryResolve;
+
+		public ParameterCanBeDemotedIssue() : this (true)
+		{
+		}
+
+		public ParameterCanBeDemotedIssue(bool tryResolve)
+		{
+			this.tryResolve = tryResolve;
+		}
+
 		#region ICodeIssueProvider implementation
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
 			var sw = new Stopwatch();
 			sw.Start();
-			var gatherer = new GatherVisitor(context, this);
-			var issues = gatherer.GetIssues().ToList();
+			var gatherer = new GatherVisitor(context, tryResolve);
+			var issues = gatherer.GetIssues();
 			sw.Stop();
-			Console.WriteLine("Elapsed time for ParameterCanBeDemotedIssue: {0} (resolved {2} method bodies in file '{1}')", sw.Elapsed, context.ParsedFile.FileName, gatherer.MethodResolveCount);
+			Console.WriteLine("Elapsed time in ParameterCanBeDemotedIssue: {0} (Checked types: {3, 4} Qualified for resolution check: {5, 4} Members with issues: {4, 4} Method bodies resolved: {2, 4} File: '{1}')",
+			                  sw.Elapsed, context.UnresolvedFile.FileName, gatherer.MethodResolveCount, gatherer.TypesChecked, gatherer.MembersWithIssues, gatherer.TypeResolveCount);
 			return issues;
 		}
 		#endregion
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			readonly BaseRefactoringContext context;
+			bool tryResolve;
 			
-			public GatherVisitor(BaseRefactoringContext context, ParameterCanBeDemotedIssue inspector) : base (context)
+			public GatherVisitor(BaseRefactoringContext context, bool tryResolve) : base (context)
 			{
-				this.context = context;
+				this.tryResolve = tryResolve;
 			}
 
 			public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 			{
-				base.VisitMethodDeclaration(methodDeclaration);
-
-				var declarationResolveResult = context.Resolve(methodDeclaration) as MemberResolveResult;
+				var eligibleParameters = methodDeclaration.Parameters
+					.Where(p => p.ParameterModifier != ParameterModifier.Out && p.ParameterModifier != ParameterModifier.Ref)
+					.ToList();
+				if (eligibleParameters.Count == 0)
+					return;
+				var declarationResolveResult = ctx.Resolve(methodDeclaration) as MemberResolveResult;
 				if (declarationResolveResult == null)
 					return;
 				var member = declarationResolveResult.Member;
-				if (member.IsOverride || member.IsOverridable)
+				if (member.IsOverride || member.IsOverridable || member.ImplementedInterfaceMembers.Any())
 					return;
 
-				var collector = new TypeCriteriaCollector(context);
+				var collector = new TypeCriteriaCollector(ctx);
 				methodDeclaration.AcceptVisitor(collector);
 				
-				foreach (var parameter in methodDeclaration.Parameters) {
+				foreach (var parameter in eligibleParameters) {
 					ProcessParameter(parameter, methodDeclaration.Body, collector);
 				}
 			}
 
-			void ProcessParameter(ParameterDeclaration parameter, BlockStatement body, TypeCriteriaCollector collector)
+			void ProcessParameter(ParameterDeclaration parameter, AstNode rootResolutionNode, TypeCriteriaCollector collector)
 			{
-				var directionExpression = parameter.Parent as DirectionExpression;
-				if (directionExpression != null && directionExpression.FieldDirection != FieldDirection.None)
-					// That kind of dependency is out of our control. Better not mess with it.
+				var localResolveResult = ctx.Resolve(parameter) as LocalResolveResult;
+				var variable = localResolveResult.Variable;
+				var typeKind = variable.Type.Kind;
+				if (!(typeKind == TypeKind.Class ||
+					  typeKind == TypeKind.Struct ||
+					  typeKind == TypeKind.Interface ||
+					  typeKind == TypeKind.Array) ||
+				    parameter.Type is PrimitiveType ||
+					!collector.UsedVariables.Contains(variable)) {
 					return;
+				}
 
-				var localResolveResult = context.Resolve(parameter) as LocalResolveResult;
-				var currentType = localResolveResult.Type;
-				var candidateTypes = localResolveResult.Type.GetAllBaseTypes();
-				var criterion = collector.GetCriterion(localResolveResult.Variable);
-				if (criterion == null)
-					// No usages in body
-					return;
+				var candidateTypes = localResolveResult.Type.GetAllBaseTypes().ToList();
+				TypesChecked += candidateTypes.Count;
+				var criterion = collector.GetCriterion(variable);
 
 				var possibleTypes = 
-					from type in candidateTypes
-					where criterion.SatisfiedBy(type) && TypeChangeResolvesCorrectly(parameter, body, type)
-					orderby GetInheritanceDepth(type) ascending
-					select type;
+					(from type in candidateTypes
+					 where !type.Equals(localResolveResult.Type) && criterion.SatisfiedBy(type)
+					 select type).ToList();
 
-				var suggestedTypes = possibleTypes.Where(type => !type.Equals(currentType));
-				if (suggestedTypes.Any()) {
-					AddIssue(parameter, context.TranslateString("Parameter can be demoted to base class"), GetActions(parameter, suggestedTypes));
+				TypeResolveCount += possibleTypes.Count;
+				var validTypes = 
+					(from type in possibleTypes
+					 where !tryResolve || TypeChangeResolvesCorrectly(parameter, rootResolutionNode, type)
+					 orderby GetInheritanceDepth(type) ascending
+					 select type).ToList();
+				if (validTypes.Any()) {
+					AddIssue(parameter, ctx.TranslateString("Parameter can be demoted to base class"), GetActions(parameter, validTypes));
+					MembersWithIssues++;
 				}
 			}
 
+			internal int TypeResolveCount = 0;
+			internal int TypesChecked = 0;
+			internal int MembersWithIssues = 0;
 			internal int MethodResolveCount = 0;
 
-			bool TypeChangeResolvesCorrectly(ParameterDeclaration parameter, BlockStatement body, IType type)
+			bool TypeChangeResolvesCorrectly(ParameterDeclaration parameter, AstNode rootNode, IType type)
 			{
 				MethodResolveCount++;
-				var resolver = context.GetResolverStateBefore(body);
-				resolver.AddVariable(new DefaultParameter(type, parameter.Name));
-				var astResolver = new CSharpAstResolver(resolver, body, context.ParsedFile);
+				var resolver = ctx.GetResolverStateBefore(rootNode);
+				resolver = resolver.AddVariable(new DefaultParameter(type, parameter.Name));
+				var astResolver = new CSharpAstResolver(resolver, rootNode, ctx.UnresolvedFile);
 				var validator = new TypeChangeValidationNavigator();
-				astResolver.ApplyNavigator(validator, context.CancellationToken);
+				astResolver.ApplyNavigator(validator, ctx.CancellationToken);
 				return !validator.FoundErrors;
 			}
 
 			IEnumerable<CodeAction> GetActions(ParameterDeclaration parameter, IEnumerable<IType> possibleTypes)
 			{
-				var csResolver = context.Resolver.GetResolverStateBefore(parameter);
+				var csResolver = ctx.Resolver.GetResolverStateBefore(parameter);
 				var astBuilder = new TypeSystemAstBuilder(csResolver);
 				foreach (var type in possibleTypes) {
 					var localType = type;
-					var message = string.Format(context.TranslateString("Demote parameter to '{0}'"), type.FullName);
+					var message = string.Format(ctx.TranslateString("Demote parameter to '{0}'"), type.FullName);
 					yield return new CodeAction(message, script => {
 						script.Replace(parameter.Type, astBuilder.ConvertType(localType));
 					});
@@ -152,12 +178,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			#region IResolveVisitorNavigator implementation
 			public ResolveVisitorNavigationMode Scan(AstNode node)
 			{
+				if (FoundErrors)
+					return ResolveVisitorNavigationMode.Skip;
 				return ResolveVisitorNavigationMode.Resolve;
 			}
+
 			public void Resolved(AstNode node, ResolveResult result)
 			{
+				bool errors = result.IsError;
 				FoundErrors |= result.IsError;
 			}
+
 			public void ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
 			{
 				// no-op

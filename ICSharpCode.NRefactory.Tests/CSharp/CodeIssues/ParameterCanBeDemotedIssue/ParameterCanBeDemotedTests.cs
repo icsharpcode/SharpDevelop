@@ -58,7 +58,7 @@ class C
 			Assert.AreEqual(1, issues.Count);
 			var issue = issues [0];
 			Assert.AreEqual(1, issue.Actions.Count);
-			
+
 			CheckFix(context, issues [0], @"
 class A
 {
@@ -76,7 +76,7 @@ class C
 	}
 }");
 		}
-
+		
 		[Test]
 		public void IgnoresUnusedParameters()
 		{
@@ -85,6 +85,25 @@ class A
 {
 	void F(A a1)
 	{
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void IgnoresDirectionalParameters()
+		{
+			var input = @"
+interface IA
+{
+}
+class A : IA
+{
+	void F(out A a1)
+	{
+		object.Equals(a1, null);
 	}
 }";
 			TestRefactoringContext context;
@@ -170,10 +189,10 @@ class TestClass
 	}
 }";
 			TestRefactoringContext context;
-			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(false), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
-
+		
 		[Test]
 		public void InterfaceTest()
 		{
@@ -217,6 +236,23 @@ class C
 		b.Foo();
 	}
 }");
+		}
+		
+		[Test]
+		public void RespectsExpectedTypeInIfStatement()
+		{
+			var input = @"
+class C
+{
+	void F (bool b, bool c)
+	{
+		if (b && c)
+			return;
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(false), input, out context);
+			Assert.AreEqual(0, issues.Count);
 		}
 		
 		[Test]
@@ -317,13 +353,127 @@ class Test
 			Assert.AreEqual(1, issues.Count);
 			var issue = issues [0];
 			Assert.AreEqual(4, issue.Actions.Count);
-
+			
 			CheckFix(context, issues [0], baseInput + @"
 class Test
 {
 	void F(IA e)
 	{
 		e.Foo();
+	}
+}");
+		}
+		
+		[Test]
+		public void DoesNotChangeOverload()
+		{
+			var input = baseInput + @"
+class Test
+{
+	void F(IB b)
+	{
+		Bar (b);
+	}
+	
+	void Bar (IA a)
+	{
+	}
+
+	void Bar (IB b)
+	{
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(false), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void AssignmentToExplicitlyTypedVariable()
+		{
+			var input = baseInput + @"
+class Test
+{
+	void F(IB b)
+	{
+		IB b2;
+		b2 = b;
+		object.Equals(b, b2);
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(false), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void GenericMethod()
+		{
+			var input = baseInput + @"
+class Test
+{
+	void F(IB b)
+	{
+		Generic (b);
+	}
+
+	void Generic<T> (T arg) where T : IA
+	{
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			var issue = issues [0];
+			Assert.AreEqual(1, issue.Actions.Count);
+			
+			CheckFix(context, issues [0], baseInput + @"
+class Test
+{
+	void F(IA b)
+	{
+		Generic (b);
+	}
+
+	void Generic<T> (T arg) where T : IA
+	{
+	}
+}");
+		}
+
+		[Test]
+		public void VariableDeclarationWithTypeInference()
+		{
+			var input = baseInput + @"
+class Test
+{
+	void Foo (IB b)
+	{
+		var b2 = b;
+		Foo (b2);
+	}
+
+	void Foo (IA a)
+	{
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			var issue = issues [0];
+			Assert.AreEqual(1, issue.Actions.Count);
+			
+			CheckFix(context, issues [0], baseInput + @"
+class Test
+{
+	void Foo (IA b)
+	{
+		var b2 = b;
+		Foo (b2);
+	}
+
+	void Foo (IA a)
+	{
 	}
 }");
 		}
@@ -391,7 +541,7 @@ class TestClass
 	}
 }";
 			TestRefactoringContext context;
-			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(false), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
 		
@@ -417,7 +567,7 @@ class TestClass
 	}
 }";
 			TestRefactoringContext context;
-			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(false), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
 		
@@ -444,7 +594,7 @@ class TestClass
 	}
 }";
 			TestRefactoringContext context;
-			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(false), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
 		
@@ -495,8 +645,248 @@ class TestClass
 	} 
 }";
 			TestRefactoringContext context;
-			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(false), input, out context);
 			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void IgnoresImplicitInterfaceImplementations()
+		{
+			var input = @"
+interface IHasFoo
+{
+	void Foo (string s);
+}
+class TestClass : IHasFoo
+{
+	public void Foo(string s)
+	{
+		object o = s;
+	} 
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(false), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+
+		[Test]
+		public void IgnoresEnumParameters()
+		{
+			var input = @"
+enum ApplicableValues
+{
+	None,
+	Some
+}
+class TestClass
+{
+	public void Foo(ApplicableValues av)
+	{
+		object o = av;
+	} 
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(false), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void CallToOverriddenMember()
+		{
+			var input = @"
+class TestBase
+{
+	public virtual void Foo()
+	{
+	}
+}
+class Test : TestBase
+{
+	void F (Test t)
+	{
+		t.Foo();
+	}
+	
+	public override void Foo()
+	{
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			var issue = issues[0];
+			Assert.AreEqual(1, issue.Actions.Count);
+			
+			CheckFix(context, issue, @"
+class TestBase
+{
+	public virtual void Foo()
+	{
+	}
+}
+class Test : TestBase
+{
+	void F (TestBase t)
+	{
+		t.Foo();
+	}
+	
+	public override void Foo()
+	{
+	}
+}");
+		}
+		
+		[Test]
+		public void CallToShadowingMember()
+		{
+			var input = @"
+class TestBase
+{
+	public virtual void Foo()
+	{
+	}
+}
+class Test : TestBase
+{
+	void F (Test t)
+	{
+		t.Foo();
+	}
+	
+	public new void Foo()
+	{
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(false), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void CallToShadowingMember2()
+		{
+			var input = @"
+class TestBaseBase
+{
+	public virtual void Foo()
+	{
+	}
+}
+class TestBase : TestBaseBase
+{
+	protected virtual new void Foo()
+	{
+	}
+}
+class Test : TestBase
+{
+	void F (Test t)
+	{
+		t.Foo();
+	}
+	
+	public override void Foo()
+	{
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(false), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			var issue = issues[0];
+			Assert.AreEqual(1, issue.Actions.Count);
+			
+			CheckFix(context, issue, @"
+class TestBaseBase
+{
+	public virtual void Foo()
+	{
+	}
+}
+class TestBase : TestBaseBase
+{
+	protected virtual new void Foo()
+	{
+	}
+}
+class Test : TestBase
+{
+	void F (TestBase t)
+	{
+		t.Foo();
+	}
+	
+	public override void Foo()
+	{
+	}
+}");
+		}
+		
+		[Test]
+		public void CallToShadowingMemberWithBaseInterface()
+		{
+			var input = @"
+interface IFoo
+{
+	void Foo();
+}
+class TestBaseBase : IFoo
+{
+	public virtual void Foo()
+	{
+	}
+}
+class TestBase : TestBaseBase
+{
+	protected virtual new void Foo()
+	{
+	}
+}
+class Test : TestBase
+{
+	void F (Test t)
+	{
+		t.Foo();
+	}
+	
+	protected override void Foo()
+	{
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(false), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			var issue = issues[0];
+			Assert.AreEqual(1, issue.Actions.Count);
+			
+			CheckFix(context, issue, @"
+interface IFoo
+{
+	void Foo();
+}
+class TestBaseBase : IFoo
+{
+	public virtual void Foo()
+	{
+	}
+}
+class TestBase : TestBaseBase
+{
+	protected virtual new void Foo()
+	{
+	}
+}
+class Test : TestBase
+{
+	void F (TestBase t)
+	{
+		t.Foo();
+	}
+	
+	protected override void Foo()
+	{
+	}
+}");
 		}
 	}
 }

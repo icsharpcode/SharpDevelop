@@ -33,10 +33,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	public class HasMemberCriterion : ITypeCriterion
 	{
 		IMember neededMember;
+		IList<IMember> acceptableMembers;
 
 		public HasMemberCriterion(IMember neededMember)
 		{
 			this.neededMember = neededMember;
+
+			if (neededMember.ImplementedInterfaceMembers.Any()) {
+				acceptableMembers = neededMember.ImplementedInterfaceMembers.ToList();
+			} else if (neededMember.IsOverride) {
+				acceptableMembers = new List<IMember>();
+				foreach (var member in InheritanceHelper.GetBaseMembers(neededMember, true)) {
+					acceptableMembers.Add(member);
+					if (member.IsShadowing)
+						break;
+				}
+				acceptableMembers.Add(neededMember);
+			} else {
+				acceptableMembers = new List<IMember> { neededMember };
+			}
 		}
 
 		#region ITypeCriterion implementation
@@ -46,13 +61,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				throw new ArgumentNullException("type");
 			
 			var typeMembers = type.GetMembers();
-			IEnumerable<IMember> acceptableMembers;
-			if (neededMember.ImplementedInterfaceMembers.Any()) {
-				acceptableMembers = neededMember.ImplementedInterfaceMembers.ToList();
-			} else {
-				acceptableMembers = new List<IMember>() { neededMember.MemberDefinition };
-			}
-			
 			return typeMembers.Any(member => HasCommonMemberDeclaration(acceptableMembers, member));
 		}
 		#endregion
@@ -62,9 +70,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var implementedInterfaceMembers = member.MemberDefinition.ImplementedInterfaceMembers;
 			if (implementedInterfaceMembers.Any()) {
 				return ContainsAny(acceptableMembers, implementedInterfaceMembers);
-			}
-			else {
-				return acceptableMembers.Contains(member.MemberDefinition);
+			} else {
+				return acceptableMembers.Contains(member/*.MemberDefinition*/);
 			}
 		}
 
