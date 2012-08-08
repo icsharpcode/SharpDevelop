@@ -249,7 +249,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			RunTypeInference(candidate);
 			CheckApplicability(candidate);
 			ConsiderIfNewCandidateIsBest(candidate);
-			ValidateMethodConstraints(candidate);
 			return true;
 		}
 		
