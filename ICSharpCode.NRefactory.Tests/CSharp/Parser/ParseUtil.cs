@@ -33,13 +33,13 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		public static T ParseGlobal<T>(string code, bool expectErrors = false) where T : AstNode
 		{
 			CSharpParser parser = new CSharpParser();
-			CompilationUnit cu = parser.Parse(new StringReader(code), "parsed.cs");
+			SyntaxTree syntaxTree = parser.Parse(code);
 			
 			foreach (var error in parser.Errors)
 				Console.WriteLine (error.Message);
 			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
 			
-			AstNode node = cu.Children.Single();
+			AstNode node = syntaxTree.Children.Single();
 			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(node.GetType()), String.Format("Parsed node was {0} instead of {1} ({2})", node.GetType(), type, node));
 			return (T)node;
@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		public static T ParseStatement<T>(string stmt, bool expectErrors = false) where T : AstNode
 		{
 			CSharpParser parser = new CSharpParser();
-			var statements = parser.ParseStatements(new StringReader(stmt));
+			var statements = parser.ParseStatements(stmt);
 			
 			foreach (var error in parser.Errors)
 				Console.WriteLine (error.Message);
@@ -79,7 +79,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		public static T ParseExpression<T>(string expr, bool expectErrors = false) where T : AstNode
 		{
 			CSharpParser parser = new CSharpParser();
-			AstNode parsedExpression = parser.ParseExpression(new StringReader(expr));
+			AstNode parsedExpression = parser.ParseExpression(expr);
 			
 			foreach (var error in parser.Errors)
 				Console.WriteLine (error.Message);
@@ -102,7 +102,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		public static T ParseTypeMember<T>(string expr, bool expectErrors = false) where T : EntityDeclaration
 		{
 			CSharpParser parser = new CSharpParser();
-			var members = parser.ParseTypeMembers(new StringReader(expr));
+			var members = parser.ParseTypeMembers(expr);
 			foreach (var error in parser.Errors)
 				Console.WriteLine (error.Message);
 			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");

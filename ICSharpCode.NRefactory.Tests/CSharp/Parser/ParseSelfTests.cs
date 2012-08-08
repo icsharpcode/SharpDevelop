@@ -50,11 +50,11 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			CSharpParser parser = new CSharpParser();
 			parser.GenerateTypeSystemMode = true;
 			foreach (string fileName in fileNames) {
-				CompilationUnit cu;
+				SyntaxTree syntaxTree;
 				using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan)) {
-					cu = parser.Parse(fs, fileName);
+					syntaxTree = parser.Parse(fs, fileName);
 				}
-				var parsedFile = cu.ToTypeSystem();
+				var parsedFile = syntaxTree.ToTypeSystem();
 				foreach (var td in parsedFile.GetAllTypeDefinitions()) {
 					Assert.AreSame(parsedFile, td.ParsedFile);
 					foreach (var member in td.Members) {
@@ -76,12 +76,12 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			CSharpParser parser = new CSharpParser();
 			foreach (string fileName in fileNames) {
 				this.currentDocument = new ReadOnlyDocument(File.ReadAllText(fileName));
-				CompilationUnit cu = parser.Parse(currentDocument.CreateReader(), fileName);
+				SyntaxTree syntaxTree = parser.Parse(currentDocument, fileName);
 				if (parser.HasErrors)
 					continue;
 				this.currentFileName = fileName;
-				CheckPositionConsistency(cu);
-				CheckMissingTokens(cu);
+				CheckPositionConsistency(syntaxTree);
+				CheckMissingTokens(syntaxTree);
 			}
 		}
 

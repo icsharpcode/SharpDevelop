@@ -158,7 +158,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		
 		public readonly ITextSource Content;
 		public readonly int LinesOfCode;
-		public CompilationUnit CompilationUnit;
+		public SyntaxTree SyntaxTree;
 		public CSharpParsedFile ParsedFile;
 		
 		public CSharpFile(CSharpProject project, string fileName)
@@ -169,14 +169,14 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			this.LinesOfCode = 1 + this.Content.Text.Count(c => c == '\n');
 			
 			CSharpParser p = new CSharpParser(project.CompilerSettings);
-			this.CompilationUnit = p.Parse(Content.CreateReader(), fileName);
+			this.SyntaxTree = p.Parse(Content, fileName);
 			if (p.HasErrors) {
 				Console.WriteLine("Error parsing " + fileName + ":");
 				foreach (var error in p.ErrorsAndWarnings) {
 					Console.WriteLine("  " + error.Region + " " + error.Message);
 				}
 			}
-			this.ParsedFile = this.CompilationUnit.ToTypeSystem();
+			this.ParsedFile = this.SyntaxTree.ToTypeSystem();
 		}
 	}
 }

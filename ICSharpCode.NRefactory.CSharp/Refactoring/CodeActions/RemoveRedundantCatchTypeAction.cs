@@ -48,12 +48,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var exceptionType = context.ResolveType(catchClause.Type);
 			if (exceptionType != context.Compilation.FindType(typeof(Exception)))
 				yield break;
-			var compilationUnit = context.RootNode as CompilationUnit ?? context.GetNode<CompilationUnit>();
-			if (compilationUnit == null)
+			var syntaxTree = context.RootNode as SyntaxTree;
+			if (syntaxTree == null)
 				yield break;
 			var exceptionIdentifierRR = context.Resolve(catchClause.VariableNameToken) as LocalResolveResult;
 			if (exceptionIdentifierRR != null &&
-				IsReferenced(exceptionIdentifierRR.Variable, catchClause.Body, compilationUnit, context))
+				IsReferenced(exceptionIdentifierRR.Variable, catchClause.Body, syntaxTree, context))
 				yield break;
 			yield return new CodeAction(context.TranslateString("Remove type specifier"), script => {
 				script.Replace(catchClause, new CatchClause() {
@@ -62,11 +62,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			});
 		}
 
-		bool IsReferenced(IVariable variable, AstNode node, CompilationUnit unit, RefactoringContext context)
+		bool IsReferenced(IVariable variable, AstNode node, SyntaxTree syntaxTree, RefactoringContext context)
 		{
 			int referencesFound = 0;
 			var findRef = new FindReferences();
-			findRef.FindLocalReferences(variable, context.ParsedFile, unit, context.Compilation, (n, entity) => {
+			findRef.FindLocalReferences(variable, context.ParsedFile, syntaxTree, context.Compilation, (n, entity) => {
 				referencesFound++;
 			}, CancellationToken.None);
 

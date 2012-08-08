@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpCompletionEngineBase.cs
 //  
 // Author:
@@ -655,7 +655,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				wrapper.Append (';');
 		}
 
-		protected CompilationUnit ParseStub(string continuation, bool appendSemicolon = true, string afterContinuation = null)
+		protected SyntaxTree ParseStub(string continuation, bool appendSemicolon = true, string afterContinuation = null)
 		{
 			var mt = GetMemberTextToCaret();
 			if (mt == null) {
@@ -681,17 +681,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (closingBrackets > 0) { 
 				wrapper.Append(new string('}', closingBrackets));
 			}
-			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
-				try {
-					var parser = new CSharpParser ();
-					var result = parser.Parse(stream, "stub.cs", memberLocation.Line - 1 - generatedLines);
-					return result;
-				} catch (Exception) {
-					Console.WriteLine("------");
-					Console.WriteLine(wrapper);
-					throw;
-				}
-			}
+			var parser = new CSharpParser ();
+			parser.InitialLocation = new TextLocation(memberLocation.Line - generatedLines, 1);
+			var result = parser.Parse(wrapper.ToString ());
+			return result;
 		}
 		
 //		string cachedText = null;
@@ -708,7 +701,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		protected ExpressionResult GetInvocationBeforeCursor(bool afterBracket)
 		{
-			CompilationUnit baseUnit;
+			SyntaxTree baseUnit;
 			baseUnit = ParseStub("a", false);
 			
 			var section = baseUnit.GetNodeAt<AttributeSection>(location.Line, location.Column - 2);
@@ -763,10 +756,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		public class ExpressionResult
 		{
 			public AstNode Node { get; private set; }
-			public CompilationUnit Unit  { get; private set; }
+			public SyntaxTree Unit  { get; private set; }
 			
 			
-			public ExpressionResult (AstNode item2, CompilationUnit item3)
+			public ExpressionResult (AstNode item2, SyntaxTree item3)
 			{
 				this.Node = item2;
 				this.Unit = item3;
@@ -797,7 +790,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				resolveNode = expr;
 			}
 			try {
-				var root = expr.AncestorsAndSelf.FirstOrDefault(n => n is EntityDeclaration || n is CompilationUnit);
+				var root = expr.AncestorsAndSelf.FirstOrDefault(n => n is EntityDeclaration || n is SyntaxTree);
 				if (root == null) {
 					return null;
 				}

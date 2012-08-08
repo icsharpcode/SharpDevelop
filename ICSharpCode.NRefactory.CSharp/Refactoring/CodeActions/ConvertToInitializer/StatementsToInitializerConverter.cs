@@ -329,7 +329,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			bool result = false;
 			referenceFinder.FindLocalReferences(localResolveResult.Variable, context.ParsedFile,
-			                                    (CompilationUnit)context.RootNode, context.Compilation,
+			                                    (SyntaxTree)context.RootNode, context.Compilation,
 			                                    (node, resolveResult) => {
 				result |= VariableHasBeenConverted(localResolveResult.Variable);
 			}, CancellationToken.None);

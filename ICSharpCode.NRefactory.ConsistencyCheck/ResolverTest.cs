@@ -35,10 +35,10 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 	{
 		public static void RunTest(CSharpFile file)
 		{
-			CSharpAstResolver resolver = new CSharpAstResolver(file.Project.Compilation, file.CompilationUnit, file.ParsedFile);
+			CSharpAstResolver resolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.ParsedFile);
 			var navigator = new ValidatingResolveAllNavigator(file.FileName);
 			resolver.ApplyNavigator(navigator, CancellationToken.None);
-			navigator.Validate(resolver, file.CompilationUnit);
+			navigator.Validate(resolver, file.SyntaxTree);
 		}
 		
 		class ValidatingResolveAllNavigator : IResolveVisitorNavigator
@@ -88,9 +88,9 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				}
 			}
 			
-			public virtual void Validate(CSharpAstResolver resolver, CompilationUnit cu)
+			public virtual void Validate(CSharpAstResolver resolver, SyntaxTree syntaxTree)
 			{
-				foreach (AstNode node in cu.DescendantsAndSelf.Except(resolvedNodes.Keys)) {
+				foreach (AstNode node in syntaxTree.DescendantsAndSelf.Except(resolvedNodes.Keys)) {
 					if (!CSharpAstResolver.IsUnresolvableNode(node)) {
 						Console.WriteLine("Forgot to resolve " + node);
 					}
@@ -104,13 +104,13 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		
 		public static void RunTestWithoutParsedFile(CSharpFile file)
 		{
-			CSharpAstResolver resolver = new CSharpAstResolver(file.Project.Compilation, file.CompilationUnit);
+			CSharpAstResolver resolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree);
 			var navigator = new ValidatingResolveAllNavigator(file.FileName);
 			resolver.ApplyNavigator(navigator, CancellationToken.None);
-			navigator.Validate(resolver, file.CompilationUnit);
+			navigator.Validate(resolver, file.SyntaxTree);
 			
-			CSharpAstResolver originalResolver = new CSharpAstResolver(file.Project.Compilation, file.CompilationUnit, file.ParsedFile);
-			foreach (var node in file.CompilationUnit.DescendantsAndSelf) {
+			CSharpAstResolver originalResolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.ParsedFile);
+			foreach (var node in file.SyntaxTree.DescendantsAndSelf) {
 				var originalResult = originalResolver.Resolve(node);
 				var result = resolver.Resolve(node);
 				if (!RandomizedOrderResolverTest.IsEqualResolveResult(result, originalResult)) {

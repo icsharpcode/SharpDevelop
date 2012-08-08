@@ -70,14 +70,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				FindIssuesInNode(removeAccessor, removeAccessor.Body, "remove accessor");
 			}
 
-			CompilationUnit compilationUnit;
-
-			public override void VisitCompilationUnit(CompilationUnit unit)
-			{
-				compilationUnit = unit;
-				base.VisitCompilationUnit(unit);
-			}
-
 			void FindIssuesInNode(AstNode anchor, AstNode node, string accessorName = "setter")
 			{
 				if (node == null || node.IsNull)
@@ -90,7 +82,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var variable = localResolveResult.Variable;
 				bool referenceFound = false;
 				var findRef = new FindReferences();
-				findRef.FindLocalReferences(variable, context.ParsedFile, compilationUnit, context.Compilation, (n, entity) => {
+				var syntaxTree = (SyntaxTree)context.RootNode;
+				findRef.FindLocalReferences(variable, context.ParsedFile, syntaxTree, context.Compilation, (n, entity) => {
 					if (n.StartLocation >= node.StartLocation && n.EndLocation <= node.EndLocation) {
 						referenceFound = true;
 					}

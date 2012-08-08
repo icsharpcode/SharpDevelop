@@ -55,8 +55,8 @@ class Impl<T> : IGeneric<List<string>[,], T> {
 }";
 			
 			var pc = new CSharpProjectContent().AddAssemblyReferences(new[] { CecilLoaderTests.Mscorlib });
-			var cu = new CSharpParser().Parse(new StringReader(program), "program.cs");
-			var compilation = pc.UpdateProjectContent(null, cu.ToTypeSystem()).CreateCompilation();
+			var syntaxTree = SyntaxTree.Parse(program, "program.cs");
+			var compilation = pc.UpdateProjectContent(null, syntaxTree.ToTypeSystem()).CreateCompilation();
 			var typeDefinition = compilation.MainAssembly.TopLevelTypeDefinitions.First();
 			IEntity entity = typeDefinition.Documentation.ResolveCref(cref);
 			Assert.IsNotNull(entity, "ResolveCref() returned null.");

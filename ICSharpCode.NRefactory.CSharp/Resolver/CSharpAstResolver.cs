@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Use this overload if you are resolving within a complete C# file.
 		/// </summary>
 		/// <param name="compilation">The current compilation.</param>
-		/// <param name="compilationUnit">The compilation unit corresponding to the specified parsed file.</param>
+		/// <param name="syntaxTree">The syntax tree corresponding to the specified parsed file.</param>
 		/// <param name="parsedFile">
 		/// Optional: Result of the <see cref="TypeSystemConvertVisitor"/> for the file being resolved.
 		/// <para>
@@ -55,14 +55,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// member's signature in the AST with the signature in the type system.
 		/// </para>
 		/// </param>
-		public CSharpAstResolver(ICompilation compilation, CompilationUnit compilationUnit, CSharpParsedFile parsedFile = null)
+		public CSharpAstResolver(ICompilation compilation, SyntaxTree syntaxTree, CSharpParsedFile parsedFile = null)
 		{
 			if (compilation == null)
 				throw new ArgumentNullException("compilation");
-			if (compilationUnit == null)
-				throw new ArgumentNullException("compilationUnit");
+			if (syntaxTree == null)
+				throw new ArgumentNullException("syntaxTree");
 			this.initialResolverState = new CSharpResolver(compilation);
-			this.rootNode = compilationUnit;
+			this.rootNode = syntaxTree;
 			this.parsedFile = parsedFile;
 			this.resolveVisitor = new ResolveVisitor(initialResolverState, parsedFile);
 		}
@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Creates a new C# AST resolver.
 		/// Use this overload if you are resolving code snippets (not necessarily complete files).
 		/// </summary>
-		/// <param name="resolver">The resolver state at the root node (to be more precise: outside the root node).</param>
+		/// <param name="resolver">The resolver state at the root node (to be more precise: just outside the root node).</param>
 		/// <param name="rootNode">The root node of the resolved tree.</param>
 		/// <param name="parsedFile">
 		/// Optional: Result of the <see cref="TypeSystemConvertVisitor"/> for the file being resolved.

@@ -57,6 +57,8 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			                  solution.AllFiles.Count(),
 			                  solution.Projects.Count);
 			
+			//VisitorBenchmark.Run(solution.AllFiles.Select(f => f.SyntaxTree));
+			
 			using (new Timer("ID String test... ")) TypeSystemTests.IDStringConsistencyCheck(solution);
 			using (new Timer("Resolve unresolved members... ")) TypeSystemTests.ResolvedUnresolvedMembers(solution);
 			//RunTestOnAllFiles("Roundtripping test", RoundtripTest.RunTest);

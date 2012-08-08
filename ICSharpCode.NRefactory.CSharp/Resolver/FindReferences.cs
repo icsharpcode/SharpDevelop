@@ -353,16 +353,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		/// <param name="searchScope">The search scope for which to look.</param>
 		/// <param name="parsedFile">The type system representation of the file being searched.</param>
-		/// <param name="compilationUnit">The compilation unit of the file being searched.</param>
+		/// <param name="syntaxTree">The syntax tree of the file being searched.</param>
 		/// <param name="compilation">The compilation for the project that contains the file.</param>
 		/// <param name="callback">Callback used to report the references that were found.</param>
 		/// <param name="cancellationToken">CancellationToken that may be used to cancel the operation.</param>
-		public void FindReferencesInFile(IFindReferenceSearchScope searchScope, CSharpParsedFile parsedFile, CompilationUnit compilationUnit,
+		public void FindReferencesInFile(IFindReferenceSearchScope searchScope, CSharpParsedFile parsedFile, SyntaxTree syntaxTree,
 		                                 ICompilation compilation, FoundReferenceCallback callback, CancellationToken cancellationToken)
 		{
 			if (searchScope == null)
 				throw new ArgumentNullException("searchScope");
-			FindReferencesInFile(new[] { searchScope }, parsedFile, compilationUnit, compilation, callback, cancellationToken);
+			FindReferencesInFile(new[] { searchScope }, parsedFile, syntaxTree, compilation, callback, cancellationToken);
 		}
 		
 		/// <summary>
@@ -370,19 +370,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		/// <param name="searchScopes">The search scopes for which to look.</param>
 		/// <param name="parsedFile">The type system representation of the file being searched.</param>
-		/// <param name="compilationUnit">The compilation unit of the file being searched.</param>
+		/// <param name="syntaxTree">The syntax tree of the file being searched.</param>
 		/// <param name="compilation">The compilation for the project that contains the file.</param>
 		/// <param name="callback">Callback used to report the references that were found.</param>
 		/// <param name="cancellationToken">CancellationToken that may be used to cancel the operation.</param>
-		public void FindReferencesInFile(IList<IFindReferenceSearchScope> searchScopes, CSharpParsedFile parsedFile, CompilationUnit compilationUnit,
+		public void FindReferencesInFile(IList<IFindReferenceSearchScope> searchScopes, CSharpParsedFile parsedFile, SyntaxTree syntaxTree,
 		                                 ICompilation compilation, FoundReferenceCallback callback, CancellationToken cancellationToken)
 		{
 			if (searchScopes == null)
 				throw new ArgumentNullException("searchScopes");
 			if (parsedFile == null)
 				throw new ArgumentNullException("parsedFile");
-			if (compilationUnit == null)
-				throw new ArgumentNullException("compilationUnit");
+			if (syntaxTree == null)
+				throw new ArgumentNullException("syntaxTree");
 			if (compilation == null)
 				throw new ArgumentNullException("compilation");
 			if (callback == null)
@@ -402,9 +402,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			cancellationToken.ThrowIfCancellationRequested();
-			combinedNavigator = new DetectSkippableNodesNavigator(combinedNavigator, compilationUnit);
+			combinedNavigator = new DetectSkippableNodesNavigator(combinedNavigator, syntaxTree);
 			cancellationToken.ThrowIfCancellationRequested();
-			CSharpAstResolver resolver = new CSharpAstResolver(compilation, compilationUnit, parsedFile);
+			CSharpAstResolver resolver = new CSharpAstResolver(compilation, syntaxTree, parsedFile);
 			resolver.ApplyNavigator(combinedNavigator, cancellationToken);
 			foreach (var n in navigators) {
 				var frn = n as FindReferenceNavigator;
@@ -1172,18 +1172,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		/// <param name="variable">The variable for which to look.</param>
 		/// <param name="parsedFile">The type system representation of the file being searched.</param>
-		/// <param name="compilationUnit">The compilation unit of the file being searched.</param>
+		/// <param name="syntaxTree">The syntax tree of the file being searched.</param>
 		/// <param name="compilation">The compilation.</param>
 		/// <param name="callback">Callback used to report the references that were found.</param>
 		/// <param name="cancellationToken">Cancellation token that may be used to cancel the operation.</param>
-		public void FindLocalReferences(IVariable variable, CSharpParsedFile parsedFile, CompilationUnit compilationUnit,
+		public void FindLocalReferences(IVariable variable, CSharpParsedFile parsedFile, SyntaxTree syntaxTree,
 		                                ICompilation compilation, FoundReferenceCallback callback, CancellationToken cancellationToken)
 		{
 			if (variable == null)
 				throw new ArgumentNullException("variable");
 			var searchScope = new SearchScope(c => new FindLocalReferencesNavigator(variable));
 			searchScope.declarationCompilation = compilation;
-			FindReferencesInFile(searchScope, parsedFile, compilationUnit, compilation, callback, cancellationToken);
+			FindReferencesInFile(searchScope, parsedFile, syntaxTree, compilation, callback, cancellationToken);
 		}
 		
 		class FindLocalReferencesNavigator : FindReferenceNavigator
@@ -1226,11 +1226,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		/// <param name="typeParameter">The type parameter for which to look.</param>
 		/// <param name="parsedFile">The type system representation of the file being searched.</param>
-		/// <param name="compilationUnit">The compilation unit of the file being searched.</param>
+		/// <param name="syntaxTree">The syntax tree of the file being searched.</param>
 		/// <param name="compilation">The compilation.</param>
 		/// <param name="callback">Callback used to report the references that were found.</param>
 		/// <param name="cancellationToken">Cancellation token that may be used to cancel the operation.</param>
-		public void FindTypeParameterReferences(IType typeParameter, CSharpParsedFile parsedFile, CompilationUnit compilationUnit,
+		public void FindTypeParameterReferences(IType typeParameter, CSharpParsedFile parsedFile, SyntaxTree syntaxTree,
 		                                ICompilation compilation, FoundReferenceCallback callback, CancellationToken cancellationToken)
 		{
 			if (typeParameter == null)
@@ -1240,7 +1240,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			var searchScope = new SearchScope(c => new FindTypeParameterReferencesNavigator((ITypeParameter)typeParameter));
 			searchScope.declarationCompilation = compilation;
 			searchScope.accessibility = Accessibility.Private;
-			FindReferencesInFile(searchScope, parsedFile, compilationUnit, compilation, callback, cancellationToken);
+			FindReferencesInFile(searchScope, parsedFile, syntaxTree, compilation, callback, cancellationToken);
 		}
 		
 		class FindTypeParameterReferencesNavigator : FindReferenceNavigator

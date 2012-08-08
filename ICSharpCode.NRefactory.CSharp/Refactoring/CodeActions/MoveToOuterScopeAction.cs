@@ -104,8 +104,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					continue;
 				bool referenceFound = false;
 				var variable = localResolveResult.Variable;
-				var compilationUnit = context.RootNode as CompilationUnit;
-				referenceFinder.FindLocalReferences(localResolveResult.Variable, context.ParsedFile, compilationUnit,
+				var syntaxTree = context.RootNode as SyntaxTree;
+				referenceFinder.FindLocalReferences(localResolveResult.Variable, context.ParsedFile, syntaxTree,
 				                                    context.Compilation, (node, nodeResolveResult) => {
 					if (node.StartLocation > firstSearchNode.StartLocation && node.EndLocation < targetNode.StartLocation)
 						referenceFound = true;

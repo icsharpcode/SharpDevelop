@@ -1627,11 +1627,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		static bool IsDelegate(TypeDefinition type)
 		{
-			if (type.BaseType == null)
-				return false;
-			else
-				return type.BaseType.FullName == "System.Delegate"
-					|| type.BaseType.FullName == "System.MulticastDelegate";
+			if (type.BaseType != null && type.BaseType.Namespace == "System") {
+				if (type.BaseType.Name == "MulticastDelegate")
+					return true;
+				if (type.BaseType.Name == "Delegate" && type.Name != "MulticastDelegate")
+					return true;
+			}
+			return false;
 		}
 		
 		static bool IsModule(TypeDefinition type)

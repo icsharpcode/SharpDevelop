@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 							}
 						}
 					);
-					var resolver = new CSharpAstResolver(file.Project.Compilation, file.CompilationUnit, file.ParsedFile);
+					var resolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.ParsedFile);
 					resolver.ApplyNavigator(navigator);
 				}
 			}
@@ -114,7 +114,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 					}
 				}
 				foreach (var file in interestingFiles) {
-					fr.FindReferencesInFile(searchScopes, file.ParsedFile, file.CompilationUnit, project.Compilation,
+					fr.FindReferencesInFile(searchScopes, file.ParsedFile, file.SyntaxTree, project.Compilation,
 					                        delegate(AstNode node, ResolveResult result) {
 					                        	foundReferences.Add(node);
 					                        }, CancellationToken.None);

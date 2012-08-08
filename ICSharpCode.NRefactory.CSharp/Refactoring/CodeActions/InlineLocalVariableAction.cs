@@ -1,4 +1,4 @@
-// 
+﻿// 
 // InlineLocalVariableAction.cs
 //  
 // Author:
@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (resolveResult == null || resolveResult.IsError) {
 				yield break;
 			}
-			var unit = context.RootNode as CompilationUnit;
+			var unit = context.RootNode as SyntaxTree;
 			if (unit == null) {
 				yield break;
 			}
