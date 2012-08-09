@@ -10,12 +10,12 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
+    <OutputPath>..\bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>bin\Debug\</OutputPath>
     <DebugSymbols>True</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
@@ -23,9 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>bin\Release\</OutputPath>
-    <DebugSymbols>False</DebugSymbols>
-    <DebugType>None</DebugType>
+    <DebugType>PdbOnly</DebugType>
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
@@ -46,7 +44,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Debug' ">
-    <OutputPath>bin\Debug\</OutputPath>
     <DebugSymbols>True</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
@@ -61,9 +58,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Release' ">
-    <OutputPath>bin\Release\</OutputPath>
-    <DebugSymbols>False</DebugSymbols>
-    <DebugType>None</DebugType>
+    <DebugType>PdbOnly</DebugType>
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>

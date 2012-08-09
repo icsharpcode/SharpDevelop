@@ -1,4 +1,4 @@
-// 
+﻿// 
 // IMemberProvider.cs
 //  
 // Author:
@@ -45,16 +45,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 	public class DefaultCompletionContextProvider : ICompletionContextProvider
 	{
 		readonly IDocument document;
-		readonly CSharpParsedFile parsedFile;
+		readonly CSharpUnresolvedFile unresolvedFile;
 
-		public DefaultCompletionContextProvider (IDocument document, CSharpParsedFile parsedFile)
+		public DefaultCompletionContextProvider (IDocument document, CSharpUnresolvedFile unresolvedFile)
 		{
 			if (document == null)
 				throw new ArgumentNullException("document");
-			if (parsedFile == null)
-				throw new ArgumentNullException("parsedFile");
+			if (unresolvedFile == null)
+				throw new ArgumentNullException("unresolvedFile");
 			this.document = document;
-			this.parsedFile = parsedFile;
+			this.unresolvedFile = unresolvedFile;
 		}
 		
 		public void GetCurrentMembers(int offset, out IUnresolvedTypeDefinition currentType, out IUnresolvedMember currentMember)
@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			currentType = null;
 			
-			foreach (var type in parsedFile.TopLevelTypeDefinitions) {
+			foreach (var type in unresolvedFile.TopLevelTypeDefinitions) {
 				if (type.Region.Begin < location)
 					currentType = type;
 			}
@@ -189,7 +189,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 		public CSharpAstResolver GetResolver (CSharpResolver resolver, AstNode rootNode)
 		{
-			return new CSharpAstResolver (resolver, rootNode, parsedFile);
+			return new CSharpAstResolver (resolver, rootNode, unresolvedFile);
 		}
 
 

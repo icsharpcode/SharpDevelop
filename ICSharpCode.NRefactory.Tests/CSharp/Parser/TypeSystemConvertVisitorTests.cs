@@ -47,9 +47,9 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 				syntaxTree = parser.Parse(s, fileName);
 			}
 			
-			var parsedFile = syntaxTree.ToTypeSystem();
+			var unresolvedFile = syntaxTree.ToTypeSystem();
 			return new CSharpProjectContent()
-				.UpdateProjectContent(null, parsedFile)
+				.AddOrUpdateFiles(unresolvedFile)
 				.AddAssemblyReferences(new[] { CecilLoaderTests.Mscorlib })
 				.SetAssemblyName(typeof(TypeSystemTests).Assembly.GetName().Name);
 		}

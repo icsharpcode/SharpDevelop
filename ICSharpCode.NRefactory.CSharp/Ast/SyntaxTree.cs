@@ -146,13 +146,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Converts this syntax tree into a parsed file that can be stored in the type system.
 		/// </summary>
-		public CSharpParsedFile ToTypeSystem ()
+		public CSharpUnresolvedFile ToTypeSystem ()
 		{
 			if (string.IsNullOrEmpty (this.FileName))
 				throw new InvalidOperationException ("Cannot use ToTypeSystem() on a syntax tree without file name.");
 			var v = new TypeSystemConvertVisitor (this.FileName);
 			v.VisitSyntaxTree (this);
-			return v.ParsedFile;
+			return v.UnresolvedFile;
 		}
 		
 		public static SyntaxTree Parse (string program, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))

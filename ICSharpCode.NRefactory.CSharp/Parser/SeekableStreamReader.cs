@@ -38,9 +38,14 @@ namespace Mono.CSharp
 
 		int pos;
 
-		public SeekableStreamReader (Stream stream, Encoding encoding, char[] sharedBuffer = null)
+		static string GetAllText(Stream stream, Encoding encoding) {
+			using (var rdr = new StreamReader(stream, encoding)) {
+				return rdr.ReadToEnd();
+			}
+		}
+
+		public SeekableStreamReader (Stream stream, Encoding encoding, char[] sharedBuffer = null) : this(new StringTextSource(GetAllText(stream, encoding)))
 		{
-			throw new NotImplementedException ();
 		}
 
 		public SeekableStreamReader (ITextSource source)

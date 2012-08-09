@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 	{
 		public static void RunTest(CSharpFile file)
 		{
-			CSharpAstResolver resolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.ParsedFile);
+			CSharpAstResolver resolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.UnresolvedTypeSystemForFile);
 			var navigator = new ValidatingResolveAllNavigator(file.FileName);
 			resolver.ApplyNavigator(navigator, CancellationToken.None);
 			navigator.Validate(resolver, file.SyntaxTree);
@@ -102,19 +102,19 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			}
 		}
 		
-		public static void RunTestWithoutParsedFile(CSharpFile file)
+		public static void RunTestWithoutUnresolvedFile(CSharpFile file)
 		{
 			CSharpAstResolver resolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree);
 			var navigator = new ValidatingResolveAllNavigator(file.FileName);
 			resolver.ApplyNavigator(navigator, CancellationToken.None);
 			navigator.Validate(resolver, file.SyntaxTree);
 			
-			CSharpAstResolver originalResolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.ParsedFile);
+			CSharpAstResolver originalResolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.UnresolvedTypeSystemForFile);
 			foreach (var node in file.SyntaxTree.DescendantsAndSelf) {
 				var originalResult = originalResolver.Resolve(node);
 				var result = resolver.Resolve(node);
 				if (!RandomizedOrderResolverTest.IsEqualResolveResult(result, originalResult)) {
-					Console.WriteLine("Got different without IParsedFile at " + file.FileName + ":" + node.StartLocation);
+					Console.WriteLine("Got different without IUnresolvedFile at " + file.FileName + ":" + node.StartLocation);
 				}
 			}
 		}

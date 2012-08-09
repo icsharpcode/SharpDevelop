@@ -723,7 +723,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						//						var astResolver = new CSharpAstResolver(
 						//							GetState(),
 						//							identifierStart.Unit,
-						//							CSharpParsedFile
+						//							CSharpUnresolvedFile
 						//						);
 						//
 						//						foreach (var type in CreateFieldAction.GetValidTypes(astResolver, (Expression)n)) {
@@ -1172,7 +1172,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (csResolver == null) {
 				if (node != null) {
 					csResolver = GetState();
-					//var astResolver = new CSharpAstResolver (csResolver, node, xp != null ? xp.Item1 : CSharpParsedFile);
+					//var astResolver = new CSharpAstResolver (csResolver, node, xp != null ? xp.Item1 : CSharpUnresolvedFile);
 					
 					try {
 						//csResolver = astResolver.GetResolverStateBefore (node);

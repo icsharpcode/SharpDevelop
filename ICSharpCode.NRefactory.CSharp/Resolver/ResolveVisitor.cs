@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <remarks>We do not have to put this into the stored state (resolver) because
 		/// query expressions are always resolved in a single operation.</remarks>
 		ResolveResult currentQueryResult;
-		readonly CSharpParsedFile parsedFile;
+		readonly CSharpUnresolvedFile unresolvedFile;
 		readonly Dictionary<AstNode, ResolveResult> resolveResultCache = new Dictionary<AstNode, ResolveResult>();
 		readonly Dictionary<AstNode, CSharpResolver> resolverBeforeDict = new Dictionary<AstNode, CSharpResolver>();
 		readonly Dictionary<AstNode, CSharpResolver> resolverAfterDict = new Dictionary<AstNode, CSharpResolver>();
@@ -93,12 +93,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Creates a new ResolveVisitor instance.
 		/// </summary>
-		public ResolveVisitor(CSharpResolver resolver, CSharpParsedFile parsedFile)
+		public ResolveVisitor(CSharpResolver resolver, CSharpUnresolvedFile unresolvedFile)
 		{
 			if (resolver == null)
 				throw new ArgumentNullException("resolver");
 			this.resolver = resolver;
-			this.parsedFile = parsedFile;
+			this.unresolvedFile = unresolvedFile;
 			this.navigator = skipAllNavigator;
 		}
 		
@@ -534,12 +534,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			CSharpResolver previousResolver = resolver;
 			try {
-				if (parsedFile != null) {
-					resolver = resolver.WithCurrentUsingScope(parsedFile.RootUsingScope.Resolve(resolver.Compilation));
+				if (unresolvedFile != null) {
+					resolver = resolver.WithCurrentUsingScope(unresolvedFile.RootUsingScope.Resolve(resolver.Compilation));
 				} else {
 					var cv = new TypeSystemConvertVisitor(unit.FileName ?? string.Empty);
 					ApplyVisitorToUsings(cv, unit.Children);
-					PushUsingScope(cv.ParsedFile.RootUsingScope);
+					PushUsingScope(cv.UnresolvedFile.RootUsingScope);
 				}
 				ScanChildren(unit);
 				return voidResult;
@@ -567,8 +567,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			CSharpResolver previousResolver = resolver;
 			try {
-				if (parsedFile != null) {
-					resolver = resolver.WithCurrentUsingScope(parsedFile.GetUsingScope(namespaceDeclaration.StartLocation).Resolve(resolver.Compilation));
+				if (unresolvedFile != null) {
+					resolver = resolver.WithCurrentUsingScope(unresolvedFile.GetUsingScope(namespaceDeclaration.StartLocation).Resolve(resolver.Compilation));
 				} else {
 					string fileName = namespaceDeclaration.GetRegion().FileName ?? string.Empty;
 					// Fetch parent using scope
@@ -589,7 +589,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// Last using scope:
 					usingScope = new UsingScope(resolver.CurrentUsingScope.UnresolvedUsingScope, identifiers.Last().Name);
 					usingScope.Region = region;
-					var cv = new TypeSystemConvertVisitor(new CSharpParsedFile(region.FileName ?? string.Empty), usingScope);
+					var cv = new TypeSystemConvertVisitor(new CSharpUnresolvedFile(region.FileName ?? string.Empty), usingScope);
 					ApplyVisitorToUsings(cv, namespaceDeclaration.Children);
 					PushUsingScope(usingScope);
 				}
@@ -673,7 +673,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			for (AstNode node = fieldOrEventDeclaration.FirstChild; node != null; node = node.NextSibling) {
 				if (node.Role == Roles.Variable) {
 					IMember member;
-					if (parsedFile != null) {
+					if (unresolvedFile != null) {
 						member = GetMemberFromLocation(node);
 					} else {
 						string name = ((VariableInitializer)node).Name;
@@ -699,7 +699,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			TextLocation location = TypeSystemConvertVisitor.GetStartLocationAfterAttributes(node);
 			return typeDef.GetMembers(
 				delegate (IUnresolvedMember m) {
-					if (m.ParsedFile != parsedFile)
+					if (m.UnresolvedFile != unresolvedFile)
 						return false;
 					DomRegion region = m.Region;
 					return !region.IsEmpty && region.Begin <= location && region.End > location;
@@ -792,7 +792,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			CSharpResolver oldResolver = resolver;
 			try {
 				IMember member;
-				if (parsedFile != null) {
+				if (unresolvedFile != null) {
 					member = GetMemberFromLocation(memberDeclaration);
 				} else {
 					// Re-discover the method:
@@ -855,7 +855,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			CSharpResolver oldResolver = resolver;
 			try {
 				IMember member;
-				if (parsedFile != null) {
+				if (unresolvedFile != null) {
 					member = GetMemberFromLocation(propertyOrIndexerDeclaration);
 				} else {
 					// Re-discover the property:
@@ -911,7 +911,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			CSharpResolver oldResolver = resolver;
 			try {
 				IMember member;
-				if (parsedFile != null) {
+				if (unresolvedFile != null) {
 					member = GetMemberFromLocation(eventDeclaration);
 				} else {
 					string name = eventDeclaration.Name;
@@ -1034,7 +1034,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					Scan(attributeSection);
 				
 				IMember member = null;
-				if (parsedFile != null) {
+				if (unresolvedFile != null) {
 					member = GetMemberFromLocation(enumMemberDeclaration);
 				} else if (resolver.CurrentTypeDefinition != null) {
 					string name = enumMemberDeclaration.Name;
@@ -1958,8 +1958,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		DomRegion MakeRegion(AstNode node)
 		{
-			if (parsedFile != null)
-				return new DomRegion(parsedFile.FileName, node.StartLocation, node.EndLocation);
+			if (unresolvedFile != null)
+				return new DomRegion(unresolvedFile.FileName, node.StartLocation, node.EndLocation);
 			else
 				return node.GetRegion();
 		}
@@ -2148,7 +2148,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			readonly QuerySelectClause selectClause;
 			
 			readonly CSharpResolver storedContext;
-			readonly CSharpParsedFile parsedFile;
+			readonly CSharpUnresolvedFile unresolvedFile;
 			readonly List<LambdaTypeHypothesis> hypotheses = new List<LambdaTypeHypothesis>();
 			internal IList<IParameter> parameters = new List<IParameter>();
 			
@@ -2186,7 +2186,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				this.parentVisitor = parentVisitor;
 				this.storedContext = parentVisitor.resolver;
-				this.parsedFile = parentVisitor.parsedFile;
+				this.unresolvedFile = parentVisitor.unresolvedFile;
 				this.bodyResult = parentVisitor.voidResult;
 			}
 			
@@ -2254,7 +2254,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (ok)
 						return h;
 				}
-				ResolveVisitor visitor = new ResolveVisitor(storedContext, parsedFile);
+				ResolveVisitor visitor = new ResolveVisitor(storedContext, unresolvedFile);
 				var newHypothesis = new LambdaTypeHypothesis(this, parameterTypes, visitor, lambda != null ? lambda.Parameters : null);
 				hypotheses.Add(newHypothesis);
 				return newHypothesis;

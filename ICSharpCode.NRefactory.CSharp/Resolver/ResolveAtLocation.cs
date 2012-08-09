@@ -30,24 +30,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	public static class ResolveAtLocation
 	{
-		public static ResolveResult Resolve (ICompilation compilation, CSharpParsedFile parsedFile, SyntaxTree syntaxTree, TextLocation location,
+		public static ResolveResult Resolve (ICompilation compilation, CSharpUnresolvedFile unresolvedFile, SyntaxTree syntaxTree, TextLocation location,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return Resolve (new Lazy<ICompilation>(() => compilation), parsedFile, syntaxTree, location, cancellationToken);
+			return Resolve (new Lazy<ICompilation>(() => compilation), unresolvedFile, syntaxTree, location, cancellationToken);
 		}
-		public static ResolveResult Resolve(Lazy<ICompilation> compilation, CSharpParsedFile parsedFile, SyntaxTree syntaxTree, TextLocation location,
+		public static ResolveResult Resolve(Lazy<ICompilation> compilation, CSharpUnresolvedFile unresolvedFile, SyntaxTree syntaxTree, TextLocation location,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
 			AstNode node;
-			return Resolve(compilation, parsedFile, syntaxTree, location, out node, cancellationToken);
+			return Resolve(compilation, unresolvedFile, syntaxTree, location, out node, cancellationToken);
 		}
 		
-		public static ResolveResult Resolve (ICompilation compilation, CSharpParsedFile parsedFile, SyntaxTree syntaxTree, TextLocation location, out AstNode node,
+		public static ResolveResult Resolve (ICompilation compilation, CSharpUnresolvedFile unresolvedFile, SyntaxTree syntaxTree, TextLocation location, out AstNode node,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return Resolve (new Lazy<ICompilation>(() => compilation), parsedFile, syntaxTree, location, out node, cancellationToken);
+			return Resolve (new Lazy<ICompilation>(() => compilation), unresolvedFile, syntaxTree, location, out node, cancellationToken);
 		}
-		public static ResolveResult Resolve(Lazy<ICompilation> compilation, CSharpParsedFile parsedFile, SyntaxTree syntaxTree, TextLocation location, out AstNode node,
+		public static ResolveResult Resolve(Lazy<ICompilation> compilation, CSharpUnresolvedFile unresolvedFile, SyntaxTree syntaxTree, TextLocation location, out AstNode node,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
 			node = syntaxTree.GetNodeAt(location);
@@ -96,7 +96,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			// TODO: I think we should provide an overload so that an existing CSharpAstResolver can be reused
-			CSharpAstResolver resolver = new CSharpAstResolver(compilation.Value, syntaxTree, parsedFile);
+			CSharpAstResolver resolver = new CSharpAstResolver(compilation.Value, syntaxTree, unresolvedFile);
 			ResolveResult rr = resolver.Resolve(node, cancellationToken);
 			if (rr is MethodGroupResolveResult && parentInvocation != null)
 				return resolver.Resolve(parentInvocation);

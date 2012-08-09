@@ -50,11 +50,6 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			        	visitor.EnterIdentifierExpression += list.Add;
 			        	syntaxTree.AcceptVisitor(visitor);
 			        });
-			RunTest("ObservableAstVisitor<object, object>", files, (syntaxTree, list) => {
-			        	var visitor = new ObservableAstVisitor<object, object>();
-			        	visitor.IdentifierExpressionVisited += (id, data) => list.Add(id);
-			        	syntaxTree.AcceptVisitor(visitor, null);
-			        });
 		}
 		
 		static void WalkTreeForEach(AstNode node, List<IdentifierExpression> list)

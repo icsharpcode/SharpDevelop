@@ -34,15 +34,15 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class CodeDomConvertVisitorTests : ResolverTestBase
 	{
 		CodeDomConvertVisitor convertVisitor;
-		CSharpParsedFile parsedFile;
+		CSharpUnresolvedFile unresolvedFile;
 		
 		public override void SetUp()
 		{
 			base.SetUp();
-			parsedFile = new CSharpParsedFile("test.cs");
-			parsedFile.RootUsingScope.Usings.Add(MakeReference("System"));
-			parsedFile.RootUsingScope.Usings.Add(MakeReference("System.Collections.Generic"));
-			parsedFile.RootUsingScope.Usings.Add(MakeReference("System.Linq"));
+			unresolvedFile = new CSharpUnresolvedFile("test.cs");
+			unresolvedFile.RootUsingScope.Usings.Add(MakeReference("System"));
+			unresolvedFile.RootUsingScope.Usings.Add(MakeReference("System.Collections.Generic"));
+			unresolvedFile.RootUsingScope.Usings.Add(MakeReference("System.Linq"));
 			
 			convertVisitor = new CodeDomConvertVisitor();
 			convertVisitor.AllowSnippetNodes = false;
@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		string ConvertHelper(AstNode node, Action<CSharpCodeProvider, CodeObject, TextWriter, CodeGeneratorOptions> action)
 		{
 			CSharpResolver resolver = new CSharpResolver(compilation);
-			resolver = resolver.WithCurrentUsingScope(parsedFile.RootUsingScope.Resolve(compilation));
+			resolver = resolver.WithCurrentUsingScope(unresolvedFile.RootUsingScope.Resolve(compilation));
 			resolver = resolver.WithCurrentTypeDefinition(compilation.FindType(KnownTypeCode.Object).GetDefinition());
 			var codeObj = convertVisitor.Convert(node, new CSharpAstResolver(resolver, node));
 			

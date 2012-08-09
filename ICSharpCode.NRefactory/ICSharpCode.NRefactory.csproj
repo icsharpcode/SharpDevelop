@@ -19,9 +19,10 @@
     <AssemblyOriginatorKeyFile>..\ICSharpCode.NRefactory.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
-    <DocumentationFile>bin\$(Configuration)\ICSharpCode.NRefactory.xml</DocumentationFile>
     <WarningLevel>4</WarningLevel>
     <NoWarn>1591</NoWarn>
+    <OutputPath>..\bin\$(Configuration)\</OutputPath>
+    <DocumentationFile>..\bin\$(Configuration)\ICSharpCode.NRefactory.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -31,14 +32,12 @@
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>bin\Debug\</OutputPath>
     <Optimize>False</Optimize>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <StartAction>Project</StartAction>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>bin\Release\</OutputPath>
     <Optimize>True</Optimize>
     <DefineConstants>TRACE</DefineConstants>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
@@ -48,10 +47,9 @@
     <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
+    <DebugType>PdbOnly</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Debug' ">
-    <OutputPath>bin\Debug\</OutputPath>
     <Optimize>False</Optimize>
     <DefineConstants>DEBUG;TRACE;NET45</DefineConstants>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
@@ -63,14 +61,13 @@
     <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Release' ">
-    <OutputPath>bin\Release\</OutputPath>
     <Optimize>True</Optimize>
     <DefineConstants>TRACE;NET45</DefineConstants>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_4_5_Release|AnyCPU' ">
-    <DebugType>none</DebugType>
+    <DebugType>PdbOnly</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -136,6 +133,7 @@
     <Compile Include="TypeSystem\ByReferenceType.cs" />
     <Compile Include="TypeSystem\CecilLoader.cs" />
     <Compile Include="TypeSystem\ComHelper.cs" />
+    <Compile Include="TypeSystem\DefaultSolutionSnapshot.cs" />
     <Compile Include="TypeSystem\DomRegion.cs" />
     <Compile Include="TypeSystem\EntityType.cs" />
     <Compile Include="TypeSystem\ExtensionMethods.cs" />
@@ -170,7 +168,6 @@
     <Compile Include="TypeSystem\Implementation\DefaultResolvedProperty.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultResolvedTypeDefinition.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultResolvedTypeParameter.cs" />
-    <Compile Include="TypeSystem\Implementation\DefaultSolutionSnapshot.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultUnresolvedAssembly.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultUnresolvedAttribute.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultUnresolvedEvent.cs" />
@@ -209,7 +206,7 @@
     <Compile Include="TypeSystem\IntersectionType.cs" />
     <Compile Include="TypeSystem\IParameter.cs" />
     <Compile Include="TypeSystem\IParameterizedMember.cs" />
-    <Compile Include="TypeSystem\IParsedFile.cs" />
+    <Compile Include="TypeSystem\IUnresolvedFile.cs" />
     <Compile Include="TypeSystem\IProjectContent.cs" />
     <Compile Include="TypeSystem\IProperty.cs" />
     <Compile Include="TypeSystem\ISolutionSnapshot.cs" />
@@ -222,6 +219,7 @@
     <Compile Include="TypeSystem\NullableType.cs" />
     <Compile Include="TypeSystem\ParameterizedType.cs" />
     <Compile Include="TypeSystem\ParameterListComparer.cs" />
+    <Compile Include="TypeSystem\ProjectReference.cs" />
     <Compile Include="TypeSystem\ReflectionNameParseException.cs" />
     <Compile Include="TypeSystem\SimpleTypeResolveContext.cs" />
     <Compile Include="TypeSystem\TypeKind.cs" />

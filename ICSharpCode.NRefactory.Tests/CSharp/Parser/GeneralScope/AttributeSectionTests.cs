@@ -108,6 +108,44 @@ public class Form1 {
 							}
 						}}});
 		}
+	
+		[Test]
+		public void TwoAttributesInSameSectionLocations()
+		{
+			string program = @"[A, B] class Test {}";
+			TypeDeclaration type = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
+			var attributeSection = type.Attributes.Single();
+			
+			var firstAttribute = attributeSection.Attributes.First();
+			Assert.AreEqual(2, firstAttribute.StartLocation.Column);
+			Assert.AreEqual(3, firstAttribute.EndLocation.Column); 
+			
+			var lastAttribute = attributeSection.Attributes.Last();
+			Assert.AreEqual(5, lastAttribute.StartLocation.Column);
+			Assert.AreEqual(6, lastAttribute.EndLocation.Column);
+			
+			Assert.AreEqual(1, attributeSection.StartLocation.Column);
+			Assert.AreEqual(7, attributeSection.EndLocation.Column);
+		}
+		
+		[Test]
+		public void TwoAttributesWithOptionalCommaInSameSectionLocations()
+		{
+			string program = @"[A, B,] class Test {}";
+			TypeDeclaration type = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
+			var attributeSection = type.Attributes.Single();
+			
+			var firstAttribute = attributeSection.Attributes.First();
+			Assert.AreEqual(2, firstAttribute.StartLocation.Column);
+			Assert.AreEqual(3, firstAttribute.EndLocation.Column); 
+			
+			var lastAttribute = attributeSection.Attributes.Last();
+			Assert.AreEqual(5, lastAttribute.StartLocation.Column);
+			Assert.AreEqual(6, lastAttribute.EndLocation.Column);
+			
+			Assert.AreEqual(1, attributeSection.StartLocation.Column);
+			Assert.AreEqual(8, attributeSection.EndLocation.Column);
+		}
 		
 		[Test]
 		public void AttributesOnTypeParameter()

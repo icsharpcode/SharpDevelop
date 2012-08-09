@@ -17,32 +17,48 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
-	public static class TypeSystemHelper
+	[TestFixture]
+	public class CyclicProjectDependency
 	{
-		public static ICompilation CreateCompilation()
+		IProjectContent pc1;
+		IProjectContent pc2;
+		ISolutionSnapshot solution;
+		
+		[SetUp]
+		public void Setup()
 		{
-			return CreateCompilation(new IUnresolvedFile[0]);
+			pc1 = new CSharpProjectContent()
+				.SetAssemblyName("PC1")
+				.SetProjectFileName("PC1.csproj")
+				.AddAssemblyReferences(new IAssemblyReference[] { CecilLoaderTests.Mscorlib, new ProjectReference("PC2.csproj") });
+
+			pc2 = new CSharpProjectContent()
+				.SetAssemblyName("PC2")
+				.SetProjectFileName("PC2.csproj")
+				.AddAssemblyReferences(new IAssemblyReference[] { CecilLoaderTests.Mscorlib, new ProjectReference("PC1.csproj") });
+			
+			solution = new DefaultSolutionSnapshot(new[] { pc1, pc2 });
 		}
 		
-		public static ICompilation CreateCompilation(params IUnresolvedTypeDefinition[] unresolvedTypeDefinitions)
+		[Test]
+		public void CreateCompilation1()
 		{
-			var unresolvedFile = new CSharpUnresolvedFile("dummy.cs");
-			foreach (var typeDef in unresolvedTypeDefinitions)
-				unresolvedFile.TopLevelTypeDefinitions.Add(typeDef);
-			return CreateCompilation(unresolvedFile);
+			ICompilation c = solution.GetCompilation(pc1);
+			Assert.AreEqual(new string[] { "PC1", "mscorlib", "PC2" }, c.Assemblies.Select(asm => asm.AssemblyName).ToArray());
 		}
 		
-		public static ICompilation CreateCompilation(params IUnresolvedFile[] unresolvedFiles)
+		[Test]
+		public void CreateCompilation2()
 		{
-			var pc = new CSharpProjectContent().AddOrUpdateFiles(unresolvedFiles);
-			pc = pc.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
-			return pc.CreateCompilation();
+			ICompilation c = solution.GetCompilation(pc2);
+			Assert.AreEqual(new string[] { "PC2", "mscorlib", "PC1" }, c.Assemblies.Select(asm => asm.AssemblyName).ToArray());
 		}
 	}
 }
