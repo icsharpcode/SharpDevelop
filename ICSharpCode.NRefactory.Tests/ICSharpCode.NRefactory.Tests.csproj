@@ -120,6 +120,7 @@
     <Compile Include="CSharp\CodeIssues\RedundantAssignmentIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\CompareBooleanWithTrueOrFalseIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantAttributeParenthesesIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantCaseLabelIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantElseIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantFieldInitializerIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantTypeCastIssueTests.cs" />
