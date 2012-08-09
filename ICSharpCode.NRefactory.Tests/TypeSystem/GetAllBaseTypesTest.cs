@@ -67,8 +67,8 @@ namespace System.Collections.Generic {
 		[SetUp]
 		public void SetUp()
 		{
-			var parsedFile = new CSharpParser().Parse(corlib, "corlib.cs").ToTypeSystem();
-			compilation = new CSharpProjectContent().SetAssemblyName("mscorlib").UpdateProjectContent(null, parsedFile).CreateCompilation();
+			var unresolvedFile = new CSharpParser().Parse(corlib, "corlib.cs").ToTypeSystem();
+			compilation = new CSharpProjectContent().SetAssemblyName("mscorlib").AddOrUpdateFiles(unresolvedFile).CreateCompilation();
 		}
 		
 		IType[] GetAllBaseTypes(Type type)

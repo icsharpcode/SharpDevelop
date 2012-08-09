@@ -494,13 +494,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			state.CurrentMember = currentMember;
 			state.CurrentTypeDefinition = currentType;
-			state.CurrentUsingScope = CSharpParsedFile.GetUsingScope (location);
+			state.CurrentUsingScope = CSharpUnresolvedFile.GetUsingScope (location);
 			if (state.CurrentMember != null) {
 				var node = Unit.GetNodeAt (location);
 				if (node == null)
 					return state;
 				var navigator = new NodeListResolveVisitorNavigator (new[] { node });
-				var visitor = new ResolveVisitor (state, CSharpParsedFile, navigator);
+				var visitor = new ResolveVisitor (state, CSharpUnresolvedFile, navigator);
 				Unit.AcceptVisitor (visitor, null);
 				try {
 					var newState = visitor.GetResolverStateBefore (node);

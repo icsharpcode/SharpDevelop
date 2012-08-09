@@ -105,7 +105,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				bool referenceFound = false;
 				var variable = localResolveResult.Variable;
 				var syntaxTree = context.RootNode as SyntaxTree;
-				referenceFinder.FindLocalReferences(localResolveResult.Variable, context.ParsedFile, syntaxTree,
+				referenceFinder.FindLocalReferences(localResolveResult.Variable, context.UnresolvedFile, syntaxTree,
 				                                    context.Compilation, (node, nodeResolveResult) => {
 					if (node.StartLocation > firstSearchNode.StartLocation && node.EndLocation < targetNode.StartLocation)
 						referenceFound = true;

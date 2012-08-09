@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			int referencesFound = 0;
 			var findRef = new FindReferences();
-			findRef.FindLocalReferences(variable, context.ParsedFile, syntaxTree, context.Compilation, (n, entity) => {
+			findRef.FindLocalReferences(variable, context.UnresolvedFile, syntaxTree, context.Compilation, (n, entity) => {
 				referencesFound++;
 			}, CancellationToken.None);
 

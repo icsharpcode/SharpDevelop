@@ -598,7 +598,7 @@ class Test {
 		[Test]
 		public void NamedArgumentInMissingMethod()
 		{
-				string program = @"
+			string program = @"
 class Test {
 	public void Test() {
 		Missing($x: 0$);
@@ -608,6 +608,32 @@ class Test {
 			Assert.IsInstanceOf<ConstantResolveResult>(narr.Argument);
 			Assert.AreEqual("x", narr.ParameterName);
 			Assert.IsNull(narr.Parameter);
+		}
+		
+		[Test]
+		public void GenericMethodInvocationWithConstraintMismatch()
+		{
+			string program = @"
+interface IA
+{
+}
+class Test
+{
+    void F()
+    {
+        string o = null;
+        $M(o)$;
+    }
+
+    void M<T>(T arg) where T : IA
+    {
+    }
+    void M(object arg) {
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.AreEqual(OverloadResolutionErrors.MethodConstraintsNotSatisfied, rr.OverloadResolutionErrors);
+			Assert.IsTrue(rr.IsError);
 		}
 	}
 }

@@ -328,7 +328,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		bool HasDependencyCheck(FindReferences referenceFinder, LocalResolveResult localResolveResult)
 		{
 			bool result = false;
-			referenceFinder.FindLocalReferences(localResolveResult.Variable, context.ParsedFile,
+			referenceFinder.FindLocalReferences(localResolveResult.Variable, context.UnresolvedFile,
 			                                    (SyntaxTree)context.RootNode, context.Compilation,
 			                                    (node, resolveResult) => {
 				result |= VariableHasBeenConverted(localResolveResult.Variable);

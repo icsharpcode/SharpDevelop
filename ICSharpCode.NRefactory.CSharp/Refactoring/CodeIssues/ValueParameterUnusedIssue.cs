@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				bool referenceFound = false;
 				var findRef = new FindReferences();
 				var syntaxTree = (SyntaxTree)context.RootNode;
-				findRef.FindLocalReferences(variable, context.ParsedFile, syntaxTree, context.Compilation, (n, entity) => {
+				findRef.FindLocalReferences(variable, context.UnresolvedFile, syntaxTree, context.Compilation, (n, entity) => {
 					if (n.StartLocation >= node.StartLocation && n.EndLocation <= node.EndLocation) {
 						referenceFound = true;
 					}

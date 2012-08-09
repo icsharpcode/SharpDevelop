@@ -21,23 +21,36 @@ using System;
 namespace ICSharpCode.NRefactory.TypeSystem
 {
 	/// <summary>
-	/// Represents a snapshot of the whole solution (multiple compilations).
+	/// References another project content in the same solution.
+	/// Using the <see cref="ProjectReference"/> class requires that you 
 	/// </summary>
-	public interface ISolutionSnapshot
+	[Serializable]
+	public class ProjectReference : IAssemblyReference
 	{
-		/// <summary>
-		/// Gets the project content with the specified file name.
-		/// Returns null if no such project exists in the solution.
-		/// </summary>
-		/// <remarks>
-		/// This method is used by the <see cref="ProjectReference"/> class.
-		/// </remarks>
-		IProjectContent GetProjectContent(string projectFileName);
+		readonly string projectFileName;
 		
 		/// <summary>
-		/// Gets the compilation for the specified project.
-		/// The project must be a part of the solution (passed to the solution snapshot's constructor).
+		/// Creates a new reference to the specified project (must be part of the same solution).
 		/// </summary>
-		ICompilation GetCompilation(IProjectContent project);
+		/// <param name="projectFileName">Full path to the file name. Must be identical to <see cref="IProjectContent.ProjectFileName"/> of the target project; do not use a relative path.</param>
+		public ProjectReference(string projectFileName)
+		{
+			this.projectFileName = projectFileName;
+		}
+		
+		public IAssembly Resolve(ITypeResolveContext context)
+		{
+			var solution = context.Compilation.SolutionSnapshot;
+			var pc = solution.GetProjectContent(projectFileName);
+			if (pc != null)
+				return pc.Resolve(context);
+			else
+				return null;
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("[ProjectReference {0}]", projectFileName);
+		}
 	}
 }

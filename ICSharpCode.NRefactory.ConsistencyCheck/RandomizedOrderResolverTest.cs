@@ -45,9 +45,9 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			Random rnd = new Random(seed);
 			var test = new RandomizedOrderResolverTest();
 			// Resolve all nodes, but in a random order without using a navigator.
-			test.resolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.ParsedFile);
+			test.resolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.UnresolvedTypeSystemForFile);
 			// For comparing whether the results are equivalent, we also use a normal 'resolve all' resolver:
-			test.resolveAllResolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.ParsedFile);
+			test.resolveAllResolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.UnresolvedTypeSystemForFile);
 			test.resolveAllResolver.ApplyNavigator(new ResolveAllNavigator(), CancellationToken.None);
 			// Prepare list of actions that we need to verify:
 			var actions = new List<Func<bool>>();

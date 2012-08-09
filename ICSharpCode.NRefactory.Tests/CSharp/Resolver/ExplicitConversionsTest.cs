@@ -194,6 +194,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			Assert.AreEqual(C.ExplicitReferenceConversion, ExplicitConversion(typeof(object[]), typeof(string[])));
 			Assert.AreEqual(C.ExplicitReferenceConversion, ExplicitConversion(typeof(dynamic[]), typeof(string[])));
+			Assert.AreEqual(C.None, ExplicitConversion(typeof(object[]), typeof(object[,])));
 			Assert.AreEqual(C.None, ExplicitConversion(typeof(object[]), typeof(int[])));
 			Assert.AreEqual(C.None, ExplicitConversion(typeof(short[]), typeof(int[])));
 			Assert.AreEqual(C.ExplicitReferenceConversion, ExplicitConversion(typeof(Array), typeof(int[])));

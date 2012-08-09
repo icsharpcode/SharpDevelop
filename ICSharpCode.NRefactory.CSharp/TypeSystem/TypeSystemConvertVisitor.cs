@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 	/// </summary>
 	public class TypeSystemConvertVisitor : DepthFirstAstVisitor<IUnresolvedEntity>
 	{
-		readonly CSharpParsedFile parsedFile;
+		readonly CSharpUnresolvedFile unresolvedFile;
 		UsingScope usingScope;
 		CSharpUnresolvedTypeDefinition currentTypeDefinition;
 		DefaultUnresolvedMethod currentMethod;
@@ -64,32 +64,32 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
-			this.parsedFile = new CSharpParsedFile(fileName);
-			this.usingScope = parsedFile.RootUsingScope;
+			this.unresolvedFile = new CSharpUnresolvedFile(fileName);
+			this.usingScope = unresolvedFile.RootUsingScope;
 		}
 		
 		/// <summary>
 		/// Creates a new TypeSystemConvertVisitor and initializes it with a given context.
 		/// </summary>
-		/// <param name="parsedFile">The parsed file to which members should be added.</param>
+		/// <param name="unresolvedFile">The parsed file to which members should be added.</param>
 		/// <param name="currentUsingScope">The current using scope.</param>
 		/// <param name="currentTypeDefinition">The current type definition.</param>
-		public TypeSystemConvertVisitor(CSharpParsedFile parsedFile, UsingScope currentUsingScope = null, CSharpUnresolvedTypeDefinition currentTypeDefinition = null)
+		public TypeSystemConvertVisitor(CSharpUnresolvedFile unresolvedFile, UsingScope currentUsingScope = null, CSharpUnresolvedTypeDefinition currentTypeDefinition = null)
 		{
-			if (parsedFile == null)
-				throw new ArgumentNullException("parsedFile");
-			this.parsedFile = parsedFile;
-			this.usingScope = currentUsingScope ?? parsedFile.RootUsingScope;
+			if (unresolvedFile == null)
+				throw new ArgumentNullException("unresolvedFile");
+			this.unresolvedFile = unresolvedFile;
+			this.usingScope = currentUsingScope ?? unresolvedFile.RootUsingScope;
 			this.currentTypeDefinition = currentTypeDefinition;
 		}
 		
-		public CSharpParsedFile ParsedFile {
-			get { return parsedFile; }
+		public CSharpUnresolvedFile UnresolvedFile {
+			get { return unresolvedFile; }
 		}
 		
 		DomRegion MakeRegion(TextLocation start, TextLocation end)
 		{
-			return new DomRegion(parsedFile.FileName, start.Line, start.Column, end.Line, end.Column);
+			return new DomRegion(unresolvedFile.FileName, start.Line, start.Column, end.Line, end.Column);
 		}
 		
 		DomRegion MakeRegion(AstNode node)
@@ -122,7 +122,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		#region Compilation Unit
 		public override IUnresolvedEntity VisitSyntaxTree (SyntaxTree unit)
 		{
-			parsedFile.Errors = unit.Errors;
+			unresolvedFile.Errors = unit.Errors;
 			return base.VisitSyntaxTree (unit);
 		}
 		#endregion
@@ -167,7 +167,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				usingScope.Region = region;
 			}
 			base.VisitNamespaceDeclaration(namespaceDeclaration);
-			parsedFile.UsingScopes.Add(usingScope); // add after visiting children so that nested scopes come first
+			unresolvedFile.UsingScopes.Add(usingScope); // add after visiting children so that nested scopes come first
 			usingScope = previousUsingScope;
 			return null;
 		}
@@ -184,9 +184,9 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				currentTypeDefinition.NestedTypes.Add(newType);
 			} else {
 				newType = new CSharpUnresolvedTypeDefinition(usingScope, name);
-				parsedFile.TopLevelTypeDefinitions.Add(newType);
+				unresolvedFile.TopLevelTypeDefinitions.Add(newType);
 			}
-			newType.ParsedFile = parsedFile;
+			newType.UnresolvedFile = unresolvedFile;
 			newType.HasExtensionMethods = false; // gets set to true when an extension method is added
 			return newType;
 		}
@@ -868,9 +868,9 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		{
 			// non-assembly attributes are handled by their parent entity
 			if (attributeSection.AttributeTarget == "assembly") {
-				ConvertAttributes(parsedFile.AssemblyAttributes, attributeSection);
+				ConvertAttributes(unresolvedFile.AssemblyAttributes, attributeSection);
 			} else if (attributeSection.AttributeTarget == "module") {
-				ConvertAttributes(parsedFile.ModuleAttributes, attributeSection);
+				ConvertAttributes(unresolvedFile.ModuleAttributes, attributeSection);
 			}
 			return null;
 		}
@@ -1197,7 +1197,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			}
 			if (documentation != null) {
 				documentation.Reverse(); // bring documentation in correct order
-				parsedFile.AddDocumentation(entity, string.Join(Environment.NewLine, documentation));
+				unresolvedFile.AddDocumentation(entity, string.Join(Environment.NewLine, documentation));
 			}
 		}
 		

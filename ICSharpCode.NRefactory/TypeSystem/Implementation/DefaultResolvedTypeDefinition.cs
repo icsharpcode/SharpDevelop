@@ -589,7 +589,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual DocumentationComment Documentation {
 			get {
 				foreach (var part in parts) {
-					var unresolvedProvider = part.ParsedFile as IUnresolvedDocumentationProvider;
+					var unresolvedProvider = part.UnresolvedFile as IUnresolvedDocumentationProvider;
 					if (unresolvedProvider != null) {
 						var doc = unresolvedProvider.GetDocumentation(part, this);
 						if (doc != null)

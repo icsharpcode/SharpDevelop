@@ -31,15 +31,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	public class FindReferencesTest
 	{
 		SyntaxTree syntaxTree;
-		CSharpParsedFile parsedFile;
+		CSharpUnresolvedFile unresolvedFile;
 		ICompilation compilation;
 		FindReferences findReferences;
 		
 		void Init(string code)
 		{
 			syntaxTree = SyntaxTree.Parse(code, "test.cs");
-			parsedFile = syntaxTree.ToTypeSystem();
-			compilation = TypeSystemHelper.CreateCompilation(parsedFile);
+			unresolvedFile = syntaxTree.ToTypeSystem();
+			compilation = TypeSystemHelper.CreateCompilation(unresolvedFile);
 			findReferences = new FindReferences();
 		}
 		
@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			var result = new List<AstNode>();
 			var searchScopes = findReferences.GetSearchScopes(entity);
-			findReferences.FindReferencesInFile(searchScopes, parsedFile, syntaxTree, compilation,
+			findReferences.FindReferencesInFile(searchScopes, unresolvedFile, syntaxTree, compilation,
 			                                    (node, rr) => result.Add(node), CancellationToken.None);
 			return result.OrderBy(n => n.StartLocation).ToArray();
 		}
