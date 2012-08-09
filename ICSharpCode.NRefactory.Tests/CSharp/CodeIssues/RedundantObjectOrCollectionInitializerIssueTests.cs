@@ -53,5 +53,43 @@ class TestClass
 }";
 			Test<RedundantObjectOrCollectionInitializerIssue> (input, 1, output);
 		}
+
+		[Test]
+		public void TestNoArgumentList ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		var x = new TestClass { };
+	}
+}";
+			var output = @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		var x = new TestClass ();
+	}
+}";
+			Test<RedundantObjectOrCollectionInitializerIssue> (input, 1, output);
+		}
+
+		[Test]
+		public void TestNoIssue ()
+		{
+			var input = @"
+class TestClass
+{
+	public int Prop { get; set; }
+	void TestMethod ()
+	{
+		var x = new TestClass ();
+		var y = new TestClass () { Prop = 1 };
+	}
+}";
+			Test<RedundantObjectOrCollectionInitializerIssue> (input, 0);
+		}
 	}
 }
