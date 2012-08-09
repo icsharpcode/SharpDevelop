@@ -305,6 +305,8 @@
     <Compile Include="Refactoring\CodeIssues\RedundantCaseLabelIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantElseIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantFieldInitializerIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\RedundantObjectCreationArgumentListIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\RedundantObjectOrCollectionInitializerIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantTypeCastIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ReferenceEqualsCalledWithValueTypeIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\UnreachableCodeIssue.cs" />
