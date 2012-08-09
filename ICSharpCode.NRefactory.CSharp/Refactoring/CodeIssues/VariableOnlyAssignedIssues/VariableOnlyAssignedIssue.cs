@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			var assignment = false;
 			var nonAssignment = false;
-			refFinder.FindLocalReferences (variable, ctx.ParsedFile, unit, ctx.Compilation,
+			refFinder.FindLocalReferences (variable, ctx.UnresolvedFile, unit, ctx.Compilation,
 				(node, resolveResult) =>
 				{
 					if (node is ParameterDeclaration)

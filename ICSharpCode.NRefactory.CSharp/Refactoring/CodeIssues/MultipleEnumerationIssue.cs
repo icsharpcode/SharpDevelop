@@ -206,7 +206,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				refStatements = new HashSet<Statement> ();
 				lambdaExpressions = new HashSet<LambdaExpression> ();
 
-				refFinder.FindLocalReferences (variable, ctx.ParsedFile, unit, ctx.Compilation,
+				refFinder.FindLocalReferences (variable, ctx.UnresolvedFile, unit, ctx.Compilation,
 					(astNode, resolveResult) => {
 						if (astNode == variableDecl)
 							return;

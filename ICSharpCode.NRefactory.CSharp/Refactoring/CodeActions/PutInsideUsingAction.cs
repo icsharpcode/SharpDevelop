@@ -135,7 +135,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		static AstNode GetLastReference (IVariable variable, RefactoringContext context, SyntaxTree unit)
 		{
 			AstNode lastReference = null;
-			refFinder.FindLocalReferences (variable, context.ParsedFile, unit, context.Compilation,
+			refFinder.FindLocalReferences (variable, context.UnresolvedFile, unit, context.Compilation,
 				(v, r) =>
 				{
 					if (lastReference == null || v.EndLocation > lastReference.EndLocation)

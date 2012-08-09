@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 										 ITypeParameter typaParameter, AstNode declaration)
 		{
 			var found = false;
-			refFinder.FindTypeParameterReferences (typaParameter, context.ParsedFile, unit, context.Compilation,
+			refFinder.FindTypeParameterReferences (typaParameter, context.UnresolvedFile, unit, context.Compilation,
 				(node, resolveResult) =>
 				{
 					found = found || node != declaration;

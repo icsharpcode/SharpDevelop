@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 										 AstNode declaration)
 		{
 			var found = false;
-			refFinder.FindLocalReferences (variable, context.ParsedFile, unit, context.Compilation,
+			refFinder.FindLocalReferences (variable, context.UnresolvedFile, unit, context.Compilation,
 				(node, resolveResult) =>
 				{
 					found = found || node != declaration;

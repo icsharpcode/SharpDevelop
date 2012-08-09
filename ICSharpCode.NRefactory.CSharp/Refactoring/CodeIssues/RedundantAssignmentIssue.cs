@@ -92,7 +92,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var references = new HashSet<AstNode> ();
 				var refStatements = new HashSet<Statement> ();
 				var usedInLambda = false;
-				refFinder.FindLocalReferences (resolveResult.Variable, ctx.ParsedFile, unit, ctx.Compilation,
+				refFinder.FindLocalReferences (resolveResult.Variable, ctx.UnresolvedFile, unit, ctx.Compilation,
 					(astNode, rr) => {
 						if (usedInLambda || astNode == variableDecl)
 							return;

@@ -112,7 +112,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 
 				var modified = false;
-				refFinder.FindLocalReferences (localResolveResult.Variable, ctx.ParsedFile, unit, ctx.Compilation,
+				refFinder.FindLocalReferences (localResolveResult.Variable, ctx.UnresolvedFile, unit, ctx.Compilation,
 					(node, resolveResult) =>
 					{
 						if (modified)

@@ -127,7 +127,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			void FindLocalReferences (IVariable variable, FoundReferenceCallback callback)
 			{
-				refFinder.FindLocalReferences (variable, ctx.ParsedFile, unit, ctx.Compilation, callback, 
+				refFinder.FindLocalReferences (variable, ctx.UnresolvedFile, unit, ctx.Compilation, callback, 
 											   ctx.CancellationToken);
 			}
 
