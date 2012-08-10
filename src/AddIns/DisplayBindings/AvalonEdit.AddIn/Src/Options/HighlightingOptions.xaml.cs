@@ -843,5 +843,12 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				writer.WriteEndElement();
 			}
 		}
+		
+		void ResetAllButtonClick(object sender, RoutedEventArgs e)
+		{
+			customizationList.Clear();
+			LanguageComboBox_SelectionChanged(null, null);
+			UpdatePreview();
+		}
 	}
 }
