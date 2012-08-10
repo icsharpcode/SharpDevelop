@@ -299,6 +299,7 @@
     <Compile Include="CSharp\CodeIssues\ExceptionRethrowTests.cs" />
     <Compile Include="CSharp\CodeIssues\ThreadStaticOnInstanceFieldTests.cs" />
     <Compile Include="CSharp\CodeIssues\StaticFieldInGenericTypeTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertAnonymousDelegateToLambdaTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
@@ -331,7 +332,6 @@
     <Folder Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\" />
     <Folder Include="Utils\CompositeFormatStringParser\" />
     <Folder Include="CSharp\CodeIssues\FormatStringIssues\" />
-    <Folder Include="Editor" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
