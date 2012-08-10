@@ -20,7 +20,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// </remarks>
 	public class HighlightingManager : IHighlightingDefinitionReferenceResolver
 	{
-		sealed class DelayLoadedHighlightingDefinition : IHighlightingDefinition2
+		sealed class DelayLoadedHighlightingDefinition : IHighlightingDefinition
 		{
 			readonly object lockObj = new object();
 			readonly string name;
@@ -107,10 +107,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			
 			public IDictionary<string, string> Properties {
 				get {
-					var def = GetDefinition() as IHighlightingDefinition2;
-					if (def != null)
-						return def.Properties;
-					return null;
+					return GetDefinition().Properties;
 				}
 			}
 		}

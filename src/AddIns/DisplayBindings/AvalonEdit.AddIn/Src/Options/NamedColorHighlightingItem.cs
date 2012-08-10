@@ -134,10 +134,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		
 		IEnumerable<StringTagPair> GetXshdProperties()
 		{
-			IHighlightingDefinition2 def = ParentDefinition as IHighlightingDefinition2;
-			if (def == null)
-				yield break;
-			foreach (var p in def.Properties)
+			foreach (var p in ParentDefinition.Properties)
 				yield return new StringTagPair(p.Key, p.Value);
 		}
 		
