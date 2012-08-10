@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop
 						else
 							Core.MessageService.ShowException(t.Exception);
 					}
-				});
+				}, TaskContinuationOptions.OnlyOnFaulted);
 		}
 		
 		/// <summary>

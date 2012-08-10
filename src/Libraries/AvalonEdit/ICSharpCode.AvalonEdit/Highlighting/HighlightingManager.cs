@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Xml;
 
-using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {
