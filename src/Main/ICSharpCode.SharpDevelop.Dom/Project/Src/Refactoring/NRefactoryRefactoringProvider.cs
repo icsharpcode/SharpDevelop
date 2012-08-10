@@ -396,7 +396,9 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 								goto checkNextImport;
 						}
 					}
-					unusedUsings.Add(import); // this using is unused
+					// always keep System and System.Linq around
+					if (!(import.Usings.Contains("System") || import.Usings.Contains("System.Linq")))
+						unusedUsings.Add(import); // this using is unused
 				}
 				checkNextImport:;
 			}
