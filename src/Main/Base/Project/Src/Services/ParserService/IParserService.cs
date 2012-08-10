@@ -242,8 +242,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 		bool HasParser(FileName fileName);
 		
 		/// <summary>
-		/// Clears the cached parse information.
+		/// Clears the cached parse information for the specified file.
 		/// If the file does not belong to any project, this also clears the cached type system.
+		/// If the file belongs to a project, the cached type system is kept (so that the classes don't go missing from the project),
+		/// but the next ParseFile() call will cause it to be reparsed even if it is unchanged.
 		/// </summary>
 		void ClearParseInformation(FileName fileName);
 		

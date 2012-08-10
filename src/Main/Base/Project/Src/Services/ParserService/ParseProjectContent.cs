@@ -358,6 +358,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 					CancellationToken = progressMonitor.CancellationToken
 				},
 				fileName => {
+					// Clear cached parse information so that the file is forced to be reparsed even if it is unchanged
+					parserService.ClearParseInformation(fileName);
+					
 					ITextSource content = finder.Create(fileName);
 					if (content != null) {
 						parserService.ParseFile(fileName, content, project);

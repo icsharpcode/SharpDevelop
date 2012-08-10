@@ -119,6 +119,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 						entries[i] = new ProjectEntry(oldEntry.Project, oldEntry.UnresolvedFile, null);
 					}
 				}
+				// force re-parse on next ParseFile() call even if unchanged
+				this.currentVersion = null;
 			}
 		}
 		
