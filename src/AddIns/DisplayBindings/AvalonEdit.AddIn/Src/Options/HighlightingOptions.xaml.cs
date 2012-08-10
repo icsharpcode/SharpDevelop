@@ -593,6 +593,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				return;
 			}
 			bool? replaceCustomizations = null;
+			XElement plainTextItem = items.FirstOrDefault(element => element.Attribute("Name") != null && element.Attribute("Name").Value == "Plain Text");
+			Color defaultForeground = Colors.Black;
+			Color defaultBackground = Colors.White;
+			if (plainTextItem != null) {
+				var entry = ParseEntry(plainTextItem);
+				defaultForeground = entry.Item1 ?? Colors.Black;
+				defaultBackground = entry.Item2 ?? Colors.White;
+			}
 			foreach (var item in items) {
 				string key = item.Attribute("Name").Value;
 				var entry = ParseEntry(item);
@@ -602,16 +610,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 						if (color.IsCustomized) {
 							if (!replaceCustomizations.HasValue) {
 								replaceCustomizations =
-									MessageService.AskQuestion("There are already one or more existing customizations. " +
-									                           "Do you want to replace them with the imported values? " +
-									                           "Colors that are not yet customized will be imported anyway.");
+									MessageService.AskQuestion("${res:Dialog.HighlightingEditor.OverwriteCustomizationsMessage}");
 							}
 							if (replaceCustomizations == false)
 								continue;
 						}
 						color.Bold = entry.Item3;
-						color.Foreground = entry.Item1;
-						color.Background = entry.Item2;
+						color.Foreground = entry.Item1 ?? defaultForeground;
+						color.Background = entry.Item2 ?? defaultBackground;
 					}
 				}
 			}
@@ -672,7 +678,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{ "HTML Operator", "" },
 			{ "HTML Server-Side Script", "" },
 			{ "HTML Tag Delimiter", "" },
-			{ "Identifier", "" },
+			{ "Identifier", "C#.MethodCall" },
 			{ "Inactive Selected Text", "" },
 			{ "Indicator Margin", "" },
 			{ "Keyword", "C#.ThisOrBaseReference" },
@@ -691,6 +697,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{ "Keyword", "C#.GetSetAddRemove" },
 			{ "Keyword", "C#.TrueFalse" },
 			{ "Keyword", "C#.TypeKeywords" },
+			{ "Keyword", "C#.ValueTypes" },
+			{ "Keyword", "C#.ReferenceTypes" },
 			{ "Keyword", "VBNET.DateLiteral" },
 			{ "Keyword", "VBNET.Preprocessor" },
 			{ "Keyword", "VBNET.DataTypes" },
@@ -752,14 +760,16 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{ "XML Doc Tag", "C#.KnownDocTags" },
 			{ "XML Doc Comment", "VBNET.DocComment" },
 			{ "XML Doc Tag", "VBNET.KnownDocTags" },
-			{ "XML Name", "" },
-			{ "XML Text", "" },
+			{ "XML Name", "XML.XmlTag" },
+			{ "XML Name", "XML.XmlDeclaration" },
+			{ "XML Name", "XML.DocType" },
+			{ "XML Text", "XML." + CustomizableHighlightingColorizer.DefaultTextAndBackground },
 		};
 		
-		Tuple<Color, Color, bool> ParseEntry(XElement element)
+		Tuple<Color?, Color?, bool> ParseEntry(XElement element)
 		{
-			Color fore = Colors.Transparent;
-			Color back = Colors.Transparent;
+			Color? fore = null;
+			Color? back = null;
 			bool isBold = false;
 			
 			var attribute = element.Attribute("Foreground");
@@ -775,14 +785,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			return Tuple.Create(fore, back, isBold);
 		}
 		
-		Color ParseColor(string s)
+		Color? ParseColor(string s)
 		{
 			if (string.IsNullOrWhiteSpace(s))
-				return Colors.Transparent;
+				return null;
 			if (s.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
 				s = s.Substring(2);
 			if (s.Substring(0, 2) == "02")
-				return Colors.Transparent;
+				return null;
 			try {
 				byte b = byte.Parse(s.Substring(2, 2), NumberStyles.HexNumber);
 				byte g = byte.Parse(s.Substring(4, 2), NumberStyles.HexNumber);
