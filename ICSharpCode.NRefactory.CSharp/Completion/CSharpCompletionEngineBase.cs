@@ -682,6 +682,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				wrapper.Append(new string('}', closingBrackets));
 			}
 			var parser = new CSharpParser ();
+			foreach (var sym in CompletionContextProvider.ConditionalSymbols)
+				parser.CompilerSettings.ConditionalSymbols.Add (sym);
 			parser.InitialLocation = new TextLocation(memberLocation.Line - generatedLines, 1);
 			var result = parser.Parse(wrapper.ToString ());
 			return result;
