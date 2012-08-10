@@ -5,18 +5,30 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Shapes;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+
+//using System.Windows.Forms;
+
+
+
+
+
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
 	/// <summary>
 	/// Base class for project option panels with configuration picker.
 	/// </summary>
-	public class ProjectOptionPanel : UserControl, IOptionPanel, ICanBeDirty
+	public class ProjectOptionPanel : UserControl, IOptionPanel, ICanBeDirty,INotifyPropertyChanged
 	{
+		
 		static ProjectOptionPanel()
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(ProjectOptionPanel), new FrameworkPropertyMetadata(typeof(ProjectOptionPanel)));
@@ -33,7 +45,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		string activeConfiguration;
 		string activePlatform;
 		bool resettingIndex;
+		bool isLoaded;
 		
+		StackPanel configStackPanel;
+		Line headerline;
+		
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+
 		protected virtual void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			foreach (IProjectProperty p in projectProperties.Values)
@@ -49,12 +67,24 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			return true;
 		}
 		
+		
+		public void HideHeader ()
+		{
+			configStackPanel.Visibility = Visibility.Hidden;
+			headerline.Visibility = Visibility.Hidden;
+		}
+		
+		
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
 			configurationComboBox = Template.FindName("PART_configuration", this) as ComboBox;
 			platformComboBox = Template.FindName("PART_platform", this) as ComboBox;
+
+			headerline = Template.FindName("PART_headerline", this) as Line;
+			configStackPanel = Template.FindName("PART_stackpanel", this) as StackPanel;
 		}
+		
 		
 		object owner;
 		
@@ -128,6 +158,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			else
 				activePlatform = project.ActivePlatform;
 			
+			isLoaded = true;
 			Load(project, activeConfiguration, activePlatform);
 		}
 		
@@ -149,11 +180,14 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
-		public string BaseDirectory
-		{
-			get {return project.Directory;}
+		public MSBuildBasedProject Project {
+			get { return project; }
 		}
-			
+		
+		public string BaseDirectory {
+			get { return project.Directory; }
+		}
+		
 		public event EventHandler IsDirtyChanged;
 		
 		#region Manage MSBuild properties
@@ -170,6 +204,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			bool treatAsLiteral = (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty);
 			ProjectProperty<string> newProperty = new ProjectProperty<string>(this, propertyName, defaultValue, defaultLocation, treatAsLiteral);
 			projectProperties.Add(propertyName, newProperty);
+			if (isLoaded)
+				newProperty.Load(project, activeConfiguration, activePlatform);
 			return newProperty;
 		}
 		
@@ -182,6 +218,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			ProjectProperty<T> newProperty = new ProjectProperty<T>(this, propertyName, defaultValue, defaultLocation, true);
 			projectProperties.Add(propertyName, newProperty);
+			if (isLoaded)
+				newProperty.Load(project, activeConfiguration, activePlatform);
 			return newProperty;
 		}
 		
@@ -200,6 +238,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			readonly bool treatPropertyValueAsLiteral;
 			T val;
 			PropertyStorageLocations location;
+			bool isLoading;
 			
 			public ProjectProperty(ProjectOptionPanel parentPanel, string propertyName, T defaultValue, PropertyStorageLocations defaultLocation, bool treatPropertyValueAsLiteral)
 			{
@@ -225,7 +264,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 						if (PropertyChanged != null)
 							PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs("Value"));
 						
-						parentPanel.IsDirty = true;
+						if (!isLoading)
+							parentPanel.IsDirty = true;
 					}
 				}
 			}
@@ -238,7 +278,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 						if (PropertyChanged != null)
 							PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs("Location"));
 						
-						parentPanel.IsDirty = true;
+						if (!isLoading)
+							parentPanel.IsDirty = true;
 					}
 				}
 			}
@@ -257,8 +298,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				if (newLocation == PropertyStorageLocations.Unknown)
 					newLocation = defaultLocation;
 				
-				this.Value = GenericConverter.FromString(v, defaultValue);
-				this.Location = newLocation;
+				isLoading = true;
+				try {
+					this.Value = GenericConverter.FromString(v, defaultValue);
+					this.Location = newLocation;
+				} finally {
+					isLoading = false;
+				}
 			}
 			
 			public void Save(MSBuildBasedProject project, string configuration, string platform)
@@ -268,5 +314,61 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		#endregion
+		
+		#region INotifyPropertyChanged implementation
+		
+		protected void RaisePropertyChanged(string propertyName)
+		{
+			RaiseInternal(propertyName);
+		}
+		
+		
+		protected void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpresssion)
+		{
+			var propertyName = ExtractPropertyName(propertyExpresssion);
+			RaiseInternal(propertyName);
+		}
+		
+		
+		private void RaiseInternal (string propertyName)
+		{
+			var handler = this.PropertyChanged;
+			if (handler != null)
+			{
+				handler(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private static String ExtractPropertyName<T>(Expression<Func<T>> propertyExpresssion)
+		{
+			if (propertyExpresssion == null)
+			{
+				throw new ArgumentNullException("propertyExpresssion");
+			}
+
+			var memberExpression = propertyExpresssion.Body as MemberExpression;
+			if (memberExpression == null)
+			{
+				throw new ArgumentException("The expression is not a member access expression.", "propertyExpresssion");
+			}
+
+			var property = memberExpression.Member as PropertyInfo;
+			if (property == null)
+			{
+				throw new ArgumentException("The member access expression does not access a property.", "propertyExpresssion");
+			}
+
+			var getMethod = property.GetGetMethod(true);
+			if (getMethod.IsStatic)
+			{
+				throw new ArgumentException("The referenced property is a static property.", "propertyExpresssion");
+			}
+
+			return memberExpression.Member.Name;
+		}
+		
+		#endregion
+		
+
 	}
 }

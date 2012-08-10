@@ -7,7 +7,7 @@ using System.Xml;
 
 using ICSharpCode.Core;
 
-namespace MattEverson.SourceAnalysis
+namespace ICSharpCode.SourceAnalysis
 {
 	public static class StyleCopWrapper
 	{		
@@ -33,7 +33,7 @@ namespace MattEverson.SourceAnalysis
 		
 		public static string GetMasterSettingsFile()
 		{
-		    var resource = typeof(StyleCopWrapper).Assembly.GetManifestResourceStream("MattEverson.SourceAnalysis.Resources.Settings.SourceAnalysis");
+		    var resource = typeof(StyleCopWrapper).Assembly.GetManifestResourceStream("ICSharpCode.SourceAnalysis.Resources.Settings.SourceAnalysis");
 		    if(!File.Exists(MasterSettingsFileName))
 		    {
 		        var xmlDoc = new XmlDocument();

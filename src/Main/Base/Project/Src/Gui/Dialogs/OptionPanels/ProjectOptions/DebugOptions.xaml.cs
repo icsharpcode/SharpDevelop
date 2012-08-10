@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// <summary>
 	/// Interaction logic for DebugOptions.xaml
 	/// </summary>
-	public partial class DebugOptions :  ProjectOptionPanel,INotifyPropertyChanged
+	public partial class DebugOptions :  ProjectOptionPanel
 	{
 		
 		public DebugOptions()
@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			get
 			{
-				return GetProperty<StartAction>("StartAction", Project.StartAction.Project, PropertyStorageLocations.ConfigurationSpecific);
+				return GetProperty<StartAction>("StartAction", SharpDevelop.Project.StartAction.Project, PropertyStorageLocations.ConfigurationSpecific);
 			}
 		}
 		
@@ -156,15 +156,5 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				}
 			return startLocation;
 		}
-		
-		private void OnPropertyChanged (string propertyName)
-		{
-			if (PropertyChanged != null) {
-				PropertyChanged (this,new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-			}
-		}
-		
-		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 	}
-	
 }

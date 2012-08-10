@@ -1210,7 +1210,7 @@
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectCulturePanel"/>
 			<OptionPanel id    = "SelectStyle"
 			             label = "${res:Dialog.Options.IDEOptions.SelectVisualStyle.PanelName}"
-			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectStylePanel"/>
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectStylePanel"/>		
 			<OptionPanel id    = "LoadSave"
 			             label = "${res:Dialog.Options.IDEOptions.LoadSaveOptions.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.LoadSaveOptions"/>
@@ -1227,11 +1227,14 @@
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ProjectAndSolutionOptions"/>
 		
 		</OptionPanel>
+		
 		<OptionPanel id    = "CodingOptions"
 		             label = "${res:Dialog.Options.IDEOptions.CodingOptionsText}">
+			
 			<OptionPanel id    = "CodeGeneration"
 			             label = "${res:Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.Title}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.CodeGenerationPanel"/>
+			
 			<OptionPanel id    = "EditStandardHeaderPanel"
 			             label = "${res:Dialog.Options.IDEOptions.EditStandardHeaderPanel.Title}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.EditStandardHeaderPanel"/>

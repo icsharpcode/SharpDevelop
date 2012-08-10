@@ -3,10 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.ComponentModel;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 
 using ICSharpCode.Core.Presentation;
 
@@ -15,8 +16,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// Simple implementation of IOptionPanel with support for OptionBinding markup extensions.
 	/// </summary>
-	public class OptionPanel : UserControl, IOptionPanel, IOptionBindingContainer
+	public class OptionPanel : UserControl, IOptionPanel, IOptionBindingContainer,INotifyPropertyChanged
 	{
+		
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+			
 		static OptionPanel()
 		{
 			MarginProperty.OverrideMetadata(typeof(OptionPanel),
@@ -62,5 +66,60 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			return true;
 		}
+		
+		
+		#region INotifyPropertyChanged implementation
+		
+		protected void RaisePropertyChanged(string propertyName)
+		{
+			RaiseInternal(propertyName);
+		}
+		
+		
+		protected void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpresssion)
+		{
+			var propertyName = ExtractPropertyName(propertyExpresssion);
+			RaiseInternal(propertyName);
+		}
+		
+		
+		private void RaiseInternal (string propertyName)
+		{
+			var handler = this.PropertyChanged;
+			if (handler != null)
+			{
+				handler(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private static String ExtractPropertyName<T>(Expression<Func<T>> propertyExpresssion)
+		{
+			if (propertyExpresssion == null)
+			{
+				throw new ArgumentNullException("propertyExpresssion");
+			}
+
+			var memberExpression = propertyExpresssion.Body as MemberExpression;
+			if (memberExpression == null)
+			{
+				throw new ArgumentException("The expression is not a member access expression.", "propertyExpresssion");
+			}
+
+			var property = memberExpression.Member as PropertyInfo;
+			if (property == null)
+			{
+				throw new ArgumentException("The member access expression does not access a property.", "propertyExpresssion");
+			}
+
+			var getMethod = property.GetGetMethod(true);
+			if (getMethod.IsStatic)
+			{
+				throw new ArgumentException("The referenced property is a static property.", "propertyExpresssion");
+			}
+
+			return memberExpression.Member.Name;
+		}
+		
+		#endregion
 	}
 }

@@ -5,7 +5,7 @@
        addInManagerHidden = "preinstalled">
 	
 	<Manifest>
-		<Identity name = "MattEverson.SourceAnalysis"/>
+		<Identity name = "ICSharpCode.SourceAnalysis"/>
 		<Dependency addin = "SharpDevelop"/>
 	</Manifest>
 	
@@ -14,19 +14,19 @@
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalTargetFiles">
-		<String id="SourceAnalysis" text = "${AddInPath:MattEverson.SourceAnalysis}/SharpDevelop.SourceAnalysis.targets"/>
+		<String id="SourceAnalysis" text = "${AddInPath:ICSharpCode.SourceAnalysis}/SharpDevelop.SourceAnalysis.targets"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
 		<OptionPanel id          = "SourceAnalysis"
 		             label       = "${res:AddIns.SourceAnalysis.Title}"
-		             class       = "MattEverson.SourceAnalysis.AnalysisProjectOptionsPanel"/>
+		             class       = "ICSharpCode.SourceAnalysis.AnalysisProjectOptionsPanel"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions">
 		<MenuItem id    = "CheckWithStyleCop"
 		          label = "${res:AddIns.SourceAnalysis.CheckWithStyleCop}"
-		          class = "MattEverson.SourceAnalysis.CheckCurrentProjectCommand"/>
+		          class = "ICSharpCode.SourceAnalysis.CheckCurrentProjectCommand"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/MainMenu/Analysis">
@@ -36,7 +36,7 @@
 			</And>
 			<MenuItem id    = "CheckWithStyleCop"
 			          label = "${res:AddIns.SourceAnalysis.CheckProjectWithStyleCop}"
-			          class = "MattEverson.SourceAnalysis.CheckCurrentProjectCommand"/>
+			          class = "ICSharpCode.SourceAnalysis.CheckCurrentProjectCommand"/>
 		</ComplexCondition>
 	</Path>
 	
@@ -44,6 +44,7 @@
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<OptionPanel id    = "SourceAnalysisOptionPanel"
 		             label = "${res:AddIns.SourceAnalysis.Title}"
-		             class = "MattEverson.SourceAnalysis.AnalysisIdeOptionsPanel"/>
+		             class = "ICSharpCode.SourceAnalysis.AnalysisIdeOptionsPanel"/>
+	
 	</Path>
 </AddIn>

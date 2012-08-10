@@ -201,6 +201,11 @@
     </Compile>
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\StringParserPropertyContainer.cs" />
     <Compile Include="Src\Gui\Components\SideBar\TextEditorSideBar.cs" />
+    <Compile Include="Src\Gui\Components\StringListEditorDialog.xaml.cs" />
+    <Compile Include="Src\Gui\Components\StringListEditorXaml.xaml.cs">
+      <DependentUpon>StringListEditorXaml.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\CustomFocusManager.cs" />
     <Compile Include="Src\Gui\Dialogs\AddOpenWithEntryDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\AddOpenWithEntryDialog.Designer.cs">
@@ -237,6 +242,14 @@
     <Compile Include="Src\Gui\Dialogs\OpenWithDialog.Designer.cs">
       <DependentUpon>OpenWithDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\CodeGenerationPanel.xaml.cs">
+      <DependentUpon>CodeGenerationPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\EditStandardHeaderPanel.xaml.cs">
+      <DependentUpon>EditStandardHeaderPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\LoadSaveOptions.xaml.cs">
       <DependentUpon>LoadSaveOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -249,17 +262,36 @@
       <DependentUpon>SelectCulturePanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectStylePanel.xaml.cs">
+      <DependentUpon>SelectStylePanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml.cs">
       <DependentUpon>TaskListOptionsl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.xaml.cs">
+      <DependentUpon>ApplicationSettings.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml.cs">
       <DependentUpon>DebugOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\KeyValuePair.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\OptionsHelper.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ReferencePaths.xaml.cs">
+      <DependentUpon>ReferencePaths.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Signing.xaml.cs">
+      <DependentUpon>Signing.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\StorageLocationConverter.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\StorageLocationPicker.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\StringToBoolConverter.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReferenceHelper.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ActiveTextEditors.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AddServiceReferenceDialog.xaml.cs">
@@ -542,12 +574,6 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ExternalToolPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\CodeGenerationPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectStylePanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AssemblyReferencePanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -596,9 +622,6 @@
     <Compile Include="Src\Internal\Templates\File\ScriptRunner.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\CustomTypeConverter\BooleanTypeConverter.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\CustomTypeConverter\TemplateTypeConverter.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\EditStandardHeaderPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Internal\Templates\StandardHeaders.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\LocalizedProperty.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\IsProcessRunningEvaluator.cs" />
@@ -714,16 +737,13 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\Util\SolutionFolderRemoveVisitor.cs" />
     <Compile Include="Src\Gui\Components\ExtTreeView\ExtTreeViewComparer.cs" />
     <Compile Include="Src\Project\WebReferenceUrl.cs" />
-    <EmbeddedResource Include="Resources\CodeGenerationOptionsPanel.xfrm" />
     <EmbeddedResource Include="Resources\CommonAboutDialog.xfrm" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Resources\EditStandardHeaderPanel.xfrm" />
     <EmbeddedResource Include="Resources\ExternalToolOptions.xfrm" />
     <EmbeddedResource Include="Resources\FontSelectionPanel.xfrm" />
     <EmbeddedResource Include="Resources\NewFileWithNameDialog.xfrm" />
     <EmbeddedResource Include="Resources\NewFileDialog.xfrm" />
     <EmbeddedResource Include="Resources\OutputWindowOptionsPanel.xfrm" />
-    <EmbeddedResource Include="Resources\SelectStylePanel.xfrm" />
     <EmbeddedResource Include="Resources\WordCountDialog.xfrm" />
     <Compile Include="Src\Bookmarks\BookmarkBase.cs" />
     <Compile Include="Src\Bookmarks\Commands\MenuCommands.cs" />
@@ -739,24 +759,8 @@
     <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />
     <Compile Include="Src\Project\MSBuildEnums.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <EmbeddedResource Include="Resources\ProjectOptions\ApplicationSettings.xfrm" />
     <Compile Include="Src\Gui\Pads\PropertyPad\IDEContainer.cs" />
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyContainer.cs" />
-    <EmbeddedResource Include="Resources\ProjectOptions\Publish.xfrm" />
-    <EmbeddedResource Include="Resources\ProjectOptions\Signing.xfrm" />
-    <EmbeddedResource Include="Resources\ProjectOptions\DebugOptions.xfrm" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Signing.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ReferencePaths.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Publish.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.cs">
       <SubType>UserControl</SubType>
       <DependentUpon>BuildEvents.xaml</DependentUpon>
@@ -783,10 +787,6 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AbstractXmlFormsProjectOptionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\CreateKey.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <EmbeddedResource Include="Resources\ProjectOptions\CreateKey.xfrm" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AbstractBuildOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -902,12 +902,20 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\Bookmarks\Pad\Controls\ListViewPad.xaml" />
+    <Page Include="Src\Gui\Components\StringListEditorDialog.xaml" />
+    <Page Include="Src\Gui\Components\StringListEditorXaml.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\CodeGenerationPanel.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\EditStandardHeaderPanel.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectStylePanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.xaml">
       <DependentUpon>ProjectOptionPanel.cs</DependentUpon>
     </Page>
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ReferencePaths.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Signing.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AddServiceReferenceDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AdvancedServiceDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceOptionsPanel..xaml" />
