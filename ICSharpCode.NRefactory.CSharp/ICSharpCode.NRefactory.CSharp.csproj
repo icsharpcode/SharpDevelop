@@ -430,6 +430,7 @@
     <Compile Include="Refactoring\CodeIssues\StaticFieldInGenericTypeIssue.cs" />
     <Compile Include="Parser\SeekableStreamReader.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertAnonymousDelegateToLambdaAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ConvertLambdaToAnonymousDelegateAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

@@ -300,6 +300,7 @@
     <Compile Include="CSharp\CodeIssues\ThreadStaticOnInstanceFieldTests.cs" />
     <Compile Include="CSharp\CodeIssues\StaticFieldInGenericTypeTests.cs" />
     <Compile Include="CSharp\CodeActions\ConvertAnonymousDelegateToLambdaTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertLamdaToAnonymousDelegateTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
