@@ -34,7 +34,7 @@
 //		
 //		protected override IClass GetClass(Type type)
 //		{
-//			ICompilationUnit cu = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], AssemblyParserService.DefaultProjectContentRegistry).AssemblyCompilationUnit;
+//			ISyntaxTree cu = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], AssemblyParserService.DefaultProjectContentRegistry).AssemblySyntaxTree;
 //			((ReflectionProjectContent)cu.ProjectContent).AddReferencedContent(mscorlib);
 //			IClass c = new ReflectionClass(cu, type, type.FullName, null);
 //			cu.ProjectContent.AddClassToNamespaceList(c);
@@ -64,7 +64,7 @@
 //		
 //		protected override IClass GetClass(Type type)
 //		{
-//			ICompilationUnit cu = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], AssemblyParserService.DefaultProjectContentRegistry).AssemblyCompilationUnit;
+//			ISyntaxTree cu = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], AssemblyParserService.DefaultProjectContentRegistry).AssemblySyntaxTree;
 //			IClass c = new ReflectionClass(cu, type, type.FullName, null);
 //			cu.ProjectContent.AddClassToNamespaceList(c);
 //			

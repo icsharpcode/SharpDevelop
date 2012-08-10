@@ -117,7 +117,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// This causes the classes combo box to lose its current selection,
 		/// so the members combo box will be cleared.
 		/// </summary>
-		public void Update(IParsedFile compilationUnit)
+		public void Update(IUnresolvedFile compilationUnit)
 		{
 			runUpdateWhenDropDownClosed = true;
 			runUpdateWhenDropDownClosedCU = compilationUnit;
@@ -130,7 +130,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		List<EntityItem> classItems = new List<EntityItem>();
 		List<EntityItem> memberItems = new List<EntityItem>();
 		
-		void DoUpdate(IParsedFile compilationUnit)
+		void DoUpdate(IUnresolvedFile compilationUnit)
 		{
 			classItems = new List<EntityItem>();
 			if (compilationUnit != null) {
@@ -146,7 +146,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		// Delayed execution - avoid changing combo boxes while the user is browsing the dropdown list.
 		bool runUpdateWhenDropDownClosed;
-		IParsedFile runUpdateWhenDropDownClosedCU;
+		IUnresolvedFile runUpdateWhenDropDownClosedCU;
 		bool runSelectItemWhenDropDownClosed;
 		TextLocation runSelectItemWhenDropDownClosedLocation;
 		
@@ -242,7 +242,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			IUnresolvedTypeDefinition selectedClass = item != null ? item.Entity as IUnresolvedTypeDefinition : null;
 			memberItems = new List<EntityItem>();
 			if (selectedClass != null) {
-				ICompilation compilation = SD.ParserService.GetCompilationForFile(FileName.Create(selectedClass.ParsedFile.FileName));
+				ICompilation compilation = SD.ParserService.GetCompilationForFile(FileName.Create(selectedClass.UnresolvedFile.FileName));
 				var context = new SimpleTypeResolveContext(compilation.MainAssembly);
 				ITypeDefinition compoundClass = selectedClass.Resolve(context).GetDefinition();
 				if (compoundClass != null) {
@@ -250,7 +250,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					foreach (var member in compoundClass.Members) {
 						if (member.IsSynthetic)
 							continue;
-						bool isInSamePart = string.Equals(member.UnresolvedMember.ParsedFile.FileName, selectedClass.ParsedFile.FileName, StringComparison.OrdinalIgnoreCase);
+						bool isInSamePart = string.Equals(member.UnresolvedMember.UnresolvedFile.FileName, selectedClass.UnresolvedFile.FileName, StringComparison.OrdinalIgnoreCase);
 						memberItems.Add(new EntityItem(member, ambience) { IsInSamePart = isInSamePart });
 					}
 					memberItems.Sort();

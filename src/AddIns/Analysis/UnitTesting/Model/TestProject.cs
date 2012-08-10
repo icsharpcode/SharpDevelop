@@ -45,11 +45,11 @@ namespace ICSharpCode.UnitTesting
 		{
 			var context = new SimpleTypeResolveContext(SD.ParserService.GetCompilation(project).MainAssembly);
 			IEnumerable<ITypeDefinition> @new;
-			if (e.NewParsedFile != null)
-				@new = e.NewParsedFile.TopLevelTypeDefinitions.Select(utd => utd.Resolve(context).GetDefinition()).Where(x => x != null && testFrameworks.IsTestClass(x, SD.ParserService.GetCompilation(project)));
+			if (e.NewUnresolvedFile != null)
+				@new = e.NewUnresolvedFile.TopLevelTypeDefinitions.Select(utd => utd.Resolve(context).GetDefinition()).Where(x => x != null && testFrameworks.IsTestClass(x, SD.ParserService.GetCompilation(project)));
 			else
 				@new = Enumerable.Empty<ITypeDefinition>();
-			testClasses.UpdateTestClasses(testFrameworks, testClasses.Where(tc => tc.Parts.Any(td => td.ParsedFile.FileName == e.OldParsedFile.FileName)).Select(tc => new DefaultResolvedTypeDefinition(context, tc.Parts.ToArray())).ToList(), @new.ToList(), null, this);
+			testClasses.UpdateTestClasses(testFrameworks, testClasses.Where(tc => tc.Parts.Any(td => td.UnresolvedFile.FileName == e.OldUnresolvedFile.FileName)).Select(tc => new DefaultResolvedTypeDefinition(context, tc.Parts.ToArray())).ToList(), @new.ToList(), null, this);
 		}
 		
 		public IProject Project {

@@ -466,6 +466,23 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(2, ctors.Count());
 			Assert.IsFalse(ctors.Any(c => c.IsStatic));
 			Assert.IsTrue(ctors.All(c => c.ReturnType.Kind == TypeKind.Void));
+			Assert.IsTrue(ctors.All(c => c.Accessibility == Accessibility.Public));
+		}
+		
+		[Test]
+		public void NoDefaultConstructorAddedToClass()
+		{
+			var ctors = compilation.FindType(typeof(MyClassWithCtor)).GetConstructors();
+			Assert.AreEqual(Accessibility.Private, ctors.Single().Accessibility);
+			Assert.AreEqual(1, ctors.Single().Parameters.Count);
+		}
+		
+		[Test]
+		public void DefaultConstructorOnAbstractClassIsProtected()
+		{
+			var ctors = compilation.FindType(typeof(AbstractClass)).GetConstructors();
+			Assert.AreEqual(0, ctors.Single().Parameters.Count);
+			Assert.AreEqual(Accessibility.Protected, ctors.Single().Accessibility);
 		}
 		
 		[Test]
@@ -637,6 +654,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(Accessibility.Public, m.Accessibility);
 			Assert.IsTrue(m.IsAbstract);
 			Assert.IsFalse(m.IsVirtual);
+			Assert.IsFalse(m.IsSealed);
 		}
 		
 		[Test]
@@ -952,7 +970,28 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.That(prop.Getter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithProperty.get_Prop" }));
 			Assert.That(prop.Setter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithProperty.set_Prop" }));
 		}
+		
+		[Test]
+		public void PropertyThatImplementsInterfaceIsNotVirtual()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsProperty));
+			var prop = type.Properties.Single(p => p.Name == "Prop");
+			Assert.IsFalse(prop.IsVirtual);
+			Assert.IsFalse(prop.IsOverridable);
+			Assert.IsFalse(prop.IsSealed);
+		}
 
+		[Test]
+		public void Property_SealedOverride()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatOverridesAndSealsVirtualProperty));
+			var prop = type.Properties.Single(p => p.Name == "Prop");
+			Assert.IsFalse(prop.IsVirtual);
+			Assert.IsTrue(prop.IsOverride);
+			Assert.IsTrue(prop.IsSealed);
+			Assert.IsFalse(prop.IsOverridable);
+		}
+		
 		[Test]
 		public void PropertyAccessorsShouldSupportToMemberReference()
 		{
@@ -1104,7 +1143,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 
 		[Test]
-		public void ExplicitlyImplementedEventsShouldBeReportedAsBeingImplemented() 
+		public void ExplicitlyImplementedEventsShouldBeReportedAsBeingImplemented()
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsEventExplicitly));
 			var evt = type.Events.Single();
@@ -1131,6 +1170,31 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.That(evt.ImplementedInterfaceMembers, Is.Empty);
 			Assert.That(evt.AddAccessor.ImplementedInterfaceMembers, Is.Empty);
 			Assert.That(evt.RemoveAccessor.ImplementedInterfaceMembers, Is.Empty);
+		}
+		
+		[Test]
+		public void StaticClassTest()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(StaticClass));
+			Assert.IsTrue(type.IsAbstract);
+			Assert.IsTrue(type.IsSealed);
+			Assert.IsTrue(type.IsStatic);
+		}
+		
+		[Test]
+		public void NoDefaultConstructorOnStaticClassTest()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(StaticClass));
+			Assert.AreEqual(0, type.GetConstructors().Count());
+		}
+		
+		[Test]
+		[Ignore("not yet implemented in C# TypeSystemConvertVisitor")]
+		public void IndexerNonDefaultName()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(IndexerNonDefaultName));
+			var indexer = type.GetProperties(p => p.IsIndexer).Single();
+			Assert.AreEqual("Foo", indexer.Name);
 		}
 	}
 }

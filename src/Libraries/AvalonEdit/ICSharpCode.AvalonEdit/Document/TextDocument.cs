@@ -370,6 +370,18 @@ namespace ICSharpCode.AvalonEdit.Document
 				return new RopeTextReader(rope.GetRange(offset, length));
 			}
 		}
+		
+		public void WriteTextTo(System.IO.TextWriter writer)
+		{
+			VerifyAccess();
+			rope.WriteTo(writer, 0, rope.Length);
+		}
+		
+		public void WriteTextTo(System.IO.TextWriter writer, int offset, int length)
+		{
+			VerifyAccess();
+			rope.WriteTo(writer, offset, length);
+		}
 		#endregion
 		
 		#region BeginUpdate / EndUpdate

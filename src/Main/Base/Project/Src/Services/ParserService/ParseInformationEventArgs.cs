@@ -13,7 +13,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 	public class ParseInformationEventArgs : EventArgs
 	{
 		IProject parentProject;
-		IParsedFile oldParsedFile;
+		IUnresolvedFile oldUnresolvedFile;
 		ParseInformation newParseInformation;
 		
 		public FileName FileName {
@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				if (newParseInformation != null)
 					return newParseInformation.FileName;
 				else
-					return FileName.Create(oldParsedFile.FileName);
+					return FileName.Create(oldUnresolvedFile.FileName);
 			}
 		}
 		
@@ -37,16 +37,16 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// The old parsed file.
 		/// Returns null if no old parse information exists (first parse run).
 		/// </summary>
-		public IParsedFile OldParsedFile {
-			get { return oldParsedFile; }
+		public IUnresolvedFile OldUnresolvedFile {
+			get { return oldUnresolvedFile; }
 		}
 		
 		/// <summary>
 		/// The new parsed file.
 		/// Returns null if no new parse information exists (file was removed from project).
 		/// </summary>
-		public IParsedFile NewParsedFile {
-			get { return newParseInformation != null ? newParseInformation.ParsedFile : null; }
+		public IUnresolvedFile NewUnresolvedFile {
+			get { return newParseInformation != null ? newParseInformation.UnresolvedFile : null; }
 		}
 		
 		/// <summary>
@@ -58,24 +58,24 @@ namespace ICSharpCode.SharpDevelop.Parser
 		}
 		
 		[Obsolete]
-		public IParsedFile OldCompilationUnit {
-			get { return this.OldParsedFile; }
+		public IUnresolvedFile OldSyntaxTree {
+			get { return this.OldUnresolvedFile; }
 		}
 		
 		[Obsolete]
-		public IParsedFile NewCompilationUnit {
-			get { return this.NewParsedFile; }
+		public IUnresolvedFile NewSyntaxTree {
+			get { return this.NewUnresolvedFile; }
 		}
 		
-		public ParseInformationEventArgs(IProject parentProject, IParsedFile oldParsedFile, ParseInformation newParseInformation)
+		public ParseInformationEventArgs(IProject parentProject, IUnresolvedFile oldUnresolvedFile, ParseInformation newParseInformation)
 		{
-			if (oldParsedFile == null && newParseInformation == null)
+			if (oldUnresolvedFile == null && newParseInformation == null)
 				throw new ArgumentNullException();
-			if (oldParsedFile != null && newParseInformation != null) {
-				Debug.Assert(FileUtility.IsEqualFileName(oldParsedFile.FileName, newParseInformation.FileName));
+			if (oldUnresolvedFile != null && newParseInformation != null) {
+				Debug.Assert(FileUtility.IsEqualFileName(oldUnresolvedFile.FileName, newParseInformation.FileName));
 			}
 			this.parentProject = parentProject;
-			this.oldParsedFile = oldParsedFile;
+			this.oldUnresolvedFile = oldUnresolvedFile;
 			this.newParseInformation = newParseInformation;
 		}
 	}
@@ -117,9 +117,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 		}
 		
-		public IParsedFile ParsedFile {
+		public IUnresolvedFile UnresolvedFile {
 			get {
-				return parseInformation.ParsedFile;
+				return parseInformation.UnresolvedFile;
 			}
 		}
 	}

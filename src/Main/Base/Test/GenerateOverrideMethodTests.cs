@@ -22,7 +22,7 @@
 //		
 //		void Run(string input, string expectedOutput)
 //		{
-//			ICompilationUnit cu = helper.Parse("a.cs", input + "\nclass DerivedClass {\n \n}");
+//			ISyntaxTree cu = helper.Parse("a.cs", input + "\nclass DerivedClass {\n \n}");
 //			Assert.AreEqual(2, cu.Classes.Count);
 //			Assert.AreEqual(1, cu.Classes[0].Methods.Count + cu.Classes[0].Properties.Count);
 //			IMember virtualMember;

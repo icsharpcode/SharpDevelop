@@ -19,12 +19,12 @@
 //		// usingMode: 0 = one using-statement for each namespace (correctly cased)
 //		//            1 = mixture of using statements and default imports (incorrectly cased)
 //		//            2 = all default imports (incorrectly cased)
-//		ICompilationUnit Prepare(LanguageProperties language, int usingMode)
+//		ISyntaxTree Prepare(LanguageProperties language, int usingMode)
 //		{
 //			DefaultProjectContent pc = new DefaultProjectContent();
 //			pc.ReferencedContents.Add(projectContentRegistry.Mscorlib);
 //			pc.Language = language;
-//			DefaultCompilationUnit cu = new DefaultCompilationUnit(pc);
+//			DefaultSyntaxTree cu = new DefaultSyntaxTree(pc);
 //			if (usingMode == 1) {
 //				cu.UsingScope.Usings.Add(CreateUsing(pc, "syStEm.coLLectIons"));
 //				pc.DefaultImports = new DefaultUsing(pc);
@@ -52,7 +52,7 @@
 //		
 //		IReturnType SearchType(string type, int typeParameterCount)
 //		{
-//			ICompilationUnit cu = Prepare(LanguageProperties.CSharp, 0);
+//			ISyntaxTree cu = Prepare(LanguageProperties.CSharp, 0);
 //			IReturnType c = cu.ProjectContent.SearchType(new SearchTypeRequest(type, typeParameterCount, null, cu, 1, 1)).Result;
 //			Assert.IsNotNull(c, type + "not found");
 //			return c;
@@ -60,7 +60,7 @@
 //		
 //		IReturnType SearchTypeVB(string type, int typeParameterCount)
 //		{
-//			ICompilationUnit cu;
+//			ISyntaxTree cu;
 //			cu = Prepare(LanguageProperties.VBNet, 0);
 //			IReturnType c0 = cu.ProjectContent.SearchType(new SearchTypeRequest(type, typeParameterCount, null, cu, 1, 1)).Result;
 //			Assert.IsNotNull(c0, type + "not found for mode=0");

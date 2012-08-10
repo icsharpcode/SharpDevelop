@@ -295,7 +295,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		{
 			string code = "int a; int b = X ? (a = 1) : 0;";
 			var block = new BlockStatement();
-			block.Statements.AddRange(new CSharpParser().ParseStatements(new StringReader(code)));
+			block.Statements.AddRange(new CSharpParser().ParseStatements(code));
 			
 			DefiniteAssignmentAnalysis da = CreateDefiniteAssignmentAnalysis(block);
 			da.Analyze("a");
@@ -307,7 +307,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		{
 			string code = "int a; int b = X ? (a = 1) : (a = 2);";
 			var block = new BlockStatement();
-			block.Statements.AddRange(new CSharpParser().ParseStatements(new StringReader(code)));
+			block.Statements.AddRange(new CSharpParser().ParseStatements(code));
 			
 			DefiniteAssignmentAnalysis da = CreateDefiniteAssignmentAnalysis(block);
 			da.Analyze("a");
@@ -319,7 +319,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		{
 			string code = "int a; int b = true ? (a = 1) : 0;";
 			var block = new BlockStatement();
-			block.Statements.AddRange(new CSharpParser().ParseStatements(new StringReader(code)));
+			block.Statements.AddRange(new CSharpParser().ParseStatements(code));
 			
 			DefiniteAssignmentAnalysis da = CreateDefiniteAssignmentAnalysis(block);
 			da.Analyze("a");

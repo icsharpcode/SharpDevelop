@@ -237,7 +237,14 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		[Ignore("Mono parser crash")]
+		public void InvalidUnicodeEscapeSequence()
+		{
+			string code = @"""\u{0}""";
+			var pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>(code, expectErrors: true);
+			Assert.AreEqual(code, pe.LiteralValue);
+		}
+		
+		[Test]
 		public void LargeVerbatimString()
 		{
 			StringBuilder b = new StringBuilder();

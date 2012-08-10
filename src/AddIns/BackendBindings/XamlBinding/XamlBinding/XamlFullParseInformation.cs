@@ -13,11 +13,11 @@ namespace ICSharpCode.XamlBinding
 		readonly AXmlDocument document;
 		readonly ITextSource text;
 		
-		public XamlFullParseInformation(XamlParsedFile parsedFile, AXmlDocument document, ITextSource text)
-			: base(parsedFile, true)
+		public XamlFullParseInformation(XamlUnresolvedFile unresolvedFile, AXmlDocument document, ITextSource text)
+			: base(unresolvedFile, true)
 		{
-			if (parsedFile == null)
-				throw new ArgumentNullException("parsedFile");
+			if (unresolvedFile == null)
+				throw new ArgumentNullException("unresolvedFile");
 			if (document == null)
 				throw new ArgumentNullException("document");
 			if (text == null)
@@ -26,8 +26,8 @@ namespace ICSharpCode.XamlBinding
 			this.text = text;
 		}
 		
-		public new XamlParsedFile ParsedFile {
-			get { return (XamlParsedFile)base.ParsedFile; }
+		public new XamlUnresolvedFile UnresolvedFile {
+			get { return (XamlUnresolvedFile)base.UnresolvedFile; }
 		}
 		
 		public AXmlDocument Document {

@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 //				                                   );
 			}
 			
-			string newInterfaceFileName = Path.Combine(Path.GetDirectoryName(c.CompilationUnit.FileName),
+			string newInterfaceFileName = Path.Combine(Path.GetDirectoryName(c.SyntaxTree.FileName),
 			                                           extractInterface.NewFileName);
 			if (File.Exists(newInterfaceFileName)) {
 				int confirmReplace = MessageService.ShowCustomDialog("Extract Interface",
@@ -57,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			
 			LanguageProperties language = c.ProjectContent.Language;
-			string classFileName = c.CompilationUnit.FileName;
+			string classFileName = c.SyntaxTree.FileName;
 			string existingClassCode = ParserService.GetParseableFileContent(classFileName).Text;
 			
 			// build the new interface...
@@ -93,8 +93,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 			}
 			
-			ICompilationUnit newCompilationUnit = ParserService.ParseFile(newInterfaceFileName).CompilationUnit;
-			IClass newInterfaceDef = newCompilationUnit.Classes[0];
+			ISyntaxTree newSyntaxTree = ParserService.ParseFile(newInterfaceFileName).SyntaxTree;
+			IClass newInterfaceDef = newSyntaxTree.Classes[0];
 			
 			// finally, add the interface to the base types of the class that we're extracting from
 			if (extractInterface.AddInterfaceToClass) {
@@ -141,13 +141,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			// Add the class declaration(s)
 			foreach (ITypeDefinition part in c.GetParts()) {
-				AddDeclarationAsReference(list, part.CompilationUnit.FileName, part.Region, part.Name);
+				AddDeclarationAsReference(list, part.SyntaxTree.FileName, part.Region, part.Name);
 			}
 			
 			// Add the constructors
 			foreach (IMethod m in c.Methods) {
 				if (m.IsConstructor || (m.Name == "#dtor")) {
-					AddDeclarationAsReference(list, m.DeclaringType.CompilationUnit.FileName, m.Region, c.Name);
+					AddDeclarationAsReference(list, m.DeclaringType.SyntaxTree.FileName, m.Region, c.Name);
 				}
 			}
 			
@@ -253,7 +253,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static bool IsReadOnly(ITypeDefinition c)
 		{
-			return c.IsSynthetic || c.Parts.All(p => p.ParsedFile == null);
+			return c.IsSynthetic || c.Parts.All(p => p.UnresolvedFile == null);
 		}
 		
 		[Obsolete("Use NavigationService.NavigateTo() instead")]
@@ -266,7 +266,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public static ITextEditor OpenDefinitionFile(IMember member, bool switchTo)
 		{
 			IViewContent viewContent = null;
-			ICompilationUnit cu = member.DeclaringType.CompilationUnit;
+			ISyntaxTree cu = member.DeclaringType.SyntaxTree;
 			if (cu != null) {
 				string fileName = cu.FileName;
 				if (fileName != null) {
@@ -280,7 +280,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public static ITextEditor JumpBehindDefinition(IMember member)
 		{
 			IViewContent viewContent = null;
-			ICompilationUnit cu = member.DeclaringType.CompilationUnit;
+			ISyntaxTree cu = member.DeclaringType.SyntaxTree;
 			if (cu != null) {
 				string fileName = cu.FileName;
 				if (fileName != null) {
@@ -442,7 +442,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public static void MoveClassToFile(IClass c, string newFileName)
 		{
 			LanguageProperties language = c.ProjectContent.Language;
-			string existingCode = ParserService.GetParseableFileContent(c.CompilationUnit.FileName).Text;
+			string existingCode = ParserService.GetParseableFileContent(c.SyntaxTree.FileName).Text;
 			DomRegion fullRegion = language.RefactoringProvider.GetFullCodeRangeForType(existingCode, c);
 			if (fullRegion.IsEmpty) return;
 			
@@ -518,7 +518,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (c is CompoundClass)
 				throw new ArgumentException("Cannot get document from compound class - must pass a specific class part");
 			
-			ITextEditorProvider tecp = FileService.OpenFile(c.CompilationUnit.FileName) as ITextEditorProvider;
+			ITextEditorProvider tecp = FileService.OpenFile(c.SyntaxTree.FileName) as ITextEditorProvider;
 			if (tecp == null) return null;
 			return tecp.TextEditor.Document;
 		}

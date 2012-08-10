@@ -148,14 +148,14 @@ namespace ICSharpCode.UnitTesting
 			int i = 0;
 			while (i < parts.Count) {
 				var part = parts[i];
-				if (!definition.Parts.Any(p => p.ParsedFile.FileName == part.ParsedFile.FileName && p.Region == part.Region))
+				if (!definition.Parts.Any(p => p.UnresolvedFile.FileName == part.UnresolvedFile.FileName && p.Region == part.Region))
 					parts.RemoveAt(i);
 				else
 					i++;
 			}
 			
 			foreach (var part in definition.Parts) {
-				if (!parts.Any(p => p.ParsedFile.FileName == part.ParsedFile.FileName && p.Region == part.Region))
+				if (!parts.Any(p => p.UnresolvedFile.FileName == part.UnresolvedFile.FileName && p.Region == part.Region))
 					parts.Add(part);
 			}
 			testMembers.RemoveWhere(m => !definition.Methods.Any(dm => dm.ReflectionName == m.Method.ReflectionName && testFrameworks.IsTestMethod(dm, definition.Compilation)));

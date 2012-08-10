@@ -292,7 +292,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				context.EndOffset = context.StartOffset + insertedText.Length;
 				
 				if (addUsing && nameResult != null && nameResult.CallingClass != null) {
-					var cu = nameResult.CallingClass.CompilationUnit;
+					var cu = nameResult.CallingClass.SyntaxTree;
 					NamespaceRefactoringService.AddUsingDeclaration(cu, document, selectedClass.Namespace, false);
 					ParserService.BeginParse(editor.FileName, document);
 				}

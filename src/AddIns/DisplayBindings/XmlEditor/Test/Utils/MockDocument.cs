@@ -238,5 +238,15 @@ namespace XmlEditor.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
+		
+		public void WriteTextTo(TextWriter writer)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void WriteTextTo(TextWriter writer, int offset, int length)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

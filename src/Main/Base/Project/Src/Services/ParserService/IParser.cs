@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 {
 	/// <summary>
 	/// Represents a language parser that produces ParseInformation
-	/// and IParsedFile instances for code files.
+	/// and IUnresolvedFile instances for code files.
 	/// </summary>
 	public interface IParser
 	{
@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// <param name="fileContent">The content of the file.</param>
 		/// <param name="fullParseInformationRequested">
 		/// Specifies whether full parse information were requested for this file.
-		/// If this parameter is false, only the ParsedFile and TagComments on the parse information need to be set.
+		/// If this parameter is false, only the UnresolvedFile and TagComments on the parse information need to be set.
 		/// </param>
 		/// <param name="parentProject">The parent project for this parse run.</param>
 		/// <param name="cancellationToken">Cancellation Token.</param>
@@ -69,6 +69,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// Used by <see cref="ParserService.GetCompilationForFile"/>.
 		/// May return null if this operation is not supported.
 		/// </summary>
-		ICompilation CreateCompilationForSingleFile(FileName fileName, IParsedFile parsedFile);
+		ICompilation CreateCompilationForSingleFile(FileName fileName, IUnresolvedFile unresolvedFile);
 	}
 }

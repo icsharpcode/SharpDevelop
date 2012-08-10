@@ -199,7 +199,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		
 		static IUnresolvedTypeDefinition GetCurrentClass(ITextEditor editor)
 		{
-			var parseInfo = SD.ParserService.GetExistingParsedFile(editor.FileName);
+			var parseInfo = SD.ParserService.GetExistingUnresolvedFile(editor.FileName);
 			if (parseInfo != null) {
 				return parseInfo.GetInnermostTypeDefinition(editor.Caret.Location);
 			}

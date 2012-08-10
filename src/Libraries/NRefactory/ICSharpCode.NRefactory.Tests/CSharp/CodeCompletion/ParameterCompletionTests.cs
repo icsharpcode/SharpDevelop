@@ -1,4 +1,4 @@
-//
+﻿//
 // ParameterCompletionTests.cs
 //
 // Author:
@@ -272,26 +272,26 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			IProjectContent pctx = new CSharpProjectContent();
 			pctx = pctx.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			
-			var compilationUnit = new CSharpParser().Parse(parsedText, "program.cs");
-			compilationUnit.Freeze();
+			var syntaxTree = new CSharpParser().Parse(parsedText, "program.cs");
+			syntaxTree.Freeze();
 			
-			var parsedFile = compilationUnit.ToTypeSystem();
-			pctx = pctx.UpdateProjectContent(null, parsedFile);
+			var unresolvedFile = syntaxTree.ToTypeSystem();
+			pctx = pctx.AddOrUpdateFiles(unresolvedFile);
 			var cmp = pctx.CreateCompilation();
 			var loc = doc.GetLocation(cursorPosition);
 			
 			
 			var rctx = new CSharpTypeResolveContext(cmp.MainAssembly);
-			rctx = rctx.WithUsingScope(parsedFile.GetUsingScope(loc).Resolve(cmp));
-			var curDef = parsedFile.GetInnermostTypeDefinition(loc);
+			rctx = rctx.WithUsingScope(unresolvedFile.GetUsingScope(loc).Resolve(cmp));
+			var curDef = unresolvedFile.GetInnermostTypeDefinition(loc);
 			if (curDef != null) {
 				rctx = rctx.WithCurrentTypeDefinition(curDef.Resolve(rctx).GetDefinition());
-				var curMember = parsedFile.GetMember(loc);
+				var curMember = unresolvedFile.GetMember(loc);
 				if (curMember != null) {
 					rctx = rctx.WithCurrentMember(curMember.CreateResolved(rctx));
 				}
 			}
-			var mb = new DefaultCompletionContextProvider(doc, parsedFile);
+			var mb = new DefaultCompletionContextProvider(doc, unresolvedFile);
 			var engine = new CSharpParameterCompletionEngine (doc, mb, new TestFactory (pctx), pctx, rctx);
 			return engine.GetParameterDataProvider (cursorPosition, doc.GetCharAt (cursorPosition - 1));
 		}

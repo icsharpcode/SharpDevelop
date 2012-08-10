@@ -21,13 +21,13 @@ namespace ICSharpCode.SharpDevelop.Parser
 		struct ProjectEntry
 		{
 			public readonly IProject Project;
-			public readonly IParsedFile ParsedFile;
+			public readonly IUnresolvedFile UnresolvedFile;
 			public readonly ParseInformation CachedParseInformation;
 			
-			public ProjectEntry(IProject project, IParsedFile parsedFile, ParseInformation cachedParseInformation)
+			public ProjectEntry(IProject project, IUnresolvedFile unresolvedFile, ParseInformation cachedParseInformation)
 			{
 				this.Project = project;
-				this.ParsedFile = parsedFile;
+				this.UnresolvedFile = unresolvedFile;
 				this.CachedParseInformation = cachedParseInformation;
 			}
 		}
@@ -107,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				return -1;
 		}
 		
-		#region Expire Cache + GetExistingParsedFile + GetCachedParseInformation
+		#region Expire Cache + GetExistingUnresolvedFile + GetCachedParseInformation
 		public void ExpireCache()
 		{
 			lock (this) {
@@ -116,13 +116,13 @@ namespace ICSharpCode.SharpDevelop.Parser
 				} else {
 					for (int i = 0; i < entries.Count; i++) {
 						var oldEntry = entries[i];
-						entries[i] = new ProjectEntry(oldEntry.Project, oldEntry.ParsedFile, null);
+						entries[i] = new ProjectEntry(oldEntry.Project, oldEntry.UnresolvedFile, null);
 					}
 				}
 			}
 		}
 		
-		public IParsedFile GetExistingParsedFile(ITextSourceVersion version, IProject parentProject)
+		public IUnresolvedFile GetExistingUnresolvedFile(ITextSourceVersion version, IProject parentProject)
 		{
 			lock (this) {
 				if (version != null && CompareVersions(version) != 0) {
@@ -131,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				int index = FindIndexForProject(parentProject);
 				if (index < 0)
 					return null;
-				return entries[index].ParsedFile;
+				return entries[index].UnresolvedFile;
 			}
 		}
 		
@@ -159,13 +159,13 @@ namespace ICSharpCode.SharpDevelop.Parser
 			return DoParse(fileContent, parentProject, true, cancellationToken).CachedParseInformation;
 		}
 		
-		public IParsedFile ParseFile(ITextSource fileContent, IProject parentProject, CancellationToken cancellationToken)
+		public IUnresolvedFile ParseFile(ITextSource fileContent, IProject parentProject, CancellationToken cancellationToken)
 		{
 			if (fileContent == null) {
 				fileContent = SD.FileService.GetFileContent(fileName);
 			}
 			
-			return DoParse(fileContent, parentProject, false, cancellationToken).ParsedFile;
+			return DoParse(fileContent, parentProject, false, cancellationToken).UnresolvedFile;
 		}
 		
 		ProjectEntry DoParse(ITextSource fileContent, IProject parentProject, bool fullParseInformationRequested,
@@ -196,8 +196,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 					// We're going backwards in time, or are requesting a project that is not an owner
 					// for this entry.
 					var parseInfo = ParseWithExceptionHandling(fileContent, fullParseInformationRequested, parentProject, cancellationToken);
-					FreezableHelper.Freeze(parseInfo.ParsedFile);
-					return new ProjectEntry(parentProject, parseInfo.ParsedFile, parseInfo);
+					FreezableHelper.Freeze(parseInfo.UnresolvedFile);
+					return new ProjectEntry(parentProject, parseInfo.UnresolvedFile, parseInfo);
 				} else {
 					if (versionComparison == 0 && index >= 0) {
 						// If full parse info is requested, ensure we have full parse info.
@@ -217,18 +217,18 @@ namespace ICSharpCode.SharpDevelop.Parser
 						throw new InvalidOperationException(parser.GetType().Name + ".Parse() did not return full parse info as requested.");
 					OnDiskTextSourceVersion onDiskVersion = fileContent.Version as OnDiskTextSourceVersion;
 					if (onDiskVersion != null)
-						parseInfo.ParsedFile.LastWriteTime = onDiskVersion.LastWriteTime;
-					FreezableHelper.Freeze(parseInfo.ParsedFile);
-					results[i] = new ParseInformationEventArgs(entries[i].Project, entries[i].ParsedFile, parseInfo);
+						parseInfo.UnresolvedFile.LastWriteTime = onDiskVersion.LastWriteTime;
+					FreezableHelper.Freeze(parseInfo.UnresolvedFile);
+					results[i] = new ParseInformationEventArgs(entries[i].Project, entries[i].UnresolvedFile, parseInfo);
 				}
 				
 				// Only if all parse runs succeeded, register the parse information.
 				currentVersion = fileContent.Version;
 				for (int i = 0; i < entries.Count; i++) {
 					if (fullParseInformationRequested || (entries[i].CachedParseInformation != null && results[i].NewParseInformation.IsFullParseInformation))
-						entries[i] = new ProjectEntry(entries[i].Project, results[i].NewParsedFile, results[i].NewParseInformation);
+						entries[i] = new ProjectEntry(entries[i].Project, results[i].NewUnresolvedFile, results[i].NewParseInformation);
 					else
-						entries[i] = new ProjectEntry(entries[i].Project, results[i].NewParsedFile, null);
+						entries[i] = new ProjectEntry(entries[i].Project, results[i].NewUnresolvedFile, null);
 					if (entries[i].Project != null)
 						entries[i].Project.OnParseInformationUpdated(results[i]);
 					parserService.RaiseParseInformationUpdated(results[i]);
@@ -264,9 +264,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 			return (await DoParseAsync(fileContent, parentProject, true, cancellationToken)).CachedParseInformation;
 		}
 		
-		public async Task<IParsedFile> ParseFileAsync(ITextSource fileContent, IProject parentProject, CancellationToken cancellationToken)
+		public async Task<IUnresolvedFile> ParseFileAsync(ITextSource fileContent, IProject parentProject, CancellationToken cancellationToken)
 		{
-			return (await DoParseAsync(fileContent, parentProject, false, cancellationToken)).ParsedFile;
+			return (await DoParseAsync(fileContent, parentProject, false, cancellationToken)).UnresolvedFile;
 		}
 		
 		Task<ProjectEntry> DoParseAsync(ITextSource fileContent, IProject parentProject, bool requestFullParseInformation, CancellationToken cancellationToken)
@@ -338,20 +338,20 @@ namespace ICSharpCode.SharpDevelop.Parser
 		}
 		#endregion
 		
-		public void RegisterParsedFile(IProject project, IParsedFile parsedFile)
+		public void RegisterUnresolvedFile(IProject project, IUnresolvedFile unresolvedFile)
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
-			if (parsedFile == null)
-				throw new ArgumentNullException("parsedFile");
-			FreezableHelper.Freeze(parsedFile);
-			var newParseInfo = new ParseInformation(parsedFile, false);
+			if (unresolvedFile == null)
+				throw new ArgumentNullException("unresolvedFile");
+			FreezableHelper.Freeze(unresolvedFile);
+			var newParseInfo = new ParseInformation(unresolvedFile, false);
 			lock (this) {
 				int index = FindIndexForProject(project);
 				if (index >= 0) {
 					currentVersion = null;
-					var args = new ParseInformationEventArgs(project, entries[index].ParsedFile, newParseInfo);
-					entries[index] = new ProjectEntry(project, parsedFile, null);
+					var args = new ParseInformationEventArgs(project, entries[index].UnresolvedFile, newParseInfo);
+					entries[index] = new ProjectEntry(project, unresolvedFile, null);
 					project.OnParseInformationUpdated(args);
 					parserService.RaiseParseInformationUpdated(args);
 				}

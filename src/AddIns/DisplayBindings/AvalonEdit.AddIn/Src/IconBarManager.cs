@@ -42,7 +42,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public event EventHandler RedrawRequested;
 		
-		public void UpdateClassMemberBookmarks(IParsedFile parseInfo, IDocument document)
+		public void UpdateClassMemberBookmarks(IUnresolvedFile parseInfo, IDocument document)
 		{
 			for (int i = bookmarks.Count - 1; i >= 0; i--) {
 				if (bookmarks[i] is EntityBookmark)

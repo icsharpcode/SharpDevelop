@@ -76,7 +76,7 @@ namespace ICSharpCode.UnitTesting
 		IProject GetProject(ITypeDefinition c)
 		{
 			if (c != null && ProjectService.OpenSolution != null) {
-				return ProjectService.OpenSolution.FindProjectContainingFile(c.Parts[0].ParsedFile.FileName);
+				return ProjectService.OpenSolution.FindProjectContainingFile(c.Parts[0].UnresolvedFile.FileName);
 			}
 			return null;
 		}

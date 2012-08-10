@@ -244,8 +244,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					if (el.HasAttribute("filename")) {
 						string fileName = el.GetAttribute("filename");
 						return projectCreateInformation => {
-							string parsedFileName = StringParser.Parse(fileName, new StringTagPair("ProjectName", projectCreateInformation.ProjectName));
-							string path = Path.Combine(projectCreateInformation.ProjectBasePath, parsedFileName);
+							string unresolvedFileName = StringParser.Parse(fileName, new StringTagPair("ProjectName", projectCreateInformation.ProjectName));
+							string path = Path.Combine(projectCreateInformation.ProjectBasePath, unresolvedFileName);
 							FileService.OpenFile(path);
 						};
 					} else {

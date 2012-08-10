@@ -14,25 +14,25 @@ namespace CSharpBinding.Parser
 {
 	public class CSharpFullParseInformation : ParseInformation
 	{
-		readonly CompilationUnit compilationUnit;
+		readonly SyntaxTree compilationUnit;
 		readonly ITextSourceVersion parsedVersion;
 		
-		public CSharpFullParseInformation(CSharpParsedFile parsedFile, ITextSourceVersion parsedVersion, CompilationUnit compilationUnit)
-			: base(parsedFile, isFullParseInformation: true)
+		public CSharpFullParseInformation(CSharpUnresolvedFile unresolvedFile, ITextSourceVersion parsedVersion, SyntaxTree compilationUnit)
+			: base(unresolvedFile, isFullParseInformation: true)
 		{
-			if (parsedFile == null)
-				throw new ArgumentNullException("parsedFile");
+			if (unresolvedFile == null)
+				throw new ArgumentNullException("unresolvedFile");
 			if (compilationUnit == null)
 				throw new ArgumentNullException("compilationUnit");
 			this.parsedVersion = parsedVersion;
 			this.compilationUnit = compilationUnit;
 		}
 		
-		public new CSharpParsedFile ParsedFile {
-			get { return (CSharpParsedFile)base.ParsedFile; }
+		public new CSharpUnresolvedFile UnresolvedFile {
+			get { return (CSharpUnresolvedFile)base.UnresolvedFile; }
 		}
 		
-		public CompilationUnit CompilationUnit {
+		public SyntaxTree SyntaxTree {
 			get { return compilationUnit; }
 		}
 		
@@ -43,7 +43,7 @@ namespace CSharpBinding.Parser
 		public CSharpAstResolver GetResolver(ICompilation compilation)
 		{
 			return (CSharpAstResolver)compilation.CacheManager.GetOrAddShared(
-				this, _ => new CSharpAstResolver(compilation, compilationUnit, ParsedFile)
+				this, _ => new CSharpAstResolver(compilation, compilationUnit, UnresolvedFile)
 			);
 		}
 	}

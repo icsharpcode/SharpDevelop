@@ -16,13 +16,13 @@ namespace CSharpBinding
 	/// </summary>
 	public static class ExtensionMethods
 	{
-		public static async Task<CompilationUnit> GetCompilationUnitAsync(this EditorRefactoringContext editorContext)
+		public static async Task<SyntaxTree> GetSyntaxTreeAsync(this EditorRefactoringContext editorContext)
 		{
 			var parseInfo = (await editorContext.GetParseInformationAsync().ConfigureAwait(false)) as CSharpFullParseInformation;
 			if (parseInfo != null)
-				return parseInfo.CompilationUnit;
+				return parseInfo.SyntaxTree;
 			else
-				return new CompilationUnit();
+				return new SyntaxTree();
 		}
 		
 		public static Task<CSharpAstResolver> GetAstResolverAsync(this EditorRefactoringContext editorContext)
@@ -34,7 +34,7 @@ namespace CSharpBinding
 					if (parseInfo != null)
 						return parseInfo.GetResolver(compilation);
 					else
-						return new CSharpAstResolver(compilation, new CompilationUnit(), new CSharpParsedFile(ec.FileName));
+						return new CSharpAstResolver(compilation, new SyntaxTree(), new CSharpUnresolvedFile(ec.FileName));
 				});
 		}
 	}

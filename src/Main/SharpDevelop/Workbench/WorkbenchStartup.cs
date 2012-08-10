@@ -144,12 +144,12 @@ class Test {
 	}
 }"), "test.cs");
 			// warm up the type system
-			var parsedFile = cu.ToTypeSystem();
-			var pc = new ICSharpCode.NRefactory.CSharp.CSharpProjectContent().UpdateProjectContent(null, parsedFile);
+			var unresolvedFile = cu.ToTypeSystem();
+			var pc = new ICSharpCode.NRefactory.CSharp.CSharpProjectContent().UpdateProjectContent(null, unresolvedFile);
 			pc = pc.AddAssemblyReferences(new[] { ICSharpCode.NRefactory.TypeSystem.Implementation.MinimalCorlib.Instance });
 			var compilation = pc.CreateCompilation();
 			// warm up the resolver
-			var resolver = new ICSharpCode.NRefactory.CSharp.Resolver.CSharpAstResolver(compilation, cu, parsedFile);
+			var resolver = new ICSharpCode.NRefactory.CSharp.Resolver.CSharpAstResolver(compilation, cu, unresolvedFile);
 			foreach (var node in cu.Descendants) {
 				resolver.Resolve(node);
 			}

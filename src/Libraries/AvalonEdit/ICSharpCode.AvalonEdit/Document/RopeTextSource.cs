@@ -136,5 +136,17 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			return rope.LastIndexOf(searchText, startIndex, count, comparisonType);
 		}
+		
+		/// <inheritdoc/>
+		public void WriteTextTo(TextWriter writer)
+		{
+			rope.WriteTo(writer, 0, rope.Length);
+		}
+		
+		/// <inheritdoc/>
+		public void WriteTextTo(TextWriter writer, int offset, int length)
+		{
+			rope.WriteTo(writer, offset, length);
+		}
 	}
 }

@@ -1,4 +1,4 @@
-//
+﻿//
 // CodeCompletionBugTests.cs
 //
 // Author:
@@ -136,15 +136,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				return new CompletionData (entity.Name);
 			}
 			
-			public ICompletionData CreateEntityCompletionData (ICSharpCode.NRefactory.TypeSystem.IUnresolvedEntity entity, string text)
-			{
-				return new CompletionData (text);
-			}
-
-			public ICompletionData CreateTypeCompletionData (ICSharpCode.NRefactory.TypeSystem.IUnresolvedTypeDefinition type, string shortType)
-			{
-				return new CompletionData (shortType);
-			}
 
 			public ICompletionData CreateTypeCompletionData (ICSharpCode.NRefactory.TypeSystem.IType type, string shortType)
 			{
@@ -166,7 +157,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				return new CompletionData (variable.Name);
 			}
 
-			public ICompletionData CreateVariableCompletionData (ICSharpCode.NRefactory.TypeSystem.IUnresolvedTypeParameter parameter)
+			public ICompletionData CreateVariableCompletionData (ICSharpCode.NRefactory.TypeSystem.ITypeParameter parameter)
 			{
 				return new CompletionData (parameter.Name);
 			}
@@ -199,52 +190,72 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			#endregion
 		}
 		
-		static CompletionDataList CreateProvider(string text, bool isCtrlSpace)
+		public static IUnresolvedAssembly SystemAssembly { get { return systemAssembly.Value; } }
+		static readonly Lazy<IUnresolvedAssembly> systemAssembly = new Lazy<IUnresolvedAssembly>(
+			delegate {
+			return new CecilLoader().LoadAssemblyFile(typeof(System.ComponentModel.BrowsableAttribute).Assembly.Location);
+		});
+		
+		public static CSharpCompletionEngine CreateEngine(string text, out int cursorPosition, params IUnresolvedAssembly[] references)
 		{
 			string parsedText;
 			string editorText;
-			int cursorPosition = text.IndexOf('$');
+			cursorPosition = text.IndexOf('$');
 			int endPos = text.IndexOf('$', cursorPosition + 1);
 			if (endPos == -1) {
-				parsedText = editorText = text.Substring(0, cursorPosition) + text.Substring(cursorPosition + 1);
+				if (cursorPosition < 0) {
+					parsedText = editorText = text;
+				} else {
+					parsedText = editorText = text.Substring(0, cursorPosition) + text.Substring(cursorPosition + 1);
+				}
 			} else {
-				parsedText = text.Substring(0, cursorPosition) + new string(' ', endPos - cursorPosition) + text.Substring(endPos + 1);
-				editorText = text.Substring(0, cursorPosition) + text.Substring(cursorPosition + 1, endPos - cursorPosition - 1) + text.Substring(endPos + 1);
-				cursorPosition = endPos - 1; 
+					parsedText = text.Substring(0, cursorPosition) + new string(' ', endPos - cursorPosition) + text.Substring(endPos + 1);
+					editorText = text.Substring(0, cursorPosition) + text.Substring(cursorPosition + 1, endPos - cursorPosition - 1) + text.Substring(endPos + 1);
+					cursorPosition = endPos - 1; 
 			}
 			var doc = new ReadOnlyDocument(editorText);
-			
-			IProjectContent pctx = new CSharpProjectContent();
-			pctx = pctx.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
-			
-			var compilationUnit = new CSharpParser().Parse(parsedText, "program.cs");
-			compilationUnit.Freeze();
-			
-			var parsedFile = compilationUnit.ToTypeSystem();
-			pctx = pctx.UpdateProjectContent(null, parsedFile);
-			
-			var cmp = pctx.CreateCompilation();
-			var loc = doc.GetLocation(cursorPosition);
-			
-			var rctx = new CSharpTypeResolveContext(cmp.MainAssembly);
-			rctx = rctx.WithUsingScope(parsedFile.GetUsingScope(loc).Resolve(cmp));
-			
 
-			var curDef = parsedFile.GetInnermostTypeDefinition(loc);
+			IProjectContent pctx = new CSharpProjectContent();
+			var refs = new List<IUnresolvedAssembly> { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore, SystemAssembly };
+			if (references != null)
+				refs.AddRange (references);
+
+			pctx = pctx.AddAssemblyReferences(refs);
+
+			var syntaxTree = new CSharpParser().Parse(parsedText, "program.cs");
+			syntaxTree.Freeze();
+
+			var unresolvedFile = syntaxTree.ToTypeSystem();
+			pctx = pctx.AddOrUpdateFiles(unresolvedFile);
+
+			var cmp = pctx.CreateCompilation();
+			var loc = cursorPosition > 0 ? doc.GetLocation(cursorPosition) : new TextLocation (1, 1);
+
+			var rctx = new CSharpTypeResolveContext(cmp.MainAssembly);
+			rctx = rctx.WithUsingScope(unresolvedFile.GetUsingScope(loc).Resolve(cmp));
+
+			var curDef = unresolvedFile.GetInnermostTypeDefinition(loc);
 			if (curDef != null) {
-				var resolvedDef = curDef.Resolve(rctx).GetDefinition();
-				rctx = rctx.WithCurrentTypeDefinition(resolvedDef);
-				var curMember = resolvedDef.Members.FirstOrDefault(m => m.Region.Begin <= loc && loc < m.BodyRegion.End);
-				if (curMember != null) {
-					rctx = rctx.WithCurrentMember(curMember);
-				}
+					var resolvedDef = curDef.Resolve(rctx).GetDefinition();
+					rctx = rctx.WithCurrentTypeDefinition(resolvedDef);
+					var curMember = resolvedDef.Members.FirstOrDefault(m => m.Region.Begin <= loc && loc < m.BodyRegion.End);
+					if (curMember != null) {
+							rctx = rctx.WithCurrentMember(curMember);
+					}
 			}
-			var mb = new DefaultCompletionContextProvider(doc, parsedFile);
-			var engine = new CSharpCompletionEngine (doc, mb, new TestFactory (), pctx, rctx);
-				
+			var mb = new DefaultCompletionContextProvider(doc, unresolvedFile);
+			mb.AddSymbol ("TEST");
+			var engine = new CSharpCompletionEngine(doc, mb, new TestFactory(), pctx, rctx);
+
 			engine.EolMarker = Environment.NewLine;
-			engine.FormattingPolicy = FormattingOptionsFactory.CreateMono ();
-			
+			engine.FormattingPolicy = FormattingOptionsFactory.CreateMono();
+			return engine;
+		}
+
+		public static CompletionDataList CreateProvider(string text, bool isCtrlSpace, params IUnresolvedAssembly[] references)
+		{
+			int cursorPosition;
+			var engine = CreateEngine(text, out cursorPosition, references);
 			var data = engine.GetCompletionData (cursorPosition, isCtrlSpace);
 			
 			return new CompletionDataList () {
@@ -255,24 +266,24 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			};
 		}
 		
-		Tuple<ReadOnlyDocument, CSharpCompletionEngine> GetContent(string text, CompilationUnit compilationUnit)
+		Tuple<ReadOnlyDocument, CSharpCompletionEngine> GetContent(string text, SyntaxTree syntaxTree)
 		{
 			var doc = new ReadOnlyDocument(text);
 			IProjectContent pctx = new CSharpProjectContent();
 			pctx = pctx.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
-			var parsedFile = compilationUnit.ToTypeSystem();
+			var unresolvedFile = syntaxTree.ToTypeSystem();
 			
-			pctx = pctx.UpdateProjectContent(null, parsedFile);
+			pctx = pctx.AddOrUpdateFiles(unresolvedFile);
 			var cmp = pctx.CreateCompilation();
 			
-			var mb = new DefaultCompletionContextProvider(doc, parsedFile);
+			var mb = new DefaultCompletionContextProvider(doc, unresolvedFile);
 			var engine = new CSharpCompletionEngine (doc, mb, new TestFactory (), pctx, new CSharpTypeResolveContext (cmp.MainAssembly));
 			engine.EolMarker = Environment.NewLine;
 			engine.FormattingPolicy = FormattingOptionsFactory.CreateMono ();
 			return Tuple.Create (doc, engine);
 		}
 		
-		static CompletionDataList CreateProvider (string text, CompilationUnit compilationUnit, CSharpCompletionEngine engine, ReadOnlyDocument doc, TextLocation loc)
+		static CompletionDataList CreateProvider (string text, SyntaxTree syntaxTree, CSharpCompletionEngine engine, ReadOnlyDocument doc, TextLocation loc)
 		{
 			var cursorPosition = doc.GetOffset (loc);
 			
@@ -5365,6 +5376,45 @@ public class FooBar
 			});
 		}
 
+		[Test()]
+		public void TestCompletionInPreprocessorIf()
+		{
+			CombinedProviderTest(
+				@"using System;
+public class FooBar
+{
+	public static void Main (string[] args)
+	{
+		#if TEST
+		$Console.$
+		#endif
+	}
+}
+
+", provider => {
+				Assert.IsNotNull(provider.Find("WriteLine"));
+			});
+		}
+
+		[Test()]
+		public void TestCompletionInUndefinedPreprocessorIf()
+		{
+			CombinedProviderTest(
+				@"using System;
+public class FooBar
+{
+	public static void Main (string[] args)
+	{
+		#if UNDEFINED
+		$Console.$
+		#endif
+	}
+}
+
+", provider => {
+				Assert.IsNull(provider.Find("WriteLine"));
+			});
+		}
 
 	}
 }

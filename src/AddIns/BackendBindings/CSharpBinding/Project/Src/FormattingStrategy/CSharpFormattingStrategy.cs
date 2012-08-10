@@ -181,12 +181,12 @@ namespace CSharpBinding.FormattingStrategy
 			FileName fileName = editor.FileName;
 			IUnresolvedEntity nextElement = null;
 			if (fileName != null) {
-				IParsedFile parsedFile = SD.ParserService.ParseFile(fileName, editor.Document);
-				if (parsedFile != null) {
-					var currentClass = parsedFile.GetInnermostTypeDefinition(caretLine, 0);
+				IUnresolvedFile unresolvedFile = SD.ParserService.ParseFile(fileName, editor.Document);
+				if (unresolvedFile != null) {
+					var currentClass = unresolvedFile.GetInnermostTypeDefinition(caretLine, 0);
 					int nextElementLine = int.MaxValue;
 					if (currentClass == null) {
-						foreach (var c in parsedFile.TopLevelTypeDefinitions) {
+						foreach (var c in unresolvedFile.TopLevelTypeDefinitions) {
 							if (c.Region.BeginLine < nextElementLine && c.Region.BeginLine > caretLine) {
 								nextElementLine = c.Region.BeginLine;
 								nextElement = c;

@@ -25,7 +25,7 @@ Stuff that was renamed/moved:
 	ICSharpCode.SharpDevelop.Dom -> the type system and resolvers now are part of ICSharpCode.NRefactory
 	IDocument -> moved to ICSharpCode.NRefactory.Editor
 	IClass -> ITypeDefinition
-	ICompilationUnit -> IParsedFile
+	ISyntaxTree -> IUnresolvedFile
 	ITextBuffer -> ITextSource (in ICSharpCode.NRefactory.Editor)
 	IReturnType -> ITypeReference (unresolved) or IType (resolved)
 	Location -> TextLocation in ICSharpCode.NRefactory
@@ -77,8 +77,8 @@ Functionality changes:
 		The result of a parser run (ParseInformation) now may contain a fully parsed AST.
 		The ParserService may cache such full ASTs, but may also drop them from memory at any time.
 		This will be implemented by keeping the last N accessed files in the cache. (currently we just keep the caches around forever)
-		Every parse information also contains an IParsedFile instance with the type system information.
-		The IParsedFile is stored permanently (both in ParserService and in the IProjectContents).
+		Every parse information also contains an IUnresolvedFile instance with the type system information.
+		The IUnresolvedFile is stored permanently (both in ParserService and in the IProjectContents).
 
 
 Context Actions vs. Member Context Menu:

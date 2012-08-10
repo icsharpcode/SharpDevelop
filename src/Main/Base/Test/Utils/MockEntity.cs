@@ -19,7 +19,7 @@
 //			}
 //		}
 //		
-//		public override ICompilationUnit CompilationUnit {
+//		public override ISyntaxTree SyntaxTree {
 //			get {
 //				throw new NotImplementedException();
 //			}

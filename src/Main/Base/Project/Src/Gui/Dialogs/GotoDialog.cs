@@ -172,7 +172,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			ITextEditor editor = GetEditor();
 			if (editor != null) {
-				IParsedFile parseInfo = SD.ParserService.GetExistingParsedFile(editor.FileName);
+				IUnresolvedFile parseInfo = SD.ParserService.GetExistingUnresolvedFile(editor.FileName);
 				if (parseInfo != null) {
 					foreach (IUnresolvedTypeDefinition c in parseInfo.TopLevelTypeDefinitions) {
 						AddAllMembersMatchingText(c, text, true);

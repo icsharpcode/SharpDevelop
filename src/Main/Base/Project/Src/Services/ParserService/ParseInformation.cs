@@ -11,39 +11,39 @@ namespace ICSharpCode.SharpDevelop.Parser
 {
 	/// <summary>
 	/// Represents the result of a parser operation.
-	/// Note: the parser service only stores the IParsedFile, not any of the extra information.
+	/// Note: the parser service only stores the IUnresolvedFile, not any of the extra information.
 	/// The extra information is only provided to listeners of the ParseInformationUpdated event.
 	/// Those listeners may then decide to store the extra information (e.g. the TaskService stores TagComments).
 	/// </summary>
 	public class ParseInformation
 	{
-		readonly IParsedFile parsedFile;
+		readonly IUnresolvedFile unresolvedFile;
 		IList<TagComment> tagComments = new List<TagComment>();
 		readonly bool isFullParseInformation;
 		
-		public ParseInformation(IParsedFile parsedFile, bool isFullParseInformation)
+		public ParseInformation(IUnresolvedFile unresolvedFile, bool isFullParseInformation)
 		{
-			if (parsedFile == null)
-				throw new ArgumentNullException("parsedFile");
-			this.parsedFile = parsedFile;
+			if (unresolvedFile == null)
+				throw new ArgumentNullException("unresolvedFile");
+			this.unresolvedFile = unresolvedFile;
 			this.isFullParseInformation = isFullParseInformation;
 		}
 		
 		/// <summary>
 		/// Gets whether this parse information contains 'extra' data.
 		/// True = extra data is provided (e.g. folding information).
-		/// False = Only ParsedFile and TagComments are provided.
+		/// False = Only UnresolvedFile and TagComments are provided.
 		/// </summary>
 		public bool IsFullParseInformation {
 			get { return isFullParseInformation; }
 		}
 		
-		public IParsedFile ParsedFile {
-			get { return parsedFile; }
+		public IUnresolvedFile UnresolvedFile {
+			get { return unresolvedFile; }
 		}
 		
 		public FileName FileName {
-			get { return FileName.Create(parsedFile.FileName); }
+			get { return FileName.Create(unresolvedFile.FileName); }
 		}
 		
 		public IList<TagComment> TagComments {

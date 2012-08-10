@@ -24,7 +24,7 @@ namespace ICSharpCode.UnitTesting
 		bool disposed;
 		DockPanel panel;
 		ToolBar toolBar;
-		List<Tuple<IParsedFile, IParsedFile>> pending = new List<Tuple<IParsedFile, IParsedFile>>();
+		List<Tuple<IUnresolvedFile, IUnresolvedFile>> pending = new List<Tuple<IUnresolvedFile, IUnresolvedFile>>();
 		static UnitTestsPad instance;
 
 		public UnitTestsPad()
@@ -154,7 +154,7 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Protected method so we can test this method.
 		/// </summary>
-		protected void UpdateParseInfo(IParsedFile oldFile, IParsedFile newFile)
+		protected void UpdateParseInfo(IUnresolvedFile oldFile, IUnresolvedFile newFile)
 		{
 			RootUnitTestNode root = (RootUnitTestNode)treeView.Root;
 			if (root == null) {

@@ -211,7 +211,7 @@ namespace CSharpBinding
 		}
 		
 		// could work to extend selection to set of adjacent statements separated by blank lines
-		Selection ExtendSelection(ITextEditor editor, CompilationUnit parsedCU, IList<ISpecial> commentsBlankLines, out INode selectedResultNode, Type[] interestingNodeTypes)
+		Selection ExtendSelection(ITextEditor editor, SyntaxTree parsedCU, IList<ISpecial> commentsBlankLines, out INode selectedResultNode, Type[] interestingNodeTypes)
 		{
 			selectedResultNode = null;
 			
@@ -394,7 +394,7 @@ namespace CSharpBinding
 		}
 		
 		// could depend just on IDocument
-		CompilationUnit ParseDocument(ITextEditor editor, out IList<ISpecial> parsedSpecials)
+		SyntaxTree ParseDocument(ITextEditor editor, out IList<ISpecial> parsedSpecials)
 		{
 			parsedSpecials = null;
 			var editorLang = EditorContext.GetEditorLanguage(editor);
@@ -404,7 +404,7 @@ namespace CSharpBinding
 			parser.ParseMethodBodies = true;
 			parser.Lexer.SkipAllComments = false;
 			parser.Parse();
-			var parsedCU = parser.CompilationUnit;
+			var parsedCU = parser.SyntaxTree;
 			if (parsedCU == null) return null;
 			foreach (var node in parsedCU.Children) {
 				// fix StartLocation / EndLocation

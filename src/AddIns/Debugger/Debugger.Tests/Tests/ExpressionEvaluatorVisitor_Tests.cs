@@ -320,7 +320,7 @@ namespace Debugger.Tests
 			else
 				context = new CSharpResolver(compilation);
 			CSharpParser parser = new CSharpParser();
-			var expr = parser.ParseExpression(new StringReader(codeSnippet));
+			var expr = parser.ParseExpression(codeSnippet);
 			Assert.IsFalse(parser.HasErrors);
 			CSharpAstResolver snippetResolver = new CSharpAstResolver(context, expr);
 			return snippetResolver.Resolve(expr, CancellationToken.None);

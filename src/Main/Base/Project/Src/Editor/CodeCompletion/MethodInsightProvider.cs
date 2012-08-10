@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			
 			LanguageProperties language;
 			if (result.CallingClass != null)
-				language = result.CallingClass.CompilationUnit.Language;
+				language = result.CallingClass.SyntaxTree.Language;
 			else
 				language = ParserService.CurrentProjectContent.Language;
 			

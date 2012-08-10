@@ -3,6 +3,7 @@
 
 using System;
 using System.Globalization;
+using System.IO;
 using System.Text;
 
 namespace ICSharpCode.AvalonEdit.Utils
@@ -42,14 +43,14 @@ namespace ICSharpCode.AvalonEdit.Utils
 		}
 		
 		/// <summary>
-		/// Retrieves the text for a portion of the rope and writes it to the specified string builder.
+		/// Retrieves the text for a portion of the rope and writes it to the specified text writer.
 		/// Runs in O(lg N + M), where M=<paramref name="length"/>.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">offset or length is outside the valid range.</exception>
 		/// <remarks>
 		/// This method counts as a read access and may be called concurrently to other read accesses.
 		/// </remarks>
-		public static void WriteTo(this Rope<char> rope, StringBuilder output, int startIndex, int length)
+		public static void WriteTo(this Rope<char> rope, TextWriter output, int startIndex, int length)
 		{
 			if (rope == null)
 				throw new ArgumentNullException("rope");
@@ -111,7 +112,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 			}
 		}
 		
-		internal static void WriteTo(this RopeNode<char> node, int index, StringBuilder output, int count)
+		internal static void WriteTo(this RopeNode<char> node, int index, TextWriter output, int count)
 		{
 			if (node.height == 0) {
 				if (node.contents == null) {
@@ -119,7 +120,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 					node.GetContentNode().WriteTo(index, output, count);
 				} else {
 					// leaf node: append data
-					output.Append(node.contents, index, count);
+					output.Write(node.contents, index, count);
 				}
 			} else {
 				// concat node: do recursive calls

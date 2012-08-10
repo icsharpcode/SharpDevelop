@@ -158,8 +158,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			{
 				FindReferences refFinder = new FindReferences ();
 				refFinder.FindReferencesInFile (refFinder.GetSearchScopes (entity), 
-				                               context.ParsedFile, 
-				                               context.RootNode as CompilationUnit, 
+				                               context.UnresolvedFile, 
+				                               context.RootNode as SyntaxTree, 
 				                               context.Compilation, (n, r) => Rename (n, name), 
 				                               context.CancellationToken);
 			}
@@ -168,8 +168,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			{
 				FindReferences refFinder = new FindReferences ();
 				refFinder.FindLocalReferences (variable, 
-				                               context.ParsedFile, 
-				                               context.RootNode as CompilationUnit, 
+				                               context.UnresolvedFile, 
+				                               context.RootNode as SyntaxTree, 
 				                               context.Compilation, (n, r) => Rename (n, name), 
 				                               context.CancellationToken);
 			}
@@ -178,8 +178,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			{
 				FindReferences refFinder = new FindReferences ();
 				refFinder.FindTypeParameterReferences (type, 
-				                               context.ParsedFile, 
-				                               context.RootNode as CompilationUnit, 
+				                               context.UnresolvedFile, 
+				                               context.RootNode as SyntaxTree, 
 				                               context.Compilation, (n, r) => Rename (n, name), 
 				                               context.CancellationToken);
 			}
@@ -258,14 +258,14 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				Console.WriteLine (error.Message);
 			Assert.IsFalse (parser.HasErrors, "File contains parsing errors.");
 			unit.Freeze ();
-			var parsedFile = unit.ToTypeSystem ();
+			var unresolvedFile = unit.ToTypeSystem ();
 			
 			IProjectContent pc = new CSharpProjectContent ();
-			pc = pc.UpdateProjectContent (null, parsedFile);
+			pc = pc.AddOrUpdateFiles (unresolvedFile);
 			pc = pc.AddAssemblyReferences (new[] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			
 			var compilation = pc.CreateCompilation ();
-			var resolver = new CSharpAstResolver (compilation, unit, parsedFile);
+			var resolver = new CSharpAstResolver (compilation, unit, unresolvedFile);
 			TextLocation location = TextLocation.Empty;
 			if (idx >= 0)
 				location = doc.GetLocation (idx);

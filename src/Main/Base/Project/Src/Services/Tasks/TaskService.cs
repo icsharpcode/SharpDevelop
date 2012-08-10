@@ -85,7 +85,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		static void ParserService_ParseInformationUpdated(object sender, ParseInformationEventArgs e)
 		{
-			if (e.NewParsedFile == SD.ParserService.GetExistingParsedFile(e.FileName)) {
+			if (e.NewUnresolvedFile == SD.ParserService.GetExistingUnresolvedFile(e.FileName)) {
 				// Call UpdateCommentTags only for the main parse information (if a file is in multiple projects),
 				// and only if the results haven't already been replaced with a more recent ParseInformation.
 				if (e.NewParseInformation != null) {

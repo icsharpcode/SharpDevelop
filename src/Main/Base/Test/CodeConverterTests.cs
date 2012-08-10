@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc, sourceLanguage);
-			visitor.VisitCompilationUnit(parser.CompilationUnit, null);
+			visitor.VisitSyntaxTree(parser.SyntaxTree, null);
 			visitor.Cu.FileName = sourceLanguage == SupportedLanguage.CSharp ? "a.cs" : "a.vb";
 			foreach (IClass c in visitor.Cu.Classes) {
 				pc.AddClassToNamespaceList(c);
@@ -60,10 +60,10 @@ namespace ICSharpCode.SharpDevelop.Tests
 			if (sourceLanguage == SupportedLanguage.CSharp) {
 				CSharpToVBNetConvertVisitor convertVisitor = new CSharpToVBNetConvertVisitor(pc, parseInfo);
 				convertVisitor.RootNamespaceToRemove = "RootNamespace";
-				parser.CompilationUnit.AcceptVisitor(convertVisitor, null);
+				parser.SyntaxTree.AcceptVisitor(convertVisitor, null);
 			} else {
 				VBNetToCSharpConvertVisitor convertVisitor = new VBNetToCSharpConvertVisitor(pc, parseInfo);
-				parser.CompilationUnit.AcceptVisitor(convertVisitor, null);
+				parser.SyntaxTree.AcceptVisitor(convertVisitor, null);
 			}
 			
 			IOutputAstVisitor outputVisitor = sourceLanguage == SupportedLanguage.CSharp ? (IOutputAstVisitor)new VBNetOutputVisitor() : new CSharpOutputVisitor();
@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			outputVisitor.Options.IndentSize = 2;
 			using (SpecialNodesInserter.Install(parser.Lexer.SpecialTracker.RetrieveSpecials(),
 			                                    outputVisitor)) {
-				outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
+				outputVisitor.VisitSyntaxTree(parser.SyntaxTree, null);
 			}
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
 			Assert.AreEqual(expectedOutput.Replace("\r", ""), outputVisitor.Text.Trim().Replace("\r", ""));

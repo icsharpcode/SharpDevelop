@@ -118,6 +118,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public MyStructWithCtor(int a) {}
 	}
 	
+	public class MyClassWithCtor
+	{
+		private MyClassWithCtor(int a) {}
+	}
+	
 	[Serializable]
 	public class NonCustomAttributes
 	{
@@ -247,6 +252,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 	public class ClassWithVirtualProperty {
 		public virtual int Prop { get; set; }
 	}
+	
+	public class ClassThatOverridesAndSealsVirtualProperty : ClassWithVirtualProperty {
+		public sealed override int Prop { get; set; }
+	}
 
 	public class ClassThatImplementsProperty : IInterfaceWithProperty {
 		public int Prop { get; set; }
@@ -307,5 +316,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		new int this[int i] { get; set; }
 		new int Prop { get; set; }
 		new event EventHandler Evt;
+	}
+	
+	public static class StaticClass {}
+	public abstract class AbstractClass {}
+	
+	public class IndexerNonDefaultName {
+		[IndexerName("Foo")]
+		public int this[int index] {
+			get { return 0; }
+		}
 	}
 }

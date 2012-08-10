@@ -134,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (member == null) {
 				ShowUnknownSymbolError();
-			} else if (member.DeclaringType.CompilationUnit.FileName == null) {
+			} else if (member.DeclaringType.SyntaxTree.FileName == null) {
 				ShowNoUserCodeError();
 			} else {
 				IMethod method = member as IMethod;
@@ -150,7 +150,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (c == null) {
 				ShowUnknownSymbolError();
-			} else if (c.CompilationUnit.FileName == null) {
+			} else if (c.SyntaxTree.FileName == null) {
 				ShowNoUserCodeError();
 			} else {
 				FindReferencesAndRenameHelper.RenameClass(c);

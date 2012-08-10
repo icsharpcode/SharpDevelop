@@ -34,15 +34,15 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class CodeDomConvertVisitorTests : ResolverTestBase
 	{
 		CodeDomConvertVisitor convertVisitor;
-		CSharpParsedFile parsedFile;
+		CSharpUnresolvedFile unresolvedFile;
 		
 		public override void SetUp()
 		{
 			base.SetUp();
-			parsedFile = new CSharpParsedFile("test.cs");
-			parsedFile.RootUsingScope.Usings.Add(MakeReference("System"));
-			parsedFile.RootUsingScope.Usings.Add(MakeReference("System.Collections.Generic"));
-			parsedFile.RootUsingScope.Usings.Add(MakeReference("System.Linq"));
+			unresolvedFile = new CSharpUnresolvedFile("test.cs");
+			unresolvedFile.RootUsingScope.Usings.Add(MakeReference("System"));
+			unresolvedFile.RootUsingScope.Usings.Add(MakeReference("System.Collections.Generic"));
+			unresolvedFile.RootUsingScope.Usings.Add(MakeReference("System.Linq"));
 			
 			convertVisitor = new CodeDomConvertVisitor();
 			convertVisitor.AllowSnippetNodes = false;
@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		string ConvertHelper(AstNode node, Action<CSharpCodeProvider, CodeObject, TextWriter, CodeGeneratorOptions> action)
 		{
 			CSharpResolver resolver = new CSharpResolver(compilation);
-			resolver = resolver.WithCurrentUsingScope(parsedFile.RootUsingScope.Resolve(compilation));
+			resolver = resolver.WithCurrentUsingScope(unresolvedFile.RootUsingScope.Resolve(compilation));
 			resolver = resolver.WithCurrentTypeDefinition(compilation.FindType(KnownTypeCode.Object).GetDefinition());
 			var codeObj = convertVisitor.Convert(node, new CSharpAstResolver(resolver, node));
 			
@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		string ConvertExpression(string code)
 		{
 			CSharpParser parser = new CSharpParser();
-			var expr = parser.ParseExpression(new StringReader(code));
+			var expr = parser.ParseExpression(code);
 			Assert.IsFalse(parser.HasErrors);
 			return ConvertExpression(expr);
 		}
@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		string ConvertStatement(string code)
 		{
 			CSharpParser parser = new CSharpParser();
-			var expr = parser.ParseStatements(new StringReader(code)).Single();
+			var expr = parser.ParseStatements(code).Single();
 			Assert.IsFalse(parser.HasErrors);
 			return ConvertStatement(expr);
 		}
@@ -97,7 +97,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		string ConvertMember(string code)
 		{
 			CSharpParser parser = new CSharpParser();
-			var expr = parser.ParseTypeMembers(new StringReader(code)).Single();
+			var expr = parser.ParseTypeMembers(code).Single();
 			Assert.IsFalse(parser.HasErrors);
 			return ConvertMember(expr);
 		}
@@ -110,9 +110,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		string ConvertTypeDeclaration(string code)
 		{
 			CSharpParser parser = new CSharpParser();
-			var cu = parser.Parse(new StringReader(code), "program.cs");
+			var syntaxTree = parser.Parse(code, "program.cs");
 			Assert.IsFalse(parser.HasErrors);
-			return ConvertTypeDeclaration((EntityDeclaration)cu.Children.Single());
+			return ConvertTypeDeclaration((EntityDeclaration)syntaxTree.Children.Single());
 		}
 		#endregion
 		

@@ -241,10 +241,10 @@ namespace CSharpBinding
 			this.line = line;
 			this.lineNumber = lineNumber;
 			if (Debugger.IsAttached) {
-				parseInfo.CompilationUnit.AcceptVisitor(this);
+				parseInfo.SyntaxTree.AcceptVisitor(this);
 			} else {
 				try {
-					parseInfo.CompilationUnit.AcceptVisitor(this);
+					parseInfo.SyntaxTree.AcceptVisitor(this);
 				} catch (Exception ex) {
 					hasCrashed = true;
 					throw new ApplicationException("Error highlighting line " + lineNumber, ex);
@@ -403,7 +403,7 @@ namespace CSharpBinding
 					string symbol = attr.PositionalArguments[0].ConstantValue as string;
 					if (symbol != null) {
 						hasConditionalAttribute = true;
-						var cu = this.resolver.RootNode as CompilationUnit;
+						var cu = this.resolver.RootNode as SyntaxTree;
 						if (cu != null) {
 							if (cu.ConditionalSymbols.Contains(symbol))
 								return false; // conditional is active

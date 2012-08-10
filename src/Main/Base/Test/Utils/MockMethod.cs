@@ -260,7 +260,7 @@
 //			throw new NotImplementedException();
 //		}
 //		
-//		public ICompilationUnit CompilationUnit {
+//		public ISyntaxTree SyntaxTree {
 //			get {
 //				throw new NotImplementedException();
 //			}

@@ -595,14 +595,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (parseInfo != null && CodeEditorOptions.Instance.EnableQuickClassBrowser) {
 				// don't create quickClassBrowser for files that don't have any classes
 				// (but do keep the quickClassBrowser when the last class is removed from a file)
-				if (quickClassBrowser != null || parseInfo.ParsedFile.TopLevelTypeDefinitions.Count > 0) {
+				if (quickClassBrowser != null || parseInfo.UnresolvedFile.TopLevelTypeDefinitions.Count > 0) {
 					if (quickClassBrowser == null) {
 						quickClassBrowser = new QuickClassBrowser();
 						quickClassBrowser.JumpAction = (line, col) => ActiveTextEditor.JumpTo(line, col);
 						SetRow(quickClassBrowser, 0);
 						this.Children.Add(quickClassBrowser);
 					}
-					quickClassBrowser.Update(parseInfo.ParsedFile);
+					quickClassBrowser.Update(parseInfo.UnresolvedFile);
 					quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditor.TextArea.Caret.Location);
 				}
 			} else {
@@ -611,7 +611,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					quickClassBrowser = null;
 				}
 			}
-			iconBarManager.UpdateClassMemberBookmarks(parseInfo != null ? parseInfo.ParsedFile : null, document);
+			iconBarManager.UpdateClassMemberBookmarks(parseInfo != null ? parseInfo.UnresolvedFile : null, document);
 			primaryTextEditor.UpdateParseInformationForFolding(parseInfo);
 			if (secondaryTextEditor != null)
 				secondaryTextEditor.UpdateParseInformationForFolding(parseInfo);

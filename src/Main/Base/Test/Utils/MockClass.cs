@@ -52,7 +52,7 @@
 //			}
 //		}
 //		
-//		public ICompilationUnit CompilationUnit {
+//		public ISyntaxTree SyntaxTree {
 //			get {
 //				throw new NotImplementedException();
 //			}

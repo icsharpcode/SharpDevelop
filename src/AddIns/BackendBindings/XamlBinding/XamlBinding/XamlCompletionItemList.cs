@@ -144,7 +144,7 @@ namespace ICSharpCode.XamlBinding
 //		static bool CreateEventHandlerCode(CompletionContext context, NewEventCompletionItem completionItem, out int discriminator)
 //		{
 //			ParseInformation p = ParserService.GetParseInformation(context.Editor.FileName);
-//			var unit = p.CompilationUnit;
+//			var unit = p.SyntaxTree;
 //			var loc = context.Editor.Document.OffsetToPosition(context.StartOffset);
 //			IClass c = unit.GetInnermostClass(loc.Line, loc.Column);
 //			
@@ -188,7 +188,7 @@ namespace ICSharpCode.XamlBinding
 //					
 //					node.Modifier = Modifiers.None;
 //
-//					IViewContent viewContent = FileService.OpenFile(part.CompilationUnit.FileName, XamlBindingOptions.SwitchToCodeViewAfterInsertion);
+//					IViewContent viewContent = FileService.OpenFile(part.SyntaxTree.FileName, XamlBindingOptions.SwitchToCodeViewAfterInsertion);
 //					IFileDocumentProvider document = viewContent as IFileDocumentProvider;
 //					
 //					if (viewContent != null && document != null) {

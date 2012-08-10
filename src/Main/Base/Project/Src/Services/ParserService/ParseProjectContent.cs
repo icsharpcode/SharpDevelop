@@ -87,8 +87,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 				pc = this.projectContent;
 				serializeOnDispose = !this.serializedProjectContentIsUpToDate;
 			}
-			foreach (var parsedFile in pc.Files) {
-				SD.ParserService.RemoveOwnerProject(FileName.Create(parsedFile.FileName), project);
+			foreach (var unresolvedFile in pc.Files) {
+				SD.ParserService.RemoveOwnerProject(FileName.Create(unresolvedFile.FileName), project);
 			}
 			if (serializeOnDispose)
 				SerializeAsync(cacheFileName, pc).FireAndForget();
@@ -105,16 +105,16 @@ namespace ICSharpCode.SharpDevelop.Parser
 				delegate {
 					pc = pc.RemoveAssemblyReferences(pc.AssemblyReferences);
 					int serializableFileCount = 0;
-					List<IParsedFile> nonSerializableParsedFiles = new List<IParsedFile>();
-					foreach (var parsedFile in pc.Files) {
-						if (IsSerializable(parsedFile))
+					List<IUnresolvedFile> nonSerializableUnresolvedFiles = new List<IUnresolvedFile>();
+					foreach (var unresolvedFile in pc.Files) {
+						if (IsSerializable(unresolvedFile))
 							serializableFileCount++;
 						else
-							nonSerializableParsedFiles.Add(parsedFile);
+							nonSerializableUnresolvedFiles.Add(unresolvedFile);
 					}
 					// remove non-serializable parsed files
-					if (nonSerializableParsedFiles.Count > 0)
-						pc = pc.UpdateProjectContent(nonSerializableParsedFiles, null);
+					if (nonSerializableUnresolvedFiles.Count > 0)
+						pc = pc.UpdateProjectContent(nonSerializableUnresolvedFiles, null);
 					if (serializableFileCount > 3) {
 						LoggingService.Debug("Serializing " + serializableFileCount + " files to " + cacheFileName);
 						SaveToCache(cacheFileName, pc);
@@ -124,9 +124,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 				});
 		}
 		
-		static bool IsSerializable(IParsedFile parsedFile)
+		static bool IsSerializable(IUnresolvedFile unresolvedFile)
 		{
-			return parsedFile != null && parsedFile.GetType().IsSerializable && parsedFile.LastWriteTime != default(DateTime);
+			return unresolvedFile != null && unresolvedFile.GetType().IsSerializable && unresolvedFile.LastWriteTime != default(DateTime);
 		}
 		
 		static string GetCacheFileName(FileName projectFileName)
@@ -211,7 +211,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 		}
 		
-		public void ParseInformationUpdated(IParsedFile oldFile, IParsedFile newFile)
+		public void ParseInformationUpdated(IUnresolvedFile oldFile, IUnresolvedFile newFile)
 		{
 			// This method is called by the parser service within the parser service (per-file) lock.
 			lock (lockObj) {
@@ -287,11 +287,11 @@ namespace ICSharpCode.SharpDevelop.Parser
 				fileName => {
 					ITextSource content = finder.CreateForOpenFile(fileName);
 					bool wasLoadedFromCache = false;
-					IParsedFile parsedFile = null;
+					IUnresolvedFile unresolvedFile = null;
 					if (content == null && cachedPC != null) {
-						parsedFile = cachedPC.GetFile(fileName);
-						if (parsedFile != null && parsedFile.LastWriteTime == File.GetLastWriteTimeUtc(fileName)) {
-							parserService.RegisterParsedFile(fileName, project, parsedFile);
+						unresolvedFile = cachedPC.GetFile(fileName);
+						if (unresolvedFile != null && unresolvedFile.LastWriteTime == File.GetLastWriteTimeUtc(fileName)) {
+							parserService.RegisterUnresolvedFile(fileName, project, unresolvedFile);
 							wasLoadedFromCache = true;
 						}
 					}
@@ -304,7 +304,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 							}
 						}
 						if (content != null) {
-							parsedFile = parserService.ParseFile(fileName, content, project);
+							unresolvedFile = parserService.ParseFile(fileName, content, project);
 						}
 					}
 					lock (progressLock) {
@@ -312,7 +312,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 							fileCountLoadedFromCache++;
 						} else {
 							fileCountParsed++;
-							if (IsSerializable(parsedFile))
+							if (IsSerializable(unresolvedFile))
 								fileCountParsedAndSerializable++;
 						}
 						progressMonitor.Progress += fileCountInverse;

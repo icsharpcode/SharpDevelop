@@ -36,7 +36,7 @@ namespace ICSharpCode.XamlBinding
 				return;
 			
 			#warning Reimplement XAML outline
-//			var cu = e.NewCompilationUnit as XamlCompilationUnit;
+//			var cu = e.NewSyntaxTree as XamlSyntaxTree;
 //			
 //			if (cu != null && cu.TreeRootNode != null)
 //				UpdateTree(cu.TreeRootNode);

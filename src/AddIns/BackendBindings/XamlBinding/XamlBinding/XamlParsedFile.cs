@@ -22,23 +22,23 @@ using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.XamlBinding
 {
-	public sealed class XamlParsedFile : IParsedFile
+	public sealed class XamlUnresolvedFile : IUnresolvedFile
 	{
 		FileName fileName;
 		AXmlDocument document;
 		List<Error> errors;
 		IUnresolvedTypeDefinition[] topLevel;
 		
-		XamlParsedFile(FileName fileName, AXmlDocument document)
+		XamlUnresolvedFile(FileName fileName, AXmlDocument document)
 		{
 			this.fileName = fileName;
 			this.document = document;
 			this.errors = new List<Error>();
 		}
 		
-		public static XamlParsedFile Create(FileName fileName, ITextSource fileContent, AXmlDocument document)
+		public static XamlUnresolvedFile Create(FileName fileName, ITextSource fileContent, AXmlDocument document)
 		{
-			XamlParsedFile file = new XamlParsedFile(fileName, document);
+			XamlUnresolvedFile file = new XamlUnresolvedFile(fileName, document);
 			
 			file.errors.AddRange(document.SyntaxErrors.Select(err => new Error(ErrorType.Error, err.Description)));
 			var visitor = new XamlDocumentVisitor(file, fileContent);
@@ -114,11 +114,11 @@ namespace ICSharpCode.XamlBinding
 		{
 			public DefaultUnresolvedTypeDefinition TypeDefinition { get; private set; }
 			
-			IParsedFile file;
+			IUnresolvedFile file;
 			AXmlDocument currentDocument;
 			ReadOnlyDocument textDocument;
 			
-			public XamlDocumentVisitor(IParsedFile file, ITextSource fileContent)
+			public XamlDocumentVisitor(IUnresolvedFile file, ITextSource fileContent)
 			{
 				this.file = file;
 				textDocument = new ReadOnlyDocument(fileContent);
@@ -133,7 +133,7 @@ namespace ICSharpCode.XamlBinding
 					if (className != null) {
 						TypeDefinition = new DefaultUnresolvedTypeDefinition(className) {
 							Kind = TypeKind.Class,
-							ParsedFile = file,
+							UnresolvedFile = file,
 							Region = new DomRegion(file.FileName, textDocument.GetLocation(rootElement.StartOffset), textDocument.GetLocation(rootElement.EndOffset))
 						};
 						TypeDefinition.Members.Add(

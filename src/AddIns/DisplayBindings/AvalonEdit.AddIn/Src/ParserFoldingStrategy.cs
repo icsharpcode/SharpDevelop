@@ -52,7 +52,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			List<NewFolding> newFoldMarkers = new List<NewFolding>();
 			if (parseInfo != null) {
-				foreach (var c in parseInfo.ParsedFile.TopLevelTypeDefinitions) {
+				foreach (var c in parseInfo.UnresolvedFile.TopLevelTypeDefinitions) {
 					AddClassMembers(c, newFoldMarkers);
 				}
 				#warning Additional folding regions

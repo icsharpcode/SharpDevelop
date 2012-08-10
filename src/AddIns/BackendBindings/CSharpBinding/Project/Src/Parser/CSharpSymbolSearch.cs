@@ -101,7 +101,7 @@ namespace CSharpBinding
 			ISyntaxHighlighter highlighter = null;
 			List<Reference> results = new List<Reference>();
 			fr.FindReferencesInFile(
-				searchScope, parseInfo.ParsedFile, parseInfo.CompilationUnit, compilation,
+				searchScope, parseInfo.UnresolvedFile, parseInfo.SyntaxTree, compilation,
 				delegate (AstNode node, ResolveResult result) {
 					if (document == null) {
 						document = new ReadOnlyDocument(textSource);

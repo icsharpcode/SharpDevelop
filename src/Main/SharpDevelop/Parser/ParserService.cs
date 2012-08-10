@@ -44,9 +44,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 				delegate {
 					if (!LoadSolutionProjectsThread.IsRunning) {
 						string addition;
-						if (e.OldParsedFile == null)
+						if (e.OldUnresolvedFile == null)
 							addition = " (new)";
-						else if (e.NewParsedFile == null)
+						else if (e.NewUnresolvedFile == null)
 							addition = " (removed)";
 						else
 							addition = " (updated)";
@@ -96,9 +96,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 			
 			var entry = GetFileEntry(fileName, false);
 			if (entry != null && entry.parser != null) {
-				var parsedFile = entry.GetExistingParsedFile(null, null);
-				if (parsedFile != null) {
-					ICompilation compilation = entry.parser.CreateCompilationForSingleFile(fileName, parsedFile);
+				var unresolvedFile = entry.GetExistingUnresolvedFile(null, null);
+				if (unresolvedFile != null) {
+					ICompilation compilation = entry.parser.CreateCompilationForSingleFile(fileName, unresolvedFile);
 					if (compilation != null)
 						return compilation;
 				}
@@ -207,11 +207,11 @@ namespace ICSharpCode.SharpDevelop.Parser
 		#endregion
 		
 		#region Forward Parse() calls to entry
-		public IParsedFile GetExistingParsedFile(FileName fileName, ITextSourceVersion version, IProject parentProject)
+		public IUnresolvedFile GetExistingUnresolvedFile(FileName fileName, ITextSourceVersion version, IProject parentProject)
 		{
 			var entry = GetFileEntry(fileName, false);
 			if (entry != null)
-				return entry.GetExistingParsedFile(version, parentProject);
+				return entry.GetExistingUnresolvedFile(version, parentProject);
 			else
 				return null;
 		}
@@ -230,7 +230,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			return GetFileEntry(fileName, true).Parse(fileContent, parentProject, cancellationToken);
 		}
 		
-		public IParsedFile ParseFile(FileName fileName, ITextSource fileContent, IProject parentProject, CancellationToken cancellationToken)
+		public IUnresolvedFile ParseFile(FileName fileName, ITextSource fileContent, IProject parentProject, CancellationToken cancellationToken)
 		{
 			return GetFileEntry(fileName, true).ParseFile(fileContent, parentProject, cancellationToken);
 		}
@@ -240,7 +240,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			return GetFileEntry(fileName, true).ParseAsync(fileContent, parentProject, cancellationToken);
 		}
 		
-		public Task<IParsedFile> ParseFileAsync(FileName fileName, ITextSource fileContent, IProject parentProject, CancellationToken cancellationToken)
+		public Task<IUnresolvedFile> ParseFileAsync(FileName fileName, ITextSource fileContent, IProject parentProject, CancellationToken cancellationToken)
 		{
 			return GetFileEntry(fileName, true).ParseFileAsync(fileContent, parentProject, cancellationToken);
 		}
@@ -369,9 +369,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 			// TODO
 		}
 		
-		public void RegisterParsedFile(FileName fileName, IProject project, IParsedFile parsedFile)
+		public void RegisterUnresolvedFile(FileName fileName, IProject project, IUnresolvedFile unresolvedFile)
 		{
-			GetFileEntry(fileName, true).RegisterParsedFile(project, parsedFile);
+			GetFileEntry(fileName, true).RegisterUnresolvedFile(project, unresolvedFile);
 		}
 	}
 }

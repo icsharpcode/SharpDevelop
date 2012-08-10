@@ -64,7 +64,7 @@ namespace CSharpBinding
 			                       v => v.Replace(ProjectTypeGuids.VBNet, ProjectTypeGuids.CSharp, StringComparison.OrdinalIgnoreCase));
 		}
 		
-		protected override void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials, FileProjectItem sourceItem)
+		protected override void ConvertAst(SyntaxTree compilationUnit, List<ISpecial> specials, FileProjectItem sourceItem)
 		{
 			PreprocessingDirective.VBToCSharp(specials);
 			CompilableProject project = (CompilableProject)sourceItem.Project;
@@ -82,7 +82,7 @@ namespace CSharpBinding
 			compilationUnit.AcceptVisitor(visitor, null);
 		}
 		
-		void RemoveWindowsFormsSpecificCode(CompilationUnit compilationUnit, List<ISpecial> specials, bool keepCode)
+		void RemoveWindowsFormsSpecificCode(SyntaxTree compilationUnit, List<ISpecial> specials, bool keepCode)
 		{
 			for (int i = 0; i < specials.Count; i++) {
 				PreprocessingDirective ppd = specials[i] as PreprocessingDirective;

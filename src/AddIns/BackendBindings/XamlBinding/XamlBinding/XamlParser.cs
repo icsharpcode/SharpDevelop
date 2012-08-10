@@ -63,12 +63,12 @@ namespace ICSharpCode.XamlBinding
 				document = parser.ParseIncremental(parserState, fileContent, out newParserState, cancellationToken);
 			}
 			parserState = newParserState;
-			XamlParsedFile parsedFile = XamlParsedFile.Create(fileName, fileContent, document);
+			XamlUnresolvedFile unresolvedFile = XamlUnresolvedFile.Create(fileName, fileContent, document);
 			ParseInformation parseInfo;
 			if (fullParseInformationRequested)
-				parseInfo = new XamlFullParseInformation(parsedFile, document, fileContent);
+				parseInfo = new XamlFullParseInformation(unresolvedFile, document, fileContent);
 			else
-				parseInfo = new ParseInformation(parsedFile, false);
+				parseInfo = new ParseInformation(unresolvedFile, false);
 			AddTagComments(document, parseInfo, fileContent);
 			return parseInfo;
 		}
@@ -105,7 +105,7 @@ namespace ICSharpCode.XamlBinding
 			throw new NotImplementedException();
 		}
 		
-		public ICompilation CreateCompilationForSingleFile(FileName fileName, IParsedFile parsedFile)
+		public ICompilation CreateCompilationForSingleFile(FileName fileName, IUnresolvedFile unresolvedFile)
 		{
 			// TODO: create a simple compilation with WPF references?
 			return null;

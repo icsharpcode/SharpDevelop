@@ -136,7 +136,7 @@ namespace ICSharpCode.XamlBinding
 		
 		ResolveResult ResolveAttributeValue(IMember propertyOrEvent, AXmlAttribute attribute)
 		{
-			IType type = parseInfo.ParsedFile.GetTopLevelTypeDefinition(location).Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
+			IType type = parseInfo.UnresolvedFile.GetTopLevelTypeDefinition(location).Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
 			if (propertyOrEvent is IEvent) {
 				var memberLookup = new MemberLookup(type.GetDefinition(), compilation.MainAssembly);
 				var rr = memberLookup.Lookup(new ThisResolveResult(type), attribute.Value, EmptyList<IType>.Instance, false);

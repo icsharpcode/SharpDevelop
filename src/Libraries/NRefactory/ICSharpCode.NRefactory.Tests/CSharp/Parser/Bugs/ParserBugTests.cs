@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ParserBugTests.cs
 //  
 // Author:
@@ -53,7 +53,7 @@ class Foo
     {
     }
 }";
-			var unit = CompilationUnit.Parse(code);
+			var unit = SyntaxTree.Parse(code);
 			var type = unit.Members.First() as TypeDeclaration;
 			var constructor = type.Members.Skip(1).First() as ConstructorDeclaration;
 			var passed = !constructor.HasModifier(Modifiers.Override);
@@ -78,7 +78,7 @@ class Stub
         return new Test ()
     }
 }";
-			var unit = CompilationUnit.Parse(code);
+			var unit = SyntaxTree.Parse(code);
 			var type = unit.Members.First() as TypeDeclaration;
 			var method = type.Members.First() as MethodDeclaration;
 			bool passed = method.Body.Statements.FirstOrDefault() is ReturnStatement;
@@ -102,7 +102,7 @@ class TestClass
   {
   }
 }";
-			var unit = CompilationUnit.Parse(code);
+			var unit = SyntaxTree.Parse(code);
 			
 			var type = unit.Members.First() as TypeDeclaration;
 			var constructor = type.Members.First() as ConstructorDeclaration;
@@ -131,7 +131,7 @@ class Foo
 		Test(new Foo (
 	}
 }";
-			var unit = CompilationUnit.Parse(code);
+			var unit = SyntaxTree.Parse(code);
 			
 			var type = unit.Members.First() as TypeDeclaration;
 			var method = type.Members.First() as MethodDeclaration;
@@ -157,7 +157,7 @@ class Foo
 		for (int i = 0; i < foo.bar)
 	}
 }";
-			var unit = CompilationUnit.Parse(code);
+			var unit = SyntaxTree.Parse(code);
 			
 			bool passed = @"class Foo
 {
@@ -187,7 +187,7 @@ class Foo
 		a = cond ? expr
 	}
 }";
-			var unit = CompilationUnit.Parse(code);
+			var unit = SyntaxTree.Parse(code);
 			
 			var type = unit.Members.First() as TypeDeclaration;
 			var method = type.Members.First() as MethodDeclaration;
@@ -213,7 +213,7 @@ class Foo
 		a = cond ? expr :
 	}
 }";
-			var unit = CompilationUnit.Parse(code);
+			var unit = SyntaxTree.Parse(code);
 			
 			var type = unit.Members.First() as TypeDeclaration;
 			var method = type.Members.First() as MethodDeclaration;
@@ -242,7 +242,7 @@ class Foo
         string str = 
     }
 }";
-			var unit = CompilationUnit.Parse(code);
+			var unit = SyntaxTree.Parse(code);
 			
 			var type = unit.Members.First() as TypeDeclaration;
 			var method = type.Members.First() as MethodDeclaration;
@@ -269,7 +269,7 @@ class Foo
 		} catch (Exception name)
 	}
 }";
-			var unit = CompilationUnit.Parse(code);
+			var unit = SyntaxTree.Parse(code);
 			
 			var type = unit.Members.First() as TypeDeclaration;
 			var method = type.Members.First() as MethodDeclaration;
@@ -300,7 +300,7 @@ class Test
     }
 }
 ";
-			var unit = CompilationUnit.Parse(code);
+			var unit = SyntaxTree.Parse(code);
 			
 			bool passed = unit.GetText().Trim() == @"using System;
 class Test
@@ -336,7 +336,7 @@ class Foo
     }
 }
 ";
-			var unit = CompilationUnit.Parse(code);
+			var unit = SyntaxTree.Parse(code);
 			
 			var type = unit.Members.First() as TypeDeclaration;
 			var method = type.Members.First() as MethodDeclaration;
@@ -363,7 +363,7 @@ class Foo
         yield return new Foo { }
     }
 }";
-			var unit = CompilationUnit.Parse(code);
+			var unit = SyntaxTree.Parse(code);
 			
 			bool passed = unit.GetText().Trim() == @"public class Bar
 {
@@ -398,7 +398,7 @@ class Foo
 	}
 }
 ";
-			var unit = CompilationUnit.Parse(code);
+			var unit = SyntaxTree.Parse(code);
 			
 			var type = unit.Members.First() as TypeDeclaration;
 			var method = type.Members.First() as MethodDeclaration;

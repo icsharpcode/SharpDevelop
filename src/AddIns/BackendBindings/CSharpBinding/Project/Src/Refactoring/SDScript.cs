@@ -49,9 +49,9 @@ namespace CSharpBinding.Refactoring
 			if (parseInfo != null) {
 				//var startLocation = editor.Document.GetLocation(offset);
 				//var endLocation = editor.Document.GetLocation(offset + length);
-				//var node = parseInfo.CompilationUnit.GetNodeContaining(startLocation, endLocation);
+				//var node = parseInfo.SyntaxTree.GetNodeContaining(startLocation, endLocation);
 				var formatter = new AstFormattingVisitor(FormattingOptionsFactory.CreateSharpDevelop(), editor.Document, context.TextEditorOptions);
-				parseInfo.CompilationUnit.AcceptVisitor(formatter);
+				parseInfo.SyntaxTree.AcceptVisitor(formatter);
 				var segment = GetSegment(node);
 				formatter.ApplyChanges(segment.Offset, segment.Length);
 			} else {
@@ -93,7 +93,7 @@ namespace CSharpBinding.Refactoring
 		{
 			if (parentType == null)
 				return completedTask;
-			var currentPart = parentType.Parts.FirstOrDefault(p => p.ParsedFile != null && string.Equals(p.ParsedFile.FileName, editor.FileName, StringComparison.OrdinalIgnoreCase));
+			var currentPart = parentType.Parts.FirstOrDefault(p => p.UnresolvedFile != null && string.Equals(p.UnresolvedFile.FileName, editor.FileName, StringComparison.OrdinalIgnoreCase));
 			if (currentPart != null) {
 				var insertionPoints = InsertionPoint.GetInsertionPoints(editor.Document, currentPart);
 				if (insertionPoints.Count > 0) {

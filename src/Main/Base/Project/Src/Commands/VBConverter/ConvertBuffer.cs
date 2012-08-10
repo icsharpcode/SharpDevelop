@@ -35,9 +35,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 				PreprocessingDirective.CSharpToVB(specials);
 				IAstVisitor v = new CSharpToVBNetConvertVisitor(ParserService.CurrentProjectContent,
 				                                                ParserService.GetParseInformation(content.PrimaryFileName));
-				v.VisitCompilationUnit(p.CompilationUnit, null);
+				v.VisitSyntaxTree(p.SyntaxTree, null);
 				using (SpecialNodesInserter.Install(specials, vbv)) {
-					vbv.VisitCompilationUnit(p.CompilationUnit, null);
+					vbv.VisitSyntaxTree(p.SyntaxTree, null);
 				}
 				
 				FileService.NewFile("Generated.vb", vbv.Text);

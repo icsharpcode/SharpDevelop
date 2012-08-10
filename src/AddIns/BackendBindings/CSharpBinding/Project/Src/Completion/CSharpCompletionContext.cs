@@ -49,8 +49,8 @@ namespace CSharpBinding.Completion
 			this.ParseInformation = parseInfo;
 			this.Compilation = compilation;
 			this.ProjectContent = projectContent;
-			this.TypeResolveContextAtCaret = parseInfo.ParsedFile.GetTypeResolveContext(compilation, editor.Caret.Location);
-			this.CompletionContextProvider = new DefaultCompletionContextProvider(editor.Document, parseInfo.ParsedFile);
+			this.TypeResolveContextAtCaret = parseInfo.UnresolvedFile.GetTypeResolveContext(compilation, editor.Caret.Location);
+			this.CompletionContextProvider = new DefaultCompletionContextProvider(editor.Document, parseInfo.UnresolvedFile);
 		}
 	}
 }

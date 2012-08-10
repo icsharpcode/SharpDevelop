@@ -35,12 +35,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		static readonly Lazy<IUnresolvedAssembly> systemCore = new Lazy<IUnresolvedAssembly>(
 			delegate {
-				return new CecilLoader().LoadAssemblyFile(typeof(System.Linq.Enumerable).Assembly.Location);
-			});
-		
+			return new CecilLoader().LoadAssemblyFile(typeof(System.Linq.Enumerable).Assembly.Location);
+		});
+
 		public static IUnresolvedAssembly Mscorlib { get { return mscorlib.Value; } }
 		public static IUnresolvedAssembly SystemCore { get { return systemCore.Value; } }
-		
+
 		[TestFixtureSetUp]
 		public void FixtureSetUp()
 		{
@@ -306,6 +306,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition c = typeRef.Resolve(compilationWithSystemCore.TypeResolveContext).GetDefinition();
 			Assert.IsNotNull(c, "System.Func<,> not found");
 			Assert.AreEqual("mscorlib", c.ParentAssembly.AssemblyName);
+		}
+		
+		public void DelegateIsClass()
+		{
+			var @delegate = compilation.FindType(KnownTypeCode.Delegate).GetDefinition();
+			Assert.AreEqual(TypeKind.Class, @delegate);
+			Assert.IsFalse(@delegate.IsSealed);
+		}
+		
+		public void MulticastDelegateIsClass()
+		{
+			var multicastDelegate = compilation.FindType(KnownTypeCode.MulticastDelegate).GetDefinition();
+			Assert.AreEqual(TypeKind.Class, multicastDelegate);
+			Assert.IsFalse(multicastDelegate.IsSealed);
 		}
 	}
 }

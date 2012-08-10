@@ -368,7 +368,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void SaveFile(FileDescriptionTemplate newfile, string content, string binaryFileName)
 		{
-			string parsedFileName = StringParser.Parse(newfile.Name);
+			string unresolvedFileName = StringParser.Parse(newfile.Name);
 			// Parse twice so that tags used in included standard header are parsed
 			string parsedContent = StringParser.Parse(StringParser.Parse(content));
 			
@@ -382,33 +382,33 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// when newFile.Name is "${Path}/${FileName}", there might be a useless '/' in front of the file name
 			// if the file is created when no project is opened. So we remove single '/' or '\', but not double
 			// '\\' (project is saved on network share).
-			if (parsedFileName.StartsWith("/") && !parsedFileName.StartsWith("//")
-			    || parsedFileName.StartsWith("\\") && !parsedFileName.StartsWith("\\\\"))
+			if (unresolvedFileName.StartsWith("/") && !unresolvedFileName.StartsWith("//")
+			    || unresolvedFileName.StartsWith("\\") && !unresolvedFileName.StartsWith("\\\\"))
 			{
-				parsedFileName = parsedFileName.Substring(1);
+				unresolvedFileName = unresolvedFileName.Substring(1);
 			}
 			
-			if (newfile.IsDependentFile && Path.IsPathRooted(parsedFileName)) {
-				Directory.CreateDirectory(Path.GetDirectoryName(parsedFileName));
+			if (newfile.IsDependentFile && Path.IsPathRooted(unresolvedFileName)) {
+				Directory.CreateDirectory(Path.GetDirectoryName(unresolvedFileName));
 				if (!String.IsNullOrEmpty(binaryFileName))
-					File.Copy(binaryFileName, parsedFileName);
+					File.Copy(binaryFileName, unresolvedFileName);
 				else
-					File.WriteAllText(parsedFileName, parsedContent, SD.FileService.DefaultFileEncoding);
+					File.WriteAllText(unresolvedFileName, parsedContent, SD.FileService.DefaultFileEncoding);
 			} else {
 				if (!String.IsNullOrEmpty(binaryFileName)) {
 					LoggingService.Warn("binary file was skipped");
 					return;
 				}
-				IViewContent viewContent = FileService.NewFile(Path.GetFileName(parsedFileName), parsedContent);
+				IViewContent viewContent = FileService.NewFile(Path.GetFileName(unresolvedFileName), parsedContent);
 				if (viewContent == null) {
 					return;
 				}
-				if (Path.IsPathRooted(parsedFileName)) {
-					Directory.CreateDirectory(Path.GetDirectoryName(parsedFileName));
-					viewContent.PrimaryFile.SaveToDisk(parsedFileName);
+				if (Path.IsPathRooted(unresolvedFileName)) {
+					Directory.CreateDirectory(Path.GetDirectoryName(unresolvedFileName));
+					viewContent.PrimaryFile.SaveToDisk(unresolvedFileName);
 				}
 			}
-			createdFiles.Add(new KeyValuePair<string, FileDescriptionTemplate>(parsedFileName, newfile));
+			createdFiles.Add(new KeyValuePair<string, FileDescriptionTemplate>(unresolvedFileName, newfile));
 		}
 		
 		internal static string GenerateValidClassOrNamespaceName(string className, bool allowDot)

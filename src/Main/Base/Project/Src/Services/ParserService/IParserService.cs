@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		void InvalidateCurrentSolutionSnapshot();
 		#endregion
 		
-		#region GetExistingParsedFile
+		#region GetExistingUnresolvedFile
 		/// <summary>
 		/// Gets the unresolved type system for the specified file.
 		/// </summary>
@@ -88,11 +88,11 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// can cause the file to be parsed differently).
 		/// </param>
 		/// <returns>
-		/// Returns the IParsedFile for the specified file,
+		/// Returns the IUnresolvedFile for the specified file,
 		/// or null if the file has not been parsed yet.
 		/// </returns>
 		/// <remarks>This method is thread-safe.</remarks>
-		IParsedFile GetExistingParsedFile(FileName fileName, ITextSourceVersion version = null, IProject parentProject = null);
+		IUnresolvedFile GetExistingUnresolvedFile(FileName fileName, ITextSourceVersion version = null, IProject parentProject = null);
 		
 		/// <summary>
 		/// Gets full parse information for the specified file, if it is available.
@@ -109,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// can cause the file to be parsed differently).
 		/// </param>
 		/// <returns>
-		/// If only the IParsedFile is available (non-full parse information), this method returns null.
+		/// If only the IUnresolvedFile is available (non-full parse information), this method returns null.
 		/// </returns>
 		ParseInformation GetCachedParseInformation(FileName fileName, ITextSourceVersion version = null, IProject parentProject = null);
 		#endregion
@@ -159,12 +159,12 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// can cause the file to be parsed differently).
 		/// </param>
 		/// <returns>
-		/// Returns the IParsedFile for the specified file, or null if the file cannot be parsed.
+		/// Returns the IUnresolvedFile for the specified file, or null if the file cannot be parsed.
 		/// For files currently open in an editor, this method does not necessarily reparse, but may return
-		/// the existing IParsedFile (but only if it's still up-to-date).
+		/// the existing IUnresolvedFile (but only if it's still up-to-date).
 		/// </returns>
 		/// <remarks><inheritdoc cref="Parse"/></remarks>
-		IParsedFile ParseFile(FileName fileName, ITextSource fileContent = null, IProject parentProject = null,
+		IUnresolvedFile ParseFile(FileName fileName, ITextSource fileContent = null, IProject parentProject = null,
 		                      CancellationToken cancellationToken = default(CancellationToken));
 		
 		/// <summary>
@@ -209,7 +209,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// </param>
 		/// <returns><inheritdoc cref="ParseFile"/></returns>
 		/// <remarks><inheritdoc cref="ParseAsync"/></remarks>
-		Task<IParsedFile> ParseFileAsync(FileName fileName, ITextSource fileContent = null, IProject parentProject = null,
+		Task<IUnresolvedFile> ParseFileAsync(FileName fileName, ITextSource fileContent = null, IProject parentProject = null,
 		                                 CancellationToken cancellationToken = default(CancellationToken));
 		#endregion
 		
@@ -264,8 +264,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		/// <summary>
 		/// Removes a project from the owners of the file.
-		/// This method invokes <c>project.UpdateParseInformation(existingParsedFile, null);</c>.
-		/// (unless existingParsedFile==null)
+		/// This method invokes <c>project.UpdateParseInformation(existingUnresolvedFile, null);</c>.
+		/// (unless existingUnresolvedFile==null)
 		/// </summary>
 		void RemoveOwnerProject(FileName fileName, IProject project);
 		
@@ -280,7 +280,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// The file must belong to the specified project, otherwise this method does nothing.
 		/// </summary>
 		/// <remarks>This method is intended for restoring parse information cached on disk.</remarks>
-		void RegisterParsedFile(FileName fileName, IProject project, IParsedFile parsedFile);
+		void RegisterUnresolvedFile(FileName fileName, IProject project, IUnresolvedFile unresolvedFile);
 	}
 	
 	public interface ILoadSolutionProjectsThread

@@ -33,26 +33,12 @@ namespace CSharpBinding.Completion
 		}
 		
 		#region ICompletionDataFactory implementation
-		public ICompletionData CreateEntityCompletionData(IUnresolvedEntity entity)
-		{
-			return new CompletionData(entity.Name) {
-				Image = ClassBrowserIconService.GetIcon(entity)
-			};
-		}
-		
-		public ICompletionData CreateEntityCompletionData(IUnresolvedEntity entity, string text)
-		{
-			return new CompletionData(text) {
-				Image = ClassBrowserIconService.GetIcon(entity)
-			};
-		}
-		
-		public ICompletionData CreateEntityCompletionData(IEntity entity)
+		ICompletionData ICompletionDataFactory.CreateEntityCompletionData(IEntity entity)
 		{
 			return new EntityCompletionData(entity);
 		}
 		
-		public ICompletionData CreateEntityCompletionData(IEntity entity, string text)
+		ICompletionData ICompletionDataFactory.CreateEntityCompletionData(IEntity entity, string text)
 		{
 			return new EntityCompletionData(entity) {
 				CompletionText = text,
@@ -60,19 +46,12 @@ namespace CSharpBinding.Completion
 			};
 		}
 		
-		public ICompletionData CreateTypeCompletionData(IType type, string shortType)
+		ICompletionData ICompletionDataFactory.CreateTypeCompletionData(IType type, string shortType)
 		{
 			return new CompletionData(shortType);
 		}
 		
-		public ICompletionData CreateTypeCompletionData(IUnresolvedTypeDefinition type, string shortType)
-		{
-			return new CompletionData(shortType) {
-				Image = ClassBrowserIconService.GetIcon(type)
-			};
-		}
-		
-		public ICompletionData CreateLiteralCompletionData(string title, string description, string insertText)
+		ICompletionData ICompletionDataFactory.CreateLiteralCompletionData(string title, string description, string insertText)
 		{
 			return new CompletionData(title) {
 				Description = description,
@@ -81,36 +60,36 @@ namespace CSharpBinding.Completion
 			};
 		}
 		
-		public ICompletionData CreateNamespaceCompletionData(string name)
+		ICompletionData ICompletionDataFactory.CreateNamespaceCompletionData(string name)
 		{
 			return new CompletionData(name) {
 				Image = ClassBrowserIconService.Namespace
 			};
 		}
 		
-		public ICompletionData CreateVariableCompletionData(IVariable variable)
+		ICompletionData ICompletionDataFactory.CreateVariableCompletionData(IVariable variable)
 		{
 			return new CompletionData(variable.Name) {
 				Image = ClassBrowserIconService.LocalVariable
 			};
 		}
 		
-		public ICompletionData CreateVariableCompletionData(IUnresolvedTypeParameter parameter)
+		ICompletionData ICompletionDataFactory.CreateVariableCompletionData(ITypeParameter parameter)
 		{
 			return new CompletionData(parameter.Name);
 		}
 		
-		public ICompletionData CreateEventCreationCompletionData(string varName, IType delegateType, IEvent evt, string parameterDefinition, IUnresolvedMember currentMember, IUnresolvedTypeDefinition currentType)
+		ICompletionData ICompletionDataFactory.CreateEventCreationCompletionData(string varName, IType delegateType, IEvent evt, string parameterDefinition, IUnresolvedMember currentMember, IUnresolvedTypeDefinition currentType)
 		{
 			return new CompletionData("TODO: event creation");
 		}
 		
-		public ICompletionData CreateNewOverrideCompletionData(int declarationBegin, IUnresolvedTypeDefinition type, IMember m)
+		ICompletionData ICompletionDataFactory.CreateNewOverrideCompletionData(int declarationBegin, IUnresolvedTypeDefinition type, IMember m)
 		{
 			return new OverrideCompletionData(declarationBegin, m, contextAtCaret);
 		}
 		
-		public ICompletionData CreateNewPartialCompletionData(int declarationBegin, IUnresolvedTypeDefinition type, IUnresolvedMember m)
+		ICompletionData ICompletionDataFactory.CreateNewPartialCompletionData(int declarationBegin, IUnresolvedTypeDefinition type, IUnresolvedMember m)
 		{
 			return new CompletionData("TODO: partial completion");
 		}

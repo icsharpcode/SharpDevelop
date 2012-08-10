@@ -37,7 +37,7 @@ namespace CSharpBinding.Parser
 		}
 		
 		/*
-		void RetrieveRegions(ICompilationUnit cu, ICSharpCode.NRefactory.Parser.SpecialTracker tracker)
+		void RetrieveRegions(ISyntaxTree cu, ICSharpCode.NRefactory.Parser.SpecialTracker tracker)
 		{
 			for (int i = 0; i < tracker.CurrentSpecials.Count; ++i) {
 				ICSharpCode.NRefactory.PreprocessingDirective directive = tracker.CurrentSpecials[i] as ICSharpCode.NRefactory.PreprocessingDirective;
@@ -76,10 +76,10 @@ namespace CSharpBinding.Parser
 			CSharpParser parser = new CSharpParser(csharpProject != null ? csharpProject.CompilerSettings : null);
 			parser.GenerateTypeSystemMode = !fullParseInformationRequested;
 			
-			CompilationUnit cu = parser.Parse(fileContent, fileName);
+			SyntaxTree cu = parser.Parse(fileContent, fileName);
 			cu.Freeze();
 			
-			CSharpParsedFile file = cu.ToTypeSystem();
+			CSharpUnresolvedFile file = cu.ToTypeSystem();
 			ParseInformation parseInfo;
 			
 			if (fullParseInformationRequested)
@@ -92,7 +92,7 @@ namespace CSharpBinding.Parser
 			return parseInfo;
 		}
 		
-		void AddCommentTags(CompilationUnit cu, IList<TagComment> tagComments, ITextSource fileContent)
+		void AddCommentTags(SyntaxTree cu, IList<TagComment> tagComments, ITextSource fileContent)
 		{
 			ReadOnlyDocument document = null;
 			foreach (var comment in cu.Descendants.OfType<Comment>().Where(c => c.CommentType != CommentType.InactiveCode)) {
@@ -125,22 +125,22 @@ namespace CSharpBinding.Parser
 		{
 			var csParseInfo = parseInfo as CSharpFullParseInformation;
 			if (csParseInfo == null)
-				throw new ArgumentException("Parse info does not have CompilationUnit");
+				throw new ArgumentException("Parse info does not have SyntaxTree");
 			
-			return ResolveAtLocation.Resolve(compilation, csParseInfo.ParsedFile, csParseInfo.CompilationUnit, location, cancellationToken);
+			return ResolveAtLocation.Resolve(compilation, csParseInfo.UnresolvedFile, csParseInfo.SyntaxTree, location, cancellationToken);
 		}
 		
 		public void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<Reference> callback, CancellationToken cancellationToken)
 		{
 			var csParseInfo = parseInfo as CSharpFullParseInformation;
 			if (csParseInfo == null)
-				throw new ArgumentException("Parse info does not have CompilationUnit");
+				throw new ArgumentException("Parse info does not have SyntaxTree");
 			
 			ReadOnlyDocument document = null;
 			ISyntaxHighlighter highlighter = null;
 			
 			new FindReferences().FindLocalReferences(
-				variable, csParseInfo.ParsedFile, csParseInfo.CompilationUnit, compilation,
+				variable, csParseInfo.UnresolvedFile, csParseInfo.SyntaxTree, compilation,
 				delegate (AstNode node, ResolveResult result) {
 					if (document == null) {
 						document = new ReadOnlyDocument(fileContent);
@@ -164,11 +164,11 @@ namespace CSharpBinding.Parser
 				return assemblies.Select(asm => new CecilLoader().LoadAssemblyFile(asm.Location)).ToArray();
 			});
 		
-		public ICompilation CreateCompilationForSingleFile(FileName fileName, IParsedFile parsedFile)
+		public ICompilation CreateCompilationForSingleFile(FileName fileName, IUnresolvedFile unresolvedFile)
 		{
 			return new CSharpProjectContent()
 				.AddAssemblyReferences(defaultReferences.Value)
-				.UpdateProjectContent(null, parsedFile)
+				.UpdateProjectContent(null, unresolvedFile)
 				.CreateCompilation();
 		}
 		
@@ -176,16 +176,16 @@ namespace CSharpBinding.Parser
 		{
 			var csParseInfo = parseInfo as CSharpFullParseInformation;
 			if (csParseInfo == null)
-				throw new ArgumentException("Parse info does not have CompilationUnit");
-			CSharpAstResolver contextResolver = new CSharpAstResolver(compilation, csParseInfo.CompilationUnit, csParseInfo.ParsedFile);
-			var node = csParseInfo.CompilationUnit.GetNodeAt(location);
+				throw new ArgumentException("Parse info does not have SyntaxTree");
+			CSharpAstResolver contextResolver = new CSharpAstResolver(compilation, csParseInfo.SyntaxTree, csParseInfo.UnresolvedFile);
+			var node = csParseInfo.SyntaxTree.GetNodeAt(location);
 			CSharpResolver context;
 			if (node != null)
 				context = contextResolver.GetResolverStateAfter(node, cancellationToken);
 			else
 				context = new CSharpResolver(compilation);
 			CSharpParser parser = new CSharpParser();
-			var expr = parser.ParseExpression(new StringReader(codeSnippet));
+			var expr = parser.ParseExpression(codeSnippet);
 			if (parser.HasErrors)
 				return new ErrorResolveResult(SpecialType.UnknownType, PrintErrorsAsString(parser.Errors), TextLocation.Empty);
 			CSharpAstResolver snippetResolver = new CSharpAstResolver(context, expr);

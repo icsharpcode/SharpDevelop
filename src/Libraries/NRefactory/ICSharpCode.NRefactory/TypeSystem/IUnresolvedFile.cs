@@ -21,10 +21,13 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
+	[Obsolete("IParsedFile was renamed to IUnresolvedFile", true)]
+	public interface IParsedFile {}
+	
 	/// <summary>
 	/// Represents a single file that was parsed.
 	/// </summary>
-	public interface IParsedFile
+	public interface IUnresolvedFile
 	{
 		/// <summary>
 		/// Returns the full path of the file.
