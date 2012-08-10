@@ -11,7 +11,7 @@ using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels.ServiceReference
 {
-	public partial class ServiceReferenceOptionsPanel : OptionPanel, INotifyPropertyChanged
+	public partial class ServiceReferenceOptionsPanel : OptionPanel
 	{
 		string svcUtilPath;
 		bool changed;
@@ -28,18 +28,19 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels.ServiceReference
 		
 		void Browse()
 		{
-			var dialog = new OpenFileDialog();
-			if (dialog.ShowDialog() ?? false) {
-				SvcUtilPath = dialog.FileName;
+			string fileName = OptionsHelper.OpenFile(string.Empty); 
+			if (!String.IsNullOrEmpty(fileName)) {
+				SvcUtilPath = fileName;
 			}
 		}
+		
 		
 		public string SvcUtilPath {
 			get { return svcUtilPath; }
 			set {
 				svcUtilPath = value;
 				changed = true;
-				OnPropertyChanged("SvcUtilPath");
+				base.RaisePropertyChanged(() => SvcUtilPath);
 			}
 		}
 		
@@ -49,15 +50,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels.ServiceReference
 				ServiceReferenceOptions.SvcUtilPath = svcUtilPath;
 			}
 			return true;
-		}
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		void OnPropertyChanged(string name)
-		{
-			if (PropertyChanged != null) {
-				PropertyChanged(this, new PropertyChangedEventArgs(name));
-			}
 		}
 	}
 }

@@ -81,7 +81,6 @@
     <Compile Include="Src\Refactoring\IssueOptionsViewModel.cs" />
     <Compile Include="Src\Refactoring\SDRedundantUsingIssue.cs" />
     <Compile Include="Src\Refactoring\SDScript.cs" />
-    <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
     <EmbeddedResource Include="Resources\MyNamespaceSupportForCSharp.cs" />
     <Compile Include="Src\CodeManipulation.cs" />
     <Compile Include="Src\Completion\CompletionData.cs" />
@@ -97,11 +96,13 @@
     <Compile Include="Src\ExtensionMethods.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormattingStrategy.cs" />
     <Compile Include="Src\FormattingStrategy\DocumentAccessor.cs" />
-    <Compile Include="Src\OptionPanels\BuildOptions.cs">
-      <SubType>Form</SubType>
+    <Compile Include="Src\OptionPanels\BuildOptions.xaml.cs">
+      <DependentUpon>BuildOptions.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Parser\CSharpFullParseInformation.cs" />
     <Compile Include="Src\Parser\CSharpSymbolSearch.cs" />
+    <Compile Include="Src\OptionPanels\HexValidator.cs" />
     <Compile Include="Src\Parser\Parser.cs" />
     <Compile Include="Src\Project\VBNetToCSharpConvertVisitorWithMyFormsSupport.cs" />
     <Compile Include="Src\Project\CSharpMyNamespaceBuilder.cs" />
@@ -156,13 +157,14 @@
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Src\Completion" />
-    <Folder Include="Src\Refactoring" />
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\Refactoring\IssueOptions.xaml" />
+    <Page Include="Src\OptionPanels\BuildOptions.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

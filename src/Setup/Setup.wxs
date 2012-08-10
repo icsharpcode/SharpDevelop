@@ -384,11 +384,6 @@
 				<ComponentRef Id="AddInWritingHelp"/>
 				<ComponentRef Id="CSharpProjectSharpDevelopCustomToolTemplates"/>
 				<ComponentRef Id="AppConfigFileTemplate"/>
-				<ComponentRef Id="InteropPartCoverDll"/>
-				<ComponentRef Id="PartCoverDll"/>
-				<ComponentRef Id="PartCoverExe"/>
-				<ComponentRef Id="PartCoverExeConfig"/>
-				<ComponentRef Id="PartCoverFrameworkDll"/>
 				
 				<!--
 				<ComponentRef Id="ICSharpCodeScriptingDll"/>
@@ -584,6 +579,19 @@
 				<!--<ComponentRef Id="JavaScriptBindingDll"/>
 				<ComponentRef Id="JavaScriptBindingAddin"/>
 				<ComponentRef Id="Antlr3RuntimeDll"/>-->
+			
+				<ComponentRef Id="OpenCoverConsoleExe"/>
+				<ComponentRef Id="OpenCoverConsoleExeConfig"/>
+				<ComponentRef Id="OpenCoverFrameworkDll"/>
+				<ComponentRef Id="OpenCoverGendarmeRulesMaintainabilityDll"/>
+				<ComponentRef Id="OpenCoverGendarmeFrameworkDll"/>
+				<ComponentRef Id="OpenCoverLog4netConfig"/>
+				<ComponentRef Id="OpenCoverLog4netDll"/>
+				<ComponentRef Id="OpenCoverMicrosoftPracticesUnityDll"/>
+				<ComponentRef Id="OpenCoverMonoCecilDll"/>
+				<ComponentRef Id="OpenCoverMonoCecilPdbDll"/>
+				<ComponentRef Id="OpenCoverProfilerX86Dll"/>
+				<ComponentRef Id="OpenCoverProfilerX64Dll"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"

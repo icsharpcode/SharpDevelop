@@ -28,9 +28,9 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		/// <summary>
 		/// Creates a new SnippetCaretElement.
 		/// </summary>
-		/// <param name="setCaretOnlyIfSelectionExists">
+		/// <param name="setCaretOnlyIfTextIsSelected">
 		/// If set to true, the caret is set only when some text was selected.
-		/// This is useful 
+		/// This is useful when both SnippetCaretElement and SnippetSelectionElement are used in the same snippet.
 		/// </param>
 		public SnippetCaretElement(bool setCaretOnlyIfTextIsSelected)
 		{

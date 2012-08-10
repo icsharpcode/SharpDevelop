@@ -128,6 +128,10 @@
     <Compile Include="Src\PythonModuleCompletionItemsFactory.cs" />
     <Compile Include="Src\PythonImportResolver.cs" />
     <Compile Include="Src\PythonNamespaceResolver.cs" />
+    <Compile Include="Src\PythonOptionsPanel.xaml.cs">
+      <DependentUpon>PythonOptionsPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\PythonProperty.cs" />
     <Compile Include="Src\PythonPropertyAssignment.cs" />
     <Compile Include="Src\PythonResolverContext.cs" />
@@ -178,7 +182,6 @@
     <Compile Include="Src\PythonImportExpressionContext.cs" />
     <Compile Include="Src\PythonLanguageProperties.cs" />
     <Compile Include="Src\PythonImportModuleResolveResult.cs" />
-    <Compile Include="Src\PythonOptionsPanel.cs" />
     <Compile Include="Src\PythonParser.cs" />
     <Compile Include="Src\PythonProject.cs" />
     <Compile Include="Src\PythonPropertyValueAssignment.cs" />
@@ -211,7 +214,6 @@
     <None Include="PythonBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <EmbeddedResource Include="Resources\PythonOptionsPanel.xfrm" />
     <EmbeddedResource Include="Resources\ApplicationSettingsPanel.xfrm" />
     <EmbeddedResource Include="Resources\CompilingOptionsPanel.xfrm" />
     <None Include="Templates\ConsoleProject.xpt">
@@ -273,15 +275,27 @@
       <Name>ICSharpCode.SharpDevelop</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Analysis\UnitTesting\UnitTesting.csproj">
       <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
@@ -298,5 +312,8 @@
       <Name>ICSharpCode.Scripting</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Src\PythonOptionsPanel.xaml" />
   </ItemGroup>
 </Project>

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
+using System.Xml.Linq;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.CodeCoverage
@@ -15,20 +16,12 @@ namespace ICSharpCode.CodeCoverage
 		string className = String.Empty;
 		string fullClassName = String.Empty;
 		string classNamespace = String.Empty;
-		int methodBodySize;
-		MethodAttributes methodAttributes;
 		List<CodeCoverageSequencePoint> sequencePoints = new List<CodeCoverageSequencePoint>();
 		
-		public CodeCoverageMethod(string name, string className) 
-			: this(name, className, MethodAttributes.Public)
-		{
-		}
-		
-		public CodeCoverageMethod(string name, string className, MethodAttributes methodAttributes)
+		public CodeCoverageMethod(string name, string className)
 		{
 			this.name = name;
 			this.fullClassName = className;
-			this.methodAttributes = methodAttributes;
 			
 			int index = fullClassName.LastIndexOf('.');
 			if (index > 0) {
@@ -39,53 +32,29 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
-		public CodeCoverageMethod(string className, XmlReader reader)
-			: this(GetMethodName(reader), className, GetMethodAttributes(reader))
+		public CodeCoverageMethod(string className, XElement reader)
+			: this(className, new CodeCoverageMethodElement(reader))
 		{
-			ReadMethodBodySize(reader);
 		}
 		
-		static string GetMethodName(XmlReader reader)
+		public CodeCoverageMethod(string className, CodeCoverageMethodElement element)
+			: this(element.MethodName, className)
 		{
-			return reader.GetAttribute("name");
-		}
-		
-		static MethodAttributes GetMethodAttributes(XmlReader reader)
-		{
-			string flags = reader.GetAttribute("flags");
-			if (flags != null) {
-				try {
-					return (MethodAttributes)Enum.Parse(typeof(MethodAttributes), flags);
-				} catch (ArgumentException) { }
-			}
-			return MethodAttributes.Public;
-		}
-		
-		void ReadMethodBodySize(XmlReader reader)
-		{
-			string bodySizeAsString = reader.GetAttribute("bodysize");
-			if (bodySizeAsString != null) {
-				methodBodySize = Int32.Parse(bodySizeAsString);
-			}
+			IsProperty = element.IsProperty && IsPropertyMethodName();
+			IsGetter = element.IsGetter;
+			IsSetter = element.IsSetter;
 		}
 		
 		/// <summary>
 		/// Returns true if the method is a getter or setter method for a property.
 		/// </summary>
-		public bool IsProperty {
-			get { 
-				return IsSpecialMethodName() && IsPropertyMethodName();
-			}
-		}
+		public bool IsProperty { get; private set; }
+		public bool IsGetter { get; private set; }
+		public bool IsSetter { get; private set; }
 		
-		bool IsSpecialMethodName()
+		bool IsPropertyMethodName()
 		{
-			return (methodAttributes & MethodAttributes.SpecialName) == MethodAttributes.SpecialName;
-		}
-		
-		 bool IsPropertyMethodName()
-		{
-			return name.StartsWith("get_") || name.StartsWith("set_");
+			return name.Contains("get_") || name.Contains("set_");
 		}
 		
 		public string Name {
@@ -161,10 +130,6 @@ namespace ICSharpCode.CodeCoverage
 		
 		public int GetUnvisitedCodeLength()
 		{
-			if (sequencePoints.Count == 0) {
-				return methodBodySize;
-			}
-			
 			int total = 0;
 			foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
 				if (sequencePoint.VisitCount == 0) {

@@ -79,7 +79,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 			testRunner.HasCodeCoverageResults();
 			
 			string expectedFileName = 
-				@"c:\projects\MyTests\PartCover\coverage.xml";
+				@"c:\projects\MyTests\OpenCover\coverage.xml";
 			
 			Assert.AreEqual(expectedFileName, fileSystem.FileExistsPathParameter);
 		}
@@ -96,7 +96,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 			testRunner.ReadCodeCoverageResults();
 			
 			string expectedFileName = 
-				@"c:\projects\MyTests\PartCover\coverage.xml";
+				@"c:\projects\MyTests\OpenCover\coverage.xml";
 			
 			Assert.AreEqual(expectedFileName, fileSystem.CreateTextReaderPathParameter);
 		}
@@ -116,18 +116,18 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 			ProcessStartInfo processStartInfo = testRunner.CallGetProcessStartInfo(tests);
 			
 			string expectedCommandLine =
-				"--target \"d:\\sharpdevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " +
-				"--target-work-dir \"c:\\projects\\MyTests\\bin\\Debug\" " +
-				"--target-args \"\\\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\\\" /noxml /results=\\\"d:\\temp\\results.txt\\\"\" " +
-				"--output \"c:\\projects\\MyTests\\PartCover\\coverage.xml\" " +
-				"--include [MyTests]*";
+				"-register:user -target:\"d:\\sharpdevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " +
+				"-targetdir:\"c:\\projects\\MyTests\\bin\\Debug\" " +
+				"-targetargs:\"\\\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\\\" /noxml /results=\\\"d:\\temp\\results.txt\\\"\" " +
+				"-output:\"c:\\projects\\MyTests\\OpenCover\\coverage.xml\" " +
+				"-filter:\"+[MyTests]* \"";
 			
 			Assert.AreEqual(expectedCommandLine, processStartInfo.Arguments);
 		}
 		
 		TextReader CreatePartCoverSettingsTextReader()
 		{
-			PartCoverSettings settings = new PartCoverSettings();
+			OpenCoverSettings settings = new OpenCoverSettings();
 			settings.Include.Add("[MyTests]*");
 			StringBuilder text = new StringBuilder();
 			StringWriter writer = new StringWriter(text);
@@ -151,7 +151,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 			fileSystem.CreateTextReaderReturnValue = new StringReader("<abc/>");
 			StartTestRunner();
 			
-			string expectedFileName = @"c:\projects\MyTests\PartCover\coverage.xml";
+			string expectedFileName = @"c:\projects\MyTests\OpenCover\coverage.xml";
 			Assert.AreEqual(expectedFileName, fileSystem.DeleteFilePathParameter);
 		}
 		
@@ -170,7 +170,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 			fileSystem.DirectoryExistsReturnValue = false;
 			StartTestRunner();
 			
-			string expectedDirectory = @"c:\projects\MyTests\PartCover";
+			string expectedDirectory = @"c:\projects\MyTests\OpenCover";
 			Assert.AreEqual(expectedDirectory, fileSystem.CreateDirectoryPathParameter);
 		}
 		
@@ -180,7 +180,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 			fileSystem.DirectoryExistsReturnValue = true;
 			StartTestRunner();
 			
-			string expectedDirectory = @"c:\projects\MyTests\PartCover";
+			string expectedDirectory = @"c:\projects\MyTests\OpenCover";
 			Assert.AreEqual(expectedDirectory, fileSystem.DirectoryExistsPathParameter);
 		}
 		
@@ -215,12 +215,12 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 		string GetCodeCoverageCommandLine()
 		{
 			return 
-				"\"d:\\sharpdevelop\\bin\\Tools\\PartCover\\PartCover.exe\" " +
-				"--target \"d:\\sharpdevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " +
-				"--target-work-dir \"c:\\projects\\MyTests\\bin\\Debug\" " +
-				"--target-args \"\\\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\\\" /noxml\" " + 
-				"--output \"c:\\projects\\MyTests\\PartCover\\coverage.xml\" " +
-				"--include [*]*";
+				"\"d:\\sharpdevelop\\bin\\Tools\\OpenCover\\OpenCover.Console.exe\" -register:user " +
+				"-target:\"d:\\sharpdevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " +
+				"-targetdir:\"c:\\projects\\MyTests\\bin\\Debug\" " +
+				"-targetargs:\"\\\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\\\" /noxml\" " + 
+				"-output:\"c:\\projects\\MyTests\\OpenCover\\coverage.xml\" " +
+				"-filter:\"+[*]* \"";
 		}
 		
 		[Test]

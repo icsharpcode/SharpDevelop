@@ -405,54 +405,47 @@
 										<File Source="..\..\bin\Tools\NUnit\nunit-console-dotnet2-x86.exe.config" Name="nunit-console-dotnet2-x86.exe.config" Id="nunit_console_dotnet2_x86.exe.config" />
 									</Component>
 								</Directory>
-								<Directory Id="PartCover" Name="PartCover">
-									<Component Guid="CD9AB556-51BD-4DB2-9AC5-C047022991DD" Id="InteropPartCoverDll" DiskId="1">
-										<File Source="..\..\bin\Tools\PartCover\Interop.PartCover.dll" Id="Interop.PartCover.dll" Name="Interop.PartCover.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Interop.PartCover.dll" AssemblyManifest="Interop.PartCover.dll" />
+								<Directory Id="OpenCoverFolder" Name="OpenCover">
+									<Component Id="OpenCoverGendarmeFrameworkDll" Guid="10810773-419F-4804-871E-1BA483E40D97" DiskId="1">
+										<File Id="OpenCover.Gendarme.Framework.dll" Name="Gendarme.Framework.dll" Source="..\..\bin\Tools\OpenCover\Gendarme.Framework.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Gendarme.Framework.dll" AssemblyManifest="OpenCover.Gendarme.Framework.dll" />
 									</Component>
-									<Component Id="PartCoverDll" Guid="BBD31A1B-36C3-4550-91BF-1C551A46359C" DiskId="1">
-										<File Id="PartCover.dll" Name="PartCover.dll" Source="..\..\bin\Tools\PartCover\PartCover.dll" KeyPath="yes" />
-										<RegistryValue Id="PartCoverCorDriverRegistryAppIdGuid" Root="HKCR" Type="string" Key="AppId\7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" Value="PartCoverCorDriver" />
-										<RegistryValue Id="PartCoverCorDriverRegistryAppIdDriverDll" Root="HKCR" Type="string" Key="AppId\PartCoverCorDriver.DLL" Name="AppId" Value="7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuid" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}" Value="CorProfiler Object" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidAppId" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}" Name="AppId" Value="7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidInProcServer" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}\InProcServer32" Value="[#PartCover.dll]" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidInProcServerThreadingModel" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}\InProcServer32" Name="ThreadingModel" Value="both" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidProgID" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}\ProgID" Value="PartCover.CorDriver.CorProfiler.4" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidProgrammable" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}\Programmable" Value="" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidTypeLib" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}\TypeLib" Value="{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidVersionIndependentProgID" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}\VersionIndependentProgID" Value="PartCover.CorDriver.CorProfiler" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuid" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}" Value="PartCoverConnector2 Object" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidAppId" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\AppId" Value="7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidInprocServer32" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\InprocServer32" Value="[#PartCover.dll]" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidInprocServer32ThreadingModel" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\InprocServer32" Name="ThreadingModel" Value="both" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidProgId" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\ProgId" Value="PartCover.CorDriver.Connector.3" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidProgrammable" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\Programmable" Value="" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidTypeLib" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\TypeLib" Value="{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidVersionIndependentProgID" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\VersionIndependentProgID" Value="PartCover.CorDriver.Connector" />
-										<RegistryValue Id="PartCoverCorConnectorRegistry" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector" Value="PartCoverConnector2 Object" />
-										<RegistryValue Id="PartCoverCorConnectorRegistryClsId" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector\CLSID" Value="{FB20430E-CDC9-45D7-8453-272268002E08}" />
-										<RegistryValue Id="PartCoverCorConnectorRegistryCurVer" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector\CurVer" Value="PartCover.CorDriver.Connector.3" />
-										<RegistryValue Id="PartCoverCorConnectorRegistry3" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector.3" Value="PartCoverConnector2 Object" />
-										<RegistryValue Id="PartCoverCorConnectorRegistry3ClsId" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector.3\CLSID" Value="{FB20430E-CDC9-45D7-8453-272268002E08}" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryName" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler" Value="CorProfiler Object" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryNameClsId" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler\CLSID" Value="{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryNameCurVer" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler\CurVer" Value="PartCover.CorDriver.CorProfiler.4" />
-										<RegistryValue Id="PartCoverCorProfilerRegistry2" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler.4" Value="CorProfiler Object" />
-										<RegistryValue Id="PartCoverCorProfilerRegistry2ClsId" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler.4\CLSID" Value="{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}" />
-										<RegistryValue Id="PartCoverTypeLibRegistryGuid" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\4.0" Value="PartCover module" />
-										<RegistryValue Id="PartCoverTypeLibRegistryGuidWin32" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\4.0\0\win32" Value="[#PartCover.dll]" />
-										<RegistryValue Id="PartCoverTypeLibRegistryGuidFlags" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\4.0\FLAGS" Value="0" />
-										<RegistryValue Id="PartCoverTypeLibRegistryGuidHelp" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\4.0\HELPDIR" Value="" />
+									<Component Id="OpenCoverGendarmeRulesMaintainabilityDll" Guid="2119F539-9FF0-4C55-8C38-CCC424C2F2A5" DiskId="1">
+										<File Id="OpenCover.Gendarme.Rules.Maintainability.dll" Name="Gendarme.Rules.Maintainability.dll" Source="..\..\bin\Tools\OpenCover\Gendarme.Rules.Maintainability.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Gendarme.Rules.Maintainability.dll" AssemblyManifest="OpenCover.Gendarme.Rules.Maintainability.dll" />
 									</Component>
-									<Component Guid="429867BD-2DC0-4934-BED7-70A17978A57C" Id="PartCoverExe" DiskId="1">
-										<File Source="..\..\bin\Tools\PartCover\PartCover.exe" Id="PartCover.exe" Name="PartCover.exe" Assembly=".net" KeyPath="yes" AssemblyApplication="PartCover.exe" AssemblyManifest="PartCover.exe" />
+									<Component Id="OpenCoverLog4netConfig" Guid="C4D1A763-567B-4D72-B68D-8245E8A4526E" DiskId="1">
+										<File Id="OpenCover.log4net.config" Name="log4net.config" Source="..\..\bin\Tools\OpenCover\log4net.config" KeyPath="yes" />
 									</Component>
-									<Component Guid="1C2BDE86-9B7C-4DA3-BFC2-AD92EB27890B" Id="PartCoverExeConfig" DiskId="1">
-										<File Source="..\..\bin\Tools\PartCover\PartCover.exe.config" Id="PartCover.exe.config" Name="PartCover.exe.config" KeyPath="yes" />
+									<Component Id="OpenCoverLog4netDll" Guid="DFF17E8D-D634-49D2-B53B-B0F190C12245" DiskId="1">
+										<File Id="OpenCover.log4net.dll" Name="log4net.dll" Source="..\..\bin\Tools\OpenCover\log4net.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.log4net.dll" AssemblyManifest="OpenCover.log4net.dll" />
 									</Component>
-									<Component Guid="9C5C2A46-D501-495C-A72A-977B0C67217D" Id="PartCoverFrameworkDll" DiskId="1">
-										<File Source="..\..\bin\Tools\PartCover\PartCover.Framework.dll" Id="PartCover.Framework.dll" Name="PartCover.Framework.dll" KeyPath="yes" />
+									<Component Id="OpenCoverMicrosoftPracticesUnityDll" Guid="E7EF4E31-5136-4303-9389-359E8BB7905E" DiskId="1">
+										<File Id="OpenCover.Microsoft.Practices.Unity.dll" Name="Microsoft.Practices.Unity.dll" Source="..\..\bin\Tools\OpenCover\Microsoft.Practices.Unity.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Microsoft.Practices.Unity.dll" AssemblyManifest="OpenCover.Microsoft.Practices.Unity.dll" />
 									</Component>
+									<Component Id="OpenCoverMonoCecilDll" Guid="8B24DEA5-45FB-4D99-A9EE-71CACDA1993B" DiskId="1">
+										<File Id="OpenCover.Mono.Cecil.dll" Name="Mono.Cecil.dll" Source="..\..\bin\Tools\OpenCover\Mono.Cecil.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Mono.Cecil.dll" AssemblyManifest="OpenCover.Mono.Cecil.dll" />
+									</Component>
+									<Component Id="OpenCoverMonoCecilPdbDll" Guid="90837FF2-4834-499C-BF34-BF8298A4C511" DiskId="1">
+										<File Id="OpenCover.Mono.Cecil.Pdb.dll" Name="Mono.Cecil.Pdb.dll" Source="..\..\bin\Tools\OpenCover\Mono.Cecil.Pdb.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Mono.Cecil.Pdb.dll" AssemblyManifest="OpenCover.Mono.Cecil.Pdb.dll" />
+									</Component>
+									<Component Id="OpenCoverConsoleExe" Guid="C829811E-893A-44EE-AC8F-DC1FD1C67649" DiskId="1">
+										<File Id="OpenCover.Console.exe" Name="OpenCover.Console.exe" Source="..\..\bin\Tools\OpenCover\OpenCover.Console.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Console.exe" AssemblyManifest="OpenCover.Console.exe" />
+									</Component>
+									<Component Id="OpenCoverConsoleExeConfig" Guid="3DB460CC-3A0E-4EF1-925D-654F0B6BA034" DiskId="1">
+										<File Id="OpenCover.Console.exe.config" Name="OpenCover.Console.exe.config" Source="..\..\bin\Tools\OpenCover\OpenCover.Console.exe.config" KeyPath="yes" />
+									</Component>
+									<Component Id="OpenCoverFrameworkDll" Guid="05BACE6F-B879-4CB6-80FC-55BA44D1A39E" DiskId="1">
+										<File Id="OpenCover.Framework.dll" Name="OpenCover.Framework.dll" Source="..\..\bin\Tools\OpenCover\OpenCover.Framework.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Framework.dll" AssemblyManifest="OpenCover.Framework.dll" />
+									</Component>
+									<Directory Id="OpenCoverX64Folder" Name="x64">
+										<Component Id="OpenCoverProfilerX64Dll" Guid="58F8307C-E52C-4814-BDB6-8913E45309EB" DiskId="1">
+											<File Id="OpenCover.Profiler.x64.dll" Name="OpenCover.Profiler.dll" Source="..\..\bin\Tools\OpenCover\x64\OpenCover.Profiler.dll" KeyPath="yes" />
+										</Component>
+									</Directory>
+									<Directory Id="OpenCoverX86Folder" Name="x86">
+										<Component Id="OpenCoverProfilerX86Dll" Guid="59CD3529-07D6-41C9-A3F7-032CF7BA5167" DiskId="1">
+											<File Id="OpenCover.Profiler.x86.dll" Name="OpenCover.Profiler.dll" Source="..\..\bin\Tools\OpenCover\x86\OpenCover.Profiler.dll" KeyPath="yes" />
+										</Component>
+									</Directory>
 								</Directory>
 							</Directory>
 							<Component Guid="2EC34D8A-CF14-4E1F-A512-9A596A1C256D" Id="ICSharpCodeCoreWinFormsDll" DiskId="1">

@@ -87,12 +87,15 @@
 		<OptionPanel id    = "DebugOptions"
 		             label = "${res:Dialog.ProjectOptions.DebugOptions}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
-		<!--<OptionPanel id    = "Publish"
-		             label = "${res:Dialog.ProjectOptions.Publish}"
-		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Publish"/>-->
-		<OptionPanel id    = "ProjectImports"
+		
+		<!--<OptionPanel id    = "ProjectImports"
+		             label = "${res:Dialog.ProjectOptions.ProjectImports}"
+		             class = "ICSharpCode.VBNetBinding.OptionPanels.ProjectImports"/>-->
+		
+		<OptionPanel id    = "ProjectImports1"
 		             label = "${res:Dialog.ProjectOptions.ProjectImports}"
 		             class = "ICSharpCode.VBNetBinding.OptionPanels.ProjectImports"/>
+		
 		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
 	</Path>
 

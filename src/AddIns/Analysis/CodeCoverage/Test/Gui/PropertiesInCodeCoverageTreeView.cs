@@ -1,13 +1,16 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.CodeCoverage;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Forms;
+using System.Xml.Linq;
+
+using ICSharpCode.CodeCoverage;
+using ICSharpCode.CodeCoverage.Tests.Utils;
+using ICSharpCode.SharpDevelop.Gui;
+using NUnit.Framework;
 
 namespace ICSharpCode.CodeCoverage.Tests.Gui
 {
@@ -27,16 +30,29 @@ namespace ICSharpCode.CodeCoverage.Tests.Gui
 		CodeCoverageMethod fooGetterMethod;
 		CodeCoverageMethod fooSetterMethod;
 		
+		XElement CreateSetterElement(string className, string propertyName)
+		{
+			return CodeCoverageMethodXElementBuilder.CreateIntegerPropertySetter(className, propertyName);
+		}
+		
+		XElement CreateGetterElement(string className, string propertyName)
+		{
+			return CodeCoverageMethodXElementBuilder.CreateIntegerPropertyGetter(className, propertyName);
+		}
+		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
 			List<CodeCoverageModule> modules = new List<CodeCoverageModule>();
 			CodeCoverageModule fooModule = new CodeCoverageModule("Tests");
-			fooSetterMethod = new CodeCoverageMethod("set_Count", "Tests.FooTest", MethodAttributes.SpecialName);
 			
+			XElement setterMethod = CreateSetterElement("Tests.FooTest", "Count");
+			fooSetterMethod = new CodeCoverageMethod("Tests.FooTest", setterMethod);
 			fooSetterMethod.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTest.cs", 1, 2, 2, 3, 4, 2));
 			fooSetterMethod.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTest.cs", 0, 3, 4, 4, 4, 1));
-			fooGetterMethod = new CodeCoverageMethod("get_Count", "Tests.FooTest", MethodAttributes.SpecialName);
+			
+			XElement getterMethod = CreateGetterElement("Tests.FooTest", "Count");
+			fooGetterMethod = new CodeCoverageMethod("Tests.FooTest", getterMethod);
 			fooGetterMethod.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTest.cs", 1, 1, 0, 2, 1, 1));
 				
 			fooModule.Methods.Add(fooGetterMethod);
@@ -48,8 +64,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Gui
 				treeView.AddModules(modules);
 				fooModuleNode = (CodeCoverageModuleTreeNode)treeView.Nodes[0];
 			}
-			
-				
+
 			fooModuleNode.Expanding();
 			
 			fooTestsNamespaceTreeNode = (CodeCoverageNamespaceTreeNode)fooModuleNode.Nodes[0];
@@ -94,12 +109,14 @@ namespace ICSharpCode.CodeCoverage.Tests.Gui
 		}
 		
 		[Test]
+		[Ignore("Visited length not implemented with OpenCover")]
 		public void PropertyTreeNodeVisitedCodeLength_CountPropertyTreeNode_ReturnsThree()
 		{
 			Assert.AreEqual(3, countPropertyTreeNode.VisitedCodeLength);
 		}
 		
 		[Test]
+		[Ignore("Visited length not implemented with OpenCover")]
 		public void VisitedCodeLength_PropertyTreeNode_ReturnsThree()
 		{
 			int count = countPropertyTreeNode.VisitedCodeLength;
@@ -123,6 +140,6 @@ namespace ICSharpCode.CodeCoverage.Tests.Gui
 		public void MethodTreeNodeMethod_SetterTreeNode_ReturnsSetterMethod()
 		{
 			Assert.AreEqual(fooSetterMethod, fooSetterTreeNode.Method);
-		}		
+		}
 	}
 }

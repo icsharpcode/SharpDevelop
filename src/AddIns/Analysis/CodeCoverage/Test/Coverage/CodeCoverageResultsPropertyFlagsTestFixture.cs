@@ -19,37 +19,75 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void SetUpFixture()
 		{
 			string xml = 
-				"<PartCoverReport ver=\"1.0.2796.35184\">\r\n" +
-				"  <File id=\"1\" url=\"d:\\Projects\\test\\TestFixture1.cs\" />\r\n" +
-				"  <Assembly id=\"1\" name=\"MyTests\" module=\"C:\\Projects\\Test\\MyTests\\bin\\MyTests.DLL\" domain=\"test-domain-MyTests.dll\" domainIdx=\"1\" />\r\n" +
-				"  <Type asmref=\"1\" name=\"MyTests.Class1\" flags=\"2606412\">\r\n" +
-				"    <Method name=\"set_Count\" sig=\"void  (int)\" flags=\"2182\" iflags=\"0\">\r\n" +
-				"      <pt visit=\"0\" pos=\"9\" len=\"1\" fid=\"1\" sl=\"34\" sc=\"4\" el=\"34\" ec=\"5\" />\r\n" +
-				"      <pt visit=\"0\" pos=\"1\" len=\"8\" fid=\"1\" sl=\"33\" sc=\"5\" el=\"33\" ec=\"12\" />\r\n" +
-				"      <pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"32\" sc=\"8\" el=\"32\" ec=\"9\" />\r\n" +
-				"    </Method>\r\n" +
-				"    <Method name=\"get_Count\" sig=\"int  ()\" flags=\"2182\" iflags=\"0\">\r\n" +
-				"      <pt visit=\"0\" pos=\"6\" len=\"2\" fid=\"1\" sl=\"31\" sc=\"4\" el=\"31\" ec=\"5\" />\r\n" +
-				"      <pt visit=\"0\" pos=\"1\" len=\"5\" fid=\"1\" sl=\"30\" sc=\"5\" el=\"30\" ec=\"15\" />\r\n" +
-				"      <pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"29\" sc=\"8\" el=\"29\" ec=\"9\" />\r\n" +
-				"    </Method>\r\n" +
-				"    <Method name=\"get_NotAProperty\" sig=\"void  ()\" flags=\"134\" iflags=\"0\">\r\n" +
-				"      <pt visit=\"0\" pos=\"1\" len=\"1\" fid=\"1\" sl=\"26\" sc=\"3\" el=\"26\" ec=\"4\" />\r\n" +
-				"      <pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"25\" sc=\"3\" el=\"25\" ec=\"4\" />\r\n" +
-				"    </Method>\r\n" +
-				"    <Method name=\"PropertyFlagsButJustAMethod\" sig=\"void  ()\" flags=\"2182\" iflags=\"0\">\r\n" +
-				"      <pt visit=\"0\" pos=\"8\" len=\"2\" fid=\"1\" sl=\"22\" sc=\"3\" el=\"22\" ec=\"4\" />\r\n" +
-				"      <pt visit=\"0\" pos=\"7\" len=\"1\" fid=\"1\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
-				"      <pt visit=\"0\" pos=\"0\" len=\"7\" fid=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"18\" />\r\n" +
-				"    </Method>\r\n" +
-				"    <Method name=\"InvalidFlags\" sig=\"void  ()\" flags=\"\" iflags=\"0\">\r\n" +
-				"      <pt visit=\"0\" pos=\"8\" len=\"2\" fid=\"1\" sl=\"22\" sc=\"3\" el=\"22\" ec=\"4\" />\r\n" +
-				"      <pt visit=\"0\" pos=\"7\" len=\"1\" fid=\"1\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
-				"      <pt visit=\"0\" pos=\"0\" len=\"7\" fid=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"18\" />\r\n" +
-				"    </Method>\r\n" +
-				"  </Type>\r\n" +
-				"</PartCoverReport>";
-
+				"<CoverageSession xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n" +
+				"\t<Modules>\r\n" +
+				"\t\t<Module hash=\"44-54-B6-13-97-49-45-F8-6A-74-9E-49-0C-77-87-C6-9C-54-47-7B\">\r\n" +
+				"\t\t\t<FullName>C:\\Projects\\Test\\MyTests\\bin\\MyTests.DLL</FullName>\r\n" +
+				"\t\t\t<ModuleName>MyTests</ModuleName>\r\n" +
+				"\t\t\t<Files>\r\n" +
+				"\t\t\t\t<File uid=\"1\" fullPath=\"d:\\Projects\\test\\TestFixture1.cs\" />\r\n" +
+				"\t\t\t</Files>\r\n" +
+				"\t\t\t<Classes>\r\n" +
+				"\t\t\t\t<Class>\r\n" +
+				"\t\t\t\t\t<FullName>MyTests.Class1</FullName>\r\n" +
+				"\t\t\t\t\t<Methods>\r\n" +
+				"\t\t\t\t\t\t<Method visited=\"true\" cyclomaticComplexity=\"1\" sequenceCoverage=\"100\" branchCoverage=\"100\" isConstructor=\"false\" isStatic=\"false\" isGetter=\"false\" isSetter=\"true\">\r\n" +
+				"\t\t\t\t\t\t\t<MetadataToken>100663297</MetadataToken>\r\n" +
+				"\t\t\t\t\t\t\t<Name>System.Void MyTests.MyClass1::set_Count(System.Int32)</Name>\r\n" +
+				"\t\t\t\t\t\t\t<FileRef uid=\"1\" />\r\n" +
+				"\t\t\t\t\t\t\t<SequencePoints>\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"34\" sc=\"4\" el=\"34\" ec=\"5\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"33\" sc=\"5\" el=\"33\" ec=\"12\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"32\" sc=\"8\" el=\"32\" ec=\"9\" />\r\n" +
+				"\t\t\t\t\t\t\t</SequencePoints>\r\n" +
+				"\t\t\t\t\t\t</Method>\r\n" +
+				"\t\t\t\t\t\t<Method visited=\"true\" cyclomaticComplexity=\"1\" sequenceCoverage=\"100\" branchCoverage=\"100\" isConstructor=\"false\" isStatic=\"false\" isGetter=\"true\" isSetter=\"false\">\r\n" +
+				"\t\t\t\t\t\t\t<MetadataToken>100663297</MetadataToken>\r\n" +
+				"\t\t\t\t\t\t\t<Name>System.Int32 MyTests.MyClass1::get_Count())</Name>\r\n" +
+				"\t\t\t\t\t\t\t<FileRef uid=\"1\" />\r\n" +
+				"\t\t\t\t\t\t\t<SequencePoints>\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"31\" sc=\"4\" el=\"31\" ec=\"5\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"30\" sc=\"5\" el=\"30\" ec=\"15\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"29\" sc=\"8\" el=\"29\" ec=\"9\" />\r\n" +
+				"\t\t\t\t\t\t\t</SequencePoints>\r\n" +
+				"\t\t\t\t\t\t</Method>\r\n" +
+				"\t\t\t\t\t\t<Method visited=\"true\" cyclomaticComplexity=\"1\" sequenceCoverage=\"100\" branchCoverage=\"100\" isConstructor=\"false\" isStatic=\"false\" isGetter=\"false\" isSetter=\"false\">\r\n" +
+				"\t\t\t\t\t\t\t<MetadataToken>100663297</MetadataToken>\r\n" +
+				"\t\t\t\t\t\t\t<Name>System.Void MyTests.MyClass1::get_NotAProperty())</Name>\r\n" +
+				"\t\t\t\t\t\t\t<FileRef uid=\"1\" />\r\n" +
+				"\t\t\t\t\t\t\t<SequencePoints>\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"19\" sc=\"3\" el=\"19\" ec=\"18\" />\r\n" +
+				"\t\t\t\t\t\t\t</SequencePoints>\r\n" +
+				"\t\t\t\t\t\t</Method>\r\n" +
+				"\t\t\t\t\t\t<Method visited=\"true\" cyclomaticComplexity=\"1\" sequenceCoverage=\"100\" branchCoverage=\"100\" isConstructor=\"false\" isStatic=\"false\" isGetter=\"true\" isSetter=\"false\">\r\n" +
+				"\t\t\t\t\t\t\t<MetadataToken>100663297</MetadataToken>\r\n" +
+				"\t\t\t\t\t\t\t<Name>System.Void MyTests.Tests.MyClass::PropertyFlagsButJustAMethod()</Name>\r\n" +
+				"\t\t\t\t\t\t\t<FileRef uid=\"1\" />\r\n" +
+				"\t\t\t\t\t\t\t<SequencePoints>\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"19\" sc=\"3\" el=\"19\" ec=\"18\" />\r\n" +
+				"\t\t\t\t\t\t\t</SequencePoints>\r\n" +
+				"\t\t\t\t\t\t</Method>\r\n" +
+				"\t\t\t\t\t\t<Method visited=\"true\" cyclomaticComplexity=\"1\" sequenceCoverage=\"100\" branchCoverage=\"100\" isConstructor=\"\" isStatic=\"false\" isGetter=\"\" isSetter=\"\">\r\n" +
+				"\t\t\t\t\t\t\t<MetadataToken>100663297</MetadataToken>\r\n" +
+				"\t\t\t\t\t\t\t<Name>System.Void MyTests.Tests.MyClass::InvalidFlags()</Name>\r\n" +
+				"\t\t\t\t\t\t\t<FileRef uid=\"1\" />\r\n" +
+				"\t\t\t\t\t\t\t<SequencePoints>\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"19\" sc=\"3\" el=\"19\" ec=\"18\" />\r\n" +
+				"\t\t\t\t\t\t\t</SequencePoints>\r\n" +
+				"\t\t\t\t\t\t</Method>\r\n" +
+				"\t\t\t\t\t</Methods>\r\n" +
+				"\t\t\t\t</Class>\r\n" +
+				"\t\t\t</Classes>\r\n" +
+				"\t\t</Module>\r\n" +
+				"\t</Modules>\r\n" +
+				"</CoverageSession>";
+			
 			base.CreateCodeCoverageResults(xml);			
 		}
 		

@@ -3,9 +3,6 @@
 
 using System;
 using System.IO;
-using System.Text;
-using ICSharpCode.CodeCoverage;
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.UnitTesting;
@@ -189,15 +186,32 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 		TextReader CreateCodeCoverageResultsTextReader()
 		{
 			string xml =
-				"<PartCoverReport>\r\n" +
-				"    <File id='1' url='c:\\Projects\\MyTests\\MyTestFixture.cs'/>\r\n" +
-				"    <Assembly id='1' name='MyTests' module='C:\\Projects\\MyTests\\bin\\MyTests.DLL' domain='test-domain.Tests.dll' domainIdx='1' />\r\n" +
-				"    <Type name='MyTests.Tests.MyTestFixture' asmref='1'>\r\n" +
-				"        <Method name='SimpleTest1'>\r\n" +
-				"            <pt visit='12' sl='20' sc='3' el='20' ec='4' fid='1' />\r\n" +
-				"        </Method>\r\n" +
-				"    </Type>\r\n" +				
-				"</PartCoverReport>";
+				"<CoverageSession xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n" +
+				"    <Modules>\r\n" +
+				"        <Module hash=\"44-54-B6-13-97-49-45-F8-6A-74-9E-49-0C-77-87-C6-9C-54-47-7A\">\r\n" +
+				"            <FullName>C:\\Projects\\MyTests\\bin\\MyTests.DLL</FullName>\r\n" +
+				"            <ModuleName>MyTests</ModuleName>\r\n" +
+				"            <Files>\r\n" +
+				"                <File uid=\"1\" fullPath=\"c:\\Projects\\MyTests\\MyTestFixture.cs\" />\r\n" +
+				"            </Files>\r\n" +
+				"            <Classes>\r\n" +
+				"                <Class>\r\n" +
+				"                    <FullName>MyTests.Tests.MyTestFixture</FullName>\r\n" +
+				"                    <Methods>\r\n" +
+				"                        <Method visited=\"true\" cyclomaticComplexity=\"1\" sequenceCoverage=\"100\" branchCoverage=\"100\" isConstructor=\"false\" isStatic=\"false\" isGetter=\"false\" isSetter=\"false\">\r\n" +
+				"                            <MetadataToken>100663297</MetadataToken>\r\n" +
+				"                            <Name>System.Void MyTests.Tests.MyTestFixture::SimpleTest1()</Name>\r\n" +
+				"                            <FileRef uid=\"1\" />\r\n" +
+				"                            <SequencePoints>\r\n" +
+				"                                <SequencePoint vc='12' sl='20' sc='3' el='20' ec='4'/>\r\n" +
+				"                            </SequencePoints>\r\n" +
+				"                        </Method>\r\n" +
+				"                    </Methods>\r\n" +
+				"                </Class>\r\n" +
+				"            </Classes>\r\n" +
+				"        </Module>\r\n" +
+				"    </Modules>\r\n" +
+				"</CoverageSession>";
 			
 			return new StringReader(xml);
 		}
@@ -245,7 +259,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 			ActionArguments<Task> args = CreateTestRunnerAndFirePartCoverProcessExitEventWhenNoCoverageFileProduced();
 			Task task = args.Arg;
 			
-			string description = @"No code coverage results file generated. c:\projects\MyTests\PartCover\coverage.xml";
+			string description = @"No code coverage results file generated. c:\projects\MyTests\OpenCover\coverage.xml";
 			int column = 1;
 			int line = 1;
 			Task expectedTask = new Task(null, description, column, line, TaskType.Error);

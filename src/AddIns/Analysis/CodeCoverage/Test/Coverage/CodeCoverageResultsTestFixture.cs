@@ -14,18 +14,35 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			string xml = 
-				"<PartCoverReport date=\"2008-07-10T02:59:13.7198656+01:00\">\r\n" +
-				"    <File id=\"1\" url=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
-				"    <Assembly id=\"1\" name=\"Foo.Tests\" module=\"C:\\Projects\\Test\\Foo.Tests\\bin\\Foo.Tests.DLL\" domain=\"test-domain-Foo.Tests.dll\" domainIdx=\"1\" />\r\n" +
-				"    <Type asmref=\"1\" name=\"Foo.Tests.FooTestFixture\" flags=\"1232592\">\r\n" +
-				"        <Method name=\"SimpleTest\" sig=\"void  ()\" bodysize=\"42\" flags=\"2182\" iflags=\"0\">\r\n" +
-				"            <pt visit=\"1\" pos=\"0\" len=\"2\" fid=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
-				"            <pt visit=\"1\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"21\" sc=\"13\" el=\"21\" ec=\"32\" />\r\n" +
-				"            <pt visit=\"0\" pos=\"0\" len=\"4\" fid=\"1\" sl=\"24\" sc=\"3\" el=\"24\" ec=\"4\" />\r\n" +
-				"        </Method>\r\n" +
-				"    </Type>\r\n" +
-				"</PartCoverReport>";
+			string xml =
+				"<CoverageSession xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n" +
+				"\t<Modules>\r\n" +
+				"\t\t<Module hash=\"44-54-B6-13-97-49-45-F8-6A-74-9E-49-0C-77-87-C6-9C-54-47-7A\">\r\n" +
+				"\t\t\t<FullName>C:\\Projects\\Test\\Foo.Tests\\bin\\Foo.Tests.DLL</FullName>\r\n" +
+				"\t\t\t<ModuleName>Foo.Tests</ModuleName>\r\n" +
+				"\t\t\t<Files>\r\n" +
+				"\t\t\t\t<File uid=\"1\" fullPath=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
+				"\t\t\t</Files>\r\n" +
+				"\t\t\t<Classes>\r\n" +
+				"\t\t\t\t<Class>\r\n" +
+				"\t\t\t\t\t<FullName>Foo.Tests.FooTestFixture</FullName>\r\n" +
+				"\t\t\t\t\t<Methods>\r\n" +
+				"\t\t\t\t\t\t<Method visited=\"true\" cyclomaticComplexity=\"1\" sequenceCoverage=\"100\" branchCoverage=\"100\" isConstructor=\"false\" isStatic=\"false\" isGetter=\"false\" isSetter=\"false\">\r\n" +
+				"\t\t\t\t\t\t\t<MetadataToken>100663297</MetadataToken>\r\n" +
+				"\t\t\t\t\t\t\t<Name>System.Void Foo.Tests.FooTestFixture::SimpleTest()</Name>\r\n" +
+				"\t\t\t\t\t\t\t<FileRef uid=\"1\" />\r\n" +
+				"\t\t\t\t\t\t\t<SequencePoints>\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"21\" sc=\"13\" el=\"21\" ec=\"32\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"24\" sc=\"3\" el=\"24\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t</SequencePoints>\r\n" +
+				"\t\t\t\t\t\t</Method>\r\n" +
+				"\t\t\t\t\t</Methods>\r\n" +
+				"\t\t\t\t</Class>\r\n" +
+				"\t\t\t</Classes>\r\n" +
+				"\t\t</Module>\r\n" +
+				"\t</Modules>\r\n" +
+				"</CoverageSession>";
 			
 			base.CreateCodeCoverageResults(xml);			
 		}
@@ -101,7 +118,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 			point.EndColumn = 4;
 			point.Line = 20;
 			point.EndLine = 20;
-			point.Length = 2;
+			point.Length = 1;
 			
 			Assert.AreEqual(point, FirstModuleFirstMethodFirstSequencePoint);
 		}
@@ -138,14 +155,14 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void GetVisitedCodeLength_FirstMethod_ReturnsSummedLengthOfVisitedSequencePoints()
 		{
 			int length = FirstModuleFirstMethod.GetVisitedCodeLength();
-			Assert.AreEqual(3, length);
+			Assert.AreEqual(2, length);
 		}
 		
 		[Test]
 		public void GetUnvisitedCodeLength_FirstMethod_ReturnsSummedLengthOfUnvisitedSequencePoints()
 		{
 			int length = FirstModuleFirstMethod.GetUnvisitedCodeLength();
-			Assert.AreEqual(4, length);
+			Assert.AreEqual(1, length);
 		}
 	}
 }
