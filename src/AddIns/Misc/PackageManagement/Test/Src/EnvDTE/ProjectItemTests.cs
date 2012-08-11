@@ -193,5 +193,29 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual(@"d:\projects\MyProject\src\program.cs", fakeFileService.FileNamePassedToGetCompilationUnit);
 			Assert.AreEqual(0, codeElements.Count);
 		}
+		
+		[Test]
+		public void Remove_FileItemInProject_FileItemRemovedFromProject()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile(@"program.cs");
+			
+			ProjectItem fileItem = projectItems.Item("program.cs");
+			fileItem.Remove();
+			
+			Assert.AreEqual(0, msbuildProject.Items.Count);
+		}
+		
+		[Test]
+		public void Remove_FileItemInProject_ProjectIsSaved()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile(@"program.cs");
+			
+			ProjectItem fileItem = projectItems.Item("program.cs");
+			fileItem.Remove();
+			
+			Assert.IsTrue(msbuildProject.IsSaved);
+		}
 	}
 }

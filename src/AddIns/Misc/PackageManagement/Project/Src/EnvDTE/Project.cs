@@ -275,5 +275,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			return fileService.GetCompilationUnit(fileName);
 		}
+		
+		internal void RemoveProjectItem(ProjectItem projectItem)
+		{
+			projectService.RemoveProjectItem(MSBuildProject, projectItem.MSBuildProjectItem);
+		}
 	}
 }

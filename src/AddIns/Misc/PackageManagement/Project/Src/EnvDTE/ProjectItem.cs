@@ -149,5 +149,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			return projectItem.Include;
 		}
+		
+		public virtual void Remove()
+		{
+			ContainingProject.RemoveProjectItem(this);
+			ContainingProject.Save();
+		}
+		
+		internal FileProjectItem MSBuildProjectItem {
+			get { return projectItem; }
+		}
 	}
 }
