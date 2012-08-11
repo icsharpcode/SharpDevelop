@@ -175,9 +175,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		FileProjectItem CreateFileProjectItemUsingPathRelativeToProject(ItemType itemType, string include)
 		{
-			return new FileProjectItem(MSBuildProject, itemType) {
+			var fileItem = new FileProjectItem(MSBuildProject, itemType) {
 				Include = include
 			};
+			if (IsLink(include)) {
+				fileItem.SetEvaluatedMetadata("Link", Path.GetFileName(include));
+			}
+			return fileItem;
+		}
+		
+		bool IsLink(string include)
+		{
+			return include.StartsWith("..");
 		}
 		
 		FileProjectItem CreateFileProjectItemUsingFullPath(string path)

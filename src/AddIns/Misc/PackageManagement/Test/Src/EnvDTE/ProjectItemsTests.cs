@@ -795,5 +795,25 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual(1, childItems.Count);
 			Assert.AreEqual("Scaffolders", scaffoldersFolderItem.Name);
 		}
+		
+		[Test]
+		public void AddFromFile_FullFileNameIsOutsideProjectPath_FileIsAddedToProjectAsLink()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			string fileName = @"d:\projects\anotherproject\test.cs";
+			
+			msbuildProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.Page;
+			projectItems.AddFromFile(fileName);
+			
+			var fileItem = msbuildProject.Items[0] as FileProjectItem;
+			string linkName = fileItem.GetEvaluatedMetadata("Link");
+			
+			Assert.AreEqual(@"..\anotherproject\test.cs", fileItem.Include);
+			Assert.AreEqual(fileName, fileItem.FileName);
+			Assert.AreEqual(ItemType.Page, fileItem.ItemType);
+			Assert.IsTrue(fileItem.IsLink);
+			Assert.AreEqual("test.cs", linkName);
+		}
 	}
 }
