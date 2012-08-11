@@ -1,15 +1,15 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Peter Forstmeier
- * Date: 22.05.2012
- * Time: 20:46
+ * Date: 09.08.2012
+ * Time: 20:10
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
 using System.Globalization;
 using System.Windows.Controls;
 
-namespace CSharpBinding.OptionPanels
+namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
 	/// <summary>
 	/// Description of HexValidator.

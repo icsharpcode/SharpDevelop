@@ -65,8 +65,12 @@
     <Compile Include="Src\Extensions.cs" />
     <Compile Include="Src\FormattingStrategy\VBStatement.cs" />
     <Compile Include="Src\LanguageUtils.cs" />
-    <Compile Include="Src\OptionPanels\ProjectImportsXaml.xaml.cs">
-      <DependentUpon>ProjectImportsXaml.xaml</DependentUpon>
+    <Compile Include="Src\OptionPanels\BuildOptionsXaml.xaml.cs">
+      <DependentUpon>BuildOptionsXaml.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\OptionPanels\ProjectImports.xaml.cs">
+      <DependentUpon>ProjectImports.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\OptionPanels\TextEditorOptions.xaml.cs">
@@ -132,7 +136,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\OptionPanels\ProjectImportsXaml.xaml" />
+    <Page Include="Src\OptionPanels\BuildOptionsXaml.xaml" />
+    <Page Include="Src\OptionPanels\ProjectImports.xaml" />
     <Page Include="Src\OptionPanels\TextEditorOptions.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

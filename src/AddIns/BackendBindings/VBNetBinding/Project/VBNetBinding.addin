@@ -84,6 +84,10 @@
 		<OptionPanel id    = "BuildOptions"
 		             label = "${res:Dialog.ProjectOptions.BuildOptions}"
 		             class = "ICSharpCode.VBNetBinding.OptionPanels.BuildOptions"/>
+		
+		<OptionPanel id    = "BuildOptions1"
+		             label = "${res:Dialog.ProjectOptions.BuildOptions}"
+		             class = "ICSharpCode.VBNetBinding.OptionPanels.BuildOptionsXaml"/>
 		<OptionPanel id    = "DebugOptions"
 		             label = "${res:Dialog.ProjectOptions.DebugOptions}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
