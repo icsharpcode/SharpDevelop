@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>ICSharpCode.NRefactory</id>
-    <version>5.1.0</version>
+    <version>5.2.0</version>
     <title>NRefactory</title>
     <authors>Daniel Grunwald, Mike Krüger, Erik Källén</authors>
     <owners>Daniel Grunwald</owners>
@@ -19,15 +19,15 @@
     </dependencies>
   </metadata>
 	<files>
-		<file src="..\ICSharpCode.NRefactory\bin\Release\ICSharpCode.NRefactory.dll" target="lib\Net40" />
-		<file src="..\ICSharpCode.NRefactory\bin\Release\ICSharpCode.NRefactory.pdb" target="lib\Net40" />
-		<file src="..\ICSharpCode.NRefactory\bin\Release\ICSharpCode.NRefactory.xml" target="lib\Net40" />
-		<file src="..\ICSharpCode.NRefactory\bin\Release\ICSharpCode.NRefactory.CSharp.dll" target="lib\Net40" />
-		<file src="..\ICSharpCode.NRefactory\bin\Release\ICSharpCode.NRefactory.CSharp.pdb" target="lib\Net40" />
-		<file src="..\ICSharpCode.NRefactory\bin\Release\ICSharpCode.NRefactory.CSharp.xml" target="lib\Net40" />
-		<file src="..\ICSharpCode.NRefactory\bin\Release\ICSharpCode.NRefactory.Xml.dll" target="lib\Net40" />
-		<file src="..\ICSharpCode.NRefactory\bin\Release\ICSharpCode.NRefactory.Xml.pdb" target="lib\Net40" />
-		<file src="..\ICSharpCode.NRefactory\bin\Release\ICSharpCode.NRefactory.Xml.xml" target="lib\Net40" />
+		<file src="..\bin\Release\ICSharpCode.NRefactory.dll" target="lib\Net40" />
+		<file src="..\bin\Release\ICSharpCode.NRefactory.pdb" target="lib\Net40" />
+		<file src="..\bin\Release\ICSharpCode.NRefactory.xml" target="lib\Net40" />
+		<file src="..\bin\Release\ICSharpCode.NRefactory.CSharp.dll" target="lib\Net40" />
+		<file src="..\bin\Release\ICSharpCode.NRefactory.CSharp.pdb" target="lib\Net40" />
+		<file src="..\bin\Release\ICSharpCode.NRefactory.CSharp.xml" target="lib\Net40" />
+		<file src="..\bin\Release\ICSharpCode.NRefactory.Xml.dll" target="lib\Net40" />
+		<file src="..\bin\Release\ICSharpCode.NRefactory.Xml.pdb" target="lib\Net40" />
+		<file src="..\bin\Release\ICSharpCode.NRefactory.Xml.xml" target="lib\Net40" />
 		<file src="..\ICSharpCode.NRefactory\**\*.cs" target="src\ICSharpCode.NRefactory" />
 		<file src="..\ICSharpCode.NRefactory.CSharp\**\*.cs" target="src\ICSharpCode.NRefactory.CSharp" />
 		<file src="..\ICSharpCode.NRefactory.CSharp\**\*.jay" target="src\ICSharpCode.NRefactory.CSharp" />
