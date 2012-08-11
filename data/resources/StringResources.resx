@@ -1556,8 +1556,11 @@ Examples: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.HighlightingEditor.Import" xml:space="preserve">
     <value>Import highlighting colors</value>
   </data>
+  <data name="Dialog.HighlightingEditor.NotSupportedMessage" xml:space="preserve">
+    <value>Settings version not supported!</value>
+  </data>
   <data name="Dialog.HighlightingEditor.OverwriteCustomizationsMessage" xml:space="preserve">
-    <value>There are already one or more existing customizations. Do you want to replace them with the imported values? Colors that are not yet customized will be imported anyway.</value>
+    <value>This will reset all existing customizations and then import the selected file. Do you want to continue?</value>
   </data>
   <data name="Dialog.HighlightingEditor.Properties.Value" xml:space="preserve">
     <value>Value</value>

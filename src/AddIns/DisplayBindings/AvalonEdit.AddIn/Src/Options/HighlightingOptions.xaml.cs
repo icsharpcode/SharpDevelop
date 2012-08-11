@@ -589,10 +589,12 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		{
 			XElement[] items;
 			if (!CheckVersionAndFindCategory(document, out items) || items == null) {
-				Core.MessageService.ShowError("Settings version not supported!");
+				Core.MessageService.ShowError("${res:Dialog.HighlightingEditor.NotSupportedMessage}");
 				return;
 			}
-			bool? replaceCustomizations = null;
+			if (!MessageService.AskQuestion("${res:Dialog.HighlightingEditor.OverwriteCustomizationsMessage}"))
+				return;
+			ResetAllButtonClick(null, null);
 			XElement plainTextItem = items.FirstOrDefault(element => element.Attribute("Name") != null && element.Attribute("Name").Value == "Plain Text");
 			Color defaultForeground = Colors.Black;
 			Color defaultBackground = Colors.White;
@@ -607,14 +609,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				foreach (var sdKey in mapping[key]) {
 					IHighlightingItem color;
 					if (FindSDColor(sdKey, out color)) {
-						if (color.IsCustomized) {
-							if (!replaceCustomizations.HasValue) {
-								replaceCustomizations =
-									MessageService.AskQuestion("${res:Dialog.HighlightingEditor.OverwriteCustomizationsMessage}");
-							}
-							if (replaceCustomizations == false)
-								continue;
-						}
 						color.Bold = entry.Item3;
 						color.Foreground = entry.Item1 ?? defaultForeground;
 						color.Background = entry.Item2 ?? defaultBackground;
