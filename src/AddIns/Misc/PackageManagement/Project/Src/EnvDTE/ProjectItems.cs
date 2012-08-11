@@ -32,25 +32,24 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual void AddFromFileCopy(string filePath)
 		{
-			string include = GetIncludePath(filePath);
+			string include = GetIncludePathForFileCopy(filePath);
 			CopyFileIntoProject(filePath, include);
 			project.AddFileProjectItemUsingPathRelativeToProject(include);
 			project.Save();
 		}
 		
-		string GetIncludePath(string filePath)
+		/// <summary>
+		/// The file will be copied inside the folder for the parent containing 
+		/// these project items.
+		/// </summary>
+		string GetIncludePathForFileCopy(string filePath)
 		{
-			string fileName = Path.GetFileName(filePath);
+			string fileNameWithoutAnyPath = Path.GetFileName(filePath);
 			if (Parent is Project) {
-				return fileName;
+				return fileNameWithoutAnyPath;
 			}
-			return GetIncludePath(Parent as ProjectItem, fileName);
-		}
-		
-		string GetIncludePath(ProjectItem projectItem, string fileName)
-		{
 			var item = Parent as ProjectItem;
-			return item.GetIncludePath(fileName);
+			return item.GetIncludePath(fileNameWithoutAnyPath);
 		}
 		
 		void ThrowExceptionIfFileExists(string filePath)
@@ -60,16 +59,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 		}
 		
-		void CopyFileIntoProject(string oldFileName, string fileName)
+		void CopyFileIntoProject(string fileName, string projectItemInclude)
 		{
-			string newFileName = GetFileNameInProject(fileName);
+			string newFileName = GetFileNameInProjectFromProjectItemInclude(projectItemInclude);
 			ThrowExceptionIfFileExists(newFileName);
-			fileService.CopyFile(oldFileName, newFileName);
+			fileService.CopyFile(fileName, newFileName);
 		}
 		
-		string GetFileNameInProject(string fileName)
+		string GetFileNameInProjectFromProjectItemInclude(string projectItemInclude)
 		{
-			return Path.Combine(project.MSBuildProject.Directory, fileName);
+			return Path.Combine(project.MSBuildProject.Directory, projectItemInclude);
 		}
 		
 		public virtual IEnumerator GetEnumerator()
