@@ -208,16 +208,18 @@ namespace NUnit.ConsoleRunner
                     else
                     {
                         WriteSummaryReport(summary);
-                        if (summary.ErrorsAndFailures > 0 || result.IsError || result.IsFailure)
-                        {
-                            if (options.stoponerror)
-                            {
-                                Console.WriteLine("Test run was stopped after first error, as requested.");
-                                Console.WriteLine();
-                            }
 
-                            WriteErrorsAndFailuresReport(result);
+                        bool hasErrors = summary.Errors > 0 || summary.Failures > 0 || result.IsError || result.IsFailure;
+
+                        if (options.stoponerror && (hasErrors || summary.NotRunnable > 0))
+                        {
+                            Console.WriteLine("Test run was stopped after first error, as requested.");
+                            Console.WriteLine();
                         }
+
+                        if (hasErrors)
+                            WriteErrorsAndFailuresReport(result);
+
                         if (summary.TestsNotRun > 0)
                             WriteNotRunReport(result);
 
@@ -234,7 +236,7 @@ namespace NUnit.ConsoleRunner
                         }
                     }
 
-                    returnCode = summary.ErrorsAndFailures;
+                    returnCode = summary.Errors + summary.Failures + summary.NotRunnable;
                 }
 
 				if ( collector.HasExceptions )

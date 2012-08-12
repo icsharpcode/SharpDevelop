@@ -52,11 +52,6 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
-    <Reference Include="nunit.uikit">
-      <HintPath>..\..\..\Tools\NUnit\lib\nunit.uikit.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\IFileSystem.cs" />
