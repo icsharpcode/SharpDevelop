@@ -28,8 +28,10 @@ namespace ICSharpCode.Scripting.Tests.Designer
 		[TestFixtureTearDown]
 		public void TearDownFixture()
 		{
-			form.Dispose();
-		}		
+			if (form != null) {
+				form.Dispose();
+			}
+		}
 
 		/// <summary>
 		/// Called at the start of SetUpFixture method before anything is setup.
