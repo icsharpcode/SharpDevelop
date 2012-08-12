@@ -593,14 +593,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			if (!MessageService.AskQuestion("${res:Dialog.HighlightingEditor.OverwriteCustomizationsMessage}"))
 				return;
 			ResetAllButtonClick(null, null);
-			XElement plainTextItem = items.FirstOrDefault(element => element.Attribute("Name") != null && element.Attribute("Name").Value == "Plain Text");
-			Color defaultForeground = Colors.Black;
-			Color defaultBackground = Colors.White;
-			if (plainTextItem != null) {
-				var entry = ParseEntry(plainTextItem);
-				defaultForeground = entry.Item1 ?? Colors.Black;
-				defaultBackground = entry.Item2 ?? Colors.White;
-			}
 			foreach (var item in items) {
 				string key = item.Attribute("Name").Value;
 				var entry = ParseEntry(item);
@@ -608,8 +600,12 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 					IHighlightingItem color;
 					if (FindSDColor(sdKey, out color)) {
 						color.Bold = entry.Item3;
-						color.Foreground = entry.Item1 ?? defaultForeground;
-						color.Background = entry.Item2 ?? defaultBackground;
+						color.UseDefaultForeground = !entry.Item1.HasValue;
+						if (entry.Item1 != null)
+							color.Foreground = entry.Item1.Value;
+						color.UseDefaultBackground = !entry.Item2.HasValue;
+						if (entry.Item2 != null)
+							color.Background = entry.Item2.Value;
 					}
 				}
 			}
@@ -783,6 +779,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				return null;
 			if (s.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
 				s = s.Substring(2);
+			if (s.Length < 8)
+				return null;
 			if (string.CompareOrdinal(s.Substring(0, 2), "02") == 0)
 				return null;
 			byte r, g, b;
