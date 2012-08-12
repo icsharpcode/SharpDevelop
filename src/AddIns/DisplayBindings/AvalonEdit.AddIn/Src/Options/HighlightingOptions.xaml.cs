@@ -553,13 +553,11 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 							case ErrorPainter.WarningColorName:
 							case ErrorPainter.MessageColorName:
 								marker.MarkerType = TextMarkerType.SquigglyUnderline;
-								marker.ForegroundColor = item.Foreground;
-								marker.BackgroundColor = item.Background;
+								marker.MarkerColor = item.Foreground;
 								break;
 							default:
 								marker.MarkerType = TextMarkerType.None;
-								marker.ForegroundColor = item.Foreground;
-								marker.BackgroundColor = item.Background;
+								marker.MarkerColor = Colors.Transparent;
 								break;
 						}
 					}
