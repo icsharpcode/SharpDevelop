@@ -294,6 +294,7 @@
     <Compile Include="Refactoring\CodeIssues\ExpressionIsAlwaysOfProvidedTypeIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ExpressionIsNeverOfProvidedTypeIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\MethodNeverReturnsIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\MethodOverloadHidesOptionalParameterIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\NegativeRelationalExpressionIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ExplicitConversionInForEachIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ForControlVariableNotModifiedIssue.cs" />
