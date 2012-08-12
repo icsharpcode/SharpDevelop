@@ -783,16 +783,16 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				return null;
 			if (s.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
 				s = s.Substring(2);
-			if (s.Substring(0, 2) == "02")
+			if (string.CompareOrdinal(s.Substring(0, 2), "02") == 0)
 				return null;
-			try {
-				byte b = byte.Parse(s.Substring(2, 2), NumberStyles.HexNumber);
-				byte g = byte.Parse(s.Substring(4, 2), NumberStyles.HexNumber);
-				byte r = byte.Parse(s.Substring(6, 2), NumberStyles.HexNumber);
-				return Color.FromRgb(r, g, b);
-			} catch (FormatException) {
+			byte r, g, b;
+			if (!byte.TryParse(s.Substring(2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out b))
 				return Colors.Transparent;
-			}
+			if (!byte.TryParse(s.Substring(4, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out g))
+				return Colors.Transparent;
+			if (!byte.TryParse(s.Substring(6, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out r))
+				return Colors.Transparent;
+			return Color.FromRgb(r, g, b);
 		}
 		
 		bool CheckVersionAndFindCategory(XDocument document, out XElement[] categoryItems)

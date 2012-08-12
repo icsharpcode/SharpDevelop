@@ -39,13 +39,13 @@
 			<Begin color="VBScriptTag">&lt;script\ lang="VBScript"&gt;</Begin>
 			<End color="VBScriptTag">&lt;/script&gt;</End>
 		</Span>
-		<Span multiline="true">
-			<Begin color="UnknownScriptTag">&lt;script[^\w\d_]&gt;</Begin>
-			<End color="UnknownScriptTag">&lt;/script&gt;</End>
-		</Span>
 		<Span ruleSet="JavaScriptSet" multiline="true">
 			<Begin color="ScriptTag">&lt;script&gt;</Begin>
 			<End color="ScriptTag">&lt;/script&gt;</End>
+		</Span>
+		<Span multiline="true">
+			<Begin color="UnknownScriptTag">&lt;script[^\w\d_]</Begin>
+			<End color="UnknownScriptTag">&lt;/script&gt;</End>
 		</Span>
 		<Span color="HtmlTag" ruleSet="HtmlTagSet" multiline="true">
 			<Begin>&lt;</Begin>
