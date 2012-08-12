@@ -318,7 +318,6 @@
     <EmbeddedResource Include="..\Project\RubyBinding.addin">
       <Link>RubyBinding.addin</Link>
     </EmbeddedResource>
-    <None Include="app.config" />
     <EmbeddedResource Include="Designer\App.ico" />
     <EmbeddedResource Include="Strings.resx" />
   </ItemGroup>

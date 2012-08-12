@@ -437,7 +437,6 @@
     <EmbeddedResource Include="..\Project\PythonBinding.addin">
       <Link>PythonBinding.addin</Link>
     </EmbeddedResource>
-    <None Include="app.config" />
     <Compile Include="Parsing\AddInvalidSourceSpanToErrorSinkTestFixture.cs" />
     <Compile Include="Utils\PythonBindingAddInFile.cs" />
     <Compile Include="Utils\PythonCompletionItemsHelper.cs" />

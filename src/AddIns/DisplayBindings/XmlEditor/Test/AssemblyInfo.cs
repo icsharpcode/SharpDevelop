@@ -3,6 +3,7 @@
 
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using NUnit.Framework;
 
 // Information about this assembly is defined by the following
 // attributes.
@@ -33,3 +34,6 @@ using System.Runtime.CompilerServices;
 // This is not required, if you don't want signing let these attributes like they're.
 [assembly: AssemblyDelaySign(false)]
 [assembly: AssemblyKeyFile("")]
+
+// Run unit tests on STA thread.
+[assembly: RequiresSTA]

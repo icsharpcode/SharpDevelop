@@ -2,9 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-
 using NUnit.Framework;
 
 // Information about this assembly is defined by the following
@@ -13,8 +10,8 @@ using NUnit.Framework;
 // change them to the information which is associated with the assembly
 // you compile.
 
-[assembly: AssemblyTitle("WpfDesign.Designer.Tests")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("VBNetBinding.Tests")]
+[assembly: AssemblyDescription("VB.NET language binding for #develop")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

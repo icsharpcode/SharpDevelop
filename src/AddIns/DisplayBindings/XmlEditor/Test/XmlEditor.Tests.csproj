@@ -335,7 +335,6 @@
     <Compile Include="Tree\InsertElementBeforeTestFixture.cs" />
     <Compile Include="Tree\AddElementsToTreeControlTestFixture.cs" />
     <Compile Include="Tree\InsertElementAfterTestFixture.cs" />
-    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion" />

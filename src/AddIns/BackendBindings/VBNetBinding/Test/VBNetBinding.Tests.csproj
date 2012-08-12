@@ -57,9 +57,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="LanguageUtilsTests.cs" />
     <Compile Include="MockTextEditor.cs" />
     <Compile Include="TextEditorBasedTests.cs" />
+    <Folder Include="Configuration" />
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
@@ -86,7 +91,6 @@
     <Compile Include="FormattingStrategy\EndSubTests.cs" />
     <Compile Include="FormattingStrategy\IndentationTests.cs" />
     <Compile Include="FormattingStrategy\InterfaceTests.cs" />
-    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

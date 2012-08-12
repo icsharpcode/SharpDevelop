@@ -75,7 +75,6 @@
     <Compile Include="XamlDom\TestHelper.cs" />
     <Compile Include="XamlDom\WhitespaceTests.cs" />
     <Compile Include="XamlDom\XamlTypeFinderTests.cs" />
-    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">

@@ -94,7 +94,6 @@
     <Compile Include="WeakReferenceTests.cs" />
     <Compile Include="XmlParser\ParserTests.cs" />
     <Compile Include="XmlParser\TextReplacementTests.cs" />
-    <None Include="app.config" />
     <None Include="XmlParser\W3C.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

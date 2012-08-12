@@ -68,8 +68,6 @@
     <Compile Include="MockTextEditor.cs" />
     <Compile Include="OverrideCompletionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <None Include="app.config">
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
