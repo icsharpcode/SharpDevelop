@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement
@@ -22,6 +23,10 @@ namespace ICSharpCode.PackageManagement
 		void RemoveProjectItem(IProject project, ProjectItem item);
 		void Save(IProject project);
 		
-		IEnumerable<IProject> GetOpenProjects();		
+		IEnumerable<IProject> GetOpenProjects();
+
+		IProjectContent GetProjectContent(IProject project);
+
+		IProjectBrowserUpdater CreateProjectBrowserUpdater();
 	}
 }

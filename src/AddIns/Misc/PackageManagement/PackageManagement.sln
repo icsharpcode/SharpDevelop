@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.1.0.7374-alpha
+# SharpDevelop 4.3.0.8820-alpha
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageManagement", "Project\PackageManagement.csproj", "{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageManagement.Tests", "Test\PackageManagement.Tests.csproj", "{56E98A01-8398-4A08-9578-C7337711A52B}"
@@ -172,5 +172,13 @@ Global
 		{A406803B-C584-43A3-BCEE-A0BB3132CB5F}.Release|x86.ActiveCfg = Release|x86
 		{A406803B-C584-43A3-BCEE-A0BB3132CB5F}.Release|Any CPU.Build.0 = Release|x86
 		{A406803B-C584-43A3-BCEE-A0BB3132CB5F}.Release|Any CPU.ActiveCfg = Release|x86
+		{56E98A01-8398-4A08-9578-C7337711A52B}.Debug|Any CPU.Build.0 = Debug|x86
+		{56E98A01-8398-4A08-9578-C7337711A52B}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{56E98A01-8398-4A08-9578-C7337711A52B}.Release|Any CPU.Build.0 = Release|x86
+		{56E98A01-8398-4A08-9578-C7337711A52B}.Release|Any CPU.ActiveCfg = Release|x86
+		{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}.Debug|Any CPU.Build.0 = Debug|x86
+		{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}.Release|Any CPU.Build.0 = Release|x86
+		{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}.Release|Any CPU.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

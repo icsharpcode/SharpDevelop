@@ -11,6 +11,8 @@ namespace PackageManagement.Tests.Helpers
 	public class TestableProject : MSBuildBasedProject
 	{
 		public bool IsSaved;
+		string assemblyName;
+		string rootNamespace;
 		
 		public ItemType ItemTypeToReturnFromGetDefaultItemType {
 			get { return TestableProjectBehaviour.ItemTypeToReturnFromGetDefaultItemType; }
@@ -48,6 +50,13 @@ namespace PackageManagement.Tests.Helpers
 			return referenceProjectItem;
 		}
 		
+		public ProjectReferenceProjectItem AddProjectReference(IProject referencedProject)
+		{
+			var referenceProjectItem = new ProjectReferenceProjectItem(this, referencedProject);
+			ProjectService.AddProjectItem(this, referenceProjectItem);
+			return referenceProjectItem;
+		}
+		
 		public FileProjectItem AddFile(string include)
 		{
 			var fileProjectItem = new FileProjectItem(this, ItemType.Compile, include);
@@ -60,6 +69,16 @@ namespace PackageManagement.Tests.Helpers
 			var fileProjectItem = new FileProjectItem(this, ItemType.Folder, include);
 			ProjectService.AddProjectItem(this, fileProjectItem);
 			return fileProjectItem;			
+		}
+		
+		public override string AssemblyName {
+			get { return assemblyName; }
+			set { assemblyName = value; }
+		}
+		
+		public override string RootNamespace {
+			get { return rootNamespace; }
+			set { rootNamespace = value; }
 		}
 	}
 }

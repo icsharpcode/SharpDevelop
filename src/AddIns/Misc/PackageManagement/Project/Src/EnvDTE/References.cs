@@ -54,7 +54,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		IEnumerable<Reference> GetReferences()
 		{
 			foreach (ReferenceProjectItem referenceProjectItem in project.GetReferences()) {
-				yield return new Reference(project, referenceProjectItem);
+				yield return new Reference3(project, referenceProjectItem);
 			}
 		}
 		

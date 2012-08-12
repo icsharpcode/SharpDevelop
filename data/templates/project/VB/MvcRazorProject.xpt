@@ -229,10 +229,15 @@ Public Class MvcApplication
 End Class
 ]]>
 			</File>
+			<File name="Views\_ViewStart.vbhtml">
+<![CDATA[@Code
+	Layout = "~/Views/Shared/_Layout.vbhtml"
+End Code
+]]>
+			</File>
 			<File name="Views\Home\Contact.vbhtml">
 <![CDATA[@Code
 	ViewData("Title") = "Contact"
-	Layout = "~/Views/Shared/_LayoutPage.vbhtml"
 End Code
 
 <h2>Contact Us</h2>
@@ -247,7 +252,6 @@ Aliquam suscipit tellus vel nunc elementum fringilla.</p>
 			<File name="Views\Home\Index.vbhtml">
 <![CDATA[@Code
 	ViewData("Title") = "Home"
-	Layout = "~/Views/Shared/_LayoutPage.vbhtml"
 End Code
 
 <h2>Home</h2>
@@ -259,7 +263,7 @@ felis elit, ac scelerisque odio. Morbi ante mauris, sollicitudin eu posuere quis
 Aliquam suscipit tellus vel nunc elementum fringilla.</p>
 ]]>
 			</File>
-			<File name="Views\Shared\_LayoutPage.vbhtml">
+			<File name="Views\Shared\_Layout.vbhtml">
 <![CDATA[<!DOCTYPE html>
 <html>
 	<head>

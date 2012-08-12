@@ -647,5 +647,16 @@ namespace PackageManagement.Tests.Scripting
 			
 			Assert.AreEqual(expectedPackageSource, packageSource);
 		}
+		
+		[Test]
+		public void SetDefaultRunspace_AfterHostIsRun_SetsDefaultRunspaceOnPowershellHost()
+		{
+			CreateHost();
+			RunHost();
+			
+			host.SetDefaultRunspace();
+			
+			Assert.IsTrue(powerShellHost.IsSetDefaultRunspaceCalled);
+		}
 	}
 }

@@ -3,8 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.Design
 {
@@ -78,6 +79,18 @@ namespace ICSharpCode.PackageManagement.Design
 		public void Save(IProject project)
 		{
 			project.Save();
+		}
+		
+		public IProjectContent GetProjectContent(IProject project)
+		{
+			return new DefaultProjectContent();
+		}
+		
+		public IProjectBrowserUpdater ProjectBrowserUpdater;
+		
+		public IProjectBrowserUpdater CreateProjectBrowserUpdater()
+		{
+			return ProjectBrowserUpdater;
 		}
 	}
 }

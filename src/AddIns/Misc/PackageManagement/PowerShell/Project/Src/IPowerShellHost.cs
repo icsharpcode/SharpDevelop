@@ -14,5 +14,6 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void SetRemoteSignedExecutionPolicy();
 		void UpdateFormatting(IEnumerable<string> formattingFiles);
 		void ExecuteCommand(string command);
+		void SetDefaultRunspace();
 	}
 }

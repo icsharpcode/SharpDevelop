@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement
@@ -52,7 +53,39 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool FileExists(string fileName)
 		{
-			return File.Exists(fileName);
+			if (WorkbenchSingleton.InvokeRequired) {
+				return WorkbenchSingleton.SafeThreadFunction(() => FileExists(fileName));
+			} else {
+				return File.Exists(fileName);
+			}
+		}
+		
+		public string[] GetFiles(string path)
+		{
+			if (WorkbenchSingleton.InvokeRequired) {
+				return WorkbenchSingleton.SafeThreadFunction(() => GetFiles(path));
+			} else {
+				return Directory.GetFiles(path);
+			}
+		}
+		
+		public string[] GetDirectories(string path)
+		{
+			if (WorkbenchSingleton.InvokeRequired) {
+				return WorkbenchSingleton.SafeThreadFunction(() => GetDirectories(path));
+			} else {
+				return Directory.GetDirectories(path);
+			}
+		}
+		
+		public void ParseFile(string fileName)
+		{
+			ParserService.ParseFile(fileName);
+		}
+		
+		public ICompilationUnit GetCompilationUnit(string fileName)
+		{
+			return ParserService.GetExistingParseInformation(fileName).CompilationUnit;
 		}
 	}
 }

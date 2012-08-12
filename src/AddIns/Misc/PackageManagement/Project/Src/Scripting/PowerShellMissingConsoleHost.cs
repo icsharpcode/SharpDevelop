@@ -76,5 +76,9 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			return null;
 		}
+		
+		public void SetDefaultRunspace()
+		{
+		}
 	}
 }
