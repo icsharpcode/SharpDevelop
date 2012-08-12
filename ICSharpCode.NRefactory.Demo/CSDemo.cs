@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory.Demo
 		
 		void CSharpParseButtonClick(object sender, EventArgs e)
 		{
-			syntaxTree = SyntaxTree.Parse(csharpCodeTextBox.Text);
+			syntaxTree = new CSharpParser().Parse(csharpCodeTextBox.Text, "demo.cs");
 			csharpTreeView.Nodes.Clear();
 			foreach (var element in syntaxTree.Children) {
 				csharpTreeView.Nodes.Add(MakeTreeNode(element));

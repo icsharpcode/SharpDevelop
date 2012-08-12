@@ -23,4 +23,4 @@ using System.Runtime.InteropServices;
 
 // [AssemblyFileVersion] is the version of the NuGet package,
 // should follow http://semver.org/ rules
-[assembly: AssemblyFileVersion("5.1.0")]
+[assembly: AssemblyFileVersion("5.2.0")]
