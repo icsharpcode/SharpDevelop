@@ -41,6 +41,14 @@ namespace ICSharpCode.PackageManagement
 			return repository.GetPackages();
 		}
 		
+		/// <summary>
+		/// Order packages by most downloaded first.
+		/// </summary>
+		protected override IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
+		{
+			return packages.OrderByDescending(package => package.DownloadCount);
+		}
+		
 		protected override IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(IQueryable<IPackage> allPackages)
 		{
 			return base.GetFilteredPackagesBeforePagingResults(allPackages)

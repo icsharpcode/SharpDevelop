@@ -382,5 +382,29 @@ namespace PackageManagement.Tests
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
 		}
+		
+		[Test]
+		public void ReadPackages_TwoPackagesWithDifferentDownloadCounts_HighestDownloadCountShownFirst()
+		{
+			CreateViewModel();
+			
+			var package1 = new FakePackage("A", "0.1.0.0") { DownloadCount = 1 };
+			var package2 = new FakePackage("Z", "0.1.0.0") { DownloadCount = 1000 };
+			
+			var packages = new FakePackage[] {
+				package1, package2
+			};
+			
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(packages);
+			
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			var expectedPackages = new FakePackage[] {
+				package2, package1
+			};
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
 	}
 }

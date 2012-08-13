@@ -173,7 +173,7 @@ namespace ICSharpCode.PackageManagement
 			return allPackages;
 		}
 		
-		IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
+		protected virtual IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
 		{
 			return packages
 				.OrderBy(package => package.Id);
