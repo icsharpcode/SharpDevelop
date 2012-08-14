@@ -125,7 +125,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				var firstStatement = catchClause.Body.Statements.FirstOrNullObject();
 				if (firstStatement.IsNull) {
-					return true;
+					return false;
 				}
 				var throwStatement = firstStatement as ThrowStatement;
 				if (throwStatement == null) {

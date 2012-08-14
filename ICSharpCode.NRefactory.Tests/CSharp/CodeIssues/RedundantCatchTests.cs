@@ -152,11 +152,7 @@ class A
 }";
 			TestRefactoringContext context;
 			var issues = GetIssues(new RedundantCatchIssue(), input, out context);
-			Assert.AreEqual(1, issues.Count);
-			
-			CheckFix(context, issues, BaseInput + @"
-	}
-}");
+			Assert.AreEqual(0, issues.Count);
 		}
 		
 		[Test]
