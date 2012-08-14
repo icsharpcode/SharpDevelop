@@ -40,7 +40,7 @@ class TestClass
 {
 	void Test (object a)
 	{
-		var b = (" + type + @")$a;
+		var b = ($" + type + @")a;
 	}
 }";
 			string output = @"
