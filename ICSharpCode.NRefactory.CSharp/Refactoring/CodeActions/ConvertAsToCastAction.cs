@@ -35,6 +35,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		protected override CodeAction GetAction (RefactoringContext context, AsExpression node)
 		{
+			if (!node.AsToken.Contains (context.Location))
+				return null;
 			return new CodeAction (context.TranslateString ("Convert 'as' to cast"), 
 				script => script.Replace (node, new CastExpression (node.Type.Clone (), node.Expression.Clone ())));
 		}
