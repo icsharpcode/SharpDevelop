@@ -51,12 +51,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				this.context = context;
 			}
 
-			static IList<Type> blockingStatements = new List<Type>() {
+			static IList<Type> moveTargetBlacklist = new List<Type>() {
 				typeof(WhileStatement),
 				typeof(ForeachStatement),
 				typeof(ForStatement),
 				typeof(DoWhileStatement),
-				typeof(TryCatchStatement)
+				typeof(TryCatchStatement),
+				typeof(AnonymousMethodExpression),
+				typeof(LambdaExpression)
 			};
 		
 			public override void VisitVariableDeclarationStatement(VariableDeclarationStatement variableDeclarationStatement)
@@ -86,7 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var path = GetPath(rootNode, lowestCommonAncestor);
 
 				var firstLoopStatement = (from node in path
-				                          where blockingStatements.Contains(node.GetType())
+				                          where moveTargetBlacklist.Contains(node.GetType())
 				                          select node).FirstOrDefault();
 				IList<AstNode> possibleDestinationsPath;
 				if (firstLoopStatement == null) {
@@ -94,22 +96,54 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				} else {
 					possibleDestinationsPath = GetPath(rootNode, firstLoopStatement);
 				}
-				var mostNestedBlockStatement = (from node in possibleDestinationsPath
-				                                let block = node as BlockStatement
-				                                where block != null
-				                                select block).LastOrDefault();
+				var mostNestedEmbeddedStatement = (from node in possibleDestinationsPath
+				                                   let statement = node as Statement
+				                                   let blockStatement = statement as BlockStatement
+				                                   where statement != null && IsNestedScope(statement)
+				                                   select statement).LastOrDefault();
 
-				if (mostNestedBlockStatement != null && mostNestedBlockStatement != rootNode) {
+				if (mostNestedEmbeddedStatement != null && mostNestedEmbeddedStatement != rootNode) {
 					AddIssue(variableDeclarationStatement, context.TranslateString("Variable could be moved to a nested scope"),
-					         GetActions(variableDeclarationStatement, mostNestedBlockStatement));
+					         GetActions(variableDeclarationStatement, mostNestedEmbeddedStatement));
 				}
 			}
 
-			IEnumerable<CodeAction> GetActions(VariableDeclarationStatement declaration, BlockStatement insertTarget)
+			bool IsNestedScope(AstNode node)
+			{
+				var blockStatement = node as BlockStatement;
+				if (blockStatement != null)
+					return true;
+
+				var statement = node as Statement;
+				if (statement == null)
+					return false;
+
+				var role = node.Role;
+				if (role == Roles.EmbeddedStatement ||
+					role == IfElseStatement.TrueRole ||
+					role == IfElseStatement.FalseRole) {
+					return true;
+				}
+				return false;
+			}
+
+			IEnumerable<CodeAction> GetActions(VariableDeclarationStatement declaration, Statement targetScope)
 			{
 				yield return new CodeAction(context.TranslateString("Move to nested scope"), script => {
+					var blockStatement = targetScope as BlockStatement;
+					if (blockStatement == null) {
+						var newBlockStatement = new BlockStatement {
+							Statements = {
+								declaration.Clone(),
+								targetScope.Clone()
+							}
+						};
+						script.Replace(targetScope, newBlockStatement);
+						script.FormatText(targetScope.Parent);
+					} else {
+						script.InsertBefore(blockStatement.Statements.First(), declaration.Clone());
+					}
 					script.Remove(declaration);
-					script.InsertBefore(insertTarget.Statements.First(), declaration.Clone());
 				});
 			}
 

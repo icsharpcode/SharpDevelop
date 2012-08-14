@@ -288,6 +288,60 @@ class A
 			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
+		
+		[Test]
+		public void DoesNotSuggestMovingIntoClosure ()
+		{	
+			var input = @"
+using System;
+class A
+{
+	void F()
+	{
+		int valA = 2;
+		Action a = () => Console.WriteLine(valA);
+
+		int valB = 2;
+		Action b = () => { Console.WriteLine(valB); };
+
+		int valC = 2;
+		Action c = delegate() { Console.WriteLine(valC); };
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+
+		[Test]
+		public void TestEmbeddedNonBlockStatement ()
+		{
+			var input = @"
+class A
+{
+	void F()
+	{
+		int val = 2;
+		if (true)
+			System.Console.WriteLine (val);
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			
+			CheckFix(context, issues [0], @"
+class A
+{
+	void F()
+	{
+		if (true) {
+			int val = 2;
+			System.Console.WriteLine (val);
+		}
+	}
+}");
+		}
 	}
 }
 
