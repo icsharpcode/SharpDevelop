@@ -103,7 +103,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.CodeActions
 							  Func<ConditionalExpression, IEnumerable<Statement>> getReplacement)
 		{
 			var conditionalExpr = GetConditionalExpression (conditionalCandidate);
-			if (conditionalExpr == null)
+			if (conditionalExpr == null || 
+				!(conditionalExpr.QuestionMarkToken.Contains(context.Location) ||
+				  conditionalExpr.ColonToken.Contains(context.Location)))
 				return null;
 
 			return new CodeAction (context.TranslateString ("Convert '?:' to 'if'"),

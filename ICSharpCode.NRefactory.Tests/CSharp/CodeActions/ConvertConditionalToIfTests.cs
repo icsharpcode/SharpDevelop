@@ -41,7 +41,7 @@ class TestClass
 	void TestMethod (int i)
 	{
 		int a;
-		$a = i > 0 ? 0 : 1;
+		a = i > 0 $? 0 : 1;
 	}
 }", @"
 class TestClass
@@ -61,7 +61,7 @@ class TestClass
 	void TestMethod (int i)
 	{
 		int a;
-		$a += i > 0 ? 0 : 1;
+		a += i > 0 $? 0 : 1;
 	}
 }", @"
 class TestClass
@@ -97,7 +97,7 @@ class TestClass
 {
 	void TestMethod (int i)
 	{
-		int a = $i > 0 ? 0 : 1;
+		int a = i > 0 $? 0 : 1;
 	}
 }", correctOutput);
 			Test<ConvertConditionalToIfAction> (@"
@@ -105,7 +105,7 @@ class TestClass
 {
 	void TestMethod (int i)
 	{
-		int a = ($i > 0 ? 0 : 1);
+		int a = (i > 0 $? 0 : 1);
 	}
 }", correctOutput);
 		}
@@ -118,7 +118,7 @@ class TestClass
 {
 	void TestMethod (int i)
 	{
-		int a, b = $i > 0 ? 0 : 1, c;
+		int a, b = i > 0 $? 0 : 1, c;
 	}
 }", @"
 class TestClass
@@ -143,7 +143,7 @@ class TestClass
 	void TestMethod (int i)
 	{
 		int a;
-		$a = 1 + (i > 0 ? 0 : 1);
+		a = 1 + (i > 0 $? 0 : 1);
 	}
 }");
 		}
@@ -156,7 +156,7 @@ class TestClass
 {
 	void TestMethod (int i)
 	{
-		int a $= 1 + (i > 0 ? 0 : 1);
+		int a = 1 + (i > 0 $? 0 : 1);
 	}
 }");
 		}
@@ -170,7 +170,7 @@ class TestClass
 	void TestMethod ()
 	{
 		int a;
-		for (int i = 0; i < 10; i++, a = $i > 10 ? 1 : 0) ;
+		for (int i = 0; i < 10; i++, a = i > 10 $? 1 : 0) ;
 	}
 }");
 			TestWrongContext<ConvertConditionalToIfAction> (@"
@@ -180,7 +180,7 @@ class TestClass
 	{
 		int a;
 		int i;
-		for (i = 0, a = $i > 10 ? 1 : 0; i < 10; i++) ;
+		for (i = 0, a = i > 10 $? 1 : 0; i < 10; i++) ;
 	}
 }");
 			TestWrongContext<ConvertConditionalToIfAction> (@"
@@ -189,7 +189,7 @@ class TestClass
 	void TestMethod ()
 	{
 		int j;
-		for (int i = 0, a = $i > 10 ? 1 : 0; i < 10; i++) ;
+		for (int i = 0, a = i > 10 $? 1 : 0; i < 10; i++) ;
 	}
 }");
 		}
@@ -204,7 +204,7 @@ class TestClass
 	{
 		System.IDisposable a;
 		int i = 0;
-		using (a = $i > 0 ? null : null) {
+		using (a = i > 0 $? null : null) {
 		}
 	}
 }");
@@ -214,7 +214,7 @@ class TestClass
 	void TestMethod ()
 	{
 		int i = 0;
-		using (System.IDisposable a = $i > 0 ? null : null) {
+		using (System.IDisposable a = i > 0 $? null : null) {
 		}
 	}
 }");
@@ -230,7 +230,7 @@ class TestClass
 	{
 		int a;
 		if (i < 10)
-			$a = i > 0 ? 0 : 1;
+			a = i > 0 $? 0 : 1;
 	}
 }", @"
 class TestClass
@@ -255,7 +255,7 @@ class TestClass
 {
 	int TestMethod (int i)
 	{
-		return$ i > 0 ? 1 : 0;
+		return i > 0 $? 1 : 0;
 	}
 }", @"
 class TestClass
