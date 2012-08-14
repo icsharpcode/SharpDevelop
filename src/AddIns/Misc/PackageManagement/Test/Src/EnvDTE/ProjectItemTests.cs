@@ -217,5 +217,18 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.IsTrue(msbuildProject.IsSaved);
 		}
+		
+		[Test]
+		public void FileNames_IndexOneRequested_ReturnsFullPathToProjectItem()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"src\program.cs");
+			ProjectItem directoryItem = projectItems.Item("src");
+			
+			string fileName = directoryItem.FileNames(1);
+			
+			Assert.AreEqual(@"d:\projects\MyProject\src", fileName);
+		}
 	}
 }

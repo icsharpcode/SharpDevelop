@@ -159,5 +159,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		internal FileProjectItem MSBuildProjectItem {
 			get { return projectItem; }
 		}
+		
+		public virtual string FileNames(short index)
+		{
+			return projectItem.FileName;
+		}
 	}
 }
