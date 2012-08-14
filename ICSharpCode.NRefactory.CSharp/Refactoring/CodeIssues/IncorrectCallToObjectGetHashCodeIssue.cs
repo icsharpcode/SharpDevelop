@@ -65,7 +65,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				base.VisitInvocationExpression(invocationExpression);
 
 				var resolveResult = ctx.Resolve(invocationExpression) as InvocationResolveResult;
-				if (resolveResult == null || !resolveResult.Member.DeclaringTypeDefinition.IsKnownType(KnownTypeCode.Object)) {
+				if (resolveResult == null || !(resolveResult.TargetResult is ThisResolveResult) ||
+				    !resolveResult.Member.DeclaringTypeDefinition.IsKnownType(KnownTypeCode.Object)) {
 					return;
 				}
 				AddIssue(invocationExpression, ctx.TranslateString("Call resolves to Object.GetHashCode, which is reference based"));

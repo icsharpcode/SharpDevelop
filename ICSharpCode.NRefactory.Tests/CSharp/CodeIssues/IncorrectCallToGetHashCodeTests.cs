@@ -48,7 +48,7 @@ class Foo
 			var issues = GetIssues(new IncorrectCallToObjectGetHashCodeIssue(), input, out context);
 			Assert.AreEqual(1, issues.Count);
 		}
-
+		
 		[Test]
 		public void NonObjectBase()
 		{
@@ -66,6 +66,27 @@ class Bar : Foo
 			TestRefactoringContext context;
 			var issues = GetIssues(new IncorrectCallToObjectGetHashCodeIssue(), input, out context);
 			Assert.AreEqual(1, issues.Count);
+		}
+		
+		[Test]
+		public void IgnoresCallsToOtherObjects()
+		{
+			var input = @"
+interface IFoo
+{
+}
+class Bar : IFoo
+{
+	IFoo foo;
+
+	public override int GetHashCode()
+	{
+		return foo.GetHashCode();
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new IncorrectCallToObjectGetHashCodeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
 		}
 
 		[Test]
