@@ -101,8 +101,8 @@ namespace ICSharpCode.PackageManagement
 			return selectedProjects.IsPackageInstalled(package);
 		}
 		
-		public IEnumerable<PackageDependency> Dependencies {
-			get { return package.Dependencies; }
+		public IEnumerable<PackageDependencySet> Dependencies {
+			get { return package.DependencySets; }
 		}
 		
 		public bool HasDependencies {

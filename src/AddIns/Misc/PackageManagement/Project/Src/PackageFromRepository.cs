@@ -83,7 +83,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public IEnumerable<PackageDependency> Dependencies {
-			get { return package.Dependencies; }
+			get { return package.GetCompatiblePackageDependencies(null); }
 		}
 		
 		public Uri ReportAbuseUrl {
@@ -158,6 +158,10 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool Listed {
 			get { return package.Listed; }
+		}
+		
+		public IEnumerable<PackageDependencySet> DependencySets {
+			get { return package.DependencySets; }
 		}
 	}
 }

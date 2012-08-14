@@ -155,7 +155,7 @@ namespace PackageManagement.Tests
 			FakePackage firstPackage = AddPackageToSharedRepository("First");
 			firstPackage.AddDependency("Second");
 			FakePackage secondPackage = AddPackageToSharedRepository("Second");
-						
+			
 			List<IPackage> actualPackages = repository.GetPackagesByDependencyOrder().ToList();
 			
 			var expectedPackages = new IPackage[] {
