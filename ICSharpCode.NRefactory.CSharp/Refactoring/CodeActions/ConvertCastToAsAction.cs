@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using ICSharpCode.NRefactory.TypeSystem;
+
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	/// <summary>
@@ -35,12 +37,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		protected override CodeAction GetAction (RefactoringContext context, CastExpression node)
 		{
+			if (node.Expression.Contains (context.Location))
+				return null;
 			// only works on reference and nullable types
 			var type = context.ResolveType (node.Type);
-			if ((!(type.IsReferenceType ?? true)) && type.FullName != "System.Nullable")
-				return null;
-			return new CodeAction (context.TranslateString ("Convert cast to 'as'"), 
-				script => script.Replace (node, new AsExpression (node.Expression.Clone (), node.Type.Clone ())));
+			var typeDef = type.GetDefinition ();
+			if (type.IsReferenceType == true || (typeDef != null && typeDef.KnownTypeCode == KnownTypeCode.NullableOfT))
+				return new CodeAction (context.TranslateString ("Convert cast to 'as'"), script =>
+					script.Replace (node, new AsExpression (node.Expression.Clone (), node.Type.Clone ())));
+
+			return null;
 		}
 	}
 }
