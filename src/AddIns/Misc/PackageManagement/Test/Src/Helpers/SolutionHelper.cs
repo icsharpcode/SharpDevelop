@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
+
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.EnvDTE;
 using SD = ICSharpCode.SharpDevelop.Project;
@@ -18,7 +20,6 @@ namespace PackageManagement.Tests.Helpers
 		public Solution Solution;
 		public FakePackageManagementProjectService FakeProjectService;
 		public SD.Solution MSBuildSolution;
-		public SD.ProjectSection ExtensibilityGlobalsSection;
 		
 		void OpenSolution()
 		{
@@ -53,14 +54,24 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void AddExtensibilityGlobalsSection()
 		{
-			ExtensibilityGlobalsSection = new SD.ProjectSection("ExtensibilityGlobals", "postSolution");
-			MSBuildSolution.Sections.Add(ExtensibilityGlobalsSection);
+			var section = new SD.ProjectSection("ExtensibilityGlobals", "postSolution");
+			MSBuildSolution.Sections.Add(section);
 		}
 		
 		public void AddVariableToExtensibilityGlobals(string name, string value)
 		{
 			var solutionItem = new SD.SolutionItem(name, value);
-			ExtensibilityGlobalsSection.Items.Add(solutionItem);
+			GetExtensibilityGlobalsSection().Items.Add(solutionItem);
+		}
+		
+		public SD.SolutionItem GetExtensibilityGlobalsSolutionItem(string name)
+		{
+			return GetExtensibilityGlobalsSection().Items.SingleOrDefault(item => item.Name == name);
+		}
+		
+		public SD.ProjectSection GetExtensibilityGlobalsSection()
+		{
+			return MSBuildSolution.Sections.SingleOrDefault(section => section.Name == "ExtensibilityGlobals");
 		}
 	}
 }
