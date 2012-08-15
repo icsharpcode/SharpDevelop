@@ -29,7 +29,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssues
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	[IssueDescription ("Method with optional parameter is hidden by overload",
 					   Description = "Method with optional parameter is hidden by overload",
