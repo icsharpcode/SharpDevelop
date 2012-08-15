@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.PatternMatching;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
