@@ -14,39 +14,28 @@ namespace PackageManagement.Tests.EnvDTE
 	[TestFixture]
 	public class SolutionTests
 	{
+		SolutionHelper solutionHelper;
 		Solution solution;
-		FakePackageManagementProjectService fakeProjectService;
-		SD.Solution sharpDevelopSolution;
 		
 		void CreateSolution()
 		{
-			fakeProjectService = new FakePackageManagementProjectService();
-			sharpDevelopSolution = CreateSharpDevelopSolution();
-			fakeProjectService.OpenSolution = sharpDevelopSolution;
-			solution = new Solution(fakeProjectService);
-		}
-		
-		SD.Solution CreateSharpDevelopSolution()
-		{
-			return new SD.Solution(new SD.MockProjectChangeWatcher());
+			solutionHelper = new SolutionHelper();
+			solution = solutionHelper.Solution;
 		}
 		
 		SD.Solution OpenDifferentSolution()
 		{
-			SD.Solution solution = CreateSharpDevelopSolution();
-			fakeProjectService.OpenSolution = solution;
-			return solution;
+			return solutionHelper.OpenDifferentSolution();
 		}
 		
 		void NoOpenSolution()
 		{
-			fakeProjectService.OpenSolution = null;
+			solutionHelper.CloseSolution();
 		}
 		
 		void AddProjectToSolution(string projectName)
 		{
-			TestableProject project = ProjectHelper.CreateTestProject(projectName);
-			fakeProjectService.AddFakeProject(project);
+			solutionHelper.AddProjectToSolution(projectName);
 		}
 		
 		[Test]
