@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.PatternMatching;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -52,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				base.VisitFieldDeclaration (fieldDeclaration);
 
-				var defaultValueExpr = ctx.GetDefaultValueExpression (fieldDeclaration.ReturnType);
+				var defaultValueExpr = GetDefaultValueExpression (fieldDeclaration.ReturnType);
 				if (defaultValueExpr == null)
 					return;
 
@@ -66,6 +67,54 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 
+			Expression GetDefaultValueExpression (AstType astType)
+			{
+				var type = ctx.ResolveType (astType);
+
+				if ((type.IsReferenceType ?? false) || type.Kind == TypeKind.Dynamic)
+					return new NullReferenceExpression ();
+
+				var typeDefinition = type.GetDefinition ();
+				if (typeDefinition != null) {
+					switch (typeDefinition.KnownTypeCode) {
+						case KnownTypeCode.Boolean:
+							return new PrimitiveExpression (false);
+
+						case KnownTypeCode.Char:
+							return new PrimitiveExpression ('\0');
+
+						case KnownTypeCode.SByte:
+						case KnownTypeCode.Byte:
+						case KnownTypeCode.Int16:
+						case KnownTypeCode.UInt16:
+						case KnownTypeCode.Int32:
+							return new PrimitiveExpression (0);
+
+						case KnownTypeCode.Int64:
+							return new Choice { new PrimitiveExpression (0), new PrimitiveExpression (0L) };
+						case KnownTypeCode.UInt32:
+							return new Choice { new PrimitiveExpression (0), new PrimitiveExpression (0U) };
+						case KnownTypeCode.UInt64:
+							return new Choice {
+								new PrimitiveExpression (0), new PrimitiveExpression (0U), new PrimitiveExpression (0UL)
+							};
+						case KnownTypeCode.Single:
+							return new Choice { new PrimitiveExpression (0), new PrimitiveExpression (0F) };
+						case KnownTypeCode.Double:
+							return new Choice {
+								new PrimitiveExpression (0), new PrimitiveExpression (0F), new PrimitiveExpression (0D)
+							};
+						case KnownTypeCode.Decimal:
+							return new Choice { new PrimitiveExpression (0), new PrimitiveExpression (0M) };
+
+						case KnownTypeCode.NullableOfT:
+							return new NullReferenceExpression ();
+					}
+					if (type.Kind == TypeKind.Struct)
+						return new ObjectCreateExpression (astType.Clone ());
+				}
+				return new DefaultValueExpression (astType.Clone ());
+			} 
 			
 		}
 	}

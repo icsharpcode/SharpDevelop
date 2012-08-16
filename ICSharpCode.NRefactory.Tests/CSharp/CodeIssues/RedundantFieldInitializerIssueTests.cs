@@ -33,19 +33,37 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 	public class RedundantFieldInitializerIssueTests : InspectionActionTestBase
 	{
 		[Test]
-		public void TestRedundantNumberInitializer ()
+		public void TestRedundantIntInitializer ()
 		{
 			var input = @"
 class TestClass
 {
 	int i = 0;
-	double d = 0;
+	long l = 0L;
 }";
 			var output = @"
 class TestClass
 {
 	int i;
+	long l;
+}";
+			Test<RedundantFieldInitializerIssue> (input, 2, output);
+		}
+
+		[Test]
+		public void TestRedundantFloatInitializer ()
+		{
+			var input = @"
+class TestClass
+{
+	double d = 0;
+	double d2 = 0.0;
+}";
+			var output = @"
+class TestClass
+{
 	double d;
+	double d2;
 }";
 			Test<RedundantFieldInitializerIssue> (input, 2, output);
 		}
