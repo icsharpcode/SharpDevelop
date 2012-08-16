@@ -13,20 +13,26 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	{
 		SD.Solution solution;
 		SolutionExtensibilityGlobals extensibilityGlobals;
+		SolutionExtensibilityGlobalsPersistence extensibilityGlobalsPersistence;
 		
 		public Globals(SD.Solution solution)
 		{
 			this.solution = solution;
 			this.extensibilityGlobals = new SolutionExtensibilityGlobals(solution);
+			this.extensibilityGlobalsPersistence = new SolutionExtensibilityGlobalsPersistence(extensibilityGlobals);
 		}
 		
 		public virtual SolutionExtensibilityGlobals VariableValue {
 			get { return extensibilityGlobals; }
 		}
 		
+		public virtual SolutionExtensibilityGlobalsPersistence VariablePersists {
+			get { return extensibilityGlobalsPersistence; }
+		}
+		
 		public virtual bool VariableExists(string name)
 		{
-			return extensibilityGlobals.GetItemFromSolution(name) != null;
+			return extensibilityGlobals.ItemExists(name);
 		}
 	}
 }

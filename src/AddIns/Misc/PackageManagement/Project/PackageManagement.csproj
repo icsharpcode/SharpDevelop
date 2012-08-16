@@ -128,6 +128,7 @@
     <Compile Include="Src\EnvDTE\Projects.cs" />
     <Compile Include="Src\EnvDTE\Reference3.cs" />
     <Compile Include="Src\EnvDTE\SolutionExtensibilityGlobals.cs" />
+    <Compile Include="Src\EnvDTE\SolutionExtensibilityGlobalsPersistence.cs" />
     <Compile Include="Src\EnvDTE\SourceControl.cs" />
     <Compile Include="Src\EnvDTE\TextPoint.cs" />
     <Compile Include="Src\EnvDTE\vsCMAccess.cs" />

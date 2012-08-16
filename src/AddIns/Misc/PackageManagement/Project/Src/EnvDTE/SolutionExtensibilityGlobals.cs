@@ -38,6 +38,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			throw new ArgumentException("Variable name does not exist.", name);
 		}
 		
+		internal bool ItemExists(string name)
+		{
+			return GetItemFromSolutionOrNonPersistedItems(name) != null;
+		}
+		
 		SD.SolutionItem GetItemFromSolutionOrNonPersistedItems(string name)
 		{
 			SD.SolutionItem item = GetNonPersistedSolutionItem(name);
@@ -57,7 +62,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return items.SingleOrDefault(item => IsMatchIgnoringCase(item.Name, name));
 		}
 		
-		internal SD.SolutionItem GetItemFromSolution(string name)
+		SD.SolutionItem GetItemFromSolution(string name)
 		{
 			SD.ProjectSection section = GetExtensibilityGlobalsSection();
 			if (section != null) {
@@ -79,6 +84,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		void GetOrCreateSolutionItem(string name, string value)
 		{
 			SD.SolutionItem item = GetItemFromSolution(name);
+			if (item == null) {
+				item = GetNonPersistedSolutionItem(name);
+			}
 			if (item != null) {
 				item.Location = value;
 			} else {
@@ -89,6 +97,49 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		void CreateNonPersistedSolutionItem(string name, string value)
 		{
 			var item = new SD.SolutionItem(name, value);
+			nonPersistedSolutionItems.Add(item);
+		}
+		
+		internal bool ItemExistsInSolution(string name)
+		{
+			return GetItemFromSolution(name) != null;
+		}
+		
+		internal void AddItemToSolution(string name)
+		{
+			if (ItemExistsInSolution(name)) {
+				return;
+			}
+			
+			SD.SolutionItem item = GetNonPersistedSolutionItem(name);
+			nonPersistedSolutionItems.Remove(item);
+			SD.ProjectSection section = GetOrCreateExtensibilityGlobalsSection();
+			section.Items.Add(item);
+		}
+		
+		SD.ProjectSection GetOrCreateExtensibilityGlobalsSection()
+		{
+			SD.ProjectSection section = GetExtensibilityGlobalsSection();
+			if (section != null) {
+				return section;
+			}
+			var newSection = new SD.ProjectSection(ExtensibilityGlobalsSectionName, "postSolution");
+			solution.Sections.Add(newSection);
+			return newSection;
+		}
+		
+		internal void RemoveItemFromSolution(string name)
+		{
+			SD.SolutionItem item = GetItemFromSolution(name);
+			if (item != null) {
+				RemoveItemFromSolution(item);
+			}
+		}
+			
+		void RemoveItemFromSolution(SD.SolutionItem item)
+		{
+			SD.ProjectSection section = GetExtensibilityGlobalsSection();
+			section.Items.Remove(item);
 			nonPersistedSolutionItems.Add(item);
 		}
 	}
