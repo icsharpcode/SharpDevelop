@@ -507,7 +507,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (!ctors.Any())
 					return false;
 			}
-			foreach (IType constraintType in typeParameter.DirectBaseTypes.Where(tp => !tp.IsKnownType(KnownTypeCode.Object))) {
+			foreach (IType constraintType in typeParameter.DirectBaseTypes) {
 				IType c = constraintType;
 				if (substitution != null)
 					c = c.AcceptVisitor(substitution);
