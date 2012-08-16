@@ -1384,7 +1384,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			for (var n = scope; n != null; n = n.Parent) {
 				foreach (var pair in n.UsingAliases) {
-					wrapper.AddNamespace(pair.Key);
+					wrapper.AddAlias(pair.Key);
 				}
 				foreach (var u in n.Usings) {
 					foreach (var type in u.Types) {
@@ -1418,7 +1418,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				foreach (var curNs in n.Namespace.ChildNamespaces) {
-					wrapper.AddNamespace(curNs.Name);
+					wrapper.AddNamespace(curNs);
 				}
 			}
 		}
@@ -2173,7 +2173,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 				}
 				foreach (var ns in nr.Namespace.ChildNamespaces) {
-					result.AddNamespace(ns.Name);
+					result.AddNamespace(ns);
 				}
 			} else if (resolveResult is TypeResolveResult) {
 				var type = resolveResult.Type;
@@ -2194,7 +2194,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			
 			foreach (var ns in Compilation.RootNamespace.ChildNamespaces) {
-				yield return factory.CreateNamespaceCompletionData(ns.Name);
+				yield return factory.CreateNamespaceCompletionData(ns);
 			}
 		}
 		
@@ -2306,7 +2306,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				foreach (var ns in nr.Namespace.ChildNamespaces) {
-					namespaceContents.AddNamespace(ns.Name);
+					namespaceContents.AddNamespace(ns);
 				}
 				return namespaceContents.Result;
 			}

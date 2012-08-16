@@ -58,7 +58,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			result.Add (data);
 		}
-		
+
+
 		public void AddCustom (string displayText, string description = null, string completionText = null)
 		{
 			result.Add (Factory.CreateLiteralCompletionData (displayText, description, completionText));
@@ -66,14 +67,20 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		HashSet<string> usedNamespaces = new HashSet<string> ();
 		
-		public void AddNamespace (string name)
+		public void AddNamespace (INamespace ns)
 		{
-			if (string.IsNullOrEmpty (name) || usedNamespaces.Contains (name))
+			if (usedNamespaces.Contains (ns.Name))
 				return;
-			usedNamespaces.Add (name);
-			result.Add (Factory.CreateNamespaceCompletionData (name));
+			usedNamespaces.Add (ns.Name);
+			result.Add (Factory.CreateNamespaceCompletionData (ns));
 		}
-		
+
+		public void AddAlias(string alias)
+		{
+			result.Add (Factory.CreateLiteralCompletionData (alias));
+		}
+
+
 		HashSet<string> usedTypes = new HashSet<string> ();
 
 		public ICompletionData AddType(IType type, string shortType)
