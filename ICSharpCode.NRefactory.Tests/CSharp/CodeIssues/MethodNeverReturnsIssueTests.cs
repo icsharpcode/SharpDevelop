@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		public void TestEnd ()
 		{
 			var input = @"
-partial class TestClass
+class TestClass
 {
 	void TestMethod () 
 	{
@@ -50,7 +50,7 @@ partial class TestClass
 		public void TestReturn ()
 		{
 			var input = @"
-partial class TestClass
+class TestClass
 {
 	void TestMethod ()
 	{
@@ -61,10 +61,24 @@ partial class TestClass
 		}
 
 		[Test]
-		public void Test ()
+		public void TestThrow ()
 		{
 			var input = @"
-partial class TestClass
+class TestClass
+{
+	void TestMethod ()
+	{
+		throw new System.NotImplementedException();	
+	}
+}";
+			Test<MethodNeverReturnsIssue> (input, 0);
+		}
+
+		[Test]
+		public void TesNeverReturns ()
+		{
+			var input = @"
+class TestClass
 {
 	void TestMethod ()
 	{

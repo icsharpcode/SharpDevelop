@@ -70,7 +70,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					if (node.PreviousStatement == methodDeclaration.Body)
 						return;
 					// reach a return statement
-					if (node.NextStatement is ReturnStatement)
+					if (node.NextStatement is ReturnStatement ||
+						node.NextStatement is ThrowStatement)
 						return;
 
 					foreach (var edge in node.Outgoing) {
