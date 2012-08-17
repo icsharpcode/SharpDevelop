@@ -11,13 +11,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class Globals
 	{
-		SD.Solution solution;
 		SolutionExtensibilityGlobals extensibilityGlobals;
 		SolutionExtensibilityGlobalsPersistence extensibilityGlobalsPersistence;
 		
-		public Globals(SD.Solution solution)
+		public Globals(Solution solution)
 		{
-			this.solution = solution;
 			this.extensibilityGlobals = new SolutionExtensibilityGlobals(solution);
 			this.extensibilityGlobalsPersistence = new SolutionExtensibilityGlobalsPersistence(extensibilityGlobals);
 		}

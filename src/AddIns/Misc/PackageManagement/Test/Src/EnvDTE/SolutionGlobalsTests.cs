@@ -389,5 +389,74 @@ namespace PackageManagement.Tests.EnvDTE
 			object value = globals.VariableValue["test"];
 			Assert.AreEqual("one", value);
 		}
+		
+		[Test]
+		public void VariablePersists_SetToTrueAfterNewVariableAdded_SolutionIsSaved()
+		{
+			CreateSolution();
+			globals.VariableValue["test"] = "new-value";
+			
+			globals.VariablePersists["test"] = true;
+			
+			solutionHelper.AssertSolutionIsSaved();
+		}
+		
+		[Test]
+		public void VariablePersists_SetToFalseAfterNewVariableAdded_SolutionIsNotSaved()
+		{
+			CreateSolution();
+			globals.VariableValue["test"] = "new-value";
+			
+			globals.VariablePersists["test"] = false;
+			
+			solutionHelper.AssertSolutionIsNotSaved();
+		}
+		
+		[Test]
+		public void VariablePersists_SetToFalseForVariableInSolution_SolutionSaved()
+		{
+			CreateSolution();
+			AddExtensibilityGlobalsSection();
+			AddVariableToExtensibilityGlobals("test", "value");
+			
+			globals.VariablePersists["test"] = false;
+			
+			solutionHelper.AssertSolutionIsSaved();
+		}
+		
+		[Test]
+		public void VariablePersists_SetToTrueForVariableInSolution_SolutionNotSaved()
+		{
+			CreateSolution();
+			AddExtensibilityGlobalsSection();
+			AddVariableToExtensibilityGlobals("test", "value");
+			
+			globals.VariablePersists["test"] = true;
+			
+			solutionHelper.AssertSolutionIsNotSaved();
+		}
+		
+		[Test]
+		public void VariableValue_VariableInSolutionChanged_SolutionIsSaved()
+		{
+			CreateSolution();
+			AddExtensibilityGlobalsSection();
+			AddVariableToExtensibilityGlobals("test", "value");
+			
+			globals.VariableValue["test"] = "new-value";
+			
+			solutionHelper.AssertSolutionIsSaved();
+		}
+		
+		[Test]
+		public void VariableValue_VariableNotSolutionChanged_SolutionIsNotSaved()
+		{
+			CreateSolution();
+			globals.VariableValue["test"] = "value";
+			
+			globals.VariableValue["test"] = "new-value";
+			
+			solutionHelper.AssertSolutionIsNotSaved();
+		}
 	}
 }

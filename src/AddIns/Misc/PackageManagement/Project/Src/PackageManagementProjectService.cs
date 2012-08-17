@@ -70,6 +70,16 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
+		public void Save(Solution solution)
+		{
+			if (WorkbenchSingleton.InvokeRequired) {
+				Action<Solution> action = Save;
+				WorkbenchSingleton.SafeThreadCall<Solution>(action, solution);
+			} else {
+				solution.Save();
+			}
+		}
+		
 		public IProjectContent GetProjectContent(IProject project)
 		{
 			return ParserService.GetProjectContent(project);

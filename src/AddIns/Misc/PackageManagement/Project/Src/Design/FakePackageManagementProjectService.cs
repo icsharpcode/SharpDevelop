@@ -81,6 +81,13 @@ namespace ICSharpCode.PackageManagement.Design
 			project.Save();
 		}
 		
+		public Solution SavedSolution;
+		
+		public void Save(Solution solution)
+		{
+			SavedSolution = solution;
+		}
+		
 		public IProjectContent GetProjectContent(IProject project)
 		{
 			return new DefaultProjectContent();

@@ -3,9 +3,9 @@
 
 using System;
 using System.Linq;
-
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.EnvDTE;
+using NUnit.Framework;
 using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace PackageManagement.Tests.Helpers
@@ -31,7 +31,9 @@ namespace PackageManagement.Tests.Helpers
 		
 		SD.Solution CreateSharpDevelopSolution()
 		{
-			return new SD.Solution(new SD.MockProjectChangeWatcher());
+			return new SD.Solution(new SD.MockProjectChangeWatcher()) {
+				FileName = @"d:\projects\MyProject\MyProject.sln"
+			};
 		}
 		
 		public SD.Solution OpenDifferentSolution()
@@ -72,6 +74,16 @@ namespace PackageManagement.Tests.Helpers
 		public SD.ProjectSection GetExtensibilityGlobalsSection()
 		{
 			return MSBuildSolution.Sections.SingleOrDefault(section => section.Name == "ExtensibilityGlobals");
+		}
+		
+		public void AssertSolutionIsSaved()
+		{
+			Assert.AreEqual(MSBuildSolution, FakeProjectService.SavedSolution);
+		}
+		
+		public void AssertSolutionIsNotSaved()
+		{
+			Assert.IsNull(FakeProjectService.SavedSolution);
 		}
 	}
 }

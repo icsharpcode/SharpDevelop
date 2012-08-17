@@ -22,6 +22,7 @@ namespace ICSharpCode.PackageManagement
 		void AddProjectItem(IProject project, ProjectItem item);
 		void RemoveProjectItem(IProject project, ProjectItem item);
 		void Save(IProject project);
+		void Save(Solution solution);
 		
 		IEnumerable<IProject> GetOpenProjects();
 

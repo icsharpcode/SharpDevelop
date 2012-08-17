@@ -11,11 +11,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class SolutionExtensibilityGlobals
 	{
-		SD.Solution solution;
+		Solution solution;
 		const string ExtensibilityGlobalsSectionName = "ExtensibilityGlobals";
 		List<SD.SolutionItem> nonPersistedSolutionItems = new List<SD.SolutionItem>();
 		
-		public SolutionExtensibilityGlobals(SD.Solution solution)
+		public SolutionExtensibilityGlobals(Solution solution)
 		{
 			this.solution = solution;
 		}
@@ -29,7 +29,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				return item.Location;
 			}
 			set {
-				GetOrCreateSolutionItem(name, value as string);
+				UpdateOrCreateSolutionItem(name, value as string);
 			}
 		}
 		
@@ -81,12 +81,29 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return String.Equals(a, b, StringComparison.OrdinalIgnoreCase);
 		}
 		
-		void GetOrCreateSolutionItem(string name, string value)
+		void UpdateOrCreateSolutionItem(string name, string value)
+		{
+			if (UpdateItemInSolution(name, value)) {
+				return;
+			}
+			
+			UpdateOrCreateNonPersistedSolutionItem(name, value);
+		}
+		
+		bool UpdateItemInSolution(string name, string value)
 		{
 			SD.SolutionItem item = GetItemFromSolution(name);
-			if (item == null) {
-				item = GetNonPersistedSolutionItem(name);
+			if (item != null) {
+				item.Location = value;
+				solution.Save();
+				return true;
 			}
+			return false;
+		}
+		
+		void UpdateOrCreateNonPersistedSolutionItem(string name, string value)
+		{
+			SD.SolutionItem item = GetNonPersistedSolutionItem(name);
 			if (item != null) {
 				item.Location = value;
 			} else {
@@ -115,6 +132,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			nonPersistedSolutionItems.Remove(item);
 			SD.ProjectSection section = GetOrCreateExtensibilityGlobalsSection();
 			section.Items.Add(item);
+			solution.Save();
 		}
 		
 		SD.ProjectSection GetOrCreateExtensibilityGlobalsSection()
@@ -141,6 +159,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			SD.ProjectSection section = GetExtensibilityGlobalsSection();
 			section.Items.Remove(item);
 			nonPersistedSolutionItems.Add(item);
+			solution.Save();
 		}
 	}
 }
