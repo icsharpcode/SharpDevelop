@@ -27,6 +27,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.PatternMatching;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -67,13 +68,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var match = pattern.Match (binaryOperatorExpression);
 				if (!match.Success)
 					return;
+				var expr = match.Get<Expression> ("expr").First ();
+				// check if expr is of boolean type
+				var exprType = ctx.Resolve (expr).Type.GetDefinition ();
+				if (exprType == null || exprType.KnownTypeCode != KnownTypeCode.Boolean)
+					return;
 
 				AddIssue (binaryOperatorExpression, ctx.TranslateString ("Simplify boolean comparison"), scrpit => {
-					var expr = match.Get<Expression> ("expr").First ().Clone ();
 					var boolConstant = (bool)match.Get<PrimitiveExpression> ("const").First ().Value;
 					if ((binaryOperatorExpression.Operator == BinaryOperatorType.InEquality && boolConstant) ||
 						(binaryOperatorExpression.Operator == BinaryOperatorType.Equality && !boolConstant)) {
-						expr = new UnaryOperatorExpression (UnaryOperatorType.Not, expr);
+						expr = new UnaryOperatorExpression (UnaryOperatorType.Not, expr.Clone());
 						expr.AcceptVisitor (insertParenthesesVisitor);
 					}
 					scrpit.Replace (binaryOperatorExpression, expr);

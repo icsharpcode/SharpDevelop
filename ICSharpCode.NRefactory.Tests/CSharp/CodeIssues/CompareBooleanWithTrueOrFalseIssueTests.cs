@@ -63,7 +63,7 @@ class TestClass
 		}
 
 		[Test]
-		public void TestInsertParenthese ()
+		public void TestInsertParentheses ()
 		{
 			var input = @"
 class TestClass
@@ -82,6 +82,20 @@ class TestClass
 	}
 }";
 			Test<CompareBooleanWithTrueOrFalseIssue> (input, 1, output);
+		}
+
+		[Test]
+		public void TestNullable ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod (bool? x)
+	{
+		var y = x == false;
+	}
+}";
+			Test<CompareBooleanWithTrueOrFalseIssue> (input, 0);
 		}
 	}
 }
