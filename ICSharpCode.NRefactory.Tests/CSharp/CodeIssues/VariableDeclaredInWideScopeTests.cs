@@ -94,8 +94,8 @@ class A
 		if (true) {
 			val2 = 2;
 		} else {
-			int val = 2;
 			val2 = 3;
+			int val = 2;
 			System.Console.WriteLine(val);
 		}
 	}
@@ -250,6 +250,49 @@ class A
 		}
 		
 		[Test]
+		public void IfElseIf()
+		{
+			var input = @"
+using System;
+class A
+{
+	int GetValue () { return 0; }
+	
+	void F (bool condition)
+	{
+		int val = GetValue ();
+		if (condition) {
+			int val2 = GetValue ();
+			Console.WriteLine(val2);
+		} else if (!condition) {
+			Console.WriteLine(val);
+		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+
+			CheckFix(context, issues [0], @"
+using System;
+class A
+{
+	int GetValue () { return 0; }
+	
+	void F (bool condition)
+	{
+		if (condition) {
+			int val2 = GetValue ();
+			Console.WriteLine(val2);
+		} else if (!condition) {
+			int val = GetValue ();
+			Console.WriteLine(val);
+		}
+	}
+}");
+		}
+		
+		[Test]
 		public void DoesNotSuggestMovingIntoTryCatch()
 		{
 			var input = @"
@@ -338,6 +381,88 @@ class A
 		if (true) {
 			int val = 2;
 			System.Console.WriteLine (val);
+		}
+	}
+}");
+		}
+		
+		[Test]
+		public void DoesNotSuggestMovingPastChangeOfInitializingExpression1 ()
+		{	
+			var input = @"
+using System;
+class A
+{
+	void F ()
+	{
+		int i = 1;
+		int j = i;
+		i = 2;
+		if (true)
+			Console.WriteLine(j);
+		Console.WriteLine(i);
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void DoesNotSuggestMovingPastChangeOfInitializingExpression2 ()
+		{	
+			var input = @"
+using System;
+class A
+{
+	int GetValue () { return 0; }
+	int SetValue (int i) { }
+
+	void F ()
+	{
+		int j = GetValue();
+		SetValue(2);
+		if (true)
+			Console.WriteLine(j);
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void SuggestsMovingMethodCallInitializer ()
+		{	
+			var input = @"
+using System;
+class A
+{
+	int GetValue () { return 0; }
+
+	void F ()
+	{
+		int j = GetValue ();
+		if (true) {
+			Console.WriteLine(j);
+		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			
+			CheckFix(context, issues[0], @"
+using System;
+class A
+{
+	int GetValue () { return 0; }
+
+	void F ()
+	{
+		if (true) {
+			int j = GetValue ();
+			Console.WriteLine(j);
 		}
 	}
 }");

@@ -26,6 +26,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -75,41 +77,154 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				// Start at the parent node. Presumably this is a BlockStatement
 				var rootNode = variableDeclarationStatement.Parent;
 				var variableInitializer = variableDeclarationStatement.Variables.First();
-				var identifiers = from node in rootNode.Descendants
-					let identifier = node as IdentifierExpression
-					where identifier != null && identifier.Identifier == variableInitializer.Name
-						select node;
+				var identifiers = GetIdentifiers(rootNode.Descendants, variableInitializer.Name).ToList();
 
-				if (identifiers.Count() == 0)
+				if (identifiers.Count == 0)
 					// variable is not used
 					return;
 
-				AstNode lowestCommonAncestor = GetLowestCommonAncestor(rootNode, identifiers);
-				var path = GetPath(rootNode, lowestCommonAncestor);
+				AstNode deepestCommonAncestor = GetDeepestCommonAncestor(rootNode, identifiers);
+				var path = GetPath(rootNode, deepestCommonAncestor);
 
-				var firstLoopStatement = (from node in path
-				                          where moveTargetBlacklist.Contains(node.GetType())
-				                          select node).FirstOrDefault();
-				IList<AstNode> possibleDestinationsPath;
-				if (firstLoopStatement == null) {
-					possibleDestinationsPath = path;
-				} else {
-					possibleDestinationsPath = GetPath(rootNode, firstLoopStatement);
+				// Restrict path to only those where the initializer has not changed
+				var firstInitializerChange = GetFirstInitializerChange(variableDeclarationStatement, path, variableInitializer.Initializer);
+				if (firstInitializerChange != null) {
+					path = GetPath(rootNode, firstInitializerChange);
 				}
-				var mostNestedEmbeddedStatement = (from node in possibleDestinationsPath
-				                                   let statement = node as Statement
-				                                   let blockStatement = statement as BlockStatement
-				                                   where statement != null && IsNestedScope(statement)
-				                                   select statement).LastOrDefault();
 
-				if (mostNestedEmbeddedStatement != null && mostNestedEmbeddedStatement != rootNode) {
+				// Restict to locations outside of blacklisted node types
+				var firstBlackListedNode = (from node in path
+				                            where moveTargetBlacklist.Contains(node.GetType())
+				                            select node).FirstOrDefault();
+				if (firstBlackListedNode != null) {
+					path = GetPath(rootNode, firstBlackListedNode);
+				}
+
+				// Get the most nested possible target for the move
+				Statement mostNestedFollowingStatement = null;
+				for (int i = path.Count - 1; i >= 0; i--) {
+					var statement = path[i] as Statement;
+					if (statement != null && (IsScopeContainer(statement.Parent) || IsScopeContainer(statement))) {
+						mostNestedFollowingStatement = statement;
+						break;
+					}
+				}
+
+				if (mostNestedFollowingStatement != null && mostNestedFollowingStatement != rootNode && mostNestedFollowingStatement.Parent != rootNode) {
 					AddIssue(variableDeclarationStatement, context.TranslateString("Variable could be moved to a nested scope"),
-					         GetActions(variableDeclarationStatement, mostNestedEmbeddedStatement));
+					         GetActions(variableDeclarationStatement, mostNestedFollowingStatement));
 				}
 			}
 
-			bool IsNestedScope(AstNode node)
+			static IEnumerable<IdentifierExpression> GetIdentifiers(IEnumerable<AstNode> candidates, string name = null)
 			{
+				return 
+					from node in candidates
+					let identifier = node as IdentifierExpression
+					where identifier != null && (name == null || identifier.Identifier == name)
+					select identifier;
+			}
+
+			AstNode GetFirstInitializerChange(AstNode variableDeclarationStatement, IList<AstNode> path, Expression initializer)
+			{
+				var identifiers = GetIdentifiers(initializer.DescendantsAndSelf).ToList();
+				var mayChangeInitializer = GetChecker (initializer, identifiers);
+				AstNode lastChange = null;
+				for (int i = path.Count - 1; i >= 0; i--) {
+					for (AstNode node = path[i].PrevSibling; node != null && node != variableDeclarationStatement; node = node.PrevSibling) {
+						// Special case for IfElseStatement: The AST nesting does not match the scope nesting, so
+						// don't handle branches here: The correct one has already been checked anyway.
+						// This also works to our advantage: No special checking is needed for the condition since
+						// it is a the same level in the tree as the false branch
+						if (node.Role == IfElseStatement.TrueRole || node.Role == IfElseStatement.FalseRole)
+							continue;
+						foreach (var expression in node.DescendantsAndSelf.Where(n => n is Expression).Cast<Expression>()) {
+							if (mayChangeInitializer(expression)) {
+								lastChange = expression;
+							}
+						}
+					}
+				}
+				return lastChange;
+			}
+
+			Func<Expression, bool> GetChecker(Expression expression, IList<IdentifierExpression> identifiers)
+			{
+				// TODO: This only works for simple cases.
+				IList<IMember> members;
+				IList<IVariable> locals;
+				var identifierResolveResults = identifiers.Select(identifier => context.Resolve(identifier)).ToList();
+				SplitResolveResults(identifierResolveResults, out members, out locals);
+				
+				if (expression is InvocationExpression || expression is ObjectCreateExpression) {
+					return node => {
+						if (node is InvocationExpression || expression is ObjectCreateExpression)
+							// We don't know what these might do, so assume it will change the initializer
+							return true;
+						var binaryOperator = node as BinaryOperatorExpression;
+						if (binaryOperator != null) {
+							var resolveResult = context.Resolve(binaryOperator) as OperatorResolveResult;
+							// Built-in operators are ok, user defined ones not so much
+							return resolveResult.UserDefinedOperatorMethod != null;
+						}
+						return IsConflictingAssignment(node, identifiers, members, locals);
+					};
+				} else if (expression is IdentifierExpression) {
+					var initializerDependsOnMembers = identifierResolveResults.Any(result => result is MemberResolveResult);
+					var initializerDependsOnReferenceType = identifierResolveResults.Any(result => result.Type.IsReferenceType == true);
+					return node => {
+						if ((node is InvocationExpression || node is ObjectCreateExpression) &&
+						    (initializerDependsOnMembers || initializerDependsOnReferenceType))
+							// Anything can happen...
+							return true;
+						var binaryOperator = node as BinaryOperatorExpression;
+						if (binaryOperator != null) {
+							var resolveResult = context.Resolve(binaryOperator) as OperatorResolveResult;
+							return resolveResult.UserDefinedOperatorMethod != null;
+						}
+						return IsConflictingAssignment(node, identifiers, members, locals);
+					};
+				}
+
+				return node => false;
+			}
+
+			bool IsConflictingAssignment (Expression node, IList<IdentifierExpression> identifiers, IList<IMember> members, IList<IVariable> locals)
+			{
+				var assignmentExpression = node as AssignmentExpression;
+				if (assignmentExpression != null) {
+					IList<IMember> targetMembers;
+					IList<IVariable> targetLocals;
+					var identifierResolveResults = identifiers.Select(identifier => context.Resolve(identifier)).ToList();
+					SplitResolveResults(identifierResolveResults, out targetMembers, out targetLocals);
+
+					return members.Any(member => targetMembers.Contains(member)) ||
+						locals.Any(local => targetLocals.Contains(local));
+				}
+				return false;
+			}
+
+			static void SplitResolveResults(List<ResolveResult> identifierResolveResults, out IList<IMember> members, out IList<IVariable> locals)
+			{
+				members = new List<IMember>();
+				locals = new List<IVariable>();
+				foreach (var resolveResult in identifierResolveResults) {
+					var memberResolveResult = resolveResult as MemberResolveResult;
+					if (memberResolveResult != null) {
+						members.Add(memberResolveResult.Member);
+					}
+					var localResolveResult = resolveResult as LocalResolveResult;
+					if (localResolveResult != null) {
+						locals.Add(localResolveResult.Variable);
+					}
+				}
+			}
+
+			bool IsScopeContainer(AstNode node)
+			{
+				if (node == null)
+					return false;
+
 				var blockStatement = node as BlockStatement;
 				if (blockStatement != null)
 					return true;
@@ -127,27 +242,26 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return false;
 			}
 
-			IEnumerable<CodeAction> GetActions(VariableDeclarationStatement declaration, Statement targetScope)
+			IEnumerable<CodeAction> GetActions(Statement oldStatement, Statement followingStatement)
 			{
 				yield return new CodeAction(context.TranslateString("Move to nested scope"), script => {
-					var blockStatement = targetScope as BlockStatement;
-					if (blockStatement == null) {
+					if (!(followingStatement.Parent is BlockStatement)) {
 						var newBlockStatement = new BlockStatement {
 							Statements = {
-								declaration.Clone(),
-								targetScope.Clone()
+								oldStatement.Clone(),
+								followingStatement.Clone()
 							}
 						};
-						script.Replace(targetScope, newBlockStatement);
-						script.FormatText(targetScope.Parent);
+						script.Replace(followingStatement, newBlockStatement);
+						script.FormatText(followingStatement.Parent);
 					} else {
-						script.InsertBefore(blockStatement.Statements.First(), declaration.Clone());
+						script.InsertBefore(followingStatement, oldStatement.Clone());
 					}
-					script.Remove(declaration);
+					script.Remove(oldStatement);
 				});
 			}
 
-			AstNode GetLowestCommonAncestor(AstNode assumedRoot, IEnumerable<AstNode> leaves)
+			AstNode GetDeepestCommonAncestor(AstNode assumedRoot, IEnumerable<AstNode> leaves)
 			{
 				var previousPath = GetPath(assumedRoot, leaves.First());
 				int lowestIndex = previousPath.Count - 1;
