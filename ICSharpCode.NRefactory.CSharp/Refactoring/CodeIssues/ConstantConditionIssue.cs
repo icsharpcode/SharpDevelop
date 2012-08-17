@@ -88,7 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 
 				var resolveResult = ctx.Resolve (condition);
-				if (!(resolveResult.ConstantValue is bool))
+				if (!(resolveResult.IsCompileTimeConstant && resolveResult.ConstantValue is bool))
 					return;
 
 				var value = (bool)resolveResult.ConstantValue;

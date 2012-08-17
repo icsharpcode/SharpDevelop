@@ -172,10 +172,11 @@ class TestClass
 			var input = @"
 class TestClass
 {
-	void TestMethod ()
+	void TestMethod (int x = true)
 	{
 		while (true) ;
 		if (false) ;
+		if (x) ;
 	}
 }";
 			Test<ConstantConditionIssue> (input, 0);
