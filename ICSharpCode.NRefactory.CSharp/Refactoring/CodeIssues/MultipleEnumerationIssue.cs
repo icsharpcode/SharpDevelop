@@ -217,7 +217,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						if (parent == null)
 							return;
 
-						// lambda expression with expression body
+						// lambda expression with expression body, should be analyzed separately
 						var expr = parent as LambdaExpression;
 						if (expr != null) {
 							if (IsAssignment (astNode) || IsEnumeration (astNode)) {
@@ -259,18 +259,24 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 
+			/// <summary>
+			/// split references in the specified node into sub nodes according to the value they uses
+			/// </summary>
+			/// <param name="node">node to split</param>
+			/// <returns>list of sub nodes</returns>
 			static IList<VariableReferenceNode> SplitNode (VariableReferenceNode node)
 			{
 				var subNodes = new List<VariableReferenceNode> ();
-				var assignmentIndexes = new List<int> { -1 };
+				// find indices of all assignments in node and use them to split references
+				var assignmentIndices = new List<int> { -1 };
 				for (int i = 0; i < node.References.Count; i++) {
 					if (IsAssignment (node.References [i]))
-						assignmentIndexes.Add (i);
+						assignmentIndices.Add (i);
 				}
-				assignmentIndexes.Add (node.References.Count);
-				for (int i = 0; i < assignmentIndexes.Count - 1; i++) {
-					var index1 = assignmentIndexes [i];
-					var index2 = assignmentIndexes [i + 1];
+				assignmentIndices.Add (node.References.Count);
+				for (int i = 0; i < assignmentIndices.Count - 1; i++) {
+					var index1 = assignmentIndices [i];
+					var index2 = assignmentIndices [i + 1];
 					if (index1 + 1 >= index2)
 						continue;
 					var subNode = new VariableReferenceNode ();
@@ -298,6 +304,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return subNodes;
 			}
 
+			/// <summary>
+			/// convert a variable reference graph starting from the specified node to an assignment usage graph,
+			/// in which nodes are connect if and only if they contains references using the same assigned value
+			/// </summary>
+			/// <param name="startNode">starting node of the variable reference graph</param>
+			/// <returns>
+			/// list of VariableReferenceNode, each of which is a starting node of a sub-graph in which references all
+			/// use the same assigned value
+			/// </returns>
 			static IEnumerable<VariableReferenceNode> GetAssignmentUsageGraph (VariableReferenceNode startNode)
 			{
 				var graph = new List<VariableReferenceNode> ();
@@ -309,7 +324,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					if (!visited.Add (node))
 						continue;
 
-					// split the node according to the assigned value
 					var nodes = SplitNode (node);
 					graph.AddRange (nodes);
 					foreach (var addedNode in nodes)
@@ -326,7 +340,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var vrg = GetAssignmentUsageGraph (startNode);
 				visitedNodes = new HashSet<VariableReferenceNode> ();
 				collectedNodes = new HashSet<VariableReferenceNode> ();
+
+				// degree of a node is the number of references that can be reached by the node
 				nodeDegree = new Dictionary<VariableReferenceNode, int> ();
+
 				foreach (var node in vrg) {
 					if (node.References.Count == 0 || !visitedNodes.Add (node))
 						continue;
