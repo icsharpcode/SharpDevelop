@@ -181,6 +181,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			void ProcessNodes (VariableReferenceNode startNode)
 			{
+				// node state of a node indicates whether it is possible for an upstream node to reach any usage via
+				// the node
 				var nodeStates = new Dictionary<VariableReferenceNode, NodeState> ();
 				var assignments = new List<VariableReferenceNode> ();
 
@@ -196,20 +198,23 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						nodeStates [node] = NodeState.None;
 					}
 
-					var assignmentIndexes = new List<int> ();
+					// find indices of all assignments in node.References
+					var assignmentIndices = new List<int> ();
 					for (int i = 0; i < node.References.Count; i++) {
 						if (IsAssignment (node.References [i]))
-							assignmentIndexes.Add (i);
+							assignmentIndices.Add (i);
 					}
-
-					for (int i = 0; i < assignmentIndexes.Count - 1; i++) {
-						var index1 = assignmentIndexes [i];
-						var index2 = assignmentIndexes [i + 1];
+					// for two consecutive assignments, the first one is redundant
+					for (int i = 0; i < assignmentIndices.Count - 1; i++) {
+						var index1 = assignmentIndices [i];
+						var index2 = assignmentIndices [i + 1];
 						if (index1 + 1 == index2)
 							AddIssue (node.References [index1]);
 					}
-					if (assignmentIndexes.Count > 0 &&
-						assignmentIndexes [assignmentIndexes.Count - 1] == node.References.Count - 1)
+					// if the node ends with an assignment, add it to assignments so as to check if it is redundant
+					// later
+					if (assignmentIndices.Count > 0 &&
+						assignmentIndices [assignmentIndices.Count - 1] == node.References.Count - 1)
 						assignments.Add (node);
 
 					foreach (var nextNode in node.NextNodes) {
@@ -237,11 +242,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						reachable = true;
 						break;
 					}
-					if (nodeStates [nextNode] == NodeState.Processing)
+					// downstream nodes are not fully processed (e.g. due to loop), there is no enough info to
+					// determine the node state
+					if (nodeStates [nextNode] != NodeState.UsageUnreachable)
 						reachable = null;
 				}
 
-				// not possible to reach any usage via NextNodes
+				// add issue if it is not possible to reach any usage via NextNodes
 				if (addIssue && reachable == false)
 					AddIssue (node.References [node.References.Count - 1]);
 

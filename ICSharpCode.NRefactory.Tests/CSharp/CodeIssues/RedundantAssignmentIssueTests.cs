@@ -257,13 +257,34 @@ class TestClass
 {
 	void TestMethod ()
 	{
-		var x;
+		var x = 0;
 		for (int i = 0; i < 10; i++) {
 			if (i > 5) {
 				x++;
 			} else {
 				x = 2;
 			}
+		}
+		if (x > 1) ;
+	}
+}";
+			Test<RedundantAssignmentIssue> (input, 0);
+		}
+
+		[Test]
+		public void TestForeach ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod (int[] array)
+	{
+		foreach (int j in array) {
+			bool x = false;
+			foreach (int k in array)
+				foreach (int i in array)
+					if (i > 5) x = true;
+			if (x) break;
 		}
 	}
 }";
