@@ -53,7 +53,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddExtensibilityGlobalsSection();
 			AddVariableToExtensibilityGlobals("test");
 			
-			bool exists = globals.VariableExists("test");
+			bool exists = globals.get_VariableExists("test");
 			
 			Assert.IsTrue(exists);
 		}
@@ -63,7 +63,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateSolution();
 			
-			bool exists = globals.VariableExists("test");
+			bool exists = globals.get_VariableExists("test");
 			
 			Assert.IsFalse(exists);
 		}
@@ -74,7 +74,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateSolution();
 			AddExtensibilityGlobalsSection();
 			
-			bool exists = globals.VariableExists("test");
+			bool exists = globals.get_VariableExists("test");
 			
 			Assert.IsFalse(exists);
 		}
@@ -86,7 +86,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddExtensibilityGlobalsSection();
 			AddVariableToExtensibilityGlobals("TEST");
 			
-			bool exists = globals.VariableExists("test");
+			bool exists = globals.get_VariableExists("test");
 			
 			Assert.IsTrue(exists);
 		}
@@ -98,7 +98,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddExtensibilityGlobalsSection();
 			AddVariableToExtensibilityGlobals("test", "test-value");
 			
-			object value = globals.VariableValue["test"];
+			object value = globals.get_VariableValue("test");
 			
 			Assert.AreEqual("test-value", value);
 		}
@@ -110,7 +110,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddExtensibilityGlobalsSection();
 			AddVariableToExtensibilityGlobals("TEST", "test-value");
 			
-			object value = globals.VariableValue["test"];
+			object value = globals.get_VariableValue("test");
 			
 			Assert.AreEqual("test-value", value);
 		}
@@ -120,7 +120,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateSolution();
 			
-			Assert.Throws<ArgumentException>(delegate { object value = globals.VariableValue["test"]; });
+			Assert.Throws<ArgumentException>(delegate { object value = globals.get_VariableValue("test"); });
 		}
 		
 		[Test]
@@ -129,7 +129,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateSolution();
 			AddExtensibilityGlobalsSection();
 			
-			Assert.Throws<ArgumentException>(delegate { object value = globals.VariableValue["test"]; });
+			Assert.Throws<ArgumentException>(delegate { object value = globals.get_VariableValue("test"); });
 		}
 		
 		[Test]
@@ -139,7 +139,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddExtensibilityGlobalsSection();
 			AddVariableToExtensibilityGlobals("test", "value");
 			
-			globals.VariableValue["test"] = "new-value";
+			globals.set_VariableValue("test", "new-value");
 			
 			SD.SolutionItem item = GetExtensibilityGlobalsSolutionItem("test");
 			Assert.AreEqual("new-value", item.Location);
@@ -151,8 +151,8 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateSolution();
 			AddExtensibilityGlobalsSection();
 			
-			globals.VariableValue["test"] = "new-value";
-			object value = globals.VariableValue["test"];
+			globals.set_VariableValue("test", "new-value");
+			object value = globals.get_VariableValue("test");
 			
 			Assert.AreEqual("new-value", value);
 		}
@@ -163,7 +163,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateSolution();
 			AddExtensibilityGlobalsSection();
 			
-			globals.VariableValue["test"] = "new-value";
+			globals.set_VariableValue("test", "new-value");
 			
 			SD.SolutionItem item = GetExtensibilityGlobalsSolutionItem("test");
 			Assert.IsNull(item);
@@ -174,7 +174,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateSolution();
 			
-			globals.VariableValue["test"] = "new-value";
+			globals.set_VariableValue("test", "new-value");
 			
 			SD.ProjectSection section = GetExtensibilityGlobalsSection();
 			Assert.IsNull(section);
@@ -185,8 +185,8 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateSolution();
 			
-			globals.VariableValue["test"] = "new-value";
-			object value = globals.VariableValue["TEST"];
+			globals.set_VariableValue("test", "new-value");
+			object value = globals.get_VariableValue("test");
 			
 			Assert.AreEqual("new-value", value);
 		}
@@ -197,9 +197,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateSolution();
 			AddExtensibilityGlobalsSection();
 			
-			globals.VariableValue["test"] = "value";
+			globals.set_VariableValue("test", "value");
 			
-			bool exists = globals.VariableExists("test");
+			bool exists = globals.get_VariableExists("test");
 			
 			Assert.IsTrue(exists);
 		}
@@ -208,9 +208,9 @@ namespace PackageManagement.Tests.EnvDTE
 		public void VariablePersists_NewVariableAdded_ReturnsFalse()
 		{
 			CreateSolution();
-			globals.VariableValue["test"] = "new-value";
+			globals.set_VariableValue("test", "new-value");
 			
-			bool persists = globals.VariablePersists["test"];
+			bool persists = globals.get_VariablePersists("test");
 			
 			Assert.IsFalse(persists);
 		}
@@ -220,7 +220,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateSolution();
 			
-			Assert.Throws<ArgumentException>(delegate { bool persists = globals.VariablePersists["test"]; });
+			Assert.Throws<ArgumentException>(delegate { bool persists = globals.get_VariablePersists("test"); });
 		}
 		
 		[Test]
@@ -230,7 +230,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddExtensibilityGlobalsSection();
 			AddVariableToExtensibilityGlobals("test", "value");
 			
-			bool persists = globals.VariablePersists["test"];
+			bool persists = globals.get_VariablePersists("test");
 			
 			Assert.IsTrue(persists);
 		}
@@ -239,9 +239,9 @@ namespace PackageManagement.Tests.EnvDTE
 		public void VariablePersists_NoExistingExtensibilityGlobalsAndVariableSetToTrueAfterNewVariableAdded_VariableAddedToSolution()
 		{
 			CreateSolution();
-			globals.VariableValue["test"] = "new-value";
+			globals.set_VariableValue("test", "new-value");
 			
-			globals.VariablePersists["test"] = true;
+			globals.set_VariablePersists("test", true);
 			
 			SD.SolutionItem item = GetExtensibilityGlobalsSolutionItem("test");
 			Assert.AreEqual("new-value", item.Location);
@@ -251,10 +251,10 @@ namespace PackageManagement.Tests.EnvDTE
 		public void VariablePersists_SetToTrueAfterNewVariableAdded_ReturnsTrue()
 		{
 			CreateSolution();
-			globals.VariableValue["test"] = "new-value";
+			globals.set_VariableValue("test", "new-value");
 			
-			globals.VariablePersists["test"] = true;
-			bool persists = globals.VariablePersists["test"];
+			globals.set_VariablePersists("test", true);
+			bool persists = globals.get_VariablePersists("test");
 			
 			Assert.IsTrue(persists);
 		}
@@ -264,9 +264,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateSolution();
 			AddExtensibilityGlobalsSection();
-			globals.VariableValue["test"] = "new-value";
+			globals.set_VariableValue("test", "new-value");
 			
-			globals.VariablePersists["test"] = true;
+			globals.set_VariablePersists("test", true);
 			
 			SD.SolutionItem item = GetExtensibilityGlobalsSolutionItem("test");
 			Assert.AreEqual("new-value", item.Location);
@@ -276,9 +276,9 @@ namespace PackageManagement.Tests.EnvDTE
 		public void VariablePersists_SetToTrueAfterNewVariableAdded_ExtensibilityGlobalsSectionAddedWithPostSolutionType()
 		{
 			CreateSolution();
-			globals.VariableValue["test"] = "new-value";
+			globals.set_VariableValue("test", "new-value");
 			
-			globals.VariablePersists["test"] = true;
+			globals.set_VariablePersists("test", true);
 			
 			SD.ProjectSection section = GetExtensibilityGlobalsSection();
 			Assert.AreEqual("postSolution", section.SectionType);
@@ -291,8 +291,8 @@ namespace PackageManagement.Tests.EnvDTE
 			AddExtensibilityGlobalsSection();
 			AddVariableToExtensibilityGlobals("test", "value");
 			
-			globals.VariablePersists["test"] = false;
-			bool persists = globals.VariablePersists["test"];
+			globals.set_VariablePersists("test", false);
+			bool persists = globals.get_VariablePersists("test");
 			
 			Assert.IsFalse(persists);
 		}
@@ -304,7 +304,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddExtensibilityGlobalsSection();
 			AddVariableToExtensibilityGlobals("test", "value");
 			
-			globals.VariablePersists["test"] = false;
+			globals.set_VariablePersists("test", false);
 			
 			SD.SolutionItem item = GetExtensibilityGlobalsSolutionItem("test");
 			Assert.IsNull(item);
@@ -317,7 +317,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddExtensibilityGlobalsSection();
 			AddVariableToExtensibilityGlobals("test", "value");
 			
-			globals.VariablePersists["TEST"] = false;
+			globals.set_VariablePersists("TEST", false);
 			
 			SD.SolutionItem item = GetExtensibilityGlobalsSolutionItem("test");
 			Assert.IsNull(item);
@@ -327,10 +327,10 @@ namespace PackageManagement.Tests.EnvDTE
 		public void VariableValue_AddNewVariableAndPersistThenUpdateVariableValue_SolutionValueUpdated()
 		{
 			CreateSolution();
-			globals.VariableValue["test"] = "one";
-			globals.VariablePersists["test"] = true;
+			globals.set_VariableValue("test", "one");
+			globals.set_VariablePersists("test", true);
 			
-			globals.VariableValue["test"] = "two";
+			globals.set_VariableValue("test", "two");
 			
 			SD.SolutionItem item = GetExtensibilityGlobalsSolutionItem("test");
 			Assert.AreEqual("two", item.Location);
@@ -340,11 +340,11 @@ namespace PackageManagement.Tests.EnvDTE
 		public void VariableValue_PersistVariableAfterSettingVariableValueTwice_NoExceptionThrown()
 		{
 			CreateSolution();
-			globals.VariableValue["test"] = "two";
-			globals.VariableValue["test"] = "three";
-			globals.VariablePersists["test"] = true;
+			globals.set_VariableValue("test", "two");
+			globals.set_VariableValue("test", "three");
+			globals.set_VariablePersists("test", true);
 			
-			object value = globals.VariableValue["test"];
+			object value = globals.get_VariableValue("test");
 			
 			Assert.AreEqual("three", value);
 		}
@@ -353,13 +353,13 @@ namespace PackageManagement.Tests.EnvDTE
 		public void VariableValue_PersistVariableMultipleTimes_NoExceptionThrown()
 		{
 			CreateSolution();
-			globals.VariableValue["test"] = "two";
-			globals.VariablePersists["test"] = true;
-			globals.VariablePersists["test"] = false;
-			globals.VariablePersists["test"] = true;
-			globals.VariableValue["test"] = "four";
+			globals.set_VariableValue("test", "two");
+			globals.set_VariablePersists("test", true);
+			globals.set_VariablePersists("test", false);
+			globals.set_VariablePersists("test", true);
+			globals.set_VariableValue("test", "four");
 			
-			object value = globals.VariableValue["test"];
+			object value = globals.get_VariableValue("test");
 			
 			Assert.AreEqual("four", value);
 		}
@@ -368,10 +368,10 @@ namespace PackageManagement.Tests.EnvDTE
 		public void VariablePersists_SetPersistToTrueTwice_VariableAddedToSolutionOnce()
 		{
 			CreateSolution();
-			globals.VariableValue["test"] = "one";
+			globals.set_VariableValue("test", "one");
 			
-			globals.VariablePersists["test"] = true;
-			globals.VariablePersists["test"] = true;
+			globals.set_VariablePersists("test", true);
+			globals.set_VariablePersists("test", true);
 			
 			SD.ProjectSection section = GetExtensibilityGlobalsSection();
 			int count = section.Items.Count;
@@ -382,11 +382,11 @@ namespace PackageManagement.Tests.EnvDTE
 		public void VariablePersists_SetPersistToFalseWhenNoExtensibilityGlobalsSection_ExceptionNotThrown()
 		{
 			CreateSolution();
-			globals.VariableValue["test"] = "one";
+			globals.set_VariableValue("test", "one");
 			
-			globals.VariablePersists["test"] = false;
+			globals.set_VariablePersists("test", false);
 			
-			object value = globals.VariableValue["test"];
+			object value = globals.get_VariableValue("test");
 			Assert.AreEqual("one", value);
 		}
 		
@@ -394,9 +394,9 @@ namespace PackageManagement.Tests.EnvDTE
 		public void VariablePersists_SetToTrueAfterNewVariableAdded_SolutionIsSaved()
 		{
 			CreateSolution();
-			globals.VariableValue["test"] = "new-value";
+			globals.set_VariableValue("test", "new-value");
 			
-			globals.VariablePersists["test"] = true;
+			globals.set_VariablePersists("test", true);
 			
 			solutionHelper.AssertSolutionIsSaved();
 		}
@@ -405,9 +405,9 @@ namespace PackageManagement.Tests.EnvDTE
 		public void VariablePersists_SetToFalseAfterNewVariableAdded_SolutionIsNotSaved()
 		{
 			CreateSolution();
-			globals.VariableValue["test"] = "new-value";
+			globals.set_VariableValue("test", "new-value");
 			
-			globals.VariablePersists["test"] = false;
+			globals.set_VariablePersists("test", false);
 			
 			solutionHelper.AssertSolutionIsNotSaved();
 		}
@@ -419,7 +419,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddExtensibilityGlobalsSection();
 			AddVariableToExtensibilityGlobals("test", "value");
 			
-			globals.VariablePersists["test"] = false;
+			globals.set_VariablePersists("test", false);
 			
 			solutionHelper.AssertSolutionIsSaved();
 		}
@@ -431,7 +431,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddExtensibilityGlobalsSection();
 			AddVariableToExtensibilityGlobals("test", "value");
 			
-			globals.VariablePersists["test"] = true;
+			globals.set_VariablePersists("test", true);
 			
 			solutionHelper.AssertSolutionIsNotSaved();
 		}
@@ -443,7 +443,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddExtensibilityGlobalsSection();
 			AddVariableToExtensibilityGlobals("test", "value");
 			
-			globals.VariableValue["test"] = "new-value";
+			globals.set_VariableValue("test", "new-value");
 			
 			solutionHelper.AssertSolutionIsSaved();
 		}
@@ -452,9 +452,9 @@ namespace PackageManagement.Tests.EnvDTE
 		public void VariableValue_VariableNotSolutionChanged_SolutionIsNotSaved()
 		{
 			CreateSolution();
-			globals.VariableValue["test"] = "value";
+			globals.set_VariableValue("test", "value");
 			
-			globals.VariableValue["test"] = "new-value";
+			globals.set_VariableValue("test", "new-value");
 			
 			solutionHelper.AssertSolutionIsNotSaved();
 		}

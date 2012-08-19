@@ -2,33 +2,41 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Globals
+	public class SolutionGlobals : Globals
 	{
 		SolutionExtensibilityGlobals extensibilityGlobals;
 		SolutionExtensibilityGlobalsPersistence extensibilityGlobalsPersistence;
 		
-		public Globals(Solution solution)
+		public SolutionGlobals(Solution solution)
 		{
 			this.extensibilityGlobals = new SolutionExtensibilityGlobals(solution);
 			this.extensibilityGlobalsPersistence = new SolutionExtensibilityGlobalsPersistence(extensibilityGlobals);
 		}
 		
-		public virtual SolutionExtensibilityGlobals VariableValue {
-			get { return extensibilityGlobals; }
+		protected override object GetVariableValue(string name)
+		{
+			return extensibilityGlobals[name];
 		}
 		
-		public virtual SolutionExtensibilityGlobalsPersistence VariablePersists {
-			get { return extensibilityGlobalsPersistence; }
+		protected override void SetVariableValue(string name, object value)
+		{
+			extensibilityGlobals[name] = value;
 		}
 		
-		public virtual bool VariableExists(string name)
+		protected override bool GetVariablePersists(string name)
+		{
+			return extensibilityGlobalsPersistence[name];
+		}
+		
+		protected override void SetVariablePersists(string name, bool value)
+		{
+			extensibilityGlobalsPersistence[name] = value;
+		}
+		
+		protected override bool GetVariableExists(string name)
 		{
 			return extensibilityGlobals.ItemExists(name);
 		}

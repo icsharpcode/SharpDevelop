@@ -119,7 +119,6 @@
     <Compile Include="Src\EnvDTE\EditPoint.cs" />
     <Compile Include="Src\EnvDTE\FileCodeModel2.cs" />
     <Compile Include="Src\EnvDTE\FileCodeModelCodeElements.cs" />
-    <Compile Include="Src\EnvDTE\Globals.cs" />
     <Compile Include="Src\EnvDTE\ImplementedInterfacesOnClass.cs" />
     <Compile Include="Src\EnvDTE\IReturnTypeExtensions.cs" />
     <Compile Include="Src\EnvDTE\NamespaceName.cs" />
@@ -129,6 +128,7 @@
     <Compile Include="Src\EnvDTE\Reference3.cs" />
     <Compile Include="Src\EnvDTE\SolutionExtensibilityGlobals.cs" />
     <Compile Include="Src\EnvDTE\SolutionExtensibilityGlobalsPersistence.cs" />
+    <Compile Include="Src\EnvDTE\SolutionGlobals.cs" />
     <Compile Include="Src\EnvDTE\SourceControl.cs" />
     <Compile Include="Src\EnvDTE\TextPoint.cs" />
     <Compile Include="Src\EnvDTE\vsCMAccess.cs" />
@@ -506,6 +506,10 @@
       <Project>{0162E499-42D0-409B-AA25-EED21F75336B}</Project>
       <Name>AvalonEdit.AddIn</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\EnvDTEHelpers\Project\PackageManagement.EnvDTEHelpers.vbproj">
+      <Project>{F7886FB7-3764-4574-B981-25EB164B532E}</Project>
+      <Name>PackageManagement.EnvDTEHelpers</Name>
     </ProjectReference>
     <ProjectReference Include="..\PowerShell\Project\PackageManagement.PowerShell.csproj">
       <Project>{A406803B-C584-43A3-BCEE-A0BB3132CB5F}</Project>

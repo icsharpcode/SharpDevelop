@@ -533,6 +533,7 @@
 				<ComponentRef Id="PackageManagementCmdletsDll"/>
 				<ComponentRef Id="PackageManagementCmdletsDllHelpXml"/>
 				<ComponentRef Id="PackageManagementDll"/>
+				<ComponentRef Id="PackageManagementEnvDTEHelpersDll"/>
 				<ComponentRef Id="PackageManagementPowerShellDll"/>
 				<ComponentRef Id="JQuery172NuGetPackage"/>
 				<ComponentRef Id="Modernizr253NuGetPackage"/>

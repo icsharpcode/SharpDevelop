@@ -1814,6 +1814,9 @@
 									<Component Id="NuGetConsoleTypesDll" Guid="7386637C-A6C6-4AD4-8EA3-C5E87AA3F552" DiskId="1">
 										<File Id="NuGet.Console.Types.dll" Name="NuGet.Console.Types.dll" Source="..\..\AddIns\Misc\PackageManagement\NuGet.Console.Types.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="NuGet.Console.Types.dll" AssemblyManifest="NuGet.Console.Types.dll" />
 									</Component>
+									<Component Id="PackageManagementEnvDTEHelpersDll" Guid="51609E3F-C1BA-4EB5-889B-61EA730207D6" DiskId="1">
+										<File Id="PackageManagement.EnvDTEHelpers.dll" Name="PackageManagement.EnvDTEHelpers.dll" Source="..\..\AddIns\Misc\PackageManagement\PackageManagement.EnvDTEHelpers.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="PackageManagement.EnvDTEHelpers.dll" AssemblyManifest="PackageManagement.EnvDTEHelpers.dll" />
+									</Component>
 								</Directory>
 								<Directory Id="TextTemplating" Name="TextTemplating">
 									<Component Id="MonoTextTemplatingDll" Guid="07BFBED7-FC7B-4CF3-BD00-DCA8E8E7C17B" DiskId="1">

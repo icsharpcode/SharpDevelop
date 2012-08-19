@@ -17,7 +17,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.projectService = projectService;
 			this.solution = projectService.OpenSolution;
 			this.Projects = new Projects(projectService);
-			this.Globals = new Globals(this);
+			this.Globals = new SolutionGlobals(this);
 		}
 		
 		public string FullName {
