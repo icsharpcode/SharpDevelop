@@ -43,5 +43,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			projectService.Save(solution);
 		}
+		
+		internal bool IsSameSolution(SD.Solution solution)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

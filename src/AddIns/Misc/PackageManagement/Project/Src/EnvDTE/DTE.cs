@@ -13,6 +13,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	{
 		IPackageManagementProjectService projectService;
 		IPackageManagementFileService fileService;
+		Solution solution;
 		
 		public DTE()
 			: this(new PackageManagementProjectService(), new PackageManagementFileService())
@@ -36,7 +37,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public Solution Solution {
 			get {
 				if (IsSolutionOpen) {
-					return new Solution(projectService);
+					CreateSolution();
+					return solution;
 				}
 				return null;
 			}
@@ -44,6 +46,21 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		bool IsSolutionOpen {
 			get { return projectService.OpenSolution != null; }
+		}
+		
+		void CreateSolution()
+		{
+			if (!IsOpenSolutionAlreadyCreated()) {
+				solution = new Solution(projectService);
+			}
+		}
+		
+		bool IsOpenSolutionAlreadyCreated()
+		{
+			if (solution != null) {
+				return solution.IsOpen;
+			}
+			return false;
 		}
 		
 		public ItemOperations ItemOperations { get; private set; }
