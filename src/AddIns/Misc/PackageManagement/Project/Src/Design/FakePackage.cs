@@ -37,6 +37,7 @@ namespace ICSharpCode.PackageManagement.Design
 			this.Description = String.Empty;
 			this.Version = new SemanticVersion(version);
 			this.Listed = true;
+			this.IsLatestVersion = true;
 		}
 		
 		public static FakePackage CreatePackageWithVersion(string version)

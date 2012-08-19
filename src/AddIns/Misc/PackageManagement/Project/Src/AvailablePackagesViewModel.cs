@@ -38,7 +38,12 @@ namespace ICSharpCode.PackageManagement
 			if (repository == null) {
 				throw new ApplicationException(errorMessage);
 			}
-			return repository.GetPackages();
+			return repository.GetPackages().Where(package => package.IsLatestVersion);
+		}
+		
+		public IQueryable<IPackage> CallGetPackagesFromPackageSource()
+		{
+			return GetPackagesFromPackageSource();
 		}
 		
 		/// <summary>

@@ -35,7 +35,7 @@ namespace ICSharpCode.PackageManagement
 			PackageViewModels = new ObservableCollection<PackageViewModel>();
 			ErrorMessage = String.Empty;
 
-			CreateCommands();			
+			CreateCommands();
 		}
 		
 		void CreateCommands()
@@ -143,7 +143,7 @@ namespace ICSharpCode.PackageManagement
 		}
 
 		void UpdatePackagesForSelectedPage(PackagesForSelectedPageResult result)
-		{			
+		{
 			pages.TotalItems = result.TotalPackages;
 			pages.TotalItemsOnSelectedPage = result.TotalPackagesOnPage;
 			UpdatePackageViewModels(result.Packages);
@@ -164,13 +164,21 @@ namespace ICSharpCode.PackageManagement
 		IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults()
 		{
 			if (allPackages == null) {
-				IQueryable<IPackage> packages = GetAllPackages();
-				packages = OrderPackages(packages);
-				packages = FilterPackagesBySearchCriteria(packages);
+				IQueryable<IPackage> packages = GetPackagesFromPackageSource();
 				TotalItems = packages.Count();
 				allPackages = GetFilteredPackagesBeforePagingResults(packages);
 			}
 			return allPackages;
+		}
+		
+		/// <summary>
+		/// Returns the queryable object that will be used to query the NuGet online feed.
+		/// </summary>
+		public IQueryable<IPackage> GetPackagesFromPackageSource()
+		{
+			IQueryable<IPackage> packages = GetAllPackages();
+			packages = OrderPackages(packages);
+			return FilterPackagesBySearchCriteria(packages);
 		}
 		
 		protected virtual IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
@@ -279,7 +287,7 @@ namespace ICSharpCode.PackageManagement
 		public bool IsPaged {
 			get { return pages.IsPaged; }
 		}
-				
+		
 		public ObservableCollection<Page> Pages {
 			get { return pages; }
 		}

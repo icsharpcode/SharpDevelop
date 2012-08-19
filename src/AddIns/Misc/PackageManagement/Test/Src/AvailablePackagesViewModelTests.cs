@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
@@ -364,7 +365,7 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			
-			var releasePackage = new FakePackage("Test", "1.0.0.0");
+			var releasePackage = new FakePackage("Test", "1.1.0.0");
 			var prereleasePackage = new FakePackage("Test", "1.1.0-alpha");
 			
 			var packages = new FakePackage[] {
@@ -405,6 +406,28 @@ namespace PackageManagement.Tests
 			};
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
+		
+		
+		[Test]
+		public void GetPackagesFromPackageSource_RepositoryHasThreePackagesWithSameIdButDifferentVersions_LatestPackageVersionOnlyRequestedFromPackageSource()
+		{
+			CreateViewModel();
+			var package1 = new FakePackage("Test", "0.1.0.0") { IsLatestVersion = false };
+			var package2 = new FakePackage("Test", "0.2.0.0") { IsLatestVersion = false };
+			var package3 = new FakePackage("Test", "0.3.0.0") { IsLatestVersion = true };
+			var packages = new FakePackage[] {
+				package1, package2, package3
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(packages);
+			viewModel.ReadPackages();
+			
+			IList<IPackage> allPackages = viewModel.GetPackagesFromPackageSource().ToList();
+			
+			var expectedPackages = new FakePackage[] {
+				package3
+			};
+			PackageCollectionAssert.AreEqual(expectedPackages, allPackages);
 		}
 	}
 }
