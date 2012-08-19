@@ -58,5 +58,26 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public virtual CodeTypeRef2 Type {
 			get { return new CodeTypeRef2(method.ProjectContent, this, method.ReturnType); }
 		}
+		
+		public virtual CodeElements Attributes {
+			get { throw new NotImplementedException(); }
+		}
+		
+		public virtual bool CanOverride {
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
+		
+		public virtual vsCMFunction FunctionKind {
+			get { throw new NotImplementedException(); }
+		}
+		
+		public virtual bool IsShared {
+			get { throw new NotImplementedException(); }
+		}
+		
+		public virtual bool MustImplement {
+			get { throw new NotImplementedException(); }
+		}
 	}
 }

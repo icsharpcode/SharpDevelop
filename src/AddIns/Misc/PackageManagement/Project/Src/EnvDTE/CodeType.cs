@@ -77,5 +77,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				return null;
 			}
 		}
+		
+		public virtual bool IsDerivedFrom(string fullName)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -3,11 +3,12 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement.EnvDTE
+namespace Microsoft.VisualStudio.Shell.Interop
 {
-	public enum vsCMFunction
+	public class SDTE : MarshalByRefObject
 	{
-		vsCMFunctionConstructor = 1,
-		vsCMFunctionFunction = 128
+		public SDTE()
+		{
+		}
 	}
 }

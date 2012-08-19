@@ -22,5 +22,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			IClass baseTypeClass = baseType.GetUnderlyingClass();
 			return new CodeClass2(projectContent, baseTypeClass);
 		}
+		
+		public bool IsGeneric {
+			get { throw new NotImplementedException(); }
+		}
+		
+		public vsCMClassKind ClassKind {
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
+		
+		public bool IsAbstract {
+			get { throw new NotImplementedException(); }
+		}
 	}
 }

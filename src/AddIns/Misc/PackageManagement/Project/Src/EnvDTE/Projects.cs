@@ -16,18 +16,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			this.projectService = projectService;
 		}
-	    
-        public IEnumerator<Project> GetEnumerator()
-        {
-        	return GetProjectsInSolution().GetEnumerator();
-        }
-	    
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-        	return GetEnumerator();
-        }
-        
-        IEnumerable<Project> GetProjectsInSolution()
+		
+		public IEnumerator<Project> GetEnumerator()
+		{
+			return GetProjectsInSolution().GetEnumerator();
+		}
+		
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+		
+		IEnumerable<Project> GetProjectsInSolution()
 		{
 			foreach (SD.MSBuildBasedProject msbuildProject in GetOpenMSBuildProjects()) {
 				yield return new Project(msbuildProject);
@@ -37,6 +37,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		IEnumerable<SD.IProject> GetOpenMSBuildProjects()
 		{
 			return projectService.GetOpenProjects();
+		}
+		
+		public Project Item(int index)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public virtual int Count {
+			get { throw new NotImplementedException(); }
 		}
 	}
 }

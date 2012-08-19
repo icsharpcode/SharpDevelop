@@ -5,9 +5,15 @@ using System;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public enum vsCMFunction
+	public class Document
 	{
-		vsCMFunctionConstructor = 1,
-		vsCMFunctionFunction = 128
+		public Document()
+		{
+		}
+		
+		public virtual bool Saved {
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
 	}
 }

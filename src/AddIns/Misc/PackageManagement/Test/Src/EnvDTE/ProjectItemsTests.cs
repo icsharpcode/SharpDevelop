@@ -527,7 +527,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("tools", name);
 			Assert.AreEqual(project, item.ContainingProject);
-			Assert.AreEqual(Constants.VsProjectItemKindPhysicalFolder, item.Kind);
+			Assert.AreEqual(Constants.vsProjectItemKindPhysicalFolder, item.Kind);
 		}
 		
 		[Test]
@@ -592,7 +592,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("tools", name);
 			Assert.AreEqual(project, item.ContainingProject);
-			Assert.AreEqual(Constants.VsProjectItemKindPhysicalFolder, item.Kind);
+			Assert.AreEqual(Constants.vsProjectItemKindPhysicalFolder, item.Kind);
 		}
 		
 		[Test]
@@ -610,9 +610,9 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("tools", name);
 			Assert.AreEqual(project, item.ContainingProject);
-			Assert.AreEqual(Constants.VsProjectItemKindPhysicalFolder, item.Kind);
+			Assert.AreEqual(Constants.vsProjectItemKindPhysicalFolder, item.Kind);
 			Assert.AreEqual(1, item.ProjectItems.Count);
-			Assert.AreEqual(Constants.VsProjectItemKindPhysicalFolder, childItem.Kind);
+			Assert.AreEqual(Constants.vsProjectItemKindPhysicalFolder, childItem.Kind);
 		}
 		
 		[Test]

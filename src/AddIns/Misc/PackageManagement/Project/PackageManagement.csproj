@@ -94,10 +94,12 @@
     <Compile Include="Src\EnvDTE\CodeElementsInNamespace.cs" />
     <Compile Include="Src\EnvDTE\CodeElementsList.cs" />
     <Compile Include="Src\EnvDTE\CodeFunction.cs" />
+    <Compile Include="Src\EnvDTE\CodeFunction2.cs" />
     <Compile Include="Src\EnvDTE\CodeGetterFunction.cs" />
     <Compile Include="Src\EnvDTE\CodeGetterOrSetterFunction.cs" />
     <Compile Include="Src\EnvDTE\CodeImport.cs" />
     <Compile Include="Src\EnvDTE\CodeInterface.cs" />
+    <Compile Include="Src\EnvDTE\CodeParameter2.cs" />
     <Compile Include="Src\EnvDTE\CodeParameters.cs" />
     <Compile Include="Src\EnvDTE\CodeModel.cs" />
     <Compile Include="Src\EnvDTE\CodeModelLanguageConstants.cs" />
@@ -116,6 +118,7 @@
     <Compile Include="Src\EnvDTE\ConfigurationManager.cs" />
     <Compile Include="Src\EnvDTE\Configuration.cs" />
     <Compile Include="Src\EnvDTE\Constants.cs" />
+    <Compile Include="Src\EnvDTE\Document.cs" />
     <Compile Include="Src\EnvDTE\EditPoint.cs" />
     <Compile Include="Src\EnvDTE\FileCodeModel2.cs" />
     <Compile Include="Src\EnvDTE\FileCodeModelCodeElements.cs" />
@@ -132,11 +135,16 @@
     <Compile Include="Src\EnvDTE\SourceControl.cs" />
     <Compile Include="Src\EnvDTE\TextPoint.cs" />
     <Compile Include="Src\EnvDTE\vsCMAccess.cs" />
+    <Compile Include="Src\EnvDTE\vsCMClassKind.cs" />
     <Compile Include="Src\EnvDTE\vsCMElement.cs" />
     <Compile Include="Src\EnvDTE\vsCMFunction.cs" />
     <Compile Include="Src\EnvDTE\vsCMInfoLocation.cs" />
+    <Compile Include="Src\EnvDTE\vsCMOverrideKind.cs" />
+    <Compile Include="Src\EnvDTE\vsCMParameterKind.cs" />
     <Compile Include="Src\EnvDTE\vsCMPropertyKind.cs" />
+    <Compile Include="Src\EnvDTE\vsCMTypeRef.cs" />
     <Compile Include="Src\EnvDTE\vsEPReplaceTextOptions.cs" />
+    <Compile Include="Src\EnvDTE\Window.cs" />
     <Compile Include="Src\IDocumentNamespaceCreator.cs" />
     <Compile Include="Src\IProjectBrowserUpdater.cs" />
     <Compile Include="Src\IRefactoringDocumentView.cs" />
@@ -450,6 +458,7 @@
     <Compile Include="Src\VisualStudio\NotInstalledException.cs" />
     <Compile Include="Src\VisualStudio\Package.cs" />
     <Compile Include="Src\VisualStudio\SComponentModel.cs" />
+    <Compile Include="Src\VisualStudio\SDTE.cs" />
     <Compile Include="Src\VisualStudio\SVsExtensionManager.cs" />
     <Compile Include="Src\VisualStudio\ThreadHelper.cs" />
     <Compile Include="Src\VisualStudio\VsConstants.cs" />

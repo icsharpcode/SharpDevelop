@@ -37,9 +37,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		string GetKindFromFileProjectItemType()
 		{
 			if (IsDirectory) {
-				return Constants.VsProjectItemKindPhysicalFolder;
+				return Constants.vsProjectItemKindPhysicalFolder;
 			}
-			return Constants.VsProjectItemKindPhysicalFile;
+			return Constants.vsProjectItemKindPhysicalFile;
 		}
 		
 		bool IsDirectory {
@@ -163,6 +163,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public virtual string FileNames(short index)
 		{
 			return projectItem.FileName;
+		}
+		
+		public Document Document {
+			get { throw new NotImplementedException(); }
+		}
+		
+		public Window Open(string viewKind)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

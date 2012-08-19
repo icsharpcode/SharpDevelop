@@ -106,7 +106,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			string kind = directoryItem.Kind;
 			
-			Assert.AreEqual(Constants.VsProjectItemKindPhysicalFolder, kind);
+			Assert.AreEqual(Constants.vsProjectItemKindPhysicalFolder, kind);
 		}
 		
 		[Test]
@@ -120,7 +120,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			string kind = fileItem.Kind;
 			
-			Assert.AreEqual(Constants.VsProjectItemKindPhysicalFile, kind);
+			Assert.AreEqual(Constants.vsProjectItemKindPhysicalFile, kind);
 		}
 		
 		[Test]

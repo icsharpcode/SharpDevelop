@@ -128,7 +128,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			var directoryItem = new FileProjectItem(project.MSBuildProject, ItemType.Folder);
 			directoryItem.Include = directoryName;
-			return new ProjectItem(project, directoryItem) { Kind = Constants.VsProjectItemKindPhysicalFolder };
+			return new ProjectItem(project, directoryItem) { Kind = Constants.vsProjectItemKindPhysicalFolder };
 		}
 		
 		string GetFirstSubDirectoryName(string include)

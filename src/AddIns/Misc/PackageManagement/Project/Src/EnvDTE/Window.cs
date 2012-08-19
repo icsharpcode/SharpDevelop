@@ -5,9 +5,10 @@ using System;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public enum vsCMFunction
+	public class Window
 	{
-		vsCMFunctionConstructor = 1,
-		vsCMFunctionFunction = 128
+		public Window()
+		{
+		}
 	}
 }

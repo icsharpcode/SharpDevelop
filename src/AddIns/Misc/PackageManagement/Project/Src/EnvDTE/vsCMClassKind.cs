@@ -5,9 +5,8 @@ using System;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public enum vsCMFunction
+	public enum vsCMClassKind
 	{
-		vsCMFunctionConstructor = 1,
-		vsCMFunctionFunction = 128
+		vsCMClassKindPartialClass = 4
 	}
 }
