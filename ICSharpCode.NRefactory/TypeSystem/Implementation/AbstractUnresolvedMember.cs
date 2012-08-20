@@ -39,6 +39,20 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			interfaceImplementations = provider.InternList(interfaceImplementations);
 		}
 		
+		protected override void FreezeInternal()
+		{
+			base.FreezeInternal();
+			interfaceImplementations = FreezableHelper.FreezeList(interfaceImplementations);
+		}
+		
+		public override object Clone()
+		{
+			var copy = (AbstractUnresolvedMember)base.Clone();
+			if (interfaceImplementations != null)
+				copy.interfaceImplementations = new List<IMemberReference>(interfaceImplementations);
+			return copy;
+		}
+		
 		/*
 		[Serializable]
 		internal new class RareFields : AbstractUnresolvedEntity.RareFields
@@ -56,6 +70,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				interfaceImplementations = FreezableHelper.FreezeListAndElements(interfaceImplementations);
 				base.FreezeInternal();
 			}
+			
+			override Clone(){}
 		}
 		
 		internal override AbstractUnresolvedEntity.RareFields WriteRareFields()
@@ -83,20 +99,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		/*
 		public IList<IMemberReference> ExplicitInterfaceImplementations {
 			get {
+				/*
 				RareFields rareFields = (RareFields)this.rareFields;
 				if (rareFields == null || rareFields.interfaceImplementations == null) {
 					rareFields = (RareFields)WriteRareFields();
 					return rareFields.interfaceImplementations = new List<IMemberReference>();
 				}
 				return rareFields.interfaceImplementations;
-			}
-		}*/
-		
-		public IList<IMemberReference> ExplicitInterfaceImplementations {
-			get {
+				*/
 				if (interfaceImplementations == null)
 					interfaceImplementations = new List<IMemberReference>();
 				return interfaceImplementations;

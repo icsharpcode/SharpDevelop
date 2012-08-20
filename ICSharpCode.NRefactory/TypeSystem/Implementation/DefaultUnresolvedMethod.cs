@@ -42,6 +42,18 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			base.FreezeInternal();
 		}
 		
+		public override object Clone()
+		{
+			var copy = (DefaultUnresolvedMethod)base.Clone();
+			if (returnTypeAttributes != null)
+				copy.returnTypeAttributes = new List<IUnresolvedAttribute>(returnTypeAttributes);
+			if (typeParameters != null)
+				copy.typeParameters = new List<IUnresolvedTypeParameter>(typeParameters);
+			if (parameters != null)
+				copy.parameters = new List<IUnresolvedParameter>(parameters);
+			return copy;
+		}
+		
 		public override void ApplyInterningProvider(IInterningProvider provider)
 		{
 			base.ApplyInterningProvider(provider);
