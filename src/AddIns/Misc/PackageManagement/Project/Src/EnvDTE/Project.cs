@@ -280,5 +280,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			projectService.RemoveProjectItem(MSBuildProject, projectItem.MSBuildProjectItem);
 		}
+		
+		internal ProjectItem FindProjectItem(string fileName)
+		{
+			SD.FileProjectItem item = MSBuildProject.FindFile(fileName);
+			if (item != null) {
+				return new ProjectItem(this, item);
+			}
+			return null;
+		}
 	}
 }

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.SharpDevelop.Project;
 using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
@@ -46,7 +47,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public ProjectItem FindProjectItem(string fileName)
 		{
-			throw new NotImplementedException();
+			foreach (Project project in Projects) {
+				ProjectItem item = project.FindProjectItem(fileName);
+				if (item != null) {
+					return item;
+				}
+			}
+			return null;
 		}
 	}
 }
