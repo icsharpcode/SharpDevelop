@@ -2,10 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement.EnvDTE;
 
 namespace Microsoft.VisualStudio.Shell.Interop
 {
-	public class SDTE : MarshalByRefObject
+	public class SDTE : DTE
 	{
 		public SDTE()
 		{
