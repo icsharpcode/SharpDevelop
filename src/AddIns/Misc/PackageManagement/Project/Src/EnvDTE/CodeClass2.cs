@@ -33,7 +33,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public bool IsAbstract {
-			get { throw new NotImplementedException(); }
+			get { return Class.IsAbstract; }
 		}
 	}
 }

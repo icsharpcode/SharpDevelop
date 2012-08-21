@@ -162,5 +162,10 @@ namespace PackageManagement.Tests.Helpers
 		{
 			ProjectContentHelper.SetProjectForProjectContent(project);
 		}
+		
+		public void MakeClassAbstract()
+		{
+			Class.Stub(c => c.IsAbstract).Return(true);
+		}
 	}
 }

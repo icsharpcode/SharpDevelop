@@ -85,6 +85,11 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddFieldToClass(fullyQualifiedName);
 		}
 		
+		void ClassIsAbstract()
+		{
+			helper.MakeClassAbstract();
+		}
+		
 		[Test]
 		public void Language_CSharpProject_ReturnsCSharpModelLanguage()
 		{
@@ -277,6 +282,29 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			bool contains = properties.Contains(property2);
 			Assert.IsTrue(contains);
+		}
+		
+		[Test]
+		public void IsAbstract_ClassIsAbstract_ReturnsTrue()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			ClassIsAbstract();
+			
+			bool isAbstract = codeClass.IsAbstract;
+			
+			Assert.IsTrue(isAbstract);
+		}
+		
+		[Test]
+		public void IsAbstract_ClassIsNotAbstract_ReturnsFalse()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			
+			bool isAbstract = codeClass.IsAbstract;
+			
+			Assert.IsFalse(isAbstract);
 		}
 	}
 }
