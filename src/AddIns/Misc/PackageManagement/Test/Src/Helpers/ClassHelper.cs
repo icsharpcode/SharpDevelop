@@ -167,5 +167,10 @@ namespace PackageManagement.Tests.Helpers
 		{
 			Class.Stub(c => c.IsAbstract).Return(true);
 		}
+		
+		public void MakeClassPartial()
+		{
+			Class.Stub(c => c.IsPartial).Return(true);
+		}
 	}
 }

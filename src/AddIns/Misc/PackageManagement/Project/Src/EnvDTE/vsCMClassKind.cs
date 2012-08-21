@@ -7,6 +7,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public enum vsCMClassKind
 	{
+		vsCMClassKindMainClass = 1,
 		vsCMClassKindPartialClass = 4
 	}
 }

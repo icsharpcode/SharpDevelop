@@ -90,6 +90,11 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.MakeClassAbstract();
 		}
 		
+		void ClassIsPartial()
+		{
+			helper.MakeClassPartial();
+		}
+		
 		[Test]
 		public void Language_CSharpProject_ReturnsCSharpModelLanguage()
 		{
@@ -305,6 +310,29 @@ namespace PackageManagement.Tests.EnvDTE
 			bool isAbstract = codeClass.IsAbstract;
 			
 			Assert.IsFalse(isAbstract);
+		}
+		
+		[Test]
+		public void ClassKind_ClassIsPartial_ReturnsPartialClassKind()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			ClassIsPartial();
+			
+			vsCMClassKind kind = codeClass.ClassKind;
+			
+			Assert.AreEqual(vsCMClassKind.vsCMClassKindPartialClass, kind);
+		}
+		
+		[Test]
+		public void ClassKind_ClassIsNotPartial_ReturnsMainClassKind()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			
+			vsCMClassKind kind = codeClass.ClassKind;
+			
+			Assert.AreEqual(vsCMClassKind.vsCMClassKindMainClass, kind);
 		}
 	}
 }

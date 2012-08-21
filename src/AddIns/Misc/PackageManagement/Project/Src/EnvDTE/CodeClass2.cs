@@ -28,7 +28,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public vsCMClassKind ClassKind {
-			get { throw new NotImplementedException(); }
+			get {
+				if (Class.IsPartial) {
+					return vsCMClassKind.vsCMClassKindPartialClass;
+				}
+				return vsCMClassKind.vsCMClassKindMainClass;
+			}
 			set { throw new NotImplementedException(); }
 		}
 		
