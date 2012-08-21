@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
@@ -39,9 +40,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return projectService.GetOpenProjects();
 		}
 		
+		/// <summary>
+		/// Index of 1 returns the first project.
+		/// </summary>
 		public Project Item(int index)
 		{
-			throw new NotImplementedException();
+			return GetProjectsInSolution()
+				.Skip(index - 1)
+				.First();
 		}
 		
 		public virtual int Count {
