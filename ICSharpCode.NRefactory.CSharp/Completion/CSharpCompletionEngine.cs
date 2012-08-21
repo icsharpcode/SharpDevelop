@@ -162,7 +162,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (type is SimpleType) {
 				name = ((SimpleType)type).Identifier;
 			} else if (type is MemberType) {
-				name = ((SimpleType)type).Identifier;
+				name = ((MemberType)type).MemberName;
 			} else {
 				yield break;
 			}

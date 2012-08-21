@@ -256,11 +256,18 @@
     <Compile Include="Completion\IVariableCompletionData.cs" />
     <Compile Include="Documentation\IdStringProvider.cs" />
     <Compile Include="Documentation\IdStringMemberReference.cs" />
+    <Compile Include="Utils\CompositeFormatStringParser\CompositeFormatStringParser.cs" />
+    <Compile Include="Utils\CompositeFormatStringParser\TextSegment.cs" />
+    <Compile Include="Utils\CompositeFormatStringParser\FormatItem.cs" />
+    <Compile Include="Utils\CompositeFormatStringParser\FormatStringSegmentBase.cs" />
+    <Compile Include="Utils\CompositeFormatStringParser\IFormatStringSegment.cs" />
+    <Compile Include="Utils\CompositeFormatStringParser\IFormatStringError.cs" />
     <Compile Include="Completion\CompletionExtensionMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />
     <Folder Include="TypeSystem\" />
+    <Folder Include="Utils\CompositeFormatStringParser\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">

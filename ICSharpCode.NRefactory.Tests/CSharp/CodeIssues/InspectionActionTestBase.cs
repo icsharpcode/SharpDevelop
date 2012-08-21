@@ -36,9 +36,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
 	public abstract class InspectionActionTestBase
 	{
-		protected static List<CodeIssue> GetIssues (ICodeIssueProvider action, string input, out TestRefactoringContext context)
+		protected static List<CodeIssue> GetIssues (ICodeIssueProvider action, string input, out TestRefactoringContext context, bool expectErrors = false)
 		{
-			context = TestRefactoringContext.Create (input);
+			context = TestRefactoringContext.Create (input, expectErrors);
 			
 			return new List<CodeIssue> (action.GetIssues (context));
 		}

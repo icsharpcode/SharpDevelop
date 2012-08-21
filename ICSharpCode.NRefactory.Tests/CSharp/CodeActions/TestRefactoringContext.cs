@@ -233,7 +233,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				return doc.Text;
 			}
 		}
-		public static TestRefactoringContext Create (string content)
+		public static TestRefactoringContext Create (string content, bool expectErrors = false)
 		{
 			int idx = content.IndexOf ("$");
 			if (idx >= 0)
@@ -250,13 +250,19 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				selectionEnd = idx2 - 2;
 				idx = selectionEnd;
 			}
-			
-			var doc = new StringBuilderDocument (content);
-			var parser = new CSharpParser ();
-			var unit = parser.Parse (content, "program.cs");
-			foreach (var error in parser.Errors)
-				Console.WriteLine (error.Message);
-			Assert.IsFalse (parser.HasErrors, "File contains parsing errors.");
+
+			var doc = new StringBuilderDocument(content);
+			var parser = new CSharpParser();
+			var unit = parser.Parse(content, "program.cs");
+			if (!expectErrors) {
+				foreach (var error in parser.Errors) {
+					Console.WriteLine(error.Message);
+				}
+				Assert.IsFalse(parser.HasErrors, "The file contains unexpected parsing errors.");
+			} else {
+				Assert.IsTrue(parser.HasErrors, "Expected parsing errors, but the file doesn't contain any.");
+			}
+
 			unit.Freeze ();
 			var unresolvedFile = unit.ToTypeSystem ();
 			

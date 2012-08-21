@@ -1580,6 +1580,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				var expr = statementErrorExpression.Expr.Accept (this) as Expression;
 				if (expr != null)
 					result.AddChild ((Expression)expr, Roles.Expression);
+				var location = LocationsBag.GetLocations (statementErrorExpression);
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location [0])), Roles.Semicolon);
 				return result;
 			}
 			

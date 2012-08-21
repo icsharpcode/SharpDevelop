@@ -153,7 +153,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			InsertText(startOffset, text);
 			output.RegisterTrackedSegments(this, startOffset);
 		}
-		
+
+		public void InsertAfter(AstNode node, AstNode insertNode)
+		{
+			var indentOffset = GetCurrentOffset(new TextLocation(node.StartLocation.Line, 1));
+			var output = OutputNode (GetIndentLevelAt (indentOffset), insertNode);
+			string text = output.Text;
+			if (!(insertNode is Expression || insertNode is AstType))
+				text = Options.EolMarker + text;
+			var insertOffset = GetCurrentOffset(node.EndLocation);
+			InsertText(insertOffset, text);
+			output.RegisterTrackedSegments(this, insertOffset);
+		}
+
 		public void AddTo(BlockStatement bodyStatement, AstNode insertNode)
 		{
 			var startOffset = GetCurrentOffset(bodyStatement.LBraceToken.EndLocation);

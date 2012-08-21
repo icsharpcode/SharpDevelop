@@ -132,6 +132,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public abstract string GetText (ISegment segment);
 		#endregion
 
+		#region Naming
 		public virtual string GetNameProposal (string name, bool camelCase = true)
 		{
 			string baseName = (camelCase ? char.ToLower (name [0]) : char.ToUpper (name [0])) + name.Substring (1);
@@ -152,6 +153,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			return baseName + (number > 0 ? (number + 1).ToString () : "");
 		}
+		#endregion
 	}
 }
 
