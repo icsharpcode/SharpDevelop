@@ -35,6 +35,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 {
 	public interface ICompletionContextProvider
 	{
+		IList<string> ConditionalSymbols {
+			get;
+		}
+
 		void GetCurrentMembers (int offset, out IUnresolvedTypeDefinition currentType, out IUnresolvedMember currentMember);
 
 		Tuple<string, TextLocation> GetMemberTextToCaret(int caretOffset, IUnresolvedTypeDefinition currentType, IUnresolvedMember currentMember);
@@ -46,6 +50,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 	{
 		readonly IDocument document;
 		readonly CSharpUnresolvedFile unresolvedFile;
+		readonly List<string> symbols = new List<string> ();
+
+		public IList<string> ConditionalSymbols {
+			get {
+				return symbols;
+			}
+		}
 
 		public DefaultCompletionContextProvider (IDocument document, CSharpUnresolvedFile unresolvedFile)
 		{
@@ -56,7 +67,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			this.document = document;
 			this.unresolvedFile = unresolvedFile;
 		}
-		
+
+		public void AddSymbol (string sym)
+		{
+			symbols.Add (sym);
+		}
 		public void GetCurrentMembers(int offset, out IUnresolvedTypeDefinition currentType, out IUnresolvedMember currentMember)
 		{
 			//var document = engine.document;

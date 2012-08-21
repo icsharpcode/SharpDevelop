@@ -147,9 +147,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				return new CompletionData (title);
 			}
 
-			public ICompletionData CreateNamespaceCompletionData (string name)
+			public ICompletionData CreateNamespaceCompletionData (INamespace ns)
 			{
-				return new CompletionData (name);
+				return new CompletionData (ns.Name);
 			}
 
 			public ICompletionData CreateVariableCompletionData (ICSharpCode.NRefactory.TypeSystem.IVariable variable)
@@ -244,6 +244,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 					}
 			}
 			var mb = new DefaultCompletionContextProvider(doc, unresolvedFile);
+			mb.AddSymbol ("TEST");
 			var engine = new CSharpCompletionEngine(doc, mb, new TestFactory(), pctx, rctx);
 
 			engine.EolMarker = Environment.NewLine;
@@ -5375,6 +5376,45 @@ public class FooBar
 			});
 		}
 
+		[Test()]
+		public void TestCompletionInPreprocessorIf()
+		{
+			CombinedProviderTest(
+				@"using System;
+public class FooBar
+{
+	public static void Main (string[] args)
+	{
+		#if TEST
+		$Console.$
+		#endif
+	}
+}
+
+", provider => {
+				Assert.IsNotNull(provider.Find("WriteLine"));
+			});
+		}
+
+		[Test()]
+		public void TestCompletionInUndefinedPreprocessorIf()
+		{
+			CombinedProviderTest(
+				@"using System;
+public class FooBar
+{
+	public static void Main (string[] args)
+	{
+		#if UNDEFINED
+		$Console.$
+		#endif
+	}
+}
+
+", provider => {
+				Assert.IsNull(provider.Find("WriteLine"));
+			});
+		}
 
 	}
 }

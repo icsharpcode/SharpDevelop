@@ -1846,6 +1846,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				// FlagHasNoExtensionMethods is unused in LazyCecilTypeDefinition
 			}
 			
+			public override object Clone()
+			{
+				throw new NotSupportedException();
+			}
+			
 			public IType Resolve(ITypeResolveContext context)
 			{
 				if (context == null)

@@ -39,6 +39,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			base.FreezeInternal();
 		}
 		
+		public override object Clone()
+		{
+			var copy = (DefaultUnresolvedProperty)base.Clone();
+			if (parameters != null)
+				copy.parameters = new List<IUnresolvedParameter>(parameters);
+			return copy;
+		}
+		
 		public override void ApplyInterningProvider(IInterningProvider provider)
 		{
 			base.ApplyInterningProvider(provider);
