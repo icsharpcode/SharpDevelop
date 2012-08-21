@@ -50,8 +50,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				.First();
 		}
 		
-		public virtual int Count {
-			get { throw new NotImplementedException(); }
+		public int Count {
+			get { return GetProjectsInSolution().Count(); }
 		}
 	}
 }

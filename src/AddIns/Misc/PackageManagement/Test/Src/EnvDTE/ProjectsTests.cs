@@ -48,5 +48,25 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("MyProject2", project.Name);
 		}
+		
+		[Test]
+		public void Count_OneProject_ReturnsOne()
+		{
+			CreateSolutionWithSingleProject("MyProject");
+			
+			int count = projects.Count;
+			
+			Assert.AreEqual(1, count);
+		}
+		
+		[Test]
+		public void Count_TwoProjects_ReturnsTwo()
+		{
+			CreateSolutionWithTwoProjects("MyProject1", "MyProject2");
+			
+			int count = projects.Count;
+			
+			Assert.AreEqual(2, count);
+		}
 	}
 }
