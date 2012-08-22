@@ -1882,6 +1882,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			DefaultUnresolvedMethod m = new DefaultUnresolvedMethod(parentType, method.Name);
 			m.EntityType = methodType;
 			m.AccessorOwner = accessorOwner;
+			m.HasBody = method.HasBody;
 			if (method.HasGenericParameters) {
 				for (int i = 0; i < method.GenericParameters.Count; i++) {
 					if (method.GenericParameters[i].Position != i)

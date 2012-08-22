@@ -262,7 +262,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			
 			public void AddPart(IUnresolvedMethod method, ITypeResolveContext context)
 			{
-				if (method.IsPartialMethodImplementation) {
+				if (method.HasBody) {
 					// make the implementation the primary part
 					this.Parts.Insert(0, method);
 					this.Contexts.Insert (0, context);
@@ -297,7 +297,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				ITypeResolveContext contextForPart = parentContextForPart.WithCurrentTypeDefinition(this);
 				foreach (var member in part.Members) {
 					IUnresolvedMethod method = member as IUnresolvedMethod;
-					if (method != null && (method.IsPartialMethodDeclaration || method.IsPartialMethodImplementation)) {
+					if (method != null && method.IsPartial) {
 						// Merge partial method declaration and implementation
 						if (partialMethodInfos == null)
 							partialMethodInfos = new List<PartialMethodInfo>();

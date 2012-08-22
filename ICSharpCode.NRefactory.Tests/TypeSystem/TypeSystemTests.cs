@@ -72,6 +72,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.IsFalse(method.IsStatic);
 			Assert.AreEqual(0, method.Parameters.Count);
 			Assert.AreEqual(0, method.Attributes.Count);
+			Assert.IsTrue(method.HasBody);
 		}
 		
 		[Test]
@@ -318,6 +319,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(Accessibility.Public, p.Accessibility);
 			Assert.AreEqual(Accessibility.Public, p.Getter.Accessibility);
 			Assert.AreEqual(Accessibility.Private, p.Setter.Accessibility);
+			Assert.IsTrue(p.Getter.HasBody);
 		}
 		
 		[Test]
@@ -712,10 +714,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(true, p.Getter.IsOverridable);
 			Assert.AreEqual(false, p.Getter.IsOverride);
 			Assert.AreEqual(true, p.Getter.IsPublic);
+			Assert.AreEqual(false, p.Getter.HasBody);
 			Assert.AreEqual(true, p.Setter.IsAbstract);
 			Assert.AreEqual(true, p.Setter.IsOverridable);
 			Assert.AreEqual(false, p.Setter.IsOverride);
 			Assert.AreEqual(true, p.Setter.IsPublic);
+			Assert.AreEqual(false, p.Setter.HasBody);
 
 			type = GetTypeDefinition(typeof(IInterfaceWithIndexers));
 			p = type.Properties.Single(x => x.Parameters.Count == 2);

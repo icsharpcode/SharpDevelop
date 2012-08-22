@@ -445,12 +445,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				m.IsExtensionMethod = true;
 				currentTypeDefinition.HasExtensionMethods = true;
 			}
-			if (methodDeclaration.HasModifier(Modifiers.Partial)) {
-				if (methodDeclaration.Body.IsNull)
-					m.IsPartialMethodDeclaration = true;
-				else
-					m.IsPartialMethodImplementation = true;
-			}
+			m.IsPartial = methodDeclaration.HasModifier(Modifiers.Partial);
+			m.HasBody = !methodDeclaration.Body.IsNull;
 			
 			ConvertParameters(m.Parameters, methodDeclaration.Parameters);
 			if (!methodDeclaration.PrivateImplementationType.IsNull) {
@@ -560,6 +556,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			ConvertAttributes(m.ReturnTypeAttributes, operatorDeclaration.Attributes.Where(s => s.AttributeTarget == "return"));
 			
 			ApplyModifiers(m, operatorDeclaration.Modifiers);
+			m.HasBody = !operatorDeclaration.Body.IsNull;
 			
 			ConvertParameters(m.Parameters, operatorDeclaration.Parameters);
 			
@@ -589,6 +586,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			ConvertAttributes(ctor.Attributes, constructorDeclaration.Attributes);
 			ConvertParameters(ctor.Parameters, constructorDeclaration.Parameters);
 			AddXmlDocumentation(ctor, constructorDeclaration);
+			ctor.HasBody = !constructorDeclaration.Body.IsNull;
 			
 			if (isStatic)
 				ctor.IsStatic = true;
@@ -613,6 +611,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			dtor.Accessibility = Accessibility.Protected;
 			dtor.IsOverride = true;
 			dtor.ReturnType = KnownTypeReference.Void;
+			dtor.HasBody = !destructorDeclaration.Body.IsNull;
 			
 			ConvertAttributes(dtor.Attributes, destructorDeclaration.Attributes);
 			AddXmlDocumentation(dtor, destructorDeclaration);
@@ -641,8 +640,9 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				p.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(
 					p.EntityType, propertyDeclaration.PrivateImplementationType.ToTypeReference(), p.Name));
 			}
-			p.Getter = ConvertAccessor(propertyDeclaration.Getter, p, "get_");
-			p.Setter = ConvertAccessor(propertyDeclaration.Setter, p, "set_");
+			bool isExtern = propertyDeclaration.HasModifier(Modifiers.Extern);
+			p.Getter = ConvertAccessor(propertyDeclaration.Getter, p, "get_", isExtern);
+			p.Setter = ConvertAccessor(propertyDeclaration.Setter, p, "set_", isExtern);
 			currentTypeDefinition.Members.Add(p);
 			if (interningProvider != null) {
 				p.ApplyInterningProvider(interningProvider);
@@ -669,8 +669,9 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				p.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(
 					p.EntityType, indexerDeclaration.PrivateImplementationType.ToTypeReference(), p.Name, 0, GetParameterTypes(p.Parameters)));
 			}
-			p.Getter = ConvertAccessor(indexerDeclaration.Getter, p, "get_");
-			p.Setter = ConvertAccessor(indexerDeclaration.Setter, p, "set_");
+			bool isExtern = indexerDeclaration.HasModifier(Modifiers.Extern);
+			p.Getter = ConvertAccessor(indexerDeclaration.Getter, p, "get_", isExtern);
+			p.Setter = ConvertAccessor(indexerDeclaration.Setter, p, "set_", isExtern);
 			
 			currentTypeDefinition.Members.Add(p);
 			if (interningProvider != null) {
@@ -679,7 +680,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			return p;
 		}
 		
-		DefaultUnresolvedMethod ConvertAccessor(Accessor accessor, IUnresolvedMember p, string prefix)
+		DefaultUnresolvedMethod ConvertAccessor(Accessor accessor, IUnresolvedMember p, string prefix, bool memberIsExtern)
 		{
 			if (accessor.IsNull)
 				return null;
@@ -695,6 +696,11 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			a.IsVirtual = p.IsVirtual;
 			
 			a.Region = MakeRegion(accessor);
+			a.BodyRegion = MakeRegion(accessor.Body);
+			// An accessor has no body if all both are true:
+			//  a) there's no body in the code
+			//  b) the member is either abstract or extern
+			a.HasBody = !(accessor.Body.IsNull && (p.IsAbstract || memberIsExtern));
 			if (p.EntityType == EntityType.Indexer) {
 				foreach (var indexerParam in ((IUnresolvedProperty)p).Parameters)
 					a.Parameters.Add(indexerParam);
@@ -784,6 +790,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			a.IsStatic = ev.IsStatic;
 			a.IsSynthetic = ev.IsSynthetic;
 			a.IsVirtual = ev.IsVirtual;
+			a.HasBody = true;
 			a.ReturnType = KnownTypeReference.Void;
 			a.Parameters.Add(valueParameter);
 			return a;
@@ -806,8 +813,9 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					e.EntityType, eventDeclaration.PrivateImplementationType.ToTypeReference(), e.Name));
 			}
 			
-			e.AddAccessor = ConvertAccessor(eventDeclaration.AddAccessor, e, "add_");
-			e.RemoveAccessor = ConvertAccessor(eventDeclaration.RemoveAccessor, e, "remove_");
+			// custom events can't be extern; the non-custom event syntax must be used for extern events
+			e.AddAccessor = ConvertAccessor(eventDeclaration.AddAccessor, e, "add_", false);
+			e.RemoveAccessor = ConvertAccessor(eventDeclaration.RemoveAccessor, e, "remove_", false);
 			
 			currentTypeDefinition.Members.Add(e);
 			if (interningProvider != null) {
@@ -841,7 +849,6 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			m.IsShadowing = (modifiers & Modifiers.New) != 0;
 			m.IsStatic = (modifiers & Modifiers.Static) != 0;
 			m.IsVirtual = (modifiers & Modifiers.Virtual) != 0;
-			//m.IsPartial = (modifiers & Modifiers.Partial) != 0;
 		}
 		
 		static Accessibility? GetAccessibility(Modifiers modifiers)
