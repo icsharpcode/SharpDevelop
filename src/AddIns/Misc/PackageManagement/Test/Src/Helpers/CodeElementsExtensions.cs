@@ -83,5 +83,10 @@ namespace PackageManagement.Tests.Helpers
 		{
 			return codeElements.FirstOrDefault() as CodeImport;
 		}
+		
+		public static CodeClass2 LastCodeClass2OrDefault(this CodeElements codeElements)
+		{
+			return codeElements.LastOrDefault() as CodeClass2;
+		}
 	}
 }

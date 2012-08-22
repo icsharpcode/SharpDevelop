@@ -122,6 +122,8 @@
     <Compile Include="Src\EnvDTE\EditPoint.cs" />
     <Compile Include="Src\EnvDTE\FileCodeModel2.cs" />
     <Compile Include="Src\EnvDTE\FileCodeModelCodeElements.cs" />
+    <Compile Include="Src\EnvDTE\FileCodeModelCodeNamespace.cs" />
+    <Compile Include="Src\EnvDTE\FileCodeModelCodeNamespaceMembers.cs" />
     <Compile Include="Src\EnvDTE\ImplementedInterfacesOnClass.cs" />
     <Compile Include="Src\EnvDTE\IReturnTypeExtensions.cs" />
     <Compile Include="Src\EnvDTE\NamespaceName.cs" />

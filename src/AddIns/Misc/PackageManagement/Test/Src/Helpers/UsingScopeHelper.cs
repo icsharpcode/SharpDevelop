@@ -37,5 +37,10 @@ namespace PackageManagement.Tests.Helpers
 			usingHelper.AddNamespaceAlias(alias, namespaceName);
 			Usings.Add(usingHelper.Using);
 		}
+		
+		public void SetNamespaceName(string namespaceName)
+		{
+			UsingScope.Stub(u => u.NamespaceName).Return(namespaceName);
+		}
 	}
 }

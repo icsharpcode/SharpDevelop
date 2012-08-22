@@ -172,5 +172,13 @@ namespace PackageManagement.Tests.Helpers
 		{
 			Class.Stub(c => c.IsPartial).Return(true);
 		}
+		
+		public void AddNamespaceUsingScopeToClass(string namespaceName)
+		{
+			var usingScopeHelper = new UsingScopeHelper();
+			usingScopeHelper.SetNamespaceName(namespaceName);
+			
+			Class.Stub(c => c.UsingScope).Return(usingScopeHelper.UsingScope);
+		}
 	}
 }
