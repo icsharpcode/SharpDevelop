@@ -42,7 +42,7 @@ interface ITest
 }
 class TestClass : ITest
 {
-	void $Method ()
+	public void $Method ()
 	{
 	}
 }", @"
@@ -104,30 +104,5 @@ interface ITest2 : ITest
 }");
 		}
 
-		[Test]
-		public void TestModifier ()
-		{
-			Test<ConvertImplicitToExplicitImplementationAction> (@"
-interface ITest
-{
-	void Method ();
-}
-class TestClass : ITest
-{
-	public void $Method ()
-	{
-	}
-}", @"
-interface ITest
-{
-	void Method ();
-}
-class TestClass : ITest
-{
-	void ITest.Method ()
-	{
-	}
-}");
-		}
 	}
 }
