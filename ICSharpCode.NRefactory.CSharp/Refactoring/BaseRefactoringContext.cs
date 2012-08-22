@@ -138,6 +138,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 
 		/// <summary>
+		/// Creates a new reachability analysis object with a given statement.
+		/// </summary>
+		/// <param name="statement">
+		/// The statement to start the analysis.
+		/// </param>
+		/// <returns>
+		/// The reachability analysis object.
+		/// </returns>
+		public ReachabilityAnalysis CreateReachabilityAnalysis (Statement statement)
+		{
+			return ReachabilityAnalysis.Create (statement, resolver, CancellationToken);
+		}
+
+		/// <summary>
 		/// Parses a composite format string.
 		/// </summary>
 		/// <returns>
