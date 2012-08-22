@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		/// </param>
 		ICompletionData CreateLiteralCompletionData (string title, string description = null, string insertText = null);
 		
-		ICompletionData CreateNamespaceCompletionData (string name);
+		ICompletionData CreateNamespaceCompletionData (INamespace name);
 		
 		ICompletionData CreateVariableCompletionData (IVariable variable);
 

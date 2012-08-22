@@ -94,7 +94,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				SpaceBeforeDelegateDeclarationParentheses = true,
 				SpaceAfterMethodCallParameterComma = true,
 				SpaceAfterConstructorDeclarationParameterComma = true,
-				
+
 				SpaceBeforeNewParentheses = true,
 				SpacesWithinNewParentheses = false,
 				SpacesBetweenEmptyNewParentheses = false,
@@ -152,6 +152,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				PropertyFormatting = PropertyFormatting.AllowOneLine,
 				SpaceBeforeMethodDeclarationParameterComma = false,
 				SpaceAfterMethodDeclarationParameterComma = true,
+				SpaceAfterDelegateDeclarationParameterComma = true,
 				SpaceBeforeFieldDeclarationComma = false,
 				SpaceAfterFieldDeclarationComma = true,
 				SpaceBeforeLocalVariableDeclarationComma = false,
@@ -322,6 +323,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				PropertyFormatting = PropertyFormatting.AllowOneLine,
 				SpaceBeforeMethodDeclarationParameterComma = false,
 				SpaceAfterMethodDeclarationParameterComma = true,
+				SpaceAfterDelegateDeclarationParameterComma = true,
 				SpaceBeforeFieldDeclarationComma = false,
 				SpaceAfterFieldDeclarationComma = true,
 				SpaceBeforeLocalVariableDeclarationComma = false,

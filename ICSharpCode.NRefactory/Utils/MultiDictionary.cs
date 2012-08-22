@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.Utils
 			dict.Clear();
 		}
 		
-		#if NET45
+		#if NET_4_5
 		public IReadOnlyList<TValue> this[TKey key] {
 		#else
 		public IList<TValue> this[TKey key] {

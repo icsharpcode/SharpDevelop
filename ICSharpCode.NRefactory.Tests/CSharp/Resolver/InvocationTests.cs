@@ -635,5 +635,105 @@ class Test
 			Assert.AreEqual(OverloadResolutionErrors.MethodConstraintsNotSatisfied, rr.OverloadResolutionErrors);
 			Assert.IsTrue(rr.IsError);
 		}
+
+		[Test]
+		public void MethodCanBeInvokedWithNullableTypeArgument1() {
+			string program = @"
+public class C {
+	static T F<T>() {
+		return default(T);
+	}
+
+	void M() {
+		$F<int?>()$;
+	}
+}";
+
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+		}
+
+		[Test]
+		public void MethodCanBeInvokedWithNullableTypeArgument2() {
+			string program = @"
+public class C {
+	static T F<T>(T t) {
+		return default(T);
+	}
+
+	void M() {
+		$F((int?)null)$;
+	}
+}";
+
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+		}
+
+		[Test]
+		public void MethodCanBeInvokedWithNullableTypeArgument3() {
+			string program = @"
+public class C {
+	static T F<T, U>() where T : U {
+		return default(T);
+	}
+
+	void M() {
+		$F<int?, object>()$;
+	}
+}";
+
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+		}
+		
+		[Test]
+		public void MethodWithStructContraintCanBeInvokedWithValueType() {
+			string program = @"
+public class C {
+	static T F<T>() where T : struct {
+		return default(T);
+	}
+
+	void M() {
+		$F<int>()$;
+	}
+}";
+
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+		}
+		
+		[Test]
+		public void MethodWithStructContraintCannotBeInvokedWithNullableValueType() {
+			string program = @"
+public class C {
+	static T F<T>() where T : struct {
+		return default(T);
+	}
+
+	void M() {
+		$F<int?>()$;
+	}
+}";
+
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsTrue(rr.IsError);
+			Assert.AreEqual(OverloadResolutionErrors.MethodConstraintsNotSatisfied, rr.OverloadResolutionErrors);
+		}
+		
+		[Test]
+		public void CanConstructGenericTypeWithNullableTypeArgument() {
+			string program = @"
+public class X<T> {}
+public class C {
+	void M() {
+		$new X<int?>()$;
+	}
+}";
+
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+		}
 	}
 }

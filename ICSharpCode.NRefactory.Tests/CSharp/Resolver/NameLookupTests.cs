@@ -989,5 +989,31 @@ class MainClass : Test
 			
 			Assert.AreEqual("System.String", result.Type.FullName);
 		}
+
+		[Test]
+		public void DuplicateUsingDirective() {
+			string program = @"
+using foo;
+using foo;
+namespace bar {
+	using foo;
+	using foo;
+
+    public class Bar {
+        public void M() {
+            new $Foo$();
+        }
+    }
+}
+namespace foo {
+    public class Foo {
+    }
+}";
+
+			var result = Resolve<TypeResolveResult>(program);
+			Assert.IsFalse(result.IsError);
+			Assert.AreEqual("foo.Foo", result.Type.FullName);
+
+		}
 	}
 }

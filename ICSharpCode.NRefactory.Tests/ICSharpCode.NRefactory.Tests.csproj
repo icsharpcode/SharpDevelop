@@ -17,11 +17,11 @@
     <OutputPath>..\bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugType>PdbOnly</DebugType>
@@ -44,19 +44,20 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Debug' ">
-    <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE;NET45</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;NET_4_5</DefineConstants>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Release' ">
     <DebugType>PdbOnly</DebugType>
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <DefineConstants>TRACE;NET45</DefineConstants>
+    <DefineConstants>TRACE;NET_4_5</DefineConstants>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -324,9 +325,39 @@
     <Compile Include="CSharp\CodeActions\ImplementInterfaceTests.cs" />
     <Compile Include="CSharp\CodeActions\ImplementInterfaceExplicitTests.cs" />
     <Compile Include="CSharp\CodeActions\ImplementAbstractMembersTest.cs" />
+    <Compile Include="CSharp\CodeActions\RemoveRedundantCatchTypeTests.cs" />
+    <Compile Include="CSharp\CodeActions\AddCatchTypeTests.cs" />
+    <Compile Include="CSharp\CodeIssues\IncorrectExceptionParameterOrderingTests.cs" />
+    <Compile Include="CSharp\CodeIssues\CallToVirtualFunctionFromConstructorTests.cs" />
+    <Compile Include="CSharp\CodeActions\StaticMethodInvocationToExtensionMethodInvocationTests.cs" />
+    <Compile Include="CSharp\CodeActions\ExtensionMethodInvocationToStaticMethodInvocationTests.cs" />
+    <Compile Include="CSharp\CodeActions\IterateViaForeachTests.cs" />
     <Compile Include="CSharp\CodeActions\ExtractFieldTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ValueParameterUnusedTests.cs" />
+    <Compile Include="CSharp\Parser\Statements\InvalidStatementsTests.cs" />
+    <Compile Include="CSharp\Refactoring\NamingHelperTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertToInitializer\ConvertToInitializerTests.cs" />
+    <Compile Include="CSharp\CodeActions\MoveToOuterScopeTests.cs" />
+    <Compile Include="CSharp\CodeIssues\VariableDeclaredInWideScopeTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\ParameterCanBeDemotedTests.cs" />
     <Compile Include="CSharp\CodeCompletion\DocumentationContextTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ReferenceToStaticMemberViaDerivedTypeTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\IsTypeCriterionTests.cs" />
+    <Compile Include="Utils\CompositeFormatStringParser\CompositeFormatStringParserTests.cs" />
+    <Compile Include="CSharp\CodeIssues\OptionalParameterCouldBeSkippedTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantCatchTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantToStringTests.cs" />
+    <Compile Include="CSharp\CodeIssues\CallToObjectEqualsViaBaseTests.cs" />
+    <Compile Include="CSharp\CodeIssues\IncorrectCallToGetHashCodeTests.cs" />
+    <Compile Include="CSharp\CodeIssues\FormatStringIssues\FormatStringTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertToInitializer\ConvertInitializerToExplicitIntializationsTests.cs" />
     <Compile Include="CSharp\CodeCompletion\BrowsableAttributeTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ExceptionRethrowTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ThreadStaticOnInstanceFieldTests.cs" />
+    <Compile Include="CSharp\CodeIssues\StaticFieldInGenericTypeTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertAnonymousDelegateToLambdaTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertLamdaToAnonymousDelegateTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\SupportsIndexingCriterionTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateBackingStoreTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -350,7 +381,17 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="CSharp\" />
+    <Folder Include="CSharp\Parser\" />
+    <Folder Include="CSharp\CodeIssues\" />
+    <Folder Include="CSharp\CodeActions\" />
+    <Folder Include="CSharp\Parser\Bugs\" />
+    <Folder Include="CSharp\CodeActions\ConvertToInitializer\" />
+    <Folder Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\" />
+    <Folder Include="Utils\CompositeFormatStringParser\" />
+    <Folder Include="CSharp\CodeIssues\FormatStringIssues\" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>

@@ -186,8 +186,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return true;
 			if (ImplicitReferenceConversion(fromType, toType, 0))
 				return true;
-			if (IsBoxingConversion(fromType, toType) && !NullableType.IsNullable(fromType))
-				return true;
+			if (NullableType.IsNullable(fromType)) {
+				// An 'object' constraint still allows nullable value types
+				// (object constraints don't exist in C#, but are inserted by DefaultResolvedTypeParameter.DirectBaseTypes)
+				if (toType.IsKnownType(KnownTypeCode.Object))
+					return true;
+			} else {
+				if (IsBoxingConversion(fromType, toType))
+					return true;
+			}
 			if (ImplicitTypeParameterConversion(fromType, toType))
 				return true;
 			return false;
