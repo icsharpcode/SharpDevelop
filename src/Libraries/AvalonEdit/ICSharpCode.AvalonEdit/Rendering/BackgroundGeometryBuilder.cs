@@ -61,19 +61,29 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				throw new ArgumentNullException("textView");
 			Size pixelSize = PixelSnapHelpers.GetPixelSize(textView);
 			foreach (Rect r in GetRectsForSegment(textView, segment, ExtendToFullWidthAtLineEnd)) {
-				if (AlignToWholePixels) {
+				AddRectangle(pixelSize, r);
+			}
+		}
+		
+		public void AddRectangle(TextView textView, Rect rectangle)
+		{
+			AddRectangle(PixelSnapHelpers.GetPixelSize(textView), rectangle);
+		}
+
+		void AddRectangle(Size pixelSize, Rect r)
+		{
+			if (AlignToWholePixels) {
 					AddRectangle(PixelSnapHelpers.Round(r.Left, pixelSize.Width),
 					             PixelSnapHelpers.Round(r.Top + 1, pixelSize.Height),
 					             PixelSnapHelpers.Round(r.Right, pixelSize.Width),
 					             PixelSnapHelpers.Round(r.Bottom + 1, pixelSize.Height));
-				} else if (AlignToMiddleOfPixels) {
+			} else if (AlignToMiddleOfPixels) {
 					AddRectangle(PixelSnapHelpers.PixelAlign(r.Left, pixelSize.Width),
 					             PixelSnapHelpers.PixelAlign(r.Top + 1, pixelSize.Height),
 					             PixelSnapHelpers.PixelAlign(r.Right, pixelSize.Width),
 					             PixelSnapHelpers.PixelAlign(r.Bottom + 1, pixelSize.Height));
-				} else {
-					AddRectangle(r.Left, r.Top + 1, r.Right, r.Bottom + 1);
-				}
+			} else {
+				AddRectangle(r.Left, r.Top + 1, r.Right, r.Bottom + 1);
 			}
 		}
 		
@@ -92,7 +102,6 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		static IEnumerable<Rect> GetRectsForSegmentImpl(TextView textView, ISegment segment, bool extendToFullWidthAtLineEnd)
 		{
-			Vector scrollOffset = textView.ScrollOffset;
 			int segmentStart = segment.Offset;
 			int segmentEnd = segment.Offset + segment.Length;
 			
@@ -131,65 +140,81 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				else
 					segmentEndVC = vl.ValidateVisualColumn(end, extendToFullWidthAtLineEnd);
 				
-				TextLine lastTextLine = vl.TextLines.Last();
+				foreach (var rect in ProcessTextLines(textView, vl, segmentStartVC, segmentEndVC))
+					yield return rect;
+			}
+		}
+		
+		public static IEnumerable<Rect> GetRectsFromVisualSegment(TextView textView, VisualLine line, int startVC, int endVC)
+		{
+			if (textView == null)
+				throw new ArgumentNullException("textView");
+			if (line == null)
+				throw new ArgumentNullException("line");
+			return ProcessTextLines(textView, line, startVC, endVC);
+		}
+
+		static IEnumerable<Rect> ProcessTextLines(TextView textView, VisualLine visualLine, int segmentStartVC, int segmentEndVC)
+		{
+			TextLine lastTextLine = visualLine.TextLines.Last();
+			Vector scrollOffset = textView.ScrollOffset;
+			
+			for (int i = 0; i < visualLine.TextLines.Count; i++) {
+				TextLine line = visualLine.TextLines[i];
+				double y = visualLine.GetTextLineVisualYPosition(line, VisualYPosition.LineTop);
+				int visualStartCol = visualLine.GetTextLineVisualStartColumn(line);
+				int visualEndCol = visualStartCol + line.Length;
+				if (line != lastTextLine)
+					visualEndCol -= line.TrailingWhitespaceLength;
 				
-				for (int i = 0; i < vl.TextLines.Count; i++) {
-					TextLine line = vl.TextLines[i];
-					double y = vl.GetTextLineVisualYPosition(line, VisualYPosition.LineTop);
-					int visualStartCol = vl.GetTextLineVisualStartColumn(line);
-					int visualEndCol = visualStartCol + line.Length;
-					if (line != lastTextLine)
-						visualEndCol -= line.TrailingWhitespaceLength;
-					
-					if (segmentEndVC < visualStartCol)
-						break;
-					if (lastTextLine != line && segmentStartVC > visualEndCol)
+				if (segmentEndVC < visualStartCol)
+					break;
+				if (lastTextLine != line && segmentStartVC > visualEndCol)
+					continue;
+				int segmentStartVCInLine = Math.Max(segmentStartVC, visualStartCol);
+				int segmentEndVCInLine = Math.Min(segmentEndVC, visualEndCol);
+				y -= scrollOffset.Y;
+				if (segmentStartVCInLine == segmentEndVCInLine) {
+					// GetTextBounds crashes for length=0, so we'll handle this case with GetDistanceFromCharacterHit
+					// We need to return a rectangle to ensure empty lines are still visible
+					double pos = visualLine.GetTextLineVisualXPosition(line, segmentStartVCInLine);
+					pos -= scrollOffset.X;
+					// The following special cases are necessary to get rid of empty rectangles at the end of a TextLine if "Show Spaces" is active.
+					// If not excluded once, the same rectangle is calculated (and added) twice (since the offset could be mapped to two visual positions; end/start of line), if there is no trailing whitespace.
+					// Skip this TextLine segment, if it is at the end of this line and this line is not the last line of the VisualLine and the selection continues and there is no trailing whitespace.
+					if (segmentEndVCInLine == visualEndCol && i < visualLine.TextLines.Count - 1 && segmentEndVC > segmentEndVCInLine && line.TrailingWhitespaceLength == 0)
 						continue;
-					int segmentStartVCInLine = Math.Max(segmentStartVC, visualStartCol);
-					int segmentEndVCInLine = Math.Min(segmentEndVC, visualEndCol);
-					y -= scrollOffset.Y;
-					if (segmentStartVCInLine == segmentEndVCInLine) {
-						// GetTextBounds crashes for length=0, so we'll handle this case with GetDistanceFromCharacterHit
-						// We need to return a rectangle to ensure empty lines are still visible
-						double pos = vl.GetTextLineVisualXPosition(line, segmentStartVCInLine);
-						pos -= scrollOffset.X;
-						// The following special cases are necessary to get rid of empty rectangles at the end of a TextLine if "Show Spaces" is active.
-						// If not excluded once, the same rectangle is calculated (and added) twice (since the offset could be mapped to two visual positions; end/start of line), if there is no trailing whitespace.
-						// Skip this TextLine segment, if it is at the end of this line and this line is not the last line of the VisualLine and the selection continues and there is no trailing whitespace.
-						if (segmentEndVCInLine == visualEndCol && i < vl.TextLines.Count - 1 && segmentEndVC > segmentEndVCInLine && line.TrailingWhitespaceLength == 0)
-							continue;
-						if (segmentStartVCInLine == visualStartCol && i > 0 && segmentStartVC < segmentStartVCInLine && vl.TextLines[i - 1].TrailingWhitespaceLength == 0)
-							continue;
-						yield return new Rect(pos, y, 1, line.Height);
-					} else {
-						Rect lastRect = Rect.Empty;
-						if (segmentStartVCInLine <= visualEndCol) {
-							foreach (TextBounds b in line.GetTextBounds(segmentStartVCInLine, segmentEndVCInLine - segmentStartVCInLine)) {
-								double left = b.Rectangle.Left - scrollOffset.X;
-								double right = b.Rectangle.Right - scrollOffset.X;
-								if (!lastRect.IsEmpty)
-									yield return lastRect;
-								// left>right is possible in RTL languages
-								lastRect = new Rect(Math.Min(left, right), y, Math.Abs(right - left), line.Height);
-							}
+					if (segmentStartVCInLine == visualStartCol && i > 0 && segmentStartVC < segmentStartVCInLine && visualLine.TextLines[i - 1].TrailingWhitespaceLength == 0)
+						continue;
+					yield return new Rect(pos, y, 1, line.Height);
+				} else {
+					Rect lastRect = Rect.Empty;
+					if (segmentStartVCInLine <= visualEndCol) {
+						foreach (TextBounds b in line.GetTextBounds(segmentStartVCInLine, segmentEndVCInLine - segmentStartVCInLine)) {
+							double left = b.Rectangle.Left - scrollOffset.X;
+							double right = b.Rectangle.Right - scrollOffset.X;
+							if (!lastRect.IsEmpty)
+								yield return lastRect;
+							// left>right is possible in RTL languages
+							lastRect = new Rect(Math.Min(left, right), y, Math.Abs(right - left), line.Height);
 						}
-						if (segmentEndVC >= vl.VisualLengthWithEndOfLineMarker) {
-							double left = (segmentStartVC > vl.VisualLengthWithEndOfLineMarker ? vl.GetTextLineVisualXPosition(lastTextLine, segmentStartVC) : line.Width) - scrollOffset.X;
-							double right = ((segmentEndVC == int.MaxValue || line != lastTextLine) ? Math.Max(((IScrollInfo)textView).ExtentWidth, ((IScrollInfo)textView).ViewportWidth) : vl.GetTextLineVisualXPosition(lastTextLine, segmentEndVC)) - scrollOffset.X;
-							Rect extendSelection = new Rect(Math.Min(left, right), y, Math.Abs(right - left), line.Height);
-							if (!lastRect.IsEmpty) {
-								if (extendSelection.IntersectsWith(lastRect)) {
-									lastRect.Union(extendSelection);
-									yield return lastRect;
-								} else {
-									yield return lastRect;
-									yield return extendSelection;
-								}
-							} else
-								yield return extendSelection;
-						} else
-							yield return lastRect;
 					}
+					if (segmentEndVC >= visualLine.VisualLengthWithEndOfLineMarker) {
+						double left = (segmentStartVC > visualLine.VisualLengthWithEndOfLineMarker ? visualLine.GetTextLineVisualXPosition(lastTextLine, segmentStartVC) : line.Width) - scrollOffset.X;
+						double right = ((segmentEndVC == int.MaxValue || line != lastTextLine) ? Math.Max(((IScrollInfo)textView).ExtentWidth, ((IScrollInfo)textView).ViewportWidth) : visualLine.GetTextLineVisualXPosition(lastTextLine, segmentEndVC)) - scrollOffset.X;
+						Rect extendSelection = new Rect(Math.Min(left, right), y, Math.Abs(right - left), line.Height);
+						if (!lastRect.IsEmpty) {
+							if (extendSelection.IntersectsWith(lastRect)) {
+								lastRect.Union(extendSelection);
+								yield return lastRect;
+							} else {
+								yield return lastRect;
+								yield return extendSelection;
+							}
+						} else
+							yield return extendSelection;
+					} else
+						yield return lastRect;
 				}
 			}
 		}

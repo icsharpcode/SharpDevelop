@@ -171,7 +171,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			if (color.Background != null) {
 				Brush b = color.Background.GetBrush(CurrentContext);
 				if (b != null)
-					element.TextRunProperties.SetBackgroundBrush(b);
+					element.BackgroundBrush = b;
 			}
 			if (color.FontStyle != null || color.FontWeight != null) {
 				Typeface tf = element.TextRunProperties.Typeface;

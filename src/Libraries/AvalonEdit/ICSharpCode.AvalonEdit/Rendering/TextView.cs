@@ -16,8 +16,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Rendering
@@ -1198,6 +1198,42 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		protected override void OnRender(DrawingContext drawingContext)
 		{
 			RenderBackground(drawingContext, KnownLayer.Background);
+			foreach (var line in visibleVisualLines) {
+				Brush currentBrush = null;
+				int startVC = 0;
+				int length = 0;
+				foreach (var element in line.Elements) {
+					if (currentBrush == null || !currentBrush.Equals(element.BackgroundBrush)) {
+						if (currentBrush != null) {
+							BackgroundGeometryBuilder builder = new BackgroundGeometryBuilder();
+							builder.AlignToWholePixels = true;
+							builder.CornerRadius = 3;
+							foreach (var rect in BackgroundGeometryBuilder.GetRectsFromVisualSegment(this, line, startVC, startVC + length))
+								builder.AddRectangle(this, rect);
+							Geometry geometry = builder.CreateGeometry();
+							if (geometry != null) {
+								drawingContext.DrawGeometry(currentBrush, null, geometry);
+							}
+						}
+						startVC = element.VisualColumn;
+						length = element.DocumentLength;
+						currentBrush = element.BackgroundBrush;
+					} else {
+						length += element.VisualLength;
+					}
+				}
+				if (currentBrush != null) {
+					BackgroundGeometryBuilder builder = new BackgroundGeometryBuilder();
+					builder.AlignToWholePixels = true;
+					builder.CornerRadius = 3;
+					foreach (var rect in BackgroundGeometryBuilder.GetRectsFromVisualSegment(this, line, startVC, startVC + length))
+						builder.AddRectangle(this, rect);
+					Geometry geometry = builder.CreateGeometry();
+					if (geometry != null) {
+						drawingContext.DrawGeometry(currentBrush, null, geometry);
+					}
+				}
+			}
 		}
 		
 		internal void RenderBackground(DrawingContext drawingContext, KnownLayer layer)
