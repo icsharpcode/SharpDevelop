@@ -498,6 +498,7 @@
     <Compile Include="Refactoring\CodeActions\ConvertLambdaToAnonymousDelegateAction.cs" />
     <Compile Include="Refactoring\CodeIssues\ParameterCanBeDemotedIssue\IsArrayTypeCriterion.cs" />
     <Compile Include="Refactoring\CodeIssues\ParameterCanBeDemotedIssue\SupportsIndexingCriterion.cs" />
+    <Compile Include="Refactoring\CodeIssues\RedundantWhereWithPredicateIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
