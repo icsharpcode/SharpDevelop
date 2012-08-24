@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				this.context = context;
 			}
 
-			static IList<Type> moveTargetBlacklist = new List<Type>() {
+			static readonly IList<Type> moveTargetBlacklist = new List<Type> {
 				typeof(WhileStatement),
 				typeof(ForeachStatement),
 				typeof(ForStatement),
@@ -67,15 +67,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				base.VisitVariableDeclarationStatement(variableDeclarationStatement);
 
-				if (!(variableDeclarationStatement.Parent is BlockStatement))
+				var rootNode = variableDeclarationStatement.Parent as BlockStatement;
+				if (rootNode == null)
 					// We are somewhere weird, like a the ResourceAquisition of a using statement
 					return;
 
+				// TODO: Handle declarations with more than one variable?
 				if (variableDeclarationStatement.Variables.Count > 1)
 					return;
 
-				// Start at the parent node. Presumably this is a BlockStatement
-				var rootNode = variableDeclarationStatement.Parent;
 				var variableInitializer = variableDeclarationStatement.Variables.First();
 				var identifiers = GetIdentifiers(rootNode.Descendants, variableInitializer.Name).ToList();
 
@@ -86,34 +86,55 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				AstNode deepestCommonAncestor = GetDeepestCommonAncestor(rootNode, identifiers);
 				var path = GetPath(rootNode, deepestCommonAncestor);
 
+				// The node that will follow the moved declaration statement
+				AstNode anchorNode = GetInitialAnchorNode (rootNode, identifiers, path);
+
 				// Restrict path to only those where the initializer has not changed
-				var firstInitializerChange = GetFirstInitializerChange(variableDeclarationStatement, path, variableInitializer.Initializer);
-				if (firstInitializerChange != null) {
-					path = GetPath(rootNode, firstInitializerChange);
+				var pathToCheck = path.Skip(1).ToList();
+				var firstInitializerChangeNode = GetFirstInitializerChange(variableDeclarationStatement, pathToCheck, variableInitializer.Initializer);
+				if (firstInitializerChangeNode != null) {
+					// The initializer and usage nodes may not be in the same path, so merge them
+					// instead of just making a path to firstInitializerChange
+					var pathToChange = GetPath(rootNode, firstInitializerChangeNode);
+					var deepestCommonIndex = GetLowestCommonAncestorIndex(path, pathToChange);
+					anchorNode = pathToChange [deepestCommonIndex + 1];
+					path = pathToChange.Take(deepestCommonIndex).ToList();
 				}
 
-				// Restict to locations outside of blacklisted node types
-				var firstBlackListedNode = (from node in path
-				                            where moveTargetBlacklist.Contains(node.GetType())
-				                            select node).FirstOrDefault();
+				// Restrict to locations outside of blacklisted node types
+				var firstBlackListedNode = path.Where(node => moveTargetBlacklist.Contains(node.GetType())).FirstOrDefault();
 				if (firstBlackListedNode != null) {
-					path = GetPath(rootNode, firstBlackListedNode);
+					path = GetPath(rootNode, firstBlackListedNode.Parent);
+					anchorNode = firstBlackListedNode;
 				}
 
-				// Get the most nested possible target for the move
-				Statement mostNestedFollowingStatement = null;
-				for (int i = path.Count - 1; i >= 0; i--) {
-					var statement = path[i] as Statement;
-					if (statement != null && (IsScopeContainer(statement.Parent) || IsScopeContainer(statement))) {
-						mostNestedFollowingStatement = statement;
-						break;
-					}
-				}
+				// Get the parent statement
+				while (anchorNode != null && !(anchorNode is Statement))
+					anchorNode = anchorNode.Parent;
 
-				if (mostNestedFollowingStatement != null && mostNestedFollowingStatement != rootNode && mostNestedFollowingStatement.Parent != rootNode) {
+				if (anchorNode != null && anchorNode != rootNode && anchorNode.Parent != rootNode) {
 					AddIssue(variableDeclarationStatement, context.TranslateString("Variable could be moved to a nested scope"),
-					         GetActions(variableDeclarationStatement, mostNestedFollowingStatement));
+					         GetActions(variableDeclarationStatement, (Statement)anchorNode));
 				}
+			}
+
+			AstNode GetInitialAnchorNode (BlockStatement rootNode, List<IdentifierExpression> identifiers, IList<AstNode> path)
+			{
+				if (identifiers.Count > 1) {
+					// Assume the first identifier is the first in the execution flow
+					// firstPath will always be longer than path since path is the
+					// combination of a least two (different) paths.
+					var firstPath = GetPath(rootNode, identifiers [0]);
+					if (firstPath [path.Count].Role == IfElseStatement.TrueRole) {
+						// IfElseStatement has a slightly weird structure; Don't
+						// consider the true role eligible for anchor node in this case
+						return firstPath [path.Count - 1];
+					}
+					return firstPath [path.Count];
+				}
+				// We only have one path, and a statement in itself cannot be an identifier
+				// so we're safe
+				return path [path.Count - 1];
 			}
 
 			static IEnumerable<IdentifierExpression> GetIdentifiers(IEnumerable<AstNode> candidates, string name = null)
@@ -158,7 +179,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				
 				if (expression is InvocationExpression || expression is ObjectCreateExpression) {
 					return node => {
-						if (node is InvocationExpression || expression is ObjectCreateExpression)
+						if (node is InvocationExpression || node is ObjectCreateExpression)
 							// We don't know what these might do, so assume it will change the initializer
 							return true;
 						var binaryOperator = node as BinaryOperatorExpression;
@@ -273,7 +294,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return previousPath [lowestIndex];
 			}
 			
-			int GetLowestCommonAncestorIndex(IList<AstNode> path1, IList<AstNode> path2, int maxIndex)
+			int GetLowestCommonAncestorIndex(IList<AstNode> path1, IList<AstNode> path2, int maxIndex = int.MaxValue)
 			{
 				var max = Math.Min(Math.Min(path1.Count, path2.Count), maxIndex);
 				for (int i = 0; i <= max; i++) {
