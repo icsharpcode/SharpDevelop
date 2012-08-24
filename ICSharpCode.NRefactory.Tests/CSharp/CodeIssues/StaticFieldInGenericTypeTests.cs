@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 	[TestFixture]
 	public class StaticFieldInGenericTypeTests : InspectionActionTestBase
 	{
-
+		
 		[Test]
 		public void GenericClass()
 		{
@@ -42,6 +42,48 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 class Foo<T>
 {
 	static string Data;
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new StaticFieldInGenericTypeIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+		}
+		
+		[Test]
+		public void GenericClassWithGenericField()
+		{
+			var input = @"
+class Foo<T>
+{
+	static System.Collections.Generic.IList<T> Cache;
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new StaticFieldInGenericTypeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void GenericClassWithMultipleGenericFields()
+		{
+			var input = @"
+class Foo<T1, T2>
+{
+	static System.Collections.Generic.IList<T1> Cache;
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new StaticFieldInGenericTypeIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+		}
+
+		[Test]
+		public void NestedGenericClassWithGenericField()
+		{
+			var input = @"
+class Foo<T1>
+{
+	class Bar<T2>
+	{
+		static System.Collections.Generic.IList<T1> Cache;
+	}
 }";
 			TestRefactoringContext context;
 			var issues = GetIssues(new StaticFieldInGenericTypeIssue(), input, out context);
