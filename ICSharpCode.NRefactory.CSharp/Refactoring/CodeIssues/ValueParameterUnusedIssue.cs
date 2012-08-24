@@ -47,6 +47,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			readonly BaseRefactoringContext context;
 			
+			readonly FindReferences findRef = new FindReferences();
+			
 			public GatherVisitor(BaseRefactoringContext context, ValueParameterUnusedIssue inspector) : base (context)
 			{
 				this.context = context;
@@ -70,27 +72,36 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				FindIssuesInNode(removeAccessor, removeAccessor.Body, "remove accessor");
 			}
 
-			void FindIssuesInNode(AstNode anchor, AstNode node, string accessorName = "setter")
+			void FindIssuesInNode(AstNode anchor, BlockStatement body, string accessorName = "setter")
 			{
-				if (node == null || node.IsNull)
+				if (!IsEligible(body))
 					return;
-				var localResolveResult = context.GetResolverStateBefore(node)
+
+				var localResolveResult = context.GetResolverStateBefore(body)
 					.LookupSimpleNameOrTypeName("value", new List<IType>(), NameLookupMode.Expression) as LocalResolveResult; 
 				if (localResolveResult == null)
 					return;
 
 				var variable = localResolveResult.Variable;
 				bool referenceFound = false;
-				var findRef = new FindReferences();
 				var syntaxTree = (SyntaxTree)context.RootNode;
 				findRef.FindLocalReferences(variable, context.UnresolvedFile, syntaxTree, context.Compilation, (n, entity) => {
-					if (n.StartLocation >= node.StartLocation && n.EndLocation <= node.EndLocation) {
+					if (n.StartLocation >= body.StartLocation && n.EndLocation <= body.EndLocation) {
 						referenceFound = true;
 					}
 				}, CancellationToken.None);
 
 				if(!referenceFound)
 					AddIssue(anchor, context.TranslateString("The " + accessorName + " does not use the 'value' parameter"));
+			}
+
+			static bool IsEligible(BlockStatement body)
+			{
+				if (body == null || body.IsNull)
+					return false;
+				if (body.Statements.FirstOrNullObject() is ThrowStatement)
+					return false;
+				return true;
 			}
 		}
 	}
