@@ -266,7 +266,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			IEnumerable<CodeAction> GetActions(Statement oldStatement, Statement followingStatement)
 			{
 				yield return new CodeAction(context.TranslateString("Move to nested scope"), script => {
-					if (!(followingStatement.Parent is BlockStatement)) {
+					var parent = followingStatement.Parent;
+					if (parent is SwitchSection || parent is BlockStatement) {
+						script.InsertBefore(followingStatement, oldStatement.Clone());
+					} else {
 						var newBlockStatement = new BlockStatement {
 							Statements = {
 								oldStatement.Clone(),
@@ -274,9 +277,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							}
 						};
 						script.Replace(followingStatement, newBlockStatement);
-						script.FormatText(followingStatement.Parent);
-					} else {
-						script.InsertBefore(followingStatement, oldStatement.Clone());
+						script.FormatText(parent);
 					}
 					script.Remove(oldStatement);
 				});
