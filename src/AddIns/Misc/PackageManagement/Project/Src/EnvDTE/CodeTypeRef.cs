@@ -46,7 +46,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual vsCMTypeRef TypeKind {
-			get { throw new NotImplementedException(); }
+			get { return ReturnType.GetTypeKind(); }
 		}
 	}
 }
