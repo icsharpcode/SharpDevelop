@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				}
 				var memberExpression = invocationExpression.Target as MemberReferenceExpression;
-				if (memberExpression == null || !(memberExpression.Target is BaseReferenceExpression)) {
+				if (memberExpression == null || memberExpression.MemberName != "Equals" || !(memberExpression.Target is BaseReferenceExpression)) {
 					return;
 				}
 				var resolveResult = ctx.Resolve(invocationExpression) as InvocationResolveResult;

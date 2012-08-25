@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				base.VisitInvocationExpression(invocationExpression);
 
 				var resolveResult = ctx.Resolve(invocationExpression) as InvocationResolveResult;
-				if (resolveResult == null || !(resolveResult.TargetResult is ThisResolveResult) ||
+				if (resolveResult == null || !(resolveResult.TargetResult is ThisResolveResult) || resolveResult.Member.Name != "GetHashCode" ||
 				    !resolveResult.Member.DeclaringTypeDefinition.IsKnownType(KnownTypeCode.Object)) {
 					return;
 				}

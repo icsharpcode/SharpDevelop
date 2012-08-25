@@ -88,7 +88,7 @@ class Bar : IFoo
 			var issues = GetIssues(new IncorrectCallToObjectGetHashCodeIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
-
+		
 		[Test]
 		public void DoesNotCheckOutsideOverriddenGetHashCode()
 		{
@@ -98,6 +98,23 @@ class Foo
 	public void Bar()
 	{
 		return base.GetHashCode();
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new IncorrectCallToObjectGetHashCodeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void DoesNotWarnAboutCallsToOtherMethods()
+		{
+			var input = @"
+class Foo
+{
+	public override int GetHashCode()
+	{
+		var type = GetType();
+		return 1;
 	}
 }";
 			TestRefactoringContext context;
