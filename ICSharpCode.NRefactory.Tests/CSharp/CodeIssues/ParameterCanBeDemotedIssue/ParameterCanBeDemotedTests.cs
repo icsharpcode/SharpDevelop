@@ -650,6 +650,22 @@ class TestClass
 		}
 		
 		[Test]
+		public void LimitsParamsParametersToArrays()
+		{
+			var input = @"
+class TestClass
+{
+	void Write(params string[] s)
+	{
+		System.Console.WriteLine (s);
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(false), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
 		public void IgnoresImplicitInterfaceImplementations()
 		{
 			var input = @"
