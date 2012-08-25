@@ -73,6 +73,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		const int GCS_COMPSTR = 0x0008;
 		
 		public const int WM_IME_COMPOSITION = 0x10F;
+		public const int WM_IME_SETCONTEXT = 0x281;
 		public const int WM_INPUTLANGCHANGE = 0x51;
 		
 		[DllImport("imm32.dll")]
@@ -123,13 +124,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			if (textArea == null)
 				throw new ArgumentNullException("textArea");
-			Rect textViewBounds = textArea.TextView.GetBounds();
+			Rect textViewBounds = textArea.TextView.GetBounds(source);
 			Rect characterBounds = textArea.TextView.GetCharacterBounds(textArea.Caret.Position, source);
-			if (source != null) {
-				Matrix transformToDevice = source.CompositionTarget.TransformToDevice;
-				textViewBounds.Transform(transformToDevice);
-				characterBounds.Transform(transformToDevice);
-			}
 			CompositionForm form = new CompositionForm();
 			form.dwStyle = 0x0020;
 			form.ptCurrentPos.x = (int)Math.Max(characterBounds.Left, textViewBounds.Left);
@@ -150,10 +146,16 @@ namespace ICSharpCode.AvalonEdit.Editing
 			return false;
 		}
 		
-		static Rect GetBounds(this TextView textView)
+		static Rect GetBounds(this TextView textView, HwndSource source)
 		{
-			Point location = textView.TranslatePoint(new Point(0,0), textView);
-			return new Rect(location, new Size(textView.ActualWidth, textView.ActualHeight));
+			// this may happen during layout changes in AvalonDock, so we just return an empty rectangle
+			// in those cases. It should be refreshed immediately.
+			if (!source.RootVisual.IsAncestorOf(textView))
+				return EMPTY_RECT;
+			Rect displayRect = new Rect(0, 0, textView.ActualWidth, textView.ActualHeight);
+			return textView
+				.TransformToAncestor(source.RootVisual).TransformBounds(displayRect) // rect on root visual
+				.TransformToDevice(source.RootVisual); // rect on HWND
 		}
 		
 		static readonly Rect EMPTY_RECT = new Rect(0, 0, 0, 0);
@@ -161,24 +163,28 @@ namespace ICSharpCode.AvalonEdit.Editing
 		static Rect GetCharacterBounds(this TextView textView, TextViewPosition pos, HwndSource source)
 		{
 			VisualLine vl = textView.GetVisualLine(pos.Line);
-			if (vl == null) return EMPTY_RECT;
-			TextLine line = vl.GetTextLine(pos.VisualColumn);
-			double offset = vl.GetTextLineVisualYPosition(line, VisualYPosition.TextTop) - textView.ScrollOffset.Y;
-			Rect r;
-			if (pos.VisualColumn < vl.VisualLengthWithEndOfLineMarker) {
-				r = line.GetTextBounds(pos.VisualColumn, 1).First().Rectangle;
-				r.Offset(-textView.ScrollOffset.X, offset);
-			} else {
-				r = new Rect(vl.GetVisualPosition(pos.VisualColumn, VisualYPosition.TextTop), new Size(textView.WideSpaceWidth, textView.DefaultLineHeight));
-				r.Offset(-textView.ScrollOffset);
-			}
+			if (vl == null)
+				return EMPTY_RECT;
 			// this may happen during layout changes in AvalonDock, so we just return an empty rectangle
 			// in those cases. It should be refreshed immediately.
-			if (!source.RootVisual.IsAncestorOf(textView)) return EMPTY_RECT;
-			Point pointOnRootVisual = textView.TransformToAncestor(source.RootVisual).Transform(r.Location);
-			Point pointOnHwnd = pointOnRootVisual.TransformToDevice(source.RootVisual);
-			r.Location = pointOnHwnd;
-			return r;
+			if (!source.RootVisual.IsAncestorOf(textView))
+				return EMPTY_RECT;
+			TextLine line = vl.GetTextLine(pos.VisualColumn);
+			Rect displayRect;
+			// calculate the display rect for the current character
+			if (pos.VisualColumn < vl.VisualLengthWithEndOfLineMarker) {
+				displayRect = line.GetTextBounds(pos.VisualColumn, 1).First().Rectangle;
+				displayRect.Offset(0, vl.GetTextLineVisualYPosition(line, VisualYPosition.LineTop));
+			} else {
+				// if we are in virtual space, we just use one wide-space as character width
+				displayRect = new Rect(vl.GetVisualPosition(pos.VisualColumn, VisualYPosition.TextTop),
+				                       new Size(textView.WideSpaceWidth, textView.DefaultLineHeight));
+			}
+			// adjust to current scrolling
+			displayRect.Offset(-textView.ScrollOffset);
+			return textView
+				.TransformToAncestor(source.RootVisual).TransformBounds(displayRect) // rect on root visual
+				.TransformToDevice(source.RootVisual); // rect on HWND
 		}
 	}
 }
