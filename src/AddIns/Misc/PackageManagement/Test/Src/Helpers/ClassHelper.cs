@@ -180,5 +180,10 @@ namespace PackageManagement.Tests.Helpers
 			
 			Class.Stub(c => c.UsingScope).Return(usingScopeHelper.UsingScope);
 		}
+		
+		public void SetDotNetName(string className)
+		{
+			Class.Stub(c => c.DotNetName).Return(className);
+		}
 	}
 }

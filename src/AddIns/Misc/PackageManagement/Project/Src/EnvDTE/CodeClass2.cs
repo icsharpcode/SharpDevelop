@@ -24,7 +24,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public bool IsGeneric {
-			get { throw new NotImplementedException(); }
+			get { return Class.DotNetName.Contains("`"); }
 		}
 		
 		public vsCMClassKind ClassKind {

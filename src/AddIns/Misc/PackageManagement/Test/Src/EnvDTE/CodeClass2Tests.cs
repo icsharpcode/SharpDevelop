@@ -95,6 +95,16 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.MakeClassPartial();
 		}
 		
+		void ClassIsGeneric()
+		{
+			helper.SetDotNetName("MyClass`1");
+		}
+		
+		void ClassIsNotGeneric()
+		{
+			helper.SetDotNetName("MyClass");
+		}
+		
 		[Test]
 		public void Language_CSharpProject_ReturnsCSharpModelLanguage()
 		{
@@ -333,6 +343,30 @@ namespace PackageManagement.Tests.EnvDTE
 			vsCMClassKind kind = codeClass.ClassKind;
 			
 			Assert.AreEqual(vsCMClassKind.vsCMClassKindMainClass, kind);
+		}
+		
+		[Test]
+		public void IsGeneric_ClassIsGeneric_ReturnsTrue()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			ClassIsGeneric();
+			
+			bool generic = codeClass.IsGeneric;
+			
+			Assert.IsTrue(generic);
+		}
+		
+		[Test]
+		public void IsGeneric_ClassIsNotGeneric_ReturnsFalse()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			ClassIsNotGeneric();
+			
+			bool generic = codeClass.IsGeneric;
+			
+			Assert.IsFalse(generic);
 		}
 	}
 }
