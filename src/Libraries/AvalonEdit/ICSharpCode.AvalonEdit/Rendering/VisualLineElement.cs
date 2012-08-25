@@ -63,6 +63,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		public VisualLineElementTextRunProperties TextRunProperties { get; private set; }
 		
+		/// <summary>
+		/// Gets/sets the brush used for the background of this <see cref="VisualLineElement" />.
+		/// </summary>
 		public Brush BackgroundBrush { get; set; }
 		
 		internal void SetTextRunProperties(VisualLineElementTextRunProperties p)

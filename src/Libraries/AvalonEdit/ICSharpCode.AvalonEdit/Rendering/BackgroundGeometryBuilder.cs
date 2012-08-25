@@ -145,6 +145,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			}
 		}
 		
+		/// <summary>
+		/// Calculates the rectangles for the visual column segment.
+		/// This returns one rectangle for each line inside the segment.
+		/// </summary>
 		public static IEnumerable<Rect> GetRectsFromVisualSegment(TextView textView, VisualLine line, int startVC, int endVC)
 		{
 			if (textView == null)
