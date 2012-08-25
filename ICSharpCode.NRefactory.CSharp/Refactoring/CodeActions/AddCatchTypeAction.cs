@@ -28,8 +28,8 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[ContextAction("Add type",
-	               Description = "Adds an exception type specifier to catch clauses.")]
+	[ContextAction("Add type to general catch clause",
+	               Description = "Adds an exception type specifier to general catch clauses.")]
 	public class AddCatchTypeAction : ICodeActionProvider
 	{
 		#region ICodeActionProvider implementation
@@ -42,15 +42,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (!catchClause.Type.IsNull)
 				yield break;
 			yield return new CodeAction(context.TranslateString("Add type specifier"), script => {
-				var newIdentifier = Identifier.Create("e");
 				var newType = context.CreateShortType("System", "Exception");
-				script.Replace(catchClause, new CatchClause() {
+				var namingHelper = new NamingHelper(context);
+				var newIdentifier = Identifier.Create(namingHelper.GenerateVariableName(newType, "e"));
+
+				script.Replace(catchClause, new CatchClause {
 					Type = newType,
 					VariableNameToken = newIdentifier,
 					Body = catchClause.Body.Clone() as BlockStatement
 				});
-				script.Link(newType);
-				script.Link(newIdentifier);
+				script.Select(newType);
 			});
 		}
 

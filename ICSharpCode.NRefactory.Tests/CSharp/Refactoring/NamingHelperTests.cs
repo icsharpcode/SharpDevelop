@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						var context = TestRefactoringContext.Create(input, expectErrors);
 						return context;
 				}
-
+		
 				[Test]
 				public void GenerateVariableNameTest()
 				{
@@ -70,6 +70,21 @@ class A
 						var name = new NamingHelper(context).GenerateVariableName(new PrimitiveType("int"));
 						Assert.NotNull(name);
 						Assert.IsFalse(name == "i", "i was already used and should not be proposed.");
+				}
+		
+				[Test]
+				public void GenerateVariableNameBasedOnCustomBaseName()
+				{
+						var context = MakeContext(@"
+class A
+{
+	void F()
+	{ $ }
+}"
+						);
+						var name = new NamingHelper(context).GenerateVariableName(new PrimitiveType("int"), "integer");
+						Assert.NotNull(name);
+						Assert.AreEqual("integer", name);
 				}
 
 				[Test]
