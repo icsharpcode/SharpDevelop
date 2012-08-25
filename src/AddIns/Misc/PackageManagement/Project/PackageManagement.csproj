@@ -120,6 +120,7 @@
     <Compile Include="Src\EnvDTE\Constants.cs" />
     <Compile Include="Src\EnvDTE\Document.cs" />
     <Compile Include="Src\EnvDTE\EditPoint.cs" />
+    <Compile Include="Src\EnvDTE\EnumerableProjectItems.cs" />
     <Compile Include="Src\EnvDTE\FileCodeModel2.cs" />
     <Compile Include="Src\EnvDTE\FileCodeModelCodeElements.cs" />
     <Compile Include="Src\EnvDTE\FileCodeModelCodeNamespace.cs" />

@@ -73,8 +73,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual IEnumerator GetEnumerator()
 		{
-			var items = new ProjectItemsInsideProject(project);
-			return items.GetEnumerator();
+			return GetProjectItems().GetEnumerator();
+		}
+		
+		protected virtual IEnumerable<ProjectItem> GetProjectItems()
+		{
+			return new ProjectItemsInsideProject(project);
 		}
 		
 		internal virtual ProjectItem Item(string name)
@@ -89,8 +93,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		internal virtual ProjectItem Item(int index)
 		{
-			var items = new ProjectItemsInsideProject(project);
-			return items.GetItem(index - 1);
+			return GetProjectItems()
+				.Skip(index - 1)
+				.First();
 		}
 		
 		public virtual ProjectItem Item(object index)
@@ -121,7 +126,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual int Count {
-			get { return new ProjectItemsInsideProject(project).Count; }
+			get { return GetProjectItems().Count(); }
 		}
 	}
 }

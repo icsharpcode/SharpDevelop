@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
@@ -16,16 +17,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.projectItem = projectItem;
 		}
 		
-		public override IEnumerator GetEnumerator()
+		protected override IEnumerable<ProjectItem> GetProjectItems()
 		{
-			var items = new ChildProjectItems(projectItem);
-			return items.GetEnumerator();
-		}
-		
-		internal override ProjectItem Item(int index)
-		{
-			var items = new ChildProjectItems(projectItem);
-			return items.GetItem(index - 1);
+			return new ChildProjectItems(projectItem);
 		}
 	}
 }
