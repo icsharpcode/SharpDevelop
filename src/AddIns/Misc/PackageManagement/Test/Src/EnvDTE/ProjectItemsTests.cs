@@ -815,5 +815,21 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.IsTrue(fileItem.IsLink);
 			Assert.AreEqual("test.cs", linkName);
 		}
+		
+		[Test]
+		public void Item_GetItemFromControllersFolderProjectItemsWhenProjectHasTwoFilesOneInRootAndOneInControllersFolder_ReturnsFileFromControllersFolder()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"AccountController.generated.cs");
+			msbuildProject.AddFile(@"Controllers\AccountController.cs");
+			
+			DTE.ProjectItem projectItem = projectItems
+				.Item("Controllers")
+				.ProjectItems
+				.Item(1);
+			
+			Assert.AreEqual("AccountController.cs", projectItem.Name);
+		}
 	}
 }

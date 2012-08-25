@@ -21,5 +21,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			var items = new ChildProjectItems(projectItem);
 			return items.GetEnumerator();
 		}
+		
+		internal override ProjectItem Item(int index)
+		{
+			var items = new ChildProjectItems(projectItem);
+			return items.GetItem(index - 1);
+		}
 	}
 }
