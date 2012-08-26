@@ -11,17 +11,24 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeAttributes : CodeElementsList
 	{
-		IEntity entity;
-		
 		public CodeAttributes(IEntity entity)
+			: this(entity.Attributes)
 		{
-			this.entity = entity;
-			GetAttributes();
 		}
 		
-		void GetAttributes()
+		public CodeAttributes(IParameter parameter)
+			: this(parameter.Attributes)
 		{
-			foreach (IAttribute attribute in entity.Attributes) {
+		}
+		
+		public CodeAttributes(IEnumerable<IAttribute> attributes)
+		{
+			AddAttributes(attributes);
+		}
+		
+		void AddAttributes(IEnumerable<IAttribute> attributes)
+		{
+			foreach (IAttribute attribute in attributes) {
 				AddAttribute(attribute);
 			}
 		}

@@ -56,5 +56,12 @@ namespace PackageManagement.Tests.Helpers
 			attributes.Add(Attribute);
 			method.Stub(m => m.Attributes).Return(attributes);
 		}
+		
+		public void AddAttributeToParameter(IParameter parameter)
+		{
+			var attributes = new List<IAttribute>();
+			attributes.Add(Attribute);
+			parameter.Stub(p => p.Attributes).Return(attributes);
+		}
 	}
 }

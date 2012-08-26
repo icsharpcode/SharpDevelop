@@ -40,5 +40,12 @@ namespace PackageManagement.Tests.Helpers
 		{
 			Parameter.Stub(p => p.Modifiers).Return(ParameterModifiers.In);
 		}
+		
+		public void AddAttributeToParameter(string attributeTypeName)
+		{
+			var attributeHelper = new AttributeHelper();
+			attributeHelper.CreateAttribute(attributeTypeName);
+			attributeHelper.AddAttributeToParameter(Parameter);
+		}
 	}
 }

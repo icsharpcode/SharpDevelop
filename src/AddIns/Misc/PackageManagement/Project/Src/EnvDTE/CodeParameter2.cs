@@ -32,9 +32,5 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 			return vsCMParameterKind.vsCMParameterKindNone;
 		}
-		
-		public virtual CodeElements Attributes {
-			get { throw new NotImplementedException(); }
-		}
 	}
 }

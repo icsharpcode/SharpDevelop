@@ -34,5 +34,18 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(vsCMElement.vsCMElementParameter, kind);
 		}
+		
+		[Test]
+		public void Attributes_ParameterHasOneAttribute_ReturnsOneAttribute()
+		{
+			CreateParameter();
+			helper.AddAttributeToParameter("System.Web.Mvc.BindAttribute");
+			
+			CodeElements attributes = parameter.Attributes;
+			
+			CodeAttribute2 attribute = parameter.Attributes.FirstCodeAttribute2OrDefault();
+			Assert.AreEqual(1, attributes.Count);
+			Assert.AreEqual("System.Web.Mvc.BindAttribute", attribute.FullName);
+		}
 	}
 }
