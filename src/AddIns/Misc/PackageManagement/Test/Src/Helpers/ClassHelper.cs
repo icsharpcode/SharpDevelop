@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Dom;
 using Rhino.Mocks;
 
@@ -66,13 +67,18 @@ namespace PackageManagement.Tests.Helpers
 			Class.Stub(c => c.BaseTypes).Return(baseTypes);
 		}
 		
-		IReturnType CreateBaseType(IClass baseTypeClass, string baseTypeFullName, string baseTypeDotNetName)
+		ReturnTypeHelper CreateBaseTypeHelper(IClass baseTypeClass, string baseTypeFullName, string baseTypeDotNetName)
 		{
 			var returnTypeHelper = new ReturnTypeHelper();
 			returnTypeHelper.CreateReturnType(baseTypeFullName);
 			returnTypeHelper.AddUnderlyingClass(baseTypeClass);
 			returnTypeHelper.AddDotNetName(baseTypeDotNetName);
-			return returnTypeHelper.ReturnType;
+			return returnTypeHelper;
+		}
+		
+		IReturnType CreateBaseType(IClass baseTypeClass, string baseTypeFullName, string baseTypeDotNetName)
+		{
+			return CreateBaseTypeHelper(baseTypeClass, baseTypeFullName, baseTypeDotNetName).ReturnType;
 		}
 		
 		public void AddClassToClassBaseTypes(string fullName)
@@ -184,6 +190,29 @@ namespace PackageManagement.Tests.Helpers
 		public void SetDotNetName(string className)
 		{
 			Class.Stub(c => c.DotNetName).Return(className);
+		}
+		
+		/// <summary>
+		/// Classes at the end of the array are at the top of the inheritance tree.
+		/// </summary>
+		public void AddClassInheritanceTreeClassesOnly(params string[] classNames)
+		{
+			List<IClass> classes = CreateClassInheritanceTree(classNames);
+			Class.Stub(c => c.ClassInheritanceTreeClassesOnly).Return(classes);
+		}
+		
+		List<IClass> CreateClassInheritanceTree(string[] classNames)
+		{
+			return classNames
+				.Select(name => CreateClassHelperWithPublicClass(name).Class)
+				.ToList();
+		}
+		
+		ClassHelper CreateClassHelperWithPublicClass(string name)
+		{
+			var classHelper = new ClassHelper();
+			classHelper.CreatePublicClass(name);
+			return classHelper;
 		}
 	}
 }

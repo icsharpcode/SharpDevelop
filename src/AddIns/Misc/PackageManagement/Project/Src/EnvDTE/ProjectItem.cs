@@ -34,6 +34,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 		}
 		
+		internal ProjectItem(IProjectContent projectContent, IClass c)
+			: this((MSBuildBasedProject)projectContent.Project, c)
+		{
+		}
+		
 		string GetKindFromFileProjectItemType()
 		{
 			if (IsDirectory) {
