@@ -128,5 +128,10 @@ namespace PackageManagement.Tests.Helpers
 		{
 			Method.Stub(m => m.IsAbstract).Return(true);
 		}
+		
+		public void MakeMethodVirtual()
+		{
+			Method.Stub(m => m.IsVirtual).Return(true);
+		}
 	}
 }

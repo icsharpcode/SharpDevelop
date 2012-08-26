@@ -80,6 +80,11 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.MakeMethodAbstract();
 		}
 		
+		void MakeMethodVirtual()
+		{
+			helper.MakeMethodVirtual();
+		}
+		
 		[Test]
 		public void Access_PublicFunction_ReturnsPublic()
 		{
@@ -323,6 +328,38 @@ namespace PackageManagement.Tests.EnvDTE
 			bool mustImplement = codeFunction.MustImplement;
 			
 			Assert.IsFalse(mustImplement);
+		}
+		
+		[Test]
+		public void CanOverride_AbstractMethod_ReturnsTrue()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			MakeMethodAbstract();
+			
+			bool canOverride = codeFunction.CanOverride;
+			
+			Assert.IsTrue(canOverride);
+		}
+		
+		[Test]
+		public void CanOverride_MethodIsNotAbstractOrVirtual_ReturnsFalse()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			
+			bool canOverride = codeFunction.CanOverride;
+			
+			Assert.IsFalse(canOverride);
+		}
+		
+		[Test]
+		public void CanOverride_VirtualMethod_ReturnsTrue()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			MakeMethodVirtual();
+			
+			bool canOverride = codeFunction.CanOverride;
+			
+			Assert.IsTrue(canOverride);
 		}
 	}
 }
