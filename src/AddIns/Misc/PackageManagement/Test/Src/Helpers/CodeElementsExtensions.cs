@@ -24,9 +24,9 @@ namespace PackageManagement.Tests.Helpers
 			return ToList(codeElements).FirstOrDefault();
 		}
 		
-		public static CodeFunction FirstCodeFunctionOrDefault(this CodeElements codeElements)
+		public static CodeFunction2 FirstCodeFunction2OrDefault(this CodeElements codeElements)
 		{
-			return codeElements.FirstOrDefault() as CodeFunction;
+			return codeElements.FirstOrDefault() as CodeFunction2;
 		}
 		
 		public static CodeClass2 FirstCodeClass2OrDefault(this CodeElements codeElements)

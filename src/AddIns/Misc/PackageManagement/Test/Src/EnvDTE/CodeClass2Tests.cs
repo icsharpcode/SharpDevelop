@@ -211,7 +211,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddMethodToClass("MyClass.MyMethod");
 			
 			CodeElements codeElements = codeClass.Members;
-			CodeFunction codeFunction = codeElements.FirstCodeFunctionOrDefault();
+			CodeFunction2 codeFunction = codeElements.FirstCodeFunction2OrDefault();
 			
 			Assert.AreEqual(1, codeElements.Count);
 			Assert.AreEqual("MyMethod", codeFunction.Name);
