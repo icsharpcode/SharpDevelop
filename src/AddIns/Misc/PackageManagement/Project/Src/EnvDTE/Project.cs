@@ -296,5 +296,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			return fileService.GetOpenFile(fileName);
 		}
+		
+		internal void OpenFile(string fileName)
+		{
+			fileService.OpenFile(fileName);
+		}
 	}
 }

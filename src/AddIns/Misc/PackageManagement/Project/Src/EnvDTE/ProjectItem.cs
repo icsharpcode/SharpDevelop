@@ -190,7 +190,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public Window Open(string viewKind)
 		{
-			throw new NotImplementedException();
+			ContainingProject.OpenFile(FileName);
+			return null;
 		}
 	}
 }

@@ -305,5 +305,18 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.IsFalse(document.Saved);
 		}
+		
+		[Test]
+		public void Open_ViewKindIsCode_OpensFile()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"program.cs");
+			ProjectItem item = projectItems.Item("program.cs");
+			
+			Window window = item.Open(Constants.vsViewKindCode);
+			
+			Assert.AreEqual(@"d:\projects\MyProject\program.cs", fakeFileService.FileNamePassedToOpenFile);
+		}
 	}
 }
