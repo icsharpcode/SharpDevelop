@@ -14,7 +14,23 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual vsCMParameterKind ParameterKind {
-			get { throw new NotImplementedException(); }
+			get { return GetParameterKind(); }
+		}
+		
+		vsCMParameterKind GetParameterKind()
+		{
+			if (Parameter.IsOptional) {
+				return vsCMParameterKind.vsCMParameterKindOptional;
+			} else if (Parameter.IsOut) {
+				return vsCMParameterKind.vsCMParameterKindOut;
+			} else if (Parameter.IsRef) {
+				return vsCMParameterKind.vsCMParameterKindRef;
+			} else if (Parameter.IsParams) {
+				return vsCMParameterKind.vsCMParameterKindParamArray;
+			} else if (Parameter.IsIn()) {
+				return vsCMParameterKind.vsCMParameterKindIn;
+			}
+			return vsCMParameterKind.vsCMParameterKindNone;
 		}
 		
 		public virtual CodeElements Attributes {

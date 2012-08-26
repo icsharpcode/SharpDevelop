@@ -4,17 +4,25 @@
 using System;
 using ICSharpCode.PackageManagement.EnvDTE;
 using NUnit.Framework;
+using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests.EnvDTE
 {
 	[TestFixture]
 	public class CodeParameterTests
 	{
+		ParameterHelper helper;
 		CodeParameter parameter;
+		
+		[SetUp]
+		public void Init()
+		{
+			helper = new ParameterHelper();
+		}
 		
 		void CreateParameter()
 		{
-			parameter = new CodeParameter(null, null);
+			parameter = new CodeParameter(null, helper.Parameter);
 		}
 		
 		[Test]

@@ -127,6 +127,7 @@
     <Compile Include="Src\EnvDTE\FileCodeModelCodeNamespaceMembers.cs" />
     <Compile Include="Src\EnvDTE\IClassExtensions.cs" />
     <Compile Include="Src\EnvDTE\ImplementedInterfacesOnClass.cs" />
+    <Compile Include="Src\EnvDTE\IParameterExtensions.cs" />
     <Compile Include="Src\EnvDTE\IReturnTypeExtensions.cs" />
     <Compile Include="Src\EnvDTE\NamespaceName.cs" />
     <Compile Include="Src\EnvDTE\PartialClasses.cs" />
