@@ -133,5 +133,12 @@ namespace PackageManagement.Tests.Helpers
 		{
 			Method.Stub(m => m.IsVirtual).Return(true);
 		}
+		
+		public void AddAttributeToMethod(string attributeTypeName)
+		{
+			var attributeHelper = new AttributeHelper();
+			attributeHelper.CreateAttribute(attributeTypeName);
+			attributeHelper.AddAttributeToMethod(Method);
+		}
 	}
 }

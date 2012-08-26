@@ -33,10 +33,10 @@ namespace PackageManagement.Tests.Helpers
 			Class.Stub(c => c.CompilationUnit).Return(CompilationUnitHelper.CompilationUnit);
 		}
 		
-		public void AddAttributeToClass(string name)
+		public void AddAttributeToClass(string attributeTypeName)
 		{
 			var attributeHelper = new AttributeHelper();
-			attributeHelper.CreateAttribute(name);
+			attributeHelper.CreateAttribute(attributeTypeName);
 			attributeHelper.AddAttributeToClass(Class);
 		}
 		

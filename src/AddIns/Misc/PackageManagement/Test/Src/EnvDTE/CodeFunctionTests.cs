@@ -85,6 +85,11 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.MakeMethodVirtual();
 		}
 		
+		void AddMethodAttribute(string attributeTypeName)
+		{
+			helper.AddAttributeToMethod(attributeTypeName);
+		}
+		
 		[Test]
 		public void Access_PublicFunction_ReturnsPublic()
 		{
@@ -360,6 +365,19 @@ namespace PackageManagement.Tests.EnvDTE
 			bool canOverride = codeFunction.CanOverride;
 			
 			Assert.IsTrue(canOverride);
+		}
+		
+		[Test]
+		public void Attributes_MethodHasOneAttribute_ReturnsOneAttribute()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			AddMethodAttribute("System.ObsoleteAttribute");
+			
+			CodeElements attributes = codeFunction.Attributes;
+			
+			CodeAttribute2 attribute = attributes.FirstCodeAttribute2OrDefault();
+			Assert.AreEqual(1, attributes.Count);
+			Assert.AreEqual("System.ObsoleteAttribute", attribute.FullName);
 		}
 	}
 }

@@ -60,7 +60,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual CodeElements Attributes {
-			get { throw new NotImplementedException(); }
+			get { return new CodeAttributes(method); }
 		}
 		
 		public virtual bool CanOverride {
