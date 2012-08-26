@@ -289,5 +289,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 			return null;
 		}
+		
+		internal bool IsFileOpen(string fileName)
+		{
+			return fileService.IsOpen(fileName);
+		}
 	}
 }

@@ -7,13 +7,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class Document
 	{
-		public Document()
+		public Document(string fileName)
 		{
+			this.FullName = fileName;
 		}
 		
 		public virtual bool Saved {
 			get { throw new NotImplementedException(); }
 			set { throw new NotImplementedException(); }
 		}
+		
+		public string FullName { get; private set; }
 	}
 }

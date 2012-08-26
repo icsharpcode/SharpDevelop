@@ -167,11 +167,23 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual string FileNames(short index)
 		{
-			return projectItem.FileName;
+			return FileName;
+		}
+		
+		string FileName {
+			get { return projectItem.FileName; }
 		}
 		
 		public Document Document {
-			get { throw new NotImplementedException(); }
+			get { return GetOpenDocument(); }
+		}
+		
+		Document GetOpenDocument()
+		{
+			if (ContainingProject.IsFileOpen(FileName)) {
+				return new Document(FileName);
+			}
+			return null;
 		}
 		
 		public Window Open(string viewKind)

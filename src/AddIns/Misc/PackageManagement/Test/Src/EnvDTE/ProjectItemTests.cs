@@ -5,7 +5,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using ICSharpCode.PackageManagement.EnvDTE;
+using ICSharpCode.SharpDevelop.Gui;
 using DTE = ICSharpCode.PackageManagement.EnvDTE;
+using Rhino.Mocks;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 
@@ -25,6 +27,12 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildProject = project.TestableProject;
 			projectItems = project.ProjectItems;
 			fakeFileService = project.FakeFileService;
+		}
+		
+		void OpenFileInSharpDevelop(string fileName)
+		{
+			IViewContent view = MockRepository.GenerateStub<IViewContent>();
+			fakeFileService.AddOpenView(view, fileName);
 		}
 		
 		[Test]
@@ -229,6 +237,34 @@ namespace PackageManagement.Tests.EnvDTE
 			string fileName = directoryItem.FileNames(1);
 			
 			Assert.AreEqual(@"d:\projects\MyProject\src", fileName);
+		}
+		
+		[Test]
+		public void Document_ProjectItemNotOpenInSharpDevelop_ReturnsNull()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"program.cs");
+			ProjectItem item = projectItems.Item("program.cs");
+			
+			Document document = item.Document;
+			
+			Assert.IsNull(document);
+		}
+		
+		[Test]
+		public void Document_ProjectItemOpenInSharpDevelop_ReturnsOpenDocumentForFile()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"program.cs");
+			ProjectItem item = projectItems.Item("program.cs");
+			string projectItemFileName = @"d:\projects\MyProject\program.cs";
+			OpenFileInSharpDevelop(projectItemFileName);
+			
+			Document document = item.Document;
+			
+			Assert.AreEqual(projectItemFileName, document.FullName);
 		}
 	}
 }

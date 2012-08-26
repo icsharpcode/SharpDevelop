@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using ICSharpCode.PackageManagement;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace PackageManagement.Tests.Helpers
@@ -122,6 +124,18 @@ namespace PackageManagement.Tests.Helpers
 		{
 			FileNamePassedToGetCompilationUnit = fileName;
 			return CompilationUnitToReturnFromGetCompilationUnit;
+		}
+		
+		public bool IsOpen(string fileName)
+		{
+			return openViews.ContainsKey(fileName);
+		}
+		
+		Dictionary<string, IViewContent> openViews = new Dictionary<string, IViewContent>();
+		
+		public void AddOpenView(IViewContent view, string fileName)
+		{
+			openViews.Add(fileName, view);
 		}
 	}
 }
