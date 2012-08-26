@@ -21,7 +21,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public IEnumerator<ProjectItem> GetEnumerator()
 		{
-			return GetProjectItems().GetEnumerator();
+			return GetProjectItems().ToList().GetEnumerator();
 		}
 		
 		protected abstract IEnumerable<ProjectItem> GetProjectItems();
