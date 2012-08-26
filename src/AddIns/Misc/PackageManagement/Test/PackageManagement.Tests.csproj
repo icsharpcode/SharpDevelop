@@ -82,6 +82,7 @@
     <Compile Include="Src\EnvDTE\CodeClass2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeDelegateTests.cs" />
     <Compile Include="Src\EnvDTE\CodeElementsInNamespaceTests.cs" />
+    <Compile Include="Src\EnvDTE\CodeFunction2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeFunctionTests.cs" />
     <Compile Include="Src\EnvDTE\CodeImportTests.cs" />
     <Compile Include="Src\EnvDTE\CodeInterfaceTests.cs" />

@@ -7,6 +7,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public enum vsCMOverrideKind
 	{
-		vsCMOverrideKindOverride = 4
+		vsCMOverrideKindNone     = 0,
+		vsCMOverrideKindAbstract = 1,
+		vsCMOverrideKindVirtual  = 2,
+		vsCMOverrideKindOverride = 4,
+		vsCMOverrideKindNew      = 8,
+		vsCMOverrideKindSealed   = 16
 	}
 }

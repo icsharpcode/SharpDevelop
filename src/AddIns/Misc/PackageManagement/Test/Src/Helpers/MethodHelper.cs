@@ -140,5 +140,20 @@ namespace PackageManagement.Tests.Helpers
 			attributeHelper.CreateAttribute(attributeTypeName);
 			attributeHelper.AddAttributeToMethod(Method);
 		}
+		
+		public void MakeMethodOverride()
+		{
+			Method.Stub(m => m.IsOverride).Return(true);
+		}
+		
+		public void MakeMethodSealed()
+		{
+			Method.Stub(m => m.IsSealed).Return(true);
+		}
+		
+		public void MakeMethodNewOverride()
+		{
+			Method.Stub(m => m.IsNew).Return(true);
+		}
 	}
 }

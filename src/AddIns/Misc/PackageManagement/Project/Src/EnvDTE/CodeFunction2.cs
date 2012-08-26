@@ -18,7 +18,23 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual vsCMOverrideKind OverrideKind {
-			get { throw new NotImplementedException(); }
+			get { return GetOverrideKind(); }
+		}
+		
+		vsCMOverrideKind GetOverrideKind()
+		{
+			if (Method.IsAbstract) {
+				return vsCMOverrideKind.vsCMOverrideKindAbstract;
+			} else if (Method.IsVirtual) {
+				return vsCMOverrideKind.vsCMOverrideKindVirtual;
+			} else if (Method.IsOverride) {
+				return vsCMOverrideKind.vsCMOverrideKindOverride;
+			} else if (Method.IsSealed) {
+				return vsCMOverrideKind.vsCMOverrideKindSealed;
+			} else if (Method.IsNew) {
+				return vsCMOverrideKind.vsCMOverrideKindNew;
+			}
+			return vsCMOverrideKind.vsCMOverrideKindNone;
 		}
 	}
 }

@@ -8,7 +8,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeFunction : CodeElement
 	{
-		IMethodOrProperty method;
 		IDocumentLoader documentLoader;
 		
 		public CodeFunction(IMethod method)
@@ -19,7 +18,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public CodeFunction(IMethod method, IDocumentLoader documentLoader)
 			: base(method)
 		{
-			this.method = method;
+			this.Method = method;
 			this.documentLoader = documentLoader;
 		}
 		
@@ -32,6 +31,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 		}
 		
+		protected IMethodOrProperty Method { get; private set; }
+		
 		public override vsCMElement Kind {
 			get { return vsCMElement.vsCMElementFunction; }
 		}
@@ -43,28 +44,28 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public override TextPoint GetStartPoint()
 		{
-			return new TextPoint(method.GetStartPosition(), documentLoader);
+			return new TextPoint(Method.GetStartPosition(), documentLoader);
 		}
 		
 		public override TextPoint GetEndPoint()
 		{
-			return new TextPoint(method.GetEndPosition(), documentLoader);
+			return new TextPoint(Method.GetEndPosition(), documentLoader);
 		}
 		
 		public virtual CodeElements Parameters {
-			get { return new CodeParameters(method.ProjectContent, method.Parameters); }
+			get { return new CodeParameters(Method.ProjectContent, Method.Parameters); }
 		}
 		
 		public virtual CodeTypeRef2 Type {
-			get { return new CodeTypeRef2(method.ProjectContent, this, method.ReturnType); }
+			get { return new CodeTypeRef2(Method.ProjectContent, this, Method.ReturnType); }
 		}
 		
 		public virtual CodeElements Attributes {
-			get { return new CodeAttributes(method); }
+			get { return new CodeAttributes(Method); }
 		}
 		
 		public virtual bool CanOverride {
-			get { return MustImplement || method.IsVirtual; }
+			get { return MustImplement || Method.IsVirtual; }
 			set { throw new NotImplementedException(); }
 		}
 		
@@ -74,18 +75,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		vsCMFunction GetFunctionKind()
 		{
-			if (method.IsConstructor()) {
+			if (Method.IsConstructor()) {
 				return vsCMFunction.vsCMFunctionConstructor;
 			}
 			return vsCMFunction.vsCMFunctionFunction;
 		}
 		
 		public virtual bool IsShared {
-			get { return method.IsStatic; }
+			get { return Method.IsStatic; }
 		}
 		
 		public virtual bool MustImplement {
-			get { return method.IsAbstract; }
+			get { return Method.IsAbstract; }
 		}
 	}
 }
