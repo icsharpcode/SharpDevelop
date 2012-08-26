@@ -81,7 +81,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual bool IsShared {
-			get { throw new NotImplementedException(); }
+			get { return method.IsStatic; }
 		}
 		
 		public virtual bool MustImplement {

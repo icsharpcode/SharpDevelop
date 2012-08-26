@@ -70,6 +70,11 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddReturnTypeToMethod(type);
 		}
 		
+		void MakeMethodStatic()
+		{
+			helper.MakeMethodStatic();
+		}
+		
 		[Test]
 		public void Access_PublicFunction_ReturnsPublic()
 		{
@@ -271,6 +276,27 @@ namespace PackageManagement.Tests.EnvDTE
 			vsCMFunction kind = codeFunction.FunctionKind;
 			
 			Assert.AreEqual(vsCMFunction.vsCMFunctionConstructor, kind);
+		}
+		
+		[Test]
+		public void IsShared_StaticMethod_ReturnsTrue()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			MakeMethodStatic();
+			
+			bool shared = codeFunction.IsShared;
+			
+			Assert.IsTrue(shared);
+		}
+		
+		[Test]
+		public void IsShared_MethodIsNotStatic_ReturnsFalse()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			
+			bool shared = codeFunction.IsShared;
+			
+			Assert.IsFalse(shared);
 		}
 	}
 }

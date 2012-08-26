@@ -118,5 +118,10 @@ namespace PackageManagement.Tests.Helpers
 			
 			Method.Stub(m => m.ReturnType).Return(returnTypeHelper.ReturnType);
 		}
+		
+		public void MakeMethodStatic()
+		{
+			Method.Stub(m => m.IsStatic).Return(true);
+		}
 	}
 }
