@@ -41,12 +41,12 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		public bool IsOpen(string fileName)
+		public IViewContent GetOpenFile(string fileName)
 		{
 			if (WorkbenchSingleton.InvokeRequired) {
-				return WorkbenchSingleton.SafeThreadFunction(() => IsOpen(fileName));
+				return WorkbenchSingleton.SafeThreadFunction(() => GetOpenFile(fileName));
 			} else {
-				return FileService.IsOpen(fileName);
+				return FileService.GetOpenFile(fileName);
 			}
 		}
 		

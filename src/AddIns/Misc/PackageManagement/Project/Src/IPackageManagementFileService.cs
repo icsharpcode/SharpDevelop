@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -10,8 +11,8 @@ namespace ICSharpCode.PackageManagement
 	{
 		void RemoveFile(string path);
 		void RemoveDirectory(string path);
-		bool IsOpen(string fileName);
 		void OpenFile(string fileName);
+		IViewContent GetOpenFile(string fileName);
 		void CopyFile(string oldFileName, string newFileName);
 		bool FileExists(string fileName);
 		string[] GetFiles(string path);

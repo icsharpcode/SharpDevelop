@@ -126,16 +126,19 @@ namespace PackageManagement.Tests.Helpers
 			return CompilationUnitToReturnFromGetCompilationUnit;
 		}
 		
-		public bool IsOpen(string fileName)
-		{
-			return openViews.ContainsKey(fileName);
-		}
-		
 		Dictionary<string, IViewContent> openViews = new Dictionary<string, IViewContent>();
 		
 		public void AddOpenView(IViewContent view, string fileName)
 		{
 			openViews.Add(fileName, view);
+		}
+		
+		public IViewContent GetOpenFile(string fileName)
+		{
+			if (openViews.ContainsKey(fileName)) {
+				return openViews[fileName];
+			}
+			return null;
 		}
 	}
 }

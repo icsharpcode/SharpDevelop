@@ -29,9 +29,20 @@ namespace PackageManagement.Tests.EnvDTE
 			fakeFileService = project.FakeFileService;
 		}
 		
-		void OpenFileInSharpDevelop(string fileName)
+		void OpenSavedFileInSharpDevelop(string fileName)
+		{
+			OpenFileInSharpDevelop(fileName, dirty: false);
+		}
+		
+		void OpenUnsavedFileInSharpDevelop(string fileName)
+		{
+			OpenFileInSharpDevelop(fileName, dirty: true);
+		}
+		
+		void OpenFileInSharpDevelop(string fileName, bool dirty)
 		{
 			IViewContent view = MockRepository.GenerateStub<IViewContent>();
+			view.Stub(v => v.IsDirty).Return(dirty);
 			fakeFileService.AddOpenView(view, fileName);
 		}
 		
@@ -260,11 +271,39 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildProject.AddFile(@"program.cs");
 			ProjectItem item = projectItems.Item("program.cs");
 			string projectItemFileName = @"d:\projects\MyProject\program.cs";
-			OpenFileInSharpDevelop(projectItemFileName);
+			OpenSavedFileInSharpDevelop(projectItemFileName);
 			
 			Document document = item.Document;
 			
 			Assert.AreEqual(projectItemFileName, document.FullName);
+		}
+		
+		[Test]
+		public void Document_ProjectItemOpenInSharpDevelopAndIsSaved_ReturnsOpenDocumentThatIsSaved()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"program.cs");
+			ProjectItem item = projectItems.Item("program.cs");
+			OpenSavedFileInSharpDevelop(@"d:\projects\MyProject\program.cs");
+			
+			Document document = item.Document;
+			
+			Assert.IsTrue(document.Saved);
+		}
+		
+		[Test]
+		public void Document_ProjectItemOpenInSharpDevelopAndIsUnsaved_ReturnsOpenDocumentThatIsNotSaved()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"program.cs");
+			ProjectItem item = projectItems.Item("program.cs");
+			OpenUnsavedFileInSharpDevelop(@"d:\projects\MyProject\program.cs");
+			
+			Document document = item.Document;
+			
+			Assert.IsFalse(document.Saved);
 		}
 	}
 }

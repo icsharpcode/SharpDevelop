@@ -95,6 +95,7 @@
     <Compile Include="Src\EnvDTE\CodeTypeRef2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeTypeTests.cs" />
     <Compile Include="Src\EnvDTE\CodeVariableTests.cs" />
+    <Compile Include="Src\EnvDTE\DocumentTests.cs" />
     <Compile Include="Src\EnvDTE\EditPointTests.cs" />
     <Compile Include="Src\EnvDTE\FileCodeModel2Tests.cs" />
     <Compile Include="Src\EnvDTE\NamespaceNameTests.cs" />

@@ -2,19 +2,23 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class Document
 	{
-		public Document(string fileName)
+		IViewContent view;
+		
+		public Document(string fileName, IViewContent view)
 		{
 			this.FullName = fileName;
+			this.view = view;
 		}
 		
 		public virtual bool Saved {
-			get { throw new NotImplementedException(); }
-			set { throw new NotImplementedException(); }
+			get { return !view.IsDirty; }
+			set { view.PrimaryFile.IsDirty = !value; }
 		}
 		
 		public string FullName { get; private set; }

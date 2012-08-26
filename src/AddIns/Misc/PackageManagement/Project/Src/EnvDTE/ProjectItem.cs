@@ -7,6 +7,7 @@ using System.IO;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using SD = ICSharpCode.SharpDevelop.Project;
 
@@ -180,8 +181,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		Document GetOpenDocument()
 		{
-			if (ContainingProject.IsFileOpen(FileName)) {
-				return new Document(FileName);
+			IViewContent view = ContainingProject.GetOpenFile(FileName);
+			if (view != null) {
+				return new Document(FileName, view);
 			}
 			return null;
 		}

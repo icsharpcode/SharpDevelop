@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Construction;
 using SD = ICSharpCode.SharpDevelop.Project;
@@ -290,9 +292,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return null;
 		}
 		
-		internal bool IsFileOpen(string fileName)
+		internal IViewContent GetOpenFile(string fileName)
 		{
-			return fileService.IsOpen(fileName);
+			return fileService.GetOpenFile(fileName);
 		}
 	}
 }
