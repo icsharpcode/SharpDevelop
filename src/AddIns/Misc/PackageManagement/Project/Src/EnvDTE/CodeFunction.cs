@@ -69,7 +69,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual vsCMFunction FunctionKind {
-			get { throw new NotImplementedException(); }
+			get { return GetFunctionKind(); }
+		}
+		
+		vsCMFunction GetFunctionKind()
+		{
+			if (method.IsConstructor()) {
+				return vsCMFunction.vsCMFunctionConstructor;
+			}
+			return vsCMFunction.vsCMFunctionFunction;
 		}
 		
 		public virtual bool IsShared {

@@ -39,6 +39,12 @@ namespace PackageManagement.Tests.EnvDTE
 			codeFunction = new CodeFunction(helper.Method);
 		}
 		
+		void CreatePublicConstructor(string name)
+		{
+			helper.CreatePublicConstructor(name);
+			CreateFunction();
+		}
+		
 		void SetDeclaringTypeAsInterface(string name)
 		{
 			helper.AddDeclaringTypeAsInterface(name);
@@ -245,6 +251,26 @@ namespace PackageManagement.Tests.EnvDTE
 			CodeTypeRef2 typeRef = codeFunction.Type;
 			
 			Assert.AreEqual(codeFunction, typeRef.Parent);
+		}
+		
+		[Test]
+		public void FunctionKind_ClassMethod_ReturnsFunctionKind()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			
+			vsCMFunction kind = codeFunction.FunctionKind;
+			
+			Assert.AreEqual(vsCMFunction.vsCMFunctionFunction, kind);
+		}
+		
+		[Test]
+		public void FunctionKind_ClassConstructor_ReturnsConstructorKind()
+		{
+			CreatePublicConstructor("MyClass.MyClass");
+			
+			vsCMFunction kind = codeFunction.FunctionKind;
+			
+			Assert.AreEqual(vsCMFunction.vsCMFunctionConstructor, kind);
 		}
 	}
 }

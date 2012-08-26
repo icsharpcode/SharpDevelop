@@ -29,6 +29,12 @@ namespace PackageManagement.Tests.Helpers
 			Method.Stub(m => m.IsPublic).Return(true);
 		}
 		
+		public void CreatePublicConstructor(string name)
+		{
+			CreatePublicMethod(name);
+			Method.Stub(m => m.IsConstructor).Return(true);
+		}
+		
 		public void CreatePrivateMethod(string name)
 		{
 			CreateMethod(name);

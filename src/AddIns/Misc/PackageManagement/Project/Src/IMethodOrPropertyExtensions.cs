@@ -25,5 +25,14 @@ namespace ICSharpCode.PackageManagement
 		{
 			return method.DeclaringType.ClassType == ClassType.Interface;
 		}
+		
+		public static bool IsConstructor(this IMethodOrProperty methodOrProperty)
+		{
+			var method = methodOrProperty as IMethod;
+			if (method != null) {
+				return method.IsConstructor;
+			}
+			return false;
+		}
 	}
 }
