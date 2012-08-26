@@ -34,5 +34,14 @@ namespace ICSharpCode.PackageManagement
 			}
 			return false;
 		}
+		
+		public static bool HasTypeParameters(this IMethodOrProperty methodOrProperty)
+		{
+			var method = methodOrProperty as IMethod;
+			if ((method != null) && (method.TypeParameters != null)) {
+				return method.TypeParameters.Count > 0;
+			}
+			return false;
+		}
 	}
 }

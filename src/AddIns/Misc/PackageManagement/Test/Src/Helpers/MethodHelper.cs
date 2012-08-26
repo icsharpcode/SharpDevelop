@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Dom;
 using Rhino.Mocks;
 
@@ -159,6 +160,23 @@ namespace PackageManagement.Tests.Helpers
 		public void MakeMethodOverridable()
 		{
 			Method.Stub(m => m.IsOverridable).Return(true);
+		}
+		
+		public void AddTypeParameter(string name)
+		{
+			var typeParameterHelper = new TypeParameterHelper();
+			typeParameterHelper.SetName(name);
+			AddTypeParameters(typeParameterHelper.TypeParameterToList());
+		}
+		
+		public void AddTypeParameters(List<ITypeParameter> typeParameters)
+		{
+			Method.Stub(m => m.TypeParameters).Return(typeParameters);
+		}
+		
+		public void NoTypeParameters()
+		{
+			AddTypeParameters(new List<ITypeParameter>());
 		}
 	}
 }

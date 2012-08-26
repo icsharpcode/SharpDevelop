@@ -95,5 +95,37 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(vsCMOverrideKind.vsCMOverrideKindNew, kind);
 		}
+		
+		[Test]
+		public void IsGeneric_MethodHasTypeParameter_ReturnsTrue()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			helper.AddTypeParameter("TResult");
+			
+			bool generic = codeFunction.IsGeneric;
+			
+			Assert.IsTrue(generic);
+		}
+		
+		[Test]
+		public void IsGeneric_MethodHasTypeParameters_ReturnsFalse()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			helper.NoTypeParameters();
+			
+			bool generic = codeFunction.IsGeneric;
+			
+			Assert.IsFalse(generic);
+		}
+		
+		[Test]
+		public void IsGeneric_MethodTypeParametersIsNull_ReturnsFalse()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			
+			bool generic = codeFunction.IsGeneric;
+			
+			Assert.IsFalse(generic);
+		}
 	}
 }

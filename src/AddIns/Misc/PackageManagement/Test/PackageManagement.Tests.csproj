@@ -122,6 +122,7 @@
     <Compile Include="Src\Helpers\TestablePackageFromRepository.cs" />
     <Compile Include="Src\Helpers\TestableProjectBehaviour.cs" />
     <Compile Include="Src\Helpers\TestableSelectedProjectsForUpdatedPackages.cs" />
+    <Compile Include="Src\Helpers\TypeParameterHelper.cs" />
     <Compile Include="Src\Helpers\UsingHelper.cs" />
     <Compile Include="Src\Helpers\UsingScopeHelper.cs" />
     <Compile Include="Src\InstalledPackageViewModelTests.cs" />

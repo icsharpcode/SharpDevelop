@@ -14,7 +14,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual bool IsGeneric {
-			get { throw new NotImplementedException(); }
+			get { return Method.HasTypeParameters(); }
 		}
 		
 		public virtual vsCMOverrideKind OverrideKind {
