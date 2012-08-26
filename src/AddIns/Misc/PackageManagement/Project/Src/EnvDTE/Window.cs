@@ -5,7 +5,7 @@ using System;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Window
+	public class Window : MarshalByRefObject
 	{
 		public Window()
 		{

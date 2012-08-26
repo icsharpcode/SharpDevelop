@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Document
+	public class Document : MarshalByRefObject
 	{
 		IViewContent view;
 		

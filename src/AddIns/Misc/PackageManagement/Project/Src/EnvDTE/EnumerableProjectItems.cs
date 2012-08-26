@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public abstract class EnumerableProjectItems : IEnumerable<ProjectItem>
+	public abstract class EnumerableProjectItems : MarshalByRefObject, IEnumerable<ProjectItem>
 	{
 		public EnumerableProjectItems()
 		{
