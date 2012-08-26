@@ -85,7 +85,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual bool MustImplement {
-			get { throw new NotImplementedException(); }
+			get { return method.IsAbstract; }
 		}
 	}
 }

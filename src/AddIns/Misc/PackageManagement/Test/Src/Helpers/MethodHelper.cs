@@ -123,5 +123,10 @@ namespace PackageManagement.Tests.Helpers
 		{
 			Method.Stub(m => m.IsStatic).Return(true);
 		}
+		
+		public void MakeMethodAbstract()
+		{
+			Method.Stub(m => m.IsAbstract).Return(true);
+		}
 	}
 }

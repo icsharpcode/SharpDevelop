@@ -75,6 +75,11 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.MakeMethodStatic();
 		}
 		
+		void MakeMethodAbstract()
+		{
+			helper.MakeMethodAbstract();
+		}
+		
 		[Test]
 		public void Access_PublicFunction_ReturnsPublic()
 		{
@@ -297,6 +302,27 @@ namespace PackageManagement.Tests.EnvDTE
 			bool shared = codeFunction.IsShared;
 			
 			Assert.IsFalse(shared);
+		}
+		
+		[Test]
+		public void MustImplement_AbstractMethod_ReturnsTrue()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			MakeMethodAbstract();
+			
+			bool mustImplement = codeFunction.MustImplement;
+			
+			Assert.IsTrue(mustImplement);
+		}
+		
+		[Test]
+		public void MustImplement_MethodIsNotAbstract_ReturnsFalse()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			
+			bool mustImplement = codeFunction.MustImplement;
+			
+			Assert.IsFalse(mustImplement);
 		}
 	}
 }
