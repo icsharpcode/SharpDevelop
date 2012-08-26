@@ -155,5 +155,10 @@ namespace PackageManagement.Tests.Helpers
 		{
 			Method.Stub(m => m.IsNew).Return(true);
 		}
+		
+		public void MakeMethodOverridable()
+		{
+			Method.Stub(m => m.IsOverridable).Return(true);
+		}
 	}
 }

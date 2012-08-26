@@ -65,7 +65,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual bool CanOverride {
-			get { return MustImplement || Method.IsVirtual; }
+			get { return Method.IsOverridable; }
 			set { throw new NotImplementedException(); }
 		}
 		

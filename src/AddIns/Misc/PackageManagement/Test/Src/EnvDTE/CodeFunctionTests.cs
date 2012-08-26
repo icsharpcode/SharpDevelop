@@ -90,6 +90,11 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddAttributeToMethod(attributeTypeName);
 		}
 		
+		void MakeMethodOverridable()
+		{
+			helper.MakeMethodOverridable();
+		}
+		
 		[Test]
 		public void Access_PublicFunction_ReturnsPublic()
 		{
@@ -336,10 +341,10 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
-		public void CanOverride_AbstractMethod_ReturnsTrue()
+		public void CanOverride_MethodIsOverridable_ReturnsTrue()
 		{
 			CreatePublicFunction("MyClass.MyFunction");
-			MakeMethodAbstract();
+			MakeMethodOverridable();
 			
 			bool canOverride = codeFunction.CanOverride;
 			
@@ -354,17 +359,6 @@ namespace PackageManagement.Tests.EnvDTE
 			bool canOverride = codeFunction.CanOverride;
 			
 			Assert.IsFalse(canOverride);
-		}
-		
-		[Test]
-		public void CanOverride_VirtualMethod_ReturnsTrue()
-		{
-			CreatePublicFunction("MyClass.MyFunction");
-			MakeMethodVirtual();
-			
-			bool canOverride = codeFunction.CanOverride;
-			
-			Assert.IsTrue(canOverride);
 		}
 		
 		[Test]
