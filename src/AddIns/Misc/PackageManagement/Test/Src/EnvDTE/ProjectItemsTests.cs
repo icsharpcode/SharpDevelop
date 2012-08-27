@@ -831,5 +831,14 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("AccountController.cs", projectItem.Name);
 		}
+		
+		[Test]
+		public void Item_UnknownProjectItemName_ThrowsException()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile("Program.cs");
+			
+			Assert.Throws<ArgumentException>(() => projectItems.Item("unknown.cs"));
+		}
 	}
 }

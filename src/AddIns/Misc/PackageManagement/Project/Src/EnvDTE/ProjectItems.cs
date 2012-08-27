@@ -88,7 +88,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 					return item;
 				}
 			}
-			return null;
+			throw new ArgumentException("Unable to find item: " + name, "name");
 		}
 		
 		internal virtual ProjectItem Item(int index)
