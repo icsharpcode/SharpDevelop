@@ -110,8 +110,8 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 	{
 		ICSharpCode.AvalonEdit.Search.ISearchResult match;
 		
-		public AvalonEditSearchResultMatch(FileName fileName, Location startLocation, Location endLocation, int offset, int length, HighlightedInlineBuilder builder, HighlightingColor defaultTextColor, ICSharpCode.AvalonEdit.Search.ISearchResult match)
-			: base(fileName, startLocation, endLocation, offset, length, builder, defaultTextColor)
+		public AvalonEditSearchResultMatch(FileName fileName, Location startLocation, Location endLocation, int offset, int length, HighlightedInlineBuilder builder, ISyntaxHighlighter highlighter, ICSharpCode.AvalonEdit.Search.ISearchResult match)
+			: base(fileName, startLocation, endLocation, offset, length, builder, GetDefaultHighlightTextColor(highlighter))
 		{
 			this.match = match;
 		}
@@ -119,6 +119,14 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		public override string TransformReplacePattern(string pattern)
 		{
 			return match.ReplaceWith(pattern);
+		}
+		
+		static HighlightingColor GetDefaultHighlightTextColor(ISyntaxHighlighter highlighter)
+		{
+			if (highlighter != null) {
+				return highlighter.DefaultTextColor;
+			}
+			return null;
 		}
 	}
 	
