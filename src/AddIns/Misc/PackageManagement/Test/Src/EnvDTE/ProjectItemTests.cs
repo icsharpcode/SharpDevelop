@@ -318,5 +318,46 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(@"d:\projects\MyProject\program.cs", fakeFileService.FileNamePassedToOpenFile);
 		}
+		
+		[Test]
+		public void ProjectItems_ProjectItemHasDependentFile_DependentFileNotAvailableFromProjectItems()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile("MainForm.cs");
+			msbuildProject.AddDependentFile("MainForm.Designer.cs", "MainForm.cs");
+			
+			ProjectItems projectItems = project.ProjectItems;
+			
+			string[] expectedFiles = new string[] {
+				"MainForm.cs"
+			};
+			ProjectItemCollectionAssert.AreEqual(expectedFiles, projectItems);
+		}
+		
+		[Test]
+		public void ProjectItems_ProjectItemHasDependentFile_DependentFileNotAvailableFromProject()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile("MainForm.cs");
+			msbuildProject.AddDependentFile("MainForm.Designer.cs", "MainForm.cs");
+			
+			Assert.Throws<ArgumentException>(() => project.ProjectItems.Item("MainForm.Designer.cs"));
+		}
+		
+		[Test]
+		public void ProjectItems_ProjectItemHasDependentFile_ReturnsDependentFile()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile("MainForm.cs");
+			msbuildProject.AddDependentFile("MainForm.Designer.cs", "MainForm.cs");
+			ProjectItem mainFormItem = project.ProjectItems.Item("MainForm.cs");
+			
+			ProjectItems mainFormProjectItems = mainFormItem.ProjectItems;
+			
+			string[] expectedFiles = new string[] {
+				"MainForm.Designer.cs"
+			};
+			ProjectItemCollectionAssert.AreEqual(expectedFiles, mainFormProjectItems);
+		}
 	}
 }

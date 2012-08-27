@@ -125,6 +125,8 @@
     <Compile Include="Src\EnvDTE\FileCodeModelCodeElements.cs" />
     <Compile Include="Src\EnvDTE\FileCodeModelCodeNamespace.cs" />
     <Compile Include="Src\EnvDTE\FileCodeModelCodeNamespaceMembers.cs" />
+    <Compile Include="Src\EnvDTE\FileProjectItemExtensions.cs" />
+    <Compile Include="Src\EnvDTE\FileProjectItems.cs" />
     <Compile Include="Src\EnvDTE\IClassExtensions.cs" />
     <Compile Include="Src\EnvDTE\ImplementedInterfacesOnClass.cs" />
     <Compile Include="Src\EnvDTE\IParameterExtensions.cs" />

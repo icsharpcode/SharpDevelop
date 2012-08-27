@@ -34,7 +34,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		ProjectItem ConvertToProjectItem(SD.ProjectItem item)
 		{
 			var fileItem = item as FileProjectItem;
-			if (fileItem != null) {
+			if ((fileItem != null) && !fileItem.IsDependentUponAnotherFile())  {
 				return ConvertFileToProjectItem(fileItem);
 			}
 			return null;

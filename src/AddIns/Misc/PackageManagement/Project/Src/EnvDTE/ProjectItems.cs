@@ -11,13 +11,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class ProjectItems : MarshalByRefObject, IEnumerable
 	{
-		Project project;
 		IPackageManagementFileService fileService;
 		object parent;
 		
 		public ProjectItems(Project project, object parent, IPackageManagementFileService fileService)
 		{
-			this.project = project;
+			this.Project = project;
 			this.fileService = fileService;
 			this.parent = parent;
 		}
@@ -25,6 +24,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public ProjectItems()
 		{
 		}
+		
+		protected Project Project { get; private set; }
 		
 		public virtual object Parent {
 			get { return parent; }
@@ -34,8 +35,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			string include = GetIncludePathForFileCopy(filePath);
 			CopyFileIntoProject(filePath, include);
-			project.AddFileProjectItemUsingPathRelativeToProject(include);
-			project.Save();
+			Project.AddFileProjectItemUsingPathRelativeToProject(include);
+			Project.Save();
 		}
 		
 		/// <summary>
@@ -68,7 +69,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		string GetFileNameInProjectFromProjectItemInclude(string projectItemInclude)
 		{
-			return Path.Combine(project.MSBuildProject.Directory, projectItemInclude);
+			return Path.Combine(Project.MSBuildProject.Directory, projectItemInclude);
 		}
 		
 		public virtual IEnumerator GetEnumerator()
@@ -78,7 +79,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		protected virtual IEnumerable<ProjectItem> GetProjectItems()
 		{
-			return new ProjectItemsInsideProject(project);
+			return new ProjectItemsInsideProject(Project);
 		}
 		
 		internal virtual ProjectItem Item(string name)
@@ -108,18 +109,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual ProjectItem AddFromDirectory(string directory)
 		{
-			using (IProjectBrowserUpdater updater = project.CreateProjectBrowserUpdater()) {
-				ProjectItem directoryItem = project.AddDirectoryProjectItemUsingFullPath(directory);
-				project.Save();
+			using (IProjectBrowserUpdater updater = Project.CreateProjectBrowserUpdater()) {
+				ProjectItem directoryItem = Project.AddDirectoryProjectItemUsingFullPath(directory);
+				Project.Save();
 				return directoryItem;
 			}
 		}
 		
 		public virtual ProjectItem AddFromFile(string fileName)
 		{
-			using (IProjectBrowserUpdater updater = project.CreateProjectBrowserUpdater()) {
-				ProjectItem projectItem = project.AddFileProjectItemUsingFullPath(fileName);
-				project.Save();
+			using (IProjectBrowserUpdater updater = Project.CreateProjectBrowserUpdater()) {
+				ProjectItem projectItem = Project.AddFileProjectItemUsingFullPath(fileName);
+				Project.Save();
 				fileService.ParseFile(fileName);
 				return projectItem;
 			}

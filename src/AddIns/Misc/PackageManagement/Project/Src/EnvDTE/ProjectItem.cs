@@ -25,9 +25,17 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			this.projectItem = projectItem;
 			this.ContainingProject = project;
-			this.ProjectItems = new DirectoryProjectItems(this);
+			this.ProjectItems = CreateProjectItems(projectItem);
 			CreateProperties();
 			Kind = GetKindFromFileProjectItemType();
+		}
+		
+		ProjectItems CreateProjectItems(FileProjectItem projectItem)
+		{
+			if (projectItem.ItemType == ItemType.Folder) {
+				return new DirectoryProjectItems(this);
+			}
+			return new FileProjectItems(this);
 		}
 		
 		internal ProjectItem(MSBuildBasedProject project, IClass c)
@@ -175,7 +183,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return projectItem.FileName; }
 		}
 		
-		public Document Document {
+		public virtual Document Document {
 			get { return GetOpenDocument(); }
 		}
 		
@@ -188,7 +196,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return null;
 		}
 		
-		public Window Open(string viewKind)
+		public virtual Window Open(string viewKind)
 		{
 			ContainingProject.OpenFile(FileName);
 			return null;
