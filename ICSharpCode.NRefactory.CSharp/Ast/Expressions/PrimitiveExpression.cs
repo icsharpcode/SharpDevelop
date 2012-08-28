@@ -43,9 +43,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		string literalValue;
+		TextLocation? endLocation;
 		public override TextLocation EndLocation {
 			get {
-				return new TextLocation (StartLocation.Line, StartLocation.Column + literalValue.Length);
+				if (!endLocation.HasValue) {
+					endLocation = value is string ? AdvanceLocation (StartLocation, literalValue) :
+						new TextLocation (StartLocation.Line, StartLocation.Column + literalValue.Length);
+				}
+				return endLocation.Value;
 			}
 		}
 		
@@ -101,6 +106,34 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitPrimitiveExpression (this, data);
+		}
+
+		unsafe static TextLocation AdvanceLocation(TextLocation startLocation, string str)
+		{
+			int line = startLocation.Line;
+			int col  = startLocation.Column;
+			fixed (char* start = str) {
+				char* p = start;
+				char* endPtr = start + str.Length;
+				while (p < endPtr) {
+					switch (*p) {
+						case '\r':
+							char* nextp = p + 1;
+							if (nextp < endPtr && *nextp == '\n') 
+								p++;
+							goto case '\n';
+						case '\n':
+							line++;
+							col = 1;
+							break;
+						default:
+							col++;
+							break;
+					}
+					p++;
+				}
+			}
+			return new TextLocation (line, col);
 		}
 		
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
