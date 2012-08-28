@@ -535,7 +535,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				
 				Connect(data, conditionNode);
 				
-				bool? cond = builder.EvaluateCondition(whileStatement.Condition);
+				bool? cond = whileStatement.Condition.IsNull ? true : builder.EvaluateCondition(whileStatement.Condition);
 				ControlFlowNode bodyStart = builder.CreateStartNode(whileStatement.EmbeddedStatement);
 				if (cond != false)
 					Connect(conditionNode, bodyStart, ControlFlowEdgeType.ConditionTrue);
@@ -563,7 +563,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				ControlFlowNode bodyEnd = doWhileStatement.EmbeddedStatement.AcceptVisitor(this, bodyStart);
 				Connect(bodyEnd, conditionNode);
 				
-				bool? cond = builder.EvaluateCondition(doWhileStatement.Condition);
+				bool? cond = doWhileStatement.Condition.IsNull ? true : builder.EvaluateCondition(doWhileStatement.Condition);
 				if (cond != false)
 					Connect(conditionNode, bodyStart, ControlFlowEdgeType.ConditionTrue);
 				if (cond != true)
