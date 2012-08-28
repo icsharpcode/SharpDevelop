@@ -158,8 +158,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		internal ProjectItem AddFileProjectItemUsingFullPath(string path)
 		{
+			return AddFileProjectItemWithDependentUsingFullPath(path, null);
+		}
+		
+		internal ProjectItem AddFileProjectItemWithDependentUsingFullPath(string path, string dependentUpon)
+		{
 			FileProjectItem fileProjectItem = CreateFileProjectItemUsingFullPath(path);
 			fileProjectItem.FileName = path;
+			fileProjectItem.DependentUpon = dependentUpon;
 			AddProjectItemToMSBuildProject(fileProjectItem);
 			return new ProjectItem(this, fileProjectItem);
 		}

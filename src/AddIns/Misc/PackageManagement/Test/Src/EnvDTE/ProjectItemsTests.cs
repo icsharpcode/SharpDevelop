@@ -667,7 +667,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			projectBrowserUpdater.AssertWasCalled(updater => updater.Dispose());
 		}
-				
+		
 		[Test]
 		public void AddFromDirectory_EmptyDirectoryInsideProject_ProjectBrowserUpdaterIsDisposed()
 		{
@@ -839,6 +839,27 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildProject.AddFile("Program.cs");
 			
 			Assert.Throws<ArgumentException>(() => projectItems.Item("unknown.cs"));
+		}
+		
+		[Test]
+		public void AddFromFile_AddFromFileFromProjectItemsBelongingToFile_FileIsAddedAsDependentFile()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			msbuildProject.AddFile("MainForm.cs");
+			string fileName = @"d:\projects\myproject\MainForm.Designer.cs";
+			msbuildProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.Page;
+			projectItems = project.ProjectItems.Item("MainForm.cs").ProjectItems;
+			
+			projectItems.AddFromFile(fileName);
+			
+			FileProjectItem fileItem = msbuildProject.FindFile(fileName);
+			
+			Assert.AreEqual("MainForm.Designer.cs", fileItem.Include);
+			Assert.AreEqual(fileName, fileItem.FileName);
+			Assert.AreEqual(ItemType.Page, fileItem.ItemType);
+			Assert.AreEqual(msbuildProject, fileItem.Project);
+			Assert.AreEqual("MainForm.cs", fileItem.DependentUpon);
 		}
 	}
 }

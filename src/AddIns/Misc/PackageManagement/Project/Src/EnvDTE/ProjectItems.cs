@@ -119,11 +119,19 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public virtual ProjectItem AddFromFile(string fileName)
 		{
 			using (IProjectBrowserUpdater updater = Project.CreateProjectBrowserUpdater()) {
-				ProjectItem projectItem = Project.AddFileProjectItemUsingFullPath(fileName);
+				ProjectItem projectItem = AddFileProjectItemToProject(fileName);
 				Project.Save();
 				fileService.ParseFile(fileName);
 				return projectItem;
 			}
+		}
+		
+		/// <summary>
+		/// Adds a file to the project with this ProjectItems as its parent.
+		/// </summary>
+		protected virtual ProjectItem AddFileProjectItemToProject(string fileName)
+		{
+			return Project.AddFileProjectItemUsingFullPath(fileName);
 		}
 		
 		public virtual int Count {

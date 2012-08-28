@@ -17,11 +17,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class FileProjectItems : ProjectItems
 	{
 		ProjectItem projectItem;
+		IPackageManagementFileService fileService;
 		
 		public FileProjectItems(ProjectItem projectItem)
-			: base(projectItem.ContainingProject, projectItem, new PackageManagementFileService())
+			: this(projectItem, new PackageManagementFileService())
+		{
+		}
+		
+		public FileProjectItems(ProjectItem projectItem, IPackageManagementFileService fileService)
+			: base(projectItem.ContainingProject, projectItem, fileService)
 		{
 			this.projectItem = projectItem;
+			this.fileService = fileService;
 		}
 		
 		protected override IEnumerable<ProjectItem> GetProjectItems()
@@ -45,6 +52,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				.Items
 				.Where(item => item is SD.FileProjectItem)
 				.Select(item => (SD.FileProjectItem)item);
+		}
+		
+		protected override ProjectItem AddFileProjectItemToProject(string fileName)
+		{
+			return AddFileProjectItemWithDependent(fileName);
+		}
+		
+		ProjectItem AddFileProjectItemWithDependent(string fileName)
+		{
+			return Project.AddFileProjectItemWithDependentUsingFullPath(fileName, projectItem.Name);
 		}
 	}
 }
