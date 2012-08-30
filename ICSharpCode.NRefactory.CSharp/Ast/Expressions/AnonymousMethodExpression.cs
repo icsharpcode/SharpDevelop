@@ -80,6 +80,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public AnonymousMethodExpression (BlockStatement body, IEnumerable<ParameterDeclaration> parameters = null)
 		{
 			if (parameters != null) {
+				hasParameterList = true;
 				foreach (var parameter in parameters) {
 					AddChild (parameter, Roles.Parameter);
 				}
