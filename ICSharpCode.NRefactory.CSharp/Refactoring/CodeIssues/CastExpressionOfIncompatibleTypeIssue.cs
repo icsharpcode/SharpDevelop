@@ -26,6 +26,8 @@
 
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -43,9 +45,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
+			readonly CSharpConversions conversion;
+
 			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)
 			{
+				conversion = new CSharpConversions(ctx.Compilation);
 			}
 
 			public override void VisitCastExpression (CastExpression castExpression)
@@ -66,8 +71,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			void VisitTypeCastExpression (Expression expression, IType exprType, IType castToType)
 			{
-				if (TypeCompatibilityHelper.CheckTypeCompatibility (exprType, castToType) ==
-				    TypeCompatibilityHelper.TypeCompatiblity.NeverOfProvidedType)
+				var foundConversion = conversion.ExplicitConversion(exprType, castToType);
+				if (foundConversion == Conversion.None)
 					AddIssue (expression, ctx.TranslateString ("Type cast expression of incompatible type"));
 			}
 		}

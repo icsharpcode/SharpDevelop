@@ -46,5 +46,21 @@ class TestClass
 }";
 			Test<CastExpressionOfIncompatibleTypeIssue> (input, 2);
 		}
+
+		[Test]
+		public void TestCompatibleTypes ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		var x1 = (int)123;
+		var x2 = (int)System.ConsoleKey.A;
+	}
+}";
+
+			Test<CastExpressionOfIncompatibleTypeIssue> (input, 0);
+		}
 	}
 }
