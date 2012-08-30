@@ -405,7 +405,9 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			
 			public override ControlFlowNode VisitIfElseStatement(IfElseStatement ifElseStatement, ControlFlowNode data)
 			{
-				bool? cond = builder.EvaluateCondition(ifElseStatement.Condition);
+				bool? cond = ifElseStatement.Condition.IsNull ? true : builder.EvaluateCondition(ifElseStatement.Condition);
+				if (ifElseStatement.TrueStatement.IsNull)
+					return data;
 				ControlFlowNode trueBegin = builder.CreateStartNode(ifElseStatement.TrueStatement);
 				if (cond != false)
 					Connect(data, trueBegin, ControlFlowEdgeType.ConditionTrue);
