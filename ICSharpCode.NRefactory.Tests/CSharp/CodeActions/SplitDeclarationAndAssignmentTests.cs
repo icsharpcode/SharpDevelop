@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"{" + Environment.NewLine +
 				"	void Test ()" + Environment.NewLine +
 				"	{" + Environment.NewLine +
-				"		var aVar;" + Environment.NewLine +
+				"		TestClass aVar;" + Environment.NewLine +
 				"		aVar = this;" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"}", result);
