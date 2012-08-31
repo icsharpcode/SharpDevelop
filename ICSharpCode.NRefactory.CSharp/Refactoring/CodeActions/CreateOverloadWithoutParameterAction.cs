@@ -66,15 +66,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					Expression argExpr;
 					if (node.ParameterModifier == ParameterModifier.Ref) {
 						body.Add (new VariableDeclarationStatement (node.Type.Clone (), node.Name, defaultExpr));
-						argExpr = new DirectionExpression (FieldDirection.Ref, new IdentifierExpression (node.Name));
+						argExpr = GetArgumentExpression (node);
 					} else if (node.ParameterModifier == ParameterModifier.Out) {
 						body.Add (new VariableDeclarationStatement (node.Type.Clone (), node.Name));
-						argExpr = new DirectionExpression (FieldDirection.Out, new IdentifierExpression (node.Name));
+						argExpr = GetArgumentExpression (node);
 					} else {
 						argExpr = defaultExpr;
 					}
 					body.Add (new InvocationExpression (new IdentifierExpression (methodDecl.Name),
-						methodDecl.Parameters.Select (param => param == node ? argExpr : new IdentifierExpression (param.Name))));
+						methodDecl.Parameters.Select (param => param == node ? argExpr : GetArgumentExpression(param))));
 
 					var decl = (MethodDeclaration)methodDecl.Clone ();
 					decl.Parameters.Remove (decl.Parameters.First (param => param.Name == node.Name));
@@ -85,6 +85,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					//if (node.ParameterModifier != ParameterModifier.Out)
 					//    script.Link (defaultExpr);
 				}); 
+		}
+
+		static Expression GetArgumentExpression(ParameterDeclaration parameter)
+		{
+			var identifierExpr = new IdentifierExpression(parameter.Name);
+			switch (parameter.ParameterModifier) {
+				case ParameterModifier.Out:
+					return new DirectionExpression (FieldDirection.Out, identifierExpr);
+				case ParameterModifier.Ref:
+					return new DirectionExpression (FieldDirection.Ref, identifierExpr);
+			}
+			return identifierExpr;
 		}
 
 		static Expression GetDefaultValueExpression (RefactoringContext context, AstType astType)
