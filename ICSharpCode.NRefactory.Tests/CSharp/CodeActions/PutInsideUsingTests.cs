@@ -187,6 +187,30 @@ class TestClass
 	}
 }");
 		}
+
+		[Test]
+		public void TestRemoveDisposeInvocation ()
+		{
+			Test<PutInsideUsingAction> (@"
+class TestClass
+{
+	void TestMethod ()
+	{
+		System.IDisposable obj $= null;
+		obj.Method ();
+		obj.Dispose();
+	}
+}", @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		using (System.IDisposable obj = null) {
+			obj.Method ();
+		}
+	}
+}");
+		}
 	}
 
 }

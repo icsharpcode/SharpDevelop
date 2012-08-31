@@ -29,6 +29,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.PatternMatching;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -99,6 +100,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					foreach (var decl in variableToMoveOutside)
 						script.InsertBefore (variableDecl, decl);
 
+					if (body.Statements.Count > 0) {
+						var lastStatement = body.Statements.Last ();
+						if (IsDisposeInvocation (resolveResult.Variable.Name, lastStatement))
+							lastStatement.Remove ();
+					}
 					var usingStatement = new UsingStatement
 					{
 						ResourceAcquisition = new VariableDeclarationStatement (variableDecl.Type.Clone (), node.Name,
@@ -142,6 +148,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						lastReference = v;
 				}, context.CancellationToken);
 			return lastReference;
+		}
+
+		static bool IsDisposeInvocation (string variableName, Statement statement)
+		{
+			var memberReferenceExpr = new MemberReferenceExpression (new IdentifierExpression (variableName), "Dispose");
+			var pattern = new ExpressionStatement (new InvocationExpression (memberReferenceExpr));
+			return pattern.Match (statement).Success;
 		}
 	}
 }
