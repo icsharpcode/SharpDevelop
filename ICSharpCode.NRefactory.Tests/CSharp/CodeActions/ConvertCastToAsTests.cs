@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class ConvertCastToAsTests : ContextActionTestBase
 	{
-		void TestType(string type)
+		void TestType (string type)
 		{
 			string input = @"
 using System;
@@ -56,19 +56,19 @@ class TestClass
 		}
 
 		[Test]
-		public void Test()
+		public void Test ()
 		{
 			TestType ("Exception");
 		}
 
 		[Test]
-		public void TestNullable()
+		public void TestNullable ()
 		{
 			TestType ("int?");	
 		}
 
 		[Test]
-		public void TestNonReferenceType()
+		public void TestNonReferenceType ()
 		{
 			TestWrongContext<ConvertCastToAsAction> (@"
 using System;
@@ -76,9 +76,29 @@ class TestClass
 {
 	void Test (object a)
 	{
-		var b = (int)$a;
+		var b = ($int)a;
 	}
 }");
+		}
+
+		[Test]
+		public void TestInsertParentheses ()
+		{
+			string input = @"
+class TestClass {
+	void TestMethod (object o)
+	{
+		var b = 1 + ($TestClass)o;
+	}
+}";
+			string output = @"
+class TestClass {
+	void TestMethod (object o)
+	{
+		var b = 1 + (o as TestClass);
+	}
+}";
+			Test<ConvertCastToAsAction> (input, output);
 		}
 	}
 }
