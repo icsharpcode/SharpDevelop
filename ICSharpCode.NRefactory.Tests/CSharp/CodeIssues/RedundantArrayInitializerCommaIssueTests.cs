@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using ICSharpCode.NRefactory.CSharp.CodeActions;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using NUnit.Framework;
 
@@ -52,6 +53,58 @@ class TestClass
 	}
 }";
 			Test<RedundantArrayInitializerCommaIssue> (input, 1, output);
+		}
+
+		[Test]
+		public void TestArrayInitializerDescription ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		var a = new int[] { 1, 2, };
+	}
+}";
+			TestRefactoringContext ctx;
+			var issues = GetIssues (new RedundantArrayInitializerCommaIssue (), input, out ctx);
+			Assert.AreEqual (issues.Count, 1);
+			Assert.AreEqual (issues [0].Description, "Remove redundant comma in array initializer");
+		}
+
+		[Test]
+		public void TestObjectInitializerDescription ()
+		{
+			var input = @"
+class TestClass
+{
+	int Prop { get; set; }
+	void TestMethod ()
+	{
+		var a = new TestClass { Prop = 1, };
+	}
+}";
+			TestRefactoringContext ctx;
+			var issues = GetIssues (new RedundantArrayInitializerCommaIssue (), input, out ctx);
+			Assert.AreEqual (issues.Count, 1);
+			Assert.AreEqual (issues [0].Description, "Remove redundant comma in object initializer");
+		}
+
+		[Test]
+		public void TestCollectionInitializerDescrition ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		var a = new TestClass { 1, };
+	}
+}";
+			TestRefactoringContext ctx;
+			var issues = GetIssues (new RedundantArrayInitializerCommaIssue (), input, out ctx);
+			Assert.AreEqual (issues.Count, 1);
+			Assert.AreEqual (issues [0].Description, "Remove redundant comma in collection initializer");
 		}
 	}
 }
