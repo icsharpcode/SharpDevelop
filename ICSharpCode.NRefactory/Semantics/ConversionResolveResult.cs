@@ -64,12 +64,5 @@ namespace ICSharpCode.NRefactory.Semantics
 			return new [] { Input };
 		}
 
-		public override object ConstantValue {
-			get { 
-				if (Conversion.IsNullableConversion)
-					return Input.ConstantValue;
-				return null;
-			}
-		}
 	}
 }
