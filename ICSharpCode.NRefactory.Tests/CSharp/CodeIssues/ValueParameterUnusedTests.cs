@@ -123,7 +123,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		{
 			var input = @"class A
 {
-string  Property { get; }
+	string  Property { get; }
 }";
 			TestRefactoringContext context;
 			var issues = GetIssues(new ValueParameterUnusedIssue(), input, out context);
@@ -135,7 +135,24 @@ string  Property { get; }
 		{
 			var input = @"abstract class A
 {
-public abstract string this[int i] { get; set; }
+	public abstract string this[int i] { get; set; }
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ValueParameterUnusedIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void DoesNotWarnOnExceptionThrowingAccessor()
+		{
+			var input = @"abstract class A
+{
+	public string Property
+	{
+		set {
+			throw new Exception();
+		}
+	}
 }";
 			TestRefactoringContext context;
 			var issues = GetIssues(new ValueParameterUnusedIssue(), input, out context);

@@ -467,6 +467,137 @@ class A
 	}
 }");
 		}
+		
+		[Test]
+		public void DoesNotReorderMethodCalls ()
+		{	
+			var input = @"
+using System;
+class A
+{
+	int GetValue () { return 0; }
+	int SetValue (int i) { }
+
+	void F (int i, int j)
+	{
+		int k = GetValue ();
+		if (j > 3) {
+			if (i < 2) {
+				// This should block any move past this point
+				SetValue (2);
+			}
+			Console.WriteLine(k);
+		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			
+			CheckFix(context, issues[0], @"
+using System;
+class A
+{
+	int GetValue () { return 0; }
+	int SetValue (int i) { }
+
+	void F (int i, int j)
+	{
+		if (j > 3) {
+			int k = GetValue ();
+			if (i < 2) {
+				// This should block any move past this point
+				SetValue (2);
+			}
+			Console.WriteLine(k);
+		}
+	}
+}");
+		}
+		
+		[Test]
+		public void CommonParentStatement ()
+		{	
+			var input = @"
+using System;
+class A
+{
+	int GetValue () { return 0; }
+	int SetValue (int i) { }
+
+	void F (int i, int j)
+	{
+		int k = GetValue ();
+		{
+			SetValue (k);
+			SetValue (k);
+		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			
+			CheckFix(context, issues[0], @"
+using System;
+class A
+{
+	int GetValue () { return 0; }
+	int SetValue (int i) { }
+
+	void F (int i, int j)
+	{
+		{
+			int k = GetValue ();
+			SetValue (k);
+			SetValue (k);
+		}
+	}
+}");
+		}
+		
+		[Test]
+		public void CaseTarget ()
+		{	
+			var input = @"
+using System;
+class A
+{
+	int GetValue () { return 0; }
+	int SetValue (int i) { }
+
+	void F (int i)
+	{
+		int j = GetValue ();
+		switch (i) {
+		case 2:
+			SetValue (j + 1);
+			break;
+		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			
+			CheckFix(context, issues[0], @"
+using System;
+class A
+{
+	int GetValue () { return 0; }
+	int SetValue (int i) { }
+
+	void F (int i)
+	{
+		switch (i) {
+		case 2:
+			int j = GetValue ();
+			SetValue (j + 1);
+			break;
+		}
+	}
+}");
+		}
 	}
 }
 

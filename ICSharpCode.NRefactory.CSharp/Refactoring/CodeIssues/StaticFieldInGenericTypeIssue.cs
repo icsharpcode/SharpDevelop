@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -45,21 +47,47 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 			}
 
-			bool isInGenericType = false;
+			IList<ITypeParameter> availableTypeParameters = new List<ITypeParameter>();
 
 			public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
 			{
-				var oldGenericStatus = isInGenericType;
+				var typeResolveResult = ctx.Resolve(typeDeclaration);
+				var newTypeParameters = typeResolveResult.Type.GetDefinition().TypeParameters;
 
-				isInGenericType = typeDeclaration.TypeParameters.Count > 0;
+				var oldTypeParameters = availableTypeParameters; 
+				availableTypeParameters = Concat(availableTypeParameters, newTypeParameters);
 
 				base.VisitTypeDeclaration(typeDeclaration);
-				isInGenericType = oldGenericStatus;
+
+				availableTypeParameters = oldTypeParameters;
+			}
+
+			static IList<ITypeParameter> Concat(params IList<ITypeParameter>[] lists)
+			{
+				return lists.SelectMany(l => l).ToList();
+			}
+
+			bool UsesAllTypeParameters(FieldDeclaration fieldDeclaration)
+			{
+				if (availableTypeParameters.Count == 0)
+					return true;
+
+				var fieldType = ctx.Resolve(fieldDeclaration.ReturnType).Type as ParameterizedType;
+				if (fieldType == null)
+					return false;
+
+				// Check that all current type parameters are used in the field type
+				var fieldTypeParameters = fieldType.TypeArguments;
+				foreach (var typeParameter in availableTypeParameters) {
+					if (!fieldTypeParameters.Contains(typeParameter))
+						return false;
+				}
+				return true;
 			}
 
 			public override void VisitFieldDeclaration(FieldDeclaration fieldDeclaration)
 			{
-				if (isInGenericType && fieldDeclaration.Modifiers.HasFlag(Modifiers.Static)) {
+				if (fieldDeclaration.Modifiers.HasFlag(Modifiers.Static) && !UsesAllTypeParameters(fieldDeclaration)) {
 					AddIssue(fieldDeclaration, ctx.TranslateString("Static field in generic type"));
 				}
 			}

@@ -131,6 +131,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 
+		public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
+		{
+			base.VisitMethodDeclaration(methodDeclaration);
+
+			var lastParameter = methodDeclaration.Parameters.LastOrNullObject();
+			if (lastParameter.IsNull || !lastParameter.ParameterModifier.HasFlag(ParameterModifier.Params))
+				return;
+			var localResolveResult = context.Resolve(lastParameter) as LocalResolveResult;
+			if (localResolveResult == null)
+				return;
+			AddCriterion(localResolveResult.Variable, new IsArrayTypeCriterion());
+		}
+
 		Role[] roles = new [] {
 			Roles.Expression,
 			Roles.Argument,

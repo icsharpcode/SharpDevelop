@@ -76,6 +76,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 			{
+				if (HasEntryPointSignature(methodDeclaration))
+					return;
 				var eligibleParameters = methodDeclaration.Parameters
 					.Where(p => p.ParameterModifier != ParameterModifier.Out && p.ParameterModifier != ParameterModifier.Ref)
 					.ToList();
@@ -94,6 +96,24 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				foreach (var parameter in eligibleParameters) {
 					ProcessParameter(parameter, methodDeclaration.Body, collector);
 				}
+			}
+
+			bool HasEntryPointSignature(MethodDeclaration methodDeclaration)
+			{
+				if (!methodDeclaration.Modifiers.HasFlag(Modifiers.Static))
+					return false;
+				var returnType = ctx.Resolve(methodDeclaration.ReturnType).Type;
+				if (!returnType.IsKnownType(KnownTypeCode.Int32) && !returnType.IsKnownType(KnownTypeCode.Void))
+					return false;
+				var parameterCount = methodDeclaration.Parameters.Count;
+				if (parameterCount == 0)
+					return true;
+				if (parameterCount != 1)
+					return false;
+				var parameterType = ctx.Resolve(methodDeclaration.Parameters.First()).Type as ArrayType;
+				if (parameterType == null || !parameterType.ElementType.IsKnownType(KnownTypeCode.String))
+					return false;
+				return true;
 			}
 
 			void ProcessParameter(ParameterDeclaration parameter, AstNode rootResolutionNode, TypeCriteriaCollector collector)
