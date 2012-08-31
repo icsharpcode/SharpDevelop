@@ -32,13 +32,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[ContextAction("Convert 'as' to cast.", Description = "Convert 'as' to cast.")]
 	public class ConvertAsToCastAction : SpecializedCodeAction <AsExpression>
 	{
-
+		static InsertParenthesesVisitor insertParentheses = new InsertParenthesesVisitor ();
 		protected override CodeAction GetAction (RefactoringContext context, AsExpression node)
 		{
 			if (!node.AsToken.Contains (context.Location))
 				return null;
-			return new CodeAction (context.TranslateString ("Convert 'as' to cast"), 
-				script => script.Replace (node, new CastExpression (node.Type.Clone (), node.Expression.Clone ())));
+			return new CodeAction (context.TranslateString ("Convert 'as' to cast"),  script => {
+				var castExpr = new CastExpression (node.Type.Clone (), node.Expression.Clone ());
+				var parenthesizedExpr = node.Parent as ParenthesizedExpression;
+				if (parenthesizedExpr != null && parenthesizedExpr.Parent is Expression) {
+					// clone parent expression and replace the ParenthesizedExpression with castExpr to remove
+					// parentheses, then insert parentheses if necessary
+					var parentExpr = (Expression)parenthesizedExpr.Parent.Clone ();
+					parentExpr.GetNodeContaining (parenthesizedExpr.StartLocation, parenthesizedExpr.EndLocation)
+						.ReplaceWith (castExpr);
+					parentExpr.AcceptVisitor (insertParentheses);
+					script.Replace (parenthesizedExpr.Parent, parentExpr);
+				} else {
+					castExpr.AcceptVisitor (insertParentheses);
+					script.Replace (node, castExpr);
+				}
+			});
 		}
 	}
 }

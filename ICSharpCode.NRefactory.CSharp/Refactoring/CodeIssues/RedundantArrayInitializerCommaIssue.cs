@@ -57,7 +57,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var commaToken = arrayInitializerExpression.RBraceToken.PrevSibling as CSharpTokenNode;
 				if (commaToken == null || commaToken.GetText () != ",")
 					return;
-				AddIssue (commaToken, ctx.TranslateString ("Remove redundant comma in array initializer"),
+				string initializerType;
+				if (arrayInitializerExpression.Parent is ObjectCreateExpression) {
+					if (arrayInitializerExpression.Elements.FirstOrNullObject () is NamedExpression) {
+						initializerType = "object";
+					} else {
+						initializerType = "collection";
+					}
+				} else {
+					initializerType = "array";
+				}
+				AddIssue (commaToken, 
+					ctx.TranslateString (string.Format("Remove redundant comma in {0} initializer", initializerType)),
 					script => script.Remove (commaToken));
 			}
 		}
