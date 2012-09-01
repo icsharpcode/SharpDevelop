@@ -79,6 +79,11 @@ namespace PackageManagement.Tests.Helpers
 			return codeElements.FirstOrDefault() as CodeParameter;
 		}
 		
+		public static CodeParameter2 FirstCodeParameter2OrDefault(this CodeElements codeElements)
+		{
+			return codeElements.FirstOrDefault() as CodeParameter2;
+		}
+		
 		public static CodeImport FirstCodeImportOrDefault(this CodeElements codeElements)
 		{
 			return codeElements.FirstOrDefault() as CodeImport;

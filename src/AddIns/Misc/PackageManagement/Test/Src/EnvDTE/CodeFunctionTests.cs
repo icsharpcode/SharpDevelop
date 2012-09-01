@@ -202,12 +202,12 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
-		public void Parameters_MethodHasOneParameter_ReturnsOneCodeParameter()
+		public void Parameters_MethodHasOneParameter_ReturnsOneCodeParameter2()
 		{
 			AddParameterToMethod("test");
 			CreatePublicFunction("MyClass.MyMethod");
 			
-			CodeParameter parameter = codeFunction.Parameters.FirstCodeParameterOrDefault();
+			CodeParameter2 parameter = codeFunction.Parameters.FirstCodeParameter2OrDefault();
 			
 			Assert.AreEqual("test", parameter.Name);
 		}
