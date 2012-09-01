@@ -270,6 +270,19 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
+		public void Namespace_PublicClassAndNamespaceNameChecked_ReturnsFullyQualifiedClassNamespace()
+		{
+			CreateProjectContent();
+			helper.CreatePublicClass("MyNamespace.Test.MyClass");
+			helper.AddClassNamespace("MyNamespace.Test");
+			CreateClass();
+			
+			CodeNamespace codeNamespace = codeClass.Namespace;
+			
+			Assert.AreEqual("MyNamespace.Test", codeNamespace.Name);
+		}
+		
+		[Test]
 		public void PartialClasses_ClassIsNotPartial_ReturnsClass()
 		{
 			CreateProjectContent();

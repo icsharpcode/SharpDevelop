@@ -67,7 +67,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual CodeNamespace Namespace {
-			get { return new CodeNamespace(ProjectContent, Class.Namespace); }
+			get { return new FileCodeModelCodeNamespace(ProjectContent, Class.Namespace); }
 		}
 		
 		public virtual ProjectItem ProjectItem {
