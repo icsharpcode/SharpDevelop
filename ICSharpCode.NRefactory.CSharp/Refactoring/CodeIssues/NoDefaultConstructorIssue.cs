@@ -5,8 +5,8 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription ("No default constructor in base class",
-					   Description = "There is no default constructor in the base class",
+	[IssueDescription ("CS1729: Base class does not contain a 0 argument constructor",
+					   Description = "CS1729: Base class does not contain a 0 argument constructor",
 					   Category = IssueCategories.CompilerErrors,
 					   Severity = Severity.Error,
 					   IssueMarker = IssueMarker.Underline)]
@@ -20,6 +20,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		private class GatherVisitor : GatherVisitorBase
 		{
 			private bool initializerInvoked;
+			private IType baseType;
+			private ConstructorInitializer initializer;
 
 			public GatherVisitor(BaseRefactoringContext context)
 				: base(context)
@@ -33,6 +35,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 				if (baseType != null)
 				{
+					// Store the base type to use when visiting individual constructors
+					this.baseType = baseType;
+
 					var baseConstructor = baseType.GetConstructors(c => c.Parameters.Count == 0).FirstOrDefault();
 
 					if (baseConstructor == null) {
@@ -40,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 						if (constructor == null) {
 							// If there are no constructors declared then the base constructor isn't being invoked
-							this.AddIssue(declaration);
+							this.AddIssue(declaration, baseType);
 						} else {
 							base.VisitTypeDeclaration(declaration);
 						}
@@ -51,11 +56,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public override void VisitConstructorDeclaration(ConstructorDeclaration declaration)
 			{
 				this.initializerInvoked = false;
+				this.initializer = null;
 				
 				base.VisitConstructorDeclaration(declaration);
 
 				if (!this.initializerInvoked) {
-					this.AddIssue(declaration);
+					int argumentCount = initializer != null ? initializer.Arguments.Count : 0;
+					this.AddIssue(declaration, baseType, argumentCount);
 				}
 			}
 
@@ -65,13 +72,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 				if (!result.IsError) {
 					this.initializerInvoked = true;
+				} else {
+					this.initializer = initializer;
 				}
 			}
 
-			private void AddIssue(AstNode node)
+			private void AddIssue(AstNode node, IType baseClass, int argumentCount = 0)
 			{
 				var identifier = node.GetChildByRole(Roles.Identifier);
-				this.AddIssue(identifier, ctx.TranslateString("There is no default constructor in the base class"));
+				var errorMessage = string.Format("The type '{0}' does not contain a constructor that takes '{1}' arguments", baseClass.FullName, argumentCount);
+
+				this.AddIssue(identifier, ctx.TranslateString(errorMessage));
 			}
 		}
 	}
