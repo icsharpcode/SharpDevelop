@@ -82,6 +82,24 @@ class ChildClass : BaseClass
 
 			Test<NoDefaultConstructorIssue>(testInput, 0);
 		}
+
+		[Test]
+		public void ShouldMakeSureAllConstructorsInvokeBaseConstructor()
+		{
+			var testInput =
+@"class BaseClass
+{
+	public BaseClass(string test) {}
+}
+
+class ChildClass : BaseClass
+{
+	public ChildClass() : base(""test"") {}
+	public ChildClass(string test) {}
+}";
+
+			Test<NoDefaultConstructorIssue>(testInput, 1);
+		}
 	}
 }
 
