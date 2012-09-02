@@ -10,6 +10,7 @@ using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.CodeAnalysis
 {
@@ -39,7 +40,7 @@ namespace ICSharpCode.CodeAnalysis
 		
 		private void FindFxCopPath_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
-			string fn = OptionsHelper.OpenFile("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe;");
+			string fn = OptionsHelper.OpenFile("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe;","",TextBoxEditMode.EditRawProperty);
 			if (!String.IsNullOrEmpty(fn)) {
 				string path = Path.GetDirectoryName(fn);
 				if (FxCopWrapper.IsFxCopPath(path)) {

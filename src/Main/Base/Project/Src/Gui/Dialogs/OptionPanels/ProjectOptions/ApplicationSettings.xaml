@@ -9,7 +9,9 @@
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
 	xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project">
-	
+	<!--<optionpanels:ProjectOptionPanel.Resources>
+		<optionpanels:StorageLocationConverter x:Key="locationConverter" />
+	</optionpanels:ProjectOptionPanel.Resources>-->
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
 		<Grid>
 			<Grid.RowDefinitions>
@@ -59,16 +61,32 @@
 			<Label Grid.Row="4" Grid.Column="2"
 				Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.StartupObject}"></Label>
 			
-			<optionpanels:StorageLocationPicker Grid.Row="5" DockPanel.Dock="Left"
-				Location="{Binding OutputType.Location}"/>
-		 
-			<ComboBox x:Name="outputTypeComboBox" Grid.Row="5" Grid.Column="1"  VerticalAlignment="Center" Margin="3,0,3,0"
-				gui:EnumBinding.EnumType="{x:Type project:OutputType}"></ComboBox>
+			<optionpanels:StorageLocationPicker Grid.Row="5" DockPanel.Dock="Left">
+				<!--<optionpanels:StorageLocationPicker.Location>
+					<MultiBinding
+						Converter="{StaticResource locationConverter}">
+						<Binding Path="OutputType.Location" />
+						<Binding Path="StartupObject.Location" />
+					</MultiBinding>
+				</optionpanels:StorageLocationPicker.Location>-->
+			</optionpanels:StorageLocationPicker>
+				
+		
+			<ComboBox x:Name="outputTypeComboBox"
+			          Grid.Row="5" Grid.Column="1"  VerticalAlignment="Center" Margin="3,0,3,0"
+			          gui:EnumBinding.EnumType="{x:Type project:OutputType}"
+			          SelectedValue="{Binding OutputType.Value}"
+			></ComboBox>
 		
 			<ComboBox x:Name="startupObjectComboBox" Grid.Row="5" Grid.Column="2" VerticalAlignment="Center"
-				IsEnabled="False"></ComboBox>
+			          Text="{Binding StartupObject.Value,UpdateSourceTrigger=PropertyChanged}"
+			          IsEditable="True"
+			          IsEnabled="False">
+			</ComboBox>
 		
-			<Image x:Name="applicationIconImage" Width="32" Height="32" Grid.Row="6"></Image>
+			<Image  Grid.Row="6" Width="32" Height="32"
+			       Source="{Binding Image}">
+			</Image>
 			
 			<Label Grid.Row="6" Grid.Column="1" Margin="3,0,3,0"
 				Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.ApplicationIcon}"></Label>
@@ -78,8 +96,10 @@
 				<optionpanels:StorageLocationPicker DockPanel.Dock="Left" Location="{Binding ApplicationIcon.Location}"></optionpanels:StorageLocationPicker>
 				
 				<TextBox x:Name="applicationIconTextBox"
-					VerticalAlignment="Center"
-					Text="{Binding ApplicationIcon.Value,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+				         VerticalAlignment="Center"
+				         TextChanged="ApplicationIconTextBox_TextChanged"
+				         Text="{Binding ApplicationIcon.Value,UpdateSourceTrigger=PropertyChanged}">
+				</TextBox>
 			
 			</DockPanel>
 	
@@ -93,12 +113,16 @@
 			<widgets:StackPanelWithSpacing Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2"
 				SpaceBetweenItems="3"
 				Orientation="Horizontal">
-				<optionpanels:StorageLocationPicker DockPanel.Dock="Left" 
-					Location="{Binding PreBuildEvent.Location}"/>
-				
-				<ComboBox x:Name="applicationManifestComboBox" VerticalAlignment="Center"
-					SelectionChanged="ApplicationManifestComboBox_SelectionChanged"
-					Width="200"></ComboBox>
+				<optionpanels:StorageLocationPicker DockPanel.Dock="Left" Location="{Binding ApplicationManifest.Location}"/> 
+					
+				<!-- Text="{Binding ApplicationManifest.Value,UpdateSourceTrigger=PropertyChanged}"-->
+				<ComboBox x:Name="applicationManifestComboBox" VerticalAlignment="Center" Width="200"
+				          IsEditable="True"
+				          ItemsSource="{Binding ManifestItems}"
+				         
+				          LostFocus="ApplicationManifestComboBox_LostFocus"
+				          SelectionChanged="ApplicationManifestComboBox_SelectionChanged" >
+				</ComboBox>
 			
 			</widgets:StackPanelWithSpacing>
 			

@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		public static string BrowseForFolder(string description,string baseDirectory,
 		                                     string startLocation,string relativeLocation,
-		                                    TextBoxEditMode textBoxEditMode)
+		                                     TextBoxEditMode textBoxEditMode)
 		{
 			string startAt = startLocation;
 			if (!String.IsNullOrEmpty(relativeLocation)) {
@@ -40,45 +40,17 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 						return MSBuildInternals.Escape(path);
 					}
 				}
-				
 			}
 			return startLocation;
 		}
-		/*
-		public void Event(object sender, EventArgs e)
-			{
-				string startLocation = panel.baseDirectory;
-				if (startLocation != null) {
-					string text = panel.ControlDictionary[target].Text;
-					if (textBoxEditMode == TextBoxEditMode.EditRawProperty)
-						text = MSBuildInternals.Unescape(text);
-					startLocation = FileUtility.GetAbsolutePath(startLocation, text);
-				}
-				
-				using (FolderBrowserDialog fdiag = FileService.CreateFolderBrowserDialog(description, startLocation)) {
-					if (fdiag.ShowDialog() == DialogResult.OK) {
-						string path = fdiag.SelectedPath;
-						if (panel.baseDirectory != null) {
-							path = FileUtility.GetRelativePath(panel.baseDirectory, path);
-						}
-						if (!path.EndsWith("\\") && !path.EndsWith("/"))
-							path += "\\";
-						if (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty) {
-							panel.ControlDictionary[target].Text = path;
-						} else {
-							panel.ControlDictionary[target].Text = MSBuildInternals.Escape(path);
-						}
-					}
-				}
-			}
-		*/
+
 		
 		/// <summary>
 		/// Open File
 		/// </summary>
 		/// <param name="filter" or String.Empty></param>
 		/// <returns FileName></returns>
-		public static string OpenFile (string filter)
+		public static string OpenFile (string filter,string baseDirectory,TextBoxEditMode textBoxEditMode)
 		{
 			var dialog = new OpenFileDialog();
 			if (!String.IsNullOrEmpty(filter)) {
@@ -86,7 +58,15 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 			
 			if (dialog.ShowDialog() ?? false) {
-				return dialog.FileName;
+				string fileName = dialog.FileName;
+				if (!String.IsNullOrEmpty(baseDirectory)) {
+						fileName = FileUtility.GetRelativePath(baseDirectory, fileName);
+					}
+				if (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty) {
+					return fileName;
+				} else {
+					return MSBuildInternals.Escape(fileName);
+				}
 			}
 			return string.Empty;
 		}

@@ -7,6 +7,7 @@ using System.Windows.Input;
 
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Widgets;
 using SDCore = ICSharpCode.Core;
 
@@ -44,7 +45,7 @@ namespace ICSharpCode.PythonBinding
 		
 		void Browse()
 		{
-			string str = OptionsHelper.OpenFile ("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe");
+			string str = OptionsHelper.OpenFile ("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe","",TextBoxEditMode.EditRawProperty);
 			if (String.IsNullOrEmpty(str))
 				return;
 			PythonFileName = str;

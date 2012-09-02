@@ -143,9 +143,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void BrowseKeyFile()
 		{
-			string str = OptionsHelper.OpenFile("${res:SharpDevelop.FileFilter.KeyFiles} (" + KeyFileExtensions + ")|" + KeyFileExtensions + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
-			if (!String.IsNullOrEmpty(str)) {
-				this.AssemblyOriginatorKeyFile.Value = str;
+			string fileName = OptionsHelper.OpenFile("${res:SharpDevelop.FileFilter.KeyFiles} (" + KeyFileExtensions + ")|" + KeyFileExtensions + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*",
+			                                    base.BaseDirectory,
+			                                    TextBoxEditMode.EditRawProperty);
+			if (!String.IsNullOrEmpty(fileName)) {
+				this.AssemblyOriginatorKeyFile.Value = fileName;
 			}                                                        
 		}
 		

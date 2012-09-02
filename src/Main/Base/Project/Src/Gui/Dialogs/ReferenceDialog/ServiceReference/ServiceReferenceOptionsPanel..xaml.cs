@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Windows.Input;
 
 using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Widgets;
 using Microsoft.Win32;
 
@@ -28,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels.ServiceReference
 		
 		void Browse()
 		{
-			string fileName = OptionsHelper.OpenFile(string.Empty); 
+			string fileName = OptionsHelper.OpenFile(string.Empty,"",TextBoxEditMode.EditRawProperty); 
 			if (!String.IsNullOrEmpty(fileName)) {
 				SvcUtilPath = fileName;
 			}
