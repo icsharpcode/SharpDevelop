@@ -1,12 +1,13 @@
 <AddIn name        = "CodeCoverageAddIn"
        author      = "Matt Ward"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Code Coverage AddIn for SharpDevelop using PartCover"
+       description = "Code Coverage AddIn for SharpDevelop using OpenCover"
        addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity   name  = "ICSharpCode.CodeCoverage"/>
 		<Dependency addin = "ICSharpCode.UnitTesting" requirePreload = "true"/>
+		<Dependency addin = "ICSharpCode.AvalonEdit" requirePreload = "true"/>
 	</Manifest>
 	
 	<Runtime>

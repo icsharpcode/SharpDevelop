@@ -54,7 +54,7 @@ namespace ICSharpCode.CodeCoverage
 		public void AddMethod(CodeCoverageMethod method)
 		{
 			name = GetPropertyName(method);
-			if (CodeCoverageProperty.IsGetter(method)) {
+			if (method.IsGetter) {
 				getter = method;
 			} else {
 				setter = method;
@@ -66,20 +66,10 @@ namespace ICSharpCode.CodeCoverage
 		/// </summary>
 		public static string GetPropertyName(CodeCoverageMethod method)
 		{
-			if (IsGetter(method) || IsSetter(method)) {
+			if (method.IsProperty) {
 				return method.Name.Substring(4);
 			}
 			return String.Empty;
-		}
-		
-		public static bool IsGetter(CodeCoverageMethod method)
-		{
-			return method.Name.StartsWith("get_");
-		}
-
-		public static bool IsSetter(CodeCoverageMethod method)
-		{
-			return method.Name.StartsWith("set_");
 		}
 	}
 }

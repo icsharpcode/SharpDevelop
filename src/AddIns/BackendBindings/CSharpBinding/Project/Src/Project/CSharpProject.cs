@@ -46,8 +46,7 @@ namespace CSharpBinding
 			Init();
 		}
 		
-		public const string DefaultTargetsFile = @"$(MSBuildBinPath)\Microsoft.CSharp.Targets";
-		public const string ExtendedTargetsFile = @"$(SharpDevelopBinPath)\SharpDevelop.Build.CSharp.targets";
+		public const string DefaultTargetsFile = @"$(MSBuildToolsPath)\Microsoft.CSharp.targets";
 		
 		public CSharpProject(ProjectCreateInformation info)
 			: base(info)
@@ -80,13 +79,35 @@ namespace CSharpBinding
 			}
 		}
 		
+		protected override ProjectBehavior CreateDefaultBehavior()
+		{
+			return new CSharpProjectBehavior(this, base.CreateDefaultBehavior());
+		}
+	}
+	
+	public class CSharpProjectBehavior : ProjectBehavior
+	{
+		public CSharpProjectBehavior(CSharpProject project, ProjectBehavior next = null)
+			: base(project, next)
+		{
+			
+		}
+		
+		public override ItemType GetDefaultItemType(string fileName)
+		{
+			if (string.Equals(Path.GetExtension(fileName), ".cs", StringComparison.OrdinalIgnoreCase))
+				return ItemType.Compile;
+			else
+				return base.GetDefaultItemType(fileName);
+		}
+		
 		static readonly CompilerVersion msbuild20 = new CompilerVersion(new Version(2, 0), "C# 2.0");
 		static readonly CompilerVersion msbuild35 = new CompilerVersion(new Version(3, 5), "C# 3.0");
 		static readonly CompilerVersion msbuild40 = new CompilerVersion(new Version(4, 0), DotnetDetection.IsDotnet45Installed() ? "C# 5.0" : "C# 4.0");
 		
 		public override CompilerVersion CurrentCompilerVersion {
 			get {
-				switch (MinimumSolutionVersion) {
+				switch (Project.MinimumSolutionVersion) {
 					case Solution.SolutionVersionVS2005:
 						return msbuild20;
 					case Solution.SolutionVersionVS2008:
@@ -109,66 +130,6 @@ namespace CSharpBinding
 			}
 			versions.Add(msbuild40);
 			return versions;
-		}
-		
-		/*
-		protected override void AddOrRemoveExtensions()
-		{
-			// Test if SharpDevelop-Build extensions are required
-			bool needExtensions = false;
-			
-			foreach (var p in GetAllProperties("TargetFrameworkVersion")) {
-				if (p.IsImported == false) {
-					if (p.Value.StartsWith("CF")) {
-						needExtensions = true;
-					}
-				}
-			}
-			
-			foreach (Microsoft.Build.BuildEngine.Import import in MSBuildProject.Imports) {
-				if (needExtensions) {
-					if (DefaultTargetsFile.Equals(import.ProjectPath, StringComparison.OrdinalIgnoreCase)) {
-						//import.ProjectPath = extendedTargets;
-						MSBuildInternals.SetImportProjectPath(this, import, ExtendedTargetsFile);
-						// Workaround for SD2-1490. It would be better if the project browser could refresh itself
-						// when necessary.
-						ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
-						break;
-					}
-				} else {
-					if (ExtendedTargetsFile.Equals(import.ProjectPath, StringComparison.OrdinalIgnoreCase)) {
-						//import.ProjectPath = defaultTargets;
-						MSBuildInternals.SetImportProjectPath(this, import, DefaultTargetsFile);
-						// Workaround for SD2-1490. It would be better if the project browser could refresh itself
-						// when necessary.
-						ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
-						break;
-					}
-				}
-			}
-		}
-		 */
-		
-		protected override ProjectBehavior CreateDefaultBehavior()
-		{
-			return new CSharpProjectBehavior(this, base.CreateDefaultBehavior());
-		}
-	}
-	
-	public class CSharpProjectBehavior : ProjectBehavior
-	{
-		public CSharpProjectBehavior(CSharpProject project, ProjectBehavior next = null)
-			: base(project, next)
-		{
-			
-		}
-		
-		public override ItemType GetDefaultItemType(string fileName)
-		{
-			if (string.Equals(Path.GetExtension(fileName), ".cs", StringComparison.OrdinalIgnoreCase))
-				return ItemType.Compile;
-			else
-				return base.GetDefaultItemType(fileName);
 		}
 	}
 }

@@ -212,6 +212,7 @@
     <Compile Include="Highlighting\Xshd\XmlHighlightingDefinition.cs" />
     <Compile Include="Highlighting\Xshd\XshdColor.cs" />
     <Compile Include="Highlighting\Xshd\XshdImport.cs" />
+    <Compile Include="Highlighting\Xshd\XshdProperty.cs" />
     <Compile Include="Highlighting\Xshd\XshdReference.cs" />
     <Compile Include="Highlighting\Xshd\XshdElement.cs" />
     <Compile Include="Highlighting\Xshd\XshdKeywords.cs" />
@@ -233,6 +234,8 @@
     <Compile Include="Rendering\ColorizingTransformer.cs">
       <DependentUpon>IVisualLineTransformer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\ColumnRulerRenderer.cs" />
+    <Compile Include="Rendering\DefaultTextRunTypographyProperties.cs" />
     <Compile Include="Rendering\DocumentColorizingTransformer.cs">
       <DependentUpon>IVisualLineTransformer.cs</DependentUpon>
     </Compile>

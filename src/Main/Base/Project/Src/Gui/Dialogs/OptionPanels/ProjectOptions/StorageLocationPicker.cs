@@ -100,6 +100,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				button.Click += button_Click;
 				
 				contextMenu = new ContextMenu();
+				TextOptions.SetTextFormattingMode(contextMenu, TextFormattingMode.Display);
 				contextMenu.Items.Add(CreateMenuItem("${res:Dialog.ProjectOptions.ConfigurationSpecific}", PropertyStorageLocations.ConfigurationSpecific));
 				contextMenu.Items.Add(CreateMenuItem("${res:Dialog.ProjectOptions.PlatformSpecific}", PropertyStorageLocations.PlatformSpecific));
 				contextMenu.Items.Add(CreateMenuItem("${res:Dialog.ProjectOptions.StoreInUserFile}", PropertyStorageLocations.UserFile));

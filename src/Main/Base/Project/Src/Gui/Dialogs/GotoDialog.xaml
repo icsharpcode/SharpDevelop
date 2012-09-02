@@ -6,6 +6,17 @@
 	Height="298"
 	Width="578"
 	Style="{x:Static core:GlobalStyles.DialogWindowStyle}">
+	
+	<Window.Resources>
+		<Style x:Key="ListItemTextStyle" TargetType="{x:Type TextBlock}">
+			<Style.Triggers>
+				<DataTrigger Binding="{Binding InCurrentFile}" Value="True">
+					<Setter Property="FontWeight" Value="Bold" />
+				</DataTrigger>
+			</Style.Triggers>
+		</Style>
+	</Window.Resources>
+	
 	<Grid>
 		<TextBlock
 			Grid.Column="0"
@@ -36,7 +47,7 @@
 				<DataTemplate>
 					<StackPanel Orientation="Horizontal">
 						<Image Source="{Binding ImageSource}"/>
-						<TextBlock Text="{Binding Text}" Margin="4,0,0,0"/>
+						<TextBlock Text="{Binding Text}" Margin="4,0,0,0" Style="{StaticResource ListItemTextStyle}"/>
 					</StackPanel>
 				</DataTemplate>
 			</ListBox.ItemTemplate>

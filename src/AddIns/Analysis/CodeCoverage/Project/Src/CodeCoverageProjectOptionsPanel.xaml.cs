@@ -42,9 +42,9 @@ namespace ICSharpCode.CodeCoverage
 		
 		void ReadPartCoverSettings()
 		{
-			string settingsFileName = PartCoverSettings.GetFileName(base.Project);
+			string settingsFileName = OpenCoverSettings.GetFileName(base.Project);
 			if (File.Exists(settingsFileName)) {
-				PartCoverSettings settings = new PartCoverSettings(settingsFileName);
+				OpenCoverSettings settings = new OpenCoverSettings(settingsFileName);
 				includeListTextBox.Text = ConvertToMultLineString(settings.Include);
 				excludeListTextBox.Text = ConvertToMultLineString(settings.Exclude);
 			}
@@ -53,10 +53,10 @@ namespace ICSharpCode.CodeCoverage
 		
 		private void SavePartCoverSettings()
 		{
-			PartCoverSettings settings = new PartCoverSettings();
+			OpenCoverSettings settings = new OpenCoverSettings();
 			settings.Include.AddRange(MakeStringArray(includeListTextBox.Text));
 			settings.Exclude.AddRange(MakeStringArray(excludeListTextBox.Text));
-			settings.Save(PartCoverSettings.GetFileName(base.Project));
+			settings.Save(OpenCoverSettings.GetFileName(base.Project));
 		}
 		
 		
@@ -80,7 +80,7 @@ namespace ICSharpCode.CodeCoverage
 			return text.ToString().Trim();
 		}
 		
-	
+		
 		void TextBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			IsDirty = true;

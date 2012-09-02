@@ -124,10 +124,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			PrintDialog printDialog = PrintPreviewViewContent.PrintDialog;
 			if (printDialog.ShowDialog() == true) {
 				FlowDocument fd = DocumentPrinter.CreateFlowDocumentForEditor(this);
-				fd.ColumnGap = 0;
-				fd.ColumnWidth = printDialog.PrintableAreaWidth;
-				fd.PageHeight = printDialog.PrintableAreaHeight;
-				fd.PageWidth = printDialog.PrintableAreaWidth;
+				PrintPreviewViewContent.ApplySettingsToFlowDocument(printDialog, fd);
 				IDocumentPaginatorSource doc = fd;
 				printDialog.PrintDocument(doc.DocumentPaginator, Path.GetFileName(this.FileName));
 			}
@@ -137,10 +134,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			PrintDialog printDialog = PrintPreviewViewContent.PrintDialog;
 			FlowDocument fd = DocumentPrinter.CreateFlowDocumentForEditor(this);
-			fd.ColumnGap = 0;
-			fd.ColumnWidth = printDialog.PrintableAreaWidth;
-			fd.PageHeight = printDialog.PrintableAreaHeight;
-			fd.PageWidth = printDialog.PrintableAreaWidth;
+			PrintPreviewViewContent.ApplySettingsToFlowDocument(printDialog, fd);
 			PrintPreviewViewContent.ShowDocument(fd, Path.GetFileName(this.FileName));
 		}
 		#endregion

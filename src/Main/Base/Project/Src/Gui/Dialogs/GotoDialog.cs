@@ -64,6 +64,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			public object Tag;
 			public string Text { get; private set; }
+			public bool InCurrentFile { get; private set; }
 			IImage image;
 			int matchType;
 			
@@ -71,15 +72,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 				get { return image.ImageSource; }
 			}
 			
-			public GotoEntry(string text, IImage image, int matchType)
+			public GotoEntry(string text, IImage image, int matchType, bool inCurrentFile)
 			{
 				this.Text = text;
 				this.image = image;
 				this.matchType = matchType;
+				this.InCurrentFile = inCurrentFile;
 			}
 			
 			public int CompareTo(GotoEntry other)
 			{
+				if ((matchType < MatchType_FullMatch_CaseInsensitive) && (other.matchType < MatchType_FullMatch_CaseInsensitive))
+				{
+					if (InCurrentFile && !other.InCurrentFile)
+						return -1;
+					if (!InCurrentFile && other.InCurrentFile)
+						return 1;
+				}
 				int r = matchType.CompareTo(other.matchType);
 				if (r != 0)
 					return -r;
@@ -151,7 +160,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} else {
 				AddSourceFiles(text, 0);
 				foreach (IClass c in SearchClasses(text)) {
-					AddItem(c, GetMatchType(text, c.Name));
+					AddItem(c, GetMatchType(text, c.Name), false);
 				}
 				AddAllMembersMatchingText(text);
 			}
@@ -169,30 +178,30 @@ namespace ICSharpCode.SharpDevelop.Gui
 				ParseInformation parseInfo = ParserService.GetExistingParseInformation(editor.FileName);
 				if (parseInfo != null) {
 					foreach (IClass c in parseInfo.CompilationUnit.Classes) {
-						AddAllMembersMatchingText(c, text);
+						AddAllMembersMatchingText(c, text, true);
 					}
 				}
 			}
 		}
 
-		void AddAllMembersMatchingText(IClass c, string text)
+		void AddAllMembersMatchingText(IClass c, string text, bool inCurrentFile)
 		{
 			foreach (IClass innerClass in c.InnerClasses) {
-				AddAllMembersMatchingText(innerClass, text);
+				AddAllMembersMatchingText(innerClass, text, inCurrentFile);
 			}
 			foreach (IMethod m in c.Methods) {
 				if (!m.IsConstructor) {
-					AddItemIfMatchText(text, m, ClassBrowserIconService.GetIcon(m));
+					AddItemIfMatchText(text, m, ClassBrowserIconService.GetIcon(m), inCurrentFile);
 				}
 			}
 			foreach (IField f in c.Fields) {
-				AddItemIfMatchText(text, f, ClassBrowserIconService.GetIcon(f));
+				AddItemIfMatchText(text, f, ClassBrowserIconService.GetIcon(f), inCurrentFile);
 			}
 			foreach (IProperty p in c.Properties) {
-				AddItemIfMatchText(text, p, ClassBrowserIconService.GetIcon(p));
+				AddItemIfMatchText(text, p, ClassBrowserIconService.GetIcon(p), inCurrentFile);
 			}
 			foreach (IEvent evt in c.Events) {
-				AddItemIfMatchText(text, evt, ClassBrowserIconService.GetIcon(evt));
+				AddItemIfMatchText(text, evt, ClassBrowserIconService.GetIcon(evt), inCurrentFile);
 			}
 		}
 		
@@ -222,7 +231,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (item.Project != null) {
 						display += StringParser.Parse(" ${res:MainWindow.Windows.SearchResultPanel.In} ") + item.Project.Name;
 					}
-					AddItem(display, ClassBrowserIconService.GotoArrow, new FileLineReference(fileName, lineNumber), matchType);
+					AddItem(display, ClassBrowserIconService.GotoArrow, new FileLineReference(fileName, lineNumber), matchType, false);
 				}
 			}
 		}
@@ -234,7 +243,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				ITextEditor editor = GetEditor();
 				if (editor != null) {
 					num = Math.Min(editor.Document.TotalNumberOfLines, Math.Max(1, num));
-					AddItem(StringParser.Parse("${res:Dialog.Goto.GotoLine} ") + num, ClassBrowserIconService.GotoArrow, num, int.MaxValue);
+					AddItem(StringParser.Parse("${res:Dialog.Goto.GotoLine} ") + num, ClassBrowserIconService.GotoArrow, num, int.MaxValue, false);
 				}
 			}
 		}
@@ -267,7 +276,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (className.Length >= classPart.Length) {
 					if (className.IndexOf(classPart, StringComparison.OrdinalIgnoreCase) >= 0) {
 						if (memberPart.Length > 0) {
-							AddAllMembersMatchingText(c, memberPart);
+							AddAllMembersMatchingText(c, memberPart, false);
 						} else {
 							list.Add(c);
 						}
@@ -314,32 +323,32 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void AddItem(string text, IImage image, object tag, int matchType)
+		void AddItem(string text, IImage image, object tag, int matchType, bool inCurrentFile)
 		{
 			if (!visibleEntries.Add(text))
 				return;
-			GotoEntry item = new GotoEntry(text, image, matchType);
+			GotoEntry item = new GotoEntry(text, image, matchType, inCurrentFile);
 			item.Tag = tag;
 			newItems.Add(item);
 		}
 		
-		void AddItem(IClass c, int matchType)
+		void AddItem(IClass c, int matchType, bool inCurrentFile)
 		{
-			AddItem(c, ClassBrowserIconService.GetIcon(c), matchType);
+			AddItem(c, ClassBrowserIconService.GetIcon(c), matchType, inCurrentFile);
 		}
 		
-		void AddItemIfMatchText(string text, IMember member, IImage image)
+		void AddItemIfMatchText(string text, IMember member, IImage image, bool inCurrentFile)
 		{
 			string name = member.Name;
 			int matchType = GetMatchType(text, name);
 			if (matchType >= 0) {
-				AddItem(member, image, matchType);
+				AddItem(member, image, matchType, inCurrentFile);
 			}
 		}
 		
-		void AddItem(IEntity e, IImage image, int matchType)
+		void AddItem(IEntity e, IImage image, int matchType, bool inCurrentFile)
 		{
-			AddItem(e.Name + " (" + e.FullyQualifiedName + ")", image, e, matchType);
+			AddItem(e.Name + " (" + e.FullyQualifiedName + ")", image, e, matchType, inCurrentFile);
 		}
 		
 		void cancelButtonClick(object sender, RoutedEventArgs e)

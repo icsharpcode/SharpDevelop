@@ -33,8 +33,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			viewer.CommandBindings.Add(new CommandBinding(ApplicationCommands.Print, OnPrint));
 		}
 		
+		/// <summary>
+		/// Original (unconverted) document.
+		/// </summary>
+		IDocumentPaginatorSource originalDocument;
+		
 		public IDocumentPaginatorSource Document {
-			get { return viewer.Document; }
+			get { return originalDocument; }
 			set {
 				if (cleanup != null) {
 					cleanup();
@@ -62,6 +67,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				} else {
 					viewer.Document = value;
 				}
+				originalDocument = value;
 			}
 		}
 		
@@ -82,7 +88,23 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void OnPrint(object sender, ExecutedRoutedEventArgs e)
 		{
-			viewer.Print();
+			if (originalDocument == null)
+				return;
+			e.Handled = true;
+			if (printDialog.ShowDialog() == true) {
+				// re-apply settings if changed
+				if (originalDocument is FlowDocument)
+					ApplySettingsToFlowDocument(printDialog, (FlowDocument)originalDocument);
+				printDialog.PrintDocument(originalDocument.DocumentPaginator, this.Description);
+			}
+		}
+		
+		public static void ApplySettingsToFlowDocument(PrintDialog printDialog, FlowDocument flowDocument)
+		{
+			flowDocument.ColumnGap = 0;
+			flowDocument.ColumnWidth = printDialog.PrintableAreaWidth;
+			flowDocument.PageHeight = printDialog.PrintableAreaHeight;
+			flowDocument.PageWidth = printDialog.PrintableAreaWidth;
 		}
 		
 		public static void ShowDocument(IDocumentPaginatorSource document, string description)

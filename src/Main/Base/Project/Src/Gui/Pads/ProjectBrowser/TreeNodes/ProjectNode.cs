@@ -43,6 +43,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public ProjectNode(IProject project)
 		{
+			if (project == null)
+				throw new ArgumentNullException("project");
 			sortOrder = 1;
 			
 			this.ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode";

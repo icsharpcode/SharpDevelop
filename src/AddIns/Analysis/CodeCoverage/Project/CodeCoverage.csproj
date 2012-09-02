@@ -6,7 +6,7 @@
     <AssemblyName>CodeCoverage</AssemblyName>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{08ce9972-283b-44f4-82fa-966f7dfa6b7a}</ProjectGuid>
+    <ProjectGuid>{08CE9972-283B-44F4-82FA-966F7DFA6B7A}</ProjectGuid>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <RegisterForComInterop>False</RegisterForComInterop>
@@ -52,6 +52,7 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -60,7 +61,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\CodeCoverageControl.cs" />
+    <Compile Include="Src\CodeCoverageControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\CodeCoverageMethodElement.cs" />
     <Compile Include="Src\CodeCoverageOptionsPanelXaml.xaml.cs">
       <DependentUpon>CodeCoverageOptionsPanelXaml.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -81,7 +85,9 @@
     <Compile Include="Src\CodeCoverageTestRunner.cs" />
     <Compile Include="Src\CodeCoverageTestRunnerContext.cs" />
     <Compile Include="Src\CodeCoverageTestRunnerFactory.cs" />
-    <Compile Include="Src\CodeCoverageTreeView.cs" />
+    <Compile Include="Src\CodeCoverageTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\CodeCoverageModuleTreeNode.cs" />
     <Compile Include="Src\CodeCoverageTreeNode.cs" />
     <Compile Include="Src\CodeCoverageMethodTreeNode.cs" />
@@ -91,9 +97,9 @@
     <Compile Include="Src\FileSystem.cs" />
     <Compile Include="Src\ICodeCoverageTestRunnerFactory.cs" />
     <Compile Include="Src\IFileSystem.cs" />
-    <Compile Include="Src\PartCoverApplication.cs" />
-    <Compile Include="Src\PartCoverSettings.cs" />
-    <Compile Include="Src\PartCoverSettingsFactory.cs" />
+    <Compile Include="Src\OpenCoverApplication.cs" />
+    <Compile Include="Src\OpenCoverSettings.cs" />
+    <Compile Include="Src\OpenCoverSettingsFactory.cs" />
     <Compile Include="Src\RunAllTestsWithCodeCoverageCommand.cs" />
     <Compile Include="Src\SequencePointListViewSorter.cs" />
     <Compile Include="Src\ToggleCodeCoverageCommand.cs" />
@@ -142,6 +148,11 @@
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj">
+      <Project>{0162E499-42D0-409B-AA25-EED21F75336B}</Project>
+      <Name>AvalonEdit.AddIn</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">

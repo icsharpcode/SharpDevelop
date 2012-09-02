@@ -3,13 +3,19 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
+
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.AddIn;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.CodeCoverage
@@ -232,9 +238,15 @@ namespace ICSharpCode.CodeCoverage
 		{
 			CodeCoverageClassTreeNode classNode = node as CodeCoverageClassTreeNode;
 			CodeCoverageMethodTreeNode methodNode = node as CodeCoverageMethodTreeNode;
+			CodeCoveragePropertyTreeNode propertyNode = node as CodeCoveragePropertyTreeNode;
 			if (classNode != null && classNode.Nodes.Count > 0) {
-				methodNode = (CodeCoverageMethodTreeNode)classNode.Nodes[0];
+				propertyNode = classNode.Nodes[0] as CodeCoveragePropertyTreeNode;
+				methodNode = classNode.Nodes[0] as CodeCoverageMethodTreeNode;
 			} 
+			
+			if (propertyNode != null && propertyNode.Nodes.Count > 0) {
+				methodNode = propertyNode.Nodes[0] as CodeCoverageMethodTreeNode;
+			}
 			
 			if (methodNode != null && methodNode.Method.SequencePoints.Count > 0) {
 				CodeCoverageSequencePoint sequencePoint = methodNode.Method.SequencePoints[0];
@@ -279,7 +291,6 @@ namespace ICSharpCode.CodeCoverage
 			foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
 				AddSequencePoint(sequencePoint);
 			}
-
 		}
 		
 		void AddSequencePoint(CodeCoverageSequencePoint sequencePoint)
@@ -307,12 +318,18 @@ namespace ICSharpCode.CodeCoverage
 		void OpenFile(string fileName, int line, int column)
 		{
 			if (fileName != textEditorFileName) {
-				textEditor.Load(fileName); 
+				textEditor.Load(fileName);
+				textEditor.SyntaxHighlighting = GetSyntaxHighlighting(fileName);
 			}
 			textEditor.ScrollToEnd();
-			textEditor.TextArea.Caret.Location = new ICSharpCode.AvalonEdit.Document.TextLocation(line, column);
+			textEditor.TextArea.Caret.Location = new TextLocation(line, column);
 			textEditor.ScrollToLine(line);
 			CodeCoverageService.ShowCodeCoverage(new AvalonEditTextEditorAdapter(textEditor), fileName);
+		}
+		
+		IHighlightingDefinition GetSyntaxHighlighting(string fileName)
+		{
+			return HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
 		}
 		
 		void CreateTreeView()
@@ -488,8 +505,15 @@ namespace ICSharpCode.CodeCoverage
 			}
 			
 			textEditor = AvalonEditTextEditorAdapter.CreateAvalonEditInstance();
+			
 			textEditor.IsReadOnly = true;
 			textEditor.MouseDoubleClick += TextEditorDoubleClick;
+			
+			var adapter = new AvalonEditTextEditorAdapter(textEditor);
+			var textMarkerService = new TextMarkerService(adapter.TextEditor.Document);
+			adapter.TextEditor.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
+			adapter.TextEditor.TextArea.TextView.LineTransformers.Add(textMarkerService);
+			adapter.TextEditor.TextArea.TextView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
 			
 			textEditorHost = new ElementHost();
 			textEditorHost.Dock = DockStyle.Fill;
@@ -545,6 +569,14 @@ namespace ICSharpCode.CodeCoverage
 				// Tree view will be moved to a different parent.
 				DisposeTreeView();
 			}
+		}
+		
+		protected override void Dispose(bool disposing)
+		{
+			if (textEditor != null) {
+				DisposeTextEditor();
+			}
+			base.Dispose(disposing);
 		}
 	}
 }

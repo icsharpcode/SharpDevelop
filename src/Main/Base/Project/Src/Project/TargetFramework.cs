@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using ICSharpCode.SharpDevelop.Project.Converter;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -116,6 +118,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public TargetFramework BasedOn { get; set; }
 		
+		public virtual bool IsCompatibleWith(CompilerVersion compilerVersion)
+		{
+			return MinimumMSBuildVersion <= compilerVersion.MSBuildVersion;
+		}
+		
 		public bool IsBasedOn(TargetFramework potentialBase)
 		{
 			TargetFramework tmp = this;
@@ -130,6 +137,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override string ToString()
 		{
 			return DisplayName;
+		}
+		
+		/// <summary>
+		/// Shows a dialog to pick the target framework.
+		/// This method is called by the UpgradeView 'convert' button to retrieve the actual target framework
+		/// </summary>
+		public virtual TargetFramework PickFramework(IEnumerable<IUpgradableProject> selectedProjects)
+		{
+			return this;
 		}
 	}
 	

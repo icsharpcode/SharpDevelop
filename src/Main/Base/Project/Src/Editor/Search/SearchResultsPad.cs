@@ -147,20 +147,14 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			return new DummySearchResult { Text = title };
 		}
 		
-		public static HighlightedInlineBuilder CreateInlineBuilder(Location startPosition, Location endPosition, TextDocument document, IHighlighter highlighter)
+		public static HighlightedInlineBuilder CreateInlineBuilder(Location startPosition, Location endPosition, TextDocument document, ISyntaxHighlighter highlighter)
 		{
 			if (startPosition.Line >= 1 && startPosition.Line <= document.LineCount) {
-				var matchedLine = document.GetLineByNumber(startPosition.Line);
-				HighlightedInlineBuilder inlineBuilder = new HighlightedInlineBuilder(document.GetText(matchedLine));
+				HighlightedInlineBuilder inlineBuilder;
 				if (highlighter != null) {
-					HighlightedLine highlightedLine = highlighter.HighlightLine(startPosition.Line);
-					int startOffset = highlightedLine.DocumentLine.Offset;
-					// copy only the foreground color
-					foreach (HighlightedSection section in highlightedLine.Sections) {
-						if (section.Color.Foreground != null) {
-							inlineBuilder.SetForeground(section.Offset - startOffset, section.Length, section.Color.Foreground.GetBrush(null));
-						}
-					}
+					inlineBuilder = highlighter.BuildInlines(startPosition.Line);
+				} else {
+					inlineBuilder = new HighlightedInlineBuilder(document.GetText(document.GetLineByNumber(startPosition.Line)));
 				}
 				
 				// now highlight the match in bold

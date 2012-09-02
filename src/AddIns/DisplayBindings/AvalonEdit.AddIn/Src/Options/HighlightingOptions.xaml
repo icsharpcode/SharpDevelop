@@ -1,45 +1,62 @@
-﻿<gui:OptionPanel x:Class="ICSharpCode.AvalonEdit.AddIn.Options.HighlightingOptions" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop" xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn.Options">
+﻿<gui:OptionPanel x:Class="ICSharpCode.AvalonEdit.AddIn.Options.HighlightingOptions"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+                 xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+                 xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
+                 xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+                 xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn.Options">
 	<FrameworkElement.Resources>
 		<BooleanToVisibilityConverter x:Key="boolToVisibility" />
 	</FrameworkElement.Resources>
 	<DockPanel>
-		<StackPanel DockPanel.Dock="Right" Margin="4,0,0,0" DataContext="{Binding SelectedItem, ElementName=listBox}">
-			<Grid Margin="0,0,8,0">
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-				</Grid.RowDefinitions>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="Auto" MinWidth="75" />
-				</Grid.ColumnDefinitions>
-				<Label Grid.Column="0" Grid.Row="0"
-				       Content="{core:StringParse ${res:Dialog.HighlightingEditor.ColorDlg.Foreground}:}"
-				       Visibility="{Binding CanSetBackground, Converter={StaticResource boolToVisibility}}" />
-				<gui:ColorPickerButton Value="{Binding Foreground}"
-					Text="{Binding UseDefaultForeground, Converter={x:Static local:BooleanToDefaultStringConverter.Instance}}"
-					Grid.Column="1" Grid.Row="0"
-					Visibility="{Binding CanSetForeground, Converter={StaticResource boolToVisibility}}" />
-				<Label Grid.Column="0" Grid.Row="1"
-				       Content="{core:StringParse ${res:Dialog.HighlightingEditor.ColorDlg.Background}:}"
-				       Visibility="{Binding CanSetBackground, Converter={StaticResource boolToVisibility}}" />
-				<gui:ColorPickerButton Value="{Binding Background}"
-					Text="{Binding UseDefaultBackground, Converter={x:Static local:BooleanToDefaultStringConverter.Instance}}"
-					Grid.Column="1" Grid.Row="1"
-					Visibility="{Binding CanSetBackground, Converter={StaticResource boolToVisibility}}" />
-			</Grid>
-			<CheckBox IsEnabled="{Binding CanSetFont}" IsChecked="{Binding Bold}"
-			          Content="{core:Localize Dialog.HighlightingEditor.ColorDlg.Bold}"/>
-			<CheckBox IsEnabled="{Binding CanSetFont}" IsChecked="{Binding Italic}"
-			          Content="{core:Localize Dialog.HighlightingEditor.ColorDlg.Italic}"/>
-			<Button Name="resetButton" IsEnabled="{Binding IsCustomized}" HorizontalAlignment="Left"
-			        Click="ResetButtonClick" Style="{x:Static core:GlobalStyles.ButtonStyle}" Margin="0,4"
-			        Content="Reset" />
-			<Label Content="{core:StringParse ${res:Dialog.HighlightingEditor.SampleText}:}" />
-			<core:RestrictDesiredSize Height="50" MinWidth="200">
-				<avalonedit:TextEditor Name="textEditor" IsReadOnly="True" />
-			</core:RestrictDesiredSize>
-		</StackPanel>
+		<Grid DockPanel.Dock="Right" Margin="4,0,0,0">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+			<StackPanel DataContext="{Binding SelectedItem, ElementName=listBox}">
+				<Grid Margin="0,0,8,0">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" MinWidth="75" />
+					</Grid.ColumnDefinitions>
+					<Label Grid.Column="0" Grid.Row="0"
+					       Content="{core:StringParse ${res:Dialog.HighlightingEditor.ColorDlg.Foreground}:}"
+					       Visibility="{Binding CanSetBackground, Converter={StaticResource boolToVisibility}}" />
+					<gui:ColorPickerButton Value="{Binding Foreground}"
+						Text="{Binding UseDefaultForeground, Converter={x:Static local:BooleanToDefaultStringConverter.Instance}}"
+						Grid.Column="1" Grid.Row="0"
+						Visibility="{Binding CanSetForeground, Converter={StaticResource boolToVisibility}}" />
+					<Label Grid.Column="0" Grid.Row="1"
+					       Content="{core:StringParse ${res:Dialog.HighlightingEditor.ColorDlg.Background}:}"
+					       Visibility="{Binding CanSetBackground, Converter={StaticResource boolToVisibility}}" />
+					<gui:ColorPickerButton Value="{Binding Background}"
+						Text="{Binding UseDefaultBackground, Converter={x:Static local:BooleanToDefaultStringConverter.Instance}}"
+						Grid.Column="1" Grid.Row="1"
+						Visibility="{Binding CanSetBackground, Converter={StaticResource boolToVisibility}}" />
+				</Grid>
+				<CheckBox IsEnabled="{Binding CanSetFont}" IsChecked="{Binding Bold}"
+				          Content="{core:Localize Dialog.HighlightingEditor.ColorDlg.Bold}"/>
+				<CheckBox IsEnabled="{Binding CanSetFont}" IsChecked="{Binding Italic}"
+				          Content="{core:Localize Dialog.HighlightingEditor.ColorDlg.Italic}"/>
+				<Button Name="resetButton" IsEnabled="{Binding IsCustomized}" HorizontalAlignment="Left"
+				        Click="ResetButtonClick" Style="{x:Static core:GlobalStyles.ButtonStyle}" Margin="0,4"
+				        Content="Reset" />
+				<Label Content="{core:StringParse ${res:Dialog.HighlightingEditor.SampleText}:}" />
+				<core:RestrictDesiredSize Height="50" MinWidth="200">
+					<avalonedit:TextEditor Name="textEditor" IsReadOnly="True" />
+				</core:RestrictDesiredSize>
+			</StackPanel>
+			<widgets:StackPanelWithSpacing Grid.Row="1" Orientation="Vertical" SpaceBetweenItems="5" Margin="0,5">
+				<Button Click="ImportButtonClick" Content="{core:Localize Dialog.HighlightingEditor.Import}" />
+				<Button Click="ExportButtonClick" Content="{core:Localize Dialog.HighlightingEditor.Export}" />
+			</widgets:StackPanelWithSpacing>
+		</Grid>
 		<ComboBox Name="languageComboBox" DockPanel.Dock="Top" SelectionChanged="LanguageComboBox_SelectionChanged">
 			<ComboBox.ItemTemplate>
 				<DataTemplate>

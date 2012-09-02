@@ -50,6 +50,13 @@
 		</xsd:complexType>
 	</xsd:element>
 	
+	<xsd:element name="Property">
+		<xsd:complexType>
+			<xsd:attribute name="name" type="xsd:string" use="required" />
+			<xsd:attribute name="value" type="xsd:string" use="required" />
+		</xsd:complexType>
+	</xsd:element>
+	
 	<!-- Regular expression -->
 	<xsd:simpleType name="regex">
 		<xsd:restriction base="xsd:string"/>
@@ -135,6 +142,7 @@
 	<xsd:element name="SyntaxDefinition">
 		<xsd:complexType>
 			<xsd:choice minOccurs="1" maxOccurs="unbounded">
+				<xsd:element ref="Property"/>
 				<xsd:element ref="Color"/>
 				<xsd:element ref="RuleSet"/>
 			</xsd:choice>

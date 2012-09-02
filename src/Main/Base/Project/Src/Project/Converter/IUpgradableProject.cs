@@ -29,6 +29,11 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		IEnumerable<CompilerVersion> GetAvailableCompilerVersions();
 		
 		/// <summary>
+		/// Gets the supported target frameworks.
+		/// </summary>
+		IEnumerable<TargetFramework> GetAvailableTargetFrameworks();
+		
+		/// <summary>
 		/// Gets the current compiler version.
 		/// </summary>
 		CompilerVersion CurrentCompilerVersion { get; }
@@ -56,6 +61,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		public static readonly CompilerVersion MSBuild35 = new CompilerVersion(new Version(3, 5), "MSBuild 3.5");
 		public static readonly CompilerVersion MSBuild40 = new CompilerVersion(new Version(4, 0), "MSBuild 4.0");
 		
+		[Obsolete("Use IUpgradableProject.GetAvailableTargetFrameworks() instead")]
 		public virtual IEnumerable<TargetFramework> GetSupportedTargetFrameworks()
 		{
 			return from fx in TargetFramework.TargetFrameworks

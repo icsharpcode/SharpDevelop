@@ -15,7 +15,15 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		static string GetSiteArgument(WebProject project)
 		{
-			return String.Format("/site:{0}", project.Name);
+			return String.Format("/site:{0}", GetSiteName(project));
+		}
+		
+		static string GetSiteName(WebProject project)
+		{
+			if (project.Name.Contains(" ")) {
+				return String.Format("\"{0}\"", project.Name);
+			}
+			return project.Name;
 		}
 	}
 }

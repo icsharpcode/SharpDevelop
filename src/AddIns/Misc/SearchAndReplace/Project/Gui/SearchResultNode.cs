@@ -56,6 +56,12 @@ namespace SearchAndReplace
 			LoggingService.Debug("Creating text for search result (" + location.Line + ", " + location.Column + ") ");
 			
 			TextBlock textBlock = new TextBlock();
+			if (result.DefaultTextColor != null && !IsSelected) {
+				if (result.DefaultTextColor.Background != null)
+					textBlock.Background = result.DefaultTextColor.Background.GetBrush(null);
+				if (result.DefaultTextColor.Foreground != null)
+					textBlock.Foreground = result.DefaultTextColor.Foreground.GetBrush(null);
+			}
 			textBlock.FontFamily = new FontFamily(EditorControlService.GlobalOptions.FontFamily);
 
 			textBlock.Inlines.Add("(" + location.Line + ", " + location.Column + ")\t");
@@ -64,7 +70,13 @@ namespace SearchAndReplace
 			if (displayText != null) {
 				textBlock.Inlines.Add(displayText);
 			} else if (result.Builder != null) {
-				textBlock.Inlines.AddRange(result.Builder.CreateRuns());
+				HighlightedInlineBuilder builder = result.Builder;
+				if (IsSelected) {
+					builder = builder.Clone();
+					builder.SetForeground(0, builder.Text.Length, null);
+					builder.SetBackground(0, builder.Text.Length, null);
+				}
+				textBlock.Inlines.AddRange(builder.CreateRuns());
 			}
 			
 			if (showFileName) {
@@ -76,6 +88,14 @@ namespace SearchAndReplace
 					});
 			}
 			return textBlock;
+		}
+		
+		protected override void OnPropertyChanged(string propertyName)
+		{
+			base.OnPropertyChanged(propertyName);
+			if (propertyName == "IsSelected") {
+				InvalidateText();
+			}
 		}
 		
 		public override void ActivateItem()

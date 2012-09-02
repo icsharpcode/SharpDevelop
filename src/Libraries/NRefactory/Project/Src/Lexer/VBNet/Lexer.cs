@@ -312,12 +312,15 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						if (ch == '%' && ReaderPeek() == '>') {
 							int x = Col - 1;
 							int y = Line;
-							inXmlMode = true;
+							// in invalid code xmlModeStack might happen to be empty.
+							// do not set lexer to XML mode, if there was no valid XML before the inline VB code.
+							// fixes http://community.sharpdevelop.net/forums/t/15920.aspx
+							inXmlMode = xmlModeStack.Any();
 							ReaderRead();
 							return new Token(Tokens.XmlEndInlineVB, new Location(x, y), new Location(Col, Line));
 						}
 						#endregion
-						if (ch == '<' && (ef.NextTokenIsPotentialStartOfExpression || ef.NextTokenIsStartOfImportsOrAccessExpression)) {
+						if (ch == '<' && ef.XmlAllowed && (ef.NextTokenIsPotentialStartOfExpression || ef.NextTokenIsStartOfImportsOrAccessExpression)) {
 							xmlModeStack.Push(new XmlModeInfo(ef.NextTokenIsStartOfImportsOrAccessExpression));
 							XmlModeInfo info = xmlModeStack.Peek();
 							int x = Col - 1;

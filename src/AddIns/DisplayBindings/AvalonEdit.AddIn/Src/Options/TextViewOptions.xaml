@@ -29,5 +29,22 @@
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.EnableAnimationsCheckBox}" />
 			</widgets:StackPanelWithSpacing>
 		</GroupBox>
+		<GroupBox
+			Header="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.MarkersGroupBox}">
+			<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
+				<StackPanel Orientation="Horizontal">
+					<CheckBox
+						Margin="0, 10"
+						IsChecked="{core:OptionBinding local:CodeEditorOptions.ShowColumnRuler}"
+						Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.VerticalRulerCheckBox}" />
+					<Label
+						Margin="0, 5"
+						Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.AtRowLabel}" />
+					<widgets:NumericUpDown
+						Margin="0, 5"
+						Value="{core:OptionBinding local:CodeEditorOptions.ColumnRulerPosition}" />
+				</StackPanel>
+			</widgets:StackPanelWithSpacing>
+		</GroupBox>
 	</StackPanel>
 </gui:OptionPanel>

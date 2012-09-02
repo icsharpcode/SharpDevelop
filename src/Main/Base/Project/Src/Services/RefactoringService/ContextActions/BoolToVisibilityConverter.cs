@@ -9,6 +9,7 @@ using System.Windows.Data;
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	[ValueConversion(typeof(bool), typeof(Visibility))]
+	[Obsolete]
 	public class BoolToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

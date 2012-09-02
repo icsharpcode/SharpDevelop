@@ -14,6 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.AddIn.Options;
@@ -24,6 +25,7 @@ using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
@@ -87,13 +89,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		protected override void OnOptionChanged(PropertyChangedEventArgs e)
 		{
 			base.OnOptionChanged(e);
-			if (e.PropertyName == "HighlightBrackets")
-				HighlightBrackets(null, e);
-			else if (e.PropertyName == "EnableFolding")
-				UpdateParseInformationForFolding();
-			else if (e.PropertyName == "HighlightSymbol") {
-				if (this.caretReferencesRenderer != null)
-					this.caretReferencesRenderer.ClearHighlight();
+			switch (e.PropertyName) {
+				case "HighlightBrackets":
+					HighlightBrackets(null, e);
+					break;
+				case "EnableFolding":
+					UpdateParseInformationForFolding();
+					break;
+				case "HighlightSymbol":
+					if (this.caretReferencesRenderer != null)
+						this.caretReferencesRenderer.ClearHighlight();
+					break;
 			}
 		}
 		
@@ -579,18 +585,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			string language = this.SyntaxHighlighting != null ? this.SyntaxHighlighting.Name : null;
 			CustomizableHighlightingColorizer.ApplyCustomizationsToDefaultElements(this, FetchCustomizations(language));
 			BracketHighlightRenderer.ApplyCustomizationsToRendering(this.bracketRenderer, FetchCustomizations(language));
-			HighlightingOptions.ApplyToFolding(this, FetchCustomizations(language));
+			HighlightingOptions.ApplyToRendering(this, FetchCustomizations(language));
 			this.TextArea.TextView.Redraw(); // manually redraw if default elements didn't change but customized highlightings did
 		}
 		
 		static IEnumerable<CustomizedHighlightingColor> FetchCustomizations(string languageName)
 		{
-			// Access CustomizedHighlightingColor.ActiveColors within enumerator so that always the latest version is used.
-			// Using CustomizedHighlightingColor.ActiveColors.Where(...) would not work correctly!
-			foreach (CustomizedHighlightingColor color in CustomizedHighlightingColor.ActiveColors) {
-				if (color.Language == null || color.Language == languageName)
-					yield return color;
-			}
+			return CustomizedHighlightingColor.FetchCustomizations(languageName);
 		}
 	}
 }

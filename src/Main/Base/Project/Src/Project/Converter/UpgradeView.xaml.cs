@@ -121,34 +121,30 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		void UpdateTargetFrameworkComboBox()
 		{
 			// Determine the available target frameworks
-			List<TargetFramework> availableFrameworks;
 			bool doNotChangeAllowed;
 			CompilerVersion selectedCompiler = newVersionComboBox.SelectedValue as CompilerVersion;
-			if (selectedCompiler == null || selectedCompiler is UnchangedCompilerVersion) {
-				// no entries or "Do not change" selected
-				// -> available target frameworks is the intersection of all compiler's target framework,
-				// and "Do not change" is always available
-				
-				availableFrameworks = (
-					from Entry entry in listView.SelectedItems
-					where entry.CompilerVersion != null
-					from fx in entry.CompilerVersion.GetSupportedTargetFrameworks()
-					select fx
-				).Distinct().ToList();
-				
-				doNotChangeAllowed = true;
-			} else {
-				// Specific compiler version is selected
-				// Show that compiler's target frameworks
-				availableFrameworks = selectedCompiler.GetSupportedTargetFrameworks().ToList();
-				// Allow do not change on target framework if all current frameworks are supported
-				// by the new compiler.
-				doNotChangeAllowed = true;
-				foreach (Entry entry in listView.SelectedItems) {
-					doNotChangeAllowed &= availableFrameworks.Contains(entry.TargetFramework);
-				}
+			if (selectedCompiler is UnchangedCompilerVersion)
+				selectedCompiler = null;
+			
+			// Calculate the intersection of available frameworks for all selected projects:
+			HashSet<TargetFramework> availableFrameworkSet = null;
+			foreach (Entry entry in listView.SelectedItems) {
+				var entryFrameworks = entry.Project.GetAvailableTargetFrameworks()
+					.Where(fx => fx.IsCompatibleWith(selectedCompiler ?? entry.CompilerVersion));
+				if (availableFrameworkSet == null)
+					availableFrameworkSet = new HashSet<TargetFramework>(entryFrameworks);
+				else
+					availableFrameworkSet.IntersectWith(entryFrameworks);
 			}
 			
+			// Allow do not change on target framework if all current frameworks are supported
+			// by the new compiler.
+			doNotChangeAllowed = true;
+			foreach (Entry entry in listView.SelectedItems) {
+				doNotChangeAllowed &= availableFrameworkSet.Contains(entry.TargetFramework);
+			}
+			
+			List<TargetFramework> availableFrameworks = availableFrameworkSet.ToList();
 			availableFrameworks.Sort((a, b) => a.DisplayName.CompareTo(b.DisplayName));
 			if (doNotChangeAllowed) {
 				availableFrameworks.Insert(0, new UnchangedTargetFramework());
@@ -225,8 +221,11 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			TargetFramework selectedFramework = newFrameworkComboBox.SelectedValue as TargetFramework;
 			if (selectedCompiler is UnchangedCompilerVersion)
 				selectedCompiler = null;
-			if (selectedFramework is UnchangedTargetFramework)
-				selectedFramework = null;
+			if (selectedFramework != null) {
+				// Show dialog for picking target frameworks for portable library.
+				// This also handles UnchangedTargetFramework
+				selectedFramework = selectedFramework.PickFramework(listView.SelectedItems.Cast<Entry>().Select(entry => entry.Project).ToList());
+			}
 			
 			
 			foreach (Entry entry in listView.SelectedItems) {
@@ -263,6 +262,11 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		{
 			public UnchangedTargetFramework() : base(string.Empty, Core.StringParser.Parse("${res:ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange}"))
 			{
+			}
+			
+			public override TargetFramework PickFramework(IEnumerable<IUpgradableProject> selectedProjects)
+			{
+				return null;
 			}
 			
 			public override bool Equals(object obj)

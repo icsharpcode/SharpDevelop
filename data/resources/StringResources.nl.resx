@@ -1501,6 +1501,12 @@ Voorbeelden: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.HighlightingEditor.ColorDlg.Italic" xml:space="preserve">
     <value>Cursief</value>
   </data>
+  <data name="Dialog.HighlightingEditor.Export" xml:space="preserve">
+    <value>Selectie kleuren expoorteren</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Import" xml:space="preserve">
+    <value>Selectie kleuren importeren</value>
+  </data>
   <data name="Dialog.HighlightingEditor.Properties.Value" xml:space="preserve">
     <value>Waarde</value>
   </data>
@@ -2184,10 +2190,13 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
     <value>Geen</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.MarkersGroupBox" xml:space="preserve">
-    <value>Markeringen en Linealen</value>
+    <value>Markeringen</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.PanelName" xml:space="preserve">
     <value>Markeringen en Linealen</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.RulersGroupBox" xml:space="preserve">
+    <value>Linealen</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.ShowHiddenDefinitionsCheckBox" xml:space="preserve">
     <value>Toon &amp;verborgen definities(alleen haakjes)</value>
@@ -2355,7 +2364,7 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
     <value>32 bit Intel-compatibele processor</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetFramework" xml:space="preserve">
-    <value>Doel Framework:</value>
+    <value>Doel raamwerk:</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TreatWarningsAsErrors" xml:space="preserve">
     <value>Behandel waarschuwingen als fouten</value>
@@ -3046,7 +3055,7 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
     <value>Bezig met Code Analyse...</value>
   </data>
   <data name="ICSharpCode.Build.UnknownTargetMonoFrameworkVersion" xml:space="preserve">
-    <value>Onbekend doel Mono Framework Versie:</value>
+    <value>Onbekend doel Mono Raamwerk Versie:</value>
   </data>
   <data name="ICSharpCode.CodeAnalysis" xml:space="preserve">
     <value>Code Analyse</value>
@@ -4090,7 +4099,7 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
     <value>Converteer geselecteerde &amp;projecten naar</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeTargetFrameworkLabel" xml:space="preserve">
-    <value>Wijzig doel framework</value>
+    <value>Wijzig doel Raamwerk:</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeVersionGroupBoxHeader" xml:space="preserve">
     <value>Versie van geselecteerde projecten wijzigen</value>
@@ -4105,7 +4114,7 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
     <value>&lt;niet wijzigen&gt;</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.TargetFramework" xml:space="preserve">
-    <value>Doel framework</value>
+    <value>Doel Raamwerk</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
     <value>Project opwaarderen</value>
@@ -4119,7 +4128,7 @@ Zonder opwaarderen kan het project niet geopend wordenh.</value>
     <value>Opwaarderen naar MSBuild ${NewToolsVersion}</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
-    <value>Deze oplossing werd met een vorige versie van SharpDevelop gemaakt. Door te upgraden kan gebruik gemaakt worden van nieuwe taal of framework mogelijkheden.</value>
+    <value>Deze oplossing werd met een eerdere versie van SharpDevelop gemaakt. Door te upgraden kan gebruik gemaakt worden van nieuwe taal- of raamwerk mogelijkheden.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError" xml:space="preserve">
     <value>Momentele ambience niet gevonden.
@@ -4427,7 +4436,7 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>WiX localisatie bestanden</value>
   </data>
   <data name="ICSharpCode.WixBinding.WixNetFxExtensionTitle" xml:space="preserve">
-    <value>.NET Framework uitbreiding</value>
+    <value>.NET Raamwerk uitbreiding</value>
   </data>
   <data name="ICSharpCode.WixBinding.WixPackageFilesDiffControl.NoDiffFound" xml:space="preserve">
     <value>Geen verschil gevonden.</value>
@@ -5382,6 +5391,27 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="OpenFileTabEventHandler.OpenCommandPromptHere" xml:space="preserve">
     <value>Open hier de commando prompt</value>
+  </data>
+  <data name="PortableLibrary.ChooseTargetFrameworks" xml:space="preserve">
+    <value>Selecteer doel-raamwerken.</value>
+  </data>
+  <data name="PortableLibrary.CouldNotFindTools" xml:space="preserve">
+    <value>Kan Portable Klasse-bibliotheek gereedschap niet vinden.</value>
+  </data>
+  <data name="PortableLibrary.PortableSubset" xml:space="preserve">
+    <value>.NET Portable subset</value>
+  </data>
+  <data name="PortableLibrary.SelectAtLeastTwoFrameworks" xml:space="preserve">
+    <value>Er moeten tenminste twee raamwerken worden geselecteerd.</value>
+  </data>
+  <data name="PortableLibrary.SelectedProfile" xml:space="preserve">
+    <value>Gekozen profiel:</value>
+  </data>
+  <data name="PortableLibrary.SelectProfileDialog.Title" xml:space="preserve">
+    <value>Kies een Portable Bibliotheek  profiel.</value>
+  </data>
+  <data name="PortableLibrary.ToolsInstallationHelp" xml:space="preserve">
+    <value>Om de portabele Klassebibliotheek gereedschappen te installeren zonder Visual Studio te  installeren, sla het download bestand op (PortableLibraryTools.exe) op uw computer en voer de installatie uit via de commndoregel. Inclusief de /bouwmachine schakeling op de commandoregel.</value>
   </data>
   <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
     <value>Alle knooppunten invouwen</value>
@@ -6639,6 +6669,12 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="Templates.Project.GtkSharpProject.Name" xml:space="preserve">
     <value>Gtk# toepassing</value>
   </data>
+  <data name="Templates.Project.PortableLibrary.Description" xml:space="preserve">
+    <value>Bibliotheek, bruikbaar bij Windows, Silverlight, Windows Phone en Xbox.</value>
+  </data>
+  <data name="Templates.Project.PortableLibrary.Name" xml:space="preserve">
+    <value>Portable Klassen-bibliotheek</value>
+  </data>
   <data name="Templates.Project.SetupProject.Description" xml:space="preserve">
     <value>Windows installatie project om een MSI installatie programma te maken.</value>
   </data>
@@ -6790,7 +6826,7 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
     <value>Ontkoppel</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.BadAssembly" xml:space="preserve">
-    <value>Kan .NET Framework versie van het programma niet krijgen. Ga na of het programma een beheerde assembly is.</value>
+    <value>Kan .NET Raamwerk versie van het programma niet oproepen. Ga na of het programma een gemanagede assembly is.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.CannotAttachToProcess" xml:space="preserve">
     <value>Kan niet bij proces aanhaken.</value>
@@ -6805,7 +6841,7 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
     <value>Kan SharpDevelop foutopsporing niet starten omdat kernel foutopsporing is aangezet. Om de kernel foutopsporing uit te zetten, dient de schakeling "/debug" uit bestand Boot.ini verwijderd te worden en de computer opnieuw te worden opgestart.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.Net10NotSupported" xml:space="preserve">
-    <value>Foutopsporing bij .NET Framework 1.0 programmas is niet ondersteund.</value>
+    <value>Foutopsporing bij .NET Raamwerk 1.0 programmas is niet ondersteund.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.NotDebugging" xml:space="preserve">
     <value>Kan actie niet uitvoeren omdat er geen foutopsporing van een proces plaatsvindt.</value>

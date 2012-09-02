@@ -20,26 +20,55 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		[SetUp]
 		public void SetUpFixture()
 		{
-			string xml = "<PartCoverReport ver=\"1.0.2796.35184\">\r\n" +
-				"<File id=\"1\" url=\"c:\\test\\MyTests\\Class1.cs\" />\r\n" +
-				"<Assembly id=\"1\" name=\"MyTests.Tests\" module=\"C:\\Projects\\Test\\MyTests\\bin\\MyTests.DLL\" domain=\"test-domain-MyTests.dll\" domainIdx=\"1\" />\r\n" +
-				"<Assembly id=\"2\" name=\"nunit.framework\" module=\"C:\\Projects\\Test\\MyTests\\bin\\nunit.framework.DLL\" domain=\"test-domain-nunit.framework.dll\" domainIdx=\"1\" />\r\n" +
-				"<Type asmref=\"2\" name=\"NUnit.Framework.NotEqualAsserter\" flags=\"1233408\">\r\n" +
-				"  <Method name=\"Fail\" sig=\"bool  ()\" flags=\"134\" iflags=\"0\">\r\n" +
-				"    <pt visit=\"1\" pos=\"11\" len=\"1\" />\r\n" +
-				"    <pt visit=\"0\" pos=\"6\" len=\"5\" />\r\n" +
-				"    <pt visit=\"0\" pos=\"0\" len=\"6\" />\r\n" +
-				"  </Method>\r\n" +
-				"</Type>\r\n" +
-				"<Type asmref=\"1\" name=\"MyClass\" flags=\"1233248\">\r\n" +
-				"  <Method name=\".ctor\" sig=\"void  ()\" flags=\"6278\" iflags=\"0\">\r\n" +
-				"    <pt visit=\"0\" pos=\"8\" len=\"2\" fid=\"1\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
-				"    <pt visit=\"0\" pos=\"7\" len=\"1\" fid=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
-				"    <pt visit=\"0\" pos=\"0\" len=\"7\" fid=\"1\" sl=\"19\" sc=\"3\" el=\"19\" ec=\"18\" />\r\n" +
-				"    <pt visit=\"0\" pos=\"0\" len=\"7\" sl=\"19\" sc=\"3\" el=\"19\" ec=\"18\" />\r\n" +
-				"  </Method>\r\n" +
-				"</Type>\r\n" +
-				"</PartCoverReport>";
+			string xml = "<CoverageSession xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n" +
+				"\t<Modules>\r\n" +
+				"\t\t<Module hash=\"44-54-B6-13-97-49-45-F8-6A-74-9E-49-0C-77-87-C6-9C-54-47-7B\">\r\n" +
+				"\t\t\t<FullName>C:\\Projects\\Test\\MyTests\\bin\\nunit.framework.DLL</FullName>\r\n" +
+				"\t\t\t<ModuleName>nunit.framework</ModuleName>\r\n" +
+				"\t\t\t<Classes>\r\n" +
+				"\t\t\t\t<Class>\r\n" +
+				"\t\t\t\t\t<FullName>NUnit.Framework.NotEqualAsserter</FullName>\r\n" +
+				"\t\t\t\t\t<Methods>\r\n" +
+				"\t\t\t\t\t\t<Method visited=\"true\" cyclomaticComplexity=\"1\" sequenceCoverage=\"100\" branchCoverage=\"100\" isConstructor=\"false\" isStatic=\"false\" isGetter=\"false\" isSetter=\"false\">\r\n" +
+				"\t\t\t\t\t\t\t<MetadataToken>100663297</MetadataToken>\r\n" +
+				"\t\t\t\t\t\t\t<Name>System.Boolean NUnit.Framework.NotEqualAsserter::Fail()</Name>\r\n" +
+				"\t\t\t\t\t\t\t<SequencePoints>\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"19\" sc=\"3\" el=\"19\" ec=\"18\" />\r\n" +
+				"\t\t\t\t\t\t\t</SequencePoints>\r\n" +
+				"\t\t\t\t\t\t</Method>\r\n" +
+				"\t\t\t\t\t</Methods>\r\n" +
+				"\t\t\t\t</Class>\r\n" +
+				"\t\t\t</Classes>\r\n" +
+				"\t\t</Module>\r\n" +
+				"\t\t<Module hash=\"44-54-B6-13-97-49-45-F8-6A-74-9E-49-0C-77-87-C6-9C-54-47-7A\">\r\n" +
+				"\t\t\t<FullName>C:\\Projects\\Test\\MyTests\\bin\\MyTests.DLL</FullName>\r\n" +
+				"\t\t\t<ModuleName>MyTests.Tests</ModuleName>\r\n" +
+				"\t\t\t<Files>\r\n" +
+				"\t\t\t\t<File uid=\"1\" fullPath=\"c:\\test\\MyTests\\Class1.cs\" />\r\n" +
+				"\t\t\t</Files>\r\n" +
+				"\t\t\t<Classes>\r\n" +
+				"\t\t\t\t<Class>\r\n" +
+				"\t\t\t\t\t<FullName>MyTests.Tests.MyClass</FullName>\r\n" +
+				"\t\t\t\t\t<Methods>\r\n" +
+				"\t\t\t\t\t\t<Method visited=\"true\" cyclomaticComplexity=\"1\" sequenceCoverage=\"100\" branchCoverage=\"100\" isConstructor=\"false\" isStatic=\"false\" isGetter=\"false\" isSetter=\"false\">\r\n" +
+				"\t\t\t\t\t\t\t<MetadataToken>100663297</MetadataToken>\r\n" +
+				"\t\t\t\t\t\t\t<Name>System.Void MyTests.Tests.MyClass::.ctor()</Name>\r\n" +
+				"\t\t\t\t\t\t\t<FileRef uid=\"1\" />\r\n" +
+				"\t\t\t\t\t\t\t<SequencePoints>\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"19\" sc=\"3\" el=\"19\" ec=\"18\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"19\" sc=\"3\" el=\"19\" ec=\"18\" />\r\n" +
+				"\t\t\t\t\t\t\t</SequencePoints>\r\n" +
+				"\t\t\t\t\t\t</Method>\r\n" +
+				"\t\t\t\t\t</Methods>\r\n" +
+				"\t\t\t\t</Class>\r\n" +
+				"\t\t\t</Classes>\r\n" +
+				"\t\t</Module>\r\n" +
+				"\t</Modules>\r\n" +
+				"</CoverageSession>";
 
 			base.CreateCodeCoverageResults(xml);
 		}

@@ -40,6 +40,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			FocusableProperty.OverrideMetadata(typeof(TextView), new FrameworkPropertyMetadata(Boxes.False));
 		}
 		
+		ColumnRulerRenderer columnRulerRenderer;
+		
 		/// <summary>
 		/// Creates a new TextView instance.
 		/// </summary>
@@ -50,7 +52,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			elementGenerators = new ObserveAddRemoveCollection<VisualLineElementGenerator>(ElementGenerator_Added, ElementGenerator_Removed);
 			lineTransformers = new ObserveAddRemoveCollection<IVisualLineTransformer>(LineTransformer_Added, LineTransformer_Removed);
 			backgroundRenderers = new ObserveAddRemoveCollection<IBackgroundRenderer>(BackgroundRenderer_Added, BackgroundRenderer_Removed);
+			columnRulerRenderer = new ColumnRulerRenderer(this);
 			this.Options = new TextEditorOptions();
+			this.columnRulerRenderer.SetRuler(Options.ColumnRulerPosition, ColumnRulerPen);
+			
 			Debug.Assert(singleCharacterElementGenerator != null); // assert that the option change created the builtin element generators
 			
 			layers = new LayerCollection(this);
@@ -178,7 +183,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			                            new FrameworkPropertyMetadata(OnOptionsChanged));
 		
 		/// <summary>
-		/// Gets/Sets the document displayed by the text editor.
+		/// Gets/Sets the options used by the text editor.
 		/// </summary>
 		public TextEditorOptions Options {
 			get { return (TextEditorOptions)GetValue(OptionsProperty); }
@@ -198,6 +203,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (OptionChanged != null) {
 				OptionChanged(this, e);
 			}
+			
+			if (Options.ShowColumnRuler)
+				columnRulerRenderer.SetRuler(Options.ColumnRulerPosition, ColumnRulerPen);
+			else
+				columnRulerRenderer.SetRuler(-1, ColumnRulerPen);
+			
 			UpdateBuiltinElementGeneratorsFromOptions();
 			Redraw();
 		}
@@ -538,6 +549,36 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			get { return (Brush)GetValue(NonPrintableCharacterBrushProperty); }
 			set { SetValue(NonPrintableCharacterBrushProperty, value); }
 		}
+		
+		/// <summary>
+		/// LinkTextForegroundBrush dependency property.
+		/// </summary>
+		public static readonly DependencyProperty LinkTextForegroundBrushProperty =
+			DependencyProperty.Register("LinkTextForegroundBrush", typeof(Brush), typeof(TextView),
+			                            new FrameworkPropertyMetadata(Brushes.Blue));
+		
+		/// <summary>
+		/// Gets/sets the Brush used for displaying link texts.
+		/// </summary>
+		public Brush LinkTextForegroundBrush {
+			get { return (Brush)GetValue(LinkTextForegroundBrushProperty); }
+			set { SetValue(LinkTextForegroundBrushProperty, value); }
+		}
+		
+		/// <summary>
+		/// LinkTextBackgroundBrush dependency property.
+		/// </summary>
+		public static readonly DependencyProperty LinkTextBackgroundBrushProperty =
+			DependencyProperty.Register("LinkTextBackgroundBrush", typeof(Brush), typeof(TextView),
+			                            new FrameworkPropertyMetadata(Brushes.Transparent));
+		
+		/// <summary>
+		/// Gets/sets the Brush used for the background of link texts.
+		/// </summary>
+		public Brush LinkTextBackgroundBrush {
+			get { return (Brush)GetValue(LinkTextBackgroundBrushProperty); }
+			set { SetValue(LinkTextBackgroundBrushProperty, value); }
+		}
 		#endregion
 		
 		#region Redraw methods / VisualLine invalidation
@@ -655,10 +696,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				throw new ArgumentException("Cannot dispose visual line because it is in construction!");
 			}
 			visibleVisualLines = null;
-			visualLine.IsDisposed = true;
-			foreach (TextLine textLine in visualLine.TextLines) {
-				textLine.Dispose();
-			}
+			visualLine.Dispose();
 			RemoveInlineObjects(visualLine);
 		}
 		#endregion
@@ -899,7 +937,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			
 			// number of pixels clipped from the first visual line(s)
 			clippedPixelsOnTop = scrollOffset.Y - heightTree.GetVisualPosition(firstLineInView);
-			Debug.Assert(clippedPixelsOnTop >= 0);
+			// clippedPixelsOnTop should be >= 0, except for floating point inaccurracy.
+			Debug.Assert(clippedPixelsOnTop >= -ExtensionMethods.Epsilon);
 			
 			newVisualLines = new List<VisualLine>();
 			
@@ -1877,7 +1916,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				// and we need to re-measure the font metrics:
 				InvalidateDefaultTextMetrics();
 			} else if (e.Property == Control.ForegroundProperty
-			           || e.Property == TextView.NonPrintableCharacterBrushProperty)
+			           || e.Property == TextView.NonPrintableCharacterBrushProperty
+			           || e.Property == TextView.LinkTextBackgroundBrushProperty
+			           || e.Property == TextView.LinkTextForegroundBrushProperty)
 			{
 				// changing brushes requires recreating the cached elements
 				RecreateCachedElements();
@@ -1895,6 +1936,33 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				InvalidateDefaultTextMetrics();
 				Redraw();
 			}
+			if (e.Property == ColumnRulerPenProperty) {
+				columnRulerRenderer.SetRuler(this.Options.ColumnRulerPosition, this.ColumnRulerPen);
+			}
+		}
+		
+		/// <summary>
+		/// The pen used to draw the column ruler.
+		/// <seealso cref="TextEditorOptions.ShowColumnRuler"/>
+		/// </summary>
+		public static readonly DependencyProperty ColumnRulerPenProperty =
+			DependencyProperty.Register("ColumnRulerBrush", typeof(Pen), typeof(TextView),
+			                            new FrameworkPropertyMetadata(CreateFrozenPen(Brushes.LightGray)));
+		
+		static Pen CreateFrozenPen(SolidColorBrush brush)
+		{
+			Pen pen = new Pen(brush, 1);
+			pen.Freeze();
+			return pen;
+		}
+		
+		/// <summary>
+		/// Gets/Sets the pen used to draw the column ruler.
+		/// <seealso cref="TextEditorOptions.ShowColumnRuler"/>
+		/// </summary>
+		public Pen ColumnRulerPen {
+			get { return (Pen)GetValue(ColumnRulerPenProperty); }
+			set { SetValue(ColumnRulerPenProperty, value); }
 		}
 	}
 }

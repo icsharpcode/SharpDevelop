@@ -16,6 +16,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -196,7 +197,7 @@ namespace SearchAndReplace
 				
 				var source = DocumentUtilitites.GetTextSource(buffer);
 				TextDocument document = null;
-				DocumentHighlighter highlighter = null;
+				ISyntaxHighlighter highlighter = null;
 				int offset = 0;
 				int length = source.TextLength;
 				if (Target == SearchTarget.CurrentSelection && Selection != null) {
@@ -209,15 +210,12 @@ namespace SearchAndReplace
 					if (document == null) {
 						document = new TextDocument(source);
 						var highlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
-						if (highlighting != null)
-							highlighter = new DocumentHighlighter(document, highlighting.MainRuleSet);
-						else
-							highlighter = null;
+						highlighter = EditorControlService.Instance.CreateHighlighter(new AvalonEditDocumentAdapter(document, null), fileName);
 					}
 					var start = document.GetLocation(result.Offset).ToLocation();
 					var end = document.GetLocation(result.Offset + result.Length).ToLocation();
 					var builder = SearchResultsPad.CreateInlineBuilder(start, end, document, highlighter);
-					results.Add(new AvalonEditSearchResultMatch(fileName, start, end, result.Offset, result.Length, builder, result));
+					results.Add(new AvalonEditSearchResultMatch(fileName, start, end, result.Offset, result.Length, builder, highlighter.DefaultTextColor, result));
 				}
 				if (results.Count > 0)
 					return new SearchedFile(fileName, results);
@@ -317,7 +315,7 @@ namespace SearchAndReplace
 				if (result != null) {
 					var start = document.OffsetToPosition(result.Offset);
 					var end = document.OffsetToPosition(result.EndOffset);
-					return new AvalonEditSearchResultMatch(file, start, end, result.Offset, result.Length, null, result);
+					return new AvalonEditSearchResultMatch(file, start, end, result.Offset, result.Length, null, null, result);
 				}
 				return null;
 			}
@@ -332,12 +330,7 @@ namespace SearchAndReplace
 			
 			public static SearchRegion CreateSearchRegion(FileName[] files, ISearchStrategy strategy, SearchLocation location)
 			{
-				ITextEditor editor = GetActiveTextEditor();
-				if (editor != null) {
-					return new SearchRegion(files, strategy, location);
-				}
-				
-				return null;
+				return new SearchRegion(files, strategy, location);
 			}
 			
 			SearchRegion(FileName[] files, ISearchStrategy strategy, SearchLocation location)

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using Debugger.MetaData;
 
 namespace Debugger
 {
@@ -42,7 +43,11 @@ namespace Debugger
 					MethodInfo mr = (MethodInfo)member;
 					if (mr.IsGenericMethod) {
 						b.Append("``");
-						b.Append(mr.GetGenericArguments().Length);
+						// DebugMethodInfo does not implement GetGenericArguments
+						if (mr is DebugMethodInfo)
+							b.Append(((DebugMethodInfo)mr).GenericParameterCount);
+						else
+							b.Append(mr.GetGenericArguments().Length);
 					}
 					parameters = mr.GetParameters();
 					if (mr.Name == "op_Implicit" || mr.Name == "op_Explicit") {
@@ -73,7 +78,7 @@ namespace Debugger
 				return;
 			}
 			if (type.IsGenericType) {
-				AppendTypeNameWithArguments(b, type.GetElementType(), type.GetGenericArguments());
+				AppendTypeNameWithArguments(b, type, type.GetGenericArguments());
 			} else if (type.HasElementType) {
 				AppendTypeName(b, type.GetElementType());
 				if (type.IsArray) {
