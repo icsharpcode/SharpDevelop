@@ -101,6 +101,20 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void MakeClassPartial_PublicCSharpClassThatIsAlreadyPartial_ClassDefinitionIsUnchanged()
+		{
+			CreatePublicCSharpClass();
+			CreateClassKindUpdater();
+			classHelper.MakeClassPartial();
+			SetClassFileName(@"d:\projects\MyProject\MyClass.cs");
+			SetClassDeclarationLine(1, "public class MyClass");
+			
+			updater.MakeClassPartial();
+			
+			document.AssertWasNotCalled(doc => doc.Insert(Arg<int>.Is.Anything, Arg<string>.Is.Anything));
+		}
+		
+		[Test]
 		public void MakeClassPartial_PublicVisualBasicClassWithNoOtherModifiers_AddsVisualBasicPartialKeywordToClassDefinition()
 		{
 			CreatePublicVisualBasicClass();

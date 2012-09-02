@@ -9,17 +9,19 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class CodeFunction : CodeElement
 	{
 		IDocumentLoader documentLoader;
+		IVirtualMethodUpdater methodUpdater;
 		
 		public CodeFunction(IMethod method)
-			: this(method, new DocumentLoader())
+			: this(method, new DocumentLoader(), new VirtualMethodUpdater(method))
 		{
 		}
 		
-		public CodeFunction(IMethod method, IDocumentLoader documentLoader)
+		public CodeFunction(IMethod method, IDocumentLoader documentLoader, IVirtualMethodUpdater methodUpdater)
 			: base(method)
 		{
 			this.Method = method;
 			this.documentLoader = documentLoader;
+			this.methodUpdater = methodUpdater;
 		}
 		
 		public CodeFunction()
@@ -66,7 +68,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual bool CanOverride {
 			get { return Method.IsOverridable; }
-			set { throw new NotImplementedException(); }
+			set {
+				if (value) {
+					methodUpdater.MakeMethodVirtual();
+				}
+			}
 		}
 		
 		public virtual vsCMFunction FunctionKind {

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
@@ -15,6 +16,7 @@ namespace PackageManagement.Tests.EnvDTE
 	{
 		CodeFunction codeFunction;
 		MethodHelper helper;
+		IVirtualMethodUpdater methodUpdater;
 		
 		[SetUp]
 		public void Init()
@@ -36,7 +38,8 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateFunction()
 		{
-			codeFunction = new CodeFunction(helper.Method);
+			methodUpdater = MockRepository.GenerateStub<IVirtualMethodUpdater>();
+			codeFunction = new CodeFunction(helper.Method, null, methodUpdater);
 		}
 		
 		void CreatePublicConstructor(string name)
@@ -372,6 +375,26 @@ namespace PackageManagement.Tests.EnvDTE
 			CodeAttribute2 attribute = attributes.FirstCodeAttribute2OrDefault();
 			Assert.AreEqual(1, attributes.Count);
 			Assert.AreEqual("System.ObsoleteAttribute", attribute.FullName);
+		}
+		
+		[Test]
+		public void CanOverride_SetToTrueForFunction_VirtualKeywordAddedToFunction()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			
+			codeFunction.CanOverride = true;
+			
+			methodUpdater.AssertWasCalled(updater => updater.MakeMethodVirtual());
+		}
+		
+		[Test]
+		public void CanOverride_SetToFalseForFunction_VirtualKeywordNotAddedToFunction()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			
+			codeFunction.CanOverride = false;
+			
+			methodUpdater.AssertWasNotCalled(updater => updater.MakeMethodVirtual());
 		}
 	}
 }

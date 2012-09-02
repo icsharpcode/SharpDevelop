@@ -26,6 +26,9 @@ namespace ICSharpCode.PackageManagement
 		
 		public void MakeClassPartial()
 		{
+			if (Class.IsPartial)
+				return;
+			
 			OpenFileContainingClass();
 			int offset = GetPartialKeywordInsertOffset();
 			InsertPartialKeyword(offset);
