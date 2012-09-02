@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
@@ -16,6 +17,7 @@ namespace PackageManagement.Tests.EnvDTE
 	{
 		CodeClass2 codeClass;
 		ClassHelper helper;
+		IClassKindUpdater classKindUpdater;
 		
 		void CreateProjectContent()
 		{
@@ -42,7 +44,8 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateClass()
 		{
-			codeClass = new CodeClass2(helper.ProjectContentHelper.ProjectContent, helper.Class);
+			classKindUpdater = MockRepository.GenerateStub<IClassKindUpdater>();
+			codeClass = new CodeClass2(helper.ProjectContentHelper.ProjectContent, helper.Class, classKindUpdater);
 		}
 		
 		void AddInterfaceToProjectContent(string fullName)
@@ -380,6 +383,26 @@ namespace PackageManagement.Tests.EnvDTE
 			bool generic = codeClass.IsGeneric;
 			
 			Assert.IsFalse(generic);
+		}
+		
+		[Test]
+		public void ClassKind_ChangeClassToBePartial_UsesClassKindUpdaterToModifyClass()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			
+			codeClass.ClassKind = vsCMClassKind.vsCMClassKindPartialClass;
+			
+			classKindUpdater.AssertWasCalled(updater => updater.MakeClassPartial());
+		}
+		
+		[Test]
+		public void ClassKind_ChangeClassToBeMainClass_ThrowsNotImplementedException()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			
+			Assert.Throws<NotImplementedException>(() => codeClass.ClassKind = vsCMClassKind.vsCMClassKindMainClass);
 		}
 	}
 }

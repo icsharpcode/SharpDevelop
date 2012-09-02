@@ -76,6 +76,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Src\ClassCodeGeneratorTests.cs" />
+    <Compile Include="Src\ClassKindUpdaterTests.cs" />
     <Compile Include="Src\CodeGeneratorTests.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeAttributesTests.cs" />

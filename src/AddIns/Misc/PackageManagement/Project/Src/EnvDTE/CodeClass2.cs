@@ -8,8 +8,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeClass2 : CodeClass
 	{
-		public CodeClass2(IProjectContent projectContent, IClass c)
+		IClassKindUpdater classKindUpdater;
+		
+		public CodeClass2(IProjectContent projectContent, IClass c, IClassKindUpdater classKindUpdater)
 			: base(projectContent, c)
+		{
+			this.classKindUpdater = classKindUpdater;
+		}
+		
+		public CodeClass2(IProjectContent projectContent, IClass c)
+			: this(projectContent, c, new ClassKindUpdater(c))
 		{
 		}
 		
@@ -34,7 +42,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				}
 				return vsCMClassKind.vsCMClassKindMainClass;
 			}
-			set { throw new NotImplementedException(); }
+			set {
+				if (value == vsCMClassKind.vsCMClassKindPartialClass) {
+					classKindUpdater.MakeClassPartial();
+				} else {
+					throw new NotImplementedException();
+				}
+			}
 		}
 		
 		public bool IsAbstract {

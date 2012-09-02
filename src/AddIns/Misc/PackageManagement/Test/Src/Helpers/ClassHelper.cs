@@ -214,5 +214,15 @@ namespace PackageManagement.Tests.Helpers
 			classHelper.CreatePublicClass(name);
 			return classHelper;
 		}
+		
+		public void SetRegionBeginLine(int line)
+		{
+			SetRegion(new DomRegion(line, 1));
+		}
+		
+		public void SetRegion(DomRegion region)
+		{
+			Class.Stub(c => c.Region).Return(region);
+		}
 	}
 }

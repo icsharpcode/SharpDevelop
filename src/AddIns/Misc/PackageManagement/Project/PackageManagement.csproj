@@ -74,6 +74,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AcceptLicensesEventArgs.cs" />
     <Compile Include="Src\ClassCodeGenerator.cs" />
+    <Compile Include="Src\ClassKindUpdater.cs" />
     <Compile Include="Src\ConfigSettingsFileSystem.cs" />
     <Compile Include="Src\Design\DesignTimeSelectProjectsViewModel.cs" />
     <Compile Include="Src\Design\FakePackageOperation.cs" />
@@ -152,6 +153,7 @@
     <Compile Include="Src\EnvDTE\vsCMTypeRef.cs" />
     <Compile Include="Src\EnvDTE\vsEPReplaceTextOptions.cs" />
     <Compile Include="Src\EnvDTE\Window.cs" />
+    <Compile Include="Src\IClassKindUpdater.cs" />
     <Compile Include="Src\IDocumentNamespaceCreator.cs" />
     <Compile Include="Src\IProjectBrowserUpdater.cs" />
     <Compile Include="Src\IRefactoringDocumentView.cs" />
