@@ -355,6 +355,26 @@ class A
 			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
+		
+		[Test]
+		public void DoesNotSuggestMovingIntoLockStatement ()
+		{	
+			var input = @"
+using System;
+class A
+{
+	void F ()
+	{
+		int i = 1;
+		lock (this) {
+			Console.WriteLine(i);
+		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
 
 		[Test]
 		public void TestEmbeddedNonBlockStatement ()
