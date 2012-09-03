@@ -33,7 +33,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription ("Possible mutiple enumeration of IEnuemrable",
+	[IssueDescription ("Possible multiple enumeration of IEnumerable",
 					   Description = "Possible multiple enumeration of IEnumerable.",
 					   Category = IssueCategories.CodeQualityIssues,
 					   Severity = Severity.Warning,
