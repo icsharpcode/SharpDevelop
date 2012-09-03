@@ -2461,6 +2461,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				foreach (var meths in state.GetExtensionMethods (type)) {
 					foreach (var m in meths) {
+						if (!lookup.IsAccessible(m, isProtectedAllowed))
+							continue;
 						result.AddMember(m);
 					}
 				}
