@@ -255,8 +255,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							(outNode ?? node).AddNextNode (finallyNode);
 							outNode = finallyNode;
 						}
-						if (outNode != null)
+						if (outNode != null) {
+							nodeDict [cfNode] = outNode;
 							return outNode;
+						}
 					}
 				}
 				return nodeDict [startNode];
