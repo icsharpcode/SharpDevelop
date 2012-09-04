@@ -8,16 +8,10 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 
 using ICSharpCode.Core.Presentation;
-using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -27,28 +21,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 	public partial class StringListEditorXaml : UserControl
 	{
 		bool browseForDirectory;
-		
 		public event EventHandler ListChanged;
 		
-		public string TitleText {
-			get { return this.title.Content.ToString(); }
-			set { this.title.Content = value;}
-		}
-		
-		
-		public string ListCaption
+		public StringListEditorXaml()
 		{
-			get {return this.listlabel.Content.ToString();}
-			set {this.listlabel.Content = value;}
+			InitializeComponent();
+			moveUpButton.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.ArrowUp") };
+			moveDownButton.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.ArrowDown")};
+			deleteButton.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.DeleteIcon")};
+			DataContext = this;
 		}
 		
+		public string TitleText {get;set;}
 		
-		public string AddButtonText {
-			get {return addButton.Content.ToString();}
-			set {addButton.Content = value;}
-		}
-		
-		
+		public string ListCaption {get;set;}
+	
+	
 		public bool BrowseForDirectory {
 			get {
 				return browseForDirectory;
@@ -191,12 +179,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		#endregion
 		
-		public StringListEditorXaml()
-		{
-			InitializeComponent();
-			moveUpButton.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.ArrowUp") };
-			moveDownButton.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.ArrowDown")};
-			deleteButton.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.DeleteIcon")};
-		}
+		
 	}
 }

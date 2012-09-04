@@ -23,7 +23,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			editor.BrowseForDirectory = true;
 			editor.TitleText = StringParser.Parse("${res:Global.Folder}:");
-			editor.AddButtonText = StringParser.Parse("${res:Dialog.ProjectOptions.ReferencePaths.AddPath}");
 			editor.ListCaption = StringParser.Parse("${res:Dialog.ProjectOptions.ReferencePaths}:");
 			editor.ListChanged += delegate { IsDirty = true; };
 		}
