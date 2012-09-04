@@ -58,6 +58,33 @@ class Foo : Simple
 ");
 		}
 
+		[Test()]
+		public void TestProtectedMembers()
+		{
+			Test<ImplementAbstractMembersAction>(@"abstract class Simple {
+	protected abstract string ServiceName { get; }
+}
+
+class Foo : $Simple
+{
+}
+", @"abstract class Simple {
+	protected abstract string ServiceName { get; }
+}
+
+class Foo : Simple
+{
+	#region implemented abstract members of Simple
+	protected override string ServiceName {
+		get {
+			throw new System.NotImplementedException ();
+		}
+	}
+	#endregion
+}
+");
+		}
+
 	}
 }
 

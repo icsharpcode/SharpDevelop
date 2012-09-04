@@ -101,7 +101,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				decl.Modifiers = Modifiers.None;
 				decl.AddChild(builder.ConvertType(member.DeclaringType), EntityDeclaration.PrivateImplementationTypeRole);
 			} else {
-				decl.Modifiers = Modifiers.Public;
+				if (member.IsProtected) {
+					decl.Modifiers = Modifiers.Protected;
+				} else {
+					decl.Modifiers = Modifiers.Public;
+				}
 			}
 			return decl;
 		}
