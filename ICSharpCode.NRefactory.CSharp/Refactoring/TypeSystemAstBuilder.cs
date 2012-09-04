@@ -461,7 +461,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		EntityDeclaration ConvertTypeDefinition(ITypeDefinition typeDefinition)
 		{
-			Modifiers modifiers = ModifierFromAccessibility(typeDefinition.Accessibility);
+			Modifiers modifiers = Modifiers.None;
+			if (this.ShowAccessibility) {
+				modifiers |= ModifierFromAccessibility(typeDefinition.Accessibility);
+			}
 			if (this.ShowModifiers) {
 				if (typeDefinition.IsStatic) {
 					modifiers |= Modifiers.Static;
@@ -598,7 +601,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (accessor == null)
 				return Accessor.Null;
 			Accessor decl = new Accessor();
-			if (accessor.Accessibility != ownerAccessibility)
+			if (this.ShowAccessibility && accessor.Accessibility != ownerAccessibility)
 				decl.Modifiers = ModifierFromAccessibility(accessor.Accessibility);
 			decl.Body = GenerateBodyBlock();
 			return decl;
@@ -716,10 +719,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		#endregion
 		
 		#region Convert Modifiers
-		Modifiers ModifierFromAccessibility(Accessibility accessibility)
+		static Modifiers ModifierFromAccessibility(Accessibility accessibility)
 		{
-			if (!this.ShowAccessibility)
-				return Modifiers.None;
 			switch (accessibility) {
 				case Accessibility.Private:
 					return Modifiers.Private;
@@ -740,7 +741,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		Modifiers GetMemberModifiers(IMember member)
 		{
 			bool isInterfaceMember = member.DeclaringType.Kind == TypeKind.Interface;
-			Modifiers m = isInterfaceMember ? Modifiers.None : ModifierFromAccessibility(member.Accessibility);
+			Modifiers m = Modifiers.None;
+			if (this.ShowAccessibility && !isInterfaceMember) {
+				m |= ModifierFromAccessibility(member.Accessibility);
+			}
 			if (this.ShowModifiers) {
 				if (member.IsStatic) {
 					m |= Modifiers.Static;
