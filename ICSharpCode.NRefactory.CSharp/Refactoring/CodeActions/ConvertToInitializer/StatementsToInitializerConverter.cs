@@ -244,11 +244,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (leftPath == null) {
 				return false;
 			}
+
 			// Move replacement annotations over, in case this is the second assignment
-			// to the same variable.
+			// to the same variable/member.
 			AddOldAnnotationsToInitializer(leftPath, initializer);
 
-			if (leftResolveResult is LocalResolveResult) {
+			if (leftPath.MemberPath.Count == 0) {
 				ReplacementNodeHelper.AddReplacementAnnotation(initializer, node);
 				initializers [leftPath] = initializer;
 				return true;
@@ -256,7 +257,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (!(leftResolveResult is MemberResolveResult))
 				return false;
 
-			Debug.Assert(leftPath.Level > 1, "No top level assignment should get here.");
+			Debug.Assert(leftPath.MemberPath.Count > 0, "No top level assignment should get here.");
 
 			var parentKey = leftPath.GetParentPath();
 			var member = leftPath.MemberPath.Last();
@@ -389,7 +390,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public static void AddReplacementAnnotation(AstNode node, AstNode replacedNode)
 		{
-			node.AddAnnotation(new ReplacementNodeAnnotation() {
+			node.AddAnnotation(new ReplacementNodeAnnotation {
 				ReplacedNode = replacedNode
 			});
 		}
