@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -31,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public override void VisitTypeDeclaration(TypeDeclaration declaration)
 			{
 				var result = ctx.Resolve(declaration) as TypeResolveResult;
-				var baseType = result.Type.GetNonInterfaceBaseTypes().FirstOrDefault(t => !t.IsKnownType(KnownTypeCode.Object) && !object.Equals(t, result.Type));
+				var baseType = result.Type.DirectBaseTypes.FirstOrDefault(t => !t.IsKnownType(KnownTypeCode.Object) && t.Kind != TypeKind.Interface);
 
 				if (baseType != null)
 				{
@@ -39,8 +40,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					this.baseType = baseType;
 
 					var baseConstructor = baseType.GetConstructors(c => c.Parameters.Count == 0).FirstOrDefault();
+					var memberLookup = new MemberLookup(result.Type.GetDefinition(), ctx.Compilation.MainAssembly, false);
 
-					if (baseConstructor == null) {
+					if (baseConstructor == null || !memberLookup.IsAccessible(baseConstructor, true)) {
 						var constructor = result.Type.GetConstructors(f => !f.IsSynthetic).FirstOrDefault();
 
 						if (constructor == null) {
@@ -80,9 +82,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			private void AddIssue(AstNode node, IType baseClass, int argumentCount = 0)
 			{
 				var identifier = node.GetChildByRole(Roles.Identifier);
-				var errorMessage = string.Format("The type '{0}' does not contain a constructor that takes '{1}' arguments", baseClass.FullName, argumentCount);
-
-				this.AddIssue(identifier, ctx.TranslateString(errorMessage));
+				this.AddIssue(
+					identifier,
+					string.Format(ctx.TranslateString("CS1729: The type '{0}' does not contain a constructor that takes '{1}' arguments"), baseType.Name, argumentCount));
 			}
 		}
 	}

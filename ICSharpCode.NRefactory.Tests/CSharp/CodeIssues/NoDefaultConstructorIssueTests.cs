@@ -100,6 +100,43 @@ class ChildClass : BaseClass
 
 			Test<NoDefaultConstructorIssue>(testInput, 1);
 		}
+
+		[Test]
+		public void ShouldOnlyLookAtDirectBaseClasses()
+		{
+			var testInput =
+@"class TopLevelClass
+{
+	public TopLevelClass(string test) {}
+}
+
+class BaseClass : TopLevelClass
+{
+	public BaseClass() : base(""hello"") {}
+}
+
+class ChildClass : BaseClass
+{
+}";
+
+			Test<NoDefaultConstructorIssue>(testInput, 0);
+		}
+
+		[Test]
+		public void ShouldReturnAnIssueIfBaseConstructorIsPrivate()
+		{
+			var testInput =
+@"class BaseClass
+{
+	private BaseClass() {}
+}
+
+class ChildClass : BaseClass
+{
+}";
+
+			Test<NoDefaultConstructorIssue>(testInput, 1);
+		}
 	}
 }
 
