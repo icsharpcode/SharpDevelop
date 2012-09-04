@@ -205,5 +205,28 @@ class Test : ITest
 	}
 }");
 		}
+
+		[Test]
+		public void TestGenereatedCall ()
+		{
+			Test<CreateOverloadWithoutParameterAction> (
+				@"class Test
+{
+	void TestMethod (ref int $i, ref int j, out int k)
+	{
+	}
+}",
+				@"class Test
+{
+	void TestMethod (ref int j, out int k)
+	{
+		int i = 0;
+		TestMethod (ref i, ref j, out k);
+	}
+	void TestMethod (ref int i, ref int j, out int k)
+	{
+	}
+}");
+		}
 	}
 }

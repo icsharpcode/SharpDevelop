@@ -290,5 +290,49 @@ class TestClass
 }";
 			Test<RedundantAssignmentIssue> (input, 0);
 		}
+
+
+		
+		[Test]
+		public void TestAssignmentInTryCatch ()
+		{
+			var input = @"using System;
+class TestClass
+{
+	void TestMethod ()
+	{
+		var a = new TestClass ();
+		try {
+			a = null;
+		} catch (Exception) {
+			if (a != null) {
+				a.TestMethod ();
+			}
+		}
+	}
+}";
+			Test<RedundantAssignmentIssue> (input, 0);
+		}
+
+		[Test]
+		public void TestAssignmentInTryCatchFinally ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		var a = new TestClass ();
+		try {
+			a = null;
+		} finally {
+			if (a != null) {
+				a.TestMethod ();
+			}
+		}
+	}
+}";
+			Test<RedundantAssignmentIssue> (input, 0);
+		}
 	}
 }

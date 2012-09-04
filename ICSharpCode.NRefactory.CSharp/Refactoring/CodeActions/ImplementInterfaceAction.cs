@@ -93,6 +93,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			var builder = context.CreateTypeSytemAstBuilder();
 			builder.GenerateBody = true;
+			builder.ShowModifiers = false;
+			builder.ShowAccessibility = true;
 			builder.ShowConstantValues = !explicitImplementation;
 			builder.ShowTypeParameterConstraints = !explicitImplementation;
 			builder.UseCustomEvents = explicitImplementation;
@@ -100,8 +102,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (explicitImplementation) {
 				decl.Modifiers = Modifiers.None;
 				decl.AddChild(builder.ConvertType(member.DeclaringType), EntityDeclaration.PrivateImplementationTypeRole);
+			} else if (member.DeclaringType.Kind == TypeKind.Interface) {
+				decl.Modifiers |= Modifiers.Public;
 			} else {
-				decl.Modifiers = Modifiers.Public;
+				// Remove 'internal' modifier from 'protected internal' members if the override is in a different assembly than the member
+				if (!member.ParentAssembly.InternalsVisibleTo(context.Compilation.MainAssembly)) {
+					decl.Modifiers &= ~Modifiers.Internal;
+				}
 			}
 			return decl;
 		}

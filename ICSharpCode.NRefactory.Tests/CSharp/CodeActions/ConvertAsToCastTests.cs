@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	public class ConvertAsToCastTests : ContextActionTestBase
 	{
 		[Test]
-		public void Test()
+		public void Test ()
 		{
 			Test<ConvertAsToCastAction> (@"
 using System;
@@ -53,6 +53,46 @@ class TestClass
 		var b = (Exception)a;
 	}
 }");
+		}
+
+		[Test]
+		public void TestRemoveParentheses ()
+		{
+			string input = @"
+class TestClass {
+	void TestMethod (object o)
+	{
+		var b = 1 + (o $as TestClass);
+	}
+}";
+			string output = @"
+class TestClass {
+	void TestMethod (object o)
+	{
+		var b = 1 + (TestClass)o;
+	}
+}";
+			Test<ConvertAsToCastAction> (input, output);
+		}
+
+		[Test]
+		public void TestInsertParentheses ()
+		{
+			string input = @"
+class TestClass {
+	void TestMethod (object o)
+	{
+		var b = 1 + o $as TestClass;
+	}
+}";
+			string output = @"
+class TestClass {
+	void TestMethod (object o)
+	{
+		var b = (TestClass)(1 + o);
+	}
+}";
+			Test<ConvertAsToCastAction> (input, output);
 		}
 	}
 }

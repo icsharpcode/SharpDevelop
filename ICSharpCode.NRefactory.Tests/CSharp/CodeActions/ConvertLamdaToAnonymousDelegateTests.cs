@@ -74,6 +74,28 @@ class A
 	}
 }");
 		}
+
+		[Test]
+		public void ParameterLessLambdaTest ()
+		{
+			Test<ConvertLambdaToAnonymousDelegateAction>(@"
+class A
+{
+	void F ()
+	{
+		System.Action = ()$ => { System.Console.WriteLine (); };
+	}
+}", @"
+class A
+{
+	void F ()
+	{
+		System.Action = delegate {
+	System.Console.WriteLine ();
+};
+	}
+}");
+		}
 	}
 }
 

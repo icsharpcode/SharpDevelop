@@ -1015,5 +1015,55 @@ namespace foo {
 			Assert.AreEqual("foo.Foo", result.Type.FullName);
 
 		}
+		
+		[Test]
+		public void BaseTypeReference_refers_to_outer_type()
+		{
+			string program = @"class B {}
+    class A : $B$ {
+        class B {}
+    }";
+			var result = Resolve<TypeResolveResult>(program);
+			Assert.IsFalse(result.IsError);
+			Assert.AreEqual("B", result.Type.FullName);
+			
+			// also check if the reference in the type system is correct
+			var a = ((ITypeDefinition)result.Type).Compilation.RootNamespace.GetTypeDefinition("A", 0);
+			Assert.AreEqual("B", a.DirectBaseTypes.Single().FullName);
+		}
+		
+		[Test]
+		public void Class_constraint_refers_to_outer_type()
+		{
+			string program = @"class B {}
+    class A<T> where T : $B$ {
+        class B {}
+    }";
+			var result = Resolve<TypeResolveResult>(program);
+			Assert.IsFalse(result.IsError);
+			Assert.AreEqual("B", result.Type.FullName);
+			
+			// also check if the reference in the type system is correct
+			var a = ((ITypeDefinition)result.Type).Compilation.RootNamespace.GetTypeDefinition("A", 1);
+			Assert.AreEqual("B", a.TypeParameters.Single().DirectBaseTypes.Single().FullName);
+		}
+		
+		[Test]
+		public void Method_constraint_refers_to_inner_type()
+		{
+			string program = @"class B {}
+    class A {
+    	void M<T>() where T : $B$ {}
+        class B {}
+    }";
+			var result = Resolve<TypeResolveResult>(program);
+			Assert.IsFalse(result.IsError);
+			Assert.AreEqual("A.B", result.Type.FullName);
+			
+			// also check if the reference in the type system is correct
+			var a = ((ITypeDefinition)result.Type).Compilation.RootNamespace.GetTypeDefinition("A", 0);
+			var method = a.Methods.Single(m => m.Name == "M");
+			Assert.AreEqual("A.B", method.TypeParameters.Single().DirectBaseTypes.Single().FullName);
+		}
 	}
 }

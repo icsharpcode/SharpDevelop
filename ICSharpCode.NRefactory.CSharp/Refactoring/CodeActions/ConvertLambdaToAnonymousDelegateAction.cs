@@ -56,7 +56,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					};
 				}
 				var method = new AnonymousMethodExpression (newBody, GetParameters(lambdaResolveResult.Parameters, context));
-				method.HasParameterList = true;
 				script.Replace(node, method);
 			});
 		}
@@ -64,6 +63,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		IEnumerable<ParameterDeclaration> GetParameters(IList<IParameter> parameters, RefactoringContext context)
 		{
+			if (parameters == null || parameters.Count == 0)
+				return null;
+			var result = new List<ParameterDeclaration> ();
 			foreach (var parameter in parameters) {
 				var type = context.CreateShortType(parameter.Type);
 				var name = parameter.Name;
@@ -72,8 +74,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					modifier |= ParameterModifier.Ref;
 				if (parameter.IsOut)
 					modifier |= ParameterModifier.Out;
-				yield return new ParameterDeclaration(type, name, modifier);
+				result.Add (new ParameterDeclaration(type, name, modifier));
 			}
+			return result;
 		}
 	}
 }

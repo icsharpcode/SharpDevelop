@@ -1200,5 +1200,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var indexer = type.GetProperties(p => p.IsIndexer).Single();
 			Assert.AreEqual("Foo", indexer.Name);
 		}
+
+		[Test]
+		public void TestNullableDefaultParameter()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassWithMethodThatHasNullableDefaultParameter));
+			var method = type.GetMethods ().Single (m => m.Name == "Foo");
+			Assert.AreEqual(42, method.Parameters.Single ().ConstantValue);
+		}
 	}
 }

@@ -179,5 +179,28 @@ class Foo {
 	} 
 }"));
 		}
+
+		[Test]
+		public void TestBug6758()
+		{
+			var rr = ResolveAtLocation<TypeResolveResult>(
+				@"using System;                                                                   
+
+namespace TestCrash                                                             
+{                                                                               
+        class A                                                                 
+        {                                                                       
+
+        }                                                                       
+
+        class B<T> : T where T: $A                                               
+        {                                                                       
+
+        }                                                                       
+}
+");
+			Assert.AreEqual("A", rr.Type.Name);
+		}
+
 	}
 }

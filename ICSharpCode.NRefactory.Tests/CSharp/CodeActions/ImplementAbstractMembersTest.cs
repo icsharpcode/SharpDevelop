@@ -1,6 +1,6 @@
-// 
+﻿// 
 // ImplementAbstractMembersTest.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
@@ -58,6 +58,59 @@ class Foo : Simple
 ");
 		}
 
+		[Test()]
+		public void TestProtectedMembers()
+		{
+			Test<ImplementAbstractMembersAction>(@"abstract class Simple {
+	protected abstract string ServiceName { get; }
+}
+
+class Foo : $Simple
+{
+}
+", @"abstract class Simple {
+	protected abstract string ServiceName { get; }
+}
+
+class Foo : Simple
+{
+	#region implemented abstract members of Simple
+	protected override string ServiceName {
+		get {
+			throw new System.NotImplementedException ();
+		}
+	}
+	#endregion
+}
+");
+		}
+
+		[Test()]
+		public void TestProtectedInternalMembers()
+		{
+			Test<ImplementAbstractMembersAction>(@"abstract class Simple {
+	protected internal abstract string ServiceName { get; }
+}
+
+class Foo : $Simple
+{
+}
+", @"abstract class Simple {
+	protected internal abstract string ServiceName { get; }
+}
+
+class Foo : Simple
+{
+	#region implemented abstract members of Simple
+	protected internal override string ServiceName {
+		get {
+			throw new System.NotImplementedException ();
+		}
+	}
+	#endregion
+}
+");
+		}
 	}
 }
 

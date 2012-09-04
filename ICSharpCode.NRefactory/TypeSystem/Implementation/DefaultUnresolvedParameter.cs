@@ -235,12 +235,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			public object ConstantValue {
 				get {
 					ResolveResult rr = LazyInit.VolatileRead(ref this.resolvedDefaultValue);
-					if (rr != null) {
-						return rr.ConstantValue;
-					} else {
+					if (rr == null) {
 						rr = defaultValue.Resolve(context);
-						return LazyInit.GetOrSet(ref this.resolvedDefaultValue, rr).ConstantValue;
+						LazyInit.GetOrSet(ref this.resolvedDefaultValue, rr);
 					}
+					if (rr is ConversionResolveResult) {
+						var crr = (ConversionResolveResult)rr;
+						if (crr.Conversion.IsNullableConversion)
+							return crr.Input.ConstantValue;
+					}
+					return rr.ConstantValue;
+
 				}
 			}
 			

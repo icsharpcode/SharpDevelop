@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -42,9 +44,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
+			static CSharpConversions conversion;
 			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)
 			{
+				conversion = new CSharpConversions(ctx.Compilation);
 			}
 
 			public override void VisitIsExpression (IsExpression isExpression)
@@ -54,8 +58,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var type = ctx.Resolve (isExpression.Expression).Type;
 				var providedType = ctx.ResolveType (isExpression.Type);
 
-				if (TypeCompatibilityHelper.CheckTypeCompatibility (type, providedType) !=
-					TypeCompatibilityHelper.TypeCompatiblity.AlwaysOfProvidedType)
+				var foundConversion = conversion.ImplicitConversion(type, providedType);
+				if (foundConversion == Conversion.None)
 					return;
 
 				var action = new CodeAction (ctx.TranslateString ("Compare with 'null'"), 

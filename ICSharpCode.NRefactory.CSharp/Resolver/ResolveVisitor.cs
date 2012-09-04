@@ -3257,13 +3257,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			AstType outermostType = type;
 			while (outermostType.Parent is AstType)
 				outermostType = (AstType)outermostType.Parent;
-			NameLookupMode lookupMode = NameLookupMode.Type;
+			
 			if (outermostType.Parent is UsingDeclaration || outermostType.Parent is UsingAliasDeclaration) {
-				lookupMode = NameLookupMode.TypeInUsingDeclaration;
-			} else if (outermostType.Parent is TypeDeclaration && outermostType.Role == Roles.BaseType) {
-				lookupMode = NameLookupMode.BaseTypeReference;
+				return NameLookupMode.TypeInUsingDeclaration;
+			} else if (outermostType.Role == Roles.BaseType) {
+				// Use BaseTypeReference for a type's base type, and for a constraint on a type.
+				// Do not use it for a constraint on a method.
+				if (outermostType.Parent is TypeDeclaration || (outermostType.Parent is Constraint && outermostType.Parent.Parent is TypeDeclaration))
+					return NameLookupMode.BaseTypeReference;
 			}
-			return lookupMode;
+			return NameLookupMode.Type;
 		}
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitMemberType(MemberType memberType)
