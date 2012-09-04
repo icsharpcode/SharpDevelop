@@ -515,7 +515,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 									continue;
 								}
 							}
-							tp.Constraints.Add(type.ToTypeReference());
+							var lookupMode = (ownerType == EntityType.TypeDefinition) ? NameLookupMode.BaseTypeReference : NameLookupMode.Type;
+							tp.Constraints.Add(type.ToTypeReference(lookupMode));
 						}
 						break;
 					}
