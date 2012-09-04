@@ -2295,11 +2295,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			}
 			
+			var lookup = new MemberLookup(
+				ctx.CurrentTypeDefinition,
+				Compilation.MainAssembly
+			);
+			
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
 				var namespaceContents = new CompletionDataWrapper(this);
 				
 				foreach (var cl in nr.Namespace.Types) {
+					if (!lookup.IsAccessible(cl, false))
+						continue;
 					IType addType = typePred != null ? typePred(cl) : cl;
 					if (addType != null)
 						namespaceContents.AddType(addType, addType.Name);
@@ -2319,13 +2326,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			//var typeDef = resolveResult.Type.GetDefinition();
 			var result = new CompletionDataWrapper(this);
 			bool includeStaticMembers = false;
-			
-			var lookup = new MemberLookup(
-				ctx.CurrentTypeDefinition,
-				Compilation.MainAssembly
-			);
-			
-			
+
 			if (resolveResult is LocalResolveResult) {
 				if (resolvedNode is IdentifierExpression) {
 					var mrr = (LocalResolveResult)resolveResult;
