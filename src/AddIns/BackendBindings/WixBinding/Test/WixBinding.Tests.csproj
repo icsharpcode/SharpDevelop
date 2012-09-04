@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="DialogXmlGeneration\DialogWithIconControlTypeOpenedAndClosedInDesignerTests.cs" />
     <Compile Include="Diff\MissingDirectoryTestFixture.cs" />
     <Compile Include="DirectoryImport\AddDuplicateDirectoryIdTestFixture.cs" />
     <Compile Include="Document\DuplicateBinaryIdTestFixture.cs" />
