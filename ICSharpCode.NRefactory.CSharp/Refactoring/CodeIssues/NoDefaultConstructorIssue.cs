@@ -21,7 +21,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		private class GatherVisitor : GatherVisitorBase
 		{
 			private bool initializerInvoked;
-			private IType baseType;
 			private ConstructorInitializer initializer;
 
 			public GatherVisitor(BaseRefactoringContext context)
@@ -36,9 +35,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 				if (baseType != null)
 				{
-					// Store the base type to use when visiting individual constructors
-					this.baseType = baseType;
-
 					var baseConstructor = baseType.GetConstructors(c => c.Parameters.Count == 0).FirstOrDefault();
 					var memberLookup = new MemberLookup(result.Type.GetDefinition(), ctx.Compilation.MainAssembly, false);
 
@@ -48,23 +44,36 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						if (constructor == null) {
 							// If there are no constructors declared then the base constructor isn't being invoked
 							this.AddIssue(declaration, baseType);
-						} else {
-							base.VisitTypeDeclaration(declaration);
 						}
 					}
 				}
+
+				base.VisitTypeDeclaration(declaration);
 			}
 
 			public override void VisitConstructorDeclaration(ConstructorDeclaration declaration)
 			{
-				this.initializerInvoked = false;
-				this.initializer = null;
-				
-				base.VisitConstructorDeclaration(declaration);
+				var result = ctx.Resolve(declaration) as MemberResolveResult;
+				if (result == null || result.IsError)
+					return;
 
-				if (!this.initializerInvoked) {
-					int argumentCount = initializer != null ? initializer.Arguments.Count : 0;
-					this.AddIssue(declaration, baseType, argumentCount);
+				var baseType = result.Member.DeclaringType.DirectBaseTypes.FirstOrDefault(t => !t.IsKnownType(KnownTypeCode.Object) && t.Kind != TypeKind.Interface);
+
+				if (baseType != null) {
+					var baseConstructor = baseType.GetConstructors(c => c.Parameters.Count == 0).FirstOrDefault();
+					var memberLookup = new MemberLookup(result.Member.DeclaringType.GetDefinition(), ctx.Compilation.MainAssembly, false);
+
+					if (baseConstructor == null || !memberLookup.IsAccessible(baseConstructor, true)) {
+						this.initializerInvoked = false;
+						this.initializer = null;
+				
+						base.VisitConstructorDeclaration(declaration);
+
+						if (!this.initializerInvoked) {
+							int argumentCount = initializer != null ? initializer.Arguments.Count : 0;
+							this.AddIssue(declaration, baseType, argumentCount);
+						}
+					}
 				}
 			}
 
@@ -79,7 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 
-			private void AddIssue(AstNode node, IType baseClass, int argumentCount = 0)
+			private void AddIssue(AstNode node, IType baseType, int argumentCount = 0)
 			{
 				var identifier = node.GetChildByRole(Roles.Identifier);
 				this.AddIssue(

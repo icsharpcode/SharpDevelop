@@ -1,6 +1,8 @@
 using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp.CodeIssues;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.CSharp.CodeActions;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
@@ -136,6 +138,31 @@ class ChildClass : BaseClass
 }";
 
 			Test<NoDefaultConstructorIssue>(testInput, 1);
+		}
+
+		[Test]
+		public void ShouldReturnIssuesForNestedTypes()
+		{
+			TestRefactoringContext context;
+
+			var testInput =
+@"class B {
+	public B(string test) {}
+}
+
+class D {
+	public D(string test) {}
+}
+
+class A : B {
+	class C : D {}
+	public A() {}
+}";
+
+			var issues = GetIssues(new NoDefaultConstructorIssue(), testInput, out context, false);
+
+			Assert.AreEqual("CS1729: The type 'B' does not contain a constructor that takes '0' arguments", issues.ElementAt(1).Description);
+			Assert.AreEqual("CS1729: The type 'D' does not contain a constructor that takes '0' arguments", issues.ElementAt(0).Description);
 		}
 	}
 }
