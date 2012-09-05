@@ -123,6 +123,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// The default value is <c>false</c>.
 		/// </summary>
 		public bool UseCustomEvents { get; set; }
+
+		/// <summary>
+		/// Controls if unbound type argument names are inserted in the ast or not.
+		/// The default value is <c>false</c>.
+		/// </summary>
+		public bool ConvertUnboundTypeArguments { get; set;}
 		#endregion
 		
 		#region Convert Type
@@ -224,14 +230,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (trr != null && !trr.IsError && TypeMatches(trr.Type, typeDef, typeArguments)) {
 					// We can use the short type name
 					SimpleType shortResult = new SimpleType(typeDef.Name);
-					AddTypeArguments(shortResult, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
+					AddTypeArguments(shortResult, typeDef, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
 					return shortResult;
 				}
 			}
 			
 			if (AlwaysUseShortTypeNames) {
 				var shortResult = new SimpleType(typeDef.Name);
-				AddTypeArguments(shortResult, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
+				AddTypeArguments(shortResult, typeDef, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
 				return shortResult;
 			}
 			MemberType result = new MemberType();
@@ -248,7 +254,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 			result.MemberName = typeDef.Name;
-			AddTypeArguments(result, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
+			AddTypeArguments(result, typeDef, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
 			return result;
 		}
 		
@@ -282,10 +288,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// <param name="typeArguments">The list of type arguments</param>
 		/// <param name="startIndex">Index of first type argument to add</param>
 		/// <param name="endIndex">Index after last type argument to add</param>
-		void AddTypeArguments(AstType result, IList<IType> typeArguments, int startIndex, int endIndex)
+		void AddTypeArguments(AstType result, ITypeDefinition typeDef, IList<IType> typeArguments, int startIndex, int endIndex)
 		{
 			for (int i = startIndex; i < endIndex; i++) {
-				result.AddChild(ConvertType(typeArguments[i]), Roles.TypeArgument);
+				if (ConvertUnboundTypeArguments && typeArguments[i].Kind == TypeKind.UnboundTypeArgument) {
+					result.AddChild(new SimpleType(typeDef.TypeParameters [i].Name), Roles.TypeArgument);
+				} else {
+					result.AddChild(ConvertType(typeArguments [i]), Roles.TypeArgument);
+				}
 			}
 		}
 		
