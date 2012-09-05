@@ -64,7 +64,7 @@ class TestClass
 	void F ()
 	{
 		";
-
+		
 		[Test]
 		public void SimpleObject()
 		{
@@ -197,8 +197,7 @@ class TestClass
 	}
 	
 	public System.Collections.Generic.IList<TestClass> Children;
-}"
-			);
+}");
 		}
 
 		[Test]
@@ -215,10 +214,9 @@ class TestClass
 			Property = ""Value""
 		};
 	}
-}"
-			);
+}");
 		}
-
+		
 		[Test]
 		public void MemberAssignment()
 		{
@@ -231,8 +229,23 @@ class TestClass
 			Property = ""Value""
 		};
 	}
-}"
-			);
+}");
+		}
+		
+		[Test]
+		public void MultipleMemberAssignments()
+		{
+			Test<ConvertToInitializerAction>(baseText + @"
+		Nested = new Test$Class ();
+		Nested = new TestClass ();
+		Nested.Property = ""Value"";
+	}
+}", baseText + @"
+		Nested = new TestClass () {
+			Property = ""Value""
+		};
+	}
+}");
 		}
 
 		[Test]
@@ -251,8 +264,7 @@ class TestClass
 			}
 		};
 	}
-}"
-			);
+}");
 		}
 
 		[Test]
@@ -277,8 +289,7 @@ class TestClass
 			Property = ""Value""
 		};
 	}
-}"
-			);
+}");
 		}
 
 		[Test]
@@ -303,8 +314,7 @@ class TestClass
 			}
 		};
 	}
-}"
-			);
+}");
 		}
 
 		[Test]
@@ -326,8 +336,7 @@ class TestClass
 			}
 		};
 	}
-}"
-			);
+}");
 		}
 
 		[Test]
@@ -345,8 +354,7 @@ class TestClass
 			Nested = new TestClass ()
 		};
 	}
-}"
-			);
+}");
 		}
 
 		[Test]
@@ -369,8 +377,7 @@ class TestClass
 			Nested = new TestClass ()
 		};
 	}
-}"
-			);
+}");
 		}
 
 		[Test]
@@ -391,8 +398,7 @@ class TestClass
 		System.Console.WriteLine("""");
 		variable.Nested.Property = ""NestedValue"";
 	}
-}"
-			);
+}");
 		}
 
 		[Test]
@@ -411,8 +417,7 @@ class TestClass
 		};
 		variable.Nested.Property = variable.ToString();
 	}
-}"
-			);
+}");
 		}
 
 		[Test]
@@ -431,8 +436,7 @@ class TestClass
 		var nested = new TestClass(variable);
 		variable.Nested = nested;
 	}
-}"
-			);
+}");
 		}
 
 		[Test]
@@ -554,8 +558,7 @@ class TestClass
 		Nested.Nested.Property = Nested.Property;
 		Nested.Nested.Nested = new TestClass();
 	}
-}"
-			);
+}");
 		}
 
 		[Test]
@@ -589,8 +592,7 @@ class TestClass
 		// This should stay here
 		item = new TestClass();
 	}
-}"
-			);
+}");
 		}
 		
 		[Test]
@@ -632,8 +634,7 @@ class TestClass
 		System.Console.$WriteLine("""");
 		var variable = new TestClass();
 	}
-}"
-			);
+}");
 		}
 		
 		[Test]

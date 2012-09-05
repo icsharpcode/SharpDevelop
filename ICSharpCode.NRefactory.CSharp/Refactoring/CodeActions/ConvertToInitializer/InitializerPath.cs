@@ -105,8 +105,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return true;
 		}
 
-		public int Level { get { return MemberPath.Count + 1; } }
-
 		object anchor;
 
 		public IVariable VariableRoot {

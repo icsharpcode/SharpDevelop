@@ -32,45 +32,53 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
 	public class VariableDeclaredInWideScopeTests : InspectionActionTestBase
 	{
-		[Test]
-		public void TestIf()
-		{
-			var input = @"
+		static void TestStatements (string statements, int expectedIssueCount = 0, string fixedStatements = null)
+		{	
+			var skeleton = @"
+using System;
 class A
 {
-	void F()
-	{
-		int val = 2;
-		if (true) {
-			System.Console.WriteLine(val);
-		}
+	int GetValue () { return 0; }
+	int SetValue (int i) { }
+
+	void F (int a, int b)
+	{";
+
+			var input = skeleton + statements + @"
 	}
 }";
 			TestRefactoringContext context;
 			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(1, issues.Count);
+			Assert.AreEqual(expectedIssueCount, issues.Count);
 
-			CheckFix(context, issues [0], @"
-class A
-{
-	void F()
-	{
+			if (expectedIssueCount == 0)
+				return;
+
+			CheckFix(context, issues [0], skeleton + fixedStatements + @"
+	}
+}");
+		}
+
+		[Test]
+		public void TestIf()
+		{
+			TestStatements(@"
+		int val = 2;
+		if (true) {
+			System.Console.WriteLine(val);
+		}
+", 1, @"
 		if (true) {
 			int val = 2;
 			System.Console.WriteLine(val);
 		}
-	}
-}");
+");
 		}
 
 		[Test]
 		public void TestIfWithMultipleVariables()
 		{
-			var input = @"
-class A
-{
-	void F()
-	{
+			TestStatements(@"
 		int val = 2;
 		int val2;
 		if (true) {
@@ -79,17 +87,7 @@ class A
 			val2 = 3;
 			System.Console.WriteLine(val);
 		}
-	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(1, issues.Count);
-			
-			CheckFix(context, issues [0], @"
-class A
-{
-	void F()
-	{
+", 1, @"
 		int val2;
 		if (true) {
 			val2 = 2;
@@ -98,168 +96,97 @@ class A
 			int val = 2;
 			System.Console.WriteLine(val);
 		}
-	}
-}");
+");
 		}
 		
 		[Test]
 		public void TestLoopNestedInIf()
 		{
-			var input = @"
-class A
-{
-	void F()
-	{
+			TestStatements(@"
 		int val = 2;
 		if (true) {
 			while (true) {
 				val = 2;
 			}
 		}
-	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(1, issues.Count);
-			
-			CheckFix(context, issues [0], @"
-class A
-{
-	void F()
-	{
+", 1, @"
 		if (true) {
 			int val = 2;
 			while (true) {
 				val = 2;
 			}
 		}
-	}
-}");
+");
 		}
 
 		[Test]
 		public void IgnoresMultiBranchIf()
 		{
-			var input = @"
-class A
-{
-	void F()
-	{
+			TestStatements(@"
 		int val = 2;
 		if (true) {
 			System.Console.WriteLine(val);
 		} else {
 			System.Console.WriteLine(val);
 		}
-	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(0, issues.Count);
+");
 		}
 		
 		[Test]
 		public void IgnoresMultiVariableDeclaration()
 		{
-			var input = @"
-class A
-{
-	void F()
-	{
+			TestStatements(@"
 		int val = 2, val2 = 3;
 		if (true) {
 			System.Console.WriteLine(val);
 		}
-	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(0, issues.Count);
+");
 		}
 		
 		[Test]
 		public void IgnoresUnusedVariables()
 		{
-			var input = @"
-class A
-{
-	void F()
-	{
+			TestStatements(@"
 		int val = 2;
-	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(0, issues.Count);
+");
 		}
 		
 		[Test]
 		public void IgnoresVariablesOnlyUsedInOneScope()
 		{
-			var input = @"
-class A
-{
-	void F()
-	{
-		A a = new A();
-		a.F();
-		a.F();
-	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(0, issues.Count);
+			TestStatements(@"
+		var sb = new System.Text.StringBuilder();
+		sb.Append ("""");
+		sb.Append ("""");
+");
 		}
 		
 		[Test]
 		public void DoesNotSuggestMovingIntoLoop()
 		{
-			var input = @"
-class A
-{
-	void F()
-	{
+			TestStatements(@"
 		int val = 2;
 		while (true) {
 			val = 3;
 		}
-	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(0, issues.Count);
+");
 		}
 		
 		[Test]
 		public void DoesNotSuggestMovingPastDependentCondition()
 		{
-			var input = @"
-class A
-{
-	void F()
-	{
+			TestStatements(@"
 		int val = 2;
 		if (val == 2 || val == 1) {
 			val = 3;
 		}
-	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(0, issues.Count);
+");
 		}
 		
 		[Test]
 		public void IfElseIf()
 		{
-			var input = @"
-using System;
-class A
-{
-	int GetValue () { return 0; }
-	
-	void F (bool condition)
-	{
+			TestStatements(@"
 		int val = GetValue ();
 		if (condition) {
 			int val2 = GetValue ();
@@ -267,20 +194,7 @@ class A
 		} else if (!condition) {
 			Console.WriteLine(val);
 		}
-	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(1, issues.Count);
-
-			CheckFix(context, issues [0], @"
-using System;
-class A
-{
-	int GetValue () { return 0; }
-	
-	void F (bool condition)
-	{
+", 1, @"
 		if (condition) {
 			int val2 = GetValue ();
 			Console.WriteLine(val2);
@@ -288,29 +202,20 @@ class A
 			int val = GetValue ();
 			Console.WriteLine(val);
 		}
-	}
-}");
+");
 		}
 		
 		[Test]
 		public void DoesNotSuggestMovingIntoTryCatch()
 		{
-			var input = @"
-class A
-{
-	void F()
-	{
+			TestStatements(@"
 		int val = 2;
 		try {
 			System.Console.WriteLine(val);
 		} catch {
 			throw;
 		}
-	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(0, issues.Count);
+");
 		}
 		
 		[Test]
@@ -335,268 +240,144 @@ class A
 		[Test]
 		public void DoesNotSuggestMovingIntoClosure ()
 		{	
-			var input = @"
-using System;
-class A
-{
-	void F()
-	{
-		int valA = 2;
-		Action a = () => Console.WriteLine(valA);
+			TestStatements(@"
+		int val1 = 2;
+		Action a1 = () => Console.WriteLine(val1);
 
-		int valB = 2;
-		Action b = () => { Console.WriteLine(valB); };
+		int val2 = 2;
+		Action a2 = () => { Console.WriteLine(val2); };
 
-		int valC = 2;
-		Action c = delegate() { Console.WriteLine(valC); };
-	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(0, issues.Count);
+		int val3 = 2;
+		Action a3 = delegate() { Console.WriteLine(val3); };
+");
+		}
+		
+		[Test]
+		public void DoesNotSuggestMovingIntoLockStatement ()
+		{	
+			TestStatements(@"
+		int i = 1;
+		lock (this) {
+			Console.WriteLine(i);
+		}
+");
 		}
 
 		[Test]
 		public void TestEmbeddedNonBlockStatement ()
 		{
-			var input = @"
-class A
-{
-	void F()
-	{
+			TestStatements(@"
 		int val = 2;
 		if (true)
 			System.Console.WriteLine (val);
-	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(1, issues.Count);
-			
-			CheckFix(context, issues [0], @"
-class A
-{
-	void F()
-	{
+", 1, @"
 		if (true) {
 			int val = 2;
 			System.Console.WriteLine (val);
 		}
-	}
-}");
+");
 		}
 		
 		[Test]
 		public void DoesNotSuggestMovingPastChangeOfInitializingExpression1 ()
 		{	
-			var input = @"
-using System;
-class A
-{
-	void F ()
-	{
+			TestStatements(@"
 		int i = 1;
 		int j = i;
 		i = 2;
 		if (true)
 			Console.WriteLine(j);
 		Console.WriteLine(i);
-	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(0, issues.Count);
+");
 		}
 		
 		[Test]
 		public void DoesNotSuggestMovingPastChangeOfInitializingExpression2 ()
 		{	
-			var input = @"
-using System;
-class A
-{
-	int GetValue () { return 0; }
-	int SetValue (int i) { }
-
-	void F ()
-	{
+			TestStatements(@"
 		int j = GetValue();
 		SetValue(2);
 		if (true)
 			Console.WriteLine(j);
-	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(0, issues.Count);
+");
 		}
 		
 		[Test]
 		public void SuggestsMovingMethodCallInitializer ()
 		{	
-			var input = @"
-using System;
-class A
-{
-	int GetValue () { return 0; }
-
-	void F ()
-	{
+				TestStatements(@"
 		int j = GetValue ();
 		if (true) {
 			Console.WriteLine(j);
 		}
-	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(1, issues.Count);
-			
-			CheckFix(context, issues[0], @"
-using System;
-class A
-{
-	int GetValue () { return 0; }
-
-	void F ()
-	{
+", 1, @"
 		if (true) {
 			int j = GetValue ();
 			Console.WriteLine(j);
 		}
-	}
-}");
+");
 		}
-		
+
 		[Test]
 		public void DoesNotReorderMethodCalls ()
 		{	
-			var input = @"
-using System;
-class A
-{
-	int GetValue () { return 0; }
-	int SetValue (int i) { }
-
-	void F (int i, int j)
-	{
+			TestStatements(@"
 		int k = GetValue ();
-		if (j > 3) {
-			if (i < 2) {
+		if (b > 3) {
+			if (a < 2) {
 				// This should block any move past this point
 				SetValue (2);
 			}
 			Console.WriteLine(k);
 		}
-	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(1, issues.Count);
-			
-			CheckFix(context, issues[0], @"
-using System;
-class A
-{
-	int GetValue () { return 0; }
-	int SetValue (int i) { }
-
-	void F (int i, int j)
-	{
-		if (j > 3) {
+", 1, @"
+		if (b > 3) {
 			int k = GetValue ();
-			if (i < 2) {
+			if (a < 2) {
 				// This should block any move past this point
 				SetValue (2);
 			}
 			Console.WriteLine(k);
 		}
-	}
-}");
+");
 		}
 		
 		[Test]
 		public void CommonParentStatement ()
 		{	
-			var input = @"
-using System;
-class A
-{
-	int GetValue () { return 0; }
-	int SetValue (int i) { }
-
-	void F (int i, int j)
-	{
+			TestStatements(@"
 		int k = GetValue ();
 		{
 			SetValue (k);
 			SetValue (k);
 		}
-	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(1, issues.Count);
-			
-			CheckFix(context, issues[0], @"
-using System;
-class A
-{
-	int GetValue () { return 0; }
-	int SetValue (int i) { }
-
-	void F (int i, int j)
-	{
+", 1, @"
 		{
 			int k = GetValue ();
 			SetValue (k);
 			SetValue (k);
 		}
-	}
-}");
+");
 		}
 		
 		[Test]
 		public void CaseTarget ()
 		{	
-			var input = @"
-using System;
-class A
-{
-	int GetValue () { return 0; }
-	int SetValue (int i) { }
-
-	void F (int i)
-	{
+			TestStatements(@"
 		int j = GetValue ();
-		switch (i) {
+		switch (a) {
 		case 2:
 			SetValue (j + 1);
 			break;
 		}
-	}
-}";
-			TestRefactoringContext context;
-			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
-			Assert.AreEqual(1, issues.Count);
-			
-			CheckFix(context, issues[0], @"
-using System;
-class A
-{
-	int GetValue () { return 0; }
-	int SetValue (int i) { }
-
-	void F (int i)
-	{
-		switch (i) {
+", 1, @"
+		switch (a) {
 		case 2:
 			int j = GetValue ();
 			SetValue (j + 1);
 			break;
 		}
-	}
-}");
+");
 		}
 	}
 }

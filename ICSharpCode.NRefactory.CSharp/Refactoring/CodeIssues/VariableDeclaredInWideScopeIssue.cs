@@ -60,7 +60,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				typeof(DoWhileStatement),
 				typeof(TryCatchStatement),
 				typeof(AnonymousMethodExpression),
-				typeof(LambdaExpression)
+				typeof(LambdaExpression),
+				typeof(LockStatement)
 			};
 		
 			public override void VisitVariableDeclarationStatement(VariableDeclarationStatement variableDeclarationStatement)
