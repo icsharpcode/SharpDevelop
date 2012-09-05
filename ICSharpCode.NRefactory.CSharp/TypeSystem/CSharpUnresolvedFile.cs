@@ -22,6 +22,7 @@ using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.TypeSystem
@@ -29,9 +30,11 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 	/// <summary>
 	/// Represents a file that was parsed and converted for the type system.
 	/// </summary>
-	[Serializable]
+	[Serializable, FastSerializerVersion(TypeSystemConvertVisitor.version)]
 	public sealed class CSharpUnresolvedFile : AbstractFreezable, IUnresolvedFile, IUnresolvedDocumentationProvider
 	{
+		// The 'FastSerializerVersion' on CSharpUnresolvedFile must be incremented when fixing 
+		
 		readonly string fileName;
 		readonly UsingScope rootUsingScope;
 		IList<IUnresolvedTypeDefinition> topLevelTypeDefinitions = new List<IUnresolvedTypeDefinition>();

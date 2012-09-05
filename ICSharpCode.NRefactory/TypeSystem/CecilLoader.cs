@@ -18,13 +18,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 using System.Threading;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.Semantics;
@@ -41,6 +38,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// if you want to load multiple project contents in parallel.</remarks>
 	public class CecilLoader
 	{
+		/// <summary>
+		/// Version number of the cecil loader.
+		/// Should be incremented when fixing bugs in the cecil loader so that project contents cached on disk
+		/// (which might be incorrect due to the bug) are re-created.
+		/// </summary>
+		const int cecilLoaderVersion = 1;
+		
 		#region Options
 		/// <summary>
 		/// Specifies whether to include internal members. The default is false.
@@ -248,7 +252,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region IUnresolvedAssembly implementation
-		[Serializable]
+		[Serializable, FastSerializerVersion(cecilLoaderVersion)]
 		sealed class CecilUnresolvedAssembly : DefaultUnresolvedAssembly, IDocumentationProvider
 		{
 			readonly IDocumentationProvider documentationProvider;
@@ -810,7 +814,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return true;
 		}
 		
-		[Serializable]
+		[Serializable, FastSerializerVersion(cecilLoaderVersion)]
 		sealed class CecilUnresolvedAttribute : IUnresolvedAttribute, ISupportsInterning
 		{
 			internal readonly ITypeReference attributeType;
@@ -1370,7 +1374,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		[Serializable]
+		[Serializable, FastSerializerVersion(cecilLoaderVersion)]
 		sealed class UnresolvedSecurityDeclaration : ISupportsInterning
 		{
 			IConstantValue securityAction;
@@ -1457,7 +1461,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		[Serializable]
+		[Serializable, FastSerializerVersion(cecilLoaderVersion)]
 		sealed class UnresolvedSecurityAttribute : IUnresolvedAttribute
 		{
 			readonly UnresolvedSecurityDeclaration secDecl;

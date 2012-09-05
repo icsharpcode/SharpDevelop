@@ -34,6 +34,13 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 	/// </summary>
 	public class TypeSystemConvertVisitor : DepthFirstAstVisitor<IUnresolvedEntity>
 	{
+		/// <summary>
+		/// Version of the C# type system loader.
+		/// Should be incremented when fixing bugs so that project contents cached on disk
+		/// (which might be incorrect due to the bug) are re-created.
+		/// </summary>
+		internal const int version = 1;
+		
 		readonly CSharpUnresolvedFile unresolvedFile;
 		UsingScope usingScope;
 		CSharpUnresolvedTypeDefinition currentTypeDefinition;
