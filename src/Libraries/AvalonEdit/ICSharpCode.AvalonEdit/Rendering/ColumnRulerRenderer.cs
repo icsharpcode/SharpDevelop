@@ -54,6 +54,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			double offset = textView.WideSpaceWidth * column;
 			Size pixelSize = PixelSnapHelpers.GetPixelSize(textView);
 			double markerXPos = PixelSnapHelpers.PixelAlign(offset, pixelSize.Width);
+			markerXPos -= textView.ScrollOffset.X;
 			Point start = new Point(markerXPos, 0);
 			Point end = new Point(markerXPos, Math.Max(textView.DocumentHeight, textView.ActualHeight));
 			
