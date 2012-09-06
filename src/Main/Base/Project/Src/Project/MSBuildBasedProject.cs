@@ -402,10 +402,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				Dictionary<string, string> globalProps = new Dictionary<string, string>();
 				InitializeMSBuildProjectProperties(globalProps);
 				globalProps["Configuration"] = configuration;
-				
-				//HACK: the ActivePlatform property should be set properly before entering here, but sometimes it does not
-				if (platform != null)
-					globalProps["Platform"] = platform;
+				globalProps["Platform"] = platform;
 				MSBuild.Project project = MSBuildInternals.LoadProject(projectCollection, projectFile, globalProps);
 				if (openCurrentConfiguration)
 					currentlyOpenProject = project;
@@ -1246,8 +1243,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			this.projectCollection = loadInformation.ParentSolution.MSBuildProjectCollection;
 			this.FileName = loadInformation.FileName;
-			this.ActiveConfiguration = loadInformation.Configuration;
-			this.ActivePlatform = loadInformation.Platform;
+			if (loadInformation.Configuration != null)
+				this.ActiveConfiguration = loadInformation.Configuration;
+			if (loadInformation.Platform != null)
+				this.ActivePlatform = loadInformation.Platform;
 			
 			projectFile = ProjectRootElement.Open(loadInformation.FileName, projectCollection);
 			if (loadInformation.upgradeToolsVersion == true && CanUpgradeToolsVersion()) {

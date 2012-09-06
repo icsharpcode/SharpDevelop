@@ -186,6 +186,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			get { return activeConfiguration; }
 			set {
 				WorkbenchSingleton.AssertMainThread();
+				if (value == null)
+					throw new ArgumentNullException();
 				
 				if (activeConfiguration != value) {
 					activeConfiguration = value;
@@ -210,6 +212,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			get { return activePlatform; }
 			set {
 				WorkbenchSingleton.AssertMainThread();
+				if (value == null)
+					throw new ArgumentNullException();
 				
 				if (activePlatform != value) {
 					activePlatform = value;
