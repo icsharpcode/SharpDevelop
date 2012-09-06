@@ -81,6 +81,8 @@ namespace ICSharpCode.SharpDevelop.Services
 				//string textLine = TextUtilities.GetLineAsString(textEditorControl.Document, line);
 				Point clickPos = exceptionView.PointToClient(Control.MousePosition);
 				int index = exceptionView.GetCharIndexFromPosition(clickPos);
+				if (index < 0)
+					return;
 				int start = index;
 				// find start of current line
 				while (--start > 0 && fullText[start - 1] != '\n');
