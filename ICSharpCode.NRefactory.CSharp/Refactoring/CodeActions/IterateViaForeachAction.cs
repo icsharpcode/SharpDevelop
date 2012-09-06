@@ -133,6 +133,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		static IType GetElementType(ResolveResult rr, BaseRefactoringContext context)
 		{
+			if (rr.IsError || rr.Type.Kind == TypeKind.Unknown)
+				return null;
 			var type = GetCollectionType(rr.Type);
 			if (type == null)
 				return null;
