@@ -44,6 +44,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			keyFile.Add(StringParser.Parse("<${res:Global.BrowseText}...>"));
 			keyFileComboBox.SelectedIndex = 0;
 			keyFileComboBox.SelectionChanged += KeyFileComboBox_SelectionChanged;
+			IsDirty = false;
 		}
 		
 		public ProjectProperty<bool> SignAssembly {
@@ -75,6 +76,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
+			/*
+			helper.Saved += delegate {
+				if (Get<CheckBox>("signAssembly").Checked) {
+					helper.SetProperty("AssemblyOriginatorKeyMode", "File", true, signAssemblyBinding.Location);
+				}
+			};
+			*/
 			if (signAssemblyCheckBox.IsChecked == true) {
 				this.AssemblyOriginatorKeyFile.Value = "File";
 			}
@@ -127,6 +135,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				directory = directory.Substring(0, pos);
 			}
 		}
+		
 		
 		void KeyFileComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
