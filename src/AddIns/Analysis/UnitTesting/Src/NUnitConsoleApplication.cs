@@ -82,7 +82,9 @@ namespace ICSharpCode.UnitTesting
 				if (ProjectUsesDotnet20Runtime(project)) {
 					exe += "-dotnet2";
 				}
-				if (IsPlatformTarget32Bit(project)) {
+				// As SharpDevelop can't debug 64-bit applications yet, use
+				// 32-bit NUnit even for AnyCPU test projects.
+				if (IsPlatformTarget32BitOrAnyCPU(project)) {
 					exe += "-x86";
 				}
 				exe += ".exe";
@@ -234,14 +236,15 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Checks that the project's PlatformTarget is x86 for the active configuration.
+		/// Checks that the project's PlatformTarget is x32 for the active configuration.
 		/// </summary>
-		bool IsPlatformTarget32Bit(IProject project)
+		bool IsPlatformTarget32BitOrAnyCPU(IProject project)
 		{
 			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
 			if (msbuildProject != null) {
 				string platformTarget = msbuildProject.GetEvaluatedProperty("PlatformTarget");
-				return String.Compare(platformTarget, "x86", true) == 0;
+				return String.Equals(platformTarget, "x86", StringComparison.OrdinalIgnoreCase)
+					|| String.Equals(platformTarget, "AnyCPU", StringComparison.OrdinalIgnoreCase);
 			}
 			return false;
 		}
