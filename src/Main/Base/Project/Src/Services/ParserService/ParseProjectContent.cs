@@ -141,6 +141,11 @@ namespace ICSharpCode.SharpDevelop.Parser
 			return cacheFileName;
 		}
 		
+		/// <summary>
+		/// Magic number that identifies the SharpDevelop version used to create the cache file.
+		/// </summary>
+		const int cacheMagicNumber = 5002;
+		
 		static IProjectContent TryReadFromCache(string cacheFileName)
 		{
 			if (cacheFileName == null || !File.Exists(cacheFileName))
@@ -149,6 +154,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 			try {
 				using (FileStream fs = new FileStream(cacheFileName, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete, 4096, FileOptions.SequentialScan)) {
 					using (BinaryReader reader = new BinaryReaderWith7BitEncodedInts(fs)) {
+						if (reader.ReadByte() != cacheMagicNumber) {
+							LoggingService.Warn("Incorrect magic number");
+							return null;
+						}
 						FastSerializer s = new FastSerializer();
 						return (IProjectContent)s.Deserialize(reader);
 					}
@@ -165,6 +174,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 			} catch (InvalidCastException ex) {
 				LoggingService.Warn(ex);
 				return null;
+			} catch (FormatException ex) {
+				// e.g. invalid 7-bit-encoded int
+				LoggingService.Warn(ex);
+				return null;
 			}
 		}
 		
@@ -174,6 +187,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				Directory.CreateDirectory(Path.GetDirectoryName(cacheFileName));
 				using (FileStream fs = new FileStream(cacheFileName, FileMode.Create, FileAccess.Write)) {
 					using (BinaryWriter writer = new BinaryWriterWith7BitEncodedInts(fs)) {
+						writer.Write(cacheMagicNumber);
 						FastSerializer s = new FastSerializer();
 						s.Serialize(writer, pc);
 					}

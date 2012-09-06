@@ -13,7 +13,7 @@ using ICSharpCode.SharpDevelop.Parser;
 namespace ICSharpCode.AvalonEdit.AddIn
 {
 	/// <summary>
-	/// Uses SharpDevelop.Dom to create parsing information.
+	/// Uses the NRefactory type system to create parsing information.
 	/// </summary>
 	public class ParserFoldingStrategy : IDisposable
 	{
@@ -84,32 +84,50 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return;
 			}
 			DomRegion cRegion = c.BodyRegion;
-			if (cRegion.IsEmpty)
-				cRegion = c.Region;
-			if (cRegion.BeginLine < cRegion.EndLine) {
-				newFoldMarkers.Add(new NewFolding(GetOffset(cRegion.BeginLine, cRegion.BeginColumn),
-				                                  GetOffset(cRegion.EndLine, cRegion.EndColumn)));
+			if (c.BodyRegion.BeginLine < c.BodyRegion.EndLine) {
+				newFoldMarkers.Add(new NewFolding(GetStartOffset(c.BodyRegion), GetEndOffset(c.BodyRegion)));
 			}
 			foreach (var innerClass in c.NestedTypes) {
 				AddClassMembers(innerClass, newFoldMarkers);
 			}
 			
 			foreach (var m in c.Members) {
-				if (m.Region.EndLine < m.BodyRegion.EndLine) {
-					newFoldMarkers.Add(new NewFoldingDefinition(GetOffset(m.Region.EndLine, m.Region.EndColumn),
-					                                            GetOffset(m.BodyRegion.EndLine, m.BodyRegion.EndColumn)));
+				if (m.BodyRegion.BeginLine < m.BodyRegion.EndLine) {
+					newFoldMarkers.Add(new NewFoldingDefinition(GetStartOffset(m.BodyRegion), GetEndOffset(m.BodyRegion)));
 				}
 			}
 		}
 		
-		int GetOffset(int line, int column)
+		int GetStartOffset(DomRegion bodyRegion)
 		{
-			if (line < 1)
+			var document = textArea.Document;
+			if (bodyRegion.BeginLine < 1)
+				return 0;
+			if (bodyRegion.BeginLine > document.LineCount)
+				return document.TextLength;
+			var line = document.GetLineByNumber(bodyRegion.BeginLine);
+			int lineStart = line.Offset;
+			int bodyStartOffset = lineStart + bodyRegion.BeginColumn - 1;
+			for (int i = lineStart; i < bodyStartOffset; i++) {
+				if (!char.IsWhiteSpace(document.GetCharAt(i))) {
+					// Non-whitespace in front of body start:
+					// Use the body start as start offset
+					return bodyStartOffset;
+				}
+			}
+			// Only whitespace in front of body start:
+			// Use the end of the previous line as start offset
+			return line.PreviousLine != null ? line.PreviousLine.EndOffset : bodyStartOffset;
+		}
+		
+		int GetEndOffset(DomRegion region)
+		{
+			if (region.EndLine < 1)
 				return 0;
 			var document = textArea.Document;
-			if (line > document.LineCount)
+			if (region.EndLine > document.LineCount)
 				return document.TextLength;
-			return document.GetOffset(line, column);
+			return document.GetOffset(region.End);
 		}
 	}
 }

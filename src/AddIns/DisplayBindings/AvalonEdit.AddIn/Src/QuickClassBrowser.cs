@@ -34,11 +34,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				get { return entity; }
 			}
 			
-			public EntityItem(IUnresolvedTypeDefinition typeDef)
+			public EntityItem(IUnresolvedTypeDefinition typeDef, ICompilation compilation)
 			{
 				this.IsInSamePart = true;
 				this.entity = typeDef;
-				this.text = typeDef.Name;
+				var resolvedDefinition = typeDef.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
+				if (resolvedDefinition != null) {
+					var ambience = compilation.GetAmbience();
+					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowDeclaringType;
+					this.text = ambience.ConvertEntity(resolvedDefinition);
+				} else {
+					this.text = typeDef.Name;
+				}
 				this.image = CompletionImage.GetImage(typeDef);
 			}
 			
@@ -46,10 +53,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			{
 				this.IsInSamePart = true;
 				this.entity = member.UnresolvedMember;
-				if (entity is ITypeDefinition)
-					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowDeclaringType;
-				else
-					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
+				ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
 				text = ambience.ConvertEntity(member);
 				image = CompletionImage.GetImage(member);
 			}
@@ -130,11 +134,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		List<EntityItem> classItems = new List<EntityItem>();
 		List<EntityItem> memberItems = new List<EntityItem>();
 		
-		void DoUpdate(IUnresolvedFile compilationUnit)
+		void DoUpdate(IUnresolvedFile unresolvedFile)
 		{
 			classItems = new List<EntityItem>();
-			if (compilationUnit != null) {
-				AddClasses(compilationUnit.TopLevelTypeDefinitions);
+			if (unresolvedFile != null) {
+				ICompilation compilation = SD.ParserService.GetCompilationForFile(FileName.Create(unresolvedFile.FileName));
+				AddClasses(unresolvedFile.TopLevelTypeDefinitions, compilation);
 			}
 			classItems.Sort();
 			classComboBox.ItemsSource = classItems;
@@ -163,13 +168,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		void AddClasses(IEnumerable<IUnresolvedTypeDefinition> classes)
+		void AddClasses(IEnumerable<IUnresolvedTypeDefinition> classes, ICompilation compilation)
 		{
 			foreach (var c in classes) {
 				if (c.IsSynthetic)
 					continue;
-				classItems.Add(new EntityItem(c));
-				AddClasses(c.NestedTypes);
+				classItems.Add(new EntityItem(c, compilation));
+				AddClasses(c.NestedTypes, compilation);
 			}
 		}
 		
