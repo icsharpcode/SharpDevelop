@@ -54,7 +54,6 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			backgroundRenderers = new ObserveAddRemoveCollection<IBackgroundRenderer>(BackgroundRenderer_Added, BackgroundRenderer_Removed);
 			columnRulerRenderer = new ColumnRulerRenderer(this);
 			this.Options = new TextEditorOptions();
-			this.columnRulerRenderer.SetRuler(Options.ColumnRulerPosition, ColumnRulerPen);
 			
 			Debug.Assert(singleCharacterElementGenerator != null); // assert that the option change created the builtin element generators
 			
