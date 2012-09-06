@@ -65,6 +65,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			}
 		}
 		
+		/// <summary>
+		/// Adds a rectangle to the geometry.
+		/// </summary>
+		/// <remarks>
+		/// This overload will align the coordinates according to
+		/// <see cref="AlignToWholePixels"/> or <see cref="AlignToMiddleOfPixels"/>.
+		/// Use the <see cref="AddRectangle(double,double,double,double)"/>-overload instead if the coordinates should not be aligned.
+		/// </remarks>
 		public void AddRectangle(TextView textView, Rect rectangle)
 		{
 			AddRectangle(PixelSnapHelpers.GetPixelSize(textView), rectangle);
@@ -73,15 +81,15 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		void AddRectangle(Size pixelSize, Rect r)
 		{
 			if (AlignToWholePixels) {
-					AddRectangle(PixelSnapHelpers.Round(r.Left, pixelSize.Width),
-					             PixelSnapHelpers.Round(r.Top + 1, pixelSize.Height),
-					             PixelSnapHelpers.Round(r.Right, pixelSize.Width),
-					             PixelSnapHelpers.Round(r.Bottom + 1, pixelSize.Height));
+				AddRectangle(PixelSnapHelpers.Round(r.Left, pixelSize.Width),
+				             PixelSnapHelpers.Round(r.Top + 1, pixelSize.Height),
+				             PixelSnapHelpers.Round(r.Right, pixelSize.Width),
+				             PixelSnapHelpers.Round(r.Bottom + 1, pixelSize.Height));
 			} else if (AlignToMiddleOfPixels) {
-					AddRectangle(PixelSnapHelpers.PixelAlign(r.Left, pixelSize.Width),
-					             PixelSnapHelpers.PixelAlign(r.Top + 1, pixelSize.Height),
-					             PixelSnapHelpers.PixelAlign(r.Right, pixelSize.Width),
-					             PixelSnapHelpers.PixelAlign(r.Bottom + 1, pixelSize.Height));
+				AddRectangle(PixelSnapHelpers.PixelAlign(r.Left, pixelSize.Width),
+				             PixelSnapHelpers.PixelAlign(r.Top + 1, pixelSize.Height),
+				             PixelSnapHelpers.PixelAlign(r.Right, pixelSize.Width),
+				             PixelSnapHelpers.PixelAlign(r.Bottom + 1, pixelSize.Height));
 			} else {
 				AddRectangle(r.Left, r.Top + 1, r.Right, r.Bottom + 1);
 			}
@@ -89,7 +97,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		/// <summary>
 		/// Calculates the list of rectangle where the segment in shown.
-		/// This returns one rectangle for each line inside the segment.
+		/// This method usually returns one rectangle for each line inside the segment
+		/// (but potentially more, e.g. when bidirectional text is involved).
 		/// </summary>
 		public static IEnumerable<Rect> GetRectsForSegment(TextView textView, ISegment segment, bool extendToFullWidthAtLineEnd = false)
 		{
@@ -232,6 +241,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <summary>
 		/// Adds a rectangle to the geometry.
 		/// </summary>
+		/// <remarks>
+		/// This overload assumes that the coordinates are aligned properly
+		/// (see <see cref="AlignToWholePixels"/>, <see cref="AlignToMiddleOfPixels"/>).
+		/// Use the <see cref="AddRectangle(TextView,Rect)"/>-overload instead if the coordinates are not yet aligned.
+		/// </remarks>
 		public void AddRectangle(double left, double top, double right, double bottom)
 		{
 			if (!top.IsClose(lastBottom)) {
