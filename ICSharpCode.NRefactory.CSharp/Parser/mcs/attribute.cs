@@ -143,6 +143,12 @@ namespace Mono.CSharp {
 			}
 		}
 
+		public bool ResolveError {
+			get {
+				return resolve_error;
+			}
+		}
+
 		public ATypeNameExpression TypeExpression {
 			get {
 				return expression;
@@ -275,7 +281,7 @@ namespace Mono.CSharp {
 		/// <summary>
 		///   Tries to resolve the type of the attribute. Flags an error if it can't, and complain is true.
 		/// </summary>
-		void ResolveAttributeType ()
+		void ResolveAttributeType (bool comparisonOnly)
 		{
 			SessionReportPrinter resolve_printer = new SessionReportPrinter ();
 			ReportPrinter prev_recorder = Report.SetPrinter (resolve_printer);
@@ -310,9 +316,12 @@ namespace Mono.CSharp {
 			}
 
 			if (t1_is_attr && t2_is_attr && t1 != t2) {
-				Report.Error (1614, Location, "`{0}' is ambiguous between `{1}' and `{2}'. Use either `@{0}' or `{0}Attribute'",
-					GetSignatureForError (), expression.GetSignatureForError (), expanded.GetSignatureForError ());
-				resolve_error = true;
+				if (!comparisonOnly) {
+					Report.Error (1614, Location, "`{0}' is ambiguous between `{1}' and `{2}'. Use either `@{0}' or `{0}Attribute'",
+						GetSignatureForError (), expression.GetSignatureForError (), expanded.GetSignatureForError ());
+					resolve_error = true;
+				}
+
 				return;
 			}
 
@@ -325,6 +334,9 @@ namespace Mono.CSharp {
 				Type = t2;
 				return;
 			}
+
+			if (comparisonOnly)
+				return;
 
 			resolve_error = true;
 
@@ -345,10 +357,10 @@ namespace Mono.CSharp {
 			resolve_printer.Merge (prev_recorder);
 		}
 
-		public TypeSpec ResolveType ()
+		public TypeSpec ResolveTypeForComparison ()
 		{
 			if (Type == null && !resolve_error)
-				ResolveAttributeType ();
+				ResolveAttributeType (true);
 			return Type;
 		}
 
@@ -430,7 +442,7 @@ namespace Mono.CSharp {
 			arg_resolved = true;
 
 			if (Type == null) {
-				ResolveAttributeType ();
+				ResolveAttributeType (false);
 				if (Type == null)
 					return null;
 			}
@@ -1133,15 +1145,13 @@ namespace Mono.CSharp {
 			Attrs.Add (a);
 			
 #if FULL_AST
-			var s = new List<Attribute>();
-			s.Add(a);
-			Sections.Add (s);
+			Sections.Add (Attrs);
 #endif
 		}
 
 		public Attributes (List<Attribute> attrs)
 		{
-			Attrs = new List<Attribute>(attrs);
+			Attrs = attrs;
 #if FULL_AST
 			Sections.Add (attrs);
 #endif
@@ -1213,6 +1223,16 @@ namespace Mono.CSharp {
 			}
 		}
 
+		public bool HasResolveError()
+		{
+			foreach (var a in Attrs) {
+				if (a.ResolveError)
+					return true;
+			}
+
+			return false;
+		}
+
 		public Attribute Search (PredefinedAttribute t)
 		{
 			return Search (null, t);
@@ -1224,7 +1244,7 @@ namespace Mono.CSharp {
 				if (explicitTarget != null && a.ExplicitTarget != explicitTarget)
 					continue;
 
-				if (a.ResolveType () == t)
+				if (a.ResolveTypeForComparison () == t)
 					return a;
 			}
 			return null;
@@ -1238,7 +1258,7 @@ namespace Mono.CSharp {
 			List<Attribute> ar = null;
 
 			foreach (Attribute a in Attrs) {
-				if (a.ResolveType () == t) {
+				if (a.ResolveTypeForComparison () == t) {
 					if (ar == null)
 						ar = new List<Attribute> (Attrs.Count);
 					ar.Add (a);

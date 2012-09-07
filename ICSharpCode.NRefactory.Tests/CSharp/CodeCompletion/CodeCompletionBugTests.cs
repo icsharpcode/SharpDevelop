@@ -74,7 +74,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				#region ICompletionData implementation
 				public void AddOverload (ICompletionData data)
 				{
-					throw new NotImplementedException ();
 				}
 
 				public CompletionCategory CompletionCategory {

@@ -387,7 +387,7 @@ class Foo
 		public void TestBug5389()
 		{
 			string code = 
-@"class Foo
+				@"class Foo
 {
 	static Dictionary<Tuple<Type, string>, string> CreatePropertyMap ()
 	{
@@ -404,6 +404,27 @@ class Foo
 			var method = type.Members.First() as MethodDeclaration;
 			var stmt = method.Body.Statements.First () as ReturnStatement;
 			bool passed = stmt.Expression is ObjectCreateExpression;
+			if (!passed) {
+				Console.WriteLine("Expected:" + code);
+				Console.WriteLine("Was:" + unit.GetText());
+			}
+			Assert.IsTrue(passed);
+		}
+
+		[Test()]
+		public void TestIncompleteParameter()
+		{
+			string code = 
+				@"class Foo
+{
+	void Bar (params System.A) {}
+}
+";
+			var unit = SyntaxTree.Parse(code);
+			
+			var type = unit.Members.First() as TypeDeclaration;
+			var method = type.Members.First() as MethodDeclaration;
+			bool passed = method.Parameters.Count == 1;
 			if (!passed) {
 				Console.WriteLine("Expected:" + code);
 				Console.WriteLine("Was:" + unit.GetText());
