@@ -1551,16 +1551,14 @@
 										<File Id="EmptySettingsFile.xft" Name="EmptySettingsFile.xft" Source="..\..\AddIns\DisplayBindings\SettingsEditor\EmptySettingsFile.xft" />
 									</Component>
 								</Directory>
+								-->
 								<Directory Id="Decompiler" Name="Decompiler">
 									<Component Id="ILSpyAddInFiles" Guid="F1422563-5927-4D98-B4D4-33FE5576C665" DiskId="1">
 										<File Id="ILSpyAddIn.dll" Name="ILSpyAddIn.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ILSpyAddIn.dll" KeyPath="yes" />
 										<File Id="ILSpyAddIn.addin" Name="ILSpyAddIn.addin" Source="..\..\AddIns\DisplayBindings\Decompiler\ILSpyAddIn.addin" />
-										<File Id="ICSharpCode.NewNRefactory.dll" Name="ICSharpCode.NewNRefactory.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ICSharpCode.NewNRefactory.dll" />
-										<File Id="ICSharpCode.NRefactory.CSharp.dll" Name="ICSharpCode.NRefactory.CSharp.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ICSharpCode.NRefactory.CSharp.dll" />
 										<File Id="ICSharpCode.Decompiler.dll" Name="ICSharpCode.Decompiler.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ICSharpCode.Decompiler.dll" />
 									</Component>
 								</Directory>
-								-->
 							</Directory>
 							<Directory Id="DebuggerFolder" Name="Debugger">
 								<Component Guid="27C66A5A-0149-45F4-B1AF-C320FE005E6B" Id="DebuggerAddInFiles" DiskId="1">
