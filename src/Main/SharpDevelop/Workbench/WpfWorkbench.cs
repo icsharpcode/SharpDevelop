@@ -340,9 +340,9 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 		}
 		
-		object activeContent;
+		IServiceProvider activeContent;
 		
-		public object ActiveContent {
+		public IServiceProvider ActiveContent {
 			get {
 				WorkbenchSingleton.AssertMainThread();
 				return activeContent;

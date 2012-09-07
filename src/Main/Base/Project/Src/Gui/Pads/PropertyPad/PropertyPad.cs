@@ -127,10 +127,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void WorkbenchActiveContentChanged(object sender, EventArgs e)
 		{
-			IHasPropertyContainer c = WorkbenchSingleton.Workbench.ActiveContent as IHasPropertyContainer;
+			var activeViewOrPad = WorkbenchSingleton.Workbench.ActiveContent;
+			IHasPropertyContainer c = activeViewOrPad != null ? activeViewOrPad.GetService<IHasPropertyContainer>() : null;
 			if (c == null) {
 				if (previousContent == null) {
-					c = WorkbenchSingleton.Workbench.ActiveViewContent as IHasPropertyContainer;
+					c = SD.GetActiveViewContentService<IHasPropertyContainer>();
 				} else {
 					// if the previous content is no longer visible, we have to remove the active container
 					if (previousContent is IViewContent && previousContent != WorkbenchSingleton.Workbench.ActiveViewContent) {

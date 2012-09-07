@@ -92,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public event EventHandler ActiveContentChanged;
 		
-		public object ActiveContent {
+		public IServiceProvider ActiveContent {
 			get {
 				object activeContent = dockingManager.ActiveContent;
 				AvalonPadContent padContent = activeContent as AvalonPadContent;

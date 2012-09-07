@@ -46,7 +46,7 @@ namespace SearchAndReplace
 		
 		class SearchableFileContentFinder
 		{
-			FileName[] viewContentFileNamesCollection = WorkbenchSingleton.SafeThreadFunction(() => SD.FileService.OpenedFiles.Select(f => f.FileName).ToArray());
+			FileName[] viewContentFileNamesCollection = SD.MainThread.InvokeIfRequired(() => SD.FileService.OpenedFiles.Select(f => f.FileName).ToArray());
 			
 			static ITextSource ReadFile(FileName fileName)
 			{
@@ -75,7 +75,7 @@ namespace SearchAndReplace
 					using (Stream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read)) {
 						if (MimeTypeDetection.FindMimeType(stream).StartsWith("text/")) {
 							stream.Position = 0;
-							return new StringTextSource(ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(stream, Encoding.Default));
+							return new StringTextSource(ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(stream, SD.FileService.DefaultFileEncoding));
 						}
 					}
 					return null;

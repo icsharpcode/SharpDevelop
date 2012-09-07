@@ -10,7 +10,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// The IPadContent interface is the basic interface to all "tool" windows
 	/// in SharpDevelop.
 	/// </summary>
-	public interface IPadContent : IDisposable
+	public interface IPadContent : IDisposable, IServiceProvider
 	{
 		/// <summary>
 		/// This is the UI element for the view.

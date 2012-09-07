@@ -38,5 +38,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return WorkbenchSingleton.Workbench.GetPad(GetType());
 			}
 		}
+		
+		public virtual object GetService(Type serviceType)
+		{
+			if (serviceType.IsInstanceOfType(this))
+				return this;
+			else
+				return null;
+		}
 	}
 }

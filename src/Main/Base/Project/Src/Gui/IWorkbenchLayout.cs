@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// The active content. This can be either a IViewContent or a IPadContent, depending on
 		/// where the focus currently is.
 		/// </summary>
-		object ActiveContent {
+		IServiceProvider ActiveContent {
 			get;
 		}
 		

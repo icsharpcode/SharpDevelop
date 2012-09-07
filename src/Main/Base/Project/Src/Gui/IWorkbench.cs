@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// If a document is currently active, this will be equal to ActiveViewContent,
 		/// if a pad has the focus, this property will return the IPadContent instance.
 		/// </summary>
-		object ActiveContent {
+		IServiceProvider ActiveContent {
 			get;
 		}
 		

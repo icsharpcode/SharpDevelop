@@ -14,6 +14,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// One view/pad content instance has to always return the same property container instance
 	/// and has to change only the properties on that PropertyContainer.
 	/// </summary>
+	[ViewContentService]
 	public interface IHasPropertyContainer
 	{
 		PropertyContainer PropertyContainer { get; }

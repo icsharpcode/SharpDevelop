@@ -323,16 +323,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 	
 	public class FileScout : UserControl, IPadContent
 	{
-		public object Control {
+		object IPadContent.Control {
 			get {
 				return this;
 			}
 		}
 		
-		public object InitiallyFocusedControl {
+		object IPadContent.InitiallyFocusedControl {
 			get {
 				return null;
 			}
+		}
+		
+		object IServiceProvider.GetService(Type type)
+		{
+			return null;
 		}
 		
 		Splitter      splitter1     = new Splitter();
