@@ -179,7 +179,7 @@ namespace XmlEditor.Tests.Utils
 		
 		public object GetService(Type serviceType)
 		{
-			throw new NotImplementedException();
+			return document.GetService(serviceType);
 		}
 		
 		public IList<ICSharpCode.SharpDevelop.Refactoring.IContextActionProvider> ContextActionProviders {

@@ -24,5 +24,10 @@ namespace XmlEditor.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
+		
+		public override object GetService(Type serviceType)
+		{
+			return textEditor.GetService(serviceType);
+		}
 	}
 }
