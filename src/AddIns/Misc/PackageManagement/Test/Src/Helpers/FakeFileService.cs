@@ -3,7 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace PackageManagement.Tests.Helpers
@@ -61,6 +64,64 @@ namespace PackageManagement.Tests.Helpers
 		public bool FileExists(string fileName)
 		{
 			return ExistingFileNames.Contains(fileName);
+		}
+		
+		Dictionary<string, string[]> directoryFiles = new Dictionary<string, string[]>();
+		
+		public void AddFilesToFakeFileSystem(string directory, params string[] filePathsRelativeToDirectory)
+		{
+			string[] fullPathFiles = ConvertToFullPaths(directory, filePathsRelativeToDirectory);
+			directoryFiles.Add(directory, fullPathFiles);
+		}
+		
+		string[] ConvertToFullPaths(string directory, string[] pathsRelativeToDirectory)
+		{
+			return pathsRelativeToDirectory
+				.Select(relativePath => Path.Combine(directory, relativePath))
+				.ToArray();
+		}
+		
+		public string[] GetFiles(string path)
+		{
+			string[] files;
+			if (directoryFiles.TryGetValue(path, out files)) {
+				return files;
+			}
+			return new string[0];
+		}
+		
+		Dictionary<string, string[]> directories = new Dictionary<string, string[]>();
+		
+		public void AddDirectoryToFakeFileSystem(string parentDirectory, params string[] childDirectoryPathsRelativeToParent)
+		{
+			string[] fullPathChildDirectories = ConvertToFullPaths(parentDirectory, childDirectoryPathsRelativeToParent);
+			directories.Add(parentDirectory, fullPathChildDirectories);
+		}
+		
+		public string[] GetDirectories(string path)
+		{
+			string[] childDirectories;
+			if (directories.TryGetValue(path, out childDirectories)) {
+				return childDirectories;
+			}
+			return new string[0];
+		}
+		
+		public string FileNamePassedToParseFile;
+		
+		public void ParseFile(string fileName)
+		{
+			FileNamePassedToParseFile = fileName;
+		}
+		
+		public string FileNamePassedToGetCompilationUnit;
+		public ICompilationUnit CompilationUnitToReturnFromGetCompilationUnit =
+			new DefaultCompilationUnit(new DefaultProjectContent());
+		
+		public ICompilationUnit GetCompilationUnit(string fileName)
+		{
+			FileNamePassedToGetCompilationUnit = fileName;
+			return CompilationUnitToReturnFromGetCompilationUnit;
 		}
 	}
 }

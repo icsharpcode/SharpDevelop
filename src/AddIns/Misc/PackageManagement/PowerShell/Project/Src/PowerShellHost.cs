@@ -174,5 +174,10 @@ namespace ICSharpCode.PackageManagement.Scripting
 				scriptingConsole.WriteLine(ex.Message, ScriptingStyle.Error);
 			}
 		}
+		
+		public void SetDefaultRunspace()
+		{
+			Runspace.DefaultRunspace = runspace;
+		}
 	}
 }

@@ -38,14 +38,6 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
-		/// Gets whether this tree node has been initialized. If it has been
-		/// initialized then all the child nodes have been added to this node.
-		/// </summary>
-		public bool IsInitialized {
-			get { return isInitialized; }
-		}
-		
-		/// <summary>
 		/// Can delete all Wix tree nodes.
 		/// </summary>
 		public override bool EnableDelete {

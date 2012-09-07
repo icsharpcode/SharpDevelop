@@ -160,7 +160,7 @@
     <value>Bu eklenti iki kez kurulmuş. Lütfen birini kaldırın.</value>
   </data>
   <data name="AddInManager.AddInMustHaveIdentity" xml:space="preserve">
-    <value>Eklentinin Eklenti Yöneticisi tarafindan kullanılmasi için bir &lt;Identity&gt; si olmalıdır</value>
+    <value>Eklentinin Eklenti Yöneticisi tarafindan kullanılmasi için bir kimliği olmalıdır.</value>
   </data>
   <data name="AddInManager.AddInRemoved" xml:space="preserve">
     <value>Eklenti SharpDevelop yeniden başlatıldığında kaldırılacak.</value>
@@ -221,7 +221,7 @@
     <value>Gerekli bağımlılıklar:</value>
   </data>
   <data name="AddInManager.ShowPreinstalledAddIns" xml:space="preserve">
-    <value>Önyüklenmiş eklentileri göster</value>
+    <value>Önyüklü eklentileri göster</value>
   </data>
   <data name="AddInManager.Title" xml:space="preserve">
     <value>Eklenti Yöneticisi</value>
@@ -254,7 +254,7 @@
     <value>Sınıf Şemasını Göster</value>
   </data>
   <data name="AddIns.Git.TortoiseGitRequired" xml:space="preserve">
-    <value>Bu işlemi gerçekleştirebilmek için TortoiseGit yüklü olmalıdır.</value>
+    <value>Bu işlem için TortoiseGit yüklü olmalıdır.</value>
   </data>
   <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
     <value>İçerikler</value>
@@ -266,28 +266,28 @@
     <value>Arama</value>
   </data>
   <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
-    <value>Yardım Kütüphanesi</value>
+    <value>Yardım Kitaplığı</value>
   </data>
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
     <value>Yardım Modu</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNoActiveCatalogError" xml:space="preserve">
-    <value>Seçilen veya yüklü bir yardım kataloğu olmadığından, Kütüphane Yöneticisi Yardımı başlatılamıyor. Yardım ayarlarınızı kontrol ediniz(Araçlar&gt; Seçenekler&gt; Araçlar&gt; Microsoft Yardım Görüntüleyicisi).</value>
+    <value>Seçili veya yüklü bir yardım kataloğu olmadığından, Kütüphane Yöneticisi Yardımı başlatılamıyor. Yardım ayarlarınızı kontrol ediniz(Araçlar&gt; Seçenekler&gt; Araçlar&gt; Microsoft Yardım Görüntüleyici).</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
-    <value>Kütüphane Yöneticisi Yardımı bulunamadı. Doğru yüklenmiş olup olmadığını kontrol ediniz.</value>
+    <value>Kütüphane Yöneticisi Yardımı bulunamadı. Yüklemeyi kontrol edin.</value>
   </data>
   <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
     <value>Yüklü Yardım Katalogları</value>
   </data>
   <data name="AddIns.HelpViewer.LaunchHelpLibraryManagerCommand" xml:space="preserve">
-    <value>Kütüphane Yöneticisi Yardımını Başlatınız</value>
+    <value>Kütüphane Yöneticisi Yardımını Başlat</value>
   </data>
   <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
     <value>Microsoft Yardım Görüntüleyici</value>
   </data>
   <data name="AddIns.HelpViewer.OfflineFeatureRequestMsg" xml:space="preserve">
-    <value>Çevrimiçi yardım modunda çevrimdışı bir özellik kullanmaya çalıştınız. Bu özelliği kullanabilmek için yardım modunu değiştirmelisiniz.</value>
+    <value>Çevrimiçi yardım modunda çevrimdışı bir özellik kullanamazsınız. Bu özelliği kullanabilmek için yardım modunu değiştirmelisiniz.</value>
   </data>
   <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
     <value>Ara</value>
@@ -377,7 +377,7 @@
     <value>{0} için tüm fonksiyonlar</value>
   </data>
   <data name="AddIns.Profiler.DatabaseTooNewError" xml:space="preserve">
-    <value>Seçili SharpDevelop oturum profili yeni bir SharpDevelop sürümü ile oluşturulmuş ve açılamıyor.</value>
+    <value>Seçili SharpDevelop profili yeni bir SharpDevelop sürümü ile oluşturulmuş ve açılamıyor.</value>
   </data>
   <data name="AddIns.Profiler.FileExtensionDescription" xml:space="preserve">
     <value>SharpDevelop Profil Oturumu</value>
@@ -792,10 +792,10 @@ SharpDevelop bu bilgileri otomatik olarak toplayıp gönderebilir.</value>
     <value>SharpDevelop'un başlatıcıya dayalı şekillendirmesine izin verme.</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
-    <value>Izgara sütun ve satır düzenleme</value>
+    <value>Izgara sütun ve satır düzenle</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle" xml:space="preserve">
-    <value>Stil özelliklerini çıkartma</value>
+    <value>Stil özelliklerini çıkart</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ErrorNoSelection" xml:space="preserve">
     <value>Geçerli bir öğe seçilmedi!</value>
@@ -805,7 +805,7 @@ SharpDevelop bu bilgileri otomatik olarak toplayıp gönderebilir.</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ReplaceQuestion" xml:space="preserve">
     <value>Seçilen kontrolün zaten atanmış bir stili var.
-Oluşturulan stili yenisiyle değiştirmek istiyor musunuz?</value>
+Stili yenisiyle değiştirmek istiyor musunuz?</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.StyleName" xml:space="preserve">
     <value>Stil adı:</value>
@@ -835,22 +835,22 @@ Oluşturulan stili yenisiyle değiştirmek istiyor musunuz?</value>
     <value>Olay işleyici desen adı:</value>
   </data>
   <data name="AddIns.XamlBinding.Options.HighlightingDescription" xml:space="preserve">
-    <value>XAML vurgulayıcı tarafından kullanılması gereken renkleri seçin:</value>
+    <value>XAML vurgulayıcı tarafından kullanılacak renkleri seçin:</value>
   </data>
   <data name="AddIns.XamlBinding.Options.HighlightingGroupLabel" xml:space="preserve">
     <value>Vurgulama</value>
   </data>
   <data name="AddIns.XamlBinding.Options.IgnoredElementColor" xml:space="preserve">
-    <value>Yok Sayılan eleman rengi:</value>
+    <value>Yok sayılan eleman rengi:</value>
   </data>
   <data name="AddIns.XamlBinding.Options.NamespaceDeclarationColor" xml:space="preserve">
-    <value>XML ad alanı bildirimi rengi:</value>
+    <value>XML ad alanı bildirim rengi:</value>
   </data>
   <data name="AddIns.XamlBinding.Options.PropertyColor" xml:space="preserve">
     <value>Özellik rengi:</value>
   </data>
   <data name="AddIns.XamlBinding.Options.SwitchToCodeViewAfterInsertion" xml:space="preserve">
-    <value>Yeni olay işleyicisi yerleştirildikten sonra kodu değiştirme</value>
+    <value>Yeni olay işleyicisi yerleşimi sonrası kodu değiştir</value>
   </data>
   <data name="AddIns.XamlBinding.Options.Title" xml:space="preserve">
     <value>XAML</value>
@@ -872,10 +872,10 @@ Oluşturulan stili yenisiyle değiştirmek istiyor musunuz?</value>
     <value>UTF-8 olarak kaydet</value>
   </data>
   <data name="BackendBindings.ExecutionManager.CantExecuteDLLError" xml:space="preserve">
-    <value>Proje dll olarak yapılandırılmış ve hiç bir yürütme komutu belirtilmemiş. Proje seçeneklerinden bir yürütme komutu belirtebilirsiniz.</value>
+    <value>Proje dll olarak yapılandırılmış ve yürütme komutu belirtilmemiş. Proje seçeneklerinden bir yürütme komutu belirtebilirsiniz.</value>
   </data>
   <data name="BackendBindings.ExecutionManager.NoSingleFileCompilation" xml:space="preserve">
-    <value>Tek bir dosyayı derleme özelliği desteklenmiyor, lütfen bir proje oluşturun!</value>
+    <value>Tek dosyayı derleme desteklenmiyor,lütfen bir proje oluşturun!</value>
   </data>
   <data name="CompilerResultView.DescriptionText" xml:space="preserve">
     <value>Tanımlama</value>
@@ -941,7 +941,7 @@ Oluşturulan stili yenisiyle değiştirmek istiyor musunuz?</value>
     <value>Tür bulunamadı</value>
   </data>
   <data name="ComponentInspector.CastDialog.CannotFindTypeInAssembliesMessage" xml:space="preserve">
-    <value>{0} türü, şu anda açık çevirmelerin herhangi birinde bulunamadı.</value>
+    <value>{0} türü, şu anda açık derlemelerde bulunamadı.</value>
   </data>
   <data name="ComponentInspector.CastDialog.CastForTitle" xml:space="preserve">
     <value>Tipi</value>
@@ -956,7 +956,7 @@ Oluşturulan stili yenisiyle değiştirmek istiyor musunuz?</value>
     <value>Tip türü belirlemede hata.</value>
   </data>
   <data name="ComponentInspector.CastDialog.RememberCastCheckBox" xml:space="preserve">
-    <value>Tipi oturum boyunca hatırla?</value>
+    <value>Tip oturum boyunca hatırlansın mı?</value>
   </data>
   <data name="ComponentInspector.CastDialog.TypeIncompatibleMessage" xml:space="preserve">
     <value>Tip türü, nesnenin türüyle uyumsuz.</value>
@@ -977,10 +977,10 @@ Oluşturulan stili yenisiyle değiştirmek istiyor musunuz?</value>
     <value>Favori/Son Erişilen Kütüphane Türleri</value>
   </data>
   <data name="ComponentInspector.ComTypeLibraryRootTreeNode.Text" xml:space="preserve">
-    <value>Tür Kütüphaneleri</value>
+    <value>Tür Kitaplıkları</value>
   </data>
   <data name="ComponentInspector.ConstructorDialog.Information" xml:space="preserve">
-    <value>Eğer parametrelerle bir kurucu seçerseniz, OK tuşuna bastıktan sonra, lütfen parametreleri doldurun ve bu nesnenin nerede oluşturulmasını istiyorsanız, seçili kurucuyu oraya sürükleyin.</value>
+    <value>Eğer parametreli bir kurucu seçerseniz, Tamam'a bastıktan sonra, lütfen parametreleri doldurun ve seçili kurucuyu oluşturulmasını istediğiniz yere sürükleyin.</value>
   </data>
   <data name="ComponentInspector.ConstructorDialog.Title" xml:space="preserve">
     <value>Bir Kurucu Seç</value>
@@ -1028,10 +1028,10 @@ Oluşturulan stili yenisiyle değiştirmek istiyor musunuz?</value>
     <value>Daha Fazla Bilgi</value>
   </data>
   <data name="ComponentInspector.ErrorDialog.ReportAsBugButton" xml:space="preserve">
-    <value>Açık bildir</value>
+    <value>Hata Raporla</value>
   </data>
   <data name="ComponentInspector.EventLogList.ClearAllMenuItem" xml:space="preserve">
-    <value>Hepsini sil</value>
+    <value>Hepsini Sil</value>
   </data>
   <data name="ComponentInspector.EventLogList.ClearMenuItem" xml:space="preserve">
     <value>Sil</value>
@@ -1051,7 +1051,7 @@ Oluşturulan stili yenisiyle değiştirmek istiyor musunuz?</value>
   <data name="ComponentInspector.EventLogList.NoEventsBeingLoggedMessage" xml:space="preserve">
     <value>Herhangi bir olayı kayıt etmiyorsunuz.
 
-Olayları kayıt etmek için, Nesneler panelinden bir nesne yada olay seçip, ya sağ tuşa basabilir yada Eylem menüsünden olay kaydetmeyi etkinleştirebilirsiniz.</value>
+Olayları kayıt için, Nesneler panelinden bir nesne yada olay seçip, ya sağ tuşa basabilir yada Eylem menüsünden olay kaydetmeyi etkinleştirebilirsiniz.</value>
   </data>
   <data name="ComponentInspector.EventLogList.ParametersColumnHeader" xml:space="preserve">
     <value>Parametreler</value>
@@ -1072,7 +1072,7 @@ Olayları kayıt etmek için, Nesneler panelinden bir nesne yada olay seçip, ya
     <value>Derlemeler/Türler</value>
   </data>
   <data name="ComponentInspector.FindDialog.ContainsRadioButton" xml:space="preserve">
-    <value>İçerir</value>
+    <value>İçeren</value>
   </data>
   <data name="ComponentInspector.FindDialog.FindButton" xml:space="preserve">
     <value>Bul</value>
@@ -1174,7 +1174,7 @@ Olayları kayıt etmek için, Nesneler panelinden bir nesne yada olay seçip, ya
     <value>GAC Panelini Göster</value>
   </data>
   <data name="ComponentInspector.GetPropertyMenuItem" xml:space="preserve">
-    <value>Özelliği al</value>
+    <value>Özelliği Al</value>
   </data>
   <data name="ComponentInspector.GettingStartedDialog.Information" xml:space="preserve">
     <value>Denetleyici herhangi bir ActiveX/COM nesnesini gösterebilir yada işletebilir.
@@ -1374,7 +1374,7 @@ Bir ActiveX / COM nesnesi oluşturmak / değiştirmek için, nesne ağacı veya 
     <value>Tür eylemcileri, aşağıda işaretli sınıfların, gereksiz detaylarını gizleyip, daha uygun bir şekilde sunar.</value>
   </data>
   <data name="ComponentInspector.WaitingForAppDialog.Information" xml:space="preserve">
-    <value>Uygulamanın başlatılması bekleniyor. Eğer uygulama başlatılamazsa(veya beklemekten sıkılırsanız), iptal tuşuna basarak iptal edebilirsiniz.</value>
+    <value>Uygulamanın başlatılması bekleniyor. Eğer uygulama başlatılamazsa(yada beklemekten sıkılırsanız),iptal edebilirsiniz.</value>
   </data>
   <data name="ComponentInspector.WaitingForAppDialog.Title" xml:space="preserve">
     <value>Uygulamanın Başlatılması Bekleniyor</value>
@@ -1608,7 +1608,7 @@ Yeni dosyayı, ${CurrentProjectName} projesine eklemek istiyor musunuz?</value>
     <value>tüm çözüm</value>
   </data>
   <data name="Dialog.NewProject.SearchReplace.MarkAllButton" xml:space="preserve">
-    <value>Tümünü yer imle</value>
+    <value>Tümünü Yer İmle</value>
   </data>
   <data name="Dialog.NewProject.SearchReplace.MatchCase" xml:space="preserve">
     <value>Eşleştir</value>
@@ -1671,8 +1671,7 @@ Yeni dosyayı, ${CurrentProjectName} projesine eklemek istiyor musunuz?</value>
     <value>Tanım</value>
   </data>
   <data name="Dialog.Options.CodeTemplate.EditGroupDialog.Text" xml:space="preserve">
-    <value>Lütfen, dosya uzantılarını, noktalı virgül ile ayrılmış bir liste olarak girin.
-(Örnek: .h;.c;.cpp)</value>
+    <value>Lütfen, dosya uzantılarını, noktalı virgül ile listeleyin.(Örnek: .h;.c;.cpp)</value>
   </data>
   <data name="Dialog.Options.CodeTemplate.EditGroupLabel" xml:space="preserve">
     <value>Uzantıları düzenle</value>
@@ -1696,7 +1695,7 @@ Yeni dosyayı, ${CurrentProjectName} projesine eklemek istiyor musunuz?</value>
     <value>Kod şablonu eklemek için Tab tuşuna basın.</value>
   </data>
   <data name="Dialog.Options.CodeTemplate.RemoveGroupLabel" xml:space="preserve">
-    <value>Grup kaldır</value>
+    <value>Grup Kaldır</value>
   </data>
   <data name="Dialog.Options.CodeTemplate.Template" xml:space="preserve">
     <value>Şablon</value>
@@ -1726,7 +1725,7 @@ Yeni dosyayı, ${CurrentProjectName} projesine eklemek istiyor musunuz?</value>
     <value>Komut</value>
   </data>
   <data name="Dialog.Options.ExternalTool.PromptForArgsCheckBox" xml:space="preserve">
-    <value>Argümanlar için sor</value>
+    <value>Argümanlar için Sor</value>
   </data>
   <data name="Dialog.Options.ExternalTool.QuickInsertMenu.CombineDirectory" xml:space="preserve">
     <value>Çözüm dizini</value>
@@ -2593,7 +2592,7 @@ Ayrıca bir ayarı proje dosyası yerine kullanıcı dosyası(.user-file) içind
     <value>Yeni Dosya Adı</value>
   </data>
   <data name="Dialog.Refactoring.ExtractInterface.SelectPublicMembers" xml:space="preserve">
-    <value>Genel Kullanıcı Seç</value>
+    <value>Public Üyeleri Seç</value>
   </data>
   <data name="Dialog.Refactoring.IntroduceMethod.CreateNew" xml:space="preserve">
     <value>Yeni sınıf oluştur:</value>
@@ -2644,7 +2643,7 @@ Ayrıca bir ayarı proje dosyası yerine kullanıcı dosyası(.user-file) içind
     <value>Seçili Referanslar</value>
   </data>
   <data name="Dialog.SelectReferenceDialog.SelectButton" xml:space="preserve">
-    <value>&amp;Seç</value>
+    <value>Seç</value>
   </data>
   <data name="Dialog.SelectReferenceDialog.TypeHeader" xml:space="preserve">
     <value>Tür</value>
@@ -2857,7 +2856,7 @@ Ayrıca bir ayarı proje dosyası yerine kullanıcı dosyası(.user-file) içind
     <value>Değiştir</value>
   </data>
   <data name="Global.RetryButtonText" xml:space="preserve">
-    <value>Yeniden dene</value>
+    <value>Yeniden Dene</value>
   </data>
   <data name="Global.SelectAllButtonText" xml:space="preserve">
     <value>Hepsini Seç</value>
@@ -2896,7 +2895,7 @@ Ayrıca bir ayarı proje dosyası yerine kullanıcı dosyası(.user-file) içind
     <value>Explorer'da Klasör Aç</value>
   </data>
   <data name="Gui.ProjectBrowser.OpenWith" xml:space="preserve">
-    <value>Birlikte aç...</value>
+    <value>Birlikte Aç...</value>
   </data>
   <data name="Gui.ProjectBrowser.OpenWith.AddProgram.DialogTitle" xml:space="preserve">
     <value>Program ekle</value>
@@ -3121,16 +3120,16 @@ Ayrıca bir ayarı proje dosyası yerine kullanıcı dosyası(.user-file) içind
     <value>Kapsanmış Kod</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.CodeNotCovered" xml:space="preserve">
-    <value>Kod Kapsanamadı</value>
+    <value>Kapsanmamış Kod</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.Column" xml:space="preserve">
     <value>Kolon</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.DisplayOptions" xml:space="preserve">
-    <value>Gösterme Seçenekleri</value>
+    <value>Gösterim Seçenekleri</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.EndColumn" xml:space="preserve">
-    <value>Sütun sonu</value>
+    <value>Sütun Sonu</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Satır Sonu</value>
@@ -3333,7 +3332,7 @@ Lütfen SharpDevelop Seçeneklerinden NAnt çalıştırılabilir dosyasının ye
     <value>Hata ayıklamak için başlangıç &amp;#8203;&amp;#8203;projesi yok.</value>
   </data>
   <data name="ICSharpCode.NUnitPad.NUnitPadContent.PadName" xml:space="preserve">
-    <value>Unit Testleri</value>
+    <value>Birim Testleri</value>
   </data>
   <data name="ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesForm.AllLanguages" xml:space="preserve">
     <value>Hepsi</value>
@@ -3616,7 +3615,7 @@ Not: Bu işlem özel düzenlemelerinizi etkilemez.</value>
     <value>Konum</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Namespace" xml:space="preserve">
-    <value>Ad alanı</value>
+    <value>Ad Alanı</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.ComponentsToAddLabel" xml:space="preserve">
     <value>Eklenilecek bileşenler</value>
@@ -3658,7 +3657,7 @@ Not: Bu işlem özel düzenlemelerinizi etkilemez.</value>
     <value>Kenarçubuğunu Yapılandır</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Namespace" xml:space="preserve">
-    <value>Ad alanı</value>
+    <value>Ad Alanı</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.NewButton" xml:space="preserve">
     <value>Yeni</value>
@@ -3870,7 +3869,7 @@ Windows Forms bileşenleri yok, lütfen kenar çubuğunu elle ayarlayın( bir ke
     <value>Yararlanılabilir Web Servisleri</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.AttachToProcessForm.AttachButtonText" xml:space="preserve">
-    <value>Bağla</value>
+    <value>İliştir</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.AttachToProcessForm.Managed" xml:space="preserve">
     <value>Yönetilen</value>
@@ -3896,7 +3895,7 @@ Sadece harf,rakam, boşluk, '.' yada '_' kullanabilirsiniz.</value>
     <value>Proje konumu için geçerli bir yol belirtmeniz gerekir.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.RegisterFiletypesPanel.CaptionLabel" xml:space="preserve">
-    <value>SharpDevelop ile ilişkilendirmek istediğiniz dosya türlerini seçin:</value>
+    <value>SharpDevelop ile ilişkilendirilecek dosya türlerini seçin:</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.RegisterFiletypesPanel.PanelName" xml:space="preserve">
     <value>Dosya Türü İlişkileri</value>
@@ -3986,10 +3985,10 @@ Sadece harf,rakam, boşluk, '.' yada '_' kullanabilirsiniz.</value>
     <value>Dosyayı çıktıya dönüştüren aracı belirtir.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomToolNamespace" xml:space="preserve">
-    <value>Özel Araç Ad alanı</value>
+    <value>Özel Araç Ad Alanı</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomToolNamespace.Description" xml:space="preserve">
-    <value>Çıktıyı yerleştiren özel aracın ad alanını belirtir.</value>
+    <value>Çıktıyı sağlayan özel aracın ad alanını belirtir.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.FileName.Description" xml:space="preserve">
     <value>Dosyanın tam yolu.</value>
@@ -4191,7 +4190,7 @@ Eğer yükseltmek isterseniz, yeni bir dil veya yeni çalışmaçerçevesi özel
     <value>Test</value>
   </data>
   <data name="ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat" xml:space="preserve">
-    <value>Ünite testleri çalıştırılamıyor.'{0}' dosyası bulunamıyor.</value>
+    <value>Birim testleri çalıştırılamıyor.'{0}' dosyası bulunamıyor.</value>
   </data>
   <data name="ICSharpCode.WebProjectOptionsPanel" xml:space="preserve">
     <value>Web</value>
@@ -4288,7 +4287,7 @@ Eğer yükseltmek isterseniz, yeni bir dil veya yeni çalışmaçerçevesi özel
 Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension</value>
   </data>
   <data name="ICSharpCode.WixBinding.LibraryParametersPanel" xml:space="preserve">
-    <value>Kütüphane</value>
+    <value>Kitaplık</value>
   </data>
   <data name="ICSharpCode.WixBinding.LinkerParametersPanel" xml:space="preserve">
     <value>Bağlantılama</value>
@@ -4890,6 +4889,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.DisableBreakpoint" xml:space="preserve">
     <value>Kesme noktası etkisiz</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.EditCondition" xml:space="preserve">
+    <value>Durum düzenleme...</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.EnableBreakpoint" xml:space="preserve">
     <value>Kesme noktasını etkin</value>
   </data>
@@ -5131,7 +5133,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Öncelik</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.Priority.AboveNormal" xml:space="preserve">
-    <value>Normal üzerinde</value>
+    <value>Normal üstü</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.Priority.BelowNormal" xml:space="preserve">
     <value>Normal Altinda</value>
@@ -5179,7 +5181,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Hatalar</value>
   </data>
   <data name="MainWindow.Windows.ErrorList.ErrorButton.Label" xml:space="preserve">
-    <value>${TaskService.Errors} Hataları</value>
+    <value>${TaskService.Errors} Hata</value>
   </data>
   <data name="MainWindow.Windows.ErrorList.ErrorButton.ToolTip" xml:space="preserve">
     <value>Hataların listede gösterilip-gösterilmeyeceğini seçin</value>
@@ -5191,7 +5193,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Mesajların listede gösterilip-gösterilmeyeceğini seçin</value>
   </data>
   <data name="MainWindow.Windows.ErrorList.WarningButton.Label" xml:space="preserve">
-    <value>${TaskService.Warnings} Uyarıları</value>
+    <value>${TaskService.Warnings} Uyarı</value>
   </data>
   <data name="MainWindow.Windows.ErrorList.WarningButton.ToolTip" xml:space="preserve">
     <value>Uyarıların listede gösterilip-gösterilmeyeceğini seçin.</value>
@@ -5251,7 +5253,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Normal arama sonuçlarına dön</value>
   </data>
   <data name="MainWindow.Windows.SearchResultPanel.ClearHistory" xml:space="preserve">
-    <value>&lt;Geçmişi temizle&gt;</value>
+    <value>&lt;Geçmişi Temizle&gt;</value>
   </data>
   <data name="MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip" xml:space="preserve">
     <value>Hepsini göster</value>
@@ -5293,7 +5295,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Sonuçlarda Ara</value>
   </data>
   <data name="MainWindow.Windows.TaskList" xml:space="preserve">
-    <value>Görev listesi</value>
+    <value>Görev Listesi</value>
   </data>
   <data name="MainWindow.Windows.ToolbarLabel" xml:space="preserve">
     <value>Araçlar</value>
@@ -5335,7 +5337,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Test derlemeleri yüklenemiyor, kendiliğinden yükleme iptal edildi.</value>
   </data>
   <data name="NUnitPad.NUnitPadContent.GotoDefinitionContextMenuLabel" xml:space="preserve">
-    <value>Tanimlamaya &amp;git</value>
+    <value>Tanimlamaya git</value>
   </data>
   <data name="NUnitPad.NUnitPadContent.ReferenceItem" xml:space="preserve">
     <value>Mevcut seçili projedeki NUnit 'e referans ekle</value>
@@ -5476,7 +5478,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Özel araçları çalıştır</value>
   </data>
   <data name="ProjectComponent.ContextMenu.ExistingFolder" xml:space="preserve">
-    <value>Varolan klasör...</value>
+    <value>Varolan Klasör...</value>
   </data>
   <data name="ProjectComponent.ContextMenu.ExistingFolder.CopyQuestion" xml:space="preserve">
     <value>Hedef dizine klasörü kopyalamak istiyor musunuz?</value>
@@ -5509,7 +5511,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Html Dışa Aktar</value>
   </data>
   <data name="ProjectComponent.ContextMenu.IncludeFileInProject" xml:space="preserve">
-    <value>Projeye dahil et</value>
+    <value>Projeye Dahil Et</value>
   </data>
   <data name="ProjectComponent.ContextMenu.IncludeMenu.InCompile" xml:space="preserve">
     <value>Derle</value>
@@ -5548,7 +5550,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Web Referansını Yenile</value>
   </data>
   <data name="ProjectComponent.ContextMenu.Rename" xml:space="preserve">
-    <value>Yeniden Adla&amp;ndır</value>
+    <value>Yeniden Adlandır</value>
   </data>
   <data name="ProjectComponent.ContextMenu.RunProject" xml:space="preserve">
     <value>Projeyi Çalıştır</value>
@@ -5614,10 +5616,10 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Çok satırlı</value>
   </data>
   <data name="RegExpTk.MainDialog.Namespace" xml:space="preserve">
-    <value>Ad alanı</value>
+    <value>Ad Alanı</value>
   </data>
   <data name="RegExpTk.MainDialog.PublicVisible" xml:space="preserve">
-    <value>Açıkça görünür</value>
+    <value>Public görünür</value>
   </data>
   <data name="RegExpTk.MainDialog.Regex" xml:space="preserve">
     <value>Düzenli ifade</value>
@@ -6299,7 +6301,7 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>Başlat</value>
   </data>
   <data name="StartPage.StartMenu.NewCombineButton" xml:space="preserve">
-    <value>Yeni çözüm</value>
+    <value>Yeni Çözüm</value>
   </data>
   <data name="StartPage.StartMenu.OpenCombineButton" xml:space="preserve">
     <value>Çözüm Aç</value>
@@ -6932,7 +6934,7 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>Biçimlendir</value>
   </data>
   <data name="XML.MainMenu.EditMenu.FormatMenu.Capitalize" xml:space="preserve">
-    <value>Büyük harfe çevir</value>
+    <value>Büyük Harfe Çevir</value>
   </data>
   <data name="XML.MainMenu.EditMenu.FormatMenu.InvertCase" xml:space="preserve">
     <value>Büyük/Küçük Tersine Çevir</value>
@@ -7028,7 +7030,7 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>Dosya...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.New.File.Description" xml:space="preserve">
-    <value>Yeni tampon aç</value>
+    <value>Yeni dosya aç</value>
   </data>
   <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
     <value>Proje...</value>
@@ -7043,7 +7045,7 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>Dosya</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open.File.Description" xml:space="preserve">
-    <value>Tamponu disk'den aç</value>
+    <value>Disk'ten aç</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open.Project" xml:space="preserve">
     <value>Proje/Çözüm...</value>
@@ -7058,7 +7060,7 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>Baskı Önizleme</value>
   </data>
   <data name="XML.MainMenu.FileMenu.RecentFiles" xml:space="preserve">
-    <value>En son Dosyalar</value>
+    <value>En Son Dosyalar</value>
   </data>
   <data name="XML.MainMenu.FileMenu.RecentProjects" xml:space="preserve">
     <value>En Son Projeler</value>
@@ -7070,19 +7072,19 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>Kaydet</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Save.Description" xml:space="preserve">
-    <value>Mevcut tamponu kaydet</value>
+    <value>Son değişikliği kaydet</value>
   </data>
   <data name="XML.MainMenu.FileMenu.SaveAll" xml:space="preserve">
     <value>Tümünü Kaydet</value>
   </data>
   <data name="XML.MainMenu.FileMenu.SaveAll.Description" xml:space="preserve">
-    <value>Mevcut açık tüm tamponları kaydet</value>
+    <value>Hepsindeki değişiklikleri kaydet</value>
   </data>
   <data name="XML.MainMenu.FileMenu.SaveAs" xml:space="preserve">
     <value>Farklı Kaydet</value>
   </data>
   <data name="XML.MainMenu.FileMenu.SaveWithEncoding" xml:space="preserve">
-    <value>Kodlama ile kaydet</value>
+    <value>Kodlama ile Kaydet</value>
   </data>
   <data name="XML.MainMenu.FormatMenu" xml:space="preserve">
     <value>Biçim</value>
@@ -7211,7 +7213,7 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>GPL...</value>
   </data>
   <data name="XML.MainMenu.HelpMenu.ReadMe" xml:space="preserve">
-    <value>BeniOku...</value>
+    <value>Beni Oku...</value>
   </data>
   <data name="XML.MainMenu.HelpMenu.StyleGuide" xml:space="preserve">
     <value>Kodlama Tarzı Rehberi</value>
@@ -7250,7 +7252,7 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>Mevcut çözümdeki tüm projeleri derler.</value>
   </data>
   <data name="XML.MainMenu.RunMenu.Compile.Description" xml:space="preserve">
-    <value>Açık projeyi yada tamponu derle(eğer proje açık değilse)(kendiliğinden kayıt yapar)</value>
+    <value>Açık projeyi derler(eğer proje açık değilse)(kendiliğinden kayıt yapar)</value>
   </data>
   <data name="XML.MainMenu.RunMenu.Compile.StopDebuggingQuestion" xml:space="preserve">
     <value>Projeyi derleyebilmek için hata ayıklayıcıyı durdurmanız gerekir. Hata ayıklamayı durdurmak istiyor musunuz?</value>
@@ -7262,7 +7264,7 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>Çalıştır</value>
   </data>
   <data name="XML.MainMenu.RunMenu.Run.Description" xml:space="preserve">
-    <value>Derlenmiş exe 'yi çalıştır(yeniden derler)</value>
+    <value>Derlenmiş exe'yi çalıştırır(yeniden derler)</value>
   </data>
   <data name="XML.MainMenu.SearchMenu" xml:space="preserve">
     <value>Ara</value>
@@ -7271,7 +7273,7 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>Tüm Yer İmlerini Temizle</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.ClrBookmark.Description" xml:space="preserve">
-    <value>Mevcut tampondaki tüm yer imlerini temizler</value>
+    <value>Arabellekteki tüm yer imlerini temizler</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.Find" xml:space="preserve">
     <value>Bul...</value>
@@ -7292,16 +7294,16 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>Artan Arama</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.NextBookmark" xml:space="preserve">
-    <value>Sonraki yer imi</value>
+    <value>Sonraki Yer İmi</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.NextBookmark.Description" xml:space="preserve">
-    <value>Sonraki yer imine git</value>
+    <value>Sonraki yer imine gider</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.PrevBookmark" xml:space="preserve">
     <value>Önceki Yer İmi</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.PrevBookmark.Description" xml:space="preserve">
-    <value>Önceki yer imine git</value>
+    <value>Önceki yer imine gider</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.Replace" xml:space="preserve">
     <value>Değiştir...</value>
@@ -7313,7 +7315,7 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>Yer imlerini ters çevir</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.ToggleBookmark.Description" xml:space="preserve">
-    <value>Mevcut satıra yer imi koy/kaldır</value>
+    <value>Satıra yer imi koyar/kaldırır</value>
   </data>
   <data name="XML.MainMenu.ToolMenu" xml:space="preserve">
     <value>Araçlar</value>
@@ -7428,6 +7430,6 @@ Başlatma hatası:</value>
     <value>Bölgeyi yorumlama</value>
   </data>
   <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Bu kaynak kullanılamıyor. Bu kaynağın amacı, çeviri veritabanını test etmektir. Bu yazıda bir satır sonu karakteri var.</value>
+    <value>Bu kaynak kullanılamıyor. Amacı, çeviri veritabanını test etmek ve bir satır kesmesi var.</value>
   </data>
 </root>

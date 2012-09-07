@@ -215,7 +215,8 @@ namespace SearchAndReplace
 					var start = document.GetLocation(result.Offset);
 					var end = document.GetLocation(result.Offset + result.Length);
 					var builder = SearchResultsPad.CreateInlineBuilder(start, end, document, highlighter);
-					results.Add(new AvalonEditSearchResultMatch(fileName, start, end, result.Offset, result.Length, builder, highlighter.DefaultTextColor, result));
+					var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
+					results.Add(new AvalonEditSearchResultMatch(fileName, start, end, result.Offset, result.Length, builder, defaultTextColor, result));
 				}
 				if (results.Count > 0)
 					return new SearchedFile(fileName, results);

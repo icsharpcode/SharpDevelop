@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return 1;
 			}
 			
-			return String.Compare(categoryX.Name, categoryY.Name);
+			return String.Compare(categoryX.Name, categoryY.Name, StringComparison.CurrentCultureIgnoreCase);
 		}
 	}
 }

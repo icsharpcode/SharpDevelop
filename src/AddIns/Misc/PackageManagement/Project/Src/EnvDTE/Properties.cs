@@ -8,7 +8,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Properties : MarshalByRefObject, IEnumerable<Property>
+	public class Properties : MarshalByRefObject, IEnumerable
 	{
 		IPropertyFactory propertyFactory;
 		
@@ -17,19 +17,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.propertyFactory = propertyFactory;
 		}
 		
-		public Property Item(string propertyName)
+		public Properties()
+		{
+		}
+		
+		public virtual Property Item(string propertyName)
 		{
 			return propertyFactory.CreateProperty(propertyName);
 		}
 		
-		public IEnumerator<Property> GetEnumerator()
+		public virtual IEnumerator GetEnumerator()
 		{
 			return propertyFactory.GetEnumerator();
-		}
-		
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
 		}
 	}
 }

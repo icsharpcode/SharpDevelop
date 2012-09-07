@@ -64,5 +64,12 @@ namespace PackageManagement.Tests.Helpers
 		{
 			throw new NotImplementedException();
 		}
+		
+		public bool IsSetDefaultRunspaceCalled;
+		
+		public void SetDefaultRunspace()
+		{
+			IsSetDefaultRunspaceCalled = true;
+		}
 	}
 }

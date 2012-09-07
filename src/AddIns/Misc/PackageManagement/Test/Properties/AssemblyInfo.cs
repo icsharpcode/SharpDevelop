@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System.Reflection;
+using NUnit.Framework;
 
 // Information about this assembly is defined by the following
 // attributes.
@@ -14,3 +15,6 @@ using System.Reflection;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+
+// Run unit tests on STA thread.
+[assembly: RequiresSTA]

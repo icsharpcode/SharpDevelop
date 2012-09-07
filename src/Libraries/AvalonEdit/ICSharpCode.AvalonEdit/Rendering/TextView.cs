@@ -17,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
 using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.NRefactory.Editor;
 
@@ -54,7 +55,6 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			backgroundRenderers = new ObserveAddRemoveCollection<IBackgroundRenderer>(BackgroundRenderer_Added, BackgroundRenderer_Removed);
 			columnRulerRenderer = new ColumnRulerRenderer(this);
 			this.Options = new TextEditorOptions();
-			this.columnRulerRenderer.SetRuler(Options.ColumnRulerPosition, ColumnRulerPen);
 			
 			Debug.Assert(singleCharacterElementGenerator != null); // assert that the option change created the builtin element generators
 			
@@ -1198,6 +1198,42 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		protected override void OnRender(DrawingContext drawingContext)
 		{
 			RenderBackground(drawingContext, KnownLayer.Background);
+			foreach (var line in visibleVisualLines) {
+				Brush currentBrush = null;
+				int startVC = 0;
+				int length = 0;
+				foreach (var element in line.Elements) {
+					if (currentBrush == null || !currentBrush.Equals(element.BackgroundBrush)) {
+						if (currentBrush != null) {
+							BackgroundGeometryBuilder builder = new BackgroundGeometryBuilder();
+							builder.AlignToWholePixels = true;
+							builder.CornerRadius = 3;
+							foreach (var rect in BackgroundGeometryBuilder.GetRectsFromVisualSegment(this, line, startVC, startVC + length))
+								builder.AddRectangle(this, rect);
+							Geometry geometry = builder.CreateGeometry();
+							if (geometry != null) {
+								drawingContext.DrawGeometry(currentBrush, null, geometry);
+							}
+						}
+						startVC = element.VisualColumn;
+						length = element.DocumentLength;
+						currentBrush = element.BackgroundBrush;
+					} else {
+						length += element.VisualLength;
+					}
+				}
+				if (currentBrush != null) {
+					BackgroundGeometryBuilder builder = new BackgroundGeometryBuilder();
+					builder.AlignToWholePixels = true;
+					builder.CornerRadius = 3;
+					foreach (var rect in BackgroundGeometryBuilder.GetRectsFromVisualSegment(this, line, startVC, startVC + length))
+						builder.AddRectangle(this, rect);
+					Geometry geometry = builder.CreateGeometry();
+					if (geometry != null) {
+						drawingContext.DrawGeometry(currentBrush, null, geometry);
+					}
+				}
+			}
 		}
 		
 		internal void RenderBackground(DrawingContext drawingContext, KnownLayer layer)

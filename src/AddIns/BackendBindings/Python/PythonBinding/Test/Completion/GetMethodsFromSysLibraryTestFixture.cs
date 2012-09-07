@@ -17,6 +17,7 @@ namespace PythonBinding.Tests.Completion
 		SysModuleCompletionItems completionItems;
 		MethodGroup exitMethodGroup;
 		MethodGroup displayHookMethodGroup;
+		MethodGroup setDefaultEncodingMethodGroup;
 		
 		[SetUp]
 		public void Init()
@@ -25,6 +26,7 @@ namespace PythonBinding.Tests.Completion
 			completionItems = new SysModuleCompletionItems(moduleType);
 			exitMethodGroup = completionItems.GetMethods("exit");
 			displayHookMethodGroup = completionItems.GetMethods("displayhook");
+			setDefaultEncodingMethodGroup = completionItems.GetMethods("setdefaultencoding");
 		}
 		
 		[Test]
@@ -60,11 +62,12 @@ namespace PythonBinding.Tests.Completion
 		[Test]
 		public void ExitMethodReturnsVoid()
 		{
-			IMethod method = displayHookMethodGroup[0];
+			IMethod method = exitMethodGroup[0];
 			Assert.AreEqual("Void", method.ReturnType.Name);
 		}
 		
 		[Test]
+		[Ignore("TODO displayhook function replaced by BuiltinFunction field")]
 		public void DisplayHookMethodDoesNotHaveCodeContextParameter()
 		{
 			IMethod method = displayHookMethodGroup[0];
@@ -73,6 +76,7 @@ namespace PythonBinding.Tests.Completion
 		}
 		
 		[Test]
+		[Ignore("TODO displayhook function replaced by BuiltinFunction field")]
 		public void DisplayHookMethodReturnsVoid()
 		{
 			IMethod method = displayHookMethodGroup[0];
@@ -85,6 +89,21 @@ namespace PythonBinding.Tests.Completion
 			MethodGroup methodGroup = completionItems.GetMethods("getdefaultencoding");
 			IMethod method = methodGroup[0];
 			Assert.AreEqual("String", method.ReturnType.Name);
+		}
+		
+		[Test]
+		public void SetDefaultEncodingMethodDoesNotHaveCodeContextParameter()
+		{
+			IMethod method = setDefaultEncodingMethodGroup[0];
+			IParameter parameter = method.Parameters[0];
+			Assert.AreEqual("name", parameter.Name);
+		}
+		
+		[Test]
+		public void SetDefaultEncodingMethodDReturnsVoid()
+		{
+			IMethod method = setDefaultEncodingMethodGroup[0];
+			Assert.AreEqual("Void", method.ReturnType.Name);
 		}
 	}
 }

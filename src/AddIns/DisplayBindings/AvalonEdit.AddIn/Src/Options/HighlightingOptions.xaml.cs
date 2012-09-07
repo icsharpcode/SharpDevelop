@@ -551,13 +551,11 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 							case ErrorPainter.WarningColorName:
 							case ErrorPainter.MessageColorName:
 								marker.MarkerTypes = TextMarkerTypes.SquigglyUnderline;
-								marker.ForegroundColor = item.Foreground;
-								marker.BackgroundColor = item.Background;
+								marker.MarkerColor = item.Foreground;
 								break;
 							default:
 								marker.MarkerTypes = TextMarkerTypes.None;
-								marker.ForegroundColor = item.Foreground;
-								marker.BackgroundColor = item.Background;
+								marker.MarkerColor = Colors.Transparent;
 								break;
 						}
 					}
@@ -587,29 +585,25 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		{
 			XElement[] items;
 			if (!CheckVersionAndFindCategory(document, out items) || items == null) {
-				Core.MessageService.ShowError("Settings version not supported!");
+				Core.MessageService.ShowError("${res:Dialog.HighlightingEditor.NotSupportedMessage}");
 				return;
 			}
-			bool? replaceCustomizations = null;
+			if (!MessageService.AskQuestion("${res:Dialog.HighlightingEditor.OverwriteCustomizationsMessage}"))
+				return;
+			ResetAllButtonClick(null, null);
 			foreach (var item in items) {
 				string key = item.Attribute("Name").Value;
 				var entry = ParseEntry(item);
 				foreach (var sdKey in mapping[key]) {
 					IHighlightingItem color;
 					if (FindSDColor(sdKey, out color)) {
-						if (color.IsCustomized) {
-							if (!replaceCustomizations.HasValue) {
-								replaceCustomizations =
-									MessageService.AskQuestion("There are already one or more existing customizations. " +
-									                           "Do you want to replace them with the imported values? " +
-									                           "Colors that are not yet customized will be imported anyway.");
-							}
-							if (replaceCustomizations == false)
-								continue;
-						}
 						color.Bold = entry.Item3;
-						color.Foreground = entry.Item1;
-						color.Background = entry.Item2;
+						color.UseDefaultForeground = !entry.Item1.HasValue;
+						if (entry.Item1 != null)
+							color.Foreground = entry.Item1.Value;
+						color.UseDefaultBackground = !entry.Item2.HasValue;
+						if (entry.Item2 != null)
+							color.Background = entry.Item2.Value;
 					}
 				}
 			}
@@ -670,7 +664,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{ "HTML Operator", "" },
 			{ "HTML Server-Side Script", "" },
 			{ "HTML Tag Delimiter", "" },
-			{ "Identifier", "" },
+			{ "Identifier", "C#.MethodCall" },
 			{ "Inactive Selected Text", "" },
 			{ "Indicator Margin", "" },
 			{ "Keyword", "C#.ThisOrBaseReference" },
@@ -689,6 +683,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{ "Keyword", "C#.GetSetAddRemove" },
 			{ "Keyword", "C#.TrueFalse" },
 			{ "Keyword", "C#.TypeKeywords" },
+			{ "Keyword", "C#.ValueTypes" },
+			{ "Keyword", "C#.ReferenceTypes" },
 			{ "Keyword", "VBNET.DateLiteral" },
 			{ "Keyword", "VBNET.Preprocessor" },
 			{ "Keyword", "VBNET.DataTypes" },
@@ -750,14 +746,16 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{ "XML Doc Tag", "C#.KnownDocTags" },
 			{ "XML Doc Comment", "VBNET.DocComment" },
 			{ "XML Doc Tag", "VBNET.KnownDocTags" },
-			{ "XML Name", "" },
-			{ "XML Text", "" },
+			{ "XML Name", "XML.XmlTag" },
+			{ "XML Name", "XML.XmlDeclaration" },
+			{ "XML Name", "XML.DocType" },
+			{ "XML Text", "XML." + CustomizableHighlightingColorizer.DefaultTextAndBackground },
 		};
 		
-		Tuple<Color, Color, bool> ParseEntry(XElement element)
+		Tuple<Color?, Color?, bool> ParseEntry(XElement element)
 		{
-			Color fore = Colors.Transparent;
-			Color back = Colors.Transparent;
+			Color? fore = null;
+			Color? back = null;
 			bool isBold = false;
 			
 			var attribute = element.Attribute("Foreground");
@@ -773,22 +771,24 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			return Tuple.Create(fore, back, isBold);
 		}
 		
-		Color ParseColor(string s)
+		Color? ParseColor(string s)
 		{
 			if (string.IsNullOrWhiteSpace(s))
-				return Colors.Transparent;
+				return null;
 			if (s.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
 				s = s.Substring(2);
-			if (s.Substring(0, 2) == "02")
+			if (s.Length < 8)
+				return null;
+			if (string.CompareOrdinal(s.Substring(0, 2), "02") == 0)
+				return null;
+			byte r, g, b;
+			if (!byte.TryParse(s.Substring(2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out b))
 				return Colors.Transparent;
-			try {
-				byte b = byte.Parse(s.Substring(2, 2), NumberStyles.HexNumber);
-				byte g = byte.Parse(s.Substring(4, 2), NumberStyles.HexNumber);
-				byte r = byte.Parse(s.Substring(6, 2), NumberStyles.HexNumber);
-				return Color.FromRgb(r, g, b);
-			} catch (FormatException) {
+			if (!byte.TryParse(s.Substring(4, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out g))
 				return Colors.Transparent;
-			}
+			if (!byte.TryParse(s.Substring(6, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out r))
+				return Colors.Transparent;
+			return Color.FromRgb(r, g, b);
 		}
 		
 		bool CheckVersionAndFindCategory(XDocument document, out XElement[] categoryItems)
@@ -836,6 +836,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			XElement root = p.Save();
 			root.SetAttributeValue("version", Properties.FileVersion.ToString());
 			new XDocument(root).Save(fileName);
+		}
+		
+		void ResetAllButtonClick(object sender, RoutedEventArgs e)
+		{
+			customizationList.Clear();
+			LanguageComboBox_SelectionChanged(null, null);
+			UpdatePreview();
 		}
 	}
 }

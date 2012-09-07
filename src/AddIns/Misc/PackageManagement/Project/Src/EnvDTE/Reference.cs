@@ -21,10 +21,24 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return referenceProjectItem.Name; }
 		}
 		
+		public string Path {
+			get { return referenceProjectItem.FileName; }
+		}
+		
 		public void Remove()
 		{
 			project.RemoveReference(referenceProjectItem);
 			project.Save();
+		}
+		
+		public Project SourceProject {
+			get {
+				var projectReference = referenceProjectItem as ProjectReferenceProjectItem;
+				if (projectReference != null) {
+					return new Project(projectReference.ReferencedProject as MSBuildBasedProject);
+				}
+				return null;
+			}
 		}
 	}
 }

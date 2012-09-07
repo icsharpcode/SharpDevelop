@@ -20,14 +20,25 @@ namespace PackageManagement.Tests.EnvDTE
 		void CreateDTE()
 		{
 			fakeProjectService = new FakePackageManagementProjectService();
-			fakeProjectService.OpenSolution = new SD.Solution(new SD.MockProjectChangeWatcher());
+			OpenSolution(@"d:\projects\MyProject\MyProject.sln");
 			fakeFileService = new FakeFileService(null);
 			dte = new DTE(fakeProjectService, fakeFileService);
+		}
+		
+		void OpenSolution(string fileName)
+		{
+			fakeProjectService.OpenSolution = new SD.Solution(new SD.MockProjectChangeWatcher());
+			SetOpenSolutionFileName(fileName);
 		}
 		
 		void NoOpenSolution()
 		{
 			fakeProjectService.OpenSolution = null;
+		}
+		
+		void SetOpenSolutionFileName(string fileName)
+		{
+			fakeProjectService.OpenSolution.FileName = fileName;
 		}
 		
 		TestableProject AddProjectToSolution(string projectName)
@@ -42,7 +53,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateDTE();
 			string fileName = @"d:\projects\myproject\myproject.sln";
-			fakeProjectService.OpenSolution.FileName = fileName;
+			SetOpenSolutionFileName(fileName);
 			
 			string fullName = dte.Solution.FullName;
 			
@@ -54,7 +65,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateDTE();
 			string expectedFileName = @"d:\projects\myproject\myproject.sln";
-			fakeProjectService.OpenSolution.FileName = expectedFileName;
+			SetOpenSolutionFileName(expectedFileName);
 			
 			string fileName = dte.Solution.FileName;
 			
@@ -146,6 +157,30 @@ namespace PackageManagement.Tests.EnvDTE
 			string version = dte.Version;
 			
 			Assert.AreEqual("10.0", version);
+		}
+		
+		[Test]
+		public void Solution_SetGlobalsVariableValueAndThenAccessSolutionPropertyAgainAndGetSolutionGlobalsVariable_GlobalsVariableValueReturned()
+		{
+			CreateDTE();
+			
+			dte.Solution.Globals.set_VariableValue("test", "test-value");
+			object variableValue = dte.Solution.Globals.get_VariableValue("test");
+			
+			Assert.AreEqual("test-value", variableValue);
+		}
+		
+		[Test]
+		public void Solution_OpenSolutionChangesAfterSolutionPropertyAccessed_SolutionReturnedForCurrentOpenSolution()
+		{
+			CreateDTE();
+			SetOpenSolutionFileName(@"d:\projects\first\first.sln");
+			Solution firstSolution = dte.Solution;
+			
+			OpenSolution(@"d:\projects\second\second.sln");
+			
+			string fileName = dte.Solution.FileName;
+			Assert.AreEqual(@"d:\projects\second\second.sln", fileName);
 		}
 	}
 }

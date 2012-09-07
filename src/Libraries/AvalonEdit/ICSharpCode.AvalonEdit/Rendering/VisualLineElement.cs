@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
 
 using ICSharpCode.AvalonEdit.Document;
@@ -61,6 +62,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <see cref="VisualLineElement"/>.
 		/// </summary>
 		public VisualLineElementTextRunProperties TextRunProperties { get; private set; }
+		
+		/// <summary>
+		/// Gets/sets the brush used for the background of this <see cref="VisualLineElement" />.
+		/// </summary>
+		public Brush BackgroundBrush { get; set; }
 		
 		internal void SetTextRunProperties(VisualLineElementTextRunProperties p)
 		{

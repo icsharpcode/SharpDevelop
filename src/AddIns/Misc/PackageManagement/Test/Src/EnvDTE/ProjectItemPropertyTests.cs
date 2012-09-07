@@ -119,20 +119,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProjectItemProperties();
 			
-			var projectItemProperties = new List<Property>(properties);
-			var property = projectItemProperties.Find(p => p.Name == "CopyToOutputDirectory");
-			
-			Assert.AreEqual("CopyToOutputDirectory", property.Name);
-		}
-		
-		[Test]
-		public void GetEnumerator_FindCopyToOutputDirectoryPropertyFromUntypedEnumerator_ReturnsPropertyWithCopyToOutputDirectoryName()
-		{
-			CreateProjectItemProperties();
-			
-			var projectItemProperties = properties as IEnumerable;
-			
-			AssertContainsProperty("CopyToOutputDirectory", projectItemProperties);
+			AssertContainsProperty("CopyToOutputDirectory", properties);
 		}
 		
 		[Test]
@@ -140,10 +127,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProjectItemProperties();
 			
-			var projectItemProperties = new List<Property>(properties);
-			var property = projectItemProperties.Find(p => p.Name == "CustomTool");
-			
-			Assert.AreEqual("CustomTool", property.Name);
+			AssertContainsProperty("CustomTool", properties);
 		}
 		
 		[Test]
@@ -162,10 +146,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProjectItemProperties();
 			
-			var projectItemProperties = new List<Property>(properties);
-			var property = projectItemProperties.Find(p => p.Name == "FullPath");
-			
-			Assert.AreEqual("FullPath", property.Name);
+			AssertContainsProperty("FullPath", properties);
 		}
 	}
 }

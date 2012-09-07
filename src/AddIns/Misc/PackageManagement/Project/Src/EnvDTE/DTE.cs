@@ -13,6 +13,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	{
 		IPackageManagementProjectService projectService;
 		IPackageManagementFileService fileService;
+		Solution solution;
 		
 		public DTE()
 			: this(new PackageManagementProjectService(), new PackageManagementFileService())
@@ -36,7 +37,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public Solution Solution {
 			get {
 				if (IsSolutionOpen) {
-					return new Solution(projectService.OpenSolution);
+					CreateSolution();
+					return solution;
 				}
 				return null;
 			}
@@ -44,6 +46,21 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		bool IsSolutionOpen {
 			get { return projectService.OpenSolution != null; }
+		}
+		
+		void CreateSolution()
+		{
+			if (!IsOpenSolutionAlreadyCreated()) {
+				solution = new Solution(projectService);
+			}
+		}
+		
+		bool IsOpenSolutionAlreadyCreated()
+		{
+			if (solution != null) {
+				return solution.IsOpen;
+			}
+			return false;
 		}
 		
 		public ItemOperations ItemOperations { get; private set; }
@@ -55,19 +72,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public object ActiveSolutionProjects {
-			get { return GetProjectsInSolution().ToArray(); }
-		}
-		
-		IEnumerable<object> GetProjectsInSolution()
-		{
-			foreach (SD.MSBuildBasedProject msbuildProject in GetOpenMSBuildProjects()) {
-				yield return new Project(msbuildProject);
+			get {
+				if (IsSolutionOpen) {
+					return Solution.Projects.ToArray();
+				}
+				return new Project[0];
 			}
 		}
 		
-		IEnumerable<SD.IProject> GetOpenMSBuildProjects()
-		{
-			return projectService.GetOpenProjects();
+		public SourceControl SourceControl {
+			get { return null; }
 		}
 	}
 }

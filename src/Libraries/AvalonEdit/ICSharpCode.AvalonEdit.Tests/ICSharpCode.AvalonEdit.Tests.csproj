@@ -95,7 +95,6 @@
     <Compile Include="Utils\IndentationStringTests.cs" />
     <Compile Include="Utils\RopeTests.cs" />
     <Compile Include="WeakReferenceTests.cs" />
-    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

@@ -31,7 +31,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <summary>
 		/// This layer contains the blinking caret.
 		/// </summary>
-		/// <remarks>This layer is above the Text layer. All items on this layer will blink with the same frequency as the caret.</remarks>
+		/// <remarks>This layer is above the Text layer.</remarks>
 		Caret
 	}
 	

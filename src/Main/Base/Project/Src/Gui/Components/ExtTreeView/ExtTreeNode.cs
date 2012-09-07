@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		protected bool isInitialized    = false;
 		string  image                    = null;
 		
-		internal bool IsInitialized {
+		public bool IsInitialized {
 			get {
 				return isInitialized;
 			}

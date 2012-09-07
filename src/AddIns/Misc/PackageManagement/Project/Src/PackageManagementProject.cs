@@ -126,7 +126,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public IEnumerable<IPackage> GetPackagesInReverseDependencyOrder()
 		{
-			var packageSorter = new PackageSorter();
+			var packageSorter = new PackageSorter(null);
 			return packageSorter
 				.GetPackagesByDependencyOrder(projectManager.LocalRepository)
 				.Reverse();

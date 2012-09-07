@@ -91,10 +91,12 @@ namespace ICSharpCode.AvalonEdit.Folding
 			int pos = textViews.IndexOf(textView);
 			if (pos < 0)
 				throw new ArgumentException();
+			textViews.RemoveAt(pos);
 			foreach (FoldingSection fs in foldings) {
 				if (fs.collapsedSections != null) {
 					var c = new CollapsedLineSection[textViews.Count];
 					Array.Copy(fs.collapsedSections, 0, c, 0, pos);
+					fs.collapsedSections[pos].Uncollapse();
 					Array.Copy(fs.collapsedSections, pos + 1, c, pos, c.Length - pos);
 					fs.collapsedSections = c;
 				}

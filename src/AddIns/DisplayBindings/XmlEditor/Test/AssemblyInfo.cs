@@ -3,6 +3,7 @@
 
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using NUnit.Framework;
 
 // Information about this assembly is defined by the following
 // attributes.
@@ -27,3 +28,5 @@ using System.Runtime.CompilerServices;
 // numbers with the '*' character (the default):
 
 [assembly: AssemblyVersion("2.0.0.1")]
+// Run unit tests on STA thread.
+[assembly: RequiresSTA]

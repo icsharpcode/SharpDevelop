@@ -17,7 +17,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public List<PackageDependency> DependenciesList = 
 			new List<PackageDependency>();
-
+		
 		public List<IPackageAssemblyReference> AssemblyReferenceList =
 			new List<IPackageAssemblyReference>();
 		
@@ -37,6 +37,7 @@ namespace ICSharpCode.PackageManagement.Design
 			this.Description = String.Empty;
 			this.Version = new SemanticVersion(version);
 			this.Listed = true;
+			this.IsLatestVersion = true;
 		}
 		
 		public static FakePackage CreatePackageWithVersion(string version)
@@ -75,10 +76,6 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public IEnumerable<string> Owners {
 			get { return OwnersList; }
-		}
-		
-		public IEnumerable<PackageDependency> Dependencies {
-			get { return DependenciesList; }
 		}
 		
 		public IEnumerable<IPackageFile> GetFiles()
@@ -158,5 +155,13 @@ namespace ICSharpCode.PackageManagement.Design
 		public string Copyright { get; set; }
 		public bool IsAbsoluteLatestVersion { get; set; }
 		public bool Listed { get; set; }
+		
+		public IEnumerable<PackageDependencySet> DependencySets {
+			get {
+				return new PackageDependencySet[] {
+					new PackageDependencySet(null, DependenciesList)
+				};
+			}
+		}
 	}
 }

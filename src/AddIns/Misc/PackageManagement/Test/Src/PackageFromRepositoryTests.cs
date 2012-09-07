@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 
 using ICSharpCode.PackageManagement;
@@ -212,12 +213,11 @@ namespace PackageManagement.Tests
 		public void Dependencies_WrappedPackageHasOneDependency_ReturnsOneDependency()
 		{
 			CreatePackage();
-			fakePackage.DependenciesList.Add(new PackageDependency("Test"));
+			fakePackage.AddDependency("Test");
 			
 			IEnumerable<PackageDependency> dependencies = package.Dependencies;
-			IEnumerable<PackageDependency> expectedDependencies = fakePackage.Dependencies;
 			
-			CollectionAssert.AreEqual(expectedDependencies, dependencies);
+			CollectionAssert.AreEqual(fakePackage.DependenciesList, dependencies);
 		}
 		
 		[Test]
@@ -268,7 +268,7 @@ namespace PackageManagement.Tests
 		public void HasDependencies_WrappedPackageHasOneDependency_ReturnsTrue()
 		{
 			CreatePackage();
-			fakePackage.DependenciesList.Add(new PackageDependency("Test"));
+			fakePackage.AddDependency("Test");
 			bool result = package.HasDependencies;
 			
 			Assert.IsTrue(result);
@@ -368,6 +368,19 @@ namespace PackageManagement.Tests
 			bool result = package.Listed;
 			
 			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void DependencySets_WrappedPackageIsListed_ReturnsTrue()
+		{
+			CreatePackage();
+			fakePackage.AddDependency("Test");
+			List<PackageDependencySet> expectedDependencies = fakePackage.DependencySets.ToList();
+			
+			List<PackageDependencySet> dependencies = package.DependencySets.ToList();
+			
+			Assert.AreEqual(1, dependencies.Count);
+			Assert.AreEqual(expectedDependencies[0].Dependencies, dependencies[0].Dependencies);
 		}
 	}
 }

@@ -1499,6 +1499,12 @@ Ejemplo: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.HighlightingEditor.ColorDlg.Italic" xml:space="preserve">
     <value>Itálica</value>
   </data>
+  <data name="Dialog.HighlightingEditor.Export" xml:space="preserve">
+    <value>Exportar colores de resaltado</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Import" xml:space="preserve">
+    <value>Importar colores de resaltado</value>
+  </data>
   <data name="Dialog.HighlightingEditor.Properties.Value" xml:space="preserve">
     <value>Valor</value>
   </data>
@@ -1866,6 +1872,9 @@ Ejemplo: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Paso por Instrucciones</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Stepping.DecompileCodeWithoutSymbols" xml:space="preserve">
+    <value>Decompilar código sin símbolos</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping.EnableJustMyCode" xml:space="preserve">
     <value>Usar 'Just My Code' al pasar por instrucciones</value>
   </data>
@@ -2179,10 +2188,13 @@ Ejemplo: "120", "MainClass", "Main.cs, 120".</value>
     <value>Ninguno</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.MarkersGroupBox" xml:space="preserve">
-    <value>Marcadores y reglas</value>
+    <value>Marcadores</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.PanelName" xml:space="preserve">
     <value>Marcadores y reglas</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.RulersGroupBox" xml:space="preserve">
+    <value>Reglas</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.ShowHiddenDefinitionsCheckBox" xml:space="preserve">
     <value>Mostrar &amp;definiciones ocultas (solo corchetes)</value>
@@ -3383,6 +3395,9 @@ Por favor configure la ubicación del archivo ejecutable de NAnt en las opciones
   <data name="ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError" xml:space="preserve">
     <value>El elemento seleccionado no es una clase o miembro sobrescribible, así que no se puede mostrar ningún símbolo derivado.</value>
   </data>
+  <data name="ICSharpCode.Refactoring.NoClassUnderCursorError" xml:space="preserve">
+    <value>No se puedo encontrar la definición de tipo en la posición del cursor.</value>
+  </data>
   <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
     <value>Enviar Línea a la Consola Ruby</value>
   </data>
@@ -3779,6 +3794,9 @@ ESTO NO AFECTA EL CÓDIGO FUENTE.</value>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.LoadErrorCheckSourceCodeForErrors" xml:space="preserve">
     <value>Falló la carga del diseñador. Verifique que la sintaxis del código sea correcta y que todas las referencias estén disponibles.</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.ReportFlushErrors" xml:space="preserve">
+    <value>Uno o más errores ocurrieron mientras se intentaba mostrar el contenido del diseñador. Esto puede ser debido a una excepción no controlada en un componente personalizado o de terceros en el control/formulario.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.ToolboxProvider.CantLoadSidbarComponentLibraryWarning" xml:space="preserve">
     <value>No se puede cargar un componente de la biblioteca de componentes de la barra lateral.
 Ningún componente de Formularios de Windows estará disponible, por favor configure la barra lateral manualmente. (clic derecho en una categoría de barra lateral -&gt; Personalizar Barra Lateral)</value>
@@ -3992,6 +4010,12 @@ Utilice solamente letras, dígitos, espacio, '.' ó '_'.</value>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Culture.Description" xml:space="preserve">
     <value>La cultura soportada por la referencia</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.EmbedInteropTypes" xml:space="preserve">
+    <value>Tipos de interoperabilidad embebidos</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.EmbedInteropTypes.Description" xml:space="preserve">
+    <value>Especifica si tipos de interoperabilidad COM definidos en el ensamblado están embebidos en el ensamblado destino.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.LocalCopy" xml:space="preserve">
     <value>Copia local</value>
   </data>
@@ -4009,6 +4033,12 @@ Utilice solamente letras, dígitos, espacio, '.' ó '_'.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.PublicKeyToken.Description" xml:space="preserve">
     <value>La Ficha (Token) de la llave Pública</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.ReferenceOutputAssembly" xml:space="preserve">
+    <value>Ensamblado referenciado</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.ReferenceOutputAssembly.Description" xml:space="preserve">
+    <value>Si se establece en falso, esta referencia especifica solo una dependencia de orden de generación y no causa una referencia al ensamblado.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.SpecificVersion" xml:space="preserve">
     <value>Versión Específica</value>
@@ -4055,6 +4085,9 @@ Utilice solamente letras, dígitos, espacio, '.' ó '_'.</value>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Cargando ${Filename}...</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.CloseSolution" xml:space="preserve">
+    <value>Cerrar Solución</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
     <value>Mantener abierta la solución antigua</value>
   </data>
@@ -4087,6 +4120,14 @@ Utilice solamente letras, dígitos, espacio, '.' ó '_'.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
     <value>Actualización de Proyecto</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpdateOnLoadDueToMissingMSBuild" xml:space="preserve">
+    <value>El proyecto '${ProjectName}' esta haciendo referencia a MSBuild ${OldToolsVersion}, pero esa versión no esta instalada.
+¿Quiere actualizar el proyecto a MSBuild ${NewToolsVersion}?
+El proyecto no puede ser abierto sin ser actualizado.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpdateToMSBuildButton" xml:space="preserve">
+    <value>Actualizar a MSBuild ${NewToolsVersion}</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
     <value>Esta solución fue creada usando una versión previa de SharpDevelop.
@@ -4169,7 +4210,7 @@ Vaya a 'Opciones-&gt;Estilo Visual' y cambie el lenguaje del ambiente.</value>
     <value>No se encontró el proceso ASP.NET/IIS (Express) ({0}).</value>
   </data>
   <data name="ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
-    <value>No hay ninguna url de proyecto ni programa externo especificado. Verifique el servidor web en la pestaña Propiedades del Proyecto - Depurar.</value>
+    <value>No hay ningún programa externo ni URL especificada. Verifique el servidor web en la pestaña Web de las propiedades del proyecto.</value>
   </data>
   <data name="ICSharpCode.WebProjectOptionsPanel.Port" xml:space="preserve">
     <value>Puerto de servidor:</value>
@@ -4788,7 +4829,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>No pude cambiar a una función sin símbolos.</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions" xml:space="preserve">
-    <value>No puede cambiar a una función sin símbolos sin haber habilitado opciones de decompilación de código.</value>
+    <value>No puede cambiar a una función sin símbolos de depuración. Recompile con símbolos o habilite "Decompilar código sin símbolos" en las opciones.</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ExternalMethods" xml:space="preserve">
     <value>[Métodos Externos]</value>
@@ -4846,6 +4887,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.DisableBreakpoint" xml:space="preserve">
     <value>Deshabilitar punto de interrupción</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.EditCondition" xml:space="preserve">
+    <value>Editar condición...</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.EnableBreakpoint" xml:space="preserve">
     <value>Habilitar punto de interrupción</value>
@@ -4946,6 +4990,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.LocalVariables.CopyToClipboard" xml:space="preserve">
     <value>Copiar valor al portapapeles</value>
   </data>
+  <data name="MainWindow.Windows.Debug.LocalVariables.NameColumn" xml:space="preserve">
+    <value>Nombre</value>
+  </data>
   <data name="MainWindow.Windows.Debug.LocalVariables.NonPublicMembers" xml:space="preserve">
     <value>Miembros No Públicos</value>
   </data>
@@ -4966,6 +5013,12 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.LocalVariables.StaticMembers" xml:space="preserve">
     <value>Miembros Estáticos (Static)</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.LocalVariables.TypeColumn" xml:space="preserve">
+    <value>Tipo</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.LocalVariables.ValueColumn" xml:space="preserve">
+    <value>Valor</value>
   </data>
   <data name="MainWindow.Windows.Debug.MemoryPad" xml:space="preserve">
     <value>Memoria</value>
@@ -5342,6 +5395,30 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
     <value>Abrir carpeta contenedora en el Explorador</value>
   </data>
+  <data name="OpenFileTabEventHandler.OpenCommandPromptHere" xml:space="preserve">
+    <value>Abrir ventana de línea de comandos aquí</value>
+  </data>
+  <data name="PortableLibrary.ChooseTargetFrameworks" xml:space="preserve">
+    <value>elija frameworks de destino</value>
+  </data>
+  <data name="PortableLibrary.CouldNotFindTools" xml:space="preserve">
+    <value>No se pudieron encontrar Herramientas de Bibliotecas de Clases Portables.</value>
+  </data>
+  <data name="PortableLibrary.PortableSubset" xml:space="preserve">
+    <value>.NET Portable Subset</value>
+  </data>
+  <data name="PortableLibrary.SelectAtLeastTwoFrameworks" xml:space="preserve">
+    <value>Dos a más frameworks deben ser seleccionados.</value>
+  </data>
+  <data name="PortableLibrary.SelectedProfile" xml:space="preserve">
+    <value>Perfil seleccionado:</value>
+  </data>
+  <data name="PortableLibrary.SelectProfileDialog.Title" xml:space="preserve">
+    <value>Seleccione Perfil de Bibliotecas Portable</value>
+  </data>
+  <data name="PortableLibrary.ToolsInstallationHelp" xml:space="preserve">
+    <value>Para instalar las Herramientas de Bibliotecas de Clases Portables sin instalar Visual Studio, descargue el archivo (PortableLibraryTools.exe) en su computadora, y ejecute la instalación desde una ventana de línea de comandos. Incluya el operador /buildmachine.</value>
+  </data>
   <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
     <value>Colapsar todos los nodos</value>
   </data>
@@ -5476,6 +5553,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ProjectComponent.ContextMenu.RunProject" xml:space="preserve">
     <value>&amp;Ejecutar Proyecto</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.RunProjectWithoutDebugger" xml:space="preserve">
+    <value>Ejecutar Proyecto sin Depurador</value>
   </data>
   <data name="ProjectComponent.ContextMenu.SetAsStartupProject" xml:space="preserve">
     <value>Establecer como Proyecto &amp;Inicial</value>
@@ -6593,6 +6673,12 @@ Los archivos de recursos han sido renombrados/movidos convenientemente.</value>
   </data>
   <data name="Templates.Project.GtkSharpProject.Name" xml:space="preserve">
     <value>Aplicación Gtk#</value>
+  </data>
+  <data name="Templates.Project.PortableLibrary.Description" xml:space="preserve">
+    <value>Biblioteca que puede ser usada en Windows,  Silverlight, Windows Phone, y Xbox.</value>
+  </data>
+  <data name="Templates.Project.PortableLibrary.Name" xml:space="preserve">
+    <value>Biblioteca de Clases Portable</value>
   </data>
   <data name="Templates.Project.SetupProject.Description" xml:space="preserve">
     <value>Un proyecto de instalador de Windows para crear un instalador MSI.</value>

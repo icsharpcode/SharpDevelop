@@ -72,7 +72,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public IEnumerable<IPackage> GetPackagesByDependencyOrder()
 		{
-			var packageSorter = new PackageSorter();
+			var packageSorter = new PackageSorter(null);
 			return packageSorter.GetPackagesByDependencyOrder(repository);
 		}
 		

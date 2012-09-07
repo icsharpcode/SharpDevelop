@@ -11,7 +11,7 @@ using NuGet;
 namespace ICSharpCode.PackageManagement.Design
 {
 	public class FakePackageAssemblyReference : IPackageAssemblyReference
-	{		
+	{
 		public FrameworkName TargetFramework {
 			get {
 				throw new NotImplementedException();
@@ -32,6 +32,12 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public IEnumerable<FrameworkName> SupportedFrameworks {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public string EffectivePath {
 			get {
 				throw new NotImplementedException();
 			}

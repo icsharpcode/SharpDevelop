@@ -129,5 +129,12 @@ namespace PackageManagement.Tests.Helpers
 			PackageSourcePassedToGetRepository = packageSource;
 			return FakePackageRepository;
 		}
+		
+		public bool IsSetDefaultRunspaceCalled;
+		
+		public void SetDefaultRunspace()
+		{
+			IsSetDefaultRunspaceCalled = true;
+		}
 	}
 }

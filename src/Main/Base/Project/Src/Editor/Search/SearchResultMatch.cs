@@ -120,6 +120,14 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		{
 			return match.ReplaceWith(pattern);
 		}
+
+
+
+
+
+
+
+
 	}
 	
 	public class SearchedFile

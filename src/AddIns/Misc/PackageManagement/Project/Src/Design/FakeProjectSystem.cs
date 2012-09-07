@@ -2,8 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Versioning;
+
 using NuGet;
 
 namespace ICSharpCode.PackageManagement.Design
@@ -11,9 +13,7 @@ namespace ICSharpCode.PackageManagement.Design
 	public class FakeProjectSystem : FakeFileSystem, IProjectSystem
 	{
 		public FrameworkName TargetFramework {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return new FrameworkName(".NETFramework, Version=v4.0"); }
 		}
 		
 		public string ProjectName {

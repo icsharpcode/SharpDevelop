@@ -13,9 +13,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.Name = name;
 		}
 		
-		public string Name { get; private set; }
+		public Property()
+		{
+		}
 		
-		public object Value {
+		public virtual string Name { get; private set; }
+		
+		public virtual object Value {
 			get { return GetValue(); }
 			set { SetValue(value); }
 		}
@@ -29,7 +33,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 		}
 		
-		public object Object {
+		public virtual object Object {
 			get { return GetObject(); }
 			set { }
 		}

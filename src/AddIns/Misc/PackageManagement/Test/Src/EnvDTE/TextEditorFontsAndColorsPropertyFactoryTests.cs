@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.PackageManagement.EnvDTE;
 using NUnit.Framework;
+using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests.EnvDTE
 {
@@ -23,8 +24,7 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void AssertPropertiesContainProperty(string expectedPropertyName)
 		{
-			var propertiesList = new List<Property>(properties);
-			Property property = propertiesList.Find(p => p.Name == expectedPropertyName);
+			Property property = PropertiesHelper.FindProperty(properties, expectedPropertyName);
 			Assert.IsNotNull(property, "Unable to find property: " + expectedPropertyName);
 		}
 		

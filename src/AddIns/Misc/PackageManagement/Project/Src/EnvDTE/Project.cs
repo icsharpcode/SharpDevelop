@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+using System.Linq;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Construction;
 using SD = ICSharpCode.SharpDevelop.Project;
@@ -36,7 +38,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			
 			CreateProperties();
 			Object = new ProjectObject(this);
-			ProjectItems = new ProjectItems(this, fileService);
+			ProjectItems = new ProjectItems(this, this, fileService);
+		}
+		
+		public Project()
+		{
 		}
 		
 		void CreateProperties()
@@ -45,23 +51,32 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			Properties = new Properties(propertyFactory);
 		}
 		
-		public string Name {
+		public virtual string Name {
 			get { return MSBuildProject.Name; }
 		}
+	
+		public virtual string UniqueName {
+			get { return GetUniqueName(); }
+		}
 		
-		public string FileName {
+		string GetUniqueName()
+		{
+			return FileUtility.GetRelativePath(MSBuildProject.ParentSolution.Directory, FileName);
+		}
+		
+		public virtual string FileName {
 			get { return MSBuildProject.FileName; }
 		}
 		
-		public string FullName {
+		public virtual string FullName {
 			get { return FileName; }
 		}
 		
-		public ProjectObject Object { get; private set; }
-		public Properties Properties { get; private set; }
-		public ProjectItems ProjectItems { get; private set; }
+		public virtual object Object { get; private set; }
+		public virtual Properties Properties { get; private set; }
+		public virtual ProjectItems ProjectItems { get; private set; }
 		
-		public DTE DTE {
+		public virtual DTE DTE {
 			get {
 				if (dte == null) {
 					dte = new DTE(projectService, fileService);
@@ -70,28 +85,36 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 		}
 		
-		public string Type {
+		public virtual string Type {
 			get { return GetProjectType(); }
 		}
 		
 		string GetProjectType()
 		{
-			var projectType = new ProjectType(this);
-			return projectType.Type;
+			return new ProjectType(this).Type;
+		}
+		
+		public virtual string Kind {
+			get { return GetProjectKind(); }
+		}
+		
+		string GetProjectKind()
+		{
+			return new ProjectKind(this).Kind;
 		}
 		
 		internal MSBuildBasedProject MSBuildProject { get; private set; }
 		
-		public void Save()
+		public virtual void Save()
 		{
 			projectService.Save(MSBuildProject);
 		}
 		
-		internal void AddReference(string path)
+		internal virtual void AddReference(string path)
 		{
 			if (!HasReference(path)) {
 				var referenceItem = new ReferenceProjectItem(MSBuildProject, path);
-				projectService.AddProjectItem(MSBuildProject, referenceItem);
+				AddProjectItemToMSBuildProject(referenceItem);
 			}
 		}
 		
@@ -103,6 +126,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				}
 			}
 			return false;
+		}
+		
+		void AddProjectItemToMSBuildProject(SD.ProjectItem projectItem)
+		{
+			projectService.AddProjectItem(MSBuildProject, projectItem);
 		}
 		
 		internal IEnumerable<SD.ProjectItem> GetReferences()
@@ -120,28 +148,51 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			projectService.RemoveProjectItem(MSBuildProject, referenceItem);
 		}
 		
-		internal void AddFile(string include)
+		internal void AddFileProjectItemUsingPathRelativeToProject(string include)
 		{
-			var fileProjectItem = CreateFileProjectItem(include);
-			projectService.AddProjectItem(MSBuildProject, fileProjectItem);
+			FileProjectItem fileProjectItem = CreateFileProjectItemUsingPathRelativeToProject(include);
+			AddProjectItemToMSBuildProject(fileProjectItem);
 		}
 		
-		FileProjectItem CreateFileProjectItem(string include)
+		internal ProjectItem AddFileProjectItemUsingFullPath(string path)
+		{
+			FileProjectItem fileProjectItem = CreateFileProjectItemUsingFullPath(path);
+			fileProjectItem.FileName = path;
+			AddProjectItemToMSBuildProject(fileProjectItem);
+			return new ProjectItem(this, fileProjectItem);
+		}
+		
+		FileProjectItem CreateFileProjectItemUsingPathRelativeToProject(string include)
 		{
 			ItemType itemType = GetDefaultItemType(include);
-			return CreateFileProjectItem(itemType, include);
+			return CreateFileProjectItemUsingPathRelativeToProject(itemType, include);
 		}
 		
 		ItemType GetDefaultItemType(string include)
 		{
-			return MSBuildProject.GetDefaultItemType(include);
+			return MSBuildProject.GetDefaultItemType(Path.GetFileName(include));
 		}
 		
-		FileProjectItem CreateFileProjectItem(ItemType itemType, string include)
+		FileProjectItem CreateFileProjectItemUsingPathRelativeToProject(ItemType itemType, string include)
 		{
-			var fileProjectItem = new FileProjectItem(MSBuildProject, itemType);
-			fileProjectItem.Include = include;
-			return fileProjectItem;
+			var fileItem = new FileProjectItem(MSBuildProject, itemType) {
+				Include = include
+			};
+			if (IsLink(include)) {
+				fileItem.SetEvaluatedMetadata("Link", Path.GetFileName(include));
+			}
+			return fileItem;
+		}
+		
+		bool IsLink(string include)
+		{
+			return include.StartsWith("..");
+		}
+		
+		FileProjectItem CreateFileProjectItemUsingFullPath(string path)
+		{
+			string relativePath = GetRelativePath(path);
+			return CreateFileProjectItemUsingPathRelativeToProject(relativePath);
 		}
 		
 		internal IList<string> GetAllPropertyNames()
@@ -151,8 +202,83 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				foreach (ProjectPropertyElement propertyElement in MSBuildProject.MSBuildProjectFile.Properties) {
 					names.Add(propertyElement.Name);
 				}
+				names.Add("OutputFileName");
 			}
 			return names;
+		}
+		
+		public virtual CodeModel CodeModel {
+			get { return new CodeModel(projectService.GetProjectContent(MSBuildProject) ); }
+		}
+		
+		public virtual ConfigurationManager ConfigurationManager {
+			get { return new ConfigurationManager(this); }
+		}
+		
+		internal virtual string GetLowercaseFileExtension()
+		{
+			return Path.GetExtension(FileName).ToLowerInvariant();
+		}
+		
+		internal virtual void DeleteFile(string fileName)
+		{
+			fileService.RemoveFile(fileName);
+		}
+		
+		public ProjectItem AddDirectoryProjectItemUsingFullPath(string directory)
+		{
+			AddDirectoryProjectItemsRecursively(directory);
+			return DirectoryProjectItem.CreateDirectoryProjectItemFromFullPath(this, directory);
+		}
+		
+		void AddDirectoryProjectItemsRecursively(string directory)
+		{
+			string[] files = fileService.GetFiles(directory);
+			string[] childDirectories = fileService.GetDirectories(directory);
+			if (files.Any()) {
+				foreach (string file in files) {
+					AddFileProjectItemUsingFullPath(file);
+				}
+			} else if (!childDirectories.Any()) {
+				AddDirectoryProjectItemToMSBuildProject(directory);
+			}
+			
+			foreach (string childDirectory in childDirectories) {
+				AddDirectoryProjectItemsRecursively(childDirectory);
+			}
+		}
+		
+		void AddDirectoryProjectItemToMSBuildProject(string directory)
+		{
+			FileProjectItem projectItem = CreateMSBuildProjectItemForDirectory(directory);
+			AddProjectItemToMSBuildProject(projectItem);
+		}
+		
+		FileProjectItem CreateMSBuildProjectItemForDirectory(string directory)
+		{
+			return new FileProjectItem(MSBuildProject, ItemType.Folder) {
+				FileName = directory
+			};
+		}
+		
+		internal string GetRelativePath(string path)
+		{
+			return FileUtility.GetRelativePath(MSBuildProject.Directory, path);
+		}
+		
+		internal IProjectBrowserUpdater CreateProjectBrowserUpdater()
+		{
+			return projectService.CreateProjectBrowserUpdater();
+		}
+		
+		internal ICompilationUnit GetCompilationUnit(string fileName)
+		{
+			return fileService.GetCompilationUnit(fileName);
+		}
+		
+		internal void RemoveProjectItem(ProjectItem projectItem)
+		{
+			projectService.RemoveProjectItem(MSBuildProject, projectItem.MSBuildProjectItem);
 		}
 	}
 }

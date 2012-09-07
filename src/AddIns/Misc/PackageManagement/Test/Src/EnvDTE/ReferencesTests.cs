@@ -26,7 +26,8 @@ namespace PackageManagement.Tests.EnvDTE
 			project = new TestableDTEProject();
 			msbuildProject = project.TestableProject;
 			fakeProjectService = project.FakeProjectService;
-			references = project.Object.References;
+			ProjectObject projectObject = (ProjectObject)project.Object;
+			references = projectObject.References;
 		}
 		
 		void ReferenceCollectionAssertAreEqual(string[] expectedReferences, List<Reference> referenceList)
@@ -187,6 +188,17 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildProject.AddReference("System.Xml");
 			
 			Reference reference = references.Item("System.Xml");
+			
+			Assert.AreEqual("System.Xml", reference.Name);
+		}
+		
+		[Test]
+		public void Item_SystemXmlProjectHasSystemXmlReference_OneReference3Returned()
+		{
+			CreateReferences();
+			msbuildProject.AddReference("System.Xml");
+			
+			Reference3 reference = references.Item("System.Xml") as Reference3;
 			
 			Assert.AreEqual("System.Xml", reference.Name);
 		}

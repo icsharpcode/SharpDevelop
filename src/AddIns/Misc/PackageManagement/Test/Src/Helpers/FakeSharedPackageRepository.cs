@@ -33,5 +33,10 @@ namespace PackageManagement.Tests.Helpers
 		{
 			throw new NotImplementedException();
 		}
+		
+		public void AddPackageReferenceEntry(string packageId, SemanticVersion version)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

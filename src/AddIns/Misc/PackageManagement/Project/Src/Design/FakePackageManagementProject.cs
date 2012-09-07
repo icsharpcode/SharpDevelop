@@ -203,5 +203,10 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			return FakePackagesInReverseDependencyOrder;
 		}
+		
+		public void AddFakePackage(string id)
+		{
+			FakePackages.Add(new FakePackage(id));
+		}
 	}
 }

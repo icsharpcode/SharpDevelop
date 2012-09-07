@@ -150,7 +150,8 @@ namespace CSharpBinding.Parser
 					int offset = document.GetOffset(node.StartLocation);
 					int length = document.GetOffset(node.EndLocation) - offset;
 					var builder = SearchResultsPad.CreateInlineBuilder(node.StartLocation, node.EndLocation, document, highlighter);
-					callback(new Reference(region, result, offset, length, builder, highlighter.DefaultTextColor));
+					var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
+					callback(new Reference(region, result, offset, length, builder, defaultTextColor));
 				}, cancellationToken);
 		}
 		

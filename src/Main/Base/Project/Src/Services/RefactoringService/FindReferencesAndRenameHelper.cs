@@ -374,7 +374,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				var startOffset = document.GetOffset(start);
 				var endOffset = document.GetOffset(end);
 				var builder = SearchResultsPad.CreateInlineBuilder(start, end, document, highlighter);
-				SearchResultMatch res = new SearchResultMatch(fileName, start, end, startOffset, endOffset - startOffset, builder, highlighter.DefaultTextColor);
+				var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
+				SearchResultMatch res = new SearchResultMatch(fileName, start, end, startOffset, endOffset - startOffset, builder, defaultTextColor);
 				results.Add(res);
 			}
 			SearchResultsPad.Instance.ShowSearchResults(title, results);

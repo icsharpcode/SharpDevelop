@@ -28,6 +28,7 @@ namespace PackageManagement.Tests.Helpers
 			
 			var project = new TestableProject(createInfo);
 			project.Parent = solution;
+			solution.AddFolder(project);
 			return project;
 		}
 		

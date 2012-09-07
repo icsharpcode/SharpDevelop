@@ -121,7 +121,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProperties();
 			msbuildProject.SetProperty("TargetFrameworkVersion", "4.0");
 			
-			Property targetFrameworkVersionProperty = project.Properties.First(p => p.Name == "TargetFrameworkVersion");
+			Property targetFrameworkVersionProperty = PropertiesHelper.FindProperty(project.Properties, "TargetFrameworkVersion");
 			string targetFrameworkVersion = targetFrameworkVersionProperty.Value as string;
 			
 			Assert.AreEqual("4.0", targetFrameworkVersion);
@@ -151,6 +151,87 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			string expectedFullPath = @"d:\projects\MyProject";
 			Assert.AreEqual(expectedFullPath, fullPath);
+		}
+		
+		[Test]
+		public void Value_GetOutputFileNameProperty_ReturnsOutputAssemblyFileNameWithoutPath()
+		{
+			CreateProperties();
+			msbuildProject.AssemblyName = "MyProject";
+			msbuildProject.SetProperty("OutputType", "Exe");
+			
+			string fileName = (string)project.Properties.Item("OutputFileName").Value;
+			
+			Assert.AreEqual(@"MyProject.exe", fileName);
+		}
+		
+		[Test]
+		public void Properties_GetOutputFileNamePropertyInLowerCase_ReturnsOutputAssemblyFileNameWithoutPath()
+		{
+			CreateProperties();
+			msbuildProject.AssemblyName = "MyProject";
+			msbuildProject.SetProperty("OutputType", "Library");
+			
+			string fileName = (string)project.Properties.Item("outputfilename").Value;
+			
+			Assert.AreEqual(@"MyProject.dll", fileName);
+		}
+		
+		[Test]
+		public void Properties_GetOutputFileNamePropertyWhenOutputTypeIsMissing_ReturnsOutputAssemblyFileNameWithExeFileExtension()
+		{
+			CreateProperties();
+			msbuildProject.AssemblyName = "MyProject";
+			
+			string fileName = (string)project.Properties.Item("outputfilename").Value;
+			
+			Assert.AreEqual(@"MyProject.exe", fileName);
+		}
+		
+		[Test]
+		public void Properties_GetOutputFileNamePropertyWhenOutputTypeValueIsInLowerCase_ReturnsOutputAssemblyFileNameWithoutPath()
+		{
+			CreateProperties();
+			msbuildProject.AssemblyName = "MyProject";
+			msbuildProject.SetProperty("OutputType", "winexe");
+			
+			string fileName = (string)project.Properties.Item("OutputFileName").Value;
+			
+			Assert.AreEqual(@"MyProject.exe", fileName);
+		}
+		
+		[Test]
+		public void Properties_GetOutputFileNamePropertyWhenOutputTypeValueIsInvalid_ReturnsOutputAssemblyFileNameWithExeFileExtension()
+		{
+			CreateProperties();
+			msbuildProject.AssemblyName = "MyProject";
+			msbuildProject.SetProperty("OutputType", "invalid");
+			
+			string fileName = (string)project.Properties.Item("OutputFileName").Value;
+			
+			Assert.AreEqual("MyProject.exe", fileName);
+		}
+		
+		[Test]
+		public void Properties_GetDefaultNamespaceProperty_ReturnsRootNamespaceForProject()
+		{
+			CreateProperties();
+			msbuildProject.RootNamespace = "MyProjectRootNamespace";
+			
+			string defaultNamespace = (string)project.Properties.Item("DefaultNamespace").Value;
+			
+			Assert.AreEqual("MyProjectRootNamespace", defaultNamespace);
+		}
+		
+		[Test]
+		public void Properties_GetDefaultNamespacePropertyUsingUppercaseName_ReturnsRootNamespaceForProject()
+		{
+			CreateProperties();
+			msbuildProject.RootNamespace = "MyProjectRootNamespace";
+			
+			string defaultNamespace = (string)project.Properties.Item("DEFAULTNAMESPACE").Value;
+			
+			Assert.AreEqual("MyProjectRootNamespace", defaultNamespace);
 		}
 	}
 }

@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="DialogXmlGeneration\DialogWithIconControlTypeOpenedAndClosedInDesignerTests.cs" />
     <Compile Include="Diff\MissingDirectoryTestFixture.cs" />
     <Compile Include="DirectoryImport\AddDuplicateDirectoryIdTestFixture.cs" />
     <Compile Include="Document\DuplicateBinaryIdTestFixture.cs" />
@@ -301,7 +302,6 @@
     <Compile Include="Diff\SameFileReferencedTwiceTestFixture.cs" />
     <Compile Include="Project\CanCompileTests.cs" />
     <Compile Include="DirectoryImport\AddDirectoryWithInvalidIdCharsTestFixture.cs" />
-    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Utils\Tests" />

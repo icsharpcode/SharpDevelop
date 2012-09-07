@@ -314,6 +314,7 @@ namespace ICSharpCode.WixBinding
 						controls.Add(CreateRadioButtonGroup(controlElement, componentCreator));
 						break;
 					case "Bitmap":
+					case "Icon":
 						controls.Add(CreatePictureBox(controlElement, componentCreator));
 						break;
 					case "ListBox":

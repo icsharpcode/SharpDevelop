@@ -12,9 +12,13 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.Cmdlets
 {
-	[Cmdlet(VerbsCommon.Get, "Project", DefaultParameterSetName = ParameterAttribute.AllParameterSets)]
+	[Cmdlet(VerbsCommon.Get, "Project", DefaultParameterSetName = ParameterSetProjectsFilteredByName)]
+	[OutputType(typeof(Project))]
 	public class GetProjectCmdlet : PackageManagementCmdlet
 	{
+		const string ParameterSetAllProjects = "AllProjects";
+		const string ParameterSetProjectsFilteredByName = "ProjectsFilteredByName";
+		
 		public GetProjectCmdlet()
 			: this(
 				PackageManagementServices.ConsoleHost,
@@ -29,10 +33,10 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		{
 		}
 		
-		[Parameter(ParameterSetName = "AllProjects")]
+		[Parameter(Mandatory = true, ParameterSetName = ParameterSetAllProjects)]
 		public SwitchParameter All { get; set; }
 		
-		[Parameter(ParameterSetName = "ProjectsFilteredByName")]
+		[Parameter(Position = 0, ParameterSetName = ParameterSetProjectsFilteredByName, ValueFromPipelineByPropertyName = true)]
 		public string[] Name { get; set; }
 		
 		protected override void ProcessRecord()

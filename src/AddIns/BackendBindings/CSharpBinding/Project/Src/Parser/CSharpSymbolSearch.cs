@@ -111,7 +111,8 @@ namespace CSharpBinding
 					int offset = document.GetOffset(node.StartLocation);
 					int length = document.GetOffset(node.EndLocation) - offset; 
 					var builder = SearchResultsPad.CreateInlineBuilder(node.StartLocation, node.EndLocation, document, highlighter);
-					results.Add(new Reference(region, result, offset, length, builder, highlighter.DefaultTextColor));
+					var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
+					results.Add(new Reference(region, result, offset, length, builder, defaultTextColor));
 				}, cancellationToken);
 			callback(new SearchedFile(fileName, results));
 		}

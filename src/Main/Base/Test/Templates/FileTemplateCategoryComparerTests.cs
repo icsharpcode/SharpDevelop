@@ -9,6 +9,7 @@ using System;
 namespace ICSharpCode.SharpDevelop.Tests.Templates
 {
 	[TestFixture]
+	[SetCulture("en-US")]
 	public class FileTemplateCategoryComparerTests
 	{
 		TemplateCategoryComparer comparer;

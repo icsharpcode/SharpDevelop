@@ -84,5 +84,15 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			throw new NotImplementedException();
 		}
+		
+		public IEnumerable<string> GetFiles(string path, string filter, bool recursive)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public DateTimeOffset GetLastAccessed(string path)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

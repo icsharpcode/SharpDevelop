@@ -53,8 +53,15 @@
 				</core:RestrictDesiredSize>
 			</StackPanel>
 			<widgets:StackPanelWithSpacing Grid.Row="1" Orientation="Vertical" SpaceBetweenItems="5" Margin="0,5">
-				<Button Click="ImportButtonClick" Content="{core:Localize Dialog.HighlightingEditor.Import}" />
-				<Button Click="ExportButtonClick" Content="{core:Localize Dialog.HighlightingEditor.Export}" />
+				<Button Click="ImportButtonClick"
+				        Style="{x:Static core:GlobalStyles.ButtonStyle}"
+				        Content="{core:Localize Dialog.HighlightingEditor.Import}" />
+				<Button Click="ExportButtonClick"
+				        Style="{x:Static core:GlobalStyles.ButtonStyle}"
+				        Content="{core:Localize Dialog.HighlightingEditor.Export}" />
+				<Button Click="ResetAllButtonClick"
+				        Style="{x:Static core:GlobalStyles.ButtonStyle}"
+				        Content="{core:Localize Dialog.HighlightingEditor.ResetAll}" />
 			</widgets:StackPanelWithSpacing>
 		</Grid>
 		<ComboBox Name="languageComboBox" DockPanel.Dock="Top" SelectionChanged="LanguageComboBox_SelectionChanged">
