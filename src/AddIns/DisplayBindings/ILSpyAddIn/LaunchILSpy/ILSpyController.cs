@@ -8,7 +8,9 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.Documentation;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -19,29 +21,20 @@ namespace ICSharpCode.ILSpyAddIn
 	/// </summary>
 	public static class ILSpyController
 	{
-		public static void TryGoTo(AbstractEntity entity)
+		public static void OpenInILSpy(IEntity entity)
 		{
 			if (entity == null)
 				throw new ArgumentNullException("entity");
 			
-			while ((entity is IMember) && ((IMember)entity).GenericMember is AbstractEntity)
-				entity = (AbstractEntity)((IMember)entity).GenericMember;
+			// Get the underlying entity for generic instance members
+			if (entity is IMember)
+				entity = ((IMember)entity).MemberDefinition;
 			
 			// Try to find the assembly which contains the resolved type
-			IProjectContent pc = entity.ProjectContent;
-			ReflectionProjectContent rpc = pc as ReflectionProjectContent;
-			string assemblyLocation = null;
-			if (rpc != null) {
-				assemblyLocation = GetAssemblyLocation(rpc);
-			} else {
-				IProject project = pc.Project as IProject;
-				if (project != null) {
-					assemblyLocation = project.OutputAssemblyFullPath;
-				}
-			}
+			var assemblyLocation = entity.ParentAssembly.GetRuntimeAssemblyLocation();
 			
 			if (string.IsNullOrEmpty(assemblyLocation)) {
-				MessageService.ShowWarning("ILSpy AddIn: Could not determine the assembly location for " + entity.FullyQualifiedName + ".");
+				MessageService.ShowWarning("ILSpy AddIn: Could not determine the assembly location for " + entity.ParentAssembly.AssemblyName + ".");
 				return;
 			}
 			
@@ -49,17 +42,9 @@ namespace ICSharpCode.ILSpyAddIn
 			if (string.IsNullOrEmpty(ilspyPath))
 				return;
 			
-			string commandLine = "/singleInstance \"" + assemblyLocation + "\" \"/navigateTo:" + entity.DocumentationTag + "\"";
+			string commandLine = "/singleInstance \"" + assemblyLocation + "\" \"/navigateTo:" + IdStringProvider.GetIdString(entity) + "\"";
 			LoggingService.Debug(ilspyPath + " " + commandLine);
 			Process.Start(ilspyPath, commandLine);
-		}
-		
-		public static string GetAssemblyLocation(ReflectionProjectContent rpc)
-		{
-			if (rpc == null)
-				throw new ArgumentNullException("rpc");
-			// prefer GAC assemblies over reference assemblies:
-			return rpc.RealAssemblyLocation;
 		}
 		
 		#region Find ILSpy
@@ -73,7 +58,7 @@ namespace ICSharpCode.ILSpyAddIn
 		/// <returns>The full path of ILSpy.exe, or <c>null</c> if the path was unknown and the user cancelled the path selection dialog.</returns>
 		internal static string GetILSpyExeFullPathInteractive()
 		{
-			string path = PropertyService.Get(ILSpyExePathPropertyName);
+			string path = PropertyService.Get(ILSpyExePathPropertyName, "");
 			string askReason = null;
 			
 			if (String.IsNullOrEmpty(path)) {

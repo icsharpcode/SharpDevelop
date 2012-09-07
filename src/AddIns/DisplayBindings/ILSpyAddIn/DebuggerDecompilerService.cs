@@ -15,6 +15,7 @@ using Mono.Cecil;
 
 namespace ICSharpCode.ILSpyAddIn
 {
+	/*
 	// Dummy class to avoid the build errors after updating the ICSharpCode.Decompiler version.
 	// TODO: get rid of this & fix debugging decompiled files
 	public class DecompileInformation {
@@ -83,15 +84,15 @@ namespace ICSharpCode.ILSpyAddIn
 				DebuggerTextOutput output = new DebuggerTextOutput(new PlainTextOutput());
 				astBuilder.GenerateCode(output);
 				
-				/*int token = type.MetadataToken.ToInt32();
-				var info = new DecompileInformation {
-					CodeMappings = astBuilder.CodeMappings,
-					LocalVariables = astBuilder.LocalVariables,
-					DecompiledMemberReferences = astBuilder.DecompiledMemberReferences
-				};
-				
-				// save the data
-				DebugInformation.AddOrUpdate(token, info, (k, v) => info);*/
+//				int token = type.MetadataToken.ToInt32();
+//				var info = new DecompileInformation {
+//					CodeMappings = astBuilder.CodeMappings,
+//					LocalVariables = astBuilder.LocalVariables,
+//					DecompiledMemberReferences = astBuilder.DecompiledMemberReferences
+//				};
+//				
+//				// save the data
+//				DebugInformation.AddOrUpdate(token, info, (k, v) => info);
 			} catch {
 				return;
 			}
@@ -199,4 +200,5 @@ namespace ICSharpCode.ILSpyAddIn
 			return resolver;
 		}
 	}
+		*/
 }

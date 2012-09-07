@@ -12,6 +12,7 @@ namespace ICSharpCode.XamlBinding
 	/// <summary>
 	/// Description of XamlLanguageBinding.
 	/// </summary>
+	[TextEditorService]
 	public class XamlLanguageBinding : XmlEditor.XmlLanguageBinding
 	{
 //		XamlColorizer colorizer;

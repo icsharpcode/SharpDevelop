@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -43,7 +44,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			textMarkerService = new TextMarkerService(textEditor.Document);
 			textEditor.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
 			textEditor.TextArea.TextView.LineTransformers.Add(textMarkerService);
-			textEditor.TextArea.TextView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
+			textEditor.Document.GetRequiredService<IServiceContainer>().AddService(typeof(ITextMarkerService), textMarkerService);
 		}
 		
 		BracketHighlightRenderer bracketHighlighter;

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -34,6 +35,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public AvalonEditViewContent(OpenedFile file, Encoding fixedEncodingForLoading = null)
 		{
+			// Use common service container for view content and primary text editor.
+			// This makes all text editor services available as view content services and vice versa.
+			// (with the exception of the interfaces implemented directly by this class,
+			// those are available as view-content services only)
+			this.Services = codeEditor.PrimaryTextEditor.GetRequiredService<IServiceContainer>();
 			if (fixedEncodingForLoading != null) {
 				codeEditor.UseFixedEncoding = true;
 				codeEditor.PrimaryTextEditor.Encoding = fixedEncodingForLoading;

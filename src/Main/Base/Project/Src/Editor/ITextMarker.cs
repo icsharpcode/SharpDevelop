@@ -107,6 +107,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		CircleInScrollBar = 0x1000
 	}
 	
+	[DocumentService]
 	public interface ITextMarkerService
 	{
 		/// <summary>

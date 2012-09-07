@@ -4,8 +4,6 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Bookmarks;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
 
 namespace ICSharpCode.ILSpyAddIn
 {
@@ -13,11 +11,13 @@ namespace ICSharpCode.ILSpyAddIn
 	/// Implements a menu command to position .NET ILSpy on a class
 	/// or class member.
 	/// </summary>
-	public sealed class TextEditorContextMenuCommand : AbstractMenuCommand
+	public sealed class OpenInILSpyCommand : AbstractMenuCommand
 	{
 		public override void Run()
 		{
-			IClass c;
+			throw new NotImplementedException();
+			#warning implement OpenInILSpyCommand
+			/*IClass c;
 			IMember m;
 			
 			MemberNode mn = this.Owner as MemberNode;
@@ -56,8 +56,8 @@ namespace ICSharpCode.ILSpyAddIn
 			if (entity == null)
 				entity = c as AbstractEntity;
 			if (entity != null) {
-				ILSpyController.TryGoTo(entity);
-			}
+				ILSpyController.OpenInILSpy(entity);
+			}*/
 		}
 	}
 }

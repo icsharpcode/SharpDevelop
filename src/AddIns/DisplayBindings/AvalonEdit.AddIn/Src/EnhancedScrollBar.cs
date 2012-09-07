@@ -21,6 +21,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// <summary>
 	/// Scrollbar that shows markers.
 	/// </summary>
+	[TextEditorService]
 	public class EnhancedScrollBar : IDisposable
 	{
 		readonly TextEditor editor;

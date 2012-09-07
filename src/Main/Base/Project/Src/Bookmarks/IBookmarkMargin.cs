@@ -5,11 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Input;
 
+using ICSharpCode.SharpDevelop.Editor;
+
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	/// <summary>
 	/// The bookmark margin.
 	/// </summary>
+	[DocumentService]
 	public interface IBookmarkMargin
 	{
 		/// <summary>

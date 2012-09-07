@@ -37,11 +37,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		protected override void OnItemActivated(SDBookmark bookmark)
 		{
 			if (bookmark is DecompiledBreakpointBookmark) {
-				// get information from breakpoint and navigate to the decompiled type
-				string assemblyFile, typeName;
-				if (DecompiledBreakpointBookmark.GetAssemblyAndType(bookmark.FileName, out assemblyFile, out typeName)) {
-					NavigationService.NavigateTo(assemblyFile, typeName, string.Empty, bookmark.LineNumber, false);
-				}
+//				// get information from breakpoint and navigate to the decompiled type
+//				string assemblyFile, typeName;
+//				if (DecompiledBreakpointBookmark.GetAssemblyAndType(bookmark.FileName, out assemblyFile, out typeName)) {
+//					NavigationService.NavigateTo(assemblyFile, typeName, string.Empty, bookmark.LineNumber, false);
+//				}
+				throw new NotImplementedException();
 			} else {
 				base.OnItemActivated(bookmark);
 			}

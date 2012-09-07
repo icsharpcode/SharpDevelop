@@ -8,6 +8,7 @@ using System.Linq;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -15,6 +16,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// <summary>
 	/// Uses the NRefactory type system to create parsing information.
 	/// </summary>
+	[TextEditorService]
 	public class ParserFoldingStrategy : IDisposable
 	{
 		readonly FoldingManager foldingManager;

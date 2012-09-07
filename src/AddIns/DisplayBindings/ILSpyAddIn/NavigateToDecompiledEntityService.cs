@@ -4,14 +4,15 @@
 using System;
 using System.IO;
 using System.Linq;
-
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Documentation;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.ILSpyAddIn
 {
-	public class NavigateToDecompiledEntityService : INavigateToEntityService, INavigateToMemberService
+	public class NavigateToDecompiledEntityService : INavigateToEntityService
 	{
 		public bool NavigateToEntity(IEntity entity)
 		{
@@ -19,46 +20,43 @@ namespace ICSharpCode.ILSpyAddIn
 				throw new ArgumentNullException("entity");
 			
 			// Get the underlying entity for generic instance members
-			while ((entity is IMember) && ((IMember)entity).GenericMember != null)
-				entity = ((IMember)entity).GenericMember;
+			if (entity is IMember)
+				entity = ((IMember)entity).MemberDefinition;
 			
-			IClass declaringType = (entity as IClass) ?? entity.DeclaringType;
+			ITypeDefinition declaringType = (entity as ITypeDefinition) ?? entity.DeclaringTypeDefinition;
 			if (declaringType == null)
 				return false;
 			// get the top-level type
-			while (declaringType.DeclaringType != null)
-				declaringType = declaringType.DeclaringType;
+			while (declaringType.DeclaringTypeDefinition != null)
+				declaringType = declaringType.DeclaringTypeDefinition;
 			
-			ReflectionProjectContent rpc = entity.ProjectContent as ReflectionProjectContent;
-			if (rpc != null) {
-				string assemblyLocation = ILSpyController.GetAssemblyLocation(rpc);
-				if (!string.IsNullOrEmpty(assemblyLocation) && File.Exists(assemblyLocation)) {
-					NavigateTo(assemblyLocation, declaringType.DotNetName, ((AbstractEntity)entity).DocumentationTag);
-					return true;
-				}
+			FileName assemblyLocation = declaringType.ParentAssembly.GetRuntimeAssemblyLocation();
+			if (assemblyLocation != null && File.Exists(assemblyLocation)) {
+				NavigateTo(assemblyLocation, declaringType.ReflectionName, IdStringProvider.GetIdString(entity));
+				return true;
 			}
 			return false;
 		}
 		
-		public static void NavigateTo(string assemblyFile, string typeName, string entityTag)
+		public static void NavigateTo(FileName assemblyFile, string typeName, string entityIdString)
 		{
-			if (string.IsNullOrEmpty(assemblyFile))
-				throw new ArgumentException("assemblyFile is null or empty");
-			
+			if (assemblyFile == null)
+				throw new ArgumentNullException("assemblyFile");
 			if (string.IsNullOrEmpty(typeName))
 				throw new ArgumentException("typeName is null or empty");
 			
 			foreach (var viewContent in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
-				if (string.Equals(viewContent.AssemblyFile, assemblyFile, StringComparison.OrdinalIgnoreCase) && typeName == viewContent.FullTypeName) {
+				if (viewContent.AssemblyFile == assemblyFile && typeName == viewContent.FullTypeName) {
 					viewContent.WorkbenchWindow.SelectWindow();
-					viewContent.JumpToEntity(entityTag);
+					viewContent.JumpToEntity(entityIdString);
 					return;
 				}
 			}
-			WorkbenchSingleton.Workbench.ShowView(new DecompiledViewContent(assemblyFile, typeName, entityTag));
+			WorkbenchSingleton.Workbench.ShowView(new DecompiledViewContent(assemblyFile, typeName, entityIdString));
 		}
 		
-		public bool NavigateToMember(string assemblyFile, string typeName, string entityTag, int lineNumber, bool updateMarker)
+		/*
+		public bool NavigateToMember(FileName assemblyFile, string typeName, string entityTag, int lineNumber, bool updateMarker)
 		{
 			if (string.IsNullOrEmpty(assemblyFile))
 				throw new ArgumentException("assemblyFile is null or empty");
@@ -95,5 +93,6 @@ namespace ICSharpCode.ILSpyAddIn
 			WorkbenchSingleton.Workbench.ShowView(decompiledView);
 			return true;
 		}
+		*/
 	}
 }

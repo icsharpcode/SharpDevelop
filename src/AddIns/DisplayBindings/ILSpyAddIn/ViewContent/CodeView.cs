@@ -2,6 +2,7 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,6 +14,8 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Search;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
@@ -21,180 +24,44 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.ILSpyAddIn.ViewContent
 {
-	class DecompiledTextEditorAdapter : AvalonEditTextEditorAdapter
-	{
-		public DecompiledTextEditorAdapter(TextEditor textEditor) : base(textEditor)
-		{}
-		
-		public string DecompiledFileName { get; set; }
-		
-		public override ICSharpCode.Core.FileName FileName {
-			get { return ICSharpCode.Core.FileName.Create(DecompiledFileName); }
-		}
-	}
-	
 	/// <summary>
 	/// Equivalent to AE.AddIn CodeEditor, but without editing capabilities.
 	/// </summary>
 	class CodeView : Grid, IDisposable, IPositionable
 	{
-		public event EventHandler DocumentChanged;
-		
-		readonly DecompiledTextEditorAdapter adapter;
+		readonly SharpDevelopTextEditor textEditor;
 		readonly IconBarManager iconBarManager;
 		readonly IconBarMargin iconMargin;
 		readonly TextMarkerService textMarkerService;
+		readonly AvalonEditTextEditorAdapter adapter;
 		
-		public CodeView(string decompiledFileName)
+		public CodeView()
 		{
-			this.adapter = new DecompiledTextEditorAdapter(new SharpDevelopTextEditor { IsReadOnly = true }) {
-				DecompiledFileName = decompiledFileName
-			};
-			this.Children.Add(adapter.TextEditor);
-			adapter.TextEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
+			textEditor = new SharpDevelopTextEditor();
+			textEditor.IsReadOnly = true;
+			this.Children.Add(textEditor);
+			adapter = new AvalonEditTextEditorAdapter(textEditor);
+			
+			textEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
 			
 			// add margin
 			this.iconMargin = new IconBarMargin(iconBarManager = new IconBarManager());
-			this.adapter.TextEditor.TextArea.LeftMargins.Insert(0, iconMargin);
-			this.adapter.TextEditor.TextArea.TextView.VisualLinesChanged += delegate { iconMargin.InvalidateVisual(); };
+			textEditor.TextArea.LeftMargins.Insert(0, iconMargin);
+			textEditor.TextArea.TextView.VisualLinesChanged += delegate { iconMargin.InvalidateVisual(); };
 			
 			// add marker service
-			this.textMarkerService = new TextMarkerService(adapter.TextEditor.Document);
-			this.adapter.TextEditor.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
-			this.adapter.TextEditor.TextArea.TextView.LineTransformers.Add(textMarkerService);
-			this.adapter.TextEditor.TextArea.TextView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
-			this.adapter.TextEditor.TextArea.TextView.Services.AddService(typeof(IBookmarkMargin), iconBarManager);
-			// DON'T add the editor in textview ervices - will mess the setting of breakpoints
+			this.textMarkerService = new TextMarkerService(textEditor.Document);
+			textEditor.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
+			textEditor.TextArea.TextView.LineTransformers.Add(textMarkerService);
+			var documentServiceContainer = textEditor.Document.GetRequiredService<ServiceContainer>();
+			documentServiceContainer.AddService(typeof(ITextMarkerService), textMarkerService);
+			documentServiceContainer.AddService(typeof(IBookmarkMargin), iconBarManager);
 			
-			// add events
-			this.adapter.TextEditor.MouseHover += TextEditorMouseHover;
-			this.adapter.TextEditor.MouseHoverStopped += TextEditorMouseHoverStopped;
-			this.adapter.TextEditor.MouseLeave += TextEditorMouseLeave;
-			
-			this.adapter.TextEditor.TextArea.DefaultInputHandler.NestedInputHandlers.Add(new SearchInputHandler(this.adapter.TextEditor.TextArea));
+			textEditor.TextArea.DefaultInputHandler.NestedInputHandlers.Add(new SearchInputHandler(textEditor.TextArea));
 		}
 
-		#region Popup
-		ToolTip toolTip;
-		Popup popupToolTip;
-		
-		void TextEditorMouseHover(object sender, MouseEventArgs e)
-		{
-			ToolTipRequestEventArgs args = new ToolTipRequestEventArgs(this.adapter);
-			var pos = adapter.TextEditor.GetPositionFromPoint(e.GetPosition(this));
-			args.InDocument = pos.HasValue;
-			if (pos.HasValue) {
-				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value.Location);
-			}
-			
-			if (!args.Handled) {
-				// if request wasn't handled by a marker, pass it to the ToolTipRequestService
-				ToolTipRequestService.RequestToolTip(args);
-			}
-			
-			if (!TryCloseExistingPopup(false)) {
-				return;
-			}
-			
-			if (args.ContentToShow != null) {
-				popupToolTip = args.ContentToShow as Popup;
-				
-				if (popupToolTip != null) {
-					var popupPosition = GetPopupPosition(e);
-					popupToolTip.HorizontalOffset = popupPosition.X;
-					popupToolTip.VerticalOffset = popupPosition.Y;
-					popupToolTip.IsOpen = true;
-					popupToolTip.StaysOpen = true;  // We will close it ourselves
-					e.Handled = true;
-				} else {
-					if (toolTip == null) {
-						toolTip = new ToolTip();
-						toolTip.Closed += delegate { toolTip = null; };
-					}
-					toolTip.PlacementTarget = this.adapter.TextEditor; // required for property inheritance
-					
-					if(args.ContentToShow is string) {
-						toolTip.Content = new TextBlock
-						{
-							Text = args.ContentToShow as string,
-							TextWrapping = TextWrapping.Wrap
-						};
-					}
-					else
-						toolTip.Content = args.ContentToShow;
-					
-					toolTip.IsOpen = true;
-					e.Handled = true;
-				}
-			}
-		}
-		
-		bool TryCloseExistingPopup(bool mouseClick)
-		{
-			if (popupToolTip != null) {
-				if (popupToolTip.IsOpen && !mouseClick && popupToolTip is ITooltip && !((ITooltip)popupToolTip).CloseOnHoverEnd) {
-					return false; // Popup does not want to be closed yet
-				}
-				popupToolTip.IsOpen = false;
-				popupToolTip = null;
-			}
-			return true;
-		}
-		
-		/// <summary> Returns Popup position based on mouse position, in device independent units </summary>
-		Point GetPopupPosition(MouseEventArgs mouseArgs)
-		{
-			Point mousePos = mouseArgs.GetPosition(this);
-			Point positionInPixels;
-			// align Popup with line bottom
-			TextViewPosition? logicalPos = adapter.TextEditor.GetPositionFromPoint(mousePos);
-			if (logicalPos.HasValue) {
-				var textView = adapter.TextEditor.TextArea.TextView;
-				positionInPixels =
-					textView.PointToScreen(
-						textView.GetVisualPosition(logicalPos.Value, VisualYPosition.LineBottom) - textView.ScrollOffset);
-				positionInPixels.X -= 4;
-			} else {
-				positionInPixels = PointToScreen(mousePos + new Vector(-4, 6));
-			}
-			// use device independent units, because Popup Left/Top are in independent units
-			return positionInPixels.TransformFromDevice(this);
-		}
-		
-		void TextEditorMouseHoverStopped(object sender, MouseEventArgs e)
-		{
-			if (toolTip != null) {
-				toolTip.IsOpen = false;
-				e.Handled = true;
-			}
-			
-			TextEditorMouseLeave(sender, e);
-		}
-		
-		void TextEditorMouseLeave(object sender, MouseEventArgs e)
-		{
-			if (popupToolTip != null && !popupToolTip.IsMouseOver) {
-				// do not close popup if mouse moved from editor to popup
-				TryCloseExistingPopup(false);
-			}
-		}
-		
-		#endregion
-		
 		public TextDocument Document {
-			get { return adapter.TextEditor.Document; }
-			set {
-				adapter.TextEditor.Document = value;
-				if (DocumentChanged != null) {
-					DocumentChanged(value, EventArgs.Empty);
-				}
-			}
-		}
-		
-		public ITextEditor TextEditor {
-			get {
-				return adapter;
-			}
+			get { return textEditor.Document; }
 		}
 		
 		public IconBarManager IconBarManager {
@@ -205,47 +72,21 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 		{
 		}
 		
-		public void UnfoldAndScroll(int lineNumber)
-		{
-			if (lineNumber <= 0 || lineNumber > adapter.Document.TotalNumberOfLines)
-				return;
-			
-//			var line = adapter.TextEditor.Document.GetLineByNumber(lineNumber);
-			
-//			// unfold
-//			var foldings = foldingManager.GetFoldingsContaining(line.Offset);
-//			if (foldings != null) {
-//				foreach (var folding in foldings) {
-//					if (folding.IsFolded) {
-//						folding.IsFolded = false;
-//					}
-//				}
-//			}
-			
-			// scroll to
-			adapter.TextEditor.ScrollTo(lineNumber, 0);
-		}
-		
-		public void Redraw(ISegment segment, System.Windows.Threading.DispatcherPriority priority)
-		{
-			this.adapter.TextEditor.TextArea.TextView.Redraw(segment, priority);
-		}
-		
 		public int Line {
 			get {
-				return this.adapter.Caret.Line;
+				return textEditor.TextArea.Caret.Line;
 			}
 		}
 		
 		public int Column {
 			get {
-				return this.adapter.Caret.Column;
+				return textEditor.TextArea.Caret.Column;
 			}
 		}
 		
 		public void JumpTo(int line, int column)
 		{
-			this.adapter.JumpTo(line, column);
+			adapter.JumpTo(line, column);
 		}
 	}
 }

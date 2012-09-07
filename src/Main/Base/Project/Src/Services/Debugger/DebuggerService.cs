@@ -313,6 +313,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	/// <summary>
 	/// Interface for common debugger-decompiler mapping operations.
 	/// </summary>
+	[SDService]
 	public interface IDebuggerDecompilerService
 	{
 		/// <summary>

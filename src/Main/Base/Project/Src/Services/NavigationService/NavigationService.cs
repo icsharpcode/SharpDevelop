@@ -468,7 +468,7 @@ namespace ICSharpCode.SharpDevelop
 		#endregion
 		
 		#region Navigate to Member
-		
+		/* Part of Eusebiu's debugger/decompiler implementation
 		public static bool NavigateTo(string assemblyFile, string typeName, string entityTag, int lineNumber = 0, bool updateMarker = true)
 		{
 			if (string.IsNullOrEmpty(assemblyFile))
@@ -483,7 +483,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 			return false;
 		}
-		
+		*/
 		#endregion
 	}
 	
@@ -497,7 +497,7 @@ namespace ICSharpCode.SharpDevelop
 	{
 		bool NavigateToEntity(IEntity entity);
 	}
-	
+	/* Part of Eusebiu's debugger/decompiler implementation
 	/// <summary>
 	/// Called by <see cref="NavigationService.NavigateTo"/> when the member reference is not defined in source code.
 	/// </summary>
@@ -508,4 +508,5 @@ namespace ICSharpCode.SharpDevelop
 	{
 		bool NavigateToMember(string assemblyFile, string typeName, string entityTag, int lineNumber, bool updateMarker);
 	}
+	*/
 }

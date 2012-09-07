@@ -154,7 +154,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			try {
 				using (FileStream fs = new FileStream(cacheFileName, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete, 4096, FileOptions.SequentialScan)) {
 					using (BinaryReader reader = new BinaryReaderWith7BitEncodedInts(fs)) {
-						if (reader.ReadByte() != cacheMagicNumber) {
+						if (reader.ReadInt32() != cacheMagicNumber) {
 							LoggingService.Warn("Incorrect magic number");
 							return null;
 						}

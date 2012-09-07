@@ -12,6 +12,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 	/// <summary>
 	/// Represents the syntax highlighter inside the text editor.
 	/// </summary>
+	[TextEditorService]
 	public interface ISyntaxHighlighter
 	{
 		/// <summary>

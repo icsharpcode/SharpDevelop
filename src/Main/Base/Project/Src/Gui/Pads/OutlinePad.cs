@@ -11,6 +11,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// Implement this interface to make a view content display tools in the outline pad.
 	/// </summary>
+	[ViewContentService]
 	public interface IOutlineContentHost
 	{
 		/// <summary>
@@ -41,17 +42,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void WorkbenchActiveContentChanged(object sender, EventArgs e)
 		{
 			IViewContent view = WorkbenchSingleton.Workbench.ActiveViewContent;
-			if(view!=null){
+			if (view!=null) {
 				IOutlineContentHost content = view.GetService(typeof(IOutlineContentHost)) as IOutlineContentHost;
-				if(content!=null){
-					contentControl.SetContent(content.OutlineContent, content);
-					return ;
-				}
-			}
-			
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			if (provider != null) {
-				IOutlineContentHost content = provider.TextEditor.GetService(typeof(IOutlineContentHost)) as IOutlineContentHost;
 				if (content != null) {
 					contentControl.SetContent(content.OutlineContent, content);
 					return;

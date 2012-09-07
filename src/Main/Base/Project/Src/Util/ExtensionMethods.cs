@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using System.Windows.Media;
 using System.Xml;
 using System.Xml.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
@@ -180,6 +181,27 @@ namespace ICSharpCode.SharpDevelop
 			if (snapshot == null)
 				return null;
 			return snapshot.GetProject(assembly.UnresolvedAssembly as IProjectContent);
+		}
+		
+		/// <summary>
+		/// Gets the location of the assembly on disk.
+		/// </summary>
+		public static FileName GetReferenceAssemblyLocation(this IAssembly assembly)
+		{
+			return FileName.Create(assembly.UnresolvedAssembly.Location);
+		}
+		
+		/// <summary>
+		/// Gets the location of the assembly on disk.
+		/// If the specified assembly is a reference assembly, this method the location of the actual runtime assembly instead.
+		/// </summary>
+		/// <remarks>
+		/// May return null if the assembly has no location.
+		/// </remarks>
+		public static FileName GetRuntimeAssemblyLocation(this IAssembly assembly)
+		{
+			#warning Find and use GAC assembly if possible
+			return FileName.Create(assembly.UnresolvedAssembly.Location);
 		}
 		
 		/// <summary>

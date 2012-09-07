@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -27,38 +28,34 @@ namespace ICSharpCode.ILSpyAddIn
 	/// </summary>
 	class DecompiledViewContent : AbstractViewContentWithoutFile
 	{
-		readonly string assemblyFile;
+		readonly FileName assemblyFile;
 		readonly string fullTypeName;
-		readonly string tempFileName;
+		readonly string uri;
 		
 		/// <summary>
 		/// Entity to jump to once decompilation has finished.
 		/// </summary>
-		string jumpToEntityTagWhenDecompilationFinished;
+		string jumpToEntityIdStringWhenDecompilationFinished;
 		
 		bool decompilationFinished;
 		
 		readonly CodeView codeView;
 		readonly CancellationTokenSource cancellation = new CancellationTokenSource();
 		
-		MemberReference decompiledType;
 		Dictionary<string, TextLocation> memberLocations;
 		
 		#region Constructor
-		public DecompiledViewContent(string assemblyFile, string fullTypeName, string entityTag)
+		public DecompiledViewContent(FileName assemblyFile, string fullTypeName, string entityTag)
 		{
-			// TODO: create options for decompiling in a specific language
-			this.tempFileName = string.Format("{0}{1}{2}.cs", assemblyFile, DecompiledBreakpointBookmark.SEPARATOR, fullTypeName);
-			this.codeView = new CodeView(tempFileName);
+			this.uri = string.Format("ilspy://{0}|{1}", assemblyFile, fullTypeName);
+			this.codeView = new CodeView();
 			
 			this.assemblyFile = assemblyFile;
 			this.fullTypeName = fullTypeName;
-			this.jumpToEntityTagWhenDecompilationFinished = entityTag;
+			this.jumpToEntityIdStringWhenDecompilationFinished = entityTag;
 			
 			string shortTypeName = fullTypeName.Substring(fullTypeName.LastIndexOf('.') + 1);
 			this.TitleName = "[" + shortTypeName + "]";
-			
-			this.InfoTip = tempFileName;
 			
 			Thread thread = new Thread(DecompilationThread);
 			thread.Name = "Decompiler (" + shortTypeName + ")";
@@ -66,17 +63,17 @@ namespace ICSharpCode.ILSpyAddIn
 			
 			BookmarkManager.Removed += BookmarkManager_Removed;
 			BookmarkManager.Added += BookmarkManager_Added;
-			
-			// add services
-			this.Services.AddService(typeof(ITextEditor), this.codeView.TextEditor);
 		}
 		#endregion
 		
 		#region Properties
-		public string AssemblyFile {
+		public FileName AssemblyFile {
 			get { return assemblyFile; }
 		}
 		
+		/// <summary>
+		/// The reflection name of the top-level type displayed in this view content.
+		/// </summary>
 		public string FullTypeName {
 			get { return fullTypeName; }
 		}
@@ -98,11 +95,8 @@ namespace ICSharpCode.ILSpyAddIn
 			codeView.Dispose();
 			BookmarkManager.Added -= BookmarkManager_Added;
 			BookmarkManager.Removed -= BookmarkManager_Removed;
-			if (decompiledType != null) {
-				DecompileInformation data;
-				DebuggerDecompilerService.DebugInformation.TryRemove(decompiledType.MetadataToken.ToInt32(), out data);
-				data = null;
-			}
+//			DecompileInformation data;
+//			DebuggerDecompilerService.DebugInformation.TryRemove(decompiledType.MetadataToken.ToInt32(), out data);
 			base.Dispose();
 		}
 		#endregion
@@ -122,14 +116,14 @@ namespace ICSharpCode.ILSpyAddIn
 		#endregion
 		
 		#region JumpToEntity
-		public void JumpToEntity(string entityTag)
+		public void JumpToEntity(string entityIdString)
 		{
 			if (!decompilationFinished) {
-				this.jumpToEntityTagWhenDecompilationFinished = entityTag;
+				this.jumpToEntityIdStringWhenDecompilationFinished = entityIdString;
 				return;
 			}
 			TextLocation location;
-			if (memberLocations != null && memberLocations.TryGetValue(entityTag, out location))
+			if (memberLocations != null && memberLocations.TryGetValue(entityIdString, out location))
 				codeView.JumpTo(location.Line, location.Column);
 		}
 		#endregion
@@ -150,7 +144,7 @@ namespace ICSharpCode.ILSpyAddIn
 					MessageService.ShowException(ex);
 					return;
 				}
-				AnalyticsMonitorService.TrackException(ex);
+				SD.AnalyticsMonitor.TrackException(ex);
 				
 				StringWriter writer = new StringWriter();
 				writer.WriteLine(string.Format("Exception while decompiling {0} ({1})", fullTypeName, assemblyFile));
@@ -178,7 +172,6 @@ namespace ICSharpCode.ILSpyAddIn
 			astBuilder.GenerateCode(textOutput);
 			
 			// save decompilation data
-			decompiledType = typeDefinition;
 			memberLocations = textOutput.MemberLocations;
 		}
 		
@@ -190,10 +183,10 @@ namespace ICSharpCode.ILSpyAddIn
 			codeView.Document.UndoStack.ClearAll();
 			
 			this.decompilationFinished = true;
-			JumpToEntity(this.jumpToEntityTagWhenDecompilationFinished);
+			JumpToEntity(this.jumpToEntityIdStringWhenDecompilationFinished);
 			
 			// update UI
-			UpdateIconMargin();
+			//UpdateIconMargin();
 			
 			// fire events
 			OnDecompilationFinished(EventArgs.Empty);
@@ -201,6 +194,7 @@ namespace ICSharpCode.ILSpyAddIn
 		#endregion
 		
 		#region Update UI
+		/*
 		void UpdateIconMargin()
 		{
 			codeView.IconBarManager.UpdateClassMemberBookmarks(
@@ -250,30 +244,19 @@ namespace ICSharpCode.ILSpyAddIn
 			this.JumpToLineNumber(line);
 		}
 		
-		public void JumpToLineNumber(int lineNumber)
-		{
-			if (codeView == null || codeView.Document == null)
-				return;
-			
-			if (lineNumber <= 0 || lineNumber > codeView.Document.LineCount)
-				return;
-			
-			codeView.UnfoldAndScroll(lineNumber);
-		}
-		
 		void UpdateCurrentLineBookmark(int lineNumber)
 		{
 			if (lineNumber <= 0)
 				return;
 			
-			CurrentLineBookmark.SetPosition(codeView.TextEditor.FileName, codeView.TextEditor.Document, lineNumber, 0, lineNumber, 0);
+			CurrentLineBookmark.SetPosition(uri, codeView.Document, lineNumber, 0, lineNumber, 0);
 			var currentLineBookmark = BookmarkManager.Bookmarks.OfType<CurrentLineBookmark>().FirstOrDefault();
 			if (currentLineBookmark != null) {
 				// update bookmark & marker
 				codeView.IconBarManager.Bookmarks.Add(currentLineBookmark);
 				currentLineBookmark.Document = this.codeView.TextEditor.Document;
 			}
-		}
+		}*/
 		
 		#endregion
 		
@@ -290,9 +273,9 @@ namespace ICSharpCode.ILSpyAddIn
 		void BookmarkManager_Added(object sender, BookmarkEventArgs e)
 		{
 			var mark = e.Bookmark;
-			if (mark != null && mark is BreakpointBookmark && mark.FileName == this.codeView.TextEditor.FileName) {
+			if (mark != null && mark is BreakpointBookmark && mark.FileName == uri) {
 				codeView.IconBarManager.Bookmarks.Add(mark);
-				mark.Document = this.codeView.TextEditor.Document;
+				mark.Document = this.codeView.Document;
 			}
 		}
 		#endregion

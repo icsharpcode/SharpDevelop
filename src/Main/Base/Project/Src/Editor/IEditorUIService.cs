@@ -8,6 +8,7 @@ using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
+	[TextEditorService]
 	public interface IEditorUIService
 	{
 		IInlineUIElement CreateInlineUIElement(ITextAnchor position, UIElement element);

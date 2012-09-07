@@ -37,6 +37,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// Integrates AvalonEdit with SharpDevelop.
 	/// Also provides support for Split-View (showing two AvalonEdit instances using the same TextDocument)
 	/// </summary>
+	[TextEditorService]
 	public class CodeEditor : Grid, IDisposable
 	{
 		const string contextMenuPath = "/SharpDevelop/ViewContent/AvalonEdit/ContextMenu";

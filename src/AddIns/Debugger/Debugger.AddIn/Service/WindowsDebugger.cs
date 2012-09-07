@@ -358,9 +358,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		public void InitializeService()
 		{
 			// get decompiler service
-			var items = AddInTree.BuildItems<IDebuggerDecompilerService>("/SharpDevelop/Services/DebuggerDecompilerService", null, false);
-			if (items.Count > 0)
-				debuggerDecompilerService = items[0];
+			debuggerDecompilerService = SD.GetService<IDebuggerDecompilerService>();
 			
 			// init NDebugger
 			CurrentDebugger = new NDebugger();
