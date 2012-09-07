@@ -145,8 +145,8 @@ class Test {
 }"), "test.cs");
 			// warm up the type system
 			var unresolvedFile = cu.ToTypeSystem();
-			var pc = new ICSharpCode.NRefactory.CSharp.CSharpProjectContent().UpdateProjectContent(null, unresolvedFile);
-			pc = pc.AddAssemblyReferences(new[] { ICSharpCode.NRefactory.TypeSystem.Implementation.MinimalCorlib.Instance });
+			var pc = new ICSharpCode.NRefactory.CSharp.CSharpProjectContent().AddOrUpdateFiles(unresolvedFile);
+			pc = pc.AddAssemblyReferences(ICSharpCode.NRefactory.TypeSystem.Implementation.MinimalCorlib.Instance);
 			var compilation = pc.CreateCompilation();
 			// warm up the resolver
 			var resolver = new ICSharpCode.NRefactory.CSharp.Resolver.CSharpAstResolver(compilation, cu, unresolvedFile);

@@ -55,7 +55,7 @@ class DerivedClass : BaseClass {
 			textEditor.Document.Text = programStart + "override " + programEnd;
 			textEditor.Caret.Offset = programStart.Length + "override ".Length;
 			var parseInfo = textEditor.CreateParseInformation();
-			var pc = new CSharpProjectContent().UpdateProjectContent(null, parseInfo.UnresolvedFile);
+			var pc = new CSharpProjectContent().AddOrUpdateFiles(parseInfo.UnresolvedFile);
 			pc = pc.AddAssemblyReferences(new[] { Corlib });
 			var compilation = pc.CreateCompilation();
 			SD.Services.AddService(typeof(IParserService), MockRepository.GenerateStrictMock<IParserService>());

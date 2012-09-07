@@ -54,6 +54,10 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			get { return projectContent.AssemblyName; }
 		}
 		
+		public string FullAssemblyName {
+			get { return projectContent.FullAssemblyName; }
+		}
+		
 		public IList<IAttribute> AssemblyAttributes {
 			get {
 				return GetAttributes(ref assemblyAttributes, true);

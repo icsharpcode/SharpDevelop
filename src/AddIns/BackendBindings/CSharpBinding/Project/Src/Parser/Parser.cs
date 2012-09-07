@@ -169,7 +169,7 @@ namespace CSharpBinding.Parser
 		{
 			return new CSharpProjectContent()
 				.AddAssemblyReferences(defaultReferences.Value)
-				.UpdateProjectContent(null, unresolvedFile)
+				.AddOrUpdateFiles(unresolvedFile)
 				.CreateCompilation();
 		}
 		

@@ -163,7 +163,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				moduleAttributes = this.InterningProvider.InternList(moduleAttributes);
 			}
 			
-			this.currentAssembly = new CecilUnresolvedAssembly(assemblyDefinition.Name.Name, this.DocumentationProvider);
+			this.currentAssembly = new CecilUnresolvedAssembly(assemblyDefinition.Name, this.DocumentationProvider);
 			currentAssembly.Location = assemblyDefinition.MainModule.FullyQualifiedName;
 			currentAssembly.AssemblyAttributes.AddRange(assemblyAttributes);
 			currentAssembly.ModuleAttributes.AddRange(assemblyAttributes);
@@ -253,8 +253,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			readonly IDocumentationProvider documentationProvider;
 			
-			public CecilUnresolvedAssembly(string assemblyName, IDocumentationProvider documentationProvider)
-				: base(assemblyName)
+			public CecilUnresolvedAssembly(AssemblyNameDefinition assemblyName, IDocumentationProvider documentationProvider)
+				: base(assemblyName.FullName)
 			{
 				Debug.Assert(assemblyName != null);
 				this.documentationProvider = documentationProvider;

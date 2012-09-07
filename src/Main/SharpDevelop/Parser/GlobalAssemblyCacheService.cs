@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Parser
 {
@@ -72,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// <summary>
 		/// Gets the file name for an assembly stored in the GAC.
 		/// </summary>
-		public string FindAssemblyInNetGac (DomAssemblyName reference)
+		public FileName FindAssemblyInNetGac (DomAssemblyName reference)
 		{
 			// without public key, it can't be in the GAC
 			if (reference.PublicKeyToken == null)
@@ -83,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 					var gac = Path.Combine (gac_paths [i], gacs [j]);
 					var file = GetAssemblyFile (reference, prefixes [i], gac);
 					if (File.Exists (file))
-						return file;
+						return FileName.Create(file);
 				}
 			}
 

@@ -188,6 +188,8 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static FileName GetReferenceAssemblyLocation(this IAssembly assembly)
 		{
+			if (assembly == null)
+				throw new ArgumentNullException("assembly");
 			return FileName.Create(assembly.UnresolvedAssembly.Location);
 		}
 		
@@ -200,7 +202,15 @@ namespace ICSharpCode.SharpDevelop
 		/// </remarks>
 		public static FileName GetRuntimeAssemblyLocation(this IAssembly assembly)
 		{
-			#warning Find and use GAC assembly if possible
+			if (assembly == null)
+				throw new ArgumentNullException("assembly");
+			IUnresolvedAssembly asm = assembly.UnresolvedAssembly;
+			if (!(asm is IProjectContent)) {
+				// assembly might be in the GAC
+				var location = SD.GlobalAssemblyCache.FindAssemblyInNetGac(new DomAssemblyName(assembly.FullAssemblyName));
+				if (location != null)
+					return location;
+			}
 			return FileName.Create(assembly.UnresolvedAssembly.Location);
 		}
 		

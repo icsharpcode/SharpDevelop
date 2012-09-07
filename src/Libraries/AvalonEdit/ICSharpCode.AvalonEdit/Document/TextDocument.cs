@@ -374,12 +374,14 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 		}
 		
+		/// <inheritdoc/>
 		public void WriteTextTo(System.IO.TextWriter writer)
 		{
 			VerifyAccess();
 			rope.WriteTo(writer, 0, rope.Length);
 		}
 		
+		/// <inheritdoc/>
 		public void WriteTextTo(System.IO.TextWriter writer, int offset, int length)
 		{
 			VerifyAccess();

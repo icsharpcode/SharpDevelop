@@ -105,16 +105,16 @@ namespace ICSharpCode.SharpDevelop.Parser
 				delegate {
 					pc = pc.RemoveAssemblyReferences(pc.AssemblyReferences);
 					int serializableFileCount = 0;
-					List<IUnresolvedFile> nonSerializableUnresolvedFiles = new List<IUnresolvedFile>();
+					List<string> nonSerializableUnresolvedFiles = new List<string>();
 					foreach (var unresolvedFile in pc.Files) {
 						if (IsSerializable(unresolvedFile))
 							serializableFileCount++;
 						else
-							nonSerializableUnresolvedFiles.Add(unresolvedFile);
+							nonSerializableUnresolvedFiles.Add(unresolvedFile.FileName);
 					}
 					// remove non-serializable parsed files
 					if (nonSerializableUnresolvedFiles.Count > 0)
-						pc = pc.UpdateProjectContent(nonSerializableUnresolvedFiles, null);
+						pc = pc.RemoveFiles(nonSerializableUnresolvedFiles);
 					if (serializableFileCount > 3) {
 						LoggingService.Debug("Serializing " + serializableFileCount + " files to " + cacheFileName);
 						SaveToCache(cacheFileName, pc);
@@ -230,7 +230,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 			// This method is called by the parser service within the parser service (per-file) lock.
 			lock (lockObj) {
 				if (!disposed) {
-					projectContent = projectContent.UpdateProjectContent(oldFile, newFile);
+					if (newFile != null)
+						projectContent = projectContent.AddOrUpdateFiles(newFile);
+					else
+						projectContent = projectContent.RemoveFiles(oldFile.FileName);
 					serializedProjectContentIsUpToDate = false;
 					SD.ParserService.InvalidateCurrentSolutionSnapshot();
 				}

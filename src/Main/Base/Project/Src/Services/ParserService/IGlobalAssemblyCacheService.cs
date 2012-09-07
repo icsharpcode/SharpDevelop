@@ -27,6 +27,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// Gets the file name for an assembly stored in the GAC.
 		/// Returns null if the assembly cannot be found.
 		/// </summary>
-		string FindAssemblyInNetGac(DomAssemblyName reference);
+		FileName FindAssemblyInNetGac(DomAssemblyName reference);
 	}
 }
