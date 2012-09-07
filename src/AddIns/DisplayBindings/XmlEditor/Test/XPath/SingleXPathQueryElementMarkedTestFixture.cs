@@ -37,7 +37,7 @@ namespace XmlEditor.Tests.XPath
 			markers = new List<ITextMarker>(service.TextMarkers);
 			
 			// Remove markers.
-			xpathNodeMarker.RemoveMarkers();
+			XPathNodeTextMarker.RemoveMarkers(doc);
 			markersAfterRemove = new List<ITextMarker>(service.TextMarkers);
 			
 			xpathNodeTextMarker = markers[0];

@@ -127,7 +127,7 @@ namespace XmlEditor.Tests.Utils
 			}
 		}
 		
-		public object ActiveContent {
+		public IServiceProvider ActiveContent {
 			get {
 				throw new NotImplementedException();
 			}
