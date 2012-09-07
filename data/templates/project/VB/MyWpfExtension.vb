@@ -10,9 +10,9 @@ Namespace My
 		''' <summary>
 		''' Returns the application object for the running application
 		''' </summary>
-		Friend ReadOnly Property Application() As MyApplication
+		Friend ReadOnly Property Application() As Application
 			Get
-				Return CType(Global.System.Windows.Application.Current, MyApplication)
+				Return CType(Global.System.Windows.Application.Current, Application)
 			End Get
 		End Property
 		
@@ -108,7 +108,7 @@ Partial Class MyLog
 	Inherits Global.Microsoft.VisualBasic.Logging.Log
 End Class
 
-Partial Class MyApplication
+Partial Class Application
     Inherits Global.System.Windows.Application
     
     Friend ReadOnly Property Info() As Global.Microsoft.VisualBasic.ApplicationServices.AssemblyInfo

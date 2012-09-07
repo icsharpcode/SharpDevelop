@@ -39,7 +39,7 @@
 		</PropertyGroup>
 		
 		<Files>
-			<File name="App.xaml" buildAction="ApplicationDefinition" language="XML"><![CDATA[<Application x:Class="App"
+			<File name="Application.xaml" buildAction="ApplicationDefinition" language="XML"><![CDATA[<Application x:Class="Application"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	StartupUri="Page1.xaml"
@@ -48,7 +48,7 @@
 		
 	</Application.Resources>
 </Application>]]></File>
-			<File name="App.xaml.vb" SubType="Code" DependentUpon="App.xaml"><![CDATA[${StandardHeader.VBNET}
+			<File name="Application.xaml.vb" SubType="Code" DependentUpon="App.xaml"><![CDATA[${StandardHeader.VBNET}
 Imports System
 Imports System.Windows
 Imports System.Data
@@ -56,10 +56,10 @@ Imports System.Xml
 Imports System.Configuration
 
 ''' <summary>
-''' Interaction logic for App.xaml
+''' Interaction logic for Application.xaml
 ''' </summary>
-Public Partial Class App
-	Inherits Application
+Public Partial Class Application
+	Inherits System.Windows.Application
 	
 End Class]]></File>
 			<File name="Page1.xaml" language="XML" buildAction="Page"><![CDATA[<Page x:Class="Page1"
