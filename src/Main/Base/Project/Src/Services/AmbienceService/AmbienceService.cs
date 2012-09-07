@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop
 		/// This method is thread-safe.
 		/// </summary>
 		/// <returns>Returns a new ambience object (ambience objects are never reused to ensure their thread-safety).
-		/// Never returns null, in case of errors the <see cref="CSharpAmbience"/> is used.</returns>
+		/// Never returns null, in case of errors the <see cref="DefaultAmbience"/> is used.</returns>
 		public static IAmbience GetCurrentAmbience()
 		{
 			if (UseProjectAmbienceIfPossible) {

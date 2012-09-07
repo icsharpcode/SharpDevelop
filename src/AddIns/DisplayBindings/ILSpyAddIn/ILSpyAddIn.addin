@@ -17,21 +17,7 @@
 	</Path>
 	
 	<!-- Text editor context menu: Launch ILSpy command -->
-	<!--
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu">
-		<MenuItem id="ILSpy" icon="ILSpy" type="Item" label="${res:ILSpyAddIn.OpenILSpyCommand}" class="ICSharpCode.ILSpyAddIn.TextEditorContextMenuCommand"/>
+	<Path name="/SharpDevelop/ViewContent/TextEditor/EntityContextMenu">
+		<MenuItem id="ILSpy" icon="ILSpy" type="Item" label="${res:ILSpyAddIn.OpenILSpyCommand}" class="ICSharpCode.ILSpyAddIn.OpenInILSpyCommand"/>
 	</Path>
-	
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu">
-		<MenuItem id="ILSpy" icon="ILSpy" type="Item" label="${res:ILSpyAddIn.OpenILSpyCommand}" class="ICSharpCode.ILSpyAddIn.TextEditorContextMenuCommand"/>
-	</Path>
-	
-	<Path name = "/SharpDevelop/Pads/ClassBrowser/MemberContextMenu">
-		<MenuItem id="ILSpy" icon="ILSpy" type="Item" label="${res:ILSpyAddIn.OpenILSpyCommand}" class="ICSharpCode.ILSpyAddIn.TextEditorContextMenuCommand"/>
-	</Path>
-	
-	<Path name = "/SharpDevelop/Pads/ClassBrowser/ClassContextMenu">
-		<MenuItem id="ILSpy" icon="ILSpy" type="Item" label="${res:ILSpyAddIn.OpenILSpyCommand}" class="ICSharpCode.ILSpyAddIn.TextEditorContextMenuCommand"/>
-	</Path>
-	-->
 </AddIn>

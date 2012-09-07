@@ -15,9 +15,9 @@ using ICSharpCode.SharpDevelop.Editor.Commands;
 
 namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 {
-	public class FindBaseClasses : SymbolUnderCaretMenuCommand
+	public class FindBaseClasses : ResolveResultMenuCommand
 	{
-		protected override void RunImpl(ITextEditor editor, int offset, ResolveResult symbol)
+		public override void Run(ResolveResult symbol)
 		{
 			IEntity entityUnderCaret = GetEntity(symbol);
 			if (entityUnderCaret is ITypeDefinition) {

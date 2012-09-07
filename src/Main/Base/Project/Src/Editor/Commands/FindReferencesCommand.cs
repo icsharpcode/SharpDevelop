@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.SharpDevelop.Refactoring;
 
@@ -10,9 +11,9 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	/// <summary>
 	/// Runs the find references command.
 	/// </summary>
-	public class FindReferencesCommand : SymbolUnderCaretMenuCommand
+	public class FindReferencesCommand : ResolveResultMenuCommand
 	{
-		protected override void RunImpl(ITextEditor editor, int offset, ResolveResult symbol)
+		public override void Run(ResolveResult symbol)
 		{
 			var entity = GetEntity(symbol);
 			if (entity != null) {

@@ -455,8 +455,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (position == null)
 					return;
 				SD.AnalyticsMonitor.TrackFeature(typeof(GoToDefinition).FullName, "Ctrl+Click");
+				var resolveResult = SD.ParserService.Resolve(Adapter, position.Value.Location);
 				var goToDefinitionCommand = new GoToDefinition();
-				goToDefinitionCommand.Run(this.Adapter, this.Document.GetOffset(position.Value.Location));
+				goToDefinitionCommand.Run(resolveResult);
 				e.Handled = true;
 			}
 		}

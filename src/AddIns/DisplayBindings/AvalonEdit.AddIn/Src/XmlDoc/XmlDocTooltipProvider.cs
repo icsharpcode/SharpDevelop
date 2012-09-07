@@ -41,6 +41,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 			
 			public FlowDocumentTooltip(FlowDocument document)
 			{
+				TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
 				viewer = new FlowDocumentScrollViewer();
 				viewer.Document = document;
 				Border border = new Border {
@@ -55,8 +56,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 				document.FontSize = CodeEditorOptions.Instance.FontSize;
 			}
 			
-			public event RoutedEventHandler Closed { add {} remove {} }
-			
 			public bool CloseOnHoverEnd {
 				get { return true; }
 			}
@@ -65,42 +64,45 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 		object CreateTooltip(IType type)
 		{
 			var ambience = AmbienceService.GetCurrentAmbience();
-			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
-			string header = ambience.ConvertType(type);
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType;
+			string header;
+			if (type is ITypeDefinition)
+				header = ambience.ConvertEntity((ITypeDefinition)type);
+			else
+				header = ambience.ConvertType(type);
+			
+			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
+			DocumentationUIBuilder b = new DocumentationUIBuilder(ambience);
+			b.AddCodeBlock(header, keepLargeMargin: true);
+			
 			ITypeDefinition entity = type.GetDefinition();
 			if (entity != null) {
 				var documentation = XmlDocumentationElement.Get(entity);
 				if (documentation != null) {
-					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
-					DocumentationUIBuilder b = new DocumentationUIBuilder(ambience);
-					b.AddCodeBlock(header, keepLargeMargin: true);
 					foreach (var child in documentation.Children) {
 						b.AddDocumentationElement(child);
 					}
-					return new FlowDocumentTooltip(b.FlowDocument);
 				}
 			}
-			return header;
+			return new FlowDocumentTooltip(b.FlowDocument);
 		}
 		
 		object CreateTooltip(IEntity entity)
 		{
 			var ambience = AmbienceService.GetCurrentAmbience();
-			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType;
 			string header = ambience.ConvertEntity(entity);
 			var documentation = XmlDocumentationElement.Get(entity);
 			
+			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
+			DocumentationUIBuilder b = new DocumentationUIBuilder(ambience);
+			b.AddCodeBlock(header, keepLargeMargin: true);
 			if (documentation != null) {
-				ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
-				DocumentationUIBuilder b = new DocumentationUIBuilder(ambience);
-				b.AddCodeBlock(header, keepLargeMargin: true);
 				foreach (var child in documentation.Children) {
 					b.AddDocumentationElement(child);
 				}
-				return new FlowDocumentTooltip(b.FlowDocument);
-			} else {
-				return header;
 			}
+			return new FlowDocumentTooltip(b.FlowDocument);
 		}
 	}
 }

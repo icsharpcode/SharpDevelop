@@ -30,7 +30,7 @@ namespace ICSharpCode.ILSpyAddIn
 	{
 		readonly FileName assemblyFile;
 		readonly string fullTypeName;
-		readonly string uri;
+		readonly FileName virtualFileName;
 		
 		/// <summary>
 		/// Entity to jump to once decompilation has finished.
@@ -47,7 +47,7 @@ namespace ICSharpCode.ILSpyAddIn
 		#region Constructor
 		public DecompiledViewContent(FileName assemblyFile, string fullTypeName, string entityTag)
 		{
-			this.uri = string.Format("ilspy://{0}|{1}", assemblyFile, fullTypeName);
+			this.virtualFileName = FileName.Create("ilspy://" + assemblyFile + ">" + fullTypeName);
 			this.codeView = new CodeView();
 			
 			this.assemblyFile = assemblyFile;
@@ -273,7 +273,7 @@ namespace ICSharpCode.ILSpyAddIn
 		void BookmarkManager_Added(object sender, BookmarkEventArgs e)
 		{
 			var mark = e.Bookmark;
-			if (mark != null && mark is BreakpointBookmark && mark.FileName == uri) {
+			if (mark != null && mark is BreakpointBookmark && mark.FileName == virtualFileName) {
 				codeView.IconBarManager.Bookmarks.Add(mark);
 				mark.Document = this.codeView.Document;
 			}

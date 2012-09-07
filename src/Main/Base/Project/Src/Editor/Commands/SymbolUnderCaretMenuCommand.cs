@@ -12,26 +12,54 @@ using ICSharpCode.SharpDevelop.Parser;
 namespace ICSharpCode.SharpDevelop.Editor.Commands
 {
 	/// <summary>
-	/// A menu command that uses the symbol under the editor's caret.
+	/// A menu command that operates on a <see cref="ResolveResult"/>.
+	/// 
+	/// Supports the following types as <see cref="Owner"/>:
+	/// - IUnresolvedTypeDefinition (as used by EntityBookmark)
+	/// - IUnresolvedMember (as used by EntityBookmark)
+	/// 
+	/// If the owner isn't one of the types above, the command operates on the caret position in the current editor.
 	/// </summary>
-	public abstract class SymbolUnderCaretMenuCommand : AbstractMenuCommand
+	public abstract class ResolveResultMenuCommand : AbstractMenuCommand
 	{
+		public abstract void Run(ResolveResult symbol);
+		
 		public override void Run()
 		{
 			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
-			if (editor != null) {
-				Run(editor, editor.Caret.Offset);
+			ResolveResult resolveResult = GetResolveResult(editor, Owner);
+			Run(resolveResult);
+		}
+		
+		public static ResolveResult GetResolveResult(ITextEditor editor, object owner)
+		{
+			if (owner is IUnresolvedTypeDefinition || owner is IUnresolvedMember) {
+				return GetResolveResultFromUnresolvedEntity((IUnresolvedEntity)owner);
+			} else if (editor != null) {
+				return SD.ParserService.Resolve(editor, editor.Caret.Location);
+			} else {
+				return ErrorResolveResult.UnknownError;
 			}
 		}
 		
-		public void Run(ITextEditor editor, int caretOffset)
+		static ResolveResult GetResolveResultFromUnresolvedEntity(IUnresolvedEntity entity)
 		{
-			var location = editor.Document.GetLocation(caretOffset);
-			var resolveResult = SD.ParserService.Resolve(editor, location);
-			RunImpl(editor, editor.Caret.Offset, resolveResult);
+			if (entity.UnresolvedFile == null)
+				return ErrorResolveResult.UnknownError;
+			ICompilation compilation = SD.ParserService.GetCompilationForFile(FileName.Create(entity.UnresolvedFile.FileName));
+			var context = new SimpleTypeResolveContext(compilation.MainAssembly);
+			if (entity is IUnresolvedMember) {
+				var member = ((IUnresolvedMember)entity).Resolve(context);
+				if (member != null) {
+					return new MemberResolveResult(null, member);
+				} else {
+					return ErrorResolveResult.UnknownError;
+				}
+			} else { // IUnresolvedTypeDefinition
+				var type = ((IUnresolvedTypeDefinition)entity).Resolve(context);
+				return new TypeResolveResult(type);
+			}
 		}
-		
-		protected abstract void RunImpl(ITextEditor editor, int caretOffset, ResolveResult symbol);
 		
 		protected IEntity GetEntity(ResolveResult symbol)
 		{

@@ -214,7 +214,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				else
 					col += 1;
 			}
-			WorkbenchSingleton.StatusBar.SetCaretPosition(col, this.Line, chOffset);
+			SD.StatusBar.SetCaretPosition(col, this.Line, chOffset);
 		}
 		
 		public override bool IsReadOnly {

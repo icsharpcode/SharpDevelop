@@ -12,9 +12,9 @@ using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop.Editor.Commands
 {
-	public class GoToDefinition : SymbolUnderCaretMenuCommand
+	public class GoToDefinition : ResolveResultMenuCommand
 	{
-		protected override void RunImpl(ITextEditor editor, int offset, ResolveResult symbol)
+		public override void Run(ResolveResult symbol)
 		{
 			if (symbol == null)
 				return;

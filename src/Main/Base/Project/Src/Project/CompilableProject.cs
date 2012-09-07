@@ -224,12 +224,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (e.PropertyName == "TargetFrameworkVersion")
 				CreateItemsListFromMSBuild();
 			if (!isLoading) {
-				if (reparseReferencesSensitiveProperties.Contains(e.PropertyName)) {
-					Reparse(true, false);
-				}
-				if (reparseCodeSensitiveProperties.Contains(e.PropertyName)) {
-					Reparse(false, true);
-				}
+				bool reparseReferences = reparseReferencesSensitiveProperties.Contains(e.PropertyName);
+				bool reparseCode = reparseCodeSensitiveProperties.Contains(e.PropertyName);
+				Reparse(reparseReferences, reparseCode);
 			}
 		}
 		
@@ -238,6 +235,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			lock (SyncRoot) {
 				if (parseProjectContentContainer == null)
 					return; // parsing hasn't started yet; no need to re-parse
+				parseProjectContentContainer.SetAssemblyName(this.AssemblyName);
+				parseProjectContentContainer.SetLocation(this.OutputAssemblyFullPath);
 				if (references) {
 					parseProjectContentContainer.ReparseReferences();
 				}

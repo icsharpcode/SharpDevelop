@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			if (project == null)
 				throw new ArgumentNullException("project");
 			this.project = project;
-			this.projectContent = initialProjectContent.SetAssemblyName(project.AssemblyName);
+			this.projectContent = initialProjectContent.SetAssemblyName(project.AssemblyName).SetLocation(project.OutputAssemblyFullPath);
 			
 			this.cacheFileName = GetCacheFileName(FileName.Create(project.FileName));
 			
@@ -235,6 +235,30 @@ namespace ICSharpCode.SharpDevelop.Parser
 					else
 						projectContent = projectContent.RemoveFiles(oldFile.FileName);
 					serializedProjectContentIsUpToDate = false;
+					SD.ParserService.InvalidateCurrentSolutionSnapshot();
+				}
+			}
+		}
+		
+		public void SetAssemblyName(string newAssemblyName)
+		{
+			lock (lockObj) {
+				if (!disposed) {
+					if (projectContent.FullAssemblyName == newAssemblyName)
+						return;
+					projectContent = projectContent.SetAssemblyName(newAssemblyName);
+					SD.ParserService.InvalidateCurrentSolutionSnapshot();
+				}
+			}
+		}
+		
+		public void SetLocation(string newLocation)
+		{
+			lock (lockObj) {
+				if (!disposed) {
+					if (projectContent.Location == newLocation)
+						return;
+					projectContent = projectContent.SetLocation(newLocation);
 					SD.ParserService.InvalidateCurrentSolutionSnapshot();
 				}
 			}

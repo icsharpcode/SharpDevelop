@@ -1930,7 +1930,7 @@
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/EntityContextMenu">
 		<MenuItem id = "FindReferences"
 		          label = "${res:SharpDevelop.Refactoring.FindReferencesCommand}"
-		          class = "ICSharpCode.SharpDevelop.Refactoring.FindLocalVariableReferencesCommand"/>
+		          class = "ICSharpCode.SharpDevelop.Editor.Commands.FindReferencesCommand"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Common">

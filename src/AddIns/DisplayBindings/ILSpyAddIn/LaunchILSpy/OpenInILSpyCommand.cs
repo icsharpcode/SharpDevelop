@@ -3,7 +3,9 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor.Commands;
 
 namespace ICSharpCode.ILSpyAddIn
 {
@@ -11,53 +13,14 @@ namespace ICSharpCode.ILSpyAddIn
 	/// Implements a menu command to position .NET ILSpy on a class
 	/// or class member.
 	/// </summary>
-	public sealed class OpenInILSpyCommand : AbstractMenuCommand
+	public sealed class OpenInILSpyCommand : ResolveResultMenuCommand
 	{
-		public override void Run()
+		public override void Run(ResolveResult symbol)
 		{
-			throw new NotImplementedException();
-			#warning implement OpenInILSpyCommand
-			/*IClass c;
-			IMember m;
-			
-			MemberNode mn = this.Owner as MemberNode;
-			if (mn != null) {
-				m = mn.Member;
-				c = m.DeclaringType;
-			} else {
-				ClassNode cn = this.Owner as ClassNode;
-				if (cn != null) {
-					c = cn.Class;
-					m = null;
-				} else {
-					ClassMemberBookmark cmbm = this.Owner as ClassMemberBookmark;
-					if (cmbm != null) {
-						m = cmbm.Member;
-						c = m.DeclaringType;
-					} else {
-						ClassBookmark cbm = this.Owner as ClassBookmark;
-						if (cbm != null) {
-							c = cbm.Class;
-							m = null;
-						} else {
-							MessageService.ShowWarning("ILSpy AddIn: Could not determine the class for the selected element. Owner: " + ((this.Owner == null) ? "<null>" : this.Owner.ToString()));
-							return;
-						}
-					}
-				}
-			}
-			
-			if (c == null) {
-				MessageService.ShowWarning("ILSpy AddIn: Could not determine the class for the selected element (known owner). Owner: " + this.Owner.ToString());
-				return;
-			}
-			
-			AbstractEntity entity = m as AbstractEntity;
-			if (entity == null)
-				entity = c as AbstractEntity;
+			var entity = GetEntity(symbol);
 			if (entity != null) {
 				ILSpyController.OpenInILSpy(entity);
-			}*/
+			}
 		}
 	}
 }

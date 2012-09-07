@@ -16,9 +16,9 @@ using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 {
-	public class FindDerivedClassesOrOverrides : SymbolUnderCaretMenuCommand
+	public class FindDerivedClassesOrOverrides : ResolveResultMenuCommand
 	{
-		protected override void RunImpl(ITextEditor editor, int offset, ResolveResult symbol)
+		public override void Run(ResolveResult symbol)
 		{
 			IEntity entityUnderCaret = GetEntity(symbol);
 			if (entityUnderCaret is ITypeDefinition && !entityUnderCaret.IsSealed) {
