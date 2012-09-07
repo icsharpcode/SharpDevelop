@@ -60,5 +60,33 @@ class TestClass
 }";
 			Test<ParameterOnlyAssignedIssue> (input, 0);
 		}
+
+		[Test]
+		public void TestOutParametr ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod(out int i)
+	{
+		i = 1;
+	}
+}";
+			Test<ParameterOnlyAssignedIssue> (input, 0);
+		}
+
+		[Test]
+		public void TestRefParametr ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod(ref int i)
+	{
+		i = 1;
+	}
+}";
+			Test<ParameterOnlyAssignedIssue> (input, 0);
+		}
 	}
 }

@@ -57,7 +57,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var resolveResult = ctx.Resolve (parameterDeclaration) as LocalResolveResult;
 				if (resolveResult == null)
 					return;
-				if (!TestOnlyAssigned (ctx, unit, resolveResult.Variable))
+				if (parameterDeclaration.ParameterModifier == ParameterModifier.Out || parameterDeclaration.ParameterModifier == ParameterModifier.Ref
+				    || !TestOnlyAssigned (ctx, unit, resolveResult.Variable))
 					return;
 				AddIssue (parameterDeclaration.NameToken, 
 					ctx.TranslateString ("Parameter is assigned by its value is never used"));
