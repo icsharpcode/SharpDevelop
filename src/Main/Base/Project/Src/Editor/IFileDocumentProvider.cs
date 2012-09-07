@@ -10,6 +10,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 	/// Interface for view contents that provide a text editor document
 	/// for one or more <see cref="OpenedFile"/>s.
 	/// </summary>
+	[ViewContentService]
 	public interface IFileDocumentProvider
 	{
 		/// <summary>

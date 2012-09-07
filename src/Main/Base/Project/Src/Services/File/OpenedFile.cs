@@ -348,7 +348,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		static Properties GetMemento(IViewContent viewContent)
 		{
-			IMementoCapable mementoCapable = viewContent as IMementoCapable;
+			IMementoCapable mementoCapable = viewContent.GetService<IMementoCapable>();
 			if (mementoCapable == null) {
 				return null;
 			} else {

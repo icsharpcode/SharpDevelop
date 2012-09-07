@@ -21,13 +21,15 @@ namespace Debugger.AddIn
 	{
 		public override void Run()
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as ITextEditorProvider;
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
+			if (editor == null)
+				return;
 			
 			BreakpointBookmark point = null;
 			
 			foreach (BreakpointBookmark breakpoint in DebuggerService.Breakpoints) {
-				if ((breakpoint.FileName == provider.TextEditor.FileName) &&
-				    (breakpoint.LineNumber == provider.TextEditor.Caret.Line)) {
+				if ((breakpoint.FileName == editor.FileName) &&
+				    (breakpoint.LineNumber == editor.Caret.Line)) {
 					point = breakpoint;
 					break;
 				}

@@ -45,15 +45,18 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
-		public void RemoveMarkers()
+		/// <summary>
+		/// Removes all markers from the given view content or text editor.
+		/// </summary>
+		public static void RemoveMarkers(IServiceProvider serviceProvider)
 		{
-			ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+			ITextMarkerService markerService = serviceProvider.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			if (markerService != null) {
 				markerService.RemoveAll(IsXPathNodeTextMarker);
 			}
 		}
 		
-		bool IsXPathNodeTextMarker(ITextMarker marker)
+		static bool IsXPathNodeTextMarker(ITextMarker marker)
 		{
 			return (Type)marker.Tag == typeof(XPathNodeTextMarker);
 		}

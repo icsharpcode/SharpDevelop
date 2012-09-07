@@ -420,27 +420,22 @@ namespace SearchAndReplace
 		#region TextEditor helpers
 		static ITextEditor OpenTextArea(string fileName, bool switchToOpenedView = true)
 		{
-			ITextEditorProvider textEditorProvider;
+			IViewContent viewContent;
 			if (fileName != null) {
-				textEditorProvider = FileService.OpenFile(fileName, switchToOpenedView) as ITextEditorProvider;
+				viewContent = FileService.OpenFile(fileName, switchToOpenedView);
 			} else {
-				textEditorProvider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+				viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
 			}
 
-			if (textEditorProvider != null) {
-				return textEditorProvider.TextEditor;
+			if (viewContent != null) {
+				return viewContent.GetService<ITextEditor>();
 			}
 			return null;
 		}
 		
 		public static ITextEditor GetActiveTextEditor()
 		{
-			ITextEditorProvider provider = SD.Workbench.ActiveViewContent as ITextEditorProvider;
-			if (provider != null) {
-				return provider.TextEditor;
-			} else {
-				return null;
-			}
+			return SD.GetActiveViewContentService<ITextEditor>();
 		}
 		
 		public static ISegment GetActiveSelection(bool useAnchors)

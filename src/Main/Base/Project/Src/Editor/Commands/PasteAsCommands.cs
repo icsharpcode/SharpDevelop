@@ -14,19 +14,13 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	{
 		public override void Run()
 		{
+			ITextEditor textEditor = SD.GetActiveViewContentService<ITextEditor>();
+			if (textEditor == null)
+				return;
+			
 			string clipboardText = ClipboardWrapper.GetText();
 			if (string.IsNullOrEmpty(clipboardText))
 				return;
-			
-			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
-			if (viewContent == null || !(viewContent is ITextEditorProvider)) {
-				return;
-			}
-			
-			ITextEditor textEditor = ((ITextEditorProvider)viewContent).TextEditor;
-			if (textEditor == null) {
-				return;
-			}
 			
 			using (textEditor.Document.OpenUndoGroup())
 				Run(textEditor, clipboardText);

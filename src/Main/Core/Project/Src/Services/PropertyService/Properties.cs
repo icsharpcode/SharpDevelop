@@ -21,6 +21,9 @@ namespace ICSharpCode.Core
 	/// and set from a object from the same class.
 	/// This is used to save and restore the state of GUI objects.
 	/// </summary>
+	/// <remarks>
+	/// This interface is used as a [ViewContentService]
+	/// </remarks>
 	public interface IMementoCapable
 	{
 		/// <summary>

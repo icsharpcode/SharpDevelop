@@ -118,6 +118,9 @@ namespace ICSharpCode.AvalonEdit.Document
 			if (textSource == null)
 				throw new ArgumentNullException("textSource");
 			
+			if (textSource is ReadOnlyDocument)
+				textSource = textSource.CreateSnapshot(); // retrieve underlying text source, which might be a RopeTextSource
+			
 			RopeTextSource rts = textSource as RopeTextSource;
 			if (rts != null)
 				return rts.GetRope();

@@ -10,6 +10,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// Implement this interface to make your view content display tools in the tool box.
 	/// </summary>
+	[ViewContentService]
 	public interface IToolsHost
 	{
 		/// <summary>
@@ -39,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void WorkbenchActiveContentChanged(object sender, EventArgs e)
 		{
-			IToolsHost th = WorkbenchSingleton.Workbench.ActiveViewContent as IToolsHost;
+			IToolsHost th = SD.GetActiveViewContentService<IToolsHost>();
 			if (th != null && th.ToolsContent != null) {
 				contentControl.SetContent(th.ToolsContent, th);
 			} else {

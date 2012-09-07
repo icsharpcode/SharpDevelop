@@ -336,11 +336,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		ITextEditor GetEditor()
 		{
-			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
-			if (viewContent is ITextEditorProvider) {
-				return ((ITextEditorProvider)viewContent).TextEditor;
-			}
-			return null;
+			return SD.GetActiveViewContentService<ITextEditor>();
 		}
 		
 		void okButtonClick(object sender, RoutedEventArgs e)

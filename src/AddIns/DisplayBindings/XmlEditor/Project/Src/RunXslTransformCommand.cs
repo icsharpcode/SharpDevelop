@@ -70,15 +70,7 @@ namespace ICSharpCode.XmlEditor
 		
 		static string GetStylesheetContent(string fileName)
 		{
-			// File already open?
-			ITextEditorProvider view = FileService.GetOpenFile(fileName) as ITextEditorProvider;
-			if (view != null) {
-				return view.TextEditor.Document.Text;
-			}
-			
-			// Read in file contents.
-			StreamReader reader = new StreamReader(fileName, true);
-			return reader.ReadToEnd();
+			return SD.FileService.GetFileContent(fileName).Text;
 		}
 	}
 }

@@ -14,13 +14,10 @@ namespace ICSharpCode.SharpDevelop.Services
 	{
 		public override void Run()
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			
-			if (provider == null || WindowsDebugger.CurrentProcess == null)
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
+			if (editor == null || WindowsDebugger.CurrentProcess == null)
 				return;
-			
-			ITextEditor textEditor = provider.TextEditor;
-			WindowsDebugger.CurrentProcess.RunTo(textEditor.FileName, textEditor.Caret.Line, textEditor.Caret.Column);
+			WindowsDebugger.CurrentProcess.RunTo(editor.FileName, editor.Caret.Line, editor.Caret.Column);
 		}
 	}
 }

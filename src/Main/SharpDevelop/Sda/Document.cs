@@ -15,9 +15,11 @@ namespace ICSharpCode.SharpDevelop.Sda
 	{
 		internal static Document FromWindow(IViewContent viewContent)
 		{
-			ITextEditorProvider editable = viewContent as ITextEditorProvider;
-			if (editable != null) {
-				return new Document(viewContent, editable.TextEditor.PrimaryView.Document);
+			if (viewContent == null)
+				return null;
+			ITextEditor editor = viewContent.GetService(typeof(ITextEditor)) as ITextEditor;
+			if (editor != null) {
+				return new Document(viewContent, editor.Document);
 			} else {
 				return null;
 			}

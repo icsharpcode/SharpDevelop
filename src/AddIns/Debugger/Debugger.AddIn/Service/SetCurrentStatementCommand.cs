@@ -12,12 +12,10 @@ namespace ICSharpCode.SharpDevelop.Services
 	{
 		public override void Run()
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+			ITextEditor textEditor = SD.GetActiveViewContentService<ITextEditor>();
 				
-			if (provider == null || DebuggerService.CurrentDebugger == null)
+			if (textEditor == null || DebuggerService.CurrentDebugger == null)
 				return;
-			
-			ITextEditor textEditor = provider.TextEditor;
 			
 			DebuggerService.CurrentDebugger.SetInstructionPointer(textEditor.FileName, textEditor.Caret.Line, textEditor.Caret.Column, false);
 		}

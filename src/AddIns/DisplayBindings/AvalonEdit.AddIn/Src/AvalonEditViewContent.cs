@@ -22,8 +22,10 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
+	[ViewContentService]
 	public interface ICodeEditorProvider : ITextEditorProvider
 	{
+		[Obsolete("Use viewContent.GetService<CodeEditor>() instead.")]
 		CodeEditor CodeEditor { get; }
 	}
 	

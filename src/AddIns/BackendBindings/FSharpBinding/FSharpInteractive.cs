@@ -142,9 +142,8 @@ namespace FSharpBinding
 			pad.BringPadToFront();
 			FSharpInteractive fsharpInteractive = (FSharpInteractive)pad.PadContent;
 			if (fsharpInteractive.foundCompiler) {
-				ITextEditorProvider editorProvider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-				if (editorProvider != null) {
-					var textEditor = editorProvider.TextEditor;
+				ITextEditor textEditor = SD.GetActiveViewContentService<ITextEditor>();
+				if (textEditor != null) {
 					if (textEditor.SelectionLength > 0) {
 						fsharpInteractive.fsiProcess.StandardInput.WriteLine(textEditor.SelectedText);
 					} else {

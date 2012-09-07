@@ -8,6 +8,7 @@ using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -47,16 +48,20 @@ namespace SearchAndReplace
 		{
 			List<FileName> files = new List<FileName>();
 			
+			ITextEditor editor;
 			switch (Target) {
 				case SearchTarget.CurrentDocument:
 				case SearchTarget.CurrentSelection:
-					ITextEditorProvider vc = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-					if (vc != null)
-						files.Add(vc.TextEditor.FileName);
+					editor = SD.GetActiveViewContentService<ITextEditor>();
+					if (editor != null)
+						files.Add(editor.FileName);
 					break;
 				case SearchTarget.AllOpenFiles:
-					foreach (ITextEditorProvider editor in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<ITextEditorProvider>())
-						files.Add(editor.TextEditor.FileName);
+					foreach (var vc in WorkbenchSingleton.Workbench.ViewContentCollection) {
+						editor = vc.GetService<ITextEditor>();
+						if (editor != null)
+							files.Add(editor.FileName);
+					}
 					break;
 				case SearchTarget.WholeProject:
 					if (ProjectService.CurrentProject == null)

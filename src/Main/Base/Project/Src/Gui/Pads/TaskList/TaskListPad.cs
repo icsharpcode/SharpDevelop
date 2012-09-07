@@ -95,12 +95,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (isInitialized)
 				UpdateItems();
 			
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
 			
-			if (provider != null) {
+			if (editor != null) {
 				// ensure we don't attach multiple times to the same editor
-				provider.TextEditor.Caret.LocationChanged -= CaretPositionChanged;
-				provider.TextEditor.Caret.LocationChanged += CaretPositionChanged;
+				editor.Caret.LocationChanged -= CaretPositionChanged;
+				editor.Caret.LocationChanged += CaretPositionChanged;
 			}
 		}
 
@@ -199,7 +199,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return ProjectService.CurrentProject != null && ProjectService.CurrentProject.FindFile(item.FileName) != null;
 				case 2:
 					// All open documents
-					return WorkbenchSingleton.Workbench.ViewContentCollection.OfType<ITextEditorProvider>().Any(provider => item.FileName == provider.TextEditor.FileName);
+					return WorkbenchSingleton.Workbench.ViewContentCollection.Select(vc => vc.GetService<ITextEditor>()).Any(editor => editor != null && item.FileName == editor.FileName);
 				case 3:
 					// Document
 					return WorkbenchSingleton.Workbench.ActiveViewContent != null && WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName == item.FileName;
@@ -221,7 +221,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			IUnresolvedFile parseInfo = SD.ParserService.GetExistingUnresolvedFile(WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName);
 			if (parseInfo != null) {
-				IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent as IPositionable;
+				IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent.GetService<IPositionable>();
 				if (positionable != null) {
 					var c = parseInfo.GetInnermostTypeDefinition(positionable.Line, positionable.Column);
 					if (c != null) return c;

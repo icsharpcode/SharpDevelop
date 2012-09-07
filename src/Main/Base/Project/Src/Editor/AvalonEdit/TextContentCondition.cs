@@ -21,12 +21,9 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		public bool IsValid(object caller, Condition condition)
 		{
 			string textcontent = condition.Properties["textcontent"];
-			IViewContent content = WorkbenchSingleton.Workbench.ActiveViewContent;
-			if (content is ITextEditorProvider) {
-				var ctrl = (content as ITextEditorProvider).TextEditor.GetService(typeof(ICSharpCode.AvalonEdit.TextEditor)) as ICSharpCode.AvalonEdit.TextEditor;
-				if (ctrl != null && ctrl.SyntaxHighlighting != null) {
-					return string.Equals(textcontent, ctrl.SyntaxHighlighting.Name, StringComparison.OrdinalIgnoreCase);
-				}
+			var editor = SD.GetActiveViewContentService<ICSharpCode.AvalonEdit.TextEditor>();
+			if (editor != null) {
+				return string.Equals(textcontent, editor.SyntaxHighlighting.Name, StringComparison.OrdinalIgnoreCase);
 			}
 			return false;
 		}

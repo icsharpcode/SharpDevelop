@@ -44,6 +44,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <remarks>
 		/// This method is thread-safe. This method involves waiting for the main thread, so using it while
 		/// holding a lock can lead to deadlocks.
+		/// This method never returns null.
 		/// </remarks>
 		ITextSource GetFileContent(FileName fileName);
 		
@@ -65,6 +66,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		/// <remarks>
 		/// This method is thread-safe.
+		/// This method never returns null.
 		/// </remarks>
 		ITextSource GetFileContentFromDisk(FileName fileName, CancellationToken cancellationToken = default(CancellationToken));
 		#endregion

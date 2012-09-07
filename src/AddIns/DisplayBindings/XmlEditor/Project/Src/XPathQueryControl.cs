@@ -428,14 +428,14 @@ namespace ICSharpCode.XmlEditor
 				
 				// Clear previous XPath results.
 				ClearResults();
-				XPathNodeTextMarker marker = new XPathNodeTextMarker(xmlView.TextEditor.Document);
-				marker.RemoveMarkers();
+				XPathNodeTextMarker.RemoveMarkers(xmlView.TextEditor.Document);
 				
 				// Run XPath query.
 				XPathQuery query = new XPathQuery(xmlView.TextEditor, GetNamespaces());
 				XPathNodeMatch[] nodes = query.FindNodes(xpathComboBox.Text);
 				if (nodes.Length > 0) {
 					AddXPathResults(nodes);
+					XPathNodeTextMarker marker = new XPathNodeTextMarker(xmlView.TextEditor.Document);
 					marker.AddMarkers(nodes);
 				} else {
 					AddNoXPathResult();

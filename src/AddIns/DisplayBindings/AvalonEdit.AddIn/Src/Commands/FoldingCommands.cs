@@ -15,8 +15,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 	{
 		public override void Run()
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			ITextEditor editor = provider.TextEditor;
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
 			FoldingManager foldingManager = editor.GetService(typeof(FoldingManager)) as FoldingManager;
 			
 			if (foldingManager != null) {
@@ -37,8 +36,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 	{
 		public override void Run()
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			ITextEditor editor = provider.TextEditor;
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
 			FoldingManager foldingManager = editor.GetService(typeof(FoldingManager)) as FoldingManager;
 			
 			if (foldingManager != null) {
@@ -60,8 +58,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 	{
 		public override void Run()
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			ITextEditor editor = provider.TextEditor;
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
 			FoldingManager foldingManager = editor.GetService(typeof(FoldingManager)) as FoldingManager;
 			
 			if (foldingManager != null) {

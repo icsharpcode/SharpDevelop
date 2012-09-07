@@ -2,12 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using System.Collections.Generic;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Commands
 {
@@ -24,9 +26,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 				if (SortOptions.SortDirection == SortDirection.Descending)
 					comparer = new DescendingStringComparer(comparer);
 				
-				ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-				if (provider != null) {
-					ITextEditor editor = provider.TextEditor;
+				ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
+				if (editor != null) {
 					if (editor.SelectionLength > 0) {
 						int start = editor.Document.GetLineByOffset(editor.SelectionStart).LineNumber;
 						int end = editor.Document.GetLineByOffset(editor.SelectionStart + editor.SelectionLength).LineNumber;

@@ -24,9 +24,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		public static void SetPosition(IViewContent viewContent, int markerStartLine, int markerStartColumn, int markerEndLine, int markerEndColumn)
 		{
-			ITextEditorProvider tecp = viewContent as ITextEditorProvider;
-			if (tecp != null) {
-				SetPosition(tecp.TextEditor.FileName, tecp.TextEditor.Document, markerStartLine, markerStartColumn, markerEndLine, markerEndColumn);
+			if (viewContent == null)
+				return;
+			ITextEditor editor = viewContent.GetService<ITextEditor>();
+			if (editor != null) {
+				SetPosition(editor.FileName, editor.Document, markerStartLine, markerStartColumn, markerEndLine, markerEndColumn);
 			}
 		}
 		

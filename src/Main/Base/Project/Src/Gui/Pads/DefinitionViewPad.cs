@@ -87,14 +87,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 		Task<ResolveResult> ResolveAtCaretAsync(ParserUpdateStepEventArgs e)
 		{
 			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (window == null) return Task.FromResult<ResolveResult>(null);
-			ITextEditorProvider provider = window.ActiveViewContent as ITextEditorProvider;
-			if (provider == null) return Task.FromResult<ResolveResult>(null);
-			ITextEditor editor = provider.TextEditor;
+			if (window == null) 
+				return Task.FromResult<ResolveResult>(null);
+			IViewContent viewContent = window.ActiveViewContent;
+			if (viewContent == null) 
+				return Task.FromResult<ResolveResult>(null);
+			ITextEditor editor = viewContent.GetService<ITextEditor>();
+			if (editor == null)
+				return Task.FromResult<ResolveResult>(null);
 			
 			// e might be null when this is a manually triggered update
 			// don't resolve when an unrelated file was changed
-			if (e != null && editor.FileName != e.FileName) return null;
+			if (e != null && editor.FileName != e.FileName)
+				return Task.FromResult<ResolveResult>(null);
 			
 			return SD.ParserService.ResolveAsync(editor.FileName, editor.Caret.Location, editor.Document);
 		}
@@ -121,19 +126,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		void LoadFile(string fileName)
 		{
-			// Get currently open text editor that matches the filename.
-			ITextEditor openTextEditor = null;
-			ITextEditorProvider provider = FileService.GetOpenFile(fileName) as ITextEditorProvider;
-			if (provider != null) {
-				openTextEditor = provider.TextEditor;
-			}
-			
 			// Load the text into the definition view's text editor.
-			if (openTextEditor != null) {
-				ctl.Text = openTextEditor.Document.Text;
-			} else {
-				ctl.Load(fileName);
-			}
+			ctl.Document = new TextDocument(SD.FileService.GetFileContent(fileName));
 			currentFileName = fileName;
 			ctl.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
 		}

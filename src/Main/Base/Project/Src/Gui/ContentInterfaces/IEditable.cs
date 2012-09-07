@@ -7,6 +7,7 @@ using System;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
+	[ViewContentService]
 	public interface IEditable
 	{
 		/// <summary>

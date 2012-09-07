@@ -4,6 +4,7 @@
 using System;
 using System.Windows.Controls.Primitives;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -61,12 +62,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 
 		ITextEditor GetCurrentEditor()
 		{
-			if (WorkbenchSingleton.Workbench == null)
-				return null;
-			var activeViewContent = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			if (activeViewContent == null)
-				return null;
-			return activeViewContent.TextEditor;
+			return SD.GetActiveViewContentService<ITextEditor>();
 		}
 		
 		void OpenAtMousePosition()

@@ -25,17 +25,15 @@ namespace Debugger.AddIn
 		
 		public bool IsValid(object caller, Condition condition)
 		{
-			if (WorkbenchSingleton.Workbench == null || WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null)
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
+			if (editor == null)
 				return false;
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as ITextEditorProvider;
-			if (provider == null)
-				return false;
-			if (string.IsNullOrEmpty(provider.TextEditor.FileName))
+			if (string.IsNullOrEmpty(editor.FileName))
 				return false;
 			
 			foreach (BreakpointBookmark mark in DebuggerService.Breakpoints) {
-				if ((mark.FileName == provider.TextEditor.FileName) &&
-				    (mark.LineNumber == provider.TextEditor.Caret.Line))
+				if ((mark.FileName == editor.FileName) &&
+				    (mark.LineNumber == editor.Caret.Line))
 					return true;
 			}
 			

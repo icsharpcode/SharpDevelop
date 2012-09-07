@@ -9,7 +9,7 @@ using ICSharpCode.SharpDevelop;
 namespace ICSharpCode.SharpDevelop.Editor.Commands
 {
 	/// <summary>
-	/// Description of CommentRegion
+	/// Surrounds the selected text in a comment
 	/// </summary>
 	public class CommentRegion : AbstractMenuCommand
 	{
@@ -18,13 +18,12 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		/// </summary>
 		public override void Run()
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			
-			if (provider == null)
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
+			if (editor == null)
 				return;
 			
-			using (provider.TextEditor.Document.OpenUndoGroup())
-				provider.TextEditor.Language.FormattingStrategy.SurroundSelectionWithComment(provider.TextEditor);
+			using (editor.Document.OpenUndoGroup())
+				editor.Language.FormattingStrategy.SurroundSelectionWithComment(editor);
 		}
 	}
 }

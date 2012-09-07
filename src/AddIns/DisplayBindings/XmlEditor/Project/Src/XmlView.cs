@@ -82,11 +82,12 @@ namespace ICSharpCode.XmlEditor
 		{
 			get {
 				foreach (IViewContent view in File.RegisteredViewContents) {
-					ITextEditorProvider provider = view as ITextEditorProvider;
-					if (provider != null) {
+					IFileDocumentProvider provider = view.GetService<IFileDocumentProvider>();
+					ITextEditor textEditor = view.GetService<ITextEditor>();
+					if (textEditor != null && provider != null) {
 						IDocument document = provider.GetDocumentForFile(File);
 						if (document != null) {
-							return provider.TextEditor;
+							return textEditor;
 						}
 					}
 				}

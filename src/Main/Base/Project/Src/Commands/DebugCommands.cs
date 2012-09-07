@@ -117,22 +117,11 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			var viewContent = WorkbenchSingleton.Workbench.ActiveContent;
-			ITextEditorProvider provider = viewContent as ITextEditorProvider;
-			ITextEditor editor = null;
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
 			
-			if (provider != null) {
-				editor = provider.TextEditor;
+			if (editor != null) {
 				if (!string.IsNullOrEmpty(editor.FileName)) {
 					DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line, typeof(BreakpointBookmark));
-				}
-			} else {
-				var view = viewContent as AbstractViewContentWithoutFile;
-				if (view != null) {
-					editor = view.GetService(typeof(ITextEditor)) as ITextEditor;
-					if (editor != null) {
-						DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line, typeof(DecompiledBreakpointBookmark));
-					}
 				}
 			}
 		}

@@ -13,8 +13,10 @@ using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
+	[ViewContentService]
 	public interface ITextEditorProvider : IFileDocumentProvider
 	{
+		[Obsolete("Use viewContent.GetService<ITextEditor>() instead.")]
 		ITextEditor TextEditor {
 			get;
 		}
@@ -23,6 +25,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 	/// <summary>
 	/// Interface for text editors.
 	/// </summary>
+	[ViewContentService]
 	public interface ITextEditor : IServiceProvider
 	{
 		/// <summary>

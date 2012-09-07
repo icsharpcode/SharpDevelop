@@ -493,7 +493,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// </summary>
 		public void StoreMemento(IViewContent viewContent)
 		{
-			IMementoCapable mementoCapable = viewContent as IMementoCapable;
+			IMementoCapable mementoCapable = viewContent.GetService<IMementoCapable>();
 			if (mementoCapable != null && LoadDocumentProperties) {
 				if (viewContent.PrimaryFileName == null)
 					return;
@@ -510,7 +510,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		void LoadViewContentMemento(IViewContent viewContent)
 		{
-			IMementoCapable mementoCapable = viewContent as IMementoCapable;
+			IMementoCapable mementoCapable = viewContent.GetService<IMementoCapable>();
 			if (mementoCapable != null && LoadDocumentProperties) {
 				if (viewContent.PrimaryFileName == null)
 					return;

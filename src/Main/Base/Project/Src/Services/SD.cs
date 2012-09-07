@@ -59,6 +59,33 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
+		/// Equivalent to <code>SD.Workbench.ActiveViewContent.GetService&lt;T&gt;()</code>,
+		/// but does not throw a NullReferenceException when ActiveViewContent is null.
+		/// (instead, null is returned).
+		/// </summary>
+		public static T GetActiveViewContentService<T>() where T : class
+		{
+			return (T)GetActiveViewContentService(typeof(T));
+		}
+		
+		/// <summary>
+		/// Equivalent to <code>SD.Workbench.ActiveViewContent.GetService(type)</code>,
+		/// but does not throw a NullReferenceException when ActiveViewContent is null.
+		/// (instead, null is returned).
+		/// </summary>
+		public static object GetActiveViewContentService(Type type)
+		{
+			var workbench = ServiceSingleton.ServiceProvider.GetService(typeof(IWorkbench)) as IWorkbench;
+			if (workbench != null) {
+				var activeViewContent = workbench.ActiveViewContent;
+				if (activeViewContent != null) {
+					return activeViewContent.GetService(type);
+				}
+			}
+			return null;
+		}
+		
+		/// <summary>
 		/// Gets the workbench.
 		/// </summary>
 		public static IWorkbench Workbench {
