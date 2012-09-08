@@ -13,6 +13,7 @@ using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.ILSpyAddIn.LaunchILSpy;
 using ICSharpCode.ILSpyAddIn.ViewContent;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -47,7 +48,7 @@ namespace ICSharpCode.ILSpyAddIn
 		#region Constructor
 		public DecompiledViewContent(FileName assemblyFile, string fullTypeName, string entityTag)
 		{
-			this.virtualFileName = FileName.Create("ilspy://" + assemblyFile + ">" + fullTypeName);
+			this.virtualFileName = FileName.Create("ilspy://" + assemblyFile + "/" + fullTypeName);
 			this.codeView = new CodeView();
 			
 			this.assemblyFile = assemblyFile;
@@ -55,7 +56,7 @@ namespace ICSharpCode.ILSpyAddIn
 			this.jumpToEntityIdStringWhenDecompilationFinished = entityTag;
 			
 			string shortTypeName = fullTypeName.Substring(fullTypeName.LastIndexOf('.') + 1);
-			this.TitleName = "[" + shortTypeName + "]";
+			this.TitleName = "[" + ReflectionHelper.SplitTypeParameterCountFromReflectionName(shortTypeName) + "]";
 			
 			Thread thread = new Thread(DecompilationThread);
 			thread.Name = "Decompiler (" + shortTypeName + ")";
