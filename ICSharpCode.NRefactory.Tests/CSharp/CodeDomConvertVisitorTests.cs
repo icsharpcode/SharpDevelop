@@ -50,6 +50,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		#region Helper methods
+		CodeObject ConvertInContext(string program)
+		{
+			var p = PrepareResolver(program);
+			return convertVisitor.Convert(p.Item2, p.Item1);
+		}
+		
 		string ConvertHelper(AstNode node, Action<CSharpCodeProvider, CodeObject, TextWriter, CodeGeneratorOptions> action)
 		{
 			CSharpResolver resolver = new CSharpResolver(compilation);
@@ -222,6 +228,26 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void StaticProperty()
 		{
 			Assert.AreEqual("System.Environment.TickCount", ConvertExpression("Environment.TickCount"));
+		}
+		
+		[Test]
+		public void FullyQualifiedEnumFieldAccess()
+		{
+			string program = "class A { object x = $System.StringComparison.Ordinal$; }";
+			var cfre = (CodeFieldReferenceExpression)ConvertInContext(program);
+			Assert.AreEqual("Ordinal", cfre.FieldName);
+			var ctre = ((CodeTypeReferenceExpression)cfre.TargetObject);
+			Assert.AreEqual("System.StringComparison", ctre.Type.BaseType);
+		}
+		
+		[Test]
+		public void EnumFieldAccess()
+		{
+			string program = "using System; class A { object x = $StringComparison.Ordinal$; }";
+			var cfre = (CodeFieldReferenceExpression)ConvertInContext(program);
+			Assert.AreEqual("Ordinal", cfre.FieldName);
+			var ctre = ((CodeTypeReferenceExpression)cfre.TargetObject);
+			Assert.AreEqual("System.StringComparison", ctre.Type.BaseType);
 		}
 		
 		[Test]
