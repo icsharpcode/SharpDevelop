@@ -127,7 +127,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void LoadFile(string fileName)
 		{
 			// Load the text into the definition view's text editor.
-			ctl.Document = new TextDocument(SD.FileService.GetFileContent(fileName));
+			ctl.Document = new TextDocument(SD.FileService.GetFileContent(fileName), fileName);
 			currentFileName = fileName;
 			ctl.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
 		}

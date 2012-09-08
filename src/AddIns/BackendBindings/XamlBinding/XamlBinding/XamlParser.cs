@@ -82,7 +82,7 @@ namespace ICSharpCode.XamlBinding
 				int index = comment.Value.IndexOfAny(TaskListTokens, 0, out matchLength);
 				if (index > -1) {
 					if (document == null)
-						document = fileContent as IDocument ?? new ReadOnlyDocument(fileContent);
+						document = fileContent as IDocument ?? new ReadOnlyDocument(fileContent, parseInfo.FileName);
 					do {
 						TextLocation startLocation = document.GetLocation(comment.StartOffset + index);
 						int startOffset = index + comment.StartOffset;

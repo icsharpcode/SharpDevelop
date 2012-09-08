@@ -142,7 +142,7 @@ class Test {
 	void Main(string[] b) {
 	   SomeMethod(b[0 + 1]);
 	}
-}"), "test.cs");
+}", "test.cs"), "test.cs");
 			// warm up the type system
 			var unresolvedFile = cu.ToTypeSystem();
 			var pc = new ICSharpCode.NRefactory.CSharp.CSharpProjectContent().AddOrUpdateFiles(unresolvedFile);

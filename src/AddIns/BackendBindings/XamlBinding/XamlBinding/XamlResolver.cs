@@ -38,7 +38,7 @@ namespace ICSharpCode.XamlBinding
 			this.parseInfo = parseInfo;
 			this.location = location;
 			this.compilation = compilation;
-			textDocument = new ReadOnlyDocument(parseInfo.Text);
+			textDocument = new ReadOnlyDocument(parseInfo.Text, parseInfo.FileName);
 			offset = textDocument.GetOffset(location);
 			
 			AXmlObject innermost = parseInfo.Document.GetChildAtOffset(offset);

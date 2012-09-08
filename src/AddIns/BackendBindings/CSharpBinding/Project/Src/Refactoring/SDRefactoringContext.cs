@@ -108,21 +108,21 @@ namespace CSharpBinding.Refactoring
 		public override IDocumentLine GetLineByOffset(int offset)
 		{
 			if (document == null)
-				document = new ReadOnlyDocument(textSource);
+				document = new ReadOnlyDocument(textSource, resolver.UnresolvedFile.FileName);
 			return document.GetLineByOffset(offset);
 		}
 		
 		public override int GetOffset(TextLocation location)
 		{
 			if (document == null)
-				document = new ReadOnlyDocument(textSource);
+				document = new ReadOnlyDocument(textSource, resolver.UnresolvedFile.FileName);
 			return document.GetOffset(location);
 		}
 		
 		public override TextLocation GetLocation(int offset)
 		{
 			if (document == null)
-				document = new ReadOnlyDocument(textSource);
+				document = new ReadOnlyDocument(textSource, resolver.UnresolvedFile.FileName);
 			return document.GetLocation(offset);
 		}
 		

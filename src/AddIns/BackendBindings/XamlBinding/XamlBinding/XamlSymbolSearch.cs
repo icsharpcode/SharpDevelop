@@ -92,7 +92,7 @@ namespace ICSharpCode.XamlBinding
 			XamlResolver resolver = new XamlResolver();
 			do {
 				if (document == null) {
-					document = new ReadOnlyDocument(textSource);
+					document = new ReadOnlyDocument(textSource, fileName);
 					highlighter = SD.EditorControlService.CreateHighlighter(document);
 				}
 				var result = resolver.Resolve(parseInfo, document.GetLocation(offset + entity.Name.Length / 2 + 1), compilation, cancellationToken);

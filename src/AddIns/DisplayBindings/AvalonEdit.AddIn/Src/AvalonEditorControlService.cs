@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ICSharpCode.AvalonEdit.AddIn.Options;
@@ -33,6 +34,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public IHighlighter CreateHighlighter(IDocument document)
 		{
+			Debug.Assert(document.FileName != null, "FileName not set in " + document.GetType().FullName);
 			var def = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(document.FileName));
 			var doc = document as TextDocument;
 			if (def == null || doc == null)

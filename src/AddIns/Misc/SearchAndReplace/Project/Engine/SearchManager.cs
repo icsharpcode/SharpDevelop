@@ -300,7 +300,7 @@ namespace SearchAndReplace
 					}
 					
 					// try to find a result
-					result = Find(file, new ReadOnlyDocument(buffer), searchOffset, length);
+					result = Find(file, new ReadOnlyDocument(buffer, file), searchOffset, length);
 					
 					i++;
 				}

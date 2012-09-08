@@ -36,10 +36,12 @@ namespace ICSharpCode.NRefactory.Editor
 		/// <summary>
 		/// Creates a new ReadOnlyDocument from the given text source.
 		/// </summary>
-		public ReadOnlyDocument(ITextSource textSource, string fileName = null)
+		public ReadOnlyDocument(ITextSource textSource, string fileName)
 		{
 			if (textSource == null)
 				throw new ArgumentNullException("textSource");
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
 			// ensure that underlying buffer is immutable
 			this.textSource = textSource.CreateSnapshot();
 			this.fileName = fileName;
@@ -60,7 +62,7 @@ namespace ICSharpCode.NRefactory.Editor
 		/// <summary>
 		/// Creates a new ReadOnlyDocument from the given string.
 		/// </summary>
-		public ReadOnlyDocument(string text, string fileName = null)
+		public ReadOnlyDocument(string text, string fileName)
 			: this(new StringTextSource(text), fileName)
 		{
 		}

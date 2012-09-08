@@ -87,12 +87,12 @@ namespace CSharpBinding.Parser
 			else
 				parseInfo = new ParseInformation(file, fullParseInformationRequested);
 			
-			AddCommentTags(cu, parseInfo.TagComments, fileContent);
+			AddCommentTags(cu, parseInfo.TagComments, fileContent, parseInfo.FileName);
 			
 			return parseInfo;
 		}
 		
-		void AddCommentTags(SyntaxTree cu, IList<TagComment> tagComments, ITextSource fileContent)
+		void AddCommentTags(SyntaxTree cu, IList<TagComment> tagComments, ITextSource fileContent, FileName fileName)
 		{
 			ReadOnlyDocument document = null;
 			foreach (var comment in cu.Descendants.OfType<Comment>().Where(c => c.CommentType != CommentType.InactiveCode)) {
@@ -100,7 +100,7 @@ namespace CSharpBinding.Parser
 				int index = comment.Content.IndexOfAny(TaskListTokens, 0, out matchLength);
 				if (index > -1) {
 					if (document == null)
-						document = new ReadOnlyDocument(fileContent);
+						document = new ReadOnlyDocument(fileContent, fileName);
 					int commentSignLength = comment.CommentType == CommentType.Documentation || comment.CommentType == CommentType.MultiLineDocumentation ? 3 : 2;
 					int commentEndSignLength = comment.CommentType == CommentType.MultiLine || comment.CommentType == CommentType.MultiLineDocumentation ? 2 : 0;
 					int commentStartOffset = document.GetOffset(comment.StartLocation) + commentSignLength;
@@ -143,7 +143,7 @@ namespace CSharpBinding.Parser
 				variable, csParseInfo.UnresolvedFile, csParseInfo.SyntaxTree, compilation,
 				delegate (AstNode node, ResolveResult result) {
 					if (document == null) {
-						document = new ReadOnlyDocument(fileContent);
+						document = new ReadOnlyDocument(fileContent, parseInfo.FileName);
 						highlighter = SD.EditorControlService.CreateHighlighter(document);
 					}
 					var region = new DomRegion(parseInfo.FileName, node.StartLocation, node.EndLocation);

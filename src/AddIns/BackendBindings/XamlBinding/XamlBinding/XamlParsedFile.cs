@@ -121,7 +121,7 @@ namespace ICSharpCode.XamlBinding
 			public XamlDocumentVisitor(IUnresolvedFile file, ITextSource fileContent)
 			{
 				this.file = file;
-				textDocument = new ReadOnlyDocument(fileContent);
+				textDocument = new ReadOnlyDocument(fileContent, file.FileName);
 			}
 			
 			public override void VisitDocument(AXmlDocument document)

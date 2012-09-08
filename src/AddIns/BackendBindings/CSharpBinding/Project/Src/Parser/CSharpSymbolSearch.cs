@@ -104,9 +104,12 @@ namespace CSharpBinding
 				searchScope, parseInfo.UnresolvedFile, parseInfo.SyntaxTree, compilation,
 				delegate (AstNode node, ResolveResult result) {
 					if (document == null) {
-						document = new ReadOnlyDocument(textSource);
+						document = new ReadOnlyDocument(textSource, fileName);
 						highlighter = SD.EditorControlService.CreateHighlighter(document);
 					}
+					Identifier identifier = node.GetChildByRole(Roles.Identifier);
+					if (identifier != null)
+						node = identifier;
 					var region = new DomRegion(fileName, node.StartLocation, node.EndLocation);
 					int offset = document.GetOffset(node.StartLocation);
 					int length = document.GetOffset(node.EndLocation) - offset; 
