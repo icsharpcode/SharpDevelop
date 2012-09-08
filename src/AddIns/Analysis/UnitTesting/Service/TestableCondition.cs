@@ -7,6 +7,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor.Commands;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.UnitTesting
@@ -34,13 +35,8 @@ namespace ICSharpCode.UnitTesting
 			if (testTreeView != null && testTreeView.SelectedMethod != null) {
 				return testTreeView.SelectedMethod.Resolve();
 			}
-//			MemberNode memberNode = caller as MemberNode;
-//			if (memberNode != null)
-//				return memberNode.Member;
-//			ClassMemberBookmark mbookmark = caller as ClassMemberBookmark;
-//			if (mbookmark != null)
-//				return mbookmark.Member;
-			return null;
+			IEntity entity = ResolveResultMenuCommand.GetEntity(caller);
+			return entity as IMethod;
 		}
 		
 		public static ITypeDefinition GetClass(object caller)
@@ -49,13 +45,8 @@ namespace ICSharpCode.UnitTesting
 			if (testTreeView != null && testTreeView.SelectedClass != null) {
 				return testTreeView.SelectedClass.Resolve();
 			}
-//			ClassNode classNode = caller as ClassNode;
-//			if (classNode != null)
-//				return classNode.Class;
-//			ClassBookmark bookmark = caller as ClassBookmark;
-//			if (bookmark != null)
-//				return bookmark.Class;
-			return null;
+			IEntity entity = ResolveResultMenuCommand.GetEntity(caller);
+			return entity as ITypeDefinition;
 		}
 		
 		public static IProject GetProject(object caller)

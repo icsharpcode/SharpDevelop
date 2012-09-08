@@ -17,6 +17,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	/// Supports the following types as <see cref="Owner"/>:
 	/// - IUnresolvedTypeDefinition (as used by EntityBookmark)
 	/// - IUnresolvedMember (as used by EntityBookmark)
+	/// - ResolveResult (so that using the wrong GetEntity overload doesn't cause hard-to-debug problems)
 	/// 
 	/// If the owner isn't one of the types above, the command operates on the caret position in the current editor.
 	/// </summary>
@@ -31,12 +32,24 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			Run(resolveResult);
 		}
 		
-		public static ResolveResult GetResolveResult(ITextEditor editor, object owner)
+		public static ResolveResult GetResolveResult(object owner)
 		{
-			if (owner is IUnresolvedTypeDefinition || owner is IUnresolvedMember) {
+			return GetResolveResult(null, owner);
+		}
+		
+		public static IEntity GetEntity(object owner)
+		{
+			return GetEntity(GetResolveResult(null, owner));
+		}
+		
+		static ResolveResult GetResolveResult(ITextEditor currentEditor, object owner)
+		{
+			if (owner is ResolveResult) {
+				return (ResolveResult)owner;
+			} else if (owner is IUnresolvedTypeDefinition || owner is IUnresolvedMember) {
 				return GetResolveResultFromUnresolvedEntity((IUnresolvedEntity)owner);
-			} else if (editor != null) {
-				return SD.ParserService.Resolve(editor, editor.Caret.Location);
+			} else if (currentEditor != null) {
+				return SD.ParserService.Resolve(currentEditor, currentEditor.Caret.Location);
 			} else {
 				return ErrorResolveResult.UnknownError;
 			}
@@ -61,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			}
 		}
 		
-		protected IEntity GetEntity(ResolveResult symbol)
+		protected static IEntity GetEntity(ResolveResult symbol)
 		{
 			TypeResolveResult trr = symbol as TypeResolveResult;
 			if (trr != null)

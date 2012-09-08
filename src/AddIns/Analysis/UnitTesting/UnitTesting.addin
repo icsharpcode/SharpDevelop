@@ -32,35 +32,7 @@
 		     defaultPosition="Right, Hidden" />
 	</Path>
 	
-	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu">
-		<Include id="UnitTests" insertbefore="MenuBuilder" item="/SharpDevelop/Pads/ClassBrowser/MemberContextMenu/UnitTestMenu"/>
-	</Path>
-	
-	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu">
-		<Include id="UnitTests" insertbefore="MenuBuilder" item="/SharpDevelop/Pads/ClassBrowser/ClassContextMenu/UnitTestMenu"/>
-	</Path>
-	
-	<Path name="/SharpDevelop/Pads/ClassBrowser/MemberContextMenu">
-		<Condition name="Testable">
-			<MenuItem id="UnitTestMenu" type="Menu" label="${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}" icon="PadIcons.NUnitTest" insertbefore="MenuBuilder">
-				<ComplexCondition action="Disable">
-					<And>
-						<Condition name="SolutionOpen"/>
-						<Not>
-							<Condition name="RunningTests"/>
-						</Not>
-					</And>
-					<MenuItem id="RunInPad"
-					          label="${res:ICSharpCode.UnitTesting.RunInTestPad}"
-					          icon="PadIcons.NUnitTest"
-					          class="ICSharpCode.UnitTesting.RunTestInPadCommand"/>
-				</ComplexCondition>
-				<Include id="CommonTestCommands" path="/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands"/>
-			</MenuItem>
-		</Condition>
-	</Path>
-	
-	<Path name="/SharpDevelop/Pads/ClassBrowser/ClassContextMenu">
+	<Path name="/SharpDevelop/ViewContent/TextEditor/EntityContextMenu">
 		<Condition name="Testable">
 			<MenuItem id="UnitTestMenu" type="Menu" label="${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}" icon="PadIcons.NUnitTest" insertbefore="MenuBuilder">
 				<ComplexCondition action="Disable">
