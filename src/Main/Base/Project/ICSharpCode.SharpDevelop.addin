@@ -2273,6 +2273,9 @@
 	
 	<Path name="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
 		<!-- put project option panels valid for all .NET projects here -->
+		<OptionPanel id          = "CustomTool"
+		             label       = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomTool}"
+		             class       = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ProjectCustomToolOptionsPanel"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Pads/ErrorList/TaskContextMenu">
