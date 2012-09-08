@@ -50,11 +50,6 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		public IList<HighlightedSection> Sections { get; private set; }
 		
-		/// <summary>
-		/// Gets the default color of all text outside a <see cref="HighlightedSection"/>.
-		/// </summary>
-		public HighlightingColor DefaultTextColor { get; set; }
-		
 		[Conditional("DEBUG")]
 		void ValidateInvariants()
 		{
@@ -263,5 +258,21 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			return "[" + GetType().Name + " " + ToHtml(new HtmlOptions()) + "]";
 		}
 		#endregion
+		
+		public HighlightedInlineBuilder ToInlineBuilder()
+		{
+			HighlightedInlineBuilder builder = new HighlightedInlineBuilder(Document.GetText(DocumentLine));
+			int startOffset = DocumentLine.Offset;
+			// copy only the foreground and background colors
+			foreach (HighlightedSection section in Sections) {
+				if (section.Color.Foreground != null) {
+					builder.SetForeground(section.Offset - startOffset, section.Length, section.Color.Foreground.GetBrush(null));
+				}
+				if (section.Color.Background != null) {
+					builder.SetBackground(section.Offset - startOffset, section.Length, section.Color.Background.GetBrush(null));
+				}
+			}
+			return builder;
+		}
 	}
 }

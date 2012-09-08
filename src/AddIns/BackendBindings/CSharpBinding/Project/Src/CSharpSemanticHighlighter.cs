@@ -5,8 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows.Threading;
 using CSharpBinding.Parser;
 using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Resolver;
@@ -25,8 +28,8 @@ namespace CSharpBinding
 	/// </summary>
 	public class CSharpSemanticHighlighter : DepthFirstAstVisitor, IHighlighter, IDisposable
 	{
-		readonly ITextEditor textEditor;
-		readonly ISyntaxHighlighter syntaxHighlighter;
+		readonly IDocument document;
+		readonly HighlightingColor defaultTextColor;
 		readonly HighlightingColor referenceTypeColor;
 		readonly HighlightingColor valueTypeColor;
 		readonly HighlightingColor methodCallColor;
@@ -47,34 +50,30 @@ namespace CSharpBinding
 		bool isInAccessor;
 		
 		#region Constructor + Dispose
-		public CSharpSemanticHighlighter(ITextEditor textEditor, ISyntaxHighlighter syntaxHighlighter)
+		public CSharpSemanticHighlighter(IDocument document)
 		{
-			if (textEditor == null)
-				throw new ArgumentNullException("textEditor");
-			if (syntaxHighlighter == null)
-				throw new ArgumentNullException("syntaxHighlighter");
-			this.textEditor = textEditor;
-			this.syntaxHighlighter = syntaxHighlighter;
+			if (document == null)
+				throw new ArgumentNullException("document");
+			this.document = document;
 			
-			IHighlightingDefinition highlightingDefinition = syntaxHighlighter.HighlightingDefinition;
-			this.referenceTypeColor = highlightingDefinition.GetNamedColor("ReferenceTypes");
-			this.valueTypeColor = highlightingDefinition.GetNamedColor("ValueTypes");
-			this.methodCallColor = highlightingDefinition.GetNamedColor("MethodCall");
-			this.fieldAccessColor = highlightingDefinition.GetNamedColor("FieldAccess");
-			this.valueKeywordColor = highlightingDefinition.GetNamedColor("NullOrValueKeywords");
-			this.parameterModifierColor = highlightingDefinition.GetNamedColor("ParameterModifiers");
-			this.inactiveCodeColor = highlightingDefinition.GetNamedColor("InactiveCode");
+			var highlighting = HighlightingManager.Instance.GetDefinition("C#");
+			this.defaultTextColor = highlighting.GetNamedColor("DefaultTextAndBackground");
+			this.referenceTypeColor = highlighting.GetNamedColor("ReferenceTypes");
+			this.valueTypeColor = highlighting.GetNamedColor("ValueTypes");
+			this.methodCallColor = highlighting.GetNamedColor("MethodCall");
+			this.fieldAccessColor = highlighting.GetNamedColor("FieldAccess");
+			this.valueKeywordColor = highlighting.GetNamedColor("NullOrValueKeywords");
+			this.parameterModifierColor = highlighting.GetNamedColor("ParameterModifiers");
+			this.inactiveCodeColor = highlighting.GetNamedColor("InactiveCode");
 			
 			SD.ParserService.ParseInformationUpdated += ParserService_ParseInformationUpdated;
 			SD.ParserService.LoadSolutionProjectsThread.Finished += ParserService_LoadSolutionProjectsThreadEnded;
-			syntaxHighlighter.VisibleDocumentLinesChanged += syntaxHighlighter_VisibleDocumentLinesChanged;
 		}
 		
 		public void Dispose()
 		{
 			SD.ParserService.ParseInformationUpdated -= ParserService_ParseInformationUpdated;
 			SD.ParserService.LoadSolutionProjectsThread.Finished -= ParserService_LoadSolutionProjectsThreadEnded;
-			syntaxHighlighter.VisibleDocumentLinesChanged -= syntaxHighlighter_VisibleDocumentLinesChanged;
 		}
 		#endregion
 		
@@ -140,9 +139,7 @@ namespace CSharpBinding
 		#region Event Handlers
 		void syntaxHighlighter_VisibleDocumentLinesChanged(object sender, EventArgs e)
 		{
-			// use this event to remove cached lines which are no longer visible
-			var visibleDocumentLines = new HashSet<IDocumentLine>(syntaxHighlighter.GetVisibleDocumentLines());
-			cachedLines.RemoveAll(c => !visibleDocumentLines.Contains(c.DocumentLine));
+
 		}
 		
 		void ParserService_LoadSolutionProjectsThreadEnded(object sender, EventArgs e)
@@ -150,16 +147,16 @@ namespace CSharpBinding
 			cachedLines.Clear();
 			invalidLines.Clear();
 			forceParseOnNextRefresh = true;
-			syntaxHighlighter.InvalidateAll();
+			OnHighlightingStateChanged(0, document.LineCount);
 		}
 		
 		void ParserService_ParseInformationUpdated(object sender, ParseInformationEventArgs e)
 		{
-			if (e.FileName == textEditor.FileName && invalidLines.Count > 0) {
+			if (e.FileName == document.FileName && invalidLines.Count > 0) {
 				cachedLines.Clear();
 				foreach (IDocumentLine line in invalidLines) {
 					if (!line.IsDeleted) {
-						syntaxHighlighter.InvalidateLine(line);
+						OnHighlightingStateChanged(line.LineNumber, line.LineNumber);
 					}
 				}
 				invalidLines.Clear();
@@ -168,18 +165,22 @@ namespace CSharpBinding
 		#endregion
 		
 		#region IHighlighter implementation
+		public event HighlightingStateChangedEventHandler HighlightingStateChanged;
+		
+		protected virtual void OnHighlightingStateChanged(int fromLineNumber, int toLineNumber)
+		{
+			if (HighlightingStateChanged != null) {
+				HighlightingStateChanged(this, fromLineNumber, toLineNumber);
+			}
+		}
+		
 		IDocument IHighlighter.Document {
-			get { return textEditor.Document; }
+			get { return document; }
 		}
 		
 		IEnumerable<HighlightingColor> IHighlighter.GetColorStack(int lineNumber)
 		{
 			return null;
-		}
-		
-		event HighlightingStateChangedEventHandler IHighlighter.HighlightingStateChanged {
-			add { }
-			remove { }
 		}
 		
 		void IHighlighter.UpdateHighlightingState(int lineNumber)
@@ -188,12 +189,12 @@ namespace CSharpBinding
 		
 		public HighlightedLine HighlightLine(int lineNumber)
 		{
-			IDocumentLine documentLine = textEditor.Document.GetLineByNumber(lineNumber);
+			IDocumentLine documentLine = document.GetLineByNumber(lineNumber);
 			if (hasCrashed) {
 				// don't highlight anymore after we've crashed
-				return new HighlightedLine(textEditor.Document, documentLine);
+				return new HighlightedLine(document, documentLine);
 			}
-			ITextSourceVersion newVersion = textEditor.Document.Version;
+			ITextSourceVersion newVersion = document.Version;
 			CachedLine cachedLine = null;
 			for (int i = 0; i < cachedLines.Count; i++) {
 				if (cachedLines[i].DocumentLine == documentLine) {
@@ -215,9 +216,9 @@ namespace CSharpBinding
 			CSharpFullParseInformation parseInfo;
 			if (forceParseOnNextRefresh) {
 				forceParseOnNextRefresh = false;
-				parseInfo = SD.ParserService.Parse(textEditor.FileName, textEditor.Document) as CSharpFullParseInformation;
+				parseInfo = SD.ParserService.Parse(FileName.Create(document.FileName), document) as CSharpFullParseInformation;
 			} else {
-				parseInfo = SD.ParserService.GetCachedParseInformation(textEditor.FileName, textEditor.Document.Version) as CSharpFullParseInformation;
+				parseInfo = SD.ParserService.GetCachedParseInformation(FileName.Create(document.FileName), document.Version) as CSharpFullParseInformation;
 			}
 			if (parseInfo == null) {
 				if (!invalidLines.Contains(documentLine))
@@ -237,7 +238,7 @@ namespace CSharpBinding
 			var compilation = SD.ParserService.GetCompilationForFile(parseInfo.FileName);
 			this.resolver = parseInfo.GetResolver(compilation);
 			
-			HighlightedLine line = new HighlightedLine(textEditor.Document, documentLine);
+			HighlightedLine line = new HighlightedLine(document, documentLine);
 			this.line = line;
 			this.lineNumber = lineNumber;
 			if (Debugger.IsAttached) {
@@ -253,10 +254,33 @@ namespace CSharpBinding
 			this.line = null;
 			this.resolver = null;
 			//Debug.WriteLine("Semantic highlighting for line {0} - added {1} sections", lineNumber, line.Sections.Count);
-			if (textEditor.Document.Version != null) {
-				cachedLines.Add(new CachedLine(line, textEditor.Document.Version));
+			if (document.Version != null) {
+				cachedLines.Add(new CachedLine(line, document.Version));
 			}
 			return line;
+		}
+		
+		public HighlightingColor DefaultTextColor {
+			get {
+				return defaultTextColor;
+			}
+		}
+		
+		public void BeginHighlighting()
+		{
+			
+		}
+		
+		public void EndHighlighting()
+		{
+			// use this event to remove cached lines which are no longer visible
+//			var visibleDocumentLines = new HashSet<IDocumentLine>(syntaxHighlighter.GetVisibleDocumentLines());
+//			cachedLines.RemoveAll(c => !visibleDocumentLines.Contains(c.DocumentLine));
+		}
+		
+		public HighlightingColor GetNamedColor(string name)
+		{
+			return null;
 		}
 		#endregion
 		

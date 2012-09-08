@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 	{
 		ITextEditor CreateEditor(out object control);
 		ITextEditorOptions GlobalOptions { get; }
-		ISyntaxHighlighter CreateHighlighter(IDocument document, string fileName);
+		IHighlighter CreateHighlighter(IDocument document);
 	}
 	
 	// Fallback if AvalonEdit.AddIn is not available (e.g. some unit tests)
@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 			}
 		}
 		
-		public ISyntaxHighlighter CreateHighlighter(IDocument document, string fileName)
+		public IHighlighter CreateHighlighter(IDocument document)
 		{
 			return null;
 		}

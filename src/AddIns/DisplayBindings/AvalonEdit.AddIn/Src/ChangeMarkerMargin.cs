@@ -232,7 +232,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				} else {
 					var baseDocument = new ReadOnlyDocument(changeWatcher.BaseDocument);
 					if (differ.editor.SyntaxHighlighting != null) {
-						var mainHighlighter = new DocumentHighlighter(baseDocument, differ.editor.SyntaxHighlighting.MainRuleSet);
+						var mainHighlighter = new DocumentHighlighter(baseDocument, differ.editor.SyntaxHighlighting);
 						var popupHighlighter = differ.editor.TextArea.GetService(typeof(IHighlighter)) as DocumentHighlighter;
 						
 						popupHighlighter.InitialSpanStack = mainHighlighter.GetSpanStack(currLineInfo.OldStartLineNumber);

@@ -26,7 +26,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			IHighlighter highlighter;
 			if (highlightingDefinition != null)
-				highlighter = new DocumentHighlighter(document, highlightingDefinition.MainRuleSet);
+				highlighter = new DocumentHighlighter(document, highlightingDefinition);
 			else
 				highlighter = null;
 			return ConvertTextDocumentToBlock(document, highlighter);

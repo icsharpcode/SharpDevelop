@@ -361,13 +361,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			TextDocument document = null;
 			ITextSource buffer = null;
 			FileName fileName = null;
-			ISyntaxHighlighter highlighter = null;
+			IHighlighter highlighter = null;
 			foreach (Reference r in list) {
 				if (document == null || fileName != r.FileName) {
 					buffer = SD.FileService.GetFileContent(r.FileName);
-					document = new TextDocument(DocumentUtilitites.GetTextSource(buffer));
+					document = new TextDocument(DocumentUtilitites.GetTextSource(buffer), r.FileName);
 					fileName = new FileName(r.FileName);
-					highlighter = SD.EditorControlService.CreateHighlighter(document, fileName);
+					highlighter = SD.EditorControlService.CreateHighlighter(document);
 				}
 				var start = r.StartLocation;
 				var end = r.EndLocation;

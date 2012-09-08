@@ -87,13 +87,13 @@ namespace ICSharpCode.XamlBinding
 			if (parseInfo == null)
 				return;
 			ReadOnlyDocument document = null;
-			ISyntaxHighlighter highlighter = null;
+			IHighlighter highlighter = null;
 			List<Reference> results = new List<Reference>();
 			XamlResolver resolver = new XamlResolver();
 			do {
 				if (document == null) {
 					document = new ReadOnlyDocument(textSource);
-					highlighter = SD.EditorControlService.CreateHighlighter(document, fileName);
+					highlighter = SD.EditorControlService.CreateHighlighter(document);
 				}
 				var result = resolver.Resolve(parseInfo, document.GetLocation(offset + entity.Name.Length / 2 + 1), compilation, cancellationToken);
 				int length = entity.Name.Length;

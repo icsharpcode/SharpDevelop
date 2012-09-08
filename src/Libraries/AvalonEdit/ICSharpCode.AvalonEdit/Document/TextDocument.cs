@@ -88,7 +88,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Create a new text document with the specified initial text.
 		/// </summary>
-		public TextDocument(IEnumerable<char> initialText)
+		public TextDocument(IEnumerable<char> initialText, string fileName = null)
 		{
 			if (initialText == null)
 				throw new ArgumentNullException("initialText");
@@ -101,14 +101,15 @@ namespace ICSharpCode.AvalonEdit.Document
 			
 			anchorTree = new TextAnchorTree(this);
 			undoStack = new UndoStack();
+			this.fileName = fileName;
 			FireChangeEvents();
 		}
 		
 		/// <summary>
 		/// Create a new text document with the specified initial text.
 		/// </summary>
-		public TextDocument(ITextSource initialText)
-			: this(GetTextFromTextSource(initialText))
+		public TextDocument(ITextSource initialText, string fileName = null)
+			: this(GetTextFromTextSource(initialText), fileName)
 		{
 		}
 		
@@ -1102,6 +1103,31 @@ namespace ICSharpCode.AvalonEdit.Document
 		object IServiceProvider.GetService(Type serviceType)
 		{
 			return this.ServiceProvider.GetService(serviceType);
+		}
+		#endregion
+		
+		#region FileName
+		string fileName;
+		
+		/// <inheritdoc/>
+		public event EventHandler FileNameChanged;
+		
+		void OnFileNameChanged(EventArgs e)
+		{
+			EventHandler handler = this.FileNameChanged;
+			if (handler != null)
+				handler(this, e);
+		}
+		
+		/// <inheritdoc/>
+		public string FileName {
+			get { return fileName; }
+			set {
+				if (fileName != value) {
+					fileName = value;
+					OnFileNameChanged(EventArgs.Empty);
+				}
+			}
 		}
 		#endregion
 	}

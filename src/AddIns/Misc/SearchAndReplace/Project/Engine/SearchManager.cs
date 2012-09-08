@@ -194,10 +194,8 @@ namespace SearchAndReplace
 					return null;
 				
 				ThrowIfCancellationRequested();
-				
-				
 				TextDocument document = null;
-				ISyntaxHighlighter highlighter = null;
+				IHighlighter highlighter = null;
 				int offset = 0;
 				int length = source.TextLength;
 				if (Target == SearchTarget.CurrentSelection && Selection != null) {
@@ -208,9 +206,9 @@ namespace SearchAndReplace
 				foreach (var result in strategy.FindAll(source, offset, length)) {
 					ThrowIfCancellationRequested();
 					if (document == null) {
-						document = new TextDocument(source);
+						document = new TextDocument(source, fileName);
 						var highlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
-						highlighter = SD.EditorControlService.CreateHighlighter(document, fileName);
+						highlighter = SD.EditorControlService.CreateHighlighter(document);
 					}
 					var start = document.GetLocation(result.Offset);
 					var end = document.GetLocation(result.Offset + result.Length);

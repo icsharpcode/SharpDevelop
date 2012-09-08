@@ -8,12 +8,12 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -127,7 +127,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		readonly IEnumerable<CustomizedHighlightingColor> customizations;
 		
 		public CustomizableHighlightingColorizer(IHighlightingDefinition highlightingDefinition, IEnumerable<CustomizedHighlightingColor> customizations)
-			: base(highlightingDefinition.MainRuleSet)
+			: base(highlightingDefinition)
 		{
 			if (customizations == null)
 				throw new ArgumentNullException("customizations");
@@ -137,14 +137,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		protected override void DeregisterServices(TextView textView)
 		{
-			textView.Services.RemoveService(typeof(ISyntaxHighlighter));
+			textView.Services.RemoveService(typeof(IHighlighter));
 			base.DeregisterServices(textView);
 		}
 		
 		protected override void RegisterServices(TextView textView)
 		{
 			base.RegisterServices(textView);
-			textView.Services.AddService(typeof(ISyntaxHighlighter), (CustomizingHighlighter)textView.GetService(typeof(IHighlighter)));
+//			textView.Services.AddService(typeof(IHighlighter), (CustomizingHighlighter)textView.GetService(typeof(IHighlighter)));
 		}
 		
 		protected override IHighlighter CreateHighlighter(TextView textView, TextDocument document)
@@ -152,7 +152,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return new CustomizingHighlighter(textView, customizations, highlightingDefinition, base.CreateHighlighter(textView, document));
 		}
 		
-		internal sealed class CustomizingHighlighter : IHighlighter, ISyntaxHighlighter
+		internal sealed class CustomizingHighlighter : IHighlighter
 		{
 			readonly TextView textView;
 			readonly IEnumerable<CustomizedHighlightingColor> customizations;
@@ -223,10 +223,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				highlighter.HighlightingStateChanged -= highlighter_HighlightingStateChanged;
 			}
 			
-			void highlighter_HighlightingStateChanged(IHighlighter sender, int lineNumber)
+			void highlighter_HighlightingStateChanged(IHighlighter sender, int fromLineNumber, int toLineNumber)
 			{
 				if (HighlightingStateChanged != null)
-					HighlightingStateChanged(this, lineNumber);
+					HighlightingStateChanged(this, fromLineNumber, toLineNumber);
 			}
 			
 			public IEnumerable<string> GetSpanColorNamesFromLineStart(int lineNumber)
@@ -266,14 +266,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			public void InvalidateLine(IDocumentLine line)
 			{
 				if (textView == null)
-					throw new InvalidOperationException("ISyntaxHighlighter has no TextView assigned!");
+					throw new InvalidOperationException("IHighlighter has no TextView assigned!");
 				textView.Redraw(line, DispatcherPriority.Background);
 			}
 			
 			public void InvalidateAll()
 			{
 				if (textView == null)
-					throw new InvalidOperationException("ISyntaxHighlighter has no TextView assigned!");
+					throw new InvalidOperationException("IHighlighter has no TextView assigned!");
 				textView.Redraw(DispatcherPriority.Background);
 			}
 			
@@ -285,7 +285,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			public IEnumerable<IDocumentLine> GetVisibleDocumentLines()
 			{
 				if (textView == null)
-					throw new InvalidOperationException("ISyntaxHighlighter has no TextView assigned!");
+					throw new InvalidOperationException("IHighlighter has no TextView assigned!");
 				List<IDocumentLine> result = new List<IDocumentLine>();
 				foreach (VisualLine line in textView.VisualLines) {
 					if (line.FirstDocumentLine == line.LastDocumentLine) {
@@ -317,21 +317,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			}
 			
-			public HighlightedInlineBuilder BuildInlines(int lineNumber)
+			public void BeginHighlighting()
 			{
-				HighlightedInlineBuilder builder = new HighlightedInlineBuilder(document.GetText(document.GetLineByNumber(lineNumber)));
-				HighlightedLine highlightedLine = HighlightLine(lineNumber);
-				int startOffset = highlightedLine.DocumentLine.Offset;
-				// copy only the foreground and background colors
-				foreach (HighlightedSection section in highlightedLine.Sections) {
-					if (section.Color.Foreground != null) {
-						builder.SetForeground(section.Offset - startOffset, section.Length, section.Color.Foreground.GetBrush(null));
-					}
-					if (section.Color.Background != null) {
-						builder.SetBackground(section.Offset - startOffset, section.Length, section.Color.Background.GetBrush(null));
-					}
-				}
-				return builder;
+				
+			}
+			
+			public void EndHighlighting()
+			{
+				
 			}
 		}
 		

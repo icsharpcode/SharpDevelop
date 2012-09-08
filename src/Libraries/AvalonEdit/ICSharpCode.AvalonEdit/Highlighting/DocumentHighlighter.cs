@@ -28,7 +28,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		readonly CompressingTreeList<SpanStack> storedSpanStacks = new CompressingTreeList<SpanStack>(object.ReferenceEquals);
 		readonly CompressingTreeList<bool> isValid = new CompressingTreeList<bool>((a, b) => a == b);
 		readonly IDocument document;
-		readonly HighlightingRuleSet baseRuleSet;
+		readonly IHighlightingDefinition definition;
 		bool isHighlighting;
 		
 		/// <summary>
@@ -41,14 +41,14 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Creates a new DocumentHighlighter instance.
 		/// </summary>
-		public DocumentHighlighter(TextDocument document, HighlightingRuleSet baseRuleSet)
+		public DocumentHighlighter(TextDocument document, IHighlightingDefinition definition)
 		{
 			if (document == null)
 				throw new ArgumentNullException("document");
-			if (baseRuleSet == null)
-				throw new ArgumentNullException("baseRuleSet");
+			if (definition == null)
+				throw new ArgumentNullException("definition");
 			this.document = document;
-			this.baseRuleSet = baseRuleSet;
+			this.definition = definition;
 			WeakLineTracker.Register(document, this);
 			InvalidateHighlighting();
 		}
@@ -56,14 +56,14 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Creates a new DocumentHighlighter instance.
 		/// </summary>
-		public DocumentHighlighter(ReadOnlyDocument document, HighlightingRuleSet baseRuleSet)
+		public DocumentHighlighter(ReadOnlyDocument document, IHighlightingDefinition definition)
 		{
 			if (document == null)
 				throw new ArgumentNullException("document");
-			if (baseRuleSet == null)
-				throw new ArgumentNullException("baseRuleSet");
+			if (definition == null)
+				throw new ArgumentNullException("definition");
 			this.document = document;
-			this.baseRuleSet = baseRuleSet;
+			this.definition = definition;
 			InvalidateHighlighting();
 		}
 		
@@ -227,7 +227,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				} else {
 					firstInvalidLine = int.MaxValue;
 				}
-				OnHighlightStateChanged(lineNumber);
+				OnHighlightStateChanged(lineNumber, lineNumber);
 			} else if (firstInvalidLine == lineNumber) {
 				isValid[lineNumber] = true;
 				firstInvalidLine = isValid.IndexOf(false);
@@ -264,10 +264,10 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <remarks>This callback must not call HighlightLine or InvalidateHighlighting.
 		/// It may call GetSpanStack, but only for the changed line and lines above.
 		/// This method must not modify the document.</remarks>
-		protected virtual void OnHighlightStateChanged(int lineNumber)
+		protected virtual void OnHighlightStateChanged(int fromLineNumber, int toLineNumber)
 		{
 			if (HighlightingStateChanged != null)
-				HighlightingStateChanged(this, lineNumber);
+				HighlightingStateChanged(this, fromLineNumber, toLineNumber);
 		}
 		
 		#region Highlighting Engine
@@ -399,7 +399,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		HighlightingRuleSet CurrentRuleSet {
 			get {
 				if (spanStack.IsEmpty)
-					return baseRuleSet;
+					return definition.MainRuleSet;
 				else
 					return spanStack.Peek().RuleSet ?? emptyRuleSet;
 			}
@@ -494,5 +494,27 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				return new Match[count];
 		}
 		#endregion
+		
+		public HighlightingColor DefaultTextColor {
+			get {
+				return new HighlightingColor() {
+				};
+			}
+		}
+		
+		public void BeginHighlighting()
+		{
+			
+		}
+		
+		public void EndHighlighting()
+		{
+			
+		}
+		
+		public HighlightingColor GetNamedColor(string name)
+		{
+			throw new NotSupportedException();
+		}
 	}
 }

@@ -61,10 +61,132 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// for details about the requirements for a correct custom IHighlighter.
 		/// </remarks>
 		event HighlightingStateChangedEventHandler HighlightingStateChanged;
+		
+		/// <summary>
+		/// Opens a group of HighlightLine calls.
+		/// </summary>
+		void BeginHighlighting();
+		
+		/// <summary>
+		/// Closes the currently opened group of HighlightLine calls.
+		/// </summary>
+		void EndHighlighting();
+		
+		/// <summary>
+		/// Retrieves the HighlightingColor with the specified name. Returns null if no color matching the name is found.
+		/// </summary>
+		HighlightingColor GetNamedColor(string name);
+		
+		/// <summary>
+		/// Gets the default text color.
+		/// </summary>
+		HighlightingColor DefaultTextColor { get; }
+	}
+	
+	public class MultiHighlighter : IHighlighter
+	{
+		readonly IHighlighter[] nestedHighlighters;
+		readonly IDocument document;
+		
+		public MultiHighlighter(IDocument document, params IHighlighter[] nestedHighlighters)
+		{
+			if (document == null)
+				throw new ArgumentNullException("document");
+			if (nestedHighlighters == null)
+				throw new ArgumentNullException("additionalHighlighters");
+
+			foreach (var highlighter in nestedHighlighters) {
+				if (highlighter == null)
+					throw new ArgumentException("nulls not allowed!");
+				if (document != highlighter.Document)
+					throw new ArgumentException("all highlighters must be assigned to the same document!");
+			}
+			
+			this.nestedHighlighters = nestedHighlighters;
+			this.document = document;
+		}
+		
+		public event HighlightingStateChangedEventHandler HighlightingStateChanged {
+			add {
+				foreach (var highlighter in nestedHighlighters) {
+					highlighter.HighlightingStateChanged += value;
+				}
+			}
+			remove {
+				foreach (var highlighter in nestedHighlighters) {
+					highlighter.HighlightingStateChanged -= value;
+				}
+			}
+		}
+		
+		public IDocument Document {
+			get {
+				return document;
+			}
+		}
+		
+		public HighlightingColor DefaultTextColor {
+			get {
+				if (nestedHighlighters.Length > 0)
+					return nestedHighlighters[0].DefaultTextColor;
+				return HighlightingColor.DefaultColor;
+			}
+		}
+		
+		public IEnumerable<HighlightingColor> GetColorStack(int lineNumber)
+		{
+			List<HighlightingColor> list = new List<HighlightingColor>();
+			for (int i = nestedHighlighters.Length - 1; i >= 0; i--) {
+				var s = nestedHighlighters[i].GetColorStack(lineNumber);
+				if (s != null)
+					list.AddRange(s);
+			}
+			return list;
+		}
+		
+		public HighlightedLine HighlightLine(int lineNumber)
+		{
+			HighlightedLine line = new HighlightedLine(document, document.GetLineByNumber(lineNumber));
+			foreach (IHighlighter h in nestedHighlighters) {
+				line.MergeWith(h.HighlightLine(lineNumber));
+			}
+			return line;
+		}
+		
+		public void UpdateHighlightingState(int lineNumber)
+		{
+			foreach (var h in nestedHighlighters) {
+				h.UpdateHighlightingState(lineNumber);
+			}
+		}
+		
+		public void BeginHighlighting()
+		{
+			foreach (var h in nestedHighlighters) {
+				h.BeginHighlighting();
+			}
+		}
+		
+		public void EndHighlighting()
+		{
+			foreach (var h in nestedHighlighters) {
+				h.EndHighlighting();
+			}
+		}
+		
+		public HighlightingColor GetNamedColor(string name)
+		{
+			foreach (var h in nestedHighlighters) {
+				var color = h.GetNamedColor(name);
+				if (color != null)
+					return color;
+			}
+			return null;
+		}
 	}
 	
 	/// <summary>
 	/// Event handler for <see cref="IHighlighter.HighlightingStateChanged"/>
 	/// </summary>
-	public delegate void HighlightingStateChangedEventHandler(IHighlighter sender, int lineNumber);
+	public delegate void HighlightingStateChangedEventHandler(IHighlighter sender, int fromLineNumber, int toLineNumber);
 }

@@ -137,14 +137,14 @@ namespace CSharpBinding.Parser
 				throw new ArgumentException("Parse info does not have SyntaxTree");
 			
 			ReadOnlyDocument document = null;
-			ISyntaxHighlighter highlighter = null;
+			IHighlighter highlighter = null;
 			
 			new FindReferences().FindLocalReferences(
 				variable, csParseInfo.UnresolvedFile, csParseInfo.SyntaxTree, compilation,
 				delegate (AstNode node, ResolveResult result) {
 					if (document == null) {
 						document = new ReadOnlyDocument(fileContent);
-						highlighter = SD.EditorControlService.CreateHighlighter(document, csParseInfo.FileName);
+						highlighter = SD.EditorControlService.CreateHighlighter(document);
 					}
 					var region = new DomRegion(parseInfo.FileName, node.StartLocation, node.EndLocation);
 					int offset = document.GetOffset(node.StartLocation);

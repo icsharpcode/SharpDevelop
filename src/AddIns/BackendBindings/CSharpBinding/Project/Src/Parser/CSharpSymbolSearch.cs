@@ -98,14 +98,14 @@ namespace CSharpBinding
 			if (parseInfo == null)
 				return;
 			ReadOnlyDocument document = null;
-			ISyntaxHighlighter highlighter = null;
+			IHighlighter highlighter = null;
 			List<Reference> results = new List<Reference>();
 			fr.FindReferencesInFile(
 				searchScope, parseInfo.UnresolvedFile, parseInfo.SyntaxTree, compilation,
 				delegate (AstNode node, ResolveResult result) {
 					if (document == null) {
 						document = new ReadOnlyDocument(textSource);
-						highlighter = SD.EditorControlService.CreateHighlighter(document, fileName);
+						highlighter = SD.EditorControlService.CreateHighlighter(document);
 					}
 					var region = new DomRegion(fileName, node.StartLocation, node.EndLocation);
 					int offset = document.GetOffset(node.StartLocation);

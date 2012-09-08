@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Windows.Media;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
@@ -129,7 +130,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			IDocumentLine line = this.Document.GetLineByNumber(this.LineNumber);
 			ITextMarker marker = markerService.Create(line.Offset, line.Length);
-			ISyntaxHighlighter highlighter = this.Document.GetService(typeof(ISyntaxHighlighter)) as ISyntaxHighlighter;
+			IHighlighter highlighter = this.Document.GetService(typeof(IHighlighter)) as IHighlighter;
 			marker.BackgroundColor = DefaultBackground;
 			marker.ForegroundColor = DefaultForeground;
 			marker.MarkerColor = DefaultBackground;

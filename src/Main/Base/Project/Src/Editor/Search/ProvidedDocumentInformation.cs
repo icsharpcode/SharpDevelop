@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		public IDocument Document {
 			get {
 				if (document == null) {
-					this.document = new TextDocument(textBuffer);
+					this.document = new TextDocument(textBuffer, fileName);
 					this.textBuffer = null;
 				}
 				return document;

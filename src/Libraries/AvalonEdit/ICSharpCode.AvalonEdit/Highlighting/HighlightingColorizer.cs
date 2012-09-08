@@ -17,7 +17,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// </summary>
 	public class HighlightingColorizer : DocumentColorizingTransformer
 	{
-		readonly HighlightingRuleSet ruleSet;
+		readonly IHighlightingDefinition definition;
 		TextView textView;
 		IHighlighter highlighter;
 		
@@ -25,11 +25,23 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// Creates a new HighlightingColorizer instance.
 		/// </summary>
 		/// <param name="ruleSet">The root highlighting rule set.</param>
-		public HighlightingColorizer(HighlightingRuleSet ruleSet)
+		public HighlightingColorizer(IHighlightingDefinition definition)
 		{
-			if (ruleSet == null)
-				throw new ArgumentNullException("ruleSet");
-			this.ruleSet = ruleSet;
+			if (definition == null)
+				throw new ArgumentNullException("definition");
+			this.definition = definition;
+			this.highlighter = highlighter;
+		}
+		
+		/// <summary>
+		/// Creates a new HighlightingColorizer instance.
+		/// </summary>
+		/// <param name="highlighter">The highlighter to be used.</param>
+		public HighlightingColorizer(IHighlighter highlighter)
+		{
+			if (highlighter == null)
+				throw new ArgumentNullException("highlighter");
+			this.highlighter = highlighter;
 		}
 		
 		void textView_DocumentChanged(object sender, EventArgs e)
@@ -77,7 +89,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		protected virtual IHighlighter CreateHighlighter(TextView textView, TextDocument document)
 		{
-			return new DocumentHighlighter(document, ruleSet);
+			return highlighter ?? new DocumentHighlighter(document, definition);
 		}
 		
 		/// <inheritdoc/>
@@ -202,9 +214,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// Hey, the user typed "/*". Don't just recreate that line, but also the next one
 		/// because my highlighting state (at end of line) changed!
 		/// </remarks>
-		void OnHighlightStateChanged(IHighlighter sender, int lineNumber)
+		void OnHighlightStateChanged(IHighlighter sender, int fromlineNumber, int toLineNumber)
 		{
-			if (lineNumberBeingColorized != lineNumber) {
+			if (lineNumberBeingColorized < fromlineNumber || lineNumberBeingColorized > toLineNumber) {
 				// Ignore notifications for any line except the one we're interested in.
 				// This improves the performance as Redraw() can take quite some time when called repeatedly
 				// while scanning the document (above the visible area) for highlighting changes.
@@ -216,7 +228,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			// If the highlighting state change applies to the lines below, too, the construction of each line
 			// will invalidate the next line, and the construction pass will regenerate all lines.
 			
-			Debug.WriteLine("OnHighlightStateChanged forces redraw of line " + (lineNumber + 1));
+			Debug.WriteLine("OnHighlightStateChanged forces redraw of lines {0} to {1}", fromlineNumber + 1, toLineNumber + 1);
 			
 			// If the VisualLine construction is in progress, we have to avoid sending redraw commands for
 			// anything above the line currently being constructed.
@@ -257,8 +269,10 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			// so it will always invalidate the next visual line when a folded line is constructed
 			// and the highlighting stack has changed.
 			
-			if (lineNumber + 1 <= textView.Document.LineCount)
-				textView.Redraw(textView.Document.GetLineByNumber(lineNumber + 1), DispatcherPriority.Normal);
+			for (int lineNumber = fromlineNumber; lineNumber <= toLineNumber; lineNumber++) {
+				if (lineNumber + 1 <= textView.Document.LineCount)
+					textView.Redraw(textView.Document.GetLineByNumber(lineNumber + 1), DispatcherPriority.Normal);
+			}
 			
 			/*
 			 * Meta-comment: "why does this have to be so complicated?"

@@ -344,7 +344,7 @@ namespace ICSharpCode.AvalonEdit
 		{
 			if (highlightingDefinition == null)
 				throw new ArgumentNullException("highlightingDefinition");
-			return new HighlightingColorizer(highlightingDefinition.MainRuleSet);
+			return new HighlightingColorizer(highlightingDefinition);
 		}
 		#endregion
 		

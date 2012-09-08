@@ -4,8 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+
 using CSharpBinding.FormattingStrategy;
 using CSharpBinding.Refactoring;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -40,11 +42,6 @@ namespace CSharpBinding
 		{
 			base.Attach(editor);
 			this.editor = editor;
-			ISyntaxHighlighter highlighter = editor.GetService(typeof(ISyntaxHighlighter)) as ISyntaxHighlighter;
-			if (highlighter != null) {
-				semanticHighlighter = new CSharpSemanticHighlighter(editor, highlighter);
-				highlighter.AddAdditionalHighlighter(semanticHighlighter);
-			}
 			inspectionManager = new IssueManager(editor);
 			//codeManipulation = new CodeManipulation(editor);
 			
@@ -57,12 +54,7 @@ namespace CSharpBinding
 		public override void Detach()
 		{
 			//codeManipulation.Dispose();
-			ISyntaxHighlighter highlighter = editor.GetService(typeof(ISyntaxHighlighter)) as ISyntaxHighlighter;
-			if (highlighter != null) {
-				highlighter.RemoveAdditionalHighlighter(semanticHighlighter);
-				semanticHighlighter.Dispose();
-				semanticHighlighter = null;
-			}
+			IHighlighter highlighter = editor.GetService(typeof(IHighlighter)) as IHighlighter;
 			if (inspectionManager != null) {
 				inspectionManager.Dispose();
 				inspectionManager = null;

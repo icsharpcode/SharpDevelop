@@ -74,6 +74,10 @@
 		<SyntaxMode id="C#" name="C#" extensions=".cs" resource="CSharpBinding.Resources.CSharp-Semantic.xshd" />
 	</Path>
 	
+	<Path name="/SharpDevelop/ViewContent/AvalonEdit/Highlighters">
+		<Highlighter id="CSharpSemantic" extensions=".cs" class="CSharpBinding.CSharpSemanticHighlighter" />
+	</Path>
+	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/C#">
 		<OptionPanel id    = "Application"
 		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"

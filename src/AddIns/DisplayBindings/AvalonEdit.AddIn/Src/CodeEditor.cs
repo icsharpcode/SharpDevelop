@@ -111,6 +111,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			set {
 				if (fileName != value) {
 					fileName = value;
+					this.document.FileName = fileName;
 					
 					primaryTextEditorAdapter.FileNameChanged();
 					if (secondaryTextEditorAdapter != null)
@@ -124,8 +125,27 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					if (changeWatcher != null) {
 						changeWatcher.Initialize(this.Document, value);
 					}
+					UpdateSyntaxHighlighting(value);
 					FetchParseInformation();
 				}
+			}
+		}
+		
+		void UpdateSyntaxHighlighting(FileName fileName)
+		{
+			var highlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
+			var highlighter = SD.EditorControlService.CreateHighlighter(document);
+
+			primaryTextEditor.SyntaxHighlighting = highlighting;
+			primaryTextEditor.TextArea.TextView.LineTransformers.RemoveWhere(t => t is HighlightingColorizer);
+			primaryTextEditor.TextArea.TextView.LineTransformers.Insert(0, new HighlightingColorizer(highlighter));
+			primaryTextEditor.UpdateCustomizedHighlighting();
+
+			if (secondaryTextEditor != null) {
+				secondaryTextEditor.SyntaxHighlighting = highlighting;
+				secondaryTextEditor.TextArea.TextView.LineTransformers.RemoveWhere(t => t is HighlightingColorizer);
+				secondaryTextEditor.TextArea.TextView.LineTransformers.Insert(0, new HighlightingColorizer(highlighter));
+				secondaryTextEditor.UpdateCustomizedHighlighting();
 			}
 		}
 		
@@ -543,18 +563,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (cc.CtrlSpace(textEditor.Adapter)) {
 					e.Handled = true;
 					break;
-				}
-			}
-		}
-		
-		public IHighlightingDefinition SyntaxHighlighting {
-			get { return primaryTextEditor.SyntaxHighlighting; }
-			set {
-				primaryTextEditor.SyntaxHighlighting = value;
-				primaryTextEditor.UpdateCustomizedHighlighting();
-				if (secondaryTextEditor != null) {
-					secondaryTextEditor.SyntaxHighlighting = value;
-					secondaryTextEditor.UpdateCustomizedHighlighting();
 				}
 			}
 		}

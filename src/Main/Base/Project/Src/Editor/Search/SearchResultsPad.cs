@@ -147,12 +147,12 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			return new DummySearchResult { Text = title };
 		}
 		
-		public static HighlightedInlineBuilder CreateInlineBuilder(TextLocation startPosition, TextLocation endPosition, IDocument document, ISyntaxHighlighter highlighter)
+		public static HighlightedInlineBuilder CreateInlineBuilder(TextLocation startPosition, TextLocation endPosition, IDocument document, IHighlighter highlighter)
 		{
 			if (startPosition.Line >= 1 && startPosition.Line <= document.LineCount) {
 				HighlightedInlineBuilder inlineBuilder;
 				if (highlighter != null) {
-					inlineBuilder = highlighter.BuildInlines(startPosition.Line);
+					inlineBuilder = highlighter.HighlightLine(startPosition.Line).ToInlineBuilder();
 				} else {
 					inlineBuilder = new HighlightedInlineBuilder(document.GetText(document.GetLineByNumber(startPosition.Line)));
 				}

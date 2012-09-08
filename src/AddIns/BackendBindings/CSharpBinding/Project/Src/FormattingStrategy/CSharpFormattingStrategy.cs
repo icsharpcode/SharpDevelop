@@ -5,6 +5,8 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Indentation.CSharp;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
@@ -340,13 +342,13 @@ namespace CSharpBinding.FormattingStrategy
 						return;
 					}
 					
-					ISyntaxHighlighter highlighter = textArea.GetService(typeof(ISyntaxHighlighter)) as ISyntaxHighlighter;
+					IHighlighter highlighter = textArea.GetService(typeof(IHighlighter)) as IHighlighter;
 					bool isInMultilineComment = false;
 					bool isInMultilineString = false;
 					if (highlighter != null && lineAbove != null) {
-						var spanStack = highlighter.GetSpanColorNamesFromLineStart(lineNr);
-						isInMultilineComment = spanStack.Contains(SyntaxHighligherKnownSpanNames.Comment);
-						isInMultilineString = spanStack.Contains(SyntaxHighligherKnownSpanNames.String);
+						var spanStack = highlighter.GetColorStack(lineNr).Select(c => c.Name).ToArray();
+						isInMultilineComment = spanStack.Contains(SyntaxHighlighterKnownSpanNames.Comment);
+						isInMultilineString = spanStack.Contains(SyntaxHighlighterKnownSpanNames.String);
 					}
 					bool isInNormalCode = !(isInMultilineComment || isInMultilineString);
 					

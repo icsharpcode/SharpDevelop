@@ -150,7 +150,7 @@
     <Compile Include="Src\Editor\IFileDocumentProvider.cs" />
     <Compile Include="Src\Editor\IFormattingStrategy.cs" />
     <Compile Include="Src\Editor\PermanentAnchor.cs" />
-    <Compile Include="Src\Editor\ISyntaxHighlighter.cs" />
+    <Compile Include="Src\Editor\SyntaxHighlighterKnownSpanNames.cs" />
     <Compile Include="Src\Editor\ITextAreaToolTipProvider.cs">
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
