@@ -41,42 +41,24 @@ namespace ICSharpCode.UnitTesting
 	
 	public class GotoDefinitionCommand : AbstractMenuCommand
 	{
-		IFileService fileService;
-		
-		public GotoDefinitionCommand()
-			: this(SD.FileService)
-		{
-		}
-		
-		public GotoDefinitionCommand(IFileService fileService)
-		{
-			this.fileService = fileService;
-		}
-		
 		public override void Run()
 		{
 			ITestTreeView treeView = Owner as ITestTreeView;
 			if (treeView != null) {
-				var method = treeView.SelectedMethod;
+				var member = treeView.SelectedMember;
 				var c = treeView.SelectedClass;
-				if (method != null) {
-					GotoMember(method.Resolve());
+				IEntity entity;
+				if (member != null) {
+					entity = member.Resolve();
 				} else if (c != null) {
-					GotoClass(c.Resolve());
+					entity = c.Resolve();
+				} else {
+					entity = null;
+				}
+				if (entity != null) {
+					NavigationService.NavigateTo(entity);
 				}
 			}
-		}
-		
-		void GotoMember(IMember member)
-		{
-			if (member != null)
-				NavigationService.NavigateTo(member);
-		}
-		
-		void GotoClass(ITypeDefinition c)
-		{
-			if (c != null)
-				NavigationService.NavigateTo(c);
 		}
 	}
 	
@@ -88,10 +70,9 @@ namespace ICSharpCode.UnitTesting
 				return;
 			
 			var treeView = (SharpTreeView)this.Owner;
-			NRefactory.Utils.TreeTraversal.PreOrder(treeView.Root, n => n.Children).ForEach(n => n.IsExpanded = false);
-			
-			if (treeView.Root.Children.Count > 0) {
-				treeView.Root.IsExpanded = true;
+			if (treeView.Root != null) {
+				foreach (var n in treeView.Root.Descendants())
+					n.IsExpanded = false;
 			}
 		}
 	}

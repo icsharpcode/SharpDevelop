@@ -20,19 +20,15 @@ namespace ICSharpCode.UnitTesting
 	/// </summary>
 	public class TestClass : ViewModelBase
 	{
-		string fullName;
-		ObservableCollection<IUnresolvedTypeDefinition> parts;
+		IList<IUnresolvedTypeDefinition> parts;
 		readonly ObservableCollection<TestMember> testMembers;
 		readonly ObservableCollection<TestClass> nestedClasses;
-		IRegisteredTestFrameworks testFrameworks;
 		
-		public TestClass(TestProject project, IRegisteredTestFrameworks testFrameworks, string fullName, ITypeDefinition definition, TestClass parent = null)
+		public TestClass(TestProject project, ITypeDefinition definition, TestClass parent = null)
 		{
 			this.parts = new ObservableCollection<IUnresolvedTypeDefinition>();
 			this.testMembers = new ObservableCollection<TestMember>();
 			this.nestedClasses = new ObservableCollection<TestClass>();
-			this.testFrameworks = testFrameworks;
-			this.fullName = fullName;
 			Project = project;
 			Parent = parent;
 			UpdateClass(definition);
@@ -43,9 +39,9 @@ namespace ICSharpCode.UnitTesting
 		public TestProject Project { get; private set; }
 		
 		/// <summary>
-		/// Gets the underlying IClass for this test class.
+		/// Gets the underlying IUnresolvedTypeDefinitions for this test class.
 		/// </summary>
-		public IEnumerable<IUnresolvedTypeDefinition> Parts {
+		public IList<IUnresolvedTypeDefinition> Parts {
 			get { return parts; }
 		}
 		
@@ -57,29 +53,25 @@ namespace ICSharpCode.UnitTesting
 			get { return nestedClasses; }
 		}
 		
-		public string FullName {
-			get { return fullName; }
-		}
-
 		/// <summary>
 		/// Gets the name of the class.
 		/// </summary>
 		public string Name {
-			get { return parts.First().Name; }
+			get { return parts[0].Name; }
 		}
 		
 		/// <summary>
 		/// Gets the fully qualified name of the class.
 		/// </summary>
-		public string QualifiedName {
-			get { return parts.First().ReflectionName; }
+		public string ReflectionName {
+			get { return parts[0].ReflectionName; }
 		}
 		
 		/// <summary>
 		/// Gets the namespace of this class.
 		/// </summary>
 		public string Namespace {
-			get { return parts.First().Namespace; }
+			get { return parts[0].Namespace; }
 		}
 		
 		TestResultType testResult;
@@ -113,7 +105,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public void UpdateTestResult(TestResult testResult)
 		{
-			var member = testMembers.SingleOrDefault(m => m.Method.ReflectionName == testResult.Name);
+			var member = testMembers.SingleOrDefault(m => m.Member.ReflectionName == testResult.Name);
 			member.TestResult = testResult.ResultType;
 			var parent = this;
 			while (parent != null) {
@@ -143,8 +135,17 @@ namespace ICSharpCode.UnitTesting
 		/// Updates the members and class based on the new class
 		/// information that has been parsed.
 		/// </summary>
-		public void UpdateClass(ITypeDefinition definition)
+		public void UpdateClass(ITypeDefinition typeDefinition)
 		{
+			this.parts = typeDefinition.Parts;
+			
+			testMembers.Clear();
+			testMembers.AddRange(Project.TestFramework.GetTestMembersFor(Project, typeDefinition));
+			
+			
+			/*var oldParts = this.parts;
+			nestedClasses.UpdateTestClasses(testFrameworks,
+			
 			int i = 0;
 			while (i < parts.Count) {
 				var part = parts[i];
@@ -158,11 +159,15 @@ namespace ICSharpCode.UnitTesting
 				if (!parts.Any(p => p.UnresolvedFile.FileName == part.UnresolvedFile.FileName && p.Region == part.Region))
 					parts.Add(part);
 			}
-			testMembers.RemoveWhere(m => !definition.Methods.Any(dm => dm.ReflectionName == m.Method.ReflectionName && testFrameworks.IsTestMethod(dm, definition.Compilation)));
-			testMembers.AddRange(definition.Methods.Where(m => testFrameworks.IsTestMethod(m, definition.Compilation) && !testMembers.Any(dm => dm.Method.ReflectionName == m.ReflectionName)).Select(m => new TestMember(Project, (IUnresolvedMethod)m.UnresolvedMember, testFrameworks.IsTestCase(m, definition.Compilation))));
+			testMembers.RemoveWhere(m => !definition.Methods.Any(dm => dm.ReflectionName == m.Member.ReflectionName && testFrameworks.IsTestMethod(dm)));
+			testMembers.AddRange(
+				definition.Methods.Where(m => testFrameworks.IsTestMethod(m, definition.Compilation)
+				                         && !testMembers.Any(dm => dm.Member.ReflectionName == m.ReflectionName))
+				.Select(m => new TestMember(Project, (IUnresolvedMethod)m.UnresolvedMember, testFrameworks.IsTestCase(m, definition.Compilation))));
 			
 			var context = new SimpleTypeResolveContext(definition);
 			nestedClasses.UpdateTestClasses(testFrameworks, nestedClasses.Select(tc => new DefaultResolvedTypeDefinition(context, tc.Parts.ToArray())).ToList(), definition.NestedTypes.Where(nt => testFrameworks.IsTestClass(nt, definition.Compilation)).ToList(), this, Project);
+			 */
 		}
 		
 		/// <summary>
@@ -180,12 +185,12 @@ namespace ICSharpCode.UnitTesting
 		public ITypeDefinition Resolve()
 		{
 			ICompilation compilation = SD.ParserService.GetCompilation(Project.Project);
-			return parts.First().Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
+			return parts[0].Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
 		}
 		
 		public override string ToString()
 		{
-			return string.Format("[TestClass TestResult={0}, FullName={1}]", testResult, fullName);
+			return string.Format("[TestClass TestResult={0}, Name={1}]", testResult, this.ReflectionName);
 		}
 	}
 }

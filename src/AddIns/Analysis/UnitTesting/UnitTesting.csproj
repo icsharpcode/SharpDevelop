@@ -66,9 +66,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\RunTestCommands.cs" />
+    <Compile Include="Commands\AbstractRunTestCommand.cs" />
+    <Compile Include="Commands\RunAllTestsInPadCommand.cs" />
+    <Compile Include="Commands\RunProjectTestsInPadCommand.cs" />
+    <Compile Include="Commands\RunTestInPadCommand.cs" />
+    <Compile Include="Commands\RunTestWithDebuggerCommand.cs" />
     <Compile Include="Commands\UnitTestCommands.cs" />
-    <Compile Include="Extensions.cs" />
     <Compile Include="Gui\EmptyUnitTestsPad.cs" />
     <Compile Include="Gui\UnitTestingOptionsPanel.xaml.cs">
       <DependentUpon>UnitTestingOptionsPanel.xaml</DependentUpon>
@@ -92,7 +95,6 @@
     <Compile Include="Interfaces\ITestRunner.cs" />
     <Compile Include="Interfaces\ITestTreeView.cs" />
     <Compile Include="Interfaces\IUnitTestDebuggerService.cs" />
-    <Compile Include="Interfaces\IUnitTestFileService.cs" />
     <Compile Include="Interfaces\IUnitTestProcessRunner.cs" />
     <Compile Include="Interfaces\IUnitTestSaveAllFilesCommand.cs" />
     <Compile Include="Interfaces\IUnitTestsPad.cs" />
@@ -101,6 +103,7 @@
     <Compile Include="Model\TestClass.cs" />
     <Compile Include="Model\TestMember.cs" />
     <Compile Include="Model\TestProject.cs" />
+    <Compile Include="Model\TestSolution.cs" />
     <Compile Include="MultipleProjectBuildable.cs" />
     <Compile Include="Nodes\ClassUnitTestNode.cs" />
     <Compile Include="Nodes\MemberUnitTestNode.cs" />
@@ -134,7 +137,6 @@
     <Compile Include="TestResultsReader.cs" />
     <Compile Include="TestResultTask.cs" />
     <Compile Include="TestTreeView.cs" />
-    <Compile Include="UnitTestApplicationStartHelper.cs" />
     <Compile Include="UnitTestingOptions.cs" />
     <Compile Include="UnitTestProcessRunner.cs" />
     <None Include="PostBuildEvent.proj" />

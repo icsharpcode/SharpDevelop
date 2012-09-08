@@ -26,17 +26,14 @@ namespace ICSharpCode.UnitTesting
 			SourceCodeItemSelected  = 1
 		}
 		
-		/// <summary>
-		/// The All Tests tree root node that is added if multiple
-		/// test projects exist in the solution. If the solution contains
-		/// only one test project then no such node will be added.
-		/// </summary>
 		IRegisteredTestFrameworks testFrameworks;
 		
-		public TestTreeView(IRegisteredTestFrameworks testFrameworks)
+		public TestTreeView(IRegisteredTestFrameworks testFrameworks, TestSolution testSolution)
 		{
 			this.testFrameworks = testFrameworks;
-			TestService.TestableProjects.CollectionChanged += delegate { ShowRoot = TestService.TestableProjects.Count > 1; };
+			// Show 'All Tests' root node only if there is more than one test project in the solution
+			testSolution.TestableProjects.CollectionChanged += delegate { ShowRoot = testSolution.TestableProjects.Count > 1; };
+			this.Root = new RootUnitTestNode(testSolution);
 		}
 		
 		/// <summary>
@@ -58,7 +55,7 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Gets the member of the currently selected tree node.
 		/// </summary>
-		public TestMember SelectedMethod {
+		public TestMember SelectedMember {
 			get {
 				MemberUnitTestNode memberNode = SelectedItem as MemberUnitTestNode;
 				if (memberNode != null) {

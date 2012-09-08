@@ -45,36 +45,33 @@ namespace ICSharpCode.UnitTesting
 			return testAttribute.Resolve(SD.ParserService.GetCompilation(project).TypeResolveContext).Kind != TypeKind.Unknown;
 		}
 		
-		public bool IsTestMethod(IMethod method, ICompilation compilation)
+		public bool IsTestMember(IMember member)
 		{
-			if (method == null)
-				throw new ArgumentNullException("method");
-			var testAttribute = NUnitTestFramework.testAttribute.Resolve(compilation.TypeResolveContext);
-			return IsTestCase(method, compilation) || method.Attributes.Any(a => a.AttributeType.Equals(testAttribute));
+			if (member == null)
+				throw new ArgumentNullException("member");
+			if (member.EntityType != EntityType.Method)
+				return false;
+			var testAttribute = NUnitTestFramework.testAttribute.Resolve(member.Compilation);
+			var testCaseAttribute = NUnitTestFramework.testCaseAttribute.Resolve(member.Compilation);
+			foreach (var attr in member.Attributes) {
+				if (attr.AttributeType.Equals(testAttribute) || attr.AttributeType.Equals(testCaseAttribute))
+					return true;
+			}
+			return false;
 		}
 		
-		public bool IsTestCase(IMethod method, ICompilation compilation)
-		{
-			if (method == null)
-				throw new ArgumentNullException("method");
-			var testCaseAttribute = NUnitTestFramework.testCaseAttribute.Resolve(compilation.TypeResolveContext);
-			return method.Attributes.Any(a => a.AttributeType.Equals(testCaseAttribute));
-		}
-		
-		public bool IsTestClass(ITypeDefinition type, ICompilation compilation)
+		public bool IsTestClass(ITypeDefinition type)
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
 			if (type.IsAbstract)
 				return false;
-			var testAttribute = NUnitTestFramework.testAttribute.Resolve(compilation.TypeResolveContext);
-			var testCaseAttribute = NUnitTestFramework.testCaseAttribute.Resolve(compilation.TypeResolveContext);
-			return type.Methods.Any(m => m.Attributes.Any(a => a.AttributeType.Equals(testAttribute) || a.AttributeType.Equals(testCaseAttribute)));
+			return type.Methods.Any(IsTestMember);
 		}
 		
-		public IEnumerable<IMethod> GetTestMethodsFor(ITypeDefinition typeDefinition)
+		public IEnumerable<TestMember> GetTestMembersFor(TestProject project, ITypeDefinition typeDefinition)
 		{
-			throw new NotImplementedException();
+			return typeDefinition.Methods.Where(IsTestMember).Select(m => new TestMember(project, m.UnresolvedMember));
 		}
 	}
 }

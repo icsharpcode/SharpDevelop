@@ -14,28 +14,25 @@ namespace ICSharpCode.UnitTesting
 	/// </summary>
 	public class TestMember : ViewModelBase
 	{
-		IUnresolvedMethod method;
+		IUnresolvedMember member;
 
-		public IUnresolvedMethod Method {
-			get { return method; }
+		public IUnresolvedMember Member {
+			get { return member; }
 		}
 		
 		public TestProject Project { get; private set; }
 		
-		public bool IsTestCase { get; private set; }
-		
-		public TestMember(TestProject project, IUnresolvedMethod method, bool isTestCase)
+		public TestMember(TestProject project, IUnresolvedMember member)
 		{
-			if (method == null)
-				throw new ArgumentNullException("method");
-			this.method = method;
+			if (member == null)
+				throw new ArgumentNullException("member");
+			this.member = member;
 			this.Project = project;
-			this.IsTestCase = isTestCase;
 		}
 
 		TestResultType testResult;
 
-		public TestResultType TestResult {
+		public virtual TestResultType TestResult {
 			get { return testResult; }
 			set {
 				if (testResult < value) {
@@ -45,20 +42,20 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
-		public void ResetTestResult()
+		public virtual void ResetTestResult()
 		{
 			testResult = TestResultType.None;
 		}
 		
-		public IMethod Resolve()
+		public IMember Resolve()
 		{
 			ICompilation compilation = SD.ParserService.GetCompilation(Project.Project);
-			return method.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
+			return member.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
 		}
 		
 		public override string ToString()
 		{
-			return string.Format("[TestMember Method={0}, TestResult={1}]", method, testResult);
+			return string.Format("[TestMember Method={0}, TestResult={1}]", member, testResult);
 		}
 	}
 }

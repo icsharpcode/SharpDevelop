@@ -47,7 +47,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public void CopyEditorSettings(TextEditor source)
 		{
 			string language = source.SyntaxHighlighting != null ? source.SyntaxHighlighting.Name : null;
-			editor.TextArea.TextView.LineTransformers.RemoveWhere(x => x is HighlightingColorizer);
+			editor.TextArea.TextView.LineTransformers.RemoveAll(x => x is HighlightingColorizer);
 			editor.TextArea.TextView.LineTransformers.Insert(0, new CustomizableHighlightingColorizer(source.SyntaxHighlighting, CustomizedHighlightingColor.FetchCustomizations(language)));
 			CustomizableHighlightingColorizer.ApplyCustomizationsToDefaultElements(editor, CustomizedHighlightingColor.FetchCustomizations(language));
 			HighlightingOptions.ApplyToRendering(editor, CustomizedHighlightingColor.FetchCustomizations(language));

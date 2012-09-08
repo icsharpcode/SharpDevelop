@@ -29,14 +29,14 @@ namespace ICSharpCode.UnitTesting
 		{
 		}
 		
-		public static IMethod GetMethod(object caller)
+		public static IMember GetMember(object caller)
 		{
 			ITestTreeView testTreeView = caller as ITestTreeView;
-			if (testTreeView != null && testTreeView.SelectedMethod != null) {
-				return testTreeView.SelectedMethod.Resolve();
+			if (testTreeView != null && testTreeView.SelectedMember != null) {
+				return testTreeView.SelectedMember.Resolve();
 			}
 			IEntity entity = ResolveResultMenuCommand.GetEntity(caller);
-			return entity as IMethod;
+			return entity as IMember;
 		}
 		
 		public static ITypeDefinition GetClass(object caller)
@@ -59,11 +59,11 @@ namespace ICSharpCode.UnitTesting
 			return GetProject(c);
 		}
 		
-		static ITypeDefinition GetClassFromMemberOrCaller(object caller)
+		public static ITypeDefinition GetClassFromMemberOrCaller(object caller)
 		{
-			IMethod m = GetMethod(caller);
+			IMember m = GetMember(caller);
 			if (m != null) {
-				return m.DeclaringType.GetDefinition();
+				return m.DeclaringTypeDefinition;
 			}
 			return GetClass(caller);
 		}
@@ -87,13 +87,13 @@ namespace ICSharpCode.UnitTesting
 		
 		public bool IsValid(object caller, Condition condition)
 		{
-			IMethod m = GetMethod(caller);
+			IMember m = GetMember(caller);
 			if (m != null) {
-				return testFrameworks.IsTestMethod(m, m.Compilation);
+				return testFrameworks.IsTestMember(m);
 			}
 			ITypeDefinition c = GetClass(caller);
 			if (ClassHasProject(c)) {
-				return testFrameworks.IsTestClass(c, c.Compilation);
+				return testFrameworks.IsTestClass(c);
 			}
 			return false;
 		}

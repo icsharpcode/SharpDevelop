@@ -5,6 +5,8 @@ using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
+using ICSharpCode.SharpDevelop;
+
 namespace ICSharpCode.UnitTesting
 {
 	/// <summary>
@@ -43,12 +45,12 @@ namespace ICSharpCode.UnitTesting
 			switch (e.Action) {
 				case NotifyCollectionChangedAction.Add:
 					foreach (TestClass c in e.NewItems) {
-						Children.OrderedInsert(new ClassUnitTestNode(c), (a, b) => string.CompareOrdinal(a.Text.ToString(), b.Text.ToString()));
+						Children.OrderedInsert(new ClassUnitTestNode(c), NodeTextComparer);
 					}
 					break;
 				case NotifyCollectionChangedAction.Remove:
 					foreach (TestClass c in e.OldItems) {
-						Children.RemoveAll(n => n is ClassUnitTestNode && ((ClassUnitTestNode)n).TestClass.FullName == c.FullName);
+						Children.RemoveAll(n => n is ClassUnitTestNode && ((ClassUnitTestNode)n).TestClass == c);
 					}
 					break;
 				case NotifyCollectionChangedAction.Reset:
@@ -62,12 +64,12 @@ namespace ICSharpCode.UnitTesting
 			switch (e.Action) {
 				case NotifyCollectionChangedAction.Add:
 					foreach (TestMember m in e.NewItems) {
-						Children.OrderedInsert(new MemberUnitTestNode(m), (a, b) => string.CompareOrdinal(a.Text.ToString(), b.Text.ToString()));
+						Children.OrderedInsert(new MemberUnitTestNode(m), NodeTextComparer);
 					}
 					break;
 				case NotifyCollectionChangedAction.Remove:
 					foreach (TestMember m in e.OldItems) {
-						Children.RemoveAll(n => n is MemberUnitTestNode && ((MemberUnitTestNode)n).TestMember.Method.ReflectionName == m.Method.ReflectionName);
+						Children.RemoveAll(n => n is MemberUnitTestNode && ((MemberUnitTestNode)n).TestMember.Member.ReflectionName == m.Member.ReflectionName);
 					}
 					break;
 				case NotifyCollectionChangedAction.Reset:

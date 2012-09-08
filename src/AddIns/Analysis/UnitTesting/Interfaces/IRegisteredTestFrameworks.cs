@@ -14,13 +14,10 @@ namespace ICSharpCode.UnitTesting
 		ITestRunner CreateTestRunner(IProject project);
 		ITestRunner CreateTestDebugger(IProject project);
 		
-		bool IsTestMethod(IMethod method, ICompilation compilation);
-		bool IsTestCase(IMethod method, ICompilation compilation);
-		bool IsTestClass(ITypeDefinition typeDefinition, ICompilation compilation);
+		bool IsTestMember(IMember member);
+		bool IsTestClass(ITypeDefinition typeDefinition);
 		bool IsTestProject(IProject project);
 		
-		IEnumerable<IMethod> GetTestMethodsFor(ITypeDefinition typeDefinition, ICompilation compilation);
-
 		bool IsBuildNeededBeforeTestRunForProject(IProject project);
 	}
 }

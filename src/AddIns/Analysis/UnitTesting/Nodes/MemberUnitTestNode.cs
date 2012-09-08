@@ -34,12 +34,12 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		public override object Text {
-			get { return testMember.Method.Name; }
+			get { return testMember.Member.Name; }
 		}
 		
 		public override void ActivateItem(System.Windows.RoutedEventArgs e)
 		{
-			var region = testMember.Method.Region;
+			var region = testMember.Member.Region;
 			SD.FileService.JumpToFilePosition(new FileName(region.FileName), region.BeginLine, region.BeginColumn);
 		}
 	}

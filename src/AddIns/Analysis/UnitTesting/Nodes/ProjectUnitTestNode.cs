@@ -49,14 +49,14 @@ namespace ICSharpCode.UnitTesting
 						if (c.Namespace == "<invalid>") continue;
 						string namespaceSuffix = GetNamespaceSuffix(c.Namespace, project.Project.RootNamespace);
 						if (string.IsNullOrEmpty(namespaceSuffix)) {
-							Children.OrderedInsert(new ClassUnitTestNode(c), (a, b) => string.CompareOrdinal(a.Text.ToString(), b.Text.ToString()));
+							Children.OrderedInsert(new ClassUnitTestNode(c), NodeTextComparer);
 						} else {
 							var node = FindNamespace(namespaceSuffix);
 							if (node == null) {
 								node = new NamespaceUnitTestNode(namespaceSuffix);
-								Children.OrderedInsert(node, (a, b) => string.CompareOrdinal(a.Text.ToString(), b.Text.ToString()));
+								Children.OrderedInsert(node, NodeTextComparer);
 							}
-							node.Children.OrderedInsert(new ClassUnitTestNode(c), (a, b) => string.CompareOrdinal(a.Text.ToString(), b.Text.ToString()));
+							node.Children.OrderedInsert(new ClassUnitTestNode(c), NodeTextComparer);
 						}
 					}
 					break;
@@ -65,11 +65,11 @@ namespace ICSharpCode.UnitTesting
 						if (c.Namespace == "<invalid>") continue;
 						string namespaceSuffix = GetNamespaceSuffix(c.Namespace, project.Project.RootNamespace);
 						if (string.IsNullOrEmpty(namespaceSuffix)) {
-							Children.RemoveWhere(n => n is ClassUnitTestNode && ((ClassUnitTestNode)n).TestClass.FullName == c.FullName);
+							Children.RemoveAll(n => n is ClassUnitTestNode && ((ClassUnitTestNode)n).TestClass == c);
 						} else {
 							UnitTestBaseNode node = FindNamespace(namespaceSuffix);
 							if (node == null) continue;
-							node.Children.RemoveWhere(n => n is ClassUnitTestNode && ((ClassUnitTestNode)n).TestClass.FullName == c.FullName);
+							node.Children.RemoveAll(n => n is ClassUnitTestNode && ((ClassUnitTestNode)n).TestClass == c);
 							while (node.Children.Count == 0) {
 								var parent = (UnitTestBaseNode)node.Parent;
 								if (parent == null) break;

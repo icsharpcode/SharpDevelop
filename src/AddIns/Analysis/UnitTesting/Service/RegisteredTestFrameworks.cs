@@ -7,6 +7,7 @@ using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.UnitTesting
@@ -33,59 +34,28 @@ namespace ICSharpCode.UnitTesting
 			return null;
 		}
 		
-		public bool IsTestMethod(IMethod method, ICompilation compilation)
+		public bool IsTestMember(IMember member)
 		{
-			ITestFramework testFramework = GetTestFramework(method, compilation);
+			ITestFramework testFramework = GetTestFramework(member);
 			if (testFramework != null) {
-				return testFramework.IsTestMethod(method, compilation);
+				return testFramework.IsTestMember(member);
 			}
 			return false;
 		}
 		
-		public bool IsTestCase(IMethod method, ICompilation compilation)
+		ITestFramework GetTestFramework(IEntity entity)
 		{
-			ITestFramework testFramework = GetTestFramework(method, compilation);
-			if (testFramework != null) {
-				return testFramework.IsTestCase(method, compilation);
-			}
-			return false;
-		}
-		
-		public IEnumerable<IMethod> GetTestMethodsFor(ITypeDefinition type, ICompilation compilation)
-		{
-			ITestFramework testFramework = GetTestFramework(type, compilation);
-			if (testFramework != null)
-				return testFramework.GetTestMethodsFor(type);
-			return new IMethod[0];
-		}
-		
-		ITestFramework GetTestFramework(IMethod method, ICompilation compilation)
-		{
-			if (method != null) {
-				return GetTestFramework(method.DeclaringTypeDefinition, compilation);
+			if (entity != null) {
+				return GetTestFrameworkForProject(entity.ParentAssembly.GetProject());
 			}
 			return null;
 		}
 		
-		ITestFramework GetTestFramework(ITypeDefinition c, ICompilation compilation)
+		public bool IsTestClass(ITypeDefinition c)
 		{
-			IProject project = GetProject(c);
-			return GetTestFrameworkForProject(project);
-		}
-
-		IProject GetProject(ITypeDefinition c)
-		{
-			if (c != null && ProjectService.OpenSolution != null) {
-				return ProjectService.OpenSolution.FindProjectContainingFile(c.Parts[0].UnresolvedFile.FileName);
-			}
-			return null;
-		}
-		
-		public bool IsTestClass(ITypeDefinition c, ICompilation compilation)
-		{
-			ITestFramework testFramework = GetTestFramework(c, compilation);
+			ITestFramework testFramework = GetTestFramework(c);
 			if (testFramework != null) {
-				return testFramework.IsTestClass(c, compilation);
+				return testFramework.IsTestClass(c);
 			}
 			return false;
 		}

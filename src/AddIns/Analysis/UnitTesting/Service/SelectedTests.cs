@@ -33,25 +33,20 @@ namespace ICSharpCode.UnitTesting
 		
 		public SelectedTests(object owner, IProject[] selectedProjects)
 		{
-//			IProject project = TestableCondition.GetProject(owner);
-//			if (project != null) {
-//				projects.Add(project);
-//			} else {
-//				projects.AddRange(selectedProjects);
-//			}
-//			
-//			member = TestableCondition.GetMember(owner);
-//			c = GetClass(member, owner);
-//			namespaceFilter = TestableCondition.GetNamespace(owner);
+			IProject project = TestableCondition.GetProject(owner);
+			if (project != null) {
+				projects.Add(project);
+			} else {
+				projects.AddRange(selectedProjects);
+			}
+			
+			TestProject testProject = TestService.Solution.GetTestProject(project);
+			if (testProject != null) {
+				member = testProject.GetTestMember(TestableCondition.GetMember(owner));
+				c = testProject.GetTestClass(TestableCondition.GetClassFromMemberOrCaller(owner));
+			}
+			namespaceFilter = TestableCondition.GetNamespace(owner);
 		}
-		
-//		static TestClass GetClass(IMember member, Object owner)
-//		{
-//			if (member != null) {
-//				return member.DeclaringType;
-//			}
-//			return TestableCondition.GetClass(owner);
-//		}
 		
 		public bool HasProjects {
 			get { return projects.Count > 0; }

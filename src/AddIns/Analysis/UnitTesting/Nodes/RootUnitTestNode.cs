@@ -26,20 +26,23 @@ namespace ICSharpCode.UnitTesting
 	/// </summary>
 	public class RootUnitTestNode : UnitTestBaseNode
 	{
-		public RootUnitTestNode()
+		readonly TestSolution testSolution;
+		
+		public RootUnitTestNode(TestSolution testSolution)
 		{
-			TestService.TestableProjects.CollectionChanged += TestService_TestableProjects_CollectionChanged;
+			this.testSolution = testSolution;
+			testSolution.TestableProjects.CollectionChanged += TestSolution_TestableProjects_CollectionChanged;
 			LazyLoading = true;
 		}
 
-		void TestService_TestableProjects_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void TestSolution_TestableProjects_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action) {
 				case NotifyCollectionChangedAction.Add:
 					Children.AddRange(e.NewItems.OfType<TestProject>().Select(p => new ProjectUnitTestNode(p)));
 					break;
 				case NotifyCollectionChangedAction.Remove:
-					Children.RemoveWhere(node => node is ProjectUnitTestNode && e.OldItems.OfType<TestProject>().Any(p => p.Project == ((ProjectUnitTestNode)node).Project));
+					Children.RemoveAll(node => node is ProjectUnitTestNode && e.OldItems.OfType<TestProject>().Any(p => p.Project == ((ProjectUnitTestNode)node).Project));
 					break;
 				case NotifyCollectionChangedAction.Reset:
 					LoadChildren();
@@ -50,7 +53,7 @@ namespace ICSharpCode.UnitTesting
 		protected override void LoadChildren()
 		{
 			Children.Clear();
-			Children.AddRange(TestService.TestableProjects.Select(p => new ProjectUnitTestNode(p)));
+			Children.AddRange(testSolution.TestableProjects.Select(p => new ProjectUnitTestNode(p)));
 		}
 		
 		public override object Text {

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -20,6 +19,7 @@ namespace ICSharpCode.UnitTesting
 {
 	public class UnitTestsPad : AbstractPadContent
 	{
+		TestSolution testSolution;
 		TestTreeView treeView;
 		bool disposed;
 		DockPanel panel;
@@ -28,13 +28,14 @@ namespace ICSharpCode.UnitTesting
 		static UnitTestsPad instance;
 
 		public UnitTestsPad()
-			: this(TestService.RegisteredTestFrameworks)
+			: this(TestService.RegisteredTestFrameworks, TestService.Solution)
 		{
 		}
 		
-		public UnitTestsPad(IRegisteredTestFrameworks testFrameworks)
+		public UnitTestsPad(IRegisteredTestFrameworks testFrameworks, TestSolution testSolution)
 		{
 			instance = this;
+			this.testSolution = testSolution;
 			
 			panel = new DockPanel();
 
@@ -42,7 +43,7 @@ namespace ICSharpCode.UnitTesting
 			panel.Children.Add(toolBar);
 			DockPanel.SetDock(toolBar, Dock.Top);
 			
-			treeView = new TestTreeView(testFrameworks);
+			treeView = new TestTreeView(testFrameworks, testSolution);
 			panel.Children.Add(treeView);
 			
 			// Add the load solution projects thread ended handler before
@@ -51,8 +52,6 @@ namespace ICSharpCode.UnitTesting
 			SD.ParserService.LoadSolutionProjectsThread.Finished += LoadSolutionProjectsThreadFinished;
 			OnAddedLoadSolutionProjectsThreadEndedHandler();
 
-			treeView.Root = new RootUnitTestNode();
-			
 			ProjectService.SolutionClosed += SolutionClosed;
 			ProjectService.SolutionFolderRemoved += SolutionFolderRemoved;
 			ProjectService.ProjectAdded += ProjectAdded;
@@ -95,7 +94,7 @@ namespace ICSharpCode.UnitTesting
 //
 		public IProject[] GetProjects()
 		{
-			return TestService.TestableProjects.Select(tp => tp.Project).ToArray();
+			return testSolution.TestableProjects.Select(tp => tp.Project).ToArray();
 		}
 		
 //		public TestProject GetTestProject(IProject project)
@@ -285,7 +284,7 @@ namespace ICSharpCode.UnitTesting
 		
 		public void ResetTestResults()
 		{
-			foreach (var testProject in TestService.TestableProjects)
+			foreach (var testProject in testSolution.TestableProjects)
 				testProject.ResetTestResults();
 		}
 	}

@@ -36,9 +36,9 @@ namespace ICSharpCode.UnitTesting
 				NamespaceFilter = selectedTests.NamespaceFilter;
 			}
 			if (selectedTests.Class != null) {
-				Fixture = selectedTests.Class.FullName;
+				Fixture = selectedTests.Class.ReflectionName;
 				if (selectedTests.Method != null) {
-					Test = selectedTests.Method.Method.Name;
+					Test = selectedTests.Method.Member.Name;
 				}
 			}
 		}

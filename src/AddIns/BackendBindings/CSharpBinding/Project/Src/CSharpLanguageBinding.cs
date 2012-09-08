@@ -60,7 +60,7 @@ namespace CSharpBinding
 				inspectionManager = null;
 			}
 			if (contextActionProviders != null) {
-				editor.ContextActionProviders.RemoveWhere(contextActionProviders.Contains);
+				editor.ContextActionProviders.RemoveAll(contextActionProviders.Contains);
 			}
 			this.editor = null;
 			base.Detach();

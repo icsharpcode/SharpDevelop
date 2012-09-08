@@ -34,6 +34,7 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	public static class ExtensionMethods
 	{
+		#region RaiseEvent
 		/// <summary>
 		/// Raises the event.
 		/// Does nothing if eventHandler is null.
@@ -71,7 +72,9 @@ namespace ICSharpCode.SharpDevelop
 				eventHandler(sender, e);
 			}
 		}
+		#endregion
 		
+		#region Task Extensions
 		/// <summary>
 		/// If the task throws an exception, notifies the message service.
 		/// Call this method on asynchronous tasks if you do not care about the result, but do not want
@@ -89,7 +92,9 @@ namespace ICSharpCode.SharpDevelop
 					}
 				}, TaskContinuationOptions.OnlyOnFaulted);
 		}
+		#endregion
 		
+		#region Collections
 		/// <summary>
 		/// Obsolete. Please use a regular foreach loop instead. ForEach() is executed for its side-effects, and side-effects mix poorly with a functional programming style.
 		/// </summary>
@@ -138,6 +143,52 @@ namespace ICSharpCode.SharpDevelop
 			return ret;
 		}
 		
+		public static int BinarySearch<T, K>(this IList<T> list, K key, Func<T, K> keySelector, IComparer<K> keyComparer = null)
+		{
+			return BinarySearch(list, 0, list.Count, key, keySelector, keyComparer);
+		}
+		
+		/// <summary>
+		/// Searches a sorted list
+		/// </summary>
+		/// <param name="list"></param>
+		/// <param name="index"></param>
+		/// <param name="length"></param>
+		/// <param name="key"></param>
+		/// <param name="keySelector">Function that maps list items to their sort key</param>
+		/// <param name="keyComparer">Comparer used for the sort</param>
+		/// <returns></returns>
+		public static int BinarySearch<T, K>(this IList<T> list, int index, int length, K key, Func<T, K> keySelector, IComparer<K> keyComparer = null)
+		{
+			if (keyComparer == null)
+				keyComparer = Comparer<K>.Default;
+			int low = index;
+			int high = index + length - 1;
+			while (low <= high) {
+				int mid = low + (high - low >> 1);
+				int r = keyComparer.Compare(keySelector(list[mid]), key);
+				if (r == 0) {
+					return mid;
+				} else if (r < 0) {
+					low = mid + 1;
+				} else {
+					high = mid - 1;
+				}
+			}
+			return ~low;
+		}
+		
+		/// <summary>
+		/// Inserts an item into a sorted list.
+		/// </summary>
+		public static void OrderedInsert<T>(this IList<T> list, T item, IComparer<T> comparer)
+		{
+			int pos = BinarySearch(list, item, x => x, comparer);
+			if (pos < 0)
+				pos = ~pos;
+			list.Insert(pos, item);
+		}
+		
 		public static IEnumerable<WinForms.Control> GetRecursive(this WinForms.Control.ControlCollection collection)
 		{
 			return collection.Cast<WinForms.Control>().Flatten(c => c.Controls.Cast<WinForms.Control>());
@@ -154,6 +205,91 @@ namespace ICSharpCode.SharpDevelop
 			return ICSharpCode.NRefactory.Utils.TreeTraversal.PreOrder(input, recursion);
 		}
 		
+		
+		/// <summary>
+		/// Creates an array containing a part of the array (similar to string.Substring).
+		/// </summary>
+		public static T[] Splice<T>(this T[] array, int startIndex)
+		{
+			if (array == null)
+				throw new ArgumentNullException("array");
+			return Splice(array, startIndex, array.Length - startIndex);
+		}
+		
+		/// <summary>
+		/// Creates an array containing a part of the array (similar to string.Substring).
+		/// </summary>
+		public static T[] Splice<T>(this T[] array, int startIndex, int length)
+		{
+			if (array == null)
+				throw new ArgumentNullException("array");
+			if (startIndex < 0 || startIndex > array.Length)
+				throw new ArgumentOutOfRangeException("startIndex", startIndex, "Value must be between 0 and " + array.Length);
+			if (length < 0 || length > array.Length - startIndex)
+				throw new ArgumentOutOfRangeException("length", length, "Value must be between 0 and " + (array.Length - startIndex));
+			T[] result = new T[length];
+			Array.Copy(array, startIndex, result, 0, length);
+			return result;
+		}
+		
+		public static IEnumerable<T> DistinctBy<T, K>(this IEnumerable<T> input, Func<T, K> keySelector)
+		{
+			return input.Distinct(KeyComparer.Create(keySelector));
+		}
+		
+		
+		/// <summary>
+		/// Returns the index of the first element for which <paramref name="predicate"/> returns true.
+		/// If none of the items in the list fits the <paramref name="predicate"/>, -1 is returned.
+		/// </summary>
+		public static int FindIndex<T>(this IList<T> list, Func<T, bool> predicate)
+		{
+			for (int i = 0; i < list.Count; i++) {
+				if (predicate(list[i]))
+					return i;
+			}
+			
+			return -1;
+		}
+		
+		/// <summary>
+		/// Returns the index of the first element for which <paramref name="predicate"/> returns true.
+		/// If none of the items in the list fits the <paramref name="predicate"/>, -1 is returned.
+		/// </summary>
+		public static int FindIndex<T>(this IReadOnlyList<T> list, Func<T, bool> predicate)
+		{
+			for (int i = 0; i < list.Count; i++) {
+				if (predicate(list[i]))
+					return i;
+			}
+			
+			return -1;
+		}
+		
+		/// <summary>
+		/// Adds item to the list if the item is not null.
+		/// </summary>
+		public static void AddIfNotNull<T>(this IList<T> list, T itemToAdd) where T : class
+		{
+			if (itemToAdd != null)
+				list.Add(itemToAdd);
+		}
+		
+		public static void RemoveAll<T>(this IList<T> list, Predicate<T> condition)
+		{
+			if (list == null)
+				throw new ArgumentNullException("list");
+			int i = 0;
+			while (i < list.Count) {
+				if (condition(list[i]))
+					list.RemoveAt(i);
+				else
+					i++;
+			}
+		}
+		#endregion
+		
+		#region NRefactory Type System Extensions
 		/// <summary>
 		/// Gets the project for which the specified compilation was created.
 		/// Returns null if the compilation was not created using the SharpDevelop project system.
@@ -177,7 +313,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (assembly == null)
 				throw new ArgumentNullException("assembly");
-			var snapshot = assembly.Compilation as SharpDevelopSolutionSnapshot;
+			var snapshot = assembly.Compilation.SolutionSnapshot as SharpDevelopSolutionSnapshot;
 			if (snapshot == null)
 				return null;
 			return snapshot.GetProject(assembly.UnresolvedAssembly as IProjectContent);
@@ -215,36 +351,20 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Creates an array containing a part of the array (similar to string.Substring).
+		/// Gets the ambience for the specified compilation.
+		/// Never returns null.
 		/// </summary>
-		public static T[] Splice<T>(this T[] array, int startIndex)
+		public static IAmbience GetAmbience(this ICompilation compilation)
 		{
-			if (array == null)
-				throw new ArgumentNullException("array");
-			return Splice(array, startIndex, array.Length - startIndex);
+			IProject p = compilation.GetProject();
+			if (p != null)
+				return p.GetAmbience();
+			else
+				return AmbienceService.GetCurrentAmbience();
 		}
+		#endregion
 		
-		/// <summary>
-		/// Creates an array containing a part of the array (similar to string.Substring).
-		/// </summary>
-		public static T[] Splice<T>(this T[] array, int startIndex, int length)
-		{
-			if (array == null)
-				throw new ArgumentNullException("array");
-			if (startIndex < 0 || startIndex > array.Length)
-				throw new ArgumentOutOfRangeException("startIndex", startIndex, "Value must be between 0 and " + array.Length);
-			if (length < 0 || length > array.Length - startIndex)
-				throw new ArgumentOutOfRangeException("length", length, "Value must be between 0 and " + (array.Length - startIndex));
-			T[] result = new T[length];
-			Array.Copy(array, startIndex, result, 0, length);
-			return result;
-		}
-		
-		public static IEnumerable<T> DistinctBy<T, K>(this IEnumerable<T> input, Func<T, K> keySelector)
-		{
-			return input.Distinct(KeyComparer.Create(keySelector));
-		}
-		
+		#region WPF SetContent
 		/// <summary>
 		/// Sets the Content property of the specified ControlControl to the specified content.
 		/// If the content is a Windows-Forms control, it is wrapped in a WindowsFormsHost.
@@ -325,6 +445,7 @@ namespace ICSharpCode.SharpDevelop
 				contentControl.Content = content;
 			}
 		}
+		#endregion
 		
 		#region System.Drawing <-> WPF conversions
 		public static System.Drawing.Point ToSystemDrawing(this Point p)
@@ -406,6 +527,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		#endregion
 		
+		#region String extensions
 		/// <summary>
 		/// Removes <param name="stringToRemove" /> from the start of this string.
 		/// Throws ArgumentException if this string does not start with <param name="stringToRemove" />.
@@ -515,6 +637,25 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		public static int IndexOfAny(this string haystack, IEnumerable<string> needles, int startIndex, out int matchLength)
+		{
+			if (haystack == null)
+				throw new ArgumentNullException("haystack");
+			if (needles == null)
+				throw new ArgumentNullException("needles");
+			int index = -1;
+			matchLength = 0;
+			foreach (var needle in needles) {
+				int i = haystack.IndexOf(needle, startIndex, StringComparison.Ordinal);
+				if (i != -1 && (index == -1 || index > i)) {
+					index = i;
+					matchLength = needle.Length;
+				}
+			}
+			return index;
+		}
+		#endregion
+		
 		/// <summary>
 		/// Creates a new image for the image source.
 		/// </summary>
@@ -525,55 +666,7 @@ namespace ICSharpCode.SharpDevelop
 			return new Image { Source = image.ImageSource };
 		}
 		
-		/// <summary>
-		/// Returns the index of the first element for which <paramref name="predicate"/> returns true.
-		/// If none of the items in the list fits the <paramref name="predicate"/>, -1 is returned.
-		/// </summary>
-		public static int FindIndex<T>(this IList<T> list, Func<T, bool> predicate)
-		{
-			for (int i = 0; i < list.Count; i++) {
-				if (predicate(list[i]))
-					return i;
-			}
-			
-			return -1;
-		}
-		
-		/// <summary>
-		/// Returns the index of the first element for which <paramref name="predicate"/> returns true.
-		/// If none of the items in the list fits the <paramref name="predicate"/>, -1 is returned.
-		/// </summary>
-		public static int FindIndex<T>(this IReadOnlyList<T> list, Func<T, bool> predicate)
-		{
-			for (int i = 0; i < list.Count; i++) {
-				if (predicate(list[i]))
-					return i;
-			}
-			
-			return -1;
-		}
-		
-		/// <summary>
-		/// Adds item to the list if the item is not null.
-		/// </summary>
-		public static void AddIfNotNull<T>(this IList<T> list, T itemToAdd) where T : class
-		{
-			if (itemToAdd != null)
-				list.Add(itemToAdd);
-		}
-		
-		public static void RemoveWhere<T>(this IList<T> list, Predicate<T> condition)
-		{
-			if (list == null)
-				throw new ArgumentNullException("list");
-			int i = 0;
-			while (i < list.Count) {
-				if (condition(list[i]))
-					list.RemoveAt(i);
-				else
-					i++;
-			}
-		}
+		#region XML extensions
 		public static XElement FormatXml(this XElement element, int indentationLevel)
 		{
 			StringWriter sw = new StringWriter();
@@ -641,26 +734,9 @@ namespace ICSharpCode.SharpDevelop
 			element.AddFirst(new XText(Environment.NewLine + indentation.ToString()));
 			return newContent;
 		}
+		#endregion
 		
-		public static int IndexOfAny(this string haystack, IEnumerable<string> needles, int startIndex, out int matchLength)
-		{
-			if (haystack == null)
-				throw new ArgumentNullException("haystack");
-			if (needles == null)
-				throw new ArgumentNullException("needles");
-			int index = -1;
-			matchLength = 0;
-			foreach (var needle in needles) {
-				int i = haystack.IndexOf(needle, startIndex, StringComparison.Ordinal);
-				if (i != -1 && (index == -1 || index > i)) {
-					index = i;
-					matchLength = needle.Length;
-				}
-			}
-			return index;
-		}
-		
-		#region Dom, AST, Editor, Document
+		#region Compatibility extension methods (to reduce merge conflicts SD4->SD5)
 		public static string GetText(this IDocument document, TextLocation startPos, TextLocation endPos)
 		{
 			int startOffset = document.GetOffset(startPos);
@@ -672,21 +748,6 @@ namespace ICSharpCode.SharpDevelop
 			editor.Select(editor.Document.GetOffset(editor.Caret.Location), 0);
 		}
 		
-		/// <summary>
-		/// Gets the ambience for the specified compilation.
-		/// Never returns null.
-		/// </summary>
-		public static IAmbience GetAmbience(this ICompilation compilation)
-		{
-			IProject p = compilation.GetProject();
-			if (p != null)
-				return p.GetAmbience();
-			else
-				return AmbienceService.GetCurrentAmbience();
-		}
-		#endregion
-		
-		#region Compatibility extension methods (to reduce merge conflicts SD4->SD5)
 		/// <summary>
 		/// Obsolete. Use GetOffset() instead.
 		/// </summary>

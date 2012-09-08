@@ -138,7 +138,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void SearchItems(string text)
 		{
 			var searchList = listView.Items.OfType<ListViewItem>().ToList();
-			searchList.RemoveWhere(item => item.Text.IndexOf(text, StringComparison.OrdinalIgnoreCase) < 0);
+			searchList.RemoveAll(item => item.Text.IndexOf(text, StringComparison.OrdinalIgnoreCase) < 0);
 			resultList = searchList;
 		}
 

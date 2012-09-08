@@ -137,13 +137,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			var highlighter = SD.EditorControlService.CreateHighlighter(document);
 
 			primaryTextEditor.SyntaxHighlighting = highlighting;
-			primaryTextEditor.TextArea.TextView.LineTransformers.RemoveWhere(t => t is HighlightingColorizer);
+			primaryTextEditor.TextArea.TextView.LineTransformers.RemoveAll(t => t is HighlightingColorizer);
 			primaryTextEditor.TextArea.TextView.LineTransformers.Insert(0, new HighlightingColorizer(highlighter));
 			primaryTextEditor.UpdateCustomizedHighlighting();
 
 			if (secondaryTextEditor != null) {
 				secondaryTextEditor.SyntaxHighlighting = highlighting;
-				secondaryTextEditor.TextArea.TextView.LineTransformers.RemoveWhere(t => t is HighlightingColorizer);
+				secondaryTextEditor.TextArea.TextView.LineTransformers.RemoveAll(t => t is HighlightingColorizer);
 				secondaryTextEditor.TextArea.TextView.LineTransformers.Insert(0, new HighlightingColorizer(highlighter));
 				secondaryTextEditor.UpdateCustomizedHighlighting();
 			}

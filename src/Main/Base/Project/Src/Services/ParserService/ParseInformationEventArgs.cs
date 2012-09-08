@@ -58,12 +58,12 @@ namespace ICSharpCode.SharpDevelop.Parser
 		}
 		
 		[Obsolete]
-		public IUnresolvedFile OldSyntaxTree {
+		public IUnresolvedFile OldCompilationUnit {
 			get { return this.OldUnresolvedFile; }
 		}
 		
 		[Obsolete]
-		public IUnresolvedFile NewSyntaxTree {
+		public IUnresolvedFile NewCompilationUnit {
 			get { return this.NewUnresolvedFile; }
 		}
 		

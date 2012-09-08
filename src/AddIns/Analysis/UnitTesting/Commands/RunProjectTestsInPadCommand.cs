@@ -23,11 +23,11 @@ namespace ICSharpCode.UnitTesting
 			base.Run();
 		}
 		
-		public IMember SelectedMember {
+		public TestMember SelectedMember {
 			get { return null; }
 		}
 		
-		public IClass SelectedClass {
+		public TestClass SelectedClass {
 			get { return null; }
 		}
 		

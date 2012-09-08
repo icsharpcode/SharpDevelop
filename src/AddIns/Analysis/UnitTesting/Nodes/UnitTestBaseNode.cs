@@ -2,13 +2,17 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.UnitTesting
 {
 	public abstract class UnitTestBaseNode : SharpTreeNode
 	{
+		protected static readonly KeyComparer<SharpTreeNode, string> NodeTextComparer = KeyComparer.Create((SharpTreeNode n) => n.Text.ToString(), StringComparer.OrdinalIgnoreCase, StringComparer.OrdinalIgnoreCase);
+		
 		internal abstract TestResultType TestResultType { get; }
 		
 		public override object Icon {
