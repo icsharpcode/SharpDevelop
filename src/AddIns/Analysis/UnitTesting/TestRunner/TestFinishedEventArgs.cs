@@ -5,8 +5,6 @@ using System;
 
 namespace ICSharpCode.UnitTesting
 {
-	public delegate void TestFinishedEventHandler(object source, TestFinishedEventArgs e);
-	
 	public class TestFinishedEventArgs : EventArgs
 	{
 		TestResult result;

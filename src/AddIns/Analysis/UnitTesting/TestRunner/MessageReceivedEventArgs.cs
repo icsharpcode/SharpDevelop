@@ -5,16 +5,17 @@ using System;
 
 namespace ICSharpCode.UnitTesting
 {
-	public interface ITestResultsMonitor : IDisposable
+	public class MessageReceivedEventArgs : EventArgs
 	{
-		event TestFinishedEventHandler TestFinished;
+		string message;
 		
-		string FileName { get; set; }
+		public MessageReceivedEventArgs(string message)
+		{
+			this.message = message;
+		}
 		
-		void Stop();
-		void Start();
-		void Read();
-		
-		long InitialFilePosition { get; set; }
+		public string Message {
+			get { return message; }
+		}
 	}
 }

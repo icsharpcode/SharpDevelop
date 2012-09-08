@@ -37,7 +37,7 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
-		public event TestFinishedEventHandler TestFinished;
+		public event EventHandler<TestFinishedEventArgs> TestFinished;
 		
 		protected void OnTestFinished(object source, TestFinishedEventArgs e)
 		{
@@ -52,7 +52,7 @@ namespace ICSharpCode.UnitTesting
 			return testResult;
 		}
 		
-		public event MessageReceivedEventHandler MessageReceived;
+		public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 		
 		protected virtual void OnMessageReceived(string message)
 		{

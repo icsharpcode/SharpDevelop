@@ -26,7 +26,7 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Raised when a single test has been completed.
 		/// </summary>
-		public event TestFinishedEventHandler TestFinished;
+		public event EventHandler<TestFinishedEventArgs> TestFinished;
 		
 		public TestResultsMonitor(string fileName)
 		{
