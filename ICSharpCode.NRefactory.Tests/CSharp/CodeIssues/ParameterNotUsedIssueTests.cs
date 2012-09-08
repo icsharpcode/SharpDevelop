@@ -43,6 +43,36 @@ class TestClass {
 }";
 			Test<ParameterNotUsedIssue> (input, 1);
 		}
+		
+		[Test]
+		public void TestInterfaceImplementation ()
+		{
+			var input = @"
+interface ITestClass {
+	void TestMethod (int i);
+}
+class TestClass : ITestClass {
+	public void TestMethod (int i)
+	{
+	}
+}";
+			Test<ParameterNotUsedIssue> (input, 0);
+		}
+		
+		[Test]
+		public void TestAbstractMethodImplementation ()
+		{
+			var input = @"
+abstract class TestBase {
+	public abstract void TestMethod (int i);
+}
+class TestClass : TestBase {
+	public override void TestMethod (int i)
+	{
+	}
+}";
+			Test<ParameterNotUsedIssue> (input, 0);
+		}
 
 		[Test]
 		public void TestUsedParameter ()
