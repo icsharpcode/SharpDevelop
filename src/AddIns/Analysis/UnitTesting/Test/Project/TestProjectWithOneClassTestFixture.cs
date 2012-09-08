@@ -3,7 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Dom;
+using System.Collections.Specialized;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -21,7 +22,6 @@ namespace UnitTesting.Tests.Project
 		TestClass testClass;
 		MSBuildBasedProject project;
 		bool resultChangedCalled;
-		MockProjectContent projectContent;
 		List<TestClass> classesAdded;
 		List<TestClass> classesRemoved;
 		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
@@ -275,13 +275,13 @@ namespace UnitTesting.Tests.Project
 			
 			// Monitor test methods added.
 			List<TestMember> methodsAdded = new List<TestMember>();
-			testClass.TestMembers.TestMemberAdded += delegate(Object source, TestMemberEventArgs e)
+			testClass.Members.TestMemberAdded += delegate(Object source, TestMemberEventArgs e)
 				{ methodsAdded.Add(e.TestMember); };
 
 			// Update TestProject's parse info.
 			testProject.UpdateParseInfo(oldUnit, newUnit);
 	
-			Assert.IsTrue(testClass.TestMembers.Contains("NewMethod"));
+			Assert.IsTrue(testClass.Members.Contains("NewMethod"));
 			Assert.AreEqual(1, methodsAdded.Count);
 			Assert.AreSame(method, methodsAdded[0].Member);
 		}
@@ -335,14 +335,12 @@ namespace UnitTesting.Tests.Project
 			resultChangedCalled = true;
 		}
 		
-		void TestClassAdded(object source, TestClassEventArgs e)
+		void TestClassesChanged(object source, NotifyCollectionChangedEventArgs e)
 		{
-			classesAdded.Add(e.TestClass);
-		}
-		
-		void TestClassRemoved(object source, TestClassEventArgs e)
-		{
-			classesRemoved.Add(e.TestClass);
+			if (e.Action == NotifyCollectionChangedAction.Add)
+				classesAdded.AddRange(e.NewItems.Cast<TestClass>());
+			else if (e.Action == NotifyCollectionChangedAction.Remove)
+				classesRemoved.AddRange(e.OldItems.Cast<TestClass>());
 		}
 	}
 }

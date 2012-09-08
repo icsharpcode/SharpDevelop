@@ -3,7 +3,6 @@
 
 using System;
 
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -18,8 +17,6 @@ namespace UnitTesting.Tests.Project
 		TestClass testClass;
 		TestMember testMethod1;
 		TestMember testMethod2;
-		MockClass mockClass;
-		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]
 		public void Init()
@@ -49,14 +46,14 @@ namespace UnitTesting.Tests.Project
 			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
 			testProject = new TestProject(project, projectContent, testFrameworks);
 			testClass = testProject.TestClasses[0];
-			testMethod1 = testClass.TestMembers[0];
-			testMethod2 = testClass.TestMembers[1];
+			testMethod1 = testClass.Members[0];
+			testMethod2 = testClass.Members[1];
 		}
 		
 		[Test]
 		public void TwoMethods()
 		{
-			Assert.AreEqual(2, testClass.TestMembers.Count);
+			Assert.AreEqual(2, testClass.Members.Count);
 		}
 			
 		[Test]

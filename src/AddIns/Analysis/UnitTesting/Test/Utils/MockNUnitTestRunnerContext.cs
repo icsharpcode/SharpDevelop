@@ -23,10 +23,6 @@ namespace UnitTesting.Tests.Utils
 			get { return base.FileSystem as MockFileService; }
 		}
 		
-		public MockMessageService MockMessageService {
-			get { return base.MessageService as MockMessageService; }
-		}
-		
 		public MockNUnitTestRunnerContext()
 			: base(new MockProcessRunner(),
 				new MockTestResultsMonitor(), 

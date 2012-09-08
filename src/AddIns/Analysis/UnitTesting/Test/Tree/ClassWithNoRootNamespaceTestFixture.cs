@@ -195,7 +195,7 @@ namespace UnitTesting.Tests.Tree
 			MockClass c = MockClass.CreateMockClassWithoutAnyAttributes();
 			MockMethod mockMethod = new MockMethod(c, "Method");
 			TestMember testMethod = new TestMember(mockMethod);
-			testClass.TestMembers.Add(testMethod);
+			testClass.Members.Add(testMethod);
 			
 			Assert.AreEqual(0, testClassNode.Nodes.Count);
 		}

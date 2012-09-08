@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -33,10 +32,10 @@ namespace UnitTesting.Tests.Utils
 			get { return "C#"; }
 		}
 		
-		public override LanguageProperties LanguageProperties {
-			get { return LanguageProperties.CSharp; }
-		}
-		
+//		public override LanguageProperties LanguageProperties {
+//			get { return LanguageProperties.CSharp; }
+//		}
+//		
 		public bool IsSaved {
 			get { return saved; }
 		}

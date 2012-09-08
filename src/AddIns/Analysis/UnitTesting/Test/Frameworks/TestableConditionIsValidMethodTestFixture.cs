@@ -10,9 +10,10 @@ using UnitTesting.Tests.Utils;
 
 namespace UnitTesting.Tests.Frameworks
 {
-	[TestFixture]
+	[TestFixture, Ignore("Class browser is not implemented")]
 	public class TestableConditionIsValidForMemberNodeTestFixture
 	{
+		/*
 		TestableCondition testableCondition;
 		MockMethod methodWithTestAttribute;
 		MockMemberNode memberNodeForMethodWithTestAttribute;
@@ -58,6 +59,6 @@ namespace UnitTesting.Tests.Frameworks
 			MockMemberNode memberNode = new MockMemberNode(method);
 			testableCondition.IsValid(memberNode, null);
 			Assert.AreEqual(method, testFrameworks.IsTestMemberParameterUsed);
-		}
+		}*/
 	}
 }

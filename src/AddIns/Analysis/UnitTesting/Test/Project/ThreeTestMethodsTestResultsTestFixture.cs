@@ -17,7 +17,6 @@ namespace UnitTesting.Tests.Project
 		TestMember testMethod1;
 		TestMember testMethod2;
 		TestMember testMethod3;
-		TestMemberCollection testMethods;
 		bool testMethodsResultChanged;
 		
 		[SetUp]

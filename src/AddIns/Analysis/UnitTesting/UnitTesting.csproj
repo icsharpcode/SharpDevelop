@@ -83,9 +83,9 @@
     <Compile Include="TestRunner\TestResultsMonitor.cs" />
     <Compile Include="TestRunner\TestResultsReader.cs" />
     <Compile Include="TestRunner\TestResultTask.cs" />
-    <Compile Include="TestFramework\IRegisteredTestFrameworks.cs" />
-    <Compile Include="TestFramework\ITestFramework.cs" />
-    <Compile Include="TestFramework\ITestFrameworkFactory.cs" />
+    <Compile Include="Frameworks\IRegisteredTestFrameworks.cs" />
+    <Compile Include="Frameworks\ITestFramework.cs" />
+    <Compile Include="Frameworks\ITestFrameworkFactory.cs" />
     <Compile Include="Interfaces\IBuildOptions.cs" />
     <Compile Include="Interfaces\IBuildProjectFactory.cs" />
     <Compile Include="Interfaces\IFileSystem.cs" />
@@ -108,12 +108,12 @@
     <Compile Include="Model\TestMember.cs" />
     <Compile Include="Model\TestProject.cs" />
     <Compile Include="Model\TestSolution.cs" />
-    <Compile Include="TestFramework\ITestResultsMonitor.cs" />
-    <Compile Include="TestFramework\RegisteredTestFrameworks.cs" />
-    <Compile Include="TestFramework\TestFrameworkDescriptor.cs" />
-    <Compile Include="TestFramework\TestFrameworkDoozer.cs" />
-    <Compile Include="TestFramework\TestFrameworkFactory.cs" />
-    <Compile Include="TestFramework\TestService.cs" />
+    <Compile Include="Frameworks\ITestResultsMonitor.cs" />
+    <Compile Include="Frameworks\RegisteredTestFrameworks.cs" />
+    <Compile Include="Frameworks\TestFrameworkDescriptor.cs" />
+    <Compile Include="Frameworks\TestFrameworkDoozer.cs" />
+    <Compile Include="Frameworks\TestFrameworkFactory.cs" />
+    <Compile Include="Frameworks\TestService.cs" />
     <Compile Include="TreeView\ClassUnitTestNode.cs" />
     <Compile Include="TreeView\ITestTreeView.cs" />
     <Compile Include="TreeView\MemberUnitTestNode.cs" />
@@ -191,7 +191,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Commands" />
-    <Folder Include="TestFramework" />
+    <Folder Include="Frameworks" />
     <Folder Include="Pad" />
     <Folder Include="Interfaces" />
     <Folder Include="Model" />

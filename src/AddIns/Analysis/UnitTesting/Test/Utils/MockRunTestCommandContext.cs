@@ -3,7 +3,6 @@
 
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
@@ -20,7 +19,6 @@ namespace UnitTesting.Tests.Utils
 		public MockBuildProjectFactory MockBuildProjectFactory = new MockBuildProjectFactory();
 		public MockBuildOptions MockBuildOptions = new MockBuildOptions();
 		public MockUnitTestsPad MockUnitTestsPad = new MockUnitTestsPad();
-		public MockMessageService MockMessageService = new MockMessageService();
 		public MockSaveAllFilesCommand MockSaveAllFilesCommand = new MockSaveAllFilesCommand();
 		public MockStatusBarService MockStatusBarService = new MockStatusBarService();
 		public MessageViewCategory UnitTestMessageViewCategory = new MessageViewCategory("Unit Tests");
@@ -54,7 +52,7 @@ namespace UnitTesting.Tests.Utils
 			get { return MockUnitTestsPad; }
 		}
 		
-		public IUnitTestMessageService MessageService {
+		public IMessageService MessageService {
 			get { return MockMessageService; }
 		}
 

@@ -28,8 +28,9 @@ namespace ICSharpCode.UnitTesting
 			return new NUnitTestDebugger();
 		}
 		
-		static readonly ITypeReference testAttribute = new GetClassTypeReference("NUnit.Framework", "TestAttribute", 0);
-		static readonly ITypeReference testCaseAttribute = new GetClassTypeReference("NUnit.Framework", "TestCaseAttribute", 0);
+		static readonly ITypeReference testAttributeRef = new GetClassTypeReference("NUnit.Framework", "TestAttribute", 0);
+		static readonly ITypeReference testCaseAttributeRef = new GetClassTypeReference("NUnit.Framework", "TestCaseAttribute", 0);
+		static readonly ITypeReference testFixtureAttributeRef = new GetClassTypeReference("NUnit.Framework", "TestFixtureAttribute", 0);
 		
 		/// <summary>
 		/// Determines whether the project is a test project. A project
@@ -42,7 +43,7 @@ namespace ICSharpCode.UnitTesting
 				throw new ArgumentNullException("project");
 			if (project.ProjectContent == null)
 				return false;
-			return testAttribute.Resolve(SD.ParserService.GetCompilation(project).TypeResolveContext).Kind != TypeKind.Unknown;
+			return testAttributeRef.Resolve(SD.ParserService.GetCompilation(project).TypeResolveContext).Kind != TypeKind.Unknown;
 		}
 		
 		public bool IsTestMember(IMember member)
@@ -51,8 +52,8 @@ namespace ICSharpCode.UnitTesting
 				throw new ArgumentNullException("member");
 			if (member.EntityType != EntityType.Method)
 				return false;
-			var testAttribute = NUnitTestFramework.testAttribute.Resolve(member.Compilation);
-			var testCaseAttribute = NUnitTestFramework.testCaseAttribute.Resolve(member.Compilation);
+			var testAttribute = testAttributeRef.Resolve(member.Compilation);
+			var testCaseAttribute = testCaseAttributeRef.Resolve(member.Compilation);
 			foreach (var attr in member.Attributes) {
 				if (attr.AttributeType.Equals(testAttribute) || attr.AttributeType.Equals(testCaseAttribute))
 					return true;
@@ -66,7 +67,11 @@ namespace ICSharpCode.UnitTesting
 				throw new ArgumentNullException("type");
 			if (type.IsAbstract)
 				return false;
-			return type.Methods.Any(IsTestMember);
+			var testFixtureAttribute = testFixtureAttributeRef.Resolve(type.Compilation);
+			if (type.Attributes.Any(attr => attr.AttributeType.Equals(testFixtureAttributeRef)))
+				return true;
+			else
+				return type.Methods.Any(IsTestMember);
 		}
 		
 		public IEnumerable<TestMember> GetTestMembersFor(TestProject project, ITypeDefinition typeDefinition)

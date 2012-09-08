@@ -2,7 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
+using System.Linq;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
@@ -10,42 +10,19 @@ using UnitTesting.Tests.Utils;
 namespace UnitTesting.Tests.Project
 {
 	[TestFixture]
-	public class TestClassWithFieldsDefinedAsTestMembersByTestFrameworkTests
+	public class TestClassWithFieldsDefinedAsTestMembersByTestFrameworkTests : ProjectTestFixtureBase
 	{
-		TestClass testClass;
-		MockClass fakeClass;
-		MockTestFramework fakeTestFramework;
-		MockRegisteredTestFrameworks fakeRegisteredTestFrameworks;
-		
-		void CreateTestClass()
-		{
-			fakeClass = MockClass.CreateMockClassWithoutAnyAttributes();
-			fakeTestFramework = new MockTestFramework();
-			fakeRegisteredTestFrameworks = new MockRegisteredTestFrameworks();
-			fakeRegisteredTestFrameworks.AddTestFrameworkForProject(fakeClass.Project, fakeTestFramework);
-			
-			testClass = new TestClass(fakeClass, fakeRegisteredTestFrameworks);
-		}
-		
-		DefaultField AddTestFieldDefinedAsTestMemberToClass(string name)
-		{
-			var field = new DefaultField(fakeClass, name);
-			fakeClass.Fields.Add(field);
-			fakeRegisteredTestFrameworks.AddTestMember(field);
-			
-			return field;
-		}
-		
 		[Test]
 		public void TestMembers_ClassHasOneFieldDefinedAsTestMemberByTestFramework_FirstItemHasSameNameAsField()
 		{
-			CreateTestClass();
-			AddTestFieldDefinedAsTestMemberToClass("MyField");
+			var fakeTestFramework = new MockTestFramework();
+			fakeTestFramework.AddTestClass("MyClass");
+			fakeTestFramework.AddTestMember("MyClass.MyField");
 			
-			TestMember testField = testClass.TestMembers[0];
-			string testFieldName = testField.Name;
+			CreateProject(fakeTestFramework, Parse("class MyClass { int MyField; }"));
 			
-			Assert.AreEqual("MyField", testFieldName);
+			TestMember testField = testProject.TestClasses.Single().Members.Single();
+			Assert.AreEqual("MyField", testField.Name);
 		}
 	}
 }

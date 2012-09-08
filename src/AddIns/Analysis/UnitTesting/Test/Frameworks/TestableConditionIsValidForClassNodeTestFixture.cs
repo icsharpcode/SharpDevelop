@@ -4,8 +4,6 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -13,12 +11,12 @@ using UnitTesting.Tests.Utils;
 
 namespace UnitTesting.Tests.Frameworks
 {
-	[TestFixture]
+	[TestFixture, Ignore("Class browser is not implemented")]
 	public class TestableConditionIsValidForClassNodeTestFixture
 	{
+		/*
 		TestableCondition testableCondition;
 		MockClass classWithTestAttribute;
-		ClassNode classNodeForClassWithTestAttribute;
 		MockRegisteredTestFrameworks testFrameworks;
 		
 		[TestFixtureSetUp]
@@ -75,6 +73,6 @@ namespace UnitTesting.Tests.Frameworks
 		{
 			classWithTestAttribute.MockProjectContent.Project = null;
 			Assert.IsFalse(testableCondition.IsValid(classNodeForClassWithTestAttribute, null));
-		}
+		}*/
 	}
 }

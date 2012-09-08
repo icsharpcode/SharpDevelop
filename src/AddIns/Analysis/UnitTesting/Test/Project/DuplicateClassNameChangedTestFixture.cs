@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -19,17 +18,13 @@ namespace UnitTesting.Tests.Project
 	/// test tree.
 	/// </summary>
 	[TestFixture]
-	public class DuplicateClassNameChangedTestFixture
+	public class DuplicateClassNameChangedTestFixture : ProjectTestFixtureBase
 	{
-		TestProject testProject;
-		IProject project;
-		MockProjectContent projectContent;
-		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
-		
 		[SetUp]
 		public void Init()
 		{
 			// Create a project to display.
+			CreateNUnitProject();
 			project = new MockCSharpProject();
 			project.Name = "TestProject";
 			ReferenceProjectItem nunitFrameworkReferenceItem = new ReferenceProjectItem(project);
@@ -56,7 +51,7 @@ namespace UnitTesting.Tests.Project
 			// Make sure test methods are created, otherwise
 			// the Test2 method will never be looked at due to lazy evaluation
 			// of test method.
-			int count = testProject.TestClasses[0].TestMembers.Count;
+			int count = testProject.TestClasses[0].Members.Count;
 			
 			// Change the name of the second test class.
 			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
@@ -99,13 +94,13 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void OldTestClassHasOneMethod()
 		{
-			Assert.AreEqual(1, GetTestClass("RootNamespace.MyTestFixture").TestMembers.Count);
+			Assert.AreEqual(1, GetTestClass("RootNamespace.MyTestFixture").Members.Count);
 		}
 		
 		[Test]
 		public void OldTestClassHasOneMethodCalledTest1()
 		{
-			Assert.AreEqual("Test1", GetTestClass("RootNamespace.MyTestFixture").TestMembers[0].Name);
+			Assert.AreEqual("Test1", GetTestClass("RootNamespace.MyTestFixture").Members[0].Name);
 		}		
 		
 		void AssertTestClassFound(string name)

@@ -2,9 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Dom;
+using System.Linq;
+
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 
@@ -13,9 +14,9 @@ namespace UnitTesting.Tests.Utils
 	public class MockTestFramework : ITestFramework
 	{
 		IMember isTestMemberParameterUsed;
-		List<IMember> testMembers = new List<IMember>();
-		IClass isTestClassParameterUsed;
-		List<IClass> testClasses = new List<IClass>();
+		List<string> testMembers = new List<IMember>();
+		ITypeDefinition isTestClassParameterUsed;
+		List<string> testClasses = new List<ITypeDefinition>();
 		IProject isTestProjectParameterUsed;
 		List<IProject> testProjects = new List<IProject>();
 		List<MockTestRunner> testRunnersCreated = new List<MockTestRunner>();
@@ -32,35 +33,35 @@ namespace UnitTesting.Tests.Utils
 			return testMembers.Contains(member);
 		}
 		
-		public IEnumerable<TestMember> GetTestMembersFor(IClass @class) {
-			return testMembers.Where(member => member.DeclaringType == @class).Select(member => new TestMember(member));
+		public IEnumerable<TestMember> GetTestMembersFor(TestProject testProject, ITypeDefinition @class) {
+			return testMembers.Where(member => member.DeclaringType == @class).Select(member => new TestMember(testProject, member));
 		}
 		
 		public IMember IsTestMemberParameterUsed {
 			get { return isTestMemberParameterUsed; }
 		}
 		
-		public void AddTestMember(IMember member)
+		public void AddTestMember(string reflectionName)
 		{
-			testMembers.Add(member);
+			testMembers.Add(reflectionName);
 		}
 		
-		public bool IsTestClass(IClass c)
+		public bool IsTestClass(ITypeDefinition c)
 		{
 			isTestClassParameterUsed = c;
-			return testClasses.Contains(c);
+			return testClasses.Contains(c.ReflectionName);
 		}
 		
-		public IClass IsTestClassParameterUsed {
+		public ITypeDefinition IsTestClassParameterUsed {
 			get { return isTestClassParameterUsed; }
 		}
 		
-		public void AddTestClass(IClass c)
+		public void AddTestClass(string reflectionName)
 		{
-			testClasses.Add(c);
+			testClasses.Add(reflectionName);
 		}
 		
-		public void RemoveTestClass(IClass c)
+		public void RemoveTestClass(ITypeDefinition c)
 		{
 			testClasses.Remove(c);
 		}

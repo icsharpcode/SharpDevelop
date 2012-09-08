@@ -248,5 +248,13 @@ namespace XmlEditor.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
+		
+		public event EventHandler FileNameChanged { add {} remove {} }
+		
+		public string FileName {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

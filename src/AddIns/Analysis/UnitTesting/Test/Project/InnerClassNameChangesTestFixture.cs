@@ -2,7 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -14,13 +14,40 @@ namespace UnitTesting.Tests.Project
 	/// Tests that the TestProject is correctly updated after the inner class name changes.
 	/// </summary>
 	[TestFixture]
-	public class InnerClassNameChangesTestFixture : InnerClassTestFixtureBase
+	public class InnerClassNameChangesTestFixture : ProjectTestFixtureBase
 	{
+		TestClass originalA;
+		
 		[SetUp]
 		public void Init()
 		{
-			base.InitBase();
-
+			CreateNUnitProject(Parse(@"
+using NUnit.Framework;
+namespace MyTests {
+	class A {
+		class InnerTest {
+			[Test]
+			public void M() {}
+		}
+	}
+}
+"));
+			
+			originalA = testProject.GetTestClass("MyTests.A");
+			
+			UpdateCodeFile(@"
+using NUnit.Framework;
+namespace MyTests {
+	class A {
+		class InnerTestMod {
+			[Test]
+			public void M() {}
+		}
+	}
+}
+");
+			
+			
 			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
 			oldUnit.Classes.Add(outerClass);
 			
@@ -39,23 +66,18 @@ namespace UnitTesting.Tests.Project
 			// Update TestProject's parse info.
 			testProject.UpdateParseInfo(oldUnit, newUnit);
 		}
-
+		
 		[Test]
-		public void NewInnerClassAdded()
+		public void OuterClassNotChanged()
 		{
-			Assert.IsTrue(testProject.TestClasses.Contains("MyTests.A+InnerATestMod"));
+			Assert.IsNotNull(originalA);
+			Assert.AreSame(originalA, testProject.GetTestClass("MyTests.A"));
 		}
 		
 		[Test]
-		public void OldInnerClassRemoved()
+		public void InnerClassRenamed()
 		{
-			Assert.IsFalse(testProject.TestClasses.Contains("MyTests.A+InnerATest"));
-		}
-		
-		[Test]
-		public void OneTestClassRemain()
-		{
-			Assert.AreEqual(1, testProject.TestClasses.Count);
+			Assert.AreEqual("InnerTestMod", originalA.NestedClasses.Single().Name);
 		}
 	}
 }

@@ -63,7 +63,7 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Gets the fully qualified name of the class.
 		/// </summary>
-		public string ReflectionName {
+		public string QualifiedName {
 			get { return parts[0].ReflectionName; }
 		}
 		
@@ -190,7 +190,7 @@ namespace ICSharpCode.UnitTesting
 		
 		public override string ToString()
 		{
-			return string.Format("[TestClass TestResult={0}, Name={1}]", testResult, this.ReflectionName);
+			return string.Format("[TestClass TestResult={0}, Name={1}]", testResult, this.QualifiedName);
 		}
 	}
 }

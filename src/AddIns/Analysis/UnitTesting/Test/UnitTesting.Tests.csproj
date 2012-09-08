@@ -16,7 +16,8 @@
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
@@ -54,6 +55,9 @@
       <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Rhino.Mocks">
+      <HintPath>..\..\..\..\Libraries\RhinoMocks\Rhino.Mocks.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -77,7 +81,6 @@
     <Compile Include="Frameworks\TestFrameworkDoozerTests.cs" />
     <Compile Include="Frameworks\TestResultsReaderTests.cs" />
     <Compile Include="Frameworks\NUnitConsoleCommandLineTests.cs" />
-    <Compile Include="Frameworks\UnitTestingOptionsPanelTestFixture.cs" />
     <Compile Include="Frameworks\UnitTestingOptionsTestFixture.cs" />
     <Compile Include="Project\AbstractBaseClassWithTestMethodsTestFixture.cs" />
     <Compile Include="Project\BaseTestMethodTestFixture.cs" />
@@ -88,70 +91,13 @@
     <Compile Include="Project\InnerClassNameChangesTestFixture.cs" />
     <Compile Include="Project\InnerClassTestFixture.cs" />
     <Compile Include="Project\InnerClassTestFixtureAttributeRemovedTestFixture.cs" />
-    <Compile Include="Project\InnerClassTestFixtureBase.cs" />
     <Compile Include="Project\OverriddenBaseTestMethodTestFixture.cs" />
-    <Compile Include="Project\RemovedClassesTestFixture.cs" />
-    <Compile Include="Project\TestClassIsTestMethodUsesTestFrameworksTestFixture.cs" />
+    <Compile Include="Project\ProjectTestFixtureBase.cs" />
     <Compile Include="Project\TestClassWithFieldsDefinedAsTestMembersByTestFrameworkTests.cs" />
-    <Compile Include="Project\TestProjectUsesTestFrameworksTestFixture.cs" />
     <Compile Include="Project\TwoBaseClassesWithTestMethodsTestFixture.cs" />
-    <Compile Include="Tree\AbstractRunTestCommandTests.cs" />
-    <Compile Include="Tree\AddNUnitReferenceToProjectTestFixture.cs" />
-    <Compile Include="Tree\BuildErrorWhenRunningTestsTestFixture.cs" />
-    <Compile Include="Tree\ClassTestFixtureSelectedTestFixture.cs" />
-    <Compile Include="Tree\EmptyUnitTestsPadTests.cs" />
-    <Compile Include="Tree\GoToSelectedBaseClassMethodTestFixture.cs" />
-    <Compile Include="Tree\GoToSelectedClassTestFixture.cs" />
-    <Compile Include="Tree\GoToSelectedClassWithNoLocationTestFixture.cs" />
-    <Compile Include="Tree\GoToSelectedMethodTestFixture.cs" />
-    <Compile Include="Tree\GoToSelectedMethodWithNoLocationTestFixture.cs" />
-    <Compile Include="Tree\MethodTestSelectedTestFixture.cs" />
-    <Compile Include="Tree\MultipleTestProjectsTestFixture.cs" />
-    <Compile Include="Tree\NonTestProjectNotAddedToTestTreeTestFixture.cs" />
-    <Compile Include="Tree\NoOwnerForSelectedTestsTestFixture.cs" />
-    <Compile Include="Tree\NoTestsRunWhenNoTestsSelectedTestFixture.cs" />
-    <Compile Include="Tree\RemoveSolutionFolderTestFixture.cs" />
-    <Compile Include="Tree\RunAllTestsInPadTestFixture.cs" />
-    <Compile Include="Tree\RunNUnitTestsForMethodTestFixture.cs" />
-    <Compile Include="Tree\RunNUnitTestsWithDebuggerTestFixture.cs" />
-    <Compile Include="Tree\RunProjectTestsInPadTestFixture.cs" />
-    <Compile Include="Tree\RunProjectTestsTestFixture.cs" />
-    <Compile Include="Tree\RunTestCommandBeforeRunTestFixture.cs" />
-    <Compile Include="Tree\RunTestCommandTestFixtureBase.cs" />
-    <Compile Include="Tree\RunTestInPadCommandTestFixture.cs" />
-    <Compile Include="Tree\RunTestsForClassTestFixture.cs" />
-    <Compile Include="Tree\RunTestsForMethodTestFixture.cs" />
-    <Compile Include="Tree\RunTestsForNamespaceTestFixture.cs" />
-    <Compile Include="Tree\RunTestsWithoutBuildingProjectTestFixture.cs" />
-    <Compile Include="Tree\RunTestsWithoutUnitTestsPadTestFixture.cs" />
-    <Compile Include="Tree\RunTestWhenDebuggerRunningTestFixture.cs" />
-    <Compile Include="Tree\RunTestWithDebuggerCommandTestFixture.cs" />
-    <Compile Include="Tree\RunTestWithDebuggerCommandTestFixtureBase.cs" />
-    <Compile Include="Tree\RunTwoProjectsTestsTestFixture.cs" />
-    <Compile Include="Tree\SelectedTestsTestFixture.cs" />
-    <Compile Include="Tree\SolutionLoadedAfterUnitTestsTreeDisposedTestFixture.cs" />
-    <Compile Include="Tree\StartingDebuggerThrowsExceptionWhenStartingTestsTestFixture.cs" />
-    <Compile Include="Tree\StopRunningTestsTestFixture.cs" />
-    <Compile Include="Tree\TestableConditionTests.cs" />
-    <Compile Include="Tree\TestResultFailureTaskTestFixture.cs" />
-    <Compile Include="Tree\TestResultFailureTaskWithNoMessageTestFixture.cs" />
-    <Compile Include="Tree\TestResultIgnoreTaskTestFixture.cs" />
-    <Compile Include="Tree\TestResultIgnoreTaskWithNoMessageTestFixture.cs" />
-    <Compile Include="Tree\TestResultIgnoreTaskWithoutMatchingTestMethodTestFixture.cs" />
-    <Compile Include="Tree\TreeNodeContextMenuTestFixture.cs" />
-    <Compile Include="Tree\TreeNodeSortingTestFixture.cs" />
-    <Compile Include="Tree\OpenUnitTestsPadWithSolutionOpenTestFixture.cs" />
     <Compile Include="Utils\DerivedRunTestCommand.cs" />
     <Compile Include="Utils\DerivedRunTestInPadCommand.cs" />
     <Compile Include="Utils\DerivedRunTestWithDebuggerCommand.cs" />
-    <Compile Include="Utils\DerivedTestProjectTreeNode.cs" />
-    <Compile Include="Utils\DerivedTestTreeView.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Utils\DerivedUnitTestingOptionsPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Utils\DerivedUnitTestsPad.cs" />
     <Compile Include="Utils\JumpedToFile.cs" />
     <Compile Include="Utils\MockAddInTree.cs" />
     <Compile Include="Utils\MockBuildOptions.cs" />
@@ -160,7 +106,6 @@
     <Compile Include="Utils\MockDebugger.cs" />
     <Compile Include="Utils\MockDebuggerService.cs" />
     <Compile Include="Utils\MockFileService.cs" />
-    <Compile Include="Utils\MockMessageService.cs" />
     <Compile Include="Utils\MockNUnitTestFramework.cs" />
     <Compile Include="Utils\MockNUnitTestRunnerContext.cs" />
     <Compile Include="Utils\MockProcessRunner.cs" />
@@ -176,22 +121,11 @@
     <Compile Include="Utils\MockTestResultsMonitor.cs" />
     <Compile Include="Utils\MockTestRunner.cs" />
     <Compile Include="Utils\MockTestTreeView.cs" />
-    <Compile Include="Utils\MockMember.cs" />
-    <Compile Include="Utils\MockClass.cs" />
-    <Compile Include="Utils\MockMethod.cs" />
-    <Compile Include="Utils\MockMemberNode.cs" />
-    <Compile Include="Utils\MockAmbience.cs" />
     <Compile Include="Utils\MockUnitTestsPad.cs" />
     <Compile Include="Utils\MockUnitTestWorkbench.cs" />
     <Compile Include="Utils\SelectedTestsHelper.cs" />
     <Compile Include="Utils\TaskComparison.cs" />
     <Compile Include="Utils\TestProjectHelper.cs" />
-    <Compile Include="Utils\Tests\CreateMockClassWithAttributesTestFixture.cs" />
-    <Compile Include="Utils\Tests\CreateMockClassWithoutAnyAttributesTestFixture.cs" />
-    <Compile Include="Utils\Tests\CreateMockClassWithSingleAttributeTestFixture.cs" />
-    <Compile Include="Utils\Tests\CreateMockMethodWithAttributesTestFixture.cs" />
-    <Compile Include="Utils\Tests\CreateMockMethodWithoutAnyAttributesTestFixture.cs" />
-    <Compile Include="Utils\Tests\CreateMockMethodWithSingleAttributeTestFixture.cs" />
     <Compile Include="Utils\Tests\CreateProjectWithOutputPathTestFixture.cs" />
     <Compile Include="Utils\Tests\CreateTestProjectWithOneTestMethodTestFixture.cs" />
     <Compile Include="Utils\Tests\CreateTestProjectWithTwoTestMethodsTestFixture.cs" />
@@ -199,15 +133,11 @@
     <Compile Include="Utils\Tests\MockAddInTreeTestFixture.cs" />
     <Compile Include="Utils\Tests\MockBuildOptionsTestFixture.cs" />
     <Compile Include="Utils\Tests\MockBuildProjectBeforeTestRunTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockClassTests.cs" />
     <Compile Include="Utils\Tests\MockDebuggerServiceTestFixture.cs" />
     <Compile Include="Utils\Tests\MockFileServiceTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockMessageServiceTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockMethodTestFixture.cs" />
     <Compile Include="Utils\Tests\MockNUnitTestFrameworkTestFixture.cs" />
     <Compile Include="Utils\Tests\MockNUnitTestRunnerContextTestFixture.cs" />
     <Compile Include="Utils\Tests\MockProcessRunnerTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockProjectContentTestFixture.cs" />
     <Compile Include="Utils\Tests\MockProjectSaveTestFixture.cs" />
     <Compile Include="Utils\Tests\MockRegisteredTestFrameworksTestFixture.cs" />
     <Compile Include="Utils\Tests\MockRunTestCommandContextTestFixture.cs" />
@@ -227,29 +157,18 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Utils\ResourceManager.cs" />
-    <Compile Include="Utils\MockProjectContent.cs" />
-    <Compile Include="Utils\MockAttribute.cs" />
-    <Compile Include="Tree\OneTestClassTestFixture.cs" />
-    <Compile Include="Utils\DummyParserServiceTestTreeView.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Project\TestProjectWithOneClassTestFixture.cs" />
     <Compile Include="Project\ClassRootNamespaceTests.cs" />
     <Compile Include="Project\TwoProjectRootNamespacesTestFixture.cs" />
     <Compile Include="Project\DuplicateProjectRootNamespaceTestFixture.cs" />
     <Compile Include="Project\EmptyRootNamespaceTestFixture.cs" />
     <Compile Include="Project\ClassWithTwoChildNamespacesTestFixture.cs" />
-    <Compile Include="Tree\ClassWithNoRootNamespaceTestFixture.cs" />
     <Compile Include="Project\TestClassWithOneMethodTestFixture.cs" />
-    <Compile Include="Tree\SolutionOpenedTestFixture.cs" />
-    <Compile Include="Tree\GetProjectsTestFixture.cs" />
     <Compile Include="Project\TestMemberGetMethodNameTests.cs" />
     <Compile Include="Project\GetQualifiedClassNameTests.cs" />
     <Compile Include="Project\TestClassWithTwoMethodsTestFixture.cs" />
     <Compile Include="Project\ThreeTestMethodsTestResultsTestFixture.cs" />
     <Compile Include="Project\ThreeTestClassesTestResultsTestFixture.cs" />
-    <Compile Include="Utils\MockParameter.cs" />
-    <Compile Include="Tree\TwoTestClassesInDifferentNamespacesTestFixture.cs" />
     <Compile Include="Project\EmptyProjectTestFixture.cs" />
     <Compile Include="Project\TestMethodsInBaseClassTestFixture.cs" />
     <Compile Include="Project\DuplicateClassNameTestFixture.cs" />
@@ -257,6 +176,19 @@
     <Compile Include="Utils\MockCSharpProject.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\UnitTesting.csproj">
       <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
       <Name>UnitTesting</Name>
@@ -268,14 +200,6 @@
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

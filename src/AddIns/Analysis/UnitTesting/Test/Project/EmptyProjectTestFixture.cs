@@ -1,7 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Dom;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -14,105 +14,61 @@ namespace UnitTesting.Tests.Project
 	/// Creates a TestProject object with no test classes.
 	/// </summary>
 	[TestFixture]
-	public class EmptyProjectTestFixture
+	public class EmptyProjectTestFixture : ProjectTestFixtureBase
 	{
-		TestProject testProject;
-		MockProjectContent projectContent;
-		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
-		
-		[SetUp]
-		public void Init()
-		{
-			// Create a project to display.
-			IProject project = new MockCSharpProject();
-			project.Name = "TestProject";
-			ReferenceProjectItem nunitFrameworkReferenceItem = new ReferenceProjectItem(project);
-			nunitFrameworkReferenceItem.Include = "NUnit.Framework";
-			ProjectService.AddProjectItem(project, nunitFrameworkReferenceItem);
-			
-			projectContent = new MockProjectContent();
-			projectContent.Language = LanguageProperties.None;
-			
-			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
-			testProject = new TestProject(project, projectContent, testFrameworks);
-		}
-		
 		/// <summary>
 		/// Tests that a new class is added to the TestProject
 		/// from the parse info when the old compilation unit is null.
 		/// </summary>
 		[Test]
-		public void NewClassInParserInfo()
+		public void AddClassWithTestFixtureAttribute()
 		{
-			// Create new compilation unit with extra class.
-			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			MockClass newClass = new MockClass(projectContent, "RootNamespace.MyNewTestFixture");
-			newClass.Attributes.Add(new MockAttribute("TestFixture"));
-			newUnit.Classes.Add(newClass);
+			// Create an empty project
+			CreateNUnitProject();
+			// Add new compilation unit with extra class.
+			UpdateCodeFile("namespace RootNamespace { [NUnit.Framework.TestFixture] class MyTextFixture {} }");
 			
-			// Update TestProject's parse info.
-			testProject.UpdateParseInfo(null, newUnit);
-			
-			Assert.IsTrue(testProject.TestClasses.Contains("RootNamespace.MyNewTestFixture"));
+			Assert.IsTrue(testProject.TestClasses.Any(c => c.QualifiedName == "RootNamespace.MyNewTestFixture"));
 		}
 		
 		/// <summary>
 		/// The class exists in both the old compilation unit and the
-		/// new compilation unit, but in the new compilation unit 
+		/// new compilation unit, but in the new compilation unit
 		/// it has an added [TestFixture] attribute.
 		/// </summary>
 		[Test]
-		public void TestFixtureAttributeAdded()
+		public void AddTestFixtureAttributeToExistingClass()
 		{
+			CreateNUnitProject("TestProject");
 			// Create an old compilation unit with the test class
 			// but without a [TestFixture] attribute.
-			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
-			MockClass newClass = new MockClass(projectContent, "RootNamespace.MyNewTestFixture");
-			oldUnit.Classes.Add(newClass);
+			UpdateCodeFile("namespace RootNamespace { class MyTextFixture {} }");
 			
 			// Create a new compilation unit with the test class
 			// having a [TestFixture] attribute.
-			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			newClass = new MockClass(projectContent, "RootNamespace.MyNewTestFixture");
-			newClass.Attributes.Add(new MockAttribute("TestFixture"));
-			newUnit.Classes.Add(newClass);
+			UpdateCodeFile("namespace RootNamespace { [NUnit.Framework.TestFixture] class MyTextFixture {} }");
 			
-			// Update TestProject's parse info.
-			testProject.UpdateParseInfo(oldUnit, newUnit);
-			
-			Assert.IsTrue(testProject.TestClasses.Contains("RootNamespace.MyNewTestFixture"),
-				"New class should have been added to the set of TestClasses.");
+			Assert.IsTrue(testProject.TestClasses.Any(c => c.QualifiedName == "RootNamespace.MyNewTestFixture"),
+			              "New class should have been added to the set of TestClasses.");
 		}
 		
 		/// <summary>
 		/// The class exists in both the old compilation unit and the
-		/// new compilation unit, but in the new compilation unit 
+		/// new compilation unit, but in the new compilation unit
 		/// the [TestFixture] attribute has been removed.
 		/// </summary>
 		[Test]
 		public void TestFixtureAttributeRemoved()
 		{
 			// Add the test class first.
-			TestFixtureAttributeAdded();
+			AddClassWithTestFixtureAttribute();
 			
 			// Create an old compilation unit with the test class
 			// having a [TestFixture] attribute.
-			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
-			MockClass newClass = new MockClass(projectContent, "RootNamespace.MyNewTestFixture");
-			newClass.Attributes.Add(new MockAttribute("TestFixture"));
-			oldUnit.Classes.Add(newClass);
+			UpdateCodeFile("namespace RootNamespace { class MyTextFixture {} }");
 			
-			// Create a new compilation unit with the test class
-			// but without a [TestFixture] attribute.
-			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			newClass = new MockClass(projectContent, "RootNamespace.MyNewTestFixture");
-			newUnit.Classes.Add(newClass);
-			
-			// Update TestProject's parse info.
-			testProject.UpdateParseInfo(oldUnit, newUnit);
-			
-			Assert.IsFalse(testProject.TestClasses.Contains("RootNamespace.MyNewTestFixture"),
-				"Class should have been removed.");
+			Assert.IsFalse(testProject.TestClasses.Any(c => c.QualifiedName == "RootNamespace.MyNewTestFixture"),
+			               "Class should have been removed.");
 		}
 	}
 }

@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -61,19 +60,19 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void TwoTestMethods()
 		{
-			Assert.AreEqual(2, testClass.TestMembers.Count);
+			Assert.AreEqual(2, testClass.Members.Count);
 		}
 		
 		[Test]
 		public void TestMethodName()
 		{
-			Assert.AreEqual("MyTest", testClass.TestMembers[0].Name);
+			Assert.AreEqual("MyTest", testClass.Members[0].Name);
 		}
 		
 		[Test]
 		public void BaseClassTestMethodName()
 		{
-			Assert.AreEqual("MyTestFixtureBase.MyTest", testClass.TestMembers[1].Name);
+			Assert.AreEqual("MyTestFixtureBase.MyTest", testClass.Members[1].Name);
 		}
 	}
 }

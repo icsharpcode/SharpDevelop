@@ -1,7 +1,6 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -14,7 +13,6 @@ namespace UnitTesting.Tests.Project
 	public class TwoRootNamespacesTestFixture
 	{
 		TestProject testProject;
-		MockProjectContent projectContent;
 		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]

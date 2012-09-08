@@ -17,7 +17,6 @@ namespace UnitTesting.Tests.Project
 		TestClass testClass1;
 		TestClass testClass2;
 		TestClass testClass3;
-		TestClassCollection testClasses;
 		bool testClassesResultChanged;
 		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		

@@ -13,7 +13,7 @@ namespace UnitTesting.Tests.Tree
 	[TestFixture]
 	public class TestResultIgnoreTaskWithNoMessageTestFixture
 	{
-		Task task;
+		SDTask task;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()

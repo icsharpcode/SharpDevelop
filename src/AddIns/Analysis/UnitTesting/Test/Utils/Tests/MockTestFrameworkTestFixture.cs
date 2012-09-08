@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;

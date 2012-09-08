@@ -122,14 +122,9 @@ namespace ICSharpCode.UnitTesting
 		
 		public TestMember GetTestMember(string reflectionName)
 		{
-			foreach (var tc in testClasses) {
-				var result = TreeTraversal.PostOrder(tc, c => c.NestedClasses)
-					.SelectMany(c => c.Members)
-					.SingleOrDefault(m => reflectionName.Equals(m.Member.ReflectionName, StringComparison.Ordinal));
-				if (result != null)
-					return result;
-			}
-			return null;
+			return TreeTraversal.PostOrder(testClasses, c => c.NestedClasses)
+				.SelectMany(c => c.Members)
+				.FirstOrDefault(m => reflectionName.Equals(m.Member.ReflectionName, StringComparison.Ordinal));
 		}
 		
 		public TestClass GetTestClass(ITypeDefinition typeDefinition)
@@ -142,11 +137,18 @@ namespace ICSharpCode.UnitTesting
 		
 		public TestClass GetTestClass(string reflectionName)
 		{
-			foreach (var tc in testClasses) {
-				foreach (var c in TreeTraversal.PostOrder(tc, c => c.NestedClasses)) {
-					var method = c.Members.SingleOrDefault(m => reflectionName.Equals(m.Member.ReflectionName, StringComparison.Ordinal));
-					if (method != null)
-						return c;
+			int pos = reflectionName.LastIndexOf('+');
+			if (pos < 0) {
+				// top-level class
+				foreach (var tc in testClasses) {
+					if (tc.QualifiedName == reflectionName)
+						return tc;
+				}
+			} else {
+				// nested class
+				TestClass declaringClass = GetTestClass(reflectionName.Substring(0, pos));
+				if (declaringClass != null) {
+					return declaringClass.NestedClasses.FirstOrDefault(t => t.QualifiedName == reflectionName);
 				}
 			}
 			return null;

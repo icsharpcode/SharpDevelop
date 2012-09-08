@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -28,12 +27,30 @@ namespace UnitTesting.Tests.Project
 	/// In this case the FooBar test is identified via: "A+InnerATest.FooBar".
 	/// </summary>
 	[TestFixture]
-	public class InnerClassTestFixture : InnerClassTestFixtureBase
+	public class InnerClassTestFixture : ProjectTestFixtureBase
 	{
+		TestClass outerClass;
+		TestClass innerClass;
+		
 		[SetUp]
 		public void Init()
 		{
-			base.InitBase();
+			CreateNUnitProject(Parse(@"
+using NUnit.Framework;
+namespace MyTests {
+	public class A
+	{
+		public class InnerATest
+		{
+			[Test]
+			public void FooBar()
+			{
+			}
+		}
+	}
+}"));
+			outerClass = testProject.GetTestClass("A");
+			innerClass = testProject.GetTestClass("A+InnerATest");
 		}
 		
 		[Test]
@@ -45,31 +62,19 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void TestClassQualifiedName()
 		{
-			Assert.AreEqual("MyTests.A+InnerATest", testClass.QualifiedName);
+			Assert.AreEqual("MyTests.A+InnerATest", innerClass.QualifiedName);
 		}
 		
 		[Test]
 		public void TestClassName()
 		{
-			Assert.AreEqual("A+InnerATest", testClass.Name);
-		}
-		
-		[Test]
-		public void NoTestClassesForNamespaceMyTestsA()
-		{
-			Assert.AreEqual(0, testProject.GetTestClasses("MyTests.A").Length);
-		}
-		
-		[Test]
-		public void OneTestClassForNamespaceMyTests()
-		{
-			Assert.AreEqual(1, testProject.GetTestClasses("MyTests").Length);
+			Assert.AreEqual("InnerATest", innerClass.Name);
 		}
 		
 		[Test]
 		public void NamespaceForInnerClassIsDeclaringTypesNamespace()
 		{
-			Assert.AreEqual("MyTests", testClass.Namespace);
-		}		
+			Assert.AreEqual("MyTests", innerClass.Namespace);
+		}
 	}
 }

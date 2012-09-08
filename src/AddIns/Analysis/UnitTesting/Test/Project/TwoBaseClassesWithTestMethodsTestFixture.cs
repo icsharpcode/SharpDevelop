@@ -1,7 +1,6 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -21,7 +20,6 @@ namespace UnitTesting.Tests.Project
 	public class TwoBaseClassesWithTestMethodsTestFixture
 	{
 		TestClass testClass;
-		MockClass c;
 		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]
@@ -59,13 +57,13 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void BaseBaseTestMethodExists()
 		{
-			Assert.IsTrue(testClass.TestMembers.Contains("BaseBaseTestFixture.BaseBaseTest"));
+			Assert.IsTrue(testClass.Members.Contains("BaseBaseTestFixture.BaseBaseTest"));
 		}
 
 		[Test]
 		public void BaseMethodExists()
 		{
-			Assert.IsTrue(testClass.TestMembers.Contains("BaseTestFixture.BaseTest"));
+			Assert.IsTrue(testClass.Members.Contains("BaseTestFixture.BaseTest"));
 		}
 		
 		/// <summary>
@@ -77,7 +75,7 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void BaseBaseMethodDeclaringTypeIsDerivedClass()
 		{
-			TestMember method = testClass.TestMembers["BaseBaseTestFixture.BaseBaseTest"];
+			TestMember method = testClass.Members["BaseBaseTestFixture.BaseBaseTest"];
 			Assert.AreEqual(c, method.Member.DeclaringType);
 		}
 	

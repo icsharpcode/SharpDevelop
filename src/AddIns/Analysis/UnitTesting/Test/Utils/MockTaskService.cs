@@ -13,7 +13,7 @@ namespace UnitTesting.Tests.Utils
 	{
 		public bool IsClearExceptCommentTasksMethodCalled;
 		public bool IsInUpdateWhilstClearExceptCommentTasksMethodCalled;
-		public List<Task> Tasks = new List<Task>();
+		public List<SDTask> Tasks = new List<SDTask>();
 		public bool HasCriticalErrorsReturnValue;
 		public bool TreatWarningsAsErrorsParameterPassedToHasCriticalErrors;
 		
@@ -41,7 +41,7 @@ namespace UnitTesting.Tests.Utils
 			IsInUpdateWhilstClearExceptCommentTasksMethodCalled = inUpdate;
 		}
 		
-		public void Add(Task task)
+		public void Add(SDTask task)
 		{
 			if ((task.TaskType == TaskType.Error) || (task.TaskType == TaskType.Warning))  {
 				SomethingWentWrong = true; 

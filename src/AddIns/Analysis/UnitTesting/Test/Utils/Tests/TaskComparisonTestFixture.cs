@@ -13,8 +13,8 @@ namespace UnitTesting.Tests.Utils.Tests
 	public class TaskComparisonTestFixture
 	{
 		TaskComparison taskComparison;
-		Task lhs;
-		Task rhs;
+		SDTask lhs;
+		SDTask rhs;
 		int column = 20;
 		int line = 5;
 		string myTestFileName = @"c:\projects\tests\mytest.cs";
@@ -24,8 +24,8 @@ namespace UnitTesting.Tests.Utils.Tests
 		public void Init()
 		{
 			FileName fileName = new FileName(myTestFileName);
-			lhs = new Task(fileName, description, column, line, TaskType.Error);
-			rhs = new Task(fileName, description, column, line, TaskType.Error);
+			lhs = new SDTask(fileName, description, column, line, TaskType.Error);
+			rhs = new SDTask(fileName, description, column, line, TaskType.Error);
 		}
 		
 		[Test]
