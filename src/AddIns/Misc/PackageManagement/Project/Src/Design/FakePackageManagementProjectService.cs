@@ -99,5 +99,20 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			return ProjectBrowserUpdater;
 		}
+		
+		Dictionary<string, string> defaultCustomTools = new Dictionary<string, string>();
+		
+		public void AddDefaultCustomToolForFileName(string fileName, string customTool)
+		{
+			defaultCustomTools.Add(fileName, customTool);
+		}
+		
+		public string GetDefaultCustomToolForFileName(FileProjectItem projectItem)
+		{
+			if (defaultCustomTools.ContainsKey(projectItem.FileName)) {
+				return defaultCustomTools[projectItem.FileName];
+			}
+			return String.Empty;
+		}
 	}
 }
