@@ -38,7 +38,7 @@ namespace CSharpBinding.OptionPanels
 		private System.Windows.Input.ICommand baseIntermediateOutputPathCommand;
 		private System.Windows.Input.ICommand intermediateOutputPathCommand;
 		
-		private MSBuildBasedProject project;
+//		private MSBuildBasedProject project;
 		
 		public BuildOptions()
 		{
@@ -192,8 +192,6 @@ namespace CSharpBinding.OptionPanels
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
-			this.project = project;
-			
 			int val;
 			if (!int.TryParse(BaseAddress.Value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out val)) {
 				val = 0x400000;
@@ -240,7 +238,7 @@ namespace CSharpBinding.OptionPanels
 		{
 			if (DocumentFileIsChecked) {
 				this.xmlDocumentationTextBox.Text = MSBuildInternals.Escape(
-					Path.ChangeExtension(ICSharpCode.Core.FileUtility.GetRelativePath(project.Directory, project.OutputAssemblyFullPath),
+					Path.ChangeExtension(ICSharpCode.Core.FileUtility.GetRelativePath(base.Project.Directory, base.Project.OutputAssemblyFullPath),
 					                     ".xml"));
 			} else {
 				this.xmlDocumentationTextBox.Text = string.Empty;
@@ -262,13 +260,13 @@ namespace CSharpBinding.OptionPanels
 		
 		private void UpdateProjectExecute ()
 		{
-			UpgradeViewContent.Show(project.ParentSolution).Select(project as IUpgradableProject);
+			UpgradeViewContent.Show(base.Project.ParentSolution).Select(base.Project as IUpgradableProject);
 			this.UpdateTargetFrameworkCombo();
 		}
 		
 		private void UpdateTargetFrameworkCombo()
 		{
-			TargetFramework fx = ((IUpgradableProject)project).CurrentTargetFramework;
+			TargetFramework fx = ((IUpgradableProject)base.Project).CurrentTargetFramework;
 			if (fx != null) {
 				targetFrameworkComboBox.Items.Add(fx.DisplayName);
 				targetFrameworkComboBox.SelectedIndex = 0;

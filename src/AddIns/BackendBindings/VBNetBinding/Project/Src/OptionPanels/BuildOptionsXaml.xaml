@@ -240,17 +240,6 @@
 							<Label Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right"
 							       Content="{core:Localize Dialog.ProjectOptions.Build.DLLBaseAddress}"></Label>
 							
-							<!-- Hex binding -->
-							<!--x:Name="dllBaseAddressTextBox"
-							<TextBox Grid.Row="4" Grid.Column="2">
-								<TextBox.Text>
-									<Binding Path="DllBaseAdress" UpdateSourceTrigger="LostFocus">
-										<Binding.ValidationRules>
-											<optionpanels:BaseAdressValidator />
-										</Binding.ValidationRules>
-									</Binding>
-								</TextBox.Text>
-							</TextBox>-->
 							
 							<!-- Hex binding -->
 							<TextBox Grid.Row="4" Grid.Column="2"
