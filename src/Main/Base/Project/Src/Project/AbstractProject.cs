@@ -577,9 +577,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			return false;
 		}
 		
+		Properties projectSpecificProperties;
+		
 		[Browsable(false)]
 		public Properties ProjectSpecificProperties {
-			get; internal set;
+			get {
+				if (projectSpecificProperties == null) {
+					projectSpecificProperties = new Properties();
+				}
+				return projectSpecificProperties;
+			}
+			internal set { projectSpecificProperties = value; }
 		}
 		
 		protected virtual ProjectBehavior CreateDefaultBehavior()
