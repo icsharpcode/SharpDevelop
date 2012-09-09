@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -20,9 +21,12 @@ namespace ICSharpCode.UnitTesting
 		{
 		}
 		
-		public override Task RunTestsAsync(IEnumerable<ITest> tests, TestExecutionOptions options, IProgressMonitor progressMonitor)
+		public override ITestRunner CreateTestRunner(TestExecutionOptions options)
 		{
-			throw new NotImplementedException();
+			if (options.UseDebugger)
+				return new NUnitTestDebugger();
+			else
+				return new NUnitTestRunner();
 		}
 		
 		public override void UpdateTestClass(ITest test, ITypeDefinition typeDefinition)
@@ -55,6 +59,41 @@ namespace ICSharpCode.UnitTesting
 				return new NUnitTestClass(this, typeDefinition);
 			else
 				return null;
+		}
+		
+		public override void UpdateTestResult(TestResult result)
+		{
+			int pos = result.Name.LastIndexOf('.');
+			if (pos < 0)
+				return;
+			string fixtureName = result.Name.Substring(0, pos);
+			string methodName = result.Name.Substring(pos + 1);
+			var testClass = FindTestClass(fixtureName);
+			if (testClass != null) {
+				var testMethod = testClass.NestedTests.OfType<NUnitTestMethod>().FirstOrDefault(m => m.Name == methodName);
+				if (testMethod != null) {
+					testMethod.UpdateTestResult(result);
+				}
+			}
+		}
+		
+		NUnitTestClass FindTestClass(string fixtureName)
+		{
+			ITypeReference r = ReflectionHelper.ParseReflectionName(fixtureName);
+			return FindTestClass(r);
+		}
+		
+		NUnitTestClass FindTestClass(ITypeReference r)
+		{
+			var gctr = r as GetClassTypeReference;
+			if (gctr != null) {
+				return (NUnitTestClass)GetTestClass(new FullNameAndTypeParameterCount(gctr.Namespace, gctr.Name, gctr.TypeParameterCount));
+			}
+			var ntc = r as NestedTypeReference;
+			if (ntc != null) {
+				
+			}
+			return null;
 		}
 	}
 }

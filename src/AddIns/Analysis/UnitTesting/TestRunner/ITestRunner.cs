@@ -3,6 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.UnitTesting
@@ -10,9 +13,8 @@ namespace ICSharpCode.UnitTesting
 	public interface ITestRunner : IDisposable
 	{
 		event EventHandler<TestFinishedEventArgs> TestFinished;
-		event EventHandler AllTestsFinished;
 		event EventHandler<MessageReceivedEventArgs> MessageReceived;
-		void Start(IEnumerable<ITest> selectedTests);
-		void Stop();
+		
+		Task RunAsync(IEnumerable<ITest> selectedTests, IProgress<double> progress, CancellationToken cancellationToken);
 	}
 }

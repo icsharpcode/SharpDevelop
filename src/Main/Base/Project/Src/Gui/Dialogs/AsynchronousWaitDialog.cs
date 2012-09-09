@@ -288,6 +288,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			set { collector.ProgressMonitor.Progress = value; }
 		}
 		
+		void IProgress<double>.Report(double value)
+		{
+			this.Progress = value;
+		}
+		
 		/// <inheritdoc/>
 		public bool ShowingDialog {
 			get { return collector.ProgressMonitor.ShowingDialog; }

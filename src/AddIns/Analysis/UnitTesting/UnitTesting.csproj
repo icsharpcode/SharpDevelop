@@ -71,8 +71,6 @@
     <Compile Include="Commands\TestableCondition.cs" />
     <Compile Include="Commands\UnitTestCommands.cs" />
     <Compile Include="Frameworks\ITestService.cs" />
-    <Compile Include="Frameworks\TestExecutionManager.cs" />
-    <Compile Include="Frameworks\TestExecutionOptions.cs" />
     <Compile Include="Interfaces\IUnitTestProcessRunner.cs" />
     <Compile Include="Interfaces\UnitTestProcessRunner.cs" />
     <Compile Include="Model\ITest.cs" />
@@ -93,8 +91,13 @@
     <Compile Include="Model\TestResult.cs" />
     <Compile Include="Model\TestResultTypeChangedEventArgs.cs" />
     <Compile Include="NUnit\NUnitTestClass.cs" />
+    <Compile Include="NUnit\NUnitTestDebugger.cs" />
     <Compile Include="NUnit\NUnitTestMethod.cs" />
     <Compile Include="NUnit\NUnitTestProject.cs" />
+    <Compile Include="NUnit\NUnitTestRunner.cs" />
+    <Compile Include="Pad\ITestTreeView.cs" />
+    <Compile Include="Pad\TestTreeView.cs" />
+    <Compile Include="Pad\UnitTestNode.cs" />
     <Compile Include="Pad\UnitTestsPad.cs" />
     <Compile Include="Interfaces\UnitTestBuildProjectFactory.cs" />
     <Compile Include="Interfaces\UnitTestDebuggerService.cs" />
@@ -105,9 +108,19 @@
     <Compile Include="Frameworks\TestFrameworkDescriptor.cs" />
     <Compile Include="Frameworks\TestFrameworkDoozer.cs" />
     <Compile Include="Frameworks\SDTestService.cs" />
-    <Compile Include="TreeView\ITestTreeView.cs" />
-    <Compile Include="TreeView\TestTreeView.cs" />
-    <Compile Include="TreeView\UnitTestNode.cs" />
+    <Compile Include="TestRunner\ITestResultsMonitor.cs" />
+    <Compile Include="TestRunner\ITestRunner.cs" />
+    <Compile Include="TestRunner\MessageReceivedEventArgs.cs" />
+    <Compile Include="TestRunner\TestDebuggerBase.cs" />
+    <Compile Include="TestRunner\TestExecutionManager.cs" />
+    <Compile Include="TestRunner\TestExecutionOptions.cs" />
+    <Compile Include="TestRunner\TestFinishedEventArgs.cs" />
+    <Compile Include="TestRunner\TestProcessRunnerBase.cs" />
+    <Compile Include="TestRunner\TestProcessRunnerBaseContext.cs" />
+    <Compile Include="TestRunner\TestResultsMonitor.cs" />
+    <Compile Include="TestRunner\TestResultsReader.cs" />
+    <Compile Include="TestRunner\TestResultTask.cs" />
+    <Compile Include="TestRunner\TestRunnerBase.cs" />
     <Compile Include="NUnit\NUnitConsoleApplication.cs" />
     <Compile Include="NUnit\NUnitTestFramework.cs" />
     <Compile Include="NUnit\NUnitTestResult.cs" />
@@ -174,7 +187,7 @@
     <Folder Include="Model" />
     <Folder Include="Options" />
     <Folder Include="NUnit" />
-    <Folder Include="TreeView" />
+    <Folder Include="TestRunner" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Options\UnitTestingOptionsPanel.xaml" />

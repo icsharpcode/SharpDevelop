@@ -27,6 +27,7 @@ namespace ICSharpCode.UnitTesting.Frameworks
 		readonly IUnitTestSaveAllFilesCommand saveAllFilesCommand;
 		readonly ITestService testService;
 		readonly IWorkbench workbench;
+		readonly IMessageLoop mainThread;
 		readonly IStatusBarService statusBarService;
 		readonly IBuildOptions buildOptions;
 		
@@ -38,11 +39,14 @@ namespace ICSharpCode.UnitTesting.Frameworks
 			this.testService = SD.GetRequiredService<ITestService>();
 			this.workbench = SD.Workbench;
 			this.statusBarService = SD.StatusBar;
+			this.mainThread = SD.MainThread;
 			this.buildOptions = new UnitTestBuildOptions();
 		}
 		
 		readonly MultiDictionary<ITestProject, ITest> testsByProject = new MultiDictionary<ITestProject, ITest>();
 		CancellationToken cancellationToken;
+		ITestProject currentProjectBeingTested;
+		IProgressMonitor testProgressMonitor;
 		
 		public async Task RunTestsAsync(IEnumerable<ITest> selectedTests, TestExecutionOptions options, CancellationToken cancellationToken)
 		{
@@ -69,11 +73,15 @@ namespace ICSharpCode.UnitTesting.Frameworks
 			using (IProgressMonitor progressMonitor = statusBarService.CreateProgressMonitor(cancellationToken)) {
 				int projectsLeftToRun = testsByProject.Count;
 				foreach (IGrouping<ITestProject, ITest> g in testsByProject) {
-					ITestProject project = g.Key;
-					progressMonitor.TaskName = GetProgressMonitorLabel(project);
+					currentProjectBeingTested = g.Key;
+					progressMonitor.TaskName = GetProgressMonitorLabel(currentProjectBeingTested);
 					progressMonitor.Progress = GetProgress(projectsLeftToRun);
-					using (IProgressMonitor nested = progressMonitor.CreateSubTask(1.0 / testsByProject.Count)) {
-						await project.RunTestsAsync(g, options, nested);
+					using (testProgressMonitor = progressMonitor.CreateSubTask(1.0 / testsByProject.Count)) {
+						using (ITestRunner testRunner = currentProjectBeingTested.CreateTestRunner(options)) {
+							testRunner.MessageReceived += testRunner_MessageReceived;
+							testRunner.TestFinished += testRunner_TestFinished;
+							await testRunner.RunAsync(g, testProgressMonitor, testProgressMonitor.CancellationToken);
+						}
 					}
 					projectsLeftToRun--;
 					progressMonitor.CancellationToken.ThrowIfCancellationRequested();
@@ -82,7 +90,7 @@ namespace ICSharpCode.UnitTesting.Frameworks
 			
 			ShowErrorList();
 		}
-		
+
 		void GroupTestsByProject(IEnumerable<ITest> selectedTests)
 		{
 			foreach (ITest test in selectedTests) {
@@ -137,6 +145,54 @@ namespace ICSharpCode.UnitTesting.Frameworks
 		{
 			int totalProjectCount = testsByProject.Count;
 			return (double)(totalProjectCount - projectsLeftToRunCount) / totalProjectCount;
+		}
+		
+		void testRunner_MessageReceived(object sender, MessageReceivedEventArgs e)
+		{
+			testService.UnitTestMessageView.AppendLine(e.Message);
+		}
+		
+		void testRunner_TestFinished(object sender, TestFinishedEventArgs e)
+		{
+			mainThread.InvokeAsync(delegate { ShowResult(e.Result); }).FireAndForget();
+		}
+		
+		protected void ShowResult(TestResult result)
+		{
+			if (IsTestResultFailureOrIsIgnored(result)) {
+				AddTaskForTestResult(result);
+				UpdateProgressMonitorStatus(result);
+			}
+			UpdateTestResult(result);
+		}
+		
+		bool IsTestResultFailureOrIsIgnored(TestResult result)
+		{
+			return result.IsFailure || result.IsIgnored;
+		}
+		
+		void AddTaskForTestResult(TestResult testResult)
+		{
+			SDTask task = TestResultTask.Create(testResult, currentProjectBeingTested);
+			taskService.Add(task);
+		}
+		
+		void UpdateProgressMonitorStatus(TestResult result)
+		{
+			if (testProgressMonitor != null) {
+				if (result.IsFailure) {
+					testProgressMonitor.Status = OperationStatus.Error;
+				} else if (result.IsIgnored && testProgressMonitor.Status == OperationStatus.Normal) {
+					testProgressMonitor.Status = OperationStatus.Warning;
+				}
+			}
+		}
+		
+		void UpdateTestResult(TestResult result)
+		{
+			if (currentProjectBeingTested != null) {
+				currentProjectBeingTested.UpdateTestResult(result);
+			}
 		}
 		
 		void ShowErrorList()

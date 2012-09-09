@@ -42,6 +42,8 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Runs the specified tests. The specified tests must belong to this project.
 		/// </summary>
-		Task RunTestsAsync(IEnumerable<ITest> tests, TestExecutionOptions options, IProgressMonitor progressMonitor);
+		ITestRunner CreateTestRunner(TestExecutionOptions options);
+		
+		void UpdateTestResult(TestResult result);
 	}
 }

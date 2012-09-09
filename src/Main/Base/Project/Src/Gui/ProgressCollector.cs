@@ -266,6 +266,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			
+			void IProgress<double>.Report(double value)
+			{
+				this.Progress = value;
+			}
+			
 			void UpdateProgress(double progress)
 			{
 				if (parent != null)

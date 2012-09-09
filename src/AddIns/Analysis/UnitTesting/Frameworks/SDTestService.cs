@@ -68,12 +68,20 @@ namespace ICSharpCode.UnitTesting
 			get { return runTestsCancellationTokenSource != null; }
 		}
 		
-		public Task RunTestsAsync(IEnumerable<ITest> selectedTests, TestExecutionOptions options)
+		public async Task RunTestsAsync(IEnumerable<ITest> selectedTests, TestExecutionOptions options)
 		{
 			CancelRunningTests();
 			runTestsCancellationTokenSource = new CancellationTokenSource();
+			// invalidate commands as IsRunningTests changes
+			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
 			var executionManager = new TestExecutionManager();
-			return executionManager.RunTestsAsync(selectedTests, options, runTestsCancellationTokenSource.Token);
+			try {
+				await executionManager.RunTestsAsync(selectedTests, options, runTestsCancellationTokenSource.Token);
+			} finally {
+				runTestsCancellationTokenSource = null;
+				// invalidate commands as IsRunningTests changes
+				System.Windows.Input.CommandManager.InvalidateRequerySuggested();
+			}
 		}
 		
 		public void CancelRunningTests()

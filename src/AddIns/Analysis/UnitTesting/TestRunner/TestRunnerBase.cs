@@ -4,13 +4,29 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ICSharpCode.UnitTesting
 {
 	public abstract class TestRunnerBase : ITestRunner
 	{
-		public TestRunnerBase()
+		TaskCompletionSource<object> tcs;
+		CancellationTokenRegistration cancellationTokenRegistration;
+		bool wasCancelled;
+		
+		public Task RunAsync(IEnumerable<ITest> selectedTests, IProgress<double> progress, CancellationToken cancellationToken)
 		{
+			tcs = new TaskCompletionSource<object>();
+			Start(selectedTests);
+			cancellationTokenRegistration = cancellationToken.Register(Cancel, true);
+			return tcs.Task;
+		}
+		
+		void Cancel()
+		{
+			wasCancelled = true;
+			Stop();
 		}
 		
 		protected virtual ProcessStartInfo GetProcessStartInfo(IEnumerable<ITest> selectedTests)
@@ -29,13 +45,13 @@ namespace ICSharpCode.UnitTesting
 			return String.Format("\"{0}\" {1}", startInfo.FileName, startInfo.Arguments);
 		}
 		
-		public event EventHandler AllTestsFinished;
-		
 		protected void OnAllTestsFinished(object source, EventArgs e)
 		{
-			if (AllTestsFinished != null) {
-				AllTestsFinished(source, e);
-			}
+			cancellationTokenRegistration.Dispose();
+			if (wasCancelled)
+				tcs.SetCanceled();
+			else
+				tcs.SetResult(e);
 		}
 		
 		public event EventHandler<TestFinishedEventArgs> TestFinished;

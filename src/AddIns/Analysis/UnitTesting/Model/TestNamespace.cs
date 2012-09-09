@@ -26,7 +26,7 @@ namespace ICSharpCode.UnitTesting
 			if (displayName != null) {
 				this.displayName = displayName;
 			} else {
-				this.displayName = namespaceName.Substring(namespaceName.IndexOf('.') + 1);
+				this.displayName = namespaceName.Substring(namespaceName.LastIndexOf('.') + 1);
 			}
 			BindResultToCompositeResultOfNestedTests();
 		}

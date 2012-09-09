@@ -33,8 +33,9 @@ namespace ICSharpCode.UnitTesting
 			BindResultToCompositeResultOfNestedTests();
 		}
 		
-		public abstract Task RunTestsAsync(IEnumerable<ITest> tests, TestExecutionOptions options, IProgressMonitor progressMonitor);
+		public abstract ITestRunner CreateTestRunner(TestExecutionOptions options);
 		public abstract ITest GetTestForEntity(IEntity entity);
+		public abstract void UpdateTestResult(TestResult result);
 		
 		// Test class management methods
 		public abstract bool IsTestClass(ITypeDefinition typeDefinition);

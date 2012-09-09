@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -35,12 +36,12 @@ namespace ICSharpCode.UnitTesting
 			this.testService = testService;
 			
 			panel = new DockPanel();
+			treeView = new TestTreeView(); // treeView must be created first because it's used by CreateToolBar
 
 			toolBar = CreateToolBar("/SharpDevelop/Pads/UnitTestsPad/Toolbar");
 			panel.Children.Add(toolBar);
 			DockPanel.SetDock(toolBar, Dock.Top);
 			
-			treeView = new TestTreeView();
 			panel.Children.Add(treeView);
 			
 			treeView.ContextMenu = CreateContextMenu("/SharpDevelop/Pads/UnitTestsPad/ContextMenu");
@@ -70,6 +71,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		protected virtual ToolBar CreateToolBar(string name)
 		{
+			Debug.Assert(treeView != null);
 			return ToolBarService.CreateToolBar(treeView, treeView, name);
 		}
 		
@@ -79,6 +81,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		protected virtual ContextMenu CreateContextMenu(string name)
 		{
+			Debug.Assert(treeView != null);
 			return MenuService.CreateContextMenu(treeView, name);
 		}
 	}

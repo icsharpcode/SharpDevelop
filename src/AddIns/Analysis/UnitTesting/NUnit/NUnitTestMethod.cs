@@ -31,5 +31,18 @@ namespace ICSharpCode.UnitTesting
 		public override string DisplayName {
 			get { return method.Name; }
 		}
+		
+		public string Name {
+			get { return method.Name; }
+		}
+		
+		public string FixtureReflectionName {
+			get { return method.DeclaringTypeDefinition.ReflectionName; }
+		}
+		
+		public void UpdateTestResult(TestResult result)
+		{
+			this.Result = result.ResultType;
+		}
 	}
 }

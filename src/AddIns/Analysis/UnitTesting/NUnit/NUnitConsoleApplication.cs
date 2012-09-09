@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -16,34 +16,33 @@ namespace ICSharpCode.UnitTesting
 {
 	public class NUnitConsoleApplication
 	{
-		/*
-		public NUnitConsoleApplication(ITestProject project, IEnumerable<ITest> selectedTests, UnitTestingOptions options)
+		public NUnitConsoleApplication(IEnumerable<ITest> selectedTests, UnitTestingOptions options)
 		{
-			Initialize(project, selectedTests);
+			Initialize(selectedTests);
 			InitializeOptions(options);
 		}
 		
-		public NUnitConsoleApplication(ITestProject project, IEnumerable<ITest> selectedTests)
+		public NUnitConsoleApplication(IEnumerable<ITest> selectedTests)
 		{
-			Initialize(project, selectedTests);
+			Initialize(selectedTests);
 		}
 		
-		void Initialize(ITestProject project, IEnumerable<ITest> selectedTests)
+		void Initialize(IEnumerable<ITest> selectedTests)
 		{
-			this.selectedTests = selectedTests;
-			this.project = selectedTests.Project;
+			ITest test = selectedTests.Single();
+			this.project = test.ParentProject.Project;
 			Assemblies.Add(project.OutputAssemblyFullPath);
-			if (selectedTests.NamespaceFilter != null) {
-				NamespaceFilter = selectedTests.NamespaceFilter;
-			}
-			if (selectedTests.Class != null) {
-				Fixture = selectedTests.Class.QualifiedName;
-				if (selectedTests.Member != null) {
-					Test = selectedTests.Member.Member.Name;
-				}
+			if (test is TestNamespace) {
+				NamespaceFilter = ((TestNamespace)test).NamespaceName;
+			} else if (test is NUnitTestClass) {
+				var testClass = (NUnitTestClass)test;
+				Fixture = testClass.ReflectionName;
+			} else if (test is NUnitTestMethod) {
+				var testMethod = (NUnitTestMethod)test;
+				Fixture = testMethod.FixtureReflectionName;
+				Test = testMethod.Name;
 			}
 		}
-		*/
 		
 		void InitializeOptions(UnitTestingOptions options)
 		{
@@ -152,11 +151,6 @@ namespace ICSharpCode.UnitTesting
 		public string NamespaceFilter;
 		
 		IProject project;
-		IEnumerable<ITest> selectedTests;
-		
-		public IEnumerable<ITest> SelectedTests {
-			get { return selectedTests; }
-		}
 		
 		public IProject Project {
 			get { return project; }

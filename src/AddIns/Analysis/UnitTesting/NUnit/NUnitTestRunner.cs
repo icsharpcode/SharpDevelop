@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-
+using System.Linq;
+using System.Threading.Tasks;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.UnitTesting
@@ -14,8 +16,8 @@ namespace ICSharpCode.UnitTesting
 		UnitTestingOptions options;
 		
 		public NUnitTestRunner()
-			: this(new TestProcessRunnerBaseContext(), 
-				UnitTestingOptions.Instance.Clone())
+			: this(new TestProcessRunnerBaseContext(),
+			       UnitTestingOptions.Instance.Clone())
 		{
 		}
 		
@@ -24,7 +26,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			this.options = options;
 		}
-				
+		
 		protected override ProcessStartInfo GetProcessStartInfo(IEnumerable<ITest> selectedTests)
 		{
 			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests, options);

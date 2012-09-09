@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// automatically sent to the correct GUI thread.
 	/// Using a progress monitor from multiple threads is possible if the user synchronizes the access.
 	/// </remarks>
-	public interface IProgressMonitor : IDisposable
+	public interface IProgressMonitor : IDisposable, IProgress<double>
 	{
 		/// <summary>
 		/// Gets/Sets the amount of work already done within this task.
@@ -113,6 +113,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public IProgressMonitor CreateSubTask(double workAmount, CancellationToken cancellationToken)
 		{
 			return new DummyProgressMonitor() { CancellationToken = cancellationToken };
+		}
+		
+		void IProgress<double>.Report(double value)
+		{
+			this.Progress = value;
 		}
 		
 		public void Dispose()

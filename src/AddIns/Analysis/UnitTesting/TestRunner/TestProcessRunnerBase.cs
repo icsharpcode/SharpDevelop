@@ -18,31 +18,12 @@ namespace ICSharpCode.UnitTesting
 		IFileSystem fileSystem;
 		IMessageService messageService;
 		
-		public TestProcessRunnerBase()
-			: this(new UnitTestProcessRunner(),
-				new TestResultsMonitor(),
-				new UnitTestFileService(),
-				SD.MessageService)
-		{
-		}
-		
 		public TestProcessRunnerBase(TestProcessRunnerBaseContext context)
-			: this(context.TestProcessRunner,
-				context.TestResultsMonitor,
-				context.FileSystem,
-				context.MessageService)
 		{
-		}
-		
-		public TestProcessRunnerBase(IUnitTestProcessRunner processRunner,
-			ITestResultsMonitor testResultsMonitor,
-			IFileSystem fileSystem,
-			IMessageService messageService)
-		{
-			this.processRunner = processRunner;
-			this.testResultsMonitor = testResultsMonitor;
-			this.fileSystem = fileSystem;
-			this.messageService = messageService;
+			this.processRunner = context.TestProcessRunner;
+			this.testResultsMonitor = context.TestResultsMonitor;
+			this.fileSystem = context.FileSystem;
+			this.messageService = context.MessageService;
 			
 			processRunner.LogStandardOutputAndError = false;
 			processRunner.OutputLineReceived += OutputLineReceived;
