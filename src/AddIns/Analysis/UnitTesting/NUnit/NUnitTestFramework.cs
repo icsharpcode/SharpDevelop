@@ -14,9 +14,9 @@ namespace ICSharpCode.UnitTesting
 {
 	public class NUnitTestFramework : ITestFramework
 	{
-		readonly ITypeReference testAttributeRef = new GetClassTypeReference("NUnit.Framework", "TestAttribute", 0);
-		readonly ITypeReference testCaseAttributeRef = new GetClassTypeReference("NUnit.Framework", "TestCaseAttribute", 0);
-		readonly ITypeReference testFixtureAttributeRef = new GetClassTypeReference("NUnit.Framework", "TestFixtureAttribute", 0);
+		static readonly ITypeReference testAttributeRef = new GetClassTypeReference("NUnit.Framework", "TestAttribute", 0);
+		static readonly ITypeReference testCaseAttributeRef = new GetClassTypeReference("NUnit.Framework", "TestCaseAttribute", 0);
+		static readonly ITypeReference testFixtureAttributeRef = new GetClassTypeReference("NUnit.Framework", "TestFixtureAttribute", 0);
 		
 		/// <summary>
 		/// Determines whether the project is a test project. A project
@@ -35,19 +35,7 @@ namespace ICSharpCode.UnitTesting
 			return new NUnitTestProject(project);
 		}
 		
-		/*
-		public ITestRunner CreateTestRunner()
-		{
-			return new NUnitTestRunner();
-		}
-		
-		public ITestRunner CreateTestDebugger()
-		{
-			return new NUnitTestDebugger();
-		}
-		
-		
-		public bool IsTestMember(IMember member)
+		public static bool IsTestMember(IMember member)
 		{
 			if (member == null || member.EntityType != EntityType.Method)
 				return false;
@@ -60,21 +48,18 @@ namespace ICSharpCode.UnitTesting
 			return false;
 		}
 		
-		public bool IsTestClass(ITypeDefinition type)
+		public static bool IsTestClass(ITypeDefinition type)
 		{
-			if (type == null || type.IsAbstract)
+			if (type == null)
+				return false;
+			if (type.NestedTypes.Any(IsTestClass))
+				return true;
+			if (type.IsAbstract)
 				return false;
 			var testFixtureAttribute = testFixtureAttributeRef.Resolve(type.Compilation);
 			if (type.Attributes.Any(attr => attr.AttributeType.Equals(testFixtureAttributeRef)))
 				return true;
-			else
-				return type.Methods.Any(IsTestMember);
+			return type.Methods.Any(IsTestMember);
 		}
-		
-		public IEnumerable<TestMember> GetTestMembersFor(ITypeDefinition typeDefinition)
-		{
-			var project = typeDefinition.ParentAssembly.GetProject();
-			return typeDefinition.Methods.Where(IsTestMember).Select(m => new TestMember(m.UnresolvedMember));
-		}*/
 	}
 }

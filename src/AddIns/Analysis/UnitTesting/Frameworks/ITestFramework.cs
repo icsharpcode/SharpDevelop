@@ -19,16 +19,5 @@ namespace ICSharpCode.UnitTesting
 		/// Creates a new test project based on the specified project.
 		/// </summary>
 		ITestProject CreateTestProject(ITestSolution parentSolution, IProject project);
-		
-		/*
-		bool IsTestMember(IMember member);
-		bool IsTestClass(ITypeDefinition testClass);
-		
-		IEnumerable<TestMember> GetTestMembersFor(ITypeDefinition typeDefinition);
-		
-		ITestRunner CreateTestRunner();
-		ITestRunner CreateTestDebugger();
-		
-		bool IsBuildNeededBeforeTestRun { get; }*/
 	}
 }

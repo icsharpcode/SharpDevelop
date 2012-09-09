@@ -13,11 +13,6 @@ namespace ICSharpCode.UnitTesting
 	/// </summary>
 	public interface ITestSolution : ITest
 	{
-//		/// <summary>
-//		/// Gets the list of all test projects.
-//		/// </summary>
-//		ObservableCollection<ITestProject> TestableProjects { get; }
-		
 		/// <summary>
 		/// Gets the test project for the specified project.
 		/// Returns null if the project is not a test project.

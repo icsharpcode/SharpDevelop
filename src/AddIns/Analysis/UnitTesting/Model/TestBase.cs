@@ -86,16 +86,28 @@ namespace ICSharpCode.UnitTesting
 		
 		public TestCollection NestedTests {
 			get {
-				if (nestedTests == null) {
-					nestedTests = InitializeNestedTests();
-					OnNestedTestsInitialized();
-				}
+				EnsureNestedTestsInitialized();
 				return nestedTests;
+			}
+		}
+		
+		public virtual bool CanExpandNestedTests {
+			get {
+				EnsureNestedTestsInitialized();
+				return nestedTests.Count != 0;
 			}
 		}
 		
 		protected bool NestedTestsInitialized {
 			get { return nestedTests != null; }
+		}
+		
+		protected void EnsureNestedTestsInitialized()
+		{
+			if (nestedTests == null) {
+				nestedTests = InitializeNestedTests();
+				OnNestedTestsInitialized();
+			}
 		}
 		
 		protected virtual TestCollection InitializeNestedTests()
@@ -130,7 +142,7 @@ namespace ICSharpCode.UnitTesting
 			get { return false; }
 		}
 		
-		public void GoToDefinition()
+		public virtual void GoToDefinition()
 		{
 			throw new NotSupportedException();
 		}

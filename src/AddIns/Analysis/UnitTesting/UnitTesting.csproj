@@ -92,6 +92,8 @@
     <Compile Include="Model\TestProjectBase.cs" />
     <Compile Include="Model\TestResult.cs" />
     <Compile Include="Model\TestResultTypeChangedEventArgs.cs" />
+    <Compile Include="NUnit\NUnitTestClass.cs" />
+    <Compile Include="NUnit\NUnitTestMethod.cs" />
     <Compile Include="NUnit\NUnitTestProject.cs" />
     <Compile Include="Pad\UnitTestsPad.cs" />
     <Compile Include="Interfaces\UnitTestBuildProjectFactory.cs" />

@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <inheritdoc/>
 		public override bool Equals(object obj)
 		{
-			return (obj is AtomicBoolean) && val == ((AtomicBoolean)obj).val;
+			return (obj is AtomicBoolean) && this.Value == ((AtomicBoolean)obj).Value;
 		}
 	}
 }

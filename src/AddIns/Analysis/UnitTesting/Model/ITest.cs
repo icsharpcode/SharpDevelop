@@ -17,6 +17,14 @@ namespace ICSharpCode.UnitTesting
 		TestCollection NestedTests { get; }
 		
 		/// <summary>
+		/// Gets whether this test allows expanding the list of nested tests.
+		/// If possible, this property should return the same value as NestedTests.Count.
+		/// However, when doing so is expensive (e.g. due to lazy initialization), this
+		/// property may return true even if there are no nested tests.
+		/// </summary>
+		bool CanExpandNestedTests { get; }
+		
+		/// <summary>
 		/// Gets the parent project that owns this test.
 		/// </summary>
 		ITestProject ParentProject { get; }

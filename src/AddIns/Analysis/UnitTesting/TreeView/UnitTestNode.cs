@@ -30,6 +30,7 @@ namespace ICSharpCode.UnitTesting
 		
 		void DetachEventHandlers()
 		{
+			// TODO: figure out when we can call this method
 			test.DisplayNameChanged -= test_NameChanged;
 			test.ResultChanged -= test_ResultChanged;
 			// If children loaded, also detach the collection change event handler
@@ -43,6 +44,10 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		#region Manage Children
+		public override bool ShowExpander {
+			get { return test.CanExpandNestedTests && base.ShowExpander; }
+		}
+		
 		protected override void LoadChildren()
 		{
 			Children.Clear();
