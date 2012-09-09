@@ -224,17 +224,24 @@
 							<Label Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right"
 							       Content="{core:Localize Dialog.ProjectOptions.Build.DLLBaseAddress}"></Label>
 							
-							<!-- Hex binding -->
-							<!--x:Name="dllBaseAddressTextBox"-->
-							<TextBox Grid.Row="4" Grid.Column="2">
+							<!-- Hex binding
+							
+							<TextBox x:Name="dllBaseAddressTextBox" Grid.Row="4" Grid.Column="2">
 								<TextBox.Text>
-									<Binding Path="BaseAddress.Value" UpdateSourceTrigger="PropertyChanged">
+									<Binding Path="DllBaseAdress" UpdateSourceTrigger="PropertyChanged">
 										<Binding.ValidationRules>
-											<optionpanels:HexValidator />
+											<optionpanels:BaseAdressValidator />
 										</Binding.ValidationRules>
 									</Binding>
 								</TextBox.Text>
+							</TextBox> -->
+							
+							<!--x:Name="dllBaseAddressTextBox"-->
+							<TextBox  Grid.Row="4" Grid.Column="2"
+							         Text="{Binding DllBaseAdress, UpdateSourceTrigger=PropertyChanged}">
+							
 							</TextBox>
+							
 							
 							<!-- location multibinding -->
 							<Label Grid.Row="6" Grid.ColumnSpan="2"

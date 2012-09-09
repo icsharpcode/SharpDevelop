@@ -7,6 +7,8 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 
 using Gui.Dialogs.OptionPanels.ProjectOptions;
@@ -70,7 +72,7 @@ namespace CSharpBinding.OptionPanels
 			this.warnLevel.Add(new KeyItemPair("2","2"));
 			this.warnLevel.Add(new KeyItemPair("3","3"));
 			this.warnLevel.Add(new KeyItemPair("4","4"));
-			this.WarnLevel = warnLevel;   
+			this.WarnLevel = warnLevel;
 		}
 		
 		private void Initialize()
@@ -85,6 +87,7 @@ namespace CSharpBinding.OptionPanels
 			this.BaseIntermediateOutputPathCommand = new RelayCommand(BaseIntermediateOutputPathExecute);
 			this.IntermediateOutputPathCommand = new RelayCommand(IntermediateOutputPathExecute);
 			SetTreatWarningAsErrorRadioButtons();
+			IsDirty = false;
 		}
 		
 		#region properties
@@ -146,7 +149,7 @@ namespace CSharpBinding.OptionPanels
 		}
 		
 		public ProjectProperty<string> BaseAddress {
-			get {return GetProperty("BaseAddress","0x400000",
+			get {return GetProperty("BaseAddress","1000",
 			                        TextBoxEditMode.EditEvaluatedProperty,PropertyStorageLocations.PlatformSpecific ); }
 		}
 		
@@ -197,6 +200,16 @@ namespace CSharpBinding.OptionPanels
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
 			SaveTreatWarningAsErrorRadioButtons();
+			
+			NumberStyles style = NumberStyles.Integer;
+			if (dllBaseAdress.StartsWith("0x")) {
+				dllBaseAdress = dllBaseAdress.Substring(2);
+				style = NumberStyles.HexNumber;
+			}
+			int val;
+			if (int.TryParse(dllBaseAdress, style, NumberFormatInfo.InvariantInfo, out val)) {
+				BaseAddress.Value = val.ToString(NumberFormatInfo.InvariantInfo);
+			}
 			
 			return base.Save(project, configuration, platform);
 		}
@@ -268,8 +281,8 @@ namespace CSharpBinding.OptionPanels
 		private void ChangeOutputPathExecute()
 		{
 			OutputPath.Value = OptionsHelper.BrowseForFolder("${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}",
-			                                        base.BaseDirectory,base.BaseDirectory,
-			                                        outputPathTextBox.Text,TextBoxEditMode.EditRawProperty);
+			                                                 base.BaseDirectory,base.BaseDirectory,
+			                                                 outputPathTextBox.Text,TextBoxEditMode.EditRawProperty);
 			base.RaisePropertyChanged(()=> OutputPath);
 		}
 		
@@ -285,7 +298,7 @@ namespace CSharpBinding.OptionPanels
 		}
 		
 		#endregion
-	
+		
 		
 		#region TargetCPU
 		
@@ -308,6 +321,54 @@ namespace CSharpBinding.OptionPanels
 		
 		#endregion
 		
+		#region DLL BaseAdress
+		
+		private string dllBaseAdress;
+		
+		public string DllBaseAdress {
+			get {
+				int val;
+				if (!int.TryParse(BaseAddress.Value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out val)) {
+					val = 1000;
+				}
+				return  "0x" + val.ToString("x", NumberFormatInfo.InvariantInfo);
+			}
+			
+			set {
+				dllBaseAdress = value;
+				
+				if (CheckBaseAdress(value)) {
+					IsDirty = true;
+					base.RaisePropertyChanged(() => DllBaseAdress);
+				} else {
+					MessageService.ShowMessage("${res:Dialog.ProjectOptions.PleaseEnterValidNumber}");
+				}
+			}
+		}
+
+		
+		private bool CheckBaseAdress(string toCheck)
+		{
+			NumberStyles style = NumberStyles.Integer;
+			if (toCheck.StartsWith("0x")) {
+				toCheck = toCheck.Substring(2);
+				style = NumberStyles.HexNumber;
+			}
+			if (!String.IsNullOrEmpty(toCheck)) {
+				int val;
+				if (int.TryParse(toCheck, style, NumberFormatInfo.InvariantInfo, out val)) {
+					return true;
+				} else {
+					MessageService.ShowMessage("${res:Dialog.ProjectOptions.PleaseEnterValidNumber}");
+					return false;
+				}
+			}
+			return false;
+		}
+		
+		
+		#endregion
+		
 		#region BaseIntermediateOutputPath
 		
 		public System.Windows.Input.ICommand BaseIntermediateOutputPathCommand {
@@ -315,13 +376,13 @@ namespace CSharpBinding.OptionPanels
 			set {this.baseIntermediateOutputPathCommand = value;
 				base.RaisePropertyChanged(() => BaseIntermediateOutputPathCommand);}
 		}
-				
+		
 		
 		private void BaseIntermediateOutputPathExecute ()
 		{
 			BaseIntermediateOutputPath.Value = OptionsHelper.BrowseForFolder("${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}",
-			                                        base.BaseDirectory,base.BaseDirectory,
-			                                        this.baseIntermediateOutputPathTextBox.Text,TextBoxEditMode.EditRawProperty);
+			                                                                 base.BaseDirectory,base.BaseDirectory,
+			                                                                 this.baseIntermediateOutputPathTextBox.Text,TextBoxEditMode.EditRawProperty);
 			base.RaisePropertyChanged(()=> BaseIntermediateOutputPath);
 		}
 		
@@ -339,8 +400,8 @@ namespace CSharpBinding.OptionPanels
 		private void IntermediateOutputPathExecute ()
 		{
 			IntermediateOutputPath.Value = OptionsHelper.BrowseForFolder("${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}",
-			                                        base.BaseDirectory,base.BaseDirectory,
-			                                        this.intermediateOutputPathTextBox.Text,TextBoxEditMode.EditRawProperty);
+			                                                             base.BaseDirectory,base.BaseDirectory,
+			                                                             this.intermediateOutputPathTextBox.Text,TextBoxEditMode.EditRawProperty);
 			base.RaisePropertyChanged(()=> IntermediateOutputPath);
 		}
 		
@@ -375,10 +436,10 @@ namespace CSharpBinding.OptionPanels
 			this.specificWarningsRadioButton.Checked += ErrorButton_Checked;
 		}
 		
-	
 		
-	
-		private void SaveTreatWarningAsErrorRadioButtons()	
+		
+		
+		private void SaveTreatWarningAsErrorRadioButtons()
 		{
 
 			if ((bool)this.noneRadioButton.IsChecked){
@@ -403,4 +464,6 @@ namespace CSharpBinding.OptionPanels
 		
 		#endregion
 	}
+	
+	
 }

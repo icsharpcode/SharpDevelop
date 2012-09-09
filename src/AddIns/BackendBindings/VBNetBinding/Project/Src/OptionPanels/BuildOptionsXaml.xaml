@@ -241,15 +241,20 @@
 							       Content="{core:Localize Dialog.ProjectOptions.Build.DLLBaseAddress}"></Label>
 							
 							<!-- Hex binding -->
-							<!--x:Name="dllBaseAddressTextBox"-->
+							<!--x:Name="dllBaseAddressTextBox"
 							<TextBox Grid.Row="4" Grid.Column="2">
 								<TextBox.Text>
-									<Binding Path="BaseAddress.Value" UpdateSourceTrigger="PropertyChanged">
+									<Binding Path="DllBaseAdress" UpdateSourceTrigger="LostFocus">
 										<Binding.ValidationRules>
-											<optionpanels:HexValidator />
+											<optionpanels:BaseAdressValidator />
 										</Binding.ValidationRules>
 									</Binding>
 								</TextBox.Text>
+							</TextBox>-->
+							
+							<!-- Hex binding -->
+							<TextBox Grid.Row="4" Grid.Column="2"
+							         Text="{Binding DllBaseAdress, UpdateSourceTrigger=LostFocus}">
 							</TextBox>
 							
 							<!-- location multibinding -->

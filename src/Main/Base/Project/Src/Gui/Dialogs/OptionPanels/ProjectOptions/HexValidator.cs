@@ -6,6 +6,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Controls;
 
@@ -25,6 +26,26 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			var res = Int32.TryParse(str,NumberStyles.HexNumber,CultureInfo.InvariantCulture,out y);
 			if (!res) {
 				 result = new ValidationResult(false, "No valid Hex Digit");
+			}
+			return result;
+		}
+	}
+	
+	public class  BaseAdressValidator :ValidationRule
+	{
+		public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+		{
+			Trace.WriteLine("-------------");
+			ValidationResult result = new ValidationResult(true, null);
+			string dllBaseAdress = value.ToString().Trim();
+			NumberStyles style = NumberStyles.Integer;
+			if (dllBaseAdress.StartsWith("0x")) {
+				dllBaseAdress = dllBaseAdress.Substring(2);
+				style = NumberStyles.HexNumber;
+			}
+			int val;
+			if (!int.TryParse(dllBaseAdress, style, NumberFormatInfo.InvariantInfo, out val)) {
+				result = new ValidationResult(false, "No valid Hex Digit");
 			}
 			return result;
 		}
