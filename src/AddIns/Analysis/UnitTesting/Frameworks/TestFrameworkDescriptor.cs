@@ -12,14 +12,14 @@ namespace ICSharpCode.UnitTesting
 	public class TestFrameworkDescriptor
 	{
 		Properties properties;
-		ITestFrameworkFactory factory;
+		Func<string, object> objectFactory;
 		ITestFramework testFramework;
 		List<string> supportedProjectFileExtensions = new List<string>();
 		
-		public TestFrameworkDescriptor(Properties properties, ITestFrameworkFactory factory)
+		public TestFrameworkDescriptor(Properties properties, Func<string, object> objectFactory)
 		{
 			this.properties = properties;
-			this.factory = factory;
+			this.objectFactory = objectFactory;
 			
 			GetSupportedProjectFileExtensions();
 		}
@@ -47,7 +47,7 @@ namespace ICSharpCode.UnitTesting
 		void CreateTestFrameworkIfNotCreated()
 		{
 			if (testFramework == null) {
-				testFramework = factory.Create(ClassName);
+				testFramework = (ITestFramework)objectFactory(ClassName);
 			}
 		}
 		

@@ -372,6 +372,7 @@
     <Compile Include="Src\Project\MSBuildEngine\WorkerProcess.cs" />
     <Compile Include="Src\Project\MSBuildFileProject.cs" />
     <Compile Include="Src\Project\MSBuildItemWrapper.cs" />
+    <Compile Include="Src\Project\MultipleProjectBuildable.cs" />
     <Compile Include="Src\Project\PortableLibrary\CheckPortableLibraryInstalled.cs" />
     <Compile Include="Src\Project\PortableLibrary\ConvertToPortableLibraryProjectBehavior.cs" />
     <Compile Include="Src\Project\PortableLibrary\PickPortableTargetFramework.cs" />

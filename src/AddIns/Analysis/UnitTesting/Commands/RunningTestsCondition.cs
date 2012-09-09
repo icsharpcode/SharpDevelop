@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -13,7 +14,8 @@ namespace ICSharpCode.UnitTesting
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
-			return AbstractRunTestCommand.IsRunningTest;
+			ITestService testService = SD.GetRequiredService<ITestService>();
+			return testService.IsRunningTests;
 		}
 	}
 }

@@ -16,18 +16,19 @@ namespace ICSharpCode.UnitTesting
 {
 	public class NUnitConsoleApplication
 	{
-		public NUnitConsoleApplication(SelectedTests selectedTests, UnitTestingOptions options)
+		/*
+		public NUnitConsoleApplication(ITestProject project, IEnumerable<ITest> selectedTests, UnitTestingOptions options)
 		{
-			Initialize(selectedTests);
+			Initialize(project, selectedTests);
 			InitializeOptions(options);
 		}
 		
-		public NUnitConsoleApplication(SelectedTests selectedTests)
+		public NUnitConsoleApplication(ITestProject project, IEnumerable<ITest> selectedTests)
 		{
-			Initialize(selectedTests);
+			Initialize(project, selectedTests);
 		}
 		
-		void Initialize(SelectedTests selectedTests)
+		void Initialize(ITestProject project, IEnumerable<ITest> selectedTests)
 		{
 			this.selectedTests = selectedTests;
 			this.project = selectedTests.Project;
@@ -42,6 +43,7 @@ namespace ICSharpCode.UnitTesting
 				}
 			}
 		}
+		*/
 		
 		void InitializeOptions(UnitTestingOptions options)
 		{
@@ -150,9 +152,9 @@ namespace ICSharpCode.UnitTesting
 		public string NamespaceFilter;
 		
 		IProject project;
-		SelectedTests selectedTests;
+		IEnumerable<ITest> selectedTests;
 		
-		public SelectedTests SelectedTests {
+		public IEnumerable<ITest> SelectedTests {
 			get { return selectedTests; }
 		}
 		

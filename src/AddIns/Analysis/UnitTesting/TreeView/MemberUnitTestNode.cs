@@ -10,7 +10,7 @@ using ICSharpCode.TreeView;
 
 namespace ICSharpCode.UnitTesting
 {
-	public class MemberUnitTestNode : UnitTestBaseNode
+	public class MemberUnitTestNode : UnitTestNode
 	{
 		TestMember testMember;
 		

@@ -2,78 +2,64 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.TreeView;
 
 namespace ICSharpCode.UnitTesting
 {
+	public class RunAllTestsInProjectCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			ITestService testService = SD.GetRequiredService<ITestService>();
+			if (testService.OpenSolution != null) {
+				ITestProject project = testService.OpenSolution.GetTestProject(ProjectService.CurrentProject);
+				if (project != null)
+					testService.RunTestsAsync(new [] { project }, new TestExecutionOptions()).FireAndForget();
+			}
+		}
+	}
+	
+	public class RunAllTestsInSolutionCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			ITestService testService = SD.GetRequiredService<ITestService>();
+			if (testService.OpenSolution != null)
+				testService.RunTestsAsync(new [] { testService.OpenSolution }, new TestExecutionOptions()).FireAndForget();
+		}
+	}
+	
+	public class RunSelectedTestCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			ITestService testService = SD.GetRequiredService<ITestService>();
+			IEnumerable<ITest> tests = TestableCondition.GetTests(testService.OpenSolution, Owner);
+			testService.RunTestsAsync(tests, new TestExecutionOptions()).FireAndForget();
+		}
+	}
+	
+	public class RunSelectedTestWithDebuggerCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			ITestService testService = SD.GetRequiredService<ITestService>();
+			IEnumerable<ITest> tests = TestableCondition.GetTests(testService.OpenSolution, Owner);
+			testService.RunTestsAsync(tests, new TestExecutionOptions { UseDebugger = true }).FireAndForget();
+		}
+	}
+	
 	public class StopTestsCommand : AbstractMenuCommand
 	{
 		public override void Run()
 		{
-			AbstractRunTestCommand runTestCommand = AbstractRunTestCommand.RunningTestCommand;
-			if (runTestCommand != null) {
-				runTestCommand.Stop();
-			}
-		}
-	}
-	
-	public class AddNUnitReferenceCommand : AbstractMenuCommand
-	{
-		public void Run(IProject project)
-		{
-			if (project != null) {
-				ReferenceProjectItem nunitRef = new ReferenceProjectItem(project, "nunit.framework");
-				ProjectService.AddProjectItem(project, nunitRef);
-				project.Save();
-			}
-		}
-		
-		public override void Run()
-		{
-			Run(ProjectService.CurrentProject);
-		}
-	}
-	
-	public class GotoDefinitionCommand : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			ITestTreeView treeView = Owner as ITestTreeView;
-			if (treeView != null) {
-				var member = treeView.SelectedMember;
-				var c = treeView.SelectedClass;
-				IEntity entity;
-				if (member != null) {
-					entity = member.Resolve(treeView.SelectedProject);
-				} else if (c != null) {
-					entity = c.Resolve(treeView.SelectedProject);
-				} else {
-					entity = null;
-				}
-				if (entity != null) {
-					NavigationService.NavigateTo(entity);
-				}
-			}
-		}
-	}
-	
-	public class CollapseAllTestsCommand : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			if (!(this.Owner is SharpTreeView))
-				return;
-			
-			var treeView = (SharpTreeView)this.Owner;
-			if (treeView.Root != null) {
-				foreach (var n in treeView.Root.Descendants())
-					n.IsExpanded = false;
-			}
+			ITestService testService = SD.GetRequiredService<ITestService>();
+			testService.CancelRunningTests();
 		}
 	}
 }

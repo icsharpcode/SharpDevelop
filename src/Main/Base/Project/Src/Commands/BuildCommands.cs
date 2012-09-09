@@ -3,9 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -74,6 +75,26 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (BuildComplete != null) {
 				BuildComplete(this, e);
 			}
+		}
+		
+		public Task<BuildResults> BuildAsync(CancellationToken cancellationToken)
+		{
+			var registration = cancellationToken.Register(BuildEngine.CancelGuiBuild, true);
+			var tcs = new TaskCompletionSource<BuildResults>();
+			this.BuildComplete += delegate {
+				registration.Dispose();
+				if (cancellationToken.IsCancellationRequested)
+					tcs.TrySetCanceled();
+				else
+					tcs.TrySetResult(this.LastBuildResults);
+			};
+			try {
+				StartBuild();
+			} catch (Exception ex) {
+				registration.Dispose();
+				tcs.TrySetException(ex);
+			}
+			return tcs.Task;
 		}
 		
 		/// <summary>

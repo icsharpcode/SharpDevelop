@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
@@ -23,17 +24,31 @@ namespace ICSharpCode.UnitTesting
 		[Flags]
 		public enum TestTreeViewState {
 			None                    = 0,
-			SourceCodeItemSelected  = 1
+			SupportsGoToDefinition  = 1
 		}
 		
-		IRegisteredTestFrameworks testFrameworks;
+		ITestSolution testSolution;
 		
-		public TestTreeView(IRegisteredTestFrameworks testFrameworks, TestSolution testSolution)
+		public ITestSolution TestSolution {
+			get { return testSolution; }
+			set {
+				if (testSolution == value)
+					return;
+				testSolution = value;
+				if (testSolution != null) {
+					this.Root = new UnitTestNode(testSolution);
+					this.Root.Children.CollectionChanged += delegate {
+						this.ShowRoot = this.Root != null && this.Root.Children.Count > 1;
+					};
+				} else {
+					this.Root = null;
+				}
+			}
+		}
+		
+		public TestTreeView()
 		{
-			this.testFrameworks = testFrameworks;
-			// Show 'All Tests' root node only if there is more than one test project in the solution
-			testSolution.TestableProjects.CollectionChanged += delegate { ShowRoot = testSolution.TestableProjects.Count > 1; };
-			this.Root = new RootUnitTestNode(testSolution);
+			this.ShowRoot = false;
 		}
 		
 		/// <summary>
@@ -41,82 +56,17 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public Enum InternalState {
 			get {
-				if (SelectedItem is ClassUnitTestNode || SelectedItem is MemberUnitTestNode)
-					return TestTreeViewState.SourceCodeItemSelected;
-				return TestTreeViewState.None;
+				var node = SelectedItem as UnitTestNode;
+				if (node != null && node.Test.SupportsGoToDefinition)
+					return TestTreeViewState.SupportsGoToDefinition;
+				else
+					return TestTreeViewState.None;
 			}
 		}
 		
-		bool IsTestProject(IProject project)
-		{
-			return testFrameworks.IsTestProject(project);
-		}
-		
-		/// <summary>
-		/// Gets the member of the currently selected tree node.
-		/// </summary>
-		public TestMember SelectedMember {
+		public IEnumerable<ITest> SelectedTests {
 			get {
-				MemberUnitTestNode memberNode = SelectedItem as MemberUnitTestNode;
-				if (memberNode != null) {
-					return memberNode.TestMember;
-				}
-				return null;
-			}
-		}
-		
-		/// <summary>
-		/// Gets the class of the currently selected tree node.
-		/// </summary>
-		public TestClass SelectedClass {
-			get {
-				ClassUnitTestNode classNode = SelectedItem as ClassUnitTestNode;
-				if (classNode == null) {
-					classNode = GetClassNodeFromSelectedMemberNode();
-				}
-				
-				if (classNode != null) {
-					return classNode.TestClass;
-				}
-				return null;
-			}
-		}
-		
-		ClassUnitTestNode GetClassNodeFromSelectedMemberNode()
-		{
-			MemberUnitTestNode memberNode = SelectedItem as MemberUnitTestNode;
-			if (memberNode != null) {
-				return memberNode.Parent as ClassUnitTestNode;
-			}
-			return null;
-		}
-		
-		/// <summary>
-		/// If a namespace node is selected then the fully qualified namespace
-		/// for this node is returned (i.e. includes the parent namespace prefixed
-		/// to it). For all other nodes this returns null.
-		/// </summary>
-		public string SelectedNamespace {
-			get {
-				NamespaceUnitTestNode selectedNode = SelectedItem as NamespaceUnitTestNode;
-				if (selectedNode != null) {
-					return selectedNode.NamespaceName;
-				}
-				return null;
-			}
-		}
-		
-		/// <summary>
-		/// Gets the selected test project.
-		/// </summary>
-		public TestProject SelectedProject {
-			get {
-				for (var node = SelectedItem as SharpTreeNode; node != null; node = node.Parent) {
-					var projectNode = node as ProjectUnitTestNode;
-					if (projectNode != null)
-						return projectNode.Project;
-				}
-				return null;
+				return this.GetTopLevelSelection().OfType<UnitTestNode>().Select(n => n.Test);
 			}
 		}
 	}

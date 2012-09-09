@@ -110,10 +110,16 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static void ClearExceptCommentTasks()
 		{
-			List<SDTask> commentTasks = new List<SDTask>(CommentTasks);
-			Clear();
-			foreach (SDTask t in commentTasks) {
-				Add(t);
+			bool wasInUpdate = InUpdate;
+			InUpdate = true;
+			try {
+				List<SDTask> commentTasks = new List<SDTask>(CommentTasks);
+				Clear();
+				foreach (SDTask t in commentTasks) {
+					Add(t);
+				}
+			} finally {
+				InUpdate = wasInUpdate;
 			}
 		}
 		
@@ -149,10 +155,10 @@ namespace ICSharpCode.SharpDevelop
 			List<SDTask> newTasks = new List<SDTask>();
 			foreach (TagComment tag in tagComments) {
 				newTasks.Add(new SDTask(fileName,
-				                      tag.Key + tag.CommentString,
-				                      tag.Region.BeginColumn,
-				                      tag.Region.BeginLine,
-				                      TaskType.Comment));
+				                        tag.Key + tag.CommentString,
+				                        tag.Region.BeginColumn,
+				                        tag.Region.BeginLine,
+				                        TaskType.Comment));
 			}
 			List<SDTask> oldTasks = new List<SDTask>();
 			

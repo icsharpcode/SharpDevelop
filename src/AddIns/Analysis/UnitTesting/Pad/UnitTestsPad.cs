@@ -19,23 +19,20 @@ namespace ICSharpCode.UnitTesting
 {
 	public class UnitTestsPad : AbstractPadContent
 	{
-		TestSolution testSolution;
+		ITestService testService;
 		TestTreeView treeView;
-		bool disposed;
 		DockPanel panel;
 		ToolBar toolBar;
 		List<Tuple<IUnresolvedFile, IUnresolvedFile>> pending = new List<Tuple<IUnresolvedFile, IUnresolvedFile>>();
-		static UnitTestsPad instance;
 
 		public UnitTestsPad()
-			: this(TestService.RegisteredTestFrameworks, TestService.Solution)
+			: this(SD.GetRequiredService<ITestService>())
 		{
 		}
 		
-		public UnitTestsPad(IRegisteredTestFrameworks testFrameworks, TestSolution testSolution)
+		public UnitTestsPad(ITestService testService)
 		{
-			instance = this;
-			this.testSolution = testSolution;
+			this.testService = testService;
 			
 			panel = new DockPanel();
 
@@ -43,131 +40,28 @@ namespace ICSharpCode.UnitTesting
 			panel.Children.Add(toolBar);
 			DockPanel.SetDock(toolBar, Dock.Top);
 			
-			treeView = new TestTreeView(testFrameworks, testSolution);
+			treeView = new TestTreeView();
 			panel.Children.Add(treeView);
 			
-			// Add the load solution projects thread ended handler before
-			// we try to display the open solution so the event does not
-			// get missed.
-			SD.ParserService.LoadSolutionProjectsThread.Finished += LoadSolutionProjectsThreadFinished;
-			OnAddedLoadSolutionProjectsThreadEndedHandler();
-
-			ProjectService.SolutionClosed += SolutionClosed;
-			ProjectService.SolutionFolderRemoved += SolutionFolderRemoved;
-			ProjectService.ProjectAdded += ProjectAdded;
-			ProjectService.ProjectItemAdded += ProjectItemAdded;
-			ProjectService.ProjectItemRemoved += ProjectItemRemoved;
-			
 			treeView.ContextMenu = CreateContextMenu("/SharpDevelop/Pads/UnitTestsPad/ContextMenu");
+			
+			testService.OpenSolutionChanged += testService_OpenSolutionChanged;
+			testService_OpenSolutionChanged(null, null);
 		}
 		
-		public static UnitTestsPad Instance {
-			get { return instance; }
+		public override void Dispose()
+		{
+			testService.OpenSolutionChanged -= testService_OpenSolutionChanged;
+			base.Dispose();
 		}
 		
 		public override object Control {
 			get { return panel; }
 		}
 		
-		public override void Dispose()
+		void testService_OpenSolutionChanged(object sender, EventArgs e)
 		{
-			if (!disposed) {
-				disposed = true;
-
-				ProjectService.ProjectItemRemoved -= ProjectItemRemoved;
-				ProjectService.ProjectItemAdded -= ProjectItemAdded;
-				ProjectService.ProjectAdded -= ProjectAdded;
-				ProjectService.SolutionFolderRemoved -= SolutionFolderRemoved;
-				ProjectService.SolutionClosed -= SolutionClosed;
-				SD.ParserService.LoadSolutionProjectsThread.Finished -= LoadSolutionProjectsThreadFinished;
-			}
-		}
-		
-//		public TestTreeView TestTreeView {
-//			get { return treeView; }
-//		}
-		
-//		public void ResetTestResults()
-//		{
-//			treeView.ResetTestResults();
-//		}
-//
-		public IProject[] GetProjects()
-		{
-			return testSolution.TestableProjects.Select(tp => tp.Project).ToArray();
-		}
-		
-//		public TestProject GetTestProject(IProject project)
-//		{
-//			return treeView.GetTestProject(project);
-//		}
-		
-		/// <summary>
-		/// Updates the state of the buttons on the Unit Tests pad's
-		/// toolbar.
-		/// </summary>
-		public void UpdateToolbar()
-		{
-//			ToolbarService.UpdateToolbar(toolBar);
-		}
-		
-		/// <summary>
-		/// Collapses all nodes.
-		/// </summary>
-//		public void CollapseAll()
-//		{
-//			if (treeView == null || treeView.Nodes == null || treeView.Nodes.Count == 0)
-//				return;
-//
-//			treeView.CollapseAll();
-//		}
-		
-		/// <summary>
-		/// Called when a solution has been closed.
-		/// </summary>
-//		protected void SolutionClosed()
-//		{
-//			treeView.Clear();
-//		}
-//
-//		protected void SolutionFolderRemoved(ISolutionFolder solutionFolder)
-//		{
-//			treeView.RemoveSolutionFolder(solutionFolder);
-//		}
-		
-		/// <summary>
-		/// If the project item removed is a reference to a unit
-		/// test framework then the project will be removed from the
-		/// test tree.
-		/// </summary>
-//		protected void ProjectItemRemoved(ProjectItem projectItem)
-//		{
-//			treeView.ProjectItemRemoved(projectItem);
-//		}
-//
-//		protected void ProjectItemAdded(ProjectItem projectItem)
-//		{
-//			treeView.ProjectItemAdded(projectItem);
-//		}
-		
-		/// <summary>
-		/// Protected method so we can test this method.
-		/// </summary>
-		protected void UpdateParseInfo(IUnresolvedFile oldFile, IUnresolvedFile newFile)
-		{
-			RootUnitTestNode root = (RootUnitTestNode)treeView.Root;
-			if (root == null) {
-//				SolutionLoaded(GetOpenSolution());
-				root = (RootUnitTestNode)treeView.Root;
-				if (root == null) return;
-			}
-			var solution = GetOpenSolution();
-			if (solution == null)
-				return;
-			var project = solution.FindProjectContainingFile((oldFile ?? newFile).FileName);
-			if (project == null)
-				return;
-			var projectNode = root.Children.OfType<ProjectUnitTestNode>().FirstOrDefault(node => node.Project == project);
+			treeView.TestSolution = testService.OpenSolution;
 		}
 		
 		/// <summary>
@@ -187,107 +81,5 @@ namespace ICSharpCode.UnitTesting
 		{
 			return MenuService.CreateContextMenu(treeView, name);
 		}
-		
-//		/// <summary>
-//		/// Virtual method so we can override this method and return
-//		/// a dummy TestTreeView when testing.
-//		/// </summary>
-//		protected virtual SharpTreeView CreateTestTreeView(IRegisteredTestFrameworks testFrameworks)
-//		{
-//			return new SharpTreeView();
-//		}
-		
-		/// <summary>
-		/// Gets the currently open solution.
-		/// </summary>
-		protected virtual Solution GetOpenSolution()
-		{
-			return ProjectService.OpenSolution;
-		}
-		
-		/// <summary>
-		/// Determines whether the parser is currently still loading the
-		/// solution.
-		/// </summary>
-		protected virtual bool IsParserLoadingSolution {
-			get { return SD.ParserService.LoadSolutionProjectsThread.IsRunning; }
-		}
-		
-		/// <summary>
-		/// Indicates that an event handler for the ParserService's
-		/// LoadSolutionProjectsThreadEnded event has been added
-		/// </summary>
-		protected virtual void OnAddedLoadSolutionProjectsThreadEndedHandler()
-		{
-		}
-		
-		void SolutionClosed(object source, EventArgs e)
-		{
-//			SolutionClosed();
-			UpdateToolbar();
-		}
-		
-		void SolutionFolderRemoved(object source, SolutionFolderEventArgs e)
-		{
-//			SolutionFolderRemoved(e.SolutionFolder);
-			UpdateToolbar();
-		}
-		
-		void ProjectAdded(object source, ProjectEventArgs e)
-		{
-			UpdateToolbar();
-		}
-		
-		void LoadSolutionProjectsThreadFinished(object source, EventArgs e)
-		{
-			WorkbenchSingleton.SafeThreadAsyncCall(UpdateToolbar);
-			Solution solution = ProjectService.OpenSolution;
-//			WorkbenchSingleton.SafeThreadAsyncCall(SolutionLoaded, solution);
-		}
-		
-//		void TestTreeViewKeyPress(object source, KeyPressEventArgs e)
-//		{
-//			if (e.KeyChar == '\r') {
-//				e.Handled = true;
-//				GotoDefinition();
-//			} else if (e.KeyChar == ' ') {
-//				e.Handled = true;
-//				RunTests();
-//			}
-//		}
-		
-		void GotoDefinition()
-		{
-//			RunCommand(new GotoDefinitionCommand());
-		}
-		
-		void RunTests()
-		{
-//			RunCommand(new RunTestInPadCommand());
-		}
-		
-		void RunCommand(ICommand command)
-		{
-			command.Owner = treeView;
-			command.Run();
-		}
-		
-		void ProjectItemAdded(object source, ProjectItemEventArgs e)
-		{
-//			ProjectItemAdded(e.ProjectItem);
-		}
-		
-		void ProjectItemRemoved(object source, ProjectItemEventArgs e)
-		{
-//			ProjectItemRemoved(e.ProjectItem);
-		}
-		
-		public void ResetTestResults()
-		{
-			foreach (var testProject in testSolution.TestableProjects)
-				testProject.ResetTestResults();
-		}
 	}
-	
-
 }

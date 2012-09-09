@@ -17,6 +17,11 @@
 		</Import>
 	</Runtime>
 	
+	<Path name = "/SharpDevelop/Services">
+		<Service id="ICSharpCode.UnitTesting.ITestService"
+		         class="ICSharpCode.UnitTesting.SDTestService"/>
+	</Path>
+	
 	<Path name="/SharpDevelop/UnitTesting/TestFrameworks">
 		<TestFramework id="nunit"
 		               class="ICSharpCode.UnitTesting.NUnitTestFramework"
@@ -45,7 +50,7 @@
 					<MenuItem id="RunInPad"
 					          label="${res:ICSharpCode.UnitTesting.RunInTestPad}"
 					          icon="PadIcons.NUnitTest"
-					          class="ICSharpCode.UnitTesting.RunTestInPadCommand"/>
+					          class="ICSharpCode.UnitTesting.RunSelectedTestCommand"/>
 				</ComplexCondition>
 				<Include id="CommonTestCommands" path="/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands"/>
 			</MenuItem>
@@ -63,7 +68,7 @@
 			<MenuItem id="RunWithDebugger"
 			          label="${res:ICSharpCode.UnitTesting.RunWithDebugger}"
 			          icon="Icons.16x16.RunProgramIcon"
-			          class="ICSharpCode.UnitTesting.RunTestWithDebuggerCommand"/>
+			          class="ICSharpCode.UnitTesting.RunSelectedTestWithDebuggerCommand"/>
 		</ComplexCondition>
 	</Path>
 	
@@ -78,12 +83,12 @@
 			<ToolbarItem id="RunAll"
 			             icon="Icons.16x16.RunAllIcon"
 			             tooltip="${res:NUnitPad.NUnitPadContent.RunAllTests}"
-			             class="ICSharpCode.UnitTesting.RunAllTestsInPadCommand"/>
+			             class="ICSharpCode.UnitTesting.RunAllTestsInSolutionCommand"/>
 			<ToolbarItem id="Run"
 			             insertafter="RunAll"
 			             icon="Icons.16x16.RunProgramIcon"
 			             tooltip="${res:NUnitPad.NUnitPadContent.RunItem}"
-			             class="ICSharpCode.UnitTesting.RunTestInPadCommand"/>
+			             class="ICSharpCode.UnitTesting.RunSelectedTestCommand"/>
 		</ComplexCondition>
 		<ComplexCondition action="Disable">
 			<And>
@@ -120,7 +125,7 @@
 			<MenuItem id="Run"
 			          icon="Icons.16x16.RunProgramIcon"
 			          label="${res:NUnitPad.NUnitPadContent.RunTestsContextMenuLabel}"
-			          class="ICSharpCode.UnitTesting.RunTestInPadCommand"/>
+			          class="ICSharpCode.UnitTesting.RunSelectedTestCommand"/>
 		</ComplexCondition>
 		<Include id="CommonTestCommands" path="/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands"/>
 		<ComplexCondition action="Disable">
@@ -133,7 +138,7 @@
 			          label="${res:NUnitPad.NUnitPadContent.StopTests}"
 			          class="ICSharpCode.UnitTesting.StopTestsCommand"/>
 		</ComplexCondition>
-		<Condition name="Ownerstate" ownerstate="SourceCodeItemSelected" action="Disable">
+		<Condition name="Ownerstate" ownerstate="SupportsGoToDefinition" action="Disable">
 			<MenuItem id="GotoDefinition"
 			          label="${res:NUnitPad.NUnitPadContent.GotoDefinitionContextMenuLabel}"
 			          class="ICSharpCode.UnitTesting.GotoDefinitionCommand"/>
@@ -152,7 +157,7 @@
 				<MenuItem id="RunAll"
 				          icon="Icons.16x16.RunAllIcon"
 				          label="${res:NUnitPad.NUnitPadContent.RunAllTests}"
-				          class="ICSharpCode.UnitTesting.RunAllTestsInPadCommand"/>
+				          class="ICSharpCode.UnitTesting.RunAllTestsInSolutionCommand"/>
 			</ComplexCondition>
 			<ComplexCondition action="Disable">
 				<And>
@@ -165,7 +170,7 @@
 				<MenuItem id="RunProjectTests"
 				          icon="Icons.16x16.RunProgramIcon"
 				          label="${res:ICSharpCode.UnitTesting.RunProjectTests}"
-				          class="ICSharpCode.UnitTesting.RunProjectTestsInPadCommand"/>
+				          class="ICSharpCode.UnitTesting.RunAllTestsInProjectCommand"/>
 			</ComplexCondition>
 			<ComplexCondition action="Disable">
 				<And>

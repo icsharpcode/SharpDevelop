@@ -10,15 +10,25 @@ namespace ICSharpCode.UnitTesting
 {
 	public interface ITestFramework
 	{
+		/// <summary>
+		/// Gets whether this test framework supports the specified project.
+		/// </summary>
+		bool IsTestProject(IProject project);
+		
+		/// <summary>
+		/// Creates a new test project based on the specified project.
+		/// </summary>
+		ITestProject CreateTestProject(ITestSolution parentSolution, IProject project);
+		
+		/*
 		bool IsTestMember(IMember member);
 		bool IsTestClass(ITypeDefinition testClass);
-		bool IsTestProject(IProject project);
 		
 		IEnumerable<TestMember> GetTestMembersFor(ITypeDefinition typeDefinition);
 		
 		ITestRunner CreateTestRunner();
 		ITestRunner CreateTestDebugger();
 		
-		bool IsBuildNeededBeforeTestRun { get; }
+		bool IsBuildNeededBeforeTestRun { get; }*/
 	}
 }

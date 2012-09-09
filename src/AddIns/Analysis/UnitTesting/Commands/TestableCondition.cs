@@ -2,13 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor.Commands;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -17,90 +17,36 @@ namespace ICSharpCode.UnitTesting
 	/// </summary>
 	public class TestableCondition : IConditionEvaluator
 	{
-		IRegisteredTestFrameworks testFrameworks;
-		
-		public TestableCondition(IRegisteredTestFrameworks testFrameworks)
-		{
-			this.testFrameworks = testFrameworks;
-		}
+		readonly ITestService testService;
 		
 		public TestableCondition()
-			: this(TestService.RegisteredTestFrameworks)
 		{
+			this.testService = SD.GetRequiredService<ITestService>();
 		}
 		
-		public static IMember GetMember(object caller)
+		public TestableCondition(ITestService testService)
 		{
-			ITestTreeView testTreeView = caller as ITestTreeView;
-			if (testTreeView != null && testTreeView.SelectedMember != null) {
-				return testTreeView.SelectedMember.Resolve(testTreeView.SelectedProject);
-			}
-			IEntity entity = ResolveResultMenuCommand.GetEntity(caller);
-			return entity as IMember;
-		}
-		
-		public static ITypeDefinition GetClass(object caller)
-		{
-			ITestTreeView testTreeView = caller as ITestTreeView;
-			if (testTreeView != null && testTreeView.SelectedClass != null) {
-				return testTreeView.SelectedClass.Resolve(testTreeView.SelectedProject);
-			}
-			IEntity entity = ResolveResultMenuCommand.GetEntity(caller);
-			return entity as ITypeDefinition;
-		}
-		
-		public static IProject GetProject(object caller)
-		{
-			ITestTreeView testTreeView = caller as ITestTreeView;
-			if (testTreeView != null) {
-				return testTreeView.SelectedProject != null ? testTreeView.SelectedProject.Project : null;
-			}
-			ITypeDefinition c = GetClassFromMemberOrCaller(caller);
-			return GetProject(c);
-		}
-		
-		public static ITypeDefinition GetClassFromMemberOrCaller(object caller)
-		{
-			IMember m = GetMember(caller);
-			if (m != null) {
-				return m.DeclaringTypeDefinition;
-			}
-			return GetClass(caller);
-		}
-		
-		static IProject GetProject(ITypeDefinition c)
-		{
-			return c != null ? c.ParentAssembly.GetProject() : null;
-		}
-		
-		/// <summary>
-		/// Returns the namespace selected if any.
-		/// </summary>
-		public static string GetNamespace(object caller)
-		{
-			ITestTreeView testTreeView = caller as ITestTreeView;
-			if (testTreeView != null) {
-				return testTreeView.SelectedNamespace;
-			}
-			return null;
+			this.testService = testService;
 		}
 		
 		public bool IsValid(object caller, Condition condition)
 		{
-			IMember m = GetMember(caller);
-			if (m != null) {
-				return testFrameworks.IsTestMember(m);
-			}
-			ITypeDefinition c = GetClass(caller);
-			if (ClassHasProject(c)) {
-				return testFrameworks.IsTestClass(c);
-			}
-			return false;
+			return GetTests(testService.OpenSolution, caller).Any();
 		}
 		
-		static bool ClassHasProject(ITypeDefinition c)
+		public static IEnumerable<ITest> GetTests(ITestSolution testSolution, object caller)
 		{
-			return (c != null) && (c.ParentAssembly.GetProject() != null);
+			ITestTreeView testTreeView = caller as ITestTreeView;
+			if (testTreeView != null) {
+				return testTreeView.SelectedTests;
+			}
+			if (testSolution != null) {
+				IEntity entity = ResolveResultMenuCommand.GetEntity(caller);
+				ITest test = testSolution.GetTestForEntity(entity);
+				if (test != null)
+					return new[] { test };
+			}
+			return Enumerable.Empty<ITest>();
 		}
 	}
 }

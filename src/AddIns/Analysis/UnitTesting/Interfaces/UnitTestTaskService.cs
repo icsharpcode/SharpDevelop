@@ -14,11 +14,6 @@ namespace ICSharpCode.UnitTesting
 			TaskService.ClearExceptCommentTasks();
 		}
 		
-		public bool InUpdate {
-			get { return TaskService.InUpdate; }
-			set { TaskService.InUpdate = value; }
-		}
-		
 		public MessageViewCategory BuildMessageViewCategory {
 			get { return TaskService.BuildMessageViewCategory; }
 		}

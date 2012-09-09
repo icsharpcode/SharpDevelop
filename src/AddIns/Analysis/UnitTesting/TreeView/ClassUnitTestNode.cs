@@ -12,7 +12,7 @@ namespace ICSharpCode.UnitTesting
 	/// <summary>
 	/// Represents a TestClass in the tree view.
 	/// </summary>
-	public class ClassUnitTestNode : UnitTestBaseNode
+	public class ClassUnitTestNode : UnitTestNode
 	{
 		TestClass testClass;
 		

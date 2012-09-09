@@ -5,7 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
@@ -15,21 +16,20 @@ namespace ICSharpCode.UnitTesting
 	/// <summary>
 	/// Manages the collection of TestProjects.
 	/// </summary>
-	public class TestSolution
+	sealed class TestSolution : TestBase, ITestSolution
 	{
-		readonly IRegisteredTestFrameworks registeredTestFrameworks;
+		readonly IResourceService resourceService;
+		readonly ITestService testService;
 		readonly List<ProjectChangeListener> changeListeners = new List<ProjectChangeListener>();
-		readonly ObservableCollection<TestProject> testableProjects = new ObservableCollection<TestProject>();
 		
-		public ObservableCollection<TestProject> TestableProjects {
-			get { return testableProjects; }
-		}
-		
-		public TestSolution(IRegisteredTestFrameworks registeredTestFrameworks)
+		public TestSolution(ITestService testService, IResourceService resourceService)
 		{
-			if (registeredTestFrameworks == null)
-				throw new ArgumentNullException("registeredTestFrameworks");
-			this.registeredTestFrameworks = registeredTestFrameworks;
+			if (testService == null)
+				throw new ArgumentNullException("testService");
+			if (resourceService == null)
+				throw new ArgumentNullException("resourceService");
+			this.testService = testService;
+			this.resourceService = resourceService;
 			ProjectService.SolutionLoaded += ProjectService_SolutionLoaded;
 			ProjectService.SolutionClosed += ProjectService_SolutionClosed;
 			ProjectService.ProjectAdded += ProjectService_ProjectAdded;
@@ -40,13 +40,39 @@ namespace ICSharpCode.UnitTesting
 				SD_ParserService_LoadSolutionProjectsThread_Finished(null, null);
 			}
 		}
-
-		/// <summary>
-		/// Retrieves the TestProject for the specified project.
-		/// </summary>
-		public TestProject GetTestProject(IProject currentProject)
+		
+		public override string DisplayName {
+			get { return resourceService.GetString("ICSharpCode.UnitTesting.AllTestsTreeNode.Text"); }
+		}
+		
+		public override event EventHandler DisplayNameChanged {
+			add { resourceService.LanguageChanged += value; }
+			remove { resourceService.LanguageChanged -= value; }
+		}
+		
+		public override ITestProject ParentProject {
+			get { return null; }
+		}
+		
+		public ITestProject GetTestProject(IProject project)
 		{
-			return testableProjects.FirstOrDefault(p => p.Project == currentProject);
+			for (int i = 0; i < changeListeners.Count; i++) {
+				if (changeListeners[i].project == project) {
+					return changeListeners[i].testProject;
+				}
+			}
+			return null;
+		}
+		
+		public ITest GetTestForEntity(IEntity entity)
+		{
+			if (entity == null)
+				return null;
+			ITestProject testProject = GetTestProject(entity.ParentAssembly.GetProject());
+			if (testProject != null)
+				return testProject.GetTestForEntity(entity);
+			else
+				return null;
 		}
 		
 		/// <summary>
@@ -57,8 +83,9 @@ namespace ICSharpCode.UnitTesting
 		class ProjectChangeListener
 		{
 			readonly TestSolution testSolution;
+			ITestFramework oldTestFramework;
 			internal readonly IProject project;
-			TestProject testProject;
+			internal ITestProject testProject;
 			
 			public ProjectChangeListener(TestSolution testSolution, IProject project)
 			{
@@ -77,7 +104,7 @@ namespace ICSharpCode.UnitTesting
 				project.ParseInformationUpdated -= project_ParseInformationUpdated;
 				// Remove old testProject
 				if (testProject != null) {
-					testSolution.testableProjects.Remove(testProject);
+					testSolution.NestedTests.Remove(testProject);
 					testProject = null;
 				}
 			}
@@ -91,20 +118,23 @@ namespace ICSharpCode.UnitTesting
 			
 			internal void CheckTestFramework()
 			{
-				ITestFramework newTestFramework = testSolution.registeredTestFrameworks.GetTestFrameworkForProject(project);
-				if (newTestFramework != null && testProject != null && testProject.TestFramework == newTestFramework)
+				ITestFramework newTestFramework = testSolution.testService.GetTestFrameworkForProject(project);
+				if (newTestFramework == oldTestFramework)
 					return; // test framework is unchanged
 				
 				// Remove old testProject
 				if (testProject != null) {
-					testSolution.testableProjects.Remove(testProject);
+					testSolution.NestedTests.Remove(testProject);
 					testProject = null;
 				}
 				// Create new testProject
 				if (newTestFramework != null) {
-					testProject = new TestProject(project, newTestFramework);
-					testSolution.testableProjects.Add(testProject);
+					testProject = newTestFramework.CreateTestProject(testSolution, project);
+					if (testProject == null)
+						throw new InvalidOperationException("CreateTestProject() returned null");
+					testSolution.NestedTests.Add(testProject);
 				}
+				oldTestFramework = newTestFramework;
 			}
 		}
 		

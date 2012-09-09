@@ -16,7 +16,7 @@ using ICSharpCode.TreeView;
 
 namespace ICSharpCode.UnitTesting
 {
-	public class NamespaceUnitTestNode : UnitTestBaseNode
+	public class NamespaceUnitTestNode : UnitTestNode
 	{
 		readonly string shortName;
 		readonly string namespaceName;
@@ -50,11 +50,11 @@ namespace ICSharpCode.UnitTesting
 		internal override TestResultType TestResultType {
 			get {
 				if (Children.Count == 0) return TestResultType.None;
-				if (Children.OfType<UnitTestBaseNode>().Any(node => node.TestResultType == TestResultType.Failure))
+				if (Children.OfType<UnitTestNode>().Any(node => node.TestResultType == TestResultType.Failure))
 					return TestResultType.Failure;
-				if (Children.OfType<UnitTestBaseNode>().Any(node => node.TestResultType == TestResultType.None))
+				if (Children.OfType<UnitTestNode>().Any(node => node.TestResultType == TestResultType.None))
 					return TestResultType.None;
-				if (Children.OfType<UnitTestBaseNode>().Any(node => node.TestResultType == TestResultType.Ignored))
+				if (Children.OfType<UnitTestNode>().Any(node => node.TestResultType == TestResultType.Ignored))
 					return TestResultType.Ignored;
 				return TestResultType.Success;
 			}

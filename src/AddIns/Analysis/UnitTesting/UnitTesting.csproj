@@ -66,79 +66,54 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\AbstractRunTestCommand.cs" />
-    <Compile Include="Commands\IRunTestCommandContext.cs" />
-    <Compile Include="Commands\MultipleProjectBuildable.cs" />
-    <Compile Include="Commands\RunAllTestsInPadCommand.cs" />
+    <Compile Include="Commands\PadCommands.cs" />
     <Compile Include="Commands\RunningTestsCondition.cs" />
-    <Compile Include="Commands\RunProjectTestsInPadCommand.cs" />
-    <Compile Include="Commands\RunTestCommandContext.cs" />
-    <Compile Include="Commands\RunTestInPadCommand.cs" />
-    <Compile Include="Commands\RunTestWithDebuggerCommand.cs" />
     <Compile Include="Commands\TestableCondition.cs" />
     <Compile Include="Commands\UnitTestCommands.cs" />
+    <Compile Include="Frameworks\ITestService.cs" />
+    <Compile Include="Frameworks\TestExecutionManager.cs" />
+    <Compile Include="Frameworks\TestExecutionOptions.cs" />
     <Compile Include="Interfaces\IUnitTestProcessRunner.cs" />
     <Compile Include="Interfaces\UnitTestProcessRunner.cs" />
-    <Compile Include="TestRunner\ITestRunner.cs" />
-    <Compile Include="TestRunner\TestResultsMonitor.cs" />
-    <Compile Include="TestRunner\TestResultsReader.cs" />
-    <Compile Include="TestRunner\TestResultTask.cs" />
-    <Compile Include="Frameworks\IRegisteredTestFrameworks.cs" />
+    <Compile Include="Model\ITest.cs" />
+    <Compile Include="Model\ITestProject.cs" />
+    <Compile Include="Model\ITestSolution.cs" />
+    <Compile Include="Model\TestBase.cs" />
     <Compile Include="Frameworks\ITestFramework.cs" />
-    <Compile Include="Frameworks\ITestFrameworkFactory.cs" />
     <Compile Include="Interfaces\IBuildOptions.cs" />
     <Compile Include="Interfaces\IBuildProjectFactory.cs" />
     <Compile Include="Interfaces\IFileSystem.cs" />
     <Compile Include="Interfaces\IUnitTestDebuggerService.cs" />
     <Compile Include="Interfaces\IUnitTestSaveAllFilesCommand.cs" />
     <Compile Include="Interfaces\IUnitTestTaskService.cs" />
-    <Compile Include="Interfaces\IUnitTestWorkbench.cs" />
     <Compile Include="Interfaces\UnitTestBuildOptions.cs" />
+    <Compile Include="Model\TestCollection.cs" />
+    <Compile Include="Model\TestNamespace.cs" />
+    <Compile Include="Model\TestProjectBase.cs" />
     <Compile Include="Model\TestResult.cs" />
-    <Compile Include="Pad\EmptyUnitTestsPad.cs" />
-    <Compile Include="Pad\IUnitTestsPad.cs" />
+    <Compile Include="Model\TestResultTypeChangedEventArgs.cs" />
+    <Compile Include="NUnit\NUnitTestProject.cs" />
     <Compile Include="Pad\UnitTestsPad.cs" />
     <Compile Include="Interfaces\UnitTestBuildProjectFactory.cs" />
     <Compile Include="Interfaces\UnitTestDebuggerService.cs" />
     <Compile Include="Interfaces\UnitTestFileService.cs" />
     <Compile Include="Interfaces\UnitTestSaveAllFilesCommand.cs" />
     <Compile Include="Interfaces\UnitTestTaskService.cs" />
-    <Compile Include="Interfaces\UnitTestWorkbench.cs" />
-    <Compile Include="Model\TestClass.cs" />
-    <Compile Include="Model\TestMember.cs" />
-    <Compile Include="Model\TestProject.cs" />
     <Compile Include="Model\TestSolution.cs" />
-    <Compile Include="Frameworks\ITestResultsMonitor.cs" />
-    <Compile Include="Frameworks\RegisteredTestFrameworks.cs" />
     <Compile Include="Frameworks\TestFrameworkDescriptor.cs" />
     <Compile Include="Frameworks\TestFrameworkDoozer.cs" />
-    <Compile Include="Frameworks\TestFrameworkFactory.cs" />
-    <Compile Include="Frameworks\TestService.cs" />
-    <Compile Include="TreeView\ClassUnitTestNode.cs" />
+    <Compile Include="Frameworks\SDTestService.cs" />
     <Compile Include="TreeView\ITestTreeView.cs" />
-    <Compile Include="TreeView\MemberUnitTestNode.cs" />
-    <Compile Include="TreeView\NamespaceUnitTestNode.cs" />
-    <Compile Include="TreeView\ProjectUnitTestNode.cs" />
-    <Compile Include="TreeView\RootUnitTestNode.cs" />
     <Compile Include="TreeView\TestTreeView.cs" />
-    <Compile Include="TreeView\UnitTestBaseNode.cs" />
+    <Compile Include="TreeView\UnitTestNode.cs" />
     <Compile Include="NUnit\NUnitConsoleApplication.cs" />
-    <Compile Include="NUnit\NUnitTestDebugger.cs" />
     <Compile Include="NUnit\NUnitTestFramework.cs" />
     <Compile Include="NUnit\NUnitTestResult.cs" />
-    <Compile Include="NUnit\NUnitTestRunner.cs" />
     <Compile Include="Options\UnitTestingOptions.cs" />
     <Compile Include="Options\UnitTestingOptionsPanel.xaml.cs">
       <DependentUpon>UnitTestingOptionsPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Resources\Images.cs" />
-    <Compile Include="TestRunner\MessageReceivedEventArgs.cs" />
-    <Compile Include="TestRunner\SelectedTests.cs" />
-    <Compile Include="TestRunner\TestDebuggerBase.cs" />
-    <Compile Include="TestRunner\TestFinishedEventArgs.cs" />
-    <Compile Include="TestRunner\TestProcessRunnerBase.cs" />
-    <Compile Include="TestRunner\TestProcessRunnerBaseContext.cs" />
-    <Compile Include="TestRunner\TestRunnerBase.cs" />
     <None Include="PostBuildEvent.proj" />
     <None Include="UnitTesting.addin">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
@@ -197,7 +172,6 @@
     <Folder Include="Model" />
     <Folder Include="Options" />
     <Folder Include="NUnit" />
-    <Folder Include="TestRunner" />
     <Folder Include="TreeView" />
   </ItemGroup>
   <ItemGroup>

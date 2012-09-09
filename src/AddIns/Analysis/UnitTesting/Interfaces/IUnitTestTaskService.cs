@@ -11,7 +11,6 @@ namespace ICSharpCode.UnitTesting
 	public interface IUnitTestTaskService
 	{
 		MessageViewCategory BuildMessageViewCategory { get; }
-		bool InUpdate { get; set; }
 		void ClearExceptCommentTasks();
 		void Add(SDTask task);
 		bool SomethingWentWrong { get; }

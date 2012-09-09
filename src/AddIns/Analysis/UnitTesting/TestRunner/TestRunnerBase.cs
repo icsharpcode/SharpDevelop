@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace ICSharpCode.UnitTesting
@@ -12,7 +13,7 @@ namespace ICSharpCode.UnitTesting
 		{
 		}
 		
-		protected virtual ProcessStartInfo GetProcessStartInfo(SelectedTests selectedTests)
+		protected virtual ProcessStartInfo GetProcessStartInfo(IEnumerable<ITest> selectedTests)
 		{
 			return new ProcessStartInfo();
 		}
@@ -63,6 +64,6 @@ namespace ICSharpCode.UnitTesting
 		
 		public abstract void Dispose();
 		public abstract void Stop();
-		public abstract void Start(SelectedTests selectedTests);
+		public abstract void Start(IEnumerable<ITest> selectedTests);
 	}
 }

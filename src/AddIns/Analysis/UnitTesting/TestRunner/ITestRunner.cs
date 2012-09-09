@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.UnitTesting
@@ -11,7 +12,7 @@ namespace ICSharpCode.UnitTesting
 		event EventHandler<TestFinishedEventArgs> TestFinished;
 		event EventHandler AllTestsFinished;
 		event EventHandler<MessageReceivedEventArgs> MessageReceived;
-		void Start(SelectedTests selectedTests);
+		void Start(IEnumerable<ITest> selectedTests);
 		void Stop();
 	}
 }

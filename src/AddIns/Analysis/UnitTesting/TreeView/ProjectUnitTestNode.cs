@@ -17,7 +17,7 @@ using ICSharpCode.TreeView;
 
 namespace ICSharpCode.UnitTesting
 {
-	public class ProjectUnitTestNode : UnitTestBaseNode
+	public class ProjectUnitTestNode : UnitTestNode
 	{
 		TestProject project;
 		
@@ -47,7 +47,7 @@ namespace ICSharpCode.UnitTesting
 				case NotifyCollectionChangedAction.Add:
 					foreach (TestClass c in e.NewItems) {
 						if (c.Namespace == "<invalid>") continue;
-						UnitTestBaseNode node = FindOrCreateNamespace(this, project.Project.RootNamespace, c.Namespace);
+						UnitTestNode node = FindOrCreateNamespace(this, project.Project.RootNamespace, c.Namespace);
 						node.Children.OrderedInsert(new ClassUnitTestNode(c), NodeTextComparer);
 					}
 					break;
@@ -70,7 +70,7 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
-		static UnitTestBaseNode FindOrCreateNamespace(UnitTestBaseNode parent, string parentNamespace, string @namespace)
+		static UnitTestNode FindOrCreateNamespace(UnitTestNode parent, string parentNamespace, string @namespace)
 		{
 			if (parentNamespace == @namespace)
 				return parent;
@@ -101,7 +101,7 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
-		static UnitTestBaseNode FindNamespace(UnitTestBaseNode parent, string parentNamespace, string @namespace)
+		static UnitTestNode FindNamespace(UnitTestNode parent, string parentNamespace, string @namespace)
 		{
 			if (parentNamespace == @namespace)
 				return parent;
@@ -120,7 +120,7 @@ namespace ICSharpCode.UnitTesting
 			Children.Clear();
 			foreach (var g in project.TestClasses.Select(c => new ClassUnitTestNode(c)).GroupBy(tc => tc.TestClass.Namespace)) {
 				if (g.Key == "<invalid>") continue;
-				UnitTestBaseNode node = FindOrCreateNamespace(this, project.Project.RootNamespace, g.Key);
+				UnitTestNode node = FindOrCreateNamespace(this, project.Project.RootNamespace, g.Key);
 				node.Children.AddRange(g.OrderBy(NodeTextComparer));
 			}
 		}

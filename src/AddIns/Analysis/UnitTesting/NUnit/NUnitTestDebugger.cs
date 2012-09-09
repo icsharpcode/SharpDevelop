@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -30,7 +32,7 @@ namespace ICSharpCode.UnitTesting
 			this.options = options;
 		}
 		
-		protected override ProcessStartInfo GetProcessStartInfo(SelectedTests selectedTests)
+		protected override ProcessStartInfo GetProcessStartInfo(IEnumerable<ITest> selectedTests)
 		{
 			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests, options);
 			app.Results = base.TestResultsMonitor.FileName;

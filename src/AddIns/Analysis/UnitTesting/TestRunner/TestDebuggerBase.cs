@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -39,7 +41,7 @@ namespace ICSharpCode.UnitTesting
 			get { return testResultsMonitor; }
 		}
 		
-		public override void Start(SelectedTests selectedTests)
+		public override void Start(IEnumerable<ITest> selectedTests)
 		{
 			ProcessStartInfo startInfo = GetProcessStartInfo(selectedTests);
 			if (IsDebuggerRunning) {

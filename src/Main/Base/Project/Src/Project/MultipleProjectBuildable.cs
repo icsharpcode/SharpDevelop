@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.UnitTesting
+namespace ICSharpCode.SharpDevelop.Project
 {
 	/// <summary>
 	/// IBuildable implementation that builds several projects.
@@ -17,7 +17,7 @@ namespace ICSharpCode.UnitTesting
 		
 		public MultipleProjectBuildable(IEnumerable<IBuildable> projects)
 		{
-			this.projects = projects.ToArray();
+			this.projects = projects.Where(p => p != null).ToArray();
 		}
 		
 		public string Name {

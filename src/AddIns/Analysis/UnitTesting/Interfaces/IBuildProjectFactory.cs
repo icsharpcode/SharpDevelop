@@ -10,6 +10,6 @@ namespace ICSharpCode.UnitTesting
 {
 	public interface IBuildProjectFactory
 	{
-		BuildProject CreateBuildProjectBeforeTestRun(IEnumerable<IProject> projects);
+		BuildProject CreateBuildProjectBeforeTestRun(IEnumerable<IBuildable> projects);
 	}
 }

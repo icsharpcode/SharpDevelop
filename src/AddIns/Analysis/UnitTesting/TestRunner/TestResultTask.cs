@@ -16,7 +16,7 @@ namespace ICSharpCode.UnitTesting
 		{
 		}
 		
-		public static SDTask Create(TestResult result, TestProject project)
+		public static SDTask Create(TestResult result, ITestProject project)
 		{
 			TaskType taskType = TaskType.Warning;
 			FileLineReference lineRef = null;
@@ -76,7 +76,7 @@ namespace ICSharpCode.UnitTesting
 		/// Returns the location of the specified test member in the
 		/// project being tested.
 		/// </summary>
-		static FileLineReference FindTest(string memberName, TestProject testProject)
+		static FileLineReference FindTest(string memberName, ITestProject testProject)
 		{
 //			if (testProject != null) {
 //				TestMember testMember = testProject.TestClasses.GetTestMember(memberName);
