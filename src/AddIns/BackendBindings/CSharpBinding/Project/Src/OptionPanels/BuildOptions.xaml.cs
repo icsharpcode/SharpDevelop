@@ -193,6 +193,13 @@ namespace CSharpBinding.OptionPanels
 		{
 			base.Load(project, configuration, platform);
 			this.project = project;
+			
+			int val;
+			if (!int.TryParse(BaseAddress.Value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out val)) {
+				val = 0x400000;
+			}
+			DllBaseAdress =  "0x" + val.ToString("x", NumberFormatInfo.InvariantInfo);
+			
 			this.Initialize();
 		}
 		
@@ -209,8 +216,10 @@ namespace CSharpBinding.OptionPanels
 			int val;
 			if (int.TryParse(dllBaseAdress, style, NumberFormatInfo.InvariantInfo, out val)) {
 				BaseAddress.Value = val.ToString(NumberFormatInfo.InvariantInfo);
+			} else {
+				MessageService.ShowMessage("${res:Dialog.ProjectOptions.PleaseEnterValidNumber}");
+				return false;
 			}
-			
 			return base.Save(project, configuration, platform);
 		}
 		#endregion
@@ -327,46 +336,16 @@ namespace CSharpBinding.OptionPanels
 		
 		public string DllBaseAdress {
 			get {
-				int val;
-				if (!int.TryParse(BaseAddress.Value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out val)) {
-					val = 1000;
-				}
-				return  "0x" + val.ToString("x", NumberFormatInfo.InvariantInfo);
+				return dllBaseAdress;
 			}
 			
 			set {
 				dllBaseAdress = value;
-				
-				if (CheckBaseAdress(value)) {
-					IsDirty = true;
-					base.RaisePropertyChanged(() => DllBaseAdress);
-				} else {
-					MessageService.ShowMessage("${res:Dialog.ProjectOptions.PleaseEnterValidNumber}");
-				}
+				IsDirty = true;
+				base.RaisePropertyChanged(() => DllBaseAdress);
 			}
 		}
 
-		
-		private bool CheckBaseAdress(string toCheck)
-		{
-			NumberStyles style = NumberStyles.Integer;
-			if (toCheck.StartsWith("0x")) {
-				toCheck = toCheck.Substring(2);
-				style = NumberStyles.HexNumber;
-			}
-			if (!String.IsNullOrEmpty(toCheck)) {
-				int val;
-				if (int.TryParse(toCheck, style, NumberFormatInfo.InvariantInfo, out val)) {
-					return true;
-				} else {
-					MessageService.ShowMessage("${res:Dialog.ProjectOptions.PleaseEnterValidNumber}");
-					return false;
-				}
-			}
-			return false;
-		}
-		
-		
 		#endregion
 		
 		#region BaseIntermediateOutputPath
