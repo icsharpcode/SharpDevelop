@@ -21,11 +21,9 @@ namespace ICSharpCode.UnitTesting
 		public MemberUnitTestNode(TestMember testMember)
 		{
 			this.testMember = testMember;
-			this.testMember.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e) {
-				if (e.PropertyName == "TestResult") {
-					RaisePropertyChanged("Icon");
-					RaisePropertyChanged("ExpandedIcon");
-				}
+			this.testMember.TestResultChanged += delegate {
+				RaisePropertyChanged("Icon");
+				RaisePropertyChanged("ExpandedIcon");
 			};
 		}
 		

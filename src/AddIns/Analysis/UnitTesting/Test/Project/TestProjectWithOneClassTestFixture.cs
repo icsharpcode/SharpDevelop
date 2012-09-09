@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -16,15 +18,14 @@ namespace UnitTesting.Tests.Project
 	/// Creates a TestProject that has one test class.
 	/// </summary>
 	[TestFixture]
-	public class TestProjectWithOneClassTestFixture
+	public class TestProjectWithOneClassTestFixture : ProjectTestFixtureBase
 	{
-		TestProject testProject;
 		TestClass testClass;
-		MSBuildBasedProject project;
 		bool resultChangedCalled;
 		List<TestClass> classesAdded;
 		List<TestClass> classesRemoved;
-		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
+		
+		const string mainFileName = "file1.cs";
 		
 		[SetUp]
 		public void Init()
@@ -34,28 +35,14 @@ namespace UnitTesting.Tests.Project
 			classesRemoved = new List<TestClass>();
 			
 			// Create a project.
-			project = new MockCSharpProject();
-			project.Name = "TestProject";
-			ReferenceProjectItem nunitFrameworkReferenceItem = new ReferenceProjectItem(project);
-			nunitFrameworkReferenceItem.Include = "NUnit.Framework";
-			ProjectService.AddProjectItem(project, nunitFrameworkReferenceItem);
-			
-			// Add a test class with a TestFixture attributes.
-			projectContent = new MockProjectContent();
-			projectContent.Language = LanguageProperties.None;
-			MockClass c = new MockClass(projectContent, "RootNamespace.MyTestFixture");
-			c.SetCompoundClass(c);
-			c.Attributes.Add(new MockAttribute("TestFixture"));
-			projectContent.Classes.Add(c);
-			
-			// Add a second class that has no test fixture attribute.
-			MockClass nonTestClass = new MockClass(projectContent);
-			projectContent.Classes.Add(nonTestClass);
-			
-			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
-			testProject = new TestProject(project, projectContent, testFrameworks);
-			testProject.TestClasses.TestClassAdded += TestClassAdded;
-			testProject.TestClasses.TestClassRemoved += TestClassRemoved;
+			CreateNUnitProject(Parse(@"using NUnit.Framework;
+namespace RootNamespace {
+	[TestFixture]
+	class MyTestFixture {
+		
+	}
+	class NonTestClass { }
+}", mainFileName));
 			
 			testClass = testProject.TestClasses[0];
 		}
@@ -64,12 +51,6 @@ namespace UnitTesting.Tests.Project
 		public void OneTestClass()
 		{
 			Assert.AreEqual(1, testProject.TestClasses.Count);
-		}
-		
-		[Test]
-		public void TestProjectName()
-		{
-			Assert.AreEqual("TestProject", testProject.Name);
 		}
 		
 		[Test]
@@ -85,12 +66,6 @@ namespace UnitTesting.Tests.Project
 		}
 		
 		[Test]
-		public void OneRootNamespace()
-		{
-			Assert.AreEqual(1, testProject.RootNamespaces.Count);
-		}
-		
-		[Test]
 		public void ProjectProperty()
 		{
 			Assert.AreSame(project, testProject.Project);
@@ -99,23 +74,23 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void FindTestClass()
 		{
-			Assert.AreSame(testClass, testProject.TestClasses["RootNamespace.MyTestFixture"]);
+			Assert.AreSame(testClass, testProject.GetTestClass("RootNamespace.MyTestFixture"));
 		}
 		
 		[Test]
 		public void NoMatchingTestClass()
 		{
-			Assert.IsFalse(testProject.TestClasses.Contains("NoSuchClass.MyTestFixture"));
+			Assert.IsNull(testProject.GetTestClass("NoSuchClass.MyTestFixture"));
 		}
 		
 		[Test]
 		public void TestClassResultChanged()
 		{
 			try {
-				testClass.ResultChanged += ResultChanged;
-				testClass.Result = TestResultType.Success;
+				testClass.TestResultChanged += ResultChanged;
+				testClass.TestResult = TestResultType.Success;
 			} finally {
-				testClass.ResultChanged -= ResultChanged;
+				testClass.TestResultChanged -= ResultChanged;
 			}
 			
 			Assert.IsTrue(resultChangedCalled);
@@ -128,26 +103,17 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void NewClassInParserInfo()
 		{
-			// Create old compilation unit.
-			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
-			MockClass mockClass = (MockClass)testClass.Class;
-			mockClass.SetCompoundClass(mockClass);
-			oldUnit.Classes.Add(testClass.Class);
+			UpdateCodeFile(@"using NUnit.Framework;
+namespace RootNamespace {
+	[TestFixture]
+	class MyTestFixture { }
+	[TestFixture]
+	class MyNewTestFixture { }
+}", mainFileName);
 			
-			// Create new compilation unit with extra class.
-			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			newUnit.Classes.Add(testClass.Class);
-			MockClass newClass = new MockClass(projectContent, "RootNamespace.MyNewTestFixture");
-			newClass.Attributes.Add(new MockAttribute("TestFixture"));
-			newClass.SetCompoundClass(newClass);
-			newUnit.Classes.Add(newClass);
-			
-			// Update TestProject's parse info.
-			testProject.UpdateParseInfo(oldUnit, newUnit);
-			
-			Assert.IsTrue(testProject.TestClasses.Contains("RootNamespace.MyNewTestFixture"));
+			Assert.IsNotNull(testProject.GetTestClass("RootNamespace.MyNewTestFixture"));
 			Assert.AreEqual(1, classesAdded.Count);
-			Assert.AreSame(newClass, classesAdded[0].Class);
+			Assert.AreEqual("RootNamespace.MyNewTestFixture", classesAdded[0].QualifiedName);
 		}
 		
 		/// <summary>
@@ -160,23 +126,13 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void TestClassInNewCompilationUnitOnly()
 		{
-			// Create old compilation unit.
-			projectContent.Classes.Clear();
-			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
+			UpdateCodeFile(@"using NUnit.Framework;
+namespace RootNamespace {
+	[TestFixture]
+	class MyTestFixture { }
+}", "file2.cs");
 			
-			// Create new compilation unit with class that 
-			// already exists in the project.
-			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			newUnit.Classes.Add(testClass.Class);
-			MockClass c = new MockClass(projectContent, "RootNamespace.MyTestFixture");
-			c.Attributes.Add(new MockAttribute("TestFixture"));
-			c.SetCompoundClass(c);
-			newUnit.Classes.Add(c);
-			
-			// Update TestProject's parse info.
-			testProject.UpdateParseInfo(oldUnit, newUnit);
-			
-			Assert.IsTrue(testProject.TestClasses.Contains("RootNamespace.MyTestFixture"));
+			Assert.IsNotNull(testProject.GetTestClass("RootNamespace.MyTestFixture"));
 			Assert.AreEqual(0, classesAdded.Count);
 		}
 		
@@ -187,41 +143,24 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void NewClassInParserInfoWithoutTestFixtureAttribute()
 		{
-			// Create old compilation unit.
-			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
-			MockClass mockClass = (MockClass)testClass.Class;
-			mockClass.SetCompoundClass(mockClass);
-			oldUnit.Classes.Add(testClass.Class);
+			UpdateCodeFile(@"using NUnit.Framework;
+namespace RootNamespace {
+	[TestFixture]
+	class MyTestFixture { }
+	
+	class SecondNonTestClass { }
+}", mainFileName);
 			
-			// Create new compilation unit with extra class.
-			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			newUnit.Classes.Add(testClass.Class);
-			MockClass newClass = new MockClass(projectContent, "RootNamespace.MyNewTestFixture");
-			newClass.SetCompoundClass(newClass);
-			newUnit.Classes.Add(newClass);
-			
-			// Update TestProject's parse info.
-			testProject.UpdateParseInfo(oldUnit, newUnit);
-			
-			Assert.IsFalse(testProject.TestClasses.Contains("RootNamespace.MyNewTestFixture"));
+			Assert.IsNull(testProject.GetTestClass("RootNamespace.MyNewTestFixture"));
 		}
 		
 		[Test]
 		public void TestClassRemovedInParserInfo()
 		{
-			// Create old compilation unit.
-			projectContent.Classes.Clear();
-			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
-			MockClass mockClass = (MockClass)testClass.Class;
-			mockClass.SetCompoundClass(mockClass);
-			oldUnit.Classes.Add(testClass.Class);
-			
-			// Create new compilation unit with the original test class
-			// removed.
-			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			
-			// Update TestProject's parse info.
-			testProject.UpdateParseInfo(oldUnit, newUnit);
+			UpdateCodeFile(@"using NUnit.Framework;
+namespace RootNamespace {
+	class NonTestClass { }
+}", mainFileName);
 			
 			Assert.AreEqual(0, testProject.TestClasses.Count);
 			Assert.AreEqual(1, classesRemoved.Count);
@@ -231,15 +170,7 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void NewCompilationUnitNull()
 		{
-			// Create old compilation unit.
-			projectContent.Classes.Clear();
-			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
-			MockClass mockClass = (MockClass)testClass.Class;
-			mockClass.SetCompoundClass(mockClass);
-			oldUnit.Classes.Add(testClass.Class);
-			
-			// Update TestProject's parse info.
-			testProject.UpdateParseInfo(oldUnit, null);
+			RemoveCodeFile(mainFileName);
 			
 			Assert.AreEqual(0, testProject.TestClasses.Count);
 			Assert.AreEqual(1, classesRemoved.Count);
@@ -248,86 +179,22 @@ namespace UnitTesting.Tests.Project
 		
 		/// <summary>
 		/// Tests that a new method is added to the TestClass
-		/// from the parse info. Also checks that the test method is 
-		/// taken from the CompoundClass via IClass.GetCompoundClass. 
+		/// from the parse info. Also checks that the test method is
+		/// taken from the CompoundClass via IClass.GetCompoundClass.
 		/// A CompoundClass combines partial classes into one class so
 		/// we do not get any duplicate classes with the same name.
 		/// </summary>
 		[Test]
 		public void NewMethodInParserInfo()
 		{
-			// Create old compilation unit.
-			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
-			oldUnit.Classes.Add(testClass.Class);
+			UpdateCodeFile(@"using NUnit.Framework;
+namespace RootNamespace {
+	[TestFixture]
+	class MyTestFixture {
+		[Test] public void NewMethod() {}
+	}", mainFileName);
 			
-			// Create new compilation unit.
-			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			newUnit.Classes.Add(testClass.Class);
-			
-			// Add a new method to a new compound class.
-			MockClass compoundClass = new MockClass(projectContent, "RootNamespace.MyTestFixture");
-			compoundClass.Attributes.Add(new MockAttribute("TestFixture"));
-			MockMethod method = new MockMethod(testClass.Class, "NewMethod");
-			method.Attributes.Add(new MockAttribute("Test"));
-			compoundClass.Methods.Add(method);
-			MockClass mockClass = (MockClass)testClass.Class;
-			mockClass.SetCompoundClass(compoundClass);
-			
-			// Monitor test methods added.
-			List<TestMember> methodsAdded = new List<TestMember>();
-			testClass.Members.TestMemberAdded += delegate(Object source, TestMemberEventArgs e)
-				{ methodsAdded.Add(e.TestMember); };
-
-			// Update TestProject's parse info.
-			testProject.UpdateParseInfo(oldUnit, newUnit);
-	
-			Assert.IsTrue(testClass.Members.Contains("NewMethod"));
-			Assert.AreEqual(1, methodsAdded.Count);
-			Assert.AreSame(method, methodsAdded[0].Member);
-		}
-		
-		[Test]
-		public void ParserInfoForDifferentProject()
-		{
-			// Create old compilation unit.
-			MockProjectContent differentProjectContent = new MockProjectContent();
-			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(differentProjectContent);
-			MockClass mockClass = (MockClass)testClass.Class;
-			mockClass.SetCompoundClass(mockClass);
-			oldUnit.Classes.Add(testClass.Class);
-			
-			// Create new compilation unit with the original test class
-			// removed.
-			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(differentProjectContent);
-			
-			// Update TestProject's parse info.
-			testProject.UpdateParseInfo(oldUnit, newUnit);
-			
-			Assert.AreEqual(1, testProject.TestClasses.Count);
-			Assert.AreEqual(0, classesRemoved.Count);
-			Assert.AreEqual(0, classesAdded.Count);
-		}
-		
-		[Test]
-		public void ParserInfoForThisProjectOldCompilationUnitNull()
-		{
-			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			Assert.IsTrue(testProject.IsParseInfoForThisProject(null, newUnit));
-		}
-		
-		[Test]
-		public void ParserInfoForDifferentProjectOldCompilationUnitNull()
-		{
-			MockProjectContent differentProjectContent = new MockProjectContent();
-			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(differentProjectContent);
-			
-			Assert.IsFalse(testProject.IsParseInfoForThisProject(null, newUnit));
-		}
-		
-		[Test]
-		public void ParseInfoForThisProjectWhenBothCompilationUnitsNull()
-		{
-			Assert.IsFalse(testProject.IsParseInfoForThisProject(null, null));
+			Assert.AreEqual("NewMethod", testClass.Members.Single().Name);
 		}
 		
 		void ResultChanged(object source, EventArgs e)
@@ -335,7 +202,7 @@ namespace UnitTesting.Tests.Project
 			resultChangedCalled = true;
 		}
 		
-		void TestClassesChanged(object source, NotifyCollectionChangedEventArgs e)
+		void testProject_TestClasses_CollectionChanged(object source, NotifyCollectionChangedEventArgs e)
 		{
 			if (e.Action == NotifyCollectionChangedAction.Add)
 				classesAdded.AddRange(e.NewItems.Cast<TestClass>());

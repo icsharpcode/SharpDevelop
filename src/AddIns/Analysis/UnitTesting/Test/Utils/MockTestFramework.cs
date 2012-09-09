@@ -14,9 +14,9 @@ namespace UnitTesting.Tests.Utils
 	public class MockTestFramework : ITestFramework
 	{
 		IMember isTestMemberParameterUsed;
-		List<string> testMembers = new List<IMember>();
+		List<string> testMembers = new List<string>();
 		ITypeDefinition isTestClassParameterUsed;
-		List<string> testClasses = new List<ITypeDefinition>();
+		List<string> testClasses = new List<string>();
 		IProject isTestProjectParameterUsed;
 		List<IProject> testProjects = new List<IProject>();
 		List<MockTestRunner> testRunnersCreated = new List<MockTestRunner>();
@@ -30,11 +30,11 @@ namespace UnitTesting.Tests.Utils
 		public bool IsTestMember(IMember member)
 		{
 			isTestMemberParameterUsed = member;
-			return testMembers.Contains(member);
+			return testMembers.Contains(member.ReflectionName);
 		}
 		
-		public IEnumerable<TestMember> GetTestMembersFor(TestProject testProject, ITypeDefinition @class) {
-			return testMembers.Where(member => member.DeclaringType == @class).Select(member => new TestMember(testProject, member));
+		public IEnumerable<TestMember> GetTestMembersFor(ITypeDefinition @class) {
+			throw new NotImplementedException();
 		}
 		
 		public IMember IsTestMemberParameterUsed {
@@ -59,11 +59,6 @@ namespace UnitTesting.Tests.Utils
 		public void AddTestClass(string reflectionName)
 		{
 			testClasses.Add(reflectionName);
-		}
-		
-		public void RemoveTestClass(ITypeDefinition c)
-		{
-			testClasses.Remove(c);
 		}
 		
 		public bool IsTestProject(IProject project)

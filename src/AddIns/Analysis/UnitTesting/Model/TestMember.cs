@@ -12,44 +12,50 @@ namespace ICSharpCode.UnitTesting
 	/// <summary>
 	/// Represents a member that can be tested.
 	/// </summary>
-	public class TestMember : ViewModelBase
+	public class TestMember
 	{
-		IUnresolvedMember member;
+		readonly IUnresolvedMember member;
 
 		public IUnresolvedMember Member {
 			get { return member; }
 		}
 		
-		public TestProject Project { get; private set; }
-		
-		public TestMember(TestProject project, IUnresolvedMember member)
+		public TestMember(IUnresolvedMember member)
 		{
 			if (member == null)
 				throw new ArgumentNullException("member");
 			this.member = member;
-			this.Project = project;
+		}
+		
+		public string Name {
+			get { return member.Name; }
 		}
 
+		public event EventHandler TestResultChanged;
+		
 		TestResultType testResult;
 
-		public virtual TestResultType TestResult {
+		public TestResultType TestResult {
 			get { return testResult; }
 			set {
-				if (testResult < value) {
+				if (testResult != value) {
 					testResult = value;
-					OnPropertyChanged();
+					if (TestResultChanged != null)
+						TestResultChanged(this, EventArgs.Empty);
 				}
 			}
 		}
 		
-		public virtual void ResetTestResult()
+		public virtual void ResetTestResults()
 		{
 			testResult = TestResultType.None;
 		}
 		
-		public IMember Resolve()
+		public IMember Resolve(TestProject project)
 		{
-			ICompilation compilation = SD.ParserService.GetCompilation(Project.Project);
+			if (project == null)
+				return null;
+			ICompilation compilation = SD.ParserService.GetCompilation(project.Project);
 			return member.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
 		}
 		

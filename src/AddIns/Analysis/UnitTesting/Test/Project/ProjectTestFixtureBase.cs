@@ -26,25 +26,25 @@ namespace UnitTesting.Tests.Project
 		protected TestProject testProject;
 		protected IProjectContent projectContent;
 		
-		protected void CreateProject(ITestFramework framework, params IUnresolvedFile[] codeFiles)
+		public TestProject CreateProject(ITestFramework framework, params IUnresolvedFile[] codeFiles)
 		{
 			SD.InitializeForUnitTests();
 			var parserService = MockRepository.GenerateStrictMock<IParserService>();
-			parserService.Expect(p => p.GetCompilation(project)).WhenCalled(m => m.ReturnValue = projectContent.CreateCompilation());
+			parserService.Stub(p => p.GetCompilation(project)).WhenCalled(m => m.ReturnValue = projectContent.CreateCompilation());
 			
 			project = MockRepository.GenerateStrictMock<IProject>();
-			project.Expect(p => p.Name).Return(projectName);
 			
-			projectContent = new CSharpProjectContent().SetAssemblyName(projectName);
+			projectContent = new CSharpProjectContent().SetAssemblyName("TestProject");
 			projectContent = projectContent.AddAssemblyReferences(Corlib, NUnitFramework);
 			projectContent = projectContent.AddOrUpdateFiles(codeFiles);
 			
 			testProject = new TestProject(project, framework);
+			return testProject;
 		}
 		
-		protected void CreateNUnitProject(params IUnresolvedFile[] codeFiles)
+		public TestProject CreateNUnitProject(params IUnresolvedFile[] codeFiles)
 		{
-			CreateProject(new NUnitTestFramework(), codeFiles);
+			return CreateProject(new NUnitTestFramework(), codeFiles);
 		}
 		
 		protected IUnresolvedFile Parse(string code, string fileName = "test.cs")

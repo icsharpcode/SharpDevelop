@@ -2,7 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-
+using System.Linq;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -11,9 +11,8 @@ using UnitTesting.Tests.Utils;
 namespace UnitTesting.Tests.Project
 {
 	[TestFixture]
-	public class TestClassWithTwoMethodsTestFixture
+	public class TestClassWithTwoMethodsTestFixture : ProjectTestFixtureBase
 	{
-		TestProject testProject;
 		TestClass testClass;
 		TestMember testMethod1;
 		TestMember testMethod2;
@@ -21,31 +20,15 @@ namespace UnitTesting.Tests.Project
 		[SetUp]
 		public void Init()
 		{
-			IProject project = new MockCSharpProject();
-			project.Name = "TestProject";
-			ReferenceProjectItem nunitFrameworkReferenceItem = new ReferenceProjectItem(project);
-			nunitFrameworkReferenceItem.Include = "NUnit.Framework";
-			ProjectService.AddProjectItem(project, nunitFrameworkReferenceItem);
-
-			MockProjectContent projectContent = new MockProjectContent();
-			projectContent.Language = LanguageProperties.None;
-			
-			mockClass = new MockClass(projectContent, "RootNamespace.Tests.MyTestFixture");
-			mockClass.Attributes.Add(new MockAttribute("TestFixture"));
-			projectContent.Classes.Add(mockClass);
-			
-			// Add a method to the test class
-			MockMethod mockMethod = new MockMethod(mockClass, "TestMethod1");
-			mockMethod.Attributes.Add(new MockAttribute("Test"));
-			mockClass.Methods.Add(mockMethod);
-			
-			mockMethod = new MockMethod(mockClass, "TestMethod2");
-			mockMethod.Attributes.Add(new MockAttribute("Test"));
-			mockClass.Methods.Add(mockMethod);
-			
-			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
-			testProject = new TestProject(project, projectContent, testFrameworks);
-			testClass = testProject.TestClasses[0];
+			CreateNUnitProject(Parse(@"using NUnit.Framework;
+namespace RootNamespace.Tests {
+	[TestFixture]
+	class MyTestFixture {
+		[Test] public void TestMethod1() {}
+		[Test] public void TestMethod2() {}
+	}
+}"));
+			testClass = testProject.TestClasses.Single();
 			testMethod1 = testClass.Members[0];
 			testMethod2 = testClass.Members[1];
 		}
@@ -55,7 +38,7 @@ namespace UnitTesting.Tests.Project
 		{
 			Assert.AreEqual(2, testClass.Members.Count);
 		}
-			
+		
 		[Test]
 		public void TestMethod1Failed()
 		{
@@ -64,7 +47,7 @@ namespace UnitTesting.Tests.Project
 			
 			testProject.UpdateTestResult(result);
 			
-			Assert.AreEqual(TestResultType.Failure, testMethod1.Result);
+			Assert.AreEqual(TestResultType.Failure, testMethod1.TestResult);
 		}
 		
 		[Test]
@@ -75,7 +58,7 @@ namespace UnitTesting.Tests.Project
 			
 			testProject.UpdateTestResult(result);
 			
-			Assert.AreEqual(TestResultType.Ignored, testMethod1.Result);
+			Assert.AreEqual(TestResultType.Ignored, testMethod1.TestResult);
 		}
 		
 		[Test]
@@ -83,7 +66,7 @@ namespace UnitTesting.Tests.Project
 		{
 			TestMethod1Failed();
 			
-			Assert.AreEqual(TestResultType.Failure, testClass.Result);
+			Assert.AreEqual(TestResultType.Failure, testClass.TestResult);
 		}
 		
 		[Test]
@@ -94,7 +77,7 @@ namespace UnitTesting.Tests.Project
 			
 			testProject.UpdateTestResult(result);
 			
-			Assert.AreEqual(TestResultType.Success, testMethod1.Result);
+			Assert.AreEqual(TestResultType.Success, testMethod1.TestResult);
 		}
 		
 		[Test]
@@ -102,7 +85,7 @@ namespace UnitTesting.Tests.Project
 		{
 			TestMethod1Passes();
 			
-			Assert.AreEqual(TestResultType.None, testClass.Result);
+			Assert.AreEqual(TestResultType.None, testClass.TestResult);
 		}
 		
 		[Test]
@@ -113,7 +96,7 @@ namespace UnitTesting.Tests.Project
 			
 			testProject.UpdateTestResult(result);
 			
-			Assert.AreEqual(TestResultType.Success, testMethod2.Result);
+			Assert.AreEqual(TestResultType.Success, testMethod2.TestResult);
 		}
 		
 		[Test]
@@ -121,7 +104,7 @@ namespace UnitTesting.Tests.Project
 		{
 			TestMethod2Passes();
 			
-			Assert.AreEqual(TestResultType.None, testClass.Result);
+			Assert.AreEqual(TestResultType.None, testClass.TestResult);
 		}
 		
 		[Test]
@@ -130,7 +113,7 @@ namespace UnitTesting.Tests.Project
 			TestMethod1Passes();
 			TestMethod2Passes();
 			
-			Assert.AreEqual(TestResultType.Success, testClass.Result);
+			Assert.AreEqual(TestResultType.Success, testClass.TestResult);
 		}
 		
 		[Test]
@@ -139,7 +122,7 @@ namespace UnitTesting.Tests.Project
 			TestMethod1Ignored();
 			TestMethod2Passes();
 			
-			Assert.AreEqual(TestResultType.Ignored, testClass.Result);
+			Assert.AreEqual(TestResultType.Ignored, testClass.TestResult);
 		}
 		
 		[Test]
@@ -148,56 +131,56 @@ namespace UnitTesting.Tests.Project
 			TestMethod1Failed();
 			TestMethod2Passes();
 			
-			Assert.AreEqual(TestResultType.Failure, testClass.Result);
+			Assert.AreEqual(TestResultType.Failure, testClass.TestResult);
 		}
 		
 		[Test]
 		public void FindTestMethod()
 		{
-			TestMember method = testProject.TestClasses.GetTestMember("RootNamespace.Tests.MyTestFixture.TestMethod1");
+			TestMember method = testProject.GetTestMember("RootNamespace.Tests.MyTestFixture.TestMethod1");
 			Assert.AreSame(testMethod1, method);
 		}
 		
 		[Test]
 		public void FindTestMethodFromUnknownTestMethod()
 		{
-			Assert.IsNull(testProject.TestClasses.GetTestMember("RootNamespace.Tests.MyTestFixture.UnknownTestMethod"));
+			Assert.IsNull(testProject.GetTestMember("RootNamespace.Tests.MyTestFixture.UnknownTestMethod"));
 		}
 		
 		[Test]
 		public void FindTestMethodFromUnknownTestClass()
 		{
-			Assert.IsNull(testProject.TestClasses.GetTestMember("RootNamespace.Tests.UnknownTestFixture.TestMethod1"));
+			Assert.IsNull(testProject.GetTestMember("RootNamespace.Tests.UnknownTestFixture.TestMethod1"));
 		}
 		
 		[Test]
 		public void FindTestMethodFromInvalidTestMethodName()
 		{
-			Assert.IsNull(testProject.TestClasses.GetTestMember(String.Empty));
+			Assert.IsNull(testProject.GetTestMember(String.Empty));
 		}
 		
 		/// <summary>
-		/// SD2-1278. Tests that the method is updated in the TestClass. 
+		/// SD2-1278. Tests that the method is updated in the TestClass.
 		/// This ensures that the method's location is up to date.
 		/// </summary>
 		[Test]
 		public void TestMethodShouldBeUpdatedInClass()
 		{
-			MockMethod mockMethod = new MockMethod(mockClass, "TestMethod1");
-			mockMethod.Attributes.Add(new MockAttribute("Test"));
+			Assert.AreEqual(5, testMethod1.Member.Region.BeginLine);
 			
-			// Remove the existing TestMethod1 in the class.
-			mockClass.Methods.RemoveAt(0);
-
-			// Add our newly created test method object.
-			mockClass.Methods.Insert(0, mockMethod);
+			UpdateCodeFile(@"using NUnit.Framework;
+namespace RootNamespace.Tests {
+	[TestFixture]
+	class MyTestFixture {
+		// New line
+		[Test] public void TestMethod1() {}
+		[Test] public void TestMethod2() {}
+	}
+}");
 			
-			TestClass testClass = testProject.TestClasses["RootNamespace.Tests.MyTestFixture"];
-			testClass.UpdateClass(mockClass);
-			
-			// Ensure that the TestClass now uses the new method object.
-			TestMember method = testClass.GetTestMember("TestMethod1");
-			Assert.AreSame(mockMethod, method.Member);
+			Assert.AreSame(testClass, testProject.TestClasses.Single());
+			Assert.AreSame(testMethod1, testClass.Members[0]);
+			Assert.AreEqual(6, testMethod1.Member.Region.BeginLine);
 		}
 	}
 }

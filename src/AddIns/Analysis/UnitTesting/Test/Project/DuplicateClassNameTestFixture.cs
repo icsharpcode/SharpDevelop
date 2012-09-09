@@ -22,7 +22,6 @@ namespace UnitTesting.Tests.Project
 		public void Init()
 		{
 			CreateNUnitProject(
-				"TestProject",
 				Parse("namespace RootNamespace { [NUnit.Framework.TestFixture] class MyTextFixture {} }", "file1.cs"),
 				Parse("namespace RootNamespace { [NUnit.Framework.TestFixture] class MyTextFixture {} }", "file2.cs"));
 		}

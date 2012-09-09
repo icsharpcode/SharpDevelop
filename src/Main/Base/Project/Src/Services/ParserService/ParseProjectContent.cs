@@ -277,7 +277,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		#region Initialize
 		void Initialize(IProgressMonitor progressMonitor, List<FileName> filesToParse)
 		{
-			ICollection<ProjectItem> projectItems = project.Items;
+			IReadOnlyCollection<ProjectItem> projectItems = project.Items;
 			lock (lockObj) {
 				if (disposed) {
 					throw new ObjectDisposedException("ParseProjectContent");
@@ -290,7 +290,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			{
 				var resolveReferencesTask = Task.Run(
 					delegate {
-						DoResolveReferences(projectItems, initReferencesProgressMonitor);
+						DoResolveReferences(initReferencesProgressMonitor);
 					}, initReferencesProgressMonitor.CancellationToken);
 				
 				ParseFiles(filesToParse, parseProgressMonitor);
@@ -414,7 +414,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		#endregion
 		
 		#region ResolveReferences
-		void DoResolveReferences(ICollection<ProjectItem> projectItems, IProgressMonitor progressMonitor)
+		void DoResolveReferences(IProgressMonitor progressMonitor)
 		{
 			var referenceItems = project.ResolveAssemblyReferences(progressMonitor.CancellationToken);
 			const double assemblyResolvingProgress = 0.3; // 30% asm resolving, 70% asm loading
@@ -460,7 +460,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				SD.ParserService.LoadSolutionProjectsThread.AddJob(
 					monitor => {
 						reparseReferencesStartedButNotYetRunning.Reset();
-						DoResolveReferences(project.Items, monitor);
+						DoResolveReferences(monitor);
 					},
 					"Loading " + project.Name + "...", LoadingReferencesWorkAmount);
 			}

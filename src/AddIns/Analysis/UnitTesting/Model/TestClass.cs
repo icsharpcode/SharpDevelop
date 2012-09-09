@@ -18,25 +18,25 @@ namespace ICSharpCode.UnitTesting
 	/// <summary>
 	/// Represents a class that can be tested.
 	/// </summary>
-	public class TestClass : ViewModelBase
+	public class TestClass
 	{
-		IList<IUnresolvedTypeDefinition> parts;
+		readonly ITestFramework testFramework;
 		readonly ObservableCollection<TestMember> testMembers;
 		readonly ObservableCollection<TestClass> nestedClasses;
+		IList<IUnresolvedTypeDefinition> parts;
 		
-		public TestClass(TestProject project, ITypeDefinition definition, TestClass parent = null)
+		public TestClass(ITypeDefinition definition, ITestFramework testFramework)
 		{
+			if (definition == null)
+				throw new ArgumentNullException("definition");
+			if (testFramework == null)
+				throw new ArgumentNullException("testFramework");
+			this.testFramework = testFramework;
 			this.parts = new ObservableCollection<IUnresolvedTypeDefinition>();
 			this.testMembers = new ObservableCollection<TestMember>();
 			this.nestedClasses = new ObservableCollection<TestClass>();
-			Project = project;
-			Parent = parent;
 			UpdateClass(definition);
 		}
-		
-		public TestClass Parent { get; private set; }
-		
-		public TestProject Project { get; private set; }
 		
 		/// <summary>
 		/// Gets the underlying IUnresolvedTypeDefinitions for this test class.
@@ -76,12 +76,20 @@ namespace ICSharpCode.UnitTesting
 		
 		TestResultType testResult;
 		
+		public event EventHandler TestResultChanged;
+		
 		/// <summary>
 		/// Gets the test result for this class.
 		/// </summary>
 		public TestResultType TestResult {
 			get { return testResult; }
-			set { SetAndNotifyPropertyChanged(ref testResult, value); }
+			set {
+				if (testResult != value) {
+					testResult = value;
+					if (TestResultChanged != null)
+						TestResultChanged(this, EventArgs.Empty);
+				}
+			}
 		}
 
 		static TestResultType GetTestResult(TestClass testClass)
@@ -107,11 +115,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			var member = testMembers.SingleOrDefault(m => m.Member.ReflectionName == testResult.Name);
 			member.TestResult = testResult.ResultType;
-			var parent = this;
-			while (parent != null) {
-				parent.TestResult = GetTestResult(parent);
-				parent = parent.Parent;
-			}
+			this.TestResult = GetTestResult(this);
 		}
 		
 		/// <summary>
@@ -119,15 +123,11 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public void ResetTestResults()
 		{
-			foreach (var testClass in TreeTraversal.PostOrder(this, c => c.NestedClasses)) {
-				foreach (var member in testClass.Members)
-					member.ResetTestResult();
-				testClass.TestResult = TestResultType.None;
+			foreach (var testClass in this.NestedClasses) {
+				testClass.ResetTestResults();
 			}
-			var parent = this;
-			while (parent != null) {
-				parent.TestResult = TestResultType.None;
-				parent = parent.Parent;
+			foreach (var member in this.Members) {
+				member.ResetTestResults();
 			}
 		}
 		
@@ -140,7 +140,7 @@ namespace ICSharpCode.UnitTesting
 			this.parts = typeDefinition.Parts;
 			
 			testMembers.Clear();
-			testMembers.AddRange(Project.TestFramework.GetTestMembersFor(Project, typeDefinition));
+			testMembers.AddRange(testFramework.GetTestMembersFor(typeDefinition));
 			
 			
 			/*var oldParts = this.parts;
@@ -182,9 +182,11 @@ namespace ICSharpCode.UnitTesting
 			return ns;
 		}
 		
-		public ITypeDefinition Resolve()
+		public ITypeDefinition Resolve(TestProject project)
 		{
-			ICompilation compilation = SD.ParserService.GetCompilation(Project.Project);
+			if (project == null)
+				return null;
+			ICompilation compilation = SD.ParserService.GetCompilation(project.Project);
 			return parts[0].Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
 		}
 		

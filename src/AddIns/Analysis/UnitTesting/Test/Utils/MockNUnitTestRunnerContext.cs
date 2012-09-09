@@ -3,7 +3,9 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.UnitTesting;
+using Rhino.Mocks;
 
 namespace UnitTesting.Tests.Utils
 {
@@ -27,7 +29,7 @@ namespace UnitTesting.Tests.Utils
 			: base(new MockProcessRunner(),
 				new MockTestResultsMonitor(), 
 				new MockFileService(), 
-				new MockMessageService())
+				MockRepository.GenerateStrictMock<IMessageService>())
 		{
 			MockTestResultsMonitor.FileName = @"c:\temp\tmp66.tmp";
 		}

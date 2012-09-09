@@ -106,6 +106,7 @@
     <Compile Include="Utils\MockDebugger.cs" />
     <Compile Include="Utils\MockDebuggerService.cs" />
     <Compile Include="Utils\MockFileService.cs" />
+    <Compile Include="Utils\MockMethod.cs" />
     <Compile Include="Utils\MockNUnitTestFramework.cs" />
     <Compile Include="Utils\MockNUnitTestRunnerContext.cs" />
     <Compile Include="Utils\MockProcessRunner.cs" />
@@ -123,7 +124,6 @@
     <Compile Include="Utils\MockTestTreeView.cs" />
     <Compile Include="Utils\MockUnitTestsPad.cs" />
     <Compile Include="Utils\MockUnitTestWorkbench.cs" />
-    <Compile Include="Utils\SelectedTestsHelper.cs" />
     <Compile Include="Utils\TaskComparison.cs" />
     <Compile Include="Utils\TestProjectHelper.cs" />
     <Compile Include="Utils\Tests\CreateProjectWithOutputPathTestFixture.cs" />
@@ -150,22 +150,14 @@
     <Compile Include="Utils\Tests\MockTestRunnerTestFixture.cs" />
     <Compile Include="Utils\Tests\MockUnitTestsPadTestFixture.cs" />
     <Compile Include="Utils\Tests\MockUnitTestWorkbenchTestFixture.cs" />
-    <Compile Include="Utils\Tests\SelectedTestsWithTestMethodTestFixture.cs" />
     <Compile Include="Utils\Tests\TaskComparisonTestFixture.cs" />
     <None Include="..\..\..\..\..\bin\SharpDevelop.exe">
       <Link>SharpDevelop.exe</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Compile Include="Utils\ResourceManager.cs" />
     <Compile Include="Project\TestProjectWithOneClassTestFixture.cs" />
-    <Compile Include="Project\ClassRootNamespaceTests.cs" />
     <Compile Include="Project\TwoProjectRootNamespacesTestFixture.cs" />
-    <Compile Include="Project\DuplicateProjectRootNamespaceTestFixture.cs" />
-    <Compile Include="Project\EmptyRootNamespaceTestFixture.cs" />
-    <Compile Include="Project\ClassWithTwoChildNamespacesTestFixture.cs" />
     <Compile Include="Project\TestClassWithOneMethodTestFixture.cs" />
-    <Compile Include="Project\TestMemberGetMethodNameTests.cs" />
-    <Compile Include="Project\GetQualifiedClassNameTests.cs" />
     <Compile Include="Project\TestClassWithTwoMethodsTestFixture.cs" />
     <Compile Include="Project\ThreeTestMethodsTestResultsTestFixture.cs" />
     <Compile Include="Project\ThreeTestClassesTestResultsTestFixture.cs" />

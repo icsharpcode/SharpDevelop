@@ -1,150 +1,97 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using UnitTesting.Tests.Project;
 using UnitTesting.Tests.Utils;
 
 namespace UnitTesting.Tests.Frameworks
 {
 	[TestFixture]
-	public class NUnitTestFrameworkIsTestMemberTests
+	public class NUnitTestFrameworkIsTestMemberTests : ProjectTestFixtureBase
 	{
 		NUnitTestFramework testFramework;
-	
-		void CreateTestFramework()
+		
+		[SetUp]
+		public void Init()
 		{
 			testFramework = new NUnitTestFramework();
+		}
+		
+		IMethod SimpleMethod {
+			get {
+				ITypeDefinition myClass = projectContent.CreateCompilation().MainAssembly.GetTypeDefinition("", "MyClass", 0);
+				return myClass.Methods.Single(m => m.Name == "SimpleMethod");
+			}
 		}
 		
 		[Test]
 		public void IsTestMember_MethodHasNoAttributes_ReturnsFalse()
 		{
-			CreateTestFramework();
-			MockMethod mockMethod = MockMethod.CreateMockMethodWithoutAnyAttributes();
-			
-			bool result = testFramework.IsTestMember(mockMethod);
-			
+			CreateProject(testFramework, Parse("class MyClass { public void SimpleMethod() {} }"));
+			bool result = testFramework.IsTestMember(SimpleMethod);
 			Assert.IsFalse(result);
 		}
 		
 		[Test]
 		public void IsTestMember_MethodHasTestAttributeWithoutAttributePart_ReturnsTrue()
 		{
-			CreateTestFramework();
-			MockAttribute testAttribute = new MockAttribute("Test");
-			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(testAttribute);
-			
-			bool result = testFramework.IsTestMember(mockMethod);
-			
+			CreateProject(testFramework, Parse("using NUnit.Framework; class MyClass { [Test] public void SimpleMethod() {} }"));
+			bool result = testFramework.IsTestMember(SimpleMethod);
 			Assert.IsTrue(result);
 		}
 		
 		[Test]
 		public void IsTestMember_MethodHasTestAttributeAttribute_ReturnsTrue()
 		{
-			CreateTestFramework();
-			MockAttribute testAttribute = new MockAttribute("TestAttribute");
-			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(testAttribute);
-			
-			bool result = testFramework.IsTestMember(mockMethod);
-			
+			CreateProject(testFramework, Parse("using NUnit.Framework; class MyClass { [TestAttribute] public void SimpleMethod() {} }"));
+			bool result = testFramework.IsTestMember(SimpleMethod);
 			Assert.IsTrue(result);
 		}
 
 		[Test]
 		public void IsTestMember_MethodHasFullyQualifiedNUnitTestAttribute_ReturnsTrue()
 		{
-			CreateTestFramework();
-			MockAttribute testAttribute = new MockAttribute("NUnit.Framework.TestAttribute");
-			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(testAttribute);
-			
-			bool result = testFramework.IsTestMember(mockMethod);
-			
+			CreateProject(testFramework, Parse("class MyClass { [NUnit.Framework.Test] public void SimpleMethod() {} }"));
+			bool result = testFramework.IsTestMember(SimpleMethod);
 			Assert.IsTrue(result);
 		}
 		
 		[Test]
 		public void IsTestMember_MethodIsNull_ReturnsFalse()
 		{
-			CreateTestFramework();
 			bool result = testFramework.IsTestMember(null);
-			
-			Assert.IsFalse(result);
-		}
-		
-		[Test]
-		public void IsTestMember_ProjectContentLanguageHasNullNameComparer_ReturnsFalse()
-		{
-			CreateTestFramework();
-			MockClass mockClass = MockClass.CreateMockClassWithoutAnyAttributes();
-			mockClass.MockProjectContent.Language = new LanguageProperties(null);
-			var mockMethod = new MockMethod(mockClass);
-			mockMethod.Attributes.Add(new MockAttribute("Test"));
-			
-			bool result = testFramework.IsTestMember(mockMethod);
-			
-			Assert.IsFalse(result);
-		}
-		
-		/// <summary>
-		/// Even if the project is null the method should be
-		/// flagged as a TestMethod.
-		/// </summary>
-		[Test]
-		public void IsTestMember_ProjectIsNull_ReturnsTrue()
-		{
-			CreateTestFramework();
-			var testAttribute = new MockAttribute("Test");
-			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(testAttribute);
-			MockProjectContent mockProjectContent = (MockProjectContent)mockMethod.DeclaringType.ProjectContent;
-			mockProjectContent.Project = null;
-			
-			bool result = testFramework.IsTestMember(mockMethod);
-			
-			Assert.IsTrue(result);
-		}
-		
-		[Test]
-		public void IsTestMember_MethodHasNullLanguage_ReturnsFalse()
-		{
-			CreateTestFramework();
-			MockClass mockClass = MockClass.CreateMockClassWithoutAnyAttributes();
-			mockClass.MockProjectContent.Language = null;
-			var mockMethod = new MockMethod(mockClass);
-			bool result = testFramework.IsTestMember(mockMethod);
-			
 			Assert.IsFalse(result);
 		}
 		
 		[Test]
 		public void IsTestMember_MethodHasParameters_ReturnsFalse()
 		{
-			CreateTestFramework();
-			var testAttribute = new MockAttribute("Test");
-			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(testAttribute);
-			var mockParameter = new MockParameter();
-			mockMethod.Parameters.Add(mockParameter);
-			
-			bool result = testFramework.IsTestMember(mockMethod);
-			
+			CreateProject(testFramework, Parse("class MyClass { [NUnit.Framework.Test] public void SimpleMethod(int a) {} }"));
+			bool result = testFramework.IsTestMember(SimpleMethod);
 			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void IsTestMember_TestCase_With_Parameters()
+		{
+			CreateProject(testFramework, Parse("class MyClass { [NUnit.Framework.TestCase(10)] public void SimpleMethod(int a) {} }"));
+			bool result = testFramework.IsTestMember(SimpleMethod);
+			Assert.IsTrue(result);
 		}
 		
 		[Test]
 		public void IsTestMember_FieldHasOneAttribute_ReturnsFalseAndDoesNotThrowInvalidCastException()
 		{
-			CreateTestFramework();
-			MockClass mockClass = MockClass.CreateMockClassWithoutAnyAttributes();
-			var field = new DefaultField(mockClass, "MyField");
-			var testAttribute = new MockAttribute("Test");
-			field.Attributes.Add(testAttribute);
-			
-			bool result = testFramework.IsTestMember(field);
-			
+			CreateProject(testFramework, Parse("class MyClass { [NUnit.Framework.Test] public int MyField; }"));
+			ITypeDefinition myClass = projectContent.CreateCompilation().MainAssembly.GetTypeDefinition("", "MyClass", 0);
+			bool result = testFramework.IsTestMember(myClass.Fields.Single());
 			Assert.IsFalse(result);
 		}
 	}

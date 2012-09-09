@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 
@@ -14,9 +15,7 @@ namespace UnitTesting.Tests.Frameworks
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			if (!PropertyService.Initialized) {
-				PropertyService.InitializeService(String.Empty, String.Empty, String.Empty);
-			}
+			SD.InitializeForUnitTests();
 		}
 		
 		[Test]

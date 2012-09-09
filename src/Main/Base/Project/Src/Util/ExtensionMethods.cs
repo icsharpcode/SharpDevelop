@@ -131,6 +131,7 @@ namespace ICSharpCode.SharpDevelop
 			return new ReadOnlyCollection<T>(arr);
 		}
 		
+		[Obsolete("This method seems to be unused now; all uses I've seen have been replaced with IReadOnlyList<T>")]
 		public static ReadOnlyCollectionWrapper<T> AsReadOnly<T>(this ICollection<T> arr)
 		{
 			return new ReadOnlyCollectionWrapper<T>(arr);
@@ -143,6 +144,16 @@ namespace ICSharpCode.SharpDevelop
 			return ret;
 		}
 		
+		/// <summary>
+		/// Searches a sorted list
+		/// </summary>
+		/// <param name="list">The list to search in</param>
+		/// <param name="key">The key to search for</param>
+		/// <param name="keySelector">Function that maps list items to their sort key</param>
+		/// <param name="keyComparer">Comparer used for the sort</param>
+		/// <returns>Returns the index of the element with the specified key.
+		/// If no such element is found, this method returns a negative number that is the bitwise complement of the
+		/// index where the element could be inserted while maintaining the order.</returns>
 		public static int BinarySearch<T, K>(this IList<T> list, K key, Func<T, K> keySelector, IComparer<K> keyComparer = null)
 		{
 			return BinarySearch(list, 0, list.Count, key, keySelector, keyComparer);
@@ -151,13 +162,15 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// Searches a sorted list
 		/// </summary>
-		/// <param name="list"></param>
-		/// <param name="index"></param>
-		/// <param name="length"></param>
-		/// <param name="key"></param>
+		/// <param name="list">The list to search in</param>
+		/// <param name="index">Starting index of the range to search</param>
+		/// <param name="length">Length of the range to search</param>
+		/// <param name="key">The key to search for</param>
 		/// <param name="keySelector">Function that maps list items to their sort key</param>
 		/// <param name="keyComparer">Comparer used for the sort</param>
-		/// <returns></returns>
+		/// <returns>Returns the index of the element with the specified key.
+		/// If no such element is found in the specified range, this method returns a negative number that is the bitwise complement of the
+		/// index where the element could be inserted while maintaining the order.</returns>
 		public static int BinarySearch<T, K>(this IList<T> list, int index, int length, K key, Func<T, K> keySelector, IComparer<K> keyComparer = null)
 		{
 			if (keyComparer == null)
@@ -187,6 +200,14 @@ namespace ICSharpCode.SharpDevelop
 			if (pos < 0)
 				pos = ~pos;
 			list.Insert(pos, item);
+		}
+		
+		/// <summary>
+		/// Inserts an item into a sorted list.
+		/// </summary>
+		public static IOrderedEnumerable<T> OrderBy<T>(this IEnumerable<T> input, IComparer<T> comparer)
+		{
+			return Enumerable.OrderBy(input, e => e, comparer);
 		}
 		
 		public static IEnumerable<WinForms.Control> GetRecursive(this WinForms.Control.ControlCollection collection)
@@ -298,9 +319,9 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (compilation == null)
 				throw new ArgumentNullException("compilation");
-			var snapshot = compilation.SolutionSnapshot as SharpDevelopSolutionSnapshot;
+			var snapshot = compilation.SolutionSnapshot as ISolutionSnapshotWithProjectMapping;
 			if (snapshot != null)
-				return snapshot.GetProject(compilation.MainAssembly.UnresolvedAssembly as IProjectContent);
+				return snapshot.GetProject(compilation.MainAssembly);
 			else
 				return null;
 		}
@@ -313,10 +334,10 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (assembly == null)
 				throw new ArgumentNullException("assembly");
-			var snapshot = assembly.Compilation.SolutionSnapshot as SharpDevelopSolutionSnapshot;
+			var snapshot = assembly.Compilation.SolutionSnapshot as ISolutionSnapshotWithProjectMapping;
 			if (snapshot == null)
 				return null;
-			return snapshot.GetProject(assembly.UnresolvedAssembly as IProjectContent);
+			return snapshot.GetProject(assembly);
 		}
 		
 		/// <summary>

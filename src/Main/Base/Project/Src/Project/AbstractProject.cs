@@ -7,9 +7,11 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
+using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Xml.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -233,14 +235,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[Browsable(false)]
-		public virtual ICollection<string> ConfigurationNames {
+		public virtual IReadOnlyCollection<string> ConfigurationNames {
 			get {
 				return new string[] { "Debug", "Release" };
 			}
 		}
 		
 		[Browsable(false)]
-		public virtual ICollection<string> PlatformNames {
+		public virtual IReadOnlyCollection<string> PlatformNames {
 			get {
 				return new string[] { "AnyCPU" };
 			}
@@ -262,7 +264,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets the list of available file item types. This member is thread-safe.
 		/// </summary>
 		[Browsable(false)]
-		public virtual ICollection<ItemType> AvailableFileItemTypes {
+		public virtual IReadOnlyCollection<ItemType> AvailableFileItemTypes {
 			get {
 				return ItemType.DefaultFileItems;
 			}
@@ -274,9 +276,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// will create a new collection.
 		/// </summary>
 		[Browsable(false)]
-		public virtual ReadOnlyCollection<ProjectItem> Items {
+		public virtual IReadOnlyCollection<ProjectItem> Items {
 			get {
-				return new ReadOnlyCollection<ProjectItem>(new ProjectItem[0]);
+				return new ProjectItem[0];
 			}
 		}
 		

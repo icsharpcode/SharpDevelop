@@ -1,18 +1,20 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using Microsoft.Build.Construction;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project.Commands;
+using Microsoft.Build.Construction;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter
 {
@@ -114,7 +116,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			if (targetProjectItems == null)
 				throw new ArgumentNullException("targetProjectItems");
 			
-			ICollection<ProjectItem> sourceItems = sourceProject.Items;
+			IReadOnlyCollection<ProjectItem> sourceItems = sourceProject.Items;
 			double totalWork = 0;
 			foreach (ProjectItem item in sourceItems) {
 				totalWork += GetRequiredWork(item);

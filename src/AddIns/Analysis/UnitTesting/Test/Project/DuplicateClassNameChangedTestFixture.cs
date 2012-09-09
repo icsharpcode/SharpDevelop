@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -12,7 +13,7 @@ namespace UnitTesting.Tests.Project
 {
 	/// <summary>
 	/// SD2-1213 - Creating a unit test with the same name as an existing test
-	///   
+	///
 	/// Two files exist in a project each having the same unit test class. In one file the
 	/// name of the class is changed. This should result in both test classes being displayed in the unit
 	/// test tree.
@@ -32,41 +33,22 @@ namespace UnitTesting.Tests.Project
 			ProjectService.AddProjectItem(project, nunitFrameworkReferenceItem);
 			
 			// Add a test class.
-			projectContent = new MockProjectContent();
-			MockClass c = new MockClass(projectContent, "RootNamespace.MyTestFixture");
-			c.Attributes.Add(new MockAttribute("TestFixture"));
-			MockMethod test1Method = new MockMethod(c, "Test1");
-			test1Method.Attributes.Add(new MockAttribute("Test"));
-			c.Methods.Add(test1Method);
+			const string program = @"
+using NUnit.Framework;
+namespace RootNamespace {
+	class MyTestFixture {
+		[Test]
+		public void Foo() {}
+	}
+}
+";
+			UpdateCodeFile(program, "file1.cs");
+			UpdateCodeFile(program, "file2.cs");
 			
-			// Test 2 method is from a duplicate test class.
-			MockMethod test2Method = new MockMethod(c, "Test2"); 
-			test2Method.Attributes.Add(new MockAttribute("Test"));
-			c.Methods.Add(test2Method);			
-			projectContent.Classes.Add(c);
-			
-			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
-			testProject = new TestProject(project, projectContent, testFrameworks);
-			
-			// Make sure test methods are created, otherwise
-			// the Test2 method will never be looked at due to lazy evaluation
-			// of test method.
-			int count = testProject.TestClasses[0].Members.Count;
+			Assert.AreEqual(2, testProject.TestClasses.Single().Members.Count);
 			
 			// Change the name of the second test class.
-			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
-			oldUnit.Classes.Add(c);
-			c.Methods.Remove(test2Method); // Remove duplicate test class method.
-			
-			// Create new compilation unit with inner class that has its method renamed.
-			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			MockClass newTestClass = new MockClass(projectContent, "RootNamespace.MyNewTestFixture");
-			newTestClass.Attributes.Add(new MockAttribute("TestFixture"));
-			projectContent.Classes.Add(newTestClass);
-			newTestClass.Methods.Add(test2Method);
-			newUnit.Classes.Add(newTestClass);
-
-			testProject.UpdateParseInfo(oldUnit, newUnit);
+			UpdateCodeFile(program.Replace("MyTestFixture", "MyNewTestFixture"), "file2.cs");
 		}
 		
 		[Test]
@@ -101,13 +83,13 @@ namespace UnitTesting.Tests.Project
 		public void OldTestClassHasOneMethodCalledTest1()
 		{
 			Assert.AreEqual("Test1", GetTestClass("RootNamespace.MyTestFixture").Members[0].Name);
-		}		
+		}
 		
 		void AssertTestClassFound(string name)
 		{
 			TestClass c = GetTestClass(name);
 			Assert.IsTrue(c != null);
-		}		
+		}
 		
 		TestClass GetTestClass(string name)
 		{

@@ -10,16 +10,24 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Parser
 {
-	public class SharpDevelopSolutionSnapshot : DefaultSolutionSnapshot
+	/// <summary>
+	/// ISolutionSnapshot implementation that supports the <c>IAssembly.GetProject()</c> extension method.
+	/// </summary>
+	public interface ISolutionSnapshotWithProjectMapping : ISolutionSnapshot
+	{
+		IProject GetProject(IAssembly assembly);
+	}
+	
+	public class SharpDevelopSolutionSnapshot : DefaultSolutionSnapshot, ISolutionSnapshotWithProjectMapping
 	{
 		Dictionary<IProject, IProjectContent> projectContentSnapshots = new Dictionary<IProject, IProjectContent>();
 		Lazy<ICompilation> dummyCompilation;
 		
-		public SharpDevelopSolutionSnapshot(Solution solution)
+		public SharpDevelopSolutionSnapshot(IEnumerable<IProject> projects)
 		{
 			dummyCompilation = new Lazy<ICompilation>(() => new SimpleCompilation(this, MinimalCorlib.Instance));
-			if (solution != null) {
-				foreach (IProject project in solution.Projects) {
+			if (projects != null) {
+				foreach (IProject project in projects) {
 					var pc = project.ProjectContent;
 					if (pc != null)
 						projectContentSnapshots.Add(project, pc);
@@ -34,6 +42,14 @@ namespace ICSharpCode.SharpDevelop.Parser
 			IProjectContent pc;
 			if (projectContentSnapshots.TryGetValue(project, out pc))
 				return pc;
+			else
+				return null;
+		}
+		
+		public IProject GetProject(IAssembly assembly)
+		{
+			if (assembly != null)
+				return GetProject(assembly.UnresolvedAssembly as IProjectContent);
 			else
 				return null;
 		}

@@ -2,10 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
+using UnitTesting.Tests.Project;
 using UnitTesting.Tests.Utils;
 
 namespace UnitTesting.Tests.Frameworks
@@ -91,7 +94,7 @@ namespace UnitTesting.Tests.Frameworks
 			
 			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /nodots";
 			Assert.AreEqual(expectedCommandLine, app.GetArguments());
-		}		
+		}
 
 		[Test]
 		public void Labels()
@@ -181,8 +184,11 @@ namespace UnitTesting.Tests.Frameworks
 		[Test]
 		public void TestMethodSpecifiedInInitialize()
 		{
-			MockClass testFixture = new MockClass("TestFixture");
-			MockMethod testMethod = new MockMethod(testFixture, "Test");
+			TestProject testProject = new ProjectTestFixtureBase().CreateNUnitProject(
+				SyntaxTree.Parse("class TestFixture { [NUnit.Framework.Test] public void Test() {} }", "test.cs").ToTypeSystem()
+			);
+			TestClass testFixture = testProject.TestClasses.Single();
+			TestMember testMethod = testFixture.Members.Single();
 			SelectedTests selectedTests = new SelectedTests(project, null, testFixture, testMethod);
 			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
 			app.NoLogo = false;
@@ -240,7 +246,7 @@ namespace UnitTesting.Tests.Frameworks
 			app.Results = @"C:\results.txt";
 			app.NoXmlOutputFile = false;
 			
-			string expectedCommandLine = 
+			string expectedCommandLine =
 				"\"C:\\Projects\\MyTests\\MyTests.dll\" " +
 				"\"SecondAssembly.dll\" " +
 				"/results=\"C:\\results.txt\"";
@@ -255,11 +261,26 @@ namespace UnitTesting.Tests.Frameworks
 			Assert.AreSame(project, app.Project);
 		}
 		
+		const string testProgram = @"
+namespace MyTests {
+	class TestFixture {
+		class InnerTest {
+			[NUnit.Framework.Test]
+			public void InnerTest() {}
+		}
+	}
+}
+";
+		
 		[Test]
 		public void TestInnerClassSpecifiedInInitialize()
 		{
-			MockClass testFixture = new MockClass("MyTests.TestFixture.InnerTest", "MyTests.TestFixture+InnerTest");
-			SelectedTests selectedTests = new SelectedTests(project, null, testFixture, null);
+			TestProject testProject = new ProjectTestFixtureBase().CreateNUnitProject(
+				SyntaxTree.Parse(testProgram, "test.cs").ToTypeSystem()
+			);
+			
+			TestClass innerTest = testProject.TestClasses.Single().NestedClasses.Single();
+			SelectedTests selectedTests = new SelectedTests(project, null, innerTest, null);
 			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
 			app.NoLogo = false;
 			app.ShadowCopy = true;
@@ -273,15 +294,19 @@ namespace UnitTesting.Tests.Frameworks
 		[Test]
 		public void XmlOutputFileNameSpecifiedOnCommandLine()
 		{
+			TestProject testProject = new ProjectTestFixtureBase().CreateNUnitProject(
+				SyntaxTree.Parse(testProgram, "test.cs").ToTypeSystem()
+			);
+			
 			UnitTestingOptions options = new UnitTestingOptions(new Properties());
 			options.CreateXmlOutputFile = true;
-			MockClass testFixture = new MockClass("MyTests.TestFixture.MyTest");
+			TestClass testFixture = testProject.TestClasses.Single();
 			SelectedTests selectedTests = new SelectedTests(project, null, testFixture, null);
 			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests, options);
 			app.NoLogo = false;
 			app.ShadowCopy = true;
 			
-			string expectedCommandLine = 
+			string expectedCommandLine =
 				"\"C:\\Projects\\MyTests\\MyTests.dll\" " +
 				"/xml=\"C:\\Projects\\MyTests\\MyTests-TestResult.xml\" " +
 				"/run=\"MyTests.TestFixture.MyTest\"";

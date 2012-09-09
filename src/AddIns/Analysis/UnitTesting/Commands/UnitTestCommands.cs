@@ -49,9 +49,9 @@ namespace ICSharpCode.UnitTesting
 				var c = treeView.SelectedClass;
 				IEntity entity;
 				if (member != null) {
-					entity = member.Resolve();
+					entity = member.Resolve(treeView.SelectedProject);
 				} else if (c != null) {
-					entity = c.Resolve();
+					entity = c.Resolve(treeView.SelectedProject);
 				} else {
 					entity = null;
 				}

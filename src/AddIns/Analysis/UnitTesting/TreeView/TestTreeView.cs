@@ -92,20 +92,6 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Gets the project associated with the currently selected
-		/// tree node.
-		/// </summary>
-		public IProject SelectedProject {
-			get {
-				TestProject testProject = SelectedTestProject;
-				if (testProject != null) {
-					return testProject.Project;
-				}
-				return null;
-			}
-		}
-		
-		/// <summary>
 		/// If a namespace node is selected then the fully qualified namespace
 		/// for this node is returned (i.e. includes the parent namespace prefixed
 		/// to it). For all other nodes this returns null.
@@ -114,7 +100,7 @@ namespace ICSharpCode.UnitTesting
 			get {
 				NamespaceUnitTestNode selectedNode = SelectedItem as NamespaceUnitTestNode;
 				if (selectedNode != null) {
-					return selectedNode.FullNamespace;
+					return selectedNode.NamespaceName;
 				}
 				return null;
 			}
@@ -123,16 +109,13 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Gets the selected test project.
 		/// </summary>
-		public TestProject SelectedTestProject {
+		public TestProject SelectedProject {
 			get {
-				if (SelectedItem is MemberUnitTestNode)
-					return ((MemberUnitTestNode)SelectedItem).TestMember.Project;
-				if (SelectedItem is ClassUnitTestNode)
-					return ((ClassUnitTestNode)SelectedItem).TestClass.Project;
-				if (SelectedItem is NamespaceUnitTestNode)
-					return ((NamespaceUnitTestNode)SelectedItem).GetProject();
-				if (SelectedItem is ProjectUnitTestNode)
-					return ((ProjectUnitTestNode)SelectedItem).Project;
+				for (var node = SelectedItem as SharpTreeNode; node != null; node = node.Parent) {
+					var projectNode = node as ProjectUnitTestNode;
+					if (projectNode != null)
+						return projectNode.Project;
+				}
 				return null;
 			}
 		}

@@ -31,8 +31,8 @@ namespace ICSharpCode.UnitTesting
 			get { return null; }
 		}
 		
-		public IProject SelectedProject {
-			get { return ProjectService.CurrentProject; }
+		public TestProject SelectedProject {
+			get { return TestService.Solution.GetTestProject(ProjectService.CurrentProject); }
 		}
 		
 		public string SelectedNamespace {

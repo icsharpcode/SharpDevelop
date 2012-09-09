@@ -10,6 +10,7 @@ namespace ICSharpCode.SharpDevelop
 	/// <summary>
 	/// Wraps any collection to make it read-only.
 	/// </summary>
+	[Obsolete("This class seems to be unused now; all uses I've seen have been replaced with IReadOnlyList<T>")]
 	public sealed class ReadOnlyCollectionWrapper<T> : ICollection<T>
 	{
 		readonly ICollection<T> c;

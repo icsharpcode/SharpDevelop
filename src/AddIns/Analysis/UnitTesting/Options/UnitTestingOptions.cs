@@ -44,7 +44,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public static readonly string CreateXmlOutputFileProperty = "CreateXmlOutputFile";
 		
-		static readonly UnitTestingOptions instance = new UnitTestingOptions();
+		static readonly UnitTestingOptions instance = new UnitTestingOptions(PropertyService.NestedProperties(AddInOptionsName));
 		
 		public static UnitTestingOptions Instance {
 			get { return instance; }
@@ -52,12 +52,7 @@ namespace ICSharpCode.UnitTesting
 
 		Properties properties;
 		
-		UnitTestingOptions()
-			: this(PropertyService.NestedProperties(AddInOptionsName))
-		{
-		}
-		
-		UnitTestingOptions(Properties properties)
+		public UnitTestingOptions(Properties properties)
 		{
 			this.properties = properties;
 		}

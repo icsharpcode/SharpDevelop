@@ -4,9 +4,12 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
+using Rhino.Mocks;
 using UnitTesting.Tests.Utils;
 
 namespace UnitTesting.Tests.Frameworks
@@ -99,8 +102,8 @@ namespace UnitTesting.Tests.Frameworks
 		[Test]
 		public void IsTestMember_UnknownMbUnitFrameworkTestMethod_ReturnsFalse()
 		{
-			MockMethod method = MockMethod.CreateMockMethodWithoutAnyAttributes();
-			IProject project = method.MockDeclaringType.Project;
+			IMethod method = MockMethod.CreateResolvedMethod();
+			IProject project = method.ParentAssembly.GetProject();
 			mbUnitTestFramework.AddTestProject(project);
 			project.FileName = @"d:\projects\test.vbproj";
 			
@@ -112,12 +115,12 @@ namespace UnitTesting.Tests.Frameworks
 		[Test]
 		public void IsTestMember_KnownMbUnitFrameworkTestMethod_ReturnsTrue()
 		{
-			MockMethod method = MockMethod.CreateMockMethodWithoutAnyAttributes();
-			IProject project = method.MockDeclaringType.Project;
+			IMethod method = MockMethod.CreateResolvedMethod();
+			IProject project = method.ParentAssembly.GetProject();
 			mbUnitTestFramework.AddTestProject(project);
-			method.MockDeclaringType.MockProjectContent.ProjectAsIProject.FileName = @"d:\projects\test.vbproj";
+			project.FileName = @"d:\projects\test.vbproj";
 			
-			mbUnitTestFramework.AddTestMember(method);
+			mbUnitTestFramework.AddTestMember(method.ReflectionName);
 			
 			bool result = testFrameworks.IsTestMember(method);
 			
@@ -127,8 +130,8 @@ namespace UnitTesting.Tests.Frameworks
 		[Test]
 		public void IsTestMember_NoTestFrameworkSupportsProject_DoesNotThrowNullReferenceException()
 		{
-			MockMethod method = MockMethod.CreateMockMethodWithoutAnyAttributes();
-			method.MockDeclaringType.MockProjectContent.ProjectAsIProject.FileName = @"d:\projects\test.unknown";
+			IMethod method = MockMethod.CreateResolvedMethod();
+			method.ParentAssembly.GetProject().FileName = @"d:\projects\test.unknown";
 			
 			bool result = testFrameworks.IsTestMember(method);
 			
@@ -146,9 +149,9 @@ namespace UnitTesting.Tests.Frameworks
 		[Test]
 		public void IsTestClass_UnknownMbUnitFrameworkTestClass_ReturnsFalse()
 		{
-			MockClass c = MockClass.CreateMockClassWithoutAnyAttributes();
-			mbUnitTestFramework.AddTestProject(c.Project);
-			c.MockProjectContent.ProjectAsIProject.FileName = @"d:\projects\test.vbproj";
+			ITypeDefinition c = MockClass.CreateMockClassWithoutAnyAttributes();
+			mbUnitTestFramework.AddTestProject(c.ParentAssembly.GetProject());
+			c.ParentAssembly.GetProject().FileName = @"d:\projects\test.vbproj";
 			
 			bool result = testFrameworks.IsTestClass(c);
 			
@@ -158,12 +161,12 @@ namespace UnitTesting.Tests.Frameworks
 		[Test]
 		public void IsTestClass_KnownMbUnitFrameworkTestClass_ReturnsTrue()
 		{
-			MockClass c = MockClass.CreateMockClassWithoutAnyAttributes();
+			ITypeDefinition c = MockClass.CreateMockClassWithoutAnyAttributes();
 			
-			c.MockProjectContent.ProjectAsIProject.FileName = @"d:\projects\test.vbproj";
+			c.ParentAssembly.GetProject().FileName = @"d:\projects\test.vbproj";
 			
-			mbUnitTestFramework.AddTestProject(c.Project);
-			mbUnitTestFramework.AddTestClass(c);
+			mbUnitTestFramework.AddTestProject(c.ParentAssembly.GetProject());
+			mbUnitTestFramework.AddTestClass(c.ReflectionName);
 			
 			bool result = testFrameworks.IsTestClass(c);
 			
@@ -173,8 +176,8 @@ namespace UnitTesting.Tests.Frameworks
 		[Test]
 		public void IsTestClass_NoTestFrameworkSupportsProject_DoesNotThrowNullReferenceException()
 		{
-			MockClass c = MockClass.CreateMockClassWithoutAnyAttributes();
-			c.MockProjectContent.ProjectAsIProject.FileName = @"d:\projects\test.unknown";
+			ITypeDefinition c = MockClass.CreateMockClassWithoutAnyAttributes();
+			c.ParentAssembly.GetProject().FileName = @"d:\projects\test.unknown";
 			
 			bool result = testFrameworks.IsTestClass(c);
 			

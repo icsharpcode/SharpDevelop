@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -49,19 +50,19 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void StackTraceFilePositionLineNumberIs28WhichIsEqualToReportedNUnitErrorLine()
 		{
-			Assert.AreEqual(28, nunitTestResult.StackTraceFilePosition.Line);
+			Assert.AreEqual(28, nunitTestResult.StackTraceFilePosition.BeginLine);
 		}
 		
 		[Test]
 		public void StackTraceFilePositionColumnNumberIsOne()
 		{
-			Assert.AreEqual(1, nunitTestResult.StackTraceFilePosition.Column);
+			Assert.AreEqual(1, nunitTestResult.StackTraceFilePosition.BeginColumn);
 		}
 		
 		[Test]
 		public void ChangingStackTraceToEmptyStringSetsStackTraceFilePositionToEmpty()
 		{
-			nunitTestResult.StackTraceFilePosition = new FilePosition("test.cs", 10, 2);
+			nunitTestResult.StackTraceFilePosition = new DomRegion("test.cs", 10, 2);
 			nunitTestResult.StackTrace = String.Empty;
 			Assert.IsTrue(nunitTestResult.StackTraceFilePosition.IsEmpty);
 		}

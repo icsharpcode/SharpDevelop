@@ -38,7 +38,7 @@ namespace MyTests {
 			}
 		}
 		
-		public class InnerBClass() {}
+		public class InnerBClass {}
 	}
 }
 "));
@@ -48,12 +48,6 @@ namespace MyTests {
 		public void OuterTestClassFound()
 		{
 			Assert.IsNotNull(testProject.GetTestClass("A"));
-		}
-
-		[Test]
-		public void InnerTestClassWithTestFixtureAttributeFound()
-		{
-			AssertTestResultContainsClass(innerClass);
 		}
 
 		[Test]

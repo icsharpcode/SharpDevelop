@@ -11,7 +11,7 @@ namespace UnitTesting.Tests.Utils
 	{
 		TestMember selectedMember;
 		TestClass selectedClass;
-		IProject selectedProject;
+		TestProject selectedProject;
 		string selectedNamespace;
 		
 		public TestMember SelectedMember {
@@ -24,7 +24,7 @@ namespace UnitTesting.Tests.Utils
 			set { selectedClass = value; }
 		}
 		
-		public IProject SelectedProject {
+		public TestProject SelectedProject {
 			get { return selectedProject; }
 			set { selectedProject = value; }
 		}

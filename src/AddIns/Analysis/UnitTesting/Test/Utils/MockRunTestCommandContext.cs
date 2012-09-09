@@ -6,6 +6,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
+using Rhino.Mocks;
 
 namespace UnitTesting.Tests.Utils
 {
@@ -19,6 +20,7 @@ namespace UnitTesting.Tests.Utils
 		public MockBuildProjectFactory MockBuildProjectFactory = new MockBuildProjectFactory();
 		public MockBuildOptions MockBuildOptions = new MockBuildOptions();
 		public MockUnitTestsPad MockUnitTestsPad = new MockUnitTestsPad();
+		public IMessageService MockMessageService = MockRepository.GenerateStrictMock<IMessageService>();
 		public MockSaveAllFilesCommand MockSaveAllFilesCommand = new MockSaveAllFilesCommand();
 		public MockStatusBarService MockStatusBarService = new MockStatusBarService();
 		public MessageViewCategory UnitTestMessageViewCategory = new MessageViewCategory("Unit Tests");

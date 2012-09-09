@@ -958,22 +958,21 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#region IProjectItemListProvider interface
 		List<ProjectItem> items = new List<ProjectItem>();
-		volatile ReadOnlyCollection<ProjectItem> itemsReadOnly;
-		volatile ICollection<ItemType> availableFileItemTypes = ItemType.DefaultFileItems;
+		volatile IReadOnlyCollection<ProjectItem> itemsReadOnly;
+		volatile IReadOnlyCollection<ItemType> availableFileItemTypes = ItemType.DefaultFileItems;
 		
 		/// <summary>
 		/// Gets the list of items in the project. This member is thread-safe.
 		/// The returned collection is guaranteed not to change - adding new items or removing existing items
 		/// will create a new collection.
 		/// </summary>
-		public override ReadOnlyCollection<ProjectItem> Items {
+		public override IReadOnlyCollection<ProjectItem> Items {
 			get {
-				ReadOnlyCollection<ProjectItem> c = itemsReadOnly;
+				IReadOnlyCollection<ProjectItem> c = itemsReadOnly;
 				if (c == null) {
 					lock (SyncRoot) {
-						c = Array.AsReadOnly(items.ToArray());
+						itemsReadOnly = c = items.ToArray();
 					}
-					itemsReadOnly = c;
 				}
 				return c;
 			}
@@ -982,7 +981,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the list of available file item types. This member is thread-safe.
 		/// </summary>
-		public override ICollection<ItemType> AvailableFileItemTypes {
+		public override IReadOnlyCollection<ItemType> AvailableFileItemTypes {
 			get {
 				return availableFileItemTypes;
 			}
@@ -1002,12 +1001,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				items.Clear();
 				itemsReadOnly = null; // remove readonly variant of item list - will regenerate on next Items call
 				
-				SortedSet<ItemType> availableFileItemTypes = new SortedSet<ItemType>();
+				List<ItemType> availableFileItemTypes = new List<ItemType>();
 				availableFileItemTypes.AddRange(ItemType.DefaultFileItems);
 				foreach (var item in c.Project.GetItems("AvailableItemName")) {
 					availableFileItemTypes.Add(new ItemType(item.EvaluatedInclude));
 				}
-				this.availableFileItemTypes = availableFileItemTypes.AsReadOnly();
+				this.availableFileItemTypes = availableFileItemTypes.Distinct().OrderBy(i => i.ItemName).ToArray();
 				
 				foreach (var item in c.Project.AllEvaluatedItems) {
 					if (item.IsImported) continue;
@@ -1333,9 +1332,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region GetConfigurationNames / GetPlatformNames
-		ICollection<string> configurationNames, platformNames;
+		IReadOnlyCollection<string> configurationNames, platformNames;
 		
-		public override ICollection<string> ConfigurationNames {
+		public override IReadOnlyCollection<string> ConfigurationNames {
 			get {
 				lock (SyncRoot) {
 					if (configurationNames == null) {
@@ -1346,7 +1345,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public override ICollection<string> PlatformNames {
+		public override IReadOnlyCollection<string> PlatformNames {
 			get {
 				lock (SyncRoot) {
 					if (platformNames == null) {
@@ -1385,8 +1384,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				platformNames.Add("AnyCPU");
 			}
 			
-			this.configurationNames = configurationNames.AsReadOnly();
-			this.platformNames      = platformNames.AsReadOnly();
+			this.configurationNames = configurationNames.ToArray();
+			this.platformNames      = platformNames.ToArray();
 		}
 
 		static void LoadConfigurationPlatformNamesFromMSBuildInternal(

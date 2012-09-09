@@ -39,18 +39,14 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public bool IsTestProject(IProject project)
 		{
-			if (project == null)
-				throw new ArgumentNullException("project");
-			if (project.ProjectContent == null)
+			if (project == null || project.ProjectContent == null)
 				return false;
 			return testAttributeRef.Resolve(SD.ParserService.GetCompilation(project).TypeResolveContext).Kind != TypeKind.Unknown;
 		}
 		
 		public bool IsTestMember(IMember member)
 		{
-			if (member == null)
-				throw new ArgumentNullException("member");
-			if (member.EntityType != EntityType.Method)
+			if (member == null || member.EntityType != EntityType.Method)
 				return false;
 			var testAttribute = testAttributeRef.Resolve(member.Compilation);
 			var testCaseAttribute = testCaseAttributeRef.Resolve(member.Compilation);
@@ -63,9 +59,7 @@ namespace ICSharpCode.UnitTesting
 		
 		public bool IsTestClass(ITypeDefinition type)
 		{
-			if (type == null)
-				throw new ArgumentNullException("type");
-			if (type.IsAbstract)
+			if (type == null || type.IsAbstract)
 				return false;
 			var testFixtureAttribute = testFixtureAttributeRef.Resolve(type.Compilation);
 			if (type.Attributes.Any(attr => attr.AttributeType.Equals(testFixtureAttributeRef)))
@@ -74,9 +68,10 @@ namespace ICSharpCode.UnitTesting
 				return type.Methods.Any(IsTestMember);
 		}
 		
-		public IEnumerable<TestMember> GetTestMembersFor(TestProject project, ITypeDefinition typeDefinition)
+		public IEnumerable<TestMember> GetTestMembersFor(ITypeDefinition typeDefinition)
 		{
-			return typeDefinition.Methods.Where(IsTestMember).Select(m => new TestMember(project, m.UnresolvedMember));
+			var project = typeDefinition.ParentAssembly.GetProject();
+			return typeDefinition.Methods.Where(IsTestMember).Select(m => new TestMember(m.UnresolvedMember));
 		}
 	}
 }

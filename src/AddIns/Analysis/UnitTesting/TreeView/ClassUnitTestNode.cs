@@ -10,7 +10,7 @@ using ICSharpCode.SharpDevelop;
 namespace ICSharpCode.UnitTesting
 {
 	/// <summary>
-	/// Description of ClassUnitTestNode.
+	/// Represents a TestClass in the tree view.
 	/// </summary>
 	public class ClassUnitTestNode : UnitTestBaseNode
 	{
@@ -23,16 +23,14 @@ namespace ICSharpCode.UnitTesting
 		public ClassUnitTestNode(TestClass testClass)
 		{
 			this.testClass = testClass;
-			this.testClass.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e) {
-				if (e.PropertyName == "TestResult") {
-					RaisePropertyChanged("Icon");
-					RaisePropertyChanged("ExpandedIcon");
-					var parentNode = Parent;
-					while (parentNode is NamespaceUnitTestNode) {
-						parentNode.RaisePropertyChanged("Icon");
-						parentNode.RaisePropertyChanged("ExpandedIcon");
-						parentNode = parentNode.Parent;
-					}
+			this.testClass.TestResultChanged += delegate {
+				RaisePropertyChanged("Icon");
+				RaisePropertyChanged("ExpandedIcon");
+				var parentNode = Parent;
+				while (parentNode is NamespaceUnitTestNode) {
+					parentNode.RaisePropertyChanged("Icon");
+					parentNode.RaisePropertyChanged("ExpandedIcon");
+					parentNode = parentNode.Parent;
 				}
 			};
 			testClass.Members.CollectionChanged += TestMembersCollectionChanged;
@@ -56,6 +54,8 @@ namespace ICSharpCode.UnitTesting
 				case NotifyCollectionChangedAction.Reset:
 					LoadChildren();
 					break;
+				default:
+					throw new NotSupportedException();
 			}
 		}
 
@@ -69,12 +69,14 @@ namespace ICSharpCode.UnitTesting
 					break;
 				case NotifyCollectionChangedAction.Remove:
 					foreach (TestMember m in e.OldItems) {
-						Children.RemoveAll(n => n is MemberUnitTestNode && ((MemberUnitTestNode)n).TestMember.Member.ReflectionName == m.Member.ReflectionName);
+						Children.RemoveAll(n => n is MemberUnitTestNode && ((MemberUnitTestNode)n).TestMember == m);
 					}
 					break;
 				case NotifyCollectionChangedAction.Reset:
 					LoadChildren();
 					break;
+				default:
+					throw new NotSupportedException();
 			}
 		}
 		

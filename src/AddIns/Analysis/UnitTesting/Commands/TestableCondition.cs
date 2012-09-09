@@ -33,7 +33,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			ITestTreeView testTreeView = caller as ITestTreeView;
 			if (testTreeView != null && testTreeView.SelectedMember != null) {
-				return testTreeView.SelectedMember.Resolve();
+				return testTreeView.SelectedMember.Resolve(testTreeView.SelectedProject);
 			}
 			IEntity entity = ResolveResultMenuCommand.GetEntity(caller);
 			return entity as IMember;
@@ -43,7 +43,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			ITestTreeView testTreeView = caller as ITestTreeView;
 			if (testTreeView != null && testTreeView.SelectedClass != null) {
-				return testTreeView.SelectedClass.Resolve();
+				return testTreeView.SelectedClass.Resolve(testTreeView.SelectedProject);
 			}
 			IEntity entity = ResolveResultMenuCommand.GetEntity(caller);
 			return entity as ITypeDefinition;
@@ -53,7 +53,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			ITestTreeView testTreeView = caller as ITestTreeView;
 			if (testTreeView != null) {
-				return testTreeView.SelectedProject;
+				return testTreeView.SelectedProject != null ? testTreeView.SelectedProject.Project : null;
 			}
 			ITypeDefinition c = GetClassFromMemberOrCaller(caller);
 			return GetProject(c);

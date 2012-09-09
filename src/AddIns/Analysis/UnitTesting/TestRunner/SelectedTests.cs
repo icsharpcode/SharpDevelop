@@ -84,7 +84,7 @@ namespace ICSharpCode.UnitTesting
 			get { return c; }
 		}
 		
-		public TestMember Method {
+		public TestMember Member {
 			get { return member; }
 		}
 	}

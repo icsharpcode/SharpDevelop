@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
@@ -12,8 +13,9 @@ namespace UnitTesting.Tests.Project
 	/// Creates a TestMethodCollection with three TestMethods.
 	/// </summary>
 	[TestFixture]
-	public class ThreeTestMethodsTestResultsTestFixture
+	public class ThreeTestMethodsTestResultsTestFixture : ProjectTestFixtureBase
 	{
+		TestClass testClass;
 		TestMember testMethod1;
 		TestMember testMethod2;
 		TestMember testMethod3;
@@ -23,38 +25,26 @@ namespace UnitTesting.Tests.Project
 		public void Init()
 		{
 			testMethodsResultChanged = false;
-			testMethods = new TestMemberCollection();
 			
-			// TestMethod1.
-			MockClass c = MockClass.CreateMockClassWithoutAnyAttributes();
-			MockMethod mockMethod = new MockMethod(c, "TestMethod1");
-			testMethod1 = new TestMember(mockMethod);
-			testMethods.Add(testMethod1);
+			testClass = new TestClass(MockClass.CreateMockClassWithoutAnyAttributes(), new NUnitTestFramework());
+			testClass.Members.Add(new TestMember(MockMethod.CreateUnresolvedMethod("TestMethod1")));
+			testClass.Members.Add(new TestMember(MockMethod.CreateUnresolvedMethod("TestMethod2")));
+			testClass.Members.Add(new TestMember(MockMethod.CreateUnresolvedMethod("TestMethod3")));
 			
-			// TestMethod2.
-			mockMethod = new MockMethod(c, "TestMethod2");
-			testMethod2 = new TestMember(mockMethod);
-			testMethods.Add(testMethod2);
-		
-			// TestMethod3.
-			mockMethod = new MockMethod(c, "TestMethod3");
-			testMethod3 = new TestMember(mockMethod);
-			testMethods.Add(testMethod3);
-			
-			testMethods.ResultChanged += TestMethodsResultChanged;
+			testClass.TestResultChanged += TestMethodsResultChanged;
 		}
 		
 		[Test]
 		public void InitialTestResult()
 		{
-			Assert.AreEqual(TestResultType.None, testMethods.Result);
+			Assert.AreEqual(TestResultType.None, testClass.TestResult);
 		}
 		
 		[Test]
 		public void TestMethod1Fails()
 		{
-			testMethod1.Result = TestResultType.Failure;
-			Assert.AreEqual(TestResultType.Failure, testMethods.Result);
+			testMethod1.TestResult = TestResultType.Failure;
+			Assert.AreEqual(TestResultType.Failure, testClass.TestResult);
 			Assert.IsTrue(testMethodsResultChanged);
 		}
 		
@@ -62,19 +52,19 @@ namespace UnitTesting.Tests.Project
 		public void ResetAfterTestMethod1Failed()
 		{
 			TestMethod1Fails();
-			testMethods.ResetTestResults();
+			testClass.ResetTestResults();
 			InitialTestResult();
 			
-			Assert.AreEqual(TestResultType.None, testMethod1.Result);
+			Assert.AreEqual(TestResultType.None, testMethod1.TestResult);
 		}
 		
 		[Test]
 		public void AllTestMethodsPass()
 		{
-			testMethod1.Result = TestResultType.Success;
-			testMethod2.Result = TestResultType.Success;
-			testMethod3.Result = TestResultType.Success;
-			Assert.AreEqual(TestResultType.Success, testMethods.Result);
+			testMethod1.TestResult = TestResultType.Success;
+			testMethod2.TestResult = TestResultType.Success;
+			testMethod3.TestResult = TestResultType.Success;
+			Assert.AreEqual(TestResultType.Success, testClass.TestResult);
 			Assert.IsTrue(testMethodsResultChanged);
 		}
 		
@@ -82,20 +72,20 @@ namespace UnitTesting.Tests.Project
 		public void ResetAfterAllPassed()
 		{
 			AllTestMethodsPass();
-			testMethods.ResetTestResults();
+			testClass.ResetTestResults();
 			InitialTestResult();
 			
-			Assert.AreEqual(TestResultType.None, testMethod1.Result);
+			Assert.AreEqual(TestResultType.None, testMethod1.TestResult);
 			Assert.IsTrue(testMethodsResultChanged);
 		}
 		
 		[Test]
 		public void AllTestMethodsIgnored()
 		{
-			testMethod1.Result = TestResultType.Ignored;
-			testMethod2.Result = TestResultType.Ignored;
-			testMethod3.Result = TestResultType.Ignored;
-			Assert.AreEqual(TestResultType.Ignored, testMethods.Result);
+			testMethod1.TestResult = TestResultType.Ignored;
+			testMethod2.TestResult = TestResultType.Ignored;
+			testMethod3.TestResult = TestResultType.Ignored;
+			Assert.AreEqual(TestResultType.Ignored, testClass.TestResult);
 			Assert.IsTrue(testMethodsResultChanged);
 		}
 		
@@ -105,19 +95,19 @@ namespace UnitTesting.Tests.Project
 			AllTestMethodsIgnored();
 			
 			testMethodsResultChanged = false;
-			testMethods.ResetTestResults();
+			testClass.ResetTestResults();
 			
 			InitialTestResult();
 			
-			Assert.AreEqual(TestResultType.None, testMethod1.Result);
+			Assert.AreEqual(TestResultType.None, testMethod1.TestResult);
 			Assert.IsTrue(testMethodsResultChanged);
 		}
 		
 		[Test]
 		public void TestMethod1Removed()
 		{
-			testMethods.Remove(testMethod1);
-			testMethod1.Result = TestResultType.Failure;
+			testClass.Members.Remove(testMethod1);
+			testMethod1.TestResult = TestResultType.Failure;
 			
 			InitialTestResult();
 			
@@ -130,9 +120,9 @@ namespace UnitTesting.Tests.Project
 			AllTestMethodsIgnored();
 			
 			testMethodsResultChanged = false;
-			testMethod1.Result = TestResultType.None;
-			testMethod2.Result = TestResultType.None;
-			testMethod3.Result = TestResultType.None;
+			testMethod1.TestResult = TestResultType.None;
+			testMethod2.TestResult = TestResultType.None;
+			testMethod3.TestResult = TestResultType.None;
 			
 			InitialTestResult();
 			
@@ -142,9 +132,9 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void TestMethod1RemovedAfterSetToIgnored()
 		{
-			testMethod1.Result = TestResultType.Ignored;
+			testMethod1.TestResult = TestResultType.Ignored;
 			
-			testMethods.Remove(testMethod1);
+			testClass.Members.Remove(testMethod1);
 			InitialTestResult();
 		}
 		
@@ -153,13 +143,9 @@ namespace UnitTesting.Tests.Project
 		{
 			AllTestMethodsPass();
 			
-			MockClass c = MockClass.CreateMockClassWithoutAnyAttributes();
-			MockMethod mockMethod = new MockMethod(c, "TestMethod4");
-			TestMember testMethod4 = new TestMember(mockMethod);
-			testMethod4.Result = TestResultType.Failure;
-			testMethods.Add(testMethod4);
+			testClass.Members.Add(new TestMember(MockMethod.CreateUnresolvedMethod("TestMethod4")));
 
-			Assert.AreEqual(TestResultType.Failure, testMethods.Result);
+			Assert.AreEqual(TestResultType.Failure, testClass.TestResult);
 		}
 		
 		void TestMethodsResultChanged(object source, EventArgs e)

@@ -34,8 +34,8 @@ namespace ICSharpCode.UnitTesting
 			var compilation = SD.ParserService.GetCompilation(project);
 			testClasses = new ObservableCollection<TestClass>(
 				from td in compilation.MainAssembly.TopLevelTypeDefinitions
-				where testFramework.IsTestClass(td)
-				select new TestClass(this, td)
+				where this.testFramework.IsTestClass(td)
+				select new TestClass(td, this.testFramework)
 			);
 		}
 		
@@ -89,7 +89,7 @@ namespace ICSharpCode.UnitTesting
 					}
 				} else if (typeDef != null && testFramework.IsTestClass(typeDef)) {
 					// Test class was added
-					testClasses.Add(new TestClass(this, typeDef));
+					testClasses.Add(new TestClass(typeDef, testFramework));
 				}
 			}
 			dirtyTypeDefinitions.Clear();

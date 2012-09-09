@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// The returned collection is guaranteed not to change - adding new items or removing existing items
 		/// will create a new collection.
 		/// </summary>
-		ReadOnlyCollection<ProjectItem> Items {
+		IReadOnlyCollection<ProjectItem> Items {
 			get;
 		}
 		
@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the list of available file item types. This member is thread-safe.
 		/// </summary>
-		ICollection<ItemType> AvailableFileItemTypes {
+		IReadOnlyCollection<ItemType> AvailableFileItemTypes {
 			get;
 		}
 		
@@ -172,12 +172,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the list of available configuration names.
 		/// </summary>
-		ICollection<string> ConfigurationNames { get; }
+		IReadOnlyCollection<string> ConfigurationNames { get; }
 		
 		/// <summary>
 		/// Gets the list of available platform names.
 		/// </summary>
-		ICollection<string> PlatformNames { get; }
+		IReadOnlyCollection<string> PlatformNames { get; }
 		
 		/// <summary>
 		/// Is raised after the ActiveConfiguration property has changed.
@@ -375,7 +375,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets a list of items in the project.
 		/// </summary>
-		ReadOnlyCollection<ProjectItem> Items {
+		IReadOnlyCollection<ProjectItem> Items {
 			get;
 		}
 		

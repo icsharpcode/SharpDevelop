@@ -1058,7 +1058,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					projectPlatform = FixPlatformNameForSolution(project.PlatformNames.First());
 				}
 				if (createInProjects) {
-					ICollection<string> existingInProject = addPlatform ? project.PlatformNames : project.ConfigurationNames;
+					IReadOnlyCollection<string> existingInProject = addPlatform ? project.PlatformNames : project.ConfigurationNames;
 					if (existingInProject.Contains(addPlatform ? newPlatform : newConfiguration)) {
 						// target platform/configuration already exists, so reference it
 						if (addPlatform) {

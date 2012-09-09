@@ -14,7 +14,7 @@ namespace ICSharpCode.UnitTesting
 		bool IsTestClass(ITypeDefinition testClass);
 		bool IsTestProject(IProject project);
 		
-		IEnumerable<TestMember> GetTestMembersFor(TestProject project, ITypeDefinition typeDefinition);
+		IEnumerable<TestMember> GetTestMembersFor(ITypeDefinition typeDefinition);
 		
 		ITestRunner CreateTestRunner();
 		ITestRunner CreateTestDebugger();

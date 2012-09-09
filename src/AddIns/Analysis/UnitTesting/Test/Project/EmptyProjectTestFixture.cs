@@ -39,7 +39,7 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void AddTestFixtureAttributeToExistingClass()
 		{
-			CreateNUnitProject("TestProject");
+			CreateNUnitProject();
 			// Create an old compilation unit with the test class
 			// but without a [TestFixture] attribute.
 			UpdateCodeFile("namespace RootNamespace { class MyTextFixture {} }");

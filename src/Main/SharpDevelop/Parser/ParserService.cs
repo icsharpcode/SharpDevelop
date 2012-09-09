@@ -117,7 +117,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 			SharpDevelopSolutionSnapshot result;
 			if (weakRef == null || !weakRef.TryGetTarget(out result)) {
 				// create new snapshot if we don't have one cached
-				result = new SharpDevelopSolutionSnapshot(ProjectService.OpenSolution);
+				var solution = ProjectService.OpenSolution;
+				result = new SharpDevelopSolutionSnapshot(solution != null ? solution.Projects : null);
 				currentSolutionSnapshot = new WeakReference<SharpDevelopSolutionSnapshot>(result);
 			}
 			return result;

@@ -18,30 +18,33 @@ namespace ICSharpCode.UnitTesting
 {
 	public class NamespaceUnitTestNode : UnitTestBaseNode
 	{
-		string name;
+		readonly string shortName;
+		readonly string namespaceName;
 		
-		public string Namespace {
-			get { return name; }
+		/// <summary>
+		/// Gets the namespace suffix (namespace portion after the root namespace)
+		/// </summary>
+		public string ShortName {
+			get { return shortName; }
 		}
 		
-		public string FullNamespace {
-			get {
-				TestProject p = GetProject();
-				if (p != null)
-					return p.Project.RootNamespace + "." + name;
-				return name;
-			}
+		/// <summary>
+		/// Gets the full namespace
+		/// </summary>
+		public string NamespaceName {
+			get { return namespaceName; }
 		}
 		
-		public NamespaceUnitTestNode(string name)
+		public NamespaceUnitTestNode(string namespaceName)
 		{
-			if (string.IsNullOrEmpty(name))
-				throw new ArgumentException("name");
-			this.name = name;
+			if (namespaceName == null)
+				throw new ArgumentNullException("namespaceName");
+			this.namespaceName = namespaceName;
+			this.shortName = namespaceName.Substring(namespaceName.IndexOf('.') + 1);
 		}
 		
 		public override object Text {
-			get { return name.Substring(name.LastIndexOf('.') + 1); }
+			get { return shortName; }
 		}
 		
 		internal override TestResultType TestResultType {
@@ -55,16 +58,6 @@ namespace ICSharpCode.UnitTesting
 					return TestResultType.Ignored;
 				return TestResultType.Success;
 			}
-		}
-		
-		public TestProject GetProject()
-		{
-			UnitTestBaseNode parent = this;
-			while (parent is NamespaceUnitTestNode)
-				parent = (UnitTestBaseNode)parent.Parent;
-			if (parent is ProjectUnitTestNode)
-				return ((ProjectUnitTestNode)parent).Project;
-			return null;
 		}
 	}
 }
