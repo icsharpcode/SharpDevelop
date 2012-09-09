@@ -19,7 +19,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void GetCustomToolProperties(IProject project)
 		{
-			properties = project.ProjectSpecificProperties.Get("customTool", new Properties());
+			if (project.ProjectSpecificProperties != null) {
+				properties = project.ProjectSpecificProperties.Get("customTool", new Properties());
+			} else {
+				properties = new Properties();
+			}
 		}
 		
 		public bool RunCustomToolOnBuild {

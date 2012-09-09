@@ -23,8 +23,14 @@ namespace ICSharpCode.SharpDevelop.Tests.Project
 		
 		IProject CreateProject(string fileName = @"d:\MyProject\MyProject.csproj")
 		{
-			projectHelper = new ProjectHelper(fileName);
+			CreateProjectWithNoProjectSpecifiedProperties(fileName);
+			projectHelper.AddProjectSpecificProperties();
 			return projectHelper.Project;
+		}
+		
+		void CreateProjectWithNoProjectSpecifiedProperties(string fileName)
+		{
+			projectHelper = new ProjectHelper(fileName);
 		}
 		
 		void CreateSolution(params IProject[] projects)
@@ -262,6 +268,17 @@ namespace ICSharpCode.SharpDevelop.Tests.Project
 				projectItem
 			};
 			CollectionAssert.AreEqual(expectedProjectItems, projectItems);
+		}
+		
+		[Test]
+		public void GetProjectItems_ProjectSpecificPropertiesIsNull_NoProjectItemsReturnedAndNoNullReferenceExceptionThrown()
+		{
+			CreateProjectWithNoProjectSpecifiedProperties(@"d:\MyProject\FirstProject.csproj");
+			CreateBeforeBuildCustomToolProjectItems();
+			
+			List<FileProjectItem> projectItems = GetProjectItems();
+			
+			Assert.AreEqual(0, projectItems.Count);
 		}
 	}
 }

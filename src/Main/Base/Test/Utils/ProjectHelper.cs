@@ -25,8 +25,12 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 				.Return(null)
 				.WhenCalled(mi => mi.ReturnValue = new ReadOnlyCollection<ProjectItem>(ProjectItems));
 			
-			Project.Stub(p => p.ProjectSpecificProperties).Return(ProjectSpecificProperties);
 			Project.Stub(p => p.SyncRoot).Return(new Object());
+		}
+		
+		public void AddProjectSpecificProperties()
+		{
+			Project.Stub(p => p.ProjectSpecificProperties).Return(ProjectSpecificProperties);
 		}
 		
 		public void AddProjectItem(ProjectItem projectItem)
