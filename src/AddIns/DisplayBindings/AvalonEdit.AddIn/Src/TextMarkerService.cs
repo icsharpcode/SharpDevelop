@@ -120,6 +120,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						if (foregroundBrush != null) {
 							element.TextRunProperties.SetForegroundBrush(foregroundBrush);
 						}
+						Typeface tf = element.TextRunProperties.Typeface;
+						element.TextRunProperties.SetTypeface(new Typeface(
+							tf.FontFamily,
+							marker.FontStyle ?? tf.Style,
+							marker.FontWeight ?? tf.Weight,
+							tf.Stretch
+						));
 					}
 				);
 			}
@@ -275,6 +282,30 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			set {
 				if (foregroundColor != value) {
 					foregroundColor = value;
+					Redraw();
+				}
+			}
+		}
+		
+		FontWeight? fontWeight;
+		
+		public FontWeight? FontWeight {
+			get { return fontWeight; }
+			set {
+				if (fontWeight != value) {
+					fontWeight = value;
+					Redraw();
+				}
+			}
+		}
+		
+		FontStyle? fontStyle;
+		
+		public FontStyle? FontStyle {
+			get { return fontStyle; }
+			set {
+				if (fontStyle != value) {
+					fontStyle = value;
 					Redraw();
 				}
 			}

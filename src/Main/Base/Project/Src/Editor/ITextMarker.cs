@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Media;
 
 namespace ICSharpCode.SharpDevelop.Editor
@@ -51,6 +52,16 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets/Sets the foreground color.
 		/// </summary>
 		Color? ForegroundColor { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets the font weight.
+		/// </summary>
+		FontWeight? FontWeight { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets the font style.
+		/// </summary>
+		FontStyle? FontStyle { get; set; }
 		
 		/// <summary>
 		/// Gets/Sets the type of the marker. Use TextMarkerType.None for normal markers.
