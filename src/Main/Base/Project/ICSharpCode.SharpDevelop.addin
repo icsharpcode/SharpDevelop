@@ -62,6 +62,8 @@
 		         class="ICSharpCode.SharpDevelop.Parser.AssemblyParserService"/>
 		<Service id="ICSharpCode.SharpDevelop.IFileService"
 		         class="ICSharpCode.SharpDevelop.Workbench.FileService"/>
+		<Service id="ICSharpCode.SharpDevelop.IShutdownService"
+		         class="ICSharpCode.SharpDevelop.Workbench.ShutdownService"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">

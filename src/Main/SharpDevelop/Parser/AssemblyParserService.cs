@@ -11,13 +11,13 @@ using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Util;
 using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop.Parser
@@ -160,7 +160,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 				}
 			}
 			l.CancellationToken = cancellationToken;
+			l.InterningProvider = null;
 			pc = l.LoadAssembly(asm);
+			//SaveToCacheAsync(cacheFileName, lastWriteTime, pc).FireAndForget();
 			SaveToCache(cacheFileName, lastWriteTime, pc);
 			return pc;
 		}
@@ -268,6 +270,18 @@ namespace ICSharpCode.SharpDevelop.Parser
 				LoggingService.Warn(ex);
 				return null;
 			}
+		}
+		
+		Task SaveToCacheAsync(string cacheFileName, DateTime lastWriteTime, IUnresolvedAssembly pc)
+		{
+			if (cacheFileName == null)
+				return Task.FromResult<object>(null);
+			
+			// Call SaveToCache on a background task:
+			var shutdownService = SD.ShutdownService;
+			var task = IOTaskScheduler.Factory.StartNew(delegate { SaveToCache(cacheFileName, lastWriteTime, pc); }, shutdownService.ShutdownToken);
+			shutdownService.AddBackgroundTask(task);
+			return task;
 		}
 		
 		void SaveToCache(string cacheFileName, DateTime lastWriteTime, IUnresolvedAssembly pc)

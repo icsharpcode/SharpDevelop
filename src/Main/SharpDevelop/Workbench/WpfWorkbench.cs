@@ -561,8 +561,11 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		{
 			base.OnClosing(e);
 			if (!e.Cancel) {
-				if (Project.ProjectService.IsBuilding) {
-					MessageService.ShowMessage(StringParser.Parse("${res:MainWindow.CannotCloseWithBuildInProgressMessage}"));
+				// see IShutdownService.Shutdown() for a description of the shutdown procedure
+				
+				var shutdownService = (ShutdownService)SD.ShutdownService;
+				if (shutdownService.CurrentReasonPreventingShutdown != null) {
+					MessageService.ShowMessage(StringParser.Parse(shutdownService.CurrentReasonPreventingShutdown));
 					e.Cancel = true;
 					return;
 				}
@@ -586,6 +589,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 					
 					this.WorkbenchLayout = null;
 					
+					shutdownService.SignalShutdownToken();
 					foreach (PadDescriptor padDescriptor in this.PadContentCollection) {
 						padDescriptor.Dispose();
 					}

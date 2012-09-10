@@ -180,8 +180,11 @@ namespace ICSharpCode.SharpDevelop.Sda
 			} finally {
 				LoggingService.Info("Unloading services...");
 				try {
+					// see IShutdownService.Shutdown for a description of the shut down procedure
 					WorkbenchSingleton.OnWorkbenchUnloaded();
 					var propertyService = SD.PropertyService;
+					var shutdownService = (ShutdownService)SD.ShutdownService;
+					shutdownService.WaitForBackgroundTasks();
 					((IDisposable)SD.Services).Dispose(); // dispose all services
 					propertyService.Save();
 				} catch (Exception ex) {

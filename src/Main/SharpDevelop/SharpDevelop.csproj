@@ -98,6 +98,7 @@
     <Compile Include="Workbench\LayoutConfiguration.cs" />
     <Compile Include="Workbench\RecentOpen.cs" />
     <Compile Include="Workbench\SDStatusBar.cs" />
+    <Compile Include="Workbench\ShutdownService.cs" />
     <Compile Include="Workbench\SingleInstanceHelper.cs" />
     <Compile Include="Workbench\StatusBarService.cs" />
     <Compile Include="Workbench\WorkbenchStartup.cs" />

@@ -411,6 +411,7 @@
     <Compile Include="Src\Services\File\OnDiskTextSourceVersion.cs" />
     <Compile Include="Src\Services\File\OpenedFile.cs" />
     <Compile Include="Src\Services\IMessageLoop.cs" />
+    <Compile Include="Src\Services\IShutdownService.cs" />
     <Compile Include="Src\Services\LanguageBinding\AggregatedLanguageBinding.cs" />
     <Compile Include="Src\Services\LanguageBinding\DefaultLanguageBinding.cs" />
     <Compile Include="Src\Services\LanguageBinding\ILanguageBinding.cs" />
@@ -746,6 +747,7 @@
     <Compile Include="Src\Util\AtomicBoolean.cs" />
     <Compile Include="Src\Util\DotnetDetection.cs" />
     <Compile Include="Src\Util\FakeXmlViewContent.cs" />
+    <Compile Include="Src\Util\IOTaskScheduler.cs" />
     <Compile Include="Src\Util\ReactiveExtensions.cs" />
     <Compile Include="Src\Util\SharpDevelopServiceContainer.cs" />
     <Compile Include="Src\Util\TreeNode.cs" />

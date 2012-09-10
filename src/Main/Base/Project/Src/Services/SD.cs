@@ -146,5 +146,9 @@ namespace ICSharpCode.SharpDevelop
 		public static IAddInTree AddInTree {
 			get { return GetRequiredService<IAddInTree>(); }
 		}
+		
+		public static IShutdownService ShutdownService {
+			get { return GetRequiredService<IShutdownService>(); }
+		}
 	}
 }

@@ -8,7 +8,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -16,6 +15,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.SharpDevelop.Parser
 {
@@ -101,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			if (cacheFileName == null)
 				return Task.FromResult<object>(null);
-			return Task.Run(
+			Task task = IOTaskScheduler.Factory.StartNew(
 				delegate {
 					pc = pc.RemoveAssemblyReferences(pc.AssemblyReferences);
 					int serializableFileCount = 0;
@@ -121,7 +121,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 					} else {
 						RemoveCache(cacheFileName);
 					}
-				});
+				}, SD.ShutdownService.ShutdownToken);
+			SD.ShutdownService.AddBackgroundTask(task);
+			return task;
 		}
 		
 		static bool IsSerializable(IUnresolvedFile unresolvedFile)

@@ -70,14 +70,14 @@
     <Compile Include="Commands\RunningTestsCondition.cs" />
     <Compile Include="Commands\TestableCondition.cs" />
     <Compile Include="Commands\UnitTestCommands.cs" />
-    <Compile Include="Frameworks\ITestService.cs" />
+    <Compile Include="Service\ITestService.cs" />
     <Compile Include="Interfaces\IUnitTestProcessRunner.cs" />
     <Compile Include="Interfaces\UnitTestProcessRunner.cs" />
     <Compile Include="Model\ITest.cs" />
+    <Compile Include="Model\ITestFramework.cs" />
     <Compile Include="Model\ITestProject.cs" />
     <Compile Include="Model\ITestSolution.cs" />
     <Compile Include="Model\TestBase.cs" />
-    <Compile Include="Frameworks\ITestFramework.cs" />
     <Compile Include="Interfaces\IBuildOptions.cs" />
     <Compile Include="Interfaces\IBuildProjectFactory.cs" />
     <Compile Include="Interfaces\IFileSystem.cs" />
@@ -105,9 +105,9 @@
     <Compile Include="Interfaces\UnitTestSaveAllFilesCommand.cs" />
     <Compile Include="Interfaces\UnitTestTaskService.cs" />
     <Compile Include="Model\TestSolution.cs" />
-    <Compile Include="Frameworks\TestFrameworkDescriptor.cs" />
-    <Compile Include="Frameworks\TestFrameworkDoozer.cs" />
-    <Compile Include="Frameworks\SDTestService.cs" />
+    <Compile Include="Service\TestFrameworkDescriptor.cs" />
+    <Compile Include="Service\TestFrameworkDoozer.cs" />
+    <Compile Include="Service\SDTestService.cs" />
     <Compile Include="TestRunner\ITestResultsMonitor.cs" />
     <Compile Include="TestRunner\ITestRunner.cs" />
     <Compile Include="TestRunner\MessageReceivedEventArgs.cs" />
@@ -181,7 +181,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Commands" />
-    <Folder Include="Frameworks" />
+    <Folder Include="Service" />
     <Folder Include="Pad" />
     <Folder Include="Interfaces" />
     <Folder Include="Model" />
