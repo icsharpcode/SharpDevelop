@@ -227,6 +227,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			
 			AddToTypeSystemTranslationTable(this.currentAssembly, assemblyDefinition);
+			// Freezing the assembly here is important:
+			// otherwise it will be frozen when a compilation is first created
+			// from it. But freezing has the effect of changing some collection instances
+			// (to ReadOnlyCollection). This hidden mutation was causing a crash
+			// when the FastSerializer was saving the assembly at the same time as
+			// the first compilation was created from it.
+			// By freezing the assembly now, we ensure it is usable on multiple
+			// threads without issues.
+			currentAssembly.Freeze();
 			
 			var result = this.currentAssembly;
 			this.currentAssembly = null;
