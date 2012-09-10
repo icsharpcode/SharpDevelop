@@ -164,16 +164,15 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		{
 			base.LoadOptions();
 			if (allSyntaxDefinitions == null) {
-				allSyntaxDefinitions = (
-					from name in typeof(HighlightingManager).Assembly.GetManifestResourceNames().AsParallel()
+				var builtins = from name in typeof(HighlightingManager).Assembly.GetManifestResourceNames().AsParallel()
 					where name.StartsWith(typeof(HighlightingManager).Namespace + ".Resources.", StringComparison.OrdinalIgnoreCase)
 					&& name.EndsWith(".xshd", StringComparison.OrdinalIgnoreCase)
-					select LoadBuiltinXshd(name)
-				).Concat(
-					ICSharpCode.Core.AddInTree.BuildItems<AddInTreeSyntaxMode>(SyntaxModeDoozer.Path, null, false).AsParallel()
-					.Select(m => m.LoadXshd())
-				)
-					//.Where(def => def.Elements.OfType<XshdColor>().Any(c => c.ExampleText != null))
+					select LoadBuiltinXshd(name);
+				var extended = ICSharpCode.Core.AddInTree.BuildItems<AddInTreeSyntaxMode>(SyntaxModeDoozer.Path, null, false)
+					.AsParallel()
+					.Select(m => m.LoadXshd());
+				allSyntaxDefinitions = extended.AsEnumerable().Concat(builtins)
+					.DistinctBy(def => def.Name)
 					.OrderBy(def => def.Name)
 					.ToList();
 			}
