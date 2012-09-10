@@ -88,14 +88,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var path = GetPath(rootNode, deepestCommonAncestor);
 
 				// The node that will follow the moved declaration statement
-				AstNode anchorNode = GetInitialAnchorNode (rootNode, identifiers, path);
+				AstNode anchorNode = GetInitialAnchorNode(rootNode, identifiers, path);
 
 				// Restrict path to only those where the initializer has not changed
 				var pathToCheck = path.Skip(1).ToList();
 				var firstInitializerChangeNode = GetFirstInitializerChange(variableDeclarationStatement, pathToCheck, variableInitializer.Initializer);
 				if (firstInitializerChangeNode != null) {
-					// The initializer and usage nodes may not be in the same path, so merge them
-					// instead of just making a path to firstInitializerChange
+					// The node changing the initializer expression may not be on the path
+					// to the actual usages of the variable, so we need to merge the paths
+					// so we get the part of the paths that are common between them
 					var pathToChange = GetPath(rootNode, firstInitializerChangeNode);
 					var deepestCommonIndex = GetLowestCommonAncestorIndex(path, pathToChange);
 					anchorNode = pathToChange [deepestCommonIndex + 1];
@@ -109,14 +110,37 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					anchorNode = firstBlackListedNode;
 				}
 
-				// Get the parent statement
-				while (anchorNode != null && !(anchorNode is Statement))
-					anchorNode = anchorNode.Parent;
+				anchorNode = GetInsertionPoint(anchorNode);
 
 				if (anchorNode != null && anchorNode != rootNode && anchorNode.Parent != rootNode) {
 					AddIssue(variableDeclarationStatement, context.TranslateString("Variable could be moved to a nested scope"),
 					         GetActions(variableDeclarationStatement, (Statement)anchorNode));
 				}
+			}
+
+			static bool IsBannedInsertionPoint(AstNode anchorNode)
+			{
+				var parent = anchorNode.Parent;
+
+				// Don't split 'else if ...' into else { if ... }
+				if (parent is IfElseStatement && anchorNode is IfElseStatement)
+					return true;
+				// Don't allow moving the declaration into the resource aquisition of a using statement
+				if (parent is UsingStatement)
+					return true;
+				return false;
+			}
+
+			static AstNode GetInsertionPoint(AstNode node)
+			{
+				while (true) {
+					if (node == null)
+						break;
+					if (node is Statement && !IsBannedInsertionPoint(node))
+						break;
+					node = node.Parent;
+				}
+				return node;
 			}
 
 			AstNode GetInitialAnchorNode (BlockStatement rootNode, List<IdentifierExpression> identifiers, IList<AstNode> path)

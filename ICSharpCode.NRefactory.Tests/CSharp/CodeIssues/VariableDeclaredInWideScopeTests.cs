@@ -379,6 +379,27 @@ class A
 		}
 ");
 		}
+		
+		[Test]
+		public void DoesNotExpandElseClause ()
+		{	
+			TestStatements(@"
+		string o = ""Hello World !"";
+		if (false) {
+		} else if (!o.Contains (""Foo"")) {
+		}
+", 0);
+		}
+		
+		[Test]
+		public void DoesNotInsertBlockStatementInResourceAquisition ()
+		{	
+			TestStatements(@"
+		string o = ""Hello World !"";
+		using (var file = File.Open(o, FileMode.Open))
+			return;
+", 0);
+		}
 	}
 }
 
