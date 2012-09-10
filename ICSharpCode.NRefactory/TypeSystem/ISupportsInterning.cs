@@ -22,7 +22,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 {
 	/// <summary>
 	/// Interface for TypeSystem objects that support interning.
-	/// See <see cref="IInterningProvider"/> for more information.
+	/// See <see cref="InterningProvider"/> for more information.
 	/// </summary>
 	public interface ISupportsInterning
 	{

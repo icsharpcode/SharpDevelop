@@ -190,5 +190,16 @@ namespace ICSharpCode.NRefactory.Editor
 		/// </summary>
 		/// <inheritdoc cref="ITextAnchor" select="remarks|example"/>
 		ITextAnchor CreateAnchor(int offset);
+		
+		/// <summary>
+		/// Gets the name of the file the document is stored in.
+		/// Could also be a non-existent dummy file name or null if no name has been set.
+		/// </summary>
+		string FileName { get; }
+		
+		/// <summary>
+		/// Fired when the file name of the document changes.
+		/// </summary>
+		event EventHandler FileNameChanged;
 	}
 }
