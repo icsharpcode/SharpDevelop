@@ -285,11 +285,11 @@ namespace ICSharpCode.NRefactory.Documentation
 					// method type parameter reference
 					pos++;
 					int index = ReflectionHelper.ReadTypeParameterCount(reflectionTypeName, ref pos);
-					result = new TypeParameterReference(EntityType.Method, index);
+					result = TypeParameterReference.Create(EntityType.Method, index);
 				} else {
 					// class type parameter reference
 					int index = ReflectionHelper.ReadTypeParameterCount(reflectionTypeName, ref pos);
-					result = new TypeParameterReference(EntityType.TypeDefinition, index);
+					result = TypeParameterReference.Create(EntityType.TypeDefinition, index);
 				}
 			} else {
 				// not a type parameter reference: read the actual type name

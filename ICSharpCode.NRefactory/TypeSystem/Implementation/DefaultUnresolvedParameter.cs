@@ -18,8 +18,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.Utils;
 
@@ -146,29 +146,30 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return this.DefaultValue != null; }
 		}
 		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			if (!IsFrozen) {
-				name = provider.Intern(name);
-				type = provider.Intern(type);
-				attributes = provider.InternList(attributes);
-				defaultValue = provider.Intern(defaultValue);
-			}
-		}
-		
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
-			return type.GetHashCode() ^ name.GetHashCode()
-				^ (attributes != null ? attributes.GetHashCode() : 0)
-				^ (defaultValue != null ? defaultValue.GetHashCode() : 0)
-				^ region.GetHashCode() ^ flags;
+			unchecked {
+				int hashCode = 1919191 ^ (flags & ~1);
+				hashCode *= 31;
+				hashCode += type.GetHashCode();
+				hashCode *= 31;
+				hashCode += name.GetHashCode();
+				hashCode += attributes != null ? attributes.Count : 0;
+				return hashCode;
+			}
 		}
 		
 		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
 		{
+			// compare everything except for the IsFrozen flag
 			DefaultUnresolvedParameter p = other as DefaultUnresolvedParameter;
-			return p != null && type == p.type && attributes == p.attributes && name == p.name
-				&& defaultValue == p.defaultValue && region == p.region && flags == p.flags;
+			return p != null && type == p.type && name == p.name && ListEquals(attributes, p.attributes)
+				&& defaultValue == p.defaultValue && region == p.region && (flags & ~1) == (p.flags & ~1);
+		}
+		
+		static bool ListEquals(IList<IUnresolvedAttribute> list1, IList<IUnresolvedAttribute> list2)
+		{
+			return (list1 ?? EmptyList<IUnresolvedAttribute>.Instance).SequenceEqual(list2 ?? EmptyList<IUnresolvedAttribute>.Instance);
 		}
 		
 		public override string ToString()

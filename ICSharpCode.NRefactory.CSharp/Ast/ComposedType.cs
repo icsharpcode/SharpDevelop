@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			visitor.VisitComposedType (this);
 		}
-			
+		
 		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 		{
 			return visitor.VisitComposedType (this);
@@ -126,18 +126,20 @@ namespace ICSharpCode.NRefactory.CSharp
 			return this;
 		}
 		
-		public override ITypeReference ToTypeReference(NameLookupMode lookupMode = NameLookupMode.Type)
+		public override ITypeReference ToTypeReference(NameLookupMode lookupMode = NameLookupMode.Type, InterningProvider interningProvider = null)
 		{
-			ITypeReference t = this.BaseType.ToTypeReference(lookupMode);
+			if (interningProvider == null)
+				interningProvider = InterningProvider.Dummy;
+			ITypeReference t = this.BaseType.ToTypeReference(lookupMode, interningProvider);
 			if (this.HasNullableSpecifier) {
-				t = NullableType.Create(t);
+				t = interningProvider.Intern(NullableType.Create(t));
 			}
 			int pointerRank = this.PointerRank;
 			for (int i = 0; i < pointerRank; i++) {
-				t = new PointerTypeReference(t);
+				t = interningProvider.Intern(new PointerTypeReference(t));
 			}
 			foreach (var a in this.ArraySpecifiers.Reverse()) {
-				t = new ArrayTypeReference(t, a.Dimensions);
+				t = interningProvider.Intern(new ArrayTypeReference(t, a.Dimensions));
 			}
 			return t;
 		}
@@ -190,7 +192,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			visitor.VisitArraySpecifier (this);
 		}
-			
+		
 		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 		{
 			return visitor.VisitArraySpecifier (this);

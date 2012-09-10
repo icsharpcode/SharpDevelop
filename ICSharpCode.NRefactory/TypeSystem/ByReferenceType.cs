@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	[Serializable]
 	public sealed class ByReferenceTypeReference : ITypeReference, ISupportsInterning
 	{
-		ITypeReference elementType;
+		readonly ITypeReference elementType;
 		
 		public ByReferenceTypeReference(ITypeReference elementType)
 		{
@@ -96,11 +96,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public override string ToString()
 		{
 			return elementType.ToString() + "&";
-		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			elementType = provider.Intern(elementType);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()

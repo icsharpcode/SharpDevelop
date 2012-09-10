@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 	/// by <see cref="MemberTypeOrNamespaceReference"/>.
 	/// </remarks>
 	[Serializable]
-	public class AliasNamespaceReference : TypeOrNamespaceReference
+	public sealed class AliasNamespaceReference : TypeOrNamespaceReference, ISupportsInterning
 	{
 		readonly string identifier;
 		
@@ -54,6 +54,17 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		public override string ToString()
 		{
 			return identifier + "::";
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return identifier.GetHashCode();
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			AliasNamespaceReference anr = other as AliasNamespaceReference;
+			return anr != null && this.identifier == anr.identifier;
 		}
 	}
 }

@@ -27,11 +27,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	public interface ISupportsInterning
 	{
 		/// <summary>
-		/// Interns child objects and strings.
-		/// </summary>
-		void PrepareForInterning(IInterningProvider provider);
-		
-		/// <summary>
 		/// Gets a hash code for interning.
 		/// </summary>
 		int GetHashCodeForInterning();

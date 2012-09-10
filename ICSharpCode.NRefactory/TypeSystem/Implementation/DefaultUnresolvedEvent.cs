@@ -36,14 +36,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			FreezableHelper.Freeze(invokeAccessor);
 		}
 		
-		public override void ApplyInterningProvider(IInterningProvider provider)
-		{
-			base.ApplyInterningProvider(provider);
-			addAccessor    = provider.Intern(addAccessor);
-			removeAccessor = provider.Intern(removeAccessor);
-			invokeAccessor = provider.Intern(invokeAccessor);
-		}
-		
 		public DefaultUnresolvedEvent()
 		{
 			this.EntityType = EntityType.Event;

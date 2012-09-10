@@ -32,9 +32,9 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 	[Serializable]
 	public sealed class MemberTypeOrNamespaceReference : TypeOrNamespaceReference, ISupportsInterning
 	{
-		TypeOrNamespaceReference target;
-		string identifier;
-		IList<ITypeReference> typeArguments;
+		readonly TypeOrNamespaceReference target;
+		readonly string identifier;
+		readonly IList<ITypeReference> typeArguments;
 		readonly NameLookupMode lookupMode;
 		
 		public MemberTypeOrNamespaceReference(TypeOrNamespaceReference target, string identifier, IList<ITypeReference> typeArguments, NameLookupMode lookupMode = NameLookupMode.Type)
@@ -92,13 +92,6 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				return target.ToString() + "." + identifier;
 			else
 				return target.ToString() + "." + identifier + "<" + string.Join(",", typeArguments) + ">";
-		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			target = provider.Intern(target);
-			identifier = provider.Intern(identifier);
-			typeArguments = provider.InternList(typeArguments);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()

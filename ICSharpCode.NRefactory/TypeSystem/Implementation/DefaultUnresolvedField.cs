@@ -34,12 +34,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			base.FreezeInternal();
 		}
 		
-		public override void ApplyInterningProvider(IInterningProvider provider)
-		{
-			base.ApplyInterningProvider(provider);
-			constantValue = provider.Intern(constantValue);
-		}
-		
 		public DefaultUnresolvedField()
 		{
 			this.EntityType = EntityType.Field;

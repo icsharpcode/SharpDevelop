@@ -58,7 +58,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return other == null || other.IsNull;
 			}
 			
-			public override ITypeReference ToTypeReference(NameLookupMode lookupMode)
+			public override ITypeReference ToTypeReference(NameLookupMode lookupMode, InterningProvider interningProvider)
 			{
 				return SpecialType.UnknownType;
 			}
@@ -99,7 +99,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return visitor.VisitPatternPlaceholder (this, child, data);
 			}
 			
-			public override ITypeReference ToTypeReference(NameLookupMode lookupMode)
+			public override ITypeReference ToTypeReference(NameLookupMode lookupMode, InterningProvider interningProvider)
 			{
 				throw new NotSupportedException();
 			}
@@ -135,7 +135,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// For resolving simple names, the current namespace and usings from the CurrentUsingScope
 		/// (on CSharpTypeResolveContext only) is used.
 		/// </remarks>
-		public abstract ITypeReference ToTypeReference(NameLookupMode lookupMode = NameLookupMode.Type);
+		public abstract ITypeReference ToTypeReference(NameLookupMode lookupMode = NameLookupMode.Type, InterningProvider interningProvider = null);
 		
 		/// <summary>
 		/// Creates a pointer type from this type by nesting it in a <see cref="ComposedType"/>.

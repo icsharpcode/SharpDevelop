@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 	[Serializable]
 	public sealed class AttributeTypeReference : ITypeReference, ISupportsInterning
 	{
-		ITypeReference withoutSuffix, withSuffix;
+		readonly ITypeReference withoutSuffix, withSuffix;
 		
 		public AttributeTypeReference(ITypeReference withoutSuffix, ITypeReference withSuffix)
 		{
@@ -73,12 +73,6 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		public override string ToString()
 		{
 			return withoutSuffix.ToString() + "[Attribute]";
-		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			withoutSuffix = provider.Intern(withoutSuffix);
-			withSuffix = provider.Intern(withSuffix);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()

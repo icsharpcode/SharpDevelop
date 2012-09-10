@@ -18,12 +18,34 @@
 
 using System;
 using System.Globalization;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	[Serializable]
-	public sealed class TypeParameterReference : ITypeReference, ISupportsInterning
+	public sealed class TypeParameterReference : ITypeReference
 	{
+		static readonly TypeParameterReference[] classTypeParameterReferences = new TypeParameterReference[8];
+		static readonly TypeParameterReference[] methodTypeParameterReferences = new TypeParameterReference[8];
+		
+		/// <summary>
+		/// Creates a type parameter reference.
+		/// For common type parameter references, this method may return a shared instance.
+		/// </summary>
+		public static TypeParameterReference Create(EntityType ownerType, int index)
+		{
+			if (index >= 0 && index < 8 && (ownerType == EntityType.TypeDefinition || ownerType == EntityType.Method)) {
+				TypeParameterReference[] arr = (ownerType == EntityType.TypeDefinition) ? classTypeParameterReferences : methodTypeParameterReferences;
+				TypeParameterReference result = LazyInit.VolatileRead(ref arr[index]);
+				if (result == null) {
+					result = LazyInit.GetOrSet(ref arr[index], new TypeParameterReference(ownerType, index));
+				}
+				return result;
+			} else {
+				return new TypeParameterReference(ownerType, index);
+			}
+		}
+		
 		readonly EntityType ownerType;
 		readonly int index;
 		
@@ -50,21 +72,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			} else {
 				return SpecialType.UnknownType;
 			}
-		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-		}
-		
-		int ISupportsInterning.GetHashCodeForInterning()
-		{
-			return index * 33 + (int)ownerType;
-		}
-		
-		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
-		{
-			TypeParameterReference r = other as TypeParameterReference;
-			return r != null && index == r.index && ownerType == r.ownerType;
 		}
 		
 		public override string ToString()

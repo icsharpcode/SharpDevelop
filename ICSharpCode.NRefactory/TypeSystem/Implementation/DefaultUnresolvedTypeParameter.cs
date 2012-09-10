@@ -157,6 +157,22 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+		/// <summary>
+		/// Uses the specified interning provider to intern
+		/// strings and lists in this entity.
+		/// This method does not test arbitrary objects to see if they implement ISupportsInterning;
+		/// instead we assume that those are interned immediately when they are created (before they are added to this entity).
+		/// </summary>
+		public virtual void ApplyInterningProvider(InterningProvider provider)
+		{
+			if (provider == null)
+				throw new ArgumentNullException("provider");
+			FreezableHelper.ThrowIfFrozen(this);
+			name = provider.Intern(name);
+			attributes = provider.InternList(attributes);
+			constraints = provider.InternList(constraints);
+		}
+		
 		public virtual ITypeParameter CreateResolvedTypeParameter(ITypeResolveContext context)
 		{
 			IEntity owner = null;
