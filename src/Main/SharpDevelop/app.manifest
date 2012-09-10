@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
 	<description>A free .NET IDE</description>
 	<dependency>
@@ -20,11 +19,19 @@
 			<requestedPrivileges>
 				<!-- this section tells Vista that SharpDevelop runs correctly in standard -->
 				<!-- user mode and does not need file/registry virtualization -->
-				<requestedExecutionLevel level="asInvoker" uiAccess="false"/>
-				<!-- (uiAccess should be used only for UI Accessibility applications) -->
+				<requestedExecutionLevel level="asInvoker"/>
 			</requestedPrivileges>
 		</security>
 	</trustInfo>
+	
+	<compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+		<application>
+			<!-- Windows Vista -->
+			<supportedOS Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"/>
+			<!-- Windows 7 -->
+			<supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"/>
+		</application>
+	</compatibility>
 	
 	<application xmlns="urn:schemas-microsoft-com:asm.v3" >
 		<windowsSettings xmlns:ws="http://schemas.microsoft.com/SMI/2005/WindowsSettings">
