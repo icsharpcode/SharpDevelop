@@ -12,9 +12,17 @@ namespace ICSharpCode.SharpDevelop.Util
 	/// </summary>
 	public class IOTaskScheduler
 	{
-		// TODO: use a limited-concurrency scheduler instead
+		static readonly CustomThreadPoolTaskScheduler scheduler = new CustomThreadPoolTaskScheduler(
+			Math.Min(Environment.ProcessorCount, 2));
+		
+		static readonly TaskFactory factory = new TaskFactory(scheduler);
+		
+		public static TaskScheduler Scheduler {
+			get { return scheduler; }
+		}
+		
 		public static TaskFactory Factory {
-			get { return Task.Factory; }
+			get { return factory; }
 		}
 	}
 }

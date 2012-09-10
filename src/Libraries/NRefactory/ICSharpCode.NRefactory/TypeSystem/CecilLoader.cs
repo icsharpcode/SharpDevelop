@@ -227,6 +227,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			
 			AddToTypeSystemTranslationTable(this.currentAssembly, assemblyDefinition);
+			currentAssembly.Freeze();
 			
 			var result = this.currentAssembly;
 			this.currentAssembly = null;

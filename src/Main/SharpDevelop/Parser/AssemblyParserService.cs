@@ -160,10 +160,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 				}
 			}
 			l.CancellationToken = cancellationToken;
-			l.InterningProvider = null;
 			pc = l.LoadAssembly(asm);
-			//SaveToCacheAsync(cacheFileName, lastWriteTime, pc).FireAndForget();
-			SaveToCache(cacheFileName, lastWriteTime, pc);
+			SaveToCacheAsync(cacheFileName, lastWriteTime, pc).FireAndForget();
+			//SaveToCache(cacheFileName, lastWriteTime, pc);
 			return pc;
 		}
 		

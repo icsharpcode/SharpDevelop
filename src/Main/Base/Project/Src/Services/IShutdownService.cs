@@ -49,8 +49,19 @@ namespace ICSharpCode.SharpDevelop
 		
 		/// <summary>
 		/// Gets a cancellation token that gets signalled when SharpDevelop is shutting down.
+		/// 
+		/// This cancellation token may be used to stop background calculations.
 		/// </summary>
 		CancellationToken ShutdownToken { get; }
+		
+		/// <summary>
+		/// Gets a cancellation token that gets signalled a couple of seconds after the ShutdownToken.
+		/// 
+		/// This cancellation token may be used to stop background calculations that should run
+		/// for a limited time after SharpDevelop is closed (e.g. saving state in caches
+		/// - work that should better run even though we're shutting down, but shouldn't take too long either)
+		/// </summary>
+		CancellationToken DelayedShutdownToken { get; }
 		
 		/// <summary>
 		/// Adds a background task on which SharpDevelop should wait on shutdown.

@@ -121,7 +121,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 					} else {
 						RemoveCache(cacheFileName);
 					}
-				}, SD.ShutdownService.ShutdownToken);
+				}, SD.ShutdownService.DelayedShutdownToken);
 			SD.ShutdownService.AddBackgroundTask(task);
 			return task;
 		}

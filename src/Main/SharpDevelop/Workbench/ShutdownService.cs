@@ -13,15 +13,21 @@ namespace ICSharpCode.SharpDevelop.Workbench
 {
 	sealed class ShutdownService : IShutdownService
 	{
-		CancellationTokenSource cts = new CancellationTokenSource();
+		CancellationTokenSource shutdownCTS = new CancellationTokenSource();
+		CancellationTokenSource delayedShutdownCTS = new CancellationTokenSource();
 		
 		public CancellationToken ShutdownToken {
-			get { return cts.Token; }
+			get { return shutdownCTS.Token; }
+		}
+		
+		public CancellationToken DelayedShutdownToken {
+			get { return delayedShutdownCTS.Token; }
 		}
 		
 		internal void SignalShutdownToken()
 		{
-			cts.Cancel();
+			shutdownCTS.Cancel();
+			delayedShutdownCTS.CancelAfter(2000);
 		}
 		
 		public bool Shutdown()
