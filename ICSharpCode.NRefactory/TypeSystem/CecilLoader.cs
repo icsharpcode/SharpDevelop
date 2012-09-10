@@ -514,7 +514,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			MethodImplAttributes implAttributes = methodDefinition.ImplAttributes & ~MethodImplAttributes.CodeTypeMask;
 			
 			#region DllImportAttribute
-			if (methodDefinition.HasPInvokeInfo) {
+			if (methodDefinition.HasPInvokeInfo && methodDefinition.PInvokeInfo != null) {
 				PInvokeInfo info = methodDefinition.PInvokeInfo;
 				var dllImport = new DefaultUnresolvedAttribute(dllImportAttributeTypeRef, new[] { KnownTypeReference.String });
 				dllImport.PositionalArguments.Add(CreateSimpleConstantValue(KnownTypeReference.String, info.Module.Name));
