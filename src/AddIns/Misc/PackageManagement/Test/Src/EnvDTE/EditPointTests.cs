@@ -69,7 +69,7 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateMethodEditPoint()
 		{
-			var codeFunction = new CodeFunction(methodHelper.Method, documentLoader);
+			var codeFunction = new CodeFunction(methodHelper.Method, documentLoader, null);
 			TextPoint startPoint = codeFunction.GetStartPoint();
 			endPoint = codeFunction.GetEndPoint();
 			editPoint = startPoint.CreateEditPoint();

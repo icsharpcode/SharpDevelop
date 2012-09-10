@@ -257,6 +257,10 @@
       <DependentUpon>DebugOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectCustomToolOptionsPanel.xaml.cs">
+      <DependentUpon>ProjectCustomToolOptionsPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\StorageLocationConverter.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\StorageLocationPicker.cs" />
@@ -350,6 +354,9 @@
     <Compile Include="Src\Internal\Templates\File\FileTemplate.cs" />
     <Compile Include="Src\Internal\Templates\TextTemplate.cs" />
     <Compile Include="Src\Internal\Templates\File\INewFileCreator.cs" />
+    <Compile Include="Src\Project\BeforeBuildCustomToolFileNameFilter.cs" />
+    <Compile Include="Src\Project\BeforeBuildCustomToolProjectItems.cs" />
+    <Compile Include="Src\Project\BeforeBuildCustomToolRunner.cs" />
     <Compile Include="Src\Project\Behaviors\DefaultProjectBehavior.cs" />
     <Compile Include="Src\Project\Behaviors\DotNetStartBehavior.cs" />
     <Compile Include="Src\Project\Behaviors\ProjectBehavior.cs" />
@@ -391,6 +398,7 @@
     </Compile>
     <Compile Include="Src\Project\PortableLibrary\SupportedFramework.cs" />
     <Compile Include="Src\Project\ProjectChangeWatcher.cs" />
+    <Compile Include="Src\Project\ProjectCustomToolOptions.cs" />
     <Compile Include="Src\Project\ProjectLoadInformation.cs" />
     <Compile Include="Src\Project\ProjectStartException.cs" />
     <Compile Include="Src\Project\ProjectLoadException.cs" />
@@ -905,6 +913,7 @@
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectCustomToolOptionsPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.xaml">
       <DependentUpon>ProjectOptionPanel.cs</DependentUpon>
     </Page>

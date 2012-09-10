@@ -7,6 +7,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public enum vsCMFunction
 	{
-		vsCMFunctionFunction = 128
+		vsCMFunctionOther       = 0,
+		vsCMFunctionConstructor = 1,
+		vsCMFunctionFunction    = 128
 	}
 }

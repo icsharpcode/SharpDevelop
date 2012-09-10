@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,7 +11,7 @@ using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class ChildProjectItems : IEnumerable<ProjectItem>
+	public class ChildProjectItems : EnumerableProjectItems
 	{
 		public ChildProjectItems(ProjectItem projectItem)
 		{
@@ -25,18 +24,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		Project Project { get; set; }
 		List<ProjectItem> ProjectItems { get; set; }
 		
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
-		
-		public IEnumerator<ProjectItem> GetEnumerator()
-		{
-			List<ProjectItem> projectItems = GetProjectItems().ToList();
-			return projectItems.GetEnumerator();
-		}
-		
-		IEnumerable<ProjectItem> GetProjectItems()
+		protected override IEnumerable<ProjectItem> GetProjectItems()
 		{
 			foreach (SD.ProjectItem msbuildProjectItem in Project.MSBuildProject.Items) {
 				ProjectItem item = GetChildProjectItem(msbuildProjectItem);

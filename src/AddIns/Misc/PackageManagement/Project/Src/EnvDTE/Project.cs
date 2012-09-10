@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Construction;
 using SD = ICSharpCode.SharpDevelop.Project;
@@ -156,8 +158,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		internal ProjectItem AddFileProjectItemUsingFullPath(string path)
 		{
+			return AddFileProjectItemWithDependentUsingFullPath(path, null);
+		}
+		
+		internal ProjectItem AddFileProjectItemWithDependentUsingFullPath(string path, string dependentUpon)
+		{
 			FileProjectItem fileProjectItem = CreateFileProjectItemUsingFullPath(path);
 			fileProjectItem.FileName = path;
+			fileProjectItem.DependentUpon = dependentUpon;
 			AddProjectItemToMSBuildProject(fileProjectItem);
 			return new ProjectItem(this, fileProjectItem);
 		}
@@ -279,6 +287,25 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		internal void RemoveProjectItem(ProjectItem projectItem)
 		{
 			projectService.RemoveProjectItem(MSBuildProject, projectItem.MSBuildProjectItem);
+		}
+		
+		internal ProjectItem FindProjectItem(string fileName)
+		{
+			SD.FileProjectItem item = MSBuildProject.FindFile(fileName);
+			if (item != null) {
+				return new ProjectItem(this, item);
+			}
+			return null;
+		}
+		
+		internal IViewContent GetOpenFile(string fileName)
+		{
+			return fileService.GetOpenFile(fileName);
+		}
+		
+		internal void OpenFile(string fileName)
+		{
+			fileService.OpenFile(fileName);
 		}
 	}
 }

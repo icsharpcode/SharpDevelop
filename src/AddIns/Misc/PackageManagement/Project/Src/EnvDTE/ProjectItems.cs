@@ -11,13 +11,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class ProjectItems : MarshalByRefObject, IEnumerable
 	{
-		Project project;
 		IPackageManagementFileService fileService;
 		object parent;
 		
 		public ProjectItems(Project project, object parent, IPackageManagementFileService fileService)
 		{
-			this.project = project;
+			this.Project = project;
 			this.fileService = fileService;
 			this.parent = parent;
 		}
@@ -25,6 +24,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public ProjectItems()
 		{
 		}
+		
+		protected Project Project { get; private set; }
 		
 		public virtual object Parent {
 			get { return parent; }
@@ -34,8 +35,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			string include = GetIncludePathForFileCopy(filePath);
 			CopyFileIntoProject(filePath, include);
-			project.AddFileProjectItemUsingPathRelativeToProject(include);
-			project.Save();
+			Project.AddFileProjectItemUsingPathRelativeToProject(include);
+			Project.Save();
 		}
 		
 		/// <summary>
@@ -68,13 +69,17 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		string GetFileNameInProjectFromProjectItemInclude(string projectItemInclude)
 		{
-			return Path.Combine(project.MSBuildProject.Directory, projectItemInclude);
+			return Path.Combine(Project.MSBuildProject.Directory, projectItemInclude);
 		}
 		
 		public virtual IEnumerator GetEnumerator()
 		{
-			var items = new ProjectItemsInsideProject(project);
-			return items.GetEnumerator();
+			return GetProjectItems().GetEnumerator();
+		}
+		
+		protected virtual IEnumerable<ProjectItem> GetProjectItems()
+		{
+			return new ProjectItemsInsideProject(Project);
 		}
 		
 		internal virtual ProjectItem Item(string name)
@@ -84,13 +89,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 					return item;
 				}
 			}
-			return null;
+			throw new ArgumentException("Unable to find item: " + name, "name");
 		}
 		
 		internal virtual ProjectItem Item(int index)
 		{
-			var items = new ProjectItemsInsideProject(project);
-			return items.GetItem(index - 1);
+			return GetProjectItems()
+				.Skip(index - 1)
+				.First();
 		}
 		
 		public virtual ProjectItem Item(object index)
@@ -103,25 +109,33 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual ProjectItem AddFromDirectory(string directory)
 		{
-			using (IProjectBrowserUpdater updater = project.CreateProjectBrowserUpdater()) {
-				ProjectItem directoryItem = project.AddDirectoryProjectItemUsingFullPath(directory);
-				project.Save();
+			using (IProjectBrowserUpdater updater = Project.CreateProjectBrowserUpdater()) {
+				ProjectItem directoryItem = Project.AddDirectoryProjectItemUsingFullPath(directory);
+				Project.Save();
 				return directoryItem;
 			}
 		}
 		
 		public virtual ProjectItem AddFromFile(string fileName)
 		{
-			using (IProjectBrowserUpdater updater = project.CreateProjectBrowserUpdater()) {
-				ProjectItem projectItem = project.AddFileProjectItemUsingFullPath(fileName);
-				project.Save();
+			using (IProjectBrowserUpdater updater = Project.CreateProjectBrowserUpdater()) {
+				ProjectItem projectItem = AddFileProjectItemToProject(fileName);
+				Project.Save();
 				fileService.ParseFile(fileName);
 				return projectItem;
 			}
 		}
 		
+		/// <summary>
+		/// Adds a file to the project with this ProjectItems as its parent.
+		/// </summary>
+		protected virtual ProjectItem AddFileProjectItemToProject(string fileName)
+		{
+			return Project.AddFileProjectItemUsingFullPath(fileName);
+		}
+		
 		public virtual int Count {
-			get { return new ProjectItemsInsideProject(project).Count; }
+			get { return GetProjectItems().Count(); }
 		}
 	}
 }

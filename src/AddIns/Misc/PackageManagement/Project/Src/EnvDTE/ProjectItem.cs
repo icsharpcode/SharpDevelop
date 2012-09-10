@@ -7,6 +7,7 @@ using System.IO;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using SD = ICSharpCode.SharpDevelop.Project;
 
@@ -24,9 +25,17 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			this.projectItem = projectItem;
 			this.ContainingProject = project;
-			this.ProjectItems = new DirectoryProjectItems(this);
+			this.ProjectItems = CreateProjectItems(projectItem);
 			CreateProperties();
 			Kind = GetKindFromFileProjectItemType();
+		}
+		
+		ProjectItems CreateProjectItems(FileProjectItem projectItem)
+		{
+			if (projectItem.ItemType == ItemType.Folder) {
+				return new DirectoryProjectItems(this);
+			}
+			return new FileProjectItems(this);
 		}
 		
 		internal ProjectItem(MSBuildBasedProject project, IClass c)
@@ -34,12 +43,17 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 		}
 		
+		internal ProjectItem(IProjectContent projectContent, IClass c)
+			: this((MSBuildBasedProject)projectContent.Project, c)
+		{
+		}
+		
 		string GetKindFromFileProjectItemType()
 		{
 			if (IsDirectory) {
-				return Constants.VsProjectItemKindPhysicalFolder;
+				return Constants.vsProjectItemKindPhysicalFolder;
 			}
-			return Constants.VsProjectItemKindPhysicalFile;
+			return Constants.vsProjectItemKindPhysicalFile;
 		}
 		
 		bool IsDirectory {
@@ -162,7 +176,30 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual string FileNames(short index)
 		{
-			return projectItem.FileName;
+			return FileName;
+		}
+		
+		string FileName {
+			get { return projectItem.FileName; }
+		}
+		
+		public virtual Document Document {
+			get { return GetOpenDocument(); }
+		}
+		
+		Document GetOpenDocument()
+		{
+			IViewContent view = ContainingProject.GetOpenFile(FileName);
+			if (view != null) {
+				return new Document(FileName, view);
+			}
+			return null;
+		}
+		
+		public virtual Window Open(string viewKind)
+		{
+			ContainingProject.OpenFile(FileName);
+			return null;
 		}
 	}
 }

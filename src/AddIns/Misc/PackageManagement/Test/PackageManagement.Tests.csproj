@@ -76,26 +76,32 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Src\ClassCodeGeneratorTests.cs" />
+    <Compile Include="Src\ClassKindUpdaterTests.cs" />
     <Compile Include="Src\CodeGeneratorTests.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeAttributesTests.cs" />
     <Compile Include="Src\EnvDTE\CodeClass2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeDelegateTests.cs" />
     <Compile Include="Src\EnvDTE\CodeElementsInNamespaceTests.cs" />
+    <Compile Include="Src\EnvDTE\CodeFunction2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeFunctionTests.cs" />
     <Compile Include="Src\EnvDTE\CodeImportTests.cs" />
     <Compile Include="Src\EnvDTE\CodeInterfaceTests.cs" />
     <Compile Include="Src\EnvDTE\CodeModelTests.cs" />
     <Compile Include="Src\EnvDTE\CodeNamespaceTests.cs" />
+    <Compile Include="Src\EnvDTE\CodeParameter2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeParameterTests.cs" />
     <Compile Include="Src\EnvDTE\CodeProperty2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeStructTests.cs" />
     <Compile Include="Src\EnvDTE\CodeTypeRef2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeTypeTests.cs" />
     <Compile Include="Src\EnvDTE\CodeVariableTests.cs" />
+    <Compile Include="Src\EnvDTE\DocumentTests.cs" />
     <Compile Include="Src\EnvDTE\EditPointTests.cs" />
     <Compile Include="Src\EnvDTE\FileCodeModel2Tests.cs" />
+    <Compile Include="Src\EnvDTE\FileProjectItemsTests.cs" />
     <Compile Include="Src\EnvDTE\NamespaceNameTests.cs" />
+    <Compile Include="Src\EnvDTE\ProjectsTests.cs" />
     <Compile Include="Src\EnvDTE\SolutionGlobalsTests.cs" />
     <Compile Include="Src\EnvDTE\SolutionTests.cs" />
     <Compile Include="Src\Helpers\AttributeHelper.cs" />
@@ -110,6 +116,7 @@
     <Compile Include="Src\Helpers\FakeUpdatePackageActionsFactory.cs" />
     <Compile Include="Src\Helpers\MethodHelper.cs" />
     <Compile Include="Src\Helpers\MethodOrPropertyHelper.cs" />
+    <Compile Include="Src\Helpers\ParameterHelper.cs" />
     <Compile Include="Src\Helpers\ProjectContentHelper.cs" />
     <Compile Include="Src\Helpers\PropertiesHelper.cs" />
     <Compile Include="Src\Helpers\PropertyHelper.cs" />
@@ -120,6 +127,7 @@
     <Compile Include="Src\Helpers\TestablePackageFromRepository.cs" />
     <Compile Include="Src\Helpers\TestableProjectBehaviour.cs" />
     <Compile Include="Src\Helpers\TestableSelectedProjectsForUpdatedPackages.cs" />
+    <Compile Include="Src\Helpers\TypeParameterHelper.cs" />
     <Compile Include="Src\Helpers\UsingHelper.cs" />
     <Compile Include="Src\Helpers\UsingScopeHelper.cs" />
     <Compile Include="Src\InstalledPackageViewModelTests.cs" />
@@ -178,6 +186,7 @@
     <Compile Include="Src\Helpers\TestableInstallProjectTemplatePackagesCommand.cs" />
     <Compile Include="Src\Helpers\TestablePowerShellMissingConsoleHost.cs" />
     <Compile Include="Src\InstallProjectTemplatePackagesCommandTests.cs" />
+    <Compile Include="Src\VirtualMethodUpdaterTests.cs" />
     <Compile Include="Src\NewProjectsCreatedTests.cs" />
     <Compile Include="Src\PackageActionRunnerTests.cs" />
     <Compile Include="Src\PackageActionsToRunTests.cs" />

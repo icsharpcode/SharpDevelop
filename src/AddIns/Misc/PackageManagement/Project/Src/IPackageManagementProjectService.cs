@@ -25,9 +25,11 @@ namespace ICSharpCode.PackageManagement
 		void Save(Solution solution);
 		
 		IEnumerable<IProject> GetOpenProjects();
-
+		
 		IProjectContent GetProjectContent(IProject project);
-
+		
 		IProjectBrowserUpdater CreateProjectBrowserUpdater();
+		
+		string GetDefaultCustomToolForFileName(FileProjectItem projectItem);
 	}
 }

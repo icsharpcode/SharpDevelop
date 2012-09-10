@@ -87,6 +87,8 @@
     <Compile Include="OutputTextLineParserTests.cs" />
     <Compile Include="OverridableMethodsTestFixture.cs" />
     <Compile Include="OverridablePropertiesTestFixture.cs" />
+    <Compile Include="Project\BeforeBuildCustomToolProjectItemsTests.cs" />
+    <Compile Include="Project\ProjectCustomToolOptionsTests.cs" />
     <Compile Include="PropertyPadSortingTests.cs" />
     <Compile Include="ReadOnlyDocumentTests.cs" />
     <Compile Include="ReflectionLayerTests.cs" />
@@ -126,6 +128,7 @@
     <Compile Include="Utils\MockSite.cs" />
     <Compile Include="Utils\MockTextMarker.cs" />
     <Compile Include="Utils\MockTextMarkerService.cs" />
+    <Compile Include="Utils\ProjectHelper.cs" />
     <Compile Include="Utils\Tests\MockAssemblyTests.cs" />
     <Compile Include="VBExpressionFinderTests.cs" />
     <Compile Include="WebReferences\ValidReferenceNameTests.cs" />
@@ -183,6 +186,7 @@
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
     <Folder Include="Highlighting" />
+    <Folder Include="Project" />
     <Folder Include="ServiceReferences" />
     <Folder Include="StringTagProvider" />
     <Folder Include="Utils" />

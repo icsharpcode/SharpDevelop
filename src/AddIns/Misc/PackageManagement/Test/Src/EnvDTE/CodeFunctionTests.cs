@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
@@ -15,6 +16,7 @@ namespace PackageManagement.Tests.EnvDTE
 	{
 		CodeFunction codeFunction;
 		MethodHelper helper;
+		IVirtualMethodUpdater methodUpdater;
 		
 		[SetUp]
 		public void Init()
@@ -36,7 +38,14 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateFunction()
 		{
-			codeFunction = new CodeFunction(helper.Method);
+			methodUpdater = MockRepository.GenerateStub<IVirtualMethodUpdater>();
+			codeFunction = new CodeFunction(helper.Method, null, methodUpdater);
+		}
+		
+		void CreatePublicConstructor(string name)
+		{
+			helper.CreatePublicConstructor(name);
+			CreateFunction();
 		}
 		
 		void SetDeclaringTypeAsInterface(string name)
@@ -62,6 +71,31 @@ namespace PackageManagement.Tests.EnvDTE
 		void AddReturnTypeToMethod(string type)
 		{
 			helper.AddReturnTypeToMethod(type);
+		}
+		
+		void MakeMethodStatic()
+		{
+			helper.MakeMethodStatic();
+		}
+		
+		void MakeMethodAbstract()
+		{
+			helper.MakeMethodAbstract();
+		}
+		
+		void MakeMethodVirtual()
+		{
+			helper.MakeMethodVirtual();
+		}
+		
+		void AddMethodAttribute(string attributeTypeName)
+		{
+			helper.AddAttributeToMethod(attributeTypeName);
+		}
+		
+		void MakeMethodOverridable()
+		{
+			helper.MakeMethodOverridable();
 		}
 		
 		[Test]
@@ -171,12 +205,12 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
-		public void Parameters_MethodHasOneParameter_ReturnsOneCodeParameter()
+		public void Parameters_MethodHasOneParameter_ReturnsOneCodeParameter2()
 		{
 			AddParameterToMethod("test");
 			CreatePublicFunction("MyClass.MyMethod");
 			
-			CodeParameter parameter = codeFunction.Parameters.FirstCodeParameterOrDefault();
+			CodeParameter2 parameter = codeFunction.Parameters.FirstCodeParameter2OrDefault();
 			
 			Assert.AreEqual("test", parameter.Name);
 		}
@@ -245,6 +279,122 @@ namespace PackageManagement.Tests.EnvDTE
 			CodeTypeRef2 typeRef = codeFunction.Type;
 			
 			Assert.AreEqual(codeFunction, typeRef.Parent);
+		}
+		
+		[Test]
+		public void FunctionKind_ClassMethod_ReturnsFunctionKind()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			
+			vsCMFunction kind = codeFunction.FunctionKind;
+			
+			Assert.AreEqual(vsCMFunction.vsCMFunctionFunction, kind);
+		}
+		
+		[Test]
+		public void FunctionKind_ClassConstructor_ReturnsConstructorKind()
+		{
+			CreatePublicConstructor("MyClass.MyClass");
+			
+			vsCMFunction kind = codeFunction.FunctionKind;
+			
+			Assert.AreEqual(vsCMFunction.vsCMFunctionConstructor, kind);
+		}
+		
+		[Test]
+		public void IsShared_StaticMethod_ReturnsTrue()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			MakeMethodStatic();
+			
+			bool shared = codeFunction.IsShared;
+			
+			Assert.IsTrue(shared);
+		}
+		
+		[Test]
+		public void IsShared_MethodIsNotStatic_ReturnsFalse()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			
+			bool shared = codeFunction.IsShared;
+			
+			Assert.IsFalse(shared);
+		}
+		
+		[Test]
+		public void MustImplement_AbstractMethod_ReturnsTrue()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			MakeMethodAbstract();
+			
+			bool mustImplement = codeFunction.MustImplement;
+			
+			Assert.IsTrue(mustImplement);
+		}
+		
+		[Test]
+		public void MustImplement_MethodIsNotAbstract_ReturnsFalse()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			
+			bool mustImplement = codeFunction.MustImplement;
+			
+			Assert.IsFalse(mustImplement);
+		}
+		
+		[Test]
+		public void CanOverride_MethodIsOverridable_ReturnsTrue()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			MakeMethodOverridable();
+			
+			bool canOverride = codeFunction.CanOverride;
+			
+			Assert.IsTrue(canOverride);
+		}
+		
+		[Test]
+		public void CanOverride_MethodIsNotAbstractOrVirtual_ReturnsFalse()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			
+			bool canOverride = codeFunction.CanOverride;
+			
+			Assert.IsFalse(canOverride);
+		}
+		
+		[Test]
+		public void Attributes_MethodHasOneAttribute_ReturnsOneAttribute()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			AddMethodAttribute("System.ObsoleteAttribute");
+			
+			CodeElements attributes = codeFunction.Attributes;
+			
+			CodeAttribute2 attribute = attributes.FirstCodeAttribute2OrDefault();
+			Assert.AreEqual(1, attributes.Count);
+			Assert.AreEqual("System.ObsoleteAttribute", attribute.FullName);
+		}
+		
+		[Test]
+		public void CanOverride_SetToTrueForFunction_VirtualKeywordAddedToFunction()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			
+			codeFunction.CanOverride = true;
+			
+			methodUpdater.AssertWasCalled(updater => updater.MakeMethodVirtual());
+		}
+		
+		[Test]
+		public void CanOverride_SetToFalseForFunction_VirtualKeywordNotAddedToFunction()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			
+			codeFunction.CanOverride = false;
+			
+			methodUpdater.AssertWasNotCalled(updater => updater.MakeMethodVirtual());
 		}
 	}
 }

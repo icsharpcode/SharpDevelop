@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Dom;
 using Rhino.Mocks;
 
@@ -32,10 +33,10 @@ namespace PackageManagement.Tests.Helpers
 			Class.Stub(c => c.CompilationUnit).Return(CompilationUnitHelper.CompilationUnit);
 		}
 		
-		public void AddAttributeToClass(string name)
+		public void AddAttributeToClass(string attributeTypeName)
 		{
 			var attributeHelper = new AttributeHelper();
-			attributeHelper.CreateAttribute(name);
+			attributeHelper.CreateAttribute(attributeTypeName);
 			attributeHelper.AddAttributeToClass(Class);
 		}
 		
@@ -66,13 +67,18 @@ namespace PackageManagement.Tests.Helpers
 			Class.Stub(c => c.BaseTypes).Return(baseTypes);
 		}
 		
-		IReturnType CreateBaseType(IClass baseTypeClass, string baseTypeFullName, string baseTypeDotNetName)
+		ReturnTypeHelper CreateBaseTypeHelper(IClass baseTypeClass, string baseTypeFullName, string baseTypeDotNetName)
 		{
 			var returnTypeHelper = new ReturnTypeHelper();
 			returnTypeHelper.CreateReturnType(baseTypeFullName);
 			returnTypeHelper.AddUnderlyingClass(baseTypeClass);
 			returnTypeHelper.AddDotNetName(baseTypeDotNetName);
-			return returnTypeHelper.ReturnType;
+			return returnTypeHelper;
+		}
+		
+		IReturnType CreateBaseType(IClass baseTypeClass, string baseTypeFullName, string baseTypeDotNetName)
+		{
+			return CreateBaseTypeHelper(baseTypeClass, baseTypeFullName, baseTypeDotNetName).ReturnType;
 		}
 		
 		public void AddClassToClassBaseTypes(string fullName)
@@ -161,6 +167,62 @@ namespace PackageManagement.Tests.Helpers
 		public void SetProjectForProjectContent(object project)
 		{
 			ProjectContentHelper.SetProjectForProjectContent(project);
+		}
+		
+		public void MakeClassAbstract()
+		{
+			Class.Stub(c => c.IsAbstract).Return(true);
+		}
+		
+		public void MakeClassPartial()
+		{
+			Class.Stub(c => c.IsPartial).Return(true);
+		}
+		
+		public void AddNamespaceUsingScopeToClass(string namespaceName)
+		{
+			var usingScopeHelper = new UsingScopeHelper();
+			usingScopeHelper.SetNamespaceName(namespaceName);
+			
+			Class.Stub(c => c.UsingScope).Return(usingScopeHelper.UsingScope);
+		}
+		
+		public void SetDotNetName(string className)
+		{
+			Class.Stub(c => c.DotNetName).Return(className);
+		}
+		
+		/// <summary>
+		/// Classes at the end of the array are at the top of the inheritance tree.
+		/// </summary>
+		public void AddClassInheritanceTreeClassesOnly(params string[] classNames)
+		{
+			List<IClass> classes = CreateClassInheritanceTree(classNames);
+			Class.Stub(c => c.ClassInheritanceTreeClassesOnly).Return(classes);
+		}
+		
+		List<IClass> CreateClassInheritanceTree(string[] classNames)
+		{
+			return classNames
+				.Select(name => CreateClassHelperWithPublicClass(name).Class)
+				.ToList();
+		}
+		
+		ClassHelper CreateClassHelperWithPublicClass(string name)
+		{
+			var classHelper = new ClassHelper();
+			classHelper.CreatePublicClass(name);
+			return classHelper;
+		}
+		
+		public void SetRegionBeginLine(int line)
+		{
+			SetRegion(new DomRegion(line, 1));
+		}
+		
+		public void SetRegion(DomRegion region)
+		{
+			Class.Stub(c => c.Region).Return(region);
 		}
 	}
 }

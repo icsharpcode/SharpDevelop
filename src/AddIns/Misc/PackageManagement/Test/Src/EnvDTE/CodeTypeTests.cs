@@ -46,7 +46,15 @@ namespace PackageManagement.Tests.EnvDTE
 		SDProject.FileProjectItem AddFileToProjectAndProjectContent(TestableProject project, string fileName)
 		{
 			helper.CompilationUnitHelper.SetFileName(fileName);
-			return project.AddFile(fileName);			
+			return project.AddFile(fileName);
+		}
+		
+		/// <summary>
+		/// Classes at the end of the array are at the top of the inheritance tree.
+		/// </summary>
+		void AddClassInheritanceTree(params string[] classNames)
+		{
+			helper.AddClassInheritanceTreeClassesOnly(classNames);
 		}
 		
 		[Test]
@@ -120,6 +128,71 @@ namespace PackageManagement.Tests.EnvDTE
 			ProjectItem item = codeType.ProjectItem;
 			
 			Assert.AreEqual("test.cs", item.Name);
+		}
+		
+		[Test]
+		public void IsDerivedFrom_ClassFullyQualifiedNameMatchesTypeNameBeingChecked_ReturnsTrue()
+		{
+			CreateProjectContent();
+			CreateClass("System.Web.Mvc.ActionResult");
+			CreateCodeType();
+			
+			bool derivedFrom = codeType.IsDerivedFrom("System.Web.Mvc.ActionResult");
+			
+			Assert.IsTrue(derivedFrom);
+		}
+		
+		[Test]
+		public void IsDerivedFrom_ClassFullyQualifiedNameDoesNotMatcheTypeNameBeingChecked_ReturnsFalse()
+		{
+			CreateProjectContent();
+			CreateClass("TestClass");
+			AddClassInheritanceTree("System.Object");
+			CreateCodeType();
+			
+			bool derivedFrom = codeType.IsDerivedFrom("System.Web.Mvc.ActionResult");
+			
+			Assert.IsFalse(derivedFrom);
+		}
+		
+		[Test]
+		public void IsDerivedFrom_ClassBaseTypeFullyQualifiedNameMatchesTypeName_ReturnsTrue()
+		{
+			CreateProjectContent();
+			CreateClass("CustomActionResult");
+			helper.AddBaseTypeToClass("System.Web.Mvc.ActionResult");
+			CreateCodeType();
+			
+			bool derivedFrom = codeType.IsDerivedFrom("System.Web.Mvc.ActionResult");
+			
+			Assert.IsTrue(derivedFrom);
+		}
+		
+		[Test]
+		public void IsDerivedFrom_ClassHasTypeInClassInheritanceTreeButNotImmediateBaseType_ReturnsTrue()
+		{
+			CreateProjectContent();
+			CreateClass("CustomActionResult");
+			AddClassInheritanceTree("CustomActionResultBase", "System.Web.Mvc.ActionResult");
+			CreateCodeType();
+			
+			bool derivedFrom = codeType.IsDerivedFrom("System.Web.Mvc.ActionResult");
+			
+			Assert.IsTrue(derivedFrom);
+		}
+		
+		[Test]
+		public void IsDerivedFrom_ClassHasClassInInheritanceTreeButNotImmediateParentAndClassBaseTypePropertyIsNotNull_ReturnsTrue()
+		{
+			CreateProjectContent();
+			CreateClass("CustomActionResult");
+			helper.AddBaseTypeToClass("CustomActionResultBase");
+			AddClassInheritanceTree("CustomActionResultBase", "System.Web.Mvc.ActionResult");
+			CreateCodeType();
+			
+			bool derivedFrom = codeType.IsDerivedFrom("System.Web.Mvc.ActionResult");
+			
+			Assert.IsTrue(derivedFrom);
 		}
 	}
 }

@@ -33,7 +33,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		void AddMethod(IMethod method)
 		{
-			AddCodeElement(new CodeFunction(method));
+			AddCodeElement(new CodeFunction2(method));
 		}
 		
 		void AddField(IField field)

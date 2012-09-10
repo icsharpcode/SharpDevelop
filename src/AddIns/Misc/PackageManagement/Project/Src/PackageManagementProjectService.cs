@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
@@ -108,6 +110,11 @@ namespace ICSharpCode.PackageManagement
 		public IProjectBrowserUpdater CreateProjectBrowserUpdater()
 		{
 			return new ThreadSafeProjectBrowserUpdater();
+		}
+		
+		public string GetDefaultCustomToolForFileName(FileProjectItem projectItem)
+		{
+			return CustomToolsService.GetCompatibleCustomToolNames(projectItem).FirstOrDefault();
 		}
 	}
 }

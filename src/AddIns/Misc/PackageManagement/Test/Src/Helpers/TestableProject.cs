@@ -68,7 +68,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			var fileProjectItem = new FileProjectItem(this, ItemType.Folder, include);
 			ProjectService.AddProjectItem(this, fileProjectItem);
-			return fileProjectItem;			
+			return fileProjectItem;
 		}
 		
 		public override string AssemblyName {
@@ -79,6 +79,13 @@ namespace PackageManagement.Tests.Helpers
 		public override string RootNamespace {
 			get { return rootNamespace; }
 			set { rootNamespace = value; }
+		}
+		
+		public FileProjectItem AddDependentFile(string include, string dependentUpon)
+		{
+			FileProjectItem dependentFile = AddFile(include);
+			dependentFile.DependentUpon = dependentUpon;
+			return dependentFile;
 		}
 	}
 }

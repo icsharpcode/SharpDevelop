@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
@@ -16,18 +17,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			this.projectService = projectService;
 		}
-	    
-        public IEnumerator<Project> GetEnumerator()
-        {
-        	return GetProjectsInSolution().GetEnumerator();
-        }
-	    
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-        	return GetEnumerator();
-        }
-        
-        IEnumerable<Project> GetProjectsInSolution()
+		
+		public IEnumerator<Project> GetEnumerator()
+		{
+			return GetProjectsInSolution().GetEnumerator();
+		}
+		
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+		
+		IEnumerable<Project> GetProjectsInSolution()
 		{
 			foreach (SD.MSBuildBasedProject msbuildProject in GetOpenMSBuildProjects()) {
 				yield return new Project(msbuildProject);
@@ -37,6 +38,20 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		IEnumerable<SD.IProject> GetOpenMSBuildProjects()
 		{
 			return projectService.GetOpenProjects();
+		}
+		
+		/// <summary>
+		/// Index of 1 returns the first project.
+		/// </summary>
+		public Project Item(int index)
+		{
+			return GetProjectsInSolution()
+				.Skip(index - 1)
+				.First();
+		}
+		
+		public int Count {
+			get { return GetProjectsInSolution().Count(); }
 		}
 	}
 }

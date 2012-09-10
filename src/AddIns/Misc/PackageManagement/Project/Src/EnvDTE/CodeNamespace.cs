@@ -40,7 +40,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return namespaceName.LastPart; }
 		}
 		
-		public CodeElements Members {
+		public virtual CodeElements Members {
 			get { return new CodeElementsInNamespace(projectContent, namespaceName); }
 		}
 	}

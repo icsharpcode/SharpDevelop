@@ -131,6 +131,15 @@ namespace PackageManagement.Tests
 			AddProjectItemToProject(fileProjectItem);
 		}
 		
+		void AddDependentFileToProject(string fileName, string dependentUpon)
+		{
+			var fileProjectItem = new FileProjectItem(project, ItemType.Compile) {
+				FileName = fileName,
+				DependentUpon = dependentUpon
+			};
+			AddProjectItemToProject(fileProjectItem);
+		}
+		
 		void AddReferenceToProject(string name)
 		{
 			var reference = new ReferenceProjectItem(project, name);
@@ -584,6 +593,151 @@ namespace PackageManagement.Tests
 			AddFileToProject(@"d:\PROJECTS\MYPROJECT\SUBFOLDER\TEST.CS");
 			
 			AssertChildFileNodesCountAreEqual(1, subfolderNode);
+		}
+		
+		[Test]
+		public void Constructor_NewDependentFileAddedWhenParentFileHasNoChildren_DependentFileAddedToParentFile()
+		{
+			string projectFileName = @"d:\projects\MyProject\MyProject.csproj";
+			string fileName = @"d:\projects\MyProject\MainForm.cs";
+			CreateProjectNodeWithOneFileInRootDirectoryExpanded(projectFileName, fileName);
+			string newFileName = @"d:\projects\MyProject\MainForm.Designer.cs";
+			
+			AddDependentFileToProject(newFileName, "MainForm.cs");
+			
+			FileNode mainFormFileNode = GetFirstFileChildNode(projectNode);
+			FileNode mainFormDesignerFileNode = GetFirstFileChildNode(mainFormFileNode);
+			Assert.AreEqual(newFileName, mainFormDesignerFileNode.FileName);
+			Assert.AreEqual(FileNodeStatus.BehindFile, mainFormDesignerFileNode.FileNodeStatus);
+		}
+		
+		[Test]
+		public void Constructor_NewDependentFileAddedWhenParentFileHasNoChildren_FileNotAddedToSameDirectoryAsParentFile()
+		{
+			string projectFileName = @"d:\projects\MyProject\MyProject.csproj";
+			string fileName = @"d:\projects\MyProject\MainForm.cs";
+			CreateProjectNodeWithOneFileInRootDirectoryExpanded(projectFileName, fileName);
+			string newFileName = @"d:\projects\MyProject\MainForm.Designer.cs";
+			
+			AddDependentFileToProject(newFileName, "MainForm.cs");
+			
+			// Should be only two project child nodes.
+			// References + MainForm.cs
+			Assert.AreEqual(2, projectNode.Nodes.Count);
+		}
+		
+		[Test]
+		public void Constructor_ProjectHasFileInProjectAndInSubdirectoryAndNewFileAddedInSubdirectory_NewFileNotAddedAsChildToExistingFile()
+		{
+			CreateExpandedProjectNodeWithFiles(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\a.cs",
+				@"d:\projects\MyProject\src\b.cs");
+			DirectoryNode srcDirectoryNode = GetFirstDirectoryChildNode(projectNode);
+			srcDirectoryNode.Expanding();
+			
+			AddFileToProject(@"d:\projects\MyProject\src\c.cs");
+			
+			FileNode firstFileNode = GetFirstFileChildNode(projectNode);
+			Assert.AreEqual(0, firstFileNode.Nodes.Count);
+		}
+		
+		[Test]
+		public void Constructor_ProjectHasThreeFilesAndDependentFileAddedToSecondFile_DependentFileAddedToSecondFile()
+		{
+			CreateExpandedProjectNodeWithFiles(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\A.cs",
+				@"d:\projects\MyProject\MainForm.cs",
+				@"d:\projects\MyProject\Z.cs");
+			
+			AddDependentFileToProject(@"d:\projects\MyProject\MainForm.Designer.cs", "MainForm.cs");
+			
+			FileNode mainFormFileNode = GetFirstChildNode(projectNode, n => n.Text == "MainForm.cs") as FileNode;
+			FileNode mainFormDesignerFileNode = GetFirstFileChildNode(mainFormFileNode);
+			Assert.AreEqual(@"d:\projects\MyProject\MainForm.Designer.cs", mainFormDesignerFileNode.FileName);
+		}
+		
+		[Test]
+		public void Constructor_ProjectHasThreeFilesAndDependentFileAddedToSecondFile_DependentFileNotAddedToFirst()
+		{
+			CreateExpandedProjectNodeWithFiles(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\A.cs",
+				@"d:\projects\MyProject\MainForm.cs",
+				@"d:\projects\MyProject\Z.cs");
+			
+			AddDependentFileToProject(@"d:\projects\MyProject\MainForm.Designer.cs", "MainForm.cs");
+			
+			FileNode fileNode = GetFirstFileChildNode(projectNode);
+			Assert.AreEqual(0, fileNode.Nodes.Count);
+		}
+		
+		[Test]
+		public void Constructor_ProjectHasOneFileAndDependentFileAddedWithDifferentCaseToParentFile_DependentFileAddedToParentFile()
+		{
+			CreateExpandedProjectNodeWithFiles(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\MainForm.cs");
+			
+			AddDependentFileToProject(@"d:\projects\MyProject\MainForm.Designer.cs", "MAINFORM.CS");
+			
+			FileNode mainFormFileNode = GetFirstFileChildNode(projectNode);
+			FileNode mainFormDesignerFileNode = GetFirstFileChildNode(mainFormFileNode);
+			Assert.AreEqual(@"d:\projects\MyProject\MainForm.Designer.cs", mainFormDesignerFileNode.FileName);
+		}
+		
+		[Test]
+		public void Constructor_DependentFileAddedWhenProjectHasTwoFilesWithSameParentNameButInDifferentFolders_DependentFileNotAddedToFileInDifferentDirectoryWithSameDependentName()
+		{
+			CreateExpandedProjectNodeWithFiles(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\a.cs",
+				@"d:\projects\MyProject\src\a.cs",
+				@"d:\projects\MyProject\src\b.cs");
+			DirectoryNode srcDirectoryNode = GetFirstDirectoryChildNode(projectNode);
+			srcDirectoryNode.Expanding();
+			
+			AddDependentFileToProject(@"d:\projects\MyProject\src\c.cs", "a.cs");
+			
+			FileNode firstFileNode = GetFirstFileChildNode(projectNode);
+			Assert.AreEqual(0, firstFileNode.Nodes.Count);
+		}
+		
+		[Test]
+		public void Constructor_DependentFileAddedWhenProjectHasTwoFilesWithSameParentNameButInDifferentFolders_DependentFileAddedToFileInSameDirectory()
+		{
+			CreateExpandedProjectNodeWithFiles(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\a.cs",
+				@"d:\projects\MyProject\src\a.cs",
+				@"d:\projects\MyProject\src\b.cs");
+			DirectoryNode srcDirectoryNode = GetFirstDirectoryChildNode(projectNode);
+			srcDirectoryNode.Expanding();
+			
+			AddDependentFileToProject(@"d:\projects\MyProject\src\c.cs", "a.cs");
+			
+			FileNode fileNode = GetFirstFileChildNode(srcDirectoryNode);
+			FileNode childNode = GetFirstFileChildNode(fileNode);
+			Assert.AreEqual(@"d:\projects\MyProject\src\c.cs", childNode.FileName);
+		}
+		
+		[Test]
+		public void Constructor_DependentFileAddedWhenProjectHasTwoFilesWithSameParentNameButInDifferentFoldersAndFolderCasingDifferent_DependentFileAddedToFileInSameDirectory()
+		{
+			CreateExpandedProjectNodeWithFiles(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\a.cs",
+				@"d:\projects\MYPROJECT\SRC\a.cs",
+				@"d:\projects\MyProject\src\b.cs");
+			DirectoryNode srcDirectoryNode = GetFirstDirectoryChildNode(projectNode);
+			srcDirectoryNode.Expanding();
+			
+			AddDependentFileToProject(@"d:\projects\MyProject\src\c.cs", "a.cs");
+			
+			FileNode fileNode = GetFirstFileChildNode(srcDirectoryNode);
+			FileNode childNode = GetFirstFileChildNode(fileNode);
+			Assert.AreEqual(@"d:\projects\MyProject\src\c.cs", childNode.FileName);
 		}
 	}
 }
