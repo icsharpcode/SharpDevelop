@@ -159,7 +159,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			readonly IHighlightingDefinition highlightingDefinition;
 			readonly IHighlighter baseHighlighter;
 			readonly IDocument document;
-			List<IHighlighter> additionalHighlighters = new List<IHighlighter>();
 			
 			public CustomizingHighlighter(TextView textView, IEnumerable<CustomizedHighlightingColor> customizations, IHighlightingDefinition highlightingDefinition, IHighlighter baseHighlighter)
 			{
@@ -202,25 +201,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			public void UpdateHighlightingState(int lineNumber)
 			{
 				baseHighlighter.UpdateHighlightingState(lineNumber);
-				foreach (var h in additionalHighlighters) {
-					h.UpdateHighlightingState(lineNumber);
-				}
-			}
-			
-			public void AddAdditionalHighlighter(IHighlighter highlighter)
-			{
-				if (highlighter == null)
-					throw new ArgumentNullException("highlighter");
-				if (highlighter.Document != baseHighlighter.Document)
-					throw new ArgumentException("Additional highlighters must use the same document as the base highlighter");
-				additionalHighlighters.Add(highlighter);
-				highlighter.HighlightingStateChanged += highlighter_HighlightingStateChanged;
-			}
-			
-			public void RemoveAdditionalHighlighter(IHighlighter highlighter)
-			{
-				additionalHighlighters.Remove(highlighter);
-				highlighter.HighlightingStateChanged -= highlighter_HighlightingStateChanged;
 			}
 			
 			void highlighter_HighlightingStateChanged(IHighlighter sender, int fromLineNumber, int toLineNumber)
@@ -241,22 +221,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			public IEnumerable<HighlightingColor> GetColorStack(int lineNumber)
 			{
-				List<HighlightingColor> list = new List<HighlightingColor>();
-				for (int i = additionalHighlighters.Count - 1; i >= 0; i--) {
-					var s = additionalHighlighters[i].GetColorStack(lineNumber);
-					if (s != null)
-						list.AddRange(s);
-				}
-				list.AddRange(baseHighlighter.GetColorStack(lineNumber));
-				return list;
+				return baseHighlighter.GetColorStack(lineNumber);
 			}
 			
 			public HighlightedLine HighlightLine(int lineNumber)
 			{
 				HighlightedLine line = baseHighlighter.HighlightLine(lineNumber);
-				foreach (IHighlighter h in additionalHighlighters) {
-					line.MergeWith(h.HighlightLine(lineNumber));
-				}
 				foreach (HighlightedSection section in line.Sections) {
 					section.Color = CustomizeColor(section.Color, customizations);
 				}

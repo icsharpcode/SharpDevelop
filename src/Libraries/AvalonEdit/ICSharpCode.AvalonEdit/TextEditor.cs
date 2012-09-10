@@ -331,7 +331,8 @@ namespace ICSharpCode.AvalonEdit
 			}
 			if (newValue != null) {
 				colorizer = CreateColorizer(newValue);
-				this.TextArea.TextView.LineTransformers.Insert(0, colorizer);
+				if (colorizer != null)
+					this.TextArea.TextView.LineTransformers.Insert(0, colorizer);
 			}
 		}
 		

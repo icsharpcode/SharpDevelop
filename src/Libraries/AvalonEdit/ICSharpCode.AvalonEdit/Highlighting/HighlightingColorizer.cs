@@ -30,7 +30,6 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			if (definition == null)
 				throw new ArgumentNullException("definition");
 			this.definition = definition;
-			this.highlighter = highlighter;
 		}
 		
 		/// <summary>

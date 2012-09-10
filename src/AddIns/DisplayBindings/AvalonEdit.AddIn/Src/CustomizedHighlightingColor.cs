@@ -19,15 +19,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// <summary>
 		/// The language to which this customization applies. null==all languages.
 		/// </summary>
-		public string Language;
+		public string Language { get; set; }
 		
 		/// <summary>
 		/// The name of the highlighting color being modified.
 		/// </summary>
-		public string Name;
+		public string Name { get; set; }
 		
-		public bool Bold, Italic;
-		public Color? Foreground, Background;
+		public bool Bold { get; set; }
+		public bool Italic { get; set; }
+		public Color? Foreground { get; set; }
+		public Color? Background { get; set; }
 		
 		public static IReadOnlyList<CustomizedHighlightingColor> LoadColors()
 		{

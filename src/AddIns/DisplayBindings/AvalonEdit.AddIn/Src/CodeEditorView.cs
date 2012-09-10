@@ -541,9 +541,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		protected override IVisualLineTransformer CreateColorizer(IHighlightingDefinition highlightingDefinition)
 		{
-			return new CustomizableHighlightingColorizer(
-				highlightingDefinition,
-				FetchCustomizations(highlightingDefinition.Name));
+			return null;
 		}
 		
 		// TODO: move this into SharpDevelopTextEditor
