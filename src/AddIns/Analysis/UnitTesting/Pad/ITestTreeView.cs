@@ -17,8 +17,8 @@ namespace ICSharpCode.UnitTesting
 		ITestSolution TestSolution { get; }
 		
 		/// <summary>
-		/// Gets the selected tests.
+		/// Gets/Sets the selected tests.
 		/// </summary>
-		IEnumerable<ITest> SelectedTests { get; }
+		IEnumerable<ITest> SelectedTests { get; set; }
 	}
 }

@@ -64,15 +64,15 @@ namespace ICSharpCode.UnitTesting
 			return null;
 		}
 		
-		public ITest GetTestForEntity(IEntity entity)
+		public IEnumerable<ITest> GetTestsForEntity(IEntity entity)
 		{
 			if (entity == null)
-				return null;
+				return Enumerable.Empty<ITest>();
 			ITestProject testProject = GetTestProject(entity.ParentAssembly.GetProject());
 			if (testProject != null)
-				return testProject.GetTestForEntity(entity);
+				return testProject.GetTestsForEntity(entity);
 			else
-				return null;
+				return Enumerable.Empty<ITest>();
 		}
 		
 		/// <summary>

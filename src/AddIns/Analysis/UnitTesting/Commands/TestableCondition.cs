@@ -42,9 +42,7 @@ namespace ICSharpCode.UnitTesting
 			}
 			if (testSolution != null) {
 				IEntity entity = ResolveResultMenuCommand.GetEntity(caller);
-				ITest test = testSolution.GetTestForEntity(entity);
-				if (test != null)
-					return new[] { test };
+				return testSolution.GetTestsForEntity(entity);
 			}
 			return Enumerable.Empty<ITest>();
 		}

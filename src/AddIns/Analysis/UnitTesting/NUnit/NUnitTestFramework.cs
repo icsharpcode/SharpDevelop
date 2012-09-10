@@ -35,13 +35,13 @@ namespace ICSharpCode.UnitTesting
 			return new NUnitTestProject(project);
 		}
 		
-		public static bool IsTestMember(IMember member)
+		public static bool IsTestMethod(IMethod method)
 		{
-			if (member == null || member.EntityType != EntityType.Method)
+			if (method == null || method.EntityType != EntityType.Method)
 				return false;
-			var testAttribute = testAttributeRef.Resolve(member.Compilation);
-			var testCaseAttribute = testCaseAttributeRef.Resolve(member.Compilation);
-			foreach (var attr in member.Attributes) {
+			var testAttribute = testAttributeRef.Resolve(method.Compilation);
+			var testCaseAttribute = testCaseAttributeRef.Resolve(method.Compilation);
+			foreach (var attr in method.Attributes) {
 				if (attr.AttributeType.Equals(testAttribute) || attr.AttributeType.Equals(testCaseAttribute))
 					return true;
 			}
@@ -57,9 +57,9 @@ namespace ICSharpCode.UnitTesting
 			if (type.IsAbstract)
 				return false;
 			var testFixtureAttribute = testFixtureAttributeRef.Resolve(type.Compilation);
-			if (type.Attributes.Any(attr => attr.AttributeType.Equals(testFixtureAttributeRef)))
+			if (type.Attributes.Any(attr => attr.AttributeType.Equals(testFixtureAttribute)))
 				return true;
-			return type.Methods.Any(IsTestMember);
+			return type.Methods.Any(IsTestMethod);
 		}
 	}
 }

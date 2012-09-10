@@ -40,18 +40,6 @@
 	<Path name="/SharpDevelop/ViewContent/TextEditor/EntityContextMenu">
 		<Condition name="Testable">
 			<MenuItem id="UnitTestMenu" type="Menu" label="${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}" icon="PadIcons.NUnitTest" insertbefore="MenuBuilder">
-				<ComplexCondition action="Disable">
-					<And>
-						<Condition name="SolutionOpen"/>
-						<Not>
-							<Condition name="RunningTests"/>
-						</Not>
-					</And>
-					<MenuItem id="RunInPad"
-					          label="${res:ICSharpCode.UnitTesting.RunInTestPad}"
-					          icon="PadIcons.NUnitTest"
-					          class="ICSharpCode.UnitTesting.RunSelectedTestCommand"/>
-				</ComplexCondition>
 				<Include id="CommonTestCommands" path="/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands"/>
 			</MenuItem>
 		</Condition>
@@ -59,12 +47,13 @@
 	
 	<Path name="/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands">
 		<ComplexCondition action="Disable">
-			<And>
-				<Condition name="SolutionOpen"/>
-				<Not>
-					<Condition name="RunningTests"/>
-				</Not>
-			</And>
+			<Not>
+				<Condition name="RunningTests"/>
+			</Not>
+			<MenuItem id="Run"
+			          icon="Icons.16x16.Debug.StartWithoutDebugging"
+			          label="${res:NUnitPad.NUnitPadContent.RunTestsContextMenuLabel}"
+			          class="ICSharpCode.UnitTesting.RunSelectedTestCommand"/>
 			<MenuItem id="RunWithDebugger"
 			          label="${res:ICSharpCode.UnitTesting.RunWithDebugger}"
 			          icon="Icons.16x16.RunProgramIcon"
@@ -115,18 +104,6 @@
 	</Path>
 	
 	<Path name="/SharpDevelop/Pads/UnitTestsPad/ContextMenu">
-		<ComplexCondition action="Disable">
-			<And>
-				<Condition name="SolutionOpen"/>
-				<Not>
-					<Condition name="RunningTests"/>
-				</Not>
-			</And>
-			<MenuItem id="Run"
-			          icon="Icons.16x16.RunProgramIcon"
-			          label="${res:NUnitPad.NUnitPadContent.RunTestsContextMenuLabel}"
-			          class="ICSharpCode.UnitTesting.RunSelectedTestCommand"/>
-		</ComplexCondition>
 		<Include id="CommonTestCommands" path="/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands"/>
 		<ComplexCondition action="Disable">
 			<And>

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Project;
@@ -20,9 +21,9 @@ namespace ICSharpCode.UnitTesting
 		ITestProject GetTestProject(IProject project);
 		
 		/// <summary>
-		/// Gets the test for the specified entity.
-		/// Returns null if the entity is not a unit test.
+		/// Gets the tests for the specified entity.
+		/// Returns an empty collection if the entity is not a unit test.
 		/// </summary>
-		ITest GetTestForEntity(IEntity entity);
+		IEnumerable<ITest> GetTestsForEntity(IEntity entity);
 	}
 }

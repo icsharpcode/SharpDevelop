@@ -377,7 +377,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			SD.MainThread.InvokeAsync(
 				delegate {
 					ParseInformationUpdated(null, args);
-				});
+				}).FireAndForget();
 		}
 		
 		public override event EventHandler<ParseInformationEventArgs> ParseInformationUpdated = delegate {};

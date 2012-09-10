@@ -68,6 +68,39 @@ namespace ICSharpCode.UnitTesting
 			get {
 				return this.GetTopLevelSelection().OfType<UnitTestNode>().Select(n => n.Test);
 			}
+			set {
+				HashSet<ITest> newSelection = new HashSet<ITest>(value);
+				// Deselect tests that are no longer selected,
+				// and remove already-selected tests from the HashSet
+				foreach (UnitTestNode node in this.SelectedItems.OfType<UnitTestNode>().ToList()) {
+					if (!newSelection.Remove(node.Test))
+						this.SelectedItems.Remove(node);
+				}
+				// Now additionally select those tests which left in the set:
+				foreach (ITest test in newSelection) {
+					UnitTestNode node = FindNode(test);
+					if (node != null) {
+						foreach (var ancestor in node.Ancestors())
+							ancestor.IsExpanded = true;
+						this.SelectedItems.Add(node);
+					}
+				}
+			}
+		}
+		
+		UnitTestNode FindNode(ITest test)
+		{
+			if (testSolution == null)
+				return null;
+			var path = testSolution.FindPathToDescendant(test);
+			UnitTestNode node = Root as UnitTestNode;
+			foreach (var ancestor in path) {
+				if (node == null)
+					break;
+				node.EnsureLazyChildren();
+				node = node.Children.OfType<UnitTestNode>().FirstOrDefault(c => c.Test == ancestor);
+			}
+			return node;
 		}
 	}
 }

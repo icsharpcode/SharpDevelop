@@ -60,6 +60,10 @@ namespace ICSharpCode.UnitTesting
 			get { return panel; }
 		}
 		
+		public ITestTreeView TreeView {
+			get { return treeView; }
+		}
+		
 		void testService_OpenSolutionChanged(object sender, EventArgs e)
 		{
 			treeView.TestSolution = testService.OpenSolution;

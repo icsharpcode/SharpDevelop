@@ -6,8 +6,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -34,13 +36,14 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		public abstract ITestRunner CreateTestRunner(TestExecutionOptions options);
-		public abstract ITest GetTestForEntity(IEntity entity);
+		public abstract IEnumerable<ITest> GetTestsForEntity(IEntity entity);
 		public abstract void UpdateTestResult(TestResult result);
 		
 		// Test class management methods
-		public abstract bool IsTestClass(ITypeDefinition typeDefinition);
-		public abstract ITest CreateTestClass(ITypeDefinition typeDefinition);
-		public abstract void UpdateTestClass(ITest test, ITypeDefinition typeDefinition);
+		protected abstract bool IsTestClass(ITypeDefinition typeDefinition);
+		protected abstract ITest CreateTestClass(ITypeDefinition typeDefinition);
+		protected abstract void UpdateTestClass(ITest test, ITypeDefinition typeDefinition);
+		protected virtual void OnTestClassRemoved(ITest test) {}
 		
 		public IProject Project {
 			get { return project; }
@@ -59,17 +62,27 @@ namespace ICSharpCode.UnitTesting
 			return project;
 		}
 		
+		public override ImmutableStack<ITest> FindPathToDescendant(ITest test)
+		{
+			if (test == null || test.ParentProject != this)
+				return null;
+			return base.FindPathToDescendant(test);
+		}
+		
 		#region NotifyParseInformationChanged
+		HashSet<FullNameAndTypeParameterCount> dirtyTypeDefinitions = new HashSet<FullNameAndTypeParameterCount>();
+		
 		public void NotifyParseInformationChanged(IUnresolvedFile oldUnresolvedFile, IUnresolvedFile newUnresolvedFile)
 		{
 			// We use delay-loading: the nested tests of a project are
-			// initializedhmm 
+			// initialized only when the NestedTests collection is actually accessed
+			// (e.g. when the test tree node is expanded)
 			if (!NestedTestsInitialized)
 				return;
-			var dirtyTypeDefinitions = new HashSet<FullNameAndTypeParameterCount>();
-			AddToDirtyList(oldUnresolvedFile, dirtyTypeDefinitions);
-			AddToDirtyList(newUnresolvedFile, dirtyTypeDefinitions);
-			ProcessUpdates(dirtyTypeDefinitions);
+			// dirtyTypeDefinitions = new HashSet<FullNameAndTypeParameterCount>();
+			AddToDirtyList(oldUnresolvedFile);
+			AddToDirtyList(newUnresolvedFile);
+			ProcessUpdates();
 		}
 		
 		public override bool CanExpandNestedTests {
@@ -85,16 +98,21 @@ namespace ICSharpCode.UnitTesting
 			base.OnNestedTestsInitialized();
 		}
 		
-		void AddToDirtyList(IUnresolvedFile unresolvedFile, HashSet<FullNameAndTypeParameterCount> dirtyTypeDefinitions)
+		void AddToDirtyList(IUnresolvedFile unresolvedFile)
 		{
 			if (unresolvedFile != null) {
 				foreach (var td in unresolvedFile.TopLevelTypeDefinitions) {
-					dirtyTypeDefinitions.Add(new FullNameAndTypeParameterCount(td.Namespace, td.Name, td.TypeParameters.Count));
+					AddToDirtyList(new FullNameAndTypeParameterCount(td.Namespace, td.Name, td.TypeParameters.Count));
 				}
 			}
 		}
 		
-		void ProcessUpdates(HashSet<FullNameAndTypeParameterCount> dirtyTypeDefinitions)
+		protected virtual void AddToDirtyList(FullNameAndTypeParameterCount className)
+		{
+			dirtyTypeDefinitions.Add(className);
+		}
+		
+		void ProcessUpdates()
 		{
 			var compilation = SD.ParserService.GetCompilation(project);
 			var context = new SimpleTypeResolveContext(compilation.MainAssembly);
@@ -103,6 +121,7 @@ namespace ICSharpCode.UnitTesting
 				ITypeDefinition typeDef = compilation.MainAssembly.GetTypeDefinition(dirtyTypeDef.Namespace, dirtyTypeDef.Name, dirtyTypeDef.TypeParameterCount);
 				UpdateType(dirtyTypeDef, typeDef);
 			}
+			dirtyTypeDefinitions.Clear();
 		}
 		
 		/// <summary>
@@ -157,6 +176,7 @@ namespace ICSharpCode.UnitTesting
 					RemoveTestNamespace(this, project.RootNamespace, fullName.Namespace);
 				}
 			}
+			OnTestClassRemoved(test);
 		}
 		
 		ITest FindOrCreateNamespace(ITest parent, string parentNamespace, string @namespace)

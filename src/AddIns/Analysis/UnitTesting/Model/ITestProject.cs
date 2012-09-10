@@ -22,10 +22,10 @@ namespace ICSharpCode.UnitTesting
 		IProject Project { get; }
 		
 		/// <summary>
-		/// Gets the test for the specified entity.
-		/// Returns null if the entity is not a unit test.
+		/// Gets the tests for the specified entity.
+		/// Returns an empty list if the entity is not a unit test.
 		/// </summary>
-		ITest GetTestForEntity(IEntity entity);
+		IEnumerable<ITest> GetTestsForEntity(IEntity entity);
 		
 		/// <summary>
 		/// Returns a SharpDevelop <see cref="IBuildable"/> that builds the project

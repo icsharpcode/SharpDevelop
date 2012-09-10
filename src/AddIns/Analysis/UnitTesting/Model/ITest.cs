@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -53,6 +55,15 @@ namespace ICSharpCode.UnitTesting
 		/// Resets the test results for this test and all nested tests.
 		/// </summary>
 		void ResetTestResults();
+		
+		/// <summary>
+		/// Retrieves the path to the specified test, if it is a descendant of this test.
+		/// Returns null if the specified test is not a descendant.
+		/// Returns an empty stack if this is the test we are searching for.
+		/// The top-most element on the stack (=first when enumerating the stack) will be
+		/// a direct child of this test.
+		/// </summary>
+		ImmutableStack<ITest> FindPathToDescendant(ITest test);
 		
 		bool SupportsGoToDefinition { get; }
 		

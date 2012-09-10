@@ -4,6 +4,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -136,6 +137,22 @@ namespace ICSharpCode.UnitTesting
 			}
 			if (!useCompositeResultsOfNestedTests)
 				this.Result = TestResultType.None;
+		}
+		
+		public virtual ImmutableStack<ITest> FindPathToDescendant(ITest test)
+		{
+			if (test == this)
+				return ImmutableStack<ITest>.Empty;
+			if (test == null)
+				return null;
+			if (!NestedTestsInitialized)
+				return null; // we don't have any nested tests (yet)
+			foreach (ITest nestedTest in NestedTests) {
+				var stack = nestedTest.FindPathToDescendant(test);
+				if (stack != null)
+					return stack.Push(nestedTest);
+			}
+			return null;
 		}
 		
 		public virtual bool SupportsGoToDefinition {

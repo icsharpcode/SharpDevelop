@@ -118,7 +118,12 @@ namespace ICSharpCode.UnitTesting.Frameworks
 		
 		void ShowUnitTestsPad()
 		{
-			workbench.GetPad(typeof(UnitTestsPad)).BringPadToFront();
+			var descriptor = workbench.GetPad(typeof(UnitTestsPad));
+			descriptor.BringPadToFront();
+			var pad = descriptor.PadContent as UnitTestsPad;
+			if (pad != null) {
+				pad.TreeView.SelectedTests = testsByProject.Values;
+			}
 		}
 		
 		void ShowOutputPad()

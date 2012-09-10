@@ -29,7 +29,8 @@ namespace ICSharpCode.UnitTesting
 		
 		void Initialize(IEnumerable<ITest> selectedTests)
 		{
-			ITest test = selectedTests.Single();
+			// TODO: support running multiple tests
+			ITest test = selectedTests.First();
 			this.project = test.ParentProject.Project;
 			Assemblies.Add(project.OutputAssemblyFullPath);
 			if (test is TestNamespace) {
@@ -40,7 +41,7 @@ namespace ICSharpCode.UnitTesting
 			} else if (test is NUnitTestMethod) {
 				var testMethod = (NUnitTestMethod)test;
 				Fixture = testMethod.FixtureReflectionName;
-				Test = testMethod.Name;
+				Test = testMethod.MethodNameWithDeclaringTypeForInheritedTests;
 			}
 		}
 		
