@@ -123,15 +123,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 					case 2: {// whole project
 						
-						
+						if (ProjectService.CurrentProject == null) {
+							MessageService.ShowError("${res:Dialog.WordCountDialog.MustBeInProtectedModeWarning}");
+							break;
+						}
+						total = new Report(StringParser.Parse("${res:Dialog.WordCountDialog.TotalText}"), 0, 0, 0);
+						CountProject(ProjectService.CurrentProject, ref total);
+						break;
+					}
+					case 3: { // whole solution
 						if (ProjectService.OpenSolution == null) {
 							MessageService.ShowError("${res:Dialog.WordCountDialog.MustBeInProtectedModeWarning}");
 							break;
 						}
 						total = new Report(StringParser.Parse("${res:Dialog.WordCountDialog.TotalText}"), 0, 0, 0);
 						CountSolution(ProjectService.OpenSolution, ref total);
-						// ((ListView)ControlDictionary["resultListView"]).Items.Add(new ListViewItem(""));
-						// ((ListView)ControlDictionary["resultListView"]).Items.Add(all.ToListItem());
 						break;
 					}
 			}
@@ -141,14 +147,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void CountSolution(Solution solution, ref Report all)
 		{
 			foreach (IProject project in solution.Projects) {
-				foreach (ProjectItem item in project.Items) {
-					if (item.ItemType == ItemType.Compile) {
-						Report r = GetReport(item.FileName);
-						if (r != null) {
-							all += r;
-							items.Add(r);
-							// ((ListView)ControlDictionary["resultListView"]).Items.Add(r.ToListItem());
-						}
+				CountProject(project, ref all);
+			}
+		}
+		
+		void CountProject(IProject project, ref Report all)
+		{
+			foreach (ProjectItem item in project.Items) {
+				if (item.ItemType == ItemType.Compile) {
+					Report r = GetReport(item.FileName);
+					if (r != null) {
+						all += r;
+						items.Add(r);
 					}
 				}
 			}
@@ -230,9 +240,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			Icon  = IconService.GetIcon("Icons.16x16.FindIcon");
 			
-			((ComboBox)ControlDictionary["locationComboBox"]).Items.Add(StringParser.Parse("${res:Global.Location.currentfile}"));
-			((ComboBox)ControlDictionary["locationComboBox"]).Items.Add(StringParser.Parse("${res:Global.Location.allopenfiles}"));
-			((ComboBox)ControlDictionary["locationComboBox"]).Items.Add(StringParser.Parse("${res:Global.Location.wholeproject}"));
+			((ComboBox)ControlDictionary["locationComboBox"]).Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.LookIn.CurrentDocument536D2AC6-E704-40BD-9790-0EB02ED6D8A9}"));
+			((ComboBox)ControlDictionary["locationComboBox"]).Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.LookIn.AllOpenDocuments}"));
+			((ComboBox)ControlDictionary["locationComboBox"]).Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.LookIn.WholeProject}"));
+			((ComboBox)ControlDictionary["locationComboBox"]).Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.LookIn.WholeSolution}"));
 			((ComboBox)ControlDictionary["locationComboBox"]).SelectedIndex = 0;
 		}
 	}
