@@ -63,5 +63,6 @@ namespace ICSharpCode.NRefactory.Semantics
 		{
 			return new [] { Input };
 		}
+
 	}
 }

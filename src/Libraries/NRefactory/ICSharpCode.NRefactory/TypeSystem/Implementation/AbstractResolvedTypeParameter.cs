@@ -219,7 +219,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public ITypeReference ToTypeReference()
 		{
-			return new TypeParameterReference(this.OwnerType, this.Index);
+			return TypeParameterReference.Create(this.OwnerType, this.Index);
 		}
 		
 		IEnumerable<IType> IType.GetNestedTypes(Predicate<ITypeDefinition> filter, GetMemberOptions options)

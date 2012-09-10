@@ -93,7 +93,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			result = new TypeDeclaration() { Name = className };
 			var entity = simpleType.GetParent<EntityDeclaration>();
 			if (entity != null)
-				result.Modifiers |= entity.Modifiers & ~Modifiers.Internal;
+				result.Modifiers |= entity.Modifiers & Modifiers.Public;
 
 			return result;
 		}

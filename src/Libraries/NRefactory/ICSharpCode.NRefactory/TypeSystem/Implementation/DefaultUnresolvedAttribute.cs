@@ -106,11 +106,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			));
 		}
 		
-		public void AddNamedFieldArgument(string fieldName, ITypeReference valueType, object value)
-		{
-			AddNamedFieldArgument(fieldName, new SimpleConstantValue(valueType, value));
-		}
-		
 		public void AddNamedPropertyArgument(string propertyName, IConstantValue value)
 		{
 			this.NamedArguments.Add(new KeyValuePair<IMemberReference, IConstantValue>(
@@ -119,40 +114,29 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			));
 		}
 		
-		public void AddNamedPropertyArgument(string propertyName, ITypeReference valueType, object value)
-		{
-			AddNamedPropertyArgument(propertyName, new SimpleConstantValue(valueType, value));
-		}
-		
 		public IAttribute CreateResolvedAttribute(ITypeResolveContext context)
 		{
 			return new DefaultResolvedAttribute(this, context);
 		}
 		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			if (!this.IsFrozen) {
-				attributeType = provider.Intern(attributeType);
-				constructorParameterTypes = provider.InternList(constructorParameterTypes);
-				positionalArguments = provider.InternList(positionalArguments);
-				if (namedArguments != null) {
-					for (int i = 0; i < namedArguments.Count; i++) {
-						namedArguments[i] = new KeyValuePair<IMemberReference, IConstantValue>(
-							provider.Intern(namedArguments[i].Key),
-							provider.Intern(namedArguments[i].Value)
-						);
-					}
-				}
-				Freeze();
-			}
-		}
-		
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
-			int hash = attributeType.GetHashCode() ^ constructorParameterTypes.GetHashCode() ^ positionalArguments.GetHashCode();
-			if (namedArguments != null) {
-				foreach (var pair in namedArguments) {
-					unchecked {
+			int hash = attributeType.GetHashCode() ^ constructorParameterTypes.GetHashCode();
+			unchecked {
+				if (constructorParameterTypes != null) {
+					foreach (var type in constructorParameterTypes) {
+						hash *= 27;
+						hash += type.GetHashCode();
+					}
+				}
+				if (positionalArguments != null) {
+					foreach (var arg in positionalArguments) {
+						hash *= 31;
+						hash += arg.GetHashCode();
+					}
+				}
+				if (namedArguments != null) {
+					foreach (var pair in namedArguments) {
 						hash *= 71;
 						hash += pair.Key.GetHashCode() + pair.Value.GetHashCode() * 73;
 					}
@@ -165,13 +149,33 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			DefaultUnresolvedAttribute o = other as DefaultUnresolvedAttribute;
 			return o != null && attributeType == o.attributeType
-				&& constructorParameterTypes == o.constructorParameterTypes && positionalArguments == o.positionalArguments
+				&& ListEquals(constructorParameterTypes, o.constructorParameterTypes)
+				&& ListEquals(positionalArguments, o.positionalArguments)
 				&& ListEquals(namedArguments ?? EmptyList<KeyValuePair<IMemberReference, IConstantValue>>.Instance,
 				              o.namedArguments ?? EmptyList<KeyValuePair<IMemberReference, IConstantValue>>.Instance);
 		}
 		
+		static bool ListEquals<T>(IList<T> list1, IList<T> list2) where T : class
+		{
+			if (list1 == null)
+				list1 = EmptyList<T>.Instance;
+			if (list2 == null)
+				list2 = EmptyList<T>.Instance;
+			if (list1 == list2)
+				return true;
+			if (list1.Count != list2.Count)
+				return false;
+			for (int i = 0; i < list1.Count; i++) {
+				if (list1[i] != list2[i])
+					return false;
+			}
+			return true;
+		}
+		
 		static bool ListEquals(IList<KeyValuePair<IMemberReference, IConstantValue>> list1, IList<KeyValuePair<IMemberReference, IConstantValue>> list2)
 		{
+			if (list1 == list2)
+				return true;
 			if (list1.Count != list2.Count)
 				return false;
 			for (int i = 0; i < list1.Count; i++) {

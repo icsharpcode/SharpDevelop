@@ -671,6 +671,12 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 					((InvocationExpression)expr).Target = new IdentifierExpression() { Identifier = "__Dereference" };
 					((InvocationExpression)expr).Arguments.Add((Expression)unaryOperatorExpression.Expression.AcceptVisitor(this, data));
 					break;
+				case ICSharpCode.NRefactory.CSharp.UnaryOperatorType.Await:
+					expr = new UnaryOperatorExpression() {
+						Expression = (Expression)unaryOperatorExpression.Expression.AcceptVisitor(this, data),
+						Operator = UnaryOperatorType.Await
+					};
+					break;
 				default:
 					throw new Exception("Invalid value for UnaryOperatorType");
 			}
@@ -1912,14 +1918,14 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			throw new NotImplementedException();
 		}
 		
-		public AstNode VisitCompilationUnit(CSharp.CompilationUnit compilationUnit, object data)
+		public AstNode VisitSyntaxTree(CSharp.SyntaxTree syntaxTree, object data)
 		{
 			var unit = new CompilationUnit();
 
-			foreach (var node in compilationUnit.Children)
+			foreach (var node in syntaxTree.Children)
 				unit.AddChild(node.AcceptVisitor(this, null), CompilationUnit.MemberRole);
 			
-			return EndNode(compilationUnit, unit);
+			return EndNode(syntaxTree, unit);
 		}
 		
 		public AstNode VisitSimpleType(CSharp.SimpleType simpleType, object data)
@@ -2134,6 +2140,8 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 				mod |= Modifiers.Override;
 			if ((modifier & CSharp.Modifiers.Virtual) == CSharp.Modifiers.Virtual)
 				mod |= Modifiers.Overridable;
+			if ((modifier & CSharp.Modifiers.Async) == CSharp.Modifiers.Async)
+				mod |= Modifiers.Async;
 			
 			return mod;
 		}

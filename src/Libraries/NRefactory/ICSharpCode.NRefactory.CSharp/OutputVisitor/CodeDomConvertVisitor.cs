@@ -38,18 +38,19 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </remarks>
 	public class CodeDomConvertVisitor : IAstVisitor<CodeObject>
 	{
-		//ICompilation compilation = MinimalResolveContext.Instance;
 		CSharpAstResolver resolver;
 		
 		/// <summary>
-		/// Gets/Sets whether the visitor should use fully-qualified type references.
+		/// Gets/Sets whether the visitor should convert short type names into
+		/// fully qualified type names.
+		/// The default is <c>false</c>.
 		/// </summary>
 		public bool UseFullyQualifiedTypeNames { get; set; }
 		
 		/// <summary>
 		/// Gets whether the visitor is allowed to produce snippet nodes for
 		/// code that cannot be converted.
-		/// The default is true. If this property is set to false,
+		/// The default is <c>true</c>. If this property is set to <c>false</c>,
 		/// unconvertible code will throw a NotSupportedException.
 		/// </summary>
 		public bool AllowSnippetNodes { get; set; }
@@ -464,8 +465,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			CodeExpression target = Convert(memberReferenceExpression.Target);
 			ResolveResult rr = Resolve(memberReferenceExpression);
 			MemberResolveResult mrr = rr as MemberResolveResult;
+			TypeResolveResult trr = rr as TypeResolveResult;
 			if (mrr != null) {
 				return HandleMemberReference(target, memberReferenceExpression.MemberName, memberReferenceExpression.TypeArguments, mrr);
+			} else if (trr != null) {
+				return new CodeTypeReferenceExpression(Convert(trr.Type));
 			} else {
 				if (memberReferenceExpression.TypeArguments.Any() || rr is MethodGroupResolveResult) {
 					return new CodeMethodReferenceExpression(target, memberReferenceExpression.MemberName, Convert(memberReferenceExpression.TypeArguments));

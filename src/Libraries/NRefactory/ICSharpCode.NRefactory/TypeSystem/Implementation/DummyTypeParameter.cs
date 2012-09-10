@@ -153,7 +153,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public override ITypeReference ToTypeReference()
 		{
-			return new TypeParameterReference(ownerType, index);
+			return TypeParameterReference.Create(ownerType, index);
 		}
 		
 		public override IType AcceptVisitor(TypeVisitor visitor)

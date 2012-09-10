@@ -27,9 +27,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	[Serializable]
 	public sealed class GetClassTypeReference : ITypeReference, ISupportsInterning
 	{
-		IAssemblyReference assembly;
-		string nameSpace, name;
-		int typeParameterCount;
+		readonly IAssemblyReference assembly;
+		readonly string nameSpace, name;
+		readonly int typeParameterCount;
 		
 		/// <summary>
 		/// Creates a new GetClassTypeReference that searches a top-level type.
@@ -113,13 +113,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (string.IsNullOrEmpty (name2))
 				return name1;
 			return name1 + "." + name2;
-		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			assembly = provider.Intern(assembly);
-			nameSpace = provider.Intern(nameSpace);
-			name = provider.Intern(name);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()

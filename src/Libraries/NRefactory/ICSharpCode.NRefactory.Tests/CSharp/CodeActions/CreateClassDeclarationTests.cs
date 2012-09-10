@@ -301,5 +301,26 @@ class TestClass
 ");
 		}
 
+		[Test()]
+		public void TestModifierBug ()
+		{
+			Test<CreateClassDeclarationAction> (
+				@"
+class TestClass
+{
+	private readonly $Foo _foo;
+}
+", @"
+class Foo
+{
+}
+class TestClass
+{
+	private readonly Foo _foo;
+}
+");
+		}
+
+
 	}
 }

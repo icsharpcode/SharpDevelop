@@ -123,6 +123,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// The default value is <c>false</c>.
 		/// </summary>
 		public bool UseCustomEvents { get; set; }
+
+		/// <summary>
+		/// Controls if unbound type argument names are inserted in the ast or not.
+		/// The default value is <c>false</c>.
+		/// </summary>
+		public bool ConvertUnboundTypeArguments { get; set;}
 		#endregion
 		
 		#region Convert Type
@@ -224,14 +230,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (trr != null && !trr.IsError && TypeMatches(trr.Type, typeDef, typeArguments)) {
 					// We can use the short type name
 					SimpleType shortResult = new SimpleType(typeDef.Name);
-					AddTypeArguments(shortResult, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
+					AddTypeArguments(shortResult, typeDef, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
 					return shortResult;
 				}
 			}
 			
 			if (AlwaysUseShortTypeNames) {
 				var shortResult = new SimpleType(typeDef.Name);
-				AddTypeArguments(shortResult, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
+				AddTypeArguments(shortResult, typeDef, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
 				return shortResult;
 			}
 			MemberType result = new MemberType();
@@ -248,7 +254,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 			result.MemberName = typeDef.Name;
-			AddTypeArguments(result, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
+			AddTypeArguments(result, typeDef, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
 			return result;
 		}
 		
@@ -279,13 +285,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// Adds type arguments to the result type.
 		/// </summary>
 		/// <param name="result">The result AST node (a SimpleType or MemberType)</param>
+		/// <param name="typeDef">The type definition that owns the type parameters</param>
 		/// <param name="typeArguments">The list of type arguments</param>
 		/// <param name="startIndex">Index of first type argument to add</param>
 		/// <param name="endIndex">Index after last type argument to add</param>
-		void AddTypeArguments(AstType result, IList<IType> typeArguments, int startIndex, int endIndex)
+		void AddTypeArguments(AstType result, ITypeDefinition typeDef, IList<IType> typeArguments, int startIndex, int endIndex)
 		{
+			Debug.Assert(endIndex <= typeDef.TypeParameterCount);
 			for (int i = startIndex; i < endIndex; i++) {
-				result.AddChild(ConvertType(typeArguments[i]), Roles.TypeArgument);
+				if (ConvertUnboundTypeArguments && typeArguments[i].Kind == TypeKind.UnboundTypeArgument) {
+					result.AddChild(new SimpleType(typeDef.TypeParameters[i].Name), Roles.TypeArgument);
+				} else {
+					result.AddChild(ConvertType(typeArguments[i]), Roles.TypeArgument);
+				}
 			}
 		}
 		
@@ -461,7 +473,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		EntityDeclaration ConvertTypeDefinition(ITypeDefinition typeDefinition)
 		{
-			Modifiers modifiers = ModifierFromAccessibility(typeDefinition.Accessibility);
+			Modifiers modifiers = Modifiers.None;
+			if (this.ShowAccessibility) {
+				modifiers |= ModifierFromAccessibility(typeDefinition.Accessibility);
+			}
 			if (this.ShowModifiers) {
 				if (typeDefinition.IsStatic) {
 					modifiers |= Modifiers.Static;
@@ -598,7 +613,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (accessor == null)
 				return Accessor.Null;
 			Accessor decl = new Accessor();
-			if (accessor.Accessibility != ownerAccessibility)
+			if (this.ShowAccessibility && accessor.Accessibility != ownerAccessibility)
 				decl.Modifiers = ModifierFromAccessibility(accessor.Accessibility);
 			decl.Body = GenerateBodyBlock();
 			return decl;
@@ -716,10 +731,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		#endregion
 		
 		#region Convert Modifiers
-		Modifiers ModifierFromAccessibility(Accessibility accessibility)
+		static Modifiers ModifierFromAccessibility(Accessibility accessibility)
 		{
-			if (!this.ShowAccessibility)
-				return Modifiers.None;
 			switch (accessibility) {
 				case Accessibility.Private:
 					return Modifiers.Private;
@@ -740,7 +753,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		Modifiers GetMemberModifiers(IMember member)
 		{
 			bool isInterfaceMember = member.DeclaringType.Kind == TypeKind.Interface;
-			Modifiers m = isInterfaceMember ? Modifiers.None : ModifierFromAccessibility(member.Accessibility);
+			Modifiers m = Modifiers.None;
+			if (this.ShowAccessibility && !isInterfaceMember) {
+				m |= ModifierFromAccessibility(member.Accessibility);
+			}
 			if (this.ShowModifiers) {
 				if (member.IsStatic) {
 					m |= Modifiers.Static;

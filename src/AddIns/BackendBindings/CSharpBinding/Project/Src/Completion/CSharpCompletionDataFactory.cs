@@ -60,9 +60,9 @@ namespace CSharpBinding.Completion
 			};
 		}
 		
-		ICompletionData ICompletionDataFactory.CreateNamespaceCompletionData(string name)
+		ICompletionData ICompletionDataFactory.CreateNamespaceCompletionData(INamespace name)
 		{
-			return new CompletionData(name) {
+			return new CompletionData(name.Name) {
 				Image = ClassBrowserIconService.Namespace
 			};
 		}

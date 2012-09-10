@@ -17,11 +17,11 @@
     <OutputPath>..\bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugType>PdbOnly</DebugType>
@@ -44,19 +44,20 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Debug' ">
-    <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE;NET45</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;NET_4_5</DefineConstants>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Release' ">
     <DebugType>PdbOnly</DebugType>
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <DefineConstants>TRACE;NET45</DefineConstants>
+    <DefineConstants>TRACE;NET_4_5</DefineConstants>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -74,7 +75,62 @@
     </Compile>
     <Compile Include="CSharp\Analysis\DefiniteAssignmentTests.cs" />
     <Compile Include="CSharp\AstStructureTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertAsToCastTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertCastToAsTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertConditionalToIfTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertExplicitToImplicitImplementationTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertIfToConditionalTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertIfToSwtichTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertImplicitToExplicittImplementationTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertLambdaBodyExpressionToStatementTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertLambdaBodyStatementToExpressionTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertSwitchToIfTests.cs" />
+    <Compile Include="CSharp\CodeActions\CreateCustomEventImplementationTests.cs" />
+    <Compile Include="CSharp\CodeActions\CreateOverloadWithoutParameterTests.cs" />
+    <Compile Include="CSharp\CodeActions\ExtractAnonymousMethodTests.cs" />
+    <Compile Include="CSharp\CodeActions\JoinDeclarationAndAssignmentTests.cs" />
+    <Compile Include="CSharp\CodeActions\JoinStringTests.cs" />
+    <Compile Include="CSharp\CodeActions\MergeNestedIfTests.cs" />
+    <Compile Include="CSharp\CodeActions\NegateRelationalExpressionTests.cs" />
+    <Compile Include="CSharp\CodeActions\PutInsideUsingTests.cs" />
+    <Compile Include="CSharp\CodeActions\SplitDeclarationListTests.cs" />
+    <Compile Include="CSharp\CodeActions\UseStringFormatTests.cs" />
+    <Compile Include="CSharp\CodeIssues\AccessToDisposedClosureTests.cs" />
+    <Compile Include="CSharp\CodeIssues\AccessToModifiedClosureTests.cs" />
+    <Compile Include="CSharp\CodeIssues\AssignmentMadeToSameVariableIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\BitwiseOperationOnNonFlagsEnumIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\CastExpressionOfIncompatibleTypeIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\CompareFloatWithEqualityOperatorIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ConstantConditionIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\DoubleNegationIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ExplicitConversionInForEachIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ExpressionIsAlwaysOfProvidedTypeIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ExpressionIsNeverOfProvidedTypeIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ForControlVariableNotModifiedIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\IdenticalConditionalBranchIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\LocalVariableHidesMemberIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\LocalVariableNotUsedIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\LocalVariableOnlyAssignedIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\MethodNeverReturnsIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\MethodOverloadHidesOptionalParameterIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\MultipleEnumerationIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\NegativeRelationalExpressionIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ParameterHidesMemberIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ParameterNotUsedIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ParameterOnlyAssignedIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantArrayInitializerCommaIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantAssignmentIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\CompareBooleanWithTrueOrFalseIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantAttributeParenthesesIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantCaseLabelIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantElseIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantFieldInitializerIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantObjectCreationArgumentListIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantObjectOrCollectionInitializerIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantTypeCastIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ReferenceEqualsCalledWithValueTypeIssueTest.cs" />
+    <Compile Include="CSharp\CodeIssues\TypeParameterNotUsedIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\UnreachableCodeIssueTests.cs" />
     <Compile Include="CSharp\CSharpAmbienceTests.cs" />
     <Compile Include="CSharp\CodeDomConvertVisitorTests.cs" />
     <Compile Include="CSharp\InsertParenthesesVisitorTests.cs" />
@@ -269,10 +325,41 @@
     <Compile Include="CSharp\CodeActions\ImplementInterfaceTests.cs" />
     <Compile Include="CSharp\CodeActions\ImplementInterfaceExplicitTests.cs" />
     <Compile Include="CSharp\CodeActions\ImplementAbstractMembersTest.cs" />
+    <Compile Include="CSharp\CodeActions\RemoveRedundantCatchTypeTests.cs" />
+    <Compile Include="CSharp\CodeActions\AddCatchTypeTests.cs" />
+    <Compile Include="CSharp\CodeIssues\IncorrectExceptionParameterOrderingTests.cs" />
+    <Compile Include="CSharp\CodeIssues\CallToVirtualFunctionFromConstructorTests.cs" />
+    <Compile Include="CSharp\CodeActions\StaticMethodInvocationToExtensionMethodInvocationTests.cs" />
+    <Compile Include="CSharp\CodeActions\ExtensionMethodInvocationToStaticMethodInvocationTests.cs" />
+    <Compile Include="CSharp\CodeActions\IterateViaForeachTests.cs" />
     <Compile Include="CSharp\CodeActions\ExtractFieldTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ValueParameterUnusedTests.cs" />
+    <Compile Include="CSharp\Parser\Statements\InvalidStatementsTests.cs" />
+    <Compile Include="CSharp\Refactoring\NamingHelperTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertToInitializer\ConvertToInitializerTests.cs" />
+    <Compile Include="CSharp\CodeActions\MoveToOuterScopeTests.cs" />
+    <Compile Include="CSharp\CodeIssues\VariableDeclaredInWideScopeTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\ParameterCanBeDemotedTests.cs" />
     <Compile Include="CSharp\CodeCompletion\DocumentationContextTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ReferenceToStaticMemberViaDerivedTypeTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\IsTypeCriterionTests.cs" />
+    <Compile Include="Utils\CompositeFormatStringParser\CompositeFormatStringParserTests.cs" />
+    <Compile Include="CSharp\CodeIssues\OptionalParameterCouldBeSkippedTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantCatchTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantToStringTests.cs" />
+    <Compile Include="CSharp\CodeIssues\CallToObjectEqualsViaBaseTests.cs" />
+    <Compile Include="CSharp\CodeIssues\IncorrectCallToGetHashCodeTests.cs" />
+    <Compile Include="CSharp\CodeIssues\FormatStringIssues\FormatStringTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertToInitializer\ConvertInitializerToExplicitIntializationsTests.cs" />
     <Compile Include="CSharp\CodeCompletion\BrowsableAttributeTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ExceptionRethrowTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ThreadStaticOnInstanceFieldTests.cs" />
+    <Compile Include="CSharp\CodeIssues\StaticFieldInGenericTypeTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertAnonymousDelegateToLambdaTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertLamdaToAnonymousDelegateTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\SupportsIndexingCriterionTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateBackingStoreTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantWhereWithPredicateIssueTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
@@ -301,7 +388,10 @@
     <Folder Include="CSharp\CodeIssues\" />
     <Folder Include="CSharp\CodeActions\" />
     <Folder Include="CSharp\Parser\Bugs\" />
-    <Folder Include="Editor" />
+    <Folder Include="CSharp\CodeActions\ConvertToInitializer\" />
+    <Folder Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\" />
+    <Folder Include="Utils\CompositeFormatStringParser\" />
+    <Folder Include="CSharp\CodeIssues\FormatStringIssues\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

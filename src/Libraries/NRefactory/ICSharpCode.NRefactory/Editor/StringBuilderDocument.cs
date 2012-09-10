@@ -482,9 +482,11 @@ namespace ICSharpCode.NRefactory.Editor
 			return null;
 		}
 		
-		public event EventHandler FileNameChanged;
+		/// <inheritdoc/>
+		public virtual event EventHandler FileNameChanged { add {} remove {} }
 		
-		public string FileName {
+		/// <inheritdoc/>
+		public virtual string FileName {
 			get { return string.Empty; }
 		}
 	}

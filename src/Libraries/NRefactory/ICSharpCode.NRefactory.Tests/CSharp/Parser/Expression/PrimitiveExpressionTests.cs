@@ -243,7 +243,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			var pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>(code, expectErrors: true);
 			Assert.AreEqual(code, pe.LiteralValue);
 		}
-		
+
+		[Ignore("Waiting for upstream fix.")]
 		[Test]
 		public void LargeVerbatimString()
 		{

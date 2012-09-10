@@ -121,6 +121,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return methodDefinition.IsOperator; }
 		}
 		
+		public bool IsPartial {
+			get { return methodDefinition.IsPartial; }
+		}
+		
+		public bool HasBody {
+			get { return methodDefinition.HasBody; }
+		}
+		
 		public bool IsAccessor {
 			get { return methodDefinition.IsAccessor; }
 		}

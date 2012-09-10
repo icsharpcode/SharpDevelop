@@ -74,7 +74,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				#region ICompletionData implementation
 				public void AddOverload (ICompletionData data)
 				{
-					throw new NotImplementedException ();
 				}
 
 				public CompletionCategory CompletionCategory {
@@ -147,9 +146,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				return new CompletionData (title);
 			}
 
-			public ICompletionData CreateNamespaceCompletionData (string name)
+			public ICompletionData CreateNamespaceCompletionData (INamespace ns)
 			{
-				return new CompletionData (name);
+				return new CompletionData (ns.Name);
 			}
 
 			public ICompletionData CreateVariableCompletionData (ICSharpCode.NRefactory.TypeSystem.IVariable variable)

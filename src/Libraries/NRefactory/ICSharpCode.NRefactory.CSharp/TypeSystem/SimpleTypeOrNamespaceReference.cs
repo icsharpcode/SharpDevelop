@@ -33,8 +33,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 	[Serializable]
 	public sealed class SimpleTypeOrNamespaceReference : TypeOrNamespaceReference, ISupportsInterning
 	{
-		string identifier;
-		IList<ITypeReference> typeArguments;
+		readonly string identifier;
+		readonly IList<ITypeReference> typeArguments;
 		readonly NameLookupMode lookupMode;
 		
 		public SimpleTypeOrNamespaceReference(string identifier, IList<ITypeReference> typeArguments, NameLookupMode lookupMode = NameLookupMode.Type)
@@ -75,12 +75,6 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				return identifier;
 			else
 				return identifier + "<" + string.Join(",", typeArguments) + ">";
-		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			identifier = provider.Intern(identifier);
-			typeArguments = provider.InternList(typeArguments);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()

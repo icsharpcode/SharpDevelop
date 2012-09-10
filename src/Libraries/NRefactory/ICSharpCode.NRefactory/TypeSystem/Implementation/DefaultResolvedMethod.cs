@@ -193,6 +193,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return ((IUnresolvedMethod)unresolved).IsOperator; }
 		}
 			
+		public bool IsPartial {
+			get { return ((IUnresolvedMethod)unresolved).IsPartial; }
+		}
+		
+		public bool HasBody {
+			get { return ((IUnresolvedMethod)unresolved).HasBody; }
+		}
+		
 		public bool IsAccessor {
 			get { return ((IUnresolvedMethod)unresolved).AccessorOwner != null; }
 		}

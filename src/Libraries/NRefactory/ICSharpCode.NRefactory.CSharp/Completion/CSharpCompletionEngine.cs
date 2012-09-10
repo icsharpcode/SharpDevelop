@@ -162,7 +162,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (type is SimpleType) {
 				name = ((SimpleType)type).Identifier;
 			} else if (type is MemberType) {
-				name = ((SimpleType)type).Identifier;
+				name = ((MemberType)type).MemberName;
 			} else {
 				yield break;
 			}
@@ -1384,7 +1384,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			for (var n = scope; n != null; n = n.Parent) {
 				foreach (var pair in n.UsingAliases) {
-					wrapper.AddNamespace(pair.Key);
+					wrapper.AddAlias(pair.Key);
 				}
 				foreach (var u in n.Usings) {
 					foreach (var type in u.Types) {
@@ -1418,7 +1418,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				foreach (var curNs in n.Namespace.ChildNamespaces) {
-					wrapper.AddNamespace(curNs.Name);
+					wrapper.AddNamespace(curNs);
 				}
 			}
 		}
@@ -2173,7 +2173,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 				}
 				foreach (var ns in nr.Namespace.ChildNamespaces) {
-					result.AddNamespace(ns.Name);
+					result.AddNamespace(ns);
 				}
 			} else if (resolveResult is TypeResolveResult) {
 				var type = resolveResult.Type;
@@ -2194,7 +2194,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			
 			foreach (var ns in Compilation.RootNamespace.ChildNamespaces) {
-				yield return factory.CreateNamespaceCompletionData(ns.Name);
+				yield return factory.CreateNamespaceCompletionData(ns);
 			}
 		}
 		
@@ -2295,18 +2295,25 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			}
 			
+			var lookup = new MemberLookup(
+				ctx.CurrentTypeDefinition,
+				Compilation.MainAssembly
+			);
+			
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
 				var namespaceContents = new CompletionDataWrapper(this);
 				
 				foreach (var cl in nr.Namespace.Types) {
+					if (!lookup.IsAccessible(cl, false))
+						continue;
 					IType addType = typePred != null ? typePred(cl) : cl;
 					if (addType != null)
 						namespaceContents.AddType(addType, addType.Name);
 				}
 				
 				foreach (var ns in nr.Namespace.ChildNamespaces) {
-					namespaceContents.AddNamespace(ns.Name);
+					namespaceContents.AddNamespace(ns);
 				}
 				return namespaceContents.Result;
 			}
@@ -2319,13 +2326,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			//var typeDef = resolveResult.Type.GetDefinition();
 			var result = new CompletionDataWrapper(this);
 			bool includeStaticMembers = false;
-			
-			var lookup = new MemberLookup(
-				ctx.CurrentTypeDefinition,
-				Compilation.MainAssembly
-			);
-			
-			
+
 			if (resolveResult is LocalResolveResult) {
 				if (resolvedNode is IdentifierExpression) {
 					var mrr = (LocalResolveResult)resolveResult;
@@ -2461,6 +2462,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				foreach (var meths in state.GetExtensionMethods (type)) {
 					foreach (var m in meths) {
+						if (!lookup.IsAccessible(m, isProtectedAllowed))
+							continue;
 						result.AddMember(m);
 					}
 				}

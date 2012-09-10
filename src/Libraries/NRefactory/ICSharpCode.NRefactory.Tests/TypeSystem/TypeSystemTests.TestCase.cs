@@ -327,4 +327,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 			get { return 0; }
 		}
 	}
+
+	public class ClassWithMethodThatHasNullableDefaultParameter {
+		public void Foo (int? bar = 42) { }
+	}
+
 }

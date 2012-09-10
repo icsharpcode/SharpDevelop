@@ -428,7 +428,7 @@ namespace ICSharpCode.NRefactory.Editor
 		
 		/// <inheritdoc/>
 		/// <remarks>Will never be raised on <see cref="ReadOnlyDocument" />.</remarks>
-		public event EventHandler FileNameChanged;
+		public event EventHandler FileNameChanged { add {} remove {} }
 		
 		/// <inheritdoc/>
 		public string FileName {

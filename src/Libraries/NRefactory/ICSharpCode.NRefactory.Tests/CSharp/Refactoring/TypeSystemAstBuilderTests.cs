@@ -82,9 +82,11 @@ namespace OtherNS {
 				new CSharpTypeResolveContext(compilation.MainAssembly, usingScope.Resolve(compilation), currentTypeDef)));
 		}
 		
-		string TypeToString(IType type, ITypeDefinition currentTypeDef = null)
+		string TypeToString(IType type, ITypeDefinition currentTypeDef = null, Action<TypeSystemAstBuilder> builderAction = null)
 		{
 			var builder = CreateBuilder(currentTypeDef);
+			if (builderAction != null)
+				builderAction (builder);
 			AstType node = builder.ConvertType(type);
 			return node.ToString();
 		}
@@ -153,7 +155,14 @@ namespace OtherNS {
 		{
 			Assert.AreEqual("Base<>", TypeToString(baseClass));
 			Assert.AreEqual("Base<>.Nested<>", TypeToString(nestedClass));
-		}
+		}		
+
+		[Test]
+		public void UnboundTypeConvertUnboundTypeArgumentsOption()
+		{
+			Assert.AreEqual("Base<T>", TypeToString(baseClass, null, builder => builder.ConvertUnboundTypeArguments = true));
+			Assert.AreEqual("Base<T>.Nested<X>", TypeToString(nestedClass, null, builder => builder.ConvertUnboundTypeArguments = true));
+		}		
 		
 		[Test]
 		public void NestedType()

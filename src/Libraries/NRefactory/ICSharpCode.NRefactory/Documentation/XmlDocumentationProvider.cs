@@ -259,11 +259,28 @@ namespace ICSharpCode.NRefactory.Documentation
 							int pos = linePosMapper.GetPositionForLine(reader.LineNumber) + Math.Max(reader.LinePosition - 2, 0);
 							string memberAttr = reader.GetAttribute("name");
 							if (memberAttr != null)
-								indexList.Add(new IndexEntry(memberAttr.GetHashCode(), pos));
+								indexList.Add(new IndexEntry(GetHashCode(memberAttr), pos));
 							reader.Skip();
 						}
 						break;
 				}
+			}
+		}
+		
+		/// <summary>
+		/// Hash algorithm used for the index.
+		/// This is a custom implementation so that old index files work correctly
+		/// even when the .NET string.GetHashCode implementation changes
+		/// (e.g. due to .NET 4.5 hash randomization)
+		/// </summary>
+		static int GetHashCode(string key)
+		{
+			unchecked {
+				int h = 0;
+				foreach (char c in key) {
+					h = (h << 5) - h + c;
+				}
+				return h;
 			}
 		}
 		#endregion
@@ -277,7 +294,7 @@ namespace ICSharpCode.NRefactory.Documentation
 			if (key == null)
 				throw new ArgumentNullException("key");
 			
-			int hashcode = key.GetHashCode();
+			int hashcode = GetHashCode(key);
 			// index is sorted, so we can use binary search
 			int m = Array.BinarySearch(index, new IndexEntry(hashcode, 0));
 			if (m < 0)

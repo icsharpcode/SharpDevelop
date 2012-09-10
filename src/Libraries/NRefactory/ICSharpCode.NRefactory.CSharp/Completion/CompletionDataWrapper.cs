@@ -58,7 +58,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			result.Add (data);
 		}
-		
+
+
 		public void AddCustom (string displayText, string description = null, string completionText = null)
 		{
 			result.Add (Factory.CreateLiteralCompletionData (displayText, description, completionText));
@@ -66,29 +67,38 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		HashSet<string> usedNamespaces = new HashSet<string> ();
 		
-		public void AddNamespace (string name)
+		public void AddNamespace (INamespace ns)
 		{
-			if (string.IsNullOrEmpty (name) || usedNamespaces.Contains (name))
+			if (usedNamespaces.Contains (ns.Name))
 				return;
-			usedNamespaces.Add (name);
-			result.Add (Factory.CreateNamespaceCompletionData (name));
+			usedNamespaces.Add (ns.Name);
+			result.Add (Factory.CreateNamespaceCompletionData (ns));
 		}
-		
-		HashSet<string> usedTypes = new HashSet<string> ();
+
+		public void AddAlias(string alias)
+		{
+			result.Add (Factory.CreateLiteralCompletionData (alias));
+		}
+
+		Dictionary<string, ICompletionData> usedTypes = new Dictionary<string, ICompletionData> ();
 
 		public ICompletionData AddType(IType type, string shortType)
 		{
-			if (type == null || string.IsNullOrEmpty(shortType) || usedTypes.Contains(shortType))
+			if (type == null || string.IsNullOrEmpty(shortType))
 				return null;
 			if (type.Name == "Void" && type.Namespace == "System")
 				return null;
 
-			var def = type.GetDefinition ();
-			if (def != null && def.ParentAssembly != completion.ctx.CurrentAssembly && !def.IsBrowsable ())
+			var def = type.GetDefinition();
+			if (def != null && def.ParentAssembly != completion.ctx.CurrentAssembly && !def.IsBrowsable())
 				return null;
-
-			usedTypes.Add(shortType);
+			ICompletionData usedType;
+			if (usedTypes.TryGetValue (shortType, out usedType)) {
+				usedType.AddOverload (Factory.CreateTypeCompletionData(type, shortType));
+				return usedType;
+			} 
 			var iCompletionData = Factory.CreateTypeCompletionData(type, shortType);
+			usedTypes[shortType] = iCompletionData;
 			result.Add(iCompletionData);
 			return iCompletionData;
 		}

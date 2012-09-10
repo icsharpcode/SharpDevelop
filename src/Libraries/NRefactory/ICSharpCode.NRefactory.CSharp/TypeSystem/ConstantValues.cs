@@ -128,8 +128,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 	[Serializable]
 	public sealed class IncrementConstantValue : IConstantValue, ISupportsInterning
 	{
-		IConstantValue baseValue;
-		int incrementAmount;
+		readonly IConstantValue baseValue;
+		readonly int incrementAmount;
 		
 		public IncrementConstantValue(IConstantValue baseValue, int incrementAmount = 1)
 		{
@@ -160,11 +160,6 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 			return new ErrorResolveResult(rr.Type);
 		}
 		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			baseValue = provider.Intern(baseValue);
-		}
-		
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
 			unchecked {
@@ -185,8 +180,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 	[Serializable]
 	public sealed class PrimitiveConstantExpression : ConstantExpression, ISupportsInterning
 	{
-		ITypeReference type;
-		object value;
+		readonly ITypeReference type;
+		readonly object value;
 		
 		public ITypeReference Type {
 			get { return type; }
@@ -209,12 +204,6 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 			return new ConstantResolveResult(type.Resolve(resolver.CurrentTypeResolveContext), value);
 		}
 		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			type = provider.Intern(type);
-			value = provider.Intern(value);
-		}
-		
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
 			return type.GetHashCode() ^ (value != null ? value.GetHashCode() : 0);
@@ -228,9 +217,9 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 	}
 	
 	[Serializable]
-	public sealed class TypeOfConstantExpression : ConstantExpression, ISupportsInterning
+	public sealed class TypeOfConstantExpression : ConstantExpression
 	{
-		ITypeReference type;
+		readonly ITypeReference type;
 		
 		public ITypeReference Type {
 			get { return type; }
@@ -245,29 +234,13 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 		{
 			return resolver.ResolveTypeOf(type.Resolve(resolver.CurrentTypeResolveContext));
 		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			type = provider.Intern(type);
-		}
-		
-		int ISupportsInterning.GetHashCodeForInterning()
-		{
-			return type.GetHashCode();
-		}
-		
-		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
-		{
-			TypeOfConstantExpression o = other as TypeOfConstantExpression;
-			return o != null && type == o.type;
-		}
 	}
 	
 	[Serializable]
 	public sealed class ConstantCast : ConstantExpression, ISupportsInterning
 	{
-		ITypeReference targetType;
-		ConstantExpression expression;
+		readonly ITypeReference targetType;
+		readonly ConstantExpression expression;
 		
 		public ConstantCast(ITypeReference targetType, ConstantExpression expression)
 		{
@@ -282,12 +255,6 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
 			return resolver.ResolveCast(targetType.Resolve(resolver.CurrentTypeResolveContext), expression.Resolve(resolver));
-		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			targetType = provider.Intern(targetType);
-			expression = provider.Intern(expression);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()
@@ -306,10 +273,10 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 	}
 	
 	[Serializable]
-	public sealed class ConstantIdentifierReference : ConstantExpression, ISupportsInterning
+	public sealed class ConstantIdentifierReference : ConstantExpression
 	{
-		string identifier;
-		IList<ITypeReference> typeArguments;
+		readonly string identifier;
+		readonly IList<ITypeReference> typeArguments;
 		
 		public ConstantIdentifierReference(string identifier, IList<ITypeReference> typeArguments = null)
 		{
@@ -323,35 +290,15 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 		{
 			return resolver.ResolveSimpleName(identifier, typeArguments.Resolve(resolver.CurrentTypeResolveContext));
 		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			identifier = provider.Intern(identifier);
-			typeArguments = provider.InternList(typeArguments);
-		}
-		
-		int ISupportsInterning.GetHashCodeForInterning()
-		{
-			unchecked {
-				return identifier.GetHashCode() ^ typeArguments.GetHashCode();
-			}
-		}
-		
-		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
-		{
-			ConstantIdentifierReference cir = other as ConstantIdentifierReference;
-			return cir != null &&
-				this.identifier == cir.identifier && this.typeArguments == cir.typeArguments;
-		}
 	}
 	
 	[Serializable]
-	public sealed class ConstantMemberReference : ConstantExpression, ISupportsInterning
+	public sealed class ConstantMemberReference : ConstantExpression
 	{
-		ITypeReference targetType;
-		ConstantExpression targetExpression;
-		string memberName;
-		IList<ITypeReference> typeArguments;
+		readonly ITypeReference targetType;
+		readonly ConstantExpression targetExpression;
+		readonly string memberName;
+		readonly IList<ITypeReference> typeArguments;
 		
 		public ConstantMemberReference(ITypeReference targetType, string memberName, IList<ITypeReference> typeArguments = null)
 		{
@@ -384,43 +331,13 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 				rr = targetExpression.Resolve(resolver);
 			return resolver.ResolveMemberAccess(rr, memberName, typeArguments.Resolve(resolver.CurrentTypeResolveContext));
 		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			targetType = provider.Intern(targetType);
-			targetExpression = provider.Intern(targetExpression);
-			memberName = provider.Intern(memberName);
-			typeArguments = provider.InternList(typeArguments);
-		}
-		
-		int ISupportsInterning.GetHashCodeForInterning()
-		{
-			unchecked {
-				int hashCode;
-				if (targetType != null)
-					hashCode = targetType.GetHashCode();
-				else
-					hashCode = targetExpression.GetHashCode();
-				hashCode ^= memberName.GetHashCode();
-				hashCode ^= typeArguments.GetHashCode();
-				return hashCode;
-			}
-		}
-		
-		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
-		{
-			ConstantMemberReference cmr = other as ConstantMemberReference;
-			return cmr != null
-				&& this.targetType == cmr.targetType && this.targetExpression == cmr.targetExpression
-				&& this.memberName == cmr.memberName && this.typeArguments == cmr.typeArguments;
-		}
 	}
 	
 	[Serializable]
-	public sealed class ConstantCheckedExpression : ConstantExpression, ISupportsInterning
+	public sealed class ConstantCheckedExpression : ConstantExpression
 	{
-		bool checkForOverflow;
-		ConstantExpression expression;
+		readonly bool checkForOverflow;
+		readonly ConstantExpression expression;
 		
 		public ConstantCheckedExpression(bool checkForOverflow, ConstantExpression expression)
 		{
@@ -434,30 +351,12 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 		{
 			return expression.Resolve(resolver.WithCheckForOverflow(checkForOverflow));
 		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			expression = provider.Intern(expression);
-		}
-		
-		int ISupportsInterning.GetHashCodeForInterning()
-		{
-			return expression.GetHashCode() ^ (checkForOverflow ? 161851612 : 75163517);
-		}
-		
-		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
-		{
-			ConstantCheckedExpression cce = other as ConstantCheckedExpression;
-			return cce != null
-				&& this.expression == cce.expression
-				&& this.checkForOverflow == cce.checkForOverflow;
-		}
 	}
 	
 	[Serializable]
 	public sealed class ConstantDefaultValue : ConstantExpression, ISupportsInterning
 	{
-		ITypeReference type;
+		readonly ITypeReference type;
 		
 		public ConstantDefaultValue(ITypeReference type)
 		{
@@ -469,11 +368,6 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 		public override ResolveResult Resolve(CSharpResolver resolver)
 		{
 			return resolver.ResolveDefaultValue(type.Resolve(resolver.CurrentTypeResolveContext));
-		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			type = provider.Intern(type);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()
@@ -489,10 +383,10 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 	}
 	
 	[Serializable]
-	public sealed class ConstantUnaryOperator : ConstantExpression, ISupportsInterning
+	public sealed class ConstantUnaryOperator : ConstantExpression
 	{
-		UnaryOperatorType operatorType;
-		ConstantExpression expression;
+		readonly UnaryOperatorType operatorType;
+		readonly ConstantExpression expression;
 		
 		public ConstantUnaryOperator(UnaryOperatorType operatorType, ConstantExpression expression)
 		{
@@ -506,34 +400,14 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 		{
 			return resolver.ResolveUnaryOperator(operatorType, expression.Resolve(resolver));
 		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			expression = provider.Intern(expression);
-		}
-		
-		int ISupportsInterning.GetHashCodeForInterning()
-		{
-			unchecked {
-				return expression.GetHashCode() * 811 + operatorType.GetHashCode();
-			}
-		}
-		
-		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
-		{
-			ConstantUnaryOperator uop = other as ConstantUnaryOperator;
-			return uop != null
-				&& this.operatorType == uop.operatorType
-				&& this.expression == uop.expression;
-		}
 	}
 
 	[Serializable]
-	public sealed class ConstantBinaryOperator : ConstantExpression, ISupportsInterning
+	public sealed class ConstantBinaryOperator : ConstantExpression
 	{
-		ConstantExpression left;
-		BinaryOperatorType operatorType;
-		ConstantExpression right;
+		readonly ConstantExpression left;
+		readonly BinaryOperatorType operatorType;
+		readonly ConstantExpression right;
 		
 		public ConstantBinaryOperator(ConstantExpression left, BinaryOperatorType operatorType, ConstantExpression right)
 		{
@@ -552,33 +426,12 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 			ResolveResult rhs = right.Resolve(resolver);
 			return resolver.ResolveBinaryOperator(operatorType, lhs, rhs);
 		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			left = provider.Intern(left);
-			right = provider.Intern(right);
-		}
-		
-		int ISupportsInterning.GetHashCodeForInterning()
-		{
-			unchecked {
-				return left.GetHashCode() * 811 + operatorType.GetHashCode() + right.GetHashCode() * 91781;
-			}
-		}
-		
-		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
-		{
-			ConstantBinaryOperator bop = other as ConstantBinaryOperator;
-			return bop != null
-				&& this.operatorType == bop.operatorType
-				&& this.left == bop.left && this.right == bop.right;
-		}
 	}
 	
 	[Serializable]
-	public sealed class ConstantConditionalOperator : ConstantExpression, ISupportsInterning
+	public sealed class ConstantConditionalOperator : ConstantExpression
 	{
-		ConstantExpression condition, trueExpr, falseExpr;
+		readonly ConstantExpression condition, trueExpr, falseExpr;
 		
 		public ConstantConditionalOperator(ConstantExpression condition, ConstantExpression trueExpr, ConstantExpression falseExpr)
 		{
@@ -601,42 +454,17 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 				falseExpr.Resolve(resolver)
 			);
 		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			condition = provider.Intern(condition);
-			trueExpr = provider.Intern(trueExpr);
-			falseExpr = provider.Intern(falseExpr);
-		}
-		
-		int ISupportsInterning.GetHashCodeForInterning()
-		{
-			unchecked {
-				return condition.GetHashCode() * 182981713
-					+ trueExpr.GetHashCode() * 917517169
-					+ falseExpr.GetHashCode() * 611651;
-			}
-		}
-		
-		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
-		{
-			ConstantConditionalOperator coo = other as ConstantConditionalOperator;
-			return coo != null
-				&& this.condition == coo.condition
-				&& this.trueExpr == coo.trueExpr
-				&& this.falseExpr == coo.falseExpr;
-		}
 	}
 	
 	/// <summary>
 	/// Represents an array creation (as used within an attribute argument)
 	/// </summary>
 	[Serializable]
-	public sealed class ConstantArrayCreation : ConstantExpression, ISupportsInterning
+	public sealed class ConstantArrayCreation : ConstantExpression
 	{
 		// type may be null when the element is being inferred
-		ITypeReference elementType;
-		IList<ConstantExpression> arrayElements;
+		readonly ITypeReference elementType;
+		readonly IList<ConstantExpression> arrayElements;
 		
 		public ConstantArrayCreation(ITypeReference type, IList<ConstantExpression> arrayElements)
 		{
@@ -657,23 +485,6 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 			} else {
 				return resolver.ResolveArrayCreation(null, 1, null, elements);
 			}
-		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			elementType = provider.Intern(elementType);
-			arrayElements = provider.InternList(arrayElements);
-		}
-		
-		int ISupportsInterning.GetHashCodeForInterning()
-		{
-			return (elementType != null ? elementType.GetHashCode() : 0) ^ arrayElements.GetHashCode();
-		}
-		
-		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
-		{
-			ConstantArrayCreation cac = other as ConstantArrayCreation;
-			return cac != null && this.elementType == cac.elementType && this.arrayElements == cac.arrayElements;
 		}
 	}
 }

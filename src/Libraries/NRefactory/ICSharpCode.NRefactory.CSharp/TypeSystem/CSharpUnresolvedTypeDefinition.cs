@@ -19,10 +19,11 @@
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 {
-	[Serializable]
+	[Serializable, FastSerializerVersion(TypeSystemConvertVisitor.version)]
 	public class CSharpUnresolvedTypeDefinition : DefaultUnresolvedTypeDefinition
 	{
 		readonly UsingScope usingScope;
