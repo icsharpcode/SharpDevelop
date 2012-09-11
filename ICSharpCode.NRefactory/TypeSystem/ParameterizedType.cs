@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			for (int i = 0; i < this.typeArguments.Length; i++) {
 				if (this.typeArguments[i] == null)
 					throw new ArgumentNullException("typeArguments[" + i + "]");
-				IResolved r = this.typeArguments[i] as IResolved;
+				ICompilationProvider r = this.typeArguments[i] as ICompilationProvider;
 				if (r != null && r.Compilation != genericType.Compilation)
 					throw new InvalidOperationException("Cannot parameterize a type with type arguments from a different compilation.");
 			}

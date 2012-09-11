@@ -289,7 +289,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				}
 			}
 			
-			ICompilation IResolved.Compilation {
+			ICompilation ICompilationProvider.Compilation {
 				get { return assembly.Compilation; }
 			}
 			

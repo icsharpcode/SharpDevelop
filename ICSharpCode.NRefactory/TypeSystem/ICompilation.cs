@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		CacheManager CacheManager { get; }
 	}
 	
-	public interface IResolved
+	public interface ICompilationProvider
 	{
 		ICompilation Compilation { get; }
 	}
