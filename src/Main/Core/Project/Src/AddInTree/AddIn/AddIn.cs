@@ -65,7 +65,7 @@ namespace ICSharpCode.Core
 				LoggingService.Error("Cannot find class: " + className);
 			} else {
 				hasShownErrorMessage = true;
-				var messageService = ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>();
+				var messageService = ServiceSingleton.GetRequiredService<IMessageService>();
 				messageService.ShowError("Cannot find class: " + className + "\nFuture missing objects will not cause an error message.");
 			}
 			return null;

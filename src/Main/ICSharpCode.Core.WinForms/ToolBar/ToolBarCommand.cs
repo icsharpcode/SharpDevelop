@@ -44,7 +44,7 @@ namespace ICSharpCode.Core.WinForms
 			}
 			if (menuCommand != null) {
 				menuCommand.Owner = caller;
-				ServiceSingleton.ServiceProvider.GetRequiredService<IAnalyticsMonitor>().TrackFeature(menuCommand.GetType().FullName, "Toolbar");
+				ServiceSingleton.GetRequiredService<IAnalyticsMonitor>().TrackFeature(menuCommand.GetType().FullName, "Toolbar");
 				menuCommand.Run();
 			}
 		}

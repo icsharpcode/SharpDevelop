@@ -232,7 +232,7 @@ namespace ICSharpCode.Core
 		
 		protected virtual void ShowError(string message)
 		{
-			ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>().ShowError(message);
+			ServiceSingleton.GetRequiredService<IMessageService>().ShowError(message);
 		}
 	}
 }

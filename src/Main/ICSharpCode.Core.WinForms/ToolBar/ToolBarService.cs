@@ -74,7 +74,7 @@ namespace ICSharpCode.Core.WinForms
 		}
 		
 		class LanguageChangeWatcher {
-			readonly IResourceService resourceService = ServiceSingleton.ServiceProvider.GetRequiredService<IResourceService>();
+			readonly IResourceService resourceService = ServiceSingleton.GetRequiredService<IResourceService>();
 			ToolStrip toolStrip;
 			public LanguageChangeWatcher(ToolStrip toolStrip) {
 				this.toolStrip = toolStrip;

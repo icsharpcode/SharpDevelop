@@ -11,7 +11,7 @@ namespace ICSharpCode.Core
 	public static class LoggingService
 	{
 		static ILoggingService Service {
-			get { return ServiceSingleton.ServiceProvider.GetRequiredService<ILoggingService>(); }
+			get { return ServiceSingleton.GetRequiredService<ILoggingService>(); }
 		}
 		
 		public static void Debug(object message)

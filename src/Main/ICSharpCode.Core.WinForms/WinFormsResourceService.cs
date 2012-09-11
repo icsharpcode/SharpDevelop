@@ -21,7 +21,7 @@ namespace ICSharpCode.Core.WinForms
 		
 		static WinFormsResourceService()
 		{
-			resourceService = ServiceSingleton.ServiceProvider.GetRequiredService<IResourceService>();
+			resourceService = ServiceSingleton.GetRequiredService<IResourceService>();
 			resourceService.LanguageChanged += OnLanguageChanged;
 		}
 		

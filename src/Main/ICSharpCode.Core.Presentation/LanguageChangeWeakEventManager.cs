@@ -39,7 +39,7 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		readonly IResourceService resourceService = ServiceSingleton.ServiceProvider.GetRequiredService<IResourceService>();
+		readonly IResourceService resourceService = ServiceSingleton.GetRequiredService<IResourceService>();
 		
 		protected override void StartListening(object source)
 		{

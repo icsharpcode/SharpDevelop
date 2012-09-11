@@ -19,7 +19,7 @@ namespace ICSharpCode.Core
 	public static class ResourceService
 	{
 		static IResourceService Service {
-			get { return ServiceSingleton.ServiceProvider.GetRequiredService<IResourceService>(); }
+			get { return ServiceSingleton.GetRequiredService<IResourceService>(); }
 		}
 		
 		public static string GetString(string resourceName)

@@ -19,7 +19,7 @@ namespace ICSharpCode.Core
 	public static class PropertyService
 	{
 		static IPropertyService Service {
-			get { return ServiceSingleton.ServiceProvider.GetRequiredService<IPropertyService>(); }
+			get { return ServiceSingleton.GetRequiredService<IPropertyService>(); }
 		}
 		
 		static Properties properties {

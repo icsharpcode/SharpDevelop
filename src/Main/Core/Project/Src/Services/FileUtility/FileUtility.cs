@@ -457,7 +457,7 @@ namespace ICSharpCode.Core
 		public static bool TestFileExists(string filename)
 		{
 			if (!File.Exists(filename)) {
-				var messageService = ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>();
+				var messageService = ServiceSingleton.GetRequiredService<IMessageService>();
 				messageService.ShowWarning(StringParser.Parse("${res:Fileutility.CantFindFileError}", new StringTagPair("FILE", filename)));
 				return false;
 			}
@@ -556,7 +556,7 @@ namespace ICSharpCode.Core
 		
 		static FileOperationResult ObservedSaveHandleException(Exception e, FileOperationDelegate saveFile, string fileName, string message, FileErrorPolicy policy)
 		{
-			var messageService = ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>();
+			var messageService = ServiceSingleton.GetRequiredService<IMessageService>();
 			switch (policy) {
 				case FileErrorPolicy.Inform:
 					messageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e);
@@ -601,7 +601,7 @@ namespace ICSharpCode.Core
 
 		static FileOperationResult ObservedSaveHandleError(Exception e, NamedFileOperationDelegate saveFileAs, string fileName, string message, FileErrorPolicy policy)
 		{
-			var messageService = ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>();
+			var messageService = ServiceSingleton.GetRequiredService<IMessageService>();
 			switch (policy) {
 				case FileErrorPolicy.Inform:
 					messageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e);
@@ -644,7 +644,7 @@ namespace ICSharpCode.Core
 
 		static FileOperationResult ObservedLoadHandleException(Exception e, FileOperationDelegate loadFile, string fileName, string message, FileErrorPolicy policy)
 		{
-			var messageService = ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>();
+			var messageService = ServiceSingleton.GetRequiredService<IMessageService>();
 			switch (policy) {
 				case FileErrorPolicy.Inform:
 					messageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileLoading}", e);

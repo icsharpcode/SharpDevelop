@@ -18,13 +18,13 @@ namespace ICSharpCode.Core
 	{
 		public static List<T> BuildItems<T>(string path, object caller, bool throwOnNotFound = true)
 		{
-			var addInTree = ServiceSingleton.ServiceProvider.GetRequiredService<IAddInTree>();
+			var addInTree = ServiceSingleton.GetRequiredService<IAddInTree>();
 			return addInTree.BuildItems<T>(path, caller, throwOnNotFound).ToList();
 		}
 		
 		public static AddInTreeNode GetTreeNode(string path, bool throwOnNotFound = true)
 		{
-			var addInTree = ServiceSingleton.ServiceProvider.GetRequiredService<IAddInTree>();
+			var addInTree = ServiceSingleton.GetRequiredService<IAddInTree>();
 			return addInTree.GetTreeNode(path, throwOnNotFound);
 		}
 	}
@@ -235,14 +235,14 @@ namespace ICSharpCode.Core
 				{
 					string path = Path.Combine(addInRoot, bitmapResource);
 					ResourceManager resourceManager = ResourceManager.CreateFileBasedResourceManager(Path.GetFileNameWithoutExtension(path), Path.GetDirectoryName(path), null);
-					ServiceSingleton.ServiceProvider.GetRequiredService<IResourceService>().RegisterNeutralImages(resourceManager);
+					ServiceSingleton.GetRequiredService<IResourceService>().RegisterNeutralImages(resourceManager);
 				}
 				
 				foreach(string stringResource in addIn.StringResources)
 				{
 					string path = Path.Combine(addInRoot, stringResource);
 					ResourceManager resourceManager = ResourceManager.CreateFileBasedResourceManager(Path.GetFileNameWithoutExtension(path), Path.GetDirectoryName(path), null);
-					ServiceSingleton.ServiceProvider.GetRequiredService<IResourceService>().RegisterNeutralStrings(resourceManager);
+					ServiceSingleton.GetRequiredService<IResourceService>().RegisterNeutralStrings(resourceManager);
 				}
 			}
 			addIns.Add(addIn);

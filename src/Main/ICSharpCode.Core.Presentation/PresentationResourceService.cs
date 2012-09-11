@@ -21,7 +21,7 @@ namespace ICSharpCode.Core.Presentation
 		
 		static PresentationResourceService()
 		{
-			resourceService = ServiceSingleton.ServiceProvider.GetRequiredService<IResourceService>();
+			resourceService = ServiceSingleton.GetRequiredService<IResourceService>();
 			resourceService.LanguageChanged += OnLanguageChanged;
 		}
 		

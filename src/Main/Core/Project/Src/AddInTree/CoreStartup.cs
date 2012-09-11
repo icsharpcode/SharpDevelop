@@ -177,7 +177,7 @@ namespace ICSharpCode.Core
 			addInTree.Load(addInFiles, disabledAddIns);
 			
 			// perform service registration
-			var container = ServiceSingleton.ServiceProvider.GetService<IServiceContainer>();
+			var container = (IServiceContainer)ServiceSingleton.ServiceProvider.GetService(typeof(IServiceContainer));
 			if (container != null)
 				addInTree.BuildItems<object>("/SharpDevelop/Services", container, false);
 			
@@ -188,7 +188,7 @@ namespace ICSharpCode.Core
 					command.Run();
 				} catch (Exception ex) {
 					// allow startup to continue if some commands fail
-					ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>().ShowException(ex);
+					ServiceSingleton.GetRequiredService<IMessageService>().ShowException(ex);
 				}
 			}
 		}
@@ -202,7 +202,7 @@ namespace ICSharpCode.Core
 			if (configDirectory == null)
 				configDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
 				                               applicationName);
-			var container = ServiceSingleton.ServiceProvider.GetRequiredService<IServiceContainer>();
+			var container = ServiceSingleton.GetRequiredService<IServiceContainer>();
 			var propertyService = new PropertyServiceImpl(
 				configDirectory,
 				dataDirectory ?? Path.Combine(FileUtility.ApplicationRootPath, "data"),

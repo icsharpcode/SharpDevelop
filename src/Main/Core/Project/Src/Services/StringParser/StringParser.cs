@@ -155,7 +155,7 @@ namespace ICSharpCode.Core
 				if (propertyName.Equals("TIME", StringComparison.OrdinalIgnoreCase))
 					return DateTime.Now.ToShortTimeString();
 				if (propertyName.Equals("ProductName", StringComparison.OrdinalIgnoreCase))
-					return ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>().ProductName;
+					return ServiceSingleton.GetRequiredService<IMessageService>().ProductName;
 				if (propertyName.Equals("GUID", StringComparison.OrdinalIgnoreCase))
 					return Guid.NewGuid().ToString().ToUpperInvariant();
 				if (propertyName.Equals("USER", StringComparison.OrdinalIgnoreCase))
@@ -163,7 +163,7 @@ namespace ICSharpCode.Core
 				if (propertyName.Equals("Version", StringComparison.OrdinalIgnoreCase))
 					return RevisionClass.FullVersion;
 				if (propertyName.Equals("CONFIGDIRECTORY", StringComparison.OrdinalIgnoreCase))
-					return ServiceSingleton.ServiceProvider.GetRequiredService<IPropertyService>().ConfigDirectory;
+					return ServiceSingleton.GetRequiredService<IPropertyService>().ConfigDirectory;
 				
 				foreach (IStringTagProvider provider in stringTagProviders) {
 					string result = provider.ProvideString(propertyName, customTags);
@@ -180,7 +180,7 @@ namespace ICSharpCode.Core
 				// before allocaing the prefix/propertyName strings
 				// All other prefixed properties {prefix:Key} shoulg get handled in the switch below.
 				if (propertyName.StartsWith("res:", StringComparison.OrdinalIgnoreCase)) {
-					var resourceService = ServiceSingleton.ServiceProvider.GetService<IResourceService>();
+					var resourceService = (IResourceService)ServiceSingleton.ServiceProvider.GetService(typeof(IResourceService));
 					if (resourceService == null)
 						return null;
 					try {
@@ -196,7 +196,7 @@ namespace ICSharpCode.Core
 					case "SDKTOOLPATH":
 						return FileUtility.GetSdkPath(propertyName);
 					case "ADDINPATH":
-						foreach (var addIn in ServiceSingleton.ServiceProvider.GetRequiredService<IAddInTree>().AddIns) {
+						foreach (var addIn in ServiceSingleton.GetRequiredService<IAddInTree>().AddIns) {
 							if (addIn.Manifest.Identities.ContainsKey(propertyName)) {
 								return System.IO.Path.GetDirectoryName(addIn.FileName);
 							}
@@ -259,7 +259,7 @@ namespace ICSharpCode.Core
 				defaultValue = propertyName.Substring(pos + 2);
 				propertyName = propertyName.Substring(0, pos);
 			}
-			Properties properties = ServiceSingleton.ServiceProvider.GetRequiredService<IPropertyService>().MainPropertiesContainer;
+			Properties properties = ServiceSingleton.GetRequiredService<IPropertyService>().MainPropertiesContainer;
 			pos = propertyName.IndexOf('/');
 			while (pos >= 0) {
 				properties = properties.NestedProperties(propertyName.Substring(0, pos));

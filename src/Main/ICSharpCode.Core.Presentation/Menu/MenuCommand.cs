@@ -181,7 +181,7 @@ namespace ICSharpCode.Core.Presentation
 			base.OnClick();
 			string feature = GetFeatureName();
 			if (!string.IsNullOrEmpty(feature)) {
-				ServiceSingleton.ServiceProvider.GetRequiredService<IAnalyticsMonitor>().TrackFeature(feature, ActivationMethod);
+				ServiceSingleton.GetRequiredService<IAnalyticsMonitor>().TrackFeature(feature, ActivationMethod);
 			}
 		}
 		
@@ -205,7 +205,7 @@ namespace ICSharpCode.Core.Presentation
 			
 			public void Execute(object parameter)
 			{
-				ServiceSingleton.ServiceProvider.GetRequiredService<IAnalyticsMonitor>().TrackFeature(featureName, "Shortcut");
+				ServiceSingleton.GetRequiredService<IAnalyticsMonitor>().TrackFeature(featureName, "Shortcut");
 				baseCommand.Execute(parameter);
 			}
 			

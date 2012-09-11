@@ -14,7 +14,7 @@ namespace ICSharpCode.Core
 	public static class MessageService
 	{
 		static IMessageService Service {
-			get { return ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>(); }
+			get { return ServiceSingleton.GetRequiredService<IMessageService>(); }
 		}
 		
 		/// <summary>

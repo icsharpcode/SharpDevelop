@@ -110,7 +110,7 @@ namespace ICSharpCode.Core.WinForms
 				if (GetVisible() && Enabled) {
 					ICommand cmd = Command;
 					if (cmd != null) {
-						ServiceSingleton.ServiceProvider.GetRequiredService<IAnalyticsMonitor>().TrackFeature(cmd.GetType().FullName, "Menu");
+						ServiceSingleton.GetRequiredService<IAnalyticsMonitor>().TrackFeature(cmd.GetType().FullName, "Menu");
 						cmd.Run();
 					}
 				}

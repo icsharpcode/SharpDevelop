@@ -113,7 +113,7 @@ namespace ICSharpCode.Core
 		}
 		
 		static AddInTreeImpl AddInTree {
-			get { return (AddInTreeImpl)ServiceSingleton.ServiceProvider.GetRequiredService(typeof(IAddInTree)); }
+			get { return (AddInTreeImpl)ServiceSingleton.GetRequiredService<IAddInTree>(); }
 		}
 		
 		/// <summary>
@@ -188,7 +188,7 @@ namespace ICSharpCode.Core
 					Directory.Delete(targetDir, true);
 				} catch (Exception ex) {
 					disabled.Add(addInName);
-					var messageService = ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>();
+					var messageService = ServiceSingleton.GetRequiredService<IMessageService>();
 					messageService.ShowError("Error removing " + addInName + ":\n" +
 					                         ex.Message + "\nThe AddIn will be " +
 					                         "removed on the next start of " + messageService.ProductName +
