@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Creates a nullable type reference.
 		/// </summary>
-		public static ITypeReference Create(ITypeReference elementType)
+		public static ParameterizedTypeReference Create(ITypeReference elementType)
 		{
 			if (elementType == null)
 				throw new ArgumentNullException("elementType");

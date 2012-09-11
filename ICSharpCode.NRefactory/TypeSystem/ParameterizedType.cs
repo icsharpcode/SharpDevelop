@@ -341,8 +341,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	[Serializable]
 	public sealed class ParameterizedTypeReference : ITypeReference, ISupportsInterning
 	{
-		ITypeReference genericType;
-		ITypeReference[] typeArguments;
+		readonly ITypeReference genericType;
+		readonly ITypeReference[] typeArguments;
 		
 		public ParameterizedTypeReference(ITypeReference genericType, IEnumerable<ITypeReference> typeArguments)
 		{
@@ -400,14 +400,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			b.Append(']');
 			return b.ToString();
-		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			genericType = provider.Intern(genericType);
-			for (int i = 0; i < typeArguments.Length; i++) {
-				typeArguments[i] = provider.Intern(typeArguments[i]);
-			}
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()

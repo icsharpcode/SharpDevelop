@@ -135,26 +135,30 @@ namespace ICSharpCode.NRefactory.CSharp
 			return b.ToString();
 		}
 		
-		public override ITypeReference ToTypeReference(NameLookupMode lookupMode = NameLookupMode.Type)
+		public override ITypeReference ToTypeReference(NameLookupMode lookupMode = NameLookupMode.Type, InterningProvider interningProvider = null)
 		{
+			if (interningProvider == null)
+				interningProvider = InterningProvider.Dummy;
+			
 			TypeOrNamespaceReference t;
 			if (this.IsDoubleColon) {
 				SimpleType st = this.Target as SimpleType;
 				if (st != null) {
-					t = new AliasNamespaceReference(st.Identifier);
+					t = interningProvider.Intern(new AliasNamespaceReference(interningProvider.Intern(st.Identifier)));
 				} else {
 					t = null;
 				}
 			} else {
-				t = this.Target.ToTypeReference(lookupMode) as TypeOrNamespaceReference;
+				t = this.Target.ToTypeReference(lookupMode, interningProvider) as TypeOrNamespaceReference;
 			}
 			if (t == null)
 				return SpecialType.UnknownType;
 			var typeArguments = new List<ITypeReference>();
 			foreach (var ta in this.TypeArguments) {
-				typeArguments.Add(ta.ToTypeReference(lookupMode));
+				typeArguments.Add(ta.ToTypeReference(lookupMode, interningProvider));
 			}
-			return new MemberTypeOrNamespaceReference(t, this.MemberName, typeArguments, lookupMode);
+			string memberName = interningProvider.Intern(this.MemberName);
+			return interningProvider.Intern(new MemberTypeOrNamespaceReference(t, memberName, interningProvider.InternList(typeArguments), lookupMode));
 		}
 	}
 }

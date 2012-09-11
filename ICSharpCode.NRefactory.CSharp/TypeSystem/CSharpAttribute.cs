@@ -51,7 +51,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			this.namedCtorArguments = namedCtorArguments ?? EmptyList<KeyValuePair<string, IConstantValue>>.Instance;
 			this.namedArguments = namedArguments ?? EmptyList<KeyValuePair<string, IConstantValue>>.Instance;
 		}
-				public DomRegion Region {
+		
+		public DomRegion Region {
 			get { return region; }
 		}
 		
@@ -165,93 +166,4 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			}
 		}
 	}
-	
-	/*
-		public IMethod ResolveConstructor(ITypeResolveContext context)
-		{
-			CSharpResolver r = new CSharpResolver(context);
-			IType type = attributeType.Resolve(context);
-			int totalArgumentCount = 0;
-			if (positionalArguments != null)
-				totalArgumentCount += positionalArguments.Count;
-			if (namedCtorArguments != null)
-				totalArgumentCount += namedCtorArguments.Count;
-			ResolveResult[] arguments = new ResolveResult[totalArgumentCount];
-			string[] argumentNames = new string[totalArgumentCount];
-			int i = 0;
-			if (positionalArguments != null) {
-				while (i < positionalArguments.Count) {
-					IConstantValue cv = positionalArguments[i];
-					arguments[i] = cv.Resolve(context);
-					i++;
-				}
-			}
-			if (namedCtorArguments != null) {
-				foreach (var pair in namedCtorArguments) {
-					argumentNames[i] = pair.Key;
-					arguments[i] = pair.Value.Resolve(context);
-					i++;
-				}
-			}
-			MemberResolveResult mrr = r.ResolveObjectCreation(type, arguments, argumentNames) as MemberResolveResult;
-			return mrr != null ? mrr.Member as IMethod : null;
-		}
-		
-		public IList<ResolveResult> GetPositionalArguments(ITypeResolveContext context)
-		{
-			List<ResolveResult> result = new List<ResolveResult>();
-			if (positionalArguments != null) {
-				foreach (var arg in positionalArguments) {
-					result.Add(Resolve(arg, context));
-				}
-			}
-			if (namedCtorArguments == null || namedCtorArguments.Count == 0) {
-				// no namedCtorArguments: just return the positionalArguments
-				return result.AsReadOnly();
-			}
-			// we do have namedCtorArguments, which need to be re-ordered and appended to the positional arguments
-			IMethod method = ResolveConstructor(context);
-			if (method != null) {
-				for (int i = result.Count; i < method.Parameters.Count; i++) {
-					IParameter p = method.Parameters[i];
-					bool found = false;
-					foreach (var pair in namedCtorArguments) {
-						if (pair.Key == p.Name) {
-							result.Add(Resolve(pair.Value, context));
-							found = true;
-						}
-					}
-					if (!found) {
-						// add the parameter's default value:
-						if (p.DefaultValue != null) {
-							result.Add(Resolve(p.DefaultValue, context));
-						} else {
-							IType type = p.Type.Resolve(context);
-							result.Add(new ConstantResolveResult(type, CSharpResolver.GetDefaultValue(type)));
-						}
-					}
-				}
-			}
-			return result.AsReadOnly();
-		}
-		
-		ResolveResult Resolve(IConstantValue constantValue, ITypeResolveContext context)
-		{
-			if (constantValue != null)
-				return constantValue.Resolve(context);
-			else
-				return new ErrorResolveResult(SpecialType.UnknownType);
-		}
-		
-		public IList<KeyValuePair<string, ResolveResult>> GetNamedArguments(ITypeResolveContext context)
-		{
-			if (namedArguments != null) {
-				return namedArguments.Select(p => new KeyValuePair<string, ResolveResult>(p.Key, p.Value.Resolve(context)))
-					.ToList().AsReadOnly();
-			} else {
-				return EmptyList<KeyValuePair<string, ResolveResult>>.Instance;
-			}
-		}
-	}
-	 */
 }

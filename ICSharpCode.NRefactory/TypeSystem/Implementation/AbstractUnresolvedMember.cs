@@ -32,10 +32,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		ITypeReference returnType = SpecialType.UnknownType;
 		IList<IMemberReference> interfaceImplementations;
 		
-		public override void ApplyInterningProvider(IInterningProvider provider)
+		public override void ApplyInterningProvider(InterningProvider provider)
 		{
 			base.ApplyInterningProvider(provider);
-			returnType = provider.Intern(returnType);
 			interfaceImplementations = provider.InternList(interfaceImplementations);
 		}
 		

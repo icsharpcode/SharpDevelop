@@ -312,13 +312,13 @@ namespace ICSharpCode.NRefactory.Editor
 		
 		/// <inheritdoc/>
 		public string Text {
-			get { 
+			get {
 				if (cachedText == null)
 					cachedText = b.ToString();
 				return cachedText;
 			}
 			set {
-				Replace(0, b.Length, value); 
+				Replace(0, b.Length, value);
 			}
 		}
 		
@@ -480,6 +480,14 @@ namespace ICSharpCode.NRefactory.Editor
 		public virtual object GetService(Type serviceType)
 		{
 			return null;
+		}
+		
+		/// <inheritdoc/>
+		public virtual event EventHandler FileNameChanged { add {} remove {} }
+		
+		/// <inheritdoc/>
+		public virtual string FileName {
+			get { return string.Empty; }
 		}
 	}
 }

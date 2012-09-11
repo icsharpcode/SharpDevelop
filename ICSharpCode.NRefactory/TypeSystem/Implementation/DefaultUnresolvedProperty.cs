@@ -47,11 +47,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return copy;
 		}
 		
-		public override void ApplyInterningProvider(IInterningProvider provider)
+		public override void ApplyInterningProvider(InterningProvider provider)
 		{
 			base.ApplyInterningProvider(provider);
-			getter = provider.Intern(getter);
-			setter = provider.Intern(setter);
 			parameters = provider.InternList(parameters);
 		}
 		

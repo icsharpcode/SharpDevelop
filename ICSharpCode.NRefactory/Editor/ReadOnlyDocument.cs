@@ -28,6 +28,7 @@ namespace ICSharpCode.NRefactory.Editor
 	public sealed class ReadOnlyDocument : IDocument
 	{
 		readonly ITextSource textSource;
+		readonly string fileName;
 		int[] lines;
 		
 		static readonly char[] newline = { '\r', '\n' };
@@ -35,12 +36,13 @@ namespace ICSharpCode.NRefactory.Editor
 		/// <summary>
 		/// Creates a new ReadOnlyDocument from the given text source.
 		/// </summary>
-		public ReadOnlyDocument(ITextSource textSource)
+		public ReadOnlyDocument(ITextSource textSource, string fileName = null)
 		{
 			if (textSource == null)
 				throw new ArgumentNullException("textSource");
 			// ensure that underlying buffer is immutable
 			this.textSource = textSource.CreateSnapshot();
+			this.fileName = fileName;
 			List<int> lines = new List<int>();
 			lines.Add(0);
 			int offset = 0;
@@ -58,8 +60,8 @@ namespace ICSharpCode.NRefactory.Editor
 		/// <summary>
 		/// Creates a new ReadOnlyDocument from the given string.
 		/// </summary>
-		public ReadOnlyDocument(string text)
-			: this(new StringTextSource(text))
+		public ReadOnlyDocument(string text, string fileName = null)
+			: this(new StringTextSource(text), fileName)
 		{
 		}
 		
@@ -422,6 +424,15 @@ namespace ICSharpCode.NRefactory.Editor
 		object IServiceProvider.GetService(Type serviceType)
 		{
 			return null;
+		}
+		
+		/// <inheritdoc/>
+		/// <remarks>Will never be raised on <see cref="ReadOnlyDocument" />.</remarks>
+		public event EventHandler FileNameChanged { add {} remove {} }
+		
+		/// <inheritdoc/>
+		public string FileName {
+			get { return fileName; }
 		}
 	}
 }

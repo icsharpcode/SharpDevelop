@@ -26,9 +26,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	[Serializable]
 	public sealed class NestedTypeReference : ITypeReference, ISupportsInterning
 	{
-		ITypeReference declaringTypeRef;
-		string name;
-		int additionalTypeParameterCount;
+		readonly ITypeReference declaringTypeRef;
+		readonly string name;
+		readonly int additionalTypeParameterCount;
 		
 		/// <summary>
 		/// Creates a new NestedTypeReference.
@@ -82,12 +82,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return declaringTypeRef + "+" + name;
 			else
 				return declaringTypeRef + "+" + name + "`" + additionalTypeParameterCount;
-		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			declaringTypeRef = provider.Intern(declaringTypeRef);
-			name = provider.Intern(name);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()

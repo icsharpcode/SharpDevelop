@@ -85,7 +85,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				rareFields.FreezeInternal();
 		}
 		
-		public virtual void ApplyInterningProvider(IInterningProvider provider)
+		/// <summary>
+		/// Uses the specified interning provider to intern
+		/// strings and lists in this entity.
+		/// This method does not test arbitrary objects to see if they implement ISupportsInterning;
+		/// instead we assume that those are interned immediately when they are created (before they are added to this entity).
+		/// </summary>
+		public virtual void ApplyInterningProvider(InterningProvider provider)
 		{
 			if (provider == null)
 				throw new ArgumentNullException("provider");
@@ -124,7 +130,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			{
 			}
 			
-			public virtual void ApplyInterningProvider(IInterningProvider provider)
+			public virtual void ApplyInterningProvider(InterningProvider provider)
 			{
 			}
 			

@@ -147,8 +147,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	[Serializable]
 	public sealed class ArrayTypeReference : ITypeReference, ISupportsInterning
 	{
-		ITypeReference elementType;
-		int dimensions;
+		readonly ITypeReference elementType;
+		readonly int dimensions;
 		
 		public ArrayTypeReference(ITypeReference elementType, int dimensions = 1)
 		{
@@ -176,11 +176,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public override string ToString()
 		{
 			return elementType.ToString() + "[" + new string(',', dimensions - 1) + "]";
-		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			elementType = provider.Intern(elementType);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()

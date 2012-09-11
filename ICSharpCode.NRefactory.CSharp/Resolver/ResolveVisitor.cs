@@ -797,7 +797,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				} else {
 					// Re-discover the method:
 					EntityType entityType = memberDeclaration.EntityType;
-					var parameterTypes = TypeSystemConvertVisitor.GetParameterTypes(memberDeclaration.GetChildrenByRole(Roles.Parameter));
+					var parameterTypes = TypeSystemConvertVisitor.GetParameterTypes(memberDeclaration.GetChildrenByRole(Roles.Parameter), InterningProvider.Dummy);
 					if (entityType == EntityType.Constructor) {
 						string name = memberDeclaration.HasModifier(Modifiers.Static) ? ".cctor" : ".ctor";
 						member = AbstractUnresolvedMember.Resolve(
@@ -860,7 +860,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				} else {
 					// Re-discover the property:
 					string name = propertyOrIndexerDeclaration.Name;
-					var parameterTypeReferences = TypeSystemConvertVisitor.GetParameterTypes(propertyOrIndexerDeclaration.GetChildrenByRole(Roles.Parameter));
+					var parameterTypeReferences = TypeSystemConvertVisitor.GetParameterTypes(propertyOrIndexerDeclaration.GetChildrenByRole(Roles.Parameter), InterningProvider.Dummy);
 					AstType explicitInterfaceAstType = propertyOrIndexerDeclaration.GetChildByRole(EntityDeclaration.PrivateImplementationTypeRole);
 					ITypeReference explicitInterfaceType = null;
 					if (!explicitInterfaceAstType.IsNull) {

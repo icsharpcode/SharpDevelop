@@ -36,6 +36,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	public class DefaultUnresolvedAssembly : AbstractFreezable, IUnresolvedAssembly
 	{
 		string assemblyName;
+		string fullAssemblyName;
 		IList<IUnresolvedAttribute> assemblyAttributes;
 		IList<IUnresolvedAttribute> moduleAttributes;
 		Dictionary<FullNameAndTypeParameterCount, IUnresolvedTypeDefinition> typeDefinitions = new Dictionary<FullNameAndTypeParameterCount, IUnresolvedTypeDefinition>(FullNameAndTypeParameterCountComparer.Ordinal);
@@ -51,15 +52,28 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+		/// <summary>
+		/// Creates a new unresolved assembly.
+		/// </summary>
+		/// <param name="assemblyName">Full assembly name</param>
 		public DefaultUnresolvedAssembly(string assemblyName)
 		{
 			if (assemblyName == null)
 				throw new ArgumentNullException("assemblyName");
-			this.assemblyName = assemblyName;
+			this.fullAssemblyName = assemblyName;
+			int pos = assemblyName != null ? assemblyName.IndexOf(',') : -1;
+			this.assemblyName = pos < 0 ? assemblyName : assemblyName.Substring(0, pos);
 			this.assemblyAttributes = new List<IUnresolvedAttribute>();
 			this.moduleAttributes = new List<IUnresolvedAttribute>();
 		}
 		
+		/// <summary>
+		/// Gets/Sets the short assembly name.
+		/// </summary>
+		/// <remarks>
+		/// This class handles the short and the full name independently;
+		/// if you change the short name, you should also change the full name.
+		/// </remarks>
 		public string AssemblyName {
 			get { return assemblyName; }
 			set {
@@ -69,7 +83,24 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				assemblyName = value;
 			}
 		}
-
+		
+		/// <summary>
+		/// Gets/Sets the full assembly name.
+		/// </summary>
+		/// <remarks>
+		/// This class handles the short and the full name independently;
+		/// if you change the full name, you should also change the short name.
+		/// </remarks>
+		public string FullAssemblyName {
+			get { return fullAssemblyName; }
+			set {
+				if (value == null)
+					throw new ArgumentNullException("value");
+				FreezableHelper.ThrowIfFrozen(this);
+				fullAssemblyName = value;
+			}
+		}
+		
 		string location;
 		public string Location {
 			get {
@@ -285,6 +316,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			
 			public string AssemblyName {
 				get { return unresolvedAssembly.AssemblyName; }
+			}
+			
+			public string FullAssemblyName {
+				get { return unresolvedAssembly.FullAssemblyName; }
 			}
 			
 			public IList<IAttribute> AssemblyAttributes { get; private set; }

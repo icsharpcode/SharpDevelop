@@ -285,16 +285,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// Adds type arguments to the result type.
 		/// </summary>
 		/// <param name="result">The result AST node (a SimpleType or MemberType)</param>
+		/// <param name="typeDef">The type definition that owns the type parameters</param>
 		/// <param name="typeArguments">The list of type arguments</param>
 		/// <param name="startIndex">Index of first type argument to add</param>
 		/// <param name="endIndex">Index after last type argument to add</param>
 		void AddTypeArguments(AstType result, ITypeDefinition typeDef, IList<IType> typeArguments, int startIndex, int endIndex)
 		{
+			Debug.Assert(endIndex <= typeDef.TypeParameterCount);
 			for (int i = startIndex; i < endIndex; i++) {
 				if (ConvertUnboundTypeArguments && typeArguments[i].Kind == TypeKind.UnboundTypeArgument) {
-					result.AddChild(new SimpleType(typeDef.TypeParameters [i].Name), Roles.TypeArgument);
+					result.AddChild(new SimpleType(typeDef.TypeParameters[i].Name), Roles.TypeArgument);
 				} else {
-					result.AddChild(ConvertType(typeArguments [i]), Roles.TypeArgument);
+					result.AddChild(ConvertType(typeArguments[i]), Roles.TypeArgument);
 				}
 			}
 		}

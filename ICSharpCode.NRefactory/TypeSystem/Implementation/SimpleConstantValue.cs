@@ -27,8 +27,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	[Serializable]
 	public sealed class SimpleConstantValue : IConstantValue, ISupportsInterning
 	{
-		ITypeReference type;
-		object value;
+		readonly ITypeReference type;
+		readonly object value;
 		
 		public SimpleConstantValue(ITypeReference type, object value)
 		{
@@ -53,12 +53,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return value.ToString().ToLowerInvariant();
 			else
 				return value.ToString();
-		}
-		
-		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
-		{
-			type = provider.Intern(type);
-			value = provider.Intern(value);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()

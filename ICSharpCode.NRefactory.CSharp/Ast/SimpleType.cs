@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override void AcceptVisitor (IAstVisitor visitor)
 			{
 			}
-				
+			
 			public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 			{
 				return default (T);
@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return other == null || other.IsNull;
 			}
 			
-			public override ITypeReference ToTypeReference(NameLookupMode lookupMode)
+			public override ITypeReference ToTypeReference(NameLookupMode lookupMode, InterningProvider interningProvider)
 			{
 				return SpecialType.UnknownType;
 			}
@@ -130,7 +130,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			visitor.VisitSimpleType (this);
 		}
-			
+		
 		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 		{
 			return visitor.VisitSimpleType (this);
@@ -158,17 +158,21 @@ namespace ICSharpCode.NRefactory.CSharp
 			return b.ToString();
 		}
 		
-		public override ITypeReference ToTypeReference(NameLookupMode lookupMode = NameLookupMode.Type)
+		public override ITypeReference ToTypeReference(NameLookupMode lookupMode = NameLookupMode.Type, InterningProvider interningProvider = null)
 		{
+			if (interningProvider == null)
+				interningProvider = InterningProvider.Dummy;
 			var typeArguments = new List<ITypeReference>();
 			foreach (var ta in this.TypeArguments) {
-				typeArguments.Add(ta.ToTypeReference(lookupMode));
+				typeArguments.Add(ta.ToTypeReference(lookupMode, interningProvider));
 			}
-			if (typeArguments.Count == 0 && string.IsNullOrEmpty(this.Identifier)) {
+			string identifier = interningProvider.Intern(this.Identifier);
+			if (typeArguments.Count == 0 && string.IsNullOrEmpty(identifier)) {
 				// empty SimpleType is used for typeof(List<>).
 				return SpecialType.UnboundTypeArgument;
 			}
-			return new SimpleTypeOrNamespaceReference(this.Identifier, typeArguments, lookupMode);
+			var t = new SimpleTypeOrNamespaceReference(identifier, interningProvider.InternList(typeArguments), lookupMode);
+			return interningProvider.Intern(t);
 		}
 	}
 }
