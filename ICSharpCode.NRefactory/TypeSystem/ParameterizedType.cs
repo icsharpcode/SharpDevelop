@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// the type arguments.
 	/// </remarks>
 	[Serializable]
-	public sealed class ParameterizedType : IType
+	public sealed class ParameterizedType : IType, ICompilationProvider
 	{
 		readonly ITypeDefinition genericType;
 		readonly IType[] typeArguments;
@@ -57,8 +57,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			for (int i = 0; i < this.typeArguments.Length; i++) {
 				if (this.typeArguments[i] == null)
 					throw new ArgumentNullException("typeArguments[" + i + "]");
-				ICompilationProvider r = this.typeArguments[i] as ICompilationProvider;
-				if (r != null && r.Compilation != genericType.Compilation)
+				ICompilationProvider p = this.typeArguments[i] as ICompilationProvider;
+				if (p != null && p.Compilation != genericType.Compilation)
 					throw new InvalidOperationException("Cannot parameterize a type with type arguments from a different compilation.");
 			}
 		}
