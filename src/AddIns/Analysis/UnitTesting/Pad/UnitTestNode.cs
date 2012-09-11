@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.UnitTesting
@@ -39,8 +39,13 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
-		public ITest Test {
+		public new ITest Model {
 			get { return test; }
+		}
+		
+		protected override object GetModel()
+		{
+			return test;
 		}
 		
 		#region Manage Children
@@ -58,7 +63,9 @@ namespace ICSharpCode.UnitTesting
 		void InsertNestedTests(IEnumerable<ITest> nestedTests)
 		{
 			foreach (var test in nestedTests) {
-				Children.OrderedInsert(test.CreateTreeNode(), NodeTextComparer);
+				var treeNode = SD.TreeNodeFactory.CreateTreeNode(test);
+				if (treeNode != null)
+					Children.OrderedInsert(treeNode, NodeTextComparer);
 			}
 		}
 		
@@ -73,7 +80,7 @@ namespace ICSharpCode.UnitTesting
 					InsertNestedTests(e.NewItems.Cast<ITest>());
 					break;
 				case NotifyCollectionChangedAction.Remove:
-					Children.RemoveAll(n => e.OldItems.Contains(((UnitTestNode)n).Test));
+					Children.RemoveAll(n => e.OldItems.Contains(n.Model));
 					break;
 				case NotifyCollectionChangedAction.Reset:
 					if (IsExpanded) {

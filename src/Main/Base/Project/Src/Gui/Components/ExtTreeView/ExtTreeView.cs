@@ -12,6 +12,8 @@ using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
+	using TreeView = System.Windows.Forms.TreeView;
+	
 	/// <summary>
 	/// Description of ExtTreeView.
 	/// </summary>

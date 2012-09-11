@@ -6,7 +6,7 @@
     <ProductVersion>8.0.40607</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{4980B743-B32F-4aba-AABD-45E2CAD3568D}</ProjectGuid>
-    <RootNamespace>ICSharpCode.SharpDevelop.Tests</RootNamespace>
+    <RootNamespace>ICSharpCode.SharpDevelop</RootNamespace>
     <AssemblyName>ICSharpCode.SharpDevelop.Tests</AssemblyName>
     <OutputTarget>Library</OutputTarget>
     <WarningLevel>4</WarningLevel>
@@ -78,6 +78,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CheckAssemblyFlags.cs" />
     <Compile Include="CodeConverterTests.cs" />
+    <Compile Include="Dom\TreeNodeFactoryServiceTests.cs" />
     <Compile Include="ExceptionClassOverridesTestFixture.cs" />
     <Compile Include="GenerateOverrideMethodTests.cs" />
     <Compile Include="GetElementByReflectionNameTests.cs" />
@@ -168,6 +169,10 @@
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj">
+      <Project>{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}</Project>
+      <Name>ICSharpCode.TreeView</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Core\Test\ICSharpCode.Core.Tests.csproj">
       <Project>{AD6FAA08-D6F5-4DBA-AF85-F4DA9F40C3B5}</Project>
       <Name>ICSharpCode.Core.Tests</Name>
@@ -188,6 +193,9 @@
   <ItemGroup>
     <EmbeddedResource Include="mime_utf-16_be_test.txt" />
     <EmbeddedResource Include="mime_utf-16_le_test.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Dom" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

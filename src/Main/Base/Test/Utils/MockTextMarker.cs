@@ -53,6 +53,8 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		public Color MarkerColor { get; set; }
 		public object Tag { get; set; }
 		public object ToolTip { get; set; }
+		public Nullable<System.Windows.FontWeight> FontWeight { get; set; }
+		public Nullable<System.Windows.FontStyle> FontStyle { get; set; }
 		
 		public void Delete()
 		{

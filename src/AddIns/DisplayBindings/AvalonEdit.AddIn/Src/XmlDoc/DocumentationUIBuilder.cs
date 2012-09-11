@@ -200,7 +200,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 		
 		public void AddCodeBlock(string textContent, bool keepLargeMargin = false)
 		{
-			var document = new ReadOnlyDocument(textContent, "");
+			var document = new ReadOnlyDocument(textContent);
 			var highlightingDefinition = HighlightingManager.Instance.GetDefinition("C#");
 			
 			var block = DocumentPrinter.ConvertTextDocumentToBlock(document, highlightingDefinition);

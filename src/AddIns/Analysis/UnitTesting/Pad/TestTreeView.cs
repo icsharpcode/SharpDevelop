@@ -57,7 +57,7 @@ namespace ICSharpCode.UnitTesting
 		public Enum InternalState {
 			get {
 				var node = SelectedItem as UnitTestNode;
-				if (node != null && node.Test.SupportsGoToDefinition)
+				if (node != null && node.Model.GoToDefinition.CanExecute(node.Model))
 					return TestTreeViewState.SupportsGoToDefinition;
 				else
 					return TestTreeViewState.None;
@@ -66,14 +66,14 @@ namespace ICSharpCode.UnitTesting
 		
 		public IEnumerable<ITest> SelectedTests {
 			get {
-				return this.GetTopLevelSelection().OfType<UnitTestNode>().Select(n => n.Test);
+				return this.GetTopLevelSelection().OfType<UnitTestNode>().Select(n => n.Model);
 			}
 			set {
 				HashSet<ITest> newSelection = new HashSet<ITest>(value);
 				// Deselect tests that are no longer selected,
 				// and remove already-selected tests from the HashSet
 				foreach (UnitTestNode node in this.SelectedItems.OfType<UnitTestNode>().ToList()) {
-					if (!newSelection.Remove(node.Test))
+					if (!newSelection.Remove(node.Model))
 						this.SelectedItems.Remove(node);
 				}
 				// Now additionally select those tests which left in the set:
@@ -98,7 +98,7 @@ namespace ICSharpCode.UnitTesting
 				if (node == null)
 					break;
 				node.EnsureLazyChildren();
-				node = node.Children.OfType<UnitTestNode>().FirstOrDefault(c => c.Test == ancestor);
+				node = node.Children.OfType<UnitTestNode>().FirstOrDefault(c => c.Model == ancestor);
 			}
 			return node;
 		}

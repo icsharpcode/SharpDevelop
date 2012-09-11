@@ -407,7 +407,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 	}
 	
-	sealed class ShellTree : TreeView
+	sealed class ShellTree : System.Windows.Forms.TreeView
 	{
 		public string NodePath {
 			get {

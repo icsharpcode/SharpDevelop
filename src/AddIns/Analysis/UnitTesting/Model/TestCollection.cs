@@ -7,13 +7,15 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
+using ICSharpCode.SharpDevelop.Dom;
+
 namespace ICSharpCode.UnitTesting
 {
 	/// <summary>
 	/// Collection of tests that monitors the amount of tests for each result type,
 	/// allowing efficient updates of the overall result.
 	/// </summary>
-	public class TestCollection : ObservableCollection<ITest>
+	public class TestCollection : ObservableCollection<ITest>, IModelCollection<ITest>
 	{
 		#region Struct TestCounts
 		struct TestCounts

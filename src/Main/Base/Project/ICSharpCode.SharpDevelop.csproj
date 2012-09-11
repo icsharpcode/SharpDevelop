@@ -94,6 +94,8 @@
     <Compile Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\ExtendedBinaryReader.cs">
       <Link>Src\Project\MSBuildEngine\ExtendedBinaryReader.cs</Link>
     </Compile>
+    <Compile Include="Dom\IModelCollection.cs" />
+    <Compile Include="Dom\ITreeNodeFactory.cs" />
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
     <Compile Include="Src\Commands\ViewInBrowser.cs" />
     <Compile Include="Src\Editor\AddInHighlightingResource.cs" />
@@ -751,6 +753,7 @@
     <Compile Include="Src\Util\IOTaskScheduler.cs" />
     <Compile Include="Src\Util\ReactiveExtensions.cs" />
     <Compile Include="Src\Util\SharpDevelopServiceContainer.cs" />
+    <Compile Include="Src\Util\SimpleCommand.cs" />
     <Compile Include="Src\Util\SimpleTaskScheduler.cs" />
     <Compile Include="Src\Util\TreeNode.cs" />
     <Compile Include="Src\Util\NativeMethods.cs" />
@@ -846,11 +849,17 @@
       <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj">
+      <Project>{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}</Project>
+      <Name>ICSharpCode.TreeView</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35cef10f-2d4c-45f2-9dd1-161e0fec583c}</Project>
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="Dom" />
     <Folder Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference" />
     <Folder Include="Src\Refactoring" />
     <Folder Include="Src\Project\Behaviors" />

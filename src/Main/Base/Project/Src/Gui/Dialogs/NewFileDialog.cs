@@ -105,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		ListView templateListView;
-		TreeView categoryTreeView;
+		System.Windows.Forms.TreeView categoryTreeView;
 		
 		void InsertCategories(TreeNode node, ArrayList catarray)
 		{
@@ -606,7 +606,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			imglist.Images.Add(IconService.GetBitmap("Icons.16x16.ClosedFolderBitmap"));
 			
 			templateListView = ((ListView)ControlDictionary["templateListView"]);
-			categoryTreeView = ((TreeView)ControlDictionary["categoryTreeView"]);
+			categoryTreeView = ((System.Windows.Forms.TreeView)ControlDictionary["categoryTreeView"]);
 			
 			categoryTreeView.ImageList = imglist;
 			

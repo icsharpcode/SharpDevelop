@@ -123,7 +123,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void ProjectBrowserTreeViewHandleCreated(object sender, EventArgs e)
 		{
-			TreeView treeView = (TreeView)sender;
+			System.Windows.Forms.TreeView treeView = (System.Windows.Forms.TreeView)sender;
 			this.treeViewHandleCreatedAttached = false;
 			treeView.HandleCreated -= this.ProjectBrowserTreeViewHandleCreated;
 			if (this.solutionToLoadWhenHandleIsCreated != null) {

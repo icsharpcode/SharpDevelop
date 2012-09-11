@@ -64,6 +64,8 @@
 		         class="ICSharpCode.SharpDevelop.Workbench.FileService"/>
 		<Service id="ICSharpCode.SharpDevelop.IShutdownService"
 		         class="ICSharpCode.SharpDevelop.Workbench.ShutdownService"/>
+		<Service id="ICSharpCode.SharpDevelop.Dom.ITreeNodeFactory"
+		         class="ICSharpCode.SharpDevelop.Dom.TreeNodeFactoryService"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">

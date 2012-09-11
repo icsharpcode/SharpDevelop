@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		[Obsolete("Use the TextDocument constructor instead")]
 		public static IDocument LoadDocumentFromBuffer(ITextSource buffer)
 		{
-			return new TextDocument(buffer, null);
+			return new TextDocument(buffer);
 		}
 		
 		/// <summary>
@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		[Obsolete("Use the ReadOnlyDocument constructor instead")]
 		public static IDocument LoadReadOnlyDocumentFromBuffer(ITextSource buffer)
 		{
-			return new ReadOnlyDocument(buffer, null);
+			return new ReadOnlyDocument(buffer);
 		}
 		
 		/// <summary>

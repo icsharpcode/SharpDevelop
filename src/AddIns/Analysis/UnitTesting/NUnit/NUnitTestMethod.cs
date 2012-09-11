@@ -79,15 +79,15 @@ namespace ICSharpCode.UnitTesting
 			return resolvedMethod;
 		}
 		
-		public override bool SupportsGoToDefinition {
-			get { return true; }
-		}
-		
-		public override void GoToDefinition()
-		{
-			IMethod resolvedMethod = Resolve();
-			if (resolvedMethod != null)
-				NavigationService.NavigateTo(resolvedMethod);
+		public override System.Windows.Input.ICommand GoToDefinition {
+			get {
+				return new SimpleCommand(
+					delegate {
+						IMethod method = Resolve();
+						if (method != null)
+							NavigationService.NavigateTo(method);
+					});
+			}
 		}
 	}
 }

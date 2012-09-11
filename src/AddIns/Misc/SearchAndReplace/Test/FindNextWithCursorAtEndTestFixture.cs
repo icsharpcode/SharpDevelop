@@ -41,17 +41,11 @@ namespace SearchAndReplace.Tests
 			SearchOptions.MatchWholeWord = false;
 			
 			// Create the document to be searched.
-			var doc = MockRepository.GenerateStub<IDocument>();
-			doc.Text = "foo";
-			doc.Stub(d => d.TextLength).Return(doc.Text.Length);
+			var doc = new ReadOnlyDocument("foo");
 			
-			var location = MockRepository.GenerateStub<SearchLocation>(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(true) : null);
+			var location = MockRepository.GenerateStub<SearchLocation>(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, null);
 			
 			location.Stub(l => l.GenerateFileList()).Return(new[] { new FileName(@"C:\Temp\test.txt") });
-			
-			// Create a doc info with an initial end offset right
-			// at the end of the text.
-			ProvidedDocumentInformation docInfo = new ProvidedDocumentInformation(doc, @"C:\Temp\test.txt", doc.TextLength);
 			
 			// Search the document.
 			var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);

@@ -4,7 +4,11 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows.Input;
+
 using ICSharpCode.NRefactory.Utils;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -85,7 +89,14 @@ namespace ICSharpCode.UnitTesting
 		#region NestedTests
 		TestCollection nestedTests;
 		
-		public TestCollection NestedTests {
+		protected TestCollection NestedTestCollection {
+			get {
+				EnsureNestedTestsInitialized();
+				return nestedTests;
+			}
+		}
+		
+		public IModelCollection<ITest> NestedTests {
 			get {
 				EnsureNestedTestsInitialized();
 				return nestedTests;
@@ -155,18 +166,8 @@ namespace ICSharpCode.UnitTesting
 			return null;
 		}
 		
-		public virtual bool SupportsGoToDefinition {
-			get { return false; }
-		}
-		
-		public virtual void GoToDefinition()
-		{
-			throw new NotSupportedException();
-		}
-		
-		public virtual UnitTestNode CreateTreeNode()
-		{
-			return new UnitTestNode(this);
+		public virtual ICommand GoToDefinition {
+			get { return SimpleCommand.NotAvailable; }
 		}
 	}
 }

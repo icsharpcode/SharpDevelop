@@ -161,33 +161,33 @@ namespace ICSharpCode.UnitTesting
 		void AddTestClass(FullNameAndTypeParameterCount fullName, ITest test)
 		{
 			topLevelTestClasses.Add(fullName, test);
-			ITest testNamespace = FindOrCreateNamespace(this, project.RootNamespace, fullName.Namespace);
-			testNamespace.NestedTests.Add(test);
+			TestCollection testNamespace = FindOrCreateNamespace(NestedTestCollection, project.RootNamespace, fullName.Namespace);
+			testNamespace.Add(test);
 		}
 		
 		void RemoveTestClass(FullNameAndTypeParameterCount fullName, ITest test)
 		{
 			topLevelTestClasses.Remove(fullName);
-			ITest testNamespace = FindNamespace(this, project.RootNamespace, fullName.Namespace);
+			TestCollection testNamespace = FindNamespace(NestedTestCollection, project.RootNamespace, fullName.Namespace);
 			if (testNamespace != null) {
-				testNamespace.NestedTests.Remove(test);
-				if (testNamespace.NestedTests.Count == 0) {
+				testNamespace.Remove(test);
+				if (testNamespace.Count == 0) {
 					// Remove the namespace
-					RemoveTestNamespace(this, project.RootNamespace, fullName.Namespace);
+					RemoveTestNamespace(NestedTestCollection, project.RootNamespace, fullName.Namespace);
 				}
 			}
 			OnTestClassRemoved(test);
 		}
 		
-		ITest FindOrCreateNamespace(ITest parent, string parentNamespace, string @namespace)
+		TestCollection FindOrCreateNamespace(TestCollection collection, string parentNamespace, string @namespace)
 		{
 			if (parentNamespace == @namespace)
-				return parent;
-			foreach (var node in parent.NestedTests.OfType<TestNamespace>()) {
+				return collection;
+			foreach (var node in collection.OfType<TestNamespace>()) {
 				if (@namespace == node.NamespaceName)
-					return node;
+					return node.NestedTests;
 				if (@namespace.StartsWith(node.NamespaceName + ".", StringComparison.Ordinal)) {
-					return FindOrCreateNamespace(node, node.NamespaceName, @namespace);
+					return FindOrCreateNamespace(node.NestedTests, node.NamespaceName, @namespace);
 				}
 			}
 			// Create missing namespace node:
@@ -201,24 +201,24 @@ namespace ICSharpCode.UnitTesting
 			int dotPos = @namespace.IndexOf('.', startPos);
 			if (dotPos < 0) {
 				var newNode = new TestNamespace(this, @namespace);
-				parent.NestedTests.Add(newNode);
-				return newNode;
+				collection.Add(newNode);
+				return newNode.NestedTests;
 			} else {
 				var newNode = new TestNamespace(this, @namespace.Substring(0, dotPos));
-				parent.NestedTests.Add(newNode);
-				return FindOrCreateNamespace(newNode, newNode.NamespaceName, @namespace);
+				collection.Add(newNode);
+				return FindOrCreateNamespace(newNode.NestedTests, newNode.NamespaceName, @namespace);
 			}
 		}
 		
-		static ITest FindNamespace(ITest parent, string parentNamespace, string @namespace)
+		static TestCollection FindNamespace(TestCollection collection, string parentNamespace, string @namespace)
 		{
 			if (parentNamespace == @namespace)
-				return parent;
-			foreach (var node in parent.NestedTests.OfType<TestNamespace>()) {
+				return collection;
+			foreach (var node in collection.OfType<TestNamespace>()) {
 				if (@namespace == node.NamespaceName)
-					return node;
+					return node.NestedTests;
 				if (@namespace.StartsWith(node.NamespaceName + ".", StringComparison.Ordinal)) {
-					return FindNamespace(node, node.NamespaceName, @namespace);
+					return FindNamespace(node.NestedTests, node.NamespaceName, @namespace);
 				}
 			}
 			return null;
@@ -227,19 +227,19 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Removes the target namespace and all parent namespaces that are empty after the removal.
 		/// </summary>
-		static void RemoveTestNamespace(ITest parent, string parentNamespace, string @namespace)
+		static void RemoveTestNamespace(TestCollection collection, string parentNamespace, string @namespace)
 		{
 			if (parentNamespace == @namespace)
 				return;
-			foreach (var node in parent.NestedTests.OfType<TestNamespace>()) {
+			foreach (var node in collection.OfType<TestNamespace>()) {
 				if (@namespace == node.NamespaceName) {
-					parent.NestedTests.Remove(node);
+					collection.Remove(node);
 					return;
 				}
 				if (@namespace.StartsWith(node.NamespaceName + ".", StringComparison.Ordinal)) {
-					RemoveTestNamespace(node, node.NamespaceName, @namespace);
+					RemoveTestNamespace(node.NestedTests, node.NamespaceName, @namespace);
 					if (node.NestedTests.Count == 0) {
-						parent.NestedTests.Remove(node);
+						collection.Remove(node);
 					}
 					return;
 				}

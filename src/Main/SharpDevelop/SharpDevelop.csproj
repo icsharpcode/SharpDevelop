@@ -78,6 +78,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dom\TreeNodeFactoryService.cs" />
     <Compile Include="OptionPanels\LoadSaveOptions.xaml.cs">
       <DependentUpon>LoadSaveOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -164,6 +165,11 @@
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj">
+      <Project>{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}</Project>
+      <Name>ICSharpCode.TreeView</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -196,6 +202,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Dom" />
     <Folder Include="OptionPanels" />
     <Folder Include="Startup" />
     <Folder Include="Workbench" />

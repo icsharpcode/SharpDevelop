@@ -7,6 +7,7 @@ using System.ComponentModel.Design;
 using System.Linq.Expressions;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Implementation;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
@@ -149,6 +150,10 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static IShutdownService ShutdownService {
 			get { return GetRequiredService<IShutdownService>(); }
+		}
+		
+		public static ITreeNodeFactory TreeNodeFactory {
+			get { return GetRequiredService<ITreeNodeFactory>(); }
 		}
 	}
 }

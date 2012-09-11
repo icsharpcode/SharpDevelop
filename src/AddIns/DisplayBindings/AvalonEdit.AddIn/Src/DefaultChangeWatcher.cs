@@ -75,7 +75,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			Stream baseFileStream = GetBaseVersion(fileName);
 			if (baseFileStream != null) {
 				// ReadAll() is taking care of closing the stream
-				baseDocument = new ReadOnlyDocument(ReadAll(baseFileStream), fileName);
+				baseDocument = new ReadOnlyDocument(new StringTextSource(ReadAll(baseFileStream)), fileName);
 			} else {
 				// if the file is not under subversion, the document is the opened document
 				if (baseDocument == null) {

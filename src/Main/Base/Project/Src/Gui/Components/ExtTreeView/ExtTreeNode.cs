@@ -10,6 +10,8 @@ using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
+	using TreeView = System.Windows.Forms.TreeView;
+	
 	public class ExtTreeNode : TreeNode, IDisposable, IClipboardHandler
 	{
 		string contextmenuAddinTreePath = null;

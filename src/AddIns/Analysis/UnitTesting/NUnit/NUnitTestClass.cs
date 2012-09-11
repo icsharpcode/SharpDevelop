@@ -61,8 +61,15 @@ namespace ICSharpCode.UnitTesting
 			get { return primaryPart.ReflectionName; }
 		}
 		
-		public override bool SupportsGoToDefinition {
-			get { return true; }
+		public override System.Windows.Input.ICommand GoToDefinition {
+			get {
+				return new SimpleCommand(
+					delegate {
+						ITypeDefinition typeDefinition = Resolve();
+			if (typeDefinition != null)
+				NavigationService.NavigateTo(typeDefinition);
+					});
+			}
 		}
 		
 		ITypeDefinition Resolve()
@@ -70,13 +77,6 @@ namespace ICSharpCode.UnitTesting
 			ICompilation compilation = SD.ParserService.GetCompilation(parentProject.Project);
 			IType type = primaryPart.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
 			return type.GetDefinition();
-		}
-		
-		public override void GoToDefinition()
-		{
-			ITypeDefinition typeDefinition = Resolve();
-			if (typeDefinition != null)
-				NavigationService.NavigateTo(typeDefinition);
 		}
 		
 		public NUnitTestClass FindNestedTestClass(string name, int typeParameterCount)
@@ -151,7 +151,7 @@ namespace ICSharpCode.UnitTesting
 						nestedTestClass.UpdateTestClass(nestedClass);
 					} else {
 						nestedTestClass = new NUnitTestClass(parentProject, nestedClass);
-						this.NestedTests.Add(nestedTestClass);
+						this.NestedTestCollection.Add(nestedTestClass);
 					}
 					newOrUpdatedNestedTests.Add(nestedTestClass);
 				}
@@ -172,12 +172,12 @@ namespace ICSharpCode.UnitTesting
 						testMethod.UpdateTestMethod(unresolvedMethod, derivedFixture);
 					} else {
 						testMethod = new NUnitTestMethod(parentProject, unresolvedMethod, derivedFixture);
-						this.NestedTests.Add(testMethod);
+						this.NestedTestCollection.Add(testMethod);
 					}
 					newOrUpdatedNestedTests.Add(testMethod);
 				}
 				// Remove all tests that weren't contained in the new type definition anymore:
-				this.NestedTests.RemoveAll(t => !newOrUpdatedNestedTests.Contains(t));
+				this.NestedTestCollection.RemoveAll(t => !newOrUpdatedNestedTests.Contains(t));
 			}
 		}
 		

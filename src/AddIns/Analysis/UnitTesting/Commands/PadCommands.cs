@@ -33,8 +33,8 @@ namespace ICSharpCode.UnitTesting
 			ITestTreeView treeView = Owner as ITestTreeView;
 			if (treeView != null) {
 				ITest test = treeView.SelectedTests.FirstOrDefault();
-				if (test != null && test.SupportsGoToDefinition)
-					test.GoToDefinition();
+				if (test != null && test.GoToDefinition.CanExecute(null))
+					test.GoToDefinition.Execute(null);
 			}
 		}
 	}

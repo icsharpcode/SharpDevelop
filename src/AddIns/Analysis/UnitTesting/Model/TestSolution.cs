@@ -104,7 +104,7 @@ namespace ICSharpCode.UnitTesting
 				project.ParseInformationUpdated -= project_ParseInformationUpdated;
 				// Remove old testProject
 				if (testProject != null) {
-					testSolution.NestedTests.Remove(testProject);
+					testSolution.NestedTestCollection.Remove(testProject);
 					testProject = null;
 				}
 			}
@@ -124,7 +124,7 @@ namespace ICSharpCode.UnitTesting
 				
 				// Remove old testProject
 				if (testProject != null) {
-					testSolution.NestedTests.Remove(testProject);
+					testSolution.NestedTestCollection.Remove(testProject);
 					testProject = null;
 				}
 				// Create new testProject
@@ -132,7 +132,7 @@ namespace ICSharpCode.UnitTesting
 					testProject = newTestFramework.CreateTestProject(testSolution, project);
 					if (testProject == null)
 						throw new InvalidOperationException("CreateTestProject() returned null");
-					testSolution.NestedTests.Add(testProject);
+					testSolution.NestedTestCollection.Add(testProject);
 				}
 				oldTestFramework = newTestFramework;
 			}

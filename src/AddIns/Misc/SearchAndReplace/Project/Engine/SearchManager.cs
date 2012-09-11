@@ -194,7 +194,7 @@ namespace SearchAndReplace
 					return null;
 				
 				ThrowIfCancellationRequested();
-				TextDocument document = null;
+				ReadOnlyDocument document = null;
 				IHighlighter highlighter = null;
 				int offset = 0;
 				int length = source.TextLength;
@@ -206,7 +206,7 @@ namespace SearchAndReplace
 				foreach (var result in strategy.FindAll(source, offset, length)) {
 					ThrowIfCancellationRequested();
 					if (document == null) {
-						document = new TextDocument(source, fileName);
+						document = new ReadOnlyDocument(source, fileName);
 						var highlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
 						highlighter = SD.EditorControlService.CreateHighlighter(document);
 					}

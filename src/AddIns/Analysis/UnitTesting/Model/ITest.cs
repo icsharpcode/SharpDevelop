@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+
 using ICSharpCode.NRefactory.Utils;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -16,7 +18,7 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Gets the collection of nested tests.
 		/// </summary>
-		TestCollection NestedTests { get; }
+		IModelCollection<ITest> NestedTests { get; }
 		
 		/// <summary>
 		/// Gets whether this test allows expanding the list of nested tests.
@@ -65,10 +67,6 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		ImmutableStack<ITest> FindPathToDescendant(ITest test);
 		
-		bool SupportsGoToDefinition { get; }
-		
-		void GoToDefinition();
-		
-		UnitTestNode CreateTreeNode();
+		System.Windows.Input.ICommand GoToDefinition { get; }
 	}
 }

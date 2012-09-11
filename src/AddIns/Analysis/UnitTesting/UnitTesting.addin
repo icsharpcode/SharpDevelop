@@ -28,6 +28,10 @@
 		               supportedProjects=".csproj;.vbproj;.booproj" />
 	</Path>
 	
+	<Path name="/SharpDevelop/TreeNodeFactories">
+		<Class id="UnitTestNodeFactory" class="ICSharpCode.UnitTesting.UnitTestNodeFactory" />
+	</Path>
+	
 	<Path name="/SharpDevelop/Workbench/Pads">
 		<Pad id="UnitTestingPad"
 		     category="Tools"

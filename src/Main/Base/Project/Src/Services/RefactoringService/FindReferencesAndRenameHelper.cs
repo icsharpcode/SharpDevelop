@@ -358,15 +358,15 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (list == null) return;
 			List<SearchResultMatch> results = new List<SearchResultMatch>(list.Count);
-			TextDocument document = null;
+			ReadOnlyDocument document = null;
 			ITextSource buffer = null;
 			FileName fileName = null;
 			IHighlighter highlighter = null;
 			foreach (Reference r in list) {
 				if (document == null || fileName != r.FileName) {
+					fileName = r.FileName;
 					buffer = SD.FileService.GetFileContent(r.FileName);
-					document = new TextDocument(DocumentUtilitites.GetTextSource(buffer), r.FileName);
-					fileName = new FileName(r.FileName);
+					document = new ReadOnlyDocument(buffer, r.FileName);
 					highlighter = SD.EditorControlService.CreateHighlighter(document);
 				}
 				var start = r.StartLocation;

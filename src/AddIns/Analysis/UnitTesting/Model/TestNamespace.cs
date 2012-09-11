@@ -42,5 +42,12 @@ namespace ICSharpCode.UnitTesting
 		public override string DisplayName {
 			get { return displayName; }
 		}
+		
+		/// <summary>
+		/// Change return type of NestedTests to TestCollection so that tests can be added externally.
+		/// </summary>
+		public new TestCollection NestedTests {
+			get { return base.NestedTestCollection; }
+		}
 	}
 }
