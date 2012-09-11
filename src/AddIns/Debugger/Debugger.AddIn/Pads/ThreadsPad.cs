@@ -11,6 +11,7 @@ using System.Windows.Input;
 using Debugger;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
+using ICSharpCode.SharpDevelop.Workbench;
 using Thread = Debugger.Thread;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads

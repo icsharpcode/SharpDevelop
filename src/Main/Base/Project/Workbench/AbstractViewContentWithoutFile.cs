@@ -3,7 +3,7 @@
 
 using System;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// Base class for view contents that are not based on a file, but can be loaded/saved.

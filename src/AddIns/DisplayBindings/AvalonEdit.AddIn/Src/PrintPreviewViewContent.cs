@@ -13,6 +13,7 @@ using System.Windows.Xps;
 using System.Windows.Xps.Packaging;
 
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {

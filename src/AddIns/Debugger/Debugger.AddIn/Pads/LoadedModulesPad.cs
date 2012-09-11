@@ -8,10 +8,12 @@ using System.Dynamic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+
 using Debugger;
 using Debugger.AddIn.Pads.Controls;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {

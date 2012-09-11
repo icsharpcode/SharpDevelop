@@ -7,6 +7,7 @@ using System.Threading;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+
 using Debugger;
 using Debugger.AddIn;
 using Debugger.AddIn.Pads.Controls;
@@ -16,6 +17,7 @@ using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Services;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads

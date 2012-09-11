@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// This class handles errors in the Load method and prevents destroying invalid files.

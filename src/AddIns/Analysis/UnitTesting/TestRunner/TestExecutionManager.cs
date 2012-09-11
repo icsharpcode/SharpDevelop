@@ -13,6 +13,7 @@ using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.UnitTesting.Frameworks
 {

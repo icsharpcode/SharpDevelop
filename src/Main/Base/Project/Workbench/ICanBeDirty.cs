@@ -3,7 +3,10 @@
 
 using System;
 
-namespace ICSharpCode.SharpDevelop.Gui
+// Not sure if this should be in the Workbench namespace...
+// It would sort of belong there, but it's also REALLY commonly used which probably
+// means it should be in the root namespace.
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Interface for classes that implement the IsDirty property and the DirtyChanged event.

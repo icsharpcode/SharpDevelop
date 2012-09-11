@@ -7,6 +7,7 @@ using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Threading;
+
 using ICSharpCode.Core;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
@@ -20,6 +21,7 @@ using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 using Mono.Cecil;
 
 namespace ICSharpCode.ILSpyAddIn

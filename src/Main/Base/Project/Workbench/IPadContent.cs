@@ -4,7 +4,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// The IPadContent interface is the basic interface to all "tool" windows

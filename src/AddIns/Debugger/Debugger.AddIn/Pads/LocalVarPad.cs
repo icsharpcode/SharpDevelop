@@ -5,10 +5,12 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+
 using Debugger;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Services;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads

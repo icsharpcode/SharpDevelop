@@ -7,27 +7,13 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Workbench;
 
-namespace ICSharpCode.SharpDevelop.Gui
+// Not sure if this should be in the Workbench namespace...
+// It would sort of belong there, but it's also REALLY commonly used which probably
+// means it should be in the root namespace.
+namespace ICSharpCode.SharpDevelop
 {
-	public delegate void SaveEventHandler(object sender, SaveEventArgs e);
-	
-	public class SaveEventArgs : System.EventArgs
-	{
-		bool successful;
-		
-		public bool Successful {
-			get {
-				return successful;
-			}
-		}
-		
-		public SaveEventArgs(bool successful)
-		{
-			this.successful = successful;
-		}
-	}
-	
 	/// <summary>
 	/// IViewContent is the base interface for "windows" in the document area of SharpDevelop.
 	/// A view content is a view onto multiple files, or other content that opens like a document

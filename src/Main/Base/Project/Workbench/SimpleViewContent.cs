@@ -3,7 +3,7 @@
 
 using System;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// A simple view content that does not use any files and simply displays a fixed control.

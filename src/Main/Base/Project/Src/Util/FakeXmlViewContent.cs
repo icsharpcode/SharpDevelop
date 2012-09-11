@@ -7,6 +7,7 @@ using System.Xml;
 using System.Xml.Linq;
 
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Util
 {

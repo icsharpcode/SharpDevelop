@@ -4,6 +4,7 @@
 using System;
 using System.Windows.Controls;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {

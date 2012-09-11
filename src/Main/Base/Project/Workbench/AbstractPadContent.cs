@@ -4,7 +4,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	public abstract class AbstractPadContent : IPadContent
 	{
@@ -33,9 +33,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected virtual PadDescriptor PadDescriptor {
 			get {
-				if (WorkbenchSingleton.Workbench == null || WorkbenchSingleton.Workbench.WorkbenchLayout == null)
-					return null;
-				return WorkbenchSingleton.Workbench.GetPad(GetType());
+				return SD.Workbench.GetPad(GetType());
 			}
 		}
 		

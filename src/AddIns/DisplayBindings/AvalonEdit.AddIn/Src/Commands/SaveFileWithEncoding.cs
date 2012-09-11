@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Commands
@@ -14,7 +15,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 	{
 		public override void Run()
 		{
-			IViewContent vc = WorkbenchSingleton.Workbench.ActiveViewContent;
+			IViewContent vc = SD.Workbench.ActiveViewContent;
 			if (vc == null)
 				return;
 			var codeEditor = vc.GetService<CodeEditor>();

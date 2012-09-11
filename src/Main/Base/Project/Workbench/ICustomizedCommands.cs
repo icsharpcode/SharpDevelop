@@ -3,10 +3,12 @@
 
 using System;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Workbench
 {
+	// TODO: change to [ViewContentService]
+	
 	/// <summary>
-	/// Allows a IViewContent to handle the save command on its own instead of using OpenedFile.
+	/// Allows an IViewContent to handle the save command on its own instead of using OpenedFile.
 	/// </summary>
 	public interface ICustomizedCommands
 	{

@@ -14,6 +14,7 @@ using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 using Mono.Cecil;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -242,16 +243,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					if (textEditor != null) {
 						DebuggerService.ToggleBreakpointAt(textEditor, line, typeof(BreakpointBookmark));
 						return;
-					}
-					
-					// create breakpoint for the other posible active contents
-					var viewContent = WorkbenchSingleton.Workbench.ActiveContent as AbstractViewContentWithoutFile;
-					if (viewContent != null) {
-						textEditor = viewContent.GetService(typeof(ITextEditor)) as ITextEditor;
-						if (textEditor != null) {
-							DebuggerService.ToggleBreakpointAt(textEditor, line, typeof(DecompiledBreakpointBookmark));
-							return;
-						}
 					}
 				}
 			}

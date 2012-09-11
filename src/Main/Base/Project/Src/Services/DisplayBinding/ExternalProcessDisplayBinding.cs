@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop
 			return string.Equals(Path.GetExtension(fileName), FileExtension, StringComparison.OrdinalIgnoreCase);
 		}
 		
-		public ICSharpCode.SharpDevelop.Gui.IViewContent CreateContentForFile(OpenedFile file)
+		public IViewContent CreateContentForFile(OpenedFile file)
 		{
 			if (file.IsDirty) {
 				// TODO: warn user that the file must be saved

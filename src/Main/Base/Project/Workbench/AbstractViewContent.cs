@@ -11,7 +11,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// Provides a default implementation for the IViewContent interface.
@@ -237,7 +237,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public virtual OpenedFile PrimaryFile {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				if (files.Count != 0)
 					return files[0];
 				else
@@ -530,7 +530,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Gets if this view content is the active view content.
 		/// </summary>
 		protected bool IsActiveViewContent {
-			get { return WorkbenchSingleton.Workbench != null && WorkbenchSingleton.Workbench.ActiveViewContent == this; }
+			get { return SD.Workbench.ActiveViewContent == this; }
 		}
 		
 		/// <summary>
@@ -541,10 +541,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (!registeredOnViewContentChange) {
 					// register WorkbenchSingleton.Workbench.ActiveViewContentChanged only on demand
 					wasActiveViewContent = IsActiveViewContent;
-					// null check is required to support running in unit test mode
-					if (WorkbenchSingleton.Workbench != null) {
-						WorkbenchSingleton.Workbench.ActiveViewContentChanged += OnActiveViewContentChanged;
-					}
+					SD.Workbench.ActiveViewContentChanged += OnActiveViewContentChanged;
 					registeredOnViewContentChange = true;
 				}
 				isActiveViewContentChanged += value;
@@ -557,10 +554,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void UnregisterOnActiveViewContentChanged()
 		{
 			if (registeredOnViewContentChange) {
-				// null check is required to support running in unit test mode
-				if (WorkbenchSingleton.Workbench != null) {
-					WorkbenchSingleton.Workbench.ActiveViewContentChanged -= OnActiveViewContentChanged;
-				}
+				SD.Workbench.ActiveViewContentChanged -= OnActiveViewContentChanged;
 				registeredOnViewContentChange = false;
 			}
 		}

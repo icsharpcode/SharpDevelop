@@ -28,6 +28,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <RootNamespace>ICSharpCode.SharpDevelop</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugType>Full</DebugType>
@@ -163,7 +164,6 @@
     </Compile>
     <Compile Include="Src\Editor\Search\ISearchResult.cs" />
     <Compile Include="Src\Editor\Search\ISearchResultFactory.cs" />
-    <Compile Include="Src\Editor\Search\ProvidedDocumentInformation.cs" />
     <Compile Include="Src\Editor\Search\SearchResultMatch.cs" />
     <Compile Include="Src\Editor\Search\SearchResultsPad.cs" />
     <Compile Include="Src\Editor\Search\SearchResultPadToolbarCommands.cs" />
@@ -172,9 +172,6 @@
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Editor\ToolTipService.cs" />
-    <Compile Include="Src\Gui\AbstractSecondaryViewContent.cs" />
-    <Compile Include="Src\Gui\AbstractViewContentHandlingLoadErrors.cs" />
-    <Compile Include="Src\Gui\AbstractViewContentWithoutFile.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserDisplayBinding.cs" />
     <Compile Include="Src\Gui\Components\ColorPickerButton.xaml.cs">
       <DependentUpon>ColorPickerButton.xaml</DependentUpon>
@@ -201,6 +198,20 @@
       <DependentUpon>AbstractAttachToProcessForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.cs" />
+    <Compile Include="Src\Gui\IWorkbenchLayout.cs" />
+    <Compile Include="Workbench\AbstractPadContent.cs" />
+    <Compile Include="Workbench\AbstractSecondaryViewContent.cs" />
+    <Compile Include="Workbench\AbstractViewContent.cs" />
+    <Compile Include="Workbench\AbstractViewContentHandlingLoadErrors.cs" />
+    <Compile Include="Workbench\AbstractViewContentWithoutFile.cs" />
+    <Compile Include="Workbench\ICanBeDirty.cs" />
+    <Compile Include="Workbench\ICustomizedCommands.cs" />
+    <Compile Include="Workbench\IPadContent.cs" />
+    <Compile Include="Workbench\IViewContent.cs" />
+    <Compile Include="Workbench\IWorkbench.cs" />
+    <Compile Include="Workbench\IWorkbenchWindow.cs" />
+    <Compile Include="Workbench\SimpleViewContent.cs" />
+    <Compile Include="Workbench\ViewContentEventArgs.cs" />
     <None Include="ICSharpCode.SharpDevelop.addin" />
     <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.Designer.cs">
       <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
@@ -335,7 +346,6 @@
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPadCommands.cs" />
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
     <Compile Include="Src\Gui\ProgressCollector.cs" />
-    <Compile Include="Src\Gui\SimpleViewContent.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ViewInBrowserConditionEvaluator.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WriteableProjectEvaluator.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WriteableSolutionEvaluator.cs" />
@@ -461,15 +471,6 @@
     <Compile Include="Src\Internal\Templates\Project\ProjectDescriptor.cs" />
     <Compile Include="Src\Internal\Templates\Project\SolutionDescriptor.cs" />
     <Compile Include="Src\Gui\IProgressMonitor.cs" />
-    <Compile Include="Src\Gui\IViewContent.cs" />
-    <Compile Include="Src\Gui\IWorkbench.cs" />
-    <Compile Include="Src\Gui\IWorkbenchLayout.cs" />
-    <Compile Include="Src\Gui\IWorkbenchWindow.cs" />
-    <Compile Include="Src\Gui\IPadContent.cs">
-      <DependentUpon>IProgressMonitor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Src\Gui\AbstractViewContent.cs" />
-    <Compile Include="Src\Gui\AbstractPadContent.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\IClipboardHandler.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\IEditable.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\IPositionable.cs" />
@@ -544,7 +545,6 @@
     <Compile Include="Src\Services\ClassBrowserIcons\ClassBrowserIconService.cs" />
     <Compile Include="Src\Services\StatusBar\StatusBarService.cs" />
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyPadCommands.cs" />
-    <Compile Include="Src\Gui\ContentInterfaces\ICustomizedCommands.cs" />
     <Compile Include="Src\Commands\VBConverter\ConvertBuffer.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\LocalizedObject.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\LocalizedPropertyDescriptor.cs" />
@@ -711,7 +711,6 @@
     <Compile Include="Src\Services\Debugger\DebuggerDoozer.cs" />
     <Compile Include="Src\Project\Solution\SolutionPreferences.cs" />
     <Compile Include="Src\Project\ConfigurationGuiHelper.cs" />
-    <Compile Include="Src\Gui\ContentInterfaces\ICanBeDirty.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AbstractXmlFormsProjectOptionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -860,6 +859,7 @@
       <Private>False</Private>
     </ProjectReference>
     <Folder Include="Dom" />
+    <Folder Include="Workbench" />
     <Folder Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference" />
     <Folder Include="Src\Refactoring" />
     <Folder Include="Src\Project\Behaviors" />

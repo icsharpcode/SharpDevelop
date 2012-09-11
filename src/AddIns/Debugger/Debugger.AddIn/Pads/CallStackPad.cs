@@ -9,10 +9,12 @@ using System.Text;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+
 using Debugger;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {

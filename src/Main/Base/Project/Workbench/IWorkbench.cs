@@ -8,8 +8,9 @@ using System.Windows;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// This is the basic interface to the workspace.
@@ -107,6 +108,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		event EventHandler ActiveContentChanged;
 		
+		[ObsoleteAttribute("WorkbenchLayout will be removed; if any features on it are not available otherwise, please move them!")]
 		IWorkbenchLayout WorkbenchLayout {
 			get;
 			set;
@@ -176,23 +178,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Is called, when a workbench view was closed
 		/// </summary>
 		event EventHandler<ViewContentEventArgs> ViewClosed;
-	}
-	
-	public class ViewContentEventArgs : EventArgs
-	{
-		IViewContent content;
-		
-		public IViewContent Content {
-			get {
-				return content;
-			}
-		}
-		
-		public ViewContentEventArgs(IViewContent content)
-		{
-			if (content == null)
-				throw new ArgumentNullException("content");
-			this.content = content;
-		}
 	}
 }

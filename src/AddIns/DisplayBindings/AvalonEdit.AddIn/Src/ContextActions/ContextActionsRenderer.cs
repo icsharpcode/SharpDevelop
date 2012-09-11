@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Threading;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -155,7 +156,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 			ClosePopup();
 			if (providers.Count == 0)
 				return;
-			IViewContent activeViewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+			IViewContent activeViewContent = SD.Workbench.ActiveViewContent;
 			if (activeViewContent != null && activeViewContent.PrimaryFileName == this.Editor.FileName)
 				delayMoveTimer.Start();
 		}

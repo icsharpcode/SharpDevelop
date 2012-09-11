@@ -8,6 +8,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
+using Rhino.Mocks;
 using XmlEditor.Tests.Utils;
 
 namespace XmlEditor.Tests.Tree
@@ -32,6 +33,9 @@ namespace XmlEditor.Tests.Tree
 		[SetUp]
 		public void SetUp()
 		{
+			SD.InitializeForUnitTests();
+			SD.Services.AddService(typeof(IMessageLoop), MockRepository.GenerateStub<IMessageLoop>());
+			
 			MockOpenedFile openedFile = new MockOpenedFile("test.xml");
 			XmlSchemaCompletionCollection schemas = new XmlSchemaCompletionCollection();
 			xmlView = new MockXmlViewContent(openedFile);

@@ -14,7 +14,7 @@ namespace ICSharpCode.AddInManager
 			return true;
 		}
 		
-		public ICSharpCode.SharpDevelop.Gui.IViewContent CreateContentForFile(OpenedFile file)
+		public IViewContent CreateContentForFile(OpenedFile file)
 		{
 			ManagerForm.ShowForm();
 			ManagerForm.Instance.ShowInstallableAddIns(new string[] { file.FileName });

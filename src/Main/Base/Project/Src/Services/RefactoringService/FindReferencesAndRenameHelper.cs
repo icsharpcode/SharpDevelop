@@ -234,23 +234,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		 */
 		
 		#region Common helper functions
-		[Obsolete]
-		public static ProvidedDocumentInformation GetDocumentInformation(string fileName)
-		{
-			OpenedFile file = SD.FileService.GetOpenedFile(fileName);
-			if (file != null) {
-				IFileDocumentProvider documentProvider = file.CurrentView as IFileDocumentProvider;
-				if (documentProvider != null) {
-					IDocument document = documentProvider.GetDocumentForFile(file);
-					if (document != null) {
-						return new ProvidedDocumentInformation(document, fileName, 0);
-					}
-				}
-			}
-			ITextSource fileContent = SD.FileService.GetFileContent(fileName);
-			return new ProvidedDocumentInformation(fileContent, fileName, 0);
-		}
-		
 		public static bool IsReadOnly(ITypeDefinition c)
 		{
 			return c.IsSynthetic || c.Parts.All(p => p.UnresolvedFile == null);

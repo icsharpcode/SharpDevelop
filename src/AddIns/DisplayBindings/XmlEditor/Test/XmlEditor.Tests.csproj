@@ -240,7 +240,6 @@
     <Compile Include="Utils\FakeXmlFoldParser.cs" />
     <Compile Include="Utils\MockTextEditorProviderViewContent.cs" />
     <Compile Include="Utils\MockViewContent.cs" />
-    <Compile Include="Utils\MockWorkbench.cs" />
     <Compile Include="Utils\NewFoldingHelper.cs" />
     <Compile Include="Utils\Tests\DerivedXmlSchemaObjectLocationTests.cs" />
     <Compile Include="Utils\Tests\NewFoldingHelperTests.cs" />

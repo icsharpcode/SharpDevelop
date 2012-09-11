@@ -20,12 +20,12 @@ namespace ICSharpCode.Svn
 			}
 		}
 		
-		public ICSharpCode.SharpDevelop.Gui.IViewContent[] CreateSecondaryViewContent(ICSharpCode.SharpDevelop.Gui.IViewContent viewContent)
+		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
 		{
-			return new ICSharpCode.SharpDevelop.Gui.IViewContent[] { new HistoryView(viewContent) };
+			return new IViewContent[] { new HistoryView(viewContent) };
 		}
 		
-		public bool CanAttachTo(ICSharpCode.SharpDevelop.Gui.IViewContent content)
+		public bool CanAttachTo(IViewContent content)
 		{
 			if (!AddInOptions.UseHistoryDisplayBinding) {
 				return false;
