@@ -127,7 +127,7 @@ class TestClass
 }";
 			Test<AssignmentMadeToSameVariableIssue> (input, 2, output);
 		}
-
+		
 		[Test]
 		public void TestNoIssue ()
 		{
@@ -145,6 +145,69 @@ class TestClass
 		this.a = b;
 		this.a = a;
 		Prop = Prop;
+	}
+}";
+			Test<AssignmentMadeToSameVariableIssue> (input, 0);
+		}
+		
+		[Test]
+		public void IgnoresAssignmentWithDifferentRootObjects ()
+		{
+			var input = @"
+class TestClass
+{
+	int a;
+
+	void TestMethod (TestClass tc)
+	{
+		a = tc.a;
+	}
+}";
+			Test<AssignmentMadeToSameVariableIssue> (input, 0);
+		}
+		
+		[Test]
+		public void NestedFieldAccess ()
+		{
+			var input = @"
+class TestClass
+{
+	int a;
+
+	TestClass nested;
+
+	void TestMethod ()
+	{
+		nested.nested.a = nested.nested.a;
+	}
+}";
+			var output = @"
+class TestClass
+{
+	int a;
+
+	TestClass nested;
+
+	void TestMethod ()
+	{
+	}
+}";
+			Test<AssignmentMadeToSameVariableIssue> (input, 1, output);
+		}
+		
+		[Test]
+		public void NestedPropertyAccess ()
+		{
+			var input = @"
+class TestClass
+{
+	int a;
+
+	TestClass nested { get; set; }
+
+	void TestMethod ()
+	{
+		nested.nested.a = nested.nested.a;
 	}
 }";
 			Test<AssignmentMadeToSameVariableIssue> (input, 0);
