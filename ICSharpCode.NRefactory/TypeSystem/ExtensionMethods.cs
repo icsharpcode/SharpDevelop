@@ -468,5 +468,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return reference.Resolve (compilation.TypeResolveContext);
 		}
 		#endregion
+
+		
+		#region IAssembly.GetTypeDefinition(string,string,int)
+		/// <summary>
+		/// Gets the type definition for a top-level type.
+		/// </summary>
+		/// <remarks>This method uses ordinal name comparison, not the compilation's name comparer.</remarks>
+		public static ITypeDefinition GetTypeDefinition(this IAssembly assembly, string namespaceName, string name, int typeParameterCount = 0)
+		{
+			if (assembly == null)
+				throw new ArgumentNullException ("assembly");
+			return assembly.GetTypeDefinition (new TopLevelTypeName (namespaceName, name, typeParameterCount));
+		}
+		#endregion
 	}
 }
