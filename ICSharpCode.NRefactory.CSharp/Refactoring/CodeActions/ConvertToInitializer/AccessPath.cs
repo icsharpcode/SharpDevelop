@@ -32,25 +32,16 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	class InitializerPath
+	class AccessPath
 	{
-		InitializerPath(object anchor)
+		public AccessPath(IVariable target)
 		{
-			this.anchor = anchor;
+			VariableRoot = target;
 			MemberPath = new List<IMember>();
 		}
 
-		public InitializerPath(IVariable target) : this((object)target)
+		public static AccessPath FromResolveResult(ResolveResult resolveResult)
 		{
-		}
-
-		public InitializerPath(IMember target) : this((object)target)
-		{
-		}
-
-		public static InitializerPath FromResolveResult(ResolveResult resolveResult)
-		{
-			InitializerPath initializerPath = null;
 			var memberPath = new List<IMember>();
 			var currentResolveResult = resolveResult;
 			do {
@@ -59,42 +50,38 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					memberPath.Add(memberResolveResult.Member);
 					currentResolveResult = memberResolveResult.TargetResult;
 				} else if (currentResolveResult is LocalResolveResult) {
+					// This is the root variable
 					var localResolveResult = (LocalResolveResult)currentResolveResult;
 					memberPath.Reverse();
-					initializerPath = new InitializerPath(localResolveResult.Variable) {
+					return new AccessPath(localResolveResult.Variable) {
 						MemberPath = memberPath
 					};
-					break;
 				} else if (currentResolveResult is ThisResolveResult) {
 					break;
 				} else {
+					// Unsupported path
 					return null;
 				}
-
 			} while (currentResolveResult != null);
 
-			if (initializerPath == null) {
-				// This path is rooted at a member
-				memberPath.Reverse();
-				initializerPath = new InitializerPath(memberPath [0]) {
-					MemberPath = memberPath.Skip(1).ToList()
-				};
-			}
-			return initializerPath;
+			memberPath.Reverse();
+			return new AccessPath(null) {
+				MemberPath = memberPath
+			};
 		}
 
-		public InitializerPath GetParentPath()
+		public AccessPath GetParentPath()
 		{
 			if (MemberPath.Count < 1)
 				throw new InvalidOperationException("Cannot get the parent path of a path that does not contain any members.");
-			return new InitializerPath(anchor) {
+			return new AccessPath(VariableRoot) {
 				MemberPath = MemberPath.Take(MemberPath.Count - 1).ToList()
 			};
 		}
 
-		public bool IsSubPath(InitializerPath other)
+		public bool IsSubPath(AccessPath other)
 		{
-			if (!other.anchor.Equals(anchor))
+			if (!object.Equals(other.VariableRoot, VariableRoot))
 				return false;
 			if (MemberPath.Count <= other.MemberPath.Count)
 				return false;
@@ -105,22 +92,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return true;
 		}
 
-		object anchor;
+		public IVariable VariableRoot { get; set; }
 
-		public IVariable VariableRoot {
-			get { return anchor as IVariable; }
-		}
-
-		public IMember MemberRoot {
-			get { return anchor as IMember; }
+		public int PartCount {
+			get {
+				return MemberPath.Count + (VariableRoot == null ? 0 : 1);
+			}
 		}
 
 		public string RootName {
 			get {
-				if (anchor is IMember)
-					return (anchor as IMember).Name;
-				else
-					return (anchor as IVariable).Name;
+				if (VariableRoot != null)
+					return VariableRoot.Name;
+				return MemberPath.First().Name;
 			}
 		}
 
@@ -128,12 +112,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		public override bool Equals(object obj)
 		{
-			if (obj.GetType() != typeof(InitializerPath))
+			if (obj.GetType() != typeof(AccessPath))
 				return false;
 
-			var other = (InitializerPath)obj;
+			var other = (AccessPath)obj;
 
-			if (!object.Equals(anchor, other.anchor))
+			if (!object.Equals(VariableRoot, other.VariableRoot))
 				return false;
 
 			if (MemberPath.Count != other.MemberPath.Count)
@@ -148,29 +132,28 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		public override int GetHashCode()
 		{
-			int hash = anchor.GetHashCode();
+			int hash = VariableRoot != null ? VariableRoot.GetHashCode() : 37;
 			foreach (var member in MemberPath)
-				hash ^= member.GetHashCode();
+				hash ^= 31 * member.GetHashCode();
 			return hash;
 		}
 
-		public static bool operator==(InitializerPath left, InitializerPath right)
+		public static bool operator==(AccessPath left, AccessPath right)
 		{
 			return object.Equals(left, right);
 		}
 
-		public static bool operator!=(InitializerPath left, InitializerPath right)
+		public static bool operator!=(AccessPath left, AccessPath right)
 		{
 			return !object.Equals(left, right);
 		}
 
 		public override string ToString()
 		{
-			if (MemberPath.Count > 0)
-				return string.Format("[InitializerPath: {0}.{1}]", RootName,
-				                     string.Join(".", MemberPath.Select<IMember, string>(member => member.Name)));
-			else
-				return string.Format("[InitializerPath: {0}]", RootName);
+			string memberPathString = string.Join(".", MemberPath.Select<IMember, string>(member => member.Name));
+			if (VariableRoot == null)
+				return string.Format("[AccessPath: {0}]", memberPathString);
+			return string.Format("[AccessPath: {0}.{1}]", VariableRoot.Name, memberPathString);
 		}
 	}
 

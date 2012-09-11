@@ -476,7 +476,6 @@
     <Compile Include="Refactoring\NamingHelper.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertToInitializer\ConvertToInitializerAction.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertToInitializer\StatementsToInitializerConverter.cs" />
-    <Compile Include="Refactoring\CodeActions\ConvertToInitializer\InitializerPath.cs" />
     <Compile Include="Refactoring\CodeActions\MoveToOuterScopeAction.cs" />
     <Compile Include="Refactoring\CodeIssues\VariableDeclaredInWideScopeIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ParameterCanBeDemotedIssue\ParameterCanBeDemotedIssue.cs" />
@@ -503,6 +502,7 @@
     <Compile Include="Refactoring\CodeIssues\ParameterCanBeDemotedIssue\IsArrayTypeCriterion.cs" />
     <Compile Include="Refactoring\CodeIssues\ParameterCanBeDemotedIssue\SupportsIndexingCriterion.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantWhereWithPredicateIssue.cs" />
+    <Compile Include="Refactoring\CodeActions\ConvertToInitializer\AccessPath.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
