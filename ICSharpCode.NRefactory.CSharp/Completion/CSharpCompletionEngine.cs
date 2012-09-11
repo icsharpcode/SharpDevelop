@@ -687,7 +687,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						// after these always follows a name
 						return null;
 					}
-					Console.WriteLine (1);
 
 					if (identifierStart == null && !string.IsNullOrEmpty(token) && !IsInsideCommentStringOrDirective() && (prevToken2 == ";" || prevToken2 == "{" || prevToken2 == "}")) {
 						char last = token [token.Length - 1];
@@ -708,7 +707,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (n != null && n.Parent is AnonymousTypeCreateExpression) {
 						AutoSelect = false;
 					}
-					Console.WriteLine (2);
 
 				// Handle foreach (type name _
 					if (n is IdentifierExpression) {
@@ -764,7 +762,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							}
 						}
 					}
-					Console.WriteLine (3);
 
 					if (n != null && n.Parent is ObjectCreateExpression) {
 						var invokeResult = ResolveExpression(n.Parent);
