@@ -77,6 +77,23 @@ class Foo
 		}
 		
 		[Test]
+		public void IgnoresCallsToIFormattableToString ()
+		{
+			var input = @"
+class Foo
+{
+	void Bar (System.DateTime dt)
+	{
+		string s = dt.ToString("""", CultureInfo.InvariantCulture) + string.Empty;
+	}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new RedundantToStringIssue (), input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
+		
+		[Test]
 		public void StringTarget ()
 		{
 			var input = @"

@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using ICSharpCode.NRefactory.Semantics;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -49,6 +51,24 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				: base (ctx)
 			{
 				this.unit = unit;
+			}
+
+			public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
+			{
+				// Only some methods are candidates for the warning
+
+				if (methodDeclaration.Body.IsNull)
+					return;
+				var methodResolveResult = ctx.Resolve(methodDeclaration) as MemberResolveResult;
+				if (methodResolveResult == null)
+					return;
+				var member = methodResolveResult.Member;
+				if (member.IsOverride)
+					return;
+				if (member.ImplementedInterfaceMembers.Any ())
+					return;
+
+				base.VisitMethodDeclaration(methodDeclaration);
 			}
 
 			public override void VisitParameterDeclaration (ParameterDeclaration parameterDeclaration)
