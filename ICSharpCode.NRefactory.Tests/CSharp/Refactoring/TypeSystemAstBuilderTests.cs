@@ -217,7 +217,7 @@ namespace OtherNS {
 		public void AmbiguousType()
 		{
 			Assert.AreEqual("System.Array", TypeToString(compilation.FindType(typeof(Array))));
-			Assert.AreEqual("OtherNS.Array", TypeToString(compilation.MainAssembly.GetTypeDefinition("OtherNS", "Array", 0)));
+			Assert.AreEqual("OtherNS.Array", TypeToString(compilation.MainAssembly.GetTypeDefinition(new TopLevelTypeName("OtherNS", "Array"))));
 		}
 	}
 }

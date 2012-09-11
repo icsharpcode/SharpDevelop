@@ -190,7 +190,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					name = interningProvider.Intern(name);
 					var typeRef = new GetClassTypeReference(GetAssemblyReference(type.Scope), ns, name, typeParameterCount);
 					typeRef = interningProvider.Intern(typeRef);
-					var key = new FullNameAndTypeParameterCount(ns, name, typeParameterCount);
+					var key = new TopLevelTypeName(ns, name, typeParameterCount);
 					currentAssembly.AddTypeForwarder(key, typeRef);
 				}
 			}
@@ -1793,6 +1793,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				get { return cecilTypeDef.FullName; }
 			}
 			
+			public FullTypeName FullTypeName {
+				get {
+					return new TopLevelTypeName(namespaceName, this.Name, typeParameters.Count);
+				}
+			}
+			
 			public TypeKind Kind {
 				get { return kind; }
 			}
@@ -1884,7 +1890,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					throw new ArgumentNullException("context");
 				if (context.CurrentAssembly == null)
 					throw new ArgumentException("An ITypeDefinition cannot be resolved in a context without a current assembly.");
-				return context.CurrentAssembly.GetTypeDefinition(this)
+				return context.CurrentAssembly.GetTypeDefinition(this.FullTypeName)
 					?? (IType)new UnknownType(this.Namespace, this.Name, this.TypeParameters.Count);
 			}
 			

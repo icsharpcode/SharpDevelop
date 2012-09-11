@@ -28,24 +28,31 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	public sealed class GetClassTypeReference : ITypeReference, ISupportsInterning
 	{
 		readonly IAssemblyReference assembly;
-		readonly string nameSpace, name;
-		readonly int typeParameterCount;
+		readonly FullTypeName fullTypeName;
 		
 		/// <summary>
-		/// Creates a new GetClassTypeReference that searches a top-level type.
+		/// Creates a new GetClassTypeReference that searches a type definition.
 		/// </summary>
-		/// <param name="nameSpace">The namespace name containing the type, e.g. "System.Collections.Generic".</param>
+		/// <param name="fullTypeName">The full name of the type.</param>
+		/// <param name="assembly">A reference to the assembly containing this type.
+		/// If this parameter is null, the GetClassTypeReference will search in all
+		/// assemblies belonging to the compilation.
+		/// </param>
+		public GetClassTypeReference(FullTypeName fullTypeName, IAssemblyReference assembly = null)
+		{
+			this.fullTypeName = fullTypeName;
+			this.assembly = assembly;
+		}
+		
+		/// <summary>
+		/// Creates a new GetClassTypeReference that searches a top-level type in all assemblies.
+		/// </summary>
+		/// <param name="namespaceName">The namespace name containing the type, e.g. "System.Collections.Generic".</param>
 		/// <param name="name">The name of the type, e.g. "List".</param>
 		/// <param name="typeParameterCount">The number of type parameters, (e.g. 1 for List&lt;T&gt;).</param>
-		public GetClassTypeReference(string nameSpace, string name, int typeParameterCount = 0)
+		public GetClassTypeReference(string namespaceName, string name, int typeParameterCount = 0)
 		{
-			if (nameSpace == null)
-				throw new ArgumentNullException("nameSpace");
-			if (name == null)
-				throw new ArgumentNullException("name");
-			this.nameSpace = nameSpace;
-			this.name = name;
-			this.typeParameterCount = typeParameterCount;
+			this.fullTypeName = new TopLevelTypeName(namespaceName, name, typeParameterCount);
 		}
 		
 		/// <summary>
@@ -53,25 +60,33 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		/// </summary>
 		/// <param name="assembly">A reference to the assembly containing this type.
 		/// If this parameter is null, the GetClassTypeReference will search in all assemblies belonging to the ICompilation.</param>
-		/// <param name="nameSpace">The namespace name containing the type, e.g. "System.Collections.Generic".</param>
+		/// <param name="namespaceName">The namespace name containing the type, e.g. "System.Collections.Generic".</param>
 		/// <param name="name">The name of the type, e.g. "List".</param>
 		/// <param name="typeParameterCount">The number of type parameters, (e.g. 1 for List&lt;T&gt;).</param>
-		public GetClassTypeReference(IAssemblyReference assembly, string nameSpace, string name, int typeParameterCount = 0)
+		public GetClassTypeReference(IAssemblyReference assembly, string namespaceName, string name, int typeParameterCount = 0)
 		{
-			if (nameSpace == null)
-				throw new ArgumentNullException("nameSpace");
-			if (name == null)
-				throw new ArgumentNullException("name");
 			this.assembly = assembly;
-			this.nameSpace = nameSpace;
-			this.name = name;
-			this.typeParameterCount = typeParameterCount;
+			this.fullTypeName = new TopLevelTypeName(namespaceName, name, typeParameterCount);
 		}
 		
+		/// <summary>
+		/// Gets the assembly reference.
+		/// This property returns null if the GetClassTypeReference is searching in all assemblies
+		/// of the compilation.
+		/// </summary>
 		public IAssemblyReference Assembly { get { return assembly; } }
-		public string Namespace { get { return nameSpace; } }
-		public string Name { get { return name; } }
-		public int TypeParameterCount { get { return typeParameterCount; } }
+		
+		/// <summary>
+		/// Gets the full name of the type this reference is searching for.
+		/// </summary>
+		public FullTypeName FullTypeName { get { return fullTypeName; } }
+		
+		[Obsolete("Use the FullTypeName property instead. GetClassTypeReference now supports nested types, where the Namespace/Name/TPC tripel isn't sufficient for identifying the type.")]
+		public string Namespace { get { return fullTypeName.TopLevelTypeName.Namespace; } }
+		[Obsolete("Use the FullTypeName property instead. GetClassTypeReference now supports nested types, where the Namespace/Name/TPC tripel isn't sufficient for identifying the type.")]
+		public string Name { get { return fullTypeName.Name; } }
+		[Obsolete("Use the FullTypeName property instead. GetClassTypeReference now supports nested types, where the Namespace/Name/TPC tripel isn't sufficient for identifying the type.")]
+		public int TypeParameterCount { get { return fullTypeName.TypeParameterCount; } }
 		
 		public IType Resolve(ITypeResolveContext context)
 		{
@@ -80,52 +95,42 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			
 			IType type = null;
 			if (assembly == null) {
-				var compilation = context.Compilation;
-				foreach (var asm in new[] { context.CurrentAssembly }.Concat(compilation.Assemblies)) {
-					if (asm != null) {
-						type = asm.GetTypeDefinition(nameSpace, name, typeParameterCount);
+				if (context.CurrentAssembly != null) {
+					type = context.CurrentAssembly.GetTypeDefinition(fullTypeName);
+				}
+				if (type == null) {
+					var compilation = context.Compilation;
+					foreach (var asm in new[] { context.CurrentAssembly }.Concat(compilation.Assemblies)) {
+						type = asm.GetTypeDefinition(fullTypeName);
 						if (type != null)
-							return type;
+							break;
 					}
 				}
 			} else {
 				IAssembly asm = assembly.Resolve(context);
 				if (asm != null) {
-					type = asm.GetTypeDefinition(nameSpace, name, typeParameterCount);
+					type = asm.GetTypeDefinition(fullTypeName);
 				}
 			}
-			return type ?? new UnknownType(nameSpace, name, typeParameterCount);
+			return type ?? new UnknownType(fullTypeName);
 		}
 		
 		public override string ToString()
 		{
-			string asmSuffix = (assembly != null ? ", " + assembly.ToString() : null);
-			if (typeParameterCount == 0)
-				return BuildQualifiedName(nameSpace, name) + asmSuffix;
-			else
-				return BuildQualifiedName(nameSpace, name) + "`" + typeParameterCount + asmSuffix;
-		}
-		
-		static string BuildQualifiedName (string name1, string name2)
-		{
-			if (string.IsNullOrEmpty (name1))
-				return name2;
-			if (string.IsNullOrEmpty (name2))
-				return name1;
-			return name1 + "." + name2;
+			return fullTypeName.ToString() + (assembly != null ? ", " + assembly.ToString() : null);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
 			unchecked {
-				return 33 * assembly.GetHashCode() + 27 * nameSpace.GetHashCode() + name.GetHashCode() + typeParameterCount;
+				return 33 * assembly.GetHashCode() + fullTypeName.GetHashCode();
 			}
 		}
 		
 		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
 		{
 			GetClassTypeReference o = other as GetClassTypeReference;
-			return o != null && assembly == o.assembly && name == o.name && nameSpace == o.nameSpace && typeParameterCount == o.typeParameterCount;
+			return o != null && assembly == o.assembly && fullTypeName == o.fullTypeName;
 		}
 	}
 }

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TestBase.cs
 //  
 // Author:
@@ -38,7 +38,7 @@ using System.Diagnostics;
 namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 {
 	[TestFixture]
-	public class TestBase 
+	public abstract class TestBase 
 	{
 		class TestListener : TraceListener
 		{

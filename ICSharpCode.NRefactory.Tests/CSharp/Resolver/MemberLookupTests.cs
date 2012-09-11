@@ -61,7 +61,7 @@ class Derived : Middle {
 	public override void Method() {}
 }";
 			var unresolvedFile = Parse(program);
-			ITypeDefinition derived = compilation.MainAssembly.GetTypeDefinition(unresolvedFile.TopLevelTypeDefinitions[2]);
+			ITypeDefinition derived = compilation.MainAssembly.GetTypeDefinition(unresolvedFile.TopLevelTypeDefinitions[2].FullTypeName);
 			var rr = lookup.Lookup(new ResolveResult(derived), "Method", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
 			Assert.AreEqual(2, rr.MethodsGroupedByDeclaringType.Count());
 			
@@ -88,7 +88,7 @@ class Derived : Base<int> {
 	public override void Method(string a) {}
 }";
 			var unresolvedFile = Parse(program);
-			ITypeDefinition derived = compilation.MainAssembly.GetTypeDefinition(unresolvedFile.TopLevelTypeDefinitions[1]);
+			ITypeDefinition derived = compilation.MainAssembly.GetTypeDefinition(unresolvedFile.TopLevelTypeDefinitions[1].FullTypeName);
 			var rr = lookup.Lookup(new ResolveResult(derived), "Method", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
 			Assert.AreEqual(2, rr.MethodsGroupedByDeclaringType.Count());
 			
@@ -116,7 +116,7 @@ class Derived : Base {
 	public override void Method<S>(S a) {}
 }";
 			var unresolvedFile = Parse(program);
-			ITypeDefinition derived = compilation.MainAssembly.GetTypeDefinition(unresolvedFile.TopLevelTypeDefinitions[1]);
+			ITypeDefinition derived = compilation.MainAssembly.GetTypeDefinition(unresolvedFile.TopLevelTypeDefinitions[1].FullTypeName);
 			var rr = lookup.Lookup(new ResolveResult(derived), "Method", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
 			Assert.AreEqual(1, rr.MethodsGroupedByDeclaringType.Count());
 			

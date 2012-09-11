@@ -508,8 +508,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					) } ) }));
 			
 			ICompilation compilation = TypeSystemHelper.CreateCompilation(a, b);
-			ITypeDefinition resolvedA = compilation.MainAssembly.GetTypeDefinition(a);
-			ITypeDefinition resolvedB = compilation.MainAssembly.GetTypeDefinition(b);
+			ITypeDefinition resolvedA = compilation.MainAssembly.GetTypeDefinition(a.FullTypeName);
+			ITypeDefinition resolvedB = compilation.MainAssembly.GetTypeDefinition(b.FullTypeName);
 			
 			IType type1 = new ParameterizedType(resolvedB, new [] { compilation.FindType(KnownTypeCode.Double) });
 			IType type2 = new ParameterizedType(resolvedA, new [] { new ParameterizedType(resolvedB, new[] { compilation.FindType(KnownTypeCode.String) }) });

@@ -142,17 +142,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return astType;
 		}
 		
-		public AstType ConvertType(string ns, string name, int typeParameterCount = 0)
+		public AstType ConvertType(FullTypeName fullTypeName)
 		{
 			if (resolver != null) {
 				foreach (var asm in resolver.Compilation.Assemblies) {
-					var def = asm.GetTypeDefinition(ns, name, typeParameterCount);
+					var def = asm.GetTypeDefinition(fullTypeName);
 					if (def != null) {
 						return ConvertType(def);
 					}
 				}
 			}
-			return new MemberType(new SimpleType(ns), name);
+			TopLevelTypeName top = fullTypeName.TopLevelTypeName;
+			AstType type;
+			if (string.IsNullOrEmpty(top.Namespace)) {
+				type = new SimpleType(top.Name);
+			} else {
+				type = new SimpleType(top.Namespace).MemberType(top.Name);
+			}
+			for (int i = 0; i < fullTypeName.NestingLevel; i++) {
+				type = type.MemberType(fullTypeName.GetNestedTypeName(i));
+			}
+			return type;
 		}
 		
 		AstType ConvertTypeHelper(IType type)
@@ -601,7 +611,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			if (GenerateBody) {
 				return new BlockStatement {
-					new ThrowStatement(new ObjectCreateExpression(ConvertType("System", "NotImplementedException")))
+					new ThrowStatement(new ObjectCreateExpression(ConvertType(new TopLevelTypeName("System", "NotImplementedException", 0))))
 				};
 			} else {
 				return BlockStatement.Null;

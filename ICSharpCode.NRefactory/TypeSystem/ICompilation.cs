@@ -37,6 +37,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets the list of all assemblies in the compilation.
 		/// </summary>
+		/// <remarks>
+		/// This main assembly is the first entry in the list.
+		/// </remarks>
 		IList<IAssembly> Assemblies { get; }
 		
 		/// <summary>

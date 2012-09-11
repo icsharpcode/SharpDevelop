@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.Documentation
 		
 		ITypeDefinition GetTypeDefinition(string nameSpace, string name, int typeParameterCount = 0)
 		{
-			return compilation.MainAssembly.GetTypeDefinition(nameSpace, name, typeParameterCount);
+			return compilation.MainAssembly.GetTypeDefinition(new TopLevelTypeName(nameSpace, name, typeParameterCount));
 		}
 		
 		[Test]

@@ -137,8 +137,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ParameterizedType crt = (ParameterizedType)rt.ReferencedType;
 			Assert.AreEqual("System.Collections.Generic.IDictionary", crt.FullName);
 			Assert.AreEqual("System.String", crt.TypeArguments[0].FullName);
-			// ? for NUnit.TestAttribute (because that assembly isn't in ctx)
-			Assert.AreEqual("System.Collections.Generic.IList`1[[?]]", crt.TypeArguments[1].ReflectionName);
+			// we know the name for TestAttribute, but not necessarily the namespace, as NUnit is not in the compilation
+			Assert.AreEqual("System.Collections.Generic.IList", crt.TypeArguments[1].FullName);
+			var testAttributeType = ((ParameterizedType)crt.TypeArguments[1]).TypeArguments.Single();
+			Assert.AreEqual("TestAttribute", testAttributeType.Name);
+			Assert.AreEqual(TypeKind.Unknown, testAttributeType.Kind);
+			// (more accurately, we know the namespace and reflection name if the type was loaded by cecil,
+			// but not if we parsed it from C#)
 		}
 		
 		[Test]

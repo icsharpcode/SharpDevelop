@@ -30,6 +30,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	{
 		TypeKind Kind { get; }
 		
+		FullTypeName FullTypeName { get; }
 		IList<ITypeReference> BaseTypes { get; }
 		IList<IUnresolvedTypeParameter> TypeParameters { get; }
 		
@@ -118,6 +119,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// For all other types: returns <see cref="SpecialType.UnknownType"/>.
 		/// </summary>
 		IType EnumUnderlyingType { get; }
+		
+		/// <summary>
+		/// Gets the full name of this type.
+		/// </summary>
+		FullTypeName FullTypeName { get; }
 		
 		/// <summary>
 		/// Gets/Sets the declaring type (incl. type arguments, if any).

@@ -393,27 +393,58 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		#region IAssembly.GetTypeDefinition()
 		/// <summary>
+		/// Retrieves the specified type in this compilation.
+		/// Returns an <see cref="UnknownType"/> if the type cannot be found in this compilation.
+		/// </summary>
+		/// <remarks>
+		/// There can be multiple types with the same full name in a compilation, as a
+		/// full type name is only unique per assembly.
+		/// If there are multiple possible matches, this method will return just one of them.
+		/// When possible, use <see cref="IAssembly.GetTypeDefinition"/> instead to
+		/// retrieve a type from a specific assembly.
+		/// </remarks>
+		public static IType FindType(this ICompilation compilation, FullTypeName fullTypeName)
+		{
+			if (compilation == null)
+				throw new ArgumentNullException("compilation");
+			foreach (IAssembly asm in compilation.Assemblies) {
+				ITypeDefinition def = asm.GetTypeDefinition(fullTypeName);
+				if (def != null)
+					return def;
+			}
+			return new UnknownType(fullTypeName);
+		}
+		
+		/// <summary>
 		/// Gets the type definition for the specified unresolved type.
 		/// Returns null if the unresolved type does not belong to this assembly.
 		/// </summary>
-		public static ITypeDefinition GetTypeDefinition(this IAssembly assembly, IUnresolvedTypeDefinition unresolved)
+		public static ITypeDefinition GetTypeDefinition(this IAssembly assembly, FullTypeName fullTypeName)
 		{
 			if (assembly == null)
 				throw new ArgumentNullException("assembly");
-			if (unresolved == null)
+			TopLevelTypeName topLevelTypeName = fullTypeName.TopLevelTypeName;
+			ITypeDefinition typeDef = assembly.GetTypeDefinition(topLevelTypeName);
+			if (typeDef == null)
 				return null;
-			if (unresolved.DeclaringTypeDefinition != null) {
-				ITypeDefinition parentType = GetTypeDefinition(assembly, unresolved.DeclaringTypeDefinition);
-				if (parentType == null)
-					return null;
-				foreach (var nestedType in parentType.NestedTypes) {
-					if (nestedType.Name == unresolved.Name && nestedType.TypeParameterCount == unresolved.TypeParameters.Count)
-						return nestedType;
-				}
-				return null;
-			} else {
-				return assembly.GetTypeDefinition(unresolved.Namespace, unresolved.Name, unresolved.TypeParameters.Count);
+			int typeParameterCount = topLevelTypeName.TypeParameterCount;
+			for (int i = 0; i < fullTypeName.NestingLevel; i++) {
+				string name = fullTypeName.GetNestedTypeName(i);
+				typeParameterCount += fullTypeName.GetNestedTypeAdditionalTypeParameterCount(i);
+				typeDef = FindNestedType(typeDef, name, typeParameterCount);
+				if (typeDef == null)
+					break;
 			}
+			return typeDef;
+		}
+		
+		static ITypeDefinition FindNestedType(ITypeDefinition typeDef, string name, int typeParameterCount)
+		{
+			foreach (var nestedType in typeDef.NestedTypes) {
+				if (nestedType.Name == name && nestedType.TypeParameterCount == typeParameterCount)
+					return nestedType;
+			}
+			return null;
 		}
 		#endregion
 

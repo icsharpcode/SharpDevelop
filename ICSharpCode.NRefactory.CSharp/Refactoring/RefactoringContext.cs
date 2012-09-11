@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public virtual AstType CreateShortType(string ns, string name, int typeParameterCount = 0)
 		{
 			var builder = CreateTypeSytemAstBuilder();
-			return builder.ConvertType(ns, name, typeParameterCount);
+			return builder.ConvertType(new TopLevelTypeName(ns, name, typeParameterCount));
 		}
 
 		public virtual IEnumerable<AstNode> GetSelectedNodes()

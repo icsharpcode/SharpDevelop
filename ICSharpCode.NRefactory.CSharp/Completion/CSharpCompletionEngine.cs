@@ -1336,7 +1336,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 				}
 				if (this.currentMember != null && !(node is AstType)) {
-					var def = ctx.CurrentTypeDefinition ?? Compilation.MainAssembly.GetTypeDefinition(currentType);
+					var def = ctx.CurrentTypeDefinition;
+					if (def == null && currentType != null)
+						def = Compilation.MainAssembly.GetTypeDefinition(currentType.FullTypeName);
 					if (def != null) {
 						bool isProtectedAllowed = true;
 						foreach (var member in def.GetMembers ()) {
