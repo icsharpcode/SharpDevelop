@@ -288,7 +288,7 @@ namespace CSharpBinding.OptionPanels
 		private void ChangeOutputPathExecute()
 		{
 			OutputPath.Value = OptionsHelper.BrowseForFolder("${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}",
-			                                                 base.BaseDirectory,base.BaseDirectory,
+			                                                 base.BaseDirectory,
 			                                                 outputPathTextBox.Text,TextBoxEditMode.EditRawProperty);
 			base.RaisePropertyChanged(()=> OutputPath);
 		}
@@ -358,7 +358,7 @@ namespace CSharpBinding.OptionPanels
 		private void BaseIntermediateOutputPathExecute ()
 		{
 			BaseIntermediateOutputPath.Value = OptionsHelper.BrowseForFolder("${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}",
-			                                                                 base.BaseDirectory,base.BaseDirectory,
+			                                                                 base.BaseDirectory,
 			                                                                 this.baseIntermediateOutputPathTextBox.Text,TextBoxEditMode.EditRawProperty);
 			base.RaisePropertyChanged(()=> BaseIntermediateOutputPath);
 		}
@@ -377,7 +377,7 @@ namespace CSharpBinding.OptionPanels
 		private void IntermediateOutputPathExecute ()
 		{
 			IntermediateOutputPath.Value = OptionsHelper.BrowseForFolder("${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}",
-			                                                             base.BaseDirectory,base.BaseDirectory,
+			                                                             base.BaseDirectory,
 			                                                             this.intermediateOutputPathTextBox.Text,TextBoxEditMode.EditRawProperty);
 			base.RaisePropertyChanged(()=> IntermediateOutputPath);
 		}

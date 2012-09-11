@@ -45,7 +45,7 @@ namespace ICSharpCode.PythonBinding
 		
 		void Browse()
 		{
-			string str = OptionsHelper.OpenFile ("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe","",TextBoxEditMode.EditRawProperty);
+			string str = OptionsHelper.OpenFile ("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe","",PythonFileName,TextBoxEditMode.EditRawProperty);
 			if (String.IsNullOrEmpty(str))
 				return;
 			PythonFileName = str;

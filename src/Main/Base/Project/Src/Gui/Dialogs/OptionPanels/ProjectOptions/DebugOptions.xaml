@@ -7,11 +7,10 @@
 	xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
 	xmlns:projects="clr-namespace:ICSharpCode.SharpDevelop.Project"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	
 	<optionpanels:ProjectOptionPanel.Resources>
-		<local:StorageLocationConverter
-			x:Key="converter" />
-		<local:StartActionToBooleanConverter
-			x:Key="startActionToBool" />
+		<local:StorageLocationConverter x:Key="converter" />
+		<local:StartActionToBooleanConverter x:Key="startActionToBool" />
 	</optionpanels:ProjectOptionPanel.Resources>
 	
 	<ScrollViewer>
@@ -38,21 +37,20 @@
 						<ColumnDefinition></ColumnDefinition>
 						<ColumnDefinition Width="Auto"></ColumnDefinition>
 					</Grid.ColumnDefinitions>
+					
 					<optionpanels:StorageLocationPicker
 						Grid.Row="1"
 						VerticalAlignment="Center">
 						<optionpanels:StorageLocationPicker.Location>
 							<MultiBinding
 								Converter="{StaticResource converter}">
-								<Binding
-									Path="StartAction.Location" />
-								<Binding
-									Path="StartProgram.Location" />
-								<Binding
-									Path="StartURL.Location" />
+								<Binding Path="StartAction.Location" />
+								<Binding Path="StartProgram.Location" />
+								<Binding Path="StartURL.Location" />
 							</MultiBinding>
 						</optionpanels:StorageLocationPicker.Location>
 					</optionpanels:StorageLocationPicker>
+					
 					<RadioButton Grid.Column="1" VerticalAlignment="Center" Margin="4,0,0,0"
 						IsChecked="{Binding StartAction.Value,
 					             Converter={StaticResource startActionToBool},
@@ -60,8 +58,8 @@
 						Content="{core:Localize Dialog.ProjectOptions.DebugOptions.StartProject}">
 					</RadioButton>
 				
-					<!--x:Name="startexternal"-->
-					<RadioButton Grid.Row="1" Grid.Column="1" Margin="4,0,0,0" VerticalAlignment="Center"						
+					
+					<RadioButton x:Name="startexternal" Grid.Row="1" Grid.Column="1" Margin="4,0,0,0" VerticalAlignment="Center"						
 						IsChecked="{Binding StartAction.Value,
 					             Converter={StaticResource startActionToBool},
 					             ConverterParameter={x:Static projects:StartAction.Program}}"
@@ -89,6 +87,7 @@
 						Text="{Binding StartURL.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
 				</Grid>
 			</GroupBox>
+			
 			<GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"
 				Height="90" VerticalAlignment="Top" Margin="0,5,0,0"
 				Header="{core:Localize Dialog.ProjectOptions.DebugOptions.StartOptions}"
@@ -104,17 +103,17 @@
 						<ColumnDefinition></ColumnDefinition>
 						<ColumnDefinition Width="Auto"></ColumnDefinition>
 					</Grid.ColumnDefinitions>
+					
 					<optionpanels:StorageLocationPicker Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Center">
 						<optionpanels:StorageLocationPicker.Location>
 							<MultiBinding
 								Converter="{StaticResource converter}">
-								<Binding
-									Path="StartArguments.Location" />
-								<Binding
-									Path="StartWorkingDirectory.Location" />
+								<Binding Path="StartArguments.Location" />
+								<Binding Path="StartWorkingDirectory.Location" />
 							</MultiBinding>
 						</optionpanels:StorageLocationPicker.Location>
 					</optionpanels:StorageLocationPicker>
+					
 					<Label Grid.Column="1" Margin="4,0,0,0" VerticalAlignment="Center"
 						Content="{core:Localize Dialog.ProjectOptions.DebugOptions.Arguments}"></Label>
 					

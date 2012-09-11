@@ -15,22 +15,20 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	public class OptionsHelper
 	{
 		
-		public static string BrowseForFolder(string description,string baseDirectory,
-		                                     string startLocation,string relativeLocation,
+
+		public static string BrowseForFolder(string description,string startLocation,
+		                                     string relativeLocation,
 		                                     TextBoxEditMode textBoxEditMode)
 		{
-			string startAt = startLocation;
-			if (!String.IsNullOrEmpty(relativeLocation)) {
-				startAt = FileUtility.GetAbsolutePath(startLocation,relativeLocation);
-			}
 			
+			string startAt = CreateStartPath(startLocation, relativeLocation);
 			
 			using (System.Windows.Forms.FolderBrowserDialog fdiag = FileService.CreateFolderBrowserDialog(description,startAt))
 			{
 				if (fdiag.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
 					string path = fdiag.SelectedPath;
-					if (baseDirectory != null) {
-						path = FileUtility.GetRelativePath(baseDirectory, path);
+					if (!String.IsNullOrEmpty(startLocation)) {
+						path = FileUtility.GetRelativePath(startLocation, path);
 					}
 					if (!path.EndsWith("\\") && !path.EndsWith("/"))
 						path += "\\";
@@ -39,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 					} else {
 						return MSBuildInternals.Escape(path);
 					}
-				}
+				} 
 			}
 			return startLocation;
 		}
@@ -50,18 +48,23 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		/// </summary>
 		/// <param name="filter" or String.Empty></param>
 		/// <returns FileName></returns>
-		public static string OpenFile (string filter,string baseDirectory,TextBoxEditMode textBoxEditMode)
+		public static string OpenFile (string filter,string startLocation,string relativeLocation, TextBoxEditMode textBoxEditMode)
 		{
+
+			string startAt = CreateStartPath(startLocation, relativeLocation);
 			var dialog = new OpenFileDialog();
+			dialog.InitialDirectory = startAt;
+			
 			if (!String.IsNullOrEmpty(filter)) {
 				dialog.Filter = StringParser.Parse(filter);
 			}
 			
 			if (dialog.ShowDialog() ?? false) {
 				string fileName = dialog.FileName;
-				if (!String.IsNullOrEmpty(baseDirectory)) {
-						fileName = FileUtility.GetRelativePath(baseDirectory, fileName);
-					}
+				
+				if (!String.IsNullOrEmpty(startLocation)) {
+					fileName = FileUtility.GetRelativePath(startLocation, fileName);
+				}
 				if (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty) {
 					return fileName;
 				} else {
@@ -69,6 +72,16 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				}
 			}
 			return string.Empty;
+		}
+
+		
+		private static string CreateStartPath(string startLocation, string relativeLocation)
+		{
+			string startAt = startLocation;
+			if (!String.IsNullOrEmpty(relativeLocation)) {
+				startAt = FileUtility.GetAbsolutePath(startLocation, relativeLocation);
+			}
+			return startAt;
 		}
 	}
 }

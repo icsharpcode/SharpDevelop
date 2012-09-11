@@ -63,7 +63,7 @@ namespace ICSharpCode.SourceAnalysis
 		private void FindStyleCopPath_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
 			string filter = StringParser.Parse("StyleCop|*" + StyleCopWrapper.STYLE_COP_FILE + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
-			string path = OptionsHelper.OpenFile(filter,"",TextBoxEditMode.EditRawProperty);
+			string path = OptionsHelper.OpenFile(filter,"","",TextBoxEditMode.EditRawProperty);
 			if (!String.IsNullOrEmpty(path)) {
 				if (StyleCopWrapper.IsStyleCopPath(path)) {
 					StyleCopPath = path;

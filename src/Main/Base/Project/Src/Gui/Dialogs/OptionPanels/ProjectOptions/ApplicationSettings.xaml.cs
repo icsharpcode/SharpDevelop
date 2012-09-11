@@ -245,7 +245,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void ApplicationIconButton_Click(object sender, RoutedEventArgs e)
 		{
-			string fileName = OptionsHelper.OpenFile(iconsfilter,base.BaseDirectory,TextBoxEditMode.EditRawProperty);
+			string fileName = OptionsHelper.OpenFile(iconsfilter,base.BaseDirectory,
+			                                         ApplicationIcon.Value,TextBoxEditMode.EditRawProperty);
 			if (!String.IsNullOrEmpty(fileName))
 			{
 				this.applicationIconTextBox.Text = fileName;
@@ -353,7 +354,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void BrowseForManifest()
 		{
-			var fileName = OptionsHelper.OpenFile(manifestFilter,base.BaseDirectory,TextBoxEditMode.EditRawProperty);
+			var fileName = OptionsHelper.OpenFile(manifestFilter,base.BaseDirectory,
+			                                      ApplicationManifest.Value,TextBoxEditMode.EditRawProperty);
 			if (!String.IsNullOrEmpty(fileName)) {
 				applicationManifestComboBox.Text = fileName;
 			}
@@ -398,7 +400,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void Win32ResourceComboButton_Click(object sender, RoutedEventArgs e)
 		{
-			string fileName = OptionsHelper.OpenFile(win32filter,base.BaseDirectory,TextBoxEditMode.EditRawProperty);
+			string fileName = OptionsHelper.OpenFile(win32filter,base.BaseDirectory,
+			                                         Win32Resource.Value,TextBoxEditMode.EditRawProperty);
 			if (!String.IsNullOrEmpty(fileName))
 			{
 				this.win32ResourceFileTextBox.Text = fileName;

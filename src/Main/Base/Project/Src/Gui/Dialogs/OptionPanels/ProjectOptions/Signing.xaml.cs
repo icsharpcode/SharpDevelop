@@ -154,6 +154,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			string fileName = OptionsHelper.OpenFile("${res:SharpDevelop.FileFilter.KeyFiles} (" + KeyFileExtensions + ")|" + KeyFileExtensions + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*",
 			                                    base.BaseDirectory,
+			                                    this.AssemblyOriginatorKeyFile.Value,
 			                                    TextBoxEditMode.EditRawProperty);
 			if (!String.IsNullOrEmpty(fileName)) {
 				this.AssemblyOriginatorKeyFile.Value = fileName;
