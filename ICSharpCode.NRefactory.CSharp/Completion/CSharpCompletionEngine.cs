@@ -627,6 +627,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					var contextList = new CompletionDataWrapper(this);
 					var identifierStart = GetExpressionAtCursor();
+
 					if (identifierStart != null) {
 						if (identifierStart.Node is TypeParameterDeclaration) {
 							return null;
@@ -669,8 +670,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (!(Char.IsWhiteSpace(prevCh) || allowedChars.IndexOf(prevCh) >= 0)) {
 						return null;
 					}
-				
-				// Do not pop up completion on identifier identifier (should be handled by keyword completion).
+					// Do not pop up completion on identifier identifier (should be handled by keyword completion).
 					tokenIndex = offset - 1;
 					token = GetPreviousToken(ref tokenIndex, false);
 					if (token == "class" || token == "interface" || token == "struct" || token == "enum" || token == "namespace") {
@@ -688,7 +688,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						// after these always follows a name
 						return null;
 					}
-				
+					Console.WriteLine (1);
+
 					if (identifierStart == null && !string.IsNullOrEmpty(token) && !IsInsideCommentStringOrDirective() && (prevToken2 == ";" || prevToken2 == "{" || prevToken2 == "}")) {
 						char last = token [token.Length - 1];
 						if (char.IsLetterOrDigit(last) || last == '_' || token == ">") {
@@ -708,7 +709,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (n != null && n.Parent is AnonymousTypeCreateExpression) {
 						AutoSelect = false;
 					}
-				
+					Console.WriteLine (2);
+
 				// Handle foreach (type name _
 					if (n is IdentifierExpression) {
 						var prev = n.GetPrevNode() as ForeachStatement;
@@ -719,24 +721,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							}
 							return null;
 						}
-					
-						//						var astResolver = new CSharpAstResolver(
-						//							GetState(),
-						//							identifierStart.Unit,
-						//							CSharpUnresolvedFile
-						//						);
-						//
-						//						foreach (var type in CreateFieldAction.GetValidTypes(astResolver, (Expression)n)) {
-						//							if (type.Kind == TypeKind.Delegate) {
-						//								AddDelegateHandlers(contextList, type, false, false);
-						//								AutoSelect = false;
-						//								AutoCompleteEmptyMatch = false;
-						//							}
-						//						}
 					}
 				
 				// Handle object/enumerable initialzer expressions: "new O () { P$"
-					if (n is IdentifierExpression && n.Parent is ArrayInitializerExpression) {
+					if (n is IdentifierExpression && n.Parent is ArrayInitializerExpression && !(n.Parent.Parent is ArrayCreateExpression)) {
 						var result = HandleObjectInitializer(identifierStart.Unit, n);
 						if (result != null)
 							return result;
@@ -777,7 +765,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							}
 						}
 					}
-				
+					Console.WriteLine (3);
+
 					if (n != null && n.Parent is ObjectCreateExpression) {
 						var invokeResult = ResolveExpression(n.Parent);
 						var mgr = invokeResult != null ? invokeResult.Item1 as ResolveResult : null;
@@ -2014,7 +2003,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					"delegate",
 					"Creates anonymous delegate.",
 					"delegate {" + EolMarker + thisLineIndent + IndentString + "|" + delegateEndString
-					);
+				);
 			}
 			var sb = new StringBuilder("(");
 			var sbWithoutTypes = new StringBuilder("(");
@@ -2026,10 +2015,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					sb.Append(", ");
 					sbWithoutTypes.Append(", ");
 				}
-				var convertedParameter = builder.ConvertParameter (delegateMethod.Parameters [k]);
+				var convertedParameter = builder.ConvertParameter(delegateMethod.Parameters [k]);
 				if (convertedParameter.ParameterModifier == ParameterModifier.Params)
 					convertedParameter.ParameterModifier = ParameterModifier.None;
-				sb.Append(convertedParameter.GetText (FormattingPolicy));
+				sb.Append(convertedParameter.GetText(FormattingPolicy));
 				sbWithoutTypes.Append(delegateMethod.Parameters [k].Name);
 			}
 			
@@ -2039,22 +2028,22 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				"delegate" + sb,
 				"Creates anonymous delegate.",
 				"delegate" + sb + " {" + EolMarker + thisLineIndent + IndentString + "|" + delegateEndString
-				);
+			);
 
 			if (!completionList.Result.Any(data => data.DisplayText == sb.ToString())) {
 				completionList.AddCustom(
 					sb.ToString(),
 					"Creates typed lambda expression.",
 					sb + " => |" + (addSemicolon ? ";" : "")
-					);
+				);
 			}
 
-			if (!delegateMethod.Parameters.Any (p => p.IsOut || p.IsRef) && !completionList.Result.Any(data => data.DisplayText == sbWithoutTypes.ToString())) {
+			if (!delegateMethod.Parameters.Any(p => p.IsOut || p.IsRef) && !completionList.Result.Any(data => data.DisplayText == sbWithoutTypes.ToString())) {
 				completionList.AddCustom(
 					sbWithoutTypes.ToString(),
 					"Creates lambda expression.",
 					sbWithoutTypes + " => |" + (addSemicolon ? ";" : "")
-					);
+				);
 			}
 			/* TODO:Make factory method out of it.
 			// It's  needed to temporarly disable inserting auto matching bracket because the anonymous delegates are selectable with '('

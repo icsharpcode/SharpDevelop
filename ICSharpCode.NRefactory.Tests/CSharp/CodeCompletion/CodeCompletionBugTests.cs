@@ -5415,5 +5415,42 @@ public class FooBar
 			});
 		}
 
+		/// <summary>
+		/// Bug 7041 - No completion inside new[]
+		/// </summary>
+		[Test()]
+		public void TestBug7041()
+		{
+			CombinedProviderTest(
+				@"using System;
+
+		namespace ConsoleApplication2
+		{
+			class Test
+			{
+				public string[] Foo { get; set; }
+			}
+
+			class Program
+			{
+				static void Main(string[] args)
+				{
+					var a = new Test ()
+					{
+						$Foo = new [] { S$
+					}
+
+				}
+			}
+		}
+
+", provider => {
+				Assert.IsNotNull(provider.Find("System"));
+			});
+		}
+
+
+
+
 	}
 }
