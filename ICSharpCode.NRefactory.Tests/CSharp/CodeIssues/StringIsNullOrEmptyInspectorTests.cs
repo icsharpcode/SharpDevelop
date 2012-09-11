@@ -410,7 +410,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 	}
 }");
 		}
-
+		
 		[Test]
 		public void TestInspectorCaseSN8 ()
 		{
@@ -422,7 +422,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 			;
 	}
 }";
-
+			
 			TestRefactoringContext context;
 			var issues = GetIssues (new StringIsNullOrEmptyIssue (), input, out context);
 			Assert.AreEqual (1, issues.Count);
@@ -431,6 +431,70 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 	void Bar (string str)
 	{
 		if (string.IsNullOrEmpty (str))
+			;
+	}
+}");
+		}
+		
+		[TestCase("str == null || str.Length == 0")]
+		[TestCase("str == null || 0 == str.Length")]
+		[TestCase("str.Length == 0 || str == null")]
+		[TestCase("0 == str.Length || str == null")]
+		[TestCase("null == str || str.Length == 0")]
+		[TestCase("null == str || 0 == str.Length")]
+		[TestCase("str.Length == 0 || null == str")]
+		[TestCase("0 == str.Length || null == str")]
+		public void TestInspectorCaseNL (string expression)
+		{
+			var input = @"class Foo
+{
+	void Bar (string str)
+	{
+		if (" + expression + @")
+			;
+	}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new StringIsNullOrEmptyIssue (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+			CheckFix (context, issues, @"class Foo
+{
+	void Bar (string str)
+	{
+		if (string.IsNullOrEmpty (str))
+			;
+	}
+}");
+		}
+	
+		[TestCase("str != null && str.Length != 0")]
+		[TestCase("str != null && 0 != str.Length")]
+		[TestCase("str.Length != 0 && str != null")]
+		[TestCase("0 != str.Length && str != null")]
+		[TestCase("null != str && str.Length != 0")]
+		[TestCase("null != str && 0 != str.Length")]
+		[TestCase("str.Length != 0 && null != str")]
+		[TestCase("0 != str.Length && null != str")]
+		public void TestInspectorCaseLN (string expression)
+		{
+			var input = @"class Foo
+{
+	void Bar (string str)
+	{
+		if (" + expression + @")
+			;
+	}
+}";
+		
+			TestRefactoringContext context;
+			var issues = GetIssues (new StringIsNullOrEmptyIssue (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+			CheckFix (context, issues, @"class Foo
+{
+	void Bar (string str)
+	{
+		if (!string.IsNullOrEmpty (str))
 			;
 	}
 }");
