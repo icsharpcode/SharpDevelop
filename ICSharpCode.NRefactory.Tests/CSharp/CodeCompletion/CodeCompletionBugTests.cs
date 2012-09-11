@@ -5449,8 +5449,25 @@ public class FooBar
 			});
 		}
 
+		[Test()]
+		public void TestGlobalPrimitiveTypes()
+		{
+			CombinedProviderTest(
+				@"$u$", provider => {
+				Assert.IsNotNull(provider.Find("using"));
+				Assert.IsNull(provider.Find("ushort"));
+			});
+		}
 
-
-
+		[Test()]
+		public void TestGlobalPrimitiveTypesCase2()
+		{
+			CombinedProviderTest(
+				@"$delegate u$", provider => {
+				Assert.IsNotNull(provider.Find("ushort"));
+				Assert.IsNotNull(provider.Find("System"));
+				Assert.IsNull(provider.Find("using"));
+			});
+		}
 	}
 }

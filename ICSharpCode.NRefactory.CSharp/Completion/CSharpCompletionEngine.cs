@@ -627,7 +627,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					var contextList = new CompletionDataWrapper(this);
 					var identifierStart = GetExpressionAtCursor();
-
 					if (identifierStart != null) {
 						if (identifierStart.Node is TypeParameterDeclaration) {
 							return null;
@@ -1136,6 +1135,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return wrapper.Result;
 				}
 			}
+
 			/*			if (Unit != null && (node == null || node is TypeDeclaration)) {
 				var constructor = Unit.GetNodeAt<ConstructorDeclaration>(
 					location.Line,
@@ -1181,6 +1181,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		void AddContextCompletion(CompletionDataWrapper wrapper, CSharpResolver state, AstNode node)
 		{
+			int i = offset - 1;
+			var isInGlobalDelegate = node == null && state.CurrentTypeDefinition == null && GetPreviousToken(ref i, true) == "delegate";
+
 			if (state != null && !(node is AstType)) {
 				foreach (var variable in state.LocalVariables) {
 					if (variable.Region.IsInside(location.Line, location.Column - 1)) {
@@ -1211,10 +1214,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return t.GetAllBaseTypeDefinitions().Any(bt => bt.Equals(attribute)) ? t : null;
 				};
 			}
-			AddTypesAndNamespaces(wrapper, state, node, typePred);
+			if (node != null || state.CurrentTypeDefinition != null || isInGlobalDelegate) {
+				AddTypesAndNamespaces(wrapper, state, node, typePred);
 			
-			wrapper.Result.Add(factory.CreateLiteralCompletionData("global"));
-			
+				wrapper.Result.Add(factory.CreateLiteralCompletionData("global"));
+			}
+
 			if (!(node is AstType)) {
 				if (currentMember != null || node is Expression) {
 					AddKeywords(wrapper, statementStartKeywords);
@@ -1224,7 +1229,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				} else if (currentType != null) {
 					AddKeywords(wrapper, typeLevelKeywords);
 				} else {
-					AddKeywords(wrapper, globalLevelKeywords);
+					if (!isInGlobalDelegate)
+						AddKeywords(wrapper, globalLevelKeywords);
 				}
 				var prop = currentMember as IUnresolvedProperty;
 				if (prop != null && prop.Setter != null && prop.Setter.Region.IsInside(location)) {
@@ -1242,7 +1248,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					AddKeywords(wrapper, parameterTypePredecessorKeywords);
 				}
 			}
-			AddKeywords(wrapper, primitiveTypesKeywords);
+
+			if (node != null || state.CurrentTypeDefinition != null || isInGlobalDelegate)
+				AddKeywords(wrapper, primitiveTypesKeywords);
 			if (currentMember != null && (node is IdentifierExpression || node is SimpleType) && (node.Parent is ExpressionStatement || node.Parent is ForeachStatement || node.Parent is UsingStatement)) {
 				wrapper.AddCustom("var");
 				wrapper.AddCustom("dynamic");
