@@ -88,10 +88,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			static bool AreEquivalent(ResolveResult first, ResolveResult second)
 			{
-				var firstPath = InitializerPath.FromResolveResult(first);
-				var secondPath = InitializerPath.FromResolveResult(second);
-				return firstPath != null && firstPath.Equals(secondPath) && !firstPath.MemberPath.Any(m => !(m is IField)) &&
-					(firstPath.MemberRoot == null || firstPath.MemberRoot is IField);
+				var firstPath = AccessPath.FromResolveResult(first);
+				var secondPath = AccessPath.FromResolveResult(second);
+				return firstPath != null && firstPath.Equals(secondPath) && !firstPath.MemberPath.Any(m => !(m is IField));
 			}
 		}
 	}
