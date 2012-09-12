@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ICompletionDataFactory.cs
 //  
 // Author:
@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		/// <summary>
 		/// Creates a generic completion data.
 		/// </summary>
-		/// <returns>
+		/// <param name='title'>
 		/// The title of the completion data
 		/// </param>
 		/// <param name='description'>
