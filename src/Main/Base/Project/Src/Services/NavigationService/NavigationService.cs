@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Input;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -443,6 +444,7 @@ namespace ICSharpCode.SharpDevelop
 			if (HistoryChanged!=null) {
 				HistoryChanged(NavigationService.CurrentPosition, EventArgs.Empty);
 			}
+			CommandManager.InvalidateRequerySuggested();
 		}
 		#endregion
 		
