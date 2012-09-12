@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using AvalonDock;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Workbench
 {

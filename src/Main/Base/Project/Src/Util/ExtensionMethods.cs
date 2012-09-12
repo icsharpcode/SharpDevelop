@@ -25,7 +25,6 @@ using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
-using WinForms = System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -117,15 +116,6 @@ namespace ICSharpCode.SharpDevelop
 				list.Add(o);
 		}
 		
-		/// <summary>
-		/// Adds all <paramref name="elements"/> to <paramref name="list"/>.
-		/// </summary>
-		internal static void AddRange(this WinForms.ComboBox.ObjectCollection list, IEnumerable elements)
-		{
-			foreach (var o in elements)
-				list.Add(o);
-		}
-		
 		public static ReadOnlyCollection<T> AsReadOnly<T>(this IList<T> arr)
 		{
 			return new ReadOnlyCollection<T>(arr);
@@ -208,11 +198,6 @@ namespace ICSharpCode.SharpDevelop
 		public static IOrderedEnumerable<T> OrderBy<T>(this IEnumerable<T> input, IComparer<T> comparer)
 		{
 			return Enumerable.OrderBy(input, e => e, comparer);
-		}
-		
-		public static IEnumerable<WinForms.Control> GetRecursive(this WinForms.Control.ControlCollection collection)
-		{
-			return collection.Cast<WinForms.Control>().Flatten(c => c.Controls.Cast<WinForms.Control>());
 		}
 		
 		/// <summary>
@@ -386,6 +371,7 @@ namespace ICSharpCode.SharpDevelop
 		#endregion
 		
 		#region WPF SetContent
+		/*
 		/// <summary>
 		/// Sets the Content property of the specified ControlControl to the specified content.
 		/// If the content is a Windows-Forms control, it is wrapped in a WindowsFormsHost.
@@ -406,108 +392,15 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static void SetContent(this ContentControl contentControl, object content, object serviceObject)
 		{
-			if (contentControl == null)
-				throw new ArgumentNullException("contentControl");
-			// serviceObject = object implementing the old clipboard/undo interfaces
-			// to allow WinForms AddIns to handle WPF commands
 			
-			var host = contentControl.Content as SDWindowsFormsHost;
-			if (host != null) {
-				if (host.Child == content) {
-					host.ServiceObject = serviceObject;
-					return;
-				}
-				host.Dispose();
-			}
-			if (content is WinForms.Control) {
-				contentControl.Content = new SDWindowsFormsHost {
-					Child = (WinForms.Control)content,
-					ServiceObject = serviceObject,
-					DisposeChild = false
-				};
-			} else if (content is string) {
-				contentControl.Content = new TextBlock {
-					Text = content.ToString(),
-					TextWrapping = TextWrapping.Wrap
-				};
-			} else {
-				contentControl.Content = content;
-			}
 		}
 		
 		
 		public static void SetContent(this ContentPresenter contentControl, object content, object serviceObject)
 		{
-			if (contentControl == null)
-				throw new ArgumentNullException("contentControl");
-			// serviceObject = object implementing the old clipboard/undo interfaces
-			// to allow WinForms AddIns to handle WPF commands
 			
-			var host = contentControl.Content as SDWindowsFormsHost;
-			if (host != null) {
-				if (host.Child == content) {
-					host.ServiceObject = serviceObject;
-					return;
-				}
-				host.Dispose();
-			}
-			if (content is WinForms.Control) {
-				contentControl.Content = new SDWindowsFormsHost {
-					Child = (WinForms.Control)content,
-					ServiceObject = serviceObject,
-					DisposeChild = false
-				};
-			} else if (content is string) {
-				contentControl.Content = new TextBlock {
-					Text = content.ToString(),
-					TextWrapping = TextWrapping.Wrap
-				};
-			} else {
-				contentControl.Content = content;
-			}
 		}
-		#endregion
-		
-		#region System.Drawing <-> WPF conversions
-		public static System.Drawing.Point ToSystemDrawing(this Point p)
-		{
-			return new System.Drawing.Point((int)p.X, (int)p.Y);
-		}
-		
-		public static System.Drawing.Size ToSystemDrawing(this Size s)
-		{
-			return new System.Drawing.Size((int)s.Width, (int)s.Height);
-		}
-		
-		public static System.Drawing.Rectangle ToSystemDrawing(this Rect r)
-		{
-			return new System.Drawing.Rectangle(r.TopLeft.ToSystemDrawing(), r.Size.ToSystemDrawing());
-		}
-		
-		public static System.Drawing.Color ToSystemDrawing(this System.Windows.Media.Color c)
-		{
-			return System.Drawing.Color.FromArgb(c.A, c.R, c.G, c.B);
-		}
-		
-		public static Point ToWpf(this System.Drawing.Point p)
-		{
-			return new Point(p.X, p.Y);
-		}
-		
-		public static Size ToWpf(this System.Drawing.Size s)
-		{
-			return new Size(s.Width, s.Height);
-		}
-		
-		public static Rect ToWpf(this System.Drawing.Rectangle rect)
-		{
-			return new Rect(rect.Location.ToWpf(), rect.Size.ToWpf());
-		}
-		
-		public static System.Windows.Media.Color ToWpf(this System.Drawing.Color c)
-		{
-			return System.Windows.Media.Color.FromArgb(c.A, c.R, c.G, c.B);
-		}
+		*/
 		#endregion
 		
 		#region DPI independence
@@ -709,6 +602,33 @@ namespace ICSharpCode.SharpDevelop
 		}
 		#endregion
 		
+		#region Resource Service Extensions
+		/// <summary>
+		/// Gets an <see cref="IImage"/> from a resource.
+		/// </summary>
+		/// <exception cref="ResourceNotFoundException">The resource with the specified name does not exist</exception>
+		public static IImage GetImage(this IResourceService resourceService, string resourceName)
+		{
+			if (resourceService == null)
+				throw new ArgumentNullException("resourceService");
+			if (resourceName == null)
+				throw new ArgumentNullException("resourceName");
+			return new ResourceServiceImage(resourceService, resourceName);
+		}
+		
+		/// <summary>
+		/// Gets an image source from a resource.
+		/// </summary>
+		/// <exception cref="ResourceNotFoundException">The resource with the specified name does not exist</exception>
+		public static ImageSource GetImageSource(this IResourceService resourceService, string resourceName)
+		{
+			if (resourceService == null)
+				throw new ArgumentNullException("resourceService");
+			if (resourceName == null)
+				throw new ArgumentNullException("resourceName");
+			return PresentationResourceService.GetBitmapSource(resourceName);
+		}
+		
 		/// <summary>
 		/// Creates a new image for the image source.
 		/// </summary>
@@ -718,6 +638,7 @@ namespace ICSharpCode.SharpDevelop
 				throw new ArgumentNullException("image");
 			return new Image { Source = image.ImageSource };
 		}
+		#endregion
 		
 		#region XML extensions
 		public static XElement FormatXml(this XElement element, int indentationLevel)

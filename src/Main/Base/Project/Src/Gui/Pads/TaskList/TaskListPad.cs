@@ -7,11 +7,11 @@ using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -140,12 +140,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			
-			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/TaskList/Toolbar");
-			ShowTaskListTokenButton[] buttons = TaskListTokensBuilder.BuildItems(tokens);
+			toolStrip = SD.WinForms.ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/TaskList/Toolbar");
 			
-			foreach (ShowTaskListTokenButton button in buttons) {
-				toolStrip.Items.Add(new ToolBarSeparator());
-				toolStrip.Items.Add((ToolStripItem)button.Owner);
+			foreach (string token in tokens) {
+				toolStrip.Items.Add(new ToolStripSeparator());
+				toolStrip.Items.Add(new TaskListTokensToolbarCheckBox(token));
 			}
 			
 			toolStrip.Stretch   = true;

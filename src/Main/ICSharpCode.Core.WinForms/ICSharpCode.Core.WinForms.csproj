@@ -74,7 +74,6 @@
     <Compile Include="ToolBar\ToolBarSeparator.cs" />
     <Compile Include="ToolBar\ToolBarService.cs" />
     <Compile Include="ToolBar\ToolBarSplitButton.cs" />
-    <Compile Include="Util\ClipboardWrapper.cs" />
     <Compile Include="Util\NativeMethods.cs" />
     <Compile Include="Util\RightToLeftConverter.cs" />
     <Compile Include="WinFormsResourceService.cs" />

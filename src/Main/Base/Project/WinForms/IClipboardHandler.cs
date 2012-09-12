@@ -3,7 +3,7 @@
 
 using System;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.WinForms
 {
 	/// <summary>
 	/// This interface is meant for Windows-Forms AddIns to preserve the clipboard handling functionality as in SharpDevelop 3.0.

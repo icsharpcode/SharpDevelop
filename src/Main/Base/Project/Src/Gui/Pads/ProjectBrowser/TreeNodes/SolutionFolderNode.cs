@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -141,15 +140,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			ClipboardWrapper.SetDataObject(new DataObject(typeof(ISolutionFolder).ToString(), folder.IdGuid));
+			SD.Clipboard.SetDataObject(new DataObject(typeof(ISolutionFolder).ToString(), folder.IdGuid));
 		}
 		
 		public static bool DoEnablePaste(ISolutionFolderNode container)
 		{
-			return DoEnablePaste(container, ClipboardWrapper.GetDataObject());
+			return DoEnablePaste(container, SD.Clipboard.GetDataObject());
 		}
 		
-		static bool DoEnablePaste(ISolutionFolderNode container, IDataObject dataObject)
+		static bool DoEnablePaste(ISolutionFolderNode container, System.Windows.IDataObject dataObject)
 		{
 			if (dataObject == null) {
 				return false;
@@ -171,7 +170,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void DoPaste(ISolutionFolderNode folderNode)
 		{
-			IDataObject dataObject = ClipboardWrapper.GetDataObject();
+			System.Windows.IDataObject dataObject = SD.Clipboard.GetDataObject();
 			if (!DoEnablePaste(folderNode, dataObject)) {
 				LoggingService.Warn("SolutionFolderNode.DoPaste: Pasting was not enabled.");
 				return;

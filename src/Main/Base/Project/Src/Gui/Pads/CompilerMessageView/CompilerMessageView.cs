@@ -21,6 +21,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -208,7 +209,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			properties = PropertyService.NestedProperties(OutputWindowOptionsPanel.OutputWindowsProperty);
 			
-			var font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", Core.WinForms.WinFormsResourceService.DefaultMonospacedFont.ToString()).ToString());
+			var font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", SD.WinForms.DefaultMonospacedFont.ToString()).ToString());
 			
 			textEditor.FontFamily = new FontFamily(font.FontFamily.Name);
 			textEditor.FontSize = Math.Round(font.Size * 96.0 / 72.0);
@@ -403,7 +404,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				ToolBarService.UpdateStatus(toolStrip.Items);
 			}
 			if (e.PropertyName == "DefaultFont") {
-				var font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", Core.WinForms.WinFormsResourceService.DefaultMonospacedFont.ToString()).ToString());
+				var font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", SD.WinForms.DefaultMonospacedFont.ToString()).ToString());
 				
 				textEditor.FontFamily = new FontFamily(font.FontFamily.Name);
 				textEditor.FontSize = Math.Round(font.Size * 96.0 / 72.0);

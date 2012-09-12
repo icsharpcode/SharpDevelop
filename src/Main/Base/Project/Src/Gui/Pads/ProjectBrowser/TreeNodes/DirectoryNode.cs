@@ -7,9 +7,9 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project.Commands;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -34,20 +34,20 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.performMove = performMove;
 		}
 		
-		public static IDataObject CreateDataObject(FileNode node, bool performMove)
+		public static System.Windows.IDataObject CreateDataObject(FileNode node, bool performMove)
 		{
-			return new DataObject(typeof(FileNode).ToString(), new FileOperationClipboardObject(node.FileName, performMove));
+			return new System.Windows.DataObject(typeof(FileNode).ToString(), new FileOperationClipboardObject(node.FileName, performMove));
 		}
 		
-		public static IDataObject CreateDataObject(SolutionItemNode node, bool performMove)
+		public static System.Windows.IDataObject CreateDataObject(SolutionItemNode node, bool performMove)
 		{
-			return new DataObject(typeof(SolutionItemNode).ToString(),
+			return new System.Windows.DataObject(typeof(SolutionItemNode).ToString(),
 			                      new FileOperationClipboardObject(node.FileName, performMove));
 		}
 		
-		public static IDataObject CreateDataObject(DirectoryNode node, bool performMove)
+		public static System.Windows.IDataObject CreateDataObject(DirectoryNode node, bool performMove)
 		{
-			return new DataObject(typeof(DirectoryNode).ToString(),
+			return new System.Windows.DataObject(typeof(DirectoryNode).ToString(),
 			                      new FileOperationClipboardObject(node.Directory, performMove));
 		}
 	}
@@ -524,11 +524,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override bool EnablePaste {
 			get {
-				IDataObject dataObject = ClipboardWrapper.GetDataObject();
+				System.Windows.IDataObject dataObject = SD.Clipboard.GetDataObject();
 				if (dataObject == null) {
 					return false;
 				}
-				if (dataObject.GetDataPresent(DataFormats.FileDrop)) {
+				if (dataObject.GetDataPresent(System.Windows.DataFormats.FileDrop)) {
 					return true;
 				}
 				if (dataObject.GetDataPresent(typeof(FileNode))) {
@@ -550,7 +550,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Paste()
 		{
-			IDataObject dataObject = ClipboardWrapper.GetDataObject();
+			System.Windows.IDataObject dataObject = SD.Clipboard.GetDataObject();
 			if (dataObject == null)
 				return;
 			
@@ -729,7 +729,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		public override void Copy()
 		{
-			ClipboardWrapper.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, false));
+			SD.Clipboard.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, false));
 		}
 		
 		public override bool EnableCut {
@@ -744,7 +744,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			ClipboardWrapper.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, true));
+			SD.Clipboard.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, true));
 		}
 		#endregion
 		

@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		public void ClearLastSearchesList()
 		{
 			lastSearches.Clear();
-			contentPlaceholder.SetContent(null);
+			SD.WinForms.SetContent(contentPlaceholder, null);
 		}
 		
 		public void ShowSearchResults(ISearchResult result)
@@ -91,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			while (lastSearches.Count > 15)
 				lastSearches.RemoveAt(15);
 			
-			contentPlaceholder.SetContent(result.GetControl());
+			SD.WinForms.SetContent(contentPlaceholder, result.GetControl());
 			
 			toolBar.Items.Clear();
 			foreach (object toolBarItem in defaultToolbarItems) {

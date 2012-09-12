@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
 	/// Signifies that the text source matches the version of the file on disk.

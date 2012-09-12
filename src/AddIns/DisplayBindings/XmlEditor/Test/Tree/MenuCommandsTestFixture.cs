@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
-
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
@@ -29,6 +29,7 @@ namespace XmlEditor.Tests.Tree
 		[SetUp]
 		public void Init()
 		{
+			SD.InitializeForUnitTests();
 			treeViewContainer = new DerivedXmlTreeViewContainerControl();
 			treeViewContainer.LoadXml("<html><body></body></html>");
 			doc = treeViewContainer.Document;

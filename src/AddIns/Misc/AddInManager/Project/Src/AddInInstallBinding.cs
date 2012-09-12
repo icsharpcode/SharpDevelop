@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.AddInManager
 {

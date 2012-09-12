@@ -15,6 +15,8 @@ using System.Xml;
 using HexEditor.Util;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 //using HexEditor.Commands;
 

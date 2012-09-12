@@ -10,12 +10,12 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// File service.
 	/// </summary>
-	[SDService]
+	[SDService("SD.FileService")]
 	public interface IFileService
 	{
 		#region Options
@@ -247,16 +247,5 @@ namespace ICSharpCode.SharpDevelop
 		event EventHandler<FileCancelEventArgs> FileReplacing;
 		event EventHandler<FileEventArgs> FileReplaced;
 		#endregion
-	}
-	
-	public interface IRecentOpen
-	{
-		IReadOnlyList<string> RecentFiles { get; }
-		IReadOnlyList<string> RecentProjects { get; }
-		
-		void ClearRecentFiles();
-		void ClearRecentProjects();
-		void AddRecentFile(string fileName);
-		void AddRecentProject(string fileName);
 	}
 }

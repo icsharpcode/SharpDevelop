@@ -23,7 +23,7 @@ namespace ICSharpCode.Core.WinForms
 				object item = CreateToolbarItemFromDescriptor(descriptor);
 				if (item is ToolStripItem) {
 					collection.Add((ToolStripItem)item);
-				} else {
+				} else if (item is ISubmenuBuilder) {
 					ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
 					collection.AddRange(submenuBuilder.BuildSubmenu(descriptor.Codon, owner));
 				}
@@ -53,6 +53,7 @@ namespace ICSharpCode.Core.WinForms
 					return new ToolBarDropDownButton(codon, caller, MenuService.ConvertSubItems(descriptor.SubItems), descriptor.Conditions);
 				case "SplitButton":
 					return new ToolBarSplitButton(codon, caller, MenuService.ConvertSubItems(descriptor.SubItems), descriptor.Conditions);
+				case "Custom":
 				case "Builder":
 					return codon.AddIn.CreateObject(codon.Properties["class"]);
 				default:

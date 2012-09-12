@@ -69,6 +69,8 @@ namespace ICSharpCode.Core.Presentation
 						codon, caller, MenuService.CreateUnexpandedMenuItems(
 							new MenuService.MenuCreateContext { ActivationMethod = "ToolbarDropDownMenu" },
 							descriptor.SubItems), descriptor.Conditions);
+				case "Builder":
+					return codon.AddIn.CreateObject(codon.Properties["class"]);
 				case "Custom":
 					object result = codon.AddIn.CreateObject(codon.Properties["class"]);
 					if (result is ComboBox)

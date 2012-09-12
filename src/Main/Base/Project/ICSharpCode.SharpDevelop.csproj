@@ -97,6 +97,8 @@
     </Compile>
     <Compile Include="Dom\IModelCollection.cs" />
     <Compile Include="Dom\ITreeNodeFactory.cs" />
+    <Compile Include="Editor\OnDiskTextSourceVersion.cs" />
+    <Compile Include="Src\Gui\FileService.cs" />
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
     <Compile Include="Src\Commands\ViewInBrowser.cs" />
     <Compile Include="Src\Editor\AddInHighlightingResource.cs" />
@@ -198,16 +200,30 @@
       <DependentUpon>AbstractAttachToProcessForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.cs" />
+    <Compile Include="Src\Gui\ICanBeDirty.cs" />
     <Compile Include="Src\Gui\IWorkbenchLayout.cs" />
+    <Compile Include="Src\Services\FileChangeWatcher.cs" />
+    <Compile Include="Src\Services\IClipboard.cs" />
+    <Compile Include="Src\Services\IMessageLoop.cs" />
+    <Compile Include="Src\Services\ViewContentServiceAttribute.cs" />
     <Compile Include="Src\Util\NotAvailableCommand.cs" />
+    <Compile Include="WinForms\IClipboardHandler.cs" />
+    <Compile Include="WinForms\IContextHelpProvider.cs" />
+    <Compile Include="WinForms\IPrintable.cs" />
+    <Compile Include="WinForms\IUndoHandler.cs" />
+    <Compile Include="WinForms\IWinFormsMenuService.cs" />
+    <Compile Include="WinForms\IWinFormsService.cs" />
+    <Compile Include="WinForms\IWinFormsToolbarService.cs" />
+    <Compile Include="WinForms\WinFormsExtensions.cs" />
     <Compile Include="Workbench\AbstractPadContent.cs" />
     <Compile Include="Workbench\AbstractSecondaryViewContent.cs" />
     <Compile Include="Workbench\AbstractViewContent.cs" />
     <Compile Include="Workbench\AbstractViewContentHandlingLoadErrors.cs" />
     <Compile Include="Workbench\AbstractViewContentWithoutFile.cs" />
-    <Compile Include="Workbench\ICanBeDirty.cs" />
+    <Compile Include="Workbench\File\IRecentOpen.cs" />
     <Compile Include="Workbench\ICustomizedCommands.cs" />
     <Compile Include="Workbench\IPadContent.cs" />
+    <Compile Include="Workbench\IShutdownService.cs" />
     <Compile Include="Workbench\IViewContent.cs" />
     <Compile Include="Workbench\IWorkbench.cs" />
     <Compile Include="Workbench\IWorkbenchWindow.cs" />
@@ -419,12 +435,8 @@
     <Compile Include="Src\Services\DisplayBinding\ExternalProcessDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ISecondaryDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ShellExecuteDisplayBinding.cs" />
-    <Compile Include="Src\Services\File\FileChangeWatcher.cs" />
-    <Compile Include="Src\Services\File\IFileService.cs" />
-    <Compile Include="Src\Services\File\OnDiskTextSourceVersion.cs" />
-    <Compile Include="Src\Services\File\OpenedFile.cs" />
-    <Compile Include="Src\Services\IMessageLoop.cs" />
-    <Compile Include="Src\Services\IShutdownService.cs" />
+    <Compile Include="Workbench\File\IFileService.cs" />
+    <Compile Include="Workbench\File\OpenedFile.cs" />
     <Compile Include="Src\Services\LanguageBinding\AggregatedLanguageBinding.cs" />
     <Compile Include="Src\Services\LanguageBinding\DefaultLanguageBinding.cs" />
     <Compile Include="Src\Services\LanguageBinding\ILanguageBinding.cs" />
@@ -435,8 +447,7 @@
     <Compile Include="Src\Internal\Doozers\DefaultOptionPanelDescriptor.cs" />
     <Compile Include="Src\Internal\Doozers\OptionPanelDoozer.cs" />
     <Compile Include="Src\Internal\Doozers\IOptionPanelDescriptor.cs" />
-    <Compile Include="Src\Services\File\FileService.cs" />
-    <Compile Include="Src\Services\File\FileEventArgs.cs" />
+    <Compile Include="Workbench\File\FileEventArgs.cs" />
     <Compile Include="Src\Services\MimeTypeDetection.cs" />
     <Compile Include="Src\Services\ParserService\DomAssemblyName.cs" />
     <Compile Include="Src\Services\ParserService\IAssemblyParserService.cs" />
@@ -472,7 +483,6 @@
     <Compile Include="Src\Internal\Templates\Project\ProjectDescriptor.cs" />
     <Compile Include="Src\Internal\Templates\Project\SolutionDescriptor.cs" />
     <Compile Include="Src\Gui\IProgressMonitor.cs" />
-    <Compile Include="Src\Gui\ContentInterfaces\IClipboardHandler.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\IEditable.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\IPositionable.cs" />
     <Compile Include="Src\Gui\WorkbenchSingleton.cs" />
@@ -497,7 +507,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Components\SideBar\SharpDevelopSideTabItem.cs" />
-    <Compile Include="Src\Gui\ContentInterfaces\IPrintable.cs" />
     <Compile Include="Src\Gui\Dialogs\AbstractOptionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -561,7 +570,6 @@
     <Compile Include="Src\Internal\ConditionEvaluators\ActiveViewContentUntitledEvaluator.cs" />
     <Compile Include="Src\Services\Debugger\DebuggerService.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\CompilerMessageView.cs" />
-    <Compile Include="Src\Gui\ContentInterfaces\IContextHelpProvider.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\LocalizedTypeDescriptor.cs" />
     <Compile Include="Src\Internal\Templates\File\ScriptRunner.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\CustomTypeConverter\BooleanTypeConverter.cs" />
@@ -651,7 +659,6 @@
     <Compile Include="Src\Project\Solution\ISolutionFolder.cs" />
     <Compile Include="Src\Project\Solution\AbstractSolutionFolder.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\SolutionItemNode.cs" />
-    <Compile Include="Src\Gui\ContentInterfaces\IUndoHandler.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\ClipboardHandlerNodeCommands.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\Util\ProjectBrowserTreeNodeVisitor.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\Util\FileRenameTreeNodeVisitor.cs" />
@@ -662,7 +669,7 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\Util\UpdateReferencesVisitor.cs" />
     <Compile Include="Src\Project\Items\TypeLibrary.cs" />
     <Compile Include="Src\Project\Items\UnknownProjectItem.cs" />
-    <Compile Include="Src\Services\File\FileRenameEventArgs.cs" />
+    <Compile Include="Workbench\File\FileRenameEventArgs.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\Util\FileRemoveTreeNodeVisitor.cs" />
     <Compile Include="Src\Services\ProjectService\SolutionFolderEventHandler.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\Util\SolutionFolderRemoveVisitor.cs" />
@@ -745,7 +752,6 @@
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AsyncDiscoveryState.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\DiscoveryNetworkCredential.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectLoader.cs" />
-    <Compile Include="Src\Services\ViewContentServiceAttribute.cs" />
     <Compile Include="Src\Util\AtomicBoolean.cs" />
     <Compile Include="Src\Util\CustomThreadPoolTaskScheduler.cs" />
     <Compile Include="Src\Util\DotnetDetection.cs" />
@@ -794,7 +800,6 @@
     <Compile Include="Src\Project\CompilableProject.cs" />
     <Compile Include="Src\Project\MSBuildInternals.cs" />
     <Compile Include="Src\Util\ScrollUtils.cs" />
-    <Compile Include="Src\Util\SDWindowsFormsHost.cs" />
     <Compile Include="Src\Util\ReadOnlyCollectionWrapper.cs" />
     <Compile Include="Src\Project\Items\ItemType.cs" />
     <Compile Include="Src\Project\BuildTarget.cs" />
@@ -802,7 +807,6 @@
     <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
     <Compile Include="Src\Util\UnclosableStream.cs" />
     <Compile Include="Src\Util\WeakCollection.cs" />
-    <Compile Include="Src\Util\WindowsFormsPrinting.cs" />
     <EmbeddedResource Include="Resources\DefaultManifest.manifest" />
     <EmbeddedResource Include="Src\Gui\Dialogs\ExtractInterfaceDialog.resx">
       <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
@@ -860,6 +864,8 @@
       <Private>False</Private>
     </ProjectReference>
     <Folder Include="Dom" />
+    <Folder Include="Editor" />
+    <Folder Include="WinForms" />
     <Folder Include="Workbench" />
     <Folder Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference" />
     <Folder Include="Src\Refactoring" />
@@ -876,11 +882,6 @@
     <ProjectReference Include="..\..\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
       <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
       <Name>ICSharpCode.Core.Presentation</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
-      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
-      <Name>ICSharpCode.Core.WinForms</Name>
       <Private>False</Private>
     </ProjectReference>
     <Folder Include="Src\Gui\Dialogs\SolutionConfiguration" />

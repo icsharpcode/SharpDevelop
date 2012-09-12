@@ -9,7 +9,6 @@ using System.Windows;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Workbench;
 
@@ -76,13 +75,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Bookmarks.BookmarkManager.Initialize();
 			Project.CustomToolsService.Initialize();
 			Project.BuildModifiedProjectsOnlyService.Initialize();
-			
-			var messageService = SD.MessageService as IDialogMessageService;
-			if (messageService != null) {
-				messageService.DialogOwner = workbench.MainWin32Window;
-				Debug.Assert(messageService.DialogOwner != null);
-				messageService.DialogSynchronizeInvoke = SD.MainThread.SynchronizingObject;
-			}
 			
 			workbench.Initialize();
 			workbench.SetMemento(PropertyService.NestedProperties(workbenchMemento));

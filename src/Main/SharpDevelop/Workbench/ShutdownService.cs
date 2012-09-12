@@ -80,9 +80,9 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		internal void WaitForBackgroundTasks()
 		{
 			if (!backgroundTaskEvent.IsSet) {
-				SD.LoggingService.Info("Waiting for background tasks to finish...");
+				SD.Log.Info("Waiting for background tasks to finish...");
 				backgroundTaskEvent.Wait();
-				SD.LoggingService.Info("Background tasks have finished.");
+				SD.Log.Info("Background tasks have finished.");
 			}
 		}
 		#endregion

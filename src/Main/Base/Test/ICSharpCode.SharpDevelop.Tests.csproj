@@ -127,6 +127,7 @@
     <Compile Include="Utils\MockSite.cs" />
     <Compile Include="Utils\MockTextMarker.cs" />
     <Compile Include="Utils\MockTextMarkerService.cs" />
+    <Compile Include="Utils\TestExtensions.cs" />
     <Compile Include="Utils\Tests\MockAssemblyTests.cs" />
     <Compile Include="WebReferences\ValidReferenceNameTests.cs" />
     <Compile Include="WebReferences\ValidWebReferenceNamespaceTests.cs" />

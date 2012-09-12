@@ -3,7 +3,6 @@
 
 using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
@@ -30,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			ControlDictionary["FontGroupBox"].Controls.Add(fontSelectionPanel);
 			((CheckBox)ControlDictionary["wordWrapCheckBox"]).Checked = properties.Get("WordWrap", true);
 			
-			fontSelectionPanel.CurrentFontString = properties.Get("DefaultFont", WinFormsResourceService.DefaultMonospacedFont.ToString()).ToString();
+			fontSelectionPanel.CurrentFontString = properties.Get("DefaultFont", SD.WinForms.DefaultMonospacedFont.ToString()).ToString();
 		}
 		
 		public override bool StorePanelContents()

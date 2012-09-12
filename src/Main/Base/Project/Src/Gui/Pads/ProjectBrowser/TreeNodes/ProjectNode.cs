@@ -7,7 +7,6 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -167,7 +166,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			ClipboardWrapper.SetDataObject(new DataObject(typeof(ISolutionFolder).ToString(), project.IdGuid));
+			SD.Clipboard.SetDataObject(new DataObject(typeof(ISolutionFolder).ToString(), project.IdGuid));
 		}
 		// Paste is inherited from DirectoryNode.
 		

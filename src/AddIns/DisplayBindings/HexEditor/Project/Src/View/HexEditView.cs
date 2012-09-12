@@ -7,6 +7,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.SharpDevelop.Workbench;
 
 namespace HexEditor.View
@@ -72,17 +73,17 @@ namespace HexEditor.View
 		
 		public void Cut()
 		{
-			if (hexEditContainer.HasSomethingSelected) ClipboardWrapper.SetText(hexEditContainer.Cut());
+			if (hexEditContainer.HasSomethingSelected) SD.Clipboard.SetText(hexEditContainer.Cut());
 		}
 		
 		public void Copy()
 		{
-			if (hexEditContainer.HasSomethingSelected) ClipboardWrapper.SetText(hexEditContainer.Copy());
+			if (hexEditContainer.HasSomethingSelected) SD.Clipboard.SetText(hexEditContainer.Copy());
 		}
 		
 		public void Paste()
 		{
-			hexEditContainer.Paste(ClipboardWrapper.GetText());
+			hexEditContainer.Paste(SD.Clipboard.GetText());
 		}
 		
 		public void Delete()

@@ -11,10 +11,10 @@ using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -91,9 +91,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return;
 			//LoggingService.Debug("UpdatePropertyGridReplacementControl");
 			if (container.PropertyGridReplacementContent != null) {
-				instance.contentControl.SetContent(container.PropertyGridReplacementContent);
+				SD.WinForms.SetContent(instance.contentControl, container.PropertyGridReplacementContent);
 			} else {
-				instance.contentControl.SetContent(instance.panel);
+				SD.WinForms.SetContent(instance.contentControl, instance.panel);
 			}
 		}
 		
@@ -182,12 +182,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			panel.Controls.Add(grid);
 			panel.Controls.Add(comboBox);
-			contentControl.SetContent(panel);
+			SD.WinForms.SetContent(contentControl, panel);
 			
 			ProjectService.SolutionClosed += SolutionClosedEvent;
 			
 			grid.PropertyValueChanged += new PropertyValueChangedEventHandler(PropertyChanged);
-			grid.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Views/PropertyPad/ContextMenu");
+			grid.ContextMenuStrip = SD.WinForms.MenuService.CreateContextMenu(this, "/SharpDevelop/Views/PropertyPad/ContextMenu");
 			
 			LoggingService.Debug("PropertyPad created");
 			WorkbenchSingleton.Workbench.ActiveContentChanged += WorkbenchActiveContentChanged;

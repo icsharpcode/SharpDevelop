@@ -8,7 +8,6 @@ using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -291,7 +290,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Copy()
 		{
-			ClipboardWrapper.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, false));
+			SD.Clipboard.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, false));
 		}
 		
 		public override bool EnableCut {
@@ -306,7 +305,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			ClipboardWrapper.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, true));
+			SD.Clipboard.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, true));
 		}
 		
 		

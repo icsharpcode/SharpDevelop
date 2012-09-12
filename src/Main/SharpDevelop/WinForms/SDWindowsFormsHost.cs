@@ -5,16 +5,16 @@ using System;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
-using ICSharpCode.Core.WinForms;
+
 using ICSharpCode.SharpDevelop.Util;
 using ICSharpCode.SharpDevelop.Widgets;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.WinForms
 {
 	/// <summary>
 	/// WindowsFormsHost used in SharpDevelop.
 	/// </summary>
-	public class SDWindowsFormsHost : CustomWindowsFormsHost
+	sealed class SDWindowsFormsHost : CustomWindowsFormsHost
 	{
 		/// <summary>
 		/// Creates a new SDWindowsFormsHost instance.
@@ -42,8 +42,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			AddBinding(processShortcutsInWPF, ApplicationCommands.Help, (IContextHelpProvider h) => h.ShowHelp(), h => true);
 			AddBinding(processShortcutsInWPF, ApplicationCommands.Undo, (IUndoHandler u) => u.Undo(), u => u.EnableUndo);
 			AddBinding(processShortcutsInWPF, ApplicationCommands.Redo, (IUndoHandler u) => u.Redo(), u => u.EnableRedo);
-			AddBinding(processShortcutsInWPF, ApplicationCommands.Print, (IPrintable p) => WindowsFormsPrinting.Print(p), p => true);
-			AddBinding(processShortcutsInWPF, ApplicationCommands.PrintPreview, (IPrintable p) => WindowsFormsPrinting.PrintPreview(p), p => true);
+			AddBinding(processShortcutsInWPF, ApplicationCommands.Print, (IPrintable p) => SD.WinForms.Print(p), p => true);
+			AddBinding(processShortcutsInWPF, ApplicationCommands.PrintPreview, (IPrintable p) => SD.WinForms.PrintPreview(p), p => true);
 		}
 		
 		void AddBinding<T>(bool processShortcutsInWPF, ICommand command, Action<T> execute, Predicate<T> canExecute) where T : class
@@ -81,21 +81,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public override string ToString()
 		{
-			if (ServiceObject != null)
-				return "[SDWindowsFormsHost " + Child + " for " + ServiceObject + "]";
+			if (ServiceProvider != null)
+				return "[SDWindowsFormsHost " + Child + " for " + ServiceProvider + "]";
 			else
 				return "[SDWindowsFormsHost " + Child + "]";
 		}
 		
 		#region Service Object
 		/// <summary>
-		/// Gets/Sets the object that implements the IClipboardHandler, IUndoHandler etc. interfaces...
+		/// Gets/Sets the service provider that provides the IClipboardHandler, IUndoHandler etc. implementations...
 		/// </summary>
-		public object ServiceObject { get; set; }
+		public IServiceProvider ServiceProvider { get; set; }
 		
 		T GetInterface<T>() where T : class
 		{
-			T instance = this.ServiceObject as T;
+			T instance = this.ServiceProvider.GetService<T>();
 			if (instance == null) {
 				instance = GetServiceWrapper(GetActiveControl()) as T;
 			}
@@ -187,9 +187,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			public bool EnableSelectAll {
 				get { return comboBox.Text.Length > 0; }
 			}
-			public void Cut()       { ClipboardWrapper.SetText(comboBox.SelectedText); comboBox.SelectedText = ""; }
-			public void Copy()      { ClipboardWrapper.SetText(comboBox.SelectedText); }
-			public void Paste()     { comboBox.SelectedText = ClipboardWrapper.GetText(); }
+			public void Cut()       { SD.Clipboard.SetText(comboBox.SelectedText); comboBox.SelectedText = ""; }
+			public void Copy()      { SD.Clipboard.SetText(comboBox.SelectedText); }
+			public void Paste()     { comboBox.SelectedText = SD.Clipboard.GetText(); }
 			public void Delete()    { comboBox.SelectedText = ""; }
 			public void SelectAll() { comboBox.SelectAll(); }
 		}

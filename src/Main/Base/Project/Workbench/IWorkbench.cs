@@ -15,12 +15,13 @@ namespace ICSharpCode.SharpDevelop.Workbench
 	/// <summary>
 	/// This is the basic interface to the workspace.
 	/// </summary>
-	[SDService]
+	[SDService("SD.Workbench")]
 	public interface IWorkbench : IMementoCapable
 	{
 		/// <summary>
 		/// The main window as IWin32Window.
 		/// </summary>
+		[Obsolete("Use SD.WinForms.ShowDialog() instead to display a WinForms dialog")]
 		IWin32Window MainWin32Window { get; }
 		
 		/// <summary>

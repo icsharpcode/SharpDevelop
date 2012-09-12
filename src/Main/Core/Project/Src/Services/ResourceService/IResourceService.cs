@@ -10,7 +10,7 @@ namespace ICSharpCode.Core
 	/// <summary>
 	/// Provides string and bitmap resources.
 	/// </summary>
-	[SDService(FallbackImplementation = typeof(FallbackResourceService))]
+	[SDService("SD.ResourceService", FallbackImplementation = typeof(FallbackResourceService))]
 	public interface IResourceService
 	{
 		/// <summary>

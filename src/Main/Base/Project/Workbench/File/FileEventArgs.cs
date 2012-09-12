@@ -3,13 +3,12 @@
 
 using System;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	public class FileEventArgs : EventArgs
 	{
 		string fileName   = null;
-		
-		bool   isDirectory;
+		bool isDirectory;
 		
 		public string FileName {
 			get {

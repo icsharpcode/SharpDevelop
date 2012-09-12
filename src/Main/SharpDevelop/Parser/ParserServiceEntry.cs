@@ -12,6 +12,7 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Parser
@@ -250,7 +251,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			try {
 				return parser.Parse(fileName, fileContent, fullParseInformationRequested, project, cancellationToken);
 			} catch (Exception ex) {
-				SD.LoggingService.Error("Got " + ex.GetType().Name + " while parsing " + fileName);
+				SD.Log.Error("Got " + ex.GetType().Name + " while parsing " + fileName);
 				throw;
 			}
 		}

@@ -22,7 +22,7 @@ namespace HexEditor.Commands
 			Editor editor = Owner as Editor;
 			
 			if (editor != null) {
-				ClipboardWrapper.SetText(editor.CopyAsBinary());
+				SD.Clipboard.SetText(editor.CopyAsBinary());
 			}
 		}
 	}

@@ -3,7 +3,7 @@
 
 using System;
 using System.Xml;
-
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
@@ -28,6 +28,7 @@ namespace XmlEditor.Tests.Tree
 		[SetUp]
 		public void Init()
 		{
+			SD.InitializeForUnitTests();
 			treeViewContainer = new DerivedXmlTreeViewContainerControl();
 			treeViewContainer.LoadXml("<!-- comment --><html><body class='a'><p>Text</p></body></html>");
 			doc = treeViewContainer.Document;

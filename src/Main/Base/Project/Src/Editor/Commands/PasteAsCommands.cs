@@ -4,7 +4,6 @@
 using System;
 using System.IO;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -18,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			if (textEditor == null)
 				return;
 			
-			string clipboardText = ClipboardWrapper.GetText();
+			string clipboardText = SD.Clipboard.GetText();
 			if (string.IsNullOrEmpty(clipboardText))
 				return;
 			

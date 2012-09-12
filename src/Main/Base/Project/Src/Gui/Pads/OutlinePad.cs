@@ -43,14 +43,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void WorkbenchActiveContentChanged(object sender, EventArgs e)
 		{
 			IViewContent view = WorkbenchSingleton.Workbench.ActiveViewContent;
-			if (view!=null) {
+			if (view != null) {
 				IOutlineContentHost content = view.GetService(typeof(IOutlineContentHost)) as IOutlineContentHost;
 				if (content != null) {
-					contentControl.SetContent(content.OutlineContent, content);
+					SD.WinForms.SetContent(contentControl, content.OutlineContent, view);
 					return;
 				}
 			}
-			contentControl.SetContent(StringParser.Parse("${res:MainWindow.Windows.OutlinePad.NoContentAvailable}"));
+			SD.WinForms.SetContent(contentControl, StringParser.Parse("${res:MainWindow.Windows.OutlinePad.NoContentAvailable}"));
 		}
 	}
 }

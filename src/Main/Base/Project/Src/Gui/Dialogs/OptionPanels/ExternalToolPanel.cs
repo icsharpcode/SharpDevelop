@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
@@ -74,13 +73,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				((ListBox)ControlDictionary["toolListBox"]).EndUpdate();
 			}
 			
-			MenuService.CreateQuickInsertMenu((TextBox)ControlDictionary["argumentTextBox"],
-			                                  ControlDictionary["argumentQuickInsertButton"],
-			                                  argumentQuickInsertMenu);
+			SD.WinForms.MenuService.CreateQuickInsertMenu((TextBox)ControlDictionary["argumentTextBox"],
+			                                              ControlDictionary["argumentQuickInsertButton"],
+			                                              argumentQuickInsertMenu);
 			
-			MenuService.CreateQuickInsertMenu((TextBox)ControlDictionary["workingDirTextBox"],
-			                                  ControlDictionary["workingDirQuickInsertButton"],
-			                                  workingDirInsertMenu);
+			SD.WinForms.MenuService.CreateQuickInsertMenu((TextBox)ControlDictionary["workingDirTextBox"],
+			                                              ControlDictionary["workingDirQuickInsertButton"],
+			                                              workingDirInsertMenu);
 			
 			((ListBox)ControlDictionary["toolListBox"]).SelectedIndexChanged += new EventHandler(selectEvent);
 			ControlDictionary["removeButton"].Click   += new EventHandler(removeEvent);

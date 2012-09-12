@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -30,9 +30,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			addButton.Text = StringParser.Parse(addButton.Text);
 			updateButton.Text = StringParser.Parse(updateButton.Text);
 			removeButton.Text = StringParser.Parse(removeButton.Text);
-			moveUpButton.Image   = WinFormsResourceService.GetBitmap("Icons.16x16.ArrowUp");
-			moveDownButton.Image = WinFormsResourceService.GetBitmap("Icons.16x16.ArrowDown");
-			deleteButton.Image   = WinFormsResourceService.GetBitmap("Icons.16x16.DeleteIcon");
+			moveUpButton.Image   = SD.ResourceService.GetBitmap("Icons.16x16.ArrowUp");
+			moveDownButton.Image = SD.ResourceService.GetBitmap("Icons.16x16.ArrowDown");
+			deleteButton.Image   = SD.ResourceService.GetBitmap("Icons.16x16.DeleteIcon");
 		}
 		
 		#region Windows Forms Designer generated code

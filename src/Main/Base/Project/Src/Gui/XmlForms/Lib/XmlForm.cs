@@ -7,7 +7,6 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 
-using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 {
@@ -43,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 			if (stream != null) {
 				xmlLoader.LoadObjectFromStream(this, stream);
 			}
-			RightToLeftConverter.ConvertRecursive(this);
+			SD.WinForms.ApplyRightToLeftConverter(this);
 			ResumeLayout(false);
 		}
 		

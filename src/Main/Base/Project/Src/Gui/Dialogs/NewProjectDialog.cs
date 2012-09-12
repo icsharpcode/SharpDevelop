@@ -8,9 +8,9 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Project.Dialogs
 {
@@ -54,9 +54,9 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			imglist.ImageSize    = new Size(32, 32);
 			smalllist.ImageSize  = new Size(16, 16);
 			
-			smalllist.Images.Add(WinFormsResourceService.GetBitmap("Icons.32x32.EmptyProjectIcon"));
+			smalllist.Images.Add(SD.ResourceService.GetBitmap("Icons.32x32.EmptyProjectIcon"));
 			
-			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.32x32.EmptyProjectIcon"));
+			imglist.Images.Add(SD.ResourceService.GetBitmap("Icons.32x32.EmptyProjectIcon"));
 			
 			// load the icons and set their index from the image list in the hashtable
 			int i = 0;
@@ -392,7 +392,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				ctl.Text = StringParser.Parse(ctl.Text);
 			}
 			this.Text = StringParser.Parse(this.Text);
-			RightToLeftConverter.Convert(this);
+			SD.WinForms.ApplyRightToLeftConverter(this, recurse: false);
 			
 			ImageList imglist = new ImageList();
 			imglist.ColorDepth = ColorDepth.Depth32Bit;

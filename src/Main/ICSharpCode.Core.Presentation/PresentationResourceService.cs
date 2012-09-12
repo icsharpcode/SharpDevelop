@@ -42,6 +42,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <exception cref="ResourceNotFoundException">
 		/// Is thrown when the GlobalResource manager can't find a requested resource.
 		/// </exception>
+		[Obsolete("Use SD.ResourceService.GetImage(name).CreateImage() instead, or just create the image manually")]
 		public static System.Windows.Controls.Image GetImage(string name)
 		{
 			return new System.Windows.Controls.Image {

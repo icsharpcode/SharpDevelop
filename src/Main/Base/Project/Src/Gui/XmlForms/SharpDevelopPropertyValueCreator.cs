@@ -3,7 +3,7 @@
 
 using System;
 using System.Drawing;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 {
@@ -18,11 +18,11 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 		{
 			
 			if (propertyType == typeof(Icon)) {
-				return WinFormsResourceService.GetIcon(valueString);
+				return SD.ResourceService.GetIcon(valueString);
 			}
 			
 			if (propertyType == typeof(Image)) {
-				return WinFormsResourceService.GetBitmap(valueString);
+				return SD.ResourceService.GetBitmap(valueString);
 			}
 			
 			return null;

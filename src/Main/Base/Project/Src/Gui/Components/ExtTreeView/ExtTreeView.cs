@@ -8,7 +8,6 @@ using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -322,7 +321,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			base.OnBeforeSelect(e);
 			ExtTreeNode node = e.Node as ExtTreeNode;
 			if (node != null) {
-				node.ContextMenuStrip = MenuService.CreateContextMenu(e.Node, node.ContextmenuAddinTreePath);
+				node.ContextMenuStrip = SD.WinForms.MenuService.CreateContextMenu(e.Node, node.ContextmenuAddinTreePath);
 			}
 		}
 		

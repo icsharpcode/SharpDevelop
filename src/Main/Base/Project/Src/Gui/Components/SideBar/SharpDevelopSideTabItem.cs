@@ -3,8 +3,8 @@
 
 using System;
 using System.Drawing;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
+using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -13,13 +13,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public SharpDevelopSideTabItem(string name)
 			: base(name)
 		{
-			Icon = WinFormsResourceService.GetBitmap("Icons.16x16.SideBarDocument");
+			Icon = SD.ResourceService.GetBitmap("Icons.16x16.SideBarDocument");
 		}
 		
 		public SharpDevelopSideTabItem(string name, object tag)
 			: base(name, tag)
 		{
-			Icon = WinFormsResourceService.GetBitmap("Icons.16x16.SideBarDocument");
+			Icon = SD.ResourceService.GetBitmap("Icons.16x16.SideBarDocument");
 		}
 		
 		public SharpDevelopSideTabItem(string name, object tag, Bitmap icon)

@@ -60,12 +60,19 @@
 		         class="ICSharpCode.SharpDevelop.Parser.ParserService"/>
 		<Service id="ICSharpCode.SharpDevelop.Parser.IAssemblyParserService"
 		         class="ICSharpCode.SharpDevelop.Parser.AssemblyParserService"/>
-		<Service id="ICSharpCode.SharpDevelop.IFileService"
+		<Service id="ICSharpCode.SharpDevelop.Workbench.IFileService"
 		         class="ICSharpCode.SharpDevelop.Workbench.FileService"/>
-		<Service id="ICSharpCode.SharpDevelop.IShutdownService"
+		<Service id="ICSharpCode.SharpDevelop.Workbench.IShutdownService"
 		         class="ICSharpCode.SharpDevelop.Workbench.ShutdownService"/>
 		<Service id="ICSharpCode.SharpDevelop.Dom.ITreeNodeFactory"
 		         class="ICSharpCode.SharpDevelop.Dom.TreeNodeFactoryService"/>
+		
+		<Service id="ICSharpCode.SharpDevelop.WinForms.IWinFormsService"
+		         class="ICSharpCode.SharpDevelop.WinForms.WinFormsService"/>
+		<Service id="ICSharpCode.SharpDevelop.WinForms.IWinFormsMenuService"
+		         class="ICSharpCode.SharpDevelop.WinForms.WinFormsMenuService"/>
+		<Service id="ICSharpCode.SharpDevelop.WinForms.IWinFormsToolbarService"
+		         class="ICSharpCode.SharpDevelop.WinForms.WinFormsToolbarService"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
@@ -2263,7 +2270,7 @@
 	
 	<Path name="/SharpDevelop/Pads/TaskList/Toolbar">
 		<ToolbarItem id = "SelectScope"
-		             class = "ICSharpCode.SharpDevelop.Gui.SelectScopeCommand"
+		             class = "ICSharpCode.SharpDevelop.Gui.SelectScopeComboBox"
 		             type = "Custom"/>
 	</Path>
 	

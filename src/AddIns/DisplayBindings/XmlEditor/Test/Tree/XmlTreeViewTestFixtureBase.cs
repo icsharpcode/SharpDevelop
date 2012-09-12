@@ -1,9 +1,10 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.XmlEditor;
 using System;
 using System.Xml;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.XmlEditor;
 using XmlEditor.Tests.Utils;
 
 namespace XmlEditor.Tests.Tree
@@ -15,6 +16,7 @@ namespace XmlEditor.Tests.Tree
 		
 		public void InitFixture()
 		{
+			SD.InitializeForUnitTests();
 			mockXmlTreeView = new MockXmlTreeView();
 			editor = new XmlTreeEditor(mockXmlTreeView, Schemas, DefaultSchemaCompletion);
 			editor.LoadXml(GetXml());

@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop
 	/// <summary>
 	/// Represents a thread running a message loop.
 	/// </summary>
-	[SDService]
+	[SDService("SD.MainThread")]
 	public interface IMessageLoop
 	{
 		/// <summary>

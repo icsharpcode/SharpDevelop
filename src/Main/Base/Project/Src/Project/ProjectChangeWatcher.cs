@@ -3,10 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project.Commands;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
 {

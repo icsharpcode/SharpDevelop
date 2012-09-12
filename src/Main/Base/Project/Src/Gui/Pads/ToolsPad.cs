@@ -43,9 +43,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			IToolsHost th = SD.GetActiveViewContentService<IToolsHost>();
 			if (th != null && th.ToolsContent != null) {
-				contentControl.SetContent(th.ToolsContent, th);
+				SD.WinForms.SetContent(contentControl, th.ToolsContent, SD.Workbench.ActiveViewContent);
 			} else {
-				contentControl.SetContent(StringParser.Parse("${res:SharpDevelop.SideBar.NoToolsAvailableForCurrentDocument}"));
+				SD.WinForms.SetContent(contentControl, StringParser.Parse("${res:SharpDevelop.SideBar.NoToolsAvailableForCurrentDocument}"));
 			}
 		}
 	}

@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// The global instance <c>SD.TreeNodeFactory</c> is a composite of all factories
 	/// registered in the AddIn-Tree path <c>/SharpDevelop/TreeNodeFactories</c>.
 	/// </remarks>
-	[SDService]
+	[SDService("SD.TreeNodeFactory")]
 	public interface ITreeNodeFactory
 	{
 		/// <summary>

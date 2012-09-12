@@ -5,13 +5,13 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Linq.Expressions;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.Implementation;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop
@@ -106,7 +106,7 @@ namespace ICSharpCode.SharpDevelop
 			get { return GetRequiredService<IStatusBarService>(); }
 		}
 		
-		public static ILoggingService LoggingService {
+		public static ILoggingService Log {
 			get { return GetRequiredService<ILoggingService>(); }
 		}
 		
@@ -156,6 +156,14 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static ITreeNodeFactory TreeNodeFactory {
 			get { return GetRequiredService<ITreeNodeFactory>(); }
+		}
+		
+		public static IClipboard Clipboard {
+			get { return GetRequiredService<IClipboard>(); }
+		}
+		
+		public static IWinFormsService WinForms {
+			get { return GetRequiredService<IWinFormsService>(); }
 		}
 	}
 }

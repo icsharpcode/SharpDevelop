@@ -8,7 +8,7 @@ using System.Drawing.Imaging;
 using System.IO;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -62,7 +62,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			Bitmap bmp;
 			try {
-				bmp = WinFormsResourceService.GetBitmap(name);
+				bmp = SD.ResourceService.GetBitmap(name);
 			} catch (ResourceNotFoundException ex) {
 				LoggingService.Warn(ex);
 				bmp = null;
@@ -71,18 +71,8 @@ namespace ICSharpCode.SharpDevelop
 				return bmp;
 			}
 			
-			return WinFormsResourceService.GetBitmap("Icons.16x16.MiscFiles");
+			return SD.ResourceService.GetBitmap("Icons.16x16.MiscFiles");
 		}
-		
-		public static Icon GetIcon(string name)
-		{
-			Icon icon = WinFormsResourceService.GetIcon(name);
-			if (icon != null) {
-				return icon;
-			}
-			return WinFormsResourceService.GetIcon("Icons.16x16.MiscFiles");
-		}
-		
 		
 		public static string GetImageForProjectType(string projectType)
 		{

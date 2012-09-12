@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -62,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (defaultBindingIndex < programListBox.Items.Count) {
 				programListBox.SelectedIndex = defaultBindingIndex;
 			}
-			RightToLeftConverter.ConvertRecursive(this);
+			SD.WinForms.ApplyRightToLeftConverter(this);
 		}
 		
 		/// <summary>

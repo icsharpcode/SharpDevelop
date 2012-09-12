@@ -4,8 +4,8 @@
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -95,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			taskView.CreateControl();
 			contentPanel.Controls.Add(taskView);
 			
-			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/ErrorList/Toolbar");
+			toolStrip = SD.WinForms.ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/ErrorList/Toolbar");
 			toolStrip.Stretch   = true;
 			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			
@@ -187,8 +187,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void UpdateToolstripStatus()
 		{
-			ToolbarService.UpdateToolbar(toolStrip);
-			ToolbarService.UpdateToolbarText(toolStrip);
+			SD.WinForms.ToolbarService.UpdateToolbar(toolStrip);
+			SD.WinForms.ToolbarService.UpdateToolbarText(toolStrip);
 		}
 		
 		void InternalShowResults()

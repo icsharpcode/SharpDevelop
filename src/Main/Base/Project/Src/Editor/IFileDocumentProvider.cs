@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {

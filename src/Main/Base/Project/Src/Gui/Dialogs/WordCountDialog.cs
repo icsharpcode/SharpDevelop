@@ -6,10 +6,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -238,7 +241,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			((Button)ControlDictionary["startButton"]).Click += new System.EventHandler(startEvent);
 			((ListView)ControlDictionary["resultListView"]).ColumnClick += new ColumnClickEventHandler(SortEvt);
 			
-			Icon  = IconService.GetIcon("Icons.16x16.FindIcon");
+			Icon = SD.ResourceService.GetIcon("Icons.16x16.FindIcon");
 			
 			((ComboBox)ControlDictionary["locationComboBox"]).Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.LookIn.CurrentDocument536D2AC6-E704-40BD-9790-0EB02ED6D8A9}"));
 			((ComboBox)ControlDictionary["locationComboBox"]).Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.LookIn.AllOpenDocuments}"));

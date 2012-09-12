@@ -15,6 +15,7 @@ using AvalonDock;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Workbench
 {
@@ -183,7 +184,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				window.RegisterNewContent(item);
 				
 				if (Count == 1) {
-					window.SetContent(item.Control, item);
+					SD.WinForms.SetContent(window, item.Control, item);
 				} else {
 					if (Count == 2) {
 						window.CreateViewTabControl();
@@ -192,13 +193,13 @@ namespace ICSharpCode.SharpDevelop.Workbench
 						
 						TabItem oldPage = new TabItem();
 						oldPage.Header = StringParser.Parse(oldItem.TabPageText);
-						oldPage.SetContent(oldItem.Control, oldItem);
+						SD.WinForms.SetContent(oldPage, oldItem.Control, oldItem);
 						window.viewTabControl.Items.Add(oldPage);
 					}
 					
 					TabItem newPage = new TabItem();
 					newPage.Header = StringParser.Parse(item.TabPageText);
-					newPage.SetContent(item.Control, item);
+					SD.WinForms.SetContent(newPage, item.Control, item);
 					
 					window.viewTabControl.Items.Insert(index, newPage);
 				}
@@ -214,7 +215,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				if (Count < 2) {
 					window.ClearContent();
 					if (Count == 1) {
-						window.SetContent(this[0].Control, this[0]);
+						SD.WinForms.SetContent(window, this[0].Control, this[0]);
 					}
 				} else {
 					window.viewTabControl.Items.RemoveAt(index);
@@ -232,10 +233,10 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				
 				if (Count == 1) {
 					window.ClearContent();
-					window.SetContent(item.Control, item);
+					SD.WinForms.SetContent(window, item.Control, item);
 				} else {
 					TabItem page = (TabItem)window.viewTabControl.Items[index];
-					page.SetContent(item.Control, item);
+					SD.WinForms.SetContent(page, item.Control, item);
 					page.Header = StringParser.Parse(item.TabPageText);
 				}
 				window.UpdateActiveViewContent();
@@ -334,7 +335,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			if (viewTabControl == null) {
 				viewTabControl = new TabControlWithModifiedShortcuts(this);
 				viewTabControl.TabStripPlacement = Dock.Bottom;
-				this.SetContent(viewTabControl);
+				SD.WinForms.SetContent(this, viewTabControl);
 				
 				viewTabControl.SelectionChanged += delegate {
 					UpdateActiveViewContent();
@@ -347,7 +348,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			this.Content = null;
 			if (viewTabControl != null) {
 				foreach (TabItem page in viewTabControl.Items) {
-					page.SetContent(null);
+					SD.WinForms.SetContent(page, null);
 				}
 				viewTabControl = null;
 			}

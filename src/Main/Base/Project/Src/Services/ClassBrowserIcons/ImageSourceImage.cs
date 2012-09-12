@@ -8,8 +8,9 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using ICSharpCode.Core.WinForms;
+
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -79,7 +80,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public Icon Icon {
 			get {
-				return LazyInitializer.EnsureInitialized(ref icon, () => WinFormsResourceService.BitmapToIcon(this.Bitmap));
+				return LazyInitializer.EnsureInitialized(ref icon, () => SD.WinForms.BitmapToIcon(this.Bitmap));
 			}
 		}
 	}

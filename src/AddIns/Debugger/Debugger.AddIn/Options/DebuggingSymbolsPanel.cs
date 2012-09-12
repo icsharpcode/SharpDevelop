@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using Debugger;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
+using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {

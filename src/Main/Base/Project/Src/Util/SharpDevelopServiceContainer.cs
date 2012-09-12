@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop
 				if (services.TryGetValue(serviceType, out instance)) {
 					ServiceCreatorCallback callback = instance as ServiceCreatorCallback;
 					if (callback != null) {
-						SD.LoggingService.Debug("Service startup: " + serviceType);
+						SD.Log.Debug("Service startup: " + serviceType);
 						instance = callback(this, serviceType);
 						if (instance != null) {
 							servicesToDispose.Add(instance as IDisposable);
@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public void Dispose()
 		{
-			var loggingService = SD.LoggingService;
+			var loggingService = SD.Log;
 			IDisposable[] disposables;
 			lock (services) {
 				disposables = servicesToDispose.ToArray();

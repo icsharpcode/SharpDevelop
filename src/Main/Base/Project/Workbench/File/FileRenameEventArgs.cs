@@ -3,7 +3,7 @@
 
 using System;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	public class FileRenamingEventArgs : FileRenameEventArgs
 	{
@@ -37,10 +37,10 @@ namespace ICSharpCode.SharpDevelop
 	
 	public class FileRenameEventArgs : EventArgs
 	{
-		bool   isDirectory;
+		bool isDirectory;
 		
-		string sourceFile = null;
-		string targetFile = null;
+		string sourceFile;
+		string targetFile;
 		
 		public string SourceFile {
 			get {

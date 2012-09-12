@@ -88,6 +88,10 @@
     <Compile Include="Startup\App.xaml.cs" />
     <Compile Include="Startup\SharpDevelopMain.cs" />
     <Compile Include="Startup\SplashScreen.cs" />
+    <Compile Include="WinForms\SDWindowsFormsHost.cs" />
+    <Compile Include="WinForms\WinFormsMenuService.cs" />
+    <Compile Include="WinForms\WinFormsService.cs" />
+    <Compile Include="WinForms\WinFormsToolbarService.cs" />
     <Compile Include="Workbench\AvalonDockLayout.cs" />
     <Compile Include="Workbench\AvalonPadContent.cs" />
     <Compile Include="Workbench\AvalonWorkbenchWindow.cs" />
@@ -203,6 +207,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Dom" />
+    <Folder Include="WinForms" />
     <Folder Include="OptionPanels" />
     <Folder Include="Startup" />
     <Folder Include="Workbench" />

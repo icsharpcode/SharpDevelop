@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Workbench;
@@ -70,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 		public override void Run()
 		{
 			IWorkbenchWindow window = Owner as IWorkbenchWindow;
-			ClipboardWrapper.SetText(window.ActiveViewContent.PrimaryFileName ?? "");
+			SD.Clipboard.SetText(window.ActiveViewContent.PrimaryFileName ?? "");
 		}
 	}
 	

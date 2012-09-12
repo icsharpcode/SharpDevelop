@@ -8,7 +8,6 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit.CodeCompletion;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.SharpDevelop

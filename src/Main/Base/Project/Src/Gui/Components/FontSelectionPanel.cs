@@ -9,7 +9,6 @@ using System.Threading;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -82,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return new Font(descr[1], Single.Parse(descr[3]));
 			} catch (Exception ex) {
 				LoggingService.Warn(ex);
-				return WinFormsResourceService.DefaultMonospacedFont;
+				return SD.WinForms.DefaultMonospacedFont;
 			}
 		}
 		

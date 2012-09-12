@@ -8,7 +8,6 @@ using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Workbench;
 
@@ -130,7 +129,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			Controls.Add(webBrowser);
 			
 			if (showNavigation) {
-				toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/ViewContent/Browser/Toolbar");
+				toolStrip = SD.WinForms.ToolbarService.CreateToolStrip(this, "/SharpDevelop/ViewContent/Browser/Toolbar");
 				toolStrip.GripStyle = ToolStripGripStyle.Hidden;
 				Controls.Add(toolStrip);
 			}
@@ -246,7 +245,8 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			SetUrlBox(comboBox);
 			comboBox.DropDownStyle = ComboBoxStyle.DropDown;
 			comboBox.Items.Clear();
-			comboBox.Items.AddRange(PropertyService.GetList<string>("Browser.URLBoxHistory"));
+			foreach (string url in PropertyService.GetList<string>("Browser.URLBoxHistory"))
+				comboBox.Items.Add(url);
 			comboBox.AutoCompleteMode      = AutoCompleteMode.Suggest;
 			comboBox.AutoCompleteSource    = AutoCompleteSource.HistoryList;
 		}
@@ -322,11 +322,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 				urlBox.Text = url;
 			}
 			// Update toolbar:
-			foreach (object o in toolStrip.Items) {
-				IStatusUpdate up = o as IStatusUpdate;
-				if (up != null)
-					up.UpdateStatus();
-			}
+			SD.WinForms.ToolbarService.UpdateToolbar(toolStrip);
 		}
 	}
 }

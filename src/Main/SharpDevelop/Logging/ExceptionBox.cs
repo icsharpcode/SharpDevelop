@@ -179,10 +179,10 @@ namespace ICSharpCode.SharpDevelop.Logging
 			if (copyErrorCheckBox.Checked) {
 				string exceptionText = exceptionTextBox.Text;
 				if (Application.OleRequired() == ApartmentState.STA) {
-					ClipboardWrapper.SetText(exceptionText);
+					SD.Clipboard.SetText(exceptionText);
 				} else {
 					Thread th = new Thread((ThreadStart)delegate {
-					                       	ClipboardWrapper.SetText(exceptionText);
+					                       	SD.Clipboard.SetText(exceptionText);
 					                       });
 					th.Name = "CopyInfoToClipboard";
 					th.SetApartmentState(ApartmentState.STA);

@@ -2,9 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.IO;
-using ICSharpCode.Core;
 using System.Diagnostics;
+using System.IO;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop
 {

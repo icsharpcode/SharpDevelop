@@ -88,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} else {
 				optionPanelScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
 			}
-			optionPanelContent.SetContent(node.Content);
+			SD.WinForms.SetContent(optionPanelContent, node.Content);
 			
 			node.IsExpanded = true;
 			node.IsActive = true;

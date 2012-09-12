@@ -10,7 +10,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 	/// <summary>
 	/// Interface for global assembly cache service.
 	/// </summary>
-	[SDService]
+	[SDService("SD.GlobalAssemblyCache")]
 	public interface IGlobalAssemblyCacheService
 	{
 		/// <summary>
