@@ -146,5 +146,29 @@ class TestClass
 }";
 			Test<RedundantTypeCastIssue> (input, 0);
 		}
+
+		/// <summary>
+		/// Bug 7065 - "remove redundant type cast" false positive for explicit interface implementation
+		/// </summary>
+		[Test]
+		public void TestBug7065 ()
+		{
+			var input = @"
+using System;
+public class TestClass : IDisposable
+{
+	void IDisposable.Dispose()
+	{
+	}
+
+	void Foo()
+	{
+	    ((IDisposable)this).Dispose();
+	}
+}
+";
+			Test<RedundantTypeCastIssue> (input, 0);
+		}
+
 	}
 }
