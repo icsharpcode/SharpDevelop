@@ -122,7 +122,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				foreach (var child in curNode.Children) {
 					if (!(child is Statement || child is Expression) &&
-					    (child.Role != Roles.TypeMemberRole || (child is TypeDeclaration && includeInnerTypes)))
+					    (child.Role != Roles.TypeMemberRole || ((child is TypeDeclaration || child is DelegateDeclaration) && includeInnerTypes)))
 						nodeStack.Push (child);
 				}
 			}
