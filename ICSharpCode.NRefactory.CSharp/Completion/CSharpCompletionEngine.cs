@@ -1788,7 +1788,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (hintType is ParameterizedType && hintType.TypeParameterCount == 1 && hintType.FullName == "System.Collections.Generic.IEnumerable") {
 						var arg = ((ParameterizedType)hintType).TypeArguments.FirstOrDefault();
 						if (arg.Kind != TypeKind.TypeParameter) {
-							var array = new ArrayTypeReference(arg.ToTypeReference(), 1).Resolve(ctx);
+							var array = new ArrayType (ctx.Compilation, arg, 1);
 							wrapper.AddType(array, amb.ConvertType(array));
 						}
 					}
