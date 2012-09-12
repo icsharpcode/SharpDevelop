@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Contains extension methods for the type system.
 	/// </summary>
-	public static class ExtensionMethods
+	public static class TypeSystemExtensions
 	{
 		#region GetAllBaseTypes
 		/// <summary>
