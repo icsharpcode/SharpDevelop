@@ -108,16 +108,17 @@ namespace CSharpBinding
 						highlighter = SD.EditorControlService.CreateHighlighter(document);
 					}
 					Identifier identifier = node.GetChildByRole(Roles.Identifier);
-					if (identifier != null)
+					if (!identifier.IsNull)
 						node = identifier;
 					var region = new DomRegion(fileName, node.StartLocation, node.EndLocation);
 					int offset = document.GetOffset(node.StartLocation);
-					int length = document.GetOffset(node.EndLocation) - offset; 
+					int length = document.GetOffset(node.EndLocation) - offset;
 					var builder = SearchResultsPad.CreateInlineBuilder(node.StartLocation, node.EndLocation, document, highlighter);
 					var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
 					results.Add(new Reference(region, result, offset, length, builder, defaultTextColor));
 				}, cancellationToken);
-			callback(new SearchedFile(fileName, results));
+			if (results.Count > 0)
+				callback(new SearchedFile(fileName, results));
 		}
 	}
 }
