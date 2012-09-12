@@ -82,7 +82,7 @@ class C
 	void F()
 	{
 		A a = new A();
-		if(a.$Ext (1))
+		if (a.$Ext (1))
 			return;
 	}
 }", @"
@@ -99,7 +99,7 @@ class C
 	void F()
 	{
 		A a = new A();
-		if(B.Ext (a, 1))
+		if (B.Ext (a, 1))
 			return;
 	}
 }");

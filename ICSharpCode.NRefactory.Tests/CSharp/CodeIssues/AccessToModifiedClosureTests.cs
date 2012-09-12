@@ -403,7 +403,7 @@ class TestClass
 		foreach (var i in a) {
 			var f = new System.Func<int, int> (x => {
 				var f2 =  new System.Func<int, int> (y => y - i);
-				return f2(x) + i;
+				return f2 (x) + i;
 			});
 		}
 	}
@@ -417,7 +417,7 @@ class TestClass
 			var i1 = i;
 			var f = new System.Func<int, int> (x => {
 				var f2 =  new System.Func<int, int> (y => y - i1);
-				return f2(x) + i1;
+				return f2 (x) + i1;
 			});
 		}
 	}
@@ -432,7 +432,7 @@ class TestClass
 			var f = new System.Func<int, int> (x => {
 				var i1 = i;
 				var f2 =  new System.Func<int, int> (y => y - i1);
-				return f2(x) + i;
+				return f2 (x) + i;
 			});
 		}
 	}
@@ -579,7 +579,7 @@ class TestClass
 {
 	void TestMethod2 (int b, System.Func<int, int> a)
 	{
-	    TestMethod2 (b++, c => c + b);
+		TestMethod2 (b++, c => c + b);
 	}
 }";
 			var input2 = @"
@@ -587,7 +587,7 @@ class TestClass
 {
 	void TestMethod3 (System.Func<int, int> a, int b)
 	{
-	    TestMethod3 (c => c + b, b++);
+		TestMethod3 (c => c + b, b++);
 	}
 }";
 			var output2 = @"
@@ -596,7 +596,7 @@ class TestClass
 	void TestMethod3 (System.Func<int, int> a, int b)
 	{
 		var b1 = b;
-	    TestMethod3 (c => c + b1, b++);
+		TestMethod3 (c => c + b1, b++);
 	}
 }";
 			Test (input1, 0);

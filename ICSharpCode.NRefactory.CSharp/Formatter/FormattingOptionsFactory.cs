@@ -82,6 +82,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				StatementBraceStyle = BraceStyle.EndOfLine,
 	
 				ElseNewLinePlacement = NewLinePlacement.SameLine,
+				ElseIfNewLinePlacement = NewLinePlacement.SameLine,
 				CatchNewLinePlacement = NewLinePlacement.SameLine,
 				FinallyNewLinePlacement = NewLinePlacement.SameLine,
 				WhileNewLinePlacement = NewLinePlacement.SameLine,

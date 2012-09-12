@@ -114,7 +114,8 @@ class TestClass
 {
 	void TestMethod ()
 	{
-		for (int i = 0; true; i++) ;
+		for (int i = 0; true; i++)
+			;
 	}
 }";
 			Test<ConstantConditionIssue> (input, 1, output);
@@ -128,7 +129,8 @@ class TestClass
 {
 	void TestMethod ()
 	{
-		while (1 > 0) ;
+		while (1 > 0)
+			;
 	}
 }";
 			var output = @"
@@ -136,7 +138,8 @@ class TestClass
 {
 	void TestMethod ()
 	{
-		while (true) ;
+		while (true)
+			;
 	}
 }";
 			Test<ConstantConditionIssue> (input, 1, output);

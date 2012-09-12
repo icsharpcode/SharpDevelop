@@ -54,13 +54,13 @@ class A
 		public void SimpleCase()
 		{
 			TestStatements(@"
-while (true) {
-	int $i = 2;
-}
+	while (true) {
+		int $i = 2;
+	}
 ", @"
-int i = 2;
-while (true) {
-}
+	int i = 2;
+		while (true) {
+	}
 ");
 		}
 		
@@ -81,14 +81,14 @@ class A
 		public void MovesOnlyTheCurrentVariableInitialization()
 		{
 			TestStatements(@"
-while (true) {
-	int $i = 2, j = 3;
-}
+	while (true) {
+		int $i = 2, j = 3;
+	}
 ", @"
-int i = 2;
-while (true) {
-	int j = 3;
-}
+	int i = 2;
+		while (true) {
+		int j = 3;
+	}
 ");
 		}
 		
@@ -96,13 +96,13 @@ while (true) {
 		public void MovesAllInitializersWhenOnType()
 		{
 			TestStatements(@"
-while (true) {
-	i$nt i = 2, j = 3;
-}
+	while (true) {
+		i$nt i = 2, j = 3;
+	}
 ", @"
-int i = 2, j = 3;
-while (true) {
-}
+	int i = 2, j = 3;
+		while (true) {
+	}
 ");
 		}
 		
@@ -110,16 +110,16 @@ while (true) {
 		public void OnlyMovesDeclarationWhenInitializerDependsOnOtherStatements()
 		{
 			TestStatements(@"
-while (true) {
-	int i = 2;
-	int j$ = i;
-}
+	while (true) {
+		int i = 2;
+		int j$ = i;
+	}
 ", @"
-int j;
-while (true) {
-	int i = 2;
-	j = i;
-}
+	int j;
+		while (true) {
+		int i = 2;
+		j = i;
+	}
 ");
 		}
 		
@@ -127,13 +127,13 @@ while (true) {
 		public void HandlesLambdaDelegate()
 		{
 			TestStatements(@"
-var action = new Action<int>(i => {
-	int j$ = 2;
-});
+	var action = new Action<int>(i => {
+		int j$ = 2;
+	});
 ", @"
-int j = 2;
-var action = new Action<int>(i => {
-});
+	int j = 2;
+		var action = new Action<int>(i => {
+	});
 ");
 		}
 	}

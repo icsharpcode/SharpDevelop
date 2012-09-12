@@ -59,6 +59,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 			}
 			bool pass = expectedOutput == ctx.Text;
 			if (!pass) {
+				Console.WriteLine ("expected:");
+				Console.WriteLine (expectedOutput);
+				Console.WriteLine ("got:");
 				Console.WriteLine (ctx.Text);
 			}
 			Assert.AreEqual (expectedOutput, ctx.Text);

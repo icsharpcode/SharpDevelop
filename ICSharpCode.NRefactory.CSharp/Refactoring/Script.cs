@@ -152,6 +152,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				text += Options.EolMarker;
 			InsertText(startOffset, text);
 			output.RegisterTrackedSegments(this, startOffset);
+			CorrectFormatting (node, insertNode);
 		}
 
 		public void InsertAfter(AstNode node, AstNode insertNode)
@@ -164,6 +165,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var insertOffset = GetCurrentOffset(node.EndLocation);
 			InsertText(insertOffset, text);
 			output.RegisterTrackedSegments(this, insertOffset);
+			CorrectFormatting (node, insertNode);
 		}
 
 		public void AddTo(BlockStatement bodyStatement, AstNode insertNode)
@@ -172,6 +174,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var output = OutputNode(1 + GetIndentLevelAt(startOffset), insertNode, true);
 			InsertText(startOffset, output.Text);
 			output.RegisterTrackedSegments(this, startOffset);
+			CorrectFormatting (null, insertNode);
 		}
 		
 		public virtual Task Link (params AstNode[] nodes)
@@ -196,6 +199,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			output.TrimStart ();
 			Replace (startOffset, segment.Length, output.Text);
 			output.RegisterTrackedSegments(this, startOffset);
+			CorrectFormatting (node, node);
+		}
+
+		void CorrectFormatting(AstNode node, AstNode newNode)
+		{
+			if (node is Identifier || node is IdentifierExpression || node is CSharpTokenNode || node is AstType)
+				return;
+			if (node == null || node.Parent is BlockStatement) {
+				FormatText(newNode); 
+			} else {
+				FormatText((node.Parent != null && (node.Parent is Statement || node.Parent is Expression || node.Parent is VariableInitializer)) ? node.Parent : newNode); 
+			}
 		}
 		
 		public abstract void Remove (AstNode node, bool removeEmptyLine = true);

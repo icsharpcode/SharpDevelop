@@ -46,7 +46,7 @@ class C
 {
 	void Main()
 	{
-		B.F();
+		B.F ();
 	}
 }";
 			TestRefactoringContext context;			
@@ -64,7 +64,7 @@ class C
 {
 	void Main()
 	{
-		A.F();
+		A.F ();
 	}
 }"
 			);
@@ -181,7 +181,7 @@ class D
 {
 	void Main()
 	{
-		A.B.F();
+		A.B.F ();
 	}
 }"
 			);
@@ -205,7 +205,7 @@ namespace Second
 	{
 		void Main()
 		{
-			B.F();
+			B.F ();
 		}
 	}
 }";
@@ -229,7 +229,7 @@ namespace Second
 	{
 		void Main()
 		{
-			First.A.F();
+			First.A.F ();
 		}
 	}
 }"
