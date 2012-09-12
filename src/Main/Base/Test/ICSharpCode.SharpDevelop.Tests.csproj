@@ -82,7 +82,6 @@
     <Compile Include="ExceptionClassOverridesTestFixture.cs" />
     <Compile Include="GenerateOverrideMethodTests.cs" />
     <Compile Include="GetElementByReflectionNameTests.cs" />
-    <Compile Include="Highlighting\AddInHighlightingResourceTests.cs" />
     <Compile Include="Highlighting\SyntaxDoozerAddsHighlightingToHighlightingManagerTestFixture.cs" />
     <Compile Include="MimeDetectionTests.cs" />
     <Compile Include="CollectionClassOverridesTestFixture.cs" />

@@ -97,11 +97,17 @@
     </Compile>
     <Compile Include="Dom\IModelCollection.cs" />
     <Compile Include="Dom\ITreeNodeFactory.cs" />
+    <Compile Include="Editor\DocumentServiceAttribute.cs" />
+    <Compile Include="Editor\IEditorControlService.cs" />
+    <Compile Include="Editor\IEditorUIService.cs" />
+    <Compile Include="Editor\IFileDocumentProvider.cs" />
+    <Compile Include="Editor\ITextEditor.cs" />
+    <Compile Include="Editor\ITextMarker.cs" />
     <Compile Include="Editor\OnDiskTextSourceVersion.cs" />
+    <Compile Include="Editor\HighlighterKnownSpanNames.cs" />
     <Compile Include="Src\Gui\FileService.cs" />
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
     <Compile Include="Src\Commands\ViewInBrowser.cs" />
-    <Compile Include="Src\Editor\AddInHighlightingResource.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditTextEditorAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\ISnippetElementProvider.cs" />
@@ -117,10 +123,7 @@
     <Compile Include="Src\Editor\Commands\FindReferencesCommand.cs" />
     <Compile Include="Src\Editor\Commands\GotoLineNumber.cs" />
     <Compile Include="Src\Editor\Commands\SymbolUnderCaretMenuCommand.cs" />
-    <Compile Include="Src\Editor\DocumentServiceAttribute.cs" />
     <Compile Include="Src\Editor\IDocumentBaseVersionProvider.cs" />
-    <Compile Include="Src\Editor\IEditorControlService.cs" />
-    <Compile Include="Src\Editor\IEditorUIService.cs" />
     <Compile Include="Src\Editor\CodeCompletion\AttributesItemProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\CodeCompletionBinding.cs" />
     <Compile Include="Src\Editor\CodeCompletion\CodeCompletionDataUsageCache.cs" />
@@ -152,15 +155,11 @@
     <Compile Include="Src\Editor\Commands\ShowColorDialog.cs" />
     <Compile Include="Src\Editor\DocumentUtilitites.cs" />
     <Compile Include="Src\Editor\IBracketSearcher.cs" />
-    <Compile Include="Src\Editor\IFileDocumentProvider.cs" />
     <Compile Include="Src\Editor\IFormattingStrategy.cs" />
     <Compile Include="Src\Editor\PermanentAnchor.cs" />
-    <Compile Include="Src\Editor\SyntaxHighlighterKnownSpanNames.cs" />
     <Compile Include="Src\Editor\ITextAreaToolTipProvider.cs">
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\Editor\ITextEditor.cs" />
-    <Compile Include="Src\Editor\ITextMarker.cs" />
     <Compile Include="Src\Editor\ITooltip.cs">
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>

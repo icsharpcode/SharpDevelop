@@ -9,7 +9,7 @@ using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
-	public static class SyntaxHighlighterKnownSpanNames
+	public static class HighlighterKnownSpanNames
 	{
 		public const string Comment = "Comment";
 		public const string String = "String";

@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -11,10 +10,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
 using System.Windows.Media;
 using System.Xml;
 using System.Xml.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
@@ -22,7 +21,6 @@ using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -369,40 +367,7 @@ namespace ICSharpCode.SharpDevelop
 				return AmbienceService.GetCurrentAmbience();
 		}
 		#endregion
-		
-		#region WPF SetContent
-		/*
-		/// <summary>
-		/// Sets the Content property of the specified ControlControl to the specified content.
-		/// If the content is a Windows-Forms control, it is wrapped in a WindowsFormsHost.
-		/// If the content control already contains a WindowsFormsHost with that content,
-		/// the old WindowsFormsHost is kept.
-		/// When a WindowsFormsHost is replaced with another content, the host is disposed (but the control
-		/// inside the host isn't)
-		/// </summary>
-		public static void SetContent(this ContentControl contentControl, object content)
-		{
-			SetContent(contentControl, content, null);
-		}
-		
-		public static void SetContent(this ContentPresenter contentControl, object content)
-		{
-			SetContent(contentControl, content, null);
-		}
-		
-		public static void SetContent(this ContentControl contentControl, object content, object serviceObject)
-		{
-			
-		}
-		
-		
-		public static void SetContent(this ContentPresenter contentControl, object content, object serviceObject)
-		{
-			
-		}
-		*/
-		#endregion
-		
+				
 		#region DPI independence
 		public static Rect TransformToDevice(this Rect rect, Visual visual)
 		{

@@ -347,8 +347,8 @@ namespace CSharpBinding.FormattingStrategy
 					bool isInMultilineString = false;
 					if (highlighter != null && lineAbove != null) {
 						var spanStack = highlighter.GetColorStack(lineNr).Select(c => c.Name).ToArray();
-						isInMultilineComment = spanStack.Contains(SyntaxHighlighterKnownSpanNames.Comment);
-						isInMultilineString = spanStack.Contains(SyntaxHighlighterKnownSpanNames.String);
+						isInMultilineComment = spanStack.Contains(HighlighterKnownSpanNames.Comment);
+						isInMultilineString = spanStack.Contains(HighlighterKnownSpanNames.String);
 					}
 					bool isInNormalCode = !(isInMultilineComment || isInMultilineString);
 					

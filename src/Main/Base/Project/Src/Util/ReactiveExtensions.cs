@@ -16,19 +16,33 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	public static class ReactiveExtensions
 	{
+		#region ObserveOnUIThread
 		public static IObservable<T> ObserveOnUIThread<T>(this IObservable<T> source)
 		{
-			return new AnonymousObservable<T>(
-				observer => source.Subscribe(
-					new AnonymousObserver<T>(
-						value => WorkbenchSingleton.SafeThreadAsyncCall(delegate { observer.OnNext(value); }),
-						exception => WorkbenchSingleton.SafeThreadAsyncCall(delegate { observer.OnError(exception); }),
-						() => WorkbenchSingleton.SafeThreadAsyncCall(delegate { observer.OnCompleted(); })
-					)
-				)
-			);
+			return new UIThreadObservable<T>(source, SD.MainThread.SynchronizationContext);
 		}
 		
+		class UIThreadObservable<T> : IObservable<T>
+		{
+			readonly IObservable<T> source;
+			readonly SynchronizationContext synchronizationContext;
+			
+			public UIThreadObservable(IObservable<T> source, SynchronizationContext synchronizationContext)
+			{
+				this.source = source;
+				this.synchronizationContext = synchronizationContext;
+			}
+			
+			public IDisposable Subscribe(IObserver<T> observer)
+			{
+				return source.Subscribe(value => synchronizationContext.Post(state => observer.OnNext((T)state), value),
+				                        ex => synchronizationContext.Post(state => observer.OnError((Exception)state), ex),
+				                        () => synchronizationContext.Post(state => observer.OnCompleted(), null));
+			}
+		}
+		#endregion
+		
+		#region Create Observable from Task + Callback Delegate
 		public static IObservable<T> CreateObservable<T>(Func<CancellationToken, Action<T>, Task> func)
 		{
 			return new AnonymousObservable<T>(observer => new TaskToObserverSubscription<T>(func, observer));
@@ -85,29 +99,36 @@ namespace ICSharpCode.SharpDevelop
 				cts.Cancel();
 			}
 		}
+		#endregion
 		
+		#region ToListAsync
+		/// <summary>
+		/// Converts the observable into a List.
+		/// </summary>
+		public static async Task<List<T>> ToListAsync<T>(this IObservable<T> source, CancellationToken cancellationToken)
+		{
+			var tcs = new TaskCompletionSource<List<T>>();
+			List<T> results = new List<T>();
+			using (source.Subscribe(item => results.Add(item),
+			                        exception => tcs.TrySetException(exception),
+			                        () => tcs.TrySetResult(results)))
+			{
+				using (cancellationToken.Register(() => tcs.SetCanceled())) {
+					return await tcs.Task.ConfigureAwait(false);
+				}
+			}
+		}
+		#endregion
+		
+		#region AnonymousObserver
 		public static IDisposable Subscribe<T>(this IObservable<T> source, Action<T> onNext, Action<Exception> onError, Action onCompleted)
 		{
 			return source.Subscribe(new AnonymousObserver<T>(onNext, onError, onCompleted));
 		}
 		
-		public static List<T> ToList<T>(this IObservable<T> source, CancellationToken cancellationToken)
-		{
-			List<T> results = new List<T>();
-			ManualResetEventSlim ev = new ManualResetEventSlim();
-			ExceptionDispatchInfo error = null;
-			using (source.Subscribe(item => results.Add(item),
-			                        exception => { error = ExceptionDispatchInfo.Capture(exception); ev.Set(); },
-			                        () => ev.Set()))
-				ev.Wait(cancellationToken);
-			if (error != null)
-				error.Throw();
-			return results;
-		}
-		
 		class AnonymousObservable<T> : IObservable<T>
 		{
-			Func<IObserver<T>, IDisposable> subscribe;
+			readonly Func<IObserver<T>, IDisposable> subscribe;
 			
 			public AnonymousObservable(Func<IObserver<T>, IDisposable> subscribe)
 			{
@@ -154,5 +175,6 @@ namespace ICSharpCode.SharpDevelop
 				onCompleted();
 			}
 		}
+		#endregion
 	}
 }
