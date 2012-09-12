@@ -191,7 +191,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Inserts an item into a sorted list.
+		/// Sorts the enumerable using the given comparer.
 		/// </summary>
 		public static IOrderedEnumerable<T> OrderBy<T>(this IEnumerable<T> input, IComparer<T> comparer)
 		{

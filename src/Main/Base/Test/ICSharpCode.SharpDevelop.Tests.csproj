@@ -173,10 +173,6 @@
       <Project>{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}</Project>
       <Name>ICSharpCode.TreeView</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Core\Test\ICSharpCode.Core.Tests.csproj">
-      <Project>{AD6FAA08-D6F5-4DBA-AF85-F4DA9F40C3B5}</Project>
-      <Name>ICSharpCode.Core.Tests</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SharpDevelop\SharpDevelop.csproj">
       <Project>{1152B71B-3C05-4598-B20D-823B5D40559E}</Project>
       <Name>SharpDevelop</Name>

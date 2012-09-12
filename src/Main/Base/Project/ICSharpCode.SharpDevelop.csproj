@@ -98,6 +98,7 @@
     <Compile Include="Dom\IModelCollection.cs" />
     <Compile Include="Dom\ITreeNodeFactory.cs" />
     <Compile Include="Editor\DocumentServiceAttribute.cs" />
+    <Compile Include="Editor\DocumentUtilitites.cs" />
     <Compile Include="Editor\IEditorControlService.cs" />
     <Compile Include="Editor\IEditorUIService.cs" />
     <Compile Include="Editor\IFileDocumentProvider.cs" />
@@ -113,39 +114,25 @@
     <Compile Include="Src\Editor\AvalonEdit\ISnippetElementProvider.cs" />
     <Compile Include="Src\Editor\AvalonEdit\TextContentCondition.cs" />
     <Compile Include="Src\Editor\AvalonEdit\TextSelectedCondition.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\CodeCompletionPanel.cs">
+    <Compile Include="Editor\CodeCompletion\CodeCompletionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\Editor\CodeCompletion\ICompletionItemHandler.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\NRefactoryInsightWindowHandler.cs" />
+    <Compile Include="Editor\CodeCompletion\ICompletionItemHandler.cs" />
     <Compile Include="Src\Editor\Commands\ClassBookmarkSubmenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\ClassMemberMenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\FindReferencesCommand.cs" />
     <Compile Include="Src\Editor\Commands\GotoLineNumber.cs" />
     <Compile Include="Src\Editor\Commands\SymbolUnderCaretMenuCommand.cs" />
     <Compile Include="Src\Editor\IDocumentBaseVersionProvider.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\AttributesItemProvider.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\CodeCompletionBinding.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\CodeCompletionDataUsageCache.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\CodeCompletionItemProvider.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\CommentCompletionItemProvider.cs">
-    </Compile>
-    <Compile Include="Src\Editor\CodeCompletion\CompletionContext.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\CtrlSpaceCompletionItemProvider.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\ICompletionItem.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\ICompletionItemList.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\ICompletionListWindow.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\IInsightItem.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\IInsightWindow.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\IndexerInsightProvider.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\ICompletionWindow.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\MethodInsightItem.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\MethodInsightProvider.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\NRefactoryCodeCompletionBinding.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\OverrideCompletionItem.cs">
-    </Compile>
-    <Compile Include="Src\Editor\CodeCompletion\OverrideCompletionItemProvider.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\TextCompletionItemProvider.cs" />
+    <Compile Include="Editor\CodeCompletion\CodeCompletionBinding.cs" />
+    <Compile Include="Editor\CodeCompletion\CodeCompletionDataUsageCache.cs" />
+    <Compile Include="Editor\CodeCompletion\CompletionContext.cs" />
+    <Compile Include="Editor\CodeCompletion\ICompletionItem.cs" />
+    <Compile Include="Editor\CodeCompletion\ICompletionItemList.cs" />
+    <Compile Include="Editor\CodeCompletion\ICompletionListWindow.cs" />
+    <Compile Include="Editor\CodeCompletion\IInsightItem.cs" />
+    <Compile Include="Editor\CodeCompletion\IInsightWindow.cs" />
+    <Compile Include="Editor\CodeCompletion\ICompletionWindow.cs" />
     <Compile Include="Src\Editor\Commands\CommentRegion.cs" />
     <Compile Include="Src\Editor\Commands\GoToDefinition.cs" />
     <Compile Include="Src\Editor\Commands\GoToMatchingBrace.cs" />
@@ -153,7 +140,6 @@
     <Compile Include="Src\Editor\Commands\InsertGuidCommand.cs" />
     <Compile Include="Src\Editor\Commands\PasteAsCommands.cs" />
     <Compile Include="Src\Editor\Commands\ShowColorDialog.cs" />
-    <Compile Include="Src\Editor\DocumentUtilitites.cs" />
     <Compile Include="Src\Editor\IBracketSearcher.cs" />
     <Compile Include="Src\Editor\IFormattingStrategy.cs" />
     <Compile Include="Src\Editor\PermanentAnchor.cs" />
@@ -163,11 +149,11 @@
     <Compile Include="Src\Editor\ITooltip.cs">
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\Editor\Search\ISearchResult.cs" />
-    <Compile Include="Src\Editor\Search\ISearchResultFactory.cs" />
-    <Compile Include="Src\Editor\Search\SearchResultMatch.cs" />
-    <Compile Include="Src\Editor\Search\SearchResultsPad.cs" />
-    <Compile Include="Src\Editor\Search\SearchResultPadToolbarCommands.cs" />
+    <Compile Include="Editor\Search\ISearchResult.cs" />
+    <Compile Include="Editor\Search\ISearchResultFactory.cs" />
+    <Compile Include="Editor\Search\SearchResultMatch.cs" />
+    <Compile Include="Editor\Search\SearchResultsPad.cs" />
+    <Compile Include="Editor\Search\SearchResultPadToolbarCommands.cs" />
     <Compile Include="Src\Editor\TextNavigationPoint.cs" />
     <Compile Include="Src\Editor\ToolTipRequestEventArgs.cs">
       <DependentUpon>ToolTipService.cs</DependentUpon>
@@ -872,9 +858,9 @@
     <Folder Include="Src\Project\PortableLibrary" />
     <Folder Include="themes" />
     <Folder Include="Src\Editor\AvalonEdit" />
-    <Folder Include="Src\Editor\CodeCompletion" />
+    <Folder Include="Editor\CodeCompletion" />
     <Folder Include="Src\Editor\Commands" />
-    <Folder Include="Src\Editor\Search" />
+    <Folder Include="Editor\Search" />
     <Folder Include="Src\Gui\Pads\TaskList" />
     <Folder Include="Src\Util" />
     <Folder Include="Src\Services\NavigationService" />

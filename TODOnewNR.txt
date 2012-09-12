@@ -61,7 +61,7 @@ Functionality changes:
 		It is possible to define a service interface in ICSharpCode.SharpDevelop.dll and have the implementation
 		somewhere else (SD will find it using the AddInTree).
 		This allows for AddIns to consume each other's functionality (e.g. debugger accessing the decompiler service)
-		without having to define a custom extension point.
+		without having to define a custom AddIn tree path.
 		The long-term goal is to have only interfaces and helper classes in ICSharpCode.SharpDevelop.dll (the API for AddIns)
 		and have the implementation details in SharpDevelop.exe (which AddIns aren't supposed to reference).
 

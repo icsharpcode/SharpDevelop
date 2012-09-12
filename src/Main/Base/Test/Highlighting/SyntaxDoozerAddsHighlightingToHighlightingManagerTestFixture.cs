@@ -8,7 +8,6 @@ using System.Text;
 
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
-using ICSharpCode.Core.Tests.Utils;
 using ICSharpCode.SharpDevelop.Tests.Utils;
 using NUnit.Framework;
 
