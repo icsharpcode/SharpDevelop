@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace ICSharpCode.Core.WinForms
 {
@@ -42,7 +43,6 @@ namespace ICSharpCode.Core.WinForms
 				imgButtonDisabled = imgButtonEnabled;
 			}
 			menuCommand = codon.AddIn.CreateObject(codon.Properties["class"]) as ICommand;
-			menuCommand.Owner = this;
 			UpdateStatus();
 			UpdateText();
 		}
@@ -91,7 +91,7 @@ namespace ICSharpCode.Core.WinForms
 				return;
 			}
 			base.OnButtonClick(e);
-			menuCommand.Run();
+			menuCommand.Execute(caller);
 		}
 		
 		public override bool Enabled {
@@ -103,10 +103,10 @@ namespace ICSharpCode.Core.WinForms
 				
 				bool isEnabled = failedAction != ConditionFailedAction.Disable;
 				
-				if (menuCommand != null && menuCommand is IMenuCommand) {
+				if (menuCommand != null) {
 					
 					// menuCommand.IsEnabled is checked first so that it's get method can set dropDownEnabled as needed
-					isEnabled &= (((IMenuCommand)menuCommand).IsEnabled || dropDownEnabled);
+					isEnabled &= menuCommand.CanExecute(caller) || dropDownEnabled;
 				}
 				
 				return isEnabled;

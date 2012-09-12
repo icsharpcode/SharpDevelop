@@ -184,7 +184,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual(1, codons1.Count);
 			Assert.AreEqual("Sub", codons1[0].Name);
 			Assert.AreEqual("Path2", codons1[0].Id);
-			Assert.AreEqual(1, codons1[0].Conditions.Length);
+			Assert.AreEqual(1, codons1[0].Conditions.Count);
 			
 			Assert.IsNotNull(addIn.Paths["/Path1/Path2"]);
 			List<Codon> codons2 = addIn.Paths["/Path1/Path2"].Codons.ToList();
@@ -192,7 +192,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual("Codon2", codons2[0].Name);
 			Assert.AreEqual("Sub2", codons2[0].Id);
 			// condition is not inherited lexically
-			Assert.AreEqual(0, codons2[0].Conditions.Length);
+			Assert.AreEqual(0, codons2[0].Conditions.Count);
 		}
 		
 		[Test]
@@ -217,7 +217,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual("b",      codon["attr2"]);
 			
 			// Test for condition.
-			Assert.AreEqual(1, codon.Conditions.Length);
+			Assert.AreEqual(1, codon.Conditions.Count);
 			Condition condition = codon.Conditions[0] as Condition;
 			Assert.IsNotNull(condition);
 			Assert.AreEqual("Equal", condition.Name);
@@ -254,7 +254,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual("b",      codon["attr2"]);
 			
 			// Test for condition
-			Assert.AreEqual(2, codon.Conditions.Length);
+			Assert.AreEqual(2, codon.Conditions.Count);
 			Condition condition = codon.Conditions[1] as Condition;
 			Assert.IsNotNull(condition);
 			Assert.AreEqual("Equal", condition.Name);
@@ -268,7 +268,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual("2", condition["equal"]);
 			
 			codon = path.Codons.ElementAt(1);
-			Assert.AreEqual(1, codon.Conditions.Length);
+			Assert.AreEqual(1, codon.Conditions.Count);
 			condition = codon.Conditions[0] as Condition;
 			Assert.IsNotNull(condition);
 			Assert.AreEqual("Equal", condition.Name);
@@ -276,7 +276,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual("b", condition["equal"]);
 			
 			codon = path.Codons.ElementAt(2);
-			Assert.AreEqual(0, codon.Conditions.Length);
+			Assert.AreEqual(0, codon.Conditions.Count);
 			
 		}
 		
@@ -310,7 +310,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual("b",      codon["attr2"]);
 			
 			// Test for condition.
-			Assert.AreEqual(1, codon.Conditions.Length);
+			Assert.AreEqual(1, codon.Conditions.Count);
 		}
 		
 		#endregion

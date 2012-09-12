@@ -16,10 +16,10 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public static class AddInTree
 	{
-		public static List<T> BuildItems<T>(string path, object caller, bool throwOnNotFound = true)
+		public static List<T> BuildItems<T>(string path, object parameter, bool throwOnNotFound = true)
 		{
 			var addInTree = ServiceSingleton.GetRequiredService<IAddInTree>();
-			return addInTree.BuildItems<T>(path, caller, throwOnNotFound).ToList();
+			return addInTree.BuildItems<T>(path, parameter, throwOnNotFound).ToList();
 		}
 		
 		public static AddInTreeNode GetTreeNode(string path, bool throwOnNotFound = true)
@@ -144,38 +144,38 @@ namespace ICSharpCode.Core
 		/// Builds a single item in the addin tree.
 		/// </summary>
 		/// <param name="path">A path to the item in the addin tree.</param>
-		/// <param name="caller">The owner used to create the objects.</param>
+		/// <param name="parameter">A parameter that gets passed into the doozer and condition evaluators.</param>
 		/// <exception cref="TreePathNotFoundException">The path does not
 		/// exist or does not point to an item.</exception>
-		public object BuildItem(string path, object caller)
+		public object BuildItem(string path, object parameter)
 		{
-			return BuildItem(path, caller, null);
+			return BuildItem(path, parameter, null);
 		}
 		
-		public object BuildItem(string path, object caller, IEnumerable<ICondition> additionalConditions)
+		public object BuildItem(string path, object parameter, IEnumerable<ICondition> additionalConditions)
 		{
 			int pos = path.LastIndexOf('/');
 			string parent = path.Substring(0, pos);
 			string child = path.Substring(pos + 1);
 			AddInTreeNode node = GetTreeNode(parent);
-			return node.BuildChildItem(child, caller, additionalConditions);
+			return node.BuildChildItem(child, parameter, additionalConditions);
 		}
 		
 		/// <summary>
 		/// Builds the items in the path. Ensures that all items have the type T.
 		/// </summary>
 		/// <param name="path">A path in the addin tree.</param>
-		/// <param name="caller">The owner used to create the objects.</param>
+		/// <param name="parameter">The owner used to create the objects.</param>
 		/// <param name="throwOnNotFound">If true, throws a <see cref="TreePathNotFoundException"/>
 		/// if the path is not found. If false, an empty ArrayList is returned when the
 		/// path is not found.</param>
-		public IReadOnlyList<T> BuildItems<T>(string path, object caller, bool throwOnNotFound = true)
+		public IReadOnlyList<T> BuildItems<T>(string path, object parameter, bool throwOnNotFound = true)
 		{
 			AddInTreeNode node = GetTreeNode(path, throwOnNotFound);
 			if (node == null)
 				return new List<T>();
 			else
-				return node.BuildChildItems<T>(caller);
+				return node.BuildChildItems<T>(parameter);
 		}
 		
 		AddInTreeNode CreatePath(AddInTreeNode localRoot, string path)

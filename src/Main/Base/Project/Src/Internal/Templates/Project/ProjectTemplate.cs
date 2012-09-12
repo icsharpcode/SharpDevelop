@@ -3,13 +3,14 @@
 
 using System;
 using System.Collections;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Input;
 using System.Xml;
 
 using ICSharpCode.Core;
@@ -257,8 +258,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 						try {
 							ICommand command = (ICommand)SD.AddInTree.BuildItem(el.GetAttribute("path"), null);
 							return projectCreateInformation => {
-								command.Owner = projectCreateInformation;
-								command.Run();
+								command.Execute(projectCreateInformation);
 							};
 						} catch (TreePathNotFoundException ex) {
 							MessageService.ShowWarning(ex.Message + " - in " + el.OwnerDocument.DocumentElement.GetAttribute("fileName"));

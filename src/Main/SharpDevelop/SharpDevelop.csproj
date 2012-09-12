@@ -91,7 +91,7 @@
     <Compile Include="Workbench\AvalonDockLayout.cs" />
     <Compile Include="Workbench\AvalonPadContent.cs" />
     <Compile Include="Workbench\AvalonWorkbenchWindow.cs" />
-    <Compile Include="Workbench\ChooseLayoutCommand.cs" />
+    <Compile Include="Workbench\ChooseLayoutComboBox.cs" />
     <Compile Include="Workbench\DispatcherMessageLoop.cs" />
     <Compile Include="Workbench\FileService.cs" />
     <Compile Include="Workbench\FileServiceOpenedFile.cs" />

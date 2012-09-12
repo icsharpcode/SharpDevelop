@@ -199,6 +199,7 @@
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.cs" />
     <Compile Include="Src\Gui\IWorkbenchLayout.cs" />
+    <Compile Include="Src\Util\NotAvailableCommand.cs" />
     <Compile Include="Workbench\AbstractPadContent.cs" />
     <Compile Include="Workbench\AbstractSecondaryViewContent.cs" />
     <Compile Include="Workbench\AbstractViewContent.cs" />

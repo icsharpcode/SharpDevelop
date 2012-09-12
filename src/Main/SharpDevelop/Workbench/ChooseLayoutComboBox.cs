@@ -14,31 +14,59 @@ namespace ICSharpCode.SharpDevelop.Workbench
 	/// <summary>
 	/// Command for layout combobox in toolbar.
 	/// </summary>
-	class ChooseLayoutCommand : AbstractComboBoxCommand
+	class ChooseLayoutComboBox : System.Windows.Controls.ComboBox
 	{
 		int editIndex  = -1;
 		int resetIndex = -1;
 		
-		public ChooseLayoutCommand()
+		public ChooseLayoutComboBox()
 		{
 			LayoutConfiguration.LayoutChanged += new EventHandler(LayoutChanged);
 			SD.ResourceService.LanguageChanged += new EventHandler(ResourceService_LanguageChanged);
+			RecreateItems();
 		}
 
 		void ResourceService_LanguageChanged(object sender, EventArgs e)
 		{
-			OnOwnerChanged(e);
+			RecreateItems();
+		}
+		
+		void RecreateItems()
+		{
+			editingLayout = true;
+			try {
+				var comboBox = this;
+				comboBox.Items.Clear();
+				int index = 0;
+				foreach (LayoutConfiguration config in LayoutConfiguration.Layouts) {
+					if (LayoutConfiguration.CurrentLayoutName == config.Name) {
+						index = comboBox.Items.Count;
+					}
+					comboBox.Items.Add(config);
+				}
+				editIndex = comboBox.Items.Count;
+				
+				comboBox.Items.Add(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.EditItem}"));
+				
+				resetIndex = comboBox.Items.Count;
+				comboBox.Items.Add(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.ResetToDefaultItem}"));
+				comboBox.SelectedIndex = index;
+			} finally {
+				editingLayout = false;
+			}
 		}
 		
 		int oldItem = 0;
 		bool editingLayout;
 		
-		public override void Run()
+		protected override void OnSelectionChanged(System.Windows.Controls.SelectionChangedEventArgs e)
 		{
+			base.OnSelectionChanged(e);
+			
 			if (editingLayout) return;
 			LoggingService.Debug("ChooseLayoutCommand.Run()");
 			
-			var comboBox = (System.Windows.Controls.ComboBox)base.ComboBox;
+			var comboBox = this;
 			string dataPath   = LayoutConfiguration.DataLayoutPath;
 			string configPath = LayoutConfiguration.ConfigLayoutPath;
 			if (!Directory.Exists(configPath)) {
@@ -52,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			if (comboBox.SelectedIndex == editIndex) {
 				editingLayout = true;
 				ShowLayoutEditor();
-				OnOwnerChanged(EventArgs.Empty);
+				RecreateItems();
 				editingLayout = false;
 			} else if (comboBox.SelectedIndex == resetIndex) {
 				ResetToDefaults();
@@ -89,7 +117,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				ed.LoadList(CustomLayoutNames);
 				FlowLayoutPanel p = new FlowLayoutPanel();
 				p.Dock = DockStyle.Bottom;
-				p.FlowDirection = FlowDirection.RightToLeft;
+				p.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
 				
 				Button btn = new Button();
 				p.Height = btn.Height + 8;
@@ -154,38 +182,12 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		{
 			if (editingLayout) return;
 			LoggingService.Debug("ChooseLayoutCommand.LayoutChanged(object,EventArgs)");
-			var comboBox = (System.Windows.Controls.ComboBox)base.ComboBox;
+			var comboBox = this;
 			for (int i = 0; i < comboBox.Items.Count; ++i) {
 				if (((LayoutConfiguration)comboBox.Items[i]).Name == LayoutConfiguration.CurrentLayoutName) {
 					comboBox.SelectedIndex = i;
 					break;
 				}
-			}
-		}
-		protected override void OnOwnerChanged(EventArgs e)
-		{
-			base.OnOwnerChanged(e);
-			
-			editingLayout = true;
-			try {
-				var comboBox = (System.Windows.Controls.ComboBox)base.ComboBox;
-				comboBox.Items.Clear();
-				int index = 0;
-				foreach (LayoutConfiguration config in LayoutConfiguration.Layouts) {
-					if (LayoutConfiguration.CurrentLayoutName == config.Name) {
-						index = comboBox.Items.Count;
-					}
-					comboBox.Items.Add(config);
-				}
-				editIndex = comboBox.Items.Count;
-				
-				comboBox.Items.Add(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.EditItem}"));
-				
-				resetIndex = comboBox.Items.Count;
-				comboBox.Items.Add(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.ResetToDefaultItem}"));
-				comboBox.SelectedIndex = index;
-			} finally {
-				editingLayout = false;
 			}
 		}
 	}

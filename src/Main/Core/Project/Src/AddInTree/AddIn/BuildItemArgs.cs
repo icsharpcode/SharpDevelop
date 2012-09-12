@@ -12,26 +12,26 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public class BuildItemArgs
 	{
-		object caller;
+		object parameter;
 		Codon codon;
-		IEnumerable<ICondition> conditions;
+		IReadOnlyCollection<ICondition> conditions;
 		AddInTreeNode subItemNode;
 		
-		public BuildItemArgs(object caller, Codon codon, IEnumerable<ICondition> conditions, AddInTreeNode subItemNode)
+		public BuildItemArgs(object parameter, Codon codon, IReadOnlyCollection<ICondition> conditions, AddInTreeNode subItemNode)
 		{
 			if (codon == null)
 				throw new ArgumentNullException("codon");
-			this.caller = caller;
+			this.parameter = parameter;
 			this.codon = codon;
-			this.conditions = conditions ?? Enumerable.Empty<ICondition>();
+			this.conditions = conditions;
 			this.subItemNode = subItemNode;
 		}
 		
 		/// <summary>
-		/// The caller passed to <see cref="IAddInTree.BuildItem(string,object)"/>.
+		/// The parameter passed to <see cref="IAddInTree.BuildItem(string,object)"/>.
 		/// </summary>
-		public object Caller {
-			get { return caller; }
+		public object Parameter {
+			get { return parameter; }
 		}
 		
 		/// <summary>
@@ -58,7 +58,7 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// The conditions applied to this item.
 		/// </summary>
-		public IEnumerable<ICondition> Conditions {
+		public IReadOnlyCollection<ICondition> Conditions {
 			get { return conditions; }
 		}
 		
@@ -79,7 +79,7 @@ namespace ICSharpCode.Core
 			if (subItemNode == null)
 				return new List<T>();
 			else
-				return subItemNode.BuildChildItems<T>(caller, conditions);
+				return subItemNode.BuildChildItems<T>(parameter, conditions);
 		}
 	}
 }

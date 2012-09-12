@@ -16,7 +16,7 @@ namespace ICSharpCode.Core
 		AddIn       addIn;
 		string      name;
 		Properties  properties;
-		ICondition[] conditions;
+		IReadOnlyList<ICondition> conditions;
 		
 		public string Name {
 			get {
@@ -60,14 +60,18 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public ICondition[] Conditions {
+		public IReadOnlyList<ICondition> Conditions {
 			get {
 				return conditions;
 			}
 		}
 		
-		public Codon(AddIn addIn, string name, Properties properties, ICondition[] conditions)
+		public Codon(AddIn addIn, string name, Properties properties, IReadOnlyList<ICondition> conditions)
 		{
+			if (name == null)
+				throw new ArgumentNullException("name");
+			if (properties == null)
+				throw new ArgumentNullException("properties");
 			this.addIn      = addIn;
 			this.name       = name;
 			this.properties = properties;
@@ -81,7 +85,7 @@ namespace ICSharpCode.Core
 				throw new CoreException("Doozer " + Name + " not found! " + ToString());
 			
 			if (!doozer.HandleConditions) {
-				ConditionFailedAction action = Condition.GetFailedAction(args.Conditions, args.Caller);
+				ConditionFailedAction action = Condition.GetFailedAction(args.Conditions, args.Parameter);
 				if (action != ConditionFailedAction.Nothing) {
 					return null;
 				}

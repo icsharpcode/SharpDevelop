@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.IO;
+using System.Windows.Input;
 
 namespace ICSharpCode.Core
 {
@@ -185,7 +186,7 @@ namespace ICSharpCode.Core
 			LoggingService.Info("Running autostart commands...");
 			foreach (ICommand command in addInTree.BuildItems<ICommand>("/Workspace/Autostart", null, false)) {
 				try {
-					command.Run();
+					command.Execute(null);
 				} catch (Exception ex) {
 					// allow startup to continue if some commands fail
 					ServiceSingleton.GetRequiredService<IMessageService>().ShowException(ex);

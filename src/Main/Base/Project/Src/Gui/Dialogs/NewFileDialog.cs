@@ -594,9 +594,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void InitializeComponents()
 		{
 			if (allowUntitledFiles) {
-				SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.NewFileDialog.xfrm"));
+				SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.SharpDevelop.Resources.NewFileDialog.xfrm"));
 			} else {
-				SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.NewFileWithNameDialog.xfrm"));
+				SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.SharpDevelop.Resources.NewFileWithNameDialog.xfrm"));
 				ControlDictionary["fileNameTextBox"].TextChanged += new EventHandler(FileNameChanged);
 			}
 			

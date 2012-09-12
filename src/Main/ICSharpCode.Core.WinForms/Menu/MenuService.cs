@@ -26,7 +26,7 @@ namespace ICSharpCode.Core.WinForms
 						((IStatusUpdate)item).UpdateStatus();
 				} else {
 					ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
-					collection.AddRange(submenuBuilder.BuildSubmenu(descriptor.Codon, descriptor.Caller));
+					collection.AddRange(submenuBuilder.BuildSubmenu(descriptor.Codon, descriptor.Parameter));
 				}
 			}
 		}
@@ -39,14 +39,14 @@ namespace ICSharpCode.Core.WinForms
 			
 			switch (type) {
 				case "Separator":
-					return new MenuSeparator(codon, descriptor.Caller, descriptor.Conditions);
+					return new MenuSeparator(codon, descriptor.Parameter, descriptor.Conditions);
 				case "CheckBox":
-					return new MenuCheckBox(codon, descriptor.Caller, descriptor.Conditions);
+					return new MenuCheckBox(codon, descriptor.Parameter, descriptor.Conditions);
 				case "Item":
 				case "Command":
-					return new MenuCommand(codon, descriptor.Caller, createCommand, descriptor.Conditions);
+					return new MenuCommand(codon, descriptor.Parameter, createCommand, descriptor.Conditions);
 				case "Menu":
-					return new Menu(codon, descriptor.Caller, ConvertSubItems(descriptor.SubItems), descriptor.Conditions);
+					return new Menu(codon, descriptor.Parameter, ConvertSubItems(descriptor.SubItems), descriptor.Conditions);
 				case "Builder":
 					return codon.AddIn.CreateObject(codon.Properties["class"]);
 				default:

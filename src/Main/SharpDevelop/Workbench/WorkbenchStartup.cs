@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Threading;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
@@ -74,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			if (!didLoadSolutionOrFile) {
 				foreach (ICommand command in AddInTree.BuildItems<ICommand>("/Workspace/AutostartNothingLoaded", null, false)) {
 					try {
-						command.Run();
+						command.Execute(null);
 					} catch (Exception ex) {
 						MessageService.ShowException(ex);
 					}

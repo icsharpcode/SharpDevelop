@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.OutputWindowOptionsPanel.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.SharpDevelop.Resources.OutputWindowOptionsPanel.xfrm"));
 			
 			Properties properties = PropertyService.NestedProperties(OutputWindowsProperty);
 			fontSelectionPanel = new FontSelectionPanel();

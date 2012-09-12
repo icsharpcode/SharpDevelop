@@ -9,6 +9,8 @@ using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
+	#warning Reimplement SelectScopeCommand
+	/*
 	/// <summary>
 	/// Description of SelectScopeCommand
 	/// </summary>
@@ -44,6 +46,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 		}
 	}
+	*/
 	
 	public class ShowTaskListTokenButton : AbstractCheckableMenuCommand
 	{

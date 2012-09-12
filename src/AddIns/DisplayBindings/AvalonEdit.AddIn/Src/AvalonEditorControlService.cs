@@ -58,12 +58,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public object BuildItem(BuildItemArgs args)
 		{
-			if (!(args.Caller is IDocument))
+			if (!(args.Parameter is IDocument))
 				throw new ArgumentException("Caller must be IDocument!");
 			Codon codon = args.Codon;
-			if (!codon.Properties["extensions"].Split(';').Contains(Path.GetExtension(((IDocument)args.Caller).FileName)))
+			if (!codon.Properties["extensions"].Split(';').Contains(Path.GetExtension(((IDocument)args.Parameter).FileName)))
 				return null;
-			return Activator.CreateInstance(codon.AddIn.FindType(codon.Properties["class"]), args.Caller);
+			return Activator.CreateInstance(codon.AddIn.FindType(codon.Properties["class"]), args.Parameter);
 		}
 	}
 

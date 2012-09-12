@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows.Input;
 using System.Xml;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -182,8 +184,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 							ICommand command = (ICommand)SD.AddInTree.BuildItem(path, null);
 							#endif
 							if (command != null) {
-								command.Owner = project;
-								command.Run();
+								command.Execute(project);
 							}
 						};
 					} else {

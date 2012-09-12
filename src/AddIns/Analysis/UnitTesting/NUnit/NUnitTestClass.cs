@@ -7,6 +7,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -63,11 +64,11 @@ namespace ICSharpCode.UnitTesting
 		
 		public override System.Windows.Input.ICommand GoToDefinition {
 			get {
-				return new SimpleCommand(
+				return new RelayCommand(
 					delegate {
 						ITypeDefinition typeDefinition = Resolve();
-			if (typeDefinition != null)
-				NavigationService.NavigateTo(typeDefinition);
+						if (typeDefinition != null)
+							NavigationService.NavigateTo(typeDefinition);
 					});
 			}
 		}

@@ -35,7 +35,7 @@ namespace ICSharpCode.Core.WinForms
 		static object CreateToolbarItemFromDescriptor(ToolbarItemDescriptor descriptor)
 		{
 			Codon codon = descriptor.Codon;
-			object caller = descriptor.Caller;
+			object caller = descriptor.Parameter;
 			string type = codon.Properties.Contains("type") ? codon.Properties["type"] : "Item";
 			
 			bool createCommand = codon.Properties["loadclasslazy"] == "false";
@@ -47,10 +47,6 @@ namespace ICSharpCode.Core.WinForms
 					return new ToolBarCheckBox(codon, caller, descriptor.Conditions);
 				case "Item":
 					return new ToolBarCommand(codon, caller, createCommand, descriptor.Conditions);
-				case "ComboBox":
-					return new ToolBarComboBox(codon, caller, descriptor.Conditions);
-				case "TextBox":
-					return new ToolBarTextBox(codon, caller, descriptor.Conditions);
 				case "Label":
 					return new ToolBarLabel(codon, caller, descriptor.Conditions);
 				case "DropDownButton":

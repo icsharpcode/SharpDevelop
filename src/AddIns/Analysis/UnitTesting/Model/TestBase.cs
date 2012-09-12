@@ -167,7 +167,7 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		public virtual ICommand GoToDefinition {
-			get { return SimpleCommand.NotAvailable; }
+			get { return NotAvailableCommand.Instance; }
 		}
 	}
 }

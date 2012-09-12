@@ -7,46 +7,17 @@ using System.Windows.Input;
 namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
-	/// Simple ICommand implementation that calls a delegate.
+	/// Base class for simple ICommand implementation that always returns true from CanExecute.
 	/// </summary>
-	public sealed class SimpleCommand : ICommand
+	public abstract class SimpleCommand : ICommand
 	{
-		public static readonly ICommand NotAvailable = new NotAvailableCommand();
+		event EventHandler ICommand.CanExecuteChanged { add {} remove {} }
 		
-		class NotAvailableCommand : ICommand
-		{
-			public event EventHandler CanExecuteChanged { add {} remove {} }
-			
-			public bool CanExecute(object parameter)
-			{
-				return false;
-			}
-			
-			public void Execute(object parameter)
-			{
-				throw new NotSupportedException();
-			}
-		}
-		
-		readonly Action<object> execute;
-		
-		public SimpleCommand(Action<object> execute)
-		{
-			if (execute == null)
-				throw new ArgumentNullException("execute");
-			this.execute = execute;
-		}
-		
-		public event EventHandler CanExecuteChanged { add {} remove {} }
-		
-		public bool CanExecute(object parameter)
+		bool ICommand.CanExecute(object parameter)
 		{
 			return true;
 		}
 		
-		public void Execute(object parameter)
-		{
-			this.execute(parameter);
-		}
+		public abstract void Execute(object parameter);
 	}
 }

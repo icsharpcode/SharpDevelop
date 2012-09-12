@@ -32,41 +32,11 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 		{
 		}
 		
-//		/// <summary>
-//		/// Creates a new instance
-//		/// </summary>
-//		/// <param name="fileName">
-//		/// Name of the xml file which defines this user control.
-//		/// </param>
-//		public XmlUserControl(string fileName)
-//		{
-//			SetupFromXml(fileName);
-//		}
-		
-		
 		public T Get<T>(string name) where T: System.Windows.Forms.Control
 		{
 			return xmlLoader.Get<T>(name);
 		}
-//
-//		protected void SetupFromXml(string fileName)
-//		{
-//			if (fileName == null) {
-//				throw new System.ArgumentNullException("fileName");
-//			}
-//
-//			using (Stream stream = File.OpenRead(fileName)) {
-//				SetupFromXmlStream(stream);
-//			}
-//		}
-		
-		protected void SetupFromXmlResource(string resourceName)
-		{
-			Assembly caller = Assembly.GetCallingAssembly();
-			resourceName = "Resources." + resourceName;
-			SetupFromXmlStream(caller.GetManifestResourceStream(resourceName));
-		}
-		
+
 		protected void SetupFromXmlStream(Stream stream)
 		{
 			if (stream == null) {

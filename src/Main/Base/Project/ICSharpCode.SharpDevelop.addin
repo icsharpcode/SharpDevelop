@@ -821,7 +821,7 @@
 	
 	<Path name = "/SharpDevelop/Pads/CompilerMessageView/Toolbar">
 		<ToolbarItem id      = "CategorySelect"
-		             type    = "ComboBox"
+		             type    = "Custom"
 		             tooltip = "${res:MainWindow.Windows.CompilerMessageView.ShowOutputFromComboBox.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Gui.ShowOutputFromComboBox"/>
 		
@@ -928,7 +928,7 @@
 	
 	<Path name = "/SharpDevelop/Pads/ClassBrowser/Searchbar">
 		<ToolbarItem id      = "Search"
-		             type    = "ComboBox"
+		             type    = "Custom"
 		             tooltip = "${res:MainWindow.Windows.ClassBrowser.SearchButton.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserSearchTerm"/>
 		
@@ -1104,8 +1104,8 @@
 		<ToolbarItem id = "ChooseConfigurationSeparator" type = "Separator"/>
 		
 		<ToolbarItem id    = "ChooseLayout"
-		             type  = "ComboBox"
-		             class = "ICSharpCode.SharpDevelop.Workbench.ChooseLayoutCommand" />
+		             type  = "Custom"
+		             class = "ICSharpCode.SharpDevelop.Workbench.ChooseLayoutComboBox" />
 		
 		<ToolbarItem id="NavigationSeparator" type="Separator"/>
 		<Condition name="CanNavigateBack" action="Disable">
@@ -2075,7 +2075,7 @@
 		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.GoSearch"/>
 		
 		<ToolbarItem id      = "URLComboBox"
-		             type    = "ComboBox"
+		             type    = "Custom"
 		             tooltip = "${res:AddIns.HtmlHelp2.EnterURL}"
 		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.UrlComboBox"/>
 		
@@ -2264,7 +2264,7 @@
 	<Path name="/SharpDevelop/Pads/TaskList/Toolbar">
 		<ToolbarItem id = "SelectScope"
 		             class = "ICSharpCode.SharpDevelop.Gui.SelectScopeCommand"
-		             type = "ComboBox"/>
+		             type = "Custom"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Pads/TaskList/TaskContextMenu">

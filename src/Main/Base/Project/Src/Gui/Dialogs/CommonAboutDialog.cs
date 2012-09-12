@@ -128,7 +128,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public CommonAboutDialog()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.CommonAboutDialog.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.SharpDevelop.Resources.CommonAboutDialog.xfrm"));
 			var aca = (AssemblyCopyrightAttribute)typeof(CommonAboutDialog).Assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false)[0];
 			ControlDictionary["copyrightLabel"].Text = "Copyright " + aca.Copyright;
 		}

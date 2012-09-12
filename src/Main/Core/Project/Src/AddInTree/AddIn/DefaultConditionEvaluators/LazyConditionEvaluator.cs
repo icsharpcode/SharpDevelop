@@ -29,13 +29,13 @@ namespace ICSharpCode.Core
 			this.className  = properties["class"];
 		}
 		
-		public bool IsValid(object caller, Condition condition)
+		public bool IsValid(object parameter, Condition condition)
 		{
 			IConditionEvaluator evaluator = (IConditionEvaluator)addIn.CreateObject(className);
 			if (evaluator == null)
 				return false;
 			addIn.AddInTree.ConditionEvaluators[name] = evaluator;
-			return evaluator.IsValid(caller, condition);
+			return evaluator.IsValid(parameter, condition);
 		}
 		
 		public override string ToString()

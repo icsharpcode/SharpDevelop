@@ -29,22 +29,22 @@ namespace ICSharpCode.Core
 		/// Builds the items in the path. Ensures that all items have the type T.
 		/// </summary>
 		/// <param name="path">A path in the addin tree.</param>
-		/// <param name="caller">The owner used to create the objects.</param>
+		/// <param name="parameter">A parameter that gets passed into the doozer and condition evaluators.</param>
 		/// <param name="throwOnNotFound">If true, throws a <see cref="TreePathNotFoundException"/>
 		/// if the path is not found. If false, an empty ArrayList is returned when the
 		/// path is not found.</param>
-		IReadOnlyList<T> BuildItems<T>(string path, object caller, bool throwOnNotFound = true);
+		IReadOnlyList<T> BuildItems<T>(string path, object parameter, bool throwOnNotFound = true);
 		
 		/// <summary>
 		/// Builds a single item in the addin tree.
 		/// </summary>
 		/// <param name="path">A path to the item in the addin tree.</param>
-		/// <param name="caller">The owner used to create the objects.</param>
+		/// <param name="parameter">A parameter that gets passed into the doozer and condition evaluators.</param>
 		/// <exception cref="TreePathNotFoundException">The path does not
 		/// exist or does not point to an item.</exception>
-		object BuildItem(string path, object caller);
+		object BuildItem(string path, object parameter);
 		
-		object BuildItem(string path, object caller, IEnumerable<ICondition> additionalConditions);
+		object BuildItem(string path, object parameter, IEnumerable<ICondition> additionalConditions);
 		
 		/// <summary>
 		/// Gets the <see cref="AddInTreeNode"/> representing the specified path.

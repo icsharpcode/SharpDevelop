@@ -83,9 +83,7 @@
     <Compile Include="GetBitmapExtension.cs" />
     <Compile Include="IOptionBindingContainer.cs" />
     <Compile Include="IStatusUpdate.cs" />
-    <Compile Include="LanguageChangeWeakEventManager.cs">
-      <DependentUpon>IStatusUpdate.cs</DependentUpon>
-    </Compile>
+    <Compile Include="LanguageChangeWeakEventManager.cs" />
     <Compile Include="LocalizeExtension.cs" />
     <Compile Include="Menu\IMenuItemBuilder.cs" />
     <Compile Include="Menu\MenuCommand.cs" />
@@ -99,7 +97,6 @@
     <Compile Include="StringParseExtension.cs" />
     <Compile Include="ToolBar\ToolBarButton.cs" />
     <Compile Include="ToolBar\ToolBarCheckBox.cs" />
-    <Compile Include="ToolBar\ToolBarComboBox.cs" />
     <Compile Include="ToolBar\ToolBarDropDownButton.cs" />
     <Compile Include="ToolBar\ToolBarService.cs" />
     <Compile Include="ToolBar\ToolBarSplitButton.cs" />

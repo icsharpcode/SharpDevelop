@@ -72,6 +72,7 @@
     <Compile Include="Src\AddInTree\AddIn\Codon.cs" />
     <Compile Include="Src\AddInTree\AddIn\ComplexCondition.cs" />
     <Compile Include="Src\AddInTree\AddIn\Condition.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\ICheckableMenuCommand.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ServiceDoozer.cs" />
     <Compile Include="Src\AddInTree\AddIn\ExtensionPath.cs" />
     <Compile Include="Src\AddInTree\AddIn\IConditionEvaluator.cs" />
@@ -86,13 +87,7 @@
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Icon\IconDescriptor.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Icon\IconDoozer.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\LazyDoozer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\AbstractCheckableMenuCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\AbstractMenuCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\ICheckableMenuCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\IMenuCommand.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\MenuItemDoozer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\AbstractComboBoxCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\IComboBoxCommand.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\ToolBarItemDoozer.cs" />
     <Compile Include="Src\AddInTree\AddInTree.cs" />
     <Compile Include="Src\AddInTree\AddInTreeNode.cs" />
@@ -103,6 +98,9 @@
     <Compile Include="Src\ExtensionMethods.cs" />
     <Compile Include="Src\Services\AnalyticsMonitorService.cs" />
     <Compile Include="Src\Services\ApplicationStateInfoService.cs" />
+    <Compile Include="Src\Services\PropertyService\IPropertyService.cs" />
+    <Compile Include="Src\Services\PropertyService\PropertyService.cs" />
+    <Compile Include="Src\Services\PropertyService\PropertyServiceImpl.cs" />
     <Compile Include="Src\Services\SDServiceAttribute.cs" />
     <Compile Include="Src\Services\FileUtility\FileName.cs" />
     <Compile Include="Src\Services\FileUtility\FileNameEventHandler.cs" />
@@ -113,10 +111,7 @@
     <Compile Include="Src\Services\MessageService\TextWriterMessageService.cs" />
     <Compile Include="Src\Services\MessageService\IMessageService.cs" />
     <Compile Include="Src\Services\MessageService\MessageService.cs" />
-    <Compile Include="Src\Services\PropertyService\IPropertyService.cs" />
     <Compile Include="Src\Services\PropertyService\Properties.cs" />
-    <Compile Include="Src\Services\PropertyService\PropertyService.cs" />
-    <Compile Include="Src\Services\PropertyService\PropertyServiceImpl.cs" />
     <Compile Include="Src\Services\ResourceService\IResourceService.cs" />
     <Compile Include="Src\Services\ResourceService\ResourceNotFoundException.cs" />
     <Compile Include="Src\Services\ResourceService\ResourceService.cs" />
@@ -127,8 +122,8 @@
     <Compile Include="Src\Services\StringParser\StringParser.cs" />
     <Compile Include="Src\Util\AbstractCommand.cs" />
     <Compile Include="Src\Util\CallbackOnDispose.cs" />
-    <Compile Include="Src\Util\DebugTextWriter.cs" />
-    <Compile Include="Src\Util\ICommand.cs" />
+    <Compile Include="Src\Util\CommandWrapper.cs" />
+    <Compile Include="Src\Util\TraceTextWriter.cs" />
     <Compile Include="Src\AddInTree\AddIn\IBuildItemsModifier.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\IncludeDoozer.cs" />
     <Compile Include="Src\Services\LoggingService\LoggingService.cs" />
@@ -140,8 +135,6 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\AbstractTextBoxCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\ITextBoxCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Services\LoggingService" />

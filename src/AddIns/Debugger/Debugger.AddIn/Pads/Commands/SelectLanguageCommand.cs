@@ -12,6 +12,8 @@ using System.Windows.Controls;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
+	#warning AbstractComboBoxCommand
+	/*
 	class SelectLanguageCommand : AbstractComboBoxCommand
 	{
 		ConsolePad pad;
@@ -43,5 +45,5 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			base.Run();
 		}
-	}
+	}*/
 }

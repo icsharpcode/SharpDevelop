@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 	{
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.CodeCompletionOptionPanel.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.SharpDevelop.Resources.CodeCompletionOptionPanel.xfrm"));
 			
 			EnableCodeCompletionSettingsGroupBox();
 			Get<CheckBox>("codeCompletionEnabled").CheckedChanged += delegate(object sender, EventArgs e) {

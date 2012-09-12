@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public object BuildItem(BuildItemArgs args)
 		{
-			ITextEditor editor = (ITextEditor)args.Caller;
+			ITextEditor editor = (ITextEditor)args.Parameter;
 			string[] extensions = args.Codon["extensions"].Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 			if (CanAttach(extensions, editor.FileName)) {
 				return args.AddIn.CreateObject(args.Codon["class"]);

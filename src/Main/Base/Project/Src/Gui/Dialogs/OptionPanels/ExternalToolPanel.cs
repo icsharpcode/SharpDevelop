@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ExternalToolOptions.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.SharpDevelop.Resources.ExternalToolOptions.xfrm"));
 			
 			((ListBox)ControlDictionary["toolListBox"]).BeginUpdate();
 			try {

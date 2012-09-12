@@ -255,7 +255,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			string manifestFile = Path.Combine(base.BaseDirectory, "app.manifest");
 			if (!File.Exists(manifestFile)) {
 				string defaultManifest;
-				using (Stream stream = typeof(ApplicationSettings).Assembly.GetManifestResourceStream("Resources.DefaultManifest.manifest")) {
+				using (Stream stream = typeof(ApplicationSettings).Assembly.GetManifestResourceStream("ICSharpCode.SharpDevelop.Resources.DefaultManifest.manifest")) {
 					if (stream == null)
 						throw new ResourceNotFoundException("DefaultManifest.manifest");
 					using (StreamReader r = new StreamReader(stream)) {

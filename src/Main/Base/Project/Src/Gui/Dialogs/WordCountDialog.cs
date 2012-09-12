@@ -233,7 +233,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void InitializeComponents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.WordCountDialog.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.SharpDevelop.Resources.WordCountDialog.xfrm"));
 			
 			((Button)ControlDictionary["startButton"]).Click += new System.EventHandler(startEvent);
 			((ListView)ControlDictionary["resultListView"]).ColumnClick += new ColumnClickEventHandler(SortEvt);

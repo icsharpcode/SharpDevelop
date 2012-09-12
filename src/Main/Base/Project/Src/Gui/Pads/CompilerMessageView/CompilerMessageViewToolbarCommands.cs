@@ -10,6 +10,8 @@ using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
+	#warning Reimplement ShowOutputFromComboBox
+	/*
 	public class ShowOutputFromComboBox : AbstractComboBoxCommand
 	{
 		ComboBox comboBox;
@@ -56,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public override void Run()
 		{
 		}
-	}
+	}*/
 	
 	public class ClearOutputWindow : AbstractCommand
 	{

@@ -2,8 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Windows.Input;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -79,9 +81,9 @@ namespace ICSharpCode.UnitTesting
 			return resolvedMethod;
 		}
 		
-		public override System.Windows.Input.ICommand GoToDefinition {
+		public override ICommand GoToDefinition {
 			get {
-				return new SimpleCommand(
+				return new RelayCommand(
 					delegate {
 						IMethod method = Resolve();
 						if (method != null)

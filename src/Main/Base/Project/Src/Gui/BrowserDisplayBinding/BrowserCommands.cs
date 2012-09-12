@@ -60,6 +60,8 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		}
 	}
 	
+	#warning Reimplement URL combo box
+	/*
 	public class UrlComboBox : AbstractComboBoxCommand
 	{
 		protected override void OnOwnerChanged(EventArgs e)
@@ -70,6 +72,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			((HtmlViewPane)toolbarItem.Caller).SetUrlComboBox(toolbarItem.ComboBox);
 		}
 	}
+	*/
 	
 	public class NewWindow : AbstractCommand
 	{

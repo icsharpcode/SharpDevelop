@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace ICSharpCode.Core.WinForms
 {
@@ -13,7 +14,7 @@ namespace ICSharpCode.Core.WinForms
 	{
 		object caller;
 		Codon codon;
-		ICommand menuCommand = null;
+		ICommand command;
 		string description = "";
 		IEnumerable<ICondition> conditions;
 		
@@ -26,56 +27,13 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 		
-		public ICommand Command {
-			get {
-				if (menuCommand == null) {
-					CreateCommand();
-				}
-				return menuCommand;
-			}
-		}
-		
-		// HACK: find a better way to allow the host app to process link commands
-		public static Func<string, ICommand> LinkCommandCreator { get; set; }
-		
-		/// <summary>
-		/// Callback that creates ICommand instances when the new syntax for known WPF commands (command="Copy") is used.
-		/// </summary>
-		public static Func<AddIn, string, ICommand> KnownCommandCreator { get; set; }
-		
-		void CreateCommand()
-		{
-			try {
-				string link = codon.Properties["link"];
-				string command = codon.Properties["command"];
-				if (link != null && link.Length > 0) {
-					var callback = LinkCommandCreator;
-					if (callback == null)
-						throw new NotSupportedException("MenuCommand.LinkCommandCreator is not set, cannot create LinkCommands.");
-					menuCommand = callback(link);
-				} else if (command != null && command.Length > 0) {
-					var callback = KnownCommandCreator;
-					if (callback == null)
-						throw new NotSupportedException("MenuCommand.KnownCommandCreator is not set, cannot create commands.");
-					menuCommand = callback(codon.AddIn, command);
-				} else {
-					menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
-				}
-				if (menuCommand != null) {
-					menuCommand.Owner = caller;
-				}
-			} catch (Exception e) {
-				MessageService.ShowException(e, "Can't create menu command : " + codon.Id);
-			}
-		}
-		
-		public MenuCommand(Codon codon, object caller, IEnumerable<ICondition> conditions)
+		public MenuCommand(Codon codon, object caller, IReadOnlyCollection<ICondition> conditions)
 			: this(codon, caller, false, conditions)
 		{
 			
 		}
 		
-		public MenuCommand(Codon codon, object caller, bool createCommand, IEnumerable<ICondition> conditions)
+		public MenuCommand(Codon codon, object caller, bool createCommand, IReadOnlyCollection<ICondition> conditions)
 		{
 			this.RightToLeft = RightToLeft.Inherit;
 			this.caller        = caller;
@@ -83,7 +41,9 @@ namespace ICSharpCode.Core.WinForms
 			this.conditions  = conditions;
 			
 			if (createCommand) {
-				CreateCommand();
+				this.command = CommandWrapper.CreateCommand(codon, conditions);
+			} else {
+				this.command = CommandWrapper.CreateLazyCommand(codon, conditions);
 			}
 			
 			UpdateText();
@@ -106,14 +66,9 @@ namespace ICSharpCode.Core.WinForms
 		protected override void OnClick(System.EventArgs e)
 		{
 			base.OnClick(e);
-			if (codon != null) {
-				if (GetVisible() && Enabled) {
-					ICommand cmd = Command;
-					if (cmd != null) {
-						ServiceSingleton.GetRequiredService<IAnalyticsMonitor>().TrackFeature(cmd.GetType().FullName, "Menu");
-						cmd.Run();
-					}
-				}
+			if (command != null && command.CanExecute(caller)) {
+				ServiceSingleton.GetRequiredService<IAnalyticsMonitor>().TrackFeature(command.GetType().FullName, "Menu");
+				command.Execute(caller);
 			}
 		}
 		
@@ -122,22 +77,6 @@ namespace ICSharpCode.Core.WinForms
 //			base.OnSelect(e);
 //			StatusBarService.SetMessage(description);
 //		}
-		
-		
-		public override bool Enabled {
-			get {
-				if (codon == null) {
-					return base.Enabled;
-				}
-				ConditionFailedAction failedAction = Condition.GetFailedAction(conditions, caller);
-				bool isEnabled = failedAction != ConditionFailedAction.Disable;
-				
-				if (menuCommand != null && menuCommand is IMenuCommand) {
-					isEnabled &= ((IMenuCommand)menuCommand).IsEnabled;
-				}
-				return isEnabled;
-			}
-		}
 		
 		bool GetVisible()
 		{
@@ -156,6 +95,7 @@ namespace ICSharpCode.Core.WinForms
 					} catch (ResourceNotFoundException) {}
 				}
 				Visible = GetVisible();
+				Enabled = command != null && command.CanExecute(caller);
 			}
 		}
 		

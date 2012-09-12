@@ -42,33 +42,16 @@ namespace ICSharpCode.Core.Presentation
 		/// <summary>
 		/// Gets a known WPF command.
 		/// </summary>
-		/// <param name="addIn">The addIn definition that defines the command class.</param>
 		/// <param name="commandName">The name of the command, e.g. "Copy".</param>
-		/// <returns>The WPF ICommand with the given name, or null if thecommand was not found.</returns>
-		public static System.Windows.Input.ICommand GetRegisteredCommand(AddIn addIn, string commandName)
+		/// <returns>The WPF ICommand with the given name, or null if the command was not found.</returns>
+		public static System.Windows.Input.ICommand GetKnownCommand(string commandName)
 		{
-			if (addIn == null)
-				throw new ArgumentNullException("addIn");
 			if (commandName == null)
 				throw new ArgumentNullException("commandName");
 			System.Windows.Input.ICommand command;
 			lock (knownCommands) {
 				if (knownCommands.TryGetValue(commandName, out command))
 					return command;
-			}
-			int pos = commandName.LastIndexOf('.');
-			if (pos > 0) {
-				string className = commandName.Substring(0, pos);
-				string propertyName = commandName.Substring(pos + 1);
-				Type classType = addIn.FindType(className);
-				if (classType != null) {
-					PropertyInfo p = classType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Static);
-					if (p != null)
-						return (System.Windows.Input.ICommand)p.GetValue(null, null);
-					FieldInfo f = classType.GetField(propertyName, BindingFlags.Public | BindingFlags.Static);
-					if (f != null)
-						return (System.Windows.Input.ICommand)f.GetValue(null);
-				}
 			}
 			return null;
 		}
@@ -212,14 +195,14 @@ namespace ICSharpCode.Core.Presentation
 			
 			switch (type) {
 				case "Separator":
-					return new ConditionalSeparator(codon, descriptor.Caller, false, descriptor.Conditions);
+					return new ConditionalSeparator(codon, descriptor.Parameter, false, descriptor.Conditions);
 				case "CheckBox":
-					return new MenuCheckBox(context.InputBindingOwner, codon, descriptor.Caller, descriptor.Conditions);
+					return new MenuCheckBox(context.InputBindingOwner, codon, descriptor.Parameter, descriptor.Conditions);
 				case "Item":
 				case "Command":
-					return new MenuCommand(context.InputBindingOwner, codon, descriptor.Caller, createCommand, context.ActivationMethod, descriptor.Conditions);
+					return new MenuCommand(context.InputBindingOwner, codon, descriptor.Parameter, createCommand, context.ActivationMethod, descriptor.Conditions);
 				case "Menu":
-					var item = new CoreMenuItem(codon, descriptor.Caller, descriptor.Conditions) {
+					var item = new CoreMenuItem(codon, descriptor.Parameter, descriptor.Conditions) {
 						ItemsSource = new object[1],
 						SetEnabled = true
 					};
@@ -235,7 +218,7 @@ namespace ICSharpCode.Core.Presentation
 					IMenuItemBuilder builder = codon.AddIn.CreateObject(codon.Properties["class"]) as IMenuItemBuilder;
 					if (builder == null)
 						throw new NotSupportedException("Menu item builder " + codon.Properties["class"] + " does not implement IMenuItemBuilder");
-					return new MenuItemBuilderPlaceholder(builder, descriptor.Codon, descriptor.Caller);
+					return new MenuItemBuilderPlaceholder(builder, descriptor.Codon, descriptor.Parameter);
 				default:
 					throw new NotSupportedException("unsupported menu item type : " + type);
 			}
@@ -249,9 +232,6 @@ namespace ICSharpCode.Core.Presentation
 		{
 			return label.Replace("_", "__").Replace("&", "_");
 		}
-		
-		// HACK: find a better way to allow the host app to process link commands
-		public static Func<string, ICommand> LinkCommandCreator { get; set; }
 		
 		/// <summary>
 		/// Creates an KeyGesture for a shortcut.

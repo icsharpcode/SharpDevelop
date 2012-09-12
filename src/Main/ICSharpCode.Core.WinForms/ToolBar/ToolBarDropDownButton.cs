@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace ICSharpCode.Core.WinForms
 {
@@ -32,7 +33,6 @@ namespace ICSharpCode.Core.WinForms
 			}
 			if (menuBuilder == null && codon.Properties.Contains("class")) {
 				menuBuilder = codon.AddIn.CreateObject(StringParser.Parse(codon.Properties["class"])) as ICommand;
-				menuBuilder.Owner = this;
 			}
 
 			UpdateStatus();

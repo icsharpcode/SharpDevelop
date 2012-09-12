@@ -27,9 +27,9 @@ namespace ICSharpCode.Core
 		
 		public object BuildItem(BuildItemArgs args)
 		{
-			var container = (IServiceContainer)args.Caller;
+			var container = (IServiceContainer)args.Parameter;
 			if (container == null)
-				throw new InvalidOperationException("Expected the owner to be a service container");
+				throw new InvalidOperationException("Expected the parameter to be a service container");
 			Type interfaceType = args.AddIn.FindType(args.Codon.Id);
 			if (interfaceType != null) {
 				string className = args.Codon.Properties["class"];

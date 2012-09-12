@@ -61,8 +61,8 @@ namespace ICSharpCode.Core.WinForms
 		{
 			base.OnClick(e);
 			if (codon != null) {
-				MenuCommand.Run();
-				Checked = MenuCommand.IsChecked;
+				MenuCommand.Execute(caller);
+				Checked = MenuCommand.IsChecked(caller);
 			}
 		}
 		
@@ -88,7 +88,7 @@ namespace ICSharpCode.Core.WinForms
 				} else {
 					CreateMenuCommand();
 					if (menuCommand != null) {
-						Checked = menuCommand.IsChecked;
+						Checked = menuCommand.IsChecked(caller);
 					}
 				}
 			}

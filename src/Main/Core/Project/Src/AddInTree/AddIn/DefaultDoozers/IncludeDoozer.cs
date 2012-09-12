@@ -44,11 +44,11 @@ namespace ICSharpCode.Core
 			string path = codon.Properties["path"];
 			if (item != null && item.Length > 0) {
 				// include item
-				return args.AddInTree.BuildItem(item, args.Caller, args.Conditions);
+				return args.AddInTree.BuildItem(item, args.Parameter, args.Conditions);
 			} else if (path != null && path.Length > 0) {
 				// include path (=multiple items)
 				AddInTreeNode node = args.AddInTree.GetTreeNode(path);
-				return new IncludeReturnItem(node, args.Caller, args.Conditions);
+				return new IncludeReturnItem(node, args.Parameter, args.Conditions);
 			} else {
 				throw new CoreException("<Include> requires the attribute 'item' (to include one item) or the attribute 'path' (to include multiple items)");
 			}
@@ -57,19 +57,19 @@ namespace ICSharpCode.Core
 		sealed class IncludeReturnItem : IBuildItemsModifier
 		{
 			readonly AddInTreeNode node;
-			readonly object caller;
+			readonly object parameter;
 			readonly IEnumerable<ICondition> additionalConditions;
 			
-			public IncludeReturnItem(AddInTreeNode node, object caller, IEnumerable<ICondition> additionalConditions)
+			public IncludeReturnItem(AddInTreeNode node, object parameter, IEnumerable<ICondition> additionalConditions)
 			{
 				this.node = node;
-				this.caller = caller;
+				this.parameter = parameter;
 				this.additionalConditions = additionalConditions;
 			}
 			
 			public void Apply(IList items)
 			{
-				foreach (object o in node.BuildChildItems<object>(caller, additionalConditions)) {
+				foreach (object o in node.BuildChildItems<object>(parameter, additionalConditions)) {
 					items.Add(o);
 				}
 			}

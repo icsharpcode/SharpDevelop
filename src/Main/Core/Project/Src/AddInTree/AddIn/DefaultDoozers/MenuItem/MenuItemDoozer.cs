@@ -65,7 +65,7 @@ namespace ICSharpCode.Core
 		
 		public object BuildItem(BuildItemArgs args)
 		{
-			return new MenuItemDescriptor(args.Caller, args.Codon, args.BuildSubItems<object>(), args.Conditions);
+			return new MenuItemDescriptor(args.Parameter, args.Codon, args.BuildSubItems<object>(), args.Conditions);
 		}
 	}
 	
@@ -75,16 +75,16 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public sealed class MenuItemDescriptor
 	{
-		public readonly object Caller;
+		public readonly object Parameter;
 		public readonly Codon Codon;
 		public readonly IList SubItems;
-		public readonly IEnumerable<ICondition> Conditions;
+		public readonly IReadOnlyCollection<ICondition> Conditions;
 		
-		public MenuItemDescriptor(object caller, Codon codon, IList subItems, IEnumerable<ICondition> conditions)
+		public MenuItemDescriptor(object parameter, Codon codon, IList subItems, IReadOnlyCollection<ICondition> conditions)
 		{
 			if (codon == null)
 				throw new ArgumentNullException("codon");
-			this.Caller = caller;
+			this.Parameter = parameter;
 			this.Codon = codon;
 			this.SubItems = subItems;
 			this.Conditions = conditions;
