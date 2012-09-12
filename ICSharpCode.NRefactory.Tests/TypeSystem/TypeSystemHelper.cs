@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public static ITypeDefinition CreateCompilationAndResolve(IUnresolvedTypeDefinition unresolvedTypeDefinition)
 		{
 			var compilation = CreateCompilation(unresolvedTypeDefinition);
-			return unresolvedTypeDefinition.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
+			return compilation.MainAssembly.GetTypeDefinition(unresolvedTypeDefinition.FullTypeName);
 		}
 	}
 }

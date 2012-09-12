@@ -30,7 +30,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// A full type name can only represent type definitions, not arbitrary types.
 	/// It does not include any type arguments, and can not refer to array or pointer types.
 	/// 
-	/// 
+	/// A full type name represented as reflection name has the syntax:
+	/// <c>NamespaceName '.' TopLevelTypeName ['`'#] { '+' NestedTypeName ['`'#] }</c>
 	/// </remarks>
 	[Serializable]
 	public struct FullTypeName : IEquatable<FullTypeName>

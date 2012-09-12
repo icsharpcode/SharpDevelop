@@ -43,20 +43,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </param>
 		/// <returns>
 		/// Returns the resolved type.
-		/// In case of an error, returns <see cref="SpecialType.UnknownType"/>.
+		/// In case of an error, returns an unknown type (<see cref="TypeKind.Unknown"/>).
 		/// Never returns null.
 		/// </returns>
 		IType Resolve(ITypeResolveContext context);
 	}
 	
-	public interface ITypeResolveContext
+	public interface ITypeResolveContext : ICompilationProvider
 	{
-		/// <summary>
-		/// Gets the parent compilation.
-		/// This property never returns null.
-		/// </summary>
-		ICompilation Compilation { get; }
-		
 		/// <summary>
 		/// Gets the current assembly.
 		/// This property may return null if this context does not specify any assembly.

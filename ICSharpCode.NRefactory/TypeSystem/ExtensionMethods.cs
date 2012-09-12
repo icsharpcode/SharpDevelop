@@ -96,11 +96,30 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		sealed class TypeClassificationVisitor : TypeVisitor
 		{
 			internal bool isOpen;
+			internal IEntity typeParameterOwner;
+			int typeParameterOwnerNestingLevel;
 			
 			public override IType VisitTypeParameter(ITypeParameter type)
 			{
 				isOpen = true;
+				// If both classes and methods, or different classes (nested types)
+				// are involved, find the most specific one
+				int newNestingLevel = GetNestingLevel(type.Owner);
+				if (newNestingLevel > typeParameterOwnerNestingLevel) {
+					typeParameterOwner = type.Owner;
+					typeParameterOwnerNestingLevel = newNestingLevel;
+				}
 				return base.VisitTypeParameter(type);
+			}
+			
+			static int GetNestingLevel(IEntity entity)
+			{
+				int level = 0;
+				while (entity != null) {
+					level++;
+					entity = entity.DeclaringTypeDefinition;
+				}
+				return level;
 			}
 		}
 		
@@ -124,6 +143,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			TypeClassificationVisitor v = new TypeClassificationVisitor();
 			type.AcceptVisitor(v);
 			return v.isOpen;
+		}
+		
+		/// <summary>
+		/// Gets the entity that owns the type parameters occurring in the specified type.
+		/// If both class and method type parameters are present, the method is returned.
+		/// Returns null if the specified type is closed.
+		/// </summary>
+		/// <seealso cref="IsOpen"/>
+		static IEntity GetTypeParameterOwner(IType type)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			TypeClassificationVisitor v = new TypeClassificationVisitor();
+			type.AcceptVisitor(v);
+			return v.typeParameterOwner;
 		}
 		
 		/// <summary>
@@ -162,7 +196,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentNullException("compilation");
 			if (type == null)
 				return null;
-			return type.ToTypeReference().Resolve(compilation.TypeResolveContext);
+			var compilationProvider = type as ICompilationProvider;
+			if (compilationProvider != null && compilationProvider.Compilation == compilation)
+				return type;
+			IEntity typeParameterOwner = GetTypeParameterOwner(type);
+			IEntity importedTypeParameterOwner = compilation.Import(typeParameterOwner);
+			if (importedTypeParameterOwner != null) {
+				return type.ToTypeReference().Resolve(new SimpleTypeResolveContext(importedTypeParameterOwner));
+			} else {
+				return type.ToTypeReference().Resolve(compilation.TypeResolveContext);
+			}
 		}
 		
 		/// <summary>

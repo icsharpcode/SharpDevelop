@@ -176,7 +176,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				get { return EmptyList<IAssembly>.Instance; }
 			}
 			
-			ICompilation IResolved.Compilation {
+			ICompilation ICompilationProvider.Compilation {
 				get { return parentNamespace.Compilation; }
 			}
 			

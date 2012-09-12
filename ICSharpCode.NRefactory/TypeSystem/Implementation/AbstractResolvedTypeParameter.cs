@@ -24,7 +24,7 @@ using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
-	public abstract class AbstractTypeParameter : ITypeParameter
+	public abstract class AbstractTypeParameter : ITypeParameter, ICompilationProvider
 	{
 		readonly ICompilation compilation;
 		readonly EntityType ownerType;

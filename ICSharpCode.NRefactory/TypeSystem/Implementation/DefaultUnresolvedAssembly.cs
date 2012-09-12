@@ -429,7 +429,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					return null;
 				}
 				
-				ICompilation IResolved.Compilation {
+				ICompilation ICompilationProvider.Compilation {
 					get { return assembly.compilation; }
 				}
 				
