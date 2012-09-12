@@ -4,6 +4,10 @@
        description        = "Help Integration for SharpDevelop"
        addInManagerHidden = "preinstalled">
 	
+	<Manifest>
+		<Identity name = "ICSharpCode.HelpViewer"/>
+	</Manifest>
+	
 	<Runtime>
 		<Import assembly = "HelpViewer.dll"/>
 	</Runtime>
