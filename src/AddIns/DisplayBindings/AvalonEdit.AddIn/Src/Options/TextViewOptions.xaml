@@ -42,6 +42,8 @@
 						Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.AtRowLabel}" />
 					<widgets:NumericUpDown
 						Margin="0, 5"
+						Minimum="1"
+						Maximum="999"
 						Value="{core:OptionBinding local:CodeEditorOptions.ColumnRulerPosition}" />
 				</StackPanel>
 			</widgets:StackPanelWithSpacing>
