@@ -100,7 +100,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				}
 				if (type == null) {
 					var compilation = context.Compilation;
-					foreach (var asm in (context.CurrentAssembly != null ? new[] { context.CurrentAssembly }.Concat(compilation.Assemblies) : compilation.Assemblies)) {
+					foreach (var asm in compilation.Assemblies) {
 						type = asm.GetTypeDefinition(fullTypeName);
 						if (type != null)
 							break;
