@@ -35,19 +35,22 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   IssueMarker = IssueMarker.GrayOut)]
 	public class LocalVariableNotUsedIssue : VariableNotUsedIssue
 	{
-		internal override GatherVisitorBase GetGatherVisitor (BaseRefactoringContext context, SyntaxTree unit)
+		internal override GatherVisitorBase GetGatherVisitor (BaseRefactoringContext context)
 		{
-			return new GatherVisitor (context, unit);
+			return new GatherVisitor (context, this);
 		}
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			SyntaxTree unit;
+			LocalReferenceFinder referenceFinder;
 
-			public GatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit)
+			VariableNotUsedIssue inspector;
+
+			public GatherVisitor (BaseRefactoringContext ctx, VariableNotUsedIssue inspector)
 				: base (ctx)
 			{
-				this.unit = unit;
+				this.inspector = inspector;
+				this.referenceFinder = new LocalReferenceFinder(ctx);
 			}
 
 			public override void VisitVariableInitializer (VariableInitializer variableInitializer)
@@ -65,7 +68,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (resolveResult == null)
 					return;
 
-				if (FindUsage (ctx, unit, resolveResult.Variable, variableInitializer))
+				var b = inspector.FindUsage(referenceFinder, decl.Parent, resolveResult.Variable, variableInitializer);
+				if (b)
 					return;
 
 				AddIssue (variableInitializer.NameToken, ctx.TranslateString ("Remove unused local variable"),
@@ -90,7 +94,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (resolveResult == null)
 					return;
 
-				if (FindUsage (ctx, unit, resolveResult.Variable, foreachStatement.VariableNameToken))
+				if (inspector.FindUsage (referenceFinder, foreachStatement, resolveResult.Variable, foreachStatement.VariableNameToken))
 					return;
 
 				AddIssue (foreachStatement.VariableNameToken, ctx.TranslateString ("Local variable is never used"));

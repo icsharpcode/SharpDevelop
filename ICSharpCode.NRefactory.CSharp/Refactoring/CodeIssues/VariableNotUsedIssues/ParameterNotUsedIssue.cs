@@ -38,19 +38,22 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	public class ParameterNotUsedIssue : VariableNotUsedIssue
 	{
 
-		internal override GatherVisitorBase GetGatherVisitor (BaseRefactoringContext context, SyntaxTree unit)
+		internal override GatherVisitorBase GetGatherVisitor (BaseRefactoringContext context)
 		{
-			return new GatherVisitor (context, unit);
+			return new GatherVisitor (context, this);
 		}
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			SyntaxTree unit;
+			VariableNotUsedIssue inspector;
 
-			public GatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit)
+			LocalReferenceFinder referenceFinder;
+
+			public GatherVisitor (BaseRefactoringContext ctx, VariableNotUsedIssue inspector)
 				: base (ctx)
 			{
-				this.unit = unit;
+				this.inspector = inspector;
+				this.referenceFinder = new LocalReferenceFinder(ctx);
 			}
 
 			public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
@@ -81,7 +84,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var resolveResult = ctx.Resolve (parameterDeclaration) as LocalResolveResult;
 				if (resolveResult == null)
 					return;
-				if (FindUsage (ctx, unit, resolveResult.Variable, parameterDeclaration))
+
+				if (inspector.FindUsage (referenceFinder, parameterDeclaration.Parent, resolveResult.Variable, parameterDeclaration))
 					return;
 
 				AddIssue (parameterDeclaration.NameToken, ctx.TranslateString ("Parameter is never used"));

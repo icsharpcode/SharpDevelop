@@ -26,35 +26,29 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public abstract class VariableNotUsedIssue : ICodeIssueProvider
 	{
-		static FindReferences refFinder = new FindReferences ();
-
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
 		{
 			var unit = context.RootNode as SyntaxTree;
 			if (unit == null)
 				return Enumerable.Empty<CodeIssue> ();
-			return GetGatherVisitor(context, unit).GetIssues ();
+			return GetGatherVisitor(context).GetIssues ();
 		}
 
-		protected static bool FindUsage (BaseRefactoringContext context, SyntaxTree unit, IVariable variable,
-										 AstNode declaration)
+		public bool FindUsage (LocalReferenceFinder referenceFinder, AstNode rootNode, IVariable variable, AstNode declaration)
 		{
 			var found = false;
-			refFinder.FindLocalReferences (variable, context.UnresolvedFile, unit, context.Compilation,
-				(node, resolveResult) =>
-				{
-					found = found || node != declaration;
-				}, context.CancellationToken);
+			referenceFinder.FindReferences (rootNode, variable,	(node, resolveResult) => {
+				found |= node != declaration;
+			});
 			return found;
 		}
 
-		internal abstract GatherVisitorBase GetGatherVisitor (BaseRefactoringContext context, SyntaxTree unit);
+		internal abstract GatherVisitorBase GetGatherVisitor (BaseRefactoringContext context);
 	}
 }
