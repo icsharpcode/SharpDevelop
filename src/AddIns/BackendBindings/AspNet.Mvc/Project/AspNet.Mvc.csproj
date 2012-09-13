@@ -122,6 +122,10 @@
     <Compile Include="Src\AddMvcViewToProjectViewModel.cs" />
     <Compile Include="Src\BooleanToVisibilityConverter.cs" />
     <Compile Include="Src\CloseDialogBehaviour.cs" />
+    <Compile Include="Src\Completion\RazorCSharpCompletionBinding.cs" />
+    <Compile Include="Src\Completion\RazorCSharpDotCompletionDataProvider.cs" />
+    <Compile Include="Src\Completion\RazorCSharpExpressionFinder.cs" />
+    <Compile Include="Src\Completion\RazorCSharpParser.cs" />
     <Compile Include="Src\CurrentAppDomain.cs" />
     <Compile Include="Src\CurrentAppDomainFactory.cs" />
     <Compile Include="Src\DelegateCommand.cs" />
@@ -257,6 +261,7 @@
     <Folder Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML" />
     <Folder Include="Resources" />
     <Folder Include="Src\Folding" />
+    <Folder Include="Src\Completion" />
     <Folder Include="Src\WebProjectOptions" />
   </ItemGroup>
   <ItemGroup>

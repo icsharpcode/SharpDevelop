@@ -124,4 +124,16 @@
 			class="ICSharpCode.AspNet.Mvc.WebProjectOptionsPanel"/>
 		</ComplexCondition>
 	</Path>
+	
+	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+		<CodeCompletionBinding id = "RazorCSharp" extensions = ".cshtml" class = "ICSharpCode.AspNet.Mvc.Completion.RazorCSharpCompletionBinding"/>
+	</Path>
+
+	<Path name = "/Workspace/Parser">
+		<Parser
+			id = "RazorCSharp"
+			supportedextensions = ".cshtml"
+			projectfileextension = ".csproj"
+			class = "ICSharpCode.AspNet.Mvc.Completion.RazorCSharpParser"/>
+	</Path>
 </AddIn>
