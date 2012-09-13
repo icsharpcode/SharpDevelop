@@ -332,4 +332,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public void Foo (int? bar = 42) { }
 	}
 
+	public class AccessibilityTest
+	{
+		public void Public() {}
+		internal void Internal() {}
+		protected internal void ProtectedInternal() {}
+		internal protected void InternalProtected() {}
+		protected void Protected() {}
+		private void Private() {}
+		void None() {}
+	}
 }

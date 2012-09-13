@@ -1213,5 +1213,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var method = type.GetMethods ().Single (m => m.Name == "Foo");
 			Assert.AreEqual(42, method.Parameters.Single ().ConstantValue);
 		}
+		
+		[Test]
+		public void AccessibilityTests()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(AccessibilityTest));
+			Assert.AreEqual(Accessibility.Public, type.Methods.Single(m => m.Name == "Public").Accessibility);
+			Assert.AreEqual(Accessibility.Internal, type.Methods.Single(m => m.Name == "Internal").Accessibility);
+			Assert.AreEqual(Accessibility.ProtectedOrInternal, type.Methods.Single(m => m.Name == "ProtectedInternal").Accessibility);
+			Assert.AreEqual(Accessibility.ProtectedOrInternal, type.Methods.Single(m => m.Name == "InternalProtected").Accessibility);
+			Assert.AreEqual(Accessibility.Protected, type.Methods.Single(m => m.Name == "Protected").Accessibility);
+			Assert.AreEqual(Accessibility.Private, type.Methods.Single(m => m.Name == "Private").Accessibility);
+			Assert.AreEqual(Accessibility.Private, type.Methods.Single(m => m.Name == "None").Accessibility);
+		}
 	}
 }
