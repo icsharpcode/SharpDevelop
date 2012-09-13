@@ -54,8 +54,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		Volatile  = 0x4000,
 		Unsafe    = 0x8000,
 		Async     = 0x10000,
-		
-		VisibilityMask = Private | Internal | Protected | Public,
+
+		ProtectedOrInternal = Protected  | Internal,
+		ProtectedAndInternal = 0x20000,
+		VisibilityMask = Private | Internal | Protected | Public | ProtectedAndInternal,
 		
 		/// <summary>
 		/// Special value used to match any modifiers during pattern matching.

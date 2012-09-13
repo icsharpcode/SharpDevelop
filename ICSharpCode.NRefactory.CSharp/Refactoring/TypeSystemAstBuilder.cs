@@ -753,8 +753,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				case Accessibility.Internal:
 					return Modifiers.Internal;
 				case Accessibility.ProtectedOrInternal:
+					return Modifiers.ProtectedOrInternal;
 				case Accessibility.ProtectedAndInternal:
-					return Modifiers.Protected | Modifiers.Internal;
+					return Modifiers.ProtectedAndInternal;
 				default:
 					return Modifiers.None;
 			}

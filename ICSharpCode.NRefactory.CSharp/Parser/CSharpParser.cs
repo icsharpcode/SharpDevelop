@@ -1093,14 +1093,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				if (location == null || location.Modifiers == null)
 					return;
+				Modifiers entityModifierMask = Modifiers.None;
 				foreach (var modifier in location.Modifiers) {
 					ICSharpCode.NRefactory.CSharp.Modifiers mod;
 					if (!modifierTable.TryGetValue (modifier.Item1, out mod)) {
 						Console.WriteLine ("modifier " + modifier.Item1 + " can't be converted,");
 					}
+
+					if (mod == Modifiers.Internal && entityModifierMask.HasFlag (Modifiers.Protected)) {
+						entityModifierMask = (entityModifierMask & ~Modifiers.Protected) | Modifiers.ProtectedAndInternal;
+					} else {
+						entityModifierMask |= mod;
+					}
 					
 					parent.AddChild (new CSharpModifierToken (Convert (modifier.Item2), mod), EntityDeclaration.ModifierRole);
 				}
+				parent.Modifiers |= entityModifierMask;
 			}
 			
 			public override void Visit (Property p)

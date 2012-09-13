@@ -76,7 +76,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			Modifiers m = 0;
 			foreach (CSharpModifierToken t in node.GetChildrenByRole (ModifierRole)) {
-				m |= t.Modifier;
+				if (t.Modifier == Modifiers.Internal && m.HasFlag (Modifiers.Protected)) {
+					m = (m & ~Modifiers.Protected) | Modifiers.ProtectedAndInternal;
+				} else {
+					m |= t.Modifier;
+				}
 			}
 			return m;
 		}
@@ -89,17 +93,38 @@ namespace ICSharpCode.NRefactory.CSharp
 				if ((m & newValue) != 0) {
 					if ((m & oldValue) == 0) {
 						// Modifier was added
-						var newToken = new CSharpModifierToken(TextLocation.Empty, m);
-						node.InsertChildAfter(insertionPos, newToken, ModifierRole);
-						insertionPos = newToken;
+						if (m == Modifiers.ProtectedAndInternal) {
+							// This modifier is a special case - it consists out of 2 tokens. 
+							// note that protected or internal is  handled by the ordering of the AllModifiers array.
+							var newToken = new CSharpModifierToken(TextLocation.Empty, Modifiers.Protected);
+							node.InsertChildAfter(insertionPos, newToken, ModifierRole);
+							insertionPos = newToken;
+
+							newToken = new CSharpModifierToken(TextLocation.Empty, Modifiers.Internal);
+							node.InsertChildAfter(insertionPos, newToken, ModifierRole);
+							insertionPos = newToken;
+						} else {
+							var newToken = new CSharpModifierToken(TextLocation.Empty, m);
+							node.InsertChildAfter(insertionPos, newToken, ModifierRole);
+							insertionPos = newToken;
+						}
 					} else {
 						// Modifier already exists
-						insertionPos = node.GetChildrenByRole(ModifierRole).First(t => t.Modifier == m);
+						if (m == Modifiers.ProtectedAndInternal) {
+							insertionPos = node.GetChildrenByRole(ModifierRole).First(t => t.Modifier == Modifiers.Internal);
+						} else {
+							insertionPos = node.GetChildrenByRole(ModifierRole).First(t => t.Modifier == m);
+						}
 					}
 				} else {
 					if ((m & oldValue) != 0) {
 						// Modifier was removed
-						node.GetChildrenByRole (ModifierRole).First(t => t.Modifier == m).Remove();
+						if (m == Modifiers.ProtectedAndInternal) {
+							node.GetChildrenByRole (ModifierRole).First(t => t.Modifier == Modifiers.Protected).Remove();
+							node.GetChildrenByRole (ModifierRole).First(t => t.Modifier == Modifiers.Internal).Remove();
+						} else {
+							node.GetChildrenByRole (ModifierRole).First(t => t.Modifier == m).Remove();
+						}
 					}
 				}
 			}

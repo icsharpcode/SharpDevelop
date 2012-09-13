@@ -30,9 +30,9 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 			ParseUtilCSharp.AssertTypeMember(
 				"int[,,,] myField;",
 				new FieldDeclaration {
-					ReturnType = new PrimitiveType("int").MakeArrayType(4),
-					Variables = { new VariableInitializer("myField") }
-				});
+				ReturnType = new PrimitiveType("int").MakeArrayType(4),
+				Variables = { new VariableInitializer("myField") }
+			});
 		}
 		
 		[Test]
@@ -77,8 +77,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 			ParseUtilCSharp.AssertTypeMember(
 				"public unsafe fixed int Field[100];",
 				new FixedFieldDeclaration() {
-					Modifiers =  Modifiers.Public | Modifiers.Unsafe,
-					ReturnType = new PrimitiveType("int"),
+				Modifiers =  Modifiers.Public | Modifiers.Unsafe,
+				ReturnType = new PrimitiveType("int"),
 					Variables = {
 						new FixedVariableInitializer {
 							Name = "Field",
@@ -86,6 +86,32 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 						}
 					}
 				});
+		}
+
+		[Test]
+		public void InternalAndProtectedFieldTest()
+		{
+			ParseUtilCSharp.AssertTypeMember(
+				"protected internal int myField;",
+				new FieldDeclaration {
+				Modifiers =  Modifiers.ProtectedAndInternal,
+				ReturnType = new PrimitiveType("int"),
+				Variables = { new VariableInitializer("myField") }
+			}
+			);
+		}
+
+		[Test]
+		public void InternalOrProtectedFieldTest()
+		{
+			ParseUtilCSharp.AssertTypeMember(
+				"internal protected int myField;",
+				new FieldDeclaration {
+				Modifiers =  Modifiers.ProtectedOrInternal,
+				ReturnType = new PrimitiveType("int"),
+				Variables = { new VariableInitializer("myField") }
+			}
+			);
 		}
 	}
 }
