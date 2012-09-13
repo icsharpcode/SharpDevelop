@@ -48,14 +48,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			static FindReferences refFinder = new FindReferences ();
-
-			SyntaxTree unit;
+			LocalReferenceFinder referenceFinder;
 
 			public GatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit)
 				: base (ctx)
 			{
-				this.unit = unit;
+				referenceFinder = new LocalReferenceFinder(ctx);
 			}
 
 			public override void VisitParameterDeclaration (ParameterDeclaration parameterDeclaration)
@@ -89,11 +87,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				if (rootStatement == null || resolveResult == null)
 					return;
+
 				var references = new HashSet<AstNode> ();
 				var refStatements = new HashSet<Statement> ();
 				var usedInLambda = false;
-				refFinder.FindLocalReferences (resolveResult.Variable, ctx.UnresolvedFile, unit, ctx.Compilation,
-					(astNode, rr) => {
+				referenceFinder.FindReferences (rootStatement, resolveResult.Variable, (astNode, rr) => {
 						if (usedInLambda || astNode == variableDecl)
 							return;
 
@@ -116,7 +114,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							}
 							parent = parent.Parent;
 						}
-					}, ctx.CancellationToken);
+					});
 
 				// stop analyzing if the variable is used in any lambda expression or anonymous method
 				if (usedInLambda)
