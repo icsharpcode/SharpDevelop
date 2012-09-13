@@ -35,7 +35,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public abstract class AccessToClosureIssue : ICodeIssueProvider
 	{
-		static FindReferences refFinder = new FindReferences ();
 		static ControlFlowGraphBuilder cfgBuilder = new ControlFlowGraphBuilder ();
 
 		public string Title
@@ -75,7 +74,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			SyntaxTree unit;
 			string title;
 			AccessToClosureIssue issueProvider;
 
@@ -84,7 +82,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				: base (context)
 			{
 				this.title = context.TranslateString (issueProvider.Title);
-				this.unit = unit;
+				this.referenceFinder = new LocalReferenceFinder(context);
 				this.issueProvider = issueProvider;
 			}
 
@@ -124,10 +122,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				base.VisitParameterDeclaration (parameterDeclaration);
 			}
 
-			void FindLocalReferences (IVariable variable, FoundReferenceCallback callback)
+			LocalReferenceFinder referenceFinder;
+
+			void FindLocalReferences (AstNode rootNode, IVariable variable, FoundReferenceCallback callback)
 			{
-				refFinder.FindLocalReferences (variable, ctx.UnresolvedFile, unit, ctx.Compilation, callback, 
-											   ctx.CancellationToken);
+				referenceFinder.FindReferences(rootNode, variable, callback);
 			}
 
 			void CheckVariable (IVariable variable, Statement env)
@@ -139,7 +138,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var envLookup = new Dictionary<AstNode, Environment> ();
 				envLookup [env] = root;
 
-				FindLocalReferences (variable, (astNode, resolveResult) => 
+				FindLocalReferences (env, variable, (astNode, resolveResult) => 
 					AddNode (envLookup, new Node (astNode, issueProvider.GetNodeKind (astNode))));
 
 				root.SortChildren ();
