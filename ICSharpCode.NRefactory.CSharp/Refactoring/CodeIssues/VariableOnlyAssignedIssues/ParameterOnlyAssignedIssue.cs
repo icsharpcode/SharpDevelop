@@ -35,19 +35,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   IssueMarker = IssueMarker.Underline)]
 	public class ParameterOnlyAssignedIssue : VariableOnlyAssignedIssue
 	{
-		internal override GatherVisitorBase GetGatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit)
+		internal override GatherVisitorBase GetGatherVisitor (BaseRefactoringContext ctx)
 		{
-			return new GatherVisitor (ctx, unit);
+			return new GatherVisitor (ctx);
 		}
 
 		private class GatherVisitor : GatherVisitorBase
 		{
-			SyntaxTree unit;
-
-			public GatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit)
+			LocalReferenceFinder referenceFinder;
+			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)
 			{
-				this.unit = unit;
+				referenceFinder = new LocalReferenceFinder(ctx);
 			}
 
 			public override void VisitParameterDeclaration (ParameterDeclaration parameterDeclaration)
@@ -58,7 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (resolveResult == null)
 					return;
 				if (parameterDeclaration.ParameterModifier == ParameterModifier.Out || parameterDeclaration.ParameterModifier == ParameterModifier.Ref
-				    || !TestOnlyAssigned (ctx, unit, resolveResult.Variable))
+				    || !TestOnlyAssigned (referenceFinder, parameterDeclaration.Parent, resolveResult.Variable))
 					return;
 				AddIssue (parameterDeclaration.NameToken, 
 					ctx.TranslateString ("Parameter is assigned by its value is never used"));

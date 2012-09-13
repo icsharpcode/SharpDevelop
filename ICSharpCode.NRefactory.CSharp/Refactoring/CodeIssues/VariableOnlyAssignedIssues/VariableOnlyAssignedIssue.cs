@@ -25,30 +25,22 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
-using System.Linq;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public abstract class VariableOnlyAssignedIssue : ICodeIssueProvider
 	{
-		static FindReferences refFinder = new FindReferences ();
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
 		{
-			var unit = context.RootNode as SyntaxTree;
-			if (unit == null)
-				return Enumerable.Empty<CodeIssue> ();
-			return GetGatherVisitor (context, unit).GetIssues ();
+			return GetGatherVisitor (context).GetIssues ();
 		}
 
-		protected static bool TestOnlyAssigned (BaseRefactoringContext ctx, SyntaxTree unit, IVariable variable)
+		protected static bool TestOnlyAssigned (LocalReferenceFinder referenceFinder, AstNode rootNode, IVariable variable)
 		{
 			var assignment = false;
 			var nonAssignment = false;
-			refFinder.FindLocalReferences (variable, ctx.UnresolvedFile, unit, ctx.Compilation,
-				(node, resolveResult) =>
-				{
+			referenceFinder.FindReferences (rootNode, variable, (node, resolveResult) => {
 					if (node is ParameterDeclaration)
 						return;
 
@@ -83,10 +75,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						}
 					}
 					nonAssignment = true;
-				}, ctx.CancellationToken);
+				});
 			return assignment && !nonAssignment;
 		}
 
-		internal abstract GatherVisitorBase GetGatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit);
+		internal abstract GatherVisitorBase GetGatherVisitor (BaseRefactoringContext ctx);
 	}
 }
