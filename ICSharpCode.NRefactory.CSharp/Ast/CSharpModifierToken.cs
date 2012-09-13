@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		// Not worth using a dictionary for such few elements.
 		// This table is sorted in the order that modifiers should be output when generating code.
 		static readonly Modifiers[] allModifiers = {
-			Modifiers.Public, Modifiers.Internal, Modifiers.Protected, Modifiers.Private, Modifiers.ProtectedAndInternal,
+			Modifiers.Public, Modifiers.Protected, Modifiers.Private, Modifiers.Internal,
 			Modifiers.New,
 			Modifiers.Unsafe,
 			Modifiers.Abstract, Modifiers.Virtual, Modifiers.Sealed, Modifiers.Static, Modifiers.Override,
@@ -89,8 +89,6 @@ namespace ICSharpCode.NRefactory.CSharp
 					return "internal";
 				case Modifiers.Protected:
 					return "protected";
-				case Modifiers.ProtectedAndInternal:
-					return "internal protected";
 				case Modifiers.Public:
 					return "public";
 				case Modifiers.Abstract:

@@ -829,12 +829,10 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			switch (modifiers & Modifiers.VisibilityMask) {
 				case Modifiers.Private:
 					return Accessibility.Private;
-				case Modifiers.ProtectedOrInternal: // Modifiers.Protected | Modifiers.Internal
-					return Accessibility.ProtectedOrInternal;
-				case Modifiers.ProtectedAndInternal:
-					return Accessibility.ProtectedAndInternal;
 				case Modifiers.Internal:
 					return Accessibility.Internal;
+				case Modifiers.Protected | Modifiers.Internal:
+					return Accessibility.ProtectedOrInternal;
 				case Modifiers.Protected:
 					return Accessibility.Protected;
 				case Modifiers.Public:
