@@ -503,6 +503,7 @@
     <Compile Include="Refactoring\CodeIssues\ParameterCanBeDemotedIssue\SupportsIndexingCriterion.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantWhereWithPredicateIssue.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertToInitializer\AccessPath.cs" />
+    <Compile Include="Refactoring\LocalReferenceFinder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
