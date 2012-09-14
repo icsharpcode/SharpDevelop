@@ -397,6 +397,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void ImplicitLongConstantExpressionConversion()
 		{
 			Assert.IsFalse(IntegerLiteralConversion(0L, typeof(int)));
+			Assert.IsFalse(IntegerLiteralConversion(0L, typeof(short)));
 			Assert.IsTrue(IntegerLiteralConversion(0L, typeof(long)));
 			Assert.IsTrue(IntegerLiteralConversion(0L, typeof(ulong)));
 			
