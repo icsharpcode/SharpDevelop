@@ -220,6 +220,14 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				};
 			}
 
+			public IParameterDataProvider CreateConstructorProvider(int startOffset, ICSharpCode.NRefactory.TypeSystem.IType type, AstNode skipNode)
+			{
+				Assert.IsTrue(type.Kind != TypeKind.Unknown);
+				return new Provider () {
+					Data = type.GetConstructors (m => m.Accessibility == Accessibility.Public)
+				};
+			}
+
 			public IParameterDataProvider CreateMethodDataProvider (int startOffset, IEnumerable<IMethod> methods)
 			{
 				return new Provider () {
