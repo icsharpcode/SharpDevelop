@@ -54,6 +54,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public override void VisitInvocationExpression(InvocationExpression invocationExpression)
 			{
 				base.VisitInvocationExpression(invocationExpression);
+
+				// Speed up the inspector by discarding some invocations early
+				var hasEligibleArgument = invocationExpression.Arguments.Any(argument => {
+					var primitiveArg = argument as PrimitiveExpression;
+					return primitiveArg != null && primitiveArg.Value is string;
+				});
+				if (!hasEligibleArgument)
+					return;
+
 				var invocationResolveResult = context.Resolve(invocationExpression) as CSharpInvocationResolveResult;
 				if (invocationResolveResult == null)
 					return;
@@ -65,7 +74,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				}
 				var primitiveArgument = formatArgument as PrimitiveExpression;
-				if (primitiveArgument == null || !(primitiveArgument.Value is String))
+				if (primitiveArgument == null || !(primitiveArgument.Value is string))
 					return;
 				var format = (string)primitiveArgument.Value;
 				var parsingResult = context.ParseFormatString(format);
