@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (typeRef == null)
 				return SpecialType.UnknownType;
 			foreach (IAssembly asm in compilation.Assemblies) {
-				var typeDef = asm.GetTypeDefinition(typeRef.Namespace, typeRef.Name, typeRef.TypeParameterCount);
+				var typeDef = asm.GetTypeDefinition(new TopLevelTypeName(typeRef.Namespace, typeRef.Name, typeRef.TypeParameterCount));
 				if (typeDef != null)
 					return typeDef;
 			}

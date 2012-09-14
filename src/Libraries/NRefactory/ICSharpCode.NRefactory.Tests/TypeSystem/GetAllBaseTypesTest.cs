@@ -83,7 +83,7 @@ namespace System.Collections.Generic {
 		
 		ITypeDefinition Resolve(IUnresolvedTypeDefinition typeDef)
 		{
-			return compilation.MainAssembly.GetTypeDefinition(typeDef);
+			return typeDef.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
 		}
 		
 		[Test]
@@ -135,8 +135,7 @@ namespace System.Collections.Generic {
 			// class C : C {}
 			var c = new DefaultUnresolvedTypeDefinition(string.Empty, "C");
 			c.BaseTypes.Add(c);
-			compilation = TypeSystemHelper.CreateCompilation(c);
-			ITypeDefinition resolvedC = Resolve(c);
+			ITypeDefinition resolvedC = TypeSystemHelper.CreateCompilationAndResolve(c);
 			Assert.AreEqual(new [] { resolvedC }, resolvedC.GetAllBaseTypes().ToArray());
 		}
 		

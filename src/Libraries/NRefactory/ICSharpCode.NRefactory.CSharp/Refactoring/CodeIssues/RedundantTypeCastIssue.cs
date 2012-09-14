@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -73,15 +74,43 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var invocationExpr = memberRefExpr.Parent as InvocationExpression;
 					if (invocationExpr != null && invocationExpr.Target == memberRefExpr) {
 						var invocationResolveResult = ctx.Resolve (invocationExpr) as InvocationResolveResult;
-						if (invocationResolveResult != null)
+						if (invocationResolveResult != null) {
 							return invocationResolveResult.Member.DeclaringType;
+						}
 					} else {
 						var memberResolveResult = ctx.Resolve (memberRefExpr) as MemberResolveResult;
-						if (memberResolveResult != null)
+						if (memberResolveResult != null) {
 							return memberResolveResult.Member.DeclaringType;
+						}
 					}
 				}
 				return ctx.GetExpectedType (typeCastNode);
+			}
+
+			bool IsExplicitImplementation(IType exprType, IType interfaceType, Expression typeCastNode)
+			{
+				var memberRefExpr = typeCastNode.Parent as MemberReferenceExpression;
+				if (memberRefExpr != null) {
+					var rr = ctx.Resolve(memberRefExpr);
+					var memberResolveResult = rr as MemberResolveResult;
+					if (memberResolveResult != null) {
+						foreach (var member in exprType.GetMembers (m => m.EntityType == memberResolveResult.Member.EntityType)) {
+							if (member.IsExplicitInterfaceImplementation && member.ImplementedInterfaceMembers.Contains (memberResolveResult.Member)) {
+								return true;
+							}
+						}
+					}
+
+					var methodGroupResolveResult = rr as MethodGroupResolveResult;
+					if (methodGroupResolveResult != null) {
+						foreach (var member in exprType.GetMethods ()) {
+							if (member.IsExplicitInterfaceImplementation && member.ImplementedInterfaceMembers.Any (m => methodGroupResolveResult.Methods.Contains ((IMethod)m))) {
+								return true;
+							}
+						}
+					}
+				}
+				return false;
 			}
 
 			void AddIssue (Expression typeCastNode, Expression expr, TextLocation start, TextLocation end)
@@ -94,9 +123,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				while (typeCastNode.Parent != null && typeCastNode.Parent is ParenthesizedExpression)
 					typeCastNode = (Expression)typeCastNode.Parent;
-
 				var expectedType = GetExpectedType (typeCastNode);
 				var exprType = ctx.Resolve (expr).Type;
+				if (expectedType.Kind == TypeKind.Interface && IsExplicitImplementation (exprType, expectedType, typeCastNode))
+					return;
 				if (exprType.GetAllBaseTypes ().Any (t => t.Equals(expectedType)))
 					AddIssue (typeCastNode, expr, castStart, castEnd);
 			}

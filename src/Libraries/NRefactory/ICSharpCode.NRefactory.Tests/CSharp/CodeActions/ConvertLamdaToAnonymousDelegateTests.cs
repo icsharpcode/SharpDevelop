@@ -47,8 +47,8 @@ class A
 	void F ()
 	{
 		System.Action<int, int> = delegate (int i1, int i2) {
-	System.Console.WriteLine (i1);
-};
+			System.Console.WriteLine (i1);
+		};
 	}
 }");
 		}
@@ -69,8 +69,8 @@ class A
 	void F ()
 	{
 		System.Action<int, int> = delegate (int i1, int i2) {
-	System.Console.WriteLine (i1);
-};
+			System.Console.WriteLine (i1);
+		};
 	}
 }");
 		}
@@ -91,8 +91,8 @@ class A
 	void F ()
 	{
 		System.Action = delegate {
-	System.Console.WriteLine ();
-};
+			System.Console.WriteLine ();
+		};
 	}
 }");
 		}

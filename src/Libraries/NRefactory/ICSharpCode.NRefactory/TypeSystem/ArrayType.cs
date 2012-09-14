@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Represents an array type.
 	/// </summary>
-	public sealed class ArrayType : TypeWithElementType
+	public sealed class ArrayType : TypeWithElementType, ICompilationProvider
 	{
 		readonly int dimensions;
 		readonly ICompilation compilation;
@@ -38,10 +38,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentOutOfRangeException("dimensions", dimensions, "dimensions must be positive");
 			this.compilation = compilation;
 			this.dimensions = dimensions;
+			
+			ICompilationProvider p = elementType as ICompilationProvider;
+			if (p != null && p.Compilation != compilation)
+				throw new InvalidOperationException("Cannot create an array type using a different compilation from the element type.");
 		}
 		
 		public override TypeKind Kind {
 			get { return TypeKind.Array; }
+		}
+		
+		public ICompilation Compilation {
+			get { return compilation; }
 		}
 		
 		public int Dimensions {

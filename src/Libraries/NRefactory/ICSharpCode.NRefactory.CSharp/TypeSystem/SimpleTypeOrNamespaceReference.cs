@@ -23,6 +23,7 @@ using System.Collections.ObjectModel;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.CSharp.TypeSystem
@@ -51,7 +52,11 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		}
 		
 		public IList<ITypeReference> TypeArguments {
-			get { return new ReadOnlyCollection<ITypeReference>(typeArguments); }
+			get { return typeArguments; }
+		}
+		
+		public NameLookupMode LookupMode {
+			get { return lookupMode; }
 		}
 		
 		/// <summary>
@@ -67,6 +72,12 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		{
 			var typeArgs = typeArguments.Resolve(resolver.CurrentTypeResolveContext);
 			return resolver.LookupSimpleNameOrTypeName(identifier, typeArgs, lookupMode);
+		}
+		
+		public override IType ResolveType(CSharpResolver resolver)
+		{
+			TypeResolveResult trr = Resolve(resolver) as TypeResolveResult;
+			return trr != null ? trr.Type : new UnknownType(null, identifier, typeArguments.Count);
 		}
 		
 		public override string ToString()

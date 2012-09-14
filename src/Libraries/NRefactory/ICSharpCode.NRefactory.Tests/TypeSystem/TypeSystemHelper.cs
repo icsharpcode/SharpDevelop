@@ -44,5 +44,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			pc = pc.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			return pc.CreateCompilation();
 		}
+		
+		public static ITypeDefinition CreateCompilationAndResolve(IUnresolvedTypeDefinition unresolvedTypeDefinition)
+		{
+			var compilation = CreateCompilation(unresolvedTypeDefinition);
+			return compilation.MainAssembly.GetTypeDefinition(unresolvedTypeDefinition.FullTypeName);
+		}
 	}
 }

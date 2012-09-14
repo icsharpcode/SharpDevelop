@@ -137,8 +137,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ParameterizedType crt = (ParameterizedType)rt.ReferencedType;
 			Assert.AreEqual("System.Collections.Generic.IDictionary", crt.FullName);
 			Assert.AreEqual("System.String", crt.TypeArguments[0].FullName);
-			// ? for NUnit.TestAttribute (because that assembly isn't in ctx)
-			Assert.AreEqual("System.Collections.Generic.IList`1[[?]]", crt.TypeArguments[1].ReflectionName);
+			// we know the name for TestAttribute, but not necessarily the namespace, as NUnit is not in the compilation
+			Assert.AreEqual("System.Collections.Generic.IList", crt.TypeArguments[1].FullName);
+			var testAttributeType = ((ParameterizedType)crt.TypeArguments[1]).TypeArguments.Single();
+			Assert.AreEqual("TestAttribute", testAttributeType.Name);
+			Assert.AreEqual(TypeKind.Unknown, testAttributeType.Kind);
+			// (more accurately, we know the namespace and reflection name if the type was loaded by cecil,
+			// but not if we parsed it from C#)
 		}
 		
 		[Test]
@@ -1207,6 +1212,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition type = GetTypeDefinition(typeof(ClassWithMethodThatHasNullableDefaultParameter));
 			var method = type.GetMethods ().Single (m => m.Name == "Foo");
 			Assert.AreEqual(42, method.Parameters.Single ().ConstantValue);
+		}
+		
+		[Test]
+		public void AccessibilityTests()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(AccessibilityTest));
+			Assert.AreEqual(Accessibility.Public, type.Methods.Single(m => m.Name == "Public").Accessibility);
+			Assert.AreEqual(Accessibility.Internal, type.Methods.Single(m => m.Name == "Internal").Accessibility);
+			Assert.AreEqual(Accessibility.ProtectedOrInternal, type.Methods.Single(m => m.Name == "ProtectedInternal").Accessibility);
+			Assert.AreEqual(Accessibility.ProtectedOrInternal, type.Methods.Single(m => m.Name == "InternalProtected").Accessibility);
+			Assert.AreEqual(Accessibility.Protected, type.Methods.Single(m => m.Name == "Protected").Accessibility);
+			Assert.AreEqual(Accessibility.Private, type.Methods.Single(m => m.Name == "Private").Accessibility);
+			Assert.AreEqual(Accessibility.Private, type.Methods.Single(m => m.Name == "None").Accessibility);
 		}
 	}
 }

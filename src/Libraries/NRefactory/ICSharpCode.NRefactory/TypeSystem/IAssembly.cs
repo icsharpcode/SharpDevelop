@@ -69,7 +69,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Represents an assembly.
 	/// </summary>
-	public interface IAssembly : IResolved
+	public interface IAssembly : ICompilationProvider
 	{
 		/// <summary>
 		/// Gets the original unresolved assembly.
@@ -115,7 +115,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the type definition for a top-level type.
 		/// </summary>
 		/// <remarks>This method uses ordinal name comparison, not the compilation's name comparer.</remarks>
-		ITypeDefinition GetTypeDefinition(string ns, string name, int typeParameterCount);
+		ITypeDefinition GetTypeDefinition(TopLevelTypeName topLevelTypeName);
 		
 		/// <summary>
 		/// Gets all non-nested types in the assembly.

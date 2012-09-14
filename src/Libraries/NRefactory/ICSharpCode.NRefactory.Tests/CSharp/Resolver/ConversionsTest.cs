@@ -397,6 +397,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void ImplicitLongConstantExpressionConversion()
 		{
 			Assert.IsFalse(IntegerLiteralConversion(0L, typeof(int)));
+			Assert.IsFalse(IntegerLiteralConversion(0L, typeof(short)));
 			Assert.IsTrue(IntegerLiteralConversion(0L, typeof(long)));
 			Assert.IsTrue(IntegerLiteralConversion(0L, typeof(ulong)));
 			
@@ -508,8 +509,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					) } ) }));
 			
 			ICompilation compilation = TypeSystemHelper.CreateCompilation(a, b);
-			ITypeDefinition resolvedA = compilation.MainAssembly.GetTypeDefinition(a);
-			ITypeDefinition resolvedB = compilation.MainAssembly.GetTypeDefinition(b);
+			ITypeDefinition resolvedA = compilation.MainAssembly.GetTypeDefinition(a.FullTypeName);
+			ITypeDefinition resolvedB = compilation.MainAssembly.GetTypeDefinition(b.FullTypeName);
 			
 			IType type1 = new ParameterizedType(resolvedB, new [] { compilation.FindType(KnownTypeCode.Double) });
 			IType type2 = new ParameterizedType(resolvedA, new [] { new ParameterizedType(resolvedB, new[] { compilation.FindType(KnownTypeCode.String) }) });

@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
 
@@ -36,7 +37,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			                     	Constraints = { new TypeParameterReference(EntityType.TypeDefinition, 0) }
 			                     });
 			
-			ITypeDefinition resolvedC = TypeSystemHelper.CreateCompilation(c).MainAssembly.GetTypeDefinition(c);
+			ITypeDefinition resolvedC = TypeSystemHelper.CreateCompilationAndResolve(c);
 			// At runtime, we might have T=System.ValueType and U=int, so C# can't inherit the 'class' constraint
 			// from one type parameter to another.
 			Assert.AreEqual(true, resolvedC.TypeParameters[0].IsReferenceType);
@@ -54,7 +55,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			                     	Constraints = { new TypeParameterReference(EntityType.TypeDefinition, 0) }
 			                     });
 			
-			ITypeDefinition resolvedC = TypeSystemHelper.CreateCompilation(c).MainAssembly.GetTypeDefinition(c);
+			ITypeDefinition resolvedC = TypeSystemHelper.CreateCompilationAndResolve(c);
 			// At runtime, we might have T=System.ValueType and U=int, so C# can't inherit the 'class' constraint
 			// from one type parameter to another.
 			Assert.AreEqual(true, resolvedC.TypeParameters[0].IsReferenceType);
@@ -73,11 +74,45 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			                     	Constraints = { new TypeParameterReference(EntityType.TypeDefinition, 0) }
 			                     });
 			
-			ITypeDefinition resolvedC = TypeSystemHelper.CreateCompilation(c).MainAssembly.GetTypeDefinition(c);
+			ITypeDefinition resolvedC = TypeSystemHelper.CreateCompilationAndResolve(c);
 			Assert.AreEqual(true, resolvedC.TypeParameters[0].IsReferenceType);
 			Assert.AreEqual(true, resolvedC.TypeParameters[1].IsReferenceType);
 			Assert.AreEqual("System.Collections.Generic.List`1[[System.String]]", resolvedC.TypeParameters[0].EffectiveBaseClass.ReflectionName);
 			Assert.AreEqual("System.Collections.Generic.List`1[[System.String]]", resolvedC.TypeParameters[1].EffectiveBaseClass.ReflectionName);
+		}
+		
+		[Test]
+		public void ImportOpenGenericType()
+		{
+			// class C<T, U> { void M<X>() {} }
+			
+			var c = new DefaultUnresolvedTypeDefinition(string.Empty, "C");
+			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 0, "T"));
+			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 1, "U"));
+			var m = new DefaultUnresolvedMethod(c, "M");
+			m.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.Method, 0, "X"));
+			c.Members.Add(m);
+			
+			var resolvedC1 = TypeSystemHelper.CreateCompilationAndResolve(c);
+			var resolvedM1 = resolvedC1.Methods.Single(method => method.Name == "M");
+			
+			var resolvedC2 = TypeSystemHelper.CreateCompilationAndResolve(c);
+			var resolvedM2 = resolvedC2.Methods.Single(method => method.Name == "M");
+			
+			// the types, methods and type parameters differ in the two compilations:
+			Assert.AreNotEqual(resolvedC1, resolvedC2);
+			Assert.AreNotEqual(resolvedM1, resolvedM2);
+			Assert.AreNotEqual(resolvedC1.TypeParameters[1], resolvedC2.TypeParameters[1]);
+			Assert.AreNotEqual(resolvedM1.TypeParameters[0], resolvedM2.TypeParameters[0]);
+			
+			// C<U, X>
+			var pt1 = new ParameterizedType(resolvedC1, new[] { resolvedC1.TypeParameters[1], resolvedM1.TypeParameters[0] });
+			var pt2 = (ParameterizedType)resolvedC2.Compilation.Import(pt1);
+			
+			// importing resulted in C<U, X> in the new compilation:
+			Assert.AreEqual(resolvedC2, pt2.GetDefinition());
+			Assert.AreEqual(resolvedC2.TypeParameters[1], pt2.TypeArguments[0]);
+			Assert.AreEqual(resolvedM2.TypeParameters[0], pt2.TypeArguments[1]);
 		}
 	}
 }

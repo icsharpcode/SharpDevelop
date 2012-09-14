@@ -100,7 +100,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"	void Test ()" + Environment.NewLine +
 				"	{" + Environment.NewLine +
 				"		int i;" + Environment.NewLine +
-				"		for (i = 1; i < 10; i++) {}" + Environment.NewLine +
+				"		for (i = 1; i < 10; i++) {" + Environment.NewLine +
+				"		}" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"}", result);
 		}

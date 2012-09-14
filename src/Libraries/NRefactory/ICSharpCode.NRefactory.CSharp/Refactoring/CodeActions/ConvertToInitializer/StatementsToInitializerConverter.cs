@@ -37,9 +37,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class StatementsToInitializerConverter
 	{
-		IDictionary<InitializerPath, Expression> initializers = new Dictionary<InitializerPath, Expression>();
+		IDictionary<AccessPath, Expression> accessPaths = new Dictionary<AccessPath, Expression>();
 		IList<Comment> comments = new List<Comment>();
-		InitializerPath mainInitializerPath;
+		AccessPath mainAccessPath;
 		RefactoringContext context;
 
 		public StatementsToInitializerConverter(RefactoringContext context)
@@ -50,13 +50,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		void Initialize(AstNode targetNode)
 		{
 			var target = context.Resolve(targetNode);
-			if (target is LocalResolveResult) {
-				mainInitializerPath = new InitializerPath(((LocalResolveResult)target).Variable);
-			} else if (target is MemberResolveResult) {
-				mainInitializerPath = new InitializerPath(((MemberResolveResult)target).Member);
-			} else {
-				throw new ArgumentException("variableInitializer must target a variable or a member.");
-			}
+			var targetInitializerPath = AccessPath.FromResolveResult(target);
+			if (targetInitializerPath == null)
+				throw new ArgumentException(string.Format("Could not create the main initializer path from resolve result ({0})", target));
+
+			mainAccessPath = targetInitializerPath;
 		}
 
 		public VariableInitializer ConvertToInitializer(VariableInitializer variableInitializer, ref IList<AstNode> statements)
@@ -67,11 +65,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				throw new ArgumentNullException("statements");
 
 			Initialize(variableInitializer);
-			initializers [mainInitializerPath] = variableInitializer.Initializer.Clone();
+			accessPaths [mainAccessPath] = variableInitializer.Initializer.Clone();
 
 			Convert(statements);
-			statements = ReplacementNodeHelper.GetReplacedNodes(initializers [mainInitializerPath]);
-			return new VariableInitializer(mainInitializerPath.RootName, initializers [mainInitializerPath]);
+			statements = ReplacementNodeHelper.GetReplacedNodes(accessPaths [mainAccessPath]);
+			return new VariableInitializer(mainAccessPath.RootName, accessPaths [mainAccessPath]);
 		}
 
 		public AssignmentExpression ConvertToInitializer(AssignmentExpression assignmentExpression, ref IList<AstNode> statements)
@@ -84,11 +82,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				throw new ArgumentException("assignmentExpression.Right must be an ObjectCreateExpression", "assignmentExpression");
 
 			Initialize(assignmentExpression.Left);
-			initializers [mainInitializerPath] = assignmentExpression.Right.Clone();
+			accessPaths [mainAccessPath] = assignmentExpression.Right.Clone();
 
 			Convert(statements);
-			statements = ReplacementNodeHelper.GetReplacedNodes(initializers [mainInitializerPath]);
-			return new AssignmentExpression(new IdentifierExpression(mainInitializerPath.RootName), initializers [mainInitializerPath]);
+			statements = ReplacementNodeHelper.GetReplacedNodes(accessPaths [mainAccessPath]);
+			return new AssignmentExpression(new IdentifierExpression(mainAccessPath.RootName), accessPaths [mainAccessPath]);
 		}
 
 		void Convert(IList<AstNode> originalStatements)
@@ -123,7 +121,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			VariableInitializer variableInitializer;
 			var variableDeclarationStatement = node as VariableDeclarationStatement;
 			if (variableDeclarationStatement == null) {
-				variableInitializer = VariableInitializer.Null;
 				return false;
 			}
 			variableInitializer = variableDeclarationStatement.Variables.FirstOrNullObject();
@@ -142,7 +139,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var invocationExpression = expressionStatement.Expression as InvocationExpression;
 			if (invocationExpression == null)
 				return false;
-			var target = invocationExpression.Target;
 			var invocationResolveResult = context.Resolve(invocationExpression) as InvocationResolveResult;
 			if (invocationResolveResult == null)
 				return false;
@@ -152,15 +148,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (targetResult is MemberResolveResult)
 				return false;
 
-			ArrayInitializerExpression tuple = new ArrayInitializerExpression();
+			var tuple = new ArrayInitializerExpression();
 			foreach (var argument in invocationExpression.Arguments) {
 				var argumentLocalResolveResult = context.Resolve(argument) as LocalResolveResult;
 				if (argumentLocalResolveResult != null) {
-					var initializerPath = InitializerPath.FromResolveResult(argumentLocalResolveResult);
-					if (initializerPath == null || !initializers.ContainsKey(initializerPath))
+					var initializerPath = AccessPath.FromResolveResult(argumentLocalResolveResult);
+					if (initializerPath == null || !accessPaths.ContainsKey(initializerPath))
 						return false;
 					// Add a clone, since we do not yet know if this is where the initializer will be used
-					var initializerClone = initializers[initializerPath].Clone();
+					var initializerClone = accessPaths[initializerPath].Clone();
 					tuple.Elements.Add(initializerClone);
 				} else {
 					tuple.Elements.Add(argument.Clone());
@@ -168,11 +164,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			ReplacementNodeHelper.AddReplacementAnnotation(tuple, expressionStatement);
 
-			var targetPath = InitializerPath.FromResolveResult(targetResult);
-			if (targetPath == null || !initializers.ContainsKey(targetPath))
+			var targetPath = AccessPath.FromResolveResult(targetResult);
+			if (targetPath == null || !accessPaths.ContainsKey(targetPath))
 				return false;
 			InsertImplicitInitializersForPath(targetPath);
-			var targetInitializer = initializers [targetPath];
+			var targetInitializer = accessPaths [targetPath];
 			AddToInitializer(targetInitializer, tuple);
 			return true;
 		}
@@ -196,29 +192,29 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		void AddNewVariable(IVariable variable, Expression initializer, AstNode node)
 		{
-			var variablePath = new InitializerPath(variable);
+			var variablePath = new AccessPath(variable);
 			var rightResolveResult = context.Resolve(initializer) as LocalResolveResult;
 			if (rightResolveResult != null) {
-				var rightPath = InitializerPath.FromResolveResult(rightResolveResult);
-				if (rightPath != null && initializers.ContainsKey(rightPath)) {
-					var rightInitializer = initializers [rightPath];
+				var rightPath = AccessPath.FromResolveResult(rightResolveResult);
+				if (rightPath != null && accessPaths.ContainsKey(rightPath)) {
+					var rightInitializer = accessPaths [rightPath];
 					ReplacementNodeHelper.AddReplacementAnnotation(rightInitializer, node);
-					initializers.Remove(rightPath);
-					initializers [variablePath] = rightInitializer;
-					if (rightPath == mainInitializerPath) {
-						mainInitializerPath = variablePath;
+					accessPaths.Remove(rightPath);
+					accessPaths [variablePath] = rightInitializer;
+					if (rightPath == mainAccessPath) {
+						mainAccessPath = variablePath;
 					}
 				}
 			} else {
-				initializers [variablePath] = ReplacementNodeHelper.CloneWithReplacementAnnotation(initializer, node);
+				accessPaths [variablePath] = ReplacementNodeHelper.CloneWithReplacementAnnotation(initializer, node);
 			}
 		}
 
-		void AddOldAnnotationsToInitializer(InitializerPath targetPath, Expression initializer)
+		void AddOldAnnotationsToInitializer(AccessPath targetPath, IAnnotatable initializer)
 		{
 			if (targetPath != null) {
-				if (initializers.ContainsKey(targetPath)) {
-					foreach (var astNode in ReplacementNodeHelper.GetAllReplacementAnnotations(initializers[targetPath])) {
+				if (accessPaths.ContainsKey(targetPath)) {
+					foreach (var astNode in ReplacementNodeHelper.GetAllReplacementAnnotations(accessPaths[targetPath])) {
 						initializer.AddAnnotation(astNode);
 					}
 				}
@@ -231,16 +227,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var leftResolveResult = context.Resolve(left);
 			Expression initializer;
 			if (rightResolveResult != null) {
-				var rightPath = InitializerPath.FromResolveResult(rightResolveResult);
-				if (initializers.ContainsKey(rightPath)) {
-					initializer = initializers [rightPath];
+				var rightPath = AccessPath.FromResolveResult(rightResolveResult);
+				if (accessPaths.ContainsKey(rightPath)) {
+					initializer = accessPaths [rightPath];
 				} else {
 					initializer = right.Clone();
 				}
 			} else {
 				initializer = right.Clone();
 			}
-			var leftPath = InitializerPath.FromResolveResult(leftResolveResult);
+			var leftPath = AccessPath.FromResolveResult(leftResolveResult);
 			if (leftPath == null) {
 				return false;
 			}
@@ -249,15 +245,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			// to the same variable/member.
 			AddOldAnnotationsToInitializer(leftPath, initializer);
 
-			if (leftPath.MemberPath.Count == 0) {
+			if (leftPath.PartCount == 1) {
 				ReplacementNodeHelper.AddReplacementAnnotation(initializer, node);
-				initializers [leftPath] = initializer;
+				accessPaths [leftPath] = initializer;
 				return true;
 			}
 			if (!(leftResolveResult is MemberResolveResult))
 				return false;
 
-			Debug.Assert(leftPath.MemberPath.Count > 0, "No top level assignment should get here.");
+			Debug.Assert(leftPath.PartCount > 1, "No top level assignment should get here.");
 
 			var parentKey = leftPath.GetParentPath();
 			var member = leftPath.MemberPath.Last();
@@ -266,13 +262,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (!success)
 				return false;
 
-			var parentInitializer = initializers [parentKey];
+			var parentInitializer = accessPaths [parentKey];
 			AddToInitializer(parentInitializer, comments.ToArray());
 			comments.Clear();
 
 			AddToInitializer(parentInitializer, new NamedExpression(member.Name, initializer));
 			ReplacementNodeHelper.AddReplacementAnnotation(initializer, node);
-			initializers [leftPath] = initializer;
+			accessPaths [leftPath] = initializer;
 			return true;
 		}
 
@@ -347,8 +343,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var resolveResult = context.Resolve(memberReference) as MemberResolveResult;
 				if (resolveResult == null)
 					continue;
-				var initializerPath = InitializerPath.FromResolveResult(resolveResult);
-				if (initializerPath != null && initializers.ContainsKey(initializerPath))
+				var initializerPath = AccessPath.FromResolveResult(resolveResult);
+				if (initializerPath != null && accessPaths.ContainsKey(initializerPath))
 					return true;
 			}
 			return false;
@@ -356,12 +352,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		bool VariableHasBeenConverted(IVariable variable)
 		{
-			return initializers.Any(item => item.Key.VariableRoot.Equals(variable));
+			return accessPaths.Any(item => item.Key.VariableRoot.Equals(variable));
 		}
 
-		bool InsertImplicitInitializersForPath(InitializerPath path)
+		bool InsertImplicitInitializersForPath(AccessPath path)
 		{
-			if (initializers.ContainsKey(path))
+			if (accessPaths.ContainsKey(path))
 				return true;
 
 			if (path.MemberPath.Count == 0)
@@ -371,11 +367,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (!success)
 				return false;
 
-			var parentInitializer = initializers [parentPath];
+			var parentInitializer = accessPaths [parentPath];
 			var initializer = new ArrayInitializerExpression();
 			var namedExpression = new NamedExpression(path.MemberPath [path.MemberPath.Count - 1].Name, initializer);
 			AddToInitializer(parentInitializer, namedExpression);
-			initializers [path] = initializer;
+			accessPaths [path] = initializer;
 			return true;
 		}
 

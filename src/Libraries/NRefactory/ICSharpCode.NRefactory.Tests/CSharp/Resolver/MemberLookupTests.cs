@@ -44,6 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			CSharpUnresolvedFile unresolvedFile = syntaxTree.ToTypeSystem();
 			project = project.AddOrUpdateFiles(unresolvedFile);
 			compilation = project.CreateCompilation();
+			lookup = new MemberLookup(null, compilation.MainAssembly);
 			return unresolvedFile;
 		}
 		
@@ -61,7 +62,7 @@ class Derived : Middle {
 	public override void Method() {}
 }";
 			var unresolvedFile = Parse(program);
-			ITypeDefinition derived = compilation.MainAssembly.GetTypeDefinition(unresolvedFile.TopLevelTypeDefinitions[2]);
+			ITypeDefinition derived = compilation.MainAssembly.GetTypeDefinition(new TopLevelTypeName("Derived"));
 			var rr = lookup.Lookup(new ResolveResult(derived), "Method", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
 			Assert.AreEqual(2, rr.MethodsGroupedByDeclaringType.Count());
 			
@@ -88,7 +89,7 @@ class Derived : Base<int> {
 	public override void Method(string a) {}
 }";
 			var unresolvedFile = Parse(program);
-			ITypeDefinition derived = compilation.MainAssembly.GetTypeDefinition(unresolvedFile.TopLevelTypeDefinitions[1]);
+			ITypeDefinition derived = compilation.MainAssembly.GetTypeDefinition(new TopLevelTypeName("Derived"));
 			var rr = lookup.Lookup(new ResolveResult(derived), "Method", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
 			Assert.AreEqual(2, rr.MethodsGroupedByDeclaringType.Count());
 			
@@ -116,7 +117,7 @@ class Derived : Base {
 	public override void Method<S>(S a) {}
 }";
 			var unresolvedFile = Parse(program);
-			ITypeDefinition derived = compilation.MainAssembly.GetTypeDefinition(unresolvedFile.TopLevelTypeDefinitions[1]);
+			ITypeDefinition derived = compilation.MainAssembly.GetTypeDefinition(new TopLevelTypeName("Derived"));
 			var rr = lookup.Lookup(new ResolveResult(derived), "Method", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
 			Assert.AreEqual(1, rr.MethodsGroupedByDeclaringType.Count());
 			
@@ -455,6 +456,38 @@ class TestClass {
 }";
 			var mrr = Resolve<MemberResolveResult>(program);
 			Assert.AreEqual("TestClass.B", mrr.Member.FullName);
+		}
+		
+		[Test]
+		public void GenericClassDoesNotHideField()
+		{
+			string program = @"using System;
+class A { public int F; }
+class B : A { public class F<T> {} }
+class C : B {
+	public void M()
+	{
+		$F$ = 1;
+	}
+}";
+			var mrr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("A.F", mrr.Member.FullName);
+		}
+		
+		[Test]
+		public void NonGenericClassHidesField_WithExplicitThisAccess()
+		{
+			string program = @"using System;
+class A { public int F; }
+class B : A { public class F {} }
+class C : B {
+	public void M()
+	{
+		$this.F$ = 1;
+	}
+}";
+			var trr = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("B+F", trr.Type.ReflectionName);
 		}
 	}
 }

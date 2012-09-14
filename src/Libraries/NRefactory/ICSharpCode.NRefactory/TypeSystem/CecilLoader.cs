@@ -190,7 +190,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					name = interningProvider.Intern(name);
 					var typeRef = new GetClassTypeReference(GetAssemblyReference(type.Scope), ns, name, typeParameterCount);
 					typeRef = interningProvider.Intern(typeRef);
-					var key = new FullNameAndTypeParameterCount(ns, name, typeParameterCount);
+					var key = new TopLevelTypeName(ns, name, typeParameterCount);
 					currentAssembly.AddTypeForwarder(key, typeRef);
 				}
 			}
@@ -227,6 +227,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			
 			AddToTypeSystemTranslationTable(this.currentAssembly, assemblyDefinition);
+			// Freezing the assembly here is important:
+			// otherwise it will be frozen when a compilation is first created
+			// from it. But freezing has the effect of changing some collection instances
+			// (to ReadOnlyCollection). This hidden mutation was causing a crash
+			// when the FastSerializer was saving the assembly at the same time as
+			// the first compilation was created from it.
+			// By freezing the assembly now, we ensure it is usable on multiple
+			// threads without issues.
 			currentAssembly.Freeze();
 			
 			var result = this.currentAssembly;
@@ -515,7 +523,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			MethodImplAttributes implAttributes = methodDefinition.ImplAttributes & ~MethodImplAttributes.CodeTypeMask;
 			
 			#region DllImportAttribute
-			if (methodDefinition.HasPInvokeInfo) {
+			if (methodDefinition.HasPInvokeInfo && methodDefinition.PInvokeInfo != null) {
 				PInvokeInfo info = methodDefinition.PInvokeInfo;
 				var dllImport = new DefaultUnresolvedAttribute(dllImportAttributeTypeRef, new[] { KnownTypeReference.String });
 				dllImport.PositionalArguments.Add(CreateSimpleConstantValue(KnownTypeReference.String, info.Module.Name));
@@ -1785,6 +1793,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				get { return cecilTypeDef.FullName; }
 			}
 			
+			public FullTypeName FullTypeName {
+				get {
+					return new TopLevelTypeName(namespaceName, this.Name, typeParameters.Count);
+				}
+			}
+			
 			public TypeKind Kind {
 				get { return kind; }
 			}
@@ -1876,7 +1890,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					throw new ArgumentNullException("context");
 				if (context.CurrentAssembly == null)
 					throw new ArgumentException("An ITypeDefinition cannot be resolved in a context without a current assembly.");
-				return context.CurrentAssembly.GetTypeDefinition(this)
+				return context.CurrentAssembly.GetTypeDefinition(this.FullTypeName)
 					?? (IType)new UnknownType(this.Namespace, this.Name, this.TypeParameters.Count);
 			}
 			

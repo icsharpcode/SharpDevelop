@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Represents a resolved namespace.
 	/// </summary>
-	public interface INamespace : IResolved
+	public interface INamespace : ICompilationProvider
 	{
 		// No pointer back to unresolved namespace:
 		// multiple unresolved namespaces (from different assemblies) get

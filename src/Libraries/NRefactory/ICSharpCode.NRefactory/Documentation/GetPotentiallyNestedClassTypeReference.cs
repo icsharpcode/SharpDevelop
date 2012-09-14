@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.Documentation
 				foreach (var asm in assemblies) {
 					if (asm == null)
 						continue;
-					ITypeDefinition typeDef = asm.GetTypeDefinition(ns, name, topLevelTPC);
+					ITypeDefinition typeDef = asm.GetTypeDefinition(new TopLevelTypeName(ns, name, topLevelTPC));
 					for (int j = i + 1; j < parts.Length && typeDef != null; j++) {
 						int tpc = (j == parts.Length - 1 ? typeParameterCount : 0);
 						typeDef = typeDef.NestedTypes.FirstOrDefault(n => n.Name == parts[j] && n.TypeParameterCount == tpc);

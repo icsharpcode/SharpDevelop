@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.PatternMatching;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -62,14 +63,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var resolveResult = ctx.Resolve (assignmentExpression.Left);
 				var memberResolveResult = resolveResult as MemberResolveResult;
 				if (memberResolveResult != null) {
-					if (!(memberResolveResult.Member is IField))
+					var memberResolveResult2 = ctx.Resolve (assignmentExpression.Right) as MemberResolveResult;
+					if (memberResolveResult2 == null || !AreEquivalent(memberResolveResult, memberResolveResult2))
 						return;
-					if (!assignmentExpression.Left.Match (assignmentExpression.Right).Success) {
-						// in case: this.field = field
-						var memberResolveResult2 = ctx.Resolve (assignmentExpression.Right) as MemberResolveResult;
-						if (memberResolveResult2 == null || memberResolveResult.Member != memberResolveResult2.Member)
-							return;
-					}
 				} else if (resolveResult is LocalResolveResult) {
 					if (!assignmentExpression.Left.Match (assignmentExpression.Right).Success)
 						return;
@@ -88,6 +84,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 				AddIssue (node, ctx.TranslateString ("CS1717:Assignment made to same variable"),
 					new [] { new CodeAction (ctx.TranslateString ("Remove assignment"), action) });
+			}
+
+			static bool AreEquivalent(ResolveResult first, ResolveResult second)
+			{
+				var firstPath = AccessPath.FromResolveResult(first);
+				var secondPath = AccessPath.FromResolveResult(second);
+				return firstPath != null && firstPath.Equals(secondPath) && !firstPath.MemberPath.Any(m => !(m is IField));
 			}
 		}
 	}

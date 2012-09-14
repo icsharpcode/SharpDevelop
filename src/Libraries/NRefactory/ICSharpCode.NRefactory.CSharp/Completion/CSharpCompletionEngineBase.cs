@@ -99,7 +99,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			// current member, instead of the beginning of the file. 
 			cpos = offset - 1;
 			var mem = currentMember;
-			if (mem == null || (mem is IType)) {
+			if (mem == null || (mem is IType) || IsInsideCommentStringOrDirective ()) {
 				return false;
 			}
 			int startPos = document.GetOffset (mem.Region.BeginLine, mem.Region.BeginColumn);

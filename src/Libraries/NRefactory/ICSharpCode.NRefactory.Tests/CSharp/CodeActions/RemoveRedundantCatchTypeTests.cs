@@ -52,8 +52,7 @@ class TestClass
 	public void F()
 	{
 		try {
-		}
-		catch {
+		} catch {
 		}
 	}
 }");
@@ -79,8 +78,7 @@ class TestClass
 	public void F()
 	{
 		try {
-		}
-		catch {
+		} catch {
 			System.Console.WriteLine (""Hi"");
 		}
 	}

@@ -93,7 +93,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Represents a resolved entity.
 	/// </summary>
-	public interface IEntity : IResolved, INamedElement, IHasAccessibility
+	public interface IEntity : ICompilationProvider, INamedElement, IHasAccessibility
 	{
 		/// <summary>
 		/// Gets the entity type.

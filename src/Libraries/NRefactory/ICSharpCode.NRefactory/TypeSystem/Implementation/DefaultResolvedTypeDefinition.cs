@@ -566,6 +566,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return parts[0].Namespace; }
 		}
 		
+		public FullTypeName FullTypeName {
+			get { return parts[0].FullTypeName; }
+		}
+		
 		public DomRegion Region {
 			get { return parts[0].Region; }
 		}

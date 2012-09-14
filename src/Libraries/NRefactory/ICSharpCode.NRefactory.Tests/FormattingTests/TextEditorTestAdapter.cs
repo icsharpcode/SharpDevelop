@@ -48,6 +48,9 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			expectedOutput = NormalizeNewlines(expectedOutput);
 			IDocument doc = GetResult(policy, input, mode);
 			if (expectedOutput != doc.Text) {
+				Console.WriteLine ("expected:");
+				Console.WriteLine (expectedOutput);
+				Console.WriteLine ("got:");
 				Console.WriteLine (doc.Text);
 			}
 			Assert.AreEqual (expectedOutput, doc.Text);

@@ -51,6 +51,12 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			return resolver.ResolveAlias(identifier);
 		}
 		
+		public override IType ResolveType(CSharpResolver resolver)
+		{
+			// alias cannot refer to types
+			return SpecialType.UnknownType;
+		}
+		
 		public override string ToString()
 		{
 			return identifier + "::";

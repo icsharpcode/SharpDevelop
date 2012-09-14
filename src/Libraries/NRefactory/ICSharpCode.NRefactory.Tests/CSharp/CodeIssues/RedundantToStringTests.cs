@@ -77,6 +77,23 @@ class Foo
 		}
 		
 		[Test]
+		public void IgnoresCallsToIFormattableToString ()
+		{
+			var input = @"
+class Foo
+{
+	void Bar (System.DateTime dt)
+	{
+		string s = dt.ToString("""", CultureInfo.InvariantCulture) + string.Empty;
+	}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new RedundantToStringIssue (), input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
+		
+		[Test]
 		public void StringTarget ()
 		{
 			var input = @"
@@ -123,7 +140,7 @@ class Foo
 {
 	void Bar (int i)
 	{
-		string s = string.Format(""{0}"", i);
+		string s = string.Format (""{0}"", i);
 	}
 }");
 		}
@@ -150,7 +167,7 @@ class Foo
 	void Bar (int i)
 	{
 		string format = ""{0}"";
-		string s = string.Format(format, i);
+		string s = string.Format (format, i);
 	}
 }");
 		}
@@ -179,7 +196,7 @@ class Foo
 {
 	void Bar (int i)
 	{
-		string s = FakeFormat(""{0} {1}"", i.ToString(), i);
+		string s = FakeFormat (""{0} {1}"", i.ToString (), i);
 	}
 
 	void FakeFormat(string format, string arg0, object arg1)
@@ -212,7 +229,7 @@ class Foo
 {
 	void Bar (int i)
 	{
-		string s = FakeFormat(""{0} {1}"", i, i);
+		string s = FakeFormat (""{0} {1}"", i, i);
 	}
 
 	void FakeFormat(string format, params object[] args)
@@ -244,8 +261,8 @@ class Foo
 	void Bar (int i)
 	{
 		var w = new System.IO.StringWriter();
-		w.Write(i);
-		w.WriteLine(i);
+		w.Write (i);
+		w.WriteLine (i);
 	}
 }");
 		}

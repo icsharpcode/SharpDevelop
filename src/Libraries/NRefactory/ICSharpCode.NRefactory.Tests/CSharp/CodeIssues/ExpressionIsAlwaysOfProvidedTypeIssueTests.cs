@@ -39,7 +39,8 @@ class TestClass
 {
 	void TestMethod (" + variableType + @" x)
 	{
-		if (x is " + providedType + @") ;
+		if (x is " + providedType + @")
+			;
 	}
 }";
 			var output = @"
@@ -47,7 +48,8 @@ class TestClass
 {
 	void TestMethod (" + variableType + @" x)
 	{
-		if (x != null) ;
+		if (x != null)
+			;
 	}
 }";
 			Test<ExpressionIsAlwaysOfProvidedTypeIssue> (input, 1, output);
@@ -73,7 +75,8 @@ class TestClass
 {
 	void TestMethod<T> (T x) where T : TestClass
 	{
-		if (x is TestClass) ;
+		if (x is TestClass)
+			;
 	}
 }";
 			var output = @"
@@ -81,7 +84,8 @@ class TestClass
 {
 	void TestMethod<T> (T x) where T : TestClass
 	{
-		if (x != null) ;
+		if (x != null)
+			;
 	}
 }";
 			Test<ExpressionIsAlwaysOfProvidedTypeIssue> (input, 1, output);

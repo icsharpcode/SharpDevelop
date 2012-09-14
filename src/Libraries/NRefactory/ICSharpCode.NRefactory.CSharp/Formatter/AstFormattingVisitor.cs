@@ -739,15 +739,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			
 			var lastLoc = fieldDeclaration.StartLocation;
-			curIndent.Push(IndentType.Block);
 			foreach (var initializer in fieldDeclaration.Variables) {
 				if (lastLoc.Line != initializer.StartLocation.Line) {
+					curIndent.Push(IndentType.Block);
 					FixStatementIndentation(initializer.StartLocation);
+					curIndent.Pop ();
 					lastLoc = initializer.StartLocation;
 				}
 				initializer.AcceptVisitor(this);
 			}
-			curIndent.Pop ();
 		}
 
 		public override void VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration)
@@ -1179,8 +1179,10 @@ namespace ICSharpCode.NRefactory.CSharp
 					nextStatementIndent = " ";
 				}
 			}
+			bool pushed = false;
 			if (policy.IndentBlocks && !(policy.AlignEmbeddedIfStatements && node is IfElseStatement && node.Parent is IfElseStatement || policy.AlignEmbeddedUsingStatements && node is UsingStatement && node.Parent is UsingStatement)) { 
 				curIndent.Push(IndentType.Block);
+				pushed = true;
 			}
 			if (isBlock) {
 				VisitBlockWithoutFixingBraces((BlockStatement)node, false);
@@ -1190,7 +1192,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				node.AcceptVisitor(this);
 			}
-			if (policy.IndentBlocks && !(policy.AlignEmbeddedIfStatements && node is IfElseStatement && node.Parent is IfElseStatement || policy.AlignEmbeddedUsingStatements && node is UsingStatement && node.Parent is UsingStatement)) { 
+			if (pushed) { 
 				curIndent.Pop();
 			}
 			switch (braceForcement) {
@@ -2105,6 +2107,10 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		void FixStatementIndentation(TextLocation location)
 		{
+			if (location.Line < 1 || location.Column < 1) {
+				Console.WriteLine("invalid location!");
+				return;
+			}
 			int offset = document.GetOffset(location);
 			if (offset <= 0) {
 				Console.WriteLine("possible wrong offset");

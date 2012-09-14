@@ -79,7 +79,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (resolveResult == null) {
 					return;
 				}
-				if (resolveResult.Member.Name != "ToString") {
+				var member = resolveResult.Member;
+				if (member.Name != "ToString" || member.Parameters.Count != 0) {
 					return;
 				}
 				AddRedundantToStringIssue(memberExpression, invocationExpression);

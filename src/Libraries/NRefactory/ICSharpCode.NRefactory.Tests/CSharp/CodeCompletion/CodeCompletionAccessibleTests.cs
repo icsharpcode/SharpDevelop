@@ -29,6 +29,7 @@
 using System;
 using NUnit.Framework;
 using System.Diagnostics;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 {
@@ -1343,6 +1344,81 @@ public class Foo
     } 
 }", provider => {
 				Assert.IsNotNull (provider.Find ("Bar"), "'Bar' not found.");
+			});
+		}
+
+		[Test()]
+		public void TestImplicitShadowing ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (@"
+using System;
+
+		namespace ConsoleApplication2
+		{
+			class A
+			{
+				public int Foo;
+			}
+
+			class B : A
+			{
+				public string Foo;
+			}
+
+			class Program
+			{
+				static void Main (string[] args)
+				{
+					var b = new B ();
+					$b.$
+				}
+			}
+		}", provider => {
+				int count = 0;
+				foreach (var data in provider.Data) 
+					if (data.DisplayText == "Foo")
+						count += data.HasOverloads ? data.OverloadedData.Count () : 1;
+				Assert.AreEqual (1, count);
+			});
+		}
+
+		[Test()]
+		public void TestOverrideFiltering ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (@"
+using System;
+
+namespace ConsoleApplication2
+{
+    class A
+    {
+        public virtual int Foo { set {} }
+    }
+
+    class B : A
+    {
+        public override int Foo {
+            set {
+                base.Foo = value;
+            }
+        }
+    }
+
+    class Program
+    {
+        static void Main (string[] args)
+        {
+            var b = new B ();
+            $b.$
+        }
+    }
+}
+", provider => {
+				int count = 0;
+				foreach (var data in provider.Data) 
+					if (data.DisplayText == "Foo")
+						count += data.HasOverloads ? data.OverloadedData.Count () : 1;
+				Assert.AreEqual (1, count);
 			});
 		}
 	}

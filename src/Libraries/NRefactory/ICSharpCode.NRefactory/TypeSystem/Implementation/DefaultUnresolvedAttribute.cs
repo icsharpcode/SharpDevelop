@@ -187,7 +187,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return true;
 		}
 		
-		sealed class DefaultResolvedAttribute : IAttribute, IResolved
+		sealed class DefaultResolvedAttribute : IAttribute, ICompilationProvider
 		{
 			readonly DefaultUnresolvedAttribute unresolved;
 			readonly ITypeResolveContext context;

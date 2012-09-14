@@ -37,6 +37,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets the list of all assemblies in the compilation.
 		/// </summary>
+		/// <remarks>
+		/// This main assembly is the first entry in the list.
+		/// </remarks>
 		IList<IAssembly> Assemblies { get; }
 		
 		/// <summary>
@@ -69,8 +72,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		CacheManager CacheManager { get; }
 	}
 	
-	public interface IResolved
+	public interface ICompilationProvider
 	{
+		/// <summary>
+		/// Gets the parent compilation.
+		/// This property never returns null.
+		/// </summary>
 		ICompilation Compilation { get; }
 	}
 }

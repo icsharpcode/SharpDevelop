@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Contains extension methods for the type system.
 	/// </summary>
-	public static class ExtensionMethods
+	public static class TypeSystemExtensions
 	{
 		#region GetAllBaseTypes
 		/// <summary>
@@ -96,11 +96,30 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		sealed class TypeClassificationVisitor : TypeVisitor
 		{
 			internal bool isOpen;
+			internal IEntity typeParameterOwner;
+			int typeParameterOwnerNestingLevel;
 			
 			public override IType VisitTypeParameter(ITypeParameter type)
 			{
 				isOpen = true;
+				// If both classes and methods, or different classes (nested types)
+				// are involved, find the most specific one
+				int newNestingLevel = GetNestingLevel(type.Owner);
+				if (newNestingLevel > typeParameterOwnerNestingLevel) {
+					typeParameterOwner = type.Owner;
+					typeParameterOwnerNestingLevel = newNestingLevel;
+				}
 				return base.VisitTypeParameter(type);
+			}
+			
+			static int GetNestingLevel(IEntity entity)
+			{
+				int level = 0;
+				while (entity != null) {
+					level++;
+					entity = entity.DeclaringTypeDefinition;
+				}
+				return level;
 			}
 		}
 		
@@ -124,6 +143,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			TypeClassificationVisitor v = new TypeClassificationVisitor();
 			type.AcceptVisitor(v);
 			return v.isOpen;
+		}
+		
+		/// <summary>
+		/// Gets the entity that owns the type parameters occurring in the specified type.
+		/// If both class and method type parameters are present, the method is returned.
+		/// Returns null if the specified type is closed.
+		/// </summary>
+		/// <seealso cref="IsOpen"/>
+		static IEntity GetTypeParameterOwner(IType type)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			TypeClassificationVisitor v = new TypeClassificationVisitor();
+			type.AcceptVisitor(v);
+			return v.typeParameterOwner;
 		}
 		
 		/// <summary>
@@ -162,7 +196,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentNullException("compilation");
 			if (type == null)
 				return null;
-			return type.ToTypeReference().Resolve(compilation.TypeResolveContext);
+			var compilationProvider = type as ICompilationProvider;
+			if (compilationProvider != null && compilationProvider.Compilation == compilation)
+				return type;
+			IEntity typeParameterOwner = GetTypeParameterOwner(type);
+			IEntity importedTypeParameterOwner = compilation.Import(typeParameterOwner);
+			if (importedTypeParameterOwner != null) {
+				return type.ToTypeReference().Resolve(new SimpleTypeResolveContext(importedTypeParameterOwner));
+			} else {
+				return type.ToTypeReference().Resolve(compilation.TypeResolveContext);
+			}
 		}
 		
 		/// <summary>
@@ -393,27 +436,58 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		#region IAssembly.GetTypeDefinition()
 		/// <summary>
+		/// Retrieves the specified type in this compilation.
+		/// Returns an <see cref="UnknownType"/> if the type cannot be found in this compilation.
+		/// </summary>
+		/// <remarks>
+		/// There can be multiple types with the same full name in a compilation, as a
+		/// full type name is only unique per assembly.
+		/// If there are multiple possible matches, this method will return just one of them.
+		/// When possible, use <see cref="IAssembly.GetTypeDefinition"/> instead to
+		/// retrieve a type from a specific assembly.
+		/// </remarks>
+		public static IType FindType(this ICompilation compilation, FullTypeName fullTypeName)
+		{
+			if (compilation == null)
+				throw new ArgumentNullException("compilation");
+			foreach (IAssembly asm in compilation.Assemblies) {
+				ITypeDefinition def = asm.GetTypeDefinition(fullTypeName);
+				if (def != null)
+					return def;
+			}
+			return new UnknownType(fullTypeName);
+		}
+		
+		/// <summary>
 		/// Gets the type definition for the specified unresolved type.
 		/// Returns null if the unresolved type does not belong to this assembly.
 		/// </summary>
-		public static ITypeDefinition GetTypeDefinition(this IAssembly assembly, IUnresolvedTypeDefinition unresolved)
+		public static ITypeDefinition GetTypeDefinition(this IAssembly assembly, FullTypeName fullTypeName)
 		{
 			if (assembly == null)
 				throw new ArgumentNullException("assembly");
-			if (unresolved == null)
+			TopLevelTypeName topLevelTypeName = fullTypeName.TopLevelTypeName;
+			ITypeDefinition typeDef = assembly.GetTypeDefinition(topLevelTypeName);
+			if (typeDef == null)
 				return null;
-			if (unresolved.DeclaringTypeDefinition != null) {
-				ITypeDefinition parentType = GetTypeDefinition(assembly, unresolved.DeclaringTypeDefinition);
-				if (parentType == null)
-					return null;
-				foreach (var nestedType in parentType.NestedTypes) {
-					if (nestedType.Name == unresolved.Name && nestedType.TypeParameterCount == unresolved.TypeParameters.Count)
-						return nestedType;
-				}
-				return null;
-			} else {
-				return assembly.GetTypeDefinition(unresolved.Namespace, unresolved.Name, unresolved.TypeParameters.Count);
+			int typeParameterCount = topLevelTypeName.TypeParameterCount;
+			for (int i = 0; i < fullTypeName.NestingLevel; i++) {
+				string name = fullTypeName.GetNestedTypeName(i);
+				typeParameterCount += fullTypeName.GetNestedTypeAdditionalTypeParameterCount(i);
+				typeDef = FindNestedType(typeDef, name, typeParameterCount);
+				if (typeDef == null)
+					break;
 			}
+			return typeDef;
+		}
+		
+		static ITypeDefinition FindNestedType(ITypeDefinition typeDef, string name, int typeParameterCount)
+		{
+			foreach (var nestedType in typeDef.NestedTypes) {
+				if (nestedType.Name == name && nestedType.TypeParameterCount == typeParameterCount)
+					return nestedType;
+			}
+			return null;
 		}
 		#endregion
 
@@ -435,6 +509,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (compilation == null)
 				throw new ArgumentNullException ("compilation");
 			return reference.Resolve (compilation.TypeResolveContext);
+		}
+		#endregion
+
+		
+		#region IAssembly.GetTypeDefinition(string,string,int)
+		/// <summary>
+		/// Gets the type definition for a top-level type.
+		/// </summary>
+		/// <remarks>This method uses ordinal name comparison, not the compilation's name comparer.</remarks>
+		public static ITypeDefinition GetTypeDefinition(this IAssembly assembly, string namespaceName, string name, int typeParameterCount = 0)
+		{
+			if (assembly == null)
+				throw new ArgumentNullException ("assembly");
+			return assembly.GetTypeDefinition (new TopLevelTypeName (namespaceName, name, typeParameterCount));
 		}
 		#endregion
 	}

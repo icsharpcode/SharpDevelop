@@ -50,8 +50,7 @@ class TestClass
 	public void F()
 	{
 		try {
-		}
-		catch (System.Exception e) {
+		} catch (System.Exception e) {
 		}
 	}
 }");
@@ -107,8 +106,7 @@ class TestClass
 	public void F()
 	{
 		try {
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 		}
 	}
 }");

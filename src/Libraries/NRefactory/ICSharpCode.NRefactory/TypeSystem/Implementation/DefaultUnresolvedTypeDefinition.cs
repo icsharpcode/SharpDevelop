@@ -142,23 +142,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public override string ReflectionName {
 			get {
+				return this.FullTypeName.ReflectionName;
+			}
+		}
+		
+		public FullTypeName FullTypeName {
+			get {
 				IUnresolvedTypeDefinition declaringTypeDef = this.DeclaringTypeDefinition;
 				if (declaringTypeDef != null) {
-					if (this.TypeParameters.Count > declaringTypeDef.TypeParameters.Count) {
-						return declaringTypeDef.ReflectionName + "+" + this.Name + "`" + (this.TypeParameters.Count - declaringTypeDef.TypeParameters.Count).ToString(CultureInfo.InvariantCulture);
-					} else {
-						return declaringTypeDef.ReflectionName + "+" + this.Name;
-					}
-				} else if (string.IsNullOrEmpty(namespaceName)) {
-					if (this.TypeParameters.Count > 0)
-						return this.Name + "`" + this.TypeParameters.Count.ToString(CultureInfo.InvariantCulture);
-					else
-						return this.Name;
+					return declaringTypeDef.FullTypeName.NestedType(this.Name, this.TypeParameters.Count - declaringTypeDef.TypeParameters.Count);
 				} else {
-					if (this.TypeParameters.Count > 0)
-						return namespaceName + "." + this.Name + "`" + this.TypeParameters.Count.ToString(CultureInfo.InvariantCulture);
-					else
-						return namespaceName + "." + this.Name;
+					return new TopLevelTypeName(namespaceName, this.Name, this.TypeParameters.Count);
 				}
 			}
 		}
@@ -226,7 +220,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				throw new ArgumentNullException("context");
 			if (context.CurrentAssembly == null)
 				throw new ArgumentException("An ITypeDefinition cannot be resolved in a context without a current assembly.");
-			return context.CurrentAssembly.GetTypeDefinition(this) 
+			return context.CurrentAssembly.GetTypeDefinition(this.FullTypeName)
 				?? (IType)new UnknownType(this.Namespace, this.Name, this.TypeParameters.Count);
 		}
 		

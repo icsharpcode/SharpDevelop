@@ -1,4 +1,4 @@
-// 
+﻿// 
 // DeclareLocalVariableTests.cs
 //  
 // Author:

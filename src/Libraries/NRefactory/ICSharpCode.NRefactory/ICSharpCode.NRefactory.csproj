@@ -137,7 +137,8 @@
     <Compile Include="TypeSystem\DefaultSolutionSnapshot.cs" />
     <Compile Include="TypeSystem\DomRegion.cs" />
     <Compile Include="TypeSystem\EntityType.cs" />
-    <Compile Include="TypeSystem\ExtensionMethods.cs" />
+    <Compile Include="TypeSystem\TypeSystemExtensions.cs" />
+    <Compile Include="TypeSystem\FullTypeName.cs" />
     <Compile Include="TypeSystem\IAmbience.cs" />
     <Compile Include="TypeSystem\IAssembly.cs" />
     <Compile Include="TypeSystem\IAttribute.cs" />
@@ -223,6 +224,7 @@
     <Compile Include="TypeSystem\ProjectReference.cs" />
     <Compile Include="TypeSystem\ReflectionNameParseException.cs" />
     <Compile Include="TypeSystem\SimpleTypeResolveContext.cs" />
+    <Compile Include="TypeSystem\TopLevelTypeName.cs" />
     <Compile Include="TypeSystem\TypeKind.cs" />
     <Compile Include="TypeSystem\TypeVisitor.cs" />
     <Compile Include="TypeSystem\IVariable.cs" />

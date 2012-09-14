@@ -56,17 +56,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			return type.ToTypeReference().Resolve(compilation.TypeResolveContext);
 		}
-		
-		/// <summary>
-		/// Retrieves the specified type in this compilation.
-		/// Returns <see cref="SpecialType.UnknownType"/> if the type cannot be found in this compilation.
-		/// </summary>
-		[Obsolete("Use ReflectionHelper.ParseReflectionName(reflectionTypeName).Resolve(compilation.TypeResolveContext) instead. " +
-		          "Make sure to read the ParseReflectionName() documentation for caveats.")]
-		public static IType FindType(this ICompilation compilation, string reflectionTypeName)
-		{
-			return ParseReflectionName(reflectionTypeName).Resolve(compilation.TypeResolveContext);
-		}
 		#endregion
 		
 		#region Type.ToTypeReference()
@@ -218,6 +207,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <see cref="ITypeResolveContext.CurrentAssembly"/> first, and if the type is not found there,
 		/// it will look in all other assemblies of the compilation.
 		/// </remarks>
+		/// <seealso cref="FullTypeName(string)"/>
 		public static ITypeReference ParseReflectionName(string reflectionTypeName)
 		{
 			if (reflectionTypeName == null)

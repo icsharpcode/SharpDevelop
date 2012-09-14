@@ -31,8 +31,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void EmptyClassHasToString()
 		{
 			DefaultUnresolvedTypeDefinition c = new DefaultUnresolvedTypeDefinition(string.Empty, "C");
-			var compilation = TypeSystemHelper.CreateCompilation(c);
-			Assert.AreEqual("System.Object.ToString", compilation.MainAssembly.GetTypeDefinition(c).GetMethods(m => m.Name == "ToString").Single().FullName);
+			var resolvedC = TypeSystemHelper.CreateCompilationAndResolve(c);
+			Assert.AreEqual("System.Object.ToString", resolvedC.GetMethods(m => m.Name == "ToString").Single().FullName);
 		}
 		
 		[Test]
@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			c.BaseTypes.Add(b2);
 			
 			var compilation = TypeSystemHelper.CreateCompilation(b1, b2, c);
-			ITypeDefinition resolvedC = compilation.MainAssembly.GetTypeDefinition(c);
+			ITypeDefinition resolvedC = compilation.MainAssembly.GetTypeDefinition(c.FullTypeName);
 			Assert.AreEqual(new[] { "P1", "P2" }, resolvedC.GetProperties().Select(p => p.Name).ToArray());
 			// Test that there's only one copy of ToString():
 			Assert.AreEqual(1, resolvedC.GetMethods(m => m.Name == "ToString").Count());
@@ -91,8 +91,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			a.NestedTypes.Add(b);
 			
 			var compilation = TypeSystemHelper.CreateCompilation(a, b);
-			ITypeDefinition resolvedA = compilation.MainAssembly.GetTypeDefinition(a);
-			ITypeDefinition resolvedB = compilation.MainAssembly.GetTypeDefinition(b);
+			ITypeDefinition resolvedA = compilation.MainAssembly.GetTypeDefinition(a.FullTypeName);
+			ITypeDefinition resolvedB = compilation.MainAssembly.GetTypeDefinition(b.FullTypeName);
 			
 			// A<> gets self-parameterized, B<> stays unbound
 			Assert.AreEqual("A`1+B`1[[`0],[]]", resolvedA.GetNestedTypes().Single().ReflectionName);

@@ -74,6 +74,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				#region ICompletionData implementation
 				public void AddOverload (ICompletionData data)
 				{
+					if (overloadedData.Count == 0)
+						overloadedData.Add (this);
+					overloadedData.Add (data);
 				}
 
 				public CompletionCategory CompletionCategory {
@@ -103,13 +106,17 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 
 				public bool HasOverloads {
 					get {
-						throw new NotImplementedException ();
+						return overloadedData.Count > 0;
 					}
 				}
-
+				List<ICompletionData> overloadedData = new List<ICompletionData> ();
 				public System.Collections.Generic.IEnumerable<ICompletionData> OverloadedData {
-					get;
-					set;
+					get {
+						return overloadedData;
+					}
+					set {
+						throw new NotImplementedException ();
+					}
 				}
 				#endregion
 				
@@ -5415,5 +5422,59 @@ public class FooBar
 			});
 		}
 
+		/// <summary>
+		/// Bug 7041 - No completion inside new[]
+		/// </summary>
+		[Test()]
+		public void TestBug7041()
+		{
+			CombinedProviderTest(
+				@"using System;
+
+		namespace ConsoleApplication2
+		{
+			class Test
+			{
+				public string[] Foo { get; set; }
+			}
+
+			class Program
+			{
+				static void Main(string[] args)
+				{
+					var a = new Test ()
+					{
+						$Foo = new [] { S$
+					}
+
+				}
+			}
+		}
+
+", provider => {
+				Assert.IsNotNull(provider.Find("System"));
+			});
+		}
+
+		[Test()]
+		public void TestGlobalPrimitiveTypes()
+		{
+			CombinedProviderTest(
+				@"$u$", provider => {
+				Assert.IsNotNull(provider.Find("using"));
+				Assert.IsNull(provider.Find("ushort"));
+			});
+		}
+
+		[Test()]
+		public void TestGlobalPrimitiveTypesCase2()
+		{
+			CombinedProviderTest(
+				@"$delegate u$", provider => {
+				Assert.IsNotNull(provider.Find("ushort"));
+				Assert.IsNotNull(provider.Find("System"));
+				Assert.IsNull(provider.Find("using"));
+			});
+		}
 	}
 }

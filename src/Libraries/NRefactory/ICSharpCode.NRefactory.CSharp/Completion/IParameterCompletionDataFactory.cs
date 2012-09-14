@@ -35,6 +35,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 	{
 		IParameterDataProvider CreateConstructorProvider (int startOffset, IType type);
 
+		/// <summary>
+		/// Creates a constructor provider skipping the parent of thisInitializer.
+		/// </summary>
+		IParameterDataProvider CreateConstructorProvider (int startOffset, IType type, AstNode thisInitializer);
+
 		IParameterDataProvider CreateMethodDataProvider (int startOffset, IEnumerable<IMethod> methods);
 
 		IParameterDataProvider CreateDelegateDataProvider (int startOffset, IType type);

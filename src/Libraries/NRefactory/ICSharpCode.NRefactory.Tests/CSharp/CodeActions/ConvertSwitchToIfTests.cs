@@ -61,11 +61,9 @@ class TestClass
 	{
 		if (a == 0) {
 			return 0;
-		} else
-			if (a == 1 || a == 2) {
+		} else if (a == 1 || a == 2) {
 			return 1;
-		} else
-				if (a == 3 || a == 4 || a == 5) {
+		} else if (a == 3 || a == 4 || a == 5) {
 			return 1;
 		} else {
 			return 2;
@@ -101,11 +99,9 @@ class TestClass
 	{
 		if (a == 0) {
 			return 0;
-		} else
-			if (a == 1 || a == 2) {
+		} else if (a == 1 || a == 2) {
 			return 1;
-		} else
-				if (a == 3 || a == 4 || a == 5) {
+		} else if (a == 3 || a == 4 || a == 5) {
 			return 1;
 		}
 	}
@@ -142,10 +138,8 @@ class TestClass
 	{
 		if (a == 0) {
 			int b = 1;
-		} else
-			if (a == 1 || a == 2) {
-		} else
-				if (a == 3 || a == 4 || a == 5) {
+		} else if (a == 1 || a == 2) {
+		} else if (a == 3 || a == 4 || a == 5) {
 		} else {
 		}
 	}
@@ -176,8 +170,7 @@ class TestClass
 	{
 		if (a == 0) {
 			return 0;
-		} else
-			if (a == (1 == 1 ? 1 : 2)) {
+		} else if (a == (1 == 1 ? 1 : 2)) {
 			return 1;
 		} else {
 			return 2;

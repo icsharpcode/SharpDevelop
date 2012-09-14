@@ -35,21 +35,17 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		public abstract ResolveResult Resolve(CSharpResolver resolver);
 		
 		/// <summary>
+		/// Returns the type that is referenced; or an <c>UnknownType</c> if the type isn't found.
+		/// </summary>
+		public abstract IType ResolveType(CSharpResolver resolver);
+		
+		/// <summary>
 		/// Returns the namespace that is referenced; or null if no such namespace is found.
 		/// </summary>
 		public INamespace ResolveNamespace(CSharpResolver resolver)
 		{
 			NamespaceResolveResult nrr = Resolve(resolver) as NamespaceResolveResult;
 			return nrr != null ? nrr.Namespace : null;
-		}
-		
-		/// <summary>
-		/// Returns the type that is referenced; or <see cref="SpecialType.UnknownType"/> if the type isn't found.
-		/// </summary>
-		public IType ResolveType(CSharpResolver resolver)
-		{
-			TypeResolveResult trr = Resolve(resolver) as TypeResolveResult;
-			return trr != null ? trr.Type : SpecialType.UnknownType;
 		}
 		
 		IType ITypeReference.Resolve(ITypeResolveContext context)
