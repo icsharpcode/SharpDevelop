@@ -167,8 +167,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				List<IEntity> entities = new List<IEntity>();
 				entities.AddRange(type.GetMembers(options: GetMemberOptions.IgnoreInheritedMembers));
-				if (!targetIsTypeParameter)
-					entities.AddRange(type.GetNestedTypes(options: GetMemberOptions.IgnoreInheritedMembers | GetMemberOptions.ReturnMemberDefinitions).Select(t => t.GetDefinition()));
+				if (!targetIsTypeParameter) {
+					var nestedTypes = type.GetNestedTypes(options: GetMemberOptions.IgnoreInheritedMembers | GetMemberOptions.ReturnMemberDefinitions);
+					// GetDefinition() might return null if some IType has a strange implementation of GetNestedTypes.
+					entities.AddRange(nestedTypes.Select(t => t.GetDefinition()).Where(td => td != null));
+				}
 				
 				foreach (var entityGroup in entities.GroupBy(e => e.Name)) {
 					
