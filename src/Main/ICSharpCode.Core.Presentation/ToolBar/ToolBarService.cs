@@ -31,7 +31,7 @@ namespace ICSharpCode.Core.Presentation
 		
 		static IList CreateToolBarItems(UIElement inputBindingOwner, IEnumerable descriptors)
 		{
-			ArrayList result = new ArrayList();
+			List<object> result = new List<object>();
 			foreach (ToolbarItemDescriptor descriptor in descriptors) {
 				object item = CreateToolBarItemFromDescriptor(inputBindingOwner, descriptor);
 				IMenuItemBuilder submenuBuilder = item as IMenuItemBuilder;

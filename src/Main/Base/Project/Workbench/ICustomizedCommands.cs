@@ -5,11 +5,10 @@ using System;
 
 namespace ICSharpCode.SharpDevelop.Workbench
 {
-	// TODO: change to [ViewContentService]
-	
 	/// <summary>
 	/// Allows an IViewContent to handle the save command on its own instead of using OpenedFile.
 	/// </summary>
+	[ViewContentService]
 	public interface ICustomizedCommands
 	{
 		/// <summary>

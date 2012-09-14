@@ -73,10 +73,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 		internal static void Save(IViewContent content)
 		{
 			if (content != null && content.IsDirty) {
-				if (content is ICustomizedCommands) {
-					if (((ICustomizedCommands)content).SaveCommand()) {
-						return;
-					}
+				var customizedCommands = content.GetService<ICustomizedCommands>();
+				if (customizedCommands != null && customizedCommands.SaveCommand()) {
+					return;
 				}
 				if (content.IsViewOnly) {
 					return;
@@ -143,7 +142,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 			
 			foreach (IViewContent content in window.ViewContents) {
 				// try to run customized Save As Command, exclude ViewContent if successful
-				if (content is ICustomizedCommands && (content as ICustomizedCommands).SaveAsCommand())
+				var customizedCommands = content.GetService<ICustomizedCommands>();
+				if (customizedCommands != null && customizedCommands.SaveAsCommand())
 					continue;
 				// exclude view only ViewContents
 				if (content.IsViewOnly)
@@ -195,8 +195,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public static void SaveAll()
 		{
 			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				if (content is ICustomizedCommands && content.IsDirty) {
-					((ICustomizedCommands)content).SaveCommand();
+				var customizedCommands = content.GetService<ICustomizedCommands>();
+				if (customizedCommands != null && content.IsDirty) {
+					customizedCommands.SaveCommand();
 				}
 			}
 			foreach (OpenedFile file in SD.FileService.OpenedFiles) {

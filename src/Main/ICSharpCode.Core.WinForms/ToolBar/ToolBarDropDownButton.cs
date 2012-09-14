@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Input;
 
@@ -68,8 +69,8 @@ namespace ICSharpCode.Core.WinForms
 				}
 				else
 				{
-					ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
-					DropDownItems.AddRange(submenuBuilder.BuildSubmenu(codon, caller));
+					IMenuItemBuilder submenuBuilder = (IMenuItemBuilder)item;
+					DropDownItems.AddRange(submenuBuilder.BuildItems(codon, caller).Cast<ToolStripItem>().ToArray());
 				}
 			}
 		}

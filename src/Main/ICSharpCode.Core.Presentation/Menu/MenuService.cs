@@ -146,7 +146,7 @@ namespace ICSharpCode.Core.Presentation
 				this.caller = caller;
 			}
 			
-			public ICollection BuildItems()
+			public IEnumerable<object> BuildItems()
 			{
 				return builder.BuildItems(codon, caller);
 			}
@@ -165,11 +165,11 @@ namespace ICSharpCode.Core.Presentation
 		
 		static IList ExpandMenuBuilders(ICollection input, bool addDummyEntryIfMenuEmpty)
 		{
-			ArrayList result = new ArrayList(input.Count);
+			List<object> result = new List<object>(input.Count);
 			foreach (object o in input) {
 				MenuItemBuilderPlaceholder p = o as MenuItemBuilderPlaceholder;
 				if (p != null) {
-					ICollection c = p.BuildItems();
+					IEnumerable<object> c = p.BuildItems();
 					if (c != null)
 						result.AddRange(c);
 				} else {

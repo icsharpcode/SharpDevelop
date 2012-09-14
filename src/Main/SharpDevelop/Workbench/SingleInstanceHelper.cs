@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Windows;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -69,7 +69,11 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			} else {
 				try {
 					SD.MainThread.InvokeAsync(
-						delegate { NativeMethods.SetForegroundWindow(SD.Workbench.MainWin32Window.Handle); }
+						delegate {
+							var win32Window = PresentationSource.FromVisual(SD.Workbench.MainWindow) as System.Windows.Interop.IWin32Window;
+							if (win32Window != null)
+								NativeMethods.SetForegroundWindow(win32Window.Handle);
+						}
 					).FireAndForget();
 					string tempFileName = Path.Combine(Path.GetTempPath(), "sd" + fileNumber + ".tmp");
 					foreach (string file in File.ReadAllLines(tempFileName)) {

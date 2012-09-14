@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
@@ -25,8 +26,8 @@ namespace ICSharpCode.Core.WinForms
 					if (item is IStatusUpdate)
 						((IStatusUpdate)item).UpdateStatus();
 				} else {
-					ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
-					collection.AddRange(submenuBuilder.BuildSubmenu(descriptor.Codon, descriptor.Parameter));
+					IMenuItemBuilder submenuBuilder = (IMenuItemBuilder)item;
+					collection.AddRange(submenuBuilder.BuildItems(descriptor.Codon, descriptor.Parameter).Cast<ToolStripItem>().ToArray());
 				}
 			}
 		}

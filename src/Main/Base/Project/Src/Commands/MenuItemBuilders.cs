@@ -102,7 +102,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			return items;
 		}
 
-		public ICollection BuildItems(Codon codon, object owner)
+		public IEnumerable<object> BuildItems(Codon codon, object owner)
 		{
 			if (NavigationService.CanNavigateBack || NavigationService.CanNavigateForwards) {
 				ICollection<INavigationPoint> points = NavigationService.Points;
@@ -135,7 +135,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	
 	public class RecentFilesMenuBuilder : IMenuItemBuilder
 	{
-		public ICollection BuildItems(Codon codon, object owner)
+		public IEnumerable<object> BuildItems(Codon codon, object owner)
 		{
 			IRecentOpen recentOpen = SD.FileService.RecentOpen;
 			
@@ -165,7 +165,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	
 	public class RecentProjectsMenuBuilder : IMenuItemBuilder
 	{
-		public ICollection BuildItems(Codon codon, object owner)
+		public IEnumerable<object> BuildItems(Codon codon, object owner)
 		{
 			IRecentOpen recentOpen = SD.FileService.RecentOpen;
 			
@@ -195,7 +195,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	
 	public class ToolMenuBuilder : IMenuItemBuilder
 	{
-		public ICollection BuildItems(Codon codon, object owner)
+		public IEnumerable<object> BuildItems(Codon codon, object owner)
 		{
 			var items = new System.Windows.Controls.MenuItem[ToolLoader.Tool.Count];
 			for (int i = 0; i < ToolLoader.Tool.Count; ++i) {
@@ -278,7 +278,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	
 	public class OpenContentsMenuBuilder : IMenuItemBuilder
 	{
-		public ICollection BuildItems(Codon codon, object owner)
+		public IEnumerable<object> BuildItems(Codon codon, object owner)
 		{
 			int windowCount = WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count;
 			if (windowCount == 0) {
@@ -452,9 +452,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 			get;
 		}
 		
-		public ICollection BuildItems(Codon codon, object owner)
+		public IEnumerable<object> BuildItems(Codon codon, object owner)
 		{
-			ArrayList list = new ArrayList();
+			List<object> list = new List<object>();
 			foreach (PadDescriptor padContent in WorkbenchSingleton.Workbench.PadContentCollection) {
 				if (padContent.Category == Category) {
 					var item = new System.Windows.Controls.MenuItem();

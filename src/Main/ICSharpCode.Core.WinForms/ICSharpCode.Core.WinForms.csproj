@@ -54,7 +54,6 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Menu\IStatusUpdate.cs" />
-    <Compile Include="Menu\ISubmenuBuilder.cs" />
     <Compile Include="Menu\Menu.cs" />
     <Compile Include="Menu\MenuCheckBox.cs" />
     <Compile Include="Menu\MenuCommand.cs" />

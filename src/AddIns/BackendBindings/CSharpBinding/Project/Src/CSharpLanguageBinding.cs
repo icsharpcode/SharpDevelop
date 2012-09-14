@@ -34,7 +34,6 @@ namespace CSharpBinding
 		}
 		
 		ITextEditor editor;
-		CSharpSemanticHighlighter semanticHighlighter;
 		IssueManager inspectionManager;
 		IList<IContextActionProvider> contextActionProviders;
 		
@@ -54,7 +53,6 @@ namespace CSharpBinding
 		public override void Detach()
 		{
 			//codeManipulation.Dispose();
-			IHighlighter highlighter = editor.GetService(typeof(IHighlighter)) as IHighlighter;
 			if (inspectionManager != null) {
 				inspectionManager.Dispose();
 				inspectionManager = null;

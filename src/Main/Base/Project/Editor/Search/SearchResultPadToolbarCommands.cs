@@ -13,7 +13,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 {
 	public class LastSearchResultsBuilder : IMenuItemBuilder
 	{
-		public ICollection BuildItems(Codon codon, object owner)
+		public IEnumerable<object> BuildItems(Codon codon, object owner)
 		{
 			List<object> items = new List<object>();
 			foreach (ISearchResult searchResult in SearchResultsPad.Instance.LastSearches) {

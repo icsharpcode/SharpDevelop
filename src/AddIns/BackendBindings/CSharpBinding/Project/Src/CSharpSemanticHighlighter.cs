@@ -152,7 +152,7 @@ namespace CSharpBinding
 		
 		void ParserService_ParseInformationUpdated(object sender, ParseInformationEventArgs e)
 		{
-			if (e.FileName == document.FileName && invalidLines.Count > 0) {
+			if (FileUtility.IsEqualFileName(e.FileName, document.FileName) && invalidLines.Count > 0) {
 				cachedLines.Clear();
 				foreach (IDocumentLine line in invalidLines) {
 					if (!line.IsDeleted) {

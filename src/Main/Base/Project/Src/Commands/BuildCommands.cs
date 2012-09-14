@@ -242,7 +242,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	
 	public class SetConfigurationMenuBuilder : IMenuItemBuilder
 	{
-		public System.Collections.ICollection BuildItems(Codon codon, object owner)
+		public IEnumerable<object> BuildItems(Codon codon, object owner)
 		{
 			if (ProjectService.OpenSolution == null)
 				return new MenuItem[0];
@@ -270,7 +270,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	
 	public class SetPlatformMenuBuilder : IMenuItemBuilder
 	{
-		public System.Collections.ICollection BuildItems(Codon codon, object owner)
+		public IEnumerable<object> BuildItems(Codon codon, object owner)
 		{
 			if (ProjectService.OpenSolution == null)
 				return new MenuItem[0];

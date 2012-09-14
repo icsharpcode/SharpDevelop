@@ -37,7 +37,7 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
-		/// Retrieves the service of type <paramref name="serviceType"/> from the provider.
+		/// Retrieves the service of type <typeparamref name="T"/> from the provider.
 		/// If the service cannot be found, a <see cref="ServiceNotFoundException"/> will be thrown.
 		/// </summary>
 		public static T GetRequiredService<T>()

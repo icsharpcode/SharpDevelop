@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
@@ -23,9 +24,9 @@ namespace ICSharpCode.Core.WinForms
 				object item = CreateToolbarItemFromDescriptor(descriptor);
 				if (item is ToolStripItem) {
 					collection.Add((ToolStripItem)item);
-				} else if (item is ISubmenuBuilder) {
-					ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
-					collection.AddRange(submenuBuilder.BuildSubmenu(descriptor.Codon, owner));
+				} else if (item is IMenuItemBuilder) {
+					IMenuItemBuilder submenuBuilder = (IMenuItemBuilder)item;
+					collection.AddRange(submenuBuilder.BuildItems(descriptor.Codon, owner).Cast<ToolStripItem>().ToArray());
 				}
 			}
 			
