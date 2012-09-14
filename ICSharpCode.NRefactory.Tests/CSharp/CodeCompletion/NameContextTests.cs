@@ -187,6 +187,20 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				Assert.AreEqual (0, provider.Count, "provider needs to be empty");
 			});
 		}
+		[Ignore("TODO")]
+		[Test()]
+		public void TestIndexerParameterName ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (@"class MyClass {
+	$public int this [int f$
+}");
+			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
+			provider = CodeCompletionBugTests.CreateProvider (@"class MyClass {
+	$public int this [int f, string x$
+}");
+			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
+		}
+
 	}
 }
 
