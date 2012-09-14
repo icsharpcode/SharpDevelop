@@ -30,7 +30,7 @@ namespace ICSharpCode.UnitTesting
 		void Initialize(IEnumerable<ITest> selectedTests)
 		{
 			// TODO: support running multiple tests
-			ITest test = selectedTests.First();
+			ITest test = selectedTests.FirstOrDefault();
 			this.project = test.ParentProject.Project;
 			Assemblies.Add(project.OutputAssemblyFullPath);
 			if (test is TestNamespace) {

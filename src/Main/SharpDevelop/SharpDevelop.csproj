@@ -47,6 +47,9 @@
     <OutputType>WinExe</OutputType>
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(SharpDevelopOutputType)' != '' ">
+    <OutputType>$(SharpDevelopOutputType)</OutputType>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net">
       <HintPath>..\..\Libraries\log4net\log4net.dll</HintPath>

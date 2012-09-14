@@ -67,105 +67,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Frameworks\CreateNUnitTestRunnerTestFixture.cs" />
-    <Compile Include="Frameworks\NUnitConsoleExeSelectedTestFixture.cs" />
-    <Compile Include="Frameworks\NUnitConsoleProcessStartInfoTestFixture.cs" />
-    <Compile Include="Frameworks\NUnitTestFrameworkIsTestClassTests.cs" />
-    <Compile Include="Frameworks\NUnitTestFrameworkIsTestMemberTests.cs" />
-    <Compile Include="Frameworks\NUnitTestFrameworkIsTestProjectTests.cs" />
-    <Compile Include="Frameworks\NUnitTestResultFailureTestFixture.cs" />
-    <Compile Include="Frameworks\RegisteredTestFrameworksTests.cs" />
-    <Compile Include="Frameworks\TestableConditionIsValidForClassNodeTestFixture.cs" />
-    <Compile Include="Frameworks\TestableConditionIsValidMethodTestFixture.cs" />
-    <Compile Include="Frameworks\TestFrameworkDescriptorTests.cs" />
-    <Compile Include="Frameworks\TestFrameworkDoozerTests.cs" />
-    <Compile Include="Frameworks\TestResultsReaderTests.cs" />
-    <Compile Include="Frameworks\NUnitConsoleCommandLineTests.cs" />
-    <Compile Include="Frameworks\UnitTestingOptionsTestFixture.cs" />
-    <Compile Include="Project\AbstractBaseClassWithTestMethodsTestFixture.cs" />
-    <Compile Include="Project\BaseTestMethodTestFixture.cs" />
-    <Compile Include="Project\DoubleNestedTestClassWithBaseType.cs" />
-    <Compile Include="Project\InnerClassInTestFixtureTests.cs" />
-    <Compile Include="Project\DuplicateClassNameChangedTestFixture.cs" />
-    <Compile Include="Project\InnerClassMethodRenamedTestFixture.cs" />
-    <Compile Include="Project\InnerClassNameChangesTestFixture.cs" />
-    <Compile Include="Project\InnerClassTestFixture.cs" />
-    <Compile Include="Project\InnerClassTestFixtureAttributeRemovedTestFixture.cs" />
-    <Compile Include="Project\OverriddenBaseTestMethodTestFixture.cs" />
-    <Compile Include="Project\ProjectTestFixtureBase.cs" />
-    <Compile Include="Project\TestClassWithFieldsDefinedAsTestMembersByTestFrameworkTests.cs" />
-    <Compile Include="Project\TwoBaseClassesWithTestMethodsTestFixture.cs" />
-    <Compile Include="Utils\DerivedRunTestCommand.cs" />
-    <Compile Include="Utils\DerivedRunTestInPadCommand.cs" />
-    <Compile Include="Utils\DerivedRunTestWithDebuggerCommand.cs" />
-    <Compile Include="Utils\JumpedToFile.cs" />
-    <Compile Include="Utils\MockAddInTree.cs" />
-    <Compile Include="Utils\MockBuildOptions.cs" />
-    <Compile Include="Utils\MockBuildProjectBeforeTestRun.cs" />
-    <Compile Include="Utils\MockBuildProjectFactory.cs" />
-    <Compile Include="Utils\MockDebugger.cs" />
-    <Compile Include="Utils\MockDebuggerService.cs" />
-    <Compile Include="Utils\MockFileService.cs" />
-    <Compile Include="Utils\MockMethod.cs" />
-    <Compile Include="Utils\MockNUnitTestFramework.cs" />
-    <Compile Include="Utils\MockNUnitTestRunnerContext.cs" />
-    <Compile Include="Utils\MockProcessRunner.cs" />
-    <Compile Include="Utils\MockRegisteredTestFrameworks.cs" />
-    <Compile Include="Utils\MockRunTestCommandContext.cs" />
-    <Compile Include="Utils\MockSaveAllFilesCommand.cs" />
-    <Compile Include="Utils\MockStatusBarService.cs" />
-    <Compile Include="Utils\MockTaskService.cs" />
-    <Compile Include="Utils\MockTestFixture.cs" />
-    <Compile Include="Utils\MockTestFramework.cs" />
-    <Compile Include="Utils\MockTestFrameworkFactory.cs" />
-    <Compile Include="Utils\MockTestFrameworksWithNUnitFrameworkSupport.cs" />
-    <Compile Include="Utils\MockTestResultsMonitor.cs" />
-    <Compile Include="Utils\MockTestRunner.cs" />
-    <Compile Include="Utils\MockTestTreeView.cs" />
-    <Compile Include="Utils\MockUnitTestsPad.cs" />
-    <Compile Include="Utils\MockUnitTestWorkbench.cs" />
-    <Compile Include="Utils\TaskComparison.cs" />
-    <Compile Include="Utils\TestProjectHelper.cs" />
-    <Compile Include="Utils\Tests\CreateProjectWithOutputPathTestFixture.cs" />
-    <Compile Include="Utils\Tests\CreateTestProjectWithOneTestMethodTestFixture.cs" />
-    <Compile Include="Utils\Tests\CreateTestProjectWithTwoTestMethodsTestFixture.cs" />
-    <Compile Include="Utils\Tests\DerivedRunTestCommandTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockAddInTreeTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockBuildOptionsTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockBuildProjectBeforeTestRunTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockDebuggerServiceTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockFileServiceTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockNUnitTestFrameworkTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockNUnitTestRunnerContextTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockProcessRunnerTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockProjectSaveTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockRegisteredTestFrameworksTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockRunTestCommandContextTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockSaveAllFilesCommandTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockTaskServiceTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockTestFrameworkFactoryTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockTestFrameworksWithNUnitFrameworkSupportTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockTestFrameworkTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockTestResultsMonitorTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockTestRunnerTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockUnitTestsPadTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockUnitTestWorkbenchTestFixture.cs" />
-    <Compile Include="Utils\Tests\TaskComparisonTestFixture.cs" />
+    <Compile Include="NUnit\CreateNUnitTestRunnerTestFixture.cs" />
+    <Compile Include="NUnit\NUnitConsoleCommandLineTests.cs" />
+    <Compile Include="Utils\MockCSharpProject.cs" />
     <None Include="..\..\..\..\..\bin\SharpDevelop.exe">
       <Link>SharpDevelop.exe</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Compile Include="Project\TestProjectWithOneClassTestFixture.cs" />
-    <Compile Include="Project\TwoProjectRootNamespacesTestFixture.cs" />
-    <Compile Include="Project\TestClassWithOneMethodTestFixture.cs" />
-    <Compile Include="Project\TestClassWithTwoMethodsTestFixture.cs" />
-    <Compile Include="Project\ThreeTestMethodsTestResultsTestFixture.cs" />
-    <Compile Include="Project\ThreeTestClassesTestResultsTestFixture.cs" />
-    <Compile Include="Project\EmptyProjectTestFixture.cs" />
-    <Compile Include="Project\TestMethodsInBaseClassTestFixture.cs" />
-    <Compile Include="Project\DuplicateClassNameTestFixture.cs" />
-    <Compile Include="Project\DuplicateMethodNameTestFixture.cs" />
-    <Compile Include="Utils\MockCSharpProject.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
@@ -193,6 +101,10 @@
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="NUnit" />
+    <Folder Include="Utils" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

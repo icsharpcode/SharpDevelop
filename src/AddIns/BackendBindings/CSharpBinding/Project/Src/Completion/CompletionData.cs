@@ -37,7 +37,7 @@ namespace CSharpBinding.Completion
 		
 		public virtual void AddOverload(ICompletionData data)
 		{
-			throw new InvalidOperationException();
+			//throw new InvalidOperationException();
 		}
 		
 		string ICompletionItem.Text {
