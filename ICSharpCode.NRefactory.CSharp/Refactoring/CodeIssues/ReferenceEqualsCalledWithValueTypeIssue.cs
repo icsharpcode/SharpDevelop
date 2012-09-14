@@ -54,6 +54,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				base.VisitInvocationExpression (invocationExpression);
 
+				// Quickly determine if this invocation is eligible to speed up the inspector
+				var nameToken = invocationExpression.Target.GetChildByRole(Roles.Identifier);
+				if (nameToken.Name != "ReferenceEquals")
+					return;
+
 				var resolveResult = ctx.Resolve (invocationExpression) as InvocationResolveResult;
 				if (resolveResult == null || 
 					resolveResult.Member.DeclaringTypeDefinition == null ||
