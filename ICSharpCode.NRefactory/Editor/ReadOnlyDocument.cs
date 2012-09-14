@@ -36,13 +36,12 @@ namespace ICSharpCode.NRefactory.Editor
 		/// <summary>
 		/// Creates a new ReadOnlyDocument from the given text source.
 		/// </summary>
-		public ReadOnlyDocument(ITextSource textSource, string fileName = null)
+		public ReadOnlyDocument(ITextSource textSource)
 		{
 			if (textSource == null)
 				throw new ArgumentNullException("textSource");
 			// ensure that underlying buffer is immutable
 			this.textSource = textSource.CreateSnapshot();
-			this.fileName = fileName;
 			List<int> lines = new List<int>();
 			lines.Add(0);
 			int offset = 0;
@@ -60,9 +59,19 @@ namespace ICSharpCode.NRefactory.Editor
 		/// <summary>
 		/// Creates a new ReadOnlyDocument from the given string.
 		/// </summary>
-		public ReadOnlyDocument(string text, string fileName = null)
-			: this(new StringTextSource(text), fileName)
+		public ReadOnlyDocument(string text)
+			: this(new StringTextSource(text))
 		{
+		}
+		
+		/// <summary>
+		/// Creates a new ReadOnlyDocument from the given text source;
+		/// and sets IDocument.FileName to the specified file name.
+		/// </summary>
+		public ReadOnlyDocument(ITextSource textSource, string fileName)
+			: this(textSource)
+		{
+			this.fileName = fileName;
 		}
 		
 		/// <inheritdoc/>

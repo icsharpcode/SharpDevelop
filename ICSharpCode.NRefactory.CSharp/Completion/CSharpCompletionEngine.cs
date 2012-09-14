@@ -2943,6 +2943,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				"include file=\"|\" path=\"\">"
 			);
 			yield return factory.CreateLiteralCompletionData(
+				"inheritdoc",
+				"Inherit documentation from a base class or interface",
+				"inheritdoc/"
+			);
+			yield return factory.CreateLiteralCompletionData(
 				"list",
 				"Create a list or table",
 				"list type=\"|\">"

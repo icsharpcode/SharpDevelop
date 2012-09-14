@@ -1,4 +1,4 @@
-// 
+﻿// 
 // DeclareLocalVariableTests.cs
 //  
 // Author:
@@ -206,7 +206,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	void DoStuff() 
 	{
 		System.Func<int> getInt = GetInt;
-		if (getInt () == 0) {
+		if (getInt() == 0) {
 		}
 	}
 	

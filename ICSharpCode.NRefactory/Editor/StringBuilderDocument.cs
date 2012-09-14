@@ -262,7 +262,7 @@ namespace ICSharpCode.NRefactory.Editor
 		public IDocument CreateDocumentSnapshot()
 		{
 			if (documentSnapshot == null)
-				documentSnapshot = new ReadOnlyDocument(this);
+				documentSnapshot = new ReadOnlyDocument(this, this.FileName);
 			return documentSnapshot;
 		}
 		
