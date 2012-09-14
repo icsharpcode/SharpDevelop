@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			void CheckExpressionInAutoCallContext(Expression expression)
 			{
-				if (expression is InvocationExpression) {
+				if (expression is InvocationExpression && !processedNodes.Contains(expression)) {
 					CheckInvocationInAutoCallContext((InvocationExpression)expression);
 				}
 			}
@@ -75,12 +75,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (memberExpression == null) {
 					return;
 				}
-				var resolveResult = ctx.Resolve(invocationExpression) as CSharpInvocationResolveResult;
-				if (resolveResult == null) {
+				if (memberExpression.MemberName != "ToString" || invocationExpression.Arguments.Any ()) {
 					return;
 				}
-				var member = resolveResult.Member;
-				if (member.Name != "ToString" || member.Parameters.Count != 0) {
+
+				var resolveResult = ctx.Resolve(invocationExpression) as CSharpInvocationResolveResult;
+				if (resolveResult == null) {
 					return;
 				}
 				AddRedundantToStringIssue(memberExpression, invocationExpression);
@@ -88,9 +88,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			void AddRedundantToStringIssue(MemberReferenceExpression memberExpression, InvocationExpression invocationExpression)
 			{
-				if (processedNodes.Contains(invocationExpression)) {
-					return;
-				}
+				// Simon Lindgren 2012-09-14: Previously there was a check here to see if the node had already been processed
+				// This has been moved out to the callers, to check it earlier for a 30-40% run time reduction
 				processedNodes.Add(invocationExpression);
 				
 				AddIssue(memberExpression.DotToken.StartLocation, invocationExpression.RParToken.EndLocation,
@@ -176,7 +175,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			void CheckTargetedObject(InvocationExpression invocationExpression, IType type, IMember member)
 			{
 				var memberExpression = invocationExpression.Target as MemberReferenceExpression;
-				if (memberExpression != null) {
+				if (memberExpression != null && !processedNodes.Contains(invocationExpression)) {
 					if (type.IsKnownType(KnownTypeCode.String) && member.Name == "ToString") {
 						AddRedundantToStringIssue(memberExpression, invocationExpression);
 					}
