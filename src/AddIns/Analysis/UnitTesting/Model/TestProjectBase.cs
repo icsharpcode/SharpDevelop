@@ -25,7 +25,7 @@ namespace ICSharpCode.UnitTesting
 	public abstract class TestProjectBase : TestBase, ITestProject
 	{
 		IProject project;
-		Dictionary<FullNameAndTypeParameterCount, ITest> topLevelTestClasses = new Dictionary<FullNameAndTypeParameterCount, ITest>();
+		Dictionary<TopLevelTypeName, ITest> topLevelTestClasses = new Dictionary<TopLevelTypeName, ITest>();
 		
 		public TestProjectBase(IProject project)
 		{
@@ -70,7 +70,7 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		#region NotifyParseInformationChanged
-		HashSet<FullNameAndTypeParameterCount> dirtyTypeDefinitions = new HashSet<FullNameAndTypeParameterCount>();
+		HashSet<TopLevelTypeName> dirtyTypeDefinitions = new HashSet<TopLevelTypeName>();
 		
 		public void NotifyParseInformationChanged(IUnresolvedFile oldUnresolvedFile, IUnresolvedFile newUnresolvedFile)
 		{
@@ -93,7 +93,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			var compilation = SD.ParserService.GetCompilation(project);
 			foreach (var typeDef in compilation.MainAssembly.TopLevelTypeDefinitions) {
-				UpdateType(new FullNameAndTypeParameterCount(typeDef.Namespace, typeDef.Name, typeDef.TypeParameterCount), typeDef);
+				UpdateType(new TopLevelTypeName(typeDef.Namespace, typeDef.Name, typeDef.TypeParameterCount), typeDef);
 			}
 			base.OnNestedTestsInitialized();
 		}
@@ -102,12 +102,12 @@ namespace ICSharpCode.UnitTesting
 		{
 			if (unresolvedFile != null) {
 				foreach (var td in unresolvedFile.TopLevelTypeDefinitions) {
-					AddToDirtyList(new FullNameAndTypeParameterCount(td.Namespace, td.Name, td.TypeParameters.Count));
+					AddToDirtyList(new TopLevelTypeName(td.Namespace, td.Name, td.TypeParameters.Count));
 				}
 			}
 		}
 		
-		protected virtual void AddToDirtyList(FullNameAndTypeParameterCount className)
+		protected virtual void AddToDirtyList(TopLevelTypeName className)
 		{
 			dirtyTypeDefinitions.Add(className);
 		}
@@ -127,7 +127,7 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Adds/Updates/Removes the test class for the type definition.
 		/// </summary>
-		void UpdateType(FullNameAndTypeParameterCount dirtyTypeDef, ITypeDefinition typeDef)
+		void UpdateType(TopLevelTypeName dirtyTypeDef, ITypeDefinition typeDef)
 		{
 			ITest test;
 			if (topLevelTestClasses.TryGetValue(dirtyTypeDef, out test)) {
@@ -152,20 +152,20 @@ namespace ICSharpCode.UnitTesting
 		#endregion
 		
 		#region Namespace Management
-		protected ITest GetTestClass(FullNameAndTypeParameterCount fullName)
+		protected ITest GetTestClass(TopLevelTypeName fullName)
 		{
 			EnsureNestedTestsInitialized();
 			return topLevelTestClasses.GetOrDefault(fullName);
 		}
 		
-		void AddTestClass(FullNameAndTypeParameterCount fullName, ITest test)
+		void AddTestClass(TopLevelTypeName fullName, ITest test)
 		{
 			topLevelTestClasses.Add(fullName, test);
 			TestCollection testNamespace = FindOrCreateNamespace(NestedTestCollection, project.RootNamespace, fullName.Namespace);
 			testNamespace.Add(test);
 		}
 		
-		void RemoveTestClass(FullNameAndTypeParameterCount fullName, ITest test)
+		void RemoveTestClass(TopLevelTypeName fullName, ITest test)
 		{
 			topLevelTestClasses.Remove(fullName);
 			TestCollection testNamespace = FindNamespace(NestedTestCollection, project.RootNamespace, fullName.Namespace);

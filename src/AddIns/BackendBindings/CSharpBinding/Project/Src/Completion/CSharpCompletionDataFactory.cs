@@ -116,6 +116,11 @@ namespace CSharpBinding.Completion
 			return CreateMethodDataProvider(startOffset, type.GetConstructors());
 		}
 		
+		IParameterDataProvider IParameterCompletionDataFactory.CreateConstructorProvider(int startOffset, IType type, AstNode thisInitializer)
+		{
+			return CreateMethodDataProvider(startOffset, type.GetConstructors());
+		}
+		
 		IParameterDataProvider IParameterCompletionDataFactory.CreateMethodDataProvider(int startOffset, IEnumerable<IMethod> methods)
 		{
 			return CreateMethodDataProvider(startOffset, methods);

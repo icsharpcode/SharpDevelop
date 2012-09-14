@@ -38,7 +38,7 @@ namespace ICSharpCode.UnitTesting
 		protected override ITest CreateTestClass(ITypeDefinition typeDefinition)
 		{
 			if (NUnitTestFramework.IsTestClass(typeDefinition))
-				return new NUnitTestClass(this, typeDefinition);
+				return new NUnitTestClass(this, typeDefinition.FullTypeName);
 			else
 				return null;
 		}
@@ -61,9 +61,9 @@ namespace ICSharpCode.UnitTesting
 			if (typeDefinition.IsAbstract) {
 				tests = from c in entity.ParentAssembly.GetAllTypeDefinitions()
 					where c.IsDerivedFrom(typeDefinition)
-					select GetTestForEntityInClass(FindTestClass(c.ToTypeReference()), entity);
+					select GetTestForEntityInClass(FindTestClass(c.FullTypeName), entity);
 			} else {
-				NUnitTestClass c = FindTestClass(typeDefinition.ToTypeReference());
+				NUnitTestClass c = FindTestClass(typeDefinition.FullTypeName);
 				tests = new [] { GetTestForEntityInClass(c, entity) };
 			}
 			// GetTestForEntityInClass might return null, so filter those out:
@@ -89,13 +89,13 @@ namespace ICSharpCode.UnitTesting
 				return;
 			string fixtureName = result.Name.Substring(0, lastDot);
 			string methodName = result.Name.Substring(lastDot + 1);
-			NUnitTestClass testClass = FindTestClass(fixtureName);
+			NUnitTestClass testClass = FindTestClass(new FullTypeName(fixtureName));
 			if (testClass == null) {
 				// maybe it's an inherited test
 				int secondToLastDot = result.Name.LastIndexOf('.', lastDot - 1);
 				if (secondToLastDot >= 0) {
 					string fixtureName2 = result.Name.Substring(0, secondToLastDot);
-					testClass = FindTestClass(fixtureName2);
+					testClass = FindTestClass(new FullTypeName(fixtureName2));
 				}
 			}
 			if (testClass != null) {
@@ -106,46 +106,38 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
-		NUnitTestClass FindTestClass(string fixtureName)
+		NUnitTestClass FindTestClass(FullTypeName fullTypeName)
 		{
-			ITypeReference r = ReflectionHelper.ParseReflectionName(fixtureName);
-			return FindTestClass(r);
-		}
-		
-		NUnitTestClass FindTestClass(ITypeReference r)
-		{
-			var gctr = r as GetClassTypeReference;
-			if (gctr != null) {
-				return (NUnitTestClass)GetTestClass(new FullNameAndTypeParameterCount(gctr.Namespace, gctr.Name, gctr.TypeParameterCount));
+			var testClass = (NUnitTestClass)GetTestClass(fullTypeName.TopLevelTypeName);
+			int tpc = fullTypeName.TopLevelTypeName.TypeParameterCount;
+			for (int i = 0; i < fullTypeName.NestingLevel; i++) {
+				if (testClass == null)
+					break;
+				tpc += fullTypeName.GetNestedTypeAdditionalTypeParameterCount(i);
+				testClass = testClass.FindNestedTestClass(fullTypeName.GetNestedTypeName(i), tpc);
 			}
-			var ntc = r as NestedTypeReference;
-			if (ntc != null) {
-				NUnitTestClass declaringTestClass = FindTestClass(ntc.DeclaringTypeReference);
-				if (declaringTestClass != null)
-					return declaringTestClass.FindNestedTestClass(ntc.Name, declaringTestClass.TypeParameterCount + ntc.AdditionalTypeParameterCount);
-			}
-			return null;
+			return testClass;
 		}
 		
 		#region Test Inheritance
-		MultiDictionary<FullNameAndTypeParameterCount, NUnitTestClass> inheritedTestClasses = new MultiDictionary<FullNameAndTypeParameterCount, NUnitTestClass>();
+		MultiDictionary<TopLevelTypeName, NUnitTestClass> inheritedTestClasses = new MultiDictionary<TopLevelTypeName, NUnitTestClass>();
 		
-		public void RegisterInheritedClass(FullNameAndTypeParameterCount baseClassName, NUnitTestClass inheritedClass)
+		public void RegisterInheritedClass(FullTypeName baseClassName, NUnitTestClass inheritedClass)
 		{
-			inheritedTestClasses.Add(baseClassName, inheritedClass);
+			inheritedTestClasses.Add(baseClassName.TopLevelTypeName, inheritedClass);
 		}
 		
-		public void RemoveInheritedClass(FullNameAndTypeParameterCount baseClassName, NUnitTestClass inheritedClass)
+		public void RemoveInheritedClass(FullTypeName baseClassName, NUnitTestClass inheritedClass)
 		{
-			inheritedTestClasses.Remove(baseClassName, inheritedClass);
+			inheritedTestClasses.Remove(baseClassName.TopLevelTypeName, inheritedClass);
 		}
 		
-		protected override void AddToDirtyList(FullNameAndTypeParameterCount className)
+		protected override void AddToDirtyList(TopLevelTypeName className)
 		{
 			// When a base class is invalidated, also invalidate all derived classes
 			base.AddToDirtyList(className);
 			foreach (var derivedClass in inheritedTestClasses[className]) {
-				base.AddToDirtyList(derivedClass.TopLevelClassName);
+				base.AddToDirtyList(derivedClass.FullTypeName.TopLevelTypeName);
 			}
 		}
 		#endregion

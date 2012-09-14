@@ -15,19 +15,19 @@ namespace ICSharpCode.UnitTesting
 	public class NUnitTestMethod : TestBase
 	{
 		readonly ITestProject parentProject;
-		IUnresolvedTypeDefinition derivedFixture;
+		FullTypeName derivedFixture;
 		IUnresolvedMethod method;
 		string displayName;
 		
-		public NUnitTestMethod(ITestProject parentProject, IUnresolvedMethod method, IUnresolvedTypeDefinition fixture = null)
+		public NUnitTestMethod(ITestProject parentProject, IUnresolvedMethod method, FullTypeName derivedFixture = default(FullTypeName))
 		{
 			if (parentProject == null)
 				throw new ArgumentNullException("parentProject");
 			this.parentProject = parentProject;
-			UpdateTestMethod(method, fixture);
+			UpdateTestMethod(method, derivedFixture);
 		}
 		
-		public void UpdateTestMethod(IUnresolvedMethod method, IUnresolvedTypeDefinition derivedFixture = null)
+		public void UpdateTestMethod(IUnresolvedMethod method, FullTypeName derivedFixture = default(FullTypeName))
 		{
 			if (method == null)
 				throw new ArgumentNullException("method");
@@ -54,7 +54,7 @@ namespace ICSharpCode.UnitTesting
 		public override event EventHandler DisplayNameChanged;
 		
 		public bool IsInherited {
-			get { return derivedFixture != null; }
+			get { return derivedFixture.Name != null; }
 		}
 		
 		public string MethodName {
@@ -66,7 +66,7 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		public string FixtureReflectionName {
-			get { return (derivedFixture ?? method.DeclaringTypeDefinition).ReflectionName; }
+			get { return IsInherited ? derivedFixture.ReflectionName : method.DeclaringTypeDefinition.ReflectionName; }
 		}
 		
 		public void UpdateTestResult(TestResult result)

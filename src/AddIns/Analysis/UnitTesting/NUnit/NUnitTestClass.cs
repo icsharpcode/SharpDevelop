@@ -17,16 +17,17 @@ namespace ICSharpCode.UnitTesting
 	public class NUnitTestClass : TestBase
 	{
 		readonly NUnitTestProject parentProject;
-		IUnresolvedTypeDefinition primaryPart;
-		List<FullNameAndTypeParameterCount> baseClassNames = new List<FullNameAndTypeParameterCount>();
+		FullTypeName fullTypeName;
+		List<FullTypeName> baseClassNames = new List<FullTypeName>();
 		
-		public NUnitTestClass(NUnitTestProject parentProject, ITypeDefinition typeDefinition)
+		public NUnitTestClass(NUnitTestProject parentProject, FullTypeName fullTypeName)
 		{
 			if (parentProject == null)
 				throw new ArgumentNullException("parentProject");
 			this.parentProject = parentProject;
-			UpdateTestClass(typeDefinition);
+			this.fullTypeName = fullTypeName;
 			BindResultToCompositeResultOfNestedTests();
+			// No need to call UpdateTestClass() here as NestedTestsInitialized still is false
 		}
 		
 		public override ITestProject ParentProject {
@@ -34,32 +35,23 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		public override string DisplayName {
-			get { return primaryPart.Name; }
+			get { return fullTypeName.Name; }
 		}
 		
-		/// <summary>
-		/// For top-level classes: returns the full name of the class.
-		/// For nested classes: returns the full name of the top-level class that contains this test class.
-		/// </summary>
-		public FullNameAndTypeParameterCount TopLevelClassName {
-			get {
-				IUnresolvedTypeDefinition top = primaryPart;
-				while (top.DeclaringTypeDefinition != null)
-					top = top.DeclaringTypeDefinition;
-				return new FullNameAndTypeParameterCount(top.Namespace, top.Name, top.TypeParameters.Count);
-			}
+		public FullTypeName FullTypeName {
+			get { return fullTypeName; }
 		}
 		
 		public string ClassName {
-			get { return primaryPart.Name; }
+			get { return fullTypeName.Name; }
 		}
 		
 		public int TypeParameterCount {
-			get { return primaryPart.TypeParameters.Count; }
+			get { return fullTypeName.TypeParameterCount; }
 		}
 		
 		public string ReflectionName {
-			get { return primaryPart.ReflectionName; }
+			get { return fullTypeName.ReflectionName; }
 		}
 		
 		public override System.Windows.Input.ICommand GoToDefinition {
@@ -76,7 +68,7 @@ namespace ICSharpCode.UnitTesting
 		ITypeDefinition Resolve()
 		{
 			ICompilation compilation = SD.ParserService.GetCompilation(parentProject.Project);
-			IType type = primaryPart.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
+			IType type = compilation.MainAssembly.GetTypeDefinition(fullTypeName);
 			return type.GetDefinition();
 		}
 		
@@ -116,7 +108,7 @@ namespace ICSharpCode.UnitTesting
 		
 		public void UpdateTestClass(ITypeDefinition typeDefinition)
 		{
-			primaryPart = typeDefinition.Parts[0];
+			fullTypeName = typeDefinition.FullTypeName;
 			if (this.NestedTestsInitialized) {
 				int baseClassIndex = 0;
 				foreach (IType baseType in typeDefinition.GetNonInterfaceBaseTypes()) {
@@ -126,7 +118,7 @@ namespace ICSharpCode.UnitTesting
 						continue;
 					if (baseTypeDef.DeclaringTypeDefinition != null)
 						continue; // we only support inheriting from top-level classes
-					var baseClassName = new FullNameAndTypeParameterCount(baseTypeDef.Namespace, baseTypeDef.Name, baseTypeDef.TypeParameterCount);
+					var baseClassName = baseTypeDef.FullTypeName;
 					if (baseClassIndex < baseClassNames.Count && baseClassName == baseClassNames[baseClassIndex]) {
 						// base class is already in the list, just keep it
 						baseClassIndex++;
@@ -151,7 +143,7 @@ namespace ICSharpCode.UnitTesting
 					if (nestedTestClass != null) {
 						nestedTestClass.UpdateTestClass(nestedClass);
 					} else {
-						nestedTestClass = new NUnitTestClass(parentProject, nestedClass);
+						nestedTestClass = new NUnitTestClass(parentProject, nestedClass.FullTypeName);
 						this.NestedTestCollection.Add(nestedTestClass);
 					}
 					newOrUpdatedNestedTests.Add(nestedTestClass);
@@ -162,11 +154,11 @@ namespace ICSharpCode.UnitTesting
 						continue;
 					
 					IUnresolvedMethod unresolvedMethod = (IUnresolvedMethod)method.UnresolvedMember;
-					IUnresolvedTypeDefinition derivedFixture;
+					FullTypeName derivedFixture;
 					if (method.DeclaringTypeDefinition == typeDefinition)
-						derivedFixture = null; // method is not inherited
+						derivedFixture = default(FullTypeName); // method is not inherited
 					else
-						derivedFixture = primaryPart; // method is inherited
+						derivedFixture = fullTypeName; // method is inherited
 					
 					NUnitTestMethod testMethod = FindTestMethod(method.Name);
 					if (testMethod != null) {
