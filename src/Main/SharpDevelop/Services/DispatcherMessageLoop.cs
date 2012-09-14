@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
-namespace ICSharpCode.SharpDevelop.Workbench
+namespace ICSharpCode.SharpDevelop
 {
 	sealed class DispatcherMessageLoop : IMessageLoop, ISynchronizeInvoke
 	{

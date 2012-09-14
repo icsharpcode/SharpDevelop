@@ -106,6 +106,9 @@
     <Compile Include="Editor\ITextMarker.cs" />
     <Compile Include="Editor\OnDiskTextSourceVersion.cs" />
     <Compile Include="Editor\HighlighterKnownSpanNames.cs" />
+    <Compile Include="Services\IClipboard.cs" />
+    <Compile Include="Services\IMessageLoop.cs" />
+    <Compile Include="Services\SD.cs" />
     <Compile Include="Src\Gui\FileService.cs" />
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
     <Compile Include="Src\Commands\ViewInBrowser.cs" />
@@ -188,8 +191,6 @@
     <Compile Include="Src\Gui\ICanBeDirty.cs" />
     <Compile Include="Src\Gui\IWorkbenchLayout.cs" />
     <Compile Include="Src\Services\FileChangeWatcher.cs" />
-    <Compile Include="Src\Services\IClipboard.cs" />
-    <Compile Include="Src\Services\IMessageLoop.cs" />
     <Compile Include="Src\Services\ViewContentServiceAttribute.cs" />
     <Compile Include="Src\Util\NotAvailableCommand.cs" />
     <Compile Include="WinForms\IClipboardHandler.cs" />
@@ -447,7 +448,6 @@
     <Compile Include="Src\Services\RefactoringService\FindReferenceService.cs" />
     <Compile Include="Src\Services\RefactoringService\TypeGraphNode.cs" />
     <Compile Include="Src\Services\RefactoringService\TypeName.cs" />
-    <Compile Include="Src\Services\SD.cs" />
     <Compile Include="Src\Services\Tasks\ErrorPainter.cs" />
     <Compile Include="Src\Services\Tasks\TagComment.cs" />
     <Compile Include="Src\Services\Tasks\Task.cs" />
@@ -850,6 +850,7 @@
     </ProjectReference>
     <Folder Include="Dom" />
     <Folder Include="Editor" />
+    <Folder Include="Services" />
     <Folder Include="WinForms" />
     <Folder Include="Workbench" />
     <Folder Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference" />

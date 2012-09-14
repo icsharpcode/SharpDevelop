@@ -20,11 +20,13 @@ namespace ICSharpCode.SharpDevelop
 		IDataObject GetDataObject();
 		
 		/// <inheritdoc cref="System.Windows.Clipboard.SetDataObject(object)"/>
-		IDataObject SetDataObject(object data);
+		void SetDataObject(object data);
 		
 		/// <inheritdoc cref="System.Windows.Clipboard.SetDataObject(object, bool)"/>
-		IDataObject SetDataObject(object data, bool copy);
+		void SetDataObject(object data, bool copy);
 		
+		/// <inheritdoc cref="System.Windows.Clipboard.ContainsText"/>
+		bool ContainsText();
 		/// <inheritdoc cref="System.Windows.Clipboard.GetText"/>
 		string GetText();
 		/// <inheritdoc cref="System.Windows.Clipboard.SetText(string)"/>
