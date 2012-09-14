@@ -21,7 +21,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
-using Gui.Dialogs.OptionPanels.ProjectOptions;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;

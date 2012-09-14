@@ -42,18 +42,18 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			get { return GetProperty("StartProgram", "", TextBoxEditMode.EditRawProperty, PropertyStorageLocations.ConfigurationSpecific);}
 		}
 		
-	
+		
 		public ProjectProperty<string> StartURL
 		{
 			get{ return GetProperty("StartURL", "", TextBoxEditMode.EditRawProperty, PropertyStorageLocations.ConfigurationSpecific);}
 		}
-	
+		
 		
 		public ProjectProperty<string> StartArguments
 		{
 			get{ return GetProperty("StartArguments", "", TextBoxEditMode.EditRawProperty, PropertyStorageLocations.ConfigurationSpecific);}
 		}
-	
+		
 		
 		public ProjectProperty<string> StartWorkingDirectory
 		{
@@ -63,21 +63,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		void ExternalProgramButton_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
 			string fileFilter =  "${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe;*.com;*.pif;*.bat;*.cmd";
-			this.StartProgram.Value = this.FileDialog(fileFilter);
+			BrowseForFile(this.StartProgram, fileFilter);
 		}
 		
-		
-		void BrwoseForFolder_Click(object sender, System.Windows.RoutedEventArgs e)
+		void BrowseForFolder_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
-			StartWorkingDirectory.Value =  OptionsHelper.BrowseForFolder("${res:Dialog.ProjectOptions.SelectFolderTitle}",
-			                                                             base.BaseDirectory,String.Empty,TextBoxEditMode.EditRawProperty);
-		}
-		
-		
-		private string FileDialog (string filter)
-		{
-			return OptionsHelper.OpenFile(filter,base.BaseDirectory,
-			                                  StartProgram.Value,TextBoxEditMode.EditRawProperty);
+			BrowseForFolder(StartWorkingDirectory, "${res:Dialog.ProjectOptions.SelectFolderTitle}");
 		}
 	}
 }

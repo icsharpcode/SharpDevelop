@@ -11,6 +11,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Win32;
 
 namespace ICSharpCode.CodeAnalysis
 {
@@ -40,9 +41,11 @@ namespace ICSharpCode.CodeAnalysis
 		
 		private void FindFxCopPath_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
-			string fn = OptionsHelper.OpenFile("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe;","","",TextBoxEditMode.EditRawProperty);
-			if (!String.IsNullOrEmpty(fn)) {
-				string path = Path.GetDirectoryName(fn);
+			OpenFileDialog dlg = new OpenFileDialog();
+			dlg.DefaultExt = "exe";
+			dlg.Filter = StringParser.Parse("FxCop|fxcop.exe|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
+			if (dlg.ShowDialog() == true) {
+				string path = Path.GetDirectoryName(dlg.FileName);
 				if (FxCopWrapper.IsFxCopPath(path)) {
 					FxCopPath = path;
 				} else {

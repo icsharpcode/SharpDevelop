@@ -50,10 +50,7 @@ namespace ICSharpCode.SourceAnalysis
 		
 		void BrowseButton_Click(object sender, RoutedEventArgs e)
 		{
-			var fn = OptionsHelper.OpenFile(String.Empty,"","",TextBoxEditMode.EditRawProperty);
-			if (!String.IsNullOrEmpty(fn)) {
-				settingsFileTextBox.Text = fn;
-			}
+			BrowseForFile(SourceAnalysisOverrideSettingsFile, "");
 		}
 		
 		
