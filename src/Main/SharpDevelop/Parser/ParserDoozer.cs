@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 	/// <attribute name="class">
 	/// Name of the IParser class.
 	/// </attribute>
-	/// <usage>Only in /Workspace/Parser</usage>
+	/// <usage>Only in /SharpDevelop/Parser</usage>
 	/// <returns>
 	/// An ParserDescriptor object that wraps the IParser object.
 	/// </returns>

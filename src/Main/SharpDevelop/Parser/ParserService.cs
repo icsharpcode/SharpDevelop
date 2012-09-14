@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		public ParserService()
 		{
-			parserDescriptors = AddInTree.BuildItems<ParserDescriptor>("/Workspace/Parser", null, false);
+			parserDescriptors = AddInTree.BuildItems<ParserDescriptor>("/SharpDevelop/Parser", null, false);
 			this.LoadSolutionProjectsThread = new LoadSolutionProjects();
 		}
 		

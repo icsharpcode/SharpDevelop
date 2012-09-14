@@ -47,7 +47,7 @@
 			class = "ICSharpCode.VBNetBinding.VbcEncodingFixingLogger"/>
 	</Path>
 	
-	<Path name = "/Workspace/Parser">
+	<Path name = "/SharpDevelop/Parser">
 		<Parser id    = "VBNet" 
 			supportedextensions  = ".vb"
 			projectfileextension = ".vbproj"

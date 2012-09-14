@@ -74,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 			
 			if (!didLoadSolutionOrFile) {
-				foreach (ICommand command in AddInTree.BuildItems<ICommand>("/Workspace/AutostartNothingLoaded", null, false)) {
+				foreach (ICommand command in AddInTree.BuildItems<ICommand>("/SharpDevelop/Workbench/AutostartNothingLoaded", null, false)) {
 					try {
 						command.Execute(null);
 					} catch (Exception ex) {

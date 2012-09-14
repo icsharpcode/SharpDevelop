@@ -33,7 +33,7 @@
 		            mimeType = "text/xml"/>
 	</Path>
 	
-	<Path name = "/Workspace/Parser">
+	<Path name = "/SharpDevelop/Parser">
 		<Parser id    = "XAML"
 		        supportedextensions  = ".xaml"
 		        class = "ICSharpCode.XamlBinding.XamlParser"/>

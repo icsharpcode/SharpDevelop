@@ -88,7 +88,7 @@
 	</Path>
 	
 	<!-- Ruby parser -->
-	<Path name="/Workspace/Parser">
+	<Path name="/SharpDevelop/Parser">
 		<Parser id="Ruby"
 		        supportedextensions=".rb"
 		        projectfileextension=".rbproj"

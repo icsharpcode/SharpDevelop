@@ -87,7 +87,7 @@
 		       class = "Grunwald.BooBinding.BooAmbience"/>
 	</Path>
 	
-	<Path name = "/Workspace/Parser">
+	<Path name = "/SharpDevelop/Parser">
 		<Parser id    = "Boo"
 		        supportedextensions  = ".boo"
 		        projectfileextension = ".booproj"

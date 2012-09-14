@@ -1822,7 +1822,7 @@
 		<MenuItem id = "Tools" label = "${res:XML.MainMenu.ToolMenu}" type="Menu">
 			<MenuItem id = "ToolBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.Commands.ToolMenuBuilder" />
 			<MenuItem id = "Separator1" type = "Separator" />
-			<Include id = "ToolList" path = "/Workspace/Tools" />
+			<Include id = "ToolList" path = "/SharpDevelop/Workbench/Tools" />
 			<MenuItem id = "Separator2" type = "Separator" />
 			
 			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider">
@@ -1927,8 +1927,8 @@
 		</MenuItem> <!-- end HELP menu -->
 	</Path> <!-- end Main Menu -->
 	
-	<!-- create empty /Workspace/Tools path - it's included by the main menu -->
-	<Path name = "/Workspace/Tools"/>
+	<!-- create empty /SharpDevelop/Workbench/Tools path - it's included by the main menu -->
+	<Path name = "/SharpDevelop/Workbench/Tools"/>
 	
 	<!-- TEXT EDITOR -->
 	

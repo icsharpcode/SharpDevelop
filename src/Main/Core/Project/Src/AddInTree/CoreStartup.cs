@@ -171,7 +171,7 @@ namespace ICSharpCode.Core
 		/// Initializes the AddIn system.
 		/// This loads the AddIns that were added to the list,
 		/// then it executes the <see cref="ICommand">commands</see>
-		/// in <c>/Workspace/Autostart</c>.
+		/// in <c>/SharpDevelop/Autostart</c>.
 		/// </summary>
 		public void RunInitialization()
 		{
@@ -184,7 +184,7 @@ namespace ICSharpCode.Core
 			
 			// run workspace autostart commands
 			LoggingService.Info("Running autostart commands...");
-			foreach (ICommand command in addInTree.BuildItems<ICommand>("/Workspace/Autostart", null, false)) {
+			foreach (ICommand command in addInTree.BuildItems<ICommand>("/SharpDevelop/Autostart", null, false)) {
 				try {
 					command.Execute(null);
 				} catch (Exception ex) {

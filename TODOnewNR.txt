@@ -90,6 +90,14 @@ Functionality changes:
 		As part of this cleanup, I'm also replacing static services with service interfaces (see above).
 
 
+	AddInTree paths reorganized
+		Plenty of AddIn tree paths have been changed to better match the new namespace structure.
+		
+		I used a global replace operation for renaming paths; so AddIns that are in the SharpDevelop
+		repository but not in the SharpDevelop solution (because they haven't been ported yet)
+		have been adjusted as well.
+
+
 	SD.MainThread:
 		The new best way to invoke a call on the main thread is:
 			SD.MainThread.InvokeAsync(delegate { ... }).FireAndForget();

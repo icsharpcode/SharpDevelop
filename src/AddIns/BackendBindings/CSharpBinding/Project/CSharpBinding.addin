@@ -52,7 +52,7 @@
 		            extensions = "*.csproj"/>
 	</Path>
 	
-	<Path name = "/Workspace/Parser">
+	<Path name = "/SharpDevelop/Parser">
 		<Parser id    = "C#"
 		        supportedextensions  = ".cs"
 		        projectfileextension = ".csproj"

@@ -184,7 +184,7 @@
 	</Path>
 	<!-- Start SharpDevelop Reports from MainMenu -->
 	
-	<Path name = "/Workspace/Tools">
+	<Path name = "/SharpDevelop/Workbench/Tools">
 		<MenuItem id       = "ReportGeneratorPad"
 		          label = "${res:SharpReport.ReportGenerator}"
 		          

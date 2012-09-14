@@ -682,11 +682,6 @@ namespace ICSharpCode.SharpDevelop
 			return document.GetText(startOffset, document.GetOffset(endPos) - startOffset);
 		}
 		
-		public static void ClearSelection(this ITextEditor editor)
-		{
-			editor.Select(editor.Document.GetOffset(editor.Caret.Location), 0);
-		}
-		
 		/// <summary>
 		/// Obsolete. Use GetOffset() instead.
 		/// </summary>

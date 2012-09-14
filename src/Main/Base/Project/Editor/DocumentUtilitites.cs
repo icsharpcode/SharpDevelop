@@ -38,6 +38,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 			return new ReadOnlyDocument(buffer);
 		}
 		
+		public static void ClearSelection(this ITextEditor editor)
+		{
+			editor.Select(editor.Document.GetOffset(editor.Caret.Location), 0);
+		}
+		
 		/// <summary>
 		/// Gets the word in front of the caret.
 		/// </summary>

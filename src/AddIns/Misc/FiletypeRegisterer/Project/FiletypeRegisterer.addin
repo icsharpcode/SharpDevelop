@@ -64,7 +64,7 @@
 	</Path>
 	
 	<!-- Disabled as we now do initial registration in the setup
-	<Path name = "/Workspace/Autostart">
+	<Path name = "/SharpDevelop/Autostart">
 		<Condition name = "Compare" string = "${property:SharpDevelop.FiletypesRegisterStartup??False}" equals = "True">
 			<Class id    = "RegisterFiletypes"
 			       class = "ICSharpCode.FiletypeRegisterer.RegisterFiletypesCommand"/>

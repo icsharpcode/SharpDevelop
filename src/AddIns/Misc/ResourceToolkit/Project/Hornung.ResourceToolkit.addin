@@ -44,7 +44,7 @@
 	
 	<!-- Tools menu -->
 	
-	<Path name="/Workspace/Tools">
+	<Path name="/SharpDevelop/Workbench/Tools">
 		<MenuItem id="ResourceToolkit" label="${res:Hornung.ResourceToolkit.ToolsMenuLabel}" type="Menu">
 			
 			<MenuItem id="FindMissingResourceKeys" label="${res:Hornung.ResourceToolkit.FindMissingResourceKeys}" type="Menu">

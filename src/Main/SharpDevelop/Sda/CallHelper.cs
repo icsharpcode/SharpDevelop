@@ -175,7 +175,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		
 		void RunWorkbenchInitializedCommands()
 		{
-			foreach (ICommand command in AddInTree.BuildItems<ICommand>("/Workspace/AutostartAfterWorkbenchInitialized", null, false)) {
+			foreach (ICommand command in AddInTree.BuildItems<ICommand>("/SharpDevelop/Workbench/AutostartAfterWorkbenchInitialized", null, false)) {
 				try {
 					command.Execute(null);
 				} catch (Exception ex) {

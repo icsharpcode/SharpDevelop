@@ -77,7 +77,7 @@
 	</Path>
 
 	<!--
-	<Path name="/Workspace/Parser">
+	<Path name="/SharpDevelop/Parser">
 		<Parser id="C++"
 				supportedextensions=".cpp;.c;.hpp;.h"
 				projectfileextension="vcxproj"

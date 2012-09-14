@@ -13,7 +13,7 @@
 		</Import>
 	</Runtime>
 	
-	<Path name = "/Workspace/Autostart">
+	<Path name = "/SharpDevelop/Autostart">
 		<Class id = "ICSharpCode.GitAddIn.RegisterEventsCommand"
 		       class = "ICSharpCode.GitAddIn.RegisterEventsCommand"/>
 	</Path>
