@@ -74,6 +74,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				#region ICompletionData implementation
 				public void AddOverload (ICompletionData data)
 				{
+					if (overloadedData.Count == 0)
+						overloadedData.Add (this);
+					overloadedData.Add (data);
 				}
 
 				public CompletionCategory CompletionCategory {
@@ -103,13 +106,17 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 
 				public bool HasOverloads {
 					get {
-						throw new NotImplementedException ();
+						return overloadedData.Count > 0;
 					}
 				}
-
+				List<ICompletionData> overloadedData = new List<ICompletionData> ();
 				public System.Collections.Generic.IEnumerable<ICompletionData> OverloadedData {
-					get;
-					set;
+					get {
+						return overloadedData;
+					}
+					set {
+						throw new NotImplementedException ();
+					}
 				}
 				#endregion
 				

@@ -2296,7 +2296,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var lookup = new MemberLookup(
 				ctx.CurrentTypeDefinition,
 				Compilation.MainAssembly
-			);
+				);
 			
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
@@ -2315,10 +2315,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				return namespaceContents.Result;
 			}
-			
 			IType type = resolveResult.Type;
 			if (resolvedNode.Parent is PointerReferenceExpression && (type is PointerType)) {
-				type = ((PointerType)type).ElementType;
+				resolveResult = new OperatorResolveResult (((PointerType)type).ElementType, System.Linq.Expressions.ExpressionType.Extension, resolveResult);
 			}
 			
 			//var typeDef = resolveResult.Type.GetDefinition();
@@ -2352,7 +2351,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					resolveResult,
 					((IdentifierExpression)resolvedNode).Identifier,
 					out trr
-				)) {
+					)) {
 					if (currentMember != null && mrr.Member.IsStatic ^ currentMember.IsStatic) {
 						skipNonStaticMembers = true;
 						
@@ -2396,18 +2395,19 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			if (resolvedNode.Annotation<ObjectCreateExpression>() == null) {
 				//tags the created expression as part of an object create expression.
-				
+				/*
 				var filteredList = new List<IMember>();
 				foreach (var member in type.GetMembers ()) {
+					filteredList.Add(member);
+				}
+				
+				foreach (var member in filteredList) {
+					//					Console.WriteLine ("add:" + member + "/" + member.IsStatic);
+					result.AddMember(member);
+				}*/
+				foreach (var member in lookup.GetAccessibleMembers (resolveResult)) {
+
 					if (member.EntityType == EntityType.Indexer || member.EntityType == EntityType.Operator || member.EntityType == EntityType.Constructor || member.EntityType == EntityType.Destructor) {
-						continue;
-					}
-					if (member.IsExplicitInterfaceImplementation) {
-						continue;
-					}
-					//					Console.WriteLine ("member:" + member + member.IsShadowing);
-					if (!lookup.IsAccessible(member, isProtectedAllowed)) {
-						//						Console.WriteLine ("skip access: " + member.FullName);
 						continue;
 					}
 					if (resolvedNode is BaseReferenceExpression && member.IsAbstract) {
@@ -2433,18 +2433,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (member.EntityType == EntityType.Operator) {
 						continue;
 					}
-					if (member.IsExplicitInterfaceImplementation) {
-						continue;
+
+					if (member is IMember) {
+						result.AddMember ((IMember)member);
+					} else {
+						if (resolveResult is TypeResolveResult || includeStaticMembers)
+							result.AddType ((IType)member, member.Name);
 					}
-					if (member.IsShadowing) {
-						filteredList.RemoveAll(m => m.Name == member.Name);
-					}
-					filteredList.Add(member);
-				}
-				
-				foreach (var member in filteredList) {
-					//					Console.WriteLine ("add:" + member + "/" + member.IsStatic);
-					result.AddMember(member);
 				}
 			}
 			
@@ -2490,7 +2485,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			return result.Result;
 		}
-		
+
 		IEnumerable<ICompletionData> CreateCaseCompletionData(TextLocation location)
 		{
 			var unit = ParseStub("a: break;");
