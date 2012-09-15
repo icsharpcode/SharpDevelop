@@ -43,11 +43,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			LocalReferenceFinder referenceFinder;
 			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)
 			{
-				referenceFinder = new LocalReferenceFinder(ctx);
 			}
 
 			public override void VisitVariableInitializer (VariableInitializer variableInitializer)
@@ -61,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var resolveResult = ctx.Resolve (variableInitializer) as LocalResolveResult;
 				if (resolveResult == null)
 					return;
-				if (!TestOnlyAssigned (referenceFinder, decl.Parent, resolveResult.Variable))
+				if (!TestOnlyAssigned (ctx, decl.Parent, resolveResult.Variable))
 					return;
 				AddIssue (variableInitializer.NameToken,
 					ctx.TranslateString ("Local variable is assigned by its value is never used"));

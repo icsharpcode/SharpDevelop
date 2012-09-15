@@ -26,7 +26,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
@@ -48,12 +47,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			LocalReferenceFinder referenceFinder;
-
 			public GatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit)
 				: base (ctx)
 			{
-				referenceFinder = new LocalReferenceFinder(ctx);
 			}
 
 			public override void VisitParameterDeclaration (ParameterDeclaration parameterDeclaration)
@@ -91,30 +87,35 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var references = new HashSet<AstNode> ();
 				var refStatements = new HashSet<Statement> ();
 				var usedInLambda = false;
-				referenceFinder.FindReferences (rootStatement, resolveResult.Variable, (astNode, rr) => {
-						if (usedInLambda || astNode == variableDecl)
-							return;
+				var results = ctx.FindReferences (rootStatement, resolveResult.Variable);
+				foreach (var result in results) {
+					var node = result.Node;
+					if (node == variableDecl)
+						continue;
 
-						var parent = astNode.Parent;
-						while (!(parent == null || parent is Statement || parent is LambdaExpression))
-							parent = parent.Parent;
-						if (parent == null)
-							return;
+					var parent = node.Parent;
+					while (!(parent == null || parent is Statement || parent is LambdaExpression))
+						parent = parent.Parent;
+					if (parent == null)
+						continue;
 
-						var statement = parent as Statement;
-						if (statement != null) {
-							references.Add (astNode);
-							refStatements.Add (statement);
+					var statement = parent as Statement;
+					if (statement != null) {
+						references.Add (node);
+						refStatements.Add (statement);
+					}
+
+					while (parent != null && parent != rootStatement) {
+						if (parent is LambdaExpression || parent is AnonymousMethodExpression) {
+							usedInLambda = true;
+							break;
 						}
-
-						while (parent != null && parent != rootStatement) {
-							if (parent is LambdaExpression || parent is AnonymousMethodExpression) {
-								usedInLambda = true;
-								break;
-							}
-							parent = parent.Parent;
-						}
-					});
+						parent = parent.Parent;
+					}
+					if (usedInLambda) {
+						break;
+					}
+				}
 
 				// stop analyzing if the variable is used in any lambda expression or anonymous method
 				if (usedInLambda)

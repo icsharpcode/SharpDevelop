@@ -29,7 +29,6 @@ using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
-using System;
 using ICSharpCode.NRefactory.Utils;
 using System.Diagnostics;
 
@@ -48,7 +47,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		LocalReferenceLocator locator;
 
-		MultiDictionary<IVariable, Tuple<AstNode, LocalResolveResult>> references = new MultiDictionary<IVariable, Tuple<AstNode, LocalResolveResult>>();
+		MultiDictionary<IVariable, ReferenceResult> references = new MultiDictionary<IVariable, ReferenceResult>();
+		
+		HashSet<AstNode> visitedRoots = new HashSet<AstNode>();
 		
 		public LocalReferenceFinder(CSharpAstResolver resolver)
 		{
@@ -58,8 +59,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public LocalReferenceFinder(BaseRefactoringContext context) : this(context.Resolver)
 		{
 		}
-
-		HashSet<AstNode> visitedRoots = new HashSet<AstNode>();
 
 		void VisitIfNeccessary(AstNode rootNode)
 		{
@@ -72,8 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				tmpRoot = tmpRoot.Parent;
 			}
 
-			rootNode.AcceptVisitor(locator);
-			visitedRoots.Add(rootNode);
+			locator.ProccessRoot (rootNode);
 		}
 
 		/// <summary>
@@ -93,15 +91,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// searches, which references outside of <paramref name="rootNode"/> are
 		/// or are not reported is undefined.
 		/// </remarks>
-		public void FindReferences (AstNode rootNode, IVariable variable, FoundReferenceCallback action)
+		public IList<ReferenceResult> FindReferences(AstNode rootNode, IVariable variable)
 		{
-			VisitIfNeccessary(rootNode);
-			var lookup = (ILookup<IVariable, Tuple<AstNode, LocalResolveResult>>)references;
-			if (!lookup.Contains(variable))
-				return;
-			var iList = references[variable];
-			foreach (var reference in iList) {
-				action(reference.Item1, reference.Item2);
+			lock (locator) {
+				VisitIfNeccessary(rootNode);
+				var lookup = (ILookup<IVariable, ReferenceResult>)references;
+				if (!lookup.Contains(variable))
+					return new List<ReferenceResult>();
+				// Clone the list for thread safety
+				return references[variable].ToList();
 			}
 		}
 
@@ -119,11 +117,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			IList<IVariable> processedVariables = new List<IVariable>();
 
+			public void ProccessRoot (AstNode rootNode)
+			{
+				rootNode.AcceptVisitor(this);
+				referenceFinder.visitedRoots.Add(rootNode);
+			}
+
 			protected override void VisitChildren(AstNode node)
 			{
+				if (referenceFinder.visitedRoots.Contains(node))
+					return;
 				var localResolveResult = resolver.Resolve(node) as LocalResolveResult;
 				if (localResolveResult != null && !processedVariables.Contains(localResolveResult.Variable)) {
-					referenceFinder.references.Add(localResolveResult.Variable, Tuple.Create(node, localResolveResult));
+					referenceFinder.references.Add(localResolveResult.Variable, new ReferenceResult(node, localResolveResult));
 
 					processedVariables.Add(localResolveResult.Variable);
 					base.VisitChildren(node);
@@ -134,5 +140,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 		}
+	}
+
+	public class ReferenceResult
+	{
+		public ReferenceResult (AstNode node, LocalResolveResult resolveResult)
+		{
+			Node = node;
+			ResolveResult = resolveResult;
+		}
+
+		public AstNode Node { get; private set; }
+
+		public LocalResolveResult ResolveResult { get; private set; }
 	}
 }

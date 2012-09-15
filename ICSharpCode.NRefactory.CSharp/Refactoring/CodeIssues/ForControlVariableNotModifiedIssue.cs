@@ -45,12 +45,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			LocalReferenceFinder referenceFinder;
-			
 			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)
 			{
-				this.referenceFinder = new LocalReferenceFinder(ctx);
 			}
 
 			static VariableInitializer GetControlVariable(VariableDeclarationStatement variableDecl, 
@@ -105,25 +102,24 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (localResolveResult == null)
 					return;
 
+				var results = ctx.FindReferences (forStatement, localResolveResult.Variable);
 				var modified = false;
-				referenceFinder.FindReferences (forStatement, localResolveResult.Variable,
-					(node, resolveResult) =>
-					{
-						if (modified)
-							return;
+				foreach (var result in results) {
+					if (modified)
+						break;
+					var node = result.Node;
+					var unary = node.Parent as UnaryOperatorExpression;
+					if (unary != null && unary.Expression == node) {
+						modified = unary.Operator == UnaryOperatorType.Decrement ||
+							unary.Operator == UnaryOperatorType.PostDecrement ||
+							unary.Operator == UnaryOperatorType.Increment ||
+							unary.Operator == UnaryOperatorType.PostIncrement;
+						continue;
+					}
 
-						var unary = node.Parent as UnaryOperatorExpression;
-						if (unary != null && unary.Expression == node) {
-							modified = unary.Operator == UnaryOperatorType.Decrement ||
-								unary.Operator == UnaryOperatorType.PostDecrement ||
-								unary.Operator == UnaryOperatorType.Increment ||
-								unary.Operator == UnaryOperatorType.PostIncrement;
-							return;
-						}
-
-						var assignment = node.Parent as AssignmentExpression;
-						modified = assignment != null && assignment.Left == node;
-					});
+					var assignment = node.Parent as AssignmentExpression;
+					modified = assignment != null && assignment.Left == node;
+				}
 
 				if (!modified)
 					AddIssue (controlVariable.NameToken,

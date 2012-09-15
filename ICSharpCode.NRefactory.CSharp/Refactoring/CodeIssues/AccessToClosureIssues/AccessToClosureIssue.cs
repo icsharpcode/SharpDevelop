@@ -27,7 +27,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Analysis;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 
@@ -82,7 +81,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				: base (context)
 			{
 				this.title = context.TranslateString (issueProvider.Title);
-				this.referenceFinder = new LocalReferenceFinder(context);
 				this.issueProvider = issueProvider;
 			}
 
@@ -122,24 +120,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				base.VisitParameterDeclaration (parameterDeclaration);
 			}
 
-			LocalReferenceFinder referenceFinder;
-
-			void FindLocalReferences (AstNode rootNode, IVariable variable, FoundReferenceCallback callback)
+			void CheckVariable(IVariable variable, Statement env)
 			{
-				referenceFinder.FindReferences(rootNode, variable, callback);
-			}
-
-			void CheckVariable (IVariable variable, Statement env)
-			{
-				if (!issueProvider.IsTargetVariable (variable))
+				if (!issueProvider.IsTargetVariable(variable))
 					return;
 
 				var root = new Environment (env, env);
 				var envLookup = new Dictionary<AstNode, Environment> ();
 				envLookup [env] = root;
 
-				FindLocalReferences (env, variable, (astNode, resolveResult) => 
-					AddNode (envLookup, new Node (astNode, issueProvider.GetNodeKind (astNode))));
+				foreach (var result in ctx.FindReferences(env, variable)) {
+					AddNode(envLookup, new Node(result.Node, issueProvider.GetNodeKind(result.Node)));
+				}
 
 				root.SortChildren ();
 				CollectIssues (root, variable.Name);

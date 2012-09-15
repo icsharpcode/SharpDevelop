@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
@@ -35,32 +34,33 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   IssueMarker = IssueMarker.Underline)]
 	public class ParameterOnlyAssignedIssue : VariableOnlyAssignedIssue
 	{
-		internal override GatherVisitorBase GetGatherVisitor (BaseRefactoringContext ctx)
+		internal override GatherVisitorBase GetGatherVisitor(BaseRefactoringContext ctx)
 		{
-			return new GatherVisitor (ctx);
+			return new GatherVisitor(ctx);
 		}
 
 		private class GatherVisitor : GatherVisitorBase
 		{
-			LocalReferenceFinder referenceFinder;
-			public GatherVisitor (BaseRefactoringContext ctx)
+			public GatherVisitor(BaseRefactoringContext ctx)
 				: base (ctx)
 			{
-				referenceFinder = new LocalReferenceFinder(ctx);
 			}
 
-			public override void VisitParameterDeclaration (ParameterDeclaration parameterDeclaration)
+			public override void VisitParameterDeclaration(ParameterDeclaration parameterDeclaration)
 			{
-				base.VisitParameterDeclaration (parameterDeclaration);
+				base.VisitParameterDeclaration(parameterDeclaration);
 
-				var resolveResult = ctx.Resolve (parameterDeclaration) as LocalResolveResult;
+				var resolveResult = ctx.Resolve(parameterDeclaration) as LocalResolveResult;
 				if (resolveResult == null)
 					return;
-				if (parameterDeclaration.ParameterModifier == ParameterModifier.Out || parameterDeclaration.ParameterModifier == ParameterModifier.Ref
-				    || !TestOnlyAssigned (referenceFinder, parameterDeclaration.Parent, resolveResult.Variable))
+
+				var parameterModifier = parameterDeclaration.ParameterModifier;
+				if (parameterModifier == ParameterModifier.Out || parameterModifier == ParameterModifier.Ref ||
+					!TestOnlyAssigned(ctx, parameterDeclaration.Parent, resolveResult.Variable)) {
 					return;
-				AddIssue (parameterDeclaration.NameToken, 
-					ctx.TranslateString ("Parameter is assigned by its value is never used"));
+				}
+				AddIssue(parameterDeclaration.NameToken, 
+					ctx.TranslateString("Parameter is assigned by its value is never used"));
 			}
 		}
 	}

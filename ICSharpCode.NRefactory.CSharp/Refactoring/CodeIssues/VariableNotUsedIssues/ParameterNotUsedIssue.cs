@@ -27,6 +27,7 @@
 using ICSharpCode.NRefactory.Semantics;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -35,25 +36,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   Category = IssueCategories.Redundancies,
 					   Severity = Severity.Warning,
 					   IssueMarker = IssueMarker.GrayOut)]
-	public class ParameterNotUsedIssue : VariableNotUsedIssue
+	public class ParameterNotUsedIssue : ICodeIssueProvider
 	{
-
-		internal override GatherVisitorBase GetGatherVisitor (BaseRefactoringContext context)
+		#region ICodeIssueProvider implementation
+		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
-			return new GatherVisitor (context, this);
+			return new GatherVisitor (context).GetIssues ();
 		}
+		#endregion
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			VariableNotUsedIssue inspector;
-
-			LocalReferenceFinder referenceFinder;
-
-			public GatherVisitor (BaseRefactoringContext ctx, VariableNotUsedIssue inspector)
+			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)
 			{
-				this.inspector = inspector;
-				this.referenceFinder = new LocalReferenceFinder(ctx);
 			}
 
 			public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
@@ -85,7 +81,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (resolveResult == null)
 					return;
 
-				if (inspector.FindUsage (referenceFinder, parameterDeclaration.Parent, resolveResult.Variable, parameterDeclaration))
+				if (ctx.FindReferences (parameterDeclaration.Parent, resolveResult.Variable).Any(r => r.Node != parameterDeclaration))
 					return;
 
 				AddIssue (parameterDeclaration.NameToken, ctx.TranslateString ("Parameter is never used"));
