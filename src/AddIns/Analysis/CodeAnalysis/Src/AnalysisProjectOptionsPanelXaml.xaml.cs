@@ -140,35 +140,40 @@ namespace ICSharpCode.CodeAnalysis
 				RuleTreeNode ruleNode;
 				if (rules.TryGetValue(rule, out ruleNode)) {
 					ruleNode.IsChecked = active;
-					//ruleNode.isError = error;
+					ruleNode.isError = error;
 					ruleNode.Index = 1;
 				}
 			}
+			
+			
 			userCheck = true;
+			SetCheckedState();
 			SetCategoryIcon();
 		}
 
 		
-		void SetCategoryIcon() {
+		void SetCheckedState()
+		{
+			foreach (SharpTreeNode cat in ruleTreeView.Root.Children) {
+				bool noneChecked = true;
+				foreach (RuleTreeNode rtn in cat.Children) {
+					if ((bool)rtn.IsChecked) {
+						noneChecked = false;
+						break;
+					}
+				}
+				cat.IsChecked = !noneChecked;
+			}
+		}
+
+		
+		private void SetCategoryIcon() {
 			
 			Console.WriteLine("SetCategoryicon");
 			foreach (CategoryTreeNode categoryNode in ruleTreeView.Root.Children) {
 				categoryNode.CheckMode();
-			/*
-				if (!categoryNode.NewErrorState.HasValue) {
-					Console.WriteLine ("\t{0} is Mixed Mode",categoryNode.Text);
-					categoryNode.AddMixedMode();
-				} else{
-					if (categoryNode.NewErrorState == true) {
-						Console.WriteLine ("\t{0} is Error",categoryNode.Text);
-//						categoryNode.Index = 1;
-					} else {
-						Console.WriteLine ("\t{0} is Warning",categoryNode.Text);
-//						categoryNode.Index = ;
-					}
-				}
-				*/
 			}
+			
 			Console.WriteLine("--------------");
 			
 		}
