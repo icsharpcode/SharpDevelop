@@ -7,11 +7,6 @@
 	xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
 
-	<optionpanels:ProjectOptionPanel.Resources>
-		<local:StringToBoolConverter x:Key="strToBool"></local:StringToBoolConverter>
-		<optionpanels:StorageLocationConverter x:Key="locationConverter" />
-	</optionpanels:ProjectOptionPanel.Resources>
-	
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
 		<StackPanel
 			Orientation="Vertical">
@@ -66,7 +61,7 @@
 					<CheckBox x:Name="delaySignOnlyCheckBox" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center"
 					          IsEnabled="{Binding ElementName=signAssemblyCheckBox, Path=IsChecked}"
 					          Content="{core:Localize Dialog.ProjectOptions.Signing.DelaySignOnly}"
-					          IsChecked="{Binding DelaySign.Value,Converter={StaticResource strToBool}}">
+					          IsChecked="{Binding DelaySign.Value}">
 					</CheckBox>
 					
 					<Label Grid.Row="4" Grid.Column="1" VerticalAlignment="Center"

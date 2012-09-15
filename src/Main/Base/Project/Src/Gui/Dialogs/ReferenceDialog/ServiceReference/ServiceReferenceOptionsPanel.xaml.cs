@@ -29,9 +29,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels.ServiceReference
 		
 		void Browse()
 		{
-			string fileName = OptionsHelper.OpenFile(string.Empty,String.Empty,String.Empty,TextBoxEditMode.EditRawProperty); 
-			if (!String.IsNullOrEmpty(fileName)) {
-				SvcUtilPath = fileName;
+			var dialog = new OpenFileDialog();
+			if (dialog.ShowDialog() ?? false) {
+				SvcUtilPath = dialog.FileName;
 			}
 		}
 		

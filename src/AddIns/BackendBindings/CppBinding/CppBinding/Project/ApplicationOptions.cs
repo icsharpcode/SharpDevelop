@@ -346,11 +346,7 @@ namespace ICSharpCode.CppBinding.Project
 		
 		void ApplicationIconButton_Click(object sender, RoutedEventArgs e)
 		{
-			string fileName = OptionsHelper.OpenFile(iconsfilter,base.BaseDirectory,this.applicationIconTextBox.Text,TextBoxEditMode.EditRawProperty);
-			if (!String.IsNullOrEmpty(fileName))
-			{
-				this.applicationIconTextBox.Text = fileName;
-			}
+			BrowseForFile(ApplicationIcon, iconsfilter);
 		}
 		
 		
@@ -407,12 +403,7 @@ namespace ICSharpCode.CppBinding.Project
 		
 		void BrowseForManifest()
 		{
-			applicationManifestComboBox.SelectedIndex = -1;
-			var fileName = OptionsHelper.OpenFile(manifestFilter,base.BaseDirectory,ApplicationManifest.Value,TextBoxEditMode.EditRawProperty);
-			if (!String.IsNullOrEmpty(fileName)) {
-				this.applicationManifestComboBox.Items.Insert(0,fileName);
-				this.applicationManifestComboBox.SelectedIndex = 0;
-			}
+			BrowseForFile(ApplicationManifest, manifestFilter);
 		}
 		
 		void CreateManifest()

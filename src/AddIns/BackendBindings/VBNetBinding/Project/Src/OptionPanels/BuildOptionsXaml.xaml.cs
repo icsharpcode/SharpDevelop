@@ -25,7 +25,7 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 	/// <summary>
 	/// Interaction logic for BuildOptionsXaml.xaml
 	/// </summary>
-	public partial class BuildOptionsXaml : ProjectOptionPanel	
+	public partial class BuildOptionsXaml : ProjectOptionPanel
 	{
 		public BuildOptionsXaml()
 		{
@@ -43,21 +43,21 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 			
 			OptionCompareItems = new List<StringPair>();
 			OptionCompareItems.Add(new StringPair("Binary", "Compare Binary"));
-			 OptionCompareItems.Add(new StringPair("Text", "Compare Text"));
-			 OptionCompareItem = OptionCompareItems[0];
-			 
-			 OptionInferItems = new List<StringPair>();
+			OptionCompareItems.Add(new StringPair("Text", "Compare Text"));
+			OptionCompareItem = OptionCompareItems[0];
+			
+			OptionInferItems = new List<StringPair>();
 			OptionInferItems.Add(new StringPair("Off", "Infer Off"));
-			 OptionInferItems.Add(new StringPair("On", "Infer On"));
-			 OptionInferItem = OptionInferItems[0];
+			OptionInferItems.Add(new StringPair("On", "Infer On"));
+			OptionInferItem = OptionInferItems[0];
 		}
 		
 		public ProjectProperty<string> DefineConstants {
 			get { return GetProperty("DefineConstants", "", TextBoxEditMode.EditRawProperty); }
 		}
 		
-		public ProjectProperty<string> Optimize {
-			get { return GetProperty("Optimize", "", TextBoxEditMode.EditRawProperty); }
+		public ProjectProperty<bool> Optimize {
+			get { return GetProperty("Optimize", false, PropertyStorageLocations.ConfigurationSpecific); }
 		}
 		
 		public ProjectProperty<string> RemoveIntegerChecks {
@@ -68,93 +68,93 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 			get { return GetProperty("OptionExplicit", "", TextBoxEditMode.EditRawProperty); }
 		}
 		
-			public ProjectProperty<string> OptionStrict {
+		public ProjectProperty<string> OptionStrict {
 			get { return GetProperty("OptionStrict", "", TextBoxEditMode.EditRawProperty); }
 		}
 		
-			public ProjectProperty<string> OptionCompare {
+		public ProjectProperty<string> OptionCompare {
 			get { return GetProperty("OptionCompare", "", TextBoxEditMode.EditRawProperty); }
 		}
 		
-			public ProjectProperty<string> OptionInfer {
+		public ProjectProperty<string> OptionInfer {
 			get { return GetProperty("OptionInfer", "", TextBoxEditMode.EditRawProperty); }
 		}
 		
 		#region OptionItems
 		
-			List<StringPair> optionExplicitItems;
-			
-			public List<StringPair> OptionExplicitItems {
-				get { return optionExplicitItems; }
-				set { optionExplicitItems = value; 
-					base.RaisePropertyChanged(() => OptionExplicitItems);
-				}
+		List<StringPair> optionExplicitItems;
+		
+		public List<StringPair> OptionExplicitItems {
+			get { return optionExplicitItems; }
+			set { optionExplicitItems = value;
+				base.RaisePropertyChanged(() => OptionExplicitItems);
 			}
-			
-			private StringPair optionExplicitItem;
-			
-			public KeyValuePair<string, string> OptionExplicitItem {
-				get { return optionExplicitItem; }
-				set { optionExplicitItem = value;
-					base.RaisePropertyChanged(() => OptionExplicitItem);
-				}
+		}
+		
+		private StringPair optionExplicitItem;
+		
+		public KeyValuePair<string, string> OptionExplicitItem {
+			get { return optionExplicitItem; }
+			set { optionExplicitItem = value;
+				base.RaisePropertyChanged(() => OptionExplicitItem);
 			}
-			
-			
-			List<StringPair> optionStrictItems;
-			
-			public List<KeyValuePair<string, string>> OptionStrictItems {
-				get { return optionStrictItems; }
-				set { optionStrictItems = value;
-					base.RaisePropertyChanged(() => OptionStrictItems);
-				}
+		}
+		
+		
+		List<StringPair> optionStrictItems;
+		
+		public List<KeyValuePair<string, string>> OptionStrictItems {
+			get { return optionStrictItems; }
+			set { optionStrictItems = value;
+				base.RaisePropertyChanged(() => OptionStrictItems);
 			}
-			
-			private StringPair optionStrictItem;
-			
-			public KeyValuePair<string, string> OptionStrictItem {
-				get { return optionStrictItem; }
-				set { optionStrictItem = value;
-					base.RaisePropertyChanged(() => OptionStrictItem);
-				}
+		}
+		
+		private StringPair optionStrictItem;
+		
+		public KeyValuePair<string, string> OptionStrictItem {
+			get { return optionStrictItem; }
+			set { optionStrictItem = value;
+				base.RaisePropertyChanged(() => OptionStrictItem);
 			}
-			
-			private List<StringPair> optionCompareItems;
-			
-			public List<KeyValuePair<string, string>> OptionCompareItems {
-				get { return optionCompareItems; }
-				set { optionCompareItems = value;
-					base.RaisePropertyChanged(() => OptionCompareItems);
-				}
+		}
+		
+		private List<StringPair> optionCompareItems;
+		
+		public List<KeyValuePair<string, string>> OptionCompareItems {
+			get { return optionCompareItems; }
+			set { optionCompareItems = value;
+				base.RaisePropertyChanged(() => OptionCompareItems);
 			}
-			
-			private StringPair optionCompareItem;
-			
-			public KeyValuePair<string, string> OptionCompareItem {
-				get { return optionCompareItem; }
-				set { optionCompareItem = value;
-					base.RaisePropertyChanged(() => OptionCompareItem);
-				}
+		}
+		
+		private StringPair optionCompareItem;
+		
+		public KeyValuePair<string, string> OptionCompareItem {
+			get { return optionCompareItem; }
+			set { optionCompareItem = value;
+				base.RaisePropertyChanged(() => OptionCompareItem);
 			}
-			
-			List<StringPair> optionInferItems;
-			
-			public List<KeyValuePair<string, string>> OptionInferItems {
-				get { return optionInferItems; }
-				set { optionInferItems = value;
-					base.RaisePropertyChanged(()=>OptionInferItems);
-				}
+		}
+		
+		List<StringPair> optionInferItems;
+		
+		public List<KeyValuePair<string, string>> OptionInferItems {
+			get { return optionInferItems; }
+			set { optionInferItems = value;
+				base.RaisePropertyChanged(()=>OptionInferItems);
 			}
-			
-			
+		}
+		
+		
 		private StringPair optionInferItem;
-			
-			public KeyValuePair<string, string> OptionInferItem {
-				get { return optionInferItem; }
-				set { optionInferItem = value;
-					base.RaisePropertyChanged(() => OptionInferItem);
-				}
+		
+		public KeyValuePair<string, string> OptionInferItem {
+			get { return optionInferItem; }
+			set { optionInferItem = value;
+				base.RaisePropertyChanged(() => OptionInferItem);
 			}
+		}
 		#endregion
 	}
 }

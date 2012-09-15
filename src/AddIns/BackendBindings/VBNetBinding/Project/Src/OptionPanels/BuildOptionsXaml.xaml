@@ -9,7 +9,6 @@
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets">
 	
 	<optionpanels:ProjectOptionPanel.Resources>
-		<optionpanels:StringToBoolConverter x:Key="strToBool"></optionpanels:StringToBoolConverter>
 		<optionpanels:StorageLocationConverter x:Key="locationConverter" />
 	</optionpanels:ProjectOptionPanel.Resources>
 	
@@ -44,14 +43,14 @@
 					<CheckBox x:Name="optimizeCodeCheckBox"
 					          Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Center"
 					          Content="{core:Localize Dialog.ProjectOptions.BuildOptions.OptimizeCode}"
-					          IsChecked="{Binding Optimize.Value,Converter={StaticResource strToBool}}">
+					          IsChecked="{Binding Optimize.Value}">
 					</CheckBox>
 					
 					<optionpanels:StorageLocationPicker Grid.Row="3" Location="{Binding RemoveIntegerChecks.Location}"  />
 					<CheckBox x:Name="removeOverflowCheckBox"
 					          Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Center"
 					          Content="{core:Localize Dialog.ProjectOptions.BuildOptions.RemoveOverflowChecks}"
-					          IsChecked="{Binding RemoveIntegerChecks.Value,Converter={StaticResource strToBool}}">
+					          IsChecked="{Binding RemoveIntegerChecks.Value}">
 					</CheckBox>
 					
 					<optionpanels:StorageLocationPicker Grid.Row="5" VerticalAlignment="Center" >

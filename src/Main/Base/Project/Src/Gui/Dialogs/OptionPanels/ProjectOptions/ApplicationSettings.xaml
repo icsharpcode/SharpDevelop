@@ -119,8 +119,6 @@
 				<ComboBox x:Name="applicationManifestComboBox" VerticalAlignment="Center" Width="200"
 				          IsEditable="True"
 				          ItemsSource="{Binding ManifestItems}"
-				         
-				          LostFocus="ApplicationManifestComboBox_LostFocus"
 				          SelectionChanged="ApplicationManifestComboBox_SelectionChanged" >
 				</ComboBox>
 			

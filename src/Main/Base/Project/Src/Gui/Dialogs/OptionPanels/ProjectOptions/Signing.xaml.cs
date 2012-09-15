@@ -53,12 +53,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		
 		public ProjectProperty<string> AssemblyOriginatorKeyFile {
-			get { return GetProperty("AssemblyOriginatorKeyFile","", TextBoxEditMode.EditEvaluatedProperty); }
+			get { return GetProperty("AssemblyOriginatorKeyFile","", TextBoxEditMode.EditRawProperty); }
 		}
 		
 		
-		public ProjectProperty<string> DelaySign {
-			get { return GetProperty("DelaySign","", TextBoxEditMode.EditEvaluatedProperty); }
+		public ProjectProperty<bool> DelaySign {
+			get { return GetProperty("DelaySign", false); }
 		}
 		
 		
@@ -82,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 					helper.SetProperty("AssemblyOriginatorKeyMode", "File", true, signAssemblyBinding.Location);
 				}
 			};
-			*/
+			 */
 			if (signAssemblyCheckBox.IsChecked == true) {
 				this.AssemblyOriginatorKeyFile.Value = "File";
 			}
@@ -142,23 +142,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			var cbo = (ComboBox) sender;
 			
 			if (cbo.SelectedIndex == keyFile.Count - 1) {
-				BrowseKeyFile();
+				BrowseForFile(this.AssemblyOriginatorKeyFile, "${res:SharpDevelop.FileFilter.KeyFiles} (" + KeyFileExtensions + ")|" + KeyFileExtensions + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
 			}
 			if (cbo.SelectedIndex == keyFile.Count - 2) {
 				CreateKeyFile();
 			}
-		}
-		
-		
-		void BrowseKeyFile()
-		{
-			string fileName = OptionsHelper.OpenFile("${res:SharpDevelop.FileFilter.KeyFiles} (" + KeyFileExtensions + ")|" + KeyFileExtensions + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*",
-			                                    base.BaseDirectory,
-			                                    this.AssemblyOriginatorKeyFile.Value,
-			                                    TextBoxEditMode.EditRawProperty);
-			if (!String.IsNullOrEmpty(fileName)) {
-				this.AssemblyOriginatorKeyFile.Value = fileName;
-			}                                                        
 		}
 		
 		
@@ -177,47 +165,47 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 						KeyFile.Add(generated);
 						SelectedKey = generated;
 						this.keyFileComboBox.SelectionChanged += KeyFileComboBox_SelectionChanged;
-					}					
+					}
 				} else {
 					MessageService.ShowMessage("${res:Dialog.ProjectOptions.Signing.SNnotFound}");
 				}
 			}
 		}
 		
-		#endregion	
+		#endregion
 		
-		 /// <summary>
-        /// Gets the path of the "strong named" executable. This is used to create keys for strongly signing
-        /// .NET assemblies.
-        /// </summary>
+		/// <summary>
+		/// Gets the path of the "strong named" executable. This is used to create keys for strongly signing
+		/// .NET assemblies.
+		/// </summary>
 		private static string StrongNameTool {
 			get {
-        		return FileUtility.GetSdkPath("sn.exe");
+				return FileUtility.GetSdkPath("sn.exe");
 			}
 		}
-        
-        
-         /// <summary>
-        /// Creates a key with the sn.exe utility.
-        /// </summary>
-        /// <param name="keyPath">The path of the key to create.</param>
-        /// <returns>True if the key was created correctly.</returns>
-        private static bool CreateKey(string keyPath)
-        {
-        	if (File.Exists(keyPath)) {
-        		string question = "${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion}";
-        		question = StringParser.Parse(question, new StringTagPair("fileNames", keyPath));
-        		if (!MessageService.AskQuestion(question, "${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName}")) {
-        			return false;
-        		}
-        	}
-        	Process p = Process.Start(StrongNameTool, "-k \"" + keyPath + "\"");
-        	p.WaitForExit();
-        	if (p.ExitCode != 0) {
-        		MessageService.ShowMessage("${res:Dialog.ProjectOptions.Signing.ErrorCreatingKey}");
-        		return false;
-        	}
-        	return true;
-        }
+		
+		
+		/// <summary>
+		/// Creates a key with the sn.exe utility.
+		/// </summary>
+		/// <param name="keyPath">The path of the key to create.</param>
+		/// <returns>True if the key was created correctly.</returns>
+		private static bool CreateKey(string keyPath)
+		{
+			if (File.Exists(keyPath)) {
+				string question = "${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion}";
+				question = StringParser.Parse(question, new StringTagPair("fileNames", keyPath));
+				if (!MessageService.AskQuestion(question, "${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName}")) {
+					return false;
+				}
+			}
+			Process p = Process.Start(StrongNameTool, "-k \"" + keyPath + "\"");
+			p.WaitForExit();
+			if (p.ExitCode != 0) {
+				MessageService.ShowMessage("${res:Dialog.ProjectOptions.Signing.ErrorCreatingKey}");
+				return false;
+			}
+			return true;
+		}
 	}
 }
