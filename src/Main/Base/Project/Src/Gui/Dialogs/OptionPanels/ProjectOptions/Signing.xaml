@@ -6,7 +6,11 @@
 	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
 	xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
-
+	
+	<optionpanels:ProjectOptionPanel.Resources>
+		<optionpanels:StorageLocationConverter x:Key="locationConverter" />
+	</optionpanels:ProjectOptionPanel.Resources>
+	
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
 		<StackPanel
 			Orientation="Vertical">

@@ -30,9 +30,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			InitializeComponent();
 		}
 		
-		
-		private void Initialize()
+		protected override void Initialize()
 		{
+			base.Initialize();
 			FindKeys(base.BaseDirectory);
 			SelectedKey = AssemblyOriginatorKeyFile.Value.Trim();
 			if (SelectedKey.Length >  0) {
@@ -46,6 +46,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			keyFileComboBox.SelectionChanged += KeyFileComboBox_SelectionChanged;
 			IsDirty = false;
 		}
+		
 		
 		public ProjectProperty<bool> SignAssembly {
 			get { return GetProperty("SignAssembly", false); }
@@ -67,22 +68,14 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		}
 		
 		#region overrides
-		
-		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
-		{
-			base.Load(project, configuration, platform);
-			Initialize();
-		}
+//		
+//		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
+//		{
+//			base.Load(project, configuration, platform);
+//		}
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
-			/*
-			helper.Saved += delegate {
-				if (Get<CheckBox>("signAssembly").Checked) {
-					helper.SetProperty("AssemblyOriginatorKeyMode", "File", true, signAssemblyBinding.Location);
-				}
-			};
-			 */
 			if (signAssemblyCheckBox.IsChecked == true) {
 				this.AssemblyOriginatorKeyFile.Value = "File";
 			}
