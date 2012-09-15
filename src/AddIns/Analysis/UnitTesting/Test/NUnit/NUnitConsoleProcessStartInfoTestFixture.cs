@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using ICSharpCode.Core;
 using ICSharpCode.UnitTesting;
+using ICSharpCode.SharpDevelop;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
 

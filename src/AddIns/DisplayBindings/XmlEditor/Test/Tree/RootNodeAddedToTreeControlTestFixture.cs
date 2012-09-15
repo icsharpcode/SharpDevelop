@@ -25,7 +25,6 @@ namespace XmlEditor.Tests.Tree
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			SD.InitializeForUnitTests();
 			using (DerivedXmlTreeViewContainerControl treeViewContainer = new DerivedXmlTreeViewContainerControl()) {
 				treeViewContainer.LoadXml("<test/>");
 				

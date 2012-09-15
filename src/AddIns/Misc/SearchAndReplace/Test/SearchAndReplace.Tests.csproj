@@ -65,6 +65,10 @@
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Base\Test\ICSharpCode.SharpDevelop.Tests.csproj">
+      <Project>{4980B743-B32F-4aba-AABD-45E2CAD3568D}</Project>
+      <Name>ICSharpCode.SharpDevelop.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>

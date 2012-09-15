@@ -26,14 +26,13 @@ namespace SearchAndReplace.Tests
 	/// </summary>
 	[TestFixture]
 	[Ignore("FindNext fails because no editor is open (??)")]
-	public class FindNextWithCursorAtEndTestFixture
+	public class FindNextWithCursorAtEndTestFixture : SDTestFixtureBase
 	{
 		SearchResultMatch result = null;
 		
-		[SetUp]
-		public void SetUp()
+		public override void FixtureSetUp()
 		{
-			SD.InitializeForUnitTests();
+			base.FixtureSetUp();
 			SD.Services.AddService(typeof(IWorkbench), MockRepository.GenerateStub<IWorkbench>());
 			
 			// Set up SearchOptions required by the BruteForceSearchStrategy.

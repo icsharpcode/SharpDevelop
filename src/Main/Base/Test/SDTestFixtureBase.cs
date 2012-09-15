@@ -3,9 +3,8 @@
 
 using System;
 using NUnit.Framework;
-using ICSharpCode.SharpDevelop;
 
-namespace UnitTesting.Tests.Utils
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Base class for test fixtures that use SD services.

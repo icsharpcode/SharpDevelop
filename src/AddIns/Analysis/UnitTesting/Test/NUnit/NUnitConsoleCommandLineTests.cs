@@ -9,6 +9,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
+using ICSharpCode.SharpDevelop;
 
 namespace UnitTesting.Tests.NUnit
 {

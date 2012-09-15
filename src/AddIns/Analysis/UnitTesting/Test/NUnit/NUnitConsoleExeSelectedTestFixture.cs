@@ -7,6 +7,7 @@ using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using ICSharpCode.UnitTesting;
 using UnitTesting.Tests.Utils;
+using ICSharpCode.SharpDevelop;
 
 namespace UnitTesting.Tests.NUnit
 {

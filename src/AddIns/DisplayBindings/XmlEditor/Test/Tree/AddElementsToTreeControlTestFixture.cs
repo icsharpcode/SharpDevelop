@@ -13,15 +13,14 @@ using XmlEditor.Tests.Utils;
 namespace XmlEditor.Tests.Tree
 {
 	[TestFixture]
-	public class AddElementsToTreeControlTestFixture
+	public class AddElementsToTreeControlTestFixture : SDTestFixtureBase
 	{
 		XmlDocument doc;
 		XmlElementTreeNode rootNode;
 		
-		[SetUp]
-		public void SetUpFixture()
+		public override void FixtureSetUp()
 		{
-			SD.InitializeForUnitTests();
+			base.FixtureSetUp();
 			using (DerivedXmlTreeViewContainerControl treeViewContainer = new DerivedXmlTreeViewContainerControl()) {
 				treeViewContainer.LoadXml("<root/>");
 				

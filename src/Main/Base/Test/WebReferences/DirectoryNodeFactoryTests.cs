@@ -9,7 +9,7 @@ using ICSharpCode.SharpDevelop.Project;
 namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 {
 	[TestFixture]
-	public class DirectoryNodeFactoryTests
+	public class DirectoryNodeFactoryTests : SDTestFixtureBase
 	{		
 		DirectoryNode appDesignerFolderNode;
 		DirectoryNode ordinaryFolderNode;

@@ -7,6 +7,7 @@ using UnitTesting.Tests.Utils;
 using NUnit.Framework;
 using Rhino.Mocks;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop;
 
 namespace UnitTesting.Tests.NUnit
 {

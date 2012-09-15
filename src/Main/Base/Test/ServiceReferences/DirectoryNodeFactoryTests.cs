@@ -12,14 +12,8 @@ using Rhino.Mocks;
 namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 {
 	[TestFixture]
-	public class DirectoryNodeFactoryTests
+	public class DirectoryNodeFactoryTests : SDTestFixtureBase
 	{
-		[TestFixtureSetUpAttribute]
-		public void FixtureSetUp()
-		{
-			SD.InitializeForUnitTests();
-		}
-		
 		MSBuildBasedProject project;
 		
 		void CreateProject()

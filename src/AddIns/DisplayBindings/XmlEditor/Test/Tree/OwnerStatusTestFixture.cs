@@ -14,7 +14,7 @@ namespace XmlEditor.Tests.Tree
 	/// Tests the XmlTreeViewContainerControl.OwnerState property.
 	/// </summary>
 	[TestFixture]
-	public class OwnerStatusTestFixture
+	public class OwnerStatusTestFixture : SDTestFixtureBase
 	{
 		DerivedXmlTreeViewContainerControl treeViewContainer;
 		XmlTreeViewControl treeView;
@@ -28,7 +28,6 @@ namespace XmlEditor.Tests.Tree
 		[SetUp]
 		public void Init()
 		{
-			SD.InitializeForUnitTests();
 			treeViewContainer = new DerivedXmlTreeViewContainerControl();
 			treeViewContainer.LoadXml("<!-- comment --><html><body class='a'><p>Text</p></body></html>");
 			doc = treeViewContainer.Document;

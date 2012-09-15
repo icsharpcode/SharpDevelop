@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 {
 	[TestFixture]
-	public class ServiceReferencesFolderNodeTests
+	public class ServiceReferencesFolderNodeTests : SDTestFixtureBase
 	{
 		MSBuildBasedProject project;
 		ServiceReferencesProjectItem projectItem;

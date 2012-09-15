@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 {
 	[TestFixture]
-	public class ServiceReferencesProjectItemTests
+	public class ServiceReferencesProjectItemTests : SDTestFixtureBase
 	{
 		MSBuildBasedProject project;
 		ServiceReferencesProjectItem projectItem;

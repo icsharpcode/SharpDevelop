@@ -17,7 +17,7 @@ namespace XmlEditor.Tests.Tree
 	/// Xml Tree (e.g. InsertElementBeforeCommand).
 	/// </summary>
 	[TestFixture]
-	public class MenuCommandsTestFixture
+	public class MenuCommandsTestFixture : SDTestFixtureBase
 	{
 		DerivedXmlTreeViewContainerControl treeViewContainer;
 		XmlDocument doc;
@@ -29,7 +29,6 @@ namespace XmlEditor.Tests.Tree
 		[SetUp]
 		public void Init()
 		{
-			SD.InitializeForUnitTests();
 			treeViewContainer = new DerivedXmlTreeViewContainerControl();
 			treeViewContainer.LoadXml("<html><body></body></html>");
 			doc = treeViewContainer.Document;

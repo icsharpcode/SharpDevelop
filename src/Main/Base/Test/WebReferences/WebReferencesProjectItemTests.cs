@@ -9,7 +9,7 @@ using System;
 namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 {
 	[TestFixture]
-	public class WebReferencesProjectItemTests
+	public class WebReferencesProjectItemTests : SDTestFixtureBase
 	{
 		MSBuildBasedProject project;
 		

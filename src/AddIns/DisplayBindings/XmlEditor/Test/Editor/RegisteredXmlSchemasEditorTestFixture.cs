@@ -14,7 +14,7 @@ using XmlEditor.Tests.Utils;
 namespace XmlEditor.Tests.Editor
 {
 	[TestFixture]
-	public class RegisteredXmlSchemasEditorTestFixture
+	public class RegisteredXmlSchemasEditorTestFixture : SDTestFixtureBase
 	{
 		RegisteredXmlSchemasEditor schemasEditor;
 		MockXmlSchemaCompletionDataFactory factory;
@@ -30,7 +30,6 @@ namespace XmlEditor.Tests.Editor
 		[SetUp]
 		public void Init()
 		{
-			SD.InitializeForUnitTests();
 			LoadBarSchema();
 			LoadFooSchema();
 			fooSchemaData.IsReadOnly = true;

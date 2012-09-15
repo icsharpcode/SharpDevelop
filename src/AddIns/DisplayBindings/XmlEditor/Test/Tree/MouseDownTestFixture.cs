@@ -29,7 +29,7 @@ namespace XmlEditor.Tests.Tree
 		List<TreeViewEventArgs> treeViewEventArgs;
 		
 		[SetUp]
-		public void SetUpFixture()
+		public void SetUp()
 		{
 			SD.InitializeForUnitTests();
 			SD.Services.AddMockService<IWinFormsService>();
@@ -43,12 +43,13 @@ namespace XmlEditor.Tests.Tree
 		}
 		
 		[TearDown]
-		public void TearDownFixture()
+		public void TearDown()
 		{
 			if (treeView != null) {
 				treeView.AfterSelect -= XmlTreeViewAfterSelect;
 				treeView.Dispose();
 			}
+			SD.TearDownForUnitTests();
 		}
 		
 		/// <summary>

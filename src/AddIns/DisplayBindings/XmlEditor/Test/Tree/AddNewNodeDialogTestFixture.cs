@@ -22,7 +22,7 @@ namespace XmlEditor.Tests.Tree
 	/// since their behaviour is the same.
 	/// </summary>
 	[TestFixture]
-	public class AddNewNodeDialogTestFixture
+	public class AddNewNodeDialogTestFixture : SDTestFixtureBase
 	{
 		DerivedAddXmlNodeDialog dialog;
 		ListBox namesListBox;
@@ -32,12 +32,6 @@ namespace XmlEditor.Tests.Tree
 		TextBox customNameTextBox;
 		Label customNameTextBoxLabel;
 		Panel bottomPanel;
-		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
-		{
-			SD.InitializeForUnitTests();
-		}
 		
 		[SetUp]
 		public void Init()

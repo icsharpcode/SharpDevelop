@@ -16,7 +16,7 @@ using Rhino.Mocks;
 namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 {
 	[TestFixture]
-	public class ProjectWithServiceReferencesTests
+	public class ProjectWithServiceReferencesTests : SDTestFixtureBase
 	{
 		IProject fakeProject;
 		ProjectWithServiceReferences project;

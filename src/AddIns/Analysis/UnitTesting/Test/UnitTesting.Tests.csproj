@@ -75,11 +75,6 @@
     <Compile Include="NUnit\NUnitTestResultFailureTestFixture.cs" />
     <Compile Include="Utils\MockCSharpProject.cs" />
     <Compile Include="Utils\AssemblyLoader.cs" />
-    <Compile Include="Utils\SDTestFixtureBase.cs" />
-    <None Include="..\..\..\..\..\bin\SharpDevelop.exe">
-      <Link>SharpDevelop.exe</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
@@ -89,6 +84,10 @@
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Base\Test\ICSharpCode.SharpDevelop.Tests.csproj">
+      <Project>{4980B743-B32F-4aba-AABD-45E2CAD3568D}</Project>
+      <Name>ICSharpCode.SharpDevelop.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>

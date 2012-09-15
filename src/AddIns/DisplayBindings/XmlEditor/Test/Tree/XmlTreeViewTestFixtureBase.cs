@@ -16,7 +16,6 @@ namespace XmlEditor.Tests.Tree
 		
 		public void InitFixture()
 		{
-			SD.InitializeForUnitTests();
 			mockXmlTreeView = new MockXmlTreeView();
 			editor = new XmlTreeEditor(mockXmlTreeView, Schemas, DefaultSchemaCompletion);
 			editor.LoadXml(GetXml());

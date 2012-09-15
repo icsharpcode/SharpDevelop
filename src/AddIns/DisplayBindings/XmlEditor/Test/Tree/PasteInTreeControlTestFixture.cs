@@ -16,7 +16,7 @@ namespace XmlEditor.Tests.Tree
 	/// Tests pasting in the XmlTreeViewContainerControl.
 	/// </summary>
 	[TestFixture]
-	public class PasteInTreeControlTestFixture
+	public class PasteInTreeControlTestFixture : SDTestFixtureBase
 	{
 		XmlDocument doc;
 		DerivedXmlTreeViewContainerControl treeViewContainerControl; 
@@ -36,7 +36,6 @@ namespace XmlEditor.Tests.Tree
 		[SetUp]
 		public void SetUp()
 		{
-			SD.InitializeForUnitTests();
 			treeViewContainerControl = new DerivedXmlTreeViewContainerControl();
 			treeView = treeViewContainerControl.TreeView;
 			treeViewContainerControl.LoadXml(GetXml());

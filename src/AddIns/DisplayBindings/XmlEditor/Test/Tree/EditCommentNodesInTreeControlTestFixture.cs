@@ -64,6 +64,7 @@ namespace XmlEditor.Tests.Tree
 			if (treeViewContainer != null) {
 				treeViewContainer.Dispose();
 			}
+			SD.TearDownForUnitTests();
 		}
 		
 		/// <summary>

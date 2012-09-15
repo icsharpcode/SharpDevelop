@@ -65,6 +65,12 @@ class DerivedClass : BaseClass {
 			keyPressResult = completion.HandleKeyPressed(textEditor, ' ');
 		}
 		
+		[TearDown]
+		public void TearDown()
+		{
+			SD.TearDownForUnitTests();
+		}
+		
 		[Test]
 		public void CheckKeyPressResult()
 		{
