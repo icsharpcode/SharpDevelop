@@ -37,8 +37,6 @@ namespace CSharpBinding.OptionPanels
 		private System.Windows.Input.ICommand baseIntermediateOutputPathCommand;
 		private System.Windows.Input.ICommand intermediateOutputPathCommand;
 		
-//		private MSBuildBasedProject project;
-		
 		public BuildOptions()
 		{
 			InitializeComponent();
@@ -74,7 +72,8 @@ namespace CSharpBinding.OptionPanels
 			this.WarnLevel = warnLevel;
 		}
 		
-		private void Initialize()
+		
+		protected override void Initialize()
 		{
 			this.UpdateProjectCommand  = new RelayCommand(UpdateProjectExecute);
 			this.ChangeOutputPath = new RelayCommand(ChangeOutputPathExecute);
@@ -86,7 +85,7 @@ namespace CSharpBinding.OptionPanels
 			this.BaseIntermediateOutputPathCommand = new RelayCommand(BaseIntermediateOutputPathExecute);
 			this.IntermediateOutputPathCommand = new RelayCommand(IntermediateOutputPathExecute);
 			SetTreatWarningAsErrorRadioButtons();
-			IsDirty = false;
+			
 		}
 		
 		#region properties
@@ -196,8 +195,7 @@ namespace CSharpBinding.OptionPanels
 				val = 0x400000;
 			}
 			DllBaseAdress =  "0x" + val.ToString("x", NumberFormatInfo.InvariantInfo);
-			
-			this.Initialize();
+			IsDirty = false;
 		}
 		
 		
