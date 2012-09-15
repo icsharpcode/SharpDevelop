@@ -46,6 +46,15 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
+		/// Removes the static SharpDevelop service container, returning to the
+		/// state before <see cref="InitializeForUnitTests"/> was called.
+		/// </summary>
+		public static void TearDownForUnitTests()
+		{
+			ServiceSingleton.ServiceProvider = ServiceSingleton.FallbackServiceProvider;
+		}
+		
+		/// <summary>
 		/// Gets a service. Returns null if service is not found.
 		/// </summary>
 		public static T GetService<T>() where T : class

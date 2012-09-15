@@ -69,7 +69,13 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="NUnit\CreateNUnitTestRunnerTestFixture.cs" />
     <Compile Include="NUnit\NUnitConsoleCommandLineTests.cs" />
+    <Compile Include="NUnit\NUnitConsoleExeSelectedTestFixture.cs" />
+    <Compile Include="NUnit\NUnitConsoleProcessStartInfoTestFixture.cs" />
+    <Compile Include="NUnit\NUnitTestFrameworkIsTestProjectTests.cs" />
+    <Compile Include="NUnit\NUnitTestResultFailureTestFixture.cs" />
     <Compile Include="Utils\MockCSharpProject.cs" />
+    <Compile Include="Utils\AssemblyLoader.cs" />
+    <Compile Include="Utils\SDTestFixtureBase.cs" />
     <None Include="..\..\..\..\..\bin\SharpDevelop.exe">
       <Link>SharpDevelop.exe</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -103,6 +109,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Frameworks" />
+    <Folder Include="Service" />
     <Folder Include="NUnit" />
     <Folder Include="Utils" />
   </ItemGroup>

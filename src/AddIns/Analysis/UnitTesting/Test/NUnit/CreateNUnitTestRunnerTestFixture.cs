@@ -2,25 +2,23 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.UnitTesting;
+using UnitTesting.Tests.Utils;
 using NUnit.Framework;
 using Rhino.Mocks;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace UnitTesting.Tests.Frameworks
+namespace UnitTesting.Tests.NUnit
 {
 	[TestFixture]
-	public class CreateNUnitTestRunnerTestFixture
+	public class CreateNUnitTestRunnerTestFixture : SDTestFixtureBase
 	{
 		IProject project;
 		NUnitTestProject testProject;
 		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		public override void FixtureSetUp()
 		{
-			SD.InitializeForUnitTests();
+			base.FixtureSetUp();
 			project = MockRepository.GenerateStub<IProject>();
 			testProject = new NUnitTestProject(project);
 		}

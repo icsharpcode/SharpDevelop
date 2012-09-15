@@ -7,7 +7,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 
-namespace UnitTesting.Tests.Tree
+namespace UnitTesting.Tests.NUnit
 {
 	[TestFixture]
 	public class NUnitTestResultFailureTestFixture

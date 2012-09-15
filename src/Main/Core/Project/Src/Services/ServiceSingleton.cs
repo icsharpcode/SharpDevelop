@@ -15,7 +15,7 @@ namespace ICSharpCode.Core
 	public static class ServiceSingleton
 	{
 		static readonly IServiceProvider fallbackServiceProvider = new FallbackServiceProvider();
-		volatile static IServiceProvider instance = new ServiceContainer(fallbackServiceProvider);
+		volatile static IServiceProvider instance = fallbackServiceProvider;
 		
 		/// <summary>
 		/// Gets the service provider that provides the fallback services.

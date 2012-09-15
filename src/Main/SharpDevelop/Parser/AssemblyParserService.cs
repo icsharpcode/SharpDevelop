@@ -3,10 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,9 +12,7 @@ using System.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Util;
 using Mono.Cecil;
 
@@ -91,6 +87,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		void CleanWeakDictionary()
 		{
+			Debug.Assert(Monitor.IsEntered(projectContentDictionary));
 			List<FileName> removed = new List<FileName>();
 			foreach (var pair in projectContentDictionary) {
 				//if (!pair.Value.IsAlive)
@@ -124,7 +121,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 				
 				if (up2dateProjectContents == null)
 					CleanWeakDictionary();
-				projectContentDictionary.Add(fileName, asm);
+				// The assembly might already be in the dictionary if we had loaded it before,
+				// but now the lastWriteTime changed.
+				projectContentDictionary[fileName] = asm;
 				
 				return asm;
 			}
@@ -239,7 +238,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			string cacheFileName = Path.GetFileNameWithoutExtension(assemblyFileName);
 			if (cacheFileName.Length > 32)
 				cacheFileName = cacheFileName.Substring(cacheFileName.Length - 32); // use 32 last characters
-			cacheFileName = Path.Combine(DomPersistencePath, cacheFileName + "." + assemblyFileName.GetHashCode().ToString("x8") + ".dat");
+			cacheFileName = Path.Combine(DomPersistencePath, cacheFileName + "." + assemblyFileName.ToString().ToUpperInvariant().GetStableHashCode().ToString("x8") + ".dat");
 			return cacheFileName;
 		}
 		

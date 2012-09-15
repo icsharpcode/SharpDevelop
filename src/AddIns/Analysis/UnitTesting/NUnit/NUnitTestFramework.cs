@@ -8,6 +8,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.UnitTesting
@@ -25,7 +26,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public bool IsTestProject(IProject project)
 		{
-			if (project == null || project.ProjectContent == null)
+			if (project == null)
 				return false;
 			return testAttributeRef.Resolve(SD.ParserService.GetCompilation(project).TypeResolveContext).Kind != TypeKind.Unknown;
 		}

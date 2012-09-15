@@ -16,8 +16,14 @@ namespace ICSharpCode.SharpDevelop.Parser
 	[SDService("SD.AssemblyParserService")]
 	public interface IAssemblyParserService
 	{
+		/// <summary>
+		/// Loads the specified assembly file from disk.
+		/// </summary>
 		IUnresolvedAssembly GetAssembly(FileName fileName, CancellationToken cancellationToken = default(CancellationToken));
 		
+		/// <summary>
+		/// Loads the specified assembly file from disk.
+		/// </summary>
 		Task<IUnresolvedAssembly> GetAssemblyAsync(FileName fileName, CancellationToken cancellationToken = default(CancellationToken));
 		
 		/// <summary>
@@ -32,6 +38,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		/// <summary>
 		/// Gets the directory for cached project contents.
+		/// May return <c>null</c> if on-disk caching is disabled.
 		/// </summary>
 		string DomPersistencePath { get; }
 	}

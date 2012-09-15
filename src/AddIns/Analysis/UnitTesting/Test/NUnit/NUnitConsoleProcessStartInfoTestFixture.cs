@@ -4,21 +4,20 @@
 using System;
 using System.Diagnostics;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
 
-namespace UnitTesting.Tests.Frameworks
+namespace UnitTesting.Tests.NUnit
 {
 	[TestFixture]
-	public class NUnitConsoleProcessStartInfoTestFixture
+	public class NUnitConsoleProcessStartInfoTestFixture : SDTestFixtureBase
 	{
 		ProcessStartInfo info;
 		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		public override void FixtureSetUp()
 		{
+			base.FixtureSetUp();
 			FileUtility.ApplicationRootPath = @"C:\SharpDevelop";
 		}
 		
@@ -26,8 +25,8 @@ namespace UnitTesting.Tests.Frameworks
 		public void Init()
 		{
 			MockCSharpProject project = new MockCSharpProject();
-			SelectedTests selectedTests = new SelectedTests(project);
-			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
+			NUnitTestProject testProject = new NUnitTestProject(project);
+			NUnitConsoleApplication app = new NUnitConsoleApplication(new[] { testProject });
 			
 			info = app.GetProcessStartInfo();
 		}

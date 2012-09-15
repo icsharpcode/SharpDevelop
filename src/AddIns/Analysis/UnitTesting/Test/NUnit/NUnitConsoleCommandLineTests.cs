@@ -2,21 +2,18 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Linq;
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.UnitTesting;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
-using Rhino.Mocks;
 using UnitTesting.Tests.Utils;
 
-namespace UnitTesting.Tests.Frameworks
+namespace UnitTesting.Tests.NUnit
 {
 	[TestFixture]
-	public class NUnitConsoleCommandLineTests
+	public class NUnitConsoleCommandLineTests : SDTestFixtureBase
 	{
 		MockCSharpProject project;
 		NUnitTestProject testProject;
@@ -258,14 +255,12 @@ namespace MyTests {
 	}
 }
 ";
-		/*
+		
 		[Test]
 		public void TestInnerClassSpecifiedInInitialize()
 		{
-			var outerClass = new DefaultUnresolvedTypeDefinition("MyTests", "TestFixture");
-			var innerClass = new DefaultUnresolvedTypeDefinition(outerClass, "InnerTest");
-			var innerTestClass = new NUnitTestClass(testProject, );
-			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
+			NUnitTestClass innerTestClass = new NUnitTestClass(testProject, new FullTypeName("MyTests.TestFixture+InnerTest"));
+			NUnitConsoleApplication app = new NUnitConsoleApplication(new [] { innerTestClass });
 			app.NoLogo = false;
 			app.ShadowCopy = true;
 			app.NoXmlOutputFile = false;
@@ -278,15 +273,10 @@ namespace MyTests {
 		[Test]
 		public void XmlOutputFileNameSpecifiedOnCommandLine()
 		{
-			TestProject testProject = new ProjectTestFixtureBase().CreateNUnitProject(
-				SyntaxTree.Parse(testProgram, "test.cs").ToTypeSystem()
-			);
-			
 			UnitTestingOptions options = new UnitTestingOptions(new Properties());
 			options.CreateXmlOutputFile = true;
-			TestClass testFixture = testProject.TestClasses.Single();
-			SelectedTests selectedTests = new SelectedTests(project, null, testFixture, null);
-			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests, options);
+			NUnitTestClass testFixture = new NUnitTestClass(testProject, new FullTypeName("MyTests.TestFixture.MyTest"));
+			NUnitConsoleApplication app = new NUnitConsoleApplication(new[] { testFixture }, options);
 			app.NoLogo = false;
 			app.ShadowCopy = true;
 			
@@ -296,6 +286,5 @@ namespace MyTests {
 				"/run=\"MyTests.TestFixture.MyTest\"";
 			Assert.AreEqual(expectedCommandLine, app.GetArguments());
 		}
-		*/
 	}
 }

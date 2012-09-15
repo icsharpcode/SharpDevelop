@@ -46,6 +46,8 @@ namespace ICSharpCode.Core
 		/// </summary>
 		/// <remarks>
 		/// This property is also useful for unit tests, as there usually is no real service instance when testing.
+		/// Fallback services must not maintain any state, as that would be preserved between runs
+		/// even if <c>SD.TearDownForUnitTests()</c> or <c>SD.InitializeForUnitTests()</c> is called.
 		/// </remarks>
 		public Type FallbackImplementation { get; set; }
 	}

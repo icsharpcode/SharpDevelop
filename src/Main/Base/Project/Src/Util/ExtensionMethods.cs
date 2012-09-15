@@ -533,6 +533,24 @@ namespace ICSharpCode.SharpDevelop
 			}
 			return index;
 		}
+		
+		/// <summary>
+		/// Retrieves a hash code for the specified string that is stable across
+		/// multiple runs of SharpDevelop and .NET upgrades.
+		/// 
+		/// Use this method instead of the normal <c>string.GetHashCode</c> if the hash code
+		/// is persisted to disk.
+		/// </summary>
+		public static int GetStableHashCode(this string text)
+		{
+			unchecked {
+				int h = 0;
+				foreach (char c in text) {
+					h = (h << 5) - h + c;
+				}
+				return h;
+			}
+		}
 		#endregion
 		
 		#region Service Provider Extensions

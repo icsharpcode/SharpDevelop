@@ -8,15 +8,17 @@ using NUnit.Framework;
 using ICSharpCode.UnitTesting;
 using UnitTesting.Tests.Utils;
 
-namespace UnitTesting.Tests.Frameworks
+namespace UnitTesting.Tests.NUnit
 {
 	/// <summary>
 	/// If the project explicitly targets 32 bit (x86) architecture then nunit-console-x86.exe should be
 	/// used. Otherwise the normal nunit-console.exe is used.
 	/// </summary>
 	[TestFixture]
-	public class NUnitConsoleExeSelectedTestFixture
+	public class NUnitConsoleExeSelectedTestFixture : SDTestFixtureBase
 	{
+		MockCSharpProject project;
+		NUnitTestProject testProject;
 		string oldRootPath;
 		
 		[TestFixtureSetUp]
@@ -32,26 +34,29 @@ namespace UnitTesting.Tests.Frameworks
 			FileUtility.ApplicationRootPath = oldRootPath;
 		}
 		
+		[SetUp]
+		public void SetUp()
+		{
+			project = new MockCSharpProject();
+			testProject = new NUnitTestProject(project);
+		}
+		
 		[Test]
 		public void NothingSpecified()
 		{
-			MockCSharpProject project = new MockCSharpProject();
-			SelectedTests selectedTests = new SelectedTests(project);
-			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
+			NUnitConsoleApplication app = new NUnitConsoleApplication(new[] { testProject });
 			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console-x86.exe", app.FileName);
 		}
 		
 		[Test]
 		public void TargetCpuAnyCPUDotnet2()
 		{
-			MockCSharpProject project = new MockCSharpProject();
 			project.ActiveConfiguration = "Debug";
 			project.ActivePlatform = "AnyCPU";
 			project.SetProperty("PlatformTarget", "AnyCPU");
 			project.SetProperty("TargetFrameworkVersion", "v3.5");
 			
-			SelectedTests selectedTests = new SelectedTests(project);
-			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
+			NUnitConsoleApplication app = new NUnitConsoleApplication(new[] { testProject });
 			// We use 32-bit NUnit to test AnyCPU projects because the debugger doesn't support 64-bit
 			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console-dotnet2-x86.exe", app.FileName);
 		}
@@ -59,14 +64,12 @@ namespace UnitTesting.Tests.Frameworks
 		[Test]
 		public void TargetCpuAnyCPUDotnet45()
 		{
-			MockCSharpProject project = new MockCSharpProject();
 			project.ActiveConfiguration = "Debug";
 			project.ActivePlatform = "AnyCPU";
 			project.SetProperty("PlatformTarget", "AnyCPU");
 			project.SetProperty("TargetFrameworkVersion", "v4.5");
 			
-			SelectedTests selectedTests = new SelectedTests(project);
-			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
+			NUnitConsoleApplication app = new NUnitConsoleApplication(new[] { testProject });
 			// We use 32-bit NUnit to test AnyCPU projects because the debugger doesn't support 64-bit
 			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console-x86.exe", app.FileName);
 		}
@@ -74,55 +77,47 @@ namespace UnitTesting.Tests.Frameworks
 		[Test]
 		public void TargetCpuX64Dotnet2()
 		{
-			MockCSharpProject project = new MockCSharpProject();
 			project.ActiveConfiguration = "Debug";
 			project.ActivePlatform = "AnyCPU";
 			project.SetProperty("PlatformTarget", "x64");
 			project.SetProperty("TargetFrameworkVersion", "v3.5");
 			
-			SelectedTests selectedTests = new SelectedTests(project);
-			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
+			NUnitConsoleApplication app = new NUnitConsoleApplication(new[] { testProject });
 			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console-dotnet2.exe", app.FileName);
 		}
 		
 		[Test]
 		public void TargetCpuX64Dotnet45()
 		{
-			MockCSharpProject project = new MockCSharpProject();
 			project.ActiveConfiguration = "Debug";
 			project.ActivePlatform = "AnyCPU";
 			project.SetProperty("PlatformTarget", "x64");
 			project.SetProperty("TargetFrameworkVersion", "v4.5");
 			
-			SelectedTests selectedTests = new SelectedTests(project);
-			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
+			NUnitConsoleApplication app = new NUnitConsoleApplication(new[] { testProject });
 			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console.exe", app.FileName);
 		}
 		
 		[Test]
 		public void NUnitConsole32BitUsedWhenTargetCpuIs32BitDotnet2()
 		{
-			MockCSharpProject project = new MockCSharpProject();
 			project.ActiveConfiguration = "Debug";
 			project.ActivePlatform = "AnyCPU";
 			project.SetProperty("PlatformTarget", "x86");
 			project.SetProperty("TargetFrameworkVersion", "v3.5");
 			
-			SelectedTests selectedTests = new SelectedTests(project);
-			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
+			NUnitConsoleApplication app = new NUnitConsoleApplication(new[] { testProject });
 			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console-dotnet2-x86.exe", app.FileName);
 		}
 		
 		[Test]
 		public void NUnitConsole32BitUsedWhenTargetCpuIs32Bit()
 		{
-			MockCSharpProject project = new MockCSharpProject();
 			project.ActiveConfiguration = "Debug";
 			project.ActivePlatform = "AnyCPU";
 			project.SetProperty("PlatformTarget", "x86");
 			
-			SelectedTests selectedTests = new SelectedTests(project);
-			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
+			NUnitConsoleApplication app = new NUnitConsoleApplication(new[] { testProject });
 			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console-x86.exe", app.FileName);
 		}
 		
@@ -130,8 +125,8 @@ namespace UnitTesting.Tests.Frameworks
 		public void NotMSBuildBasedProject()
 		{
 			MissingProject project = new MissingProject(@"C:\Projects\Test.proj", "Test");
-			SelectedTests selectedTests = new SelectedTests(project);
-			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
+			ITestProject testProject = new NUnitTestProject(project);
+			NUnitConsoleApplication app = new NUnitConsoleApplication(new[] { testProject });
 			
 			Assert.AreEqual(project.GetType().BaseType, typeof(AbstractProject), "MissingProject should be derived from AbstractProject.");
 			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console.exe", app.FileName);
