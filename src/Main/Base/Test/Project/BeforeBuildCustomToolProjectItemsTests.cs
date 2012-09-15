@@ -21,6 +21,27 @@ namespace ICSharpCode.SharpDevelop.Tests.Project
 		BeforeBuildCustomToolProjectItems beforeBuildCustomToolProjectItems;
 		Solution solution;
 		
+		class UnknownBuildable : IBuildable
+		{
+			public string Name { get; set; }
+			
+			public Solution ParentSolution { get; set; }
+			
+			public ICollection<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
+			{
+				return new IBuildable[0];
+			}
+			
+			public void StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
+			{
+			}
+			
+			public ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)
+			{
+				return new ProjectBuildOptions(BuildTarget.Build);
+			}
+		}
+		
 		IProject CreateProject(string fileName = @"d:\MyProject\MyProject.csproj")
 		{
 			CreateProjectWithNoProjectSpecifiedProperties(fileName);
@@ -87,6 +108,12 @@ namespace ICSharpCode.SharpDevelop.Tests.Project
 			var projectItem = new FileProjectItem(projectHelper.Project, ItemType.Compile, include);
 			projectHelper.AddProjectItem(projectItem);
 			return projectItem;
+		}
+		
+		void CreateBeforeBuildCustomToolProjectItemsWithUnknownIBuildableDerivedClass()
+		{
+			var unknownBuildable = new UnknownBuildable();
+			CreateBeforeBuildCustomToolProjectItems(unknownBuildable);
 		}
 		
 		[Test]
@@ -275,6 +302,16 @@ namespace ICSharpCode.SharpDevelop.Tests.Project
 		{
 			CreateProjectWithNoProjectSpecifiedProperties(@"d:\MyProject\FirstProject.csproj");
 			CreateBeforeBuildCustomToolProjectItems();
+			
+			List<FileProjectItem> projectItems = GetProjectItems();
+			
+			Assert.AreEqual(0, projectItems.Count);
+		}
+		
+		[Test]
+		public void GetProjectItems_UnknownIBuildableDerivedClass_NullReferenceExceptionIsNotThrown()
+		{
+			CreateBeforeBuildCustomToolProjectItemsWithUnknownIBuildableDerivedClass();
 			
 			List<FileProjectItem> projectItems = GetProjectItems();
 			

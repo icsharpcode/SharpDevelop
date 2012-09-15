@@ -32,7 +32,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			var solution = buildable as Solution;
-			return solution.Projects;
+			if (solution != null) {
+				return solution.Projects;
+			}
+			
+			return new IProject[0];
 		}
 		
 		IEnumerable<FileProjectItem> GetConfiguredCustomToolProjectItems(IProject project)
