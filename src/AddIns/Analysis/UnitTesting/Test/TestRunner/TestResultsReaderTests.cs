@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 
-namespace UnitTesting.Tests.Frameworks
+namespace UnitTesting.Tests.TestRunner
 {
 	[TestFixture]
 	public class TestResultsReaderTests

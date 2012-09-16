@@ -9,7 +9,7 @@ using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
 
-namespace UnitTesting.Tests.Frameworks
+namespace UnitTesting.Tests.Commands
 {
 	[TestFixture, Ignore("Class browser is not implemented")]
 	public class TestableConditionIsValidForClassNodeTestFixture

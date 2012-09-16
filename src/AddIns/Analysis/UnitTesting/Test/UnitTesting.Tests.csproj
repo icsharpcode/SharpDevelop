@@ -67,6 +67,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Commands\TestableConditionIsValidForClassNodeTestFixture.cs" />
+    <Compile Include="Commands\TestableConditionIsValidMethodTestFixture.cs" />
     <Compile Include="NUnit\CreateNUnitTestRunnerTestFixture.cs" />
     <Compile Include="NUnit\NUnitConsoleCommandLineTests.cs" />
     <Compile Include="NUnit\NUnitConsoleExeSelectedTestFixture.cs" />
@@ -75,7 +77,17 @@
     <Compile Include="NUnit\NUnitTestFrameworkIsTestMemberTests.cs" />
     <Compile Include="NUnit\NUnitTestFrameworkIsTestProjectTests.cs" />
     <Compile Include="NUnit\NUnitTestResultFailureTestFixture.cs" />
+    <Compile Include="Project\AbstractBaseClassWithTestMethodsTestFixture.cs" />
+    <Compile Include="Project\DoubleNestedTestClassWithBaseType.cs" />
+    <Compile Include="Project\DuplicateClassNameTestFixture.cs" />
+    <Compile Include="Project\DuplicateMethodNameTestFixture.cs" />
+    <Compile Include="Project\EmptyProjectTestFixture.cs" />
+    <Compile Include="Project\InheritanceHierarchyTestFixture.cs" />
+    <Compile Include="Project\NUnitTestProjectFixtureBase.cs" />
+    <Compile Include="Project\OverriddenBaseTestMethodTestFixture.cs" />
     <Compile Include="Service\TestFrameworkDescriptorTests.cs" />
+    <Compile Include="TestRunner\TestResultsReaderTests.cs" />
+    <Compile Include="UnitTestingOptionsTestFixture.cs" />
     <Compile Include="Utils\MockCSharpProject.cs" />
     <Compile Include="Utils\NRefactoryHelper.cs" />
   </ItemGroup>
@@ -111,7 +123,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Frameworks" />
+    <Folder Include="Commands" />
+    <Folder Include="Project" />
+    <Folder Include="TestRunner" />
     <Folder Include="Service" />
     <Folder Include="NUnit" />
     <Folder Include="Utils" />

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -11,38 +12,57 @@ using UnitTesting.Tests.Utils;
 namespace UnitTesting.Tests.Project
 {
 	/// <summary>
-	/// Tests that the TestProject can handle the user
-	/// opening a project with two test classes with the same
-	/// fully qualified name.
+	/// SD2-1213 - Creating a unit test with the same name as an existing test
+	///
+	/// Two files exist in a project each having the same unit test class. In one file the
+	/// name of the class is changed. This should result in both test classes being displayed in the unit
+	/// test tree.
 	/// </summary>
 	[TestFixture]
-	public class DuplicateClassNameTestFixture : ProjectTestFixtureBase
+	public class DuplicateClassNameTestFixture : NUnitTestProjectFixtureBase
 	{
-		[SetUp]
-		public void Init()
+		const string program = @"
+using NUnit.Framework;
+namespace RootNamespace {
+	class MyTestFixture {
+		[Test]
+		public void Foo() {}
+	}
+}
+";
+		
+		NUnitTestClass myTestFixture;
+		
+		public override void SetUp()
 		{
-			CreateNUnitProject(
-				Parse("namespace RootNamespace { [NUnit.Framework.TestFixture] class MyTextFixture {} }", "file1.cs"),
-				Parse("namespace RootNamespace { [NUnit.Framework.TestFixture] class MyTextFixture {} }", "file2.cs"));
+			base.SetUp();
+			AddCodeFile("file1.cs", program);
+			
+			myTestFixture = (NUnitTestClass)testProject.NestedTests.Single();
+			myTestFixture.EnsureNestedTestsInitialized();
+			
+			AddCodeFile("file2.cs", program);
 		}
 		
-		/// <summary>
-		/// If one or more classes exist with the same fully qualified
-		/// name only one should be added to the test project. The
-		/// project will not compile anyway due to the duplicate class
-		/// name so only having one test class is probably an OK
-		/// workaround.
-		/// </summary>
 		[Test]
-		public void OneTestClass()
+		public void SingleTestClass()
 		{
-			Assert.AreEqual(1, testProject.TestClasses.Count);
+			Assert.AreSame(myTestFixture, testProject.NestedTests.Single());
 		}
 		
 		[Test]
-		public void TestClassName()
+		public void SingleMethod()
 		{
-			Assert.AreEqual("RootNamespace.MyTestFixture", testProject.TestClasses[0].QualifiedName);
+			Assert.AreEqual(1, myTestFixture.NestedTests.Count);
+		}
+		
+		[Test]
+		public void RenameOneCopyOfDuplicateClass()
+		{
+			UpdateCodeFile("file2.cs", program.Replace("MyTestFixture", "NewTestFixture"));
+			
+			Assert.AreEqual(2, testProject.NestedTests.Count);
+			Assert.AreEqual(1, myTestFixture.NestedTests.Count);
 		}
 	}
 }

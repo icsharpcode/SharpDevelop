@@ -14,8 +14,21 @@ namespace UnitTesting.Tests.Project
 	/// Creates a TestProject object with no test classes.
 	/// </summary>
 	[TestFixture]
-	public class EmptyProjectTestFixture : ProjectTestFixtureBase
+	public class EmptyProjectTestFixture : NUnitTestProjectFixtureBase
 	{
+		public override void SetUp()
+		{
+			base.SetUp();
+			// Initialize the project while it is empty
+			testProject.EnsureNestedTestsInitialized();
+		}
+		
+		[Test]
+		public void EmptyProjectHasNoNestedTests()
+		{
+			Assert.IsEmpty(testProject.NestedTests);
+		}
+		
 		/// <summary>
 		/// Tests that a new class is added to the TestProject
 		/// from the parse info when the old compilation unit is null.
@@ -23,12 +36,11 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void AddClassWithTestFixtureAttribute()
 		{
-			// Create an empty project
-			CreateNUnitProject();
 			// Add new compilation unit with extra class.
-			UpdateCodeFile("namespace RootNamespace { [NUnit.Framework.TestFixture] class MyTextFixture {} }");
+			AddCodeFileInNamespace("test.cs", "[TestFixture] class MyTestFixture {}");
 			
-			Assert.IsTrue(testProject.TestClasses.Any(c => c.QualifiedName == "RootNamespace.MyNewTestFixture"));
+			NUnitTestClass testClass = (NUnitTestClass)testProject.NestedTests.Single();
+			Assert.AreEqual("RootNamespace.MyTestFixture", testClass.ReflectionName);
 		}
 		
 		/// <summary>
@@ -39,17 +51,18 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void AddTestFixtureAttributeToExistingClass()
 		{
-			CreateNUnitProject();
 			// Create an old compilation unit with the test class
 			// but without a [TestFixture] attribute.
-			UpdateCodeFile("namespace RootNamespace { class MyTextFixture {} }");
+			AddCodeFileInNamespace("test.cs", "class MyTestFixture {}");
+			
+			Assert.IsEmpty(testProject.NestedTests);
 			
 			// Create a new compilation unit with the test class
 			// having a [TestFixture] attribute.
-			UpdateCodeFile("namespace RootNamespace { [NUnit.Framework.TestFixture] class MyTextFixture {} }");
+			UpdateCodeFileInNamespace("test.cs", "[TestFixture] class MyTestFixture {}");
 			
-			Assert.IsTrue(testProject.TestClasses.Any(c => c.QualifiedName == "RootNamespace.MyNewTestFixture"),
-			              "New class should have been added to the set of TestClasses.");
+			NUnitTestClass testClass = (NUnitTestClass)testProject.NestedTests.Single();
+			Assert.AreEqual("RootNamespace.MyTestFixture", testClass.ReflectionName);
 		}
 		
 		/// <summary>
@@ -63,12 +76,20 @@ namespace UnitTesting.Tests.Project
 			// Add the test class first.
 			AddClassWithTestFixtureAttribute();
 			
-			// Create an old compilation unit with the test class
-			// having a [TestFixture] attribute.
-			UpdateCodeFile("namespace RootNamespace { class MyTextFixture {} }");
+			UpdateCodeFileInNamespace("test.cs", "class MyTestFixture {}");
 			
-			Assert.IsFalse(testProject.TestClasses.Any(c => c.QualifiedName == "RootNamespace.MyNewTestFixture"),
-			               "Class should have been removed.");
+			Assert.IsEmpty(testProject.NestedTests);
+		}
+		
+		[Test]
+		public void TestFixtureFileRemoved()
+		{
+			// Add the test class first.
+			AddClassWithTestFixtureAttribute();
+			
+			RemoveCodeFile("test.cs");
+			
+			Assert.IsEmpty(testProject.NestedTests);
 		}
 	}
 }

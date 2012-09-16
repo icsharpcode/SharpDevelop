@@ -9,7 +9,7 @@ namespace ICSharpCode.SharpDevelop
 {
 	public static class TestExtensions
 	{
-		public static void AddMockService<T>(this IServiceContainer container) where T : class
+		public static void AddStrictMockService<T>(this IServiceContainer container) where T : class
 		{
 			container.AddService(typeof(T), MockRepository.GenerateStrictMock<T>());
 		}

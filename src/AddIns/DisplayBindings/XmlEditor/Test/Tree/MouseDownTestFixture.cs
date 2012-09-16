@@ -32,7 +32,7 @@ namespace XmlEditor.Tests.Tree
 		public void SetUp()
 		{
 			SD.InitializeForUnitTests();
-			SD.Services.AddMockService<IWinFormsService>();
+			SD.Services.AddStrictMockService<IWinFormsService>();
 			SD.WinForms.Stub(w => w.MenuService).Return(MockRepository.GenerateStub<IWinFormsMenuService>());
 			
 			treeViewEventArgs = new List<TreeViewEventArgs>();

@@ -81,11 +81,31 @@ namespace ICSharpCode.UnitTesting
 			return null;
 		}
 		
+		/// <summary>
+		/// Gets the test method with the specified <see cref="NUnitTestMethod.MethodNameWithDeclaringTypeForInheritedTests"/>.
+		/// For inherited tests, this is a string in the form '<c>DeclaringTypeName.MethodName</c>'
+		/// </summary>
 		public NUnitTestMethod FindTestMethod(string name)
 		{
 			foreach (var t in this.NestedTests.OfType<NUnitTestMethod>()) {
-				if (t.MethodName == name)
+				if (t.MethodNameWithDeclaringTypeForInheritedTests == name)
 					return t;
+			}
+			return null;
+		}
+		
+		/// <summary>
+		/// Gets the test method with the specified name.
+		/// This will return inherited tests assuming they are
+		/// not hidden by tests in the derived class.
+		/// </summary>
+		public NUnitTestMethod FindTestMethodWithShortName(string name)
+		{
+			// Go backwards because base class tests come first
+			for (int i = this.NestedTestCollection.Count - 1; i >= 0; i--) {
+				var method = this.NestedTestCollection[i] as NUnitTestMethod;
+				if (method != null && method.MethodName == name)
+					return method;
 			}
 			return null;
 		}
@@ -154,13 +174,24 @@ namespace ICSharpCode.UnitTesting
 						continue;
 					
 					IUnresolvedMethod unresolvedMethod = (IUnresolvedMethod)method.UnresolvedMember;
+					string methodNameWithDeclaringType;
 					FullTypeName derivedFixture;
-					if (method.DeclaringTypeDefinition == typeDefinition)
+					if (method.DeclaringTypeDefinition == typeDefinition) {
 						derivedFixture = default(FullTypeName); // method is not inherited
-					else
+						methodNameWithDeclaringType = method.Name;
+					} else {
+						if (method.DeclaringTypeDefinition == null)
+							continue;
 						derivedFixture = fullTypeName; // method is inherited
+						methodNameWithDeclaringType = method.DeclaringTypeDefinition.Name + "." + method.Name;
+					}
 					
-					NUnitTestMethod testMethod = FindTestMethod(method.Name);
+					NUnitTestMethod testMethod;
+					if (method.IsOverride) {
+						testMethod = FindTestMethodWithShortName(method.Name);
+					} else {
+						testMethod = FindTestMethod(methodNameWithDeclaringType);
+					}
 					if (testMethod != null) {
 						testMethod.UpdateTestMethod(unresolvedMethod, derivedFixture);
 					} else {

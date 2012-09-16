@@ -95,6 +95,7 @@ namespace ICSharpCode.UnitTesting
 				int secondToLastDot = result.Name.LastIndexOf('.', lastDot - 1);
 				if (secondToLastDot >= 0) {
 					string fixtureName2 = result.Name.Substring(0, secondToLastDot);
+					methodName = result.Name.Substring(secondToLastDot + 1);
 					testClass = FindTestClass(new FullTypeName(fixtureName2));
 				}
 			}

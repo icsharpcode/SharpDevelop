@@ -110,11 +110,15 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
-		protected bool NestedTestsInitialized {
+		/// <summary>
+		/// Gets whether the nested test list was initialized.
+		/// Accessing the <see cref="NestedTests"/> property will automatically initialize the list.
+		/// </summary>
+		public bool NestedTestsInitialized {
 			get { return nestedTests != null; }
 		}
 		
-		protected void EnsureNestedTestsInitialized()
+		public void EnsureNestedTestsInitialized()
 		{
 			if (nestedTests == null) {
 				nestedTests = InitializeNestedTests();
