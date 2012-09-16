@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			return result;
 		}
 	}
-	
+	/*
 	public class  BaseAdressValidator :ValidationRule
 	{
 		public override ValidationResult Validate(object value, CultureInfo cultureInfo)
@@ -49,5 +49,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 			return result;
 		}
+		
 	}
+	*/
 }

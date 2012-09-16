@@ -73,21 +73,6 @@ namespace CSharpBinding.OptionPanels
 		}
 		
 		
-		protected override void Initialize()
-		{
-			this.UpdateProjectCommand  = new RelayCommand(UpdateProjectExecute);
-			this.ChangeOutputPath = new RelayCommand(ChangeOutputPathExecute);
-			UpdateTargetFrameworkCombo();
-			if (DocumentationFile.Value.Length > 0) {
-				documentFileIsChecked = true;
-			}
-			XmlDocHelper();
-			this.BaseIntermediateOutputPathCommand = new RelayCommand(BaseIntermediateOutputPathExecute);
-			this.IntermediateOutputPathCommand = new RelayCommand(IntermediateOutputPathExecute);
-			SetTreatWarningAsErrorRadioButtons();
-			
-		}
-		
 		#region properties
 		
 		public ProjectProperty<string> DefineConstants {
@@ -187,6 +172,22 @@ namespace CSharpBinding.OptionPanels
 		
 		#region overrides
 		
+		protected override void Initialize()
+		{
+			this.UpdateProjectCommand  = new RelayCommand(UpdateProjectExecute);
+			this.ChangeOutputPath = new RelayCommand(ChangeOutputPathExecute);
+			UpdateTargetFrameworkCombo();
+			if (DocumentationFile.Value.Length > 0) {
+				documentFileIsChecked = true;
+			}
+			XmlDocHelper();
+			this.BaseIntermediateOutputPathCommand = new RelayCommand(BaseIntermediateOutputPathExecute);
+			this.IntermediateOutputPathCommand = new RelayCommand(IntermediateOutputPathExecute);
+			SetTreatWarningAsErrorRadioButtons();
+			
+		}
+		
+		
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
@@ -217,6 +218,8 @@ namespace CSharpBinding.OptionPanels
 			}
 			return base.Save(project, configuration, platform);
 		}
+		
+		
 		#endregion
 		
 		#region Documentation File
