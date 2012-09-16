@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
@@ -18,51 +19,51 @@ namespace UnitTesting.Tests.Project
 	/// Creates a TestProject that has one test class.
 	/// </summary>
 	[TestFixture]
-	public class TestProjectWithOneClassTestFixture : ProjectTestFixtureBase
+	public class TestProjectWithOneClassTestFixture : NUnitTestProjectFixtureBase
 	{
-		TestClass testClass;
-		bool resultChangedCalled;
-		List<TestClass> classesAdded;
-		List<TestClass> classesRemoved;
+		NUnitTestClass testClass;
+		List<NUnitTestClass> classesAdded;
+		List<NUnitTestClass> classesRemoved;
 		
 		const string mainFileName = "file1.cs";
 		
-		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
-			resultChangedCalled = false;
-			classesAdded = new List<TestClass>();
-			classesRemoved = new List<TestClass>();
+			base.SetUp();
+			classesAdded = new List<NUnitTestClass>();
+			classesRemoved = new List<NUnitTestClass>();
 			
 			// Create a project.
-			CreateNUnitProject(Parse(@"using NUnit.Framework;
+			AddCodeFile(mainFileName, @"using NUnit.Framework;
 namespace RootNamespace {
 	[TestFixture]
 	class MyTestFixture {
 		
 	}
-	class NonTestClass { }
-}", mainFileName));
+	class NonNUnitTestClass { }
+}");
 			
-			testClass = testProject.TestClasses[0];
+			testClass = testProject.GetTestClass(new FullTypeName("RootNamespace.MyTestFixture"));
+			testProject.NestedTests.CollectionChanged += testProject_TestClasses_CollectionChanged;
 		}
 		
 		[Test]
-		public void OneTestClass()
+		public void OneNUnitTestClass()
 		{
-			Assert.AreEqual(1, testProject.TestClasses.Count);
+			Assert.AreEqual(1, testProject.NestedTests.Count);
+			Assert.AreSame(testClass, testProject.NestedTests.Single());
 		}
 		
 		[Test]
-		public void TestClassName()
+		public void NUnitTestClassName()
 		{
-			Assert.AreEqual("MyTestFixture", testClass.Name);
+			Assert.AreEqual("MyTestFixture", testClass.ClassName);
 		}
 		
 		[Test]
-		public void TestClassQualifiedName()
+		public void NUnitTestClassQualifiedName()
 		{
-			Assert.AreEqual("RootNamespace.MyTestFixture", testClass.QualifiedName);
+			Assert.AreEqual("RootNamespace.MyTestFixture", testClass.ReflectionName);
 		}
 		
 		[Test]
@@ -72,28 +73,15 @@ namespace RootNamespace {
 		}
 		
 		[Test]
-		public void FindTestClass()
+		public void TestClassIsInProjectNestedTestsCollection()
 		{
-			Assert.AreSame(testClass, testProject.GetTestClass("RootNamespace.MyTestFixture"));
+			Assert.AreSame(testClass, testProject.NestedTests.Single());
 		}
 		
 		[Test]
-		public void NoMatchingTestClass()
+		public void NoMatchingNUnitTestClass()
 		{
-			Assert.IsNull(testProject.GetTestClass("NoSuchClass.MyTestFixture"));
-		}
-		
-		[Test]
-		public void TestClassResultChanged()
-		{
-			try {
-				testClass.TestResultChanged += ResultChanged;
-				testClass.TestResult = TestResultType.Success;
-			} finally {
-				testClass.TestResultChanged -= ResultChanged;
-			}
-			
-			Assert.IsTrue(resultChangedCalled);
+			Assert.IsNull(testProject.GetTestClass(new FullTypeName("NoSuchClass.MyTestFixture")));
 		}
 		
 		/// <summary>
@@ -103,17 +91,17 @@ namespace RootNamespace {
 		[Test]
 		public void NewClassInParserInfo()
 		{
-			UpdateCodeFile(@"using NUnit.Framework;
+			UpdateCodeFile(mainFileName, @"using NUnit.Framework;
 namespace RootNamespace {
 	[TestFixture]
 	class MyTestFixture { }
 	[TestFixture]
 	class MyNewTestFixture { }
-}", mainFileName);
+}");
 			
-			Assert.IsNotNull(testProject.GetTestClass("RootNamespace.MyNewTestFixture"));
+			Assert.IsNotNull(testProject.GetTestClass(new TopLevelTypeName("RootNamespace.MyNewTestFixture")));
 			Assert.AreEqual(1, classesAdded.Count);
-			Assert.AreEqual("RootNamespace.MyNewTestFixture", classesAdded[0].QualifiedName);
+			Assert.AreEqual("RootNamespace.MyNewTestFixture", classesAdded[0].ReflectionName);
 		}
 		
 		/// <summary>
@@ -124,15 +112,15 @@ namespace RootNamespace {
 		/// added to our TestProject.
 		/// </summary>
 		[Test]
-		public void TestClassInNewCompilationUnitOnly()
+		public void NUnitTestClassInNewCompilationUnitOnly()
 		{
-			UpdateCodeFile(@"using NUnit.Framework;
+			AddCodeFile("file2.cs", @"using NUnit.Framework;
 namespace RootNamespace {
 	[TestFixture]
 	class MyTestFixture { }
-}", "file2.cs");
+}");
 			
-			Assert.IsNotNull(testProject.GetTestClass("RootNamespace.MyTestFixture"));
+			Assert.IsNotNull(testProject.GetTestClass(new TopLevelTypeName("RootNamespace.MyTestFixture")));
 			Assert.AreEqual(0, classesAdded.Count);
 		}
 		
@@ -143,26 +131,26 @@ namespace RootNamespace {
 		[Test]
 		public void NewClassInParserInfoWithoutTestFixtureAttribute()
 		{
-			UpdateCodeFile(@"using NUnit.Framework;
+			UpdateCodeFile(mainFileName, @"using NUnit.Framework;
 namespace RootNamespace {
 	[TestFixture]
 	class MyTestFixture { }
 	
-	class SecondNonTestClass { }
-}", mainFileName);
+	class SecondNonNUnitTestClass { }
+}");
 			
-			Assert.IsNull(testProject.GetTestClass("RootNamespace.MyNewTestFixture"));
+			Assert.IsNull(testProject.GetTestClass(new TopLevelTypeName("RootNamespace.MyNewTestFixture")));
 		}
 		
 		[Test]
-		public void TestClassRemovedInParserInfo()
+		public void NUnitTestClassRemovedInParserInfo()
 		{
-			UpdateCodeFile(@"using NUnit.Framework;
+			UpdateCodeFile(mainFileName, @"using NUnit.Framework;
 namespace RootNamespace {
-	class NonTestClass { }
-}", mainFileName);
+	class NonNUnitTestClass { }
+}");
 			
-			Assert.AreEqual(0, testProject.TestClasses.Count);
+			Assert.AreEqual(0, testProject.NestedTests.Count);
 			Assert.AreEqual(1, classesRemoved.Count);
 			Assert.AreSame(testClass, classesRemoved[0]);
 		}
@@ -172,13 +160,13 @@ namespace RootNamespace {
 		{
 			RemoveCodeFile(mainFileName);
 			
-			Assert.AreEqual(0, testProject.TestClasses.Count);
+			Assert.AreEqual(0, testProject.NestedTests.Count);
 			Assert.AreEqual(1, classesRemoved.Count);
 			Assert.AreSame(testClass, classesRemoved[0]);
 		}
 		
 		/// <summary>
-		/// Tests that a new method is added to the TestClass
+		/// Tests that a new method is added to the NUnitTestClass
 		/// from the parse info. Also checks that the test method is
 		/// taken from the CompoundClass via IClass.GetCompoundClass.
 		/// A CompoundClass combines partial classes into one class so
@@ -187,27 +175,22 @@ namespace RootNamespace {
 		[Test]
 		public void NewMethodInParserInfo()
 		{
-			UpdateCodeFile(@"using NUnit.Framework;
+			UpdateCodeFile(mainFileName, @"using NUnit.Framework;
 namespace RootNamespace {
 	[TestFixture]
 	class MyTestFixture {
 		[Test] public void NewMethod() {}
-	}", mainFileName);
+	}}");
 			
-			Assert.AreEqual("NewMethod", testClass.Members.Single().Name);
-		}
-		
-		void ResultChanged(object source, EventArgs e)
-		{
-			resultChangedCalled = true;
+			Assert.AreEqual("NewMethod", testClass.NestedTests.Single().DisplayName);
 		}
 		
 		void testProject_TestClasses_CollectionChanged(object source, NotifyCollectionChangedEventArgs e)
 		{
 			if (e.Action == NotifyCollectionChangedAction.Add)
-				classesAdded.AddRange(e.NewItems.Cast<TestClass>());
+				classesAdded.AddRange(e.NewItems.Cast<NUnitTestClass>());
 			else if (e.Action == NotifyCollectionChangedAction.Remove)
-				classesRemoved.AddRange(e.OldItems.Cast<TestClass>());
+				classesRemoved.AddRange(e.OldItems.Cast<NUnitTestClass>());
 		}
 	}
 }

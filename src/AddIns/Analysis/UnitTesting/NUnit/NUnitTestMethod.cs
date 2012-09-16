@@ -53,6 +53,10 @@ namespace ICSharpCode.UnitTesting
 		
 		public override event EventHandler DisplayNameChanged;
 		
+		public DomRegion Region {
+			get { return method.Region; }
+		}
+		
 		public bool IsInherited {
 			get { return derivedFixture.Name != null; }
 		}
@@ -74,7 +78,7 @@ namespace ICSharpCode.UnitTesting
 			this.Result = result.ResultType;
 		}
 		
-		IMethod Resolve()
+		public IMethod Resolve()
 		{
 			ICompilation compilation = SD.ParserService.GetCompilation(parentProject.Project);
 			IMethod resolvedMethod = method.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));

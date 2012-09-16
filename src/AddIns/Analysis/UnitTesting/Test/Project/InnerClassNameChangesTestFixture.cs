@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -14,14 +15,14 @@ namespace UnitTesting.Tests.Project
 	/// Tests that the TestProject is correctly updated after the inner class name changes.
 	/// </summary>
 	[TestFixture]
-	public class InnerClassNameChangesTestFixture : ProjectTestFixtureBase
+	public class InnerClassNameChangesTestFixture : NUnitTestProjectFixtureBase
 	{
-		TestClass originalA;
+		NUnitTestClass originalA;
 		
-		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
-			CreateNUnitProject(Parse(@"
+			base.SetUp();
+			AddCodeFile("test.cs", @"
 using NUnit.Framework;
 namespace MyTests {
 	class A {
@@ -31,11 +32,11 @@ namespace MyTests {
 		}
 	}
 }
-"));
+");
 			
-			originalA = testProject.GetTestClass("MyTests.A");
+			originalA = testProject.GetTestClass(new FullTypeName("MyTests.A"));
 			
-			UpdateCodeFile(@"
+			UpdateCodeFile("test.cs", @"
 using NUnit.Framework;
 namespace MyTests {
 	class A {
@@ -52,13 +53,13 @@ namespace MyTests {
 		public void OuterClassNotChanged()
 		{
 			Assert.IsNotNull(originalA);
-			Assert.AreSame(originalA, testProject.GetTestClass("MyTests.A"));
+			Assert.AreSame(originalA, testProject.GetTestClass(new FullTypeName("MyTests.A")));
 		}
 		
 		[Test]
 		public void InnerClassRenamed()
 		{
-			Assert.AreEqual("InnerTestMod", originalA.NestedClasses.Single().Name);
+			Assert.AreEqual("InnerTestMod", originalA.NestedTests.Single().DisplayName);
 		}
 	}
 }

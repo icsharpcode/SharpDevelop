@@ -14,18 +14,17 @@ using UnitTesting.Tests.Utils;
 namespace UnitTesting.Tests.Project
 {
 	[TestFixture]
-	public class TestClassWithOneMethodTestFixture : ProjectTestFixtureBase
+	public class TestClassWithOneMethodTestFixture : NUnitTestProjectFixtureBase
 	{
-		TestClass testClass;
-		TestMember testMethod;
+		NUnitTestClass testClass;
+		NUnitTestMethod testMethod;
 		bool resultChangedCalled;
-		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
-		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
+			base.SetUp();
 			resultChangedCalled = false;
-			CreateNUnitProject(Parse(@"
+			AddCodeFile("test.cs", @"
 using NUnit.Framework;
 namespace RootNamespace.Tests {
 	[TestFixture]
@@ -33,15 +32,15 @@ namespace RootNamespace.Tests {
 		[Test]
 		public void TestMethod() { }
 	}
-}"));
-			testClass = testProject.TestClasses.Single();
-			testMethod = testClass.Members.Single();
+}");
+			testClass = (NUnitTestClass)testProject.NestedTests.Single().NestedTests.Single();
+			testMethod = (NUnitTestMethod)testClass.NestedTests.Single();
 		}
 		
 		[Test]
 		public void TestMethodResult()
 		{
-			Assert.AreEqual(TestResultType.None, testMethod.TestResult);
+			Assert.AreEqual(TestResultType.None, testMethod.Result);
 		}
 		
 		[Test]
@@ -52,14 +51,14 @@ namespace RootNamespace.Tests {
 			
 			testProject.UpdateTestResult(result);
 			
-			Assert.AreEqual(TestResultType.Failure, testMethod.TestResult);
+			Assert.AreEqual(TestResultType.Failure, testMethod.Result);
 		}
 		
 		[Test]
 		public void TestClassFailed()
 		{
 			TestFailed();
-			Assert.AreEqual(TestResultType.Failure, testClass.TestResult);
+			Assert.AreEqual(TestResultType.Failure, testClass.Result);
 		}
 		
 		[Test]
@@ -70,19 +69,19 @@ namespace RootNamespace.Tests {
 			
 			testProject.UpdateTestResult(result);
 			
-			Assert.AreEqual(TestResultType.Ignored, testClass.TestResult);
+			Assert.AreEqual(TestResultType.Ignored, testClass.Result);
 		}
 		
 		[Test]
 		public void TestResultChanged()
 		{
 			try {
-				testMethod.TestResultChanged += ResultChanged;
+				testMethod.ResultChanged += ResultChanged;
 				TestResult result = new TestResult("RootNamespace.Tests.MyTestFixture.TestMethod");
 				result.ResultType = TestResultType.Failure;
 				testProject.UpdateTestResult(result);
 			} finally {
-				testMethod.TestResultChanged -= ResultChanged;
+				testMethod.ResultChanged -= ResultChanged;
 			}
 			
 			Assert.IsTrue(resultChangedCalled);
@@ -92,12 +91,12 @@ namespace RootNamespace.Tests {
 		public void TestResultChangedOnClass()
 		{
 			try {
-				testClass.TestResultChanged += ResultChanged;
+				testClass.ResultChanged += ResultChanged;
 				TestResult result = new TestResult("RootNamespace.Tests.MyTestFixture.TestMethod");
 				result.ResultType = TestResultType.Failure;
 				testProject.UpdateTestResult(result);
 			} finally {
-				testClass.TestResultChanged -= ResultChanged;
+				testClass.ResultChanged -= ResultChanged;
 			}
 			
 			Assert.IsTrue(resultChangedCalled);
@@ -133,14 +132,14 @@ namespace RootNamespace.Tests {
 		[Test]
 		public void FindTestMethod()
 		{
-			Assert.AreSame(testMethod, testClass.Members.Single(m => m.Name == "TestMethod"));
+			Assert.AreSame(testMethod, testClass.NestedTests.Single(m => m.DisplayName == "TestMethod"));
 		}
 		
 		/*
 		[Test]
 		public void AddNewClassNodeWhenTestClassPassed()
 		{
-			testClass.TestResult = TestResultType.Success;
+			testClass.Result = TestResultType.Success;
 			TestClassTreeNode node = new TestClassTreeNode(testProject, testClass);
 			Assert.AreEqual(TestTreeViewImageListIndex.TestPassed, (TestTreeViewImageListIndex)node.ImageIndex);
 		}
@@ -148,7 +147,7 @@ namespace RootNamespace.Tests {
 		[Test]
 		public void AddNewMethodNodeWhenTestPassed()
 		{
-			testMethod.TestResult = TestResultType.Success;
+			testMethod.Result = TestResultType.Success;
 			TestMemberTreeNode node = new TestMemberTreeNode(testProject, testMethod);
 			Assert.AreEqual(TestTreeViewImageListIndex.TestPassed, (TestTreeViewImageListIndex)node.ImageIndex);
 		}
@@ -161,7 +160,7 @@ namespace RootNamespace.Tests {
 		[Test]
 		public void MethodRemovedInParserInfo()
 		{
-			UpdateCodeFile(@"
+			UpdateCodeFile("test.cs", @"
 using NUnit.Framework;
 namespace RootNamespace.Tests {
 	[TestFixture]
@@ -170,7 +169,7 @@ namespace RootNamespace.Tests {
 	}
 }");
 			
-			Assert.AreEqual(0, testClass.Members.Count);
+			Assert.AreEqual(0, testClass.NestedTests.Count);
 		}
 		
 		void ResultChanged(object source, EventArgs e)

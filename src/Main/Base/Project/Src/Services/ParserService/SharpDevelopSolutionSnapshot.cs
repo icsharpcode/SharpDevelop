@@ -16,6 +16,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 	public interface ISolutionSnapshotWithProjectMapping : ISolutionSnapshot
 	{
 		IProject GetProject(IAssembly assembly);
+		
+		ICompilation GetCompilation(IProject project);
 	}
 	
 	public class SharpDevelopSolutionSnapshot : DefaultSolutionSnapshot, ISolutionSnapshotWithProjectMapping

@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
@@ -13,14 +14,15 @@ namespace UnitTesting.Tests.Project
 	/// Tests what happens when a test method is renamed inside an inner class.
 	/// </summary>
 	[TestFixture]
-	public class InnerClassMethodRemovedTestFixture : ProjectTestFixtureBase
+	public class InnerClassMethodRemovedTestFixture : NUnitTestProjectFixtureBase
 	{
-		TestClass innerTestClass;
+		NUnitTestClass innerTestClass;
 		
-		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
-			CreateNUnitProject(Parse(@"
+			base.SetUp();
+			
+			AddCodeFile("test.cs", @"
 using NUnit.Framework;
 namespace MyTests {
 	class A {
@@ -30,13 +32,13 @@ namespace MyTests {
 		}
 	}
 }
-"));
+");
 
 			// The members should be changed on the existing TestClass instance,
 			// so grab the reference in before updating.
-			innerTestClass = testProject.GetTestClass("MyTests.A+InnerATest");
+			innerTestClass = testProject.GetTestClass(new FullTypeName("MyTests.A+InnerATest"));
 			
-			UpdateCodeFile(@"
+			UpdateCodeFile("test.cs", @"
 using NUnit.Framework;
 namespace MyTests {
 	class A {
@@ -55,20 +57,20 @@ namespace MyTests {
 		[Test]
 		public void NewTestMethodExists()
 		{
-			TestMember method = innerTestClass.Members[0];
-			Assert.AreEqual("FooBarRenamed", method.Name);
+			Assert.Contains("FooBarRenamed", GetTestMethodNames(innerTestClass));
 		}
 		
 		[Test]
 		public void OldTestMethodRemoved()
 		{
-			Assert.AreEqual(1, innerTestClass.Members.Count);
+			Assert.IsFalse(GetTestMethodNames(innerTestClass).Contains("FooBar"));
 		}
 		
 		[Test]
-		public void NewTestClassExists() 
+		public void NewTestClassExists()
 		{
-			CollectionAssert.Contains(innerTestClass.NestedClasses.Select(x => x.QualifiedName).ToList(), "MyTests.A+InnerATest+InnerInnerTest");
+			CollectionAssert.Contains(innerTestClass.NestedTests.OfType<NUnitTestClass>().Select(x => x.ReflectionName),
+			                          "MyTests.A+InnerATest+InnerInnerTest");
 		}
 	}
 }

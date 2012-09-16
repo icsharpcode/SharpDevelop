@@ -154,9 +154,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return results;
 		}
 		
-		static SharpDevelopSolutionSnapshot GetSolutionSnapshot(ICompilation compilation)
+		static ISolutionSnapshotWithProjectMapping GetSolutionSnapshot(ICompilation compilation)
 		{
-			var snapshot = compilation.SolutionSnapshot as SharpDevelopSolutionSnapshot;
+			var snapshot = compilation.SolutionSnapshot as ISolutionSnapshotWithProjectMapping;
 			return snapshot ?? SD.ParserService.GetCurrentSolutionSnapshot();
 		}
 		

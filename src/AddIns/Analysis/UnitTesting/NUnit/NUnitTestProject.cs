@@ -61,9 +61,9 @@ namespace ICSharpCode.UnitTesting
 			if (typeDefinition.IsAbstract) {
 				tests = from c in entity.ParentAssembly.GetAllTypeDefinitions()
 					where c.IsDerivedFrom(typeDefinition)
-					select GetTestForEntityInClass(FindTestClass(c.FullTypeName), entity);
+					select GetTestForEntityInClass(GetTestClass(c.FullTypeName), entity);
 			} else {
-				NUnitTestClass c = FindTestClass(typeDefinition.FullTypeName);
+				NUnitTestClass c = GetTestClass(typeDefinition.FullTypeName);
 				tests = new [] { GetTestForEntityInClass(c, entity) };
 			}
 			// GetTestForEntityInClass might return null, so filter those out:
@@ -89,14 +89,14 @@ namespace ICSharpCode.UnitTesting
 				return;
 			string fixtureName = result.Name.Substring(0, lastDot);
 			string methodName = result.Name.Substring(lastDot + 1);
-			NUnitTestClass testClass = FindTestClass(new FullTypeName(fixtureName));
+			NUnitTestClass testClass = GetTestClass(new FullTypeName(fixtureName));
 			if (testClass == null) {
 				// maybe it's an inherited test
 				int secondToLastDot = result.Name.LastIndexOf('.', lastDot - 1);
 				if (secondToLastDot >= 0) {
 					string fixtureName2 = result.Name.Substring(0, secondToLastDot);
 					methodName = result.Name.Substring(secondToLastDot + 1);
-					testClass = FindTestClass(new FullTypeName(fixtureName2));
+					testClass = GetTestClass(new FullTypeName(fixtureName2));
 				}
 			}
 			if (testClass != null) {
@@ -107,9 +107,9 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
-		NUnitTestClass FindTestClass(FullTypeName fullTypeName)
+		public NUnitTestClass GetTestClass(FullTypeName fullTypeName)
 		{
-			var testClass = (NUnitTestClass)GetTestClass(fullTypeName.TopLevelTypeName);
+			var testClass = (NUnitTestClass)base.GetTestClass(fullTypeName.TopLevelTypeName);
 			int tpc = fullTypeName.TopLevelTypeName.TypeParameterCount;
 			for (int i = 0; i < fullTypeName.NestingLevel; i++) {
 				if (testClass == null)

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
@@ -13,15 +14,12 @@ namespace UnitTesting.Tests.Project
 	/// Tests that a class nested inside test fixture is recognized
 	/// </summary>
 	[TestFixture]
-	public class InnerClassInTestFixtureTests : ProjectTestFixtureBase
+	public class InnerClassInTestFixtureTests : NUnitTestProjectFixtureBase
 	{
-		TestClass outerTestClass;
-		
-		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
-			CreateNUnitProject(
-				Parse(@"using NUnit.Framework;
+			base.SetUp();
+			AddCodeFile("test.cs", @"using NUnit.Framework;
 namespace MyTests {
 	[TestFixture]
 	public class A
@@ -40,38 +38,31 @@ namespace MyTests {
 		
 		public class InnerBClass {}
 	}
-}
-"));
+}");
 		}
 		
 		[Test]
 		public void OuterTestClassFound()
 		{
-			Assert.IsNotNull(testProject.GetTestClass("A"));
+			Assert.IsNotNull(testProject.GetTestClass(new FullTypeName("MyTests.A")));
 		}
 
 		[Test]
 		public void InnerNonTestClassWithoutWasNotMarkedAsTestClass()
 		{
-			Assert.IsNull(testProject.GetTestClass("A+InnerBClass"));
+			Assert.IsNull(testProject.GetTestClass(new FullTypeName("MyTests.A+InnerBClass")));
 		}
 		
 		[Test]
 		public void InnerClassInInnerClassFound()
 		{
-			Assert.IsNotNull(testProject.GetTestClass("A+InnerATest+InnerTestLevel2"));
+			Assert.IsNotNull(testProject.GetTestClass(new FullTypeName("MyTests.A+InnerATest+InnerTestLevel2")));
 		}
 		
 		[Test]
 		public void TestClassNameShouldBeDotNetNameOfTheDoubleNestedClass()
 		{
-			Assert.AreEqual("MyTests.A+InnerATest+InnerTestLevel2", testProject.GetTestClass("A+InnerATest+InnerTestLevel2").QualifiedName);
-		}
-		
-		[Test]
-		public void TestClassNamespaceShouldBeValid()
-		{
-			Assert.AreEqual("MyTests", testProject.GetTestClass("A+InnerATest+InnerTestLevel2").Namespace);
+			Assert.AreEqual("MyTests.A+InnerATest+InnerTestLevel2", testProject.GetTestClass(new FullTypeName("MyTests.A+InnerATest+InnerTestLevel2")).ReflectionName);
 		}
 	}
 }

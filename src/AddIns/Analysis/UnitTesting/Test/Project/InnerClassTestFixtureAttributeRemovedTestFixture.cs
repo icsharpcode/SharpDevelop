@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
@@ -13,38 +14,39 @@ namespace UnitTesting.Tests.Project
 	/// Tests that the inner test class is removed when its TestFixture attribute is removed.
 	/// </summary>
 	[TestFixture]
-	public class InnerClassTestFixtureAttributeRemovedTestFixture : ProjectTestFixtureBase
+	public class InnerClassTestFixtureAttributeRemovedTestFixture : NUnitTestProjectFixtureBase
 	{
-		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
-			CreateNUnitProject(Parse(@"
+			base.SetUp();
+			AddCodeFile("test.cs", @"
 using NUnit.Framework;
 namespace MyTests {
 	class A {
 		[TestFixture]
 		class Inner {}
 	}
-}"));
+}");
+			testProject.EnsureNestedTestsInitialized();
 		}
 		
 		[Test]
 		public void RemoveAttribute_Leaves_No_TestClasses()
 		{
-			UpdateCodeFile(@"
+			UpdateCodeFile("test.cs", @"
 using NUnit.Framework;
 namespace MyTests {
 	class A {
 		class Inner {}
 	}
 }");
-			Assert.AreEqual(0, testProject.TestClasses.Count);
+			Assert.AreEqual(0, testProject.NestedTests.Count);
 		}
 		
 		[Test]
 		public void MoveAttributeToOuterClass()
 		{
-			UpdateCodeFile(@"
+			UpdateCodeFile("test.cs", @"
 using NUnit.Framework;
 namespace MyTests {
 	[TestFixture]
@@ -52,7 +54,7 @@ namespace MyTests {
 		class Inner {}
 	}
 }");
-			Assert.IsEmpty(testProject.TestClasses.Single().NestedClasses);
+			Assert.IsEmpty(testProject.GetTestClass(new FullTypeName("MyTests.A")).NestedTests);
 		}
 	}
 }

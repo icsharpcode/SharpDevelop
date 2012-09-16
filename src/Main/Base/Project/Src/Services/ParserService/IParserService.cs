@@ -59,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// <remarks>
 		/// This method is thread-safe.
 		/// </remarks>
-		SharpDevelopSolutionSnapshot GetCurrentSolutionSnapshot();
+		ISolutionSnapshotWithProjectMapping GetCurrentSolutionSnapshot();
 		
 		/// <summary>
 		/// Invalidates the current solution snapshot, causing

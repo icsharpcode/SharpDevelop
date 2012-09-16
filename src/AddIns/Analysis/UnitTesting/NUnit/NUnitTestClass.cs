@@ -65,7 +65,7 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
-		ITypeDefinition Resolve()
+		public ITypeDefinition Resolve()
 		{
 			ICompilation compilation = SD.ParserService.GetCompilation(parentProject.Project);
 			IType type = compilation.MainAssembly.GetTypeDefinition(fullTypeName);

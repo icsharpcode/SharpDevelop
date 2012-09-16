@@ -111,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		// is only browsing code.
 		volatile WeakReference<SharpDevelopSolutionSnapshot> currentSolutionSnapshot;
 		
-		public SharpDevelopSolutionSnapshot GetCurrentSolutionSnapshot()
+		public ISolutionSnapshotWithProjectMapping GetCurrentSolutionSnapshot()
 		{
 			var weakRef = currentSolutionSnapshot;
 			SharpDevelopSolutionSnapshot result;
