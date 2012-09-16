@@ -39,7 +39,10 @@ namespace ICSharpCode.AspNet.Mvc.Completion
 		
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ITextBuffer fileContent)
 		{
-			return new DefaultCompilationUnit(projectContent);
+			var modelTypeLocater = new RazorCSharpModelTypeLocater(fileContent);
+			return new RazorCompilationUnit(projectContent) {
+				ModelTypeName = modelTypeLocater.ModelTypeName
+			};
 		}
 		
 		public IResolver CreateResolver()

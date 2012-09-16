@@ -31,7 +31,7 @@ namespace ICSharpCode.AspNet.Mvc.Completion
 		
 		ParseInformation CreateParseInformationWithWebViewPageClass(ParseInformation parseInfo)
 		{
-			var compilationUnit = new DefaultCompilationUnit(parseInfo.CompilationUnit.ProjectContent);
+			RazorCompilationUnit compilationUnit = RazorCompilationUnit.CreateFromParseInfo(parseInfo);
 			AddDefaultUsings(compilationUnit);
 			AddWebViewPageClass(compilationUnit);
 			return new ParseInformation(compilationUnit);
@@ -58,34 +58,52 @@ namespace ICSharpCode.AspNet.Mvc.Completion
 			return defaultUsing;
 		}
 		
-		void AddWebViewPageClass(DefaultCompilationUnit compilationUnit)
+		void AddWebViewPageClass(RazorCompilationUnit compilationUnit)
 		{
 			DefaultClass webViewPageClass = CreateWebViewPageClass(compilationUnit);
 			compilationUnit.Classes.Add(webViewPageClass);
 		}
 		
-		DefaultClass CreateWebViewPageClass(ICompilationUnit compilationUnit)
+		DefaultClass CreateWebViewPageClass(RazorCompilationUnit compilationUnit)
 		{
 			var webViewPageClass = new DefaultClass(compilationUnit, "RazorWebViewPage") {
 				Region = new DomRegion(1, 0, 3, 0)
 			};
-			AddWebViewPageBaseClass(webViewPageClass);
+			IReturnType modelType = GetModelReturnType(compilationUnit);
+			AddWebViewPageBaseClass(webViewPageClass, modelType);
 			return webViewPageClass;
 		}
 		
-		void AddWebViewPageBaseClass(DefaultClass webViewPageClass)
+		IReturnType GetModelReturnType(RazorCompilationUnit compilationUnit)
+		{
+			IClass modelType = GetClassIfTypeNameIsNotEmpty(compilationUnit.ProjectContent, compilationUnit.ModelTypeName);
+			if (modelType != null) {
+				return modelType.DefaultReturnType;
+			}
+			return new DynamicReturnType(compilationUnit.ProjectContent);
+		}
+		
+		IClass GetClassIfTypeNameIsNotEmpty(IProjectContent projectContent, string modelTypeName)
+		{
+			if (!String.IsNullOrEmpty(modelTypeName)) {
+				return projectContent.GetClass(modelTypeName, 0);
+			}
+			return null;
+		}
+		
+		void AddWebViewPageBaseClass(DefaultClass webViewPageClass, IReturnType modelType)
 		{
 			IClass webViewPageBaseClass = webViewPageClass.ProjectContent.GetClass("System.Web.Mvc.WebViewPage", 1);
 			if (webViewPageBaseClass != null) {
-				IReturnType returnType = GetWebViewPageBaseClassReturnType(webViewPageBaseClass);
+				IReturnType returnType = GetWebViewPageBaseClassReturnType(webViewPageBaseClass, modelType);
 				webViewPageClass.BaseTypes.Add(returnType);
 			}
 		}
 		
-		IReturnType GetWebViewPageBaseClassReturnType(IClass webViewPageBaseClass)
+		IReturnType GetWebViewPageBaseClassReturnType(IClass webViewPageBaseClass, IReturnType modelType)
 		{
 			var typeArguments = new List<IReturnType>();
-			typeArguments.Add(new DynamicReturnType(webViewPageBaseClass.ProjectContent));
+			typeArguments.Add(modelType);
 			return new ConstructedReturnType(webViewPageBaseClass.DefaultReturnType, typeArguments);
 		}
 		
