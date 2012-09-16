@@ -55,7 +55,7 @@ namespace ICSharpCode.UnitTesting
 				return false;
 			if (type.NestedTypes.Any(IsTestClass))
 				return true;
-			if (type.IsAbstract)
+			if (type.IsAbstract && !type.IsStatic)
 				return false;
 			var testFixtureAttribute = testFixtureAttributeRef.Resolve(type.Compilation);
 			if (type.Attributes.Any(attr => attr.AttributeType.Equals(testFixtureAttribute)))

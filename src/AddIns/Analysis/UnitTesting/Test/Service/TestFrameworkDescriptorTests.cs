@@ -6,15 +6,16 @@ using ICSharpCode.Core;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
+using Rhino.Mocks;
+using ICSharpCode.SharpDevelop;
 
-namespace UnitTesting.Tests.Frameworks
+namespace UnitTesting.Tests.Service
 {
 	[TestFixture]
-	public class TestFrameworkDescriptorTests
+	public class TestFrameworkDescriptorTests : SDTestFixtureBase
 	{
 		TestFrameworkDescriptor descriptor;
-		MockTestFrameworkFactory fakeTestFrameworkFactory;
-		MockTestFramework fakeTestFramework;
+		ITestFramework fakeTestFramework;
 		
 		void CreateTestFrameworkDescriptorToSupportCSharpProjects()
 		{
@@ -28,24 +29,23 @@ namespace UnitTesting.Tests.Frameworks
 			properties["class"] = "NUnitTestFramework";
 			properties["supportedProjects"] = fileExtensions;
 			
-			fakeTestFrameworkFactory = new MockTestFrameworkFactory();
-			fakeTestFramework = new MockTestFramework();
-			fakeTestFrameworkFactory.Add("NUnitTestFramework", fakeTestFramework);
-			
-			descriptor = new TestFrameworkDescriptor(properties, fakeTestFrameworkFactory);
+			descriptor = new TestFrameworkDescriptor(properties, _ => fakeTestFramework);
 		}
 		
 		MockCSharpProject CreateCSharpProjectNotSupportedByTestFramework()
 		{
 			var project = new MockCSharpProject();
 			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			fakeTestFramework = MockRepository.GenerateStrictMock<ITestFramework>();
+			fakeTestFramework.Stub(f => f.IsTestProject(project)).Return(false);
 			return project;
 		}
 		
 		MockCSharpProject CreateCSharpProjectSupportedByTestFramework()
 		{
 			MockCSharpProject project = CreateCSharpProjectNotSupportedByTestFramework();
-			fakeTestFramework.AddTestProject(project);
+			fakeTestFramework = MockRepository.GenerateStrictMock<ITestFramework>();
+			fakeTestFramework.Stub(f => f.IsTestProject(project)).Return(true);
 			return project;
 		}
 		

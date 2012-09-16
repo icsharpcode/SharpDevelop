@@ -43,7 +43,7 @@ namespace UnitTesting.Tests.NUnit
 		public void IsTestProjectReturnsTrueForProjectWithNUnitFrameworkAssemblyReference()
 		{
 			MockCSharpProject project = new MockCSharpProject();
-			project.AddAssemblyReference(AssemblyLoader.NUnitFramework);
+			project.AddAssemblyReference(NRefactoryHelper.NUnitFramework);
 			SD.ParserService.Stub(p => p.GetCompilation(project)).Return(project.ProjectContent.CreateCompilation());
 			
 			Assert.IsTrue(testFramework.IsTestProject(project));

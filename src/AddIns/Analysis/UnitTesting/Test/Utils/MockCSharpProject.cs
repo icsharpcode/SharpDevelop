@@ -31,7 +31,7 @@ namespace UnitTesting.Tests.Utils
 		{
 			OutputType = OutputType.Library;
 			projectContent = new CSharpProjectContent().SetAssemblyName(name).SetProjectFileName(this.FileName);
-			projectContent = projectContent.AddAssemblyReferences(AssemblyLoader.Corlib);
+			projectContent = projectContent.AddAssemblyReferences(NRefactoryHelper.Corlib);
 		}
 		
 		public override string Language {

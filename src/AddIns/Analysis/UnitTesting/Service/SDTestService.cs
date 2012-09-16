@@ -86,6 +86,7 @@ namespace ICSharpCode.UnitTesting
 		
 		public void CancelRunningTests()
 		{
+			SD.MainThread.VerifyAccess();
 			if (runTestsCancellationTokenSource != null) {
 				runTestsCancellationTokenSource.Cancel();
 				runTestsCancellationTokenSource = null;

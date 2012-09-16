@@ -71,10 +71,13 @@
     <Compile Include="NUnit\NUnitConsoleCommandLineTests.cs" />
     <Compile Include="NUnit\NUnitConsoleExeSelectedTestFixture.cs" />
     <Compile Include="NUnit\NUnitConsoleProcessStartInfoTestFixture.cs" />
+    <Compile Include="NUnit\NUnitTestFrameworkIsTestClassTests.cs" />
+    <Compile Include="NUnit\NUnitTestFrameworkIsTestMemberTests.cs" />
     <Compile Include="NUnit\NUnitTestFrameworkIsTestProjectTests.cs" />
     <Compile Include="NUnit\NUnitTestResultFailureTestFixture.cs" />
+    <Compile Include="Service\TestFrameworkDescriptorTests.cs" />
     <Compile Include="Utils\MockCSharpProject.cs" />
-    <Compile Include="Utils\AssemblyLoader.cs" />
+    <Compile Include="Utils\NRefactoryHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">

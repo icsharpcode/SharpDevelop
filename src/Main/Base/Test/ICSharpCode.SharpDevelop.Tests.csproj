@@ -114,16 +114,10 @@
     <Compile Include="StringTagProvider\MockProjectForTagProvider.cs" />
     <Compile Include="StringTagProvider\NullProjectStringTagProviderTestFixture.cs" />
     <Compile Include="StringTagProvider\ProjectTagsTestFixture.cs" />
-    <Compile Include="Utils\MockAmbience.cs" />
+    <Compile Include="Utils\FakeMessageLoop.cs" />
     <Compile Include="Utils\MockAssembly.cs" />
-    <Compile Include="Utils\MockClass.cs" />
     <Compile Include="Utils\MockComponent.cs" />
-    <Compile Include="Utils\MockEntity.cs" />
-    <Compile Include="Utils\MockDefaultReturnType.cs" />
-    <Compile Include="Utils\MockMethod.cs" />
     <Compile Include="Utils\MockOpenedFile.cs" />
-    <Compile Include="Utils\MockProject.cs" />
-    <Compile Include="Utils\MockProperty.cs" />
     <Compile Include="Utils\MockSite.cs" />
     <Compile Include="Utils\MockTextMarker.cs" />
     <Compile Include="Utils\MockTextMarkerService.cs" />
