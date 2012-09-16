@@ -129,6 +129,7 @@
     <Compile Include="Src\Completion\RazorCSharpModelTypeLocater.cs" />
     <Compile Include="Src\Completion\RazorCSharpParser.cs" />
     <Compile Include="Src\Completion\RazorCSharpParserModelTypeVisitor.cs" />
+    <Compile Include="Src\Completion\RazorCSharpResolver.cs" />
     <Compile Include="Src\CurrentAppDomain.cs" />
     <Compile Include="Src\CurrentAppDomainFactory.cs" />
     <Compile Include="Src\DelegateCommand.cs" />

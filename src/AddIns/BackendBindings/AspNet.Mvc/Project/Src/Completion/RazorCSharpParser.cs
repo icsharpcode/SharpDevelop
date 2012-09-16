@@ -47,7 +47,7 @@ namespace ICSharpCode.AspNet.Mvc.Completion
 		
 		public IResolver CreateResolver()
 		{
-			return null;
+			return new RazorCSharpResolver();
 		}
 	}
 }

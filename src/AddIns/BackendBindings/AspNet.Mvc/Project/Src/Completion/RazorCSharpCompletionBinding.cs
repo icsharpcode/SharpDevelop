@@ -7,24 +7,21 @@ using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.AspNet.Mvc.Completion
 {
-	public class RazorCSharpCompletionBinding : ICodeCompletionBinding
+	public class RazorCSharpCompletionBinding : DefaultCodeCompletionBinding
 	{
 		public RazorCSharpCompletionBinding()
 		{
 		}
 		
-		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
+		public override CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
 			if (ch == '.') {
 				new RazorCSharpDotCompletionDataProvider().ShowCompletion(editor);
 				return CodeCompletionKeyPressResult.Completed;
+			} else if (ch == '(') {
+				return base.HandleKeyPress(editor, ch);
 			}
 			return CodeCompletionKeyPressResult.None;
-		}
-		
-		public bool CtrlSpace(ITextEditor editor)
-		{
-			return false;
 		}
 	}
 }
