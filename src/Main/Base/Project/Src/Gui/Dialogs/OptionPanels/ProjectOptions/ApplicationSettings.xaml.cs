@@ -282,6 +282,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			} else if (applicationManifestComboBox.SelectedIndex == applicationManifestComboBox.Items.Count - 1) {
 				BrowseForFile(ApplicationManifest, manifestFilter);
 			}
+			IsDirty = true;
 		}
 		
 		void CreateManifest()

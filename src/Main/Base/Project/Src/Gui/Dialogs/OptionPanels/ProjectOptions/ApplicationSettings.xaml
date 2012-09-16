@@ -9,9 +9,8 @@
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
 	xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project">
-	<!--<optionpanels:ProjectOptionPanel.Resources>
-		<optionpanels:StorageLocationConverter x:Key="locationConverter" />
-	</optionpanels:ProjectOptionPanel.Resources>-->
+
+	
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
 		<Grid>
 			<Grid.RowDefinitions>

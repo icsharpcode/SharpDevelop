@@ -97,6 +97,7 @@
 				<optionpanels:StorageLocationPicker Location="{Binding PreBuildEvent.Location}" DockPanel.Dock="Left" />
 				
 				<ComboBox x:Name="applicationManifestComboBox"  VerticalAlignment="Center" Width="200"
+				          IsEditable="True"
 				          SelectionChanged="ApplicationManifestComboBox_SelectionChanged" ></ComboBox>
 			</widgets:StackPanelWithSpacing>
 			
