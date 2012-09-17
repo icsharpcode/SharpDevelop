@@ -45,13 +45,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		class GatherVisitor : GatherVisitorBase
 		{
-			readonly BaseRefactoringContext context;
-			
-			readonly FindReferences findRef = new FindReferences();
-			
 			public GatherVisitor(BaseRefactoringContext context, ValueParameterUnusedIssue inspector) : base (context)
 			{
-				this.context = context;
 			}
 
 			public override void VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration)
@@ -77,22 +72,22 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (!IsEligible(body))
 					return;
 
-				var localResolveResult = context.GetResolverStateBefore(body)
+				var localResolveResult = ctx.GetResolverStateBefore(body)
 					.LookupSimpleNameOrTypeName("value", new List<IType>(), NameLookupMode.Expression) as LocalResolveResult; 
 				if (localResolveResult == null)
 					return;
 
-				var variable = localResolveResult.Variable;
 				bool referenceFound = false;
-				var syntaxTree = (SyntaxTree)context.RootNode;
-				findRef.FindLocalReferences(variable, context.UnresolvedFile, syntaxTree, context.Compilation, (n, entity) => {
-					if (n.StartLocation >= body.StartLocation && n.EndLocation <= body.EndLocation) {
+				foreach (var result in ctx.FindReferences (body, localResolveResult.Variable)) {
+					var node = result.Node;
+					if (node.StartLocation >= body.StartLocation && node.EndLocation <= body.EndLocation) {
 						referenceFound = true;
+						break;
 					}
-				}, CancellationToken.None);
+				}
 
 				if(!referenceFound)
-					AddIssue(anchor, context.TranslateString("The " + accessorName + " does not use the 'value' parameter"));
+					AddIssue(anchor, ctx.TranslateString("The " + accessorName + " does not use the 'value' parameter"));
 			}
 
 			static bool IsEligible(BlockStatement body)

@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using ICSharpCode.NRefactory.Semantics;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -33,21 +35,22 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   Category = IssueCategories.Redundancies,
 					   Severity = Severity.Warning,
 					   IssueMarker = IssueMarker.GrayOut)]
-	public class LocalVariableNotUsedIssue : VariableNotUsedIssue
+	public class LocalVariableNotUsedIssue : ICodeIssueProvider
 	{
-		internal override GatherVisitorBase GetGatherVisitor (BaseRefactoringContext context, SyntaxTree unit)
+		#region ICodeIssueProvider implementation
+
+		public System.Collections.Generic.IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
-			return new GatherVisitor (context, unit);
+			return new GatherVisitor (context).GetIssues ();
 		}
 
+		#endregion
+		
 		class GatherVisitor : GatherVisitorBase
 		{
-			SyntaxTree unit;
-
-			public GatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit)
+			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)
 			{
-				this.unit = unit;
 			}
 
 			public override void VisitVariableInitializer (VariableInitializer variableInitializer)
@@ -65,7 +68,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (resolveResult == null)
 					return;
 
-				if (FindUsage (ctx, unit, resolveResult.Variable, variableInitializer))
+				if (IsUsed (decl.Parent, resolveResult.Variable, variableInitializer))
 					return;
 
 				AddIssue (variableInitializer.NameToken, ctx.TranslateString ("Remove unused local variable"),
@@ -90,10 +93,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (resolveResult == null)
 					return;
 
-				if (FindUsage (ctx, unit, resolveResult.Variable, foreachStatement.VariableNameToken))
+				if (IsUsed (foreachStatement, resolveResult.Variable, foreachStatement.VariableNameToken))
 					return;
 
 				AddIssue (foreachStatement.VariableNameToken, ctx.TranslateString ("Local variable is never used"));
+			}
+
+			bool IsUsed(AstNode rootNode, IVariable variable, AstNode variableNode)
+			{
+				return ctx.FindReferences(rootNode, variable).Any(result => result.Node != variableNode);
 			}
 		}
 

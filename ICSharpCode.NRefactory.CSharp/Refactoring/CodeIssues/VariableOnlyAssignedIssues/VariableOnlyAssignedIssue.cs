@@ -25,68 +25,61 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
-using System.Linq;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public abstract class VariableOnlyAssignedIssue : ICodeIssueProvider
 	{
-		static FindReferences refFinder = new FindReferences ();
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
 		{
-			var unit = context.RootNode as SyntaxTree;
-			if (unit == null)
-				return Enumerable.Empty<CodeIssue> ();
-			return GetGatherVisitor (context, unit).GetIssues ();
+			return GetGatherVisitor (context).GetIssues ();
 		}
 
-		protected static bool TestOnlyAssigned (BaseRefactoringContext ctx, SyntaxTree unit, IVariable variable)
+		protected static bool TestOnlyAssigned(BaseRefactoringContext ctx, AstNode rootNode, IVariable variable)
 		{
 			var assignment = false;
 			var nonAssignment = false;
-			refFinder.FindLocalReferences (variable, ctx.UnresolvedFile, unit, ctx.Compilation,
-				(node, resolveResult) =>
-				{
-					if (node is ParameterDeclaration)
-						return;
+			foreach (var result in ctx.FindReferences(rootNode, variable)) {
+				var node = result.Node;
+				if (node is ParameterDeclaration)
+					continue;
 
-					if (node is VariableInitializer) {
-						if (!(node as VariableInitializer).Initializer.IsNull)
+				if (node is VariableInitializer) {
+					if (!(node as VariableInitializer).Initializer.IsNull)
+						assignment = true;
+					continue;
+				}
+
+				if (node is IdentifierExpression) {
+					var parent = node.Parent;
+					if (parent is AssignmentExpression) {
+						if (((AssignmentExpression)parent).Left == node) {
 							assignment = true;
-						return;
-					}
-
-					if (node is IdentifierExpression) {
-						var parent = node.Parent;
-						if (parent is AssignmentExpression) {
-							if (((AssignmentExpression)parent).Left == node) {
-								assignment = true;
-								return;
-							}
-						} else if (parent is UnaryOperatorExpression) {
-							var op = ((UnaryOperatorExpression)parent).Operator;
-							switch (op) {
+							continue;
+						}
+					} else if (parent is UnaryOperatorExpression) {
+						var op = ((UnaryOperatorExpression)parent).Operator;
+						switch (op) {
 							case UnaryOperatorType.Increment:
 							case UnaryOperatorType.PostIncrement:
 							case UnaryOperatorType.Decrement:
 							case UnaryOperatorType.PostDecrement:
 								assignment = true;
-								return;
-							}
-						} else if (parent is DirectionExpression) {
-							if (((DirectionExpression)parent).FieldDirection == FieldDirection.Out) {
-								assignment = true;
-								return;
-							}
+								continue;
+						}
+					} else if (parent is DirectionExpression) {
+						if (((DirectionExpression)parent).FieldDirection == FieldDirection.Out) {
+							assignment = true;
+							continue;
 						}
 					}
-					nonAssignment = true;
-				}, ctx.CancellationToken);
+				}
+				nonAssignment = true;
+			}
 			return assignment && !nonAssignment;
 		}
 
-		internal abstract GatherVisitorBase GetGatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit);
+		internal abstract GatherVisitorBase GetGatherVisitor (BaseRefactoringContext ctx);
 	}
 }

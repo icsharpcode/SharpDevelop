@@ -27,7 +27,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Analysis;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 
@@ -35,7 +34,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public abstract class AccessToClosureIssue : ICodeIssueProvider
 	{
-		static FindReferences refFinder = new FindReferences ();
 		static ControlFlowGraphBuilder cfgBuilder = new ControlFlowGraphBuilder ();
 
 		public string Title
@@ -75,7 +73,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			SyntaxTree unit;
 			string title;
 			AccessToClosureIssue issueProvider;
 
@@ -84,7 +81,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				: base (context)
 			{
 				this.title = context.TranslateString (issueProvider.Title);
-				this.unit = unit;
 				this.issueProvider = issueProvider;
 			}
 
@@ -124,23 +120,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				base.VisitParameterDeclaration (parameterDeclaration);
 			}
 
-			void FindLocalReferences (IVariable variable, FoundReferenceCallback callback)
+			void CheckVariable(IVariable variable, Statement env)
 			{
-				refFinder.FindLocalReferences (variable, ctx.UnresolvedFile, unit, ctx.Compilation, callback, 
-											   ctx.CancellationToken);
-			}
-
-			void CheckVariable (IVariable variable, Statement env)
-			{
-				if (!issueProvider.IsTargetVariable (variable))
+				if (!issueProvider.IsTargetVariable(variable))
 					return;
 
 				var root = new Environment (env, env);
 				var envLookup = new Dictionary<AstNode, Environment> ();
 				envLookup [env] = root;
 
-				FindLocalReferences (variable, (astNode, resolveResult) => 
-					AddNode (envLookup, new Node (astNode, issueProvider.GetNodeKind (astNode))));
+				foreach (var result in ctx.FindReferences(env, variable)) {
+					AddNode(envLookup, new Node(result.Node, issueProvider.GetNodeKind(result.Node)));
+				}
 
 				root.SortChildren ();
 				CollectIssues (root, variable.Name);

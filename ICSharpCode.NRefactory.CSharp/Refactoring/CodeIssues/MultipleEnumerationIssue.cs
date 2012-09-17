@@ -42,11 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
 		{
-			var unit = context.RootNode as SyntaxTree;
-			if (unit == null)
-				return Enumerable.Empty<CodeIssue> ();
-
-			return new GatherVisitor (context, unit).GetIssues ();
+			return new GatherVisitor (context).GetIssues ();
 		}
 
 		class AnalysisStatementCollector : DepthFirstAstVisitor
@@ -110,15 +106,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			static FindReferences refFinder = new FindReferences ();
-
-			SyntaxTree unit;
 			HashSet<AstNode> collectedAstNodes;
 
-			public GatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit)
+			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)
 			{
-				this.unit = unit;
 				this.collectedAstNodes = new HashSet<AstNode> ();
 			}
 
@@ -139,7 +131,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				base.VisitParameterDeclaration (parameterDeclaration);
 
 				var resolveResult = ctx.Resolve (parameterDeclaration) as LocalResolveResult;
-				CollectIssues (parameterDeclaration, resolveResult);
+				CollectIssues (parameterDeclaration, parameterDeclaration.Parent, resolveResult);
 			}
 
 			public override void VisitVariableInitializer (VariableInitializer variableInitializer)
@@ -147,7 +139,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				base.VisitVariableInitializer (variableInitializer);
 
 				var resolveResult = ctx.Resolve (variableInitializer) as LocalResolveResult;
-				CollectIssues (variableInitializer, resolveResult);
+				CollectIssues (variableInitializer, variableInitializer.Parent.Parent, resolveResult);
 			}
 
 			static bool IsAssignment (AstNode node)
@@ -200,42 +192,42 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			HashSet<VariableReferenceNode> collectedNodes;
 			Dictionary<VariableReferenceNode, int> nodeDegree; // number of enumerations a node can reach
 
-			void FindReferences (AstNode variableDecl, IVariable variable)
+			void FindReferences (AstNode variableDecl, AstNode rootNode, IVariable variable)
 			{
 				references = new HashSet<AstNode> ();
 				refStatements = new HashSet<Statement> ();
 				lambdaExpressions = new HashSet<LambdaExpression> ();
 
-				refFinder.FindLocalReferences (variable, ctx.UnresolvedFile, unit, ctx.Compilation,
-					(astNode, resolveResult) => {
-						if (astNode == variableDecl)
-							return;
+				foreach (var result in ctx.FindReferences (rootNode, variable)) {
+					var astNode = result.Node;
+					if (astNode == variableDecl)
+						continue;
 
-						var parent = astNode.Parent;
-						while (!(parent == null || parent is Statement || parent is LambdaExpression))
-							parent = parent.Parent;
-						if (parent == null)
-							return;
+					var parent = astNode.Parent;
+					while (!(parent == null || parent is Statement || parent is LambdaExpression))
+						parent = parent.Parent;
+					if (parent == null)
+						continue;
 
-						// lambda expression with expression body, should be analyzed separately
-						var expr = parent as LambdaExpression;
-						if (expr != null) {
-							if (IsAssignment (astNode) || IsEnumeration (astNode)) {
-								references.Add (astNode);
-								lambdaExpressions.Add (expr);
-							}
-							return;
-						}
-
-						var statement = (Statement)parent;
+					// lambda expression with expression body, should be analyzed separately
+					var expr = parent as LambdaExpression;
+					if (expr != null) {
 						if (IsAssignment (astNode) || IsEnumeration (astNode)) {
 							references.Add (astNode);
-							refStatements.Add (statement);
+							lambdaExpressions.Add (expr);
 						}
-					}, ctx.CancellationToken);
+						continue;
+					}
+
+					if (IsAssignment (astNode) || IsEnumeration (astNode)) {
+						references.Add (astNode);
+						var statement = (Statement)parent;
+						refStatements.Add (statement);
+					}
+				}
 			}
 
-			void CollectIssues (AstNode variableDecl, LocalResolveResult resolveResult)
+			void CollectIssues (AstNode variableDecl, AstNode rootNode, LocalResolveResult resolveResult)
 			{
 				if (resolveResult == null)
 					return;
@@ -246,7 +238,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				     typeDef.KnownTypeCode != KnownTypeCode.IEnumerableOfT))
 					return;
 
-				FindReferences (variableDecl, resolveResult.Variable);
+				FindReferences (variableDecl, rootNode, resolveResult.Variable);
 
 				var statements = AnalysisStatementCollector.Collect (variableDecl);
 				foreach (var statement in statements) {
