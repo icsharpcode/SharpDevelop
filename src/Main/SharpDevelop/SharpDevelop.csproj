@@ -81,6 +81,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dom\ModelFactory.cs" />
     <Compile Include="Dom\MemberModel.cs" />
     <Compile Include="Dom\TopLevelTypeDefinitionModelCollection.cs" />
     <Compile Include="Dom\TreeNodeFactoryService.cs" />
@@ -91,6 +92,7 @@
     </Compile>
     <Compile Include="Parser\AssemblyParserService.cs" />
     <Compile Include="Parser\LoadSolutionProjects.cs" />
+    <Compile Include="Parser\SharpDevelopSolutionSnapshot.cs" />
     <Compile Include="Services\ClipboardWrapper.cs" />
     <Compile Include="Services\DispatcherMessageLoop.cs" />
     <Compile Include="Startup\App.xaml.cs" />

@@ -98,7 +98,7 @@
     <Compile Include="Dom\ConcatModelCollection.cs" />
     <Compile Include="Dom\IEntityModelContext.cs" />
     <Compile Include="Dom\IMemberModel.cs" />
-    <Compile Include="Dom\IModelService.cs" />
+    <Compile Include="Dom\IModelFactory.cs" />
     <Compile Include="Dom\ITypeDefinitionModel.cs" />
     <Compile Include="Dom\ITypeDefinitionModelCollection.cs" />
     <Compile Include="Dom\KeyedModelCollection.cs" />
@@ -114,6 +114,15 @@
     <Compile Include="Editor\ITextMarker.cs" />
     <Compile Include="Editor\OnDiskTextSourceVersion.cs" />
     <Compile Include="Editor\HighlighterKnownSpanNames.cs" />
+    <Compile Include="Parser\DomAssemblyName.cs" />
+    <Compile Include="Parser\IAssemblyParserService.cs" />
+    <Compile Include="Parser\IGlobalAssemblyCacheService.cs" />
+    <Compile Include="Parser\IParser.cs" />
+    <Compile Include="Parser\IParserService.cs" />
+    <Compile Include="Parser\ISolutionSnapshotWithProjectMapping.cs" />
+    <Compile Include="Parser\ParseInformation.cs" />
+    <Compile Include="Parser\ParseInformationEventArgs.cs" />
+    <Compile Include="Parser\ProjectContentContainer.cs" />
     <Compile Include="Services\IClipboard.cs" />
     <Compile Include="Services\IMessageLoop.cs" />
     <Compile Include="Services\SD.cs" />
@@ -443,13 +452,6 @@
     <Compile Include="Src\Internal\Doozers\IOptionPanelDescriptor.cs" />
     <Compile Include="Workbench\File\FileEventArgs.cs" />
     <Compile Include="Src\Services\MimeTypeDetection.cs" />
-    <Compile Include="Src\Services\ParserService\DomAssemblyName.cs" />
-    <Compile Include="Src\Services\ParserService\IAssemblyParserService.cs" />
-    <Compile Include="Src\Services\ParserService\IGlobalAssemblyCacheService.cs" />
-    <Compile Include="Src\Services\ParserService\IParserService.cs" />
-    <Compile Include="Src\Services\ParserService\IParser.cs" />
-    <Compile Include="Src\Services\ParserService\ParseInformation.cs" />
-    <Compile Include="Src\Services\ParserService\SharpDevelopSolutionSnapshot.cs" />
     <Compile Include="Src\Services\ProjectService\CompileModifiedProjectsOnly.cs" />
     <Compile Include="Src\Services\ProjectService\SolutionConfigurationEventHandler.cs" />
     <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
@@ -595,7 +597,6 @@
     <Compile Include="Src\Services\ProjectService\SolutionEventHandler.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectEventHandler.cs" />
     <Compile Include="Src\Commands\FileMenuCommands.cs" />
-    <Compile Include="Src\Services\ParserService\ParseInformationEventArgs.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectConfigurationEventHandler.cs" />
     <Compile Include="Src\Commands\DebugCommands.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\AbstractProjectBrowserTreeNode.cs" />
@@ -703,7 +704,6 @@
     <Compile Include="Src\Services\RefactoringService\RefactoringService.cs" />
     <Compile Include="Src\Services\RefactoringService\Reference.cs" />
     <Compile Include="Src\Services\ProjectService\ParseableFileContentFinder.cs" />
-    <Compile Include="Src\Services\ParserService\ParseProjectContent.cs" />
     <Compile Include="Src\Project\Items\ImportProjectItem.cs" />
     <EmbeddedResource Include="Resources\CodeCompletionOptionPanel.xfrm" />
     <Compile Include="Src\Services\Debugger\CurrentLineBookmark.cs" />
@@ -858,6 +858,7 @@
     </ProjectReference>
     <Folder Include="Dom" />
     <Folder Include="Editor" />
+    <Folder Include="Parser" />
     <Folder Include="Services" />
     <Folder Include="WinForms" />
     <Folder Include="Workbench" />

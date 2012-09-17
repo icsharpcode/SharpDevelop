@@ -66,6 +66,8 @@
 		         class="ICSharpCode.SharpDevelop.Workbench.ShutdownService"/>
 		<Service id="ICSharpCode.SharpDevelop.Dom.ITreeNodeFactory"
 		         class="ICSharpCode.SharpDevelop.Dom.TreeNodeFactoryService"/>
+		<Service id="ICSharpCode.SharpDevelop.Dom.IModelFactory"
+		         class="ICSharpCode.SharpDevelop.Dom.ModelFactory"/>
 		<Service id="ICSharpCode.SharpDevelop.IClipboard"
 		         class="ICSharpCode.SharpDevelop.ClipboardWrapper"/>
 		

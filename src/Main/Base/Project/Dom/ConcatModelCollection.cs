@@ -16,6 +16,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public sealed class ConcatModelCollection<T> : IModelCollection<T>
 	{
+		// TODO: do we still need this class? maybe we should remove it?
+		// the indirection through this collection wrapper makes the weak reference/weak event stuff too complicated...
+		
 		sealed class InputCollection : Collection<IModelCollection<T>>
 		{
 			readonly ConcatModelCollection<T> owner;

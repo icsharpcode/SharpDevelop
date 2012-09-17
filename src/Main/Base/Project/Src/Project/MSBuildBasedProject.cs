@@ -143,11 +143,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public override void ResolveAssemblyReferences()
-		{
-			MSBuildInternals.ResolveAssemblyReferences(this);
-		}
-		
 		public override IEnumerable<ReferenceProjectItem> ResolveAssemblyReferences(CancellationToken cancellationToken)
 		{
 			ReferenceProjectItem[] additionalItems = {

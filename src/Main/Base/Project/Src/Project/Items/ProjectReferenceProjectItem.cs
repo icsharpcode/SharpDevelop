@@ -102,7 +102,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			IProject p = this.ReferencedProject;
 			if (p == null)
 				return null;
-			var snapshot = context.Compilation.SolutionSnapshot as SharpDevelopSolutionSnapshot;
+			var snapshot = context.Compilation.SolutionSnapshot as ISolutionSnapshotWithProjectMapping;
 			IProjectContent pc = (snapshot != null) ? snapshot.GetProjectContent(p) : p.ProjectContent;
 			return (pc != null) ? pc.Resolve(context) : null;
 		}

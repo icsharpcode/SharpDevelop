@@ -471,17 +471,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			get { return Solution.SolutionVersionVS2005; }
 		}
 		
-		public virtual void ResolveAssemblyReferences()
-		{
-		}
-		
 		/// <summary>
 		/// Resolves assembly references for this project.
 		/// The resulting list of resolved references will include project references.
 		/// </summary>
 		public virtual IEnumerable<ReferenceProjectItem> ResolveAssemblyReferences(CancellationToken cancellationToken)
 		{
-			ResolveAssemblyReferences();
 			List<ReferenceProjectItem> referenceItems = new List<ReferenceProjectItem>();
 			bool mscorlib = false;
 			foreach (ProjectItem item in this.Items) {
@@ -672,6 +667,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public virtual ICSharpCode.SharpDevelop.Dom.ITypeDefinitionModelCollection TypeDefinitionModels {
 			get {
 				return EmptyTypeDefinitionModelCollection.Instance;

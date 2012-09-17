@@ -9,9 +9,11 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
 using System.Xml.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project.Converter;
 using ICSharpCode.SharpDevelop.Util;
@@ -233,16 +235,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		void Reparse(bool references, bool code)
 		{
 			lock (SyncRoot) {
-				if (parseProjectContentContainer == null)
+				if (projectContentContainer == null)
 					return; // parsing hasn't started yet; no need to re-parse
-				parseProjectContentContainer.SetAssemblyName(this.AssemblyName);
-				parseProjectContentContainer.SetLocation(this.OutputAssemblyFullPath);
+				projectContentContainer.SetAssemblyName(this.AssemblyName);
+				projectContentContainer.SetLocation(this.OutputAssemblyFullPath);
 				if (references) {
-					parseProjectContentContainer.ReparseReferences();
+					projectContentContainer.ReparseReferences();
 				}
 				if (code) {
-					parseProjectContentContainer.SetCompilerSettings(CreateCompilerSettings());
-					parseProjectContentContainer.ReparseCode();
+					projectContentContainer.SetCompilerSettings(CreateCompilerSettings());
+					projectContentContainer.ReparseCode();
 				}
 			}
 		}
@@ -279,8 +281,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Dispose()
 		{
 			lock (SyncRoot) {
-				if (parseProjectContentContainer != null)
-					parseProjectContentContainer.Dispose();
+				if (projectContentContainer != null)
+					projectContentContainer.Dispose();
 			}
 			base.Dispose();
 		}
@@ -343,15 +345,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Type System
-		volatile ParseProjectContentContainer parseProjectContentContainer;
+		volatile ProjectContentContainer projectContentContainer;
+		IMutableTypeDefinitionModelCollection typeDefinitionModels;
 		
 		protected void InitializeProjectContent(IProjectContent initialProjectContent)
 		{
 			lock (SyncRoot) {
-				if (parseProjectContentContainer != null)
+				if (projectContentContainer != null)
 					throw new InvalidOperationException("Already initialized.");
-				parseProjectContentContainer = new ParseProjectContentContainer(this, initialProjectContent);
-				parseProjectContentContainer.SetCompilerSettings(CreateCompilerSettings());
+				projectContentContainer = new ProjectContentContainer(this, initialProjectContent);
+				projectContentContainer.SetCompilerSettings(CreateCompilerSettings());
 			}
 		}
 		
@@ -362,20 +365,31 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override IProjectContent ProjectContent {
 			get {
-				var c = parseProjectContentContainer;
+				var c = projectContentContainer;
 				return c != null ? c.ProjectContent : null;
+			}
+		}
+		
+		public override ITypeDefinitionModelCollection TypeDefinitionModels {
+			get {
+				SD.MainThread.VerifyAccess();
+				if (typeDefinitionModels == null)
+					typeDefinitionModels = SD.GetRequiredService<IModelFactory>().CreateTopLevelTypeDefinitionCollection(new ProjectEntityModelContext(this, ".cs"));
+				return typeDefinitionModels;
 			}
 		}
 		
 		public override void OnParseInformationUpdated(ParseInformationEventArgs args)
 		{
-			var c = parseProjectContentContainer;
+			var c = projectContentContainer;
 			if (c != null)
 				c.ParseInformationUpdated(args.OldUnresolvedFile, args.NewUnresolvedFile);
 			// OnParseInformationUpdated is called inside a lock, but we don't want to raise the event inside that lock.
 			// To ensure events are raised in the same order, we always invoke on the main thread.
 			SD.MainThread.InvokeAsync(
 				delegate {
+					if (typeDefinitionModels != null)
+						typeDefinitionModels.Update(args.OldUnresolvedFile, args.NewUnresolvedFile);
 					ParseInformationUpdated(null, args);
 				}).FireAndForget();
 		}

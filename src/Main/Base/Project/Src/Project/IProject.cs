@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -238,10 +239,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		int MinimumSolutionVersion { get; }
 		
 		/// <summary>
-		/// Retrieve the fully qualified assembly names and file location of referenced assemblies.
-		/// This method is thread safe.
+		/// Resolves assembly references for this project.
+		/// The resulting list of resolved references will include project references.
 		/// </summary>
-		void ResolveAssemblyReferences();
+		IEnumerable<ReferenceProjectItem> ResolveAssemblyReferences(CancellationToken cancellationToken);
 		
 		/// <summary>
 		/// Notifies the project that it was succesfully created from a project template.

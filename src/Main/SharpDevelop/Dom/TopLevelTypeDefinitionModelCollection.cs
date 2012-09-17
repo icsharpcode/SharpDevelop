@@ -13,7 +13,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// <summary>
 	/// A TypeDefinitionModel-collection that holds models for all top-level types in a project content.
 	/// </summary>
-	sealed class TopLevelTypeDefinitionModelCollection : KeyedModelCollection<TopLevelTypeName, TypeDefinitionModel>
+	sealed class TopLevelTypeDefinitionModelCollection : KeyedModelCollection<TopLevelTypeName, ITypeDefinitionModel>, IMutableTypeDefinitionModelCollection
 	{
 		readonly IEntityModelContext context;
 		
@@ -24,9 +24,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.context = context;
 		}
 		
-		public TypeDefinitionModel this[FullTypeName fullTypeName] {
+		public ITypeDefinitionModel this[FullTypeName fullTypeName] {
 			get {
-				TypeDefinitionModel model = base[fullTypeName.TopLevelTypeName];
+				ITypeDefinitionModel model = base[fullTypeName.TopLevelTypeName];
 				for (int i = 0; i < fullTypeName.NestingLevel; i++) {
 					throw new NotImplementedException();
 				}
@@ -37,14 +37,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Updates the parse information.
 		/// </summary>
-		public void NotifyParseInformationChanged(IUnresolvedFile oldFile, IUnresolvedFile newFile)
+		public void Update(IUnresolvedFile oldFile, IUnresolvedFile newFile)
 		{
 			if (oldFile != null) {
 				
 			}
+			throw new NotImplementedException();
 		}
 		
-		protected override TopLevelTypeName GetKeyForItem(TypeDefinitionModel item)
+		protected override TopLevelTypeName GetKeyForItem(ITypeDefinitionModel item)
 		{
 			return item.FullTypeName.TopLevelTypeName;
 		}

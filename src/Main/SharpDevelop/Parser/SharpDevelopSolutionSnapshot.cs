@@ -10,17 +10,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Parser
 {
-	/// <summary>
-	/// ISolutionSnapshot implementation that supports the <c>IAssembly.GetProject()</c> extension method.
-	/// </summary>
-	public interface ISolutionSnapshotWithProjectMapping : ISolutionSnapshot
-	{
-		IProject GetProject(IAssembly assembly);
-		
-		ICompilation GetCompilation(IProject project);
-	}
-	
-	public class SharpDevelopSolutionSnapshot : DefaultSolutionSnapshot, ISolutionSnapshotWithProjectMapping
+	sealed class SharpDevelopSolutionSnapshot : DefaultSolutionSnapshot, ISolutionSnapshotWithProjectMapping
 	{
 		Dictionary<IProject, IProjectContent> projectContentSnapshots = new Dictionary<IProject, IProjectContent>();
 		Lazy<ICompilation> dummyCompilation;

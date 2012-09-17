@@ -19,9 +19,10 @@ using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.SharpDevelop.Parser
 {
-	public class ParseProjectContentContainer : IDisposable
+	sealed class ProjectContentContainer : IDisposable
 	{
-		readonly MSBuildBasedProject project;
+		readonly IProject project;
+		readonly IParserService parserService = SD.ParserService;
 		
 		/// <summary>
 		/// Lock for accessing mutable fields of this class.
@@ -47,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		string cacheFileName;
 		
 		#region Constructor + Dispose
-		public ParseProjectContentContainer(MSBuildBasedProject project, IProjectContent initialProjectContent)
+		public ProjectContentContainer(MSBuildBasedProject project, IProjectContent initialProjectContent)
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
@@ -88,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				serializeOnDispose = !this.serializedProjectContentIsUpToDate;
 			}
 			foreach (var unresolvedFile in pc.Files) {
-				SD.ParserService.RemoveOwnerProject(FileName.Create(unresolvedFile.FileName), project);
+				parserService.RemoveOwnerProject(FileName.Create(unresolvedFile.FileName), project);
 			}
 			if (serializeOnDispose)
 				SerializeAsync(cacheFileName, pc).FireAndForget();
@@ -139,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			string cacheFileName = Path.GetFileNameWithoutExtension(projectFileName);
 			if (cacheFileName.Length > 32)
 				cacheFileName = cacheFileName.Substring(cacheFileName.Length - 32); // use 32 last characters
-			cacheFileName = Path.Combine(persistencePath, cacheFileName + "." + projectFileName.GetHashCode().ToString("x8") + ".prj");
+			cacheFileName = Path.Combine(persistencePath, cacheFileName + "." + projectFileName.ToString().GetStableHashCode().ToString("x8") + ".prj");
 			return cacheFileName;
 		}
 		

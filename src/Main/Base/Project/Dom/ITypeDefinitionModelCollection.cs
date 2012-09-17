@@ -29,6 +29,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		ITypeDefinitionModel this[TopLevelTypeName topLevelTypeName] { get; }
 	}
 	
+	public interface IMutableTypeDefinitionModelCollection : ITypeDefinitionModelCollection, IList<ITypeDefinitionModel>
+	{
+		/// <summary>
+		/// Updates the collection when the parse information has changed.
+		/// </summary>
+		void Update(IUnresolvedFile oldFile, IUnresolvedFile newFile);
+	}
+	
 	public sealed class EmptyTypeDefinitionModelCollection : ITypeDefinitionModelCollection
 	{
 		public static readonly EmptyTypeDefinitionModelCollection Instance = new EmptyTypeDefinitionModelCollection();

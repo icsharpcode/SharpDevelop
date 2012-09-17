@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			Assert.IsNull(oldFile);
 			var newFile = Parse(fileName, code);
 			projectContent = projectContent.AddOrUpdateFiles(newFile);
-			topLevelTypeModels.NotifyParseInformationChanged(oldFile, newFile);
+			topLevelTypeModels.Update(oldFile, newFile);
 		}
 		
 		IUnresolvedFile Parse(string fileName, string code)
@@ -62,14 +62,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			Assert.IsNotNull(oldFile);
 			var newFile = Parse(fileName, code);
 			projectContent = projectContent.AddOrUpdateFiles(newFile);
-			topLevelTypeModels.NotifyParseInformationChanged(oldFile, newFile);
+			topLevelTypeModels.Update(oldFile, newFile);
 		}
 		
 		protected void RemoveCodeFile(string fileName)
 		{
 			var oldFile = projectContent.GetFile(fileName);
 			projectContent = projectContent.RemoveFiles(fileName);
-			topLevelTypeModels.NotifyParseInformationChanged(oldFile, null);
+			topLevelTypeModels.Update(oldFile, null);
 		}
 		#endregion
 		
