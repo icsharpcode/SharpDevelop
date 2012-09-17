@@ -8,7 +8,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	sealed class ModelFactory : IModelFactory
 	{
-		public IMutableTypeDefinitionModelCollection CreateTopLevelTypeDefinitionCollection(IEntityModelContext context)
+		public ITypeDefinitionModelCollection CreateTopLevelTypeDefinitionCollection(IEntityModelContext context)
 		{
 			return new TopLevelTypeDefinitionModelCollection(context);
 		}

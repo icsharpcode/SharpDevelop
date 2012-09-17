@@ -152,16 +152,5 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			return GetEnumerator();
 		}
-		
-		public T this[int index] {
-			get {
-				int inputIndex = 0;
-				while (index >= inputs[inputIndex].Count) {
-					index -= inputs[inputIndex].Count;
-					inputIndex++;
-				}
-				return inputs[inputIndex][index];
-			}
-		}
 	}
 }

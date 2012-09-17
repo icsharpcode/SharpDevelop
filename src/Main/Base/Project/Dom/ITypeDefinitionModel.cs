@@ -27,5 +27,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Returns null if the type definition could not be resolved.
 		/// </summary>
 		new ITypeDefinition Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot);
+		
+		/// <summary>
+		/// Retrieves
+		/// </summary>
+		ITypeDefinitionModel GetNestedType(string name, int atpc);
 	}
 }

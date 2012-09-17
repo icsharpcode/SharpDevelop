@@ -10,7 +10,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// <summary>
 	/// A read-only collection that provides change notifications.
 	/// </summary>
-	public interface IModelCollection<out T> : IReadOnlyList<T>, INotifyCollectionChanged
+	public interface IModelCollection<out T> : IReadOnlyCollection<T>, INotifyCollectionChanged
 	{
 	}
 }

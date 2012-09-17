@@ -27,10 +27,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Returns null if no such model object exists.
 		/// </summary>
 		ITypeDefinitionModel this[TopLevelTypeName topLevelTypeName] { get; }
-	}
-	
-	public interface IMutableTypeDefinitionModelCollection : ITypeDefinitionModelCollection, IList<ITypeDefinitionModel>
-	{
+		
 		/// <summary>
 		/// Updates the collection when the parse information has changed.
 		/// </summary>
@@ -54,12 +51,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get { return null; }
 		}
 		
-		ITypeDefinitionModel IReadOnlyList<ITypeDefinitionModel>.this[int index] {
-			get {
-				throw new ArgumentOutOfRangeException();
-			}
-		}
-		
 		int IReadOnlyCollection<ITypeDefinitionModel>.Count {
 			get { return 0; }
 		}
@@ -72,6 +63,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return Enumerable.Empty<ITypeDefinitionModel>().GetEnumerator();
+		}
+		
+		void ITypeDefinitionModelCollection.Update(IUnresolvedFile oldFile, IUnresolvedFile newFile)
+		{
+			throw new NotSupportedException();
 		}
 	}
 }

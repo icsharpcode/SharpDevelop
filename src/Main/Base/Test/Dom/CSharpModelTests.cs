@@ -77,6 +77,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public void EmptyProject()
 		{
 			Assert.AreEqual(0, topLevelTypeModels.Count);
+			Assert.IsNull(topLevelTypeModels[new TopLevelTypeName("A")]);
+		}
+		
+		[Test]
+		public void AddSimpleClass()
+		{
+			AddCodeFile("test.cs", @"class SimpleClass {}");
+			Assert.AreEqual(1, topLevelTypeModels.Count);
 		}
 	}
 }

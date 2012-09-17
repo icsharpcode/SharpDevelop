@@ -346,7 +346,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#region Type System
 		volatile ProjectContentContainer projectContentContainer;
-		IMutableTypeDefinitionModelCollection typeDefinitionModels;
+		ITypeDefinitionModelCollection typeDefinitionModels;
 		
 		protected void InitializeProjectContent(IProjectContent initialProjectContent)
 		{

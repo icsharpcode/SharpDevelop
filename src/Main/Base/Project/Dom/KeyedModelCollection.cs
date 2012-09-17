@@ -12,6 +12,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public abstract class KeyedModelCollection<TKey, TItem> : KeyedCollection<TKey, TItem>, IModelCollection<TItem>
 	{
+		// TODO: do we still need this class? maybe we should remove it?
+		// It's less useful than I initially thought because the indexer throws exceptions and there's no TryGetValue
+		
 		protected override void ClearItems()
 		{
 			base.ClearItems();

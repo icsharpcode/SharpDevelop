@@ -49,24 +49,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			parts[0] = primaryPart;
 		}
 		
-		/*
-		/// <summary>
-		/// Updates the type definition model by removing the old parts and adding the new ones.
-		/// </summary>
-		public void Update(IReadOnlyList<IUnresolvedTypeDefinition> removedParts, IReadOnlyList<IUnresolvedTypeDefinition> newParts)
-		{
-			SD.MainThread.VerifyAccess();
-			if (removedParts != null)
-				foreach (var p in removedParts)
-					parts.Remove(p);
-			if (newParts != null)
-				parts.AddRange(newParts);
-			
-			MemberModelCollection members;
-			if (membersWeakReference.TryGetTarget(out members)) {
-				members.Update(parts);
-			}
-		}*/
+		public IReadOnlyList<IUnresolvedTypeDefinition> Parts {
+			get { return parts; }
+		}
 		
 		public IProject ParentProject {
 			get { return context.Project; }
@@ -221,17 +206,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			{
 				return GetEnumerator();
 			}
-			
-			public MemberModel this[int index] {
-				get {
-					int inputIndex = 0;
-					while (index >= lists[inputIndex].Count) {
-						index -= lists[inputIndex].Count;
-						inputIndex++;
-					}
-					return lists[inputIndex][index];
-				}
-			}
 		}
 		
 		WeakReference<MemberCollection> membersWeakReference = new WeakReference<MemberCollection>(null);
@@ -255,10 +229,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		#endregion
 		
+		#region Nested Types collection
 		public IModelCollection<ITypeDefinitionModel> NestedTypes {
 			get {
 				throw new NotImplementedException();
 			}
+		}
+		
+		public ITypeDefinitionModel GetNestedType(string name, int atpc)
+		{
+			throw new NotImplementedException();
+		}
+		#endregion
+		
+		public void Update(IUnresolvedTypeDefinition oldPart, IUnresolvedTypeDefinition newPart)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }
