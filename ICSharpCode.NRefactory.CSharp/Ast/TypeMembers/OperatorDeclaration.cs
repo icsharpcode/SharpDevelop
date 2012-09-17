@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.ComponentModel;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
@@ -250,6 +251,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { throw new NotSupportedException(); }
 		}
 		
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public override Identifier NameToken {
 			get { return Identifier.Null; }
 			set { throw new NotSupportedException(); }
