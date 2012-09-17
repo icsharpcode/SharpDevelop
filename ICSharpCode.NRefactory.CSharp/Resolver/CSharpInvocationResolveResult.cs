@@ -107,8 +107,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 			}
-			if (IsExpandedForm)
-				results[results.Length - 1] = new ArrayCreateResolveResult(Member.Parameters.Last().Type, null, paramsArguments.ToArray());
+			if (IsExpandedForm){
+				IType arrayType = Member.Parameters.Last().Type;
+				IType int32 = Member.Compilation.FindType(KnownTypeCode.Int32);
+				ResolveResult[] sizeArguments = { new ConstantResolveResult(int32, paramsArguments.Count) };
+				results[results.Length - 1] = new ArrayCreateResolveResult(arrayType, sizeArguments, paramsArguments);
+			}
 			
 			for (int i = 0; i < results.Length; i++) {
 				if (results[i] == null) {

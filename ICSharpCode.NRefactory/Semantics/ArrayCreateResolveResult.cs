@@ -43,16 +43,18 @@ namespace ICSharpCode.NRefactory.Semantics
 		public ArrayCreateResolveResult(IType arrayType, IList<ResolveResult> sizeArguments, IList<ResolveResult> initializerElements)
 			: base(arrayType)
 		{
+			if (sizeArguments == null)
+				throw new ArgumentNullException("sizeArguments");
 			this.SizeArguments = sizeArguments;
 			this.InitializerElements = initializerElements;
 		}
 		
 		public override IEnumerable<ResolveResult> GetChildResults()
 		{
-			if (SizeArguments != null && InitializerElements != null)
+			if (InitializerElements != null)
 				return SizeArguments.Concat(InitializerElements);
 			else
-				return SizeArguments ?? InitializerElements ?? EmptyList<ResolveResult>.Instance;
+				return SizeArguments;
 		}
 	}
 }

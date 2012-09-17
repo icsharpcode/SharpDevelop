@@ -2433,21 +2433,48 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// The array element type.
 		/// Pass null to resolve an implicitly-typed array creation.
 		/// </param>
-		/// <param name="dimensions">
-		/// The number of array dimensions.
+		/// <param name="sizeArguments">
+		/// The size arguments.
+		/// The length of this array will be used as the number of dimensions of the array type.
+		/// Negative values will be treated as errors.
+		/// </param>
+		/// <param name="initializerElements">
+		/// The initializer elements. May be null if no array initializer was specified.
+		/// The resolver may mutate this array to wrap elements in <see cref="ConversionResolveResult"/>s!
+		/// </param>
+		public ArrayCreateResolveResult ResolveArrayCreation(IType elementType, int[] sizeArguments, ResolveResult[] initializerElements = null)
+		{
+			ResolveResult[] sizeArgResults = new ResolveResult[sizeArguments.Length];
+			for (int i = 0; i < sizeArguments.Length; i++) {
+				if (sizeArguments[i] < 0)
+					sizeArgResults[i] = ErrorResolveResult.UnknownError;
+				else
+					sizeArgResults[i] = new ConstantResolveResult(compilation.FindType(KnownTypeCode.Int32), sizeArguments[i]);
+			}
+			return ResolveArrayCreation(elementType, sizeArgResults, initializerElements);
+		}
+		
+		/// <summary>
+		/// Resolves an array creation.
+		/// </summary>
+		/// <param name="elementType">
+		/// The array element type.
+		/// Pass null to resolve an implicitly-typed array creation.
 		/// </param>
 		/// <param name="sizeArguments">
-		/// The size arguments. May be null if no explicit size was given.
+		/// The size arguments.
+		/// The length of this array will be used as the number of dimensions of the array type.
 		/// The resolver may mutate this array to wrap elements in <see cref="ConversionResolveResult"/>s!
 		/// </param>
 		/// <param name="initializerElements">
 		/// The initializer elements. May be null if no array initializer was specified.
 		/// The resolver may mutate this array to wrap elements in <see cref="ConversionResolveResult"/>s!
 		/// </param>
-		public ArrayCreateResolveResult ResolveArrayCreation(IType elementType, int dimensions = 1, ResolveResult[] sizeArguments = null, ResolveResult[] initializerElements = null)
+		public ArrayCreateResolveResult ResolveArrayCreation(IType elementType, ResolveResult[] sizeArguments, ResolveResult[] initializerElements = null)
 		{
-			if (sizeArguments != null && dimensions != Math.Max(1, sizeArguments.Length))
-				throw new ArgumentException("dimensions and sizeArguments.Length don't match");
+			int dimensions = sizeArguments.Length;
+			if (dimensions == 0)
+				throw new ArgumentException("sizeArguments.Length must not be 0");
 			if (elementType == null) {
 				TypeInference typeInference = new TypeInference(compilation, conversions);
 				bool success;
@@ -2455,8 +2482,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			IType arrayType = new ArrayType(compilation, elementType, dimensions);
 			
-			if (sizeArguments != null)
-				AdjustArrayAccessArguments(sizeArguments);
+			AdjustArrayAccessArguments(sizeArguments);
 			
 			if (initializerElements != null) {
 				for (int i = 0; i < initializerElements.Length; i++) {

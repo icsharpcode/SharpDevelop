@@ -735,12 +735,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (aie != null && arrayType != null) {
 					StoreCurrentState(aie);
 					List<Expression> initializerElements = new List<Expression>();
-					UnpackArrayInitializer(initializerElements, aie, arrayType.Dimensions, true);
+					int[] sizes = new int[arrayType.Dimensions];
+					UnpackArrayInitializer(initializerElements, sizes, aie, 0, true);
 					ResolveResult[] initializerElementResults = new ResolveResult[initializerElements.Count];
 					for (int i = 0; i < initializerElementResults.Length; i++) {
 						initializerElementResults[i] = Resolve(initializerElements[i]);
 					}
-					var arrayCreation = resolver.ResolveArrayCreation(arrayType.ElementType, arrayType.Dimensions, null, initializerElementResults);
+					var arrayCreation = resolver.ResolveArrayCreation(arrayType.ElementType, sizes, initializerElementResults);
 					StoreResult(aie, arrayCreation);
 					ProcessConversionResults(initializerElements, arrayCreation.InitializerElements);
 				} else if (variableInitializer.Parent is FixedStatement) {
@@ -1201,6 +1202,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult IAstVisitor<ResolveResult>.VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression)
 		{
 			int dimensions = arrayCreateExpression.Arguments.Count;
+			IEnumerable<Expression> sizeArgumentExpressions;
 			ResolveResult[] sizeArguments;
 			IEnumerable<ArraySpecifier> additionalArraySpecifiers;
 			if (dimensions == 0) {
@@ -1213,24 +1215,29 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					additionalArraySpecifiers = arrayCreateExpression.AdditionalArraySpecifiers;
 				}
 				sizeArguments = null;
+				sizeArgumentExpressions = null;
 			} else {
+				sizeArgumentExpressions = arrayCreateExpression.Arguments;
 				sizeArguments = new ResolveResult[dimensions];
 				int pos = 0;
-				foreach (var node in arrayCreateExpression.Arguments)
+				foreach (var node in sizeArgumentExpressions)
 					sizeArguments[pos++] = Resolve(node);
 				additionalArraySpecifiers = arrayCreateExpression.AdditionalArraySpecifiers;
 			}
 			
+			int[] sizes;
 			List<Expression> initializerElements;
 			ResolveResult[] initializerElementResults;
 			if (arrayCreateExpression.Initializer.IsNull) {
+				sizes = null;
 				initializerElements = null;
 				initializerElementResults = null;
 			} else {
 				StoreCurrentState(arrayCreateExpression.Initializer);
 				
 				initializerElements = new List<Expression>();
-				UnpackArrayInitializer(initializerElements, arrayCreateExpression.Initializer, dimensions, true);
+				sizes = new int[dimensions];
+				UnpackArrayInitializer(initializerElements, sizes, arrayCreateExpression.Initializer, 0, true);
 				initializerElementResults = new ResolveResult[initializerElements.Count];
 				for (int i = 0; i < initializerElementResults.Length; i++) {
 					initializerElementResults[i] = Resolve(initializerElements[i]);
@@ -1238,39 +1245,59 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				StoreResult(arrayCreateExpression.Initializer, voidResult);
 			}
 			
-			ArrayCreateResolveResult acrr;
+			IType elementType;
 			if (arrayCreateExpression.Type.IsNull) {
-				acrr = resolver.ResolveArrayCreation(null, dimensions, sizeArguments, initializerElementResults);
+				elementType = null;
 			} else {
-				IType elementType = ResolveType(arrayCreateExpression.Type);
+				elementType = ResolveType(arrayCreateExpression.Type);
 				foreach (var spec in additionalArraySpecifiers.Reverse()) {
 					elementType = new ArrayType(resolver.Compilation, elementType, spec.Dimensions);
 				}
-				acrr = resolver.ResolveArrayCreation(elementType, dimensions, sizeArguments, initializerElementResults);
 			}
+			ArrayCreateResolveResult acrr;
+			if (sizeArguments != null) {
+				acrr = resolver.ResolveArrayCreation(elementType, sizeArguments, initializerElementResults);
+			} else if (sizes != null) {
+				acrr = resolver.ResolveArrayCreation(elementType, sizes, initializerElementResults);
+			} else {
+				// neither size arguments nor an initializer exist -> error
+				return new ErrorResolveResult(new ArrayType(resolver.Compilation, elementType ?? SpecialType.UnknownType, dimensions));
+			}
+			if (sizeArgumentExpressions != null)
+				ProcessConversionResults(sizeArgumentExpressions, acrr.SizeArguments);
+			if (acrr.InitializerElements != null)
+				ProcessConversionResults(initializerElements, acrr.InitializerElements);
 			return acrr;
 		}
 		
-		void UnpackArrayInitializer(List<Expression> elementList, ArrayInitializerExpression initializer, int dimensions, bool resolveNestedInitializesToVoid)
+		void UnpackArrayInitializer(List<Expression> elementList, int[] sizes, ArrayInitializerExpression initializer, int dimension, bool resolveNestedInitializersToVoid)
 		{
-			Debug.Assert(dimensions >= 1);
-			if (dimensions > 1) {
+			Debug.Assert(dimension < sizes.Length);
+			int elementCount = 0;
+			if (dimension + 1 < sizes.Length) {
 				foreach (var node in initializer.Elements) {
 					ArrayInitializerExpression aie = node as ArrayInitializerExpression;
 					if (aie != null) {
-						if (resolveNestedInitializesToVoid) {
+						if (resolveNestedInitializersToVoid) {
 							StoreCurrentState(aie);
 							StoreResult(aie, voidResult);
 						}
-						UnpackArrayInitializer(elementList, aie, dimensions - 1, resolveNestedInitializesToVoid);
+						UnpackArrayInitializer(elementList, sizes, aie, dimension + 1, resolveNestedInitializersToVoid);
 					} else {
 						elementList.Add(node);
 					}
+					elementCount++;
 				}
 			} else {
-				foreach (var expr in initializer.Elements)
+				foreach (var expr in initializer.Elements) {
 					elementList.Add(expr);
+					elementCount++;
+				}
 			}
+			if (sizes[dimension] == 0) // 0 = uninitialized
+				sizes[dimension] = elementCount;
+			else if (sizes[dimension] != elementCount)
+				sizes[dimension] = -1; // -1 = error
 		}
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression)

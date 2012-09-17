@@ -1169,7 +1169,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 							if (elements[i].IsError)
 								return ErrorResolveResult.UnknownError;
 						}
-						return new ArrayCreateResolveResult(argType, null, elements);
+						IType int32 = currentResolvedAssembly.Compilation.FindType(KnownTypeCode.Int32);
+						ResolveResult[] sizeArgs = { new ConstantResolveResult(int32, elements.Length) };
+						return new ArrayCreateResolveResult(argType, sizeArgs, elements);
 					}
 				} else {
 					return ReadElem(argType);
