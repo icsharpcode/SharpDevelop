@@ -2,15 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>
-	/// A read-only collection that provides change notifications.
+	/// Service that enables lookup of model objects from NRefactory objects.
 	/// </summary>
-	public interface IModelCollection<out T> : IReadOnlyList<T>, INotifyCollectionChanged
+	public interface IModelService
 	{
 	}
 }

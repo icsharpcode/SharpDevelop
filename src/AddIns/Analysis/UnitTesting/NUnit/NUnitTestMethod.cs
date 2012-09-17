@@ -5,6 +5,7 @@ using System;
 using System.Windows.Input;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.UnitTesting
@@ -80,7 +81,12 @@ namespace ICSharpCode.UnitTesting
 		
 		public IMethod Resolve()
 		{
-			ICompilation compilation = SD.ParserService.GetCompilation(parentProject.Project);
+			return Resolve(SD.ParserService.GetCurrentSolutionSnapshot());
+		}
+		
+		public IMethod Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot)
+		{
+			ICompilation compilation = solutionSnapshot.GetCompilation(parentProject.Project);
 			IMethod resolvedMethod = method.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
 			return resolvedMethod;
 		}

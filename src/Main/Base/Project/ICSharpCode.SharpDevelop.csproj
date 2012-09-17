@@ -95,6 +95,14 @@
     <Compile Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\ExtendedBinaryReader.cs">
       <Link>Src\Project\MSBuildEngine\ExtendedBinaryReader.cs</Link>
     </Compile>
+    <Compile Include="Dom\ConcatModelCollection.cs" />
+    <Compile Include="Dom\IEntityModelContext.cs" />
+    <Compile Include="Dom\IMemberModel.cs" />
+    <Compile Include="Dom\IModelService.cs" />
+    <Compile Include="Dom\ITypeDefinitionModel.cs" />
+    <Compile Include="Dom\ITypeDefinitionModelCollection.cs" />
+    <Compile Include="Dom\KeyedModelCollection.cs" />
+    <Compile Include="Dom\IEntityModel.cs" />
     <Compile Include="Dom\IModelCollection.cs" />
     <Compile Include="Dom\ITreeNodeFactory.cs" />
     <Compile Include="Editor\DocumentServiceAttribute.cs" />

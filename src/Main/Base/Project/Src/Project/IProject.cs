@@ -9,8 +9,10 @@ using System.ComponentModel;
 using System.IO;
 using System.Xml;
 using System.Xml.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 
@@ -319,6 +321,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// This method is called by the parser service <b>within a per-file lock</b>.
 		/// </summary>
 		void OnParseInformationUpdated(ParseInformationEventArgs args);
+		
+		/// <summary>
+		/// Gets the models for the top-level type definitions in this project.
+		/// Never returns null, but may return a permanently empty collection if this project does not support such models.
+		/// </summary>
+		ITypeDefinitionModelCollection TypeDefinitionModels { get; }
 	}
 	
 	/// <summary>

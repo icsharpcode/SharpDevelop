@@ -4,9 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.UnitTesting
@@ -67,7 +70,12 @@ namespace ICSharpCode.UnitTesting
 		
 		public ITypeDefinition Resolve()
 		{
-			ICompilation compilation = SD.ParserService.GetCompilation(parentProject.Project);
+			return Resolve(SD.ParserService.GetCurrentSolutionSnapshot());
+		}
+		
+		public ITypeDefinition Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot)
+		{
+			ICompilation compilation = solutionSnapshot.GetCompilation(parentProject.Project);
 			IType type = compilation.MainAssembly.GetTypeDefinition(fullTypeName);
 			return type.GetDefinition();
 		}

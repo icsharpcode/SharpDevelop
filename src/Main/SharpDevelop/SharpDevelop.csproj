@@ -81,7 +81,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dom\MemberModel.cs" />
+    <Compile Include="Dom\TopLevelTypeDefinitionModelCollection.cs" />
     <Compile Include="Dom\TreeNodeFactoryService.cs" />
+    <Compile Include="Dom\TypeDefinitionModel.cs" />
     <Compile Include="OptionPanels\LoadSaveOptions.xaml.cs">
       <DependentUpon>LoadSaveOptions.xaml</DependentUpon>
       <SubType>Code</SubType>

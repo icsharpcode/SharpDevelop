@@ -11,10 +11,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Xml.Linq;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Parser;
@@ -669,6 +669,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				return myGuid == projectTypeGuid;
 			} else {
 				return false;
+			}
+		}
+		
+		public virtual ICSharpCode.SharpDevelop.Dom.ITypeDefinitionModelCollection TypeDefinitionModels {
+			get {
+				return EmptyTypeDefinitionModelCollection.Instance;
 			}
 		}
 	}
