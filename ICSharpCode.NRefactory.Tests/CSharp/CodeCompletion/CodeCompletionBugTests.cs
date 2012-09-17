@@ -5476,5 +5476,41 @@ public class FooBar
 				Assert.IsNull(provider.Find("using"));
 			});
 		}
+
+		/// <summary>
+		/// Bug 7207 - Missing inherited enum in completion
+		/// </summary>
+		[Test()]
+		public void TestBug7207()
+		{
+			CombinedProviderTest(
+				@"using System;
+
+class A
+{
+    protected enum MyEnum
+    {
+        A
+    }
+	
+	class Hidden {}
+
+}
+
+class C : A
+{
+	class NotHidden {}
+    public static void Main ()
+    {
+       $var a2 = M$
+    }
+}
+
+", provider => {
+				Assert.IsNotNull(provider.Find("MyEnum"));
+				Assert.IsNotNull(provider.Find("NotHidden"));
+				Assert.IsNull(provider.Find("Hidden"));
+			});
+		}
 	}
 }

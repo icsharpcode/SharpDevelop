@@ -1312,10 +1312,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		void AddTypesAndNamespaces(CompletionDataWrapper wrapper, CSharpResolver state, AstNode node, Func<IType, IType> typePred = null, Predicate<IMember> memberPred = null, Action<ICompletionData, IType> callback = null)
 		{
 			var lookup = new MemberLookup(ctx.CurrentTypeDefinition, Compilation.MainAssembly);
+
 			if (currentType != null) {
 				for (var ct = ctx.CurrentTypeDefinition; ct != null; ct = ct.DeclaringTypeDefinition) {
-					foreach (var nestedType in ct.NestedTypes) {
+					foreach (var nestedType in ct.GetNestedTypes ()) {
 						string name = nestedType.Name;
+						if (!lookup.IsAccessible (nestedType.GetDefinition (), true))
+							continue;
 						if (IsAttributeContext(node) && name.EndsWith("Attribute") && name.Length > "Attribute".Length) {
 							name = name.Substring(0, name.Length - "Attribute".Length);
 						}
@@ -1354,7 +1357,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							if (!lookup.IsAccessible(member, isProtectedAllowed)) {
 								continue;
 							}
-							
+
 							if (memberPred == null || memberPred(member)) {
 								wrapper.AddMember(member);
 							}
@@ -2292,7 +2295,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (resolveResult == null /*|| resolveResult.IsError*/) {
 				return null;
 			}
-			
+
 			var lookup = new MemberLookup(
 				ctx.CurrentTypeDefinition,
 				Compilation.MainAssembly
