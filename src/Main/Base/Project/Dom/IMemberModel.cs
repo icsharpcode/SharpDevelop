@@ -16,12 +16,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Resolves the member in the current solution snapshot.
 		/// Returns null if the member could not be resolved.
 		/// </summary>
-		IMember Resolve();
+		new IMember Resolve();
 		
 		/// <summary>
 		/// Resolves the member in the specified solution snapshot.
 		/// Returns null if the member could not be resolved.
 		/// </summary>
-		IMember Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot);
+		new IMember Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot);
+		
+		/// <summary>
+		/// Updates the member model with the specified new member.
+		/// </summary>
+		void Update(IUnresolvedMember newMember);
 	}
 }

@@ -6,8 +6,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
-
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
@@ -21,32 +21,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		readonly IEntityModelContext context;
 		readonly FullTypeName fullTypeName;
-		List<IUnresolvedTypeDefinition> parts;
+		List<IUnresolvedTypeDefinition> parts = new List<IUnresolvedTypeDefinition>();
 		
-		public TypeDefinitionModel(IEntityModelContext context, params IUnresolvedTypeDefinition[] parts)
+		public TypeDefinitionModel(IEntityModelContext context, IUnresolvedTypeDefinition firstPart)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
-			if (parts.Length == 0)
-				throw new ArgumentException("Number of parts must not be zero");
+			if (firstPart == null)
+				throw new ArgumentNullException("firstPart");
 			this.context = context;
-			this.parts = new List<IUnresolvedTypeDefinition>(parts);
-			MovePrimaryPartToFront();
-			this.fullTypeName = parts[0].FullTypeName;
-		}
-		
-		void MovePrimaryPartToFront()
-		{
-			int bestPartIndex = 0;
-			for (int i = 1; i < parts.Count; i++) {
-				if (context.IsBetterPart(parts[i], parts[bestPartIndex]))
-					bestPartIndex = i;
-			}
-			IUnresolvedTypeDefinition primaryPart = parts[bestPartIndex];
-			for (int i = bestPartIndex; i > 0; i--) {
-				parts[i] = parts[i - 1];
-			}
-			parts[0] = primaryPart;
+			this.parts.Add(firstPart);
+			this.fullTypeName = firstPart.FullTypeName;
 		}
 		
 		public IReadOnlyList<IUnresolvedTypeDefinition> Parts {
@@ -106,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				this.parent = parent;
 			}
 			
-			public void Insert(int partIndex, IUnresolvedTypeDefinition newPart)
+			public void InsertPart(int partIndex, IUnresolvedTypeDefinition newPart)
 			{
 				List<MemberModel> newItems = new List<MemberModel>(newPart.Members.Count);
 				foreach (var newMember in newPart.Members) {
@@ -117,7 +102,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					collectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItems, GetCount(partIndex)));
 			}
 			
-			public void Remove(int partIndex)
+			public void RemovePart(int partIndex)
 			{
 				var oldItems = lists[partIndex];
 				lists.RemoveAt(partIndex);
@@ -125,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					collectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItems, GetCount(partIndex)));
 			}
 			
-			public void Update(int partIndex, IUnresolvedTypeDefinition newPart)
+			public void UpdatePart(int partIndex, IUnresolvedTypeDefinition newPart)
 			{
 				List<MemberModel> list = lists[partIndex];
 				var newMembers = newPart.Members;
@@ -222,6 +207,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				MemberCollection members;
 				if (!membersWeakReference.TryGetTarget(out members)) {
 					members = new MemberCollection(this);
+					for (int i = 0; i < parts.Count; i++) {
+						members.InsertPart(i, parts[i]);
+					}
 					membersWeakReference.SetTarget(members);
 				}
 				return members;
@@ -242,9 +230,41 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		#endregion
 		
+		#region Update
 		public void Update(IUnresolvedTypeDefinition oldPart, IUnresolvedTypeDefinition newPart)
 		{
-			throw new NotImplementedException();
+			SD.MainThread.VerifyAccess();
+			MemberCollection members;
+			membersWeakReference.TryGetTarget(out members);
+			if (oldPart == null) {
+				if (newPart == null) {
+					// nothing changed
+					return;
+				}
+				// Part added
+				int newPartIndex = 0;
+				while (newPartIndex < parts.Count && !context.IsBetterPart(newPart, parts[newPartIndex]))
+					newPartIndex++;
+				if (members != null)
+					members.InsertPart(newPartIndex, newPart);
+				parts.Insert(newPartIndex, newPart);
+			} else {
+				int partIndex = parts.IndexOf(oldPart);
+				if (partIndex < 0)
+					throw new ArgumentException("could not find old part");
+				if (newPart == null) {
+					// Part removed
+					parts.RemoveAt(partIndex);
+					if (members != null)
+						members.RemovePart(partIndex);
+				} else {
+					// Part updated
+					parts[partIndex] = newPart;
+					if (members != null)
+						members.UpdatePart(partIndex, newPart);
+				}
+			}
 		}
+		#endregion
 	}
 }

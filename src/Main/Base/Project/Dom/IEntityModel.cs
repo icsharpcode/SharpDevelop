@@ -15,6 +15,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public interface IEntityModel : INotifyPropertyChanged
 	{
 		/// <summary>
+		/// Gets the name of the entity.
+		/// </summary>
+		string Name { get; }
+		
+		/// <summary>
 		/// Gets the parent project that contains this entity.
 		/// May return null if the entity is not part of a project.
 		/// </summary>

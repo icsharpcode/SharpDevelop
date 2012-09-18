@@ -29,8 +29,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		new ITypeDefinition Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot);
 		
 		/// <summary>
-		/// Retrieves
+		/// Retrieves the nested type with the specified name and additional type parameter count
 		/// </summary>
-		ITypeDefinitionModel GetNestedType(string name, int atpc);
+		ITypeDefinitionModel GetNestedType(string name, int additionalTypeParameterCount);
+		
+		/// <summary>
+		/// Updates this type definition model by replacing oldPart with newPart.
+		/// Either oldPart or newPart may be null when adding/removed a part.
+		/// </summary>
+		void Update(IUnresolvedTypeDefinition oldPart, IUnresolvedTypeDefinition newPart);
 	}
 }
