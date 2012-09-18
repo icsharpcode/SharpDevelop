@@ -11,14 +11,20 @@ namespace ICSharpCode.Scripting
 	public abstract class ConsoleTextEditorKeyEventArgs : EventArgs
 	{
 		Key key;
+		ModifierKeys modifiers;
 		
-		public ConsoleTextEditorKeyEventArgs(Key key)
+		public ConsoleTextEditorKeyEventArgs(Key key, ModifierKeys modifiers)
 		{
 			this.key = key;
+			this.modifiers = modifiers;
 		}
 		
 		public Key Key {
 			get { return key; }
+		}
+		
+		public ModifierKeys Modifiers {
+			get { return modifiers; }
 		}
 		
 		public abstract bool Handled {

@@ -11,8 +11,8 @@ namespace ICSharpCode.Scripting.Tests.Utils
 	{
 		bool handled;
 		
-		public FakeConsoleTextEditorKeyEventArgs(Key key)
-			: base(key)
+		public FakeConsoleTextEditorKeyEventArgs(Key key, ModifierKeys modifiers = ModifierKeys.None)
+			: base(key, modifiers)
 		{
 		}
 		

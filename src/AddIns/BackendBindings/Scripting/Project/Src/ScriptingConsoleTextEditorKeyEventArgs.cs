@@ -11,7 +11,7 @@ namespace ICSharpCode.Scripting
 		KeyEventArgs e;
 		
 		public ScriptingConsoleTextEditorKeyEventArgs(KeyEventArgs e)
-			: base(e.Key)
+			: base(e.Key, e.KeyboardDevice.Modifiers)
 		{
 			this.e = e;
 		}
