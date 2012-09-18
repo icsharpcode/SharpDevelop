@@ -30,9 +30,9 @@
 				<ColumnDefinition Width="Auto"></ColumnDefinition>
 				<ColumnDefinition Width="150"></ColumnDefinition>
 				<ColumnDefinition></ColumnDefinition>
-				<ColumnDefinition Width="Auto"></ColumnDefinition>
-					
+				<ColumnDefinition Width="Auto"></ColumnDefinition>	
 			</Grid.ColumnDefinitions>
+			
 			<Label
 				Grid.ColumnSpan="2"
 				Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.AssemblyName}"></Label>
@@ -53,6 +53,7 @@
 			<TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3"
 				x:Name="rootNamespaceTextBox"
 				Text="{Binding RootNamespace.Value,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+			
 			
 			<Label Grid.Row="4" Grid.ColumnSpan="2"
 				Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.OutputType}"></Label>
@@ -139,6 +140,7 @@
 				Content="..."
 				Click="Win32ResourceComboButton_Click"></Button>
 			
+			
 			<GroupBox Grid.Row="10" Grid.ColumnSpan="3" Margin="0,5,0,0"
 				Header="{core:Localize Dialog.ProjectOptions.ApplicationSettings.ProjectInformation}">
 				<Grid Margin="15,0,0,0">
@@ -169,6 +171,7 @@
 					<TextBox x:Name="outputNameTextBox" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"></TextBox>
 				</Grid>
 			</GroupBox>
+	
 		</Grid>
 	</ScrollViewer>
 </optionpanels:ProjectOptionPanel>
