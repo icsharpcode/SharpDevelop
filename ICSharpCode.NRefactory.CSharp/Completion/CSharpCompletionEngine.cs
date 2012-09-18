@@ -1058,7 +1058,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				node = node.Parent;
 			}
 			var contextList = new CompletionDataWrapper(this);
-			if (node is PropertyDeclaration) {
+			if (node is PropertyDeclaration || node is IndexerDeclaration) {
 				contextList.AddCustom("get");
 				contextList.AddCustom("set");
 				AddKeywords(contextList, accessorModifierKeywords);
