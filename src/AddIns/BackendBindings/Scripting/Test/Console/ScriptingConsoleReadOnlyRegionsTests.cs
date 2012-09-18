@@ -164,5 +164,14 @@ namespace ICSharpCode.Scripting.Tests.Console
 			
 			Assert.IsFalse(result);
 		}
+		
+		[Test]
+		public void PreviewKeyDown_ControlAInReadOnlyRegion_HandledSetToFalseSoSelectAllInReadOnlyRegionAllowed()
+		{
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
+			bool result = FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A, ModifierKeys.Control);
+			
+			Assert.IsFalse(result);
+		}
 	}
 }

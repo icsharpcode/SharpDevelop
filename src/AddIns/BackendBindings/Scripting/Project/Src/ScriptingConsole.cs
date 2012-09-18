@@ -153,6 +153,7 @@ namespace ICSharpCode.Scripting
 					case Key.Down:
 						return false;
 					case Key.C:
+					case Key.A:
 						return keyModifiers != ModifierKeys.Control;
 					default:
 						return true;
