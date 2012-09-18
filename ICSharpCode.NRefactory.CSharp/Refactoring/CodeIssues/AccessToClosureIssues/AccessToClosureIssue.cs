@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public abstract class AccessToClosureIssue : ICodeIssueProvider
 	{
-		static ControlFlowGraphBuilder cfgBuilder = new ControlFlowGraphBuilder ();
+		ControlFlowGraphBuilder cfgBuilder = new ControlFlowGraphBuilder ();
 
 		public string Title
 		{ get; private set; }
@@ -143,7 +143,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				IDictionary<Statement, IList<Node>> modifications = null;
 
 				if (env.Body != null) {
-					cfg = cfgBuilder.BuildControlFlowGraph (env.Body);
+					cfg = issueProvider.cfgBuilder.BuildControlFlowGraph (env.Body);
 					modifications = new Dictionary<Statement, IList<Node>> ();
 					foreach (var node in env.Children) {
 						if (node.Kind == NodeKind.Modification || node.Kind == NodeKind.ReferenceAndModification) {
