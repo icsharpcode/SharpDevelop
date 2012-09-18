@@ -31,12 +31,28 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 			InitializeComponent();
 		}
 		
-		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
-		{
-			base.Load(project, configuration, platform);
-			Initialize();
-		}
+		#region override
 		
+		protected override void Initialize()
+		{
+			ProjectItems = new ObservableCollection<string>();
+			NameSpaceItems = new ObservableCollection<string> ();
+				
+			foreach(ProjectItem item in base.Project.Items)
+			{
+				if(item.ItemType == ItemType.Import) {
+					ProjectItems.Add(item.Include);
+				}
+			}
+			
+			
+			IProjectContent projectContent = ParserService.GetProjectContent(base.Project);
+			foreach(IProjectContent refProjectContent in projectContent.ThreadSafeGetReferencedContents()) {
+				AddNamespaces(refProjectContent);
+			}
+			AddNamespaces(projectContent);
+		}
+			
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
@@ -61,6 +77,9 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 			
 			return base.Save(project, configuration, platform);
 		}
+		
+		#endregion
+		
 		
 		private ObservableCollection<string> projectItems;
 		
@@ -121,25 +140,7 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 			}
 		}
 		
-		private void Initialize()
-		{
-			ProjectItems = new ObservableCollection<string>();
-			NameSpaceItems = new ObservableCollection<string> ();
-				
-			foreach(ProjectItem item in base.Project.Items)
-			{
-				if(item.ItemType == ItemType.Import) {
-					ProjectItems.Add(item.Include);
-				}
-			}
-			
-			
-			IProjectContent projectContent = ParserService.GetProjectContent(base.Project);
-			foreach(IProjectContent refProjectContent in projectContent.ThreadSafeGetReferencedContents()) {
-				AddNamespaces(refProjectContent);
-			}
-			AddNamespaces(projectContent);
-		}
+	
 		
 		private void AddNamespaces(IProjectContent projectContent)
 		{
