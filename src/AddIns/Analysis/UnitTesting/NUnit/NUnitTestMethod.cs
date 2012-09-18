@@ -81,7 +81,9 @@ namespace ICSharpCode.UnitTesting
 		
 		public IMethod Resolve()
 		{
-			return Resolve(SD.ParserService.GetCurrentSolutionSnapshot());
+			ICompilation compilation = SD.ParserService.GetCompilation(parentProject.Project);
+			IMethod resolvedMethod = method.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
+			return resolvedMethod;
 		}
 		
 		public IMethod Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot)

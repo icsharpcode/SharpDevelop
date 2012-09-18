@@ -70,7 +70,9 @@ namespace ICSharpCode.UnitTesting
 		
 		public ITypeDefinition Resolve()
 		{
-			return Resolve(SD.ParserService.GetCurrentSolutionSnapshot());
+			ICompilation compilation = SD.ParserService.GetCompilation(parentProject.Project);
+			IType type = compilation.MainAssembly.GetTypeDefinition(fullTypeName);
+			return type.GetDefinition();
 		}
 		
 		public ITypeDefinition Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot)
