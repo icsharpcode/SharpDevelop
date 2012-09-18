@@ -37,6 +37,8 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using NUnit.Framework;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 {
@@ -68,6 +70,14 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 		class TestFactory
 		: ICompletionDataFactory
 		{
+			readonly TypeSystemAstBuilder builder;
+
+			public TestFactory(CSharpResolver state)
+			{
+				Console.WriteLine ("ct:"+state.CurrentTypeDefinition);
+				builder = new TypeSystemAstBuilder(state);
+			}
+
 			class CompletionData
 			: ICompletionData
 			{
@@ -143,10 +153,21 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			}
 			
 
-			public ICompletionData CreateTypeCompletionData (ICSharpCode.NRefactory.TypeSystem.IType type, string shortType)
+			public ICompletionData CreateTypeCompletionData (ICSharpCode.NRefactory.TypeSystem.IType type, bool fullName, bool isInAttributeContext)
 			{
-				return new CompletionData (shortType);
+				string name = fullName ? builder.ConvertType(type).GetText() : type.Name; 
+				if (isInAttributeContext && name.EndsWith("Attribute") && name.Length > "Attribute".Length) {
+					name = name.Substring(0, name.Length - "Attribute".Length);
+				}
+				return new CompletionData (name);
 			}
+			public ICompletionData CreateMemberCompletionData(IType type, IEntity member)
+			{
+				string name = builder.ConvertType(type).GetText(); 
+				Console.WriteLine("name:"+name);
+				return new CompletionData (name + "."+ member.Name);
+			}
+
 
 			public ICompletionData CreateLiteralCompletionData (string title, string description, string insertText)
 			{
@@ -251,7 +272,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			}
 			var mb = new DefaultCompletionContextProvider(doc, unresolvedFile);
 			mb.AddSymbol ("TEST");
-			var engine = new CSharpCompletionEngine(doc, mb, new TestFactory(), pctx, rctx);
+			var engine = new CSharpCompletionEngine(doc, mb, new TestFactory(new CSharpResolver (rctx)), pctx, rctx);
 
 			engine.EolMarker = Environment.NewLine;
 			engine.FormattingPolicy = FormattingOptionsFactory.CreateMono();
@@ -283,7 +304,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			var cmp = pctx.CreateCompilation();
 			
 			var mb = new DefaultCompletionContextProvider(doc, unresolvedFile);
-			var engine = new CSharpCompletionEngine (doc, mb, new TestFactory (), pctx, new CSharpTypeResolveContext (cmp.MainAssembly));
+			var engine = new CSharpCompletionEngine (doc, mb, new TestFactory (new CSharpResolver (new CSharpTypeResolveContext (cmp.MainAssembly))), pctx, new CSharpTypeResolveContext (cmp.MainAssembly));
 			engine.EolMarker = Environment.NewLine;
 			engine.FormattingPolicy = FormattingOptionsFactory.CreateMono ();
 			return Tuple.Create (doc, engine);

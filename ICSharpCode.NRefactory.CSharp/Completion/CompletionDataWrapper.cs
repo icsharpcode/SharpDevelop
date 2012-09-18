@@ -80,12 +80,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			result.Add (Factory.CreateLiteralCompletionData (alias));
 		}
 
-		Dictionary<string, ICompletionData> usedTypes = new Dictionary<string, ICompletionData> ();
+		Dictionary<IType, ICompletionData> usedTypes = new Dictionary<IType, ICompletionData> ();
 
-		public ICompletionData AddType(IType type, string shortType)
+		public ICompletionData AddType(IType type, bool showFullName, bool isInAttributeContext = false)
 		{
-			if (type == null || string.IsNullOrEmpty(shortType))
-				return null;
+			if (type == null)
+				throw new ArgumentNullException("type");
 			if (type.Name == "Void" && type.Namespace == "System")
 				return null;
 
@@ -93,12 +93,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (def != null && def.ParentAssembly != completion.ctx.CurrentAssembly && !def.IsBrowsable())
 				return null;
 			ICompletionData usedType;
-			if (usedTypes.TryGetValue (shortType, out usedType)) {
-				usedType.AddOverload (Factory.CreateTypeCompletionData(type, shortType));
+			if (usedTypes.TryGetValue (type, out usedType)) {
+				usedType.AddOverload (Factory.CreateTypeCompletionData(type, showFullName, isInAttributeContext));
 				return usedType;
 			} 
-			var iCompletionData = Factory.CreateTypeCompletionData(type, shortType);
-			usedTypes[shortType] = iCompletionData;
+			var iCompletionData = Factory.CreateTypeCompletionData(type, showFullName, isInAttributeContext);
+			usedTypes[type] = iCompletionData;
 			result.Add(iCompletionData);
 			return iCompletionData;
 		}
@@ -214,21 +214,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 		}
 		HashSet<IType> addedEnums = new HashSet<IType> ();
-		public void AddEnumMembers (IType resolvedType, CSharpResolver state, string typeString)
+		public void AddEnumMembers (IType resolvedType, CSharpResolver state)
 		{
 			if (addedEnums.Contains (resolvedType))
 				return;
 			addedEnums.Add (resolvedType);
-			if (typeString.Contains(".")) {
-				AddType(resolvedType, typeString);
-			}
+			AddType(resolvedType, true);
 			foreach (var field in resolvedType.GetFields ()) {
 				if (field.IsPublic && (field.IsConst || field.IsStatic)) {
-					Result.Add(Factory.CreateEntityCompletionData(
-						field,
-						typeString + "." + field.Name
-						)
-					           );
+					Result.Add(Factory.CreateMemberCompletionData(resolvedType, field));
 				}
 			}
 		}
