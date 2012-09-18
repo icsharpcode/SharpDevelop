@@ -340,7 +340,7 @@ namespace AvalonDock
 
         protected override void OnDeactivated(EventArgs e)
         {
-            if (Manager != null && lastActiveContent != null)
+            if (Manager != null && !Manager.RestoringLayout && lastActiveContent != null)
             {
                 Manager.ActiveContent = lastActiveContent;
             }
