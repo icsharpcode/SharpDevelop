@@ -153,36 +153,18 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				return new CompletionData (entity.Name);
 			}
 
-			string GetShortType(IType type)
-			{
-				var dt = state.CurrentTypeDefinition;
-				var declaring = type.DeclaringType != null ? type.DeclaringType.GetDefinition() : null;
-				if (declaring != null) {
-					while (dt != null) {
-						if (dt.Equals(declaring)) {
-							builder.AlwaysUseShortTypeNames = true;
-							break;
-						}
-						dt = dt.DeclaringTypeDefinition;
-					}
-				}
-				var shortType = builder.ConvertType(type);
-				return shortType.GetText();
-			}
-
-
 			public ICompletionData CreateTypeCompletionData (ICSharpCode.NRefactory.TypeSystem.IType type, bool fullName, bool isInAttributeContext)
 			{
-				string name = fullName ? GetShortType(type) : type.Name; 
+				string name = fullName ? builder.ConvertType(type).GetText() : type.Name; 
 				if (isInAttributeContext && name.EndsWith("Attribute") && name.Length > "Attribute".Length) {
 					name = name.Substring(0, name.Length - "Attribute".Length);
 				}
 				return new CompletionData (name);
 			}
+
 			public ICompletionData CreateMemberCompletionData(IType type, IEntity member)
 			{
-				string name = GetShortType(type); 
-				Console.WriteLine("name:"+name);
+				string name = builder.ConvertType(type).GetText(); 
 				return new CompletionData (name + "."+ member.Name);
 			}
 
