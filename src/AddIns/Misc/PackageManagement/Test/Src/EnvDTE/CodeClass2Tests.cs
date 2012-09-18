@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
@@ -16,6 +17,7 @@ namespace PackageManagement.Tests.EnvDTE
 	{
 		CodeClass2 codeClass;
 		ClassHelper helper;
+		IClassKindUpdater classKindUpdater;
 		
 		void CreateProjectContent()
 		{
@@ -42,7 +44,8 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateClass()
 		{
-			codeClass = new CodeClass2(helper.ProjectContentHelper.ProjectContent, helper.Class);
+			classKindUpdater = MockRepository.GenerateStub<IClassKindUpdater>();
+			codeClass = new CodeClass2(helper.ProjectContentHelper.ProjectContent, helper.Class, classKindUpdater);
 		}
 		
 		void AddInterfaceToProjectContent(string fullName)
@@ -83,6 +86,26 @@ namespace PackageManagement.Tests.EnvDTE
 		void AddFieldToClass(string fullyQualifiedName)
 		{
 			helper.AddFieldToClass(fullyQualifiedName);
+		}
+		
+		void ClassIsAbstract()
+		{
+			helper.MakeClassAbstract();
+		}
+		
+		void ClassIsPartial()
+		{
+			helper.MakeClassPartial();
+		}
+		
+		void ClassIsGeneric()
+		{
+			helper.SetDotNetName("MyClass`1");
+		}
+		
+		void ClassIsNotGeneric()
+		{
+			helper.SetDotNetName("MyClass");
 		}
 		
 		[Test]
@@ -191,7 +214,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddMethodToClass("MyClass.MyMethod");
 			
 			CodeElements codeElements = codeClass.Members;
-			CodeFunction codeFunction = codeElements.FirstCodeFunctionOrDefault();
+			CodeFunction2 codeFunction = codeElements.FirstCodeFunction2OrDefault();
 			
 			Assert.AreEqual(1, codeElements.Count);
 			Assert.AreEqual("MyMethod", codeFunction.Name);
@@ -250,6 +273,19 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
+		public void Namespace_PublicClassAndNamespaceNameChecked_ReturnsFullyQualifiedClassNamespace()
+		{
+			CreateProjectContent();
+			helper.CreatePublicClass("MyNamespace.Test.MyClass");
+			helper.AddClassNamespace("MyNamespace.Test");
+			CreateClass();
+			
+			CodeNamespace codeNamespace = codeClass.Namespace;
+			
+			Assert.AreEqual("MyNamespace.Test", codeNamespace.Name);
+		}
+		
+		[Test]
 		public void PartialClasses_ClassIsNotPartial_ReturnsClass()
 		{
 			CreateProjectContent();
@@ -277,6 +313,96 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			bool contains = properties.Contains(property2);
 			Assert.IsTrue(contains);
+		}
+		
+		[Test]
+		public void IsAbstract_ClassIsAbstract_ReturnsTrue()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			ClassIsAbstract();
+			
+			bool isAbstract = codeClass.IsAbstract;
+			
+			Assert.IsTrue(isAbstract);
+		}
+		
+		[Test]
+		public void IsAbstract_ClassIsNotAbstract_ReturnsFalse()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			
+			bool isAbstract = codeClass.IsAbstract;
+			
+			Assert.IsFalse(isAbstract);
+		}
+		
+		[Test]
+		public void ClassKind_ClassIsPartial_ReturnsPartialClassKind()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			ClassIsPartial();
+			
+			vsCMClassKind kind = codeClass.ClassKind;
+			
+			Assert.AreEqual(vsCMClassKind.vsCMClassKindPartialClass, kind);
+		}
+		
+		[Test]
+		public void ClassKind_ClassIsNotPartial_ReturnsMainClassKind()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			
+			vsCMClassKind kind = codeClass.ClassKind;
+			
+			Assert.AreEqual(vsCMClassKind.vsCMClassKindMainClass, kind);
+		}
+		
+		[Test]
+		public void IsGeneric_ClassIsGeneric_ReturnsTrue()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			ClassIsGeneric();
+			
+			bool generic = codeClass.IsGeneric;
+			
+			Assert.IsTrue(generic);
+		}
+		
+		[Test]
+		public void IsGeneric_ClassIsNotGeneric_ReturnsFalse()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			ClassIsNotGeneric();
+			
+			bool generic = codeClass.IsGeneric;
+			
+			Assert.IsFalse(generic);
+		}
+		
+		[Test]
+		public void ClassKind_ChangeClassToBePartial_UsesClassKindUpdaterToModifyClass()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			
+			codeClass.ClassKind = vsCMClassKind.vsCMClassKindPartialClass;
+			
+			classKindUpdater.AssertWasCalled(updater => updater.MakeClassPartial());
+		}
+		
+		[Test]
+		public void ClassKind_ChangeClassToBeMainClass_ThrowsNotImplementedException()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			
+			Assert.Throws<NotImplementedException>(() => codeClass.ClassKind = vsCMClassKind.vsCMClassKindMainClass);
 		}
 	}
 }

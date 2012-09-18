@@ -26,7 +26,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		void AddParameters(IParameter parameter)
 		{
-			AddCodeElement(new CodeParameter(projectContent, parameter));
+			AddCodeElement(new CodeParameter2(projectContent, parameter));
 		}
 	}
 }

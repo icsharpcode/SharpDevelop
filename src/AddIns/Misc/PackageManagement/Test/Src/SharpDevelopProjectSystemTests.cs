@@ -38,7 +38,12 @@ namespace PackageManagement.Tests
 		{
 			ProjectHelper.AddFile(project, fileName);
 		}
-
+		
+		void AddDefaultCustomToolForFileName(string fileName, string customTool)
+		{
+			projectSystem.FakeProjectService.AddDefaultCustomToolForFileName(fileName, customTool);
+		}
+		
 		[Test]
 		public void Root_NewInstanceCreated_ReturnsProjectDirectory()
 		{
@@ -720,6 +725,38 @@ namespace PackageManagement.Tests
 			string path = projectSystem.ResolvePath(expectedPath);
 			
 			Assert.AreEqual(expectedPath, path);
+		}
+		
+		[Test]
+		public void AddFile_NewTextTemplateFileWithAssociatedDefaultCustomTool_AddsFileToProjectWithDefaultCustomTool()
+		{
+			CreateTestProject();
+			CreateProjectSystem(project);
+			string path = @"d:\temp\abc.tt";
+			AddDefaultCustomToolForFileName(path, "TextTemplatingFileGenerator");
+			Stream stream = new MemoryStream();
+			
+			projectSystem.AddFile(path, stream);
+			
+			FileProjectItem fileItem = ProjectHelper.GetFile(project, path);
+			string customTool = fileItem.CustomTool;
+			Assert.AreEqual("TextTemplatingFileGenerator", customTool);
+		}
+		
+		[Test]
+		public void AddFile_NewFileWithNoAssociatedDefaultCustomTool_AddsFileToProjectWithNoDefaultCustomTool()
+		{
+			CreateTestProject();
+			CreateProjectSystem(project);
+			string path = @"d:\temp\abc.tt";
+			AddDefaultCustomToolForFileName(path, null);
+			Stream stream = new MemoryStream();
+			
+			projectSystem.AddFile(path, stream);
+			
+			FileProjectItem fileItem = ProjectHelper.GetFile(project, path);
+			string customTool = fileItem.CustomTool;
+			Assert.AreEqual(String.Empty, customTool);
 		}
 	}
 }

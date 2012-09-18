@@ -340,6 +340,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		static Dictionary<string, CustomToolDescriptor> toolDict;
 		static List<CustomToolDescriptor> customToolList;
 		static CustomToolRun activeToolRun;
+		static BeforeBuildCustomToolRunner beforeBuildCustomToolRunner;
 		
 		internal static void Initialize()
 		{
@@ -353,6 +354,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				initialized = true;
 				FileUtility.FileSaved += OnFileSaved;
 			}
+			
+			beforeBuildCustomToolRunner = new BeforeBuildCustomToolRunner();
 		}
 		
 		static void OnFileSaved(object sender, FileNameEventArgs e)

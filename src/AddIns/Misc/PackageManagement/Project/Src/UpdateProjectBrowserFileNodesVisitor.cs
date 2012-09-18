@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using DTE = ICSharpCode.PackageManagement.EnvDTE;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -48,7 +49,9 @@ namespace ICSharpCode.PackageManagement
 				return null;
 			
 			if (IsImmediateParentForNewFile(directoryNode)) {
-				if (IsChildFileNodeMissingForNewFile(directoryNode)) {
+				if (IsNewFileIsDependentUponAnotherFile()) {
+					base.Visit(directoryNode, data);
+				} else if (IsChildFileNodeMissingForNewFile(directoryNode)) {
 					AddFileOrDirectoryNodeTo(directoryNode);
 				}
 			} else if (IsChildDirectoryNodeMissingForNewFile(directoryNode)) {
@@ -77,6 +80,11 @@ namespace ICSharpCode.PackageManagement
 		bool IsImmediateParentForNewFile(DirectoryNode directoryNode)
 		{
 			return FileUtility.IsBaseDirectory(DirectoryForNewFileAddedToProject, directoryNode.Directory);
+		}
+		
+		bool IsNewFileIsDependentUponAnotherFile()
+		{
+			return !String.IsNullOrEmpty(newFileAddedToProject.DependentUpon);
 		}
 		
 		string GetDirectoryForFileAddedToProject()
@@ -121,10 +129,10 @@ namespace ICSharpCode.PackageManagement
 				AddFileNodeTo(directoryNode);
 			}
 		}
-
-		void AddFileNodeTo(TreeNode node)
+		
+		void AddFileNodeTo(TreeNode node, FileNodeStatus status = FileNodeStatus.InProject)
 		{
-			var fileNode = new FileNode(newFileAddedToProject.FileName, FileNodeStatus.InProject);
+			var fileNode = new FileNode(newFileAddedToProject.FileName, status);
 			fileNode.InsertSorted(node);
 		}
 		
@@ -168,6 +176,22 @@ namespace ICSharpCode.PackageManagement
 		IEnumerable<DirectoryNode> GetChildDirectoryNodes(ExtTreeNode parentNode)
 		{
 			return parentNode.AllNodes.OfType<DirectoryNode>();
+		}
+		
+		public override object Visit(FileNode fileNode, object data)
+		{
+			if (IsNewFileIsDependentUponAnotherFile()) {
+				if (IsImmediateParentForNewFile(fileNode)) {
+					AddFileNodeTo(fileNode, FileNodeStatus.BehindFile);
+					return null;
+				}
+			}
+			return base.Visit(fileNode, data);
+		}
+		
+		bool IsImmediateParentForNewFile(FileNode fileNode)
+		{
+			return DTE.FileProjectItemExtensions.IsDependentUponFileName(newFileAddedToProject, fileNode.FileName);
 		}
 	}
 }

@@ -117,6 +117,7 @@
     <Compile Include="Src\CodeTemplates\RazorCSharpEditViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\RazorCSharpEmptyViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\RazorCSharpListViewTemplateTests.cs" />
+    <Compile Include="Src\Completion\RazorCSharpParserTests.cs" />
     <Compile Include="Src\Folding\CharacterReaderTests.cs" />
     <Compile Include="Src\Folding\HtmlReaderTests.cs" />
     <Compile Include="Src\Folding\RazorHtmlFoldParserTests.cs" />
@@ -189,6 +190,7 @@
     <Folder Include="Src\CodeTemplates" />
     <Folder Include="Src\CodeTemplates\Models" />
     <Folder Include="Src\Folding" />
+    <Folder Include="Src\Completion" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

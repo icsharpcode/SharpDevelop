@@ -56,6 +56,11 @@ namespace PackageManagement.Tests.EnvDTE
 			return fileCodeModel.CodeElements.FirstCodeImportOrDefault();
 		}
 		
+		CodeNamespace GetFirstCodeNamespaceFromCodeElements()
+		{
+			return fileCodeModel.CodeElements.FirstCodeNamespaceOrDefault();
+		}
+		
 		void AddNamespaceToCompilationUnit(string namespaceName)
 		{
 			compilationUnitHelper.AddNamespace(namespaceName);
@@ -65,7 +70,21 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			compilationUnitHelper.AddNamespaceAlias(alias, namespaceName);
 		}
-
+		
+		void AddClassToCompilationUnit(string namespaceName, string className)
+		{
+			var classHelper = new ClassHelper();
+			classHelper.CreatePublicClass(className);
+			classHelper.AddNamespaceUsingScopeToClass(namespaceName);
+			classHelper.AddClassNamespace(namespaceName);
+			compilationUnitHelper.AddClass(classHelper.Class);
+		}
+		
+		CodeNamespace GetLastCodeNamespaceFromCodeElements()
+		{
+			return fileCodeModel.CodeElements.LastCodeNamespaceOrDefault();
+		}
+		
 		[Test]
 		public void CodeElements_OneNamespaceInFile_FileNameUsedToGetCompilationUnit()
 		{
@@ -115,6 +134,66 @@ namespace PackageManagement.Tests.EnvDTE
 			fileCodeModel.AddImport("System.Xml");
 			
 			namespaceCreator.AssertWasCalled(creator => creator.AddNamespace(compilationUnitHelper.CompilationUnit, "System.Xml"));
+		}
+		
+		[Test]
+		public void CodeElements_OneClassInFileWithNamespace_ReturnsOneCodeNamespace()
+		{
+			CreateProjectWithOneFile();
+			CreateCompilationUnitForFileProjectItem();
+			AddClassToCompilationUnit("Test.CodeModel", "Test.CodeModel.Class1");
+			CreateFileCodeModel();
+			
+			CodeNamespace ns = GetFirstCodeNamespaceFromCodeElements();
+			
+			Assert.AreEqual("Test.CodeModel", ns.Name);
+		}
+		
+		[Test]
+		public void CodeElements_OneClassInFileWithNamespace_ReturnsOneClassInsideCodeNamespace()
+		{
+			CreateProjectWithOneFile();
+			CreateCompilationUnitForFileProjectItem();
+			AddClassToCompilationUnit("Test.CodeModel", "Test.CodeModel.Class1");
+			CreateFileCodeModel();
+			
+			CodeNamespace ns = GetFirstCodeNamespaceFromCodeElements();
+			CodeClass2 codeClass = ns.Members.FirstCodeClass2OrDefault();
+			
+			Assert.AreEqual("Test.CodeModel.Class1", codeClass.FullName);
+		}
+		
+		[Test]
+		public void CodeElements_TwoClassesInFileWithNamespace_ReturnsTwoClassesInsideCodeNamespace()
+		{
+			CreateProjectWithOneFile();
+			CreateCompilationUnitForFileProjectItem();
+			AddClassToCompilationUnit("Test.CodeModel", "Test.CodeModel.Class1");
+			AddClassToCompilationUnit("Test.CodeModel", "Test.CodeModel.Class2");
+			CreateFileCodeModel();
+			
+			CodeNamespace ns = GetFirstCodeNamespaceFromCodeElements();
+			CodeClass2 codeClass1 = ns.Members.FirstCodeClass2OrDefault();
+			CodeClass2 codeClass2 = ns.Members.LastCodeClass2OrDefault();
+			
+			Assert.AreEqual("Test.CodeModel.Class1", codeClass1.FullName);
+			Assert.AreEqual("Test.CodeModel.Class2", codeClass2.FullName);
+		}
+		
+		[Test]
+		public void CodeElements_TwoClassesInFileEachWithDifferentNamespace_ReturnsTwoCodeNamespaces()
+		{
+			CreateProjectWithOneFile();
+			CreateCompilationUnitForFileProjectItem();
+			AddClassToCompilationUnit("Test.CodeModel1", "Test.CodeModel.Class1");
+			AddClassToCompilationUnit("Test.CodeModel2", "Test.CodeModel.Class2");
+			CreateFileCodeModel();
+			
+			CodeNamespace ns1 = GetFirstCodeNamespaceFromCodeElements();
+			CodeNamespace ns2 = GetLastCodeNamespaceFromCodeElements();
+			
+			Assert.AreEqual("Test.CodeModel1", ns1.Name);
+			Assert.AreEqual("Test.CodeModel2", ns2.Name);
 		}
 	}
 }

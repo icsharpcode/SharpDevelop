@@ -7,7 +7,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class FileCodeModel2
+	public class FileCodeModel2 : MarshalByRefObject
 	{
 		Project project;
 		FileProjectItem projectItem;

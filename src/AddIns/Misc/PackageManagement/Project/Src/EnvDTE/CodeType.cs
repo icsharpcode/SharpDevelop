@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -66,16 +67,25 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual CodeNamespace Namespace {
-			get { return new CodeNamespace(ProjectContent, Class.Namespace); }
+			get { return new FileCodeModelCodeNamespace(ProjectContent, Class.Namespace); }
 		}
 		
 		public virtual ProjectItem ProjectItem {
 			get {
 				if (ProjectContent.Project != null) {
-					return new ProjectItem((MSBuildBasedProject)ProjectContent.Project, Class);
+					return new ProjectItem(ProjectContent, Class);
 				}
 				return null;
 			}
+		}
+		
+		/// <summary>
+		/// Returns true if the current type matches the fully qualified name or any of its
+		/// base types are a match.
+		/// </summary>
+		public virtual bool IsDerivedFrom(string fullName)
+		{
+			return Class.IsDerivedFrom(fullName);
 		}
 	}
 }

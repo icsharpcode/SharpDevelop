@@ -90,6 +90,8 @@
     <Compile Include="OutputTextLineParserTests.cs" />
     <Compile Include="OverridableMethodsTestFixture.cs" />
     <Compile Include="OverridablePropertiesTestFixture.cs" />
+    <Compile Include="Project\BeforeBuildCustomToolProjectItemsTests.cs" />
+    <Compile Include="Project\ProjectCustomToolOptionsTests.cs" />
     <Compile Include="PropertyPadSortingTests.cs" />
     <Compile Include="ReadOnlyDocumentTests.cs" />
     <Compile Include="ReflectionLayerTests.cs" />
@@ -124,6 +126,7 @@
     <Compile Include="Utils\MockSite.cs" />
     <Compile Include="Utils\MockTextMarker.cs" />
     <Compile Include="Utils\MockTextMarkerService.cs" />
+    <Compile Include="Utils\ProjectHelper.cs" />
     <Compile Include="Utils\TestExtensions.cs" />
     <Compile Include="Utils\Tests\MockAssemblyTests.cs" />
     <Compile Include="WebReferences\ValidReferenceNameTests.cs" />
@@ -191,9 +194,6 @@
   <ItemGroup>
     <EmbeddedResource Include="mime_utf-16_be_test.txt" />
     <EmbeddedResource Include="mime_utf-16_le_test.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Dom" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

@@ -9,24 +9,29 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class CodeParameter : CodeElement
 	{
 		IProjectContent projectContent;
-		IParameter parameter;
 		
 		public CodeParameter(IProjectContent projectContent, IParameter parameter)
 		{
 			this.projectContent = projectContent;
-			this.parameter = parameter;
+			this.Parameter = parameter;
 		}
+		
+		protected IParameter Parameter { get; private set; }
 		
 		public override vsCMElement Kind {
 			get { return vsCMElement.vsCMElementParameter; }
 		}
 		
 		public override string Name {
-			get { return parameter.Name; }
+			get { return Parameter.Name; }
 		}
 		
 		public virtual CodeTypeRef2 Type {
-			get { return new CodeTypeRef2(projectContent, this, parameter.ReturnType); }
+			get { return new CodeTypeRef2(projectContent, this, Parameter.ReturnType); }
+		}
+		
+		public virtual CodeElements Attributes {
+			get { return new CodeAttributes(Parameter); }
 		}
 	}
 }

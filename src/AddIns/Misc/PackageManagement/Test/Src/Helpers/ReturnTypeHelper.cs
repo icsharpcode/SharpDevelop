@@ -32,5 +32,10 @@ namespace PackageManagement.Tests.Helpers
 		{
 			ReturnType.Stub(t => t.GetUnderlyingClass()).Return(c);
 		}
+		
+		public void MakeReferenceType()
+		{
+			ReturnType.Stub(t => t.IsReferenceType).Return(true);
+		}
 	}
 }

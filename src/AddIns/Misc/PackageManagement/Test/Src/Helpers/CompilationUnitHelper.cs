@@ -14,6 +14,7 @@ namespace PackageManagement.Tests.Helpers
 		public FakeCodeGenerator FakeCodeGenerator = new FakeCodeGenerator();
 		public List<IClass> Classes = new List<IClass>();
 		public UsingScopeHelper UsingScopeHelper = new UsingScopeHelper();
+		public ProjectContentHelper ProjectContentHelper = new ProjectContentHelper();
 		
 		public CompilationUnitHelper()
 		{
@@ -23,6 +24,7 @@ namespace PackageManagement.Tests.Helpers
 			CompilationUnit.Stub(unit => unit.Language).Return(language);
 			CompilationUnit.Stub(unit => unit.Classes).Return(Classes);
 			CompilationUnit.Stub(unit => unit.UsingScope).Return(UsingScopeHelper.UsingScope);
+			CompilationUnit.Stub(unit => unit.ProjectContent).Return(ProjectContentHelper.ProjectContent);
 		}
 		
 		public void SetFileName(string fileName)

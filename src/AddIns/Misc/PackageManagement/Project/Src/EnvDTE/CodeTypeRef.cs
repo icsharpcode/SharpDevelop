@@ -44,5 +44,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public virtual CodeType CodeType {
 			get { return new CodeClass2(projectContent, ReturnType.GetUnderlyingClass()); }
 		}
+		
+		public virtual vsCMTypeRef TypeKind {
+			get { return ReturnType.GetTypeKind(); }
+		}
 	}
 }

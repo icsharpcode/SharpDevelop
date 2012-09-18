@@ -43,11 +43,25 @@ namespace PackageManagement.Tests.Helpers
 			NamedArguments.Add(name, value);
 		}
 		
-		public void AddAttributeToClass(IClass @class)
+		public void AddAttributeToClass(IClass c)
 		{
 			var attributes = new List<IAttribute>();
 			attributes.Add(Attribute);
-			@class.Stub(c => c.Attributes).Return(attributes);
+			c.Stub(item => item.Attributes).Return(attributes);
+		}
+		
+		public void AddAttributeToMethod(IMethod method)
+		{
+			var attributes = new List<IAttribute>();
+			attributes.Add(Attribute);
+			method.Stub(m => m.Attributes).Return(attributes);
+		}
+		
+		public void AddAttributeToParameter(IParameter parameter)
+		{
+			var attributes = new List<IAttribute>();
+			attributes.Add(Attribute);
+			parameter.Stub(p => p.Attributes).Return(attributes);
 		}
 	}
 }

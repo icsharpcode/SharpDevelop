@@ -4,6 +4,10 @@
        description = "Runner for Machine.Specifications unit tests for SharpDevelop"
        addInManagerHidden = "preinstalled">
 	
+	<Manifest>
+		<Identity name="ICSharpCode.MachineSpecifications" />
+	</Manifest>
+	
 	<Runtime>
 		<Import assembly = "MachineSpecifications.dll"/>
 	</Runtime>

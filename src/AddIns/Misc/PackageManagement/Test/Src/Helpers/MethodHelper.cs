@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Dom;
 using Rhino.Mocks;
 
@@ -27,6 +28,12 @@ namespace PackageManagement.Tests.Helpers
 		{
 			CreateMethod(name);
 			Method.Stub(m => m.IsPublic).Return(true);
+		}
+		
+		public void CreatePublicConstructor(string name)
+		{
+			CreatePublicMethod(name);
+			Method.Stub(m => m.IsConstructor).Return(true);
 		}
 		
 		public void CreatePrivateMethod(string name)
@@ -111,6 +118,65 @@ namespace PackageManagement.Tests.Helpers
 			returnTypeHelper.AddDotNetName(type);
 			
 			Method.Stub(m => m.ReturnType).Return(returnTypeHelper.ReturnType);
+		}
+		
+		public void MakeMethodStatic()
+		{
+			Method.Stub(m => m.IsStatic).Return(true);
+		}
+		
+		public void MakeMethodAbstract()
+		{
+			Method.Stub(m => m.IsAbstract).Return(true);
+		}
+		
+		public void MakeMethodVirtual()
+		{
+			Method.Stub(m => m.IsVirtual).Return(true);
+		}
+		
+		public void AddAttributeToMethod(string attributeTypeName)
+		{
+			var attributeHelper = new AttributeHelper();
+			attributeHelper.CreateAttribute(attributeTypeName);
+			attributeHelper.AddAttributeToMethod(Method);
+		}
+		
+		public void MakeMethodOverride()
+		{
+			Method.Stub(m => m.IsOverride).Return(true);
+		}
+		
+		public void MakeMethodSealed()
+		{
+			Method.Stub(m => m.IsSealed).Return(true);
+		}
+		
+		public void MakeMethodNewOverride()
+		{
+			Method.Stub(m => m.IsNew).Return(true);
+		}
+		
+		public void MakeMethodOverridable()
+		{
+			Method.Stub(m => m.IsOverridable).Return(true);
+		}
+		
+		public void AddTypeParameter(string name)
+		{
+			var typeParameterHelper = new TypeParameterHelper();
+			typeParameterHelper.SetName(name);
+			AddTypeParameters(typeParameterHelper.TypeParameterToList());
+		}
+		
+		public void AddTypeParameters(List<ITypeParameter> typeParameters)
+		{
+			Method.Stub(m => m.TypeParameters).Return(typeParameters);
+		}
+		
+		public void NoTypeParameters()
+		{
+			AddTypeParameters(new List<ITypeParameter>());
 		}
 	}
 }

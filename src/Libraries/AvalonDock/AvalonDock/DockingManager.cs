@@ -3752,7 +3752,7 @@ namespace AvalonDock
         /// <summary>
         /// True while is restoring a layout
         /// </summary>
-        protected bool RestoringLayout { get; private set; }
+        protected internal bool RestoringLayout { get; private set; }
 
         /// <summary>
         /// Internal main restore layout method

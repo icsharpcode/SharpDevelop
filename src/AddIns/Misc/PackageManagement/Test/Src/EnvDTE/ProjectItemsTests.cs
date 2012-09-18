@@ -527,7 +527,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("tools", name);
 			Assert.AreEqual(project, item.ContainingProject);
-			Assert.AreEqual(Constants.VsProjectItemKindPhysicalFolder, item.Kind);
+			Assert.AreEqual(Constants.vsProjectItemKindPhysicalFolder, item.Kind);
 		}
 		
 		[Test]
@@ -592,7 +592,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("tools", name);
 			Assert.AreEqual(project, item.ContainingProject);
-			Assert.AreEqual(Constants.VsProjectItemKindPhysicalFolder, item.Kind);
+			Assert.AreEqual(Constants.vsProjectItemKindPhysicalFolder, item.Kind);
 		}
 		
 		[Test]
@@ -610,9 +610,9 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("tools", name);
 			Assert.AreEqual(project, item.ContainingProject);
-			Assert.AreEqual(Constants.VsProjectItemKindPhysicalFolder, item.Kind);
+			Assert.AreEqual(Constants.vsProjectItemKindPhysicalFolder, item.Kind);
 			Assert.AreEqual(1, item.ProjectItems.Count);
-			Assert.AreEqual(Constants.VsProjectItemKindPhysicalFolder, childItem.Kind);
+			Assert.AreEqual(Constants.vsProjectItemKindPhysicalFolder, childItem.Kind);
 		}
 		
 		[Test]
@@ -667,7 +667,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			projectBrowserUpdater.AssertWasCalled(updater => updater.Dispose());
 		}
-				
+		
 		[Test]
 		public void AddFromDirectory_EmptyDirectoryInsideProject_ProjectBrowserUpdaterIsDisposed()
 		{
@@ -814,6 +814,52 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual(ItemType.Page, fileItem.ItemType);
 			Assert.IsTrue(fileItem.IsLink);
 			Assert.AreEqual("test.cs", linkName);
+		}
+		
+		[Test]
+		public void Item_GetItemFromControllersFolderProjectItemsWhenProjectHasTwoFilesOneInRootAndOneInControllersFolder_ReturnsFileFromControllersFolder()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"AccountController.generated.cs");
+			msbuildProject.AddFile(@"Controllers\AccountController.cs");
+			
+			DTE.ProjectItem projectItem = projectItems
+				.Item("Controllers")
+				.ProjectItems
+				.Item(1);
+			
+			Assert.AreEqual("AccountController.cs", projectItem.Name);
+		}
+		
+		[Test]
+		public void Item_UnknownProjectItemName_ThrowsException()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile("Program.cs");
+			
+			Assert.Throws<ArgumentException>(() => projectItems.Item("unknown.cs"));
+		}
+		
+		[Test]
+		public void AddFromFile_AddFromFileFromProjectItemsBelongingToFile_FileIsAddedAsDependentFile()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			msbuildProject.AddFile("MainForm.cs");
+			string fileName = @"d:\projects\myproject\MainForm.Designer.cs";
+			msbuildProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.Page;
+			projectItems = project.ProjectItems.Item("MainForm.cs").ProjectItems;
+			
+			projectItems.AddFromFile(fileName);
+			
+			FileProjectItem fileItem = msbuildProject.FindFile(fileName);
+			
+			Assert.AreEqual("MainForm.Designer.cs", fileItem.Include);
+			Assert.AreEqual(fileName, fileItem.FileName);
+			Assert.AreEqual(ItemType.Page, fileItem.ItemType);
+			Assert.AreEqual(msbuildProject, fileItem.Project);
+			Assert.AreEqual("MainForm.cs", fileItem.DependentUpon);
 		}
 	}
 }

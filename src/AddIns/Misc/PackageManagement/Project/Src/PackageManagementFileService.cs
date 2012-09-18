@@ -41,6 +41,15 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
+		public IViewContent GetOpenFile(string fileName)
+		{
+			if (WorkbenchSingleton.InvokeRequired) {
+				return WorkbenchSingleton.SafeThreadFunction(() => GetOpenFile(fileName));
+			} else {
+				return FileService.GetOpenFile(fileName);
+			}
+		}
+		
 		public void CopyFile(string oldFileName, string newFileName)
 		{
 			if (WorkbenchSingleton.InvokeRequired) {

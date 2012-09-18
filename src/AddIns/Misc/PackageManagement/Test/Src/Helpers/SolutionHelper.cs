@@ -50,7 +50,13 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void AddProjectToSolution(string projectName)
 		{
+			AddProjectToSolutionWithFileName(projectName, @"c:\projects\MyProject\MyProject.csproj");
+		}
+		
+		public void AddProjectToSolutionWithFileName(string projectName, string fileName)
+		{
 			TestableProject project = ProjectHelper.CreateTestProject(projectName);
+			project.FileName = fileName;
 			FakeProjectService.AddFakeProject(project);
 		}
 		
@@ -84,6 +90,25 @@ namespace PackageManagement.Tests.Helpers
 		public void AssertSolutionIsNotSaved()
 		{
 			Assert.IsNull(FakeProjectService.SavedSolution);
+		}
+		
+		public SD.FileProjectItem AddFileToFirstProjectInSolution(string include)
+		{
+			TestableProject project = FakeProjectService
+				.FakeOpenProjects
+				.Select(p => p as TestableProject)
+				.First();
+			return project.AddFile(include);
+		}
+		
+		public SD.FileProjectItem AddFileToSecondProjectInSolution(string include)
+		{
+			TestableProject project = FakeProjectService
+				.FakeOpenProjects
+				.Select(p => p as TestableProject)
+				.Skip(1)
+				.First();
+			return project.AddFile(include);
 		}
 	}
 }

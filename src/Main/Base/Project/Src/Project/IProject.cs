@@ -194,12 +194,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		/// <summary>
-		/// Saves the project using it's current file name.
+		/// Saves the project using its current file name.
 		/// </summary>
 		void Save();
 		
 		/// <summary>
-		/// Returns true, if a specific file (given by it's name) is inside this project.
+		/// Returns true, if a specific file (given by its name) is inside this project.
 		/// This member is thread-safe.
 		/// </summary>
 		/// <param name="fileName">The <b>fully qualified</b> file name of the file</param>
@@ -219,7 +219,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		/// <summary>
 		/// Gets project specific properties.
+		/// These are saved in as part of the SharpDevelop configuration in the AppData folder.
 		/// </summary>
+		/// <remarks>This property never returns null.</remarks>
 		Properties ProjectSpecificProperties { get; }
 		
 		/// <summary>

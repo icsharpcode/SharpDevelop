@@ -187,5 +187,195 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("Test.MyClass", name);
 		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsReferenceType_ReturnsClassType()
+		{
+			helper.CreateReturnType("Test.MyClass");
+			AddUnderlyingClassToReturnType("Test.MyClass");
+			helper.MakeReferenceType();
+			CreateCodeTypeRef2();
+			
+			vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefCodeType, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsNotReferenceType_ReturnsNonClassType()
+		{
+			helper.CreateReturnType("Test.MyClass");
+			CreateCodeTypeRef2();
+			
+			vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefOther, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemVoid_ReturnsVoidType()
+		{
+			helper.CreateReturnType("System.Void");
+			CreateCodeTypeRef2();
+			
+			vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefVoid, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemString_ReturnsStringType()
+		{
+			helper.CreateReturnType("System.String");
+			helper.MakeReferenceType();
+			CreateCodeTypeRef2();
+			
+			vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefString, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemBoolean_ReturnsBooleanType()
+		{
+			helper.CreateReturnType("System.Boolean");
+			CreateCodeTypeRef2();
+			
+			vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefBool, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemByte_ReturnsByteType()
+		{
+			helper.CreateReturnType("System.Byte");
+			CreateCodeTypeRef2();
+			
+			vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefByte, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemChar_ReturnsCharType()
+		{
+			helper.CreateReturnType("System.Char");
+			CreateCodeTypeRef2();
+			
+			vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefChar, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemDecimal_ReturnsDecimalType()
+		{
+			helper.CreateReturnType("System.Decimal");
+			CreateCodeTypeRef2();
+			
+			vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefDecimal, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemDouble_ReturnsDoubleType()
+		{
+			helper.CreateReturnType("System.Double");
+			CreateCodeTypeRef2();
+			
+			vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefDouble, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemSingle_ReturnsFloatType()
+		{
+			helper.CreateReturnType("System.Single");
+			CreateCodeTypeRef2();
+			
+			vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefFloat, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemInt32_ReturnsIntType()
+		{
+			helper.CreateReturnType("System.Int32");
+			CreateCodeTypeRef2();
+			
+			vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefInt, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemInt16_ReturnsShortType()
+		{
+			helper.CreateReturnType("System.Int16");
+			CreateCodeTypeRef2();
+			
+			vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefShort, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemInt64_ReturnsLongType()
+		{
+			helper.CreateReturnType("System.Int64");
+			CreateCodeTypeRef2();
+			
+			vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefLong, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemUInt32_ReturnsIntType()
+		{
+			helper.CreateReturnType("System.UInt32");
+			CreateCodeTypeRef2();
+			
+			vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefInt, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemUInt16_ReturnsShortType()
+		{
+			helper.CreateReturnType("System.UInt16");
+			CreateCodeTypeRef2();
+			
+			vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefShort, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemUInt64_ReturnsLongType()
+		{
+			helper.CreateReturnType("System.UInt64");
+			CreateCodeTypeRef2();
+			
+			vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefLong, kind);
+		}
+		
+		[Test]
+		public void TypeKind_ReturnTypeIsSystemObject_ReturnsObjectType()
+		{
+			helper.CreateReturnType("System.Object");
+			CreateCodeTypeRef2();
+			
+			vsCMTypeRef kind = typeRef.TypeKind;
+			
+			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefObject, kind);
+		}
 	}
 }
