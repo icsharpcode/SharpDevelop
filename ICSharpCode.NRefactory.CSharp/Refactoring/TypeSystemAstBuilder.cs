@@ -236,12 +236,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				} else {
 					localTypeArguments = EmptyList<IType>.Instance;
 				}
-				TypeResolveResult trr = resolver.ResolveSimpleName(typeDef.Name, localTypeArguments) as TypeResolveResult;
-				if (trr != null && !trr.IsError && TypeMatches(trr.Type, typeDef, typeArguments)) {
-					// We can use the short type name
-					SimpleType shortResult = new SimpleType(typeDef.Name);
-					AddTypeArguments(shortResult, typeDef, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
-					return shortResult;
+				ResolveResult rr = resolver.ResolveSimpleName(typeDef.Name, localTypeArguments);
+				TypeResolveResult trr = rr as TypeResolveResult;
+				if (trr != null || (localTypeArguments.Count == 0 && resolver.IsVariableReferenceWithSameType(rr, typeDef.Name, out trr))) {
+					if (!trr.IsError && TypeMatches(trr.Type, typeDef, typeArguments)) {
+						// We can use the short type name
+						SimpleType shortResult = new SimpleType(typeDef.Name);
+						AddTypeArguments(shortResult, typeDef, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
+						return shortResult;
+					}
 				}
 			}
 			
