@@ -22,34 +22,12 @@ namespace ICSharpCode.CppBinding.Project
 	public partial class PreprocessorOptions : ProjectOptionPanel
 	{
 		private const string metaElement ="ClCompile";
-		private MSBuildBasedProject project;
+	
 		
 		public PreprocessorOptions()
 		{
 			InitializeComponent();
 		}
-		
-		
-		private void Initialize()
-		{
-			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(project,
-			                                                                  project.ActiveConfiguration, project.ActivePlatform);
-			
-			this.defineTextBox.Text = GetElementMetaData(group,"PreprocessorDefinitions");
-			
-			this.undefineTextBox.Text =  GetElementMetaData(group,"UndefinePreprocessorDefinitions" );
-			
-			string defs = GetElementMetaData(group,"UndefineAllPreprocessorDefinitions");
-			
-			bool check;
-			if (bool.TryParse(defs, out check))
-			{
-				this.CheckBoxChecked = check;
-				this.undefineAllCheckBox.IsChecked = check;
-			}
-			IsDirty = false;
-		}
-		
 		
 		#region Properties
 		
@@ -71,20 +49,35 @@ namespace ICSharpCode.CppBinding.Project
 		
 		#endregion
 		
-		
 		#region overrides
+		
+		protected override void Initialize()
+		{
+			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(base.Project,
+			                                                                  base.Project.ActiveConfiguration, base.Project.ActivePlatform);
+			
+			this.defineTextBox.Text = GetElementMetaData(group,"PreprocessorDefinitions");
+			
+			this.undefineTextBox.Text =  GetElementMetaData(group,"UndefinePreprocessorDefinitions" );
+			
+			string defs = GetElementMetaData(group,"UndefineAllPreprocessorDefinitions");
+			
+			bool check;
+			if (bool.TryParse(defs, out check))
+			{
+				this.CheckBoxChecked = check;
+				this.undefineAllCheckBox.IsChecked = check;
+			}
+			IsDirty = false;
+		}
+		
 		
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
 			HideHeader();
 		}
-		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
-		{
-			base.Load(project, configuration, platform);
-			this.project = project;
-			Initialize();
-		}
+
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
@@ -103,6 +96,7 @@ namespace ICSharpCode.CppBinding.Project
 					
 			return base.Save(project, configuration, platform);
 		}
+		
 		#endregion
 		
 		#region MSBuildItemDefinitionGroup Set-Get
