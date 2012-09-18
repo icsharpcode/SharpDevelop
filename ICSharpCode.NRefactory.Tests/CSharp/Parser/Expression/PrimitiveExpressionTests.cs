@@ -244,7 +244,6 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			Assert.AreEqual(code, pe.LiteralValue);
 		}
 
-		[Ignore("Waiting for upstream fix.")]
 		[Test]
 		public void LargeVerbatimString()
 		{

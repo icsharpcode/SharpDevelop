@@ -173,7 +173,7 @@ namespace Mono.CSharp
 			parser.parse ();
 			return parser;
 		}
-		
+
 		public static int Main (string[] args)
 		{
 			Location.InEmacs = Environment.GetEnvironmentVariable ("EMACS") == "t";
