@@ -187,7 +187,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				Assert.AreEqual (0, provider.Count, "provider needs to be empty");
 			});
 		}
-		[Ignore("TODO")]
+
 		[Test()]
 		public void TestIndexerParameterName ()
 		{
