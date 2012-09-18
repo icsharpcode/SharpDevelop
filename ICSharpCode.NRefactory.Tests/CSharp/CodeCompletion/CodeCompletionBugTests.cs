@@ -70,11 +70,12 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 		class TestFactory
 		: ICompletionDataFactory
 		{
+			readonly CSharpResolver state;
 			readonly TypeSystemAstBuilder builder;
 
 			public TestFactory(CSharpResolver state)
 			{
-				Console.WriteLine ("ct:"+state.CurrentTypeDefinition);
+				this.state = state;
 				builder = new TypeSystemAstBuilder(state);
 			}
 
@@ -151,11 +152,28 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			{
 				return new CompletionData (entity.Name);
 			}
-			
+
+			string GetShortType(IType type)
+			{
+				var dt = state.CurrentTypeDefinition;
+				var declaring = type.DeclaringType != null ? type.DeclaringType.GetDefinition() : null;
+				if (declaring != null) {
+					while (dt != null) {
+						if (dt.Equals(declaring)) {
+							builder.AlwaysUseShortTypeNames = true;
+							break;
+						}
+						dt = dt.DeclaringTypeDefinition;
+					}
+				}
+				var shortType = builder.ConvertType(type);
+				return shortType.GetText();
+			}
+
 
 			public ICompletionData CreateTypeCompletionData (ICSharpCode.NRefactory.TypeSystem.IType type, bool fullName, bool isInAttributeContext)
 			{
-				string name = fullName ? builder.ConvertType(type).GetText() : type.Name; 
+				string name = fullName ? GetShortType(type) : type.Name; 
 				if (isInAttributeContext && name.EndsWith("Attribute") && name.Length > "Attribute".Length) {
 					name = name.Substring(0, name.Length - "Attribute".Length);
 				}
@@ -163,7 +181,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			}
 			public ICompletionData CreateMemberCompletionData(IType type, IEntity member)
 			{
-				string name = builder.ConvertType(type).GetText(); 
+				string name = GetShortType(type); 
 				Console.WriteLine("name:"+name);
 				return new CompletionData (name + "."+ member.Name);
 			}
@@ -5533,5 +5551,38 @@ class C : A
 				Assert.IsNull(provider.Find("Hidden"));
 			});
 		}
+
+
+		/// <summary>
+		/// Bug 7191 - code completion problem with generic interface using nested type
+		/// </summary>
+		[Test()]
+		public void TestBug7191()
+		{
+			CombinedProviderTest(
+				@"using System.Collections.Generic;
+namespace bug
+{
+    public class Outer
+    {
+        public class Nested
+        {
+        }
+    }
+    public class TestClass
+    {
+        void Bar()
+        {
+            $IList<Outer.Nested> foo = new $
+        }
+    }
+}
+
+", provider => {
+				Assert.IsNotNull(provider.Find("List<Outer.Nested>"));
+			});
+		}
+
+
 	}
 }
