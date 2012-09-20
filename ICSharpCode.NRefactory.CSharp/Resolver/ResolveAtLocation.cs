@@ -54,8 +54,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (node == null || node is ArrayInitializerExpression)
 				return null;
 			if (node.Parent is UsingAliasDeclaration && node.Role == UsingAliasDeclaration.AliasRole) {
-				node = ((UsingAliasDeclaration)node.Parent).Import;
-				goto resolve;
+				var r = new CSharpAstResolver(compilation.Value, syntaxTree, unresolvedFile);
+				return r.Resolve(((UsingAliasDeclaration)node.Parent).Import, cancellationToken);
 			}
 			if (CSharpAstResolver.IsUnresolvableNode(node)) {
 				if (node is Identifier) {
@@ -85,7 +85,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return null;
 				}
 			}
-		resolve:
+
 			if (node == null)
 				return null;
 			
