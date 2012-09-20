@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -53,6 +53,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			node = syntaxTree.GetNodeAt(location);
 			if (node == null || node is ArrayInitializerExpression)
 				return null;
+			if (node.Parent is UsingAliasDeclaration && node.Role == UsingAliasDeclaration.AliasRole) {
+				node = ((UsingAliasDeclaration)node.Parent).Import;
+				goto resolve;
+			}
 			if (CSharpAstResolver.IsUnresolvableNode(node)) {
 				if (node is Identifier) {
 					node = node.Parent;
@@ -81,6 +85,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return null;
 				}
 			}
+		resolve:
 			if (node == null)
 				return null;
 			
