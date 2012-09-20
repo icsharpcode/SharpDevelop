@@ -261,7 +261,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						}
 					}
 				}
-				return nodeDict [startNode];
+				VariableReferenceNode result;
+				if (!nodeDict.TryGetValue (startNode, out result))
+					return new VariableReferenceNode ();
+				return result;
 			}
 		}
 
