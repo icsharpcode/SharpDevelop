@@ -217,12 +217,27 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			#endregion
 		}
 		
-		public static IUnresolvedAssembly SystemAssembly { get { return systemAssembly.Value; } }
 		static readonly Lazy<IUnresolvedAssembly> systemAssembly = new Lazy<IUnresolvedAssembly>(
 			delegate {
-			return new CecilLoader().LoadAssemblyFile(typeof(System.ComponentModel.BrowsableAttribute).Assembly.Location);
+			var loader = new CecilLoader();
+			loader.IncludeInternalMembers = true;
+			return loader.LoadAssemblyFile(typeof(System.ComponentModel.BrowsableAttribute).Assembly.Location);
 		});
-		
+
+		static readonly Lazy<IUnresolvedAssembly> mscorlib = new Lazy<IUnresolvedAssembly>(
+			delegate {
+			var loader = new CecilLoader();
+			loader.IncludeInternalMembers = true;
+			return loader.LoadAssemblyFile(typeof(object).Assembly.Location);
+		});
+
+		static readonly Lazy<IUnresolvedAssembly> systemCore = new Lazy<IUnresolvedAssembly>(
+			delegate {
+			var loader = new CecilLoader();
+			loader.IncludeInternalMembers = true;
+			return loader.LoadAssemblyFile(typeof(System.Linq.Enumerable).Assembly.Location);
+		});
+
 		public static CSharpCompletionEngine CreateEngine(string text, out int cursorPosition, params IUnresolvedAssembly[] references)
 		{
 			string parsedText;
@@ -243,7 +258,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			var doc = new ReadOnlyDocument(editorText);
 
 			IProjectContent pctx = new CSharpProjectContent();
-			var refs = new List<IUnresolvedAssembly> { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore, SystemAssembly };
+			var refs = new List<IUnresolvedAssembly> { mscorlib.Value, systemCore.Value, systemAssembly.Value };
 			if (references != null)
 				refs.AddRange (references);
 
@@ -5566,5 +5581,57 @@ namespace bug
 		}
 
 
+		/// <summary>
+		/// Bug 6849 - Regression: Inaccesible types in completion
+		/// </summary>
+		[Test()]
+		public void TestBug6849()
+		{
+			CombinedProviderTest(
+				@"
+namespace bug
+{
+   public class TestClass
+    {
+        void Bar()
+        {
+            $new System.Collections.Generic.$
+        }
+    }
+}
+
+", provider => {
+				// it's likely to be mono specific.
+				Assert.IsNull(provider.Find("RBTree"));
+				Assert.IsNull(provider.Find("GenericComparer"));
+				Assert.IsNull(provider.Find("InternalStringComparer"));
+			});
+		}
+
+
+		[Test()]
+		public void TestBug6849Case2()
+		{
+
+			CombinedProviderTest(
+				@"
+namespace bug
+{
+   public class TestClass
+    {
+        void Bar()
+        {
+            $System.Collections.Generic.$
+        }
+    }
+}
+
+", provider => {
+				// it's likely to be mono specific.
+				Assert.IsNull(provider.Find("RBTree"));
+				Assert.IsNull(provider.Find("GenericComparer"));
+				Assert.IsNull(provider.Find("InternalStringComparer"));
+			});
+		}
 	}
 }

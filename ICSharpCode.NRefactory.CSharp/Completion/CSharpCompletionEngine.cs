@@ -198,6 +198,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 			}
 			var resolveResult = ResolveExpression(expr);
+
 			if (resolveResult == null) {
 				return null;
 			}
@@ -2154,10 +2155,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
 				if (!(resolvedNode.Parent is UsingDeclaration || resolvedNode.Parent != null && resolvedNode.Parent.Parent is UsingDeclaration)) {
+					var lookup = new MemberLookup(
+						ctx.CurrentTypeDefinition,
+						Compilation.MainAssembly
+						);
+
 					foreach (var cl in nr.Namespace.Types) {
 						if (hintType != null && hintType.Kind != TypeKind.Array && cl.Kind == TypeKind.Interface) {
 							continue;
 						}
+						if (!lookup.IsAccessible (cl, false))
+							continue;
 						result.AddType(cl, false, IsAttributeContext(resolvedNode));
 					}
 				}
