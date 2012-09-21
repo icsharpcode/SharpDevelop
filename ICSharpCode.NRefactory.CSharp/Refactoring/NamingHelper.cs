@@ -103,6 +103,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// <param name='type'>
 		/// The type of the variable.
 		/// </param>
+		/// <param name='baseName'>
+		/// Suggested base name.
+		/// </param>
 		public string GenerateVariableName(AstType type, string baseName = null)
 		{
 			if (baseName == null) {
@@ -141,6 +144,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// </returns>
 		/// <param name='type'>
 		/// The type of the variable.
+		/// </param>
+		/// <param name='baseName'>
+		/// Suggested base name.
 		/// </param>
 		public string GenerateVariableName(IType type, string baseName = null)
 		{

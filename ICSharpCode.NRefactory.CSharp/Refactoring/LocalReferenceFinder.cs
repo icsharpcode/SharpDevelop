@@ -83,9 +83,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// <param name='variable'>
 		/// The variable to find references for.
 		/// </param>
-		/// <param name='action'>
-		/// Will be called for each reference found.
-		/// </param>
 		/// <remarks>
 		/// When a single <see cref="LocalReferenceFinder"/> is reused for multiple
 		/// searches, which references outside of <paramref name="rootNode"/> are
