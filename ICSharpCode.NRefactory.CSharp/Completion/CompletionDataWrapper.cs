@@ -86,7 +86,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
-			if (type.Name == "Void" && type.Namespace == "System")
+			if (type.Name == "Void" && type.Namespace == "System" || type.Kind == TypeKind.Unknown)
 				return null;
 
 			var def = type.GetDefinition();
