@@ -10,7 +10,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 
-namespace ICSharpCode.SharpDevelop.Bookmarks
+namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 {
 	public sealed class NextBookmarkPadCommand : AbstractMenuCommand
 	{
@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			BookmarkPadBase pad = (BookmarkPadBase)this.Owner;
 			foreach(SDBookmark bm in pad.Items.OfType<SDBookmark>().ToList()) {
-				BookmarkManager.RemoveMark(bm);
+				SD.BookmarkManager.RemoveMark(bm);
 			}
 		}
 	}
@@ -53,7 +53,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			BookmarkPadBase pad = (BookmarkPadBase)this.Owner;
 			if (pad.SelectedItem != null) {
-				BookmarkManager.RemoveMark(pad.SelectedItem);
+				SD.BookmarkManager.RemoveMark(pad.SelectedItem);
 			}
 		}
 	}

@@ -12,7 +12,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
@@ -35,8 +35,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			
 			ProjectService.BeforeSolutionClosing += OnBeforeSolutionClosing;
 			
-			BookmarkManager.Added   += BookmarkAdded;
-			BookmarkManager.Removed += BookmarkRemoved;
+			SD.BookmarkManager.BookmarkAdded   += BookmarkAdded;
+			SD.BookmarkManager.BookmarkRemoved += BookmarkRemoved;
 		}
 		
 		static void GetDescriptors()
@@ -188,16 +188,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
-		public static IList<BreakpointBookmark> Breakpoints {
+		public static IEnumerable<BreakpointBookmark> Breakpoints {
 			get {
-				List<BreakpointBookmark> breakpoints = new List<BreakpointBookmark>();
-				foreach (SDBookmark bookmark in BookmarkManager.Bookmarks) {
-					BreakpointBookmark breakpoint = bookmark as BreakpointBookmark;
-					if (breakpoint != null) {
-						breakpoints.Add(breakpoint);
-					}
-				}
-				return breakpoints.AsReadOnly();
+				return SD.BookmarkManager.Bookmarks.OfType<BreakpointBookmark>();
 			}
 		}
 		
@@ -257,22 +250,14 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// <param name="lineNumber">Line number.</param>
 		/// <param name="breakpointType">Type of breakpoint bookmark.</param>
 		/// <param name="parameters">Optional constructor parameters.</param>
-		public static void ToggleBreakpointAt(ITextEditor editor, int lineNumber, Type breakpointType, object[] parameters = null)
+		public static void ToggleBreakpointAt(ITextEditor editor, int lineNumber)
 		{
 			if (editor == null)
 				throw new ArgumentNullException("editor");
 			
-			if (breakpointType == null)
-				throw new ArgumentNullException("breakpointType");
-			
-			if (!typeof(BreakpointBookmark).IsAssignableFrom(breakpointType))
-				throw new ArgumentException("breakpointType is not a BreakpointBookmark");
-			
-			BookmarkManager.ToggleBookmark(
-				editor, lineNumber,
-				b => b.CanToggle && b is BreakpointBookmark,
-				location => (BreakpointBookmark)Activator.CreateInstance(breakpointType,
-				                                                         parameters ?? new object[] { editor.FileName, location, BreakpointAction.Break, "", ""}));
+			if (!SD.BookmarkManager.RemoveBookmarkAt(editor.FileName, lineNumber, b => b is BreakpointBookmark)) {
+				SD.BookmarkManager.AddMark(new BreakpointBookmark(), editor.Document, lineNumber);
+			}
 		}
 		
 		/* TODO: reimplement this stuff

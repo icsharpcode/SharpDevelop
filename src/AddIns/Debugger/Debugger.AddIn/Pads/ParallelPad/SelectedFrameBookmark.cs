@@ -5,10 +5,10 @@ using System.Windows.Media;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 
-namespace ICSharpCode.SharpDevelop.Bookmarks
+namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 {
 	public class SelectedFrameBookmark : SDMarkerBookmark
 	{

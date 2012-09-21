@@ -93,7 +93,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			// breakpoints and files
 			Properties properties = new Properties();
-			properties.SetList("bookmarks", ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.GetProjectBookmarks(Project));
+			properties.SetList("bookmarks", SD.BookmarkManager.GetProjectBookmarks(Project));
 			List<string> files = new List<string>();
 			foreach (string fileName in FileService.GetOpenFiles()) {
 				if (fileName != null && Project.IsFileInProject(fileName)) {
@@ -113,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			WorkbenchSingleton.AssertMainThread();
 			
 			foreach (var mark in memento.GetList<ICSharpCode.SharpDevelop.Editor.Bookmarks.SDBookmark>("bookmarks")) {
-				ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.AddMark(mark);
+				SD.BookmarkManager.AddMark(mark);
 			}
 			List<string> filesToOpen = new List<string>();
 			foreach (string fileName in memento.GetList<string>("files")) {

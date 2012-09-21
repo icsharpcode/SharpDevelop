@@ -72,6 +72,8 @@
 		         class="ICSharpCode.SharpDevelop.ClipboardWrapper"/>
 		<Service id="ICSharpCode.SharpDevelop.Project.IBuildService"
 		         class="ICSharpCode.SharpDevelop.Project.BuildService"/>
+		<Service id="ICSharpCode.SharpDevelop.Editor.Bookmarks.IBookmarkManager"
+		         class="ICSharpCode.SharpDevelop.Editor.Bookmarks.BookmarkManager"/>
 		
 		<Service id="ICSharpCode.SharpDevelop.WinForms.IWinFormsService"
 		         class="ICSharpCode.SharpDevelop.WinForms.WinFormsService"/>
@@ -177,7 +179,7 @@
 		     category = "Tools"
 		     title    = "${res:MainWindow.Windows.BookmarksLabel}"
 		     icon     = "PadIcons.Bookmarks"
-		     class    = "ICSharpCode.SharpDevelop.Bookmarks.BookmarkPad"
+		     class    = "ICSharpCode.SharpDevelop.Editor.Bookmarks.BookmarkPad"
 		     defaultPosition = "Bottom, Hidden" />
 		
 		<Pad id       = "DefinitionView"
@@ -1148,26 +1150,26 @@
 		<ToolbarItem id      = "GotoPrev"
 		             icon    = "Bookmarks.PrevBreakpoint"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoPrev.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmarkPadCommand"/>
+		             class   = "ICSharpCode.SharpDevelop.Editor.Bookmarks.PrevBookmarkPadCommand"/>
 		<ToolbarItem id      = "GotoNext"
 		             icon    = "Bookmarks.NextBreakpoint"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoNext.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmarkPadCommand"/>
+		             class   = "ICSharpCode.SharpDevelop.Editor.Bookmarks.NextBookmarkPadCommand"/>
 		<ToolbarItem id = "GotoInFolderSeparator" type = "Separator" />
 		<ToolbarItem id      = "DisableAllBreakpoints"
 		             icon    = "Bookmarks.DisableAllBreakpoints"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.EnableDisableAll.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Bookmarks.EnableDisableAll"/>
+		             class   = "ICSharpCode.SharpDevelop.Editor.Bookmarks.EnableDisableAll"/>
 		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
 		<ToolbarItem id      = "DeleteMark"
 		             icon    = "Icons.16x16.DeleteIcon"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.DeleteMark.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Bookmarks.DeleteMark"/>
+		             class   = "ICSharpCode.SharpDevelop.Editor.Bookmarks.DeleteMark"/>
 		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
 		<ToolbarItem id      = "DeleteAllBreakpoints"
 		             icon    = "Bookmarks.DeleteAllBreakpoints"
 		             tooltip = "${res:XML.MainMenu.DebugMenu.RemoveAllBreakpoints}"
-		             class   = "ICSharpCode.SharpDevelop.Bookmarks.DeleteAllMarks"/>
+		             class   = "ICSharpCode.SharpDevelop.Editor.Bookmarks.DeleteAllMarks"/>
 	</Path>
 	<!-- end toolbars -->
 	
@@ -1779,21 +1781,21 @@
 				          label = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
 				          shortcut = "Control|M"
 				          icon = "Bookmarks.ToggleMark"
-				          class = "ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark"/>
+				          class = "ICSharpCode.SharpDevelop.Editor.Bookmarks.ToggleBookmark"/>
 				<MenuItem id = "PrevBookmark"
 				          label = "${res:XML.MainMenu.SearchMenu.PrevBookmark}"
 				          shortcut = "Control|OemComma"
 				          icon = "Bookmarks.GotoPrevInFile"
-				          class = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmark"/>
+				          class = "ICSharpCode.SharpDevelop.Editor.Bookmarks.PrevBookmark"/>
 				<MenuItem id = "NextBookmark"
 				          label = "${res:XML.MainMenu.SearchMenu.NextBookmark}"
 				          shortcut = "Control|OemPeriod"
 				          icon = "Bookmarks.GotoNextInFile"
-				          class = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmark"/>
+				          class = "ICSharpCode.SharpDevelop.Editor.Bookmarks.NextBookmark"/>
 				<MenuItem id = "ClearBookmarks"
 				          label = "${res:XML.MainMenu.SearchMenu.ClrBookmark}"
 				          icon = "Bookmarks.ClearAll"
-				          class = "ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks"/>
+				          class = "ICSharpCode.SharpDevelop.Editor.Bookmarks.ClearBookmarks"/>
 			</Condition>
 			<MenuItem id = "Separator2" type = "Separator" />
 			
@@ -2028,19 +2030,19 @@
 			<ToolbarItem id = "ToggleBookmark"
 			             icon = "Bookmarks.ToggleMark"
 			             tooltip = "${res:XML.MainMenu.SearchMenu.ToggleBookmark.Description}"
-			             class = "ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark"/>
+			             class = "ICSharpCode.SharpDevelop.Editor.Bookmarks.ToggleBookmark"/>
 			<ToolbarItem id = "PrevBookmark"
 			             icon = "Bookmarks.GotoPrevInFile"
 			             tooltip = "${res:XML.MainMenu.SearchMenu.PrevBookmark.Description}"
-			             class = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmark"/>
+			             class = "ICSharpCode.SharpDevelop.Editor.Bookmarks.PrevBookmark"/>
 			<ToolbarItem id = "NextBookmark"
 			             icon = "Bookmarks.GotoNextInFile"
 			             tooltip = "${res:XML.MainMenu.SearchMenu.NextBookmark.Description}"
-			             class = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmark"/>
+			             class = "ICSharpCode.SharpDevelop.Editor.Bookmarks.NextBookmark"/>
 			<ToolbarItem id = "ClearBookmarks"
 			             icon = "Bookmarks.ClearAll"
 			             tooltip = "${res:XML.MainMenu.SearchMenu.ClrBookmark.Description}"
-			             class = "ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks"/>
+			             class = "ICSharpCode.SharpDevelop.Editor.Bookmarks.ClearBookmarks"/>
 		</Condition>
 	</Path>
 	
@@ -2110,31 +2112,31 @@
 			<ToolbarItem id = "ToggleBookmark"
 			             tooltip = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
 			             icon = "Bookmarks.ToggleMark"
-			             class = "ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark"/>
+			             class = "ICSharpCode.SharpDevelop.Editor.Bookmarks.ToggleBookmark"/>
 		</Condition>
 		
 		<ToolbarItem id      = "GotoPrev"
 		             icon    = "Bookmarks.GotoPrev"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoPrev.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmarkPadCommand"/>
+		             class   = "ICSharpCode.SharpDevelop.Editor.Bookmarks.PrevBookmarkPadCommand"/>
 		<ToolbarItem id      = "GotoNext"
 		             icon    = "Bookmarks.GotoNext"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoNext.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmarkPadCommand"/>
+		             class   = "ICSharpCode.SharpDevelop.Editor.Bookmarks.NextBookmarkPadCommand"/>
 		<!--<ToolbarItem id = "GotoInFolderSeparator" type = "Separator" />
 		<ToolbarItem id      = "EnableDisableAll"
 		             icon    = "Bookmarks.EnableDisableAll"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.EnableDisableAll.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Bookmarks.EnableDisableAll"/>-->
+		             class   = "ICSharpCode.SharpDevelop.Editor.Bookmarks.EnableDisableAll"/>-->
 		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
 		<ToolbarItem id      = "DeleteMark"
 		             icon    = "Bookmarks.DeleteMark"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.DeleteMark.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Bookmarks.DeleteMark"/>
+		             class   = "ICSharpCode.SharpDevelop.Editor.Bookmarks.DeleteMark"/>
 		<ToolbarItem id      = "DeleteAllMarks"
 		             icon    = "Bookmarks.DeleteAllMarks"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.DeleteAllMarks.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Bookmarks.DeleteAllMarks"/>
+		             class   = "ICSharpCode.SharpDevelop.Editor.Bookmarks.DeleteAllMarks"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/SearchResultPad/Toolbar">

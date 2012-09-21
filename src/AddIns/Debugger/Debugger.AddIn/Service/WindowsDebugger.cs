@@ -22,7 +22,7 @@ using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -372,7 +372,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				AddBreakpoint(b);
 			}
 			
-			BookmarkManager.Removed += (sender, e) => {
+			SD.BookmarkManager.BookmarkRemoved += (sender, e) => {
 				BreakpointBookmark bm = e.Bookmark as BreakpointBookmark;
 				if (bm != null) {
 					Breakpoint bp = bm.InternalBreakpointObject as Breakpoint;
@@ -387,7 +387,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void UpdateBreakpointLines()
 		{
-			foreach (BreakpointBookmark bookmark in BookmarkManager.Bookmarks.OfType<BreakpointBookmark>()) {
+			foreach (BreakpointBookmark bookmark in SD.BookmarkManager.Bookmarks.OfType<BreakpointBookmark>()) {
 				Breakpoint breakpoint = bookmark.InternalBreakpointObject as Breakpoint;
 				breakpoint.Line = bookmark.LineNumber;
 				breakpoint.Column = bookmark.ColumnNumber;
@@ -396,7 +396,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void UpdateBreakpointIcons()
 		{
-			foreach (BreakpointBookmark bookmark in BookmarkManager.Bookmarks.OfType<BreakpointBookmark>()) {
+			foreach (BreakpointBookmark bookmark in SD.BookmarkManager.Bookmarks.OfType<BreakpointBookmark>()) {
 				Breakpoint breakpoint = bookmark.InternalBreakpointObject as Breakpoint;
 				bookmark.IsHealthy = (CurrentProcess == null) || breakpoint.IsSet;
 			}
@@ -517,7 +517,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 			
 			foreach (Breakpoint breakpoint in e.BreakpointsHit) {
-				var bookmark = BookmarkManager.Bookmarks.OfType<BreakpointBookmark>().First(bm => bm.InternalBreakpointObject == breakpoint);
+				var bookmark = SD.BookmarkManager.Bookmarks.OfType<BreakpointBookmark>().First(bm => bm.InternalBreakpointObject == breakpoint);
 				
 				LoggingService.Debug(bookmark.Action + " " + bookmark.ScriptLanguage + " " + bookmark.Condition);
 				

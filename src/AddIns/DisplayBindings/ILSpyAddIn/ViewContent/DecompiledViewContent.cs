@@ -16,7 +16,7 @@ using ICSharpCode.ILSpyAddIn.ViewContent;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
@@ -65,8 +65,8 @@ namespace ICSharpCode.ILSpyAddIn
 			thread.Name = "Decompiler (" + shortTypeName + ")";
 			thread.Start();
 			
-			BookmarkManager.Removed += BookmarkManager_Removed;
-			BookmarkManager.Added += BookmarkManager_Added;
+			SD.BookmarkManager.BookmarkRemoved += BookmarkManager_Removed;
+			SD.BookmarkManager.BookmarkAdded += BookmarkManager_Added;
 		}
 		#endregion
 		
@@ -97,8 +97,8 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			cancellation.Cancel();
 			codeView.Dispose();
-			BookmarkManager.Added -= BookmarkManager_Added;
-			BookmarkManager.Removed -= BookmarkManager_Removed;
+			SD.BookmarkManager.BookmarkAdded -= BookmarkManager_Added;
+			SD.BookmarkManager.BookmarkRemoved -= BookmarkManager_Removed;
 //			DecompileInformation data;
 //			DebuggerDecompilerService.DebugInformation.TryRemove(decompiledType.MetadataToken.ToInt32(), out data);
 			base.Dispose();

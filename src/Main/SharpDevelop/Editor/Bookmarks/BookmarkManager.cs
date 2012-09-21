@@ -3,47 +3,44 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop.Bookmarks
+namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 {
-	/// <summary>
-	/// Static class that maintains the list of bookmarks and breakpoints.
-	/// </summary>
-	public static class BookmarkManager
+	sealed class BookmarkManager : IBookmarkManager
 	{
-		static List<SDBookmark> bookmarks = new List<SDBookmark>();
+		public BookmarkManager()
+		{
+			Project.ProjectService.SolutionClosing += delegate { Clear(); };
+		}
 		
-		public static List<SDBookmark> Bookmarks {
+		List<SDBookmark> bookmarks = new List<SDBookmark>();
+		
+		public IReadOnlyCollection<SDBookmark> Bookmarks {
 			get {
+				SD.MainThread.VerifyAccess();
 				return bookmarks;
 			}
 		}
 		
-		public static List<SDBookmark> GetBookmarks(FileName fileName)
+		public IEnumerable<SDBookmark> GetBookmarks(FileName fileName)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
 			
-			WorkbenchSingleton.AssertMainThread();
-			
-			List<SDBookmark> marks = new List<SDBookmark>();
-			
-			foreach (SDBookmark mark in bookmarks) {
-				if (fileName == mark.FileName) {
-					marks.Add(mark);
-				}
-			}
-			
-			return marks;
+			SD.MainThread.VerifyAccess();
+			return bookmarks.Where(b => b.FileName == fileName);
 		}
 		
-		public static void AddMark(SDBookmark bookmark)
+		public void AddMark(SDBookmark bookmark)
 		{
 			WorkbenchSingleton.AssertMainThread();
 			if (bookmark == null) return;
@@ -51,6 +48,15 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			if (bookmarks.Exists(b => IsEqualBookmark(b, bookmark))) return;
 			bookmarks.Add(bookmark);
 			OnAdded(new BookmarkEventArgs(bookmark));
+		}
+		
+		public void AddMark(SDBookmark bookmark, IDocument document, int line)
+		{
+			int lineStartOffset = document.GetLineByNumber(line).Offset;
+			int column = 1 + DocumentUtilitites.GetWhitespaceAfter(document, lineStartOffset).Length;
+			bookmark.Location = new TextLocation(line, column);
+			bookmark.FileName = FileName.Create(document.FileName);
+			AddMark(bookmark);
 		}
 		
 		static bool IsEqualBookmark(SDBookmark a, SDBookmark b)
@@ -66,14 +72,14 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			return a.LineNumber == b.LineNumber;
 		}
 		
-		public static void RemoveMark(SDBookmark bookmark)
+		public void RemoveMark(SDBookmark bookmark)
 		{
 			WorkbenchSingleton.AssertMainThread();
 			bookmarks.Remove(bookmark);
 			OnRemoved(new BookmarkEventArgs(bookmark));
 		}
 		
-		public static void Clear()
+		public void Clear()
 		{
 			WorkbenchSingleton.AssertMainThread();
 			while (bookmarks.Count > 0) {
@@ -83,26 +89,21 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		internal static void Initialize()
+		void OnRemoved(BookmarkEventArgs e)
 		{
-			Project.ProjectService.SolutionClosing += delegate { Clear(); };
-		}
-		
-		static void OnRemoved(BookmarkEventArgs e)
-		{
-			if (Removed != null) {
-				Removed(null, e);
+			if (BookmarkRemoved != null) {
+				BookmarkRemoved(null, e);
 			}
 		}
 		
-		static void OnAdded(BookmarkEventArgs e)
+		void OnAdded(BookmarkEventArgs e)
 		{
-			if (Added != null) {
-				Added(null, e);
+			if (BookmarkAdded != null) {
+				BookmarkAdded(null, e);
 			}
 		}
 		
-		public static List<SDBookmark> GetProjectBookmarks(ICSharpCode.SharpDevelop.Project.IProject project)
+		public IEnumerable<SDBookmark> GetProjectBookmarks(ICSharpCode.SharpDevelop.Project.IProject project)
 		{
 			WorkbenchSingleton.AssertMainThread();
 			List<SDBookmark> projectBookmarks = new List<SDBookmark>();
@@ -115,24 +116,20 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			return projectBookmarks;
 		}
 		
-		public static void ToggleBookmark(ITextEditor editor, int line,
-		                                  Predicate<SDBookmark> canToggle,
-		                                  Func<TextLocation, SDBookmark> bookmarkFactory)
+		public bool RemoveBookmarkAt(FileName fileName, int line, Predicate<SDBookmark> predicate = null)
 		{
-			WorkbenchSingleton.AssertMainThread();
-			foreach (SDBookmark bookmark in GetBookmarks(editor.FileName)) {
-				if (canToggle(bookmark) && bookmark.LineNumber == line) {
-					BookmarkManager.RemoveMark(bookmark);
-					return;
+			foreach (SDBookmark bookmark in GetBookmarks(fileName)) {
+				if (bookmark.CanToggle && bookmark.LineNumber == line) {
+					if (predicate == null || predicate(bookmark)) {
+						RemoveMark(bookmark);
+						return true;
+					}
 				}
 			}
-			// no bookmark at that line: create a new bookmark
-			int lineStartOffset = editor.Document.GetLineByNumber(line).Offset;
-			int column = 1 + DocumentUtilitites.GetWhitespaceAfter(editor.Document, lineStartOffset).Length;
-			BookmarkManager.AddMark(bookmarkFactory(new TextLocation(line, column)));
+			return false;
 		}
 		
-		public static void RemoveAll(Predicate<SDBookmark> match)
+		public void RemoveAll(Predicate<SDBookmark> match)
 		{
 			if (match == null)
 				throw new ArgumentNullException("Predicate is null!");
@@ -147,7 +144,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		public static event EventHandler<BookmarkEventArgs> Removed;
-		public static event EventHandler<BookmarkEventArgs> Added;
+		public event EventHandler<BookmarkEventArgs> BookmarkRemoved;
+		public event EventHandler<BookmarkEventArgs> BookmarkAdded;
 	}
 }

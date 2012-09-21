@@ -7,7 +7,7 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
@@ -60,13 +60,13 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			instance = new CurrentLineBookmark();
 			instance.Location = new TextLocation(startLine, startColumn);
 			instance.FileName = fileName;
-			BookmarkManager.AddMark(instance);
+			SD.BookmarkManager.AddMark(instance);
 		}
 		
 		public static void Remove()
 		{
 			if (instance != null) {
-				BookmarkManager.RemoveMark(instance);
+				SD.BookmarkManager.RemoveMark(instance);
 				instance = null;
 			}
 		}

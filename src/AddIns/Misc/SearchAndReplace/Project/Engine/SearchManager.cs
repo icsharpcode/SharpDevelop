@@ -16,7 +16,7 @@ using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
@@ -408,13 +408,13 @@ namespace SearchAndReplace
 				if (switchToOpenedView)
 					textArea.Caret.Location = result.StartLocation;
 
-				foreach (var bookmark in BookmarkManager.GetBookmarks(result.FileName)) {
+				foreach (var bookmark in SD.BookmarkManager.GetBookmarks(result.FileName)) {
 					if (bookmark.CanToggle && bookmark.LineNumber == result.StartLocation.Line) {
 						// bookmark or breakpoint already exists at that line
 						return;
 					}
 				}
-				BookmarkManager.AddMark(new Bookmark { FileName = result.FileName, Location = result.StartLocation});
+				SD.BookmarkManager.AddMark(new Bookmark { FileName = result.FileName, Location = result.StartLocation});
 			}
 		}
 		#endregion

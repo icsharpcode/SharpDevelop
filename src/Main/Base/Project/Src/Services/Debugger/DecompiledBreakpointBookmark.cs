@@ -6,7 +6,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Debugging;
 using Mono.Cecil;
 
-namespace ICSharpCode.SharpDevelop.Bookmarks
+namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 {
 	public class DecompiledBreakpointBookmark : BreakpointBookmark
 	{

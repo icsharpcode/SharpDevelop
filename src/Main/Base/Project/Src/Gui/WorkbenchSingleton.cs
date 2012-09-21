@@ -72,7 +72,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			DisplayBindingService.InitializeService();
 			TaskService.Initialize();
-			Bookmarks.BookmarkManager.Initialize();
 			Project.CustomToolsService.Initialize();
 			
 			workbench.Initialize();

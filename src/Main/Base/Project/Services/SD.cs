@@ -9,6 +9,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.Implementation;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
@@ -98,86 +99,106 @@ namespace ICSharpCode.SharpDevelop
 			return null;
 		}
 		
-		/// <summary>
-		/// Gets the workbench.
-		/// </summary>
+		/// <inheritdoc see="IWorkbench"/>
 		public static IWorkbench Workbench {
 			get { return GetRequiredService<IWorkbench>(); }
 		}
 		
+		/// <summary>
+		/// Gets the <see cref="IMessageLoop"/> representing the main UI thread.
+		/// </summary>
 		public static IMessageLoop MainThread {
 			get { return GetRequiredService<IMessageLoop>(); }
 		}
 		
-		/// <summary>
-		/// Gets the status bar.
-		/// </summary>
+		/// <inheritdoc see="IStatusBarService"/>
 		public static IStatusBarService StatusBar {
 			get { return GetRequiredService<IStatusBarService>(); }
 		}
 		
+		/// <inheritdoc see="ILoggingService"/>
 		public static ILoggingService Log {
 			get { return GetRequiredService<ILoggingService>(); }
 		}
 		
+		/// <inheritdoc see="IMessageService"/>
 		public static IMessageService MessageService {
 			get { return GetRequiredService<IMessageService>(); }
 		}
 		
+		/// <inheritdoc see="IPropertyService"/>
 		public static IPropertyService PropertyService {
 			get { return GetRequiredService<IPropertyService>(); }
 		}
 		
+		/// <inheritdoc see="Core.IResourceService"/>
 		public static Core.IResourceService ResourceService {
 			get { return GetRequiredService<Core.IResourceService>(); }
 		}
 		
+		/// <inheritdoc see="IEditorControlService"/>
 		public static IEditorControlService EditorControlService {
 			get { return GetRequiredService<IEditorControlService>(); }
 		}
 		
+		/// <inheritdoc see="IAnalyticsMonitor"/>
 		public static IAnalyticsMonitor AnalyticsMonitor {
 			get { return GetRequiredService<IAnalyticsMonitor>(); }
 		}
 		
+		/// <inheritdoc see="IParserService"/>
 		public static IParserService ParserService {
 			get { return GetRequiredService<IParserService>(); }
 		}
 		
+		/// <inheritdoc see="IAssemblyParserService"/>
 		public static IAssemblyParserService AssemblyParserService {
 			get { return GetRequiredService<IAssemblyParserService>(); }
 		}
 		
+		/// <inheritdoc see="IFileService"/>
 		public static IFileService FileService {
 			get { return GetRequiredService<IFileService>(); }
 		}
 		
+		/// <inheritdoc see="IGlobalAssemblyCacheService"/>
 		public static IGlobalAssemblyCacheService GlobalAssemblyCache {
 			get { return GetRequiredService<IGlobalAssemblyCacheService>(); }
 		}
 		
+		/// <inheritdoc see="IAddInTree"/>
 		public static IAddInTree AddInTree {
 			get { return GetRequiredService<IAddInTree>(); }
 		}
 		
+		/// <inheritdoc see="IShutdownService"/>
 		public static IShutdownService ShutdownService {
 			get { return GetRequiredService<IShutdownService>(); }
 		}
 		
+		/// <inheritdoc see="ITreeNodeFactory"/>
 		public static ITreeNodeFactory TreeNodeFactory {
 			get { return GetRequiredService<ITreeNodeFactory>(); }
 		}
 		
+		/// <inheritdoc see="IClipboard"/>
 		public static IClipboard Clipboard {
 			get { return GetRequiredService<IClipboard>(); }
 		}
 		
+		/// <inheritdoc see="IWinFormsService"/>
 		public static IWinFormsService WinForms {
 			get { return GetRequiredService<IWinFormsService>(); }
 		}
 		
+		/// <inheritdoc see="IBuildService"/>
 		public static IBuildService BuildService {
 			get { return GetRequiredService<IBuildService>(); }
+		}
+		
+		/// <inheritdoc see="IBookmarkManager"/>
+		public static IBookmarkManager BookmarkManager {
+			get { return GetRequiredService<IBookmarkManager>(); }
 		}
 	}
 }

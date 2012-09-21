@@ -25,7 +25,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
@@ -206,7 +206,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			primaryTextEditor.UpdateCustomizedHighlighting();
 			if (secondaryTextEditor != null)
 				secondaryTextEditor.UpdateCustomizedHighlighting();
-			foreach (var bookmark in BookmarkManager.GetBookmarks(fileName).OfType<SDMarkerBookmark>())
+			foreach (var bookmark in SD.BookmarkManager.GetBookmarks(fileName).OfType<SDMarkerBookmark>())
 				bookmark.SetMarker();
 		}
 		

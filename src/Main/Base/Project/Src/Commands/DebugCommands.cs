@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -121,7 +121,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			
 			if (editor != null) {
 				if (!string.IsNullOrEmpty(editor.FileName)) {
-					DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line, typeof(BreakpointBookmark));
+					DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line);
 				}
 			}
 		}

@@ -14,7 +14,7 @@ using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Workbench;
 
-namespace ICSharpCode.SharpDevelop.Bookmarks
+namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 {
 	public sealed class BookmarkPad : BookmarkPadBase
 	{
@@ -55,10 +55,10 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			this.control = new BookmarkPadContent();
 			this.control.InitializeComponent();
 			
-			BookmarkManager.Added   += BookmarkManagerAdded;
-			BookmarkManager.Removed += BookmarkManagerRemoved;
+			SD.BookmarkManager.BookmarkAdded   += BookmarkManagerAdded;
+			SD.BookmarkManager.BookmarkRemoved += BookmarkManagerRemoved;
 			
-			foreach (SDBookmark bookmark in BookmarkManager.Bookmarks) {
+			foreach (SDBookmark bookmark in SD.BookmarkManager.Bookmarks) {
 				if (ShowBookmarkInThisPad(bookmark)) {
 					this.Items.Add(bookmark);
 				}
@@ -73,8 +73,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public override void Dispose()
 		{
-			BookmarkManager.Added   -= BookmarkManagerAdded;
-			BookmarkManager.Removed -= BookmarkManagerRemoved;
+			SD.BookmarkManager.BookmarkAdded   -= BookmarkManagerAdded;
+			SD.BookmarkManager.BookmarkRemoved -= BookmarkManagerRemoved;
 		}
 		
 		protected abstract bool ShowBookmarkInThisPad(SDBookmark mark);

@@ -7,7 +7,7 @@ using System.IO;
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 
 namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 {
@@ -79,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 		
 		protected override void RemoveMark()
 		{
-			BookmarkManager.RemoveMark(this);
+			SD.BookmarkManager.RemoveMark(this);
 		}
 	}
 	

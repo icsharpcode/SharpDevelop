@@ -15,7 +15,7 @@ using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
@@ -221,12 +221,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (bookmarksAttached) return;
 			bookmarksAttached = true;
-			foreach (SDBookmark bookmark in BookmarkManager.GetBookmarks(codeEditor.FileName)) {
+			foreach (SDBookmark bookmark in SD.BookmarkManager.GetBookmarks(codeEditor.FileName)) {
 				bookmark.Document = codeEditor.Document;
 				codeEditor.IconBarManager.Bookmarks.Add(bookmark);
 			}
-			BookmarkManager.Added += BookmarkManager_Added;
-			BookmarkManager.Removed += BookmarkManager_Removed;
+			SD.BookmarkManager.BookmarkAdded += BookmarkManager_Added;
+			SD.BookmarkManager.BookmarkRemoved += BookmarkManager_Removed;
 			
 			PermanentAnchorService.AttachDocument(codeEditor.FileName, codeEditor.Document);
 		}
@@ -237,8 +237,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				PermanentAnchorService.DetachDocument(codeEditor.FileName, codeEditor.Document);
 			}
 			
-			BookmarkManager.Added -= BookmarkManager_Added;
-			BookmarkManager.Removed -= BookmarkManager_Removed;
+			SD.BookmarkManager.BookmarkAdded -= BookmarkManager_Added;
+			SD.BookmarkManager.BookmarkRemoved -= BookmarkManager_Removed;
 			foreach (SDBookmark bookmark in codeEditor.IconBarManager.Bookmarks.OfType<SDBookmark>()) {
 				if (bookmark.Document == codeEditor.Document) {
 					bookmark.Document = null;

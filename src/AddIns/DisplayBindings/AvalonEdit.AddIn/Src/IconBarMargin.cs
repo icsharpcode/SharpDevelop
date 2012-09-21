@@ -10,7 +10,7 @@ using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
-using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
@@ -242,7 +242,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					// no bookmark on the line: create a new breakpoint
 					ITextEditor textEditor = TextView.GetService(typeof(ITextEditor)) as ITextEditor;
 					if (textEditor != null) {
-						DebuggerService.ToggleBreakpointAt(textEditor, line, typeof(BreakpointBookmark));
+						DebuggerService.ToggleBreakpointAt(textEditor, line);
 						return;
 					}
 				}

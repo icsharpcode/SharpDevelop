@@ -109,8 +109,11 @@
     <Compile Include="Dom\SimpleModelCollection.cs" />
     <Compile Include="Editor\Bookmarks\BookmarkBase.cs" />
     <Compile Include="Editor\Bookmarks\BookmarkEventArgs.cs" />
+    <Compile Include="Editor\Bookmarks\BookmarkPad.cs" />
+    <Compile Include="Editor\Bookmarks\BookmarkPadToolbarCommands.cs" />
     <Compile Include="Editor\Bookmarks\EntityBookmark.cs" />
     <Compile Include="Editor\Bookmarks\IBookmark.cs" />
+    <Compile Include="Editor\Bookmarks\IBookmarkManager.cs" />
     <Compile Include="Editor\Bookmarks\IBookmarkMargin.cs" />
     <Compile Include="Editor\Bookmarks\SDBookmark.cs" />
     <Compile Include="Editor\Bookmarks\SDMarkerBookmark.cs" />
@@ -702,10 +705,6 @@
     <EmbeddedResource Include="Resources\NewFileDialog.xfrm" />
     <EmbeddedResource Include="Resources\OutputWindowOptionsPanel.xfrm" />
     <EmbeddedResource Include="Resources\WordCountDialog.xfrm" />
-    <Compile Include="Src\Bookmarks\Commands\MenuCommands.cs" />
-    <Compile Include="Src\Bookmarks\Pad\BookmarkPad.cs" />
-    <Compile Include="Src\Bookmarks\Pad\BookmarkPadToolbarCommands.cs" />
-    <Compile Include="Src\Bookmarks\BookmarkManager.cs" />
     <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />
     <Compile Include="Src\Project\MSBuildEnums.cs" />
@@ -826,7 +825,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\Bookmarks\Pad\BookmarkPadContent.xaml" />
+    <Page Include="Editor\Bookmarks\BookmarkPadContent.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorDialog.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorXaml.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\CodeGenerationPanel.xaml" />

@@ -10,9 +10,9 @@ using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop.Bookmarks
+namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 {
-	public abstract class BookmarkMenuCommand : AbstractMenuCommand
+	abstract class BookmarkMenuCommand : AbstractMenuCommand
 	{
 		public override void Run()
 		{
@@ -36,16 +36,17 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		protected abstract void Run(ITextEditor editor, IBookmarkMargin bookmarkMargin);
 	}
 	
-	public class ToggleBookmark : BookmarkMenuCommand
+	class ToggleBookmark : BookmarkMenuCommand
 	{
 		protected override void Run(ITextEditor editor, IBookmarkMargin bookmarkMargin)
 		{
-			BookmarkManager.ToggleBookmark(editor, editor.Caret.Line,
-			                               b => b.CanToggle && b.GetType() == typeof(Bookmark),
-			                               location => new Bookmark { FileName = editor.FileName, Location = location});
+			int lineNumber = editor.Caret.Line;
+			if (!SD.BookmarkManager.RemoveBookmarkAt(editor.FileName, lineNumber, b => b is Bookmark)) {
+				SD.BookmarkManager.AddMark(new Bookmark(), editor.Document, lineNumber);
+			}
 		}
 	}
-	public class PrevBookmark : BookmarkMenuCommand
+	class PrevBookmark : BookmarkMenuCommand
 	{
 		protected override void Run(ITextEditor editor, IBookmarkMargin bookmarkMargin)
 		{
@@ -61,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		}
 	}
 	
-	public class NextBookmark : BookmarkMenuCommand
+	class NextBookmark : BookmarkMenuCommand
 	{
 		protected override void Run(ITextEditor editor, IBookmarkMargin bookmarkMargin)
 		{
@@ -77,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		}
 	}
 	
-	public class ClearBookmarks : BookmarkMenuCommand
+	class ClearBookmarks : BookmarkMenuCommand
 	{
 		protected override void Run(ITextEditor editor, IBookmarkMargin bookmarkMargin)
 		{
@@ -85,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			                 where b.CanToggle
 			                 select b).ToList();
 			foreach (SDBookmark b in bookmarks)
-				BookmarkManager.RemoveMark(b);
+				SD.BookmarkManager.RemoveMark(b);
 		}
 	}
 }

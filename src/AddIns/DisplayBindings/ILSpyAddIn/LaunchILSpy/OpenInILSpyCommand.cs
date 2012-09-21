@@ -4,7 +4,7 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor.Commands;
 
 namespace ICSharpCode.ILSpyAddIn
