@@ -96,6 +96,7 @@
       <Link>Src\Project\MSBuildEngine\ExtendedBinaryReader.cs</Link>
     </Compile>
     <Compile Include="Dom\ConcatModelCollection.cs" />
+    <Compile Include="Dom\FilterModelCollection.cs" />
     <Compile Include="Dom\IEntityModelContext.cs" />
     <Compile Include="Dom\IMemberModel.cs" />
     <Compile Include="Dom\IModelFactory.cs" />
@@ -105,6 +106,14 @@
     <Compile Include="Dom\IEntityModel.cs" />
     <Compile Include="Dom\IModelCollection.cs" />
     <Compile Include="Dom\ITreeNodeFactory.cs" />
+    <Compile Include="Dom\SimpleModelCollection.cs" />
+    <Compile Include="Editor\Bookmarks\BookmarkBase.cs" />
+    <Compile Include="Editor\Bookmarks\BookmarkEventArgs.cs" />
+    <Compile Include="Editor\Bookmarks\EntityBookmark.cs" />
+    <Compile Include="Editor\Bookmarks\IBookmark.cs" />
+    <Compile Include="Editor\Bookmarks\IBookmarkMargin.cs" />
+    <Compile Include="Editor\Bookmarks\SDBookmark.cs" />
+    <Compile Include="Editor\Bookmarks\SDMarkerBookmark.cs" />
     <Compile Include="Editor\DocumentServiceAttribute.cs" />
     <Compile Include="Editor\DocumentUtilitites.cs" />
     <Compile Include="Editor\IEditorControlService.cs" />
@@ -693,15 +702,10 @@
     <EmbeddedResource Include="Resources\NewFileDialog.xfrm" />
     <EmbeddedResource Include="Resources\OutputWindowOptionsPanel.xfrm" />
     <EmbeddedResource Include="Resources\WordCountDialog.xfrm" />
-    <Compile Include="Src\Bookmarks\BookmarkBase.cs" />
     <Compile Include="Src\Bookmarks\Commands\MenuCommands.cs" />
-    <Compile Include="Src\Bookmarks\IBookmarkMargin.cs" />
     <Compile Include="Src\Bookmarks\Pad\BookmarkPad.cs" />
     <Compile Include="Src\Bookmarks\Pad\BookmarkPadToolbarCommands.cs" />
-    <Compile Include="Src\Bookmarks\SDBookmark.cs" />
-    <Compile Include="Src\Bookmarks\BookmarkEventHandler.cs" />
     <Compile Include="Src\Bookmarks\BookmarkManager.cs" />
-    <Compile Include="Src\Bookmarks\SDMarkerBookmark.cs" />
     <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />
     <Compile Include="Src\Project\MSBuildEnums.cs" />
@@ -715,8 +719,6 @@
     <Compile Include="Src\Gui\BrowserDisplayBinding\ExtendedWebBrowser.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Src\Bookmarks\BookmarkConverter.cs" />
-    <Compile Include="Src\Bookmarks\EntityBookmark.cs" />
     <Compile Include="Src\Services\RefactoringService\RefactoringService.cs" />
     <Compile Include="Src\Services\RefactoringService\Reference.cs" />
     <Compile Include="Src\Services\ProjectService\ParseableFileContentFinder.cs" />
@@ -871,6 +873,7 @@
     </ProjectReference>
     <Folder Include="Dom" />
     <Folder Include="Editor" />
+    <Folder Include="Editor\Bookmarks" />
     <Folder Include="Project" />
     <Folder Include="Parser" />
     <Folder Include="Project\Build" />

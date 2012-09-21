@@ -126,6 +126,7 @@
     <Compile Include="Utils\MockSite.cs" />
     <Compile Include="Utils\MockTextMarker.cs" />
     <Compile Include="Utils\MockTextMarkerService.cs" />
+    <Compile Include="Utils\ModelCollectionEventCheck.cs" />
     <Compile Include="Utils\ProjectHelper.cs" />
     <Compile Include="Utils\TestExtensions.cs" />
     <Compile Include="Utils\Tests\MockAssemblyTests.cs" />

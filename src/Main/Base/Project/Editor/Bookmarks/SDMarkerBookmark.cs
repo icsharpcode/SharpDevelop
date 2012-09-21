@@ -7,18 +7,13 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Editor;
 
-namespace ICSharpCode.SharpDevelop.Bookmarks
+namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 {
 	/// <summary>
 	/// A bookmark that is persistant across SharpDevelop sessions and has a text marker assigned to it.
 	/// </summary>
 	public abstract class SDMarkerBookmark : SDBookmark
 	{
-		public SDMarkerBookmark(FileName fileName, TextLocation location) : base(fileName, location)
-		{
-			//SetMarker();
-		}
-		
 		ITextMarker marker;
 		
 		protected abstract ITextMarker CreateMarker(ITextMarkerService markerService);

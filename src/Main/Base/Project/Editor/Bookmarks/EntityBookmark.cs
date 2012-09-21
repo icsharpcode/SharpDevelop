@@ -9,7 +9,7 @@ using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.SharpDevelop.Bookmarks
+namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 {
 	/// <summary>
 	/// Bookmark used to give additional operations for entities.

@@ -19,6 +19,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -413,7 +414,7 @@ namespace SearchAndReplace
 						return;
 					}
 				}
-				BookmarkManager.AddMark(new Bookmark(result.FileName, result.StartLocation));
+				BookmarkManager.AddMark(new Bookmark { FileName = result.FileName, Location = result.StartLocation});
 			}
 		}
 		#endregion

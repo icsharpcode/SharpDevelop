@@ -4,22 +4,18 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Bookmarks;
 
-namespace ICSharpCode.SharpDevelop.Bookmarks
+namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 {
 	/// <summary>
 	/// A bookmark that is persistant across SharpDevelop sessions.
 	/// </summary>
-	[TypeConverter(typeof(BookmarkConverter))]
 	public abstract class SDBookmark : BookmarkBase
 	{
-		public SDBookmark(FileName fileName, TextLocation location) : base(location)
-		{
-			this.fileName = fileName;
-		}
-		
 		FileName fileName;
 		
 		public FileName FileName {
@@ -55,39 +51,29 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				LineNumberChanged(this, EventArgs.Empty);
 		}
 		
-		bool isSaved = true;
-		
 		/// <summary>
 		/// Gets/Sets if the bookmark should be saved to the project memento file.
 		/// </summary>
 		/// <remarks>
-		/// Default is true, set this property to false if you are using the bookmark for
+		/// Default is true; override this property if you are using the bookmark for
 		/// something special like like "CurrentLineBookmark" in the debugger.
 		/// </remarks>
-		public bool IsSaved {
+		public virtual bool IsSaved {
 			get {
-				return isSaved;
-			}
-			set {
-				isSaved = value;
+				return true;
 			}
 		}
-		
-		bool isVisibleInBookmarkPad = true;
 		
 		/// <summary>
 		/// Gets/Sets if the bookmark is shown in the bookmark pad.
 		/// </summary>
 		/// <remarks>
-		/// Default is true, set this property to false if you are using the bookmark for
+		/// Default is true, override this property if you are using the bookmark for
 		/// something special like like "CurrentLineBookmark" in the debugger.
 		/// </remarks>
-		public bool IsVisibleInBookmarkPad {
+		public virtual bool IsVisibleInBookmarkPad {
 			get {
-				return isVisibleInBookmarkPad;
-			}
-			set {
-				isVisibleInBookmarkPad = value;
+				return true;
 			}
 		}
 		
@@ -102,8 +88,5 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	/// </summary>
 	public sealed class Bookmark : SDBookmark
 	{ 
-		public Bookmark(FileName fileName, TextLocation location) : base(fileName, location)
-		{
-		}
 	}
 }

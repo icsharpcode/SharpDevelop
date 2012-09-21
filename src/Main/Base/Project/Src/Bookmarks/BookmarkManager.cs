@@ -1,12 +1,13 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.NRefactory;
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
@@ -146,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		public static event BookmarkEventHandler Removed;
-		public static event BookmarkEventHandler Added;
+		public static event EventHandler<BookmarkEventArgs> Removed;
+		public static event EventHandler<BookmarkEventArgs> Added;
 	}
 }

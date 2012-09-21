@@ -7,9 +7,8 @@ using System.Windows.Media;
 
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.SharpDevelop.Editor;
 
-namespace ICSharpCode.SharpDevelop.Bookmarks
+namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 {
 	/// <summary>
 	/// A bookmark that can be attached to an AvalonEdit TextDocument.
@@ -147,12 +146,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		public BookmarkBase(TextLocation location)
-		{
-			this.Location = location;
+		public static IImage DefaultBookmarkImage {
+			get { return SD.ResourceService.GetImage("Bookmarks.ToggleMark"); }
 		}
-		
-		public static readonly IImage DefaultBookmarkImage = new ResourceServiceImage("Bookmarks.ToggleMark");
 		
 		public virtual IImage Image {
 			get { return DefaultBookmarkImage; }

@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {

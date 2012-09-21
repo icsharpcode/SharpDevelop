@@ -112,7 +112,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			WorkbenchSingleton.AssertMainThread();
 			
-			foreach (var mark in memento.GetList<ICSharpCode.SharpDevelop.Bookmarks.SDBookmark>("bookmarks")) {
+			foreach (var mark in memento.GetList<ICSharpCode.SharpDevelop.Editor.Bookmarks.SDBookmark>("bookmarks")) {
 				ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.AddMark(mark);
 			}
 			List<string> filesToOpen = new List<string>();

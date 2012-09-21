@@ -4,12 +4,14 @@
 using System;
 using System.Linq;
 using System.Windows.Media;
+
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
@@ -97,8 +99,17 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			set { tooltip = value; }
 		}
 		
-		public BreakpointBookmark(FileName fileName, TextLocation location, BreakpointAction action, string scriptLanguage, string script) : base(fileName, location)
+		/// <summary>
+		/// parameter-less ctor is necessary for deserialization
+		/// </summary>
+		public BreakpointBookmark()
 		{
+		}
+		
+		public BreakpointBookmark(FileName fileName, TextLocation location, BreakpointAction action, string scriptLanguage, string script)
+		{
+			this.Location = location;
+			this.FileName = fileName;
 			this.action = action;
 			this.scriptLanguage = scriptLanguage;
 			this.condition = script;

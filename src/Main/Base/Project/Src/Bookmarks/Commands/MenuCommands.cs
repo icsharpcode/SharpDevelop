@@ -4,8 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
@@ -40,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			BookmarkManager.ToggleBookmark(editor, editor.Caret.Line,
 			                               b => b.CanToggle && b.GetType() == typeof(Bookmark),
-			                               location => new Bookmark(editor.FileName, location));
+			                               location => new Bookmark { FileName = editor.FileName, Location = location});
 		}
 	}
 	public class PrevBookmark : BookmarkMenuCommand

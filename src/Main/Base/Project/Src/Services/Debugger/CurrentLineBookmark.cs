@@ -9,6 +9,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Debugging
@@ -56,7 +57,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			IDocumentLine line = document.GetLineByNumber(startLine);
 			if (endColumn < 1 || endColumn > line.Length)
 				endColumn = line.Length;
-			instance = new CurrentLineBookmark(fileName, new TextLocation(startLine, startColumn));
+			instance = new CurrentLineBookmark();
+			instance.Location = new TextLocation(startLine, startColumn);
+			instance.FileName = fileName;
 			BookmarkManager.AddMark(instance);
 		}
 		
@@ -81,16 +84,16 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			get { return 100; }
 		}
 		
-		public CurrentLineBookmark(FileName fileName, TextLocation location) : base(fileName, location)
-		{
-			this.IsSaved = false;
-			this.IsVisibleInBookmarkPad = false;
+		public override bool IsSaved {
+			get { return false; }
 		}
 		
-		readonly static IImage currentLineArrow = new ResourceServiceImage("Bookmarks.CurrentLine");
+		public override bool IsVisibleInBookmarkPad {
+			get { return false; }
+		}
 		
 		public override IImage Image {
-			get { return currentLineArrow; }
+			get { return SD.ResourceService.GetImage("Bookmarks.CurrentLine"); }
 		}
 		
 		protected override ITextMarker CreateMarker(ITextMarkerService markerService)

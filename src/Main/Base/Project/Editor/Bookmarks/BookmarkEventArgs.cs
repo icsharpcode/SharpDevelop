@@ -3,10 +3,8 @@
 
 using System;
 
-namespace ICSharpCode.SharpDevelop.Bookmarks
+namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 {
-	public delegate void BookmarkEventHandler(object sender, BookmarkEventArgs e);
-	
 	/// <summary>
 	/// Description of BookmarkEventHandler.
 	/// </summary>
