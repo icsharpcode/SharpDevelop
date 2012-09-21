@@ -57,9 +57,8 @@ namespace ICSharpCode.UnitTesting
 			get { return project.Name; }
 		}
 		
-		public virtual IBuildable GetBuildableForTesting()
-		{
-			return project;
+		public virtual bool IsBuildNeededBeforeTestRun {
+			get { return true; }
 		}
 		
 		public override ImmutableStack<ITest> FindPathToDescendant(ITest test)

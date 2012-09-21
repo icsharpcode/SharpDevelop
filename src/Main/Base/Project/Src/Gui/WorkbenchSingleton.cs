@@ -74,7 +74,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			TaskService.Initialize();
 			Bookmarks.BookmarkManager.Initialize();
 			Project.CustomToolsService.Initialize();
-			Project.BuildModifiedProjectsOnlyService.Initialize();
 			
 			workbench.Initialize();
 			workbench.SetMemento(PropertyService.NestedProperties(workbenchMemento));

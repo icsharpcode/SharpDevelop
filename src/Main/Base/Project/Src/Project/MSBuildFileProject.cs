@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Threading.Tasks;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -18,9 +20,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			TypeGuid = "{00000000-0000-0000-0000-000000000000}";
 		}
 		
-		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		public override Task<bool> BuildAsync(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IProgressMonitor progressMonitor)
 		{
-			MSBuildEngine.StartBuild(this, options, feedbackSink, MSBuildEngine.AdditionalTargetFiles);
+			return MSBuildEngine.BuildAsync(this, options, feedbackSink, progressMonitor.CancellationToken, MSBuildEngine.AdditionalTargetFiles);
 		}
 	}
 }

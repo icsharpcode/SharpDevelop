@@ -11,6 +11,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.SharpDevelop.Workbench;
 
@@ -173,6 +174,10 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static IWinFormsService WinForms {
 			get { return GetRequiredService<IWinFormsService>(); }
+		}
+		
+		public static IBuildService BuildService {
+			get { return GetRequiredService<IBuildService>(); }
 		}
 	}
 }

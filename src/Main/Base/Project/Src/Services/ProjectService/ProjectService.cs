@@ -540,7 +540,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			// If a build is running, cancel it.
 			// If we would let a build run but unload the MSBuild projects, the next project.StartBuild call
 			// could cause an exception.
-			BuildEngine.CancelGuiBuild();
+			SD.BuildService.CancelBuild();
 			
 			if (openSolution != null) {
 				CurrentProject = null;
@@ -610,42 +610,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static bool building;
-		
+		[Obsolete]
 		public static bool IsBuilding {
 			get {
-				return building;
+				return SD.BuildService.IsBuilding;
 			}
-		}
-		
-		/// <summary>
-		/// Raises the <see cref="BuildStarted"/> event.
-		/// 
-		/// You do not need to call this method if you use BuildEngine.BuildInGui - the build
-		/// engine will call these events itself.
-		/// </summary>
-		public static void RaiseEventBuildStarted(BuildEventArgs e)
-		{
-			if (e == null)
-				throw new ArgumentNullException("e");
-			WorkbenchSingleton.AssertMainThread();
-			building = true;
-			BuildStarted.RaiseEvent(null, e);
-		}
-		
-		/// <summary>
-		/// Raises the <see cref="BuildFinished"/> event.
-		/// 
-		/// You do not need to call this method if you use BuildEngine.BuildInGui - the build
-		/// engine will call these events itself.
-		/// </summary>
-		public static void RaiseEventBuildFinished(BuildEventArgs e)
-		{
-			if (e == null)
-				throw new ArgumentNullException("e");
-			WorkbenchSingleton.AssertMainThread();
-			building = false;
-			BuildFinished.RaiseEvent(null, e);
 		}
 		
 		public static void RemoveSolutionFolder(string guid)
@@ -740,8 +709,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static event SolutionFolderEventHandler SolutionFolderRemoved;
 		
-		public static event EventHandler<BuildEventArgs> BuildStarted;
-		public static event EventHandler<BuildEventArgs> BuildFinished;
+		[Obsolete]
+		public static event EventHandler<BuildEventArgs> BuildStarted {
+			add { SD.BuildService.BuildStarted += value; }
+			remove { SD.BuildService.BuildFinished -= value; }
+		}
+		[Obsolete]
+		public static event EventHandler<BuildEventArgs> BuildFinished {
+			add { SD.BuildService.BuildFinished += value; }
+			remove { SD.BuildService.BuildFinished -= value; }
+		}
 		
 		public static event SolutionConfigurationEventHandler SolutionConfigurationChanged;
 		
@@ -773,40 +750,5 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static event EventHandler<ProjectItemEventArgs> ProjectItemAdded;
 		public static event EventHandler<ProjectItemEventArgs> ProjectItemRemoved;
-	}
-	
-	public class BuildEventArgs : EventArgs
-	{
-		/// <summary>
-		/// The project/solution to be built.
-		/// </summary>
-		public readonly IBuildable Buildable;
-		
-		/// <summary>
-		/// The build options.
-		/// </summary>
-		public readonly BuildOptions Options;
-		
-		/// <summary>
-		/// Gets the build results.
-		/// This property is null for build started events.
-		/// </summary>
-		public readonly BuildResults Results;
-		
-		public BuildEventArgs(IBuildable buildable, BuildOptions options)
-			: this(buildable, options, null)
-		{
-		}
-		
-		public BuildEventArgs(IBuildable buildable, BuildOptions options, BuildResults results)
-		{
-			if (buildable == null)
-				throw new ArgumentNullException("buildable");
-			if (options == null)
-				throw new ArgumentNullException("options");
-			this.Buildable = buildable;
-			this.Options = options;
-			this.Results = results;
-		}
 	}
 }

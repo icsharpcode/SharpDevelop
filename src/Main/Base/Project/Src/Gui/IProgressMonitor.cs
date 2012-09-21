@@ -7,7 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Represents a target where an active task reports progress to.

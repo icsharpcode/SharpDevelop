@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -1101,9 +1102,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Building
-		public override ICollection<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
+		public override IEnumerable<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
 		{
-			ICollection<IBuildable> result = base.GetBuildDependencies(buildOptions);
+			var result = base.GetBuildDependencies(buildOptions).ToList();
 			foreach (ProjectItem item in GetItemsOfType(ItemType.ProjectReference)) {
 				ProjectReferenceProjectItem prpi = item as ProjectReferenceProjectItem;
 				if (prpi != null && prpi.ReferencedProject != null)
@@ -1112,16 +1113,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			return result;
 		}
 		
-		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		public override Task<bool> BuildAsync(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IProgressMonitor progressMonitor)
 		{
-			MSBuildEngine.StartBuild(this, options, feedbackSink, MSBuildEngine.AdditionalTargetFiles);
+			return MSBuildEngine.BuildAsync(this, options, feedbackSink, progressMonitor.CancellationToken, MSBuildEngine.AdditionalTargetFiles);
 		}
 		
 		public override ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)
 		{
 			ProjectBuildOptions projectOptions = base.CreateProjectBuildOptions(options, isRootBuildable);
 			Solution solution = this.ParentSolution;
-			var configMatchings = solution.GetActiveConfigurationsAndPlatformsForProjects(options.SolutionConfiguration, options.SolutionPlatform);
+			string solutionConfiguration = options.SolutionConfiguration ?? solution.Preferences.ActiveConfiguration;
+			string solutionPlatform = options.SolutionPlatform ?? solution.Preferences.ActivePlatform;
+			
+			var configMatchings = solution.GetActiveConfigurationsAndPlatformsForProjects(solutionConfiguration, solutionPlatform);
 			// Find the project configuration, and build an XML string containing all configurations from the solution
 			StringWriter solutionConfigurationXml = new StringWriter();
 			using (XmlTextWriter solutionConfigurationWriter = new XmlTextWriter(solutionConfigurationXml)) {

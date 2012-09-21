@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Project
 
 		void ProjectBuildStarted(object sender, BuildEventArgs e)
 		{
-			var projectItems = new BeforeBuildCustomToolProjectItems(e.Buildable);
+			var projectItems = new BeforeBuildCustomToolProjectItems(e.Projects);
 			RunCustomTool(projectItems.GetProjectItems());
 		}
 		

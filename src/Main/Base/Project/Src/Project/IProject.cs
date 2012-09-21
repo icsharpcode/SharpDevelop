@@ -330,48 +330,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Never returns null, but may return a permanently empty collection if this project does not support such models.
 		/// </summary>
 		ITypeDefinitionModelCollection TypeDefinitionModels { get; }
-	}
-	
-	/// <summary>
-	/// A project or solution.
-	/// The IBuildable interface members are thread-safe.
-	/// </summary>
-	public interface IBuildable
-	{
-		/// <summary>
-		/// Gets the list of projects on which this project depends.
-		/// This method is thread-safe.
-		/// </summary>
-		ICollection<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions);
-		
-		/// <summary>
-		/// Starts building the project using the specified options.
-		/// This member must be implemented thread-safe.
-		/// </summary>
-		void StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink);
-		
-		/// <summary>
-		/// Gets the name of the buildable item.
-		/// This property is thread-safe.
-		/// </summary>
-		string Name { get; }
 		
 		/// <summary>
 		/// Gets the parent solution.
 		/// This property is thread-safe.
 		/// </summary>
 		Solution ParentSolution { get; }
-		
-		/// <summary>
-		/// Creates the project-specific build options.
-		/// This member must be implemented thread-safe.
-		/// </summary>
-		/// <param name="options">The global build options.</param>
-		/// <param name="isRootBuildable">Specifies whether this project is the main buildable item.
-		/// The root buildable is the buildable for which <see cref="BuildOptions.ProjectTarget"/> and <see cref="BuildOptions.ProjectAdditionalProperties"/> apply.
-		/// The dependencies of that root buildable are the non-root buildables.</param>
-		/// <returns>The project-specific build options.</returns>
-		ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable);
 	}
 	
 	/// <summary>

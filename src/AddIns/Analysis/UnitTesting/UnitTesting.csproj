@@ -80,7 +80,6 @@
     <Compile Include="Model\ITestSolution.cs" />
     <Compile Include="Model\TestBase.cs" />
     <Compile Include="Interfaces\IBuildOptions.cs" />
-    <Compile Include="Interfaces\IBuildProjectFactory.cs" />
     <Compile Include="Interfaces\IFileSystem.cs" />
     <Compile Include="Interfaces\IUnitTestDebuggerService.cs" />
     <Compile Include="Interfaces\IUnitTestSaveAllFilesCommand.cs" />
@@ -100,7 +99,6 @@
     <Compile Include="Pad\TestTreeView.cs" />
     <Compile Include="Pad\UnitTestNode.cs" />
     <Compile Include="Pad\UnitTestsPad.cs" />
-    <Compile Include="Interfaces\UnitTestBuildProjectFactory.cs" />
     <Compile Include="Interfaces\UnitTestDebuggerService.cs" />
     <Compile Include="Interfaces\UnitTestFileService.cs" />
     <Compile Include="Interfaces\UnitTestSaveAllFilesCommand.cs" />

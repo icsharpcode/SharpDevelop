@@ -4,6 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -24,19 +27,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			get { return string.Empty; }
 		}
 		
-		public Solution ParentSolution {
-			get { return projects.Length > 0 ? projects[0].ParentSolution : null; }
-		}
-		
-		public ICollection<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
+		public IEnumerable<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
 		{
 			return projects;
 		}
 		
-		public void StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
+		public Task<bool> BuildAsync(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IProgressMonitor progressMonitor)
 		{
 			// SharpDevelop already has built our dependencies, so we're done immediately.
-			feedbackSink.Done(true);
+			return Task.FromResult(true);
 		}
 		
 		public ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)

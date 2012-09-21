@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -495,14 +496,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			return referenceItems;
 		}
 		
-		public virtual void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		public virtual Task<bool> BuildAsync(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IProgressMonitor progressMonitor)
 		{
 			feedbackSink.ReportError(new BuildError { ErrorText = "Building project " + Name + " is not supported.", IsWarning = true });
 			// we don't know how to build anything, report that we're done.
-			feedbackSink.Done(true);
+			return Task.FromResult(true);
 		}
 		
-		public virtual ICollection<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
+		public virtual IEnumerable<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
 		{
 			lock (SyncRoot) {
 				List<IBuildable> result = new List<IBuildable>();
@@ -525,8 +526,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (options == null)
 				throw new ArgumentNullException("options");
+			string solutionConfiguration = options.SolutionConfiguration ?? ParentSolution.Preferences.ActiveConfiguration;
+			string solutionPlatform = options.SolutionPlatform ?? ParentSolution.Preferences.ActivePlatform;
+			
 			// start of default implementation
-			var configMatchings = this.ParentSolution.GetActiveConfigurationsAndPlatformsForProjects(options.SolutionConfiguration, options.SolutionPlatform);
+			var configMatchings = this.ParentSolution.GetActiveConfigurationsAndPlatformsForProjects(solutionConfiguration, solutionPlatform);
 			ProjectBuildOptions projectOptions = new ProjectBuildOptions(isRootBuildable ? options.ProjectTarget : options.TargetForDependencies);
 			projectOptions.BuildOutputVerbosity = options.BuildOutputVerbosity;
 			// find the project configuration
@@ -538,9 +542,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			// fall back to solution config if we don't find any entries for the project
 			if (string.IsNullOrEmpty(projectOptions.Configuration))
-				projectOptions.Configuration = options.SolutionConfiguration;
+				projectOptions.Configuration = solutionConfiguration;
 			if (string.IsNullOrEmpty(projectOptions.Platform))
-				projectOptions.Platform = options.SolutionPlatform;
+				projectOptions.Platform = solutionPlatform;
 			
 			// copy global properties to project options
 			foreach (var pair in options.GlobalAdditionalProperties)

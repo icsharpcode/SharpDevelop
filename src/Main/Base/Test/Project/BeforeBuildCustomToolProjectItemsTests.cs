@@ -5,8 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-
+using System.Threading.Tasks;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Tests.Utils;
 using NUnit.Framework;
@@ -20,27 +21,6 @@ namespace ICSharpCode.SharpDevelop.Tests.Project
 		ProjectHelper projectHelper;
 		BeforeBuildCustomToolProjectItems beforeBuildCustomToolProjectItems;
 		Solution solution;
-		
-		class UnknownBuildable : IBuildable
-		{
-			public string Name { get; set; }
-			
-			public Solution ParentSolution { get; set; }
-			
-			public ICollection<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
-			{
-				return new IBuildable[0];
-			}
-			
-			public void StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
-			{
-			}
-			
-			public ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)
-			{
-				return new ProjectBuildOptions(BuildTarget.Build);
-			}
-		}
 		
 		IProject CreateProject(string fileName = @"d:\MyProject\MyProject.csproj")
 		{
@@ -84,17 +64,17 @@ namespace ICSharpCode.SharpDevelop.Tests.Project
 		
 		void CreateBeforeBuildCustomToolProjectItems()
 		{
-			CreateBeforeBuildCustomToolProjectItems(projectHelper.Project as IBuildable);
+			CreateBeforeBuildCustomToolProjectItems(new[] { projectHelper.Project });
 		}
 		
-		void CreateBeforeBuildCustomToolProjectItems(IBuildable buildable)
+		void CreateBeforeBuildCustomToolProjectItems(IReadOnlyList<IProject> projects)
 		{
-			beforeBuildCustomToolProjectItems = new BeforeBuildCustomToolProjectItems(buildable);
+			beforeBuildCustomToolProjectItems = new BeforeBuildCustomToolProjectItems(projects);
 		}
 		
 		void CreateBeforeBuildCustomToolProjectItemsUsingSolution()
 		{
-			CreateBeforeBuildCustomToolProjectItems(solution as IBuildable);
+			CreateBeforeBuildCustomToolProjectItems(solution.Projects.ToList());
 		}
 		
 		FileProjectItem AddFileToProject(string include)
@@ -102,12 +82,6 @@ namespace ICSharpCode.SharpDevelop.Tests.Project
 			var projectItem = new FileProjectItem(projectHelper.Project, ItemType.Compile, include);
 			projectHelper.AddProjectItem(projectItem);
 			return projectItem;
-		}
-		
-		void CreateBeforeBuildCustomToolProjectItemsWithUnknownIBuildableDerivedClass()
-		{
-			var unknownBuildable = new UnknownBuildable();
-			CreateBeforeBuildCustomToolProjectItems(unknownBuildable);
 		}
 		
 		[Test]
@@ -289,16 +263,6 @@ namespace ICSharpCode.SharpDevelop.Tests.Project
 				projectItem
 			};
 			CollectionAssert.AreEqual(expectedProjectItems, projectItems);
-		}
-		
-		[Test]
-		public void GetProjectItems_UnknownIBuildableDerivedClass_NullReferenceExceptionIsNotThrown()
-		{
-			CreateBeforeBuildCustomToolProjectItemsWithUnknownIBuildableDerivedClass();
-			
-			List<FileProjectItem> projectItems = GetProjectItems();
-			
-			Assert.AreEqual(0, projectItems.Count);
 		}
 	}
 }

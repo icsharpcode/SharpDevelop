@@ -10,11 +10,11 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public class BeforeBuildCustomToolProjectItems
 	{
-		IBuildable buildable;
+		IReadOnlyList<IProject> projects;
 		
-		public BeforeBuildCustomToolProjectItems(IBuildable buildable)
+		public BeforeBuildCustomToolProjectItems(IReadOnlyList<IProject> projects)
 		{
-			this.buildable = buildable;
+			this.projects = projects;
 		}
 		
 		public IEnumerable<FileProjectItem> GetProjectItems()
@@ -26,17 +26,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		IEnumerable<IProject> GetProjects()
 		{
-			IProject project = buildable as IProject;
-			if (project != null) {
-				return new IProject[] { project };
-			}
-			
-			var solution = buildable as Solution;
-			if (solution != null) {
-				return solution.Projects;
-			}
-			
-			return new IProject[0];
+			return projects;
 		}
 		
 		IEnumerable<FileProjectItem> GetConfiguredCustomToolProjectItems(IProject project)

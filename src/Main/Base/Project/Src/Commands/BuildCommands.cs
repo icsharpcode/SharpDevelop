@@ -25,9 +25,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public virtual void BeforeBuild()
 		{
 			TaskService.BuildMessageViewCategory.ClearText();
-			TaskService.InUpdate = true;
 			TaskService.ClearExceptCommentTasks();
-			TaskService.InUpdate = false;
 			ICSharpCode.SharpDevelop.Commands.SaveAllFiles.SaveAll();
 		}
 		
@@ -77,26 +75,6 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 		}
 		
-		public Task<BuildResults> BuildAsync(CancellationToken cancellationToken)
-		{
-			var registration = cancellationToken.Register(BuildEngine.CancelGuiBuild, true);
-			var tcs = new TaskCompletionSource<BuildResults>();
-			this.BuildComplete += delegate {
-				registration.Dispose();
-				if (cancellationToken.IsCancellationRequested)
-					tcs.TrySetCanceled();
-				else
-					tcs.TrySetResult(this.LastBuildResults);
-			};
-			try {
-				StartBuild();
-			} catch (Exception ex) {
-				registration.Dispose();
-				tcs.TrySetException(ex);
-			}
-			return tcs.Task;
-		}
-		
 		/// <summary>
 		/// Notifies the user that #develp's internal MSBuildEngine
 		/// implementation only supports compiling solutions and projects;
@@ -113,9 +91,9 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	
 	public class Build : AbstractBuildMenuCommand
 	{
-		public override void StartBuild()
+		public override async void StartBuild()
 		{
-			BuildEngine.BuildInGui(ProjectService.OpenSolution, new BuildOptions(BuildTarget.Build, CallbackMethod));
+			CallbackMethod(await SD.BuildService.BuildAsync(ProjectService.OpenSolution, new BuildOptions(BuildTarget.Build)));
 		}
 	}
 	
@@ -123,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			if (BuildModifiedProjectsOnlyService.Setting == BuildOnExecuteSetting.DoNotBuild) {
+			if (BuildOptions.BuildOnExecute == BuildDetection.DoNotBuild) {
 				LastBuildResults = new BuildResults { Result = BuildResultCode.Success };
 				OnBuildComplete(EventArgs.Empty);
 			} else {
@@ -131,22 +109,22 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 		}
 		
-		public override void StartBuild()
+		public override async void StartBuild()
 		{
-			BuildEngine.BuildInGui(BuildModifiedProjectsOnlyService.WrapBuildable(ProjectService.OpenSolution),
-			                       new BuildOptions(BuildTarget.Build, CallbackMethod));
+			var options = new BuildOptions(BuildTarget.Build) { BuildDetection = BuildOptions.BuildOnExecute };
+			CallbackMethod(await SD.BuildService.BuildAsync(ProjectService.OpenSolution, options));
 		}
 	}
 	
 	public class BuildProjectBeforeExecute : BuildProject
 	{
-		public BuildProjectBeforeExecute(IBuildable project) : base(project)
+		public BuildProjectBeforeExecute(IProject project) : base(project)
 		{
 		}
 		
 		public override void Run()
 		{
-			if (BuildModifiedProjectsOnlyService.Setting == BuildOnExecuteSetting.DoNotBuild) {
+			if (BuildOptions.BuildOnExecute == BuildDetection.DoNotBuild) {
 				LastBuildResults = new BuildResults { Result = BuildResultCode.Success };
 				OnBuildComplete(EventArgs.Empty);
 			} else {
@@ -154,33 +132,33 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 		}
 		
-		public override void StartBuild()
+		public override async void StartBuild()
 		{
-			BuildEngine.BuildInGui(BuildModifiedProjectsOnlyService.WrapBuildable(this.ProjectToBuild),
-			                       new BuildOptions(BuildTarget.Build, CallbackMethod));
+			var options = new BuildOptions(BuildTarget.Build) { BuildDetection = BuildOptions.BuildOnExecute };
+			CallbackMethod(await SD.BuildService.BuildAsync(this.ProjectToBuild, options));
 		}
 	}
 	
 	public class Rebuild : Build
 	{
-		public override void StartBuild()
+		public override async void StartBuild()
 		{
-			BuildEngine.BuildInGui(ProjectService.OpenSolution, new BuildOptions(BuildTarget.Rebuild, CallbackMethod));
+			CallbackMethod(await SD.BuildService.BuildAsync(ProjectService.OpenSolution, new BuildOptions(BuildTarget.Rebuild)));
 		}
 	}
 	
 	public class Clean : AbstractBuildMenuCommand
 	{
-		public override void StartBuild()
+		public override async void StartBuild()
 		{
-			BuildEngine.BuildInGui(ProjectService.OpenSolution, new BuildOptions(BuildTarget.Clean, CallbackMethod));
+			CallbackMethod(await SD.BuildService.BuildAsync(ProjectService.OpenSolution, new BuildOptions(BuildTarget.Clean)));
 		}
 	}
 	
 	public abstract class AbstractProjectBuildMenuCommand : AbstractBuildMenuCommand
 	{
-		protected IBuildable targetProject;
-		protected IBuildable ProjectToBuild {
+		protected IProject targetProject;
+		protected IProject ProjectToBuild {
 			get {
 				return targetProject ?? ProjectService.CurrentProject;
 			}
@@ -197,33 +175,33 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public BuildProject()
 		{
 		}
-		public BuildProject(IBuildable targetProject)
+		public BuildProject(IProject targetProject)
 		{
 			this.targetProject = targetProject;
 		}
 		
-		public override void StartBuild()
+		public override async void StartBuild()
 		{
-			BuildEngine.BuildInGui(this.ProjectToBuild, new BuildOptions(BuildTarget.Build, CallbackMethod));
+			CallbackMethod(await SD.BuildService.BuildAsync(this.ProjectToBuild, new BuildOptions(BuildTarget.Build)));
 		}
 	}
 	
 	public class RebuildProject : BuildProject
 	{
 		public RebuildProject() {}
-		public RebuildProject(IBuildable targetProject) : base(targetProject) {}
+		public RebuildProject(IProject targetProject) : base(targetProject) {}
 		
-		public override void StartBuild()
+		public override async void StartBuild()
 		{
-			BuildEngine.BuildInGui(this.ProjectToBuild, new BuildOptions(BuildTarget.Rebuild, CallbackMethod));
+			CallbackMethod(await SD.BuildService.BuildAsync(this.ProjectToBuild, new BuildOptions(BuildTarget.Rebuild)));
 		}
 	}
 	
 	public class CleanProject : AbstractProjectBuildMenuCommand
 	{
-		public override void StartBuild()
+		public override async void StartBuild()
 		{
-			BuildEngine.BuildInGui(this.ProjectToBuild, new BuildOptions(BuildTarget.Clean, CallbackMethod));
+			CallbackMethod(await SD.BuildService.BuildAsync(this.ProjectToBuild, new BuildOptions(BuildTarget.Clean)));
 		}
 	}
 	
@@ -231,11 +209,11 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			BuildEngine.CancelGuiBuild();
+			SD.BuildService.CancelBuild();
 		}
 		
 		public override bool IsEnabled {
-			get { return BuildEngine.IsGuiBuildRunning; }
+			get { return SD.BuildService.IsBuilding; }
 			set { }
 		}
 	}

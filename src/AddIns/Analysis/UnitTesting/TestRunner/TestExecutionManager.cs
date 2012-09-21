@@ -23,7 +23,7 @@ namespace ICSharpCode.UnitTesting.Frameworks
 	/// </summary>
 	public class TestExecutionManager
 	{
-		readonly IBuildProjectFactory buildProjectFactory;
+		readonly IBuildService buildService;
 		readonly IUnitTestTaskService taskService;
 		readonly IUnitTestSaveAllFilesCommand saveAllFilesCommand;
 		readonly ITestService testService;
@@ -34,7 +34,7 @@ namespace ICSharpCode.UnitTesting.Frameworks
 		
 		public TestExecutionManager()
 		{
-			this.buildProjectFactory = new UnitTestBuildProjectFactory();
+			this.buildService = SD.BuildService;
 			this.taskService = new UnitTestTaskService();
 			this.saveAllFilesCommand = new UnitTestSaveAllFilesCommand();
 			this.testService = SD.GetRequiredService<ITestService>();
@@ -62,12 +62,15 @@ namespace ICSharpCode.UnitTesting.Frameworks
 			saveAllFilesCommand.SaveAllFiles();
 			
 			// Run the build, if necessary:
-			var projectsToBuild = testsByProject.Keys.Select(p => p.GetBuildableForTesting()).Where(b => b != null).ToList();
+			var projectsToBuild = testsByProject.Keys.Where(p => p.IsBuildNeededBeforeTestRun).Select(p => p.Project).ToList();
 			if (projectsToBuild.Count > 0) {
-				var buildCommand = buildProjectFactory.CreateBuildProjectBeforeTestRun(projectsToBuild);
-				var buildResults = await buildCommand.BuildAsync(cancellationToken);
-				if (buildResults.Result != BuildResultCode.Success)
-					return;
+				using (cancellationToken.Register(buildService.CancelBuild)) {
+					var buildOptions = new BuildOptions(BuildTarget.Build);
+					buildOptions.BuildDetection = BuildOptions.BuildOnExecute;
+					var buildResults = await buildService.BuildAsync(projectsToBuild, buildOptions);
+					if (buildResults.Result != BuildResultCode.Success)
+						return;
+				}
 			}
 			
 			cancellationToken.ThrowIfCancellationRequested();

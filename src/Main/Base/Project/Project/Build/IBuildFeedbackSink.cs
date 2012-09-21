@@ -7,19 +7,16 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	/// <summary>
 	/// Interface for reporting build results in real-time.
-	/// Project-specific build engines use this interface to report results to the main build engine.
 	/// </summary>
+	/// <remarks>
+	/// Implementations of this interface must be thread-safe.
+	/// Project-specific build engines use this interface to report results to the main build engine,
+	/// and the main build engine uses this interface to report the combined results to the IDE.
+	/// </remarks>
 	public interface IBuildFeedbackSink
 	{
 		/// <summary>
-		/// Gets the progress monitor associated with this build.
-		/// Does not return null.
-		/// This member is thread-safe.
-		/// </summary>
-		Gui.IProgressMonitor ProgressMonitor { get; }
-		
-		/// <summary>
-		/// Reports an build error by adding it to the error list.
+		/// Reports an build error/warning/message by adding it to the error list.
 		/// This member is thread-safe.
 		/// </summary>
 		void ReportError(BuildError error);
@@ -29,12 +26,5 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// This member is thread-safe.
 		/// </summary>
 		void ReportMessage(string message);
-		
-		/// <summary>
-		/// Notifies the build engine that the build of a project has finished.
-		/// You should not call any methods after the Done() call.
-		/// This member is thread-safe.
-		/// </summary>
-		void Done(bool success);
 	}
 }

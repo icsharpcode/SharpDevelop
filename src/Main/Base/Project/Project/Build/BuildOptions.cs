@@ -4,60 +4,15 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
-using Microsoft.Build.Framework;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public delegate void BuildCallback(BuildResults results);
-	
-	/// <summary>
-	/// Specifies options for building a single project.
-	/// </summary>
-	public class ProjectBuildOptions
-	{
-		BuildTarget target;
-		IDictionary<string, string> properties = new SortedList<string, string>();
-		
-		public BuildTarget Target {
-			get { return target; }
-		}
-		
-		public IDictionary<string, string> Properties {
-			get { return properties; }
-		}
-		
-		public ProjectBuildOptions(BuildTarget target)
-		{
-			this.target = target;
-		}
-		
-		/// <summary>
-		/// Specifies the project configuration used for the build.
-		/// </summary>
-		public string Configuration { get; set; }
-		
-		/// <summary>
-		/// Specifies the project platform used for the build.
-		/// </summary>
-		public string Platform { get; set; }
-		
-		/// <summary>
-		/// Gets/Sets the verbosity of build output.
-		/// </summary>
-		public BuildOutputVerbosity BuildOutputVerbosity { get; set; }
-	}
-	
-	public enum BuildOutputVerbosity
-	{
-		Normal,
-		Diagnostic
-	}
-	
 	/// <summary>
 	/// Specifies options when starting a build.
 	/// </summary>
 	public class BuildOptions
 	{
+		#region static settings
 		public static bool ShowErrorListAfterBuild {
 			get {
 				return PropertyService.Get("SharpDevelop.ShowErrorListAfterBuild", true);
@@ -76,6 +31,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		public static BuildDetection BuildOnExecute {
+			get {
+				return PropertyService.Get("SharpDevelop.BuildOnExecute", BuildDetection.RegularBuild);
+			}
+			set {
+				PropertyService.Set("SharpDevelop.BuildOnExecute", value);
+			}
+		}
+		
 		public static BuildOutputVerbosity DefaultBuildOutputVerbosity {
 			get {
 				return PropertyService.Get("SharpDevelop.DefaultBuildOutputVerbosity", BuildOutputVerbosity.Normal);
@@ -84,6 +48,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				PropertyService.Set("SharpDevelop.DefaultBuildOutputVerbosity", value);
 			}
 		}
+		#endregion
 		
 		IDictionary<string, string> globalAdditionalProperties = new SortedList<string, string>();
 		IDictionary<string, string> projectAdditionalProperties = new SortedList<string, string>();
@@ -113,24 +78,21 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public BuildOutputVerbosity BuildOutputVerbosity { get; set; }
 		
-		public BuildOptions(BuildTarget target, BuildCallback callback)
+		/// <summary>
+		/// Gets/Sets whether to build all projects or only modified ones.
+		/// The default is to build all projects.
+		/// </summary>
+		public BuildDetection BuildDetection { get; set; }
+		
+		public BuildOptions(BuildTarget target)
 		{
-			this.callback = callback;
 			this.projectTarget = target;
 			this.TargetForDependencies = target;
 			
 			this.BuildDependentProjects = true;
 			this.ParallelProjectCount = DefaultParallelProjectCount;
 			this.BuildOutputVerbosity = DefaultBuildOutputVerbosity;
-		}
-		
-		readonly BuildCallback callback;
-		
-		/// <summary>
-		/// Gets the method to call when the build has finished.
-		/// </summary>
-		public BuildCallback Callback {
-			get { return callback; }
+			this.BuildDetection = BuildDetection.RegularBuild;
 		}
 		
 		readonly BuildTarget projectTarget;

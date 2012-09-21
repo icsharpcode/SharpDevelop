@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-
+using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.BuildWorker;
 using ICSharpCode.SharpDevelop.Project;

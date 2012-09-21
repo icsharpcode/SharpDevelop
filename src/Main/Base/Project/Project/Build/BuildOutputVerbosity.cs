@@ -3,13 +3,14 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Project.Commands;
 
-namespace ICSharpCode.UnitTesting
+namespace ICSharpCode.SharpDevelop.Project
 {
-	public interface IBuildProjectFactory
+	public enum BuildOutputVerbosity
 	{
-		BuildProject CreateBuildProjectBeforeTestRun(IEnumerable<IBuildable> projects);
+		Normal,
+		Diagnostic
 	}
+
+
 }

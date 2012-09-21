@@ -93,6 +93,10 @@
     <Compile Include="Parser\AssemblyParserService.cs" />
     <Compile Include="Parser\LoadSolutionProjects.cs" />
     <Compile Include="Parser\SharpDevelopSolutionSnapshot.cs" />
+    <Compile Include="Project\Build\BuildEngine.cs" />
+    <Compile Include="Project\Build\BuildModifiedProjectsOnlyService.cs" />
+    <Compile Include="Project\Build\BuildService.cs" />
+    <Compile Include="Project\Build\UIBuildFeedbackSink.cs" />
     <Compile Include="Services\ClipboardWrapper.cs" />
     <Compile Include="Services\DispatcherMessageLoop.cs" />
     <Compile Include="Startup\App.xaml.cs" />
@@ -216,6 +220,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Dom" />
+    <Folder Include="Project" />
+    <Folder Include="Project\Build" />
     <Folder Include="Services" />
     <Folder Include="WinForms" />
     <Folder Include="OptionPanels" />

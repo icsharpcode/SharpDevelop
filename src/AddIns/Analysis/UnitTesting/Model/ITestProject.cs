@@ -28,11 +28,9 @@ namespace ICSharpCode.UnitTesting
 		IEnumerable<ITest> GetTestsForEntity(IEntity entity);
 		
 		/// <summary>
-		/// Returns a SharpDevelop <see cref="IBuildable"/> that builds the project
-		/// for test execution.
-		/// May return null if the project does not require compilation.
+		/// Gets whether the project needs to be compiled before the tests can be run.
 		/// </summary>
-		IBuildable GetBuildableForTesting();
+		bool IsBuildNeededBeforeTestRun { get; }
 		
 		/// <summary>
 		/// Notifies the project that the parse information was changed.

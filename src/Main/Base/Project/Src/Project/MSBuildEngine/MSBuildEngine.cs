@@ -6,10 +6,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.BuildWorker;
+using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Build.Framework;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -89,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			MSBuildLoggerFilters = AddInTree.BuildItems<IMSBuildLoggerFilter>(LoggerFiltersPath, null, false);
 		}
 		
-		public static void StartBuild(IProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IEnumerable<string> additionalTargetFiles)
+		public static Task<bool> BuildAsync(IProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, CancellationToken cancellationToken, IEnumerable<string> additionalTargetFiles)
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
@@ -105,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (project.MinimumSolutionVersion >= Solution.SolutionVersionVS2010) {
 				engine.additionalTargetFiles.Add(Path.Combine(Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location), "SharpDevelop.TargetingPack.targets"));
 			}
-			engine.StartBuild();
+			return engine.RunBuildAsync(cancellationToken);
 		}
 		
 		readonly string projectFileName;
@@ -192,7 +194,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		List<ILogger> loggers = new List<ILogger>();
 		IMSBuildChainedLoggerFilter loggerChain;
 		
-		void StartBuild()
+		Task<bool> RunBuildAsync(CancellationToken cancellationToken)
 		{
 			Dictionary<string, string> globalProperties = new Dictionary<string, string>();
 			MSBuildBasedProject.InitializeMSBuildProjectProperties(globalProperties);
@@ -264,24 +266,28 @@ namespace ICSharpCode.SharpDevelop.Project
 				logger.Initialize(eventSource);
 			}
 			
+			tcs = new TaskCompletionSource<bool>();
 			if (projectMinimumSolutionVersion <= Solution.SolutionVersionVS2008) {
 				if (DotnetDetection.IsDotnet35SP1Installed()) {
-					BuildWorkerManager.MSBuild35.RunBuildJob(job, loggerChain, OnDone, feedbackSink.ProgressMonitor.CancellationToken);
+					BuildWorkerManager.MSBuild35.RunBuildJob(job, loggerChain, OnDone, cancellationToken);
 				} else {
 					loggerChain.HandleError(new BuildError(job.ProjectFileName, ".NET 3.5 SP1 is required to build this project."));
-					OnDone(false);
+					tcs.SetResult(false);
 				}
 			} else {
-				BuildWorkerManager.MSBuild40.RunBuildJob(job, loggerChain, OnDone, feedbackSink.ProgressMonitor.CancellationToken);
+				BuildWorkerManager.MSBuild40.RunBuildJob(job, loggerChain, OnDone, cancellationToken);
 			}
+			return tcs.Task;
 		}
+		
+		TaskCompletionSource<bool> tcs;
 		
 		void OnDone(bool success)
 		{
 			foreach (ILogger logger in loggers) {
 				logger.Shutdown();
 			}
-			feedbackSink.Done(success);
+			tcs.SetResult(success);
 		}
 		
 		void WriteAdditionalTargetsToTempFile(Dictionary<string, string> globalProperties)

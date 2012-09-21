@@ -35,6 +35,7 @@ namespace ICSharpCode.Core
 			this.configDirectory = configDirectory;
 			this.dataDirectory = dataDirectory;
 			this.propertyFileName = propertiesName + ".xml";
+			Directory.CreateDirectory(configDirectory);
 			LoadPropertiesFromStream(Path.Combine(configDirectory, propertyFileName));
 		}
 		

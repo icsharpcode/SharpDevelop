@@ -39,7 +39,7 @@ namespace UnitTesting.Tests.NUnit
 		[Test]
 		public void NUnitTestProjectBuildsTheProject()
 		{
-			Assert.AreSame(project, testProject.GetBuildableForTesting());
+			Assert.IsTrue(testProject.IsBuildNeededBeforeTestRun);
 		}
 	}
 }

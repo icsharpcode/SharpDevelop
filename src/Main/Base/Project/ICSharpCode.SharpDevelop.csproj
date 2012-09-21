@@ -123,6 +123,18 @@
     <Compile Include="Parser\ParseInformation.cs" />
     <Compile Include="Parser\ParseInformationEventArgs.cs" />
     <Compile Include="Parser\ProjectContentContainer.cs" />
+    <Compile Include="Project\Build\BuildDetection.cs" />
+    <Compile Include="Project\Build\BuildError.cs" />
+    <Compile Include="Project\Build\BuildEventArgs.cs" />
+    <Compile Include="Project\Build\BuildOptions.cs" />
+    <Compile Include="Project\Build\BuildOutputVerbosity.cs" />
+    <Compile Include="Project\Build\BuildResults.cs" />
+    <Compile Include="Project\Build\BuildTarget.cs" />
+    <Compile Include="Project\Build\IBuildable.cs" />
+    <Compile Include="Project\Build\IBuildFeedbackSink.cs" />
+    <Compile Include="Project\Build\IBuildService.cs" />
+    <Compile Include="Project\Build\MultipleProjectBuildable.cs" />
+    <Compile Include="Project\Build\ProjectBuildOptions.cs" />
     <Compile Include="Services\IClipboard.cs" />
     <Compile Include="Services\IMessageLoop.cs" />
     <Compile Include="Services\SD.cs" />
@@ -389,7 +401,6 @@
     <Compile Include="Src\Project\Behaviors\ProjectBehaviorService.cs" />
     <Compile Include="Src\Project\Behaviors\ProjectBehaviorSupportedConditionEvaluator.cs" />
     <Compile Include="Src\Project\Behaviors\ResXConverter.cs" />
-    <Compile Include="Src\Project\BuildEngine.cs" />
     <Compile Include="Src\Project\ContextSpecificProperties.cs" />
     <Compile Include="Src\Project\Converter\IUpgradableProject.cs" />
     <Compile Include="Src\Project\Converter\UpgradeView.xaml.cs">
@@ -397,7 +408,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Project\Converter\UpgradeViewContent.cs" />
-    <Compile Include="Src\Project\IBuildFeedbackSink.cs" />
     <Compile Include="Src\Project\IProjectChangeWatcher.cs" />
     <Compile Include="Src\Project\IProjectItemBackendStore.cs" />
     <Compile Include="Src\Project\Items\ServiceReferenceProjectItem.cs" />
@@ -411,7 +421,6 @@
     <Compile Include="Src\Project\MSBuildEngine\WorkerProcess.cs" />
     <Compile Include="Src\Project\MSBuildFileProject.cs" />
     <Compile Include="Src\Project\MSBuildItemWrapper.cs" />
-    <Compile Include="Src\Project\MultipleProjectBuildable.cs" />
     <Compile Include="Src\Project\PortableLibrary\CheckPortableLibraryInstalled.cs" />
     <Compile Include="Src\Project\PortableLibrary\ConvertToPortableLibraryProjectBehavior.cs" />
     <Compile Include="Src\Project\PortableLibrary\PickPortableTargetFramework.cs" />
@@ -460,7 +469,6 @@
     <Compile Include="Src\Internal\Doozers\IOptionPanelDescriptor.cs" />
     <Compile Include="Workbench\File\FileEventArgs.cs" />
     <Compile Include="Src\Services\MimeTypeDetection.cs" />
-    <Compile Include="Src\Services\ProjectService\CompileModifiedProjectsOnly.cs" />
     <Compile Include="Src\Services\ProjectService\SolutionConfigurationEventHandler.cs" />
     <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
     <Compile Include="Src\Services\RefactoringService\FindReferenceService.cs" />
@@ -777,8 +785,6 @@
     <Compile Include="Src\Services\NavigationService\NavigationService.cs" />
     <Compile Include="Src\Commands\NavigationCommands.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\NavigationConditionEvaluators.cs" />
-    <Compile Include="Src\Project\BuildResults.cs" />
-    <Compile Include="Src\Project\BuildError.cs" />
     <Compile Include="Src\Services\HelpProvider.cs" />
     <Compile Include="Src\Services\ParserService\CodeCompletionOptions.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\CompareProjectPropertyConditionEvaluator.cs" />
@@ -797,13 +803,11 @@
     <Compile Include="Src\Project\MSBuildBasedProject.cs" />
     <Compile Include="Src\Project\MSBuildItemDefinitionGroup.cs" />
     <Compile Include="Src\Project\AbstractProject.cs" />
-    <Compile Include="Src\Project\BuildOptions.cs" />
     <Compile Include="Src\Project\CompilableProject.cs" />
     <Compile Include="Src\Project\MSBuildInternals.cs" />
     <Compile Include="Src\Util\ScrollUtils.cs" />
     <Compile Include="Src\Util\ReadOnlyCollectionWrapper.cs" />
     <Compile Include="Src\Project\Items\ItemType.cs" />
-    <Compile Include="Src\Project\BuildTarget.cs" />
     <Compile Include="Src\Util\GenericConverter.cs" />
     <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
     <Compile Include="Src\Util\UnclosableStream.cs" />
@@ -867,7 +871,9 @@
     </ProjectReference>
     <Folder Include="Dom" />
     <Folder Include="Editor" />
+    <Folder Include="Project" />
     <Folder Include="Parser" />
+    <Folder Include="Project\Build" />
     <Folder Include="Services" />
     <Folder Include="WinForms" />
     <Folder Include="Workbench" />

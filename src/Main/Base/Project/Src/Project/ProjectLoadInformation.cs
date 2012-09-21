@@ -29,13 +29,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		internal bool? upgradeToolsVersion;
 		
-		Gui.IProgressMonitor progressMonitor = new Gui.DummyProgressMonitor();
+		IProgressMonitor progressMonitor = new DummyProgressMonitor();
 		
 		/// <summary>
 		/// Gets/Sets the progress monitor used during the load.
 		/// This property never returns null.
 		/// </summary>
-		public Gui.IProgressMonitor ProgressMonitor {
+		public IProgressMonitor ProgressMonitor {
 			get { return progressMonitor; }
 			set {
 				if (value == null)

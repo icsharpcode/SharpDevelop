@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-
+using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -1253,18 +1253,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Building
-		ICollection<IBuildable> IBuildable.GetBuildDependencies(ProjectBuildOptions buildOptions)
+		IEnumerable<IBuildable> IBuildable.GetBuildDependencies(ProjectBuildOptions buildOptions)
 		{
-			List<IBuildable> result = new List<IBuildable>();
-			foreach (IProject p in this.Projects)
-				result.Add(p);
-			return result;
+			return this.Projects;
 		}
 		
-		void IBuildable.StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
+		Task<bool> IBuildable.BuildAsync(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IProgressMonitor progressMonitor)
 		{
 			// building a solution finishes immediately: we only care for the dependencies
-			feedbackSink.Done(true);
+			return Task.FromResult(true);
 		}
 		
 		ProjectBuildOptions IBuildable.CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)

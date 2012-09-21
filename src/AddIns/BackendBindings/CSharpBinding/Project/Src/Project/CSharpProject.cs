@@ -7,9 +7,12 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
+
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Converter;
@@ -80,16 +83,15 @@ namespace CSharpBinding
 				InitializeProjectContent(new CSharpProjectContent());
 		}
 		
-		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		public override Task<bool> BuildAsync(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IProgressMonitor progressMonitor)
 		{
 			if (this.MinimumSolutionVersion == Solution.SolutionVersionVS2005) {
-				MSBuildEngine.StartBuild(this,
-				                         options,
-				                         feedbackSink,
-				                         MSBuildEngine.AdditionalTargetFiles.Concat(
-				                         	new [] { Path.Combine(MSBuildEngine.SharpDevelopBinPath, "SharpDevelop.CheckMSBuild35Features.targets") }));
+				return MSBuildEngine.BuildAsync(
+					this, options, feedbackSink, progressMonitor.CancellationToken,
+					MSBuildEngine.AdditionalTargetFiles.Concat(
+						new [] { Path.Combine(MSBuildEngine.SharpDevelopBinPath, "SharpDevelop.CheckMSBuild35Features.targets") }));
 			} else {
-				base.StartBuild(options, feedbackSink);
+				return base.BuildAsync(options, feedbackSink, progressMonitor);
 			}
 		}
 		

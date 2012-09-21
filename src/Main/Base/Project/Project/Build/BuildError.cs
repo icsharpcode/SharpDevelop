@@ -42,7 +42,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		string errorText;
 		string fileName;
 		int line;
-		bool warning;
+		bool isWarning;
+		bool isMessage;
 		[NonSerialized]
 		object tag;
 		string contextMenuAddInTreeEntry;
@@ -105,12 +106,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		public bool IsWarning {
-			get {
-				return warning;
-			}
-			set {
-				warning = value;
-			}
+			get { return isWarning; }
+			set { isWarning = value; }
+		}
+		
+		public bool IsMessage {
+			get { return isMessage; }
+			set { isMessage = value; }
 		}
 		
 		/// <summary>

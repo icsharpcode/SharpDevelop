@@ -37,6 +37,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// <summary>
 	/// Class that helps connecting configuration GUI controls to MsBuild properties.
 	/// </summary>
+	[Obsolete]
 	public class ConfigurationGuiHelper : ICanBeDirty
 	{
 		MSBuildBasedProject project;

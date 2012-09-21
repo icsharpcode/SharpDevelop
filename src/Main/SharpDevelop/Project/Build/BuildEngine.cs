@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -20,10 +21,10 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// 
 	/// This class is not related to MSBuild: it simply "builds" a project by calling IBuildable.StartBuild.
 	/// </summary>
-	public sealed class BuildEngine
+	sealed class BuildEngine
 	{
 		#region Building in the SharpDevelop GUI
-		static CancellationTokenSource guiBuildCancellation;
+		/*static CancellationTokenSource guiBuildCancellation;
 		static IAnalyticsMonitorTrackedFeature guiBuildTrackedFeature;
 		
 		/// <summary>
@@ -151,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						ProjectService.RaiseEventBuildFinished(new BuildEventArgs(buildable, options, results));
 					});
 			}
-		}
+		}*/
 		#endregion
 		
 		#region StartBuild
@@ -165,26 +166,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// will ensure that output from two projects building in parallel isn't interleaved.</param>
 		/// <param name="progressMonitor">The progress monitor that receives build progress. The monitor will be disposed
 		/// when the build completes.</param>
-		public static void StartBuild(IBuildable project, BuildOptions options, IBuildFeedbackSink realtimeBuildFeedbackSink)
+		public static Task<BuildResults> BuildAsync(IBuildable project, BuildOptions options, IBuildFeedbackSink buildFeedbackSink, IProgressMonitor progressMonitor)
 		{
 			if (project == null)
 				throw new ArgumentNullException("solution");
 			if (options == null)
 				throw new ArgumentNullException("options");
 			
-			Solution solution = project.ParentSolution;
-			if (solution == null)
-				throw new ArgumentException("project.ParentSolution must not be null", "project");
-			
-			if (string.IsNullOrEmpty(options.SolutionConfiguration))
-				options.SolutionConfiguration = solution.Preferences.ActiveConfiguration;
-			if (string.IsNullOrEmpty(options.SolutionPlatform))
-				options.SolutionPlatform = solution.Preferences.ActivePlatform;
-			
 			BuildEngine engine = new BuildEngine(options, project);
 			engine.buildStart = DateTime.Now;
-			engine.combinedBuildFeedbackSink = realtimeBuildFeedbackSink;
-			engine.progressMonitor = realtimeBuildFeedbackSink.ProgressMonitor;
+			engine.combinedBuildFeedbackSink = buildFeedbackSink;
+			engine.progressMonitor = progressMonitor;
 			try {
 				engine.rootNode = engine.CreateBuildGraph(project);
 			} catch (CyclicDependencyException ex) {
@@ -201,7 +193,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				engine.results.Result = BuildResultCode.BuildFileError;
 				engine.ReportDone();
-				return;
+				return engine.tcs.Task;
 			}
 			
 			engine.workersToStart = options.ParallelProjectCount;
@@ -213,6 +205,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			engine.ReportMessageLine("${res:MainWindow.CompilerMessages.BuildStarted}");
 			engine.StartBuildProjects();
 			engine.UpdateProgressTaskName();
+			return engine.tcs.Task;
 		}
 		#endregion
 		
@@ -280,12 +273,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				this.project = project;
 			}
 			
-			public void DoStartBuild(object state)
+			public async void DoStartBuild(object state)
 			{
 				string name = string.Empty;
 				try {
 					name = project.Name;
-					project.StartBuild(options, this);
+					bool success = await project.BuildAsync(options, this, perNodeProgressMonitor).ConfigureAwait(false);
+					Done(success);
 				} catch (ObjectDisposedException) {
 					// Handle ObjectDisposedException that occurs when trying to build a project that was unloaded.
 					ReportError(new BuildError(null, "The project '" + name + "' was unloaded."));
@@ -313,15 +307,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				engine.OnBuildFinished(this, success);
 			}
-			
-			IProgressMonitor IBuildFeedbackSink.ProgressMonitor {
-				get {
-					// property should be accessed only while build is running and progress monitor available
-					if (perNodeProgressMonitor == null)
-						throw new InvalidOperationException();
-					return perNodeProgressMonitor;
-				}
-			}
 		}
 		#endregion
 		
@@ -330,6 +315,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		readonly BuildOptions options;
 		IProgressMonitor progressMonitor;
 		CancellationTokenRegistration cancellationRegistration;
+		readonly TaskCompletionSource<BuildResults> tcs = new TaskCompletionSource<BuildResults>();
 		BuildNode rootNode;
 		readonly IBuildable rootProject;
 		readonly BuildResults results = new BuildResults();
@@ -500,7 +486,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				node.hasErrors = !success;
 				
 				projectsCurrentlyBuilding.Remove(node);
-				results.AddBuiltProject(node.project);
 				
 				foreach (BuildNode n in node.dependentOnThis) {
 					n.outstandingDependencies--;
@@ -546,7 +531,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				ReportMessageLine("${res:MainWindow.CompilerMessages.BuildFinished}" + buildTime);
 			}
 			cancellationRegistration.Dispose();
-			progressMonitor.Dispose();
 			ReportDone();
 		}
 		
@@ -555,20 +539,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		void ReportDone()
 		{
-			if (combinedBuildFeedbackSink != null) {
-				if (combinedBuildFeedbackSink is MessageViewSink) {
-					// Special case GUI-builds so that they have more information available:
-					// (non-GUI builds can get the same information from the options.Callback,
-					// but the GUI cannot use the callback because the build options are set by
-					// the code triggering the build)
-					((MessageViewSink)combinedBuildFeedbackSink).Done(rootProject, options, results);
-				} else {
-					combinedBuildFeedbackSink.Done(results.Result == BuildResultCode.Success);
-				}
-			}
-			if (options.Callback != null) {
-				Gui.WorkbenchSingleton.SafeThreadAsyncCall(delegate { options.Callback(results); });
-			}
+			tcs.SetResult(results);
 		}
 		#endregion
 		
