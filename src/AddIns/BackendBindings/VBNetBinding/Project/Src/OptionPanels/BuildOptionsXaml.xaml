@@ -331,10 +331,11 @@
 				</Grid>
 			</GroupBox>
 			
-			<optionpanels:ErrorsAndWarnings x:Name="errorsAndWarnings">
+			<GroupBox Margin="0,8,0,0" Header="{core:Localize Dialog.ProjectOptions.Build.ErrorsAndWarnings}">   
+				<optionpanels:ErrorsAndWarnings x:Name="errorsAndWarnings">
+				</optionpanels:ErrorsAndWarnings>
+			</GroupBox>
 			
-			</optionpanels:ErrorsAndWarnings>
-				
 			<!--<GroupBox Margin="0,8,0,0"
 			          Header="{core:Localize Dialog.ProjectOptions.Build.ErrorsAndWarnings}">
 				<Grid>
