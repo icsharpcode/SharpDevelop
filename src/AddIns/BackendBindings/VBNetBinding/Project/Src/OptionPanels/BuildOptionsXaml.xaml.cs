@@ -31,25 +31,36 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 		{
 			InitializeComponent();
 			DataContext = this;
-			OptionExplicitItems = new List<StringPair>();
-			OptionExplicitItems.Add(new StringPair("Off", "Explicit Off"));
-			OptionExplicitItems.Add(new StringPair("On", "Explicit On"));
-			OptionExplicitItem = OptionExplicitItems[0];
 			
-			OptionStrictItems = new List<StringPair>();
-			OptionStrictItems.Add( new StringPair("Off", "Strict Off"));
-			OptionStrictItems.Add(new StringPair("On", "Strict On"));
-			OptionStrictItem = OptionStrictItems[0];
 			
-			OptionCompareItems = new List<StringPair>();
-			OptionCompareItems.Add(new StringPair("Binary", "Compare Binary"));
-			OptionCompareItems.Add(new StringPair("Text", "Compare Text"));
-			OptionCompareItem = OptionCompareItems[0];
+			optionExplicitItems = new List<KeyItemPair>();
+			optionExplicitItems.Add(new KeyItemPair("Off","Explicit Off"));
+			optionExplicitItems.Add(new KeyItemPair("On","Explicit On"));
+			OptionExplicitItems = optionExplicitItems;
 			
-			OptionInferItems = new List<StringPair>();
-			OptionInferItems.Add(new StringPair("Off", "Infer Off"));
-			OptionInferItems.Add(new StringPair("On", "Infer On"));
-			OptionInferItem = OptionInferItems[0];
+			optionStrictItems = new List<KeyItemPair>();
+			optionStrictItems.Add(new KeyItemPair("Off", "Strict Off"));
+			optionStrictItems.Add(new KeyItemPair("On", "Strict On"));
+			OptionStrictItems = optionStrictItems;
+			
+			
+			optionCompareItems = new List<KeyItemPair>();
+			optionCompareItems.Add(new KeyItemPair("Binary", "Compare Binary"));
+			optionCompareItems.Add(new KeyItemPair("Text", "Compare Text"));
+			OptionCompareItems = optionCompareItems;
+			
+			optionInferItems = new List<KeyItemPair>();
+			optionInferItems.Add(new KeyItemPair("Off", "Infer Off"));
+			optionInferItems.Add(new KeyItemPair("On", "Infer On"));
+			OptionInferItems = optionInferItems;
+			
+			IsDirty = false;
+		}
+		
+			
+		public ProjectOptionPanel.ProjectProperty<bool> TreatWarningsAsErrors {
+			get {
+				return GetProperty("TreatWarningsAsErrors", false); }
 		}
 		
 		public ProjectProperty<string> DefineConstants {
@@ -65,81 +76,57 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 		}
 		
 		public ProjectProperty<string> OptionExplicit {
-			get { return GetProperty("OptionExplicit", "", TextBoxEditMode.EditRawProperty); }
+			get {return GetProperty("OptionExplicit", "", TextBoxEditMode.EditRawProperty); }	
 		}
 		
 		public ProjectProperty<string> OptionStrict {
-			get { return GetProperty("OptionStrict", "", TextBoxEditMode.EditRawProperty); }
+			get { return GetProperty("OptionStrict", "Off", TextBoxEditMode.EditRawProperty); }
 		}
 		
 		public ProjectProperty<string> OptionCompare {
-			get { return GetProperty("OptionCompare", "", TextBoxEditMode.EditRawProperty); }
+			get { return GetProperty("OptionCompare", "Binary", TextBoxEditMode.EditRawProperty); }
 		}
 		
 		public ProjectProperty<string> OptionInfer {
-			get { return GetProperty("OptionInfer", "", TextBoxEditMode.EditRawProperty); }
+			get { return GetProperty("OptionInfer", "Off", TextBoxEditMode.EditRawProperty); }
 		}
+		
 		
 		#region OptionItems
 		
-		List<StringPair> optionExplicitItems;
+		List<KeyItemPair> optionExplicitItems;
 		
-		public List<StringPair> OptionExplicitItems {
+		public List<KeyItemPair> OptionExplicitItems {
 			get { return optionExplicitItems; }
 			set { optionExplicitItems = value;
 				base.RaisePropertyChanged(() => OptionExplicitItems);
 			}
 		}
+	
 		
-		private StringPair optionExplicitItem;
+		List<KeyItemPair> optionStrictItems;
 		
-		public KeyValuePair<string, string> OptionExplicitItem {
-			get { return optionExplicitItem; }
-			set { optionExplicitItem = value;
-				base.RaisePropertyChanged(() => OptionExplicitItem);
-			}
-		}
-		
-		
-		List<StringPair> optionStrictItems;
-		
-		public List<KeyValuePair<string, string>> OptionStrictItems {
+		public List<KeyItemPair> OptionStrictItems {
 			get { return optionStrictItems; }
 			set { optionStrictItems = value;
 				base.RaisePropertyChanged(() => OptionStrictItems);
 			}
 		}
 		
-		private StringPair optionStrictItem;
 		
-		public KeyValuePair<string, string> OptionStrictItem {
-			get { return optionStrictItem; }
-			set { optionStrictItem = value;
-				base.RaisePropertyChanged(() => OptionStrictItem);
-			}
-		}
+		private List<KeyItemPair> optionCompareItems;
 		
-		private List<StringPair> optionCompareItems;
-		
-		public List<KeyValuePair<string, string>> OptionCompareItems {
+		public List<KeyItemPair> OptionCompareItems {
 			get { return optionCompareItems; }
 			set { optionCompareItems = value;
 				base.RaisePropertyChanged(() => OptionCompareItems);
 			}
 		}
 		
-		private StringPair optionCompareItem;
 		
-		public KeyValuePair<string, string> OptionCompareItem {
-			get { return optionCompareItem; }
-			set { optionCompareItem = value;
-				base.RaisePropertyChanged(() => OptionCompareItem);
-			}
-		}
+		List<KeyItemPair> optionInferItems;
 		
-		List<StringPair> optionInferItems;
-		
-		public List<KeyValuePair<string, string>> OptionInferItems {
+		public List<KeyItemPair> OptionInferItems {
 			get { return optionInferItems; }
 			set { optionInferItems = value;
 				base.RaisePropertyChanged(()=>OptionInferItems);
@@ -147,14 +134,33 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 		}
 		
 		
-		private StringPair optionInferItem;
+	
+		#endregion
 		
-		public KeyValuePair<string, string> OptionInferItem {
-			get { return optionInferItem; }
-			set { optionInferItem = value;
-				base.RaisePropertyChanged(() => OptionInferItem);
-			}
+		#region overrides
+		
+		
+		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
+		{
+			base.Load(project, configuration, platform);
+		
+//			Console.WriteLine(" 1 - option {0}",TreatWarningsAsErrors.Value);
+			
+			errorsAndWarnings.SetProjectOptions(this);
+			
+//			Console.WriteLine(" 2 - option {0}",TreatWarningsAsErrors.Value);
+//			Console.WriteLine(" 4 - option {0}",TreatWarningsAsErrors.Value);
+//			
 		}
+		
+		
+		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
+		{
+			Console.WriteLine(OptionExplicit.Value);
+			errorsAndWarnings.SaveTreatWarningAsErrorRadioButtons();
+			return base.Save(project, configuration, platform);
+		}
+		
 		#endregion
 	}
 }

@@ -22,7 +22,6 @@ namespace CSharpBinding.OptionPanels
 	/// <summary>
 	/// Interaction logic for BuildOptionsXaml.xaml
 	/// </summary>
-	/// SYST
 	
 	public partial class BuildOptions : ProjectOptionPanel
 	{
@@ -183,8 +182,7 @@ namespace CSharpBinding.OptionPanels
 			XmlDocHelper();
 			this.BaseIntermediateOutputPathCommand = new RelayCommand(BaseIntermediateOutputPathExecute);
 			this.IntermediateOutputPathCommand = new RelayCommand(IntermediateOutputPathExecute);
-			SetTreatWarningAsErrorRadioButtons();
-			
+			errorsAndWarnings.SetProjectOptions(this);
 		}
 		
 		
@@ -196,14 +194,13 @@ namespace CSharpBinding.OptionPanels
 				val = 0x400000;
 			}
 			DllBaseAdress =  "0x" + val.ToString("x", NumberFormatInfo.InvariantInfo);
+			errorsAndWarnings.SetProjectOptions(this);
 			IsDirty = false;
 		}
 		
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
-			SaveTreatWarningAsErrorRadioButtons();
-			
 			NumberStyles style = NumberStyles.Integer;
 			if (dllBaseAdress.StartsWith("0x")) {
 				dllBaseAdress = dllBaseAdress.Substring(2);
@@ -216,6 +213,7 @@ namespace CSharpBinding.OptionPanels
 				MessageService.ShowMessage("${res:Dialog.ProjectOptions.PleaseEnterValidNumber}");
 				return false;
 			}
+			errorsAndWarnings.SaveTreatWarningAsErrorRadioButtons();
 			return base.Save(project, configuration, platform);
 		}
 		
@@ -387,7 +385,7 @@ namespace CSharpBinding.OptionPanels
 		#endregion
 		
 		#region SpecificWarnings TreatWarningsAsErrors
-		
+		/*
 		private void SetTreatWarningAsErrorRadioButtons()
 		{
 			if (this.TreatWarningsAsErrors.Value) {
@@ -405,8 +403,8 @@ namespace CSharpBinding.OptionPanels
 		}
 		
 		
-		
-		
+		*/
+		/*
 		private void SaveTreatWarningAsErrorRadioButtons()
 		{
 
@@ -428,10 +426,8 @@ namespace CSharpBinding.OptionPanels
 		{
 			IsDirty = true;
 		}
-		
+		*/
 		
 		#endregion
 	}
-	
-	
 }

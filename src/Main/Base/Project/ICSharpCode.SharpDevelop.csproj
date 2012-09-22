@@ -279,6 +279,10 @@
       <DependentUpon>DebugOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ErrorsAndWarnings.xaml.cs">
+      <DependentUpon>ErrorsAndWarnings.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\HexValidator.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\KeyValuePair.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.cs" />
@@ -912,6 +916,7 @@
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ErrorsAndWarnings.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.xaml">
       <DependentUpon>ProjectOptionPanel.cs</DependentUpon>
     </Page>

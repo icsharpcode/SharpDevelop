@@ -77,6 +77,7 @@
 						Content="{core:Localize Dialog.ProjectOptions.BuildOptions.NoCorlib}"></CheckBox>
 				</Grid>
 			</GroupBox>
+			
 			<GroupBox
 				Header="{core:Localize Dialog.ProjectOptions.Build.Output}">
 				<Grid >
@@ -300,40 +301,10 @@
 				</Grid>
 			</GroupBox>
 			
-			<GroupBox Margin="0,8,0,0"
-			          Header="{core:Localize Dialog.ProjectOptions.Build.TreatWarningsAsErrors}">
-				<Grid>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto"></ColumnDefinition>
-						<ColumnDefinition Width="Auto"></ColumnDefinition>
-						<ColumnDefinition Width="*"></ColumnDefinition>
-					</Grid.ColumnDefinitions>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto"></RowDefinition>
-						<RowDefinition Height="Auto"></RowDefinition>
-						<RowDefinition Height="Auto"></RowDefinition>
-					</Grid.RowDefinitions>
-					
-					<optionpanels:StorageLocationPicker Grid.Row="1" Location="{Binding TreatWarningsAsErrors.Location}">
-					</optionpanels:StorageLocationPicker>
-					
-					<RadioButton x:Name="noneRadioButton" Grid.Column="1" VerticalAlignment="Center" Margin="3,0,3,0"					    
-					             Content="{core:Localize Dialog.ProjectOptions.Build.TreatWarningsAsErrors.None}"></RadioButton>
-					
-					<RadioButton x:Name="specificWarningsRadioButton" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="3,0,3,0"					        
-					             Content="{core:Localize Dialog.ProjectOptions.Build.TreatWarningsAsErrors.Specific}"></RadioButton>
-					
-					<TextBox x:Name="specificWarningsTextBox" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"
-					         Margin="3,0,3,0"
-					         IsEnabled="{Binding ElementName=specificWarningsRadioButton, Path=IsChecked}"
-					         Text="{Binding WarningsAsErrors.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-					
-					<RadioButton x:Name="allRadioButton" Grid.Row="2" Grid.Column="1"
-					             Margin="3,0,3,0"
-					             VerticalAlignment="Center"
-					             Content="{core:Localize Dialog.ProjectOptions.Build.TreatWarningsAsErrors.All}"></RadioButton>
-				</Grid>
-			</GroupBox>
+			<optionpanels:ErrorsAndWarnings x:Name="errorsAndWarnings">
+			
+			</optionpanels:ErrorsAndWarnings>
+			
 		</StackPanel>
 	</ScrollViewer>
 </optionpanels:ProjectOptionPanel>
