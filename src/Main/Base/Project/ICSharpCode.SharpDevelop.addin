@@ -23,14 +23,14 @@
 			<ConditionEvaluator name="WriteableProject" class="ICSharpCode.SharpDevelop.WriteableProjectConditionEvaluator"/>
 			<ConditionEvaluator name="WriteableSolution" class="ICSharpCode.SharpDevelop.WriteableSolutionConditionEvaluator"/>
 			<ConditionEvaluator name="ProjectActive" class="ICSharpCode.SharpDevelop.ProjectActiveConditionEvaluator"/>
-			<ConditionEvaluator name="TextContent" class="ICSharpCode.SharpDevelop.Editor.AvalonEdit.TextContentConditionEvaluator"/>
+			<ConditionEvaluator name="TextContent" class="ICSharpCode.SharpDevelop.Editor.TextContentConditionEvaluator"/>
 			<ConditionEvaluator name="BrowserLocation" class="ICSharpCode.SharpDevelop.BrowserDisplayBinding.BrowserLocationConditionEvaluator"/>
 			<ConditionEvaluator name="RefactoringProviderSupports" class="ICSharpCode.SharpDevelop.Refactoring.RefactoringProviderSupportsConditionEvaluator"/>
 			<ConditionEvaluator name="CanNavigateBack" class="ICSharpCode.SharpDevelop.CanNavigateBackConditionEvaluator"/>
 			<ConditionEvaluator name="CanNavigateForward" class="ICSharpCode.SharpDevelop.CanNavigateForwardConditionEvaluator"/>
 			<ConditionEvaluator name="CompareProjectProperty" class="ICSharpCode.SharpDevelop.CompareProjectPropertyConditionEvaluator"/>
 			<ConditionEvaluator name="ProjectItem" class="ICSharpCode.SharpDevelop.Project.ProjectItemConditionEvaluator"/>
-			<ConditionEvaluator name="IsTextSelected" class="ICSharpCode.SharpDevelop.Editor.AvalonEdit.TextSelectedCondition"/>
+			<ConditionEvaluator name="IsTextSelected" class="ICSharpCode.SharpDevelop.Editor.TextSelectedCondition"/>
 			<ConditionEvaluator name="ViewInBrowser" class="ICSharpCode.SharpDevelop.ViewInBrowserConditionEvaluator"/>
 			<ConditionEvaluator name="ProjectBehaviorSupported" class="ICSharpCode.SharpDevelop.Project.ProjectBehaviorSupportedConditionEvaluator"/>
 			

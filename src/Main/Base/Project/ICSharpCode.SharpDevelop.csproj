@@ -107,6 +107,7 @@
     <Compile Include="Dom\IModelCollection.cs" />
     <Compile Include="Dom\ITreeNodeFactory.cs" />
     <Compile Include="Dom\SimpleModelCollection.cs" />
+    <Compile Include="Editor\AvalonEditTextEditorAdapter.cs" />
     <Compile Include="Editor\Bookmarks\BookmarkBase.cs" />
     <Compile Include="Editor\Bookmarks\BookmarkEventArgs.cs" />
     <Compile Include="Editor\Bookmarks\BookmarkPad.cs" />
@@ -119,13 +120,28 @@
     <Compile Include="Editor\Bookmarks\SDMarkerBookmark.cs" />
     <Compile Include="Editor\DocumentServiceAttribute.cs" />
     <Compile Include="Editor\DocumentUtilitites.cs" />
+    <Compile Include="Editor\IBracketSearcher.cs" />
+    <Compile Include="Editor\IDocumentVersionProvider.cs" />
     <Compile Include="Editor\IEditorControlService.cs" />
     <Compile Include="Editor\IEditorUIService.cs" />
     <Compile Include="Editor\IFileDocumentProvider.cs" />
+    <Compile Include="Editor\ISnippetElementProvider.cs" />
+    <Compile Include="Editor\ITextAreaToolTipProvider.cs">
+      <DependentUpon>ToolTipService.cs</DependentUpon>
+    </Compile>
     <Compile Include="Editor\ITextEditor.cs" />
     <Compile Include="Editor\ITextMarker.cs" />
+    <Compile Include="Editor\ITooltip.cs">
+      <DependentUpon>ToolTipService.cs</DependentUpon>
+    </Compile>
     <Compile Include="Editor\OnDiskTextSourceVersion.cs" />
     <Compile Include="Editor\HighlighterKnownSpanNames.cs" />
+    <Compile Include="Editor\PermanentAnchor.cs" />
+    <Compile Include="Editor\RepoChangeWatcher.cs" />
+    <Compile Include="Editor\ToolTipRequestEventArgs.cs">
+      <DependentUpon>ToolTipService.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editor\ToolTipService.cs" />
     <Compile Include="Parser\DomAssemblyName.cs" />
     <Compile Include="Parser\IAssemblyParserService.cs" />
     <Compile Include="Parser\IGlobalAssemblyCacheService.cs" />
@@ -153,11 +169,7 @@
     <Compile Include="Src\Gui\FileService.cs" />
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
     <Compile Include="Src\Commands\ViewInBrowser.cs" />
-    <Compile Include="Src\Editor\AvalonEdit\AvalonEditTextEditorAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
-    <Compile Include="Src\Editor\AvalonEdit\ISnippetElementProvider.cs" />
-    <Compile Include="Src\Editor\AvalonEdit\TextContentCondition.cs" />
-    <Compile Include="Src\Editor\AvalonEdit\TextSelectedCondition.cs" />
     <Compile Include="Editor\CodeCompletion\CodeCompletionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -167,7 +179,6 @@
     <Compile Include="Src\Editor\Commands\FindReferencesCommand.cs" />
     <Compile Include="Src\Editor\Commands\GotoLineNumber.cs" />
     <Compile Include="Src\Editor\Commands\SymbolUnderCaretMenuCommand.cs" />
-    <Compile Include="Src\Editor\IDocumentBaseVersionProvider.cs" />
     <Compile Include="Editor\CodeCompletion\CodeCompletionBinding.cs" />
     <Compile Include="Editor\CodeCompletion\CodeCompletionDataUsageCache.cs" />
     <Compile Include="Editor\CodeCompletion\CompletionContext.cs" />
@@ -184,25 +195,13 @@
     <Compile Include="Src\Editor\Commands\InsertGuidCommand.cs" />
     <Compile Include="Src\Editor\Commands\PasteAsCommands.cs" />
     <Compile Include="Src\Editor\Commands\ShowColorDialog.cs" />
-    <Compile Include="Src\Editor\IBracketSearcher.cs" />
     <Compile Include="Src\Editor\IFormattingStrategy.cs" />
-    <Compile Include="Src\Editor\PermanentAnchor.cs" />
-    <Compile Include="Src\Editor\ITextAreaToolTipProvider.cs">
-      <DependentUpon>ToolTipService.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Src\Editor\ITooltip.cs">
-      <DependentUpon>ToolTipService.cs</DependentUpon>
-    </Compile>
     <Compile Include="Editor\Search\ISearchResult.cs" />
     <Compile Include="Editor\Search\ISearchResultFactory.cs" />
     <Compile Include="Editor\Search\SearchResultMatch.cs" />
     <Compile Include="Editor\Search\SearchResultsPad.cs" />
     <Compile Include="Editor\Search\SearchResultPadToolbarCommands.cs" />
     <Compile Include="Src\Editor\TextNavigationPoint.cs" />
-    <Compile Include="Src\Editor\ToolTipRequestEventArgs.cs">
-      <DependentUpon>ToolTipService.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Src\Editor\ToolTipService.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserDisplayBinding.cs" />
     <Compile Include="Src\Gui\Components\ColorPickerButton.xaml.cs">
       <DependentUpon>ColorPickerButton.xaml</DependentUpon>

@@ -10,33 +10,15 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
-	public interface IDocumentVersionProvider
-	{
-		/// <summary>
-		/// Provides the BASE-Version for a file. This can be either the file saved
-		/// to disk or a base version provided by any VCS.
-		/// </summary>
-		Stream OpenBaseVersion(string fileName);
-		
-		IDisposable WatchBaseVersionChanges(string fileName, EventHandler callback);
-	}
-	
-	public class VersioningServices
-	{
-		public static readonly VersioningServices Instance = new VersioningServices();
-		
-		List<IDocumentVersionProvider> baseVersionProviders;
-		
-		public List<IDocumentVersionProvider> DocumentVersionProviders {
-			get {
-				if (baseVersionProviders == null)
-					baseVersionProviders = AddInTree.BuildItems<IDocumentVersionProvider>("/Workspace/DocumentVersionProviders", this, false);
-				
-				return baseVersionProviders;
-			}
-		}
-	}
-	
+	/// <summary>
+	/// A helper class that can be used to register an action to be called
+	/// when the contents of a directory change.
+	/// The action is called only once if there were multiple changes,
+	/// and the call may wait until SharpDevelop gets the focus.
+	/// If multiple actions are registered for the same directory, the underlying
+	/// FileSystemWatcher will be reused.
+	/// This class is usually used to watch a .svn or .git directory.
+	/// </summary>
 	public class RepoChangeWatcher
 	{
 		static readonly Dictionary<string, RepoChangeWatcher> watchers
@@ -58,10 +40,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 			watcher.Changed += FileChanged;
 			watcher.Renamed += FileChanged;
 			
-//			watcher.IncludeSubdirectories = true;
+	//			watcher.IncludeSubdirectories = true;
 			watcher.EnableRaisingEvents = true;
 		}
-
+	
 		void MainWindowActivated(object sender, EventArgs e)
 		{
 			if (alreadyCalled) {

@@ -5,9 +5,9 @@ using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
+namespace ICSharpCode.SharpDevelop.Editor
 {
-	public class TextSelectedCondition : IConditionEvaluator
+	sealed class TextSelectedCondition : IConditionEvaluator
 	{
 		public bool IsValid(object owner, Condition condition)
 		{

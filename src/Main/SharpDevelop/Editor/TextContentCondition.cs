@@ -2,10 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
 	/// Tests the name of the highlighting strategy of the text editor.
@@ -16,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 	/// <example title="Test if any XML file is being edited">
 	/// &lt;Condition name = "TextContent" textcontent="XML"&gt;
 	/// </example>
-	public class TextContentConditionEvaluator : IConditionEvaluator
+	sealed class TextContentConditionEvaluator : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)
 		{

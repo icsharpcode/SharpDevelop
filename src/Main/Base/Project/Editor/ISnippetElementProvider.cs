@@ -4,7 +4,7 @@
 using System;
 using ICSharpCode.AvalonEdit.Snippets;
 
-namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
 	/// Used in "/SharpDevelop/ViewContent/AvalonEdit/SnippetElementProviders" to allow AddIns to provide custom snippet elements.

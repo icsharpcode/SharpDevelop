@@ -15,7 +15,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
-namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	using ICSharpCode.AvalonEdit;
 	

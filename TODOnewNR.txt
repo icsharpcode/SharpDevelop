@@ -200,3 +200,7 @@ Context Actions vs. Member Context Menu:
 	Refactorings that don't make sense without opening the file shouldn't be in the member menu.
 	
 	The context actions menu should show all refactorings (even those that are also in the members context menu).
+
+Automatic Translation:
+	WorkbenchSingleton.AssertMainThread() -> SD.MainThread.VerifyAccess()
+	AbstractMenuCommand-derived classes that do not override IsEnabled -> SimpleCommand

@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public DefinitionViewPad()
 		{
-			ctl = Editor.AvalonEdit.AvalonEditTextEditorAdapter.CreateAvalonEditInstance();
+			ctl = Editor.AvalonEditTextEditorAdapter.CreateAvalonEditInstance();
 			ctl.IsReadOnly = true;
 			ctl.MouseDoubleClick += OnDoubleClick;
 			throw new NotImplementedException();
