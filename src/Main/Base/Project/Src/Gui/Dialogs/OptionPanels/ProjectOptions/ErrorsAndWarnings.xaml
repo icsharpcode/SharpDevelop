@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels;assembly=ICSharpCode.SharpDevelop"
              xmlns:core="http://icsharpcode.net/sharpdevelop/core">
-	
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -13,26 +12,25 @@
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"></RowDefinition>
 			<RowDefinition Height="Auto"></RowDefinition>
-			<RowDefinition Height="Auto"></RowDefinition>
 		</Grid.RowDefinitions>
 		
-		<optionpanels:StorageLocationPicker Grid.Row="1" Location="{Binding TreatWarningsAsErrors.Location}">
-		</optionpanels:StorageLocationPicker>
+		<Label Grid.Column="1" Content="{core:Localize Dialog.ProjectOptions.Build.WarningLevel}"></Label>
 		
-		<RadioButton x:Name="noneRadioButton" Grid.Column="1" VerticalAlignment="Center" Margin="3,0,3,0"
-		             Content="{core:Localize Dialog.ProjectOptions.Build.TreatWarningsAsErrors.None}"></RadioButton>
+		<!--x:Name="warningLevelComboBox"-->
+		<ComboBox Grid.Column="2" Width="40" VerticalAlignment="Center" HorizontalAlignment="Left"
+		          ItemsSource="{Binding Path=DataContext.WarnLevel}"
+		          SelectedValue="{Binding Path=WarningLevel.Value}"
+		          DisplayMemberPath="DisplayValue"
+		          SelectedValuePath="Key"
+		          SelectedIndex="4"></ComboBox>
 		
-		<RadioButton x:Name="specificWarningsRadioButton" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="3,0,3,0"
-		             Content="{core:Localize Dialog.ProjectOptions.Build.TreatWarningsAsErrors.Specific}"></RadioButton>
+		<optionpanels:StorageLocationPicker Grid.Row="1" Location="{Binding NoWarn.Location}" DockPanel.Dock="Left" />
 		
-		<TextBox x:Name="specificWarningsTextBox" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"
-		         Margin="3,0,3,0"
-		         IsEnabled="{Binding ElementName=specificWarningsRadioButton, Path=IsChecked}"
-		         Text="{Binding WarningsAsErrors.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+		<Label Grid.Row="1" Grid.Column="1"
+		       Content="{core:Localize Dialog.ProjectOptions.Build.SuppressWarnings}"></Label>
 		
-		<RadioButton x:Name="allRadioButton" Grid.Row="2" Grid.Column="1"
-		             Margin="3,0,3,0"
-		             VerticalAlignment="Center"
-		             Content="{core:Localize Dialog.ProjectOptions.Build.TreatWarningsAsErrors.All}"></RadioButton>
+		<!--x:Name="suppressWarningsTextBox"-->
+		<TextBox Grid.Row="1" Grid.Column="2"
+		         Text="{Binding NoWarn.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
 	</Grid>
 </UserControl>

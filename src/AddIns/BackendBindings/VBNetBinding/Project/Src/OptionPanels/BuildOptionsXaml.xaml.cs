@@ -58,10 +58,10 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 		}
 		
 			
-		public ProjectOptionPanel.ProjectProperty<bool> TreatWarningsAsErrors {
-			get {
-				return GetProperty("TreatWarningsAsErrors", false); }
-		}
+//		public ProjectOptionPanel.ProjectProperty<bool> TreatWarningsAsErrors {
+//			get {
+//				return GetProperty("TreatWarningsAsErrors", false); }
+//		}
 		
 		public ProjectProperty<string> DefineConstants {
 			get { return GetProperty("DefineConstants", "", TextBoxEditMode.EditRawProperty); }
@@ -143,21 +143,15 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
-		
-//			Console.WriteLine(" 1 - option {0}",TreatWarningsAsErrors.Value);
-			
 			errorsAndWarnings.SetProjectOptions(this);
-			
-//			Console.WriteLine(" 2 - option {0}",TreatWarningsAsErrors.Value);
-//			Console.WriteLine(" 4 - option {0}",TreatWarningsAsErrors.Value);
-//			
+			treatErrorsAndWarnings.SetProjectOptions(this);
 		}
 		
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
 			Console.WriteLine(OptionExplicit.Value);
-			errorsAndWarnings.SaveTreatWarningAsErrorRadioButtons();
+			treatErrorsAndWarnings.SaveTreatWarningAsErrorRadioButtons();
 			return base.Save(project, configuration, platform);
 		}
 		

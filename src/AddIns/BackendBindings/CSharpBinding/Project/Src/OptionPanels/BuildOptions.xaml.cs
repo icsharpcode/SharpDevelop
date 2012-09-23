@@ -61,7 +61,7 @@ namespace CSharpBinding.OptionPanels
 			fileAlignment.Add(new KeyItemPair("4096", "4096"));
 			fileAlignment.Add(new KeyItemPair("8192", "8192"));
 			FileAlign = fileAlignment;
-			
+			/*
 			this.warnLevel = new List<KeyItemPair>();
 			this.warnLevel.Add(new KeyItemPair("0","0"));
 			this.warnLevel.Add(new KeyItemPair("1","1"));
@@ -69,6 +69,7 @@ namespace CSharpBinding.OptionPanels
 			this.warnLevel.Add(new KeyItemPair("3","3"));
 			this.warnLevel.Add(new KeyItemPair("4","4"));
 			this.WarnLevel = warnLevel;
+			*/
 		}
 		
 		
@@ -147,23 +148,8 @@ namespace CSharpBinding.OptionPanels
 		}
 		
 		
-		public ProjectProperty<string> WarningLevel {
-			get {return GetProperty("WarningLevel","4",TextBoxEditMode.EditEvaluatedProperty ); }
-		}
-		
-		
 		public ProjectProperty<string> NoWarn {
 			get {return GetProperty("NoWarn","",TextBoxEditMode.EditRawProperty ); }
-		}
-		
-		
-		public ProjectProperty<string> WarningsAsErrors {
-			get {return GetProperty("WarningsAsErrors","",TextBoxEditMode.EditRawProperty ); }
-		}
-		
-		
-		public ProjectProperty<bool> TreatWarningsAsErrors {
-			get {return GetProperty("TreatWarningsAsErrors", false); }
 		}
 		
 		
@@ -182,7 +168,7 @@ namespace CSharpBinding.OptionPanels
 			XmlDocHelper();
 			this.BaseIntermediateOutputPathCommand = new RelayCommand(BaseIntermediateOutputPathExecute);
 			this.IntermediateOutputPathCommand = new RelayCommand(IntermediateOutputPathExecute);
-			errorsAndWarnings.SetProjectOptions(this);
+			treatErrorsAndWarnings.SetProjectOptions(this);
 		}
 		
 		
@@ -195,6 +181,7 @@ namespace CSharpBinding.OptionPanels
 			}
 			DllBaseAdress =  "0x" + val.ToString("x", NumberFormatInfo.InvariantInfo);
 			errorsAndWarnings.SetProjectOptions(this);
+			treatErrorsAndWarnings.SetProjectOptions(this);
 			IsDirty = false;
 		}
 		
@@ -213,7 +200,7 @@ namespace CSharpBinding.OptionPanels
 				MessageService.ShowMessage("${res:Dialog.ProjectOptions.PleaseEnterValidNumber}");
 				return false;
 			}
-			errorsAndWarnings.SaveTreatWarningAsErrorRadioButtons();
+			treatErrorsAndWarnings.SaveTreatWarningAsErrorRadioButtons();
 			return base.Save(project, configuration, platform);
 		}
 		
@@ -373,61 +360,5 @@ namespace CSharpBinding.OptionPanels
 		
 		#endregion
 		
-		#region WarningLevel
-		
-		public List<KeyItemPair> WarnLevel {
-			get { return warnLevel; }
-			set { warnLevel = value;
-				base.RaisePropertyChanged(() => WarnLevel);
-			}
-		}
-
-		#endregion
-		
-		#region SpecificWarnings TreatWarningsAsErrors
-		/*
-		private void SetTreatWarningAsErrorRadioButtons()
-		{
-			if (this.TreatWarningsAsErrors.Value) {
-				this.allRadioButton.IsChecked  = true;
-			} else {
-				if (WarningsAsErrors.Value.Length > 0) {
-					this.specificWarningsRadioButton.IsChecked = true;
-				} else {
-					this.noneRadioButton.IsChecked = true;
-				}
-			}
-			this.noneRadioButton.Checked += ErrorButton_Checked;
-			this.allRadioButton.Checked += ErrorButton_Checked;
-			this.specificWarningsRadioButton.Checked += ErrorButton_Checked;
-		}
-		
-		
-		*/
-		/*
-		private void SaveTreatWarningAsErrorRadioButtons()
-		{
-
-			if ((bool)this.noneRadioButton.IsChecked){
-				this.specificWarningsTextBox.Text = string.Empty;
-			}
-			
-			if ((bool)this.allRadioButton.IsChecked) {
-				this.TreatWarningsAsErrors.Value = true;
-			}	else {
-				this.TreatWarningsAsErrors.Value = false;
-			}
-			this.noneRadioButton.Checked -= ErrorButton_Checked;
-			this.allRadioButton.Checked -= ErrorButton_Checked;
-			this.specificWarningsRadioButton.Checked -= ErrorButton_Checked;
-		}
-		
-		void ErrorButton_Checked(object sender, System.Windows.RoutedEventArgs e)
-		{
-			IsDirty = true;
-		}
-		*/
-		
-		#endregion
 	}
 }

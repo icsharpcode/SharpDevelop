@@ -268,7 +268,9 @@
 			
 			<GroupBox Margin="0,8,0,0"
 			          Header="{core:Localize Dialog.ProjectOptions.Build.ErrorsAndWarnings}">
-				<Grid>
+			<optionpanels:ErrorsAndWarnings x:Name="errorsAndWarnings">
+				</optionpanels:ErrorsAndWarnings>
+				<!--<Grid>
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="Auto"></ColumnDefinition>
 						<ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -281,7 +283,7 @@
 					
 					<Label Grid.Column="1" Content="{core:Localize Dialog.ProjectOptions.Build.WarningLevel}"></Label>
 					
-					<!--x:Name="warningLevelComboBox"-->
+					
 					<ComboBox Grid.Column="2" Width="40" VerticalAlignment="Center" HorizontalAlignment="Left"
 					          ItemsSource="{Binding Path=DataContext.WarnLevel}"
 					          SelectedValue="{Binding Path=WarningLevel.Value}"
@@ -294,16 +296,16 @@
 					<Label Grid.Row="1" Grid.Column="1"
 					       Content="{core:Localize Dialog.ProjectOptions.Build.SuppressWarnings}"></Label>
 					
-					<!--x:Name="suppressWarningsTextBox"-->
+					
 					<TextBox Grid.Row="1" Grid.Column="2"
 					         Text="{Binding NoWarn.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
 				
-				</Grid>
+				</Grid>-->
 			</GroupBox>
 			
 			<GroupBox Margin="0,8,0,0" Header="{core:Localize Dialog.ProjectOptions.Build.ErrorsAndWarnings}">  
-				<optionpanels:ErrorsAndWarnings x:Name="errorsAndWarnings">
-				</optionpanels:ErrorsAndWarnings>
+				<optionpanels:TreatErrorsAndWarnings x:Name="treatErrorsAndWarnings">
+				</optionpanels:TreatErrorsAndWarnings>
 			</GroupBox>
 		
 		</StackPanel>
