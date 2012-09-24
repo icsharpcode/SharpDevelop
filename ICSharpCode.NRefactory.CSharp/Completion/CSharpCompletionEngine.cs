@@ -2337,7 +2337,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						
 						if (trr.Type.Kind == TypeKind.Enum) {
 							foreach (var field in trr.Type.GetFields ()) {
-								result.AddMember(field);
+								if (lookup.IsAccessible (field, false))
+									result.AddMember(field);
 							}
 							return result.Result;
 						}

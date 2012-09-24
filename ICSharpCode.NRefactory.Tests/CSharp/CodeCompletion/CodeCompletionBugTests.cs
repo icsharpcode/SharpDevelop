@@ -77,6 +77,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			{
 				this.state = state;
 				builder = new TypeSystemAstBuilder(state);
+				builder.ConvertUnboundTypeArguments = true;
 			}
 
 			class CompletionData
