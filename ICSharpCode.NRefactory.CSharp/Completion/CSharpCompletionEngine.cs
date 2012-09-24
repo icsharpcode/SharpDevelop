@@ -671,18 +671,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
 					}
 				
-					char prevCh = offset > 2 ? document.GetCharAt(offset - 2) : ';';
-					char nextCh = offset < document.TextLength ? document.GetCharAt(offset) : ' ';
-					const string allowedChars = ";,.[](){}+-*/%^?:&|~!<>=";
 
-					if (!Char.IsWhiteSpace(nextCh) && allowedChars.IndexOf(nextCh) < 0) {
-						return null;
-					}
-					if (!(Char.IsWhiteSpace(prevCh) || allowedChars.IndexOf(prevCh) >= 0)) {
-						if (controlSpace && identifierStart != null && identifierStart.Node is IdentifierExpression)
-							return  DefaultControlSpaceItems(identifierStart);
-						return null;
-					}
 					// Do not pop up completion on identifier identifier (should be handled by keyword completion).
 					tokenIndex = offset - 1;
 					token = GetPreviousToken(ref tokenIndex, false);
@@ -693,6 +682,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					var keywordresult = HandleKeywordCompletion(tokenIndex, token);
 					if (keywordresult != null) {
 						return keywordresult;
+					}
+
+					char prevCh = offset > 2 ? document.GetCharAt(offset - 2) : ';';
+					char nextCh = offset < document.TextLength ? document.GetCharAt(offset) : ' ';
+					const string allowedChars = ";,.[](){}+-*/%^?:&|~!<>=";
+
+					if ((!Char.IsWhiteSpace(nextCh) && allowedChars.IndexOf(nextCh) < 0) || !(Char.IsWhiteSpace(prevCh) || allowedChars.IndexOf(prevCh) >= 0)) {
+						if (controlSpace)
+							return DefaultControlSpaceItems(identifierStart);
+						return null;
 					}
 				
 					int prevTokenIndex = tokenIndex;
