@@ -587,6 +587,64 @@ class MyTest
 			);
 		}
 
+
+		/// <summary>
+		/// Bug 7383 - Object initializer completion inaccessible
+		/// </summary>
+		[Test()]
+		public void TestBug7383()
+		{
+			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider(
+				@"using System.Runtime.InteropServices;
+
+class S
+{
+    public int Foo { get; protected set; }
+    public int Bar { get; set; }
+}
+
+class C
+{
+    public static void Main ()
+    {
+        var s = new S () {
+            $Fo$
+        };
+    }
+}
+
+");
+			Assert.IsNull(provider.Find("Foo"), "'Foo' found.");
+			Assert.IsNotNull(provider.Find("Bar"), "'Bar' not found.");
+		}
+
+		[Test()]
+		public void TestBug7383Case2()
+		{
+			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider(
+				@"using System.Runtime.InteropServices;
+
+class S
+{
+    public int Foo { get; protected set; }
+    public int Bar { get; set; }
+}
+
+class C : S
+{
+    public static void Main ()
+    {
+        var s = new C () {
+            $Fo$
+        };
+    }
+}
+
+");
+			Assert.IsNotNull(provider.Find("Foo"), "'Foo' found.");
+			Assert.IsNotNull(provider.Find("Bar"), "'Bar' not found.");
+		}
+
 	}
 
 }

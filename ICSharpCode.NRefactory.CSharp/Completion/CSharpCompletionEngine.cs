@@ -263,10 +263,20 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return contextList.Result;
 					}
 					
-					foreach (var m in initializerResult.Item1.Type.GetMembers (m => m.IsPublic && (m.EntityType == EntityType.Property || m.EntityType == EntityType.Field))) {
-						contextList.AddMember(m);
+					var lookup = new MemberLookup(ctx.CurrentTypeDefinition, Compilation.MainAssembly);
+					bool isProtectedAllowed = ctx.CurrentTypeDefinition != null ? 
+						ctx.CurrentTypeDefinition.IsDerivedFrom(initializerResult.Item1.Type.GetDefinition()) : 
+							false;
+
+					foreach (var m in initializerResult.Item1.Type.GetMembers (m => m.EntityType == EntityType.Field)) {
+						if (lookup.IsAccessible (m, isProtectedAllowed))
+							contextList.AddMember(m);
 					}
-					
+					foreach (IProperty m in initializerResult.Item1.Type.GetMembers (m => m.EntityType == EntityType.Property)) {
+						if (m.CanSet && lookup.IsAccessible (m.Setter, isProtectedAllowed))
+							contextList.AddMember(m);
+					}
+
 					if (prev != null && (prev is NamedExpression)) {
 						// case 2)
 						return contextList.Result;
@@ -657,17 +667,20 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							return HandleCatchClauseType(identifierStart);
 						}
 					}
-					if (!(char.IsLetter(completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null || !(identifierStart.Node.Parent is ArrayInitializerExpression))) {
+					if (!(char.IsLetter(completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null)) {
 						return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
 					}
 				
 					char prevCh = offset > 2 ? document.GetCharAt(offset - 2) : ';';
 					char nextCh = offset < document.TextLength ? document.GetCharAt(offset) : ' ';
 					const string allowedChars = ";,.[](){}+-*/%^?:&|~!<>=";
+
 					if (!Char.IsWhiteSpace(nextCh) && allowedChars.IndexOf(nextCh) < 0) {
 						return null;
 					}
 					if (!(Char.IsWhiteSpace(prevCh) || allowedChars.IndexOf(prevCh) >= 0)) {
+						if (controlSpace && identifierStart != null && identifierStart.Node is IdentifierExpression)
+							return  DefaultControlSpaceItems(identifierStart);
 						return null;
 					}
 					// Do not pop up completion on identifier identifier (should be handled by keyword completion).
