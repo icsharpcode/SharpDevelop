@@ -148,10 +148,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return resolver.Compilation.FindType(KnownTypeCode.Object);
 			}
 
+
 			foreach (var method in type.GetMethods (m => m.Name == "GetEnumerator")) {
-				var pr = method.ReturnType.GetProperties(p => p.Name == "Current").FirstOrDefault();
-				if (pr != null)
-					return pr.ReturnType;
+				IType returnType = null;
+				foreach (var prop in method.ReturnType.GetProperties(p => p.Name == "Current")) {
+					if (returnType != null && prop.ReturnType.IsKnownType (KnownTypeCode.Object))
+						continue;
+					returnType = prop.ReturnType;
+				}
+				if (returnType != null)
+					return returnType;
 			}
 
 			return resolver.Compilation.FindType(KnownTypeCode.Object);
