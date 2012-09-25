@@ -2399,23 +2399,28 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					result.AddMember(member);
 				}*/
 				foreach (var member in lookup.GetAccessibleMembers (resolveResult)) {
-
 					if (member.EntityType == EntityType.Indexer || member.EntityType == EntityType.Operator || member.EntityType == EntityType.Constructor || member.EntityType == EntityType.Destructor) {
 						continue;
 					}
 					if (resolvedNode is BaseReferenceExpression && member.IsAbstract) {
 						continue;
 					}
+					if (member is IType) {
+						if (resolveResult is TypeResolveResult || includeStaticMembers) {
+							result.AddType ((IType)member, false);
+							continue;
+						}
+					}
 					bool memberIsStatic = member.IsStatic;
 					if (!includeStaticMembers && memberIsStatic && !(resolveResult is TypeResolveResult)) {
 						//						Console.WriteLine ("skip static member: " + member.FullName);
 						continue;
 					}
+
 					var field = member as IField;
 					if (field != null) {
 						memberIsStatic |= field.IsConst;
 					}
-					
 					if (!memberIsStatic && skipNonStaticMembers) {
 						continue;
 					}
@@ -2429,23 +2434,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 					if (member is IMember) {
 						result.AddMember ((IMember)member);
-					} else {
-						if (resolveResult is TypeResolveResult || includeStaticMembers)
-							result.AddType ((IType)member, false);
 					}
 				}
 			}
-			
-			if (resolveResult is TypeResolveResult || includeStaticMembers) {
-				foreach (var nested in type.GetNestedTypes ()) {
-					if (!lookup.IsAccessible(nested.GetDefinition(), isProtectedAllowed))
-						continue;
-					IType addType = typePred != null ? typePred(nested) : nested;
-					if (addType != null)
-						result.AddType(addType, false);
-				}
-				
-			} else {
+
+			if (!(resolveResult is TypeResolveResult || includeStaticMembers)) {
 				foreach (var meths in state.GetExtensionMethods (type)) {
 					foreach (var m in meths) {
 						if (!lookup.IsAccessible(m, isProtectedAllowed))
