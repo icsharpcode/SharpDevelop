@@ -985,5 +985,26 @@ public class B
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (1, provider.Count);
 		}
+
+
+		[Test()]
+		public void TestLambdaCase()
+		{
+			IParameterDataProvider provider = CreateProvider(
+				@"using System;
+class TestClass
+{    
+	void F (Action i, int foo)
+	{
+		$F (()=> Something(),$
+
+	}
+}
+");
+			Assert.IsTrue (provider != null && provider.Count == 1);
+		}
+
+		
+
 	}
 }
