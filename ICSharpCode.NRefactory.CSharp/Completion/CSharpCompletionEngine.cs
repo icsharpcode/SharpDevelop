@@ -1111,10 +1111,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				node = unit.GetNodeAt(
 					location.Line,
 					location.Column + 2,
-					n => n is Expression || n is AstType
+					n => n is Expression || n is AstType || n is NamespaceDeclaration
 				);
 				rr = ResolveExpression(node);
 			}
+			// namespace name case
+			if (node is NamespaceDeclaration)
+				return null;
 			if (node is Identifier && node.Parent is ForeachStatement) {
 				var foreachStmt = (ForeachStatement)node.Parent;
 				foreach (var possibleName in GenerateNameProposals (foreachStmt.VariableType)) {
