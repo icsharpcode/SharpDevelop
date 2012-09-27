@@ -276,6 +276,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (invoke == null) {
 						return null;
 					}
+					if (invoke.Node is ArrayCreateExpression) {
+						return null;
+					}
 					var indexerExpression = ResolveExpression(invoke);
 					if (indexerExpression == null || indexerExpression.Item1 == null || indexerExpression.Item1.IsError) {
 						return null;

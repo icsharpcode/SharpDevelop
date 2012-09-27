@@ -1004,7 +1004,22 @@ class TestClass
 			Assert.IsTrue (provider != null && provider.Count == 1);
 		}
 
-		
+		[Test()]
+		public void TestJaggedArrayCreation()
+		{
+			IParameterDataProvider provider = CreateProvider(
+				@"using System;
+class TestClass
+{    
+	void F (Action i, int foo)
+	{
+		$new foo[1,2][$
+
+	}
+}
+");
+			Assert.IsTrue (provider == null || provider.Count == 0);
+		}
 
 	}
 }
