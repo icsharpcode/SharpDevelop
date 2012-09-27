@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// </summary>
 	
 	
-	public partial class TreatErrorsAndWarnings : UserControl
+	public partial class TreatErrorsAndWarnings : UserControl,IProjectUserControl
 	{
 		private ProjectOptionPanel projectOptions;
 		
@@ -50,6 +50,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		#endregion
 		
+		#region IProjectuserControl
+	
 		public void SetProjectOptions (ProjectOptionPanel projectOptions)
 		{
 			if (projectOptions == null) {
@@ -59,6 +61,24 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			SetTreatWarningAsErrorRadioButtons();
 		}
 		
+		public bool SaveProjectOptions()
+		{
+			if ((bool)this.noneRadioButton.IsChecked){
+				this.specificWarningsTextBox.Text = string.Empty;
+			}
+			
+			if ((bool)this.allRadioButton.IsChecked) {
+				this.TreatWarningsAsErrors.Value = true;
+			}	else {
+				this.TreatWarningsAsErrors.Value = false;
+			}
+			this.noneRadioButton.Checked -= ErrorButton_Checked;
+			this.allRadioButton.Checked -= ErrorButton_Checked;
+			this.specificWarningsRadioButton.Checked -= ErrorButton_Checked;
+			return true;
+		}
+		
+		#endregion
 		
 		private void SetTreatWarningAsErrorRadioButtons()
 		{
@@ -76,23 +96,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			this.specificWarningsRadioButton.Checked += ErrorButton_Checked;
 		}
 		
-		
-		public void SaveTreatWarningAsErrorRadioButtons()
-		{
-			if ((bool)this.noneRadioButton.IsChecked){
-				this.specificWarningsTextBox.Text = string.Empty;
-			}
-			
-			if ((bool)this.allRadioButton.IsChecked) {
-				this.TreatWarningsAsErrors.Value = true;
-			}	else {
-				this.TreatWarningsAsErrors.Value = false;
-			}
-			this.noneRadioButton.Checked -= ErrorButton_Checked;
-			this.allRadioButton.Checked -= ErrorButton_Checked;
-			this.specificWarningsRadioButton.Checked -= ErrorButton_Checked;
-		}
-		
+
 		
 		void ErrorButton_Checked(object sender, System.Windows.RoutedEventArgs e)
 		{

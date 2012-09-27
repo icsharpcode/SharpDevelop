@@ -26,50 +26,13 @@ namespace CSharpBinding.OptionPanels
 	public partial class BuildOptions : ProjectOptionPanel
 	{
 
-		private List<KeyItemPair> serializationInfo;
-		private List<KeyItemPair> targetCPU;
-		private List<KeyItemPair> fileAlignment;
-		private List<KeyItemPair> warnLevel;
-		
 		private System.Windows.Input.ICommand updateProjectCommand;
 		private System.Windows.Input.ICommand changeOutputPath;
-		private System.Windows.Input.ICommand baseIntermediateOutputPathCommand;
-		private System.Windows.Input.ICommand intermediateOutputPathCommand;
 		
 		public BuildOptions()
 		{
 			InitializeComponent();
-			this.serializationInfo = new List<KeyItemPair>();
-			
-			this.serializationInfo.Add (new KeyItemPair("Off",StringParser.Parse("${res:Dialog.ProjectOptions.Build.Off}")));
-			this.serializationInfo.Add (new KeyItemPair("On",StringParser.Parse("${res:Dialog.ProjectOptions.Build.On}")));
-			this.serializationInfo.Add (new KeyItemPair("Auto",StringParser.Parse( "${res:Dialog.ProjectOptions.Build.Auto}")));
-			this.SerializationInfo = this.serializationInfo;
-			
-			this.targetCPU = new List<KeyItemPair>();
-			this.targetCPU.Add(new KeyItemPair( "AnyCPU",StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Any}")));
-			this.targetCPU.Add(new KeyItemPair( "x86",StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.x86}")));
-			this.targetCPU.Add(new KeyItemPair( "x64",StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.x64}")));
-			this.targetCPU.Add(new KeyItemPair( "Itanium",StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Itanium}")));
-			this.TargetCPU = targetCPU;
-			
-			
-			fileAlignment = new List<KeyItemPair>();
-			fileAlignment.Add( new KeyItemPair("512", "512"));
-			fileAlignment.Add( new KeyItemPair("1024", "1024"));
-			fileAlignment.Add(new KeyItemPair("2048", "2048"));
-			fileAlignment.Add(new KeyItemPair("4096", "4096"));
-			fileAlignment.Add(new KeyItemPair("8192", "8192"));
-			FileAlign = fileAlignment;
-			/*
-			this.warnLevel = new List<KeyItemPair>();
-			this.warnLevel.Add(new KeyItemPair("0","0"));
-			this.warnLevel.Add(new KeyItemPair("1","1"));
-			this.warnLevel.Add(new KeyItemPair("2","2"));
-			this.warnLevel.Add(new KeyItemPair("3","3"));
-			this.warnLevel.Add(new KeyItemPair("4","4"));
-			this.WarnLevel = warnLevel;
-			*/
+			this.DataContext = this;
 		}
 		
 		
@@ -80,13 +43,16 @@ namespace CSharpBinding.OptionPanels
 			                        TextBoxEditMode.EditRawProperty,PropertyStorageLocations.ConfigurationSpecific); }
 		}
 		
+		
 		public ProjectProperty<bool> Optimize {
 			get { return GetProperty("Optimize", false, PropertyStorageLocations.ConfigurationSpecific); }
 		}
 		
+		
 		public ProjectProperty<bool> AllowUnsafeBlocks {
 			get { return GetProperty("AllowUnsafeBlocks", false); }
 		}
+		
 		
 		public ProjectProperty<bool> CheckForOverflowUnderflow {
 			get { return GetProperty("CheckForOverflowUnderflow", false, PropertyStorageLocations.ConfigurationSpecific); }
@@ -101,6 +67,7 @@ namespace CSharpBinding.OptionPanels
 			get {return GetProperty("OutputPath", "", TextBoxEditMode.EditRawProperty); }
 		}
 		
+		
 		public ProjectProperty<string> DocumentationFile {
 			get {return GetProperty("DocumentationFile", "", TextBoxEditMode.EditRawProperty);}
 		}
@@ -110,49 +77,7 @@ namespace CSharpBinding.OptionPanels
 			get {return GetProperty("DebugType",ICSharpCode.SharpDevelop.Project.DebugSymbolType.Full ); }
 		}
 		
-		// used in multibinding
-		public ProjectProperty<bool> RegisterForComInterop {
-			get {return GetProperty("RegisterForComInterop", false, PropertyStorageLocations.PlatformSpecific ); }
-		}
-		
-		
-		public ProjectProperty<string> GenerateSerializationAssemblies {
-			get {return GetProperty("GenerateSerializationAssemblies","Auto",
-			                        TextBoxEditMode.EditEvaluatedProperty, PropertyStorageLocations.PlatformSpecific ); }
-		}
-		
-		public ProjectProperty<string> PlatformTarget {
-			get {return GetProperty("PlatformTarget","AnyCPU",
-			                        TextBoxEditMode.EditEvaluatedProperty, PropertyStorageLocations.PlatformSpecific ); }
-		}
-		
-		public ProjectProperty<string> FileAlignment {
-			get {return GetProperty("FileAlignment","4096",
-			                        TextBoxEditMode.EditEvaluatedProperty, PropertyStorageLocations.PlatformSpecific ); }
-		}
-		
-		public ProjectProperty<string> BaseAddress {
-			get {return GetProperty("BaseAddress","1000",
-			                        TextBoxEditMode.EditEvaluatedProperty,PropertyStorageLocations.PlatformSpecific ); }
-		}
-		
-		
-		public ProjectProperty<string> BaseIntermediateOutputPath {
-			get {return GetProperty("BaseIntermediateOutputPath",@"obj\",
-			                        TextBoxEditMode.EditRawProperty,PropertyStorageLocations.ConfigurationSpecific ); }
-		}
-		
-		
-		public ProjectProperty<string> IntermediateOutputPath {
-			get {return GetProperty("IntermediateOutputPath",@"obj\$(Configuration)\",TextBoxEditMode.EditRawProperty ); }
-		}
-		
-		
-		public ProjectProperty<string> NoWarn {
-			get {return GetProperty("NoWarn","",TextBoxEditMode.EditRawProperty ); }
-		}
-		
-		
+	
 		#endregion
 		
 		#region overrides
@@ -166,42 +91,26 @@ namespace CSharpBinding.OptionPanels
 				documentFileIsChecked = true;
 			}
 			XmlDocHelper();
-			this.BaseIntermediateOutputPathCommand = new RelayCommand(BaseIntermediateOutputPathExecute);
-			this.IntermediateOutputPathCommand = new RelayCommand(IntermediateOutputPathExecute);
-			treatErrorsAndWarnings.SetProjectOptions(this);
 		}
 		
 		
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
-			int val;
-			if (!int.TryParse(BaseAddress.Value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out val)) {
-				val = 0x400000;
-			}
-			DllBaseAdress =  "0x" + val.ToString("x", NumberFormatInfo.InvariantInfo);
-			errorsAndWarnings.SetProjectOptions(this);
-			treatErrorsAndWarnings.SetProjectOptions(this);
+			this.buildAdvanced.SetProjectOptions(this);
+			this.errorsAndWarnings.SetProjectOptions(this);
+			this.treatErrorsAndWarnings.SetProjectOptions(this);
 			IsDirty = false;
 		}
 		
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
-			NumberStyles style = NumberStyles.Integer;
-			if (dllBaseAdress.StartsWith("0x")) {
-				dllBaseAdress = dllBaseAdress.Substring(2);
-				style = NumberStyles.HexNumber;
+			if (buildAdvanced.SaveProjectOptions()) {
+				treatErrorsAndWarnings.SaveProjectOptions();
+				return base.Save(project, configuration, platform);
 			}
-			int val;
-			if (int.TryParse(dllBaseAdress, style, NumberFormatInfo.InvariantInfo, out val)) {
-				BaseAddress.Value = val.ToString(NumberFormatInfo.InvariantInfo);
-			} else {
-				MessageService.ShowMessage("${res:Dialog.ProjectOptions.PleaseEnterValidNumber}");
-				return false;
-			}
-			treatErrorsAndWarnings.SaveTreatWarningAsErrorRadioButtons();
-			return base.Save(project, configuration, platform);
+			return false;
 		}
 		
 		
@@ -279,86 +188,35 @@ namespace CSharpBinding.OptionPanels
 		
 		#region SerializationInfo
 		
-		public List<KeyItemPair> SerializationInfo {
-			get {return this.serializationInfo;}
-			set {this.serializationInfo = value;
-				base.RaisePropertyChanged(() => SerializationInfo);
-			}
-		}
+//		public List<KeyItemPair> SerializationInfo {
+//			get {return this.serializationInfo;}
+//			set {this.serializationInfo = value;
+//				base.RaisePropertyChanged(() => SerializationInfo);
+//			}
+//		}
 		
 		#endregion
 		
 		
 		#region TargetCPU
 		
-		public List<KeyItemPair> TargetCPU {
-			get { return targetCPU; }
-			set { targetCPU = value;
-				base.RaisePropertyChanged(() => TargetCPU);
-			}
-		}
+//		public List<KeyItemPair> TargetCPU {
+//			get { return targetCPU; }
+//			set { targetCPU = value;
+//				base.RaisePropertyChanged(() => TargetCPU);
+//			}
+//		}
 		#endregion
 		
 		#region FileAlignment
 		
-		public List<KeyItemPair> FileAlign {
-			get { return fileAlignment; }
-			set { fileAlignment = value;
-				base.RaisePropertyChanged(() => FileAlign);
-			}
-		}
+//		public List<KeyItemPair> FileAlign {
+//			get { return fileAlignment; }
+//			set { fileAlignment = value;
+//				base.RaisePropertyChanged(() => FileAlign);
+//			}
+//		}
 		
 		#endregion
-		
-		#region DLL BaseAdress
-		
-		private string dllBaseAdress;
-		
-		public string DllBaseAdress {
-			get {
-				return dllBaseAdress;
-			}
-			
-			set {
-				dllBaseAdress = value;
-				IsDirty = true;
-				base.RaisePropertyChanged(() => DllBaseAdress);
-			}
-		}
-
-		#endregion
-		
-		#region BaseIntermediateOutputPath
-		
-		public System.Windows.Input.ICommand BaseIntermediateOutputPathCommand {
-			get{return this.baseIntermediateOutputPathCommand;}
-			set {this.baseIntermediateOutputPathCommand = value;
-				base.RaisePropertyChanged(() => BaseIntermediateOutputPathCommand);}
-		}
-		
-		
-		private void BaseIntermediateOutputPathExecute ()
-		{
-			BrowseForFolder(BaseIntermediateOutputPath, "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
-		}
-		
-		#endregion
-		
-		#region IntermediateOutputPath
-		
-		public System.Windows.Input.ICommand IntermediateOutputPathCommand {
-			get{return this.intermediateOutputPathCommand;}
-			set {this.intermediateOutputPathCommand = value;
-				base.RaisePropertyChanged(() => IntermediateOutputPathCommand);}
-		}
-		
-		
-		private void IntermediateOutputPathExecute ()
-		{
-			BrowseForFolder(IntermediateOutputPath, "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
-		}
-		
-		#endregion
-		
 	}
 }

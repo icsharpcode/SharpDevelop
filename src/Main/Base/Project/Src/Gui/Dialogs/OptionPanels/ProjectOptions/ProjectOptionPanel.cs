@@ -385,9 +385,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		/// <summary>
 		/// Shows the 'Browse for folder' dialog.
 		/// </summary>
-		protected void BrowseForFolder(ProjectProperty<string> property, string description)
+		public void BrowseForFolder(ProjectProperty<string> property, string description)
 		{
-			string newValue = BrowseForFile(description, property.Value, property.TextBoxEditMode);
+			string newValue = BrowseForFolder(description, BaseDirectory, property.TextBoxEditMode);
 			if (newValue != null)
 				property.Value = newValue;
 		}

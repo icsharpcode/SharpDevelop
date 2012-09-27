@@ -23,7 +23,16 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// <summary>
 	/// Interaction logic for ErrorsAndWarnings.xaml
 	/// </summary>
-	public partial class ErrorsAndWarnings : UserControl, INotifyPropertyChanged
+	/// 
+	
+	public interface IProjectUserControl
+	{
+		void SetProjectOptions (ProjectOptionPanel projectOptions);
+		bool SaveProjectOptions();
+	}
+	
+	
+	public partial class ErrorsAndWarnings : UserControl, INotifyPropertyChanged,IProjectUserControl
 	{
 		private List<KeyItemPair> warnLevel;
 		private ProjectOptionPanel projectOptions;
@@ -42,6 +51,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			this.WarnLevel = warnLevel;
 		}
 		
+		#region IProjectUserControl
+		
 		public void SetProjectOptions (ProjectOptionPanel projectOptions)
 		{
 			if (projectOptions == null) {
@@ -50,7 +61,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			this.projectOptions = projectOptions;
 		}
 		
-			
+		public bool SaveProjectOptions()
+		{
+			return true;
+		}
+		
+		#endregion
+		
 		public ProjectOptionPanel.ProjectProperty<string> WarningLevel {
 			get {return projectOptions.GetProperty("WarningLevel","4",TextBoxEditMode.EditEvaluatedProperty ); }
 		}

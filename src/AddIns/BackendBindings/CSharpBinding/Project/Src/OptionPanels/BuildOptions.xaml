@@ -10,10 +10,6 @@
 	xmlns:local="clr-namespace:CSharpBinding.OptionPanels"
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets">
 	
-	<optionpanels:ProjectOptionPanel.Resources>
-		<optionpanels:StorageLocationConverter
-			x:Key="converter" />
-	</optionpanels:ProjectOptionPanel.Resources>
 	
 	<ScrollViewer
 		VerticalScrollBarVisibility="Auto">
@@ -149,158 +145,17 @@
 							Style="{x:Static core:GlobalStyles.ButtonStyle}"></Button>
 					</StackPanel>
 					
-					<GroupBox Grid.Row="5" Grid.ColumnSpan="4" Margin="5,10,0,0"
-					          Header="{core:Localize Dialog.ProjectOptions.Build.Advanced}">
-						<Grid>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto"></RowDefinition>
-								<RowDefinition Height="Auto"></RowDefinition>
-								<RowDefinition Height="Auto"></RowDefinition>
-								<RowDefinition Height="Auto"></RowDefinition>
-								<RowDefinition Height="Auto"></RowDefinition>
-								<RowDefinition Height="Auto"></RowDefinition>
-								<RowDefinition Height="Auto"></RowDefinition>
-								<RowDefinition Height="Auto"></RowDefinition>
-								<RowDefinition Height="Auto"></RowDefinition>
-								<RowDefinition Height="Auto"></RowDefinition>
-							</Grid.RowDefinitions>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto"></ColumnDefinition>
-								<ColumnDefinition Width="Auto"></ColumnDefinition>
-								<ColumnDefinition MinWidth="120"></ColumnDefinition>
-								<ColumnDefinition></ColumnDefinition>
-								<ColumnDefinition Width="50"></ColumnDefinition>
-							</Grid.ColumnDefinitions>
-							
-							<optionpanels:StorageLocationPicker Grid.Row="1" VerticalAlignment="Center">
-								<optionpanels:StorageLocationPicker.Location>
-									<MultiBinding Converter="{StaticResource converter}">
-										<Binding Path="RegisterForComInterop.Location" />
-										<Binding Path="GenerateSerializationAssemblies.Location" />
-										<Binding Path="PlatformTarget.Location" />
-										<Binding Path="FileAlignment.Location" />
-										<Binding Path="BaseAddress.Location" />
-									</MultiBinding>
-								</optionpanels:StorageLocationPicker.Location>
-							
-							</optionpanels:StorageLocationPicker>
-							
-							<!--x:Name="registerCOMInteropCheckBox"-->
-							<CheckBox Grid.Column="2"
-							          IsChecked="{Binding RegisterForComInterop.Value}"
-							          Content="{core:Localize Dialog.ProjectOptions.Build.RegisterForCOM}"></CheckBox>
-							
-							<Label Grid.Row="1" Grid.Column="1"
-							       HorizontalAlignment="Right"
-							       Content="{core:Localize Dialog.ProjectOptions.Build.GenerateSerializationAssembly}"></Label>
-							
-							<!--x:Name="generateSerializationAssemblyComboBox"-->
-							<ComboBox  Grid.Row="1" Grid.Column="2"
-							          VerticalAlignment="Center"
-							          ItemsSource="{Binding Path=DataContext.SerializationInfo}"
-							          SelectedValue="{Binding Path=GenerateSerializationAssemblies.Value}"
-							          DisplayMemberPath="DisplayValue"
-							          SelectedValuePath="Key"></ComboBox>
-							
-							<Label Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right"
-							       Content="{core:Localize Dialog.ProjectOptions.Build.TargetCPU}"></Label>
-							
-							<!--x:Name="targetCpuComboBox"-->
-							<ComboBox Grid.Row="2" Grid.Column="2" VerticalAlignment="Center"
-							          ItemsSource="{Binding Path=DataContext.TargetCPU}"
-							          SelectedValue="{Binding Path=PlatformTarget.Value}"
-							          DisplayMemberPath="DisplayValue"
-							          SelectedValuePath="Key"></ComboBox>
-							
-							<Label Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right"
-							       Content="{core:Localize Dialog.ProjectOptions.Build.FileAlignment}"></Label>
-							
-							<!--x:Name="fileAlignmentComboBox"-->
-							<ComboBox Grid.Row="3" Grid.Column="2" VerticalAlignment="Center"
-							          ItemsSource="{Binding Path=DataContext.FileAlign}"
-							          SelectedValue="{Binding Path=FileAlignment.Value}"
-							          DisplayMemberPath="DisplayValue"
-							          SelectedValuePath="Key"></ComboBox>
-							
-							<Label Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right"
-							       Content="{core:Localize Dialog.ProjectOptions.Build.DLLBaseAddress}"></Label>
-							
-							
-							<!--x:Name="dllBaseAddressTextBox"-->
-							<TextBox  Grid.Row="4" Grid.Column="2"
-							         Text="{Binding DllBaseAdress, UpdateSourceTrigger=PropertyChanged}">
-							
-							</TextBox>
-							
-							
-							<!-- location multibinding -->
-							<Label Grid.Row="6" Grid.ColumnSpan="2"
-							       Content="{core:Localize Dialog.ProjectOptions.Build.BaseIntermediateOutputPath}"></Label>
-							
-							<optionpanels:StorageLocationPicker Grid.Row="7"
-								Location="{Binding BaseIntermediateOutputPath.Location}"
-								DockPanel.Dock="Left" />
-							
-							<TextBox x:Name="baseIntermediateOutputPathTextBox" Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3"
-							         Text="{Binding BaseIntermediateOutputPath.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-							
-							<Button Grid.Row="7" Grid.Column="4" Margin="3,0,3,0"
-							        Content="..."
-							        VerticalAlignment="Center"
-							        Command="{Binding BaseIntermediateOutputPathCommand}"></Button>
-							
-							<Label Grid.Row="8" Grid.ColumnSpan="2" Content="{core:Localize Dialog.ProjectOptions.Build.IntermediateOutputPath}"></Label>
-							
-							<optionpanels:StorageLocationPicker Grid.Row="9" DockPanel.Dock="Left"
-								Location="{Binding IntermediateOutputPath.Location}"/>
-							
-							<TextBox x:Name="intermediateOutputPathTextBox" Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="3"
-							         Text="{Binding IntermediateOutputPath.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-							
-							<Button Grid.Row="9" Grid.Column="4" Margin="3,0,3,0"
-							        Content="..."
-							        VerticalAlignment="Center"
-							        Command="{Binding IntermediateOutputPathCommand}"></Button>
-						</Grid>
+					<GroupBox Grid.Row="5" Grid.ColumnSpan="4" Margin="5,10,0,0" Header="{core:Localize Dialog.ProjectOptions.Build.Advanced}">
+						<optionpanels:BuildAdvanced x:Name="buildAdvanced">
+						</optionpanels:BuildAdvanced>
 					</GroupBox>
+				
 				</Grid>
 			</GroupBox>
 			
-			<GroupBox Margin="0,8,0,0"
-			          Header="{core:Localize Dialog.ProjectOptions.Build.ErrorsAndWarnings}">
-			<optionpanels:ErrorsAndWarnings x:Name="errorsAndWarnings">
+			<GroupBox Margin="0,8,0,0" Header="{core:Localize Dialog.ProjectOptions.Build.ErrorsAndWarnings}">
+				<optionpanels:ErrorsAndWarnings x:Name="errorsAndWarnings">
 				</optionpanels:ErrorsAndWarnings>
-				<!--<Grid>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto"></ColumnDefinition>
-						<ColumnDefinition Width="Auto"></ColumnDefinition>
-						<ColumnDefinition Width="*"></ColumnDefinition>
-					</Grid.ColumnDefinitions>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto"></RowDefinition>
-						<RowDefinition Height="Auto"></RowDefinition>
-					</Grid.RowDefinitions>
-					
-					<Label Grid.Column="1" Content="{core:Localize Dialog.ProjectOptions.Build.WarningLevel}"></Label>
-					
-					
-					<ComboBox Grid.Column="2" Width="40" VerticalAlignment="Center" HorizontalAlignment="Left"
-					          ItemsSource="{Binding Path=DataContext.WarnLevel}"
-					          SelectedValue="{Binding Path=WarningLevel.Value}"
-					          DisplayMemberPath="DisplayValue"
-					          SelectedValuePath="Key"
-					          SelectedIndex="4"></ComboBox>
-					
-					<optionpanels:StorageLocationPicker Grid.Row="1" Location="{Binding NoWarn.Location}" DockPanel.Dock="Left" />
-					
-					<Label Grid.Row="1" Grid.Column="1"
-					       Content="{core:Localize Dialog.ProjectOptions.Build.SuppressWarnings}"></Label>
-					
-					
-					<TextBox Grid.Row="1" Grid.Column="2"
-					         Text="{Binding NoWarn.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-				
-				</Grid>-->
 			</GroupBox>
 			
 			<GroupBox Margin="0,8,0,0" Header="{core:Localize Dialog.ProjectOptions.Build.ErrorsAndWarnings}">  
