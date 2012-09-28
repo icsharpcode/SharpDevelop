@@ -121,7 +121,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (usedInLambda)
 					return;
 
-				var startNode = VariableReferenceGraphBuilder.Build (rootStatement, references, refStatements, ctx);
+				var startNode = new VariableReferenceGraphBuilder (ctx).Build (rootStatement, references, refStatements, ctx);
 				var variableInitializer = variableDecl as VariableInitializer;
 				if (variableInitializer != null && !variableInitializer.Initializer.IsNull)
 					startNode.References.Insert (0, variableInitializer);

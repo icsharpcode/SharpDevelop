@@ -65,23 +65,30 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 	class VariableReferenceGraphBuilder
 	{
-		static ControlFlowGraphBuilder cfgBuilder = new ControlFlowGraphBuilder ();
-		static CfgVariableReferenceNodeBuilder cfgVrNodeBuilder = new CfgVariableReferenceNodeBuilder ();
+		ControlFlowGraphBuilder cfgBuilder = new ControlFlowGraphBuilder ();
+		CfgVariableReferenceNodeBuilder cfgVrNodeBuilder;
+		BaseRefactoringContext ctx;
 
-		public static VariableReferenceNode Build (ISet<AstNode> references, CSharpAstResolver resolver,
+		public VariableReferenceGraphBuilder(BaseRefactoringContext ctx)
+		{
+			this.ctx = ctx;
+			cfgVrNodeBuilder = new CfgVariableReferenceNodeBuilder (this);
+		}
+
+		public VariableReferenceNode Build (ISet<AstNode> references, CSharpAstResolver resolver,
 			Expression expression)
 		{
 			return ExpressionNodeCreationVisitor.CreateNode (references, resolver, new [] { expression });
 		}
 
-		public static VariableReferenceNode Build (Statement statement, ISet<AstNode> references,
+		public VariableReferenceNode Build (Statement statement, ISet<AstNode> references,
 			ISet<Statement> refStatements, BaseRefactoringContext context)
 		{
 			var cfg = cfgBuilder.BuildControlFlowGraph (statement, context.Resolver, context.CancellationToken);
 			return cfgVrNodeBuilder.Build (cfg [0], references, refStatements, context.Resolver);
 		}
 
-		public static VariableReferenceNode Build (Statement statement, ISet<AstNode> references,
+		public VariableReferenceNode Build (Statement statement, ISet<AstNode> references,
 		                                           ISet<Statement> refStatements, CSharpAstResolver resolver, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var cfg = cfgBuilder.BuildControlFlowGraph (statement, resolver, cancellationToken);
@@ -169,12 +176,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class CfgVariableReferenceNodeBuilder
 		{
-			static GetExpressionsVisitor getExpr = new GetExpressionsVisitor ();
+			readonly VariableReferenceGraphBuilder variableReferenceGraphBuilder;
+			GetExpressionsVisitor getExpr = new GetExpressionsVisitor ();
 
 			ISet<AstNode> references;
 			ISet<Statement> refStatements;
 			CSharpAstResolver resolver;
 			Dictionary<ControlFlowNode, VariableReferenceNode> nodeDict;
+
+			public CfgVariableReferenceNodeBuilder(VariableReferenceGraphBuilder variableReferenceGraphBuilder)
+			{
+				this.variableReferenceGraphBuilder = variableReferenceGraphBuilder;
+			}
 
 			public VariableReferenceNode Build (ControlFlowNode startNode, ISet<AstNode> references,
 				ISet<Statement> refStatements, CSharpAstResolver resolver)
@@ -214,6 +227,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var node = new VariableReferenceNode ();
 				var cfNode = startNode;
 				while (true) {
+					if (variableReferenceGraphBuilder.ctx.CancellationToken.IsCancellationRequested)
+						return null;
 					if (nodeDict.ContainsKey (cfNode)) {
 						node.AddNextNode (nodeDict [cfNode]);
 						break;
@@ -246,12 +261,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					if (tryc != null) {
 						VariableReferenceNode outNode = null;
 						foreach (var n in tryc.CatchClauses) {
-							var catchNode = VariableReferenceGraphBuilder.Build(n.Body, references, refStatements, this.resolver);
+							var catchNode = variableReferenceGraphBuilder.Build(n.Body, references, refStatements, this.resolver);
 							(outNode ?? node).AddNextNode (catchNode);
 							outNode = catchNode;
 						}
 						if (!tryc.FinallyBlock.IsNull) {
-							var finallyNode = VariableReferenceGraphBuilder.Build(tryc.FinallyBlock, references, refStatements, this.resolver);
+							var finallyNode = variableReferenceGraphBuilder.Build(tryc.FinallyBlock, references, refStatements, this.resolver);
 							(outNode ?? node).AddNextNode (finallyNode);
 							outNode = finallyNode;
 						}

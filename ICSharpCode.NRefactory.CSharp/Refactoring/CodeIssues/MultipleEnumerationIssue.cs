@@ -241,12 +241,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				FindReferences (variableDecl, rootNode, resolveResult.Variable);
 
 				var statements = AnalysisStatementCollector.Collect (variableDecl);
+				var builder = new VariableReferenceGraphBuilder (ctx);
 				foreach (var statement in statements) {
-					var vrNode = VariableReferenceGraphBuilder.Build (statement, references, refStatements, ctx);
+					var vrNode = builder.Build (statement, references, refStatements, ctx);
 					FindMultipleEnumeration (vrNode);
 				}
 				foreach (var lambda in lambdaExpressions) {
-					var vrNode = VariableReferenceGraphBuilder.Build (references, ctx.Resolver, (Expression)lambda.Body);
+					var vrNode = builder.Build (references, ctx.Resolver, (Expression)lambda.Body);
 					FindMultipleEnumeration (vrNode);
 				}
 			}
