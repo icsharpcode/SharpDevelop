@@ -53,44 +53,48 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			var projectsList = projects.ToList();
 			guiBuildCancellation = new CancellationTokenSource();
-			using (var progressMonitor = SD.StatusBar.CreateProgressMonitor(guiBuildCancellation.Token)) {
-				if (BuildStarted != null)
-					BuildStarted(this, new BuildEventArgs(projectsList, options));
-				
-				var trackedFeature = SD.AnalyticsMonitor.TrackFeature("ICSharpCode.SharpDevelop.Project.BuildEngine.Build");
-				SD.StatusBar.SetMessage(StringParser.Parse("${res:MainWindow.CompilerMessages.BuildVerb}..."));
-				IBuildable buildable;
-				if (projectsList.Count == 1)
-					buildable = projectsList[0];
-				else
-					buildable = new MultipleProjectBuildable(projectsList);
-				
-				buildable = buildModifiedProjectsOnly.WrapBuildable(buildable, options.BuildDetection);
-				
-				var sink = new UIBuildFeedbackSink(TaskService.BuildMessageViewCategory, SD.StatusBar);
-				// Actually run the build:
-				var results = await BuildEngine.BuildAsync(buildable, options, sink, progressMonitor);
-				
-				string message;
-				if (results.Result == BuildResultCode.Cancelled) {
-					message = "${res:MainWindow.CompilerMessages.BuildCancelled}";
-				} else {
-					if (results.Result == BuildResultCode.Success)
-						message = "${res:MainWindow.CompilerMessages.BuildFinished}";
-					else
-						message = "${res:MainWindow.CompilerMessages.BuildFailed}";
+			try {
+				using (var progressMonitor = SD.StatusBar.CreateProgressMonitor(guiBuildCancellation.Token)) {
+					if (BuildStarted != null)
+						BuildStarted(this, new BuildEventArgs(projectsList, options));
 					
-					if (results.ErrorCount > 0)
-						message += " " + results.ErrorCount + " error(s)";
-					if (results.WarningCount > 0)
-						message += " " + results.WarningCount + " warning(s)";
+					var trackedFeature = SD.AnalyticsMonitor.TrackFeature("ICSharpCode.SharpDevelop.Project.BuildEngine.Build");
+					SD.StatusBar.SetMessage(StringParser.Parse("${res:MainWindow.CompilerMessages.BuildVerb}..."));
+					IBuildable buildable;
+					if (projectsList.Count == 1)
+						buildable = projectsList[0];
+					else
+						buildable = new MultipleProjectBuildable(projectsList);
+					
+					buildable = buildModifiedProjectsOnly.WrapBuildable(buildable, options.BuildDetection);
+					
+					var sink = new UIBuildFeedbackSink(TaskService.BuildMessageViewCategory, SD.StatusBar);
+					// Actually run the build:
+					var results = await BuildEngine.BuildAsync(buildable, options, sink, progressMonitor);
+					
+					string message;
+					if (results.Result == BuildResultCode.Cancelled) {
+						message = "${res:MainWindow.CompilerMessages.BuildCancelled}";
+					} else {
+						if (results.Result == BuildResultCode.Success)
+							message = "${res:MainWindow.CompilerMessages.BuildFinished}";
+						else
+							message = "${res:MainWindow.CompilerMessages.BuildFailed}";
+						
+						if (results.ErrorCount > 0)
+							message += " " + results.ErrorCount + " error(s)";
+						if (results.WarningCount > 0)
+							message += " " + results.WarningCount + " warning(s)";
+					}
+					SD.StatusBar.SetMessage(message);
+					trackedFeature.EndTracking();
+					if (BuildFinished != null)
+						BuildFinished(this, new BuildEventArgs(projectsList, options, results));
+					
+					return results;
 				}
-				SD.StatusBar.SetMessage(message);
-				trackedFeature.EndTracking();
-				if (BuildFinished != null)
-					BuildFinished(this, new BuildEventArgs(projectsList, options, results));
-				
-				return results;
+			} finally {
+				guiBuildCancellation = null;
 			}
 		}
 		
