@@ -137,5 +137,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public virtual int Count {
 			get { return GetProjectItems().Count(); }
 		}
+		
+		public virtual string Kind {
+			get { throw new NotImplementedException(); }
+		}
 	}
 }

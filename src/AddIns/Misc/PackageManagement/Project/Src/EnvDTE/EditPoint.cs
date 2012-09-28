@@ -63,5 +63,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			return text.Split('\n').Length;
 		}
+		
+		public void Insert(string text)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

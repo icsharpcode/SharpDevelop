@@ -41,5 +41,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 			return new CodeClass2(projectContent, c);
 		}
+		
+		public string Language {
+			get { throw new NotImplementedException(); }
+		}
 	}
 }

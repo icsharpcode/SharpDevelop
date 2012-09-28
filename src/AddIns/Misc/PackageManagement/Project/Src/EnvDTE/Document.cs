@@ -22,5 +22,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public string FullName { get; private set; }
+		
+		public Object Object(string modelKind)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

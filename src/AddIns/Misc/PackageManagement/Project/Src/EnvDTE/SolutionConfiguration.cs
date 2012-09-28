@@ -5,13 +5,13 @@ using System;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Window : MarshalByRefObject
+	public class SolutionConfiguration
 	{
-		public Window()
+		public SolutionConfiguration()
 		{
 		}
 		
-		public Document Document {
+		public string Name {
 			get { throw new NotImplementedException(); }
 		}
 	}

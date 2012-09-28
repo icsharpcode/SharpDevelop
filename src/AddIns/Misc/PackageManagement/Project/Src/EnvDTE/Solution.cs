@@ -55,5 +55,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 			return null;
 		}
+		
+		public SolutionBuild SolutionBuild {
+			get { throw new NotImplementedException(); }
+		}
 	}
 }

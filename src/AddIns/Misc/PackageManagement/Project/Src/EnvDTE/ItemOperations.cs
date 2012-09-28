@@ -23,5 +23,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			fileService.OpenFile(url);
 		}
+		
+		public Window NewFile(string fileName)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

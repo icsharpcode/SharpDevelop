@@ -201,5 +201,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			ContainingProject.OpenFile(FileName);
 			return null;
 		}
+		
+		public virtual short FileCount {
+			get { throw new NotImplementedException(); }
+		}
 	}
 }
