@@ -131,7 +131,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		}
 		
 		public override string Name {
-			get { return "PowerShell Host"; }
+			get { return "Package Manager Host"; }
 		}
 		
 		public override Guid InstanceId {
