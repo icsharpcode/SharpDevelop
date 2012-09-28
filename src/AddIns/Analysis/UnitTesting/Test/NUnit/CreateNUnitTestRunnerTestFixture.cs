@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.UnitTesting;
 using UnitTesting.Tests.Utils;
 using NUnit.Framework;
@@ -20,6 +21,7 @@ namespace UnitTesting.Tests.NUnit
 		public override void FixtureSetUp()
 		{
 			base.FixtureSetUp();
+			SD.Services.AddService(typeof(IBookmarkManager), MockRepository.GenerateStub<IBookmarkManager>());
 			project = MockRepository.GenerateStub<IProject>();
 			testProject = new NUnitTestProject(project);
 		}
