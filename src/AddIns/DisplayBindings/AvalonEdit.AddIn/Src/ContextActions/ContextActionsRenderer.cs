@@ -77,7 +77,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 			if (e.Key == Key.T && Keyboard.Modifiers == ModifierKeys.Control) {
 				if (popup == null)
 					popup = new ContextActionsBulbPopup();
-				if (popup.ViewModel != null && popup.ViewModel.Actions != null && popup.ViewModel.Actions.Count > 0) {
+				if (popup.IsOpen && popup.ViewModel != null && popup.ViewModel.Actions != null && popup.ViewModel.Actions.Count > 0) {
 					popup.IsDropdownOpen = true;
 					popup.Focus();
 				} else {
