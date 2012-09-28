@@ -186,6 +186,7 @@ namespace CSharpBinding.OptionPanels
 		
 		#endregion
 		
+		
 		#region SerializationInfo
 		
 //		public List<KeyItemPair> SerializationInfo {
@@ -207,6 +208,7 @@ namespace CSharpBinding.OptionPanels
 //			}
 //		}
 		#endregion
+		
 		
 		#region FileAlignment
 		

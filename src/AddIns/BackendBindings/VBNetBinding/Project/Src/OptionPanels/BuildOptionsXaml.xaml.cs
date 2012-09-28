@@ -7,18 +7,8 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
-
-using StringPair = System.Collections.Generic.KeyValuePair<System.String, System.String>;
 
 namespace ICSharpCode.VBNetBinding.OptionPanels
 {
@@ -53,8 +43,6 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 			optionInferItems.Add(new KeyItemPair("Off", "Infer Off"));
 			optionInferItems.Add(new KeyItemPair("On", "Infer On"));
 			OptionInferItems = optionInferItems;
-			
-			IsDirty = false;
 		}
 		
 		
@@ -136,15 +124,20 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
-			errorsAndWarnings.SetProjectOptions(this);
-			treatErrorsAndWarnings.SetProjectOptions(this);
+			this.buildAdvanced.SetProjectOptions(this);
+			this.errorsAndWarnings.SetProjectOptions(this);
+			this.treatErrorsAndWarnings.SetProjectOptions(this);
+			IsDirty = false;
 		}
 		
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
-			treatErrorsAndWarnings.SaveProjectOptions();
-			return base.Save(project, configuration, platform);
+			if (this.buildAdvanced.SaveProjectOptions()) {
+				treatErrorsAndWarnings.SaveProjectOptions();
+				return base.Save(project, configuration, platform);
+			}
+			return false;
 		}
 		
 		#endregion
