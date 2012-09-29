@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.CodeDom.Compiler;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AspNet.Mvc
@@ -10,6 +11,8 @@ namespace ICSharpCode.AspNet.Mvc
 	{
 		IMvcProject Project { get; set; }
 		MvcControllerTextTemplate Template { get; set; }
+		CompilerErrorCollection Errors { get; }
+		bool HasErrors { get; }
 		
 		void GenerateFile(MvcControllerFileName fileName);
 	}

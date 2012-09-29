@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.CodeDom.Compiler;
 using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
 using ICSharpCode.SharpDevelop.Project;
@@ -76,6 +77,11 @@ namespace AspNet.Mvc.Tests
 			return new MvcViewTextTemplate() {
 				FileName = fileName
 			};
+		}
+		
+		CompilerError AddCompilerErrorToTemplateHost()
+		{
+			return fakeHost.AddCompilerError();
 		}
 		
 		[Test]
@@ -314,6 +320,42 @@ namespace AspNet.Mvc.Tests
 			string assemblyLocation = generator.ModelClassAssemblyLocation;
 			
 			Assert.AreEqual(String.Empty, assemblyLocation);
+		}
+		
+		[Test]
+		public void GenerateFile_TemplateProcessedWithCompilerError_ErrorsSavedByGenerator()
+		{
+			CreateGenerator();
+			ProjectPassedToGeneratorIsCSharpProject();
+			CompilerError error = AddCompilerErrorToTemplateHost();
+			
+			GenerateFile();
+			
+			Assert.AreEqual(1, generator.Errors.Count);
+			Assert.AreEqual(error, generator.Errors[0]);
+		}
+		
+		[Test]
+		public void HasErrors_NoErrors_ReturnsFalse()
+		{
+			CreateGenerator();
+			GenerateFile();
+			
+			bool result = generator.HasErrors;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void HasErrors_OneError_ReturnsTrue()
+		{
+			CreateGenerator();
+			AddCompilerErrorToTemplateHost();
+			GenerateFile();
+			
+			bool result = generator.HasErrors;
+			
+			Assert.IsTrue(result);
 		}
 	}
 }

@@ -81,6 +81,11 @@ namespace AspNet.Mvc.Tests
 			viewModel.SelectedControllerTemplate = GetControllerTemplateFromViewModel("EmptyReadWrite");
 		}
 		
+		void AddCompilerErrorToControllerGenerator()
+		{
+			fakeControllerGenerator.AddCompilerError();
+		}
+		
 		[Test]
 		public void AddMvcControllerCommand_ExecutedWhenControllerNameSpecified_MvcControllerIsGenerated()
  		{
@@ -278,6 +283,19 @@ namespace AspNet.Mvc.Tests
 			string expectedFileName = @"d:\sd\AspNetMvcAddIn\ItemTemplates\VisualBasic\CodeTemplates\AddController\Controller.tt";
 			
 			Assert.AreEqual(expectedFileName, fileName);
+		}
+		
+		[Test]
+		public void AddMvcController_TemplateGenerationHasError_FileIsNotAddedToProject()
+		{
+			CreateViewModelWithCSharpProject();
+			viewModel.ControllerName = "Home";
+			AddCompilerErrorToControllerGenerator();
+			
+			viewModel.AddMvcController();
+			
+			string fileAddedToProject = fakeSelectedMvcControllerFolder.FileNamePassedToAddFile;
+			Assert.IsNull(fileAddedToProject);
 		}
 	}
 }

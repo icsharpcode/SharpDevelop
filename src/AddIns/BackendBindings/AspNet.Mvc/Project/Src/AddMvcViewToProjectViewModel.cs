@@ -223,16 +223,18 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		public void AddMvcView()
 		{
-			GenerateMvcViewFile();
-			AddMvcViewFileToProject();
+			if (GenerateMvcViewFile()) {
+				AddMvcViewFileToProject();
+			}
 			IsClosed = true;
 		}
 		
-		void GenerateMvcViewFile()
+		bool GenerateMvcViewFile()
 		{
 			ConfigureMvcViewGenerator();
 			viewFileName.TemplateLanguage = GetTemplateLanguage();
 			viewGenerator.GenerateFile(viewFileName);
+			return !viewGenerator.HasErrors;
 		}
 		
 		void ConfigureMvcViewGenerator()

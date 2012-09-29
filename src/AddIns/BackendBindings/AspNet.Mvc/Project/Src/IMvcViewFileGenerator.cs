@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.CodeDom.Compiler;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AspNet.Mvc
@@ -15,6 +16,8 @@ namespace ICSharpCode.AspNet.Mvc
 		string MasterPageFile { get; set; }
 		string PrimaryContentPlaceHolderId { get; set; }
 		MvcViewTextTemplate Template { get; set; }
+		CompilerErrorCollection Errors { get; }
+		bool HasErrors { get; }
 		
 		void GenerateFile(MvcViewFileName fileName);
 	}

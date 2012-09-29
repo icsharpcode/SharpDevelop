@@ -106,15 +106,17 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		public void AddMvcController()
 		{
-			GenerateMvcControllerFile();
-			AddMvcControllerFileToProject();
+			if (GenerateMvcControllerFile()) {
+				AddMvcControllerFileToProject();
+			}
 			IsClosed = true;
 		}
 		
-		void GenerateMvcControllerFile()
+		bool GenerateMvcControllerFile()
 		{
 			ConfigureMvcControllerGenerator();
 			controllerGenerator.GenerateFile(controllerFileName);
+			return !controllerGenerator.HasErrors;
 		}
 		
 		void ConfigureMvcControllerGenerator()

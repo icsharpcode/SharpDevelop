@@ -106,6 +106,11 @@ namespace AspNet.Mvc.Tests
 			return fakeProject.AddModelClassToProject(fullyQualifiedClassName);
 		}
 		
+		void AddCompilerErrorToViewGenerator()
+		{
+			fakeViewGenerator.AddCompilerError();
+		}
+		
 		[Test]
 		public void AddMvcViewCommand_ExecutedWhenViewNameSpecified_MvcViewIsGenerated()
 		{
@@ -1420,6 +1425,18 @@ namespace AspNet.Mvc.Tests
 			string assemblyLocation = fakeViewGenerator.ModelClassAssemblyLocation;
 			
 			Assert.AreEqual(String.Empty, assemblyLocation);
+		}
+		
+		[Test]
+		public void AddMvcView_TemplateGenerationHasError_FileIsNotAddedToProject()
+		{
+			CreateViewModel();
+			AddCompilerErrorToViewGenerator();
+			
+			viewModel.AddMvcView();
+			
+			string fileAddedToProject = fakeSelectedMvcViewFolder.FileNamePassedToAddFile;
+			Assert.IsNull(fileAddedToProject);
 		}
 	}
 }

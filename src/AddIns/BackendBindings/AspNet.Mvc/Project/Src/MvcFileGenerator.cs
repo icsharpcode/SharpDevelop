@@ -23,6 +23,11 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		public MvcTextTemplateLanguage TemplateLanguage { get; set; }
 		public IMvcProject Project { get; set; }
+		public CompilerErrorCollection Errors { get; private set; }
+		
+		public bool HasErrors {
+			get { return Errors.Count > 0; }
+		}
 		
 		public void GenerateFile(MvcFileName fileName)
 		{
@@ -49,6 +54,8 @@ namespace ICSharpCode.AspNet.Mvc
 			string templateFileName = GetTextTemplateFileName();
 			string outputViewFileName = fileName.GetPath();
 			host.ProcessTemplate(templateFileName, outputViewFileName);
+			
+			Errors = host.Errors;
 			
 			if (host.Errors.Count > 0) {
 				CompilerError error = host.Errors[0];
