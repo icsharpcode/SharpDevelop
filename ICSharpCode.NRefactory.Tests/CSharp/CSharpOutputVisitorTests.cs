@@ -138,5 +138,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			             "case 3: {\n$int a = 3;\n$return a;\n}\n" +
 			             "default:\n$break;\n}\n", type);
 		}
+		
+		[Test]
+		public void ZeroLiterals()
+		{
+			AssertOutput("0.0", new PrimitiveExpression(0.0));
+			AssertOutput("-0.0", new PrimitiveExpression(-0.0));
+			AssertOutput("0f", new PrimitiveExpression(0f));
+			AssertOutput("-0f", new PrimitiveExpression(-0f));
+		}
 	}
 }
