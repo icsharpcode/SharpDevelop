@@ -7,6 +7,7 @@ using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace AspNet.Mvc.Tests
 {
@@ -19,6 +20,7 @@ namespace AspNet.Mvc.Tests
 		FakeMvcTextTemplateHostFactory fakeHostFactory;
 		FakeMvcTextTemplateHost fakeHost;
 		FakeMvcTextTemplateAppDomainFactory fakeAppDomainFactory;
+		IMvcFileGenerationErrorReporter fakeErrorReporter;
 		
 		void CreateTemplateRepository(string templateRootDirectory)
 		{
@@ -36,7 +38,8 @@ namespace AspNet.Mvc.Tests
 			fakeHostFactory = new FakeMvcTextTemplateHostFactory();
 			fakeHost = fakeHostFactory.FakeMvcTextTemplateHost;
 			fakeAppDomainFactory = new FakeMvcTextTemplateAppDomainFactory();
-			generator = new MvcViewFileGenerator(fakeHostFactory, templateRepository, fakeAppDomainFactory);
+			fakeErrorReporter = MockRepository.GenerateStub<IMvcFileGenerationErrorReporter>();
+			generator = new MvcViewFileGenerator(fakeHostFactory, templateRepository, fakeAppDomainFactory, fakeErrorReporter);
 			projectUsedByGenerator = new FakeMvcProject();
 			generator.Project = projectUsedByGenerator;
 			ProjectPassedToGeneratorIsCSharpProject();
@@ -356,6 +359,29 @@ namespace AspNet.Mvc.Tests
 			bool result = generator.HasErrors;
 			
 			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void GenerateFile_TemplateProcessedWithCompilerError_ErrorsReported()
+		{
+			CreateGenerator();
+			ProjectPassedToGeneratorIsCSharpProject();
+			CompilerError error = AddCompilerErrorToTemplateHost();
+			
+			GenerateFile();
+			
+			fakeErrorReporter.AssertWasCalled(reporter => reporter.ShowErrors(generator.Errors));
+		}
+		
+		[Test]
+		public void GenerateFile_TemplateProcessedNoErrors_NoErrorsReported()
+		{
+			CreateGenerator();
+			ProjectPassedToGeneratorIsCSharpProject();
+			
+			GenerateFile();
+			
+			fakeErrorReporter.AssertWasNotCalled(reporter => reporter.ShowErrors(Arg<CompilerErrorCollection>.Is.Anything));
 		}
 	}
 }

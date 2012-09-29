@@ -11,14 +11,16 @@ namespace ICSharpCode.AspNet.Mvc
 		public MvcControllerFileGenerator()
 			: this(
 				new MvcTextTemplateHostFactory(),
-				new MvcTextTemplateHostAppDomainFactory())
+				new MvcTextTemplateHostAppDomainFactory(),
+				new MvcFileGenerationErrorReporter())
 		{
 		}
 		
 		public MvcControllerFileGenerator(
 			IMvcTextTemplateHostFactory hostFactory,
-			IMvcTextTemplateHostAppDomainFactory appDomainFactory)
-			: base(hostFactory, appDomainFactory)
+			IMvcTextTemplateHostAppDomainFactory appDomainFactory,
+			IMvcFileGenerationErrorReporter errorReporter)
+			: base(hostFactory, appDomainFactory, errorReporter)
 		{
 			this.Template = new MvcControllerTextTemplate();
 		}

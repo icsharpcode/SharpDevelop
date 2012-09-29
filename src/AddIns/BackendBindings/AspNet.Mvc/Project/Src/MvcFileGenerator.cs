@@ -12,13 +12,16 @@ namespace ICSharpCode.AspNet.Mvc
 	{
 		IMvcTextTemplateHostFactory hostFactory;
 		IMvcTextTemplateHostAppDomainFactory appDomainFactory;
+		IMvcFileGenerationErrorReporter errorReporter;
 		
 		public MvcFileGenerator(
 			IMvcTextTemplateHostFactory hostFactory,
-			IMvcTextTemplateHostAppDomainFactory appDomainFactory)
+			IMvcTextTemplateHostAppDomainFactory appDomainFactory,
+			IMvcFileGenerationErrorReporter errorReporter)
 		{
 			this.hostFactory = hostFactory;
 			this.appDomainFactory = appDomainFactory;
+			this.errorReporter = errorReporter;
 		}
 		
 		public MvcTextTemplateLanguage TemplateLanguage { get; set; }
@@ -56,11 +59,8 @@ namespace ICSharpCode.AspNet.Mvc
 			host.ProcessTemplate(templateFileName, outputViewFileName);
 			
 			Errors = host.Errors;
-			
-			if (host.Errors.Count > 0) {
-				CompilerError error = host.Errors[0];
-				Console.WriteLine("ProcessTemplate error: " + error.ErrorText);
-				Console.WriteLine("ProcessTemplate error: Line: " + error.Line);
+			if (HasErrors) {
+				errorReporter.ShowErrors(Errors);
 			}
 		}
 		
