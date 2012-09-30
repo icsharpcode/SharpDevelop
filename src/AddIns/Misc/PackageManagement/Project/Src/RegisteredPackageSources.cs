@@ -11,7 +11,7 @@ namespace ICSharpCode.PackageManagement
 {
 	public class RegisteredPackageSources : ObservableCollection<PackageSource>
 	{
-		public static readonly string DefaultPackageSourceUrl = "https://go.microsoft.com/fwlink/?LinkID=206669";
+		public static readonly string DefaultPackageSourceUrl = "https://nuget.org/api/v2/";
 		public static readonly string DefaultPackageSourceName = "NuGet Official Package Source";
 		
 		public static readonly PackageSource DefaultPackageSource = 
