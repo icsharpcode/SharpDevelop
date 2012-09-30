@@ -39,6 +39,18 @@ namespace PackageManagement.Tests
 			viewModel = new PackageSourceViewModel(packageSource);
 		}
 		
+		void CreateEnabledPackageSource()
+		{
+			CreatePackageSource();
+			packageSource.IsEnabled = true;
+		}
+		
+		void CreateDisabledPackageSource()
+		{
+			CreatePackageSource();
+			packageSource.IsEnabled = false;
+		}
+		
 		[Test]
 		public void Name_InstanceCreatedWithRegisteredPackageSource_MatchesRegisteredPackageSourceName()
 		{
@@ -75,6 +87,48 @@ namespace PackageManagement.Tests
 			viewModel.SourceUrl = "changed";
 			
 			Assert.AreEqual("changed", viewModel.SourceUrl);
+		}
+		
+		[Test]
+		public void IsEnabled_PackageSourceIsEnabled_ReturnsTrue()
+		{
+			CreateEnabledPackageSource();
+			CreateViewModel(packageSource);
+			
+			Assert.IsTrue(viewModel.IsEnabled);
+		}
+		
+		[Test]
+		public void IsEnabled_PackageSourceIsNotEnabled_ReturnsFalse()
+		{
+			CreateDisabledPackageSource();
+			CreateViewModel(packageSource);
+			
+			Assert.IsFalse(viewModel.IsEnabled);
+		}
+		
+		[Test]
+		public void IsEnabled_ChangedFromTrueToFalse_UpdatesPackageSource()
+		{
+			CreateEnabledPackageSource();
+			CreateViewModel(packageSource);
+			
+			viewModel.IsEnabled = false;
+			
+			PackageSource updatedPackageSource = viewModel.GetPackageSource();
+			Assert.IsFalse(updatedPackageSource.IsEnabled);
+		}
+		
+		[Test]
+		public void IsEnabled_ChangedFromFalseToTrue_UpdatesPackageSource()
+		{
+			CreateDisabledPackageSource();
+			CreateViewModel(packageSource);
+			
+			viewModel.IsEnabled = true;
+			
+			PackageSource updatedPackageSource = viewModel.GetPackageSource();
+			Assert.IsTrue(updatedPackageSource.IsEnabled);
 		}
 	}
 }

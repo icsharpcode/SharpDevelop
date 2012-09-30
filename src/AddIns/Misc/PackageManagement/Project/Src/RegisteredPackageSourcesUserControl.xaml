@@ -41,7 +41,9 @@
 				<StackPanel
 					x:Name="PackageSourceStackPanel"
 					Margin="4">
-					<TextBlock Text="{Binding Path=Name}"/>
+					<CheckBox
+						Content="{Binding Path=Name}"
+						IsChecked="{Binding Path=IsEnabled}"/>
 					<TextBlock>
 						<Hyperlink>
 							<TextBlock Text="{Binding Path=SourceUrl}"/>

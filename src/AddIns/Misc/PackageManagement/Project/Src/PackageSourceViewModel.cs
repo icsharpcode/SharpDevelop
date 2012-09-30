@@ -29,5 +29,10 @@ namespace ICSharpCode.PackageManagement
 			get { return packageSource.Source; }
 			set { packageSource.Source = value; }
 		}
+		
+		public bool IsEnabled {
+			get { return packageSource.IsEnabled; }
+			set { packageSource.IsEnabled = value; }
+		}
 	}
 }

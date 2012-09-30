@@ -80,7 +80,7 @@ namespace PackageManagement.Tests
 			fakeSettings.AddFakePackageSource(packageSource);
 			CreateOptions(fakeSettings);
 			
-			var actualSources = options.PackageSources;
+			RegisteredPackageSources actualSources = options.PackageSources;
 			
 			List<PackageSource> expectedSources = new List<PackageSource>();
 			expectedSources.Add(packageSource);
@@ -97,7 +97,7 @@ namespace PackageManagement.Tests
 			List<PackageSource> expectedSources = new List<PackageSource>();
 			expectedSources.Add(RegisteredPackageSources.DefaultPackageSource);
 			
-			var actualPackageSources = options.PackageSources;
+			RegisteredPackageSources actualPackageSources = options.PackageSources;
 			
 			CollectionAssert.AreEqual(expectedSources, actualPackageSources);
 		}
@@ -108,16 +108,16 @@ namespace PackageManagement.Tests
 			CreateSettings();
 			CreateOptions(fakeSettings);
 			
-			var packageSources = options.PackageSources;
+			RegisteredPackageSources packageSources = options.PackageSources;
 			
-			var defaultSource = RegisteredPackageSources.DefaultPackageSource;
+			PackageSource defaultSource = RegisteredPackageSources.DefaultPackageSource;
 			
 			var expectedSavedPackageSourceSettings = new List<KeyValuePair<string, string>>();
 			string name = defaultSource.Name;
 			string sourceUrl = defaultSource.Source;
 			expectedSavedPackageSourceSettings.Add(new KeyValuePair<string, string>(name, sourceUrl));
 			
-			var actualSavedPackageSourceSettings = fakeSettings.GetValuesPassedToSetValuesForPackageSourcesSection();
+			IList<KeyValuePair<string, string>> actualSavedPackageSourceSettings = fakeSettings.GetValuesPassedToSetValuesForPackageSourcesSection();
 			
 			Assert.AreEqual(expectedSavedPackageSourceSettings, actualSavedPackageSourceSettings);
 		}
@@ -127,7 +127,7 @@ namespace PackageManagement.Tests
 		{
 			CreateSettings();
 			CreateOptions(fakeSettings);
-			var registeredPackageSources = options.PackageSources;
+			RegisteredPackageSources registeredPackageSources = options.PackageSources;
 			
 			var packageSource = new PackageSource("http://codeplex.com", "Test");
 			registeredPackageSources.Clear();
@@ -136,7 +136,7 @@ namespace PackageManagement.Tests
 			var expectedSavedPackageSourceSettings = new List<KeyValuePair<string, string>>();
 			expectedSavedPackageSourceSettings.Add(new KeyValuePair<string, string>("Test", "http://codeplex.com"));
 			
-			var actualSavedPackageSourceSettings = fakeSettings.GetValuesPassedToSetValuesForPackageSourcesSection();
+			IList<KeyValuePair<string, string>> actualSavedPackageSourceSettings = fakeSettings.GetValuesPassedToSetValuesForPackageSourcesSection();
 			
 			Assert.AreEqual(expectedSavedPackageSourceSettings, actualSavedPackageSourceSettings);
 		}
@@ -146,7 +146,7 @@ namespace PackageManagement.Tests
 		{
 			CreateSettings();
 			CreateOptions(fakeSettings);
-			var registeredPackageSources = options.PackageSources;	
+			RegisteredPackageSources registeredPackageSources = options.PackageSources;	
 			
 			var packageSource = new PackageSource("http://codeplex.com", "Test");
 			registeredPackageSources.Clear();
@@ -185,7 +185,7 @@ namespace PackageManagement.Tests
 			options.ActivePackageSource = packageSource;
 			
 			var expectedKeyValuePair = new KeyValuePair<string, string>("Test", "http://sharpdevelop.com");
-			var actualKeyValuePair = fakeSettings.GetValuePassedToSetValueForActivePackageSourceSection();
+			KeyValuePair<string, string> actualKeyValuePair = fakeSettings.GetValuePassedToSetValueForActivePackageSourceSection();
 			
 			Assert.AreEqual(expectedKeyValuePair, actualKeyValuePair);
 		}
@@ -227,7 +227,7 @@ namespace PackageManagement.Tests
 			var differentSource = new PackageSource("http://different-url", "Test2");
 			options.ActivePackageSource = differentSource;
 			
-			var activeSource = options.ActivePackageSource;
+			PackageSource activeSource = options.ActivePackageSource;
 			
 			Assert.IsNull(activeSource);
 		}
@@ -280,7 +280,7 @@ namespace PackageManagement.Tests
 			options.RecentPackages.Add(recentPackage);
 			CreateOptions(properties);
 			
-			var recentPackages = options.RecentPackages;
+			IList<RecentPackageInfo> recentPackages = options.RecentPackages;
 			
 			var expectedRecentPackages = new RecentPackageInfo[] {
 				new RecentPackageInfo(package)
@@ -293,7 +293,7 @@ namespace PackageManagement.Tests
 		public void RecentPackages_SaveRecentPackages_DoesNotThrowInvalidOperationException()
 		{
 			CreateOptions();
-			var recentPackage = AddRecentPackageToOptions("id", "1.0");
+			RecentPackageInfo recentPackage = AddRecentPackageToOptions("id", "1.0");
 			
 			Assert.DoesNotThrow(() => SaveOptions());
 		}
@@ -302,13 +302,91 @@ namespace PackageManagement.Tests
 		public void ActivePackageSource_AggregatePackageSourceIsActivePackageSourceInSettings_ReturnsAggregatePackageSource()
 		{
 			CreateSettings();
-			var expectedPackageSource = RegisteredPackageSourceSettings.AggregatePackageSource;
+			PackageSource expectedPackageSource = RegisteredPackageSourceSettings.AggregatePackageSource;
 			fakeSettings.SetFakeActivePackageSource(expectedPackageSource);
 			CreateOptions(fakeSettings);
 			
-			var activePackageSource = options.ActivePackageSource;
+			PackageSource activePackageSource = options.ActivePackageSource;
 			
 			Assert.AreEqual(expectedPackageSource, activePackageSource);
+		}
+		
+		[Test]
+		public void PackageSources_OneEnabledPackageSourceInSettings_ContainsSingleEnabledPackageSourceFromSettings()
+		{
+			CreateSettings();
+			var packageSource = new PackageSource("http://codeplex.com", "Test") { IsEnabled = true };
+			fakeSettings.AddFakePackageSource(packageSource);
+			CreateOptions(fakeSettings);
+			
+			RegisteredPackageSources actualSources = options.PackageSources;
+			
+			Assert.IsTrue(actualSources[0].IsEnabled);
+		}
+		
+		[Test]
+		public void PackageSources_OneDisabledPackageSourceInSettings_ContainsSingleDisabledPackageSourceFromSettings()
+		{
+			CreateSettings();
+			var packageSource = new PackageSource("http://codeplex.com", "Test") { IsEnabled = false };
+			fakeSettings.AddFakePackageSource(packageSource);
+			fakeSettings.AddDisabledPackageSource(packageSource);
+			CreateOptions(fakeSettings);
+			
+			RegisteredPackageSources actualSources = options.PackageSources;
+			
+			Assert.IsFalse(actualSources[0].IsEnabled);
+		}
+		
+		[Test]
+		public void PackageSources_OnePackageSourceAdded_DisabledPackageSourcesSectionDeletedFromSettings()
+		{
+			CreateSettings();
+			CreateOptions(fakeSettings);
+			RegisteredPackageSources registeredPackageSources = options.PackageSources;	
+			
+			var packageSource = new PackageSource("http://codeplex.com", "Test");
+			registeredPackageSources.Clear();
+			registeredPackageSources.Add(packageSource);
+			
+			bool sectionDeleted = fakeSettings.IsDisabledPackageSourcesSectionDeleted;
+			
+			Assert.IsTrue(sectionDeleted);
+		}
+		
+		[Test]
+		public void PackageSources_OneDisabledPackageSourceAdded_DisabledPackageSourcesSectionSaved()
+		{
+			CreateSettings();
+			CreateOptions(fakeSettings);
+			RegisteredPackageSources registeredPackageSources = options.PackageSources;	
+			
+			var packageSource = new PackageSource("http://codeplex.com", "Test") { IsEnabled = false };
+			registeredPackageSources.Clear();
+			registeredPackageSources.Add(packageSource);
+			
+			var expectedSavedPackageSourceSettings = new List<KeyValuePair<string, string>>();
+			expectedSavedPackageSourceSettings.Add(new KeyValuePair<string, string>(packageSource.Name, "true"));
+			
+			IList<KeyValuePair<string, string>> actualSavedPackageSourceSettings = 
+				fakeSettings.GetValuesPassedToSetValuesForDisabledPackageSourcesSection();
+			Assert.AreEqual(expectedSavedPackageSourceSettings, actualSavedPackageSourceSettings);
+		}
+		
+		[Test]
+		public void PackageSources_OneEnabledPackageSourceAdded_DisabledPackageSourcesSectionNotChanged()
+		{
+			CreateSettings();
+			CreateOptions(fakeSettings);
+			RegisteredPackageSources registeredPackageSources = options.PackageSources;	
+			
+			var packageSource = new PackageSource("http://codeplex.com", "Test") { IsEnabled = true };
+			registeredPackageSources.Clear();
+			registeredPackageSources.Add(packageSource);
+			
+			bool result = fakeSettings.AnyValuesPassedToSetValuesForDisabledPackageSourcesSection;
+			
+			Assert.IsFalse(result);
 		}
 	}
 }
