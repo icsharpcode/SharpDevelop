@@ -72,6 +72,11 @@ namespace PackageManagement.Tests
 			return recentPackage;
 		}
 		
+		void EnablePackageRestoreInSettings()
+		{
+			fakeSettings.SetPackageRestoreSetting(true);
+		}
+		
 		[Test]
 		public void PackageSources_OnePackageSourceInSettings_ContainsSinglePackageSourceFromSettings()
 		{
@@ -387,6 +392,54 @@ namespace PackageManagement.Tests
 			bool result = fakeSettings.AnyValuesPassedToSetValuesForDisabledPackageSourcesSection;
 			
 			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void IsPackageRestoreEnabled_EnabledInSettings_ReturnsTrue()
+		{
+			CreateSettings();
+			EnablePackageRestoreInSettings();
+			CreateOptions(fakeSettings);
+			
+			bool enabled = options.IsPackageRestoreEnabled;
+			
+			Assert.IsTrue(enabled);
+		}
+		
+		[Test]
+		public void IsPackageRestoreEnabled_PackageRestoreNotInSettings_ReturnsFalse()
+		{
+			CreateOptions();
+			
+			bool enabled = options.IsPackageRestoreEnabled;
+			
+			Assert.IsFalse(enabled);
+		}
+		
+		[Test]
+		public void IsPackageRestoreEnabled_NotInSettingsOriginallyButSetToTrue_PackageRestoreEnabledInSettings()
+		{
+			CreateOptions();
+			
+			options.IsPackageRestoreEnabled = true;
+			
+			KeyValuePair<string, string> keyPair = fakeSettings.GetValuePassedToSetValueForPackageRestoreSection();
+			
+			Assert.AreEqual("enabled", keyPair.Key);
+			Assert.AreEqual("True", keyPair.Value);
+		}
+		
+		[Test]
+		public void IsPackageRestoreEnabled_OriginallyEnabledInSettingsButSetToTrue_PackageRestoreSectionDeletedFromSettings()
+		{
+			CreateSettings();
+			EnablePackageRestoreInSettings();
+			CreateOptions(fakeSettings);
+			
+			options.IsPackageRestoreEnabled = false;
+			
+			bool deleted = fakeSettings.IsPackageRestoreSectionDeleted;
+			Assert.IsTrue(deleted);
 		}
 	}
 }

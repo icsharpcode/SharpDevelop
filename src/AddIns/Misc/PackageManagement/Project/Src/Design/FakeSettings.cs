@@ -30,6 +30,9 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public string GetValue(string section, string key)
 		{
+			if (!Sections.ContainsKey(section))
+				return null;
+			
 			IList<KeyValuePair<string, string>> values = Sections[section];
 			foreach (KeyValuePair<string, string> keyPair in values) {
 				if (keyPair.Key == key) {
@@ -159,6 +162,24 @@ namespace ICSharpCode.PackageManagement.Design
 		public bool AnyValuesPassedToSetValuesForDisabledPackageSourcesSection {
 			get {
 				return SavedSectionValueLists.ContainsKey(RegisteredPackageSourceSettings.DisabledPackageSourceSectionName);
+			}
+		}
+		
+		public void SetPackageRestoreSetting(bool enabled)
+		{
+			var items = new List<KeyValuePair<string, string>>();
+			items.Add(new KeyValuePair<string, string>("enabled", enabled.ToString()));
+			Sections.Add("packageRestore", items);
+		}
+		
+		public KeyValuePair<string, string> GetValuePassedToSetValueForPackageRestoreSection()
+		{
+			return SavedSectionValues["packageRestore"];
+		}
+		
+		public bool IsPackageRestoreSectionDeleted {
+			get {
+				return SectionsDeleted.Contains("packageRestore");
 			}
 		}
 	}
