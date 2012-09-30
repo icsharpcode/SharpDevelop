@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
+using System.Linq;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -50,6 +50,11 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool HasMultiplePackageSources {
 			get { return Count > 1; }
+		}
+		
+		public IEnumerable<PackageSource> GetEnabledPackageSources()
+		{
+			return this.Where(packageSource => packageSource.IsEnabled);
 		}
 	}
 }
