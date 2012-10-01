@@ -654,18 +654,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			AstNode node = this;
 			while (node.FirstChild != null) {
 				var child = node.FirstChild;
-				while (child != null) {
-					if (child.StartLocation <= location && location < child.EndLocation) {
-						if (pred == null || pred (child))
-							result = child;
-						node = child;
-						break;
-					}
-					child = child.NextSibling;
-				}
-				// found no better child node - therefore the parent is the right one.
-				if (child == null)
+				while (child != null && child.EndLocation <= location)
+					child = child.nextSibling;
+				if (child != null && child.StartLocation <= location) {
+					if (pred == null || pred (child))
+						result = child;
+					node = child;
+				} else {
+					// found no better child node - therefore the parent is the right one.
 					break;
+				}
 			}
 			return result;
 		}
@@ -691,18 +689,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			AstNode node = this;
 			while (node.FirstChild != null) {
 				var child = node.FirstChild;
-				while (child != null) {
-					if (child.StartLocation <= location && location < child.EndLocation) {
-						if (child is T)
-							result = (T)child;
-						node = child;
-						break;
-					}
-					child = child.NextSibling;
-				}
-				// found no better child node - therefore the parent is the right one.
-				if (child == null)
+				while (child != null && child.EndLocation <= location)
+					child = child.nextSibling;
+				if (child != null && child.StartLocation <= location) {
+					if (child is T)
+						result = (T)child;
+					node = child;
+				} else {
+					// found no better child node - therefore the parent is the right one.
 					break;
+				}
 			}
 			return result;
 		}
@@ -731,18 +727,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			AstNode node = this;
 			while (node.FirstChild != null) {
 				var child = node.FirstChild;
-				while (child != null) {
-					if (child.StartLocation <= location && location <= child.EndLocation) {
-						if (pred == null || pred (child))
-							result = child;
-						node = child;
-						break;
-					}
-					child = child.NextSibling;
-				}
-				// found no better child node - therefore the parent is the right one.
-				if (child == null)
+				while (child != null && child.EndLocation < location)
+					child = child.nextSibling;
+				if (child != null && child.StartLocation <= location) {
+					if (pred == null || pred (child))
+						result = child;
+					node = child;
+				} else {
+					// found no better child node - therefore the parent is the right one.
 					break;
+				}
 			}
 			return result;
 		}
@@ -768,18 +762,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			AstNode node = this;
 			while (node.FirstChild != null) {
 				var child = node.FirstChild;
-				while (child != null) {
-					if (child.StartLocation <= location && location < child.EndLocation) {
-						if (child is T)
-							result = (T)child;
-						node = child;
-						break;
-					}
-					child = child.NextSibling;
-				}
-				// found no better child node - therefore the parent is the right one.
-				if (child == null)
+				while (child != null && child.EndLocation < location)
+					child = child.nextSibling;
+				if (child != null && child.StartLocation <= location) {
+					if (child is T)
+						result = (T)child;
+					node = child;
+				} else {
+					// found no better child node - therefore the parent is the right one.
 					break;
+				}
 			}
 			return result;
 		}
