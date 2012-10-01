@@ -86,11 +86,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void InlineCommentAtEndOfCondition()
 		{
 			IfElseStatement condition = new IfElseStatement();
-			condition.AddChild(new CSharpTokenNode(new TextLocation(1, 1)), IfElseStatement.IfKeywordRole);
-			condition.AddChild(new CSharpTokenNode(new TextLocation(1, 4)), Roles.LPar);
+			condition.AddChild(new CSharpTokenNode(new TextLocation(1, 1), IfElseStatement.IfKeywordRole), IfElseStatement.IfKeywordRole);
+			condition.AddChild(new CSharpTokenNode(new TextLocation(1, 4), Roles.LPar), Roles.LPar);
 			condition.AddChild(new IdentifierExpression("cond", new TextLocation(1, 5)), IfElseStatement.ConditionRole);
 			condition.AddChild(new Comment(CommentType.MultiLine, new TextLocation(1, 9), new TextLocation(1, 14)) { Content = "a" }, Roles.Comment);
-			condition.AddChild(new CSharpTokenNode(new TextLocation(1, 14)), Roles.RPar);
+			condition.AddChild(new CSharpTokenNode(new TextLocation(1, 14), Roles.RPar), Roles.RPar);
 			condition.AddChild(new ReturnStatement(), IfElseStatement.TrueRole);
 			
 			AssertOutput("if (cond/*a*/)\n$return;\n", condition);

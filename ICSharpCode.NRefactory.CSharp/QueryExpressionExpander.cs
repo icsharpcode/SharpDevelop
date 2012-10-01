@@ -122,14 +122,14 @@ namespace ICSharpCode.NRefactory.CSharp {
 			LambdaExpression CreateLambda(IList<ParameterDeclaration> parameters, Expression body) {
 				var result = new LambdaExpression();
 				if (parameters.Count > 1)
-					result.AddChild(new CSharpTokenNode(TextLocation.Empty), Roles.LPar);
+					result.AddChild(new CSharpTokenNode(TextLocation.Empty, Roles.LPar), Roles.LPar);
 				result.AddChild(parameters[0], Roles.Parameter);
 				for (int i = 1; i < parameters.Count; i++) {
-					result.AddChild(new CSharpTokenNode(TextLocation.Empty), Roles.Comma);
+					result.AddChild(new CSharpTokenNode(TextLocation.Empty, Roles.Comma), Roles.Comma);
 					result.AddChild(parameters[i], Roles.Parameter);
 				}
 				if (parameters.Count > 1)
-					result.AddChild(new CSharpTokenNode(TextLocation.Empty), Roles.RPar);
+					result.AddChild(new CSharpTokenNode(TextLocation.Empty, Roles.RPar), Roles.RPar);
 				result.AddChild(body, LambdaExpression.BodyRole);
 
 				return result;

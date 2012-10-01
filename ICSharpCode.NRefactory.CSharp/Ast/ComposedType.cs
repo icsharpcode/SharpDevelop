@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return !GetChildByRole(NullableRole).IsNull;
 			}
 			set {
-				SetChildByRole(NullableRole, value ? new CSharpTokenNode(TextLocation.Empty) : null);
+				SetChildByRole(NullableRole, value ? new CSharpTokenNode(TextLocation.Empty, null) : null);
 			}
 		}
 		
@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					d--;
 				}
 				while (d < value) {
-					InsertChildBefore(GetChildByRole(PointerRole), new CSharpTokenNode(TextLocation.Empty), PointerRole);
+					InsertChildBefore(GetChildByRole(PointerRole), new CSharpTokenNode(TextLocation.Empty, PointerRole), PointerRole);
 					d++;
 				}
 			}
@@ -178,7 +178,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					d--;
 				}
 				while (d < value) {
-					InsertChildBefore(GetChildByRole(Roles.Comma), new CSharpTokenNode(TextLocation.Empty), Roles.Comma);
+					InsertChildBefore(GetChildByRole(Roles.Comma), new CSharpTokenNode(TextLocation.Empty, Roles.Comma), Roles.Comma);
 					d++;
 				}
 			}
