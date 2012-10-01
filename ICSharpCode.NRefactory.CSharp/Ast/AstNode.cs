@@ -652,11 +652,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			AstNode result = null;
 			AstNode node = this;
-			while (node.FirstChild != null) {
-				var child = node.FirstChild;
-				while (child != null && child.EndLocation <= location)
-					child = child.nextSibling;
-				if (child != null && child.StartLocation <= location) {
+			while (node.LastChild != null) {
+				var child = node.LastChild;
+				while (child != null && child.StartLocation > location)
+					child = child.prevSibling;
+				if (child != null && location < child.EndLocation) {
 					if (pred == null || pred (child))
 						result = child;
 					node = child;
@@ -687,11 +687,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			T result = null;
 			AstNode node = this;
-			while (node.FirstChild != null) {
-				var child = node.FirstChild;
-				while (child != null && child.EndLocation <= location)
-					child = child.nextSibling;
-				if (child != null && child.StartLocation <= location) {
+			while (node.LastChild != null) {
+				var child = node.LastChild;
+				while (child != null && child.StartLocation > location)
+					child = child.prevSibling;
+				if (child != null && location < child.EndLocation) {
 					if (child is T)
 						result = (T)child;
 					node = child;
@@ -725,11 +725,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			AstNode result = null;
 			AstNode node = this;
-			while (node.FirstChild != null) {
-				var child = node.FirstChild;
-				while (child != null && child.EndLocation < location)
-					child = child.nextSibling;
-				if (child != null && child.StartLocation <= location) {
+			while (node.LastChild != null) {
+				var child = node.LastChild;
+				while (child != null && child.StartLocation > location)
+					child = child.prevSibling;
+				if (child != null && location <= child.EndLocation) {
 					if (pred == null || pred (child))
 						result = child;
 					node = child;
@@ -760,11 +760,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			T result = null;
 			AstNode node = this;
-			while (node.FirstChild != null) {
-				var child = node.FirstChild;
-				while (child != null && child.EndLocation < location)
-					child = child.nextSibling;
-				if (child != null && child.StartLocation <= location) {
+			while (node.LastChild != null) {
+				var child = node.LastChild;
+				while (child != null && child.StartLocation > location)
+					child = child.prevSibling;
+				if (child != null && location <= child.EndLocation) {
 					if (child is T)
 						result = (T)child;
 					node = child;
