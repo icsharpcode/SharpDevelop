@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Tests.StringTagProvider
 	/// Tests the SharpDevelopStringTagProvider when there is no active project.
 	/// </summary>
 	[TestFixture]
-	public class NullProjectStringTagProviderTestFixture
+	public class NullProjectStringTagProviderTestFixture : SDTestFixtureBase
 	{
 		SharpDevelopStringTagProvider tagProvider;
 		

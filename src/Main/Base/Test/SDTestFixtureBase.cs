@@ -3,6 +3,7 @@
 
 using System;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -16,6 +17,8 @@ namespace ICSharpCode.SharpDevelop
 		public virtual void FixtureSetUp()
 		{
 			SD.InitializeForUnitTests();
+			SD.Services.AddService(typeof(IMessageLoop), MockRepository.GenerateStrictMock<IMessageLoop>());
+			SD.MainThread.Stub(m => m.VerifyAccess());
 		}
 		
 		[TestFixtureTearDown]
