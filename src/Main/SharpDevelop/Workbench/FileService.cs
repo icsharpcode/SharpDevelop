@@ -111,11 +111,13 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				delegate {
 					OpenedFile file = this.GetOpenedFile(fileName);
 					if (file != null) {
-						IFileDocumentProvider p = file.CurrentView as IFileDocumentProvider;
-						if (p != null) {
-							IDocument document = p.GetDocumentForFile(file);
-							if (document != null) {
-								return document.CreateSnapshot();
+						if (file.CurrentView != null) {
+							IFileDocumentProvider provider = file.CurrentView.GetService<IFileDocumentProvider>();
+							if (provider != null) {
+								IDocument document = provider.GetDocumentForFile(file);
+								if (document != null) {
+									return document.CreateSnapshot();
+								}
 							}
 						}
 						

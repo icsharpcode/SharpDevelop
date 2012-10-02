@@ -363,7 +363,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// don't use TextEditor.Save here because that would touch the Modified flag,
 			// but OpenedFile is already managing IsDirty
 			using (StreamWriter writer = new StreamWriter(stream, primaryTextEditor.Encoding ?? Encoding.UTF8)) {
-				writer.Write(primaryTextEditor.Text);
+				primaryTextEditor.Document.WriteTextTo(writer);
 			}
 		}
 		

@@ -26,6 +26,7 @@ namespace CSharpBinding.Refactoring
 			InitializeComponent();
 			FixCheckBox_Unchecked(null, null);
 			treeView.Root = new RootTreeNode(IssueManager.IssueProviders);
+			searchInRBG.SelectedValue = SearchForIssuesTarget.WholeSolution;
 		}
 		
 		public SearchForIssuesTarget Target {

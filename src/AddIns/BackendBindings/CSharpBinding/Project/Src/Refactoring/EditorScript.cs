@@ -21,13 +21,14 @@ namespace CSharpBinding.Refactoring
 	/// <summary>
 	/// Refactoring change script.
 	/// </summary>
-	sealed class SDScript : DocumentScript
+	sealed class EditorScript : DocumentScript
 	{
 		readonly ITextEditor editor;
 		readonly TextSegmentCollection<TextSegment> textSegmentCollection;
 		readonly SDRefactoringContext context;
 		
-		public SDScript(ITextEditor editor, SDRefactoringContext context) : base(editor.Document, FormattingOptionsFactory.CreateSharpDevelop(), context.TextEditorOptions)
+		public EditorScript(ITextEditor editor, SDRefactoringContext context, CSharpFormattingOptions formattingOptions) 
+			: base(editor.Document, formattingOptions, context.TextEditorOptions)
 		{
 			this.editor = editor;
 			this.context = context;

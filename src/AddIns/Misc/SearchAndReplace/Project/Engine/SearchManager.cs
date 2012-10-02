@@ -54,9 +54,9 @@ namespace SearchAndReplace
 			static ITextSource ReadFile(FileName fileName)
 			{
 				OpenedFile openedFile = SD.FileService.GetOpenedFile(fileName);
-				if (openedFile == null)
+				if (openedFile == null || openedFile.CurrentView == null)
 					return null;
-				IFileDocumentProvider provider = FileService.GetOpenFile(fileName) as IFileDocumentProvider;
+				var provider = openedFile.CurrentView.GetService<IFileDocumentProvider>();
 				if (provider == null)
 					return null;
 				IDocument doc = provider.GetDocumentForFile(openedFile);

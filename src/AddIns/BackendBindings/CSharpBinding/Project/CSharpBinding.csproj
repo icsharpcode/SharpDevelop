@@ -80,7 +80,7 @@
     <Compile Include="Src\Refactoring\IssueManager.cs" />
     <Compile Include="Src\Refactoring\IssueOptionsViewModel.cs" />
     <Compile Include="Src\Refactoring\SDRedundantUsingIssue.cs" />
-    <Compile Include="Src\Refactoring\SDScript.cs" />
+    <Compile Include="Src\Refactoring\EditorScript.cs" />
     <Compile Include="Src\Refactoring\SearchForIssuesCommand.cs" />
     <Compile Include="Src\Refactoring\SearchForIssuesDialog.xaml.cs">
       <DependentUpon>SearchForIssuesDialog.xaml</DependentUpon>

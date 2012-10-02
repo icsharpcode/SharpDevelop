@@ -4,17 +4,21 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
 using CSharpBinding.Parser;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace CSharpBinding.Refactoring
@@ -26,13 +30,30 @@ namespace CSharpBinding.Refactoring
 			SearchForIssuesDialog dlg = new SearchForIssuesDialog();
 			dlg.Owner = SD.Workbench.MainWindow;
 			if (dlg.ShowDialog() == true) {
+				string title = "Issue Search";
 				var providers = dlg.SelectedProviders.ToList();
 				var fileNames = GetFilesToSearch(dlg.Target).ToList();
-				var monitor = SD.StatusBar.CreateProgressMonitor();
-				var observable = ReactiveExtensions.CreateObservable<SearchedFile>(
-					(m, c) => SearchForIssuesAsync(fileNames, providers, c, m),
-					monitor);
-				SearchResultsPad.Instance.ShowSearchResults("Issue Search", observable);
+				if (dlg.FixIssues) {
+					int fixedIssueCount = 0;
+					IReadOnlyList<SearchResultMatch> remainingIssues = null;
+					AsynchronousWaitDialog.RunInCancellableWaitDialog(
+						title, null,
+						monitor => {
+							remainingIssues = FindAndFixIssues(fileNames, providers, monitor, out fixedIssueCount);
+						});
+					string message = string.Format(
+						"{0} issues were fixed automatically." +
+						"{1} issues are remaining (no automatic fix available).",
+						fixedIssueCount, remainingIssues.Count);
+					SearchResultsPad.Instance.ShowSearchResults(title, remainingIssues);
+					MessageService.ShowMessage(message, title);
+				} else {
+					var monitor = SD.StatusBar.CreateProgressMonitor();
+					var observable = ReactiveExtensions.CreateObservable<SearchedFile>(
+						(m, c) => SearchForIssuesAsync(fileNames, providers, c, m),
+						monitor);
+					SearchResultsPad.Instance.ShowSearchResults(title, observable);
+				}
 			}
 		}
 		
@@ -116,6 +137,82 @@ namespace CSharpBinding.Refactoring
 				return new SearchedFile(fileName, results);
 			else
 				return null;
+		}
+		
+		IReadOnlyList<SearchResultMatch> FindAndFixIssues(List<FileName> fileNames, List<IssueManager.IssueProvider> providers, IProgressMonitor progress, out int fixedIssueCount)
+		{
+			fixedIssueCount = 0;
+			List<SearchResultMatch> remainingIssues = new List<SearchResultMatch>();
+			for (int i = 0; i < fileNames.Count; i++) {
+				remainingIssues.AddRange(FindAndFixIssues(fileNames[i], providers, progress.CancellationToken, ref fixedIssueCount));
+				progress.Report((double)i / fileNames.Count);
+			}
+			return remainingIssues;
+		}
+		
+		IEnumerable<SearchResultMatch> FindAndFixIssues(FileName fileName, List<IssueManager.IssueProvider> providers, CancellationToken cancellationToken, ref int fixedIssueCount)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var openedFile = SD.FileService.GetOpenedFile(fileName);
+			bool documentWasLoadedFromDisk = false;
+			IDocument document = null;
+			if (openedFile != null && openedFile.CurrentView != null) {
+				var provider = openedFile.CurrentView.GetService<IFileDocumentProvider>();
+				if (provider != null)
+					document = provider.GetDocumentForFile(openedFile);
+			}
+			if (document == null) {
+				documentWasLoadedFromDisk = true;
+				document = new TextDocument(SD.FileService.GetFileContent(fileName));
+			}
+			var parseInfo = SD.ParserService.Parse(fileName, document, cancellationToken: cancellationToken) as CSharpFullParseInformation;
+			if (parseInfo == null)
+				return Enumerable.Empty<SearchResultMatch>();
+			
+			var compilation = SD.ParserService.GetCompilationForFile(fileName);
+			var resolver = parseInfo.GetResolver(compilation);
+			var context = new SDRefactoringContext(document, resolver, new TextLocation(0, 0), 0, 0, cancellationToken);
+			List<CodeIssue> allIssues = new List<CodeIssue>();
+			bool documentWasChanged = false;
+			foreach (var provider in providers) {
+				cancellationToken.ThrowIfCancellationRequested();
+				var issues = provider.GetIssues(context).ToList();
+				// Fix issues, if possible:
+				if (issues.Any(i => i.Actions.Count > 0)) {
+					using (var script = context.StartScript()) {
+						foreach (var issue in issues) {
+							if (issue.Actions.Count > 0) {
+								fixedIssueCount++;
+								issue.Actions[0].Run(script);
+							}
+						}
+					}
+					documentWasChanged = true;
+					// Update parseInfo etc. now that we've modified the document
+					parseInfo = SD.ParserService.Parse(fileName, document, cancellationToken: cancellationToken) as CSharpFullParseInformation;
+					if (parseInfo == null)
+						return Enumerable.Empty<SearchResultMatch>();
+					compilation = SD.ParserService.GetCompilationForFile(fileName);
+					resolver = parseInfo.GetResolver(compilation);
+					context = new SDRefactoringContext(document, resolver, new TextLocation(0, 0), 0, 0, cancellationToken);
+					// Find remaining issues:
+					allIssues.AddRange(provider.GetIssues(context));
+				} else {
+					allIssues.AddRange(issues);
+				}
+			}
+			if (documentWasChanged && documentWasLoadedFromDisk) {
+				// Save changes back to disk
+				using (var writer = new StreamWriter(fileName, false, SD.FileService.DefaultFileEncoding)) {
+					document.WriteTextTo(writer);
+				}
+			}
+			if (allIssues.Count > 0) {
+				var highlighter = SD.EditorControlService.CreateHighlighter(document);
+				return allIssues.Select(issue => SearchResultMatch.Create(document, issue.Start, issue.End, highlighter));
+			} else {
+				return Enumerable.Empty<SearchResultMatch>();
+			}
 		}
 	}
 	

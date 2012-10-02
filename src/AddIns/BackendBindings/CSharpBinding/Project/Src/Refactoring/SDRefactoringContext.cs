@@ -60,9 +60,13 @@ namespace CSharpBinding.Refactoring
 		
 		public Script StartScript()
 		{
-			if (editor == null)
-				throw new InvalidOperationException("Cannot start a script in IsAvailable().");
-			return new SDScript(editor, this);
+			var formattingOptions = FormattingOptionsFactory.CreateSharpDevelop();
+			if (editor != null)
+				return new EditorScript(editor, this, formattingOptions);
+			else if (document == null || document is ReadOnlyDocument)
+				throw new InvalidOperationException("Cannot start a script in a read-only context");
+			else
+				return new DocumentScript(document, formattingOptions, this.TextEditorOptions);
 		}
 		
 		public override TextLocation Location {
