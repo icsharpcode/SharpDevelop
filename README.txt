@@ -20,13 +20,14 @@ How To Compile
 SharpDevelop can be compiled using the supplied .bat files, or in SharpDevelop itself.
 
 System Requirements (running SharpDevelop)
- - Windows 7 or higher.
- - .NET 4.5 Full (Extended, the "Client" portion is not sufficient)
+ - Windows Vista or higher.
+ - .NET 4.5
  - Visual C++ 2008 SP1 Runtime (http://www.microsoft.com/downloads/details.aspx?familyid=A5C84275-3B97-4AB7-A40D-3802B2AF5FC2&displaylang=en)
 
 Extended Requirements (building SharpDevelop)
  - .NET 3.5 SP1
- - Windows SDK 7.1
+ - .NET 4.5 SDK (part of Windows SDK 8.0)
+ - Windows SDK 7.1 (?? not sure if this still is necessary...)
  - Windows SDK 7.0 (optional; C++ compiler needed for profiler)
  - Windows PowerShell
 
@@ -69,4 +70,4 @@ SharpDevelop Contributors:
 	Siegfried Pammer
 	Peter Forstmeier (SharpDevelop Reports)
 	
-	(for a full list see http://wiki.sharpdevelop.net/Contributors.ashx)
+	(for a full list see https://github.com/icsharpcode/SharpDevelop/wiki/Contributors)

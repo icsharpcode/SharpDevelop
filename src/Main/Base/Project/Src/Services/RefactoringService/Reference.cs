@@ -15,6 +15,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// </summary>
 	public class Reference : SearchResultMatch
 	{
+		// TODO: this looks like a memory usage problem
+		// SearchResultMatch is kept alive for a long time (list of previous searches),
+		// but ResolveResult keeps the whole compilation alive
+		// We might have to split Reference/SearchResultMatch into separate instances
 		ResolveResult resolveResult;
 		
 		public Reference(DomRegion region, ResolveResult resolveResult, int offset, int length, HighlightedInlineBuilder builder, HighlightingColor defaultTextColor)

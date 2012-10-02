@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,7 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
@@ -34,14 +36,22 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public IHighlighter CreateHighlighter(IDocument document)
 		{
-			Debug.Assert(document.FileName != null, "FileName not set in " + document.GetType().FullName);
-			var def = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(document.FileName));
-			var doc = document as TextDocument;
-			if (def == null || doc == null)
+			if (document.FileName == null)
 				return null;
-			var baseHighlighter = new DocumentHighlighter(doc, def);
-			var additionalHighlighters = AddInTree.BuildItems<IHighlighter>(HighlighterDoozer.AddInPath, doc, false);
-			var multiHighlighter = new MultiHighlighter(document, new[] { baseHighlighter }.Concat(additionalHighlighters).ToArray());
+			var def = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(document.FileName));
+			if (def == null)
+				return null;
+			List<IHighlighter> highlighters = new List<IHighlighter>();
+			var textDocument = document as TextDocument;
+			var readOnlyDocument = document as ReadOnlyDocument;
+			if (textDocument != null) {
+				highlighters.Add(new DocumentHighlighter(textDocument, def));
+			} else if (readOnlyDocument != null) {
+				highlighters.Add(new DocumentHighlighter(readOnlyDocument, def));
+			}
+			// add additional highlighters
+			highlighters.AddRange(SD.AddInTree.BuildItems<IHighlighter>(HighlighterDoozer.AddInPath, document, false));
+			var multiHighlighter = new MultiHighlighter(document, highlighters.ToArray());
 			return new CustomizableHighlightingColorizer.CustomizingHighlighter(
 				document, CustomizedHighlightingColor.FetchCustomizations(def.Name),
 				def, multiHighlighter);

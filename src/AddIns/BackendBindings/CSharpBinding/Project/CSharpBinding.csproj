@@ -81,6 +81,11 @@
     <Compile Include="Src\Refactoring\IssueOptionsViewModel.cs" />
     <Compile Include="Src\Refactoring\SDRedundantUsingIssue.cs" />
     <Compile Include="Src\Refactoring\SDScript.cs" />
+    <Compile Include="Src\Refactoring\SearchForIssuesCommand.cs" />
+    <Compile Include="Src\Refactoring\SearchForIssuesDialog.xaml.cs">
+      <DependentUpon>SearchForIssuesDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <EmbeddedResource Include="Resources\MyNamespaceSupportForCSharp.cs" />
     <Compile Include="Src\CodeManipulation.cs" />
     <Compile Include="Src\Completion\CompletionData.cs" />
@@ -132,6 +137,11 @@
       <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj">
+      <Project>{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}</Project>
+      <Name>ICSharpCode.TreeView</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -165,6 +175,7 @@
   <ItemGroup>
     <Page Include="Src\Refactoring\IssueOptions.xaml" />
     <Page Include="Src\OptionPanels\BuildOptions.xaml" />
+    <Page Include="Src\Refactoring\SearchForIssuesDialog.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

@@ -82,7 +82,7 @@
 		<OptionPanel id    = "Application"
 		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ApplicationSettings"/>
-	
+		
 		<OptionPanel id    = "ReferencePaths"
 		             label = "${res:Dialog.ProjectOptions.ReferencePaths}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ReferencePaths"/>
@@ -142,6 +142,12 @@
 			             class="CSharpBinding.Refactoring.IssueOptions"/>
 			<ContextActionOptionPanel id="ContextActions" path="/SharpDevelop/ViewContent/TextEditor/C#/ContextActions"/>
 		</OptionPanel>
+	</Path>
+	
+	<Path path = "/SharpDevelop/Workbench/MainMenu/Search">
+		<MenuItem id = "SearchForIssues"
+		          label="Search For Issues..."
+		          class="CSharpBinding.Refactoring.SearchForIssuesCommand"/>
 	</Path>
 	
 	<Path path = "/SharpDevelop/ViewContent/TextEditor/C#/IssueProviders">

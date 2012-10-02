@@ -289,12 +289,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			public void BeginHighlighting()
 			{
-				
+				baseHighlighter.BeginHighlighting();
 			}
 			
 			public void EndHighlighting()
 			{
-				
+				baseHighlighter.EndHighlighting();
 			}
 		}
 		

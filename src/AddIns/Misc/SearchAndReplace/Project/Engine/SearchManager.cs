@@ -210,7 +210,6 @@ namespace SearchAndReplace
 					ThrowIfCancellationRequested();
 					if (document == null) {
 						document = new ReadOnlyDocument(source, fileName);
-						var highlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
 						highlighter = SD.EditorControlService.CreateHighlighter(document);
 					}
 					var start = document.GetLocation(result.Offset);

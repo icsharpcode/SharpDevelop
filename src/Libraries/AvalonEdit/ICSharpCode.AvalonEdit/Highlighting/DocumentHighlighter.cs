@@ -496,10 +496,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		#endregion
 		
 		public HighlightingColor DefaultTextColor {
-			get {
-				return new HighlightingColor() {
-				};
-			}
+			get { return null; }
 		}
 		
 		public void BeginHighlighting()
@@ -514,7 +511,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		
 		public HighlightingColor GetNamedColor(string name)
 		{
-			throw new NotSupportedException();
+			return definition.GetNamedColor(name);
 		}
 	}
 }

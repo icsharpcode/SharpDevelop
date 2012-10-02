@@ -10,6 +10,7 @@ using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Editor.Search
@@ -70,6 +71,18 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			this.length = length;
 			this.builder = builder;
 			this.defaultTextColor = defaultTextColor;
+		}
+		
+		public static SearchResultMatch Create(IDocument document, TextLocation startLocation, TextLocation endLocation, IHighlighter highlighter)
+		{
+			int startOffset = document.GetOffset(startLocation);
+			int endOffset = document.GetOffset(endLocation);
+			var inlineBuilder = SearchResultsPad.CreateInlineBuilder(startLocation, endLocation, document, highlighter);
+			var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
+			return new SearchResultMatch(FileName.Create(document.FileName),
+			                             startLocation, endLocation,
+			                             startOffset, endOffset - startOffset,
+			                             inlineBuilder, defaultTextColor);
 		}
 		
 		/// <summary>

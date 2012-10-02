@@ -38,7 +38,6 @@ namespace CSharpBinding.Refactoring
 		
 		internal class IssueProvider
 		{
-			readonly ICodeIssueProvider provider;
 			public readonly Type ProviderType;
 			public readonly IssueDescriptionAttribute Attribute;
 			
@@ -46,7 +45,6 @@ namespace CSharpBinding.Refactoring
 			{
 				if (provider == null)
 					throw new ArgumentNullException("provider");
-				this.provider = provider;
 				this.ProviderType = provider.GetType();
 				var attributes = ProviderType.GetCustomAttributes(typeof(IssueDescriptionAttribute), true);
 				
@@ -67,6 +65,9 @@ namespace CSharpBinding.Refactoring
 			
 			public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 			{
+				// use a separate instance for every call, this is necessary
+				// for thread-safety
+				var provider = (ICodeIssueProvider)Activator.CreateInstance(ProviderType);
 				return provider.GetIssues(context);
 			}
 		}
