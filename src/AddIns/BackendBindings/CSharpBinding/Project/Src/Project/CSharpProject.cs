@@ -3,16 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Converter;
@@ -115,7 +112,7 @@ namespace CSharpBinding
 			
 			string symbols = GetEvaluatedProperty("DefineConstants");
 			if (symbols != null) {
-				foreach (string symbol in symbols.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
+				foreach (string symbol in symbols.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries)) {
 					settings.ConditionalSymbols.Add(symbol.Trim());
 				}
 			}
