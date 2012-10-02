@@ -172,7 +172,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			var compilations = GetProjectsThatCouldReferenceEntity(baseType).Select(p => solutionSnapshot.GetCompilation(p));
 			var graph = BuildTypeInheritanceGraph(compilations);
 			TypeGraphNode node;
-			if (graph.TryGetValue(new TypeName(baseType), out node)) {
+			if (graph.TryGetValue(new AssemblyQualifiedTypeName(baseType), out node)) {
 				node.BaseTypes.Clear(); // only derived types were requested, so don't return the base types
 				return node;
 			} else {
@@ -184,26 +184,26 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// Builds a graph of all type definitions in the specified set of project contents.
 		/// </summary>
 		/// <remarks>The resulting graph may be cyclic if there are cyclic type definitions.</remarks>
-		static Dictionary<TypeName, TypeGraphNode> BuildTypeInheritanceGraph(IEnumerable<ICompilation> compilations)
+		static Dictionary<AssemblyQualifiedTypeName, TypeGraphNode> BuildTypeInheritanceGraph(IEnumerable<ICompilation> compilations)
 		{
 			if (compilations == null)
 				throw new ArgumentNullException("projectContents");
-			Dictionary<TypeName, TypeGraphNode> dict = new Dictionary<TypeName, TypeGraphNode>();
+			Dictionary<AssemblyQualifiedTypeName, TypeGraphNode> dict = new Dictionary<AssemblyQualifiedTypeName, TypeGraphNode>();
 			foreach (ICompilation compilation in compilations) {
 				foreach (ITypeDefinition typeDef in compilation.MainAssembly.GetAllTypeDefinitions()) {
 					// Overwrite previous entry - duplicates can occur if there are multiple versions of the
 					// same project loaded in the solution (e.g. separate .csprojs for separate target frameworks)
-					dict[new TypeName(typeDef)] = new TypeGraphNode(typeDef);
+					dict[new AssemblyQualifiedTypeName(typeDef)] = new TypeGraphNode(typeDef);
 				}
 			}
 			foreach (ICompilation compilation in compilations) {
 				foreach (ITypeDefinition typeDef in compilation.MainAssembly.GetAllTypeDefinitions()) {
-					TypeGraphNode typeNode = dict[new TypeName(typeDef)];
+					TypeGraphNode typeNode = dict[new AssemblyQualifiedTypeName(typeDef)];
 					foreach (IType baseType in typeDef.DirectBaseTypes) {
 						ITypeDefinition baseTypeDef = baseType.GetDefinition();
 						if (baseTypeDef != null) {
 							TypeGraphNode baseTypeNode;
-							if (dict.TryGetValue(new TypeName(baseTypeDef), out baseTypeNode)) {
+							if (dict.TryGetValue(new AssemblyQualifiedTypeName(baseTypeDef), out baseTypeNode)) {
 								typeNode.BaseTypes.Add(baseTypeNode);
 								baseTypeNode.DerivedTypes.Add(typeNode);
 							}
