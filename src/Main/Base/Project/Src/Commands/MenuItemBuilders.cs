@@ -262,12 +262,11 @@ namespace ICSharpCode.SharpDevelop.Commands
 
 		void ProcessExitEvent(object sender, EventArgs e)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					ProcessRunner p = (ProcessRunner)sender;
-					TaskService.BuildMessageViewCategory.AppendLine(StringParser.Parse("${res:XML.MainMenu.ToolMenu.ExternalTools.ExitedWithCode} " + p.ExitCode));
-					p.Dispose();
-				});
+			SD.MainThread.InvokeAsync(delegate {
+				ProcessRunner p = (ProcessRunner)sender;
+				TaskService.BuildMessageViewCategory.AppendLine(StringParser.Parse("${res:XML.MainMenu.ToolMenu.ExternalTools.ExitedWithCode} " + p.ExitCode));
+				p.Dispose();
+			}).FireAndForget();
 		}
 		
 		void process_OutputLineReceived(object sender, LineReceivedEventArgs e)

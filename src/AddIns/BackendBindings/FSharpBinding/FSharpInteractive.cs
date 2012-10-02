@@ -71,21 +71,21 @@ namespace FSharpBinding
 					lock (outputQueue) {
 						outputQueue.Enqueue(e.Data);
 					}
-					WorkbenchSingleton.SafeThreadAsyncCall(ReadAll);
+					SD.MainThread.InvokeAsync(ReadAll).FireAndForget();
 				};
 				fsiProcess.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) {
 					lock (outputQueue) {
 						outputQueue.Enqueue(e.Data);
 					}
-					WorkbenchSingleton.SafeThreadAsyncCall(ReadAll);
+					SD.MainThread.InvokeAsync(ReadAll).FireAndForget();
 				};
 				fsiProcess.Exited += delegate(object sender, EventArgs e) {
 					lock (outputQueue) {
 						outputQueue.Enqueue("fsi.exe died");
 						outputQueue.Enqueue("restarting ...");
 					}
-					WorkbenchSingleton.SafeThreadAsyncCall(ReadAll);
-					WorkbenchSingleton.SafeThreadAsyncCall(StartFSharp);
+					SD.MainThread.InvokeAsync(ReadAll).FireAndForget();
+					SD.MainThread.InvokeAsync(StartFSharp).FireAndForget();
 				};
 				StartFSharp();
 			}

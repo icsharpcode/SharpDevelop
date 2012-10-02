@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static DisplayBindingDescriptor AddExternalProcessDisplayBinding(ExternalProcessDisplayBinding binding)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (binding == null)
 				throw new ArgumentNullException("binding");
 			DisplayBindingDescriptor descriptor = AddExternalProcessDisplayBindingInternal(binding);
@@ -61,7 +61,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static void RemoveExternalProcessDisplayBinding(ExternalProcessDisplayBinding binding)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (binding == null)
 				throw new ArgumentNullException("binding");
 			if (!externalProcessDisplayBindings.Remove(binding))
@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static IDisplayBinding GetBindingPerFileName(string filename)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (FileUtility.IsUrl(filename)) {
 				// The normal display binding dispatching code can't handle URLs (e.g. because it uses Path.GetExtension),
 				// so we'll directly return the browser display binding.
@@ -96,7 +96,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static DisplayBindingDescriptor GetDefaultCodonPerFileName(string filename)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			
 			string defaultCommandID = displayBindingServiceProperties.Get("Default" + Path.GetExtension(filename).ToLowerInvariant(), string.Empty);
 			if (!string.IsNullOrEmpty(defaultCommandID)) {
@@ -122,7 +122,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static void SetDefaultCodon(string extension, DisplayBindingDescriptor bindingDescriptor)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (bindingDescriptor == null)
 				throw new ArgumentNullException("bindingDescriptor");
 			if (extension == null)
@@ -138,7 +138,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static IList<DisplayBindingDescriptor> GetCodonsPerFileName(string filename)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			
 			List<DisplayBindingDescriptor> list = new List<DisplayBindingDescriptor>();
 			foreach (DisplayBindingDescriptor binding in bindings) {
@@ -166,7 +166,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <param name="isReattaching">This is a reattaching pass</param>
 		public static void AttachSubWindows(IViewContent viewContent, bool isReattaching)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (viewContent == null)
 				throw new ArgumentNullException("viewContent");
 			

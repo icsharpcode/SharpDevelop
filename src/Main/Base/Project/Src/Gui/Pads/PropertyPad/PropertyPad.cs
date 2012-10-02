@@ -367,7 +367,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void RefreshItem(object obj)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (instance != null && instance.grid.SelectedObjects.Contains(obj)) {
 				instance.inUpdate = true;
 				instance.grid.SelectedObjects = instance.grid.SelectedObjects;

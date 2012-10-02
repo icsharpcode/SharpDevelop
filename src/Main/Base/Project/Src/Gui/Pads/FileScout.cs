@@ -159,7 +159,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 			};
-			WorkbenchSingleton.SafeThreadAsyncCall(method);
+			SD.MainThread.InvokeAsync(method).FireAndForget();
 		}
 		
 		void fileChanged(object sender, FileSystemEventArgs e)
@@ -181,7 +181,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 			};
-			WorkbenchSingleton.SafeThreadAsyncCall(method);
+			SD.MainThread.InvokeAsync(method).FireAndForget();
 		}
 		
 		void fileCreated(object sender, FileSystemEventArgs e)
@@ -197,7 +197,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					// ignore IO errors
 				}
 			};
-			WorkbenchSingleton.SafeThreadAsyncCall(method);
+			SD.MainThread.InvokeAsync(method).FireAndForget();
 		}
 		
 		void fileRenamed(object sender, RenamedEventArgs e)
@@ -212,7 +212,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 			};
-			WorkbenchSingleton.SafeThreadAsyncCall(method);
+			SD.MainThread.InvokeAsync(method).FireAndForget();
 		}
 		
 		void renameFile(object sender, EventArgs e)

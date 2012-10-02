@@ -230,14 +230,14 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public ICollection<IViewContent> ViewContentCollection {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				return WorkbenchWindowCollection.SelectMany(w => w.ViewContents).ToList().AsReadOnly();
 			}
 		}
 		
 		public ICollection<IViewContent> PrimaryViewContents {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				return (from window in WorkbenchWindowCollection
 				        where window.ViewContents.Count > 0
 				        select window.ViewContents[0]
@@ -247,7 +247,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public IList<IWorkbenchWindow> WorkbenchWindowCollection {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				if (workbenchLayout != null)
 					return workbenchLayout.WorkbenchWindows;
 				else
@@ -257,7 +257,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public IList<PadDescriptor> PadContentCollection {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				return padDescriptorCollection.AsReadOnly();
 			}
 		}
@@ -266,7 +266,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				return activeWorkbenchWindow;
 			}
 			private set {
@@ -328,7 +328,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public IViewContent ActiveViewContent {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				return activeViewContent;
 			}
 			private set {
@@ -346,7 +346,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public IServiceProvider ActiveContent {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				return activeContent;
 			}
 			private set {
@@ -367,7 +367,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				return workbenchLayout;
 			}
 			set {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				
 				if (workbenchLayout != null) {
 					workbenchLayout.ActiveContentChanged -= OnActiveWindowChanged;
@@ -395,7 +395,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public void ShowView(IViewContent content, bool switchToOpenedView)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (content == null)
 				throw new ArgumentNullException("content");
 			if (ViewContentCollection.Contains(content))
@@ -409,7 +409,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public void ShowPad(PadDescriptor content)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (content == null)
 				throw new ArgumentNullException("content");
 			if (padDescriptorCollection.Contains(content))
@@ -428,7 +428,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public PadDescriptor GetPad(Type type)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (type == null)
 				throw new ArgumentNullException("type");
 			foreach (PadDescriptor pad in PadContentCollection) {
@@ -441,7 +441,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public void CloseAllViews()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			foreach (IWorkbenchWindow window in this.WorkbenchWindowCollection.ToArray()) {
 				window.CloseWindow(false);
 			}

@@ -135,7 +135,7 @@ namespace ICSharpCode.Svn.Commands
 			
 			public void Callback()
 			{
-				WorkbenchSingleton.SafeThreadAsyncCall(CallbackInvoked);
+				SD.MainThread.InvokeAsync(CallbackInvoked).FireAndForget();
 			}
 			
 			void CallbackInvoked()

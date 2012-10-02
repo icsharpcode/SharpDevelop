@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		/// </summary>
 		public static ReadOnlyCollection<ProjectTemplate> ProjectTemplates {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				
 				#if DEBUG
 				// Always reload project templates if debugging.

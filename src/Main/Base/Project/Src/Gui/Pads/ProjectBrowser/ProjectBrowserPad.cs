@@ -151,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			// do the potentially expensive selection of the item in the tree view only once after the last change
 			if (!activeContentChangedEnqueued) {
 				activeContentChangedEnqueued = true;
-				WorkbenchSingleton.SafeThreadAsyncCall(ActiveContentChangedInvoked);
+				SD.MainThread.InvokeAsync(ActiveContentChangedInvoked).FireAndForget();
 			}
 		}
 		
@@ -262,17 +262,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void RefreshViewAsync()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (refreshViewEnqueued || WorkbenchSingleton.Workbench == null)
 				return;
 			refreshViewEnqueued = true;
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					refreshViewEnqueued = false;
-					if (instance != null) {
-						instance.ProjectBrowserControl.RefreshView();
-					}
-				});
+			SD.MainThread.InvokeAsync(delegate {
+				refreshViewEnqueued = false;
+				if (instance != null) {
+					instance.ProjectBrowserControl.RefreshView();
+				}
+			}).FireAndForget();
 		}
 	}
 }

@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 		
 		public void AddMark(SDBookmark bookmark)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (bookmark == null) return;
 			if (bookmarks.Contains(bookmark)) return;
 			if (bookmarks.Exists(b => IsEqualBookmark(b, bookmark))) return;
@@ -74,14 +74,14 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 		
 		public void RemoveMark(SDBookmark bookmark)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			bookmarks.Remove(bookmark);
 			OnRemoved(new BookmarkEventArgs(bookmark));
 		}
 		
 		public void Clear()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			while (bookmarks.Count > 0) {
 				SDBookmark b = bookmarks[bookmarks.Count - 1];
 				bookmarks.RemoveAt(bookmarks.Count - 1);
@@ -105,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 		
 		public IEnumerable<SDBookmark> GetProjectBookmarks(ICSharpCode.SharpDevelop.Project.IProject project)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			List<SDBookmark> projectBookmarks = new List<SDBookmark>();
 			foreach (SDBookmark mark in bookmarks) {
 				// Only return those bookmarks which belong to the specified project.
@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 		{
 			if (match == null)
 				throw new ArgumentNullException("Predicate is null!");
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			
 			for(int index = bookmarks.Count - 1; index >= 0; --index){
 				SDBookmark bookmark = bookmarks[index];

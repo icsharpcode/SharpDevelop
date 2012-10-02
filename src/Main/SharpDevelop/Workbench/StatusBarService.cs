@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		{
 			if (progress == null)
 				throw new ArgumentNullException("progress");
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (currentProgress != null) {
 				currentProgress.ProgressMonitorDisposed -= progress_ProgressMonitorDisposed;
 				currentProgress.PropertyChanged -= progress_PropertyChanged;
@@ -78,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		void SetActiveProgress(ProgressCollector progress)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			currentProgress = progress;
 			if (progress == null) {
 				statusBar.HideProgress();

@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				return currentProject;
 			}
 			set {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				if (currentProject != value) {
 					LoggingService.Info("CurrentProject changed to " + (value == null ? "null" : value.Name));
 					currentProject = value;

@@ -32,10 +32,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void ReportError(BuildError error)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					TaskService.Add(new SDTask(error));
-				});
+			SD.MainThread.InvokeAsync(delegate {
+				TaskService.Add(new SDTask(error));
+			}).FireAndForget();
 		}
 		
 		public void ReportMessage(string message)

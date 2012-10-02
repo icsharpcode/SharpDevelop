@@ -40,20 +40,21 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			// RaiseParseInformationUpdated is called inside a lock, but we don't want to raise the event inside that lock.
 			// To ensure events are raised in the same order, we always invoke on the main thread.
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					if (!LoadSolutionProjectsThread.IsRunning) {
-						string addition;
-						if (e.OldUnresolvedFile == null)
-							addition = " (new)";
-						else if (e.NewUnresolvedFile == null)
-							addition = " (removed)";
-						else
-							addition = " (updated)";
-						LoggingService.Debug("ParseInformationUpdated " + e.FileName + addition);
+			SD.MainThread.InvokeAsync(delegate {
+				if (!LoadSolutionProjectsThread.IsRunning) {
+					string addition;
+					if (e.OldUnresolvedFile == null) {
+						addition = " (new)";
+					} else
+			if (e.NewUnresolvedFile == null) {
+						addition = " (removed)";
+					} else {
+						addition = " (updated)";
 					}
-					ParseInformationUpdated(null, e);
-				});
+					LoggingService.Debug("ParseInformationUpdated " + e.FileName + addition);
+				}
+				ParseInformationUpdated(null, e);
+			}).FireAndForget();
 		}
 		#endregion
 		

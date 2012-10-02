@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return null;
 			}
 			set {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				if (value != null) {
 					values[key] = value;
 				} else {

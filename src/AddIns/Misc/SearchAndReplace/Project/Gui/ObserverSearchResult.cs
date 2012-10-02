@@ -9,6 +9,7 @@ using System.Windows.Controls;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -28,7 +29,7 @@ namespace SearchAndReplace
 		
 		public override object GetControl()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (resultsTreeViewInstance == null)
 				resultsTreeViewInstance = new ResultsTreeView();
 			rootNode.GroupResultsByFile(ResultsTreeView.GroupResultsByFile);

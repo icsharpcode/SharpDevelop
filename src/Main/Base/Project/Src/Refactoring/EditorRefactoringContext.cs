@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		public ITextEditor Editor {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				return editor;
 			}
 		}

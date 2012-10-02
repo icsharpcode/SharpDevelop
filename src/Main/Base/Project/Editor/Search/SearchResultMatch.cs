@@ -64,6 +64,8 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		
 		public SearchResultMatch(FileName fileName, TextLocation startLocation, TextLocation endLocation, int offset, int length, HighlightedInlineBuilder builder, HighlightingColor defaultTextColor)
 		{
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
 			this.fileName = fileName;
 			this.startLocation = startLocation;
 			this.endLocation = endLocation;

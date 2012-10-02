@@ -134,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		[Conditional("DEBUG")]
 		internal static void DebugAssertMainThread()
 		{
-			AssertMainThread();
+			SD.MainThread.VerifyAccess();
 		}
 		
 		/// <summary>

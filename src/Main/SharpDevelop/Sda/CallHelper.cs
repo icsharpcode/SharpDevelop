@@ -269,7 +269,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		public bool WorkbenchVisible {
 			get {
 				if (WorkbenchSingleton.InvokeRequired) {
-					return WorkbenchSingleton.SafeThreadFunction<bool>(GetWorkbenchVisibleInternal);
+					return SD.MainThread.InvokeIfRequired<bool>(GetWorkbenchVisibleInternal);
 				} else {
 					return GetWorkbenchVisibleInternal();
 				}

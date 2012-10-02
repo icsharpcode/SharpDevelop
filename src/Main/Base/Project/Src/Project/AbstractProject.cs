@@ -57,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void Dispose()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (watcher != null)
 				watcher.Dispose();
 			isDisposed = true;
@@ -104,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			set {
 				if (value == null)
 					throw new ArgumentNullException();
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				Debug.Assert(FileUtility.IsUrl(value) || Path.IsPathRooted(value));
 				
 				if (WorkbenchSingleton.Workbench == null)
@@ -173,7 +173,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public List<ProjectSection> ProjectSections {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				return projectSections;
 			}
 		}
@@ -188,7 +188,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public string ActiveConfiguration {
 			get { return activeConfiguration; }
 			set {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				if (value == null)
 					throw new ArgumentNullException();
 				
@@ -214,7 +214,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public string ActivePlatform {
 			get { return activePlatform; }
 			set {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				if (value == null)
 					throw new ArgumentNullException();
 				

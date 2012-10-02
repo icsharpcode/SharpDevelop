@@ -162,7 +162,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (baseItem.Project != project)
 				throw new ArgumentException("baseItem is not from project this CustomToolContext belongs to");
 			
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			bool saveProject = false;
 			if (isPrimaryOutput) {
 				if (baseItem.GetEvaluatedMetadata("LastGenOutput") != Path.GetFileName(outputFileName)) {
@@ -188,7 +188,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void WriteCodeDomToFile(FileProjectItem baseItem, string outputFileName, CodeCompileUnit ccu)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			
 			string codeOutput;
 			using (StringWriter writer = new StringWriter()) {
@@ -433,7 +433,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				throw new ArgumentNullException("baseItem");
 			if (customTool == null)
 				throw new ArgumentNullException("customTool");
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			
 			string fileName = baseItem.FileName;
 			if (toolRuns.Any(run => FileUtility.IsEqualFileName(run.file, fileName)))
@@ -485,16 +485,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		internal static void NotifyAsyncFinish(CustomToolContext context)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					activeToolRun = null;
-					if(toolRuns.Count > 0) {
-						CustomToolRun nextRun = toolRuns.Dequeue();
-						if(nextRun != null) {
-							RunCustomTool(nextRun);
-						}
+			SD.MainThread.InvokeAsync(delegate {
+				activeToolRun = null;
+				if (toolRuns.Count > 0) {
+					CustomToolRun nextRun = toolRuns.Dequeue();
+					if (nextRun != null) {
+						RunCustomTool(nextRun);
 					}
-				});
+				}
+			}).FireAndForget();
 		}
 	}
 	#endregion

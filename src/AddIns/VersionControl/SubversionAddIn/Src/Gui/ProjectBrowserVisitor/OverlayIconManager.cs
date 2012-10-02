@@ -223,10 +223,9 @@ namespace ICSharpCode.Svn
 				}
 			}
 			
-			SharpDevelop.Gui.WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					node.Overlay = GetImage(status);
-				});
+			SD.MainThread.InvokeAsync(delegate {
+				node.Overlay = GetImage(status);
+			}).FireAndForget();
 		}
 	}
 }

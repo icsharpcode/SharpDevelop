@@ -83,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		protected virtual void ChangeFileName(FileName newValue)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			
 			fileName = newValue;
 			

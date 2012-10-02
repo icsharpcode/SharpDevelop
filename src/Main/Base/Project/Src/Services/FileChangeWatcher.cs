@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				return PropertyService.Get("SharpDevelop.FileChangeWatcher.DetectExternalChanges", true);
 			}
 			set {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				PropertyService.Set("SharpDevelop.FileChangeWatcher.DetectExternalChanges", value);
 				foreach (FileChangeWatcher watcher in activeWatchers) {
 					watcher.SetWatcher();
@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public static void DisableAllChangeWatchers()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			globalDisableCount++;
 			foreach (FileChangeWatcher w in activeWatchers)
 				w.SetWatcher();
@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public static void EnableAllChangeWatchers()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (globalDisableCount == 0)
 				throw new InvalidOperationException();
 			globalDisableCount--;
@@ -85,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public void Dispose()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			activeWatchers.Remove(this);
 			if (file != null) {
 				WorkbenchSingleton.MainWindow.Activated -= MainForm_Activated;
@@ -110,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		void SetWatcher()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			
 			if (watcher != null) {
 				watcher.EnableRaisingEvents = false;

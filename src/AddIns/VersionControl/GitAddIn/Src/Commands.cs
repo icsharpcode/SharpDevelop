@@ -70,7 +70,7 @@ namespace ICSharpCode.GitAddIn
 		Action AfterCommand(string nodeFileName, AbstractProjectBrowserTreeNode node)
 		{
 			return delegate {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				// and then refresh the project browser:
 				GitStatusCache.ClearCachedStatus(nodeFileName);
 				OverlayIconManager.EnqueueRecursive(node);

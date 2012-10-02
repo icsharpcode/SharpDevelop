@@ -4,7 +4,9 @@
 using System;
 using System.Diagnostics;
 using System.Text;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
 
@@ -71,7 +73,9 @@ namespace ICSharpCode.GitAddIn
 					p.EnableRaisingEvents = true;
 					p.Exited += delegate {
 						p.Dispose();
-						if (callback != null) { ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.SafeThreadAsyncCall(callback); }
+						if (callback != null) {
+							SD.MainThread.InvokeAsync(callback).FireAndForget();
+						}
 					};
 //					p.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) {
 //						SvnClient.Instance.SvnCategory.AppendText(e.Data);

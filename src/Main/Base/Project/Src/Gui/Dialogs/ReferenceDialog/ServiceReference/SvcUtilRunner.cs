@@ -68,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			var runner = (ProcessRunner)sender;
 			ExitCode = runner.ExitCode;
 			
-			WorkbenchSingleton.SafeThreadAsyncCall(() => OnProcessExited());
+			SD.MainThread.InvokeAsync(() => OnProcessExited()).FireAndForget();
 		}
 		
 		void OnProcessExited()

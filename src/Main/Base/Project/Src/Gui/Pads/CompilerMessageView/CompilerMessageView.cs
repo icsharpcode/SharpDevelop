@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static CompilerMessageView Instance {
 			get {
 				if (instance == null)
-					WorkbenchSingleton.SafeThreadCall(InitializeInstance);
+					SD.MainThread.InvokeIfRequired(InitializeInstance);
 				return instance;
 			}
 		}
@@ -141,7 +141,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return selectedCategory;
 			}
 			set {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				if (selectedCategory != value) {
 					selectedCategory = value;
 					DisplayActiveCategory();
@@ -294,7 +294,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			lock (appendLock) {
 				appendCalls.Add(appendCall);
 				if (appendCalls.Count == 1)
-					WorkbenchSingleton.SafeThreadAsyncCall(ProcessAppendText);
+					SD.MainThread.InvokeAsync(ProcessAppendText).FireAndForget();
 				waitForMainThread = appendCalls.Count > 2000;
 			}
 			if (waitForMainThread && WorkbenchSingleton.InvokeRequired) {

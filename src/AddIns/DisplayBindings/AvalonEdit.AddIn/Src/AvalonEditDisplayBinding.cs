@@ -22,7 +22,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		internal static void RegisterAddInHighlightingDefinitions()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (!addInHighlightingDefinitionsRegistered) {
 				foreach (AddInTreeSyntaxMode syntaxMode in AddInTree.BuildItems<AddInTreeSyntaxMode>(SyntaxModeDoozer.Path, null, false)) {
 					syntaxMode.Register(HighlightingManager.Instance);

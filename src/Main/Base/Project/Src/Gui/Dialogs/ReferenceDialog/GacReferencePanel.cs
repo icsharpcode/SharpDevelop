@@ -270,27 +270,28 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			List<ListViewItem> itemsToResolveVersion = new List<ListViewItem>();
 			List<ReferenceProjectItem> referenceItems = new List<ReferenceProjectItem>();
-			WorkbenchSingleton.SafeThreadCall(
+			SD.MainThread.InvokeIfRequired(
 				delegate {
-					foreach (ListViewItem item in shortItemList) {
-						if (item.SubItems[1].Text.Contains("/")) {
-							itemsToResolveVersion.Add(item);
-							referenceItems.Add(new ReferenceProjectItem(project, item.Text));
-						}
+				foreach (ListViewItem item in shortItemList) {
+					if (item.SubItems [1].Text.Contains("/")) {
+						itemsToResolveVersion.Add(item);
+						referenceItems.Add(new ReferenceProjectItem(project, item.Text));
 					}
-				});
+				}
+			});
 			
 			MSBuildInternals.ResolveAssemblyReferences(project, referenceItems.ToArray(), resolveOnlyAdditionalReferences: true, logErrorsToOutputPad: false);
 			
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					if (IsDisposed) return;
-					for (int i = 0; i < itemsToResolveVersion.Count; i++) {
-						if (referenceItems[i].Version != null) {
-							itemsToResolveVersion[i].SubItems[1].Text = referenceItems[i].Version.ToString();
-						}
+			SD.MainThread.InvokeAsync(delegate {
+				if (IsDisposed) {
+					return;
+				}
+				for (int i = 0; i < itemsToResolveVersion.Count; i++) {
+					if (referenceItems [i].Version != null) {
+						itemsToResolveVersion [i].SubItems [1].Text = referenceItems [i].Version.ToString();
 					}
-				});
+				}
+			}).FireAndForget();
 		}
 		
 		#if DEBUG
@@ -317,7 +318,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			using (StreamWriter w = new StreamWriter("c:\\temp\\references.txt")) {
 				List<ReferenceProjectItem> referenceItems = new List<ReferenceProjectItem>();
-				WorkbenchSingleton.SafeThreadCall(
+				SD.MainThread.InvokeIfRequired(
 					delegate {
 						foreach (ListViewItem item in fullItemList) {
 							referenceItems.Add(new ReferenceProjectItem(project, item.Tag.ToString()));

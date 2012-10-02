@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static IEnumerable<ErrorPainter> Instances {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				return instances;
 			}
 		}

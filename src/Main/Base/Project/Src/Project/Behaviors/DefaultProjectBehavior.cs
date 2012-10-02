@@ -89,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public override Properties CreateMemento()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			
 			// breakpoints and files
 			Properties properties = new Properties();
@@ -110,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void SetMemento(Properties memento)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			
 			foreach (var mark in memento.GetList<ICSharpCode.SharpDevelop.Editor.Bookmarks.SDBookmark>("bookmarks")) {
 				SD.BookmarkManager.AddMark(mark);

@@ -988,7 +988,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		internal void CreateItemsListFromMSBuild()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			
 			using (var c = OpenCurrentConfiguration()) {
 				foreach (ProjectItem item in items) {
@@ -1028,7 +1028,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (item.IsAddedToProject)
 				throw new ArgumentException("item is already added to project", "item");
 			
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			using (var c = OpenCurrentConfiguration()) {
 				items.Add(item);
 				itemsReadOnly = null; // remove readonly variant of item list - will regenerate on next Items call

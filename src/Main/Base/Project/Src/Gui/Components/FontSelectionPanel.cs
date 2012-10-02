@@ -129,14 +129,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			DebugTimer.Stop("Getting installed fonts");
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					fontListComboBox.Items.AddRange(fonts.ToArray());
-					fontSizeComboBox.Enabled = true;
-					fontListComboBox.Enabled = true;
-					fontListComboBox.SelectedIndex = index;
-					fontSizeComboBox.Text = currentFont.Size.ToString();
-				});
+			SD.MainThread.InvokeAsync(delegate {
+				fontListComboBox.Items.AddRange(fonts.ToArray());
+				fontSizeComboBox.Enabled = true;
+				fontListComboBox.Enabled = true;
+				fontListComboBox.SelectedIndex = index;
+				fontSizeComboBox.Text = currentFont.Size.ToString();
+			}).FireAndForget();
 			DebugTimer.Start();
 			using (Bitmap newBitmap = new Bitmap(1, 1)) {
 				using (Graphics g  = Graphics.FromImage(newBitmap)) {

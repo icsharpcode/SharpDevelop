@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public static TextEditorSideBar Instance {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				if (instance == null) {
 					instance = new TextEditorSideBar();
 					instance.Initialize();

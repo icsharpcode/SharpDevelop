@@ -130,16 +130,16 @@ namespace ICSharpCode.GitAddIn
 				}
 			}
 			
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					Image image = GetImage(status);
-					if (image != null) {
-						node.Overlay = image;
-					} else if (node.Overlay != null && (node.Overlay.Tag as Type) == typeof(GitAddIn.OverlayIconManager)) {
-						// reset overlay to null only if the old overlay belongs to the OverlayIconManager
-						node.Overlay = null;
-					}
-				});
+			SD.MainThread.InvokeAsync(delegate {
+				Image image = GetImage(status);
+				if (image != null) {
+					node.Overlay = image;
+				} else
+		if (node.Overlay != null && (node.Overlay.Tag as Type) == typeof(GitAddIn.OverlayIconManager)) {
+					// reset overlay to null only if the old overlay belongs to the OverlayIconManager
+					node.Overlay = null;
+				}
+			}).FireAndForget();
 		}
 		
 		public static Image GetImage(GitStatus status)

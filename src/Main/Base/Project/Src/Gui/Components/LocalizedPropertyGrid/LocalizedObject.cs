@@ -70,7 +70,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			globalizedProps = null;
 			if (WorkbenchSingleton.Workbench != null) {
-				WorkbenchSingleton.SafeThreadAsyncCall(delegate { PropertyPad.RefreshItem(this); });
+				SD.MainThread.InvokeAsync(delegate {
+					PropertyPad.RefreshItem(this);
+				}).FireAndForget();
 			}
 		}
 		

@@ -446,7 +446,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public bool CloseWindow(bool force)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			
 			forceClose = force;
 			Close();

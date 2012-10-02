@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 			if (column < 1)
 				throw new ArgumentOutOfRangeException("column");
 			
-			Gui.WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			
 			this.fileName = fileName;
 			this.line = line;
@@ -248,7 +248,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 				throw new ArgumentNullException("fileName");
 			if (document == null)
 				throw new ArgumentNullException("document");
-			Gui.WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			
 			// there may be multiple documents with the same file name - in that case, only attach to one of them
 			if (!openDocuments.ContainsKey(fileName)) {
@@ -270,7 +270,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 				throw new ArgumentNullException("fileName");
 			if (document == null)
 				throw new ArgumentNullException("document");
-			Gui.WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			
 			IDocument actualDocument;
 			if (openDocuments.TryGetValue(fileName, out actualDocument)) {
@@ -297,7 +297,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 				throw new ArgumentNullException("newFileName");
 			if (document == null)
 				throw new ArgumentNullException("document");
-			Gui.WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			
 			IDocument actualDocument;
 			if (openDocuments.TryGetValue(oldFileName, out actualDocument)) {

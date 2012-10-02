@@ -194,7 +194,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public FileNode FindFileNode(string fileName)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			return FindFileNode(treeView.Nodes, fileName);
 		}
 		

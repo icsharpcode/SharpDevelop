@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			this.fileName = fileName;
 			
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			activeWatchers.Add(this);
 			
 			WorkbenchSingleton.MainWindow.Activated += MainFormActivated;
@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Project
 
 		void SetWatcher()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 
 			if (watcher != null) {
 				watcher.EnableRaisingEvents = false;
@@ -150,7 +150,7 @@ namespace ICSharpCode.SharpDevelop.Project
 
 		public void Dispose()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (!disposed) {
 				WorkbenchSingleton.MainWindow.Activated -= MainFormActivated;
 				activeWatchers.Remove(this);

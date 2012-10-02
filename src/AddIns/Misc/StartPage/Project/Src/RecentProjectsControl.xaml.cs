@@ -64,11 +64,10 @@ namespace ICSharpCode.StartPage
 				}
 			}
 			if (items.Count > 0) {
-				WorkbenchSingleton.SafeThreadAsyncCall(new Action(
-					delegate {
-						lastProjectsListView.ItemsSource = items;
-						lastProjectsListView.Visibility = Visibility.Visible;
-					}));
+				SD.MainThread.InvokeAsync(new Action(delegate {
+					lastProjectsListView.ItemsSource = items;
+					lastProjectsListView.Visibility = Visibility.Visible;
+				})).FireAndForget();
 			}
 		}
 		

@@ -39,12 +39,12 @@ namespace ICSharpCode.IconEditor
 			} catch (InvalidIconException ex) {
 				// call with a delay to work around a re-entrancy bug
 				// when closing a workbench window while it is getting activated
-				WorkbenchSingleton.SafeThreadAsyncCall(
-					delegate {
-						MessageService.ShowHandledException(ex);
-						if (WorkbenchWindow != null)
-							WorkbenchWindow.CloseWindow(true);
-					});
+				SD.MainThread.InvokeAsync(delegate {
+					MessageService.ShowHandledException(ex);
+					if (WorkbenchWindow != null) {
+						WorkbenchWindow.CloseWindow(true);
+					}
+				}).FireAndForget();
 			}
 		}
 		
