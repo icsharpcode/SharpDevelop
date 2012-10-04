@@ -510,7 +510,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 					var or = mgrr.PerformOverloadResolution(compilation,
 					                                        args,
-					                                        allowExpandingParams: false);
+					                                        allowExpandingParams: false, allowOptionalParameters: false);
 					if (or.FoundApplicableCandidate && or.BestCandidateAmbiguousWith == null) {
 						IType returnType = or.GetBestCandidateWithSubstitutedTypeArguments().ReturnType;
 						MakeLowerBoundInference(returnType, m.ReturnType);

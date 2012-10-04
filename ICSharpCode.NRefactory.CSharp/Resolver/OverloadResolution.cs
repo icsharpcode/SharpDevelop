@@ -155,6 +155,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			this.conversions = conversions ?? CSharpConversions.Get(compilation);
 			this.AllowExpandingParams = true;
+			this.AllowOptionalParameters = true;
 		}
 		#endregion
 		
@@ -173,6 +174,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// The default value is true.
 		/// </summary>
 		public bool AllowExpandingParams { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets whether optional parameters may be left at their default value.
+		/// The default value is true.
+		/// If this property is set to false, optional parameters will be treated like regular parameters.
+		/// </summary>
+		public bool AllowOptionalParameters { get; set; }
 		
 		/// <summary>
 		/// Gets/Sets whether ConversionResolveResults created by this OverloadResolution
@@ -543,7 +551,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (candidate.IsExpandedForm && i == argumentCountPerParameter.Length - 1)
 					continue; // any number of arguments is fine for the params-array
 				if (argumentCountPerParameter[i] == 0) {
-					if (candidate.Parameters[i].IsOptional)
+					if (this.AllowOptionalParameters && candidate.Parameters[i].IsOptional)
 						candidate.HasUnmappedOptionalParameters = true;
 					else
 						candidate.AddError(OverloadResolutionErrors.MissingArgumentForRequiredParameter);
