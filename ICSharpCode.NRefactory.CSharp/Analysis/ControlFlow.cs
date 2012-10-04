@@ -1,4 +1,4 @@
-// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -26,6 +26,7 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.CSharp.Analysis
 {
@@ -749,6 +750,58 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				ControlFlowNode bodyEnd = HandleEmbeddedStatement(fixedStatement.EmbeddedStatement, data);
 				return CreateConnectedEndNode(fixedStatement, bodyEnd);
 			}
+		}
+		
+		/// <summary>
+		/// Debugging helper that exports a control flow graph.
+		/// </summary>
+		public static GraphVizGraph ExportGraph(IList<ControlFlowNode> nodes)
+		{
+			GraphVizGraph g = new GraphVizGraph();
+			GraphVizNode[] n = new GraphVizNode[nodes.Count];
+			Dictionary<ControlFlowNode, int> dict = new Dictionary<ControlFlowNode, int>();
+			for (int i = 0; i < n.Length; i++) {
+				dict.Add(nodes[i], i);
+				n[i] = new GraphVizNode(i);
+				string name = "#" + i + " = ";
+				switch (nodes[i].Type) {
+					case ControlFlowNodeType.StartNode:
+					case ControlFlowNodeType.BetweenStatements:
+						name += nodes[i].NextStatement.DebugToString();
+						break;
+					case ControlFlowNodeType.EndNode:
+						name += "End of " + nodes[i].PreviousStatement.DebugToString();
+						break;
+					case ControlFlowNodeType.LoopCondition:
+						name += "Condition in " + nodes[i].NextStatement.DebugToString();
+						break;
+					default:
+						name += "?";
+						break;
+				}
+				n[i].label = name;
+				g.AddNode(n[i]);
+			}
+			for (int i = 0; i < n.Length; i++) {
+				foreach (ControlFlowEdge edge in nodes[i].Outgoing) {
+					GraphVizEdge ge = new GraphVizEdge(i, dict[edge.To]);
+					if (edge.IsLeavingTryFinally)
+						ge.style = "dashed";
+					switch (edge.Type) {
+						case ControlFlowEdgeType.ConditionTrue:
+							ge.color = "green";
+							break;
+						case ControlFlowEdgeType.ConditionFalse:
+							ge.color = "red";
+							break;
+						case ControlFlowEdgeType.Jump:
+							ge.color = "blue";
+							break;
+					}
+					g.AddEdge(ge);
+				}
+			}
+			return g;
 		}
 	}
 }
