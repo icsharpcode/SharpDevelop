@@ -76,9 +76,11 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 			var input = @"class A	
 {
 	delegate void TestEventHandler ();
+	TestEventHandler eventTested;
 	event TestEventHandler EventTested
 	{
 		add {
+			eventTested += value;
 		}
 		remove {
 		}
@@ -86,7 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 }";
 			TestRefactoringContext context;
 			var issues = GetIssues(new ValueParameterUnusedIssue(), input, out context);
-			Assert.AreEqual(2, issues.Count);
+			Assert.AreEqual(1, issues.Count);
 		}
 
 		[Test]
@@ -152,6 +154,25 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		set {
 			throw new Exception();
 		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ValueParameterUnusedIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void DoesNotWarnOnEmptyCustomEvent()
+		{
+			// Empty custom events are often used when the event can never be raised
+			// by a class (but the event is required e.g. due to an interface).
+			var input = @"class A	
+{
+	delegate void TestEventHandler ();
+	event TestEventHandler EventTested
+	{
+		add { }
+		remove { }
 	}
 }";
 			TestRefactoringContext context;
