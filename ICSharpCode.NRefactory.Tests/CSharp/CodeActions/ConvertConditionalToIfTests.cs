@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using ICSharpCode.NRefactory.CSharp.Refactoring.CodeActions;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeActions

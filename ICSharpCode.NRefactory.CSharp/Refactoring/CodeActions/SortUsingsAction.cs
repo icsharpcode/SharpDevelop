@@ -5,7 +5,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
-namespace ICSharpCode.NRefactory.CSharp.Refactoring.CodeActions
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	[ContextAction("Sort usings", Description = "Sorts usings by their origin and then alphabetically.")]
 	public class SortUsingsAction: ICodeActionProvider

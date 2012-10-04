@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 
-using ICSharpCode.NRefactory.CSharp.Refactoring.CodeActions;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeActions

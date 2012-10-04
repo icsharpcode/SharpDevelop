@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using ICSharpCode.NRefactory.CSharp.Refactoring.CodeActions;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeActions
 {
