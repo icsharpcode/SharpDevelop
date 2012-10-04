@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (method.Parameters.Count == 0 || !method.Parameters.Last ().IsOptional)
 					return;
 
-				var overloads = method.DeclaringType.GetMembers (m => m.Name == method.Name).OfType<IMethod> ()
+				var overloads = method.DeclaringType.GetMethods(m => m.Name == method.Name && m.TypeParameters.Count == method.TypeParameters.Count)
 					.ToArray ();
 
 				var parameterNodes = methodDeclaration.Parameters.ToArray();

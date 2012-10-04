@@ -71,5 +71,17 @@ class TestClass
 }";
 			Test<MethodOverloadHidesOptionalParameterIssue> (input, 0);
 		}
+		
+		[Test]
+		public void TestNoIssue_Generics ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod (object obj) { }
+	void TestMethod<T> (object obj, int arg = 0) { }
+}";
+			Test<MethodOverloadHidesOptionalParameterIssue> (input, 0);
+		}
 	}
 }
