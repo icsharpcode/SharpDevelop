@@ -299,6 +299,28 @@ class B : A
 			var issues = GetIssues(new ReferenceToStaticMemberViaDerivedTypeIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
+		
+		[Test]
+		public void IgnoresCuriouslyRecurringTemplatePattern()
+		{
+			var input = @"
+class Base<T>
+{
+	public static void F() { }
+}
+class Derived : Base<Derived> {}
+class Test
+{
+	void Main()
+	{
+		Derived.F();
+	}
+}";
+			// do not suggest replacing 'Derived.F()' with 'Base<Derived>.F()'
+			TestRefactoringContext context;			
+			var issues = GetIssues(new ReferenceToStaticMemberViaDerivedTypeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
 	}
 }
 
