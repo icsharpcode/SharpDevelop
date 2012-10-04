@@ -185,13 +185,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 
 		#region IServiceProvider implementation
-		readonly ServiceContainer services = new ServiceContainer();
+		IServiceContainer services = new ServiceContainer();
 		
 		/// <summary>
 		/// Gets a service container used to associate services with this context.
 		/// </summary>
-		public ServiceContainer Services {
+		public IServiceContainer Services {
 			get { return services; }
+			protected set { services = value; }
 		}
 		
 		/// <summary>
