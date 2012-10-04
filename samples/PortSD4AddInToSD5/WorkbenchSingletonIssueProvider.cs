@@ -18,7 +18,7 @@ namespace PortSD4AddInToSD5
 {
 	[IssueDescription ("Usage of SD4 WorkbenchSingleton",
 	                   Description = "Usage of SD4 WorkbenchSingleton",
-	                   Category = IssueCategories.Notifications,
+	                   Category = "SD4->SD5",
 	                   Severity = Severity.Warning,
 	                   IssueMarker = IssueMarker.Underline)]
 	public class WorkbenchSingletonIssueProvider : ICodeIssueProvider
