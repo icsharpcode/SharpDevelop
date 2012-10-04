@@ -115,8 +115,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				} else if (parent is OperatorDeclaration) {
 					body = ((OperatorDeclaration)parent).Body;
 				}
-				if (body != null)
-					CheckVariable (((LocalResolveResult)ctx.Resolve (parameterDeclaration)).Variable, body);
+				if (body != null) {
+					var lrr = ctx.Resolve (parameterDeclaration) as LocalResolveResult;
+					if (lrr != null)
+						CheckVariable (lrr.Variable, body);
+				}
 				base.VisitParameterDeclaration (parameterDeclaration);
 			}
 
