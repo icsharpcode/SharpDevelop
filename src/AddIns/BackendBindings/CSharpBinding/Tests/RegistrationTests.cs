@@ -19,6 +19,11 @@ namespace CSharpBinding.Tests
 	[TestFixture]
 	public class RegistrationTests
 	{
+		Type[] exceptions = {
+			typeof(MultipleEnumerationIssue), // disabled due to https://github.com/icsharpcode/NRefactory/issues/123
+			typeof(RedundantAssignmentIssue), // disabled due to https://github.com/icsharpcode/NRefactory/issues/123
+		};
+		
 		Assembly NRCSharp = typeof(ICodeIssueProvider).Assembly;
 		Assembly CSharpBinding = typeof(SDRefactoringContext).Assembly;
 		
@@ -59,14 +64,22 @@ namespace CSharpBinding.Tests
 		public void AllNRefactoryIssueProvidersAreRegistered()
 		{
 			var registeredNRissueProviders = registeredIssueProviders.Select(p => p.Assembly == CSharpBinding ? p.BaseType : p);
-			Assert.IsEmpty(NRissueProviders.Except(registeredNRissueProviders), "There are providers in NR that are not registered in SD");
+			Assert.IsEmpty(NRissueProviders.Except(registeredNRissueProviders).Except(exceptions),
+			               "There are providers in NR that are not registered in SD");
 		}
 		
 		[Test]
 		public void AllNRefactoryCodeActionProvidersAreRegistered()
 		{
 			var registeredNRcodeActionProviders = registeredContextActions.Select(p => p.Assembly == CSharpBinding ? p.BaseType : p);
-			Assert.IsEmpty(NRcontextActions.Except(registeredNRcodeActionProviders), "There are context actions in NR that are not registered in SD");
+			Assert.IsEmpty(NRcontextActions.Except(registeredNRcodeActionProviders).Except(exceptions),
+			               "There are context actions in NR that are not registered in SD");
+		}
+		
+		[Test]
+		public void ExceptionsAreNotRegistered()
+		{
+			Assert.IsEmpty(exceptions.Intersect(registeredIssueProviders.Union(registeredContextActions)));
 		}
 	}
 }

@@ -178,7 +178,7 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.LocalVariableOnlyAssignedIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.MethodNeverReturnsIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.MethodOverloadHidesOptionalParameterIssue" />
-		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.MultipleEnumerationIssue" />
+		<!--<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.MultipleEnumerationIssue" />-->
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.NegativeRelationalExpressionIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.NotImplementedExceptionIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.OptionalParameterCouldBeSkippedIssue" />
@@ -187,7 +187,7 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ParameterNotUsedIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ParameterOnlyAssignedIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantArrayInitializerCommaIssue" />
-		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantAssignmentIssue" />
+		<!--<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantAssignmentIssue" />-->
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantAttributeParenthesesIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantCaseLabelIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantCatchIssue" />
