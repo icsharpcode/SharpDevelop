@@ -360,8 +360,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region ResolveUnaryOperator method
 		public ResolveResult ResolveUnaryOperator(UnaryOperatorType op, ResolveResult expression)
 		{
-			if (expression.Type.Kind == TypeKind.Dynamic)
-				return UnaryOperatorResolveResult(SpecialType.Dynamic, op, expression);
+			if (expression.Type.Kind == TypeKind.Dynamic) {
+				if (op == UnaryOperatorType.Await) {
+					return new AwaitResolveResult(SpecialType.Dynamic, new DynamicInvocationResolveResult(new DynamicMemberResolveResult(expression, "GetAwaiter"), DynamicInvocationType.Invocation, EmptyList<ResolveResult>.Instance), SpecialType.Dynamic, null, null, null);
+				}
+				else {
+					return UnaryOperatorResolveResult(SpecialType.Dynamic, op, expression);
+				}
+			}
 			
 			// C# 4.0 spec: §7.3.3 Unary operator overload resolution
 			string overloadableOperatorName = GetOverloadableOperatorName(op);
@@ -375,17 +381,37 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							return ErrorResult;
 					case UnaryOperatorType.AddressOf:
 						return UnaryOperatorResolveResult(new PointerType(expression.Type), op, expression);
-					case UnaryOperatorType.Await:
+					case UnaryOperatorType.Await: {
 						ResolveResult getAwaiterMethodGroup = ResolveMemberAccess(expression, "GetAwaiter", EmptyList<IType>.Instance, NameLookupMode.InvocationTarget);
 						ResolveResult getAwaiterInvocation = ResolveInvocation(getAwaiterMethodGroup, new ResolveResult[0]);
-						var getResultMethodGroup = CreateMemberLookup().Lookup(getAwaiterInvocation, "GetResult", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
+
+						var lookup = CreateMemberLookup();
+						IMethod getResultMethod;
+						IType awaitResultType;
+						var getResultMethodGroup = lookup.Lookup(getAwaiterInvocation, "GetResult", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
 						if (getResultMethodGroup != null) {
-							var or = getResultMethodGroup.PerformOverloadResolution(compilation, new ResolveResult[0], allowExtensionMethods: false, conversions: conversions);
-							IType awaitResultType = or.GetBestCandidateWithSubstitutedTypeArguments().ReturnType;
-							return UnaryOperatorResolveResult(awaitResultType, UnaryOperatorType.Await, expression);
-						} else {
-							return UnaryOperatorResolveResult(SpecialType.UnknownType, UnaryOperatorType.Await, expression);
+							var getResultOR = getResultMethodGroup.PerformOverloadResolution(compilation, new ResolveResult[0], allowExtensionMethods: false, conversions: conversions);
+							getResultMethod = getResultOR.FoundApplicableCandidate ? getResultOR.GetBestCandidateWithSubstitutedTypeArguments() as IMethod : null;
+							awaitResultType = getResultMethod != null ? getResultMethod.ReturnType : SpecialType.UnknownType;
 						}
+						else {
+							getResultMethod = null;
+							awaitResultType = SpecialType.UnknownType;
+						}
+
+						var isCompletedRR = lookup.Lookup(getAwaiterInvocation, "IsCompleted", EmptyList<IType>.Instance, false);
+						var isCompletedProperty = (isCompletedRR is MemberResolveResult ? ((MemberResolveResult)isCompletedRR).Member as IProperty : null);
+
+						var onCompletedMethodGroup = lookup.Lookup(getAwaiterInvocation, "OnCompleted", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
+						IMethod onCompletedMethod = null;
+						if (onCompletedMethodGroup != null) {
+							var onCompletedOR = onCompletedMethodGroup.PerformOverloadResolution(compilation, new ResolveResult[] { new TypeResolveResult(compilation.FindType(new FullTypeName("System.Action")))  }, allowExtensionMethods: false, conversions: conversions);
+							onCompletedMethod = (onCompletedOR.FoundApplicableCandidate ? onCompletedOR.GetBestCandidateWithSubstitutedTypeArguments() as IMethod : null);
+						}
+
+						return new AwaitResolveResult(awaitResultType, getAwaiterInvocation, getAwaiterInvocation.Type, isCompletedProperty, onCompletedMethod, getResultMethod);
+					}
+
 					default:
 						throw new ArgumentException("Invalid value for UnaryOperatorType", "op");
 				}

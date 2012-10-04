@@ -337,6 +337,7 @@
     <Compile Include="Refactoring\TypeSystemAstBuilder.cs" />
     <Compile Include="Refactoring\VariableReferenceGraph.cs" />
     <Compile Include="Resolver\CompositeResolveVisitorNavigator.cs" />
+    <Compile Include="Resolver\AwaitResolveResult.cs" />
     <Compile Include="Resolver\DynamicInvocationResolveResult.cs" />
     <Compile Include="Resolver\DynamicMemberResolveResult.cs" />
     <Compile Include="Resolver\CSharpConversions.cs" />

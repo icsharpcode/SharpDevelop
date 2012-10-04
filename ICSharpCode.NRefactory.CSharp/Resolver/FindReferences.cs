@@ -244,6 +244,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					scope = FindMemberReferences(entity, m => new FindPropertyReferences((IProperty)m));
 					if (entity.Name == "Current")
 						additionalScope = FindEnumeratorCurrentReferences((IProperty)entity);
+					else if (entity.Name == "IsCompleted")
+						additionalScope = FindAwaiterIsCompletedReferences((IProperty)entity);
 					break;
 				case EntityType.Event:
 					scope = FindMemberReferences(entity, m => new FindEventReferences((IEvent)m));
@@ -661,6 +663,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return imported != null ? new FindEnumeratorCurrentReferencesNavigator(imported) : null;
 				});
 		}
+
+		SearchScope FindAwaiterIsCompletedReferences(IProperty property)
+		{
+			return new SearchScope(
+				delegate(ICompilation compilation) {
+					IProperty imported = compilation.Import(property);
+					return imported != null ? new FindAwaiterIsCompletedReferencesNavigator(imported) : null;
+				});
+		}
 		
 		sealed class FindEnumeratorCurrentReferencesNavigator : FindReferenceNavigator
 		{
@@ -680,6 +691,27 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				ForEachResolveResult ferr = rr as ForEachResolveResult;
 				return ferr != null && ferr.CurrentProperty != null && findReferences.IsMemberMatch(property, ferr.CurrentProperty, true);
+			}
+		}
+
+		sealed class FindAwaiterIsCompletedReferencesNavigator : FindReferenceNavigator
+		{
+			IProperty property;
+			
+			public FindAwaiterIsCompletedReferencesNavigator(IProperty property)
+			{
+				this.property = property;
+			}
+			
+			internal override bool CanMatch(AstNode node)
+			{
+				return node is UnaryOperatorExpression;
+			}
+			
+			internal override bool IsMatch(ResolveResult rr)
+			{
+				AwaitResolveResult arr = rr as AwaitResolveResult;
+				return arr != null && arr.IsCompletedProperty != null && findReferences.IsMemberMatch(property, arr.IsCompletedProperty, true);
 			}
 		}
 		#endregion
@@ -723,6 +755,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case "GetEnumerator":
 				case "MoveNext":
 					specialNodeType = typeof(ForeachStatement);
+					break;
+				case "GetAwaiter":
+				case "GetResult":
+				case "OnCompleted":
+					specialNodeType = typeof(UnaryOperatorExpression);
 					break;
 				default:
 					specialNodeType = null;
@@ -793,6 +830,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (ferr != null) {
 						return IsMatch(ferr.GetEnumeratorCall)
 							|| (ferr.MoveNextMethod != null && findReferences.IsMemberMatch(method, ferr.MoveNextMethod, true));
+					}
+					var arr = rr as AwaitResolveResult;
+					if (arr != null) {
+						return IsMatch(arr.GetAwaiterInvocation)
+						    || (arr.GetResultMethod != null && findReferences.IsMemberMatch(method, arr.GetResultMethod, true))
+						    || (arr.OnCompletedMethod != null && findReferences.IsMemberMatch(method, arr.OnCompletedMethod, true));
 					}
 				}
 				var mrr = rr as MemberResolveResult;
