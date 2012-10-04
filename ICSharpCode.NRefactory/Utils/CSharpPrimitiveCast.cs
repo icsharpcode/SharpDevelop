@@ -32,6 +32,8 @@ namespace ICSharpCode.NRefactory.Utils
 		/// and let the compiler figure out the exact semantics.
 		/// And we have to do everything twice, once in a checked-block, once in an unchecked-block.
 		/// </summary>
+		/// <exception cref="OverflowException">Overflow checking is enabled and an overflow occurred.</exception>
+		/// <exception cref="InvalidCastException">The cast is invalid, e.g. casting a boolean to an integer.</exception>
 		public static object Cast(TypeCode targetType, object input, bool checkForOverflow)
 		{
 			if (input == null)

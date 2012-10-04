@@ -22,7 +22,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.CSharp.Resolver 
+namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	[TestFixture]
 	public class MethodTests : ResolverTestBase
@@ -224,6 +224,22 @@ class TestClass {
 			IVariable value2 = ((LocalResolveResult)assignRR.Operands[1]).Variable;
 
 			Assert.IsTrue(ReferenceEquals(value1, value2));
+		}
+		
+		[Test]
+		public void MethodWithInvalidCastInDefaultValue()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod ($int x = true$)
+	{
+	}
+}";
+			var rr = Resolve<LocalResolveResult>(input);
+			IParameter p = (IParameter)rr.Variable;
+			Assert.IsTrue(p.IsOptional);
+			Assert.IsNull(p.ConstantValue);
 		}
 	}
 }

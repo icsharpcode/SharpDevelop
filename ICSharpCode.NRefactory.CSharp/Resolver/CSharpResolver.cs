@@ -1305,6 +1305,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						return new ConstantResolveResult(targetType, CSharpPrimitiveCast(code, expression.ConstantValue));
 					} catch (OverflowException) {
 						return new ErrorResolveResult(targetType);
+					} catch (InvalidCastException) {
+						return new ErrorResolveResult(targetType);
 					}
 				} else if (code == TypeCode.String) {
 					if (expression.ConstantValue == null || expression.ConstantValue is string)
@@ -1317,6 +1319,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						try {
 							return new ConstantResolveResult(targetType, CSharpPrimitiveCast(code, expression.ConstantValue));
 						} catch (OverflowException) {
+							return new ErrorResolveResult(targetType);
+						} catch (InvalidCastException) {
 							return new ErrorResolveResult(targetType);
 						}
 					}
