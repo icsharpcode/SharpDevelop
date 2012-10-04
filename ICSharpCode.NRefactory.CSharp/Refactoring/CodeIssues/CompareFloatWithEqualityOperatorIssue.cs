@@ -80,12 +80,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			void AddIsNaNIssue(BinaryOperatorExpression binaryOperatorExpr, Expression argExpr, string floatType)
 			{
-				if (ctx.Resolve (argExpr).Type.ReflectionName != "System.Single")
+				if (!ctx.Resolve(argExpr).Type.IsKnownType(KnownTypeCode.Single))
 					floatType = "double";
-				AddIssue (binaryOperatorExpr, string.Format(ctx.TranslateString ("Use {0}.IsNan()"), floatType),
+				AddIssue(binaryOperatorExpr, string.Format(ctx.TranslateString ("Use {0}.IsNaN()"), floatType),
 					script => {
-						Expression expr = new InvocationExpression (new MemberReferenceExpression (
-							new TypeReferenceExpression (new PrimitiveType (floatType)), "IsNaN"), argExpr.Clone ());
+						Expression expr = new PrimitiveType(floatType).Invoke("IsNaN", argExpr.Clone());
 						if (binaryOperatorExpr.Operator == BinaryOperatorType.InEquality)
 							expr = new UnaryOperatorExpression (UnaryOperatorType.Not, expr);
 						script.Replace (binaryOperatorExpr, expr);
@@ -109,13 +108,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					AddIssue (binaryOperatorExpression, ctx.TranslateString ("Compare a difference with EPSILON"),
 						script => {
 							// Math.Abs(diff) op EPSILON
+							var builder = ctx.CreateTypeSytemAstBuilder(binaryOperatorExpression);
 							var diff = new BinaryOperatorExpression (binaryOperatorExpression.Left.Clone (),
 								BinaryOperatorType.Subtract, binaryOperatorExpression.Right.Clone ());
-							var abs = new InvocationExpression (
-								new MemberReferenceExpression (
-									new TypeReferenceExpression (new SimpleType ("System.Math")),
-									"Abs"),
-								diff);
+							var abs = builder.ConvertType(new TopLevelTypeName("System", "Math")).Invoke("Abs", diff);
 							var op = binaryOperatorExpression.Operator == BinaryOperatorType.Equality ?
 								BinaryOperatorType.LessThan : BinaryOperatorType.GreaterThan;
 							var epsilon = new IdentifierExpression ("EPSILON");
