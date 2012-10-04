@@ -242,6 +242,8 @@ namespace ICSharpCode.Core
 							return array;
 						} catch (XamlObjectWriterException ex) {
 							LoggingService.Warn(ex);
+						} catch (NotSupportedException ex) {
+							LoggingService.Warn(ex);
 						}
 					} else {
 						LoggingService.Warn("Properties.GetList(" + key + ") - this entry is not a list");
