@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ICSharpCode.NRefactory.CSharp.Refactoring.CodeActions
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	[ContextAction ("Convert '?:' to 'if'", Description = "Convert '?:' operator to 'if' statement.")]
 	public class ConvertConditionalToIfAction : ICodeActionProvider

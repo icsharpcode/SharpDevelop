@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CSharpFormattingTests.cs" />
+    <Compile Include="RegistrationTests.cs" />
     <Compile Include="MockTextEditor.cs" />
     <Compile Include="OverrideCompletionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

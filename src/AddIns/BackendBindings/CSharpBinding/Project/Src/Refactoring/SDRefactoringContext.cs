@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel.Design;
 using System.Threading;
+
 using CSharpBinding.Parser;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
@@ -36,6 +38,7 @@ namespace CSharpBinding.Refactoring
 			this.selectionStart = selectionStart;
 			this.selectionLength = selectionLength;
 			this.location = location;
+			InitializeServices();
 		}
 		
 		public SDRefactoringContext(ITextEditor editor, CSharpAstResolver resolver, TextLocation location)
@@ -48,6 +51,13 @@ namespace CSharpBinding.Refactoring
 			this.selectionStart = editor.SelectionStart;
 			this.selectionLength = editor.SelectionLength;
 			this.location = location;
+			InitializeServices();
+		}
+		
+		void InitializeServices()
+		{
+			this.Services = new ServiceContainer(SD.Services);
+			this.Services.AddService(typeof(NamingConventionService), new SDNamingConventionService());
 		}
 		
 		public override bool Supports(Version version)
