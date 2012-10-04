@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using CSharpBinding.Parser;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -47,6 +48,15 @@ namespace CSharpBinding.Refactoring
 						fixedIssueCount, remainingIssues.Count);
 					SearchResultsPad.Instance.ShowSearchResults(title, remainingIssues);
 					MessageService.ShowMessage(message, title);
+				} else if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Alt | ModifierKeys.Shift)) {
+					// Ctrl+Alt+Shift => run issue search on main thread,
+					// this helps debugging as exceptions don't get caught and passed from one thread to another
+					List<SearchResultMatch> issues = new List<SearchResultMatch>();
+					AsynchronousWaitDialog.RunInCancellableWaitDialog(
+						title, null,
+						monitor => SearchForIssues(fileNames, providers, f => issues.AddRange(f.Matches), monitor)
+					);
+					SearchResultsPad.Instance.ShowSearchResults(title, issues);
 				} else {
 					var monitor = SD.StatusBar.CreateProgressMonitor();
 					var observable = ReactiveExtensions.CreateObservable<SearchedFile>(
@@ -92,23 +102,48 @@ namespace CSharpBinding.Refactoring
 		
 		Task SearchForIssuesAsync(List<FileName> fileNames, IEnumerable<IssueManager.IssueProvider> providers, Action<SearchedFile> callback, IProgressMonitor monitor)
 		{
-			return Task.Run(() => SearchForIssues(fileNames, providers, callback, monitor));
+			return Task.Run(() => SearchForIssuesParallel(fileNames, providers, callback, monitor));
 		}
 		
-		void SearchForIssues(List<FileName> fileNames, IEnumerable<IssueManager.IssueProvider> providers, Action<SearchedFile> callback, IProgressMonitor monitor)
+		void SearchForIssuesParallel(List<FileName> fileNames, IEnumerable<IssueManager.IssueProvider> providers, Action<SearchedFile> callback, IProgressMonitor monitor)
 		{
 			ParseableFileContentFinder contentFinder = new ParseableFileContentFinder();
 			int filesProcessed = 0;
 			Parallel.ForEach(
 				fileNames,
+				new ParallelOptions {
+					MaxDegreeOfParallelism = Environment.ProcessorCount,
+					CancellationToken = monitor.CancellationToken
+				},
 				delegate (FileName fileName) {
 					var fileContent = contentFinder.Create(fileName);
-					var resultForFile = SearchForIssues(fileName, fileContent, providers, monitor.CancellationToken);
-					if (resultForFile != null) {
-						callback(resultForFile);
+					try {
+						var resultForFile = SearchForIssues(fileName, fileContent, providers, monitor.CancellationToken);
+						if (resultForFile != null) {
+							callback(resultForFile);
+						}
+					} catch (OperationCanceledException) {
+						throw;
+					} catch (Exception ex) {
+						throw new ApplicationException("Exception while searching for issues in " + fileName, ex);
 					}
 					monitor.Progress = (double)Interlocked.Increment(ref filesProcessed) / fileNames.Count;
 				});
+		}
+		
+		void SearchForIssues(List<FileName> fileNames, IEnumerable<IssueManager.IssueProvider> providers, Action<SearchedFile> callback, IProgressMonitor monitor)
+		{
+			// used for debugging so that we can break in the crashing issue
+			ParseableFileContentFinder contentFinder = new ParseableFileContentFinder();
+			int filesProcessed = 0;
+			foreach (FileName fileName in fileNames) {
+				var fileContent = contentFinder.Create(fileName);
+				var resultForFile = SearchForIssues(fileName, fileContent, providers, monitor.CancellationToken);
+				if (resultForFile != null) {
+					callback(resultForFile);
+				}
+				monitor.Progress = (double)(++filesProcessed) / fileNames.Count;
+			}
 		}
 		
 		SearchedFile SearchForIssues(FileName fileName, ITextSource fileContent, IEnumerable<IssueManager.IssueProvider> providers, CancellationToken cancellationToken)
