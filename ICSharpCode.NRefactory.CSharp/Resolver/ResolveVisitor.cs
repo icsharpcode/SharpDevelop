@@ -3268,7 +3268,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			// Figure out the correct lookup mode:
-			NameLookupMode lookupMode = GetNameLookupMode(simpleType);
+			NameLookupMode lookupMode = simpleType.GetNameLookupMode();
 			
 			var typeArguments = ResolveTypeArguments(simpleType.TypeArguments);
 			Identifier identifier = simpleType.IdentifierToken;
@@ -3281,23 +3281,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return withSuffix;
 			}
 			return rr;
-		}
-		
-		NameLookupMode GetNameLookupMode(AstType type)
-		{
-			AstType outermostType = type;
-			while (outermostType.Parent is AstType)
-				outermostType = (AstType)outermostType.Parent;
-			
-			if (outermostType.Parent is UsingDeclaration || outermostType.Parent is UsingAliasDeclaration) {
-				return NameLookupMode.TypeInUsingDeclaration;
-			} else if (outermostType.Role == Roles.BaseType) {
-				// Use BaseTypeReference for a type's base type, and for a constraint on a type.
-				// Do not use it for a constraint on a method.
-				if (outermostType.Parent is TypeDeclaration || (outermostType.Parent is Constraint && outermostType.Parent.Parent is TypeDeclaration))
-					return NameLookupMode.BaseTypeReference;
-			}
-			return NameLookupMode.Type;
 		}
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitMemberType(MemberType memberType)
@@ -3316,7 +3299,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				target = Resolve(memberType.Target);
 			}
 			
-			NameLookupMode lookupMode = GetNameLookupMode(memberType);
+			NameLookupMode lookupMode = memberType.GetNameLookupMode();
 			var typeArguments = ResolveTypeArguments(memberType.TypeArguments);
 			Identifier identifier = memberType.MemberNameToken;
 			ResolveResult rr = resolver.ResolveMemberAccess(target, identifier.Name, typeArguments, lookupMode);

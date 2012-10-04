@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				base.VisitMemberType(memberType);
 				HandleMemberReference(
-					memberType, memberType.Target, memberType.MemberNameToken, memberType.TypeArguments, NameLookupMode.Type,
+					memberType, memberType.Target, memberType.MemberNameToken, memberType.TypeArguments, memberType.GetNameLookupMode(),
 					script => {
 						script.Replace(memberType, RefactoringAstHelper.RemoveTarget(memberType));
 					});
