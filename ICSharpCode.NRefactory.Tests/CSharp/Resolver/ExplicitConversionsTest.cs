@@ -491,6 +491,24 @@ class C {
 		}
 		
 		[Test]
+		public void ImplicitUserDefinedConversionFollowedByExplicitNumericConversion()
+		{
+			var rr = Resolve<ConversionResolveResult>(@"
+		struct T {
+			public static implicit operator float(T t) { return 0; }
+		}
+		class Test {
+			void Run(T t) {
+				int x = $(int)t$;
+			}
+		}");
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			// even though the user-defined conversion is implicit, the combined conversion is explicit
+			Assert.IsTrue(rr.Conversion.IsExplicit);
+		}
+		
+		[Test]
 		[Ignore("Not implemented yet.")]
 		public void BothDirectConversionAndBaseClassConversionAvailable()
 		{
