@@ -50,11 +50,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public object ConstantValue {
 			get {
-				using (var busyLock = BusyManager.Enter(this)) {
-					if (!busyLock.Success)
-						return null;
-					ResolveResult rr = this.constantValue;
-					if (rr == null) {
+				ResolveResult rr = this.constantValue;
+				if (rr == null) {
+					using (var busyLock = BusyManager.Enter(this)) {
+						if (!busyLock.Success)
+							return null;
+
 						IConstantValue unresolvedCV = ((IUnresolvedField)unresolved).ConstantValue;
 						if (unresolvedCV != null)
 							rr = unresolvedCV.Resolve(context);
@@ -62,8 +63,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 							rr = ErrorResolveResult.UnknownError;
 						this.constantValue = rr;
 					}
-					return rr.ConstantValue;
 				}
+				return rr.ConstantValue;
 			}
 		}
 	}
