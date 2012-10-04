@@ -906,13 +906,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			MethodGroupResolveResult rr = resolveResult as MethodGroupResolveResult;
 			if (rr == null)
 				return Conversion.None;
-			IMethod m = toType.GetDelegateInvokeMethod();
-			if (m == null)
+			IMethod invoke = toType.GetDelegateInvokeMethod();
+			if (invoke == null)
 				return Conversion.None;
 			
-			ResolveResult[] args = new ResolveResult[m.Parameters.Count];
+			ResolveResult[] args = new ResolveResult[invoke.Parameters.Count];
 			for (int i = 0; i < args.Length; i++) {
-				IParameter param = m.Parameters[i];
+				IParameter param = invoke.Parameters[i];
 				IType parameterType = param.Type;
 				if ((param.IsRef || param.IsOut) && parameterType.Kind == TypeKind.ByReference) {
 					parameterType = ((ByReferenceType)parameterType).ElementType;
@@ -926,10 +926,48 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				IMethod method = (IMethod)or.GetBestCandidateWithSubstitutedTypeArguments();
 				var thisRR = rr.TargetResult as ThisResolveResult;
 				bool isVirtual = method.IsOverridable && !(thisRR != null && thisRR.CausesNonVirtualInvocation);
-				return Conversion.MethodGroupConversion(method, isVirtual);
+				if (IsDelegateCompatible(method, invoke))
+					return Conversion.MethodGroupConversion(method, isVirtual);
+				else
+					return Conversion.InvalidMethodGroupConversion(method, isVirtual);
 			} else {
 				return Conversion.None;
 			}
+		}
+		
+		/// <summary>
+		/// Gets whether a method <paramref name="m"/> is compatible with a delegate type.
+		/// §15.2 Delegate compatibility
+		/// </summary>
+		/// <param name="m">The method to test for compatibility</param>
+		/// <param name="invoke">The invoke method of the delegate</param>
+		public bool IsDelegateCompatible(IMethod m, IMethod invoke)
+		{
+			if (m == null)
+				throw new ArgumentNullException("m");
+			if (invoke == null)
+				throw new ArgumentNullException("invoke");
+			if (m.Parameters.Count != invoke.Parameters.Count)
+				return false;
+			for (int i = 0; i < m.Parameters.Count; i++) {
+				var pm = m.Parameters[i];
+				var pd = invoke.Parameters[i];
+				// ret/out must match
+				if (pm.IsRef != pd.IsRef || pm.IsOut != pd.IsOut)
+					return false;
+				if (pm.IsRef || pm.IsOut) {
+					// ref/out parameters must have same types
+					if (!pm.Type.Equals(pd.Type))
+						return false;
+				} else {
+					// non-ref/out parameters must have an identity or reference conversion from pd to pm
+					if (!IdentityConversion(pd.Type, pm.Type) && !IsImplicitReferenceConversion(pd.Type, pm.Type))
+						return false;
+				}
+			}
+			// check return type compatibility
+			return IdentityConversion(m.ReturnType, invoke.ReturnType)
+				|| IsImplicitReferenceConversion(m.ReturnType, invoke.ReturnType);
 		}
 		#endregion
 		

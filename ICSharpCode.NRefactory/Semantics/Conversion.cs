@@ -92,7 +92,14 @@ namespace ICSharpCode.NRefactory.Semantics
 		{
 			if (chosenMethod == null)
 				throw new ArgumentNullException("chosenMethod");
-			return new MethodGroupConv(chosenMethod, isVirtualMethodLookup);
+			return new MethodGroupConv(chosenMethod, isVirtualMethodLookup, isValid: true);
+		}
+		
+		public static Conversion InvalidMethodGroupConversion(IMethod chosenMethod, bool isVirtualMethodLookup)
+		{
+			if (chosenMethod == null)
+				throw new ArgumentNullException("chosenMethod");
+			return new MethodGroupConv(chosenMethod, isVirtualMethodLookup, isValid: false);
 		}
 		#endregion
 		
@@ -311,11 +318,17 @@ namespace ICSharpCode.NRefactory.Semantics
 		{
 			readonly IMethod method;
 			readonly bool isVirtualMethodLookup;
+			readonly bool isValid;
 			
-			public MethodGroupConv(IMethod method, bool isVirtualMethodLookup)
+			public MethodGroupConv(IMethod method, bool isVirtualMethodLookup, bool isValid)
 			{
 				this.method = method;
 				this.isVirtualMethodLookup = isVirtualMethodLookup;
+				this.isValid = isValid;
+			}
+			
+			public override bool IsValid {
+				get { return isValid; }
 			}
 			
 			public override bool IsImplicit {
