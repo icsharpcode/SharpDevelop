@@ -63,8 +63,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				var firstParam = parameters.FirstOrNullObject() as PrimitiveExpression;
 				var secondParam = parameters.LastOrNullObject() as PrimitiveExpression;
-				if (firstParam == null || firstParam.Value.GetType() != typeof(string) ||
-					secondParam == null || firstParam.Value.GetType() != typeof(string))
+				if (firstParam == null || !(firstParam.Value is string) ||
+					secondParam == null || !(secondParam.Value is string))
 					return;
 				var type = context.Resolve(objectCreateExpression.Type) as TypeResolveResult;
 				if (type == null)
