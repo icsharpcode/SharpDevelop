@@ -87,12 +87,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (obj == null)
 				return null;
 			
+			// ensure objects are frozen when we put them into the dictionary
+			// note that Freeze may change the hash code of the object
+			FreezableHelper.Freeze(obj);
+
 			ISupportsInterning output;
 			if (supportsInternDict.TryGetValue(obj, out output)) {
 				return output;
 			} else {
-				// ensure objects are frozen when we put them into the dictionary
-				FreezableHelper.Freeze(obj);
 				supportsInternDict.Add(obj, obj);
 				return obj;
 			}

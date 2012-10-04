@@ -794,6 +794,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition type = GetTypeDefinition(typeof(ParamsAttribute));
 			var arr = (ArrayCreateResolveResult)type.Attributes.Single().PositionalArguments.Single();
 			Assert.AreEqual(5, arr.InitializerElements.Count);
+			Assert.AreEqual(1, arr.SizeArguments.Count);
+			Assert.AreEqual(5, arr.SizeArguments[0].ConstantValue);
 			return arr.InitializerElements[index];
 		}
 		

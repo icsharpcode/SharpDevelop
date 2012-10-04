@@ -1809,6 +1809,26 @@ namespace Mono.CSharp
 			return x;
 		}
 
+		int get_char_withwithoutskippingwindowseol ()
+		{
+			int x;
+			if (putback_char != -1) {
+				x = putback_char;
+				putback_char = -1;
+			} else {
+				x = reader.Read ();
+			}
+			
+			if (x == '\r') {
+
+			} else if (x == '\n') {
+				advance_line ();
+			} else {
+				col++;
+			}
+			return x;
+		}
+
 		void advance_line ()
 		{
 			line++;
@@ -2901,7 +2921,7 @@ namespace Mono.CSharp
 #endif
 
 			while (true){
-				c = get_char ();
+				c = get_char_withwithoutskippingwindowseol ();
 				if (c == '"') {
 					if (quoted && peek_char () == '"') {
 						if (pos == value_builder.Length)

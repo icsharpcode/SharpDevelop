@@ -58,9 +58,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression)
 			{
-				var type = context.Resolve(objectCreateExpression.Type) as TypeResolveResult;
-				if (type == null)
-					return;
 				var parameters = objectCreateExpression.Arguments;
 				if (parameters.Count != 2)
 					return;
@@ -68,6 +65,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var secondParam = parameters.LastOrNullObject() as PrimitiveExpression;
 				if (firstParam == null || firstParam.Value.GetType() != typeof(string) ||
 					secondParam == null || firstParam.Value.GetType() != typeof(string))
+					return;
+				var type = context.Resolve(objectCreateExpression.Type) as TypeResolveResult;
+				if (type == null)
 					return;
 				var leftLength = (firstParam.Value as string).Length;
 				var rightLength = (secondParam.Value as string).Length;

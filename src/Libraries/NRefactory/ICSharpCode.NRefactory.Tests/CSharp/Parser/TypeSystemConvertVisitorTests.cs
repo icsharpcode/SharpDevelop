@@ -36,6 +36,16 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		{
 			compilation = ParseTestCase().CreateCompilation();
 		}
+
+		static IProjectContent CreateContent (IUnresolvedFile unresolvedFile)
+		{
+			return new CSharpProjectContent()
+				.AddOrUpdateFiles(unresolvedFile)
+				.AddAssemblyReferences(new[] {
+					CecilLoaderTests.Mscorlib
+				})
+				.SetAssemblyName(typeof(TypeSystemTests).Assembly.GetName().Name);
+		}
 		
 		internal static IProjectContent ParseTestCase()
 		{
@@ -47,11 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 				syntaxTree = parser.Parse(s, fileName);
 			}
 			
-			var unresolvedFile = syntaxTree.ToTypeSystem();
-			return new CSharpProjectContent()
-				.AddOrUpdateFiles(unresolvedFile)
-				.AddAssemblyReferences(new[] { CecilLoaderTests.Mscorlib })
-				.SetAssemblyName(typeof(TypeSystemTests).Assembly.GetName().Name);
+			return CreateContent(syntaxTree.ToTypeSystem());
 		}
 		
 		[Test]
@@ -79,6 +85,19 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			var t = compilation.FindType(typeof(PartialClass));
 			var method = t.GetMethods(m => m.Name == "PartialMethodWithoutImplementation").Single();
 			Assert.AreEqual(1, method.Parts.Count);
+		}
+
+		[Test]
+		public void CyclicConstants()
+		{
+			var syntaxTree = SyntaxTree.Parse ("class Test { const int foo = foo; }");
+			syntaxTree.FileName = "a.cs";
+			var content = CreateContent (syntaxTree.ToTypeSystem());
+			var testType = content.CreateCompilation ().MainAssembly.GetTypeDefinition ("", "Test");
+			Assert.NotNull (testType);
+			var field = testType.Fields.First ();
+			Assert.IsTrue (field.IsConst);
+			Assert.IsNull (field.ConstantValue);
 		}
 	}
 	

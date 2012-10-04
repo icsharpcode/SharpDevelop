@@ -211,5 +211,63 @@ class Calls {
 			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 9 && r is InvocationExpression));
 		}
 		#endregion
+
+		#region Await
+		const string awaitTest = @"using System;
+class MyAwaiter {
+	public bool IsCompleted { get { return false; } }
+	public void OnCompleted(Action continuation) {}
+	public int GetResult() { return 0; }
+}
+class MyAwaitable {
+	public MyAwaiter GetAwaiter() { return null; }
+}
+public class C {
+	public async void M() {
+		MyAwaitable x = null;
+		int i = await x;
+	}
+}";
+
+		[Test]
+		public void GetAwaiterReferenceInAwaitExpressionIsFound() {
+			Init(awaitTest);
+			var test = compilation.MainAssembly.TopLevelTypeDefinitions.Single(t => t.Name == "MyAwaitable");
+			var method = test.Methods.Single(m => m.Name == "GetAwaiter");
+			var actual = FindReferences(method).ToList();
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 8 && r is MethodDeclaration));
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 13 && r is UnaryOperatorExpression));
+		}
+
+		[Test]
+		public void GetResultReferenceInAwaitExpressionIsFound() {
+			Init(awaitTest);
+			var test = compilation.MainAssembly.TopLevelTypeDefinitions.Single(t => t.Name == "MyAwaiter");
+			var method = test.Methods.Single(m => m.Name == "GetResult");
+			var actual = FindReferences(method).ToList();
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 5 && r is MethodDeclaration));
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 13 && r is UnaryOperatorExpression));
+		}
+
+		[Test]
+		public void OnCompletedReferenceInAwaitExpressionIsFound() {
+			Init(awaitTest);
+			var test = compilation.MainAssembly.TopLevelTypeDefinitions.Single(t => t.Name == "MyAwaiter");
+			var method = test.Methods.Single(m => m.Name == "OnCompleted");
+			var actual = FindReferences(method).ToList();
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 4 && r is MethodDeclaration));
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 13 && r is UnaryOperatorExpression));
+		}
+
+		[Test]
+		public void IsCompletedReferenceInAwaitExpressionIsFound() {
+			Init(awaitTest);
+			var test = compilation.MainAssembly.TopLevelTypeDefinitions.Single(t => t.Name == "MyAwaiter");
+			var property = test.Properties.Single(m => m.Name == "IsCompleted");
+			var actual = FindReferences(property).ToList();
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 3 && r is PropertyDeclaration));
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 13 && r is UnaryOperatorExpression));
+		}
+		#endregion
 	}
 }

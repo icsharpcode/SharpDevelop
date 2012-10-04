@@ -86,11 +86,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void InlineCommentAtEndOfCondition()
 		{
 			IfElseStatement condition = new IfElseStatement();
-			condition.AddChild(new CSharpTokenNode(new TextLocation(1, 1)), IfElseStatement.IfKeywordRole);
-			condition.AddChild(new CSharpTokenNode(new TextLocation(1, 4)), Roles.LPar);
+			condition.AddChild(new CSharpTokenNode(new TextLocation(1, 1), IfElseStatement.IfKeywordRole), IfElseStatement.IfKeywordRole);
+			condition.AddChild(new CSharpTokenNode(new TextLocation(1, 4), Roles.LPar), Roles.LPar);
 			condition.AddChild(new IdentifierExpression("cond", new TextLocation(1, 5)), IfElseStatement.ConditionRole);
 			condition.AddChild(new Comment(CommentType.MultiLine, new TextLocation(1, 9), new TextLocation(1, 14)) { Content = "a" }, Roles.Comment);
-			condition.AddChild(new CSharpTokenNode(new TextLocation(1, 14)), Roles.RPar);
+			condition.AddChild(new CSharpTokenNode(new TextLocation(1, 14), Roles.RPar), Roles.RPar);
 			condition.AddChild(new ReturnStatement(), IfElseStatement.TrueRole);
 			
 			AssertOutput("if (cond/*a*/)\n$return;\n", condition);
@@ -137,6 +137,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			AssertOutput("switch (i) {\ncase 1:\ncase 2:\n$A ();\n$B ();\n$break;\n" +
 			             "case 3: {\n$int a = 3;\n$return a;\n}\n" +
 			             "default:\n$break;\n}\n", type);
+		}
+		
+		[Test]
+		public void ZeroLiterals()
+		{
+			AssertOutput("0.0", new PrimitiveExpression(0.0));
+			AssertOutput("-0.0", new PrimitiveExpression(-0.0));
+			AssertOutput("0f", new PrimitiveExpression(0f));
+			AssertOutput("-0f", new PrimitiveExpression(-0f));
 		}
 	}
 }

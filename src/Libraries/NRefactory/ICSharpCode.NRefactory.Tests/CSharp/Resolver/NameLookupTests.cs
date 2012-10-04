@@ -1065,5 +1065,33 @@ namespace foo {
 			var method = a.Methods.Single(m => m.Name == "M");
 			Assert.AreEqual("A.B", method.TypeParameters.Single().DirectBaseTypes.Single().FullName);
 		}
+
+		[Test]
+		public void EmptyNamespaces()
+		{
+			// should maybe a typesystem test - but empty namespaces don't make sense in cecil.
+			string program = @"namespace A.B.C.D
+{
+
+}
+
+namespace Test
+{
+    using $A.B.C.D$;
+
+    public class C
+    {
+        public static void Main ()
+        {
+
+        }
+    }
+}
+
+	";
+			var nrr = Resolve<NamespaceResolveResult>(program);
+			Assert.AreEqual("A.B.C.D", nrr.NamespaceName);
+		}
+
 	}
 }

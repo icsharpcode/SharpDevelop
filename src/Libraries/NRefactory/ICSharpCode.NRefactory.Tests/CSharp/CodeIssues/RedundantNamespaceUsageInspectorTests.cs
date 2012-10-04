@@ -81,5 +81,15 @@ class Foo
 	}
 }");
 		}
+		
+		[Test]
+		public void UsingAlias()
+		{
+			var input = @"using IEnumerable = System.Collections.IEnumerable;";
+
+			TestRefactoringContext context;
+			var issues = GetIssues (new RedundantNamespaceUsageIssue (), input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
 	}
 }

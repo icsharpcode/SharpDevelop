@@ -480,10 +480,11 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 			for (int i = 0; i < elements.Length; i++) {
 				elements[i] = arrayElements[i].Resolve(resolver);
 			}
+			int[] sizeArguments = { elements.Length };
 			if (elementType != null) {
-				return resolver.ResolveArrayCreation(elementType.Resolve(resolver.CurrentTypeResolveContext), 1, null, elements);
+				return resolver.ResolveArrayCreation(elementType.Resolve(resolver.CurrentTypeResolveContext), sizeArguments, elements);
 			} else {
-				return resolver.ResolveArrayCreation(null, 1, null, elements);
+				return resolver.ResolveArrayCreation(null, sizeArguments, elements);
 			}
 		}
 	}

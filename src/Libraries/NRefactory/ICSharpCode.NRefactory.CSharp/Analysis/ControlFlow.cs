@@ -408,10 +408,15 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				bool? cond = ifElseStatement.Condition.IsNull ? true : builder.EvaluateCondition(ifElseStatement.Condition);
 				if (ifElseStatement.TrueStatement.IsNull)
 					return data;
-				ControlFlowNode trueBegin = builder.CreateStartNode(ifElseStatement.TrueStatement);
-				if (cond != false)
+				ControlFlowNode trueBegin;
+				if (ifElseStatement.TrueStatement.IsNull) {
+					trueBegin = null;
+				} else {
+					trueBegin = builder.CreateStartNode(ifElseStatement.TrueStatement);
+				}
+				if (cond != false && trueBegin != null)
 					Connect(data, trueBegin, ControlFlowEdgeType.ConditionTrue);
-				ControlFlowNode trueEnd = ifElseStatement.TrueStatement.AcceptVisitor(this, trueBegin);
+				ControlFlowNode trueEnd = trueBegin != null ? ifElseStatement.TrueStatement.AcceptVisitor(this, trueBegin) : null;
 				ControlFlowNode falseEnd;
 				if (ifElseStatement.FalseStatement.IsNull) {
 					falseEnd = null;

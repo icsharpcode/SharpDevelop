@@ -360,8 +360,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region ResolveUnaryOperator method
 		public ResolveResult ResolveUnaryOperator(UnaryOperatorType op, ResolveResult expression)
 		{
-			if (expression.Type.Kind == TypeKind.Dynamic)
-				return UnaryOperatorResolveResult(SpecialType.Dynamic, op, expression);
+			if (expression.Type.Kind == TypeKind.Dynamic) {
+				if (op == UnaryOperatorType.Await) {
+					return new AwaitResolveResult(SpecialType.Dynamic, new DynamicInvocationResolveResult(new DynamicMemberResolveResult(expression, "GetAwaiter"), DynamicInvocationType.Invocation, EmptyList<ResolveResult>.Instance), SpecialType.Dynamic, null, null, null);
+				}
+				else {
+					return UnaryOperatorResolveResult(SpecialType.Dynamic, op, expression);
+				}
+			}
 			
 			// C# 4.0 spec: §7.3.3 Unary operator overload resolution
 			string overloadableOperatorName = GetOverloadableOperatorName(op);
@@ -375,17 +381,37 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							return ErrorResult;
 					case UnaryOperatorType.AddressOf:
 						return UnaryOperatorResolveResult(new PointerType(expression.Type), op, expression);
-					case UnaryOperatorType.Await:
+					case UnaryOperatorType.Await: {
 						ResolveResult getAwaiterMethodGroup = ResolveMemberAccess(expression, "GetAwaiter", EmptyList<IType>.Instance, NameLookupMode.InvocationTarget);
 						ResolveResult getAwaiterInvocation = ResolveInvocation(getAwaiterMethodGroup, new ResolveResult[0]);
-						var getResultMethodGroup = CreateMemberLookup().Lookup(getAwaiterInvocation, "GetResult", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
+
+						var lookup = CreateMemberLookup();
+						IMethod getResultMethod;
+						IType awaitResultType;
+						var getResultMethodGroup = lookup.Lookup(getAwaiterInvocation, "GetResult", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
 						if (getResultMethodGroup != null) {
-							var or = getResultMethodGroup.PerformOverloadResolution(compilation, new ResolveResult[0], allowExtensionMethods: false, conversions: conversions);
-							IType awaitResultType = or.GetBestCandidateWithSubstitutedTypeArguments().ReturnType;
-							return UnaryOperatorResolveResult(awaitResultType, UnaryOperatorType.Await, expression);
-						} else {
-							return UnaryOperatorResolveResult(SpecialType.UnknownType, UnaryOperatorType.Await, expression);
+							var getResultOR = getResultMethodGroup.PerformOverloadResolution(compilation, new ResolveResult[0], allowExtensionMethods: false, conversions: conversions);
+							getResultMethod = getResultOR.FoundApplicableCandidate ? getResultOR.GetBestCandidateWithSubstitutedTypeArguments() as IMethod : null;
+							awaitResultType = getResultMethod != null ? getResultMethod.ReturnType : SpecialType.UnknownType;
 						}
+						else {
+							getResultMethod = null;
+							awaitResultType = SpecialType.UnknownType;
+						}
+
+						var isCompletedRR = lookup.Lookup(getAwaiterInvocation, "IsCompleted", EmptyList<IType>.Instance, false);
+						var isCompletedProperty = (isCompletedRR is MemberResolveResult ? ((MemberResolveResult)isCompletedRR).Member as IProperty : null);
+
+						var onCompletedMethodGroup = lookup.Lookup(getAwaiterInvocation, "OnCompleted", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
+						IMethod onCompletedMethod = null;
+						if (onCompletedMethodGroup != null) {
+							var onCompletedOR = onCompletedMethodGroup.PerformOverloadResolution(compilation, new ResolveResult[] { new TypeResolveResult(compilation.FindType(new FullTypeName("System.Action")))  }, allowExtensionMethods: false, conversions: conversions);
+							onCompletedMethod = (onCompletedOR.FoundApplicableCandidate ? onCompletedOR.GetBestCandidateWithSubstitutedTypeArguments() as IMethod : null);
+						}
+
+						return new AwaitResolveResult(awaitResultType, getAwaiterInvocation, getAwaiterInvocation.Type, isCompletedProperty, onCompletedMethod, getResultMethod);
+					}
+
 					default:
 						throw new ArgumentException("Invalid value for UnaryOperatorType", "op");
 				}
@@ -1279,6 +1305,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						return new ConstantResolveResult(targetType, CSharpPrimitiveCast(code, expression.ConstantValue));
 					} catch (OverflowException) {
 						return new ErrorResolveResult(targetType);
+					} catch (InvalidCastException) {
+						return new ErrorResolveResult(targetType);
 					}
 				} else if (code == TypeCode.String) {
 					if (expression.ConstantValue == null || expression.ConstantValue is string)
@@ -1291,6 +1319,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						try {
 							return new ConstantResolveResult(targetType, CSharpPrimitiveCast(code, expression.ConstantValue));
 						} catch (OverflowException) {
+							return new ErrorResolveResult(targetType);
+						} catch (InvalidCastException) {
 							return new ErrorResolveResult(targetType);
 						}
 					}
@@ -2433,21 +2463,48 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// The array element type.
 		/// Pass null to resolve an implicitly-typed array creation.
 		/// </param>
-		/// <param name="dimensions">
-		/// The number of array dimensions.
+		/// <param name="sizeArguments">
+		/// The size arguments.
+		/// The length of this array will be used as the number of dimensions of the array type.
+		/// Negative values will be treated as errors.
+		/// </param>
+		/// <param name="initializerElements">
+		/// The initializer elements. May be null if no array initializer was specified.
+		/// The resolver may mutate this array to wrap elements in <see cref="ConversionResolveResult"/>s!
+		/// </param>
+		public ArrayCreateResolveResult ResolveArrayCreation(IType elementType, int[] sizeArguments, ResolveResult[] initializerElements = null)
+		{
+			ResolveResult[] sizeArgResults = new ResolveResult[sizeArguments.Length];
+			for (int i = 0; i < sizeArguments.Length; i++) {
+				if (sizeArguments[i] < 0)
+					sizeArgResults[i] = ErrorResolveResult.UnknownError;
+				else
+					sizeArgResults[i] = new ConstantResolveResult(compilation.FindType(KnownTypeCode.Int32), sizeArguments[i]);
+			}
+			return ResolveArrayCreation(elementType, sizeArgResults, initializerElements);
+		}
+		
+		/// <summary>
+		/// Resolves an array creation.
+		/// </summary>
+		/// <param name="elementType">
+		/// The array element type.
+		/// Pass null to resolve an implicitly-typed array creation.
 		/// </param>
 		/// <param name="sizeArguments">
-		/// The size arguments. May be null if no explicit size was given.
+		/// The size arguments.
+		/// The length of this array will be used as the number of dimensions of the array type.
 		/// The resolver may mutate this array to wrap elements in <see cref="ConversionResolveResult"/>s!
 		/// </param>
 		/// <param name="initializerElements">
 		/// The initializer elements. May be null if no array initializer was specified.
 		/// The resolver may mutate this array to wrap elements in <see cref="ConversionResolveResult"/>s!
 		/// </param>
-		public ArrayCreateResolveResult ResolveArrayCreation(IType elementType, int dimensions = 1, ResolveResult[] sizeArguments = null, ResolveResult[] initializerElements = null)
+		public ArrayCreateResolveResult ResolveArrayCreation(IType elementType, ResolveResult[] sizeArguments, ResolveResult[] initializerElements = null)
 		{
-			if (sizeArguments != null && dimensions != Math.Max(1, sizeArguments.Length))
-				throw new ArgumentException("dimensions and sizeArguments.Length don't match");
+			int dimensions = sizeArguments.Length;
+			if (dimensions == 0)
+				throw new ArgumentException("sizeArguments.Length must not be 0");
 			if (elementType == null) {
 				TypeInference typeInference = new TypeInference(compilation, conversions);
 				bool success;
@@ -2455,8 +2512,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			IType arrayType = new ArrayType(compilation, elementType, dimensions);
 			
-			if (sizeArguments != null)
-				AdjustArrayAccessArguments(sizeArguments);
+			AdjustArrayAccessArguments(sizeArguments);
 			
 			if (initializerElements != null) {
 				for (int i = 0; i < initializerElements.Length; i++) {

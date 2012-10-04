@@ -36,6 +36,7 @@ using ICSharpCode.NRefactory.Editor;
 using System.ComponentModel.Design;
 using ICSharpCode.NRefactory.CSharp.Analysis;
 using ICSharpCode.NRefactory.Utils;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -87,6 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			this.resolver = resolver;
 			this.cancellationToken = cancellationToken;
+			this.referenceFinder = new LocalReferenceFinder(resolver);
 		}
 
 
@@ -161,6 +163,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			return new CompositeFormatStringParser().Parse(source);
 		}
+
+		LocalReferenceFinder referenceFinder;
+
+		public IList<ReferenceResult> FindReferences(AstNode rootNode, IVariable variable)
+		{
+			return referenceFinder.FindReferences(rootNode, variable);
+		}
+
 		#endregion
 
 		/// <summary>

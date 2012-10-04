@@ -19,6 +19,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -602,5 +603,233 @@ class Test {
 			Assert.AreEqual(C.ImplicitReferenceConversion, GetConversion(program));
 		}
 		
+		[Test]
+		public void MethodGroupConversion_Void()
+		{
+			string program = @"using System;
+delegate void D();
+class Test {
+	D d = $M$;
+	public static void M() {}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+			Assert.IsNotNull(c.Method);
+		}
+		
+		[Test]
+		public void MethodGroupConversion_MatchingSignature()
+		{
+			string program = @"using System;
+delegate object D(int argument);
+class Test {
+	D d = $M$;
+	public static object M(int argument) {}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+		}
+		
+		[Test]
+		public void MethodGroupConversion_InvalidReturnType()
+		{
+			string program = @"using System;
+delegate object D(int argument);
+class Test {
+	D d = $M$;
+	public static int M(int argument) {}
+}";
+			var c = GetConversion(program);
+			Assert.IsFalse(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+		}
+		
+		[Test]
+		public void MethodGroupConversion_CovariantReturnType()
+		{
+			string program = @"using System;
+delegate object D(int argument);
+class Test {
+	D d = $M$;
+	public static string M(int argument) {}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+		}
+		
+		[Test]
+		public void MethodGroupConversion_RefArgumentTypesEqual()
+		{
+			string program = @"using System;
+delegate void D(ref object o);
+class Test {
+	D d = $M$;
+	public static void M(ref object o) {}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+		}
+		
+		[Test]
+		public void MethodGroupConversion_RefArgumentObjectVsDynamic()
+		{
+			string program = @"using System;
+delegate void D(ref object o);
+class Test {
+	D d = $M$;
+	public static void M(ref dynamic o) {}
+}";
+			var c = GetConversion(program);
+			Assert.IsFalse(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+		}
+		
+		[Test]
+		public void MethodGroupConversion_RefVsOut()
+		{
+			string program = @"using System;
+delegate void D(ref object o);
+class Test {
+	D d = $M$;
+	public static void M(out object o) {}
+}";
+			var c = GetConversion(program);
+			Assert.IsFalse(c.IsValid);
+		}
+		
+		[Test]
+		public void MethodGroupConversion_RefVsNormal()
+		{
+			string program = @"using System;
+delegate void D(ref object o);
+class Test {
+	D d = $M$;
+	public static void M(object o) {}
+}";
+			var c = GetConversion(program);
+			Assert.IsFalse(c.IsValid);
+		}
+		
+		[Test]
+		public void MethodGroupConversion_NormalVsOut()
+		{
+			string program = @"using System;
+delegate void D(object o);
+class Test {
+	D d = $M$;
+	public static void M(out object o) {}
+}";
+			var c = GetConversion(program);
+			Assert.IsFalse(c.IsValid);
+		}
+		
+		[Test]
+		public void MethodGroupConversion_MatchingNormalParameter()
+		{
+			string program = @"using System;
+delegate void D(object o);
+class Test {
+	D d = $M$;
+	public static void M(object o) {}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+		}
+		
+		[Test]
+		public void MethodGroupConversion_IdentityConversion()
+		{
+			string program = @"using System;
+delegate void D(object o);
+class Test {
+	D d = $M$;
+	public static void M(dynamic o) {}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+		}
+		
+		[Test]
+		public void MethodGroupConversion_Contravariance()
+		{
+			string program = @"using System;
+delegate void D(string o);
+class Test {
+	D d = $M$;
+	public static void M(object o) {}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+			
+		}
+		
+		[Test, Ignore("Not sure if this conversion should be valid or not... NR and mcs both accept it as valid, csc treats it as invalid")]
+		public void MethodGroupConversion_NoContravarianceDynamic()
+		{
+			string program = @"using System;
+delegate void D(string o);
+class Test {
+	D d = $M$;
+	public static void M(dynamic o) {}
+}";
+			var c = GetConversion(program);
+			//Assert.IsFrue(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+		}
+		
+		[Test]
+		public void MethodGroupConversion_ExactMatchIsBetter()
+		{
+			string program = @"using System;
+class Test {
+	delegate void D(string a);
+	D d = $M$;
+	static void M(object x) {}
+	static void M(string x = null) {}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+			Assert.AreEqual("System.String", c.Method.Parameters.Single().Type.FullName);
+		}
+		
+		[Test]
+		public void MethodGroupConversion_CannotLeaveOutOptionalParameters()
+		{
+			string program = @"using System;
+class Test {
+	delegate void D(string a);
+	D d = $M$;
+	static void M(object x) {}
+	static void M(string x, string y = null) {}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+			Assert.AreEqual("System.Object", c.Method.Parameters.Single().Type.FullName);
+		}
+		
+		[Test]
+		public void MethodGroupConversion_CannotUseExpandedParams()
+		{
+			string program = @"using System;
+class Test {
+	delegate void D(string a);
+	D d = $M$;
+	static void M(object x) {}
+	static void M(params string[] x) {}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+			Assert.AreEqual("System.Object", c.Method.Parameters.Single().Type.FullName);
+		}
 	}
 }

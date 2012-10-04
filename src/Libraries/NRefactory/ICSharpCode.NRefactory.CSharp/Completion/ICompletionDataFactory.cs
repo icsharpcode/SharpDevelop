@@ -35,7 +35,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		ICompletionData CreateEntityCompletionData (IEntity entity);
 		ICompletionData CreateEntityCompletionData (IEntity entity, string text);
 		
-		ICompletionData CreateTypeCompletionData (IType type, string shortType);
+		ICompletionData CreateTypeCompletionData (IType type, bool showFullName, bool isInAttributeContext);
+
+		/// <summary>
+		/// Creates the member completion data. 
+		/// Form: Type.Member
+		/// Used for generating enum members Foo.A, Foo.B where the enum 'Foo' is valid.
+		/// </summary>
+		ICompletionData CreateMemberCompletionData(IType type, IEntity member);
 
 		/// <summary>
 		/// Creates a generic completion data.

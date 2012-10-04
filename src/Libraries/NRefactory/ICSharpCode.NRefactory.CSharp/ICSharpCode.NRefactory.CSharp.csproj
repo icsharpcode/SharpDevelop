@@ -324,7 +324,6 @@
     <Compile Include="Refactoring\CodeIssues\VariableNotUsedIssues\LocalVariableNotUsedIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\VariableNotUsedIssues\ParameterNotUsedIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\TypeParameterNotUsedIssue.cs" />
-    <Compile Include="Refactoring\CodeIssues\VariableNotUsedIssues\VariableNotUsedIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\VariableOnlyAssignedIssues\ParameterOnlyAssignedIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\VariableOnlyAssignedIssues\VariableOnlyAssignedIssue.cs" />
     <Compile Include="Refactoring\DocumentScript.cs" />
@@ -338,6 +337,7 @@
     <Compile Include="Refactoring\TypeSystemAstBuilder.cs" />
     <Compile Include="Refactoring\VariableReferenceGraph.cs" />
     <Compile Include="Resolver\CompositeResolveVisitorNavigator.cs" />
+    <Compile Include="Resolver\AwaitResolveResult.cs" />
     <Compile Include="Resolver\DynamicInvocationResolveResult.cs" />
     <Compile Include="Resolver\DynamicMemberResolveResult.cs" />
     <Compile Include="Resolver\CSharpConversions.cs" />
@@ -503,6 +503,8 @@
     <Compile Include="Refactoring\CodeIssues\ParameterCanBeDemotedIssue\SupportsIndexingCriterion.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantWhereWithPredicateIssue.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertToInitializer\AccessPath.cs" />
+    <Compile Include="Refactoring\LocalReferenceFinder.cs" />
+    <Compile Include="Refactoring\CodeActions\SortUsingsAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

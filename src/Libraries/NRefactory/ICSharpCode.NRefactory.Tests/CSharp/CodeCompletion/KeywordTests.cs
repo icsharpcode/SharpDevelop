@@ -145,9 +145,25 @@ class Test
 		public void GetSetKeywordTest ()
 		{
 			CodeCompletionBugTests.CombinedProviderTest (
-@"class Test
+				@"class Test
 {
 	public int MyProperty {
+		$g$
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("public"), "keyword 'public' not found.");
+				Assert.IsNotNull (provider.Find ("get"), "keyword 'get' not found.");
+				Assert.IsNotNull (provider.Find ("set"), "keyword 'set' not found.");
+			});
+		}
+
+		[Test()]
+		public void GetSetKeywordIndexerCaseTest ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (
+				@"class Test
+{
+	public int this[int i] {
 		$g$
 }
 ", provider => {

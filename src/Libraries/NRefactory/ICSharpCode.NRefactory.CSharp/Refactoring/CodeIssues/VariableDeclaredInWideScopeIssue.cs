@@ -210,6 +210,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						var binaryOperator = node as BinaryOperatorExpression;
 						if (binaryOperator != null) {
 							var resolveResult = context.Resolve(binaryOperator) as OperatorResolveResult;
+							if (resolveResult == null)
+								return false;
 							// Built-in operators are ok, user defined ones not so much
 							return resolveResult.UserDefinedOperatorMethod != null;
 						}
@@ -226,6 +228,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						var binaryOperator = node as BinaryOperatorExpression;
 						if (binaryOperator != null) {
 							var resolveResult = context.Resolve(binaryOperator) as OperatorResolveResult;
+							if (resolveResult == null)
+								return false;
 							return resolveResult.UserDefinedOperatorMethod != null;
 						}
 						return IsConflictingAssignment(node, identifiers, members, locals);

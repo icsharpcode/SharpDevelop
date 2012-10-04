@@ -46,9 +46,18 @@ namespace CSharpBinding.Completion
 			};
 		}
 		
-		ICompletionData ICompletionDataFactory.CreateTypeCompletionData(IType type, string shortType)
+		ICompletionData ICompletionDataFactory.CreateTypeCompletionData(IType type, bool showFullName, bool isInAttributeContext)
 		{
-			return new CompletionData(shortType);
+			var typeDef = type.GetDefinition();
+			if (typeDef != null)
+				return new EntityCompletionData(typeDef);
+			else
+				return new CompletionData(type.Name);
+		}
+		
+		ICompletionData ICompletionDataFactory.CreateMemberCompletionData(IType type, IEntity member)
+		{
+			return new CompletionData(type.Name + "." + member.Name);
 		}
 		
 		ICompletionData ICompletionDataFactory.CreateLiteralCompletionData(string title, string description, string insertText)

@@ -66,15 +66,24 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				                (invocation, args) => new InvocationExpression(invocation.Target.Clone(), args));
 			}
 
-			void CheckMethodCall<T> (T node, IEnumerable<Expression> arguments, Func<T, IEnumerable<Expression>, T> generateReplacement) where T: AstNode
+			void CheckMethodCall<T> (T node, IEnumerable<Expression> args, Func<T, IEnumerable<Expression>, T> generateReplacement) where T: AstNode
 			{
+				// The first two checks are unnecessary, but eliminates the majority of calls early,
+				// improving performance.
+				var arguments = args.ToArray();
+				if (arguments.Length == 0)
+					return;
+				var lastArg = arguments[arguments.Length - 1];
+				if (!(lastArg is PrimitiveExpression || lastArg is NamedArgumentExpression))
+					return;
+
 				var invocationResolveResult = ctx.Resolve(node) as CSharpInvocationResolveResult;
 				if (invocationResolveResult == null)
 					return;
 				
 				string actionMessage = ctx.TranslateString("Remove redundant arguments");
 				
-				var redundantArguments = GetRedundantArguments(arguments.ToArray(), invocationResolveResult);
+				var redundantArguments = GetRedundantArguments(arguments, invocationResolveResult);
 				var action = new CodeAction(actionMessage, script => {
 					var newArgumentList = arguments
 						.Where(arg => !redundantArguments.Contains(arg))
@@ -84,7 +93,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				});
 				var issueMessage = ctx.TranslateString("Argument is identical to the default value");
 				var lastPositionalArgument = redundantArguments.FirstOrDefault(expression => !(expression is NamedArgumentExpression));
-				bool hasNamedArguments = false;
 
 				foreach (var argument in redundantArguments) {
 					var localArgument = argument;
@@ -100,7 +108,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							var newInvocation = generateReplacement(node, newArgumentList);
 							script.Replace(node, newInvocation);
 						}));
-						hasNamedArguments = true;
 					} else {
 						var title = ctx.TranslateString("Remove this and the following positional arguments");
 						actions.Add(new CodeAction(title, script => {
@@ -116,10 +123,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 
-			IEnumerable<Expression> GetRedundantArguments(Expression[] arguments, CSharpInvocationResolveResult invocationResolveResult)
+			IList<Expression> GetRedundantArguments(Expression[] arguments, CSharpInvocationResolveResult invocationResolveResult)
 			{
 				var argumentToParameterMap = invocationResolveResult.GetArgumentToParameterMap();
 				var resolvedParameters = invocationResolveResult.Member.Parameters;
+
+				IList<Expression> redundantArguments = new List<Expression>();
 
 				for (int i = arguments.Length - 1; i >= 0; i--) {
 					var parameterIndex = argumentToParameterMap[i];
@@ -141,7 +150,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							// Stop here since any arguments before this one has to be there
 							// to enable the passing of this argument
 							break;
-						yield return argument;
+						redundantArguments.Add(argument);
 					} else if (argument is NamedArgumentExpression) {
 						var expression = ((NamedArgumentExpression)argument).Expression as PrimitiveExpression;
 						if (expression == null)
@@ -150,12 +159,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						if (expressionResolveResult == null || parameter.ConstantValue != expressionResolveResult.ConstantValue)
 							// continue, since there can still be more arguments that are redundant
 							continue;
-						yield return argument;
+						redundantArguments.Add(argument);
 					} else {
 						// This is a non-constant positional argument => no more redundancies are possible
 						break;
 					}
 				}
+				return redundantArguments;
 			}
 		}
 	}

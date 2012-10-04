@@ -112,7 +112,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		public override bool Equals(object obj)
 		{
-			if (obj.GetType() != typeof(AccessPath))
+			if (obj == null || obj.GetType() != typeof(AccessPath))
 				return false;
 
 			var other = (AccessPath)obj;

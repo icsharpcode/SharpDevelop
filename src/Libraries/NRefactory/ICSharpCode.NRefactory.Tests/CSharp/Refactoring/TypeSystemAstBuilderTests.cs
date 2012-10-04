@@ -32,13 +32,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[TestFixture]
 	public class TypeSystemAstBuilderTests
 	{
-		const string program = @"
+		const string mainProgram = @"
 using System;
 using System.Collections.Generic;
 using OtherNS;
 
 class Base<T> {
 	public class Nested<X> { }
+	public class Sibling { }
 }
 class Derived<T, S> : Base<S> { }
 
@@ -55,11 +56,22 @@ namespace OtherNS {
 		
 		IProjectContent pc;
 		ICompilation compilation;
-		ITypeDefinition baseClass, derivedClass, nestedClass, systemClass;
+		ITypeDefinition baseClass, derivedClass, nestedClass, siblingClass, systemClass;
 		CSharpUnresolvedFile unresolvedFile;
 		
 		[SetUp]
 		public void SetUp()
+		{
+			Init(mainProgram);
+			
+			baseClass = compilation.RootNamespace.GetTypeDefinition("Base", 1);
+			nestedClass = baseClass.NestedTypes.Single(t => t.Name == "Nested");
+			siblingClass = baseClass.NestedTypes.Single(t => t.Name == "Sibling");
+			derivedClass = compilation.RootNamespace.GetTypeDefinition("Derived", 2);
+			systemClass = compilation.RootNamespace.GetChildNamespace("NS").GetTypeDefinition("System", 0);
+		}
+		
+		void Init(string program)
 		{
 			pc = new CSharpProjectContent();
 			pc = pc.SetAssemblyName("MyAssembly");
@@ -68,11 +80,6 @@ namespace OtherNS {
 			pc = pc.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib });
 			
 			compilation = pc.CreateCompilation();
-			
-			baseClass = compilation.RootNamespace.GetTypeDefinition("Base", 1);
-			nestedClass = baseClass.NestedTypes.Single();
-			derivedClass = compilation.RootNamespace.GetTypeDefinition("Derived", 2);
-			systemClass = compilation.RootNamespace.GetChildNamespace("NS").GetTypeDefinition("System", 0);
 		}
 		
 		TypeSystemAstBuilder CreateBuilder(ITypeDefinition currentTypeDef = null)
@@ -92,20 +99,10 @@ namespace OtherNS {
 		}
 		
 		[Test]
-		public void PrimitiveVoid()
+		public void PrimitiveTypeNames()
 		{
 			Assert.AreEqual("void", TypeToString(compilation.FindType(KnownTypeCode.Void)));
-		}
-		
-		[Test]
-		public void PrimitiveInt()
-		{
 			Assert.AreEqual("int", TypeToString(compilation.FindType(KnownTypeCode.Int32)));
-		}
-		
-		[Test]
-		public void PrimitiveDecimal()
-		{
 			Assert.AreEqual("decimal", TypeToString(compilation.FindType(KnownTypeCode.Decimal)));
 		}
 		
@@ -151,18 +148,25 @@ namespace OtherNS {
 		}
 		
 		[Test]
+		public void AliasedTypeWrongTypeArgument()
+		{
+			var type = new ParameterizedType(compilation.FindType(typeof(List<>)).GetDefinition(), new[] { compilation.FindType(KnownTypeCode.Int32) });
+			Assert.AreEqual("List<int>", TypeToString(type, systemClass));
+		}
+		
+		[Test]
 		public void UnboundType()
 		{
 			Assert.AreEqual("Base<>", TypeToString(baseClass));
 			Assert.AreEqual("Base<>.Nested<>", TypeToString(nestedClass));
-		}		
+		}
 
 		[Test]
 		public void UnboundTypeConvertUnboundTypeArgumentsOption()
 		{
 			Assert.AreEqual("Base<T>", TypeToString(baseClass, null, builder => builder.ConvertUnboundTypeArguments = true));
 			Assert.AreEqual("Base<T>.Nested<X>", TypeToString(nestedClass, null, builder => builder.ConvertUnboundTypeArguments = true));
-		}		
+		}
 		
 		[Test]
 		public void NestedType()
@@ -196,6 +200,20 @@ namespace OtherNS {
 		}
 		
 		[Test]
+		public void SiblingClass()
+		{
+			var type = new ParameterizedType(siblingClass, new[] { baseClass.TypeParameters[0] });
+			Assert.AreEqual("Sibling", TypeToString(type, nestedClass));
+		}
+		
+		[Test]
+		public void GenericClass()
+		{
+			var type = new ParameterizedType(nestedClass, new[] { baseClass.TypeParameters[0], compilation.FindType(KnownTypeCode.String) });
+			Assert.AreEqual("Nested<string>", TypeToString(type, siblingClass));
+		}
+		
+		[Test]
 		public void MultidimensionalArray()
 		{
 			Assert.AreEqual("byte[][,]", TypeToString(compilation.FindType(typeof(byte[][,]))));
@@ -218,6 +236,38 @@ namespace OtherNS {
 		{
 			Assert.AreEqual("System.Array", TypeToString(compilation.FindType(typeof(Array))));
 			Assert.AreEqual("OtherNS.Array", TypeToString(compilation.MainAssembly.GetTypeDefinition(new TopLevelTypeName("OtherNS", "Array"))));
+		}
+		
+		[Test]
+		public void NestedFooCollidingWithProperty_SameType()
+		{
+			string program = @"class MainClass {
+        public enum Foo { Value1, Value2 }
+
+        public class Test {
+            Foo Foo { get; set; }
+        }
+    }";
+			Init(program);
+			var foo = compilation.MainAssembly.GetTypeDefinition(new FullTypeName("MainClass+Foo"));
+			var test = compilation.MainAssembly.GetTypeDefinition(new FullTypeName("MainClass+Test"));
+			Assert.AreEqual("Foo", TypeToString(foo, test));
+		}
+		
+		[Test]
+		public void NestedFooCollidingWithProperty_DifferentType()
+		{
+			string program = @"class MainClass {
+        public enum Foo { Value1, Value2 }
+
+        public class Test {
+            int Foo { get; set; }
+        }
+    }";
+			Init(program);
+			var foo = compilation.MainAssembly.GetTypeDefinition(new FullTypeName("MainClass+Foo"));
+			var test = compilation.MainAssembly.GetTypeDefinition(new FullTypeName("MainClass+Test"));
+			Assert.AreEqual("MainClass.Foo", TypeToString(foo, test));
 		}
 	}
 }

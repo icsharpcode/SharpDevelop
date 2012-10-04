@@ -36,19 +36,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   IssueMarker = IssueMarker.Underline)]
 	public class LocalVariableOnlyAssignedIssue : VariableOnlyAssignedIssue
 	{
-		internal override GatherVisitorBase GetGatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit)
+		internal override GatherVisitorBase GetGatherVisitor (BaseRefactoringContext ctx)
 		{
-			return new GatherVisitor (ctx, unit);
+			return new GatherVisitor (ctx);
 		}
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			SyntaxTree unit;
-
-			public GatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit)
+			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)
 			{
-				this.unit = unit;
 			}
 
 			public override void VisitVariableInitializer (VariableInitializer variableInitializer)
@@ -62,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var resolveResult = ctx.Resolve (variableInitializer) as LocalResolveResult;
 				if (resolveResult == null)
 					return;
-				if (!TestOnlyAssigned (ctx, unit, resolveResult.Variable))
+				if (!TestOnlyAssigned (ctx, decl.Parent, resolveResult.Variable))
 					return;
 				AddIssue (variableInitializer.NameToken,
 					ctx.TranslateString ("Local variable is assigned by its value is never used"));

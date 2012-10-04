@@ -274,5 +274,371 @@ class Test {
 			Assert.IsFalse(rr.IsError);
 			Assert.AreEqual(unchecked( (ushort)~3 ), rr.ConstantValue);
 		}
+
+		[Test]
+		public void Await() {
+			string program = @"
+using System;
+class MyAwaiter {
+	public bool IsCompleted { get { return false; } }
+	public void OnCompleted(Action continuation) {}
+	public int GetResult() { return 0; }
+}
+class MyAwaitable {
+	public MyAwaiter GetAwaiter() { return null; }
+	public MyAwaiter GetAwaiter(int i) { return null; }
+}
+public class C {
+	public async void M() {
+		MyAwaitable x = null;
+		int i = $await x$;
+	}
+}";
+		
+			var rr = Resolve<AwaitResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.IsTrue(rr.Type.IsKnownType(KnownTypeCode.Int32));
+			Assert.IsInstanceOf<CSharpInvocationResolveResult>(rr.GetAwaiterInvocation);
+			var getAwaiterInvocation = (CSharpInvocationResolveResult)rr.GetAwaiterInvocation;
+			Assert.IsFalse(rr.GetAwaiterInvocation.IsError);
+			Assert.AreEqual(0, getAwaiterInvocation.Arguments.Count);
+			Assert.AreEqual("MyAwaitable.GetAwaiter", getAwaiterInvocation.Member.FullName);
+			Assert.AreEqual(0, getAwaiterInvocation.Member.Parameters.Count);
+
+			Assert.AreEqual("MyAwaiter", rr.AwaiterType.FullName);
+
+			Assert.IsNotNull(rr.IsCompletedProperty);
+			Assert.AreEqual("MyAwaiter.IsCompleted", rr.IsCompletedProperty.FullName);
+
+			Assert.IsNotNull(rr.OnCompletedMethod);
+			Assert.AreEqual("MyAwaiter.OnCompleted", rr.OnCompletedMethod.FullName);
+
+			Assert.IsNotNull(rr.GetResultMethod);
+			Assert.AreEqual("MyAwaiter.GetResult", rr.GetResultMethod.FullName);
+		}
+
+		[Test]
+		public void AwaitWhenGetAwaiterIsAnExtensionMethod() {
+			string program = @"
+using System;
+namespace N {
+	class MyAwaiter {
+		public bool IsCompleted { get { return false; } }
+		public void OnCompleted(Action continuation) {}
+		public int GetResult() { return 0; }
+	}
+	class MyAwaitable {
+	}
+	static class MyAwaitableExtensions {
+		public static MyAwaiter GetAwaiter(this MyAwaitable x) { return null; }
+	}
+	public class C {
+		public async void M() {
+			MyAwaitable x = null;
+			int i = $await x$;
+		}
+	}
+}";
+		
+			var rr = Resolve<AwaitResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.IsTrue(rr.Type.IsKnownType(KnownTypeCode.Int32));
+			Assert.IsInstanceOf<CSharpInvocationResolveResult>(rr.GetAwaiterInvocation);
+			var getAwaiterInvocation = (CSharpInvocationResolveResult)rr.GetAwaiterInvocation;
+			Assert.IsFalse(rr.GetAwaiterInvocation.IsError);
+			Assert.AreEqual(1, getAwaiterInvocation.Arguments.Count);
+			Assert.AreEqual("N.MyAwaitableExtensions.GetAwaiter", getAwaiterInvocation.Member.FullName);
+			Assert.AreEqual(1, getAwaiterInvocation.Member.Parameters.Count);
+			Assert.IsTrue(getAwaiterInvocation.Arguments[0] is LocalResolveResult && ((LocalResolveResult)getAwaiterInvocation.Arguments[0]).Variable.Name == "x");
+
+			Assert.AreEqual("N.MyAwaiter", rr.AwaiterType.FullName);
+
+			Assert.IsNotNull(rr.IsCompletedProperty);
+			Assert.AreEqual("N.MyAwaiter.IsCompleted", rr.IsCompletedProperty.FullName);
+
+			Assert.IsNotNull(rr.OnCompletedMethod);
+			Assert.AreEqual("N.MyAwaiter.OnCompleted", rr.OnCompletedMethod.FullName);
+
+			Assert.IsNotNull(rr.GetResultMethod);
+			Assert.AreEqual("N.MyAwaiter.GetResult", rr.GetResultMethod.FullName);
+		}
+
+		[Test, Ignore("TODO: MS C# (at least the RC version) refuses to use default values in GetAwaiter(). I do not know, however, if this is by design, and I could not find a simple, nice way to do the implementation")]
+		public void GetAwaiterMethodWithDefaultArgumentCannotBeUsed() {
+			string program = @"
+using System;
+class MyAwaiter {
+	public bool IsCompleted { get { return false; } }
+	public void OnCompleted(Action continuation) {}
+	public int GetResult() { return 0; }
+}
+class MyAwaitable {
+	public MyAwaiter GetAwaiter(int i = 0) { return null; }
+}
+public class C {
+	public async void M() {
+		MyAwaitable x = null;
+		int i = $await x$;
+	}
+}";
+		
+			var rr = Resolve<AwaitResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual(SpecialType.UnknownType, rr.Type);
+			Assert.IsInstanceOf<CSharpInvocationResolveResult>(rr.GetAwaiterInvocation);
+			Assert.IsTrue(rr.GetAwaiterInvocation.IsError);
+
+			Assert.AreEqual(rr.AwaiterType, SpecialType.UnknownType);
+
+			Assert.IsNull(rr.IsCompletedProperty);
+			Assert.IsNull(rr.OnCompletedMethod);
+			Assert.IsNull(rr.GetResultMethod);
+		}
+
+		[Test, Ignore("TODO: MS C# (at least the RC version) refuses to use default values in GetAwaiter(). I do not know, however, if this is by design, and I could not find a simple, nice way to do the implementation")]
+		public void GetAwaiterMethodWithDefaultArgumentHidesExtensionMethodAndResultsInError() {
+			string program = @"
+using System;
+namespace N {
+	class MyAwaiter {
+		public bool IsCompleted { get { return false; } }
+		public void OnCompleted(Action continuation) {}
+		public int GetResult() { return 0; }
+	}
+	class MyAwaitable {
+		public MyAwaiter GetAwaiter(int i = 0) { return null; }
+	}
+	static class MyAwaitableExtensions {
+		public static MyAwaiter GetAwaiter(this MyAwaitable x) { return null; }
+	}
+	public class C {
+		public async void M() {
+			MyAwaitable x = null;
+			int i = $await x$;
+		}
+	}
+}";
+		
+			var rr = Resolve<AwaitResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual(SpecialType.UnknownType, rr.Type);
+			Assert.IsInstanceOf<CSharpInvocationResolveResult>(rr.GetAwaiterInvocation);
+			Assert.IsTrue(rr.GetAwaiterInvocation.IsError);
+
+			Assert.AreEqual(rr.AwaiterType, SpecialType.UnknownType);
+
+			Assert.IsNull(rr.IsCompletedProperty);
+			Assert.IsNull(rr.OnCompletedMethod);
+			Assert.IsNull(rr.GetResultMethod);
+		}
+
+		[Test]
+		public void GetAwaiterMethodWithArgumentDoesNotHideExtensionMethod() {
+			string program = @"
+using System;
+namespace N {
+	class MyAwaiter {
+		public bool IsCompleted { get { return false; } }
+		public void OnCompleted(Action continuation) {}
+		public int GetResult() { return 0; }
+	}
+	class MyAwaitable {
+		public static MyAwaiter GetAwaiter(int i) { return null; }
+	}
+	static class MyAwaitableExtensions {
+		public static MyAwaiter GetAwaiter(this MyAwaitable x) { return null; }
+	}
+	public class C {
+		public async void M() {
+			MyAwaitable x = null;
+			int i = $await x$;
+		}
+	}
+}";
+		
+			var rr = Resolve<AwaitResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.IsTrue(rr.Type.IsKnownType(KnownTypeCode.Int32));
+			Assert.IsInstanceOf<CSharpInvocationResolveResult>(rr.GetAwaiterInvocation);
+			var getAwaiterInvocation = (CSharpInvocationResolveResult)rr.GetAwaiterInvocation;
+			Assert.IsFalse(rr.GetAwaiterInvocation.IsError);
+			Assert.AreEqual(1, getAwaiterInvocation.Arguments.Count);
+			Assert.AreEqual("N.MyAwaitableExtensions.GetAwaiter", getAwaiterInvocation.Member.FullName);
+			Assert.AreEqual(1, getAwaiterInvocation.Member.Parameters.Count);
+			Assert.IsTrue(getAwaiterInvocation.Arguments[0] is LocalResolveResult && ((LocalResolveResult)getAwaiterInvocation.Arguments[0]).Variable.Name == "x");
+
+			Assert.AreEqual("N.MyAwaiter", rr.AwaiterType.FullName);
+
+			Assert.IsNotNull(rr.IsCompletedProperty);
+			Assert.AreEqual("N.MyAwaiter.IsCompleted", rr.IsCompletedProperty.FullName);
+
+			Assert.IsNotNull(rr.OnCompletedMethod);
+			Assert.AreEqual("N.MyAwaiter.OnCompleted", rr.OnCompletedMethod.FullName);
+
+			Assert.IsNotNull(rr.GetResultMethod);
+			Assert.AreEqual("N.MyAwaiter.GetResult", rr.GetResultMethod.FullName);
+		}
+
+		[Test]
+		public void AwaiterWithNoSuitableGetResult() {
+			string program = @"
+using System;
+namespace N {
+	class MyAwaiter {
+		public bool IsCompleted { get { return false; } }
+		public void OnCompleted(Action continuation) {}
+		public int GetResult(int i) { return 0; }
+	}
+	class MyAwaitable {
+		public static MyAwaiter GetAwaiter(int i) { return null; }
+	}
+	static class MyAwaitableExtensions {
+		public static MyAwaiter GetAwaiter(this MyAwaitable x) { return null; }
+	}
+	public class C {
+		public async void M() {
+			MyAwaitable x = null;
+			int i = $await x$;
+		}
+	}
+}";
+		
+			var rr = Resolve<AwaitResolveResult>(program);
+			Assert.IsTrue(rr.IsError);
+			Assert.AreEqual(SpecialType.UnknownType, rr.Type);
+			Assert.IsInstanceOf<CSharpInvocationResolveResult>(rr.GetAwaiterInvocation);
+			var getAwaiterInvocation = (CSharpInvocationResolveResult)rr.GetAwaiterInvocation;
+			Assert.IsFalse(rr.GetAwaiterInvocation.IsError);
+			Assert.AreEqual(1, getAwaiterInvocation.Arguments.Count);
+			Assert.AreEqual("N.MyAwaitableExtensions.GetAwaiter", getAwaiterInvocation.Member.FullName);
+			Assert.AreEqual(1, getAwaiterInvocation.Member.Parameters.Count);
+			Assert.IsTrue(getAwaiterInvocation.Arguments[0] is LocalResolveResult && ((LocalResolveResult)getAwaiterInvocation.Arguments[0]).Variable.Name == "x");
+
+			Assert.AreEqual("N.MyAwaiter", rr.AwaiterType.FullName);
+
+			Assert.IsNotNull(rr.IsCompletedProperty);
+			Assert.AreEqual("N.MyAwaiter.IsCompleted", rr.IsCompletedProperty.FullName);
+
+			Assert.IsNotNull(rr.OnCompletedMethod);
+			Assert.AreEqual("N.MyAwaiter.OnCompleted", rr.OnCompletedMethod.FullName);
+
+			Assert.IsNull(rr.GetResultMethod);
+		}
+
+		[Test]
+		public void AwaiterWithNoIsCompletedProperty() {
+			string program = @"
+using System;
+namespace N {
+	class MyAwaiter {
+		public bool IsCompleted() { return false; }
+		public void OnCompleted(Action continuation) {}
+		public int GetResult(int i) { return 0; }
+	}
+	class MyAwaitable {
+		public static MyAwaiter GetAwaiter(int i) { return null; }
+	}
+	static class MyAwaitableExtensions {
+		public static MyAwaiter GetAwaiter(this MyAwaitable x) { return null; }
+	}
+	public class C {
+		public async void M() {
+			MyAwaitable x = null;
+			int i = $await x$;
+		}
+	}
+}";
+		
+			var rr = Resolve<AwaitResolveResult>(program);
+			Assert.IsTrue(rr.IsError);
+			Assert.AreEqual(SpecialType.UnknownType, rr.Type);
+			Assert.IsInstanceOf<CSharpInvocationResolveResult>(rr.GetAwaiterInvocation);
+			var getAwaiterInvocation = (CSharpInvocationResolveResult)rr.GetAwaiterInvocation;
+			Assert.IsFalse(rr.GetAwaiterInvocation.IsError);
+			Assert.AreEqual(1, getAwaiterInvocation.Arguments.Count);
+			Assert.AreEqual("N.MyAwaitableExtensions.GetAwaiter", getAwaiterInvocation.Member.FullName);
+			Assert.AreEqual(1, getAwaiterInvocation.Member.Parameters.Count);
+			Assert.IsTrue(getAwaiterInvocation.Arguments[0] is LocalResolveResult && ((LocalResolveResult)getAwaiterInvocation.Arguments[0]).Variable.Name == "x");
+
+			Assert.AreEqual("N.MyAwaiter", rr.AwaiterType.FullName);
+
+			Assert.IsNull(rr.IsCompletedProperty);
+
+			Assert.IsNotNull(rr.OnCompletedMethod);
+			Assert.AreEqual("N.MyAwaiter.OnCompleted", rr.OnCompletedMethod.FullName);
+
+			Assert.IsNull(rr.GetResultMethod);
+		}
+
+		[Test]
+		public void AwaiterWithNoOnCompletedMethodWithSuitableSignature() {
+			string program = @"
+using System;
+class MyAwaiter {
+	public bool IsCompleted { get { return false; } }
+	public void OnCompleted(Func<int> continuation) {}
+	public int GetResult() { return 0; }
+}
+class MyAwaitable {
+	public MyAwaiter GetAwaiter() { return null; }
+	public MyAwaiter GetAwaiter(int i) { return null; }
+}
+public class C {
+	public async void M() {
+		MyAwaitable x = null;
+		int i = $await x$;
+	}
+}";
+		
+			var rr = Resolve<AwaitResolveResult>(program);
+			Assert.IsTrue(rr.IsError);
+			Assert.IsTrue(rr.Type.IsKnownType(KnownTypeCode.Int32));
+			Assert.IsInstanceOf<CSharpInvocationResolveResult>(rr.GetAwaiterInvocation);
+			var getAwaiterInvocation = (CSharpInvocationResolveResult)rr.GetAwaiterInvocation;
+			Assert.IsFalse(rr.GetAwaiterInvocation.IsError);
+			Assert.AreEqual(0, getAwaiterInvocation.Arguments.Count);
+			Assert.AreEqual("MyAwaitable.GetAwaiter", getAwaiterInvocation.Member.FullName);
+			Assert.AreEqual(0, getAwaiterInvocation.Member.Parameters.Count);
+
+			Assert.AreEqual("MyAwaiter", rr.AwaiterType.FullName);
+
+			Assert.IsNotNull(rr.IsCompletedProperty);
+			Assert.AreEqual("MyAwaiter.IsCompleted", rr.IsCompletedProperty.FullName);
+
+			Assert.IsNull(rr.OnCompletedMethod);
+
+			Assert.IsNotNull(rr.GetResultMethod);
+			Assert.AreEqual("MyAwaiter.GetResult", rr.GetResultMethod.FullName);
+		}
+
+		[Test]
+		public void AwaitDynamic() {
+			string program = @"
+public class C {
+	public async void M() {
+		dynamic x = null;
+		int i = $await x$;
+	}
+}";
+		
+			var rr = Resolve<AwaitResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual(SpecialType.Dynamic, rr.Type);
+			Assert.IsInstanceOf<DynamicInvocationResolveResult>(rr.GetAwaiterInvocation);
+			var getAwaiterInvocation = (DynamicInvocationResolveResult)rr.GetAwaiterInvocation;
+			Assert.IsFalse(rr.GetAwaiterInvocation.IsError);
+			Assert.AreEqual(DynamicInvocationType.Invocation, getAwaiterInvocation.InvocationType);
+			Assert.AreEqual(0, getAwaiterInvocation.Arguments.Count);
+			Assert.IsInstanceOf<DynamicMemberResolveResult>(getAwaiterInvocation.Target);
+			var target = (DynamicMemberResolveResult)getAwaiterInvocation.Target;
+			Assert.IsInstanceOf<LocalResolveResult>(target.Target);
+			Assert.AreEqual("GetAwaiter", target.Member);
+
+			Assert.AreEqual(SpecialType.Dynamic, rr.AwaiterType);
+
+			Assert.IsNull(rr.IsCompletedProperty);
+			Assert.IsNull(rr.OnCompletedMethod);
+			Assert.IsNull(rr.GetResultMethod);
+		}
 	}
 }

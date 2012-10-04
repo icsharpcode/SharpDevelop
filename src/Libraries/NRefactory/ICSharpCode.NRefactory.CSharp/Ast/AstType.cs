@@ -127,6 +127,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		/// <summary>
 		/// Create an ITypeReference for this AstType.
+		/// Uses the context (ancestors of this node) to determine the correct <see cref="NameLookupMode"/>.
 		/// </summary>
 		/// <remarks>
 		/// The resulting type reference will read the context information from the
@@ -135,7 +136,42 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// For resolving simple names, the current namespace and usings from the CurrentUsingScope
 		/// (on CSharpTypeResolveContext only) is used.
 		/// </remarks>
-		public abstract ITypeReference ToTypeReference(NameLookupMode lookupMode = NameLookupMode.Type, InterningProvider interningProvider = null);
+		public ITypeReference ToTypeReference(InterningProvider interningProvider = null)
+		{
+			return ToTypeReference(GetNameLookupMode(), interningProvider);
+		}
+		
+		/// <summary>
+		/// Create an ITypeReference for this AstType.
+		/// </summary>
+		/// <remarks>
+		/// The resulting type reference will read the context information from the
+		/// <see cref="ITypeResolveContext"/>:
+		/// For resolving type parameters, the CurrentTypeDefinition/CurrentMember is used.
+		/// For resolving simple names, the current namespace and usings from the CurrentUsingScope
+		/// (on CSharpTypeResolveContext only) is used.
+		/// </remarks>
+		public abstract ITypeReference ToTypeReference(NameLookupMode lookupMode, InterningProvider interningProvider = null);
+		
+		/// <summary>
+		/// Gets the name lookup mode from the context (looking at the ancestors of this <see cref="AstType"/>).
+		/// </summary>
+		public NameLookupMode GetNameLookupMode()
+		{
+			AstType outermostType = this;
+			while (outermostType.Parent is AstType)
+				outermostType = (AstType)outermostType.Parent;
+			
+			if (outermostType.Parent is UsingDeclaration || outermostType.Parent is UsingAliasDeclaration) {
+				return NameLookupMode.TypeInUsingDeclaration;
+			} else if (outermostType.Role == Roles.BaseType) {
+				// Use BaseTypeReference for a type's base type, and for a constraint on a type.
+				// Do not use it for a constraint on a method.
+				if (outermostType.Parent is TypeDeclaration || (outermostType.Parent is Constraint && outermostType.Parent.Parent is TypeDeclaration))
+					return NameLookupMode.BaseTypeReference;
+			}
+			return NameLookupMode.Type;
+		}
 		
 		/// <summary>
 		/// Creates a pointer type from this type by nesting it in a <see cref="ComposedType"/>.

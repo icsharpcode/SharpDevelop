@@ -224,6 +224,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					if (GetCurrentParameterIndex(document.GetOffset(invoke.Node.StartLocation), offset) < 0)
 						return null;
+					if (invoke.Node is ArrayCreateExpression)
+						return null;
 					if (invoke.Node is ObjectCreateExpression) {
 						var createType = ResolveExpression(((ObjectCreateExpression)invoke.Node).Type);
 						return factory.CreateConstructorProvider(document.GetOffset(invoke.Node.StartLocation), createType.Item1.Type);
@@ -274,6 +276,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				case '[':
 					invoke = GetIndexerBeforeCursor();
 					if (invoke == null) {
+						return null;
+					}
+					if (invoke.Node is ArrayCreateExpression) {
 						return null;
 					}
 					var indexerExpression = ResolveExpression(invoke);

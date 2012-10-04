@@ -55,6 +55,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			this.ShowTypeParameterConstraints = true;
 			this.ShowParameterNames = true;
 			this.ShowConstantValues = true;
+			this.UseAliases = true;
 		}
 		
 		/// <summary>
@@ -129,6 +130,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// The default value is <c>false</c>.
 		/// </summary>
 		public bool ConvertUnboundTypeArguments { get; set;}
+
+		/// <summary>
+		/// Controls if aliases should be used inside the type name or not.
+		/// The default value is <c>true</c>.
+		/// </summary>
+		public bool UseAliases { get; set;}
 		#endregion
 		
 		#region Convert Type
@@ -218,11 +225,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			if (resolver != null) {
 				// Look if there's an alias to the target type
-				for (ResolvedUsingScope usingScope = resolver.CurrentUsingScope; usingScope != null; usingScope = usingScope.Parent) {
-					foreach (var pair in usingScope.UsingAliases) {
-						if (pair.Value is TypeResolveResult) {
-							if (TypeMatches(pair.Value.Type, typeDef, typeArguments))
-								return new SimpleType(pair.Key);
+				if (UseAliases) {
+					for (ResolvedUsingScope usingScope = resolver.CurrentUsingScope; usingScope != null; usingScope = usingScope.Parent) {
+						foreach (var pair in usingScope.UsingAliases) {
+							if (pair.Value is TypeResolveResult) {
+								if (TypeMatches(pair.Value.Type, typeDef, typeArguments))
+									return new SimpleType(pair.Key);
+							}
 						}
 					}
 				}
@@ -236,12 +245,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				} else {
 					localTypeArguments = EmptyList<IType>.Instance;
 				}
-				TypeResolveResult trr = resolver.ResolveSimpleName(typeDef.Name, localTypeArguments) as TypeResolveResult;
-				if (trr != null && !trr.IsError && TypeMatches(trr.Type, typeDef, typeArguments)) {
-					// We can use the short type name
-					SimpleType shortResult = new SimpleType(typeDef.Name);
-					AddTypeArguments(shortResult, typeDef, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
-					return shortResult;
+				ResolveResult rr = resolver.ResolveSimpleName(typeDef.Name, localTypeArguments);
+				TypeResolveResult trr = rr as TypeResolveResult;
+				if (trr != null || (localTypeArguments.Count == 0 && resolver.IsVariableReferenceWithSameType(rr, typeDef.Name, out trr))) {
+					if (!trr.IsError && TypeMatches(trr.Type, typeDef, typeArguments)) {
+						// We can use the short type name
+						SimpleType shortResult = new SimpleType(typeDef.Name);
+						AddTypeArguments(shortResult, typeDef, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
+						return shortResult;
+					}
 				}
 			}
 			
@@ -315,11 +327,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			if (resolver != null) {
 				// Look if there's an alias to the target namespace
-				for (ResolvedUsingScope usingScope = resolver.CurrentUsingScope; usingScope != null; usingScope = usingScope.Parent) {
-					foreach (var pair in usingScope.UsingAliases) {
-						NamespaceResolveResult nrr = pair.Value as NamespaceResolveResult;
-						if (nrr != null && nrr.NamespaceName == ns)
-							return new SimpleType(pair.Key);
+				if (UseAliases) {
+					for (ResolvedUsingScope usingScope = resolver.CurrentUsingScope; usingScope != null; usingScope = usingScope.Parent) {
+						foreach (var pair in usingScope.UsingAliases) {
+							NamespaceResolveResult nrr = pair.Value as NamespaceResolveResult;
+							if (nrr != null && nrr.NamespaceName == ns)
+								return new SimpleType(pair.Key);
+						}
 					}
 				}
 			}

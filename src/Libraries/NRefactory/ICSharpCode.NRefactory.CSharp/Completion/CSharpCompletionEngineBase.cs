@@ -200,6 +200,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					parameter.Push (0);
 					break;
+				case '=':
+					if (nextCh == '>') {
+						i++;
+						continue;
+					}
+					break;
 				case '>':
 					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
 						break;
@@ -705,7 +711,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			SyntaxTree baseUnit;
 			baseUnit = ParseStub("a", false);
-			
+
 			var section = baseUnit.GetNodeAt<AttributeSection>(location.Line, location.Column - 2);
 			var attr = section != null ? section.Attributes.LastOrDefault() : null;
 			if (attr != null) {

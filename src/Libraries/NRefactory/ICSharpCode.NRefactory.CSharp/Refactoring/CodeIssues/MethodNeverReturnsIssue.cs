@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			static readonly ControlFlowGraphBuilder cfgBuilder = new ControlFlowGraphBuilder ();
+			readonly ControlFlowGraphBuilder cfgBuilder = new ControlFlowGraphBuilder ();
 
 			public GatherVisitor(BaseRefactoringContext ctx)
 				: base (ctx)

@@ -44,7 +44,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 
-		[Ignore("Parser bug.")]
 		[Test()]
 		public void TestNamespaceNameCase3 ()
 		{
@@ -187,7 +186,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				Assert.AreEqual (0, provider.Count, "provider needs to be empty");
 			});
 		}
-		[Ignore("TODO")]
+
 		[Test()]
 		public void TestIndexerParameterName ()
 		{

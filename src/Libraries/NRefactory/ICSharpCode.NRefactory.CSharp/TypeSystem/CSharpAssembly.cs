@@ -99,6 +99,10 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					root = new NS(this);
 					Dictionary<string, NS> dict = new Dictionary<string, NS>(compilation.NameComparer);
 					dict.Add(string.Empty, root);
+					// Add namespaces declared in C# files, even if they're empty:
+					foreach (var usingScope in projectContent.Files.OfType<CSharpUnresolvedFile>().SelectMany(f => f.UsingScopes)) {
+						GetOrAddNamespace(dict, usingScope.NamespaceName);
+					}
 					foreach (var pair in GetTypes()) {
 						NS ns = GetOrAddNamespace(dict, pair.Key.Namespace);
 						if (ns.types != null)

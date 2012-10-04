@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using NUnit.Framework;
 
@@ -110,6 +111,105 @@ class A {
 ";
 			var result = Resolve(program);
 			Assert.AreEqual("System.Int32[,]", result.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void SizeArguments2x3()
+		{
+			string program = @"using System.Collections.Generic;
+class A {
+	int[,] a = ${ { 1, 2, 3 }, { 4, 5, 6 } }$;
+}
+";
+			var result = Resolve<ArrayCreateResolveResult>(program);
+			Assert.AreEqual(6, result.InitializerElements.Count);
+			Assert.AreEqual(2, result.SizeArguments.Count);
+			Assert.AreEqual(2, result.SizeArguments[0].ConstantValue);
+			Assert.AreEqual(3, result.SizeArguments[1].ConstantValue);
+		}
+		
+		[Test]
+		public void SizeArguments3x2()
+		{
+			string program = @"using System.Collections.Generic;
+class A {
+	int[,] a = $new int[,] { { 1, 2 }, { 3, 4 }, { 5, 6 } }$;
+}
+";
+			var result = Resolve<ArrayCreateResolveResult>(program);
+			Assert.AreEqual("System.Int32[,]", result.Type.ReflectionName);
+			Assert.AreEqual(6, result.InitializerElements.Count);
+			Assert.AreEqual(2, result.SizeArguments.Count);
+			Assert.AreEqual(3, result.SizeArguments[0].ConstantValue);
+			Assert.AreEqual(2, result.SizeArguments[1].ConstantValue);
+		}
+		
+		[Test]
+		public void SizeArguments2xInvalid()
+		{
+			string program = @"using System.Collections.Generic;
+class A {
+	int[,] a = ${ { 1, 2, 3 }, { 4, 5 } }$;
+}
+";
+			var result = Resolve<ArrayCreateResolveResult>(program);
+			Assert.AreEqual("System.Int32[,]", result.Type.ReflectionName);
+			Assert.AreEqual(5, result.InitializerElements.Count);
+			Assert.AreEqual(2, result.SizeArguments.Count);
+			Assert.AreEqual(2, result.SizeArguments[0].ConstantValue);
+			Assert.IsTrue(result.SizeArguments[1].IsError);
+		}
+		
+		[Test]
+		public void SizeArgumentsExplicitSizeInconsistentWithActualSize()
+		{
+			string program = @"using System.Collections.Generic;
+class A {
+	int[,] a = $new int[5,6] { { 1, 2, 3 }, { 4, 5, 6 } }$;
+}
+";
+			var result = Resolve<ArrayCreateResolveResult>(program);
+			Assert.AreEqual("System.Int32[,]", result.Type.ReflectionName);
+			Assert.AreEqual(6, result.InitializerElements.Count);
+			Assert.AreEqual(2, result.SizeArguments.Count);
+			Assert.AreEqual(5, result.SizeArguments[0].ConstantValue);
+			Assert.AreEqual(6, result.SizeArguments[1].ConstantValue);
+		}
+		
+		[Test]
+		public void ArraySizeArgumentConversion()
+		{
+			string program = @"using System.Collections.Generic;
+class A {
+	static byte b = 5;
+	int[] a = new int[$b$];
+}
+";
+			Assert.AreEqual(Conversion.ImplicitNumericConversion, GetConversion(program));
+		}
+		
+		[Test]
+		public void ArrayInitializerConversion()
+		{
+			string program = @"using System.Collections.Generic;
+class A {
+	static byte b = 5;
+	int[] a = new int[] { $b$ };
+}
+";
+			Assert.AreEqual(Conversion.ImplicitNumericConversion, GetConversion(program));
+		}
+		
+		[Test]
+		public void ArrayInitializerConversion2()
+		{
+			string program = @"using System.Collections.Generic;
+class A {
+	static byte b = 5;
+	int[] a = { $b$ };
+}
+";
+			Assert.AreEqual(Conversion.ImplicitNumericConversion, GetConversion(program));
 		}
 	}
 }

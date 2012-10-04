@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			public NullCSharpTokenNode () : base (TextLocation.Empty)
+			public NullCSharpTokenNode () : base (TextLocation.Empty, null)
 			{
 			}
 			
@@ -80,12 +80,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				return startLocation;
 			}
 		}
-		
-		protected virtual int TokenLength {
+
+		int TokenLength {
 			get {
-				if (!(Role is TokenRole))
-					return 0;
-				return ((TokenRole)Role).Length;
+				return TokenRole.TokenLengths [(int)(this.flags >> AstNodeFlagsUsedBits)];
 			}
 		}
 		
@@ -94,17 +92,17 @@ namespace ICSharpCode.NRefactory.CSharp
 				return new TextLocation (StartLocation.Line, StartLocation.Column + TokenLength);
 			}
 		}
-		
-		public CSharpTokenNode (TextLocation location)
+
+		public CSharpTokenNode (TextLocation location, TokenRole role)
 		{
 			this.startLocation = location;
+			if (role != null)
+				this.flags |= role.TokenIndex << AstNodeFlagsUsedBits;
 		}
 		
 		public override string GetText (CSharpFormattingOptions formattingOptions = null)
 		{
-			if (!(Role is TokenRole))
-				return null;
-			return ((TokenRole)Role).Token;
+			return TokenRole.Tokens [(int)(this.flags >> AstNodeFlagsUsedBits)];
 		}
 
 		public override void AcceptVisitor (IAstVisitor visitor)

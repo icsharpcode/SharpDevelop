@@ -26,7 +26,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.PatternMatching;
 using ICSharpCode.NRefactory.Semantics;
 
@@ -39,24 +38,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   IssueMarker = IssueMarker.Underline)]
 	public class ForControlVariableNotModifiedIssue : ICodeIssueProvider
 	{
-		static FindReferences refFinder = new FindReferences ();
-
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
 		{
-			var unit = context.RootNode as SyntaxTree;
-			if (unit == null)
-				return Enumerable.Empty<CodeIssue> ();
-
-			return new GatherVisitor (context, unit).GetIssues ();
+			return new GatherVisitor (context).GetIssues ();
 		}
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			SyntaxTree unit;
-			public GatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit)
+			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)
 			{
-				this.unit = unit;
 			}
 
 			static VariableInitializer GetControlVariable(VariableDeclarationStatement variableDecl, 
@@ -111,25 +102,24 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (localResolveResult == null)
 					return;
 
+				var results = ctx.FindReferences (forStatement, localResolveResult.Variable);
 				var modified = false;
-				refFinder.FindLocalReferences (localResolveResult.Variable, ctx.UnresolvedFile, unit, ctx.Compilation,
-					(node, resolveResult) =>
-					{
-						if (modified)
-							return;
+				foreach (var result in results) {
+					if (modified)
+						break;
+					var node = result.Node;
+					var unary = node.Parent as UnaryOperatorExpression;
+					if (unary != null && unary.Expression == node) {
+						modified = unary.Operator == UnaryOperatorType.Decrement ||
+							unary.Operator == UnaryOperatorType.PostDecrement ||
+							unary.Operator == UnaryOperatorType.Increment ||
+							unary.Operator == UnaryOperatorType.PostIncrement;
+						continue;
+					}
 
-						var unary = node.Parent as UnaryOperatorExpression;
-						if (unary != null && unary.Expression == node) {
-							modified = unary.Operator == UnaryOperatorType.Decrement ||
-								unary.Operator == UnaryOperatorType.PostDecrement ||
-								unary.Operator == UnaryOperatorType.Increment ||
-								unary.Operator == UnaryOperatorType.PostIncrement;
-							return;
-						}
-
-						var assignment = node.Parent as AssignmentExpression;
-						modified = assignment != null && assignment.Left == node;
-					}, ctx.CancellationToken);
+					var assignment = node.Parent as AssignmentExpression;
+					modified = assignment != null && assignment.Left == node;
+				}
 
 				if (!modified)
 					AddIssue (controlVariable.NameToken,
