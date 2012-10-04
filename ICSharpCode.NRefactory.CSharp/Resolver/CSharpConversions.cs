@@ -926,7 +926,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				IMethod method = (IMethod)or.GetBestCandidateWithSubstitutedTypeArguments();
 				var thisRR = rr.TargetResult as ThisResolveResult;
 				bool isVirtual = method.IsOverridable && !(thisRR != null && thisRR.CausesNonVirtualInvocation);
-				if (IsDelegateCompatible(method, invoke))
+				bool isValid = !or.IsAmbiguous && IsDelegateCompatible(method, invoke, or.IsExtensionMethodInvocation);
+				if (isValid)
 					return Conversion.MethodGroupConversion(method, isVirtual);
 				else
 					return Conversion.InvalidMethodGroupConversion(method, isVirtual);
@@ -941,16 +942,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		/// <param name="m">The method to test for compatibility</param>
 		/// <param name="invoke">The invoke method of the delegate</param>
-		public bool IsDelegateCompatible(IMethod m, IMethod invoke)
+		/// <param name="isExtensionMethodInvocation">Gets whether m is accessed using extension method syntax.
+		/// If this parameter is true, the first parameter of <paramref name="m"/> will be ignored.</param>
+		bool IsDelegateCompatible(IMethod m, IMethod invoke, bool isExtensionMethodInvocation)
 		{
 			if (m == null)
 				throw new ArgumentNullException("m");
 			if (invoke == null)
 				throw new ArgumentNullException("invoke");
-			if (m.Parameters.Count != invoke.Parameters.Count)
+			int firstParameterInM = isExtensionMethodInvocation ? 1 : 0;
+			if (m.Parameters.Count - firstParameterInM != invoke.Parameters.Count)
 				return false;
-			for (int i = 0; i < m.Parameters.Count; i++) {
-				var pm = m.Parameters[i];
+			for (int i = 0; i < invoke.Parameters.Count; i++) {
+				var pm = m.Parameters[firstParameterInM + i];
 				var pd = invoke.Parameters[i];
 				// ret/out must match
 				if (pm.IsRef != pd.IsRef || pm.IsOut != pd.IsOut)
