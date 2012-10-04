@@ -651,7 +651,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				long val = (long)rr.ConstantValue;
 				return val >= 0 && toTypeCode == TypeCode.UInt64;
 			} else if (fromTypeCode == TypeCode.Int32) {
-				int val = (int)rr.ConstantValue;
+				object cv = rr.ConstantValue;
+				if (cv == null)
+					return false;
+				int val = (int)cv;
 				switch (toTypeCode) {
 					case TypeCode.SByte:
 						return val >= SByte.MinValue && val <= SByte.MaxValue;

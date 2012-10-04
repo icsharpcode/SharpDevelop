@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -49,16 +50,20 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public object ConstantValue {
 			get {
-				ResolveResult rr = this.constantValue;
-				if (rr == null) {
-					IConstantValue unresolvedCV = ((IUnresolvedField)unresolved).ConstantValue;
-					if (unresolvedCV != null)
-						rr = unresolvedCV.Resolve(context);
-					else
-						rr = ErrorResolveResult.UnknownError;
-					this.constantValue = rr;
+				using (var busyLock = BusyManager.Enter(this)) {
+					if (!busyLock.Success)
+						return null;
+					ResolveResult rr = this.constantValue;
+					if (rr == null) {
+						IConstantValue unresolvedCV = ((IUnresolvedField)unresolved).ConstantValue;
+						if (unresolvedCV != null)
+							rr = unresolvedCV.Resolve(context);
+						else
+							rr = ErrorResolveResult.UnknownError;
+						this.constantValue = rr;
+					}
+					return rr.ConstantValue;
 				}
-				return rr.ConstantValue;
 			}
 		}
 	}

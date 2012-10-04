@@ -97,6 +97,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			Assert.NotNull (testType);
 			var field = testType.Fields.First ();
 			Assert.IsTrue (field.IsConst);
+			Assert.IsNull (field.ConstantValue);
 		}
 	}
 	
