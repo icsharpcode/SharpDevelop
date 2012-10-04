@@ -87,11 +87,27 @@ class TestClass
 	}
 	void TestMethod()
 	{
-		int i = 1;
-		Test (out i);
+		int tmp;
+		Test (out tmp);
 	}
 }";
-			Test<LocalVariableOnlyAssignedIssue> (input1, 1);
+			// should not warn because ignoring out-arguments is legitimate
+			Test<LocalVariableOnlyAssignedIssue> (input1, 0);
+		}
+		
+		[Test]
+		public void TestIncrement ()
+		{
+			var input1 = @"
+class TestClass
+{
+	void TestMethod()
+	{
+		int i = 1;
+		Test (i++);
+	}
+}";
+			Test<LocalVariableOnlyAssignedIssue> (input1, 0);
 		}
 	}
 }

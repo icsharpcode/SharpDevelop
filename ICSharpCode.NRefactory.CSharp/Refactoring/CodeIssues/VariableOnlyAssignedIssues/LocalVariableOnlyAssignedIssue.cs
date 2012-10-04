@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 
 	[IssueDescription ("Local variable is only assigned",
-					   Description = "Local variable is assigned by its value is never used",
+					   Description = "Local variable is assigned but its value is never used",
 					   Category = IssueCategories.CodeQualityIssues,
 					   Severity = Severity.Warning,
 					   IssueMarker = IssueMarker.Underline)]
@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (!TestOnlyAssigned (ctx, decl.Parent, resolveResult.Variable))
 					return;
 				AddIssue (variableInitializer.NameToken,
-					ctx.TranslateString ("Local variable is assigned by its value is never used"));
+					ctx.TranslateString ("Local variable is assigned but its value is never used"));
 			}
 		}
 	}
