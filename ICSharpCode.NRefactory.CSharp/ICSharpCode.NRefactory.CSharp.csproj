@@ -333,7 +333,6 @@
     <Compile Include="Refactoring\RefactoringAstHelper.cs" />
     <Compile Include="Refactoring\RefactoringContext.cs" />
     <Compile Include="Refactoring\Script.cs" />
-    <Compile Include="Refactoring\TypeCompatibilityHelper.cs" />
     <Compile Include="Refactoring\TypeSystemAstBuilder.cs" />
     <Compile Include="Refactoring\VariableReferenceGraph.cs" />
     <Compile Include="Resolver\CompositeResolveVisitorNavigator.cs" />

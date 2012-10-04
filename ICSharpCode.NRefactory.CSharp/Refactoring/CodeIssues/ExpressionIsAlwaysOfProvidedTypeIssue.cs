@@ -44,11 +44,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			static CSharpConversions conversion;
+			readonly CSharpConversions conversions;
 			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)
 			{
-				conversion = new CSharpConversions(ctx.Compilation);
+				conversions = CSharpConversions.Get(ctx.Compilation);
 			}
 
 			public override void VisitIsExpression (IsExpression isExpression)
@@ -58,8 +58,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var type = ctx.Resolve (isExpression.Expression).Type;
 				var providedType = ctx.ResolveType (isExpression.Type);
 
-				var foundConversion = conversion.ImplicitConversion(type, providedType);
-				if (foundConversion == Conversion.None)
+				var foundConversion = conversions.ImplicitConversion(type, providedType);
+				if (!foundConversion.IsValid)
 					return;
 
 				var action = new CodeAction (ctx.TranslateString ("Compare with 'null'"), 
