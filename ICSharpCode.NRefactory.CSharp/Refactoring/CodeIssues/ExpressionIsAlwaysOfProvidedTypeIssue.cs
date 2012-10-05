@@ -27,6 +27,7 @@
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -59,7 +60,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var providedType = ctx.ResolveType (isExpression.Type);
 
 				var foundConversion = conversions.ImplicitConversion(type, providedType);
-				if (!foundConversion.IsValid)
+				if (!IsValidReferenceOrBoxingConversion(type, providedType))
 					return;
 
 				var action = new CodeAction (ctx.TranslateString ("Compare with 'null'"), 
@@ -67,6 +68,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						isExpression.Expression.Clone (), BinaryOperatorType.InEquality, new PrimitiveExpression (null))));
 				AddIssue (isExpression, ctx.TranslateString ("Given expression is always of the provided type. " +
 					"Consider comparing with 'null' instead"), new [] { action });
+			}
+			
+			bool IsValidReferenceOrBoxingConversion(IType fromType, IType toType)
+			{
+				Conversion c = conversions.ImplicitConversion(fromType, toType);
+				return c.IsValid && (c.IsIdentityConversion || c.IsReferenceConversion || c.IsBoxingConversion);
 			}
 		}
 	}
