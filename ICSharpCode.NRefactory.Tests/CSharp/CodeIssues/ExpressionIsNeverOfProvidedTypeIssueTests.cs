@@ -273,5 +273,33 @@ sealed class TestClass
 }";
 			Test<ExpressionIsNeverOfProvidedTypeIssue> (input, 0);
 		}
+		
+		[Test]
+		public void UnknownExpression()
+		{
+			var input = @"
+sealed class TestClass
+{
+	void TestMethod ()
+	{
+		if (unknown is string) ;
+	}
+}";
+			Test<ExpressionIsNeverOfProvidedTypeIssue> (input, 0);
+		}
+		
+		[Test]
+		public void UnknownType()
+		{
+			var input = @"
+sealed class TestClass
+{
+	void TestMethod (int x)
+	{
+		if (x is unknown) ;
+	}
+}";
+			Test<ExpressionIsNeverOfProvidedTypeIssue> (input, 0);
+		}
 	}
 }

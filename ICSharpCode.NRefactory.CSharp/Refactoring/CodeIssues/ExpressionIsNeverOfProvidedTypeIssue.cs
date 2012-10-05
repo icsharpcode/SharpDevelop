@@ -61,6 +61,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var exprType = ctx.Resolve (isExpression.Expression).Type;
 				var providedType = ctx.ResolveType (isExpression.Type);
 
+				if (exprType.Kind == TypeKind.Unknown || providedType.Kind == TypeKind.Unknown)
+					return;
 				if (IsValidReferenceOrBoxingConversion(exprType, providedType))
 					return;
 				
