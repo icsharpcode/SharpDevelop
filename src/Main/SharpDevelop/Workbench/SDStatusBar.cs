@@ -154,7 +154,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			// to allow the user to see the red progress bar as a visual clue of a failed 
 			// build even if it occurs close to the end of the build, we'll hide the progress bar
 			// with a bit of time delay
-			WorkbenchSingleton.CallLater(
+			SD.MainThread.CallLater(
 				TimeSpan.FromMilliseconds(currentStatus == OperationStatus.Error ? 500 : 150),
 				new Action(DoHideProgress));
 		}
@@ -168,7 +168,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				var animation = new DoubleAnimation(0, new Duration(timeSpan), FillBehavior.HoldEnd);
 				statusProgressBarItem.BeginAnimation(OpacityProperty, animation);
 				jobNamePanel.BeginAnimation(OpacityProperty, animation);
-				WorkbenchSingleton.CallLater(
+				SD.MainThread.CallLater(
 					timeSpan,
 					delegate{
 						if (!statusProgressBarIsVisible) {

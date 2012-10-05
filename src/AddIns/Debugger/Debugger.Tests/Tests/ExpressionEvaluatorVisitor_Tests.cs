@@ -136,6 +136,16 @@ namespace Debugger.Tests
 				if (value < 0) return "DBBool.False";
 				return "DBBool.Null";
 			}
+			
+			public override bool Equals(object obj)
+			{
+				return obj is DBBool && this.value == ((DBBool)obj).value;
+			}
+			
+			public override int GetHashCode()
+			{
+				return value;
+			}
 		}
 		
 		public class DerivedClass: BaseClass

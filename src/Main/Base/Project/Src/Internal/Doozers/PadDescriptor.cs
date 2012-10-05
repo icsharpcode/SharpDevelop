@@ -178,7 +178,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			CreatePad();
 			if (padContent == null) return;
-			SD.Workbench.WorkbenchLayout.ActivatePad(this);
+			SD.Workbench.ActivatePad(this);
 		}
 		
 		public override string ToString()

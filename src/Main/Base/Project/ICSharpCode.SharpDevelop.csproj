@@ -227,7 +227,6 @@
       <DependentUpon>AbstractAttachToProcessForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.cs" />
-    <Compile Include="Src\Gui\IWorkbenchLayout.cs" />
     <Compile Include="Src\Services\FileChangeWatcher.cs" />
     <Compile Include="Util\AtomicBoolean.cs" />
     <Compile Include="Util\CustomThreadPoolTaskScheduler.cs" />
@@ -235,7 +234,6 @@
     <Compile Include="Util\DotnetDetection.cs" />
     <Compile Include="Util\EnumBinding.cs" />
     <Compile Include="Util\SharpDevelopExtensions.cs" />
-    <Compile Include="Util\FakeXmlViewContent.cs" />
     <Compile Include="Util\GenericConverter.cs" />
     <Compile Include="Util\ICanBeDirty.cs" />
     <Compile Include="Util\IImage.cs" />
@@ -269,6 +267,7 @@
     <Compile Include="Workbench\AbstractViewContent.cs" />
     <Compile Include="Workbench\AbstractViewContentHandlingLoadErrors.cs" />
     <Compile Include="Workbench\AbstractViewContentWithoutFile.cs" />
+    <Compile Include="Workbench\FakeXmlViewContent.cs" />
     <Compile Include="Workbench\File\FileService.cs" />
     <Compile Include="Workbench\File\IRecentOpen.cs" />
     <Compile Include="Workbench\ICustomizedCommands.cs" />
@@ -280,6 +279,7 @@
     <Compile Include="Workbench\SimpleViewContent.cs" />
     <Compile Include="Workbench\ViewContentEventArgs.cs" />
     <Compile Include="Workbench\ViewContentServiceAttribute.cs" />
+    <Compile Include="Workbench\WorkbenchSingleton.cs" />
     <None Include="ICSharpCode.SharpDevelop.addin" />
     <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.Designer.cs">
       <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
@@ -527,7 +527,6 @@
     <Compile Include="Src\Internal\Templates\Project\SolutionDescriptor.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\IEditable.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\IPositionable.cs" />
-    <Compile Include="Src\Gui\WorkbenchSingleton.cs" />
     <Compile Include="Src\Commands\EditCommands.cs" />
     <Compile Include="Src\Commands\FileCommands.cs" />
     <Compile Include="Src\Commands\FileTabStripCommands.cs" />

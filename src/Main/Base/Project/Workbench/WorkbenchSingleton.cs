@@ -14,23 +14,20 @@ using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
+	/// <summary>
+	/// WorkbenchSingleton only consists of obsolete members.
+	/// Use SD.Workbench and SD.MainThread instead.
+	/// </summary>
 	public static class WorkbenchSingleton
 	{
-		const string uiIconStyle             = "IconMenuItem.IconMenuStyle";
-		const string uiLanguageProperty      = "CoreProperties.UILanguage";
-		const string workbenchMemento        = "WorkbenchMemento";
-		const string activeContentState      = "Workbench.ActiveContent";
-		
-		static IWorkbench workbench;
-		
 		/// <summary>
 		/// Gets the main form. Returns null in unit-testing mode.
 		/// </summary>
 		[Obsolete("Use SD.WinForms.MainWin32Window instead")]
 		public static IWin32Window MainWin32Window {
 			get {
-				if (workbench != null) {
-					return workbench.MainWin32Window;
+				if (Workbench != null) {
+					return Workbench.MainWin32Window;
 				}
 				return null;
 			}
@@ -42,8 +39,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		[Obsolete("Use SD.Workbench.MainWindow instead")]
 		public static Window MainWindow {
 			get {
-				if (workbench != null) {
-					return workbench.MainWindow;
+				if (Workbench != null) {
+					return Workbench.MainWindow;
 				}
 				return null;
 			}
@@ -55,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		[Obsolete("Use SD.Workbench instead")]
 		public static IWorkbench Workbench {
 			get {
-				return workbench;
+				return SD.Services.GetService<IWorkbench>();
 			}
 		}
 		
@@ -64,46 +61,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get {
 				return SD.StatusBar;
 			}
-		}
-		
-		internal static void InitializeWorkbench(IWorkbench workbench, IWorkbenchLayout layout)
-		{
-			WorkbenchSingleton.workbench = workbench;
-			SD.Services.AddService(typeof(IWorkbench), workbench);
-			
-			LanguageService.ValidateLanguage();
-			
-			DisplayBindingService.InitializeService();
-			TaskService.Initialize();
-			Project.CustomToolsService.Initialize();
-			
-			workbench.Initialize();
-			workbench.SetMemento(PropertyService.NestedProperties(workbenchMemento));
-			workbench.WorkbenchLayout = layout;
-			
-			var applicationStateInfoService = SD.GetService<ApplicationStateInfoService>();
-			if (applicationStateInfoService != null) {
-				applicationStateInfoService.RegisterStateGetter(activeContentState, delegate { return SD.Workbench.ActiveContent; });
-			}
-			
-			OnWorkbenchCreated();
-			
-			// initialize workbench-dependent services:
-			Project.ProjectService.InitializeService();
-			NavigationService.InitializeService();
-			
-			workbench.ActiveContentChanged += delegate {
-				Debug.WriteLine("ActiveContentChanged to " + workbench.ActiveContent);
-				LoggingService.Debug("ActiveContentChanged to " + workbench.ActiveContent);
-			};
-			workbench.ActiveViewContentChanged += delegate {
-				Debug.WriteLine("ActiveViewContentChanged to " + workbench.ActiveViewContent);
-				LoggingService.Debug("ActiveViewContentChanged to " + workbench.ActiveViewContent);
-			};
-			workbench.ActiveWorkbenchWindowChanged += delegate {
-				Debug.WriteLine("ActiveWorkbenchWindowChanged to " + workbench.ActiveWorkbenchWindow);
-				LoggingService.Debug("ActiveWorkbenchWindowChanged to " + workbench.ActiveWorkbenchWindow);
-			};
 		}
 		
 		/// <summary>
@@ -124,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		[Obsolete("Use SD.MainThread.InvokeRequired instead")]
 		public static bool InvokeRequired {
 			get {
-				if (workbench == null)
+				if (Workbench == null)
 					return false; // unit test mode, don't crash
 				else
 					return SD.MainThread.InvokeRequired;
@@ -261,13 +218,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Calls a method on the GUI thread, but delays the call a bit.
 		/// </summary>
 		[Obsolete("Use SD.MainThread.CallLater() instead")]
-		public static async void CallLater(TimeSpan delay, Action method)
+		public static void CallLater(TimeSpan delay, Action method)
 		{
 			SD.MainThread.CallLater(delay, method);
 		}
 		#endregion
 		
-		static void OnWorkbenchCreated()
+		internal static void OnWorkbenchCreated()
 		{
 			WorkbenchCreated(null, EventArgs.Empty);
 		}

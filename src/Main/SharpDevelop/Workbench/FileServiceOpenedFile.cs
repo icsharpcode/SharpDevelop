@@ -109,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				bool wasDirty = this.IsDirty;
 				fileService.OpenedFileClosed(this);
 				
-				FileClosed.RaiseEvent(this, EventArgs.Empty);
+				FileClosed(this, EventArgs.Empty);
 				
 				if (fileChangeWatcher != null) {
 					fileChangeWatcher.Dispose();
@@ -156,6 +156,6 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 		}
 		
-		public override event EventHandler FileClosed;
+		public override event EventHandler FileClosed = delegate {};
 	}
 }

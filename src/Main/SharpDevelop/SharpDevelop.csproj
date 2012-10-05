@@ -117,6 +117,7 @@
     <Compile Include="Workbench\FileService.cs" />
     <Compile Include="Workbench\FileServiceOpenedFile.cs" />
     <Compile Include="Workbench\FullScreenEnabledWindow.cs" />
+    <Compile Include="Workbench\IWorkbenchLayout.cs" />
     <Compile Include="Workbench\LayoutConfiguration.cs" />
     <Compile Include="Workbench\RecentOpen.cs" />
     <Compile Include="Workbench\SDStatusBar.cs" />

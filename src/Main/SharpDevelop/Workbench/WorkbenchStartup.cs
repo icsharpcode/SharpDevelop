@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Windows.Input;
@@ -24,6 +25,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 	class WorkbenchStartup
 	{
 		const string workbenchMemento = "WorkbenchMemento";
+		const string activeContentState = "Workbench.ActiveContent";
 		App app;
 		
 		public void InitializeWorkbench()
@@ -34,7 +36,46 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			ComponentDispatcher.ThreadIdle += ComponentDispatcher_ThreadIdle;
 			LayoutConfiguration.LoadLayoutConfiguration();
 			SD.Services.AddService(typeof(IMessageLoop), new DispatcherMessageLoop(app.Dispatcher, SynchronizationContext.Current));
-			WorkbenchSingleton.InitializeWorkbench(new WpfWorkbench(), new AvalonDockLayout());
+			InitializeWorkbench(new WpfWorkbench(), new AvalonDockLayout());
+		}
+		
+		static void InitializeWorkbench(WpfWorkbench workbench, IWorkbenchLayout layout)
+		{
+			SD.Services.AddService(typeof(IWorkbench), workbench);
+			
+			LanguageService.ValidateLanguage();
+			
+			DisplayBindingService.InitializeService();
+			TaskService.Initialize();
+			Project.CustomToolsService.Initialize();
+			
+			workbench.Initialize();
+			workbench.SetMemento(PropertyService.NestedProperties(workbenchMemento));
+			workbench.WorkbenchLayout = layout;
+			
+			var applicationStateInfoService = SD.GetService<ApplicationStateInfoService>();
+			if (applicationStateInfoService != null) {
+				applicationStateInfoService.RegisterStateGetter(activeContentState, delegate { return SD.Workbench.ActiveContent; });
+			}
+			
+			WorkbenchSingleton.OnWorkbenchCreated();
+			
+			// initialize workbench-dependent services:
+			Project.ProjectService.InitializeService();
+			NavigationService.InitializeService();
+			
+			workbench.ActiveContentChanged += delegate {
+				Debug.WriteLine("ActiveContentChanged to " + workbench.ActiveContent);
+				LoggingService.Debug("ActiveContentChanged to " + workbench.ActiveContent);
+			};
+			workbench.ActiveViewContentChanged += delegate {
+				Debug.WriteLine("ActiveViewContentChanged to " + workbench.ActiveViewContent);
+				LoggingService.Debug("ActiveViewContentChanged to " + workbench.ActiveViewContent);
+			};
+			workbench.ActiveWorkbenchWindowChanged += delegate {
+				Debug.WriteLine("ActiveWorkbenchWindowChanged to " + workbench.ActiveWorkbenchWindow);
+				LoggingService.Debug("ActiveWorkbenchWindowChanged to " + workbench.ActiveWorkbenchWindow);
+			};
 		}
 		
 		static void ComponentDispatcher_ThreadIdle(object sender, EventArgs e)

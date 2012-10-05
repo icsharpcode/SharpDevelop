@@ -422,10 +422,6 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 		}
 		
-		public void UnloadPad(PadDescriptor content)
-		{
-		}
-		
 		public PadDescriptor GetPad(Type type)
 		{
 			SD.MainThread.VerifyAccess();
@@ -751,6 +747,21 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				return "<null>";
 			else
 				return element.GetType().FullName + ": " + element.ToString();
+		}
+		
+		public string CurrentLayoutConfiguration {
+			get {
+				return LayoutConfiguration.CurrentLayoutName;
+			}
+			set {
+				LayoutConfiguration.CurrentLayoutName = value;
+			}
+		}
+		
+		public void ActivatePad(PadDescriptor content)
+		{
+			if (workbenchLayout != null)
+				workbenchLayout.ActivatePad(content);
 		}
 	}
 }

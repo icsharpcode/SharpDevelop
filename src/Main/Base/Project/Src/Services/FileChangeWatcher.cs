@@ -173,7 +173,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 					// delay reloading message a bit, prevents showing two messages
 					// when the file changes twice in quick succession; and prevents
 					// trying to reload the file while it is still being written
-					WorkbenchSingleton.CallLater(
+					SD.MainThread.CallLater(
 						TimeSpan.FromSeconds(0.5),
 						delegate { MainForm_Activated(this, EventArgs.Empty); } );
 				}

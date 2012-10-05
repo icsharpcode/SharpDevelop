@@ -9,7 +9,6 @@ using System.Collections.Specialized;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
-using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {

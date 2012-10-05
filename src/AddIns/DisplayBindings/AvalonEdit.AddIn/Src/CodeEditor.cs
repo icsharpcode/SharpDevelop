@@ -435,7 +435,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditor.TextArea.Caret.Location);
 			}
 			
-			CaretPositionChanged.RaiseEvent(this, EventArgs.Empty);
+			if (CaretPositionChanged != null)
+				CaretPositionChanged(this, EventArgs.Empty);
 		}
 		
 		volatile static ReadOnlyCollection<ICodeCompletionBinding> codeCompletionBindings;

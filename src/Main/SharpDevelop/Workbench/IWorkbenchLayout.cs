@@ -3,9 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Workbench;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// The IWorkbenchLayout object is responsible for the layout of
@@ -13,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// implementation etc. it could be attached/detached at the runtime
 	/// to a workbench.
 	/// </summary>
-	public interface IWorkbenchLayout
+	interface IWorkbenchLayout
 	{
 		/// <summary>
 		/// The active workbench window.

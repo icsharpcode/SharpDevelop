@@ -491,7 +491,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			CaretHighlightAdorner adorner = new CaretHighlightAdorner(textArea);
 			layer.Add(adorner);
 			
-			WorkbenchSingleton.CallLater(TimeSpan.FromSeconds(1), () => layer.Remove(adorner));
+			SD.MainThread.CallLater(TimeSpan.FromSeconds(1), () => layer.Remove(adorner));
 		}
 		
 		#region UpdateParseInformation - Folding

@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// Description of FontSelectionPanel.
 	/// </summary>
-	[Obsolete("XML Forms are obsolete")]
+	[Obsolete("XMLForms-based FontSelectionPanel is obsolete")]
 	public class FontSelectionPanel : BaseSharpDevelopUserControl
 	{
 		public string CurrentFontString {

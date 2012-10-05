@@ -109,12 +109,6 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// </summary>
 		event EventHandler ActiveContentChanged;
 		
-		[ObsoleteAttribute("WorkbenchLayout will be removed; if any features on it are not available otherwise, please move them!")]
-		IWorkbenchLayout WorkbenchLayout {
-			get;
-			set;
-		}
-		
 		/// <summary>
 		/// Gets whether SharpDevelop is the active application in Windows.
 		/// </summary>
@@ -138,14 +132,9 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		void ShowView(IViewContent content, bool switchToOpenedView);
 		
 		/// <summary>
-		/// Inserts a new <see cref="IPadContent"/> object in the workspace.
+		/// Activates the specified pad.
 		/// </summary>
-		void ShowPad(PadDescriptor content);
-		
-		/// <summary>
-		/// Closes and disposes a <see cref="IPadContent"/>.
-		/// </summary>
-		void UnloadPad(PadDescriptor content);
+		void ActivatePad(PadDescriptor content);
 		
 		/// <summary>
 		/// Returns a pad from a specific type.
@@ -164,6 +153,12 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// 	True if all views were closed properly, false if closing was aborted.
 		/// </returns>
 		bool CloseAllSolutionViews();
+		
+		/// <summary>
+		/// Gets/Sets the name of the current layout configuration.
+		/// Setting this property causes the current layout to be saved, and the specified layout to be loaded.
+		/// </summary>
+		string CurrentLayoutConfiguration { get; set; }
 		
 		/// <summary>
 		/// Is called, when a workbench view was opened

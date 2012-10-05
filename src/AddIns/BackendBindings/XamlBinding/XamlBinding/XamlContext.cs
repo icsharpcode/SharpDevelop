@@ -103,7 +103,7 @@ namespace ICSharpCode.XamlBinding
 		public ElementWrapper ActiveElement { get; set; }
 		public ElementWrapper ParentElement { get; set; }
 		public List<ElementWrapper> Ancestors { get; set; }
-		new public AttributeWrapper Attribute { get; set; }
+		public AttributeWrapper Attribute { get; set; }
 		public AttributeValue AttributeValue { get; set; }
 		public string RawAttributeValue { get; set; }
 		public int ValueStartOffset { get; set; }

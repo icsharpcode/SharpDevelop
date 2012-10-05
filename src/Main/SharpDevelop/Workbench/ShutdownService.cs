@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		public bool Shutdown()
 		{
 			SD.Workbench.MainWindow.Close();
-			return SD.Workbench.WorkbenchLayout == null;
+			return ((WpfWorkbench)SD.Workbench).WorkbenchLayout == null;
 		}
 		
 		#region PreventShutdown

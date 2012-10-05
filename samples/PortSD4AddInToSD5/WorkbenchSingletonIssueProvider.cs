@@ -75,6 +75,14 @@ namespace PortSD4AddInToSD5
 				if (irr == null)
 					continue;
 				switch (irr.Member.FullName) {
+					case "ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.CallLater":
+						yield return Issue(
+							invocationExpression,
+							script => {
+								script.Replace(invocationExpression,
+								               new IdentifierExpression("SD").Member("MainThread").Invoke("CallLater", invocationExpression.Arguments.Select(e => e.Clone())));
+							});
+						break;
 					case "ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.AssertMainThread":
 						yield return Issue(
 							invocationExpression,

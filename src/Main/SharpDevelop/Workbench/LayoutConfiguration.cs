@@ -125,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				SD.MainThread.VerifyAccess();
 				if (value != CurrentLayoutName) {
 					currentLayoutName = value;
-					SD.Workbench.WorkbenchLayout.LoadConfiguration();
+					((WpfWorkbench)SD.Workbench).WorkbenchLayout.LoadConfiguration();
 					OnLayoutChanged(EventArgs.Empty);
 				}
 			}
@@ -134,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		public static void ReloadDefaultLayout()
 		{
 			currentLayoutName = DefaultLayoutName;
-			SD.Workbench.WorkbenchLayout.LoadConfiguration();
+			((WpfWorkbench)SD.Workbench).WorkbenchLayout.LoadConfiguration();
 			OnLayoutChanged(EventArgs.Empty);
 		}
 		

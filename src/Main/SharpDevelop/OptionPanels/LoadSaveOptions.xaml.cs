@@ -12,8 +12,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
+namespace ICSharpCode.SharpDevelop.OptionPanels
 {
 	partial class LoadSaveOptions : OptionPanel
 	{

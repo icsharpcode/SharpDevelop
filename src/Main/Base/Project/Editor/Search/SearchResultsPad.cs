@@ -105,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 				}
 			}
 			
-			SearchResultsShown.RaiseEvent(this, EventArgs.Empty);
+			SearchResultsShown(this, EventArgs.Empty);
 		}
 		
 		public void ShowSearchResults(string title, IEnumerable<SearchResultMatch> matches)
@@ -118,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			ShowSearchResults(CreateSearchResult(title, matches));
 		}
 		
-		public event EventHandler SearchResultsShown;
+		public event EventHandler SearchResultsShown = delegate {};
 		
 		public static ISearchResult CreateSearchResult(string title, IEnumerable<SearchResultMatch> matches)
 		{

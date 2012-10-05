@@ -74,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 			
 			if (oldItem != editIndex && oldItem != resetIndex) {
-				SD.Workbench.WorkbenchLayout.StoreConfiguration();
+				((WpfWorkbench)SD.Workbench).WorkbenchLayout.StoreConfiguration();
 			}
 			
 			if (comboBox.SelectedIndex == editIndex) {

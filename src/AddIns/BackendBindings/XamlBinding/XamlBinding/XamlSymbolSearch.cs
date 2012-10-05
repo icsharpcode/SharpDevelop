@@ -27,7 +27,6 @@ namespace ICSharpCode.XamlBinding
 	/// </summary>
 	public class XamlSymbolSearch : ISymbolSearch
 	{
-		IProject project;
 		ICompilation compilation;
 		IEntity entity;
 		List<FileName> interestingFileNames;

@@ -50,8 +50,6 @@ namespace ICSharpCode.Core.WinForms
 
 		void CreateDropDownItems()
 		{
-			ToolStripItem[] itemsToAdd = null;
-			
 			DropDownItems.Clear();
 			foreach (object item in subItems)
 			{
