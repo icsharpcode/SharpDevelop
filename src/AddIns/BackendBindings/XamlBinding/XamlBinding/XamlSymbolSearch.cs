@@ -94,6 +94,8 @@ namespace ICSharpCode.XamlBinding
 				if (document == null) {
 					document = new ReadOnlyDocument(textSource, fileName);
 					highlighter = SD.EditorControlService.CreateHighlighter(document);
+					if (highlighter != null)
+						highlighter.BeginHighlighting();
 				}
 				var result = resolver.Resolve(parseInfo, document.GetLocation(offset + entity.Name.Length / 2 + 1), compilation, cancellationToken);
 				int length = entity.Name.Length;

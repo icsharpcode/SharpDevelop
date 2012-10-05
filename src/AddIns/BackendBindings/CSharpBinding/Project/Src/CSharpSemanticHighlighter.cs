@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows.Threading;
 using CSharpBinding.Parser;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.Core;
@@ -38,14 +39,17 @@ namespace CSharpBinding
 		readonly HighlightingColor parameterModifierColor;
 		readonly HighlightingColor inactiveCodeColor;
 		
-		List<IDocumentLine> invalidLines = new List<IDocumentLine>();
-		List<CachedLine> cachedLines = new List<CachedLine>();
+		List<IDocumentLine> invalidLines;
+		List<CachedLine> cachedLines;
 		bool hasCrashed;
 		bool forceParseOnNextRefresh;
+		bool eventHandlersAreRegistered;
+		bool inHighlightingGroup;
 		
 		int lineNumber;
 		HighlightedLine line;
 		CSharpAstResolver resolver;
+		CSharpFullParseInformation parseInfo;
 		
 		bool isInAccessor;
 		
@@ -66,14 +70,30 @@ namespace CSharpBinding
 			this.parameterModifierColor = highlighting.GetNamedColor("ParameterModifiers");
 			this.inactiveCodeColor = highlighting.GetNamedColor("InactiveCode");
 			
-			SD.ParserService.ParseInformationUpdated += ParserService_ParseInformationUpdated;
-			SD.ParserService.LoadSolutionProjectsThread.Finished += ParserService_LoadSolutionProjectsThreadEnded;
+			if (document is TextDocument && SD.MainThread.CheckAccess()) {
+				// Use the cache only for the live AvalonEdit document
+				// Highlighting in read-only documents (e.g. search results) does
+				// not need the cache as it does not need to highlight the same line multiple times
+				cachedLines = new List<CachedLine>();
+				// Line invalidation is only necessary for the live AvalonEdit document
+				invalidLines = new List<IDocumentLine>();
+				// Also, attach these event handlers only for real documents in the editor,
+				// we don't need them for the highlighting in search results etc.
+				SD.ParserService.ParseInformationUpdated += ParserService_ParseInformationUpdated;
+				SD.ParserService.LoadSolutionProjectsThread.Finished += ParserService_LoadSolutionProjectsThreadEnded;
+				eventHandlersAreRegistered = true;
+			}
 		}
 		
 		public void Dispose()
 		{
-			SD.ParserService.ParseInformationUpdated -= ParserService_ParseInformationUpdated;
-			SD.ParserService.LoadSolutionProjectsThread.Finished -= ParserService_LoadSolutionProjectsThreadEnded;
+			if (eventHandlersAreRegistered) {
+				SD.ParserService.ParseInformationUpdated -= ParserService_ParseInformationUpdated;
+				SD.ParserService.LoadSolutionProjectsThread.Finished -= ParserService_LoadSolutionProjectsThreadEnded;
+				eventHandlersAreRegistered = false;
+			}
+			this.resolver = null;
+			this.parseInfo = null;
 		}
 		#endregion
 		
@@ -196,34 +216,53 @@ namespace CSharpBinding
 			}
 			ITextSourceVersion newVersion = document.Version;
 			CachedLine cachedLine = null;
-			for (int i = 0; i < cachedLines.Count; i++) {
-				if (cachedLines[i].DocumentLine == documentLine) {
-					if (newVersion == null || !newVersion.BelongsToSameDocumentAs(cachedLines[i].OldVersion)) {
-						// cannot list changes from old to new: we can't update the cache, so we'll remove it
-						cachedLines.RemoveAt(i);
-					} else {
-						cachedLine = cachedLines[i];
+			if (cachedLines != null) {
+				for (int i = 0; i < cachedLines.Count; i++) {
+					if (cachedLines[i].DocumentLine == documentLine) {
+						if (newVersion == null || !newVersion.BelongsToSameDocumentAs(cachedLines[i].OldVersion)) {
+							// cannot list changes from old to new: we can't update the cache, so we'll remove it
+							cachedLines.RemoveAt(i);
+						} else {
+							cachedLine = cachedLines[i];
+						}
+						break;
 					}
-					break;
+				}
+				
+				if (cachedLine != null && cachedLine.IsValid && newVersion.CompareAge(cachedLine.OldVersion) == 0) {
+					// the file hasn't changed since the cache was created, so just reuse the old highlighted line
+					return cachedLine.HighlightedLine;
 				}
 			}
 			
-			if (cachedLine != null && cachedLine.IsValid && newVersion.CompareAge(cachedLine.OldVersion) == 0) {
-				// the file hasn't changed since the cache was created, so just reuse the old highlighted line
-				return cachedLine.HighlightedLine;
+			bool wasInHighlightingGroup = inHighlightingGroup;
+			if (!inHighlightingGroup) {
+				BeginHighlighting();
 			}
-			
-			CSharpFullParseInformation parseInfo;
-			if (forceParseOnNextRefresh) {
-				forceParseOnNextRefresh = false;
-				parseInfo = SD.ParserService.Parse(FileName.Create(document.FileName), document) as CSharpFullParseInformation;
-			} else {
-				parseInfo = SD.ParserService.GetCachedParseInformation(FileName.Create(document.FileName), document.Version) as CSharpFullParseInformation;
+			try {
+				return DoHighlightLine(lineNumber, documentLine, cachedLine, newVersion);
+			} finally {
+				line = null;
+				if (!wasInHighlightingGroup)
+					EndHighlighting();
+			}
+		}
+		
+		HighlightedLine DoHighlightLine(int lineNumber, IDocumentLine documentLine, CachedLine cachedLine, ITextSourceVersion newVersion)
+		{
+			if (parseInfo == null) {
+				if (forceParseOnNextRefresh) {
+					forceParseOnNextRefresh = false;
+					parseInfo = SD.ParserService.Parse(FileName.Create(document.FileName), document) as CSharpFullParseInformation;
+				} else {
+					parseInfo = SD.ParserService.GetCachedParseInformation(FileName.Create(document.FileName), newVersion) as CSharpFullParseInformation;
+				}
 			}
 			if (parseInfo == null) {
-				if (!invalidLines.Contains(documentLine))
+				if (invalidLines != null && !invalidLines.Contains(documentLine)) {
 					invalidLines.Add(documentLine);
-				Debug.WriteLine("Semantic highlighting for line {0} - marking as invalid", lineNumber);
+					Debug.WriteLine("Semantic highlighting for line {0} - marking as invalid", lineNumber);
+				}
 				
 				if (cachedLine != null) {
 					// If there's a cached version, adjust it to the latest document changes and return it.
@@ -235,11 +274,12 @@ namespace CSharpBinding
 				}
 			}
 			
-			var compilation = SD.ParserService.GetCompilationForFile(parseInfo.FileName);
-			this.resolver = parseInfo.GetResolver(compilation);
+			if (resolver == null) {
+				var compilation = SD.ParserService.GetCompilationForFile(parseInfo.FileName);
+				resolver = parseInfo.GetResolver(compilation);
+			}
 			
-			HighlightedLine line = new HighlightedLine(document, documentLine);
-			this.line = line;
+			line = new HighlightedLine(document, documentLine);
 			this.lineNumber = lineNumber;
 			if (Debugger.IsAttached) {
 				parseInfo.SyntaxTree.AcceptVisitor(this);
@@ -251,10 +291,8 @@ namespace CSharpBinding
 					throw new ApplicationException("Error highlighting line " + lineNumber, ex);
 				}
 			}
-			this.line = null;
-			this.resolver = null;
 			//Debug.WriteLine("Semantic highlighting for line {0} - added {1} sections", lineNumber, line.Sections.Count);
-			if (document.Version != null) {
+			if (cachedLines != null && document.Version != null) {
 				cachedLines.Add(new CachedLine(line, document.Version));
 			}
 			return line;
@@ -268,12 +306,22 @@ namespace CSharpBinding
 		
 		public void BeginHighlighting()
 		{
-			
+			if (inHighlightingGroup)
+				throw new InvalidOperationException();
+			inHighlightingGroup = true;
+			if (invalidLines == null) {
+				// if invalidation isn't available, we're forced to parse the file now
+				forceParseOnNextRefresh = true;
+			}
 		}
 		
 		public void EndHighlighting()
 		{
-			// use this event to remove cached lines which are no longer visible
+			inHighlightingGroup = false;
+			this.resolver = null;
+			this.parseInfo = null;
+			
+			// TODO use this to remove cached lines which are no longer visible
 //			var visibleDocumentLines = new HashSet<IDocumentLine>(syntaxHighlighter.GetVisibleDocumentLines());
 //			cachedLines.RemoveAll(c => !visibleDocumentLines.Contains(c.DocumentLine));
 		}

@@ -145,6 +145,8 @@ namespace CSharpBinding.Parser
 					if (document == null) {
 						document = new ReadOnlyDocument(fileContent, parseInfo.FileName);
 						highlighter = SD.EditorControlService.CreateHighlighter(document);
+						if (highlighter != null)
+							highlighter.BeginHighlighting();
 					}
 					var region = new DomRegion(parseInfo.FileName, node.StartLocation, node.EndLocation);
 					int offset = document.GetOffset(node.StartLocation);

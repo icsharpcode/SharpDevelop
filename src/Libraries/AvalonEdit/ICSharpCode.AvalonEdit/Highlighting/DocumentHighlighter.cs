@@ -31,6 +31,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		readonly IHighlightingDefinition definition;
 		readonly WeakLineTracker weakLineTracker;
 		bool isHighlighting;
+		bool isInHighlightingGroup;
+		bool isDisposed;
 		
 		/// <summary>
 		/// Gets the document that this DocumentHighlighter is highlighting.
@@ -50,6 +52,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				throw new ArgumentNullException("definition");
 			this.document = document;
 			this.definition = definition;
+			document.VerifyAccess();
 			weakLineTracker = WeakLineTracker.Register(document, this);
 			InvalidateHighlighting();
 		}
@@ -75,6 +78,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		{
 			if (weakLineTracker != null)
 				weakLineTracker.Deregister();
+			isDisposed = true;
 		}
 		
 		void ILineTracker.BeforeRemoveLine(DocumentLine line)
@@ -197,6 +201,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		
 		void CheckIsHighlighting()
 		{
+			if (isDisposed) {
+				throw new ObjectDisposedException("DocumentHighlighter");
+			}
 			if (isHighlighting) {
 				throw new InvalidOperationException("Invalid call - a highlighting operation is currently running.");
 			}
@@ -505,20 +512,28 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		}
 		#endregion
 		
+		/// <inheritdoc/>
 		public HighlightingColor DefaultTextColor {
 			get { return null; }
 		}
 		
+		/// <inheritdoc/>
 		public void BeginHighlighting()
 		{
-			
+			if (isInHighlightingGroup)
+				throw new InvalidOperationException("Highlighting group is already open");
+			isInHighlightingGroup = true;
 		}
 		
+		/// <inheritdoc/>
 		public void EndHighlighting()
 		{
-			
+			if (!isInHighlightingGroup)
+				throw new InvalidOperationException("Highlighting group is not open");
+			isInHighlightingGroup = false;
 		}
 		
+		/// <inheritdoc/>
 		public HighlightingColor GetNamedColor(string name)
 		{
 			return definition.GetNamedColor(name);

@@ -211,6 +211,8 @@ namespace SearchAndReplace
 					if (document == null) {
 						document = new ReadOnlyDocument(source, fileName);
 						highlighter = SD.EditorControlService.CreateHighlighter(document);
+						if (highlighter != null)
+							highlighter.BeginHighlighting();
 					}
 					var start = document.GetLocation(result.Offset);
 					var end = document.GetLocation(result.Offset + result.Length);

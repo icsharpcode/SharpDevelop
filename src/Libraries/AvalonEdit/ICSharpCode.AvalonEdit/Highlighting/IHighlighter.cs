@@ -63,13 +63,21 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		event HighlightingStateChangedEventHandler HighlightingStateChanged;
 		
 		/// <summary>
-		/// Opens a group of HighlightLine calls.
+		/// Opens a group of <see cref="HighlightLine"/> calls.
+		/// It is not necessary to call this method before calling <see cref="HighlightLine"/>,
+		/// however, doing so can make the highlighting much more performant in some cases
+		/// (e.g. the C# semantic highlighter in SharpDevelop will re-use the resolver within a highlighting group).
 		/// </summary>
+		/// <remarks>
+		/// The group is closed by either a <see cref="EndHighlighting"/> or a <see cref="IDisposable.Dispose"/> call.
+		/// Nested groups are not allowed.
+		/// </remarks>
 		void BeginHighlighting();
 		
 		/// <summary>
-		/// Closes the currently opened group of HighlightLine calls.
+		/// Closes the currently opened group of <see cref="HighlightLine"/> calls.
 		/// </summary>
+		/// <seealso cref="BeginHighlighting"/>.
 		void EndHighlighting();
 		
 		/// <summary>

@@ -20,6 +20,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		readonly IHighlightingDefinition definition;
 		TextView textView;
 		IHighlighter highlighter;
+		bool isFixedHighlighter;
 		
 		/// <summary>
 		/// Creates a new HighlightingColorizer instance.
@@ -33,7 +34,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		}
 		
 		/// <summary>
-		/// Creates a new HighlightingColorizer instance.
+		/// Creates a new HighlightingColorizer instance that uses a fixed highlighter instance.
+		/// The colorizer can only be used with text views that show the document for which
+		/// the highlighter was created.
 		/// </summary>
 		/// <param name="highlighter">The highlighter to be used.</param>
 		public HighlightingColorizer(IHighlighter highlighter)
@@ -41,6 +44,15 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			if (highlighter == null)
 				throw new ArgumentNullException("highlighter");
 			this.highlighter = highlighter;
+			this.isFixedHighlighter = true;
+		}
+		
+		/// <summary>
+		/// Creates a new HighlightingColorizer instance.
+		/// Derived classes using this constructor must override the <see cref="CreateHighlighter"/> method.
+		/// </summary>
+		protected HighlightingColorizer()
+		{
 		}
 		
 		void textView_DocumentChanged(object sender, EventArgs e)
@@ -61,7 +73,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				// remove highlighter if it is registered
 				if (textView.Services.GetService(typeof(IHighlighter)) == highlighter)
 					textView.Services.RemoveService(typeof(IHighlighter));
-				
+				if (!isFixedHighlighter) {
+					if (highlighter != null)
+						highlighter.Dispose();
+					highlighter = null;
+				}
 			}
 		}
 		
@@ -72,8 +88,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		protected virtual void RegisterServices(TextView textView)
 		{
 			if (textView.Document != null) {
-				highlighter = textView.Document != null ? CreateHighlighter(textView, textView.Document) : null;
-				if (highlighter != null) {
+				if (!isFixedHighlighter)
+					highlighter = textView.Document != null ? CreateHighlighter(textView, textView.Document) : null;
+				if (highlighter != null && highlighter.Document == textView.Document) {
 					// add service only if it doesn't already exist
 					if (textView.Services.GetService(typeof(IHighlighter)) == null) {
 						textView.Services.AddService(typeof(IHighlighter), highlighter);
@@ -88,7 +105,10 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		protected virtual IHighlighter CreateHighlighter(TextView textView, TextDocument document)
 		{
-			return highlighter ?? new DocumentHighlighter(document, definition);
+			if (definition != null)
+				return new DocumentHighlighter(document, definition);
+			else
+				throw new NotSupportedException("Cannot create a highlighter because no IHighlightingDefinition was specified, and the CreateHighlighter() method was not overridden.");
 		}
 		
 		/// <inheritdoc/>
@@ -101,6 +121,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			this.textView = textView;
 			textView.DocumentChanged += textView_DocumentChanged;
 			textView.VisualLineConstructionStarting += textView_VisualLineConstructionStarting;
+			textView.VisualLinesChanged += textView_VisualLinesChanged;
 			RegisterServices(textView);
 		}
 		
@@ -110,6 +131,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			DeregisterServices(textView);
 			textView.DocumentChanged -= textView_DocumentChanged;
 			textView.VisualLineConstructionStarting -= textView_VisualLineConstructionStarting;
+			textView.VisualLinesChanged -= textView_VisualLinesChanged;
 			base.OnRemoveFromTextView(textView);
 			this.textView = null;
 		}
@@ -122,8 +144,16 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				// We need to detect this case and issue a redraw (through TextViewDocumentHighligher.OnHighlightStateChanged)
 				// before the visual line construction reuses existing lines that were built using the invalid highlighting state.
 				lineNumberBeingColorized = e.FirstLineInView.LineNumber - 1;
+				highlighter.BeginHighlighting();
 				highlighter.UpdateHighlightingState(lineNumberBeingColorized);
 				lineNumberBeingColorized = 0;
+			}
+		}
+		
+		void textView_VisualLinesChanged(object sender, EventArgs e)
+		{
+			if (highlighter != null) {
+				highlighter.EndHighlighting();
 			}
 		}
 		
