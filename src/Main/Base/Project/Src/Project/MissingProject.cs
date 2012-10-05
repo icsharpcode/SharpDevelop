@@ -2,12 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
 	public class MissingProject : AbstractProject
 	{
-		public MissingProject(string fileName, string title)
+		public MissingProject(FileName fileName, string title)
 		{
 			Name     = title;
 			FileName = fileName;

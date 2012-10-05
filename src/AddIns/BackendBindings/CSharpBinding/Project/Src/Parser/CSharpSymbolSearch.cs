@@ -117,6 +117,9 @@ namespace CSharpBinding
 					var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
 					results.Add(new Reference(region, result, offset, length, builder, defaultTextColor));
 				}, cancellationToken);
+			if (highlighter != null) {
+				highlighter.Dispose();
+			}
 			if (results.Count > 0)
 				callback(new SearchedFile(fileName, results));
 		}

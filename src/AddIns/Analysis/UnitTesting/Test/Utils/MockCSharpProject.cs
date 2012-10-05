@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.CSharp;
@@ -26,7 +27,7 @@ namespace UnitTesting.Tests.Utils
 			       	ProjectName = name,
 			       	Platform = "x86",
 			       	TargetFramework = TargetFramework.Net40Client,
-			       	OutputProjectFileName = "c:\\projects\\" + name + "\\" + name + ".csproj"
+			       	OutputProjectFileName = FileName.Create("c:\\projects\\" + name + "\\" + name + ".csproj")
 			       })
 		{
 			OutputType = OutputType.Library;

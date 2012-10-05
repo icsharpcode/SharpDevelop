@@ -13,7 +13,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public class MSBuildFileProject : AbstractProject
 	{
-		public MSBuildFileProject(string fileName, string title)
+		public MSBuildFileProject(FileName fileName, string title)
 		{
 			Name     = title;
 			FileName = fileName;

@@ -26,7 +26,7 @@ namespace CSharpBinding
 	/// <summary>
 	/// Semantic highlighting for C#.
 	/// </summary>
-	public class CSharpSemanticHighlighter : DepthFirstAstVisitor, IHighlighter, IDisposable
+	public class CSharpSemanticHighlighter : DepthFirstAstVisitor, IHighlighter
 	{
 		readonly IDocument document;
 		readonly HighlightingColor defaultTextColor;

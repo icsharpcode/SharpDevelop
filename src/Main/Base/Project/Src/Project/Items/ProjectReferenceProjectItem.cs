@@ -16,8 +16,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public IProject ReferencedProject {
 			get {
-				// must be thread-safe because it's used by LoadSolutionProjectsThread
-				return ProjectService.GetProject(this.FileName);
+				// must be thread-safe because it's used by LoadSolutionProjectsThread,
+				// and by IAssemblyReference.Resolve()
+				return ProjectService.GetProject(Core.FileName.Create(this.FileName));
 			}
 		}
 		

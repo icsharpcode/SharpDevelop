@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// 
 		/// Only the getter is thread-safe.
 		/// </summary>
-		string FileName {
+		FileName FileName {
 			get;
 			set;
 		}

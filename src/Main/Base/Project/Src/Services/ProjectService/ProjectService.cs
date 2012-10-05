@@ -52,13 +52,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets an open project by the name of the project file.
 		/// </summary>
-		public static IProject GetProject(string projectFilename)
+		public static IProject GetProject(FileName projectFilename)
 		{
 			Solution sln = openSolution;
 			if (sln == null)
 				return null;
 			foreach (IProject project in sln.Projects) {
-				if (FileUtility.IsEqualFileName(project.FileName, projectFilename)) {
+				if (project.FileName == projectFilename) {
 					return project;
 				}
 			}
@@ -376,7 +376,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						                                          "${res:Global.IgnoreButtonText}");
 						if (res == 0) {
 							// Add project to solution
-							Commands.AddExitingProjectToSolution.AddProject((ISolutionFolderNode)ProjectBrowserPad.Instance.SolutionNode, fileName);
+							Commands.AddExitingProjectToSolution.AddProject((ISolutionFolderNode)ProjectBrowserPad.Instance.SolutionNode, FileName.Create(fileName));
 							SaveSolution();
 							return;
 						} else if (res == 1) {
@@ -402,7 +402,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			IProjectBinding binding = ProjectBindingService.GetBindingPerProjectFile(fileName);
 			IProject project;
 			if (binding != null) {
-				project = ProjectBindingService.LoadProject(new ProjectLoadInformation(solution, fileName, solution.Name));
+				project = ProjectBindingService.LoadProject(new ProjectLoadInformation(solution, FileName.Create(fileName), solution.Name));
 				if (project is UnknownProject) {
 					if (((UnknownProject)project).WarningDisplayedToUser == false) {
 						((UnknownProject)project).ShowWarningMessageBox();

@@ -347,6 +347,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			IHighlighter highlighter = null;
 			foreach (Reference r in list) {
 				if (document == null || fileName != r.FileName) {
+					if (highlighter != null) {
+						highlighter.Dispose();
+					}
 					fileName = r.FileName;
 					buffer = SD.FileService.GetFileContent(r.FileName);
 					document = new ReadOnlyDocument(buffer, r.FileName);
@@ -360,6 +363,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
 				SearchResultMatch res = new SearchResultMatch(fileName, start, end, startOffset, endOffset - startOffset, builder, defaultTextColor);
 				results.Add(res);
+			}
+			if (highlighter != null) {
+				highlighter.Dispose();
 			}
 			SearchResultsPad.Instance.ShowSearchResults(title, results);
 			SearchResultsPad.Instance.BringToFront();

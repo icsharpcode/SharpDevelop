@@ -544,7 +544,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						SolutionFolder newFolder = SolutionFolder.ReadFolder(sr, title, location, guid);
 						newSolution.AddFolder(newFolder);
 					} else {
-						ProjectLoadInformation loadInfo = new ProjectLoadInformation(newSolution, location, title);
+						ProjectLoadInformation loadInfo = new ProjectLoadInformation(newSolution, Core.FileName.Create(location), title);
 						loadInfo.TypeGuid = projectGuid;
 						loadInfo.Guid = guid;
 						projectsToLoad.Add(loadInfo);

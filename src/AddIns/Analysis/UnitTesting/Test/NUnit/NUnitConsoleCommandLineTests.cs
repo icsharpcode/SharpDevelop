@@ -23,7 +23,7 @@ namespace UnitTesting.Tests.NUnit
 		public void SetUp()
 		{
 			project = new MockCSharpProject();
-			project.FileName = @"C:\Projects\MyTests\MyTests.csproj";
+			project.FileName = FileName.Create(@"C:\Projects\MyTests\MyTests.csproj");
 			project.AssemblyName = "MyTests";
 			project.OutputType = OutputType.Library;
 			project.SetProperty("OutputPath", null);

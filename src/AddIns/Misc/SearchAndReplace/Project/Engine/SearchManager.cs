@@ -218,6 +218,9 @@ namespace SearchAndReplace
 					var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
 					results.Add(new AvalonEditSearchResultMatch(fileName, start, end, result.Offset, result.Length, builder, defaultTextColor, result));
 				}
+				if (highlighter != null) {
+					highlighter.Dispose();
+				}
 				if (results.Count > 0)
 					return new SearchedFile(fileName, results);
 				else

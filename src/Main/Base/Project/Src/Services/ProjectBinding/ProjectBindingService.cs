@@ -89,7 +89,7 @@ namespace ICSharpCode.SharpDevelop
 			if (loadInformation == null)
 				throw new ArgumentNullException("loadInformation");
 			
-			string location = FileUtility.NormalizePath(loadInformation.FileName);
+			var location = loadInformation.FileName;
 			string title = loadInformation.ProjectName;
 			IProgressMonitor progressMonitor = loadInformation.ProgressMonitor;
 			

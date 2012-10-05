@@ -126,6 +126,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		readonly IHighlightingDefinition highlightingDefinition;
 		readonly IEnumerable<CustomizedHighlightingColor> customizations;
 		
+		[ObsoleteAttribute("Use a normal HighlightingColorizer with a CustomizingHighlighter instead")]
 		public CustomizableHighlightingColorizer(IHighlightingDefinition highlightingDefinition, IEnumerable<CustomizedHighlightingColor> customizations)
 			: base(highlightingDefinition)
 		{
@@ -152,7 +153,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return new CustomizingHighlighter(textView, customizations, highlightingDefinition, base.CreateHighlighter(textView, document));
 		}
 		
-		internal sealed class CustomizingHighlighter : IHighlighter
+		internal sealed class CustomizingHighlighter : IHighlighter, IDisposable
 		{
 			readonly TextView textView;
 			readonly IEnumerable<CustomizedHighlightingColor> customizations;
@@ -295,6 +296,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			public void EndHighlighting()
 			{
 				baseHighlighter.EndHighlighting();
+			}
+			
+			public void Dispose()
+			{
+				baseHighlighter.Dispose();
 			}
 		}
 		

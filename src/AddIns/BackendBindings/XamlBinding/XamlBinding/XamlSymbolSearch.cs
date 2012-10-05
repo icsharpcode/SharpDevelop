@@ -104,6 +104,9 @@ namespace ICSharpCode.XamlBinding
 				}
 				offset = textSource.IndexOf(entity.Name, offset + length, textSource.TextLength - offset - length, StringComparison.OrdinalIgnoreCase);
 			} while (offset > 0);
+			if (highlighter != null) {
+				highlighter.Dispose();
+			}
 			callback(new SearchedFile(fileName, results));
 		}
 	}

@@ -88,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void CreateDirectoryNode_ProjectHasServiceReferencesItemAndDirectoryMatchesServiceReferencesPath_CreatesServiceReferencesFolderNode()
 		{
 			CreateProject();
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			project.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
 			ServiceReferencesProjectItem projectItem = AddWCFMetadataProjectItemToProject();
 			projectItem.Include = @"Service References\";
 			
@@ -103,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void CreateDirectoryNode_FileProjectItemThatEndsWithForwardSlash_DirectoryNodeCreatedWithForwardSlashRemoved()
 		{
 			CreateProject();
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			project.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
 			FileProjectItem projectItem = CreateFileProjectItem(@"MyFolder/");
 			
 			DirectoryNode node = DirectoryNodeFactory.CreateDirectoryNode(projectItem, FileNodeStatus.None);
@@ -115,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void CreateDirectoryNode_FileProjectItemThatEndsWithBackSlash_DirectoryNodeCreatedWithBackSlashRemoved()
 		{
 			CreateProject();
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			project.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
 			FileProjectItem projectItem = CreateFileProjectItem(@"MyFolder\");
 			
 			DirectoryNode node = DirectoryNodeFactory.CreateDirectoryNode(projectItem, FileNodeStatus.None);

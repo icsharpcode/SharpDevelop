@@ -134,6 +134,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void UpdateSyntaxHighlighting(FileName fileName)
 		{
+			var oldHighlighter = primaryTextEditor.GetService<IHighlighter>();
+			
 			var highlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
 			var highlighter = SD.EditorControlService.CreateHighlighter(document);
 
@@ -147,6 +149,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				secondaryTextEditor.TextArea.TextView.LineTransformers.RemoveAll(t => t is HighlightingColorizer);
 				secondaryTextEditor.TextArea.TextView.LineTransformers.Insert(0, new HighlightingColorizer(highlighter));
 				secondaryTextEditor.UpdateCustomizedHighlighting();
+			}
+			// Dispose the old highlighter; necessary to avoid memory leaks as
+			// semantic highlighters might attach to global parser events.
+			if (oldHighlighter != null) {
+				oldHighlighter.Dispose();
 			}
 		}
 		
@@ -263,6 +270,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			foreach (var d in textEditor.TextArea.LeftMargins.OfType<IDisposable>())
 				d.Dispose();
 			textEditor.TextArea.GetRequiredService<EnhancedScrollBar>().Dispose();
+			var highlighter = textEditor.TextArea.GetService<IHighlighter>();
+			if (highlighter != null)
+				highlighter.Dispose();
 			textEditor.Dispose();
 		}
 		

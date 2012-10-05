@@ -153,6 +153,10 @@ namespace CSharpBinding.Parser
 					var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
 					callback(new Reference(region, result, offset, length, builder, defaultTextColor));
 				}, cancellationToken);
+			
+			if (highlighter != null) {
+				highlighter.Dispose();
+			}
 		}
 		
 		static readonly Lazy<IAssemblyReference[]> defaultReferences = new Lazy<IAssemblyReference[]>(

@@ -125,7 +125,7 @@ namespace UnitTesting.Tests.NUnit
 		[Test]
 		public void NotMSBuildBasedProject()
 		{
-			MissingProject project = new MissingProject(@"C:\Projects\Test.proj", "Test");
+			MissingProject project = new MissingProject(FileName.Create(@"C:\Projects\Test.proj"), "Test");
 			ITestProject testProject = new NUnitTestProject(project);
 			NUnitConsoleApplication app = new NUnitConsoleApplication(new[] { testProject });
 			

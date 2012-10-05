@@ -220,7 +220,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				}
 			}
-			project.FileName = newFileName;
+			project.FileName = FileName.Create(newFileName);
 			project.Name = newName;
 			ProjectService.SaveSolution();
 		}

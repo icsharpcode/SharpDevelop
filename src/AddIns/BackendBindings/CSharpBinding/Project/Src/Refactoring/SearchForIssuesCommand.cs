@@ -168,6 +168,9 @@ namespace CSharpBinding.Refactoring
 					results.Add(SearchResultMatch.Create(document, issue.Start, issue.End, highlighter));
 				}
 			}
+			if (highlighter != null) {
+				highlighter.Dispose();
+			}
 			if (results.Count > 0)
 				return new SearchedFile(fileName, results);
 			else
@@ -243,8 +246,9 @@ namespace CSharpBinding.Refactoring
 				}
 			}
 			if (allIssues.Count > 0) {
-				var highlighter = SD.EditorControlService.CreateHighlighter(document);
-				return allIssues.Select(issue => SearchResultMatch.Create(document, issue.Start, issue.End, highlighter));
+				using (var highlighter = SD.EditorControlService.CreateHighlighter(document)) {
+					return allIssues.Select(issue => SearchResultMatch.Create(document, issue.Start, issue.End, highlighter)).ToList();
+				}
 			} else {
 				return Enumerable.Empty<SearchResultMatch>();
 			}

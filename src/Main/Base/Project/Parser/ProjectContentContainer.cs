@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			this.project = project;
 			this.projectContent = initialProjectContent.SetAssemblyName(project.AssemblyName).SetLocation(project.OutputAssemblyFullPath);
 			
-			this.cacheFileName = GetCacheFileName(FileName.Create(project.FileName));
+			this.cacheFileName = GetCacheFileName(project.FileName);
 			
 			ProjectService.ProjectItemAdded += OnProjectItemAdded;
 			ProjectService.ProjectItemRemoved += OnProjectItemRemoved;

@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 							MessageService.ShowError("No project has been created, there is nothing to add.");
 							return;
 						}
-						AddExitingProjectToSolution.AddProject(solutionFolderNode, npdlg.NewProjectLocation);
+						AddExitingProjectToSolution.AddProject(solutionFolderNode, FileName.Create(npdlg.NewProjectLocation));
 						ProjectService.SaveSolution();
 					}
 				}
@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	
 	public class AddExitingProjectToSolution : AbstractMenuCommand
 	{
-		public static void AddProject(ISolutionFolderNode solutionFolderNode, string fileName)
+		public static void AddProject(ISolutionFolderNode solutionFolderNode, FileName fileName)
 		{
 			if (solutionFolderNode == null)
 				throw new ArgumentNullException("solutionFolderNode");
@@ -97,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					fdiag.InitialDirectory = AddNewProjectToSolution.GetInitialDirectorySuggestion(solutionFolderNode);
 					if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 						foreach (string fileName in fdiag.FileNames) {
-							AddProject(solutionFolderNode, fileName);
+							AddProject(solutionFolderNode, FileName.Create(fileName));
 						}
 						ProjectService.SaveSolution();
 					}

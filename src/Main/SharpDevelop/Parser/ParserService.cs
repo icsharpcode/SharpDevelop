@@ -45,8 +45,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 					string addition;
 					if (e.OldUnresolvedFile == null) {
 						addition = " (new)";
-					} else
-			if (e.NewUnresolvedFile == null) {
+					} else if (e.NewUnresolvedFile == null) {
 						addition = " (removed)";
 					} else {
 						addition = " (updated)";

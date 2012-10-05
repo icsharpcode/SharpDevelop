@@ -24,7 +24,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Creates a new HighlightingColorizer instance.
 		/// </summary>
-		/// <param name="ruleSet">The root highlighting rule set.</param>
+		/// <param name="definition">The highlighting definition.</param>
 		public HighlightingColorizer(IHighlightingDefinition definition)
 		{
 			if (definition == null)

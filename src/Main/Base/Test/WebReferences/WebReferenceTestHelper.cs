@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 				: base(new ProjectCreateInformation {
 				       	Solution = new Solution(new MockProjectChangeWatcher()),
 				       	ProjectName = "TestProject",
-				       	OutputProjectFileName = "c:\\temp\\TestProject.csproj"
+				       	OutputProjectFileName = FileName.Create("c:\\temp\\TestProject.csproj")
 				       })
 			{
 				this.languageName = languageName;

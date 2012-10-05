@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Filename / Directory
-		volatile string fileName;
+		volatile FileName fileName;
 		string cachedDirectoryName;
 		protected IProjectChangeWatcher watcher;
 		
@@ -97,9 +97,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Only the getter is thread-safe.
 		/// </summary>
 		[ReadOnly(true)]
-		public string FileName {
+		public FileName FileName {
 			get {
-				return fileName ?? "";
+				return fileName;
 			}
 			set {
 				if (value == null)

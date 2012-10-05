@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.Core;
 using NUnit.Framework;
 using System;
 using System.IO;
@@ -24,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		public void SetUpFixture()
 		{
 			MSBuildBasedProject project = WebReferenceTestHelper.CreateTestProject("C#");
-			project.FileName = Path.Combine(projectDirectory, "foo.csproj");
+			project.FileName = FileName.Create(Path.Combine(projectDirectory, "foo.csproj"));
 			project.AppDesignerFolder = "Properties";
 			
 			WebReferencesProjectItem webReferencesItem = new WebReferencesProjectItem(project);

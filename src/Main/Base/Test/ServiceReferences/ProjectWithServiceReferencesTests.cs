@@ -6,6 +6,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Tests.WebReferences;
@@ -335,7 +336,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void AddAppConfigFile_ProjectHasNoAppConfig_ProjectItemAddedToProjectForAppConfig()
 		{
 			CreateProjectWithMSBuildProject();
-			msbuildProject.FileName = @"d:\projects\MyProject\myproject.csproj";
+			msbuildProject.FileName = FileName.Create(@"d:\projects\MyProject\myproject.csproj");
 			
 			project.AddAppConfigFile();
 			
@@ -391,7 +392,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void GetAppConfigFileName_ProjectHasNoAppConfig_DefaultAppConfigFileNameReturned()
 		{
 			CreateProjectWithMSBuildProject();
-			msbuildProject.FileName = @"d:\projects\MyProject\myproject.csproj";
+			msbuildProject.FileName = FileName.Create(@"d:\projects\MyProject\myproject.csproj");
 			
 			string fileName = project.GetAppConfigFileName();
 			
@@ -402,7 +403,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void GetAppConfigFileName_ProjectHasAppConfigInSubFolder_AppConfigFileNameReturned()
 		{
 			CreateProjectWithMSBuildProject();
-			msbuildProject.FileName = @"d:\projects\MyProject\myproject.csproj";
+			msbuildProject.FileName = FileName.Create(@"d:\projects\MyProject\myproject.csproj");
 			AddFileToMSBuildProject(@"SubFolder\app.config");
 			string fileName = project.GetAppConfigFileName();
 			

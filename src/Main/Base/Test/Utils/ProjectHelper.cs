@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		
 		public ProjectHelper(string fileName)
 		{
-			Project.Stub(p => p.FileName).Return(fileName);
+			Project.Stub(p => p.FileName).Return(FileName.Create(fileName));
 			
 			Project
 				.Stub(p => p.Items)

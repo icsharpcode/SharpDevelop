@@ -323,7 +323,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					}
 				}
 				
-				projectCreateInformation.OutputProjectFileName = projectLocation;
+				projectCreateInformation.OutputProjectFileName = FileName.Create(projectLocation);
 				projectCreateInformation.RootNamespace = standardNamespace.ToString();
 				projectCreateInformation.ProjectName = newProjectName;
 				if (!string.IsNullOrEmpty(defaultPlatform))

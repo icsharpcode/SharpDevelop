@@ -29,6 +29,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		readonly CompressingTreeList<bool> isValid = new CompressingTreeList<bool>((a, b) => a == b);
 		readonly IDocument document;
 		readonly IHighlightingDefinition definition;
+		readonly WeakLineTracker weakLineTracker;
 		bool isHighlighting;
 		
 		/// <summary>
@@ -49,7 +50,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				throw new ArgumentNullException("definition");
 			this.document = document;
 			this.definition = definition;
-			WeakLineTracker.Register(document, this);
+			weakLineTracker = WeakLineTracker.Register(document, this);
 			InvalidateHighlighting();
 		}
 		
@@ -65,6 +66,15 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			this.document = document;
 			this.definition = definition;
 			InvalidateHighlighting();
+		}
+		
+		/// <summary>
+		/// Disposes the document highlighter.
+		/// </summary>
+		public void Dispose()
+		{
+			if (weakLineTracker != null)
+				weakLineTracker.Deregister();
 		}
 		
 		void ILineTracker.BeforeRemoveLine(DocumentLine line)

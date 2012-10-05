@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -12,7 +13,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	public class ProjectLoadInformation
 	{
 		public Solution ParentSolution { get; private set; }
-		public string FileName { get; private set; }
+		public FileName FileName { get; private set; }
 		public string Configuration { get; internal set; }
 		public string Platform { get; internal set; }
 		public string ProjectName { get; private set; }
@@ -44,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public ProjectLoadInformation(Solution parentSolution, string fileName, string projectName)
+		public ProjectLoadInformation(Solution parentSolution, FileName fileName, string projectName)
 		{
 			if (parentSolution == null)
 				throw new ArgumentNullException("parentSolution");

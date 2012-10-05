@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
@@ -35,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			get { return createdProjects.AsReadOnly(); }
 		}
 		
-		public string OutputProjectFileName { get; set; }
+		public FileName OutputProjectFileName { get; set; }
 		public string Platform { get; set; }
 		public string ProjectName { get; set; }
 		public string SolutionName { get; set; }

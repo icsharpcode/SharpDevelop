@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
@@ -39,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		public void SetUpFixture()
 		{
 			project = WebReferenceTestHelper.CreateTestProject("C#");
-			project.FileName = "C:\\projects\\test\\foo.csproj";
+			project.FileName = FileName.Create("C:\\projects\\test\\foo.csproj");
 
 			protocol = new DiscoveryClientProtocol();
 			DiscoveryDocumentReference discoveryRef = new DiscoveryDocumentReference();

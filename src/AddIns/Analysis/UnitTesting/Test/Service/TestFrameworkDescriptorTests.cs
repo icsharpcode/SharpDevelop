@@ -35,7 +35,7 @@ namespace UnitTesting.Tests.Service
 		MockCSharpProject CreateCSharpProjectNotSupportedByTestFramework()
 		{
 			var project = new MockCSharpProject();
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			project.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
 			fakeTestFramework = MockRepository.GenerateStrictMock<ITestFramework>();
 			fakeTestFramework.Stub(f => f.IsTestProject(project)).Return(false);
 			return project;
@@ -52,7 +52,7 @@ namespace UnitTesting.Tests.Service
 		MockCSharpProject CreateVisualBasicProjectSupportedByTestFramework()
 		{
 			MockCSharpProject project = CreateCSharpProjectSupportedByTestFramework();
-			project.FileName = @"d:\projects\MyProject\MyProject.vbproj";
+			project.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.vbproj");
 			return project;
 		}
 		
@@ -167,7 +167,7 @@ namespace UnitTesting.Tests.Service
 		{
 			CreateTestFrameworkDescriptorToSupportProjectFileExtensions(".csproj");
 			MockCSharpProject project = CreateCSharpProjectSupportedByTestFramework();
-			project.FileName = @"d:\projects\MyProject\MyProject.CSPROJ";
+			project.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.CSPROJ");
 			
 			bool supported = descriptor.IsSupportedProject(project);
 			

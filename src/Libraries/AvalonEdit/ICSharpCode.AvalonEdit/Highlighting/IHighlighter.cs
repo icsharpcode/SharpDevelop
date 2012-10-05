@@ -11,7 +11,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// Represents a highlighted document.
 	/// </summary>
 	/// <remarks>This interface is used by the <see cref="HighlightingColorizer"/> to register the highlighter as a TextView service.</remarks>
-	public interface IHighlighter
+	public interface IHighlighter : IDisposable
 	{
 		/// <summary>
 		/// Gets the underlying text document.
@@ -182,6 +182,13 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 					return color;
 			}
 			return null;
+		}
+		
+		public void Dispose()
+		{
+			foreach (var h in nestedHighlighters) {
+				h.Dispose();
+			}
 		}
 	}
 	

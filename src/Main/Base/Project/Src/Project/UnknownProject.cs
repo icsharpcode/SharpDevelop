@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			MessageService.ShowError("Error loading " + this.FileName + ":\n" + warningText);
 		}
 		
-		public UnknownProject(string fileName, string title, string warningText, bool displayWarningToUser)
+		public UnknownProject(FileName fileName, string title, string warningText, bool displayWarningToUser)
 			: this(fileName, title)
 		{
 			this.warningText = warningText;
@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public UnknownProject(string fileName, string title)
+		public UnknownProject(FileName fileName, string title)
 		{
 			Name     = title;
 			FileName = fileName;
