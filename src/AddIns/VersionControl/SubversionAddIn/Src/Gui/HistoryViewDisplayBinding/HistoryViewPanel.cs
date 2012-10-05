@@ -7,6 +7,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Svn

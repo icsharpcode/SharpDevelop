@@ -251,7 +251,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void AddCategory(MessageViewCategory category)
 		{
 			if (WorkbenchSingleton.InvokeRequired) {
-				SD.MainThread.InvokeAsync(() => (Action<MessageViewCategory>)AddCategory(category)).FireAndForget();
+				SD.MainThread.InvokeAsync(() => AddCategory(category)).FireAndForget();
 				return;
 			}
 			messageCategories.Add(category);

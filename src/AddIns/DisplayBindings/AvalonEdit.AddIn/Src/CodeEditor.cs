@@ -27,7 +27,6 @@ using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Widgets.MyersDiff;

@@ -105,6 +105,7 @@
     <Compile Include="Src\ContextActions\GoToEntityAction.cs" />
     <Compile Include="Src\DocumentSequence.cs" />
     <Compile Include="Src\EnhancedScrollBar.cs" />
+    <Compile Include="Src\MultiHighlighter.cs" />
     <Compile Include="Src\Snippets\CodeSnippetComparer.cs" />
     <Compile Include="Src\Utils.cs" />
     <Compile Include="Src\XmlDoc\DocumentationUIBuilder.cs" />

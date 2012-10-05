@@ -28,8 +28,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			InitializeComponent();
 			
-			revertButton.Content = PresentationResourceService.GetImage("Icons.16x16.UndoIcon");
-			copyButton.Content = PresentationResourceService.GetImage("Icons.16x16.CopyIcon");
+			revertButton.Content = SD.ResourceService.GetImage("Icons.16x16.UndoIcon").CreateImage();
+			copyButton.Content = SD.ResourceService.GetImage("Icons.16x16.CopyIcon").CreateImage();
 		}
 		
 		void CopyButtonClick(object sender, RoutedEventArgs e)

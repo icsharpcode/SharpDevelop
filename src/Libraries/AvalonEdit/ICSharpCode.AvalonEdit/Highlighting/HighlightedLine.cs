@@ -259,6 +259,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		}
 		#endregion
 		
+		/// <summary>
+		/// Creates a <see cref="HighlightedInlineBuilder"/> that stores the text and highlighting of this line.
+		/// </summary>
 		public HighlightedInlineBuilder ToInlineBuilder()
 		{
 			HighlightedInlineBuilder builder = new HighlightedInlineBuilder(Document.GetText(DocumentLine));

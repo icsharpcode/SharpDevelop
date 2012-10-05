@@ -17,13 +17,6 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	[Serializable]
 	public class HighlightingColor : ISerializable
 	{
-		[NonSerialized]
-		public static readonly HighlightingColor DefaultColor = new HighlightingColor {
-			Background = new SimpleHighlightingBrush(Brushes.White),
-			Foreground = new SimpleHighlightingBrush(Brushes.Black),
-			Name = "<default>"
-		};
-		
 		/// <summary>
 		/// Gets/Sets the name of the color.
 		/// </summary>

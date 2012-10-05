@@ -53,6 +53,20 @@ namespace PortSD4AddInToSD5
 								script.Replace(mre, new IdentifierExpression("SD").Member("StatusBar"));
 							});
 						break;
+					case "ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.InvokeRequired":
+						yield return Issue(
+							mre,
+							script => {
+								script.Replace(mre, new IdentifierExpression("SD").Member("MainThread").Member("InvokeRequired"));
+							});
+						break;
+					case "ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWindow":
+						yield return Issue(
+							mre,
+							script => {
+								script.Replace(mre, new IdentifierExpression("SD").Member("Workbench").Member("MainWindow"));
+							});
+						break;
 				}
 			}
 			foreach (var invocationExpression in context.RootNode.Descendants.OfType<InvocationExpression>()) {

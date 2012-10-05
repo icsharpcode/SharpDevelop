@@ -26,6 +26,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Gets the main form. Returns null in unit-testing mode.
 		/// </summary>
+		[Obsolete("Use SD.WinForms.MainWin32Window instead")]
 		public static IWin32Window MainWin32Window {
 			get {
 				if (workbench != null) {
@@ -38,6 +39,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Gets the main window. Returns null in unit-testing mode.
 		/// </summary>
+		[Obsolete("Use SD.Workbench.MainWindow instead")]
 		public static Window MainWindow {
 			get {
 				if (workbench != null) {
@@ -50,6 +52,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Gets the workbench. Returns null in unit-testing mode.
 		/// </summary>
+		[Obsolete("Use SD.Workbench instead")]
 		public static IWorkbench Workbench {
 			get {
 				return workbench;
@@ -63,7 +66,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public static void InitializeWorkbench(IWorkbench workbench, IWorkbenchLayout layout)
+		internal static void InitializeWorkbench(IWorkbench workbench, IWorkbenchLayout layout)
 		{
 			WorkbenchSingleton.workbench = workbench;
 			SD.Services.AddService(typeof(IWorkbench), workbench);
@@ -107,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Runs workbench cleanup.
 		/// Is called by ICSharpCode.SharpDevelop.Sda and should not be called manually!
 		/// </summary>
-		public static void OnWorkbenchUnloaded()
+		internal static void OnWorkbenchUnloaded()
 		{
 			if (!Project.ProjectService.IsClosingCanceled()) {
 				Project.ProjectService.CloseSolution();
@@ -132,6 +135,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// For performance reasons, the thread check is only done in debug builds.
 		/// </summary>
 		[Conditional("DEBUG")]
+		[Obsolete("Use SD.MainThread.VerifyAccess() instead")]
 		internal static void DebugAssertMainThread()
 		{
 			SD.MainThread.VerifyAccess();
@@ -140,6 +144,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Throws an exception if the current thread is not the main thread.
 		/// </summary>
+		[Obsolete("Use SD.MainThread.VerifyAccess() instead")]
 		public static void AssertMainThread()
 		{
 			if (InvokeRequired) {
@@ -154,6 +159,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// operation, which can result in a dead-lock when the main thread waits for a lock
 		/// held by this thread!
 		/// </summary>
+		[Obsolete("Use SD.MainThread.InvokeIfRequired() instead")]
 		public static R SafeThreadFunction<R>(Func<R> method)
 		{
 			return SD.MainThread.InvokeIfRequired(method);
@@ -164,6 +170,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// operation, which can result in a dead-lock when the main thread waits for a lock
 		/// held by this thread!
 		/// </summary>
+		[Obsolete("Use SD.MainThread.InvokeIfRequired() instead")]
 		public static R SafeThreadFunction<A, R>(Func<A, R> method, A arg1)
 		{
 			return SD.MainThread.InvokeIfRequired(() => method(arg1));
@@ -174,6 +181,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// operation, which can result in a dead-lock when the main thread waits for a lock
 		/// held by this thread!
 		/// </summary>
+		[Obsolete("Use SD.MainThread.InvokeIfRequired() instead")]
 		public static void SafeThreadCall(Action method)
 		{
 			SD.MainThread.InvokeIfRequired(method);
@@ -184,6 +192,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// operation, which can result in a dead-lock when the main thread waits for a lock
 		/// held by this thread!
 		/// </summary>
+		[Obsolete("Use SD.MainThread.InvokeIfRequired() instead")]
 		public static void SafeThreadCall<A>(Action<A> method, A arg1)
 		{
 			SD.MainThread.InvokeIfRequired(() => method(arg1));
@@ -194,6 +203,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// operation, which can result in a dead-lock when the main thread waits for a lock
 		/// held by this thread!
 		/// </summary>
+		[Obsolete("Use SD.MainThread.InvokeIfRequired() instead")]
 		public static void SafeThreadCall<A, B>(Action<A, B> method, A arg1, B arg2)
 		{
 			SD.MainThread.InvokeIfRequired(() => method(arg1, arg2));
@@ -204,6 +214,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// operation, which can result in a dead-lock when the main thread waits for a lock
 		/// held by this thread!
 		/// </summary>
+		[Obsolete("Use SD.MainThread.InvokeIfRequired() instead")]
 		public static void SafeThreadCall<A, B, C>(Action<A, B, C> method, A arg1, B arg2, C arg3)
 		{
 			SD.MainThread.InvokeIfRequired(() => method(arg1, arg2, arg3));
@@ -212,6 +223,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Makes a call GUI threadsafe without waiting for the returned value.
 		/// </summary>
+		[Obsolete("Use SD.MainThread.InvokeAsync().FireAndForget() instead")]
 		public static void SafeThreadAsyncCall(Action method)
 		{
 			SD.MainThread.InvokeAsync(method).FireAndForget();
@@ -220,6 +232,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Makes a call GUI threadsafe without waiting for the returned value.
 		/// </summary>
+		[Obsolete("Use SD.MainThread.InvokeAsync().FireAndForget() instead")]
 		public static void SafeThreadAsyncCall<A>(Action<A> method, A arg1)
 		{
 			SD.MainThread.InvokeAsync(() => method(arg1)).FireAndForget();
@@ -228,6 +241,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Makes a call GUI threadsafe without waiting for the returned value.
 		/// </summary>
+		[Obsolete("Use SD.MainThread.InvokeAsync().FireAndForget() instead")]
 		public static void SafeThreadAsyncCall<A, B>(Action<A, B> method, A arg1, B arg2)
 		{
 			SD.MainThread.InvokeAsync(() => method(arg1, arg2)).FireAndForget();
@@ -236,6 +250,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Makes a call GUI threadsafe without waiting for the returned value.
 		/// </summary>
+		[Obsolete("Use SD.MainThread.InvokeAsync().FireAndForget() instead")]
 		public static void SafeThreadAsyncCall<A, B, C>(Action<A, B, C> method, A arg1, B arg2, C arg3)
 		{
 			SD.MainThread.InvokeAsync(() => method(arg1, arg2, arg3)).FireAndForget();
