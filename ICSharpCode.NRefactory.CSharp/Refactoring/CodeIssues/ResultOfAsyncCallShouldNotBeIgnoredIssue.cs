@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
-			return new GatherVisitor().GetIssues();
+			return new GatherVisitor(context).GetIssues();
 		}
 		
 		sealed class GatherVisitor : GatherVisitorBase
