@@ -48,12 +48,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			KnownTypeReference typeRef = KnownTypeReference.Get(typeCode);
 			if (typeRef == null)
 				return SpecialType.UnknownType;
+			var typeName = new TopLevelTypeName(typeRef.Namespace, typeRef.Name, typeRef.TypeParameterCount);
 			foreach (IAssembly asm in compilation.Assemblies) {
-				var typeDef = asm.GetTypeDefinition(new TopLevelTypeName(typeRef.Namespace, typeRef.Name, typeRef.TypeParameterCount));
+				var typeDef = asm.GetTypeDefinition(typeName);
 				if (typeDef != null)
 					return typeDef;
 			}
-			return new UnknownType(typeRef.Namespace, typeRef.Name, typeRef.TypeParameterCount);
+			return new UnknownType(typeName);
 		}
 	}
 }
