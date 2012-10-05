@@ -119,16 +119,20 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		protected override void VisitChildren (AstNode node)
 		{
-			if (!FormattingRegion.IsEmpty) {
-				if (node.EndLocation < FormattingRegion.Begin || node.StartLocation > FormattingRegion.End)
-					return;
-			}
-
 			AstNode next;
 			for (var child = node.FirstChild; child != null; child = next) {
 				// Store next to allow the loop to continue
 				// if the visitor removes/replaces child.
 				next = child.NextSibling;
+
+				if (!FormattingRegion.IsEmpty) {
+					if (child.EndLocation < FormattingRegion.Begin) {
+						continue;
+					}
+					if (child.StartLocation > FormattingRegion.End) {
+						break;
+					}
+				}
 				child.AcceptVisitor (this);
 			}
 		}
@@ -404,7 +408,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		void ForceSpace(int startOffset, int endOffset, bool forceSpace)
 		{
 			int lastNonWs = SearchLastNonWsChar(startOffset, endOffset);
-			AddChange(lastNonWs + 1, System.Math.Max(0, endOffset - lastNonWs - 1), forceSpace ? " " : "");
+			if (lastNonWs >= 0)
+				AddChange(lastNonWs + 1, System.Math.Max(0, endOffset - lastNonWs - 1), forceSpace ? " " : "");
 		}
 //		void ForceSpacesAfter (AstNode n, bool forceSpaces)
 //		{

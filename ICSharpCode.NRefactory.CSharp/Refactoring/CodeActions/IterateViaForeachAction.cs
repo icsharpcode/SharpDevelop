@@ -70,7 +70,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var blockStatement = new BlockStatement();
 					blockStatement.Statements.Add(iterator);
 					script.Replace(usingStatement.EmbeddedStatement, blockStatement);
-					script.FormatText(blockStatement);
+					script.FormatText((AstNode)blockStatement);
 				} else if (usingStatement.EmbeddedStatement is BlockStatement) {
 					var anchorNode = usingStatement.EmbeddedStatement.FirstChild;
 					script.InsertAfter(anchorNode, iterator);

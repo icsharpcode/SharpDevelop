@@ -138,10 +138,15 @@ class TestClass
 	{
 		if (a == 0) {
 			int b = 1;
-		} else if (a == 1 || a == 2) {
-		} else if (a == 3 || a == 4 || a == 5) {
-		} else {
 		}
+		else
+			if (a == 1 || a == 2) {
+			}
+			else
+				if (a == 3 || a == 4 || a == 5) {
+				}
+				else {
+				}
 	}
 }");
 		}

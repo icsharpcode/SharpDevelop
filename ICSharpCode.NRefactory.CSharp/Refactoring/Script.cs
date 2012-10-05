@@ -202,21 +202,28 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			CorrectFormatting (node, node);
 		}
 
+		List<AstNode> nodesToFormat = new List<AstNode> ();
+
 		void CorrectFormatting(AstNode node, AstNode newNode)
 		{
 			if (node is Identifier || node is IdentifierExpression || node is CSharpTokenNode || node is AstType)
 				return;
 			if (node == null || node.Parent is BlockStatement) {
-				FormatText(newNode); 
+				nodesToFormat.Add (newNode); 
 			} else {
-				FormatText((node.Parent != null && (node.Parent is Statement || node.Parent is Expression || node.Parent is VariableInitializer)) ? node.Parent : newNode); 
+				nodesToFormat.Add ((node.Parent != null && (node.Parent is Statement || node.Parent is Expression || node.Parent is VariableInitializer)) ? node.Parent : newNode); 
 			}
 		}
 		
 		public abstract void Remove (AstNode node, bool removeEmptyLine = true);
 		
-		public abstract void FormatText (AstNode node);
-		
+		public abstract void FormatText (IEnumerable<AstNode> nodes);
+
+		public void FormatText (params AstNode[] node)
+		{
+			FormatText ((IEnumerable<AstNode>)node);
+		}
+
 		public virtual void Select (AstNode node)
 		{
 			// default implementation: do nothing
@@ -380,6 +387,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		public virtual void Dispose()
 		{
+			FormatText (nodesToFormat);
 		}
 		
 		public enum NewTypeContext {
