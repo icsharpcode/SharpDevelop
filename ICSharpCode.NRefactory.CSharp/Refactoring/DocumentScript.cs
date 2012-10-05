@@ -104,7 +104,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var segment = GetSegment(node);
 				var formatter = new AstFormattingVisitor(FormattingOptions, currentDocument, Options);
 
-				formatter.FormattingRegion = new ICSharpCode.NRefactory.TypeSystem.DomRegion (node.StartLocation, node.EndLocation);
+				formatter.FormattingRegion = new ICSharpCode.NRefactory.TypeSystem.DomRegion (
+					currentDocument.GetLocation (segment.Offset), 
+					currentDocument.GetLocation (segment.EndOffset)
+				);
 				syntaxTree.AcceptVisitor(formatter);
 				formatter.ApplyChanges(segment.Offset, segment.Length);
 			}
