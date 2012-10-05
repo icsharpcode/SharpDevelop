@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ICSharpCode.SharpDevelop.Util
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// A simple scheduler that adds tasks to a queue.

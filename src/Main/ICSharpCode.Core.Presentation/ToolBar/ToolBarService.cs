@@ -138,7 +138,8 @@ namespace ICSharpCode.Core.Presentation
 			bool isLabel = false;
 			if (codon.Properties.Contains("icon"))
 			{
-				image = PresentationResourceService.GetImage(StringParser.Parse(codon.Properties["icon"]));
+				image = new Image();
+				image.Source = PresentationResourceService.GetBitmapSource(StringParser.Parse(codon.Properties["icon"]));
 				image.Height = 16;
 				image.SetResourceReference(FrameworkElement.StyleProperty, ToolBarService.ImageStyleKey);
 				isImage = true;

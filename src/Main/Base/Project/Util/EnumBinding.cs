@@ -14,7 +14,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Widgets;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Used to bind ComboBoxes or RadioButtonGroups to enums.

@@ -33,7 +33,8 @@ namespace ICSharpCode.Core.Presentation
 			
 			if (codon.Properties.Contains("icon")) {
 				try {
-					var image = PresentationResourceService.GetImage(codon.Properties["icon"]);
+					var image = new Image();
+					image.Source = PresentationResourceService.GetBitmapSource(codon.Properties["icon"]);
 					image.Height = 16;
 					this.Icon = image;
 				} catch (ResourceNotFoundException) {}

@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ICSharpCode.SharpDevelop.Util
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// A task scheduler that manages its own thread pool.

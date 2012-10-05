@@ -7,7 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Collects progress using nested IProgressMonitors and provides it to a different thread using events.

@@ -6,6 +6,7 @@ using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Markup;
 
 [assembly: CLSCompliant(false)]
 [assembly: StringFreezing()]
@@ -14,6 +15,8 @@ using System.Windows;
 	ResourceDictionaryLocation.SourceAssembly, //where theme specific resource dictionaries are located
 	ResourceDictionaryLocation.SourceAssembly //where the generic resource dictionary is located
 )]
+
+[assembly: XmlnsDefinition("http://icsharpcode.net/sharpdevelop/core", "ICSharpCode.SharpDevelop")]
 
 [assembly: AssemblyTitle("SharpDevelopBase")]
 [assembly: AssemblyDescription("The base add-in of SharpDevelop")]

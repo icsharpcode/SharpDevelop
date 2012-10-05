@@ -228,11 +228,24 @@
       <DependentUpon>AbstractAttachToProcessForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.cs" />
-    <Compile Include="Src\Gui\ICanBeDirty.cs" />
     <Compile Include="Src\Gui\IWorkbenchLayout.cs" />
     <Compile Include="Src\Services\FileChangeWatcher.cs" />
     <Compile Include="Src\Services\ViewContentServiceAttribute.cs" />
     <Compile Include="Src\Util\NotAvailableCommand.cs" />
+    <Compile Include="Util\AtomicBoolean.cs" />
+    <Compile Include="Util\CustomThreadPoolTaskScheduler.cs" />
+    <Compile Include="Util\DebugTimer.cs" />
+    <Compile Include="Util\EnumBinding.cs" />
+    <Compile Include="Util\ExtensionMethods.cs" />
+    <Compile Include="Util\ICanBeDirty.cs" />
+    <Compile Include="Util\IImage.cs" />
+    <Compile Include="Util\IProgressMonitor.cs" />
+    <Compile Include="Util\ProgressCollector.cs" />
+    <Compile Include="Util\ReactiveExtensions.cs" />
+    <Compile Include="Util\SimpleCommand.cs" />
+    <Compile Include="Util\SimpleTaskScheduler.cs" />
+    <Compile Include="Util\UnclosableStream.cs" />
+    <Compile Include="Util\WeakCollection.cs" />
     <Compile Include="WinForms\IClipboardHandler.cs" />
     <Compile Include="WinForms\IContextHelpProvider.cs" />
     <Compile Include="WinForms\IPrintable.cs" />
@@ -382,8 +395,6 @@
       <DependentUpon>TreeViewOptionsDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Gui\EnumBinding.cs" />
-    <Compile Include="Src\Gui\IImage.cs" />
     <Compile Include="Src\Gui\Pads\AbstractConsolePad.cs" />
     <Compile Include="Src\Gui\Pads\BaseWatchBox.cs" />
     <Compile Include="Src\Gui\Pads\OutlinePad.cs" />
@@ -392,7 +403,6 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\ServiceReferencesFolderNode.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPadCommands.cs" />
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
-    <Compile Include="Src\Gui\ProgressCollector.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ViewInBrowserConditionEvaluator.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WriteableProjectEvaluator.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WriteableSolutionEvaluator.cs" />
@@ -504,7 +514,6 @@
     <Compile Include="Src\Internal\ConditionEvaluators\WindowOpenEvaluator.cs" />
     <Compile Include="Src\Internal\Templates\Project\ProjectDescriptor.cs" />
     <Compile Include="Src\Internal\Templates\Project\SolutionDescriptor.cs" />
-    <Compile Include="Src\Gui\IProgressMonitor.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\IEditable.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\IPositionable.cs" />
     <Compile Include="Src\Gui\WorkbenchSingleton.cs" />
@@ -761,15 +770,10 @@
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AsyncDiscoveryState.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\DiscoveryNetworkCredential.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectLoader.cs" />
-    <Compile Include="Src\Util\AtomicBoolean.cs" />
-    <Compile Include="Src\Util\CustomThreadPoolTaskScheduler.cs" />
     <Compile Include="Src\Util\DotnetDetection.cs" />
     <Compile Include="Src\Util\FakeXmlViewContent.cs" />
     <Compile Include="Src\Util\IOTaskScheduler.cs" />
-    <Compile Include="Src\Util\ReactiveExtensions.cs" />
     <Compile Include="Src\Util\SharpDevelopServiceContainer.cs" />
-    <Compile Include="Src\Util\SimpleCommand.cs" />
-    <Compile Include="Src\Util\SimpleTaskScheduler.cs" />
     <Compile Include="Src\Util\TreeNode.cs" />
     <Compile Include="Src\Util\NativeMethods.cs" />
     <Compile Include="Src\Util\ProcessRunnerException.cs" />
@@ -793,8 +797,6 @@
     </Compile>
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\SolutionConfigurationEditor.cs" />
     <Compile Include="Src\Gui\Dialogs\SharpDevelopColorDialog.cs" />
-    <Compile Include="Src\Util\ExtensionMethods.cs" />
-    <Compile Include="Src\Util\DebugTimer.cs" />
     <Compile Include="Src\Project\CustomTool.cs" />
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\EditAvailableConfigurationsDialog.Designer.cs">
       <DependentUpon>EditAvailableConfigurationsDialog.cs</DependentUpon>
@@ -810,8 +812,6 @@
     <Compile Include="Src\Project\Items\ItemType.cs" />
     <Compile Include="Src\Util\GenericConverter.cs" />
     <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
-    <Compile Include="Src\Util\UnclosableStream.cs" />
-    <Compile Include="Src\Util\WeakCollection.cs" />
     <EmbeddedResource Include="Resources\DefaultManifest.manifest" />
     <EmbeddedResource Include="Src\Gui\Dialogs\ExtractInterfaceDialog.resx">
       <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
@@ -872,6 +872,7 @@
     <Folder Include="Dom" />
     <Folder Include="Editor" />
     <Folder Include="Editor\Bookmarks" />
+    <Folder Include="Util" />
     <Folder Include="Project" />
     <Folder Include="Parser" />
     <Folder Include="Project\Build" />

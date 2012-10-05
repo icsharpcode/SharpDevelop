@@ -117,6 +117,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 	}
 	
+	#pragma warning disable 618
 	public class CommonAboutDialog : XmlForm
 	{
 		public ScrollBox ScrollBox {

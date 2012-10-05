@@ -5,7 +5,7 @@
         xmlns:tv="http://icsharpcode.net/sharpdevelop/treeview"
         xmlns:core="http://icsharpcode.net/sharpdevelop/core"
         xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
-        xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+        xmlns:sd="clr-namespace:ICSharpCode.SharpDevelop;assembly=ICSharpCode.SharpDevelop"
         xmlns:local="clr-namespace:CSharpBinding.Refactoring"
         Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
         WindowStartupLocation="CenterOwner"
@@ -24,7 +24,7 @@
 		</Grid.ColumnDefinitions>
 		<StackPanel Orientation="Horizontal">
 			<Label Content="Search In:" />
-			<widgets:RadioButtonGroup Name="searchInRBG" Margin="0,6,0,0" gui:EnumBinding.EnumType="local:SearchForIssuesTarget" />
+			<widgets:RadioButtonGroup Name="searchInRBG" Margin="0,6,0,0" sd:EnumBinding.EnumType="local:SearchForIssuesTarget" />
 		</StackPanel>
 		<Label Content="Issues:" Grid.Row="1" HorizontalAlignment="Left" />
 		<tv:SharpTreeView Name="treeView" Grid.Row="2" Margin="4,0,4,4" />

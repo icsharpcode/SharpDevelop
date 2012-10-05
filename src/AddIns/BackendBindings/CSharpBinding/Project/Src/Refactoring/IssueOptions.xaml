@@ -23,7 +23,7 @@
 							          GotFocus="ComboBox_GotFocus"
 							          MinWidth="85"
 							          VerticalAlignment="Center"
-							          gui:EnumBinding.EnumType="{x:Type nr:Severity}"
+							          sd:EnumBinding.EnumType="{x:Type nr:Severity}"
 							          SelectedValue="{Binding Severity}"/>
 							<sd:RestrictDesiredSize RestrictHeight="False" MinWidth="150">
 								<TextBlock Text="{Binding Title}" TextWrapping="WrapWithOverflow" VerticalAlignment="Center" />

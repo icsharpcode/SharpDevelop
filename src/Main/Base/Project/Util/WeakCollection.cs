@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ICSharpCode.SharpDevelop.Util
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// A collection that allows its elements to be garbage-collected (unless there are other
