@@ -100,6 +100,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var segment = GetSegment(node);
 			var syntaxTree = SyntaxTree.Parse(currentDocument, "dummy.cs");
 			var formatter = new AstFormattingVisitor(FormattingOptions, currentDocument, Options);
+			formatter.FormattingRegion = new ICSharpCode.NRefactory.TypeSystem.DomRegion (node.StartLocation, node.EndLocation);
 			syntaxTree.AcceptVisitor(formatter);
 			formatter.ApplyChanges(segment.Offset, segment.Length);
 		}
