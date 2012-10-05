@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 		public override void Run()
 		{
 			IWorkbenchWindow thisWindow = Owner as IWorkbenchWindow;
-			foreach (IWorkbenchWindow window in WorkbenchSingleton.Workbench.WorkbenchWindowCollection.ToArray()) {
+			foreach (IWorkbenchWindow window in SD.Workbench.WorkbenchWindowCollection.ToArray()) {
 				if (window != thisWindow) {
 					if (!window.CloseWindow(false))
 						break;

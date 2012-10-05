@@ -49,7 +49,7 @@ namespace MSHelpSystem.Commands
 		{
 			if (Help3Service.Config.ExternalHelp) DisplayHelp.Catalog();
 			else {
-				PadDescriptor toc = WorkbenchSingleton.Workbench.GetPad(typeof(Help3TocPad));
+				PadDescriptor toc = SD.Workbench.GetPad(typeof(Help3TocPad));
 				if (toc != null) toc.BringPadToFront();
 			}
 		}
@@ -59,7 +59,7 @@ namespace MSHelpSystem.Commands
 	{
 		public override void Run()
 		{
-			PadDescriptor search = WorkbenchSingleton.Workbench.GetPad(typeof(Help3SearchPad));
+			PadDescriptor search = SD.Workbench.GetPad(typeof(Help3SearchPad));
 			if (search != null) search.BringPadToFront();
 		}
 	}

@@ -129,14 +129,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void WorkbenchActiveContentChanged(object sender, EventArgs e)
 		{
-			var activeViewOrPad = WorkbenchSingleton.Workbench.ActiveContent;
+			var activeViewOrPad = SD.Workbench.ActiveContent;
 			IHasPropertyContainer c = activeViewOrPad != null ? activeViewOrPad.GetService<IHasPropertyContainer>() : null;
 			if (c == null) {
 				if (previousContent == null) {
 					c = SD.GetActiveViewContentService<IHasPropertyContainer>();
 				} else {
 					// if the previous content is no longer visible, we have to remove the active container
-					if (previousContent is IViewContent && previousContent != WorkbenchSingleton.Workbench.ActiveViewContent) {
+					if (previousContent is IViewContent && previousContent != SD.Workbench.ActiveViewContent) {
 						c = null;
 					} else {
 						c = previousContent;
@@ -190,11 +190,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			grid.ContextMenuStrip = SD.WinForms.MenuService.CreateContextMenu(this, "/SharpDevelop/Views/PropertyPad/ContextMenu");
 			
 			LoggingService.Debug("PropertyPad created");
-			WorkbenchSingleton.Workbench.ActiveContentChanged += WorkbenchActiveContentChanged;
+			SD.Workbench.ActiveContentChanged += WorkbenchActiveContentChanged;
 			// it is possible that ActiveContent changes fires before ActiveViewContent.
 			// if the new content is not a IHasPropertyContainer and we listen only to ActiveContentChanged,
 			// we might display the PropertyPad of a no longer active view content
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
+			SD.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
 			WorkbenchActiveContentChanged(null, null);
 		}
 		

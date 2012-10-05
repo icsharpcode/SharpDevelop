@@ -204,7 +204,7 @@ namespace CSharpBinding.Refactoring
 			}
 			if (document == null) {
 				documentWasLoadedFromDisk = true;
-				document = new TextDocument(SD.FileService.GetFileContent(fileName));
+				document = new TextDocument(SD.FileService.GetFileContent(fileName)) { FileName = fileName };
 			}
 			var parseInfo = SD.ParserService.Parse(fileName, document, cancellationToken: cancellationToken) as CSharpFullParseInformation;
 			if (parseInfo == null)

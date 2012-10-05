@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (!initialized) {
 				initialized = true;
-				WorkbenchSingleton.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
+				SD.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
 				FileService.FileRenamed += FileServiceFileRenamed;
 				FileService.FileRemoved += FileServiceFileRemoved;
 				
@@ -191,7 +191,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void ActiveViewContentChanged(object sender, EventArgs e)
 		{
-			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+			IViewContent viewContent = SD.Workbench.ActiveViewContent;
 			if (OpenSolution == null || viewContent == null) {
 				return;
 			}
@@ -250,7 +250,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (openSolution != null && !IsClosingCanceled()) {
 				SaveSolutionPreferences();
-				WorkbenchSingleton.Workbench.CloseAllViews();
+				SD.Workbench.CloseAllViews();
 				CloseSolution();
 			}
 		}

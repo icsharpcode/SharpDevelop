@@ -4,6 +4,7 @@
 using System;
 using System.Windows.Controls.Primitives;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -19,14 +20,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.HiddenDefinition
 		{
 			this.editor = editorView;
 			control = new HiddenDefinitionControl();
-			WorkbenchSingleton.Workbench.ActiveContentChanged += WorkbenchSingleton_Workbench_ActiveContentChanged;
+			SD.Workbench.ActiveContentChanged += WorkbenchSingleton_Workbench_ActiveContentChanged;
 		}
 
 		public BracketSearchResult BracketSearchResult { get; set; }
 		
 		public void Dispose()
 		{
-			WorkbenchSingleton.Workbench.ActiveContentChanged -= WorkbenchSingleton_Workbench_ActiveContentChanged;
+			SD.Workbench.ActiveContentChanged -= WorkbenchSingleton_Workbench_ActiveContentChanged;
 			ClosePopup();
 			popup = null;
 		}

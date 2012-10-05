@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public ToolsPad()
 		{
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
+			SD.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
 			WorkbenchActiveContentChanged(null, null);
 		}
 		

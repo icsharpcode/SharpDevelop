@@ -139,7 +139,7 @@ namespace ICSharpCode.ILSpyAddIn
 				StringWriter writer = new StringWriter();
 				RunDecompiler(assemblyFile, fullTypeName, new DebuggerTextOutput(new PlainTextOutput(writer)), cancellation.Token);
 				if (!cancellation.IsCancellationRequested) {
-					WorkbenchSingleton.SafeThreadAsyncCall(OnDecompilationFinished, writer);
+					SD.MainThread.InvokeAsync(() => OnDecompilationFinished(writer)).FireAndForget();
 				}
 			} catch (OperationCanceledException) {
 				// ignore cancellation
@@ -154,7 +154,7 @@ namespace ICSharpCode.ILSpyAddIn
 				writer.WriteLine(string.Format("Exception while decompiling {0} ({1})", fullTypeName, assemblyFile));
 				writer.WriteLine();
 				writer.WriteLine(ex.ToString());
-				WorkbenchSingleton.SafeThreadAsyncCall(OnDecompilationFinished, writer);
+				SD.MainThread.InvokeAsync(() => OnDecompilationFinished(writer)).FireAndForget();
 			}
 		}
 		

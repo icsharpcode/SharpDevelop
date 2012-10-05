@@ -66,11 +66,11 @@ namespace ICSharpCode.SharpDevelop
 		public static void InitializeService()
 		{
 			if (!serviceInitialized) {
-				if (WorkbenchSingleton.Workbench == null) {
+				if (SD.Workbench == null) {
 					throw new InvalidOperationException("Initializing the NavigationService requires that the WorkbenchSingleton has already created a Workbench.");
 				}
 				// trap changes in the secondary tab via the workbench's ActiveViewContentChanged event
-				WorkbenchSingleton.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
+				SD.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
 				
 				// ignore files opened as part of loading a solution.
 				ProjectService.SolutionLoading += ProjectService_SolutionLoading;
@@ -222,10 +222,10 @@ namespace ICSharpCode.SharpDevelop
 		// Unit test covered but the test does not yet verify the results.
 		public static INavigationPoint Log()
 		{
-			if (WorkbenchSingleton.Workbench == null) {
+			if (SD.Workbench == null) {
 				return null;
 			}
-			IViewContent view = WorkbenchSingleton.Workbench.ActiveViewContent;
+			IViewContent view = SD.Workbench.ActiveViewContent;
 			if (view == null) {
 				return null;
 			}
@@ -400,7 +400,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		static void ActiveViewContentChanged(object sender, EventArgs e)
 		{
-			IViewContent vc = WorkbenchSingleton.Workbench.ActiveViewContent;
+			IViewContent vc = SD.Workbench.ActiveViewContent;
 			if (vc == null) return;
 			LoggingService.DebugFormatted("NavigationService\n\tActiveViewContent: {0}\n\t          Subview: {1}",
 			                              vc.TitleName,

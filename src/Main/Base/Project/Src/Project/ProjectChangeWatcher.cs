@@ -109,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			LoggingService.Debug("Project file " + e.Name + " was changed externally: {1}" + e.ChangeType);
 			if (!wasChangedExternally) {
 				wasChangedExternally = true;
-				if (WorkbenchSingleton.Workbench.IsActiveWindow) {
+				if (SD.Workbench.IsActiveWindow) {
 					// delay reloading message a bit, prevents showing two messages
 					// when the file changes twice in quick succession; and prevents
 					// trying to reload the file while it is still being written

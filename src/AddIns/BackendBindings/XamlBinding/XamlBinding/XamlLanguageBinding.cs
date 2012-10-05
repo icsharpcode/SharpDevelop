@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -30,7 +31,7 @@ namespace ICSharpCode.XamlBinding
 			// if editor is not an AvalonEdit.TextEditor
 			// GetService returns null
 			if (textView != null) {
-				if (WorkbenchSingleton.Workbench != null) {
+				if (SD.Workbench != null) {
 //					if (XamlBindingOptions.UseAdvancedHighlighting) {
 //						colorizer = new XamlColorizer(editor, textView);
 //						// attach the colorizer

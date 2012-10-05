@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			form.btnContinue.Enabled = !isUnhandled;
 			form.Exception = exception;
 			
-			form.Show(WorkbenchSingleton.MainWin32Window);
+			form.Show(SD.WinForms.MainWin32Window);
 		}
 		
 		void ExceptionViewDoubleClick(object sender, EventArgs e)

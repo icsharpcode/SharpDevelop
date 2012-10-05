@@ -138,7 +138,7 @@ namespace FSharpBinding
 	{
 		public override void Run()
 		{
-			PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(FSharpInteractive));
+			PadDescriptor pad = SD.Workbench.GetPad(typeof(FSharpInteractive));
 			pad.BringPadToFront();
 			FSharpInteractive fsharpInteractive = (FSharpInteractive)pad.PadContent;
 			if (fsharpInteractive.foundCompiler) {

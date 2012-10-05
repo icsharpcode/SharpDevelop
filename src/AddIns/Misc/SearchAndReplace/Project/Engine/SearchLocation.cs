@@ -57,7 +57,7 @@ namespace SearchAndReplace
 						files.Add(editor.FileName);
 					break;
 				case SearchTarget.AllOpenFiles:
-					foreach (var vc in WorkbenchSingleton.Workbench.ViewContentCollection) {
+					foreach (var vc in SD.Workbench.ViewContentCollection) {
 						editor = vc.GetService<ITextEditor>();
 						if (editor != null)
 							files.Add(editor.FileName);

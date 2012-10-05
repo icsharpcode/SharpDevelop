@@ -72,9 +72,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			TaskService.Removed += new TaskEventHandler(TaskServiceRemoved);
 			TaskService.InUpdateChanged += new EventHandler(TaskServiceInUpdateChanged);
 			
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged += new EventHandler(WorkbenchActiveViewContentChanged);
+			SD.Workbench.ActiveViewContentChanged += new EventHandler(WorkbenchActiveViewContentChanged);
 			
-			if (WorkbenchSingleton.Workbench.ActiveViewContent != null) {
+			if (SD.Workbench.ActiveViewContent != null) {
 				UpdateItems();
 				WorkbenchActiveViewContentChanged(null, null);
 			}
@@ -200,10 +200,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return ProjectService.CurrentProject != null && ProjectService.CurrentProject.FindFile(item.FileName) != null;
 				case 2:
 					// All open documents
-					return WorkbenchSingleton.Workbench.ViewContentCollection.Select(vc => vc.GetService<ITextEditor>()).Any(editor => editor != null && item.FileName == editor.FileName);
+					return SD.Workbench.ViewContentCollection.Select(vc => vc.GetService<ITextEditor>()).Any(editor => editor != null && item.FileName == editor.FileName);
 				case 3:
 					// Document
-					return WorkbenchSingleton.Workbench.ActiveViewContent != null && WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName == item.FileName;
+					return SD.Workbench.ActiveViewContent != null && SD.Workbench.ActiveViewContent.PrimaryFileName == item.FileName;
 				case 4:
 					// Namespace
 					return current != null && itemClass != null && current.Namespace == itemClass.Namespace;
@@ -217,12 +217,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		IUnresolvedTypeDefinition GetCurrentClass()
 		{
-			if (WorkbenchSingleton.Workbench.ActiveViewContent == null)
+			if (SD.Workbench.ActiveViewContent == null)
 				return null;
 			
-			IUnresolvedFile parseInfo = SD.ParserService.GetExistingUnresolvedFile(WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName);
+			IUnresolvedFile parseInfo = SD.ParserService.GetExistingUnresolvedFile(SD.Workbench.ActiveViewContent.PrimaryFileName);
 			if (parseInfo != null) {
-				IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent.GetService<IPositionable>();
+				IPositionable positionable = SD.Workbench.ActiveViewContent.GetService<IPositionable>();
 				if (positionable != null) {
 					var c = parseInfo.GetInnermostTypeDefinition(positionable.Line, positionable.Column);
 					if (c != null) return c;

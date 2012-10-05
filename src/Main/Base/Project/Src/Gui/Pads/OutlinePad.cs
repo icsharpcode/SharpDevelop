@@ -36,13 +36,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public OutlinePad()
 		{
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
+			SD.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
 			WorkbenchActiveContentChanged(null, null);
 		}
 		
 		void WorkbenchActiveContentChanged(object sender, EventArgs e)
 		{
-			IViewContent view = WorkbenchSingleton.Workbench.ActiveViewContent;
+			IViewContent view = SD.Workbench.ActiveViewContent;
 			if (view != null) {
 				IOutlineContentHost content = view.GetService(typeof(IOutlineContentHost)) as IOutlineContentHost;
 				if (content != null) {

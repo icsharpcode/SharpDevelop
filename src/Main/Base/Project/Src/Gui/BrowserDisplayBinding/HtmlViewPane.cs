@@ -138,12 +138,12 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		void NewWindow(object sender, NewWindowExtendedEventArgs e)
 		{
 			e.Cancel = true;
-			WorkbenchSingleton.Workbench.ShowView(new BrowserPane(e.Url));
+			SD.Workbench.ShowView(new BrowserPane(e.Url));
 		}
 		
 		void WebBrowserStatusTextChanged(object sender, EventArgs e)
 		{
-			IWorkbenchWindow workbench = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			IWorkbenchWindow workbench = SD.Workbench.ActiveWorkbenchWindow;
 			if (workbench == null) return;
 			BrowserPane browser = workbench.ActiveViewContent as BrowserPane;
 			if (browser == null) return;

@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					npdlg.InitialProjectLocationDirectory = GetInitialDirectorySuggestion(solutionFolderNode);
 					
 					// show the dialog to request project type and name
-					if (npdlg.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+					if (npdlg.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 						if (npdlg.NewProjectLocation.Length == 0) {
 							MessageService.ShowError("No project has been created, there is nothing to add.");
 							return;
@@ -95,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					fdiag.Multiselect     = true;
 					fdiag.CheckFileExists = true;
 					fdiag.InitialDirectory = AddNewProjectToSolution.GetInitialDirectorySuggestion(solutionFolderNode);
-					if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+					if (fdiag.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 						foreach (string fileName in fdiag.FileNames) {
 							AddProject(solutionFolderNode, FileName.Create(fileName));
 						}
@@ -118,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					fdiag.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.AllFiles}|*.*");
 					fdiag.Multiselect     = true;
 					fdiag.CheckFileExists = true;
-					if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+					if (fdiag.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 						foreach (string fileName in fdiag.FileNames) {
 							solutionFolderNode.AddItem(fileName);
 						}

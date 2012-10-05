@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		public static SearchResultsPad Instance {
 			get {
 				if (instance == null) {
-					WorkbenchSingleton.Workbench.GetPad(typeof(SearchResultsPad)).CreatePad();
+					SD.Workbench.GetPad(typeof(SearchResultsPad)).CreatePad();
 				}
 				return instance;
 			}

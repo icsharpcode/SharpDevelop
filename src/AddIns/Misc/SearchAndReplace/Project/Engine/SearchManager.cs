@@ -70,13 +70,13 @@ namespace SearchAndReplace
 				try {
 					foreach (FileName name in viewContentFileNamesCollection) {
 						if (FileUtility.IsEqualFileName(name, fileName)) {
-							ITextSource buffer = WorkbenchSingleton.SafeThreadFunction(ReadFile, fileName);
+							ITextSource buffer = SD.MainThread.InvokeIfRequired(() => ReadFile(fileName));
 							if (buffer != null)
 								return buffer;
 						}
 					}
 					using (Stream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read)) {
-						if (MimeTypeDetection.FindMimeType(stream).StartsWith("text/")) {
+						if (MimeTypeDetection.FindMimeType(stream).StartsWith("text/", StringComparison.Ordinal)) {
 							stream.Position = 0;
 							return new StringTextSource(ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(stream, SD.FileService.DefaultFileEncoding));
 						}
@@ -430,7 +430,7 @@ namespace SearchAndReplace
 			if (fileName != null) {
 				viewContent = FileService.OpenFile(fileName, switchToOpenedView);
 			} else {
-				viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+				viewContent = SD.Workbench.ActiveViewContent;
 			}
 
 			if (viewContent != null) {

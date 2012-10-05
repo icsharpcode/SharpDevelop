@@ -113,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		static void OnDebugStarting(object sender, EventArgs e)
 		{
-			WorkbenchSingleton.Workbench.WorkbenchLayout.SwitchLayout("Debug");
+			SD.Workbench.WorkbenchLayout.SwitchLayout("Debug");
 			
 			debugFeature = SD.AnalyticsMonitor.TrackFeature("Debugger");
 			
@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				debugFeature.EndTracking();
 			
 			RemoveCurrentLineMarker();
-			WorkbenchSingleton.Workbench.WorkbenchLayout.SwitchLayout("Default");
+			SD.Workbench.WorkbenchLayout.SwitchLayout("Default");
 			if (DebugStopped != null)
 				DebugStopped(null, e);
 		}

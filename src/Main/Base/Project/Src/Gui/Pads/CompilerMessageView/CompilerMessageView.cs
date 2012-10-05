@@ -48,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		static void InitializeInstance()
 		{
-			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).CreatePad();
+			SD.Workbench.GetPad(typeof(CompilerMessageView)).CreatePad();
 		}
 		
 		#region MessageViewLinkElementGenerator
@@ -251,7 +251,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void AddCategory(MessageViewCategory category)
 		{
 			if (WorkbenchSingleton.InvokeRequired) {
-				WorkbenchSingleton.SafeThreadAsyncCall((Action<MessageViewCategory>)AddCategory, category);
+				SD.MainThread.InvokeAsync(() => (Action<MessageViewCategory>)AddCategory(category)).FireAndForget();
 				return;
 			}
 			messageCategories.Add(category);

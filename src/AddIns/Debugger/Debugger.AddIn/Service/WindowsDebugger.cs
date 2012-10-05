@@ -192,7 +192,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		public void ShowAttachDialog()
 		{
 			using (AttachToProcessForm attachForm = new AttachToProcessForm()) {
-				if (attachForm.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+				if (attachForm.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 					Attach(attachForm.Process);
 				}
 			}
@@ -460,7 +460,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			} catch (GetValueException e) {
 				string errorMessage = "Error while evaluating breakpoint condition " + code + ":\n" + e.Message + "\n";
 				DebuggerService.PrintDebugMessage(errorMessage);
-				WorkbenchSingleton.SafeThreadAsyncCall(MessageService.ShowWarning, errorMessage);
+				SD.MainThread.InvokeAsync(() => MessageService.ShowWarning(errorMessage)).FireAndForget();
 				return true;
 			}
 		}

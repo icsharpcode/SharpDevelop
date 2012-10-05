@@ -14,6 +14,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
@@ -127,7 +128,7 @@ namespace Plugins.RegExpTk {
 		void showGroupForm(Match match)
 		{
 			GroupForm groupform = new GroupForm(match);
-			groupform.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window);
+			groupform.ShowDialog(SD.WinForms.MainWin32Window);
 		}
 		
 		void GroupListView_MouseUp(object sender, MouseEventArgs e)
@@ -249,7 +250,7 @@ namespace Plugins.RegExpTk {
 			sfd.DefaultExt = "dll";
 			sfd.CheckPathExists = true;
 			
-			if (sfd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+			if (sfd.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 				((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"]).Text = sfd.FileName;
 			}
 		}

@@ -100,7 +100,7 @@ namespace SearchAndReplace
 		void FindAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			using (var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor()) {
+			using (var monitor = SD.StatusBar.CreateProgressMonitor()) {
 				monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
 				try {
 					var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(false) : null);
@@ -116,7 +116,7 @@ namespace SearchAndReplace
 		void BookmarkAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			using (var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor()) {
+			using (var monitor = SD.StatusBar.CreateProgressMonitor()) {
 				monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
 				try {
 					var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(false) : null);

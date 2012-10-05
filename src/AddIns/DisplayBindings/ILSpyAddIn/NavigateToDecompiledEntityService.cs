@@ -45,14 +45,14 @@ namespace ICSharpCode.ILSpyAddIn
 			if (string.IsNullOrEmpty(typeName))
 				throw new ArgumentException("typeName is null or empty");
 			
-			foreach (var viewContent in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
+			foreach (var viewContent in SD.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
 				if (viewContent.AssemblyFile == assemblyFile && typeName == viewContent.FullTypeName) {
 					viewContent.WorkbenchWindow.SelectWindow();
 					viewContent.JumpToEntity(entityIdString);
 					return;
 				}
 			}
-			WorkbenchSingleton.Workbench.ShowView(new DecompiledViewContent(assemblyFile, typeName, entityIdString));
+			SD.Workbench.ShowView(new DecompiledViewContent(assemblyFile, typeName, entityIdString));
 		}
 		
 		/*

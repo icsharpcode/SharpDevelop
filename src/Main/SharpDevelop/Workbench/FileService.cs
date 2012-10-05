@@ -337,7 +337,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 					IViewContent newContent = binding.CreateContentForFile(file);
 					if (newContent != null) {
 						DisplayBindingService.AttachSubWindows(newContent, false);
-						WorkbenchSingleton.Workbench.ShowView(newContent, switchToOpenedView);
+						SD.Workbench.ShowView(newContent, switchToOpenedView);
 					}
 				} finally {
 					file.CloseIfAllViewsClosed();
@@ -375,7 +375,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			
 			DisplayBindingService.AttachSubWindows(newContent, false);
 			
-			WorkbenchSingleton.Workbench.ShowView(newContent);
+			SD.Workbench.ShowView(newContent);
 			return newContent;
 		}
 		
@@ -383,7 +383,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		public IReadOnlyList<FileName> OpenPrimaryFiles {
 			get {
 				List<FileName> fileNames = new List<FileName>();
-				foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
+				foreach (IViewContent content in SD.Workbench.ViewContentCollection) {
 					FileName contentName = content.PrimaryFileName;
 					if (contentName != null && !fileNames.Contains(contentName))
 						fileNames.Add(contentName);
@@ -396,7 +396,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		public IViewContent GetOpenFile(FileName fileName)
 		{
 			if (fileName != null) {
-				foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
+				foreach (IViewContent content in SD.Workbench.ViewContentCollection) {
 					string contentName = content.PrimaryFileName;
 					if (contentName != null) {
 						if (FileUtility.IsEqualFileName(fileName, contentName))

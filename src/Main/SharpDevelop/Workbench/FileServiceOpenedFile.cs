@@ -67,9 +67,9 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			
 			registeredViews.Add(view);
 			
-			if (WorkbenchSingleton.Workbench != null) {
-				WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveViewContentChanged;
-				if (WorkbenchSingleton.Workbench.ActiveViewContent == view) {
+			if (SD.Workbench != null) {
+				SD.Workbench.ActiveViewContentChanged += WorkbenchActiveViewContentChanged;
+				if (SD.Workbench.ActiveViewContent == view) {
 					SwitchedToView(view);
 				}
 			}
@@ -84,8 +84,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				throw new ArgumentNullException("view");
 			Debug.Assert(registeredViews.Contains(view));
 			
-			if (WorkbenchSingleton.Workbench != null) {
-				WorkbenchSingleton.Workbench.ActiveViewContentChanged -= WorkbenchActiveViewContentChanged;
+			if (SD.Workbench != null) {
+				SD.Workbench.ActiveViewContentChanged -= WorkbenchActiveViewContentChanged;
 			}
 			#if DEBUG
 			view.Disposed -= ViewDisposed;
@@ -136,7 +136,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		void WorkbenchActiveViewContentChanged(object sender, EventArgs e)
 		{
-			IViewContent newView = WorkbenchSingleton.Workbench.ActiveViewContent;
+			IViewContent newView = SD.Workbench.ActiveViewContent;
 			
 			if (!registeredViews.Contains(newView))
 				return;

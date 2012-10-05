@@ -185,7 +185,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				fdiag.CheckFileExists = true;
 				fdiag.Title = StringParser.Parse("${res:ProjectComponent.ContextMenu.AddExistingFiles}");
 				
-				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+				if (fdiag.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 					List<KeyValuePair<string, string>> fileNames = new List<KeyValuePair<string, string>>(fdiag.FileNames.Length);
 					foreach (string fileName in fdiag.FileNames) {
 						fileNames.Add(new KeyValuePair<string, string>(fileName, ""));
@@ -282,7 +282,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			using (FolderBrowserDialog dlg = new FolderBrowserDialog()) {
 				dlg.SelectedPath = node.Directory;
 				dlg.ShowNewFolderButton = false;
-				if (dlg.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+				if (dlg.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 					string folderName = dlg.SelectedPath;
 					string copiedFolderName = Path.Combine(node.Directory, Path.GetFileName(folderName));
 					if (!FileUtility.IsEqualFileName(folderName, copiedFolderName)) {
@@ -351,7 +351,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			List<FileProjectItem> addedItems = new List<FileProjectItem>();
 			
 			using (NewFileDialog nfd = new NewFileDialog(node.Directory)) {
-				if (nfd.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+				if (nfd.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 					bool additionalProperties = false;
 					foreach (KeyValuePair<string, FileDescriptionTemplate> createdFile in nfd.CreatedFiles) {
 						FileProjectItem item = node.AddNewFile(createdFile.Key);

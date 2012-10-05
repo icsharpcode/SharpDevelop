@@ -96,7 +96,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			switch (((ComboBox)ControlDictionary["locationComboBox"]).SelectedIndex) {
 					case 0: {// current file
-						IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+						IViewContent viewContent = SD.Workbench.ActiveViewContent;
 						if (viewContent != null) {
 							IEditable editable = viewContent.GetService<IEditable>();
 							if (editable == null) {
@@ -109,9 +109,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 						break;
 					}
 					case 1: {// all open files
-						if (WorkbenchSingleton.Workbench.ViewContentCollection.Count > 0) {
+						if (SD.Workbench.ViewContentCollection.Count > 0) {
 							total = new Report(StringParser.Parse("${res:Dialog.WordCountDialog.TotalText}"), 0, 0, 0);
-							foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
+							foreach (IViewContent content in SD.Workbench.ViewContentCollection) {
 								IEditable editable = content.GetService<IEditable>();
 								if (editable != null) {
 									Report r = GetReport(content, editable.CreateSnapshot().CreateReader());

@@ -35,7 +35,7 @@ namespace ICSharpCode.GitAddIn
 		void AddFile(string fileName)
 		{
 			Git.Add(fileName,
-				exitcode => WorkbenchSingleton.SafeThreadAsyncCall(ClearStatusCacheAndEnqueueFile, fileName)
+				exitcode => SD.MainThread.InvokeAsync(() => ClearStatusCacheAndEnqueueFile(fileName)).FireAndForget()
 			);
 		}
 		
@@ -43,16 +43,16 @@ namespace ICSharpCode.GitAddIn
 		{
 			if (GitStatusCache.GetFileStatus(fileName) == GitStatus.Added) {
 				Git.Remove(fileName, true,
-					exitcode => WorkbenchSingleton.SafeThreadAsyncCall(ClearStatusCacheAndEnqueueFile, fileName));
+					exitcode => SD.MainThread.InvokeAsync(() => ClearStatusCacheAndEnqueueFile(fileName)).FireAndForget());
 			}
 		}
 		
 		void RenameFile(string sourceFileName, string targetFileName)
 		{
 			Git.Add(targetFileName,
-				exitcode => WorkbenchSingleton.SafeThreadAsyncCall(RemoveFile, sourceFileName)
+				exitcode => SD.MainThread.InvokeAsync(() => RemoveFile(sourceFileName)).FireAndForget()
 			);
-			WorkbenchSingleton.SafeThreadAsyncCall(ClearStatusCacheAndEnqueueFile, targetFileName);
+			SD.MainThread.InvokeAsync(() => ClearStatusCacheAndEnqueueFile(targetFileName)).FireAndForget();
 		}
 		
 		void TreeNodeCreated(object sender, TreeViewEventArgs e)

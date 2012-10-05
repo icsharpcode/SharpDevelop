@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 			LoggingService.Info("Show add reference dialog for " + project.FileName);
 			using (SelectReferenceDialog selDialog = new SelectReferenceDialog(project)) {
-				if (selDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+				if (selDialog.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 					foreach (ReferenceProjectItem reference in selDialog.ReferenceInformations) {
 						ProjectService.AddProjectItem(project, reference);
 					}
@@ -91,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				} catch (WebException ex) {
 					if (protocol.IsAuthenticationRequired) {
 						using (UserCredentialsDialog dialog = new UserCredentialsDialog(url, protocol.GetAuthenticationHeader().AuthenticationType)) {
-							if (dialog.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+							if (dialog.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 								credential = dialog.Credential;
 							} else {
 								retry = false;
@@ -114,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (node != null && node.Project != null) {
 				using (AddWebReferenceDialog refDialog = new AddWebReferenceDialog(node.Project)) {
 					refDialog.NamespacePrefix = node.Project.RootNamespace;
-					if (refDialog.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+					if (refDialog.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 						// Do not overwrite existing web references.
 						refDialog.WebReference.Name = WebReference.GetReferenceName(refDialog.WebReference.WebReferencesDirectory, refDialog.WebReference.Name);
 						refDialog.WebReference.Save();

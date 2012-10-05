@@ -279,16 +279,16 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public IEnumerable<object> BuildItems(Codon codon, object owner)
 		{
-			int windowCount = WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count;
+			int windowCount = SD.Workbench.WorkbenchWindowCollection.Count;
 			if (windowCount == 0) {
 				return new object[] {};
 			}
 			var items = new object[windowCount + 1];
 			items[0] = new System.Windows.Controls.Separator();
 			for (int i = 0; i < windowCount; ++i) {
-				IWorkbenchWindow window = WorkbenchSingleton.Workbench.WorkbenchWindowCollection[i];
+				IWorkbenchWindow window = SD.Workbench.WorkbenchWindowCollection [i];
 				var item = new System.Windows.Controls.MenuItem() {
-					IsChecked = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == window,
+					IsChecked = SD.Workbench.ActiveWorkbenchWindow == window,
 					IsCheckable = true,
 					Header = StringParser.Parse(window.Title).Replace("_", "__")
 				};
@@ -454,7 +454,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public IEnumerable<object> BuildItems(Codon codon, object owner)
 		{
 			List<object> list = new List<object>();
-			foreach (PadDescriptor padContent in WorkbenchSingleton.Workbench.PadContentCollection) {
+			foreach (PadDescriptor padContent in SD.Workbench.PadContentCollection) {
 				if (padContent.Category == Category) {
 					var item = new System.Windows.Controls.MenuItem();
 					item.Header = ICSharpCode.Core.Presentation.MenuService.ConvertLabel(StringParser.Parse(padContent.Title));

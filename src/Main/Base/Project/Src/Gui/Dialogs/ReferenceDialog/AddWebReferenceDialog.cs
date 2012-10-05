@@ -680,7 +680,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				StartDiscovery(uri, credential);
 			} else {
 				using (UserCredentialsDialog credentialsForm = new UserCredentialsDialog(uri.ToString(), authenticationType)) {
-					if (DialogResult.OK == credentialsForm.ShowDialog(WorkbenchSingleton.MainWin32Window)) {
+					if (DialogResult.OK == credentialsForm.ShowDialog(SD.WinForms.MainWin32Window)) {
 						StartDiscovery(uri, credentialsForm.Credential);
 					}
 				}

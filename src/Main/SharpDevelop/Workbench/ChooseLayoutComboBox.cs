@@ -142,7 +142,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				frm.StartPosition = FormStartPosition.CenterParent;
 				frm.ShowInTaskbar = false;
 				
-				if (frm.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+				if (frm.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 					IList<string> oldNames = new List<string>(CustomLayoutNames);
 					IList<string> newNames = ed.GetList();
 					// add newly added layouts

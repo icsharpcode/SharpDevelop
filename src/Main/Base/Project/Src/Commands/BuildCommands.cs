@@ -85,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public static void AddNoSingleFileCompilationError()
 		{
 			TaskService.Add(new SDTask(null, StringParser.Parse("${res:BackendBindings.ExecutionManager.NoSingleFileCompilation}"), 0, 0, TaskType.Error));
-			WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+			SD.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 		}
 	}
 	
@@ -279,7 +279,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			using (SolutionConfigurationEditor sce = new SolutionConfigurationEditor()) {
-				sce.ShowDialog(WorkbenchSingleton.MainWin32Window);
+				sce.ShowDialog(SD.WinForms.MainWin32Window);
 				ProjectService.SaveSolution();
 				ProjectService.OpenSolution.ApplySolutionConfigurationAndPlatformToProjects();
 				ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();

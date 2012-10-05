@@ -25,21 +25,21 @@ namespace ICSharpCode.SharpDevelop
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
-			if (WorkbenchSingleton.Workbench == null) {
+			if (SD.Workbench == null) {
 				return false;
 			}
 			
 			string activewindow = condition.Properties["activewindow"];
 			
 			if (activewindow == "*") {
-				return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null;
+				return SD.Workbench.ActiveWorkbenchWindow != null;
 			}
 			
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null || WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent == null) {
+			if (SD.Workbench.ActiveWorkbenchWindow == null || SD.Workbench.ActiveWorkbenchWindow.ActiveViewContent == null) {
 				return false;
 			}
 			
-			Type currentType = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent.GetType();
+			Type currentType = SD.Workbench.ActiveWorkbenchWindow.ActiveViewContent.GetType();
 			if (currentType.FullName == activewindow)
 				return true;
 			foreach (Type interf in currentType.GetInterfaces()) {

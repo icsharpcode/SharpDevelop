@@ -62,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 			if (!alreadyCalled) {
 				alreadyCalled = true;
 				LoggingService.Info(e.Name + " changed!" + e.ChangeType);
-				if (WorkbenchSingleton.Workbench.IsActiveWindow) {
+				if (SD.Workbench.IsActiveWindow) {
 					WorkbenchSingleton.CallLater(
 						TimeSpan.FromSeconds(2),
 						() => { MainWindowActivated(this, EventArgs.Empty); }

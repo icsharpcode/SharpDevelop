@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// <summary>
 		/// The main window as IWin32Window.
 		/// </summary>
-		[Obsolete("Use SD.WinForms.ShowDialog() instead to display a WinForms dialog")]
+		[Obsolete("Use SD.WinForms.MainWin32Window instead")]
 		IWin32Window MainWin32Window { get; }
 		
 		/// <summary>

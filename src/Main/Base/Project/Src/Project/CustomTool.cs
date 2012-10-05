@@ -208,7 +208,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			RunAsync(delegate {
 			         	CodeCompileUnit ccu = func();
-			         	WorkbenchSingleton.SafeThreadAsyncCall(WriteCodeDomToFile, baseItem, outputFileName, ccu);
+			         	SD.MainThread.InvokeAsync(() => WriteCodeDomToFile(baseItem, outputFileName, ccu)).FireAndForget();
 			         });
 		}
 		

@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			var applicationStateInfoService = SD.GetService<ApplicationStateInfoService>();
 			if (applicationStateInfoService != null) {
-				applicationStateInfoService.RegisterStateGetter(activeContentState, delegate { return WorkbenchSingleton.Workbench.ActiveContent; });
+				applicationStateInfoService.RegisterStateGetter(activeContentState, delegate { return SD.Workbench.ActiveContent; });
 			}
 			
 			OnWorkbenchCreated();

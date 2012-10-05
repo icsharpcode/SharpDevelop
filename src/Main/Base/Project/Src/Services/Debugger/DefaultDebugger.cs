@@ -73,8 +73,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			attachedProcess.Exited -= new EventHandler(AttachedProcessExited);
 			attachedProcess.Dispose();
 			attachedProcess = null;
-			WorkbenchSingleton.SafeThreadAsyncCall(new Action<EventArgs>(OnDebugStopped),
-			                                       EventArgs.Empty);
+			SD.MainThread.InvokeAsync(() => new Action<EventArgs>(OnDebugStopped)(EventArgs.Empty)).FireAndForget();
 		}
 		
 		public void StartWithoutDebugging(ProcessStartInfo processStartInfo)

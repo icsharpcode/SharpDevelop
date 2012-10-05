@@ -190,7 +190,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			get {
 				List<Document> l = new List<Document>();
 				if (WorkbenchSingleton.InvokeRequired) {
-					WorkbenchSingleton.SafeThreadCall(new Action<List<Document>>(GetOpenDocuments), l);
+					SD.MainThread.InvokeIfRequired(() => new Action<List<Document>>(GetOpenDocuments)(l));
 				} else {
 					GetOpenDocuments(l);
 				}
@@ -199,7 +199,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		}
 		void GetOpenDocuments(List<Document> l)
 		{
-			foreach (IViewContent vc in WorkbenchSingleton.Workbench.ViewContentCollection) {
+			foreach (IViewContent vc in SD.Workbench.ViewContentCollection) {
 				Document d = Document.FromWindow(vc);
 				if (d != null) {
 					l.Add(d);
@@ -213,7 +213,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		public Document OpenDocument(string fileName)
 		{
 			if (WorkbenchSingleton.InvokeRequired) {
-				return WorkbenchSingleton.SafeThreadFunction<string, Document>(OpenDocumentInternal, fileName);
+				return SD.MainThread.InvokeIfRequired(() => OpenDocumentInternal(fileName));
 			} else {
 				return OpenDocumentInternal(fileName);
 			}
@@ -226,7 +226,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		public void OpenProject(string fileName)
 		{
 			if (WorkbenchSingleton.InvokeRequired) {
-				WorkbenchSingleton.SafeThreadCall(OpenProjectInternal, fileName);
+				SD.MainThread.InvokeIfRequired(() => OpenProjectInternal(fileName));
 			} else {
 				OpenProjectInternal(fileName);
 			}
@@ -245,14 +245,14 @@ namespace ICSharpCode.SharpDevelop.Sda
 		public bool CloseWorkbench(bool force)
 		{
 			if (WorkbenchSingleton.InvokeRequired) {
-				return WorkbenchSingleton.SafeThreadFunction<bool, bool>(CloseWorkbenchInternal, force);
+				return SD.MainThread.InvokeIfRequired(() => CloseWorkbenchInternal(force));
 			} else {
 				return CloseWorkbenchInternal(force);
 			}
 		}
 		bool CloseWorkbenchInternal(bool force)
 		{
-			foreach (IWorkbenchWindow window in WorkbenchSingleton.Workbench.WorkbenchWindowCollection.ToArray()) {
+			foreach (IWorkbenchWindow window in SD.Workbench.WorkbenchWindowCollection.ToArray()) {
 				if (!window.CloseWindow(force))
 					return false;
 			}
@@ -276,7 +276,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			}
 			set {
 				if (WorkbenchSingleton.InvokeRequired) {
-					WorkbenchSingleton.SafeThreadCall(SetWorkbenchVisibleInternal, value);
+					SD.MainThread.InvokeIfRequired(() => SetWorkbenchVisibleInternal(value));
 				} else {
 					SetWorkbenchVisibleInternal(value);
 				}

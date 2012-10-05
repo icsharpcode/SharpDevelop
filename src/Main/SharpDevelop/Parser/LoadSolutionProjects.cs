@@ -164,7 +164,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 							if (actions.Count > 0) {
 								actions.Dequeue(); // dequeue the null
 								if (actions.Count > 0)
-									WorkbenchSingleton.SafeThreadAsyncCall(StartRunningIfRequired);
+									SD.MainThread.InvokeAsync(StartRunningIfRequired).FireAndForget();
 								else
 									loadSolutionProjects.RaiseThreadEnded();
 							} else {

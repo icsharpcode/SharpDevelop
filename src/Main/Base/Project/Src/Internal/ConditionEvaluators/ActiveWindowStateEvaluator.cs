@@ -23,8 +23,8 @@ namespace ICSharpCode.SharpDevelop
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
-			if (WorkbenchSingleton.Workbench == null || 
-			    WorkbenchSingleton.Workbench.ActiveViewContent == null) {
+			if (SD.Workbench == null || 
+			    SD.Workbench.ActiveViewContent == null) {
 				return false;
 			}
 			
@@ -35,13 +35,13 @@ namespace ICSharpCode.SharpDevelop
 			bool isWindowStateOk = false;
 			if (windowState != WindowState.None) {
 				if ((windowState & WindowState.Dirty) > 0) {
-					isWindowStateOk |= WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContents.Any(vc => vc.IsDirty);
+					isWindowStateOk |= SD.Workbench.ActiveWorkbenchWindow.ViewContents.Any(vc => vc.IsDirty);
 				} 
 				if ((windowState & WindowState.Untitled) > 0) {
-					isWindowStateOk |= IsUntitled(WorkbenchSingleton.Workbench.ActiveViewContent);
+					isWindowStateOk |= IsUntitled(SD.Workbench.ActiveViewContent);
 				}
 				if ((windowState & WindowState.ViewOnly) > 0) {
-					isWindowStateOk |= WorkbenchSingleton.Workbench.ActiveViewContent.IsViewOnly;
+					isWindowStateOk |= SD.Workbench.ActiveViewContent.IsViewOnly;
 				}
 			} else {
 				isWindowStateOk = true;
@@ -49,15 +49,15 @@ namespace ICSharpCode.SharpDevelop
 			
 			if (nowindowState != WindowState.None) {
 				if ((nowindowState & WindowState.Dirty) > 0) {
-					isWindowStateOk &= !WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContents.Any(vc => vc.IsDirty);
+					isWindowStateOk &= !SD.Workbench.ActiveWorkbenchWindow.ViewContents.Any(vc => vc.IsDirty);
 				}
 				
 				if ((nowindowState & WindowState.Untitled) > 0) {
-					isWindowStateOk &= !IsUntitled(WorkbenchSingleton.Workbench.ActiveViewContent);
+					isWindowStateOk &= !IsUntitled(SD.Workbench.ActiveViewContent);
 				}
 				
 				if ((nowindowState & WindowState.ViewOnly) > 0) {
-					isWindowStateOk &= !WorkbenchSingleton.Workbench.ActiveViewContent.IsViewOnly;
+					isWindowStateOk &= !SD.Workbench.ActiveViewContent.IsViewOnly;
 				}
 			}
 			return isWindowStateOk;

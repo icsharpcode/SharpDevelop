@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.SharpDevelop;
 
@@ -25,6 +26,35 @@ namespace PortSD4AddInToSD5
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
 		{
+			foreach (var mre in context.RootNode.Descendants.OfType<MemberReferenceExpression>()) {
+				var rr = context.Resolve(mre);
+				var mrr = rr as MemberResolveResult;
+				if (mrr == null)
+					continue;
+				switch (mrr.Member.FullName) {
+					case "ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window":
+						yield return Issue(
+							mre,
+							script => {
+								script.Replace(mre, new IdentifierExpression("SD").Member("WinForms").Member("MainWin32Window"));
+							});
+						break;
+					case "ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench":
+						yield return Issue(
+							mre,
+							script => {
+								script.Replace(mre, new IdentifierExpression("SD").Member("Workbench"));
+							});
+						break;
+					case "ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.StatusBar":
+						yield return Issue(
+							mre,
+							script => {
+								script.Replace(mre, new IdentifierExpression("SD").Member("StatusBar"));
+							});
+						break;
+				}
+			}
 			foreach (var invocationExpression in context.RootNode.Descendants.OfType<InvocationExpression>()) {
 				var rr = context.Resolve(invocationExpression);
 				var irr = rr as CSharpInvocationResolveResult;
@@ -40,34 +70,36 @@ namespace PortSD4AddInToSD5
 							});
 						break;
 					case "ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.SafeThreadAsyncCall":
-						if (invocationExpression.Arguments.Count == 1) {
+						{
 							// SD.MainThread.InvokeAsync(argument).FireAndForget();
+							Expression arg = invocationExpression.Arguments.First().Clone();
+							if (invocationExpression.Arguments.Count > 1)
+								arg = new LambdaExpression { Body = arg.Invoke(invocationExpression.Arguments.Skip(1).Select(a => a.Clone())) };
 							yield return Issue(
 								invocationExpression,
 								script => {
 									script.Replace(invocationExpression,
 									               new IdentifierExpression("SD").Member("MainThread")
-									               .Invoke("InvokeAsync", invocationExpression.Arguments.Single().Clone())
+									               .Invoke("InvokeAsync", arg)
 									               .Invoke("FireAndForget"));
 								});
-						} else {
-							yield return Issue(invocationExpression);
+							break;
 						}
-						break;
 					case "ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.SafeThreadCall":
 					case "ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.SafeThreadFunction":
-						if (invocationExpression.Arguments.Count == 1) {
+						{
 							// SD.MainThread.InvokeIfRequired(argument);
+							Expression arg = invocationExpression.Arguments.First().Clone();
+							if (invocationExpression.Arguments.Count > 1)
+								arg = new LambdaExpression { Body = arg.Invoke(invocationExpression.Arguments.Skip(1).Select(a => a.Clone())) };
 							yield return Issue(
 								invocationExpression,
 								script => {
-									script.Replace(invocationExpression.Target,
-									               new IdentifierExpression("SD").Member("MainThread").Member("InvokeIfRequired"));
+									script.Replace(invocationExpression,
+									               new IdentifierExpression("SD").Member("MainThread").Invoke("InvokeIfRequired", arg));
 								});
-						} else {
-							yield return Issue(invocationExpression);
+							break;
 						}
-						break;
 				}
 			}
 		}

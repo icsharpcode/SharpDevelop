@@ -110,7 +110,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		public static XmlView ActiveXmlView {
-			get { return XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent); }
+			get { return XmlView.ForViewContent(SD.Workbench.ActiveViewContent); }
 		}
 		
 		public void GoToSchemaDefinition()
@@ -166,7 +166,7 @@ namespace ICSharpCode.XmlEditor
 		static void ShowErrorList()
 		{
 			if (ErrorListPad.ShowAfterBuild && TaskService.SomethingWentWrong) {
-				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+				SD.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 			}
 		}
 		
@@ -449,7 +449,7 @@ namespace ICSharpCode.XmlEditor
 		public void RunXslTransform(string xsl)
 		{
 			try {
-				WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
+				SD.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
 				
 				TaskService.ClearExceptCommentTasks();
 				
@@ -519,7 +519,7 @@ namespace ICSharpCode.XmlEditor
 		bool IsValidXsl(string xml)
 		{
 			try	{
-				WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
+				SD.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
 
 				StringReader reader = new StringReader(xml);
 				XPathDocument doc = new XPathDocument(reader);
@@ -544,7 +544,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		static void ShowOutputWindow()
 		{
-			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
+			SD.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
 		}
 		
 		/// <summary>

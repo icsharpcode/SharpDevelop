@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace Plugins.RegExpTk {
@@ -12,7 +13,7 @@ namespace Plugins.RegExpTk {
 		public override void Run()
 		{
 			RegExpTkDialog dialog = new RegExpTkDialog();
-			dialog.Show(WorkbenchSingleton.MainWin32Window);
+			dialog.Show(SD.WinForms.MainWin32Window);
 		}
 	}
 }

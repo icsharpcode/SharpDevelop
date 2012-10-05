@@ -88,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		Task<ResolveResult> ResolveAtCaretAsync(ParserUpdateStepEventArgs e)
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			IWorkbenchWindow window = SD.Workbench.ActiveWorkbenchWindow;
 			if (window == null) 
 				return Task.FromResult<ResolveResult>(null);
 			IViewContent viewContent = window.ActiveViewContent;

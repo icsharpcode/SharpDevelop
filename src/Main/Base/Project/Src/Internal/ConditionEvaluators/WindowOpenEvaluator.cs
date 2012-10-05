@@ -26,17 +26,17 @@ namespace ICSharpCode.SharpDevelop
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
-			if (WorkbenchSingleton.Workbench == null) {
+			if (SD.Workbench == null) {
 				return false;
 			}
 			
 			string openwindow = condition.Properties["openwindow"];
 			
 			if (openwindow == "*") {
-				return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null;
+				return SD.Workbench.ActiveWorkbenchWindow != null;
 			}
 			
-			foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
+			foreach (IViewContent view in SD.Workbench.ViewContentCollection) {
 				Type currentType = view.GetType();
 				if (currentType.ToString() == openwindow) {
 					return true;

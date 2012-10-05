@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		string GetCurrentItemPath()
 		{
-			return WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName;
+			return SD.Workbench.ActiveViewContent.PrimaryFileName;
 		}
 		
 		string GetCurrentTargetPath()

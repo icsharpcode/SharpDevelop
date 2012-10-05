@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			WorkbenchSingleton.Workbench.FullScreen = !WorkbenchSingleton.Workbench.FullScreen;
+			SD.Workbench.FullScreen = !SD.Workbench.FullScreen;
 		}
 	}
 }

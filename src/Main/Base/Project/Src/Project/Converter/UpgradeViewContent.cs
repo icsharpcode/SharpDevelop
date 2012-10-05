@@ -25,14 +25,14 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		public static UpgradeViewContent Show(Solution solution)
 		{
-			foreach (UpgradeViewContent vc in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<UpgradeViewContent>()) {
+			foreach (UpgradeViewContent vc in SD.Workbench.ViewContentCollection.OfType<UpgradeViewContent>()) {
 				if (vc.Solution == solution) {
 					vc.WorkbenchWindow.SelectWindow();
 					return vc;
 				}
 			}
 			var newVC = new UpgradeViewContent(solution);
-			WorkbenchSingleton.Workbench.ShowView(newVC);
+			SD.Workbench.ShowView(newVC);
 			return newVC;
 		}
 		

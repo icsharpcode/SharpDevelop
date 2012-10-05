@@ -576,8 +576,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 					// save preferences
 					Project.ProjectService.SaveSolutionPreferences();
 					
-					while (WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count > 0) {
-						IWorkbenchWindow window = WorkbenchSingleton.Workbench.WorkbenchWindowCollection[0];
+					while (SD.Workbench.WorkbenchWindowCollection.Count > 0) {
+						IWorkbenchWindow window = SD.Workbench.WorkbenchWindowCollection [0];
 						if (!window.CloseWindow(false)) {
 							e.Cancel = true;
 							return;

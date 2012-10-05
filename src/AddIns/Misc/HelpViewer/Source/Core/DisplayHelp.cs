@@ -203,19 +203,19 @@ namespace MSHelpSystem.Core
 
 		static BrowserPane ActiveHelp3Browser()
 		{
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			IWorkbenchWindow window = SD.Workbench.ActiveWorkbenchWindow;
 			if (window != null)
 			{
 				BrowserPane browser = window.ActiveViewContent as BrowserPane;
 				if (browser != null && browser.Url.Scheme == "http") return browser;
 			}
-			foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection)
+			foreach (IViewContent view in SD.Workbench.ViewContentCollection)
 			{
 				BrowserPane browser = view as BrowserPane;
 				if (browser != null && browser.Url.Scheme == "http") return browser;
 			}
 			BrowserPane tmp = new BrowserPane();
-			WorkbenchSingleton.Workbench.ShowView(tmp);
+			SD.Workbench.ShowView(tmp);
 			return tmp;
 		}
 	}

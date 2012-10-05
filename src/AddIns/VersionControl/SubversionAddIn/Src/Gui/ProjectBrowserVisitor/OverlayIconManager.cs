@@ -184,10 +184,7 @@ namespace ICSharpCode.Svn
 						client = new SvnClientWrapper();
 					} catch (Exception ex) {
 						subversionDisabled = true;
-						SharpDevelop.Gui.WorkbenchSingleton.SafeThreadAsyncCall(
-							MessageService.ShowWarning,
-							"Error initializing Subversion library:\n" + ex.ToString()
-						);
+						SD.MainThread.InvokeAsync(() => MessageService.ShowWarning("Error initializing Subversion library:\n" + ex.ToString())).FireAndForget();
 						return StatusKind.None;
 					}
 				}
