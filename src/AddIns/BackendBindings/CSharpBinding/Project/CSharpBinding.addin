@@ -175,9 +175,9 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.IncorrectExceptionParameterOrderingIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.LocalVariableHidesMemberIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.LocalVariableNotUsedIssue" />
-		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.LocalVariableOnlyAssignedIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.MethodNeverReturnsIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.MethodOverloadHidesOptionalParameterIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.MissingStringComparisonIssue" />
 		<!--<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.MultipleEnumerationIssue" />-->
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.NegativeRelationalExpressionIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.NotImplementedExceptionIssue" />
@@ -205,6 +205,7 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantWhereWithPredicateIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ReferenceEqualsCalledWithValueTypeIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ReferenceToStaticMemberViaDerivedTypeIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ResultOfAsyncCallShouldNotBeIgnoredIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.StaticFieldInGenericTypeIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.StringIsNullOrEmptyIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ThreadStaticOnInstanceFieldIssue" />

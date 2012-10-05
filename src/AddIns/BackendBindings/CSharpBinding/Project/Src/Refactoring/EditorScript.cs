@@ -44,7 +44,7 @@ namespace CSharpBinding.Refactoring
 			return segment;
 		}
 		
-		public override void FormatText(AstNode node)
+		/*public override void FormatText(AstNode node)
 		{
 			var parseInfo = SD.ParserService.Parse(editor.FileName, editor.Document) as CSharpFullParseInformation;
 			if (parseInfo != null) {
@@ -58,7 +58,7 @@ namespace CSharpBinding.Refactoring
 			} else {
 				base.FormatText(node);
 			}
-		}
+		}*/
 		
 		public override void Select(AstNode node)
 		{

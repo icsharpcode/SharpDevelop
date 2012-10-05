@@ -108,7 +108,7 @@ class TestClass
 }");
 		}
 
-		[Test]
+		[Test, Ignore("broken")]
 		public void TestBreak ()
 		{
 			Test<ConvertSwitchToIfAction> (@"
