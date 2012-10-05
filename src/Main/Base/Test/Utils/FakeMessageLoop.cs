@@ -109,5 +109,10 @@ namespace ICSharpCode.SharpDevelop
 		{
 			throw new NotImplementedException();
 		}
+		
+		public void CallLater(TimeSpan delay, Action method)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

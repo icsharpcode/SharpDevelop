@@ -9,7 +9,7 @@ using System.Xml.Linq;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Workbench;
 
-namespace ICSharpCode.SharpDevelop.Util
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// IViewContent implementation that opens a file as XDocument and allows editing it, while synchronizing changes with any open editor.

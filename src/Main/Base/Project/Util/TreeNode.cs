@@ -6,10 +6,13 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop
 {
+	// TODO: is this interface really useful?
+	// the use with TypeGraphNode seems redundant, we can just directly use the TypeGraphNodes...
+	
 	/// <summary>
 	/// Generic TreeNode with content and children.
 	/// </summary>
-	public interface ITreeNode<TContent>
+	public interface ITreeNode<out TContent>
 	{
 		TContent Content { get; }
 		

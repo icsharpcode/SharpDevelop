@@ -11,7 +11,6 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Util;
 using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.GitAddIn

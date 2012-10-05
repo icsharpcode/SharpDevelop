@@ -8,8 +8,8 @@ using System.IO.Pipes;
 using System.Runtime.InteropServices;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Util;
 using Microsoft.Win32.SafeHandles;
 
 namespace ICSharpCode.GitAddIn

@@ -9,7 +9,7 @@ using System.Threading;
 
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop.Util
+namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Runs a process that sends output to standard output and to
@@ -37,12 +37,12 @@ namespace ICSharpCode.SharpDevelop.Util
 		/// <summary>
 		/// Triggered when a line of text is read from the standard output.
 		/// </summary>
-		public event LineReceivedEventHandler OutputLineReceived;
+		public event EventHandler<LineReceivedEventArgs> OutputLineReceived;
 		
 		/// <summary>
 		/// Triggered when a line of text is read from the standard error.
 		/// </summary>
-		public event LineReceivedEventHandler ErrorLineReceived;
+		public event EventHandler<LineReceivedEventArgs> ErrorLineReceived;
 		
 		/// <summary>
 		/// Creates a new instance of the <see cref="ProcessRunner"/>.
@@ -124,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.Util
 		public bool WaitForExit(int timeout)
 		{
 			if (process == null) {
-				throw new ProcessRunnerException(StringParser.Parse("${res:ICSharpCode.NAntAddIn.ProcessRunner.NoProcessRunningErrorText}"));
+				throw new InvalidOperationException("no process is running");
 			}
 			
 			bool exited = process.WaitForExit(timeout);

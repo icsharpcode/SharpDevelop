@@ -13,7 +13,6 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
-using ICSharpCode.SharpDevelop.Util;
 using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop.Parser

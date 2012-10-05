@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Util;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -11,12 +11,12 @@ namespace ICSharpCode.UnitTesting
 	{
 		ProcessRunner runner;
 		
-		public event LineReceivedEventHandler OutputLineReceived {
+		public event EventHandler<LineReceivedEventArgs> OutputLineReceived {
 			add { runner.OutputLineReceived += value; }
 			remove { runner.OutputLineReceived -= value; }
 		}
 		
-		public event LineReceivedEventHandler ErrorLineReceived {
+		public event EventHandler<LineReceivedEventArgs> ErrorLineReceived {
 			add { runner.ErrorLineReceived += value; }
 			remove { runner.ErrorLineReceived -= value; }
 		}

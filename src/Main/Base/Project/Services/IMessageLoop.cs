@@ -92,5 +92,10 @@ namespace ICSharpCode.SharpDevelop
 		Task<T> InvokeAsync<T>(Func<T> callback, DispatcherPriority priority);
 		/// <inheritdoc see="InvokeAsync(Action)"/>
 		Task<T> InvokeAsync<T>(Func<T> callback, DispatcherPriority priority, CancellationToken cancellationToken);
+		
+		/// <summary>
+		/// Waits <paramref name="delay"/>, then executed <paramref name="method"/> on the message loop thread.
+		/// </summary>
+		void CallLater(TimeSpan delay, Action method);
 	}
 }

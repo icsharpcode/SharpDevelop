@@ -121,6 +121,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		#region Safe Thread Caller
+		[Obsolete("Use SD.MainThread.InvokeRequired instead")]
 		public static bool InvokeRequired {
 			get {
 				if (workbench == null)
@@ -259,10 +260,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Calls a method on the GUI thread, but delays the call a bit.
 		/// </summary>
+		[Obsolete("Use SD.MainThread.CallLater() instead")]
 		public static async void CallLater(TimeSpan delay, Action method)
 		{
-			await Task.Delay(delay).ConfigureAwait(false);
-			SD.MainThread.InvokeAsync(method).FireAndForget();
+			SD.MainThread.CallLater(delay, method);
 		}
 		#endregion
 		

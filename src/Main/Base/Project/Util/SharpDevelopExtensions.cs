@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop
 	/// <summary>
 	/// Extension methods used in SharpDevelop.
 	/// </summary>
-	public static class ExtensionMethods
+	public static class SharpDevelopExtensions
 	{
 		#region RaiseEvent
 		/// <summary>
@@ -45,6 +45,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		/// <remarks>Using this method is only thread-safe under the Microsoft .NET memory model,
 		/// not under the less strict memory model in the CLI specification.</remarks>
+		[Obsolete("Use 'event EventHandler MyEvent = delegate{};' instead")]
 		public static void RaiseEvent(this EventHandler eventHandler, object sender, EventArgs e)
 		{
 			if (eventHandler != null) {
@@ -63,6 +64,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <code>if (MyEvent != null) MyEvent(x,y);</code>
 		/// would not be safe.
 		/// </summary>
+		[Obsolete("Use 'event EventHandler MyEvent = delegate{};' instead")]
 		public static void RaiseEvent<T>(this EventHandler<T> eventHandler, object sender, T e) where T : EventArgs
 		{
 			if (eventHandler != null) {

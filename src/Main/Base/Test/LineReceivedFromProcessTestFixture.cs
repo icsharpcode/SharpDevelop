@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using NUnit.Framework;
-using ICSharpCode.SharpDevelop.Util;
 using System;
 using System.Collections;
 using System.IO;
@@ -32,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			string echoText = "Test";
 			string expectedOutput = String.Concat(echoText, "\r\n");
 			
-			runner.OutputLineReceived += new LineReceivedEventHandler(OutputLineReceived);
+			runner.OutputLineReceived += OutputLineReceived;
 			
 			runner.Start(GetConsoleAppFileName(), String.Concat("-echo:", echoText));
 			runner.WaitForExit();

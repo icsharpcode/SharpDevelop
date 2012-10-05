@@ -5,7 +5,6 @@ using System;
 using System.IO;
 using System.Threading;
 
-using ICSharpCode.SharpDevelop.Util;
 using NUnit.Framework;
 
 namespace ICSharpCode.SharpDevelop.Tests

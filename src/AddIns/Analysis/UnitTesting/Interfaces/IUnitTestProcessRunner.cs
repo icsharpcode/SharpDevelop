@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Util;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -17,8 +17,8 @@ namespace ICSharpCode.UnitTesting
 		void Start(string command, string arguments);
 		void Kill();
 		
-		event LineReceivedEventHandler OutputLineReceived;
-		event LineReceivedEventHandler ErrorLineReceived;
+		event EventHandler<LineReceivedEventArgs> OutputLineReceived;
+		event EventHandler<LineReceivedEventArgs> ErrorLineReceived;
 		event EventHandler ProcessExited;
 	}
 }

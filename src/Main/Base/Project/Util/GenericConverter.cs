@@ -11,7 +11,7 @@ namespace ICSharpCode.SharpDevelop
 	/// Provides static conversion functions to quickly convert types
 	/// having a TypeConverter to and from string (culture-invariant).
 	/// </summary>
-	internal static class GenericConverter
+	public static class GenericConverter
 	{
 		/// <summary>
 		/// Converts the value from string.

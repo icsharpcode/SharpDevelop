@@ -128,6 +128,12 @@ namespace ICSharpCode.SharpDevelop
 			return dispatcher.InvokeAsync(callback, priority, cancellationToken).Task;
 		}
 		
+		public async void CallLater(TimeSpan delay, Action method)
+		{
+			await Task.Delay(delay).ConfigureAwait(false);
+			InvokeAsync(method).FireAndForget();
+		}
+		
 		IAsyncResult ISynchronizeInvoke.BeginInvoke(Delegate method, object[] args)
 		{
 			return dispatcher.InvokeAsync<object>(() => method.DynamicInvoke(args)).Task;

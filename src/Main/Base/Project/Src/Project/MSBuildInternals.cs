@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Parser;
-using ICSharpCode.SharpDevelop.Util;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;

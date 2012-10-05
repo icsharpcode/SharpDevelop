@@ -4,7 +4,6 @@
 using System;
 using System.IO;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Util;
 using NUnit.Framework;
 using System.Text.RegularExpressions;
 

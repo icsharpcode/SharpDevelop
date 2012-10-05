@@ -3,10 +3,8 @@
 
 using System;
 
-namespace ICSharpCode.SharpDevelop.Util
+namespace ICSharpCode.SharpDevelop
 {
-	public delegate void LineReceivedEventHandler(object sender, LineReceivedEventArgs e);
-	
 	/// <summary>
 	/// The arguments for the <see cref="LineReceivedEventHandler"/> event.
 	/// </summary>

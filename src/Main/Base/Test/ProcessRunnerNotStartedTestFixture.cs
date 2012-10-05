@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Util;
 using NUnit.Framework;
 
 namespace ICSharpCode.SharpDevelop.Tests
@@ -42,15 +41,10 @@ namespace ICSharpCode.SharpDevelop.Tests
 		}
 		
 		[Test]
+		[ExpectedException(typeof(InvalidOperationException))]
 		public void WaitForExit()
 		{
-			try {
-				runner.WaitForExit();
-				Assert.Fail("Expected ProcessRunnerException");
-			} catch (ProcessRunnerException ex) {
-				Assert.AreEqual(ICSharpCode.Core.StringParser.Parse("${res:ICSharpCode.NAntAddIn.ProcessRunner.NoProcessRunningErrorText}"),
-				                ex.Message);
-			}
+			runner.WaitForExit();
 		}
 	}
 }

@@ -166,7 +166,6 @@
     <Compile Include="Services\IClipboard.cs" />
     <Compile Include="Services\IMessageLoop.cs" />
     <Compile Include="Services\SD.cs" />
-    <Compile Include="Src\Gui\FileService.cs" />
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
     <Compile Include="Src\Commands\ViewInBrowser.cs" />
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
@@ -230,20 +229,31 @@
     <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.cs" />
     <Compile Include="Src\Gui\IWorkbenchLayout.cs" />
     <Compile Include="Src\Services\FileChangeWatcher.cs" />
-    <Compile Include="Src\Services\ViewContentServiceAttribute.cs" />
-    <Compile Include="Src\Util\NotAvailableCommand.cs" />
     <Compile Include="Util\AtomicBoolean.cs" />
     <Compile Include="Util\CustomThreadPoolTaskScheduler.cs" />
     <Compile Include="Util\DebugTimer.cs" />
+    <Compile Include="Util\DotnetDetection.cs" />
     <Compile Include="Util\EnumBinding.cs" />
-    <Compile Include="Util\ExtensionMethods.cs" />
+    <Compile Include="Util\SharpDevelopExtensions.cs" />
+    <Compile Include="Util\FakeXmlViewContent.cs" />
+    <Compile Include="Util\GenericConverter.cs" />
     <Compile Include="Util\ICanBeDirty.cs" />
     <Compile Include="Util\IImage.cs" />
+    <Compile Include="Util\IOTaskScheduler.cs" />
     <Compile Include="Util\IProgressMonitor.cs" />
+    <Compile Include="Util\LineReceivedEventArgs.cs" />
+    <Compile Include="Util\MimeTypeDetection.cs" />
+    <Compile Include="Util\NativeMethods.cs" />
+    <Compile Include="Util\NotAvailableCommand.cs" />
+    <Compile Include="Util\ProcessRunner.cs" />
     <Compile Include="Util\ProgressCollector.cs" />
     <Compile Include="Util\ReactiveExtensions.cs" />
+    <Compile Include="Util\ReadOnlyCollectionWrapper.cs" />
+    <Compile Include="Util\ScrollUtils.cs" />
+    <Compile Include="Util\SharpDevelopServiceContainer.cs" />
     <Compile Include="Util\SimpleCommand.cs" />
     <Compile Include="Util\SimpleTaskScheduler.cs" />
+    <Compile Include="Util\TreeNode.cs" />
     <Compile Include="Util\UnclosableStream.cs" />
     <Compile Include="Util\WeakCollection.cs" />
     <Compile Include="WinForms\IClipboardHandler.cs" />
@@ -259,6 +269,7 @@
     <Compile Include="Workbench\AbstractViewContent.cs" />
     <Compile Include="Workbench\AbstractViewContentHandlingLoadErrors.cs" />
     <Compile Include="Workbench\AbstractViewContentWithoutFile.cs" />
+    <Compile Include="Workbench\File\FileService.cs" />
     <Compile Include="Workbench\File\IRecentOpen.cs" />
     <Compile Include="Workbench\ICustomizedCommands.cs" />
     <Compile Include="Workbench\IPadContent.cs" />
@@ -268,6 +279,7 @@
     <Compile Include="Workbench\IWorkbenchWindow.cs" />
     <Compile Include="Workbench\SimpleViewContent.cs" />
     <Compile Include="Workbench\ViewContentEventArgs.cs" />
+    <Compile Include="Workbench\ViewContentServiceAttribute.cs" />
     <None Include="ICSharpCode.SharpDevelop.addin" />
     <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.Designer.cs">
       <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
@@ -489,7 +501,6 @@
     <Compile Include="Src\Internal\Doozers\OptionPanelDoozer.cs" />
     <Compile Include="Src\Internal\Doozers\IOptionPanelDescriptor.cs" />
     <Compile Include="Workbench\File\FileEventArgs.cs" />
-    <Compile Include="Src\Services\MimeTypeDetection.cs" />
     <Compile Include="Src\Services\ProjectService\SolutionConfigurationEventHandler.cs" />
     <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
     <Compile Include="Src\Services\RefactoringService\FindReferenceService.cs" />
@@ -770,15 +781,6 @@
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AsyncDiscoveryState.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\DiscoveryNetworkCredential.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectLoader.cs" />
-    <Compile Include="Src\Util\DotnetDetection.cs" />
-    <Compile Include="Src\Util\FakeXmlViewContent.cs" />
-    <Compile Include="Src\Util\IOTaskScheduler.cs" />
-    <Compile Include="Src\Util\SharpDevelopServiceContainer.cs" />
-    <Compile Include="Src\Util\TreeNode.cs" />
-    <Compile Include="Src\Util\NativeMethods.cs" />
-    <Compile Include="Src\Util\ProcessRunnerException.cs" />
-    <Compile Include="Src\Util\LineReceivedEventArgs.cs" />
-    <Compile Include="Src\Util\ProcessRunner.cs" />
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
@@ -807,10 +809,7 @@
     <Compile Include="Src\Project\AbstractProject.cs" />
     <Compile Include="Src\Project\CompilableProject.cs" />
     <Compile Include="Src\Project\MSBuildInternals.cs" />
-    <Compile Include="Src\Util\ScrollUtils.cs" />
-    <Compile Include="Src\Util\ReadOnlyCollectionWrapper.cs" />
     <Compile Include="Src\Project\Items\ItemType.cs" />
-    <Compile Include="Src\Util\GenericConverter.cs" />
     <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
     <EmbeddedResource Include="Resources\DefaultManifest.manifest" />
     <EmbeddedResource Include="Src\Gui\Dialogs\ExtractInterfaceDialog.resx">
@@ -889,7 +888,6 @@
     <Folder Include="Src\Editor\Commands" />
     <Folder Include="Editor\Search" />
     <Folder Include="Src\Gui\Pads\TaskList" />
-    <Folder Include="Src\Util" />
     <Folder Include="Src\Services\NavigationService" />
     <ProjectReference Include="..\..\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
       <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>

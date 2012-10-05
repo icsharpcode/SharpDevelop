@@ -7,7 +7,6 @@ using System.Diagnostics;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.UnitTesting
 {
