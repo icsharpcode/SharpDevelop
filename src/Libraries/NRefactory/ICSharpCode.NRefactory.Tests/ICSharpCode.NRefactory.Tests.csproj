@@ -110,9 +110,9 @@
     <Compile Include="CSharp\CodeIssues\IdenticalConditionalBranchIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\LocalVariableHidesMemberIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\LocalVariableNotUsedIssueTests.cs" />
-    <Compile Include="CSharp\CodeIssues\LocalVariableOnlyAssignedIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\MethodNeverReturnsIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\MethodOverloadHidesOptionalParameterIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\MissingStringComparisonIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\MultipleEnumerationIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\NegativeRelationalExpressionIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterHidesMemberIssueTests.cs" />

@@ -90,5 +90,19 @@ class TestClass
 }";
 			Test<ExpressionIsAlwaysOfProvidedTypeIssue> (input, 1, output);
 		}
+		
+		[Test]
+		public void IntIsNotDouble ()
+		{
+			var input = @"
+sealed class TestClass
+{
+	void TestMethod (int x)
+	{
+		if (x is double) ;
+	}
+}";
+			Test<ExpressionIsAlwaysOfProvidedTypeIssue> (input, 0);
+		}
 	}
 }

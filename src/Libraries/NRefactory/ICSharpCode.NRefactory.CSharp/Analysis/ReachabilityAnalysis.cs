@@ -78,6 +78,10 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			}
 		}
 		
+		public IEnumerable<Statement> ReachableStatements {
+			get { return reachableStatements; }
+		}
+		
 		public bool IsReachable(Statement statement)
 		{
 			return reachableStatements.Contains(statement);

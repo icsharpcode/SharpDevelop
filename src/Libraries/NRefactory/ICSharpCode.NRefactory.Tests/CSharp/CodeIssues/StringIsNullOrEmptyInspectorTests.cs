@@ -499,5 +499,23 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 	}
 }");
 		}
+
+		[Test]
+		public void TestArrays ()
+		{
+			var input = @"class Foo
+{
+	void Bar ()
+	{
+		int[] foo = new int[10];
+		if (foo == null || foo.Length == 0) {
+		}
+	}
+}";
+
+			TestRefactoringContext context;
+			var issues = GetIssues (new StringIsNullOrEmptyIssue (), input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
 	}
 }

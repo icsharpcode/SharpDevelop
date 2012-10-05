@@ -97,5 +97,36 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			AssertError(typeof(StringComparison), resolver.WithCheckForOverflow(true).ResolveCast(ResolveType(typeof(StringComparison)), MakeConstant(long.MaxValue)));
 		}
+		
+		[Test]
+		public void ImplicitCastInConstant()
+		{
+			string program = @"using System;
+class Test {
+	const int $MAXSIZE = ushort.MaxValue;
+}";
+			var rr = ResolveAtLocation<MemberResolveResult>(program);
+			IField field = (IField)rr.Member;
+			Assert.IsTrue(field.IsConst);
+			Assert.AreEqual("System.Int32", field.Type.FullName);
+			Assert.AreEqual(typeof(int), field.ConstantValue.GetType());
+			Assert.AreEqual(ushort.MaxValue, (int)field.ConstantValue);
+		}
+		
+		[Test]
+		public void ImplicitCastInLocalConstant()
+		{
+			string program = @"using System;
+class Test {
+	void M() {
+		const int $MAXSIZE = ushort.MaxValue;
+	}
+}";
+			var rr = ResolveAtLocation<LocalResolveResult>(program);
+			Assert.IsTrue(rr.Variable.IsConst);
+			Assert.AreEqual("System.Int32", rr.Variable.Type.FullName);
+			Assert.AreEqual(typeof(int), rr.Variable.ConstantValue.GetType());
+			Assert.AreEqual(ushort.MaxValue, (int)rr.Variable.ConstantValue);
+		}
 	}
 }

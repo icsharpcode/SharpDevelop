@@ -6,7 +6,7 @@ using ICSharpCode.NRefactory.PatternMatching;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription("Any() should be used with predicate and Where() removed",
+	[IssueDescription("Any()/First()/etc. should be used with predicate and Where() removed",
 	                  Description= "Detects redundant Where() with predicate calls followed by Any().",
 	                  Category = IssueCategories.CodeQualityIssues,
 	                  Severity = Severity.Hint)]
@@ -15,11 +15,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		static readonly AstNode pattern =
 			new InvocationExpression (
 				new MemberReferenceExpression (
-				new NamedNode ("whereInvoke",
-			               new InvocationExpression (
-				new MemberReferenceExpression (new AnyNode ("target"), "Where"),
-				new AnyNode ())),
-				"Any"));
+					new NamedNode ("whereInvoke",
+					               new InvocationExpression (
+					               	new MemberReferenceExpression (new AnyNode ("target"), "Where"),
+					               	new AnyNode ())),
+					Pattern.AnyString));
 		
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
@@ -41,11 +41,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				
 				var anyResolve = ctx.Resolve (anyInvoke) as InvocationResolveResult;
-				if (anyResolve == null || anyResolve.Member.FullName != "System.Linq.Enumerable.Any")
+				if (anyResolve == null || !HasPredicateVersion(anyResolve.Member))
 					return;
 				var whereInvoke = match.Get<InvocationExpression> ("whereInvoke").Single ();
 				var whereResolve = ctx.Resolve (whereInvoke) as InvocationResolveResult;
-				if (whereResolve == null || whereResolve.Member.FullName != "System.Linq.Enumerable.Where")
+				if (whereResolve == null || whereResolve.Member.Name != "Where" || !IsQueryExtensionClass(whereResolve.Member.DeclaringTypeDefinition))
 					return;
 				if (whereResolve.Member.Parameters.Count != 2)
 					return;
@@ -53,11 +53,47 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (predResolve.Type.TypeParameterCount != 2)
 					return;
 				
-				AddIssue (anyInvoke, "Redundant Where() call with predicate followed by Any()", script => {
-					var arg = whereInvoke.Arguments.Single ().Clone ();
-					var target = match.Get<Expression> ("target").Single ().Clone ();
-					script.Replace (anyInvoke, new InvocationExpression (new MemberReferenceExpression (target, "Any"), arg));
-				});
+				AddIssue (
+					anyInvoke, string.Format("Redundant Where() call with predicate followed by {0}()", anyResolve.Member.Name),
+				    script => {
+						var arg = whereInvoke.Arguments.Single ().Clone ();
+						var target = match.Get<Expression> ("target").Single ().Clone ();
+						script.Replace (anyInvoke, new InvocationExpression (new MemberReferenceExpression (target, anyResolve.Member.Name), arg));
+					});
+			}
+			
+			bool IsQueryExtensionClass(ITypeDefinition typeDef)
+			{
+				if (typeDef == null || typeDef.Namespace != "System.Linq")
+					return false;
+				switch (typeDef.Name) {
+					case "Enumerable":
+					case "ParallelEnumerable":
+					case "Queryable":
+						return true;
+					default:
+						return false;
+				}
+			}
+			
+			bool HasPredicateVersion(IParameterizedMember member)
+			{
+				if (!IsQueryExtensionClass(member.DeclaringTypeDefinition))
+					return false;
+				switch (member.Name) {
+					case "Any":
+					case "Count":
+					case "First":
+					case "FirstOrDefault":
+					case "Last":
+					case "LastOrDefault":
+					case "LongCount":
+					case "Single":
+					case "SingleOrDefault":
+						return true;
+					default:
+						return false;
+				}
 			}
 		}
 	}

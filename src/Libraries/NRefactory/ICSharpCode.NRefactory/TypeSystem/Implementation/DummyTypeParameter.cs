@@ -189,7 +189,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return SpecialType.UnknownType; }
 		}
 		
-		IList<IType> ITypeParameter.EffectiveInterfaceSet {
+		ICollection<IType> ITypeParameter.EffectiveInterfaceSet {
 			get { return EmptyList<IType>.Instance; }
 		}
 		

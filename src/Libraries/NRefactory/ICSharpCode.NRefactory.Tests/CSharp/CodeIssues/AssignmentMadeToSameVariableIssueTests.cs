@@ -212,5 +212,19 @@ class TestClass
 }";
 			Test<AssignmentMadeToSameVariableIssue> (input, 0);
 		}
+		
+		[Test]
+		public void TestNoIssueWithCompoundOperator ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod (int a)
+	{
+		a += a;
+	}
+}";
+			Test<AssignmentMadeToSameVariableIssue> (input, 0);
+		}
 	}
 }

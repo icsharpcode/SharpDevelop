@@ -79,6 +79,7 @@ class A
 		throw new ArgumentException (""The parameter 'blah' can not be null"", ""blah"");
 		throw new ArgumentOutOfRangeException (""blah"", ""The parameter 'blah' can not be null"");
 		throw new DuplicateWaitObjectException (""blah"", ""The parameter 'blah' can not be null"");
+		throw new ArgumentOutOfRangeException (""blah"", 42);
 	}
 }";
 			TestRefactoringContext context;

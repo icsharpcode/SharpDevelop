@@ -66,5 +66,28 @@ public class X
 			var issues = GetIssues (new RedundantWhereWithPredicateIssue (), input, out context);
 			Assert.AreEqual (0, issues.Count);
 		}
+		
+		[Test]
+		public void TestWhereCount()
+		{
+			var input = @"using System.Linq;
+public class CSharpDemo {
+	public void Bla () {
+		int[] arr;
+		var bla = arr.Where (x => x < 4).Count ();
+	}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new RedundantWhereWithPredicateIssue (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+			CheckFix (context, issues, @"using System.Linq;
+public class CSharpDemo {
+	public void Bla () {
+		int[] arr;
+		var bla = arr.Count (x => x < 4);
+	}
+}");
+		}
 	}
 }

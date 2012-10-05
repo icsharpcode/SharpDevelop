@@ -28,6 +28,8 @@ using ICSharpCode.NRefactory.Semantics;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using System;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -41,15 +43,48 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		#region ICodeIssueProvider implementation
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
-			return new GatherVisitor (context).GetIssues ();
+			var delegateVisitor = new GetDelgateUsagesVisitor (context);
+			context.RootNode.AcceptVisitor (delegateVisitor);
+
+			return new GatherVisitor (context, delegateVisitor).GetIssues ();
 		}
 		#endregion
 
+		// Collect all methods that are used as delegate
+		class GetDelgateUsagesVisitor : DepthFirstAstVisitor
+		{
+			BaseRefactoringContext ctx;
+			public readonly List<IMethod> UsedMethods = new List<IMethod> ();
+
+			public GetDelgateUsagesVisitor(BaseRefactoringContext ctx)
+			{
+				this.ctx = ctx;
+			}
+			
+			public override void VisitIdentifierExpression(IdentifierExpression identifierExpression)
+			{
+				var mgr = ctx.Resolve (identifierExpression) as MethodGroupResolveResult;
+				if (mgr != null)
+					UsedMethods.AddRange (mgr.Methods);
+				base.VisitIdentifierExpression(identifierExpression);
+			}
+
+			public override void VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression)
+			{
+				var mgr = ctx.Resolve (memberReferenceExpression) as MethodGroupResolveResult;
+				if (mgr != null)
+					UsedMethods.AddRange (mgr.Methods);
+				base.VisitMemberReferenceExpression(memberReferenceExpression);
+			}
+		}
+
 		class GatherVisitor : GatherVisitorBase
 		{
-			public GatherVisitor (BaseRefactoringContext ctx)
+			GetDelgateUsagesVisitor usedDelegates;
+			public GatherVisitor (BaseRefactoringContext ctx, GetDelgateUsagesVisitor usedDelegates)
 				: base (ctx)
 			{
+				this.usedDelegates = usedDelegates;
 			}
 
 			public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
@@ -66,13 +101,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				if (member.ImplementedInterfaceMembers.Any ())
 					return;
-
-				base.VisitMethodDeclaration(methodDeclaration);
+				if (usedDelegates.UsedMethods.Any (m => m.Region.Begin == methodDeclaration.StartLocation))
+					return;
+				foreach (var parameter in methodDeclaration.Parameters)
+					parameter.AcceptVisitor (this);
 			}
 
 			public override void VisitParameterDeclaration (ParameterDeclaration parameterDeclaration)
 			{
-				base.VisitParameterDeclaration (parameterDeclaration);
+ 				base.VisitParameterDeclaration (parameterDeclaration);
 
 				if (!(parameterDeclaration.Parent is MethodDeclaration))
 					return;

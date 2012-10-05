@@ -43,8 +43,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			readonly ControlFlowGraphBuilder cfgBuilder = new ControlFlowGraphBuilder ();
-
 			public GatherVisitor(BaseRefactoringContext ctx)
 				: base (ctx)
 			{
@@ -58,30 +56,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (methodDeclaration.Body.IsNull)
 					return;
 
-				var cfg = cfgBuilder.BuildControlFlowGraph (methodDeclaration.Body, ctx.Resolver,
-					ctx.CancellationToken);
-				var stack = new Stack<ControlFlowNode> ();
-				var visitedNodes = new HashSet<ControlFlowNode> ();
-				stack.Push (cfg [0]);
-				while (stack.Count > 0) {
-					var node = stack.Pop ();
-
-					// reach method's end
-					if (node.PreviousStatement == methodDeclaration.Body)
-						return;
-					// reach a return statement
-					if (node.NextStatement is ReturnStatement ||
-						node.NextStatement is ThrowStatement)
-						return;
-
-					foreach (var edge in node.Outgoing) {
-						if (visitedNodes.Add(edge.To))
-							stack.Push(edge.To);
+				var reachability = ctx.CreateReachabilityAnalysis(methodDeclaration.Body);
+				bool hasReachableReturn = false;
+				foreach (var statement in reachability.ReachableStatements) {
+					if (statement is ReturnStatement || statement is ThrowStatement || statement is YieldBreakStatement) {
+						hasReachableReturn = true;
+						break;
 					}
 				}
-
-				AddIssue (methodDeclaration.NameToken, 
-					ctx.TranslateString ("Method never reaches its end or a 'return' statement."));
+				if (!hasReachableReturn && !reachability.IsEndpointReachable(methodDeclaration.Body)) {
+					AddIssue (methodDeclaration.NameToken, 
+						ctx.TranslateString ("Method never reaches its end or a 'return' statement."));
+				}
 			}
 		}
 	}

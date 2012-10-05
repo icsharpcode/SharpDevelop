@@ -17,8 +17,10 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Diagnostics;
 using ICSharpCode.NRefactory.Editor;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -95,13 +97,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return originalDocument.Version.MoveOffsetTo(currentDocument.Version, originalDocumentOffset);
 		}
 		
-		public override void FormatText(AstNode node)
+		public override void FormatText(IEnumerable<AstNode> nodes)
 		{
-			var segment = GetSegment(node);
 			var syntaxTree = SyntaxTree.Parse(currentDocument, "dummy.cs");
-			var formatter = new AstFormattingVisitor(FormattingOptions, currentDocument, Options);
-			syntaxTree.AcceptVisitor(formatter);
-			formatter.ApplyChanges(segment.Offset, segment.Length);
+			foreach (var node in nodes.OrderByDescending (n => n.StartLocation)) {
+				var segment = GetSegment(node);
+				var formatter = new AstFormattingVisitor(FormattingOptions, currentDocument, Options);
+
+				formatter.FormattingRegion = new ICSharpCode.NRefactory.TypeSystem.DomRegion (
+					currentDocument.GetLocation (segment.Offset), 
+					currentDocument.GetLocation (segment.EndOffset)
+				);
+				syntaxTree.AcceptVisitor(formatter);
+				formatter.ApplyChanges(segment.Offset, segment.Length);
+			}
 		}
 		
 		protected override int GetIndentLevelAt(int offset)

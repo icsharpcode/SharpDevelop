@@ -122,6 +122,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			return resolver.GetConversion(expression, cancellationToken);
 		}
+		
+		public TypeSystemAstBuilder CreateTypeSytemAstBuilder(AstNode node)
+		{
+			var csResolver = resolver.GetResolverStateBefore(node);
+			return new TypeSystemAstBuilder(csResolver);
+		}
 		#endregion
 
 		#region Code Analyzation

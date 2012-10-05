@@ -66,11 +66,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							case UnaryOperatorType.Decrement:
 							case UnaryOperatorType.PostDecrement:
 								assignment = true;
+								if (!(parent.Parent is ExpressionStatement))
+									nonAssignment = true;
 								continue;
 						}
 					} else if (parent is DirectionExpression) {
 						if (((DirectionExpression)parent).FieldDirection == FieldDirection.Out) {
 							assignment = true;
+							// Using dummy variables is necessary for ignoring
+							// out-arguments, so we don't want to warn for those.
+							nonAssignment = true;
 							continue;
 						}
 					}

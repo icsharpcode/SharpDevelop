@@ -107,7 +107,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets the effective interface set of this type parameter.
 		/// </summary>
-		IList<IType> EffectiveInterfaceSet { get; }
+		ICollection<IType> EffectiveInterfaceSet { get; }
 		
 		/// <summary>
 		/// Gets if the type parameter has the 'new()' constraint.

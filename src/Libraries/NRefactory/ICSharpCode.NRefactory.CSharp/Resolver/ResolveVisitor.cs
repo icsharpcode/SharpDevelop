@@ -2913,7 +2913,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				foreach (VariableInitializer vi in variableDeclarationStatement.Variables) {
 					IVariable v;
 					if (isConst) {
-						v = MakeConstant(type, vi.NameToken, Resolve(vi.Initializer).ConstantValue);
+						ResolveResult rr = Resolve(vi.Initializer);
+						rr = resolver.ResolveCast(type, rr);
+						v = MakeConstant(type, vi.NameToken, rr.ConstantValue);
 					} else {
 						v = MakeVariable(type, vi.NameToken);
 					}

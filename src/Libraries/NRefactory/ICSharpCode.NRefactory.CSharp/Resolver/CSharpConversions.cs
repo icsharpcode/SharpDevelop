@@ -788,7 +788,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// Find the candidate operators:
 			Predicate<IUnresolvedMethod> opFilter;
 			if (isExplicit)
-				opFilter = m => m.IsStatic && m.IsOperator && m.Name == "op_Explicit" && m.Parameters.Count == 1;
+				opFilter = m => m.IsStatic && m.IsOperator && (m.Name == "op_Explicit" || m.Name == "op_Implicit") && m.Parameters.Count == 1;
 			else
 				opFilter = m => m.IsStatic && m.IsOperator && m.Name == "op_Implicit" && m.Parameters.Count == 1;
 			

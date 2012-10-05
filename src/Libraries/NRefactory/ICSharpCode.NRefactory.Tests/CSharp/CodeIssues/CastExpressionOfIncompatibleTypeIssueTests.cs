@@ -56,7 +56,39 @@ class TestClass
 	void TestMethod ()
 	{
 		var x1 = (int)123;
-		var x2 = (int)System.ConsoleKey.A;
+		var x2 = (short)123;
+		var x3 = (int)System.ConsoleKey.A;
+	}
+}";
+			Test<CastExpressionOfIncompatibleTypeIssue> (input, 0);
+		}
+		
+		[Test]
+		public void UnknownIdentifierDoesNotCauseIncompatibleCastIssue ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		var x1 = unknown as string;
+		var x2 = (string)unknown;
+	}
+}";
+
+			Test<CastExpressionOfIncompatibleTypeIssue> (input, 0);
+		}
+		
+		[Test]
+		public void UnknownTargetTypeDoesNotCauseIncompatibleCastIssue ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod (int p)
+	{
+		var x1 = (unknown)p;
+		var x2 = p as unknown;
 	}
 }";
 

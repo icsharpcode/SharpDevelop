@@ -25,6 +25,10 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using System.Linq;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -42,21 +46,45 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
+			readonly CSharpConversions conversions;
 			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)
 			{
+				conversions = CSharpConversions.Get(ctx.Compilation);
 			}
 
 			public override void VisitIsExpression (IsExpression isExpression)
 			{
 				base.VisitIsExpression (isExpression);
 
+				var conversions = CSharpConversions.Get(ctx.Compilation);
 				var exprType = ctx.Resolve (isExpression.Expression).Type;
 				var providedType = ctx.ResolveType (isExpression.Type);
 
-				if (TypeCompatibilityHelper.CheckTypeCompatibility(exprType, providedType) == 
-					TypeCompatibilityHelper.TypeCompatiblity.NeverOfProvidedType)
-					AddIssue (isExpression, ctx.TranslateString ("Given expression is never of the provided type"));
+				if (exprType.Kind == TypeKind.Unknown || providedType.Kind == TypeKind.Unknown)
+					return;
+				if (IsValidReferenceOrBoxingConversion(exprType, providedType))
+					return;
+				
+				var exprTP = exprType as ITypeParameter;
+				var providedTP = providedType as ITypeParameter;
+				if (exprTP != null) {
+					if (IsValidReferenceOrBoxingConversion(exprTP.EffectiveBaseClass, providedType)
+					    && exprTP.EffectiveInterfaceSet.All(i => IsValidReferenceOrBoxingConversion(i, providedType)))
+						return;
+				}
+				if (providedTP != null) {
+					if (IsValidReferenceOrBoxingConversion(exprType, providedTP.EffectiveBaseClass))
+						return;
+				}
+				
+				AddIssue (isExpression, ctx.TranslateString ("Given expression is never of the provided type"));
+			}
+			
+			bool IsValidReferenceOrBoxingConversion(IType fromType, IType toType)
+			{
+				Conversion c = conversions.ExplicitConversion(fromType, toType);
+				return c.IsValid && (c.IsIdentityConversion || c.IsReferenceConversion || c.IsBoxingConversion || c.IsUnboxingConversion);
 			}
 		}
 	}

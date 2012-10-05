@@ -93,6 +93,20 @@ class TestClass
 		}
 
 		[Test]
+		public void TestObjectToInt ()
+		{
+			var input = @"
+sealed class TestClass
+{
+	void TestMethod (object x)
+	{
+		if (x is int) ;
+	}
+}";
+			Test<ExpressionIsNeverOfProvidedTypeIssue> (input, 0);
+		}
+
+		[Test]
 		public void TestClassIsTypeParameter ()
 		{
 			var input = @"
@@ -153,7 +167,8 @@ class TestClass
 		if (x is T) ;
 	}
 }";
-			Test<ExpressionIsNeverOfProvidedTypeIssue> (input, 1);
+			// this is possible with T==object
+			Test<ExpressionIsNeverOfProvidedTypeIssue> (input, 0);
 		}
 
 		[Test]
@@ -216,21 +231,6 @@ sealed class TestClass
 		}
 
 		[Test]
-		public void TestTypeParameter5 ()
-		{
-			var input = @"
-sealed class TestClass
-{
-	public TestClass (int i) { }
-	void TestMethod<T> (T x) where T : new()
-	{
-		if (x is TestClass) ;
-	}
-}";
-			Test<ExpressionIsNeverOfProvidedTypeIssue> (input, 1);
-		}
-
-		[Test]
 		public void TestTypeParameterIsTypeParameter ()
 		{
 			var input = @"
@@ -255,6 +255,48 @@ class TestClass
 	void TestMethod<T, T2> (T x) where T : TestClass where T2 : ITest, new()
 	{
 		if (x is T2) ;
+	}
+}";
+			Test<ExpressionIsNeverOfProvidedTypeIssue> (input, 0);
+		}
+		
+		[Test]
+		public void TestObjectArrayToStringArray ()
+		{
+			var input = @"
+sealed class TestClass
+{
+	void TestMethod (object[] x)
+	{
+		if (x is string[]) ;
+	}
+}";
+			Test<ExpressionIsNeverOfProvidedTypeIssue> (input, 0);
+		}
+		
+		[Test]
+		public void UnknownExpression()
+		{
+			var input = @"
+sealed class TestClass
+{
+	void TestMethod ()
+	{
+		if (unknown is string) ;
+	}
+}";
+			Test<ExpressionIsNeverOfProvidedTypeIssue> (input, 0);
+		}
+		
+		[Test]
+		public void UnknownType()
+		{
+			var input = @"
+sealed class TestClass
+{
+	void TestMethod (int x)
+	{
+		if (x is unknown) ;
 	}
 }";
 			Test<ExpressionIsNeverOfProvidedTypeIssue> (input, 0);

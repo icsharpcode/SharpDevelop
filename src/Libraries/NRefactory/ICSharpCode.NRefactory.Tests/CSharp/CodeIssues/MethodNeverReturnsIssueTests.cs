@@ -87,5 +87,19 @@ class TestClass
 }";
 			Test<MethodNeverReturnsIssue> (input, 1);
 		}
+		
+		[Test]
+		public void YieldBreak ()
+		{
+			var input = @"
+class TestClass
+{
+	System.Collections.Generic.IEnumerable<string> TestMethod ()
+	{
+		yield break;
+	}
+}";
+			Test<MethodNeverReturnsIssue> (input, 0);
+		}
 	}
 }

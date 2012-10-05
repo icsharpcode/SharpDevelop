@@ -89,6 +89,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				if (typeResolveResult.Type.Equals(member.DeclaringType))
 					return;
+				// check whether member.DeclaringType contains the original type
+				// (curiously recurring template pattern)
+				var v = new ContainsTypeVisitor(typeResolveResult.Type.GetDefinition());
+				member.DeclaringType.AcceptVisitor(v);
+				if (v.IsContained)
+					return;
 				AddIssue(issueAnchor, context.TranslateString("Static method invoked via derived type"),
 				         GetActions(context, targetExpression, member));
 			}
@@ -96,13 +102,30 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			IEnumerable<CodeAction> GetActions(BaseRefactoringContext context, Expression targetExpression,
 			                                   IMember member)
 			{
-				var csResolver = context.Resolver.GetResolverStateBefore(targetExpression);
-				var builder = new TypeSystemAstBuilder(csResolver);
+				var builder = context.CreateTypeSytemAstBuilder(targetExpression);
 				var newType = builder.ConvertType(member.DeclaringType);
 				string description = string.Format("{0} '{1}'", context.TranslateString("Use base class"), newType.GetText());
 				yield return new CodeAction(description, script => {
 					script.Replace(targetExpression, newType);
 				});
+			}
+			
+			sealed class ContainsTypeVisitor : TypeVisitor
+			{
+				readonly ITypeDefinition searchedType;
+				internal bool IsContained;
+				
+				public ContainsTypeVisitor(ITypeDefinition searchedType)
+				{
+					this.searchedType = searchedType;
+				}
+				
+				public override IType VisitTypeDefinition(ITypeDefinition type)
+				{
+					if (type.Equals(searchedType))
+						IsContained = true;
+					return base.VisitTypeDefinition(type);
+				}
 			}
 		}
 		#endregion

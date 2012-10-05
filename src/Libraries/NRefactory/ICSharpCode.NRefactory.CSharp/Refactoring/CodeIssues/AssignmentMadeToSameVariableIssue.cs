@@ -56,6 +56,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				base.VisitAssignmentExpression (assignmentExpression);
 
+				if (assignmentExpression.Operator != AssignmentOperatorType.Assign)
+					return;
 				if (!(assignmentExpression.Left is IdentifierExpression) && 
 					!(assignmentExpression.Left is MemberReferenceExpression))
 					return;

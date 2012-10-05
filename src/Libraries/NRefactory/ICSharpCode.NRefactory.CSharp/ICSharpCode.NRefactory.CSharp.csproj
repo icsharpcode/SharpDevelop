@@ -301,6 +301,7 @@
     <Compile Include="Refactoring\CodeIssues\ExpressionIsNeverOfProvidedTypeIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\MethodNeverReturnsIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\MethodOverloadHidesOptionalParameterIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\MissingStringComparisonIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\NegativeRelationalExpressionIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ExplicitConversionInForEachIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ForControlVariableNotModifiedIssue.cs" />
@@ -316,11 +317,11 @@
     <Compile Include="Refactoring\CodeIssues\RedundantObjectOrCollectionInitializerIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantTypeCastIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ReferenceEqualsCalledWithValueTypeIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\ResultOfAsyncCallShouldNotBeIgnoredIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\UnreachableCodeIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\VariableHidesMemberIssue\LocalVariableHidesMemberIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\VariableHidesMemberIssue\ParameterHidesMemberIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\VariableHidesMemberIssue\VariableHidesMemberIssue.cs" />
-    <Compile Include="Refactoring\CodeIssues\VariableOnlyAssignedIssues\LocalVariableOnlyAssignedIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\VariableNotUsedIssues\LocalVariableNotUsedIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\VariableNotUsedIssues\ParameterNotUsedIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\TypeParameterNotUsedIssue.cs" />
@@ -333,7 +334,6 @@
     <Compile Include="Refactoring\RefactoringAstHelper.cs" />
     <Compile Include="Refactoring\RefactoringContext.cs" />
     <Compile Include="Refactoring\Script.cs" />
-    <Compile Include="Refactoring\TypeCompatibilityHelper.cs" />
     <Compile Include="Refactoring\TypeSystemAstBuilder.cs" />
     <Compile Include="Refactoring\VariableReferenceGraph.cs" />
     <Compile Include="Resolver\CompositeResolveVisitorNavigator.cs" />

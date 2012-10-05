@@ -70,7 +70,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var blockStatement = new BlockStatement();
 					blockStatement.Statements.Add(iterator);
 					script.Replace(usingStatement.EmbeddedStatement, blockStatement);
-					script.FormatText(blockStatement);
+					script.FormatText((AstNode)blockStatement);
 				} else if (usingStatement.EmbeddedStatement is BlockStatement) {
 					var anchorNode = usingStatement.EmbeddedStatement.FirstChild;
 					script.InsertAfter(anchorNode, iterator);
@@ -149,11 +149,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			IType collectionType = null;
 			foreach (var baseType in type.GetAllBaseTypes()) {
-				var baseTypeDefinition = baseType.GetDefinition();
-				if (baseTypeDefinition.IsKnownType(KnownTypeCode.IEnumerableOfT)) {
+				if (baseType.IsKnownType(KnownTypeCode.IEnumerableOfT)) {
 					collectionType = baseType;
 					break;
-				} else if (baseTypeDefinition.IsKnownType(KnownTypeCode.IEnumerable)) {
+				} else if (baseType.IsKnownType(KnownTypeCode.IEnumerable)) {
 					collectionType = baseType;
 					// Don't break, continue in case type implements IEnumerable<T>
 				}

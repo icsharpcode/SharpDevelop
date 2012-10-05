@@ -71,6 +71,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			void VisitTypeCastExpression (Expression expression, IType exprType, IType castToType)
 			{
+				if (exprType.Kind == TypeKind.Unknown || castToType.Kind == TypeKind.Unknown)
+					return;
 				var foundConversion = conversion.ExplicitConversion(exprType, castToType);
 				if (foundConversion == Conversion.None)
 					AddIssue (expression, ctx.TranslateString ("Type cast expression of incompatible type"));
