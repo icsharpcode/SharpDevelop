@@ -19,6 +19,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -107,7 +108,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				SD.MainThread.VerifyAccess();
 				Debug.Assert(FileUtility.IsUrl(value) || Path.IsPathRooted(value));
 				
-				if (SD.Workbench == null)
+				if (SD.Services.GetService(typeof(IWorkbench)) == null)
 					watcher = new MockProjectChangeWatcher();
 				
 				if (watcher == null) {

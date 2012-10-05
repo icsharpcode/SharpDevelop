@@ -219,20 +219,6 @@ namespace ICSharpCode.SharpDevelop
 			OnHistoryChanged();
 		}
 		
-		// Unit test covered but the test does not yet verify the results.
-		public static INavigationPoint Log()
-		{
-			if (SD.Workbench == null) {
-				return null;
-			}
-			IViewContent view = SD.Workbench.ActiveViewContent;
-			if (view == null) {
-				return null;
-			}
-
-			return view.BuildNavPoint();
-		}
-
 		/// <summary>
 		/// Gets a <see cref="List{T}"/> of the <see cref="INavigationPoint">INavigationPoints</see> that
 		/// are currently in the collection.

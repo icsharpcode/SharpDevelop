@@ -472,18 +472,6 @@ namespace ICSharpCode.SharpDevelop.Tests.NavigationServiceTests
 		{
 			navigationChangedCount++;
 		}
-		
-		[Test]
-		/// <summary>
-		/// The <see cref="NavigationService"/> must
-		/// expose a method to generate an 
-		/// <see cref="INavigationPoint"/> from a 
-		/// given window.
-		/// </summary>
-		public void GenerateCurrentPositionTest()
-		{
-			INavigationPoint p = NavigationService.Log();
-		}
 		#endregion
 
 		[Test]

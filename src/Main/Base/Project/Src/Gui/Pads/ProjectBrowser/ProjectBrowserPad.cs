@@ -263,14 +263,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static void RefreshViewAsync()
 		{
 			SD.MainThread.VerifyAccess();
-			if (refreshViewEnqueued || SD.Workbench == null)
+			if (refreshViewEnqueued || instance == null)
 				return;
 			refreshViewEnqueued = true;
 			SD.MainThread.InvokeAsync(delegate {
 				refreshViewEnqueued = false;
-				if (instance != null) {
-					instance.ProjectBrowserControl.RefreshView();
-				}
+				instance.ProjectBrowserControl.RefreshView();
 			}).FireAndForget();
 		}
 	}
