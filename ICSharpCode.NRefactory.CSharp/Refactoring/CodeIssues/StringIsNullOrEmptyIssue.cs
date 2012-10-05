@@ -31,7 +31,7 @@ using ICSharpCode.NRefactory.PatternMatching;
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	/// <summary>
-	/// Checks for str == null && str == "" 
+	/// Checks for str == null &amp;&amp; str == " "
 	/// Converts to: string.IsNullOrEmpty (str)
 	/// </summary>
 	[IssueDescription("Use string.IsNullOrEmpty",
@@ -124,6 +124,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 				if (m.Success) {
 					var str = m.Get<Expression>("str").Single();
+					var def = ctx.Resolve (str).Type.GetDefinition ();
+					if (def == null || def.KnownTypeCode != ICSharpCode.NRefactory.TypeSystem.KnownTypeCode.String)
+						return;
 					AddIssue(binaryOperatorExpression, ctx.TranslateString("Use string.IsNullOrEmpty"), script => {
 						Expression expr = new PrimitiveType ("string").Invoke("IsNullOrEmpty", str.Clone());
 						if (isNegated)
