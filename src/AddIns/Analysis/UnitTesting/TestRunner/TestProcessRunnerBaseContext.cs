@@ -11,25 +11,25 @@ namespace ICSharpCode.UnitTesting
 	public class TestProcessRunnerBaseContext
 	{		
 		IUnitTestProcessRunner processRunner;
-		ITestResultsMonitor testResultsMonitor;
+		ITestResultsReader testResultsReader;
 		IFileSystem fileSystem;
 		IMessageService messageService;
 		
 		public TestProcessRunnerBaseContext()
 			: this(new UnitTestProcessRunner(),
-				new TestResultsMonitor(),
+				new TestResultsReader(),
 				new UnitTestFileService(),
 				SD.MessageService)
 		{
 		}
 				
 		public TestProcessRunnerBaseContext(IUnitTestProcessRunner processRunner,
-			ITestResultsMonitor testResultsMonitor,
+			ITestResultsReader testResultsMonitor,
 			IFileSystem fileSystem,
 			IMessageService messageService)
 		{
 			this.processRunner = processRunner;
-			this.testResultsMonitor = testResultsMonitor;
+			this.testResultsReader = testResultsMonitor;
 			this.fileSystem = fileSystem;
 			this.messageService = messageService;
 		}
@@ -38,8 +38,8 @@ namespace ICSharpCode.UnitTesting
 			get { return processRunner; }
 		}
 		
-		public ITestResultsMonitor TestResultsMonitor {
-			get { return testResultsMonitor; }
+		public ITestResultsReader TestResultsReader {
+			get { return testResultsReader; }
 		}
 		
 		public IFileSystem FileSystem {

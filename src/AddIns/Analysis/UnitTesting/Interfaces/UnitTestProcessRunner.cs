@@ -54,5 +54,10 @@ namespace ICSharpCode.UnitTesting
 		{
 			runner.Kill();
 		}
+		
+		public void Dispose()
+		{
+			runner.Dispose();
+		}
 	}
 }

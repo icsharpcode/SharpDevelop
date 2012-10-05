@@ -30,13 +30,30 @@ namespace ICSharpCode.UnitTesting
 		protected override ProcessStartInfo GetProcessStartInfo(IEnumerable<ITest> selectedTests)
 		{
 			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests, options);
-			app.Results = base.TestResultsMonitor.FileName;
+			app.ResultsPipe = base.TestResultsReader.PipeName;
 			return app.GetProcessStartInfo();
 		}
 		
 		protected override TestResult CreateTestResultForTestFramework(TestResult testResult)
 		{
 			return new NUnitTestResult(testResult);
+		}
+		
+		public override int GetExpectedNumberOfTestResults(IEnumerable<ITest> selectedTests)
+		{
+			return GetNumberOfTestMethods(selectedTests);
+		}
+		
+		public static int GetNumberOfTestMethods(IEnumerable<ITest> selectedTests)
+		{
+			int count = 0;
+			foreach (ITest test in selectedTests) {
+				if (test is NUnitTestMethod)
+					count++;
+				else
+					count += GetNumberOfTestMethods(test.NestedTests);
+			}
+			return count;
 		}
 	}
 }

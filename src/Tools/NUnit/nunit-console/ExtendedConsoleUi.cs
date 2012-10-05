@@ -1,3 +1,4 @@
+using System.IO.Pipes;
 // ****************************************************************
 // This is free software licensed under the NUnit license. You
 // may obtain a copy of the license as well as information regarding
@@ -64,9 +65,11 @@ namespace NUnit.ConsoleRunner
 			}
 			
 			TextWriter testResultWriter = null;
-			if ( options.IsResults )
+			if ( options.UsePipe )
 			{
-				testResultWriter = new StreamWriter ( options.results, false, Encoding.UTF8 );
+				var namedPipe = new NamedPipeClientStream(".", options.pipe, PipeDirection.Out, PipeOptions.WriteThrough);
+				namedPipe.Connect();
+				testResultWriter = new StreamWriter ( namedPipe, Encoding.UTF8 );
 				((StreamWriter)testResultWriter).AutoFlush = true;
 			}
             TestPackage package = MakeTestPackage(options);
@@ -184,7 +187,7 @@ namespace NUnit.ConsoleRunner
 						outWriter.Close();
 					if ( redirectError )
 						errorWriter.Close();
-					if ( options.IsResults )
+					if ( testResultWriter != null )
 						testResultWriter.Close();
 
 					Environment.CurrentDirectory = savedDirectory;

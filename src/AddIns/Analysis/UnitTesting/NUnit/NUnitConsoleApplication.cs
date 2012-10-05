@@ -141,9 +141,9 @@ namespace ICSharpCode.UnitTesting
 		public string Test;
 		
 		/// <summary>
-		/// File to write test results to.
+		/// Pipe to write test results to.
 		/// </summary>
-		public string Results;
+		public string ResultsPipe;
 		
 		/// <summary>
 		/// The namespace that tests need to be a part of if they are to 
@@ -206,9 +206,9 @@ namespace ICSharpCode.UnitTesting
 				b.Append(XmlOutputFile);
 				b.Append('"');
 			}
-			if (Results != null) {
-				b.Append(" /results=\"");
-				b.Append(Results);
+			if (ResultsPipe != null) {
+				b.Append(" /pipe=\"");
+				b.Append(ResultsPipe);
 				b.Append('"');
 			}
 			string run = null;

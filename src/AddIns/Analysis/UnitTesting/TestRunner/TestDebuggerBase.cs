@@ -16,29 +16,29 @@ namespace ICSharpCode.UnitTesting
 		IUnitTestDebuggerService debuggerService;
 		IMessageService messageService;
 		IDebugger debugger;
-		ITestResultsMonitor testResultsMonitor;
+		ITestResultsReader testResultsReader;
 		
 		public TestDebuggerBase()
 			: this(new UnitTestDebuggerService(),
 				SD.MessageService,
-				new TestResultsMonitor())
+				new TestResultsReader())
 		{
 		}
 		
 		public TestDebuggerBase(IUnitTestDebuggerService debuggerService,
 			IMessageService messageService,
-			ITestResultsMonitor testResultsMonitor)
+			ITestResultsReader testResultsReader)
 		{
 			this.debuggerService = debuggerService;
 			this.messageService = messageService;
-			this.testResultsMonitor = testResultsMonitor;
+			this.testResultsReader = testResultsReader;
 			this.debugger = debuggerService.CurrentDebugger;
 			
-			testResultsMonitor.TestFinished += OnTestFinished;
+			testResultsReader.TestFinished += OnTestFinished;
 		}
 		
-		protected ITestResultsMonitor TestResultsMonitor {
-			get { return testResultsMonitor; }
+		protected ITestResultsReader TestResultsReader {
+			get { return testResultsReader; }
 		}
 		
 		public override void Start(IEnumerable<ITest> selectedTests)
@@ -67,7 +67,7 @@ namespace ICSharpCode.UnitTesting
 		
 		void Start(ProcessStartInfo startInfo)
 		{
-			testResultsMonitor.Start();
+			testResultsReader.Start();
 			StartDebugger(startInfo);
 		}
 		
@@ -90,6 +90,7 @@ namespace ICSharpCode.UnitTesting
 		void DebugStopped(object source, EventArgs e)
 		{
 			debugger.DebugStopped -= DebugStopped;
+			testResultsReader.Join();
 			OnAllTestsFinished(source, e);
 		}
 		
@@ -98,15 +99,12 @@ namespace ICSharpCode.UnitTesting
 			if (debugger.IsDebugging) {
 				debugger.Stop();
 			}
-			
-			testResultsMonitor.Stop();
-			testResultsMonitor.Read();
 		}
 		
 		public override void Dispose()
 		{
-			Stop();
-			testResultsMonitor.Dispose();
+			testResultsReader.Dispose();
+			testResultsReader.TestFinished -= OnTestFinished;
 		}
 	}
 }

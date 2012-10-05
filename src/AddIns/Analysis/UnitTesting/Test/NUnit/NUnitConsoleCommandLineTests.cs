@@ -38,9 +38,9 @@ namespace UnitTesting.Tests.NUnit
 			app.NoLogo = false;
 			app.ShadowCopy = true;
 			app.NoXmlOutputFile = false;
-			app.Results = @"C:\results.txt";
+			app.ResultsPipe = @"C:\results.txt";
 			
-			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /results=\"C:\\results.txt\"";
+			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /pipe=\"C:\\results.txt\"";
 			Assert.AreEqual(expectedCommandLine, app.GetArguments());
 		}
 		
@@ -229,13 +229,13 @@ namespace UnitTesting.Tests.NUnit
 			app.Assemblies.Add("SecondAssembly.dll");
 			app.NoLogo = false;
 			app.ShadowCopy = true;
-			app.Results = @"C:\results.txt";
+			app.ResultsPipe = @"C:\results.txt";
 			app.NoXmlOutputFile = false;
 			
 			string expectedCommandLine =
 				"\"C:\\Projects\\MyTests\\MyTests.dll\" " +
 				"\"SecondAssembly.dll\" " +
-				"/results=\"C:\\results.txt\"";
+				"/pipe=\"C:\\results.txt\"";
 			Assert.AreEqual(expectedCommandLine, app.GetArguments());
 		}
 		

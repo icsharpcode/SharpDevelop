@@ -18,16 +18,16 @@ namespace ICSharpCode.UnitTesting
 		public NUnitTestDebugger()
 			: this(new UnitTestDebuggerService(),
 				SD.MessageService,
-				new TestResultsMonitor(),
+				new TestResultsReader(),
 				UnitTestingOptions.Instance.Clone())
 		{
 		}
 		
 		public NUnitTestDebugger(IUnitTestDebuggerService debuggerService,
 			IMessageService messageService,
-			ITestResultsMonitor testResultsMonitor,
+			ITestResultsReader testResultsReader,
 			UnitTestingOptions options)
-			: base(debuggerService, messageService, testResultsMonitor)
+			: base(debuggerService, messageService, testResultsReader)
 		{
 			this.options = options;
 		}
@@ -35,13 +35,18 @@ namespace ICSharpCode.UnitTesting
 		protected override ProcessStartInfo GetProcessStartInfo(IEnumerable<ITest> selectedTests)
 		{
 			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests, options);
-			app.Results = base.TestResultsMonitor.FileName;
+			app.ResultsPipe = base.TestResultsReader.PipeName;
 			return app.GetProcessStartInfo();
 		}
 		
 		protected override TestResult CreateTestResultForTestFramework(TestResult testResult)
 		{
 			return new NUnitTestResult(testResult);
+		}
+		
+		public override int GetExpectedNumberOfTestResults(IEnumerable<ITest> selectedTests)
+		{
+			return NUnitTestRunner.GetNumberOfTestMethods(selectedTests);
 		}
 	}
 }

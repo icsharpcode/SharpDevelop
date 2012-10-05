@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,12 +12,17 @@ namespace ICSharpCode.UnitTesting
 {
 	public abstract class TestRunnerBase : ITestRunner
 	{
+		IProgress<double> progress;
+		double progressPerTest;
+		int testsFinished;
 		TaskCompletionSource<object> tcs;
 		CancellationTokenRegistration cancellationTokenRegistration;
 		bool wasCancelled;
 		
 		public Task RunAsync(IEnumerable<ITest> selectedTests, IProgress<double> progress, CancellationToken cancellationToken)
 		{
+			this.progress = progress;
+			progressPerTest = 1.0 / GetExpectedNumberOfTestResults(selectedTests);
 			tcs = new TaskCompletionSource<object>();
 			Start(selectedTests);
 			cancellationTokenRegistration = cancellationToken.Register(Cancel, true);
@@ -45,7 +51,7 @@ namespace ICSharpCode.UnitTesting
 			return String.Format("\"{0}\" {1}", startInfo.FileName, startInfo.Arguments);
 		}
 		
-		protected void OnAllTestsFinished(object source, EventArgs e)
+		protected virtual void OnAllTestsFinished(object source, EventArgs e)
 		{
 			cancellationTokenRegistration.Dispose();
 			if (wasCancelled)
@@ -62,6 +68,8 @@ namespace ICSharpCode.UnitTesting
 				TestResult testResult = CreateTestResultForTestFramework(e.Result);
 				TestFinished(source, new TestFinishedEventArgs(testResult));
 			}
+			if (!double.IsInfinity(progressPerTest))
+				progress.Report(progressPerTest * Interlocked.Increment(ref testsFinished));
 		}
 		
 		protected virtual TestResult CreateTestResultForTestFramework(TestResult testResult)
@@ -78,6 +86,7 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
+		public abstract int GetExpectedNumberOfTestResults(IEnumerable<ITest> selectedTests);
 		public abstract void Dispose();
 		public abstract void Stop();
 		public abstract void Start(IEnumerable<ITest> selectedTests);

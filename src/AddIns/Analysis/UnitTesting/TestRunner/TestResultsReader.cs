@@ -2,17 +2,105 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
+using System.IO;
+using System.IO.Pipes;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.UnitTesting
 {
-	/// <summary>
-	/// Reads the test results file produced by the custom
-	/// nunit-console application.
-	/// </summary>
-	public class TestResultsReader
+	public interface ITestResultsReader : IDisposable
 	{
+		event EventHandler<TestFinishedEventArgs> TestFinished;
+		string PipeName { get; }
+		void Start();
+		void Join();
+	}
+	
+	public class TestResultsReader : ITestResultsReader
+	{
+		TextReader reader;
+		readonly NamedPipeServerStream namedPipe;
+		readonly string pipeName;
+		TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+		
+		public TestResultsReader()
+		{
+			pipeName = Guid.NewGuid().ToString();
+			namedPipe = new NamedPipeServerStream(this.PipeName, PipeDirection.In, 1, PipeTransmissionMode.Byte);
+		}
+		
+		/// <summary>
+		/// Creates a new TestResultsReader that reads from an existing text reader.
+		/// </summary>
+		public TestResultsReader(TextReader reader)
+		{
+			this.reader = reader;
+		}
+		
+		public string PipeName {
+			get { return pipeName; }
+		}
+		
+		public void Dispose()
+		{
+			reader.Dispose();
+			namedPipe.Dispose();
+		}
+		
+		public event EventHandler<TestFinishedEventArgs> TestFinished;
+		
+		Thread thread;
+		
+		/// <summary>
+		/// Runs the pipe reader on a background thread.
+		/// The returned task will be signalled as completed when the worker process closes the pipe, after
+		/// all contents have been read from the pipe.
+		/// </summary>
+		public void Start()
+		{
+			thread = new Thread(Run);
+			thread.Name = "UnitTesting Pipe Reader";
+			thread.Start();
+		}
+		
+		public void Join()
+		{
+			SD.Log.Debug("Waiting for pipe reader to finish");
+			thread.Join();
+			SD.Log.Debug("Pipe reader has finished");
+		}
+		
+		/// <summary>
+		/// Run the pipe reader on the current thread.
+		/// This method blocks until the worker process closes the pipe.
+		/// </summary>
+		public void Run()
+		{
+			if (reader == null) {
+				SD.Log.Debug("Waiting for connection to pipe");
+				namedPipe.WaitForConnection();
+				SD.Log.Debug("Start reading pipe");
+				reader = new StreamReader(namedPipe);
+			}
+			char[] buffer = new char[1024];
+			int read;
+			while ((read = reader.Read(buffer, 0, buffer.Length)) != 0) {
+				for (int i = 0; i < read; i++) {
+					if (ReadNameValuePair(buffer[i])) {
+						if (ReadTestResult()) {
+							if (TestFinished != null)
+								TestFinished(this, new TestFinishedEventArgs(result));
+						}
+					}
+				}
+			}
+			SD.Log.Debug("End of pipe");
+		}
+		
 		StringBuilder nameBuilder = new StringBuilder();
 		StringBuilder valueBuilder = new StringBuilder();
 		bool firstNameChar = true;
@@ -25,28 +113,6 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		State state = State.WaitingForEndOfName;
-		
-		public TestResultsReader()
-		{
-		}
-		
-		/// <summary>
-		/// Returns any TestResults that are in the text.
-		/// </summary>
-		/// <param name="text">The text read in from the
-		/// TestResults file.</param>
-		public TestResult[] Read(string text)
-		{
-			List<TestResult> results = new List<TestResult>();
-			foreach (char ch in text) {
-				if (ReadNameValuePair(ch)) {
-					if (ReadTestResult()) {
-						results.Add(result);
-					}
-				}
-			}
-			return results.ToArray();
-		}
 		
 		/// <summary>
 		/// Reads a name-value pair of the form:
@@ -119,8 +185,8 @@ namespace ICSharpCode.UnitTesting
 		/// <returns>True if a TestResult is ready to be returned
 		/// to the caller.</returns>
 		/// <remarks>
-		/// The first name-value pair for a test result is the 
-		/// test name. The last name-value pair is the result of 
+		/// The first name-value pair for a test result is the
+		/// test name. The last name-value pair is the result of
 		/// the test (Success, Failure or Ignored).</remarks>
 		bool ReadTestResult()
 		{

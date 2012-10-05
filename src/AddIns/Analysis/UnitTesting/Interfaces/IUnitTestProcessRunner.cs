@@ -7,7 +7,7 @@ using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.UnitTesting
 {
-	public interface IUnitTestProcessRunner
+	public interface IUnitTestProcessRunner : IDisposable
 	{
 		bool LogStandardOutputAndError { get; set; }
 		string WorkingDirectory { get; set; }

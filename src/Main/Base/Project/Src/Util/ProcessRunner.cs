@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Util
 		Process process;
 		StringBuilder standardOutput = new StringBuilder();
 		StringBuilder standardError = new StringBuilder();
-		ManualResetEvent endOfOutput = new ManualResetEvent(false);
+		ManualResetEventSlim endOfOutput = new ManualResetEventSlim(false);
 		int outputStreamsFinished;
 		
 		/// <summary>
@@ -91,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Util
 		public void Dispose()
 		{
 			process.Dispose();
-			endOfOutput.Close();
+			endOfOutput.Dispose();
 		}
 		
 		/// <summary>
@@ -130,7 +130,7 @@ namespace ICSharpCode.SharpDevelop.Util
 			bool exited = process.WaitForExit(timeout);
 			
 			if (exited) {
-				endOfOutput.WaitOne(timeout == int.MaxValue ? Timeout.Infinite : timeout, false);
+				endOfOutput.Wait(timeout == int.MaxValue ? Timeout.Infinite : timeout);
 			}
 			
 			return exited;
@@ -216,14 +216,15 @@ namespace ICSharpCode.SharpDevelop.Util
 		{
 			if (process != null) {
 				if (!process.HasExited) {
-					process.Kill();
-					process.Close();
-					process.Dispose();
-					process = null;
-					endOfOutput.WaitOne();
-				} else {
-					process = null;
+					try {
+						process.Kill();
+					} catch (InvalidOperationException) {
+						// race condition (if the process has already exited)
+					}
+					// don't call process.Dispose() here - that causes the OnProcessExited
+					// event not to fire correctly
 				}
+				endOfOutput.Wait();
 			}
 		}
 		
@@ -234,7 +235,7 @@ namespace ICSharpCode.SharpDevelop.Util
 		{
 			if (ProcessExited != null) {
 				if (endOfOutput != null) {
-					endOfOutput.WaitOne();
+					endOfOutput.Wait();
 				}
 				
 				ProcessExited(this, e);

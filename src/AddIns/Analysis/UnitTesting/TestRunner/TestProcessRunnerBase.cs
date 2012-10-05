@@ -11,17 +11,17 @@ using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.UnitTesting
 {
-	public class TestProcessRunnerBase : TestRunnerBase
+	public abstract class TestProcessRunnerBase : TestRunnerBase
 	{
 		IUnitTestProcessRunner processRunner;
-		ITestResultsMonitor testResultsMonitor;
+		ITestResultsReader testResultsReader;
 		IFileSystem fileSystem;
 		IMessageService messageService;
 		
 		public TestProcessRunnerBase(TestProcessRunnerBaseContext context)
 		{
 			this.processRunner = context.TestProcessRunner;
-			this.testResultsMonitor = context.TestResultsMonitor;
+			this.testResultsReader = context.TestResultsReader;
 			this.fileSystem = context.FileSystem;
 			this.messageService = context.MessageService;
 			
@@ -29,11 +29,11 @@ namespace ICSharpCode.UnitTesting
 			processRunner.OutputLineReceived += OutputLineReceived;
 			processRunner.ErrorLineReceived += OutputLineReceived;
 			processRunner.ProcessExited += OnAllTestsFinished;
-			testResultsMonitor.TestFinished += OnTestFinished;
+			testResultsReader.TestFinished += OnTestFinished;
 		}
 		
-		protected ITestResultsMonitor TestResultsMonitor {
-			get { return testResultsMonitor; }
+		protected ITestResultsReader TestResultsReader {
+			get { return testResultsReader; }
 		}
 		
 		protected IUnitTestProcessRunner ProcessRunner {
@@ -56,7 +56,7 @@ namespace ICSharpCode.UnitTesting
 			LogCommandLine(processStartInfo);
 			
 			if (ApplicationFileNameExists(processStartInfo.FileName)) {
-				testResultsMonitor.Start();
+				testResultsReader.Start();
 				processRunner.WorkingDirectory = processStartInfo.WorkingDirectory;
 				processRunner.Start(processStartInfo.FileName, processStartInfo.Arguments);
 			} else {
@@ -75,17 +75,23 @@ namespace ICSharpCode.UnitTesting
 			messageService.ShowErrorFormatted(resourceString, fileName);
 		}
 		
+		protected override void OnAllTestsFinished(object source, EventArgs e)
+		{
+			testResultsReader.Join();
+			base.OnAllTestsFinished(source, e);
+		}
+		
 		public override void Stop()
 		{
+			SD.Log.Info("Killing unit test runner");
 			processRunner.Kill();
-			testResultsMonitor.Stop();
-			testResultsMonitor.Read();
 		}
 		
 		public override void Dispose()
 		{
-			testResultsMonitor.Dispose();
-			testResultsMonitor.TestFinished -= OnTestFinished;
+			processRunner.Dispose();
+			testResultsReader.Dispose();
+			testResultsReader.TestFinished -= OnTestFinished;
 			processRunner.ErrorLineReceived -= OutputLineReceived;
 			processRunner.OutputLineReceived -= OutputLineReceived;
 		}
