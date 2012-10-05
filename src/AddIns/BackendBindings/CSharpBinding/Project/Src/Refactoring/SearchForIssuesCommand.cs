@@ -42,6 +42,8 @@ namespace CSharpBinding.Refactoring
 						monitor => {
 							remainingIssues = FindAndFixIssues(fileNames, providers, monitor, out fixedIssueCount);
 						});
+					if (remainingIssues == null)
+						return; // can happen if issue search is cancelled
 					string message = string.Format(
 						"{0} issues were fixed automatically." +
 						"{1} issues are remaining (no automatic fix available).",

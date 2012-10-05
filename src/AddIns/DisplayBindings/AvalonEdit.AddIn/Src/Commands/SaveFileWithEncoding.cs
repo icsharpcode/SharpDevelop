@@ -21,7 +21,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 			var codeEditor = vc.GetService<CodeEditor>();
 			if (codeEditor != null) {
 				ChooseEncodingDialog dlg = new ChooseEncodingDialog();
-				dlg.Owner = WorkbenchSingleton.MainWindow;
+				dlg.Owner = SD.Workbench.MainWindow;
 				dlg.Encoding = codeEditor.PrimaryTextEditor.Encoding;
 				if (dlg.ShowDialog() == true) {
 					codeEditor.PrimaryTextEditor.Encoding = dlg.Encoding;

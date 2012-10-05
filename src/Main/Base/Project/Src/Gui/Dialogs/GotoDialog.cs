@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (Instance == null) {
 				Instance = new GotoDialog();
-				Instance.Owner = WorkbenchSingleton.MainWindow;
+				Instance.Owner = SD.Workbench.MainWindow;
 				Instance.Show();
 			} else {
 				Instance.Activate();

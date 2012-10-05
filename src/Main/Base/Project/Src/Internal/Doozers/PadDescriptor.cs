@@ -156,8 +156,9 @@ namespace ICSharpCode.SharpDevelop
 		
 		public void CreatePad()
 		{
-			if (WorkbenchSingleton.InvokeRequired)
+			if (SD.MainThread.InvokeRequired) {
 				throw new InvalidOperationException("This action could trigger pad creation and is only valid on the main thread!");
+			}
 			if (!padContentCreated) {
 				padContentCreated = true;
 				try {

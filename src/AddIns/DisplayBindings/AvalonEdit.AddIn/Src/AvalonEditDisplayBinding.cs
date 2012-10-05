@@ -65,7 +65,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
 			ChooseEncodingDialog dlg = new ChooseEncodingDialog();
-			dlg.Owner = WorkbenchSingleton.MainWindow;
+			dlg.Owner = SD.Workbench.MainWindow;
 			using (Stream stream = file.OpenRead()) {
 				using (StreamReader reader = FileReader.OpenStream(stream, SD.FileService.DefaultFileEncoding)) {
 					reader.Peek(); // force reader to auto-detect encoding

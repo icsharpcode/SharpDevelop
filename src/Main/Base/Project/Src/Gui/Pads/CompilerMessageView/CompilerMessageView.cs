@@ -250,7 +250,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public void AddCategory(MessageViewCategory category)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
+			if (SD.MainThread.InvokeRequired) {
 				SD.MainThread.InvokeAsync(() => AddCategory(category)).FireAndForget();
 				return;
 			}
@@ -297,7 +297,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					SD.MainThread.InvokeAsync(ProcessAppendText).FireAndForget();
 				waitForMainThread = appendCalls.Count > 2000;
 			}
-			if (waitForMainThread && WorkbenchSingleton.InvokeRequired) {
+			if (waitForMainThread && SD.MainThread.InvokeRequired) {
 				int sleepLength = 20;
 				do {
 					Thread.Sleep(sleepLength);

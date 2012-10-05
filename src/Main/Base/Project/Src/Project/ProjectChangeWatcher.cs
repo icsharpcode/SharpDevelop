@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			SD.MainThread.VerifyAccess();
 			activeWatchers.Add(this);
 			
-			WorkbenchSingleton.MainWindow.Activated += MainFormActivated;
+			SD.Workbench.MainWindow.Activated += MainFormActivated;
 		}
 		
 		public void Enable()
@@ -152,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			SD.MainThread.VerifyAccess();
 			if (!disposed) {
-				WorkbenchSingleton.MainWindow.Activated -= MainFormActivated;
+				SD.Workbench.MainWindow.Activated -= MainFormActivated;
 				activeWatchers.Remove(this);
 			}
 			if (watcher != null) {

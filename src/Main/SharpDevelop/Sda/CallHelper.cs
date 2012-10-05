@@ -189,11 +189,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		public List<Document> OpenDocuments {
 			get {
 				List<Document> l = new List<Document>();
-				if (WorkbenchSingleton.InvokeRequired) {
-					SD.MainThread.InvokeIfRequired(() => new Action<List<Document>>(GetOpenDocuments)(l));
-				} else {
-					GetOpenDocuments(l);
-				}
+				SD.MainThread.InvokeIfRequired(() => GetOpenDocuments(l));
 				return l;
 			}
 		}
@@ -212,12 +208,9 @@ namespace ICSharpCode.SharpDevelop.Sda
 		/// </summary>
 		public Document OpenDocument(string fileName)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				return SD.MainThread.InvokeIfRequired(() => OpenDocumentInternal(fileName));
-			} else {
-				return OpenDocumentInternal(fileName);
-			}
+			return SD.MainThread.InvokeIfRequired(() => OpenDocumentInternal(fileName));
 		}
+		
 		Document OpenDocumentInternal(string fileName)
 		{
 			return Document.FromWindow(FileService.OpenFile(fileName));
@@ -225,15 +218,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		
 		public void OpenProject(string fileName)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				SD.MainThread.InvokeIfRequired(() => OpenProjectInternal(fileName));
-			} else {
-				OpenProjectInternal(fileName);
-			}
-		}
-		void OpenProjectInternal(string fileName)
-		{
-			Project.ProjectService.LoadSolutionOrProject(fileName);
+			SD.MainThread.InvokeIfRequired(() => Project.ProjectService.LoadSolutionOrProject(fileName));
 		}
 		
 		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
@@ -244,11 +229,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		
 		public bool CloseWorkbench(bool force)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				return SD.MainThread.InvokeIfRequired(() => CloseWorkbenchInternal(force));
-			} else {
-				return CloseWorkbenchInternal(force);
-			}
+			return SD.MainThread.InvokeIfRequired(() => CloseWorkbenchInternal(force));
 		}
 		bool CloseWorkbenchInternal(bool force)
 		{
@@ -256,7 +237,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 				if (!window.CloseWindow(force))
 					return false;
 			}
-			WorkbenchSingleton.MainWindow.Close();
+			SD.Workbench.MainWindow.Close();
 			return true;
 		}
 		
@@ -268,27 +249,19 @@ namespace ICSharpCode.SharpDevelop.Sda
 		
 		public bool WorkbenchVisible {
 			get {
-				if (WorkbenchSingleton.InvokeRequired) {
-					return SD.MainThread.InvokeIfRequired<bool>(GetWorkbenchVisibleInternal);
-				} else {
-					return GetWorkbenchVisibleInternal();
-				}
+				return SD.MainThread.InvokeIfRequired<bool>(GetWorkbenchVisibleInternal);
 			}
 			set {
-				if (WorkbenchSingleton.InvokeRequired) {
-					SD.MainThread.InvokeIfRequired(() => SetWorkbenchVisibleInternal(value));
-				} else {
-					SetWorkbenchVisibleInternal(value);
-				}
+				SD.MainThread.InvokeIfRequired(() => SetWorkbenchVisibleInternal(value));
 			}
 		}
 		bool GetWorkbenchVisibleInternal()
 		{
-			return WorkbenchSingleton.MainWindow.Visibility == Visibility.Visible;
+			return SD.Workbench.MainWindow.Visibility == Visibility.Visible;
 		}
 		void SetWorkbenchVisibleInternal(bool value)
 		{
-			WorkbenchSingleton.MainWindow.Visibility = value ? Visibility.Visible : Visibility.Hidden;
+			SD.Workbench.MainWindow.Visibility = value ? Visibility.Visible : Visibility.Hidden;
 		}
 	}
 }

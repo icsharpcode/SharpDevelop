@@ -256,7 +256,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			var vm = new AddServiceReferenceViewModel(project);
 			var dialog = new AddServiceReferenceDialog();
 			dialog.DataContext = vm;
-			dialog.Owner = WorkbenchSingleton.MainWindow;
+			dialog.Owner = SD.Workbench.MainWindow;
 			if (dialog.ShowDialog() ?? true) {
 				vm.AddServiceReference();
 			}

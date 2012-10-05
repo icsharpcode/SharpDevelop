@@ -111,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// </summary>
 		public IViewContent ActiveViewContent {
 			get {
-				WorkbenchSingleton.DebugAssertMainThread();
+				SD.MainThread.VerifyAccess();
 				if (viewTabControl != null && viewTabControl.SelectedIndex >= 0 && viewTabControl.SelectedIndex < ViewContents.Count) {
 					return ViewContents[viewTabControl.SelectedIndex];
 				} else if (ViewContents.Count == 1) {

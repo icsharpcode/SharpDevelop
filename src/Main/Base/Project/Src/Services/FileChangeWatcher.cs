@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			if (file == null)
 				throw new ArgumentNullException("file");
 			this.file = file;
-			WorkbenchSingleton.MainWindow.Activated += MainForm_Activated;
+			SD.Workbench.MainWindow.Activated += MainForm_Activated;
 			file.FileNameChanged += file_FileNameChanged;
 			activeWatchers.Add(this);
 			SetWatcher();
@@ -88,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			SD.MainThread.VerifyAccess();
 			activeWatchers.Remove(this);
 			if (file != null) {
-				WorkbenchSingleton.MainWindow.Activated -= MainForm_Activated;
+				SD.Workbench.MainWindow.Activated -= MainForm_Activated;
 				file.FileNameChanged -= file_FileNameChanged;
 				file = null;
 			}

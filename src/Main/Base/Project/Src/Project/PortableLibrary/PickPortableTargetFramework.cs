@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 		{
 			if (ProfileList.IsPortableLibraryInstalled()) {
 				SelectProfileDialog dlg = new SelectProfileDialog(ProfileList.Instance);
-				dlg.Owner = WorkbenchSingleton.MainWindow;
+				dlg.Owner = SD.Workbench.MainWindow;
 				if (selectedProjects != null) {
 					var project = selectedProjects.FirstOrDefault() as CompilableProject;
 					if (project != null) {

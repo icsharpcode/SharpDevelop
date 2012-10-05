@@ -464,7 +464,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					item.Command = new BringPadToFrontCommand(padContent);
 					if (!string.IsNullOrEmpty(padContent.Shortcut)) {
 						var kg = Core.Presentation.MenuService.ParseShortcut(padContent.Shortcut);
-						WorkbenchSingleton.MainWindow.InputBindings.Add(
+						SD.Workbench.MainWindow.InputBindings.Add(
 							new System.Windows.Input.InputBinding(item.Command, kg)
 						);
 						item.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);

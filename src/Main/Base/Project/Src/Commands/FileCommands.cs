@@ -302,7 +302,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			WorkbenchSingleton.MainWindow.Close();
+			SD.Workbench.MainWindow.Close();
 		}
 	}
 

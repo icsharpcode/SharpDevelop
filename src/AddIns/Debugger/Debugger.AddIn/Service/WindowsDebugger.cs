@@ -610,7 +610,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (CurrentThread == null)
 				return;
 			
-			WorkbenchSingleton.MainWindow.Activate();
+			SD.Workbench.MainWindow.Activate();
 			
 			// if (debuggedProcess.IsSelectedFrameForced()) {
 			if (CurrentThread != null && CurrentStackFrame.HasSymbols) {

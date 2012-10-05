@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 			
 			watcher.SynchronizingObject = SD.MainThread.SynchronizingObject;
 			
-			WorkbenchSingleton.MainWindow.Activated += MainWindowActivated;
+			SD.Workbench.MainWindow.Activated += MainWindowActivated;
 			
 			watcher.Created += FileChanged;
 			watcher.Deleted += FileChanged;
@@ -92,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 			lock (watchers) {
 				actions -= action;
 				if (actions == null && !disposed) {
-					WorkbenchSingleton.MainWindow.Activated -= MainWindowActivated;
+					SD.Workbench.MainWindow.Activated -= MainWindowActivated;
 					watchers.Remove(watcher.Path);
 					this.watcher.Dispose();
 					disposed = true;

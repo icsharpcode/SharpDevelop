@@ -89,10 +89,11 @@ namespace ICSharpCode.SharpDevelop.Logging
 					LoggingService.Warn("Error tracking exception", ex);
 				}
 				using (ExceptionBox box = new ExceptionBox(exception, message, mustTerminate)) {
-					if (ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.InvokeRequired)
+					if (SD.MainThread.InvokeRequired) {
 						box.ShowDialog();
-					else
+					} else {
 						box.ShowDialog(SD.WinForms.MainWin32Window);
+					}
 				}
 			} catch (Exception ex) {
 				LoggingService.Warn("Error showing ExceptionBox", ex);
