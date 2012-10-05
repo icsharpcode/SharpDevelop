@@ -114,5 +114,21 @@ class TestClass {
 }";
 			Test<ParameterNotUsedIssue> (input, 0);
 		}
+
+
+		[Test]
+		public void TestMethodUsedAsDelegateMethod ()
+		{
+			var input = @"using System;
+class TestClass {
+	public event EventHandler FooEvt;
+	void TestMethod ()
+	{
+		FooEvt += FooBar;
+	}
+	void FooBar (object sender, EventArgs e) {}
+}";
+			Test<ParameterNotUsedIssue> (input, 0);
+		}
 	}
 }
