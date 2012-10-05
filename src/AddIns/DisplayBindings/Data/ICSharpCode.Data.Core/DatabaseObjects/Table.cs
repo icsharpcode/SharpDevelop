@@ -79,7 +79,7 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
         {
             get
             {
-                if (Items.Where(column => column.IsPrimaryKey).Count() > 1)
+                if (Items.Count(column => column.IsPrimaryKey) > 1)
                     return true;
                 else
                     return false;

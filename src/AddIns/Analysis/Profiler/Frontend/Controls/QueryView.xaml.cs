@@ -138,7 +138,7 @@ namespace ICSharpCode.Profiler.Controls
 		CallTreeNodeViewModel GetViewModelFromPath(IEnumerable<NodePath> paths, SearchInfo info)
 		{
 			CallTreeNodeViewModel result = null;
-			var parent = list.Roots.Where(i => i.Node.Equals(info.ResultRoot)).FirstOrDefault();
+			var parent = list.Roots.FirstOrDefault(i => i.Node.Equals(info.ResultRoot));
 
 			foreach (var path in paths) {
 				var items = parent.Children;

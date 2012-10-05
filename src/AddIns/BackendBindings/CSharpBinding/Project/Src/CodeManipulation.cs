@@ -219,8 +219,7 @@ namespace CSharpBinding
 			var selectionStart = editor.Document.OffsetToPosition(editor.SelectionStart);
 			var selectionEnd = editor.Document.OffsetToPosition(editor.SelectionStart + editor.SelectionLength);
 			
-			Ast.INode currentNode = parsedCU.Children.Select(
-				n => EditorContext.FindInnermostNodeContainingSelection(n, selectionStart, selectionEnd)).Where(n => n != null).FirstOrDefault();
+			Ast.INode currentNode = parsedCU.Children.Select(n => EditorContext.FindInnermostNodeContainingSelection(n, selectionStart, selectionEnd)).FirstOrDefault(n => n != null);
 			if (currentNode == null) return null;
 			if (!IsNodeTypeInteresting(currentNode, interestingNodeTypes)) {
 				// ignore uninteresting nodes in the AST
@@ -306,7 +305,7 @@ namespace CSharpBinding
 		/// </summary>
 		Selection ExtendSelectionToEndOfLineComments(IDocument document, Location selectionStart, Location selectionEnd, IEnumerable<Comment> commentsBlankLines)
 		{
-			var lineComment = commentsBlankLines.Where(c => c.StartPosition.Line == selectionEnd.Line && c.StartPosition >= selectionEnd).FirstOrDefault();
+			var lineComment = commentsBlankLines.FirstOrDefault(c => c.StartPosition.Line == selectionEnd.Line && c.StartPosition >= selectionEnd);
 			if (lineComment == null) {
 				return null;
 			}

@@ -213,7 +213,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                 foreach (var propertyElement in entityTypeElement.Elements(XName.Get("Property", ssdlNamespace.NamespaceName)))
                 {
                     var name = propertyElement.Attribute("Name").Value;
-                    var property = new Property(entityType) { Name = name, Type = propertyElement.Attribute("Type").Value, IsKey = entityTypeElement.Element(XName.Get("Key", ssdlNamespace.NamespaceName)).Elements(XName.Get("PropertyRef", ssdlNamespace.NamespaceName)).Where(pr => pr.Attribute("Name").Value == name).Any() };
+                    var property = new Property(entityType) { Name = name, Type = propertyElement.Attribute("Type").Value, IsKey = entityTypeElement.Element(XName.Get("Key", ssdlNamespace.NamespaceName)).Elements(XName.Get("PropertyRef", ssdlNamespace.NamespaceName)).Any(pr => pr.Attribute("Name").Value == name) };
                     SetBoolValueFromAttribute(propertyElement, "Nullable", nullable => property.Nullable = nullable);
                     SetIntValueFromAttribute(propertyElement, "MaxLength", maxLength => property.MaxLength = maxLength);
                     SetBoolValueFromAttribute(propertyElement, "FixedLength", fixedLength => property.FixedLength = fixedLength);

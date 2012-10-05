@@ -9,6 +9,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop
 {
+	[Flags]
 	public enum WindowState {
 		None     = 0,
 		Untitled = 1,

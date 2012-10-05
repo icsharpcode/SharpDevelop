@@ -157,7 +157,7 @@ namespace ICSharpCode.WixBinding
 		public Form CreateDialog(IComponentCreator componentCreator)
 		{
 			if (componentCreator == null) {
-				throw new ArgumentException("Cannot be null.", "componentCreator");
+				throw new ArgumentNullException("componentCreator");
 			}
 			
 			Form dialog = CreateForm(componentCreator);

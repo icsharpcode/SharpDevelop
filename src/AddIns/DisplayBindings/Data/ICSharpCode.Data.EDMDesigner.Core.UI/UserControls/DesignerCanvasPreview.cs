@@ -93,7 +93,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls
             get
             {
                 if (_typebaseDesignerListView == null)
-                    _typebaseDesignerListView = VisualTreeHelperUtil.GetControlsDecendant<ListView>(Content.Children.OfType<TypeBaseDesigner>().Where(tbd => tbd.UIType.BusinessInstance == UIType.BusinessInstance).First()).First();
+                    _typebaseDesignerListView = VisualTreeHelperUtil.GetControlsDecendant<ListView>(Content.Children.OfType<TypeBaseDesigner>().First(tbd => tbd.UIType.BusinessInstance == UIType.BusinessInstance)).First();
                 return _typebaseDesignerListView;
             }
         }

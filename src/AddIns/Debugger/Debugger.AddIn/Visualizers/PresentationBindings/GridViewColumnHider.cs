@@ -91,7 +91,7 @@ namespace Debugger.AddIn.Visualizers
 
 		private GridViewColumnWithVisibility findColumn(string header)
 		{
-			return allColumns.Where(columnVis => columnVis.Header == header).First();
+			return allColumns.First(columnVis => columnVis.Header == header);
 		}
 
 		void hideColumn(string header)

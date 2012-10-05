@@ -301,7 +301,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.EDMObjects.CSDL.Type
         private void _navigationProperties_ItemRemoved(NavigationProperty navigationProperty)
         {
             _navigationProperties.ItemRemoved -= _navigationProperties_ItemRemoved;
-            var navigationProperty2 = navigationProperty.Association.PropertiesEnd.Where(pe => pe != navigationProperty).First();
+            var navigationProperty2 = navigationProperty.Association.PropertiesEnd.First(pe => pe != navigationProperty);
             if (!navigationProperty2.IsDeleted)
                 navigationProperty2.EntityType.NavigationProperties.Remove(navigationProperty2);
             _navigationProperties.ItemRemoved += _navigationProperties_ItemRemoved;
