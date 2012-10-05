@@ -8,6 +8,7 @@ using System.Text;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace CSharpBinding.Completion
 {
@@ -30,9 +31,10 @@ namespace CSharpBinding.Completion
 			this.stringWriter = stringWriter;
 		}
 		
-		public static IReadOnlyDictionary<AstNode, ISegment> WriteNode(StringWriter writer, AstNode node, CSharpFormattingOptions policy)
+		public static IReadOnlyDictionary<AstNode, ISegment> WriteNode(StringWriter writer, AstNode node, CSharpFormattingOptions policy, ITextEditorOptions editorOptions)
 		{
 			var formatter = new SegmentTrackingOutputFormatter(writer);
+			formatter.IndentationString = editorOptions.IndentationString;
 			var visitor = new CSharpOutputVisitor(formatter, policy);
 			node.AcceptVisitor(visitor);
 			return formatter.Segments;

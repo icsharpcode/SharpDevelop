@@ -2,15 +2,19 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CSharpBinding.FormattingStrategy;
+using CSharpBinding.Parser;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace CSharpBinding.Completion
@@ -47,14 +51,59 @@ namespace CSharpBinding.Completion
 			entityDeclaration.Modifiers &= ~(Modifiers.Virtual | Modifiers.Abstract);
 			entityDeclaration.Modifiers |= Modifiers.Override;
 			
-			StringWriter w = new StringWriter();
-			var segmentDict = SegmentTrackingOutputFormatter.WriteNode(w, entityDeclaration, FormattingOptionsFactory.CreateSharpDevelop());
+			if (!this.Entity.IsAbstract) {
+				// modify body to call the base method
+				if (this.Entity.EntityType == EntityType.Method) {
+					var baseCall = new BaseReferenceExpression().Invoke(this.Entity.Name, ParametersToExpressions(this.Entity));
+					var body = entityDeclaration.GetChildByRole(Roles.Body);
+					body.Statements.Clear();
+					if (((IMethod)this.Entity).ReturnType.IsKnownType(KnownTypeCode.Void))
+						body.Statements.Add(new ExpressionStatement(baseCall));
+					else
+						body.Statements.Add(new ReturnStatement(baseCall));
+				} else if (this.Entity.EntityType == EntityType.Indexer || this.Entity.EntityType == EntityType.Property) {
+					Expression baseCall;
+					if (this.Entity.EntityType == EntityType.Indexer)
+						baseCall = new BaseReferenceExpression().Indexer(ParametersToExpressions(this.Entity));
+					else
+						baseCall = new BaseReferenceExpression().Member(this.Entity.Name);
+					var getterBody = entityDeclaration.GetChildByRole(PropertyDeclaration.GetterRole).Body;
+					if (!getterBody.IsNull) {
+						getterBody.Statements.Clear();
+						getterBody.Add(new ReturnStatement(baseCall.Clone()));
+					}
+					var setterBody = entityDeclaration.GetChildByRole(PropertyDeclaration.SetterRole).Body;
+					if (!setterBody.IsNull) {
+						setterBody.Statements.Clear();
+						setterBody.Add(new AssignmentExpression(baseCall.Clone(), new IdentifierExpression("value")));
+					}
+				}
+			}
 			
-			context.Editor.Document.Replace(declarationBegin, context.EndOffset - declarationBegin, w.ToString().TrimEnd());
-			var throwStatement = entityDeclaration.Descendants.FirstOrDefault(n => n is ThrowStatement);
-			if (throwStatement != null) {
-				var segment = segmentDict[throwStatement];
-				context.Editor.Select(declarationBegin + segment.Offset, segment.Length);
+			var document = context.Editor.Document;
+			StringWriter w = new StringWriter();
+			var formattingOptions = FormattingOptionsFactory.CreateSharpDevelop();
+			var segmentDict = SegmentTrackingOutputFormatter.WriteNode(w, entityDeclaration, formattingOptions, context.Editor.Options);
+			
+			using (document.OpenUndoGroup()) {
+				string newText = w.ToString().TrimEnd();
+				document.Replace(declarationBegin, context.EndOffset - declarationBegin, newText);
+				var throwStatement = entityDeclaration.Descendants.FirstOrDefault(n => n is ThrowStatement);
+				if (throwStatement != null) {
+					var segment = segmentDict[throwStatement];
+					context.Editor.Select(declarationBegin + segment.Offset, segment.Length);
+				}
+				CSharpFormatter.Format(context.Editor, declarationBegin, newText.Length, formattingOptions);
+			}
+		}
+		
+		IEnumerable<Expression> ParametersToExpressions(IEntity entity)
+		{
+			foreach (var p in ((IParameterizedMember)entity).Parameters) {
+				if (p.IsRef || p.IsOut)
+					yield return new DirectionExpression(p.IsOut ? FieldDirection.Out : FieldDirection.Ref, new IdentifierExpression(p.Name));
+				else
+					yield return new IdentifierExpression(p.Name);
 			}
 		}
 	}

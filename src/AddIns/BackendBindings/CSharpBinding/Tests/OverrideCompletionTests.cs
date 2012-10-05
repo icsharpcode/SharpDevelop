@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using CSharpBinding.Completion;
+using CSharpBinding.Parser;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -61,6 +62,11 @@ class DerivedClass : BaseClass {
 			SD.Services.AddService(typeof(IParserService), MockRepository.GenerateStrictMock<IParserService>());
 			SD.ParserService.Stub(p => p.GetCachedParseInformation(textEditor.FileName)).Return(parseInfo);
 			SD.ParserService.Stub(p => p.GetCompilationForFile(textEditor.FileName)).Return(compilation);
+			SD.ParserService.Stub(p => p.Parse(textEditor.FileName, textEditor.Document)).WhenCalled(
+				i => {
+					var syntaxTree = new CSharpParser().Parse(textEditor.Document, textEditor.FileName);
+					i.ReturnValue = new CSharpFullParseInformation(syntaxTree.ToTypeSystem(), null, syntaxTree);
+				});
 			CSharpCompletionBinding completion = new CSharpCompletionBinding();
 			keyPressResult = completion.HandleKeyPressed(textEditor, ' ');
 		}
@@ -92,9 +98,9 @@ class DerivedClass : BaseClass {
 			Assert.AreEqual(
 				new string[] {
 					"AbstractEvent", "AbstractMethod()",
-					"Equals(object obj)", "GetHashCode()", "ProtectedWriteProperty", 
+					"Equals(object obj)", "GetHashCode()", "ProtectedWriteProperty",
 					"ReadOnlyAbstractProperty", "ToString()",
-					 "VirtualEvent", "VirtualMethod()", "VirtualProperty", 
+					"VirtualEvent", "VirtualMethod()", "VirtualProperty",
 				}, itemNames);
 		}
 		
@@ -104,7 +110,6 @@ class DerivedClass : BaseClass {
 		}
 		
 		[Test]
-		[Ignore("Implement formatter")]
 		public void OverrideAbstractMethod()
 		{
 			CompletionContext context = new CompletionContext();
@@ -123,7 +128,6 @@ class DerivedClass : BaseClass {
 		}
 		
 		[Test]
-		[Ignore("Implement formatter")]
 		public void OverrideVirtualMethod()
 		{
 			CompletionContext context = new CompletionContext();
@@ -142,7 +146,6 @@ class DerivedClass : BaseClass {
 		}
 		
 		[Test]
-		[Ignore("Implement formatter")]
 		public void OverrideReadOnlyAbstractProperty()
 		{
 			CompletionContext context = new CompletionContext();
@@ -153,14 +156,15 @@ class DerivedClass : BaseClass {
 			textEditor.LastCompletionItemList.Complete(context, item);
 			Assert.AreEqual(Normalize(
 				programStart + "public override int ReadOnlyAbstractProperty {\n" +
-				"    get { throw new NotImplementedException(); }\n" +
+				"    get {\n" +
+				"      throw new NotImplementedException();\n" +
+				"    }\n" +
 				"  }" + programEnd),
 			                Normalize(textEditor.Document.Text)
 			               );
 		}
 		
 		[Test]
-		[Ignore("Implement formatter")]
 		public void OverrideVirtualProperty()
 		{
 			CompletionContext context = new CompletionContext();
@@ -171,15 +175,18 @@ class DerivedClass : BaseClass {
 			textEditor.LastCompletionItemList.Complete(context, item);
 			Assert.AreEqual(Normalize(
 				programStart + "public override int VirtualProperty {\n" +
-				"    get { return base.VirtualProperty; }\n" +
-				"    set { base.VirtualProperty = value; }\n" +
+				"    get {\n" +
+				"      return base.VirtualProperty;\n" +
+				"    }\n" +
+				"    set {\n" +
+				"      base.VirtualProperty = value;\n" +
+				"    }\n" +
 				"  }" + programEnd),
 			                Normalize(textEditor.Document.Text)
 			               );
 		}
 		
 		[Test]
-		[Ignore("Implement formatter")]
 		public void OverrideProtectedWriteProperty()
 		{
 			CompletionContext context = new CompletionContext();
@@ -190,8 +197,12 @@ class DerivedClass : BaseClass {
 			textEditor.LastCompletionItemList.Complete(context, item);
 			Assert.AreEqual(Normalize(
 				programStart + "public override int ProtectedWriteProperty {\n" +
-				"    get { return base.ProtectedWriteProperty; }\n" +
-				"    protected set { base.ProtectedWriteProperty = value; }\n" +
+				"    get {\n" +
+				"      return base.ProtectedWriteProperty;\n" +
+				"    }\n" +
+				"    protected set {\n" +
+				"      base.ProtectedWriteProperty = value;\n" +
+				"    }\n" +
 				"  }" + programEnd),
 			                Normalize(textEditor.Document.Text)
 			               );

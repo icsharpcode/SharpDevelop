@@ -7,6 +7,7 @@ using CSharpBinding.Parser;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace CSharpBinding
@@ -16,6 +17,18 @@ namespace CSharpBinding
 	/// </summary>
 	public static class ExtensionMethods
 	{
+		public static TextEditorOptions ToEditorOptions(this ITextEditor editor)
+		{
+			return new TextEditorOptions {
+				TabsToSpaces = editor.Options.ConvertTabsToSpaces,
+				TabSize = editor.Options.IndentationSize,
+				IndentSize = editor.Options.IndentationSize,
+				ContinuationIndent = editor.Options.IndentationSize,
+				LabelIndent = -editor.Options.IndentationSize,
+				WrapLineLength = editor.Options.VerticalRulerColumn,
+			};
+		}
+		
 		public static async Task<SyntaxTree> GetSyntaxTreeAsync(this EditorRefactoringContext editorContext)
 		{
 			var parseInfo = (await editorContext.GetParseInformationAsync().ConfigureAwait(false)) as CSharpFullParseInformation;
