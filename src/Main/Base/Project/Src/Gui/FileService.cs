@@ -144,7 +144,7 @@ namespace ICSharpCode.SharpDevelop
 		/// behaviour of the FolderBrowserDialog is used where it selects the
 		/// desktop folder.
 		/// </summary>
-		[Obsolete("Use SD.FileService.BrowseForFolder instead.")]
+		[Obsolete("Use SD.FileService.BrowseForFolder() instead.")]
 		public static FolderBrowserDialog CreateFolderBrowserDialog(string description, string selectedPath = null)
 		{
 			FolderBrowserDialog dialog = new FolderBrowserDialog();

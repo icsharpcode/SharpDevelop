@@ -11,7 +11,6 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
@@ -120,11 +119,21 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		public static readonly Color DefaultBackground = Color.FromRgb(180, 38, 38);
 		public static readonly Color DefaultForeground = Colors.White;
 		
-		public static readonly IImage BreakpointImage = new ResourceServiceImage("Bookmarks.Breakpoint");
-		public static readonly IImage BreakpointConditionalImage = new ResourceServiceImage("Bookmarks.BreakpointConditional");
-		public static readonly IImage DisabledBreakpointImage = new ResourceServiceImage("Bookmarks.DisabledBreakpoint");
-		public static readonly IImage UnhealthyBreakpointImage = new ResourceServiceImage("Bookmarks.UnhealthyBreakpoint");
-		public static readonly IImage UnhealthyBreakpointConditionalImage = new ResourceServiceImage("Bookmarks.UnhealthyBreakpointConditional");
+		public static IImage BreakpointImage {
+			get { return SD.ResourceService.GetImage("Bookmarks.Breakpoint"); }
+		}
+		public static IImage BreakpointConditionalImage {
+			get {  return SD.ResourceService.GetImage("Bookmarks.BreakpointConditional"); }
+		}
+		public static IImage DisabledBreakpointImage {
+			get { return SD.ResourceService.GetImage("Bookmarks.DisabledBreakpoint"); }
+		}
+		public static IImage UnhealthyBreakpointImage {
+			get { return SD.ResourceService.GetImage("Bookmarks.UnhealthyBreakpoint"); }
+		}
+		public static IImage UnhealthyBreakpointConditionalImage {
+			get { return SD.ResourceService.GetImage("Bookmarks.UnhealthyBreakpointConditional"); }
+		}
 		
 		public override IImage Image {
 			get {

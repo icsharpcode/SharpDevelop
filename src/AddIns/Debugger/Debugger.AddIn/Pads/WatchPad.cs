@@ -91,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			try {
 				node = new ValueNode(null, name, () => WindowsDebugger.Evaluate(name));
 			} catch (GetValueException e) {
-				node = new TreeNode(new ResourceServiceImage("Icons.16x16.Error"), name, e.Message, string.Empty, null);
+				node = new TreeNode(SD.ResourceService.GetImage("Icons.16x16.Error"), name, e.Message, string.Empty, null);
 			}
 			node.CanDelete = true;
 			node.CanSetName = true;

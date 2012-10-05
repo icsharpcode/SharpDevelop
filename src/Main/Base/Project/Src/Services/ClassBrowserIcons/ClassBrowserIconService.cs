@@ -68,15 +68,15 @@ namespace ICSharpCode.SharpDevelop
 		}
 		#endregion
 		
-		public static readonly IImage Namespace = GetIImage(CompletionImage.NamespaceImage);
-		public static readonly IImage Solution = new ResourceServiceImage("Icons.16x16.CombineIcon");
-		public static readonly IImage Const = GetIImage(CompletionImage.Literal.BaseImage);
-		public static readonly IImage GotoArrow = new ResourceServiceImage("Icons.16x16.SelectionArrow");
+		public static IImage Namespace { get { return GetIImage(CompletionImage.NamespaceImage); } }
+		public static IImage Solution { get { return SD.ResourceService.GetImage("Icons.16x16.CombineIcon"); } }
+		public static IImage Const { get { return GetIImage(CompletionImage.Literal.BaseImage); } }
+		public static IImage GotoArrow { get { return SD.ResourceService.GetImage("Icons.16x16.SelectionArrow"); } }
 		
-		public static readonly IImage LocalVariable = new ResourceServiceImage("Icons.16x16.Local");
-		public static readonly IImage Parameter = new ResourceServiceImage("Icons.16x16.Parameter");
-		public static readonly IImage Keyword = new ResourceServiceImage("Icons.16x16.Keyword");
-		public static readonly IImage Operator = new ResourceServiceImage("Icons.16x16.Operator");
-		public static readonly IImage CodeTemplate = new ResourceServiceImage("Icons.16x16.TextFileIcon");
+		public static IImage LocalVariable { get { return SD.ResourceService.GetImage("Icons.16x16.Local"); } }
+		public static IImage Parameter { get { return SD.ResourceService.GetImage("Icons.16x16.Parameter"); } }
+		public static IImage Keyword { get { return SD.ResourceService.GetImage("Icons.16x16.Keyword"); } }
+		public static IImage Operator { get { return SD.ResourceService.GetImage("Icons.16x16.Operator"); } }
+		public static IImage CodeTemplate { get { return SD.ResourceService.GetImage("Icons.16x16.TextFileIcon"); } }
 	}
 }

@@ -2,15 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	public class SelectScopeComboBox : ToolStripComboBox
 	{
-		private ComboBox comboBox;
 		private static string[] viewTypes = new string[] {"Solution", "Project", "All open documents", "Document", "Namespace", "Class/Module"};
 		
 		public SelectScopeComboBox()

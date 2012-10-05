@@ -11,7 +11,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		public BeforeBuildCustomToolRunner()
 		{
-			ProjectService.BuildStarted += ProjectBuildStarted;
+			SD.BuildService.BuildStarted += ProjectBuildStarted;
 		}
 
 		void ProjectBuildStarted(object sender, BuildEventArgs e)

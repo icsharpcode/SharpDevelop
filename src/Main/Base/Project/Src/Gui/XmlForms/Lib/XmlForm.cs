@@ -13,6 +13,7 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 	/// <summary>
 	/// The basic xml generated form.
 	/// </summary>
+	[Obsolete("XML Forms are obsolete")]
 	public abstract class XmlForm : Form
 	{
 		protected XmlLoader xmlLoader;

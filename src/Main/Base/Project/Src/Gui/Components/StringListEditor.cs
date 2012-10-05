@@ -279,15 +279,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void BrowseButtonClick(object sender, EventArgs e)
 		{
-			using (FolderBrowserDialog fdiag = FileService.CreateFolderBrowserDialog("${res:Dialog.ProjectOptions.SelectFolderTitle}")) {
-				if (fdiag.ShowDialog() == DialogResult.OK) {
-					string path = fdiag.SelectedPath;
-					if (!path.EndsWith("\\") && !path.EndsWith("/"))
-						path += "\\";
-					editTextBox.Text = path;
-					if (autoAddAfterBrowse) {
-						AddButtonClick(null, null);
-					}
+			string path = SD.FileService.BrowseForFolder("${res:Dialog.ProjectOptions.SelectFolderTitle}");
+			if (path != null) {
+				if (!path.EndsWith("\\") && !path.EndsWith("/"))
+					path += "\\";
+				editTextBox.Text = path;
+				if (autoAddAfterBrowse) {
+					AddButtonClick(null, null);
 				}
 			}
 		}

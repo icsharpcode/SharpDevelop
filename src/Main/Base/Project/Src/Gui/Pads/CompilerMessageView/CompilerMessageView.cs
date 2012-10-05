@@ -152,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void DisplayActiveCategory()
 		{
-			WorkbenchSingleton.DebugAssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (selectedCategory < 0) {
 				textEditor.Text = "";
 			} else {

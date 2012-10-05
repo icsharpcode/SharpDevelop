@@ -7,6 +7,7 @@ using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 {
+	[Obsolete("XML Forms are obsolete")]
 	public class SharpDevelopPropertyValueCreator : IPropertyValueCreator
 	{
 		public bool CanCreateValueForType(Type propertyType)

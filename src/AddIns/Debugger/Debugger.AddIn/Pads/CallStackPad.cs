@@ -143,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				previousItemIsExternalMethod = false;
 				return new CallStackItem() {
 					Frame = frame,
-					ImageSource = new ResourceServiceImage("Icons.16x16.Method").ImageSource,
+					ImageSource = SD.ResourceService.GetImageSource("Icons.16x16.Method"),
 					Name = GetFullName(frame)
 				};
 			} else {

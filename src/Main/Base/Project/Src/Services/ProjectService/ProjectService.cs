@@ -709,12 +709,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static event SolutionFolderEventHandler SolutionFolderRemoved;
 		
-		[Obsolete]
+		[Obsolete("Use SD.BuildService.BuildStarted instead")]
 		public static event EventHandler<BuildEventArgs> BuildStarted {
 			add { SD.BuildService.BuildStarted += value; }
-			remove { SD.BuildService.BuildFinished -= value; }
+			remove { SD.BuildService.BuildStarted -= value; }
 		}
-		[Obsolete]
+		[Obsolete("Use SD.BuildService.BuildFinished instead")]
 		public static event EventHandler<BuildEventArgs> BuildFinished {
 			add { SD.BuildService.BuildFinished += value; }
 			remove { SD.BuildService.BuildFinished -= value; }

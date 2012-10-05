@@ -12,6 +12,7 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 	/// <summary>
 	/// The basic xml generated user control.
 	/// </summary>
+	[Obsolete("XML Forms are obsolete")]
 	public abstract class XmlUserControl : UserControl
 	{
 		protected XmlLoader xmlLoader;

@@ -13,6 +13,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
+	[Obsolete("XML Forms are obsolete")]
 	public class AbstractBuildOptions : AbstractXmlFormsProjectOptionPanel
 	{
 		protected void InitBaseIntermediateOutputPath()
