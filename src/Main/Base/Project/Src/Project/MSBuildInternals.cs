@@ -231,6 +231,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			var query =
 				from msbuildItem in resolvedAssemblyProjectItems
+				where msbuildItem.GetMetadataValue("ReferenceSourceTarget") != "ProjectReference"
 				let originalInclude = msbuildItem.GetMetadataValue("OriginalItemSpec")
 				join item in referenceProjectItems.Where(p => p.ItemType != ItemType.ProjectReference) on originalInclude equals item.Include into referenceItems
 				select new {
