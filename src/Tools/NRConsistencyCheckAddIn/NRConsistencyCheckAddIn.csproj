@@ -5,8 +5,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>StressTest</RootNamespace>
-    <AssemblyName>StressTest</AssemblyName>
+    <RootNamespace>ICSharpCode.NRefactory.ConsistencyCheck</RootNamespace>
+    <AssemblyName>NRConsistencyCheckAddIn</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
@@ -29,7 +29,7 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <StartAction>Program</StartAction>
-    <StartProgram>..\..\..\..\bin\SharpDevelop.exe</StartProgram>
+    <StartProgram>..\..\..\bin\SharpDevelop.exe</StartProgram>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -41,18 +41,23 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.AvalonEdit">
-      <HintPath>..\..\..\..\bin\ICSharpCode.AvalonEdit.dll</HintPath>
+      <HintPath>..\..\..\bin\ICSharpCode.AvalonEdit.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.Core">
-      <HintPath>..\..\..\..\bin\ICSharpCode.Core.dll</HintPath>
+      <HintPath>..\..\..\bin\ICSharpCode.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.NRefactory">
-      <HintPath>..\..\..\..\bin\ICSharpCode.NRefactory.dll</HintPath>
+      <HintPath>..\..\..\bin\ICSharpCode.NRefactory.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.NRefactory.CSharp">
+      <HintPath>..\..\..\bin\ICSharpCode.NRefactory.CSharp.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpDevelop">
-      <HintPath>..\..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
+      <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore">
@@ -83,23 +88,29 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="StressTest.addin">
+    <None Include="NRConsistencyCheckAddIn.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="StressTestMenuCommand.cs" />
-    <Compile Include="UserControl.xaml.cs">
-      <DependentUpon>UserControl.xaml</DependentUpon>
-      <SubType>Code</SubType>
+    <Compile Include="..\..\Libraries\NRefactory\ICSharpCode.NRefactory.ConsistencyCheck\FindReferencesConsistencyCheck.cs">
+      <Link>FindReferencesConsistencyCheck.cs</Link>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="UserControl.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ProfilingSessions\Session20100225_205054.sdps" />
+    <Compile Include="..\..\Libraries\NRefactory\ICSharpCode.NRefactory.ConsistencyCheck\RandomizedOrderResolverTest.cs">
+      <Link>RandomizedOrderResolverTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Libraries\NRefactory\ICSharpCode.NRefactory.ConsistencyCheck\ResolverTest.cs">
+      <Link>ResolverTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Libraries\NRefactory\ICSharpCode.NRefactory.ConsistencyCheck\TypeSystemTests.cs">
+      <Link>TypeSystemTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Libraries\NRefactory\ICSharpCode.NRefactory.ConsistencyCheck\VisitorBenchmark.cs">
+      <Link>VisitorBenchmark.cs</Link>
+    </Compile>
+    <Compile Include="Commands.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Adapter.cs" />
   </ItemGroup>
   <PropertyGroup>
     <StartArguments>/addindir:"$(MsBuildProjectDirectory)\$(OutputPath)"</StartArguments>
