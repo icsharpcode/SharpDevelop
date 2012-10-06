@@ -114,6 +114,18 @@
     <Compile Include="Workbench\AvalonPadContent.cs" />
     <Compile Include="Workbench\AvalonWorkbenchWindow.cs" />
     <Compile Include="Workbench\ChooseLayoutComboBox.cs" />
+    <Compile Include="Workbench\DisplayBinding\AddOpenWithEntryDialog.cs" />
+    <Compile Include="Workbench\DisplayBinding\AddOpenWithEntryDialog.Designer.cs">
+      <DependentUpon>AddOpenWithEntryDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Workbench\DisplayBinding\AutoDetectDisplayBinding.cs" />
+    <Compile Include="Workbench\DisplayBinding\DisplayBindingDoozer.cs" />
+    <Compile Include="Workbench\DisplayBinding\DisplayBindingService.cs" />
+    <Compile Include="Workbench\DisplayBinding\OpenWithDialog.cs" />
+    <Compile Include="Workbench\DisplayBinding\OpenWithDialog.Designer.cs">
+      <DependentUpon>OpenWithDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Workbench\DisplayBinding\ShellExecuteDisplayBinding.cs" />
     <Compile Include="Workbench\FileService.cs" />
     <Compile Include="Workbench\FileServiceOpenedFile.cs" />
     <Compile Include="Workbench\FullScreenEnabledWindow.cs" />
@@ -237,6 +249,7 @@
     <Folder Include="Logging" />
     <Folder Include="Parser" />
     <Folder Include="Sda" />
+    <Folder Include="Workbench\DisplayBinding" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="OptionPanels\LoadSaveOptions.xaml" />

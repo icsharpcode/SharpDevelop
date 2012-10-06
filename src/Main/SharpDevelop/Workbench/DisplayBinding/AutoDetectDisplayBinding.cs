@@ -5,35 +5,33 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using ICSharpCode.Core;
 
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Workbench;
-
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// Implements content auto detection and opens the appropriate IViewContent.
 	/// </summary>
-	public sealed class AutoDetectDisplayBinding : IDisplayBinding
+	sealed class AutoDetectDisplayBinding : IDisplayBinding
 	{
-		public bool IsPreferredBindingForFile(string fileName)
+		public bool IsPreferredBindingForFile(FileName fileName)
 		{
 			return false;
 		}
 		
-		public bool CanCreateContentForFile(string fileName)
+		public bool CanCreateContentForFile(FileName fileName)
 		{
 			return true;
 		}
 		
-		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		public double AutoDetectFileContent(FileName fileName, Stream fileContent, string detectedMimeType)
 		{
 			return double.NegativeInfinity;
 		}
 		
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
-			var codons = DisplayBindingService.GetCodonsPerFileName(file.FileName);
+			var codons = SD.DisplayBindingService.GetCodonsPerFileName(file.FileName);
 			DisplayBindingDescriptor bestMatch = null;
 			double max = double.NegativeInfinity;
 			const int BUFFER_LENGTH = 4 * 1024;

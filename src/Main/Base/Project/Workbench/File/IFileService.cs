@@ -163,6 +163,11 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		IViewContent OpenFileWith(FileName fileName, IDisplayBinding displayBinding, bool switchToOpenedView = true);
 		
 		/// <summary>
+		/// Shows the 'Open With' dialog, allowing the user to pick a display binding for opening the specified files.
+		/// </summary>
+		IEnumerable<IViewContent> ShowOpenWithDialog(IEnumerable<FileName> fileNames, bool switchToOpenedView = true);
+		
+		/// <summary>
 		/// Opens a new unsaved file.
 		/// </summary>
 		/// <param name="defaultName">The (unsaved) name of the to open</param>

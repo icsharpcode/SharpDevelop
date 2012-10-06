@@ -13,17 +13,17 @@ namespace HexEditor.View
 {
 	public class HexEditDisplayBinding : IDisplayBinding
 	{
-		public bool CanCreateContentForFile(string fileName)
+		public bool CanCreateContentForFile(FileName fileName)
 		{
 			return true;
 		}
 		
-		public bool IsPreferredBindingForFile(string fileName)
+		public bool IsPreferredBindingForFile(FileName fileName)
 		{
 			return false;
 		}
 		
-		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		public double AutoDetectFileContent(FileName fileName, Stream fileContent, string detectedMimeType)
 		{
 			return 0.1;
 		}

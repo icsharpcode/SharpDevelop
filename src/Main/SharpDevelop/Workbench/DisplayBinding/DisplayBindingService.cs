@@ -5,24 +5,23 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// This class handles the installed display bindings
 	/// and provides a simple access point to these bindings.
 	/// </summary>
-	public static class DisplayBindingService
+	sealed class DisplayBindingService : IDisplayBindingService
 	{
 		const string displayBindingPath = "/SharpDevelop/Workbench/DisplayBindings";
 		
-		static Properties displayBindingServiceProperties;
+		Properties displayBindingServiceProperties;
 		
-		static List<DisplayBindingDescriptor> bindings;
-		static List<ExternalProcessDisplayBinding> externalProcessDisplayBindings = new List<ExternalProcessDisplayBinding>();
+		List<DisplayBindingDescriptor> bindings;
+		List<ExternalProcessDisplayBinding> externalProcessDisplayBindings = new List<ExternalProcessDisplayBinding>();
 		
-		internal static void InitializeService()
+		public DisplayBindingService()
 		{
 			bindings = AddInTree.BuildItems<DisplayBindingDescriptor>(displayBindingPath, null, true);
 			displayBindingServiceProperties = PropertyService.NestedProperties("DisplayBindingService");
@@ -33,7 +32,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public static DisplayBindingDescriptor AddExternalProcessDisplayBinding(ExternalProcessDisplayBinding binding)
+		public DisplayBindingDescriptor AddExternalProcessDisplayBinding(ExternalProcessDisplayBinding binding)
 		{
 			SD.MainThread.VerifyAccess();
 			if (binding == null)
@@ -43,12 +42,12 @@ namespace ICSharpCode.SharpDevelop
 			return descriptor;
 		}
 		
-		static void SaveExternalProcessDisplayBindings()
+		void SaveExternalProcessDisplayBindings()
 		{
 			displayBindingServiceProperties.SetList("ExternalProcesses", externalProcessDisplayBindings);
 		}
 		
-		static DisplayBindingDescriptor AddExternalProcessDisplayBindingInternal(ExternalProcessDisplayBinding binding)
+		DisplayBindingDescriptor AddExternalProcessDisplayBindingInternal(ExternalProcessDisplayBinding binding)
 		{
 			externalProcessDisplayBindings.Add(binding);
 			DisplayBindingDescriptor descriptor = new DisplayBindingDescriptor(binding) {
@@ -59,7 +58,7 @@ namespace ICSharpCode.SharpDevelop
 			return descriptor;
 		}
 		
-		public static void RemoveExternalProcessDisplayBinding(ExternalProcessDisplayBinding binding)
+		public void RemoveExternalProcessDisplayBinding(ExternalProcessDisplayBinding binding)
 		{
 			SD.MainThread.VerifyAccess();
 			if (binding == null)
@@ -79,7 +78,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// Gets the primary display binding for the specified file name.
 		/// </summary>
-		public static IDisplayBinding GetBindingPerFileName(string filename)
+		public IDisplayBinding GetBindingPerFileName(FileName filename)
 		{
 			SD.MainThread.VerifyAccess();
 			if (FileUtility.IsUrl(filename)) {
@@ -94,7 +93,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// Gets the default primary display binding for the specified file name.
 		/// </summary>
-		public static DisplayBindingDescriptor GetDefaultCodonPerFileName(string filename)
+		public DisplayBindingDescriptor GetDefaultCodonPerFileName(FileName filename)
 		{
 			SD.MainThread.VerifyAccess();
 			
@@ -120,7 +119,7 @@ namespace ICSharpCode.SharpDevelop
 			return autoDetectDescriptor;
 		}
 		
-		public static void SetDefaultCodon(string extension, DisplayBindingDescriptor bindingDescriptor)
+		public void SetDefaultCodon(string extension, DisplayBindingDescriptor bindingDescriptor)
 		{
 			SD.MainThread.VerifyAccess();
 			if (bindingDescriptor == null)
@@ -136,7 +135,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// Gets list of possible primary display bindings for the specified file name.
 		/// </summary>
-		public static IList<DisplayBindingDescriptor> GetCodonsPerFileName(string filename)
+		public IReadOnlyList<DisplayBindingDescriptor> GetCodonsPerFileName(FileName filename)
 		{
 			SD.MainThread.VerifyAccess();
 			
@@ -149,7 +148,7 @@ namespace ICSharpCode.SharpDevelop
 			return list;
 		}
 		
-		static bool IsPrimaryBindingValidForFileName(DisplayBindingDescriptor binding, string filename)
+		static bool IsPrimaryBindingValidForFileName(DisplayBindingDescriptor binding, FileName filename)
 		{
 			if (!binding.IsSecondary && binding.CanOpenFile(filename)) {
 				if (binding.Binding != null && binding.Binding.CanCreateContentForFile(filename)) {
@@ -164,7 +163,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		/// <param name="viewContent">The view content to attach to</param>
 		/// <param name="isReattaching">This is a reattaching pass</param>
-		public static void AttachSubWindows(IViewContent viewContent, bool isReattaching)
+		public void AttachSubWindows(IViewContent viewContent, bool isReattaching)
 		{
 			SD.MainThread.VerifyAccess();
 			if (viewContent == null)

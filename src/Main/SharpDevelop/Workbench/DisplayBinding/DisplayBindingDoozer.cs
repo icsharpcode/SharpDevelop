@@ -5,7 +5,7 @@ using System;
 using System.Collections;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// Creates DisplayBindingDescriptor objects.
@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop
 	///                   fileNamePattern = "\.(cs|vb)$" /&gt;
 	/// &lt;/Path&gt;
 	/// </example>
-	public class DisplayBindingDoozer : IDoozer
+	sealed class DisplayBindingDoozer : IDoozer
 	{
 		/// <summary>
 		/// Gets if the doozer handles codon conditions on its own.

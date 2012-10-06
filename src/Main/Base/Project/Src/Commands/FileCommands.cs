@@ -266,35 +266,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		protected override void OpenFiles(FileName[] fileNames)
 		{
-			OpenFilesWith(fileNames);
-		}
-		
-		/// <summary>
-		/// Shows the OpenWith dialog for the specified files.
-		/// </summary>
-		public static void OpenFilesWith(FileName[] fileNames)
-		{
-			if (fileNames.Length == 0)
-				return;
-			
-			List<DisplayBindingDescriptor> codons = DisplayBindingService.GetCodonsPerFileName(fileNames[0]).ToList();
-			for (int i = 1; i < fileNames.Length; i++) {
-				var codonsForThisFile = DisplayBindingService.GetCodonsPerFileName(fileNames[i]);
-				codons.RemoveAll(c => !codonsForThisFile.Contains(c));
-			}
-			if (codons.Count == 0)
-				return;
-			
-			int defaultCodonIndex = codons.IndexOf(DisplayBindingService.GetDefaultCodonPerFileName(fileNames[0]));
-			if (defaultCodonIndex < 0)
-				defaultCodonIndex = 0;
-			using (OpenWithDialog dlg = new OpenWithDialog(codons, defaultCodonIndex, Path.GetExtension(fileNames[0]))) {
-				if (dlg.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
-					foreach (var fileName in fileNames) {
-						SD.FileService.OpenFileWith(fileName, dlg.SelectedBinding.Binding, true);
-					}
-				}
-			}
+			SD.FileService.ShowOpenWithDialog(fileNames);
 		}
 	}
 

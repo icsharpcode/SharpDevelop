@@ -5,14 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// Dialog to choose the display binding to use to open a file.
 	/// </summary>
-	public sealed partial class OpenWithDialog : Form
+	sealed partial class OpenWithDialog : Form
 	{
 		sealed class ListEntry
 		{
@@ -87,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						Title = dlg.DisplayName,
 						Id = Guid.NewGuid().ToString()
 					};
-					programListBox.Items.Add(new ListEntry(DisplayBindingService.AddExternalProcessDisplayBinding(binding), false));
+					programListBox.Items.Add(new ListEntry(SD.DisplayBindingService.AddExternalProcessDisplayBinding(binding), false));
 				}
 			}
 		}
@@ -108,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void RemoveButtonClick(object sender, EventArgs e)
 		{
-			DisplayBindingService.RemoveExternalProcessDisplayBinding((ExternalProcessDisplayBinding)SelectedBinding.GetLoadedBinding());
+			SD.DisplayBindingService.RemoveExternalProcessDisplayBinding((ExternalProcessDisplayBinding)SelectedBinding.GetLoadedBinding());
 			if (defaultBindingIndex == programListBox.SelectedIndex)
 				defaultBindingIndex = -1;
 			programListBox.Items.RemoveAt(programListBox.SelectedIndex);
@@ -125,7 +126,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			programListBox.Items[defaultBindingIndex] = new ListEntry(
 				((ListEntry)programListBox.Items[defaultBindingIndex]).desc,
 				true);
-			DisplayBindingService.SetDefaultCodon(fileExtension, SelectedBinding);
+			SD.DisplayBindingService.SetDefaultCodon(fileExtension, SelectedBinding);
 		}
 	}
 }

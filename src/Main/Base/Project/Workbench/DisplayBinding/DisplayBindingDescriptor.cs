@@ -5,7 +5,7 @@ using System;
 using System.Text.RegularExpressions;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	public class DisplayBindingDescriptor
 	{

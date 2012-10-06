@@ -200,5 +200,10 @@ namespace ICSharpCode.SharpDevelop
 		public static IBookmarkManager BookmarkManager {
 			get { return GetRequiredService<IBookmarkManager>(); }
 		}
+		
+		/// <inheritdoc see="IDisplayBindingService"/>
+		public static IDisplayBindingService DisplayBindingService {
+			get { return GetRequiredService<IDisplayBindingService>(); }
+		}
 	}
 }

@@ -2,9 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// This class defines the SharpDevelop display binding interface, it is a factory

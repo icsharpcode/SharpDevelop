@@ -7,12 +7,12 @@ using System.Windows.Forms;
 using System.IO;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// This dialog is used to add a new program to the open with dialog.
 	/// </summary>
-	public partial class AddOpenWithEntryDialog : Form
+	partial class AddOpenWithEntryDialog : Form
 	{
 		public AddOpenWithEntryDialog()
 		{
@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void BrowseForProgramButtonClick(object sender, EventArgs e)
 		{
 			using (OpenFileDialog dlg = new OpenFileDialog()) {
-				dlg.Filter = StringParser.Parse(OptionPanels.ExternalToolPane.ExecutableFilesFilter);
+				dlg.Filter = StringParser.Parse(Gui.OptionPanels.ExternalToolPane.ExecutableFilesFilter);
 				if (dlg.ShowDialog(this) == DialogResult.OK) {
 					programNameTextBox.Text = "\"" + dlg.FileName + "\"";
 					if (!userEditedDisplayName) {

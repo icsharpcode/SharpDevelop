@@ -31,7 +31,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		public bool CanCreateContentForFile(string fileName)
+		public bool CanCreateContentForFile(FileName fileName)
 		{
 			return true;
 		}
@@ -41,7 +41,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return new AvalonEditViewContent(file);
 		}
 		
-		public bool IsPreferredBindingForFile(string fileName)
+		public bool IsPreferredBindingForFile(FileName fileName)
 		{
 			string extension = Path.GetExtension(fileName);
 			var fileFilter = ProjectService.GetFileFilters().FirstOrDefault(ff => ff.ContainsExtension(extension));
@@ -49,7 +49,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return fileFilter != null && fileFilter.MimeType.StartsWith("text/", StringComparison.OrdinalIgnoreCase);
 		}
 		
-		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		public double AutoDetectFileContent(FileName fileName, Stream fileContent, string detectedMimeType)
 		{
 			return detectedMimeType.StartsWith("text/") ? 0.5 : 0;
 		}
@@ -57,7 +57,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	
 	public class ChooseEncodingDisplayBinding : IDisplayBinding
 	{
-		public bool CanCreateContentForFile(string fileName)
+		public bool CanCreateContentForFile(FileName fileName)
 		{
 			return true;
 		}
@@ -79,12 +79,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		public bool IsPreferredBindingForFile(string fileName)
+		public bool IsPreferredBindingForFile(FileName fileName)
 		{
 			return false;
 		}
 		
-		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		public double AutoDetectFileContent(FileName fileName, Stream fileContent, string detectedMimeType)
 		{
 			return double.NegativeInfinity;
 		}

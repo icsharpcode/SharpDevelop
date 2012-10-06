@@ -214,10 +214,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\CustomFocusManager.cs" />
-    <Compile Include="Src\Gui\Dialogs\AddOpenWithEntryDialog.cs" />
-    <Compile Include="Src\Gui\Dialogs\AddOpenWithEntryDialog.Designer.cs">
-      <DependentUpon>AddOpenWithEntryDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="Src\Gui\Dialogs\AsynchronousWaitDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\AsynchronousWaitDialog.Designer.cs">
       <DependentUpon>AsynchronousWaitDialog.cs</DependentUpon>
@@ -267,6 +263,11 @@
     <Compile Include="Workbench\AbstractViewContent.cs" />
     <Compile Include="Workbench\AbstractViewContentHandlingLoadErrors.cs" />
     <Compile Include="Workbench\AbstractViewContentWithoutFile.cs" />
+    <Compile Include="Workbench\DisplayBinding\DisplayBindingDescriptor.cs" />
+    <Compile Include="Workbench\DisplayBinding\ExternalProcessDisplayBinding.cs" />
+    <Compile Include="Workbench\DisplayBinding\IDisplayBinding.cs" />
+    <Compile Include="Workbench\DisplayBinding\IDisplayBindingService.cs" />
+    <Compile Include="Workbench\DisplayBinding\ISecondaryDisplayBinding.cs" />
     <Compile Include="Workbench\FakeXmlViewContent.cs" />
     <Compile Include="Workbench\File\FileService.cs" />
     <Compile Include="Workbench\File\IRecentOpen.cs" />
@@ -290,10 +291,6 @@
     <Compile Include="Src\Gui\Dialogs\NewProjectDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\NewProjectDialog.Designer.cs">
       <DependentUpon>NewProjectDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Src\Gui\Dialogs\OpenWithDialog.cs" />
-    <Compile Include="Src\Gui\Dialogs\OpenWithDialog.Designer.cs">
-      <DependentUpon>OpenWithDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\CodeGenerationPanel.xaml.cs">
       <DependentUpon>CodeGenerationPanel.xaml</DependentUpon>
@@ -484,10 +481,6 @@
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
     <Compile Include="Src\Services\Debugger\DecompiledBreakpointBookmark.cs" />
-    <Compile Include="Src\Services\DisplayBinding\AutoDetectDisplayBinding.cs" />
-    <Compile Include="Src\Services\DisplayBinding\ExternalProcessDisplayBinding.cs" />
-    <Compile Include="Src\Services\DisplayBinding\ISecondaryDisplayBinding.cs" />
-    <Compile Include="Src\Services\DisplayBinding\ShellExecuteDisplayBinding.cs" />
     <Compile Include="Workbench\File\IFileService.cs" />
     <Compile Include="Workbench\File\OpenedFile.cs" />
     <Compile Include="Src\Services\LanguageBinding\AggregatedLanguageBinding.cs" />
@@ -510,16 +503,13 @@
     <Compile Include="Src\Services\Tasks\TagComment.cs" />
     <Compile Include="Src\Services\Tasks\Task.cs" />
     <Compile Include="Src\Services\Tasks\TaskService.cs" />
-    <Compile Include="Src\Services\DisplayBinding\IDisplayBinding.cs" />
     <Compile Include="Src\Internal\ExternalTool\ToolLoader.cs" />
     <Compile Include="Src\Services\ProjectBinding\IProjectBinding.cs" />
     <Compile Include="Src\Internal\Templates\Project\ProjectCreateInformation.cs" />
     <Compile Include="Src\Services\ProjectBinding\ProjectBindingService.cs" />
-    <Compile Include="Src\Services\DisplayBinding\DisplayBindingDoozer.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\CombineOpenEvaluator.cs" />
     <Compile Include="Src\Services\ProjectBinding\ProjectBindingDoozer.cs" />
     <Compile Include="Src\Services\Language\Language.cs" />
-    <Compile Include="Src\Services\DisplayBinding\DisplayBindingService.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ProjectActiveEvaluator.cs" />
     <Compile Include="Src\Services\AmbienceService\AmbienceService.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WindowOpenEvaluator.cs" />
@@ -666,7 +656,6 @@
     <Compile Include="Src\Gui\Dialogs\ProjectOptionsView.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\ToolbarCommands.cs" />
     <Compile Include="Src\Services\ProjectBinding\ProjectBindingDescriptor.cs" />
-    <Compile Include="Src\Services\DisplayBinding\DisplayBindingDescriptor.cs" />
     <Compile Include="Src\Gui\XmlForms\Lib\IPropertyValueCreator.cs" />
     <Compile Include="Src\Gui\XmlForms\Lib\IStringValueFilter.cs" />
     <Compile Include="Src\Gui\XmlForms\Lib\StringWrapper.cs" />
@@ -822,6 +811,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Workbench\DisplayBinding" />
     <Page Include="Editor\Bookmarks\BookmarkPadContent.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorDialog.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorXaml.xaml" />

@@ -4,12 +4,10 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Workbench;
+using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// This class defines the SharpDevelop display binding interface, it is a factory
@@ -17,7 +15,7 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	public interface IDisplayBinding
 	{
-		bool IsPreferredBindingForFile(string fileName);
+		bool IsPreferredBindingForFile(FileName fileName);
 		
 		/// <remarks>
 		/// This function determines, if this display binding is able to create
@@ -28,9 +26,9 @@ namespace ICSharpCode.SharpDevelop
 		/// an IViewContent for the file given by fileName.
 		/// false otherwise
 		/// </returns>
-		bool CanCreateContentForFile(string fileName);
+		bool CanCreateContentForFile(FileName fileName);
 		
-		double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType);
+		double AutoDetectFileContent(FileName fileName, Stream fileContent, string detectedMimeType);
 		
 		/// <remarks>
 		/// Creates a new IViewContent object for the file fileName
@@ -40,6 +38,4 @@ namespace ICSharpCode.SharpDevelop
 		/// </returns>
 		IViewContent CreateContentForFile(OpenedFile file);
 	}
-	
-
 }

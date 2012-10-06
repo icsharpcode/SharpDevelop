@@ -45,7 +45,6 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			
 			LanguageService.ValidateLanguage();
 			
-			DisplayBindingService.InitializeService();
 			TaskService.Initialize();
 			Project.CustomToolsService.Initialize();
 			

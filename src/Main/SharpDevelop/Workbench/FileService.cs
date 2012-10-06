@@ -26,8 +26,9 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		void ParserServiceLoadSolutionProjectsThreadEnded(object sender, EventArgs e)
 		{
+			var displayBindingService = SD.DisplayBindingService;
 			foreach (IViewContent content in SD.Workbench.ViewContentCollection.ToArray()) {
-				DisplayBindingService.AttachSubWindows(content, true);
+				displayBindingService.AttachSubWindows(content, true);
 			}
 		}
 		
@@ -297,7 +298,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				return viewContent;
 			}
 			
-			IDisplayBinding binding = DisplayBindingService.GetBindingPerFileName(fileName);
+			IDisplayBinding binding = SD.DisplayBindingService.GetBindingPerFileName(fileName);
 			
 			if (binding == null) {
 				binding = new ErrorFallbackBinding("Could not find any display binding for " + Path.GetFileName(fileName));
@@ -336,7 +337,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				try {
 					IViewContent newContent = binding.CreateContentForFile(file);
 					if (newContent != null) {
-						DisplayBindingService.AttachSubWindows(newContent, false);
+						SD.DisplayBindingService.AttachSubWindows(newContent, false);
 						SD.Workbench.ShowView(newContent, switchToOpenedView);
 					}
 				} finally {
@@ -359,7 +360,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			if (content == null)
 				throw new ArgumentNullException("content");
 			
-			IDisplayBinding binding = DisplayBindingService.GetBindingPerFileName(defaultName);
+			var displayBindingService = SD.DisplayBindingService;
+			IDisplayBinding binding = displayBindingService.GetBindingPerFileName(FileName.Create(defaultName));
 			
 			if (binding == null) {
 				binding = new ErrorFallbackBinding("Can't create display binding for file " + defaultName);
@@ -373,7 +375,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				return null;
 			}
 			
-			DisplayBindingService.AttachSubWindows(newContent, false);
+			displayBindingService.AttachSubWindows(newContent, false);
 			
 			SD.Workbench.ShowView(newContent);
 			return newContent;
@@ -416,7 +418,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				this.errorMessage = errorMessage;
 			}
 			
-			public bool CanCreateContentForFile(string fileName)
+			public bool CanCreateContentForFile(FileName fileName)
 			{
 				return true;
 			}
@@ -426,12 +428,12 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				return new SimpleViewContent(errorMessage) { TitleName = Path.GetFileName(file.FileName) };
 			}
 			
-			public bool IsPreferredBindingForFile(string fileName)
+			public bool IsPreferredBindingForFile(FileName fileName)
 			{
 				return false;
 			}
 			
-			public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+			public double AutoDetectFileContent(FileName fileName, Stream fileContent, string detectedMimeType)
 			{
 				return double.NegativeInfinity;
 			}
@@ -472,6 +474,38 @@ namespace ICSharpCode.SharpDevelop.Workbench
 					NavigationService.ResumeLogging();
 				}
 			}
+		}
+		
+		public IEnumerable<IViewContent> ShowOpenWithDialog(IEnumerable<FileName> fileNames, bool switchToOpenedView = true)
+		{
+			var fileNamesList = fileNames.ToList();
+			if (fileNamesList.Count == 0)
+				return Enumerable.Empty<IViewContent>();
+			
+			var displayBindingService = SD.DisplayBindingService;
+			List<DisplayBindingDescriptor> codons = displayBindingService.GetCodonsPerFileName(fileNamesList[0]).ToList();
+			for (int i = 1; i < fileNamesList.Count; i++) {
+				var codonsForThisFile = displayBindingService.GetCodonsPerFileName(fileNamesList[i]);
+				codons.RemoveAll(c => !codonsForThisFile.Contains(c));
+			}
+			if (codons.Count == 0)
+				return Enumerable.Empty<IViewContent>();
+			
+			int defaultCodonIndex = codons.IndexOf(displayBindingService.GetDefaultCodonPerFileName(fileNamesList[0]));
+			if (defaultCodonIndex < 0)
+				defaultCodonIndex = 0;
+			using (OpenWithDialog dlg = new OpenWithDialog(codons, defaultCodonIndex, Path.GetExtension(fileNamesList[0]))) {
+				if (dlg.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
+					var result = new List<IViewContent>();
+					foreach (var fileName in fileNamesList) {
+						IViewContent vc = OpenFileWith(fileName, dlg.SelectedBinding.Binding, switchToOpenedView);
+						if (vc != null)
+							result.Add(vc);
+					}
+					return result;
+				}
+			}
+			return Enumerable.Empty<IViewContent>();
 		}
 		#endregion
 		

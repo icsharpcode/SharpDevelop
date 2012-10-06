@@ -6,16 +6,15 @@ using System.Diagnostics;
 using System.IO;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Workbench;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// Opens files with the default Windows application for them.
 	/// </summary>
-	public class ShellExecuteDisplayBinding : IDisplayBinding
+	sealed class ShellExecuteDisplayBinding : IDisplayBinding
 	{
-		public bool CanCreateContentForFile(string fileName)
+		public bool CanCreateContentForFile(FileName fileName)
 		{
 			return true;
 		}
@@ -35,12 +34,12 @@ namespace ICSharpCode.SharpDevelop
 			return null;
 		}
 		
-		public bool IsPreferredBindingForFile(string fileName)
+		public bool IsPreferredBindingForFile(FileName fileName)
 		{
 			return false;
 		}
 		
-		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		public double AutoDetectFileContent(FileName fileName, Stream fileContent, string detectedMimeType)
 		{
 			return double.NegativeInfinity;
 		}

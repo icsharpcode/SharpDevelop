@@ -7,9 +7,8 @@ using System.Diagnostics;
 using System.IO;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Workbench;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// Display binding for opening a file in an external process.
@@ -22,7 +21,7 @@ namespace ICSharpCode.SharpDevelop
 		public string Title { get; set; }
 		public string Id { get; set; }
 		
-		public bool CanCreateContentForFile(string fileName)
+		public bool CanCreateContentForFile(FileName fileName)
 		{
 			return string.Equals(Path.GetExtension(fileName), FileExtension, StringComparison.OrdinalIgnoreCase);
 		}
@@ -64,12 +63,12 @@ namespace ICSharpCode.SharpDevelop
 			Process.Start(info);
 		}
 		
-		public bool IsPreferredBindingForFile(string fileName)
+		public bool IsPreferredBindingForFile(FileName fileName)
 		{
 			return false;
 		}
 		
-		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		public double AutoDetectFileContent(FileName fileName, Stream fileContent, string detectedMimeType)
 		{
 			return double.NegativeInfinity;
 		}

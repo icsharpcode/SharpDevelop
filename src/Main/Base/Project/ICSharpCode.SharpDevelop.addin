@@ -37,7 +37,7 @@
 			<Doozer name="CustomTool" class="ICSharpCode.SharpDevelop.Project.CustomToolDoozer"/>
 			<Doozer name="CustomProperty" class="ICSharpCode.SharpDevelop.Project.CustomPropertyDoozer"/>
 			<Doozer name="OptionPanel" class="ICSharpCode.SharpDevelop.OptionPanelDoozer"/>
-			<Doozer name="DisplayBinding" class="ICSharpCode.SharpDevelop.DisplayBindingDoozer"/>
+			<Doozer name="DisplayBinding" class="ICSharpCode.SharpDevelop.Workbench.DisplayBindingDoozer"/>
 			<Doozer name="Pad" class="ICSharpCode.SharpDevelop.PadDoozer"/>
 			<Doozer name="ProjectBinding" class="ICSharpCode.SharpDevelop.ProjectBindingDoozer"/>
 			<Doozer name="LanguageBinding" class="ICSharpCode.SharpDevelop.LanguageBindingDoozer"/>
@@ -64,6 +64,8 @@
 		         class="ICSharpCode.SharpDevelop.Workbench.FileService"/>
 		<Service id="ICSharpCode.SharpDevelop.Workbench.IShutdownService"
 		         class="ICSharpCode.SharpDevelop.Workbench.ShutdownService"/>
+		<Service id="ICSharpCode.SharpDevelop.Workbench.IDisplayBindingService"
+		         class="ICSharpCode.SharpDevelop.Workbench.DisplayBindingService"/>
 		<Service id="ICSharpCode.SharpDevelop.Dom.ITreeNodeFactory"
 		         class="ICSharpCode.SharpDevelop.Dom.TreeNodeFactoryService"/>
 		<Service id="ICSharpCode.SharpDevelop.Dom.IModelFactory"
@@ -92,7 +94,10 @@
 		                class = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.BrowserDisplayBinding"/>
 		<DisplayBinding id    = "AutoDetect"
 		                title = "Auto-detect file type"
-		                class = "ICSharpCode.SharpDevelop.AutoDetectDisplayBinding"/>
+		                class = "ICSharpCode.SharpDevelop.Workbench.AutoDetectDisplayBinding"/>
+		<DisplayBinding id    = "ShellExecute"
+		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.DefaultWindowsApplication}"
+		                class = "ICSharpCode.SharpDevelop.Workbench.ShellExecuteDisplayBinding" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
@@ -1939,12 +1944,6 @@
 	<Path name = "/SharpDevelop/Workbench/Tools"/>
 	
 	<!-- TEXT EDITOR -->
-	
-	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
-		<DisplayBinding id    = "ShellExecute"
-		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.DefaultWindowsApplication}"
-		                class = "ICSharpCode.SharpDevelop.ShellExecuteDisplayBinding" />
-	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/EntityContextMenu">
 		<MenuItem id = "FindReferences"
