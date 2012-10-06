@@ -155,5 +155,23 @@ namespace ICSharpCode.Scripting.Tests.Console
 			
 			Assert.AreEqual(String.Empty, TestableScriptingConsole.GetCurrentLine());
 		}
+		
+		[Test]
+		public void PreviewKeyDown_ControlCInReadOnlyRegion_HandledSetToFalseSoCopyInReadOnlyRegionAllowed()
+		{
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
+			bool result = FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.C, ModifierKeys.Control);
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void PreviewKeyDown_ControlAInReadOnlyRegion_HandledSetToFalseSoSelectAllInReadOnlyRegionAllowed()
+		{
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
+			bool result = FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A, ModifierKeys.Control);
+			
+			Assert.IsFalse(result);
+		}
 	}
 }

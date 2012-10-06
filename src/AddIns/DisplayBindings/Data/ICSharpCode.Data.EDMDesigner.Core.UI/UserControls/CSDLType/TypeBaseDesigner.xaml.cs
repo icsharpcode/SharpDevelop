@@ -85,7 +85,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.CSDLType
             {
                 foreach (var relatedProperty in Designer.DesignerView.SelectMany(dv => dv.UIType.Properties).OfType<UIRelatedProperty>().Where(uirp => uirp.RelatedType == UIType && !RelationsContenerByRelatedProperty.ContainsKey(uirp)))
                 {
-                    var otherType = Designer.Children.OfType<TypeBaseDesigner>().Where(td => td.UIType.Properties.Contains(relatedProperty)).FirstOrDefault();
+                    var otherType = Designer.Children.OfType<TypeBaseDesigner>().FirstOrDefault(td => td.UIType.Properties.Contains(relatedProperty));
                     if (otherType != null)
                         otherType.DrawRelation(relatedProperty);
                 }

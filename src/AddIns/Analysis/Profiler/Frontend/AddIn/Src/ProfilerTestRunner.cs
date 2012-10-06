@@ -73,8 +73,7 @@ namespace ICSharpCode.Profiler.AddIn
 			}
 			
 			if (selectedTests.Member == null) {
-				return content.Classes
-					.Where(c => c.FullyQualifiedName == selectedTests.Class.DotNetName).First().Methods
+				return content.Classes.First(c => c.FullyQualifiedName == selectedTests.Class.DotNetName).Methods
 					.Where(m => m.Attributes.Any(a2 => a2.AttributeType.FullyQualifiedName == "NUnit.Framework.TestAttribute"))
 					.Select(m2 => m2.FullyQualifiedName);
 			}

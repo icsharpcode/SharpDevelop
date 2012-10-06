@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public MSBuildItemDefinitionGroup(MSBuildBasedProject project, string condition)
 		{
 			ProjectRootElement root = project.MSBuildProjectFile;			
-			group = root.ItemDefinitionGroups.Where(item => item.Condition == condition).SingleOrDefault();
+			group = root.ItemDefinitionGroups.SingleOrDefault(item => item.Condition == condition);
 			if (group == null)
 			{
 				group = root.CreateItemDefinitionGroupElement();
@@ -61,11 +61,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		public string GetElementMetadata(string element, string name)
 		{
 			ProjectItemDefinitionElement elem;
-			elem = (ProjectItemDefinitionElement)group.Children.Where(
-				item => item is ProjectItemDefinitionElement && ((ProjectItemDefinitionElement)item).ItemType == element).SingleOrDefault();
+			elem = (ProjectItemDefinitionElement)group.Children.SingleOrDefault(item => item is ProjectItemDefinitionElement && ((ProjectItemDefinitionElement)item).ItemType == element);
 			if (elem == null) return null;
 			ProjectMetadataElement metadataElement;
-			metadataElement = elem.Metadata.Where(item => item.Name == name).SingleOrDefault();
+			metadataElement = elem.Metadata.SingleOrDefault(item => item.Name == name);
 			if (metadataElement == null) return null;
 			return metadataElement.Value;
 		}
@@ -79,12 +78,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		public void SetElementMetadata(string element, string name, string value)
 		{
 			ProjectItemDefinitionElement elem;
-			elem = (ProjectItemDefinitionElement)group.Children.Where(
-				item => item is ProjectItemDefinitionElement && ((ProjectItemDefinitionElement)item).ItemType == element).SingleOrDefault();
+			elem = (ProjectItemDefinitionElement)group.Children.SingleOrDefault(item => item is ProjectItemDefinitionElement && ((ProjectItemDefinitionElement)item).ItemType == element);
 			if (elem == null)
 				elem = AddElement(element);
 			ProjectMetadataElement metadataElement;
-			metadataElement = elem.Metadata.Where(item => item.Name == name).SingleOrDefault();
+			metadataElement = elem.Metadata.SingleOrDefault(item => item.Name == name);
 			if (metadataElement != null)
 				metadataElement.Value = value;
 			else

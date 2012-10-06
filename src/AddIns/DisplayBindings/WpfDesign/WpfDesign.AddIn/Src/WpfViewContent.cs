@@ -179,7 +179,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 				if (!propertyGridView.PropertyGrid.IsNameCorrect) return;
 				
 				// get the XAML file
-				OpenedFile fileName = this.Files.Where(f => f.FileName.ToString().EndsWith(".xaml")).FirstOrDefault();
+				OpenedFile fileName = this.Files.FirstOrDefault(f => f.FileName.ToString().EndsWith(".xaml"));
 				if (fileName == null) return;
 				
 				// parse the XAML file
@@ -188,8 +188,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 				if (info.CompilationUnit.Classes.Count != 1) return;
 				
 				// rename the member
-				IMember member = info.CompilationUnit.Classes[0].AllMembers
-					.Where(m => m.Name == propertyGridView.PropertyGrid.OldName).FirstOrDefault();
+				IMember member = info.CompilationUnit.Classes [0].AllMembers.FirstOrDefault(m => m.Name == propertyGridView.PropertyGrid.OldName);
 				if (member != null) {
 					FindReferencesAndRenameHelper.RenameMember(member, propertyGridView.PropertyGrid.Name);
 				}

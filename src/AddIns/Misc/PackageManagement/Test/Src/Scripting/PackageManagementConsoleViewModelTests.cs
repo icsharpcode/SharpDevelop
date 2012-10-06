@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
@@ -82,6 +83,18 @@ namespace PackageManagement.Tests.Scripting
 			return activePackageSource;
 		}
 		
+		PackageSource CreateViewModelWithTwoRegisteredPackageSourcesAndFirstOneIsDisabledPackageSource()
+		{
+			CreateConsoleHost();
+			var packageSources = new List<PackageSource>();
+			var disabledPackageSource = new PackageSource("Disabled source") { IsEnabled = false };
+			var enabledPackageSource = new PackageSource("Enabled source") { IsEnabled = true };
+			packageSources.Add(disabledPackageSource);
+			packageSources.Add(enabledPackageSource);
+			CreateViewModel(packageSources, consoleHost);
+			return enabledPackageSource;
+		}
+		
 		Solution CreateViewModelWithOneProjectOpen()
 		{
 			CreateConsoleHost();
@@ -122,7 +135,7 @@ namespace PackageManagement.Tests.Scripting
 		
 		PackageSourceViewModel SelectSecondPackageSource()
 		{
-			var selectedPackageSource = viewModel.PackageSources[1];
+			PackageSourceViewModel selectedPackageSource = viewModel.PackageSources[1];
 			viewModel.ActivePackageSource = selectedPackageSource;
 			return selectedPackageSource;
 		}
@@ -168,7 +181,7 @@ namespace PackageManagement.Tests.Scripting
 			solution.RemoveFolder(project);
 			return project;
 		}
-
+		
 		[Test]
 		public void PackageSources_OneRegisteredPackageSourceWhenConsoleCreated_OnePackageSourceDisplayed()
 		{
@@ -536,6 +549,19 @@ namespace PackageManagement.Tests.Scripting
 		{
 			CreateViewModel();
 			Assert.DoesNotThrow(() => viewModel.ActivePackageSource = null);
+		}
+		
+		[Test]
+		public void PackageSources_TwoRegisteredPackageSourcesButOnlyOneEnabledWhenConsoleCreated_OnlyEnabledPackageSourceDisplayed()
+		{
+			PackageSource enabledPackageSource = 
+				CreateViewModelWithTwoRegisteredPackageSourcesAndFirstOneIsDisabledPackageSource();
+			
+			ObservableCollection<PackageSourceViewModel> actualPackageSources = viewModel.PackageSources;
+			
+			var expectedPackageSources = new List<PackageSource>();
+			expectedPackageSources.Add(enabledPackageSource);
+			PackageSourceCollectionAssert.AreEqual(expectedPackageSources, actualPackageSources);
 		}
 	}
 }

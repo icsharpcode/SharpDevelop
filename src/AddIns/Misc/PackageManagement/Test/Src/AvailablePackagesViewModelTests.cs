@@ -76,6 +76,17 @@ namespace PackageManagement.Tests
 			registeredPackageRepositories.AddPackageSources(sources);
 		}
 		
+		PackageSource AddTwoPackageSourcesToRegisteredSourcesWithFirstOneDisabled()
+		{
+			var expectedPackageSources = new PackageSource[] {
+				new PackageSource("http://first.com", "First") { IsEnabled = false },
+				new PackageSource("http://second.com", "Second") { IsEnabled = true }
+			};
+			AddPackageSourcesToRegisteredSources(expectedPackageSources);
+			registeredPackageRepositories.HasMultiplePackageSources = true;
+			return expectedPackageSources[0];
+		}
+		
 		void CreateNewActiveRepositoryWithDifferentPackages()
 		{
 			var package = new FakePackage("NewRepositoryPackageId");
@@ -428,6 +439,21 @@ namespace PackageManagement.Tests
 				package3
 			};
 			PackageCollectionAssert.AreEqual(expectedPackages, allPackages);
+		}
+		
+		[Test]
+		public void PackageSources_TwoPackageSourcesButFirstIsDisabled_DoesNotReturnDisabledPackageSource()
+		{
+			CreateRegisteredPackageRepositories();
+			AddTwoPackageSourcesToRegisteredSourcesWithFirstOneDisabled();
+			CreateViewModel(registeredPackageRepositories);
+			
+			IEnumerable<PackageSource> packageSources = viewModel.PackageSources;
+			
+			bool containsDisabledPackageSource = packageSources.Contains(registeredPackageRepositories.PackageSources[0]);
+			bool containsEnabledPackageSource = packageSources.Contains(registeredPackageRepositories.PackageSources[1]);
+			Assert.IsFalse(containsDisabledPackageSource);
+			Assert.IsTrue(containsEnabledPackageSource);
 		}
 	}
 }

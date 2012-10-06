@@ -4,14 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
+using System.Linq;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class RegisteredPackageSources : ObservableCollection<PackageSource>
 	{
-		public static readonly string DefaultPackageSourceUrl = "https://go.microsoft.com/fwlink/?LinkID=206669";
+		public static readonly string DefaultPackageSourceUrl = "https://nuget.org/api/v2/";
 		public static readonly string DefaultPackageSourceName = "NuGet Official Package Source";
 		
 		public static readonly PackageSource DefaultPackageSource = 
@@ -50,6 +50,11 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool HasMultiplePackageSources {
 			get { return Count > 1; }
+		}
+		
+		public IEnumerable<PackageSource> GetEnabledPackageSources()
+		{
+			return this.Where(packageSource => packageSource.IsEnabled);
 		}
 	}
 }

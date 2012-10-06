@@ -120,7 +120,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
         {
             var entityType = new EntityType { Name = typeName, BaseType = baseType };
             SetBoolValueFromAttribute(entityTypeElement, "Abstract", isAbstract => entityType.Abstract = isAbstract);
-            var entitySetElement = entityContainerElement.Elements(XName.Get("EntitySet", csdlNamespace.NamespaceName)).Where(ese => GetName(ese.Attribute("EntityType").Value) == entityType.Name).FirstOrDefault();
+            var entitySetElement = entityContainerElement.Elements(XName.Get("EntitySet", csdlNamespace.NamespaceName)).FirstOrDefault(ese => GetName(ese.Attribute("EntityType").Value) == entityType.Name);
             if (entitySetElement != null)
             {
                 entityType.EntitySetName = entitySetElement.Attribute("Name").Value;
@@ -149,7 +149,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                 }
                 else
                 {
-                    property = new ScalarProperty() { Name = name, IsKey = keyElement != null && keyElement.Elements(XName.Get("PropertyRef", csdlNamespace.NamespaceName)).Where(pr => pr.Attribute("Name").Value == name).Any(), Type = propertyType.Value };
+                    property = new ScalarProperty() { Name = name, IsKey = keyElement != null && keyElement.Elements(XName.Get("PropertyRef", csdlNamespace.NamespaceName)).Any(pr => pr.Attribute("Name").Value == name), Type = propertyType.Value };
                     var scalarProp = (ScalarProperty)property;
                     SetBoolValueFromAttribute(propertyElement, "Nullable", nullable => scalarProp.Nullable = nullable);
                     SetVisibilityValueFromAttribute(propertyElement, "SetterAccess", setterAccess => scalarProp.SetVisibility = setterAccess);

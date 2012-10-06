@@ -5,17 +5,18 @@
 	xmlns:pm="clr-namespace:ICSharpCode.PackageManagement"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	
+	<gui:OptionPanel.Resources>
+		<pm:PackageManagementViewModels x:Key="ViewModels"/>
+		<BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+	</gui:OptionPanel.Resources>
+	
+	<gui:OptionPanel.DataContext>
+		<Binding Source="{StaticResource ViewModels}" Path="PackageManagementOptionsViewModel"/>
+	</gui:OptionPanel.DataContext>
+
 	<Grid>
-		<Grid.Resources>
-			<pm:PackageManagementViewModels x:Key="ViewModels"/>
-			<BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
-		</Grid.Resources>
-		
-		<Grid.DataContext>
-			<Binding Source="{StaticResource ViewModels}" Path="PackageManagementOptionsViewModel"/>
-		</Grid.DataContext>
-		
 		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
@@ -54,6 +55,14 @@
 					Visibility="{Binding Path=HasNoCachedPackages, Converter={StaticResource BoolToVisibility}}"
 					Text="No cached packages"/>
 			</StackPanel>
+		</GroupBox>
+		<GroupBox
+			Grid.Row="2"
+			Header="R_estore Packages">
+			<CheckBox
+				Margin="4, 4"
+				IsChecked="{Binding Path=IsPackageRestoreEnabled}"
+				Content="Enable package restore"/>
 		</GroupBox>
 	</Grid>
 </gui:OptionPanel>

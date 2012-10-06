@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NUnit.Framework;
@@ -18,6 +19,8 @@ namespace PackageManagement.Tests
 		FakeMachinePackageCache fakeMachineCache;
 		FakeProcess fakeProcess;
 		List<string> propertiesChanged;
+		PackageManagementOptions options;
+		FakeSettings fakeSettings;
 		
 		void CreateRecentRepository()
 		{
@@ -29,18 +32,37 @@ namespace PackageManagement.Tests
 			fakeMachineCache = new FakeMachinePackageCache();
 		}
 		
+		void CreateOptions()
+		{
+			var properties = new Properties();
+			fakeSettings = new FakeSettings();
+			options = new PackageManagementOptions(properties, fakeSettings);
+		}
+		
+		void EnablePackageRestoreInOptions()
+		{
+			fakeSettings.SetPackageRestoreSetting(true);
+		}
+		
 		void CreateViewModelUsingCreatedMachineCache()
 		{
 			CreateRecentRepository();
+			CreateOptions();
 			fakeProcess = new FakeProcess();
-			viewModel = new PackageManagementOptionsViewModel(fakeRecentRepository, fakeMachineCache, fakeProcess);			
+			CreateViewModel(options);
 		}
 		
 		void CreateViewModelUsingCreatedRecentRepository()
 		{
 			CreateMachineCache();
+			CreateOptions();
 			fakeProcess = new FakeProcess();
-			viewModel = new PackageManagementOptionsViewModel(fakeRecentRepository, fakeMachineCache, fakeProcess);			
+			CreateViewModel(options);
+		}
+		
+		void CreateViewModel(PackageManagementOptions options)
+		{
+			viewModel = new PackageManagementOptionsViewModel(options, fakeRecentRepository, fakeMachineCache, fakeProcess);			
 		}
 		
 		void AddPackageToRecentRepository()
@@ -276,6 +298,42 @@ namespace PackageManagement.Tests
 			string fileName = fakeProcess.FileNamePassedToStart;
 			
 			Assert.AreEqual(expectedFileName, fileName);
+		}
+		
+		[Test]
+		public void IsPackageRestoreEnabled_TrueInOptions_ReturnsTrue()
+		{
+			CreateOptions();
+			EnablePackageRestoreInOptions();
+			CreateViewModel(options);
+			
+			bool result = viewModel.IsPackageRestoreEnabled;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void IsPackageRestoreEnabled_FalseInOptions_ReturnsFalse()
+		{
+			CreateOptions();
+			CreateViewModel(options);
+			
+			bool result = viewModel.IsPackageRestoreEnabled;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void SaveOptions_PackageRestoreChangedFromFalseToTrue_PackageRestoreUpdatedInSettings()
+		{
+			CreateOptions();
+			CreateViewModel(options);
+			viewModel.IsPackageRestoreEnabled = true;
+			
+			viewModel.SaveOptions();
+			
+			KeyValuePair<string, string> keyPair = fakeSettings.GetValuePassedToSetValueForPackageRestoreSection();
+			Assert.AreEqual("True", keyPair.Value);
 		}
 	}
 }

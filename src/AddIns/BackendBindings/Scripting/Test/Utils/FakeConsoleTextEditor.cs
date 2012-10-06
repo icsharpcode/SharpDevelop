@@ -28,14 +28,14 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		
 		public StringBuilder PreviousLines = new StringBuilder();
 		public StringBuilder LineBuilder = new StringBuilder();
-				
+		
 		public event ConsoleTextEditorKeyEventHandler PreviewKeyDown;
 		
 		public FakeConsoleTextEditor()
 		{
 			TotalLines = 1;
 		}
-				
+		
 		public void Dispose()
 		{
 			IsDisposed = true;
@@ -68,9 +68,9 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			}
 		}
 		
-		public bool RaisePreviewKeyDownEvent(Key key)
+		public bool RaisePreviewKeyDownEvent(Key key, ModifierKeys modifiers = ModifierKeys.None)
 		{
-			FakeConsoleTextEditorKeyEventArgs e = new FakeConsoleTextEditorKeyEventArgs(key);
+			FakeConsoleTextEditorKeyEventArgs e = new FakeConsoleTextEditorKeyEventArgs(key, modifiers);
 			OnPreviewKeyDown(e);
 			if (!e.Handled) {
 				KeyConverter converter = new KeyConverter();
@@ -174,7 +174,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			IsCompletionWindowDisplayed = true;
 			this.CompletionProviderPassedToShowCompletionWindow = completionDataProvider;
 		}
-				
+		
 		public void MakeCurrentContentReadOnly()
 		{
 			IsMakeCurrentContentReadOnlyCalled = true;

@@ -12,6 +12,9 @@ namespace ICSharpCode.PackageManagement.Design
 		public List<KeyValuePair<string, string>> PackageSources 
 			= new List<KeyValuePair<string, string>>();
 		
+		public List<KeyValuePair<string, string>> DisabledPackageSources
+			= new List<KeyValuePair<string, string>>();
+		
 		public List<KeyValuePair<string, string>> ActivePackageSourceSettings =
 			new List<KeyValuePair<string, string>>();
 		
@@ -22,11 +25,21 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			Sections.Add(RegisteredPackageSourceSettings.PackageSourcesSectionName, PackageSources);
 			Sections.Add(RegisteredPackageSourceSettings.ActivePackageSourceSectionName, ActivePackageSourceSettings);
+			Sections.Add(RegisteredPackageSourceSettings.DisabledPackageSourceSectionName, DisabledPackageSources);
 		}
 		
 		public string GetValue(string section, string key)
 		{
-			throw new NotImplementedException();
+			if (!Sections.ContainsKey(section))
+				return null;
+			
+			IList<KeyValuePair<string, string>> values = Sections[section];
+			foreach (KeyValuePair<string, string> keyPair in values) {
+				if (keyPair.Key == key) {
+					return keyPair.Value;
+				}
+			}
+			return null;
 		}
 		
 		public IList<KeyValuePair<string, string>> GetValues(string section)
@@ -87,6 +100,12 @@ namespace ICSharpCode.PackageManagement.Design
 			}
 		}
 		
+		public bool IsDisabledPackageSourcesSectionDeleted {
+			get {
+				return SectionsDeleted.Contains(RegisteredPackageSourceSettings.DisabledPackageSourceSectionName);
+			}
+		}
+		
 		public bool IsActivePackageSourceSectionDeleted {
 			get {
 				return SectionsDeleted.Contains(RegisteredPackageSourceSettings.ActivePackageSourceSectionName);
@@ -127,6 +146,41 @@ namespace ICSharpCode.PackageManagement.Design
 		public void SetNestedValues(string section, string key, IList<KeyValuePair<string, string>> values)
 		{
 			throw new NotImplementedException();
+		}
+		
+		public void AddDisabledPackageSource(PackageSource packageSource)
+		{
+			var valuePair = new KeyValuePair<string, string>(packageSource.Name, packageSource.Source);
+			DisabledPackageSources.Add(valuePair);
+		}
+		
+		public IList<KeyValuePair<string, string>> GetValuesPassedToSetValuesForDisabledPackageSourcesSection()
+		{
+			return SavedSectionValueLists[RegisteredPackageSourceSettings.DisabledPackageSourceSectionName];
+		}
+		
+		public bool AnyValuesPassedToSetValuesForDisabledPackageSourcesSection {
+			get {
+				return SavedSectionValueLists.ContainsKey(RegisteredPackageSourceSettings.DisabledPackageSourceSectionName);
+			}
+		}
+		
+		public void SetPackageRestoreSetting(bool enabled)
+		{
+			var items = new List<KeyValuePair<string, string>>();
+			items.Add(new KeyValuePair<string, string>("enabled", enabled.ToString()));
+			Sections.Add("packageRestore", items);
+		}
+		
+		public KeyValuePair<string, string> GetValuePassedToSetValueForPackageRestoreSection()
+		{
+			return SavedSectionValues["packageRestore"];
+		}
+		
+		public bool IsPackageRestoreSectionDeleted {
+			get {
+				return SectionsDeleted.Contains("packageRestore");
+			}
 		}
 	}
 }

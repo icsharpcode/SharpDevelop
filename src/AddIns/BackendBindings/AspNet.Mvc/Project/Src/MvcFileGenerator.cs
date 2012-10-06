@@ -12,17 +12,25 @@ namespace ICSharpCode.AspNet.Mvc
 	{
 		IMvcTextTemplateHostFactory hostFactory;
 		IMvcTextTemplateHostAppDomainFactory appDomainFactory;
+		IMvcFileGenerationErrorReporter errorReporter;
 		
 		public MvcFileGenerator(
 			IMvcTextTemplateHostFactory hostFactory,
-			IMvcTextTemplateHostAppDomainFactory appDomainFactory)
+			IMvcTextTemplateHostAppDomainFactory appDomainFactory,
+			IMvcFileGenerationErrorReporter errorReporter)
 		{
 			this.hostFactory = hostFactory;
 			this.appDomainFactory = appDomainFactory;
+			this.errorReporter = errorReporter;
 		}
 		
 		public MvcTextTemplateLanguage TemplateLanguage { get; set; }
 		public IMvcProject Project { get; set; }
+		public CompilerErrorCollection Errors { get; private set; }
+		
+		public bool HasErrors {
+			get { return Errors.Count > 0; }
+		}
 		
 		public void GenerateFile(MvcFileName fileName)
 		{
@@ -50,10 +58,9 @@ namespace ICSharpCode.AspNet.Mvc
 			string outputViewFileName = fileName.GetPath();
 			host.ProcessTemplate(templateFileName, outputViewFileName);
 			
-			if (host.Errors.Count > 0) {
-				CompilerError error = host.Errors[0];
-				Console.WriteLine("ProcessTemplate error: " + error.ErrorText);
-				Console.WriteLine("ProcessTemplate error: Line: " + error.Line);
+			Errors = host.Errors;
+			if (HasErrors) {
+				errorReporter.ShowErrors(Errors);
 			}
 		}
 		

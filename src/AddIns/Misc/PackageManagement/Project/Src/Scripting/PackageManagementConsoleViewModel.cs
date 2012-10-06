@@ -82,14 +82,14 @@ namespace ICSharpCode.PackageManagement.Scripting
 		void UpdatePackageSourceViewModels()
 		{
 			packageSources.Clear();
-			AddRegisteredPackageSourceViewModels();
+			AddEnabledPackageSourceViewModels();
 			AddAggregatePackageSourceViewModelIfMoreThanOnePackageSourceViewModelAdded();
 			SelectActivePackageSource();
 		}
 
-		void AddRegisteredPackageSourceViewModels()
+		void AddEnabledPackageSourceViewModels()
 		{
-			foreach (PackageSource packageSource in registeredPackageSources) {
+			foreach (PackageSource packageSource in registeredPackageSources.GetEnabledPackageSources()) {
 				AddPackageSourceViewModel(packageSource);
 			}
 		}

@@ -173,6 +173,7 @@
     <Compile Include="Src\IISAdministrator.cs" />
     <Compile Include="Src\IISExpressAdministrator.cs" />
     <Compile Include="Src\IISExpressProcessStartInfo.cs" />
+    <Compile Include="Src\IMvcFileGenerationErrorReporter.cs" />
     <Compile Include="Src\IMvcModelClassLocator.cs" />
     <Compile Include="Src\IMvcClass.cs" />
     <Compile Include="Src\IMvcControllerFileGenerator.cs" />
@@ -193,6 +194,7 @@
     <Compile Include="Src\IsMvcViewFolderSelectedConditionEvaluator.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\MvcControllerTextTemplate.cs" />
+    <Compile Include="Src\MvcFileGenerationErrorReporter.cs" />
     <Compile Include="Src\MvcProjectMasterPageFile.cs" />
     <Compile Include="Src\MvcModelClassLocator.cs" />
     <Compile Include="Src\MvcAddViewTextTemplateFolder.cs" />

@@ -2,10 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.CodeDom.Compiler;
 using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace AspNet.Mvc.Tests
 {
@@ -17,13 +19,15 @@ namespace AspNet.Mvc.Tests
 		FakeMvcTextTemplateHostFactory fakeHostFactory;
 		FakeMvcTextTemplateHost fakeHost;
 		FakeMvcTextTemplateAppDomainFactory fakeAppDomainFactory;
+		IMvcFileGenerationErrorReporter fakeErrorReporter;
 		
 		void CreateGenerator()
 		{
 			fakeHostFactory = new FakeMvcTextTemplateHostFactory();
 			fakeHost = fakeHostFactory.FakeMvcTextTemplateHost;
 			fakeAppDomainFactory = new FakeMvcTextTemplateAppDomainFactory();
-			generator = new MvcControllerFileGenerator(fakeHostFactory, fakeAppDomainFactory);
+			fakeErrorReporter = MockRepository.GenerateStub<IMvcFileGenerationErrorReporter>();
+			generator = new MvcControllerFileGenerator(fakeHostFactory, fakeAppDomainFactory, fakeErrorReporter);
 			projectUsedByGenerator = new FakeMvcProject();
 			generator.Project = projectUsedByGenerator;
 			ProjectPassedToGeneratorIsCSharpProject();
@@ -64,6 +68,11 @@ namespace AspNet.Mvc.Tests
 			return new MvcControllerTextTemplate() {
 				FileName = fileName
 			};
+		}
+		
+		CompilerError AddCompilerErrorToTemplateHost()
+		{
+			return fakeHost.AddCompilerError();
 		}
 		
 		[Test]
@@ -201,6 +210,65 @@ namespace AspNet.Mvc.Tests
 			FakeMvcTextTemplateAppDomain expectedAppDomain = fakeAppDomainFactory.FakeAppDomain;
 			
 			Assert.AreEqual(expectedAppDomain, appDomain);
+		}
+		
+		[Test]
+		public void GenerateFile_TemplateProcessedWithCompilerError_ErrorsSavedByGenerator()
+		{
+			CreateGenerator();
+			ProjectPassedToGeneratorIsCSharpProject();
+			CompilerError error = AddCompilerErrorToTemplateHost();
+			
+			GenerateFile();
+			
+			Assert.AreEqual(1, generator.Errors.Count);
+			Assert.AreEqual(error, generator.Errors[0]);
+		}
+		
+		[Test]
+		public void HasErrors_NoErrors_ReturnsFalse()
+		{
+			CreateGenerator();
+			GenerateFile();
+			
+			bool result = generator.HasErrors;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void HasErrors_OneError_ReturnsTrue()
+		{
+			CreateGenerator();
+			AddCompilerErrorToTemplateHost();
+			GenerateFile();
+			
+			bool result = generator.HasErrors;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void GenerateFile_TemplateProcessedWithCompilerError_ErrorsReported()
+		{
+			CreateGenerator();
+			ProjectPassedToGeneratorIsCSharpProject();
+			CompilerError error = AddCompilerErrorToTemplateHost();
+			
+			GenerateFile();
+			
+			fakeErrorReporter.AssertWasCalled(reporter => reporter.ShowErrors(generator.Errors));
+		}
+		
+		[Test]
+		public void GenerateFile_TemplateProcessedNoErrors_NoErrorsReported()
+		{
+			CreateGenerator();
+			ProjectPassedToGeneratorIsCSharpProject();
+			
+			GenerateFile();
+			
+			fakeErrorReporter.AssertWasNotCalled(reporter => reporter.ShowErrors(Arg<CompilerErrorCollection>.Is.Anything));
 		}
 	}
 }

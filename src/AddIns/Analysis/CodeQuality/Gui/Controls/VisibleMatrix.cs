@@ -32,7 +32,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			var items = type == HeaderType.Columns ? headerColumns : headerRows;
 			
 			foreach (var item in items) {
-				var foundItem = visibleItems.Where(n => n.Equals(item.Value)).SingleOrDefault();
+				var foundItem = visibleItems.SingleOrDefault(n => n.Equals(item.Value));
 				item.Visible = foundItem != null;
 			}
 			

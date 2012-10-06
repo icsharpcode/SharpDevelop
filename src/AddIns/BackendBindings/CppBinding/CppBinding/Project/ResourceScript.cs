@@ -48,8 +48,7 @@ namespace ICSharpCode.CppBinding.Project
 		}
 		
 		public void SetIcon(string resourceId, string newPath) {
-			ResourceIcon iconEntry = (ResourceIcon)Icons.Where(
-										icon => icon.ResourceID == resourceId).SingleOrDefault();
+			ResourceIcon iconEntry = (ResourceIcon)Icons.SingleOrDefault(icon => icon.ResourceID == resourceId);
 			if (iconEntry != null)
 				iconEntry.Data = newPath;
 			else 

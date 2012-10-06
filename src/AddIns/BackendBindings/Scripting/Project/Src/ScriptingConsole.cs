@@ -136,11 +136,10 @@ namespace ICSharpCode.Scripting
 		/// </summary>
 		void ProcessPreviewKeyDown(object source, ConsoleTextEditorKeyEventArgs e)
 		{
-			Key keyPressed = e.Key;
-			e.Handled = HandleKeyDown(keyPressed); 
+			e.Handled = HandleKeyDown(e.Key, e.Modifiers); 
 		}
 		
-		bool HandleKeyDown(Key keyPressed)
+		bool HandleKeyDown(Key keyPressed, ModifierKeys keyModifiers)
 		{
 			if (textEditor.IsCompletionWindowDisplayed) {
 				return false;
@@ -153,6 +152,9 @@ namespace ICSharpCode.Scripting
 					case Key.Up:
 					case Key.Down:
 						return false;
+					case Key.C:
+					case Key.A:
+						return keyModifiers != ModifierKeys.Control;
 					default:
 						return true;
 				}

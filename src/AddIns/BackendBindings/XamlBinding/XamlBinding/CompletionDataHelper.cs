@@ -1021,7 +1021,7 @@ namespace ICSharpCode.XamlBinding
 		
 		static IEnumerable<ICompletionItem> CreateEventCompletion(XamlCompletionContext context, IClass c)
 		{
-			IMethod invoker = c.Methods.Where(method => method.Name == "Invoke").FirstOrDefault();
+			IMethod invoker = c.Methods.FirstOrDefault(method => method.Name == "Invoke");
 			if (invoker != null && context.ActiveElement != null) {
 				var item = context.ActiveElement;
 				var evt = ResolveAttribute(context.Attribute.ToQualifiedName(), context) as IEvent;
@@ -1324,14 +1324,7 @@ namespace ICSharpCode.XamlBinding
 			
 			string eventName = field.Name.Remove(field.Name.Length - "Event".Length);
 			
-			IMethod method = c.Methods
-				.Where(m =>
-				       m.IsPublic &&
-				       m.IsStatic &&
-				       m.Parameters.Count == 2 &&
-				       (m.Name == "Add" + eventName + "Handler" ||
-				        m.Name == "Remove" + eventName + "Handler"))
-				.FirstOrDefault();
+			IMethod method = c.Methods.FirstOrDefault(m => m.IsPublic && m.IsStatic && m.Parameters.Count == 2 && (m.Name == "Add" + eventName + "Handler" || m.Name == "Remove" + eventName + "Handler"));
 			
 			if (method == null)
 				return null;
@@ -1346,12 +1339,7 @@ namespace ICSharpCode.XamlBinding
 			
 			string propertyName = field.Name.Remove(field.Name.Length - "Property".Length);
 			
-			IMethod method = c.Methods
-				.Where(m =>
-				       m.IsPublic &&
-				       m.IsStatic &&
-				       m.Name == "Get" + propertyName)
-				.FirstOrDefault();
+			IMethod method = c.Methods.FirstOrDefault(m => m.IsPublic && m.IsStatic && m.Name == "Get" + propertyName);
 			
 			if (method == null)
 				return null;

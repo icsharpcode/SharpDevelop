@@ -12,5 +12,12 @@ namespace ICSharpCode.PackageManagement
 		{
 			InitializeComponent();
 		}
+		
+		public override bool SaveOptions()
+		{
+			var viewModel = DataContext as PackageManagementOptionsViewModel;
+			viewModel.SaveOptions();
+			return true;
+		}
 	}
 }

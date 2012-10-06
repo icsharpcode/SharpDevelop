@@ -9,32 +9,37 @@ namespace ICSharpCode.PackageManagement
 {
 	public class PackageManagementOptionsViewModel : ViewModelBase<PackageManagementOptionsViewModel>
 	{
+		PackageManagementOptions options;
 		IRecentPackageRepository recentPackageRepository;
 		IMachinePackageCache machinePackageCache;
 		IProcess process;
 		
 		public PackageManagementOptionsViewModel(IRecentPackageRepository recentPackageRepository)
-			: this(recentPackageRepository, new MachinePackageCache(), new Process())
+			: this(PackageManagementServices.Options, recentPackageRepository, new MachinePackageCache(), new Process())
 		{
 		}
 		
 		public PackageManagementOptionsViewModel(
+			PackageManagementOptions options,
 			IRecentPackageRepository recentPackageRepository,
 			IMachinePackageCache machinePackageCache,
 			IProcess process)
 		{
+			this.options = options;
 			this.recentPackageRepository = recentPackageRepository;
 			this.machinePackageCache = machinePackageCache;
 			this.process = process;
 			
 			this.HasNoRecentPackages = !RecentPackageRepositoryHasPackages();
 			this.HasNoCachedPackages = !MachinePackageCacheHasPackages();
+			this.IsPackageRestoreEnabled = options.IsPackageRestoreEnabled;
 			
 			CreateCommands();
 		}
 		
 		public bool HasNoRecentPackages { get; private set; }
 		public bool HasNoCachedPackages { get; private set; }
+		public bool IsPackageRestoreEnabled { get; set; }
 		
 		bool MachinePackageCacheHasPackages()
 		{
@@ -77,6 +82,11 @@ namespace ICSharpCode.PackageManagement
 		public void BrowseCachedPackages()
 		{
 			process.Start(machinePackageCache.Source);
+		}
+		
+		public void SaveOptions()
+		{
+			options.IsPackageRestoreEnabled = IsPackageRestoreEnabled;
 		}
 	}
 }

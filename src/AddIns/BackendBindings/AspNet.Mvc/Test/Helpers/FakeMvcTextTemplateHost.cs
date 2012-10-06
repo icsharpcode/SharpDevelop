@@ -45,5 +45,12 @@ namespace AspNet.Mvc.Tests.Helpers
 		public string PrimaryContentPlaceHolderID { get; set; }
 		
 		public CompilerErrorCollection Errors { get; set; }
+		
+		public CompilerError AddCompilerError()
+		{
+			var error = new CompilerError();
+			Errors.Add(error);
+			return error;
+		}
 	}
 }
