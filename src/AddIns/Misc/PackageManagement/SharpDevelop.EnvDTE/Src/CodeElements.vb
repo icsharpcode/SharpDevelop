@@ -8,5 +8,7 @@ Namespace EnvDTE
 		ReadOnly Property Count() As Integer
 		
 		Function Item(index As Object) As CodeElement
+		
+		Function GetEnumerator() As IEnumerator
 	End Interface
 End Namespace
