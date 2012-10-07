@@ -90,7 +90,8 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateSolution();
 			
-			int count = solution.Projects.ToList().Count;
+			Projects projects = (Projects)solution.Projects;
+			int count = projects.ToList().Count;
 			
 			Assert.AreEqual(0, count);
 		}
@@ -101,7 +102,8 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateSolution();
 			AddProjectToSolution("MyProject");
 			
-			Project project = solution.Projects.First();
+			Projects projects = (Projects)solution.Projects;
+			Project project = projects.First();
 			
 			Assert.AreEqual("MyProject", project.Name);
 		}
@@ -112,7 +114,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateSolution();
 			AddProjectToSolution("MyProject");
 			
-			ProjectItem item = solution.FindProjectItem(@"c:\projects\MyProject\test.cs");
+			global::EnvDTE.ProjectItem item = solution.FindProjectItem(@"c:\projects\MyProject\test.cs");
 			
 			Assert.IsNull(item);
 		}
@@ -125,7 +127,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddFileToFirstProjectInSolution(@"src\test.cs");
 			string fileName = @"c:\projects\MyProject\src\test.cs";
 			
-			ProjectItem item = solution.FindProjectItem(fileName);
+			global::EnvDTE.ProjectItem item = solution.FindProjectItem(fileName);
 			
 			Assert.AreEqual("test.cs", item.Name);
 		}
@@ -138,7 +140,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddFileToFirstProjectInSolution(@"src\test.cs");
 			string fileName = @"c:\projects\MyProject\src\test.cs";
 			
-			ProjectItem item = solution.FindProjectItem(fileName);
+			global::EnvDTE.ProjectItem item = solution.FindProjectItem(fileName);
 			
 			Assert.AreEqual(@"c:\projects\MyProject\MyProject.csproj", item.ContainingProject.FileName);
 		}
@@ -152,7 +154,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddFileToSecondProjectInSolution(@"src\test.cs");
 			string fileName = @"c:\projects\MyProject2\src\test.cs";
 			
-			ProjectItem item = solution.FindProjectItem(fileName);
+			global::EnvDTE.ProjectItem item = solution.FindProjectItem(fileName);
 			
 			Assert.AreEqual("test.cs", item.Name);
 		}

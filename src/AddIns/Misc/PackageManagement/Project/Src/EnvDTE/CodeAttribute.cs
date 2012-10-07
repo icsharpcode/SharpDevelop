@@ -7,7 +7,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeAttribute : CodeElement
+	public class CodeAttribute : CodeElement, global::EnvDTE.CodeAttribute
 	{
 		IAttribute attribute;
 		static readonly string AttributeEndName = "Attribute";
@@ -21,8 +21,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.attribute = attribute;
 		}
 		
-		public override vsCMElement Kind {
-			get { return vsCMElement.vsCMElementAttribute; }
+		public override global::EnvDTE.vsCMElement Kind {
+			get { return global::EnvDTE.vsCMElement.vsCMElementAttribute; }
 		}
 		
 		public override string Name {

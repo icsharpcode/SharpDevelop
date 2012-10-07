@@ -8,7 +8,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Properties : MarshalByRefObject, IEnumerable
+	public class Properties : MarshalByRefObject, global::EnvDTE.Properties
 	{
 		IPropertyFactory propertyFactory;
 		
@@ -21,7 +21,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 		}
 		
-		public virtual Property Item(string propertyName)
+		public virtual global::EnvDTE.Property Item(string propertyName)
 		{
 			return propertyFactory.CreateProperty(propertyName);
 		}

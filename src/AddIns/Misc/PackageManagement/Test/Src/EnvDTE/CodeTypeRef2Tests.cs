@@ -80,9 +80,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateCodeTypeRef2();
 			
 			CodeClass2 codeClass = typeRef.CodeType as CodeClass2;
-			vsCMInfoLocation location = codeClass.InfoLocation;
+			global::EnvDTE.vsCMInfoLocation location = codeClass.InfoLocation;
 			
-			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationExternal, location);
+			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal, location);
 		}
 		
 		[Test]
@@ -94,9 +94,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateCodeTypeRef2();
 			
 			CodeClass2 codeClass = typeRef.CodeType as CodeClass2;
-			vsCMInfoLocation location = codeClass.InfoLocation;
+			global::EnvDTE.vsCMInfoLocation location = codeClass.InfoLocation;
 			
-			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationProject, location);
+			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject, location);
 		}
 		
 		[Test]
@@ -196,9 +196,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.MakeReferenceType();
 			CreateCodeTypeRef2();
 			
-			vsCMTypeRef kind = typeRef.TypeKind;
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
 			
-			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefCodeType, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefCodeType, kind);
 		}
 		
 		[Test]
@@ -207,9 +207,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreateReturnType("Test.MyClass");
 			CreateCodeTypeRef2();
 			
-			vsCMTypeRef kind = typeRef.TypeKind;
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
 			
-			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefOther, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefOther, kind);
 		}
 		
 		[Test]
@@ -218,9 +218,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreateReturnType("System.Void");
 			CreateCodeTypeRef2();
 			
-			vsCMTypeRef kind = typeRef.TypeKind;
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
 			
-			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefVoid, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefVoid, kind);
 		}
 		
 		[Test]
@@ -230,9 +230,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.MakeReferenceType();
 			CreateCodeTypeRef2();
 			
-			vsCMTypeRef kind = typeRef.TypeKind;
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
 			
-			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefString, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefString, kind);
 		}
 		
 		[Test]
@@ -241,9 +241,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreateReturnType("System.Boolean");
 			CreateCodeTypeRef2();
 			
-			vsCMTypeRef kind = typeRef.TypeKind;
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
 			
-			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefBool, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefBool, kind);
 		}
 		
 		[Test]
@@ -252,9 +252,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreateReturnType("System.Byte");
 			CreateCodeTypeRef2();
 			
-			vsCMTypeRef kind = typeRef.TypeKind;
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
 			
-			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefByte, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefByte, kind);
 		}
 		
 		[Test]
@@ -263,9 +263,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreateReturnType("System.Char");
 			CreateCodeTypeRef2();
 			
-			vsCMTypeRef kind = typeRef.TypeKind;
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
 			
-			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefChar, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefChar, kind);
 		}
 		
 		[Test]
@@ -274,9 +274,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreateReturnType("System.Decimal");
 			CreateCodeTypeRef2();
 			
-			vsCMTypeRef kind = typeRef.TypeKind;
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
 			
-			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefDecimal, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefDecimal, kind);
 		}
 		
 		[Test]
@@ -285,9 +285,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreateReturnType("System.Double");
 			CreateCodeTypeRef2();
 			
-			vsCMTypeRef kind = typeRef.TypeKind;
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
 			
-			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefDouble, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefDouble, kind);
 		}
 		
 		[Test]
@@ -296,9 +296,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreateReturnType("System.Single");
 			CreateCodeTypeRef2();
 			
-			vsCMTypeRef kind = typeRef.TypeKind;
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
 			
-			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefFloat, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefFloat, kind);
 		}
 		
 		[Test]
@@ -307,9 +307,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreateReturnType("System.Int32");
 			CreateCodeTypeRef2();
 			
-			vsCMTypeRef kind = typeRef.TypeKind;
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
 			
-			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefInt, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefInt, kind);
 		}
 		
 		[Test]
@@ -318,9 +318,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreateReturnType("System.Int16");
 			CreateCodeTypeRef2();
 			
-			vsCMTypeRef kind = typeRef.TypeKind;
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
 			
-			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefShort, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefShort, kind);
 		}
 		
 		[Test]
@@ -329,9 +329,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreateReturnType("System.Int64");
 			CreateCodeTypeRef2();
 			
-			vsCMTypeRef kind = typeRef.TypeKind;
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
 			
-			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefLong, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefLong, kind);
 		}
 		
 		[Test]
@@ -340,9 +340,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreateReturnType("System.UInt32");
 			CreateCodeTypeRef2();
 			
-			vsCMTypeRef kind = typeRef.TypeKind;
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
 			
-			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefInt, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefInt, kind);
 		}
 		
 		[Test]
@@ -351,9 +351,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreateReturnType("System.UInt16");
 			CreateCodeTypeRef2();
 			
-			vsCMTypeRef kind = typeRef.TypeKind;
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
 			
-			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefShort, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefShort, kind);
 		}
 		
 		[Test]
@@ -362,9 +362,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreateReturnType("System.UInt64");
 			CreateCodeTypeRef2();
 			
-			vsCMTypeRef kind = typeRef.TypeKind;
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
 			
-			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefLong, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefLong, kind);
 		}
 		
 		[Test]
@@ -373,9 +373,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreateReturnType("System.Object");
 			CreateCodeTypeRef2();
 			
-			vsCMTypeRef kind = typeRef.TypeKind;
+			global::EnvDTE.vsCMTypeRef kind = typeRef.TypeKind;
 			
-			Assert.AreEqual(vsCMTypeRef.vsCMTypeRefObject, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMTypeRef.vsCMTypeRefObject, kind);
 		}
 	}
 }

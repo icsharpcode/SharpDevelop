@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
-using ICSharpCode.PackageManagement.EnvDTE;
+using EnvDTE;
 
 namespace PackageManagement.Tests.Helpers
 {

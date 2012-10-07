@@ -91,7 +91,6 @@
     <Compile Include="Src\EnvDTE\CodeClass2.cs" />
     <Compile Include="Src\EnvDTE\CodeDelegate.cs" />
     <Compile Include="Src\EnvDTE\CodeElement.cs" />
-    <Compile Include="Src\EnvDTE\CodeElements.cs" />
     <Compile Include="Src\EnvDTE\CodeElementsInNamespace.cs" />
     <Compile Include="Src\EnvDTE\CodeElementsList.cs" />
     <Compile Include="Src\EnvDTE\CodeFunction.cs" />
@@ -118,7 +117,6 @@
     <Compile Include="Src\EnvDTE\CodeVariable.cs" />
     <Compile Include="Src\EnvDTE\ConfigurationManager.cs" />
     <Compile Include="Src\EnvDTE\Configuration.cs" />
-    <Compile Include="Src\EnvDTE\Constants.cs" />
     <Compile Include="Src\EnvDTE\Document.cs" />
     <Compile Include="Src\EnvDTE\EditPoint.cs" />
     <Compile Include="Src\EnvDTE\EnumerableProjectItems.cs" />
@@ -145,16 +143,6 @@
     <Compile Include="Src\EnvDTE\SourceControl.cs" />
     <Compile Include="Src\EnvDTE\TextDocument.cs" />
     <Compile Include="Src\EnvDTE\TextPoint.cs" />
-    <Compile Include="Src\EnvDTE\vsCMAccess.cs" />
-    <Compile Include="Src\EnvDTE\vsCMClassKind.cs" />
-    <Compile Include="Src\EnvDTE\vsCMElement.cs" />
-    <Compile Include="Src\EnvDTE\vsCMFunction.cs" />
-    <Compile Include="Src\EnvDTE\vsCMInfoLocation.cs" />
-    <Compile Include="Src\EnvDTE\vsCMOverrideKind.cs" />
-    <Compile Include="Src\EnvDTE\vsCMParameterKind.cs" />
-    <Compile Include="Src\EnvDTE\vsCMPropertyKind.cs" />
-    <Compile Include="Src\EnvDTE\vsCMTypeRef.cs" />
-    <Compile Include="Src\EnvDTE\vsEPReplaceTextOptions.cs" />
     <Compile Include="Src\EnvDTE\Window.cs" />
     <Compile Include="Src\IClassKindUpdater.cs" />
     <Compile Include="Src\IDocumentNamespaceCreator.cs" />
@@ -466,9 +454,6 @@
     <Compile Include="Src\VisualStudio\ComponentModel.cs" />
     <Compile Include="Src\VisualStudio\FlavoredProject.cs" />
     <Compile Include="Src\VisualStudio\IComponentModel.cs" />
-    <Compile Include="Src\VisualStudio\IVsAggregatableProject.cs" />
-    <Compile Include="Src\VisualStudio\IVsHierarchy.cs" />
-    <Compile Include="Src\VisualStudio\IVsSolution.cs" />
     <Compile Include="Src\VisualStudio\NotInstalledException.cs" />
     <Compile Include="Src\VisualStudio\Package.cs" />
     <Compile Include="Src\VisualStudio\SComponentModel.cs" />
@@ -531,13 +516,14 @@
       <Name>AvalonEdit.AddIn</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\EnvDTEHelpers\Project\PackageManagement.EnvDTEHelpers.vbproj">
-      <Project>{F7886FB7-3764-4574-B981-25EB164B532E}</Project>
-      <Name>PackageManagement.EnvDTEHelpers</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PowerShell\Project\PackageManagement.PowerShell.csproj">
       <Project>{A406803B-C584-43A3-BCEE-A0BB3132CB5F}</Project>
       <Name>PackageManagement.PowerShell</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SharpDevelop.EnvDTE\SharpDevelop.EnvDTE.vbproj">
+      <Project>{6FB1260D-68A2-41A0-BB09-F5F710842E99}</Project>
+      <Name>SharpDevelop.EnvDTE</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

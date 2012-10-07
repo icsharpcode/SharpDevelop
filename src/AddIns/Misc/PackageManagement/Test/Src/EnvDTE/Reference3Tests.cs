@@ -82,7 +82,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateReference("System.Xml");
 			
-			Project project = reference.SourceProject;
+			global::EnvDTE.Project project = reference.SourceProject;
 			
 			Assert.IsNull(project);
 		}
@@ -93,7 +93,7 @@ namespace PackageManagement.Tests.EnvDTE
 			TestableProject referencedProject = CreateProjectReference();
 			referencedProject.FileName = @"d:\projects\referencedproject.csproj";
 			
-			Project project = reference.SourceProject;
+			global::EnvDTE.Project project = reference.SourceProject;
 			
 			Assert.AreEqual(@"d:\projects\referencedproject.csproj", project.FileName);
 		}

@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeStruct : CodeType
+	public class CodeStruct : CodeType, global::EnvDTE.CodeStruct
 	{
 		public CodeStruct()
 		{
@@ -17,8 +17,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 		}
 		
-		public override vsCMElement Kind {
-			get { return vsCMElement.vsCMElementStruct; }
+		public override global::EnvDTE.vsCMElement Kind {
+			get { return global::EnvDTE.vsCMElement.vsCMElementStruct; }
 		}
 	}
 }

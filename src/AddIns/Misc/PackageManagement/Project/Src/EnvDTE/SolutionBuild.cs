@@ -5,13 +5,13 @@ using System;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class SolutionBuild
+	public class SolutionBuild : MarshalByRefObject, global::EnvDTE.SolutionBuild
 	{
 		public SolutionBuild()
 		{
 		}
 		
-		public SolutionConfiguration ActiveConfiguration {
+		public global::EnvDTE.SolutionConfiguration ActiveConfiguration {
 			get { throw new NotImplementedException(); }
 		}
 		

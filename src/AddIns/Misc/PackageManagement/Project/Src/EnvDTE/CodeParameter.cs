@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeParameter : CodeElement
+	public class CodeParameter : CodeElement, global::EnvDTE.CodeParameter
 	{
 		IProjectContent projectContent;
 		
@@ -18,19 +18,19 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		protected IParameter Parameter { get; private set; }
 		
-		public override vsCMElement Kind {
-			get { return vsCMElement.vsCMElementParameter; }
+		public override global::EnvDTE.vsCMElement Kind {
+			get { return global::EnvDTE.vsCMElement.vsCMElementParameter; }
 		}
 		
 		public override string Name {
 			get { return Parameter.Name; }
 		}
 		
-		public virtual CodeTypeRef2 Type {
+		public virtual global::EnvDTE.CodeTypeRef2 Type {
 			get { return new CodeTypeRef2(projectContent, this, Parameter.ReturnType); }
 		}
 		
-		public virtual CodeElements Attributes {
+		public virtual global::EnvDTE.CodeElements Attributes {
 			get { return new CodeAttributes(Parameter); }
 		}
 	}

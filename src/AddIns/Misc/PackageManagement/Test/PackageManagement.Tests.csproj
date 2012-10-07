@@ -360,10 +360,6 @@
       <Project>{0162E499-42D0-409B-AA25-EED21F75336B}</Project>
       <Name>AvalonEdit.AddIn</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EnvDTEHelpers\Project\PackageManagement.EnvDTEHelpers.vbproj">
-      <Project>{F7886FB7-3764-4574-B981-25EB164B532E}</Project>
-      <Name>PackageManagement.EnvDTEHelpers</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PowerShell\Project\PackageManagement.PowerShell.csproj">
       <Project>{A406803B-C584-43A3-BCEE-A0BB3132CB5F}</Project>
       <Name>PackageManagement.PowerShell</Name>
@@ -371,6 +367,10 @@
     <ProjectReference Include="..\Project\PackageManagement.csproj">
       <Project>{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}</Project>
       <Name>PackageManagement</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SharpDevelop.EnvDTE\SharpDevelop.EnvDTE.vbproj">
+      <Project>{6FB1260D-68A2-41A0-BB09-F5F710842E99}</Project>
+      <Name>SharpDevelop.EnvDTE</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

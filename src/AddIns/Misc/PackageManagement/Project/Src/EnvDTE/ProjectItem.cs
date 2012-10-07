@@ -13,9 +13,10 @@ using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class ProjectItem : MarshalByRefObject
+	public class ProjectItem : MarshalByRefObject, global::EnvDTE.ProjectItem
 	{
 		SD.FileProjectItem projectItem;
+		Project containingProject;
 		
 		public const string CopyToOutputDirectoryPropertyName = "CopyToOutputDirectory";
 		public const string CustomToolPropertyName = "CustomTool";
@@ -24,13 +25,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public ProjectItem(Project project, FileProjectItem projectItem)
 		{
 			this.projectItem = projectItem;
-			this.ContainingProject = project;
+			this.containingProject = project;
 			this.ProjectItems = CreateProjectItems(projectItem);
 			CreateProperties();
 			Kind = GetKindFromFileProjectItemType();
 		}
 		
-		ProjectItems CreateProjectItems(FileProjectItem projectItem)
+		global::EnvDTE.ProjectItems CreateProjectItems(FileProjectItem projectItem)
 		{
 			if (projectItem.ItemType == ItemType.Folder) {
 				return new DirectoryProjectItems(this);
@@ -51,9 +52,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		string GetKindFromFileProjectItemType()
 		{
 			if (IsDirectory) {
-				return Constants.vsProjectItemKindPhysicalFolder;
+				return global::EnvDTE.Constants.vsProjectItemKindPhysicalFolder;
 			}
-			return Constants.vsProjectItemKindPhysicalFile;
+			return global::EnvDTE.Constants.vsProjectItemKindPhysicalFile;
 		}
 		
 		bool IsDirectory {
@@ -76,13 +77,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual string Kind { get; set; }
 		
-		public Project SubProject {
+		public global::EnvDTE.Project SubProject {
 			get { return null; }
 		}
 		
-		public virtual Properties Properties { get; private set; }
-		public virtual Project ContainingProject  { get; private set; }
-		public virtual ProjectItems ProjectItems { get; private set; }
+		public virtual global::EnvDTE.Properties Properties { get; private set; }
+		public virtual global::EnvDTE.Project ContainingProject {
+			get { return this.containingProject; }
+		}
+		public virtual global::EnvDTE.ProjectItems ProjectItems { get; private set; }
 		
 		internal virtual object GetProperty(string name)
 		{
@@ -140,14 +143,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public void Delete()
 		{
-			ContainingProject.DeleteFile(projectItem.FileName);
-			ContainingProject.Save();
+			containingProject.DeleteFile(projectItem.FileName);
+			containingProject.Save();
 		}
 		
-		public FileCodeModel2 FileCodeModel {
+		public global::EnvDTE.FileCodeModel2 FileCodeModel {
 			get {
 				if (!IsDirectory) {
-					return new FileCodeModel2(ContainingProject, projectItem);
+					return new FileCodeModel2(containingProject, projectItem);
 				}
 				return null;
 			}
@@ -155,7 +158,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		internal string GetIncludePath(string fileName)
 		{
-			string relativeDirectory = ContainingProject.GetRelativePath(projectItem.FileName);
+			string relativeDirectory = containingProject.GetRelativePath(projectItem.FileName);
 			return Path.Combine(relativeDirectory, fileName);
 		}
 		
@@ -166,8 +169,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual void Remove()
 		{
-			ContainingProject.RemoveProjectItem(this);
-			ContainingProject.Save();
+			containingProject.RemoveProjectItem(this);
+			containingProject.Save();
 		}
 		
 		internal FileProjectItem MSBuildProjectItem {
@@ -183,22 +186,22 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return projectItem.FileName; }
 		}
 		
-		public virtual Document Document {
+		public virtual global::EnvDTE.Document Document {
 			get { return GetOpenDocument(); }
 		}
 		
 		Document GetOpenDocument()
 		{
-			IViewContent view = ContainingProject.GetOpenFile(FileName);
+			IViewContent view = containingProject.GetOpenFile(FileName);
 			if (view != null) {
 				return new Document(FileName, view);
 			}
 			return null;
 		}
 		
-		public virtual Window Open(string viewKind)
+		public virtual global::EnvDTE.Window Open(string viewKind)
 		{
-			ContainingProject.OpenFile(FileName);
+			containingProject.OpenFile(FileName);
 			return null;
 		}
 		

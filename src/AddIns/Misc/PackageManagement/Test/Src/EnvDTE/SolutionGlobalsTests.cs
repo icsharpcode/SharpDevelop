@@ -13,7 +13,7 @@ namespace PackageManagement.Tests.EnvDTE
 	public class SolutionGlobalsTests
 	{
 		SolutionHelper solutionHelper;
-		Globals globals;
+		global::EnvDTE.Globals globals;
 		
 		void CreateSolution()
 		{

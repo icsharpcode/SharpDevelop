@@ -38,7 +38,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateFontsAndColorItems();
 			AddDefaultTextAndBackgroundColorToRules();
 			
-			ColorableItems colorableItems = items.Item("Plain Text");
+			global::EnvDTE.ColorableItems colorableItems = items.Item("Plain Text");
 			string name = colorableItems.Name;
 			
 			Assert.AreEqual("Plain Text", name);
@@ -50,7 +50,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateFontsAndColorItems();
 			AddDefaultTextAndBackgroundColorToRules();
 			
-			ColorableItems colorableItems = items.Item("Unknown item");
+			global::EnvDTE.ColorableItems colorableItems = items.Item("Unknown item");
 			
 			Assert.IsNull(colorableItems);
 		}
@@ -61,7 +61,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateFontsAndColorItems();
 			AddDefaultTextAndBackgroundColorToRules();
 			
-			ColorableItems colorableItems = items.Item("PLAIN TEXT");
+			global::EnvDTE.ColorableItems colorableItems = items.Item("PLAIN TEXT");
 			string name = colorableItems.Name;
 			
 			Assert.AreEqual("Plain Text", name);
@@ -74,7 +74,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CustomizedHighlightingColor defaultColor = AddDefaultTextAndBackgroundColorToRules();
 			defaultColor.Background = Colors.Blue;
 			
-			ColorableItems colorableItems = items.Item("Plain Text");
+			global::EnvDTE.ColorableItems colorableItems = items.Item("Plain Text");
 			uint backgroundOleColor = colorableItems.Background;
 			Color backgroundColor = ColorHelper.ConvertToColor(backgroundOleColor);
 			
@@ -86,11 +86,11 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateFontsAndColorItems();
 			
-			ColorableItems colorableItems = items.Item("Plain Text");
+			global::EnvDTE.ColorableItems colorableItems = items.Item("Plain Text");
 			uint backgroundOleColor = colorableItems.Background;
 			Color backgroundColor = ColorHelper.ConvertToColor(backgroundOleColor);
 			
-			Assert.AreEqual(ColorableItems.DefaultBackgroundColor, backgroundColor);			
+			Assert.AreEqual(ColorableItems.DefaultBackgroundColor, backgroundColor);
 		}
 		
 		[Test]
@@ -98,7 +98,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateFontsAndColorItems();
 			
-			ColorableItems colorableItems = items.Item("Plain Text");
+			global::EnvDTE.ColorableItems colorableItems = items.Item("Plain Text");
 			colorableItems.Bold = true;
 			
 			CustomizedHighlightingColor color = 

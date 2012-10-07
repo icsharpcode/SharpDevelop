@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeFunction : CodeElement
+	public class CodeFunction : CodeElement, global::EnvDTE.CodeFunction
 	{
 		IDocumentLoader documentLoader;
 		IVirtualMethodUpdater methodUpdater;
@@ -35,34 +35,34 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		protected IMethodOrProperty Method { get; private set; }
 		
-		public override vsCMElement Kind {
-			get { return vsCMElement.vsCMElementFunction; }
+		public override global::EnvDTE.vsCMElement Kind {
+			get { return global::EnvDTE.vsCMElement.vsCMElementFunction; }
 		}
 		
-		public virtual vsCMAccess Access {
+		public virtual global::EnvDTE.vsCMAccess Access {
 			get { return GetAccess(); }
 			set { }
 		}
 		
-		public override TextPoint GetStartPoint()
+		public override global::EnvDTE.TextPoint GetStartPoint()
 		{
 			return new TextPoint(Method.GetStartPosition(), documentLoader);
 		}
 		
-		public override TextPoint GetEndPoint()
+		public override global::EnvDTE.TextPoint GetEndPoint()
 		{
 			return new TextPoint(Method.GetEndPosition(), documentLoader);
 		}
 		
-		public virtual CodeElements Parameters {
+		public virtual global::EnvDTE.CodeElements Parameters {
 			get { return new CodeParameters(Method.ProjectContent, Method.Parameters); }
 		}
 		
-		public virtual CodeTypeRef2 Type {
+		public virtual global::EnvDTE.CodeTypeRef2 Type {
 			get { return new CodeTypeRef2(Method.ProjectContent, this, Method.ReturnType); }
 		}
 		
-		public virtual CodeElements Attributes {
+		public virtual global::EnvDTE.CodeElements Attributes {
 			get { return new CodeAttributes(Method); }
 		}
 		
@@ -75,16 +75,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 		}
 		
-		public virtual vsCMFunction FunctionKind {
+		public virtual global::EnvDTE.vsCMFunction FunctionKind {
 			get { return GetFunctionKind(); }
 		}
 		
-		vsCMFunction GetFunctionKind()
+		global::EnvDTE.vsCMFunction GetFunctionKind()
 		{
 			if (Method.IsConstructor()) {
-				return vsCMFunction.vsCMFunctionConstructor;
+				return global::EnvDTE.vsCMFunction.vsCMFunctionConstructor;
 			}
-			return vsCMFunction.vsCMFunctionFunction;
+			return global::EnvDTE.vsCMFunction.vsCMFunctionFunction;
 		}
 		
 		public virtual bool IsShared {

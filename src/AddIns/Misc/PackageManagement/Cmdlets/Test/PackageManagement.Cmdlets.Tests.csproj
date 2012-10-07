@@ -81,6 +81,10 @@
       <Project>{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}</Project>
       <Name>PackageManagement</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SharpDevelop.EnvDTE\SharpDevelop.EnvDTE.vbproj">
+      <Project>{6FB1260D-68A2-41A0-BB09-F5F710842E99}</Project>
+      <Name>SharpDevelop.EnvDTE</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Test\PackageManagement.Tests.csproj">
       <Project>{56E98A01-8398-4A08-9578-C7337711A52B}</Project>
       <Name>PackageManagement.Tests</Name>

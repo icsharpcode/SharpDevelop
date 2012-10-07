@@ -21,7 +21,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.project = project;
 		}
 		
-		protected override IEnumerable<ProjectItem> GetProjectItems()
+		protected override IEnumerable<global::EnvDTE.ProjectItem> GetProjectItems()
 		{
 			foreach (SD.ProjectItem item in project.MSBuildProject.Items) {
 				ProjectItem projectItem = ConvertToProjectItem(item);
@@ -117,7 +117,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			var directoryItem = new FileProjectItem(project.MSBuildProject, ItemType.Folder);
 			directoryItem.Include = directoryName;
-			return new ProjectItem(project, directoryItem) { Kind = Constants.vsProjectItemKindPhysicalFolder };
+			return new ProjectItem(project, directoryItem) { Kind = global::EnvDTE.Constants.vsProjectItemKindPhysicalFolder };
 		}
 		
 		string GetFirstSubDirectoryName(string include)

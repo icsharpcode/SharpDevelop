@@ -10,7 +10,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class References : MarshalByRefObject, IEnumerable<Reference>
+	public class References : MarshalByRefObject, IEnumerable<Reference>, global::EnvDTE.References
 	{
 		MSBuildBasedProject msbuildProject;
 		IPackageManagementProjectService projectService;
@@ -63,12 +63,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return GetEnumerator();
 		}
 		
-		public Reference Item(string identity)
+		public global::EnvDTE.Reference Item(string identity)
 		{
 			return Find(identity);
 		}
 		
-		public Reference Find(string identity)
+		public global::EnvDTE.Reference Find(string identity)
 		{
 			foreach (Reference reference in this) {
 				if (IsMatch(reference, identity)) {

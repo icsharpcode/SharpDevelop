@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeAttribute2 : CodeAttribute
+	public class CodeAttribute2 : CodeAttribute, global::EnvDTE.CodeAttribute2
 	{
 		IAttribute attribute;
 		
@@ -20,7 +20,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.attribute = attribute;
 		}
 		
-		public virtual CodeElements Arguments {
+		public virtual global::EnvDTE.CodeElements Arguments {
 			get { return new CodeAttributeArguments(attribute); }
 		}
 	}

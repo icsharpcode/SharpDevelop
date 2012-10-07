@@ -16,7 +16,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			this.ParentProjectItem = parentProjectItem;
 			this.MSBuildProjectItem = msbuildProjectItem;
-			this.Project = parentProjectItem.ContainingProject;
+			this.Project = (Project)parentProjectItem.ContainingProject;
 			GetRelationship();
 		}
 		

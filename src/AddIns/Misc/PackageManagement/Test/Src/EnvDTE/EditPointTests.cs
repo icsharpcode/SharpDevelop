@@ -62,22 +62,22 @@ namespace PackageManagement.Tests.EnvDTE
 		void CreateFieldEditPoint()
 		{
 			var codeVariable = new CodeVariable(fieldHelper.Field, documentLoader);
-			TextPoint startPoint = codeVariable.GetStartPoint();
-			endPoint = codeVariable.GetEndPoint();
-			editPoint = startPoint.CreateEditPoint();
+			TextPoint startPoint = (TextPoint)codeVariable.GetStartPoint();
+			endPoint = (TextPoint)codeVariable.GetEndPoint();
+			editPoint = (EditPoint)startPoint.CreateEditPoint();
 		}
 		
 		void CreateMethodEditPoint()
 		{
 			var codeFunction = new CodeFunction(methodHelper.Method, documentLoader, null);
-			TextPoint startPoint = codeFunction.GetStartPoint();
-			endPoint = codeFunction.GetEndPoint();
-			editPoint = startPoint.CreateEditPoint();
+			TextPoint startPoint = (TextPoint)codeFunction.GetStartPoint();
+			endPoint = (TextPoint)codeFunction.GetEndPoint();
+			editPoint = (EditPoint)startPoint.CreateEditPoint();
 		}
 		
 		void ReplaceText(string text)
 		{
-			editPoint.ReplaceText(endPoint, text, (int)vsEPReplaceTextOptions.vsEPReplaceTextAutoformat);
+			editPoint.ReplaceText(endPoint, text, (int)global::EnvDTE.vsEPReplaceTextOptions.vsEPReplaceTextAutoformat);
 		}
 		
 		void DocumentFileName(string fileName)

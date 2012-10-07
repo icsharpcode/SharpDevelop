@@ -36,51 +36,51 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return returnType.GetFullName();
 		}
 		
-		public static vsCMTypeRef GetTypeKind(this IReturnType returnType)
+		public static global::EnvDTE.vsCMTypeRef GetTypeKind(this IReturnType returnType)
 		{
-			vsCMTypeRef typeRef = GetSystemTypeKind(returnType.FullyQualifiedName);
-			if (typeRef != vsCMTypeRef.vsCMTypeRefOther) {
+			global::EnvDTE.vsCMTypeRef typeRef = GetSystemTypeKind(returnType.FullyQualifiedName);
+			if (typeRef != global::EnvDTE.vsCMTypeRef.vsCMTypeRefOther) {
 				return typeRef;
 			}
 			
 			if (returnType.IsReferenceType.GetValueOrDefault()) {
-				return vsCMTypeRef.vsCMTypeRefCodeType;
+				return global::EnvDTE.vsCMTypeRef.vsCMTypeRefCodeType;
 			}
-			return vsCMTypeRef.vsCMTypeRefOther;
+			return global::EnvDTE.vsCMTypeRef.vsCMTypeRefOther;
 		}
 		
-		static vsCMTypeRef GetSystemTypeKind(string fullyQualifiedTypeName)
+		static global::EnvDTE.vsCMTypeRef GetSystemTypeKind(string fullyQualifiedTypeName)
 		{
 			switch (fullyQualifiedTypeName) {
 				case "System.String":
-					return vsCMTypeRef.vsCMTypeRefString;
+					return global::EnvDTE.vsCMTypeRef.vsCMTypeRefString;
 				case "System.Void":
-					return vsCMTypeRef.vsCMTypeRefVoid;
+					return global::EnvDTE.vsCMTypeRef.vsCMTypeRefVoid;
 				case "System.Boolean":
-					return vsCMTypeRef.vsCMTypeRefBool;
+					return global::EnvDTE.vsCMTypeRef.vsCMTypeRefBool;
 				case "System.Int16":
 				case "System.UInt16":
-					return vsCMTypeRef.vsCMTypeRefShort;
+					return global::EnvDTE.vsCMTypeRef.vsCMTypeRefShort;
 				case "System.Int32":
 				case "System.UInt32":
-					return vsCMTypeRef.vsCMTypeRefInt;
+					return global::EnvDTE.vsCMTypeRef.vsCMTypeRefInt;
 				case "System.Int64":
 				case "System.UInt64":
-					return vsCMTypeRef.vsCMTypeRefLong;
+					return global::EnvDTE.vsCMTypeRef.vsCMTypeRefLong;
 				case "System.Decimal":
-					return vsCMTypeRef.vsCMTypeRefDecimal;
+					return global::EnvDTE.vsCMTypeRef.vsCMTypeRefDecimal;
 				case "System.Char":
-					return vsCMTypeRef.vsCMTypeRefChar;
+					return global::EnvDTE.vsCMTypeRef.vsCMTypeRefChar;
 				case "System.Byte":
-					return vsCMTypeRef.vsCMTypeRefByte;
+					return global::EnvDTE.vsCMTypeRef.vsCMTypeRefByte;
 				case "System.Object":
-					return vsCMTypeRef.vsCMTypeRefObject;
+					return global::EnvDTE.vsCMTypeRef.vsCMTypeRefObject;
 				case "System.Double":
-					return vsCMTypeRef.vsCMTypeRefDouble;
+					return global::EnvDTE.vsCMTypeRef.vsCMTypeRefDouble;
 				case "System.Single":
-					return vsCMTypeRef.vsCMTypeRefFloat;
+					return global::EnvDTE.vsCMTypeRef.vsCMTypeRefFloat;
 			}
-			return vsCMTypeRef.vsCMTypeRefOther;
+			return global::EnvDTE.vsCMTypeRef.vsCMTypeRefOther;
 		}
 	}
 }

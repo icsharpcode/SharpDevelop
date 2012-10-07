@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class ProjectItems : MarshalByRefObject, IEnumerable
+	public class ProjectItems : MarshalByRefObject, IEnumerable, global::EnvDTE.ProjectItems
 	{
 		IPackageManagementFileService fileService;
 		object parent;
@@ -77,7 +77,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return GetProjectItems().GetEnumerator();
 		}
 		
-		protected virtual IEnumerable<ProjectItem> GetProjectItems()
+		protected virtual IEnumerable<global::EnvDTE.ProjectItem> GetProjectItems()
 		{
 			return new ProjectItemsInsideProject(Project);
 		}
@@ -96,10 +96,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			return GetProjectItems()
 				.Skip(index - 1)
-				.First();
+				.First() as ProjectItem;
 		}
 		
-		public virtual ProjectItem Item(object index)
+		public virtual global::EnvDTE.ProjectItem Item(object index)
 		{
 			if (index is int) {
 				return Item((int)index);
@@ -107,7 +107,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return Item(index as string);
 		}
 		
-		public virtual ProjectItem AddFromDirectory(string directory)
+		public virtual global::EnvDTE.ProjectItem AddFromDirectory(string directory)
 		{
 			using (IProjectBrowserUpdater updater = Project.CreateProjectBrowserUpdater()) {
 				ProjectItem directoryItem = Project.AddDirectoryProjectItemUsingFullPath(directory);
@@ -116,7 +116,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 		}
 		
-		public virtual ProjectItem AddFromFile(string fileName)
+		public virtual global::EnvDTE.ProjectItem AddFromFile(string fileName)
 		{
 			using (IProjectBrowserUpdater updater = Project.CreateProjectBrowserUpdater()) {
 				ProjectItem projectItem = AddFileProjectItemToProject(fileName);

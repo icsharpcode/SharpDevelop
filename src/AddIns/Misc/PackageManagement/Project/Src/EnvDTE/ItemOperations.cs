@@ -5,7 +5,7 @@ using System;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class ItemOperations : MarshalByRefObject
+	public class ItemOperations : MarshalByRefObject, global::EnvDTE.ItemOperations
 	{
 		IPackageManagementFileService fileService;
 		
@@ -24,7 +24,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			fileService.OpenFile(url);
 		}
 		
-		public Window NewFile(string fileName)
+		public global::EnvDTE.Window NewFile(string fileName)
 		{
 			throw new NotImplementedException();
 		}

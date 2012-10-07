@@ -199,7 +199,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProject();
 			msbuildProject.SetProperty("OutputPath", @"bin\debug\");
-			Configuration activeConfig = project.ConfigurationManager.ActiveConfiguration;
+			global::EnvDTE.Configuration activeConfig = project.ConfigurationManager.ActiveConfiguration;
 			
 			string outputPath = (string)activeConfig.Properties.Item("OutputPath").Value;
 			
@@ -211,7 +211,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProject();
 			
-			CodeType codeType = project.CodeModel.CodeTypeFromFullName("UnknownTypeName");
+			global::EnvDTE.CodeType codeType = project.CodeModel.CodeTypeFromFullName("UnknownTypeName");
 			
 			Assert.IsNull(codeType);
 		}
@@ -222,7 +222,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProject();
 			AddClassToProjectContent("Tests.MyClass");
 			
-			CodeType codeType = project.CodeModel.CodeTypeFromFullName("Tests.MyClass");
+			global::EnvDTE.CodeType codeType = project.CodeModel.CodeTypeFromFullName("Tests.MyClass");
 			
 			Assert.IsNotNull(codeType);
 		}
@@ -236,7 +236,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			CodeElement element = project.CodeModel.CodeElements.FirstOrDefault();
 			
-			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationProject, element.InfoLocation);
+			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject, element.InfoLocation);
 		}
 		
 		[Test]
@@ -248,7 +248,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			CodeElement element = project.CodeModel.CodeElements.FirstOrDefault();
 			
-			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationExternal, element.InfoLocation);
+			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal, element.InfoLocation);
 		}
 	}
 }

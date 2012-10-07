@@ -5,7 +5,7 @@ using System;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class SolutionConfiguration
+	public class SolutionConfiguration : MarshalByRefObject, global::EnvDTE.SolutionConfiguration
 	{
 		public SolutionConfiguration()
 		{

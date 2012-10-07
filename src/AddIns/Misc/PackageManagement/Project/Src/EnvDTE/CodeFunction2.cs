@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeFunction2 : CodeFunction
+	public class CodeFunction2 : CodeFunction, global::EnvDTE.CodeFunction2
 	{
 		public CodeFunction2(IMethod method)
 			: base(method)
@@ -17,24 +17,24 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return Method.HasTypeParameters(); }
 		}
 		
-		public virtual vsCMOverrideKind OverrideKind {
+		public virtual global::EnvDTE.vsCMOverrideKind OverrideKind {
 			get { return GetOverrideKind(); }
 		}
 		
-		vsCMOverrideKind GetOverrideKind()
+		global::EnvDTE.vsCMOverrideKind GetOverrideKind()
 		{
 			if (Method.IsAbstract) {
-				return vsCMOverrideKind.vsCMOverrideKindAbstract;
+				return global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindAbstract;
 			} else if (Method.IsVirtual) {
-				return vsCMOverrideKind.vsCMOverrideKindVirtual;
+				return global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindVirtual;
 			} else if (Method.IsOverride) {
-				return vsCMOverrideKind.vsCMOverrideKindOverride;
+				return global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindOverride;
 			} else if (Method.IsSealed) {
-				return vsCMOverrideKind.vsCMOverrideKindSealed;
+				return global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindSealed;
 			} else if (Method.IsNew) {
-				return vsCMOverrideKind.vsCMOverrideKindNew;
+				return global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindNew;
 			}
-			return vsCMOverrideKind.vsCMOverrideKindNone;
+			return global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindNone;
 		}
 	}
 }

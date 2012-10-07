@@ -7,7 +7,7 @@ using ICSharpCode.AvalonEdit.AddIn;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class FontsAndColorsItems : MarshalByRefObject
+	public class FontsAndColorsItems : MarshalByRefObject, global::EnvDTE.FontsAndColorsItems
 	{
 		static readonly string PlainTextItem = "Plain Text";
 		
@@ -24,7 +24,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.highlightingRules = highlightingRules;
 		}
 		
-		public ColorableItems Item(string name)
+		public global::EnvDTE.ColorableItems Item(string name)
 		{
 			if (IsPlainText(name)) {
 				return CreatePlainTextColorableItems();

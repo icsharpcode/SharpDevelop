@@ -32,9 +32,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateInterface();
 			
-			vsCMElement kind = codeInterface.Kind;
+			global::EnvDTE.vsCMElement kind = codeInterface.Kind;
 			
-			Assert.AreEqual(vsCMElement.vsCMElementInterface, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMElement.vsCMElementInterface, kind);
 		}
 	}
 }

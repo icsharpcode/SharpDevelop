@@ -18,7 +18,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			solutionHelper = new SolutionHelper();
 			solutionHelper.AddProjectToSolution(projectName);
-			projects = solutionHelper.Solution.Projects;
+			projects = (Projects)solutionHelper.Solution.Projects;
 		}
 		
 		void CreateSolutionWithTwoProjects(string projectName1, string projectName2)
@@ -26,7 +26,7 @@ namespace PackageManagement.Tests.EnvDTE
 			solutionHelper = new SolutionHelper();
 			solutionHelper.AddProjectToSolution(projectName1);
 			solutionHelper.AddProjectToSolution(projectName2);
-			projects = solutionHelper.Solution.Projects;
+			projects = (Projects)solutionHelper.Solution.Projects;
 		}
 		
 		[Test]
@@ -34,7 +34,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateSolutionWithSingleProject("MyProject");
 			
-			Project project = projects.Item(1);
+			global::EnvDTE.Project project = projects.Item(1);
 			
 			Assert.AreEqual("MyProject", project.Name);
 		}
@@ -44,7 +44,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateSolutionWithTwoProjects("MyProject1", "MyProject2");
 			
-			Project project = projects.Item(2);
+			global::EnvDTE.Project project = projects.Item(2);
 			
 			Assert.AreEqual("MyProject2", project.Name);
 		}

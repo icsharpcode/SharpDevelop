@@ -5,13 +5,13 @@ using System;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class TextDocument
+	public class TextDocument : MarshalByRefObject, global::EnvDTE.TextDocument
 	{
 		public TextDocument()
 		{
 		}
 		
-		public TextPoint StartPoint {
+		public global::EnvDTE.TextPoint StartPoint {
 			get { throw new NotImplementedException(); }
 		}
 	}

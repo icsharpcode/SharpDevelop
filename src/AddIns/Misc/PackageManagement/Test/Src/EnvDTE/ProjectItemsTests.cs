@@ -28,7 +28,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			project = new TestableDTEProject();
 			msbuildProject = project.TestableProject;
-			projectItems = project.ProjectItems;
+			projectItems = (ProjectItems)project.ProjectItems;
 			fakeFileService = project.FakeFileService;
 		}
 		
@@ -37,7 +37,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.FileName = projectFileName;
 			msbuildProject.AddDirectory(folderName);
-			projectItems = project.ProjectItems.Item(folderName).ProjectItems;
+			projectItems = (ProjectItems)project.ProjectItems.Item(folderName).ProjectItems;
 		}
 		
 		void AddFileToFakeFileSystem(string directory, string relativeFileName)
@@ -57,19 +57,19 @@ namespace PackageManagement.Tests.EnvDTE
 			return projectBrowserUpdater;
 		}
 		
-		DTE.ProjectItem GetChildItem(ProjectItems projectItems, string name)
+		DTE.ProjectItem GetChildItem(global::EnvDTE.ProjectItems projectItems, string name)
 		{
 			return projectItems
 				.OfType<DTE.ProjectItem>()
 				.SingleOrDefault(item => item.Name == name);
 		}
 		
-		DTE.ProjectItem GetFirstChildItem(ProjectItems projectItems)
+		DTE.ProjectItem GetFirstChildItem(global::EnvDTE.ProjectItems projectItems)
 		{
 			return projectItems.OfType<DTE.ProjectItem>().FirstOrDefault();
 		}
 		
-		List<DTE.ProjectItem> GetAllChildItems(ProjectItems projectItems)
+		List<DTE.ProjectItem> GetAllChildItems(global::EnvDTE.ProjectItems projectItems)
 		{
 			return projectItems.OfType<DTE.ProjectItem>().ToList();
 		}
@@ -481,7 +481,7 @@ namespace PackageManagement.Tests.EnvDTE
 			string fileName = @"d:\projects\myproject\tools\test.cs";
 			
 			msbuildProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.Page;
-			DTE.ProjectItem item = projectItems.AddFromFile(fileName);
+			global::EnvDTE.ProjectItem item = projectItems.AddFromFile(fileName);
 			
 			string fullPath = (string)item.Properties.Item("FullPath").Value;
 			
@@ -522,12 +522,12 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
 			string directory = @"d:\projects\myproject\tools";
 			
-			DTE.ProjectItem item = projectItems.AddFromDirectory(directory);
+			global::EnvDTE.ProjectItem item = projectItems.AddFromDirectory(directory);
 			string name = item.Name;
 			
 			Assert.AreEqual("tools", name);
 			Assert.AreEqual(project, item.ContainingProject);
-			Assert.AreEqual(Constants.vsProjectItemKindPhysicalFolder, item.Kind);
+			Assert.AreEqual(global::EnvDTE.Constants.vsProjectItemKindPhysicalFolder, item.Kind);
 		}
 		
 		[Test]
@@ -587,12 +587,12 @@ namespace PackageManagement.Tests.EnvDTE
 			string directory = @"d:\projects\myproject\tools";
 			AddFileToFakeFileSystem(directory, "a.txt");
 			
-			DTE.ProjectItem item = projectItems.AddFromDirectory(directory);
+			global::EnvDTE.ProjectItem item = projectItems.AddFromDirectory(directory);
 			string name = item.Name;
 			
 			Assert.AreEqual("tools", name);
 			Assert.AreEqual(project, item.ContainingProject);
-			Assert.AreEqual(Constants.vsProjectItemKindPhysicalFolder, item.Kind);
+			Assert.AreEqual(global::EnvDTE.Constants.vsProjectItemKindPhysicalFolder, item.Kind);
 		}
 		
 		[Test]
@@ -603,16 +603,16 @@ namespace PackageManagement.Tests.EnvDTE
 			string parentDirectory = @"d:\projects\myproject\tools";
 			AddDirectoryToFakeFileSystem(parentDirectory, "packages");
 			
-			DTE.ProjectItem item = projectItems.AddFromDirectory(parentDirectory);
+			global::EnvDTE.ProjectItem item = projectItems.AddFromDirectory(parentDirectory);
 			string name = item.Name;
 			
-			DTE.ProjectItem childItem = item.ProjectItems.Item("packages");
+			global::EnvDTE.ProjectItem childItem = item.ProjectItems.Item("packages");
 			
 			Assert.AreEqual("tools", name);
 			Assert.AreEqual(project, item.ContainingProject);
-			Assert.AreEqual(Constants.vsProjectItemKindPhysicalFolder, item.Kind);
+			Assert.AreEqual(global::EnvDTE.Constants.vsProjectItemKindPhysicalFolder, item.Kind);
 			Assert.AreEqual(1, item.ProjectItems.Count);
-			Assert.AreEqual(Constants.vsProjectItemKindPhysicalFolder, childItem.Kind);
+			Assert.AreEqual(global::EnvDTE.Constants.vsProjectItemKindPhysicalFolder, childItem.Kind);
 		}
 		
 		[Test]
@@ -724,7 +724,7 @@ namespace PackageManagement.Tests.EnvDTE
 			DTE.ProjectItem scaffolderFolderItem = GetChildItem(codeTemplatesFolderItem.ProjectItems, "Scaffolders");
 			DTE.ProjectItem jqueryPluginFolderItem = GetChildItem(scaffolderFolderItem.ProjectItems, "jQueryPlugin");
 			
-			DTE.ProjectItem jqueryPluginFileItem = jqueryPluginFolderItem.ProjectItems.Item("jQueryPlugin.ps1");
+			global::EnvDTE.ProjectItem jqueryPluginFileItem = jqueryPluginFolderItem.ProjectItems.Item("jQueryPlugin.ps1");
 			
 			Assert.AreEqual("jQueryPlugin.ps1", jqueryPluginFileItem.Name);
 		}
@@ -824,7 +824,7 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildProject.AddFile(@"AccountController.generated.cs");
 			msbuildProject.AddFile(@"Controllers\AccountController.cs");
 			
-			DTE.ProjectItem projectItem = projectItems
+			global::EnvDTE.ProjectItem projectItem = projectItems
 				.Item("Controllers")
 				.ProjectItems
 				.Item(1);
@@ -849,7 +849,7 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildProject.AddFile("MainForm.cs");
 			string fileName = @"d:\projects\myproject\MainForm.Designer.cs";
 			msbuildProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.Page;
-			projectItems = project.ProjectItems.Item("MainForm.cs").ProjectItems;
+			projectItems = (ProjectItems)project.ProjectItems.Item("MainForm.cs").ProjectItems;
 			
 			projectItems.AddFromFile(fileName);
 			

@@ -27,7 +27,7 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildProject = project.TestableProject;
 			msbuildFileProjectItem = new SD.FileProjectItem(msbuildProject, SD.ItemType.Compile);
 			projectItem = new ProjectItem(project, msbuildFileProjectItem);
-			properties = projectItem.Properties;
+			properties = (Properties)projectItem.Properties;
 		}
 		
 		void AssertContainsProperty(string propertyName, IEnumerable items)

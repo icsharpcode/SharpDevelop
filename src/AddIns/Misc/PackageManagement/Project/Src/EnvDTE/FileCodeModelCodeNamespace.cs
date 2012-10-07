@@ -26,7 +26,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return base.FullName; }
 		}
 		
-		public override CodeElements Members {
+		public override global::EnvDTE.CodeElements Members {
 			get { return members; }
 		}
 		

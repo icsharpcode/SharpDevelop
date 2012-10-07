@@ -8,7 +8,7 @@ using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Solution : MarshalByRefObject
+	public class Solution : MarshalByRefObject, global::EnvDTE.Solution
 	{
 		IPackageManagementProjectService projectService;
 		SD.Solution solution;
@@ -33,8 +33,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return projectService.OpenSolution == solution; }
 		}
 		
-		public Projects Projects { get; private set; }
-		public Globals Globals { get; private set; }
+		public global::EnvDTE.Projects Projects { get; private set; }
+		public global::EnvDTE.Globals Globals { get; private set; }
 		
 		internal IList<SD.ProjectSection> Sections {
 			get { return solution.Sections; }
@@ -45,7 +45,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			projectService.Save(solution);
 		}
 		
-		public ProjectItem FindProjectItem(string fileName)
+		public global::EnvDTE.ProjectItem FindProjectItem(string fileName)
 		{
 			foreach (Project project in Projects) {
 				ProjectItem item = project.FindProjectItem(fileName);
@@ -56,7 +56,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return null;
 		}
 		
-		public SolutionBuild SolutionBuild {
+		public global::EnvDTE.SolutionBuild SolutionBuild {
 			get { throw new NotImplementedException(); }
 		}
 	}

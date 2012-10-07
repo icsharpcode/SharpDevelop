@@ -96,7 +96,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddPositionalArguments("StringValue");
 			CreateAttribute();
 			
-			CodeElements args = codeAttribute.Arguments;
+			global::EnvDTE.CodeElements args = codeAttribute.Arguments;
 			
 			CodeAttributeArgument attributeArg = args.FirstCodeAttributeArgumentOrDefault();
 			
@@ -112,7 +112,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddNamedArgument("Name", "StringValue");
 			CreateAttribute();
 			
-			CodeElements args = codeAttribute.Arguments;
+			global::EnvDTE.CodeElements args = codeAttribute.Arguments;
 			
 			CodeAttributeArgument attributeArg = args.FirstCodeAttributeArgumentOrDefault();
 			
@@ -127,7 +127,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddPositionalArguments("StringValue", false);
 			CreateAttribute();
 			
-			CodeElements args = codeAttribute.Arguments;
+			global::EnvDTE.CodeElements args = codeAttribute.Arguments;
 			
 			CodeAttributeArgument arg = args.Item(2) as CodeAttributeArgument;
 			
@@ -142,7 +142,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddNamedArgument("Two", false);
 			CreateAttribute();
 			
-			CodeElements args = codeAttribute.Arguments;
+			global::EnvDTE.CodeElements args = codeAttribute.Arguments;
 			
 			CodeAttributeArgument arg = args.Item("Two") as CodeAttributeArgument;
 			
@@ -166,9 +166,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateMSBuildAttribute("System.ComponentModel.DataAnnotations.DisplayColumnAttribute");
 			CreateAttribute();
 			
-			vsCMElement kind = codeAttribute.Kind;
+			global::EnvDTE.vsCMElement kind = codeAttribute.Kind;
 			
-			Assert.AreEqual(vsCMElement.vsCMElementAttribute, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMElement.vsCMElementAttribute, kind);
 		}
 	}
 }
