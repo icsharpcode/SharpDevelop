@@ -26,8 +26,8 @@ namespace CSharpBinding.OptionPanels
 	public partial class BuildOptions : ProjectOptionPanel
 	{
 
-		private System.Windows.Input.ICommand updateProjectCommand;
-		private System.Windows.Input.ICommand changeOutputPath;
+//		private System.Windows.Input.ICommand updateProjectCommand;
+//		private System.Windows.Input.ICommand changeOutputPath;
 		
 		public BuildOptions()
 		{
@@ -63,19 +63,19 @@ namespace CSharpBinding.OptionPanels
 		}
 		
 		
-		public ProjectProperty<string> OutputPath {
-			get {return GetProperty("OutputPath", "", TextBoxEditMode.EditRawProperty); }
-		}
-		
-		
-		public ProjectProperty<string> DocumentationFile {
-			get {return GetProperty("DocumentationFile", "", TextBoxEditMode.EditRawProperty);}
-		}
-		
-		
-		public ProjectProperty<DebugSymbolType> DebugType {
-			get {return GetProperty("DebugType",ICSharpCode.SharpDevelop.Project.DebugSymbolType.Full ); }
-		}
+//		public ProjectProperty<string> OutputPath {
+//			get {return GetProperty("OutputPath", "", TextBoxEditMode.EditRawProperty); }
+//		}
+//		
+//		
+//		public ProjectProperty<string> DocumentationFile {
+//			get {return GetProperty("DocumentationFile", "", TextBoxEditMode.EditRawProperty);}
+//		}
+//		
+//		
+//		public ProjectProperty<DebugSymbolType> DebugType {
+//			get {return GetProperty("DebugType",ICSharpCode.SharpDevelop.Project.DebugSymbolType.Full ); }
+//		}
 		
 	
 		#endregion
@@ -84,19 +84,20 @@ namespace CSharpBinding.OptionPanels
 		
 		protected override void Initialize()
 		{
-			this.UpdateProjectCommand  = new RelayCommand(UpdateProjectExecute);
-			this.ChangeOutputPath = new RelayCommand(ChangeOutputPathExecute);
-			UpdateTargetFrameworkCombo();
-			if (DocumentationFile.Value.Length > 0) {
-				documentFileIsChecked = true;
-			}
-			XmlDocHelper();
+//			this.UpdateProjectCommand  = new RelayCommand(UpdateProjectExecute);
+//			this.ChangeOutputPath = new RelayCommand(ChangeOutputPathExecute);
+//			UpdateTargetFrameworkCombo();
+//			if (DocumentationFile.Value.Length > 0) {
+//				documentFileIsChecked = true;
+//			}
+//			XmlDocHelper();
 		}
 		
 		
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
+			buildOutput.SetProjectOptions(this);
 			this.buildAdvanced.SetProjectOptions(this);
 			this.errorsAndWarnings.SetProjectOptions(this);
 			this.treatErrorsAndWarnings.SetProjectOptions(this);
@@ -106,84 +107,88 @@ namespace CSharpBinding.OptionPanels
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
-			if (buildAdvanced.SaveProjectOptions()) {
+//			if (buildAdvanced.SaveProjectOptions()) {
 				treatErrorsAndWarnings.SaveProjectOptions();
 				return base.Save(project, configuration, platform);
-			}
-			return false;
+//			}
+//			return false;
 		}
 		
 		
 		#endregion
 		
-		#region Documentation File
-		
-		private bool documentFileIsChecked;
-		
-		public bool DocumentFileIsChecked {
-			get { return documentFileIsChecked; }
-			set { documentFileIsChecked = value;
-				XmlDocHelper();
-				base.RaisePropertyChanged(() => DocumentFileIsChecked);
-			}
-		}
-		
-		private void XmlDocHelper()
-		{
-			if (DocumentFileIsChecked) {
-				this.xmlDocumentationTextBox.Text = MSBuildInternals.Escape(
-					Path.ChangeExtension(ICSharpCode.Core.FileUtility.GetRelativePath(base.Project.Directory, base.Project.OutputAssemblyFullPath),
-					                     ".xml"));
-			} else {
-				this.xmlDocumentationTextBox.Text = string.Empty;
-			}
-		}
-		
-		
-		#endregion
+//		#region Documentation File
+//		
+//		private bool documentFileIsChecked;
+//		
+//		public bool DocumentFileIsChecked {
+//			get { return documentFileIsChecked; }
+//			set { documentFileIsChecked = value;
+//				XmlDocHelper();
+//				base.RaisePropertyChanged(() => DocumentFileIsChecked);
+//			}
+//		}
+//		
+//		private void XmlDocHelper()
+//		{
+//			/*
+//			if (DocumentFileIsChecked) {
+//				this.xmlDocumentationTextBox.Text = MSBuildInternals.Escape(
+//					Path.ChangeExtension(ICSharpCode.Core.FileUtility.GetRelativePath(base.Project.Directory, base.Project.OutputAssemblyFullPath),
+//					                     ".xml"));
+//			} else {
+//				this.xmlDocumentationTextBox.Text = string.Empty;
+//			}
+//			*/
+//		}
+//		
+//		
+//		#endregion
 		
 		#region Command Update Project
 		
-		public System.Windows.Input.ICommand UpdateProjectCommand {
-			get { return updateProjectCommand; }
-			set { updateProjectCommand = value;
-				base.RaisePropertyChanged(() =>this.UpdateProjectCommand);
-			}
-		}
+//		public System.Windows.Input.ICommand UpdateProjectCommand {
+//			get { return updateProjectCommand; }
+//			set { updateProjectCommand = value;
+//				base.RaisePropertyChanged(() =>this.UpdateProjectCommand);
+//			}
+//		}
 		
 		
-		private void UpdateProjectExecute ()
-		{
-			UpgradeViewContent.Show(base.Project.ParentSolution).Select(base.Project as IUpgradableProject);
-			this.UpdateTargetFrameworkCombo();
-		}
+//		private void UpdateProjectExecute ()
+//		{
+//			UpgradeViewContent.Show(base.Project.ParentSolution).Select(base.Project as IUpgradableProject);
+////			this.UpdateTargetFrameworkCombo();
+//		}
 		
-		private void UpdateTargetFrameworkCombo()
-		{
-			TargetFramework fx = ((IUpgradableProject)base.Project).CurrentTargetFramework;
-			if (fx != null) {
-				targetFrameworkComboBox.Items.Add(fx.DisplayName);
-				targetFrameworkComboBox.SelectedIndex = 0;
-			}
-		}
+//		private void UpdateTargetFrameworkCombo()
+//		{
+//			/*
+//			TargetFramework fx = ((IUpgradableProject)base.Project).CurrentTargetFramework;
+//			if (fx != null) {
+//				targetFrameworkComboBox.Items.Add(fx.DisplayName);
+//				targetFrameworkComboBox.SelectedIndex = 0;
+//			}
+//			*/
+//		}
 		
 		#endregion
 		
 		
 		#region ChangeOutputPathCommand
 		
-		public System.Windows.Input.ICommand ChangeOutputPath
-		{
-			get {return this.changeOutputPath;}
-			set {this.changeOutputPath = value;
-				base.RaisePropertyChanged(() => this.ChangeOutputPath);
-			}
-		}
-		private void ChangeOutputPathExecute()
-		{
-			BrowseForFolder(OutputPath, "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
-		}
-		
+//		public System.Windows.Input.ICommand ChangeOutputPath
+//		{
+//			get {return this.changeOutputPath;}
+//			set {this.changeOutputPath = value;
+//				base.RaisePropertyChanged(() => this.ChangeOutputPath);
+//			}
+//		}
+//		private void ChangeOutputPathExecute()
+//		{
+////			BrowseForFolder(OutputPath, "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
+//		}
+//		
 		#endregion
 		
 		

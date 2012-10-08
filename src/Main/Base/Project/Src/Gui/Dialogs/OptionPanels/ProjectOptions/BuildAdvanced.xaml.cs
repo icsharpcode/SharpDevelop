@@ -28,10 +28,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// </summary>
 	public partial class BuildAdvanced : UserControl,IProjectUserControl, INotifyPropertyChanged
 	{
-		private List<KeyItemPair> serializationInfo;
-		private List<KeyItemPair> targetCPU;
+
 		private string dllBaseAdress;
-		private List<KeyItemPair> fileAlignment;
 		private System.Windows.Input.ICommand baseIntermediateOutputPathCommand;
 		private System.Windows.Input.ICommand intermediateOutputPathCommand;
 		private ProjectOptionPanel projectOptions;
@@ -39,28 +37,32 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public BuildAdvanced()
 		{
 			InitializeComponent();
+			InitializeCombos();
+			this.BaseIntermediateOutputPathCommand = new RelayCommand(BaseIntermediateOutputPathExecute);
+			this.IntermediateOutputPathCommand = new RelayCommand(IntermediateOutputPathExecute);
 			this.DataContext = this;
-			this.serializationInfo = new List<KeyItemPair>();
+		}
+
+		void InitializeCombos()
+		{
+
+			this.SerializationInfo = new List<KeyItemPair>();
+			this.SerializationInfo.Add(new KeyItemPair("Off", StringParser.Parse("${res:Dialog.ProjectOptions.Build.Off}")));
+			this.SerializationInfo.Add(new KeyItemPair("On", StringParser.Parse("${res:Dialog.ProjectOptions.Build.On}")));
+			this.SerializationInfo.Add(new KeyItemPair("Auto", StringParser.Parse("${res:Dialog.ProjectOptions.Build.Auto}")));
 			
-			this.serializationInfo.Add (new KeyItemPair("Off",StringParser.Parse("${res:Dialog.ProjectOptions.Build.Off}")));
-			this.serializationInfo.Add (new KeyItemPair("On",StringParser.Parse("${res:Dialog.ProjectOptions.Build.On}")));
-			this.serializationInfo.Add (new KeyItemPair("Auto",StringParser.Parse( "${res:Dialog.ProjectOptions.Build.Auto}")));
-			this.SerializationInfo = this.serializationInfo;
+			this.TargetCPU = new List<KeyItemPair>();
+			this.TargetCPU.Add(new KeyItemPair("AnyCPU", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Any}")));
+			this.TargetCPU.Add(new KeyItemPair("x86", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.x86}")));
+			this.TargetCPU.Add(new KeyItemPair("x64", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.x64}")));
+			this.TargetCPU.Add(new KeyItemPair("Itanium", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Itanium}")));
 			
-			this.targetCPU = new List<KeyItemPair>();
-			this.targetCPU.Add(new KeyItemPair( "AnyCPU",StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Any}")));
-			this.targetCPU.Add(new KeyItemPair( "x86",StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.x86}")));
-			this.targetCPU.Add(new KeyItemPair( "x64",StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.x64}")));
-			this.targetCPU.Add(new KeyItemPair( "Itanium",StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Itanium}")));
-			this.TargetCPU = targetCPU;
-			
-			fileAlignment = new List<KeyItemPair>();
-			fileAlignment.Add( new KeyItemPair("512", "512"));
-			fileAlignment.Add( new KeyItemPair("1024", "1024"));
-			fileAlignment.Add(new KeyItemPair("2048", "2048"));
-			fileAlignment.Add(new KeyItemPair("4096", "4096"));
-			fileAlignment.Add(new KeyItemPair("8192", "8192"));
-			FileAlign = fileAlignment;
+			this.FileAlign = new List<KeyItemPair>();
+			this.FileAlign.Add(new KeyItemPair("512", "512"));
+			this.FileAlign.Add(new KeyItemPair("1024", "1024"));
+			this.FileAlign.Add(new KeyItemPair("2048", "2048"));
+			this.FileAlign.Add(new KeyItemPair("4096", "4096"));
+			this.FileAlign.Add(new KeyItemPair("8192", "8192"));
 		}
 		
 		#region IProjectUserControl
@@ -73,14 +75,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 			this.projectOptions = projectOptions;
 			
-			this.BaseIntermediateOutputPathCommand = new RelayCommand(BaseIntermediateOutputPathExecute);
-			this.IntermediateOutputPathCommand = new RelayCommand(IntermediateOutputPathExecute);
-			
 			int val;
 			if (!int.TryParse(BaseAddress.Value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out val)) {
 				val = 0x400000;
 			}
 			DllBaseAdress =  "0x" + val.ToString("x", NumberFormatInfo.InvariantInfo);
+			projectOptions.IsDirty = true;
 		}
 		
 		
@@ -108,34 +108,34 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		#region Properies
 		
 		public ProjectOptionPanel.ProjectProperty<bool> RegisterForComInterop {
-			get {return projectOptions.GetProperty("RegisterForComInterop", false, PropertyStorageLocations.PlatformSpecific ); }
+			get {return projectOptions.GetProperty("RegisterForComInterop", false, PropertyStorageLocations.PlatformSpecific ); }	
 		}
 		
 		
 		public ProjectOptionPanel.ProjectProperty<string> GenerateSerializationAssemblies {
 			get {return projectOptions.GetProperty("GenerateSerializationAssemblies","Auto",
-			                        TextBoxEditMode.EditEvaluatedProperty, PropertyStorageLocations.PlatformSpecific ); }
+			                                       TextBoxEditMode.EditEvaluatedProperty, PropertyStorageLocations.PlatformSpecific ); }
 		}
 		
 		public ProjectOptionPanel.ProjectProperty<string> PlatformTarget {
 			get {return projectOptions.GetProperty("PlatformTarget","AnyCPU",
-			                        TextBoxEditMode.EditEvaluatedProperty, PropertyStorageLocations.PlatformSpecific ); }
+			                                       TextBoxEditMode.EditEvaluatedProperty, PropertyStorageLocations.PlatformSpecific ); }
 		}
 		
 		public ProjectOptionPanel.ProjectProperty<string> FileAlignment {
 			get {return projectOptions.GetProperty("FileAlignment","4096",
-			                        TextBoxEditMode.EditEvaluatedProperty, PropertyStorageLocations.PlatformSpecific ); }
+			                                       TextBoxEditMode.EditEvaluatedProperty, PropertyStorageLocations.PlatformSpecific ); }
 		}
 		
 		public ProjectOptionPanel.ProjectProperty<string> BaseAddress {
 			get {return projectOptions.GetProperty("BaseAddress","1000",
-			                        TextBoxEditMode.EditEvaluatedProperty,PropertyStorageLocations.PlatformSpecific ); }
+			                                       TextBoxEditMode.EditEvaluatedProperty,PropertyStorageLocations.PlatformSpecific ); }
 		}
 		
 		
 		public ProjectOptionPanel.ProjectProperty<string> BaseIntermediateOutputPath {
 			get {return projectOptions.GetProperty("BaseIntermediateOutputPath",@"obj\",
-			                        TextBoxEditMode.EditRawProperty,PropertyStorageLocations.ConfigurationSpecific ); }
+			                                       TextBoxEditMode.EditRawProperty,PropertyStorageLocations.ConfigurationSpecific ); }
 		}
 		
 		
@@ -143,31 +143,14 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			get {return projectOptions.GetProperty("IntermediateOutputPath",@"obj\$(Configuration)\",TextBoxEditMode.EditRawProperty ); }
 		}
 		
-		
 		#endregion
 		
-		public List<KeyItemPair> SerializationInfo {
-			get {return this.serializationInfo;}
-			set {this.serializationInfo = value;
-				RaisePropertyChanged("SerializationInfo");
-			}
-		}
+	
+		public List<KeyItemPair> SerializationInfo {get;set;}
 		
+		public List<KeyItemPair> TargetCPU {get;set;}
 		
-		public List<KeyItemPair> TargetCPU {
-			get { return targetCPU; }
-			set { targetCPU = value;
-				RaisePropertyChanged("TargetCPU");
-			}
-		}
-		
-		
-		public List<KeyItemPair> FileAlign {
-			get { return fileAlignment; }
-			set { fileAlignment = value;
-				RaisePropertyChanged("FileAlign");
-			}
-		}
+		public List<KeyItemPair> FileAlign {get;set;}
 		
 		
 		public string DllBaseAdress {

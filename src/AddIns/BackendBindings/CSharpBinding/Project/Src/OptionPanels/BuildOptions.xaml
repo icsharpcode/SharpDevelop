@@ -76,6 +76,7 @@
 			
 			<GroupBox
 				Header="{core:Localize Dialog.ProjectOptions.Build.Output}">
+			
 				<Grid >
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"></RowDefinition>
@@ -91,65 +92,14 @@
 						<ColumnDefinition Width="*"></ColumnDefinition>
 						<ColumnDefinition Width="50"></ColumnDefinition>
 					</Grid.ColumnDefinitions>
+					<optionpanels:BuildOutput x:Name="buildOutput" Grid.ColumnSpan="3">
+					</optionpanels:BuildOutput>
 					
-					<Label Grid.ColumnSpan="2" Content="{core:Localize Dialog.ProjectOptions.Build.OutputPath}"></Label>
-					
-					<optionpanels:StorageLocationPicker Grid.Row="1" DockPanel.Dock="Left"
-						Location="{Binding OutputPath.Location}"/>
-					
-					<TextBox x:Name="outputPathTextBox" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
-					         Text="{Binding OutputPath.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-					
-					<Button Grid.Row="1" Grid.Column="3"  Margin="3,0,3,0"
-					        VerticalAlignment="Center"
-					        Content="..."
-					        Command="{Binding ChangeOutputPath}"></Button>
-					
-					<optionpanels:StorageLocationPicker Grid.Row="2" DockPanel.Dock="Left" Location="{Binding DocumentationFile.Location}"/>
-					
-					<CheckBox x:Name="xmlDocumentationCheckBox" Grid.Row="2" Grid.Column="1"
-					          VerticalAlignment="Center"
-					          Margin="3,0,3,0"
-					          IsChecked="{Binding DocumentFileIsChecked}"
-					          Content="{core:Localize Dialog.ProjectOptions.Build.XmlDocumentationFile}"></CheckBox>
-					
-					<TextBox x:Name="xmlDocumentationTextBox" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2"
-					         IsEnabled="{Binding DocumentFileIsChecked}"
-					         Text="{Binding DocumentationFile.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-					
-					<optionpanels:StorageLocationPicker Grid.Row="3" DockPanel.Dock="Left" Location="{Binding DebugType.Location}" />
-					
-					<Label Grid.Row="3" Grid.Column="1" Margin="3,0,3,0"
-					       HorizontalAlignment="Right"
-					       Content="{core:Localize Dialog.ProjectOptions.Build.DebugInfo}"></Label>
-					
-					<ComboBox Grid.Row="3" Grid.Column="2" Width="150"
-					          VerticalAlignment="Center"
-					          HorizontalAlignment="Left"
-					          SelectedValue="{Binding Path=DebugType.Value}"
-					          gui:EnumBinding.EnumType="{x:Type project:DebugSymbolType}"></ComboBox>
-					
-					<Label Grid.Row="4" Grid.Column="1" Margin="3,0,3,0"
-					       HorizontalAlignment="Right"
-					       Content="{core:Localize Dialog.ProjectOptions.Build.TargetFramework}"></Label>
-					
-					<StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2">
-						
-						<ComboBox x:Name="targetFrameworkComboBox" Width="200" Margin="0,0,3,0"
-						          VerticalAlignment="Center"
-						          IsEnabled="False"></ComboBox>
-						
-						<Button Margin="3,0,3,0" VerticalAlignment="Center"
-							Content="Change"
-							Command="{Binding UpdateProjectCommand}"
-							Style="{x:Static core:GlobalStyles.ButtonStyle}"></Button>
-					</StackPanel>
-					
+		
 					<GroupBox Grid.Row="5" Grid.ColumnSpan="4" Margin="5,10,0,0" Header="{core:Localize Dialog.ProjectOptions.Build.Advanced}">
 						<optionpanels:BuildAdvanced x:Name="buildAdvanced">
 						</optionpanels:BuildAdvanced>
 					</GroupBox>
-				
 				</Grid>
 			</GroupBox>
 			

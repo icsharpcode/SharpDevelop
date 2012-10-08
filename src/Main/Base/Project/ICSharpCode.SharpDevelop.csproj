@@ -279,6 +279,10 @@
       <DependentUpon>BuildAdvanced.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildOutput.xaml.cs">
+      <DependentUpon>BuildOutput.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml.cs">
       <DependentUpon>DebugOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -924,6 +928,7 @@
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildAdvanced.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildOutput.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ErrorsAndWarnings.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\TreatErrorsAndWarnings.xaml" />
