@@ -121,12 +121,24 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 		
 		#region overrides
 		
-		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
+		
+		protected override void Initialize()
 		{
-			base.Load(project, configuration, platform);
+			base.Initialize();
+			buildOutput.SetProjectOptions(this);
 			this.buildAdvanced.SetProjectOptions(this);
 			this.errorsAndWarnings.SetProjectOptions(this);
 			this.treatErrorsAndWarnings.SetProjectOptions(this);
+		}
+		
+		
+		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
+		{
+			base.Load(project, configuration, platform);
+//			buildOutput.SetProjectOptions(this);
+//			this.buildAdvanced.SetProjectOptions(this);
+//			this.errorsAndWarnings.SetProjectOptions(this);
+//			this.treatErrorsAndWarnings.SetProjectOptions(this);
 			IsDirty = false;
 		}
 		

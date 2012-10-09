@@ -84,66 +84,36 @@ namespace CSharpBinding.OptionPanels
 		
 		protected override void Initialize()
 		{
-//			this.UpdateProjectCommand  = new RelayCommand(UpdateProjectExecute);
-//			this.ChangeOutputPath = new RelayCommand(ChangeOutputPathExecute);
-//			UpdateTargetFrameworkCombo();
-//			if (DocumentationFile.Value.Length > 0) {
-//				documentFileIsChecked = true;
-//			}
-//			XmlDocHelper();
-		}
-		
-		
-		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
-		{
-			base.Load(project, configuration, platform);
+			base.Initialize();
 			buildOutput.SetProjectOptions(this);
 			this.buildAdvanced.SetProjectOptions(this);
 			this.errorsAndWarnings.SetProjectOptions(this);
 			this.treatErrorsAndWarnings.SetProjectOptions(this);
+		}
+		
+		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
+		{
+			base.Load(project, configuration, platform);
+//			buildOutput.SetProjectOptions(this);
+//			this.buildAdvanced.SetProjectOptions(this);
+//			this.errorsAndWarnings.SetProjectOptions(this);
+//			this.treatErrorsAndWarnings.SetProjectOptions(this);
 			IsDirty = false;
 		}
 		
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
-//			if (buildAdvanced.SaveProjectOptions()) {
+			if (buildAdvanced.SaveProjectOptions()) {
 				treatErrorsAndWarnings.SaveProjectOptions();
 				return base.Save(project, configuration, platform);
-//			}
-//			return false;
+			}
+			return false;
 		}
 		
 		
 		#endregion
 		
-//		#region Documentation File
-//		
-//		private bool documentFileIsChecked;
-//		
-//		public bool DocumentFileIsChecked {
-//			get { return documentFileIsChecked; }
-//			set { documentFileIsChecked = value;
-//				XmlDocHelper();
-//				base.RaisePropertyChanged(() => DocumentFileIsChecked);
-//			}
-//		}
-//		
-//		private void XmlDocHelper()
-//		{
-//			/*
-//			if (DocumentFileIsChecked) {
-//				this.xmlDocumentationTextBox.Text = MSBuildInternals.Escape(
-//					Path.ChangeExtension(ICSharpCode.Core.FileUtility.GetRelativePath(base.Project.Directory, base.Project.OutputAssemblyFullPath),
-//					                     ".xml"));
-//			} else {
-//				this.xmlDocumentationTextBox.Text = string.Empty;
-//			}
-//			*/
-//		}
-//		
-//		
-//		#endregion
 		
 		#region Command Update Project
 		

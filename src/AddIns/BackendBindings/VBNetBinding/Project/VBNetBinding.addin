@@ -81,11 +81,11 @@
 		<OptionPanel id    = "BuildEvents"
 		             label = "${res:Dialog.ProjectOptions.BuildEvents}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
-		<OptionPanel id    = "BuildOptions"
+		<!--<OptionPanel id    = "BuildOptions"
 		             label = "${res:Dialog.ProjectOptions.BuildOptions}"
-		             class = "ICSharpCode.VBNetBinding.OptionPanels.BuildOptions"/>
+		             class = "ICSharpCode.VBNetBinding.OptionPanels.BuildOptions"/>-->
 		
-		<OptionPanel id    = "BuildOptions1"
+		<OptionPanel id    = "BuildOptions"
 		             label = "${res:Dialog.ProjectOptions.BuildOptions}"
 		             class = "ICSharpCode.VBNetBinding.OptionPanels.BuildOptionsXaml"/>
 		<OptionPanel id    = "DebugOptions"

@@ -83,9 +83,6 @@
     <Compile Include="Src\VBNetLanguageBinding.cs" />
     <Compile Include="Src\VBNetProjectBinding.cs" />
     <Compile Include="Src\FormattingStrategy\VBNetFormattingStrategy.cs" />
-    <Compile Include="Src\OptionPanels\BuildOptions.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Src\Parser\Parser.cs" />
     <Compile Include="Src\Project\VBNetProject.cs" />
     <None Include="VBNetBinding.addin">
