@@ -224,6 +224,13 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			loader.IncludeInternalMembers = true;
 			return loader.LoadAssemblyFile(typeof(System.ComponentModel.BrowsableAttribute).Assembly.Location);
 		});
+		static readonly Lazy<IUnresolvedAssembly> systemXmlLinq = new Lazy<IUnresolvedAssembly>(
+			delegate {
+			var loader = new CecilLoader();
+			loader.IncludeInternalMembers = true;
+			return loader.LoadAssemblyFile(typeof(System.Xml.Linq.XElement).Assembly.Location);
+		});
+
 
 		static readonly Lazy<IUnresolvedAssembly> mscorlib = new Lazy<IUnresolvedAssembly>(
 			delegate {
@@ -259,7 +266,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			var doc = new ReadOnlyDocument(editorText);
 
 			IProjectContent pctx = new CSharpProjectContent();
-			var refs = new List<IUnresolvedAssembly> { mscorlib.Value, systemCore.Value, systemAssembly.Value };
+			var refs = new List<IUnresolvedAssembly> { mscorlib.Value, systemCore.Value, systemAssembly.Value, systemXmlLinq.Value };
 			if (references != null)
 				refs.AddRange (references);
 
@@ -313,7 +320,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 		{
 			var doc = new ReadOnlyDocument(text);
 			IProjectContent pctx = new CSharpProjectContent();
-			pctx = pctx.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
+			pctx = pctx.AddAssemblyReferences(new [] { mscorlib.Value, systemAssembly.Value, systemCore.Value, systemXmlLinq.Value });
 			var unresolvedFile = syntaxTree.ToTypeSystem();
 			
 			pctx = pctx.AddOrUpdateFiles(unresolvedFile);
@@ -5634,5 +5641,36 @@ namespace bug
 				Assert.IsNull(provider.Find("InternalStringComparer"));
 			});
 		}
+
+		/// <summary>
+		/// Bug 6237 - Code completion includes private code 
+		/// </summary>
+		[Test()]
+		public void TestBug6237 ()
+		{
+
+			CombinedProviderTest(
+				@"
+namespace bug
+{
+   public class TestClass
+    {
+        void Bar()
+        {
+            $System.Xml.Linq.XElement.$
+        }
+    }
+}
+
+", provider => {
+				Assert.IsTrue (provider.Count > 0);
+				// it's likely to be mono specific.
+				foreach (var data in provider.Data) {
+					Assert.IsFalse (data.DisplayText.StartsWith ("<"), "Data was:"+ data.DisplayText);
+				}
+			});
+		}
+
+
 	}
 }

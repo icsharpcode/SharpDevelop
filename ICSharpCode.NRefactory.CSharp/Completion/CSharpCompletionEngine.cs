@@ -2410,7 +2410,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					if (member is IType) {
 						if (resolveResult is TypeResolveResult || includeStaticMembers) {
-							result.AddType ((IType)member, false);
+							if (!lookup.IsAccessible(member, isProtectedAllowed))
+								continue;
+							result.AddType((IType)member, false);
 							continue;
 						}
 					}
