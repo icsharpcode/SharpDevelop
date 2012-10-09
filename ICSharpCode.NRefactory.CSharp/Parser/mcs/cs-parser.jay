@@ -2954,7 +2954,10 @@ type_parameter
 	: opt_attributes opt_type_parameter_variance IDENTIFIER
 	  {
 		var lt = (Tokenizer.LocatedToken)$3;
-		$$ = new TypeParameter (new MemberName (lt.Value, lt.Location), (Attributes)$1, (Variance) $2);
+		var variance = (Variance) $2;
+		$$ = new TypeParameter (new MemberName (lt.Value, lt.Location), (Attributes)$1, variance);
+		if (variance != Variance.None)
+			lbag.AddLocation ($$, savedLocation);
   	  }
   	| error
   	  {
@@ -4789,6 +4792,19 @@ block_prepared
 	  }
 	;
 
+block_prepared_strict
+	: OPEN_BRACE
+	  {
+		++lexer.parsing_block;
+		current_block.StartLocation = GetLocation ($1);
+	  }
+	  opt_statement_list CLOSE_BRACE 
+	  {
+		--lexer.parsing_block;
+		$$ = end_block (GetLocation ($4));
+	  }
+	;
+
 opt_statement_list
 	: /* empty */
 	| statement_list 
@@ -5779,8 +5795,7 @@ try_statement
 	  }
 	| TRY block catch_clauses FINALLY block
 	  {
-		var loc = GetLocation ($1);
-		$$ = new TryFinally (new TryCatch ((Block) $2, (List<Catch>) $3, loc, true), (Block) $5, loc);
+		$$ = new TryFinally (new TryCatch ((Block) $2, (List<Catch>) $3, Location.Null, true), (Block) $5, GetLocation ($1));
 		lbag.AddStatement ($$, GetLocation ($4));
 	  }
 	| TRY block error
@@ -5837,7 +5852,7 @@ catch_clause
 		lbag.AddLocation (c, GetLocation ($2), GetLocation ($5));
 		$$ = c;
 	  }
-	  block_prepared
+	  block_prepared_strict
 	  {
 		$$ = $6;
 	  }
@@ -5851,6 +5866,17 @@ catch_clause
 		}
 		
 		$$ = new Catch (null, GetLocation ($1));
+	  }
+	| CATCH open_parens_any type opt_identifier CLOSE_PARENS error
+	  {
+		Error_SyntaxError (yyToken);
+
+		var c = new Catch (null, GetLocation ($1));
+		c.TypeExpression = (FullNamedExpression) $3;
+
+		lbag.AddLocation (c, GetLocation ($2), GetLocation ($5));
+
+		$$ = c;
 	  }
 	;
 
