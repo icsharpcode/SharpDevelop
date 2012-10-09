@@ -638,6 +638,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					var contextList = new CompletionDataWrapper(this);
 					var identifierStart = GetExpressionAtCursor();
+					if (!(char.IsLetter(completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null)) {
+						return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
+					}
 					if (identifierStart != null) {
 						if (identifierStart.Node is TypeParameterDeclaration) {
 							return null;
@@ -667,10 +670,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							return HandleCatchClauseType(identifierStart);
 						}
 					}
-					if (!(char.IsLetter(completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null)) {
-						return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
-					}
-					
+
 
 					// Do not pop up completion on identifier identifier (should be handled by keyword completion).
 					tokenIndex = offset - 1;
