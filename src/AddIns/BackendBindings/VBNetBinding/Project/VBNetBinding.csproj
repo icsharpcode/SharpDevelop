@@ -65,8 +65,8 @@
     <Compile Include="Src\Extensions.cs" />
     <Compile Include="Src\FormattingStrategy\VBStatement.cs" />
     <Compile Include="Src\LanguageUtils.cs" />
-    <Compile Include="Src\OptionPanels\BuildOptionsXaml.xaml.cs">
-      <DependentUpon>BuildOptionsXaml.xaml</DependentUpon>
+    <Compile Include="Src\OptionPanels\BuildOptions.xaml.cs">
+      <DependentUpon>BuildOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\OptionPanels\ProjectImports.xaml.cs">
@@ -133,7 +133,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\OptionPanels\BuildOptionsXaml.xaml" />
+    <Page Include="Src\OptionPanels\BuildOptions.xaml" />
     <Page Include="Src\OptionPanels\ProjectImports.xaml" />
     <Page Include="Src\OptionPanels\TextEditorOptions.xaml" />
   </ItemGroup>

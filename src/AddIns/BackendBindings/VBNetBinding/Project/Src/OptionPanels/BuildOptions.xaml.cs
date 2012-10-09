@@ -15,9 +15,9 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 	/// <summary>
 	/// Interaction logic for BuildOptionsXaml.xaml
 	/// </summary>
-	public partial class BuildOptionsXaml : ProjectOptionPanel
+	public partial class BuildOptions : ProjectOptionPanel
 	{
-		public BuildOptionsXaml()
+		public BuildOptions()
 		{
 			InitializeComponent();
 			DataContext = this;
@@ -135,10 +135,6 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
-//			buildOutput.SetProjectOptions(this);
-//			this.buildAdvanced.SetProjectOptions(this);
-//			this.errorsAndWarnings.SetProjectOptions(this);
-//			this.treatErrorsAndWarnings.SetProjectOptions(this);
 			IsDirty = false;
 		}
 		
