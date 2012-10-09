@@ -662,11 +662,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						if (identifierStart.Node is VariableInitializer && location <= ((VariableInitializer)identifierStart.Node).NameToken.EndLocation) {
 							return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
 						}
-						
 						if (identifierStart.Node is CatchClause) {
-							if (((CatchClause)identifierStart.Node).VariableNameToken.Contains(location)) {
+							if (((CatchClause)identifierStart.Node).VariableNameToken.IsInside(location)) {
 								return null;
 							}
+						}
+						if (identifierStart.Node is AstType && identifierStart.Node.Parent is CatchClause) {
 							return HandleCatchClauseType(identifierStart);
 						}
 					}
@@ -990,7 +991,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return type;
 				return null;
 			};
-			if (identifierStart.Node is CatchClause) {
+			if (identifierStart.Node.Parent is CatchClause) {
 				var wrapper = new CompletionDataWrapper(this);
 				AddTypesAndNamespaces(
 					wrapper,
