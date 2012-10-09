@@ -392,6 +392,24 @@ class A
 		}
 		
 		[Test]
+		public void DoesNotExpandForStatement ()
+		{	
+			TestStatements(@"
+		var val = GetValue ();
+		if (false) {
+			for (var i = GetValue (); ; i++)
+				System.Console.WriteLine (val);
+		}
+", 1, @"
+		if (false) {
+			var val = GetValue ();
+			for (var i = GetValue (); ; i++)
+				System.Console.WriteLine (val);
+		}
+");
+		}
+		
+		[Test]
 		public void DoesNotInsertBlockStatementInResourceAquisition ()
 		{	
 			TestStatements(@"

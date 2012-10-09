@@ -111,5 +111,86 @@ class TestClass
 }";
 			Test<LocalVariableHidesMemberIssue> (input, 0);
 		}
+		
+		[Test]
+		public void TestAccessiblePrivate ()
+		{
+			var input = @"
+class TestClass
+{
+	int i;
+
+	void Method ()
+	{
+		int i = 0;
+	}
+}";
+			Test<LocalVariableHidesMemberIssue> (input, 1);
+		}
+		
+		[Test]
+		public void TestAccessiblePrivateDueToTypeNesting ()
+		{
+			var input = @"
+class RootClass
+{
+	int i;
+
+	class NestedClass : RootClass
+	{
+		// Issue 1
+		void Method ()
+		{
+			int i = 0;
+		}
+
+		class NestedNestedClass : NestedClass
+		{
+			// Issue 2
+			void OtherMethod ()
+			{
+				int i = 0;
+			}
+		}
+	}
+}";
+			Test<LocalVariableHidesMemberIssue> (input, 2);
+		}
+		
+		[Test]
+		public void TestInternalAccessibility ()
+		{
+			var input = @"
+class BaseClass
+{
+	internal int i;
+}
+class TestClass : BaseClass
+{
+	void Method ()
+	{
+		int i = 0;
+	}
+}";
+			Test<LocalVariableHidesMemberIssue> (input, 1);
+		}
+		
+		[Test]
+		public void TestInaccessiblePrivate ()
+		{
+			var input = @"
+class BaseClass
+{
+	int i;
+}
+class TestClass : BaseClass
+{
+	void Method ()
+	{
+		int i = 0;
+	}
+}";
+			Test<LocalVariableHidesMemberIssue> (input, 0);
+		}
 	}
 }

@@ -128,6 +128,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				// Don't allow moving the declaration into the resource aquisition of a using statement
 				if (parent is UsingStatement)
 					return true;
+				// Don't allow moving things into arbitrary positions of for statements
+				if (parent is ForStatement && anchorNode.Role != Roles.EmbeddedStatement)
+					return true;
 				return false;
 			}
 
