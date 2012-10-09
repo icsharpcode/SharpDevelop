@@ -66,11 +66,25 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		}
 		
 		HashSet<string> usedNamespaces = new HashSet<string> ();
+
+		bool IsAccessible(MemberLookup lookup, INamespace ns)
+		{
+			if (ns.Types.Any (t => lookup.IsAccessible (t, false)))
+				return true;
+			foreach (var child in ns.ChildNamespaces)
+				if (IsAccessible (lookup, child))
+					return true;
+			return false;
+		}
 		
-		public void AddNamespace (INamespace ns)
+		public void AddNamespace (MemberLookup lookup, INamespace ns)
 		{
 			if (usedNamespaces.Contains (ns.Name))
 				return;
+			if (!IsAccessible (lookup, ns)) {
+				usedNamespaces.Add (ns.Name);
+				return;
+			}
 			usedNamespaces.Add (ns.Name);
 			result.Add (Factory.CreateNamespaceCompletionData (ns));
 		}
