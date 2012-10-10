@@ -20,15 +20,12 @@ using ICSharpCode.SharpDevelop.Widgets;
 namespace CSharpBinding.OptionPanels
 {
 	/// <summary>
-	/// Interaction logic for BuildOptionsXaml.xaml
+	/// Interaction logic for BuildOptions.xaml
 	/// </summary>
 	
 	public partial class BuildOptions : ProjectOptionPanel
 	{
 
-//		private System.Windows.Input.ICommand updateProjectCommand;
-//		private System.Windows.Input.ICommand changeOutputPath;
-		
 		public BuildOptions()
 		{
 			InitializeComponent();
@@ -61,21 +58,6 @@ namespace CSharpBinding.OptionPanels
 		public ProjectProperty<bool> NoStdLib {
 			get { return GetProperty("NoStdLib", false); }
 		}
-		
-		
-//		public ProjectProperty<string> OutputPath {
-//			get {return GetProperty("OutputPath", "", TextBoxEditMode.EditRawProperty); }
-//		}
-//		
-//		
-//		public ProjectProperty<string> DocumentationFile {
-//			get {return GetProperty("DocumentationFile", "", TextBoxEditMode.EditRawProperty);}
-//		}
-//		
-//		
-//		public ProjectProperty<DebugSymbolType> DebugType {
-//			get {return GetProperty("DebugType",ICSharpCode.SharpDevelop.Project.DebugSymbolType.Full ); }
-//		}
 		
 	
 		#endregion
@@ -111,86 +93,5 @@ namespace CSharpBinding.OptionPanels
 		
 		#endregion
 		
-		
-		#region Command Update Project
-		
-//		public System.Windows.Input.ICommand UpdateProjectCommand {
-//			get { return updateProjectCommand; }
-//			set { updateProjectCommand = value;
-//				base.RaisePropertyChanged(() =>this.UpdateProjectCommand);
-//			}
-//		}
-		
-		
-//		private void UpdateProjectExecute ()
-//		{
-//			UpgradeViewContent.Show(base.Project.ParentSolution).Select(base.Project as IUpgradableProject);
-////			this.UpdateTargetFrameworkCombo();
-//		}
-		
-//		private void UpdateTargetFrameworkCombo()
-//		{
-//			/*
-//			TargetFramework fx = ((IUpgradableProject)base.Project).CurrentTargetFramework;
-//			if (fx != null) {
-//				targetFrameworkComboBox.Items.Add(fx.DisplayName);
-//				targetFrameworkComboBox.SelectedIndex = 0;
-//			}
-//			*/
-//		}
-		
-		#endregion
-		
-		
-		#region ChangeOutputPathCommand
-		
-//		public System.Windows.Input.ICommand ChangeOutputPath
-//		{
-//			get {return this.changeOutputPath;}
-//			set {this.changeOutputPath = value;
-//				base.RaisePropertyChanged(() => this.ChangeOutputPath);
-//			}
-//		}
-//		private void ChangeOutputPathExecute()
-//		{
-////			BrowseForFolder(OutputPath, "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
-//		}
-//		
-		#endregion
-		
-		
-		#region SerializationInfo
-		
-//		public List<KeyItemPair> SerializationInfo {
-//			get {return this.serializationInfo;}
-//			set {this.serializationInfo = value;
-//				base.RaisePropertyChanged(() => SerializationInfo);
-//			}
-//		}
-		
-		#endregion
-		
-		
-		#region TargetCPU
-		
-//		public List<KeyItemPair> TargetCPU {
-//			get { return targetCPU; }
-//			set { targetCPU = value;
-//				base.RaisePropertyChanged(() => TargetCPU);
-//			}
-//		}
-		#endregion
-		
-		
-		#region FileAlignment
-		
-//		public List<KeyItemPair> FileAlign {
-//			get { return fileAlignment; }
-//			set { fileAlignment = value;
-//				base.RaisePropertyChanged(() => FileAlign);
-//			}
-//		}
-		
-		#endregion
 	}
 }
