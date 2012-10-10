@@ -85,5 +85,23 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 			Assert.IsFalse(c1.IsMatch(c2));
 			Assert.IsFalse(c2.IsMatch(c1)); // and vice versa
 		}
+
+		[Test]
+		public void CommentBeforeTryCatchFinally()
+		{
+			var stmt = ParseUtilCSharp.ParseStatement<BlockStatement>(
+@"{
+	//Comment before
+	try { } catch { } finally { }
+	//Comment after
+}");
+			var children = stmt.Children.ToList();
+			Assert.That(children.Count, Is.EqualTo(5));
+			Assert.That(children[0].Role, Is.EqualTo(Roles.LBrace));
+			Assert.That(children[1].Role, Is.EqualTo(Roles.Comment));
+			Assert.That(children[2].Role, Is.EqualTo(BlockStatement.StatementRole));
+			Assert.That(children[3].Role, Is.EqualTo(Roles.Comment));
+			Assert.That(children[4].Role, Is.EqualTo(Roles.RBrace));
+		}
 	}
 }
