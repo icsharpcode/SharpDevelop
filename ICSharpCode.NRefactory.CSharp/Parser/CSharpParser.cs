@@ -3361,9 +3361,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (Mono.CSharp.Linq.Where w)
 			{
 				var result = new QueryWhereClause ();
-				var location = LocationsBag.GetLocations (w);
-				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location [0]), QueryWhereClause.WhereKeywordRole), QueryWhereClause.WhereKeywordRole);
+				result.AddChild (new CSharpTokenNode (Convert (w.Location), QueryWhereClause.WhereKeywordRole), QueryWhereClause.WhereKeywordRole);
 				if (w.Expr != null)
 					result.AddChild ((Expression)w.Expr.Accept (this), Roles.Condition);
 				return result;
