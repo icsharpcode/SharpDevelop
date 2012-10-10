@@ -18,7 +18,7 @@
 					<ColumnDefinition Width="*" />
 				</Grid.ColumnDefinitions>
 				
-				<ListBox
+				<ListBox Margin="8"
 					HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
 					ItemsSource="{Binding ProjectItems}"
 					SelectedItem="{Binding SelectedProjectItem}">

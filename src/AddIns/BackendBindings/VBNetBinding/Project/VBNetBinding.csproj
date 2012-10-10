@@ -59,9 +59,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Resources\BuildOptions.xfrm">
-      <LogicalName>Resources.BuildOptions.xfrm</LogicalName>
-    </EmbeddedResource>
     <Compile Include="Src\Extensions.cs" />
     <Compile Include="Src\FormattingStrategy\VBStatement.cs" />
     <Compile Include="Src\LanguageUtils.cs" />
@@ -90,12 +87,6 @@
     </None>
     <Compile Include="Src\VBNetCompletionBinding.cs" />
     <Compile Include="Src\MyNamespaceBuilder.cs" />
-    <Compile Include="Src\OptionPanels\old_ProjectImports.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <EmbeddedResource Include="Resources\old_ProjectImports.xfrm">
-      <LogicalName>Resources.ProjectImports.xfrm</LogicalName>
-    </EmbeddedResource>
     <Compile Include="Src\Project\CSharpToVBNetConverter.cs" />
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
