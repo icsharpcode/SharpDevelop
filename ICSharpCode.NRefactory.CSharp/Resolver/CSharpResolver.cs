@@ -383,7 +383,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						return UnaryOperatorResolveResult(new PointerType(expression.Type), op, expression);
 					case UnaryOperatorType.Await: {
 						ResolveResult getAwaiterMethodGroup = ResolveMemberAccess(expression, "GetAwaiter", EmptyList<IType>.Instance, NameLookupMode.InvocationTarget);
-						ResolveResult getAwaiterInvocation = ResolveInvocation(getAwaiterMethodGroup, new ResolveResult[0]);
+						ResolveResult getAwaiterInvocation = ResolveInvocation(getAwaiterMethodGroup, new ResolveResult[0], argumentNames: null, allowOptionalParameters: false);
 
 						var lookup = CreateMemberLookup();
 						IMethod getResultMethod;
@@ -401,12 +401,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 
 						var isCompletedRR = lookup.Lookup(getAwaiterInvocation, "IsCompleted", EmptyList<IType>.Instance, false);
 						var isCompletedProperty = (isCompletedRR is MemberResolveResult ? ((MemberResolveResult)isCompletedRR).Member as IProperty : null);
+						if (isCompletedProperty != null && (!isCompletedProperty.ReturnType.IsKnownType(KnownTypeCode.Boolean) || !isCompletedProperty.CanGet))
+							isCompletedProperty = null;
 
-						var onCompletedMethodGroup = lookup.Lookup(getAwaiterInvocation, "OnCompleted", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
+						var interfaceOnCompleted = compilation.FindType(KnownTypeCode.INotifyCompletion).GetMethods().FirstOrDefault(x => x.Name == "OnCompleted");
+						var interfaceUnsafeOnCompleted = compilation.FindType(KnownTypeCode.ICriticalNotifyCompletion).GetMethods().FirstOrDefault(x => x.Name == "UnsafeOnCompleted");
+
 						IMethod onCompletedMethod = null;
-						if (onCompletedMethodGroup != null) {
-							var onCompletedOR = onCompletedMethodGroup.PerformOverloadResolution(compilation, new ResolveResult[] { new TypeResolveResult(compilation.FindType(new FullTypeName("System.Action")))  }, allowExtensionMethods: false, conversions: conversions);
-							onCompletedMethod = (onCompletedOR.FoundApplicableCandidate ? onCompletedOR.GetBestCandidateWithSubstitutedTypeArguments() as IMethod : null);
+						var candidates = getAwaiterInvocation.Type.GetMethods().Where(x => x.ImplementedInterfaceMembers.Contains(interfaceUnsafeOnCompleted)).ToList();
+						if (candidates.Count == 0) {
+							candidates = getAwaiterInvocation.Type.GetMethods().Where(x => x.ImplementedInterfaceMembers.Contains(interfaceOnCompleted)).ToList();
+							if (candidates.Count == 1)
+								onCompletedMethod = candidates[0];
+						}
+						else if (candidates.Count == 1) {
+							onCompletedMethod = candidates[0];
 						}
 
 						return new AwaitResolveResult(awaitResultType, getAwaiterInvocation, getAwaiterInvocation.Type, isCompletedProperty, onCompletedMethod, getResultMethod);
@@ -1927,19 +1936,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 
-		/// <summary>
-		/// Resolves an invocation.
-		/// </summary>
-		/// <param name="target">The target of the invocation. Usually a MethodGroupResolveResult.</param>
-		/// <param name="arguments">
-		/// Arguments passed to the method.
-		/// The resolver may mutate this array to wrap elements in <see cref="ConversionResolveResult"/>s!
-		/// </param>
-		/// <param name="argumentNames">
-		/// The argument names. Pass the null string for positional arguments.
-		/// </param>
-		/// <returns>InvocationResolveResult or UnknownMethodResolveResult</returns>
-		public ResolveResult ResolveInvocation(ResolveResult target, ResolveResult[] arguments, string[] argumentNames = null)
+		private ResolveResult ResolveInvocation(ResolveResult target, ResolveResult[] arguments, string[] argumentNames, bool allowOptionalParameters)
 		{
 			// C# 4.0 spec: §7.6.5
 			
@@ -1971,7 +1968,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 
-				OverloadResolution or = mgrr.PerformOverloadResolution(compilation, arguments, argumentNames, checkForOverflow: checkForOverflow, conversions: conversions);
+				OverloadResolution or = mgrr.PerformOverloadResolution(compilation, arguments, argumentNames, checkForOverflow: checkForOverflow, conversions: conversions, allowOptionalParameters: allowOptionalParameters);
 				if (or.BestCandidate != null) {
 					if (or.BestCandidate.IsStatic && !or.IsExtensionMethodInvocation && !(mgrr.TargetResult is TypeResolveResult))
 						return or.CreateResolveResult(new TypeResolveResult(mgrr.TargetType));
@@ -2004,6 +2001,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					argumentToParameterMap: or.GetArgumentToParameterMap());
 			}
 			return ErrorResult;
+		}
+
+		/// <summary>
+		/// Resolves an invocation.
+		/// </summary>
+		/// <param name="target">The target of the invocation. Usually a MethodGroupResolveResult.</param>
+		/// <param name="arguments">
+		/// Arguments passed to the method.
+		/// The resolver may mutate this array to wrap elements in <see cref="ConversionResolveResult"/>s!
+		/// </param>
+		/// <param name="argumentNames">
+		/// The argument names. Pass the null string for positional arguments.
+		/// </param>
+		/// <returns>InvocationResolveResult or UnknownMethodResolveResult</returns>
+		public ResolveResult ResolveInvocation(ResolveResult target, ResolveResult[] arguments, string[] argumentNames = null)
+		{
+			return ResolveInvocation(target, arguments, argumentNames, allowOptionalParameters: true);
 		}
 		
 		List<IParameter> CreateParameters(ResolveResult[] arguments, string[] argumentNames)
