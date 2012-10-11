@@ -255,26 +255,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						}
 						break;
 					}
-
-					// Hack for handling try ... catch ... finally.
-					var tryc = cfNode.NextStatement as TryCatchStatement;
-					if (tryc != null) {
-						VariableReferenceNode outNode = null;
-						foreach (var n in tryc.CatchClauses) {
-							var catchNode = variableReferenceGraphBuilder.Build(n.Body, references, refStatements, this.resolver);
-							(outNode ?? node).AddNextNode (catchNode);
-							outNode = catchNode;
-						}
-						if (!tryc.FinallyBlock.IsNull) {
-							var finallyNode = variableReferenceGraphBuilder.Build(tryc.FinallyBlock, references, refStatements, this.resolver);
-							(outNode ?? node).AddNextNode (finallyNode);
-							outNode = finallyNode;
-						}
-						if (outNode != null) {
-							nodeDict [cfNode] = outNode;
-							return outNode;
-						}
-					}
 				}
 				VariableReferenceNode result;
 				if (!nodeDict.TryGetValue (startNode, out result))
