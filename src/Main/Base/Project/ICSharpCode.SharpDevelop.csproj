@@ -291,6 +291,10 @@
       <DependentUpon>ErrorsAndWarnings.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectInformation.xaml.cs">
+      <DependentUpon>ProjectInformation.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\TreatErrorsAndWarnings.xaml.cs">
       <DependentUpon>TreatErrorsAndWarnings.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -931,6 +935,7 @@
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildOutput.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ErrorsAndWarnings.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectInformation.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\TreatErrorsAndWarnings.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.xaml">
       <DependentUpon>ProjectOptionPanel.cs</DependentUpon>

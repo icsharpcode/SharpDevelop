@@ -143,33 +143,9 @@
 			
 			<GroupBox Grid.Row="10" Grid.ColumnSpan="3" Margin="0,5,0,0"
 				Header="{core:Localize Dialog.ProjectOptions.ApplicationSettings.ProjectInformation}">
-				<Grid Margin="15,0,0,0">
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto"></RowDefinition>
-						<RowDefinition  Height="Auto"></RowDefinition>
-						<RowDefinition Height="Auto"></RowDefinition>
-					</Grid.RowDefinitions>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="100"></ColumnDefinition>							
-						<ColumnDefinition></ColumnDefinition>
-					</Grid.ColumnDefinitions>
-					<Label
-						Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.ProjectFolder}"></Label>
-
-					<TextBox x:Name="projectFolderTextBox" Grid.Column="1"
-						VerticalAlignment="Center"></TextBox>
-					<Label
-						Grid.Row="1"
-						Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.ProjectFile}"></Label>
-					
-					<TextBox x:Name="projectFileTextBox" Grid.Row="1" Grid.Column="1"
-						VerticalAlignment="Center"></TextBox>
 				
-					<Label Grid.Row="2"
-						Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.OutputName}"></Label>
+				<optionpanels:ProjectInformation x:Name="projectInformation"></optionpanels:ProjectInformation>
 				
-					<TextBox x:Name="outputNameTextBox" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"></TextBox>
-				</Grid>
 			</GroupBox>
 	
 		</Grid>

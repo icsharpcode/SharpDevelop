@@ -112,6 +112,7 @@ namespace ICSharpCode.CppBinding.Project
 		protected override void Initialize()
 		{
 			base.Initialize();
+			this.projectInformation.SetProjectOptions(this);
 			
 			foreach (IClass c in GetPossibleStartupObjects(base.Project)) {
 				startupObjectComboBox.Items.Add(c.FullyQualifiedName);
@@ -127,8 +128,8 @@ namespace ICSharpCode.CppBinding.Project
 			// because the "convert project" button on the compiling tab page might have updated the MSBuild version.
 			base.Project.MinimumSolutionVersionChanged += project_MinimumSolutionVersionChanged;
 			
-			projectFolderTextBox.Text = base.Project.Directory;
-			projectFileTextBox.Text = Path.GetFileName(base.Project.FileName);
+			this.projectInformation.ProjectFolder = base.BaseDirectory;
+			this.projectInformation.ProjectFile = Path.GetFileName(base.Project.FileName);
 			
 			//OptionBinding
 			RefreshStartupObjectEnabled(this, EventArgs.Empty);
@@ -247,7 +248,7 @@ namespace ICSharpCode.CppBinding.Project
 		{
 			if (this.outputTypeComboBox.SelectedValue != null) {
 				var enmType = (OutputType) Enum.Parse(typeof(OutputType),this.outputTypeComboBox.SelectedValue.ToString());
-				this.outputNameTextBox.Text = this.assemblyNameTextBox.Text + CompilableProject.GetExtension(enmType);
+				this.projectInformation.OutputTypeName = this.assemblyNameTextBox.Text + CompilableProject.GetExtension(enmType);
 			}
 		}
 		

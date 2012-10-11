@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		protected override void Initialize()
 		{
 			base.Initialize();
-			
+			this.projectInformation.SetProjectOptions(this);
 			startupObjectComboBox.Items.Clear();
 			foreach (IClass c in GetPossibleStartupObjects(base.Project)) {
 				startupObjectComboBox.Items.Add(c.FullyQualifiedName);
@@ -52,8 +52,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			// because the "convert project" button on the compiling tab page might have updated the MSBuild version.
 			base.Project.MinimumSolutionVersionChanged += project_MinimumSolutionVersionChanged;
 			
-			projectFolderTextBox.Text = base.BaseDirectory;
-			projectFileTextBox.Text = Path.GetFileName(base.Project.FileName);
+			this.projectInformation.ProjectFolder = base.BaseDirectory;
+			this.projectInformation.ProjectFile = Path.GetFileName(base.Project.FileName);
 			
 			//OptionBinding
 			RefreshStartupObjectEnabled(this, EventArgs.Empty);
@@ -63,6 +63,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			//this.startupObjectComboBox.SelectionChanged += (s,e) => {IsDirty = true;};
 			this.outputTypeComboBox.SelectionChanged += RefreshOutputNameTextBox;
 			this.outputTypeComboBox.SelectionChanged += RefreshStartupObjectEnabled;
+			
+//			this.projectInformation.SetProjectOptions(this);
 		}
 
 		public override void Dispose()
@@ -208,7 +210,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			if (this.outputTypeComboBox.SelectedValue != null) {
 				var outputType = (OutputType)this.outputTypeComboBox.SelectedValue;
-				this.outputNameTextBox.Text = this.assemblyNameTextBox.Text + CompilableProject.GetExtension(outputType);
+				this.projectInformation.OutputTypeName = this.assemblyNameTextBox.Text + CompilableProject.GetExtension(outputType);
 			}
 		}
 		
