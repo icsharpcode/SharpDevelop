@@ -71,8 +71,6 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		void TextAreaGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
 		{
-			if (this.textArea == null)
-				return;
 			if (e.OriginalSource != this.textArea)
 				return;
 			CreateContext();
@@ -80,8 +78,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 
 		void CreateContext()
 		{
-			if (this.textArea == null)
-				return;
+			ClearContext(); // clear old context if necessary
 			if (!textArea.Options.EnableImeSupport)
 				return;
 			hwndSource = (HwndSource)PresentationSource.FromVisual(this.textArea);
