@@ -23,6 +23,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 	{
 		readonly TextArea textArea;
 		IntPtr currentContext;
+		IntPtr previousContext;
 		HwndSource hwndSource;
 		
 		public ImeSupport(TextArea textArea)
@@ -45,7 +46,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 		void ClearContext()
 		{
 			if (hwndSource != null) {
-				ImeNativeWrapper.ReleaseContext(hwndSource, currentContext);
+				ImeNativeWrapper.AssociateContext(hwndSource, previousContext);
+				ImeNativeWrapper.ImmDestroyContext(currentContext);
 				currentContext = IntPtr.Zero;
 				hwndSource.RemoveHook(WndProc);
 				hwndSource = null;
@@ -64,7 +66,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 				return;
 			hwndSource = (HwndSource)PresentationSource.FromVisual(this.textArea);
 			if (hwndSource != null) {
-				currentContext = ImeNativeWrapper.GetContext(hwndSource);
+				currentContext = ImeNativeWrapper.ImmCreateContext();
+				previousContext = ImeNativeWrapper.AssociateContext(hwndSource, currentContext);
 //				ImeNativeWrapper.SetCompositionFont(hwndSource, currentContext, textArea);
 				hwndSource.AddHook(WndProc);
 				// UpdateCompositionWindow() will be called by the caret becoming visible
