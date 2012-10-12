@@ -150,7 +150,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			// this may happen during layout changes in AvalonDock, so we just return an empty rectangle
 			// in those cases. It should be refreshed immediately.
-			if (!source.RootVisual.IsAncestorOf(textView))
+			if (source.RootVisual == null || !source.RootVisual.IsAncestorOf(textView))
 				return EMPTY_RECT;
 			Rect displayRect = new Rect(0, 0, textView.ActualWidth, textView.ActualHeight);
 			return textView
@@ -167,7 +167,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				return EMPTY_RECT;
 			// this may happen during layout changes in AvalonDock, so we just return an empty rectangle
 			// in those cases. It should be refreshed immediately.
-			if (!source.RootVisual.IsAncestorOf(textView))
+			if (source.RootVisual == null || !source.RootVisual.IsAncestorOf(textView))
 				return EMPTY_RECT;
 			TextLine line = vl.GetTextLine(pos.VisualColumn);
 			Rect displayRect;
