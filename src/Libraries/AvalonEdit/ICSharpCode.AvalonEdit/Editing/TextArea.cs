@@ -29,6 +29,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 	/// </summary>
 	public class TextArea : Control, IScrollInfo, IWeakEventListener, ITextEditorComponent, IServiceProvider
 	{
+		internal readonly ImeSupport ime;
+		
 		#region Constructor
 		static TextArea()
 		{
@@ -68,6 +70,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			
 			caret = new Caret(this);
 			caret.PositionChanged += (sender, e) => RequestSelectionValidation();
+			ime = new ImeSupport(this);
 			
 			leftMargins.CollectionChanged += leftMargins_CollectionChanged;
 			
@@ -754,6 +757,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 		protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
 		{
 			base.OnGotKeyboardFocus(e);
+			// First activate IME, then show caret
+			ime.OnGotFocus(e);
 			caret.Show();
 		}
 		
@@ -762,6 +767,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			base.OnLostKeyboardFocus(e);
 			caret.Hide();
+			ime.OnLostFocus(e);
 		}
 		#endregion
 		

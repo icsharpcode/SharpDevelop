@@ -77,15 +77,22 @@ namespace ICSharpCode.AvalonEdit.Editing
 		public const int WM_INPUTLANGCHANGE = 0x51;
 		
 		[DllImport("imm32.dll")]
+		public static extern IntPtr ImmCreateContext();
+		
+		[DllImport("imm32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool ImmDestroyContext(IntPtr hIMC);
+		
+		[DllImport("imm32.dll")]
 		static extern IntPtr ImmAssociateContext(IntPtr hWnd, IntPtr hIMC);
 		[DllImport("imm32.dll")]
 		static extern IntPtr ImmGetContext(IntPtr hWnd);
 		[DllImport("imm32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		static extern bool ImmNotifyIME(IntPtr hIMC, int dwAction, int dwIndex, int dwValue = 0);
+		static extern bool ImmReleaseContext(IntPtr hWnd, IntPtr hIMC);
 		[DllImport("imm32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		static extern bool ImmReleaseContext(IntPtr hWnd, IntPtr hIMC);
+		static extern bool ImmNotifyIME(IntPtr hIMC, int dwAction, int dwIndex, int dwValue = 0);
 		[DllImport("imm32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		static extern bool ImmSetCompositionWindow(IntPtr hIMC, ref CompositionForm form);
