@@ -431,10 +431,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 						Win32.SetCaretPosition(textView, caretRect.Location - textView.ScrollOffset);
 					}
 					caretAdorner.Show(caretRect);
+					textArea.ime.UpdateCompositionWindow();
 				} else {
 					caretAdorner.Hide();
 				}
-				textArea.ime.UpdateCompositionWindow();
 			}
 		}
 		
