@@ -49,23 +49,23 @@ namespace ICSharpCode.AvalonEdit.Editing
 			public int bottom;
 		}
 		
-		[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Auto)]
-		class LOGFONT
+		[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
+		struct LOGFONT
 		{
-			public int lfHeight = 0;
-			public int lfWidth = 0;
-			public int lfEscapement = 0;
-			public int lfOrientation = 0;
-			public int lfWeight = 0;
-			public byte lfItalic = 0;
-			public byte lfUnderline = 0;
-			public byte lfStrikeOut = 0;
-			public byte lfCharSet = 0;
-			public byte lfOutPrecision = 0;
-			public byte lfClipPrecision = 0;
-			public byte lfQuality = 0;
-			public byte lfPitchAndFamily = 0;
-			[MarshalAs(UnmanagedType.ByValTStr, SizeConst=32)] public string lfFaceName = null;
+			public int lfHeight;
+			public int lfWidth;
+			public int lfEscapement;
+			public int lfOrientation;
+			public int lfWeight;
+			public byte lfItalic;
+			public byte lfUnderline;
+			public byte lfStrikeOut;
+			public byte lfCharSet;
+			public byte lfOutPrecision;
+			public byte lfClipPrecision;
+			public byte lfQuality;
+			public byte lfPitchAndFamily;
+			[MarshalAs(UnmanagedType.ByValTStr, SizeConst=32)] public string lfFaceName;
 		}
 		
 		const int CPS_CANCEL = 0x4;
@@ -97,7 +97,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		[DllImport("imm32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		static extern bool ImmSetCompositionWindow(IntPtr hIMC, ref CompositionForm form);
-		[DllImport("imm32.dll")]
+		[DllImport("imm32.dll", CharSet = CharSet.Unicode)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		static extern bool ImmSetCompositionFont(IntPtr hIMC, ref LOGFONT font);
 		[DllImport("imm32.dll")]
@@ -157,9 +157,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			if (textArea == null)
 				throw new ArgumentNullException("textArea");
-//			LOGFONT font = new LOGFONT();
-//			ImmGetCompositionFont(hIMC, out font);
-			return false;
+			LOGFONT lf = new LOGFONT();
+			Rect characterBounds = textArea.TextView.GetCharacterBounds(textArea.Caret.Position, source);
+			lf.lfFaceName = textArea.FontFamily.Source;
+			lf.lfHeight = (int)characterBounds.Height;
+			return ImmSetCompositionFont(hIMC, ref lf);
 		}
 		
 		static Rect GetBounds(this TextView textView, HwndSource source)

@@ -70,7 +70,6 @@ namespace ICSharpCode.AvalonEdit.Editing
 				//currentContext = ImeNativeWrapper.ImmCreateContext();
 				//previousContext = ImeNativeWrapper.AssociateContext(hwndSource, currentContext);
 				currentContext = ImeNativeWrapper.GetContext(hwndSource);
-//				ImeNativeWrapper.SetCompositionFont(hwndSource, currentContext, textArea);
 				hwndSource.AddHook(WndProc);
 				// UpdateCompositionWindow() will be called by the caret becoming visible
 				
@@ -109,6 +108,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		public void UpdateCompositionWindow()
 		{
 			if (currentContext != IntPtr.Zero) {
+				ImeNativeWrapper.SetCompositionFont(hwndSource, currentContext, textArea);
 				ImeNativeWrapper.SetCompositionWindow(hwndSource, currentContext, textArea);
 			}
 		}
