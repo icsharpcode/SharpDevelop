@@ -23,7 +23,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 	{
 		readonly TextArea textArea;
 		IntPtr currentContext;
-		IntPtr previousContext;
+		//IntPtr previousContext;
 		HwndSource hwndSource;
 		
 		public ImeSupport(TextArea textArea)
@@ -46,8 +46,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 		void ClearContext()
 		{
 			if (hwndSource != null) {
-				ImeNativeWrapper.AssociateContext(hwndSource, previousContext);
-				ImeNativeWrapper.ImmDestroyContext(currentContext);
+				//ImeNativeWrapper.AssociateContext(hwndSource, previousContext);
+				//ImeNativeWrapper.ImmDestroyContext(currentContext);
+				ImeNativeWrapper.ReleaseContext(hwndSource, currentContext);
 				currentContext = IntPtr.Zero;
 				hwndSource.RemoveHook(WndProc);
 				hwndSource = null;
@@ -66,11 +67,19 @@ namespace ICSharpCode.AvalonEdit.Editing
 				return;
 			hwndSource = (HwndSource)PresentationSource.FromVisual(this.textArea);
 			if (hwndSource != null) {
-				currentContext = ImeNativeWrapper.ImmCreateContext();
-				previousContext = ImeNativeWrapper.AssociateContext(hwndSource, currentContext);
+				//currentContext = ImeNativeWrapper.ImmCreateContext();
+				//previousContext = ImeNativeWrapper.AssociateContext(hwndSource, currentContext);
+				currentContext = ImeNativeWrapper.GetContext(hwndSource);
 //				ImeNativeWrapper.SetCompositionFont(hwndSource, currentContext, textArea);
 				hwndSource.AddHook(WndProc);
 				// UpdateCompositionWindow() will be called by the caret becoming visible
+				
+				var threadMgr = ImeNativeWrapper.GetTextFrameworkThreadManager();
+				if (threadMgr != null) {
+					// Even though the docu says passing null is invalid, this seems to help
+					// activating the IME on the default input context that is shared with WPF
+					threadMgr.SetFocus(null);
+				}
 			}
 		}
 		

@@ -76,15 +76,16 @@ namespace ICSharpCode.AvalonEdit.Editing
 		public const int WM_IME_SETCONTEXT = 0x281;
 		public const int WM_INPUTLANGCHANGE = 0x51;
 		
-		[DllImport("imm32.dll")]
-		public static extern IntPtr ImmCreateContext();
+//		[DllImport("imm32.dll")]
+//		public static extern IntPtr ImmCreateContext();
+//
+//		[DllImport("imm32.dll")]
+//		[return: MarshalAs(UnmanagedType.Bool)]
+//		public static extern bool ImmDestroyContext(IntPtr hIMC);
 		
-		[DllImport("imm32.dll")]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		public static extern bool ImmDestroyContext(IntPtr hIMC);
+//		[DllImport("imm32.dll")]
+//		public static extern IntPtr ImmAssociateContext(IntPtr hWnd, IntPtr hIMC);
 		
-		[DllImport("imm32.dll")]
-		static extern IntPtr ImmAssociateContext(IntPtr hWnd, IntPtr hIMC);
 		[DllImport("imm32.dll")]
 		static extern IntPtr ImmGetContext(IntPtr hWnd);
 		[DllImport("imm32.dll")]
@@ -103,11 +104,19 @@ namespace ICSharpCode.AvalonEdit.Editing
 		[return: MarshalAs(UnmanagedType.Bool)]
 		static extern bool ImmGetCompositionFont(IntPtr hIMC, out LOGFONT font);
 		
-		public static IntPtr AssociateContext(HwndSource source, IntPtr hIMC)
+		[DllImport("msctf.dll")]
+		static extern int TF_CreateThreadMgr(out ITfThreadMgr threadMgr);
+		
+		[ThreadStatic] static bool textFrameworkThreadMgrInitialized;
+		[ThreadStatic] static ITfThreadMgr textFrameworkThreadMgr;
+		
+		public static ITfThreadMgr GetTextFrameworkThreadManager()
 		{
-			if (source == null)
-				throw new ArgumentNullException("source");
-			return ImmAssociateContext(source.Handle, hIMC);
+			if (!textFrameworkThreadMgrInitialized) {
+				textFrameworkThreadMgrInitialized = true;
+				TF_CreateThreadMgr(out textFrameworkThreadMgr);
+			}
+			return textFrameworkThreadMgr;
 		}
 		
 		public static bool NotifyIme(IntPtr hIMC)
@@ -193,5 +202,21 @@ namespace ICSharpCode.AvalonEdit.Editing
 				.TransformToAncestor(source.RootVisual).TransformBounds(displayRect) // rect on root visual
 				.TransformToDevice(source.RootVisual); // rect on HWND
 		}
+	}
+	
+	[ComImport, Guid("aa80e801-2021-11d2-93e0-0060b067b86e"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+	interface ITfThreadMgr
+	{
+		void Activate(out int clientId);
+		void Deactivate();
+		void CreateDocumentMgr(out object docMgr);
+		void EnumDocumentMgrs(out object enumDocMgrs);
+		void GetFocus(out object docMgr);
+		void SetFocus(object docMgr);
+		void AssociateFocus(IntPtr hwnd, object newDocMgr, out object prevDocMgr);
+		void IsThreadFocus([MarshalAs(UnmanagedType.Bool)] out bool isFocus);
+		void GetFunctionProvider(ref Guid classId, out object funcProvider);
+		void EnumFunctionProviders(out object enumProviders);
+		void GetGlobalCompartment(out object compartmentMgr);
 	}
 }
