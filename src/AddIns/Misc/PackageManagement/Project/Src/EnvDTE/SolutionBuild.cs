@@ -7,8 +7,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class SolutionBuild : MarshalByRefObject, global::EnvDTE.SolutionBuild
 	{
+		Solution solution;
+		int lastBuildInfo;
+		
 		public SolutionBuild()
 		{
+		}
+		
+		public SolutionBuild(Solution solution)
+		{
+			this.solution = solution;
 		}
 		
 		public global::EnvDTE.SolutionConfiguration ActiveConfiguration {
@@ -19,12 +27,25 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		/// Returns the number of projects that failed to build.
 		/// </summary>
 		public int LastBuildInfo {
-			get { throw new NotImplementedException(); }
+			get { return lastBuildInfo; }
 		}
 		
 		public void BuildProject(string solutionConfiguration, string projectUniqueName, bool waitForBuildToFinish)
 		{
 			throw new NotImplementedException();
+		}
+		
+		public object StartupProjects {
+			get { return GetStartupProjects(); }
+		}
+		
+		object[] GetStartupProjects()
+		{
+			var project = solution.GetStartupProject();
+			if (project != null) {
+				return new string[] { project.UniqueName };
+			}
+			return new string[0];
 		}
 	}
 }

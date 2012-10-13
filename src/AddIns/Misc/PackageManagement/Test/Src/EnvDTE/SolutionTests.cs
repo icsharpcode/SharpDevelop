@@ -149,14 +149,25 @@ namespace PackageManagement.Tests.EnvDTE
 		public void FindProjectItem_SolutionHasTwoProjectsWithOneItemMatchingFileNameInSecondProject_ReturnsProjectItem()
 		{
 			CreateSolution();
-			AddProjectToSolutionWithFileName("MyProject1", @"c:\projects\MyProject1\MyProject.csproj");
-			AddProjectToSolutionWithFileName("MyProject2", @"c:\projects\MyProject2\MyProject.csproj");
+			AddProjectToSolutionWithFileName("MyProject1", @"c:\projects\MyProject1\MyProject1.csproj");
+			AddProjectToSolutionWithFileName("MyProject2", @"c:\projects\MyProject2\MyProject2.csproj");
 			AddFileToSecondProjectInSolution(@"src\test.cs");
 			string fileName = @"c:\projects\MyProject2\src\test.cs";
 			
 			global::EnvDTE.ProjectItem item = solution.FindProjectItem(fileName);
 			
 			Assert.AreEqual("test.cs", item.Name);
+		}
+		
+		[Test]
+		public void SolutionBuild_SolutionNotBuilt_ReturnsSolutionBuildWithNoProjectsFailingToBuild()
+		{
+			CreateSolution();
+			
+			global::EnvDTE.SolutionBuild solutionBuild = solution.SolutionBuild;
+			int lastBuildInfo = solutionBuild.LastBuildInfo;
+			
+			Assert.AreEqual(0, lastBuildInfo);
 		}
 	}
 }

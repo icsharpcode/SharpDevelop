@@ -9,6 +9,7 @@ Namespace EnvDTE
 		ReadOnly Property Projects() As Projects
 		ReadOnly Property Globals() As Globals
 		ReadOnly Property SolutionBuild() As SolutionBuild
+		ReadOnly Property Properties As Properties
 		
 		Function FindProjectItem(fileName As String) As ProjectItem
 	End Interface

@@ -4,6 +4,7 @@
 Namespace EnvDTE
 	Public Interface SolutionBuild
 		ReadOnly Property ActiveConfiguration() As SolutionConfiguration
+		ReadOnly Property StartupProjects As Object
 		
 		''' <summary>
 		''' Returns the number of projects that failed to build.

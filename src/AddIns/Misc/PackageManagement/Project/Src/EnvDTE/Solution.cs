@@ -57,7 +57,22 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public global::EnvDTE.SolutionBuild SolutionBuild {
-			get { throw new NotImplementedException(); }
+			get { return new SolutionBuild(this); }
+		}
+		
+		public global::EnvDTE.Properties Properties {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		internal Project GetStartupProject()
+		{
+			MSBuildBasedProject project = solution.StartupProject as MSBuildBasedProject;
+			if (project != null) {
+				return new Project(project);
+			}
+			return null;
 		}
 	}
 }

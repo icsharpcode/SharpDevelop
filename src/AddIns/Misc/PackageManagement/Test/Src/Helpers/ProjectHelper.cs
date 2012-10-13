@@ -19,16 +19,24 @@ namespace PackageManagement.Tests.Helpers
 			Solution solution = new Solution(new MockProjectChangeWatcher());
 			solution.FileName = @"d:\projects\Test\TestSolution.sln";
 			
+			return CreateTestProject(solution, name);
+		}
+		
+		public static TestableProject CreateTestProject(
+			Solution parentSolution,
+			string name,
+			string fileName = @"d:\projects\Test\TestProject\TestProject.csproj")
+		{
 			ProjectCreateInformation createInfo = new ProjectCreateInformation();
-			createInfo.Solution = solution;
+			createInfo.Solution = parentSolution;
 			createInfo.ProjectName = name;
 			createInfo.SolutionPath = @"d:\projects\Test";
 			createInfo.ProjectBasePath = @"d:\projects\Test\TestProject";
-			createInfo.OutputProjectFileName = @"d:\projects\Test\TestProject\TestProject.csproj";
+			createInfo.OutputProjectFileName = fileName;
 			
 			var project = new TestableProject(createInfo);
-			project.Parent = solution;
-			solution.AddFolder(project);
+			project.Parent = parentSolution;
+			parentSolution.AddFolder(project);
 			return project;
 		}
 		

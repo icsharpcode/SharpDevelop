@@ -48,16 +48,16 @@ namespace PackageManagement.Tests.Helpers
 			FakeProjectService.OpenSolution = null;
 		}
 		
-		public void AddProjectToSolution(string projectName)
+		public TestableProject AddProjectToSolution(string projectName)
 		{
-			AddProjectToSolutionWithFileName(projectName, @"c:\projects\MyProject\MyProject.csproj");
+			return AddProjectToSolutionWithFileName(projectName, @"c:\projects\MyProject\MyProject.csproj");
 		}
 		
-		public void AddProjectToSolutionWithFileName(string projectName, string fileName)
+		public TestableProject AddProjectToSolutionWithFileName(string projectName, string fileName)
 		{
-			TestableProject project = ProjectHelper.CreateTestProject(projectName);
-			project.FileName = fileName;
+			TestableProject project = ProjectHelper.CreateTestProject(MSBuildSolution, projectName, fileName);
 			FakeProjectService.AddFakeProject(project);
+			return project;
 		}
 		
 		public void AddExtensibilityGlobalsSection()

@@ -24,8 +24,8 @@ namespace PackageManagement.Tests.EnvDTE
 		void CreateSolutionWithTwoProjects(string projectName1, string projectName2)
 		{
 			solutionHelper = new SolutionHelper();
-			solutionHelper.AddProjectToSolution(projectName1);
-			solutionHelper.AddProjectToSolution(projectName2);
+			TestableProject project = solutionHelper.AddProjectToSolutionWithFileName(projectName1, @"d:\projects\" + projectName1 + ".csproj");
+			solutionHelper.AddProjectToSolutionWithFileName(projectName2, @"d:\projects\" + projectName2 + ".csproj");
 			projects = (Projects)solutionHelper.Solution.Projects;
 		}
 		

@@ -13,6 +13,7 @@ namespace PackageManagement.Tests.Helpers
 		public bool IsSaved;
 		string assemblyName;
 		string rootNamespace;
+		bool isStartable = true;
 		
 		public ItemType ItemTypeToReturnFromGetDefaultItemType {
 			get { return TestableProjectBehaviour.ItemTypeToReturnFromGetDefaultItemType; }
@@ -24,6 +25,10 @@ namespace PackageManagement.Tests.Helpers
 		public TestableProject(ProjectCreateInformation createInfo)
 			: base(createInfo)
 		{
+		}
+		
+		public override bool IsStartable {
+			get { return isStartable; }
 		}
 		
 		public override void Save(string fileName)

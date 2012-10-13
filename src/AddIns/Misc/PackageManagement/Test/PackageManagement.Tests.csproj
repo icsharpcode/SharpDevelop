@@ -102,6 +102,7 @@
     <Compile Include="Src\EnvDTE\FileProjectItemsTests.cs" />
     <Compile Include="Src\EnvDTE\NamespaceNameTests.cs" />
     <Compile Include="Src\EnvDTE\ProjectsTests.cs" />
+    <Compile Include="Src\EnvDTE\SolutionBuildTests.cs" />
     <Compile Include="Src\EnvDTE\SolutionGlobalsTests.cs" />
     <Compile Include="Src\EnvDTE\SolutionTests.cs" />
     <Compile Include="Src\Helpers\AttributeHelper.cs" />
