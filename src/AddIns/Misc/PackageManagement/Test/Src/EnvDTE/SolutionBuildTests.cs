@@ -34,6 +34,11 @@ namespace PackageManagement.Tests.EnvDTE
 			solutionHelper.SetStartupProject(project);
 		}
 		
+		void SetActiveConfiguration(string name)
+		{
+			solutionHelper.SetActiveConfiguration(name);
+		}
+		
 		[Test]
 		public void StartupProjects_SolutionHasNoProjects_ReturnsEmptyArray()
 		{
@@ -55,6 +60,18 @@ namespace PackageManagement.Tests.EnvDTE
 			object[] projects = solutionBuild.StartupProjects as object[];
 			
 			CollectionAssert.AreEqual(expectedProjects, projects);
+		}
+		
+		[Test]
+		public void ActiveConfiguration_SolutionHasDebugAsActiveConfig_ReturnsDebugForActiveConfigName()
+		{
+			CreateSolutionBuild();
+			SetActiveConfiguration("Debug");
+			
+			global::EnvDTE.SolutionConfiguration config = solutionBuild.ActiveConfiguration;
+			string name = config.Name;
+			
+			Assert.AreEqual("Debug", name);
 		}
 	}
 }

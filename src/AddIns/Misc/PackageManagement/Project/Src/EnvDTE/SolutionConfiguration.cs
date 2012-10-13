@@ -2,17 +2,21 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class SolutionConfiguration : MarshalByRefObject, global::EnvDTE.SolutionConfiguration
 	{
-		public SolutionConfiguration()
+		SolutionPreferences preferences;
+		
+		public SolutionConfiguration(SolutionPreferences preferences)
 		{
+			this.preferences = preferences;
 		}
 		
 		public string Name {
-			get { throw new NotImplementedException(); }
+			get { return preferences.ActiveConfiguration; }
 		}
 	}
 }

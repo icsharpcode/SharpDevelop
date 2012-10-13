@@ -85,5 +85,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				"StartupProject"
 			};
 		}
+		
+		internal SolutionConfiguration GetActiveConfiguration()
+		{
+			return new SolutionConfiguration(solution.Preferences);
+		}
 	}
 }

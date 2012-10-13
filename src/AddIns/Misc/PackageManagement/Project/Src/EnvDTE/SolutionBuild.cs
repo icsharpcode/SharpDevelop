@@ -19,7 +19,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public global::EnvDTE.SolutionConfiguration ActiveConfiguration {
-			get { throw new NotImplementedException(); }
+			get { return solution.GetActiveConfiguration(); }
 		}
 		
 		/// <summary>

@@ -115,5 +115,10 @@ namespace PackageManagement.Tests.Helpers
 		{
 			MSBuildSolution.Preferences.StartupProject = project;
 		}
+		
+		public void SetActiveConfiguration(string name)
+		{
+			MSBuildSolution.Preferences.ActiveConfiguration = name;
+		}
 	}
 }
