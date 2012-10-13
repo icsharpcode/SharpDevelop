@@ -32,6 +32,35 @@ namespace PackageManagement.Tests.Helpers
 			return project;
 		}
 		
+		public static TestableProject CreateTestWebApplicationProject()
+		{
+			TestableProject project = CreateTestProject();
+			AddWebApplicationProjectType(project);
+			return project;
+		}
+		
+		public static TestableProject CreateTestWebSiteProject()
+		{
+			TestableProject project = CreateTestProject();
+			AddWebSiteProjectType(project);
+			return project;
+		}
+		
+		public static void AddWebApplicationProjectType(MSBuildBasedProject project)
+		{
+			AddProjectType(project, ProjectTypeGuids.WebApplication);
+		}
+		
+		public static void AddWebSiteProjectType(TestableProject project)
+		{
+			AddProjectType(project, ProjectTypeGuids.WebSite);
+		}
+		
+		public static void AddProjectType(MSBuildBasedProject project, string guidText)
+		{
+			project.AddProjectType(Guid.Parse(guidText));
+		}
+		
 		public static void AddReference(MSBuildBasedProject project, string referenceName)
 		{
 			var referenceProjectItem = new ReferenceProjectItem(project, referenceName);
