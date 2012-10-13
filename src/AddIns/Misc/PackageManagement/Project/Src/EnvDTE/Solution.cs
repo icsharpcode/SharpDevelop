@@ -19,6 +19,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.solution = projectService.OpenSolution;
 			this.Projects = new Projects(projectService);
 			this.Globals = new SolutionGlobals(this);
+			CreateProperties();
+		}
+		
+		void CreateProperties()
+		{
+			var propertyFactory = new SolutionPropertyFactory(this);
+			Properties = new Properties(propertyFactory);
 		}
 		
 		public string FullName {
@@ -60,19 +67,23 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return new SolutionBuild(this); }
 		}
 		
-		public global::EnvDTE.Properties Properties {
-			get {
-				throw new NotImplementedException();
-			}
-		}
+		public global::EnvDTE.Properties Properties { get; private set; }
 		
 		internal Project GetStartupProject()
 		{
-			MSBuildBasedProject project = solution.StartupProject as MSBuildBasedProject;
+			MSBuildBasedProject project = solution.Preferences.StartupProject as MSBuildBasedProject;
 			if (project != null) {
 				return new Project(project);
 			}
 			return null;
+		}
+		
+		internal IEnumerable<string> GetAllPropertyNames()
+		{
+			return new string[] {
+				"Path",
+				"StartupProject"
+			};
 		}
 	}
 }

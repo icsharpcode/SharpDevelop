@@ -140,6 +140,8 @@
     <Compile Include="Src\EnvDTE\SolutionExtensibilityGlobals.cs" />
     <Compile Include="Src\EnvDTE\SolutionExtensibilityGlobalsPersistence.cs" />
     <Compile Include="Src\EnvDTE\SolutionGlobals.cs" />
+    <Compile Include="Src\EnvDTE\SolutionProperty.cs" />
+    <Compile Include="Src\EnvDTE\SolutionPropertyFactory.cs" />
     <Compile Include="Src\EnvDTE\SourceControl.cs" />
     <Compile Include="Src\EnvDTE\TextDocument.cs" />
     <Compile Include="Src\EnvDTE\TextPoint.cs" />

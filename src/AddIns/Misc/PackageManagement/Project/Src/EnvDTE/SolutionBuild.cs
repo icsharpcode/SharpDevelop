@@ -8,7 +8,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class SolutionBuild : MarshalByRefObject, global::EnvDTE.SolutionBuild
 	{
 		Solution solution;
-		int lastBuildInfo;
 		
 		public SolutionBuild()
 		{
@@ -27,7 +26,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		/// Returns the number of projects that failed to build.
 		/// </summary>
 		public int LastBuildInfo {
-			get { return lastBuildInfo; }
+			get { return 0; }
 		}
 		
 		public void BuildProject(string solutionConfiguration, string projectUniqueName, bool waitForBuildToFinish)

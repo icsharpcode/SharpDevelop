@@ -104,6 +104,7 @@
     <Compile Include="Src\EnvDTE\ProjectsTests.cs" />
     <Compile Include="Src\EnvDTE\SolutionBuildTests.cs" />
     <Compile Include="Src\EnvDTE\SolutionGlobalsTests.cs" />
+    <Compile Include="Src\EnvDTE\SolutionPropertyTests.cs" />
     <Compile Include="Src\EnvDTE\SolutionTests.cs" />
     <Compile Include="Src\Helpers\AttributeHelper.cs" />
     <Compile Include="Src\Helpers\ClassHelper.cs" />

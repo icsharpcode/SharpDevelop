@@ -30,7 +30,8 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void AddStartupProject(string projectFileName)
 		{
-			solutionHelper.AddProjectToSolutionWithFileName("TestProject", projectFileName);
+			TestableProject project = solutionHelper.AddProjectToSolutionWithFileName("TestProject", projectFileName);
+			solutionHelper.SetStartupProject(project);
 		}
 		
 		[Test]

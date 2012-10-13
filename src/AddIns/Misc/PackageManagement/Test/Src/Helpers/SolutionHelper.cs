@@ -110,5 +110,10 @@ namespace PackageManagement.Tests.Helpers
 				.First();
 			return project.AddFile(include);
 		}
+		
+		public void SetStartupProject(SD.IProject project)
+		{
+			MSBuildSolution.Preferences.StartupProject = project;
+		}
 	}
 }
