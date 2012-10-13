@@ -43,10 +43,25 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		/// <summary>
 		/// Index of 1 returns the first project.
 		/// </summary>
-		public global::EnvDTE.Project Item(int index)
+		public global::EnvDTE.Project Item(object index)
+		{
+			if (index is int) {
+				return Item((int)index);
+			}
+			return Item((string)index);
+		}
+		
+		global::EnvDTE.Project Item(int index)
 		{
 			return GetProjectsInSolution()
 				.Skip(index - 1)
+				.First();
+		}
+		
+		global::EnvDTE.Project Item(string uniqueName)
+		{
+			return GetProjectsInSolution()
+				.Where(p => p.UniqueName == uniqueName)
 				.First();
 		}
 		

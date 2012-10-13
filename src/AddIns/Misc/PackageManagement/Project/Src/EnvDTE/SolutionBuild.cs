@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Project.Commands;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
@@ -31,7 +32,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public void BuildProject(string solutionConfiguration, string projectUniqueName, bool waitForBuildToFinish)
 		{
-			throw new NotImplementedException();
 		}
 		
 		public object StartupProjects {

@@ -8,7 +8,7 @@ Namespace EnvDTE
 		''' <summary>
 		''' Index of 1 returns the first project.
 		''' </summary>
-		Function Item(index As Integer) As Project
+		Function Item(index As Object) As Project
 		
 		ReadOnly Property Count() As Integer
 	End Interface

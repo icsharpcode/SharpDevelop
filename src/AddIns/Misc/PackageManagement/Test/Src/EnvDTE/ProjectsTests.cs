@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using ICSharpCode.PackageManagement.EnvDTE;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -27,6 +28,18 @@ namespace PackageManagement.Tests.EnvDTE
 			TestableProject project = solutionHelper.AddProjectToSolutionWithFileName(projectName1, @"d:\projects\" + projectName1 + ".csproj");
 			solutionHelper.AddProjectToSolutionWithFileName(projectName2, @"d:\projects\" + projectName2 + ".csproj");
 			projects = (Projects)solutionHelper.Solution.Projects;
+		}
+		
+		void CreateSolution(string fileName)
+		{
+			solutionHelper = new SolutionHelper();
+			solutionHelper.MSBuildSolution.FileName = fileName;
+			projects = (Projects)solutionHelper.Solution.Projects;
+		}
+		
+		void AddProjectToSolution(string fileName)
+		{
+			solutionHelper.AddProjectToSolutionWithFileName("MyProject", fileName);
 		}
 		
 		[Test]
@@ -67,6 +80,17 @@ namespace PackageManagement.Tests.EnvDTE
 			int count = projects.Count;
 			
 			Assert.AreEqual(2, count);
+		}
+		
+		[Test]
+		public void Item_GetProjectByUniqueName_ReturnsProject()
+		{
+			CreateSolution(@"d:\projects\MyProject\MySolution.sln");
+			AddProjectToSolution(@"d:\projects\MyProject\SubFolder\MyProject.csproj");
+			
+			Project project = (Project)projects.Item(@"SubFolder\MyProject.csproj");
+			
+			Assert.AreEqual(@"d:\projects\MyProject\SubFolder\MyProject.csproj", project.FileName);
 		}
 	}
 }
