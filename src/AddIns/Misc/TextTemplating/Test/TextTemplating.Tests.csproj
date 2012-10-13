@@ -44,6 +44,9 @@
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="Rhino.Mocks">
+      <HintPath>..\..\..\..\Libraries\RhinoMocks\Rhino.Mocks.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -85,6 +88,7 @@
     <Compile Include="Src\AddInAssemblyNameTests.cs" />
     <Compile Include="Src\AddInAssemblyRuntimeTests.cs" />
     <Compile Include="Src\CompilerErrorTaskTests.cs" />
+    <Compile Include="Src\CustomTextTemplatingServiceProvidersTests.cs" />
     <Compile Include="Src\NamespaceHintTests.cs" />
     <Compile Include="Src\TextTemplatingAssemblyPathResolverTests.cs" />
     <Compile Include="Src\TextTemplatingAssemblyResolverTests.cs" />

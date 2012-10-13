@@ -15,5 +15,10 @@ namespace ICSharpCode.TextTemplating
 				yield return new TextTemplatingAddIn(addIn);
 			}
 		}
+		
+		public List<IServiceProvider> BuildServiceProviders(string path)
+		{
+			return AddInTree.BuildItems<IServiceProvider>(path, null);
+		}
 	}
 }

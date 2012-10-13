@@ -51,4 +51,12 @@
 	<Path name="/SharpDevelop/BackendBindings/Templates">
 		<Directory id="TextTemplating" path="./Templates"/>
 	</Path>
+	
+	<!-- Defines service providers that will be used by the text templating host
+	     to create types before the default TextTemplatingServiceProvider class -->
+	<Path name="/SharpDevelop/TextTemplating/ServiceProviders">
+		<!-- Example
+			<Class id="Default" class="MyNamespace.MyServiceProvider" />
+		-->
+	</Path>
 </AddIn>
