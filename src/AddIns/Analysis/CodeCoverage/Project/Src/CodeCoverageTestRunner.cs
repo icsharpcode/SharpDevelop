@@ -35,7 +35,7 @@ namespace ICSharpCode.CodeCoverage
 			return fileSystem.FileExists(CodeCoverageResultsFileName);
 		}
 		
-		public 	CodeCoverageResults ReadCodeCoverageResults()
+		public CodeCoverageResults ReadCodeCoverageResults()
 		{
 			TextReader reader = fileSystem.CreateTextReader(CodeCoverageResultsFileName);
 			return new CodeCoverageResults(reader);

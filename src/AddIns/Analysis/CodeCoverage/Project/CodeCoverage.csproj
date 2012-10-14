@@ -91,8 +91,10 @@
     <Compile Include="Src\OpenCoverApplication.cs" />
     <Compile Include="Src\OpenCoverSettings.cs" />
     <Compile Include="Src\OpenCoverSettingsFactory.cs" />
+    <Compile Include="Src\ProjectCodeCoverageResultsFileName.cs" />
     <Compile Include="Src\RunAllTestsWithCodeCoverageCommand.cs" />
     <Compile Include="Src\SequencePointListViewSorter.cs" />
+    <Compile Include="Src\SolutionCodeCoverageResults.cs" />
     <Compile Include="Src\ToggleCodeCoverageCommand.cs" />
     <Compile Include="Src\CodeCoverageHighlighter.cs" />
     <Compile Include="Src\CodeCoverageOptions.cs" />
