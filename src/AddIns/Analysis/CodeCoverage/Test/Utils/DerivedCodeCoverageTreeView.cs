@@ -21,19 +21,6 @@ namespace ICSharpCode.CodeCoverage.Tests.Utils
 	}
 	
 	/// <summary>
-	/// Derived ExtTreeNode class so we can check the IsInitialized
-	/// property.
-	/// </summary>
-	public class DerivedExtTreeNode : ExtTreeNode
-	{
-		public bool IsInitialized {
-			get {
-				return base.isInitialized;
-			}
-		}
-	}
-	
-	/// <summary>
 	/// Derived CodeCoverageTreeNode class so we can check the IsInitialized
 	/// property.
 	/// </summary>
@@ -42,12 +29,6 @@ namespace ICSharpCode.CodeCoverage.Tests.Utils
 		public DerivedCodeCoverageTreeNode(string name, CodeCoverageImageListIndex index)
 			: base(name, index)
 		{
-		}
-		
-		public bool IsInitialized {
-			get {
-				return base.isInitialized;
-			}
 		}
 	}
 }

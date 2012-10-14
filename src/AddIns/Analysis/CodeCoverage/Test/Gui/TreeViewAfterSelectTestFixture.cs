@@ -33,7 +33,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Gui
 		public void NonCodeCoverageNodeNotInitialised()
 		{
 			DerivedCodeCoverageTreeView treeView = new DerivedCodeCoverageTreeView();
-			DerivedExtTreeNode node = new DerivedExtTreeNode();
+			ExtTreeNode node = new ExtTreeNode();
 			treeView.CallOnAfterSelect(node);
 			Assert.IsFalse(node.IsInitialized);
 		}
