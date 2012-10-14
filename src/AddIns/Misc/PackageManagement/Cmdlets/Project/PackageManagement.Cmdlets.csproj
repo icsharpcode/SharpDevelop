@@ -46,6 +46,7 @@
     <Compile Include="Src\CmdletTerminatingError.cs" />
     <Compile Include="Src\GetPackageCmdlet.cs" />
     <Compile Include="Src\GetProjectCmdlet.cs" />
+    <Compile Include="Src\GetVSComponentModelCmdlet.cs" />
     <Compile Include="Src\ICmdletTerminatingError.cs" />
     <Compile Include="Src\InstallPackageCmdlet.cs" />
     <Compile Include="Src\InvokeInitializePackagesCmdlet.cs" />

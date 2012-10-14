@@ -103,6 +103,7 @@
     <Compile Include="Src\SourceControl.vb" />
     <Compile Include="Src\TextDocument.vb" />
     <Compile Include="Src\TextPoint.vb" />
+    <Compile Include="Src\VisualStudio\IComponentModel.vb" />
     <Compile Include="Src\VisualStudio\IVsAggregatableProject.vb" />
     <Compile Include="Src\VisualStudio\IVsHierarchy.vb" />
     <Compile Include="Src\VisualStudio\IVsSolution.vb" />

@@ -63,7 +63,7 @@ namespace PackageManagement.Cmdlets.Tests
 				expectedProjectNames.Add(testableProject.Name);
 			}
 			
-			var actualProjectNames = new List<string>();			
+			var actualProjectNames = new List<string>();
 			foreach (Project project in actualProjects) {
 				actualProjectNames.Add(project.Name);
 			}
@@ -219,7 +219,7 @@ namespace PackageManagement.Cmdlets.Tests
 				projectC
 			};
 			
-			ProjectCollectionAssertAreEqual(expectedProjects, projects);			
+			ProjectCollectionAssertAreEqual(expectedProjects, projects);
 		}
 	}
 }

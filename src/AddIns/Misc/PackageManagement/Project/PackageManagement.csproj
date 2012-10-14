@@ -457,7 +457,8 @@
     <Compile Include="Src\PackageManagementViewModels.cs" />
     <Compile Include="Src\VisualStudio\ComponentModel.cs" />
     <Compile Include="Src\VisualStudio\FlavoredProject.cs" />
-    <Compile Include="Src\VisualStudio\IComponentModel.cs" />
+    <Compile Include="Src\VisualStudio\IVsPackageInstallerServices.cs" />
+    <Compile Include="Src\VisualStudio\IVsPackageMetadata.cs" />
     <Compile Include="Src\VisualStudio\NotInstalledException.cs" />
     <Compile Include="Src\VisualStudio\Package.cs" />
     <Compile Include="Src\VisualStudio\SComponentModel.cs" />
@@ -466,6 +467,8 @@
     <Compile Include="Src\VisualStudio\SVsExtensionManager.cs" />
     <Compile Include="Src\VisualStudio\ThreadHelper.cs" />
     <Compile Include="Src\VisualStudio\VsConstants.cs" />
+    <Compile Include="Src\VisualStudio\VsPackageInstallerServices.cs" />
+    <Compile Include="Src\VisualStudio\VsPackageMetadata.cs" />
     <Compile Include="Src\VisualStudio\VsSolution.cs" />
   </ItemGroup>
   <ItemGroup>

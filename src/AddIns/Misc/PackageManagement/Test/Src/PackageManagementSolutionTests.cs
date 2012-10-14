@@ -539,5 +539,19 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(2, projects.Count);
 		}
+		
+		[Test]
+		public void GetInstallPath_OnePackageInSolutionRepository_ReturnsPackageInstallPath()
+		{
+			CreateSolution();
+			FakePackage package = FakePackage.CreatePackageWithVersion("Test", "1.3.4.5");
+			string expectedInstallPath = @"d:\projects\MyProject\packages\TestPackage";
+			fakeSolutionPackageRepository.InstallPathToReturn = expectedInstallPath;
+			
+			string installPath = solution.GetInstallPath(package);
+			
+			Assert.AreEqual(expectedInstallPath, installPath);
+			Assert.AreEqual(package, fakeSolutionPackageRepository.PackagePassedToGetInstallPath);
+		}
 	}
 }

@@ -329,6 +329,7 @@
     <Compile Include="Src\VisualStudio\FlavoredProjectTests.cs" />
     <Compile Include="Src\VisualStudio\PackageTests.cs" />
     <Compile Include="Src\VisualStudio\SVsExtensionManagerTests.cs" />
+    <Compile Include="Src\VisualStudio\VsPackageInstallerServicesTests.cs" />
     <Compile Include="Src\VisualStudio\VsSolutionTests.cs" />
   </ItemGroup>
   <ItemGroup>

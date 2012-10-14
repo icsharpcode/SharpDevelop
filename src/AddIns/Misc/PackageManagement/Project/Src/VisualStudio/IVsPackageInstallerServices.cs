@@ -2,12 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 
-namespace Microsoft.VisualStudio.ComponentModelHost
+namespace NuGet.VisualStudio
 {
-	public interface IComponentModel
+	public interface IVsPackageInstallerServices
 	{
-		T GetService<T>()
-			where T : class;
+		IEnumerable<IVsPackageMetadata> GetInstalledPackages();
 	}
 }
