@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Coverage\TwoClassNamesMatchingAtStartTests.cs" />
     <Compile Include="Coverage\CodeCoverageMethodElementTests.cs" />
     <Compile Include="Coverage\CodeCoverageNamespaceTestFixture.cs" />
     <Compile Include="Coverage\CodeCoveragePropertyCollectionWithGetterAndSetterTestFixture.cs" />

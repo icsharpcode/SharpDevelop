@@ -91,7 +91,7 @@ namespace ICSharpCode.CodeCoverage
 			var methods = reader
 				.Elements("Classes")
 				.Elements("Class")
-				.Where(c => c.Element("FullName").Value.StartsWith(className, StringComparison.Ordinal))
+				.Where(c => c.Element("FullName").Value.Equals(className, StringComparison.Ordinal))
 				.Elements("Methods")
 				.Elements("Method");
 			foreach (XElement method in methods) {
