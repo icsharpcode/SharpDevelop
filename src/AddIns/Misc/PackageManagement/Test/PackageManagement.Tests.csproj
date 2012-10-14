@@ -188,6 +188,7 @@
     <Compile Include="Src\Helpers\TestableInstallProjectTemplatePackagesCommand.cs" />
     <Compile Include="Src\Helpers\TestablePowerShellMissingConsoleHost.cs" />
     <Compile Include="Src\InstallProjectTemplatePackagesCommandTests.cs" />
+    <Compile Include="Src\OpenMSBuildProjectsTests.cs" />
     <Compile Include="Src\PackageManagementServiceProviderTests.cs" />
     <Compile Include="Src\VirtualMethodUpdaterTests.cs" />
     <Compile Include="Src\NewProjectsCreatedTests.cs" />
