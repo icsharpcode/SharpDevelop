@@ -75,7 +75,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			} else {
 				if (state.CurrentMember == null)
 					yield break;
-				isStatic |= state.CurrentMember.IsStatic || state.CurrentTypeDefinition.IsStatic;
+				isStatic |= state.CurrentTypeDefinition.IsStatic;
+				if (targetResolveResult == null)
+					isStatic |= state.CurrentMember.IsStatic;
 			}
 
 	//			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));

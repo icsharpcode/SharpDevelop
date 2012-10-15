@@ -307,5 +307,27 @@ class Foo
 }
 ");
 		}
+
+		[Test()]
+		public void TestNonStaticPropertyInStaticMethod ()
+		{
+			TestCreateProperty (@"class TestClass
+{
+	static void Foo ()
+	{
+		new TestClass ().$NonExistantProperty = 5;
+	}
+}", @"class TestClass
+{
+	int NonExistantProperty {
+		get;
+		set;
+	}
+	static void Foo ()
+	{
+		new TestClass ().NonExistantProperty = 5;
+	}
+}");
+		}
 	}
 }
