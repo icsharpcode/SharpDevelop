@@ -2278,8 +2278,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (resolvedType.Kind != TypeKind.Enum) {
 				return;
 			}
-			completionList.AddEnumMembers(resolvedType, state);
-			DefaultCompletionString = resolvedType.Name;
+			var type = completionList.AddEnumMembers(resolvedType, state);
+			if (type != null)
+				DefaultCompletionString = type.DisplayText;
 		}
 		
 		IEnumerable<ICompletionData> CreateCompletionData(TextLocation location, ResolveResult resolveResult, AstNode resolvedNode, CSharpResolver state, Func<IType, IType> typePred = null)

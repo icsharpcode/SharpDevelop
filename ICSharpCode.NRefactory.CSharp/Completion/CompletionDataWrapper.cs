@@ -230,17 +230,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 		}
 		HashSet<IType> addedEnums = new HashSet<IType> ();
-		public void AddEnumMembers (IType resolvedType, CSharpResolver state)
+		public ICompletionData AddEnumMembers (IType resolvedType, CSharpResolver state)
 		{
 			if (addedEnums.Contains (resolvedType))
-				return;
+				return null;
 			addedEnums.Add (resolvedType);
-			AddType(resolvedType, true);
+			var result = AddType(resolvedType, true);
 			foreach (var field in resolvedType.GetFields ()) {
 				if (field.IsPublic && (field.IsConst || field.IsStatic)) {
 					Result.Add(Factory.CreateMemberCompletionData(resolvedType, field));
 				}
 			}
+			return result;
 		}
 	}
 }
