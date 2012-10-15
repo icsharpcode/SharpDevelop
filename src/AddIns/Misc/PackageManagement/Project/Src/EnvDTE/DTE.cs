@@ -5,11 +5,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
+using Microsoft.VisualStudio.Shell;
 using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class DTE : MarshalByRefObject, global::EnvDTE.DTE
+	public class DTE : MarshalByRefObject, global::EnvDTE.DTE, IServiceProvider
 	{
 		IPackageManagementProjectService projectService;
 		IPackageManagementFileService fileService;
@@ -82,6 +84,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public global::EnvDTE.SourceControl SourceControl {
 			get { return null; }
+		}
+		
+		/// <summary>
+		/// HACK - EnvDTE.DTE actually implements Microsoft.VisualStudio.OLE.Interop.IServiceProvider
+		/// which is COM specific and has a QueryInterface method.
+		/// </summary>
+		object IServiceProvider.GetService(Type serviceType)
+		{
+			return Package.GetGlobalService(serviceType);
 		}
 	}
 }
