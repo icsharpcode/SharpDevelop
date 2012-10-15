@@ -309,6 +309,35 @@ class Foo
 		}
 
 		[Test()]
+		public void TestPropertyFromObjectInitializerInStaticMember ()
+		{
+			TestCreateProperty (
+				@"class TestClass
+{
+	static void TestMethod ()
+	{
+		new TestClass {
+			$NonExistantProperty = 5
+		};
+	}
+}
+", @"class TestClass
+{
+	int NonExistantProperty {
+		get;
+		set;
+	}
+	static void TestMethod ()
+	{
+		new TestClass {
+			NonExistantProperty = 5
+		};
+	}
+}
+");
+		}
+
+		[Test()]
 		public void TestNonStaticPropertyInStaticMethod ()
 		{
 			TestCreateProperty (@"class TestClass

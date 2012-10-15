@@ -233,5 +233,29 @@ class Foo
 }");
 		}
 
+		[Test()]
+		public void TestObjectInitializerInStaticMethod ()
+		{
+			// Not 100% correct input code, but should work in that case as well.
+			Test<CreateFieldAction> (@"class TestClass
+{
+	static void TestMethod ()
+	{
+		new TestClass {
+			$NonExistantProperty = 5
+		};
+	}
+}", @"class TestClass
+{
+	int NonExistantProperty;
+	static void TestMethod ()
+	{
+		new TestClass {
+			NonExistantProperty = 5
+		};
+	}
+}");
+		}
+
 	}
 }

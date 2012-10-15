@@ -79,6 +79,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (targetResolveResult == null)
 					isStatic |= state.CurrentMember.IsStatic;
 			}
+			isStatic &= !(identifier is NamedExpression);
 
 	//			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
 //			if (service != null && !service.IsValidName(propertyName, AffectedEntity.Property, Modifiers.Private, isStatic)) { 

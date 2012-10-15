@@ -75,8 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var state = context.GetResolverStateBefore(expr);
 			if (state.CurrentMember == null || state.CurrentTypeDefinition == null)
 				yield break;
-
-			bool isStatic = state.CurrentMember.IsStatic | state.CurrentTypeDefinition.IsStatic;
+			bool isStatic =  !(expr is NamedExpression) && (state.CurrentMember.IsStatic | state.CurrentTypeDefinition.IsStatic);
 
 //			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
 //			if (service != null && !service.IsValidName(identifier.Identifier, AffectedEntity.Field, Modifiers.Private, isStatic)) { 
