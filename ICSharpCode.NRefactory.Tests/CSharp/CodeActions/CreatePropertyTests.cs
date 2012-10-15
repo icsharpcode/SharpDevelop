@@ -278,5 +278,34 @@ class Foo
 }
 ");
 		}
+
+		[Test()]
+		public void TestPropertyFromObjectInitializer ()
+		{
+			TestCreateProperty (
+				@"class TestClass
+{
+	void TestMethod ()
+	{
+		new TestClass {
+			$NonExistantProperty = 5
+		};
+	}
+}
+", @"class TestClass
+{
+	int NonExistantProperty {
+		get;
+		set;
+	}
+	void TestMethod ()
+	{
+		new TestClass {
+			NonExistantProperty = 5
+		};
+	}
+}
+");
+		}
 	}
 }

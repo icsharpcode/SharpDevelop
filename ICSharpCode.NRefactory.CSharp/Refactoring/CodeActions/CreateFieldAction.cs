@@ -44,9 +44,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return invoke != null && invoke.Target == node;
 		}
 
+		internal static Expression GetCreatePropertyOrFieldNode(RefactoringContext context)
+		{
+			return context.GetNode(n => n is IdentifierExpression || n is MemberReferenceExpression || n is NamedExpression) as Expression;
+		}
+
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			var expr = context.GetNode(n => n is IdentifierExpression || n is MemberReferenceExpression) as Expression;
+			var expr = GetCreatePropertyOrFieldNode(context);
 			if (expr == null)
 				yield break;
 
@@ -174,6 +179,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 
 			if (expr.Parent is ArrayInitializerExpression) {
+				if (expr is NamedExpression)
+					return new [] { resolver.Resolve(((NamedExpression)expr).Expression).Type };
+
 				var aex = expr.Parent as ArrayInitializerExpression;
 				if (aex.IsSingleElement)
 					aex = aex.Parent as ArrayInitializerExpression;

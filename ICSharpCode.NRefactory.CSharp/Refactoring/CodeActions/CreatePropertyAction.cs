@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			var identifier = context.GetNode(n => n is IdentifierExpression || n is MemberReferenceExpression) as Expression;
+			var identifier = CreateFieldAction.GetCreatePropertyOrFieldNode (context);
 			if (identifier == null)
 				yield break;
 			if (CreateFieldAction.IsInvocationTarget(identifier))
@@ -118,6 +118,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return ((IdentifierExpression)expr).Identifier;
 			if (expr is MemberReferenceExpression) 
 				return ((MemberReferenceExpression)expr).MemberName;
+			if (expr is NamedExpression) 
+				return ((NamedExpression)expr).Name;
 
 			return null;
 		}
