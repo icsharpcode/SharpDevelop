@@ -206,7 +206,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual short FileCount {
-			get { throw new NotImplementedException(); }
+			get { return 1; }
 		}
 	}
 }

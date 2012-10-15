@@ -359,5 +359,18 @@ namespace PackageManagement.Tests.EnvDTE
 			};
 			ProjectItemCollectionAssert.AreEqual(expectedFiles, mainFormProjectItems);
 		}
+		
+		[Test]
+		public void FileCount_FileProjectItem_ReturnsOne()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"program.cs");
+			global::EnvDTE.ProjectItem projectItem = projectItems.Item("program.cs");
+			
+			short count = projectItem.FileCount;
+			
+			Assert.AreEqual(1, count);
+		}
 	}
 }
