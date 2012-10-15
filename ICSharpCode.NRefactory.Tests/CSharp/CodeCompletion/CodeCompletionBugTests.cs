@@ -5672,5 +5672,49 @@ namespace bug
 		}
 
 
+		/// <summary>
+		/// Bug 7795 - Completion cannot handle nested types 
+		/// </summary>
+		[Test()]
+		public void TestBug7795 ()
+		{
+
+			CombinedProviderTest(
+				@"
+using System;
+using System.Linq;
+using System.Collections;
+
+class Foo
+{
+    public enum Selector
+    {
+        VV
+    }
+}
+
+public class Bugged
+{
+    static void Test (Foo.Selector selector)
+    {
+
+    }
+
+    void Selector ()
+    {
+
+    }
+
+    public static void Main ()
+    {
+        Test ($S$);
+    }
+}
+", provider => {
+				Assert.AreEqual ("Foo.Selector", provider.DefaultCompletionString);
+			});
+		}
+
+
 	}
 }
