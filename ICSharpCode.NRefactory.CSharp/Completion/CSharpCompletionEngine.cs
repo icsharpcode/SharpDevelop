@@ -1297,7 +1297,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (type.Kind == TypeKind.Enum) {
 						AddEnumMembers(wrapper, type, state);
 					} else if (type.Kind == TypeKind.Delegate) {
-						AddDelegateHandlers(wrapper, type, true, true);
+						AddDelegateHandlers(wrapper, type, false, true);
 						AutoSelect = false;
 						AutoCompleteEmptyMatch = false;
 					}
@@ -2230,7 +2230,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				} else if (resolvedType.Kind == TypeKind.Delegate) {
 					if (addedDelegates.Contains(resolvedType.ReflectionName))
 						continue;
-					string parameterDefinition = AddDelegateHandlers(result, resolvedType);
+					string parameterDefinition = AddDelegateHandlers(result, resolvedType, false);
 					string varName = "Handle" + method.Parameters [parameter].Type.Name + method.Parameters [parameter].Name;
 					result.Result.Add(
 						factory.CreateEventCreationCompletionData(
