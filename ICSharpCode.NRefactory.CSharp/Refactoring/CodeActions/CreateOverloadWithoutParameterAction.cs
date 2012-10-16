@@ -112,7 +112,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var members = type.GetMembers ().ToArray();
 				if (members.Length == 0)
 					return new DefaultValueExpression (astType.Clone ());
-				return astType.Member(members[0].Name);
+				return astType.Member(members[0].Name).Clone ();
 			}
 
 			if ((type.IsReferenceType ?? false) || type.Kind == TypeKind.Dynamic)
