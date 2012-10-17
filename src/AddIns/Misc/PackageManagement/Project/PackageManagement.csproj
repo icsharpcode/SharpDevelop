@@ -102,7 +102,6 @@
     <Compile Include="Src\EnvDTE\CodeParameter2.cs" />
     <Compile Include="Src\EnvDTE\CodeParameters.cs" />
     <Compile Include="Src\EnvDTE\CodeModel.cs" />
-    <Compile Include="Src\EnvDTE\CodeModelLanguageConstants.cs" />
     <Compile Include="Src\EnvDTE\CodeNamespace.cs" />
     <Compile Include="Src\EnvDTE\CodeParameter.cs" />
     <Compile Include="Src\EnvDTE\CodeProperty.cs" />
@@ -148,6 +147,7 @@
     <Compile Include="Src\EnvDTE\Window.cs" />
     <Compile Include="Src\IClassKindUpdater.cs" />
     <Compile Include="Src\IDocumentNamespaceCreator.cs" />
+    <Compile Include="Src\IProjectContentExtensions.cs" />
     <Compile Include="Src\IVirtualMethodUpdater.cs" />
     <Compile Include="Src\IProjectBrowserUpdater.cs" />
     <Compile Include="Src\IRefactoringDocumentView.cs" />

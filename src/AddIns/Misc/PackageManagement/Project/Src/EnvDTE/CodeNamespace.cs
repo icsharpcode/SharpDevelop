@@ -21,7 +21,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.projectContent = projectContent;
 			this.namespaceName = namespaceName;
 			this.InfoLocation = global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal;
-			this.Language = GetLanguage(projectContent);
+			this.Language = projectContent.GetCodeModelLanguage();
 		}
 		
 		public override global::EnvDTE.vsCMElement Kind {

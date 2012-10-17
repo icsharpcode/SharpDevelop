@@ -21,10 +21,39 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateCodeModel()
 		{
-			helper = new ProjectContentHelper();
+			CreateProjectContentHelper();
+			CreateProjectForProjectContent();
+			CreateCodeModel(helper.ProjectContent);
+		}
+		
+		void CreateProjectForProjectContent()
+		{
 			msbuildProject = ProjectHelper.CreateTestProject();
 			helper.SetProjectForProjectContent(msbuildProject);
-			codeModel = new CodeModel(helper.ProjectContent);
+		}
+
+		void CreateProjectContentHelper()
+		{
+			helper = new ProjectContentHelper();
+		}
+		
+		void CreateCodeModel(IProjectContent projectContent)
+		{
+			codeModel = new CodeModel(projectContent);
+		}
+		
+		void CreateCodeModelWithCSharpProject()
+		{
+			CreateProjectContentHelper();
+			helper.ProjectContentIsForCSharpProject();
+			CreateCodeModel(helper.ProjectContent);
+		}
+		
+		void CreateCodeModelWithVisualBasicProject()
+		{
+			CreateProjectContentHelper();
+			helper.ProjectContentIsForVisualBasicProject();
+			CreateCodeModel(helper.ProjectContent);
 		}
 		
 		void AddClassToProjectContent(string className)
@@ -50,6 +79,16 @@ namespace PackageManagement.Tests.EnvDTE
 		void AddInterfaceToDifferentProjectContent(string interfaceName)
 		{
 			helper.AddInterfaceToDifferentProjectContent(interfaceName);
+		}
+		
+		void ProjectIsCSharpProject()
+		{
+			helper.ProjectContentIsForCSharpProject();
+		}
+		
+		void ProjectIsVisualBasicProject()
+		{
+			helper.ProjectContentIsForVisualBasicProject();
 		}
 		
 		[Test]
@@ -184,7 +223,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject, codeClass.InfoLocation);
 		}
-				
+		
 		[Test]
 		public void CodeTypeFromFullName_ClassExistsInDifferentProject_InfoLocationIsExternal()
 		{
@@ -216,6 +255,26 @@ namespace PackageManagement.Tests.EnvDTE
 			var codeInterface = codeModel.CodeTypeFromFullName("Tests.ITest") as CodeInterface;
 			
 			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal, codeInterface.InfoLocation);
+		}
+		
+		[Test]
+		public void Language_CSharpProject_ReturnsCSharpProjectGuid()
+		{
+			CreateCodeModelWithCSharpProject();
+			
+			string language = codeModel.Language;
+			
+			Assert.AreEqual(global::EnvDTE.CodeModelLanguageConstants.vsCMLanguageCSharp, language);
+		}
+		
+		[Test]
+		public void Language_VisualBasicProject_ReturnsVisualBasicProjectGuid()
+		{
+			CreateCodeModelWithVisualBasicProject();
+			
+			string language = codeModel.Language;
+			
+			Assert.AreEqual(global::EnvDTE.CodeModelLanguageConstants.vsCMLanguageVB, language);
 		}
 	}
 }

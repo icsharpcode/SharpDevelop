@@ -18,18 +18,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public CodeElement(IEntity entity)
 		{
 			this.Entity = entity;
-			this.Language = GetLanguage(entity.ProjectContent);
-		}
-		
-		protected string GetLanguage(IProjectContent projectContent)
-		{
-			if (projectContent.Project != null) {
-				var projectType = new ProjectType(projectContent.Project as MSBuildBasedProject);
-				if (projectType.Type == ProjectType.VBNet) {
-					return CodeModelLanguageConstants.vsCMLanguageVB;
-				}
-			}
-			return CodeModelLanguageConstants.vsCMLanguageCSharp;
+			this.Language = entity.ProjectContent.GetCodeModelLanguage();
 		}
 		
 		protected IEntity Entity { get; private set; }

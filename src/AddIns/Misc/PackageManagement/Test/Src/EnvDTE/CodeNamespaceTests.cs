@@ -135,7 +135,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			string language = codeNamespace.Language;
 			
-			Assert.AreEqual(CodeModelLanguageConstants.vsCMLanguageCSharp, language);
+			Assert.AreEqual(global::EnvDTE.CodeModelLanguageConstants.vsCMLanguageCSharp, language);
 		}
 		
 		[Test]
@@ -147,7 +147,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			string language = codeNamespace.Language;
 			
-			Assert.AreEqual(CodeModelLanguageConstants.vsCMLanguageVB, language);
+			Assert.AreEqual(global::EnvDTE.CodeModelLanguageConstants.vsCMLanguageVB, language);
 		}
 		
 		[Test]

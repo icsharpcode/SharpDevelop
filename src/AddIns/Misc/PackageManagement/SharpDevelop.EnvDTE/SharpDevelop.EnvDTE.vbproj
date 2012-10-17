@@ -65,6 +65,7 @@
     <Compile Include="Src\CodeFunction2.vb" />
     <Compile Include="Src\CodeImport.vb" />
     <Compile Include="Src\CodeInterface.vb" />
+    <Compile Include="Src\CodeLanguageModelConstants.vb" />
     <Compile Include="Src\CodeModel.vb" />
     <Compile Include="Src\CodeModelLanguageConstants.vb" />
     <Compile Include="Src\CodeNamespace.vb" />

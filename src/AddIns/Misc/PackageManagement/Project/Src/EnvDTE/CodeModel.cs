@@ -43,7 +43,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public string Language {
-			get { throw new NotImplementedException(); }
+			get { return projectContent.GetCodeModelLanguage(); }
 		}
 	}
 }
