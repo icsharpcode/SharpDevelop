@@ -40,7 +40,7 @@ namespace ICSharpCode.CodeAnalysis
 	public partial class AnalysisProjectOptionsPanelXaml : ProjectOptionPanel
 	{
 		private bool initSuccess;
-		private bool userCheck;
+//		private bool userCheck;
 		private Dictionary<string, RuleTreeNode> rules = new Dictionary<string, RuleTreeNode>();
 		
 		public AnalysisProjectOptionsPanelXaml()
@@ -92,6 +92,7 @@ namespace ICSharpCode.CodeAnalysis
 		
 		string CreateRuleString()
 		{
+			Console.WriteLine ("CreateRuleString()");
 			StringBuilder b = new StringBuilder();
 			foreach (SharpTreeNode category in ruleTreeView.Items) {
 				foreach (RuleTreeNode rule in category.Children) {
@@ -103,6 +104,7 @@ namespace ICSharpCode.CodeAnalysis
 						else
 							b.Append('-');
 						if (rule.isError)
+							Console.WriteLine("Error Node found");
 							b.Append('!');
 						b.Append(rule.Identifier);
 					}
@@ -114,13 +116,15 @@ namespace ICSharpCode.CodeAnalysis
 		
 		void ReadRuleString()
 		{
-			userCheck = false;
+			Console.WriteLine("ReadRuleString()");
+//			userCheck = false;
 			foreach (SharpTreeNode cat in ruleTreeView.Root.Children) {
 				foreach (RuleTreeNode rtn in cat.Children) {
 					rtn.IsChecked = true;
 					rtn.isError = false;
 				}
 			}
+			Console.WriteLine("{0}",ruleString);
 			foreach (string rule2 in ruleString.Split(';')) {
 				string rule = rule2;
 				if (rule.Length == 0) continue;
@@ -143,19 +147,22 @@ namespace ICSharpCode.CodeAnalysis
 					ruleNode.Index = 1;
 				}
 			}
-			
-			
-			userCheck = true;
-			SetCheckedState();
+//			userCheck = true;
+//			SetCheckedState();
 			SetCategoryIcon();
 		}
-
 		
+	
+		/*
 		void SetCheckedState()
 		{
 			foreach (SharpTreeNode cat in ruleTreeView.Root.Children) {
 				bool noneChecked = true;
 				foreach (RuleTreeNode rtn in cat.Children) {
+					if (!(bool) rtn.IsChecked) {
+						
+Console.WriteLine("uncheck");
+					}
 					if ((bool)rtn.IsChecked) {
 						noneChecked = false;
 						break;
@@ -164,18 +171,21 @@ namespace ICSharpCode.CodeAnalysis
 				cat.IsChecked = !noneChecked;
 			}
 		}
-
+        */
 		
-		private void SetCategoryIcon() {
-			
-			Console.WriteLine("SetCategoryicon");
-			foreach (CategoryTreeNode categoryNode in ruleTreeView.Root.Children) {
-				categoryNode.CheckMode();
-			}
-			
-			Console.WriteLine("--------------");
-			
-		}
+       private void SetCategoryIcon() {
+       	foreach (CategoryTreeNode categoryNode in ruleTreeView.Root.Children) {
+       		foreach (RuleTreeNode rtn in categoryNode.Children) {
+       			if (!(bool) rtn.IsChecked) {
+       				Console.WriteLine("uncheck");
+       			}
+       			if (rtn.isError) {
+       				Console.WriteLine("Error");
+       			}
+       		}
+       		categoryNode.CheckMode();
+       	}
+       }
 		
 		string ruleString = "";
 		
@@ -197,6 +207,7 @@ namespace ICSharpCode.CodeAnalysis
 		#endregion
 		
 		#region overrides
+		
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
@@ -257,8 +268,11 @@ namespace ICSharpCode.CodeAnalysis
 		private void OnPropertyChanged(object sender,System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (initSuccess) {
-				Console.WriteLine("OnPropertyChanged {0}",e.PropertyName);
 				if (e.PropertyName == "Index") {
+					base.IsDirty = true;
+				}
+				
+				if (e.PropertyName == "IsChecked") {
 					base.IsDirty = true;
 				}
 			}

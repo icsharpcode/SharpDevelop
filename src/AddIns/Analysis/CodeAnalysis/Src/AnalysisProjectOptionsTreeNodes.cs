@@ -42,7 +42,7 @@ namespace ICSharpCode.CodeAnalysis
 			imageSource = ToImageSource(icon);
 			this.RuleState.Add(Tuple.Create<ImageSource,string>(imageSource,
 			                                                    ResourceService.GetString("Global.ErrorText")));
-//			bla.Add(Tuple.Create<Icon,string>(null,"None"));
+			
 		}
 		
 		private static ImageSource ToImageSource( Icon icon)
@@ -105,24 +105,17 @@ namespace ICSharpCode.CodeAnalysis
 			get { return category.DisplayName; }
 		}
 		
-		bool ignoreCheckMode;
+
 		public override int Index {
 			get { return base.Index; }
 			set {
 				if (value != base.Index) {
 					base.Index = value;
 					if (mixedModeTuple == null) {
-						Console.WriteLine("Set all to index");
-						ignoreCheckMode = true;
 						foreach (RuleTreeNode rule in this.Children) {
 							rule.Index = Index;
 						}
-						ignoreCheckMode = false;
-//						CheckMode();
-//						base.RaisePropertyChanged("Index");
-//						foreach (RuleTreeNode rule in this.Children) {
-//							Console.WriteLine(rule.Index.ToString());
-//						}
+						CheckMode();
 					}
 				}
 			}
@@ -131,7 +124,6 @@ namespace ICSharpCode.CodeAnalysis
 		
 		private void AddMixedMode()
 		{
-			Console.WriteLine("AddMixedMode");
 			if (!RuleState.Contains(mixedModeTuple)) {
 				var image = PresentationResourceService.GetBitmapSource("Icons.16x16.ClosedFolderBitmap");
 				mixedModeTuple = Tuple.Create<ImageSource,string>(image,
@@ -145,7 +137,6 @@ namespace ICSharpCode.CodeAnalysis
 		
 		private void RemoveMixedMode()
 		{
-			Console.WriteLine("RemoveMixedMode(");
 			if (mixedModeTuple != null) {
 				if (RuleState.Contains(mixedModeTuple)) {
 					RuleState.Remove(mixedModeTuple);
@@ -158,29 +149,36 @@ namespace ICSharpCode.CodeAnalysis
 		
 		public void CheckMode ()
 		{
-			if (! ignoreCheckMode) {
-				Console.WriteLine("CheckMode");
-				if (!NewErrorState.HasValue) {
-					Console.WriteLine ("\t{0} is Mixed Mode",Text);
+			var state = ErrorState;
+			
+			if (state == 0) {
+				RemoveMixedMode();
+			} else if (state == 1) {
+//				RemoveMixedMode();
+				AddMixedMode();
+			} else {
+				AddMixedMode();	
+				Console.WriteLine("Unchecked");
+			}
+		}
+		
+		/*
+		public void CheckMode ()
+		{
+//			if (! ignoreCheckMode) {
+//				Console.WriteLine("CheckMode");
+				if (!ErrorState.HasValue) {
+//					Console.WriteLine ("\t{0} is Mixed Mode",Text);
 					AddMixedMode();
 				}
 				else{
 					RemoveMixedMode();
-					/*
-					if (NewErrorState == true) {
-						Console.WriteLine ("\t{0} is Error",Text);
-//					Index = 1;
-					} else {
-						Console.WriteLine ("\t{0} is Warning",Text);
-//						categoryNode.Index = ;
-					}
-					 */
 				}
-			}
+//			}
 		}
-		
-		
-		public Nullable<bool> NewErrorState {
+		*/
+		/*
+		public Nullable<bool> ErrorState {
 			get {
 				bool allWarn = true;
 				bool allErr = true;
@@ -196,30 +194,38 @@ namespace ICSharpCode.CodeAnalysis
 					return false;
 				else
 					return null;
-
 			}
 		}
+		*/
 		
-		/*
-			internal int ErrorState {
-				get {
-					bool allWarn = true;
-					bool allErr = true;
-					foreach (RuleTreeNode tn in Children) {
-						if (tn.isError)
-							allWarn = false;
-						else
-							allErr = false;
-					}
-					if (allErr)
-						return 1;
-					else if (allWarn)
-						return 0;
+		internal int ErrorState {
+			get {
+				bool allWarn = true;
+				bool allErr = true;
+				foreach (RuleTreeNode tn in Children) {
+					if (tn.isError)
+						allWarn = false;
 					else
-						return -1;
+						allErr = false;
 				}
+				/*
+				if (allErr)
+					return 1;
+				else if (allWarn)
+					return 0;
+				else
+					return -1;
+					*/
+				if (allErr)
+					return 1;
+				if (allWarn) {
+					return 0;
+				}
+//				else
+//					return -1;	
+				return -1;
 			}
-		 */
+		}
 	}
 	
 	
@@ -230,10 +236,7 @@ namespace ICSharpCode.CodeAnalysis
 		
 		internal bool isError {
 			get { return error; }
-			set {
-				error = value;
-//				Index = 1;
-			}
+			set {error = value;}
 		}
 		
 		
@@ -262,11 +265,14 @@ namespace ICSharpCode.CodeAnalysis
 			set {
 				if (base.Index != value) {
 					isError = value == 1;
+					if (isError) {
+						Console.WriteLine ("RuleNode {0} - index {1} - error {2}",rule.DisplayName,Index, isError);
+					}
 					base.Index = value;
 					RaisePropertyChanged("Index");
-					var p = Parent as CategoryTreeNode;
-					p.CheckMode();
-					Console.WriteLine ("RuleNode {0} - index {1} - error {2}",rule.DisplayName,Index, isError);
+					var parent = Parent as CategoryTreeNode;
+					parent.CheckMode();
+//					
 				}
 			}
 		}
