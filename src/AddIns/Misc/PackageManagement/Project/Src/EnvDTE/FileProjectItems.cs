@@ -63,5 +63,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			return Project.AddFileProjectItemWithDependentUsingFullPath(fileName, projectItem.Name);
 		}
+		
+		public override string Kind {
+			get { return global::EnvDTE.Constants.vsProjectItemKindPhysicalFile; }
+		}
 	}
 }

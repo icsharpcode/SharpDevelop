@@ -5,10 +5,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Project;
+using Microsoft.VisualStudio;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 using Rhino.Mocks;
@@ -361,6 +361,31 @@ namespace PackageManagement.Tests.EnvDTE
 			string projectItemName = projectItem.Name;
 			
 			Assert.AreEqual("Program.cs", projectItemName);
+		}
+		
+		[Test]
+		public void Kind_FileProjectItems_ReturnsItemKindPhysicalFile()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile("program.cs");
+			
+			string kind = projectItems
+				.Item("program.cs")
+				.ProjectItems
+				.Kind;
+			
+			Assert.AreEqual(global::EnvDTE.Constants.vsProjectItemKindPhysicalFile, kind);
+		}
+		
+		[Test]
+		public void Kind_ProjectItemsForProject_ReturnsItemKindPhysicalFolder()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile("program.cs");
+			
+			string kind = projectItems.Kind;
+			
+			Assert.AreEqual(global::EnvDTE.Constants.vsProjectItemKindPhysicalFolder, kind);
 		}
 		
 		[Test]

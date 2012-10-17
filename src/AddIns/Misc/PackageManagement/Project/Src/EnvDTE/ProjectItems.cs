@@ -139,7 +139,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual string Kind {
-			get { throw new NotImplementedException(); }
+			get { return global::EnvDTE.Constants.vsProjectItemKindPhysicalFolder; }
 		}
 	}
 }
