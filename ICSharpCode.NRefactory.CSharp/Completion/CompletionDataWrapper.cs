@@ -95,13 +95,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		}
 
 		Dictionary<string, ICompletionData> typeDisplayText = new Dictionary<string, ICompletionData> ();
-		Dictionary<string, ICompletionData> addedTypes = new Dictionary<string, ICompletionData> ();
+		Dictionary<IType, ICompletionData> addedTypes = new Dictionary<IType, ICompletionData> ();
 		public ICompletionData AddType(IType type, bool showFullName, bool isInAttributeContext = false)
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
 			if (type.Name == "Void" && type.Namespace == "System" || type.Kind == TypeKind.Unknown)
 				return null;
+			if (addedTypes.ContainsKey (type))
+				return addedTypes[type];
 
 			var def = type.GetDefinition();
 			if (def != null && def.ParentAssembly != completion.ctx.CurrentAssembly && !def.IsBrowsable())
@@ -110,18 +112,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var data = Factory.CreateTypeCompletionData(type, showFullName, isInAttributeContext);
 			var text = data.DisplayText;
 
-			var reflectionName = text + "~" + type.TypeParameterCount;
-			if (addedTypes.ContainsKey(reflectionName))
-				return addedTypes[reflectionName];
-
-
 			if (typeDisplayText.TryGetValue(text, out usedType)) {
 				usedType.AddOverload(data);
 				return usedType;
 			} 
 			typeDisplayText [text] = data;
 			result.Add(data);
-			addedTypes[reflectionName] = data;
+			addedTypes[type] = data;
 			return data;
 		}
 
