@@ -1043,6 +1043,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					child.AcceptVisitor(this);
 				} else if (child is Comment) {
 					child.AcceptVisitor(this);
+				} else if (child is NewLineNode) {
+					// ignore
 				} else {
 					// pre processor directives at line start, if they are there.
 					if (child.StartLocation.Column > 1)

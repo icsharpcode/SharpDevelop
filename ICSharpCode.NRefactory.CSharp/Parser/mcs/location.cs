@@ -414,8 +414,25 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 			Documentation,
 			InactiveCode
 		}
+
+		public class SpecialVisitor
+		{
+			public virtual void Visit (Comment comment)
+			{
+			}
+			public virtual void Visit (NewLineToken newLineToken)
+			{
+			}
+			public virtual void Visit (PreProcessorDirective preProcessorDirective)
+			{
+			}
+		}
+		public abstract class SpecialBase
+		{
+			public abstract void Accept (SpecialVisitor visitor);
+		}
 		
-		public class Comment
+		public class Comment : SpecialBase
 		{
 			public readonly CommentType CommentType;
 			public readonly bool StartsLine;
@@ -440,9 +457,33 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 			{
 				return string.Format ("[Comment: CommentType={0}, Line={1}, Col={2}, EndLine={3}, EndCol={4}, Content={5}]", CommentType, Line, Col, EndLine, EndCol, Content);
 			}
+
+			public override void Accept (SpecialVisitor visitor)
+			{
+				visitor.Visit (this);
+			}
 		}
-		
-		public class PreProcessorDirective
+
+		public class NewLineToken : SpecialBase
+		{
+			public readonly int Line;
+			public readonly int Col;
+			public readonly NewLine NewLine;
+
+			public NewLineToken (int line, int col, NewLine newLine)
+			{
+				this.Line = line;
+				this.Col = col;
+				this.NewLine = newLine;
+			}
+
+			public override void Accept (SpecialVisitor visitor)
+			{
+				visitor.Visit (this);
+			}
+		}
+
+		public class PreProcessorDirective : SpecialBase
 		{
 			public readonly int Line;
 			public readonly int Col;
@@ -464,13 +505,18 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 				this.Arg = arg;
 			}
 			
+			public override void Accept (SpecialVisitor visitor)
+			{
+				visitor.Visit (this);
+			}
+
 			public override string ToString ()
 			{
 				return string.Format ("[PreProcessorDirective: Line={0}, Col={1}, EndLine={2}, EndCol={3}, Cmd={4}, Arg={5}]", Line, Col, EndLine, EndCol, Cmd, Arg);
 			}
 		}
 		
-		public readonly List<object> Specials = new List<object> ();
+		public readonly List<SpecialBase> Specials = new List<SpecialBase> ();
 		
 		CommentType curComment;
 		bool startsLine;
@@ -517,6 +563,14 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 			if (inComment)
 				EndComment (startLine, startCol);
 			Specials.Add (new PreProcessorDirective (startLine, startCol, endLine, endColumn, cmd, arg));
+		}
+
+		public enum NewLine { Unix, Windows }
+
+		[Conditional ("FULL_AST")]
+		public void AddNewLine (int line, int col, NewLine newLine)
+		{
+			Specials.Add (new NewLineToken (line, col, newLine));
 		}
 
 		public void SkipIf ()

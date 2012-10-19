@@ -3630,6 +3630,15 @@ namespace ICSharpCode.NRefactory.CSharp
 							Argument = directive.Arg,
 							Take = directive.Take
 						};
+					} else {
+	/*					var newLine = special as SpecialsBag.NewLineToken;
+						if (newLine != null) {
+							if (newLine.NewLine == SpecialsBag.NewLine.Unix) {
+								newLeaf = new UnixNewLine (new TextLocation (newLine.Line, newLine.Col));
+							} else {
+								newLeaf = new WindowsNewLine (new TextLocation (newLine.Line, newLine.Col));
+							}
+						}*/
 					}
 				}
 				if (newLeaf == null)
@@ -3644,7 +3653,9 @@ namespace ICSharpCode.NRefactory.CSharp
 							leaf = node;
 							node = node.Parent;
 						}
-						if (newLeaf is Comment) {
+						if (newLeaf is NewLineNode) {
+							node.InsertChildBefore (leaf, (NewLineNode)newLeaf, Roles.NewLine);
+						} else if (newLeaf is Comment) {
 							node.InsertChildBefore (leaf, (Comment)newLeaf, Roles.Comment);
 						} else {
 							node.InsertChildBefore (leaf, (PreProcessorDirective)newLeaf, Roles.PreProcessorDirective);
@@ -3656,7 +3667,9 @@ namespace ICSharpCode.NRefactory.CSharp
 					// insert comment at the end
 					if (nextLeaf == null) {
 						var node = leaf.Parent ?? conversionVisitor.Unit;
-						if (newLeaf is Comment) {
+						if (newLeaf is NewLineNode) {
+							node.AddChild ((NewLineNode)newLeaf, Roles.NewLine);
+						} else if (newLeaf is Comment) {
 							node.AddChild ((Comment)newLeaf, Roles.Comment);
 						} else {
 							node.AddChild ((PreProcessorDirective)newLeaf, Roles.PreProcessorDirective);
@@ -3668,7 +3681,9 @@ namespace ICSharpCode.NRefactory.CSharp
 					// comment is between 2 nodes
 					if (leaf.EndLocation <= newLeaf.StartLocation && newLeaf.StartLocation <= nextLeaf.StartLocation) {
 						var node = leaf.Parent ?? conversionVisitor.Unit;
-						if (newLeaf is Comment) {
+						if (newLeaf is NewLineNode) {
+							node.InsertChildAfter (leaf, (NewLineNode)newLeaf, Roles.NewLine);
+						} else if (newLeaf is Comment) {
 							node.InsertChildAfter (leaf, (Comment)newLeaf, Roles.Comment);
 						} else {
 							node.InsertChildAfter (leaf, (PreProcessorDirective)newLeaf, Roles.PreProcessorDirective);
@@ -3884,6 +3899,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		IEnumerable<EntityDeclaration> ParseTypeMembers (string code, int initialLine, int initialColumn)
 		{
 			const string prefix = "unsafe partial class MyClass { ";
+			Console.WriteLine("---");
+			Console.WriteLine(prefix + code + "}");
+			Console.WriteLine("---");
 			var syntaxTree = Parse (new StringTextSource (prefix + code + "}"), "parsed.cs", initialLine, initialColumn - prefix.Length);
 			if (syntaxTree == null)
 				return Enumerable.Empty<EntityDeclaration> ();

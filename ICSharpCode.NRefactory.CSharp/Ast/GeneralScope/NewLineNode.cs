@@ -76,6 +76,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 		}
 
+		public override string GetText(CSharpFormattingOptions formattingOptions)
+		{
+			return "\n";
+		}
+
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			var o = other as UnixNewLine;
@@ -99,6 +104,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 		}
 
+		public override string GetText(CSharpFormattingOptions formattingOptions)
+		{
+			return "\r\n";
+		}
+
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			var o = other as WindowsNewLine;
@@ -120,6 +130,11 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public MacNewLine(TextLocation startLocation) : base (startLocation)
 		{
+		}
+
+		public override string GetText(CSharpFormattingOptions formattingOptions)
+		{
+			return "\r";
 		}
 
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
