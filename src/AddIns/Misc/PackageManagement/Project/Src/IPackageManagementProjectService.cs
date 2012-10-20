@@ -12,6 +12,7 @@ namespace ICSharpCode.PackageManagement
 	{
 		IProject CurrentProject { get; }
 		Solution OpenSolution { get; }
+		IProjectBuilder ProjectBuilder { get; }
 		
 		event ProjectEventHandler ProjectAdded;
 		event SolutionFolderEventHandler SolutionFolderRemoved;

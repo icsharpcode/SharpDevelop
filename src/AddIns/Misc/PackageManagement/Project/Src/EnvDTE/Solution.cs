@@ -19,6 +19,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.solution = projectService.OpenSolution;
 			this.Projects = new Projects(projectService);
 			this.Globals = new SolutionGlobals(this);
+			this.SolutionBuild = new SolutionBuild(this, projectService.ProjectBuilder);
 			CreateProperties();
 		}
 		
@@ -63,10 +64,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return null;
 		}
 		
-		public global::EnvDTE.SolutionBuild SolutionBuild {
-			get { return new SolutionBuild(this); }
-		}
-		
+		public global::EnvDTE.SolutionBuild SolutionBuild { get; private set; }
 		public global::EnvDTE.Properties Properties { get; private set; }
 		
 		internal Project GetStartupProject()
