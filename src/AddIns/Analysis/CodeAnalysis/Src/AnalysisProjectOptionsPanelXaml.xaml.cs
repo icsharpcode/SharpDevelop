@@ -92,7 +92,7 @@ namespace ICSharpCode.CodeAnalysis
 		
 		string CreateRuleString()
 		{
-			Console.WriteLine ("CreateRuleString()");
+
 			StringBuilder b = new StringBuilder();
 			foreach (SharpTreeNode category in ruleTreeView.Items) {
 				foreach (RuleTreeNode rule in category.Children) {
@@ -104,7 +104,6 @@ namespace ICSharpCode.CodeAnalysis
 						else
 							b.Append('-');
 						if (rule.isError)
-							Console.WriteLine("Error Node found");
 							b.Append('!');
 						b.Append(rule.Identifier);
 					}
@@ -116,15 +115,13 @@ namespace ICSharpCode.CodeAnalysis
 		
 		void ReadRuleString()
 		{
-			Console.WriteLine("ReadRuleString()");
-//			userCheck = false;
 			foreach (SharpTreeNode cat in ruleTreeView.Root.Children) {
 				foreach (RuleTreeNode rtn in cat.Children) {
 					rtn.IsChecked = true;
 					rtn.isError = false;
 				}
 			}
-			Console.WriteLine("{0}",ruleString);
+
 			foreach (string rule2 in ruleString.Split(';')) {
 				string rule = rule2;
 				if (rule.Length == 0) continue;
@@ -144,48 +141,24 @@ namespace ICSharpCode.CodeAnalysis
 				if (rules.TryGetValue(rule, out ruleNode)) {
 					ruleNode.IsChecked = active;
 					ruleNode.isError = error;
-					ruleNode.Index = 1;
+					if (error) {
+						ruleNode.Index = 1;
+					} else {
+						ruleNode.Index = 0;
+					}
+//					ruleNode.Index = 1;
 				}
 			}
-//			userCheck = true;
-//			SetCheckedState();
 			SetCategoryIcon();
 		}
 		
 	
-		/*
-		void SetCheckedState()
-		{
-			foreach (SharpTreeNode cat in ruleTreeView.Root.Children) {
-				bool noneChecked = true;
-				foreach (RuleTreeNode rtn in cat.Children) {
-					if (!(bool) rtn.IsChecked) {
-						
-Console.WriteLine("uncheck");
-					}
-					if ((bool)rtn.IsChecked) {
-						noneChecked = false;
-						break;
-					}
-				}
-				cat.IsChecked = !noneChecked;
+		private void SetCategoryIcon() {
+			foreach (CategoryTreeNode categoryNode in ruleTreeView.Root.Children) {
+				categoryNode.CheckMode();
 			}
 		}
-        */
 		
-       private void SetCategoryIcon() {
-       	foreach (CategoryTreeNode categoryNode in ruleTreeView.Root.Children) {
-       		foreach (RuleTreeNode rtn in categoryNode.Children) {
-       			if (!(bool) rtn.IsChecked) {
-       				Console.WriteLine("uncheck");
-       			}
-       			if (rtn.isError) {
-       				Console.WriteLine("Error");
-       			}
-       		}
-       		categoryNode.CheckMode();
-       	}
-       }
 		
 		string ruleString = "";
 		
@@ -269,8 +242,24 @@ Console.WriteLine("uncheck");
 		{
 			if (initSuccess) {
 				if (e.PropertyName == "Index") {
-					base.IsDirty = true;
+					initSuccess = false;
+					var categoryNode = sender as CategoryTreeNode;
+					if (categoryNode != null) {
+						foreach (RuleTreeNode rule in categoryNode.Children) {
+							rule.Index = categoryNode.Index;
+						}
+						base.IsDirty = true;
+						initSuccess = true;
+					}
+					var ruleNode = sender as RuleTreeNode;
+					if (ruleNode != null) {
+						CategoryTreeNode parent = ruleNode.Parent as CategoryTreeNode;
+						parent.CheckMode();
+						base.IsDirty = true;
+						initSuccess = true;
+					}
 				}
+				
 				
 				if (e.PropertyName == "IsChecked") {
 					base.IsDirty = true;
