@@ -4,7 +4,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Project;
@@ -885,6 +887,48 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual(ItemType.Page, fileItem.ItemType);
 			Assert.AreEqual(msbuildProject, fileItem.Project);
 			Assert.AreEqual("MainForm.cs", fileItem.DependentUpon);
+		}
+		
+		[Test]
+		public void AddFromFileCopy_AddExistingFileNameInsideProjectFolder_FileIsAddedToProject()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			string fileName = @"d:\projects\myproject\test.cs";
+			fakeFileService.ExistingFileNames.Add(fileName);
+			
+			projectItems.AddFromFileCopy(fileName);
+			
+			string addedFileName = @"d:\projects\myproject\test.cs";
+			FileProjectItem fileItem = msbuildProject.FindFile(addedFileName);
+			Assert.AreEqual("test.cs", fileItem.Include);
+		}
+		
+		[Test]
+		public void AddFromFileCopy_AddExistingFileNameInsideProjectFolder_ProjectUpdaterIsDisposed()
+		{
+			CreateProjectItems();
+			IProjectBrowserUpdater projectBrowserUpdater = CreateProjectBrowserUpdater();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			string fileName = @"d:\projects\myproject\test.cs";
+			fakeFileService.ExistingFileNames.Add(fileName);
+			
+			projectItems.AddFromFileCopy(fileName);
+			
+			projectBrowserUpdater.AssertWasCalled(updater => updater.Dispose());
+		}
+		
+		[Test]
+		public void AddFromFileCopy_AddNonExistentFileNameInsideProjectFolder_MissingFileExceptionThrown()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			string fileName = @"d:\projects\myproject\test.cs";
+			
+			FileNotFoundException ex = Assert.Throws<FileNotFoundException>(() => projectItems.AddFromFileCopy(fileName));
+			
+			Assert.AreEqual("Cannot find file", ex.Message);
+			Assert.AreEqual(fileName, ex.FileName);
 		}
 	}
 }

@@ -307,5 +307,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			fileService.OpenFile(fileName);
 		}
+		
+		internal bool IsFileFileInsideProjectFolder(string filePath)
+		{
+			return FileUtility.IsBaseDirectory(MSBuildProject.Directory, filePath);
+		}
 	}
 }
