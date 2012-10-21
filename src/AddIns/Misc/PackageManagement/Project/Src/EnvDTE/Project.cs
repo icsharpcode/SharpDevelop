@@ -150,15 +150,20 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			projectService.RemoveProjectItem(MSBuildProject, referenceItem);
 		}
 		
-		internal void AddFileProjectItemUsingPathRelativeToProject(string include)
-		{
-			FileProjectItem fileProjectItem = CreateFileProjectItemUsingPathRelativeToProject(include);
-			AddProjectItemToMSBuildProject(fileProjectItem);
-		}
-		
 		internal ProjectItem AddFileProjectItemUsingFullPath(string path)
 		{
-			return AddFileProjectItemWithDependentUsingFullPath(path, null);
+			string dependentUpon = GetDependentUpon(path);
+			return AddFileProjectItemWithDependentUsingFullPath(path, dependentUpon);
+		}
+		
+		string GetDependentUpon(string path)
+		{
+			var dependentFile = new DependentFile(MSBuildProject);
+			FileProjectItem projectItem = dependentFile.GetParentFileProjectItem(path);
+			if (projectItem != null) {
+				return Path.GetFileName(projectItem.Include);
+			}
+			return null;
 		}
 		
 		internal ProjectItem AddFileProjectItemWithDependentUsingFullPath(string path, string dependentUpon)

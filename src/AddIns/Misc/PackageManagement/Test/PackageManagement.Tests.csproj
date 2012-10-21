@@ -78,6 +78,7 @@
     <Compile Include="Src\ClassCodeGeneratorTests.cs" />
     <Compile Include="Src\ClassKindUpdaterTests.cs" />
     <Compile Include="Src\CodeGeneratorTests.cs" />
+    <Compile Include="Src\DependentFileNameTests.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeAttributesTests.cs" />
     <Compile Include="Src\EnvDTE\CodeClass2Tests.cs" />

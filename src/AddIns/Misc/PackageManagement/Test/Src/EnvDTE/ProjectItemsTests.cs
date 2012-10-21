@@ -930,5 +930,37 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual("Cannot find file", ex.Message);
 			Assert.AreEqual(fileName, ex.FileName);
 		}
+		
+		[Test]
+		public void AddFromFileCopy_AddResxFileWhenParentFileExistsInProject_FileIsAddedToProjectAsDependentFile()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			msbuildProject.AddFile("MainForm.cs");
+			string fileToAdd = @"d:\projects\myproject\MainForm.resx";
+			fakeFileService.ExistingFileNames.Add(fileToAdd);
+			
+			projectItems.AddFromFileCopy(fileToAdd);
+			
+			FileProjectItem fileItem = msbuildProject.FindFile(fileToAdd);
+			Assert.AreEqual("MainForm.resx", fileItem.Include);
+			Assert.AreEqual("MainForm.cs", fileItem.DependentUpon);
+		}
+		
+		[Test]
+		public void AddFromFileCopy_AddDesignerFileInProjectSubFolderWhenParentFileExistsInProject_FileIsAddedToProjectAsDependentFile()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			msbuildProject.AddFile(@"UI\MainForm.cs");
+			string fileToAdd = @"d:\projects\myproject\UI\MainForm.Designer.cs";
+			fakeFileService.ExistingFileNames.Add(fileToAdd);
+			
+			projectItems.AddFromFileCopy(fileToAdd);
+			
+			FileProjectItem fileItem = msbuildProject.FindFile(fileToAdd);
+			Assert.AreEqual(@"UI\MainForm.Designer.cs", fileItem.Include);
+			Assert.AreEqual("MainForm.cs", fileItem.DependentUpon);
+		}
 	}
 }

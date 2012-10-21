@@ -33,15 +33,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual void AddFromFileCopy(string filePath)
 		{
-			string include = GetIncludePathForFileCopy(filePath);
+			string fileAdded = filePath;
 			if (IsFileInsideProjectFolder(filePath)) {
 				ThrowExceptionIfFileDoesNotExist(filePath);
 			} else {
-				CopyFileIntoProject(filePath, include);
+				fileAdded = CopyFileIntoProject(filePath);
 			}
 			
 			using (IProjectBrowserUpdater updater = Project.CreateProjectBrowserUpdater()) {
-				Project.AddFileProjectItemUsingPathRelativeToProject(include);
+				AddFileProjectItemToProject(fileAdded);
 				Project.Save();
 			}
 		}
@@ -79,11 +79,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 		}
 		
-		void CopyFileIntoProject(string fileName, string projectItemInclude)
+		string CopyFileIntoProject(string fileName)
 		{
+			string projectItemInclude = GetIncludePathForFileCopy(fileName);
 			string newFileName = GetFileNameInProjectFromProjectItemInclude(projectItemInclude);
 			ThrowExceptionIfFileExists(newFileName);
 			fileService.CopyFile(fileName, newFileName);
+			return newFileName;
 		}
 		
 		string GetFileNameInProjectFromProjectItemInclude(string projectItemInclude)
