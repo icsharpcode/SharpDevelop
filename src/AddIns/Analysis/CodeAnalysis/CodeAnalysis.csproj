@@ -64,8 +64,8 @@
       <DependentUpon>AnalysisIdeOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\AnalysisProjectOptionsPanelXaml.xaml.cs">
-      <DependentUpon>AnalysisProjectOptionsPanelXaml.xaml</DependentUpon>
+    <Compile Include="Src\AnalysisProjectOptionsPanel.xaml.cs">
+      <DependentUpon>AnalysisProjectOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\AnalysisProjectOptionsTreeNodes.cs" />
@@ -108,7 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\AnalysisIdeOptionsPanel.xaml" />
-    <Page Include="Src\AnalysisProjectOptionsPanelXaml.xaml" />
+    <Page Include="Src\AnalysisProjectOptionsPanel.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
