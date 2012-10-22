@@ -1113,12 +1113,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					location.Line,
 					location.Column + 2,
 					n => n is Expression || n is AstType || n is NamespaceDeclaration
-					);
+				);
 				rr = ResolveExpression(node);
 			}
 			// namespace name case
-			if (node is NamespaceDeclaration)
-				return null;
+			var ns = node as NamespaceDeclaration;
+			if (ns != null) {
+				var last = ns.Identifiers.LastOrDefault ();
+				if (last != null && location < last.EndLocation)
+					return null;
+			}
 			if (node is Identifier && node.Parent is ForeachStatement) {
 				var foreachStmt = (ForeachStatement)node.Parent;
 				foreach (var possibleName in GenerateNameProposals (foreachStmt.VariableType)) {
@@ -1228,7 +1232,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return t.GetAllBaseTypeDefinitions().Any(bt => bt.Equals(attribute)) ? t : null;
 				};
 			}
-			if (node != null || state.CurrentTypeDefinition != null || isInGlobalDelegate) {
+			if (node != null && !(node is NamespaceDeclaration) || state.CurrentTypeDefinition != null || isInGlobalDelegate) {
 				AddTypesAndNamespaces(wrapper, state, node, typePred);
 				
 				wrapper.Result.Add(factory.CreateLiteralCompletionData("global"));

@@ -405,15 +405,17 @@ namespace ICSharpCode.NRefactory.CSharp
 				AstNode insertPos = null;
 				while (memberName != null) {
 					Identifier newIdent = Identifier.Create (memberName.Name, Convert (memberName.Location));
-					namespaceDecl.InsertChildBefore (insertPos, newIdent, Roles.Identifier);
-					insertPos = newIdent;
-					
-					if (!memberName.DotLocation.IsNull) {
-						var dotToken = new CSharpTokenNode (Convert (memberName.DotLocation), Roles.Dot);
-						namespaceDecl.InsertChildBefore (insertPos, dotToken, Roles.Dot);
-						insertPos = dotToken;
+					// HACK for a parser 'bug' - sometimes it generates "<invalid>" identifiers in namespace names (on certain bugs in the input file)
+					if (newIdent.Name != "<invalid>") {
+						namespaceDecl.InsertChildBefore (insertPos, newIdent, Roles.Identifier);
+						insertPos = newIdent;
+						
+						if (!memberName.DotLocation.IsNull) {
+							var dotToken = new CSharpTokenNode (Convert (memberName.DotLocation), Roles.Dot);
+							namespaceDecl.InsertChildBefore (insertPos, dotToken, Roles.Dot);
+							insertPos = dotToken;
+						}
 					}
-					
 					memberName = memberName.Left;
 				}
 			}

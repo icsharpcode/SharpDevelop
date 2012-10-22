@@ -1421,5 +1421,28 @@ namespace ConsoleApplication2
 				Assert.AreEqual (1, count);
 			});
 		}
+
+
+		/// <summary>
+		/// Bug 5648 - Types are displayed even when cannot be used 
+		/// </summary>
+		[Test()]
+		public void TestBug5648 ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (@"
+using System;
+
+namespace N
+{
+	$e$
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("enum"), "'enum' not found.");
+				Assert.IsNotNull (provider.Find ("namespace"), "'namespace' not found.");
+				Assert.IsNotNull (provider.Find ("public"), "'public' not found.");
+				Assert.IsNull (provider.Find ("CharEnumerator"), "'CharEnumerator' found.");
+				Assert.IsNull (provider.Find ("Console"), "'Console' found.");
+			});
+		}
 	}
 }
