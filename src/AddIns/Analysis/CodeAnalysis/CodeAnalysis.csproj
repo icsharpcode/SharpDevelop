@@ -64,14 +64,6 @@
       <DependentUpon>AnalysisIdeOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\old_AnalysisProjectOptionsPanel.cs" />
-    <Compile Include="Src\old_AnalysisProjectOptions.Designer.cs">
-      <DependentUpon>old_AnalysisProjectOptions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Src\old_AnalysisProjectOptions.cs" />
-    <EmbeddedResource Include="Src\old_AnalysisProjectOptions.resx">
-      <DependentUpon>old_AnalysisProjectOptions.cs</DependentUpon>
-    </EmbeddedResource>
     <Compile Include="Src\AnalysisProjectOptionsPanelXaml.xaml.cs">
       <DependentUpon>AnalysisProjectOptionsPanelXaml.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -82,8 +74,6 @@
     <Compile Include="Src\CheckCurrentProjectCommand.cs" />
     <Compile Include="Src\FxCopLogger.cs" />
     <Compile Include="Src\SuppressMessageCommand.cs" />
-    <Compile Include="Src\old_AnalysisIdeOptionsPanel.cs" />
-    <EmbeddedResource Include="Resources\old_AnalysisIdeOptionPanel.xfrm" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj">
@@ -115,7 +105,6 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Folder Include="Resources" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\AnalysisIdeOptionsPanel.xaml" />
