@@ -113,6 +113,10 @@
     <Compile Include="Src\Editor\CodeCompletion\CodeCompletionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml.cs">
+      <DependentUpon>CodeCompletionPanelXaml.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Editor\CodeCompletion\ICompletionItemHandler.cs" />
     <Compile Include="Src\Editor\CodeCompletion\IInsightWindowHandler.cs" />
     <Compile Include="Src\Editor\CodeCompletion\NRefactoryInsightWindowHandler.cs" />
@@ -923,6 +927,7 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\Bookmarks\Pad\Controls\ListViewPad.xaml" />
+    <Page Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorDialog.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorXaml.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\CodeGenerationPanel.xaml" />
