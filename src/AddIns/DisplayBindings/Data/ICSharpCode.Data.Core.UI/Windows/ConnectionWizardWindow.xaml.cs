@@ -31,6 +31,7 @@ namespace ICSharpCode.Data.Core.UI.Windows
 		private IDatasource _selectedDatasource = null;
 		private IDatabase _selectedDatabase = null;
 		private bool _isLoading = false;
+		IDatasource defaultDataSource = null;
 
 		#endregion
 
@@ -47,22 +48,34 @@ namespace ICSharpCode.Data.Core.UI.Windows
 			get { return _selectedDatabaseDriver; }
 			set
 			{
+				if (_selectedDatabaseDriver != value) {
+					defaultDataSource = GetDefaultDatasource(value);
+					_selectedDatasource = defaultDataSource;
+				} else if (value == null) {
+					defaultDataSource = null;
+					_selectedDatasource = null;
+				}
 				_selectedDatabaseDriver = value;
 				OnPropertyChanged("SelectedDatabaseDriver");
+				OnPropertyChanged("SelectedDatasource");
 			}
 		}
-
-		public IDatasource SelectedDatasource
+		
+		IDatasource GetDefaultDatasource(IDatabaseDriver driver)
 		{
+			if (driver != null) {
+				return driver.CreateNewIDatasource("");
+			}
+			return null;
+		}
+		
+		public IDatasource SelectedDatasource {
 			get { return _selectedDatasource; }
-			set
-			{
+			set {
 				if (value != null)
-					btnConnect.IsEnabled = true;
+					_selectedDatasource = value;
 				else
-					btnConnect.IsEnabled = false;
-
-				_selectedDatasource = value;
+					_selectedDatasource = defaultDataSource;
 				OnPropertyChanged("SelectedDatasource");
 			}
 		}
@@ -177,6 +190,8 @@ namespace ICSharpCode.Data.Core.UI.Windows
 
 		private void btnConnect_Click(object sender, RoutedEventArgs e)
 		{
+			if (!_selectedDatabaseDriver.IDatasources.Contains(_selectedDatasource))
+				_selectedDatasource.Name = cboDatasources.Text;
 			PopulateDatabases();
 		}
 
