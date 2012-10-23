@@ -196,7 +196,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public bool IsPartial {
 			get { return ((IUnresolvedMethod)unresolved).IsPartial; }
 		}
-		
+
+		public bool IsAsync {
+			get { return ((IUnresolvedMethod)unresolved).IsAsync; }
+		}
+
 		public bool HasBody {
 			get { return ((IUnresolvedMethod)unresolved).HasBody; }
 		}

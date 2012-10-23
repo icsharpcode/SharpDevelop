@@ -65,6 +65,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		internal const ushort FlagExtensionMethod = 0x1000;
 		internal const ushort FlagPartialMethod = 0x2000;
 		internal const ushort FlagHasBody = 0x4000;
+		internal const ushort FlagAsyncMethod = 0x8000;
 		
 		public bool IsFrozen {
 			get { return flags[FlagFrozen]; }

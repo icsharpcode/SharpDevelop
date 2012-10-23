@@ -125,6 +125,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return methodDefinition.IsPartial; }
 		}
 		
+		public bool IsAsync {
+			get { return methodDefinition.IsAsync; }
+		}
+		
 		public bool HasBody {
 			get { return methodDefinition.HasBody; }
 		}
