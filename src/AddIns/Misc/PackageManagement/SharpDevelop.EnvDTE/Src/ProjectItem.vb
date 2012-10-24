@@ -11,11 +11,11 @@ Namespace EnvDTE
 		ReadOnly Property ProjectItems() As ProjectItems
 		ReadOnly Property FileCodeModel() As FileCodeModel2
 		ReadOnly Property Document() As Document
+		ReadOnly Property FileNames(index As Short) As String
 		ReadOnly Property FileCount() As Short
 		
 		Sub Delete()
 		Sub Remove()
-		Function FileNames(index As Short) As String
 		Function Open(viewKind As String) As Global.EnvDTE.Window
 	End Interface
 End Namespace

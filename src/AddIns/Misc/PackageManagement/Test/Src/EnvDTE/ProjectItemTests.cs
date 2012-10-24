@@ -245,7 +245,7 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildProject.AddFile(@"src\program.cs");
 			global::EnvDTE.ProjectItem directoryItem = projectItems.Item("src");
 			
-			string fileName = directoryItem.FileNames(1);
+			string fileName = directoryItem.get_FileNames(1);
 			
 			Assert.AreEqual(@"d:\projects\MyProject\src", fileName);
 		}

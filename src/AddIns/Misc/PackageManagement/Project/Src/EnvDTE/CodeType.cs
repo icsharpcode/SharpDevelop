@@ -83,7 +83,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		/// Returns true if the current type matches the fully qualified name or any of its
 		/// base types are a match.
 		/// </summary>
-		public virtual bool IsDerivedFrom(string fullName)
+		protected override bool GetIsDerivedFrom(string fullName)
 		{
 			return Class.IsDerivedFrom(fullName);
 		}

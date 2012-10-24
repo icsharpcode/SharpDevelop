@@ -17,6 +17,6 @@ Namespace EnvDTE
 		''' Returns true if the current type matches the fully qualified name or any of its
 		''' base types are a match.
 		''' </summary>
-		Function IsDerivedFrom(fullName As String) As Boolean
+		ReadOnly Property IsDerivedFrom (fullName As String) As Boolean
 	End Interface
 End Namespace

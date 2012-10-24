@@ -7,7 +7,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeElement : MarshalByRefObject, global::EnvDTE.CodeElement
+	public class CodeElement : global::EnvDTE.CodeElementBase, global::EnvDTE.CodeElement
 	{
 		DTE dte;
 		
@@ -67,6 +67,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual global::EnvDTE.vsCMElement Kind {
 			get { return global::EnvDTE.vsCMElement.vsCMElementOther; }
+		}
+		
+		protected override bool GetIsDerivedFrom(string fullName)
+		{
+			return false;
 		}
 	}
 }

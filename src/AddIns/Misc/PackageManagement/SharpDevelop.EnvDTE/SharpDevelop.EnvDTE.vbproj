@@ -90,6 +90,7 @@
     <Compile Include="Src\ItemOperations.vb" />
     <Compile Include="Src\Project.vb" />
     <Compile Include="Src\ProjectItem.vb" />
+    <Compile Include="Src\ProjectItemBase.vb" />
     <Compile Include="Src\ProjectItems.vb" />
     <Compile Include="Src\ProjectObject.vb" />
     <Compile Include="Src\Projects.vb" />
@@ -127,6 +128,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\Constants.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Src\CodeElementBase.vb" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

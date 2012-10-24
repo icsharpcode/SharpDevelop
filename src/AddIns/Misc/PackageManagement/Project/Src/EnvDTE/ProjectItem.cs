@@ -13,7 +13,7 @@ using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class ProjectItem : MarshalByRefObject, global::EnvDTE.ProjectItem
+	public class ProjectItem : global::EnvDTE.ProjectItemBase, global::EnvDTE.ProjectItem
 	{
 		SD.FileProjectItem projectItem;
 		Project containingProject;
@@ -177,7 +177,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return projectItem; }
 		}
 		
-		public virtual string FileNames(short index)
+		protected override string GetFileNames(short index)
 		{
 			return FileName;
 		}
