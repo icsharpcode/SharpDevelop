@@ -634,6 +634,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return dataList.Result;
 					}
 					if (currentType != null && currentType.Kind == TypeKind.Enum) {
+						if (!char.IsLetter(completionChar))
+							return null;
 						return HandleEnumContext();
 					}
 					var contextList = new CompletionDataWrapper(this);
