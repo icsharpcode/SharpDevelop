@@ -3901,9 +3901,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		IEnumerable<EntityDeclaration> ParseTypeMembers (string code, int initialLine, int initialColumn)
 		{
 			const string prefix = "unsafe partial class MyClass { ";
-			Console.WriteLine("---");
-			Console.WriteLine(prefix + code + "}");
-			Console.WriteLine("---");
 			var syntaxTree = Parse (new StringTextSource (prefix + code + "}"), "parsed.cs", initialLine, initialColumn - prefix.Length);
 			if (syntaxTree == null)
 				return Enumerable.Empty<EntityDeclaration> ();
