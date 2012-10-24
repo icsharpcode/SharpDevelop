@@ -1361,7 +1361,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						def = Compilation.MainAssembly.GetTypeDefinition(currentType.FullTypeName);
 					if (def != null) {
 						bool isProtectedAllowed = true;
-						foreach (var member in def.GetMembers ()) {
+
+						foreach (var member in def.GetMembers (m => currentMember.IsStatic ? m.IsStatic : true)) {
 							if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize") {
 								continue;
 							}
@@ -1374,7 +1375,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							if (!lookup.IsAccessible(member, isProtectedAllowed)) {
 								continue;
 							}
-
 							if (memberPred == null || memberPred(member)) {
 								wrapper.AddMember(member);
 							}

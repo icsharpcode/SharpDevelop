@@ -1444,5 +1444,31 @@ namespace N
 				Assert.IsNull (provider.Find ("Console"), "'Console' found.");
 			});
 		}
+
+		[Test()]
+		public void CheckInstanceMembersAreHiddenInStaticMethod ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (@"
+using System;
+
+class Test
+{
+	int foo;
+	int Foo { get { return foo; } }
+	void TestMethod () {}
+
+	public static void Main (string[] args)
+	{
+		$f$	
+	}
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("Main"), "'Main' not found.");
+				Assert.IsNotNull (provider.Find ("Test"), "'Test' not found.");
+				Assert.IsNull (provider.Find ("foo"), "'foo' found.");
+				Assert.IsNull (provider.Find ("Foo"), "'Foo' found.");
+				Assert.IsNull (provider.Find ("TestMethod"), "'TestMethod' found.");
+			});
+		}
 	}
 }
