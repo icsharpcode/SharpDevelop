@@ -59,8 +59,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				Assert.AreEqual (0, provider.Count);
 			});
 		}
-		
-		
+
+
 		[Test()]
 		public void TestEnumAssignment ()
 		{
@@ -92,7 +92,7 @@ enum Name {
 				Assert.IsNotNull (provider.Find ("Name"), "type 'Name' not found.");
 			});
 		}
-		
+
 		
 		[Test()]
 		public void TestEnumInitializerContinuation()
@@ -140,6 +140,42 @@ $enum Name : $
 				Assert.IsNotNull(provider.Find(type), "value '" + type + "' not found.");
 			Assert.IsNull(provider.Find("char"), "type 'char' found.");
 		}
-		
+
+		/// <summary>
+		/// Bug 5444 - Missing completion values when declaring enum 
+		/// </summary>
+		[Test()]
+		public void Test5444 ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (
+				@"enum Foo
+{
+    Bar = 1 << 0,
+    Baz = 1 << 1,
+    BarBaz $= B$
+}
+
+", provider => {
+				Assert.IsNotNull(provider.Find("Bar"), "value 'Bar' not found.");
+				Assert.IsNotNull(provider.Find("Baz"), "value 'Baz' not found.");
+			});
+		}
+
+		[Test()]
+		public void Test5444Case2 ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (
+				@"enum Foo
+{
+    Bar = 1 << 0,
+    Baz = 1 << 1,
+    BarBaz = Bar$ | B$
+}
+
+", provider => {
+				Assert.IsNotNull(provider.Find("Bar"), "value 'Bar' not found.");
+				Assert.IsNotNull(provider.Find("Baz"), "value 'Baz' not found.");
+			});
+		}
 	}
 }

@@ -1044,6 +1044,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			var member = syntaxTree.GetNodeAt<EnumMemberDeclaration>(location);
 			if (member != null && member.NameToken.EndLocation < location) {
+				if (currentMember == null && currentType != null) {
+					foreach (var a in currentType.Members)
+						if (a.Region.Begin < location && (currentMember == null || a.Region.Begin > currentMember.Region.Begin))
+							currentMember = a;
+				}
 				return DefaultControlSpaceItems();
 			}
 			return null;
