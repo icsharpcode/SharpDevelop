@@ -13,6 +13,7 @@ Namespace EnvDTE
 		ReadOnly Property Document() As Document
 		ReadOnly Property FileNames(index As Short) As String
 		ReadOnly Property FileCount() As Short
+		ReadOnly Property Collection As ProjectItems
 		
 		Sub Delete()
 		Sub Remove()

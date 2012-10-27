@@ -158,8 +158,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		internal string GetIncludePath(string fileName)
 		{
-			string relativeDirectory = containingProject.GetRelativePath(projectItem.FileName);
+			string relativeDirectory = GetProjectItemRelativePathToProject();
 			return Path.Combine(relativeDirectory, fileName);
+		}
+		
+		string GetProjectItemRelativePathToProject()
+		{
+			return containingProject.GetRelativePath(projectItem.FileName);
 		}
 		
 		internal string GetIncludePath()
@@ -207,6 +212,22 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual short FileCount {
 			get { return 1; }
+		}
+		
+		public global::EnvDTE.ProjectItems Collection {
+			get {
+				string relativePath = GetProjectItemRelativeDirectoryToProject();
+				if (String.IsNullOrEmpty(relativePath)) {
+					return containingProject.ProjectItems;
+				}
+				var directoryProjectItem = new DirectoryProjectItem(containingProject, relativePath);
+				return directoryProjectItem.ProjectItems;
+			}
+		}
+		
+		string GetProjectItemRelativeDirectoryToProject()
+		{
+			return Path.GetDirectoryName(GetProjectItemRelativePathToProject());
 		}
 	}
 }

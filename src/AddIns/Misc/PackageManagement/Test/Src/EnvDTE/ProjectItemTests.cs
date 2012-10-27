@@ -372,5 +372,33 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(1, count);
 		}
+		
+		[Test]
+		public void Collection_ProjectItemIsFileInProjectRootFolder_ReturnsProjectItemsCollectionForProject()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"program.cs");
+			global::EnvDTE.ProjectItem projectItem = projectItems.Item("program.cs");
+			
+			global::EnvDTE.ProjectItems collection = projectItem.Collection;
+			
+			Assert.AreEqual(project.ProjectItems, collection);
+		}
+		
+		[Test]
+		public void Collection_ProjectItemIsFileInSubFolderOfProject_ReturnsProjectItemsCollectionForSubFolder()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"src\program.cs");
+			global::EnvDTE.ProjectItem srcDirectoryItem = project.ProjectItems.Item("src");
+			global::EnvDTE.ProjectItem fileProjectItem = srcDirectoryItem.ProjectItems.Item("program.cs");
+			
+			global::EnvDTE.ProjectItems collection = fileProjectItem.Collection;
+			
+			global::EnvDTE.ProjectItem item = collection.Item("program.cs");
+			Assert.AreEqual("program.cs", item.Name);
+		}
 	}
 }
