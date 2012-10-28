@@ -8,7 +8,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
-	public class CodeCompletionPanel : XmlFormsOptionPanel
+	public class old_CodeCompletionPanel : XmlFormsOptionPanel
 	{
 		public override void LoadPanelContents()
 		{

@@ -110,7 +110,7 @@
     <Compile Include="Src\Editor\AvalonEdit\ISnippetElementProvider.cs" />
     <Compile Include="Src\Editor\AvalonEdit\TextContentCondition.cs" />
     <Compile Include="Src\Editor\AvalonEdit\TextSelectedCondition.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\CodeCompletionPanel.cs">
+    <Compile Include="Src\Editor\CodeCompletion\old_CodeCompletionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml.cs">
@@ -801,7 +801,7 @@
     <Compile Include="Src\Services\ProjectService\ParseableFileContentFinder.cs" />
     <Compile Include="Src\Services\ParserService\ParseProjectContent.cs" />
     <Compile Include="Src\Project\Items\ImportProjectItem.cs" />
-    <EmbeddedResource Include="Resources\CodeCompletionOptionPanel.xfrm" />
+    <EmbeddedResource Include="Resources\old_CodeCompletionOptionPanel.xfrm" />
     <Compile Include="Src\Services\Debugger\CurrentLineBookmark.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserCommands.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserLocationConditionEvaluator.cs" />
