@@ -236,7 +236,7 @@ class A
 			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
-		
+
 		[Test]
 		public void DoesNotSuggestMovingIntoClosure ()
 		{	
@@ -418,6 +418,43 @@ class A
 			return;
 ", 0);
 		}
+
+		[Ignore("FIXME")]
+		[Test]
+		public void DoesNotSuggestMovingIntoBodyAfterMethodCall()
+		{	
+			var input = @"
+using System.IO;
+
+class FooBar
+{
+	public int foo = 5;
+	public void ChangeFoo ()
+	{
+		foo = 10;
+	}
+}
+
+class A
+{
+	FooBar foo = new FooBar();
+
+	public void F()
+	{
+		int length = foo.foo;
+		foo.ChangeFoo ();
+		if (true) {
+			System.Console.WriteLine (length);
+		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+
+
+
 	}
 }
 
