@@ -71,12 +71,23 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				CollectIssues (parameterDeclaration, rootStatement, resolveResult);
 			}
 
-			public override void VisitVariableInitializer (VariableInitializer variableInitializer)
+			public override void VisitVariableInitializer(VariableInitializer variableInitializer)
 			{
-				base.VisitVariableInitializer (variableInitializer);
+				base.VisitVariableInitializer(variableInitializer);
+				if (!inUsingStatementResourceAcquisition) {
+					var resolveResult = ctx.Resolve(variableInitializer) as LocalResolveResult;
+					CollectIssues(variableInitializer, variableInitializer.GetParent<BlockStatement>(), resolveResult);
+				}
+			}
 
-				var resolveResult = ctx.Resolve (variableInitializer) as LocalResolveResult;
-				CollectIssues (variableInitializer, variableInitializer.GetParent<BlockStatement> (), resolveResult);
+			bool inUsingStatementResourceAcquisition;
+
+			public override void VisitUsingStatement(UsingStatement usingStatement)
+			{
+				inUsingStatementResourceAcquisition = true;
+				usingStatement.ResourceAcquisition.AcceptVisitor (this);
+				inUsingStatementResourceAcquisition = false;
+				usingStatement.EmbeddedStatement.AcceptVisitor (this);
 			}
 
 			void CollectIssues (AstNode variableDecl, BlockStatement rootStatement, LocalResolveResult resolveResult)

@@ -376,5 +376,22 @@ class TestClass
 }";
 			Test<RedundantAssignmentIssue> (input, 0);
 		}
+
+		
+		[Test]
+		public void TestAssignmentInUsing ()
+		{
+			var input = @"using System;
+class TestClass
+{
+	void TestMethod ()
+	{
+		using (var tc = new TestClass ()) {
+			// nothing
+		}
+	}
+}";
+			Test<RedundantAssignmentIssue> (input, 0);
+		}
 	}
 }

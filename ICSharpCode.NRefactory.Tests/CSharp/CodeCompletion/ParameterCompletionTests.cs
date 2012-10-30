@@ -72,6 +72,11 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 					return "";
 				}
 
+				public string GetParameterName(int overload, int currentParameter)
+				{
+					return "";
+				}
+
 				public int GetParameterCount (int overload)
 				{
 					var method = Data.ElementAt (overload);
@@ -109,6 +114,11 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				}
 
 				public string GetParameterDescription (int overload, int paramIndex)
+				{
+					return "";
+				}
+
+				public string GetParameterName(int overload, int currentParameter)
 				{
 					return "";
 				}
@@ -157,6 +167,10 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				{
 					return 1;
 				}
+				public string GetParameterName(int overload, int currentParameter)
+				{
+					return "";
+				}
 
 				public bool AllowParameterList (int overload)
 				{
@@ -188,6 +202,11 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				}
 
 				public string GetParameterDescription (int overload, int paramIndex)
+				{
+					return "";
+				}
+
+				public string GetParameterName(int overload, int currentParameter)
 				{
 					return "";
 				}
