@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			bool HasRundundantElse(IfElseStatement ifElseStatement)
 			{
-				if (ifElseStatement.FalseStatement.IsNull)
+				if (ifElseStatement.FalseStatement.IsNull || ifElseStatement.Parent is IfElseStatement)
 					return false;
 				var blockStatement = ifElseStatement.FalseStatement as BlockStatement;
 				if (blockStatement != null && blockStatement.Statements.Count == 0)
