@@ -105,11 +105,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IList<IMember> Members { get; }
 
 		/// <summary>
-		/// Gets the members that are defined in this type.
+		/// Gets the members that are defined in this type definition.
 		/// </summary>
 		/// <param name="filter">The filter used to select which members to return.
 		/// The filter is tested on the original member definitions (before specialization).</param>
-		IList<IMember> GetDefinedMembers (Predicate<IUnresolvedMethod> filter);
+		IList<IMember> GetDefinedMembers (Predicate<IUnresolvedMember> filter);
 
 		IEnumerable<IField> Fields { get; }
 		IEnumerable<IMethod> Methods { get; }

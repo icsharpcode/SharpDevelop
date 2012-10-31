@@ -282,7 +282,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		MemberList memberList;
 		
-		MemberList GetMemberList(Predicate<IUnresolvedMethod> filter = null)
+		MemberList GetMemberList(Predicate<IUnresolvedMember> filter = null)
 		{
 			var result = LazyInit.VolatileRead(ref this.memberList);
 			if (result != null) {
@@ -345,7 +345,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return GetMemberList(); }
 		}
 
-		public IList<IMember> GetDefinedMembers (Predicate<IUnresolvedMethod> filter)
+		public IList<IMember> GetDefinedMembers (Predicate<IUnresolvedMember> filter)
 		{
 			return GetMemberList(filter);
 		}
