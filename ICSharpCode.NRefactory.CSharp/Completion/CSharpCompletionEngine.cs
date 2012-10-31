@@ -237,7 +237,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			while (p != null && !(p is ObjectCreateExpression)) {
 				p = p.Parent;
 			}
-			var parent = (ArrayInitializerExpression)n.Parent;
+			var parent = n.Parent as ArrayInitializerExpression;
+			if (parent == null)
+				return null;
 			if (parent.IsSingleElement)
 				parent = (ArrayInitializerExpression)parent.Parent;
 			if (p != null) {
