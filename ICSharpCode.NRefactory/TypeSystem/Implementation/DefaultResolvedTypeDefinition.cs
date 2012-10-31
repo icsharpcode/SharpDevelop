@@ -282,7 +282,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		MemberList memberList;
 		
-		MemberList GetMemberList(Predicate<IUnresolvedMethod> filter = null)
+		MemberList GetMemberList()
 		{
 			var result = LazyInit.VolatileRead(ref this.memberList);
 			if (result != null) {
@@ -296,8 +296,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				ITypeResolveContext parentContextForPart = part.CreateResolveContext(parentContext);
 				ITypeResolveContext contextForPart = parentContextForPart.WithCurrentTypeDefinition(this);
 				foreach (var member in part.Members) {
-					if (filter != null && !filter(member))
-						continue;
 					IUnresolvedMethod method = member as IUnresolvedMethod;
 					if (method != null && method.IsPartial) {
 						// Merge partial method declaration and implementation
@@ -330,11 +328,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				if (kind == TypeKind.Class && !this.IsStatic && !unresolvedMembers.Any(m => m.EntityType == EntityType.Constructor && !m.IsStatic)
 				    || kind == TypeKind.Enum || kind == TypeKind.Struct)
 				{
-					var defaultConstructor = DefaultUnresolvedMethod.CreateDefaultConstructor(parts[0]);
-					if (filter == null || filter(defaultConstructor)) {
-						contextPerMember.Add(parts[0].CreateResolveContext(parentContext).WithCurrentTypeDefinition(this));
-						unresolvedMembers.Add(defaultConstructor);
-					}
+					contextPerMember.Add(parts[0].CreateResolveContext(parentContext).WithCurrentTypeDefinition(this));
+					unresolvedMembers.Add(DefaultUnresolvedMethod.CreateDefaultConstructor(parts[0]));
 				}
 			}
 			result = new MemberList(contextPerMember, unresolvedMembers, partialMethodInfos);
@@ -344,12 +339,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IList<IMember> Members {
 			get { return GetMemberList(); }
 		}
-
-		public IList<IMember> GetDefinedMembers (Predicate<IUnresolvedMethod> filter)
-		{
-			return GetMemberList(filter);
-		}
-
+		
 		public IEnumerable<IField> Fields {
 			get {
 				var members = GetMemberList();
