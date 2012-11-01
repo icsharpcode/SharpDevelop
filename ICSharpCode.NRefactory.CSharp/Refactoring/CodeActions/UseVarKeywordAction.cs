@@ -31,7 +31,9 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[ContextAction("Use 'var' keyword", Description = "Converts local variable declaration to be implicit typed.")]
+	[ContextAction("Use 'var' keyword",
+	               Description = "Converts local variable declaration to be implicit typed.",
+	               BoundToIssue = typeof (ICSharpCode.NRefactory.CSharp.Refactoring.UseVarKeywordIssue))]
 	public class UseVarKeywordAction : ICodeActionProvider
 	{
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
