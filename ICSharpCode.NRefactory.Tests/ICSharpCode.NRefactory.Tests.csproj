@@ -361,6 +361,7 @@
     <Compile Include="CSharp\CodeActions\CreateBackingStoreTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantWhereWithPredicateIssueTests.cs" />
     <Compile Include="CSharp\CodeActions\SortUsingsTests.cs" />
+    <Compile Include="CSharp\CodeActions\CreateEventInvocatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
