@@ -223,13 +223,27 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var compareCategory = other as TypeCompletionCategory;
 				if (compareCategory == null)
 					return -1;
-				
-				if (Type.ReflectionName == compareCategory.Type.ReflectionName)
-					return 0;
-				
-				if (Type.GetAllBaseTypes ().Any (t => t.ReflectionName == compareCategory.Type.ReflectionName))
-					return -1;
-				return 1;
+				int result;
+				if (Type.ReflectionName == compareCategory.Type.ReflectionName) {
+					result = 0;
+				} else if (Type.GetAllBaseTypes().Any(t => t.ReflectionName == compareCategory.Type.ReflectionName)) {
+					result = -1;
+				} else if (compareCategory.Type.GetAllBaseTypes().Any(t => t.ReflectionName == Type.ReflectionName)) {
+					result = 1;
+				} else {
+					var d = Type.GetDefinition ();
+					var ct = compareCategory.Type.GetDefinition();
+					if (ct.IsStatic && d.IsStatic) {
+						result = d.FullName.CompareTo (ct.FullName);
+					} else if (d.IsStatic) {
+						result = 1;
+					}else if (ct.IsStatic) {
+						result = -1;
+					} else {
+						result = 0;
+					}
+				}
+				return result;
 			}
 		}
 		HashSet<IType> addedEnums = new HashSet<IType> ();
