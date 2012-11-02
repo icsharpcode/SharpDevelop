@@ -17,7 +17,7 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Debugging;
 
-namespace Debugger.AddIn.Service
+namespace Debugger.AddIn
 {
 	/// <summary>
 	/// Interaction logic for EditBreakpointScriptWindow.xaml
@@ -26,38 +26,15 @@ namespace Debugger.AddIn.Service
 	{
 		BreakpointBookmark data;
 		
-		public BreakpointBookmark Data {
-			get { return data; }
-		}
-		
 		public EditBreakpointScriptWindow(BreakpointBookmark data)
 		{
 			InitializeComponent();
 			
 			this.data = data;
-			this.data.Action = BreakpointAction.Condition;
 			
-			foreach (var name in Enum.GetNames(typeof(SupportedLanguage)))
-				cmbLanguage.Items.Add(name);
-			
-			string language = "CSharp";
-			
-			if (ProjectService.CurrentProject != null)
-				language = ProjectService.CurrentProject.Language.Replace("#", "Sharp");
-			
-			this.cmbLanguage.SelectedIndex = 
-				(!string.IsNullOrEmpty(data.ScriptLanguage)) ? 
-				this.cmbLanguage.Items.IndexOf(data.ScriptLanguage) :
-				this.cmbLanguage.Items.IndexOf(language);
-			
-			this.codeEditor.Document.Text = data.Condition;
-			
-			UpdateHighlighting();
-		}
-		
-		void UpdateHighlighting()
-		{
-			codeEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition(this.cmbLanguage.SelectedItem.ToString().Replace("Sharp", "#"));
+			string language = ProjectService.CurrentProject != null ? ProjectService.CurrentProject.Language : "C#";
+			this.codeEditor.Document.Text = data.Condition ?? string.Empty;
+			this.codeEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition(language);
 		}
 		
 		bool CheckSyntax()
@@ -79,6 +56,7 @@ namespace Debugger.AddIn.Service
 		{
 			if (!this.CheckSyntax())
 				return;
+			
 			this.data.Condition = this.codeEditor.Document.Text;
 			DialogResult = true;
 		}
@@ -86,17 +64,6 @@ namespace Debugger.AddIn.Service
 		void BtnCancelClick(object sender, RoutedEventArgs e)
 		{
 			DialogResult = false;
-		}
-		
-		void CmbLanguageSelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			this.data.ScriptLanguage = this.cmbLanguage.SelectedValue.ToString();
-			UpdateHighlighting();
-		}
-		
-		void BtnCheckSyntaxClick(object sender, RoutedEventArgs e)
-		{
-			CheckSyntax();
 		}
 	}
 }

@@ -364,19 +364,22 @@ namespace ICSharpCode.SharpDevelop.Services
 			CurrentDebugger = new NDebugger();
 			CurrentDebugger.Options = DebuggingOptions.Instance;
 			
-			DebuggerService.BreakPointAdded  += delegate (object sender, BreakpointBookmarkEventArgs e) {
-				AddBreakpoint(e.BreakpointBookmark);
-			};
-			
-			foreach (BreakpointBookmark b in DebuggerService.Breakpoints) {
+			foreach (BreakpointBookmark b in SD.BookmarkManager.Bookmarks.OfType<BreakpointBookmark>()) {
 				AddBreakpoint(b);
 			}
+			
+			SD.BookmarkManager.BookmarkAdded += (sender, e) => {
+				BreakpointBookmark bm = e.Bookmark as BreakpointBookmark;
+				if (bm != null) {
+					AddBreakpoint(bm);
+				}
+			};
 			
 			SD.BookmarkManager.BookmarkRemoved += (sender, e) => {
 				BreakpointBookmark bm = e.Bookmark as BreakpointBookmark;
 				if (bm != null) {
 					Breakpoint bp = bm.InternalBreakpointObject as Breakpoint;
-					bp.IsEnabled = false;
+					CurrentDebugger.RemoveBreakpoint(bp);
 				}
 			};
 			
@@ -501,7 +504,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			RefreshPads();
 		}
 		
-		void debuggedProcess_DebuggingPaused(object sender, DebuggerEventArgs e)
+		void debuggedProcess_DebuggingPaused(object sender, DebuggerPausedEventArgs e)
 		{
 			OnIsProcessRunningChanged(EventArgs.Empty);
 			
@@ -509,31 +512,32 @@ namespace ICSharpCode.SharpDevelop.Services
 			CurrentThread = e.Thread;
 			CurrentStackFrame = CurrentThread != null ? CurrentThread.MostRecentUserStackFrame : null;
 			
-			LoggingService.Info("Jump to current line");
-			JumpToCurrentLine();
-			
 			if (e.ExceptionThrown != null) {
 				HandleException(e);
+				return;
 			}
 			
+			bool breakpointHit = false;
 			foreach (Breakpoint breakpoint in e.BreakpointsHit) {
 				var bookmark = SD.BookmarkManager.Bookmarks.OfType<BreakpointBookmark>().First(bm => bm.InternalBreakpointObject == breakpoint);
 				
-				LoggingService.Debug(bookmark.Action + " " + bookmark.ScriptLanguage + " " + bookmark.Condition);
-				
-				switch (bookmark.Action) {
-					case BreakpointAction.Break:
-						break;
-					case BreakpointAction.Condition:
-						if (EvaluateCondition(bookmark.Condition))
-							DebuggerService.PrintDebugMessage(string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAtBecause}") + "\n", bookmark.LineNumber, bookmark.FileName, bookmark.Condition));
-						else
-							CurrentProcess.AsyncContinue();
-						break;
-					case BreakpointAction.Trace:
-						DebuggerService.PrintDebugMessage(string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAt}") + "\n", bookmark.LineNumber, bookmark.FileName));
-						break;
+				if (string.IsNullOrEmpty(bookmark.Condition)) {
+					breakpointHit = true;
+				} else {
+					if (EvaluateCondition(bookmark.Condition)) {
+						breakpointHit = true;
+						DebuggerService.PrintDebugMessage(string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAtBecause}") + "\n", bookmark.LineNumber, bookmark.FileName, bookmark.Condition));
+					}
 				}
+			}
+			
+			// We can have several, potentially conditional, breakpoints at the same time
+			// ... as well as stepper happening on the same line
+			if (e.Break || breakpointHit) {
+				LoggingService.Info("Jump to current line");
+				JumpToCurrentLine();
+			} else {
+				e.Process.AsyncContinue();
 			}
 			
 			RefreshPads();
@@ -550,7 +554,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			RefreshPads();
 		}
 		
-		void HandleException(DebuggerEventArgs e)
+		void HandleException(DebuggerPausedEventArgs e)
 		{
 			JumpToCurrentLine();
 			
@@ -583,6 +587,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			Bitmap icon = WinFormsResourceService.GetBitmap(e.ExceptionThrown.IsUnhandled ? "Icons.32x32.Error" : "Icons.32x32.Warning");
 			
 			DebuggeeExceptionForm.Show(e.Process, title, message, stacktraceBuilder.ToString(), icon, e.ExceptionThrown.IsUnhandled, e.ExceptionThrown);
+			
+			RefreshPads();
 		}
 		
 		public bool BreakAndInterceptHandledException(Debugger.Exception exception)

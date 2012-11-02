@@ -14,50 +14,22 @@ using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
-	public enum BreakpointAction
-	{
-		Break,
-		Trace,
-		Condition
-	}
-	
 	public class BreakpointBookmark : SDMarkerBookmark
 	{
 		bool isHealthy = true;
 		bool isEnabled = true;
 		string tooltip;
-		
-		BreakpointAction action = BreakpointAction.Break;
 		string condition;
-		string scriptLanguage;
 		
 		public event EventHandler<EventArgs> ConditionChanged;
-		
-		public string ScriptLanguage {
-			get { return scriptLanguage; }
-			set { scriptLanguage = value; }
-		}
 		
 		public string Condition {
 			get { return condition; }
 			set {
 				if (condition != value) {
 					condition = value;
-					this.Action = string.IsNullOrEmpty(condition) ? BreakpointAction.Break : BreakpointAction.Condition;
 					if (ConditionChanged != null)
 						ConditionChanged(this, EventArgs.Empty);
-					Redraw();
-				}
-			}
-		}
-		
-		public BreakpointAction Action {
-			get {
-				return action;
-			}
-			set {
-				if (action != value) {
-					action = value;
 					Redraw();
 				}
 			}
@@ -105,13 +77,10 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 		}
 		
-		public BreakpointBookmark(FileName fileName, TextLocation location, BreakpointAction action, string scriptLanguage, string script)
+		public BreakpointBookmark(FileName fileName, TextLocation location)
 		{
 			this.Location = location;
 			this.FileName = fileName;
-			this.action = action;
-			this.scriptLanguage = scriptLanguage;
-			this.condition = script;
 		}
 		
 		public const string BreakpointMarker = "Breakpoint";
@@ -140,9 +109,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				if (!this.IsEnabled)
 					return DisabledBreakpointImage;
 				else if (this.IsHealthy)
-					return this.Action == BreakpointAction.Break ? BreakpointImage : BreakpointConditionalImage;
+					return string.IsNullOrEmpty(this.Condition) ? BreakpointImage : BreakpointConditionalImage;
 				else
-					return this.Action == BreakpointAction.Break ? UnhealthyBreakpointImage : UnhealthyBreakpointConditionalImage;
+					return string.IsNullOrEmpty(this.Condition) ? UnhealthyBreakpointImage : UnhealthyBreakpointConditionalImage;
 			}
 		}
 		

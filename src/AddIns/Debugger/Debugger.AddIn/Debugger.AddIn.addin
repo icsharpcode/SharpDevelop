@@ -61,10 +61,9 @@
 					          class="Debugger.AddIn.EnableBreakpointMenuCommand"
 					          label= "${res:MainWindow.Windows.Debug.Conditional.Breakpoints.EnableBreakpoint}" />
 				</ComplexCondition>
-				<!--
-				<MenuItem id="BreakpointSeparator" type = "Separator" />
-				<MenuItem id="MenuBuilder" type="Builder" class="Debugger.AddIn.BreakpointChangeMenuBuilder" />
-				-->
+				<MenuItem id="EditCondition"
+				          class="Debugger.AddIn.EditBreakpointMenuCommand"
+				          label= "${res:MainWindow.Windows.Debug.Conditional.Breakpoints.EditCondition}" />
 			</Condition>
 		</MenuItem>
 	</Path>
@@ -148,8 +147,6 @@
 	
 	<Path name="/SharpDevelop/Pads/ConsolePad/ToolBar">
 		<Include id="StandardCommands" path="/SharpDevelop/Pads/CommonConsole/ToolBar" />
-		<ToolbarItem class="ICSharpCode.SharpDevelop.Gui.Pads.SelectLanguageCommand"
-		             type="ComboBox" id="SelectLanguageCommand" />
 	</Path>
 	
 	<Path name="/SharpDevelop/Pads/ParallelStacksPad/ToolBar">

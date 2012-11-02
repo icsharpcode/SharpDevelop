@@ -23,12 +23,10 @@ namespace Debugger
 	{
 		Process process;
 		bool pauseOnNextExit;
-		bool raiseEventsOnNextExit;
 		bool isInCallback;
+		DebuggerPausedEventArgs pausedEventArgs;
 		
-		Thread threadToReport;
-		List<Breakpoint> breakpointsHit = new List<Breakpoint>();
-		Exception exceptionThrown;
+		Thread threadToReport; // TODO: Remove
 		
 		[Debugger.Tests.Ignore]
 		public Process Process {
@@ -42,6 +40,20 @@ namespace Debugger
 		public ManagedCallback(Process process)
 		{
 			this.process = process;
+		}
+		
+		// Calling this will prepare the paused event.
+		// The reason for the accumulation is that several pause callbacks
+		// can happen "at the same time" in the debugee.
+		// The event will be raised as soon as the callback queue is drained.
+		DebuggerPausedEventArgs GetPausedEventArgs()
+		{
+			if (pausedEventArgs == null) {
+				pausedEventArgs = new DebuggerPausedEventArgs();
+				pausedEventArgs.Process = process;
+				pausedEventArgs.BreakpointsHit = new List<Breakpoint>();
+			}
+			return pausedEventArgs;
 		}
 		
 		void EnterCallback(string name, ICorDebugProcess pProcess)
@@ -86,7 +98,8 @@ namespace Debugger
 			if (hasQueuedCallbacks)
 				process.TraceMessage("Process has queued callbacks");
 			
-			if (hasQueuedCallbacks && exceptionThrown == null) {
+			// TODO: Can we drain the queue?
+			if (hasQueuedCallbacks && (pausedEventArgs == null || pausedEventArgs.ExceptionThrown == null)) {
 				// Process queued callbacks if no exception occurred
 				process.AsyncContinue(DebuggeeStateAction.Keep, null, null);
 			} else if (process.Evaluating) {
@@ -97,23 +110,18 @@ namespace Debugger
 					process.TraceMessage("Callback exit: Paused");
 
 				process.DisableAllSteppers();
-				if (raiseEventsOnNextExit) {
-					DebuggerEventArgs e = new DebuggerEventArgs();
-					e.Process = process;
-					e.Thread = threadToReport;
-					e.BreakpointsHit = breakpointsHit.ToArray();
-					e.ExceptionThrown = exceptionThrown;
+				if (pausedEventArgs != null) {
+					pausedEventArgs.Thread = threadToReport;
 					threadToReport = null;
-					breakpointsHit.Clear();
-					exceptionThrown = null;
 					
 					// Raise the pause event outside the callback
 					// Warning: Make sure that process in not resumed in the meantime
+					DebuggerPausedEventArgs e = pausedEventArgs; // Copy for capture
 					process.Debugger.MTA2STA.AsyncCall(delegate { process.OnPaused(e); });
 				}
 				
 				pauseOnNextExit = false;
-				raiseEventsOnNextExit = false;
+				pausedEventArgs = null;
 			} else {
 				process.AsyncContinue(DebuggeeStateAction.Keep, null, null);
 			}
@@ -157,7 +165,7 @@ namespace Debugger
 			} else {
 				// User-code method
 				pauseOnNextExit = true;
-				raiseEventsOnNextExit = true;
+				GetPausedEventArgs().Break = true;
 				process.TraceMessage(" - pausing in user code");
 			}
 			
@@ -170,13 +178,15 @@ namespace Debugger
 			EnterCallback("Breakpoint", pThread);
 			
 			Breakpoint breakpoint = process.Debugger.GetBreakpoint(corBreakpoint);
-			// Could be tempBreakpoint
+			// Could be one of Process.tempBreakpoints
+			// The breakpoint might have just been removed
 			if (breakpoint != null) {
-				breakpointsHit.Add(breakpoint);
+				GetPausedEventArgs().BreakpointsHit.Add(breakpoint);
+			} else {
+				GetPausedEventArgs().Break = true;
 			}
 			
 			pauseOnNextExit = true;
-			raiseEventsOnNextExit = true;
 			
 			ExitCallback();
 		}
@@ -193,7 +203,7 @@ namespace Debugger
 			EnterCallback("Break", pThread);
 
 			pauseOnNextExit = true;
-			raiseEventsOnNextExit = true;
+			GetPausedEventArgs().Break = true;
 			ExitCallback();
 		}
 
@@ -202,7 +212,7 @@ namespace Debugger
 			EnterCallback("ControlCTrap", pProcess);
 
 			pauseOnNextExit = true;
-			raiseEventsOnNextExit = true;
+			GetPausedEventArgs().Break = true;
 			ExitCallback();
 		}
 
@@ -293,7 +303,7 @@ namespace Debugger
 
 			try {
 				pauseOnNextExit = true;
-				raiseEventsOnNextExit = true;
+				GetPausedEventArgs().Break = true;
 				ExitCallback();
 			} catch (COMException) {
 			} catch (InvalidComObjectException) {
@@ -524,14 +534,13 @@ namespace Debugger
 			bool pauseOnHandled = !process.Evaluating && process.Options != null && process.Options.PauseOnHandledExceptions;
 			
 			if (exceptionType == ExceptionType.Unhandled || (pauseOnHandled && exceptionType == ExceptionType.CatchHandlerFound)) {
-				// sanity check: we can only handle one exception after another
-				// TODO : create Exception queue if CLR throws multiple exceptions
-				Debug.Assert(exceptionThrown == null);
 				Value value = new Value(process.GetAppDomain(pAppDomain), pThread.GetCurrentException()).GetPermanentReferenceOfHeapValue();
-				exceptionThrown = new Exception(value, exceptionType);
+				
+				if (GetPausedEventArgs().ExceptionThrown != null)
+					throw new DebuggerException("Exception is already being processed");
+				GetPausedEventArgs().ExceptionThrown = new Exception(value, exceptionType);
 				
 				pauseOnNextExit = true;
-				raiseEventsOnNextExit = true;
 			}
 			
 			ExitCallback();

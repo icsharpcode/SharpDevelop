@@ -205,7 +205,7 @@ namespace Debugger.Tests
 			process.ModuleLoaded += delegate(object sender, ModuleEventArgs e) {
 				LogEvent("ModuleLoaded", e.Module.Name + (e.Module.HasSymbols ? " (Has symbols)" : " (No symbols)"));
 			};
-			process.Paused += delegate(object sender, DebuggerEventArgs e) {
+			process.Paused += delegate(object sender, DebuggerPausedEventArgs e) {
 				this.CurrentThread = e.Thread;
 				if (e.Thread != null && e.Thread.IsInValidState) {
 					this.CurrentStackFrame = e.Thread.MostRecentStackFrame;
