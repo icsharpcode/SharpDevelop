@@ -297,10 +297,7 @@ namespace Debugger
 		
 		#region Array
 		
-		/// <summary>
-		/// Gets the number of elements in the array.
-		/// eg new object[4,5] returns 20
-		/// </summary>
+		/// <summary> Gets the number of elements in the array. (eg new object[4,5] returns 20) </summary>
 		/// <returns> 0 for non-arrays </returns>
 		public int ArrayLength {
 			get {
@@ -309,10 +306,7 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary>
-		/// Gets the number of dimensions of the array.
-		/// eg new object[4,5] returns 2
-		/// </summary>
+		/// <summary> Gets the number of dimensions of the array. (eg new object[4,5] returns 2) </summary>
 		/// <returns> 0 for non-arrays </returns>
 		public int ArrayRank {
 			get {
@@ -321,71 +315,56 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> Gets the dimensions of the array  </summary>
-		/// <returns> null for non-arrays </returns>
-		public ArrayDimensions ArrayDimensions {
+		/// <summary> Returns the lowest allowed index for each dimension. Generally zero. </summary>
+		public uint[] ArrayBaseIndicies {
 			get {
 				if (this.Type.Kind != TypeKind.Array) return null;
-				int rank = this.ArrayRank;
-				uint[] baseIndicies;
 				if (CorArrayValue.HasBaseIndicies() == 1) {
-					baseIndicies = CorArrayValue.GetBaseIndicies();
+					return CorArrayValue.GetBaseIndicies();
 				} else {
-					baseIndicies = new uint[this.ArrayRank];
+					return new uint[this.ArrayRank];
 				}
-				uint[] dimensionCounts = CorArrayValue.GetDimensions();
-				
-				List<ArrayDimension> dimensions = new List<ArrayDimension>();
-				for(int i = 0; i < rank; i++) {
-					dimensions.Add(new ArrayDimension((int)baseIndicies[i], (int)baseIndicies[i] + (int)dimensionCounts[i] - 1));
-				}
-				
-				return new ArrayDimensions(dimensions);
+			}
+		}
+		
+		/// <summary> Returns the number of elements in each dimension </summary>
+		public uint[] ArrayDimensions {
+			get {
+				if (this.Type.Kind != TypeKind.Array) return null;
+				return CorArrayValue.GetDimensions();
 			}
 		}
 		
 		/// <summary> Returns an element of a single-dimensional array </summary>
 		public Value GetArrayElement(int index)
 		{
-			return GetArrayElement(new int[] {index});
+			return GetArrayElement(new uint[] { (uint)index });
 		}
 		
 		/// <summary> Returns an element of an array </summary>
-		public Value GetArrayElement(int[] elementIndices)
+		public Value GetArrayElement(uint[] indices)
 		{
-			int[] indices = (int[])elementIndices.Clone();
-			
-			return new Value(this.AppDomain, GetCorValueOfArrayElement(indices));
+			try {
+				return new Value(this.AppDomain, CorArrayValue.GetElement(indices));
+			} catch (ArgumentException) {
+				throw new GetValueException("Invalid array index");
+			}
 		}
 		
-		// May be called later
-		ICorDebugValue GetCorValueOfArrayElement(int[] indices)
+		/// <summary> Returns an element of an array (treats the array as zero-based and single dimensional) </summary>
+		public Value GetElementAtPosition(int index)
 		{
-			if (indices.Length != ArrayRank) {
-				throw new GetValueException("Given indicies do not have the same dimension as array.");
+			try {
+				return new Value(this.AppDomain, CorArrayValue.GetElementAtPosition((uint)index));
+			} catch (ArgumentException) {
+				throw new GetValueException("Invalid array index");
 			}
-			if (!this.ArrayDimensions.IsIndexValid(indices)) {
-				throw new GetValueException("Given indices are out of range of the array");
-			}
-			
-			return CorArrayValue.GetElement(indices);
 		}
 		
-		public void SetArrayElement(Thread evalThread, int[] elementIndices, Value newVal)
+		public void SetArrayElement(Thread evalThread, uint[] elementIndices, Value newVal)
 		{
 			Value elem = GetArrayElement(elementIndices);
 			elem.SetValue(evalThread, newVal);
-		}
-		
-		/// <summary> Returns all elements in the array </summary>
-		public Value[] GetArrayElements()
-		{
-			if (this.Type.Kind != TypeKind.Array) return null;
-			List<Value> values = new List<Value>();
-			foreach(int[] indices in this.ArrayDimensions.Indices) {
-				values.Add(GetArrayElement(indices));
-			}
-			return values.ToArray();
 		}
 		
 		#endregion

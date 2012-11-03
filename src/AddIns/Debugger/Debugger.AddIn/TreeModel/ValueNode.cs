@@ -109,9 +109,10 @@ namespace Debugger.AddIn.TreeModel
 				} else if (val.Type.IsPrimitiveType() || val.Type.IsKnownType(KnownTypeCode.String)) { // Must be before IsClass
 					this.GetChildren = null;
 				} else if (val.Type.Kind == TypeKind.Array) { // Must be before IsClass
-					var dims = val.ArrayDimensions;  // Eval now
-					if (dims.TotalElementCount > 0) {
-						this.GetChildren = () => GetArrayChildren(dims, dims);
+					var dimBase = val.ArrayBaseIndicies;		// Eval now
+					var dimSize = val.ArrayDimensions;		// Eval now
+					if (val.ArrayLength > 0) {
+						this.GetChildren = () => GetArrayChildren(dimBase, dimSize);
 					}
 				} else if (val.Type.Kind == TypeKind.Class || val.Type.Kind == TypeKind.Struct) {
 					if (val.Type.IsKnownType(typeof(List<>))) {
@@ -373,83 +374,87 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		TreeNode GetArraySubsetNode(ArrayDimensions bounds, ArrayDimensions originalBounds)
-		{
-			StringBuilder name = new StringBuilder();
-			bool isFirst = true;
-			name.Append("[");
-			for(int i = 0; i < bounds.Count; i++) {
-				if (!isFirst) name.Append(", ");
-				isFirst = false;
-				ArrayDimension dim = bounds[i];
-				ArrayDimension originalDim = originalBounds[i];
-				
-				if (dim.Count == 0) {
-					name.Append("-");
-				} else if (dim.Count == 1) {
-					name.Append(dim.LowerBound.ToString());
-				} else if (dim.Equals(originalDim)) {
-					name.Append("*");
-				} else {
-					name.Append(dim.LowerBound);
-					name.Append("..");
-					name.Append(dim.UpperBound);
-				}
-			}
-			name.Append("]");
-			
-			return new TreeNode(name.ToString(), () => GetArrayChildren(bounds, originalBounds));
-		}
-		
-		IEnumerable<TreeNode> GetArrayChildren(ArrayDimensions bounds, ArrayDimensions originalBounds)
+		IEnumerable<TreeNode> GetArrayChildren(uint[] dimBase, uint[] dimSize)
 		{
 			const int MaxElementCount = 100;
 			
-			if (bounds.TotalElementCount == 0)
+			int rank = dimSize.Length;
+			uint totalSize = dimSize.Aggregate((uint)1, (acc, s) => acc * s);
+			
+			if (totalSize == 0)
 			{
 				yield return new TreeNode("(empty)", null);
 				yield break;
 			}
 			
-			// The whole array is small - just add all elements as childs
-			if (bounds.TotalElementCount <= MaxElementCount * 2) {
-				foreach(int[] indices in bounds.Indices) {
-					StringBuilder sb = new StringBuilder(indices.Length * 4);
-					sb.Append("[");
+			// The array is small - just add all elements as children
+			StringBuilder sb = new StringBuilder();
+			if (totalSize <= MaxElementCount) {
+				uint[] indices = (uint[])dimBase.Clone();
+				while(indices[0] < dimBase[0] + dimSize[0]) {
+					// Make element name
+					sb.Clear();
+					sb.Append('[');
 					bool isFirst = true;
 					foreach(int index in indices) {
 						if (!isFirst) sb.Append(", ");
-						sb.Append(index.ToString());
+						sb.Append(index);
 						isFirst = false;
 					}
-					sb.Append("]");
-					int[] indicesCopy = indices;
+					sb.Append(']');
+					
+					// The getValue delegate might be called later or several times
+					uint[] indicesCopy = (uint[])indices.Clone();
 					yield return new ValueNode(ClassBrowserIconService.Field, sb.ToString(), () => GetValue().GetArrayElement(indicesCopy));
+					
+					// Get next combination
+					indices[rank - 1]++;
+					for (int i = rank - 1; i > 0; i--) {
+						if (indices[i] >= dimBase[i] + dimSize[i]) {
+							indices[i] = dimBase[i];
+							indices[i - 1]++;
+						}
+					}
 				}
 				yield break;
 			}
 			
-			// Find a dimension of size at least 2
-			int splitDimensionIndex = bounds.Count - 1;
-			for(int i = 0; i < bounds.Count; i++) {
-				if (bounds[i].Count > 1) {
-					splitDimensionIndex = i;
-					break;
+			// Split the array into smaller subsets
+			int splitIndex = Array.FindIndex(dimSize, s => (s > 1));
+			uint groupSize = 1;
+			while (dimSize[splitIndex] > groupSize * MaxElementCount) {
+				groupSize *= MaxElementCount;
+			}
+			for(uint i = dimBase[splitIndex]; i < dimBase[splitIndex] + dimSize[splitIndex]; i += groupSize) {
+				// Get the base&size for the subset
+				uint[] newDimBase = (uint[])dimBase.Clone();
+				uint[] newDimSize = (uint[])dimSize.Clone();
+				newDimBase[splitIndex] = i;
+				newDimSize[splitIndex] = Math.Min(groupSize, dimBase[splitIndex] + dimSize[splitIndex] - i);
+				
+				// Make the subset name
+				sb.Clear();
+				sb.Append('[');
+				bool isFirst = true;
+				for (int j = 0; j < rank; j++) {
+					if (!isFirst) sb.Append(", ");
+					if (j < splitIndex) {
+						sb.Append(newDimBase[j]);
+					} else if (j == splitIndex) {
+						sb.Append(i);
+						if (newDimSize[splitIndex] > 1) {
+							sb.Append("..");
+							sb.Append(i + newDimSize[splitIndex] - 1);
+						}
+					} else if (j > splitIndex) {
+						sb.Append('*');
+					}
+					isFirst = false;
 				}
+				sb.Append(']');
+				
+				yield return new TreeNode(sb.ToString(), () => GetArrayChildren(newDimBase, newDimSize));
 			}
-			ArrayDimension splitDim = bounds[splitDimensionIndex];
-			
-			// Split the dimension
-			int elementsPerSegment = 1;
-			while (splitDim.Count > elementsPerSegment * MaxElementCount) {
-				elementsPerSegment *= MaxElementCount;
-			}
-			for(int i = splitDim.LowerBound; i <= splitDim.UpperBound; i += elementsPerSegment) {
-				List<ArrayDimension> newDims = new List<ArrayDimension>(bounds);
-				newDims[splitDimensionIndex] = new ArrayDimension(i, Math.Min(i + elementsPerSegment - 1, splitDim.UpperBound));
-				yield return GetArraySubsetNode(new ArrayDimensions(newDims), originalBounds);
-			}
-			yield break;
 		}
 	}
 }

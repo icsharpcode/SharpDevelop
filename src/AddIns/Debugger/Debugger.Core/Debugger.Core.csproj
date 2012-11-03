@@ -64,8 +64,6 @@
     <Compile Include="TypeSystemExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AppDomain.cs" />
-    <Compile Include="ArrayDimension.cs" />
-    <Compile Include="ArrayDimensions.cs" />
     <Compile Include="Breakpoint.cs" />
     <Compile Include="DebuggerException.cs" />
     <Compile Include="Eval.cs" />

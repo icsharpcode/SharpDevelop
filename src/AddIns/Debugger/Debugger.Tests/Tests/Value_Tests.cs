@@ -46,7 +46,7 @@ namespace Debugger.Tests {
 			
 			Value lbArray = this.CurrentStackFrame.GetLocalVariableValue("lbArray").GetPermanentReference(this.EvalThread);
 			ObjectDump("lbArray", lbArray);
-			ObjectDump("lbArray-10-20", lbArray.GetArrayElement(new int[] {10, 20}));
+			ObjectDump("lbArray-10-20", lbArray.GetArrayElement(new uint[] {10, 20}));
 			
 			EndTest();
 		}
@@ -108,20 +108,20 @@ namespace Debugger.Tests {
     </array.Length>
     <array>
       <Value
+        ArrayBaseIndicies="{0, 0}"
         ArrayDimensions="{2, 2}"
         ArrayLength="4"
         ArrayRank="2"
-        GetArrayElements="{0, 1, 2, 3}"
         IsReference="True"
         PrimitiveValue="{Exception: Value is not a primitive type}"
         Type="System.Int32[,]" />
     </array>
     <lbArray>
       <Value
-        ArrayDimensions="{10..11, 20..21}"
+        ArrayBaseIndicies="{10, 20}"
+        ArrayDimensions="{2, 2}"
         ArrayLength="4"
         ArrayRank="2"
-        GetArrayElements="{a, b, c, d}"
         IsReference="True"
         PrimitiveValue="{Exception: Value is not a primitive type}"
         Type="System.Char[,]" />
