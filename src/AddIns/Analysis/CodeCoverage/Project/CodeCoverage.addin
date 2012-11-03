@@ -49,7 +49,7 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
-		<OptionPanel id          = "CodeCoverageOptionsPanel1"
+		<OptionPanel id          = "CodeCoverageOptionsPanel"
 		             label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
 		             insertafter = "CodeAnalysisOptionPanel"
 		             class       = "ICSharpCode.CodeCoverage.CodeCoverageOptionsPanel"/>
@@ -109,7 +109,6 @@
 		<OptionPanel id          = "CodeCoverage"
 		             label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
 		             class       = "ICSharpCode.CodeCoverage.CodeCoverageProjectOptionsPanel"/>
-		
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit/Format">
