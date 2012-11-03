@@ -72,7 +72,7 @@ namespace Debugger.AddIn.TreeModel
 				cachedValue = this.getValue().GetPermanentReference(WindowsDebugger.EvalThread);
 				cachedValueProcess = cachedValue.Process;
 				cachedValueDebuggeeState = cachedValue.Process.DebuggeeState;
-				LoggingService.InfoFormatted("Evaluated node '{0}' in {1} ms (result cached for future use)", this.Name, watch.ElapsedMilliseconds);
+				LoggingService.InfoFormatted("Evaluated node '{0}' in {1} ms (result cached)", this.Name, watch.ElapsedMilliseconds);
 			}
 			return cachedValue;
 		}
@@ -92,9 +92,8 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		/// <summary>
-		/// Get the value of the node and update the UI text fields.
-		/// </summary>
+		/// <summary> Get the value of the node and update the UI text fields. </summary>
+		/// <remarks> This should be only called once so the Value is not cached. </remarks>
 		void GetValueAndUpdateUI()
 		{
 			try {
@@ -175,7 +174,6 @@ namespace Debugger.AddIn.TreeModel
 				this.Type  = string.Empty;
 				this.GetChildren = null;
 				#warning				this.VisualizerCommands = null;
-				return;
 			}
 		}
 		
@@ -240,13 +238,6 @@ namespace Debugger.AddIn.TreeModel
 				throw new GetValueException("No stack frame selected");
 			
 			return WindowsDebugger.CurrentStackFrame;
-		}
-		
-		public static TreeNode GetTooltipFor(string text, Value value)
-		{
-			if (value == null)
-				throw new ArgumentNullException("value");
-			return new ValueNode(ClassBrowserIconService.LocalVariable, text, () => value);
 		}
 		
 		public static IEnumerable<TreeNode> GetLocalVariables()
@@ -361,15 +352,13 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
+		/// <remarks> 'getValue' really should return cached value, because we do Eval to create indices. </remarks>
 		static IEnumerable<TreeNode> GetIListChildren(Func<Value> getValue)
 		{
-			Value list;
 			IProperty itemProp;
 			int count = 0;
 			try {
-				// TODO: We want new list on reeval
-				// We need the list to survive generation of index via Eval
-				list = getValue().GetPermanentReference(WindowsDebugger.EvalThread);
+				Value list = getValue();
 				IType iListType = list.Type.GetAllBaseTypeDefinitions().Where(t => t.FullName == typeof(IList).FullName).FirstOrDefault();
 				itemProp = iListType.GetProperties(p => p.Name == "Item").Single();
 				// Do not get string representation since it can be printed in hex
@@ -380,7 +369,7 @@ namespace Debugger.AddIn.TreeModel
 			if (count == 0) {
 				return new [] { new TreeNode("(empty)", null) };
 			} else {
-				return Enumerable.Range(0, count).Select(i => new ValueNode(ClassBrowserIconService.Field, "[" + i + "]", () => list.GetPropertyValue(WindowsDebugger.EvalThread, itemProp, Eval.CreateValue(WindowsDebugger.EvalThread, i))));
+				return Enumerable.Range(0, count).Select(i => new ValueNode(ClassBrowserIconService.Field, "[" + i + "]", () => getValue().GetPropertyValue(WindowsDebugger.EvalThread, itemProp, Eval.CreateValue(WindowsDebugger.EvalThread, i))));
 			}
 		}
 		

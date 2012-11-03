@@ -710,18 +710,23 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			if (!(IsDebugging && CurrentProcess.IsPaused))
 				return;
-			if (e.ResolveResult == null)
+			var resolveResult = e.ResolveResult;
+			if (resolveResult == null)
 				return;
-			if (e.ResolveResult is LocalResolveResult || e.ResolveResult is MemberResolveResult || e.ResolveResult is InvocationResolveResult) {
+			if (resolveResult is LocalResolveResult || resolveResult is MemberResolveResult || resolveResult is InvocationResolveResult) {
+				string text = string.Empty;
 				try {
+					text = new ResolveResultPrettyPrinter().Print(resolveResult);
+				} catch (NotImplementedException) {
+				}
+				Func<Value> getValue = delegate {
 					ExpressionEvaluationVisitor eval = new ExpressionEvaluationVisitor(CurrentStackFrame, EvalThread, CurrentStackFrame.AppDomain.Compilation);
-					Value result = eval.Convert(e.ResolveResult);
-					string text = new ResolveResultPrettyPrinter().Print(e.ResolveResult);
-					e.SetToolTip(new DebuggerTooltipControl(ValueNode.GetTooltipFor(text, result)));
-				} catch (GetValueException ex) {
-					e.SetToolTip(ex.Message);
+					return eval.Convert(resolveResult);
+				};
+				try {
+					var rootNode = new ValueNode(ClassBrowserIconService.LocalVariable, text, getValue);
+					e.SetToolTip(new DebuggerTooltipControl(rootNode));
 				} catch (InvalidOperationException) {
-					return;
 				}
 			}
 		}

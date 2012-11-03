@@ -371,7 +371,9 @@ namespace Debugger
 		public Value GetLocalVariableValue(string name)
 		{
 			var loc = GetLocalVariables(this.IP).Where(v => v.Name == name).FirstOrDefault();
-			return loc != null ? loc.GetValue(this) : null;
+			if (loc == null)
+				throw new GetValueException("Local variable \"{0}\" not found", name);
+			return loc.GetValue(this);
 		}
 		
 		/// <summary> Gets value indicating whether this method should be stepped over according to current options </summary>
