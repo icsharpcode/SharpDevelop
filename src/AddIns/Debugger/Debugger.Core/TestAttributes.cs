@@ -10,4 +10,16 @@ namespace Debugger.Tests
 	{
 		
 	}
+	
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Method)]
+	public class IgnoreAttribute: Attribute
+	{
+		
+	}
+	
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Method | AttributeTargets.Class)]
+	public class IgnoreOnExceptionAttribute: Attribute
+	{
+		
+	}
 }

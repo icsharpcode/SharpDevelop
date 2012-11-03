@@ -14,11 +14,17 @@ namespace Debugger
 {
 	public delegate Value ValueGetter(StackFrame context);
 	
+	public class GetValueException: DebuggerException
+	{
+		public GetValueException(string error) : base(error) {}
+		public GetValueException(string errorFmt, params object[] args) : base(string.Format(errorFmt, args)) {}
+		public GetValueException(string error, System.Exception inner) : base(error, inner) {}
+	}
+	
 	/// <summary>
 	/// Value class provides functions to examine value in the debuggee.
-	/// It has very life-time.  In general, value dies whenever debugger is
+	/// It has very short life-time.  In general, value dies whenever debugger is
 	/// resumed (this includes method invocation and property evaluation).
-	/// You can use Expressions to reobtain the value.
 	/// </summary>
 	public class Value: DebuggerObject
 	{

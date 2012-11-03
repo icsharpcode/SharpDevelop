@@ -8,9 +8,34 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn
 {
+	public class RunToCursorCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
+			if (editor == null || WindowsDebugger.CurrentProcess == null)
+				return;
+			WindowsDebugger.CurrentProcess.RunTo(editor.FileName, editor.Caret.Line, editor.Caret.Column);
+		}
+	}
+	
+	public class SetCurrentStatementCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			ITextEditor textEditor = SD.GetActiveViewContentService<ITextEditor>();
+				
+			if (textEditor == null || DebuggerService.CurrentDebugger == null)
+				return;
+			
+			DebuggerService.CurrentDebugger.SetInstructionPointer(textEditor.FileName, textEditor.Caret.Line, textEditor.Caret.Column, false);
+		}
+	}
+	
 	public static class BreakpointUtil
 	{
 		public static IEnumerable<BreakpointBookmark> BreakpointsOnCaret {
