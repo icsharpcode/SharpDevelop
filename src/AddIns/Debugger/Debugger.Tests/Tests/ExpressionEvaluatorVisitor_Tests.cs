@@ -291,6 +291,8 @@ namespace Debugger.Tests
 		{
 			StartTest();
 			
+			evalContext = GetResource("ExpressionEvaluatorVisitor_Tests.cs");
+			
 			AssertEval("i", "4");
 			AssertEval("pi", "3.14f");
 			AssertEval("hi", "\"hi\"");
@@ -312,10 +314,11 @@ namespace Debugger.Tests
 			EndTest(false);
 		}
 		
+		string evalContext;
 		
 		void AssertEval(string expression, string expected)
 		{
-			NUnit.Framework.Assert.AreEqual(expected, ExpressionEvaluationVisitor.FormatValue(EvalThread, Evaluate(CurrentStackFrame, EvalThread, expression, GetResource("ExpressionEvaluatorVisitor_Tests.cs"))));
+			NUnit.Framework.Assert.AreEqual(expected, ExpressionEvaluationVisitor.FormatValue(EvalThread, Evaluate(CurrentStackFrame, EvalThread, expression, evalContext)));
 		}
 		
 		static ResolveResult ResolveSnippet(string fileName, TextLocation location, string contextCode, string codeSnippet, ICompilation compilation)

@@ -65,7 +65,7 @@ namespace Debugger.Tests {
 	
 	public partial class DebuggerTests
 	{
-		[NUnit.Framework.Test, NUnit.Framework.Ignore("TODO: Compiler generated classes are missing from the metadata")]
+		[NUnit.Framework.Test]
 		public void DebugType_CompilerGeneratedClasses()
 		{
 			StartTest();
@@ -74,9 +74,13 @@ namespace Debugger.Tests {
 			DumpLocalVariables("OutterDelegateLocalVariables");
 			process.Continue();
 			DumpLocalVariables("InnterDelegateLocalVariables");
-			Evaluate(CurrentStackFrame, EvalThread, "nestedDelegArg", GetResource("DebugType_CompilerGeneratedClasses.cs"));
-			Evaluate(CurrentStackFrame, EvalThread, "instanceField", GetResource("DebugType_CompilerGeneratedClasses.cs"));
-			Evaluate(CurrentStackFrame, EvalThread, "staticField", GetResource("DebugType_CompilerGeneratedClasses.cs"));
+			
+			evalContext = GetResource("DebugType_CompilerGeneratedClasses.cs");
+			
+			AssertEval("nestedDelegArg", "402");
+			AssertEval("instanceField", "\"instance field value\"");
+			AssertEval("staticField", "\"static field value\"");
+			
 			EndTest();
 		}
 	}
@@ -141,6 +145,12 @@ namespace Debugger.Tests {
           Type="System.Int32"
           Value="103" />
       </Item>
+      <Item>
+        <LocalVariable
+          Name="this"
+          Type="Debugger.Tests.DebugType_CompilerGeneratedClasses"
+          Value="{Debugger.Tests.DebugType_CompilerGeneratedClasses}" />
+      </Item>
     </YieldLocalVariables>
     <Paused>DebugType_CompilerGeneratedClasses.cs:53,6-53,42</Paused>
     <OutterDelegateLocalVariables>
@@ -154,7 +164,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="nestedDeleg"
           Type="Debugger.Tests.DebugType_CompilerGeneratedClasses+IntDelegate"
-          Value="{Debugger.Tests.DebugType_CompilerGeneratedClasses+IntDelegate}" />
+          Value="{Debugger.Tests.DebugType_CompilerGeneratedClasses.IntDelegate}" />
       </Item>
       <Item>
         <LocalVariable
@@ -250,9 +260,6 @@ namespace Debugger.Tests {
           Value="{Debugger.Tests.DebugType_CompilerGeneratedClasses}" />
       </Item>
     </InnterDelegateLocalVariables>
-    <Eval> nestedDelegArg = 402 </Eval>
-    <Eval> instanceField = "instance field value" </Eval>
-    <Eval> staticField = "static field value" </Eval>
     <Exited />
   </Test>
 </DebuggerTests>

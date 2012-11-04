@@ -18,6 +18,12 @@ using NUnit.Framework;
 
 namespace Debugger.Tests
 {
+	[TestFixture]
+	public partial class DebuggerTests: DebuggerTestsBase
+	{
+		
+	}
+	
 	public class DebuggerTestsBase
 	{
 		string expetedOutputEnvVar = "SD_TESTS_DEBUGGER_XML_OUT";
