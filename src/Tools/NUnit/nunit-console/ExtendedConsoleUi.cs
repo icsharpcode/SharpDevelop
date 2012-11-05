@@ -4,6 +4,8 @@
 // copyright ownership at http://nunit.org.
 // ****************************************************************
 
+using System.Diagnostics;
+
 namespace NUnit.ConsoleRunner
 {
 	using System;
@@ -69,6 +71,7 @@ namespace NUnit.ConsoleRunner
 				testResultWriter = new StreamWriter ( options.results, false, Encoding.UTF8 );
 				((StreamWriter)testResultWriter).AutoFlush = true;
 			}
+
             TestPackage package = MakeTestPackage(options);
 
             ProcessModel processModel = package.Settings.Contains("ProcessModel")
@@ -110,61 +113,10 @@ namespace NUnit.ConsoleRunner
 
 				ExtendedEventCollector collector = new ExtendedEventCollector( options, outWriter, errorWriter, testResultWriter );
 
-				TestFilter testFilter = TestFilter.Empty;
-                SimpleNameFilter nameFilter = new SimpleNameFilter();
-
-				if ( options.run != null && options.run != string.Empty )
-				{
-					Console.WriteLine( "Selected test(s): " + options.run );
-                    foreach (string name in TestNameParser.Parse(options.run))
-                        nameFilter.Add(name);
-                    testFilter = nameFilter;
-				}
-
-                if (options.runlist != null && options.runlist != string.Empty)
-                {
-                    Console.WriteLine("Run list: " + options.runlist);
-                    using (StreamReader rdr = new StreamReader(options.runlist))
-                    {
-                        // NOTE: We can't use rdr.EndOfStream because it's
-                        // not present in .NET 1.x.
-                        string line = rdr.ReadLine();
-                        while (line != null)
-                        {
-                            if (line[0] != '#')
-                                nameFilter.Add(line);
-                            line = rdr.ReadLine();
-                        }
-                    }
-                    testFilter = nameFilter;
-                }
-
-				if ( options.include != null && options.include != string.Empty )
-				{
-					TestFilter includeFilter = new CategoryExpression( options.include ).Filter;
-                    Console.WriteLine("Included categories: " + includeFilter.ToString());
-
-                    if (testFilter.IsEmpty)
-						testFilter = includeFilter;
-					else
-						testFilter = new AndFilter( testFilter, includeFilter );
-				}
-
-				if ( options.exclude != null && options.exclude != string.Empty )
-				{
-					TestFilter excludeFilter = new NotFilter( new CategoryExpression( options.exclude ).Filter );
-                    Console.WriteLine("Excluded categories: " + excludeFilter.ToString());
-
-					if ( testFilter.IsEmpty )
-						testFilter = excludeFilter;
-					else if ( testFilter is AndFilter )
-						((AndFilter)testFilter).Add( excludeFilter );
-					else
-						testFilter = new AndFilter( testFilter, excludeFilter );
-				}
-
-                if (testFilter is NotFilter)
-                    ((NotFilter)testFilter).TopLevel = true;
+				TestFilter testFilter;
+					
+				if(!CreateTestFilter(options, out testFilter))
+					return INVALID_ARG;
 
 				TestResult result = null;
 				string savedDirectory = Environment.CurrentDirectory;
@@ -180,13 +132,15 @@ namespace NUnit.ConsoleRunner
 					outWriter.Flush();
 					errorWriter.Flush();
 
-					if ( redirectOutput )
+					if (redirectOutput)
 						outWriter.Close();
-					if ( redirectError )
+
+					if (redirectError)
 						errorWriter.Close();
+
 					if ( options.IsResults )
 						testResultWriter.Close();
-
+						
 					Environment.CurrentDirectory = savedDirectory;
 					Console.SetOut( savedOut );
 					Console.SetError( savedError );
@@ -239,7 +193,7 @@ namespace NUnit.ConsoleRunner
                     returnCode = summary.Errors + summary.Failures + summary.NotRunnable;
                 }
 
-				if ( collector.HasExceptions )
+				if (collector.HasExceptions)
 				{
 					collector.WriteExceptions();
 					returnCode = UNEXPECTED_ERROR;
@@ -247,6 +201,84 @@ namespace NUnit.ConsoleRunner
             
 				return returnCode;
 			}
+		}
+
+		internal static bool CreateTestFilter(ConsoleOptions options, out TestFilter testFilter)
+		{
+			testFilter = TestFilter.Empty;
+
+			SimpleNameFilter nameFilter = new SimpleNameFilter();
+
+			if (options.run != null && options.run != string.Empty)
+			{
+				Console.WriteLine("Selected test(s): " + options.run);
+
+				foreach (string name in TestNameParser.Parse(options.run))
+					nameFilter.Add(name);
+
+				testFilter = nameFilter;
+			}
+
+			if (options.runlist != null && options.runlist != string.Empty)
+			{
+				Console.WriteLine("Run list: " + options.runlist);
+				
+				try
+				{
+					using (StreamReader rdr = new StreamReader(options.runlist))
+					{
+						// NOTE: We can't use rdr.EndOfStream because it's
+						// not present in .NET 1.x.
+						string line = rdr.ReadLine();
+						while (line != null && line.Length > 0)
+						{
+							if (line[0] != '#')
+								nameFilter.Add(line);
+							line = rdr.ReadLine();
+						}
+					}
+				}
+				catch (Exception e)
+				{
+					if (e is FileNotFoundException || e is DirectoryNotFoundException)
+					{
+						Console.WriteLine("Unable to locate file: " + options.runlist);
+						return false;
+					}
+					throw;
+				}
+
+				testFilter = nameFilter;
+			}
+
+			if (options.include != null && options.include != string.Empty)
+			{
+				TestFilter includeFilter = new CategoryExpression(options.include).Filter;
+				Console.WriteLine("Included categories: " + includeFilter.ToString());
+
+				if (testFilter.IsEmpty)
+					testFilter = includeFilter;
+				else
+					testFilter = new AndFilter(testFilter, includeFilter);
+			}
+
+			if (options.exclude != null && options.exclude != string.Empty)
+			{
+				TestFilter excludeFilter = new NotFilter(new CategoryExpression(options.exclude).Filter);
+				Console.WriteLine("Excluded categories: " + excludeFilter.ToString());
+
+				if (testFilter.IsEmpty)
+					testFilter = excludeFilter;
+				else if (testFilter is AndFilter)
+					((AndFilter) testFilter).Add(excludeFilter);
+				else
+					testFilter = new AndFilter(testFilter, excludeFilter);
+			}
+
+			if (testFilter is NotFilter)
+				((NotFilter) testFilter).TopLevel = true;
+
+			return true;
 		}
 
 		#region Helper Methods
@@ -289,6 +321,17 @@ namespace NUnit.ConsoleRunner
 				domainUsage = DomainUsage.Multiple;
 			}
 
+			if (options.basepath != null && options.basepath != string.Empty)
+ 			{
+ 				package.BasePath = options.basepath;
+ 			}
+ 
+ 			if (options.privatebinpath != null && options.privatebinpath != string.Empty)
+ 			{
+ 				package.AutoBinPath = false;
+				package.PrivateBinPath = options.privatebinpath;
+ 			}
+
 #if CLR_2_0 || CLR_4_0
             if (options.framework != null)
                 framework = RuntimeFramework.Parse(options.framework);
@@ -304,10 +347,9 @@ namespace NUnit.ConsoleRunner
             
             package.Settings["ProcessModel"] = processModel;
             package.Settings["DomainUsage"] = domainUsage;
-            if (framework != null)
-                package.Settings["RuntimeFramework"] = framework;
-
             
+			if (framework != null)
+                package.Settings["RuntimeFramework"] = framework;
 
             if (domainUsage == DomainUsage.None)
             {
