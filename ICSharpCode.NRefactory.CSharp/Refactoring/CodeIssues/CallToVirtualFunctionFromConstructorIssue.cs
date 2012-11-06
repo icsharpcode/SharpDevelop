@@ -30,29 +30,33 @@ using ICSharpCode.NRefactory.Semantics;
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	[IssueDescription("Constructors should not call virtual members",
-	       Description = "Warns about calls to virtual member functions occuring in the constructor.",
-	       Category = IssueCategories.CodeQualityIssues,
-	       Severity = Severity.Warning)]
+	                  Description = "Warns about calls to virtual member functions occuring in the constructor.",
+	                  Category = IssueCategories.CodeQualityIssues,
+	                  Severity = Severity.Warning)]
 	public class CallToVirtualFunctionFromConstructorIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
-			return new GatherVisitor(context).GetIssues();
+			var gv = new GatherVisitor(context);
+			context.RootNode.AcceptVisitor(gv);
+			return gv.CallFinder.FoundIssues;
 		}
 		
 		class GatherVisitor : GatherVisitorBase
 		{
-			readonly BaseRefactoringContext context;
-			
+			internal readonly VirtualCallFinderVisitor CallFinder;
+
 			public GatherVisitor(BaseRefactoringContext context) : base (context)
 			{
-				this.context = context;
+				CallFinder = new VirtualCallFinderVisitor(context);
 			}
 
 			bool isSealedType;
 
 			public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
 			{
+				if (typeDeclaration.ClassType != ClassType.Class && typeDeclaration.ClassType != ClassType.Struct)
+					return;
 				bool oldIsSealedType = isSealedType;
 				isSealedType = typeDeclaration.Modifiers.HasFlag(Modifiers.Sealed);
 				base.VisitTypeDeclaration(typeDeclaration);
@@ -66,9 +70,42 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var body = constructorDeclaration.Body;
 				if (body == null || body.IsNull)
 					return;
-				var callFinder = new VirtualCallFinderVisitor(context);
-				body.AcceptVisitor(callFinder);
-				FoundIssues.AddRange(callFinder.FoundIssues);
+				body.AcceptVisitor(CallFinder);
+			}
+
+			public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
+			{
+				// nothing
+			}
+
+			public override void VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
+			{
+				// nothing
+			}
+
+			public override void VisitIndexerExpression(IndexerExpression indexerExpression)
+			{
+				// nothing
+			}
+
+			public override void VisitCustomEventDeclaration(CustomEventDeclaration eventDeclaration)
+			{
+				// nothing
+			}
+
+			public override void VisitEventDeclaration(EventDeclaration eventDeclaration)
+			{
+				// nothing
+			}
+
+			public override void VisitFieldDeclaration(FieldDeclaration fieldDeclaration)
+			{
+				// nothing
+			}
+
+			public override void VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration)
+			{
+				// nothing
 			}
 		}
 
