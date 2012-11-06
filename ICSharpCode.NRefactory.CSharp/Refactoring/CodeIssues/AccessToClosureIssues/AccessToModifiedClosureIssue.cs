@@ -30,12 +30,12 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription ("Access to modified closure variable",
-					   Description = "Access to closure variable from anonymous method when the variable is modified " +
-									 "externally",
-					   Category = IssueCategories.CodeQualityIssues,
-					   Severity = Severity.Warning,
-					   IssueMarker = IssueMarker.Underline)]	
+//	[IssueDescription ("Access to modified closure variable",
+//					   Description = "Access to closure variable from anonymous method when the variable is modified " +
+//									 "externally",
+//					   Category = IssueCategories.CodeQualityIssues,
+//					   Severity = Severity.Warning,
+//					   IssueMarker = IssueMarker.Underline)]	
 	public class AccessToModifiedClosureIssue : AccessToClosureIssue
 	{
 		public AccessToModifiedClosureIssue ()
