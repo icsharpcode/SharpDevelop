@@ -3410,7 +3410,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location [0]), QueryJoinClause.InKeywordRole), QueryJoinClause.InKeywordRole);
-				
+
 				if (join.Expr != null)
 					result.AddChild ((Expression)join.Expr.Accept (this), QueryJoinClause.InExpressionRole);
 
@@ -3438,7 +3438,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (Mono.CSharp.Linq.OrderByAscending orderByAscending)
 			{
 				currentQueryOrderClause = new QueryOrderClause();
-				
+				var location2 = LocationsBag.GetLocations (orderByAscending.block);
+				if (location2 != null)
+					currentQueryOrderClause.AddChild (new CSharpTokenNode (Convert (location2 [0]), QueryOrderClause.OrderbyKeywordRole), QueryOrderClause.OrderbyKeywordRole);
 				var ordering = new QueryOrdering ();
 				if (orderByAscending.Expr != null)
 					ordering.AddChild ((Expression)orderByAscending.Expr.Accept (this), Roles.Expression);
