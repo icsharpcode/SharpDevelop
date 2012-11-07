@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.Semantics
 		}
 		
 		public override object ConstantValue {
-			get { return variable.ConstantValue; }
+			get { return IsParameter ? null : variable.ConstantValue; }
 		}
 		
 		public override string ToString()

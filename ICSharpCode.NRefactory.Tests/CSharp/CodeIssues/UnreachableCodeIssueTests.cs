@@ -273,5 +273,24 @@ class TestClass
 }";
 			Test<UnreachableCodeIssue> (input, output, 1);
 		}
+
+		[Test]
+		public void TestDefaultParameter ()
+		{
+			var input = @"
+using System;
+
+namespace TestProjectForBug
+{
+	class MainClass
+	{
+		public static void CondMethod (bool cond = false)
+		{
+			Console.WriteLine (cond ? ""true"" : ""false"");
+		}
+	}
+}";
+			Test<UnreachableCodeIssue> (input, 0);
+		}
 	}
 }
