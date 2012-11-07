@@ -2163,7 +2163,11 @@ conversion_operator_declarator
 
 		Location loc = GetLocation ($2);
 		current_local_parameters = (ParametersCompiled)$6;  
-		  
+
+		if (current_local_parameters.Count != 1) {
+			report.Error (1535, loc, "Overloaded unary operator `implicit' takes one parameter");
+		}
+
 		if (doc_support) {
 			tmpComment = Lexer.consume_doc_comment ();
 			Lexer.doc_state = XmlCommentState.NotAllowed;
@@ -2182,7 +2186,11 @@ conversion_operator_declarator
 		
 		Location loc = GetLocation ($2);
 		current_local_parameters = (ParametersCompiled)$6;  
-		  
+
+		if (current_local_parameters.Count != 1) {
+			report.Error (1535, loc, "Overloaded unary operator `explicit' takes one parameter");
+		}
+
 		if (doc_support) {
 			tmpComment = Lexer.consume_doc_comment ();
 			Lexer.doc_state = XmlCommentState.NotAllowed;
@@ -6666,6 +6674,7 @@ orderby_clause
 	: ORDERBY
 	  {
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
+		lbag.AddLocation (current_block, GetLocation ($1));
 	  }
 	  orderings
 	  {
@@ -7163,7 +7172,8 @@ public void parse ()
 		}
 			
 		if (e is yyParser.yyException) {
-			report.Error (-25, lexer.Location, "Parsing error");
+			if (report.Errors == 0)
+				report.Error (-25, lexer.Location, "Parsing error");
 		} else {
 			// Used by compiler-tester to test internal errors
 			if (yacc_verbose_flag > 0 || e is FatalException)

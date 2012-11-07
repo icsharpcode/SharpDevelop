@@ -349,16 +349,13 @@ namespace Mono.CSharp
 		public string GetSignatureForMetadata ()
 		{
 #if STATIC
-			var name = TypeNameParser.Escape (MemberName.Basename);
-
 			if (Parent is TypeDefinition) {
-				return Parent.GetSignatureForMetadata () + "+" + name;
+				return Parent.GetSignatureForMetadata () + "+" + TypeNameParser.Escape (MemberName.Basename);
 			}
 
-			if (Parent != null && Parent.MemberName != null)
-				return Parent.GetSignatureForMetadata () + "." + name;
-
-			return name;
+			var sb = new StringBuilder ();
+			CreateMetadataName (sb);
+			return sb.ToString ();
 #else
 			throw new NotImplementedException ();
 #endif
@@ -1241,7 +1238,7 @@ namespace Mono.CSharp
 			//
 			// Sets .size to 1 for structs with no instance fields
 			//
-			int type_size = Kind == MemberKind.Struct && first_nonstatic_field == null ? 1 : 0;
+			int type_size = Kind == MemberKind.Struct && first_nonstatic_field == null && !(this is StateMachine) ? 1 : 0;
 
 			var parent_def = Parent as TypeDefinition;
 			if (parent_def == null) {

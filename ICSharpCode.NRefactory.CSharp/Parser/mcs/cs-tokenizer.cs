@@ -2914,6 +2914,7 @@ namespace Mono.CSharp
 
 				if (c == '"') {
 					++col;
+
 					if (quoted && peek_char () == '"') {
 						if (pos == value_builder.Length)
 							Array.Resize (ref value_builder, pos * 2);
@@ -2961,6 +2962,7 @@ namespace Mono.CSharp
 
 					advance_line (SpecialsBag.NewLine.Unix);
 				} else if (c == '\\' && !quoted) {
+					++col;
 					int surrogate;
 					c = escape (c, out surrogate);
 					if (c == -1)
