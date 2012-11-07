@@ -319,6 +319,91 @@ public class C {
 		}
 
 		[Test]
+		public void AwaitWithGenericAwaiterType() {
+			string program = @"
+using System;
+class MyAwaiter<T> : System.Runtime.CompilerServices.INotifyCompletion {
+	public bool IsCompleted { get { return false; } }
+	public void OnCompleted(Action continuation) {}
+	public T GetResult() { return 0; }
+}
+class MyAwaitable {
+	public MyAwaiter<int> GetAwaiter() { return null; }
+	public MyAwaiter<int> GetAwaiter(int i) { return null; }
+}
+public class C {
+	public async void M() {
+		MyAwaitable x = null;
+		int i = $await x$;
+	}
+}";
+		
+			var rr = Resolve<AwaitResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.IsTrue(rr.Type.IsKnownType(KnownTypeCode.Int32));
+			Assert.IsInstanceOf<CSharpInvocationResolveResult>(rr.GetAwaiterInvocation);
+			var getAwaiterInvocation = (CSharpInvocationResolveResult)rr.GetAwaiterInvocation;
+			Assert.IsFalse(rr.GetAwaiterInvocation.IsError);
+			Assert.AreEqual(0, getAwaiterInvocation.Arguments.Count);
+			Assert.AreEqual("MyAwaitable.GetAwaiter", getAwaiterInvocation.Member.FullName);
+			Assert.AreEqual(0, getAwaiterInvocation.Member.Parameters.Count);
+
+			Assert.AreEqual("MyAwaiter", rr.AwaiterType.FullName);
+
+			Assert.IsNotNull(rr.IsCompletedProperty);
+			Assert.AreEqual("MyAwaiter.IsCompleted", rr.IsCompletedProperty.FullName);
+
+			Assert.IsNotNull(rr.OnCompletedMethod);
+			Assert.AreEqual("MyAwaiter.OnCompleted", rr.OnCompletedMethod.FullName);
+
+			Assert.IsNotNull(rr.GetResultMethod);
+			Assert.AreEqual("MyAwaiter.GetResult", rr.GetResultMethod.FullName);
+		}
+
+		[Test]
+		public void AwaitWithCriticalGenericAwaiterType() {
+			string program = @"
+using System;
+class MyAwaiter<T> : System.Runtime.CompilerServices.ICriticalNotifyCompletion {
+	public bool IsCompleted { get { return false; } }
+	public void OnCompleted(Action continuation) {}
+	public void UnsafeOnCompleted(Action continuation) {}
+	public T GetResult() { return 0; }
+}
+class MyAwaitable {
+	public MyAwaiter<int> GetAwaiter() { return null; }
+	public MyAwaiter<int> GetAwaiter(int i) { return null; }
+}
+public class C {
+	public async void M() {
+		MyAwaitable x = null;
+		int i = $await x$;
+	}
+}";
+		
+			var rr = Resolve<AwaitResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.IsTrue(rr.Type.IsKnownType(KnownTypeCode.Int32));
+			Assert.IsInstanceOf<CSharpInvocationResolveResult>(rr.GetAwaiterInvocation);
+			var getAwaiterInvocation = (CSharpInvocationResolveResult)rr.GetAwaiterInvocation;
+			Assert.IsFalse(rr.GetAwaiterInvocation.IsError);
+			Assert.AreEqual(0, getAwaiterInvocation.Arguments.Count);
+			Assert.AreEqual("MyAwaitable.GetAwaiter", getAwaiterInvocation.Member.FullName);
+			Assert.AreEqual(0, getAwaiterInvocation.Member.Parameters.Count);
+
+			Assert.AreEqual("MyAwaiter", rr.AwaiterType.FullName);
+
+			Assert.IsNotNull(rr.IsCompletedProperty);
+			Assert.AreEqual("MyAwaiter.IsCompleted", rr.IsCompletedProperty.FullName);
+
+			Assert.IsNotNull(rr.OnCompletedMethod);
+			Assert.AreEqual("MyAwaiter.UnsafeOnCompleted", rr.OnCompletedMethod.FullName);
+
+			Assert.IsNotNull(rr.GetResultMethod);
+			Assert.AreEqual("MyAwaiter.GetResult", rr.GetResultMethod.FullName);
+		}
+
+		[Test]
 		public void AwaitWhenGetAwaiterIsAnExtensionMethod() {
 			string program = @"
 using System;
