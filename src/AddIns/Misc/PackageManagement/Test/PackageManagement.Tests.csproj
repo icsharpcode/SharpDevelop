@@ -78,6 +78,7 @@
     <Compile Include="Src\ClassCodeGeneratorTests.cs" />
     <Compile Include="Src\ClassKindUpdaterTests.cs" />
     <Compile Include="Src\CodeGeneratorTests.cs" />
+    <Compile Include="Src\DependentFileNameTests.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeAttributesTests.cs" />
     <Compile Include="Src\EnvDTE\CodeClass2Tests.cs" />
@@ -102,7 +103,9 @@
     <Compile Include="Src\EnvDTE\FileProjectItemsTests.cs" />
     <Compile Include="Src\EnvDTE\NamespaceNameTests.cs" />
     <Compile Include="Src\EnvDTE\ProjectsTests.cs" />
+    <Compile Include="Src\EnvDTE\SolutionBuildTests.cs" />
     <Compile Include="Src\EnvDTE\SolutionGlobalsTests.cs" />
+    <Compile Include="Src\EnvDTE\SolutionPropertyTests.cs" />
     <Compile Include="Src\EnvDTE\SolutionTests.cs" />
     <Compile Include="Src\Helpers\AttributeHelper.cs" />
     <Compile Include="Src\Helpers\ClassHelper.cs" />
@@ -186,6 +189,8 @@
     <Compile Include="Src\Helpers\TestableInstallProjectTemplatePackagesCommand.cs" />
     <Compile Include="Src\Helpers\TestablePowerShellMissingConsoleHost.cs" />
     <Compile Include="Src\InstallProjectTemplatePackagesCommandTests.cs" />
+    <Compile Include="Src\OpenMSBuildProjectsTests.cs" />
+    <Compile Include="Src\PackageManagementServiceProviderTests.cs" />
     <Compile Include="Src\VirtualMethodUpdaterTests.cs" />
     <Compile Include="Src\NewProjectsCreatedTests.cs" />
     <Compile Include="Src\PackageActionRunnerTests.cs" />
@@ -325,6 +330,7 @@
     <Compile Include="Src\VisualStudio\FlavoredProjectTests.cs" />
     <Compile Include="Src\VisualStudio\PackageTests.cs" />
     <Compile Include="Src\VisualStudio\SVsExtensionManagerTests.cs" />
+    <Compile Include="Src\VisualStudio\VsPackageInstallerServicesTests.cs" />
     <Compile Include="Src\VisualStudio\VsSolutionTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -360,10 +366,6 @@
       <Project>{0162E499-42D0-409B-AA25-EED21F75336B}</Project>
       <Name>AvalonEdit.AddIn</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EnvDTEHelpers\Project\PackageManagement.EnvDTEHelpers.vbproj">
-      <Project>{F7886FB7-3764-4574-B981-25EB164B532E}</Project>
-      <Name>PackageManagement.EnvDTEHelpers</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PowerShell\Project\PackageManagement.PowerShell.csproj">
       <Project>{A406803B-C584-43A3-BCEE-A0BB3132CB5F}</Project>
       <Name>PackageManagement.PowerShell</Name>
@@ -371,6 +373,10 @@
     <ProjectReference Include="..\Project\PackageManagement.csproj">
       <Project>{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}</Project>
       <Name>PackageManagement</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SharpDevelop.EnvDTE\SharpDevelop.EnvDTE.vbproj">
+      <Project>{6FB1260D-68A2-41A0-BB09-F5F710842E99}</Project>
+      <Name>SharpDevelop.EnvDTE</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

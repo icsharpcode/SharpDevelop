@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeElementsList : MarshalByRefObject, CodeElements
+	public class CodeElementsList : MarshalByRefObject, global::EnvDTE.CodeElements
 	{
 		List<CodeElement> elements = new List<CodeElement>();
 		
@@ -30,7 +30,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return elements.GetEnumerator();
 		}
 		
-		public CodeElement Item(object index)
+		public global::EnvDTE.CodeElement Item(object index)
 		{
 			if (index is int) {
 				return Item((int)index);
@@ -38,12 +38,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return Item((string)index);
 		}
 		
-		CodeElement Item(int index)
+		global::EnvDTE.CodeElement Item(int index)
 		{
 			return elements[index - 1];
 		}
 		
-		CodeElement Item(string name)
+		global::EnvDTE.CodeElement Item(string name)
 		{
 			return elements.Single(item => item.Name == name);
 		}

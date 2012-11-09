@@ -78,7 +78,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateDTE();
 			NoOpenSolution();
 			
-			Solution solution = dte.Solution;
+			global::EnvDTE.Solution solution = dte.Solution;
 			
 			Assert.IsNull(solution);
 		}
@@ -88,7 +88,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateDTE();
 			
-			Properties properties = dte.Properties("FontsAndColors", "TextEditor");
+			global::EnvDTE.Properties properties = dte.Properties("FontsAndColors", "TextEditor");
 			
 			Assert.IsNotNull(properties);
 		}
@@ -98,7 +98,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateDTE();
 			
-			Properties properties = dte.Properties("UnknownCategory", "UnknownPage");
+			global::EnvDTE.Properties properties = dte.Properties("UnknownCategory", "UnknownPage");
 			
 			Assert.IsNull(properties);
 		}
@@ -108,7 +108,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateDTE();
 			
-			Properties properties = dte.Properties("FONTSANDCOLORS", "TEXTEDITOR");
+			global::EnvDTE.Properties properties = dte.Properties("FONTSANDCOLORS", "TEXTEDITOR");
 			
 			Assert.IsNotNull(properties);
 		}
@@ -175,7 +175,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateDTE();
 			SetOpenSolutionFileName(@"d:\projects\first\first.sln");
-			Solution firstSolution = dte.Solution;
+			global::EnvDTE.Solution firstSolution = dte.Solution;
 			
 			OpenSolution(@"d:\projects\second\second.sln");
 			

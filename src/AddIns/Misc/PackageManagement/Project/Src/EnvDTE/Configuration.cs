@@ -5,7 +5,7 @@ using System;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Configuration : MarshalByRefObject
+	public class Configuration : MarshalByRefObject, global::EnvDTE.Configuration
 	{
 		Project project;
 		
@@ -14,7 +14,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.project = project;
 		}
 		
-		public Properties Properties {
+		public global::EnvDTE.Properties Properties {
 			get { return project.Properties; }
 		}
 	}

@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class ProjectObject : MarshalByRefObject
+	public class ProjectObject : MarshalByRefObject, global::EnvDTE.ProjectObject
 	{
 		public ProjectObject(Project project)
 		{
@@ -14,10 +14,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			References = new References(project);
 		}
 		
-		public References References { get; private set; }
-		public Project Project { get; private set; }
+		public global::EnvDTE.References References { get; private set; }
+		public global::EnvDTE.Project Project { get; private set; }
 		
-		public DTE DTE {
+		public global::EnvDTE.DTE DTE {
 			get { return Project.DTE; }
 		}
 	}

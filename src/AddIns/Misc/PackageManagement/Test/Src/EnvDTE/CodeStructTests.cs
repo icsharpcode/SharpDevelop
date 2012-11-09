@@ -44,9 +44,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreatePublicStruct("MyStruct");
 			
-			vsCMAccess access = codeStruct.Access;
+			global::EnvDTE.vsCMAccess access = codeStruct.Access;
 			
-			Assert.AreEqual(vsCMAccess.vsCMAccessPublic, access);
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPublic, access);
 		}
 		
 		[Test]
@@ -54,9 +54,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreatePrivateStruct("MyStruct");
 			
-			vsCMAccess access = codeStruct.Access;
+			global::EnvDTE.vsCMAccess access = codeStruct.Access;
 			
-			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPrivate, access);
 		}
 		
 		[Test]
@@ -64,9 +64,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreatePublicStruct("MyStruct");
 			
-			vsCMElement kind = codeStruct.Kind;
+			global::EnvDTE.vsCMElement kind = codeStruct.Kind;
 			
-			Assert.AreEqual(vsCMElement.vsCMElementStruct, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMElement.vsCMElementStruct, kind);
 		}
 	}
 }

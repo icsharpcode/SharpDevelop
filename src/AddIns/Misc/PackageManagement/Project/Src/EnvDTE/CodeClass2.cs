@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeClass2 : CodeClass
+	public class CodeClass2 : CodeClass, global::EnvDTE.CodeClass2
 	{
 		IClassKindUpdater classKindUpdater;
 		
@@ -21,7 +21,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 		}
 		
-		public CodeElements PartialClasses {
+		public global::EnvDTE.CodeElements PartialClasses {
 			get { return new PartialClasses(this); }
 		}
 		
@@ -35,15 +35,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return Class.DotNetName.Contains("`"); }
 		}
 		
-		public vsCMClassKind ClassKind {
+		public global::EnvDTE.vsCMClassKind ClassKind {
 			get {
 				if (Class.IsPartial) {
-					return vsCMClassKind.vsCMClassKindPartialClass;
+					return global::EnvDTE.vsCMClassKind.vsCMClassKindPartialClass;
 				}
-				return vsCMClassKind.vsCMClassKindMainClass;
+				return global::EnvDTE.vsCMClassKind.vsCMClassKindMainClass;
 			}
 			set {
-				if (value == vsCMClassKind.vsCMClassKindPartialClass) {
+				if (value == global::EnvDTE.vsCMClassKind.vsCMClassKindPartialClass) {
 					classKindUpdater.MakeClassPartial();
 				} else {
 					throw new NotImplementedException();

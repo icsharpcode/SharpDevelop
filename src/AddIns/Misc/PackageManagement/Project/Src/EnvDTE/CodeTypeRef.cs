@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeTypeRef : MarshalByRefObject
+	public class CodeTypeRef : MarshalByRefObject, global::EnvDTE.CodeTypeRef
 	{
 		IProjectContent projectContent;
 		CodeElement parent;
@@ -37,15 +37,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 		}
 		
-		public virtual CodeElement Parent {
+		public virtual global::EnvDTE.CodeElement Parent {
 			get { return parent; }
 		}
 		
-		public virtual CodeType CodeType {
+		public virtual global::EnvDTE.CodeType CodeType {
 			get { return new CodeClass2(projectContent, ReturnType.GetUnderlyingClass()); }
 		}
 		
-		public virtual vsCMTypeRef TypeKind {
+		public virtual global::EnvDTE.vsCMTypeRef TypeKind {
 			get { return ReturnType.GetTypeKind(); }
 		}
 	}

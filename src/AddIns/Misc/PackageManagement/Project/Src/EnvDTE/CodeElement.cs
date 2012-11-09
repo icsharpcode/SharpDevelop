@@ -7,10 +7,10 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeElement : MarshalByRefObject
+	public class CodeElement : global::EnvDTE.CodeElementBase, global::EnvDTE.CodeElement
 	{
 		DTE dte;
-			
+		
 		public CodeElement()
 		{
 		}
@@ -18,18 +18,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public CodeElement(IEntity entity)
 		{
 			this.Entity = entity;
-			this.Language = GetLanguage(entity.ProjectContent);
-		}
-		
-		protected string GetLanguage(IProjectContent projectContent)
-		{
-			if (projectContent.Project != null) {
-				var projectType = new ProjectType(projectContent.Project as MSBuildBasedProject);
-				if (projectType.Type == ProjectType.VBNet) {
-					return CodeModelLanguageConstants.vsCMLanguageVB;
-				}
-			}
-			return CodeModelLanguageConstants.vsCMLanguageCSharp;
+			this.Language = entity.ProjectContent.GetCodeModelLanguage();
 		}
 		
 		protected IEntity Entity { get; private set; }
@@ -47,19 +36,19 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public virtual string Language { get; protected set; }
 		
 		// default is vsCMPart.vsCMPartWholeWithAttributes
-		public virtual TextPoint GetStartPoint()
+		public virtual global::EnvDTE.TextPoint GetStartPoint()
 		{
 			return null;
 		}
 		
-		public virtual TextPoint GetEndPoint()
+		public virtual global::EnvDTE.TextPoint GetEndPoint()
 		{
 			return null;
 		}
 		
-		public virtual vsCMInfoLocation InfoLocation { get; protected set; }
+		public virtual global::EnvDTE.vsCMInfoLocation InfoLocation { get; protected set; }
 		
-		public virtual DTE DTE {
+		public virtual global::EnvDTE.DTE DTE {
 			get {
 				if (dte == null) {
 					dte = new DTE();
@@ -68,16 +57,21 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 		}
 		
-		protected vsCMAccess GetAccess()
+		protected global::EnvDTE.vsCMAccess GetAccess()
 		{
 			if (Entity.IsPublic) {
-				return vsCMAccess.vsCMAccessPublic;
+				return global::EnvDTE.vsCMAccess.vsCMAccessPublic;
 			}
-			return vsCMAccess.vsCMAccessPrivate;
+			return global::EnvDTE.vsCMAccess.vsCMAccessPrivate;
 		}
 		
-		public virtual vsCMElement Kind {
-			get { return vsCMElement.vsCMElementOther; }
+		public virtual global::EnvDTE.vsCMElement Kind {
+			get { return global::EnvDTE.vsCMElement.vsCMElementOther; }
+		}
+		
+		protected override bool GetIsDerivedFrom(string fullName)
+		{
+			return false;
 		}
 	}
 }

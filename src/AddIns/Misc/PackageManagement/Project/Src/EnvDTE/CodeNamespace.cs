@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeNamespace : CodeElement
+	public class CodeNamespace : CodeElement, global::EnvDTE.CodeNamespace
 	{
 		NamespaceName namespaceName;
 		IProjectContent projectContent;
@@ -20,12 +20,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			this.projectContent = projectContent;
 			this.namespaceName = namespaceName;
-			this.InfoLocation = vsCMInfoLocation.vsCMInfoLocationExternal;
-			this.Language = GetLanguage(projectContent);
+			this.InfoLocation = global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal;
+			this.Language = projectContent.GetCodeModelLanguage();
 		}
 		
-		public override vsCMElement Kind {
-			get { return vsCMElement.vsCMElementNamespace; }
+		public override global::EnvDTE.vsCMElement Kind {
+			get { return global::EnvDTE.vsCMElement.vsCMElementNamespace; }
 		}
 		
 		internal NamespaceName NamespaceName {
@@ -40,7 +40,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return namespaceName.LastPart; }
 		}
 		
-		public virtual CodeElements Members {
+		public virtual global::EnvDTE.CodeElements Members {
 			get { return new CodeElementsInNamespace(projectContent, namespaceName); }
 		}
 	}

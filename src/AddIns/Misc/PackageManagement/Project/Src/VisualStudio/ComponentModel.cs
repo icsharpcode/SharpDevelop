@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.PackageManagement.Scripting;
 using Microsoft.VisualStudio.ComponentModelHost;
+using NuGet.VisualStudio;
 using NuGetConsole;
 
 namespace ICSharpCode.PackageManagement.VisualStudio
@@ -11,10 +12,12 @@ namespace ICSharpCode.PackageManagement.VisualStudio
 	public class ComponentModel : SComponentModel, IComponentModel
 	{
 		IPackageManagementConsoleHost consoleHost;
+		IPackageManagementSolution solution;
 		
-		public ComponentModel(IPackageManagementConsoleHost consoleHost)
+		public ComponentModel(IPackageManagementConsoleHost consoleHost, IPackageManagementSolution solution)
 		{
 			this.consoleHost = consoleHost;
+			this.solution = solution;
 		}
 		
 		public ComponentModel()
@@ -27,20 +30,30 @@ namespace ICSharpCode.PackageManagement.VisualStudio
 			return GetService(typeof(T)) as T;
 		}
 		
-		object GetService(Type type)
+		public object GetService(Type type)
 		{
 			if (type.FullName == typeof(IConsoleInitializer).FullName) {
 				return new ConsoleInitializer(GetConsoleHost());
+			} else if (type.FullName == typeof(IVsPackageInstallerServices).FullName) {
+				return new VsPackageInstallerServices(GetSolution());
 			}
 			return null;
 		}
 		
-		protected virtual IPackageManagementConsoleHost GetConsoleHost()
+		IPackageManagementConsoleHost GetConsoleHost()
 		{
 			if (consoleHost != null) {
 				return consoleHost;
 			}
 			return PackageManagementServices.ConsoleHost;
+		}
+		
+		IPackageManagementSolution GetSolution()
+		{
+			if (solution != null) {
+				return solution;
+			}
+			return PackageManagementServices.Solution;
 		}
 	}
 }

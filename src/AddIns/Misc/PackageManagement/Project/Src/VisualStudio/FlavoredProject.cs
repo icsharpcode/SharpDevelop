@@ -14,32 +14,32 @@ namespace Microsoft.VisualStudio.Shell.Flavor
 		
 		public FlavoredProject(MSBuildBasedProject project)
 		{
-			 this.project = project;
+			this.project = project;
 		}
-	    
-        public int GetAggregateProjectTypeGuids(out string projTypeGuids)
-        {
-        	projTypeGuids = GetProjectTypeGuidsFromProject();
-        	if (projTypeGuids == null) {
-        		projTypeGuids = GetProjectTypeGuidsBasedOnProjectFileExtension();
-        	}        	
-            return VsConstants.S_OK;
-        }
-        
+		
+		public int GetAggregateProjectTypeGuids(out string projTypeGuids)
+		{
+			projTypeGuids = GetProjectTypeGuidsFromProject();
+			if (projTypeGuids == null) {
+				projTypeGuids = GetProjectTypeGuidsBasedOnProjectFileExtension();
+			}
+			return VsConstants.S_OK;
+		}
+		
 		string GetProjectTypeGuidsFromProject()
 		{
 			return project.GetUnevalatedProperty("ProjectTypeGuids");
 		}
-        
+		
 		string GetProjectTypeGuidsBasedOnProjectFileExtension()
 		{
-        	var projectType = new ProjectType(project);
-        	if (projectType.Type == ProjectType.CSharp) {
-        		return ProjectTypeGuids.CSharp;        		
-        	} else if (projectType.Type == ProjectType.VBNet) {
-        		return ProjectTypeGuids.VBNet;
-        	}
-       		return String.Empty;
+			var projectType = new ProjectType(project);
+			if (projectType.Type == ProjectType.CSharp) {
+				return ProjectTypeGuids.CSharp;
+			} else if (projectType.Type == ProjectType.VBNet) {
+				return ProjectTypeGuids.VBNet;
+			}
+			return String.Empty;
 		}
 	}
 }

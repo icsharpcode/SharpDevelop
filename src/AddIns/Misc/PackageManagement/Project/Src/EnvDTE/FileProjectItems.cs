@@ -25,13 +25,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public FileProjectItems(ProjectItem projectItem, IPackageManagementFileService fileService)
-			: base(projectItem.ContainingProject, projectItem, fileService)
+			: base((Project)projectItem.ContainingProject, projectItem, fileService)
 		{
 			this.projectItem = projectItem;
 			this.fileService = fileService;
 		}
 		
-		protected override IEnumerable<ProjectItem> GetProjectItems()
+		protected override IEnumerable<global::EnvDTE.ProjectItem> GetProjectItems()
 		{
 			return GetChildDependentProjectItems().ToList();
 		}
@@ -62,6 +62,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		ProjectItem AddFileProjectItemWithDependent(string fileName)
 		{
 			return Project.AddFileProjectItemWithDependentUsingFullPath(fileName, projectItem.Name);
+		}
+		
+		public override string Kind {
+			get { return global::EnvDTE.Constants.vsProjectItemKindPhysicalFile; }
 		}
 	}
 }

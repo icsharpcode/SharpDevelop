@@ -44,9 +44,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreatePublicDelegate("MyDelegate");
 			
-			vsCMAccess access = codeDelegate.Access;
+			global::EnvDTE.vsCMAccess access = codeDelegate.Access;
 			
-			Assert.AreEqual(vsCMAccess.vsCMAccessPublic, access);
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPublic, access);
 		}
 		
 		[Test]
@@ -54,9 +54,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreatePrivateDelegate("MyDelegate");
 			
-			vsCMAccess access = codeDelegate.Access;
+			global::EnvDTE.vsCMAccess access = codeDelegate.Access;
 			
-			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPrivate, access);
 		}
 		
 		[Test]
@@ -64,9 +64,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreatePublicDelegate("MyDelegate");
 			
-			vsCMElement kind = codeDelegate.Kind;
+			global::EnvDTE.vsCMElement kind = codeDelegate.Kind;
 			
-			Assert.AreEqual(vsCMElement.vsCMElementDelegate, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMElement.vsCMElementDelegate, kind);
 		}
 	}
 }

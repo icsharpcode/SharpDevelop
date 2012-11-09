@@ -24,5 +24,10 @@ namespace TextTemplating.Tests.Helpers
 		{
 			return FakeAddIns;
 		}
+		
+		public List<IServiceProvider> BuildServiceProviders(string path)
+		{
+			return null;
+		}
 	}
 }

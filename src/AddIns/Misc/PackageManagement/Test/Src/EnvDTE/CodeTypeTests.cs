@@ -65,7 +65,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddAttributeToClass("TestAttribute");
 			CreateCodeType();
 			
-			CodeElements attributes = codeType.Attributes;
+			global::EnvDTE.CodeElements attributes = codeType.Attributes;
 			
 			CodeAttribute2 attribute = attributes.Item(1) as CodeAttribute2;
 			
@@ -80,7 +80,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateClass("Class1");
 			CreateCodeType();
 			
-			ProjectItem item = codeType.ProjectItem;
+			global::EnvDTE.ProjectItem item = codeType.ProjectItem;
 			
 			Assert.IsNull(item);
 		}
@@ -94,7 +94,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateClass("Class1");
 			CreateCodeType();
 			
-			ProjectItem item = codeType.ProjectItem;
+			global::EnvDTE.ProjectItem item = codeType.ProjectItem;
 			
 			Assert.IsNotNull(item);
 		}
@@ -109,7 +109,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateClass("Class1");
 			CreateCodeType();
 			
-			ProjectItem item = codeType.ProjectItem;
+			global::EnvDTE.ProjectItem item = codeType.ProjectItem;
 			
 			Assert.AreEqual(@"d:\projects\MyProject\MyProject.csproj", item.ContainingProject.FileName);
 		}
@@ -125,7 +125,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateClass("Class1");
 			CreateCodeType();
 			
-			ProjectItem item = codeType.ProjectItem;
+			global::EnvDTE.ProjectItem item = codeType.ProjectItem;
 			
 			Assert.AreEqual("test.cs", item.Name);
 		}
@@ -137,7 +137,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateClass("System.Web.Mvc.ActionResult");
 			CreateCodeType();
 			
-			bool derivedFrom = codeType.IsDerivedFrom("System.Web.Mvc.ActionResult");
+			bool derivedFrom = codeType.get_IsDerivedFrom("System.Web.Mvc.ActionResult");
 			
 			Assert.IsTrue(derivedFrom);
 		}
@@ -150,7 +150,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddClassInheritanceTree("System.Object");
 			CreateCodeType();
 			
-			bool derivedFrom = codeType.IsDerivedFrom("System.Web.Mvc.ActionResult");
+			bool derivedFrom = codeType.get_IsDerivedFrom("System.Web.Mvc.ActionResult");
 			
 			Assert.IsFalse(derivedFrom);
 		}
@@ -163,7 +163,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddBaseTypeToClass("System.Web.Mvc.ActionResult");
 			CreateCodeType();
 			
-			bool derivedFrom = codeType.IsDerivedFrom("System.Web.Mvc.ActionResult");
+			bool derivedFrom = codeType.get_IsDerivedFrom("System.Web.Mvc.ActionResult");
 			
 			Assert.IsTrue(derivedFrom);
 		}
@@ -176,7 +176,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddClassInheritanceTree("CustomActionResultBase", "System.Web.Mvc.ActionResult");
 			CreateCodeType();
 			
-			bool derivedFrom = codeType.IsDerivedFrom("System.Web.Mvc.ActionResult");
+			bool derivedFrom = codeType.get_IsDerivedFrom("System.Web.Mvc.ActionResult");
 			
 			Assert.IsTrue(derivedFrom);
 		}
@@ -190,7 +190,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddClassInheritanceTree("CustomActionResultBase", "System.Web.Mvc.ActionResult");
 			CreateCodeType();
 			
-			bool derivedFrom = codeType.IsDerivedFrom("System.Web.Mvc.ActionResult");
+			bool derivedFrom = codeType.get_IsDerivedFrom("System.Web.Mvc.ActionResult");
 			
 			Assert.IsTrue(derivedFrom);
 		}

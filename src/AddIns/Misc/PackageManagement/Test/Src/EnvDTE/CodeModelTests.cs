@@ -21,10 +21,39 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateCodeModel()
 		{
-			helper = new ProjectContentHelper();
+			CreateProjectContentHelper();
+			CreateProjectForProjectContent();
+			CreateCodeModel(helper.ProjectContent);
+		}
+		
+		void CreateProjectForProjectContent()
+		{
 			msbuildProject = ProjectHelper.CreateTestProject();
 			helper.SetProjectForProjectContent(msbuildProject);
-			codeModel = new CodeModel(helper.ProjectContent);
+		}
+
+		void CreateProjectContentHelper()
+		{
+			helper = new ProjectContentHelper();
+		}
+		
+		void CreateCodeModel(IProjectContent projectContent)
+		{
+			codeModel = new CodeModel(projectContent);
+		}
+		
+		void CreateCodeModelWithCSharpProject()
+		{
+			CreateProjectContentHelper();
+			helper.ProjectContentIsForCSharpProject();
+			CreateCodeModel(helper.ProjectContent);
+		}
+		
+		void CreateCodeModelWithVisualBasicProject()
+		{
+			CreateProjectContentHelper();
+			helper.ProjectContentIsForVisualBasicProject();
+			CreateCodeModel(helper.ProjectContent);
 		}
 		
 		void AddClassToProjectContent(string className)
@@ -52,12 +81,22 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddInterfaceToDifferentProjectContent(interfaceName);
 		}
 		
+		void ProjectIsCSharpProject()
+		{
+			helper.ProjectContentIsForCSharpProject();
+		}
+		
+		void ProjectIsVisualBasicProject()
+		{
+			helper.ProjectContentIsForVisualBasicProject();
+		}
+		
 		[Test]
 		public void CodeTypeFromFullName_NoSuchTypeInProject_ReturnsNull()
 		{
 			CreateCodeModel();
 			
-			CodeType codeType = codeModel.CodeTypeFromFullName("UnknownType");
+			global::EnvDTE.CodeType codeType = codeModel.CodeTypeFromFullName("UnknownType");
 			
 			Assert.IsNull(codeType);
 		}
@@ -102,8 +141,8 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateCodeModel();
 			helper.AddNamespaceCompletionEntryInNamespace(String.Empty, "Test");
 			
-			CodeElements codeElements = codeModel.CodeElements;
-			CodeNamespace codeNamespace = codeElements.FirstCodeNamespaceOrDefault();
+			global::EnvDTE.CodeElements codeElements = codeModel.CodeElements;
+			global::EnvDTE.CodeNamespace codeNamespace = codeElements.FirstCodeNamespaceOrDefault();
 			
 			Assert.AreEqual(1, codeElements.Count);
 			Assert.AreEqual("Test", codeNamespace.FullName);
@@ -117,8 +156,8 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddNamespaceCompletionEntryInNamespace(String.Empty, "First");
 			helper.AddNamespaceCompletionEntryInNamespace("First", "Second");
 			
-			CodeElements codeElements = codeModel.CodeElements;
-			CodeNamespace codeNamespace = codeElements.FirstCodeNamespaceOrDefault();
+			global::EnvDTE.CodeElements codeElements = codeModel.CodeElements;
+			global::EnvDTE.CodeNamespace codeNamespace = codeElements.FirstCodeNamespaceOrDefault();
 			
 			Assert.AreEqual(1, codeElements.Count);
 			Assert.AreEqual("First", codeNamespace.FullName);
@@ -131,7 +170,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateCodeModel();
 			AddClassToProjectContent(String.Empty, "TestClass");
 			
-			CodeElements codeElements = codeModel.CodeElements;
+			global::EnvDTE.CodeElements codeElements = codeModel.CodeElements;
 			CodeClass2 codeClass = codeElements.FirstCodeClass2OrDefault();
 			
 			Assert.AreEqual(1, codeElements.Count);
@@ -147,10 +186,10 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.NoCompletionItemsInNamespace("First.A");
 			helper.NoCompletionItemsInNamespace("First.B");
 			
-			CodeElements codeElements = codeModel.CodeElements;
+			global::EnvDTE.CodeElements codeElements = codeModel.CodeElements;
 			CodeNamespace codeNamespace = codeElements.FirstCodeNamespaceOrDefault();
 			
-			CodeElements members = codeNamespace.Members;
+			global::EnvDTE.CodeElements members = codeNamespace.Members;
 			CodeNamespace firstChildNamespace = members.FirstCodeNamespaceOrDefault();
 			CodeNamespace secondChildNamespace = members.LastCodeNamespaceOrDefault();
 			
@@ -167,7 +206,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateCodeModel();
 			helper.AddNamespaceCompletionEntriesInNamespace(String.Empty, String.Empty, "Tests");
 			
-			CodeElements members = codeModel.CodeElements;
+			global::EnvDTE.CodeElements members = codeModel.CodeElements;
 			CodeNamespace codeNamespace = members.FirstCodeNamespaceOrDefault();
 			
 			Assert.AreEqual(1, members.Count);
@@ -182,9 +221,9 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			var codeClass = codeModel.CodeTypeFromFullName("Tests.TestClass") as CodeClass2;
 			
-			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationProject, codeClass.InfoLocation);
+			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject, codeClass.InfoLocation);
 		}
-				
+		
 		[Test]
 		public void CodeTypeFromFullName_ClassExistsInDifferentProject_InfoLocationIsExternal()
 		{
@@ -193,7 +232,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			var codeClass = codeModel.CodeTypeFromFullName("Tests.TestClass") as CodeClass2;
 			
-			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationExternal, codeClass.InfoLocation);
+			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal, codeClass.InfoLocation);
 		}
 		
 		[Test]
@@ -204,7 +243,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			var codeInterface = codeModel.CodeTypeFromFullName("Tests.ITest") as CodeInterface;
 			
-			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationProject, codeInterface.InfoLocation);
+			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject, codeInterface.InfoLocation);
 		}
 		
 		[Test]
@@ -215,7 +254,27 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			var codeInterface = codeModel.CodeTypeFromFullName("Tests.ITest") as CodeInterface;
 			
-			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationExternal, codeInterface.InfoLocation);
+			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal, codeInterface.InfoLocation);
+		}
+		
+		[Test]
+		public void Language_CSharpProject_ReturnsCSharpProjectGuid()
+		{
+			CreateCodeModelWithCSharpProject();
+			
+			string language = codeModel.Language;
+			
+			Assert.AreEqual(global::EnvDTE.CodeModelLanguageConstants.vsCMLanguageCSharp, language);
+		}
+		
+		[Test]
+		public void Language_VisualBasicProject_ReturnsVisualBasicProjectGuid()
+		{
+			CreateCodeModelWithVisualBasicProject();
+			
+			string language = codeModel.Language;
+			
+			Assert.AreEqual(global::EnvDTE.CodeModelLanguageConstants.vsCMLanguageVB, language);
 		}
 	}
 }

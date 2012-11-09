@@ -103,9 +103,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreatePublicFunction("Class1.MyFunction");
 			
-			vsCMAccess access = codeFunction.Access;
+			global::EnvDTE.vsCMAccess access = codeFunction.Access;
 			
-			Assert.AreEqual(vsCMAccess.vsCMAccessPublic, access);
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPublic, access);
 		}
 		
 		[Test]
@@ -113,9 +113,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreatePrivateFunction("Class1.MyFunction");
 			
-			vsCMAccess access = codeFunction.Access;
+			global::EnvDTE.vsCMAccess access = codeFunction.Access;
 			
-			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPrivate, access);
 		}
 		
 		[Test]
@@ -125,7 +125,7 @@ namespace PackageManagement.Tests.EnvDTE
 			SetDeclaringType("Class1");
 			helper.FunctionStartsAtColumn(3);
 			
-			TextPoint point = codeFunction.GetStartPoint();
+			global::EnvDTE.TextPoint point = codeFunction.GetStartPoint();
 			int offset = point.LineCharOffset;
 			
 			Assert.AreEqual(3, offset);
@@ -138,7 +138,7 @@ namespace PackageManagement.Tests.EnvDTE
 			SetDeclaringType("Class1");
 			helper.FunctionStartsAtLine(2);
 			
-			TextPoint point = codeFunction.GetStartPoint();
+			global::EnvDTE.TextPoint point = codeFunction.GetStartPoint();
 			int line = point.Line;
 			
 			Assert.AreEqual(2, line);
@@ -151,7 +151,7 @@ namespace PackageManagement.Tests.EnvDTE
 			SetDeclaringType("Class1");
 			helper.FunctionBodyEndsAtColumn(4);
 			
-			TextPoint point = codeFunction.GetEndPoint();
+			global::EnvDTE.TextPoint point = codeFunction.GetEndPoint();
 			int offset = point.LineCharOffset;
 			
 			Assert.AreEqual(4, offset);
@@ -164,7 +164,7 @@ namespace PackageManagement.Tests.EnvDTE
 			SetDeclaringType("Class1");
 			helper.FunctionBodyEndsAtLine(4);
 			
-			TextPoint point = codeFunction.GetEndPoint();
+			global::EnvDTE.TextPoint point = codeFunction.GetEndPoint();
 			int line = point.Line;
 			
 			Assert.AreEqual(4, line);
@@ -175,9 +175,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreatePublicFunction("MyFunction");
 			
-			vsCMElement kind = codeFunction.Kind;
+			global::EnvDTE.vsCMElement kind = codeFunction.Kind;
 			
-			Assert.AreEqual(vsCMElement.vsCMElementFunction, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMElement.vsCMElementFunction, kind);
 		}
 				
 		[Test]
@@ -188,7 +188,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.SetRegion(new DomRegion(1, 1, 1, 10));
 			helper.SetBodyRegion(new DomRegion(1, 10, 0, 0));
 			
-			TextPoint point = codeFunction.GetEndPoint();
+			global::EnvDTE.TextPoint point = codeFunction.GetEndPoint();
 			
 			Assert.AreEqual(1, point.Line);
 			Assert.AreEqual(10, point.LineCharOffset);
@@ -199,7 +199,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreatePublicFunction("MyClass.MyMethod");
 			
-			CodeElements parameters = codeFunction.Parameters;
+			global::EnvDTE.CodeElements parameters = codeFunction.Parameters;
 			
 			Assert.AreEqual(0, parameters.Count);
 		}
@@ -254,7 +254,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicFunction("MyClass.MyFunction");
 			AddReturnTypeToMethod("System.String");
 			
-			CodeTypeRef2 typeRef = codeFunction.Type;
+			global::EnvDTE.CodeTypeRef2 typeRef = codeFunction.Type;
 			
 			Assert.AreEqual("System.String", typeRef.AsFullName);
 		}
@@ -265,7 +265,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicFunction("MyClass.MyFunction");
 			AddReturnTypeToMethod("System.String");
 			
-			CodeTypeRef2 typeRef = codeFunction.Type;
+			global::EnvDTE.CodeTypeRef2 typeRef = codeFunction.Type;
 			
 			Assert.AreEqual("string", typeRef.AsString);
 		}
@@ -276,7 +276,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicFunction("MyClass.MyFunction");
 			AddReturnTypeToMethod("System.String");
 			
-			CodeTypeRef2 typeRef = codeFunction.Type;
+			global::EnvDTE.CodeTypeRef2 typeRef = codeFunction.Type;
 			
 			Assert.AreEqual(codeFunction, typeRef.Parent);
 		}
@@ -286,9 +286,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreatePublicFunction("MyClass.MyFunction");
 			
-			vsCMFunction kind = codeFunction.FunctionKind;
+			global::EnvDTE.vsCMFunction kind = codeFunction.FunctionKind;
 			
-			Assert.AreEqual(vsCMFunction.vsCMFunctionFunction, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMFunction.vsCMFunctionFunction, kind);
 		}
 		
 		[Test]
@@ -296,9 +296,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreatePublicConstructor("MyClass.MyClass");
 			
-			vsCMFunction kind = codeFunction.FunctionKind;
+			global::EnvDTE.vsCMFunction kind = codeFunction.FunctionKind;
 			
-			Assert.AreEqual(vsCMFunction.vsCMFunctionConstructor, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMFunction.vsCMFunctionConstructor, kind);
 		}
 		
 		[Test]
@@ -370,7 +370,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicFunction("MyClass.MyFunction");
 			AddMethodAttribute("System.ObsoleteAttribute");
 			
-			CodeElements attributes = codeFunction.Attributes;
+			global::EnvDTE.CodeElements attributes = codeFunction.Attributes;
 			
 			CodeAttribute2 attribute = attributes.FirstCodeAttribute2OrDefault();
 			Assert.AreEqual(1, attributes.Count);

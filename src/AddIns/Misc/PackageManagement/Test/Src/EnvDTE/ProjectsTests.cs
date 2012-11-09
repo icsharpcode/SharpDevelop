@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using ICSharpCode.PackageManagement.EnvDTE;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -18,15 +19,27 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			solutionHelper = new SolutionHelper();
 			solutionHelper.AddProjectToSolution(projectName);
-			projects = solutionHelper.Solution.Projects;
+			projects = (Projects)solutionHelper.Solution.Projects;
 		}
 		
 		void CreateSolutionWithTwoProjects(string projectName1, string projectName2)
 		{
 			solutionHelper = new SolutionHelper();
-			solutionHelper.AddProjectToSolution(projectName1);
-			solutionHelper.AddProjectToSolution(projectName2);
-			projects = solutionHelper.Solution.Projects;
+			TestableProject project = solutionHelper.AddProjectToSolutionWithFileName(projectName1, @"d:\projects\" + projectName1 + ".csproj");
+			solutionHelper.AddProjectToSolutionWithFileName(projectName2, @"d:\projects\" + projectName2 + ".csproj");
+			projects = (Projects)solutionHelper.Solution.Projects;
+		}
+		
+		void CreateSolution(string fileName)
+		{
+			solutionHelper = new SolutionHelper();
+			solutionHelper.MSBuildSolution.FileName = fileName;
+			projects = (Projects)solutionHelper.Solution.Projects;
+		}
+		
+		void AddProjectToSolution(string fileName)
+		{
+			solutionHelper.AddProjectToSolutionWithFileName("MyProject", fileName);
 		}
 		
 		[Test]
@@ -34,7 +47,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateSolutionWithSingleProject("MyProject");
 			
-			Project project = projects.Item(1);
+			global::EnvDTE.Project project = projects.Item(1);
 			
 			Assert.AreEqual("MyProject", project.Name);
 		}
@@ -44,7 +57,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateSolutionWithTwoProjects("MyProject1", "MyProject2");
 			
-			Project project = projects.Item(2);
+			global::EnvDTE.Project project = projects.Item(2);
 			
 			Assert.AreEqual("MyProject2", project.Name);
 		}
@@ -67,6 +80,17 @@ namespace PackageManagement.Tests.EnvDTE
 			int count = projects.Count;
 			
 			Assert.AreEqual(2, count);
+		}
+		
+		[Test]
+		public void Item_GetProjectByUniqueName_ReturnsProject()
+		{
+			CreateSolution(@"d:\projects\MyProject\MySolution.sln");
+			AddProjectToSolution(@"d:\projects\MyProject\SubFolder\MyProject.csproj");
+			
+			Project project = (Project)projects.Item(@"SubFolder\MyProject.csproj");
+			
+			Assert.AreEqual(@"d:\projects\MyProject\SubFolder\MyProject.csproj", project.FileName);
 		}
 	}
 }

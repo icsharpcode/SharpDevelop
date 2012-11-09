@@ -15,6 +15,11 @@ namespace ICSharpCode.PackageManagement
 {
 	public class PackageManagementProjectService : IPackageManagementProjectService
 	{
+		public PackageManagementProjectService()
+		{
+			ProjectBuilder = new ProjectBuilder();
+		}
+		
 		public IProject CurrentProject {
 			get { return ProjectService.CurrentProject; }
 		}
@@ -22,6 +27,8 @@ namespace ICSharpCode.PackageManagement
 		public Solution OpenSolution {
 			get { return ProjectService.OpenSolution; }
 		}
+		
+		public IProjectBuilder ProjectBuilder { get; private set; }
 		
 		public void RefreshProjectBrowser()
 		{

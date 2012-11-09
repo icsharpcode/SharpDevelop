@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Reference : MarshalByRefObject
+	public class Reference : MarshalByRefObject, global::EnvDTE.Reference
 	{
 		ReferenceProjectItem referenceProjectItem;
 		Project project;
@@ -31,7 +31,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			project.Save();
 		}
 		
-		public Project SourceProject {
+		public global::EnvDTE.Project SourceProject {
 			get {
 				var projectReference = referenceProjectItem as ProjectReferenceProjectItem;
 				if (projectReference != null) {

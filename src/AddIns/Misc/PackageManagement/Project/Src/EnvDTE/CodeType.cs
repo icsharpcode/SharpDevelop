@@ -8,7 +8,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeType : CodeElement
+	public class CodeType : CodeElement, global::EnvDTE.CodeType
 	{
 		CodeTypeMembers members;
 		
@@ -25,12 +25,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			InfoLocation = GetInfoLocation(projectContent, c);
 		}
 		
-		vsCMInfoLocation GetInfoLocation(IProjectContent projectContent, IClass c)
+		global::EnvDTE.vsCMInfoLocation GetInfoLocation(IProjectContent projectContent, IClass c)
 		{
 			if (projectContent.Project == c.ProjectContent.Project) {
-				return vsCMInfoLocation.vsCMInfoLocationProject;
+				return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject;
 			}
-			return vsCMInfoLocation.vsCMInfoLocationExternal;
+			return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal;
 		}
 		
 		public CodeType()
@@ -40,7 +40,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		protected IClass Class { get; private set; }
 		protected IProjectContent ProjectContent { get; private set; }
 		
-		public virtual vsCMAccess Access {
+		public virtual global::EnvDTE.vsCMAccess Access {
 			get { return GetAccess(); }
 			set { }
 		}
@@ -49,7 +49,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return Class.FullyQualifiedName; }
 		}
 		
-		public virtual CodeElements Members {
+		public virtual global::EnvDTE.CodeElements Members {
 			get {
 				if (members == null) {
 					members = new CodeTypeMembers(ProjectContent, Class);
@@ -58,19 +58,19 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 		}
 		
-		public virtual CodeElements Bases {
+		public virtual global::EnvDTE.CodeElements Bases {
 			get { return new CodeTypeBaseTypes(ProjectContent, Class); }
 		}
 		
-		public virtual CodeElements Attributes {
+		public virtual global::EnvDTE.CodeElements Attributes {
 			get { return new CodeAttributes(Class); }
 		}
 		
-		public virtual CodeNamespace Namespace {
+		public virtual global::EnvDTE.CodeNamespace Namespace {
 			get { return new FileCodeModelCodeNamespace(ProjectContent, Class.Namespace); }
 		}
 		
-		public virtual ProjectItem ProjectItem {
+		public virtual global::EnvDTE.ProjectItem ProjectItem {
 			get {
 				if (ProjectContent.Project != null) {
 					return new ProjectItem(ProjectContent, Class);
@@ -83,7 +83,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		/// Returns true if the current type matches the fully qualified name or any of its
 		/// base types are a match.
 		/// </summary>
-		public virtual bool IsDerivedFrom(string fullName)
+		protected override bool GetIsDerivedFrom(string fullName)
 		{
 			return Class.IsDerivedFrom(fullName);
 		}

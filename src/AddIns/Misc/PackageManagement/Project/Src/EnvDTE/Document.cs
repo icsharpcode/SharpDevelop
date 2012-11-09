@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Document : MarshalByRefObject
+	public class Document : MarshalByRefObject, global::EnvDTE.Document
 	{
 		IViewContent view;
 		
@@ -22,5 +22,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public string FullName { get; private set; }
+		
+		public Object Object(string modelKind)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

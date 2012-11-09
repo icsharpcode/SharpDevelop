@@ -6,31 +6,31 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeParameter2 : CodeParameter
+	public class CodeParameter2 : CodeParameter, global::EnvDTE.CodeParameter2
 	{
 		public CodeParameter2(IProjectContent projectContent, IParameter parameter)
 			: base(projectContent, parameter)
 		{
 		}
 		
-		public virtual vsCMParameterKind ParameterKind {
+		public virtual global::EnvDTE.vsCMParameterKind ParameterKind {
 			get { return GetParameterKind(); }
 		}
 		
-		vsCMParameterKind GetParameterKind()
+		global::EnvDTE.vsCMParameterKind GetParameterKind()
 		{
 			if (Parameter.IsOptional) {
-				return vsCMParameterKind.vsCMParameterKindOptional;
+				return global::EnvDTE.vsCMParameterKind.vsCMParameterKindOptional;
 			} else if (Parameter.IsOut) {
-				return vsCMParameterKind.vsCMParameterKindOut;
+				return global::EnvDTE.vsCMParameterKind.vsCMParameterKindOut;
 			} else if (Parameter.IsRef) {
-				return vsCMParameterKind.vsCMParameterKindRef;
+				return global::EnvDTE.vsCMParameterKind.vsCMParameterKindRef;
 			} else if (Parameter.IsParams) {
-				return vsCMParameterKind.vsCMParameterKindParamArray;
+				return global::EnvDTE.vsCMParameterKind.vsCMParameterKindParamArray;
 			} else if (Parameter.IsIn()) {
-				return vsCMParameterKind.vsCMParameterKindIn;
+				return global::EnvDTE.vsCMParameterKind.vsCMParameterKindIn;
 			}
-			return vsCMParameterKind.vsCMParameterKindNone;
+			return global::EnvDTE.vsCMParameterKind.vsCMParameterKindNone;
 		}
 	}
 }

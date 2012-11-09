@@ -32,7 +32,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddAttribute("Tests.TestAttribute", "TestAttribute");
 			CreateCodeProperty2();
 			
-			CodeElements attributes = property.Attributes;
+			global::EnvDTE.CodeElements attributes = property.Attributes;
 			
 			CodeAttribute2 attribute = attributes.Item(1) as CodeAttribute2;
 			
@@ -58,7 +58,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddParentClass("Tests.Class1");
 			CreateCodeProperty2();
 			
-			CodeClass parentClass = property.Parent;
+			global::EnvDTE.CodeClass parentClass = property.Parent;
 			
 			Assert.AreEqual("Tests.Class1", parentClass.FullName);
 		}
@@ -69,9 +69,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreatePublicProperty("MyProperty");
 			CreateCodeProperty2();
 			
-			vsCMAccess access = property.Access;
+			global::EnvDTE.vsCMAccess access = property.Access;
 			
-			Assert.AreEqual(vsCMAccess.vsCMAccessPublic, access);
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPublic, access);
 		}
 		
 		[Test]
@@ -80,9 +80,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreatePrivateProperty("MyProperty");
 			CreateCodeProperty2();
 			
-			vsCMAccess access = property.Access;
+			global::EnvDTE.vsCMAccess access = property.Access;
 			
-			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPrivate, access);
 		}
 		
 		[Test]
@@ -92,9 +92,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.HasGetterAndSetter();
 			CreateCodeProperty2();
 			
-			vsCMPropertyKind kind = property.ReadWrite;
+			global::EnvDTE.vsCMPropertyKind kind = property.ReadWrite;
 			
-			Assert.AreEqual(vsCMPropertyKind.vsCMPropertyKindReadWrite, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMPropertyKind.vsCMPropertyKindReadWrite, kind);
 		}
 		
 		[Test]
@@ -104,9 +104,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.HasGetterOnly();
 			CreateCodeProperty2();
 			
-			vsCMPropertyKind kind = property.ReadWrite;
+			global::EnvDTE.vsCMPropertyKind kind = property.ReadWrite;
 			
-			Assert.AreEqual(vsCMPropertyKind.vsCMPropertyKindReadOnly, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMPropertyKind.vsCMPropertyKindReadOnly, kind);
 		}
 		
 		[Test]
@@ -116,9 +116,9 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.HasSetterOnly();
 			CreateCodeProperty2();
 			
-			vsCMPropertyKind kind = property.ReadWrite;
+			global::EnvDTE.vsCMPropertyKind kind = property.ReadWrite;
 			
-			Assert.AreEqual(vsCMPropertyKind.vsCMPropertyKindWriteOnly, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMPropertyKind.vsCMPropertyKindWriteOnly, kind);
 		}
 		
 		[Test]
@@ -128,7 +128,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddParameter("item");
 			CreateCodeProperty2();
 			
-			CodeElements parameters = property.Parameters;
+			global::EnvDTE.CodeElements parameters = property.Parameters;
 			CodeParameter parameter = parameters.FirstCodeParameterOrDefault();
 			
 			Assert.AreEqual(1, parameters.Count);
@@ -143,10 +143,10 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.GetterModifierIsNone();
 			CreateCodeProperty2();
 			
-			CodeFunction getter = property.Getter;
-			vsCMAccess access = getter.Access;
+			global::EnvDTE.CodeFunction getter = property.Getter;
+			global::EnvDTE.vsCMAccess access = getter.Access;
 			
-			Assert.AreEqual(vsCMAccess.vsCMAccessPublic, access);
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPublic, access);
 		}
 		
 		[Test]
@@ -157,10 +157,10 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.GetterModifierIsNone();
 			CreateCodeProperty2();
 			
-			CodeFunction getter = property.Getter;
-			vsCMAccess access = getter.Access;
+			global::EnvDTE.CodeFunction getter = property.Getter;
+			global::EnvDTE.vsCMAccess access = getter.Access;
 			
-			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPrivate, access);
 		}
 		
 		[Test]
@@ -169,7 +169,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreatePublicProperty("MyProperty");
 			CreateCodeProperty2();
 			
-			CodeFunction getter = property.Getter;
+			global::EnvDTE.CodeFunction getter = property.Getter;
 			
 			Assert.IsNull(getter);
 		}
@@ -182,10 +182,10 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.GetterModifierIsPrivate();
 			CreateCodeProperty2();
 			
-			CodeFunction getter = property.Getter;
-			vsCMAccess access = getter.Access;
+			global::EnvDTE.CodeFunction getter = property.Getter;
+			global::EnvDTE.vsCMAccess access = getter.Access;
 			
-			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPrivate, access);
 		}
 		
 		[Test]
@@ -196,10 +196,10 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.SetterModifierIsNone();
 			CreateCodeProperty2();
 			
-			CodeFunction setter = property.Setter;
-			vsCMAccess access = setter.Access;
+			global::EnvDTE.CodeFunction setter = property.Setter;
+			global::EnvDTE.vsCMAccess access = setter.Access;
 			
-			Assert.AreEqual(vsCMAccess.vsCMAccessPublic, access);
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPublic, access);
 		}
 		
 		[Test]
@@ -210,10 +210,10 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.SetterModifierIsNone();
 			CreateCodeProperty2();
 			
-			CodeFunction setter = property.Setter;
-			vsCMAccess access = setter.Access;
+			global::EnvDTE.CodeFunction setter = property.Setter;
+			global::EnvDTE.vsCMAccess access = setter.Access;
 			
-			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPrivate, access);
 		}
 		
 		[Test]
@@ -222,7 +222,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.CreatePublicProperty("MyProperty");
 			CreateCodeProperty2();
 			
-			CodeFunction setter = property.Setter;
+			global::EnvDTE.CodeFunction setter = property.Setter;
 			
 			Assert.IsNull(setter);
 		}
@@ -235,10 +235,10 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.SetterModifierIsPrivate();
 			CreateCodeProperty2();
 			
-			CodeFunction setter = property.Setter;
-			vsCMAccess access = setter.Access;
+			global::EnvDTE.CodeFunction setter = property.Setter;
+			global::EnvDTE.vsCMAccess access = setter.Access;
 			
-			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPrivate, access);
 		}
 		
 		[Test]
@@ -248,7 +248,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.SetPropertyReturnType("System.String");
 			CreateCodeProperty2();
 			
-			CodeTypeRef typeRef = property.Type;
+			global::EnvDTE.CodeTypeRef typeRef = property.Type;
 			string fullName = typeRef.AsFullName;
 			
 			Assert.AreEqual("System.String", fullName);
@@ -261,8 +261,8 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.SetPropertyReturnType("System.String");
 			CreateCodeProperty2();
 			
-			CodeTypeRef typeRef = property.Type;
-			CodeElement parent = typeRef.Parent;
+			global::EnvDTE.CodeTypeRef typeRef = property.Type;
+			global::EnvDTE.CodeElement parent = typeRef.Parent;
 			
 			Assert.AreEqual(property, parent);
 		}
@@ -279,10 +279,10 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.ReturnTypeHelper.AddUnderlyingClass(classHelper.Class);
 			CreateCodeProperty2();
 			
-			CodeTypeRef typeRef = property.Type;
-			vsCMInfoLocation location = typeRef.CodeType.InfoLocation;
+			global::EnvDTE.CodeTypeRef typeRef = property.Type;
+			global::EnvDTE.vsCMInfoLocation location = typeRef.CodeType.InfoLocation;
 			
-			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationExternal, location);
+			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal, location);
 		}
 		
 		[Test]
@@ -297,10 +297,10 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.ReturnTypeHelper.AddUnderlyingClass(classHelper.Class);
 			CreateCodeProperty2();
 			
-			CodeTypeRef typeRef = property.Type;
-			vsCMInfoLocation location = typeRef.CodeType.InfoLocation;
+			global::EnvDTE.CodeTypeRef typeRef = property.Type;
+			global::EnvDTE.vsCMInfoLocation location = typeRef.CodeType.InfoLocation;
 			
-			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationProject, location);
+			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject, location);
 		}
 		
 		[Test]
@@ -308,9 +308,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			helper.CreatePublicProperty("MyProperty");
 			
-			vsCMElement kind = property.Kind;
+			global::EnvDTE.vsCMElement kind = property.Kind;
 			
-			Assert.AreEqual(vsCMElement.vsCMElementProperty, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMElement.vsCMElementProperty, kind);
 		}
 	}
 }

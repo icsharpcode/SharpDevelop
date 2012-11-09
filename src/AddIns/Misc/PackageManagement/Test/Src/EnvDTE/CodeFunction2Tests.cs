@@ -36,9 +36,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreatePublicFunction("MyClass.MyFunction");
 			
-			vsCMOverrideKind kind = codeFunction.OverrideKind;
+			global::EnvDTE.vsCMOverrideKind kind = codeFunction.OverrideKind;
 			
-			Assert.AreEqual(vsCMOverrideKind.vsCMOverrideKindNone, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindNone, kind);
 		}
 		
 		[Test]
@@ -47,9 +47,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicFunction("MyClass.MyFunction");
 			helper.MakeMethodAbstract();
 			
-			vsCMOverrideKind kind = codeFunction.OverrideKind;
+			global::EnvDTE.vsCMOverrideKind kind = codeFunction.OverrideKind;
 			
-			Assert.AreEqual(vsCMOverrideKind.vsCMOverrideKindAbstract, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindAbstract, kind);
 		}
 		
 		[Test]
@@ -58,9 +58,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicFunction("MyClass.MyFunction");
 			helper.MakeMethodVirtual();
 			
-			vsCMOverrideKind kind = codeFunction.OverrideKind;
+			global::EnvDTE.vsCMOverrideKind kind = codeFunction.OverrideKind;
 			
-			Assert.AreEqual(vsCMOverrideKind.vsCMOverrideKindVirtual, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindVirtual, kind);
 		}
 		
 		[Test]
@@ -69,9 +69,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicFunction("MyClass.MyFunction");
 			helper.MakeMethodOverride();
 			
-			vsCMOverrideKind kind = codeFunction.OverrideKind;
+			global::EnvDTE.vsCMOverrideKind kind = codeFunction.OverrideKind;
 			
-			Assert.AreEqual(vsCMOverrideKind.vsCMOverrideKindOverride, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindOverride, kind);
 		}
 		
 		[Test]
@@ -80,9 +80,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicFunction("MyClass.MyFunction");
 			helper.MakeMethodSealed();
 			
-			vsCMOverrideKind kind = codeFunction.OverrideKind;
+			global::EnvDTE.vsCMOverrideKind kind = codeFunction.OverrideKind;
 			
-			Assert.AreEqual(vsCMOverrideKind.vsCMOverrideKindSealed, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindSealed, kind);
 		}
 		
 		[Test]
@@ -91,9 +91,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicFunction("MyClass.MyFunction");
 			helper.MakeMethodNewOverride();
 			
-			vsCMOverrideKind kind = codeFunction.OverrideKind;
+			global::EnvDTE.vsCMOverrideKind kind = codeFunction.OverrideKind;
 			
-			Assert.AreEqual(vsCMOverrideKind.vsCMOverrideKindNew, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMOverrideKind.vsCMOverrideKindNew, kind);
 		}
 		
 		[Test]

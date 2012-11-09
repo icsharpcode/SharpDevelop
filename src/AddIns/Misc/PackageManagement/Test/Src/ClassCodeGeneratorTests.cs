@@ -137,8 +137,8 @@ namespace PackageManagement.Tests
 			
 			AddPublicVariable("MyVariable", "System.String");
 			
-			TextPoint start = codeVariable.GetStartPoint();
-			TextPoint end = codeVariable.GetEndPoint();
+			TextPoint start = (TextPoint)codeVariable.GetStartPoint();
+			TextPoint end = (TextPoint)codeVariable.GetEndPoint();
 			Assert.AreEqual("MyVariable", codeVariable.Name);
 			Assert.AreEqual(1, start.Line);
 			Assert.AreEqual(2, start.LineCharOffset);
@@ -264,8 +264,8 @@ namespace PackageManagement.Tests
 			
 			AddPublicMethod("MyMethod", "System.String");
 			
-			TextPoint start = codeFunction.GetStartPoint();
-			TextPoint end = codeFunction.GetEndPoint();
+			TextPoint start = (TextPoint)codeFunction.GetStartPoint();
+			TextPoint end = (TextPoint)codeFunction.GetEndPoint();
 			Assert.AreEqual("MyMethod", codeFunction.Name);
 			Assert.AreEqual(1, start.Line);
 			Assert.AreEqual(2, start.LineCharOffset);

@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Property : MarshalByRefObject
+	public class Property : MarshalByRefObject, global::EnvDTE.Property
 	{
 		public Property(string name)
 		{

@@ -102,4 +102,10 @@
 			id="InstallPackages"
 			class="ICSharpCode.PackageManagement.InstallProjectTemplatePackagesCommand"/>
 	</Path>
+	
+	<Path name="/SharpDevelop/TextTemplating/ServiceProviders">
+		<Class
+			id="PackageManagementServiceProvider"
+			class="ICSharpCode.PackageManagement.PackageManagementServiceProvider"/>
+	</Path>
 </AddIn>

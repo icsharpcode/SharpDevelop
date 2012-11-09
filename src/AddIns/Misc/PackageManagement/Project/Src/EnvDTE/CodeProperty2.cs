@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeProperty2 : CodeProperty
+	public class CodeProperty2 : CodeProperty, global::EnvDTE.CodeProperty2
 	{
 		public CodeProperty2()
 		{
@@ -17,21 +17,21 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 		}
 		
-		public vsCMPropertyKind ReadWrite { 
+		public global::EnvDTE.vsCMPropertyKind ReadWrite { 
 			get { return GetPropertyKind(); }
 		}
 		
-		vsCMPropertyKind GetPropertyKind()
+		global::EnvDTE.vsCMPropertyKind GetPropertyKind()
 		{
 			if (Property.CanSet && Property.CanGet) {
-				return vsCMPropertyKind.vsCMPropertyKindReadWrite;
+				return global::EnvDTE.vsCMPropertyKind.vsCMPropertyKindReadWrite;
 			} else if (Property.CanSet) {
-				return vsCMPropertyKind.vsCMPropertyKindWriteOnly;
+				return global::EnvDTE.vsCMPropertyKind.vsCMPropertyKindWriteOnly;
 			}
-			return vsCMPropertyKind.vsCMPropertyKindReadOnly;
+			return global::EnvDTE.vsCMPropertyKind.vsCMPropertyKindReadOnly;
 		}
 		
-		public CodeElements Parameters {
+		public global::EnvDTE.CodeElements Parameters {
 			get { return new CodeParameters(null, Property.Parameters); }
 		}
 	}

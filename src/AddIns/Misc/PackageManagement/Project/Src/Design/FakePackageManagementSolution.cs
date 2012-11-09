@@ -172,5 +172,10 @@ namespace ICSharpCode.PackageManagement.Design
 			FakeInstalledPackages.Add(package);
 			return package;
 		}
+		
+		public string GetInstallPath(IPackage package)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -122,6 +122,11 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
 
         #endregion
         
+		public SQLServerDatabaseDriver()
+		{
+			Datasources = new DatabaseObjectsCollection<SQLServerDatasource>(null);
+		}
+		
         public override string Name
         {
             get { return "MS SQL Server"; }

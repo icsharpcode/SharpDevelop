@@ -76,8 +76,10 @@
     <Compile Include="Src\ClassCodeGenerator.cs" />
     <Compile Include="Src\ClassKindUpdater.cs" />
     <Compile Include="Src\ConfigSettingsFileSystem.cs" />
+    <Compile Include="Src\DependentFile.cs" />
     <Compile Include="Src\Design\DesignTimeSelectProjectsViewModel.cs" />
     <Compile Include="Src\Design\FakePackageOperation.cs" />
+    <Compile Include="Src\Design\FakeProjectBuilder.cs" />
     <Compile Include="Src\Design\FakeSelectedProject.cs" />
     <Compile Include="Src\DocumentLoader.cs" />
     <Compile Include="Src\DocumentNamespaceCreator.cs" />
@@ -91,7 +93,6 @@
     <Compile Include="Src\EnvDTE\CodeClass2.cs" />
     <Compile Include="Src\EnvDTE\CodeDelegate.cs" />
     <Compile Include="Src\EnvDTE\CodeElement.cs" />
-    <Compile Include="Src\EnvDTE\CodeElements.cs" />
     <Compile Include="Src\EnvDTE\CodeElementsInNamespace.cs" />
     <Compile Include="Src\EnvDTE\CodeElementsList.cs" />
     <Compile Include="Src\EnvDTE\CodeFunction.cs" />
@@ -103,7 +104,6 @@
     <Compile Include="Src\EnvDTE\CodeParameter2.cs" />
     <Compile Include="Src\EnvDTE\CodeParameters.cs" />
     <Compile Include="Src\EnvDTE\CodeModel.cs" />
-    <Compile Include="Src\EnvDTE\CodeModelLanguageConstants.cs" />
     <Compile Include="Src\EnvDTE\CodeNamespace.cs" />
     <Compile Include="Src\EnvDTE\CodeParameter.cs" />
     <Compile Include="Src\EnvDTE\CodeProperty.cs" />
@@ -118,7 +118,6 @@
     <Compile Include="Src\EnvDTE\CodeVariable.cs" />
     <Compile Include="Src\EnvDTE\ConfigurationManager.cs" />
     <Compile Include="Src\EnvDTE\Configuration.cs" />
-    <Compile Include="Src\EnvDTE\Constants.cs" />
     <Compile Include="Src\EnvDTE\Document.cs" />
     <Compile Include="Src\EnvDTE\EditPoint.cs" />
     <Compile Include="Src\EnvDTE\EnumerableProjectItems.cs" />
@@ -137,24 +136,21 @@
     <Compile Include="Src\EnvDTE\ProjectKind.cs" />
     <Compile Include="Src\EnvDTE\Projects.cs" />
     <Compile Include="Src\EnvDTE\Reference3.cs" />
+    <Compile Include="Src\EnvDTE\SolutionBuild.cs" />
+    <Compile Include="Src\EnvDTE\SolutionConfiguration.cs" />
     <Compile Include="Src\EnvDTE\SolutionExtensibilityGlobals.cs" />
     <Compile Include="Src\EnvDTE\SolutionExtensibilityGlobalsPersistence.cs" />
     <Compile Include="Src\EnvDTE\SolutionGlobals.cs" />
+    <Compile Include="Src\EnvDTE\SolutionProperty.cs" />
+    <Compile Include="Src\EnvDTE\SolutionPropertyFactory.cs" />
     <Compile Include="Src\EnvDTE\SourceControl.cs" />
+    <Compile Include="Src\EnvDTE\TextDocument.cs" />
     <Compile Include="Src\EnvDTE\TextPoint.cs" />
-    <Compile Include="Src\EnvDTE\vsCMAccess.cs" />
-    <Compile Include="Src\EnvDTE\vsCMClassKind.cs" />
-    <Compile Include="Src\EnvDTE\vsCMElement.cs" />
-    <Compile Include="Src\EnvDTE\vsCMFunction.cs" />
-    <Compile Include="Src\EnvDTE\vsCMInfoLocation.cs" />
-    <Compile Include="Src\EnvDTE\vsCMOverrideKind.cs" />
-    <Compile Include="Src\EnvDTE\vsCMParameterKind.cs" />
-    <Compile Include="Src\EnvDTE\vsCMPropertyKind.cs" />
-    <Compile Include="Src\EnvDTE\vsCMTypeRef.cs" />
-    <Compile Include="Src\EnvDTE\vsEPReplaceTextOptions.cs" />
     <Compile Include="Src\EnvDTE\Window.cs" />
     <Compile Include="Src\IClassKindUpdater.cs" />
     <Compile Include="Src\IDocumentNamespaceCreator.cs" />
+    <Compile Include="Src\IProjectBuilder.cs" />
+    <Compile Include="Src\IProjectContentExtensions.cs" />
     <Compile Include="Src\IVirtualMethodUpdater.cs" />
     <Compile Include="Src\IProjectBrowserUpdater.cs" />
     <Compile Include="Src\IRefactoringDocumentView.cs" />
@@ -223,6 +219,9 @@
     <Compile Include="Src\IThreadSafePackageManagementEvents.cs" />
     <Compile Include="Src\ManagePackagesUserPrompts.cs" />
     <Compile Include="Src\ManagePackagesViewTitle.cs" />
+    <Compile Include="Src\MSBuildBasedProjectExtensions.cs" />
+    <Compile Include="Src\PackageManagementServiceProvider.cs" />
+    <Compile Include="Src\ProjectBuilder.cs" />
     <Compile Include="Src\VirtualMethodUpdater.cs" />
     <Compile Include="Src\NewProjectsCreated.cs" />
     <Compile Include="Src\OpenMSBuildProjects.cs" />
@@ -462,17 +461,18 @@
     <Compile Include="Src\PackageManagementViewModels.cs" />
     <Compile Include="Src\VisualStudio\ComponentModel.cs" />
     <Compile Include="Src\VisualStudio\FlavoredProject.cs" />
-    <Compile Include="Src\VisualStudio\IComponentModel.cs" />
-    <Compile Include="Src\VisualStudio\IVsAggregatableProject.cs" />
-    <Compile Include="Src\VisualStudio\IVsHierarchy.cs" />
-    <Compile Include="Src\VisualStudio\IVsSolution.cs" />
+    <Compile Include="Src\VisualStudio\IVsPackageInstallerServices.cs" />
+    <Compile Include="Src\VisualStudio\IVsPackageMetadata.cs" />
     <Compile Include="Src\VisualStudio\NotInstalledException.cs" />
     <Compile Include="Src\VisualStudio\Package.cs" />
     <Compile Include="Src\VisualStudio\SComponentModel.cs" />
     <Compile Include="Src\VisualStudio\SDTE.cs" />
+    <Compile Include="Src\VisualStudio\ServiceProvider.cs" />
     <Compile Include="Src\VisualStudio\SVsExtensionManager.cs" />
     <Compile Include="Src\VisualStudio\ThreadHelper.cs" />
     <Compile Include="Src\VisualStudio\VsConstants.cs" />
+    <Compile Include="Src\VisualStudio\VsPackageInstallerServices.cs" />
+    <Compile Include="Src\VisualStudio\VsPackageMetadata.cs" />
     <Compile Include="Src\VisualStudio\VsSolution.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -527,13 +527,14 @@
       <Name>AvalonEdit.AddIn</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\EnvDTEHelpers\Project\PackageManagement.EnvDTEHelpers.vbproj">
-      <Project>{F7886FB7-3764-4574-B981-25EB164B532E}</Project>
-      <Name>PackageManagement.EnvDTEHelpers</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PowerShell\Project\PackageManagement.PowerShell.csproj">
       <Project>{A406803B-C584-43A3-BCEE-A0BB3132CB5F}</Project>
       <Name>PackageManagement.PowerShell</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SharpDevelop.EnvDTE\SharpDevelop.EnvDTE.vbproj">
+      <Project>{6FB1260D-68A2-41A0-BB09-F5F710842E99}</Project>
+      <Name>SharpDevelop.EnvDTE</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

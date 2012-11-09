@@ -6,6 +6,7 @@ using System.IO;
 
 namespace ICSharpCode.PackageManagement
 {
+	[Serializable]
 	public class FileExistsException : Exception
 	{
 		public FileExistsException(string fileName)

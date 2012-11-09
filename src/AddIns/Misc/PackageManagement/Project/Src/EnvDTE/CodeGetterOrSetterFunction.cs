@@ -16,12 +16,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.modifier = modifier;
 		}
 		
-		public override vsCMAccess Access {
+		public override global::EnvDTE.vsCMAccess Access {
 			get {
 				if (modifier == ModifierEnum.None) {
 					return base.Access;
 				}
-				return vsCMAccess.vsCMAccessPrivate;
+				return global::EnvDTE.vsCMAccess.vsCMAccessPrivate;
 			}
 			set { }
 		}

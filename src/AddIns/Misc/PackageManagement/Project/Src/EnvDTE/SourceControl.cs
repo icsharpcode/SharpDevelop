@@ -5,7 +5,7 @@ using System;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class SourceControl : MarshalByRefObject
+	public class SourceControl : MarshalByRefObject, global::EnvDTE.SourceControl
 	{
 		public SourceControl()
 		{

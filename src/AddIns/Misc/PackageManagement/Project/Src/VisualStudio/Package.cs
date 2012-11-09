@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.Shell
 	{
 		public static object GetGlobalService(Type serviceType)
 		{
-			if (serviceType == typeof(DTE)) {
+			if (serviceType == typeof(global::EnvDTE.DTE)) {
 				return new DTE();
 			} else if (serviceType == typeof(SVsExtensionManager)) {
 				return new SVsExtensionManager();

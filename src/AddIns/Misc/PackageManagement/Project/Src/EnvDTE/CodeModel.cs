@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeModel : MarshalByRefObject
+	public class CodeModel : MarshalByRefObject, global::EnvDTE.CodeModel
 	{
 		IProjectContent projectContent;
 		CodeElementsInNamespace codeElements;
@@ -16,7 +16,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.projectContent = projectContent;
 		}
 		
-		public CodeElements CodeElements {
+		public global::EnvDTE.CodeElements CodeElements {
 			get {
 				if (codeElements == null) {
 					codeElements = new CodeElementsInNamespace(projectContent, String.Empty);
@@ -25,7 +25,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 		}
 		
-		public CodeType CodeTypeFromFullName(string name)
+		public global::EnvDTE.CodeType CodeTypeFromFullName(string name)
 		{
 			IClass matchedClass = projectContent.GetClass(name, 0);
 			if (matchedClass != null) {
@@ -40,6 +40,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				return new CodeInterface(projectContent, c);
 			}
 			return new CodeClass2(projectContent, c);
+		}
+		
+		public string Language {
+			get { return projectContent.GetCodeModelLanguage(); }
 		}
 	}
 }

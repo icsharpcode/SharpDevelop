@@ -15,7 +15,7 @@ using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Project : MarshalByRefObject
+	public class Project : MarshalByRefObject, global::EnvDTE.Project
 	{
 		IPackageManagementProjectService projectService;
 		IPackageManagementFileService fileService;
@@ -75,10 +75,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual object Object { get; private set; }
-		public virtual Properties Properties { get; private set; }
-		public virtual ProjectItems ProjectItems { get; private set; }
+		public virtual global::EnvDTE.Properties Properties { get; private set; }
+		public virtual global::EnvDTE.ProjectItems ProjectItems { get; private set; }
 		
-		public virtual DTE DTE {
+		public virtual global::EnvDTE.DTE DTE {
 			get {
 				if (dte == null) {
 					dte = new DTE(projectService, fileService);
@@ -150,15 +150,20 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			projectService.RemoveProjectItem(MSBuildProject, referenceItem);
 		}
 		
-		internal void AddFileProjectItemUsingPathRelativeToProject(string include)
-		{
-			FileProjectItem fileProjectItem = CreateFileProjectItemUsingPathRelativeToProject(include);
-			AddProjectItemToMSBuildProject(fileProjectItem);
-		}
-		
 		internal ProjectItem AddFileProjectItemUsingFullPath(string path)
 		{
-			return AddFileProjectItemWithDependentUsingFullPath(path, null);
+			string dependentUpon = GetDependentUpon(path);
+			return AddFileProjectItemWithDependentUsingFullPath(path, dependentUpon);
+		}
+		
+		string GetDependentUpon(string path)
+		{
+			var dependentFile = new DependentFile(MSBuildProject);
+			FileProjectItem projectItem = dependentFile.GetParentFileProjectItem(path);
+			if (projectItem != null) {
+				return Path.GetFileName(projectItem.Include);
+			}
+			return null;
 		}
 		
 		internal ProjectItem AddFileProjectItemWithDependentUsingFullPath(string path, string dependentUpon)
@@ -215,11 +220,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return names;
 		}
 		
-		public virtual CodeModel CodeModel {
+		public virtual global::EnvDTE.CodeModel CodeModel {
 			get { return new CodeModel(projectService.GetProjectContent(MSBuildProject) ); }
 		}
 		
-		public virtual ConfigurationManager ConfigurationManager {
+		public virtual global::EnvDTE.ConfigurationManager ConfigurationManager {
 			get { return new ConfigurationManager(this); }
 		}
 		
@@ -233,7 +238,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			fileService.RemoveFile(fileName);
 		}
 		
-		public ProjectItem AddDirectoryProjectItemUsingFullPath(string directory)
+		internal ProjectItem AddDirectoryProjectItemUsingFullPath(string directory)
 		{
 			AddDirectoryProjectItemsRecursively(directory);
 			return DirectoryProjectItem.CreateDirectoryProjectItemFromFullPath(this, directory);
@@ -306,6 +311,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		internal void OpenFile(string fileName)
 		{
 			fileService.OpenFile(fileName);
+		}
+		
+		internal bool IsFileFileInsideProjectFolder(string filePath)
+		{
+			return FileUtility.IsBaseDirectory(MSBuildProject.Directory, filePath);
 		}
 	}
 }

@@ -46,6 +46,7 @@
     <Compile Include="Src\CmdletTerminatingError.cs" />
     <Compile Include="Src\GetPackageCmdlet.cs" />
     <Compile Include="Src\GetProjectCmdlet.cs" />
+    <Compile Include="Src\GetVSComponentModelCmdlet.cs" />
     <Compile Include="Src\ICmdletTerminatingError.cs" />
     <Compile Include="Src\InstallPackageCmdlet.cs" />
     <Compile Include="Src\InvokeInitializePackagesCmdlet.cs" />
@@ -71,6 +72,11 @@
     <ProjectReference Include="..\..\Project\PackageManagement.csproj">
       <Project>{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}</Project>
       <Name>PackageManagement</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SharpDevelop.EnvDTE\SharpDevelop.EnvDTE.vbproj">
+      <Project>{6FB1260D-68A2-41A0-BB09-F5F710842E99}</Project>
+      <Name>SharpDevelop.EnvDTE</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

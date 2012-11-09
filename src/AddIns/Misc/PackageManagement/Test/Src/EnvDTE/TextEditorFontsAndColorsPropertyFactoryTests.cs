@@ -24,7 +24,7 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void AssertPropertiesContainProperty(string expectedPropertyName)
 		{
-			Property property = PropertiesHelper.FindProperty(properties, expectedPropertyName);
+			global::EnvDTE.Property property = PropertiesHelper.FindProperty(properties, expectedPropertyName);
 			Assert.IsNotNull(property, "Unable to find property: " + expectedPropertyName);
 		}
 		
@@ -52,7 +52,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProperties();
 			
-			Property property = properties.Item("UnknownPropertyName");
+			global::EnvDTE.Property property = properties.Item("UnknownPropertyName");
 			Assert.IsNull(property);
 		}
 		
@@ -61,7 +61,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProperties();
 			
-			Property property = properties.Item("FONTSANDCOLORSITEMS");
+			global::EnvDTE.Property property = properties.Item("FONTSANDCOLORSITEMS");
 			Assert.IsNotNull(property);
 		}
 		
@@ -81,7 +81,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProperties();
 			
-			Property property = properties.Item("FONTSIZE");
+			global::EnvDTE.Property property = properties.Item("FONTSIZE");
 			
 			Assert.IsNotNull(property);
 		}

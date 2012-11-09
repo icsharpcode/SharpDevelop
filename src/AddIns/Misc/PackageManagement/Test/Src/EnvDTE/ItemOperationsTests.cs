@@ -22,7 +22,7 @@ namespace PackageManagement.Tests.EnvDTE
 			fakeProjectService = new FakePackageManagementProjectService();
 			fakeFileService = new FakeFileService(null);
 			dte = new DTE(fakeProjectService, fakeFileService);
-			itemOperations = dte.ItemOperations;
+			itemOperations = (ItemOperations)dte.ItemOperations;
 		}
 		
 		[Test]

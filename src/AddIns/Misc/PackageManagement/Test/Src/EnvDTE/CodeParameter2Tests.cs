@@ -30,9 +30,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateParameter();
 			
-			vsCMParameterKind kind = parameter.ParameterKind;
+			global::EnvDTE.vsCMParameterKind kind = parameter.ParameterKind;
 			
-			Assert.AreEqual(vsCMParameterKind.vsCMParameterKindNone, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMParameterKind.vsCMParameterKindNone, kind);
 		}
 		
 		[Test]
@@ -41,9 +41,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateParameter();
 			helper.MakeOptionalParameter();
 			
-			vsCMParameterKind kind = parameter.ParameterKind;
+			global::EnvDTE.vsCMParameterKind kind = parameter.ParameterKind;
 			
-			Assert.AreEqual(vsCMParameterKind.vsCMParameterKindOptional, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMParameterKind.vsCMParameterKindOptional, kind);
 		}
 		
 		[Test]
@@ -52,9 +52,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateParameter();
 			helper.MakeOutParameter();
 			
-			vsCMParameterKind kind = parameter.ParameterKind;
+			global::EnvDTE.vsCMParameterKind kind = parameter.ParameterKind;
 			
-			Assert.AreEqual(vsCMParameterKind.vsCMParameterKindOut, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMParameterKind.vsCMParameterKindOut, kind);
 		}
 		
 		[Test]
@@ -63,9 +63,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateParameter();
 			helper.MakeRefParameter();
 			
-			vsCMParameterKind kind = parameter.ParameterKind;
+			global::EnvDTE.vsCMParameterKind kind = parameter.ParameterKind;
 			
-			Assert.AreEqual(vsCMParameterKind.vsCMParameterKindRef, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMParameterKind.vsCMParameterKindRef, kind);
 		}
 		
 		[Test]
@@ -74,9 +74,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateParameter();
 			helper.MakeParamArrayParameter();
 			
-			vsCMParameterKind kind = parameter.ParameterKind;
+			global::EnvDTE.vsCMParameterKind kind = parameter.ParameterKind;
 			
-			Assert.AreEqual(vsCMParameterKind.vsCMParameterKindParamArray, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMParameterKind.vsCMParameterKindParamArray, kind);
 		}
 		
 		[Test]
@@ -85,9 +85,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateParameter();
 			helper.MakeInParameter();
 			
-			vsCMParameterKind kind = parameter.ParameterKind;
+			global::EnvDTE.vsCMParameterKind kind = parameter.ParameterKind;
 			
-			Assert.AreEqual(vsCMParameterKind.vsCMParameterKindIn, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMParameterKind.vsCMParameterKindIn, kind);
 		}
 	}
 }

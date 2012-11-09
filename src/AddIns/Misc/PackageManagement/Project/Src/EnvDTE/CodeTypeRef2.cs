@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeTypeRef2 : CodeTypeRef
+	public class CodeTypeRef2 : CodeTypeRef, global::EnvDTE.CodeTypeRef2
 	{
 		public CodeTypeRef2(IProjectContent projectContent, CodeElement parent, IReturnType returnType)
 			: base(projectContent, parent, returnType)
