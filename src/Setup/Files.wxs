@@ -480,6 +480,9 @@
 							<Component Id="ICSharpCodeScriptingDll" Guid="62B44EFA-CCB4-4B73-B455-AE3C72B8121F" DiskId="1">
 								<File Id="ICSharpCode.Scripting.dll" Name="ICSharpCode.Scripting.dll" Source="..\..\bin\ICSharpCode.Scripting.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.Scripting.dll" AssemblyManifest="ICSharpCode.Scripting.dll" />
 							</Component>
+							<Component Id="SharpDevelopEnvDteDll" Guid="BEB5529F-D774-4C82-AA5A-AA877A64A79E" DiskId="1">
+								<File Id="SharpDevelop.EnvDTE.dll" Name="SharpDevelop.EnvDTE.dll" Source="..\..\bin\SharpDevelop.EnvDTE.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="SharpDevelop.EnvDTE.dll" AssemblyManifest="SharpDevelop.EnvDTE.dll" />
+							</Component>
 						</Directory>
 						<Directory Id="DocFolder" Name="doc">
 							<Component Guid="9DCED5AC-B771-4A4F-B4FE-69867BF2EBDE" Id="SharpDevelopDocFiles" DiskId="1">
@@ -1813,9 +1816,6 @@
 									</Component>
 									<Component Id="NuGetConsoleTypesDll" Guid="7386637C-A6C6-4AD4-8EA3-C5E87AA3F552" DiskId="1">
 										<File Id="NuGet.Console.Types.dll" Name="NuGet.Console.Types.dll" Source="..\..\AddIns\Misc\PackageManagement\NuGet.Console.Types.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="NuGet.Console.Types.dll" AssemblyManifest="NuGet.Console.Types.dll" />
-									</Component>
-									<Component Id="PackageManagementEnvDTEHelpersDll" Guid="51609E3F-C1BA-4EB5-889B-61EA730207D6" DiskId="1">
-										<File Id="PackageManagement.EnvDTEHelpers.dll" Name="PackageManagement.EnvDTEHelpers.dll" Source="..\..\AddIns\Misc\PackageManagement\PackageManagement.EnvDTEHelpers.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="PackageManagement.EnvDTEHelpers.dll" AssemblyManifest="PackageManagement.EnvDTEHelpers.dll" />
 									</Component>
 								</Directory>
 								<Directory Id="TextTemplating" Name="TextTemplating">
