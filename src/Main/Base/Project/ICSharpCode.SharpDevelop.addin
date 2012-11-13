@@ -1245,6 +1245,11 @@
 			<OptionPanel id    = "ExternalTools"
 			             label = "${res:Dialog.Options.ExternalToolsText}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ExternalToolPane"/>
+			
+			<OptionPanel id    = "ExternalTools1"
+			             label = "${res:Dialog.Options.ExternalToolsText}"
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ExternalToolPanelXaml"/>
+			
 			<OptionPanel id    = "ServiceReferences"
 			             label = "Service References"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ServiceReference.ServiceReferenceOptionsPanel"/>

@@ -247,6 +247,10 @@
     <Compile Include="Src\Gui\Dialogs\OpenWithDialog.Designer.cs">
       <DependentUpon>OpenWithDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ExternalToolPanelXaml.xaml.cs">
+      <DependentUpon>ExternalToolPanelXaml.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\CodeGenerationPanel.xaml.cs">
       <DependentUpon>CodeGenerationPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -930,6 +934,7 @@
     <Page Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorDialog.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorXaml.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ExternalToolPanelXaml.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\CodeGenerationPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\EditStandardHeaderPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectStylePanel.xaml" />
