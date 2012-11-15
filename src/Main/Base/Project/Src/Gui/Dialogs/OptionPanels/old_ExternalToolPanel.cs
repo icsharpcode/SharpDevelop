@@ -12,7 +12,7 @@ using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class ExternalToolPane : XmlFormsOptionPanel
+	public class old_ExternalToolPane : XmlFormsOptionPanel
 	{
 		
 		static string[,] argumentQuickInsertMenu = new string[,] {

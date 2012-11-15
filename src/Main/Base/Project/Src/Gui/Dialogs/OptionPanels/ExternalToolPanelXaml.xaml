@@ -9,7 +9,6 @@
 		<Grid.RowDefinitions>
 			<RowDefinition Height="25" ></RowDefinition>
 			<RowDefinition Height="Auto" ></RowDefinition>
-
 			<RowDefinition Height="15"></RowDefinition>
 			<RowDefinition Height="25"></RowDefinition>
 			<RowDefinition Height="25"></RowDefinition>
@@ -18,6 +17,7 @@
 			<RowDefinition Height="25"></RowDefinition>
 			<RowDefinition Height="25"></RowDefinition>
 		</Grid.RowDefinitions>
+		
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="50" ></ColumnDefinition>
 			<ColumnDefinition Width="140"></ColumnDefinition>
@@ -37,21 +37,22 @@
 				<RowDefinition Height="12"></RowDefinition>
 				<RowDefinition Height="12" ></RowDefinition>
 				<RowDefinition Height="12"></RowDefinition>
-			
 			</Grid.RowDefinitions>
+			
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition></ColumnDefinition>
-				
 				<ColumnDefinition Width="100"></ColumnDefinition>
 			</Grid.ColumnDefinitions>
 			
 			<ListBox x:Name="listBox" Grid.RowSpan="7"
 			         SelectionMode="Multiple"
+			         SelectionChanged="ListBox_SelectionChanged"
 			         SelectedItem="{Binding SelectedTool}">
 			</ListBox>
 			
 			<Button x:Name="addButton"  Grid.Column="1" Margin="5,0,5,0"
 			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
+			         IsEnabled="{Binding ButtonsEnable}"
 			        Click="AddButton_Click"
 			        Content="{core:Localize Global.AddButtonText}"></Button>
 			
@@ -63,13 +64,11 @@
 			
 			<Button x:Name="upButton" Grid.Row="4" Grid.Column="1" Margin="5,0,5,0"
 			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
-			        IsEnabled="{Binding ButtonsEnable}"
 			        Content="{core:Localize Global.MoveUp}"
 			        Click="UpButton_Click"></Button>
 			
 			<Button x:Name="downButton" Grid.Row="6" Grid.RowSpan="2" Grid.Column="1" Margin="5,0,5,0"
 			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
-			        IsEnabled="{Binding ButtonsEnable}"
 			        Content="{core:Localize Global.MoveDown}"
 			        Click="DownButton_Click"></Button>
 		</Grid>
@@ -87,13 +86,14 @@
 		       Content="{core:Localize Dialog.Options.ExternalTool.CommandLabel}">
 		</Label>
 		
-		<TextBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Center"
+		<TextBox x:Name="commandTextBox" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Center"
 		         IsEnabled="{Binding EditEnable}"
 		         Text="{Binding SelectedTool.Command}">
 		</TextBox>
 		
 		<Button x:Name="browseButton" Grid.Row="4" Grid.Column="4"  Margin="5,0,5,0"
 		        IsEnabled="{Binding EditEnable}"
+		        Click="BrowseButton_Click"
 		        Content="...">
 		</Button>
 		
