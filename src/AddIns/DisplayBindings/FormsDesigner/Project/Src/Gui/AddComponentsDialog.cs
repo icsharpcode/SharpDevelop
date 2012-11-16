@@ -110,7 +110,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 												ToolboxBitmapAttribute toolboxBitmapAttribute = (ToolboxBitmapAttribute)attr;
 												images[t.FullName + ".bmp"] = il.Images.Count;
 												Bitmap b = new Bitmap(toolboxBitmapAttribute.GetImage(t));
-												b.MakeTransparent();
+												b.MakeTransparent(Color.Fuchsia);
 												il.Images.Add(b);
 												break;
 											}
