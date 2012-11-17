@@ -7,12 +7,13 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
@@ -73,29 +74,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			base.Dispose();
 		}
 		
-		private List<String> manifestItems;
+		// must be observable because we insert an entry in the <Create> action
+		readonly ObservableCollection<string> manifestItems = new ObservableCollection<string>();
 		
-		public List<string> ManifestItems {
+		public ObservableCollection<string> ManifestItems {
 			get { return manifestItems; }
-			set { manifestItems = value;
-				base.RaisePropertyChanged(() => ManifestItems);
-			}
 		}
-		
-		
-		void FillManifestCombo()
-		{
-			manifestItems = new List<string>();
-			manifestItems.Add(StringParser.Parse("${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.EmbedDefault}"));
-			manifestItems.Add(StringParser.Parse("${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.DoNotEmbedManifest}"));
-			foreach (string fileName in Directory.GetFiles(base.BaseDirectory, "*.manifest")) {
-				manifestItems.Add(Path.GetFileName(fileName));
-			}
-			manifestItems.Add(StringParser.Parse("<${res:Global.CreateButtonText}...>"));
-			manifestItems.Add(StringParser.Parse("<${res:Global.BrowseText}...>"));
-			ManifestItems = manifestItems;
-		}
-		
 		
 		public ProjectProperty<string> AssemblyName {
 			get { return GetProperty("AssemblyName", "", TextBoxEditMode.EditRawProperty); }
@@ -143,14 +127,17 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
+			// Ensure that the template is applied before we assign ComboBox.Text, this ensures
+			// the TextBoxBase.TextChanged event fires immediately and doesn't cause us to
+			// set the IsDirty flag later.
+			applicationManifestComboBox.ApplyTemplate();
 			if (string.IsNullOrEmpty(this.ApplicationManifest.Value)) {
 				if (this.NoWin32Manifest.Value) {
 					applicationManifestComboBox.SelectedIndex = 1;
 				} else {
 					applicationManifestComboBox.SelectedIndex = 0;
 				}
-			}
-			else {
+			} else {
 				applicationManifestComboBox.Text = this.ApplicationManifest.Value;
 			}
 			IsDirty = false;
@@ -277,14 +264,37 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		#region manifest
 		
+		const int newManifestInsertPosition = 2;
+		
+		void FillManifestCombo()
+		{
+			manifestItems.Add(StringParser.Parse("${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.EmbedDefault}"));
+			manifestItems.Add(StringParser.Parse("${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.DoNotEmbedManifest}"));
+			// When a new manifest is created, it'll be inserted at this position in the list
+			Debug.Assert(newManifestInsertPosition == manifestItems.Count);
+			foreach (string fileName in Directory.GetFiles(base.BaseDirectory, "*.manifest")) {
+				manifestItems.Add(Path.GetFileName(fileName));
+			}
+			manifestItems.Add(StringParser.Parse("<${res:Global.CreateButtonText}...>"));
+			manifestItems.Add(StringParser.Parse("<${res:Global.BrowseText}...>"));
+		}
+		
 		void ApplicationManifestComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (applicationManifestComboBox.SelectedIndex == applicationManifestComboBox.Items.Count - 2) {
-				CreateManifest();
-			} else if (applicationManifestComboBox.SelectedIndex == applicationManifestComboBox.Items.Count - 1) {
-				BrowseForFile(ApplicationManifest, manifestFilter);
-			}
-			IsDirty = true;
+			// Because this event is raised while the combobox is still switching to the "<create>" or "<browse>" value,
+			// we cannot set comboBox.Text within this event handler.
+			// To avoid this problem, we invoke the operation after the combobox has finished switching to the new value.
+			WorkbenchSingleton.SafeThreadAsyncCall(
+				delegate {
+					if (applicationManifestComboBox.SelectedIndex == applicationManifestComboBox.Items.Count - 2) {
+						CreateManifest();
+					} else if (applicationManifestComboBox.SelectedIndex == applicationManifestComboBox.Items.Count - 1) {
+						BrowseForFile(ApplicationManifest, manifestFilter);
+						// Because we're not using a binding but loading the manifest combobox manually,
+						// we need to store re-load the changed property value.
+						applicationManifestComboBox.Text = this.ApplicationManifest.Value;
+					}
+				});
 		}
 		
 		void CreateManifest()
@@ -313,9 +323,16 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			FileService.OpenFile(manifestFile);
 			
-//			this.applicationManifestComboBox.Items.Insert(0,"app.manifest");
-			ManifestItems.Insert(0,"app.manifest");
-			this.applicationManifestComboBox.SelectedIndex = 0;
+			if (!manifestItems.Contains("app.manifest"))
+				manifestItems.Insert(newManifestInsertPosition, "app.manifest");
+			this.applicationManifestComboBox.SelectedIndex = manifestItems.IndexOf("app.manifest");
+		}
+		
+		void ApplicationManifestComboBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			// We don't use binding with the application manifest combo box,
+			// so we need to manually set IsDirty to true.
+			this.IsDirty = true;
 		}
 		
 		#endregion

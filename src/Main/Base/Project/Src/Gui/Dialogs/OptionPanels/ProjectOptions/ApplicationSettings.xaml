@@ -115,11 +115,11 @@
 				Orientation="Horizontal">
 				<optionpanels:StorageLocationPicker DockPanel.Dock="Left" Location="{Binding ApplicationManifest.Location}"/> 
 					
-				<!-- Text="{Binding ApplicationManifest.Value,UpdateSourceTrigger=PropertyChanged}"-->
 				<ComboBox x:Name="applicationManifestComboBox" VerticalAlignment="Center" Width="200"
 				          IsEditable="True"
 				          ItemsSource="{Binding ManifestItems}"
-				          SelectionChanged="ApplicationManifestComboBox_SelectionChanged" >
+				          SelectionChanged="ApplicationManifestComboBox_SelectionChanged"
+				          TextBoxBase.TextChanged="ApplicationManifestComboBox_TextChanged">
 				</ComboBox>
 			
 			</widgets:StackPanelWithSpacing>
