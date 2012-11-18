@@ -426,7 +426,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 						ProjectItem newProjectItem = new UnknownProjectItem(
 							project,
 							StringParser.Parse(projectItem.ItemType.ItemName),
-							StringParser.Parse(projectItem.Include, new StringTagPair("ProjectName", projectCreateInformation.ProjectName))
+							StringParser.Parse(projectItem.Include,
+								new StringTagPair("ProjectName", projectCreateInformation.ProjectName),
+								new StringTagPair("SolutionName", projectCreateInformation.SolutionName))
 						);
 						foreach (string metadataName in projectItem.MetadataNames) {
 							string metadataValue = projectItem.GetMetadata(metadataName);
