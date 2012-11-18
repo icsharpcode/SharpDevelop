@@ -54,9 +54,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		bool resettingIndex;
 		bool isLoaded;
 		
-		StackPanel configStackPanel;
-		Line headerline;
-		
 		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
 		protected virtual void Load(MSBuildBasedProject project, string configuration, string platform)
@@ -75,21 +72,20 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		}
 		
 		
-		public void HideHeader ()
-		{
-			configStackPanel.Visibility = Visibility.Hidden;
-			headerline.Visibility = Visibility.Hidden;
-		}
+		public static readonly DependencyProperty HeaderVisibilityProperty =
+			DependencyProperty.Register("HeaderVisibility", typeof(Visibility), typeof(ProjectOptionPanel),
+			                            new FrameworkPropertyMetadata(Visibility.Visible));
 		
+		public Visibility HeaderVisibility {
+			get { return (Visibility)GetValue(HeaderVisibilityProperty); }
+			set { SetValue(HeaderVisibilityProperty, value); }
+		}
 		
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
 			configurationComboBox = Template.FindName("PART_configuration", this) as ComboBox;
 			platformComboBox = Template.FindName("PART_platform", this) as ComboBox;
-
-			headerline = Template.FindName("PART_headerline", this) as Line;
-			configStackPanel = Template.FindName("PART_stackpanel", this) as StackPanel;
 		}
 		
 		

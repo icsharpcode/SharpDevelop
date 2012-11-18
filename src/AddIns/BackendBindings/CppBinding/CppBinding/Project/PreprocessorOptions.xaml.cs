@@ -27,6 +27,7 @@ namespace ICSharpCode.CppBinding.Project
 		public PreprocessorOptions()
 		{
 			InitializeComponent();
+			this.HeaderVisibility = Visibility.Collapsed;
 		}
 		
 		#region Properties
@@ -71,13 +72,6 @@ namespace ICSharpCode.CppBinding.Project
 			IsDirty = false;
 		}
 		
-		
-		public override void OnApplyTemplate()
-		{
-			base.OnApplyTemplate();
-			HideHeader();
-		}
-
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
