@@ -14,6 +14,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
@@ -240,8 +241,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 							image.Source = src;
 							image.Stretch = Stretch.Uniform;
 							Image = image.Source;
-
+						
 						} catch (OutOfMemoryException) {
+							Image = null;
+							MessageService.ShowErrorFormatted("${res:Dialog.ProjectOptions.ApplicationSettings.InvalidIconFile}",
+							                                  FileUtility.NormalizePath(appIconPath));
+						} catch (NotSupportedException) {
 							Image = null;
 							MessageService.ShowErrorFormatted("${res:Dialog.ProjectOptions.ApplicationSettings.InvalidIconFile}",
 							                                  FileUtility.NormalizePath(appIconPath));
