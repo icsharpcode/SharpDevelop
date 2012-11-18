@@ -10,7 +10,7 @@
 	
 	<GroupBox
 		Header="{core:Localize ICSharpCode.CodeCoverage.OptionsPanel.CodeCoverageColoursGroupBoxText}">
-		<Grid >
+		<Grid>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto"></RowDefinition>
 				<RowDefinition Height="Auto"></RowDefinition>
@@ -21,50 +21,50 @@
 			</Grid.RowDefinitions>
 			
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition></ColumnDefinition>
-				<ColumnDefinition></ColumnDefinition>
-				<ColumnDefinition></ColumnDefinition>
-				<ColumnDefinition Width="30"></ColumnDefinition>
+				<ColumnDefinition Width="1.25*"></ColumnDefinition>
+				<ColumnDefinition Width="0.75*"></ColumnDefinition>
+				<ColumnDefinition Width="40"></ColumnDefinition>
 			</Grid.ColumnDefinitions>
-			
+		
 			<Label
 				Content="{core:Localize ICSharpCode.CodeCoverage.OptionsPanel.DisplayItemsLabel}"></Label>
 			
 			<Label
-				Grid.Column="2"
+				Grid.Row="1"
+				Grid.Column="1"
 				HorizontalAlignment="Stretch"
 				VerticalAlignment="Center"
 				Content="{core:Localize ICSharpCode.CodeCoverage.OptionsPanel.ItemForegroundLabel}"></Label>
 		
 			<gui:ColorPickerButton
-				Grid.Row="1" Grid.Column="3" VerticalAlignment="Center"
-				Value="{Binding ForeGroundColor}"
+				Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" 
+				Value="{Binding ForeGroundColor}" Width="30"
 				Text="...">
 			</gui:ColorPickerButton>
 			
 			<Label
-				Grid.Row="2"
-				Grid.Column="2"
+				Grid.Row="3"
+				Grid.Column="1"
 				HorizontalAlignment="Stretch"
 				VerticalAlignment="Center"
 				Content="{core:Localize ICSharpCode.CodeCoverage.OptionsPanel.ItemBackgroundLabel}"></Label>
 			
 			<gui:ColorPickerButton
-				Grid.Row="3" Grid.Column="3" VerticalAlignment="Center"
-				Value="{Binding BackGroundColor}"
+				Grid.Row="3" Grid.Column="2" VerticalAlignment="Center"
+				Value="{Binding BackGroundColor}" Width="30"
 				Text="...">
 			</gui:ColorPickerButton>
 			
 			<ListView x:Name="displayItemsListBox"
-				Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="3"
+				Grid.Row="1"  Grid.RowSpan="3"
 				ItemsSource="{Binding DisplayItems}"
-			    SelectedIndex="0"
 				SelectedItem="{Binding DisplayItem}"
+			    SelectedIndex="0"   
 				IsSynchronizedWithCurrentItem="True"></ListView>
 		
 			<TextBlock
 				Grid.Row="6"
-				Grid.ColumnSpan="3"
+				Grid.ColumnSpan="2"
 				Text="{core:Localize ICSharpCode.CodeCoverage.OptionsPanel.SampleText}"
 				TextAlignment="Center"
 				FontSize="15"
