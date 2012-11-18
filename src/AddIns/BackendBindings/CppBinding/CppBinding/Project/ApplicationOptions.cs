@@ -112,7 +112,6 @@ namespace ICSharpCode.CppBinding.Project
 		protected override void Initialize()
 		{
 			base.Initialize();
-			this.projectInformation.SetProjectOptions(this);
 			
 			foreach (IClass c in GetPossibleStartupObjects(base.Project)) {
 				startupObjectComboBox.Items.Add(c.FullyQualifiedName);

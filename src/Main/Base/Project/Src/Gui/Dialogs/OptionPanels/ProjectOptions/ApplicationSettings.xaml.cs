@@ -40,7 +40,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		protected override void Initialize()
 		{
 			base.Initialize();
-			this.projectInformation.SetProjectOptions(this);
 			startupObjectComboBox.Items.Clear();
 			foreach (IClass c in GetPossibleStartupObjects(base.Project)) {
 				startupObjectComboBox.Items.Add(c.FullyQualifiedName);
