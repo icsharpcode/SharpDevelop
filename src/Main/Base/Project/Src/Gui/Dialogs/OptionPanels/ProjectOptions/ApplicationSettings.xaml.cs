@@ -61,11 +61,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			RefreshOutputNameTextBox(this, null);
 			
 			ApplicationIconTextBox_TextChanged(this,null);
-			//this.startupObjectComboBox.SelectionChanged += (s,e) => {IsDirty = true;};
 			this.outputTypeComboBox.SelectionChanged += RefreshOutputNameTextBox;
 			this.outputTypeComboBox.SelectionChanged += RefreshStartupObjectEnabled;
-			
-//			this.projectInformation.SetProjectOptions(this);
 		}
 
 		public override void Dispose()
@@ -82,12 +79,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		}
 		
 		public ProjectProperty<string> AssemblyName {
-			get { return GetProperty("AssemblyName", "", TextBoxEditMode.EditRawProperty); }
+			get { return GetProperty("AssemblyName", "", TextBoxEditMode.EditEvaluatedProperty); }
 		}
 		
 		
 		public ProjectProperty<string> RootNamespace {
-			get { return GetProperty("RootNamespace", "", TextBoxEditMode.EditRawProperty); }
+			get { return GetProperty("RootNamespace", "", TextBoxEditMode.EditEvaluatedProperty); }
 		}
 		
 		
@@ -97,7 +94,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		
 		public ProjectProperty<string> StartupObject {
-			get { return GetProperty("StartupObject", "", TextBoxEditMode.EditRawProperty); }
+			get { return GetProperty("StartupObject", "", TextBoxEditMode.EditEvaluatedProperty); }
 		}
 		
 		
@@ -121,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		}
 		
 		
-		#region overrides
+		#region Load/Save
 		
 		
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
@@ -232,14 +229,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 							}
 							memoryStream.Position = 0;
 							
-							Image image = new Image();
 							BitmapImage src = new BitmapImage();
 							src.BeginInit();
 							src.StreamSource = memoryStream;
 							src.EndInit();
-							image.Source = src;
-							image.Stretch = Stretch.Uniform;
-							Image = image.Source;
+							Image = src;
 						
 						} catch (OutOfMemoryException) {
 							Image = null;
@@ -262,7 +256,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public ImageSource Image {
 			get { return image; }
 			set { image = value;
-				base.RaisePropertyChanged(() => Image);			}
+				base.RaisePropertyChanged(() => Image);
+			}
 		}
 		#endregion
 		
