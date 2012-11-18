@@ -21,27 +21,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// <summary>
 	/// Interaction logic for ProjectInformation.xaml
 	/// </summary>
-	public partial class ProjectInformation : UserControl,IProjectUserControl, INotifyPropertyChanged
+	public partial class ProjectInformation : UserControl, INotifyPropertyChanged
 	{
-		private ProjectOptionPanel projectOptions;
-		
 		public ProjectInformation()
 		{
 			InitializeComponent();
 			this.DataContext = this;
-		}
-		
-		public void SetProjectOptions(ProjectOptionPanel projectOptions)
-		{
-			if (projectOptions == null) {
-				throw new ArgumentNullException("projectOptions");
-			}
-			this.projectOptions = projectOptions;
-		}
-		
-		public bool SaveProjectOptions()
-		{
-			throw new NotImplementedException();
 		}
 		
 		private string projectFolder;

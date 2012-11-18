@@ -4,13 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Shapes;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Win32;
@@ -54,9 +54,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		bool resettingIndex;
 		bool isLoaded;
 		
-		StackPanel configStackPanel;
-		Line headerline;
-		
 		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
 		protected virtual void Load(MSBuildBasedProject project, string configuration, string platform)
@@ -75,21 +72,20 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		}
 		
 		
-		public void HideHeader ()
-		{
-			configStackPanel.Visibility = Visibility.Hidden;
-			headerline.Visibility = Visibility.Hidden;
-		}
+		public static readonly DependencyProperty HeaderVisibilityProperty =
+			DependencyProperty.Register("HeaderVisibility", typeof(Visibility), typeof(ProjectOptionPanel),
+			                            new FrameworkPropertyMetadata(Visibility.Visible));
 		
+		public Visibility HeaderVisibility {
+			get { return (Visibility)GetValue(HeaderVisibilityProperty); }
+			set { SetValue(HeaderVisibilityProperty, value); }
+		}
 		
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
 			configurationComboBox = Template.FindName("PART_configuration", this) as ComboBox;
 			platformComboBox = Template.FindName("PART_platform", this) as ComboBox;
-
-			headerline = Template.FindName("PART_headerline", this) as Line;
-			configStackPanel = Template.FindName("PART_stackpanel", this) as StackPanel;
 		}
 		
 		
@@ -401,7 +397,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		/// <returns>Returns the location of the folder; or null if the dialog was cancelled.</returns>
 		protected string BrowseForFolder(string description, string startLocation, TextBoxEditMode textBoxEditMode)
 		{
-			string startAt = GetInitialDirectory(startLocation, textBoxEditMode);
+			string startAt = GetInitialDirectory(startLocation, textBoxEditMode, false);
 			using (var fdiag = FileService.CreateFolderBrowserDialog(description, startAt))
 			{
 				if (fdiag.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
@@ -441,7 +437,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		protected string BrowseForFile(string filter, string startLocation, TextBoxEditMode textBoxEditMode)
 		{
 			var dialog = new OpenFileDialog();
-			dialog.InitialDirectory = GetInitialDirectory(startLocation, textBoxEditMode);
+			dialog.InitialDirectory = GetInitialDirectory(startLocation, textBoxEditMode, true);
 			
 			if (!String.IsNullOrEmpty(filter)) {
 				dialog.Filter = StringParser.Parse(filter);
@@ -461,7 +457,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			return null;
 		}
 		
-		string GetInitialDirectory(string relativeLocation, TextBoxEditMode textBoxEditMode)
+		string GetInitialDirectory(string relativeLocation, TextBoxEditMode textBoxEditMode, bool isFile)
 		{
 			if (textBoxEditMode == TextBoxEditMode.EditRawProperty)
 				relativeLocation = MSBuildInternals.Unescape(relativeLocation);
@@ -471,11 +467,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			try {
 				string path = FileUtility.GetAbsolutePath(this.BaseDirectory, relativeLocation);
 				if (FileUtility.IsValidPath(path))
-					return path;
+					return isFile ? System.IO.Path.GetDirectoryName(path) : path;
 			} catch (ArgumentException) {
 				// can happen in GetAbsolutePath if the path contains invalid characters
 			}
-			return string.Empty;
+			return this.BaseDirectory;
 		}
 		#endregion
 	}
