@@ -18,7 +18,7 @@
 		</Label>
 		
 		<TextBox Grid.Column="1" VerticalAlignment="Center"
-		         Text="{Binding ProjectFolder}">
+		         Text="{Binding ProjectFolder}" IsReadOnly="True">
 		</TextBox>
 		         
 		<Label Grid.Row="1"
@@ -26,7 +26,7 @@
 		</Label>
 		
 		<TextBox  Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"
-		         Text="{Binding ProjectFile}">
+		         Text="{Binding ProjectFile}" IsReadOnly="True">
 		</TextBox>
 		         
 		<Label Grid.Row="2"
@@ -34,7 +34,7 @@
 		</Label>
 		
 		<TextBox  Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"
-		         Text="{Binding OutputTypeName}">
+		         Text="{Binding OutputTypeName}" IsReadOnly="True">
 		</TextBox>
 	</Grid>
 </UserControl>
