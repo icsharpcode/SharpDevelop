@@ -391,6 +391,8 @@ C#.File.WPFPageFunction								= backendicons\CSharp\file\WPFPageFunction.png
 C#.File.WPFResourceDictionary						= backendicons\CSharp\file\WPFResourceDictionary.png
 C#.File.WPFUserControl								= backendicons\CSharp\file\WPFUserControl.png
 C#.File.WPFWindow									= backendicons\CSharp\file\WPFWindow.png
+C#.File.PRISMView									= backendicons\CSharp\file\PRISMView.png
+C#.File.PRISMViewModel								= backendicons\CSharp\file\PRISMViewModel.png
 C#.Project.EmptyProject								= backendicons\CSharp\project\EmptyProject.png
 C#.Project.DOSProject								= backendicons\CSharp\project\DOSProject.png
 C#.Project.Form										= backendicons\CSharp\project\Form.png
@@ -409,6 +411,8 @@ C#.Project.WPFCustomControlLibrary					= backendicons\CSharp\project\WPFCustomCo
 C#.Project.WPFNavigationProject						= backendicons\CSharp\project\WPFNavigationProject.png
 C#.Project.WPFProject								= backendicons\CSharp\project\WPFProject.png
 C#.Project.WPFUserControlLibrary					= backendicons\CSharp\project\WPFUserControlLibrary.png
+C#.Project.PRISMApplication                         = backendicons\CSharp\project\PRISMApplication.png
+C#.Project.PRISMModule                              = backendicons\CSharp\project\PRISMModule.png
 
 VBNet.ProjectIcon									= backendicons\VBNet\SmallProject.png
 VBNet.FileIcon										= backendicons\VBNet\SmallFile.png
