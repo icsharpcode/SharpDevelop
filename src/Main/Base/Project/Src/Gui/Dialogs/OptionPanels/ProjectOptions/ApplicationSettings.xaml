@@ -10,7 +10,10 @@
 	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
 	xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project">
 
-	
+	<optionpanels:ProjectOptionPanel.Resources>
+		<optionpanels:StorageLocationConverter x:Key="locationConverter" />
+	</optionpanels:ProjectOptionPanel.Resources>
+
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
 		<Grid>
 			<Grid.RowDefinitions>
@@ -62,13 +65,13 @@
 				Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.StartupObject}"></Label>
 			
 			<optionpanels:StorageLocationPicker Grid.Row="5" DockPanel.Dock="Left">
-				<!--<optionpanels:StorageLocationPicker.Location>
+				<optionpanels:StorageLocationPicker.Location>
 					<MultiBinding
 						Converter="{StaticResource locationConverter}">
 						<Binding Path="OutputType.Location" />
 						<Binding Path="StartupObject.Location" />
 					</MultiBinding>
-				</optionpanels:StorageLocationPicker.Location>-->
+				</optionpanels:StorageLocationPicker.Location>
 			</optionpanels:StorageLocationPicker>
 				
 		
