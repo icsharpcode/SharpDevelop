@@ -1505,8 +1505,18 @@ Ejemplo: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.HighlightingEditor.Import" xml:space="preserve">
     <value>Importar colores de resaltado</value>
   </data>
+  <data name="Dialog.HighlightingEditor.NotSupportedMessage" xml:space="preserve">
+    <value>Versión de configuraciones no soportada!</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.OverwriteCustomizationsMessage" xml:space="preserve">
+    <value>Esto reiniciará todas las personalizaciones y luego importará el archivo seleccionado.
+¿Quiere continuar?</value>
+  </data>
   <data name="Dialog.HighlightingEditor.Properties.Value" xml:space="preserve">
     <value>Valor</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.ResetAll" xml:space="preserve">
+    <value>Restablecer todo a predeterminado</value>
   </data>
   <data name="Dialog.HighlightingEditor.SampleText" xml:space="preserve">
     <value>Texto de ejemplo</value>

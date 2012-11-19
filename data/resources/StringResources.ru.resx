@@ -4714,7 +4714,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Добавить существующие файлы</value>
   </data>
   <data name="ProjectComponent.ContextMenu.AddExistingFiles.Copy" xml:space="preserve">
-    <value>Корировать</value>
+    <value>Копировать</value>
   </data>
   <data name="ProjectComponent.ContextMenu.AddExistingFiles.Link" xml:space="preserve">
     <value>Создать ссылку</value>

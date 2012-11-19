@@ -6402,6 +6402,24 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   <data name="Templates.File.NAnt.NAntBuildFile.Name" xml:space="preserve">
     <value>NAnt Builddatei</value>
   </data>
+  <data name="Templates.File.PRISMViewAndViewModelUnity.Description" xml:space="preserve">
+    <value>Erstellt eine View für ein PRISM-Modul mit einem zugehörigen ViewModel.</value>
+  </data>
+  <data name="Templates.File.PRISMViewAndViewModelUnity.Name" xml:space="preserve">
+    <value>PRISM View und ViewModel (Unity)</value>
+  </data>
+  <data name="Templates.File.PRISMViewModelUnity.Description" xml:space="preserve">
+    <value>Erstellt ein ViewModel für ein PRISM-Modul.</value>
+  </data>
+  <data name="Templates.File.PRISMViewModelUnity.Name" xml:space="preserve">
+    <value>PRISM ViewModel (Unity)</value>
+  </data>
+  <data name="Templates.File.PRISMViewUnity.Description" xml:space="preserve">
+    <value>Erstellt eine View für ein PRISM-Modul.</value>
+  </data>
+  <data name="Templates.File.PRISMViewUnity.Name" xml:space="preserve">
+    <value>PRISM View (Unity)</value>
+  </data>
   <data name="Templates.File.Properties.AddIFDEFTest" xml:space="preserve">
     <value>'#if TEST ... #endif' einfügen</value>
   </data>
@@ -6665,6 +6683,24 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   </data>
   <data name="Templates.Project.GtkSharpProject.Name" xml:space="preserve">
     <value>Gtk#-Anwendung</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationSmallUnity.Description" xml:space="preserve">
+    <value>Erstellt eine einfache PRISM-Anwendung mit Bootstrapper und Infrastruktur.</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationSmallUnity.Name" xml:space="preserve">
+    <value>PRISM-Anwendung - einfach (Unity)</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationUnity.Description" xml:space="preserve">
+    <value>Erstellt eine PRISM-Anwendung mit Bootstrapper und Infrastruktur.</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationUnity.Name" xml:space="preserve">
+    <value>PRISM-Anwendung (Unity)</value>
+  </data>
+  <data name="Templates.Project.PRISMModuleUnity.Description" xml:space="preserve">
+    <value>Erstellt ein PRISM-Modul mit einer View und zugehörigem ViewModel.</value>
+  </data>
+  <data name="Templates.Project.PRISMModuleUnity.Name" xml:space="preserve">
+    <value>PRISM-Modul (Unity)</value>
   </data>
   <data name="Templates.Project.SetupProject.Description" xml:space="preserve">
     <value>Ein Windows Installer-Projekt zum Erstellen eines MSI Installers.</value>
@@ -7417,6 +7453,6 @@ Fehler beim Starten:
     <value>Kommentar entfernen</value>
   </data>
   <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Wir sind in Corsavy</value>
+    <value>6e61ff43-0241-47da-95bd-2ab6cd6d60f7</value>
   </data>
 </root>

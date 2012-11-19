@@ -1493,8 +1493,20 @@ Ad esempio: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.HighlightingEditor.ColorDlg.Italic" xml:space="preserve">
     <value>Corsivo</value>
   </data>
+  <data name="Dialog.HighlightingEditor.Export" xml:space="preserve">
+    <value>Esporta schema colori</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Import" xml:space="preserve">
+    <value>Importa schema colori</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.NotSupportedMessage" xml:space="preserve">
+    <value>Versione delle impostazioni non supportata!</value>
+  </data>
   <data name="Dialog.HighlightingEditor.Properties.Value" xml:space="preserve">
     <value>Valore</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.ResetAll" xml:space="preserve">
+    <value>Reimposta tutto a predefinito</value>
   </data>
   <data name="Dialog.HighlightingEditor.SampleText" xml:space="preserve">
     <value>Testo di esempio</value>
@@ -2177,10 +2189,13 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
     <value>Nessuna</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.MarkersGroupBox" xml:space="preserve">
-    <value>Marcatori e righelli</value>
+    <value>Marcatori</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.PanelName" xml:space="preserve">
     <value>Marcatori e righelli</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.RulersGroupBox" xml:space="preserve">
+    <value>Righelli</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.ShowHiddenDefinitionsCheckBox" xml:space="preserve">
     <value>Mostra definizioni nascoste (solo parentesi)</value>
@@ -3382,6 +3397,9 @@ Configura il percorso di NAnt nelle opzioni di SharpDevelop.</value>
   <data name="ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError" xml:space="preserve">
     <value>L'elemento selezionato non è una classe o un membro overridable quindi non può essere mostrato nessun simbolo derivato.</value>
   </data>
+  <data name="ICSharpCode.Refactoring.NoClassUnderCursorError" xml:space="preserve">
+    <value>Impossibile trovare la definizione del tipo sulla posizione del cursore</value>
+  </data>
   <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
     <value>Invia Linea alla Console Ruby</value>
   </data>
@@ -3781,6 +3799,9 @@ QUESTO NON INTERESSA IL CODICE SORGENTE.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.LoadErrorCheckSourceCodeForErrors" xml:space="preserve">
     <value>Impossibile caricare il designer. Controllare il codice sorgente per eventuali errori sintattici e controllare che siano disponibili tutti i references.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.ReportFlushErrors" xml:space="preserve">
+    <value>Uno o più errori sono stati sollevati durante il salvataggio dei contenuti del Designer. Potrebbe trattarsi di una eccezione non gestita in un componente personalizzato o di terze parti presente nella finestra/controllo.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.ToolboxProvider.CantLoadSidbarComponentLibraryWarning" xml:space="preserve">
     <value>Impossibile caricare la barra laterale dei componenti.
@@ -4863,6 +4884,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.DisableBreakpoint" xml:space="preserve">
     <value>Disattiva interruzione</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.EditCondition" xml:space="preserve">
+    <value>Modifica condizioni...</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.EnableBreakpoint" xml:space="preserve">
     <value>Attiva interruzione</value>
   </data>
@@ -5367,6 +5391,27 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
     <value>Apri la cartella in Esplora risorse</value>
   </data>
+  <data name="OpenFileTabEventHandler.OpenCommandPromptHere" xml:space="preserve">
+    <value>Apri prompt dei comandi</value>
+  </data>
+  <data name="PortableLibrary.ChooseTargetFrameworks" xml:space="preserve">
+    <value>Scegli i framework di destinazione</value>
+  </data>
+  <data name="PortableLibrary.CouldNotFindTools" xml:space="preserve">
+    <value>Impossibile trovare gli strumenti per Libreria di Classi Portabile</value>
+  </data>
+  <data name="PortableLibrary.SelectAtLeastTwoFrameworks" xml:space="preserve">
+    <value>Selezionare almeno 2 frameworks.</value>
+  </data>
+  <data name="PortableLibrary.SelectedProfile" xml:space="preserve">
+    <value>Profilo selezionato:</value>
+  </data>
+  <data name="PortableLibrary.SelectProfileDialog.Title" xml:space="preserve">
+    <value>Seleziona il profilo di Libreria Portabile</value>
+  </data>
+  <data name="PortableLibrary.ToolsInstallationHelp" xml:space="preserve">
+    <value>Per installare i Portable Class Library Tools senza installare Visual Studio, salva il file (PortableLibraryTools.exe) nel computer ed esegui il programma di installazione dal prompt dei comandi. Aggiungi l'opzione /buildmachine sulla linea di comando.</value>
+  </data>
   <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
     <value>Comprimi tutti i nodi</value>
   </data>
@@ -5501,6 +5546,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ProjectComponent.ContextMenu.RunProject" xml:space="preserve">
     <value>&amp;Esegui Progetto</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.RunProjectWithoutDebugger" xml:space="preserve">
+    <value>Esegui Progetto senza Debugger</value>
   </data>
   <data name="ProjectComponent.ContextMenu.SetAsStartupProject" xml:space="preserve">
     <value>Imposta come Progetto Inizi&amp;ale</value>
@@ -6616,6 +6664,12 @@ SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è 
   </data>
   <data name="Templates.Project.GtkSharpProject.Name" xml:space="preserve">
     <value>Applicazione Gtk#</value>
+  </data>
+  <data name="Templates.Project.PortableLibrary.Description" xml:space="preserve">
+    <value>Libreria che può essere usata su Windows, Silverlight, Windows Phone e XBox.</value>
+  </data>
+  <data name="Templates.Project.PortableLibrary.Name" xml:space="preserve">
+    <value>Libreria di classi portabile</value>
   </data>
   <data name="Templates.Project.SetupProject.Description" xml:space="preserve">
     <value>Un progetto Windows Installer per creare file di installazione MSI.</value>

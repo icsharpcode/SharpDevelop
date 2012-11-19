@@ -1507,8 +1507,18 @@ Voorbeelden: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.HighlightingEditor.Import" xml:space="preserve">
     <value>Selectie kleuren importeren</value>
   </data>
+  <data name="Dialog.HighlightingEditor.NotSupportedMessage" xml:space="preserve">
+    <value>Settings versie niet ondersteund!</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.OverwriteCustomizationsMessage" xml:space="preserve">
+    <value>Dit zet alle toegevoegde wijzigingen terug en importeert vervolgens het geselecteerde bestand.
+Wilt u doorgaan?</value>
+  </data>
   <data name="Dialog.HighlightingEditor.Properties.Value" xml:space="preserve">
     <value>Waarde</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.ResetAll" xml:space="preserve">
+    <value>Alles terug naar verstekwaardes.</value>
   </data>
   <data name="Dialog.HighlightingEditor.SampleText" xml:space="preserve">
     <value>Voorbeeldtekst</value>
