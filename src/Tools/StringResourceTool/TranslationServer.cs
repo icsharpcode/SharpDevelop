@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Web;
 using System.Windows.Forms;
 
 namespace StringResourceTool
@@ -28,7 +29,7 @@ namespace StringResourceTool
 			System.Threading.Thread.Sleep(50);
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(baseURL + "logon.asp");
 			request.ContentType = "application/x-www-form-urlencoded";
-			string postString = "uname=" + user + "&upwd=" + pwd;
+			string postString = "uname=" + user + "&upwd=" + HttpUtility.UrlEncode(pwd);
 			request.ContentLength = postString.Length;
 			request.CookieContainer = cookieContainer;
 			request.Method = "POST";
