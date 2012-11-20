@@ -1,0 +1,11 @@
+<gui:OptionPanel x:Class="ICSharpCode.WixBinding.Options.WixIdeOptionsPanel"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+                 xmlns:addin="clr-namespace:ICSharpCode.WixBinding.Options"
+                 xmlns:wd="http://icsharpcode.net/sharpdevelop/widgets"
+                 xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<StackPanel>
+	    <CheckBox Content="Use SharpDevelop shipped WiX" IsChecked="{sd:OptionBinding addin:WixIdeOptions.UseSharpDevelopWix}" />
+	</StackPanel>
+</gui:OptionPanel>

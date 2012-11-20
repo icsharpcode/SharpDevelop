@@ -293,4 +293,11 @@
 		<String id="obj" text="obj"/>
 		<String id="pdb" text="*.pdb"/>
 	</Path>
+
+    <!-- Options panel -->
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<OptionPanel id    = "WixIdeOptionPanel"
+		             label = "WiX"
+		             class = "ICSharpCode.WixBinding.Options.WixIdeOptionsPanel"/>
+	</Path>
 </AddIn>

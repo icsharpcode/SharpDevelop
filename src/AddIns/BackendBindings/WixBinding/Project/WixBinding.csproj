@@ -72,6 +72,11 @@
     <Compile Include="Src\IPackageFilesViewFactory.cs" />
     <Compile Include="Src\IWixPackageFilesControl.cs" />
     <Compile Include="Src\IWixPropertyValueProvider.cs" />
+    <Compile Include="Src\Options\WixIdeOptions.cs" />
+    <Compile Include="Src\Options\WixIdeOptionsPanel.xaml.cs">
+      <DependentUpon>WixIdeOptionsPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\PackageFilesViewFactory.cs" />
     <Compile Include="Src\Project\WixExtensionFolderNode.cs" />
     <Compile Include="Src\Project\WixExtensionNode.cs" />
@@ -218,6 +223,10 @@
     </Content>
     <Folder Include="Resources" />
     <Folder Include="Src\Commands" />
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj">
       <Project>{0162E499-42D0-409B-AA25-EED21F75336B}</Project>
       <Name>AvalonEdit.AddIn</Name>
@@ -250,6 +259,7 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="Src\Options" />
     <Folder Include="Src\PropertyGrid" />
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
@@ -268,6 +278,9 @@
       <Name>XmlEditor</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Src\Options\WixIdeOptionsPanel.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

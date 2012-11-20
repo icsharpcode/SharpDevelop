@@ -40,12 +40,21 @@ namespace ICSharpCode.WixBinding
 		{
 			SetProperty("OutputType", "Package");
 			
-			string wixToolPath = @"$(SharpDevelopBinPath)\Tools\Wix";
-			AddGuardedProperty("WixToolPath", wixToolPath);
-			AddGuardedProperty("WixTargetsPath", @"$(WixToolPath)\wix.targets");
-			AddGuardedProperty("WixTasksPath", @"$(WixToolPath)\WixTasks.dll");
-			
-			this.AddImport(DefaultTargetsFile, null);
+        	if (Options.WixIdeOptions.UseSharpDevelopWix)
+        	{
+            	string wixToolPath = @"$(SharpDevelopBinPath)\Tools\Wix";
+            	AddGuardedProperty("WixToolPath", wixToolPath);
+            	AddGuardedProperty("WixTargetsPath", @"$(WixToolPath)\wix.targets");
+            	AddGuardedProperty("WixTasksPath", @"$(WixToolPath)\WixTasks.dll");
+            	
+            	this.AddImport(DefaultTargetsFile, null);
+        	}
+        	else
+        	{
+        	    AddRawProperty("WixTargetsPath", " '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ", @"$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets");
+            	AddGuardedProperty("WixTargetsPath", @"$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets");
+            	this.AddImport("$(WixTargetsPath)", null);
+        	}
 		}
 		
 		public override string Language {
