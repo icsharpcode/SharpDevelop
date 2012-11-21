@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 using System.Linq;
-
+using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Flavor;
@@ -44,9 +44,10 @@ namespace ICSharpCode.PackageManagement.VisualStudio
 				.SingleOrDefault(project => ProjectUniqueNameMatches(project, uniqueName)) as MSBuildBasedProject;
 		}
 		
-		bool ProjectUniqueNameMatches(IProject project, string uniqueName)
+		bool ProjectUniqueNameMatches(IProject msbuildProject, string uniqueName)
 		{
-			return IsCaseInsensitiveMatch(Path.GetFileName(project.FileName), uniqueName);
+			var project = new Project(msbuildProject as MSBuildBasedProject);
+			return IsCaseInsensitiveMatch(project.UniqueName, uniqueName);
 		}
 		
 		bool IsCaseInsensitiveMatch(string a, string b)
