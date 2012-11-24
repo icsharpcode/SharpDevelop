@@ -204,6 +204,16 @@ namespace ICSharpCode.SharpDevelop.Project
 				projectFile.AddProperty(name, value).Condition = " '$(" + name + ")' == '' ";
 			}
 		}
+		/// <summary>
+		/// Adds a guarded property:
+		/// &lt;<paramref name="name"/> Condition="<paramref name="condition"/>"
+		/// </summary>
+		protected void AddRawProperty(string name, string condition, string value)
+		{
+			lock (SyncRoot) {
+				projectFile.AddProperty(name, value).Condition = condition;
+			}
+		}
 		
 		/// <summary>
 		/// Adds an MSBuild import to the project.
