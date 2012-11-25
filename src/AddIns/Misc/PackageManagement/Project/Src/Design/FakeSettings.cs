@@ -182,5 +182,10 @@ namespace ICSharpCode.PackageManagement.Design
 				return SectionsDeleted.Contains("packageRestore");
 			}
 		}
+		
+		public string GetValue(string section, string key, bool isPath)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

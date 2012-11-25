@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Versioning;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement.Design
@@ -162,6 +163,20 @@ namespace ICSharpCode.PackageManagement.Design
 					new PackageDependencySet(null, DependenciesList)
 				};
 			}
+		}
+		
+		public List<FrameworkName> SupportedFrameworks = new List<FrameworkName>();
+		
+		public FrameworkName AddSupportedFramework(string identifier)
+		{
+			var framework = new FrameworkName(identifier);
+			SupportedFrameworks.Add(framework);
+			return framework;
+		}
+		
+		public IEnumerable<FrameworkName> GetSupportedFrameworks()
+		{
+			return SupportedFrameworks;
 		}
 	}
 }
