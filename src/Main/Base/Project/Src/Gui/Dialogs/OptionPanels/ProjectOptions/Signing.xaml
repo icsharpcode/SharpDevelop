@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <optionpanels:ProjectOptionPanel
 	x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.Signing"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -53,8 +53,8 @@
 					          IsEditable="True"
 					          IsEnabled="{Binding ElementName=signAssemblyCheckBox, Path=IsChecked}"
 					          ItemsSource="{Binding KeyFile}"
-					          Text="{Binding AssemblyOriginatorKeyFile.Value,UpdateSourceTrigger=PropertyChanged}"
-					          SelectedValue="{Binding Path=SelectedKey}">
+					          SelectionChanged="KeyFileComboBox_SelectionChanged"
+					          Text="{Binding AssemblyOriginatorKeyFile.Value,UpdateSourceTrigger=PropertyChanged}">
 					</ComboBox>
 					
 					<Button Grid.Row="2" Grid.Column="3" VerticalAlignment="Center" Margin="10,3,10,3"

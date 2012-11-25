@@ -22,29 +22,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	public partial class Signing : ProjectOptionPanel
 	{
 		private const string KeyFileExtensions = "*.snk;*.pfx;*.key";
-		private string selectedKey;
-		private ObservableCollection<string> keyFile = new ObservableCollection<string>();
-		
+	
 		public Signing()
 		{
 			InitializeComponent();
-		}
-		
-		protected override void Initialize()
-		{
-			base.Initialize();
-			FindKeys(base.BaseDirectory);
-			SelectedKey = AssemblyOriginatorKeyFile.Value.Trim();
-			if (SelectedKey.Length >  0) {
-				if (!KeyFile.Contains(SelectedKey)) {
-					keyFile.Add(SelectedKey);
-				}
-			}
-			keyFile.Add(StringParser.Parse("<${res:Global.CreateButtonText}...>"));
-			keyFile.Add(StringParser.Parse("<${res:Global.BrowseText}...>"));
-			keyFileComboBox.SelectedIndex = 0;
-			keyFileComboBox.SelectionChanged += KeyFileComboBox_SelectionChanged;
-			IsDirty = false;
 		}
 		
 		
@@ -53,13 +34,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		}
 		
 		
-		public ProjectProperty<string> AssemblyOriginatorKeyFile {
-			get { return GetProperty("AssemblyOriginatorKeyFile","", TextBoxEditMode.EditRawProperty); }
+		public ProjectProperty<bool> DelaySign {
+			get { return GetProperty("DelaySign", false); }
 		}
 		
 		
-		public ProjectProperty<bool> DelaySign {
-			get { return GetProperty("DelaySign", false); }
+		public ProjectProperty<string> AssemblyOriginatorKeyFile {
+			get { return GetProperty("AssemblyOriginatorKeyFile","", TextBoxEditMode.EditRawProperty); }
 		}
 		
 		
@@ -68,24 +49,39 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		}
 		
 		#region overrides
-//		
-//		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
-//		{
-//			base.Load(project, configuration, platform);
-//		}
+		
+	
+		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
+		{
+			base.Load(project, configuration, platform);
+			// Ensure that the template is applied before we assign ComboBox.Text, this ensures
+			// the TextBoxBase.TextChanged event fires immediately and doesn't cause us to
+			// set the IsDirty flag later.
+			keyFileComboBox.ApplyTemplate();
+			FillKeyFileComboBox();
+			if (KeyFile.Count > 2) {
+				if (!String.IsNullOrEmpty(this.AssemblyOriginatorKeyFile.Value)) {
+					keyFileComboBox.Text = this.AssemblyOriginatorKeyFile.Value;
+				}
+			}
+		}
+		
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
 			if (signAssemblyCheckBox.IsChecked == true) {
-				this.AssemblyOriginatorKeyFile.Value = "File";
+				this.AssemblyOriginatorKeyMode.Value = "File";
 			}
 			keyFileComboBox.SelectionChanged -= KeyFileComboBox_SelectionChanged;
 			return base.Save(project, configuration, platform);
 		}
+		
 		#endregion
 		
 		
 		#region KeyFile
+		
+		private ObservableCollection<string> keyFile = new ObservableCollection<string>();
 		
 		public ObservableCollection<string> KeyFile {
 			get { return keyFile; }
@@ -96,11 +92,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		}
 		
 		
-		public string SelectedKey {
-			get { return selectedKey; }
-			set { selectedKey = value;
-				base.RaisePropertyChanged(() => SelectedKey);
-			}
+		private void FillKeyFileComboBox()
+		{
+			FindKeys(base.BaseDirectory);
+			keyFile.Add(StringParser.Parse("<${res:Global.CreateButtonText}...>"));
+			keyFile.Add(StringParser.Parse("<${res:Global.BrowseText}...>"));
 		}
 		
 		
@@ -132,19 +128,26 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void KeyFileComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			var cbo = (ComboBox) sender;
-			
-			if (cbo.SelectedIndex == keyFile.Count - 1) {
-				BrowseForFile(this.AssemblyOriginatorKeyFile, "${res:SharpDevelop.FileFilter.KeyFiles} (" + KeyFileExtensions + ")|" + KeyFileExtensions + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
-			}
-			if (cbo.SelectedIndex == keyFile.Count - 2) {
-				CreateKeyFile();
-			}
+			// Because this event is raised while the combobox is still switching to the "<create>" or "<browse>" value,
+			// we cannot set comboBox.Text within this event handler.
+			// To avoid this problem, we invoke the operation after the combobox has finished switching to the new value.
+			WorkbenchSingleton.SafeThreadAsyncCall(
+				delegate {
+					if (this.keyFileComboBox.SelectedIndex == keyFile.Count - 1) {
+						BrowseForFile(this.AssemblyOriginatorKeyFile, "${res:SharpDevelop.FileFilter.KeyFiles} (" + KeyFileExtensions + ")|" + KeyFileExtensions + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
+						keyFileComboBox.Text = this.AssemblyOriginatorKeyFile.Value;
+					}
+					if (this.keyFileComboBox.SelectedIndex == keyFile.Count - 2) {
+						CreateKeyFile();
+					}
+				});
 		}
+		
 		
 		
 		private void CreateKeyFile()
 		{
+			
 			if (File.Exists(StrongNameTool)) {
 				string title = StringParser.Parse("${res:Dialog.ProjectOptions.Signing.CreateKey.Title}");
 				string str = StringParser.Parse("${res:Dialog.ProjectOptions.Signing.CreateKey.KeyName}");
@@ -152,12 +155,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				
 				string key = MessageService.ShowInputBox(title,keyName,base.Project.Name);
 				if(!String.IsNullOrEmpty(key)) {
-					if (CreateKey(key.Trim())) {
-						this.keyFileComboBox.SelectionChanged -= KeyFileComboBox_SelectionChanged;
-						var generated = MSBuildInternals.Escape(key);
-						KeyFile.Add(generated);
-						SelectedKey = generated;
-						this.keyFileComboBox.SelectionChanged += KeyFileComboBox_SelectionChanged;
+					if (!key.EndsWith(".snk") && !key.EndsWith(".pfx"))
+						key += ".snk";
+					if (CreateKey(Path.Combine(base.Project.Directory, key))) {
+						AssemblyOriginatorKeyFile.Value = MSBuildInternals.Escape(key);
+						keyFileComboBox.Text = AssemblyOriginatorKeyFile.Value;
 					}
 				} else {
 					MessageService.ShowMessage("${res:Dialog.ProjectOptions.Signing.SNnotFound}");
@@ -176,7 +178,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				return FileUtility.GetSdkPath("sn.exe");
 			}
 		}
-		
 		
 		/// <summary>
 		/// Creates a key with the sn.exe utility.
