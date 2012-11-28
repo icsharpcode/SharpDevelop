@@ -642,6 +642,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					var contextList = new CompletionDataWrapper(this);
 					var identifierStart = GetExpressionAtCursor();
+
 					if (!(char.IsLetter(completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null)) {
 						return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
 					}
@@ -1094,7 +1095,55 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			return contextList.Result;
 		}
-		
+		class IfVisitor :DepthFirstAstVisitor
+		{
+			TextLocation loc;
+			ICompletionContextProvider completionContextProvider;
+			public bool IsValid;
+			
+			public IfVisitor(TextLocation loc, ICompletionContextProvider completionContextProvider)
+			{
+				this.loc = loc;
+				this.completionContextProvider = completionContextProvider;
+
+				this.IsValid = true;
+			}
+
+			void Check(string argument)
+			{
+				// TODO: evaluate #if epressions
+				if (argument.Any(c => !(char.IsLetterOrDigit(c) || c == '_')))
+					return;
+				IsValid &= completionContextProvider.ConditionalSymbols.Contains(argument);
+			}
+
+			Stack<PreProcessorDirective> ifStack = new Stack<PreProcessorDirective> ();
+
+			public override void VisitPreProcessorDirective(PreProcessorDirective preProcessorDirective)
+			{
+				Console.WriteLine("visit directiv:"+preProcessorDirective.GetText ());
+				if (preProcessorDirective.Type == PreProcessorDirectiveType.If) {
+					ifStack.Push (preProcessorDirective);
+				} else if (preProcessorDirective.Type == PreProcessorDirectiveType.Endif) {
+					if (ifStack.Count == 0)
+						return;
+					var ifDirective = ifStack.Pop ();
+					if (ifDirective.StartLocation < loc && loc < preProcessorDirective.EndLocation) {
+						Console.WriteLine ("if :"+ ifDirective.Argument);
+						Check (ifDirective.Argument);
+					}
+
+				}
+			
+				base.VisitPreProcessorDirective(preProcessorDirective);
+			}
+			public void End ()
+			{
+				while (ifStack.Count > 0) {
+					Check (ifStack.Pop ().Argument);
+				}
+			}
+		}
 		IEnumerable<ICompletionData> DefaultControlSpaceItems(ExpressionResult xp = null, bool controlSpace = true)
 		{
 			var wrapper = new CompletionDataWrapper(this);
@@ -1125,6 +1174,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				);
 				rr = ResolveExpression(node);
 			}
+			var ifvisitor = new IfVisitor(location, CompletionContextProvider);
+			unit.AcceptVisitor(ifvisitor);
+			ifvisitor.End();
+			if (!ifvisitor.IsValid)
+				return null;
 			// namespace name case
 			var ns = node as NamespaceDeclaration;
 			if (ns != null) {
