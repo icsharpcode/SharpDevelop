@@ -1905,6 +1905,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					case "internal":
 					case "sealed":
 					case "override":
+					case "partial":
 						declarationBegin = j;
 						break;
 					case "static":
