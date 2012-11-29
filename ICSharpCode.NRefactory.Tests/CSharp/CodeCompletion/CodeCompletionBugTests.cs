@@ -5769,5 +5769,40 @@ $a$
 				Assert.IsNotNull(provider.Find("local"));
 			});
 		}
+
+		/// <summary>
+		/// Bug 8655 - Completion for attribute properties not working
+		/// </summary>
+		[Test]
+		public void TestBug8655 ()
+		{
+			
+			CombinedProviderTest(
+				@"using System;
+
+namespace TestConsole
+{
+	[AttributeUsage (AttributeTargets.Assembly, Inherited = true, AllowMultiple = true)]
+	public sealed class MyAttribute : Attribute
+	{
+		public int NamedInt { get; set; }
+		public int[] Categories { get; set; }
+
+		public MyAttribute (string[] str) { }
+	}
+
+
+	$[MyAttribute(new[] {""Foo"", ""Bar""}, Categories = new[] {1,2,3}, n$
+	class MainClass
+	{
+	}
+}
+
+
+", provider => {
+				Assert.IsNotNull(provider.Find("NamedInt"));
+				Assert.IsNull(provider.Find("delegate"));
+			});
+		}
 	}
 }

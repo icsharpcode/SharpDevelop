@@ -642,7 +642,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					var contextList = new CompletionDataWrapper(this);
 					var identifierStart = GetExpressionAtCursor();
-
 					if (!(char.IsLetter(completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null)) {
 						return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
 					}
@@ -857,6 +856,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 						return DefaultControlSpaceItems();
 					}
+
 					if (IsAttributeContext(n)) {
 						// add attribute targets
 						if (currentType == null) {
@@ -900,14 +900,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						// add attribute properties.
 						if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute) {
 							var resolved = astResolver.Resolve(n.Parent);
-							if (resolved != null && resolved.Type != null) {
-								foreach (var property in resolved.Type.GetProperties (p => p.Accessibility == Accessibility.Public)) {
-									contextList.AddMember(property);
-								}
-								foreach (var field in resolved.Type.GetFields (p => p.Accessibility == Accessibility.Public)) {
-									contextList.AddMember(field);
-								}
-							}
+							AddAttributeProperties(contextList, resolved);
 						}
 					} else {
 						csResolver = GetState();
@@ -1170,15 +1163,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				node = unit.GetNodeAt(
 					location.Line,
 					location.Column + 2,
-					n => n is Expression || n is AstType || n is NamespaceDeclaration
+					n => n is Expression || n is AstType || n is NamespaceDeclaration || n is Attribute
 				);
 				rr = ResolveExpression(node);
 			}
+
 			var ifvisitor = new IfVisitor(location, CompletionContextProvider);
 			unit.AcceptVisitor(ifvisitor);
 			ifvisitor.End();
 			if (!ifvisitor.IsValid)
 				return null;
+
 			// namespace name case
 			var ns = node as NamespaceDeclaration;
 			if (ns != null) {
@@ -1239,6 +1234,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (rr != null) {
 				csResolver = rr.Item2;
 			}
+
 			if (csResolver == null) {
 				if (node != null) {
 					csResolver = GetState();
@@ -1255,9 +1251,31 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					csResolver = GetState();
 				}
 			}
+			
+			if (node is Attribute) {
+				// add attribute properties.
+				var astResolver = CompletionContextProvider.GetResolver(csResolver, unit);
+				var resolved = astResolver.Resolve (node);
+				AddAttributeProperties (wrapper, resolved);
+			}
+			
+
 			AddContextCompletion(wrapper, csResolver, node);
 			
 			return wrapper.Result;
+		}
+
+		static void AddAttributeProperties(CompletionDataWrapper wrapper, ResolveResult resolved)
+		{
+			if (resolved == null || resolved.Type.Kind == TypeKind.Unknown)
+				return;
+
+			foreach (var property in resolved.Type.GetProperties (p => p.Accessibility == Accessibility.Public)) {
+				wrapper.AddMember(property);
+			}
+			foreach (var field in resolved.Type.GetFields (p => p.Accessibility == Accessibility.Public)) {
+				wrapper.AddMember(field);
+			}
 		}
 		
 		void AddContextCompletion(CompletionDataWrapper wrapper, CSharpResolver state, AstNode node)
@@ -1310,7 +1328,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				} else if (currentType != null) {
 					AddKeywords(wrapper, typeLevelKeywords);
 				} else {
-					if (!isInGlobalDelegate)
+					if (!isInGlobalDelegate && !(node is Attribute) )
 						AddKeywords(wrapper, globalLevelKeywords);
 				}
 				var prop = currentMember as IUnresolvedProperty;
