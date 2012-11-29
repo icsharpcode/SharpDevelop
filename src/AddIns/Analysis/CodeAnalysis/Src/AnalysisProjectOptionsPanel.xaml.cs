@@ -290,6 +290,7 @@ namespace ICSharpCode.CodeAnalysis
 				initSuccess = true;
 				try {
 					this.RuleAssemblies = b.ToString();
+					IsDirty = true;
 				} finally {
 					initSuccess = oldInitSuccess;
 				}
