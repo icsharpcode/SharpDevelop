@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var type = ctx.Resolve (isExpression.Expression).Type;
 				var providedType = ctx.ResolveType (isExpression.Type);
 
-				var foundConversion = conversions.ImplicitConversion(type, providedType);
+//				var foundConversion = conversions.ImplicitConversion(type, providedType);
 				if (!IsValidReferenceOrBoxingConversion(type, providedType))
 					return;
 

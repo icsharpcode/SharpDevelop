@@ -1787,7 +1787,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return "";
 		}
 		
-		static CSharpAmbience amb = new CSharpAmbience();
+//		static CSharpAmbience amb = new CSharpAmbience();
 		
 		class Category : CompletionCategory
 		{

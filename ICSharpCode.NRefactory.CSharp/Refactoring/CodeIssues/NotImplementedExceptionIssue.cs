@@ -44,11 +44,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			readonly NotImplementedExceptionIssue inspector;
+//			readonly NotImplementedExceptionIssue inspector;
 			
 			public GatherVisitor (BaseRefactoringContext ctx, NotImplementedExceptionIssue inspector) : base (ctx)
 			{
-				this.inspector = inspector;
+//				this.inspector = inspector;
 			}
 
 			public override void VisitThrowStatement(ThrowStatement throwStatement)

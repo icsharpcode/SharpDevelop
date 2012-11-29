@@ -50,11 +50,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			readonly RedundantNamespaceUsageIssue inspector;
+//			readonly RedundantNamespaceUsageIssue inspector;
 			
 			public GatherVisitor (BaseRefactoringContext ctx, RedundantNamespaceUsageIssue inspector) : base (ctx)
 			{
-				this.inspector = inspector;
+//				this.inspector = inspector;
 			}
 
 			public override void VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression)

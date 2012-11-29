@@ -205,7 +205,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public void Resolved(AstNode node, ResolveResult result)
 			{
-				bool errors = result.IsError;
+//				bool errors = result.IsError;
 				FoundErrors |= result.IsError;
 			}
 

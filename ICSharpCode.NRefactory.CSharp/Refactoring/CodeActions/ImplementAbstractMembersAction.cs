@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		public static List<IMember> CollectMembersToImplement(ITypeDefinition implementingType, IType abstractType)
 		{
-			var def = abstractType.GetDefinition();
+//			var def = abstractType.GetDefinition();
 			var toImplement = new List<IMember>();
 			bool alreadyImplemented;
 			

@@ -570,7 +570,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (unresolvedFile != null) {
 					resolver = resolver.WithCurrentUsingScope(unresolvedFile.GetUsingScope(namespaceDeclaration.StartLocation).Resolve(resolver.Compilation));
 				} else {
-					string fileName = namespaceDeclaration.GetRegion().FileName ?? string.Empty;
+//					string fileName = namespaceDeclaration.GetRegion().FileName ?? string.Empty;
 					// Fetch parent using scope
 					// Create root using scope if necessary
 					if (resolver.CurrentUsingScope == null)
