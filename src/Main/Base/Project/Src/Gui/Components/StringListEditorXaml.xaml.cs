@@ -35,8 +35,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public string TitleText {get;set;}
 		
 		public string ListCaption {get;set;}
-	
-	
+		
+		
 		public bool BrowseForDirectory {
 			get {
 				return browseForDirectory;
@@ -51,7 +51,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		
 		public bool AutoAddAfterBrowse {get;set;}
+		
 		
 		void AddButton_Click(object sender, RoutedEventArgs e)
 		{
@@ -68,13 +70,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		#region Load/Save List
 		
-		
 		public void LoadList(IEnumerable<string> list)
 		{
 			listBox.Items.Clear();
 			foreach (string str in list) {
 				listBox.Items.Add(str);
 			}
+			CheckEnableState();
 		}
 		
 		
@@ -88,9 +90,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		
-		#endregion		
+		#endregion
 		
-		void UpdateButton_Click(object sender, RoutedEventArgs e)
+		
+		private void UpdateButton_Click(object sender, RoutedEventArgs e)
 		{
 			editTextBox.Text = editTextBox.Text.Trim();
 			if (editTextBox.Text.Length > 0) {
@@ -110,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (!path.EndsWith("\\") && !path.EndsWith("/"))
 						path += "\\";
 					editTextBox.Text = path;
-				
+					
 					if (AutoAddAfterBrowse) {
 						AddButton_Click(null, null);
 					}
@@ -119,10 +122,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		
-		void EditTextBox_TextChanged(object sender, TextChangedEventArgs e)
+		private void EditTextBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			addButton.IsEnabled = editTextBox.Text.Length > 0;
-			updateButton.IsEnabled = listBox.SelectedIndex >= 0 && editTextBox.Text.Length > 0;
+//			updateButton.IsEnabled = listBox.SelectedIndex >= 0 && editTextBox.Text.Length > 0;
+			CheckEnableState();
 		}
 		
 		
@@ -131,45 +135,54 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (ListChanged != null) {
 				ListChanged(this, e);
 			}
+			CheckEnableState();
 		}
 
 		
-		void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (listBox.SelectedIndex >= 0) {
 				editTextBox.Text = listBox.Items[listBox.SelectedIndex].ToString();
 			}
-			moveUpButton.IsEnabled = listBox.SelectedIndex > 0;
-			moveDownButton.IsEnabled = listBox.SelectedIndex >= 0 && listBox.SelectedIndex < listBox.Items.Count - 1;
-			removeButton.IsEnabled = deleteButton.IsEnabled = listBox.SelectedIndex >= 0;
-			updateButton.IsEnabled = listBox.SelectedIndex >= 0 && editTextBox.Text.Length > 0;
+			CheckEnableState();
+		}
+
+		
+		private void CheckEnableState()
+		{
+			moveUpButton.IsEnabled = listBox.SelectedIndex > -1 && listBox.Items.Count > 1;
+			moveDownButton.IsEnabled = listBox.SelectedIndex > -1 && listBox.Items.Count > 1;
+			removeButton.IsEnabled = listBox.SelectedIndex > -1;
+			
+			deleteButton.IsEnabled = listBox.SelectedIndex > -1;
+			updateButton.IsEnabled = listBox.SelectedIndex > -1 && editTextBox.Text.Length > 0;
 		}
 		
 		
 		#region MoveUp-MoveDow-DeleteButton
 		
-		void MoveUpButtonClick(object sender, RoutedEventArgs e)
+		private void MoveUpButtonClick(object sender, RoutedEventArgs e)
 		{
 			int index = listBox.SelectedIndex;
 			object tmp = listBox.Items[index];
 			listBox.Items[index] = listBox.Items[index - 1];
 			listBox.Items[index - 1] = tmp;
-			listBox.SelectedIndex = index - 1;
+//			listBox.SelectedIndex = index - 1;
 			OnListChanged(EventArgs.Empty);
 		}
 		
-		void MoveDownButtonClick(object sender, RoutedEventArgs e)
+		private void MoveDownButtonClick(object sender, RoutedEventArgs e)
 		{
 			int index = listBox.SelectedIndex;
 			object tmp = listBox.Items[index];
 			listBox.Items[index] = listBox.Items[index + 1];
 			listBox.Items[index + 1] = tmp;
-			listBox.SelectedIndex = index + 1;
+//			listBox.SelectedIndex = index + 1;
 			OnListChanged(EventArgs.Empty);
 		}
 		
 		
-		void RemoveButtonClick(object sender, RoutedEventArgs e)
+		private void RemoveButtonClick(object sender, RoutedEventArgs e)
 		{
 			if (listBox.SelectedIndex >= 0) {
 				listBox.Items.RemoveAt(listBox.SelectedIndex);

@@ -6,17 +6,17 @@
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
 	<Grid>
+
 		<Grid.RowDefinitions>
 			<RowDefinition Height="30"></RowDefinition>
 			<RowDefinition Height="30"></RowDefinition>
 			<RowDefinition Height="30"></RowDefinition>
 			<RowDefinition Height="30"></RowDefinition>
-			<RowDefinition Height="150"></RowDefinition>
+			<RowDefinition ></RowDefinition>
 		</Grid.RowDefinitions>
-		
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="300"></ColumnDefinition>
-			<ColumnDefinition Width="40"></ColumnDefinition>
+			<ColumnDefinition ></ColumnDefinition>
+			<ColumnDefinition Width="60"></ColumnDefinition>
 		</Grid.ColumnDefinitions>
 		
 		<Label Content="{Binding TitleText}"></Label>
@@ -26,7 +26,7 @@
 		</TextBox>
 			
 		
-		<Button x:Name="browseButton" Grid.Column="1" Grid.Row="1" Margin="0,3,5,0"
+		<Button x:Name="browseButton" Grid.Column="1" Grid.Row="1" Margin="5,3,5,3"
 			Content="..."
 			Visibility="Hidden"
 			Click="BrowseButtonClick">
@@ -48,7 +48,7 @@
 				Style="{x:Static core:GlobalStyles.ButtonStyle}">
 			</Button>
 			
-			<Button x:Name="removeButton"
+			<Button x:Name="removeButton" Margin="5,3,5,3"
 				Visibility="Hidden"
 				Content="{core:Localize Global.DeleteButtonText}"
 				Style="{x:Static core:GlobalStyles.ButtonStyle}">
@@ -65,9 +65,9 @@
 		</ListBox>
 		
 		<widgets:StackPanelWithSpacing Orientation="Vertical" Grid.Row="4" Grid.Column="1" SpaceBetweenItems="5">
-			<Button Content="b1" x:Name="moveUpButton" Click="MoveUpButtonClick"></Button>
-			<Button Content="b2" x:Name="moveDownButton" Click="MoveDownButtonClick"></Button>
-			<Button Content="b3" x:Name="deleteButton" Click="RemoveButtonClick"></Button>
+			<Button  x:Name="moveUpButton" Margin="5,3,5,0" Click="MoveUpButtonClick"></Button>
+			<Button  x:Name="moveDownButton" Margin="5,0,5,0" Click="MoveDownButtonClick"></Button>
+			<Button  x:Name="deleteButton" Margin="5,0,5,0" Click="RemoveButtonClick"></Button>
 		</widgets:StackPanelWithSpacing>
 	</Grid>
 </UserControl>
