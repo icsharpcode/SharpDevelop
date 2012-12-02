@@ -143,11 +143,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				});
 		}
 		
-		
-		
 		private void CreateKeyFile()
 		{
-			
 			if (File.Exists(StrongNameTool)) {
 				string title = StringParser.Parse("${res:Dialog.ProjectOptions.Signing.CreateKey.Title}");
 				string str = StringParser.Parse("${res:Dialog.ProjectOptions.Signing.CreateKey.KeyName}");
@@ -161,9 +158,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 						AssemblyOriginatorKeyFile.Value = MSBuildInternals.Escape(key);
 						keyFileComboBox.Text = AssemblyOriginatorKeyFile.Value;
 					}
-				} else {
-					MessageService.ShowMessage("${res:Dialog.ProjectOptions.Signing.SNnotFound}");
 				}
+			} else {
+				MessageService.ShowMessage("${res:Dialog.ProjectOptions.Signing.SNnotFound}");
 			}
 		}
 		
