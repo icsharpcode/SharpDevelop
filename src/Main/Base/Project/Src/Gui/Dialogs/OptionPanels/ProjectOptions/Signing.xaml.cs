@@ -72,7 +72,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (signAssemblyCheckBox.IsChecked == true) {
 				this.AssemblyOriginatorKeyMode.Value = "File";
 			}
-			keyFileComboBox.SelectionChanged -= KeyFileComboBox_SelectionChanged;
 			return base.Save(project, configuration, platform);
 		}
 		
