@@ -744,27 +744,113 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return a.Kind != TypeKind.Interface && b.Kind != TypeKind.Interface
 				&& (StandardImplicitConversion(a, b).IsValid || StandardImplicitConversion(b, a).IsValid);
 		}
-		
+
+		IType FindMostEncompassedType(IEnumerable<IType> candidates)
+		{
+			IType best = null;
+			foreach (var current in candidates) {
+				if (best == null || IsEncompassedBy(current, best))
+					best = current;
+				else if (!IsEncompassedBy(best, current))
+					return null;	// Ambiguous
+			}
+			return best;
+		}
+
+		IType FindMostEncompassingType(IEnumerable<IType> candidates)
+		{
+			IType best = null;
+			foreach (var current in candidates) {
+				if (best == null || IsEncompassedBy(best, current))
+					best = current;
+				else if (!IsEncompassedBy(current, best))
+					return null;	// Ambiguous
+			}
+			return best;
+		}
+
+		OperatorInfo SelectOperator(IType mostSpecificSource, IType mostSpecificTarget, IList<OperatorInfo> operators)
+		{
+			var selected = operators.Where(op => op.SourceType.Equals(mostSpecificSource) && op.TargetType.Equals(mostSpecificTarget)).ToList();
+
+			//TODO: This is fishy. I can't find the justification for this in the spec, but when performing algorithm in the spec for the conversion DateTime -> DateTimeOffset? (test UserDefinedImplicitNullableConversion)
+			// we get (according to the algorithm in §6.4.4, if my understanding is correct):
+			// S0 = DateTime, T0 = DateTimeOffset
+			// U = { DateTime -> DateTimeOffset (user-defined); DateTime? -> DateTimeOffset? (lifted) }
+			// Sx = DateTime
+			// Tx = DateTimeOffset?
+			// Now the problem is in the next step:
+			//   "* If U contains exactly one user-defined conversion operator that converts from Sx to Tx, then this is the most specific conversion operator". Nope, no conversion DateTime -> DateTimeOffset?
+			//   "* Otherwise, if U contains exactly one lifted conversion operator that converts from Sx to Tx, then this is the most specific conversion operator". Nope, no lifted conversion DateTime -> DateTimeOffset?
+			//   "* Otherwise, the conversion is ambiguous and a compile-time error occurs". This is what happens!
+			if (selected.Count == 0 && NullableType.IsNullable(mostSpecificTarget))
+				selected = operators.Where(op => op.SourceType.Equals(mostSpecificSource) && op.TargetType.Equals(NullableType.GetUnderlyingType(mostSpecificTarget))).ToList();
+
+			int nNonLifted = selected.Count(s => !s.IsLifted);
+			if (nNonLifted == 1)
+				return selected.First(s => !s.IsLifted);
+			else if (nNonLifted > 1)
+				return null;	// Ambiguous
+
+			int nLifted = selected.Count(s => s.IsLifted);
+			if (nLifted == 1)
+				return selected.First(s => s.IsLifted);
+			else
+				return null;	// Ambiguous or none applicable.
+		}
+
 		Conversion UserDefinedImplicitConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec §6.4.4 User-defined implicit conversions
 			var operators = GetApplicableConversionOperators(fromType, toType, false);
-			// TODO: Find most specific conversion
-			if (operators.Count > 0)
-				return Conversion.UserDefinedImplicitConversion(operators[0].Method, operators[0].IsLifted);
-			else
+
+			if (operators.Count > 0) {
+				var mostSpecificSource = operators.Any(op => op.SourceType.Equals(fromType)) ? fromType : FindMostEncompassedType(operators.Select(op => op.SourceType));
+				if (mostSpecificSource == null)
+					return Conversion.None;
+				var mostSpecificTarget = operators.Any(op => op.TargetType.Equals(toType)) ? toType : FindMostEncompassingType(operators.Select(op => op.TargetType));
+				if (mostSpecificTarget == null)
+					return Conversion.None;
+
+				var selected = SelectOperator(mostSpecificSource, mostSpecificTarget, operators);
+				return selected != null ? Conversion.UserDefinedImplicitConversion(selected.Method, selected.IsLifted) : Conversion.None;
+			}
+			else {
 				return Conversion.None;
+			}
 		}
 		
 		Conversion UserDefinedExplicitConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec §6.4.5 User-defined implicit conversions
 			var operators = GetApplicableConversionOperators(fromType, toType, true);
-			// TODO: Find most specific conversion
-			if (operators.Count > 0)
-				return Conversion.UserDefinedExplicitConversion(operators[0].Method, operators[0].IsLifted);
-			else
+			if (operators.Count > 0) {
+				IType mostSpecificSource;
+				if (operators.Any(op => op.SourceType.Equals(fromType)))
+					mostSpecificSource = fromType;
+				else if (operators.Any(op => IsEncompassedBy(fromType, op.SourceType)))
+					mostSpecificSource = FindMostEncompassedType(operators.Where(op => IsEncompassedBy(fromType, op.SourceType)).Select(op => op.SourceType));
+				else
+					mostSpecificSource = FindMostEncompassingType(operators.Select(op => op.SourceType));
+				if (mostSpecificSource == null)
+					return Conversion.None;
+
+				IType mostSpecificTarget;
+				if (operators.Any(op => op.TargetType.Equals(toType)))
+					mostSpecificTarget = toType;
+				else if (operators.Any(op => IsEncompassedBy(op.TargetType, toType)))
+					mostSpecificTarget = FindMostEncompassingType(operators.Where(op => IsEncompassedBy(op.TargetType, toType)).Select(op => op.TargetType));
+				else
+					mostSpecificTarget = FindMostEncompassedType(operators.Select(op => op.TargetType));
+				if (mostSpecificTarget == null)
+					return Conversion.None;
+
+				var selected = SelectOperator(mostSpecificSource, mostSpecificTarget, operators);
+				return selected != null ? Conversion.UserDefinedExplicitConversion(selected.Method, selected.IsLifted) : Conversion.None;
+			}
+			else {
 				return Conversion.None;
+			}
 		}
 		
 		class OperatorInfo

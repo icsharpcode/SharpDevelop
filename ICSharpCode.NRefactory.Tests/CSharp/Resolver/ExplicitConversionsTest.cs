@@ -509,7 +509,6 @@ class C {
 		}
 		
 		[Test]
-		[Ignore("Not implemented yet.")]
 		public void BothDirectConversionAndBaseClassConversionAvailable()
 		{
 			var rr = Resolve<ConversionResolveResult>(@"
@@ -527,6 +526,201 @@ class C {
 			Assert.IsTrue(rr.Conversion.IsValid);
 			Assert.IsTrue(rr.Conversion.IsUserDefined);
 			Assert.AreEqual("b", rr.Conversion.Method.Parameters.Single().Name);
+		}
+
+		[Test]
+		public void UserDefinedExplicitConversion_PicksExactSourceTypeIfPossible() {
+			string program = @"using System;
+class Convertible {
+	public static explicit operator Convertible(int i) {return new Convertible(); }
+	public static explicit operator Convertible(short s) {return new Convertible(); }
+}
+class Test {
+	public void M() {
+		var a = $(Convertible)33$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.AreEqual("i", rr.Conversion.Method.Parameters[0].Name);
+		}
+
+		[Test]
+		public void UserDefinedExplicitConversion_PicksMostEncompassedSourceTypeIfPossible() {
+			string program = @"using System;
+class Convertible {
+	public static explicit operator Convertible(long l) {return new Convertible(); }
+	public static explicit operator Convertible(uint ui) {return new Convertible(); }
+}
+class Test {
+	public void M() {
+		var a = $(Convertible)(ushort)33$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.AreEqual("ui", rr.Conversion.Method.Parameters[0].Name);
+		}
+
+		[Test]
+		public void UserDefinedExplicitConversion_PicksMostEncompassingSourceType() {
+			string program = @"using System;
+class Convertible {
+	public static explicit operator Convertible(int i) {return new Convertible(); }
+	public static explicit operator Convertible(ushort us) {return new Convertible(); }
+}
+class Test {
+	public void M() {
+		var a = $(Convertible)(long)33$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.AreEqual("i", rr.Conversion.Method.Parameters[0].Name);
+		}
+
+		[Test]
+		public void UserDefinedExplicitConversion_NoMostEncompassingSourceTypeIsInvalid() {
+			string program = @"using System;
+class Convertible {
+	public static explicit operator Convertible(uint i) {return new Convertible(); }
+	public static explicit operator Convertible(short us) {return new Convertible(); }
+}
+class Test {
+	public void M() {
+		var a = $(Convertible)(long)33$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsFalse(rr.Conversion.IsValid);
+		}
+
+		[Test]
+		public void UserDefinedExplicitConversion_PicksExactTargetTypeIfPossible() {
+			string program = @"using System;
+class Convertible {
+	public static explicit operator int(Convertible i) {return 0; }
+	public static explicit operator short(Convertible s) {return 0; }
+}
+class Test {
+	public void M() {
+		var a = $(int)new Convertible()$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.AreEqual("i", rr.Conversion.Method.Parameters[0].Name);
+		}
+
+		[Test]
+		public void UserDefinedExplicitConversion_PicksMostEncompassingTargetTypeIfPossible() {
+			string program = @"using System;
+class Convertible {
+	public static explicit operator int(Convertible i) {return 0; }
+	public static explicit operator ushort(Convertible us) {return 0; }
+}
+class Test {
+	public void M() {
+		var a = $(ulong)new Convertible()$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.AreEqual("us", rr.Conversion.Method.Parameters[0].Name);
+		}
+
+		[Test]
+		public void UserDefinedExplicitConversion_PicksMostEncompassedTargetType() {
+			string program = @"using System;
+class Convertible {
+	public static explicit operator long(Convertible l) { return 0; }
+	public static explicit operator uint(Convertible ui) { return 0; }
+}
+class Test {
+	public void M() {
+		var a = $(ushort)new Convertible()$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.AreEqual("ui", rr.Conversion.Method.Parameters[0].Name);
+		}
+
+		[Test]
+		public void UserDefinedExplicitConversion_NoMostEncompassedTargetTypeIsInvalid() {
+			string program = @"using System;
+class Convertible {
+	public static explicit operator ulong(Convertible l) { return 0; }
+	public static explicit operator int(Convertible ui) { return 0; }
+}
+class Test {
+	public void M() {
+		var a = $(ushort)new Convertible()$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsFalse(rr.Conversion.IsValid);
+		}
+
+		[Test]
+		public void UserDefinedExplicitConversion_AmbiguousIsInvalid() {
+			string program = @"using System;
+class Convertible1 {
+	public static explicit operator Convertible2(Convertible1 c) {return 0; }
+}
+class Convertible2 {
+	public static explicit operator Convertible2(Convertible1 c) {return 0; }
+}
+class Test {
+	public void M() {
+		var a = $(Convertible2)new Convertible1()$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsFalse(rr.Conversion.IsValid);
+		}
+
+		[Test]
+		public void UserDefinedExplicitConversion_DefinedNullableTakesPrecedenceOverLifted() {
+			string program = @"using System;
+struct Convertible {
+	public static explicit operator Convertible(int i) {return new Convertible(); }
+	public static explicit operator Convertible?(int? ni) {return new Convertible(); }
+}
+class Test {
+	public void M() {
+		 a = $(Convertible?)(int?)33$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.IsFalse(rr.Conversion.IsLifted);
+			Assert.AreEqual("ni", rr.Conversion.Method.Parameters[0].Name);
+		}
+
+		[Test, Ignore("TODO: The 'most encompassing' algorithm should pick the long overload, but csc picks the uint one.")]
+		public void UserDefinedExplicitConversion_UIntConstant() {
+			string program = @"using System;
+class Convertible {
+	public static explicit operator Convertible(long l) {return new Convertible(); }
+	public static explicit operator Convertible(uint ui) {return new Convertible(); }
+}
+class Test {
+	public void M() {
+		var a = $(Convertible)33$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.AreEqual("ui", rr.Conversion.Method.Parameters[0].Name);
 		}
 	}
 }
