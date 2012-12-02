@@ -133,10 +133,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
 					if (this.keyFileComboBox.SelectedIndex == keyFile.Count - 1) {
+						keyFileComboBox.Text = String.Empty;
 						BrowseForFile(this.AssemblyOriginatorKeyFile, "${res:SharpDevelop.FileFilter.KeyFiles} (" + KeyFileExtensions + ")|" + KeyFileExtensions + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
 						keyFileComboBox.Text = this.AssemblyOriginatorKeyFile.Value;
 					}
 					if (this.keyFileComboBox.SelectedIndex == keyFile.Count - 2) {
+						keyFileComboBox.Text = String.Empty;
 						CreateKeyFile();
 					}
 				});
