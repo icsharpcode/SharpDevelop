@@ -1183,24 +1183,71 @@ class TestClass
 		public void TestEnumInBinaryOperatorExpression ()
 		{
 			CodeCompletionBugTests.CombinedProviderTest (
-@"
+				@"
 [Flags]
 public enum TestEnum { A, B, C}
 
 class TestClass
 {
+public void Foo ()
+{
+$TestEnum test = TestEnum.A | T$
+}
+}", provider => {
+				Assert.IsNotNull (provider.Find ("TestEnum"), "enum 'TestEnum' not found.");
+				Assert.IsNotNull (provider.Find ("TestEnum.A"), "enum 'TestEnum.A' not found.");
+				Assert.IsNotNull (provider.Find ("TestEnum.B"), "enum 'TestEnum.B' not found.");
+				Assert.IsNotNull (provider.Find ("TestEnum.C"), "enum 'TestEnum.C' not found.");
+			});
+		}
+		
+		[Test()]
+		public void TestEnumComparison ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider(
+				@"
+public enum TestEnum { A, B, C}
+
+class TestClass
+{
+	public static TestEnum A (int i, int j, string s) {}
+
 	public void Foo ()
 	{
-		$TestEnum test = TestEnum.A | T$
+		$if (A(1,2,""foo"") == $
 	}
-}", provider => {
+}");
+			Assert.IsFalse(provider.AutoCompleteEmptyMatch);
 			Assert.IsNotNull (provider.Find ("TestEnum"), "enum 'TestEnum' not found.");
 			Assert.IsNotNull (provider.Find ("TestEnum.A"), "enum 'TestEnum.A' not found.");
 			Assert.IsNotNull (provider.Find ("TestEnum.B"), "enum 'TestEnum.B' not found.");
 			Assert.IsNotNull (provider.Find ("TestEnum.C"), "enum 'TestEnum.C' not found.");
-			});
 		}
+
 		
+		[Test()]
+		public void TestEnumComparisonCase2 ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider(
+				@"
+public enum TestEnum { A, B, C}
+
+class TestClass
+{
+	public static TestEnum A (int i, int j, string s) {}
+
+	public void Foo ()
+	{
+		$if (A(1,2,""foo"") != $
+	}
+}");
+			Assert.IsFalse(provider.AutoCompleteEmptyMatch);
+			Assert.IsNotNull (provider.Find ("TestEnum"), "enum 'TestEnum' not found.");
+			Assert.IsNotNull (provider.Find ("TestEnum.A"), "enum 'TestEnum.A' not found.");
+			Assert.IsNotNull (provider.Find ("TestEnum.B"), "enum 'TestEnum.B' not found.");
+			Assert.IsNotNull (provider.Find ("TestEnum.C"), "enum 'TestEnum.C' not found.");
+		}
+
 		[Test()]
 		public void TestPrimimitiveTypeCompletionString ()
 		{

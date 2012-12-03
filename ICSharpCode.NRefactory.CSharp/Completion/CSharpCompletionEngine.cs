@@ -444,7 +444,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (token == "=") {
 						int j = tokenIndex;
 						string prevToken = GetPreviousToken(ref j, false);
-						if (prevToken == "=" || prevToken == "+" || prevToken == "-") {
+						if (prevToken == "=" || prevToken == "+" || prevToken == "-" || prevToken == "!") {
 							token = prevToken + token;
 							tokenIndex = j;
 						}
@@ -481,14 +481,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							return null;
 						case "=":
 						case "==":
+						case "!=":
 							GetPreviousToken(ref tokenIndex, false);
 							var expressionOrVariableDeclaration = GetExpressionAt(tokenIndex);
 							if (expressionOrVariableDeclaration == null) {
 								return null;
 							}
-							
 							resolveResult = ResolveExpression(expressionOrVariableDeclaration);
-							
 							if (resolveResult == null) {
 								return null;
 							}
