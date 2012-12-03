@@ -376,6 +376,7 @@
     <Compile Include="Project\Xml\BaseItemLoader.cs" />
     <Compile Include="Project\Xml\MycroParser.cs" />
     <Compile Include="Project\Xml\MycroWriter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Project\Dialogs\EditorDialog.resx">
       <DependentUpon>EditorDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -393,6 +394,7 @@
     <None Include="Project\ReportViewer\Resources\Icons\Next.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Properties" />
     <Folder Include="Project\DataManager\DataAccess" />
     <Folder Include="Project\WpfReportViewer" />
     <Folder Include="Project\WPF" />
