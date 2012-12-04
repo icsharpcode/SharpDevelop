@@ -1482,6 +1482,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				foreach (var pair in n.UsingAliases) {
 					wrapper.AddAlias(pair.Key);
 				}
+				foreach (var alias in n.ExternAliases) {
+					wrapper.AddAlias(alias);
+				}
 				foreach (var u in n.Usings) {
 					foreach (var type in u.Types) {
 						if (!lookup.IsAccessible(type, false))
