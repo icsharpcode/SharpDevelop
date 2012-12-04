@@ -99,6 +99,15 @@ namespace ICSharpCode.PackageManagement
 			if (Package == null) {
 				Package = Project.SourceRepository.FindPackage(PackageId, PackageVersion);
 			}
+			if (Package == null) {
+				ThrowPackageNotFoundError(PackageId);
+			}
+		}
+		
+		void ThrowPackageNotFoundError(string packageId)
+		{
+			string message = String.Format("Unable to find package '{0}'.", packageId);
+			throw new ApplicationException(message);
 		}
 		
 		protected bool PackageIdExistsInProject()

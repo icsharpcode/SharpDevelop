@@ -148,6 +148,7 @@ namespace PackageManagement.Tests
 		{
 			CreateAction();
 			fakeProject.AddFakeInstallOperation();
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			installPackageHelper.InstallPackageById("PackageId");
 			
 			var actualOperations = action.Operations;
@@ -174,6 +175,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageIdAndSourceAndProjectPassedAndIgnoreDependenciesIsTrue_DependenciesIgnoredWhenGettingPackageOperations()
 		{
 			CreateAction();
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			installPackageHelper.IgnoreDependencies = true;
 			installPackageHelper.InstallPackageById("PackageId");
 			
@@ -186,6 +188,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageIdAndSourceAndProjectPassedAndAllowPrereleaseVersionsIsTrue_PrereleaseVersionsAllowedWhenGettingPackageOperations()
 		{
 			CreateAction();
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			installPackageHelper.AllowPrereleaseVersions = true;
 			installPackageHelper.InstallPackageById("PackageId");
 			
@@ -198,6 +201,7 @@ namespace PackageManagement.Tests
 		public void InstallPackage_PackageIdAndSourceAndProjectPassedAndIgnoreDependenciesIsFalse_DependenciesNotIgnoredWhenGettingPackageOperations()
 		{
 			CreateAction();
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			installPackageHelper.IgnoreDependencies = false;
 			installPackageHelper.InstallPackageById("PackageId");
 			
@@ -210,6 +214,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageIdAndSourceAndProjectPassedAndAllowPrereleaseVersionsIsFalse_PrereleaseVersionsNotAllowedWhenGettingPackageOperations()
 		{
 			CreateAction();
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			installPackageHelper.AllowPrereleaseVersions = false;
 			installPackageHelper.InstallPackageById("PackageId");
 			
@@ -245,6 +250,7 @@ namespace PackageManagement.Tests
 		public void HasPackageScriptsToRun_OnePackageInOperationsHasInitPowerShellScript_ReturnsTrue()
 		{
 			CreateAction();
+			fakeProject.AddFakePackageToSourceRepository("Test");
 			action.PackageId = "Test";
 			AddInstallOperationWithFile(@"tools\init.ps1");
 			
@@ -257,6 +263,7 @@ namespace PackageManagement.Tests
 		public void HasPackageScriptsToRun_OnePackageInOperationsHasNoFiles_ReturnsFalse()
 		{
 			CreateAction();
+			fakeProject.AddFakePackageToSourceRepository("Test");
 			action.PackageId = "Test";
 			action.Operations = new List<PackageOperation>();
 			
@@ -269,6 +276,7 @@ namespace PackageManagement.Tests
 		public void HasPackageScriptsToRun_OnePackageInOperationsHasInitPowerShellScriptInUpperCase_ReturnsTrue()
 		{
 			CreateAction();
+			fakeProject.AddFakePackageToSourceRepository("Test");
 			action.PackageId = "Test";
 			AddInstallOperationWithFile(@"tools\INIT.PS1");
 			
@@ -281,6 +289,7 @@ namespace PackageManagement.Tests
 		public void HasPackageScriptsToRun_OnePackageInOperationsHasInstallPowerShellScriptInUpperCase_ReturnsTrue()
 		{
 			CreateAction();
+			fakeProject.AddFakePackageToSourceRepository("Test");
 			action.PackageId = "Test";
 			AddInstallOperationWithFile(@"tools\INSTALL.PS1");
 			
@@ -293,6 +302,7 @@ namespace PackageManagement.Tests
 		public void HasPackageScriptsToRun_OnePackageInOperationsHasUninstallPowerShellScriptInUpperCase_ReturnsTrue()
 		{
 			CreateAction();
+			fakeProject.AddFakePackageToSourceRepository("Test");
 			action.PackageId = "Test";
 			AddInstallOperationWithFile(@"tools\UNINSTALL.PS1");
 			
@@ -330,6 +340,17 @@ namespace PackageManagement.Tests
 			IPackage actualPackage = action.Package;
 			
 			Assert.AreEqual(expectedPackage, actualPackage);
+		}
+		
+		[Test]
+		public void Execute_PackageIdSpecifiedButDoesNotExistInRepository_ExceptionThrown()
+		{
+			CreateAction();
+			action.PackageId = "UnknownId";
+			
+			Exception ex = Assert.Throws(typeof(ApplicationException), () => action.Execute());
+			
+			Assert.AreEqual("Unable to find package 'UnknownId'.", ex.Message);
 		}
 	}
 }

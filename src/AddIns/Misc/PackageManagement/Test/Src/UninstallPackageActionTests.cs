@@ -75,7 +75,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageObjectPassedAndForceRemoveIsFalse_PackageIsNotForcefullyRemoved()
 		{
 			CreateAction();
-			
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			uninstallPackageHelper.ForceRemove = false;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
@@ -88,7 +88,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageObjectPassedAndForceRemoveIsTrue_PackageIsForcefullyRemoved()
 		{
 			CreateAction();
-			
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			uninstallPackageHelper.ForceRemove = true;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
@@ -101,7 +101,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageObjectPassedAndRemoveDependenciesIsFalse_PackageDependenciesAreNotRemoved()
 		{
 			CreateAction();
-			
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			uninstallPackageHelper.RemoveDependencies = false;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
@@ -114,7 +114,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageObjectPassedAndRemoveDependenciesIsTrue_PackageDependenciesAreRemoved()
 		{
 			CreateAction();
-			
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			uninstallPackageHelper.RemoveDependencies = true;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
@@ -127,7 +127,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageIdSpecifiedAndForceRemoveIsTrue_PackageIsForcefullyRemoved()
 		{
 			CreateAction();
-			
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			uninstallPackageHelper.ForceRemove = true;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
@@ -140,7 +140,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageIdSpecifiedAndRemoveDependenciesIsTrue_PackageDependenciesAreRemoved()
 		{
 			CreateAction();
-			
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			uninstallPackageHelper.RemoveDependencies = true;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
