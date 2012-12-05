@@ -44,6 +44,7 @@ namespace ICSharpCode.SourceAnalysis
 			if (String.IsNullOrEmpty(SourceAnalysisOverrideSettingsFile.Value)) {
 				SourceAnalysisOverrideSettingsFile.Value = StyleCopWrapper.GetMasterSettingsFile();
 				SourceAnalysisOverrideSettingsFile.Location =  PropertyStorageLocations.Base;
+				IsDirty = false;
 			}
 		}
 		
