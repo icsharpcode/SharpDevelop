@@ -74,6 +74,7 @@ namespace ICSharpCode.SourceAnalysis
 					MessageService.ShowError(string.Format("Directory does not contain StyleCop (*{0}).", StyleCopWrapper.STYLE_COP_FILE));
 				}
 			}
+			ShowStatus();
 		}
 		
 		
