@@ -30,8 +30,10 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public enum IndentType {
 		Block,
+		DoubleBlock,
 		Continuation,
-		Label
+		Label,
+		Empty
 	}
 
 	public class Indent
@@ -44,8 +46,28 @@ namespace ICSharpCode.NRefactory.CSharp
 		public Indent(TextEditorOptions options)
 		{
 			this.options = options;
+			Reset();
 		}
 
+		Indent(TextEditorOptions options, Stack<IndentType> indentStack, int curIndent) : this(options)
+		{
+			this.indentStack = indentStack;
+			this.curIndent = curIndent;
+		}
+
+		public Indent Clone()
+		{
+			var result = new Indent(options, new Stack<IndentType> (indentStack), curIndent);
+			result.indentString = indentString;
+			return result;
+		}
+
+		public void Reset()
+		{
+			curIndent = 0;
+			indentString = "";
+			indentStack.Clear();
+		}
 
 		public void Push(IndentType type)
 		{
@@ -60,15 +82,30 @@ namespace ICSharpCode.NRefactory.CSharp
 			Update();
 		}
 
+		public int Count {
+			get {
+				return indentStack.Count;
+			}
+		}
+
+		public IndentType Peek ()
+		{
+			return indentStack.Peek();
+		}
+
 		int GetIndent(IndentType indentType)
 		{
 			switch (indentType) {
 				case IndentType.Block:
 					return options.IndentSize;
+				case IndentType.DoubleBlock:
+					return options.IndentSize * 2;
 				case IndentType.Continuation:
 					return options.ContinuationIndent;
 				case IndentType.Label:
 					return options.LabelIndent;
+				case IndentType.Empty:
+					return 0;
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
