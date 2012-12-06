@@ -74,18 +74,8 @@
       <DependentUpon>AnalysisOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\old_AnalysisProjectOptionsPanel.cs" />
-    <Compile Include="Src\old_AnalysisProjectOptions.Designer.cs">
-      <DependentUpon>old_AnalysisProjectOptions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Src\old_AnalysisProjectOptions.cs" />
-    <EmbeddedResource Include="Src\old_AnalysisProjectOptions.resx">
-      <DependentUpon>old_AnalysisProjectOptions.cs</DependentUpon>
-    </EmbeddedResource>
     <Compile Include="Src\StyleCopWrapper.cs" />
     <Compile Include="Src\CheckCurrentProjectCommand.cs" />
-    <Compile Include="Src\old_AnalysisIdeOptionsPanel.cs" />
-    <EmbeddedResource Include="Resources\old_AnalysisIdeOptionPanel.xfrm" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources" />
