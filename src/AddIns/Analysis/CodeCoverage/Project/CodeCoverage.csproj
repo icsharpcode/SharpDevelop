@@ -65,8 +65,8 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\CodeCoverageMethodElement.cs" />
-    <Compile Include="Src\CodeCoverageOptionsPanelXaml.xaml.cs">
-      <DependentUpon>CodeCoverageOptionsPanelXaml.xaml</DependentUpon>
+    <Compile Include="Src\CodeCoverageOptionsPanel.xaml.cs">
+      <DependentUpon>CodeCoverageOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\CodeCoverageProjectOptionsPanel.xaml.cs">
@@ -106,7 +106,6 @@
     <Compile Include="Src\CodeCoverageHighlighter.cs" />
     <Compile Include="Src\CodeCoverageOptions.cs" />
     <Compile Include="Src\old_CodeCoverageOptionsPanel.cs" />
-    <EmbeddedResource Include="Resources\old_CodeCoverageOptionsPanel.xfrm" />
     <Compile Include="Src\CodeCoverageDisplayItem.cs" />
     <Compile Include="Src\ColorPickerComboBox.cs" />
     <Compile Include="Src\CodeCoverageService.cs" />
@@ -172,7 +171,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\CodeCoverageOptionsPanelXaml.xaml" />
+    <Page Include="Src\CodeCoverageOptionsPanel.xaml" />
     <Page Include="Src\CodeCoverageProjectOptionsPanel.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
