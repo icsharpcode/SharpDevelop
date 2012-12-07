@@ -7,17 +7,11 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using Microsoft.Win32;
 
@@ -108,6 +102,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 			SelectedTool = null;
 		}
+		
 		
 		public override bool SaveOptions()
 		{
@@ -202,13 +197,14 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		private void UpButton_Click(object sender, RoutedEventArgs e)
 		{
-			int index = listBox.SelectedItems.Count;
+			var index = listBox.SelectedIndex;
+			if (index > 0) {
 			object tmp = listBox.Items[index];
 			listBox.Items[index] = listBox.Items[index - 1];
 			listBox.Items[index - 1] = tmp;
 			listBox.SelectedIndex = index - 1;
-			listBox.SelectedItems.Clear();
 			base.RaisePropertyChanged(null);
+			}
 		}
 		
 		
@@ -222,7 +218,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				listBox.SelectedIndex = index + 1;
 				base.RaisePropertyChanged(null);
 			}
-			listBox.SelectedItems.Clear();
 		}
 		
 		
@@ -260,7 +255,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			
 			if (listBox.SelectedItems.Count == 0 ) {
 				EnableFields(false);
 				ButtonsEnable = false;

@@ -110,9 +110,6 @@
     <Compile Include="Src\Editor\AvalonEdit\ISnippetElementProvider.cs" />
     <Compile Include="Src\Editor\AvalonEdit\TextContentCondition.cs" />
     <Compile Include="Src\Editor\AvalonEdit\TextSelectedCondition.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\old_CodeCompletionPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml.cs">
       <DependentUpon>CodeCompletionPanelXaml.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -600,9 +597,6 @@
     <Compile Include="Src\Gui\Dialogs\WordCountDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\old_ExternalToolPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AssemblyReferencePanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -768,7 +762,6 @@
     <Compile Include="Src\Project\WebReferenceUrl.cs" />
     <EmbeddedResource Include="Resources\CommonAboutDialog.xfrm" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Resources\old_ExternalToolOptions.xfrm" />
     <EmbeddedResource Include="Resources\FontSelectionPanel.xfrm" />
     <EmbeddedResource Include="Resources\NewFileWithNameDialog.xfrm" />
     <EmbeddedResource Include="Resources\NewFileDialog.xfrm" />
@@ -805,7 +798,6 @@
     <Compile Include="Src\Services\ProjectService\ParseableFileContentFinder.cs" />
     <Compile Include="Src\Services\ParserService\ParseProjectContent.cs" />
     <Compile Include="Src\Project\Items\ImportProjectItem.cs" />
-    <EmbeddedResource Include="Resources\old_CodeCompletionOptionPanel.xfrm" />
     <Compile Include="Src\Services\Debugger\CurrentLineBookmark.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserCommands.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserLocationConditionEvaluator.cs" />

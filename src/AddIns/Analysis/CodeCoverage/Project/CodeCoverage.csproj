@@ -105,7 +105,6 @@
     <Compile Include="Src\ToggleCodeCoverageCommand.cs" />
     <Compile Include="Src\CodeCoverageHighlighter.cs" />
     <Compile Include="Src\CodeCoverageOptions.cs" />
-    <Compile Include="Src\old_CodeCoverageOptionsPanel.cs" />
     <Compile Include="Src\CodeCoverageDisplayItem.cs" />
     <Compile Include="Src\ColorPickerComboBox.cs" />
     <Compile Include="Src\CodeCoverageService.cs" />
