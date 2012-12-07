@@ -61,10 +61,9 @@
 					          class="Debugger.AddIn.EnableBreakpointMenuCommand"
 					          label= "${res:MainWindow.Windows.Debug.Conditional.Breakpoints.EnableBreakpoint}" />
 				</ComplexCondition>
-				<!--
-				<MenuItem id="BreakpointSeparator" type = "Separator" />
-				<MenuItem id="MenuBuilder" type="Builder" class="Debugger.AddIn.BreakpointChangeMenuBuilder" />
-				-->
+				<MenuItem id="EditCondition"
+				          class="Debugger.AddIn.EditBreakpointMenuCommand"
+				          label= "${res:MainWindow.Windows.Debug.Conditional.Breakpoints.EditCondition}" />
 			</Condition>
 		</MenuItem>
 	</Path>
@@ -118,13 +117,6 @@
 		     icon     = "PadIcons.LocalVariables"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.WatchPad"
 		     defaultPosition = "Bottom, Hidden" />
-	
-		<Pad id    = "ParallelStacksPad"
-		     category = "Debugger"
-		     title    = "${res:MainWindow.Windows.Debug.ParallelStack}"
-		     icon     = "PadIcons.Parallel"
-		     class = "ICSharpCode.SharpDevelop.Gui.Pads.ParallelStackPad"
-		     defaultPosition = "Bottom, Hidden" />
 	</Path>
 	
 	<Path name ="/SharpDevelop/Pads/WatchPad/ContextMenu">
@@ -148,26 +140,6 @@
 	
 	<Path name="/SharpDevelop/Pads/ConsolePad/ToolBar">
 		<Include id="StandardCommands" path="/SharpDevelop/Pads/CommonConsole/ToolBar" />
-		<ToolbarItem class="ICSharpCode.SharpDevelop.Gui.Pads.SelectLanguageCommand"
-		             type="ComboBox" id="SelectLanguageCommand" />
-	</Path>
-	
-	<Path name="/SharpDevelop/Pads/ParallelStacksPad/ToolBar">
-		<ToolbarItem id="View" type="ComboBox" class="ICSharpCode.SharpDevelop.Gui.Pads.ParallelStacksViewCommand"/>
-		<ToolbarItem id="Separator" type="Separator"/>
-		<ToolbarItem 
-			id="MethodView"
-			type="CheckBox" 
-			tooltip="${res:MainWindow.Windows.Debug.ToggleMethodView}"
-			icon="ParallelStacks.MethodView"
-			class="ICSharpCode.SharpDevelop.Gui.Pads.ToggleMethodViewCommand"/>
-		<ToolbarItem 
-			id="ZoomControl"
-			type="CheckBox" 
-			tooltip="${res:MainWindow.Windows.Debug.HideZoomControl}"
-			icon="ParallelStacks.ZoomControl"
-			class="ICSharpCode.SharpDevelop.Gui.Pads.ShowZoomControlCommand"/>
-		/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Services/DebuggerService/Visualizers">

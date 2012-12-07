@@ -72,7 +72,7 @@ namespace Debugger.AddIn.TreeModel
 				cachedValue = this.getValue().GetPermanentReference(WindowsDebugger.EvalThread);
 				cachedValueProcess = cachedValue.Process;
 				cachedValueDebuggeeState = cachedValue.Process.DebuggeeState;
-				LoggingService.InfoFormatted("Evaluated node '{0}' in {1} ms (result cached for future use)", this.Name, watch.ElapsedMilliseconds);
+				LoggingService.InfoFormatted("Evaluated node '{0}' in {1} ms (result cached)", this.Name, watch.ElapsedMilliseconds);
 			}
 			return cachedValue;
 		}
@@ -92,9 +92,8 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		/// <summary>
-		/// Get the value of the node and update the UI text fields.
-		/// </summary>
+		/// <summary> Get the value of the node and update the UI text fields. </summary>
+		/// <remarks> This should be only called once so the Value is not cached. </remarks>
 		void GetValueAndUpdateUI()
 		{
 			try {
@@ -110,9 +109,10 @@ namespace Debugger.AddIn.TreeModel
 				} else if (val.Type.IsPrimitiveType() || val.Type.IsKnownType(KnownTypeCode.String)) { // Must be before IsClass
 					this.GetChildren = null;
 				} else if (val.Type.Kind == TypeKind.Array) { // Must be before IsClass
-					var dims = val.ArrayDimensions;  // Eval now
-					if (dims.TotalElementCount > 0) {
-						this.GetChildren = () => GetArrayChildren(dims, dims);
+					var dimBase = val.ArrayBaseIndicies;		// Eval now
+					var dimSize = val.ArrayDimensions;		// Eval now
+					if (val.ArrayLength > 0) {
+						this.GetChildren = () => GetArrayChildren(dimBase, dimSize);
 					}
 				} else if (val.Type.Kind == TypeKind.Class || val.Type.Kind == TypeKind.Struct) {
 					if (val.Type.IsKnownType(typeof(List<>))) {
@@ -175,7 +175,6 @@ namespace Debugger.AddIn.TreeModel
 				this.Type  = string.Empty;
 				this.GetChildren = null;
 				#warning				this.VisualizerCommands = null;
-				return;
 			}
 		}
 		
@@ -240,13 +239,6 @@ namespace Debugger.AddIn.TreeModel
 				throw new GetValueException("No stack frame selected");
 			
 			return WindowsDebugger.CurrentStackFrame;
-		}
-		
-		public static TreeNode GetTooltipFor(string text, Value value)
-		{
-			if (value == null)
-				throw new ArgumentNullException("value");
-			return new ValueNode(ClassBrowserIconService.LocalVariable, text, () => value);
 		}
 		
 		public static IEnumerable<TreeNode> GetLocalVariables()
@@ -361,15 +353,13 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
+		/// <remarks> 'getValue' really should return cached value, because we do Eval to create indices. </remarks>
 		static IEnumerable<TreeNode> GetIListChildren(Func<Value> getValue)
 		{
-			Value list;
 			IProperty itemProp;
 			int count = 0;
 			try {
-				// TODO: We want new list on reeval
-				// We need the list to survive generation of index via Eval
-				list = getValue().GetPermanentReference(WindowsDebugger.EvalThread);
+				Value list = getValue();
 				IType iListType = list.Type.GetAllBaseTypeDefinitions().Where(t => t.FullName == typeof(IList).FullName).FirstOrDefault();
 				itemProp = iListType.GetProperties(p => p.Name == "Item").Single();
 				// Do not get string representation since it can be printed in hex
@@ -380,87 +370,91 @@ namespace Debugger.AddIn.TreeModel
 			if (count == 0) {
 				return new [] { new TreeNode("(empty)", null) };
 			} else {
-				return Enumerable.Range(0, count).Select(i => new ValueNode(ClassBrowserIconService.Field, "[" + i + "]", () => list.GetPropertyValue(WindowsDebugger.EvalThread, itemProp, Eval.CreateValue(WindowsDebugger.EvalThread, i))));
+				return Enumerable.Range(0, count).Select(i => new ValueNode(ClassBrowserIconService.Field, "[" + i + "]", () => getValue().GetPropertyValue(WindowsDebugger.EvalThread, itemProp, Eval.CreateValue(WindowsDebugger.EvalThread, i))));
 			}
 		}
 		
-		TreeNode GetArraySubsetNode(ArrayDimensions bounds, ArrayDimensions originalBounds)
-		{
-			StringBuilder name = new StringBuilder();
-			bool isFirst = true;
-			name.Append("[");
-			for(int i = 0; i < bounds.Count; i++) {
-				if (!isFirst) name.Append(", ");
-				isFirst = false;
-				ArrayDimension dim = bounds[i];
-				ArrayDimension originalDim = originalBounds[i];
-				
-				if (dim.Count == 0) {
-					name.Append("-");
-				} else if (dim.Count == 1) {
-					name.Append(dim.LowerBound.ToString());
-				} else if (dim.Equals(originalDim)) {
-					name.Append("*");
-				} else {
-					name.Append(dim.LowerBound);
-					name.Append("..");
-					name.Append(dim.UpperBound);
-				}
-			}
-			name.Append("]");
-			
-			return new TreeNode(name.ToString(), () => GetArrayChildren(bounds, originalBounds));
-		}
-		
-		IEnumerable<TreeNode> GetArrayChildren(ArrayDimensions bounds, ArrayDimensions originalBounds)
+		IEnumerable<TreeNode> GetArrayChildren(uint[] dimBase, uint[] dimSize)
 		{
 			const int MaxElementCount = 100;
 			
-			if (bounds.TotalElementCount == 0)
+			int rank = dimSize.Length;
+			uint totalSize = dimSize.Aggregate((uint)1, (acc, s) => acc * s);
+			
+			if (totalSize == 0)
 			{
 				yield return new TreeNode("(empty)", null);
 				yield break;
 			}
 			
-			// The whole array is small - just add all elements as childs
-			if (bounds.TotalElementCount <= MaxElementCount * 2) {
-				foreach(int[] indices in bounds.Indices) {
-					StringBuilder sb = new StringBuilder(indices.Length * 4);
-					sb.Append("[");
+			// The array is small - just add all elements as children
+			StringBuilder sb = new StringBuilder();
+			if (totalSize <= MaxElementCount) {
+				uint[] indices = (uint[])dimBase.Clone();
+				while(indices[0] < dimBase[0] + dimSize[0]) {
+					// Make element name
+					sb.Clear();
+					sb.Append('[');
 					bool isFirst = true;
 					foreach(int index in indices) {
 						if (!isFirst) sb.Append(", ");
-						sb.Append(index.ToString());
+						sb.Append(index);
 						isFirst = false;
 					}
-					sb.Append("]");
-					int[] indicesCopy = indices;
+					sb.Append(']');
+					
+					// The getValue delegate might be called later or several times
+					uint[] indicesCopy = (uint[])indices.Clone();
 					yield return new ValueNode(ClassBrowserIconService.Field, sb.ToString(), () => GetValue().GetArrayElement(indicesCopy));
+					
+					// Get next combination
+					indices[rank - 1]++;
+					for (int i = rank - 1; i > 0; i--) {
+						if (indices[i] >= dimBase[i] + dimSize[i]) {
+							indices[i] = dimBase[i];
+							indices[i - 1]++;
+						}
+					}
 				}
 				yield break;
 			}
 			
-			// Find a dimension of size at least 2
-			int splitDimensionIndex = bounds.Count - 1;
-			for(int i = 0; i < bounds.Count; i++) {
-				if (bounds[i].Count > 1) {
-					splitDimensionIndex = i;
-					break;
+			// Split the array into smaller subsets
+			int splitIndex = Array.FindIndex(dimSize, s => (s > 1));
+			uint groupSize = 1;
+			while (dimSize[splitIndex] > groupSize * MaxElementCount) {
+				groupSize *= MaxElementCount;
+			}
+			for(uint i = dimBase[splitIndex]; i < dimBase[splitIndex] + dimSize[splitIndex]; i += groupSize) {
+				// Get the base&size for the subset
+				uint[] newDimBase = (uint[])dimBase.Clone();
+				uint[] newDimSize = (uint[])dimSize.Clone();
+				newDimBase[splitIndex] = i;
+				newDimSize[splitIndex] = Math.Min(groupSize, dimBase[splitIndex] + dimSize[splitIndex] - i);
+				
+				// Make the subset name
+				sb.Clear();
+				sb.Append('[');
+				bool isFirst = true;
+				for (int j = 0; j < rank; j++) {
+					if (!isFirst) sb.Append(", ");
+					if (j < splitIndex) {
+						sb.Append(newDimBase[j]);
+					} else if (j == splitIndex) {
+						sb.Append(i);
+						if (newDimSize[splitIndex] > 1) {
+							sb.Append("..");
+							sb.Append(i + newDimSize[splitIndex] - 1);
+						}
+					} else if (j > splitIndex) {
+						sb.Append('*');
+					}
+					isFirst = false;
 				}
+				sb.Append(']');
+				
+				yield return new TreeNode(sb.ToString(), () => GetArrayChildren(newDimBase, newDimSize));
 			}
-			ArrayDimension splitDim = bounds[splitDimensionIndex];
-			
-			// Split the dimension
-			int elementsPerSegment = 1;
-			while (splitDim.Count > elementsPerSegment * MaxElementCount) {
-				elementsPerSegment *= MaxElementCount;
-			}
-			for(int i = splitDim.LowerBound; i <= splitDim.UpperBound; i += elementsPerSegment) {
-				List<ArrayDimension> newDims = new List<ArrayDimension>(bounds);
-				newDims[splitDimensionIndex] = new ArrayDimension(i, Math.Min(i + elementsPerSegment - 1, splitDim.UpperBound));
-				yield return GetArraySubsetNode(new ArrayDimensions(newDims), originalBounds);
-			}
-			yield break;
 		}
 	}
 }

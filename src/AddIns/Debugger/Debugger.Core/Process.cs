@@ -54,7 +54,7 @@ namespace Debugger
 		public event EventHandler<MessageEventArgs> LogMessage;
 		public event EventHandler<ModuleEventArgs> ModuleLoaded;
 		public event EventHandler<ModuleEventArgs> ModuleUnloaded;
-		public event EventHandler<DebuggerEventArgs> Paused;
+		public event EventHandler<DebuggerPausedEventArgs> Paused;
 		public event EventHandler<DebuggerEventArgs> Resumed;
 		public event EventHandler<DebuggerEventArgs> Exited;
 		
@@ -256,7 +256,7 @@ namespace Debugger
 		
 		#region Events
 		
-		internal void OnPaused(DebuggerEventArgs e)
+		internal void OnPaused(DebuggerPausedEventArgs e)
 		{
 			AssertPaused();
 			DisableAllSteppers();
@@ -270,7 +270,7 @@ namespace Debugger
 			if (callbackInterface.IsInCallback) throw new DebuggerException("Can not raise event within callback.");
 			TraceMessage ("Debugger event: OnPaused()");
 			if (Paused != null) {
-				foreach(EventHandler<DebuggerEventArgs> d in Paused.GetInvocationList()) {
+				foreach(EventHandler<DebuggerPausedEventArgs> d in Paused.GetInvocationList()) {
 					if (IsRunning) {
 						TraceMessage ("Skipping OnPaused delegate because process has resumed");
 						break;
@@ -402,7 +402,7 @@ namespace Debugger
 			corProcess.Stop(uint.MaxValue); // Infinite; ignored anyway
 			
 			NotifyPaused();
-			OnPaused(new DebuggerEventArgs() { Process = this });
+			OnPaused(new DebuggerPausedEventArgs() { Process = this });
 		}
 		
 		public void Detach()
@@ -619,11 +619,6 @@ namespace Debugger
 		internal void OnModuleLoaded(Module module)
 		{
 			module.OrderOfLoading = lastAssignedModuleOrderOfLoading++;
-			
-			foreach (Breakpoint b in this.Debugger.Breakpoints) {
-				b.SetBreakpoint(module);
-			}
-			
 			module.AppDomain.InvalidateCompilation();
 			
 			if (this.BreakInMain) {

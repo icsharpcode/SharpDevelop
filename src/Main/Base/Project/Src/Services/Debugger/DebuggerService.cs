@@ -26,9 +26,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			};
 			
 			ProjectService.BeforeSolutionClosing += OnBeforeSolutionClosing;
-			
-			SD.BookmarkManager.BookmarkAdded   += BookmarkAdded;
-			SD.BookmarkManager.BookmarkRemoved += BookmarkRemoved;
 		}
 		
 		static void GetDescriptors()
@@ -153,63 +150,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			EnsureDebugCategory();
 			debugCategory.AppendText(msg);
-		}
-
-		public static event EventHandler<BreakpointBookmarkEventArgs> BreakPointChanged;
-		public static event EventHandler<BreakpointBookmarkEventArgs> BreakPointAdded;
-		public static event EventHandler<BreakpointBookmarkEventArgs> BreakPointRemoved;
-		
-		static void OnBreakPointChanged(BreakpointBookmarkEventArgs e)
-		{
-			if (BreakPointChanged != null) {
-				BreakPointChanged(null, e);
-			}
-		}
-		
-		static void OnBreakPointAdded(BreakpointBookmarkEventArgs e)
-		{
-			if (BreakPointAdded != null) {
-				BreakPointAdded(null, e);
-			}
-		}
-		
-		static void OnBreakPointRemoved(BreakpointBookmarkEventArgs e)
-		{
-			if (BreakPointRemoved != null) {
-				BreakPointRemoved(null, e);
-			}
-		}
-		
-		public static IEnumerable<BreakpointBookmark> Breakpoints {
-			get {
-				return SD.BookmarkManager.Bookmarks.OfType<BreakpointBookmark>();
-			}
-		}
-		
-		static void BookmarkAdded(object sender, BookmarkEventArgs e)
-		{
-			BreakpointBookmark bb = e.Bookmark as BreakpointBookmark;
-			if (bb != null) {
-				bb.LineNumberChanged += BookmarkChanged;
-				OnBreakPointAdded(new BreakpointBookmarkEventArgs(bb));
-			}
-		}
-		
-		static void BookmarkRemoved(object sender, BookmarkEventArgs e)
-		{
-			BreakpointBookmark bb = e.Bookmark as BreakpointBookmark;
-			if (bb != null) {
-				bb.RemoveMarker();
-				OnBreakPointRemoved(new BreakpointBookmarkEventArgs(bb));
-			}
-		}
-		
-		static void BookmarkChanged(object sender, EventArgs e)
-		{
-			BreakpointBookmark bb = sender as BreakpointBookmark;
-			if (bb != null) {
-				OnBreakPointChanged(new BreakpointBookmarkEventArgs(bb));
-			}
 		}
 		
 		static void OnBeforeSolutionClosing(object sender, SolutionCancelEventArgs e)

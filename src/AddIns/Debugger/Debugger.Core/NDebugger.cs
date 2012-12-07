@@ -188,6 +188,12 @@ namespace Debugger
 			}
 		}
 		
+		public void RemoveBreakpoint(Breakpoint breakpoint)
+		{
+			breakpoint.IsEnabled = false;
+			this.breakpoints.Remove(breakpoint);
+		}
+		
 		internal Breakpoint GetBreakpoint(ICorDebugBreakpoint corBreakpoint)
 		{
 			foreach (Breakpoint breakpoint in this.Breakpoints) {
@@ -299,10 +305,26 @@ namespace Debugger
 	{
 		/// <summary> The process on which the event occured.  Can be null. </summary>
 		public Process Process { get; set; }
+	}
+	
+	/// <summary>
+	/// This event occurs when the debuggee stops.
+	/// Note that several events can happen at the same time.
+	/// </summary>
+	[Serializable]
+	public class DebuggerPausedEventArgs: DebuggerEventArgs
+	{
 		/// <summary> The thread on which the event occured.  Can be null if the event was not thread specific. </summary>
 		public Thread Thread { get; set; }
-		public Breakpoint[] BreakpointsHit { get; set; }
+		
+		/// <summary> Breakpoints hit </summary>
+		public List<Breakpoint> BreakpointsHit { get; set; }
+		
+		/// <summary> Exception thrown </summary>
 		public Exception ExceptionThrown { get; set; }
+		
+		/// <summary> Break, stepper or any other pause reason. </summary>
+		public bool Break { get; set; }
 	}
 	
 	[Serializable]

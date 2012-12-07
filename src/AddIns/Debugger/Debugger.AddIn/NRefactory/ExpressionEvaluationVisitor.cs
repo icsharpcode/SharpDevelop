@@ -308,7 +308,7 @@ namespace Debugger.AddIn
 		Value Visit(ArrayAccessResolveResult result)
 		{
 			var val = Convert(result.Array).GetPermanentReference(evalThread);
-			return val.GetArrayElement(result.Indexes.Select(rr => (int)Convert(rr).PrimitiveValue).ToArray());
+			return val.GetArrayElement(result.Indexes.Select(rr => (uint)(int)Convert(rr).PrimitiveValue).ToArray());
 		}
 		
 		Value Visit(ArrayCreateResolveResult result)
@@ -390,10 +390,11 @@ namespace Debugger.AddIn
 				sb.Append(val.Type.Name);
 				sb.Append(" {");
 				bool first = true;
-				foreach(Value item in val.GetArrayElements()) {
+				int size = val.ArrayLength;
+				for (int i = 0; i < size; i++) {
 					if (!first) sb.Append(", ");
 					first = false;
-					sb.Append(FormatValue(evalThread, item));
+					sb.Append(FormatValue(evalThread, val.GetElementAtPosition(i)));
 				}
 				sb.Append("}");
 				return sb.ToString();

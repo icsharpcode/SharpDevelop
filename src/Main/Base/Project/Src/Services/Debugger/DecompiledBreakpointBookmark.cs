@@ -15,8 +15,8 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 		MemberReference memberReference;
 		string assemblyFile;
 		
-		public DecompiledBreakpointBookmark(FileName fileName, TextLocation location, BreakpointAction action, string scriptLanguage, string script) 
-			: base(fileName, location, action, scriptLanguage, script)
+		public DecompiledBreakpointBookmark(FileName fileName, TextLocation location) 
+			: base(fileName, location)
 		{
 			
 		}
