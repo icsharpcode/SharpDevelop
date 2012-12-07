@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public const int SolutionVersionVS2005 = 9;
 		public const int SolutionVersionVS2008 = 10;
 		public const int SolutionVersionVS2010 = 11;
-		public const int SolutionVersionVS11 = 12;
+		public const int SolutionVersionVS2012 = 12;
 		
 		/// <summary>contains &lt;GUID, (IProject/ISolutionFolder)&gt; pairs.</summary>
 		Dictionary<string, ISolutionFolder> guidDictionary = new Dictionary<string, ISolutionFolder>();
@@ -405,7 +405,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					sw.WriteLine("# Visual Studio 2008");
 				} else if (versionNumber == SolutionVersionVS2010) {
 					sw.WriteLine("# Visual Studio 2010");
-				} else if (versionNumber == SolutionVersionVS11) {
+				} else if (versionNumber == SolutionVersionVS2012) {
 					sw.WriteLine("# Visual Studio 11");
 				}
 				sw.WriteLine("# SharpDevelop " + RevisionClass.Major + "." + RevisionClass.Minor);

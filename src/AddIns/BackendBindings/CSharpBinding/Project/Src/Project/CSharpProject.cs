@@ -165,7 +165,7 @@ namespace CSharpBinding
 					case Solution.SolutionVersionVS2008:
 						return msbuild35;
 					case Solution.SolutionVersionVS2010:
-					case Solution.SolutionVersionVS11:
+					case Solution.SolutionVersionVS2012:
 						return msbuild40;
 					default:
 						throw new NotSupportedException();
