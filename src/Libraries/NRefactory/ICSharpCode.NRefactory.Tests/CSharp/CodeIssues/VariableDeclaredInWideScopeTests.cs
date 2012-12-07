@@ -236,7 +236,7 @@ class A
 			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
-		
+
 		[Test]
 		public void DoesNotSuggestMovingIntoClosure ()
 		{	
@@ -392,6 +392,24 @@ class A
 		}
 		
 		[Test]
+		public void DoesNotExpandForStatement ()
+		{	
+			TestStatements(@"
+		var val = GetValue ();
+		if (false) {
+			for (var i = GetValue (); ; i++)
+				System.Console.WriteLine (val);
+		}
+", 1, @"
+		if (false) {
+			var val = GetValue ();
+			for (var i = GetValue (); ; i++)
+				System.Console.WriteLine (val);
+		}
+");
+		}
+		
+		[Test]
 		public void DoesNotInsertBlockStatementInResourceAquisition ()
 		{	
 			TestStatements(@"
@@ -400,6 +418,43 @@ class A
 			return;
 ", 0);
 		}
+
+		[Ignore("FIXME")]
+		[Test]
+		public void DoesNotSuggestMovingIntoBodyAfterMethodCall()
+		{	
+			var input = @"
+using System.IO;
+
+class FooBar
+{
+	public int foo = 5;
+	public void ChangeFoo ()
+	{
+		foo = 10;
+	}
+}
+
+class A
+{
+	FooBar foo = new FooBar();
+
+	public void F()
+	{
+		int length = foo.foo;
+		foo.ChangeFoo ();
+		if (true) {
+			System.Console.WriteLine (length);
+		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+
+
+
 	}
 }
 

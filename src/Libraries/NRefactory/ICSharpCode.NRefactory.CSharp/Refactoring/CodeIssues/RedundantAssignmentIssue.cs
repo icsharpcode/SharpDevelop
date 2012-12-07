@@ -42,12 +42,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var unit = context.RootNode as SyntaxTree;
 			if (unit == null)
 				return Enumerable.Empty<CodeIssue> ();
-			return new GatherVisitor (context, unit).GetIssues ();
+			return new GatherVisitor (context).GetIssues ();
 		}
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			public GatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit)
+			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)
 			{
 			}
@@ -71,12 +71,23 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				CollectIssues (parameterDeclaration, rootStatement, resolveResult);
 			}
 
-			public override void VisitVariableInitializer (VariableInitializer variableInitializer)
+			public override void VisitVariableInitializer(VariableInitializer variableInitializer)
 			{
-				base.VisitVariableInitializer (variableInitializer);
+				base.VisitVariableInitializer(variableInitializer);
+				if (!inUsingStatementResourceAcquisition) {
+					var resolveResult = ctx.Resolve(variableInitializer) as LocalResolveResult;
+					CollectIssues(variableInitializer, variableInitializer.GetParent<BlockStatement>(), resolveResult);
+				}
+			}
 
-				var resolveResult = ctx.Resolve (variableInitializer) as LocalResolveResult;
-				CollectIssues (variableInitializer, variableInitializer.GetParent<BlockStatement> (), resolveResult);
+			bool inUsingStatementResourceAcquisition;
+
+			public override void VisitUsingStatement(UsingStatement usingStatement)
+			{
+				inUsingStatementResourceAcquisition = true;
+				usingStatement.ResourceAcquisition.AcceptVisitor (this);
+				inUsingStatementResourceAcquisition = false;
+				usingStatement.EmbeddedStatement.AcceptVisitor (this);
 			}
 
 			void CollectIssues (AstNode variableDecl, BlockStatement rootStatement, LocalResolveResult resolveResult)
@@ -170,6 +181,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return false;
 			}
 
+			static bool IsInsideTryBlock (AstNode node)
+			{
+				var tryCatchStatement = node.GetParent<TryCatchStatement> ();
+				if (tryCatchStatement == null)
+					return false;
+				return tryCatchStatement.TryBlock.Contains (node.StartLocation.Line,node.StartLocation.Column);
+			}
+
 			enum NodeState
 			{
 				None,
@@ -222,8 +241,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					}
 				}
 
-				foreach (var node in assignments)
-					ProcessNode (node, true, nodeStates);
+				foreach (var node in assignments) {
+					// we do not analyze an assignment inside a try block as it can jump to any catch block or finally block
+					if (IsInsideTryBlock(node.References[0]))
+						continue;
+					ProcessNode(node, true, nodeStates);
+				}
 			}
 
 			void ProcessNode (VariableReferenceNode node, bool addIssue,

@@ -32,12 +32,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class HasMemberCriterion : ITypeCriterion
 	{
-		IMember neededMember;
+//		IMember neededMember;
 		IList<IMember> acceptableMembers;
 
 		public HasMemberCriterion(IMember neededMember)
 		{
-			this.neededMember = neededMember;
+//			this.neededMember = neededMember;
 
 			if (neededMember.ImplementedInterfaceMembers.Any()) {
 				acceptableMembers = neededMember.ImplementedInterfaceMembers.ToList();

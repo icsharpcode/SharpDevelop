@@ -88,7 +88,7 @@ class TestClass
 }";
 			Test<ParameterHidesMemberIssue> (input, 1);
 		}
-
+		
 		[Test]
 		public void TestStaticNoIssue ()
 		{
@@ -101,6 +101,78 @@ class TestClass
 	{
 	}
 	static void TestMethod2 (int j)
+	{
+	}
+}";
+			Test<ParameterHidesMemberIssue> (input, 0);
+		}
+		
+		[Test]
+		public void TestAccessiblePrivate ()
+		{
+			var input = @"
+class TestClass
+{
+	int i;
+
+	void Method (int i)
+	{
+	}
+}";
+			Test<ParameterHidesMemberIssue> (input, 1);
+		}
+		
+		[Test]
+		public void TestAccessiblePrivateDueToTypeNesting ()
+		{
+			var input = @"
+class RootClass
+{
+	int i;
+
+	class NestedClass : RootClass
+	{
+		// Issue 1
+		void Method (int i) {}
+
+		class NestedNestedClass : NestedClass
+		{
+			// Issue 2
+			void OtherMethod (int i) {}
+		}
+	}
+}";
+			Test<ParameterHidesMemberIssue> (input, 2);
+		}
+		
+		[Test]
+		public void TestInternalAccessibility ()
+		{
+			var input = @"
+class BaseClass
+{
+	internal int i;
+}
+class TestClass : BaseClass
+{
+	void Method (int i)
+	{
+	}
+}";
+			Test<ParameterHidesMemberIssue> (input, 1);
+		}
+		
+		[Test]
+		public void TestInaccessiblePrivate ()
+		{
+			var input = @"
+class BaseClass
+{
+	private int i;
+}
+class TestClass : BaseClass
+{
+	void Method (int i)
 	{
 	}
 }";

@@ -334,5 +334,64 @@ class TestClass
 }";
 			Test<RedundantAssignmentIssue> (input, 0);
 		}
+
+		[Test]
+		public void TestAssignmentInCatch ()
+		{
+			var input = @"using System;
+class TestClass
+{
+    void Test(TestClass a) { }
+
+	void TestMethod ()
+	{
+		var a = new TestClass ();
+		try {
+		} catch (Exception) {
+			a = null;
+		}
+        Test (a);
+	}
+}";
+			Test<RedundantAssignmentIssue> (input, 0);
+		}
+
+		[Test]
+		public void TestAssignmentBeforeTry ()
+		{
+			var input = @"using System;
+class TestClass
+{
+    void Test(TestClass a) { }
+
+	void TestMethod ()
+	{
+		var a = null;
+		try {
+			a = new TestClass ();
+		} catch (Exception) {
+		}
+        Test (a);
+	}
+}";
+			Test<RedundantAssignmentIssue> (input, 0);
+		}
+
+		
+		[Test]
+		public void TestAssignmentInUsing ()
+		{
+			var input = @"using System;
+class TestClass
+{
+	void TestMethod ()
+	{
+		using (var tc = new TestClass ()) {
+			// nothing
+		}
+	}
+}";
+			Test<RedundantAssignmentIssue> (input, 0);
+		}
 	}
 }

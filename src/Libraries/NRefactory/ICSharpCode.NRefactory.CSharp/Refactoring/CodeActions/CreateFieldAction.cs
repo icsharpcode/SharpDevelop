@@ -44,9 +44,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return invoke != null && invoke.Target == node;
 		}
 
+		internal static Expression GetCreatePropertyOrFieldNode(RefactoringContext context)
+		{
+			return context.GetNode(n => n is IdentifierExpression || n is MemberReferenceExpression || n is NamedExpression) as Expression;
+		}
+
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			var expr = context.GetNode(n => n is IdentifierExpression || n is MemberReferenceExpression) as Expression;
+			var expr = GetCreatePropertyOrFieldNode(context);
 			if (expr == null)
 				yield break;
 
@@ -70,8 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var state = context.GetResolverStateBefore(expr);
 			if (state.CurrentMember == null || state.CurrentTypeDefinition == null)
 				yield break;
-
-			bool isStatic = state.CurrentMember.IsStatic | state.CurrentTypeDefinition.IsStatic;
+			bool isStatic =  !(expr is NamedExpression) && (state.CurrentMember.IsStatic | state.CurrentTypeDefinition.IsStatic);
 
 //			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
 //			if (service != null && !service.IsValidName(identifier.Identifier, AffectedEntity.Field, Modifiers.Private, isStatic)) { 
@@ -174,6 +178,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 
 			if (expr.Parent is ArrayInitializerExpression) {
+				if (expr is NamedExpression)
+					return new [] { resolver.Resolve(((NamedExpression)expr).Expression).Type };
+
 				var aex = expr.Parent as ArrayInitializerExpression;
 				if (aex.IsSingleElement)
 					aex = aex.Parent as ArrayInitializerExpression;

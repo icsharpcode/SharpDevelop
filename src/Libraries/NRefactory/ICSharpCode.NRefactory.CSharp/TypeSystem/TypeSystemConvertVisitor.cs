@@ -446,6 +446,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				currentTypeDefinition.HasExtensionMethods = true;
 			}
 			m.IsPartial = methodDeclaration.HasModifier(Modifiers.Partial);
+			m.IsAsync = methodDeclaration.HasModifier(Modifiers.Async);
+
 			m.HasBody = !methodDeclaration.Body.IsNull;
 			
 			ConvertParameters(m.Parameters, methodDeclaration.Parameters);

@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			var identifier = context.GetNode(n => n is IdentifierExpression || n is MemberReferenceExpression) as Expression;
+			var identifier = CreateFieldAction.GetCreatePropertyOrFieldNode (context);
 			if (identifier == null)
 				yield break;
 			if (CreateFieldAction.IsInvocationTarget(identifier))
@@ -75,8 +75,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			} else {
 				if (state.CurrentMember == null)
 					yield break;
-				isStatic |= state.CurrentMember.IsStatic || state.CurrentTypeDefinition.IsStatic;
+				isStatic |= state.CurrentTypeDefinition.IsStatic;
+				if (targetResolveResult == null)
+					isStatic |= state.CurrentMember.IsStatic;
 			}
+			isStatic &= !(identifier is NamedExpression);
 
 	//			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
 //			if (service != null && !service.IsValidName(propertyName, AffectedEntity.Property, Modifiers.Private, isStatic)) { 
@@ -118,6 +121,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return ((IdentifierExpression)expr).Identifier;
 			if (expr is MemberReferenceExpression) 
 				return ((MemberReferenceExpression)expr).MemberName;
+			if (expr is NamedExpression) 
+				return ((NamedExpression)expr).Name;
 
 			return null;
 		}

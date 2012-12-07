@@ -103,7 +103,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (localResolveResult == null)
 					continue;
 				bool referenceFound = false;
-				var variable = localResolveResult.Variable;
+//				var variable = localResolveResult.Variable;
 				var syntaxTree = context.RootNode as SyntaxTree;
 				referenceFinder.FindLocalReferences(localResolveResult.Variable, context.UnresolvedFile, syntaxTree,
 				                                    context.Compilation, (node, nodeResolveResult) => {

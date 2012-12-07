@@ -37,15 +37,16 @@ namespace ICSharpCode.NRefactory.Utils
 		IList<IFormatStringSegment> ParseTest(string format, params IFormatStringSegment[] expectedFormatSegments)
 		{
 			var parser = new CompositeFormatStringParser();
-			var actualFormatSegments = parser.Parse(format).Segments;
+			var formatStringParseResult = parser.Parse(format);
+			var actualFormatSegments = formatStringParseResult.Segments;
 
 			Console.WriteLine("Expected format segments:");
 			foreach (var item in expectedFormatSegments) {
-				Console.WriteLine(item.ToString());
+				Console.WriteLine(item);
 			}
 			Console.WriteLine("Actual format segments:");
 			foreach (var item in actualFormatSegments) {
-				Console.WriteLine(item.ToString());
+				Console.WriteLine(item);
 				foreach (var error in item.Errors) {
 					Console.WriteLine("\t{0}", error);
 				}
@@ -117,7 +118,8 @@ namespace ICSharpCode.NRefactory.Utils
 		[Test]
 		public void BraceEscape()
 		{
-			ParseTest("{{}}", new TextSegment("{}"));
+			var segments = ParseTest("{{}}", new TextSegment("{}"));
+			Assert.IsFalse(segments.First().HasErrors);
 		}
 		
 		[Test]

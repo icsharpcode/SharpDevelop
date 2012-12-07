@@ -1572,7 +1572,7 @@ namespace Mono.CSharp
 #endif
 			number_pos = 0;
 			var loc = Location;
-			bool hasLeadingDot = c == '.';
+//			bool hasLeadingDot = c == '.';
 
 			if (c >= '0' && c <= '9'){
 				if (c == '0'){
@@ -1797,40 +1797,23 @@ namespace Mono.CSharp
 			if (x == '\r') {
 				if (peek_char () == '\n') {
 					putback_char = -1;
+					advance_line (SpecialsBag.NewLine.Windows);
+				} else {
+					advance_line (SpecialsBag.NewLine.Unix);
 				}
-
 				x = '\n';
-				advance_line ();
 			} else if (x == '\n') {
-				advance_line ();
+				advance_line (SpecialsBag.NewLine.Unix);
+
 			} else {
 				col++;
 			}
 			return x;
 		}
 
-		int get_char_withwithoutskippingwindowseol ()
+		void advance_line (SpecialsBag.NewLine newLine)
 		{
-			int x;
-			if (putback_char != -1) {
-				x = putback_char;
-				putback_char = -1;
-			} else {
-				x = reader.Read ();
-			}
-			
-			if (x == '\r') {
-
-			} else if (x == '\n') {
-				advance_line ();
-			} else {
-				col++;
-			}
-			return x;
-		}
-
-		void advance_line ()
-		{
+			sbag.AddNewLine (line, col, newLine);
 			line++;
 			ref_line++;
 			previous_col = col;
@@ -2921,8 +2904,17 @@ namespace Mono.CSharp
 #endif
 
 			while (true){
-				c = get_char_withwithoutskippingwindowseol ();
+				// Cannot use get_char because of \r in quoted strings
+				if (putback_char != -1) {
+					c = putback_char;
+					putback_char = -1;
+				} else {
+					c = reader.Read ();
+				}
+
 				if (c == '"') {
+					++col;
+
 					if (quoted && peek_char () == '"') {
 						if (pos == value_builder.Length)
 							Array.Resize (ref value_builder, pos * 2);
@@ -2954,10 +2946,23 @@ namespace Mono.CSharp
 				if (c == '\n') {
 					if (!quoted) {
 						Report.Error (1010, Location, "Newline in constant");
+
+
+						// Don't add \r to string literal
+						if (pos > 1 && value_builder [pos - 1] == '\r') {
+							advance_line (SpecialsBag.NewLine.Windows);
+							--pos;
+						} else {
+							advance_line (SpecialsBag.NewLine.Unix);
+						}
+
 						val = new StringLiteral (context.BuiltinTypes, new string (value_builder, 0, pos), start_location);
 						return Token.LITERAL;
 					}
+
+					advance_line (SpecialsBag.NewLine.Unix);
 				} else if (c == '\\' && !quoted) {
+					++col;
 					int surrogate;
 					c = escape (c, out surrogate);
 					if (c == -1)
@@ -2972,6 +2977,8 @@ namespace Mono.CSharp
 				} else if (c == -1) {
 					Report.Error (1039, Location, "Unterminated string literal");
 					return Token.EOF;
+				} else {
+					++col;
 				}
 
 				if (pos == value_builder.Length)

@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (varInit.Parent is FieldDeclaration) yield break;
 				if (CannotExtractField(varInit)) yield break;
 				
-				yield return new CodeAction("Extract field", s=>{
+				yield return new CodeAction(context.TranslateString("Assign to new field"), s=>{
 					var name = varInit.Name;
 					FieldDeclaration field = new FieldDeclaration(){
 						ReturnType = type.Clone(),
@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					};
 					AstNode nodeToRemove = RemoveDeclaration(varInit) ? varInit.Parent : type;
 					s.Remove(nodeToRemove, true);
-					s.InsertWithCursor(context.TranslateString("Extract field"),Script.InsertPosition.Before,field);
+					s.InsertWithCursor(context.TranslateString("Insert new field"),Script.InsertPosition.Before,field);
 					s.FormatText(varInit.Parent);
 				});
 			}
@@ -71,8 +71,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					ReturnType = type.Clone(),
 					Variables = { new VariableInitializer(idntf.Name) }
 				};
-				yield return new CodeAction("Extract field", s=>{
-					s.InsertWithCursor(context.TranslateString("Extract field"),Script.InsertPosition.Before,field);
+				yield return new CodeAction(context.TranslateString("Assign to new field"), s=>{
+					s.InsertWithCursor(context.TranslateString("Insert new field"),Script.InsertPosition.Before,field);
 					s.AddTo(ctor.Body, statement);
 				});
 			}

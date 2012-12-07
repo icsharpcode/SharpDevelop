@@ -34,6 +34,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[ContextAction("Create event invocator", Description = "Creates a standard OnXXX event method.")]
 	public class CreateEventInvocatorAction : ICodeActionProvider
 	{
+		/// <summary>
+		/// If <c>true</c> an explicit type will be used for the handler variable; otherwise, 'var' will be used as type.
+		/// Default value is <c>false</c>
+		/// </summary>
+		public bool UseExplictType {
+			get;
+			set;
+		}
+
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
 			VariableInitializer initializer;
@@ -42,7 +51,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				yield break;
 			}
 			var type = (TypeDeclaration)eventDeclaration.Parent;
-			if (type.Members.Any(m => m is MethodDeclaration && ((MethodDeclaration)m).Name == "On" + initializer.Name)) {
+			var proposedHandlerName = "On" + char.ToUpper(initializer.Name [0]) + initializer.Name.Substring(1);
+			if (type.Members.Any(m => m is MethodDeclaration && ((MethodDeclaration)m).Name == proposedHandlerName)) {
 				yield break;
 			}
 			var resolvedType = context.Resolve(eventDeclaration.ReturnType).Type;
@@ -67,16 +77,24 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						
 				var arguments = new List<Expression>();
 				if (hasSenderParam)
-					arguments.Add(new ThisReferenceExpression());
-				foreach (var par in pars)
+					arguments.Add(eventDeclaration.HasModifier (Modifiers.Static) ? (Expression)new PrimitiveExpression (null) : new ThisReferenceExpression());
+				bool useThisMemberReference = false;
+				foreach (var par in pars) {
 					arguments.Add(new IdentifierExpression(par.Name));
-				
+					useThisMemberReference |= par.Name == initializer.Name;
+				}
+
 				var methodDeclaration = new MethodDeclaration() {
-					Name = "On" + initializer.Name,
+					Name = proposedHandlerName,
 					ReturnType = new PrimitiveType ("void"),
-					Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Protected | ICSharpCode.NRefactory.CSharp.Modifiers.Virtual,
+					Modifiers = eventDeclaration.HasModifier (Modifiers.Static) ? Modifiers.Static : Modifiers.Protected | Modifiers.Virtual,
 					Body = new BlockStatement () {
-						new VariableDeclarationStatement (eventDeclaration.ReturnType.Clone (), handlerName, new MemberReferenceExpression (new ThisReferenceExpression (), initializer.Name)),
+						new VariableDeclarationStatement (
+							UseExplictType ? eventDeclaration.ReturnType.Clone () : new PrimitiveType ("var"), handlerName, 
+								useThisMemberReference ? 
+									(Expression)new MemberReferenceExpression (new ThisReferenceExpression (), initializer.Name) 
+									: new IdentifierExpression (initializer.Name)
+							),
 						new IfElseStatement () {
 							Condition = new BinaryOperatorExpression (new IdentifierExpression (handlerName), BinaryOperatorType.InEquality, new PrimitiveExpression (null)),
 							TrueStatement = new ExpressionStatement (new InvocationExpression (new IdentifierExpression (handlerName), arguments))

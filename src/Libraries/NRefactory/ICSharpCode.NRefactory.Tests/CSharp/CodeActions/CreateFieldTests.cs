@@ -209,5 +209,53 @@ class Foo
 				"}", result);
 		}
 
+		[Test()]
+		public void TestObjectInitializer ()
+		{
+			// Not 100% correct input code, but should work in that case as well.
+			Test<CreateFieldAction> (@"class TestClass
+{
+	void TestMethod ()
+	{
+		new TestClass {
+			$NonExistantProperty = 5
+		};
+	}
+}", @"class TestClass
+{
+	int NonExistantProperty;
+	void TestMethod ()
+	{
+		new TestClass {
+			NonExistantProperty = 5
+		};
+	}
+}");
+		}
+
+		[Test()]
+		public void TestObjectInitializerInStaticMethod ()
+		{
+			// Not 100% correct input code, but should work in that case as well.
+			Test<CreateFieldAction> (@"class TestClass
+{
+	static void TestMethod ()
+	{
+		new TestClass {
+			$NonExistantProperty = 5
+		};
+	}
+}", @"class TestClass
+{
+	int NonExistantProperty;
+	static void TestMethod ()
+	{
+		new TestClass {
+			NonExistantProperty = 5
+		};
+	}
+}");
+		}
+
 	}
 }

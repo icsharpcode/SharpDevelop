@@ -106,7 +106,7 @@ class A
 ");
 		}
 		
-		[Test, Ignore("broken")]
+		[Test]
 		public void OnlyMovesDeclarationWhenInitializerDependsOnOtherStatements()
 		{
 			TestStatements(@"
@@ -116,7 +116,7 @@ class A
 	}
 ", @"
 	int j;
-	while (true) {
+		while (true) {
 		int i = 2;
 		j = i;
 		}

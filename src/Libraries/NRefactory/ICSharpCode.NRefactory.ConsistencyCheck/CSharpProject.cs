@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			this.CompilerSettings.AllowUnsafeBlocks = GetBoolProperty(msbuildProject, "AllowUnsafeBlocks") ?? false;
 			this.CompilerSettings.CheckForOverflow = GetBoolProperty(msbuildProject, "CheckForOverflowUnderflow") ?? false;
 			string defineConstants = msbuildProject.GetPropertyValue("DefineConstants");
-			foreach (string symbol in defineConstants.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+			foreach (string symbol in defineConstants.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries))
 				this.CompilerSettings.ConditionalSymbols.Add(symbol.Trim());
 			
 			// Initialize the unresolved type system

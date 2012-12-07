@@ -62,11 +62,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		class GatherVisitor : GatherVisitorBase
 		{
-			readonly ConditionalToNullCoalescingIssue inspector;
+//			readonly ConditionalToNullCoalescingIssue inspector;
 			
 			public GatherVisitor (BaseRefactoringContext ctx, ConditionalToNullCoalescingIssue inspector) : base (ctx)
 			{
-				this.inspector = inspector;
+//				this.inspector = inspector;
 			}
 
 			public override void VisitConditionalExpression(ConditionalExpression conditionalExpression)

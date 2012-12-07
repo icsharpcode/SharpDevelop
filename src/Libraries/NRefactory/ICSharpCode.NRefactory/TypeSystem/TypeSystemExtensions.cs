@@ -286,6 +286,30 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			return (IProperty)compilation.Import((IMember)property);
 		}
+		
+		/// <summary>
+		/// Imports a namespace from another compilation.
+		/// </summary>
+		/// <remarks>
+		/// This method may return null if the namespace does not exist in the target compilation.
+		/// </remarks>
+		public static INamespace Import(this ICompilation compilation, INamespace ns)
+		{
+			if (compilation == null)
+				throw new ArgumentNullException("compilation");
+			if (ns == null)
+				return null;
+			if (ns.ParentNamespace == null) {
+				// root namespace
+				return compilation.GetNamespaceForExternAlias(ns.ExternAlias);
+			} else {
+				INamespace parent = Import(compilation, ns.ParentNamespace);
+				if (parent != null)
+					return parent.GetChildNamespace(ns.Name);
+				else
+					return null;
+			}
+		}
 		#endregion
 		
 		#region GetDelegateInvokeMethod

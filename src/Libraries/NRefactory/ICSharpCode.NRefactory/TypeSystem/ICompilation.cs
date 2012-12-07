@@ -50,13 +50,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		/// <summary>
 		/// Gets the root namespace of this compilation.
-		/// This is a merged .
+		/// This is a merged version of the root namespaces of all assemblies.
 		/// </summary>
 		INamespace RootNamespace { get; }
 		
 		/// <summary>
 		/// Gets the root namespace for a given extern alias.
 		/// </summary>
+		/// <remarks>
+		/// If <paramref name="alias"/> is <c>null</c> or an empty string, this method
+		/// returns the global root namespace.
+		/// If alias with the specified name exists, this method returns null.
+		/// </remarks>
 		INamespace GetNamespaceForExternAlias(string alias);
 		
 		IType FindType(KnownTypeCode typeCode);

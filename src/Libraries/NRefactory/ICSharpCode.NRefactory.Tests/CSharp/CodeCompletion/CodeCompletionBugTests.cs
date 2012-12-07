@@ -224,6 +224,13 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			loader.IncludeInternalMembers = true;
 			return loader.LoadAssemblyFile(typeof(System.ComponentModel.BrowsableAttribute).Assembly.Location);
 		});
+		static readonly Lazy<IUnresolvedAssembly> systemXmlLinq = new Lazy<IUnresolvedAssembly>(
+			delegate {
+			var loader = new CecilLoader();
+			loader.IncludeInternalMembers = true;
+			return loader.LoadAssemblyFile(typeof(System.Xml.Linq.XElement).Assembly.Location);
+		});
+
 
 		static readonly Lazy<IUnresolvedAssembly> mscorlib = new Lazy<IUnresolvedAssembly>(
 			delegate {
@@ -259,7 +266,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			var doc = new ReadOnlyDocument(editorText);
 
 			IProjectContent pctx = new CSharpProjectContent();
-			var refs = new List<IUnresolvedAssembly> { mscorlib.Value, systemCore.Value, systemAssembly.Value };
+			var refs = new List<IUnresolvedAssembly> { mscorlib.Value, systemCore.Value, systemAssembly.Value, systemXmlLinq.Value };
 			if (references != null)
 				refs.AddRange (references);
 
@@ -288,6 +295,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			}
 			var mb = new DefaultCompletionContextProvider(doc, unresolvedFile);
 			mb.AddSymbol ("TEST");
+			foreach (var sym in syntaxTree.ConditionalSymbols) {
+				mb.AddSymbol(sym);
+			}
 			var engine = new CSharpCompletionEngine(doc, mb, new TestFactory(new CSharpResolver (rctx)), pctx, rctx);
 
 			engine.EolMarker = Environment.NewLine;
@@ -313,7 +323,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 		{
 			var doc = new ReadOnlyDocument(text);
 			IProjectContent pctx = new CSharpProjectContent();
-			pctx = pctx.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
+			pctx = pctx.AddAssemblyReferences(new [] { mscorlib.Value, systemAssembly.Value, systemCore.Value, systemXmlLinq.Value });
 			var unresolvedFile = syntaxTree.ToTypeSystem();
 			
 			pctx = pctx.AddOrUpdateFiles(unresolvedFile);
@@ -377,7 +387,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 		}
 		
 		[Ignore("TODO")]
-		[Test()]
+		[Test]
 		public void TestLoadAllTests ()
 		{
 			int found = 0;
@@ -417,7 +427,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				Assert.Fail ();
 		}
 			
-		[Test()]
+		[Test]
 		public void TestSimpleCodeCompletion ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -438,7 +448,7 @@ void TestMethod ()
 			Assert.IsNotNull (provider.Find ("TF1"));
 		}
 
-		[Test()]
+		[Test]
 		public void TestSimpleInterfaceCodeCompletion ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -462,7 +472,7 @@ void TestMethod ()
 		/// <summary>
 		/// Bug 399695 - Code completion not working with an enum in a different namespace
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug399695 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -482,7 +492,7 @@ namespace ThisOne {
 			Assert.IsNotNull (provider.Find ("Other.TheEnum"), "Other.TheEnum not found.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestInnerEnum ()
 		{
 			var provider = CreateProvider (
@@ -505,7 +515,7 @@ public class Test {
 		/// <summary>
 		/// Bug 318834 - autocompletion kicks in when inputting decimals
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug318834 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -521,7 +531,7 @@ public class Test {
 			Assert.IsTrue (provider == null || provider.Count == 0);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestBug318834CaseB ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -540,7 +550,7 @@ public class Test {
 		/// <summary>
 		/// Bug 321306 - Code completion doesn't recognize child namespaces
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug321306 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -570,7 +580,7 @@ public class Test {
 		/// <summary>
 		/// Bug 322089 - Code completion for indexer
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug322089 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -602,7 +612,7 @@ class Test
 		/// <summary>
 		/// Bug 323283 - Code completion for indexers offered by generic types (generics)
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug323283 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -639,7 +649,7 @@ class Test
 		/// <summary>
 		/// Bug 323317 - Code completion not working just after a constructor
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug323317 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -666,7 +676,7 @@ class Test
 		/// <summary>
 		/// Bug 325509 - Inaccessible methods displayed in autocomplete
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug325509 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -698,7 +708,7 @@ class Test
 		/// <summary>
 		/// Bug 338392 - MD tries to use types when declaring namespace
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug338392 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -718,7 +728,7 @@ $namespace A.$
 		/// <summary>
 		/// Bug 427284 - Code Completion: class list shows the full name of classes
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug427284 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -744,7 +754,7 @@ class TestClass
 		/// <summary>
 		/// Bug 427294 - Code Completion: completion on values returned by methods doesn't work
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug427294 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -772,7 +782,7 @@ class Test
 		/// <summary>
 		/// Bug 405000 - Namespace alias qualifier operator (::) does not trigger code completion
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug405000 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -800,7 +810,7 @@ namespace B {
 		/// <summary>
 		/// Bug 427649 - Code Completion: protected methods shown in code completion
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug427649 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -829,7 +839,7 @@ class C : BaseClass
 		/// <summary>
 		/// Bug 427734 - Code Completion issues with enums
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug427734A ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -851,7 +861,7 @@ class C : BaseClass
 		/// <summary>
 		/// Bug 427734 - Code Completion issues with enums
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug427734B ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -872,7 +882,7 @@ class C : BaseClass
 		/// <summary>
 		/// Bug 431764 - Completion doesn't work in properties
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug431764 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -891,7 +901,7 @@ class C : BaseClass
 		/// <summary>
 		/// Bug 431797 - Code completion showing invalid options
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug431797A ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -908,7 +918,7 @@ class C : BaseClass
 		/// <summary>
 		/// Bug 431797 - Code completion showing invalid options
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug431797B ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -928,7 +938,7 @@ class C : BaseClass
 		/// <summary>
 		/// Bug 432681 - Incorrect completion in nested classes
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug432681 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -948,7 +958,7 @@ class C {
 			Assert.AreEqual ("D", provider.DefaultCompletionString, "Completion string is incorrect");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestGenericObjectCreation ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -969,7 +979,7 @@ class Test{
 		/// <summary>
 		/// Bug 431803 - Autocomplete not giving any options
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug431803 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -987,7 +997,7 @@ class Test{
 		/// <summary>
 		/// Bug 434770 - No autocomplete on array types
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug434770 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -1007,7 +1017,7 @@ public class Test
 		/// <summary>
 		/// Bug 439601 - Intellisense Broken For Partial Classes
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug439601 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -1052,7 +1062,7 @@ namespace MyNamespace
 		/// <summary>
 		/// Bug 1932 - [new resolver] fields don't show up unless prefixed with 'this.'
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug1932 ()
 		{
 			CombinedProviderTest (
@@ -1085,7 +1095,7 @@ namespace MyNamespace
 		/// <summary>
 		/// Bug 1967 - [new resolver] Intellisense doesn't work
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug1967 ()
 		{
 			CombinedProviderTest (
@@ -1119,7 +1129,7 @@ namespace MyNamespace
 		/// <summary>
 		/// Bug 432434 - Code completion doesn't work with subclasses
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug432434 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -1152,7 +1162,7 @@ namespace MyNamespace
 		/// <summary>
 		/// Bug 432434A - Code completion doesn't work with subclasses
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug432434A ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -1176,7 +1186,7 @@ namespace MyNamespace
 		/// <summary>
 		/// Bug 432434B - Code completion doesn't work with subclasses
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug432434B ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -1202,7 +1212,7 @@ namespace MyNamespace
 		/// <summary>
 		/// Bug 436705 - code completion for constructors does not handle class name collisions properly
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug436705 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -1230,7 +1240,7 @@ class C {
 		/// <summary>
 		/// Bug 439963 - Lacking members in code completion
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug439963 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -1263,7 +1273,7 @@ public class Test
 		/// <summary>
 		/// Bug 441671 - Finalisers show up in code completion
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug441671 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -1299,7 +1309,7 @@ class AClass
 		/// <summary>
 		/// Bug 444110 - Code completion doesn't activate
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug444110 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -1340,7 +1350,7 @@ namespace CCTests
 		/// <summary>
 		/// Bug 460234 - Invalid options shown when typing 'override'
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug460234 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -1364,7 +1374,7 @@ public class TestMe : System.Object
 		/// <summary>
 		/// Bug 457003 - code completion shows variables out of scope
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug457003 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -1391,7 +1401,7 @@ class A
 		/// <summary>
 		/// Bug 457237 - code completion doesn't show static methods when setting global variable
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug457237 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -1413,7 +1423,7 @@ class Test2
 		/// <summary>
 		/// Bug 459682 - Static methods/properties don't show up in subclasses
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug459682 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -1436,7 +1446,7 @@ public class Child : BaseC
 		/// <summary>
 		/// Bug 466692 - Missing completion for return/break keywords after yield
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug466692 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -1457,7 +1467,7 @@ public class TestMe
 		/// <summary>
 		/// Bug 467507 - No completion of base members inside explicit events
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug467507 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -1489,7 +1499,7 @@ class Test
 		/// <summary>
 		/// Bug 444643 - Extension methods don't show up on array types
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug444643 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -1520,7 +1530,7 @@ using System.Collections.Generic;
 		/// <summary>
 		/// Bug 471935 - Code completion window not showing in MD1CustomDataItem.cs
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug471935 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -1549,7 +1559,7 @@ public class AClass
 		/// <summary>
 		/// Bug 471937 - Code completion of 'new' showing invorrect entries 
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug471937()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider(
@@ -1577,7 +1587,7 @@ class A
 		/// <summary>
 		/// Bug 2268 - Potential omission in code completion
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug2268 ()
 		{
 			CombinedProviderTest (
@@ -1603,7 +1613,7 @@ public class Outer
 		/// <summary>
 		/// Bug 2295 - [New Resolver] 'new' completion doesn't select the correct class name 
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug2295 ()
 		{
 			CombinedProviderTest (
@@ -1629,7 +1639,7 @@ class A
 		/// <summary>
 		/// Bug 2061 - Typing 'new' in a method all does not offer valid completion
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug2061 ()
 		{
 			CombinedProviderTest (
@@ -1650,7 +1660,7 @@ class A
 			});
 		}
 	
-		[Test()]
+		[Test]
 		public void TestBug2061Case2 ()
 		{
 			CombinedProviderTest (
@@ -1675,7 +1685,7 @@ class A
 		/// <summary>
 		/// Bug 2788 - Locals do not show up inside the 'for' statement context
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug2788 ()
 		{
 			CombinedProviderTest (
@@ -1698,7 +1708,7 @@ class A
 		/// <summary>
 		/// Bug 2800 - Finalize is offered as a valid completion target
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug2800 ()
 		{
 			CombinedProviderTest (
@@ -1715,7 +1725,7 @@ class A
 			});
 		}
 		
-		[Test()]
+		[Test]
 		public void TestBug2800B ()
 		{
 			CombinedProviderTest (
@@ -1729,7 +1739,7 @@ class A
 				Assert.IsNull (provider.Find ("Finalize"), "'Finalize' found.");
 			});
 		}
-		[Test()]
+		[Test]
 		public void TestOverrideCompletion ()
 		{
 			CombinedProviderTest (
@@ -1764,7 +1774,7 @@ class A : Base
 		/// <summary>
 		/// Bug 3370 -MD ignores member hiding
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug3370 ()
 		{
 			CombinedProviderTest (
@@ -1782,7 +1792,7 @@ class A
 		/// <summary>
 		/// Bug 2793 - op_Equality should not be offered in the completion list
 		/// </summary>
-		[Test()]
+		[Test]
 		public void Test2793 ()
 		{
 			CombinedProviderTest (
@@ -1814,14 +1824,14 @@ public class MyClass
         $myclass.$
     }
 }", provider => {
-				Assert.AreEqual (1, provider.Data.Where(c => c.DisplayText == "MouseClick").Count ());
+				Assert.AreEqual(1, provider.Data.Count(c => c.DisplayText == "MouseClick"));
 			});
 		}
 		
 		/// <summary>
 		/// Bug 2798 - Unnecessary namespace qualification being prepended
 		/// </summary>
-		[Test()]
+		[Test]
 		public void Test2798 ()
 		{
 			CombinedProviderTest (
@@ -1863,7 +1873,7 @@ namespace Foobar
 		/// <summary>
 		/// Bug 2799 - No completion offered when declaring fields in a class
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug2799 ()
 		{
 			CombinedProviderTest (
@@ -1893,7 +1903,7 @@ namespace Foobar
 		/// <summary>
 		/// Bug 3371 - MD intellisense ignores namespace aliases
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug3371 ()
 		{
 			CombinedProviderTest (
@@ -1938,7 +1948,7 @@ namespace B
 			});
 		}
 		
-		[Test()]
+		[Test]
 		public void TestNewInConstructor ()
 		{
 			CombinedProviderTest (
@@ -1969,7 +1979,7 @@ class A
 		/// <summary>
 		/// Bug 473686 - Constants are not included in code completion
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug473686 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -1992,7 +2002,7 @@ class ATest
 		/// <summary>
 		/// Bug 473849 - Classes with no visible constructor shouldn't appear in "new" completion
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug473849 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2045,7 +2055,7 @@ class Test : TestB
 		/// <summary>
 		/// Bug 474199 - Code completion not working for a nested class
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug474199A ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2080,7 +2090,7 @@ class Test
 		/// <summary>
 		/// Bug 3438 - [New Resolver] Local var missing in code completion
 		/// </summary>
-		[Test()]
+		[Test]
 		public void Test3438 ()
 		{
 			CombinedProviderTest (
@@ -2109,7 +2119,7 @@ class C
 		/// <summary>
 		/// Bug 3436 - [New Resolver] Type missing in return type completion
 		/// </summary>
-		[Test()]
+		[Test]
 		public void Test3436 ()
 		{
 			CombinedProviderTest (
@@ -2140,7 +2150,7 @@ namespace Foo
 		/// <summary>
 		/// Bug 474199 - Code completion not working for a nested class
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug474199B ()
 		{
 			var provider = ParameterCompletionTests.CreateProvider (
@@ -2175,7 +2185,7 @@ class Test
 		/// <summary>
 		/// Bug 350862 - Autocomplete bug with enums
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug350862 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2204,7 +2214,7 @@ public class Test
 		/// <summary>
 		/// Bug 470954 - using System.Windows.Forms is not honored
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug470954 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2235,7 +2245,7 @@ public class SomeControl : Control
 		/// <summary>
 		/// Bug 470954 - using System.Windows.Forms is not honored
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug470954_bis ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2268,7 +2278,7 @@ public class SomeControl : Control
 		/// <summary>
 		/// Bug 487228 - No intellisense for implicit arrays
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug487228 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2290,7 +2300,7 @@ public class Test
 		/// <summary>
 		/// Bug 487218 - var does not work with arrays
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug487218 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2312,7 +2322,7 @@ public class Test
 		/// <summary>
 		/// Bug 487206 - Intellisense not working
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug487206 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2338,7 +2348,7 @@ class CastByExample
 		/// <summary>
 		/// Bug 487203 - Extension methods not working
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug487203 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2366,7 +2376,7 @@ class Program
 		/// <summary>
 		/// Bug 491020 - Wrong typeof intellisense
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug491020 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2397,7 +2407,7 @@ public class Test
 		/// Bug 491020 - Wrong typeof intellisense
 		/// It's a different case when the class is inside a namespace.
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug491020B ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2430,7 +2440,7 @@ public class Test
 		/// <summary>
 		/// Bug 491019 - No intellisense for recursive generics
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug491019 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2460,7 +2470,7 @@ public abstract class GenericBase<T> : NonGenericBase where T : GenericBase<T>
 		/// <summary>
 		/// Bug 429034 - Class alias completion not working properly
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug429034 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -2482,7 +2492,7 @@ class Test
 		/// <summary>
 		/// Bug 429034 - Class alias completion not working properly
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug429034B ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2501,7 +2511,7 @@ class Test
 			Assert.IsNotNull (provider.Find ("DirectorySeparatorChar"), "method 'PathTest' not found.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestInvalidCompletion ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2529,7 +2539,7 @@ class Test
 		/// <summary>
 		/// Bug 510919 - Code completion does not show interface method when not using a local var 
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug510919 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2567,7 +2577,7 @@ public class Program
 		/// <summary>
 		/// Bug 538208 - Go to declaration not working over a generic method...
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug538208 ()
 		{
 			// We've to test 2 expressions for this bug. Since there are 2 ways of accessing
@@ -2620,7 +2630,7 @@ class MyClass2
 		/// <summary>
 		/// Bug 542976 resolution problem
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug542976 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2670,7 +2680,7 @@ namespace TestMe
 		/// <summary>
 		/// Bug 545189 - C# resolver bug
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug545189A ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2699,7 +2709,7 @@ public class Foo
 		/// <summary>
 		/// Bug 549864 - Intellisense does not work properly with expressions
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug549864 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2728,7 +2738,7 @@ class TestClass
 		/// <summary>
 		/// Bug 550185 - Intellisence for extension methods
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug550185 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2762,7 +2772,7 @@ class TestClass
 		/// <summary>
 		/// Bug 553101 – Enum completion does not use type aliases
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug553101 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2791,7 +2801,7 @@ namespace Test
 		/// <summary>
 		/// Bug 555523 - C# code completion gets confused by extension methods with same names as properties
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug555523A ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2838,7 +2848,7 @@ class MainClass
 		/// <summary>
 		/// Bug 555523 - C# code completion gets confused by extension methods with same names as properties
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug555523B ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2886,7 +2896,7 @@ class MainClass
 		/// <summary>
 		/// Bug 561964 - Wrong type in tooltip when there are two properties with the same name
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug561964 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2921,7 +2931,7 @@ class Foo : IFoo
 		/// <summary>
 		/// Bug 568204 - Inconsistency in resolution
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug568204 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2956,7 +2966,7 @@ public class Foo
 		/// <summary>
 		/// Bug 577225 - Inconsistent autocomplete on returned value of generic method.
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug577225 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -2998,7 +3008,7 @@ namespace Other
 		/// <summary>
 		/// Bug 582017 - C# Generic Type Constraints
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug582017 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -3025,7 +3035,7 @@ class Foo
 		/// <summary>
 		/// Bug 586304 - Intellisense does not show several linq extenion methods when using nested generic type
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug586304 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -3067,7 +3077,7 @@ public class Test
 		/// <summary>
 		/// Bug 586304 - Intellisense does not show several linq extenion methods when using nested generic type
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug586304B ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -3107,7 +3117,7 @@ class MyClass
 		/// <summary>
 		/// Bug 587543 - Intellisense ignores interface constraints
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug587543 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -3133,7 +3143,7 @@ class C
 		/// <summary>
 		/// Bug 587549 - Intellisense does not work with override constraints
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug587549 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -3171,7 +3181,7 @@ public class PrinterImpl : Printer
 		/// <summary>
 		/// Bug 588223 - Intellisense does not recognize nested generics correctly.
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug588223 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -3211,7 +3221,7 @@ class Test
 		/// <summary>
 		/// Bug 592120 - Type resolver bug with this.Property[]
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug592120 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -3241,7 +3251,7 @@ class Foo
 		/// <summary>
 		/// Bug 576354 - Type inference failure
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug576354 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -3284,7 +3294,7 @@ class MyTest
 		/// <summary>
 		/// Bug 534680 - LINQ keywords missing from Intellisense
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug534680 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3304,7 +3314,7 @@ class Foo
 		/// <summary>
 		/// Bug 610006 - Intellisense gives members of return type of functions even when that function isn't invoked
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug610006 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -3329,7 +3339,7 @@ class MainClass
 		/// <summary>
 		/// Bug 614045 - Types hidden by members are not formatted properly by ambience
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug614045 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -3368,7 +3378,7 @@ namespace B
 		/// <summary>
 		/// Bug 615992 - Intellisense broken when calling generic method.
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug615992 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -3402,7 +3412,7 @@ class Test : TestBase
 		/// <summary>
 		/// Bug 625064 - Internal classes aren't suggested for completion
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug625064 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3419,7 +3429,7 @@ class Test : TestBase
 		/// <summary>
 		/// Bug 631875 - No Intellisense for arrays
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug631875 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3439,7 +3449,7 @@ class Test : TestBase
 		/// <summary>
 		/// Bug 632228 - Wrong var inference
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug632228 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3460,7 +3470,7 @@ class C {
 		/// <summary>
 		/// Bug 632696 - No intellisense for constraints
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug632696 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3481,7 +3491,7 @@ class Program
 			Assert.IsNotNull (provider.Find ("Foo"), "method 'Foo' not found.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestCommentsWithWindowsEol ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider ("class TestClass\r\n{\r\npublic static void Main (string[] args) {\r\n// TestComment\r\n$args.$\r\n}\r\n}");
@@ -3489,7 +3499,7 @@ class Program
 			Assert.IsNotNull (provider.Find ("ToString"), "method 'ToString' not found.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestGhostEntryBug ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3517,7 +3527,7 @@ class TestClass
 		/// <summary>
 		/// Bug 648562 – Abstract members are allowed by base call
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug648562 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3543,7 +3553,7 @@ class B : A
 		/// <summary>
 		/// Bug 633767 - Wrong intellisense for simple lambda
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug633767 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3581,7 +3591,7 @@ public class C
 		/// <summary>
 		/// Bug 616208 - Renaming a struct/class is renaming too much
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug616208 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3618,7 +3628,7 @@ namespace Test
 		/// <summary>
 		/// Bug 668135 - Problems with "new" completion
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug668135a ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3638,7 +3648,7 @@ namespace Test
 		/// <summary>
 		/// Bug 668453 - var completion infers var type too eagerly
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug668453 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3659,7 +3669,7 @@ namespace Test
 		/// <summary>
 		/// Bug 669285 - Extension method on T[] shows up on T
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug669285 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3710,7 +3720,7 @@ public class Test<T>
 		/// <summary>
 		/// Bug 669818 - Autocomplete missing for new nested class
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug669818 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3739,7 +3749,7 @@ class TestNested
 		/// <summary>
 		/// Bug 674514 - foreach value should not be in the completion list
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug674514 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3760,7 +3770,7 @@ class Foo
 			Assert.IsNull (provider.Find ("arg"), "variable 'arg' found.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestBug674514B ()
 		{
 			var provider = CreateCtrlSpaceProvider (
@@ -3785,7 +3795,7 @@ class Foo
 		/// <summary>
 		/// Bug 675436 - Completion is trying to complete symbol names in declarations
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug675436_LocalVar ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3803,7 +3813,7 @@ class Foo
 		/// <summary>
 		/// Bug 675956 - Completion in for loops is broken
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug675956 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3821,7 +3831,7 @@ class Foo
 		/// <summary>
 		/// Bug 675956 - Completion in for loops is broken
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug675956Case2 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -3839,7 +3849,7 @@ class Foo
 		/// <summary>
 		/// Bug 676311 - auto completion too few proposals in fluent API (Moq)
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug676311 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3892,7 +3902,7 @@ namespace Test
 		/// <summary>
 		/// Bug 676311 - auto completion too few proposals in fluent API (Moq)
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug676311B ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3946,7 +3956,7 @@ namespace Test
 		/// <summary>
 		/// Bug 676311 - auto completion too few proposals in fluent API (Moq)
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug676311_Case2 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -3998,7 +4008,7 @@ namespace Test
 		/// <summary>
 		/// Bug 678340 - Cannot infer types from Dictionary<K,V>.Values
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug678340 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -4022,7 +4032,7 @@ public class Test
 		/// <summary>
 		/// Bug 678340 - Cannot infer types from Dictionary<K,V>.Values
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug678340_Case2 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -4056,7 +4066,7 @@ public class Test
 		/// <summary>
 		/// Bug 679792 - MonoDevelop becomes unresponsive and leaks memory
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug679792 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -4078,7 +4088,7 @@ class TestClass
 		/// Bug 679995 - Variable missing from completiom
 		/// </summary>
 		/// 
-		[Test()]
+		[Test]
 		public void TestBug679995 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -4099,7 +4109,7 @@ class TestClass
 		/// Bug 680264 - Lamba completion inference issues
 		/// </summary>
 		/// 
-		[Test()]
+		[Test]
 		public void TestBug680264 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -4130,7 +4140,7 @@ class TestClass
 		/// Bug 683037 - Missing autocompletion when 'using' directive references namespace by relative names
 		/// </summary>
 		/// 
-		[Test()]
+		[Test]
 		public void TestBug683037 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -4171,7 +4181,7 @@ namespace N1
 		/// <summary>
 		/// Bug 690606 - Incomplete subclasses listing in code completion
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug690606 ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -4200,7 +4210,7 @@ public class Test
 		/// <summary>
 		/// Bug 1744 - [New Resolver] Issues while typing a property
 		/// </summary>
-		[Test()]
+		[Test]
 		public void Test1744 ()
 		{
 			var provider = CreateProvider (
@@ -4220,7 +4230,7 @@ public class Test
 		/// <summary>
 		/// Bug 1747 - [New Resolver] Code completion issues when declaring a generic dictionary
 		/// </summary>
-		[Test()]
+		[Test]
 		public void Test1747()
 		{
 			var provider = CreateProvider(
@@ -4236,7 +4246,7 @@ public class Test
 			Assert.AreEqual ("Dictionary<int, string>", provider.DefaultCompletionString);
 		}
 		
-		[Test()]
+		[Test]
 		public void Test1747Case2 ()
 		{
 			var provider = CreateProvider (
@@ -4257,7 +4267,7 @@ public class Test
 			
 		}
 		
-		[Test()]
+		[Test]
 		public void TestCompletionInTryCatch ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -4277,7 +4287,7 @@ void TestMethod ()
 			Assert.IsNotNull (provider.Find ("TF1"));
 		}
 		
-		[Test()]
+		[Test]
 		public void TestPartialCompletionData ()
 		{
 			var provider = CreateProvider (
@@ -4302,7 +4312,7 @@ public partial class TestMe
 		/// <summary>
 		/// Bug 224 - Code completion cannot handle lambdas properly. 
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug224 ()
 		{
 			CombinedProviderTest (
@@ -4344,7 +4354,7 @@ namespace ConsoleProject
 			});
 		}
 		
-		[Test()]
+		[Test]
 		public void TestParameterContext ()
 		{
 			var provider = CreateProvider (
@@ -4359,7 +4369,7 @@ public class TestMe
 		/// <summary>
 		/// Bug 2123 - Completion kicks in after an array type is used in method parameters
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestParameterContextCase2FromBug2123 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -4372,7 +4382,7 @@ public class TestMe
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestParameterContextNameProposal ()
 		{
 			var provider = CreateCtrlSpaceProvider (
@@ -4387,7 +4397,7 @@ public class TestMe
 			Assert.IsNotNull (provider.Find ("parameter"), "'parameter' not found.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestParameterTypeNameContext ()
 		{
 			CombinedProviderTest (
@@ -4401,7 +4411,7 @@ public class TestMe
 			});
 		}
 		
-		[Test()]
+		[Test]
 		public void TestMethodNameContext ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -4421,7 +4431,7 @@ namespace Test
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestNamedParameters ()
 		{
 			CombinedProviderTest (
@@ -4440,7 +4450,7 @@ namespace Test
 				Assert.IsNotNull (provider.Find ("foo:"), "'foo:' not found.");
 			});
 		}
-		[Test()]
+		[Test]
 		public void TestNamedParameters2 ()
 		{
 			var provider = CreateCtrlSpaceProvider (
@@ -4459,7 +4469,7 @@ namespace Test
 			Assert.IsNotNull (provider.Find ("foo:"), "'foo:' not found.");
 		}
 
-		[Test()]
+		[Test]
 		public void TestNamedParametersConstructorCase ()
 		{
 			CombinedProviderTest (
@@ -4477,7 +4487,7 @@ namespace Test
 			});
 		}
 		
-		[Test()]
+		[Test]
 		public void TestConstructorThisBase ()
 		{
 			CombinedProviderTest (
@@ -4492,7 +4502,7 @@ namespace Test
 			});
 		}
 		
-		[Test()]
+		[Test]
 		public void TestAnonymousArguments ()
 		{
 			CombinedProviderTest (
@@ -4513,7 +4523,7 @@ class Program
 			});
 		}
 		
-		[Test()]
+		[Test]
 		public void TestCodeCompletionCategorySorting ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -4558,7 +4568,7 @@ class Test
 			Assert.AreEqual ("System.Object", list [3].DisplayText);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestAsExpressionContext ()
 		{
 			var provider = CreateProvider (
@@ -4598,7 +4608,7 @@ class Test
 		/// <summary>
 		/// Bug 2109 - [Regression] Incorrect autocompletion when declaring an enum 
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug2109B ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -4634,7 +4644,7 @@ class Test
 		/// <summary>
 		/// Bug 3581 - [New Resolver] No code completion on Attributes
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug3581 ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -4667,7 +4677,7 @@ namespace Foobar
 			Assert.IsNotNull (provider.Find ("Intent"), "'Intent' not found.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestForConditionContext ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -4685,7 +4695,7 @@ class MainClass
 		}
 		
 		[Ignore("Mcs bug")]
-		[Test()]
+		[Test]
 		public void TestConditionalExpression ()
 		{
 			CompletionDataList provider = CreateProvider (
@@ -4706,7 +4716,7 @@ class MainClass
 		/// <summary>
 		/// Bug 3655 - Autocompletion does not work for the assembly attribute [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("MyExternalAssembly")] 
 		/// </summary>
-		[Test()]
+		[Test]
 		public void Test3655 ()
 		{
 			CombinedProviderTest (@"$[a$", provider => {
@@ -4715,7 +4725,7 @@ class MainClass
 			});
 		}
 		
-		[Test()]
+		[Test]
 		public void Test3655Case2 ()
 		{
 			CombinedProviderTest (@"$[assembly:System.R$", provider => {
@@ -4723,7 +4733,7 @@ class MainClass
 			});
 		}
 		
-		[Test()]
+		[Test]
 		public void Test3655Case2Part2 ()
 		{
 			CombinedProviderTest (@"$[assembly:System.$", provider => {
@@ -4731,7 +4741,7 @@ class MainClass
 			});
 		}
 		
-		[Test()]
+		[Test]
 		public void Test3655Case3 ()
 		{
 			CombinedProviderTest (@"$[assembly:System.Runtime.C$", provider => {
@@ -4739,7 +4749,7 @@ class MainClass
 			});
 		}
 		
-		[Test()]
+		[Test]
 		public void Test3655Case3Part2 ()
 		{
 			CombinedProviderTest (@"$[assembly:System.Runtime.$", provider => {
@@ -4747,7 +4757,7 @@ class MainClass
 			});
 		}
 		
-		[Test()]
+		[Test]
 		public void Test3655Case4 ()
 		{
 			CombinedProviderTest (@"$[assembly:System.Runtime.CompilerServices.I$", provider => {
@@ -4755,7 +4765,7 @@ class MainClass
 			});
 		}
 		
-		[Test()]
+		[Test]
 		public void Test3655Case4Part2 ()
 		{
 			CombinedProviderTest (@"$[assembly:System.Runtime.CompilerServices.$", provider => {
@@ -4763,7 +4773,7 @@ class MainClass
 			});
 		}
 		
-		[Test()]
+		[Test]
 		public void TestUsingContext ()
 		{
 			CombinedProviderTest (@"$using System.$", provider => {
@@ -4772,7 +4782,7 @@ class MainClass
 			});
 		}
 		
-		[Test()]
+		[Test]
 		public void TestUsingContextCase2 ()
 		{
 			CombinedProviderTest (@"$using System.U$", provider => {
@@ -4781,7 +4791,7 @@ class MainClass
 			});
 		}
 
-		[Test()]
+		[Test]
 		public void TestInterfaceReturnType()
 		{
 			var provider = CreateProvider(
@@ -4802,7 +4812,7 @@ class MainClass
 			Assert.IsNull(provider.Find("IEnumerable<string>"), "'IEnumerable<string>' found.");
 		}
 
-		[Test()]
+		[Test]
 		public void TestInterfaceReturnTypeCase2 ()
 		{
 			var provider = CreateProvider (
@@ -4821,7 +4831,7 @@ class MainClass
 			Assert.IsNull (provider.Find ("IEnumerable"), "'IEnumerable' found.");
 		}
 
-		[Test()]
+		[Test]
 		public void TestInterfaceReturnTypeCase3 ()
 		{
 			var provider = CreateProvider (
@@ -4844,7 +4854,7 @@ class MainClass
 		/// <summary>
 		/// Bug 3957 - [New Resolver]Override completion doesn't work well for overloaded methods
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug3957 ()
 		{
 			var provider = CreateProvider (
@@ -4862,13 +4872,13 @@ class B : A
 }
 
 ");
-			Assert.AreEqual (2, provider.Data.Where (d => d.DisplayText == "Method").Count ());
+			Assert.AreEqual(2, provider.Data.Count(d => d.DisplayText == "Method"));
 		}
 
 		/// <summary>
 		/// Bug 3973 - code completion forgets context if text is deleted 
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug3973 ()
 		{
 			var provider = CreateProvider (
@@ -4890,7 +4900,7 @@ class A
 		/// <summary>
 		/// Bug 4017 - code completion in foreach does not work for local variables declared in the same block
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug4017()
 		{
 			var provider = CreateProvider (
@@ -4910,7 +4920,7 @@ class TestClass
 		/// <summary>
 		/// Bug 4020 - code completion handles explicit interface implementations improperly
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug4020 ()
 		{
 			// todo: maybe a better solution would be 
@@ -4939,7 +4949,7 @@ namespace Test
 		/// <summary>
 		/// Bug 4085 - code completion problem with generic dictionary
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug4085()
 		{
 			// Name proposal feature breaks here
@@ -4963,7 +4973,7 @@ namespace Test
 		/// <summary>
 		/// Bug 4283 - Newresolver: completing constructor parameters
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug4283()
 		{
 			var provider = CreateCtrlSpaceProvider(
@@ -4976,7 +4986,7 @@ namespace Test
 			Assert.IsNotNull(provider.Find("test"), "'test' not found.");
 		}
 
-		[Test()]
+		[Test]
 		public void TestBug4283ThisCase()
 		{
 			var provider = CreateCtrlSpaceProvider(
@@ -4992,7 +5002,7 @@ namespace Test
 		/// <summary>
 		/// Bug 4290 - Parameter completion exception inserting method with arguments before other methods
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug4290()
 		{
 			// just test for exception
@@ -5013,7 +5023,7 @@ namespace Test
 		/// <summary>
 		/// Bug 4174 - Intellisense popup after #region (same line) 
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug4174()
 		{
 			var provider = CreateProvider(
@@ -5031,7 +5041,7 @@ $#region S$
 		/// <summary>
 		/// Bug 4323 - Parameter completion exception while attempting to instantiate unknown class
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug4323()
 		{
 			// just test for exception
@@ -5048,7 +5058,7 @@ $#region S$
 }");
 		}
 
-		[Test()]
+		[Test]
 		public void TestParameterAttributeContext()
 		{
 			CombinedProviderTest(
@@ -5068,7 +5078,7 @@ public class Test
 		/// <summary>
 		/// Bug 1051 - Code completion can't handle interface return types properly
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug1051()
 		{
 			CombinedProviderTest(
@@ -5092,7 +5102,7 @@ public class Test
 		/// <summary>
 		/// Bug 2668 - No completion offered for enum keys of Dictionaries 
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug2668()
 		{
 			CombinedProviderTest(
@@ -5119,7 +5129,7 @@ public class Test
 		/// <summary>
 		/// Bug 4487 - Filtering possible types for new expressions a bit too aggressively
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug4487()
 		{
 			// note 'string bar = new Test ().ToString ()' would be valid.
@@ -5139,7 +5149,7 @@ public class Test
 		/// <summary>
 		/// Bug 4525 - Unexpected code completion exception
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug4525()
 		{
 			CombinedProviderTest(
@@ -5154,7 +5164,7 @@ public class Test
 		/// <summary>
 		/// Bug 4604 - [Resolver] Attribute Properties are not offered valid autocomplete choices
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug4604()
 		{
 			CombinedProviderTest(
@@ -5181,7 +5191,7 @@ public class Test
 		/// Bug 4624 - [AutoComplete] Attribute autocomplete inserts entire attribute class name. 
 		/// </summary>
 		[Ignore("MCS BUG")]
-		[Test()]
+		[Test]
 		public void TestBug4624()
 		{
 			CombinedProviderTest(
@@ -5198,7 +5208,7 @@ enum TestEnum
 			});
 		}
 
-		[Test()]
+		[Test]
 		public void TestCatchContext()
 		{
 			CombinedProviderTest(
@@ -5219,7 +5229,7 @@ class Foo
 			});
 		}
 
-		[Test, Ignore("broken")]
+		[Test]
 		public void TestCatchContextFollowUp()
 		{
 			CombinedProviderTest(
@@ -5243,7 +5253,7 @@ class Foo
 		/// <summary>
 		/// Bug 4688 - No code completion in nested using statements
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug4688()
 		{
 			CombinedProviderTest(
@@ -5266,7 +5276,7 @@ public class TestFoo
 		/// <summary>
 		/// Bug 4808 - Enums have an unknown 'split_char' member included in them.
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug4808()
 		{
 			var provider = CreateProvider(
@@ -5291,7 +5301,7 @@ public class TestFoo
 		/// <summary>
 		/// Bug 4961 - Code completion for enumerations in static classes doesn't work.
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug4961()
 		{
 			CombinedProviderTest(
@@ -5324,7 +5334,7 @@ namespace EnumerationProblem
 		/// <summary>
 		/// Bug 5191 - Creating extension method problem when typing "this" 
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug5191()
 		{
 			CombinedProviderTest(
@@ -5353,7 +5363,7 @@ static class Ext
 		/// <summary>
 		/// Bug 5404 - Completion and highlighting for pointers 
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug5404()
 		{
 			CombinedProviderTest(
@@ -5380,7 +5390,7 @@ $mc->$
 		/// <summary>
 		/// Bug 6146 - No intellisense on value keyword in property set method
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug6146()
 		{
 			CombinedProviderTest(
@@ -5400,7 +5410,7 @@ public class FooBar
 		}
 
 
-		[Test()]
+		[Test]
 		public void TestBug6146Case2()
 		{
 			CombinedProviderTest(
@@ -5419,7 +5429,7 @@ public class FooBar
 			});
 		}
 
-		[Test()]
+		[Test]
 		public void TestCompletionInPreprocessorIf()
 		{
 			CombinedProviderTest(
@@ -5439,7 +5449,7 @@ public class FooBar
 			});
 		}
 
-		[Test()]
+		[Test]
 		public void TestCompletionInUndefinedPreprocessorIf()
 		{
 			CombinedProviderTest(
@@ -5462,7 +5472,7 @@ public class FooBar
 		/// <summary>
 		/// Bug 7041 - No completion inside new[]
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug7041()
 		{
 			CombinedProviderTest(
@@ -5493,7 +5503,7 @@ public class FooBar
 			});
 		}
 
-		[Test()]
+		[Test]
 		public void TestGlobalPrimitiveTypes()
 		{
 			CombinedProviderTest(
@@ -5503,7 +5513,7 @@ public class FooBar
 			});
 		}
 
-		[Test()]
+		[Test]
 		public void TestGlobalPrimitiveTypesCase2()
 		{
 			CombinedProviderTest(
@@ -5517,7 +5527,7 @@ public class FooBar
 		/// <summary>
 		/// Bug 7207 - Missing inherited enum in completion
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug7207()
 		{
 			CombinedProviderTest(
@@ -5554,7 +5564,7 @@ class C : A
 		/// <summary>
 		/// Bug 7191 - code completion problem with generic interface using nested type
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug7191()
 		{
 			CombinedProviderTest(
@@ -5585,7 +5595,7 @@ namespace bug
 		/// <summary>
 		/// Bug 6849 - Regression: Inaccesible types in completion
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug6849()
 		{
 			CombinedProviderTest(
@@ -5610,7 +5620,7 @@ namespace bug
 		}
 
 
-		[Test()]
+		[Test]
 		public void TestBug6849Case2()
 		{
 
@@ -5632,6 +5642,166 @@ namespace bug
 				Assert.IsNull(provider.Find("RBTree"));
 				Assert.IsNull(provider.Find("GenericComparer"));
 				Assert.IsNull(provider.Find("InternalStringComparer"));
+			});
+		}
+
+		/// <summary>
+		/// Bug 6237 - Code completion includes private code 
+		/// </summary>
+		[Test]
+		public void TestBug6237 ()
+		{
+
+			CombinedProviderTest(
+				@"
+namespace bug
+{
+   public class TestClass
+    {
+        void Bar()
+        {
+            $System.Xml.Linq.XElement.$
+        }
+    }
+}
+
+", provider => {
+				Assert.IsTrue (provider.Count > 0);
+				// it's likely to be mono specific.
+				foreach (var data in provider.Data) {
+					Assert.IsFalse (data.DisplayText.StartsWith ("<"), "Data was:"+ data.DisplayText);
+				}
+			});
+		}
+
+
+		/// <summary>
+		/// Bug 7795 - Completion cannot handle nested types 
+		/// </summary>
+		[Test]
+		public void TestBug7795 ()
+		{
+
+			CombinedProviderTest(
+				@"
+using System;
+using System.Linq;
+using System.Collections;
+
+class Foo
+{
+    public enum Selector
+    {
+        VV
+    }
+}
+
+public class Bugged
+{
+    static void Test (Foo.Selector selector)
+    {
+
+    }
+
+    void Selector ()
+    {
+
+    }
+
+    public static void Main ()
+    {
+        Test ($S$);
+    }
+}
+", provider => {
+				Assert.AreEqual ("Foo.Selector", provider.DefaultCompletionString);
+			});
+		}
+
+
+
+		/// <summary>
+		/// Bug 8618 - Intellisense broken within compiler directives
+		/// </summary>
+		[Test]
+		public void TestBug8618 ()
+		{
+			
+			CombinedProviderTest(
+				@"
+public class TestClass
+{
+void Bar(object argument)
+{
+object local;
+#if FOOBAR
+$a$
+#endif
+}
+}
+
+", provider => {
+				Assert.IsNull(provider.Find("argument"));
+				Assert.IsNull(provider.Find("local"));
+			});
+		}
+
+		[Test]
+		public void TestBug8618Case2 ()
+		{
+			
+			CombinedProviderTest(
+				@"#define FOOBAR
+
+public class TestClass
+{
+void Bar(object argument)
+{
+object local;
+#if FOOBAR
+$a$
+#endif
+}
+}
+
+", provider => {
+				Assert.IsNotNull(provider.Find("argument"));
+				Assert.IsNotNull(provider.Find("local"));
+			});
+		}
+
+		/// <summary>
+		/// Bug 8655 - Completion for attribute properties not working
+		/// </summary>
+		[Test]
+		public void TestBug8655 ()
+		{
+			
+			CombinedProviderTest(
+				@"using System;
+
+namespace TestConsole
+{
+	[AttributeUsage (AttributeTargets.Assembly, Inherited = true, AllowMultiple = true)]
+	public sealed class MyAttribute : Attribute
+	{
+		public int NamedInt { get; set; }
+		public int[] Categories { get; set; }
+
+		public MyAttribute (string[] str) { }
+	}
+
+
+	$[MyAttribute(new[] {""Foo"", ""Bar""}, Categories = new[] {1,2,3}, n$
+	class MainClass
+	{
+	}
+}
+
+
+", provider => {
+				Assert.IsNotNull(provider.Find("NamedInt"));
+				Assert.IsNull(provider.Find("delegate"));
 			});
 		}
 	}

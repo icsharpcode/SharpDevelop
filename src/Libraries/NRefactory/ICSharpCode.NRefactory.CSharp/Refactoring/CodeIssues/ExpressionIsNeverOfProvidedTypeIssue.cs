@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				base.VisitIsExpression (isExpression);
 
-				var conversions = CSharpConversions.Get(ctx.Compilation);
+//				var conversions = CSharpConversions.Get(ctx.Compilation);
 				var exprType = ctx.Resolve (isExpression.Expression).Type;
 				var providedType = ctx.ResolveType (isExpression.Type);
 

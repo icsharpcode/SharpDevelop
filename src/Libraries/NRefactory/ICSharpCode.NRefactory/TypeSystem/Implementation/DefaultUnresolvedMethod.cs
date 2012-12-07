@@ -121,7 +121,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				flags[FlagPartialMethod] = value;
 			}
 		}
-		
+
+		public bool IsAsync {
+			get { return flags[FlagAsyncMethod]; }
+			set {
+				ThrowIfFrozen();
+				flags[FlagAsyncMethod] = value;
+			}
+		}
+
 		public bool HasBody {
 			get { return flags[FlagHasBody]; }
 			set {

@@ -48,11 +48,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			readonly RedundantPrivateIssue inspector;
+//			readonly RedundantPrivateIssue inspector;
 			
 			public GatherVisitor (BaseRefactoringContext ctx, RedundantPrivateIssue inspector) : base (ctx)
 			{
-				this.inspector = inspector;
+//				this.inspector = inspector;
 			}
 
 			void CheckNode(EntityDeclaration node)

@@ -353,7 +353,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target.Target.Target),
-				Tuple.Create(new TextLocation(1, 22), (AstNode)astNode.Target.Target),	// This should be the where at location 16, but a parser bug causes 22 to be returned. change this to 16 after fixing the parser bug.
+				Tuple.Create(new TextLocation(1, 16), (AstNode)astNode.Target.Target),
 				Tuple.Create(new TextLocation(1, 28), (AstNode)astNode),
 			});
 		}
@@ -371,7 +371,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target.Target.Target.Target.Target),
 				Tuple.Create(new TextLocation(1, 16), (AstNode)astNode.Target.Target.Target.Target),
-				Tuple.Create(new TextLocation(1, 36), (AstNode)astNode.Target.Target),	// This should be the orderby at location 30, but a parser bug causes 36 to be returned. change this to 30 after fixing the parser bug.
+				Tuple.Create(new TextLocation(1, 30), (AstNode)astNode.Target.Target),
 				Tuple.Create(new TextLocation(1, 42), (AstNode)astNode),
 			});
 		}
@@ -387,7 +387,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target),
-				Tuple.Create(new TextLocation(1, 22), (AstNode)astNode),
+				Tuple.Create(new TextLocation(1, 16), (AstNode)astNode),
 				Tuple.Create(new TextLocation(1, 28), (AstNode)astNode),
 			});
 		}
@@ -403,7 +403,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target),
-				Tuple.Create(new TextLocation(1, 22), (AstNode)astNode),
+				Tuple.Create(new TextLocation(1, 16), (AstNode)astNode),
 				Tuple.Create(new TextLocation(1, 28), (AstNode)astNode),
 			});
 		}
@@ -434,7 +434,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target),
-				Tuple.Create(new TextLocation(1, 24), (AstNode)astNode),	// This should be the orderby at location 16, but a parser bug causes 24 to be returned. change this to 16 after fixing the parser bug.
+				Tuple.Create(new TextLocation(1, 16), (AstNode)astNode),
 				Tuple.Create(new TextLocation(1, 24), (AstNode)astNode),
 				Tuple.Create(new TextLocation(1, 33), (AstNode)astNode),
 			});
@@ -453,7 +453,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target.Target.Target.Target.Target),
 				Tuple.Create(new TextLocation(1, 16), (AstNode)astNode.Target.Target.Target.Target),
-				Tuple.Create(new TextLocation(1, 38), (AstNode)astNode.Target.Target),	// This should be the orderby at location 30, but a parser bug causes 38 to be returned. change this to 30 after fixing the parser bug.
+				Tuple.Create(new TextLocation(1, 30), (AstNode)astNode.Target.Target),
 				Tuple.Create(new TextLocation(1, 38), (AstNode)astNode.Target.Target),
 				Tuple.Create(new TextLocation(1, 44), (AstNode)astNode),
 			});
@@ -470,7 +470,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target.Target.Target),
-				Tuple.Create(new TextLocation(1, 24), (AstNode)astNode),	// This should be the orderby at location 16, but a parser bug causes 24 to be returned. change this to 16 after fixing the parser bug.
+				Tuple.Create(new TextLocation(1, 16), (AstNode)astNode),	// This should be the orderby at location 16, but a parser bug causes 24 to be returned. change this to 16 after fixing the parser bug.
 				Tuple.Create(new TextLocation(1, 24), (AstNode)astNode.Target.Target),
 				Tuple.Create(new TextLocation(1, 34), (AstNode)astNode),
 				Tuple.Create(new TextLocation(1, 43), (AstNode)astNode),
@@ -512,7 +512,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target.Target.Target.Target.Target),
 				Tuple.Create(new TextLocation(1, 16), (AstNode)astNode.Target.Target.Target.Target),
 				Tuple.Create(new TextLocation(1, 31), (AstNode)astNode.Target.Target.Target.Target),
-				Tuple.Create(new TextLocation(1, 57), (AstNode)astNode.Target.Target),
+				Tuple.Create(new TextLocation(1, 51), (AstNode)astNode.Target.Target),
 				Tuple.Create(new TextLocation(1, 63), (AstNode)astNode),
 			});
 		}

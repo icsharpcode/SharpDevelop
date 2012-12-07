@@ -23,36 +23,83 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
+using System;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public abstract class VariableHidesMemberIssue : ICodeIssueProvider
 	{
-		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
+		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
-			return GetGatherVisitor (context).GetIssues ();
+			return GetGatherVisitor(context).GetIssues();
 		}
 
 		protected static bool HidesMember(BaseRefactoringContext ctx, AstNode node, string variableName)
 		{
-			var typeDecl = node.GetParent<TypeDeclaration> ();
+			var typeDecl = node.GetParent<TypeDeclaration>();
 			if (typeDecl == null)
 				return false;
-			var typeResolveResult = ctx.Resolve (typeDecl) as TypeResolveResult;
+			var entityDecl = node.GetParent<EntityDeclaration>();
+			var memberResolveResult = ctx.Resolve(entityDecl) as MemberResolveResult;
+			if (memberResolveResult == null)
+				return false;
+			var typeResolveResult = ctx.Resolve(typeDecl) as TypeResolveResult;
 			if (typeResolveResult == null)
 				return false;
 
-			var entityDecl = node.GetParent<EntityDeclaration> ();
-			var isStatic = (entityDecl.Modifiers & Modifiers.Static) == Modifiers.Static;
+			var sourceMember = memberResolveResult.Member;
 
-			return typeResolveResult.Type.GetMembers (m => m.Name == variableName && m.IsStatic	== isStatic).Any ();
+			return typeResolveResult.Type.GetMembers(m => m.Name == variableName).Any(m2 => IsAccessible(sourceMember, m2));
 		}
 
-		internal abstract GatherVisitorBase GetGatherVisitor (BaseRefactoringContext context);
+		static bool IsAccessible(IMember sourceMember, IMember targetMember)
+		{
+			if (sourceMember.IsStatic != targetMember.IsStatic)
+				return false;
+
+			var sourceType = sourceMember.DeclaringType;
+			var targetType = targetMember.DeclaringType;
+			switch (targetMember.Accessibility) {
+				case Accessibility.None:
+					return false;
+				case Accessibility.Private:
+					// check for members of outer classes (private members of outer classes can be accessed)
+					var targetTypeDefinition = targetType.GetDefinition();
+					for (var t = sourceType.GetDefinition(); t != null; t = t.DeclaringTypeDefinition) {
+						if (t.Equals(targetTypeDefinition))
+							return true;
+					}
+					return false;
+				case Accessibility.Public:
+					return true;
+				case Accessibility.Protected:
+					return IsProtectedAccessible(sourceType, targetType);
+				case Accessibility.Internal:
+					return IsInternalAccessible(sourceMember.ParentAssembly, targetMember.ParentAssembly);
+				case Accessibility.ProtectedOrInternal:
+					return IsInternalAccessible(sourceMember.ParentAssembly, targetMember.ParentAssembly) || IsProtectedAccessible(sourceType, targetType);
+				case Accessibility.ProtectedAndInternal:
+					return IsInternalAccessible(sourceMember.ParentAssembly, targetMember.ParentAssembly) && IsProtectedAccessible(sourceType, targetType);
+				default:
+					throw new Exception("Invalid value for Accessibility");
+			}
+		}
+
+		static bool IsProtectedAccessible(IType sourceType, IType targetType)
+		{
+			return sourceType.GetAllBaseTypes().Any(type => targetType.Equals(type));
+		}
+
+		static bool IsInternalAccessible(IAssembly sourceAssembly, IAssembly targetAssembly)
+		{
+			return sourceAssembly.InternalsVisibleTo(targetAssembly);
+		}
+
+		internal abstract GatherVisitorBase GetGatherVisitor(BaseRefactoringContext context);
 
 	}
 }

@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 				if (!rule.IsValid(name)) {
 					IList<string> suggestedNames;
-					var msg = rule.GetErrorMessage(ctx, name, out suggestedNames);
+					rule.GetErrorMessage(ctx, name, out suggestedNames);
 					if (suggestedNames.Any ())
 						return suggestedNames [0];
 				}

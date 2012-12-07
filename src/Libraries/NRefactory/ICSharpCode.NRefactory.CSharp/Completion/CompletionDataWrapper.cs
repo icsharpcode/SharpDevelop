@@ -66,11 +66,25 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		}
 		
 		HashSet<string> usedNamespaces = new HashSet<string> ();
+
+		bool IsAccessible(MemberLookup lookup, INamespace ns)
+		{
+			if (ns.Types.Any (t => lookup.IsAccessible (t, false)))
+				return true;
+			foreach (var child in ns.ChildNamespaces)
+				if (IsAccessible (lookup, child))
+					return true;
+			return false;
+		}
 		
-		public void AddNamespace (INamespace ns)
+		public void AddNamespace (MemberLookup lookup, INamespace ns)
 		{
 			if (usedNamespaces.Contains (ns.Name))
 				return;
+			if (!IsAccessible (lookup, ns)) {
+				usedNamespaces.Add (ns.Name);
+				return;
+			}
 			usedNamespaces.Add (ns.Name);
 			result.Add (Factory.CreateNamespaceCompletionData (ns));
 		}
@@ -80,14 +94,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			result.Add (Factory.CreateLiteralCompletionData (alias));
 		}
 
-		Dictionary<string, ICompletionData> usedTypes = new Dictionary<string, ICompletionData> ();
-
+		Dictionary<string, ICompletionData> typeDisplayText = new Dictionary<string, ICompletionData> ();
+		Dictionary<IType, ICompletionData> addedTypes = new Dictionary<IType, ICompletionData> ();
 		public ICompletionData AddType(IType type, bool showFullName, bool isInAttributeContext = false)
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
 			if (type.Name == "Void" && type.Namespace == "System" || type.Kind == TypeKind.Unknown)
 				return null;
+			if (addedTypes.ContainsKey (type))
+				return addedTypes[type];
 
 			var def = type.GetDefinition();
 			if (def != null && def.ParentAssembly != completion.ctx.CurrentAssembly && !def.IsBrowsable())
@@ -96,12 +112,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var data = Factory.CreateTypeCompletionData(type, showFullName, isInAttributeContext);
 			var text = data.DisplayText;
 
-			if (usedTypes.TryGetValue(text, out usedType)) {
+			if (typeDisplayText.TryGetValue(text, out usedType)) {
 				usedType.AddOverload(data);
 				return usedType;
 			} 
-			usedTypes [text] = data;
+			typeDisplayText [text] = data;
 			result.Add(data);
+			addedTypes[type] = data;
 			return data;
 		}
 
@@ -206,27 +223,42 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var compareCategory = other as TypeCompletionCategory;
 				if (compareCategory == null)
 					return -1;
-				
-				if (Type.ReflectionName == compareCategory.Type.ReflectionName)
-					return 0;
-				
-				if (Type.GetAllBaseTypes ().Any (t => t.ReflectionName == compareCategory.Type.ReflectionName))
-					return -1;
-				return 1;
+				int result;
+				if (Type.ReflectionName == compareCategory.Type.ReflectionName) {
+					result = 0;
+				} else if (Type.GetAllBaseTypes().Any(t => t.ReflectionName == compareCategory.Type.ReflectionName)) {
+					result = -1;
+				} else if (compareCategory.Type.GetAllBaseTypes().Any(t => t.ReflectionName == Type.ReflectionName)) {
+					result = 1;
+				} else {
+					var d = Type.GetDefinition ();
+					var ct = compareCategory.Type.GetDefinition();
+					if (ct.IsStatic && d.IsStatic) {
+						result = d.FullName.CompareTo (ct.FullName);
+					} else if (d.IsStatic) {
+						result = 1;
+					}else if (ct.IsStatic) {
+						result = -1;
+					} else {
+						result = 0;
+					}
+				}
+				return result;
 			}
 		}
 		HashSet<IType> addedEnums = new HashSet<IType> ();
-		public void AddEnumMembers (IType resolvedType, CSharpResolver state)
+		public ICompletionData AddEnumMembers (IType resolvedType, CSharpResolver state)
 		{
 			if (addedEnums.Contains (resolvedType))
-				return;
+				return null;
 			addedEnums.Add (resolvedType);
-			AddType(resolvedType, true);
+			var result = AddType(resolvedType, true);
 			foreach (var field in resolvedType.GetFields ()) {
 				if (field.IsPublic && (field.IsConst || field.IsStatic)) {
 					Result.Add(Factory.CreateMemberCompletionData(resolvedType, field));
 				}
 			}
+			return result;
 		}
 	}
 }

@@ -182,8 +182,6 @@ namespace ICSharpCode.NRefactory.CSharp
 						mem.Parent.InsertChildBefore (mem, cmt3, Roles.Comment);
 						if (cmt.PrevSibling is EntityDeclaration)
 							mem.Parent.InsertChildBefore (cmt, new UnixNewLine (), Roles.NewLine);
-
-						mem.Parent.InsertChildAfter (cmt3, new UnixNewLine (), Roles.NewLine);
 					}
 				}
 			}

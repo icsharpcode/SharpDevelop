@@ -89,7 +89,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public bool ShowTypeParameters { get; set; }
 		
 		/// <summary>
-		/// Controls whether contraints on type parameter declarations are shown.
+		/// Controls whether constraints on type parameter declarations are shown.
 		/// Has no effect if ShowTypeParameters is false.
 		/// The default value is <c>true</c>.
 		/// </summary>

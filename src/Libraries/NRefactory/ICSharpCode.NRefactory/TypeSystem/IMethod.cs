@@ -41,7 +41,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Check <see cref="HasBody"/> to test if it is a partial method declaration or implementation.
 		/// </summary>
 		bool IsPartial { get; }
-		
+
+		/// <summary>
+		/// Gets whether the method is a C#-style async method.
+		/// </summary>
+		bool IsAsync { get; }
+
 		[Obsolete("Use IsPartial && !HasBody instead")]
 		bool IsPartialMethodDeclaration { get; }
 		
@@ -104,7 +109,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <seealso cref="HasBody"/>
 		bool IsPartial { get; }
-		
+
+		/// <summary>
+		/// Gets whether the method is a C#-style async method.
+		/// </summary>
+		bool IsAsync { get; }
+
 		/// <summary>
 		/// Gets whether the method has a body.
 		/// This property returns <c>false</c> for <c>abstract</c> or <c>extern</c> methods,

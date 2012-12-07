@@ -58,6 +58,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						
 			public GatherVisitor (BaseRefactoringContext context) : base (context)
 			{
+				binOpVisitor = new BinaryExpressionVisitor (this);
 			}
 			
 			HashSet<AstNode> processedNodes = new HashSet<AstNode>();
@@ -68,7 +69,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					CheckInvocationInAutoCallContext((InvocationExpression)expression);
 				}
 			}
-			
+
 			void CheckInvocationInAutoCallContext(InvocationExpression invocationExpression)
 			{
 				var memberExpression = invocationExpression.Target as MemberReferenceExpression;
@@ -105,56 +106,65 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 				if (binaryOperatorExpression.Operator != BinaryOperatorType.Add)
 					return;
+				binOpVisitor.Reset();
+				binaryOperatorExpression.AcceptVisitor(binOpVisitor);
+			}
 
-				var expressions = FlattenBinaryOperator(binaryOperatorExpression);
+			BinaryExpressionVisitor binOpVisitor;
+			class BinaryExpressionVisitor : DepthFirstAstVisitor
+			{
+				GatherVisitor issue;
+				int stringExpressionCount;
+				Expression firstStringExpression;
 
-				int stringExpressionCount = 0;
-				foreach (var expression in expressions) {
-					var resolveResult = ctx.Resolve(expression);
-					if (resolveResult.Type.IsKnownType(KnownTypeCode.String)) {
-						stringExpressionCount++;
+				public BinaryExpressionVisitor(GatherVisitor issue)
+				{
+					this.issue = issue;
+				}
+
+				public void Reset()
+				{
+					stringExpressionCount = 0;
+					firstStringExpression = null;
+				}
+
+				void Check (Expression expression)
+				{
+					if (expression is BinaryOperatorExpression) {
+						expression.AcceptVisitor(this);
+						return;
 					}
-					if (stringExpressionCount > 1) {
-						break;
+					if (stringExpressionCount <= 1) {
+						var resolveResult = issue.ctx.Resolve(expression);
+						if (resolveResult.Type.IsKnownType(KnownTypeCode.String)) {
+							stringExpressionCount++;
+							if (stringExpressionCount == 1) {
+								firstStringExpression = expression;
+							} else {
+								issue.CheckExpressionInAutoCallContext(firstStringExpression);
+								issue.CheckExpressionInAutoCallContext(expression);
+							}
+						}
+					} else {
+						issue.CheckExpressionInAutoCallContext(expression);
 					}
 				}
-				if (stringExpressionCount <= 1) {
-					return;
-				}
-
-				foreach (var expression in expressions) {
-					CheckExpressionInAutoCallContext(expression);
-				}
-			}
-
-			IList<Expression> FlattenBinaryOperator(BinaryOperatorExpression binaryOperatorExpression)
-			{
-				var expressions = new List<Expression>();
-				FlattenBinaryOperator(binaryOperatorExpression, expressions);
-				return expressions;
-			}
-
-			void FlattenBinaryOperator(BinaryOperatorExpression binaryOperatorExpression, IList<Expression> expressions)
-			{
-				FlattenExpression(binaryOperatorExpression.Left, expressions);
-				FlattenExpression(binaryOperatorExpression.Right, expressions);
-			}
-
-			void FlattenExpression(Expression expression, IList<Expression> expressions)
-			{
-				if (expression is BinaryOperatorExpression) {
-					FlattenBinaryOperator((BinaryOperatorExpression)expression, expressions);
-				}
-				else {
-					expressions.Add(expression);
+				
+				public override void VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression)
+				{
+					Check(binaryOperatorExpression.Left);
+					Check(binaryOperatorExpression.Right);
 				}
 			}
+
 			#endregion
 
 			#region Invocation expression
 			public override void VisitInvocationExpression(InvocationExpression invocationExpression)
 			{
 				base.VisitInvocationExpression(invocationExpression);
+
+				var target = invocationExpression.Target as MemberReferenceExpression;
 
 				var invocationResolveResult = ctx.Resolve(invocationExpression) as CSharpInvocationResolveResult;
 				if (invocationResolveResult == null) {

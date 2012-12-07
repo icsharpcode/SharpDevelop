@@ -39,62 +39,72 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
-			var visitor = new GatherVisitor(context, this);
+			var visitor = new GatherVisitor(context);
 			context.RootNode.AcceptVisitor(visitor);
 			return visitor.FoundIssues;
 		}
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			readonly InconsistentNamingIssue inspector;
 			readonly NamingConventionService service;
 
-			public GatherVisitor (BaseRefactoringContext ctx, InconsistentNamingIssue inspector) : base (ctx)
+			public GatherVisitor (BaseRefactoringContext ctx) : base (ctx)
 			{
-				this.inspector = inspector;
 				service = (NamingConventionService)ctx.GetService (typeof (NamingConventionService));
+			}
+
+			void CheckName(TypeDeclaration node, AffectedEntity entity, Identifier identifier, Modifiers accessibilty)
+			{
+				ResolveResult resolveResult = ctx.Resolve(node);
+				var type = ((TypeResolveResult)resolveResult).Type;
+				if (type.DirectBaseTypes.Any(t => t.FullName == "System.Attribute")) {
+					if (CheckNamedResolveResult(resolveResult, node, AffectedEntity.CustomAttributes, identifier, accessibilty)) {
+						return;
+					}
+				} else if (type.DirectBaseTypes.Any(t => t.FullName == "System.EventArgs")) {
+					if (CheckNamedResolveResult(resolveResult, node, AffectedEntity.CustomEventArgs, identifier, accessibilty)) {
+						return;
+					}
+				} else if (type.DirectBaseTypes.Any(t => t.FullName == "System.Exception")) {
+					if (CheckNamedResolveResult(resolveResult, node, AffectedEntity.CustomExceptions, identifier, accessibilty)) {
+						return;
+					}
+				}
+
+				var typeDef = type.GetDefinition();
+				if (typeDef != null && typeDef.Attributes.Any(attr => attr.AttributeType.FullName == "NUnit.Framework.TestFixtureAttribute")) {
+					if (CheckNamedResolveResult(resolveResult, node, AffectedEntity.TestType, identifier, accessibilty)) {
+						return;
+					}
+				}
+
+				CheckNamedResolveResult(resolveResult, node, entity, identifier, accessibilty);
+			}
+
+			void CheckName(MethodDeclaration node, AffectedEntity entity, Identifier identifier, Modifiers accessibilty)
+			{
+				ResolveResult resolveResult = null;
+				if (node != null && node.Attributes.Any ())
+					resolveResult = ctx.Resolve(node);
+				
+				if (resolveResult is MemberResolveResult) {
+					var member = ((MemberResolveResult)resolveResult).Member;
+					if (member.EntityType == EntityType.Method && member.Attributes.Any(attr => attr.AttributeType.FullName == "NUnit.Framework.TestAttribute")) {
+						if (CheckNamedResolveResult(resolveResult, node, AffectedEntity.TestMethod, identifier, accessibilty)) {
+							return;
+						}
+					}
+				}
+
+				CheckNamedResolveResult(resolveResult, node, entity, identifier, accessibilty);
 			}
 
 			void CheckName(AstNode node, AffectedEntity entity, Identifier identifier, Modifiers accessibilty)
 			{
-				ResolveResult resolveResult = null;
-				if (node != null) {
-					resolveResult = ctx.Resolve(node);
-				}
-				if (resolveResult is TypeResolveResult) {
-					var type = ((TypeResolveResult)resolveResult).Type;
-					if (type.DirectBaseTypes.Any(t => t.FullName == "System.Attribute")) {
-						if (CheckNamedResolveResult(resolveResult, AffectedEntity.CustomAttributes, identifier, accessibilty)) {
-							return;
-						}
-					} else if (type.DirectBaseTypes.Any(t => t.FullName == "System.EventArgs")) {
-						if (CheckNamedResolveResult(resolveResult, AffectedEntity.CustomEventArgs, identifier, accessibilty)) {
-							return;
-						}
-					} else if (type.DirectBaseTypes.Any(t => t.FullName == "System.Exception")) {
-						if (CheckNamedResolveResult(resolveResult, AffectedEntity.CustomExceptions, identifier, accessibilty)) {
-							return;
-						}
-					}
-
-					var typeDef = type.GetDefinition();
-					if (typeDef != null && typeDef.Attributes.Any(attr => attr.AttributeType.FullName == "NUnit.Framework.TestFixtureAttribute")) {
-						if (CheckNamedResolveResult(resolveResult, AffectedEntity.TestType, identifier, accessibilty)) {
-							return;
-						}
-					}
-				} else if (resolveResult is MemberResolveResult) {
-					var member = ((MemberResolveResult)resolveResult).Member;
-					if (member.EntityType == EntityType.Method && member.Attributes.Any(attr => attr.AttributeType.FullName == "NUnit.Framework.TestAttribute")) {
-						if (CheckNamedResolveResult(resolveResult, AffectedEntity.TestMethod, identifier, accessibilty)) {
-							return;
-						}
-					}
-				}
-				CheckNamedResolveResult(resolveResult, entity, identifier, accessibilty);
+				CheckNamedResolveResult(null, node, entity, identifier, accessibilty);
 			}
 
-			bool CheckNamedResolveResult(ResolveResult resolveResult, AffectedEntity entity, Identifier identifier, Modifiers accessibilty)
+			bool CheckNamedResolveResult(ResolveResult resolveResult, AstNode node, AffectedEntity entity, Identifier identifier, Modifiers accessibilty)
 			{
 				bool wasHandled = false;
 				foreach (var rule in service.Rules) {
@@ -105,47 +115,51 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						continue;
 					}
 					if (!rule.IncludeInstanceMembers || !rule.IncludeStaticEntities) {
-						IEntity typeSystemEntity = null;
-						if (resolveResult is MemberResolveResult) {
-							typeSystemEntity = ((MemberResolveResult)resolveResult).Member;
-						} else if (resolveResult is TypeResolveResult) { 
-							typeSystemEntity = ((TypeResolveResult)resolveResult).Type.GetDefinition();
+						EntityDeclaration typeSystemEntity;
+						if (node is VariableInitializer) {
+							typeSystemEntity = node.Parent as EntityDeclaration;
+						} else {
+							typeSystemEntity = node as EntityDeclaration;
 						}
 						if (!rule.IncludeInstanceMembers) {
-							if (typeSystemEntity == null || !typeSystemEntity.IsStatic) {
+							if (typeSystemEntity == null || !typeSystemEntity.HasModifier (Modifiers.Static) || typeSystemEntity.HasModifier (Modifiers.Sealed)) {
 								continue;
 							}
 						}
 						if (!rule.IncludeStaticEntities) {
-							if (typeSystemEntity == null || typeSystemEntity.IsStatic) {
+							if (typeSystemEntity == null || typeSystemEntity.HasModifier (Modifiers.Static) || typeSystemEntity.HasModifier (Modifiers.Sealed)) {
 								continue;
 							}
 						}
 					}
+
 					wasHandled = true;
 					if (!rule.IsValid(identifier.Name)) {
 						IList<string> suggestedNames;
 						var msg = rule.GetErrorMessage(ctx, identifier.Name, out suggestedNames);
 						var actions = new List<CodeAction>(suggestedNames.Select(n => new CodeAction(string.Format(ctx.TranslateString("Rename to '{0}'"), n), (Script script) => {
-								if (resolveResult is MemberResolveResult) {
-									script.Rename(((MemberResolveResult)resolveResult).Member, n);
-								} else if (resolveResult is TypeResolveResult) {
-									var def = ((TypeResolveResult)resolveResult).Type.GetDefinition();
-									if (def != null) {
-										script.Rename(def, n);
-									} else {
-										script.RenameTypeParameter(((TypeResolveResult)resolveResult).Type, n);
-									}
-								} else if (resolveResult is LocalResolveResult) {
-									script.Rename(((LocalResolveResult)resolveResult).Variable, n);
-								} else { 
-									script.Replace(identifier, Identifier.Create(n));
+							if (resolveResult == null)
+								resolveResult = ctx.Resolve (node);
+							if (resolveResult is MemberResolveResult) {
+								script.Rename(((MemberResolveResult)resolveResult).Member, n);
+							} else if (resolveResult is TypeResolveResult) {
+								var def = ((TypeResolveResult)resolveResult).Type.GetDefinition();
+								if (def != null) {
+									script.Rename(def, n);
+								} else {
+									script.RenameTypeParameter(((TypeResolveResult)resolveResult).Type, n);
 								}
+							} else if (resolveResult is LocalResolveResult) {
+								script.Rename(((LocalResolveResult)resolveResult).Variable, n);
+							} else { 
+								script.Replace(identifier, Identifier.Create(n));
 							}
-						)));
+						})));
 
-						if (resolveResult is MemberResolveResult || resolveResult is TypeResolveResult || resolveResult is LocalResolveResult) {
+						if (entity != AffectedEntity.Namespace && entity != AffectedEntity.Label) {
 							actions.Add(new CodeAction(string.Format(ctx.TranslateString("Rename '{0}'..."), identifier.Name), (Script script) => {
+								if (resolveResult == null)
+									resolveResult = ctx.Resolve (node);
 								if (resolveResult is MemberResolveResult) {
 									script.Rename(((MemberResolveResult)resolveResult).Member);
 								} else if (resolveResult is TypeResolveResult) {
@@ -171,7 +185,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				base.VisitNamespaceDeclaration(namespaceDeclaration);
 				foreach (var id in namespaceDeclaration.Identifiers) {
-					CheckName(null, AffectedEntity.Namespace, id, Modifiers.None);
+					CheckNamedResolveResult(null, namespaceDeclaration, AffectedEntity.Namespace, id, Modifiers.None);
 				}
 			}
 
@@ -317,13 +331,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public override void VisitParameterDeclaration(ParameterDeclaration parameterDeclaration)
 			{
 				base.VisitParameterDeclaration(parameterDeclaration);
-				CheckName(parameterDeclaration, parameterDeclaration.Parent is LambdaExpression ? AffectedEntity.LambdaParameter : AffectedEntity.Parameter, parameterDeclaration.NameToken, Modifiers.None);
+				CheckNamedResolveResult(null, parameterDeclaration, parameterDeclaration.Parent is LambdaExpression ? AffectedEntity.LambdaParameter : AffectedEntity.Parameter, parameterDeclaration.NameToken, Modifiers.None);
 			}
 
 			public override void VisitTypeParameterDeclaration(TypeParameterDeclaration typeParameterDeclaration)
 			{
 				base.VisitTypeParameterDeclaration(typeParameterDeclaration);
-				CheckName(typeParameterDeclaration, AffectedEntity.TypeParameter, typeParameterDeclaration.NameToken, Modifiers.None);
+				CheckNamedResolveResult(null, typeParameterDeclaration, AffectedEntity.TypeParameter, typeParameterDeclaration.NameToken, Modifiers.None);
 			}
 
 			public override void VisitVariableDeclarationStatement(VariableDeclarationStatement variableDeclarationStatement)
@@ -331,14 +345,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				base.VisitVariableDeclarationStatement(variableDeclarationStatement);
 				var entity = variableDeclarationStatement.Modifiers.HasFlag(Modifiers.Const) ? AffectedEntity.LocalConstant : AffectedEntity.LocalVariable;
 				foreach (var init in variableDeclarationStatement.Variables) {
-					CheckName(init, entity, init.NameToken, Modifiers.None);
+					CheckNamedResolveResult(null, init, entity, init.NameToken, Modifiers.None);
 				}
 			}
 
 			public override void VisitLabelStatement(LabelStatement labelStatement)
 			{
 				base.VisitLabelStatement(labelStatement);
-				CheckName(null, AffectedEntity.Label, labelStatement.LabelToken, Modifiers.None);
+				CheckNamedResolveResult(null, labelStatement, AffectedEntity.Label, labelStatement.LabelToken, Modifiers.None);
 			}
 		}
 

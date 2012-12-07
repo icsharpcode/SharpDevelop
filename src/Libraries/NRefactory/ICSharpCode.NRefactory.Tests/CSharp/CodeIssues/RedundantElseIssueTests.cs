@@ -200,5 +200,30 @@ class TestClass
 }";
 			Test<RedundantElseIssue> (input, 0);
 		}
+
+		[Test]
+		public void TestNecessaryElseCase2 ()
+		{
+
+			var input = @"
+class TestClass
+{
+	void TestMethod (int i)
+	{
+		int a;
+		while (true) {
+			if (i > 0) {
+				a = 1;
+			} else if (i < 0) {
+				a = 0;
+				break;
+			} else {
+				break;
+			}
+		}
+	}
+}";
+			Test<RedundantElseIssue> (input, 0);
+		}
 	}
 }

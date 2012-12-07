@@ -120,6 +120,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		protected virtual INamespace CreateRootNamespace()
 		{
+			// SimpleCompilation does not support extern aliases; but derived classes might.
+			// CreateRootNamespace() is virtual so that derived classes can change the global namespace.
 			INamespace[] namespaces = new INamespace[referencedAssemblies.Count + 1];
 			namespaces[0] = mainAssembly.RootNamespace;
 			for (int i = 0; i < referencedAssemblies.Count; i++) {
@@ -134,6 +136,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public virtual INamespace GetNamespaceForExternAlias(string alias)
 		{
+			if (string.IsNullOrEmpty(alias))
+				return this.RootNamespace;
+			// SimpleCompilation does not support extern aliases; but derived classes might.
 			return null;
 		}
 		
