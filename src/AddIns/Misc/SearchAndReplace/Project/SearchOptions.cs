@@ -2,8 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace SearchAndReplace
 {
@@ -151,6 +154,36 @@ namespace SearchAndReplace
 		static SearchOptions()
 		{
 			properties = PropertyService.Get(searchPropertyKey, new Properties());
+		}
+	}
+	
+	public class SearchAndReplaceBinding : DefaultLanguageBinding
+	{
+		SearchInputHandler handler;
+		
+		public override void Attach(ITextEditor editor)
+		{
+			TextArea textArea = editor.GetService(typeof(TextArea)) as TextArea;
+			if (textArea == null) return;
+			handler = new SearchInputHandler(textArea);
+			textArea.DefaultInputHandler.NestedInputHandlers.Add(handler);
+			handler.SearchOptionsChanged += SearchOptionsChanged;
+		}
+
+		void SearchOptionsChanged(object sender, SearchOptionsChangedEventArgs e)
+		{
+			SearchOptions.CurrentFindPattern = e.SearchPattern;
+			SearchOptions.MatchCase = e.MatchCase;
+			SearchOptions.MatchWholeWord = e.WholeWords;
+			SearchOptions.SearchMode = e.UseRegex ? SearchMode.RegEx : SearchMode.Normal;
+		}
+		
+		public override void Detach()
+		{
+			if (handler != null) {
+				handler.SearchOptionsChanged -= SearchOptionsChanged;
+			}
+			handler = null;
 		}
 	}
 }
