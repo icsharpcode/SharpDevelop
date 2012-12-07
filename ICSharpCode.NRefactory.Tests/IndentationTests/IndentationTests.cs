@@ -43,7 +43,6 @@ namespace ICSharpCode.NRefactory.CSharp.Indentation
 			Assert.AreEqual("\t", indent.NewLineIndent);
 		}
 
-		[Ignore ("TODO")]
 		[Test]
 		public void TestPreProcessorDirectives ()
 		{
@@ -56,6 +55,20 @@ namespace Foo {
 		$");
 			Assert.AreEqual("\t\t", indent.ThisLineIndent);
 			Assert.AreEqual("\t\t", indent.NewLineIndent);
+		}
+
+		[Test]
+		public void TestPreProcessorDirectives2 ()
+		{
+			var indent = CreateEngine(@"
+namespace Foo {
+	class Foo {
+#if NOTTHERE || true
+	{
+#endif
+		$");
+			Assert.AreEqual("\t\t\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t\t\t", indent.NewLineIndent);
 		}
 
 		[Test]
@@ -144,7 +157,6 @@ class Foo {
 			Assert.AreEqual("\t\t\t", indent.NewLineIndent);
 		}
 
-		[Ignore ("TODO")]
 		[Test]
 		public void TestParameters ()
 		{
@@ -154,7 +166,7 @@ class Foo {
 	{
 		Foo(true,$");
 			Assert.AreEqual("\t\t", indent.ThisLineIndent);
-			Assert.AreEqual("\t\t    ", indent.NewLineIndent);
+			Assert.AreEqual("\t\t   ", indent.NewLineIndent);
 		}
 
 		[Test]

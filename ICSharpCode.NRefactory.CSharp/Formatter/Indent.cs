@@ -43,6 +43,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		int curIndent;
 
+		public int CurIndent {
+			get {
+				return curIndent;
+			}
+		}
+
 		public Indent(TextEditorOptions options)
 		{
 			this.options = options;
@@ -127,6 +133,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				return extraSpaces;
 			}
 			set {
+				if (value < 0)
+					throw new ArgumentOutOfRangeException ("ExtraSpaces >= 0 but was " + value);
 				extraSpaces = value;
 				Update();
 			}

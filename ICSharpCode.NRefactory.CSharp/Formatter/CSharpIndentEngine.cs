@@ -1,6 +1,9 @@
 using System;
 using ICSharpCode.NRefactory.Editor;
 using System.Text;
+using System.Collections.Generic;
+using System.Linq;
+using System.Globalization;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -10,8 +13,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		readonly CSharpFormattingOptions options;
 		readonly TextEditorOptions textEditorOptions;
 		readonly StringBuilder wordBuf = new StringBuilder();
+
 		Indent thisLineindent;
 		Indent indent;
+
+		public IList<string> ConditionalSymbols {
+			get;
+			set;
+		}
 
 		public string ThisLineIndent {
 			get {
@@ -34,7 +43,44 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.thisLineindent = new Indent(textEditorOptions);
 		}
 
+		CSharpIndentEngine (CSharpIndentEngine prototype)
+		{
+			this.document = prototype.document;
+			this.options = prototype.options;
+			this.textEditorOptions = prototype.textEditorOptions;
+			this.indent = prototype.indent.Clone();
+			this.thisLineindent = prototype.thisLineindent.Clone();
+			this.offset = prototype.offset;
+			this.inside = prototype.inside;
+			this.IsLineStart = prototype.IsLineStart;
+			this.pc = prototype.pc;
+			this.parenStack = new Stack<TextLocation>(prototype.parenStack.Reverse ());
+			this.currentBody = prototype.currentBody;
+			this.nextBody = prototype.nextBody;
+			this.addContinuation = prototype.addContinuation;
+			this.line = prototype.line;
+			this.col = prototype.col;
+			this.popNextParenBlock = prototype.popNextParenBlock;
+		}
+
+		public CSharpIndentEngine Clone ()
+		{
+			return new CSharpIndentEngine(this);
+		}
+
 		int offset;
+		Inside inside = Inside.Empty;
+		bool IsLineStart = true;
+		char pc;
+		Stack<TextLocation> parenStack = new Stack<TextLocation> ();
+		Body currentBody;
+		Body nextBody;
+		bool addContinuation;
+		int line, col;
+		bool popNextParenBlock;
+
+		bool readPreprocessorExpression;
+
 
 		void Reset()
 		{
@@ -44,8 +90,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			pc = '\0';
 			IsLineStart = true;
 			addContinuation = false;
+			popNextParenBlock = false;
+			parenStack.Clear();
 			inside = Inside.Empty;
 			nextBody = currentBody = Body.None;
+			line = col = 1;
 		}
 
 		public void UpdateToOffset (int toOffset)
@@ -56,8 +105,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				Push(document.GetCharAt(i));
 		}
 
-		Inside inside = Inside.Empty;
-		bool IsLineStart = true;
 
 		bool IsInStringOrChar {
 			get {
@@ -71,12 +118,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
+		bool IsInPreProcessorComment {
+			get {
+				return inside.HasFlag (Inside.PreProcessorComment);
+			}
+		}
+		 
 		[Flags]
 		public enum Inside {
 			Empty              = 0,
 			
 			PreProcessor       = (1 << 0),
-			
+			PreProcessorComment = (1 << 12),
+
 			MultiLineComment   = (1 << 1),
 			LineComment        = (1 << 2),
 			DocComment         = (1 << 11),
@@ -99,21 +153,198 @@ namespace ICSharpCode.NRefactory.CSharp
 			FoldedBlockOrCase  = (FoldedStatement | Block | Case)
 		}
 
-		char pc;
-		int parens = 0;
+		#region Pre processor evaluation (from cs-tokenizer.cs)
+		static bool is_identifier_start_character (int c)
+		{
+			return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || Char.IsLetter ((char)c);
+		}
+
+		static bool is_identifier_part_character (char c)
+		{
+			if (c >= 'a' && c <= 'z')
+				return true;
+			
+			if (c >= 'A' && c <= 'Z')
+				return true;
+			
+			if (c == '_' || (c >= '0' && c <= '9'))
+				return true;
+			
+			if (c < 0x80)
+				return false;
+			
+			return Char.IsLetter (c) || Char.GetUnicodeCategory (c) == UnicodeCategory.ConnectorPunctuation;
+		}
+
+		bool eval_val (string s)
+		{
+			if (s == "true")
+				return true;
+			if (s == "false")
+				return false;
+			
+			return ConditionalSymbols != null && ConditionalSymbols.Contains (s);
+		}
+		
+		bool pp_primary (ref string s)
+		{
+			s = s.Trim ();
+			int len = s.Length;
+			
+			if (len > 0){
+				char c = s [0];
+				
+				if (c == '('){
+					s = s.Substring (1);
+					bool val = pp_expr (ref s, false);
+					if (s.Length > 0 && s [0] == ')'){
+						s = s.Substring (1);
+						return val;
+					}
+					return false;
+				}
+				
+				if (is_identifier_start_character (c)){
+					int j = 1;
+					
+					while (j < len){
+						c = s [j];
+						
+						if (is_identifier_part_character (c)){
+							j++;
+							continue;
+						}
+						bool v = eval_val (s.Substring (0, j));
+						s = s.Substring (j);
+						return v;
+					}
+					bool vv = eval_val (s);
+					s = "";
+					return vv;
+				}
+			}
+			return false;
+		}
+		
+		bool pp_unary (ref string s)
+		{
+			s = s.Trim ();
+			int len = s.Length;
+			
+			if (len > 0){
+				if (s [0] == '!'){
+					if (len > 1 && s [1] == '='){
+						return false;
+					}
+					s = s.Substring (1);
+					return ! pp_primary (ref s);
+				} else
+					return pp_primary (ref s);
+			} else {
+				return false;
+			}
+		}
+		
+		bool pp_eq (ref string s)
+		{
+			bool va = pp_unary (ref s);
+			
+			s = s.Trim ();
+			int len = s.Length;
+			if (len > 0){
+				if (s [0] == '='){
+					if (len > 2 && s [1] == '='){
+						s = s.Substring (2);
+						return va == pp_unary (ref s);
+					} else {
+						return false;
+					}
+				} else if (s [0] == '!' && len > 1 && s [1] == '='){
+					s = s.Substring (2);
+					
+					return va != pp_unary (ref s);
+					
+				} 
+			}
+			
+			return va;
+			
+		}
+		
+		bool pp_and (ref string s)
+		{
+			bool va = pp_eq (ref s);
+			
+			s = s.Trim ();
+			int len = s.Length;
+			if (len > 0){
+				if (s [0] == '&'){
+					if (len > 2 && s [1] == '&'){
+						s = s.Substring (2);
+						return (va & pp_and (ref s));
+					} else {
+						return false;
+					}
+				} 
+			}
+			return va;
+		}
+		
+		//
+		// Evaluates an expression for `#if' or `#elif'
+		//
+		bool pp_expr (ref string s, bool isTerm)
+		{
+			bool va = pp_and (ref s);
+			s = s.Trim ();
+			int len = s.Length;
+			if (len > 0){
+				char c = s [0];
+				
+				if (c == '|'){
+					if (len > 2 && s [1] == '|'){
+						s = s.Substring (2);
+						return va | pp_expr (ref s, isTerm);
+					} else {
+
+						return false;
+					}
+				}
+				if (isTerm) {
+					return false;
+				}
+			}
+			
+			return va;
+		}
+		
+		bool eval (string s)
+		{
+			bool v = pp_expr (ref s, true);
+			s = s.Trim ();
+			if (s.Length != 0){
+				return false;
+			}
+			
+			return v;
+		}
+		#endregion
 		void Push(char ch)
 		{
+			if (readPreprocessorExpression) {
+				wordBuf.Append(ch);
+			}
+
 			if (inside.HasFlag (Inside.VerbatimString) && pc == '"' && ch != '"') {
 				inside &= ~Inside.String;
 			}
-			Console.WriteLine(ch);
 			switch (ch) {
 				case '#':
 					if (IsLineStart)
 						inside = Inside.PreProcessor;
 					break;
 				case '/':
-					if (IsInStringOrChar)
+					if (IsInStringOrChar || IsInPreProcessorComment)
 						break;
 					if (pc == '/') {
 						if (inside.HasFlag (Inside.Comment)) {
@@ -124,13 +355,22 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					break;
 				case '*':
-					if (IsInStringOrChar || IsInComment)
+					if (IsInStringOrChar || IsInComment || IsInPreProcessorComment)
 						break;
 					if (pc == '/')
 						inside |= Inside.MultiLineComment;
 					break;
-				case '\n':
+				case '\t':
+					var nextTabStop = (col - 1 + textEditorOptions.IndentSize) / textEditorOptions.IndentSize;
+					col = 1 + nextTabStop * textEditorOptions.IndentSize;
+					return;
 				case '\r':
+					
+					if (readPreprocessorExpression) {
+						if (!eval (wordBuf.ToString ()))
+							inside |= Inside.PreProcessorComment;
+					}
+
 					inside &= ~(Inside.Comment | Inside.String | Inside.CharLiteral | Inside.PreProcessor);
 					CheckKeyword(wordBuf.ToString());
 					wordBuf.Length = 0;
@@ -140,9 +380,16 @@ namespace ICSharpCode.NRefactory.CSharp
 					thisLineindent = indent.Clone ();
 					addContinuation = false;
 					IsLineStart = true;
+					readPreprocessorExpression = false;
+					col = 1;
+					line++;
 					break;
+				case '\n':
+					if (pc == '\r')
+						break;
+					goto case '\r';
 				case '"':
-					if (IsInComment)
+					if (IsInComment || IsInPreProcessorComment)
 						break;
 					if (inside.HasFlag (Inside.String)) {
 						if (pc != '\\')
@@ -159,21 +406,33 @@ namespace ICSharpCode.NRefactory.CSharp
 				case '<':
 				case '[':
 				case '(':
-					if (IsInComment || IsInStringOrChar)
+					if (IsInComment || IsInStringOrChar || IsInPreProcessorComment)
 						break;
-					parens++;
+					parenStack.Push (new TextLocation (line, col));
+					popNextParenBlock = true;
 					indent.Push (IndentType.Block);
 					break;
 				case '>':
 				case ']':
 				case ')':
-					if (IsInComment || IsInStringOrChar)
+					if (IsInComment || IsInStringOrChar || IsInPreProcessorComment)
 						break;
-					parens--;
+					if (popNextParenBlock)
+						parenStack.Pop ();
 					indent.Pop ();
+					indent.ExtraSpaces = 0;
+					break;
+				case ',':
+					if (IsInComment || IsInStringOrChar || IsInPreProcessorComment)
+						break;
+					if (parenStack.Count > 0 && parenStack.Peek ().Line == line) {
+						indent.Pop ();
+						popNextParenBlock = false;
+						indent.ExtraSpaces = parenStack.Peek ().Column - 1 - thisLineindent.CurIndent;
+					}
 					break;
 				case '{':
-					if (IsInComment || IsInStringOrChar)
+					if (IsInComment || IsInStringOrChar || IsInPreProcessorComment)
 						break;
 					currentBody = nextBody;
 					if (indent.Count > 0 && indent.Peek() == IndentType.Continuation)
@@ -182,18 +441,20 @@ namespace ICSharpCode.NRefactory.CSharp
 					AddIndentation (currentBody);
 					break;
 				case '}':
-					if (IsInComment || IsInStringOrChar)
+					if (IsInComment || IsInStringOrChar || IsInPreProcessorComment)
 						break;
 					indent.Pop ();
 					if (indent.Count > 0 && indent.Peek() == IndentType.Continuation)
 						indent.Pop();
 					break;
 				case ';':
+					if (IsInComment || IsInStringOrChar || IsInPreProcessorComment)
+						break;
 					if (indent.Count > 0 && indent.Peek() == IndentType.Continuation)
 						indent.Pop();
 					break;
 				case '\'':
-					if (IsInComment || inside.HasFlag (Inside.String))
+					if (IsInComment || inside.HasFlag (Inside.String) || IsInPreProcessorComment)
 						break;
 					if (inside.HasFlag (Inside.CharLiteral)) {
 						if (pc != '\\')
@@ -204,11 +465,22 @@ namespace ICSharpCode.NRefactory.CSharp
 					break;
 			}
 
-			if (!IsInComment && !IsInStringOrChar) {
+			if (!IsInComment && !IsInStringOrChar && !readPreprocessorExpression) {
 				if ((wordBuf.Length == 0 ? char.IsLetter(ch) : char.IsLetterOrDigit(ch)) || ch == '_') {
 					wordBuf.Append(ch);
 				} else {
-					CheckKeyword(wordBuf.ToString());
+					if (inside.HasFlag (Inside.PreProcessor)) {
+						if (wordBuf.ToString () == "endif") {
+							inside &= ~Inside.PreProcessorComment;
+						} else if (wordBuf.ToString () == "if") {
+							readPreprocessorExpression = true;
+						} else if (wordBuf.ToString () == "elif") {
+							inside &= ~Inside.PreProcessorComment;
+							readPreprocessorExpression = true;
+						}
+					} else {
+						CheckKeyword(wordBuf.ToString());
+					}
 					wordBuf.Length = 0;
 				}
 			}
@@ -218,8 +490,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			IsLineStart &= ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r';
 			pc = ch;
+			if (ch != '\n' && ch != '\r')
+				col++;
 		}
-
 
 		void AddIndentation(BraceStyle braceStyle)
 		{
@@ -277,9 +550,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			Switch
 		}
 
-		Body currentBody;
-		Body nextBody;
-		bool addContinuation;
 		void CheckKeyword (string keyword)
 		{
 			switch (currentBody) {
