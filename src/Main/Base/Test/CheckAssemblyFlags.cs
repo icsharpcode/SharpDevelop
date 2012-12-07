@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 				throw new InvalidOperationException("Timeout running corflags");
 			} else {
 				Console.WriteLine(pr.StandardOutput);
-				Match m = Regex.Match(pr.StandardOutput, @"32BIT\s*:\s*([01])");
+				Match m = Regex.Match(pr.StandardOutput, @"32BIT(?:REQ)?\s*:\s*([01])");
 				if (m.Success) {
 					return m.Groups[1].Value == "1";
 				} else {

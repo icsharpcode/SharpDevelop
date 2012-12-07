@@ -109,6 +109,11 @@ namespace CSharpBinding.Completion
 			throw new NotImplementedException();
 		}
 		
+		string IParameterDataProvider.GetParameterName(int overload, int currentParameter)
+		{
+			throw new NotImplementedException();
+		}
+		
 		int IParameterDataProvider.GetParameterCount(int overload)
 		{
 			throw new NotImplementedException();
