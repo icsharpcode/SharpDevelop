@@ -77,14 +77,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			var list = new List<UIElement>();
 			for (int i = 0; i < menuArray.GetLength(0); i++) {
-				if (menuArray[i,0].StartsWith("${") && (!String.IsNullOrEmpty(menuArray[i,1]))) {
-					list.Add(new MenuItem()
-					            {
-					            	Header = StringParser.Parse(menuArray[i,0]),
-					            	Tag = argumentQuickInsertMenu[i,1],
-					            });
-				}
-				else {
+				if (menuArray[i, 0].StartsWith("${") && (!String.IsNullOrEmpty(menuArray[i, 1]))) {
+					list.Add(new MenuItem() {
+						Header = StringParser.Parse(menuArray[i, 0]).Replace('&', '_'),
+						Tag = argumentQuickInsertMenu[i, 1],
+					});
+				} else {
 					list.Add(new Separator());
 				}
 			}
