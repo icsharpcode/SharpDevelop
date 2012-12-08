@@ -45,7 +45,7 @@
 			</Grid.ColumnDefinitions>
 			
 			<ListBox x:Name="listBox" Grid.RowSpan="7"
-			         SelectionMode="Multiple"
+			         SelectionMode="Extended"
 			         SelectionChanged="ListBox_SelectionChanged"
 			         SelectedItem="{Binding SelectedTool}">
 			</ListBox>
