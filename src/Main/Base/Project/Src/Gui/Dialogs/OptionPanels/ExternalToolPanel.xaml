@@ -7,20 +7,19 @@
 	
 	<Grid>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="25" ></RowDefinition>
-			<RowDefinition Height="Auto" ></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
 			<RowDefinition Height="15"></RowDefinition>
-			<RowDefinition Height="25"></RowDefinition>
-			<RowDefinition Height="25"></RowDefinition>
-			<RowDefinition Height="25"></RowDefinition>
-			<RowDefinition Height="25"></RowDefinition>
-			<RowDefinition Height="25"></RowDefinition>
-			<RowDefinition Height="25"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
 		</Grid.RowDefinitions>
 		
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="50" ></ColumnDefinition>
-			<ColumnDefinition Width="140"></ColumnDefinition>
+			<ColumnDefinition Width="Auto"></ColumnDefinition>
 			<ColumnDefinition Width="*" MinWidth="20"></ColumnDefinition>
 			<ColumnDefinition Width="*" MinWidth="20"></ColumnDefinition>
 			<ColumnDefinition Width="45" ></ColumnDefinition>
@@ -29,14 +28,10 @@
 		<Label Grid.ColumnSpan="2" Content="{core:Localize Dialog.Options.ExternalTool.ToolsLabel}"></Label>
 		<Grid  Grid.Row="1" Grid.ColumnSpan="6">
 			<Grid.RowDefinitions>
-				<RowDefinition Height="25"></RowDefinition>
-				<RowDefinition Height="12"></RowDefinition>
-				<RowDefinition Height="25"></RowDefinition>
-				<RowDefinition Height="20"></RowDefinition>
-				<RowDefinition Height="25"></RowDefinition>
-				<RowDefinition Height="12"></RowDefinition>
-				<RowDefinition Height="12" ></RowDefinition>
-				<RowDefinition Height="12"></RowDefinition>
+				<RowDefinition Height="*"></RowDefinition>
+				<RowDefinition Height="*"></RowDefinition>
+				<RowDefinition Height="*"></RowDefinition>
+				<RowDefinition Height="*"></RowDefinition>
 			</Grid.RowDefinitions>
 			
 			<Grid.ColumnDefinitions>
@@ -44,48 +39,48 @@
 				<ColumnDefinition Width="100"></ColumnDefinition>
 			</Grid.ColumnDefinitions>
 			
-			<ListBox x:Name="listBox" Grid.RowSpan="7"
+			<ListBox x:Name="listBox" Grid.RowSpan="4"
 			         SelectionMode="Extended"
 			         SelectionChanged="ListBox_SelectionChanged"
 			         SelectedItem="{Binding SelectedTool}">
 			</ListBox>
 			
-			<Button x:Name="addButton"  Grid.Column="1" Margin="5,0,5,0"
+			<Button x:Name="addButton" Grid.Column="1" Margin="5,0,5,0"
 			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
 			        Click="AddButton_Click"
 			        Content="{core:Localize Global.AddButtonText}"></Button>
 			
-			<Button x:Name="removeButton" Grid.Row="2" Grid.Column="1" Margin="5,0,5,0"
+			<Button x:Name="removeButton" Grid.Row="1" Grid.Column="1" Margin="5,0,5,0"
 			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
 			       	IsEnabled="{Binding ButtonsEnable}"
 			        Content="{core:Localize Global.RemoveButtonText}"
 			        Click="RemoveButton_Click"></Button>
 			
-			<Button x:Name="upButton" Grid.Row="4" Grid.Column="1" Margin="5,0,5,0"
+			<Button x:Name="upButton" Grid.Row="2" Grid.Column="1" Margin="5,0,5,0"
 			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
 			        Content="{core:Localize Global.MoveUp}"
 			        Click="UpButton_Click"></Button>
 			
-			<Button x:Name="downButton" Grid.Row="6" Grid.RowSpan="2" Grid.Column="1" Margin="5,0,5,0"
+			<Button x:Name="downButton" Grid.Row="3" Grid.RowSpan="2" Grid.Column="1" Margin="5,0,5,0"
 			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
 			        Content="{core:Localize Global.MoveDown}"
 			        Click="DownButton_Click"></Button>
 		</Grid>
 		
-		<Label Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" IsEnabled="{Binding EditEnable}"
+		<Label Grid.Row="3" IsEnabled="{Binding EditEnable}"
 		       Content="{core:Localize Dialog.Options.ExternalTool.TitleLabel}">
 		</Label>
 		
-		<TextBox Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" VerticalAlignment="Center"
+		<TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3"
 		         IsEnabled="{Binding EditEnable}"
 		         Text="{Binding SelectedTool.MenuCommand}">
 		</TextBox>
 		
-		<Label Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" IsEnabled="{Binding EditEnable}"
+		<Label Grid.Row="4" IsEnabled="{Binding EditEnable}"
 		       Content="{core:Localize Dialog.Options.ExternalTool.CommandLabel}">
 		</Label>
 		
-		<TextBox x:Name="commandTextBox" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Center"
+		<TextBox x:Name="commandTextBox" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2"
 		         IsEnabled="{Binding EditEnable}"
 		         Text="{Binding SelectedTool.Command}">
 		</TextBox>
@@ -96,11 +91,11 @@
 		        Content="...">
 		</Button>
 		
-		<Label Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" IsEnabled="{Binding EditEnable}"
+		<Label Grid.Row="5" IsEnabled="{Binding EditEnable}"
 		       Content="{core:Localize Dialog.Options.ExternalTool.ArgumentLabel}">
 		</Label>
 		
-		<TextBox x:Name="argumentTextBox" Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Center"
+		<TextBox x:Name="argumentTextBox" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2"
 		         IsEnabled="{Binding EditEnable}"
 		         Text="{Binding SelectedTool.Arguments}">
 			<TextBox.ContextMenu >
@@ -123,14 +118,14 @@
 		</Button>
 		
 		
-		<Label Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" IsEnabled="{Binding EditEnable}"
+		<Label Grid.Row="6" IsEnabled="{Binding EditEnable}"
 		       Content="{core:Localize Dialog.Options.ExternalTool.WorkingDirLabel}">
 		</Label>
 		
-		<TextBox x:Name="workingDirTextBox" Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Center"
+		<TextBox x:Name="workingDirTextBox" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2"
 		         IsEnabled="{Binding EditEnable}"
 		         Text="{Binding SelectedTool.InitialDirectory}">
-		<TextBox.ContextMenu >
+		<TextBox.ContextMenu>
 				<ContextMenu ItemsSource="{Binding WorkingDirContextMenu}"
 				             MenuItem.Click="WorkingDirTextBoxMenuItem_Click">
 					
@@ -150,13 +145,13 @@
 		        Content="&gt;">
 		</Button>
 		
-		<CheckBox x:Name="promptArgsCheckBox" Grid.Row="7" Grid.ColumnSpan="3" VerticalAlignment="Center"
+		<CheckBox x:Name="promptArgsCheckBox" Grid.Row="7" Grid.ColumnSpan="3" Margin="0, 5"
 		          IsEnabled="{Binding EditEnable}"
 		          Content="{core:Localize Dialog.Options.ExternalTool.PromptForArgsCheckBox}"
 		          IsChecked="{Binding SelectedTool.PromptForArguments}">
 		</CheckBox>
 		
-		<CheckBox x:Name="useOutputPadCheckBox" Grid.Row="8" Grid.ColumnSpan="3" VerticalAlignment="Center"
+		<CheckBox x:Name="useOutputPadCheckBox" Grid.Row="8" Grid.ColumnSpan="3"
 		          IsEnabled="{Binding EditEnable}"
 		          Content="{core:Localize Dialog.Options.ExternalTool.UseOutputWindow}"
 		          IsChecked="{Binding SelectedTool.UseOutputPad}">
