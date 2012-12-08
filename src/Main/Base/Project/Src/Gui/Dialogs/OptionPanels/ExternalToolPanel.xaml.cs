@@ -1,10 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 28.10.2012
- * Time: 18:35
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -17,15 +13,11 @@ using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	/// <summary>
-	/// Interaction logic for ExternalToolPanelXaml.xaml
-	/// </summary>
 	public partial class ExternalToolPanel : OptionPanel
 	{
 		internal const string ExecutableFilesFilter = "${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe;*.com;*.pif;*.bat;*.cmd|${res:SharpDevelop.FileFilter.AllFiles}|*.*";
 		
 		static string[,] argumentQuickInsertMenu = new string[,] {
-			
 			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.FullItemPath}",      "${ItemPath}"},
 			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.FullItemDirectory}", "${ItemDir}"},
 			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.ItemFileName}",      "${ItemFileName}"},
@@ -46,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.CombineDirectory}", "${SolutionDir}"},
 			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.CombineFileName}",  "${SolutionFileName}"},
 			{"-", ""},
-			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.SharpDevelopStartupPath}",  "${StartupPath}"},
+			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.SharpDevelopStartupPath}", "${StartupPath}"},
 		};
 		
 		static string[,] workingDirInsertMenu = new string[,] {
@@ -59,9 +51,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			{"-", ""},
 			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.CombineDirectory}", "${SolutionDir}"},
 			{"-", ""},
-			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.SharpDevelopStartupPath}",  "${StartupPath}"},
+			{"${res:Dialog.Options.ExternalTool.QuickInsertMenu.SharpDevelopStartupPath}", "${StartupPath}"},
 		};
-		
 		
 		public ExternalToolPanel()
 		{
@@ -72,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			WorkingDirContextMenu = FillArgumentContextMenu(workingDirInsertMenu);
 			this.DataContext = this;
 		}
-
+		
 		private List<UIElement> FillArgumentContextMenu(string[,] menuArray)
 		{
 			var list = new List<UIElement>();
@@ -87,10 +78,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				}
 			}
 			return list;
-		} 
-		
-		
-		#region overrides
+		}
 		
 		public override void LoadOptions()
 		{
@@ -101,10 +89,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			SelectedTool = null;
 		}
 		
-		
 		public override bool SaveOptions()
 		{
-			List<ExternalTool> newlist = new List<ExternalTool>();
+			var newlist = new List<ExternalTool>();
 			foreach (ExternalTool tool in listBox.Items) {
 				if (!FileUtility.IsValidPath(StringParser.Parse(tool.Command))) {
 					if (!Regex.IsMatch(tool.Command, @"^\$\{SdkToolPath:[\w\d]+\.exe\}$")) {
@@ -127,59 +114,54 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			return true;
 		}
 		
-		
-		#endregion
-		
-		#region properties
-		
-		private ExternalTool selectedTool;
+		ExternalTool selectedTool;
 		
 		public ExternalTool SelectedTool {
 			get { return selectedTool; }
-			set { selectedTool = value;
+			set {
+				selectedTool = value;
 				Console.WriteLine("selected {0}",listBox.SelectedItems.Count.ToString());
-				base.RaisePropertyChanged(() => SelectedTool);			}
+				base.RaisePropertyChanged(() => SelectedTool);
+			}
 		}
-	
 		
-		private bool editEnable;
+		bool editEnable;
 		
 		public bool EditEnable {
-			get { return editEnable;}
-			set {editEnable = value;
-				base.RaisePropertyChanged(() => EditEnable);}
+			get { return editEnable; }
+			set {
+				editEnable = value;
+				base.RaisePropertyChanged(() => EditEnable);
+			}
 		}
 		
-		private bool buttonsEnable;
+		bool buttonsEnable;
 		
 		public bool ButtonsEnable {
 			get { return buttonsEnable; }
-			set { buttonsEnable = value;
-				base.RaisePropertyChanged(() => ButtonsEnable);			}
+			set {
+				buttonsEnable = value;
+				base.RaisePropertyChanged(() => ButtonsEnable);
+			}
 		}
 		
-		public List<UIElement> ArgumentContextMenu {get; private set;}
-			
-		public List<UIElement> WorkingDirContextMenu {get; private  set;}
+		public List<UIElement> ArgumentContextMenu { get; private set; }
+		public List<UIElement> WorkingDirContextMenu { get; private  set; }
 		
-		#endregion
-		
-	
-		private void AddButton_Click(object sender, RoutedEventArgs e)
+		void AddButton_Click(object sender, RoutedEventArgs e)
 		{
 			EditEnable = true;
 			ButtonsEnable = true;
 			var newTool = new ExternalTool();
 			listBox.Items.Add(newTool);
 			SelectedTool = newTool;
-			var i = listBox.SelectedIndex;
+			int i = listBox.SelectedIndex;
 			listBox.SelectedIndex = listBox.Items.Count -1;
 		}
 		
-
-		private void RemoveButton_Click(object sender, RoutedEventArgs e)
+		void RemoveButton_Click(object sender, RoutedEventArgs e)
 		{
-			for (int i =listBox.SelectedItems.Count -1 ; i >= 0; i--) {
+			for (int i = listBox.SelectedItems.Count -1; i >= 0; i--) {
 				listBox.Items.Remove(listBox.SelectedItems[i]);
 			}
 			
@@ -192,21 +174,19 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			listBox.SelectedItems.Clear();
 		}
 		
-		
-		private void UpButton_Click(object sender, RoutedEventArgs e)
+		void UpButton_Click(object sender, RoutedEventArgs e)
 		{
-			var index = listBox.SelectedIndex;
+			int index = listBox.SelectedIndex;
 			if (index > 0) {
-			object tmp = listBox.Items[index];
-			listBox.Items[index] = listBox.Items[index - 1];
-			listBox.Items[index - 1] = tmp;
-			listBox.SelectedIndex = index - 1;
-			base.RaisePropertyChanged(null);
+				object tmp = listBox.Items[index];
+				listBox.Items[index] = listBox.Items[index - 1];
+				listBox.Items[index - 1] = tmp;
+				listBox.SelectedIndex = index - 1;
+				base.RaisePropertyChanged(null);
 			}
 		}
 		
-		
-		private void DownButton_Click(object sender, RoutedEventArgs e)
+		void DownButton_Click(object sender, RoutedEventArgs e)
 		{
 			int index = listBox.SelectedIndex;
 			if (index < listBox.Items.Count -1) {
@@ -218,15 +198,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
-		
-		private void ArgumentQuickInsertButton_Click(object sender, RoutedEventArgs e)
+		void ArgumentQuickInsertButton_Click(object sender, RoutedEventArgs e)
 		{
 			argumentTextBox.ContextMenu.PlacementTarget = argumentTextBox;
 			argumentTextBox.ContextMenu.IsOpen = true;
 		}
 		
-		
-		private void ArgumentTextBoxMenuItem_Click(object sender, RoutedEventArgs e)
+		void ArgumentTextBoxMenuItem_Click(object sender, RoutedEventArgs e)
 		{
 			var menuItem  = e.OriginalSource as MenuItem;
 			if (menuItem != null) {
@@ -234,15 +212,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
-		
-		private void WorkingDirQuickInsertButton_Click(object sender, RoutedEventArgs e)
+		void WorkingDirQuickInsertButton_Click(object sender, RoutedEventArgs e)
 		{
 			workingDirTextBox.ContextMenu.PlacementTarget = argumentTextBox;
 			workingDirTextBox.ContextMenu.IsOpen = true;
 		}
 		
-		
-		private void WorkingDirTextBoxMenuItem_Click(object sender, RoutedEventArgs e)
+		void WorkingDirTextBoxMenuItem_Click(object sender, RoutedEventArgs e)
 		{
 			var menuItem  = e.OriginalSource as MenuItem;
 			if (menuItem != null) {
@@ -250,10 +226,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
-		
-		private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (listBox.SelectedItems.Count == 0 ) {
+			if (listBox.SelectedItems.Count == 0) {
 				EnableFields(false);
 				ButtonsEnable = false;
 			} else {
@@ -267,15 +242,14 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
-		
-		private void EnableFields (bool enable)
+		void EnableFields (bool enable)
 		{
 			EditEnable = enable;
 			this.upButton.IsEnabled = enable;
 			this.downButton.IsEnabled = enable;
 		}
 		
-		private void BrowseButton_Click(object sender, RoutedEventArgs e)
+		void BrowseButton_Click(object sender, RoutedEventArgs e)
 		{
 			var dialog = new OpenFileDialog();
 			dialog.CheckFileExists = true;
