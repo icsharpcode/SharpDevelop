@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	public partial class BuildAdvanced : UserControl,IProjectUserControl, INotifyPropertyChanged
 	{
 
-		private string dllBaseAdress;
+		private string dllBaseAddress;
 		private System.Windows.Input.ICommand baseIntermediateOutputPathCommand;
 		private System.Windows.Input.ICommand intermediateOutputPathCommand;
 		private ProjectOptionPanel projectOptions;
@@ -79,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (!int.TryParse(BaseAddress.Value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out val)) {
 				val = 0x400000;
 			}
-			DllBaseAdress =  "0x" + val.ToString("x", NumberFormatInfo.InvariantInfo);
+			DllBaseAddress =  "0x" + val.ToString("x", NumberFormatInfo.InvariantInfo);
 			projectOptions.IsDirty = true;
 		}
 		
@@ -87,13 +87,14 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public bool SaveProjectOptions()
 		{
 			NumberStyles style = NumberStyles.Integer;
-			if (dllBaseAdress.StartsWith("0x")) {
-				dllBaseAdress = dllBaseAdress.Substring(2);
+			string dllBaseAddressWithoutHexPrefix = dllBaseAddress;
+			if (dllBaseAddress.StartsWith("0x")) {
+				dllBaseAddressWithoutHexPrefix = dllBaseAddress.Substring(2);
 				style = NumberStyles.HexNumber;
 			}
 			
 			int val;
-			if (int.TryParse(dllBaseAdress, style, NumberFormatInfo.InvariantInfo, out val)) {
+			if (int.TryParse(dllBaseAddressWithoutHexPrefix, style, NumberFormatInfo.InvariantInfo, out val)) {
 				BaseAddress.Value = val.ToString(NumberFormatInfo.InvariantInfo);
 				return true;
 			} else {
@@ -153,13 +154,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public List<KeyItemPair> FileAlign {get;set;}
 		
 		
-		public string DllBaseAdress {
+		public string DllBaseAddress {
 			get {
-				return dllBaseAdress;
+				return dllBaseAddress;
 			}
 			
 			set {
-				dllBaseAdress = value;
+				dllBaseAddress = value;
 				projectOptions.IsDirty = true;
 				RaisePropertyChanged("DllBaseAdress");
 			}

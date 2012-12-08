@@ -85,7 +85,7 @@
 		
 		<!--x:Name="dllBaseAddressTextBox"-->
 		<TextBox  Grid.Row="4" Grid.Column="2"
-		         Text="{Binding DllBaseAdress, UpdateSourceTrigger=PropertyChanged}">
+		         Text="{Binding DllBaseAddress, UpdateSourceTrigger=PropertyChanged}">
 		
 		</TextBox>
 		
