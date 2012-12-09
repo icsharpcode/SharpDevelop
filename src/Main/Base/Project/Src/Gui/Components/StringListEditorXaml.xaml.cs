@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void AddButton_Click(object sender, RoutedEventArgs e)
 		{
 			editTextBox.Text = editTextBox.Text.Trim();
-			if (editTextBox.Text.Length > 0) {
+			if (AnyTextInTextBox()) {
 				int index = listBox.Items.IndexOf(editTextBox.Text);
 				if (index < 0) {
 					index = listBox.Items.Add(editTextBox.Text);
@@ -66,6 +66,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 				listBox.SelectedIndex = index;
 			}
+		}
+		
+		bool AnyTextInTextBox()
+		{
+			return editTextBox.Text.Length > 0;
 		}
 		
 		#region Load/Save List
@@ -96,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		private void UpdateButton_Click(object sender, RoutedEventArgs e)
 		{
 			editTextBox.Text = editTextBox.Text.Trim();
-			if (editTextBox.Text.Length > 0) {
+			if (AnyTextInTextBox()) {
 				listBox.Items[listBox.SelectedIndex] = editTextBox.Text;
 				OnListChanged(EventArgs.Empty);
 			}
@@ -124,8 +129,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		private void EditTextBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
-			addButton.IsEnabled = editTextBox.Text.Length > 0;
-//			updateButton.IsEnabled = listBox.SelectedIndex >= 0 && editTextBox.Text.Length > 0;
+			addButton.IsEnabled = AnyTextInTextBox();
 			CheckEnableState();
 		}
 		
@@ -150,14 +154,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		private void CheckEnableState()
 		{
-			moveUpButton.IsEnabled = listBox.SelectedIndex > -1 && listBox.Items.Count > 1;
-			moveDownButton.IsEnabled = listBox.SelectedIndex > -1 && listBox.Items.Count > 1;
-			removeButton.IsEnabled = listBox.SelectedIndex > -1;
+			moveUpButton.IsEnabled = (listBox.SelectedIndex > 0) && MultipleItemsInList();
+			moveDownButton.IsEnabled = IsItemSelected() && MultipleItemsInList() && (listBox.SelectedIndex < listBox.Items.Count - 1);
+			removeButton.IsEnabled = IsItemSelected();
 			
-			deleteButton.IsEnabled = listBox.SelectedIndex > -1;
-			updateButton.IsEnabled = listBox.SelectedIndex > -1 && editTextBox.Text.Length > 0;
+			deleteButton.IsEnabled = IsItemSelected();
+			updateButton.IsEnabled = IsItemSelected() && AnyTextInTextBox();
 		}
 		
+		bool MultipleItemsInList()
+		{
+			return listBox.Items.Count > 1;
+		}
+		
+		bool IsItemSelected()
+		{
+			return listBox.SelectedIndex > -1;
+		}
 		
 		#region MoveUp-MoveDow-DeleteButton
 		
@@ -167,7 +180,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			object tmp = listBox.Items[index];
 			listBox.Items[index] = listBox.Items[index - 1];
 			listBox.Items[index - 1] = tmp;
-//			listBox.SelectedIndex = index - 1;
+			listBox.SelectedIndex = index - 1;
 			OnListChanged(EventArgs.Empty);
 		}
 		
@@ -177,7 +190,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			object tmp = listBox.Items[index];
 			listBox.Items[index] = listBox.Items[index + 1];
 			listBox.Items[index + 1] = tmp;
-//			listBox.SelectedIndex = index + 1;
+			listBox.SelectedIndex = index + 1;
 			OnListChanged(EventArgs.Empty);
 		}
 		
