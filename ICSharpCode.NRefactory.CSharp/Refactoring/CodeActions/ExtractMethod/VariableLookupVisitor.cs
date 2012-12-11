@@ -91,7 +91,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 			return visitor.UsedVariables;
 		}
 		
-		public static List<IVariable> Analyze(RefactoringContext context, List<Statement> statements)
+		public static List<IVariable> Analyze(RefactoringContext context, List<AstNode> statements)
 		{
 			var visitor = new VariableLookupVisitor(context);
 			statements.ForEach(stmt => stmt.AcceptVisitor(visitor));

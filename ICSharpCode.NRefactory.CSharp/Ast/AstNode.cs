@@ -369,7 +369,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Adds a child without performing any safety checks.
 		/// </summary>
-		void AddChildUnsafe (AstNode child, Role role)
+		internal void AddChildUnsafe (AstNode child, Role role)
 		{
 			child.parent = this;
 			child.SetRole(role);
