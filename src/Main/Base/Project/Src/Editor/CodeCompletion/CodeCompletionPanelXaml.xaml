@@ -11,9 +11,11 @@
 			<RowDefinition Height="Auto"></RowDefinition>
 		</Grid.RowDefinitions>
 		
-		<Label
-			Content="{core:Localize Dialog.Options.IDEOptions.CodeCompletion.MainOption}" VerticalAlignment="Center">
-		</Label>
+		<TextBlock
+			Margin="0,0,0,5"
+			Text="{core:Localize Dialog.Options.IDEOptions.CodeCompletion.MainOption}"
+			TextWrapping="Wrap"
+			VerticalAlignment="Center"/>
 		
 		<CheckBox Grid.Row="1"  VerticalAlignment="Center"
 		          Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.CodeCompletionCheckBox}"
