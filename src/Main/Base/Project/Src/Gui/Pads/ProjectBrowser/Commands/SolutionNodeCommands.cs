@@ -20,6 +20,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			ISolutionFolderNode solutionFolderNode = node as ISolutionFolderNode;
 			if (node != null) {
 				using (NewProjectDialog npdlg = new NewProjectDialog(false)) {
+					npdlg.SolutionFolderNode = solutionFolderNode;
 					npdlg.InitialProjectLocationDirectory = GetInitialDirectorySuggestion(solutionFolderNode);
 					
 					// show the dialog to request project type and name
@@ -28,8 +29,6 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 							MessageService.ShowError("No project has been created, there is nothing to add.");
 							return;
 						}
-						AddExitingProjectToSolution.AddProject(solutionFolderNode, npdlg.NewProjectLocation);
-						ProjectService.SaveSolution();
 					}
 				}
 			}
@@ -62,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		}
 	}
 	
-	public class AddExitingProjectToSolution : AbstractMenuCommand
+	public class AddExistingProjectToSolution : AbstractMenuCommand
 	{
 		public static void AddProject(ISolutionFolderNode solutionFolderNode, string fileName)
 		{
