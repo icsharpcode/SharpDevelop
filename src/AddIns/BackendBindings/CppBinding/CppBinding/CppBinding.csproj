@@ -58,6 +58,8 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Reference Include="Microsoft.Build" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -65,47 +67,40 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CppAmbience.cs" />
     <Compile Include="CppFormattingStrategy.cs" />
     <Compile Include="CppLanguageBinding.cs" />
     <Compile Include="CppLanguageProperties.cs" />
-    <Compile Include="Project\DependencyRelation.cs" />
-    <Compile Include="Project\MultiDictionary.cs" />
     <Compile Include="Project\ApplicationOptions.cs">
-      <SubType>UserControl</SubType>
+      <DependentUpon>ApplicationOptions.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Project\LinkerOptions.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="Project\DependencyRelation.cs" />
+    <Compile Include="Project\LinkerOptions.xaml.cs">
+      <DependentUpon>LinkerOptions.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Project\BuildEventOptions.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Project\ItemDefinitionGroupBinding.cs" />
-    <Compile Include="Project\ObservedBinding.cs" />
-    <Compile Include="Project\OpenStringListEditorEvent.cs" />
-    <Compile Include="Project\PreprocessorOptions.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="Project\MultiDictionary.cs" />
+    <Compile Include="Project\PreprocessorOptions.xaml.cs">
+      <DependentUpon>PreprocessorOptions.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Project\ProjectConfigurationProjectItem.cs" />
     <Compile Include="Project\ResourceScript.cs" />
     <Compile Include="Project\SpecifyCliRuntimeLibraryCommand.cs" />
     <Compile Include="Project\CppProject.cs" />
-    <Compile Include="Project\StringListEditorDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Project\StringListEditorDialog.Designer.cs">
-      <DependentUpon>StringListEditorDialog.cs</DependentUpon>
-    </Compile>
     <None Include="CppBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="CppProjectBinding.cs" />
-    <EmbeddedResource Include="Resources\LinkerOptions.xfrm" />
-    <EmbeddedResource Include="Resources\PreprocessorOptions.xfrm" />
     <None Include="Templates\ConsoleProject.xpt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -138,13 +133,25 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resources" />
+    <Page Include="Project\ApplicationOptions.xaml" />
+    <Page Include="Project\LinkerOptions.xaml" />
+    <Page Include="Project\PreprocessorOptions.xaml" />
   </ItemGroup>
 </Project>

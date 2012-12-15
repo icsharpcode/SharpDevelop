@@ -72,27 +72,31 @@
 		<OptionPanel id    = "Application"
 		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ApplicationSettings"/>
+		
 		<OptionPanel id    = "ReferencePaths"
 		             label = "${res:Dialog.ProjectOptions.ReferencePaths}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ReferencePaths"/>
+		
 		<OptionPanel id    = "Signing"
 		             label = "${res:Dialog.ProjectOptions.Signing}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Signing"/>
+		
 		<OptionPanel id    = "BuildEvents"
 		             label = "${res:Dialog.ProjectOptions.BuildEvents}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
+		
 		<OptionPanel id    = "BuildOptions"
 		             label = "${res:Dialog.ProjectOptions.BuildOptions}"
 		             class = "ICSharpCode.VBNetBinding.OptionPanels.BuildOptions"/>
+		
 		<OptionPanel id    = "DebugOptions"
 		             label = "${res:Dialog.ProjectOptions.DebugOptions}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
-		<!--<OptionPanel id    = "Publish"
-		             label = "${res:Dialog.ProjectOptions.Publish}"
-		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Publish"/>-->
+		
 		<OptionPanel id    = "ProjectImports"
 		             label = "${res:Dialog.ProjectOptions.ProjectImports}"
 		             class = "ICSharpCode.VBNetBinding.OptionPanels.ProjectImports"/>
+		
 		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
 	</Path>
 

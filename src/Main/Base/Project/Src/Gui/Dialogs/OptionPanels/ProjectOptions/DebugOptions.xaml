@@ -1,168 +1,136 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <optionpanels:ProjectOptionPanel
-	x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels" xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels" xmlns:projects="clr-namespace:ICSharpCode.SharpDevelop.Project" xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
+	xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
+	xmlns:projects="clr-namespace:ICSharpCode.SharpDevelop.Project"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	
 	<optionpanels:ProjectOptionPanel.Resources>
-		<local:StorageLocationConverter
-			x:Key="converter" />
-		<local:StartActionToBooleanConverter
-			x:Key="startActionToBool" />
+		<local:StorageLocationConverter x:Key="converter" />
+		<local:StartActionToBooleanConverter x:Key="startActionToBool" />
 	</optionpanels:ProjectOptionPanel.Resources>
-	<Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition
-				Height="130"></RowDefinition>
-			<RowDefinition
-				Height="100"></RowDefinition>
-			<RowDefinition></RowDefinition>
-		</Grid.RowDefinitions>
-		<GroupBox
-			Height="120"
-			Margin="0,5,0,0"
-			Header="{core:Localize Dialog.ProjectOptions.DebugOptions.StartAction}"
-			VerticalAlignment="Top"
-			Grid.Column="0"
-			Grid.Row="0"
-			Grid.ColumnSpan="3"
-			HorizontalAlignment="Stretch">
-			<Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition></RowDefinition>
-					<RowDefinition></RowDefinition>
-					<RowDefinition></RowDefinition>
-				</Grid.RowDefinitions>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition
-						Width="50"></ColumnDefinition>
-					<ColumnDefinition
-						Width="190"></ColumnDefinition>
-					<ColumnDefinition></ColumnDefinition>
-					<ColumnDefinition
-						Width="40"></ColumnDefinition>
-				</Grid.ColumnDefinitions>
-				<optionpanels:StorageLocationPicker
-					Grid.Row="1"
-					VerticalAlignment="Center">
-					<optionpanels:StorageLocationPicker.Location>
-						<MultiBinding
-							Converter="{StaticResource converter}">
-							<Binding
-								Path="StartAction.Location" />
-							<Binding
-								Path="StartProgram.Location" />
-							<Binding
-								Path="StartURL.Location" />
-						</MultiBinding>
-					</optionpanels:StorageLocationPicker.Location>
-				</optionpanels:StorageLocationPicker>
-				<RadioButton
-					IsChecked="{Binding StartAction.Value, Converter={StaticResource startActionToBool}, ConverterParameter={x:Static projects:StartAction.Project}}"
-					Grid.Column="1"
-					VerticalAlignment="Center"
-					Margin="4,0,0,0"
-					Content="{core:Localize Dialog.ProjectOptions.DebugOptions.StartProject}"></RadioButton>
-				<RadioButton
-					x:Name="startexternal"
-					Grid.Row="1"
-					VerticalAlignment="Center"
-					Grid.Column="1"
-					Margin="4,0,0,0"
-					IsChecked="{Binding StartAction.Value, Converter={StaticResource startActionToBool}, ConverterParameter={x:Static projects:StartAction.Program}}"
-					Content="{core:Localize Dialog.ProjectOptions.DebugOptions.StartProgram}"></RadioButton>
-				<RadioButton
-					x:Name="startUrl"
-					Grid.Row="2"
-					VerticalAlignment="Center"
-					Grid.Column="1"
-					Margin="4,0,0,0"
-					IsChecked="{Binding StartAction.Value, Converter={StaticResource startActionToBool}, ConverterParameter={x:Static projects:StartAction.StartURL}}"
-					Content="{core:Localize Dialog.ProjectOptions.DebugOptions.StartBrowser}"></RadioButton>
-				<TextBox
-					Grid.Row="1"
-					Grid.Column="2"
-					IsEnabled="{Binding ElementName=startexternal, Path=IsChecked}"
-					Text="{Binding StartProgram.Value, UpdateSourceTrigger=PropertyChanged}"
-					Margin="5,5,5,5"></TextBox>
-				<Button
-					Grid.Row="1"
-					Grid.Column="3"
-					Margin="5,0,0,0"
-					Content="..."
-					IsEnabled="{Binding ElementName=startexternal, Path=IsChecked}"
-					Click="ExternalProgramButton_Click"></Button>
-				<TextBox
-					Grid.Row="2"
-					Grid.Column="2"
-					Grid.ColumnSpan="2"
-					Margin="5"
-					IsEnabled="{Binding ElementName=startUrl, Path=IsChecked}"
-					Text="{Binding StartURL.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-			</Grid>
-		</GroupBox>
-		<GroupBox
-			Height="90"
-			Header="{core:Localize Dialog.ProjectOptions.DebugOptions.StartOptions}"
-			VerticalAlignment="Top"
-			Grid.Column="0"
-			Grid.Row="1"
-			Grid.ColumnSpan="3"
-			Margin="0,5,0,0"
-			HorizontalAlignment="Stretch">
-			<Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition></RowDefinition>
-					<RowDefinition></RowDefinition>
-				</Grid.RowDefinitions>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition
-						Width="50"></ColumnDefinition>
-					<ColumnDefinition
-						Width="190"></ColumnDefinition>
-					<ColumnDefinition></ColumnDefinition>
-					<ColumnDefinition
-						Width="40"></ColumnDefinition>
-				</Grid.ColumnDefinitions>
-				<optionpanels:StorageLocationPicker
-					Grid.Row="1"
-					Grid.RowSpan="2"
-					VerticalAlignment="Center">
-					<optionpanels:StorageLocationPicker.Location>
-						<MultiBinding
-							Converter="{StaticResource converter}">
-							<Binding
-								Path="StartArguments.Location" />
-							<Binding
-								Path="StartWorkingDirectory.Location" />
-						</MultiBinding>
-					</optionpanels:StorageLocationPicker.Location>
-				</optionpanels:StorageLocationPicker>
-				<Label
-					Content="{core:Localize Dialog.ProjectOptions.DebugOptions.Arguments}"
-					Grid.Column="1"
-					VerticalAlignment="Center"
-					Margin="4,0,0,0"></Label>
-				<Label
-					Content="{core:Localize Dialog.ProjectOptions.DebugOptions.WorkingDir}"
-					Grid.Row="1"
-					Grid.Column="1"
-					VerticalAlignment="Center"
-					Margin="4,0,0,0"></Label>
-				<TextBox
-					Grid.Column="2"
-					Grid.ColumnSpan="2"
-					Margin="5"
-					Text="{Binding StartArguments.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-				<TextBox
-					Grid.Row="1"
-					Grid.Column="2"
-					Margin="5"
-					Text="{Binding StartWorkingDirectory.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-				<Button
-					Grid.Row="1"
-					Grid.Column="3"
-					Margin="5"
-					Click="BrwoseForFolder_Click"
-					Content="..."></Button>
-			</Grid>
-		</GroupBox>
-	</Grid>
+	
+	<ScrollViewer>
+		<Grid >
+			<Grid.RowDefinitions>
+				<RowDefinition Height="130"></RowDefinition>
+				<RowDefinition Height="100"></RowDefinition>
+				<!--<RowDefinition></RowDefinition>-->
+			</Grid.RowDefinitions>
+			<GroupBox Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
+			          Height="120" Margin="0,5,0,0"
+			        VerticalAlignment="Top" HorizontalAlignment="Stretch"  
+				Header="{core:Localize Dialog.ProjectOptions.DebugOptions.StartAction}">
+
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition></RowDefinition>
+						<RowDefinition></RowDefinition>
+						<RowDefinition></RowDefinition>
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"></ColumnDefinition>
+						<ColumnDefinition Width="190"></ColumnDefinition>
+						<ColumnDefinition></ColumnDefinition>
+						<ColumnDefinition Width="Auto"></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+					
+					<optionpanels:StorageLocationPicker
+						Grid.Row="1"
+						VerticalAlignment="Center">
+						<optionpanels:StorageLocationPicker.Location>
+							<MultiBinding
+								Converter="{StaticResource converter}">
+								<Binding Path="StartAction.Location" />
+								<Binding Path="StartProgram.Location" />
+								<Binding Path="StartURL.Location" />
+							</MultiBinding>
+						</optionpanels:StorageLocationPicker.Location>
+					</optionpanels:StorageLocationPicker>
+					
+					<RadioButton Grid.Column="1" VerticalAlignment="Center" Margin="4,0,0,0"
+						IsChecked="{Binding StartAction.Value,
+					             Converter={StaticResource startActionToBool},
+					             ConverterParameter={x:Static projects:StartAction.Project}}"
+						Content="{core:Localize Dialog.ProjectOptions.DebugOptions.StartProject}">
+					</RadioButton>
+				
+					
+					<RadioButton x:Name="startexternal" Grid.Row="1" Grid.Column="1" Margin="4,0,0,0" VerticalAlignment="Center"						
+						IsChecked="{Binding StartAction.Value,
+					             Converter={StaticResource startActionToBool},
+					             ConverterParameter={x:Static projects:StartAction.Program}}"
+						Content="{core:Localize Dialog.ProjectOptions.DebugOptions.StartProgram}"></RadioButton>
+					
+					<!--x:Name="startUrl"-->
+					<RadioButton Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="4,0,0,0"
+						IsChecked="{Binding StartAction.Value, 
+					             Converter={StaticResource startActionToBool},
+					             ConverterParameter={x:Static projects:StartAction.StartURL}}"
+						Content="{core:Localize Dialog.ProjectOptions.DebugOptions.StartBrowser}"></RadioButton>
+					
+					<TextBox Grid.Row="1" Grid.Column="2" Margin="5,5,5,5" VerticalAlignment="Center"
+						IsEnabled="{Binding ElementName=startexternal, Path=IsChecked}"
+						Text="{Binding StartProgram.Value, UpdateSourceTrigger=PropertyChanged}">
+						</TextBox>
+					
+					<Button Grid.Row="1" Grid.Column="3" Padding="9,1" VerticalAlignment="Center"
+						Content="..."
+						IsEnabled="{Binding ElementName=startexternal, Path=IsChecked}"
+						Click="ExternalProgramButton_Click"></Button>
+					
+					<TextBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" VerticalAlignment="Center"
+						IsEnabled="{Binding ElementName=startUrl, Path=IsChecked}"
+						Text="{Binding StartURL.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+				</Grid>
+			</GroupBox>
+			
+			<GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"
+				Height="90" VerticalAlignment="Top" Margin="0,5,0,0"
+				Header="{core:Localize Dialog.ProjectOptions.DebugOptions.StartOptions}"
+				HorizontalAlignment="Stretch">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition></RowDefinition>
+						<RowDefinition></RowDefinition>
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"></ColumnDefinition>
+						<ColumnDefinition Width="190"></ColumnDefinition>
+						<ColumnDefinition></ColumnDefinition>
+						<ColumnDefinition Width="Auto"></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+					
+					<optionpanels:StorageLocationPicker Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Center">
+						<optionpanels:StorageLocationPicker.Location>
+							<MultiBinding
+								Converter="{StaticResource converter}">
+								<Binding Path="StartArguments.Location" />
+								<Binding Path="StartWorkingDirectory.Location" />
+							</MultiBinding>
+						</optionpanels:StorageLocationPicker.Location>
+					</optionpanels:StorageLocationPicker>
+					
+					<Label Grid.Column="1" Margin="4,0,0,0" VerticalAlignment="Center"
+						Content="{core:Localize Dialog.ProjectOptions.DebugOptions.Arguments}"></Label>
+					
+					<Label Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="4,0,0,0"
+						Content="{core:Localize Dialog.ProjectOptions.DebugOptions.WorkingDir}"></Label>
+					
+					<TextBox Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Center"
+						Text="{Binding StartArguments.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+					
+					<TextBox Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"
+						Text="{Binding StartWorkingDirectory.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+					
+					<Button Grid.Row="1" Grid.Column="3" Margin="5" Padding="9,1" VerticalAlignment="Center"
+						Click="BrowseForFolder_Click"
+						Content="..."></Button>
+				</Grid>
+			</GroupBox>
+		</Grid>
+</ScrollViewer>
 </optionpanels:ProjectOptionPanel>

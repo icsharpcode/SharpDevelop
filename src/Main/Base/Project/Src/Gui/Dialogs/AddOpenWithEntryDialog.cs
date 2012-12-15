@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void BrowseForProgramButtonClick(object sender, EventArgs e)
 		{
 			using (OpenFileDialog dlg = new OpenFileDialog()) {
-				dlg.Filter = StringParser.Parse(OptionPanels.ExternalToolPane.ExecutableFilesFilter);
+				dlg.Filter = StringParser.Parse(OptionPanels.ExternalToolPanel.ExecutableFilesFilter);
 				if (dlg.ShowDialog(this) == DialogResult.OK) {
 					programNameTextBox.Text = "\"" + dlg.FileName + "\"";
 					if (!userEditedDisplayName) {

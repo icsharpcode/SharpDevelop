@@ -4,19 +4,25 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Shapes;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
 	/// <summary>
 	/// Base class for project option panels with configuration picker.
 	/// </summary>
-	public class ProjectOptionPanel : UserControl, IOptionPanel, ICanBeDirty
+	public class ProjectOptionPanel : UserControl, IOptionPanel, ICanBeDirty, INotifyPropertyChanged, IDisposable
 	{
+		
 		static ProjectOptionPanel()
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(ProjectOptionPanel), new FrameworkPropertyMetadata(typeof(ProjectOptionPanel)));
@@ -27,13 +33,29 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			this.DataContext = this;
 		}
 		
+		/// <summary>
+		/// Initializes the project option panel.
+		/// This method is called after the project property was initialized,
+		/// immediately before the first Load() call.
+		/// </summary>
+		protected virtual void Initialize()
+		{
+		}
+		
+		public virtual void Dispose()
+		{
+		}
+		
 		ComboBox configurationComboBox;
 		ComboBox platformComboBox;
 		MSBuildBasedProject project;
 		string activeConfiguration;
 		string activePlatform;
 		bool resettingIndex;
+		bool isLoaded;
 		
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+
 		protected virtual void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			foreach (IProjectProperty p in projectProperties.Values)
@@ -49,12 +71,23 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			return true;
 		}
 		
+		
+		public static readonly DependencyProperty HeaderVisibilityProperty =
+			DependencyProperty.Register("HeaderVisibility", typeof(Visibility), typeof(ProjectOptionPanel),
+			                            new FrameworkPropertyMetadata(Visibility.Visible));
+		
+		public Visibility HeaderVisibility {
+			get { return (Visibility)GetValue(HeaderVisibilityProperty); }
+			set { SetValue(HeaderVisibilityProperty, value); }
+		}
+		
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
 			configurationComboBox = Template.FindName("PART_configuration", this) as ComboBox;
 			platformComboBox = Template.FindName("PART_platform", this) as ComboBox;
 		}
+		
 		
 		object owner;
 		
@@ -85,6 +118,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				platformComboBox.SelectedItem = project.ActivePlatform;
 				platformComboBox.SelectionChanged += comboBox_SelectionChanged;
 			}
+			Initialize();
 			Load();
 		}
 		
@@ -128,6 +162,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			else
 				activePlatform = project.ActivePlatform;
 			
+			isLoaded = true;
 			Load(project, activeConfiguration, activePlatform);
 		}
 		
@@ -149,11 +184,14 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
-		public string BaseDirectory
-		{
-			get {return project.Directory;}
+		public MSBuildBasedProject Project {
+			get { return project; }
 		}
-			
+		
+		public string BaseDirectory {
+			get { return project.Directory; }
+		}
+		
 		public event EventHandler IsDirtyChanged;
 		
 		#region Manage MSBuild properties
@@ -170,6 +208,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			bool treatAsLiteral = (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty);
 			ProjectProperty<string> newProperty = new ProjectProperty<string>(this, propertyName, defaultValue, defaultLocation, treatAsLiteral);
 			projectProperties.Add(propertyName, newProperty);
+			if (isLoaded)
+				newProperty.Load(project, activeConfiguration, activePlatform);
 			return newProperty;
 		}
 		
@@ -182,6 +222,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			ProjectProperty<T> newProperty = new ProjectProperty<T>(this, propertyName, defaultValue, defaultLocation, true);
 			projectProperties.Add(propertyName, newProperty);
+			if (isLoaded)
+				newProperty.Load(project, activeConfiguration, activePlatform);
 			return newProperty;
 		}
 		
@@ -200,6 +242,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			readonly bool treatPropertyValueAsLiteral;
 			T val;
 			PropertyStorageLocations location;
+			bool isLoading;
 			
 			public ProjectProperty(ProjectOptionPanel parentPanel, string propertyName, T defaultValue, PropertyStorageLocations defaultLocation, bool treatPropertyValueAsLiteral)
 			{
@@ -211,6 +254,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				
 				this.val = defaultValue;
 				this.location = defaultLocation;
+			}
+			
+			public TextBoxEditMode TextBoxEditMode {
+				get { return treatPropertyValueAsLiteral ? TextBoxEditMode.EditEvaluatedProperty : TextBoxEditMode.EditRawProperty; }
 			}
 			
 			public string PropertyName {
@@ -225,7 +272,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 						if (PropertyChanged != null)
 							PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs("Value"));
 						
-						parentPanel.IsDirty = true;
+						if (!isLoading)
+							parentPanel.IsDirty = true;
 					}
 				}
 			}
@@ -238,7 +286,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 						if (PropertyChanged != null)
 							PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs("Location"));
 						
-						parentPanel.IsDirty = true;
+						if (!isLoading)
+							parentPanel.IsDirty = true;
 					}
 				}
 			}
@@ -257,8 +306,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				if (newLocation == PropertyStorageLocations.Unknown)
 					newLocation = defaultLocation;
 				
-				this.Value = GenericConverter.FromString(v, defaultValue);
-				this.Location = newLocation;
+				isLoading = true;
+				try {
+					this.Value = GenericConverter.FromString(v, defaultValue);
+					this.Location = newLocation;
+				} finally {
+					isLoading = false;
+				}
 			}
 			
 			public void Save(MSBuildBasedProject project, string configuration, string platform)
@@ -266,6 +320,158 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				string newValue = GenericConverter.ToString(val);
 				project.SetProperty(configuration, platform, propertyName, newValue, location, treatPropertyValueAsLiteral);
 			}
+		}
+		#endregion
+		
+		#region INotifyPropertyChanged implementation
+		
+		protected void RaisePropertyChanged(string propertyName)
+		{
+			RaiseInternal(propertyName);
+		}
+		
+		
+		protected void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpresssion)
+		{
+			var propertyName = ExtractPropertyName(propertyExpresssion);
+			RaiseInternal(propertyName);
+		}
+		
+		
+		private void RaiseInternal (string propertyName)
+		{
+			var handler = this.PropertyChanged;
+			if (handler != null)
+			{
+				handler(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private static String ExtractPropertyName<T>(Expression<Func<T>> propertyExpresssion)
+		{
+			if (propertyExpresssion == null)
+			{
+				throw new ArgumentNullException("propertyExpresssion");
+			}
+
+			var memberExpression = propertyExpresssion.Body as MemberExpression;
+			if (memberExpression == null)
+			{
+				throw new ArgumentException("The expression is not a member access expression.", "propertyExpresssion");
+			}
+
+			var property = memberExpression.Member as PropertyInfo;
+			if (property == null)
+			{
+				throw new ArgumentException("The member access expression does not access a property.", "propertyExpresssion");
+			}
+
+			var getMethod = property.GetGetMethod(true);
+			if (getMethod.IsStatic)
+			{
+				throw new ArgumentException("The referenced property is a static property.", "propertyExpresssion");
+			}
+
+			return memberExpression.Member.Name;
+		}
+		
+		#endregion
+		
+		#region Browse Helper
+		/// <summary>
+		/// Shows the 'Browse for folder' dialog.
+		/// </summary>
+		public void BrowseForFolder(ProjectProperty<string> property, string description)
+		{
+			string newValue = BrowseForFolder(description, BaseDirectory, property.TextBoxEditMode);
+			if (newValue != null)
+				property.Value = newValue;
+		}
+		
+		/// <summary>
+		/// Shows the 'Browse for folder' dialog.
+		/// </summary>
+		/// <param name="description">A description shown inside the dialog.</param>
+		/// <param name="startLocation">Start location, relative to the <see cref="BaseDirectory"/></param>
+		/// <param name="textBoxEditMode">The TextBoxEditMode used for the text box containing the file name</param>
+		/// <returns>Returns the location of the folder; or null if the dialog was cancelled.</returns>
+		protected string BrowseForFolder(string description, string startLocation, TextBoxEditMode textBoxEditMode)
+		{
+			string startAt = GetInitialDirectory(startLocation, textBoxEditMode, false);
+			using (var fdiag = FileService.CreateFolderBrowserDialog(description, startAt))
+			{
+				if (fdiag.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+					string path = fdiag.SelectedPath;
+					if (!String.IsNullOrEmpty(startLocation)) {
+						path = FileUtility.GetRelativePath(startLocation, path);
+					}
+					if (!path.EndsWith("\\", StringComparison.Ordinal) && !path.EndsWith("/", StringComparison.Ordinal))
+						path += "\\";
+					if (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty) {
+						return path;
+					} else {
+						return MSBuildInternals.Escape(path);
+					}
+				}
+			}
+			return null;
+		}
+		
+		/// <summary>
+		/// Shows an 'Open File' dialog.
+		/// </summary>
+		protected void BrowseForFile(ProjectProperty<string> property, string filter)
+		{
+			string newValue = BrowseForFile(filter, property.Value, property.TextBoxEditMode);
+			if (newValue != null)
+				property.Value = newValue;
+		}
+		
+		/// <summary>
+		/// Shows an 'Open File' dialog.
+		/// </summary>
+		/// <param name="filter">The filter string that determines which files are displayed.</param>
+		/// <param name="startLocation">Start location, relative to the <see cref="BaseDirectory"/></param>
+		/// <param name="textBoxEditMode">The TextBoxEditMode used for the text box containing the file name</param>
+		/// <returns>Returns the location of the file; or null if the dialog was cancelled.</returns>
+		protected string BrowseForFile(string filter, string startLocation, TextBoxEditMode textBoxEditMode)
+		{
+			var dialog = new OpenFileDialog();
+			dialog.InitialDirectory = GetInitialDirectory(startLocation, textBoxEditMode, true);
+			
+			if (!String.IsNullOrEmpty(filter)) {
+				dialog.Filter = StringParser.Parse(filter);
+			}
+			
+			if (dialog.ShowDialog() == true) {
+				string fileName = dialog.FileName;
+				if (!String.IsNullOrEmpty(this.BaseDirectory)) {
+					fileName = FileUtility.GetRelativePath(this.BaseDirectory, fileName);
+				}
+				if (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty) {
+					return fileName;
+				} else {
+					return MSBuildInternals.Escape(fileName);
+				}
+			}
+			return null;
+		}
+		
+		string GetInitialDirectory(string relativeLocation, TextBoxEditMode textBoxEditMode, bool isFile)
+		{
+			if (textBoxEditMode == TextBoxEditMode.EditRawProperty)
+				relativeLocation = MSBuildInternals.Unescape(relativeLocation);
+			if (string.IsNullOrEmpty(relativeLocation))
+				return this.BaseDirectory;
+			
+			try {
+				string path = FileUtility.GetAbsolutePath(this.BaseDirectory, relativeLocation);
+				if (FileUtility.IsValidPath(path))
+					return isFile ? System.IO.Path.GetDirectoryName(path) : path;
+			} catch (ArgumentException) {
+				// can happen in GetAbsolutePath if the path contains invalid characters
+			}
+			return this.BaseDirectory;
 		}
 		#endregion
 	}

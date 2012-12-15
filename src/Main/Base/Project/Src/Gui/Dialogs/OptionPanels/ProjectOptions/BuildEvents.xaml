@@ -6,27 +6,30 @@
 	xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project"
 	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui"
 	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels">
-	<GroupBox Header="{core:Localize Dialog.ProjectOptions.BuildEvents}">
-		<StackPanel>
-			<Label Content="{core:Localize Dialog.ProjectOptions.BuildEvents.PreBuild}" Target="{Binding ElementName=preBuild}"/>
-			<DockPanel>
-				<optionpanels:StorageLocationPicker Location="{Binding PreBuildEvent.Location}" DockPanel.Dock="Left" />
-				<TextBox Name="preBuild" Text="{Binding PreBuildEvent.Value, UpdateSourceTrigger=PropertyChanged}" Height="75"
-				         HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Visible" AcceptsReturn="True" />
-			</DockPanel>
-			
-			<Label Content="{core:Localize Dialog.ProjectOptions.BuildEvents.PostBuild}" Target="{Binding ElementName=postBuild}"/>
-			<DockPanel>
-				<optionpanels:StorageLocationPicker Location="{Binding PostBuildEvent.Location}" DockPanel.Dock="Left" />
-				<TextBox Name="postBuild" Text="{Binding PostBuildEvent.Value, UpdateSourceTrigger=PropertyChanged}" Height="75"
-				         HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Visible" AcceptsReturn="True" />
-			</DockPanel>
-			
-			<Label Content="{core:Localize Dialog.ProjectOptions.BuildEvents.RunPostBuild}" />
-			<DockPanel>
-				<optionpanels:StorageLocationPicker Location="{Binding RunPostBuildEvent.Location}" DockPanel.Dock="Left" />
-				<ComboBox gui:EnumBinding.EnumType="{x:Type project:RunPostBuildEvent}" SelectedValue="{Binding RunPostBuildEvent.Value}" />
-			</DockPanel>
-		</StackPanel>
-	</GroupBox>
+	<ScrollViewer
+		VerticalScrollBarVisibility="Auto">
+		<GroupBox Header="{core:Localize Dialog.ProjectOptions.BuildEvents}">
+			<StackPanel>
+				<Label Content="{core:Localize Dialog.ProjectOptions.BuildEvents.PreBuild}" Target="{Binding ElementName=preBuild}"/>
+				<DockPanel>
+					<optionpanels:StorageLocationPicker Location="{Binding PreBuildEvent.Location}" DockPanel.Dock="Left" />
+					<TextBox Name="preBuild" Text="{Binding PreBuildEvent.Value, UpdateSourceTrigger=PropertyChanged}" Height="75"
+					         HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Visible" AcceptsReturn="True" />
+				</DockPanel>
+				
+				<Label Content="{core:Localize Dialog.ProjectOptions.BuildEvents.PostBuild}" Target="{Binding ElementName=postBuild}"/>
+				<DockPanel>
+					<optionpanels:StorageLocationPicker Location="{Binding PostBuildEvent.Location}" DockPanel.Dock="Left" />
+					<TextBox Name="postBuild" Text="{Binding PostBuildEvent.Value, UpdateSourceTrigger=PropertyChanged}" Height="75"
+					         HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Visible" AcceptsReturn="True" />
+				</DockPanel>
+				
+				<Label Content="{core:Localize Dialog.ProjectOptions.BuildEvents.RunPostBuild}" />
+				<DockPanel>
+					<optionpanels:StorageLocationPicker Location="{Binding RunPostBuildEvent.Location}" DockPanel.Dock="Left" />
+					<ComboBox gui:EnumBinding.EnumType="{x:Type project:RunPostBuildEvent}" SelectedValue="{Binding RunPostBuildEvent.Value}" />
+				</DockPanel>
+			</StackPanel>
+		</GroupBox>
+	</ScrollViewer>
 </optionpanels:ProjectOptionPanel>

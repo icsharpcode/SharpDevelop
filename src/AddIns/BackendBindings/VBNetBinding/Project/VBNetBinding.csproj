@@ -59,14 +59,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Resources\BuildOptions.xfrm">
-      <LogicalName>Resources.BuildOptions.xfrm</LogicalName>
-    </EmbeddedResource>
     <Compile Include="Src\Extensions.cs" />
     <Compile Include="Src\FormattingStrategy\VBStatement.cs" />
     <Compile Include="Src\LanguageUtils.cs" />
-    <Compile Include="Src\OptionPanels\ProjectImportsOptions.xaml.cs">
-      <DependentUpon>ProjectImportsOptions.xaml</DependentUpon>
+    <Compile Include="Src\OptionPanels\BuildOptions.xaml.cs">
+      <DependentUpon>BuildOptions.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\OptionPanels\ProjectImports.xaml.cs">
+      <DependentUpon>ProjectImports.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\OptionPanels\TextEditorOptions.xaml.cs">
@@ -79,9 +80,6 @@
     <Compile Include="Src\VBNetLanguageBinding.cs" />
     <Compile Include="Src\VBNetProjectBinding.cs" />
     <Compile Include="Src\FormattingStrategy\VBNetFormattingStrategy.cs" />
-    <Compile Include="Src\OptionPanels\BuildOptions.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Src\Parser\Parser.cs" />
     <Compile Include="Src\Project\VBNetProject.cs" />
     <None Include="VBNetBinding.addin">
@@ -89,12 +87,6 @@
     </None>
     <Compile Include="Src\VBNetCompletionBinding.cs" />
     <Compile Include="Src\MyNamespaceBuilder.cs" />
-    <Compile Include="Src\OptionPanels\ProjectImports.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <EmbeddedResource Include="Resources\ProjectImports.xfrm">
-      <LogicalName>Resources.ProjectImports.xfrm</LogicalName>
-    </EmbeddedResource>
     <Compile Include="Src\Project\CSharpToVBNetConverter.cs" />
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
@@ -120,6 +112,7 @@
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
       <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
       <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
@@ -129,10 +122,12 @@
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\OptionPanels\ProjectImportsOptions.xaml" />
+    <Page Include="Src\OptionPanels\BuildOptions.xaml" />
+    <Page Include="Src\OptionPanels\ProjectImports.xaml" />
     <Page Include="Src\OptionPanels\TextEditorOptions.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

@@ -323,7 +323,6 @@
     <Compile Include="Gui\DebugPythonCommandTests.cs" />
     <Compile Include="Gui\FormsDesignerDisplayBindingTestFixture.cs" />
     <Compile Include="Gui\PythonFormattingStrategyTests.cs" />
-    <Compile Include="Gui\PythonOptionsPanelTestFixture.cs" />
     <Compile Include="Gui\RunPythonCommandTests.cs" />
     <Compile Include="Parsing\ClassWithBaseClassTestFixture.cs" />
     <Compile Include="Parsing\InvalidCastInPythonParserTestFixture.cs" />
@@ -466,6 +465,10 @@
     <ProjectReference Include="..\..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>

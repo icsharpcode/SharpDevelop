@@ -84,6 +84,10 @@
     <Compile Include="Src\Gui\ImageResourceEditorDialog.Designer.cs">
       <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Gui\OptionPanels\GeneralOptionsPanel.xaml.cs">
+      <DependentUpon>GeneralOptionsPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\OptionPanels\GridOptionsPanel.xaml.cs">
       <DependentUpon>GridOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -140,8 +144,6 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Src\Gui\OptionPanels\GeneralOptions.cs" />
-    <EmbeddedResource Include="Resources\WindowsFormsGeneralOptions.xfrm" />
     <EmbeddedResource Include="Src\Gui\ImageResourceEditorDialog.resx">
       <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -190,6 +192,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\Gui\OptionPanels\GeneralOptionsPanel.xaml" />
     <Page Include="Src\Gui\OptionPanels\GridOptionsPanel.xaml" />
     <Page Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.xaml" />
   </ItemGroup>

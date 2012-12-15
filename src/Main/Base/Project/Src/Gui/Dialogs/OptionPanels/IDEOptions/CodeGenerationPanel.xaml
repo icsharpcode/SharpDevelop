@@ -1,0 +1,33 @@
+<gui:OptionPanel x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.CodeGenerationPanel"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui"
+                 xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	<Grid>
+		<StackPanel>
+			<GroupBox Margin="0,4,0,0"
+				Header="{core:Localize Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.CodeGenerationOptionsGroupBox}">
+				<StackPanel>
+					<CheckBox x:Name="startBlockOnTheSameLineCheckBox" Margin="0,6,0,0"
+					          Content="{core:Localize Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.StartBlockOnTheSameLineCheckBox}"></CheckBox>
+					<CheckBox x:Name="elseOnClosingCheckbox" Margin="0,6,0,0"
+					          Content="{core:Localize Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.ElseOnClosingCheckBox}"></CheckBox>
+					<CheckBox x:Name="blankLinesBetweenMemberCheckBox" Margin="0,6,0,0"
+					          Content="{core:Localize Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.BlankLinesBetweenMembersCheckBox}"></CheckBox>
+					<CheckBox x:Name="useFullTypeNamesCheckBox" Margin="0,6,0,0"
+					          Content="{core:Localize Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.UseFullTypeNamesCheckBox}"></CheckBox>
+				</StackPanel>
+			</GroupBox>
+			
+			<GroupBox Margin="0,8,0,0"
+				Header="{core:Localize Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.CommentGenerationOptionsGroupBox}">
+				<StackPanel>
+					<CheckBox x:Name="generateDocCommentsCheckBox" Margin="0,6,0,0"
+					          Content="{core:Localize Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.GenerateDocCommentsCheckBox}"></CheckBox>
+					<CheckBox x:Name="generateAdditonalCommentsCheckBox" Margin="0,6,0,0"
+					          Content="{core:Localize Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.GenerateAdditionalCommentsCheckBox}"></CheckBox>
+				</StackPanel>
+			</GroupBox>
+		</StackPanel>
+	</Grid>
+</gui:OptionPanel>

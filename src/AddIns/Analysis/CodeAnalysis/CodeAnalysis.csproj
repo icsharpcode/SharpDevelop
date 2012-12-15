@@ -39,12 +39,18 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CodeAnalysis.addin">
@@ -54,23 +60,27 @@
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Src\AnalysisProjectOptionsPanel.cs" />
-    <Compile Include="Src\AnalysisProjectOptions.Designer.cs">
-      <DependentUpon>AnalysisProjectOptions.cs</DependentUpon>
+    <Compile Include="Src\AnalysisIdeOptionsPanel.xaml.cs">
+      <DependentUpon>AnalysisIdeOptionsPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\AnalysisProjectOptions.cs" />
-    <EmbeddedResource Include="Src\AnalysisProjectOptions.resx">
-      <DependentUpon>AnalysisProjectOptions.cs</DependentUpon>
-    </EmbeddedResource>
+    <Compile Include="Src\AnalysisProjectOptionsPanel.xaml.cs">
+      <DependentUpon>AnalysisProjectOptionsPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\AnalysisProjectOptionsTreeNodes.cs" />
     <Compile Include="Src\FxCopWrapper.cs" />
     <Compile Include="Src\FxCopRule.cs" />
     <Compile Include="Src\CheckCurrentProjectCommand.cs" />
     <Compile Include="Src\FxCopLogger.cs" />
     <Compile Include="Src\SuppressMessageCommand.cs" />
-    <Compile Include="Src\AnalysisIdeOptionsPanel.cs" />
-    <EmbeddedResource Include="Resources\AnalysisIdeOptionPanel.xfrm" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj">
+      <Project>{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}</Project>
+      <Name>ICSharpCode.TreeView</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -86,12 +96,20 @@
       <Name>NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Folder Include="Resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Src\AnalysisIdeOptionsPanel.xaml" />
+    <Page Include="Src\AnalysisProjectOptionsPanel.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

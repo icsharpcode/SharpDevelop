@@ -62,7 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
     <EmbeddedResource Include="Resources\MyNamespaceSupportForCSharp.cs" />
     <Compile Include="Src\CodeManipulation.cs" />
     <Compile Include="Src\CSharpAdvancedHighlighter.cs" />
@@ -73,8 +72,9 @@
     <Compile Include="Src\EventHandlerCompletionItemProvider.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormattingStrategy.cs" />
     <Compile Include="Src\FormattingStrategy\DocumentAccessor.cs" />
-    <Compile Include="Src\OptionPanels\BuildOptions.cs">
-      <SubType>Form</SubType>
+    <Compile Include="Src\OptionPanels\BuildOptions.xaml.cs">
+      <DependentUpon>BuildOptions.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Parser\Parser.cs" />
     <Compile Include="Src\Project\RemoveMembersInRangeVisitor.cs" />
@@ -111,6 +111,11 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
@@ -121,6 +126,14 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Src\OptionPanels\BuildOptions.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

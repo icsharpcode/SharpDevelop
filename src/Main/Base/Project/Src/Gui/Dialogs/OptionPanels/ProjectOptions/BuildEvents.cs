@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		}
 		
 		public ProjectProperty<RunPostBuildEvent> RunPostBuildEvent {
-			get { return GetProperty("RunPostBuildEvent", Project.RunPostBuildEvent.OnBuildSuccess); }
+			get { return GetProperty("RunPostBuildEvent", SharpDevelop.Project.RunPostBuildEvent.OnBuildSuccess); }
 		}
 	}
 }
