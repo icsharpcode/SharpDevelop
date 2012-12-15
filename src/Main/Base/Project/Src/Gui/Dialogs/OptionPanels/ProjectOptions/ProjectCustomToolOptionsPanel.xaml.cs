@@ -3,12 +3,14 @@
 
 using System;
 using System.ComponentModel;
+using System.Windows.Controls;
+
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public partial class ProjectCustomToolOptionsPanel : INotifyPropertyChanged, ICanBeDirty
+	public partial class ProjectCustomToolOptionsPanel : OptionPanel, ICanBeDirty
 	{
 		ProjectCustomToolOptions customToolsOptions;
 		bool runCustomToolOnBuild;
@@ -70,18 +72,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			return true;
 		}
 		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
 		void OnPropertyChanged()
 		{
-			OnPropertyChanged(null);
-		}
-		
-		void OnPropertyChanged(string propertyName)
-		{
-			if (PropertyChanged != null) {
-				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
+			RaisePropertyChanged(null);
 		}
 		
 		public event EventHandler IsDirtyChanged;
