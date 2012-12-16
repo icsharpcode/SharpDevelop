@@ -48,6 +48,7 @@ namespace ICSharpCode.NRefactory.Ast
 		WriteOnly  = 0x400000, // VB specific
 		
 		Async = 0x800000,
+		Iterator = 0x1000000,
 		
 		Visibility						= Private | Public | Protected | Internal,
 		Classes							= New | Visibility | Abstract | Sealed | Partial | Static,

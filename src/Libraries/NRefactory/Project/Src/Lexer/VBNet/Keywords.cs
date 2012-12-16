@@ -16,7 +16,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"AS",
 			"ASCENDING",
 			"ASSEMBLY",
+			"ASYNC",
 			"AUTO",
+			"AWAIT",
 			"BINARY",
 			"BOOLEAN",
 			"BYREF",
@@ -96,6 +98,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"INTO",
 			"IS",
 			"ISNOT",
+			"ITERATOR",
 			"JOIN",
 			"KEY",
 			"LET",
@@ -187,6 +190,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"WITHEVENTS",
 			"WRITEONLY",
 			"XOR",
+			"YIELD",
 			"GETXMLNAMESPACE"
 		};
 		

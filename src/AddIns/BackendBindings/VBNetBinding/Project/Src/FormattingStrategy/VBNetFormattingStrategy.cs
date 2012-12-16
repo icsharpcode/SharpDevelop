@@ -631,6 +631,8 @@ namespace ICSharpCode.VBNetBinding
 					if (isMultiLineLambda && (currentToken.Kind == Tokens.Function || currentToken.Kind == Tokens.Sub)) {
 						lambdaNesting++;
 						int endColumn = currentToken.Location.Column;
+						if (prevToken.Kind == Tokens.Iterator || prevToken.Kind == Tokens.Async)
+							endColumn = prevToken.Location.Column;
 						int startColumn = DocumentUtilitites.GetWhitespaceAfter(editor.Document, editor.Document.GetLine(lastVisualLine).Offset).Length;
 						if (startColumn < endColumn)
 							Indent(editor, indentation, new string(' ', endColumn - startColumn - 1));

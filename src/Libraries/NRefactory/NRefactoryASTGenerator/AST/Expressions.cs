@@ -185,6 +185,7 @@ namespace NRefactoryASTGenerator.Ast
 		Expression expressionBody;
 		TypeReference returnType;
 		bool isAsync;
+		bool isIterator;
 	}
 	
 	class CheckedExpression : Expression {

@@ -89,7 +89,9 @@ ColonAssign = ":="
 "As"
 "Ascending"
 "Assembly"
+"Async"
 "Auto"
+"Await"
 "Binary"
 "Boolean"
 "ByRef"
@@ -169,6 +171,7 @@ ColonAssign = ":="
 "Into"
 "Is"
 "IsNot"
+"Iterator"
 # Note: IsTrue and IsFalse are 'NOT' keywords they're only valid in Operator declarations (like get/set/value are no C# 'keywords')
 "Join"
 "Key"
@@ -262,6 +265,7 @@ ColonAssign = ":="
 "WithEvents"
 "WriteOnly"
 "Xor"
+"Yield"
 
 #XML specific keywords
 "GetXmlNamespace"
@@ -273,7 +277,7 @@ GlobalLevel("Namespace", "Module", "Class", "Structure", "Imports", "Option")
 TypeLevel("Sub", "Function", "Property")
 
 # List of keywords that are valid identifiers, must be the same as the "Identifier" production in VBNET.ATG
-IdentifierTokens("Text", "Binary", "Compare", "Assembly", "Ansi", "Auto", "Preserve", "Unicode", "Until", "Off", "Out", "Key", "Explicit", "Infer", "From", "Join", "Equals", "Distinct", "Where", "Take", "Skip", "Order", "By", "Ascending", "Descending", "Group", "Into", "Aggregate")
+IdentifierTokens("Text", "Binary", "Compare", "Assembly", "Ansi", "Auto", "Preserve", "Unicode", "Until", "Off", "Out", "Key", "Explicit", "Infer", "From", "Join", "Equals", "Distinct", "Where", "Take", "Skip", "Order", "By", "Ascending", "Descending", "Group", "Into", "Aggregate", "Async", "Await", "Iterator", "Yield")
 ExpressionStart("Me", "MyBase", "MyClass", @BooleanExpressions, @OperatorsAtStart, "New", @Null, "AddressOf", "GetType", "TypeOf", "GetXmlNamespace", "Global", @TypeKW, @LambdaStart, @CastExpressions)
 StatementStart(@Null, @ExpressionStart, "Dim", "Const", "Static", "For", "While", "Do", "Select")
 SimpleTypeName(@TypeKW, @IdentifierTokens)

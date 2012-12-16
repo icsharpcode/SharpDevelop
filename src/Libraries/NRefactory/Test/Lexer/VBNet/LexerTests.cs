@@ -339,10 +339,24 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		}
 
 		[Test]
+		public void TestAsync()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Async"));
+			Assert.AreEqual(Tokens.Async, lexer.NextToken().Kind);
+		}
+
+		[Test]
 		public void TestAuto()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Auto"));
 			Assert.AreEqual(Tokens.Auto, lexer.NextToken().Kind);
+		}
+
+		[Test]
+		public void TestAwait()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Await"));
+			Assert.AreEqual(Tokens.Await, lexer.NextToken().Kind);
 		}
 
 		[Test]
@@ -896,6 +910,13 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("IsNot"));
 			Assert.AreEqual(Tokens.IsNot, lexer.NextToken().Kind);
+		}
+
+		[Test]
+		public void TestIterator()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Iterator"));
+			Assert.AreEqual(Tokens.Iterator, lexer.NextToken().Kind);
 		}
 
 		[Test]
@@ -1526,6 +1547,13 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Xor"));
 			Assert.AreEqual(Tokens.Xor, lexer.NextToken().Kind);
+		}
+
+		[Test]
+		public void TestYield()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Yield"));
+			Assert.AreEqual(Tokens.Yield, lexer.NextToken().Kind);
 		}
 
 		[Test]
