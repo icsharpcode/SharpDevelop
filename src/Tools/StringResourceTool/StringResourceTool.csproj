@@ -53,9 +53,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuildResourceFiles.cs" />
+    <Compile Include="CookieAwareWebClient.cs" />
     <Compile Include="MainForm.cs" />
     <Compile Include="ResourceDatabase.cs" />
     <Compile Include="TranslationServer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Web;
 using System.Windows.Forms;
 
@@ -17,11 +18,17 @@ namespace StringResourceTool
 	{
 		TextBox output;
 		string baseURL = "http://developer.sharpdevelop.net/corsavy/translation/";
+		
 		public TranslationServer(TextBox output)
 		{
 			this.output = output;
+			this.cookieContainer = new CookieContainer();
+			this.wc = new CookieAwareWebClient(cookieContainer);
 		}
-		CookieContainer cookieContainer = new CookieContainer();
+		
+		CookieContainer cookieContainer;
+		CookieAwareWebClient wc;
+		
 		public bool Login(string user, string pwd)
 		{
 			output.Text = "Contacting server...";
@@ -52,8 +59,6 @@ namespace StringResourceTool
 		}
 		public void DownloadDatabase(string targetFile, EventHandler successCallback)
 		{
-			WebClient wc = new WebClient();
-			wc.Headers.Set("Cookie", cookieContainer.GetCookieHeader(new Uri(baseURL)));
 			wc.DownloadProgressChanged += delegate(object sender, DownloadProgressChangedEventArgs e) {
 				output.BeginInvoke((MethodInvoker)delegate {
 				                   	output.Text = "Download: " + e.ProgressPercentage + "%";
@@ -79,13 +84,20 @@ namespace StringResourceTool
 		
 		public void AddResourceString(string idx, string value, string purpose)
 		{
-			WebClient wc = new WebClient();
-			wc.Headers.Set("Cookie", cookieContainer.GetCookieHeader(new Uri(baseURL)));
 			wc.Headers.Set("Content-Type", "application/x-www-form-urlencoded");
 			wc.UploadString(new Uri(baseURL + "owners_AddNew.asp"),
 			                "Idx=" + Uri.EscapeDataString(idx)
 			                + "&PrimaryResLangValue=" + Uri.EscapeDataString(value)
 			                + "&PrimaryPurpose=" + Uri.EscapeDataString(purpose));
+		}
+		
+		public void UpdateTranslation(string idx, string newValue)
+		{
+			newValue = HttpUtility.UrlEncode(newValue, Encoding.Default);
+			wc.Headers.Set("Content-Type", "application/x-www-form-urlencoded");
+			wc.UploadString(new Uri(baseURL + "translation_edit.asp"),
+			                "Idx=" + Uri.EscapeDataString(idx)
+			                + "&Localization=" + newValue);
 		}
 		
 		public void DeleteResourceStrings(string[] idx)
@@ -117,8 +129,6 @@ namespace StringResourceTool
 		
 		public void DeleteResourceString(string idx, EventHandler callback)
 		{
-			WebClient wc = new WebClient();
-			wc.Headers.Set("Cookie", cookieContainer.GetCookieHeader(new Uri(baseURL)));
 			wc.Headers.Set("Content-Type", "application/x-www-form-urlencoded");
 			wc.UploadStringCompleted += delegate {
 				output.BeginInvoke((MethodInvoker)delegate {
@@ -130,6 +140,13 @@ namespace StringResourceTool
 			};
 			wc.UploadStringAsync(new Uri(baseURL + "owners_delete.asp"),
 			                     "Idx=" + Uri.EscapeDataString(idx) + "&ReallyDelete=on");
+		}
+		
+		public void SetLanguage(string language)
+		{
+			wc.Headers.Set("Content-Type", "application/x-www-form-urlencoded");
+			wc.UploadString(new Uri(baseURL + "SelectLanguage.asp"),
+			                "Language=" + Uri.EscapeDataString(language));
 		}
 	}
 }
