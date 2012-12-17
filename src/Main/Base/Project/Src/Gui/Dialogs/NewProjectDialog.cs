@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project.Commands;
+using Microsoft.Build.Exceptions;
 
 namespace ICSharpCode.SharpDevelop.Project.Dialogs
 {
@@ -296,7 +296,17 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			return null;
 		}
 		
-		void OpenEvent(object sender, EventArgs e)
+		void TryCreateProject(object sender, EventArgs e)
+		{
+			try {
+				CreateProject();
+			} catch (InvalidProjectFileException ex) {
+				LoggingService.Error("Unable to create new project.", ex);
+				MessageService.ShowError(ex.Message);
+			}
+		}
+		
+		void CreateProject()
 		{
 			if (categoryTreeView.SelectedNode != null) {
 				PropertyService.Set("Dialogs.NewProjectDialog.LastSelectedCategory", TreeViewHelper.GetPath(categoryTreeView.SelectedNode));
@@ -431,7 +441,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			smallIconsRadioButton.CheckedChanged += new EventHandler(IconSizeChange);
 			smallIconsRadioButton.Image = IconService.GetBitmap("Icons.16x16.SmallIconsIcon");
 			
-			openButton.Click += new EventHandler(OpenEvent);
+			openButton.Click += new EventHandler(TryCreateProject);
 			browseButton.Click += new EventHandler(BrowseDirectories);
 			createDirectoryForSolutionCheckBox.CheckedChanged += new EventHandler(PathChanged);
 			
