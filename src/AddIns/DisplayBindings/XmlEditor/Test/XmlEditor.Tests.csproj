@@ -162,6 +162,7 @@
     <Compile Include="Schema.Multiple\DuplicateSchemaNamespaceAddedToCollectionTestFixture.cs" />
     <Compile Include="Schema.Multiple\TwoSchemaChildElementCompletionTestFixture.cs" />
     <Compile Include="Schema\ElementAnnotationWithWhitespaceTestFixture.cs" />
+    <Compile Include="Schema\InvalidUnionMemberTypesTests.cs" />
     <Compile Include="Schema\SchemaHasNamespaceTests.cs" />
     <Compile Include="Schema\SimpleContentExtensionBaseTypeWithAttributeTestFixture.cs" />
     <Compile Include="Schema\SingleElementSchemaTestFixture.cs" />
@@ -190,6 +191,7 @@
     <Compile Include="Paths\TwoElementPathTestFixture.cs" />
     <Compile Include="Schema\NestedChoiceTestFixture.cs" />
     <Compile Include="Schema\ChildElementAttributesTestFixture.cs" />
+    <Compile Include="Schema\UnionMemberTypesTests.cs" />
     <Compile Include="Tree\AddChildTextNodeTestFixture.cs" />
     <Compile Include="Tree\AddNewNodeDialogTestFixture.cs" />
     <Compile Include="Tree\DeleteTreeNodeWithDeleteKeyTestFixture.cs" />
