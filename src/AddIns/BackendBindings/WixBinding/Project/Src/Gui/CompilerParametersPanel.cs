@@ -29,25 +29,14 @@ namespace ICSharpCode.WixBinding
 			b.CreateLocationButton("intermediateOutputPathTextBox");
 			ConnectBrowseFolder("intermediateOutputPathBrowseButton", "intermediateOutputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}", TextBoxEditMode.EditRawProperty);
 			
-			b = helper.BindString("wixToolPathTextBox", "WixToolPath", TextBoxEditMode.EditRawProperty);
-			ConnectBrowseFolder("wixToolPathBrowseButton", "wixToolPathTextBox", String.Empty, TextBoxEditMode.EditRawProperty);
-			
 			b = helper.BindString("wixTargetsPathTextBox", "WixTargetsPath", TextBoxEditMode.EditRawProperty);
 			ConnectBrowseButton("wixTargetsPathBrowseButton", "wixTargetsPathTextBox", "${res:ICSharpCode.WixBinding.WixTargetsFileFilterName} (wix.targets)|wix.targets|${res:SharpDevelop.FileFilter.AllFiles}|*.*", TextBoxEditMode.EditRawProperty);
-
-			b = helper.BindString("wixTasksPathTextBox", "WixTasksPath", TextBoxEditMode.EditRawProperty);
-			ConnectBrowseButton("wixTasksPathBrowseButton", "wixTasksPathTextBox", "${res:ICSharpCode.WixBinding.WixTasksFileFilterName} (wixtasks.dll)|wixtasks.dll|${res:SharpDevelop.FileFilter.AllFiles}|*.*", TextBoxEditMode.EditRawProperty);
 
 			b = helper.BindString("suppressWarningsTextBox", "SuppressIces", TextBoxEditMode.EditRawProperty);
 			b = helper.BindString("wixVariablesTextBox", "WixVariables", TextBoxEditMode.EditRawProperty);
 			b = helper.BindString("culturesTextBox", "Cultures", TextBoxEditMode.EditRawProperty);
 
 			helper.AddConfigurationSelector(this);
-		}
-		
-		void CompilerExtensionsChanged(object source, EventArgs e)
-		{
-			IsDirty = true;
 		}
 	}
 }
