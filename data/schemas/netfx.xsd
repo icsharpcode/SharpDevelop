@@ -1,4 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  <copyright file="netfx.xsd" company="Outercurve Foundation">
+    Copyright (c) 2004, Outercurve Foundation.
+    This software is released under Microsoft Reciprocal License (MS-RL).
+    The license and further copyright text can be found in the file
+    LICENSE.TXT at the root directory of the distribution.
+  </copyright>
+-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
           xmlns:xse="http://schemas.microsoft.com/wix/2005/XmlSchemaExtension"
          xmlns:html="http://www.w3.org/1999/xhtml"
@@ -6,16 +14,6 @@
               xmlns="http://schemas.microsoft.com/wix/NetFxExtension">
     <xs:annotation>
         <xs:documentation>
-            Copyright (c) Microsoft Corporation.  All rights reserved.
-            
-            The use and distribution terms for this software are covered by the
-            Common Public License 1.0 (http://opensource.org/licenses/cpl1.0.php)
-            which can be found in the file CPL.TXT at the root of this distribution.
-            By using this software in any fashion, you are agreeing to be bound by
-            the terms of this license.
-            
-            You must not remove this notice, or any other, from this software.
-
             The source code schema for the Windows Installer XML Toolset .NET Framework Extension.
         </xs:documentation>
     </xs:annotation>
@@ -30,12 +28,31 @@
             <xs:appinfo>
                 <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="File" />
                 <xse:remarks>
-                    Native images are files containing compiled processor-specific machine code, which
-                    are installed into the native image cache on the local computer. The runtime
-                    can use native images from the cache instead using the just-in-time (JIT)
-                    compiler to compile the original assembly.
-                    The native image custom actions are configured to ignore failures so that failing
-                    to generate or remove a native image will not cause setup to fail and roll back.
+                    <html:p>
+                        Native images are files containing compiled processor-specific machine code, which
+                        are installed into the native image cache on the local computer. The runtime
+                        can use native images from the cache instead using the just-in-time (JIT)
+                        compiler to compile the original assembly.
+                    </html:p>
+                    <html:p>
+                        The native image custom actions are configured to ignore failures so that failing
+                        to generate or remove a native image will not cause setup to fail and roll back.
+                    </html:p>
+                    <html:p>
+                        <html:b>Note for patches:</html:b> if you built your target, or baseline, MSI with
+                        previous versions 3.0 or 3.5 of this extension and want to upgrade to formattable
+                        values for @AssemblyApplication or @AppBaseDirectory you must also include a
+                        BinaryRef to "NetFxCA" to pull in necessary changes. If you do use formattable
+                        values and do not include the binary changes ngen.exe will not optimize your
+                        native images for the specified application.
+                    </html:p>
+                    <html:p>
+                        This should be a rare occurrence, however. Because you cannot remove components
+                        in a patch - and pyro does validate you do not - it is not practical to switch
+                        from using identifiers to formattable values in a patch. One practical possibility
+                        is if you wanted to use a different application to optimize your native images
+                        and that application is not already installed with the MSI to be updated.
+                    </html:p>
                 </xse:remarks>
             </xs:appinfo>
         </xs:annotation>
@@ -50,34 +67,50 @@
             <xs:attribute name="AppBaseDirectory" type="xs:string">
                 <xs:annotation>
                     <xs:documentation>
-                        The identifier of the directory to use for locating dependent assemblies.
-                        For DLL assemblies and assemblies installed to the Global Assembly Cache (GAC),
-                        this attribute should be set to the directory of the application which loads this
-                        assembly.  For EXE assemblies, this attribute does not need to be set because NGen
-                        will use the directory of the assembly file by default.
+                        <html:p>
+                            The directory to use for locating dependent assemblies.
+                            For DLL assemblies and assemblies installed to the Global Assembly Cache (GAC),
+                            this attribute should be set to the directory of the application which loads this
+                            assembly.  For EXE assemblies, this attribute does not need to be set because NGen
+                            will use the directory of the assembly file by default.
+                        </html:p>
+                        <html:p>
+                            The value can be in the form of a directory identifier, or a formatted string
+                            that resolves to either a directory identifier or a full path to a directory.
+                        </html:p>
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="AssemblyApplication" type="xs:string">
                 <xs:annotation>
                     <xs:documentation>
-                        The identifier of the application which will load this assembly.
-                        For DLL assemblies which are loaded via reflection, this attribute should
-                        be set to indicate the application which will load this assembly.
-                        The configuration of the application (usually specified via an exe.config file) will be used
-                        to determine how to resolve dependencies for this assembly.
-                        When a shared component is loaded at run time, using the Load method, the
-                        application's configuration file determines the dependencies that are loaded
-                        for the shared component — for example, the version of a dependency that is loaded.
-                        This attribute gives guidance on which dependencies would be loaded at run time in order
-                        to figure out which dependency assemblies will also need to have native images generated
-                        (assuming the Dependency attribute is not set to "no").
-                        This attribute cannot be set if the AssemblyApplication attribute is set on the parent
-                        File element (please note that these attributes both refer to the same application
-                        assembly but do very different things: specifiying File/@AssemblyApplication will force
-                        an assembly to install to a private location next to the indicated application, whereas
-                        this AssemblyApplication attribute will be used to help resolve dependent assemblies
-                        while generating native images for this assembly).
+                        <html:p>
+                            The application which will load this assembly.
+                            For DLL assemblies which are loaded via reflection, this attribute should
+                            be set to indicate the application which will load this assembly.
+                            The configuration of the application (usually specified via an exe.config file) will be used
+                            to determine how to resolve dependencies for this assembly.
+                        </html:p>
+                        <html:p>
+                            The value can be in the form of a file identifier, or a formatted string
+                            that resolves to either a file identifier or a full path to a file.
+                        </html:p>
+                        <html:p>
+                            When a shared component is loaded at run time, using the Load method, the
+                            application's configuration file determines the dependencies that are loaded
+                            for the shared component — for example, the version of a dependency that is loaded.
+                            This attribute gives guidance on which dependencies would be loaded at run time in order
+                            to figure out which dependency assemblies will also need to have native images generated
+                            (assuming the Dependency attribute is not set to "no").
+                        </html:p>
+                        <html:p>
+                            This attribute cannot be set if the AssemblyApplication attribute is set on the parent
+                            File element (please note that these attributes both refer to the same application
+                            assembly but do very different things: specifiying File/@AssemblyApplication will force
+                            an assembly to install to a private location next to the indicated application, whereas
+                            this AssemblyApplication attribute will be used to help resolve dependent assemblies
+                            while generating native images for this assembly).
+                        </html:p>
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>

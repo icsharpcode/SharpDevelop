@@ -213,9 +213,6 @@
       <Private>False</Private>
     </ProjectReference>
     <Folder Include="Configuration" />
-    <Content Include="..\..\..\..\Tools\wix\wix.targets">
-      <Link>wix.targets</Link>
-    </Content>
     <Folder Include="Resources" />
     <Folder Include="Src\Commands" />
     <ProjectReference Include="..\..\..\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj">

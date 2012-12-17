@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.0.0.5967
+# SharpDevelop 4.3
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WixBinding", "Project\WixBinding.csproj", "{e1b288a2-08ee-4318-8bbb-8ab72c69e33e}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WixBinding.Tests", "Test\WixBinding.Tests.csproj", "{388E7B64-0393-4EB4-A3E3-5C474F141853}"

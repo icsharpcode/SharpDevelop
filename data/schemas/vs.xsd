@@ -1,20 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  <copyright file="vs.xsd" company="Outercurve Foundation">
+    Copyright (c) 2004, Outercurve Foundation.
+    This software is released under Microsoft Reciprocal License (MS-RL).
+    The license and further copyright text can be found in the file
+    LICENSE.TXT at the root directory of the distribution.
+  </copyright>
+-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
           xmlns:xse="http://schemas.microsoft.com/wix/2005/XmlSchemaExtension"
     targetNamespace="http://schemas.microsoft.com/wix/VSExtension"
               xmlns="http://schemas.microsoft.com/wix/VSExtension">
     <xs:annotation>
         <xs:documentation>
-            Copyright (c) Microsoft Corporation.  All rights reserved.
-            
-            The use and distribution terms for this software are covered by the
-            Common Public License 1.0 (http://opensource.org/licenses/cpl1.0.php)
-            which can be found in the file CPL.TXT at the root of this distribution.
-            By using this software in any fashion, you are agreeing to be bound by
-            the terms of this license.
-            
-            You must not remove this notice, or any other, from this software.
-
             The source code schema for the Windows Installer XML Toolset Visual Studio Extension.
         </xs:documentation>
     </xs:annotation>
@@ -196,6 +194,96 @@
             </xs:anyAttribute>
         </xs:complexType>
     </xs:element>
+
+    <xs:element name="VsixPackage">
+        <xs:annotation>
+            <xs:documentation>
+                This element provides the metdata required to install/uninstall a file as
+                a VSIX Package. The VSIX package file will be installed as part of the MSI
+                then passed to the VSIX installer to install the VSIX package. To avoid the
+                duplication, simply use the MSI to install the VSIX package itself.
+            </xs:documentation>
+            <xs:appinfo>
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Component" />
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="File" />
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="File" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                    Reference to file identifer. This attribute is required when the element is not a
+                    child of a File element and is invalid when the element is a child of the File element.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="PackageId" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation>
+                    Identity of the VSIX package per its internal manifest. If this value is not correct
+                    the VSIX package will not correctly uninstall.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Permanent" type="YesNoType">
+                <xs:annotation>
+                    <xs:documentation>
+                    Indicates whether the VSIX package is uninstalled when the parent Component is uninstalled.
+                    The default is 'no'.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Target" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                    Specifies the SKU of Visual Studio in which to register the extension. If no target
+                    is specified the extension is registered with all installed SKUs. If the Target
+                    attribute is specified the TargetVersion attribute must also be specified. The 
+                    following is a list of known Visual Studio targets: integratedShell, professional,
+                    premium, ultimate, vbExpress, vcExpress, vcsExpress, vwdExpress
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="TargetVersion" type="VersionType">
+                <xs:annotation>
+                    <xs:documentation>
+                    Specifies the version of Visual Studio in which to register the extension. This attribute
+                    is required if the Target attribute is specified.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Vital" type="YesNoType">
+                <xs:annotation>
+                    <xs:documentation>
+                    Indicates whether failure to install the VSIX package causes the installation to rollback.
+                    The default is 'yes'.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="VsixInstallerPathProperty" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                    Optional reference to a Property element that contains the path to the VsixInstaller.exe.
+                    By default, the latest VsixInstaller.exe on the machine will be used to install the VSIX
+                    package. It is highly recommended that this attribute is *not* used.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:anyAttribute namespace="##other" processContents="lax">
+                <xs:annotation><xs:documentation>
+                    Extensibility point in the WiX XML Schema.  Schema extensions can register additional
+                    attributes at this point in the schema.
+                </xs:documentation></xs:annotation>
+            </xs:anyAttribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="VersionType">
+        <xs:annotation><xs:documentation>Values of this type will look like: "x.x.x.x" where x is an integer from 0 to 65534.</xs:documentation></xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="(\d{1,5}\.){0,3}\d{1,5}"/>
+        </xs:restriction>
+    </xs:simpleType>
 
     <xs:simpleType name="YesNoType">
         <xs:annotation>
