@@ -200,8 +200,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		protected void AddGuardedProperty(string name, string value)
 		{
+			AddConditionalProperty(name, value, " '$(" + name + ")' == '' ");
+		}
+		
+		protected void AddConditionalProperty(string name, string value, string condition)
+		{
 			lock (SyncRoot) {
-				projectFile.AddProperty(name, value).Condition = " '$(" + name + ")' == '' ";
+				projectFile.AddProperty(name, value).Condition = condition;
 			}
 		}
 		
