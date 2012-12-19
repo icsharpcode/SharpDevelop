@@ -58,7 +58,12 @@ namespace ICSharpCode.Data.Core.UI.Windows
 				_selectedDatabaseDriver = value;
 				OnPropertyChanged("SelectedDatabaseDriver");
 				OnPropertyChanged("SelectedDatasource");
+				OnPropertyChanged("CanConnect");
 			}
+		}
+		
+		public bool CanConnect {
+			get { return _selectedDatabaseDriver != null; }
 		}
 		
 		IDatasource GetDefaultDatasource(IDatabaseDriver driver)
@@ -77,6 +82,7 @@ namespace ICSharpCode.Data.Core.UI.Windows
 				else
 					_selectedDatasource = defaultDataSource;
 				OnPropertyChanged("SelectedDatasource");
+				OnPropertyChanged("CanConnect");
 			}
 		}
 
