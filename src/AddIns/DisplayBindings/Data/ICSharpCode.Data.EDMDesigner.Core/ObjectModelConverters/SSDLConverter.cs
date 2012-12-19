@@ -162,13 +162,15 @@ namespace ICSharpCode.Data.EDMDesigner.Core.ObjectModelConverters
             return property;
         }
 
-        private static Association CreateSSDLAssociation(IConstraint constraint)
-        {
-            Association association = new Association()
-            {
-                Name = constraint.Name,
-                AssociationSetName = constraint.Name
-            };
+		private static Association CreateSSDLAssociation(IConstraint constraint)
+		{
+			string associationName = constraint.Name.Replace('.', '_');
+			
+			Association association = new Association()
+			{
+				Name = associationName,
+				AssociationSetName = associationName
+			};
 
             Role role1 = new Role()
             {
