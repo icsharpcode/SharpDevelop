@@ -392,7 +392,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 						} else {
 							// Textual content
 							StreamWriter sr = new StreamWriter(File.Create(fileName), ParserService.DefaultFileEncoding);
-							string fileContent = StringParser.Parse(file.Content, new StringTagPair("ProjectName", projectCreateInformation.ProjectName), new StringTagPair("FileName", fileName));
+							string fileContent = StringParser.Parse(file.Content, 
+								new StringTagPair("ProjectName", projectCreateInformation.ProjectName),
+								new StringTagPair("SolutionName", projectCreateInformation.SolutionName),
+								new StringTagPair("FileName", fileName));
 							fileContent = StringParser.Parse(fileContent);
 							if (EditorControlService.GlobalOptions.IndentationString != "\t") {
 								fileContent = fileContent.Replace("\t", EditorControlService.GlobalOptions.IndentationString);
