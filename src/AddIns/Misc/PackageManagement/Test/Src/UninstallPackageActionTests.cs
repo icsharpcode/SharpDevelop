@@ -212,5 +212,14 @@ namespace PackageManagement.Tests
 			
 			Assert.IsTrue(hasPackageScripts);
 		}
+		
+		[Test]
+		public void AllowPreleasePackages_DefaultValue_IsTrue()
+		{
+			CreateAction();
+			
+			Assert.IsTrue(action.AllowPrereleaseVersions);
+		}
+		
 	}
 }

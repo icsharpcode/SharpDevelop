@@ -343,6 +343,47 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void Execute_InstallPrereleasePackageAndAllowPreleasePackagesIsFalse_DoesNotFindPreleasePackage()
+		{
+			CreateAction();
+			FakePackage package = fakeProject.FakeSourceRepository.AddFakePackageWithVersion("Prerelease", "1.0-beta");
+			action.PackageId = "Prerelease";
+			action.AllowPrereleaseVersions = false;
+			
+			Exception ex = Assert.Throws(typeof(ApplicationException), () => action.Execute());
+			
+			Assert.AreEqual("Unable to find package 'Prerelease'.", ex.Message);
+		}
+		
+		[Test]
+		public void Execute_InstallPrereleasePackageAndAllowPreleasePackagesIsTrue_InstallsPackageIntoProject()
+		{
+			CreateAction();
+			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion("Prerelease", "1.0-beta");
+			action.PackageId = "Prerelease";
+			action.AllowPrereleaseVersions = true;
+			
+			action.Execute();
+			
+			IPackage actualPackage = fakeProject.PackagePassedToInstallPackage;
+			Assert.AreEqual(expectedPackage, actualPackage);
+		}
+		
+		[Test]
+		public void Execute_InstallUnlistedPackage_InstallsPackageIntoProject()
+		{
+			CreateAction();
+			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion("test", "1.0");
+			expectedPackage.Listed = false;
+			action.PackageId = "test";
+			
+			action.Execute();
+			
+			IPackage actualPackage = fakeProject.PackagePassedToInstallPackage;
+			Assert.AreEqual(expectedPackage, actualPackage);
+		}
+		
+		[Test]
 		public void Execute_PackageIdSpecifiedButDoesNotExistInRepository_ExceptionThrown()
 		{
 			CreateAction();

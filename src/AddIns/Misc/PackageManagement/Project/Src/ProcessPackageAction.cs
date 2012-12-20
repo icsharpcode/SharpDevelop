@@ -26,6 +26,7 @@ namespace ICSharpCode.PackageManagement
 		public SemanticVersion PackageVersion { get; set; }
 		public string PackageId { get; set; }
 		public IPackageScriptRunner PackageScriptRunner { get; set; }
+		public bool AllowPrereleaseVersions { get; set; }
 		
 		public virtual bool HasPackageScriptsToRun()
 		{
@@ -97,11 +98,18 @@ namespace ICSharpCode.PackageManagement
 		void GetPackageIfMissing()
 		{
 			if (Package == null) {
-				Package = Project.SourceRepository.FindPackage(PackageId, PackageVersion);
+				FindPackage();
 			}
 			if (Package == null) {
 				ThrowPackageNotFoundError(PackageId);
 			}
+		}
+		
+		void FindPackage()
+		{
+			Package =Project
+				.SourceRepository
+				.FindPackage(PackageId, PackageVersion, AllowPrereleaseVersions, allowUnlisted: true);
 		}
 		
 		void ThrowPackageNotFoundError(string packageId)

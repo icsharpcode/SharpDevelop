@@ -15,6 +15,7 @@ namespace ICSharpCode.PackageManagement
 			IPackageManagementEvents packageManagementEvents)
 			: base(project, packageManagementEvents)
 		{
+			this.AllowPrereleaseVersions = true;
 		}
 		
 		public bool ForceRemove { get; set; }

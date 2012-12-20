@@ -19,7 +19,6 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public bool IgnoreDependencies { get; set; }
-		public bool AllowPrereleaseVersions { get; set; }
 		
 		protected override IEnumerable<PackageOperation> GetPackageOperations()
 		{
