@@ -99,7 +99,7 @@ namespace ICSharpCode.AvalonEdit
 		/// <summary>
 		/// Implicit conversion to <see cref="TextLocation"/>.
 		/// </summary>
-		[Obsolete("Avoid")]
+		[Obsolete("Use the Location property instead of the implicit conversion to TextLocation")]
 		public static implicit operator TextLocation(TextViewPosition position)
 		{
 			return new TextLocation(position.Line, position.Column);
