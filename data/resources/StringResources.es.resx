@@ -6426,6 +6426,24 @@ Los archivos de recursos han sido renombrados o cambiados de ubicación de acuer
   <data name="Templates.File.NAnt.NAntBuildFile.Name" xml:space="preserve">
     <value>Archivo de generación NAnt</value>
   </data>
+  <data name="Templates.File.PRISMViewAndViewModelUnity.Description" xml:space="preserve">
+    <value>Crea una Vista para un modulo PRISM con un ViewModel acorde.</value>
+  </data>
+  <data name="Templates.File.PRISMViewAndViewModelUnity.Name" xml:space="preserve">
+    <value>Vista y ViewModel PRISM (Unity)</value>
+  </data>
+  <data name="Templates.File.PRISMViewModelUnity.Description" xml:space="preserve">
+    <value>Crea un ViewModel para un Módulo PRISM.</value>
+  </data>
+  <data name="Templates.File.PRISMViewModelUnity.Name" xml:space="preserve">
+    <value>ViewModel PRISM (Unity)</value>
+  </data>
+  <data name="Templates.File.PRISMViewUnity.Description" xml:space="preserve">
+    <value>Crea un View para un Módulo PRISM.</value>
+  </data>
+  <data name="Templates.File.PRISMViewUnity.Name" xml:space="preserve">
+    <value>View Prism (Unity)</value>
+  </data>
   <data name="Templates.File.Properties.AddIFDEFTest" xml:space="preserve">
     <value>Incluir '#if TEST ... #endif'</value>
   </data>
@@ -6695,6 +6713,24 @@ Los archivos de recursos han sido renombrados o cambiados de ubicación de acuer
   </data>
   <data name="Templates.Project.PortableLibrary.Name" xml:space="preserve">
     <value>Biblioteca de Clases Portable</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationSmallUnity.Description" xml:space="preserve">
+    <value>Crea una pequeña aplicación PRISM con Bootstrapper e  Infraestructura.</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationSmallUnity.Name" xml:space="preserve">
+    <value>Aplicación PRISM - pequeña (Unity)</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationUnity.Description" xml:space="preserve">
+    <value>Crea una aplicación PRISM con Bootstrapper e Infraestructura.</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationUnity.Name" xml:space="preserve">
+    <value>Aplicación PRISM (Unity)</value>
+  </data>
+  <data name="Templates.Project.PRISMModuleUnity.Description" xml:space="preserve">
+    <value>Crea un Módulo PRISM con un View y un ViewModel  acorde.</value>
+  </data>
+  <data name="Templates.Project.PRISMModuleUnity.Name" xml:space="preserve">
+    <value>Módulo PRISM (Unity)</value>
   </data>
   <data name="Templates.Project.SetupProject.Description" xml:space="preserve">
     <value>Un proyecto de instalador de windows para crear un instalador MSI.</value>

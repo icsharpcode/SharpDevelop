@@ -10,7 +10,7 @@
 	<Languages name="Czech"                         code="cz"       icon="czech.png" />
 	<!--<Languages name="Danish"                        code="dk"       icon="denmark.png" />-->
 	<Languages name="Dutch"                         code="nl"       icon="netherlands.png" />
-	<!--<Languages name="Finnish"                       code="fi"       icon="finnish.png" />-->
+	<Languages name="Finnish"                       code="fi"       icon="finnish.png" />
 	<Languages name="French"                        code="fr"       icon="france.png" />
 	<Languages name="German"                        code="de"       icon="germany.png" />
 	<!--<Languages name="Greek"                         code="el"       icon="notyetdone.png" />-->

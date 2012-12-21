@@ -4791,7 +4791,7 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>Toon openbare leden</value>
   </data>
   <data name="MainWindow.Windows.ClassBrowser.ClassViewSettingsButton.ToolTip" xml:space="preserve">
-    <value>Klassen Overzicht instellingen</value>
+    <value>Weergave Klassen Instellingen</value>
   </data>
   <data name="MainWindow.Windows.ClassBrowser.ClearSearch.ToolTip" xml:space="preserve">
     <value>Maak zoeken leeg</value>
@@ -5181,7 +5181,7 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>Observatiepunt verwijderen</value>
   </data>
   <data name="MainWindow.Windows.DefinitionViewLabel" xml:space="preserve">
-    <value>Definitie overzicht</value>
+    <value>Definitie Weergave</value>
   </data>
   <data name="MainWindow.Windows.ErrorList" xml:space="preserve">
     <value>Fouten</value>
@@ -6418,6 +6418,24 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="Templates.File.NAnt.NAntBuildFile.Name" xml:space="preserve">
     <value>NAnt Build sjabloon</value>
   </data>
+  <data name="Templates.File.PRISMViewAndViewModelUnity.Description" xml:space="preserve">
+    <value>Maakt een Weergave voor PRISMA module volgens Weergavemodel.</value>
+  </data>
+  <data name="Templates.File.PRISMViewAndViewModelUnity.Name" xml:space="preserve">
+    <value>PRISMA Weergave en Weergavemodel (Eenheid)</value>
+  </data>
+  <data name="Templates.File.PRISMViewModelUnity.Description" xml:space="preserve">
+    <value>Maakt een Weergavemodel voor een PRISMA module.</value>
+  </data>
+  <data name="Templates.File.PRISMViewModelUnity.Name" xml:space="preserve">
+    <value>PRISMA Weergavemodel (Eenheid)</value>
+  </data>
+  <data name="Templates.File.PRISMViewUnity.Description" xml:space="preserve">
+    <value>Maakt een weergave voor een PRISMA module.</value>
+  </data>
+  <data name="Templates.File.PRISMViewUnity.Name" xml:space="preserve">
+    <value>PRISMA weergave (Eenheid)</value>
+  </data>
   <data name="Templates.File.Properties.AddIFDEFTest" xml:space="preserve">
     <value>'#if TEST ... #endif' toevoegen</value>
   </data>
@@ -6485,10 +6503,10 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
     <value>Leeg Pad</value>
   </data>
   <data name="Templates.File.SharpDevelop.View.Description" xml:space="preserve">
-    <value>Een #D view inhoud (bijv. een tekstbewerker of bronbestand editor).</value>
+    <value>Een #D inhoudsweergave (bijv. tekstbewerker of bronbestand editor).</value>
   </data>
   <data name="Templates.File.SharpDevelop.View.Name" xml:space="preserve">
-    <value>Leeg View</value>
+    <value>Lege Weergave</value>
   </data>
   <data name="Templates.File.SingletonClass.Description" xml:space="preserve">
     <value>Klasse welke het singleton patroon volgt.</value>
@@ -6687,6 +6705,24 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="Templates.Project.PortableLibrary.Name" xml:space="preserve">
     <value>Portable Klassen-bibliotheek</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationSmallUnity.Description" xml:space="preserve">
+    <value>Maakt een kleine  PRISMA applicatie met  bootstrapper en infrastructuur.</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationSmallUnity.Name" xml:space="preserve">
+    <value>PRISMA Applicatie - klein (Eenheid)</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationUnity.Description" xml:space="preserve">
+    <value>Maakt  een PRISMA applicatie met bootstrapper en infrastructuur.</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationUnity.Name" xml:space="preserve">
+    <value>PRISMA applicatie (Eenheid)</value>
+  </data>
+  <data name="Templates.Project.PRISMModuleUnity.Description" xml:space="preserve">
+    <value>Maakt een PRISMA module met weergave naar overeenkomend weergavemodel.</value>
+  </data>
+  <data name="Templates.Project.PRISMModuleUnity.Name" xml:space="preserve">
+    <value>PRISMA module (Eenheid)</value>
   </data>
   <data name="Templates.Project.SetupProject.Description" xml:space="preserve">
     <value>Windows installatie project om een MSI installatie programma te maken.</value>
@@ -7360,7 +7396,7 @@ Startfout:</value>
     <value>Reguliere expressie gereedschap</value>
   </data>
   <data name="XML.MainMenu.ViewMenu" xml:space="preserve">
-    <value>Beel&amp;d</value>
+    <value>Weerga&amp;ve</value>
   </data>
   <data name="XML.MainMenu.ViewMenu.DebugMenu" xml:space="preserve">
     <value>&amp;Foutopsporing</value>
