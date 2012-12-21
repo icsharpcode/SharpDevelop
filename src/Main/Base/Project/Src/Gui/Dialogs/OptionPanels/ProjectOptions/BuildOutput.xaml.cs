@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// <summary>
 	/// Interaction logic for BuildOutput.xaml
 	/// </summary>
-	public partial class BuildOutput : UserControl,IProjectUserControl, INotifyPropertyChanged
+	public partial class BuildOutput : UserControl, INotifyPropertyChanged, ProjectOptionPanel.ILoadSaveCallback
 	{
 		private ProjectOptionPanel projectOptions;
 		private System.Windows.Input.ICommand updateProjectCommand;
@@ -62,24 +62,28 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		#region IProjectUserControl
 		
 		
-		public void SetProjectOptions(ProjectOptionPanel projectOptions)
+		public void Initialize(ProjectOptionPanel projectOptions)
 		{
 			if (projectOptions == null) {
 				throw new ArgumentNullException("projectOptions");
 			}
 			this.projectOptions = projectOptions;
+			projectOptions.RegisterLoadSaveCallback(this);
+		}
 		
+		public void Load(MSBuildBasedProject project, string configuration, string platform)
+		{
 			UpdateTargetFrameworkCombo();
 			if (DocumentationFile.Value.Length > 0) {
 				documentFileIsChecked = true;
 			}
-			XmlDocHelper();
 		}
 		
-		public bool SaveProjectOptions()
+		public bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
-			throw new NotImplementedException();
+			return true;
 		}
+			
 		
 		#endregion
 		
@@ -99,12 +103,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		private void XmlDocHelper()
 		{
 			if (DocumentFileIsChecked) {
-				this.xmlDocumentationTextBox.Text = MSBuildInternals.Escape(
+				this.DocumentationFile.Value = MSBuildInternals.Escape(
 					Path.ChangeExtension(ICSharpCode.Core.FileUtility.GetRelativePath(projectOptions.Project.Directory,projectOptions.
 					                                                                  Project.OutputAssemblyFullPath),
 					                     ".xml"));
 			} else {
-				this.xmlDocumentationTextBox.Text = string.Empty;
+				this.DocumentationFile.Value = string.Empty;
 			}
 		}
 		
@@ -132,6 +136,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			TargetFramework fx = ((IUpgradableProject)projectOptions.Project).CurrentTargetFramework;
 			if (fx != null) {
+				targetFrameworkComboBox.Items.Clear();
 				targetFrameworkComboBox.Items.Add(fx.DisplayName);
 				targetFrameworkComboBox.SelectedIndex = 0;
 			}

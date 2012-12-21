@@ -67,29 +67,11 @@ namespace CSharpBinding.OptionPanels
 		protected override void Initialize()
 		{
 			base.Initialize();
-			buildOutput.SetProjectOptions(this);
-			this.buildAdvanced.SetProjectOptions(this);
-			this.errorsAndWarnings.SetProjectOptions(this);
-			this.treatErrorsAndWarnings.SetProjectOptions(this);
+			buildOutput.Initialize(this);
+			this.buildAdvanced.Initialize(this);
+			this.errorsAndWarnings.Initialize(this);
+			this.treatErrorsAndWarnings.Initialize(this);
 		}
-		
-		
-		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
-		{
-			base.Load(project, configuration, platform);
-			IsDirty = false;
-		}
-		
-		
-		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
-		{
-			if (buildAdvanced.SaveProjectOptions()) {
-				treatErrorsAndWarnings.SaveProjectOptions();
-				return base.Save(project, configuration, platform);
-			}
-			return false;
-		}
-		
 		
 		#endregion
 		

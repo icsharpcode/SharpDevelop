@@ -20,19 +20,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	/// <summary>
-	/// Interaction logic for ErrorsAndWarnings.xaml
-	/// </summary>
-	/// 
-	
-	public interface IProjectUserControl
-	{
-		void SetProjectOptions (ProjectOptionPanel projectOptions);
-		bool SaveProjectOptions();
-	}
-	
-	
-	public partial class ErrorsAndWarnings : UserControl, INotifyPropertyChanged,IProjectUserControl
+	public partial class ErrorsAndWarnings : UserControl, INotifyPropertyChanged
 	{
 		private List<KeyItemPair> warnLevel;
 		private ProjectOptionPanel projectOptions;
@@ -53,17 +41,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		#region IProjectUserControl
 		
-		public void SetProjectOptions (ProjectOptionPanel projectOptions)
+		public void Initialize (ProjectOptionPanel projectOptions)
 		{
 			if (projectOptions == null) {
 				throw new ArgumentNullException("projectOptions");
 			}
 			this.projectOptions = projectOptions;
-		}
-		
-		public bool SaveProjectOptions()
-		{
-			return true;
 		}
 		
 		#endregion

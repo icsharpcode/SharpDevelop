@@ -55,18 +55,33 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		bool isLoaded;
 		
 		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+		
+		List<ILoadSaveCallback> loadSaveCallbacks = new List<ILoadSaveCallback>();
 
+		public void RegisterLoadSaveCallback(ILoadSaveCallback callback)
+		{
+			if (callback == null)
+				throw new ArgumentNullException("callback");
+			loadSaveCallbacks.Add(callback);
+		}
+		
 		protected virtual void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
-			foreach (IProjectProperty p in projectProperties.Values)
+			// First load project properties; then invoke other callbacks
+			// so that the callbacks can use the new values in the properties
+			foreach (ILoadSaveCallback p in projectProperties.Values.Concat(loadSaveCallbacks))
 				p.Load(project, configuration, platform);
 			this.IsDirty = false;
 		}
 		
 		protected virtual bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
-			foreach (IProjectProperty p in projectProperties.Values)
-				p.Save(project, configuration, platform);
+			// First invoke callbacks; then save project properties.
+			// So that the callbacks can store values via the properties
+			foreach (ILoadSaveCallback p in loadSaveCallbacks.Concat(projectProperties.Values)) {
+				if (!p.Save(project, configuration, platform))
+					return false;
+			}
 			this.IsDirty = false;
 			return true;
 		}
@@ -195,13 +210,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public event EventHandler IsDirtyChanged;
 		
 		#region Manage MSBuild properties
-		Dictionary<string, IProjectProperty> projectProperties = new Dictionary<string, IProjectProperty>();
+		Dictionary<string, ILoadSaveCallback> projectProperties = new Dictionary<string, ILoadSaveCallback>();
 		
 		public ProjectProperty<string> GetProperty(string propertyName, string defaultValue,
 		                                           TextBoxEditMode textBoxEditMode = TextBoxEditMode.EditEvaluatedProperty,
 		                                           PropertyStorageLocations defaultLocation = PropertyStorageLocations.Base)
 		{
-			IProjectProperty existingProperty;
+			ILoadSaveCallback existingProperty;
 			if (projectProperties.TryGetValue(propertyName, out existingProperty))
 				return (ProjectProperty<string>)existingProperty;
 			
@@ -216,7 +231,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public ProjectProperty<T> GetProperty<T>(string propertyName, T defaultValue,
 		                                         PropertyStorageLocations defaultLocation = PropertyStorageLocations.Base)
 		{
-			IProjectProperty existingProperty;
+			ILoadSaveCallback existingProperty;
 			if (projectProperties.TryGetValue(propertyName, out existingProperty))
 				return (ProjectProperty<T>)existingProperty;
 			
@@ -227,13 +242,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			return newProperty;
 		}
 		
-		interface IProjectProperty
+		public interface ILoadSaveCallback
 		{
 			void Load(MSBuildBasedProject project, string configuration, string platform);
-			void Save(MSBuildBasedProject project, string configuration, string platform);
+			bool Save(MSBuildBasedProject project, string configuration, string platform);
 		}
 		
-		public class ProjectProperty<T> : IProjectProperty, INotifyPropertyChanged
+		public class ProjectProperty<T> : ILoadSaveCallback, INotifyPropertyChanged
 		{
 			readonly ProjectOptionPanel parentPanel;
 			readonly string propertyName;
@@ -315,10 +330,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				}
 			}
 			
-			public void Save(MSBuildBasedProject project, string configuration, string platform)
+			public bool Save(MSBuildBasedProject project, string configuration, string platform)
 			{
 				string newValue = GenericConverter.ToString(val);
 				project.SetProperty(configuration, platform, propertyName, newValue, location, treatPropertyValueAsLiteral);
+				return true;
 			}
 		}
 		#endregion

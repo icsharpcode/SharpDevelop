@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// <summary>
 	/// Interaction logic for BuildAdvenced.xaml
 	/// </summary>
-	public partial class BuildAdvanced : UserControl,IProjectUserControl, INotifyPropertyChanged
+	public partial class BuildAdvanced : UserControl, INotifyPropertyChanged, ProjectOptionPanel.ILoadSaveCallback
 	{
 
 		private string dllBaseAddress;
@@ -68,23 +68,25 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		#region IProjectUserControl
 		
 		
-		public void SetProjectOptions (ProjectOptionPanel projectOptions)
+		public void Initialize (ProjectOptionPanel projectOptions)
 		{
 			if (projectOptions == null) {
 				throw new ArgumentNullException("projectOptions");
 			}
 			this.projectOptions = projectOptions;
-			
+			projectOptions.RegisterLoadSaveCallback(this);
+		}
+		
+		public void Load(MSBuildBasedProject project, string configuration, string platform)
+		{
 			int val;
 			if (!int.TryParse(BaseAddress.Value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out val)) {
 				val = 0x400000;
 			}
-			DllBaseAddress =  "0x" + val.ToString("x", NumberFormatInfo.InvariantInfo);
-			projectOptions.IsDirty = true;
+			DllBaseAddress = "0x" + val.ToString("x", NumberFormatInfo.InvariantInfo);
 		}
 		
-		
-		public bool SaveProjectOptions()
+		public bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
 			NumberStyles style = NumberStyles.Integer;
 			string dllBaseAddressWithoutHexPrefix = dllBaseAddress;
@@ -105,11 +107,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		#endregion
 		
-		
 		#region Properies
 		
 		public ProjectOptionPanel.ProjectProperty<bool> RegisterForComInterop {
-			get {return projectOptions.GetProperty("RegisterForComInterop", false, PropertyStorageLocations.PlatformSpecific ); }	
+			get {return projectOptions.GetProperty("RegisterForComInterop", false, PropertyStorageLocations.PlatformSpecific ); }
 		}
 		
 		
@@ -121,6 +122,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public ProjectOptionPanel.ProjectProperty<string> PlatformTarget {
 			get {return projectOptions.GetProperty("PlatformTarget","AnyCPU",
 			                                       TextBoxEditMode.EditEvaluatedProperty, PropertyStorageLocations.PlatformSpecific ); }
+		}
+		
+		/// <summary>
+		/// null means false when targeting .NET 4.0, but true if targeting .NET 4.5
+		/// </summary>
+		public ProjectOptionPanel.ProjectProperty<bool?> Prefer32Bit {
+			get {return projectOptions.GetProperty<bool?>("Prefer32Bit", null, PropertyStorageLocations.PlatformSpecific ); }
 		}
 		
 		public ProjectOptionPanel.ProjectProperty<string> FileAlignment {
@@ -146,7 +154,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		#endregion
 		
-	
+		
 		public List<KeyItemPair> SerializationInfo {get;set;}
 		
 		public List<KeyItemPair> TargetCPU {get;set;}

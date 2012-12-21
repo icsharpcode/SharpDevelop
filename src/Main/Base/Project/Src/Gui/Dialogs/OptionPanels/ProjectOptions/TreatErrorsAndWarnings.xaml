@@ -20,10 +20,12 @@
 		</optionpanels:StorageLocationPicker>
 		
 		<RadioButton x:Name="noneRadioButton" Grid.Column="1" VerticalAlignment="Center" Margin="3,0,3,0"
-		             Content="{core:Localize Dialog.ProjectOptions.Build.TreatWarningsAsErrors.None}"></RadioButton>
+		             Content="{core:Localize Dialog.ProjectOptions.Build.TreatWarningsAsErrors.None}"
+		             Checked="ErrorButton_Checked"/>
 		
 		<RadioButton x:Name="specificWarningsRadioButton" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="3,0,3,0"
-		             Content="{core:Localize Dialog.ProjectOptions.Build.TreatWarningsAsErrors.Specific}"></RadioButton>
+		             Content="{core:Localize Dialog.ProjectOptions.Build.TreatWarningsAsErrors.Specific}"
+		             Checked="ErrorButton_Checked"/>
 		
 		<TextBox x:Name="specificWarningsTextBox" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"
 		         Margin="3,0,3,0"
@@ -33,6 +35,7 @@
 		<RadioButton x:Name="allRadioButton" Grid.Row="2" Grid.Column="1"
 		             Margin="3,0,3,0"
 		             VerticalAlignment="Center"
-		             Content="{core:Localize Dialog.ProjectOptions.Build.TreatWarningsAsErrors.All}"></RadioButton>
+		             Content="{core:Localize Dialog.ProjectOptions.Build.TreatWarningsAsErrors.All}"
+		             Checked="ErrorButton_Checked"/>
 	</Grid>
 </UserControl>

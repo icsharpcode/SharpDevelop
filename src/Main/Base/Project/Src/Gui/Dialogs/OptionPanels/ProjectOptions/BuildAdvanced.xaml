@@ -39,7 +39,6 @@
 					<Binding Path="BaseAddress.Location" />
 				</MultiBinding>
 			</optionpanels:StorageLocationPicker.Location>
-		
 		</optionpanels:StorageLocationPicker>
 		
 		<!--x:Name="registerCOMInteropCheckBox"-->
