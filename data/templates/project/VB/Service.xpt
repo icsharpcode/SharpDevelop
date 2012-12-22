@@ -18,7 +18,7 @@
 		<Open filename = "${ProjectName}.vb"/>
 	</Actions>
 	
-	<Project language="VBNet" defaultPlatform="x86">
+	<Project language="VBNet">
 		<PropertyGroup>
 			<OutputType>Exe</OutputType>
 			<AppDesignerFolder>Properties</AppDesignerFolder>
