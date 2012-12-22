@@ -225,7 +225,7 @@
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewProjectToSolution"/>
 				<MenuItem id    = "AddExitingProjectToSolution"
 				          label = "${res:ProjectComponent.ContextMenu.ExistingProject}"
-				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExitingProjectToSolution"/>
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingProjectToSolution"/>
 				<MenuItem id    = "Separator1" type = "Separator" />
 				<MenuItem id    = "AddItem"
 				          label = "${res:ProjectComponent.ContextMenu.AddItem}"
