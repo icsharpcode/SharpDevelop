@@ -117,7 +117,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (DotnetDetection.IsDotnet45Installed()) {
 					Project.SetProperty(null, Project.ActivePlatform, "Prefer32Bit", "True", PropertyStorageLocations.PlatformSpecific, true);
 				} else {
-					Project.SetProperty(null, Project.ActivePlatform, "TargetPlatform", "x86", PropertyStorageLocations.PlatformSpecific, true);
+					Project.SetProperty(null, Project.ActivePlatform, "PlatformTarget", "x86", PropertyStorageLocations.PlatformSpecific, true);
 				}
 			}
 			base.ProjectCreationComplete();
