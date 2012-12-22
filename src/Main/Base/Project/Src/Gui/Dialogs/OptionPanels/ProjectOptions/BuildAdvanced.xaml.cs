@@ -16,9 +16,9 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Project.Converter;
 using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
@@ -33,26 +33,44 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		private System.Windows.Input.ICommand baseIntermediateOutputPathCommand;
 		private System.Windows.Input.ICommand intermediateOutputPathCommand;
 		private ProjectOptionPanel projectOptions;
+		bool supports32BitPreferred;
 		
 		public BuildAdvanced()
 		{
 			InitializeComponent();
-			InitializeCombos();
 			this.BaseIntermediateOutputPathCommand = new RelayCommand(BaseIntermediateOutputPathExecute);
 			this.IntermediateOutputPathCommand = new RelayCommand(IntermediateOutputPathExecute);
 			this.DataContext = this;
 		}
 
-		void InitializeCombos()
+		public void Initialize (ProjectOptionPanel projectOptions)
 		{
-
+			if (projectOptions == null) {
+				throw new ArgumentNullException("projectOptions");
+			}
+			this.projectOptions = projectOptions;
+			projectOptions.RegisterLoadSaveCallback(this);
+			
+			
 			this.SerializationInfo = new List<KeyItemPair>();
 			this.SerializationInfo.Add(new KeyItemPair("Off", StringParser.Parse("${res:Dialog.ProjectOptions.Build.Off}")));
 			this.SerializationInfo.Add(new KeyItemPair("On", StringParser.Parse("${res:Dialog.ProjectOptions.Build.On}")));
 			this.SerializationInfo.Add(new KeyItemPair("Auto", StringParser.Parse("${res:Dialog.ProjectOptions.Build.Auto}")));
 			
 			this.TargetCPU = new List<KeyItemPair>();
-			this.TargetCPU.Add(new KeyItemPair("AnyCPU", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Any}")));
+			supports32BitPreferred = false;
+			if (DotnetDetection.IsDotnet45Installed()) {
+				supports32BitPreferred = projectOptions.Project.MinimumSolutionVersion >= Solution.SolutionVersionVS2010;
+				var compilableProject = projectOptions.Project as CompilableProject;
+				if (compilableProject != null && compilableProject.OutputType == OutputType.Library)
+					supports32BitPreferred = false;
+			}
+			if (supports32BitPreferred) {
+				this.TargetCPU.Add(new KeyItemPair("AnyCPU32", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Any32}")));
+				this.TargetCPU.Add(new KeyItemPair("AnyCPU64", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Any64}")));
+			} else {
+				this.TargetCPU.Add(new KeyItemPair("AnyCPU", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Any}")));
+			}
 			this.TargetCPU.Add(new KeyItemPair("x86", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.x86}")));
 			this.TargetCPU.Add(new KeyItemPair("x64", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.x64}")));
 			this.TargetCPU.Add(new KeyItemPair("Itanium", StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Itanium}")));
@@ -65,18 +83,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			this.FileAlign.Add(new KeyItemPair("8192", "8192"));
 		}
 		
-		#region IProjectUserControl
-		
-		
-		public void Initialize (ProjectOptionPanel projectOptions)
-		{
-			if (projectOptions == null) {
-				throw new ArgumentNullException("projectOptions");
-			}
-			this.projectOptions = projectOptions;
-			projectOptions.RegisterLoadSaveCallback(this);
-		}
-		
 		public void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			int val;
@@ -84,6 +90,20 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				val = 0x400000;
 			}
 			DllBaseAddress = "0x" + val.ToString("x", NumberFormatInfo.InvariantInfo);
+			
+			if (supports32BitPreferred && string.Equals(this.PlatformTarget.Value, "AnyCPU", StringComparison.OrdinalIgnoreCase)) {
+				bool default32BitPreferred = false;
+				var upgradableProject = projectOptions.Project as IUpgradableProject;
+				if (upgradableProject != null && upgradableProject.CurrentTargetFramework.IsBasedOn(TargetFramework.Net45)) {
+					default32BitPreferred = true;
+				}
+				if (Prefer32Bit.Value ?? default32BitPreferred)
+					targetCpuComboBox.SelectedValue = "AnyCPU32";
+				else
+					targetCpuComboBox.SelectedValue = "AnyCPU64";
+			} else {
+				targetCpuComboBox.SelectedValue = this.PlatformTarget.Value;
+			}
 		}
 		
 		public bool Save(MSBuildBasedProject project, string configuration, string platform)
@@ -98,14 +118,28 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			int val;
 			if (int.TryParse(dllBaseAddressWithoutHexPrefix, style, NumberFormatInfo.InvariantInfo, out val)) {
 				BaseAddress.Value = val.ToString(NumberFormatInfo.InvariantInfo);
-				return true;
 			} else {
 				MessageService.ShowMessage("${res:Dialog.ProjectOptions.PleaseEnterValidNumber}");
 				return false;
 			}
+			// targetCPU is saved in targetCPUCombobox_SelectionChanged
+			
+			return true;
 		}
 		
-		#endregion
+		void TargetCpuComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (string.Equals((string)targetCpuComboBox.SelectedValue, "AnyCPU32", StringComparison.OrdinalIgnoreCase)) {
+				this.PlatformTarget.Value = "AnyCPU";
+				this.Prefer32Bit.Value = true;
+			} else if (string.Equals((string)targetCpuComboBox.SelectedValue, "AnyCPU64", StringComparison.OrdinalIgnoreCase)) {
+				this.PlatformTarget.Value = "AnyCPU";
+				this.Prefer32Bit.Value = false;
+			} else {
+				this.PlatformTarget.Value = (string)targetCpuComboBox.SelectedValue;
+				this.Prefer32Bit.Value = null;
+			}
+		}
 		
 		#region Properies
 		
@@ -137,7 +171,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		}
 		
 		public ProjectOptionPanel.ProjectProperty<string> BaseAddress {
-			get {return projectOptions.GetProperty("BaseAddress","1000",
+			get {return projectOptions.GetProperty("BaseAddress","",
 			                                       TextBoxEditMode.EditEvaluatedProperty,PropertyStorageLocations.PlatformSpecific ); }
 		}
 		

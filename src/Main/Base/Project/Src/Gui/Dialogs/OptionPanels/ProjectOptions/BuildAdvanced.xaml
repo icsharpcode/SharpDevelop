@@ -35,6 +35,7 @@
 					<Binding Path="RegisterForComInterop.Location" />
 					<Binding Path="GenerateSerializationAssemblies.Location" />
 					<Binding Path="PlatformTarget.Location" />
+					<Binding Path="Prefer32Bit.Location" />
 					<Binding Path="FileAlignment.Location" />
 					<Binding Path="BaseAddress.Location" />
 				</MultiBinding>
@@ -61,10 +62,10 @@
 		<Label Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right"
 		       Content="{core:Localize Dialog.ProjectOptions.Build.TargetCPU}"></Label>
 		
-		<!--x:Name="targetCpuComboBox"-->
-		<ComboBox Grid.Row="2" Grid.Column="2" VerticalAlignment="Center"
+		<ComboBox x:Name="targetCpuComboBox"
+		          Grid.Row="2" Grid.Column="2" VerticalAlignment="Center"
 		          ItemsSource="{Binding Path=DataContext.TargetCPU}"
-		          SelectedValue="{Binding Path=PlatformTarget.Value}"
+		          SelectionChanged="TargetCpuComboBox_SelectionChanged"
 		          DisplayMemberPath="DisplayValue"
 		          SelectedValuePath="Key"></ComboBox>
 		
