@@ -2,10 +2,15 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.CodeDom;
+using System.CodeDom.Compiler;
 using System.IO;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Project;
+using Microsoft.CSharp;
 
 namespace ICSharpCode.SharpDevelop.Editor.Commands
 {
@@ -47,9 +52,6 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	{
 		protected override void Run(ITextEditor editor, string clipboardText)
 		{
-			#warning Reimplement PasteAsCommentCommand
-			throw new NotImplementedException();
-			/*
 			string indentation = GetIndentation(editor.Document, editor.Caret.Line);
 			IAmbience ambience = AmbienceService.GetCurrentAmbience();
 			int maxLineLength = editor.Options.VerticalRulerColumn - VisualIndentationLength(editor, indentation);
@@ -63,10 +65,9 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			}
 			IDocument document = editor.Document;
 			int insertionPos = document.GetLineByNumber(editor.Caret.Line).Offset + indentation.Length;
-			document.Insert(insertionPos, insertedText.ToString());*/
+			document.Insert(insertionPos, insertedText.ToString());
 		}
 		
-		/*
 		void AppendTextLine(string indentation, IAmbience ambience, int maxLineLength, StringWriter insertedText, string line)
 		{
 			const int minimumLineLength = 10;
@@ -106,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 					length += 1;
 			}
 			return length;
-		}*/
+		}
 	}
 	
 	/// <summary>
@@ -121,32 +122,44 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	{
 		protected override void Run(ITextEditor editor, string clipboardText)
 		{
-			#warning Reimplement PasteAsStringCommand
-			throw new NotImplementedException();
-			/*
-			CodeGenerator codeGenerator = ParserService.CurrentProjectContent.Language.CodeGenerator;
-			if (codeGenerator == null)
-				codeGenerator = LanguageProperties.CSharp.CodeGenerator;
-			Expression expression = null;
+			// TODO: reimplement as C#-specific refactoring with NR5;
+			// because CodeDom introduces redundant parentheses
+			CodeDomProvider codeDomProvider = null;
+			IProject project = ProjectService.CurrentProject;
+			if (project != null)
+				codeDomProvider = project.CreateCodeDomProvider();
+			if (codeDomProvider == null)
+				codeDomProvider = new CSharpCodeProvider();
+			
+			CodeExpression expression = null;
 			using (StringReader reader = new StringReader(clipboardText)) {
 				string line;
 				while ((line = reader.ReadLine()) != null) {
-					Expression newExpr = new PrimitiveExpression(line);
+					CodeExpression newExpr = new CodePrimitiveExpression(line);
 					if (expression == null) {
 						expression = newExpr;
 					} else {
-						expression = expression
-							.Operator(BinaryOperatorType.Concat,
-							          ExpressionBuilder.Identifier("Environment").Member("NewLine"))
-							.Operator(BinaryOperatorType.Concat,
-							          newExpr);
+						expression = new CodeBinaryOperatorExpression(
+							expression,
+							CodeBinaryOperatorType.Add,
+							new CodePropertyReferenceExpression(
+								new CodeTypeReferenceExpression("Environment"),
+								"NewLine"
+							));
+						expression = new CodeBinaryOperatorExpression(
+							expression, CodeBinaryOperatorType.Add, newExpr);
+						
 					}
 				}
 			}
 			if (expression == null)
 				return;
 			string indentation = GetIndentation(editor.Document, editor.Caret.Line);
-			editor.Document.Insert(editor.Caret.Offset, codeGenerator.GenerateCode(expression, indentation).Trim());*/
+			CodeGeneratorOptions options = new CodeGeneratorOptions();
+			options.IndentString = editor.Options.IndentationString;
+			StringWriter writer = new StringWriter();
+			codeDomProvider.GenerateCodeFromExpression(expression, writer, options);
+			editor.Document.Insert(editor.Caret.Offset, writer.ToString().Trim());
 		}
 	}
 }
