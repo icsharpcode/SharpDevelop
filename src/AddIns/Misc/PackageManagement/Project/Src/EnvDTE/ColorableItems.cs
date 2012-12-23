@@ -8,7 +8,7 @@ using ICSharpCode.AvalonEdit.AddIn;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class ColorableItems : MarshalByRefObject
+	public class ColorableItems : MarshalByRefObject, global::EnvDTE.ColorableItems
 	{
 		public static readonly Wpf.Color DefaultForegroundColor = System.Windows.SystemColors.WindowTextColor;
 		public static readonly Wpf.Color DefaultBackgroundColor = System.Windows.SystemColors.WindowColor;

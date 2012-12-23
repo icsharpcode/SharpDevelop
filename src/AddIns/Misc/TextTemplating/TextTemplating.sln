@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.1.0.7374-alpha
+# SharpDevelop 4.3
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextTemplating", "Project\TextTemplating.csproj", "{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvalonDock", "..\..\..\Libraries\AvalonDock\AvalonDock\AvalonDock.csproj", "{87E61430-4243-45F2-B74E-0A4C096CEBF3}"
@@ -106,5 +106,9 @@ Global
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}.Release|x86.ActiveCfg = Release|Any CPU
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF}.Debug|Any CPU.Build.0 = Debug|x86
+		{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF}.Release|Any CPU.Build.0 = Release|x86
+		{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF}.Release|Any CPU.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

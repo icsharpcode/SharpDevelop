@@ -5,7 +5,7 @@ using System;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class SolutionGlobals : Globals
+	public class SolutionGlobals : global::EnvDTE.Globals
 	{
 		SolutionExtensibilityGlobals extensibilityGlobals;
 		SolutionExtensibilityGlobalsPersistence extensibilityGlobalsPersistence;

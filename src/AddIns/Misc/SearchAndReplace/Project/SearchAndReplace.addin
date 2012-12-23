@@ -43,4 +43,10 @@
 	<Path name="/SharpDevelop/Pads/SearchResultPad/Factories">
 		<Class id="DefaultSearchResultFactory" class="SearchAndReplace.DefaultSearchResultFactory"/>
 	</Path>
+	
+	<Path name="/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding
+			id="SearchAndReplace"
+			class="SearchAndReplace.SearchAndReplaceBinding" />
+	</Path>
 </AddIn>

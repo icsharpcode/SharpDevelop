@@ -113,6 +113,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			if (fx != null)
 				UpdateAppConfig(fx);
+			if (Project.OutputType != OutputType.Library) {
+				if (DotnetDetection.IsDotnet45Installed()) {
+					Project.SetProperty(null, Project.ActivePlatform, "Prefer32Bit", "True", PropertyStorageLocations.PlatformSpecific, true);
+				} else {
+					Project.SetProperty(null, Project.ActivePlatform, "PlatformTarget", "x86", PropertyStorageLocations.PlatformSpecific, true);
+				}
+			}
 			base.ProjectCreationComplete();
 		}
 		

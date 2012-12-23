@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class TextPoint : MarshalByRefObject
+	public class TextPoint : MarshalByRefObject, global::EnvDTE.TextPoint
 	{
 		internal TextPoint(FilePosition filePosition, IDocumentLoader documentLoader)
 		{
@@ -25,7 +25,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return FilePosition.Line; }
 		}
 		
-		public EditPoint CreateEditPoint()
+		public global::EnvDTE.EditPoint CreateEditPoint()
 		{
 			return new EditPoint(FilePosition, DocumentLoader);
 		}

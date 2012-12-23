@@ -65,18 +65,7 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		public string CodeCoverageResultsFileName {
-			get { return GetCodeCoverageResultsFileName(); }
-		}
-		
-		string GetCodeCoverageResultsFileName()
-		{
-			string  outputDirectory = GetOutputDirectory(nunitConsoleApp.Project);
-			return Path.Combine(outputDirectory, "coverage.xml");
-		}
-		
-		string GetOutputDirectory(IProject project)
-		{
-			return Path.Combine(project.Directory, "OpenCover");
+			get { return new ProjectCodeCoverageResultsFileName(nunitConsoleApp.Project).FileName; }
 		}
 		
 		public ProcessStartInfo GetProcessStartInfo()

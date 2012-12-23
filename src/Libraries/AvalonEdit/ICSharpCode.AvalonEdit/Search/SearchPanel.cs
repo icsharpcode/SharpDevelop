@@ -157,6 +157,7 @@ namespace ICSharpCode.AvalonEdit.Search
 			if (renderer.CurrentResults.Any())
 				messageView.IsOpen = false;
 			strategy = SearchStrategyFactory.Create(SearchPattern ?? "", !MatchCase, WholeWords, UseRegex ? SearchMode.RegEx : SearchMode.Normal);
+			OnSearchOptionsChanged(new SearchOptionsChangedEventArgs(SearchPattern, MatchCase, UseRegex, WholeWords));
 			DoSearch(true);
 		}
 		
@@ -191,6 +192,7 @@ namespace ICSharpCode.AvalonEdit.Search
 			this.CommandBindings.Add(new CommandBinding(SearchCommands.FindNext, (sender, e) => FindNext()));
 			this.CommandBindings.Add(new CommandBinding(SearchCommands.FindPrevious, (sender, e) => FindPrevious()));
 			this.CommandBindings.Add(new CommandBinding(SearchCommands.CloseSearchPanel, (sender, e) => Close()));
+			IsClosed = true;
 		}
 
 		void textArea_DocumentChanged(object sender, EventArgs e)
@@ -355,13 +357,84 @@ namespace ICSharpCode.AvalonEdit.Search
 			var layer = AdornerLayer.GetAdornerLayer(textArea);
 			if (layer != null)
 				layer.Remove(adorner);
+			messageView.IsOpen = false;
 			textArea.TextView.BackgroundRenderers.Remove(renderer);
+			textArea.Focus();
+			IsClosed = true;
+		}
+		
+		/// <summary>
+		/// Closes the SearchPanel and removes it.
+		/// </summary>
+		public void CloseAndRemove()
+		{
+			Close();
 			textArea.DocumentChanged -= textArea_DocumentChanged;
 			if (currentDocument != null)
 				currentDocument.TextChanged -= textArea_Document_TextChanged;
-			messageView.IsOpen = false;
-			textArea.Focus();
-			IsClosed = true;
+		}
+		
+		/// <summary>
+		/// Opens the an existing search panel.
+		/// </summary>
+		public void Open()
+		{
+			var layer = AdornerLayer.GetAdornerLayer(textArea);
+			if (layer != null)
+				layer.Add(adorner);
+			textArea.TextView.BackgroundRenderers.Add(renderer);
+		}
+		
+		/// <summary>
+		/// Fired when SearchOptions are changed inside the SearchPanel.
+		/// </summary>
+		public event EventHandler<SearchOptionsChangedEventArgs> SearchOptionsChanged;
+		
+		/// <summary>
+		/// Raises the <see cref="SearchOptionsChanged" /> event.
+		/// </summary>
+		protected virtual void OnSearchOptionsChanged(SearchOptionsChangedEventArgs e)
+		{
+			if (SearchOptionsChanged != null) {
+				SearchOptionsChanged(this, e);
+			}
+		}
+	}
+	
+	/// <summary>
+	/// EventArgs for <see cref="SearchPanel.SearchOptionsChanged"/> event.
+	/// </summary>
+	public class SearchOptionsChangedEventArgs : EventArgs
+	{
+		/// <summary>
+		/// Gets the search pattern.
+		/// </summary>
+		public string SearchPattern { get; private set; }
+		
+		/// <summary>
+		/// Gets whether the search pattern should be interpreted case-sensitive.
+		/// </summary>
+		public bool MatchCase { get; private set; }
+		
+		/// <summary>
+		/// Gets whether the search pattern should be interpreted as regular expression.
+		/// </summary>
+		public bool UseRegex { get; private set; }
+		
+		/// <summary>
+		/// Gets whether the search pattern should only match whole words.
+		/// </summary>
+		public bool WholeWords { get; private set; }
+		
+		/// <summary>
+		/// Creates a new SearchOptionsChangedEventArgs instance.
+		/// </summary>
+		public SearchOptionsChangedEventArgs(string searchPattern, bool matchCase, bool useRegex, bool wholeWords)
+		{
+			this.SearchPattern = searchPattern;
+			this.MatchCase = matchCase;
+			this.UseRegex = useRegex;
+			this.WholeWords = wholeWords;
 		}
 	}
 	

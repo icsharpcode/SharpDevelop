@@ -7,7 +7,9 @@ using System.Windows.Input;
 
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Widgets;
+using Microsoft.Win32;
 using SDCore = ICSharpCode.Core;
 
 namespace ICSharpCode.PythonBinding
@@ -44,10 +46,12 @@ namespace ICSharpCode.PythonBinding
 		
 		void Browse()
 		{
-			string str = OptionsHelper.OpenFile ("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe");
-			if (String.IsNullOrEmpty(str))
-				return;
-			PythonFileName = str;
+			OpenFileDialog dlg = new OpenFileDialog();
+			dlg.DefaultExt = "exe";
+			dlg.Filter = Core.StringParser.Parse("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe");
+			if (dlg.ShowDialog() == true) {
+				PythonFileName = dlg.FileName;
+			}
 		}
 		
 		public override bool SaveOptions()

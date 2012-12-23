@@ -4,9 +4,6 @@
 	</PropertyGroup>
 	
 	<ItemGroup>
-		<WixFiles Include="wix\*"/>
-		<WixBitmapFiles Include="wix\Bitmaps\*"/>
-		<WixLibFiles Include="wix\lib\*"/>
 		<NUnitFiles Include="NUnit\*.dll;NUnit\*.exe"/>
 		<NUnitConfigFiles Include="NUnit\*.config"/>
 		<NUnitLibFiles Include="NUnit\lib\*.dll"/>
@@ -26,9 +23,6 @@
 	</Target>
 	
 	<Target Name="Build" DependsOnTargets="CompileLanguageResources">
-		<Copy SourceFiles="@(WixFiles)" DestinationFolder="..\..\bin\Tools\Wix" SkipUnchangedFiles="true"/>
-		<Copy SourceFiles="@(WixBitmapFiles)" DestinationFolder="..\..\bin\Tools\Wix\Bitmaps" SkipUnchangedFiles="true"/>
-		<Copy SourceFiles="@(WixLibFiles)" DestinationFolder="..\..\bin\Tools\Wix\lib" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(NUnitFiles)" DestinationFolder="..\..\bin\Tools\NUnit" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(NUnitConfigFiles)" DestinationFolder="..\..\bin\Tools\NUnit" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(NUnitLibFiles)" DestinationFolder="..\..\bin\Tools\NUnit\lib" SkipUnchangedFiles="true"/>

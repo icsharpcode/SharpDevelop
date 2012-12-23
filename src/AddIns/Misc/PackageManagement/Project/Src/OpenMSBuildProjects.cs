@@ -19,16 +19,22 @@ namespace ICSharpCode.PackageManagement
 		public MSBuildBasedProject FindProject(string name)
 		{
 			foreach (IProject project in projectService.GetOpenProjects()) {
-				if (IsProjectNameMatch(project.Name, name)) {
+				if (IsProjectNameMatch(project, name)) {
 					return project as MSBuildBasedProject;
 				}
 			}
 			return null;
 		}
 		
-		bool IsProjectNameMatch(string a, string b)
+		bool IsProjectNameMatch(IProject project, string name)
 		{
-			return String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
+			return IsMatchIgnoringCase(project.Name, name) ||
+				(project.FileName == name);
+		}
+		
+		bool IsMatchIgnoringCase(string a, string b)
+		{
+			return String.Equals(a, b, StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }

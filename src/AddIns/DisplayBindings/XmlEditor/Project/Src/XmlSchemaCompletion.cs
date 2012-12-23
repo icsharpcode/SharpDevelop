@@ -1014,7 +1014,13 @@ namespace ICSharpCode.XmlEditor
 					completionItems.AddRange(GetAttributeValueCompletion(simpleType));
 				}
 			}
-
+			
+			if (union.BaseMemberTypes != null) {
+				foreach (XmlSchemaSimpleType simpleType in union.BaseMemberTypes) {
+					completionItems.AddRange(GetAttributeValueCompletion(simpleType));
+				}
+			}
+			
 			return completionItems;
 		}
 		

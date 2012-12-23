@@ -5,11 +5,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
+using Microsoft.VisualStudio.Shell;
 using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class DTE : MarshalByRefObject
+	public class DTE : MarshalByRefObject, global::EnvDTE.DTE, IServiceProvider
 	{
 		IPackageManagementProjectService projectService;
 		IPackageManagementFileService fileService;
@@ -34,7 +36,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return "10.0"; }
 		}
 		
-		public Solution Solution {
+		public global::EnvDTE.Solution Solution {
 			get {
 				if (IsSolutionOpen) {
 					CreateSolution();
@@ -63,9 +65,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return false;
 		}
 		
-		public ItemOperations ItemOperations { get; private set; }
+		public global::EnvDTE.ItemOperations ItemOperations { get; private set; }
 		
-		public Properties Properties(string category, string page)
+		public global::EnvDTE.Properties Properties(string category, string page)
 		{
 			var properties = new DTEProperties();
 			return properties.GetProperties(category, page);
@@ -74,14 +76,23 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public object ActiveSolutionProjects {
 			get {
 				if (IsSolutionOpen) {
-					return Solution.Projects.ToArray();
+					return Solution.Projects.OfType<Project>().ToArray();
 				}
 				return new Project[0];
 			}
 		}
 		
-		public SourceControl SourceControl {
+		public global::EnvDTE.SourceControl SourceControl {
 			get { return null; }
+		}
+		
+		/// <summary>
+		/// HACK - EnvDTE.DTE actually implements Microsoft.VisualStudio.OLE.Interop.IServiceProvider
+		/// which is COM specific and has a QueryInterface method.
+		/// </summary>
+		object IServiceProvider.GetService(Type serviceType)
+		{
+			return Package.GetGlobalService(serviceType);
 		}
 	}
 }

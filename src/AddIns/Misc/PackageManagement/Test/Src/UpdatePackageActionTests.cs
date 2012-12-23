@@ -166,7 +166,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageIdAndSourceAndProjectPassedAndUpdateDependenciesIsTrue_DependenciesUpdatedWhenUpdatingPackage()
 		{
 			CreateSolution();
-			
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			updatePackageHelper.UpdateDependencies = true;
 			updatePackageHelper.UpdatePackageById("PackageId");
 			
@@ -179,7 +179,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageIdAndSourceAndProjectPassedAndUpdateDependenciesIsFalse_DependenciesNotUpdatedWhenGettingPackageOperations()
 		{
 			CreateSolution();
-			
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			updatePackageHelper.UpdateDependencies = false;
 			updatePackageHelper.UpdatePackageById("PackageId");
 			
@@ -192,7 +192,7 @@ namespace PackageManagement.Tests
 		public void Execute_UpdatedDepdenciesIsFalseAndNoPackageOperations_DependenciesIgnoredWhenGettingPackageOperations()
 		{
 			CreateSolution();
-			
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			updatePackageHelper.UpdateDependencies = false;
 			updatePackageHelper.UpdatePackageById("PackageId");
 			
@@ -205,7 +205,7 @@ namespace PackageManagement.Tests
 		public void Execute_UpdateDependenciesIsTrueAndNoPackageOperations_DependenciesNotIgnoredWhenGettingPackageOperations()
 		{
 			CreateSolution();
-			
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			updatePackageHelper.UpdateDependencies = true;
 			updatePackageHelper.UpdatePackageById("PackageId");
 			
@@ -218,7 +218,7 @@ namespace PackageManagement.Tests
 		public void Execute_AllowPrereleaseVersionsIsFalseAndNoPackageOperations_PrereleaseVersionsNotAllowedWhenGettingPackageOperations()
 		{
 			CreateSolution();
-			
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			updatePackageHelper.AllowPrereleaseVersions = false;
 			updatePackageHelper.UpdatePackageById("PackageId");
 			
@@ -231,7 +231,7 @@ namespace PackageManagement.Tests
 		public void Execute_AllowPrereleaseVersionsIsTrueAndNoPackageOperations_PrereleaseVersionsAllowedWhenGettingPackageOperations()
 		{
 			CreateSolution();
-			
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			updatePackageHelper.AllowPrereleaseVersions = true;
 			updatePackageHelper.UpdatePackageById("PackageId");
 			
@@ -255,6 +255,7 @@ namespace PackageManagement.Tests
 		public void HasPackageScriptsToRun_OnePackageInOperationsHasInitPowerShellScript_ReturnsTrue()
 		{
 			CreateSolution();
+			fakeProject.AddFakePackageToSourceRepository("Test");
 			action.PackageId = "Test";
 			AddInstallOperationWithFile(@"tools\init.ps1");
 			
@@ -267,6 +268,7 @@ namespace PackageManagement.Tests
 		public void HasPackageScriptsToRun_OnePackageInOperationsHasNoFiles_ReturnsFalse()
 		{
 			CreateSolution();
+			fakeProject.AddFakePackageToSourceRepository("Test");
 			action.PackageId = "Test";
 			action.Operations = new List<PackageOperation>();
 			

@@ -26,6 +26,7 @@ namespace ICSharpCode.PackageManagement
 		bool IsPackageInstalled(IPackage package);
 		IQueryable<IPackage> GetPackages();
 		IEnumerable<IPackage> GetPackagesInReverseDependencyOrder();
+		string GetInstallPath(IPackage package);
 		
 		bool IsOpen { get; }
 		string FileName { get; }

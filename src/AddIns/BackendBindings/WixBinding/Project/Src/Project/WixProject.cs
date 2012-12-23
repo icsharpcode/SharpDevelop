@@ -25,7 +25,7 @@ namespace ICSharpCode.WixBinding
 	
 	public class WixProject : CompilableProject, IWixPropertyValueProvider
 	{
-		public const string DefaultTargetsFile = @"$(WixToolPath)\wix.targets";
+		public const string DefaultTargetsFile = "$(WixTargetsPath)";
 		public const string FileNameExtension = ".wixproj";
 		
 		delegate bool IsFileNameMatch(string fileName);
@@ -39,13 +39,16 @@ namespace ICSharpCode.WixBinding
 			: base(info)
 		{
 			SetProperty("OutputType", "Package");
+			AddWixTargetsPathProperties();
+			AddImport(DefaultTargetsFile, null);
+		}
+		
+		void AddWixTargetsPathProperties()
+		{
+			string condition = " '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ";
+			AddConditionalProperty("WixTargetsPath", @"$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets", condition);
 			
-			string wixToolPath = @"$(SharpDevelopBinPath)\Tools\Wix";
-			AddGuardedProperty("WixToolPath", wixToolPath);
-			AddGuardedProperty("WixTargetsPath", @"$(WixToolPath)\wix.targets");
-			AddGuardedProperty("WixTasksPath", @"$(WixToolPath)\WixTasks.dll");
-			
-			this.AddImport(DefaultTargetsFile, null);
+			AddGuardedProperty("WixTargetsPath", @"$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets");
 		}
 		
 		public override string Language {
@@ -227,7 +230,6 @@ namespace ICSharpCode.WixBinding
 		public WixStartBehavior(WixProject project, ProjectBehavior next = null)
 			: base(project, next)
 		{
-			
 		}
 		
 		new WixProject Project {

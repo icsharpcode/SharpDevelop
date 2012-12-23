@@ -8,16 +8,10 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 
 using ICSharpCode.Core.Presentation;
-using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -27,26 +21,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 	public partial class StringListEditorXaml : UserControl
 	{
 		bool browseForDirectory;
-		
 		public event EventHandler ListChanged;
 		
-		public string TitleText {
-			get { return this.title.Content.ToString(); }
-			set { this.title.Content = value;}
-		}
-		
-		
-		public string ListCaption
+		public StringListEditorXaml()
 		{
-			get {return this.listlabel.Content.ToString();}
-			set {this.listlabel.Content = value;}
+			InitializeComponent();
+			moveUpButton.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.ArrowUp") };
+			moveDownButton.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.ArrowDown")};
+			deleteButton.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.DeleteIcon")};
+			DataContext = this;
 		}
 		
+		public string TitleText {get;set;}
 		
-		public string AddButtonText {
-			get {return addButton.Content.ToString();}
-			set {addButton.Content = value;}
-		}
+		public string ListCaption {get;set;}
 		
 		
 		public bool BrowseForDirectory {
@@ -63,12 +51,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		
 		public bool AutoAddAfterBrowse {get;set;}
+		
 		
 		void AddButton_Click(object sender, RoutedEventArgs e)
 		{
 			editTextBox.Text = editTextBox.Text.Trim();
-			if (editTextBox.Text.Length > 0) {
+			if (AnyTextInTextBox()) {
 				int index = listBox.Items.IndexOf(editTextBox.Text);
 				if (index < 0) {
 					index = listBox.Items.Add(editTextBox.Text);
@@ -78,8 +68,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		#region Load/Save List
+		bool AnyTextInTextBox()
+		{
+			return editTextBox.Text.Length > 0;
+		}
 		
+		#region Load/Save List
 		
 		public void LoadList(IEnumerable<string> list)
 		{
@@ -87,6 +81,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			foreach (string str in list) {
 				listBox.Items.Add(str);
 			}
+			CheckEnableState();
 		}
 		
 		
@@ -100,12 +95,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		
-		#endregion		
+		#endregion
 		
-		void UpdateButton_Click(object sender, RoutedEventArgs e)
+		
+		private void UpdateButton_Click(object sender, RoutedEventArgs e)
 		{
 			editTextBox.Text = editTextBox.Text.Trim();
-			if (editTextBox.Text.Length > 0) {
+			if (AnyTextInTextBox()) {
 				listBox.Items[listBox.SelectedIndex] = editTextBox.Text;
 				OnListChanged(EventArgs.Empty);
 			}
@@ -122,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (!path.EndsWith("\\") && !path.EndsWith("/"))
 						path += "\\";
 					editTextBox.Text = path;
-				
+					
 					if (AutoAddAfterBrowse) {
 						AddButton_Click(null, null);
 					}
@@ -131,10 +127,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		
-		void EditTextBox_TextChanged(object sender, TextChangedEventArgs e)
+		private void EditTextBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
-			addButton.IsEnabled = editTextBox.Text.Length > 0;
-			updateButton.IsEnabled = listBox.SelectedIndex >= 0 && editTextBox.Text.Length > 0;
+			addButton.IsEnabled = AnyTextInTextBox();
+			CheckEnableState();
 		}
 		
 		
@@ -143,24 +139,42 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (ListChanged != null) {
 				ListChanged(this, e);
 			}
+			CheckEnableState();
 		}
 
 		
-		void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (listBox.SelectedIndex >= 0) {
 				editTextBox.Text = listBox.Items[listBox.SelectedIndex].ToString();
 			}
-			moveUpButton.IsEnabled = listBox.SelectedIndex > 0;
-			moveDownButton.IsEnabled = listBox.SelectedIndex >= 0 && listBox.SelectedIndex < listBox.Items.Count - 1;
-			removeButton.IsEnabled = deleteButton.IsEnabled = listBox.SelectedIndex >= 0;
-			updateButton.IsEnabled = listBox.SelectedIndex >= 0 && editTextBox.Text.Length > 0;
+			CheckEnableState();
+		}
+
+		
+		private void CheckEnableState()
+		{
+			moveUpButton.IsEnabled = (listBox.SelectedIndex > 0) && MultipleItemsInList();
+			moveDownButton.IsEnabled = IsItemSelected() && MultipleItemsInList() && (listBox.SelectedIndex < listBox.Items.Count - 1);
+			removeButton.IsEnabled = IsItemSelected();
+			
+			deleteButton.IsEnabled = IsItemSelected();
+			updateButton.IsEnabled = IsItemSelected() && AnyTextInTextBox();
 		}
 		
+		bool MultipleItemsInList()
+		{
+			return listBox.Items.Count > 1;
+		}
+		
+		bool IsItemSelected()
+		{
+			return listBox.SelectedIndex > -1;
+		}
 		
 		#region MoveUp-MoveDow-DeleteButton
 		
-		void MoveUpButtonClick(object sender, RoutedEventArgs e)
+		private void MoveUpButtonClick(object sender, RoutedEventArgs e)
 		{
 			int index = listBox.SelectedIndex;
 			object tmp = listBox.Items[index];
@@ -170,7 +184,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			OnListChanged(EventArgs.Empty);
 		}
 		
-		void MoveDownButtonClick(object sender, RoutedEventArgs e)
+		private void MoveDownButtonClick(object sender, RoutedEventArgs e)
 		{
 			int index = listBox.SelectedIndex;
 			object tmp = listBox.Items[index];
@@ -181,7 +195,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		
-		void RemoveButtonClick(object sender, RoutedEventArgs e)
+		private void RemoveButtonClick(object sender, RoutedEventArgs e)
 		{
 			if (listBox.SelectedIndex >= 0) {
 				listBox.Items.RemoveAt(listBox.SelectedIndex);
@@ -191,12 +205,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		#endregion
 		
-		public StringListEditorXaml()
-		{
-			InitializeComponent();
-			moveUpButton.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.ArrowUp") };
-			moveDownButton.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.ArrowDown")};
-			deleteButton.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.DeleteIcon")};
-		}
+		
 	}
 }

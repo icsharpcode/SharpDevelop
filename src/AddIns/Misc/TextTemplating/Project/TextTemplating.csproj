@@ -53,6 +53,7 @@
     <Compile Include="Src\AddInAssemblyName.cs" />
     <Compile Include="Src\AddInAssemblyRuntime.cs" />
     <Compile Include="Src\CompilerErrorTask.cs" />
+    <Compile Include="Src\CustomServiceTextTemplatingServiceProviders.cs" />
     <Compile Include="Src\IAddIn.cs" />
     <Compile Include="Src\IAddInRuntime.cs" />
     <Compile Include="Src\IAddInTree.cs" />

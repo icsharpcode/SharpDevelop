@@ -19,7 +19,7 @@
 	</Actions>
 
 	<!-- Template Content -->
-	<Project language = "C#" defaultPlatform="x86">
+	<Project language = "C#">
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Configuration.Install" />

@@ -74,18 +74,8 @@
       <DependentUpon>AnalysisOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\old_AnalysisProjectOptionsPanel.cs" />
-    <Compile Include="Src\old_AnalysisProjectOptions.Designer.cs">
-      <DependentUpon>old_AnalysisProjectOptions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Src\old_AnalysisProjectOptions.cs" />
-    <EmbeddedResource Include="Src\old_AnalysisProjectOptions.resx">
-      <DependentUpon>old_AnalysisProjectOptions.cs</DependentUpon>
-    </EmbeddedResource>
     <Compile Include="Src\StyleCopWrapper.cs" />
     <Compile Include="Src\CheckCurrentProjectCommand.cs" />
-    <Compile Include="Src\old_AnalysisIdeOptionsPanel.cs" />
-    <EmbeddedResource Include="Resources\old_AnalysisIdeOptionPanel.xfrm" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources" />
@@ -107,6 +97,7 @@
     <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
       <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
       <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>

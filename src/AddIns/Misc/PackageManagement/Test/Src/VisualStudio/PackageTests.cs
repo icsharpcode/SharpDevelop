@@ -35,7 +35,7 @@ namespace PackageManagement.Tests.VisualStudio
 		[Test]
 		public void GetGlobalService_GetDTE_ReturnsDTE()
 		{
-			object dte = Package.GetGlobalService(typeof(DTE)) as DTE;
+			object dte = Package.GetGlobalService(typeof(global::EnvDTE.DTE)) as DTE;
 			
 			Assert.IsInstanceOf(typeof(DTE), dte);
 		}

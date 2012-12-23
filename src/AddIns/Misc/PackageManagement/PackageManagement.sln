@@ -36,7 +36,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvalonEdit.AddIn", "..\..\D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageManagement.PowerShell", "PowerShell\Project\PackageManagement.PowerShell.csproj", "{A406803B-C584-43A3-BCEE-A0BB3132CB5F}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "PackageManagement.EnvDTEHelpers", "EnvDTEHelpers\Project\PackageManagement.EnvDTEHelpers.vbproj", "{F7886FB7-3764-4574-B981-25EB164B532E}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "SharpDevelop.EnvDTE", "SharpDevelop.EnvDTE\SharpDevelop.EnvDTE.vbproj", "{6FB1260D-68A2-41A0-BB09-F5F710842E99}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -182,13 +182,13 @@ Global
 		{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}.Release|Any CPU.Build.0 = Release|x86
 		{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}.Release|Any CPU.ActiveCfg = Release|x86
-		{F7886FB7-3764-4574-B981-25EB164B532E}.Debug|x86.Build.0 = Debug|Any CPU
-		{F7886FB7-3764-4574-B981-25EB164B532E}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{F7886FB7-3764-4574-B981-25EB164B532E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F7886FB7-3764-4574-B981-25EB164B532E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F7886FB7-3764-4574-B981-25EB164B532E}.Release|x86.Build.0 = Release|Any CPU
-		{F7886FB7-3764-4574-B981-25EB164B532E}.Release|x86.ActiveCfg = Release|Any CPU
-		{F7886FB7-3764-4574-B981-25EB164B532E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F7886FB7-3764-4574-B981-25EB164B532E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FB1260D-68A2-41A0-BB09-F5F710842E99}.Debug|x86.Build.0 = Debug|Any CPU
+		{6FB1260D-68A2-41A0-BB09-F5F710842E99}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6FB1260D-68A2-41A0-BB09-F5F710842E99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FB1260D-68A2-41A0-BB09-F5F710842E99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FB1260D-68A2-41A0-BB09-F5F710842E99}.Release|x86.Build.0 = Release|Any CPU
+		{6FB1260D-68A2-41A0-BB09-F5F710842E99}.Release|x86.ActiveCfg = Release|Any CPU
+		{6FB1260D-68A2-41A0-BB09-F5F710842E99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FB1260D-68A2-41A0-BB09-F5F710842E99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 EndGlobal

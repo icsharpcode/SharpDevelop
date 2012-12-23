@@ -208,5 +208,10 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			FakePackages.Add(new FakePackage(id));
 		}
+		
+		public void AddFakePackageToSourceRepository(string packageId)
+		{
+			FakeSourceRepository.AddFakePackage(packageId);
+		}
 	}
 }

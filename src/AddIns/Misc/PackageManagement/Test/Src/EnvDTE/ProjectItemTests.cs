@@ -25,7 +25,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			project = new TestableDTEProject();
 			msbuildProject = project.TestableProject;
-			projectItems = project.ProjectItems;
+			projectItems = (ProjectItems)project.ProjectItems;
 			fakeFileService = project.FakeFileService;
 		}
 		
@@ -51,9 +51,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProjectItems();
 			msbuildProject.AddFile(@"src\program.cs");
-		
-			ProjectItem directoryItem = projectItems.Item("src");
-			ProjectItems directoryProjectItems = directoryItem.ProjectItems;
+			
+			global::EnvDTE.ProjectItem directoryItem = projectItems.Item("src");
+			global::EnvDTE.ProjectItems directoryProjectItems = directoryItem.ProjectItems;
 			
 			string[] expectedFiles = new string[] {
 				"program.cs"
@@ -67,9 +67,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProjectItems();
 			msbuildProject.AddDirectory(@"src\test");
-		
-			ProjectItem directoryItem = projectItems.Item("src");
-			ProjectItems directoryProjectItems = directoryItem.ProjectItems;
+			
+			global::EnvDTE.ProjectItem directoryItem = projectItems.Item("src");
+			global::EnvDTE.ProjectItems directoryProjectItems = directoryItem.ProjectItems;
 			var items = directoryProjectItems as IEnumerable;
 			
 			string[] expectedItems = new string[] {
@@ -85,9 +85,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.AddFile(@"src\test.cs");
 			msbuildProject.AddFile("program.cs");
-		
-			ProjectItem directoryItem = projectItems.Item("src");
-			ProjectItems directoryProjectItems = directoryItem.ProjectItems;
+			
+			global::EnvDTE.ProjectItem directoryItem = projectItems.Item("src");
+			global::EnvDTE.ProjectItems directoryProjectItems = directoryItem.ProjectItems;
 			var items = directoryProjectItems as IEnumerable;
 			
 			string[] expectedItems = new string[] {
@@ -103,9 +103,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.AddFile(@"src\test\test.cs");
 		
-			ProjectItem directoryItem = projectItems.Item("src");
-			ProjectItem testDirectoryItem = directoryItem.ProjectItems.Item("test");
-			ProjectItems testDirectoryProjectItems = testDirectoryItem.ProjectItems;
+			global::EnvDTE.ProjectItem directoryItem = projectItems.Item("src");
+			global::EnvDTE.ProjectItem testDirectoryItem = directoryItem.ProjectItems.Item("test");
+			global::EnvDTE.ProjectItems testDirectoryProjectItems = testDirectoryItem.ProjectItems;
 			var items = testDirectoryProjectItems as IEnumerable;
 			
 			string[] expectedItems = new string[] {
@@ -121,11 +121,11 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.AddFile(@"src\program.cs");
 		
-			ProjectItem directoryItem = projectItems.Item("src");
+			ProjectItem directoryItem = (ProjectItem)projectItems.Item("src");
 			
 			string kind = directoryItem.Kind;
 			
-			Assert.AreEqual(Constants.vsProjectItemKindPhysicalFolder, kind);
+			Assert.AreEqual(global::EnvDTE.Constants.vsProjectItemKindPhysicalFolder, kind);
 		}
 		
 		[Test]
@@ -134,12 +134,12 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.AddFile(@"src\program.cs");
 		
-			ProjectItem directoryItem = projectItems.Item("src");
-			ProjectItem fileItem = directoryItem.ProjectItems.Item("program.cs");
+			global::EnvDTE.ProjectItem directoryItem = projectItems.Item("src");
+			global::EnvDTE.ProjectItem fileItem = directoryItem.ProjectItems.Item("program.cs");
 			
 			string kind = fileItem.Kind;
 			
-			Assert.AreEqual(Constants.vsProjectItemKindPhysicalFile, kind);
+			Assert.AreEqual(global::EnvDTE.Constants.vsProjectItemKindPhysicalFile, kind);
 		}
 		
 		[Test]
@@ -148,8 +148,8 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
 			msbuildProject.AddFile(@"src\program.cs");
-			ProjectItem directoryItem = projectItems.Item("src");
-			ProjectItem fileItem = directoryItem.ProjectItems.Item("program.cs");
+			global::EnvDTE.ProjectItem directoryItem = projectItems.Item("src");
+			global::EnvDTE.ProjectItem fileItem = directoryItem.ProjectItems.Item("program.cs");
 			
 			fileItem.Delete();
 			
@@ -162,8 +162,8 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
 			msbuildProject.AddFile(@"src\program.cs");
-			ProjectItem directoryItem = projectItems.Item("src");
-			ProjectItem fileItem = directoryItem.ProjectItems.Item("program.cs");
+			global::EnvDTE.ProjectItem directoryItem = projectItems.Item("src");
+			global::EnvDTE.ProjectItem fileItem = directoryItem.ProjectItems.Item("program.cs");
 			
 			fileItem.Delete();
 			
@@ -176,9 +176,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.AddFile(@"src\program.cs");
 		
-			ProjectItem directoryItem = projectItems.Item("src");
+			global::EnvDTE.ProjectItem directoryItem = projectItems.Item("src");
 			
-			FileCodeModel2 fileCodeModel = directoryItem.FileCodeModel;
+			global::EnvDTE.FileCodeModel2 fileCodeModel = directoryItem.FileCodeModel;
 			
 			Assert.IsNull(fileCodeModel);
 		}
@@ -189,10 +189,10 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.AddFile(@"src\program.cs");
 		
-			ProjectItem directoryItem = projectItems.Item("src");
-			ProjectItem fileItem = directoryItem.ProjectItems.Item("program.cs");
+			global::EnvDTE.ProjectItem directoryItem = projectItems.Item("src");
+			global::EnvDTE.ProjectItem fileItem = directoryItem.ProjectItems.Item("program.cs");
 			
-			FileCodeModel2 fileCodeModel = fileItem.FileCodeModel;
+			global::EnvDTE.FileCodeModel2 fileCodeModel = fileItem.FileCodeModel;
 			
 			Assert.IsNotNull(fileCodeModel);
 		}
@@ -203,11 +203,11 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
 			msbuildProject.AddFile(@"src\program.cs");
-		
-			ProjectItem directoryItem = projectItems.Item("src");
-			ProjectItem fileItem = directoryItem.ProjectItems.Item("program.cs");
 			
-			CodeElements codeElements = fileItem.FileCodeModel.CodeElements;
+			global::EnvDTE.ProjectItem directoryItem = projectItems.Item("src");
+			global::EnvDTE.ProjectItem fileItem = directoryItem.ProjectItems.Item("program.cs");
+			
+			global::EnvDTE.CodeElements codeElements = fileItem.FileCodeModel.CodeElements;
 			
 			Assert.AreEqual(@"d:\projects\MyProject\src\program.cs", fakeFileService.FileNamePassedToGetCompilationUnit);
 			Assert.AreEqual(0, codeElements.Count);
@@ -219,7 +219,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.AddFile(@"program.cs");
 			
-			ProjectItem fileItem = projectItems.Item("program.cs");
+			global::EnvDTE.ProjectItem fileItem = projectItems.Item("program.cs");
 			fileItem.Remove();
 			
 			Assert.AreEqual(0, msbuildProject.Items.Count);
@@ -231,7 +231,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.AddFile(@"program.cs");
 			
-			ProjectItem fileItem = projectItems.Item("program.cs");
+			global::EnvDTE.ProjectItem fileItem = projectItems.Item("program.cs");
 			fileItem.Remove();
 			
 			Assert.IsTrue(msbuildProject.IsSaved);
@@ -243,9 +243,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
 			msbuildProject.AddFile(@"src\program.cs");
-			ProjectItem directoryItem = projectItems.Item("src");
+			global::EnvDTE.ProjectItem directoryItem = projectItems.Item("src");
 			
-			string fileName = directoryItem.FileNames(1);
+			string fileName = directoryItem.get_FileNames(1);
 			
 			Assert.AreEqual(@"d:\projects\MyProject\src", fileName);
 		}
@@ -256,9 +256,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
 			msbuildProject.AddFile(@"program.cs");
-			ProjectItem item = projectItems.Item("program.cs");
+			global::EnvDTE.ProjectItem item = projectItems.Item("program.cs");
 			
-			Document document = item.Document;
+			global::EnvDTE.Document document = item.Document;
 			
 			Assert.IsNull(document);
 		}
@@ -269,11 +269,11 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
 			msbuildProject.AddFile(@"program.cs");
-			ProjectItem item = projectItems.Item("program.cs");
+			global::EnvDTE.ProjectItem item = projectItems.Item("program.cs");
 			string projectItemFileName = @"d:\projects\MyProject\program.cs";
 			OpenSavedFileInSharpDevelop(projectItemFileName);
 			
-			Document document = item.Document;
+			global::EnvDTE.Document document = item.Document;
 			
 			Assert.AreEqual(projectItemFileName, document.FullName);
 		}
@@ -284,10 +284,10 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
 			msbuildProject.AddFile(@"program.cs");
-			ProjectItem item = projectItems.Item("program.cs");
+			global::EnvDTE.ProjectItem item = projectItems.Item("program.cs");
 			OpenSavedFileInSharpDevelop(@"d:\projects\MyProject\program.cs");
 			
-			Document document = item.Document;
+			global::EnvDTE.Document document = item.Document;
 			
 			Assert.IsTrue(document.Saved);
 		}
@@ -298,10 +298,10 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
 			msbuildProject.AddFile(@"program.cs");
-			ProjectItem item = projectItems.Item("program.cs");
+			global::EnvDTE.ProjectItem item = projectItems.Item("program.cs");
 			OpenUnsavedFileInSharpDevelop(@"d:\projects\MyProject\program.cs");
 			
-			Document document = item.Document;
+			global::EnvDTE.Document document = item.Document;
 			
 			Assert.IsFalse(document.Saved);
 		}
@@ -312,9 +312,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
 			msbuildProject.AddFile(@"program.cs");
-			ProjectItem item = projectItems.Item("program.cs");
+			global::EnvDTE.ProjectItem item = projectItems.Item("program.cs");
 			
-			Window window = item.Open(Constants.vsViewKindCode);
+			global::EnvDTE.Window window = item.Open(global::EnvDTE.Constants.vsViewKindCode);
 			
 			Assert.AreEqual(@"d:\projects\MyProject\program.cs", fakeFileService.FileNamePassedToOpenFile);
 		}
@@ -326,7 +326,7 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildProject.AddFile("MainForm.cs");
 			msbuildProject.AddDependentFile("MainForm.Designer.cs", "MainForm.cs");
 			
-			ProjectItems projectItems = project.ProjectItems;
+			global::EnvDTE.ProjectItems projectItems = project.ProjectItems;
 			
 			string[] expectedFiles = new string[] {
 				"MainForm.cs"
@@ -350,14 +350,55 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectItems();
 			msbuildProject.AddFile("MainForm.cs");
 			msbuildProject.AddDependentFile("MainForm.Designer.cs", "MainForm.cs");
-			ProjectItem mainFormItem = project.ProjectItems.Item("MainForm.cs");
+			global::EnvDTE.ProjectItem mainFormItem = project.ProjectItems.Item("MainForm.cs");
 			
-			ProjectItems mainFormProjectItems = mainFormItem.ProjectItems;
+			global::EnvDTE.ProjectItems mainFormProjectItems = mainFormItem.ProjectItems;
 			
 			string[] expectedFiles = new string[] {
 				"MainForm.Designer.cs"
 			};
 			ProjectItemCollectionAssert.AreEqual(expectedFiles, mainFormProjectItems);
+		}
+		
+		[Test]
+		public void FileCount_FileProjectItem_ReturnsOne()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"program.cs");
+			global::EnvDTE.ProjectItem projectItem = projectItems.Item("program.cs");
+			
+			short count = projectItem.FileCount;
+			
+			Assert.AreEqual(1, count);
+		}
+		
+		[Test]
+		public void Collection_ProjectItemIsFileInProjectRootFolder_ReturnsProjectItemsCollectionForProject()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"program.cs");
+			global::EnvDTE.ProjectItem projectItem = projectItems.Item("program.cs");
+			
+			global::EnvDTE.ProjectItems collection = projectItem.Collection;
+			
+			Assert.AreEqual(project.ProjectItems, collection);
+		}
+		
+		[Test]
+		public void Collection_ProjectItemIsFileInSubFolderOfProject_ReturnsProjectItemsCollectionForSubFolder()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"src\program.cs");
+			global::EnvDTE.ProjectItem srcDirectoryItem = project.ProjectItems.Item("src");
+			global::EnvDTE.ProjectItem fileProjectItem = srcDirectoryItem.ProjectItems.Item("program.cs");
+			
+			global::EnvDTE.ProjectItems collection = fileProjectItem.Collection;
+			
+			global::EnvDTE.ProjectItem item = collection.Item("program.cs");
+			Assert.AreEqual("program.cs", item.Name);
 		}
 	}
 }

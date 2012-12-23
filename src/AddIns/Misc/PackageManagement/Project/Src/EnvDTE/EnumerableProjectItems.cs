@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public abstract class EnumerableProjectItems : MarshalByRefObject, IEnumerable<ProjectItem>
+	public abstract class EnumerableProjectItems : MarshalByRefObject, IEnumerable<global::EnvDTE.ProjectItem>
 	{
 		public EnumerableProjectItems()
 		{
@@ -19,12 +19,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return GetEnumerator();
 		}
 		
-		public IEnumerator<ProjectItem> GetEnumerator()
+		public IEnumerator<global::EnvDTE.ProjectItem> GetEnumerator()
 		{
 			return GetProjectItems().ToList().GetEnumerator();
 		}
 		
-		protected abstract IEnumerable<ProjectItem> GetProjectItems();
+		protected abstract IEnumerable<global::EnvDTE.ProjectItem> GetProjectItems();
 		
 		internal virtual int Count {
 			get { return GetProjectItems().Count(); }

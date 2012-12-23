@@ -28,6 +28,16 @@ namespace PackageManagement.Tests
 			project = ProjectHelper.CreateTestProject();
 		}
 		
+		void CreateTestWebApplicationProject()
+		{
+			project = ProjectHelper.CreateTestWebApplicationProject();
+		}
+		
+		void CreateTestWebSiteProject()
+		{
+			project = ProjectHelper.CreateTestWebSiteProject();
+		}
+		
 		void CreateTestProject(string fileName)
 		{
 			CreateTestProject();
@@ -133,9 +143,9 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void IsSupportedFile_PassedAppConfigFileName_ReturnsFalse()
+		public void IsSupportedFile_ProjectIsWebProjectAndPassedAppConfigFileName_ReturnsFalse()
 		{
-			CreateTestProject();
+			CreateTestWebApplicationProject();
 			CreateProjectSystem(project);
 			
 			string fileName = @"d:\temp\app.config";
@@ -145,15 +155,75 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void IsSupportedFile_PassedAppConfigFileNameInUpperCase_ReturnsFalse()
+		public void IsSupportedFile_ProjectIsWebProjectAndPassedAppConfigFileNameInUpperCase_ReturnsFalse()
 		{
-			CreateTestProject();
+			CreateTestWebApplicationProject();
 			CreateProjectSystem(project);
 			
 			string fileName = @"c:\projects\APP.CONFIG";
 			bool result = projectSystem.IsSupportedFile(fileName);
 			
 			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void IsSupportedFile_ProjectIsWebApplicationProjectAndPassedWebConfigFileName_ReturnsTrue()
+		{
+			CreateTestWebApplicationProject();
+			CreateProjectSystem(project);
+			
+			string fileName = @"d:\temp\web.config";
+			bool result = projectSystem.IsSupportedFile(fileName);
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void IsSupportedFile_ProjectIsWebSiteProjectAndPassedWebConfigFileName_ReturnsTrue()
+		{
+			CreateTestWebSiteProject();
+			CreateProjectSystem(project);
+			
+			string fileName = @"d:\temp\web.config";
+			bool result = projectSystem.IsSupportedFile(fileName);
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void IsSupportedFile_ProjectIsCSharpProjectAndPassedWebConfigFileName_ReturnsFalse()
+		{
+			CreateTestProject();
+			CreateProjectSystem(project);
+			
+			string fileName = @"d:\temp\web.config";
+			bool result = projectSystem.IsSupportedFile(fileName);
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void IsSupportedFile_ProjectIsCSharpProjectAndPassedWebConfigFileNameInUpperCase_ReturnsFalse()
+		{
+			CreateTestProject();
+			CreateProjectSystem(project);
+			
+			string fileName = @"d:\temp\WEB.CONFIG";
+			bool result = projectSystem.IsSupportedFile(fileName);
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void IsSupportedFile_ProjectIsCSharpProjectAndPassedAppConfigFileName_ReturnsTrue()
+		{
+			CreateTestProject();
+			CreateProjectSystem(project);
+			
+			string fileName = @"d:\temp\app.config";
+			bool result = projectSystem.IsSupportedFile(fileName);
+			
+			Assert.IsTrue(result);
 		}
 		
 		[Test]

@@ -22,42 +22,25 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	public partial class Signing : ProjectOptionPanel
 	{
 		private const string KeyFileExtensions = "*.snk;*.pfx;*.key";
-		private string selectedKey;
-		private ObservableCollection<string> keyFile = new ObservableCollection<string>();
-		
+	
 		public Signing()
 		{
 			InitializeComponent();
 		}
 		
 		
-		private void Initialize()
-		{
-			FindKeys(base.BaseDirectory);
-			SelectedKey = AssemblyOriginatorKeyFile.Value.Trim();
-			if (SelectedKey.Length >  0) {
-				if (!KeyFile.Contains(SelectedKey)) {
-					keyFile.Add(SelectedKey);
-				}
-			}
-			keyFile.Add(StringParser.Parse("<${res:Global.CreateButtonText}...>"));
-			keyFile.Add(StringParser.Parse("<${res:Global.BrowseText}...>"));
-			keyFileComboBox.SelectedIndex = 0;
-			keyFileComboBox.SelectionChanged += KeyFileComboBox_SelectionChanged;
-		}
-		
 		public ProjectProperty<bool> SignAssembly {
 			get { return GetProperty("SignAssembly", false); }
 		}
 		
 		
-		public ProjectProperty<string> AssemblyOriginatorKeyFile {
-			get { return GetProperty("AssemblyOriginatorKeyFile","", TextBoxEditMode.EditEvaluatedProperty); }
+		public ProjectProperty<bool> DelaySign {
+			get { return GetProperty("DelaySign", false); }
 		}
 		
 		
-		public ProjectProperty<string> DelaySign {
-			get { return GetProperty("DelaySign","", TextBoxEditMode.EditEvaluatedProperty); }
+		public ProjectProperty<string> AssemblyOriginatorKeyFile {
+			get { return GetProperty("AssemblyOriginatorKeyFile","", TextBoxEditMode.EditRawProperty); }
 		}
 		
 		
@@ -67,24 +50,37 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		#region overrides
 		
+	
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
-			Initialize();
+			// Ensure that the template is applied before we assign ComboBox.Text, this ensures
+			// the TextBoxBase.TextChanged event fires immediately and doesn't cause us to
+			// set the IsDirty flag later.
+			keyFileComboBox.ApplyTemplate();
+			FillKeyFileComboBox();
+			if (KeyFile.Count > 2) {
+				if (!String.IsNullOrEmpty(this.AssemblyOriginatorKeyFile.Value)) {
+					keyFileComboBox.Text = this.AssemblyOriginatorKeyFile.Value;
+				}
+			}
 		}
+		
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
 			if (signAssemblyCheckBox.IsChecked == true) {
-				this.AssemblyOriginatorKeyFile.Value = "File";
+				this.AssemblyOriginatorKeyMode.Value = "File";
 			}
-			keyFileComboBox.SelectionChanged -= KeyFileComboBox_SelectionChanged;
 			return base.Save(project, configuration, platform);
 		}
+		
 		#endregion
 		
 		
 		#region KeyFile
+		
+		private ObservableCollection<string> keyFile = new ObservableCollection<string>();
 		
 		public ObservableCollection<string> KeyFile {
 			get { return keyFile; }
@@ -95,11 +91,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		}
 		
 		
-		public string SelectedKey {
-			get { return selectedKey; }
-			set { selectedKey = value;
-				base.RaisePropertyChanged(() => SelectedKey);
-			}
+		private void FillKeyFileComboBox()
+		{
+			FindKeys(base.BaseDirectory);
+			keyFile.Add(StringParser.Parse("<${res:Global.CreateButtonText}...>"));
+			keyFile.Add(StringParser.Parse("<${res:Global.BrowseText}...>"));
 		}
 		
 		
@@ -128,27 +124,25 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
+		
 		void KeyFileComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			var cbo = (ComboBox) sender;
-			
-			if (cbo.SelectedIndex == keyFile.Count - 1) {
-				BrowseKeyFile();
-			}
-			if (cbo.SelectedIndex == keyFile.Count - 2) {
-				CreateKeyFile();
-			}
+			// Because this event is raised while the combobox is still switching to the "<create>" or "<browse>" value,
+			// we cannot set comboBox.Text within this event handler.
+			// To avoid this problem, we invoke the operation after the combobox has finished switching to the new value.
+			WorkbenchSingleton.SafeThreadAsyncCall(
+				delegate {
+					if (this.keyFileComboBox.SelectedIndex == keyFile.Count - 1) {
+						keyFileComboBox.Text = String.Empty;
+						BrowseForFile(this.AssemblyOriginatorKeyFile, "${res:SharpDevelop.FileFilter.KeyFiles} (" + KeyFileExtensions + ")|" + KeyFileExtensions + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
+						keyFileComboBox.Text = this.AssemblyOriginatorKeyFile.Value;
+					}
+					if (this.keyFileComboBox.SelectedIndex == keyFile.Count - 2) {
+						keyFileComboBox.Text = String.Empty;
+						CreateKeyFile();
+					}
+				});
 		}
-		
-		
-		void BrowseKeyFile()
-		{
-			string str = OptionsHelper.OpenFile("${res:SharpDevelop.FileFilter.KeyFiles} (" + KeyFileExtensions + ")|" + KeyFileExtensions + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
-			if (!String.IsNullOrEmpty(str)) {
-				this.AssemblyOriginatorKeyFile.Value = str;
-			}                                                        
-		}
-		
 		
 		private void CreateKeyFile()
 		{
@@ -159,53 +153,51 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				
 				string key = MessageService.ShowInputBox(title,keyName,base.Project.Name);
 				if(!String.IsNullOrEmpty(key)) {
-					if (CreateKey(key.Trim())) {
-						this.keyFileComboBox.SelectionChanged -= KeyFileComboBox_SelectionChanged;
-						var generated = MSBuildInternals.Escape(key);
-						KeyFile.Add(generated);
-						SelectedKey = generated;
-						this.keyFileComboBox.SelectionChanged += KeyFileComboBox_SelectionChanged;
-					}					
-				} else {
-					MessageService.ShowMessage("${res:Dialog.ProjectOptions.Signing.SNnotFound}");
+					if (!key.EndsWith(".snk") && !key.EndsWith(".pfx"))
+						key += ".snk";
+					if (CreateKey(Path.Combine(base.Project.Directory, key))) {
+						AssemblyOriginatorKeyFile.Value = MSBuildInternals.Escape(key);
+						keyFileComboBox.Text = AssemblyOriginatorKeyFile.Value;
+					}
 				}
+			} else {
+				MessageService.ShowMessage("${res:Dialog.ProjectOptions.Signing.SNnotFound}");
 			}
 		}
 		
-		#endregion	
+		#endregion
 		
-		 /// <summary>
-        /// Gets the path of the "strong named" executable. This is used to create keys for strongly signing
-        /// .NET assemblies.
-        /// </summary>
+		/// <summary>
+		/// Gets the path of the "strong named" executable. This is used to create keys for strongly signing
+		/// .NET assemblies.
+		/// </summary>
 		private static string StrongNameTool {
 			get {
-        		return FileUtility.GetSdkPath("sn.exe");
+				return FileUtility.GetSdkPath("sn.exe");
 			}
 		}
-        
-        
-         /// <summary>
-        /// Creates a key with the sn.exe utility.
-        /// </summary>
-        /// <param name="keyPath">The path of the key to create.</param>
-        /// <returns>True if the key was created correctly.</returns>
-        private static bool CreateKey(string keyPath)
-        {
-        	if (File.Exists(keyPath)) {
-        		string question = "${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion}";
-        		question = StringParser.Parse(question, new StringTagPair("fileNames", keyPath));
-        		if (!MessageService.AskQuestion(question, "${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName}")) {
-        			return false;
-        		}
-        	}
-        	Process p = Process.Start(StrongNameTool, "-k \"" + keyPath + "\"");
-        	p.WaitForExit();
-        	if (p.ExitCode != 0) {
-        		MessageService.ShowMessage("${res:Dialog.ProjectOptions.Signing.ErrorCreatingKey}");
-        		return false;
-        	}
-        	return true;
-        }
+		
+		/// <summary>
+		/// Creates a key with the sn.exe utility.
+		/// </summary>
+		/// <param name="keyPath">The path of the key to create.</param>
+		/// <returns>True if the key was created correctly.</returns>
+		private static bool CreateKey(string keyPath)
+		{
+			if (File.Exists(keyPath)) {
+				string question = "${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion}";
+				question = StringParser.Parse(question, new StringTagPair("fileNames", keyPath));
+				if (!MessageService.AskQuestion(question, "${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName}")) {
+					return false;
+				}
+			}
+			Process p = Process.Start(StrongNameTool, "-k \"" + keyPath + "\"");
+			p.WaitForExit();
+			if (p.ExitCode != 0) {
+				MessageService.ShowMessage("${res:Dialog.ProjectOptions.Signing.ErrorCreatingKey}");
+				return false;
+			}
+			return true;
+		}
 	}
 }

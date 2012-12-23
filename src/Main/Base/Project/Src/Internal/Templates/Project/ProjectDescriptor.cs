@@ -277,7 +277,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			string outerProjectName = projectCreateInformation.ProjectName;
 			try
 			{
-				projectCreateInformation.ProjectBasePath = Path.Combine(projectCreateInformation.ProjectBasePath, this.relativePath);
+				projectCreateInformation.ProjectBasePath = Path.Combine(projectCreateInformation.ProjectBasePath, GetRelativePath(projectCreateInformation));
 				if (!Directory.Exists(projectCreateInformation.ProjectBasePath)) {
 					Directory.CreateDirectory(projectCreateInformation.ProjectBasePath);
 				}
@@ -393,7 +393,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 						} else {
 							// Textual content
 							StreamWriter sr = new StreamWriter(File.Create(fileName), SD.FileService.DefaultFileEncoding);
-							string fileContent = StringParser.Parse(file.Content, new StringTagPair("ProjectName", projectCreateInformation.ProjectName), new StringTagPair("FileName", fileName));
+							string fileContent = StringParser.Parse(file.Content, 
+								new StringTagPair("ProjectName", projectCreateInformation.ProjectName),
+								new StringTagPair("SolutionName", projectCreateInformation.SolutionName),
+								new StringTagPair("FileName", fileName));
 							fileContent = StringParser.Parse(fileContent);
 							if (SD.EditorControlService.GlobalOptions.IndentationString != "\t") {
 								fileContent = fileContent.Replace("\t", SD.EditorControlService.GlobalOptions.IndentationString);
@@ -427,7 +430,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 						ProjectItem newProjectItem = new UnknownProjectItem(
 							project,
 							StringParser.Parse(projectItem.ItemType.ItemName),
-							StringParser.Parse(projectItem.Include)
+							StringParser.Parse(projectItem.Include,
+								new StringTagPair("ProjectName", projectCreateInformation.ProjectName),
+								new StringTagPair("SolutionName", projectCreateInformation.SolutionName))
 						);
 						foreach (string metadataName in projectItem.MetadataNames) {
 							string metadataValue = projectItem.GetMetadata(metadataName);
@@ -523,6 +528,11 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				projectCreateInformation.ProjectBasePath = outerProjectBasePath;
 				projectCreateInformation.ProjectName = outerProjectName;
 			}
+		}
+		
+		string GetRelativePath(ProjectCreateInformation projectCreateInformation)
+		{
+			return StringParser.Parse(this.relativePath, new StringTagPair("ProjectName", projectCreateInformation.ProjectName));
 		}
 		
 		void RunPreCreateActions(ProjectCreateInformation projectCreateInformation)

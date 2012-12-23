@@ -7,6 +7,8 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -31,17 +33,16 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public ApplicationSettings()
 		{
 			InitializeComponent();
+			this.DataContext = this;
 		}
 		
-		
-		private void Initialize()
+		protected override void Initialize()
 		{
-			
+			base.Initialize();
+			startupObjectComboBox.Items.Clear();
 			foreach (var c in GetPossibleStartupObjects(base.Project)) {
 				startupObjectComboBox.Items.Add(c.FullName);
 			}
-
-			this.outputTypeComboBox.SelectedValue = OutputType.Value.ToString();
 			
 			FillManifestCombo();
 			
@@ -51,43 +52,48 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			// because the "convert project" button on the compiling tab page might have updated the MSBuild version.
 			base.Project.MinimumSolutionVersionChanged += project_MinimumSolutionVersionChanged;
 			
-			projectFolderTextBox.Text = base.BaseDirectory;
-			projectFileTextBox.Text = Path.GetFileName(base.Project.FileName);
+			this.projectInformation.ProjectFolder = base.BaseDirectory;
+			this.projectInformation.ProjectFile = Path.GetFileName(base.Project.FileName);
 			
 			//OptionBinding
 			RefreshStartupObjectEnabled(this, EventArgs.Empty);
 			RefreshOutputNameTextBox(this, null);
 			
 			ApplicationIconTextBox_TextChanged(this,null);
-			this.startupObjectComboBox.SelectionChanged += (s,e) => {IsDirty = true;};
-			this.outputTypeComboBox.SelectionChanged +=  OutputTypeComboBox_SelectionChanged;
+			this.outputTypeComboBox.SelectionChanged += RefreshOutputNameTextBox;
+			this.outputTypeComboBox.SelectionChanged += RefreshStartupObjectEnabled;
 		}
 
-		
-		void FillManifestCombo()
+		public override void Dispose()
 		{
-			applicationManifestComboBox.Items.Add(StringParser.Parse("${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.EmbedDefault}"));
-			applicationManifestComboBox.Items.Add(StringParser.Parse("${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.DoNotEmbedManifest}"));
-			foreach (string fileName in Directory.GetFiles(base.BaseDirectory, "*.manifest")) {
-				applicationManifestComboBox.Items.Add(Path.GetFileName(fileName));
-			}
-			applicationManifestComboBox.Items.Add(StringParser.Parse("<${res:Global.CreateButtonText}...>"));
-			applicationManifestComboBox.Items.Add(StringParser.Parse("<${res:Global.BrowseText}...>"));
-			applicationManifestComboBox.SelectedIndex = 0;
+			base.Project.MinimumSolutionVersionChanged -= project_MinimumSolutionVersionChanged;
+			base.Dispose();
 		}
 		
+		// must be observable because we insert an entry in the <Create> action
+		readonly ObservableCollection<string> manifestItems = new ObservableCollection<string>();
+		
+		public ObservableCollection<string> ManifestItems {
+			get { return manifestItems; }
+		}
 		
 		public ProjectProperty<string> AssemblyName {
-			get { return GetProperty("AssemblyName", "", TextBoxEditMode.EditRawProperty); }
+			get { return GetProperty("AssemblyName", "", TextBoxEditMode.EditEvaluatedProperty); }
 		}
 		
+		
 		public ProjectProperty<string> RootNamespace {
-			get { return GetProperty("RootNamespace", "", TextBoxEditMode.EditRawProperty); }
+			get { return GetProperty("RootNamespace", "", TextBoxEditMode.EditEvaluatedProperty); }
 		}
 		
 		
 		public ProjectProperty<OutputType> OutputType {
-			get {return GetProperty("OutputType", ICSharpCode.SharpDevelop.Project.OutputType.Exe); }	
+			get { return GetProperty("OutputType", ICSharpCode.SharpDevelop.Project.OutputType.Exe); }
+		}
+		
+		
+		public ProjectProperty<string> StartupObject {
+			get { return GetProperty("StartupObject", "", TextBoxEditMode.EditEvaluatedProperty); }
 		}
 		
 		
@@ -101,23 +107,56 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		}
 		
 		
+		public ProjectProperty<bool> NoWin32Manifest {
+			get { return GetProperty("NoWin32Manifest", false); }
+		}
+		
+		
 		public ProjectProperty<string> Win32Resource {
 			get { return GetProperty("Win32Resource", "", TextBoxEditMode.EditRawProperty); }
 		}
 		
 		
-		#region overrides
+		#region Load/Save
 		
 		
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
-			Initialize();
+			// Ensure that the template is applied before we assign ComboBox.Text, this ensures
+			// the TextBoxBase.TextChanged event fires immediately and doesn't cause us to
+			// set the IsDirty flag later.
+			applicationManifestComboBox.ApplyTemplate();
+			if (string.IsNullOrEmpty(this.ApplicationManifest.Value)) {
+				if (this.NoWin32Manifest.Value) {
+					applicationManifestComboBox.SelectedIndex = 1;
+				} else {
+					applicationManifestComboBox.SelectedIndex = 0;
+				}
+			} else {
+				applicationManifestComboBox.Text = this.ApplicationManifest.Value;
+			}
+			IsDirty = false;
 		}
 		
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
+			if (applicationManifestComboBox.SelectedIndex == 0) {
+				// Embed default manifest
+				this.NoWin32Manifest.Value = false;
+				this.ApplicationManifest.Value = "";
+				this.NoWin32Manifest.Location = ApplicationManifest.Location;
+			} else if (applicationManifestComboBox.SelectedIndex == 1) {
+				// No manifest
+				this.NoWin32Manifest.Value = true;
+				this.ApplicationManifest.Value = "";
+				this.NoWin32Manifest.Location = ApplicationManifest.Location;
+			} else {
+				ApplicationManifest.Value = applicationManifestComboBox.Text;
+				this.NoWin32Manifest.Value = false;
+				this.NoWin32Manifest.Location = ApplicationManifest.Location;
+			}
 			return base.Save(project, configuration, platform);
 		}
 		
@@ -140,114 +179,120 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			return results;
 		}
 		
+		
 		void project_MinimumSolutionVersionChanged(object sender, EventArgs e)
 		{
 			// embedding manifests requires the project to target MSBuild 3.5 or higher
 			applicationManifestComboBox.IsEnabled = base.Project.MinimumSolutionVersion >= Solution.SolutionVersionVS2008;
 		}
-			
+		
+		
 		#region refresh Outputpath + StartupOptions
 		
-		void RefreshOutputNameTextBox (object sender, TextChangedEventArgs e)
+		void RefreshOutputNameTextBox (object sender, EventArgs e)
 		{
 			if (this.outputTypeComboBox.SelectedValue != null) {
-				var enmType = (OutputType) Enum.Parse(typeof(OutputType),this.outputTypeComboBox.SelectedValue.ToString());
-				this.outputNameTextBox.Text = this.assemblyNameTextBox.Text + CompilableProject.GetExtension(enmType);
+				var outputType = (OutputType)this.outputTypeComboBox.SelectedValue;
+				this.projectInformation.OutputTypeName = this.assemblyNameTextBox.Text + CompilableProject.GetExtension(outputType);
 			}
 		}
-		
 		
 		void RefreshStartupObjectEnabled(object sender, EventArgs e)
 		{
 			if (this.outputTypeComboBox.SelectedValue != null) {
-				var enmType = (OutputType) Enum.Parse(typeof(OutputType),this.outputTypeComboBox.SelectedValue.ToString());
-				bool isLibrary = ICSharpCode.SharpDevelop.Project.OutputType.Library == enmType;
-				startupObjectComboBox.IsEnabled = !isLibrary;
+				var outputType = (OutputType)this.outputTypeComboBox.SelectedValue;
+				startupObjectComboBox.IsEnabled = outputType != SharpDevelop.Project.OutputType.Library;
 			}
 		}
-		
-		
-		void OutputTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			RefreshOutputNameTextBox(this,null);
-			RefreshStartupObjectEnabled(this,null);
-			IsDirty = true;
-		}
-		
-		
 		#endregion
-	
+		
 		#region ApplicationIcon
 		
 		void ApplicationIconButton_Click(object sender, RoutedEventArgs e)
 		{
-			string fileName = OptionsHelper.OpenFile(iconsfilter);
-			if (!String.IsNullOrEmpty(fileName))
-			{
-				this.applicationIconTextBox.Text = fileName;
-			}
+			BrowseForFile(ApplicationIcon, iconsfilter);
 		}
-		
-		
+
 		void ApplicationIconTextBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			if (base.Project != null) {
 				if(FileUtility.IsValidPath(this.applicationIconTextBox.Text))
 				{
 					string appIconPath = Path.Combine(base.BaseDirectory, this.applicationIconTextBox.Text);
-					Console.WriteLine(appIconPath);
-					var b = File.Exists(appIconPath);
 					if (File.Exists(appIconPath)) {
-						
 						try {
-		
-							FileStream stream = new FileStream(appIconPath, FileMode.Open, FileAccess.Read);
-							Image image = new Image();
+							MemoryStream memoryStream = new MemoryStream();
+							using (var stream = new FileStream(appIconPath, FileMode.Open, FileAccess.Read))
+							{
+								stream.CopyTo(memoryStream);
+							}
+							memoryStream.Position = 0;
+							
 							BitmapImage src = new BitmapImage();
 							src.BeginInit();
-							src.StreamSource = stream;
+							src.StreamSource = memoryStream;
 							src.EndInit();
-							
-							image.Source = src;
-							image.Stretch = Stretch.Uniform;
-
-							this.applicationIconImage.Source = image.Source;
-							this.applicationIconImage.Stretch = Stretch.Fill;
-
+							Image = src;
+						
 						} catch (OutOfMemoryException) {
-							this.applicationIconImage.Source = null;
+							Image = null;
+							MessageService.ShowErrorFormatted("${res:Dialog.ProjectOptions.ApplicationSettings.InvalidIconFile}",
+							                                  FileUtility.NormalizePath(appIconPath));
+						} catch (NotSupportedException) {
+							Image = null;
 							MessageService.ShowErrorFormatted("${res:Dialog.ProjectOptions.ApplicationSettings.InvalidIconFile}",
 							                                  FileUtility.NormalizePath(appIconPath));
 						}
 					} else {
-						this.applicationIconImage.Source = null;
+						Image = null;
 					}
 				}
 			}
 		}
 		
+		private ImageSource image;
+		
+		public ImageSource Image {
+			get { return image; }
+			set { image = value;
+				base.RaisePropertyChanged(() => Image);
+			}
+		}
 		#endregion
 		
 		#region manifest
 		
-		void ApplicationManifestComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		const int newManifestInsertPosition = 2;
+		
+		void FillManifestCombo()
 		{
-			if (applicationManifestComboBox.SelectedIndex == applicationManifestComboBox.Items.Count - 2) {
-				CreateManifest();
-			} else if (applicationManifestComboBox.SelectedIndex == applicationManifestComboBox.Items.Count - 1) {
-				BrowseForManifest();
+			manifestItems.Add(StringParser.Parse("${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.EmbedDefault}"));
+			manifestItems.Add(StringParser.Parse("${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.DoNotEmbedManifest}"));
+			// When a new manifest is created, it'll be inserted at this position in the list
+			Debug.Assert(newManifestInsertPosition == manifestItems.Count);
+			foreach (string fileName in Directory.GetFiles(base.BaseDirectory, "*.manifest")) {
+				manifestItems.Add(Path.GetFileName(fileName));
 			}
+			manifestItems.Add(StringParser.Parse("<${res:Global.CreateButtonText}...>"));
+			manifestItems.Add(StringParser.Parse("<${res:Global.BrowseText}...>"));
 		}
 		
-		
-		void BrowseForManifest()
+		void ApplicationManifestComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			applicationManifestComboBox.SelectedIndex = -1;
-			var fileName = OptionsHelper.OpenFile(manifestFilter);
-			if (!String.IsNullOrEmpty(fileName)) {
-				this.applicationManifestComboBox.Items.Insert(0,fileName);
-				this.applicationManifestComboBox.SelectedIndex = 0;
-			}
+			// Because this event is raised while the combobox is still switching to the "<create>" or "<browse>" value,
+			// we cannot set comboBox.Text within this event handler.
+			// To avoid this problem, we invoke the operation after the combobox has finished switching to the new value.
+			WorkbenchSingleton.SafeThreadAsyncCall(
+				delegate {
+					if (applicationManifestComboBox.SelectedIndex == applicationManifestComboBox.Items.Count - 2) {
+						CreateManifest();
+					} else if (applicationManifestComboBox.SelectedIndex == applicationManifestComboBox.Items.Count - 1) {
+						BrowseForFile(ApplicationManifest, manifestFilter);
+						// Because we're not using a binding but loading the manifest combobox manually,
+						// we need to store re-load the changed property value.
+						applicationManifestComboBox.Text = this.ApplicationManifest.Value;
+					}
+				});
 		}
 		
 		void CreateManifest()
@@ -273,11 +318,19 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				ProjectService.AddProjectItem(base.Project, newItem);
 				ProjectBrowserPad.RefreshViewAsync();
 			}
-		
+			
 			FileService.OpenFile(manifestFile);
 			
-			this.applicationManifestComboBox.Items.Insert(0,"app.manifest");
-			this.applicationManifestComboBox.SelectedIndex = 0;
+			if (!manifestItems.Contains("app.manifest"))
+				manifestItems.Insert(newManifestInsertPosition, "app.manifest");
+			this.applicationManifestComboBox.SelectedIndex = manifestItems.IndexOf("app.manifest");
+		}
+		
+		void ApplicationManifestComboBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			// We don't use binding with the application manifest combo box,
+			// so we need to manually set IsDirty to true.
+			this.IsDirty = true;
 		}
 		
 		#endregion
@@ -286,13 +339,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void Win32ResourceComboButton_Click(object sender, RoutedEventArgs e)
 		{
-			string fileName = OptionsHelper.OpenFile(win32filter);
-			if (!String.IsNullOrEmpty(fileName))
-			{
-				this.win32ResourceFileTextBox.Text = fileName;
-			}
+			BrowseForFile(Win32Resource, win32filter);
 		}
 		
-		#endregion	
+		#endregion
 	}
 }

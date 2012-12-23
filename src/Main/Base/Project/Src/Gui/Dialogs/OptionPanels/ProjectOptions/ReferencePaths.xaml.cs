@@ -23,7 +23,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			editor.BrowseForDirectory = true;
 			editor.TitleText = StringParser.Parse("${res:Global.Folder}:");
-			editor.AddButtonText = StringParser.Parse("${res:Dialog.ProjectOptions.ReferencePaths.AddPath}");
 			editor.ListCaption = StringParser.Parse("${res:Dialog.ProjectOptions.ReferencePaths}:");
 			editor.ListChanged += delegate { IsDirty = true; };
 		}
@@ -39,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
-			string prop  = GetProperty("ReferencePath", "", TextBoxEditMode.EditRawProperty).Value.ToString();
+			string prop  = GetProperty("ReferencePath", "", TextBoxEditMode.EditRawProperty).Value;
 			
 			string[] values = prop.Split(';');
 			if (values.Length == 1 && values[0].Length == 0) {

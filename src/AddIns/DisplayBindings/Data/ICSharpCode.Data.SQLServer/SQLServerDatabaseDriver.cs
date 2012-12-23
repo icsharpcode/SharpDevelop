@@ -122,6 +122,11 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
 
         #endregion
         
+		public SQLServerDatabaseDriver()
+		{
+			Datasources = new DatabaseObjectsCollection<SQLServerDatasource>(null);
+		}
+		
         public override string Name
         {
             get { return "MS SQL Server"; }
@@ -157,11 +162,7 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
                    
                 SQLServerDatasource datasource = new SQLServerDatasource(this) { Name = serverName };
 
-                string manifestToken;
-                if (!IsVersionSupported(version, out manifestToken))
-                	throw new NotSupportedException(string.Format("Version '{0}' is not supported!", version == null ? "unknown" : version.ToString()));
-                
-                datasource.ProviderManifestToken = manifestToken;
+                datasource.ProviderManifestToken = GetManifestToken(version);
 
                 if (!String.IsNullOrEmpty(instanceName))
                     datasource.Name += "\\" + instanceName;
@@ -171,7 +172,15 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
 
             Datasources = datasources;
         }
-        
+		
+		string GetManifestToken(Version version)
+		{
+			string manifestToken;
+			if (!IsVersionSupported(version, out manifestToken))
+				throw new NotSupportedException(string.Format("Version '{0}' is not supported!", version == null ? "unknown" : version.ToString()));
+			return manifestToken;
+		}
+		
 		bool IsVersionSupported(Version version, out string manifestToken)
 		{
 			manifestToken = "";
@@ -228,10 +237,8 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
                 throw ex;
             }
 
-            Version version = new Version(sqlConnection.ServerVersion);
-            string manifestToken;
-            if (!IsVersionSupported(version, out manifestToken))
-            	throw new NotSupportedException(string.Format("Version '{0}' is not supported!", version == null ? "unknown" : version.ToString()));
+			Version version = new Version(sqlConnection.ServerVersion);
+			datasource.ProviderManifestToken = GetManifestToken(version);
 
             string sql = string.Empty;
 

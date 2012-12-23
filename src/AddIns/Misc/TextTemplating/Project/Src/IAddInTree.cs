@@ -9,5 +9,6 @@ namespace ICSharpCode.TextTemplating
 	public interface IAddInTree
 	{
 		IEnumerable<IAddIn> GetAddIns();
+		List<IServiceProvider> BuildServiceProviders(string path);
 	}
 }

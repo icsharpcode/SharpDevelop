@@ -64,16 +64,8 @@
       <DependentUpon>AnalysisIdeOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\old_AnalysisProjectOptionsPanel.cs" />
-    <Compile Include="Src\old_AnalysisProjectOptions.Designer.cs">
-      <DependentUpon>old_AnalysisProjectOptions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Src\old_AnalysisProjectOptions.cs" />
-    <EmbeddedResource Include="Src\old_AnalysisProjectOptions.resx">
-      <DependentUpon>old_AnalysisProjectOptions.cs</DependentUpon>
-    </EmbeddedResource>
-    <Compile Include="Src\AnalysisProjectOptionsPanelXaml.xaml.cs">
-      <DependentUpon>AnalysisProjectOptionsPanelXaml.xaml</DependentUpon>
+    <Compile Include="Src\AnalysisProjectOptionsPanel.xaml.cs">
+      <DependentUpon>AnalysisProjectOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\AnalysisProjectOptionsTreeNodes.cs" />
@@ -82,13 +74,12 @@
     <Compile Include="Src\CheckCurrentProjectCommand.cs" />
     <Compile Include="Src\FxCopLogger.cs" />
     <Compile Include="Src\SuppressMessageCommand.cs" />
-    <Compile Include="Src\old_AnalysisIdeOptionsPanel.cs" />
-    <EmbeddedResource Include="Resources\old_AnalysisIdeOptionPanel.xfrm" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
@@ -100,11 +91,10 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Folder Include="Resources" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\AnalysisIdeOptionsPanel.xaml" />
-    <Page Include="Src\AnalysisProjectOptionsPanelXaml.xaml" />
+    <Page Include="Src\AnalysisProjectOptionsPanel.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

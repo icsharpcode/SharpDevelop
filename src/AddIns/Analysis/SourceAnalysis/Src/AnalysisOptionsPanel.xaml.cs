@@ -44,16 +44,14 @@ namespace ICSharpCode.SourceAnalysis
 			if (String.IsNullOrEmpty(SourceAnalysisOverrideSettingsFile.Value)) {
 				SourceAnalysisOverrideSettingsFile.Value = StyleCopWrapper.GetMasterSettingsFile();
 				SourceAnalysisOverrideSettingsFile.Location =  PropertyStorageLocations.Base;
+				IsDirty = false;
 			}
 		}
 		
 		
 		void BrowseButton_Click(object sender, RoutedEventArgs e)
 		{
-			var fn = OptionsHelper.OpenFile(String.Empty);
-			if (!String.IsNullOrEmpty(fn)) {
-				settingsFileTextBox.Text = fn;
-			}
+			BrowseForFile(SourceAnalysisOverrideSettingsFile, "");
 		}
 		
 		

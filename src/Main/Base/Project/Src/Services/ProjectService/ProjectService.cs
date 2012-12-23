@@ -376,7 +376,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						                                          "${res:Global.IgnoreButtonText}");
 						if (res == 0) {
 							// Add project to solution
-							Commands.AddExitingProjectToSolution.AddProject((ISolutionFolderNode)ProjectBrowserPad.Instance.SolutionNode, FileName.Create(fileName));
+							Commands.AddExistingProjectToSolution.AddProject((ISolutionFolderNode)ProjectBrowserPad.Instance.SolutionNode, FileName.Create(fileName));
 							SaveSolution();
 							return;
 						} else if (res == 1) {

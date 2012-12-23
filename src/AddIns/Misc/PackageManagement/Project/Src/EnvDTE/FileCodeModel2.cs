@@ -7,7 +7,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class FileCodeModel2 : MarshalByRefObject
+	public class FileCodeModel2 : MarshalByRefObject, global::EnvDTE.FileCodeModel2
 	{
 		Project project;
 		FileProjectItem projectItem;
@@ -28,7 +28,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.namespaceCreator = namespaceCreator;
 		}
 		
-		public CodeElements CodeElements {
+		public global::EnvDTE.CodeElements CodeElements {
 			get { return new FileCodeModelCodeElements(GetCompilationUnit()); }
 		}
 		

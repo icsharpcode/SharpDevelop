@@ -30,9 +30,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateParameter();
 			
-			vsCMElement kind = parameter.Kind;
+			global::EnvDTE.vsCMElement kind = parameter.Kind;
 			
-			Assert.AreEqual(vsCMElement.vsCMElementParameter, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMElement.vsCMElementParameter, kind);
 		}
 		
 		[Test]
@@ -41,7 +41,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateParameter();
 			helper.AddAttributeToParameter("System.Web.Mvc.BindAttribute");
 			
-			CodeElements attributes = parameter.Attributes;
+			global::EnvDTE.CodeElements attributes = parameter.Attributes;
 			
 			CodeAttribute2 attribute = parameter.Attributes.FirstCodeAttribute2OrDefault();
 			Assert.AreEqual(1, attributes.Count);

@@ -3,8 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using System.Runtime.Versioning;
 
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
@@ -381,6 +382,18 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(1, dependencies.Count);
 			Assert.AreEqual(expectedDependencies[0].Dependencies, dependencies[0].Dependencies);
+		}
+		
+		[Test]
+		public void GetSupportedFrameworks_OneFramework_ReturnsOneFramework()
+		{
+			CreatePackage();
+			FrameworkName expectedFramework = fakePackage.AddSupportedFramework(".NET Framework, Version=4.0");
+			
+			List<FrameworkName> supportedFrameworks = package.GetSupportedFrameworks().ToList();
+			
+			Assert.AreEqual(1, supportedFrameworks.Count);
+			Assert.AreEqual(expectedFramework, supportedFrameworks[0]);
 		}
 	}
 }

@@ -9,7 +9,11 @@
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
 	xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project">
-	
+
+	<optionpanels:ProjectOptionPanel.Resources>
+		<optionpanels:StorageLocationConverter x:Key="locationConverter" />
+	</optionpanels:ProjectOptionPanel.Resources>
+
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
 		<Grid>
 			<Grid.RowDefinitions>
@@ -29,9 +33,9 @@
 				<ColumnDefinition Width="Auto"></ColumnDefinition>
 				<ColumnDefinition Width="150"></ColumnDefinition>
 				<ColumnDefinition></ColumnDefinition>
-				<ColumnDefinition Width="Auto"></ColumnDefinition>
-					
+				<ColumnDefinition Width="Auto"></ColumnDefinition>	
 			</Grid.ColumnDefinitions>
+			
 			<Label
 				Grid.ColumnSpan="2"
 				Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.AssemblyName}"></Label>
@@ -53,22 +57,39 @@
 				x:Name="rootNamespaceTextBox"
 				Text="{Binding RootNamespace.Value,UpdateSourceTrigger=PropertyChanged}"></TextBox>
 			
+			
 			<Label Grid.Row="4" Grid.ColumnSpan="2"
 				Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.OutputType}"></Label>
 			
 			<Label Grid.Row="4" Grid.Column="2"
 				Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.StartupObject}"></Label>
 			
-			<optionpanels:StorageLocationPicker Grid.Row="5" DockPanel.Dock="Left"
-				Location="{Binding OutputType.Location}"/>
-		 
-			<ComboBox x:Name="outputTypeComboBox" Grid.Row="5" Grid.Column="1"  VerticalAlignment="Center" Margin="3,0,3,0"
-				sd:EnumBinding.EnumType="{x:Type project:OutputType}"></ComboBox>
+			<optionpanels:StorageLocationPicker Grid.Row="5" DockPanel.Dock="Left">
+				<optionpanels:StorageLocationPicker.Location>
+					<MultiBinding
+						Converter="{StaticResource locationConverter}">
+						<Binding Path="OutputType.Location" />
+						<Binding Path="StartupObject.Location" />
+					</MultiBinding>
+				</optionpanels:StorageLocationPicker.Location>
+			</optionpanels:StorageLocationPicker>
+				
+		
+			<ComboBox x:Name="outputTypeComboBox"
+			          Grid.Row="5" Grid.Column="1"  VerticalAlignment="Center" Margin="3,0,3,0"
+			          sd:EnumBinding.EnumType="{x:Type project:OutputType}"
+			          SelectedValue="{Binding OutputType.Value}"
+			></ComboBox>
 		
 			<ComboBox x:Name="startupObjectComboBox" Grid.Row="5" Grid.Column="2" VerticalAlignment="Center"
-				IsEnabled="False"></ComboBox>
+			          Text="{Binding StartupObject.Value,UpdateSourceTrigger=PropertyChanged}"
+			          IsEditable="True"
+			          IsEnabled="False">
+			</ComboBox>
 		
-			<Image x:Name="applicationIconImage" Width="32" Height="32" Grid.Row="6"></Image>
+			<Image  Grid.Row="6" Width="32" Height="32"
+			       Source="{Binding Image}">
+			</Image>
 			
 			<Label Grid.Row="6" Grid.Column="1" Margin="3,0,3,0"
 				Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.ApplicationIcon}"></Label>
@@ -78,8 +99,10 @@
 				<optionpanels:StorageLocationPicker DockPanel.Dock="Left" Location="{Binding ApplicationIcon.Location}"></optionpanels:StorageLocationPicker>
 				
 				<TextBox x:Name="applicationIconTextBox"
-					VerticalAlignment="Center"
-					Text="{Binding ApplicationIcon.Value,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+				         VerticalAlignment="Center"
+				         TextChanged="ApplicationIconTextBox_TextChanged"
+				         Text="{Binding ApplicationIcon.Value,UpdateSourceTrigger=PropertyChanged}">
+				</TextBox>
 			
 			</DockPanel>
 	
@@ -93,12 +116,14 @@
 			<widgets:StackPanelWithSpacing Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2"
 				SpaceBetweenItems="3"
 				Orientation="Horizontal">
-				<optionpanels:StorageLocationPicker DockPanel.Dock="Left" 
-					Location="{Binding PreBuildEvent.Location}"/>
-				
-				<ComboBox x:Name="applicationManifestComboBox" VerticalAlignment="Center"
-					SelectionChanged="ApplicationManifestComboBox_SelectionChanged"
-					Width="200"></ComboBox>
+				<optionpanels:StorageLocationPicker DockPanel.Dock="Left" Location="{Binding ApplicationManifest.Location}"/> 
+					
+				<ComboBox x:Name="applicationManifestComboBox" VerticalAlignment="Center" Width="200"
+				          IsEditable="True"
+				          ItemsSource="{Binding ManifestItems}"
+				          SelectionChanged="ApplicationManifestComboBox_SelectionChanged"
+				          TextBoxBase.TextChanged="ApplicationManifestComboBox_TextChanged">
+				</ComboBox>
 			
 			</widgets:StackPanelWithSpacing>
 			
@@ -118,36 +143,14 @@
 				Content="..."
 				Click="Win32ResourceComboButton_Click"></Button>
 			
+			
 			<GroupBox Grid.Row="10" Grid.ColumnSpan="3" Margin="0,5,0,0"
 				Header="{core:Localize Dialog.ProjectOptions.ApplicationSettings.ProjectInformation}">
-				<Grid Margin="15,0,0,0">
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto"></RowDefinition>
-						<RowDefinition  Height="Auto"></RowDefinition>
-						<RowDefinition Height="Auto"></RowDefinition>
-					</Grid.RowDefinitions>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="100"></ColumnDefinition>							
-						<ColumnDefinition></ColumnDefinition>
-					</Grid.ColumnDefinitions>
-					<Label
-						Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.ProjectFolder}"></Label>
-
-					<TextBox x:Name="projectFolderTextBox" Grid.Column="1"
-						VerticalAlignment="Center"></TextBox>
-					<Label
-						Grid.Row="1"
-						Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.ProjectFile}"></Label>
-					
-					<TextBox x:Name="projectFileTextBox" Grid.Row="1" Grid.Column="1"
-						VerticalAlignment="Center"></TextBox>
 				
-					<Label Grid.Row="2"
-						Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.OutputName}"></Label>
+				<optionpanels:ProjectInformation x:Name="projectInformation"></optionpanels:ProjectInformation>
 				
-					<TextBox x:Name="outputNameTextBox" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"></TextBox>
-				</Grid>
 			</GroupBox>
+	
 		</Grid>
 	</ScrollViewer>
 </optionpanels:ProjectOptionPanel>

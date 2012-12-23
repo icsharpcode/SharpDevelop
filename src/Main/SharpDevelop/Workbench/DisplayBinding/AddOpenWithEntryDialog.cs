@@ -3,9 +3,11 @@
 
 using System;
 using System.Drawing;
-using System.Windows.Forms;
 using System.IO;
+using System.Windows.Forms;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 
 namespace ICSharpCode.SharpDevelop.Workbench
 {
@@ -42,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		void BrowseForProgramButtonClick(object sender, EventArgs e)
 		{
 			using (OpenFileDialog dlg = new OpenFileDialog()) {
-				dlg.Filter = StringParser.Parse(Gui.OptionPanels.ExternalToolPane.ExecutableFilesFilter);
+				dlg.Filter = StringParser.Parse(ExternalToolPanel.ExecutableFilesFilter);
 				if (dlg.ShowDialog(this) == DialogResult.OK) {
 					programNameTextBox.Text = "\"" + dlg.FileName + "\"";
 					if (!userEditedDisplayName) {

@@ -12,12 +12,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		ProjectItem projectItem;
 		
 		public DirectoryProjectItems(ProjectItem projectItem)
-			: base(projectItem.ContainingProject, projectItem, new PackageManagementFileService())
+			: base((Project)projectItem.ContainingProject, projectItem, new PackageManagementFileService())
 		{
 			this.projectItem = projectItem;
 		}
 		
-		protected override IEnumerable<ProjectItem> GetProjectItems()
+		protected override IEnumerable<global::EnvDTE.ProjectItem> GetProjectItems()
 		{
 			return new ChildProjectItems(projectItem);
 		}

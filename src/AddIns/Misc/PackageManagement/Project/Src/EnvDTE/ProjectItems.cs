@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class ProjectItems : MarshalByRefObject, IEnumerable
+	public class ProjectItems : MarshalByRefObject, IEnumerable, global::EnvDTE.ProjectItems
 	{
 		IPackageManagementFileService fileService;
 		object parent;
@@ -33,10 +33,17 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual void AddFromFileCopy(string filePath)
 		{
-			string include = GetIncludePathForFileCopy(filePath);
-			CopyFileIntoProject(filePath, include);
-			Project.AddFileProjectItemUsingPathRelativeToProject(include);
-			Project.Save();
+			string fileAdded = filePath;
+			if (IsFileInsideProjectFolder(filePath)) {
+				ThrowExceptionIfFileDoesNotExist(filePath);
+			} else {
+				fileAdded = CopyFileIntoProject(filePath);
+			}
+			
+			using (IProjectBrowserUpdater updater = Project.CreateProjectBrowserUpdater()) {
+				AddFileProjectItemToProject(fileAdded);
+				Project.Save();
+			}
 		}
 		
 		/// <summary>
@@ -53,6 +60,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return item.GetIncludePath(fileNameWithoutAnyPath);
 		}
 		
+		bool IsFileInsideProjectFolder(string filePath)
+		{
+			return Project.IsFileFileInsideProjectFolder(filePath);
+		}
+		
+		void ThrowExceptionIfFileDoesNotExist(string filePath)
+		{
+			if (!fileService.FileExists(filePath)) {
+				throw new FileNotFoundException("Cannot find file", filePath);
+			}
+		}
+		
 		void ThrowExceptionIfFileExists(string filePath)
 		{
 			if (fileService.FileExists(filePath)) {
@@ -60,11 +79,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 		}
 		
-		void CopyFileIntoProject(string fileName, string projectItemInclude)
+		string CopyFileIntoProject(string fileName)
 		{
+			string projectItemInclude = GetIncludePathForFileCopy(fileName);
 			string newFileName = GetFileNameInProjectFromProjectItemInclude(projectItemInclude);
 			ThrowExceptionIfFileExists(newFileName);
 			fileService.CopyFile(fileName, newFileName);
+			return newFileName;
 		}
 		
 		string GetFileNameInProjectFromProjectItemInclude(string projectItemInclude)
@@ -77,7 +98,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return GetProjectItems().GetEnumerator();
 		}
 		
-		protected virtual IEnumerable<ProjectItem> GetProjectItems()
+		protected virtual IEnumerable<global::EnvDTE.ProjectItem> GetProjectItems()
 		{
 			return new ProjectItemsInsideProject(Project);
 		}
@@ -96,10 +117,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			return GetProjectItems()
 				.Skip(index - 1)
-				.First();
+				.First() as ProjectItem;
 		}
 		
-		public virtual ProjectItem Item(object index)
+		public virtual global::EnvDTE.ProjectItem Item(object index)
 		{
 			if (index is int) {
 				return Item((int)index);
@@ -107,7 +128,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return Item(index as string);
 		}
 		
-		public virtual ProjectItem AddFromDirectory(string directory)
+		public virtual global::EnvDTE.ProjectItem AddFromDirectory(string directory)
 		{
 			using (IProjectBrowserUpdater updater = Project.CreateProjectBrowserUpdater()) {
 				ProjectItem directoryItem = Project.AddDirectoryProjectItemUsingFullPath(directory);
@@ -116,7 +137,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 		}
 		
-		public virtual ProjectItem AddFromFile(string fileName)
+		public virtual global::EnvDTE.ProjectItem AddFromFile(string fileName)
 		{
 			using (IProjectBrowserUpdater updater = Project.CreateProjectBrowserUpdater()) {
 				ProjectItem projectItem = AddFileProjectItemToProject(fileName);
@@ -136,6 +157,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual int Count {
 			get { return GetProjectItems().Count(); }
+		}
+		
+		public virtual string Kind {
+			get { return global::EnvDTE.Constants.vsProjectItemKindPhysicalFolder; }
 		}
 	}
 }

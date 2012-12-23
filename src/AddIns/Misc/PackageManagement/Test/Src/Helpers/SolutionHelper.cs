@@ -48,16 +48,16 @@ namespace PackageManagement.Tests.Helpers
 			FakeProjectService.OpenSolution = null;
 		}
 		
-		public void AddProjectToSolution(string projectName)
+		public TestableProject AddProjectToSolution(string projectName)
 		{
-			AddProjectToSolutionWithFileName(projectName, @"c:\projects\MyProject\MyProject.csproj");
+			return AddProjectToSolutionWithFileName(projectName, @"c:\projects\MyProject\MyProject.csproj");
 		}
 		
-		public void AddProjectToSolutionWithFileName(string projectName, string fileName)
+		public TestableProject AddProjectToSolutionWithFileName(string projectName, string fileName)
 		{
-			TestableProject project = ProjectHelper.CreateTestProject(projectName);
-			project.FileName = fileName;
+			TestableProject project = ProjectHelper.CreateTestProject(MSBuildSolution, projectName, fileName);
 			FakeProjectService.AddFakeProject(project);
+			return project;
 		}
 		
 		public void AddExtensibilityGlobalsSection()
@@ -109,6 +109,16 @@ namespace PackageManagement.Tests.Helpers
 				.Skip(1)
 				.First();
 			return project.AddFile(include);
+		}
+		
+		public void SetStartupProject(SD.IProject project)
+		{
+			MSBuildSolution.Preferences.StartupProject = project;
+		}
+		
+		public void SetActiveConfiguration(string name)
+		{
+			MSBuildSolution.Preferences.ActiveConfiguration = name;
 		}
 	}
 }

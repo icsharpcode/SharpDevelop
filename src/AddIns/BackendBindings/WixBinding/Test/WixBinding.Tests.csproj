@@ -358,5 +358,11 @@
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\Tools\wix\wix2010.targets">
+      <Link>wix2010.targets</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

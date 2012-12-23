@@ -318,13 +318,26 @@ namespace ICSharpCode.CodeCoverage
 		void OpenFile(string fileName, int line, int column)
 		{
 			if (fileName != textEditorFileName) {
-				textEditor.Load(fileName);
+				if (!TryLoadFileIntoTextEditor(fileName)) {
+					return;
+				}
 				textEditor.SyntaxHighlighting = GetSyntaxHighlighting(fileName);
 			}
 			textEditor.ScrollToEnd();
 			textEditor.TextArea.Caret.Location = new TextLocation(line, column);
 			textEditor.ScrollToLine(line);
 			CodeCoverageService.ShowCodeCoverage(new AvalonEditTextEditorAdapter(textEditor), fileName);
+		}
+		
+		bool TryLoadFileIntoTextEditor(string fileName)
+		{
+			if (!File.Exists(fileName)) {
+				textEditor.Text = String.Format("File does not exist '{0}'.", fileName);
+				return false;
+			}
+			
+			textEditor.Load(fileName);
+			return true;
 		}
 		
 		IHighlightingDefinition GetSyntaxHighlighting(string fileName)

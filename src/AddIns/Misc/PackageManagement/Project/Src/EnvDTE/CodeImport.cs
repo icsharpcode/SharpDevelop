@@ -7,7 +7,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeImport : CodeElement
+	public class CodeImport : CodeElement, global::EnvDTE.CodeImport
 	{
 		IUsing import;
 		
@@ -33,8 +33,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public string Namespace { get; private set; }
 		
-		public override vsCMElement Kind {
-			get { return vsCMElement.vsCMElementImportStmt; }
+		public override global::EnvDTE.vsCMElement Kind {
+			get { return global::EnvDTE.vsCMElement.vsCMElementImportStmt; }
 		}
 	}
 }

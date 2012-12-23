@@ -20,7 +20,6 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool UpdateDependencies { get; set; }
 		public bool UpdateIfPackageDoesNotExistInProject { get; set; }
-		public bool AllowPrereleaseVersions { get; set; }
 		
 		protected override IEnumerable<PackageOperation> GetPackageOperations()
 		{

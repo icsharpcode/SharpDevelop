@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeInterface : CodeType
+	public class CodeInterface : CodeType, global::EnvDTE.CodeInterface
 	{
 		string fullName;
 		
@@ -22,8 +22,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			fullName = type.GetFullName();
 		}
 		
-		public override vsCMElement Kind {
-			get { return vsCMElement.vsCMElementInterface; }
+		public override global::EnvDTE.vsCMElement Kind {
+			get { return global::EnvDTE.vsCMElement.vsCMElementInterface; }
 		}
 		
 		/// <summary>
@@ -38,7 +38,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return null;
 		}
 		
-		public CodeFunction AddFunction(string name, vsCMFunction kind, object type, object Position = null, vsCMAccess Access = vsCMAccess.vsCMAccessPublic)
+		public global::EnvDTE.CodeFunction AddFunction(string name, global::EnvDTE.vsCMFunction kind, object type, object Position = null, global::EnvDTE.vsCMAccess Access = global::EnvDTE.vsCMAccess.vsCMAccessPublic)
 		{
 			var codeGenerator = new ClassCodeGenerator(Class);
 			return codeGenerator.AddPublicMethod(name, (string)type);

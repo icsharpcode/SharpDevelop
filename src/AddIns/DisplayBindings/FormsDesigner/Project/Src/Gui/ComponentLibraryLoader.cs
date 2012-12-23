@@ -346,7 +346,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 					if (attr is ToolboxBitmapAttribute) {
 						ToolboxBitmapAttribute toolboxBitmapAttribute = (ToolboxBitmapAttribute)attr;
 						b = new Bitmap(toolboxBitmapAttribute.GetImage(type));
-						b.MakeTransparent();
+						b.MakeTransparent(Color.Fuchsia);
 						break;
 					}
 				}
@@ -356,7 +356,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 					Stream imageStream = asm.GetManifestResourceStream(component.FullName + ".bmp");
 					if (imageStream != null) {
 						b = new Bitmap(Image.FromStream(imageStream));
-						b.MakeTransparent();
+						b.MakeTransparent(Color.Fuchsia);
 					}
 				} catch (Exception e) {
 					ICSharpCode.Core.LoggingService.Warn("ComponentLibraryLoader.GetIcon: " + e.Message);

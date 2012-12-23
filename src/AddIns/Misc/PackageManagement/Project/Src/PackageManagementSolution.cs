@@ -155,6 +155,12 @@ namespace ICSharpCode.PackageManagement
 			return repository.GetPackages();
 		}
 		
+		public string GetInstallPath(IPackage package)
+		{
+			ISolutionPackageRepository repository = CreateSolutionPackageRepository();
+			return repository.GetInstallPath(package);
+		}
+		
 		public IEnumerable<IPackage> GetPackagesInReverseDependencyOrder()
 		{
 			ISolutionPackageRepository repository = CreateSolutionPackageRepository();

@@ -19,11 +19,11 @@ using ICSharpCode.AvalonEdit.Rendering;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
-	class ImeSupport : IDisposable
+	class ImeSupport
 	{
-		TextArea textArea;
+		readonly TextArea textArea;
 		IntPtr currentContext;
-		IntPtr previousContext;
+		//IntPtr previousContext;
 		HwndSource hwndSource;
 		
 		public ImeSupport(TextArea textArea)
@@ -32,72 +32,59 @@ namespace ICSharpCode.AvalonEdit.Editing
 				throw new ArgumentNullException("textArea");
 			this.textArea = textArea;
 			InputMethod.SetIsInputMethodSuspended(this.textArea, true);
-			textArea.GotKeyboardFocus += TextAreaGotKeyboardFocus;
-			textArea.LostKeyboardFocus += TextAreaLostKeyboardFocus;
 			textArea.OptionChanged += TextAreaOptionChanged;
 			currentContext = IntPtr.Zero;
-			previousContext = IntPtr.Zero;
 		}
 
 		void TextAreaOptionChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "EnableImeSupport" && textArea.IsKeyboardFocusWithin) {
+			if (e.PropertyName == "EnableImeSupport" && textArea.IsKeyboardFocused) {
 				CreateContext();
 			}
-		}
-		
-		public void Dispose()
-		{
-			if (textArea != null) {
-				textArea.GotKeyboardFocus -= TextAreaGotKeyboardFocus;
-				textArea.LostKeyboardFocus -= TextAreaLostKeyboardFocus;
-				textArea.OptionChanged -= TextAreaOptionChanged;
-				textArea = null;
-			}
-			ClearContext();
 		}
 
 		void ClearContext()
 		{
 			if (hwndSource != null) {
-				hwndSource.RemoveHook(WndProc);
-				ImeNativeWrapper.AssociateContext(hwndSource, previousContext);
-				previousContext = IntPtr.Zero;
+				//ImeNativeWrapper.AssociateContext(hwndSource, previousContext);
+				//ImeNativeWrapper.ImmDestroyContext(currentContext);
 				ImeNativeWrapper.ReleaseContext(hwndSource, currentContext);
-				hwndSource = null;
 				currentContext = IntPtr.Zero;
+				hwndSource.RemoveHook(WndProc);
+				hwndSource = null;
 			}
 		}
 		
-		void TextAreaGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+		public void OnGotFocus(KeyboardFocusChangedEventArgs e)
 		{
-			if (this.textArea == null)
-				return;
-			if (e.OriginalSource != this.textArea)
-				return;
 			CreateContext();
 		}
 
 		void CreateContext()
 		{
-			if (this.textArea == null)
-				return;
+			ClearContext(); // clear old context if necessary
 			if (!textArea.Options.EnableImeSupport)
 				return;
 			hwndSource = (HwndSource)PresentationSource.FromVisual(this.textArea);
 			if (hwndSource != null) {
+				//currentContext = ImeNativeWrapper.ImmCreateContext();
+				//previousContext = ImeNativeWrapper.AssociateContext(hwndSource, currentContext);
 				currentContext = ImeNativeWrapper.GetContext(hwndSource);
-				previousContext = ImeNativeWrapper.AssociateContext(hwndSource, currentContext);
-//				ImeNativeWrapper.SetCompositionFont(hwndSource, currentContext, textArea);
 				hwndSource.AddHook(WndProc);
+				// UpdateCompositionWindow() will be called by the caret becoming visible
+				
+				var threadMgr = ImeNativeWrapper.GetTextFrameworkThreadManager();
+				if (threadMgr != null) {
+					// Even though the docu says passing null is invalid, this seems to help
+					// activating the IME on the default input context that is shared with WPF
+					threadMgr.SetFocus(null);
+				}
 			}
 		}
 		
-		void TextAreaLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+		public void OnLostFocus(KeyboardFocusChangedEventArgs e)
 		{
-			if (e.OriginalSource != this.textArea)
-				return;
-			if (currentContext != IntPtr.Zero)
+			if (e.OldFocus == textArea && currentContext != IntPtr.Zero)
 				ImeNativeWrapper.NotifyIme(currentContext);
 			ClearContext();
 		}
@@ -106,6 +93,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			switch (msg) {
 				case ImeNativeWrapper.WM_INPUTLANGCHANGE:
+					// Don't mark the message as handled; other windows
+					// might want to handle it as well.
 					ClearContext();
 					CreateContext();
 					break;
@@ -118,7 +107,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		public void UpdateCompositionWindow()
 		{
-			if (currentContext != IntPtr.Zero && textArea != null) {
+			if (currentContext != IntPtr.Zero) {
+				ImeNativeWrapper.SetCompositionFont(hwndSource, currentContext, textArea);
 				ImeNativeWrapper.SetCompositionWindow(hwndSource, currentContext, textArea);
 			}
 		}

@@ -117,7 +117,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			string language = codeClass.Language;
 			
-			Assert.AreEqual(CodeModelLanguageConstants.vsCMLanguageCSharp, language);
+			Assert.AreEqual(global::EnvDTE.CodeModelLanguageConstants.vsCMLanguageCSharp, language);
 		}
 		
 		[Test]
@@ -129,7 +129,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			string language = codeClass.Language;
 			
-			Assert.AreEqual(CodeModelLanguageConstants.vsCMLanguageVB, language);
+			Assert.AreEqual(global::EnvDTE.CodeModelLanguageConstants.vsCMLanguageVB, language);
 		}
 		
 		[Test]
@@ -138,9 +138,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectContent();
 			CreatePublicClass("MyClass");
 			
-			vsCMAccess access = codeClass.Access;
+			global::EnvDTE.vsCMAccess access = codeClass.Access;
 			
-			Assert.AreEqual(vsCMAccess.vsCMAccessPublic, access);
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPublic, access);
 		}
 		
 		[Test]
@@ -149,9 +149,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectContent();
 			CreatePrivateClass("MyClass");
 			
-			vsCMAccess access = codeClass.Access;
+			global::EnvDTE.vsCMAccess access = codeClass.Access;
 			
-			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPrivate, access);
 		}
 		
 		[Test]
@@ -161,7 +161,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicClass("MyClass");
 			AddInterfaceToClassBaseTypes("System.Collections.Generic.ICollection", "System.Collections.Generic.ICollection{System.String}");
 			
-			CodeElements codeElements = codeClass.ImplementedInterfaces;
+			global::EnvDTE.CodeElements codeElements = codeClass.ImplementedInterfaces;
 			CodeInterface codeInterface = codeElements.FirstCodeInterfaceOrDefault();
 			
 			Assert.AreEqual(1, codeElements.Count);
@@ -175,7 +175,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicClass("MyClass");
 			AddClassToClassBaseTypes("MyNamespace.MyBaseClass");
 			
-			CodeElements codeElements = codeClass.ImplementedInterfaces;			
+			global::EnvDTE.CodeElements codeElements = codeClass.ImplementedInterfaces;
 			
 			Assert.AreEqual(0, codeElements.Count);
 		}
@@ -187,7 +187,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicClass("MyClass");
 			AddBaseTypeToClass("System.Object");
 			
-			CodeElements codeElements = codeClass.Bases;
+			global::EnvDTE.CodeElements codeElements = codeClass.Bases;
 			CodeClass2 baseClass = codeElements.FirstCodeClass2OrDefault();
 			
 			Assert.AreEqual(1, codeElements.Count);
@@ -201,7 +201,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectContent();
 			CreatePublicClass("System.Object");
 			
-			CodeElements codeElements = codeClass.Bases;
+			global::EnvDTE.CodeElements codeElements = codeClass.Bases;
 			
 			Assert.AreEqual(0, codeElements.Count);
 		}
@@ -213,7 +213,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicClass("MyClass");
 			AddMethodToClass("MyClass.MyMethod");
 			
-			CodeElements codeElements = codeClass.Members;
+			global::EnvDTE.CodeElements codeElements = codeClass.Members;
 			CodeFunction2 codeFunction = codeElements.FirstCodeFunction2OrDefault();
 			
 			Assert.AreEqual(1, codeElements.Count);
@@ -227,7 +227,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicClass("MyClass");
 			AddPropertyToClass("MyClass.MyProperty");
 			
-			CodeElements codeElements = codeClass.Members;
+			global::EnvDTE.CodeElements codeElements = codeClass.Members;
 			CodeProperty2 codeFunction = codeElements.FirstCodeProperty2OrDefault();
 			
 			Assert.AreEqual(1, codeElements.Count);
@@ -241,7 +241,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicClass("MyClass");
 			AddFieldToClass("MyClass.MyField");
 			
-			CodeElements codeElements = codeClass.Members;
+			global::EnvDTE.CodeElements codeElements = codeClass.Members;
 			CodeVariable codeVariable = codeElements.FirstCodeVariableOrDefault();
 			
 			Assert.AreEqual(1, codeElements.Count);
@@ -254,9 +254,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectContent();
 			CreatePublicClass("MyClass");
 			
-			vsCMElement kind = codeClass.Kind;
+			global::EnvDTE.vsCMElement kind = codeClass.Kind;
 			
-			Assert.AreEqual(vsCMElement.vsCMElementClass, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMElement.vsCMElementClass, kind);
 		}
 		
 		[Test]
@@ -267,7 +267,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddClassNamespace("MyNamespace.Test");
 			CreateClass();
 			
-			CodeNamespace codeNamespace = codeClass.Namespace;
+			global::EnvDTE.CodeNamespace codeNamespace = codeClass.Namespace;
 			
 			Assert.AreEqual("MyNamespace.Test", codeNamespace.FullName);
 		}
@@ -280,7 +280,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddClassNamespace("MyNamespace.Test");
 			CreateClass();
 			
-			CodeNamespace codeNamespace = codeClass.Namespace;
+			global::EnvDTE.CodeNamespace codeNamespace = codeClass.Namespace;
 			
 			Assert.AreEqual("MyNamespace.Test", codeNamespace.Name);
 		}
@@ -292,7 +292,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicClass("MyNamespace.MyClass");
 			CreateClass();
 			
-			CodeElements partialClasses = codeClass.PartialClasses;
+			global::EnvDTE.CodeElements partialClasses = codeClass.PartialClasses;
 			CodeClass firstClass = partialClasses.FirstCodeClass2OrDefault();
 			
 			Assert.AreEqual(1, partialClasses.Count);
@@ -345,9 +345,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicClass("MyClass");
 			ClassIsPartial();
 			
-			vsCMClassKind kind = codeClass.ClassKind;
+			global::EnvDTE.vsCMClassKind kind = codeClass.ClassKind;
 			
-			Assert.AreEqual(vsCMClassKind.vsCMClassKindPartialClass, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMClassKind.vsCMClassKindPartialClass, kind);
 		}
 		
 		[Test]
@@ -356,9 +356,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectContent();
 			CreatePublicClass("MyClass");
 			
-			vsCMClassKind kind = codeClass.ClassKind;
+			global::EnvDTE.vsCMClassKind kind = codeClass.ClassKind;
 			
-			Assert.AreEqual(vsCMClassKind.vsCMClassKindMainClass, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMClassKind.vsCMClassKindMainClass, kind);
 		}
 		
 		[Test]
@@ -391,7 +391,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectContent();
 			CreatePublicClass("MyClass");
 			
-			codeClass.ClassKind = vsCMClassKind.vsCMClassKindPartialClass;
+			codeClass.ClassKind = global::EnvDTE.vsCMClassKind.vsCMClassKindPartialClass;
 			
 			classKindUpdater.AssertWasCalled(updater => updater.MakeClassPartial());
 		}
@@ -402,7 +402,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectContent();
 			CreatePublicClass("MyClass");
 			
-			Assert.Throws<NotImplementedException>(() => codeClass.ClassKind = vsCMClassKind.vsCMClassKindMainClass);
+			Assert.Throws<NotImplementedException>(() => codeClass.ClassKind = global::EnvDTE.vsCMClassKind.vsCMClassKindMainClass);
 		}
 	}
 }

@@ -72,7 +72,14 @@
         
         <ContentControl Grid.Row="3" Grid.Column="1" Margin="3" Content="{Binding SelectedDatasource.ControlPanel, ElementName=This}" />
         
-        <Button x:Name="btnConnect" Grid.Row="4" Grid.Column="1" Margin="3" Content="Connect" HorizontalAlignment="Right" Click="btnConnect_Click" />
+        <Button x:Name="btnConnect"
+                Grid.Row="4"
+                Grid.Column="1"
+                Margin="3"
+                Content="Connect"
+                HorizontalAlignment="Right"
+                IsEnabled="{Binding CanConnect, ElementName=This}"
+                Click="btnConnect_Click" />
         
         <TextBlock Grid.Row="5" Margin="3">Database:</TextBlock>
 

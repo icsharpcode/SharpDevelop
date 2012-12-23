@@ -19,9 +19,12 @@ namespace PackageManagement.Tests.VisualStudio
 		IVsHierarchy hierarchy;
 		FakePackageManagementProjectService fakeProjectService;
 		
-		void CreateVsSolution()
+		void CreateVsSolution(string solutionFileName = @"d:\projects\test\Test.sln")
 		{
+			var msbuildSolution = new Solution(new MockProjectChangeWatcher());
+			msbuildSolution.FileName = solutionFileName;
 			fakeProjectService = new FakePackageManagementProjectService();
+			fakeProjectService.OpenSolution = msbuildSolution;
 			solution = new VsSolution(fakeProjectService);
 		}
 		
@@ -33,6 +36,7 @@ namespace PackageManagement.Tests.VisualStudio
 		void AddProjectToMSBuildSolution(string fileName)
 		{
 			TestableProject project = ProjectHelper.CreateTestProject();
+			project.Parent = fakeProjectService.OpenSolution;
 			project.FileName = fileName;
 			fakeProjectService.AddFakeProject(project);
 		}
@@ -50,7 +54,7 @@ namespace PackageManagement.Tests.VisualStudio
 		[Test]
 		public void GetProjectOfUniqueName_SolutionHasProjectMatchingUniqueName_ReturnsSuccessAndVsHierarchy()
 		{
-			CreateVsSolution();
+			CreateVsSolution(@"d:\projects\test\Test.sln");
 			AddProjectToMSBuildSolution(@"d:\projects\test\Test.csproj");
 			
 			int result = GetProjectOfUniqueName("Test.csproj");
@@ -62,7 +66,7 @@ namespace PackageManagement.Tests.VisualStudio
 		[Test]
 		public void GetProjectOfUniqueName_SolutionHasProjectButDoesNotMatchUniqueName_ReturnsError()
 		{
-			CreateVsSolution();
+			CreateVsSolution(@"d:\projects\test\Test.sln");
 			AddProjectToMSBuildSolution(@"d:\projects\test\unknown.vbproj");
 			
 			int result = GetProjectOfUniqueName("Test.csproj");
@@ -73,7 +77,7 @@ namespace PackageManagement.Tests.VisualStudio
 		[Test]
 		public void GetProjectOfUniqueName_UniqueNameCaseIsIgnored_ReturnsSuccess()
 		{
-			CreateVsSolution();
+			CreateVsSolution(@"d:\projects\test\Test.sln");
 			AddProjectToMSBuildSolution(@"d:\projects\test\test.csproj");
 			
 			int result = GetProjectOfUniqueName("TEST.CSPROJ");
@@ -85,7 +89,7 @@ namespace PackageManagement.Tests.VisualStudio
 		[Test]
 		public void GetProjectOfUniqueName_ProjectTypeGuidsRetrievedFromAggregatableCSharpProject_ReturnsCSharpProjectTypeGuid()
 		{
-			CreateVsSolution();
+			CreateVsSolution(@"d:\projects\test\Test.sln");
 			AddProjectToMSBuildSolution(@"d:\projects\test\test.csproj");
 			
 			GetProjectOfUniqueName("test.csproj");
@@ -97,6 +101,18 @@ namespace PackageManagement.Tests.VisualStudio
 			
 			Assert.AreEqual(VsConstants.S_OK, result);
 			Assert.AreEqual(ProjectTypeGuids.CSharp, guids);
+		}
+		
+		[Test]
+		public void GetProjectOfUniqueName_UniqueNameIncludesProjectFolderInsideSolutionr_ReturnsSuccess()
+		{
+			CreateVsSolution(@"d:\projects\test\Test.sln");
+			AddProjectToMSBuildSolution(@"d:\projects\test\Project\MyProject.csproj");
+			
+			int result = GetProjectOfUniqueName(@"Project\MyProject.csproj");
+			
+			Assert.AreEqual(VsConstants.S_OK, result);
+			Assert.IsNotNull(hierarchy);
 		}
 	}
 }

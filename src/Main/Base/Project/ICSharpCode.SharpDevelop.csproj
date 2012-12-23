@@ -169,10 +169,8 @@
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
     <Compile Include="Src\Commands\ViewInBrowser.cs" />
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
-    <Compile Include="Editor\CodeCompletion\CodeCompletionPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Editor\CodeCompletion\ICompletionItemHandler.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml.cs" />
     <Compile Include="Src\Editor\Commands\ClassBookmarkSubmenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\ClassMemberMenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\FindReferencesCommand.cs" />
@@ -292,6 +290,10 @@
     <Compile Include="Src\Gui\Dialogs\NewProjectDialog.Designer.cs">
       <DependentUpon>NewProjectDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ExternalToolPanel.xaml.cs">
+      <DependentUpon>ExternalToolPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\CodeGenerationPanel.xaml.cs">
       <DependentUpon>CodeGenerationPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -320,16 +322,36 @@
       <DependentUpon>ApplicationSettings.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildAdvanced.xaml.cs">
+      <DependentUpon>BuildAdvanced.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildOutput.xaml.cs">
+      <DependentUpon>BuildOutput.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml.cs">
       <DependentUpon>DebugOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\KeyValuePair.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\OptionsHelper.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectCustomToolOptionsPanel.xaml.cs">
       <DependentUpon>ProjectCustomToolOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ErrorsAndWarnings.xaml.cs">
+      <DependentUpon>ErrorsAndWarnings.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectInformation.xaml.cs">
+      <DependentUpon>ProjectInformation.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\TreatErrorsAndWarnings.xaml.cs">
+      <DependentUpon>TreatErrorsAndWarnings.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\HexValidator.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\KeyValuePair.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ReferencePaths.xaml.cs">
       <DependentUpon>ReferencePaths.xaml</DependentUpon>
@@ -377,8 +399,8 @@
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceMapFileProjectItem.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceMapGenerator.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceOptions.cs" />
-    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceOptionsPanel..xaml.cs">
-      <DependentUpon>ServiceReferenceOptionsPanel..xaml</DependentUpon>
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceOptionsPanel.xaml.cs">
+      <DependentUpon>ServiceReferenceOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceProxyGenerator.cs" />
@@ -556,9 +578,6 @@
     <Compile Include="Src\Gui\Dialogs\WordCountDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ExternalToolPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AssemblyReferencePanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -706,7 +725,6 @@
     <Compile Include="Src\Project\WebReferenceUrl.cs" />
     <EmbeddedResource Include="Resources\CommonAboutDialog.xfrm" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Resources\ExternalToolOptions.xfrm" />
     <EmbeddedResource Include="Resources\FontSelectionPanel.xfrm" />
     <EmbeddedResource Include="Resources\NewFileWithNameDialog.xfrm" />
     <EmbeddedResource Include="Resources\NewFileDialog.xfrm" />
@@ -729,7 +747,6 @@
     <Compile Include="Src\Services\RefactoringService\Reference.cs" />
     <Compile Include="Src\Services\ProjectService\ParseableFileContentFinder.cs" />
     <Compile Include="Src\Project\Items\ImportProjectItem.cs" />
-    <EmbeddedResource Include="Resources\CodeCompletionOptionPanel.xfrm" />
     <Compile Include="Src\Services\Debugger\CurrentLineBookmark.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserCommands.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserLocationConditionEvaluator.cs" />
@@ -813,16 +830,23 @@
   <ItemGroup>
     <Folder Include="Workbench\DisplayBinding" />
     <Page Include="Editor\Bookmarks\BookmarkPadContent.xaml" />
+    <Page Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorDialog.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorXaml.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ExternalToolPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\CodeGenerationPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\EditStandardHeaderPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectStylePanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildAdvanced.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildOutput.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectCustomToolOptionsPanel.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ErrorsAndWarnings.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectInformation.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\TreatErrorsAndWarnings.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.xaml">
       <DependentUpon>ProjectOptionPanel.cs</DependentUpon>
     </Page>
@@ -830,7 +854,7 @@
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Signing.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AddServiceReferenceDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AdvancedServiceDialog.xaml" />
-    <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceOptionsPanel..xaml" />
+    <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceOptionsPanel.xaml" />
     <Page Include="Src\Project\PortableLibrary\SelectProfileDialog.xaml" />
     <Page Include="themes\generic.xaml" />
     <ProjectReference Include="..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">

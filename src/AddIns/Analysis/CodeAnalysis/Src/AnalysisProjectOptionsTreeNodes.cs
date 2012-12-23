@@ -6,7 +6,6 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Windows;
@@ -27,8 +26,6 @@ namespace ICSharpCode.CodeAnalysis
 	{
 		private int index;
 		
-		
-		
 		public BaseTree()
 		{
 			RuleState = new ObservableCollection<Tuple<ImageSource,string>>();
@@ -42,8 +39,9 @@ namespace ICSharpCode.CodeAnalysis
 			imageSource = ToImageSource(icon);
 			this.RuleState.Add(Tuple.Create<ImageSource,string>(imageSource,
 			                                                    ResourceService.GetString("Global.ErrorText")));
-//			bla.Add(Tuple.Create<Icon,string>(null,"None"));
+			
 		}
+		
 		
 		private static ImageSource ToImageSource( Icon icon)
 		{
@@ -59,7 +57,6 @@ namespace ICSharpCode.CodeAnalysis
 			return wpfBitmap;
 		}
 
-		
 		
 		public ObservableCollection<Tuple<ImageSource,string>> RuleState {get;set;}
 		
@@ -93,7 +90,6 @@ namespace ICSharpCode.CodeAnalysis
 			foreach (FxCopRule rule in category.Rules) {
 				this.Children.Add(new RuleTreeNode(rule));
 			}
-			CheckMode();
 		}
 		
 
@@ -101,29 +97,18 @@ namespace ICSharpCode.CodeAnalysis
 			get { return true; }
 		}
 		
+		
 		public override object Text {
 			get { return category.DisplayName; }
 		}
 		
-		bool ignoreCheckMode;
+
 		public override int Index {
 			get { return base.Index; }
 			set {
 				if (value != base.Index) {
 					base.Index = value;
-					if (mixedModeTuple == null) {
-						Console.WriteLine("Set all to index");
-						ignoreCheckMode = true;
-						foreach (RuleTreeNode rule in this.Children) {
-							rule.Index = Index;
-						}
-						ignoreCheckMode = false;
-//						CheckMode();
-//						base.RaisePropertyChanged("Index");
-//						foreach (RuleTreeNode rule in this.Children) {
-//							Console.WriteLine(rule.Index.ToString());
-//						}
-					}
+					RaisePropertyChanged("Index");
 				}
 			}
 		}
@@ -131,7 +116,6 @@ namespace ICSharpCode.CodeAnalysis
 		
 		private void AddMixedMode()
 		{
-			Console.WriteLine("AddMixedMode");
 			if (!RuleState.Contains(mixedModeTuple)) {
 				var image = PresentationResourceService.GetBitmapSource("Icons.16x16.ClosedFolderBitmap");
 				mixedModeTuple = Tuple.Create<ImageSource,string>(image,
@@ -139,48 +123,39 @@ namespace ICSharpCode.CodeAnalysis
 				RuleState.Add(mixedModeTuple);
 				Index = RuleState.Count -1;
 				base.RaisePropertyChanged("Index");
-				CheckMode();
 			}
 		}
 		
+		
 		private void RemoveMixedMode()
 		{
-			Console.WriteLine("RemoveMixedMode(");
 			if (mixedModeTuple != null) {
 				if (RuleState.Contains(mixedModeTuple)) {
 					RuleState.Remove(mixedModeTuple);
 					mixedModeTuple = null;
 					base.RaisePropertyChanged("Index");
-					CheckMode();
 				}
 			}
 		}
+		
 		
 		public void CheckMode ()
 		{
-			if (! ignoreCheckMode) {
-				Console.WriteLine("CheckMode");
-				if (!NewErrorState.HasValue) {
-					Console.WriteLine ("\t{0} is Mixed Mode",Text);
-					AddMixedMode();
-				}
-				else{
-					RemoveMixedMode();
-					/*
-					if (NewErrorState == true) {
-						Console.WriteLine ("\t{0} is Error",Text);
-//					Index = 1;
-					} else {
-						Console.WriteLine ("\t{0} is Warning",Text);
-//						categoryNode.Index = ;
-					}
-					 */
-				}
+			var state = ErrorState;
+			
+			if (state == 0) {
+				RemoveMixedMode();
+				Index = 0;
+			} else if (state == 1) {
+				RemoveMixedMode();
+				Index = 1;
+			} else {
+				AddMixedMode();	
 			}
 		}
 		
 		
-		public Nullable<bool> NewErrorState {
+		internal int ErrorState {
 			get {
 				bool allWarn = true;
 				bool allErr = true;
@@ -191,35 +166,13 @@ namespace ICSharpCode.CodeAnalysis
 						allErr = false;
 				}
 				if (allErr)
-					return true;
-				else if (allWarn)
-					return false;
-				else
-					return null;
-
+					return 1;
+				if (allWarn) {
+					return 0;
+				}
+				return -1;
 			}
 		}
-		
-		/*
-			internal int ErrorState {
-				get {
-					bool allWarn = true;
-					bool allErr = true;
-					foreach (RuleTreeNode tn in Children) {
-						if (tn.isError)
-							allWarn = false;
-						else
-							allErr = false;
-					}
-					if (allErr)
-						return 1;
-					else if (allWarn)
-						return 0;
-					else
-						return -1;
-				}
-			}
-		 */
 	}
 	
 	
@@ -230,10 +183,7 @@ namespace ICSharpCode.CodeAnalysis
 		
 		internal bool isError {
 			get { return error; }
-			set {
-				error = value;
-//				Index = 1;
-			}
+			set {error = value;}
 		}
 		
 		
@@ -242,13 +192,16 @@ namespace ICSharpCode.CodeAnalysis
 			this.rule = rule;
 		}
 		
+		
 		public override bool IsCheckable {
 			get { return true; }
 		}
 		
+		
 		public override object Text {
 			get { return rule.CheckId + " : " + rule.DisplayName; }
 		}
+		
 		
 		public string Identifier {
 			get {
@@ -264,9 +217,6 @@ namespace ICSharpCode.CodeAnalysis
 					isError = value == 1;
 					base.Index = value;
 					RaisePropertyChanged("Index");
-					var p = Parent as CategoryTreeNode;
-					p.CheckMode();
-					Console.WriteLine ("RuleNode {0} - index {1} - error {2}",rule.DisplayName,Index, isError);
 				}
 			}
 		}

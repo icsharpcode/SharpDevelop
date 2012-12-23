@@ -51,8 +51,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 						r.XmlResolver = null;
 						r.WhitespaceHandling = WhitespaceHandling.None;
 						while (r.NodeType != XmlNodeType.Element && r.Read());
-						if(r.LocalName=="ResourceDictionary")
-							return false;						
+						if (r.LocalName == "ResourceDictionary" || r.LocalName == "Activity")
+							return false;
 					} catch (XmlException) {
 						return true;
 					}

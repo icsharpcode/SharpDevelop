@@ -7,7 +7,7 @@
  */
 using System;
 
-namespace Gui.Dialogs.OptionPanels.ProjectOptions
+namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
 	/// <summary>
 	/// Description of KeyValuePair.

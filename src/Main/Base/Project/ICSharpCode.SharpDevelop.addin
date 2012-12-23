@@ -261,7 +261,7 @@
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewProjectToSolution"/>
 				<MenuItem id    = "AddExitingProjectToSolution"
 				          label = "${res:ProjectComponent.ContextMenu.ExistingProject}"
-				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExitingProjectToSolution"/>
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingProjectToSolution"/>
 				<MenuItem id    = "Separator1" type = "Separator" />
 				<MenuItem id    = "AddItem"
 				          label = "${res:ProjectComponent.ContextMenu.AddItem}"
@@ -1278,9 +1278,11 @@
 		
 		<OptionPanel id    = "ToolsOptions"
 		             label = "${res:Dialog.Options.IDEOptions.ToolsOptionsText}">
+		
 			<OptionPanel id    = "ExternalTools"
 			             label = "${res:Dialog.Options.ExternalToolsText}"
-			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ExternalToolPane"/>
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ExternalToolPanel"/>
+			
 			<OptionPanel id    = "ServiceReferences"
 			             label = "Service References"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ServiceReference.ServiceReferenceOptionsPanel"/>

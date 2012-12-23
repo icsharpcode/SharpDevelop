@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <optionpanels:ProjectOptionPanel
 	x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.Signing"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -6,17 +6,16 @@
 	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
 	xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
-
+	
 	<optionpanels:ProjectOptionPanel.Resources>
-		<local:StringToBoolConverter x:Key="strToBool"></local:StringToBoolConverter>
+		<optionpanels:StorageLocationConverter x:Key="locationConverter" />
 	</optionpanels:ProjectOptionPanel.Resources>
 	
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
-		
 		<StackPanel
 			Orientation="Vertical">
-			<GroupBox
-				Header="{core:Localize Dialog.ProjectOptions.Signing.StrongName}">
+			<GroupBox Header="{core:Localize Dialog.ProjectOptions.Signing.StrongName}">
+				
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="30"></RowDefinition>
@@ -31,60 +30,57 @@
 						<ColumnDefinition Width="*"></ColumnDefinition>
 					</Grid.ColumnDefinitions>
 					
-					<CheckBox x:Name="signAssemblyCheckBox"
-					          Grid.Column="1" VerticalAlignment="Bottom"
+					<CheckBox x:Name="signAssemblyCheckBox" Grid.Column="1" VerticalAlignment="Bottom"
 					          Content="{core:Localize Dialog.ProjectOptions.Signing.SignAssembly}"
 					          IsChecked="{Binding SignAssembly.Value}">
 					</CheckBox>
 					
 					<Label Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"
-					       Content="{core:Localize Dialog.ProjectOptions.Signing.ChooseKeyFile}"></Label>
+					       Content="{core:Localize Dialog.ProjectOptions.Signing.ChooseKeyFile}">
+					</Label>
 					
-					<optionpanels:StorageLocationPicker
-						Grid.Row="2"></optionpanels:StorageLocationPicker>
-					
-					<ComboBox
-						x:Name="keyFileComboBox"
-						Grid.Row="2"
-						Grid.Column="1"
-						VerticalAlignment="Center"
-						Margin="3,3,3,3"
-						IsEnabled="{Binding ElementName=signAssemblyCheckBox, Path=IsChecked}"
-						ItemsSource="{Binding KeyFile}"
-						SelectedValue="{Binding Path=SelectedKey}">
+					<optionpanels:StorageLocationPicker Grid.Row="2">
+						<optionpanels:StorageLocationPicker.Location>
+							<MultiBinding Converter="{StaticResource locationConverter}">
+								<Binding Path="SignAssembly.Location" />
+								<Binding Path="AssemblyOriginatorKeyFile.Location" />
+								<Binding Path="DelaySign.Location" />
+							</MultiBinding>
+						</optionpanels:StorageLocationPicker.Location>
+					</optionpanels:StorageLocationPicker>
+						
+					<ComboBox x:Name="keyFileComboBox" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="3,3,3,3"
+					          IsEditable="True"
+					          IsEnabled="{Binding ElementName=signAssemblyCheckBox, Path=IsChecked}"
+					          ItemsSource="{Binding KeyFile}"
+					          SelectionChanged="KeyFileComboBox_SelectionChanged"
+					          Text="{Binding AssemblyOriginatorKeyFile.Value,UpdateSourceTrigger=PropertyChanged}">
 					</ComboBox>
 					
-					<Button
-						x:Name="changePasswordButton"
-						Grid.Row="2"
-						Grid.Column="3"
-						VerticalAlignment="Center"
-						IsEnabled="False"
-						Content="{core:Localize Dialog.ProjectOptions.Signing.ChangePassword}"
-						Margin="10,3,10,3"></Button>
+					<Button Grid.Row="2" Grid.Column="3" VerticalAlignment="Center" Margin="10,3,10,3"
+					        IsEnabled="False"
+					        Content="{core:Localize Dialog.ProjectOptions.Signing.ChangePassword}">
+					</Button>
 					
-					<CheckBox
-						x:Name="delaySignOnlyCheckBox"
-						Grid.Row="3"
-						Grid.Column="1"
-						VerticalAlignment="Center"
-						IsEnabled="{Binding ElementName=signAssemblyCheckBox, Path=IsChecked}"
-						Content="{core:Localize Dialog.ProjectOptions.Signing.DelaySignOnly}"
-						IsChecked="{Binding DelaySign.Value,Converter={StaticResource strToBool}}">
+					<CheckBox x:Name="delaySignOnlyCheckBox" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center"
+					          IsEnabled="{Binding ElementName=signAssemblyCheckBox, Path=IsChecked}"
+					          Content="{core:Localize Dialog.ProjectOptions.Signing.DelaySignOnly}"
+					          IsChecked="{Binding DelaySign.Value}">
 					</CheckBox>
 					
-					<Label
-						Grid.Row="4"
-						Grid.Column="1" VerticalAlignment="Center"
+					<Label Grid.Row="4" Grid.Column="1" VerticalAlignment="Center"
 						IsEnabled="{Binding ElementName=signAssemblyCheckBox, Path=IsChecked}"
-						Content="{core:Localize Dialog.ProjectOptions.Signing.DelaySignWarning}"></Label>
+						Content="{core:Localize Dialog.ProjectOptions.Signing.DelaySignWarning}">
+					</Label>
+				
 				</Grid>
+			
 			</GroupBox>
-			<GroupBox
-				Header="{core:Localize Dialog.ProjectOptions.Signing.ClickOnce}"
-				Margin="0,20,0,0">
+			
+			<GroupBox Margin="0,20,0,0" Header="{core:Localize Dialog.ProjectOptions.Signing.ClickOnce}">
 				<Label Content="{core:Localize Dialog.ProjectOptions.Signing.ClickOnceNotSupported}"></Label>
 			</GroupBox>
+		
 		</StackPanel>
 	</ScrollViewer>
 </optionpanels:ProjectOptionPanel>

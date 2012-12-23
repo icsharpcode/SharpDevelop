@@ -65,26 +65,22 @@ namespace WixBinding.Tests.Utils
 		}
 		
 		/// <summary>
-		/// The MSBuildEngine sets the SharpDevelopBinPath so if
-		/// the SharpDevelop.Base assembly is shadow copied it refers
+		/// The MSBuildEngine sets the WixTargetsPath so if
+		/// the WixBinding.Tests assembly is shadow copied it refers
 		/// to the shadow copied assembly not the original. This
 		/// causes problems for wix projects that refer to the
-		/// wix.targets import via $(SharpDevelopBinPath) so here
-		/// we change it so it points to the real SharpDevelop 
-		/// binary.
+		/// wix.targets import via $(WixTargetsPath) so here
+		/// we change it so it points to where the test assembly is built.
 		/// </summary>
 		public static void InitMSBuildEngine()
 		{
-			// Remove existing SharpDevelopBinPath property.
-			MSBuildEngine.MSBuildProperties.Remove("SharpDevelopBinPath");
-
-			// Set the SharpDevelopBinPath property so it points to
+			// Set the WixTargetsPath property so it points to
 			// the actual bin path where SharpDevelop was built not
 			// to the shadow copy folder.
-			string codeBase = typeof(MSBuildEngine).Assembly.CodeBase.Replace("file:///", String.Empty);
+			string codeBase = typeof(WixBindingTestsHelper).Assembly.CodeBase.Replace("file:///", String.Empty);
 			string folder = Path.GetDirectoryName(codeBase);
-			folder = Path.GetFullPath(Path.Combine(folder, @"..\"));
-			MSBuildEngine.MSBuildProperties["SharpDevelopBinPath"] = folder;
+			string fileName = Path.Combine(folder, "wix2010.targets");
+			MSBuildEngine.MSBuildProperties["WixTargetsPath"] = fileName;
 		}
 		
 		/// <summary>

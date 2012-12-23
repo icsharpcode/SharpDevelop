@@ -20,6 +20,8 @@ using System.Windows.Media;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Win32;
 
 namespace ICSharpCode.SourceAnalysis
 {
@@ -49,7 +51,7 @@ namespace ICSharpCode.SourceAnalysis
 				EnableModifyStyleCopSettings = true;
 			}
 		}
-	
+		
 		
 		public bool EnableModifyStyleCopSettings {
 			get { return enableModifyStyleCopSettings; }
@@ -61,15 +63,18 @@ namespace ICSharpCode.SourceAnalysis
 		
 		private void FindStyleCopPath_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
-			string filter = StringParser.Parse("StyleCop|*" + StyleCopWrapper.STYLE_COP_FILE + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
-			string path = OptionsHelper.OpenFile(filter);
-			if (!String.IsNullOrEmpty(path)) {
+			OpenFileDialog dlg = new OpenFileDialog();
+			dlg.DefaultExt = "dll";
+			dlg.Filter = StringParser.Parse("StyleCop|*" + StyleCopWrapper.STYLE_COP_FILE + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
+			if (dlg.ShowDialog() == true) {
+				string path = dlg.FileName;
 				if (StyleCopWrapper.IsStyleCopPath(path)) {
 					StyleCopPath = path;
 				} else {
 					MessageService.ShowError(string.Format("Directory does not contain StyleCop (*{0}).", StyleCopWrapper.STYLE_COP_FILE));
 				}
 			}
+			ShowStatus();
 		}
 		
 		

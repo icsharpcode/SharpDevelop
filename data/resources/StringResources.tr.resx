@@ -1504,8 +1504,17 @@ Satır numaraları, sınıf yada dosya adları girebilirsiniz.
   <data name="Dialog.HighlightingEditor.Import" xml:space="preserve">
     <value>Renk vurgulaması al</value>
   </data>
+  <data name="Dialog.HighlightingEditor.NotSupportedMessage" xml:space="preserve">
+    <value>Ayarlar sürümü desteklenmiyor!</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.OverwriteCustomizationsMessage" xml:space="preserve">
+    <value>Mevcut tüm özelleştirmeler sıfırlanacak ve seçili dosyadaki bilgi aktarılacak. Devam etmek istiyor musunuz?</value>
+  </data>
   <data name="Dialog.HighlightingEditor.Properties.Value" xml:space="preserve">
     <value>Değer</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.ResetAll" xml:space="preserve">
+    <value>Varsayılanları sıfırla</value>
   </data>
   <data name="Dialog.HighlightingEditor.SampleText" xml:space="preserve">
     <value>Örnek metin</value>
@@ -2496,7 +2505,7 @@ Yeni dosyayı, ${CurrentProjectName} projesine eklemek istiyor musunuz?</value>
     <value>Referans Yolları</value>
   </data>
   <data name="Dialog.ProjectOptions.ReferencePaths.AddPath" xml:space="preserve">
-    <value>Yol ekle</value>
+    <value>&amp;Yol ekle</value>
   </data>
   <data name="Dialog.ProjectOptions.RunPostBuildEvent.Always" xml:space="preserve">
     <value>Daima</value>
@@ -6411,6 +6420,24 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
   <data name="Templates.File.NAnt.NAntBuildFile.Name" xml:space="preserve">
     <value>NAnt derleme dosyası</value>
   </data>
+  <data name="Templates.File.PRISMViewAndViewModelUnity.Description" xml:space="preserve">
+    <value>Uygun bir ModelGörünüm içeren PRISM Modülü Görünümü oluşturur.</value>
+  </data>
+  <data name="Templates.File.PRISMViewAndViewModelUnity.Name" xml:space="preserve">
+    <value>PRISM Görünüm ve ModelGörünüm(Ünite)</value>
+  </data>
+  <data name="Templates.File.PRISMViewModelUnity.Description" xml:space="preserve">
+    <value>PRISM Modülü için bir ModelGörünüm oluşturur.</value>
+  </data>
+  <data name="Templates.File.PRISMViewModelUnity.Name" xml:space="preserve">
+    <value>PRISM ModelGörünüm(Ünite)</value>
+  </data>
+  <data name="Templates.File.PRISMViewUnity.Description" xml:space="preserve">
+    <value>Bir PRISM Modulü için Görünüm oluştur.</value>
+  </data>
+  <data name="Templates.File.PRISMViewUnity.Name" xml:space="preserve">
+    <value>PRISM Görünüm (Ünite)</value>
+  </data>
   <data name="Templates.File.Properties.AddIFDEFTest" xml:space="preserve">
     <value>'#if TEST ... #endif' ekle</value>
   </data>
@@ -6680,6 +6707,24 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
   </data>
   <data name="Templates.Project.PortableLibrary.Name" xml:space="preserve">
     <value>Taşınabilir Sınıf Kitaplığı</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationSmallUnity.Description" xml:space="preserve">
+    <value>Önyükleyicisi ve Altyapı ile küçük bir PRISM Uygulaması oluşturur.</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationSmallUnity.Name" xml:space="preserve">
+    <value>PRISM Uygulaması - küçük (Ünite)</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationUnity.Description" xml:space="preserve">
+    <value>Önyükleyicisi ve Altyapı ile bir PRISM Uygulaması oluşturur.</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationUnity.Name" xml:space="preserve">
+    <value>PRISM Uygulaması (Ünite)</value>
+  </data>
+  <data name="Templates.Project.PRISMModuleUnity.Description" xml:space="preserve">
+    <value>Uygun bir ModelGörünüm ve Görünüm ile PRISM Modülü oluşturur.</value>
+  </data>
+  <data name="Templates.Project.PRISMModuleUnity.Name" xml:space="preserve">
+    <value>PRISM Modülü (Ünite)</value>
   </data>
   <data name="Templates.Project.SetupProject.Description" xml:space="preserve">
     <value>MSI Installer oluşturabilmek için bir Windows Installer projesi.</value>

@@ -42,7 +42,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddClassToProjectContent("Tests", "Tests.MyClass");
 			CreateCodeNamespace("Tests");
 			
-			CodeElements members = codeNamespace.Members;
+			global::EnvDTE.CodeElements members = codeNamespace.Members;
 			CodeClass2 codeClass = members.FirstCodeClass2OrDefault();
 			
 			Assert.AreEqual(1, members.Count);
@@ -56,7 +56,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddNamespaceCompletionEntryInNamespace("First", "Second");
 			CreateCodeNamespace("First");
 			
-			CodeElements members = codeNamespace.Members;
+			global::EnvDTE.CodeElements members = codeNamespace.Members;
 			CodeNamespace childNamespace = members.FirstCodeNamespaceOrDefault();
 			
 			Assert.AreEqual("First", codeNamespace.Name);
@@ -71,7 +71,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectContent();
 			CreateCodeNamespace("Test");
 			
-			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationExternal, codeNamespace.InfoLocation);
+			Assert.AreEqual(global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal, codeNamespace.InfoLocation);
 		}
 		
 		[Test]
@@ -83,7 +83,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.NoCompletionItemsInNamespace("First.Second.Third");
 			CreateCodeNamespace("First");
 			
-			CodeElements members = codeNamespace.Members;
+			global::EnvDTE.CodeElements members = codeNamespace.Members;
 			CodeNamespace secondNamespace = members.FirstCodeNamespaceOrDefault();
 			CodeNamespace thirdNamespace = secondNamespace.Members.FirstCodeNamespaceOrDefault();
 			
@@ -104,7 +104,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddNamespaceCompletionEntriesInNamespace("First.Second", "Third", "Different");
 			CreateCodeNamespace("First");
 			
-			CodeElements members = codeNamespace.Members;
+			global::EnvDTE.CodeElements members = codeNamespace.Members;
 			CodeNamespace secondNamespace = members.FirstOrDefault() as CodeNamespace;
 			
 			Assert.AreEqual("First", codeNamespace.Name);
@@ -121,7 +121,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddUnknownCompletionEntryToNamespace("Tests");
 			CreateCodeNamespace("Tests");
 			
-			CodeElements members = codeNamespace.Members;
+			global::EnvDTE.CodeElements members = codeNamespace.Members;
 			
 			Assert.AreEqual(0, members.Count);
 		}
@@ -135,7 +135,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			string language = codeNamespace.Language;
 			
-			Assert.AreEqual(CodeModelLanguageConstants.vsCMLanguageCSharp, language);
+			Assert.AreEqual(global::EnvDTE.CodeModelLanguageConstants.vsCMLanguageCSharp, language);
 		}
 		
 		[Test]
@@ -147,7 +147,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			string language = codeNamespace.Language;
 			
-			Assert.AreEqual(CodeModelLanguageConstants.vsCMLanguageVB, language);
+			Assert.AreEqual(global::EnvDTE.CodeModelLanguageConstants.vsCMLanguageVB, language);
 		}
 		
 		[Test]
@@ -156,9 +156,9 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProjectContent();
 			CreateCodeNamespace(String.Empty);
 			
-			vsCMElement kind = codeNamespace.Kind;
+			global::EnvDTE.vsCMElement kind = codeNamespace.Kind;
 			
-			Assert.AreEqual(vsCMElement.vsCMElementNamespace, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMElement.vsCMElementNamespace, kind);
 		}
 	}
 }

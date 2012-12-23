@@ -121,7 +121,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProperties();
 			msbuildProject.SetProperty("TargetFrameworkVersion", "4.0");
 			
-			Property targetFrameworkVersionProperty = PropertiesHelper.FindProperty(project.Properties, "TargetFrameworkVersion");
+			global::EnvDTE.Property targetFrameworkVersionProperty = PropertiesHelper.FindProperty(project.Properties, "TargetFrameworkVersion");
 			string targetFrameworkVersion = targetFrameworkVersionProperty.Value as string;
 			
 			Assert.AreEqual("4.0", targetFrameworkVersion);
@@ -133,7 +133,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProperties();
 			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
 			
-			Property fullPathProperty = project.Properties.Item("FullPath");
+			global::EnvDTE.Property fullPathProperty = project.Properties.Item("FullPath");
 			string fullPath = fullPathProperty.Value as string;
 			
 			string expectedFullPath = @"d:\projects\MyProject";
@@ -146,7 +146,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProperties();
 			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
 			
-			Property fullPathProperty = project.Properties.Item("FULLPATH");
+			global::EnvDTE.Property fullPathProperty = project.Properties.Item("FULLPATH");
 			string fullPath = fullPathProperty.Value as string;
 			
 			string expectedFullPath = @"d:\projects\MyProject";

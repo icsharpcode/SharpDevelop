@@ -6,7 +6,7 @@
     <Controls>
       <System.Windows.Forms.GroupBox>
         <Name value="errorsAndWarningsGroupBox" />
-        <Location value="3, 426" />
+        <Location value="0, 334" />
         <Text value="${res:Dialog.ProjectOptions.Build.ErrorsAndWarnings}" />
         <Size value="502, 61" />
         <Anchor value="Top, Left, Right" />
@@ -33,20 +33,20 @@
         <Name value="wixGroupBox" />
         <Location value="3, 177" />
         <Text value="WiX" />
-        <Size value="502, 244" />
+        <Size value="502, 151" />
         <Anchor value="Top, Left, Right" />
         <TabIndex value="1" />
         <Controls>
           <System.Windows.Forms.TextBox>
             <Name value="culturesTextBox" />
             <TabIndex value="12" />
-            <Location value="6, 214" />
+            <Location value="6, 122" />
             <Anchor value="Top, Left, Right" />
             <Size value="484, 20" />
           </System.Windows.Forms.TextBox>
           <System.Windows.Forms.Label>
             <Name value="culturesLabel" />
-            <Location value="6, 194" />
+            <Location value="6, 102" />
             <Text value="${res:ICSharpCode.WixBinding.CompilerParametersPanel.CulturesLabel}" />
             <Size value="490, 16" />
             <TextAlign value="BottomLeft" />
@@ -56,13 +56,13 @@
           <System.Windows.Forms.TextBox>
             <Name value="wixVariablesTextBox" />
             <TabIndex value="10" />
-            <Location value="6, 171" />
+            <Location value="6, 79" />
             <Anchor value="Top, Left, Right" />
             <Size value="484, 20" />
           </System.Windows.Forms.TextBox>
           <System.Windows.Forms.Label>
             <Name value="wixVariablesLabel" />
-            <Location value="6, 151" />
+            <Location value="6, 59" />
             <Text value="${res:ICSharpCode.WixBinding.CompilerParametersPanel.WixVariablesLabel}" />
             <Size value="490, 16" />
             <TextAlign value="BottomLeft" />
@@ -70,33 +70,8 @@
             <TabIndex value="9" />
           </System.Windows.Forms.Label>
           <System.Windows.Forms.Button>
-            <Name value="wixTasksPathBrowseButton" />
-            <Location value="450, 125" />
-            <Text value="..." />
-            <UseVisualStyleBackColor value="True" />
-            <Size value="46, 21" />
-            <Anchor value="Top, Right" />
-            <TabIndex value="8" />
-          </System.Windows.Forms.Button>
-          <System.Windows.Forms.TextBox>
-            <Name value="wixTasksPathTextBox" />
-            <TabIndex value="7" />
-            <Location value="6, 126" />
-            <Anchor value="Top, Left, Right" />
-            <Size value="438, 20" />
-          </System.Windows.Forms.TextBox>
-          <System.Windows.Forms.Label>
-            <Name value="wixTasksPathLabel" />
-            <Location value="6, 106" />
-            <Text value="${res:ICSharpCode.WixBinding.CompilerParametersPanel.WixTasksPathLabel}" />
-            <Size value="490, 16" />
-            <TextAlign value="BottomLeft" />
-            <Anchor value="Top, Left, Right" />
-            <TabIndex value="6" />
-          </System.Windows.Forms.Label>
-          <System.Windows.Forms.Button>
             <Name value="wixTargetsPathBrowseButton" />
-            <Location value="450, 78" />
+            <Location value="450, 35" />
             <Text value="..." />
             <UseVisualStyleBackColor value="True" />
             <Size value="46, 21" />
@@ -106,43 +81,18 @@
           <System.Windows.Forms.TextBox>
             <Name value="wixTargetsPathTextBox" />
             <TabIndex value="4" />
-            <Location value="6, 79" />
+            <Location value="6, 36" />
             <Anchor value="Top, Left, Right" />
             <Size value="438, 20" />
           </System.Windows.Forms.TextBox>
           <System.Windows.Forms.Label>
             <Name value="wixTargetsPathLabel" />
-            <Location value="6, 59" />
+            <Location value="6, 16" />
             <Text value="${res:ICSharpCode.WixBinding.CompilerParametersPanel.WixTargetsPathLabel}" />
             <Size value="490, 16" />
             <TextAlign value="BottomLeft" />
             <Anchor value="Top, Left, Right" />
             <TabIndex value="3" />
-          </System.Windows.Forms.Label>
-          <System.Windows.Forms.Button>
-            <Name value="wixToolPathBrowseButton" />
-            <Location value="450, 35" />
-            <Text value="..." />
-            <UseVisualStyleBackColor value="True" />
-            <Size value="46, 21" />
-            <Anchor value="Top, Right" />
-            <TabIndex value="2" />
-          </System.Windows.Forms.Button>
-          <System.Windows.Forms.TextBox>
-            <Name value="wixToolPathTextBox" />
-            <TabIndex value="1" />
-            <Location value="6, 35" />
-            <Anchor value="Top, Left, Right" />
-            <Size value="438, 20" />
-          </System.Windows.Forms.TextBox>
-          <System.Windows.Forms.Label>
-            <Name value="wixToolPathLabel" />
-            <Location value="6, 17" />
-            <Text value="${res:ICSharpCode.WixBinding.CompilerParametersPanel.WixToolPathLabel}" />
-            <Size value="490, 15" />
-            <TextAlign value="BottomLeft" />
-            <Anchor value="Top, Left, Right" />
-            <TabIndex value="0" />
           </System.Windows.Forms.Label>
         </Controls>
       </System.Windows.Forms.GroupBox>

@@ -162,13 +162,26 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool IsSupportedFile(string path)
 		{
-			return !IsAppConfigFile(path);
+			if (project.IsWebProject()) {
+				return !IsAppConfigFile(path);
+			}
+			return !IsWebConfigFile(path);
+		}
+		
+		bool IsWebConfigFile(string path)
+		{
+			return IsFileNameMatchIgnoringPath("web.config", path);
 		}
 		
 		bool IsAppConfigFile(string path)
 		{
-			string fileName = Path.GetFileName(path);
-			return IsMatchIgnoringCase("app.config", fileName);
+			return IsFileNameMatchIgnoringPath("app.config", path);
+		}
+		
+		bool IsFileNameMatchIgnoringPath(string fileName1, string path)
+		{
+			string fileName2 = Path.GetFileName(path);
+			return IsMatchIgnoringCase(fileName1, fileName2);
 		}
 		
 		public override void AddFile(string path, Stream stream)

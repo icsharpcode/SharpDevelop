@@ -27,7 +27,7 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildProject = project.TestableProject;
 			fakeProjectService = project.FakeProjectService;
 			ProjectObject projectObject = (ProjectObject)project.Object;
-			references = projectObject.References;
+			references = (References)projectObject.References;
 		}
 		
 		void ReferenceCollectionAssertAreEqual(string[] expectedReferences, List<Reference> referenceList)
@@ -165,7 +165,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateReferences();
 			msbuildProject.AddReference("System.Xml");
 			
-			Reference reference = references.Find("System.Xml");
+			global::EnvDTE.Reference reference = references.Find("System.Xml");
 			
 			Assert.AreEqual("System.Xml", reference.Name);
 		}
@@ -176,7 +176,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateReferences();
 			msbuildProject.AddReference("System.Xml");
 			
-			Reference reference = references.Find("SYSTEM.XML");
+			global::EnvDTE.Reference reference = references.Find("SYSTEM.XML");
 			
 			Assert.AreEqual("System.Xml", reference.Name);
 		}
@@ -187,7 +187,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateReferences();
 			msbuildProject.AddReference("System.Xml");
 			
-			Reference reference = references.Item("System.Xml");
+			global::EnvDTE.Reference reference = references.Item("System.Xml");
 			
 			Assert.AreEqual("System.Xml", reference.Name);
 		}

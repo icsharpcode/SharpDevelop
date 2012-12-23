@@ -38,6 +38,9 @@
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Rhino.Mocks">
+      <HintPath>..\..\..\..\Libraries\RhinoMocks\Rhino.Mocks.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Windows.Forms" />
@@ -56,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Coverage\TwoClassNamesMatchingAtStartTests.cs" />
     <Compile Include="Coverage\CodeCoverageMethodElementTests.cs" />
     <Compile Include="Coverage\CodeCoverageNamespaceTestFixture.cs" />
     <Compile Include="Coverage\CodeCoveragePropertyCollectionWithGetterAndSetterTestFixture.cs" />
@@ -75,6 +79,7 @@
     <Compile Include="Coverage\RemoveTaskMarkerTests.cs" />
     <Compile Include="Coverage\SequencePointTests.cs" />
     <Compile Include="Coverage\SimilarRootNamespaceTestFixture.cs" />
+    <Compile Include="Coverage\SolutionCodeCoverageResultsTests.cs" />
     <Compile Include="Gui\DisplayItemTestFixture.cs" />
     <Compile Include="Gui\PropertiesInCodeCoverageTreeView.cs" />
     <Compile Include="Gui\TreeViewSortingTestFixture.cs" />

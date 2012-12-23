@@ -1867,7 +1867,7 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
     <value>Code completion detail settings</value>
   </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.LanguageDependend" xml:space="preserve">
-    <value>The following options are language-dependend, some options are not available in some programming languages.</value>
+    <value>The following options are language-dependent, some options are not available in some programming languages.</value>
   </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.MainOption" xml:space="preserve">
     <value>Use the following option to turn code completion completely off:</value>
@@ -2436,6 +2436,12 @@ system. I don't think that it needs translation.</comment>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.Any" xml:space="preserve">
     <value>Any processor</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Build.TargetCPU.Any32" xml:space="preserve">
+    <value>Any processor (prefer 32-bit)</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Build.TargetCPU.Any64" xml:space="preserve">
+    <value>Any processor (prefer 64-bit)</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.Itanium" xml:space="preserve">
     <value>Intel 64-bit Itanium processor</value>
@@ -6789,6 +6795,24 @@ The resources files have been renamed/moved accordingly.</value>
     <value>NAnt Build File</value>
     <comment>Name for the template that creates a new  NAnt build file.</comment>
   </data>
+  <data name="Templates.File.PRISMViewAndViewModelUnity.Description" xml:space="preserve">
+    <value>Creates a View for a PRISM Module with an according ViewModel.</value>
+  </data>
+  <data name="Templates.File.PRISMViewAndViewModelUnity.Name" xml:space="preserve">
+    <value>PRISM View and ViewModel (Unity)</value>
+  </data>
+  <data name="Templates.File.PRISMViewModelUnity.Description" xml:space="preserve">
+    <value>Creates a ViewModel for a PRISM Module.</value>
+  </data>
+  <data name="Templates.File.PRISMViewModelUnity.Name" xml:space="preserve">
+    <value>PRISM ViewModel (Unity)</value>
+  </data>
+  <data name="Templates.File.PRISMViewUnity.Description" xml:space="preserve">
+    <value>Creates a View for a PRISM Module.</value>
+  </data>
+  <data name="Templates.File.PRISMViewUnity.Name" xml:space="preserve">
+    <value>PRISM View (Unity)</value>
+  </data>
   <data name="Templates.File.Properties.AddIFDEFTest" xml:space="preserve">
     <value>Add '#if TEST ... #endif'</value>
   </data>
@@ -7065,6 +7089,24 @@ The resources files have been renamed/moved accordingly.</value>
   </data>
   <data name="Templates.Project.PortableLibrary.Name" xml:space="preserve">
     <value>Portable Class Library</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationSmallUnity.Description" xml:space="preserve">
+    <value>Creates a small PRISM Application with Bootstrapper and Infrastructure.</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationSmallUnity.Name" xml:space="preserve">
+    <value>PRISM Application - small (Unity)</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationUnity.Description" xml:space="preserve">
+    <value>Creates a PRISM Application with Bootstrapper and Infrastructure.</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationUnity.Name" xml:space="preserve">
+    <value>PRISM Application (Unity)</value>
+  </data>
+  <data name="Templates.Project.PRISMModuleUnity.Description" xml:space="preserve">
+    <value>Creates a PRISM Module with a View and an according ViewModel.</value>
+  </data>
+  <data name="Templates.Project.PRISMModuleUnity.Name" xml:space="preserve">
+    <value>PRISM Module (Unity)</value>
   </data>
   <data name="Templates.Project.SetupProject.Description" xml:space="preserve">
     <value>A windows installer project for creating a MSI installer.</value>

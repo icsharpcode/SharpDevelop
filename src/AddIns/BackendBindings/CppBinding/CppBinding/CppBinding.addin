@@ -14,8 +14,7 @@
 	</Manifest>
 	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/C++">
-	
-		<OptionPanel id = "Application1"
+		<OptionPanel id = "Application"
 		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
 		             class = "ICSharpCode.CppBinding.Project.ApplicationOptions" />
 		

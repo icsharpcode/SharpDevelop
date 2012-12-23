@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeProperty : CodeElement
+	public class CodeProperty : CodeElement, global::EnvDTE.CodeProperty
 	{
 		public CodeProperty()
 		{
@@ -20,28 +20,28 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		protected IProperty Property { get; private set; }
 		
-		public override vsCMElement Kind {
-			get { return vsCMElement.vsCMElementProperty; }
+		public override global::EnvDTE.vsCMElement Kind {
+			get { return global::EnvDTE.vsCMElement.vsCMElementProperty; }
 		}
 		
-		public virtual vsCMAccess Access {
+		public virtual global::EnvDTE.vsCMAccess Access {
 			get { return GetAccess(); }
 			set { }
 		}
 		
-		public virtual CodeClass Parent {
+		public virtual global::EnvDTE.CodeClass Parent {
 			get { return new CodeClass(Property.ProjectContent, Property.DeclaringType); }
 		}
 		
-		public virtual CodeElements Attributes {
+		public virtual global::EnvDTE.CodeElements Attributes {
 			get { return new CodeAttributes(Property); }
 		}
 		
-		public virtual CodeTypeRef Type {
+		public virtual global::EnvDTE.CodeTypeRef Type {
 			get { return new CodeTypeRef2(Property.ProjectContent, this, Property.ReturnType); }
 		}
 		
-		public virtual CodeFunction Getter {
+		public virtual global::EnvDTE.CodeFunction Getter {
 			get { return GetGetter(); }
 		}
 		
@@ -53,7 +53,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return null;
 		}
 		
-		public virtual CodeFunction Setter {
+		public virtual global::EnvDTE.CodeFunction Setter {
 			get { return GetSetter(); }
 		}
 		

@@ -97,12 +97,14 @@
 				<optionpanels:StorageLocationPicker Location="{Binding PreBuildEvent.Location}" DockPanel.Dock="Left" />
 				
 				<ComboBox x:Name="applicationManifestComboBox"  VerticalAlignment="Center" Width="200"
+				          IsEditable="True"
 				          SelectionChanged="ApplicationManifestComboBox_SelectionChanged" ></ComboBox>
 			</widgets:StackPanelWithSpacing>
 			
 			<GroupBox Grid.Row="9" Grid.ColumnSpan="3" Margin="0,5,0,0"
 			          Header="{core:Localize Dialog.ProjectOptions.ApplicationSettings.ProjectInformation}">
-				<Grid Margin="15,0,0,0" >
+				<optionpanels:ProjectInformation x:Name="projectInformation"></optionpanels:ProjectInformation>
+				<!--<Grid Margin="15,0,0,0" >
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"></RowDefinition>
 						<RowDefinition Height="Auto"></RowDefinition>
@@ -127,7 +129,7 @@
 					
 					<TextBox x:Name="outputNameTextBox" VerticalAlignment="Center"
 					         Grid.Row="2" Grid.Column="1"></TextBox>
-				</Grid>
+				</Grid>-->
 			</GroupBox>
 		</Grid>
 	</ScrollViewer>

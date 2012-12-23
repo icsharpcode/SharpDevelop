@@ -57,6 +57,8 @@ namespace ICSharpCode.AvalonEdit.Search
 			: base(textArea)
 		{
 			RegisterCommands(this.CommandBindings);
+			panel = new SearchPanel();
+			panel.Attach(TextArea);
 		}
 		
 		void RegisterCommands(ICollection<CommandBinding> commandBindings)
@@ -71,9 +73,8 @@ namespace ICSharpCode.AvalonEdit.Search
 		
 		void ExecuteFind(object sender, ExecutedRoutedEventArgs e)
 		{
-			if (panel == null || panel.IsClosed) {
-				panel = new SearchPanel();
-				panel.Attach(TextArea);
+			if (panel.IsClosed) {
+				panel.Open();
 			}
 			panel.SearchPattern = TextArea.Selection.GetText();
 			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Input, (Action)delegate { panel.Reactivate(); });
@@ -81,21 +82,25 @@ namespace ICSharpCode.AvalonEdit.Search
 		
 		void ExecuteFindNext(object sender, ExecutedRoutedEventArgs e)
 		{
-			if (panel != null)
-				panel.FindNext();
+			panel.FindNext();
 		}
 		
 		void ExecuteFindPrevious(object sender, ExecutedRoutedEventArgs e)
 		{
-			if (panel != null)
-				panel.FindPrevious();
+			panel.FindPrevious();
 		}
 		
 		void ExecuteCloseSearchPanel(object sender, ExecutedRoutedEventArgs e)
 		{
-			if (panel != null)
-				panel.Close();
-			panel = null;
+			panel.Close();
+		}
+		
+		/// <summary>
+		/// Fired when SearchOptions are modified inside the SearchPanel.
+		/// </summary>
+		public event EventHandler<SearchOptionsChangedEventArgs> SearchOptionsChanged {
+			add { panel.SearchOptionsChanged += value; }
+			remove { panel.SearchOptionsChanged -= value; }
 		}
 	}
 }

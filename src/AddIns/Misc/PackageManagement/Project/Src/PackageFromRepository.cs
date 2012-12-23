@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Versioning;
 
 using NuGet;
 
@@ -162,6 +163,11 @@ namespace ICSharpCode.PackageManagement
 		
 		public IEnumerable<PackageDependencySet> DependencySets {
 			get { return package.DependencySets; }
+		}
+		
+		public IEnumerable<FrameworkName> GetSupportedFrameworks()
+		{
+			return package.GetSupportedFrameworks();
 		}
 	}
 }

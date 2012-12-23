@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Reference3 : Reference
+	public class Reference3 : Reference, global::EnvDTE.Reference3
 	{
 		public Reference3(Project project, ReferenceProjectItem referenceProjectItem)
 			: base(project, referenceProjectItem)

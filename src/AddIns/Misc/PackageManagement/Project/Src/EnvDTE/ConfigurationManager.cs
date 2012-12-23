@@ -5,7 +5,7 @@ using System;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class ConfigurationManager : MarshalByRefObject
+	public class ConfigurationManager : MarshalByRefObject, global::EnvDTE.ConfigurationManager
 	{
 		Configuration activeConfiguration;
 		
@@ -14,7 +14,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			activeConfiguration = new Configuration(project);
 		}
 		
-		public Configuration ActiveConfiguration {
+		public global::EnvDTE.Configuration ActiveConfiguration {
 			get { return activeConfiguration; }
 		}
 	}

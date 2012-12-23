@@ -6,81 +6,68 @@
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
 	<Grid>
+
 		<Grid.RowDefinitions>
-			<RowDefinition
-				Height="30"></RowDefinition>
-			<RowDefinition
-				Height="30"></RowDefinition>
-			<RowDefinition
-				Height="30"></RowDefinition>
-			<RowDefinition
-				Height="30"></RowDefinition>
-			<RowDefinition Height="150"></RowDefinition>
+			<RowDefinition Height="30"></RowDefinition>
+			<RowDefinition Height="30"></RowDefinition>
+			<RowDefinition Height="30"></RowDefinition>
+			<RowDefinition Height="30"></RowDefinition>
+			<RowDefinition ></RowDefinition>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition
-				Width="300"></ColumnDefinition>
-			<ColumnDefinition
-				Width="40"></ColumnDefinition>
+			<ColumnDefinition ></ColumnDefinition>
+			<ColumnDefinition Width="60"></ColumnDefinition>
 		</Grid.ColumnDefinitions>
-		<Label
-			x:Name="title"
-			Content="Title"></Label>
-		<TextBox
-			x:Name="editTextBox"
-			Margin="5,3,5,3"
-			TextChanged="EditTextBox_TextChanged"
-			Grid.Row="1"></TextBox>
-		<Button
-			x:Name="browseButton"
+		
+		<Label Content="{Binding TitleText}"></Label>
+			
+		<TextBox x:Name="editTextBox" Grid.Row="1" Margin="5,3,5,3"
+			TextChanged="EditTextBox_TextChanged">
+		</TextBox>
+			
+		
+		<Button x:Name="browseButton" Grid.Column="1" Grid.Row="1" Margin="5,3,5,3"
 			Content="..."
 			Visibility="Hidden"
-			Margin="0,3,5,0"
-			Grid.Column="1"
-			Grid.Row="1"
-			Click="BrowseButtonClick"
-			 />
-		<widgets:StackPanelWithSpacing
-			Orientation="Horizontal"
-			Margin="5,3,5,3"
-			SpaceBetweenItems="5"
-			Grid.Row="2">
-			<Button
-				x:Name="addButton"
-				IsEnabled="False"
+			Click="BrowseButtonClick">
+		</Button>
 			
-				Click="AddButton_Click"
-				Content="{core:Localize Global.AddButtonText}"
-				Style="{x:Static core:GlobalStyles.ButtonStyle}"></Button>
-			<Button
-				x:Name="updateButton"
+		<widgets:StackPanelWithSpacing Orientation="Horizontal" Grid.Row="2" Margin="5,3,5,3" SpaceBetweenItems="5">
+			
+			<Button x:Name="addButton"
 				IsEnabled="False"
-				
+				Click="AddButton_Click"
+				Content="{core:Localize Dialog.ProjectOptions.ReferencePaths.AddPath}"
+				Style="{x:Static core:GlobalStyles.ButtonStyle}">
+			</Button>
+		
+			<Button x:Name="updateButton"
+				IsEnabled="False"
 				Click="UpdateButton_Click"
 				Content="{core:Localize Global.UpdateButtonText}"
-				Style="{x:Static core:GlobalStyles.ButtonStyle}"></Button>
-			<Button
-				x:Name="removeButton"
-				Visibility="Hidden"
+				Style="{x:Static core:GlobalStyles.ButtonStyle}">
+			</Button>
 			
+			<Button x:Name="removeButton" Margin="5,3,5,3"
+				Visibility="Hidden"
 				Content="{core:Localize Global.DeleteButtonText}"
-				Style="{x:Static core:GlobalStyles.ButtonStyle}"></Button>
-		</widgets:StackPanelWithSpacing>
-		<Label
-			x:Name="listlabel"
-			Grid.Row="3"
-			Content="List"></Label>
-		<ListBox
-			x:Name="listBox"
-			Margin="5,3,5,3"
-			SelectionChanged="ListBox_SelectionChanged"
-			Grid.Row="4"></ListBox>
-	<widgets:StackPanelWithSpacing Orientation="Vertical" SpaceBetweenItems="5"
-Grid.Row="4" Grid.Column="1">
+				Style="{x:Static core:GlobalStyles.ButtonStyle}">
+			</Button>
 		
-		<Button Content="b1" x:Name="moveUpButton" Click="MoveUpButtonClick"></Button>
-		<Button Content="b2" x:Name="moveDownButton" Click="MoveDownButtonClick"></Button>
-		<Button Content="b3" x:Name="deleteButton" Click="RemoveButtonClick"></Button>
+		</widgets:StackPanelWithSpacing>
+		
+		<Label Grid.Row="3"
+		       Content="{Binding ListCaption}">
+		</Label>
+			
+		<ListBox x:Name="listBox"  Grid.Row="4" Margin="5,3,5,3"
+		         SelectionChanged="ListBox_SelectionChanged">
+		</ListBox>
+		
+		<widgets:StackPanelWithSpacing Orientation="Vertical" Grid.Row="4" Grid.Column="1" SpaceBetweenItems="5">
+			<Button  x:Name="moveUpButton" Margin="5,3,5,0" Click="MoveUpButtonClick"></Button>
+			<Button  x:Name="moveDownButton" Margin="5,0,5,0" Click="MoveDownButtonClick"></Button>
+			<Button  x:Name="deleteButton" Margin="5,0,5,0" Click="RemoveButtonClick"></Button>
 		</widgets:StackPanelWithSpacing>
 	</Grid>
 </UserControl>

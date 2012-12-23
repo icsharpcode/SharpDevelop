@@ -1,0 +1,122 @@
+﻿<UserControl x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildAdvanced"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+			 xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels">
+
+	<UserControl.Resources>
+		<optionpanels:StorageLocationConverter x:Key="converter" />
+	</UserControl.Resources>
+	
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto"></ColumnDefinition>
+			<ColumnDefinition Width="Auto"></ColumnDefinition>
+			<ColumnDefinition MinWidth="120"></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition Width="50"></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		
+		<optionpanels:StorageLocationPicker Grid.Row="1" VerticalAlignment="Center">
+			<optionpanels:StorageLocationPicker.Location>
+				<MultiBinding Converter="{StaticResource converter}">
+					<Binding Path="RegisterForComInterop.Location" />
+					<Binding Path="GenerateSerializationAssemblies.Location" />
+					<Binding Path="PlatformTarget.Location" />
+					<Binding Path="Prefer32Bit.Location" />
+					<Binding Path="FileAlignment.Location" />
+					<Binding Path="BaseAddress.Location" />
+				</MultiBinding>
+			</optionpanels:StorageLocationPicker.Location>
+		</optionpanels:StorageLocationPicker>
+		
+		<!--x:Name="registerCOMInteropCheckBox"-->
+		<CheckBox Grid.Column="2"
+		          IsChecked="{Binding RegisterForComInterop.Value}"
+		          Content="{core:Localize Dialog.ProjectOptions.Build.RegisterForCOM}"></CheckBox>
+		
+		<Label Grid.Row="1" Grid.Column="1"
+		       HorizontalAlignment="Right"
+		       Content="{core:Localize Dialog.ProjectOptions.Build.GenerateSerializationAssembly}"></Label>
+		
+		<!--x:Name="generateSerializationAssemblyComboBox"-->
+		<ComboBox  Grid.Row="1" Grid.Column="2"
+		          VerticalAlignment="Center"
+		          ItemsSource="{Binding Path=DataContext.SerializationInfo}"
+		          SelectedValue="{Binding Path=GenerateSerializationAssemblies.Value}"
+		          DisplayMemberPath="DisplayValue"
+		          SelectedValuePath="Key"></ComboBox>
+		
+		<Label Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right"
+		       Content="{core:Localize Dialog.ProjectOptions.Build.TargetCPU}"></Label>
+		
+		<ComboBox x:Name="targetCpuComboBox"
+		          Grid.Row="2" Grid.Column="2" VerticalAlignment="Center"
+		          ItemsSource="{Binding Path=DataContext.TargetCPU}"
+		          SelectionChanged="TargetCpuComboBox_SelectionChanged"
+		          DisplayMemberPath="DisplayValue"
+		          SelectedValuePath="Key"></ComboBox>
+		
+		<Label Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right"
+		       Content="{core:Localize Dialog.ProjectOptions.Build.FileAlignment}"></Label>
+		
+		<!--x:Name="fileAlignmentComboBox"-->
+		<ComboBox Grid.Row="3" Grid.Column="2" VerticalAlignment="Center"
+		          ItemsSource="{Binding Path=DataContext.FileAlign}"
+		          SelectedValue="{Binding Path=FileAlignment.Value}"
+		          DisplayMemberPath="DisplayValue"
+		          SelectedValuePath="Key"></ComboBox>
+		
+		<Label Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right"
+		       Content="{core:Localize Dialog.ProjectOptions.Build.DLLBaseAddress}"></Label>
+		
+		
+		<!--x:Name="dllBaseAddressTextBox"-->
+		<TextBox  Grid.Row="4" Grid.Column="2"
+		         Text="{Binding DllBaseAddress, UpdateSourceTrigger=PropertyChanged}">
+		
+		</TextBox>
+		
+		
+		<!-- location multibinding -->
+		<Label Grid.Row="6" Grid.ColumnSpan="2"
+		       Content="{core:Localize Dialog.ProjectOptions.Build.BaseIntermediateOutputPath}"></Label>
+		
+		<optionpanels:StorageLocationPicker Grid.Row="7"
+			Location="{Binding BaseIntermediateOutputPath.Location}"
+			DockPanel.Dock="Left" />
+		
+		<TextBox x:Name="baseIntermediateOutputPathTextBox" Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3"
+		         Text="{Binding BaseIntermediateOutputPath.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+		
+		<Button Grid.Row="7" Grid.Column="4" Margin="3,0,3,0"
+		        Content="..."
+		        VerticalAlignment="Center"
+		        Command="{Binding BaseIntermediateOutputPathCommand}"></Button>
+		
+		<Label Grid.Row="8" Grid.ColumnSpan="2" Content="{core:Localize Dialog.ProjectOptions.Build.IntermediateOutputPath}"></Label>
+		
+		<optionpanels:StorageLocationPicker Grid.Row="9" DockPanel.Dock="Left"
+			Location="{Binding IntermediateOutputPath.Location}"/>
+		
+		<TextBox x:Name="intermediateOutputPathTextBox" Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="3"
+		         Text="{Binding IntermediateOutputPath.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+		
+		<Button Grid.Row="9" Grid.Column="4" Margin="3,0,3,0"
+		        Content="..."
+		        VerticalAlignment="Center"
+		        Command="{Binding IntermediateOutputPathCommand}"></Button>
+	</Grid>
+</UserControl>

@@ -16,7 +16,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public ChildProjectItems(ProjectItem projectItem)
 		{
 			this.ProjectItem = projectItem;
-			this.Project = projectItem.ContainingProject;
+			this.Project = (Project)projectItem.ContainingProject;
 			this.ProjectItems = new List<ProjectItem>();
 		}
 		
@@ -24,14 +24,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		Project Project { get; set; }
 		List<ProjectItem> ProjectItems { get; set; }
 		
-		protected override IEnumerable<ProjectItem> GetProjectItems()
+		protected override IEnumerable<global::EnvDTE.ProjectItem> GetProjectItems()
 		{
 			foreach (SD.ProjectItem msbuildProjectItem in Project.MSBuildProject.Items) {
 				ProjectItem item = GetChildProjectItem(msbuildProjectItem);
 				if (!IgnoreChildProjectItem(item)) {
 					yield return item;
 				}
-			}	
+			}
 		}
 		
 		ProjectItem GetChildProjectItem(SD.ProjectItem msbuildProjectItem)

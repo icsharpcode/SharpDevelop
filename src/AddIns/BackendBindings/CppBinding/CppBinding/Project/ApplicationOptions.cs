@@ -1,10 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 01.04.2012
- * Time: 17:16
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,57 +27,19 @@ namespace ICSharpCode.CppBinding.Project
 		private const string iconsfilter = "${res:SharpDevelop.FileFilter.Icons}|*.ico|${res:SharpDevelop.FileFilter.AllFiles}|*.*";
 		private const string manifestFilter = "${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.ManifestFiles}|*.manifest|${res:SharpDevelop.FileFilter.AllFiles}|*.*";
 		private const string win32filter = "Win32 Resource files|*.res|${res:SharpDevelop.FileFilter.AllFiles}|*.*";
-		MSBuildBasedProject project;
 		
 		public ApplicationOptions()
 		{
 			InitializeComponent();
+			this.DataContext = this;
 		}
 		
-		#region Initialize
-		
-		private void Initialize()
-		{
-			
-			foreach (var c in GetPossibleStartupObjects(project)) {
-				startupObjectComboBox.Items.Add(c.FullName);
-			}
-
-			//this.outputTypeComboBox.SelectedValue = OutputType.Value.ToString();
-			
-			SetOutputTypeCombo();
-			
-			FillManifestCombo();
-			
-			// embedding manifests requires the project to target MSBuild 3.5 or higher
-			project_MinimumSolutionVersionChanged(null, null);
-			// re-evluate if the project has the minimum version whenever this options page gets visible
-			// because the "convert project" button on the compiling tab page might have updated the MSBuild version.
-			project.MinimumSolutionVersionChanged += project_MinimumSolutionVersionChanged;
-			
-			projectFolderTextBox.Text = project.Directory;
-			projectFileTextBox.Text = Path.GetFileName(project.FileName);
-			
-			//OptionBinding
-			RefreshStartupObjectEnabled(this, EventArgs.Empty);
-			RefreshOutputNameTextBox(this, null);
-			
-			//SetApplicationIcon();
-			this.applicationIconTextBox.Text = GetApplicationIconPathFromResourceScripts();
-			ApplicationIconTextBox_TextChanged(this,null);
-			IsDirty = false;
-			this.applicationIconTextBox.TextChanged += ApplicationIconTextBox_TextChanged;
-			
-			this.startupObjectComboBox.SelectionChanged += (s,e) => {IsDirty = true;};
-			this.outputTypeComboBox.SelectionChanged += OutputTypeComboBox_SelectionChanged;
-		}
-
-		
+	
 		void SetOutputTypeCombo()
 		{
-			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(project, project.ActiveConfiguration, project.ActivePlatform);
+			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(base.Project, base.Project.ActiveConfiguration, base.Project.ActivePlatform);
 			string subsystem = group.GetElementMetadata("Link", "SubSystem");
-			string configurationType = project.GetEvaluatedProperty("ConfigurationType");
+			string configurationType = base.Project.GetEvaluatedProperty("ConfigurationType");
 			OutputType validOutputType = ConfigurationTypeToOutputType(configurationType, subsystem);
 			this.outputTypeComboBox.SelectedIndex = Array.IndexOf((OutputType[])Enum.GetValues(typeof(OutputType)), validOutputType);
 		}
@@ -91,7 +49,7 @@ namespace ICSharpCode.CppBinding.Project
 		{
 			applicationManifestComboBox.Items.Add(StringParser.Parse("${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.EmbedDefault}"));
 			applicationManifestComboBox.Items.Add(StringParser.Parse("${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.DoNotEmbedManifest}"));
-			foreach (string fileName in Directory.GetFiles(project.Directory, "*.manifest")) {
+			foreach (string fileName in Directory.GetFiles(base.Project.Directory, "*.manifest")) {
 				applicationManifestComboBox.Items.Add(Path.GetFileName(fileName));
 			}
 			applicationManifestComboBox.Items.Add(StringParser.Parse("<${res:Global.CreateButtonText}...>"));
@@ -103,11 +61,9 @@ namespace ICSharpCode.CppBinding.Project
 		void project_MinimumSolutionVersionChanged(object sender, EventArgs e)
 		{
 			// embedding manifests requires the project to target MSBuild 3.5 or higher
-			applicationManifestComboBox.IsEnabled = project.MinimumSolutionVersion >= Solution.SolutionVersionVS2008;
+			applicationManifestComboBox.IsEnabled = base.Project.MinimumSolutionVersion >= Solution.SolutionVersionVS2008;
 		}
 		
-		
-		#endregion
 		
 		#region Properties
 		
@@ -149,13 +105,48 @@ namespace ICSharpCode.CppBinding.Project
 		
 		#region overrides
 		
-		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
+		protected override void Initialize()
 		{
-			base.Load(project, configuration, platform);
-			this.project = project;
-			Initialize();
+			base.Initialize();
+			
+			foreach (var c in GetPossibleStartupObjects(base.Project)) {
+				startupObjectComboBox.Items.Add(c.FullName);
+			}
+			
+			SetOutputTypeCombo();
+			
+			FillManifestCombo();
+			
+			// embedding manifests requires the project to target MSBuild 3.5 or higher
+			project_MinimumSolutionVersionChanged(null, null);
+			// re-evluate if the project has the minimum version whenever this options page gets visible
+			// because the "convert project" button on the compiling tab page might have updated the MSBuild version.
+			base.Project.MinimumSolutionVersionChanged += project_MinimumSolutionVersionChanged;
+			
+			this.projectInformation.ProjectFolder = base.BaseDirectory;
+			this.projectInformation.ProjectFile = Path.GetFileName(base.Project.FileName);
+			
+			//OptionBinding
+			RefreshStartupObjectEnabled(this, EventArgs.Empty);
+			RefreshOutputNameTextBox(this, null);
+			
+			//SetApplicationIcon();
+			this.applicationIconTextBox.Text = GetApplicationIconPathFromResourceScripts();
+			ApplicationIconTextBox_TextChanged(this,null);
+			
+			this.applicationIconTextBox.TextChanged += ApplicationIconTextBox_TextChanged;
+			
+			this.startupObjectComboBox.SelectionChanged += (s,e) => {IsDirty = true;};
+			this.outputTypeComboBox.SelectionChanged += OutputTypeComboBox_SelectionChanged;
+			IsDirty = false;
 		}
 		
+		public override void Dispose()
+		{
+			base.Project.MinimumSolutionVersionChanged -= project_MinimumSolutionVersionChanged;
+			base.Dispose();
+		}
+
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
@@ -180,8 +171,8 @@ namespace ICSharpCode.CppBinding.Project
 			OutputType outputType = values[this.outputTypeComboBox.SelectedIndex];
 			
 			string subsystem = OutputTypeToSubsystem(outputType);
-			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(project,
-			                                                                  project.ActiveConfiguration, project.ActivePlatform);
+			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(base.Project,
+			                                                                  base.Project.ActiveConfiguration, base.Project.ActivePlatform);
 			group.SetElementMetadata("Link", "SubSystem", subsystem);
 			
 			return OutputTypeToConfigurationType(outputType);
@@ -252,7 +243,7 @@ namespace ICSharpCode.CppBinding.Project
 		{
 			if (this.outputTypeComboBox.SelectedValue != null) {
 				var enmType = (OutputType) Enum.Parse(typeof(OutputType),this.outputTypeComboBox.SelectedValue.ToString());
-				this.outputNameTextBox.Text = this.assemblyNameTextBox.Text + CompilableProject.GetExtension(enmType);
+				this.projectInformation.OutputTypeName = this.assemblyNameTextBox.Text + CompilableProject.GetExtension(enmType);
 			}
 		}
 		
@@ -292,7 +283,7 @@ namespace ICSharpCode.CppBinding.Project
 		string GetApplicationIconPathFromResourceScripts() {
 			foundIconEntry = null;
 			iconResourceScriptPath = null;
-			IEnumerable <ProjectItem> resourceScripts = project.Items.Where(
+			IEnumerable <ProjectItem> resourceScripts =base.Project .Items.Where(
 						item => item is FileProjectItem && ((FileProjectItem)item).BuildAction == "ResourceCompile");			
 			
 			// search in all resource scripts, but due to limitation in resource compiler, only one of them can contain icons
@@ -326,7 +317,7 @@ namespace ICSharpCode.CppBinding.Project
 			}
 			else
 			{
-				iconResourceScriptPath = AddResourceScriptToProject(project, DEFAULT_RC_NAME);
+				iconResourceScriptPath = AddResourceScriptToProject(base.Project, DEFAULT_RC_NAME);
 				rc = new ResourceScript();
 				newIconId = DEFAULT_ICON_ID;
 			}
@@ -346,20 +337,16 @@ namespace ICSharpCode.CppBinding.Project
 		
 		void ApplicationIconButton_Click(object sender, RoutedEventArgs e)
 		{
-			string fileName = OptionsHelper.OpenFile(iconsfilter);
-			if (!String.IsNullOrEmpty(fileName))
-			{
-				this.applicationIconTextBox.Text = fileName;
-			}
+			BrowseForFile(ApplicationIcon, iconsfilter);
 		}
 		
 		
 		void ApplicationIconTextBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
-			if (project != null) {
+			if (base.Project != null) {
 				if(FileUtility.IsValidPath(this.applicationIconTextBox.Text))
 				{
-					string appIconPath = Path.Combine(project.Directory, this.applicationIconTextBox.Text);
+					string appIconPath = Path.Combine(base.Project.Directory, this.applicationIconTextBox.Text);
 					Console.WriteLine(appIconPath);
 					var b = File.Exists(appIconPath);
 					if (File.Exists(appIconPath)) {
@@ -388,7 +375,6 @@ namespace ICSharpCode.CppBinding.Project
 					}
 				}
 			}
-			
 		}
 		
 		#endregion
@@ -402,22 +388,18 @@ namespace ICSharpCode.CppBinding.Project
 			} else if (applicationManifestComboBox.SelectedIndex == applicationManifestComboBox.Items.Count - 1) {
 				BrowseForManifest();
 			}
+			IsDirty = true;
 		}
 		
 		
 		void BrowseForManifest()
 		{
-			applicationManifestComboBox.SelectedIndex = -1;
-			var fileName = OptionsHelper.OpenFile(manifestFilter);
-			if (!String.IsNullOrEmpty(fileName)) {
-				this.applicationManifestComboBox.Items.Insert(0,fileName);
-				this.applicationManifestComboBox.SelectedIndex = 0;
-			}
+			BrowseForFile(ApplicationManifest, manifestFilter);
 		}
 		
 		void CreateManifest()
 		{
-			string manifestFile = Path.Combine(project.Directory, "app.manifest");
+			string manifestFile = Path.Combine(base.Project.Directory, "app.manifest");
 			if (!File.Exists(manifestFile)) {
 				string defaultManifest;
 				using (Stream stream = typeof(ApplicationSettings).Assembly.GetManifestResourceStream("Resources.DefaultManifest.manifest")) {
@@ -432,10 +414,10 @@ namespace ICSharpCode.CppBinding.Project
 				FileService.FireFileCreated(manifestFile, false);
 			}
 			
-			if (!project.IsFileInProject(manifestFile)) {
-				FileProjectItem newItem = new FileProjectItem(project, ItemType.None);
+			if (!base.Project.IsFileInProject(manifestFile)) {
+				FileProjectItem newItem = new FileProjectItem(base.Project, ItemType.None);
 				newItem.Include = "app.manifest";
-				ProjectService.AddProjectItem(project, newItem);
+				ProjectService.AddProjectItem(base.Project, newItem);
 				ProjectBrowserPad.RefreshViewAsync();
 			}
 			

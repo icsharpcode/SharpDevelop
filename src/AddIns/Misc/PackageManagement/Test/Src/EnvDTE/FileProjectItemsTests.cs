@@ -37,7 +37,7 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateFileProjectItemsFromFileInProjectFolder(string include)
 		{
-			DTE.ProjectItem projectItem = project.ProjectItems.Item(include);
+			DTE.ProjectItem projectItem = (DTE.ProjectItem)project.ProjectItems.Item(include);
 			fileProjectItems = new DTE.FileProjectItems(projectItem, fakeFileService);
 		}
 		
@@ -70,7 +70,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateFileProjectItemsFromFileInProjectFolder("MainForm.cs");
 			string fileName = @"d:\projects\myproject\MainForm.Designer.cs";
 			
-			DTE.ProjectItem itemAdded = fileProjectItems.AddFromFile(fileName);
+			global::EnvDTE.ProjectItem itemAdded = fileProjectItems.AddFromFile(fileName);
 			
 			string fullPath = (string)itemAdded.Properties.Item("FullPath").Value;
 			Assert.AreEqual("MainForm.Designer.cs", itemAdded.Name);

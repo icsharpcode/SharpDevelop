@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  <copyright file="firewall.xsd" company="Outercurve Foundation">
+    Copyright (c) 2004, Outercurve Foundation.
+    This software is released under Microsoft Reciprocal License (MS-RL).
+    The license and further copyright text can be found in the file
+    LICENSE.TXT at the root directory of the distribution.
+  </copyright>
+-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
           xmlns:xse="http://schemas.microsoft.com/wix/2005/XmlSchemaExtension"
          xmlns:html="http://www.w3.org/1999/xhtml"
@@ -6,16 +14,6 @@
               xmlns="http://schemas.microsoft.com/wix/FirewallExtension">
     <xs:annotation>
         <xs:documentation>
-            Copyright (c) Microsoft Corporation.  All rights reserved.
-            
-            The use and distribution terms for this software are covered by the
-            Common Public License 1.0 (http://opensource.org/licenses/cpl1.0.php)
-            which can be found in the file CPL.TXT at the root of this distribution.
-            By using this software in any fashion, you are agreeing to be bound by
-            the terms of this license.
-            
-            You must not remove this notice, or any other, from this software.
-
             The source code schema for the Windows Installer XML Toolset Firewall Extension.
         </xs:documentation>
     </xs:annotation>
@@ -85,8 +83,12 @@
             <xs:attribute name="Port" type="xs:string">
                 <xs:annotation>
                     <xs:documentation>
-                        Port to allow through the firewall for this exception. If you use Port, you 
-                        cannot also use File or Program.
+                        Port to allow through the firewall for this exception. 
+
+                        If you use Port and also File or Program in the same 
+                        FirewallException element, the exception will fail to install on 
+                        Windows XP and Windows Server 2003. IgnoreFailure="yes" can be used to
+                        ignore the resulting failure, but the exception will not be added.
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
@@ -94,9 +96,13 @@
             <xs:attribute name="Protocol">
                 <xs:annotation>
                     <xs:documentation>
-                        IP protocol used for this firewall exception. If not specified, "tcp" is 
-                        assumed. If you use Protocol, you must also specify Port and you cannot 
-                        also use File or Program.
+                        IP protocol used for this firewall exception. If Port is defined, 
+                        "tcp" is assumed if the protocol is not specified. 
+
+                        If you use Protocol and also File or Program in the same 
+                        FirewallException element, the exception will fail to install on 
+                        Windows XP and Windows Server 2003. IgnoreFailure="yes" can be used to
+                        ignore the resulting failure, but the exception will not be added.
                     </xs:documentation>
                 </xs:annotation>
                 <xs:simpleType>
@@ -111,7 +117,12 @@
                 <xs:annotation>
                     <xs:documentation>
                         Identifier of a file to be granted access to all incoming ports and 
-                        protocols. If you use File, you cannot also use Program, Port, or Protocol.
+                        protocols. If you use File, you cannot also use Program.
+
+                        If you use File and also Port or Protocol in the same 
+                        FirewallException element, the exception will fail to install on 
+                        Windows XP and Windows Server 2003. IgnoreFailure="yes" can be used to
+                        ignore the resulting failure, but the exception will not be added.
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
@@ -122,7 +133,12 @@
                         Path to a target program to be granted access to all incoming ports and 
                         protocols. Note that this is a formatted field, so you can use [#fileId] 
                         syntax to refer to a file being installed. If you use Program, you cannot 
-                        also use File, Port, or Protocol.
+                        also use File.
+
+                        If you use Program and also Port or Protocol in the same 
+                        FirewallException element, the exception will fail to install on 
+                        Windows XP and Windows Server 2003. IgnoreFailure="yes" can be used to
+                        ignore the resulting failure, but the exception will not be added.
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
@@ -151,7 +167,14 @@
                 </xs:restriction>
               </xs:simpleType>
             </xs:attribute>
-          
+            <xs:attribute name="Description" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                      Description for this firewall rule displayed in Windows Firewall manager in 
+                      Windows Vista and later.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
         </xs:complexType>
     </xs:element>
 

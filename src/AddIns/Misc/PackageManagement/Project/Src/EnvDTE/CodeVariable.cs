@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeVariable : CodeElement
+	public class CodeVariable : CodeElement, global::EnvDTE.CodeVariable
 	{
 		IField field;
 		IDocumentLoader documentLoader;
@@ -27,21 +27,21 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.documentLoader = documentLoader;
 		}
 		
-		public override vsCMElement Kind {
-			get { return vsCMElement.vsCMElementVariable; }
+		public override global::EnvDTE.vsCMElement Kind {
+			get { return global::EnvDTE.vsCMElement.vsCMElementVariable; }
 		}
 		
-		public vsCMAccess Access {
+		public global::EnvDTE.vsCMAccess Access {
 			get { return GetAccess(); }
 			set { }
 		}
 		
-		public override TextPoint GetStartPoint()
+		public override global::EnvDTE.TextPoint GetStartPoint()
 		{
 			return new TextPoint(field.GetStartPosition(), documentLoader);
 		}
 		
-		public override TextPoint GetEndPoint()
+		public override global::EnvDTE.TextPoint GetEndPoint()
 		{
 			return new TextPoint(field.GetEndPosition(), documentLoader);
 		}

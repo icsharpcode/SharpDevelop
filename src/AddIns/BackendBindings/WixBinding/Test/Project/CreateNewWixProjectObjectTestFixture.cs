@@ -69,58 +69,35 @@ namespace WixBinding.Tests.Project
 				Assert.AreEqual(WixProject.DefaultTargetsFile, project.MSBuildProjectFile.Imports.Single().Project);
 			}
 		}
-		
-		[Test]
-		public void WixToolPath()
-		{
-			Assert.AreEqual(@"$(SharpDevelopBinPath)\Tools\Wix", project.GetUnevalatedProperty("WixToolPath"));
-		}
-		
-		[Test]
-		public void WixToolPathCondition()
-		{
-			ProjectPropertyElement property = GetMSBuildProperty("WixToolPath");
-			Assert.AreEqual(" '$(WixToolPath)' == '' ", property.Condition);
-		}
-		
-		[Test]
-		public void ToolPathDoesNotExist()
-		{
-			Assert.IsNull(project.GetUnevalatedProperty("ToolPath"));
-		}
-		
-		[Test]
-		public void WixMSBuildExtensionsPathShouldNotExist()
-		{
-			Assert.IsNull(project.GetUnevalatedProperty("WixMSBuildExtensionsPath"));
-		}
-		
-		[Test]
-		public void WixTargetsPath()
-		{
-			Assert.AreEqual(@"$(WixToolPath)\wix.targets", project.GetUnevalatedProperty("WixTargetsPath"));
-		}
 
 		[Test]
-		public void WixTargetsPathCondition()
+		public void FirstWixTargetsPathCondition()
 		{
 			ProjectPropertyElement property = GetMSBuildProperty("WixTargetsPath");
+			Assert.AreEqual(" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ", property.Condition);
+		}
+
+		[Test]
+		public void FirstWixTargetsPathValue()
+		{
+			ProjectPropertyElement property = GetMSBuildProperty("WixTargetsPath");
+			Assert.AreEqual(@"$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets", property.Value);
+		}
+		
+		[Test]
+		public void LastWixTargetsPathCondition()
+		{
+			ProjectPropertyElement property = GetLastMSBuildProperty("WixTargetsPath");
 			Assert.AreEqual(" '$(WixTargetsPath)' == '' ", property.Condition);
 		}
-
+		
 		[Test]
-		public void WixTasksPath()
+		public void LastWixTargetsPathValue()
 		{
-			Assert.AreEqual(@"$(WixToolPath)\WixTasks.dll", project.GetUnevalatedProperty("WixTasksPath"));
+			ProjectPropertyElement property = GetLastMSBuildProperty("WixTargetsPath");
+			Assert.AreEqual(@"$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets", property.Value);
 		}
-
-		[Test]
-		public void WixTasksPathCondition()
-		{
-			ProjectPropertyElement property = GetMSBuildProperty("WixTasksPath");
-			Assert.AreEqual(" '$(WixTasksPath)' == '' ", property.Condition);
-		}
-
+		
 		[Test]
 		public void DebugConfiguration()
 		{
@@ -165,6 +142,22 @@ namespace WixBinding.Tests.Project
 				}
 			}
 			return null;
+		}
+		
+		/// <summary>
+		/// Gets the last MSBuild build property with the specified name from the WixProject.
+		/// </summary>
+		ProjectPropertyElement GetLastMSBuildProperty(string name)
+		{
+			ProjectPropertyElement matchedElement = null;
+			foreach (ProjectPropertyGroupElement propertyGroup in project.MSBuildProjectFile.PropertyGroups) {
+				foreach (ProjectPropertyElement element in propertyGroup.Properties) {
+					if (element.Name == name) {
+						matchedElement = element;
+					}
+				}
+			}
+			return matchedElement;
 		}
 	}
 }

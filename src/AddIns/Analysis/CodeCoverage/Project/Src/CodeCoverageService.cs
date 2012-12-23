@@ -5,6 +5,7 @@ using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.CodeCoverage
 {
@@ -20,6 +21,7 @@ namespace ICSharpCode.CodeCoverage
 		static CodeCoverageService()
 		{
 			WorkbenchSingleton.Workbench.ViewOpened += ViewOpened;
+			ProjectService.SolutionLoaded += SolutionLoaded;
 		}
 		
 		/// <summary>
@@ -141,6 +143,14 @@ namespace ICSharpCode.CodeCoverage
 		static bool CodeCoverageResultsExist {
 			get {
 				return results.Count > 0;
+			}
+		}
+		
+		static void SolutionLoaded(object sender, SolutionEventArgs e)
+		{
+			var solutionCodeCoverageResults = new SolutionCodeCoverageResults(e.Solution);
+			foreach (CodeCoverageResults results in solutionCodeCoverageResults.GetCodeCoverageResultsForAllProjects()) {
+				ShowResults(results);
 			}
 		}
 	}

@@ -5,7 +5,7 @@ using System;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeAttributeArgument : CodeElement
+	public class CodeAttributeArgument : CodeElement, global::EnvDTE.CodeAttributeArgument
 	{
 		string name;
 		string value;

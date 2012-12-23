@@ -23,37 +23,13 @@ namespace ICSharpCode.CppBinding.Project
 	public partial class LinkerOptions :  ProjectOptionPanel
 	{
 		private const string metaElement ="Link";
-		private MSBuildBasedProject project;
 		
 		public LinkerOptions()
 		{
+			this.HeaderVisibility = Visibility.Collapsed;
 			InitializeComponent();
 		}
 		
-		
-		private void Initialize()
-		{
-			var msDefGroup = new MSBuildItemDefinitionGroup(project, project.ActiveConfiguration, project.ActivePlatform);
-			                                                                  
-			this.additionalLibsTextBox.Text = GetElementMetaData(msDefGroup,"AdditionalDependencies");
-			
-			this.addModuleTextBox.Text = GetElementMetaData(msDefGroup,"AddModuleNamesToAssembly");
-			
-			this.resourceFileTextBox.Text = GetElementMetaData(msDefGroup,"EmbedManagedResourceFile");
-			
-			this.additionalOptionsTextBox.Text = GetElementMetaData(msDefGroup,"AdditionalOptions");
-			
-			string def = GetElementMetaData(msDefGroup,"GenerateDebugInformation");
-			
-			bool check;
-			if (bool.TryParse(def, out check))
-			{
-				this.CheckBoxChecked = check;
-				this.debugInfoCheckBox.IsChecked = check;
-			}
-			
-			IsDirty = false;
-		}
 	
 		#region Properties
 		
@@ -78,17 +54,27 @@ namespace ICSharpCode.CppBinding.Project
 		
 		#region Save/Load
 		
-		public override void OnApplyTemplate()
+		protected override void Initialize()
 		{
-			base.OnApplyTemplate();
-			HideHeader();
-		}
-		
-		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
-		{
-			base.Load(project, configuration, platform);
-			this.project = project;
-			Initialize();
+			var msDefGroup = new MSBuildItemDefinitionGroup(base.Project, base.Project.ActiveConfiguration, base.Project.ActivePlatform);
+			                                                                  
+			this.additionalLibsTextBox.Text = GetElementMetaData(msDefGroup,"AdditionalDependencies");
+			
+			this.addModuleTextBox.Text = GetElementMetaData(msDefGroup,"AddModuleNamesToAssembly");
+			
+			this.resourceFileTextBox.Text = GetElementMetaData(msDefGroup,"EmbedManagedResourceFile");
+			
+			this.additionalOptionsTextBox.Text = GetElementMetaData(msDefGroup,"AdditionalOptions");
+			
+			string def = GetElementMetaData(msDefGroup,"GenerateDebugInformation");
+			
+			bool check;
+			if (bool.TryParse(def, out check))
+			{
+				this.CheckBoxChecked = check;
+				this.debugInfoCheckBox.IsChecked = check;
+			}
+			IsDirty = false;
 		}
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)

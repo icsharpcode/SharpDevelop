@@ -64,9 +64,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreatePublicVariable("MyVariable");
 			
-			vsCMAccess access = codeVariable.Access;
+			global::EnvDTE.vsCMAccess access = codeVariable.Access;
 			
-			Assert.AreEqual(vsCMAccess.vsCMAccessPublic, access);
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPublic, access);
 		}
 		
 		[Test]
@@ -74,9 +74,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreatePrivateVariable("MyVariable");
 			
-			vsCMAccess access = codeVariable.Access;
+			global::EnvDTE.vsCMAccess access = codeVariable.Access;
 			
-			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
+			Assert.AreEqual(global::EnvDTE.vsCMAccess.vsCMAccessPrivate, access);
 		}
 		
 		[Test]
@@ -85,7 +85,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicVariable("MyVariable");
 			VariableStartsAtColumn(5);
 			
-			TextPoint point = codeVariable.GetStartPoint();
+			global::EnvDTE.TextPoint point = codeVariable.GetStartPoint();
 			int offset = point.LineCharOffset;
 			
 			Assert.AreEqual(5, offset);
@@ -97,7 +97,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicVariable("MyVariable");
 			VariableStartsAtLine(1);
 			
-			TextPoint point = codeVariable.GetStartPoint();
+			global::EnvDTE.TextPoint point = codeVariable.GetStartPoint();
 			int line = point.Line;
 			
 			Assert.AreEqual(1, line);
@@ -109,7 +109,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicVariable("MyVariable");
 			VariableEndsAtColumn(10);
 			
-			TextPoint point = codeVariable.GetEndPoint();
+			global::EnvDTE.TextPoint point = codeVariable.GetEndPoint();
 			int offset = point.LineCharOffset;
 			
 			Assert.AreEqual(10, offset);
@@ -121,7 +121,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreatePublicVariable("MyVariable");
 			VariableEndsAtLine(2);
 			
-			TextPoint point = codeVariable.GetEndPoint();
+			global::EnvDTE.TextPoint point = codeVariable.GetEndPoint();
 			int line = point.Line;
 			
 			Assert.AreEqual(2, line);
@@ -132,9 +132,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreatePublicVariable("MyVariable");
 			
-			vsCMElement kind = codeVariable.Kind;
+			global::EnvDTE.vsCMElement kind = codeVariable.Kind;
 			
-			Assert.AreEqual(vsCMElement.vsCMElementVariable, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMElement.vsCMElementVariable, kind);
 		}
 	}
 }

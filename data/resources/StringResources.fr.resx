@@ -1501,8 +1501,18 @@ Pour créer ou manipuler un objet ActiveX/COM, déplcaer une classe depuis TypeL
   <data name="Dialog.HighlightingEditor.Import" xml:space="preserve">
     <value>Importer les couleurs de surlignage</value>
   </data>
+  <data name="Dialog.HighlightingEditor.NotSupportedMessage" xml:space="preserve">
+    <value>Version des paramétres non-supportée !</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.OverwriteCustomizationsMessage" xml:space="preserve">
+    <value>Toutes les personnalisations seront réinitialisées et le fichier sélectionné sera importé.
+Voulez-vous continuer ?</value>
+  </data>
   <data name="Dialog.HighlightingEditor.Properties.Value" xml:space="preserve">
     <value>Valeur</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.ResetAll" xml:space="preserve">
+    <value>Tout réinitialiser aux valeurs par défaut</value>
   </data>
   <data name="Dialog.HighlightingEditor.SampleText" xml:space="preserve">
     <value>Echantillon de texte</value>
@@ -7264,10 +7274,10 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
     <value>&amp;Recherche</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.ClrBookmark" xml:space="preserve">
-    <value>Effa&amp;cer les points d'arrêt</value>
+    <value>Effa&amp;cer les marque-pages</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.ClrBookmark.Description" xml:space="preserve">
-    <value>Effacer tous les Favoris...</value>
+    <value>Effacer tous les marque-pages</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.Find" xml:space="preserve">
     <value>&amp;Rechercher...</value>
@@ -7288,16 +7298,16 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
     <value>Recherche incrémentale</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.NextBookmark" xml:space="preserve">
-    <value>Point d'arrêt &amp;suivant</value>
+    <value>Marque-page suivant ^X</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.NextBookmark.Description" xml:space="preserve">
-    <value>Aller au point d'arrêt suivant</value>
+    <value>Aller au marque-page suivant</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.PrevBookmark" xml:space="preserve">
-    <value>Point d'arrêt &amp;précédent</value>
+    <value>Marque-page &amp;précédent</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.PrevBookmark.Description" xml:space="preserve">
-    <value>Revenir au point d'arrêt précédent</value>
+    <value>Revenir au marque-page précédent</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.Replace" xml:space="preserve">
     <value>&amp;Remplacer...</value>
@@ -7306,10 +7316,10 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
     <value>Recherche incrémentale inversée</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.ToggleBookmark" xml:space="preserve">
-    <value>Point d'arrê&amp;t</value>
+    <value>Ac&amp;tiver/Désactiver un marque-page</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.ToggleBookmark.Description" xml:space="preserve">
-    <value>Positionner/Dépositionner un point d'arrêt à la ligne courante</value>
+    <value>Activer/désactiver un marque-page à la ligne actuelle</value>
   </data>
   <data name="XML.MainMenu.ToolMenu" xml:space="preserve">
     <value>&amp;Outils</value>

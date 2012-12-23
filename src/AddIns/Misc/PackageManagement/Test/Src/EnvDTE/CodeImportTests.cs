@@ -33,9 +33,9 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateCodeImport("System.Xml");
 			
-			vsCMElement kind = codeImport.Kind;
+			global::EnvDTE.vsCMElement kind = codeImport.Kind;
 			
-			Assert.AreEqual(vsCMElement.vsCMElementImportStmt, kind);
+			Assert.AreEqual(global::EnvDTE.vsCMElement.vsCMElementImportStmt, kind);
 		}
 		
 		[Test]
