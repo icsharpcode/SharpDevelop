@@ -54,7 +54,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			var multiHighlighter = new MultiHighlighter(document, highlighters.ToArray());
 			return new CustomizableHighlightingColorizer.CustomizingHighlighter(
 				document, CustomizedHighlightingColor.FetchCustomizations(def.Name),
-				def, multiHighlighter);
+				multiHighlighter);
 		}
 	}
 

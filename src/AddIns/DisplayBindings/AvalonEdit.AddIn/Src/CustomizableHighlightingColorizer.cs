@@ -150,51 +150,42 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		protected override IHighlighter CreateHighlighter(TextView textView, TextDocument document)
 		{
-			return new CustomizingHighlighter(textView, customizations, highlightingDefinition, base.CreateHighlighter(textView, document));
+			return new CustomizingHighlighter(textView, customizations, base.CreateHighlighter(textView, document));
 		}
 		
 		internal sealed class CustomizingHighlighter : IHighlighter, IDisposable
 		{
 			readonly TextView textView;
 			readonly IEnumerable<CustomizedHighlightingColor> customizations;
-			readonly IHighlightingDefinition highlightingDefinition;
 			readonly IHighlighter baseHighlighter;
 			readonly IDocument document;
 			
-			public CustomizingHighlighter(TextView textView, IEnumerable<CustomizedHighlightingColor> customizations, IHighlightingDefinition highlightingDefinition, IHighlighter baseHighlighter)
+			public CustomizingHighlighter(TextView textView, IEnumerable<CustomizedHighlightingColor> customizations, IHighlighter baseHighlighter)
 			{
 				Debug.Assert(textView != null);
 				Debug.Assert(customizations != null);
-				Debug.Assert(highlightingDefinition != null);
 				Debug.Assert(baseHighlighter != null);
 				
 				this.textView = textView;
 				this.document = textView.Document;
 				this.customizations = customizations;
-				this.highlightingDefinition = highlightingDefinition;
 				this.baseHighlighter = baseHighlighter;
 				baseHighlighter.HighlightingStateChanged += highlighter_HighlightingStateChanged;
 			}
 			
-			public CustomizingHighlighter(IDocument document, IEnumerable<CustomizedHighlightingColor> customizations, IHighlightingDefinition highlightingDefinition, IHighlighter baseHighlighter)
+			public CustomizingHighlighter(IDocument document, IEnumerable<CustomizedHighlightingColor> customizations, IHighlighter baseHighlighter)
 			{
 				Debug.Assert(customizations != null);
-				Debug.Assert(highlightingDefinition != null);
 				Debug.Assert(baseHighlighter != null);
 				
 				this.document = document;
 				this.customizations = customizations;
-				this.highlightingDefinition = highlightingDefinition;
 				this.baseHighlighter = baseHighlighter;
 				baseHighlighter.HighlightingStateChanged += highlighter_HighlightingStateChanged;
 			}
 
 			public IDocument Document {
 				get { return baseHighlighter.Document; }
-			}
-			
-			public IHighlightingDefinition HighlightingDefinition {
-				get { return highlightingDefinition; }
 			}
 			
 			public event HighlightingStateChangedEventHandler HighlightingStateChanged;
@@ -279,7 +270,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			public HighlightingColor GetNamedColor(string name)
 			{
-				return CustomizeColor(name, CustomizedHighlightingColor.FetchCustomizations(highlightingDefinition.Name));
+				return CustomizeColor(name, customizations);
 			}
 			
 			public HighlightingColor DefaultTextColor {

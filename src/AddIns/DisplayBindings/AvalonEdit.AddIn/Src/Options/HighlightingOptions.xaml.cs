@@ -539,7 +539,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			UpdatePreview();
 		}
 		
-		CustomizableHighlightingColorizer colorizer;
+		HighlightingColorizer colorizer;
 		
 		void UpdatePreview()
 		{
@@ -556,7 +556,11 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				colorizer = null;
 				if (item != null) {
 					if (item.ParentDefinition != null) {
-						colorizer = new CustomizableHighlightingColorizer(item.ParentDefinition, customizationsForCurrentLanguage);
+						var highlighter = new CustomizableHighlightingColorizer.CustomizingHighlighter(
+							textView, customizationsForCurrentLanguage,
+							new DocumentHighlighter(textView.Document, item.ParentDefinition)
+						);
+						colorizer = new HighlightingColorizer(highlighter);
 						textView.LineTransformers.Add(colorizer);
 					}
 					textEditor.Select(0, 0);
