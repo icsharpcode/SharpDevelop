@@ -26,6 +26,12 @@
 			<TextBlock Text="{Binding Path=Name}"/>
 		</DataTemplate>
 		
+		<DataTemplate x:Key="PackageDependencySetItemTemplate">
+			<Grid>
+				<ItemsControl ItemsSource="{Binding Path=Dependencies}"/>
+			</Grid>
+		</DataTemplate>
+		
 		<DataTemplate x:Key="PackageListBoxItemTemplate">
 			<Grid>
 				<Grid.ColumnDefinitions>
@@ -233,6 +239,7 @@
 						</StackPanel>
 						<ItemsControl 
 							Margin="4, 4"
+							ItemTemplate="{StaticResource PackageDependencySetItemTemplate}"
 							ItemsSource="{Binding Path=Dependencies}"/>
 					</StackPanel>
 				</StackPanel>
