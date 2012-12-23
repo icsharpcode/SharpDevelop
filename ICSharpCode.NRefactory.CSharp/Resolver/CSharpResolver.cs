@@ -1948,6 +1948,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			MethodGroupResolveResult mgrr = target as MethodGroupResolveResult;
+			Func<ResolveResult, ResolveResult> convert = x => x;
 			if (mgrr != null) {
 				if (arguments.Any(a => a.Type.Kind == TypeKind.Dynamic)) {
 					// If we have dynamic arguments, we need to represent the invocation as a dynamic invocation if there is more than one applicable method.
@@ -1969,41 +1970,43 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						}
 						return new DynamicInvocationResolveResult(new MethodGroupResolveResult(actualTarget, mgrr.MethodName, l, mgrr.TypeArguments), DynamicInvocationType.Invocation, AddArgumentNamesIfNecessary(arguments, argumentNames));
 					}
+					else {
+						convert = x => x.Type.Kind == TypeKind.Dynamic ? x : Convert(x, SpecialType.Dynamic);
+					}
 				}
 
 				OverloadResolution or = mgrr.PerformOverloadResolution(compilation, arguments, argumentNames, checkForOverflow: checkForOverflow, conversions: conversions);
 				if (or.BestCandidate != null) {
 					if (or.BestCandidate.IsStatic && !or.IsExtensionMethodInvocation && !(mgrr.TargetResult is TypeResolveResult))
-						return or.CreateResolveResult(new TypeResolveResult(mgrr.TargetType));
+						return convert(or.CreateResolveResult(new TypeResolveResult(mgrr.TargetType)));
 					else
-						return or.CreateResolveResult(mgrr.TargetResult);
+						return convert(or.CreateResolveResult(mgrr.TargetResult));
 				} else {
 					// No candidate found at all (not even an inapplicable one).
 					// This can happen with empty method groups (as sometimes used with extension methods)
-					return new UnknownMethodResolveResult(
-						mgrr.TargetType, mgrr.MethodName, mgrr.TypeArguments, CreateParameters(arguments, argumentNames));
+					return convert(new UnknownMethodResolveResult(mgrr.TargetType, mgrr.MethodName, mgrr.TypeArguments, CreateParameters(arguments, argumentNames)));
 				}
 			}
 			UnknownMemberResolveResult umrr = target as UnknownMemberResolveResult;
 			if (umrr != null) {
-				return new UnknownMethodResolveResult(umrr.TargetType, umrr.MemberName, umrr.TypeArguments, CreateParameters(arguments, argumentNames));
+				return convert(new UnknownMethodResolveResult(umrr.TargetType, umrr.MemberName, umrr.TypeArguments, CreateParameters(arguments, argumentNames)));
 			}
 			UnknownIdentifierResolveResult uirr = target as UnknownIdentifierResolveResult;
 			if (uirr != null && CurrentTypeDefinition != null) {
-				return new UnknownMethodResolveResult(CurrentTypeDefinition, uirr.Identifier, EmptyList<IType>.Instance, CreateParameters(arguments, argumentNames));
+				return convert(new UnknownMethodResolveResult(CurrentTypeDefinition, uirr.Identifier, EmptyList<IType>.Instance, CreateParameters(arguments, argumentNames)));
 			}
 			IMethod invokeMethod = target.Type.GetDelegateInvokeMethod();
 			if (invokeMethod != null) {
 				OverloadResolution or = CreateOverloadResolution(arguments, argumentNames);
 				or.AddCandidate(invokeMethod);
-				return new CSharpInvocationResolveResult(
+				return convert(new CSharpInvocationResolveResult(
 					target, invokeMethod, //invokeMethod.ReturnType.Resolve(context),
 					or.GetArgumentsWithConversionsAndNames(), or.BestCandidateErrors,
 					isExpandedForm: or.BestCandidateIsExpandedForm,
 					isDelegateInvocation: true,
-					argumentToParameterMap: or.GetArgumentToParameterMap());
+					argumentToParameterMap: or.GetArgumentToParameterMap()));
 			}
-			return ErrorResult;
+			return convert(ErrorResult);
 		}
 		
 		List<IParameter> CreateParameters(ResolveResult[] arguments, string[] argumentNames)
