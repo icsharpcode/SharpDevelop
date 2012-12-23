@@ -3,25 +3,23 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
-using ICSharpCode.AvalonEdit.Document;
+
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
 	/// <summary>
-	/// Applies a set of customizations to syntax highlighting.
+	/// Wraps another <see cref="IHighlighter"/> and applies customizations
+	/// to the highlighting.
 	/// </summary>
-	public class CustomizableHighlightingColorizer : HighlightingColorizer
+	public class CustomizingHighlighter : IHighlighter, IDisposable
 	{
 		#region ApplyCustomizationsToDefaultElements
 		public const string DefaultTextAndBackground = "Default text/background";
@@ -123,176 +121,150 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		#endregion
 		
-		readonly IHighlightingDefinition highlightingDefinition;
+		readonly TextView textView;
 		readonly IEnumerable<CustomizedHighlightingColor> customizations;
+		readonly IHighlighter baseHighlighter;
+		readonly IDocument document;
 		
-		[ObsoleteAttribute("Use a normal HighlightingColorizer with a CustomizingHighlighter instead")]
-		public CustomizableHighlightingColorizer(IHighlightingDefinition highlightingDefinition, IEnumerable<CustomizedHighlightingColor> customizations)
-			: base(highlightingDefinition)
+		public CustomizingHighlighter(TextView textView, IEnumerable<CustomizedHighlightingColor> customizations, IHighlighter baseHighlighter)
 		{
+			if (textView == null)
+				throw new ArgumentNullException("textView");
 			if (customizations == null)
 				throw new ArgumentNullException("customizations");
-			this.highlightingDefinition = highlightingDefinition;
+			if (baseHighlighter == null)
+				throw new ArgumentNullException("baseHighlighter");
+			
+			this.textView = textView;
+			this.document = textView.Document;
 			this.customizations = customizations;
+			this.baseHighlighter = baseHighlighter;
+			baseHighlighter.HighlightingStateChanged += highlighter_HighlightingStateChanged;
 		}
 		
-		protected override void DeregisterServices(TextView textView)
+		public CustomizingHighlighter(IDocument document, IEnumerable<CustomizedHighlightingColor> customizations, IHighlighter baseHighlighter)
 		{
-			textView.Services.RemoveService(typeof(IHighlighter));
-			base.DeregisterServices(textView);
-		}
-		
-		protected override void RegisterServices(TextView textView)
-		{
-			base.RegisterServices(textView);
-//			textView.Services.AddService(typeof(IHighlighter), (CustomizingHighlighter)textView.GetService(typeof(IHighlighter)));
-		}
-		
-		protected override IHighlighter CreateHighlighter(TextView textView, TextDocument document)
-		{
-			return new CustomizingHighlighter(textView, customizations, base.CreateHighlighter(textView, document));
-		}
-		
-		internal sealed class CustomizingHighlighter : IHighlighter, IDisposable
-		{
-			readonly TextView textView;
-			readonly IEnumerable<CustomizedHighlightingColor> customizations;
-			readonly IHighlighter baseHighlighter;
-			readonly IDocument document;
+			if (document == null)
+				throw new ArgumentNullException("document");
+			if (customizations == null)
+				throw new ArgumentNullException("customizations");
+			if (baseHighlighter == null)
+				throw new ArgumentNullException("baseHighlighter");
 			
-			public CustomizingHighlighter(TextView textView, IEnumerable<CustomizedHighlightingColor> customizations, IHighlighter baseHighlighter)
-			{
-				Debug.Assert(textView != null);
-				Debug.Assert(customizations != null);
-				Debug.Assert(baseHighlighter != null);
-				
-				this.textView = textView;
-				this.document = textView.Document;
-				this.customizations = customizations;
-				this.baseHighlighter = baseHighlighter;
-				baseHighlighter.HighlightingStateChanged += highlighter_HighlightingStateChanged;
-			}
-			
-			public CustomizingHighlighter(IDocument document, IEnumerable<CustomizedHighlightingColor> customizations, IHighlighter baseHighlighter)
-			{
-				Debug.Assert(customizations != null);
-				Debug.Assert(baseHighlighter != null);
-				
-				this.document = document;
-				this.customizations = customizations;
-				this.baseHighlighter = baseHighlighter;
-				baseHighlighter.HighlightingStateChanged += highlighter_HighlightingStateChanged;
-			}
+			this.document = document;
+			this.customizations = customizations;
+			this.baseHighlighter = baseHighlighter;
+			baseHighlighter.HighlightingStateChanged += highlighter_HighlightingStateChanged;
+		}
 
-			public IDocument Document {
-				get { return baseHighlighter.Document; }
+		public IDocument Document {
+			get { return baseHighlighter.Document; }
+		}
+		
+		public event HighlightingStateChangedEventHandler HighlightingStateChanged;
+		
+		public void UpdateHighlightingState(int lineNumber)
+		{
+			baseHighlighter.UpdateHighlightingState(lineNumber);
+		}
+		
+		void highlighter_HighlightingStateChanged(IHighlighter sender, int fromLineNumber, int toLineNumber)
+		{
+			if (HighlightingStateChanged != null)
+				HighlightingStateChanged(this, fromLineNumber, toLineNumber);
+		}
+		
+		public IEnumerable<string> GetSpanColorNamesFromLineStart(int lineNumber)
+		{
+			// delayed evaluation doesn't cause a problem here: GetColorStack is called immediately,
+			// only the where/select portion is evaluated later. But that won't be a problem because the
+			// HighlightingColor instance shouldn't change once it's in use.
+			return from color in GetColorStack(lineNumber - 1)
+				where color.Name != null
+				select color.Name;
+		}
+		
+		public IEnumerable<HighlightingColor> GetColorStack(int lineNumber)
+		{
+			return baseHighlighter.GetColorStack(lineNumber);
+		}
+		
+		public HighlightedLine HighlightLine(int lineNumber)
+		{
+			HighlightedLine line = baseHighlighter.HighlightLine(lineNumber);
+			foreach (HighlightedSection section in line.Sections) {
+				section.Color = CustomizeColor(section.Color, customizations);
 			}
-			
-			public event HighlightingStateChangedEventHandler HighlightingStateChanged;
-			
-			public void UpdateHighlightingState(int lineNumber)
-			{
-				baseHighlighter.UpdateHighlightingState(lineNumber);
-			}
-			
-			void highlighter_HighlightingStateChanged(IHighlighter sender, int fromLineNumber, int toLineNumber)
-			{
-				if (HighlightingStateChanged != null)
-					HighlightingStateChanged(this, fromLineNumber, toLineNumber);
-			}
-			
-			public IEnumerable<string> GetSpanColorNamesFromLineStart(int lineNumber)
-			{
-				// delayed evaluation doesn't cause a problem here: GetColorStack is called immediately,
-				// only the where/select portion is evaluated later. But that won't be a problem because the
-				// HighlightingColor instance shouldn't change once it's in use.
-				return from color in GetColorStack(lineNumber - 1)
-					where color.Name != null
-					select color.Name;
-			}
-			
-			public IEnumerable<HighlightingColor> GetColorStack(int lineNumber)
-			{
-				return baseHighlighter.GetColorStack(lineNumber);
-			}
-			
-			public HighlightedLine HighlightLine(int lineNumber)
-			{
-				HighlightedLine line = baseHighlighter.HighlightLine(lineNumber);
-				foreach (HighlightedSection section in line.Sections) {
-					section.Color = CustomizeColor(section.Color, customizations);
-				}
-				return line;
-			}
+			return line;
+		}
 
-			public void InvalidateLine(IDocumentLine line)
-			{
-				if (textView == null)
-					throw new InvalidOperationException("IHighlighter has no TextView assigned!");
-				textView.Redraw(line, DispatcherPriority.Background);
-			}
-			
-			public void InvalidateAll()
-			{
-				if (textView == null)
-					throw new InvalidOperationException("IHighlighter has no TextView assigned!");
-				textView.Redraw(DispatcherPriority.Background);
-			}
-			
-			public event EventHandler VisibleDocumentLinesChanged {
-				add { textView.VisualLinesChanged += value; }
-				remove { textView.VisualLinesChanged -= value; }
-			}
-			
-			public IEnumerable<IDocumentLine> GetVisibleDocumentLines()
-			{
-				if (textView == null)
-					throw new InvalidOperationException("IHighlighter has no TextView assigned!");
-				List<IDocumentLine> result = new List<IDocumentLine>();
-				foreach (VisualLine line in textView.VisualLines) {
-					if (line.FirstDocumentLine == line.LastDocumentLine) {
-						result.Add(line.FirstDocumentLine);
-					} else {
-						int firstLineStart = line.FirstDocumentLine.Offset;
-						int lineEndOffset = firstLineStart + line.FirstDocumentLine.TotalLength;
-						foreach (VisualLineElement e in line.Elements) {
-							int elementOffset = firstLineStart + e.RelativeTextOffset;
-							if (elementOffset >= lineEndOffset) {
-								var currentLine = this.Document.GetLineByOffset(elementOffset);
-								lineEndOffset = currentLine.Offset + currentLine.TotalLength;
-								result.Add(currentLine);
-							}
+		public void InvalidateLine(IDocumentLine line)
+		{
+			if (textView == null)
+				throw new InvalidOperationException("IHighlighter has no TextView assigned!");
+			textView.Redraw(line, DispatcherPriority.Background);
+		}
+		
+		public void InvalidateAll()
+		{
+			if (textView == null)
+				throw new InvalidOperationException("IHighlighter has no TextView assigned!");
+			textView.Redraw(DispatcherPriority.Background);
+		}
+		
+		public event EventHandler VisibleDocumentLinesChanged {
+			add { textView.VisualLinesChanged += value; }
+			remove { textView.VisualLinesChanged -= value; }
+		}
+		
+		public IEnumerable<IDocumentLine> GetVisibleDocumentLines()
+		{
+			if (textView == null)
+				throw new InvalidOperationException("IHighlighter has no TextView assigned!");
+			List<IDocumentLine> result = new List<IDocumentLine>();
+			foreach (VisualLine line in textView.VisualLines) {
+				if (line.FirstDocumentLine == line.LastDocumentLine) {
+					result.Add(line.FirstDocumentLine);
+				} else {
+					int firstLineStart = line.FirstDocumentLine.Offset;
+					int lineEndOffset = firstLineStart + line.FirstDocumentLine.TotalLength;
+					foreach (VisualLineElement e in line.Elements) {
+						int elementOffset = firstLineStart + e.RelativeTextOffset;
+						if (elementOffset >= lineEndOffset) {
+							var currentLine = this.Document.GetLineByOffset(elementOffset);
+							lineEndOffset = currentLine.Offset + currentLine.TotalLength;
+							result.Add(currentLine);
 						}
 					}
 				}
-				return result;
 			}
-			
-			public HighlightingColor GetNamedColor(string name)
-			{
-				return CustomizeColor(name, customizations);
+			return result;
+		}
+		
+		public HighlightingColor GetNamedColor(string name)
+		{
+			return CustomizeColor(name, customizations);
+		}
+		
+		public HighlightingColor DefaultTextColor {
+			get {
+				return GetNamedColor(CustomizingHighlighter.DefaultTextAndBackground);
 			}
-			
-			public HighlightingColor DefaultTextColor {
-				get {
-					return GetNamedColor(CustomizableHighlightingColorizer.DefaultTextAndBackground);
-				}
-			}
-			
-			public void BeginHighlighting()
-			{
-				baseHighlighter.BeginHighlighting();
-			}
-			
-			public void EndHighlighting()
-			{
-				baseHighlighter.EndHighlighting();
-			}
-			
-			public void Dispose()
-			{
-				baseHighlighter.Dispose();
-			}
+		}
+		
+		public void BeginHighlighting()
+		{
+			baseHighlighter.BeginHighlighting();
+		}
+		
+		public void EndHighlighting()
+		{
+			baseHighlighter.EndHighlighting();
+		}
+		
+		public void Dispose()
+		{
+			baseHighlighter.Dispose();
 		}
 		
 		internal static HighlightingColor CustomizeColor(HighlightingColor color, IEnumerable<CustomizedHighlightingColor> customizations)

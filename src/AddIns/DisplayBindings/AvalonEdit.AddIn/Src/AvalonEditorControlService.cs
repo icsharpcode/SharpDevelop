@@ -52,7 +52,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// add additional highlighters
 			highlighters.AddRange(SD.AddInTree.BuildItems<IHighlighter>(HighlighterDoozer.AddInPath, document, false));
 			var multiHighlighter = new MultiHighlighter(document, highlighters.ToArray());
-			return new CustomizableHighlightingColorizer.CustomizingHighlighter(
+			return new CustomizingHighlighter(
 				document, CustomizedHighlightingColor.FetchCustomizations(def.Name),
 				multiHighlighter);
 		}

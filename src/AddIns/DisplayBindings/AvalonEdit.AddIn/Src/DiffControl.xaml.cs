@@ -48,13 +48,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			string language = source.SyntaxHighlighting != null ? source.SyntaxHighlighting.Name : null;
 			editor.TextArea.TextView.LineTransformers.RemoveAll(x => x is HighlightingColorizer);
-			var customizedHighlighter = new CustomizableHighlightingColorizer.CustomizingHighlighter(
+			var customizedHighlighter = new CustomizingHighlighter(
 				editor.TextArea.TextView,
 				CustomizedHighlightingColor.FetchCustomizations(language),
 				new DocumentHighlighter(editor.Document, source.SyntaxHighlighting)
 			);
 			editor.TextArea.TextView.LineTransformers.Insert(0, new HighlightingColorizer(customizedHighlighter));
-			CustomizableHighlightingColorizer.ApplyCustomizationsToDefaultElements(editor, CustomizedHighlightingColor.FetchCustomizations(language));
+			CustomizingHighlighter.ApplyCustomizationsToDefaultElements(editor, CustomizedHighlightingColor.FetchCustomizations(language));
 			HighlightingOptions.ApplyToRendering(editor, CustomizedHighlightingColor.FetchCustomizations(language));
 			editor.TextArea.TextView.Redraw(); // manually redraw if default elements didn't change but customized highlightings did
 		}

@@ -279,7 +279,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		void CreateDefaultEntries(string language, out IHighlightingItem defaultText, IList<IHighlightingItem> items)
 		{
 			// Create entry for "default text/background"
-			defaultText = new SimpleHighlightingItem(CustomizableHighlightingColorizer.DefaultTextAndBackground, ta => ta.Document.Text = "Normal text") {
+			defaultText = new SimpleHighlightingItem(CustomizingHighlighter.DefaultTextAndBackground, ta => ta.Document.Text = "Normal text") {
 				Foreground = SystemColors.WindowTextColor,
 				Background = SystemColors.WindowColor
 			};
@@ -289,7 +289,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			
 			// Create entry for "Selected text"
 			IHighlightingItem selectedText = new SimpleHighlightingItem(
-				CustomizableHighlightingColorizer.SelectedText,
+				CustomizingHighlighter.SelectedText,
 				ta => {
 					ta.Document.Text = "Selected text";
 					ta.Selection = Selection.Create(ta, 0, 13);
@@ -304,7 +304,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			
 			// Create entry for "Non-printable characters"
 			IHighlightingItem nonPrintChars = new SimpleHighlightingItem(
-				CustomizableHighlightingColorizer.NonPrintableCharacters,
+				CustomizingHighlighter.NonPrintableCharacters,
 				ta => {
 					ta.Document.Text = "	    \r \r\n \n";
 				})
@@ -317,7 +317,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			
 			// Create entry for "Line numbers"
 			IHighlightingItem lineNumbers = new SimpleHighlightingItem(
-				CustomizableHighlightingColorizer.LineNumbers,
+				CustomizingHighlighter.LineNumbers,
 				ta => {
 					ta.Document.Text = "These are just" + Environment.NewLine +
 						"multiple" + Environment.NewLine +
@@ -402,7 +402,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			items.Add(foldingTextMarker);
 			
 			IHighlightingItem linkText = new SimpleHighlightingItem(
-				CustomizableHighlightingColorizer.LinkText,
+				CustomizingHighlighter.LinkText,
 				ta => {
 					ta.Document.Text = "http://icsharpcode.net" + Environment.NewLine + "me@example.com";
 				})
@@ -502,7 +502,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			items.Add(currentStatementMarker);
 			
 			IHighlightingItem columnRuler = new SimpleHighlightingItem(
-				CustomizableHighlightingColorizer.ColumnRuler,
+				CustomizingHighlighter.ColumnRuler,
 				ta => {
 					ta.Document.Text = "some line with a lot of text";
 					ta.TextView.Options.ColumnRulerPosition = 15;
@@ -546,7 +546,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			XshdSyntaxDefinition xshd = (XshdSyntaxDefinition)languageComboBox.SelectedItem;
 			if (xshd != null) {
 				var customizationsForCurrentLanguage = customizationList.Where(c => c.Language == null || c.Language == xshd.Name);
-				CustomizableHighlightingColorizer.ApplyCustomizationsToDefaultElements(textEditor, customizationsForCurrentLanguage);
+				CustomizingHighlighter.ApplyCustomizationsToDefaultElements(textEditor, customizationsForCurrentLanguage);
 				ApplyToRendering(textEditor, customizationsForCurrentLanguage);
 				var item = (IHighlightingItem)listBox.SelectedItem;
 				TextView textView = textEditor.TextArea.TextView;
@@ -556,7 +556,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				colorizer = null;
 				if (item != null) {
 					if (item.ParentDefinition != null) {
-						var highlighter = new CustomizableHighlightingColorizer.CustomizingHighlighter(
+						var highlighter = new CustomizingHighlighter(
 							textView, customizationsForCurrentLanguage,
 							new DocumentHighlighter(textView.Document, item.ParentDefinition)
 						);
@@ -704,7 +704,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{ "Keyword", "VBNET.Keywords" },
 			{ "Keyword", "VBNET.FunctionKeywords" },
 			{ "Keyword", "VBNET.ContextKeywords" },
-			{ "Line Numbers", CustomizableHighlightingColorizer.LineNumbers },
+			{ "Line Numbers", CustomizingHighlighter.LineNumbers },
 			{ "MarkerFormatDefinition/HighlightedReference", "" },
 			{ "Number", "C#.NumberLiteral" },
 			{ "Operator", "C#.Punctuation" },
@@ -713,7 +713,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{ "outlining.square", FoldingSelectedControls },
 			{ "outlining.verticalrule", "" },
 			{ "Plain Text", "" },
-			{ "Plain Text", CustomizableHighlightingColorizer.DefaultTextAndBackground },
+			{ "Plain Text", CustomizingHighlighter.DefaultTextAndBackground },
 			{ "Preprocessor Keyword", "" },
 			{ "Preprocessor Keyword", "C#.Preprocessor" },
 			{ "Razor Code", "" },
@@ -724,12 +724,12 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{ "Script Operator", "" },
 			{ "Script String", "" },
 			{ "Selected Text", "" },
-			{ "Selected Text", CustomizableHighlightingColorizer.SelectedText },
+			{ "Selected Text", CustomizingHighlighter.SelectedText },
 			{ "String", "VBNET.String" },
 			{ "String", "C#.String" },
 			{ "String(C# @ Verbatim)", "" },
 			{ "Syntax Error", "" },
-			{ "urlformat", CustomizableHighlightingColorizer.LinkText },
+			{ "urlformat", CustomizingHighlighter.LinkText },
 			{ "User Types", "" },
 			{ "User Types(Delegates)", "" },
 			{ "User Types(Enums)", "" },
@@ -760,7 +760,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{ "XML Name", "XML.XmlTag" },
 			{ "XML Name", "XML.XmlDeclaration" },
 			{ "XML Name", "XML.DocType" },
-			{ "XML Text", "XML." + CustomizableHighlightingColorizer.DefaultTextAndBackground },
+			{ "XML Text", "XML." + CustomizingHighlighter.DefaultTextAndBackground },
 		};
 		
 		Tuple<Color?, Color?, bool> ParseEntry(XElement element)
