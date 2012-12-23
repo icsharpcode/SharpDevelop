@@ -391,23 +391,41 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void HasLastUpdated_PackageHasLastUpdatedDate_ReturnsTrue()
+		public void HasLastPublished_PackageHasPublishedDate_ReturnsTrue()
 		{
 			CreateViewModel();
-			fakePackage.LastUpdated = new DateTime(2011, 1, 2);
+			fakePackage.Published = new DateTime(2011, 1, 2);
 			
-			Assert.IsTrue(viewModel.HasLastUpdated);
+			Assert.IsTrue(viewModel.HasLastPublished);
 		}
 		
 		[Test]
-		public void HasLastUpdated_PackageHasNoLastUpdatedDate_ReturnsFalse()
+		public void HasLastPublished_PackageHasNoPublishedDate_ReturnsFalse()
 		{
 			CreateViewModel();
-			fakePackage.LastUpdated = null;
+			fakePackage.Published = null;
 			
-			Assert.IsFalse(viewModel.HasLastUpdated);
+			Assert.IsFalse(viewModel.HasLastPublished);
 		}
-				
+		
+		[Test]
+		public void LastPublished_PackageHasPublishedDate_ReturnsPackagePublishedDate()
+		{
+			CreateViewModel();
+			fakePackage.Published = new DateTime(2011, 1, 2);
+			
+			Assert.AreEqual(fakePackage.Published, viewModel.LastPublished);
+		}
+		
+		[Test]
+		public void LastPublished_PackageHasNoPublishedDate_ReturnsNull()
+		{
+			CreateViewModel();
+			fakePackage.Published = null;
+			
+			Assert.IsNull(viewModel.LastPublished);
+		}
+		
 		[Test]
 		public void AddPackage_PackageRequiresLicenseAgreementAcceptance_UserAskedToAcceptLicenseAgreementForPackageBeforeInstalling()
 		{

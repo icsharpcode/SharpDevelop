@@ -171,13 +171,13 @@
 					</StackPanel>
 					<StackPanel
 						Orientation="Horizontal"
-						Visibility="{Binding Path=HasLastUpdated, Converter={StaticResource BoolToVisibility}}"
+						Visibility="{Binding Path=HasLastPublished, Converter={StaticResource BoolToVisibility}}"
 						Margin="0, 4">
 						<TextBlock
 							Margin="0, 0, 4, 0"
-							Text="Last Updated:"
+							Text="Last Published:"
 							FontWeight="Bold"/>
-						<TextBlock Text="{Binding Path=LastUpdated, StringFormat=d}"/>
+						<TextBlock Text="{Binding Path=LastPublished, StringFormat=d}"/>
 					</StackPanel>
 					<StackPanel
 						Orientation="Horizontal"
