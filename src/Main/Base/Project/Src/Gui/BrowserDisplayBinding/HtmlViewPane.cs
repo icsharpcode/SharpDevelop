@@ -240,17 +240,6 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		
 		Control urlBox;
 		
-		public void SetUrlComboBox(ComboBox comboBox)
-		{
-			SetUrlBox(comboBox);
-			comboBox.DropDownStyle = ComboBoxStyle.DropDown;
-			comboBox.Items.Clear();
-			foreach (string url in PropertyService.GetList<string>("Browser.URLBoxHistory"))
-				comboBox.Items.Add(url);
-			comboBox.AutoCompleteMode      = AutoCompleteMode.Suggest;
-			comboBox.AutoCompleteSource    = AutoCompleteSource.HistoryList;
-		}
-		
 		public void SetUrlBox(Control urlBox)
 		{
 			this.urlBox = urlBox;

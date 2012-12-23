@@ -2090,10 +2090,10 @@
 		             tooltip = "${res:AddIns.HtmlHelp2.Search}"
 		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.GoSearch"/>
 		
-		<ToolbarItem id      = "URLComboBox"
-		             type    = "Custom"
+		<ToolbarItem id      = "UrlComboBox"
+		             type    = "Builder"
 		             tooltip = "${res:AddIns.HtmlHelp2.EnterURL}"
-		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.UrlComboBox"/>
+		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.UrlComboBoxBuilder"/>
 		
 		<ToolbarItem id      = "NewWindow"
 		             icon    = "Icons.16x16.BrowserWindow"

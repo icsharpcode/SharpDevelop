@@ -221,26 +221,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public void ShowHelp()
 		{
 			// Resolve expression at cursor and show help
-			#warning Reimplement ShowHelp()
-			/*
-			TextArea textArea = this.TextArea;
-			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(this.Adapter.FileName);
-			if (expressionFinder == null)
-				return;
-			string textContent = this.Text;
-			ExpressionResult expressionResult = expressionFinder.FindFullExpression(textContent, textArea.Caret.Offset);
-			string expression = expressionResult.Expression;
-			if (expression != null && expression.Length > 0) {
-				ResolveResult result = ParserService.Resolve(expressionResult, textArea.Caret.Line, textArea.Caret.Column, this.Adapter.FileName, textContent);
-				TypeResolveResult trr = result as TypeResolveResult;
-				if (trr != null) {
-					HelpProvider.ShowHelp(trr.ResolvedClass);
-				}
-				MemberResolveResult mrr = result as MemberResolveResult;
-				if (mrr != null) {
-					HelpProvider.ShowHelp(mrr.ResolvedMember);
-				}
-			}*/
+			var compilation = SD.ParserService.GetCompilationForFile(FileName);
+			var result = SD.ParserService.Resolve(Adapter, TextArea.Caret.Location, compilation);
+			TypeResolveResult trr = result as TypeResolveResult;
+			if (trr != null && trr.Type.GetDefinition() != null) {
+				HelpProvider.ShowHelp(trr.Type.GetDefinition());
+			}
+			MemberResolveResult mrr = result as MemberResolveResult;
+			if (mrr != null) {
+				HelpProvider.ShowHelp(mrr.Member);
+			}
 		}
 		#endregion
 		
