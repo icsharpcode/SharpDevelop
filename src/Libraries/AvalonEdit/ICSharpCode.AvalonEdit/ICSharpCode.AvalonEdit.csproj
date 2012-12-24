@@ -150,7 +150,6 @@
     <Compile Include="Editing\ImeNativeWrapper.cs" />
     <Compile Include="Editing\SelectionSegment.cs" />
     <Compile Include="Editing\ImeSupport.cs" />
-    <Compile Include="Folding\AbstractFoldingStrategy.cs" />
     <Compile Include="Folding\FoldingElementGenerator.cs" />
     <Compile Include="Folding\FoldingManager.cs" />
     <Compile Include="Folding\FoldingMargin.cs" />

@@ -2,7 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
+
+using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
@@ -16,6 +19,7 @@ namespace CSharpBinding.Parser
 	{
 		readonly SyntaxTree compilationUnit;
 		readonly ITextSourceVersion parsedVersion;
+		internal List<NewFolding> newFoldings;
 		
 		public CSharpFullParseInformation(CSharpUnresolvedFile unresolvedFile, ITextSourceVersion parsedVersion, SyntaxTree compilationUnit)
 			: base(unresolvedFile, isFullParseInformation: true)
@@ -45,6 +49,12 @@ namespace CSharpBinding.Parser
 			return (CSharpAstResolver)compilation.CacheManager.GetOrAddShared(
 				this, _ => new CSharpAstResolver(compilation, compilationUnit, UnresolvedFile)
 			);
+		}
+		
+		public override IEnumerable<NewFolding> GetFoldings(IDocument document, out int firstErrorOffset)
+		{
+			firstErrorOffset = -1;
+			return newFoldings;
 		}
 	}
 }

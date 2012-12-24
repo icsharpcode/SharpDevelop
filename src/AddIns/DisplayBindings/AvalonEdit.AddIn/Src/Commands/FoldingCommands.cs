@@ -63,7 +63,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 			
 			if (foldingManager != null) {
 				foreach (FoldingSection fm in foldingManager.AllFoldings) {
-					fm.IsFolded = ParserFoldingStrategy.IsDefinition(fm);
+					var newFolding = fm.Tag as NewFolding;
+					if (newFolding != null)
+						fm.IsFolded = newFolding.IsDefinition;
 				}
 			}
 		}

@@ -32,6 +32,12 @@ namespace ICSharpCode.AvalonEdit.Folding
 		public bool DefaultClosed { get; set; }
 		
 		/// <summary>
+		/// Gets/Sets whether the folding is considered to be a definition.
+		/// This has an effect on the 'Show Definitions only' command.
+		/// </summary>
+		public bool IsDefinition { get; set; }
+		
+		/// <summary>
 		/// Creates a new NewFolding instance.
 		/// </summary>
 		public NewFolding()

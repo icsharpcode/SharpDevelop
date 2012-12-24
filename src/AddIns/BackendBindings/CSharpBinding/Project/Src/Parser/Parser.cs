@@ -8,6 +8,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+
+using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
@@ -17,9 +19,7 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
@@ -87,15 +87,23 @@ namespace CSharpBinding.Parser
 			else
 				parseInfo = new ParseInformation(file, fullParseInformationRequested);
 			
-			AddCommentTags(cu, parseInfo.TagComments, fileContent, parseInfo.FileName);
+			IDocument document = fileContent as IDocument;
+			AddCommentTags(cu, parseInfo.TagComments, fileContent, parseInfo.FileName, ref document);
+			if (fullParseInformationRequested) {
+				if (document == null)
+					document = new ReadOnlyDocument(fileContent, parseInfo.FileName);
+				((CSharpFullParseInformation)parseInfo).newFoldings = CreateNewFoldings(cu, document);
+			}
 			
 			return parseInfo;
 		}
 		
-		void AddCommentTags(SyntaxTree cu, IList<TagComment> tagComments, ITextSource fileContent, FileName fileName)
+		#region AddCommentTags
+		void AddCommentTags(SyntaxTree cu, IList<TagComment> tagComments, ITextSource fileContent, FileName fileName, ref IDocument document)
 		{
-			ReadOnlyDocument document = null;
-			foreach (var comment in cu.Descendants.OfType<Comment>().Where(c => c.CommentType != CommentType.InactiveCode)) {
+			foreach (var comment in cu.Descendants.OfType<Comment>()) {
+				if (comment.CommentType == CommentType.InactiveCode)
+					continue;
 				int matchLength;
 				int index = comment.Content.IndexOfAny(TaskListTokens, 0, out matchLength);
 				if (index > -1) {
@@ -120,6 +128,17 @@ namespace CSharpBinding.Parser
 				}
 			}
 		}
+		#endregion
+		
+		#region CreateNewFoldings
+		List<NewFolding> CreateNewFoldings(SyntaxTree syntaxTree, IDocument document)
+		{
+			FoldingVisitor v = new FoldingVisitor();
+			v.document = document;
+			syntaxTree.AcceptVisitor(v);
+			return v.foldings;
+		}
+		#endregion
 		
 		public ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken)
 		{

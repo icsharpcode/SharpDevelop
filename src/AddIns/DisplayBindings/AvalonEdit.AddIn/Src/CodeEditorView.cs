@@ -490,25 +490,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			UpdateParseInformationForFolding(null);
 		}
 		
-		bool disableParseInformationFolding;
-		
-		public bool DisableParseInformationFolding {
-			get { return disableParseInformationFolding; }
-			set {
-				if (disableParseInformationFolding != value) {
-					disableParseInformationFolding = value;
-					UpdateParseInformationForFolding();
-				}
-			}
-		}
-		
 		public void UpdateParseInformationForFolding(ParseInformation parseInfo)
 		{
-			if (!CodeEditorOptions.Instance.EnableFolding || disableParseInformationFolding) {
+			if (!CodeEditorOptions.Instance.EnableFolding) {
 				parseInfo = null;
 			} else {
 				if (parseInfo == null || !parseInfo.IsFullParseInformation)
 					parseInfo = SD.ParserService.Parse(this.FileName, this.Document);
+				if (parseInfo != null && !parseInfo.SupportsFolding)
+					parseInfo = null;
 			}
 			
 			IServiceContainer container = this.Adapter.GetService(typeof(IServiceContainer)) as IServiceContainer;

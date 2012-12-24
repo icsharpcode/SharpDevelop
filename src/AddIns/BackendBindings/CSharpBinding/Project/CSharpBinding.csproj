@@ -72,6 +72,7 @@
     <Compile Include="Src\Completion\OverrideCompletionData.cs" />
     <Compile Include="Src\Completion\SegmentTrackingOutputFormatter.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormatter.cs" />
+    <Compile Include="Src\Parser\FoldingVisitor.cs" />
     <Compile Include="Src\Refactoring\InsertionPoint.cs" />
     <Compile Include="Src\Refactoring\IssueOptions.xaml.cs">
       <DependentUpon>IssueOptions.xaml</DependentUpon>
