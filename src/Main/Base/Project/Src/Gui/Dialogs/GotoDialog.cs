@@ -274,7 +274,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			foreach (IClass c in classes) {
 				string className = c.Name;
 				if (className.Length >= classPart.Length) {
-					if (CamelHumpsMatch(className,classPart)){
+					if (className.AutoCompleteWithCamelHumpsMatch(classPart)){
 						if (memberPart.Length > 0) {
 							AddAllMembersMatchingText(c, memberPart, false);
 						} else {
@@ -284,12 +284,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 				AddClasses(classPart, memberPart, list, c.InnerClasses);
 			}
-		}
-		
-		private bool CamelHumpsMatch(string entity,string entityPart)
-		{
-			return ((className.IndexOf(classPart, StringComparison.OrdinalIgnoreCase) >= 0) || (false));
-		}
+		}		
 		
 		const int MatchType_NoMatch = -1;
 		const int MatchType_ContainsMatch_CaseInsensitive = 0;
