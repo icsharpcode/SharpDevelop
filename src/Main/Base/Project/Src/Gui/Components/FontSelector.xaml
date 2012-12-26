@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="ICSharpCode.SharpDevelop.Gui.FontSelector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui"
+             xmlns:sd="http://icsharpcode.net/sharpdevelop/core">
+	<UserControl.Resources>
+		<local:SDFontSizeConverter x:Key="conv" />
+		<local:BoolToFontWeightConverter x:Key="fwConv" />
+	</UserControl.Resources>
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*" />
+			<ColumnDefinition Width="*" />
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="50" />
+		</Grid.RowDefinitions>
+		<Label Content="{sd:Localize Dialog.Options.IDEOptions.TextEditor.General.TextfontLabel}" />
+		<Label Grid.Column="1" Content="{sd:Localize Dialog.Options.IDEOptions.TextEditor.General.FontSizeLabel}" />
+		<ComboBox Grid.Row="1" Margin="3"  SelectedValuePath="FontFamily" SelectedValue="{Binding SelectedFontFamily, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:FontSelector}}}" ItemsSource="{Binding}">
+			<ComboBox.ItemTemplate>
+				<DataTemplate>
+					<TextBlock FontWeight="{Binding IsMonospaced, Converter={StaticResource fwConv}}" Text="{Binding FontName}"/>
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
+		<ComboBox Grid.Column="1" Grid.Row="1" Margin="3" SelectedValue="{Binding SelectedFontSize, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:FontSelector}}}" ItemsSource="{Binding Source={x:Static Member=local:FontSelector.FontSizes}}" />
+		<Border Grid.Row="2" Grid.ColumnSpan="2" Background="White" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<TextBlock Text="AaBbCcXxYyZz" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{Binding SelectedFontName, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:FontSelector}}}" FontSize="{Binding SelectedFontSize, Converter={StaticResource conv}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:FontSelector}}}" />
+		</Border>
+	</Grid>
+</UserControl>
