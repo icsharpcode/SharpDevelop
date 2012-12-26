@@ -300,7 +300,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return MatchType_NoMatch;
 			int indexInsensitive = itemText.IndexOf(searchText, StringComparison.OrdinalIgnoreCase);
 			if (indexInsensitive < 0)
+			{
+				if (itemText.AutoCompleteWithCamelHumpsMatch(searchText)) {
+					return MatchType_ContainsMatch_CaseInsensitive;
+				}
 				return MatchType_NoMatch;
+			}				
 			// This is a case insensitive match
 			int indexSensitive = itemText.IndexOf(searchText, StringComparison.Ordinal);
 			if (itemText.Length == searchText.Length) {
