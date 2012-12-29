@@ -15,6 +15,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -34,7 +35,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			DataContext = Fonts.SystemFontFamilies
 				.OrderBy(ff => ff.Source)
-				.AsParallel().AsOrdered()
 				.Select(ff => new FontFamilyInfo(ff))
 				.ToArray();
 			InitializeComponent();
@@ -98,21 +98,26 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (fontFamily == null)
 					throw new ArgumentNullException("fontFamily");
 				this.FontFamily = fontFamily;
-				Task.Run(() => DetectMonospaced(fontFamily)).FireAndForget();
+				DetectMonospaced();
+			}
+			
+			async void DetectMonospaced()
+			{
+				this.IsMonospaced = await Task.Run(() => DetectMonospaced(this.FontFamily));
 			}
 
-			void DetectMonospaced(FontFamily fontFamily)
+			bool DetectMonospaced(FontFamily fontFamily)
 			{
 				var tf = fontFamily.GetTypefaces().FirstOrDefault(t => t.Style == FontStyles.Normal);
 				if (tf == null)
-					return;
+					return false;
 				// determine if the length of i == m because I see no other way of
 				// getting if a font is monospaced or not.
 				FormattedText formatted = new FormattedText("i.", CultureInfo.InvariantCulture, FlowDirection.LeftToRight,
 				                                            tf, 12f, Brushes.Black);
 				FormattedText formatted2 = new FormattedText("mw", CultureInfo.InvariantCulture, FlowDirection.LeftToRight,
 				                                             tf, 12f, Brushes.Black);
-				this.IsMonospaced = formatted.Width == formatted2.Width;
+				return formatted.Width == formatted2.Width;
 			}
 
 			public FontFamily FontFamily { get; private set; }
