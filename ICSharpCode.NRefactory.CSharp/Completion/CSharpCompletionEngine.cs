@@ -720,6 +720,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					CSharpResolver csResolver;
 					AstNode n = identifierStart.Node;
+					if (n.Parent is NamedArgumentExpression)
+						n = n.Parent;
 					if (n != null && n.Parent is AnonymousTypeCreateExpression) {
 						AutoSelect = false;
 					}

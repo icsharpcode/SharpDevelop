@@ -5829,5 +5829,31 @@ class MainClass
 				Assert.IsNull(provider.Find("Foo"));
 			});
 		}
+
+		/// <summary>
+		/// Bug 9115 - Code completion fumbles on named lambda parameters.
+		/// </summary>
+		[Test]
+		public void TestBug9115 ()
+		{
+			
+			CombinedProviderTest(
+				@"using System;
+
+class MainClass
+{
+
+	static void Run(Action<int> act) { }
+	public static void Main (string[] args)
+	{
+		$Run(act: i$
+	}
+}
+
+
+", provider => {
+				Assert.IsFalse(provider.AutoSelect);
+			});
+		}
 	}
 }
