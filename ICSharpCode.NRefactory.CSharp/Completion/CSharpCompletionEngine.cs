@@ -189,7 +189,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			if (expr == null) 
 				return null;
-			
 			// do not complete <number>. (but <number>.<number>.)
 			if (expr.Node is PrimitiveExpression) {
 				var pexpr = (PrimitiveExpression)expr.Node;
@@ -2256,12 +2255,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				CreateFieldAction.GetValidTypes(astResolver, exprParent) .FirstOrDefault() :
 					null;
 			var result = new CompletionDataWrapper(this);
+			var lookup = new MemberLookup(
+				ctx.CurrentTypeDefinition,
+				Compilation.MainAssembly
+				);
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
-				var lookup = new MemberLookup(
-					ctx.CurrentTypeDefinition,
-					Compilation.MainAssembly
-					);
 				if (!(resolvedNode.Parent is UsingDeclaration || resolvedNode.Parent != null && resolvedNode.Parent.Parent is UsingDeclaration)) {
 					foreach (var cl in nr.Namespace.Types) {
 						if (hintType != null && hintType.Kind != TypeKind.Array && cl.Kind == TypeKind.Interface) {
@@ -2281,6 +2280,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (hintType != null && hintType.Kind != TypeKind.Array && nested.Kind == TypeKind.Interface) {
 						continue;
 					}
+					var def = nested.GetDefinition();
+					if (def != null && !lookup.IsAccessible (def, false))
+						continue;
 					result.AddType(nested, false);
 				}
 			}
@@ -2376,12 +2378,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (resolveResult == null /*|| resolveResult.IsError*/) {
 				return null;
 			}
-
+			
 			var lookup = new MemberLookup(
 				ctx.CurrentTypeDefinition,
 				Compilation.MainAssembly
 				);
-			
+
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
 				var namespaceContents = new CompletionDataWrapper(this);

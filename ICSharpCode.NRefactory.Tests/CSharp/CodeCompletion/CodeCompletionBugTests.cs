@@ -5804,5 +5804,30 @@ namespace TestConsole
 				Assert.IsNull(provider.Find("delegate"));
 			});
 		}
+
+		/// <summary>
+		/// Bug 9026 - Completion shows inaccesible members 
+		/// </summary>
+		[Test]
+		public void TestBug9026 ()
+		{
+			
+			CombinedProviderTest(
+				@"using System;
+class Test { class Foo {} }
+
+class MainClass
+{
+	public static void Main (string[] args)
+	{
+		$new Test.$
+	}
+}
+
+
+", provider => {
+				Assert.IsNull(provider.Find("Foo"));
+			});
+		}
 	}
 }
