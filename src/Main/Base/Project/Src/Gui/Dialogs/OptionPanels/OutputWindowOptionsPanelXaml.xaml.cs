@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// </summary>
 	public partial class OutputWindowOptionsPanelXaml :  OptionPanel
 	{
-		private static readonly string OutputWindowsProperty = "SharpDevelop.UI.OutputWindowOptions";
+		public static readonly string OutputWindowsProperty = "SharpDevelop.UI.OutputWindowOptions";
 		
 		public OutputWindowOptionsPanelXaml()
 		{
@@ -58,7 +58,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 			var font = new Font(new System.Drawing.FontFamily(fontSelectionPanel.SelectedFontName),
 			                     (float)fontSelectionPanel.SelectedFontSize);
-			Console.WriteLine(font.ToString());
+			if (font != null) {
+				properties.Set("DefaultFont", font.ToString());
+			}
 			font.Dispose();
 			return base.SaveOptions();
 		}

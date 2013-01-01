@@ -207,12 +207,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			textEditor.ContextMenu = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/CompilerMessageView/ContextMenu");
 			
-			properties = PropertyService.NestedProperties(OutputWindowOptionsPanel.OutputWindowsProperty);
+			properties = PropertyService.NestedProperties(OutputWindowOptionsPanelXaml.OutputWindowsProperty);
 			
-//			var font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", SD.WinForms.DefaultMonospacedFont.ToString()).ToString());
-			var font = OutputWindowOptionsPanelXaml.ParseFont(properties.Get("DefaultFont", SD.WinForms.DefaultMonospacedFont.ToString()).ToString());
-			textEditor.FontFamily = new FontFamily(font.FontFamily.Name);
-			textEditor.FontSize = Math.Round(font.Size * 96.0 / 72.0);
+			SetTextEditorFont();
+//			textEditor.FontFamily = new FontFamily(font.FontFamily.Name);
+//			textEditor.FontSize = Math.Round(font.Size * 96.0 / 72.0);
 			properties.PropertyChanged += new PropertyChangedEventHandler(PropertyChanged);
 			
 			MessageViewLinkElementGenerator.RegisterGenerators(textEditor.TextArea.TextView);
@@ -238,10 +237,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void SetWordWrap()
+		
+		private void SetWordWrap()
 		{
 			bool wordWrap = this.WordWrap;
 			textEditor.WordWrap = wordWrap;
+		}
+		
+		
+		private void SetTextEditorFont()
+		{
+			var font =  OutputWindowOptionsPanelXaml.ParseFont(properties.Get("DefaultFont",
+			                                                               SD.WinForms.DefaultMonospacedFont.ToString()).ToString());
+			textEditor.FontFamily = new FontFamily(font.FontFamily.Name);
+			textEditor.FontSize = Math.Round(font.Size * 96.0 / 72.0);
 		}
 		
 		#region Category handling
@@ -404,10 +413,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				ToolBarService.UpdateStatus(toolStrip.Items);
 			}
 			if (e.PropertyName == "DefaultFont") {
-				var font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", SD.WinForms.DefaultMonospacedFont.ToString()).ToString());
-				
-				textEditor.FontFamily = new FontFamily(font.FontFamily.Name);
-				textEditor.FontSize = Math.Round(font.Size * 96.0 / 72.0);
+				SetTextEditorFont();
+//				textEditor.FontFamily = new FontFamily(font.FontFamily.Name);
+//				textEditor.FontSize = Math.Round(font.Size * 96.0 / 72.0);
 			}
 		}
 		

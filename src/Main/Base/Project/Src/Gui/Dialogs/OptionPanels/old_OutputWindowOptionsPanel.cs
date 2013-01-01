@@ -9,22 +9,22 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// <summary>
 	/// The Output Window options panel.
 	/// </summary>
-	public class OutputWindowOptionsPanel : XmlFormsOptionPanel
+	public class old_OutputWindowOptionsPanel : XmlFormsOptionPanel
 	{
 		public static readonly string OutputWindowsProperty = "SharpDevelop.UI.OutputWindowOptions";
-		FontSelectionPanel fontSelectionPanel;
+		old_FontSelectionPanel fontSelectionPanel;
 		
-		public OutputWindowOptionsPanel()
+		public old_OutputWindowOptionsPanel()
 		{
 		}
 		
 		
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.SharpDevelop.Resources.OutputWindowOptionsPanel.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.SharpDevelop.Resources.old_OutputWindowOptionsPanel.xfrm"));
 			
 			Properties properties = PropertyService.NestedProperties(OutputWindowsProperty);
-			fontSelectionPanel = new FontSelectionPanel();
+			fontSelectionPanel = new old_FontSelectionPanel();
 			fontSelectionPanel.Dock = DockStyle.Fill;
 			ControlDictionary["FontGroupBox"].Controls.Add(fontSelectionPanel);
 			((CheckBox)ControlDictionary["wordWrapCheckBox"]).Checked = properties.Get("WordWrap", true);

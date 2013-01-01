@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// Description of FontSelectionPanel.
 	/// </summary>
 	[Obsolete("XMLForms-based FontSelectionPanel is obsolete, use FontSelector instead!")]
-	public class FontSelectionPanel : BaseSharpDevelopUserControl
+	public class old_FontSelectionPanel : BaseSharpDevelopUserControl
 	{
 		public string CurrentFontString {
 			get {
@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return null;
 			}
 			set {
-				CurrentFont = FontSelectionPanel.ParseFont(value);
+				CurrentFont = old_FontSelectionPanel.ParseFont(value);
 			}
 		}
 		
@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public FontSelectionPanel()
+		public old_FontSelectionPanel()
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.SharpDevelop.Resources.FontSelectionPanel.xfrm"));
 

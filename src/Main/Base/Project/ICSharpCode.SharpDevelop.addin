@@ -1257,7 +1257,7 @@
 			
 			<OptionPanel id    = "OutputWindowOptions"
 			             label = "${res:Dialog.Options.IDEOptions.OutputPanel.Title}"
-			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.OutputWindowOptionsPanel"/>
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.old_OutputWindowOptionsPanel"/>
 			
 			<OptionPanel id    = "OutputWindowOptions1"
 			             label = "${res:Dialog.Options.IDEOptions.OutputPanel.Title}"

@@ -643,12 +643,12 @@
     <Compile Include="Src\Internal\ConditionEvaluators\ActiveWindowStateEvaluator.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\OpenWindowStateEvaluator.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\DebuggerSupportsEvaluator.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\OutputWindowOptionsPanel.cs">
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\old_OutputWindowOptionsPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Pads\CompilerMessageView\FileLineReference.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\OutputTextLineParser.cs" />
-    <Compile Include="Src\Gui\Components\FontSelectionPanel.cs">
+    <Compile Include="Src\Gui\Components\old_FontSelectionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Project\Items\FileProjectItem.cs" />
@@ -736,7 +736,7 @@
     <EmbeddedResource Include="Resources\FontSelectionPanel.xfrm" />
     <EmbeddedResource Include="Resources\NewFileWithNameDialog.xfrm" />
     <EmbeddedResource Include="Resources\NewFileDialog.xfrm" />
-    <EmbeddedResource Include="Resources\OutputWindowOptionsPanel.xfrm" />
+    <EmbeddedResource Include="Resources\old_OutputWindowOptionsPanel.xfrm" />
     <EmbeddedResource Include="Resources\WordCountDialog.xfrm" />
     <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />
