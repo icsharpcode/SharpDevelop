@@ -209,8 +209,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			properties = PropertyService.NestedProperties(OutputWindowOptionsPanel.OutputWindowsProperty);
 			
-			var font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", SD.WinForms.DefaultMonospacedFont.ToString()).ToString());
-			
+//			var font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", SD.WinForms.DefaultMonospacedFont.ToString()).ToString());
+			var font = OutputWindowOptionsPanelXaml.ParseFont(properties.Get("DefaultFont", SD.WinForms.DefaultMonospacedFont.ToString()).ToString());
 			textEditor.FontFamily = new FontFamily(font.FontFamily.Name);
 			textEditor.FontSize = Math.Round(font.Size * 96.0 / 72.0);
 			properties.PropertyChanged += new PropertyChangedEventHandler(PropertyChanged);

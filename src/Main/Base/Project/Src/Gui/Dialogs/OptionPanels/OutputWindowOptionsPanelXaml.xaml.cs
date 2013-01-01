@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		}
 		
 		
-		private static Font ParseFont(string font)
+		public static Font ParseFont(string font)
 		{
 			try {
 				string[] descr = font.Split(new char[]{',', '='});
