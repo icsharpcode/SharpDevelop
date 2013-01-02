@@ -3188,7 +3188,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			"public", "internal", "protected", "private", "async"
 		};
 		static string[] typeLevelKeywords = new string [] {
-			"public", "internal", "protected", "private",
+			"public", "internal", "protected", "private", "async",
 			"class", "interface", "struct", "enum", "delegate",
 			"abstract", "sealed", "static", "unsafe", "partial",
 			"const", "event", "extern", "fixed","new", 
