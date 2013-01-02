@@ -363,6 +363,7 @@
     <Compile Include="CSharp\CodeActions\SortUsingsTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateEventInvocatorTests.cs" />
     <Compile Include="IndentationTests\IndentationTests.cs" />
+    <Compile Include="CSharp\CodeCompletion\ImportCompletionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">

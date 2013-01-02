@@ -129,7 +129,39 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			return Enumerable.Empty<ICompletionData>();
 		}
-		
+
+		/// <summary>
+		/// Gets the types that needs to be imported via using or full type name.
+		/// </summary>
+		public IEnumerable<ICompletionData> GetImportCompletionData(int offset)
+		{
+			var generalLookup = new MemberLookup (null, Compilation.MainAssembly);
+			SetOffset(offset);
+
+			// flatten usings
+			var namespaces = new List<INamespace>();
+			for (var n = ctx.CurrentUsingScope; n != null; n = n.Parent) {
+				namespaces.Add (n.Namespace);
+				foreach (var u in n.Usings)
+					namespaces.Add (u);
+			}
+
+			foreach (var type in Compilation.GetAllTypeDefinitions ()) {
+				if (!generalLookup.IsAccessible (type, false))
+					continue;	
+				if (namespaces.Any (n => n.FullName == type.Namespace))
+					continue;
+				bool useFullName = false;
+				foreach (var ns in namespaces) {
+					if (ns.GetTypeDefinition (type.Name, type.TypeParameterCount) != null) {
+						useFullName = true;
+						break;
+					}
+				}
+				yield return factory.CreateImportCompletionData (type, useFullName);
+			}
+		}
+
 		IEnumerable<string> GenerateNameProposals(AstType type)
 		{
 			if (type is PrimitiveType) {
