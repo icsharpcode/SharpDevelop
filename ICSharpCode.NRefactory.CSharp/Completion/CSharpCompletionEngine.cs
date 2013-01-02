@@ -1959,6 +1959,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					case "sealed":
 					case "override":
 					case "partial":
+					case "async":
 						declarationBegin = j;
 						break;
 					case "static":
@@ -1988,6 +1989,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					case "internal":
 					case "sealed":
 					case "override":
+					case "async":
 						declarationBegin = j;
 						break;
 					case "static":
@@ -3175,7 +3177,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			"unchecked", "const", "continue", "do", "finally", "fixed", "for", "foreach",
 			"goto", "if", "lock", "return", "stackalloc", "switch", "throw", "try", "unsafe", 
 			"using", "while", "yield",
-			"catch"
+			"catch", "await"
 		};
 		static string[] globalLevelKeywords = new string [] {
 			"namespace", "using", "extern", "public", "internal", 
@@ -3183,7 +3185,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			"abstract", "sealed", "static", "unsafe", "partial"
 		};
 		static string[] accessorModifierKeywords = new string [] {
-			"public", "internal", "protected", "private"
+			"public", "internal", "protected", "private", "async"
 		};
 		static string[] typeLevelKeywords = new string [] {
 			"public", "internal", "protected", "private",
