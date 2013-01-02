@@ -125,7 +125,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		IList<int> disabledWarnings = new List<int>();
 		
 		/// <summary>
-		/// Allows treating specific warnings as errors without setting <see cref="TreatWarningsAsErrors"/> to true.
+		/// Disables the specified warnings.
 		/// </summary>
 		public IList<int> DisabledWarnings {
 			get { return disabledWarnings; }
