@@ -54,10 +54,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 			}
 			
 			foreach (var node in selected) {
-				if (!(node is Statement))
+				if (!(node is Statement) && !(node is Comment) && !(node is PreProcessorDirective))
 					yield break;
 			}
-			var action = CreateFromStatements (context, new List<Statement> (selected.OfType<Statement> ()));
+			var action = CreateFromStatements (context, new List<AstNode> (selected));
 			if (action != null)
 				yield return action;
 		}
@@ -95,7 +95,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 			});
 		}
 		
-		CodeAction CreateFromStatements(RefactoringContext context, List<Statement> statements)
+		CodeAction CreateFromStatements(RefactoringContext context, List<AstNode> statements)
 		{
 			if (!(statements [0].Parent is Statement))
 				return null;
@@ -108,9 +108,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 					Body = new BlockStatement()
 				};
 				bool usesNonStaticMember = false;
-				foreach (Statement node in statements) {
+				foreach (var node in statements) {
 					usesNonStaticMember |= StaticVisitor.UsesNotStaticMember(context, node);
-					method.Body.Add(node.Clone());
+					if (node is Statement) {
+						method.Body.Add((Statement)node.Clone());
+					} else {
+						method.Body.AddChildUnsafe (node.Clone (), node.Role);
+					}
 				}
 				if (!usesNonStaticMember)
 					method.Modifiers |= Modifiers.Static;

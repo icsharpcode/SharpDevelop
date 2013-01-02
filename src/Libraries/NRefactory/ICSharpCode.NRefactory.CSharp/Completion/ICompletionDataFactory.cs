@@ -72,5 +72,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		IEnumerable<ICompletionData> CreateCodeTemplateCompletionData ();
 		
 		IEnumerable<ICompletionData> CreatePreProcessorDefinesCompletionData ();
+
+		/// <summary>
+		/// Creates a completion data that adds the required using for the created type.
+		/// </summary>
+		/// <param name="type">The type to import</param>
+		/// <param name="useFullName">If set to true the full name of the type needs to be used.</param>
+		ICompletionData CreateImportCompletionData(IType type, bool useFullName);
 	}
 }

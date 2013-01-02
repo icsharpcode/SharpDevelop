@@ -53,10 +53,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public IProjectContent GetProjectContent(string projectFileName)
 		{
 			IProjectContent pc;
-			if (projectDictionary.TryGetValue(projectFileName, out pc))
-				return pc;
-			else
-				return null;
+			lock (projectDictionary) {
+				if (projectDictionary.TryGetValue(projectFileName, out pc))
+					return pc;
+				else
+					return null;
+			}
 		}
 		
 		public ICompilation GetCompilation(IProjectContent project)
@@ -74,6 +76,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentNullException("compilation");
 			if (!dictionary.TryAdd(project, compilation))
 				throw new InvalidOperationException();
+			if (project.ProjectFileName != null) {
+				lock (projectDictionary) {
+					projectDictionary.Add(project.ProjectFileName, project);
+				}
+			}
 		}
 	}
 }

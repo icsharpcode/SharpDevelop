@@ -120,7 +120,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			bool alreadyImplemented;
 			
 			// Stub out non-implemented events defined by @iface
-			foreach (var evGroup in interfaceType.GetEvents (e => !e.IsSynthetic && e.DeclaringTypeDefinition.ReflectionName == def.ReflectionName).GroupBy (m => m.DeclaringType).Reverse ())
+			foreach (var evGroup in interfaceType.GetEvents (e => !e.IsSynthetic).GroupBy (m => m.DeclaringType).Reverse ())
 				foreach (var ev in evGroup) {
 					bool needsExplicitly = explicitly;
 					alreadyImplemented = implementingType.GetAllBaseTypeDefinitions().Any(
@@ -153,7 +153,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			
 			// Stub out non-implemented properties defined by @iface
-			foreach (var propGroup in interfaceType.GetProperties (p => !p.IsSynthetic && p.DeclaringTypeDefinition.ReflectionName == def.ReflectionName).GroupBy (m => m.DeclaringType).Reverse ())
+			foreach (var propGroup in interfaceType.GetProperties (p => !p.IsSynthetic).GroupBy (m => m.DeclaringType).Reverse ())
 				foreach (var prop in propGroup) {
 					bool needsExplicitly = explicitly;
 					alreadyImplemented = false;
