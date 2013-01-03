@@ -17,6 +17,7 @@
 		       Content="{core:Localize Dialog.Options.IDEOptions.EditStandardHeaderPanel.HeaderLabel}"></Label>
 		
 		<TextBox x:Name="headerTextBox"
+		         AcceptsReturn="True"
 		         TextChanged="HeaderTextBox_TextChanged"
 		         Margin="0,2,0,0" Height="200"></TextBox>
 	
