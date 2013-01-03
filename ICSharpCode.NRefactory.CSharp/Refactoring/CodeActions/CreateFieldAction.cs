@@ -276,7 +276,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			var type = GetValidTypes(context.Resolver, expr).ToArray();
 			var typeInference = new TypeInference(context.Compilation);
-			typeInference.Algorithm = TypeInferenceAlgorithm.ImprovedReturnAllResults;
+			typeInference.Algorithm = TypeInferenceAlgorithm.Improved;
 			var inferedType = typeInference.FindTypeInBounds(type, emptyTypes);
 			if (inferedType.Kind == TypeKind.Unknown)
 				return new PrimitiveType("object");
@@ -287,7 +287,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			var type = GetValidTypes(context.Resolver, expr).ToArray();
 			var typeInference = new TypeInference(context.Compilation);
-			typeInference.Algorithm = TypeInferenceAlgorithm.ImprovedReturnAllResults;
+			typeInference.Algorithm = TypeInferenceAlgorithm.Improved;
 			var inferedType = typeInference.FindTypeInBounds(type, emptyTypes);
 			return inferedType;
 		}

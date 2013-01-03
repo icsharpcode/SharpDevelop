@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				foreach (var block in blocks)
 				{
 					var originalNodes = block.ToArray();
-					var sortedNodes = SortUsingBlock(originalNodes, context).ToArray();
+					var sortedNodes = UsingHelper.SortUsingBlock(originalNodes, context).ToArray();
 
 					for (var i = 0; i < originalNodes.Length; ++i)
 						script.Replace(originalNodes[i], sortedNodes[i].Clone());
@@ -67,79 +67,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			for (var node = firstNode; IsUsingDeclaration(node); node = node.NextSibling)
 				yield return node;
-		}
-
-		private static IEnumerable<AstNode> SortUsingBlock(IEnumerable<AstNode> nodes, RefactoringContext context)
-		{
-			var infos = nodes.Select(_ => new UsingInfo(_, context));
-			var orderedInfos = infos.OrderBy(_ => _, new UsingInfoComparer());
-			var orderedNodes = orderedInfos.Select(_ => _.Node);
-
-			return orderedNodes;
-		}
-
-
-		private sealed class UsingInfo
-		{
-			public AstNode Node { get; private set; }
-
-			public string Alias { get; private set; }
-			public string Name { get; private set; }
-
-			public bool IsAlias { get; private set; }
-			public bool IsAssembly { get; private set; }
-			public bool IsSystem { get; private set; }
-
-			public UsingInfo(AstNode node, RefactoringContext context)
-			{
-				var importAndAlias = GetImportAndAlias(node);
-
-				Node = node;
-
-				Alias = importAndAlias.Item2;
-				Name = importAndAlias.Item1.ToString();
-
-				IsAlias = Alias != null;
-
-				var result = context.Resolve(importAndAlias.Item1) as NamespaceResolveResult;
-				var mainSourceAssembly = result != null ? result.Namespace.ContributingAssemblies.First() : null;
-				var unresolvedAssembly = mainSourceAssembly != null ? mainSourceAssembly.UnresolvedAssembly : null;
-				IsAssembly = unresolvedAssembly is DefaultUnresolvedAssembly;
-
-				IsSystem = IsAssembly && Name.StartsWith("System");
-			}
-
-			private static Tuple<AstType, string> GetImportAndAlias(AstNode node)
-			{
-				var plainUsing = node as UsingDeclaration;
-				if (plainUsing != null)
-					return Tuple.Create(plainUsing.Import, (string)null);
-				
-				var aliasUsing = node as UsingAliasDeclaration;
-				if (aliasUsing != null)
-					return Tuple.Create(aliasUsing.Import, aliasUsing.Alias);
-
-				throw new InvalidOperationException(string.Format("Invalid using node: {0}", node));
-			}
-		}
-
-		private sealed class UsingInfoComparer: IComparer<UsingInfo>
-		{
-			public int Compare(UsingInfo x, UsingInfo y)
-			{
-				if (x.IsAlias != y.IsAlias)
-					return x.IsAlias && !y.IsAlias ? 1 : -1;
-				else if (x.IsAssembly != y.IsAssembly)
-					return x.IsAssembly && !y.IsAssembly ? -1 : 1;
-				else if (x.IsSystem != y.IsSystem)
-					return x.IsSystem && !y.IsSystem ? -1 : 1;
-				else if (x.Alias != y.Alias)
-					return Comparer<string>.Default.Compare(x.Alias, y.Alias);
-				else if (x.Name != y.Name)
-					return Comparer<string>.Default.Compare(x.Name, y.Name);
-				else
-					return 0;
-			}
 		}
 	}
 }

@@ -1178,7 +1178,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			// traverse AST backwards until the next non-whitespace node
 			for (AstNode node = entityDeclaration.PrevSibling; node != null && node.NodeType == NodeType.Whitespace; node = node.PrevSibling) {
 				Comment c = node as Comment;
-				if (c != null && (c.CommentType == CommentType.Documentation || c.CommentType == CommentType.MultiLineDocumentation)) {
+				if (c != null && c.IsDocumentation) {
 					if (documentation == null)
 						documentation = new List<string>();
 					if (c.CommentType == CommentType.MultiLineDocumentation) {

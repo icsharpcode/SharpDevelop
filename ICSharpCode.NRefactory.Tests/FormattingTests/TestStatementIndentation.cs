@@ -2010,6 +2010,29 @@ if (b) {
 	}
 }");
 		}
+
+		[Test]
+		public void TestUsingInsideNamespace()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			policy.UsingPlacement = UsingPlacement.InsideNamespace;
+
+			Test(policy, @"namespace TestNamespace
+{
+using System;
+
+	class Test
+	{
+	}
+}", @"namespace TestNamespace
+{
+	using System;
+
+	class Test
+	{
+	}
+}");
+		}
 		
 	}
 }
