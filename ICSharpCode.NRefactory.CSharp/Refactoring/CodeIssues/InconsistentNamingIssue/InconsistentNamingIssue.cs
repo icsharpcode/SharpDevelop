@@ -55,8 +55,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			void CheckName(TypeDeclaration node, AffectedEntity entity, Identifier identifier, Modifiers accessibilty)
 			{
-				ResolveResult resolveResult = ctx.Resolve(node);
-				var type = ((TypeResolveResult)resolveResult).Type;
+				TypeResolveResult resolveResult = ctx.Resolve(node) as TypeResolveResult;
+				if (resolveResult == null)
+					return;
+				var type = resolveResult.Type;
 				if (type.DirectBaseTypes.Any(t => t.FullName == "System.Attribute")) {
 					if (CheckNamedResolveResult(resolveResult, node, AffectedEntity.CustomAttributes, identifier, accessibilty)) {
 						return;
