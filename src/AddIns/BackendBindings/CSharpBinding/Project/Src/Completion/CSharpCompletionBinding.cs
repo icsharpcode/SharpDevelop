@@ -60,6 +60,7 @@ namespace CSharpBinding.Completion
 					triggerWordLength = 0;
 				}
 				completionData = cce.GetCompletionData(startPos, true);
+				completionData = completionData.Concat(cce.GetImportCompletionData(startPos));
 			} else {
 				startPos = editor.Caret.Offset;
 				if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {

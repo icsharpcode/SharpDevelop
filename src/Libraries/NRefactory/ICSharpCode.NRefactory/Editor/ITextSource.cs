@@ -186,6 +186,9 @@ namespace ICSharpCode.NRefactory.Editor
 		/// <summary>
 		/// Gets whether this checkpoint belongs to the same document as the other checkpoint.
 		/// </summary>
+		/// <remarks>
+		/// Returns false when given <c>null</c>.
+		/// </remarks>
 		bool BelongsToSameDocumentAs(ITextSourceVersion other);
 		
 		/// <summary>

@@ -11,6 +11,7 @@ namespace CSharpBinding.Refactoring
 		public SDRedundantUsingIssue()
 		{
 			base.NamespacesToKeep.Add("System");
+			base.NamespacesToKeep.Add("System.Linq");
 		}
 	}
 }

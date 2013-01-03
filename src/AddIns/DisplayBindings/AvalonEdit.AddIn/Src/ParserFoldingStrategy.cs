@@ -8,6 +8,7 @@ using System.Linq;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Parser;
 
@@ -44,6 +45,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public void UpdateFoldings(ParseInformation parseInfo)
 		{
+			if (!textArea.Document.Version.Equals(parseInfo.ParsedVersion)) {
+				SD.Log.Debug("Folding update ignored; parse information is outdated version");
+				return;
+			}
+			SD.Log.Debug("Update Foldings");
 			int firstErrorOffset = -1;
 			IEnumerable<NewFolding> newFoldings = parseInfo.GetFoldings(textArea.Document, out firstErrorOffset);
 			newFoldings = newFoldings.OrderBy(f => f.StartOffset);

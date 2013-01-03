@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using CSharpBinding.Parser;
+using CSharpBinding.Refactoring;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;

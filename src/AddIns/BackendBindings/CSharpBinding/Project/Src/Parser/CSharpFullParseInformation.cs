@@ -18,17 +18,15 @@ namespace CSharpBinding.Parser
 	public class CSharpFullParseInformation : ParseInformation
 	{
 		readonly SyntaxTree compilationUnit;
-		readonly ITextSourceVersion parsedVersion;
 		internal List<NewFolding> newFoldings;
 		
 		public CSharpFullParseInformation(CSharpUnresolvedFile unresolvedFile, ITextSourceVersion parsedVersion, SyntaxTree compilationUnit)
-			: base(unresolvedFile, isFullParseInformation: true)
+			: base(unresolvedFile, parsedVersion, isFullParseInformation: true)
 		{
 			if (unresolvedFile == null)
 				throw new ArgumentNullException("unresolvedFile");
 			if (compilationUnit == null)
 				throw new ArgumentNullException("compilationUnit");
-			this.parsedVersion = parsedVersion;
 			this.compilationUnit = compilationUnit;
 		}
 		
@@ -38,10 +36,6 @@ namespace CSharpBinding.Parser
 		
 		public SyntaxTree SyntaxTree {
 			get { return compilationUnit; }
-		}
-		
-		public ITextSourceVersion ParsedVersion {
-			get { return parsedVersion; }
 		}
 		
 		public CSharpAstResolver GetResolver(ICompilation compilation)

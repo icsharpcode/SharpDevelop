@@ -70,7 +70,7 @@ namespace ICSharpCode.XamlBinding
 			if (fullParseInformationRequested)
 				parseInfo = new XamlFullParseInformation(unresolvedFile, document, fileContent);
 			else
-				parseInfo = new ParseInformation(unresolvedFile, false);
+				parseInfo = new ParseInformation(unresolvedFile, fileContent.Version, false);
 			AddTagComments(document, parseInfo, fileContent);
 			return parseInfo;
 		}

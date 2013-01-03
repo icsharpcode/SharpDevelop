@@ -41,6 +41,7 @@ namespace ICSharpCode.SharpDevelop.Logging
 		
 		static void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
 		{
+			LoggingService.Error("Unhandled WPF exception", e.Exception);
 			ShowErrorBox(e.Exception, "Unhandled WPF exception", false);
 			e.Handled = true;
 		}

@@ -14,7 +14,7 @@ namespace ICSharpCode.XamlBinding
 		readonly ITextSource text;
 		
 		public XamlFullParseInformation(XamlUnresolvedFile unresolvedFile, AXmlDocument document, ITextSource text)
-			: base(unresolvedFile, true)
+			: base(unresolvedFile, text.Version, true)
 		{
 			if (unresolvedFile == null)
 				throw new ArgumentNullException("unresolvedFile");

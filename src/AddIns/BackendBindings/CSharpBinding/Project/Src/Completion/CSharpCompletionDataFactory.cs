@@ -115,7 +115,11 @@ namespace CSharpBinding.Completion
 		
 		ICompletionData ICompletionDataFactory.CreateImportCompletionData(IType type, bool useFullName)
 		{
-			return new CompletionData("TODO: import completion");
+			ITypeDefinition typeDef = type.GetDefinition();
+			if (typeDef != null)
+				return new ImportCompletionData(typeDef, contextAtCaret, useFullName);
+			else
+				throw new InvalidOperationException("Should never happen");
 		}
 		#endregion
 		

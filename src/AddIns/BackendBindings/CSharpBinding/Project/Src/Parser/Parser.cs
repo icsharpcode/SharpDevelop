@@ -85,7 +85,7 @@ namespace CSharpBinding.Parser
 			if (fullParseInformationRequested)
 				parseInfo = new CSharpFullParseInformation(file, fileContent.Version, cu);
 			else
-				parseInfo = new ParseInformation(file, fullParseInformationRequested);
+				parseInfo = new ParseInformation(file, fileContent.Version, fullParseInformationRequested);
 			
 			IDocument document = fileContent as IDocument;
 			AddCommentTags(cu, parseInfo.TagComments, fileContent, parseInfo.FileName, ref document);

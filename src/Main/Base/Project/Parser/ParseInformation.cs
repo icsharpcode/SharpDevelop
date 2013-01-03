@@ -21,13 +21,15 @@ namespace ICSharpCode.SharpDevelop.Parser
 	{
 		readonly IUnresolvedFile unresolvedFile;
 		IList<TagComment> tagComments = new List<TagComment>();
+		readonly ITextSourceVersion parsedVersion;
 		readonly bool isFullParseInformation;
 		
-		public ParseInformation(IUnresolvedFile unresolvedFile, bool isFullParseInformation)
+		public ParseInformation(IUnresolvedFile unresolvedFile, ITextSourceVersion parsedVersion, bool isFullParseInformation)
 		{
 			if (unresolvedFile == null)
 				throw new ArgumentNullException("unresolvedFile");
 			this.unresolvedFile = unresolvedFile;
+			this.parsedVersion = parsedVersion;
 			this.isFullParseInformation = isFullParseInformation;
 		}
 		
@@ -52,6 +54,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 			get { return tagComments; }
 		}
 		
+		public ITextSourceVersion ParsedVersion {
+			get { return parsedVersion; }
+		}
+		
 		#region Folding
 		/// <summary>
 		/// Gets whether this <see cref="ParseInformation"/> instance supports folding.
@@ -66,8 +72,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// The base implementation of this method uses the unresolved file to produce
 		/// fold markers for all type defintions and methods.
 		/// </summary>
-		/// <param name="document"></param>
-		/// <param name="firstErrorOffset"></param>
+		/// <param name="document">The document for which to get the foldings</param>
+		/// <param name="firstErrorOffset">The first position of a parse error. Existing foldings starting after
+		/// this offset will be kept even if they don't appear in <paramref name="newFoldings"/>.
+		/// Use -1 for this parameter if there were no parse errors.</param>
 		/// <returns></returns>
 		public virtual IEnumerable<NewFolding> GetFoldings(IDocument document, out int firstErrorOffset)
 		{

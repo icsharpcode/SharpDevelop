@@ -69,6 +69,10 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		protected virtual void DeregisterServices(TextView textView)
 		{
 			if (highlighter != null) {
+				if (isInHighlightingGroup) {
+					highlighter.EndHighlighting();
+					isInHighlightingGroup = false;
+				}
 				highlighter.HighlightingStateChanged -= OnHighlightStateChanged;
 				// remove highlighter if it is registered
 				if (textView.Services.GetService(typeof(IHighlighter)) == highlighter)
@@ -136,6 +140,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			this.textView = null;
 		}
 		
+		bool isInHighlightingGroup;
+		
 		void textView_VisualLineConstructionStarting(object sender, VisualLineConstructionStartEventArgs e)
 		{
 			if (highlighter != null) {
@@ -144,7 +150,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				// We need to detect this case and issue a redraw (through TextViewDocumentHighligher.OnHighlightStateChanged)
 				// before the visual line construction reuses existing lines that were built using the invalid highlighting state.
 				lineNumberBeingColorized = e.FirstLineInView.LineNumber - 1;
-				highlighter.BeginHighlighting();
+				if (!isInHighlightingGroup) {
+					// avoid opening group twice if there was an exception during the previous visual line construction
+					highlighter.BeginHighlighting();
+					isInHighlightingGroup = true;
+				}
 				highlighter.UpdateHighlightingState(lineNumberBeingColorized);
 				lineNumberBeingColorized = 0;
 			}
@@ -152,8 +162,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		
 		void textView_VisualLinesChanged(object sender, EventArgs e)
 		{
-			if (highlighter != null) {
+			if (highlighter != null && isInHighlightingGroup) {
 				highlighter.EndHighlighting();
+				isInHighlightingGroup = false;
 			}
 		}
 		

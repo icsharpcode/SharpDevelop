@@ -6,6 +6,7 @@ using System.ComponentModel.Design;
 using System.Threading;
 
 using CSharpBinding.Parser;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
@@ -28,6 +29,26 @@ namespace CSharpBinding.Refactoring
 		readonly TextLocation location;
 		volatile IDocument document;
 		int selectionStart, selectionLength;
+		
+		public static SDRefactoringContext Create(ITextEditor editor, CancellationToken cancellationToken)
+		{
+			return Create(editor.FileName, editor.Document, editor.Caret.Location, cancellationToken);
+		}
+		
+		public static SDRefactoringContext Create(FileName fileName, ITextSource textSource, TextLocation location, CancellationToken cancellationToken)
+		{
+			var parseInfo = SD.ParserService.Parse(fileName, textSource, cancellationToken: cancellationToken) as CSharpFullParseInformation;
+			var compilation = SD.ParserService.GetCompilationForFile(fileName);
+			CSharpAstResolver resolver;
+			if (parseInfo != null) {
+				resolver = parseInfo.GetResolver(compilation);
+			} else {
+				// create dummy refactoring context
+				resolver = new CSharpAstResolver(compilation, new SyntaxTree());
+			}
+			var context = new SDRefactoringContext(textSource, resolver, new TextLocation(0, 0), 0, 0, cancellationToken);
+			return context;
+		}
 		
 		public SDRefactoringContext(ITextSource textSource, CSharpAstResolver resolver, TextLocation location, int selectionStart, int selectionLength, CancellationToken cancellationToken)
 			: base(resolver, cancellationToken)

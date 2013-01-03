@@ -151,12 +151,7 @@ namespace CSharpBinding.Refactoring
 		SearchedFile SearchForIssues(FileName fileName, ITextSource fileContent, IEnumerable<IssueManager.IssueProvider> providers, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var parseInfo = SD.ParserService.Parse(fileName, fileContent, cancellationToken: cancellationToken) as CSharpFullParseInformation;
-			if (parseInfo == null)
-				return null;
-			var compilation = SD.ParserService.GetCompilationForFile(fileName);
-			var resolver = parseInfo.GetResolver(compilation);
-			var context = new SDRefactoringContext(fileContent, resolver, new TextLocation(0, 0), 0, 0, cancellationToken);
+			var context = SDRefactoringContext.Create(fileName, fileContent, TextLocation.Empty, cancellationToken);
 			ReadOnlyDocument document = null;
 			IHighlighter highlighter = null;
 			var results = new List<SearchResultMatch>();
@@ -208,13 +203,8 @@ namespace CSharpBinding.Refactoring
 				documentWasLoadedFromDisk = true;
 				document = new TextDocument(SD.FileService.GetFileContent(fileName)) { FileName = fileName };
 			}
-			var parseInfo = SD.ParserService.Parse(fileName, document, cancellationToken: cancellationToken) as CSharpFullParseInformation;
-			if (parseInfo == null)
-				return Enumerable.Empty<SearchResultMatch>();
 			
-			var compilation = SD.ParserService.GetCompilationForFile(fileName);
-			var resolver = parseInfo.GetResolver(compilation);
-			var context = new SDRefactoringContext(document, resolver, new TextLocation(0, 0), 0, 0, cancellationToken);
+			var context = SDRefactoringContext.Create(fileName, document, TextLocation.Empty, cancellationToken);
 			List<CodeIssue> allIssues = new List<CodeIssue>();
 			bool documentWasChanged = false;
 			foreach (var provider in providers) {
@@ -231,13 +221,8 @@ namespace CSharpBinding.Refactoring
 						}
 					}
 					documentWasChanged = true;
-					// Update parseInfo etc. now that we've modified the document
-					parseInfo = SD.ParserService.Parse(fileName, document, cancellationToken: cancellationToken) as CSharpFullParseInformation;
-					if (parseInfo == null)
-						return Enumerable.Empty<SearchResultMatch>();
-					compilation = SD.ParserService.GetCompilationForFile(fileName);
-					resolver = parseInfo.GetResolver(compilation);
-					context = new SDRefactoringContext(document, resolver, new TextLocation(0, 0), 0, 0, cancellationToken);
+					// Update context now that we've modified the document
+					context = SDRefactoringContext.Create(fileName, document, TextLocation.Empty, cancellationToken);
 					// Find remaining issues:
 					allIssues.AddRange(provider.GetIssues(context));
 				} else {

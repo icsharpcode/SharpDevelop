@@ -348,7 +348,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			if (unresolvedFile == null)
 				throw new ArgumentNullException("unresolvedFile");
 			FreezableHelper.Freeze(unresolvedFile);
-			var newParseInfo = new ParseInformation(unresolvedFile, false);
+			var newParseInfo = new ParseInformation(unresolvedFile, null, false);
 			lock (this) {
 				int index = FindIndexForProject(project);
 				if (index >= 0) {
