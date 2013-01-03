@@ -52,7 +52,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
 			{
 				var typeResolveResult = ctx.Resolve(typeDeclaration);
-				var newTypeParameters = typeResolveResult.Type.GetDefinition().TypeParameters;
+				var typeDefinition = typeResolveResult.Type.GetDefinition();
+				if (typeDefinition == null)
+					return;
+				var newTypeParameters = typeDefinition.TypeParameters;
 
 				var oldTypeParameters = availableTypeParameters; 
 				availableTypeParameters = Concat(availableTypeParameters, newTypeParameters);
