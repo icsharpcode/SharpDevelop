@@ -342,4 +342,20 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		private void Private() {}
 		void None() {}
 	}
+
+	public class ConstantFieldTest
+	{
+		public const byte Cb = 42;
+		public const sbyte Csb = 42;
+		public const char Cc = '\x42';
+		public const short Cs = 42;
+		public const ushort Cus = 42;
+		public const int Ci = 42;
+		public const uint Cui = 42;
+		public const long Cl = 42;
+		public const ulong Cul = 42;
+		public const double Cd = 42;
+		public const float Cf = 42;
+		public const decimal Cm = 42;
+	}
 }
