@@ -210,6 +210,7 @@
 		     or you can add NR5 code action providers using <CSharpCodeActionProvider> -->
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.AddAnotherAccessorAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.AddCatchTypeAction" />
+		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.AddUsingAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CheckIfParameterIsNullAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertAnonymousDelegateToLambdaAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertAsToCastAction" />

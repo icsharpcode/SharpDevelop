@@ -16,6 +16,9 @@ using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace CSharpBinding.Completion
 {
+	/// <summary>
+	/// Completion item that introduces a using declaration.
+	/// </summary>
 	class ImportCompletionData : EntityCompletionData
 	{
 		string insertUsing;
@@ -42,11 +45,7 @@ namespace CSharpBinding.Completion
 				SD.Log.Debug("Insert using '" + insertUsing + "'");
 				var refactoringContext = SDRefactoringContext.Create(context.Editor, CancellationToken.None);
 				using (var script = refactoringContext.StartScript()) {
-					// TODO: sort usings; insert inside namespace if other usings are there; etc.
-					var prevUsing = refactoringContext.RootNode.Children.LastOrDefault(p => p is UsingDeclaration);
-					if (prevUsing != null) {
-						script.InsertAfter(prevUsing, new UsingDeclaration(insertUsing));
-					}
+					UsingHelper.InsertUsing(refactoringContext, script, new UsingDeclaration(insertUsing));
 				}
 			}
 		}
