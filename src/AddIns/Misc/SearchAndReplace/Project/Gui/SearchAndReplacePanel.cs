@@ -100,33 +100,37 @@ namespace SearchAndReplace
 		void FindAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			using (var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor()) {
-				monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
-				try {
-					var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(false) : null);
-					var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
-					var results = SearchManager.FindAllParallel(strategy, location, monitor);
-					SearchManager.ShowSearchResults(SearchOptions.FindPattern, results);
-				} catch (SearchPatternException ex) {
-					MessageService.ShowError(ex.Message);
-				} catch (OperationCanceledException) {}
+			var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(false) : null);
+			ISearchStrategy strategy;
+			try {
+				strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
+			} catch (SearchPatternException ex) {
+				MessageService.ShowError(ex.Message);
+				return;
 			}
+			// No using block for the monitor; it is disposed when the asynchronous search finishes
+			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
+			monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
+			var results = SearchManager.FindAllParallel(strategy, location, monitor);
+			SearchManager.ShowSearchResults(SearchOptions.FindPattern, results);
 		}
 		
 		void BookmarkAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			using (var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor()) {
-				monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
-				try {
-					var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(false) : null);
-					var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
-					var results = SearchManager.FindAllParallel(strategy, location, monitor);
-					SearchManager.MarkAll(results);
-				} catch (SearchPatternException ex) {
-					MessageService.ShowError(ex.Message);
-				} catch (OperationCanceledException) {}
+			var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(false) : null);
+			ISearchStrategy strategy;
+			try {
+				strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
+			} catch (SearchPatternException ex) {
+				MessageService.ShowError(ex.Message);
+				return;
 			}
+			// No using block for the monitor; it is disposed when the asynchronous search finishes
+			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
+			monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
+			var results = SearchManager.FindAllParallel(strategy, location, monitor);
+			SearchManager.MarkAll(results);
 		}
 		
 		void ReplaceAllButtonClicked(object sender, EventArgs e)
