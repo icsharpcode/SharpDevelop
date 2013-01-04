@@ -1,4 +1,4 @@
-// 
+﻿// 
 // GatherVisitorBase.cs
 //  
 // Author:
@@ -78,6 +78,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			FoundIssues.Add(new CodeIssue(title, start, end, fix != null ? new CodeAction(title, fix) : null));
 		}
 
+		protected void AddIssue(AstNode node, string title, CodeAction fix)
+		{
+			FoundIssues.Add(new CodeIssue(title, node.StartLocation, node.EndLocation, fix));
+		}
+
+		protected void AddIssue(TextLocation start, TextLocation end, string title, CodeAction fix)
+		{
+			FoundIssues.Add(new CodeIssue (title, start, end, fix));
+		}
+		
 		protected void AddIssue(AstNode node, string title, IEnumerable<CodeAction> fixes)
 		{
 			FoundIssues.Add(new CodeIssue(title, node.StartLocation, node.EndLocation, fixes));
@@ -87,10 +97,5 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			FoundIssues.Add(new CodeIssue (title, start, end, fixes));
 		}
-
-
 	}
-		
-	
 }
-

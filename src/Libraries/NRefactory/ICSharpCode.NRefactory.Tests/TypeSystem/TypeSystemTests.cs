@@ -1228,5 +1228,29 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(Accessibility.Private, type.Methods.Single(m => m.Name == "Private").Accessibility);
 			Assert.AreEqual(Accessibility.Private, type.Methods.Single(m => m.Name == "None").Accessibility);
 		}
+
+		private void AssertConstantField<T>(ITypeDefinition type, string name, T expected) {
+			var f = type.GetFields().Single(x => x.Name == name);
+			Assert.IsTrue(f.IsConst);
+			Assert.AreEqual(expected, f.ConstantValue);
+		}
+
+		[Test]
+		public void ConstantFields()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ConstantFieldTest));
+			AssertConstantField<byte>(type, "Cb", 42);
+			AssertConstantField<sbyte>(type, "Csb", 42);
+			AssertConstantField<char>(type, "Cc", '\x42');
+			AssertConstantField<short>(type, "Cs", 42);
+			AssertConstantField<ushort>(type, "Cus", 42);
+			AssertConstantField<int>(type, "Ci", 42);
+			AssertConstantField<uint>(type, "Cui", 42);
+			AssertConstantField<long>(type, "Cl", 42);
+			AssertConstantField<ulong>(type, "Cul", 42);
+			AssertConstantField<double>(type, "Cd", 42);
+			AssertConstantField<float>(type, "Cf", 42);
+			AssertConstantField<decimal>(type, "Cm", 42);
+		}
 	}
 }

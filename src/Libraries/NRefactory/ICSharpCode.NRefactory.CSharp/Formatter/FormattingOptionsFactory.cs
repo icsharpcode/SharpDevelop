@@ -1,4 +1,4 @@
-// 
+﻿// 
 // FormattingOptionsFactory.cs
 //  
 // Author:
@@ -168,7 +168,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				BlankLinesBeforeUsings = 0,
 				BlankLinesAfterUsings = 1,
-				
+				UsingPlacement = UsingPlacement.TopOfFile,
 				
 				BlankLinesBeforeFirstDeclaration = 0,
 				BlankLinesBetweenTypes = 1,

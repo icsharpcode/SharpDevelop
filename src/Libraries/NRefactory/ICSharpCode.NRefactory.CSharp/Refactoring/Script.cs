@@ -143,38 +143,38 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			get { return options; }
 		}
 		
-		public void InsertBefore(AstNode node, AstNode insertNode)
+		public void InsertBefore(AstNode node, AstNode newNode)
 		{
 			var startOffset = GetCurrentOffset(new TextLocation(node.StartLocation.Line, 1));
-			var output = OutputNode (GetIndentLevelAt (startOffset), insertNode);
+			var output = OutputNode (GetIndentLevelAt (startOffset), newNode);
 			string text = output.Text;
-			if (!(insertNode is Expression || insertNode is AstType))
+			if (!(newNode is Expression || newNode is AstType))
 				text += Options.EolMarker;
 			InsertText(startOffset, text);
 			output.RegisterTrackedSegments(this, startOffset);
-			CorrectFormatting (node, insertNode);
+			CorrectFormatting (node, newNode);
 		}
 
-		public void InsertAfter(AstNode node, AstNode insertNode)
+		public void InsertAfter(AstNode node, AstNode newNode)
 		{
 			var indentOffset = GetCurrentOffset(new TextLocation(node.StartLocation.Line, 1));
-			var output = OutputNode (GetIndentLevelAt (indentOffset), insertNode);
+			var output = OutputNode (GetIndentLevelAt (indentOffset), newNode);
 			string text = output.Text;
-			if (!(insertNode is Expression || insertNode is AstType))
+			if (!(newNode is Expression || newNode is AstType))
 				text = Options.EolMarker + text;
 			var insertOffset = GetCurrentOffset(node.EndLocation);
 			InsertText(insertOffset, text);
 			output.RegisterTrackedSegments(this, insertOffset);
-			CorrectFormatting (node, insertNode);
+			CorrectFormatting (node, newNode);
 		}
 
-		public void AddTo(BlockStatement bodyStatement, AstNode insertNode)
+		public void AddTo(BlockStatement bodyStatement, AstNode newNode)
 		{
 			var startOffset = GetCurrentOffset(bodyStatement.LBraceToken.EndLocation);
-			var output = OutputNode(1 + GetIndentLevelAt(startOffset), insertNode, true);
+			var output = OutputNode(1 + GetIndentLevelAt(startOffset), newNode, true);
 			InsertText(startOffset, output.Text);
 			output.RegisterTrackedSegments(this, startOffset);
-			CorrectFormatting (null, insertNode);
+			CorrectFormatting (null, newNode);
 		}
 		
 		public virtual Task Link (params AstNode[] nodes)

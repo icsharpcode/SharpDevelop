@@ -251,5 +251,20 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return new TypeReferenceExpression { Type = this }.Invoke(methodName, typeArguments, arguments);
 		}
+		
+		/// <summary>
+		/// Creates a simple AstType from a dotted name.
+		/// Does not support generics, arrays, etc. - just simple dotted names,
+		/// e.g. namespace names.
+		/// </summary>
+		public static AstType Create(string dottedName)
+		{
+			string[] parts = dottedName.Split('.');
+			AstType type = new SimpleType(parts[0]);
+			for (int i = 1; i < parts.Length; i++) {
+				type = new MemberType(type, parts[i]);
+			}
+			return type;
+		}
 	}
 }

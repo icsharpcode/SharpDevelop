@@ -55,6 +55,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			this.doc = document;
 			this.location = location;
 			this.UseExplicitTypes = UseExplict;
+			this.FormattingOptions = FormattingOptionsFactory.CreateMono ();
 			UseExplict = false;
 			Services.AddService (typeof(NamingConventionService), new TestNameService ());
 		}
@@ -77,6 +78,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			get { return location; }
 		}
 		
+		public CSharpFormattingOptions FormattingOptions { get; set; }
+		
 		public Script StartScript ()
 		{
 			return new TestScript (this);
@@ -85,7 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		sealed class TestScript : DocumentScript
 		{
 			readonly TestRefactoringContext context;
-			public TestScript(TestRefactoringContext context) : base(context.doc, FormattingOptionsFactory.CreateMono (), new TextEditorOptions ())
+			public TestScript(TestRefactoringContext context) : base(context.doc, context.FormattingOptions, new TextEditorOptions ())
 			{
 				this.context = context;
 			}

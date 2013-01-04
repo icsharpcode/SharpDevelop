@@ -1,6 +1,6 @@
 ﻿// 
 // ContextActionTestBase.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
@@ -35,6 +35,14 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 {
 	public abstract class ContextActionTestBase
 	{
+		protected CSharpFormattingOptions formattingOptions;
+		
+		[SetUp]
+		public virtual void SetUp()
+		{
+			formattingOptions = FormattingOptionsFactory.CreateMono();
+		}
+		
 		internal static string HomogenizeEol (string str)
 		{
 			var sb = new StringBuilder ();
@@ -53,10 +61,15 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			return sb.ToString ();
 		}
 
-		public void Test<T> (string input, string output, int action = 0, bool expectErrors = false) 
+		public void Test<T> (string input, string output, int action = 0, bool expectErrors = false)
 			where T : ICodeActionProvider, new ()
 		{
-			string result = RunContextAction (new T (), HomogenizeEol (input), action, expectErrors);
+			Test(new T(), input, output, action, expectErrors);
+		}
+		
+		public void Test (ICodeActionProvider provider, string input, string output, int action = 0, bool expectErrors = false)
+		{
+			string result = RunContextAction (provider, HomogenizeEol (input), action, expectErrors);
 			bool passed = result == output;
 			if (!passed) {
 				Console.WriteLine ("-----------Expected:");
@@ -65,13 +78,13 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				Console.WriteLine (result);
 			}
 			Assert.AreEqual (HomogenizeEol (output), result);
-		}	
-	
+		}
 
-		protected static string RunContextAction (ICodeActionProvider action, string input,
+		protected string RunContextAction (ICodeActionProvider action, string input,
 		                                          int actionIndex = 0, bool expectErrors = false)
 		{
 			var context = TestRefactoringContext.Create (input, expectErrors);
+			context.FormattingOptions = formattingOptions;
 			bool isValid = action.GetActions (context).Any ();
 
 			if (!isValid)
@@ -84,18 +97,29 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			return context.doc.Text;
 		}
 		
-		protected static void TestWrongContext<T> (string input) where T : ICodeActionProvider, new ()
+		protected void TestWrongContext<T> (string input) where T : ICodeActionProvider, new ()
 		{
 			TestWrongContext (new T(), input);
 		}
 		
-		protected static void TestWrongContext (ICodeActionProvider action, string input)
+		protected void TestWrongContext (ICodeActionProvider action, string input)
 		{
 			var context = TestRefactoringContext.Create (input);
+			context.FormattingOptions = formattingOptions;
 			bool isValid = action.GetActions (context).Any ();
 			if (!isValid)
 				Console.WriteLine ("invalid node is:" + context.GetNode ());
 			Assert.IsTrue (!isValid, action.GetType () + " shouldn't be valid there.");
+		}
+		
+		protected void TestActionDescriptions (ICodeActionProvider provider, string input, params string[] expected)
+		{
+			var ctx = TestRefactoringContext.Create(input);
+			ctx.FormattingOptions = formattingOptions;
+			var actions = provider.GetActions(ctx).ToList();
+			Assert.AreEqual(
+				expected,
+				actions.Select(a => a.Description).ToArray());
 		}
 	}
 }
