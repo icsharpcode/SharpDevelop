@@ -231,6 +231,7 @@
     </Compile>
     <Compile Include="Src\Services\FileChangeWatcher.cs" />
     <Compile Include="Util\AtomicBoolean.cs" />
+    <Compile Include="Util\ComparerExtensions.cs" />
     <Compile Include="Util\CustomThreadPoolTaskScheduler.cs" />
     <Compile Include="Util\DebugTimer.cs" />
     <Compile Include="Util\DotnetDetection.cs" />

@@ -113,7 +113,7 @@ namespace ICSharpCode.SharpDevelop
 			                        exception => tcs.TrySetException(exception),
 			                        () => tcs.TrySetResult(results)))
 			{
-				using (cancellationToken.Register(() => tcs.SetCanceled())) {
+				using (cancellationToken.Register(() => tcs.TrySetCanceled())) {
 					return await tcs.Task.ConfigureAwait(false);
 				}
 			}
