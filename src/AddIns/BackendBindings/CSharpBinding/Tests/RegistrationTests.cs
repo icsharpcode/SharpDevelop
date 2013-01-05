@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using CSharpBinding.Refactoring;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using NUnit.Framework;
 using Rhino.Mocks;
@@ -46,11 +47,11 @@ namespace CSharpBinding.Tests
 			
 			registeredIssueProviders = addIn.Paths["/SharpDevelop/ViewContent/TextEditor/C#/IssueProviders"].Codons
 				.Select(c => FindType(c.Properties["class"])).ToList();
-			NRissueProviders = NRCSharp.ExportedTypes.Where(t => !t.IsAbstract && t.GetInterface(typeof(ICodeIssueProvider).FullName) != null).ToList();
+			NRissueProviders = NRCSharp.ExportedTypes.Where(t => t.GetCustomAttribute<IssueDescriptionAttribute>() != null).ToList();
 			
 			registeredContextActions = addIn.Paths["/SharpDevelop/ViewContent/TextEditor/C#/ContextActions"].Codons
 				.Select(c => FindType(c.Properties["class"])).ToList();
-			NRcontextActions = NRCSharp.ExportedTypes.Where(t => !t.IsAbstract && t.GetInterface(typeof(ICodeActionProvider).FullName) != null).ToList();
+			NRcontextActions = NRCSharp.ExportedTypes.Where(t => t.GetCustomAttribute<ContextActionAttribute>() != null).ToList();
 		}
 		
 		[Test]
@@ -58,6 +59,18 @@ namespace CSharpBinding.Tests
 		{
 			Assert.AreEqual(registeredIssueProviders, registeredIssueProviders.Distinct());
 			Assert.AreEqual(registeredContextActions, registeredContextActions.Distinct());
+		}
+		
+		[Test]
+		public void AllAreRegisteredIssueProvidersHaveAttribute()
+		{
+			Assert.IsTrue(registeredIssueProviders.All(t => t.GetCustomAttribute<IssueDescriptionAttribute>() != null));
+		}
+		
+		[Test]
+		public void AllAreRegisteredContextActionsHaveAttribute()
+		{
+			Assert.IsTrue(registeredContextActions.All(t => t.GetCustomAttribute<ContextActionAttribute>() != null));
 		}
 		
 		[Test]

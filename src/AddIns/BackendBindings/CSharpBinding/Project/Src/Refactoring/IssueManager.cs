@@ -52,6 +52,8 @@ namespace CSharpBinding.Refactoring
 				if (attributes.Length == 1) {
 					this.Attribute = (IssueDescriptionAttribute)attributes[0];
 					defaultSeverity = this.Attribute.Severity;
+				} else {
+					SD.Log.Warn("Issue provider without attribute: " + ProviderType);
 				}
 				var properties = PropertyService.NestedProperties("CSharpIssueSeveritySettings");
 				this.CurrentSeverity = properties.Get(ProviderType.FullName, defaultSeverity);
