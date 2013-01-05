@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CreateMethodDeclarationTests.cs
 //  
 // Author:

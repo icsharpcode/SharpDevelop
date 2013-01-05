@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyCompany("ICSharpCode")]
 [assembly: AssemblyProduct("SharpDevelop/MonoDevelop")]
-[assembly: AssemblyCopyright("Copyright 2010-2012 AlphaSierraPapa")]
+[assembly: AssemblyCopyright("Copyright 2010-2013 AlphaSierraPapa")]
 
 // This sets the default COM visibility of types in the assembly to invisible.
 // If you need to expose a type to COM, use [ComVisible(true)] on that type.
@@ -23,4 +23,4 @@ using System.Runtime.InteropServices;
 
 // [AssemblyFileVersion] is the version of the NuGet package,
 // should follow http://semver.org/ rules
-[assembly: AssemblyFileVersion("5.2.0")]
+[assembly: AssemblyFileVersion("5.3.0")]

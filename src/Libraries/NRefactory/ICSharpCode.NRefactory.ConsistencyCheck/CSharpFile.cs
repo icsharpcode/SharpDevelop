@@ -50,6 +50,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			// Keep the original text around; we might use it for a refactoring later
 			this.OriginalText = File.ReadAllText(fileName);
 			this.SyntaxTree = p.Parse(this.OriginalText, fileName);
+			this.SyntaxTree.Freeze(); // the various tests shouldn't modify the AST shared by all tests
 			
 			if (p.HasErrors) {
 				Console.WriteLine("Error parsing " + fileName + ":");

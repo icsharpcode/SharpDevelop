@@ -4,10 +4,10 @@ using ICSharpCode.NRefactory.CSharp.CodeActions;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using System.Linq;
 
-namespace ICSharpCode.NRefactory.CSharp.CodeIssues.UnresolvedType
+namespace ICSharpCode.NRefactory.CSharp.CodeActions.AddUsing
 {
 	[TestFixture]
-	public class UnresolvedTypeIssueTests : ContextActionTestBase
+	public class AddUsingActionTests : ContextActionTestBase
 	{
 		void UnresolvedTypeName(string code, string typeName, params string[] namespaces)
 		{

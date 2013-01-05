@@ -64,6 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			// Find the main block of using declarations in the chosen scope:
 			AstNode blockStart = usingParent.Children.FirstOrDefault(IsUsingDeclaration);
 			AstNode insertionPoint;
+			bool insertAfter = false;
 			if (blockStart == null) {
 				// no using declarations in the file
 				Debug.Assert(SyntaxTree.MemberRole == NamespaceDeclaration.MemberRole);
@@ -72,9 +73,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				insertionPoint = blockStart;
 				while (IsUsingDeclaration(insertionPoint) && newUsingInfo.CompareTo(new UsingInfo(insertionPoint, context)) > 0)
 					insertionPoint = insertionPoint.NextSibling;
+				if (!IsUsingDeclaration(insertionPoint)) {
+					// Insert after last using instead of before next node
+					// This affects where empty lines get placed.
+					insertionPoint = insertionPoint.PrevSibling;
+					insertAfter = true;
+				}
 			}
 			if (insertionPoint != null) {
-				script.InsertBefore(insertionPoint, newUsing);
+				if (insertAfter)
+					script.InsertAfter(insertionPoint, newUsing);
+				else
+					script.InsertBefore(insertionPoint, newUsing);
 			}
 		}
 		

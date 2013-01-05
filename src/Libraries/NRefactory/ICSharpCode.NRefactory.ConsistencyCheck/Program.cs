@@ -66,6 +66,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			RunTestOnAllFiles("Resolver test (no parsed file)", ResolverTest.RunTestWithoutUnresolvedFile);
 			RunTestOnAllFiles("Resolver test (randomized order)", RandomizedOrderResolverTest.RunTest);
 			new FindReferencesConsistencyCheck(solution).Run();
+			RunTestOnAllFiles("Pattern Matching test", PatternMatchingTest.RunTest);
 			
 			Console.Write("Press any key to continue . . . ");
 			Console.ReadKey(true);

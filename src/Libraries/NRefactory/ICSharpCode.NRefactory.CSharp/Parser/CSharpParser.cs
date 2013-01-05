@@ -101,7 +101,11 @@ namespace ICSharpCode.NRefactory.CSharp
 					
 					if (first) {
 						first = false;
-						AddAttributeSection(Unit, mc);
+						if (mc.OptAttributes != null) {
+							foreach (var attr in mc.OptAttributes.Sections) {
+								unit.AddChild (ConvertAttributeSection (attr), SyntaxTree.MemberRole);
+							}
+						}
 					}
 					
 					if (nspace.Containers != null) {
@@ -934,12 +938,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddAttributeSection (parent, a.OptAttributes);
 			}
 			
-			public void AddAttributeSection (AstNode parent, Attributes attrs, Role role)
+			public void AddAttributeSection (AstNode parent, Attributes attrs, Role<AttributeSection> role)
 			{
 				if (attrs == null)
 					return;
 				foreach (var attr in attrs.Sections) {
-					parent.AddChild (ConvertAttributeSection (attr), EntityDeclaration.AttributeRole);
+					parent.AddChild (ConvertAttributeSection (attr), role);
 				}
 			}
 
@@ -957,7 +961,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				newIndexer.AddChild (ConvertToType (indexer.TypeExpression), Roles.Type);
 				AddExplicitInterface (newIndexer, indexer.MemberName);
 				var name = indexer.MemberName;
-				newIndexer.AddChild (Identifier.Create ("this", Convert (name.Location)), Roles.Identifier);
+				newIndexer.AddChild (new CSharpTokenNode(Convert (name.Location), IndexerDeclaration.ThisKeywordRole), IndexerDeclaration.ThisKeywordRole);
 				
 				if (location != null && location.Count > 0)
 					newIndexer.AddChild (new CSharpTokenNode (Convert (location [0]), Roles.LBracket), Roles.LBracket);
@@ -2594,7 +2598,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				if (d == null)
 					return;
-				for (int i = d.Count - 1; i >= 0; i--) {
+				for (int i = 0; i < d.Count; i++) {
 					var typeParameter = d [i];
 					if (typeParameter == null)
 						continue;
@@ -2617,7 +2621,11 @@ namespace ICSharpCode.NRefactory.CSharp
 						}
 					}
 					
-					parent.AddChild (constraint, Roles.Constraint);
+					// We need to sort the constraints by position; as they might be in a different order than the type parameters
+					AstNode prevSibling = parent.LastChild;
+					while (prevSibling.StartLocation > constraint.StartLocation && prevSibling.PrevSibling != null)
+						prevSibling = prevSibling.PrevSibling;
+					parent.InsertChildAfter (prevSibling, constraint, Roles.Constraint);
 				}
 			}
 			

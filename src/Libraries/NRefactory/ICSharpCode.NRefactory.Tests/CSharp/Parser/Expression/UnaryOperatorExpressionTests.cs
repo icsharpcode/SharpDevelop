@@ -82,7 +82,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			TestUnaryOperatorExpressionTest("a--", UnaryOperatorType.PostDecrement);
 		}
 		
-		[Test, Ignore("Incorrect start position")]
+		[Test]
 		public void Dereference()
 		{
 			TestUnaryOperatorExpressionTest("*a", UnaryOperatorType.Dereference);
