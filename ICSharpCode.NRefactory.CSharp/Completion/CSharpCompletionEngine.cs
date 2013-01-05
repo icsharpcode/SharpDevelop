@@ -2997,7 +2997,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 		restart:
 				string lineText = document.GetText(line);
-			if (!lineText.Trim().StartsWith("///"))
+			if (!lineText.Trim().StartsWith("///", StringComparison.Ordinal))
 				return null;
 			int startIndex = Math.Min(location.Column - 1, lineText.Length - 1) - 1;
 			while (startIndex > 0 && lineText [startIndex] != '<') {
