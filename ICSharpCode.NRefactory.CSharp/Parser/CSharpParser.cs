@@ -2594,7 +2594,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				if (d == null)
 					return;
-				for (int i = d.Count - 1; i >= 0; i--) {
+				for (int i = 0; i < d.Count; i++) {
 					var typeParameter = d [i];
 					if (typeParameter == null)
 						continue;
@@ -2617,7 +2617,11 @@ namespace ICSharpCode.NRefactory.CSharp
 						}
 					}
 					
-					parent.AddChild (constraint, Roles.Constraint);
+					// We need to sort the constraints by position; as they might be in a different order than the type parameters
+					AstNode prevSibling = parent.LastChild;
+					while (prevSibling.StartLocation > constraint.StartLocation && prevSibling.PrevSibling != null)
+						prevSibling = prevSibling.PrevSibling;
+					parent.InsertChildAfter (prevSibling, constraint, Roles.Constraint);
 				}
 			}
 			
