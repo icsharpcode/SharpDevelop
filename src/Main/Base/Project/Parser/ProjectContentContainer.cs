@@ -282,7 +282,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			IReadOnlyCollection<ProjectItem> projectItems = project.Items;
 			lock (lockObj) {
 				if (disposed) {
-					throw new ObjectDisposedException("ParseProjectContent");
+					return;
 				}
 			}
 
