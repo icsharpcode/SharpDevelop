@@ -258,6 +258,11 @@ namespace CSharpBinding.Refactoring
 								continue;
 							
 							foreach (var issue in issueProvider.GetIssues(context)) {
+								if (issue.Start.IsEmpty || issue.End.IsEmpty) {
+									// Issues can occur on invalid locations when analyzing incomplete code.
+									// We'll just ignore them.
+									continue;
+								}
 								results.Add(new InspectionTag(
 									this,
 									issueProvider,
