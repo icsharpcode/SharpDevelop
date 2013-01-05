@@ -4,10 +4,10 @@ using ICSharpCode.NRefactory.CSharp.CodeActions;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using System.Linq;
 
-namespace ICSharpCode.NRefactory.CSharp.CodeIssues.UnresolvedType
+namespace ICSharpCode.NRefactory.CSharp.CodeActions.AddUsing
 {
 	[TestFixture]
-	public class UnresolvedTypeActionTests : ContextActionTestBase
+	public class AddUsingRunActionTests : ContextActionTestBase
 	{
 		[Test]
 		[Ignore("Add using does not honor the blank line setting yet")]
@@ -125,7 +125,6 @@ namespace TestNamespace
 		}
 
 		[Test]
-		[Ignore("Something else is broken regarding blank lines as well")]
 		public void ShouldNotAddBlankLinesAfterIfTheyAreAlreadyThere()
 		{
 			string testCode =
@@ -155,7 +154,6 @@ namespace TestNamespace
 		}
 
 		[Test]
-		[Ignore("Something else is broken regarding blank lines as well")]
 		public void ShouldLeaveAdditionalBlankLinesThatAlreadyExist()
 		{
 			string testCode =

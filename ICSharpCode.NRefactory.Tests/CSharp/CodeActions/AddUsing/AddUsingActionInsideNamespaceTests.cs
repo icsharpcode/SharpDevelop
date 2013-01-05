@@ -4,10 +4,10 @@ using ICSharpCode.NRefactory.CSharp.CodeActions;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using System.Linq;
 
-namespace ICSharpCode.NRefactory.CSharp.CodeIssues.UnresolvedType
+namespace ICSharpCode.NRefactory.CSharp.CodeActions.AddUsing
 {
 	[TestFixture]
-	public class UnresolvedTypeActionInsideNamespaceTests : ContextActionTestBase
+	public class AddUsingActionInsideNamespaceTests : ContextActionTestBase
 	{
 		[Test]
 		public void ShouldInsertUsingStatement()
@@ -98,7 +98,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues.UnresolvedType
 		}
 
 		[Test]
-		[Ignore("Something is wrong with the blank lines")]
 		public void ShouldAddUsingAfterExistingUsings()
 		{
 			string testCode =
@@ -163,7 +162,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues.UnresolvedType
 		}
 
 		[Test]
-		[Ignore("Something is wrong with the blank lines")]
 		public void ShouldAddUsingAfterExistingUsingsInMostNestedNamespace()
 		{
 			string testCode =

@@ -1,14 +1,12 @@
-using NUnit.Framework;
-using ICSharpCode.NRefactory.CSharp.CodeIssues;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using ICSharpCode.NRefactory.CSharp.CodeActions;
-using ICSharpCode.NRefactory.CSharp;
 using System.Linq;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using NUnit.Framework;
+using ICSharpCode.NRefactory.CSharp.CodeActions;
 
-namespace ICSharpCode.NRefactory.CSharp.CodeIssues.UnresolvedType
+namespace ICSharpCode.NRefactory.CSharp.CodeActions.AddUsing
 {
 	[TestFixture]
-	public class UnresolvedTypeActionAlphabeticalTests : ContextActionTestBase
+	public class AddUsingActionAlphabeticalTests : ContextActionTestBase
 	{
 		[Test]
 		public void ShouldAddUsingAtStartIfItIsTheFirstAlphabetically()
@@ -71,7 +69,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues.UnresolvedType
 		}
 		
 		[Test]
-		[Ignore("Add using does not honor the blank line setting yet")]
 		public void ShouldInsertUsingAfterExistingUsings()
 		{
 			string testCode =
