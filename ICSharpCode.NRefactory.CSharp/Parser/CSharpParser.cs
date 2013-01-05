@@ -961,7 +961,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				newIndexer.AddChild (ConvertToType (indexer.TypeExpression), Roles.Type);
 				AddExplicitInterface (newIndexer, indexer.MemberName);
 				var name = indexer.MemberName;
-				newIndexer.AddChild (Identifier.Create ("this", Convert (name.Location)), Roles.Identifier);
+				newIndexer.AddChild (new CSharpTokenNode(Convert (name.Location), IndexerDeclaration.ThisKeywordRole), IndexerDeclaration.ThisKeywordRole);
 				
 				if (location != null && location.Count > 0)
 					newIndexer.AddChild (new CSharpTokenNode (Convert (location [0]), Roles.LBracket), Roles.LBracket);

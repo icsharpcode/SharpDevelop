@@ -39,6 +39,14 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 		}
 		
 		[Test]
+		public void ThisTokenPosition()
+		{
+			IndexerDeclaration id = ParseUtilCSharp.ParseTypeMember<IndexerDeclaration>("public int this[int a] { get { } protected set { } }");
+			CSharpTokenNode thisKeyword = id.GetChildByRole(IndexerDeclaration.ThisKeywordRole);
+			Assert.AreEqual(12, thisKeyword.StartLocation.Column);
+		}
+		
+		[Test]
 		public void IndexerImplementingInterfaceTest()
 		{
 			IndexerDeclaration id = ParseUtilCSharp.ParseTypeMember<IndexerDeclaration>("int MyInterface.this[int a, string b] { get { } set { } }");
