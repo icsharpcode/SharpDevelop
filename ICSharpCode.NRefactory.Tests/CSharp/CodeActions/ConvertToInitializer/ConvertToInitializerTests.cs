@@ -33,7 +33,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class ConvertToInitializerTests : ContextActionTestBase
 	{
-
 		// TODO: Remove this when the formatter handles object and collection initializers
 		// This tests the expected code vs the actual code based on their ASTs instead of the text they produce.
 		public new void Test<T>(string input, string output, int action = 0, bool expectErrors = false) 
@@ -113,7 +112,7 @@ class TestClass
 	}
 }", baseText + @"
 		var tc0 = new TestClass();
-		var collection = new System.Collections.Generic.Dictionary<string> () {
+		var collection = new System.Collections.Generic.Dictionary<string, TestClass> () {
 			{""string1"", new TestClass() { Property = ""tc1"" }},
 			{""string2"", new TestClass() { Property = ""tc2"" }}
 		};
@@ -138,12 +137,12 @@ class TestClass
 	}
 }", baseText + @"
 		var collection = new System.Collections.Generic.List<string> () {
-			new TestClass() {
+			new TestClass () {
 				Property = ""Value1""
 			},
-			new TestClass() {
+			new TestClass () {
 				Property = ""Value2"",
-				Nested = new TestClass() {
+				Nested = new TestClass () {
 					Property = ""Value3""
 				}
 			}
@@ -163,7 +162,7 @@ class TestClass
 	}
 }", baseText + @"
 		var collection = new System.Collections.Generic.List<string> ();
-		var item = new TestClass() {
+		var item = new TestClass () {
 			Property = ""Value1""
 		};
 		collection.Add(item);
@@ -186,12 +185,12 @@ class TestClass
 	
 	public System.Collections.Generic.IList<TestClass> Children;
 }", baseText + @"
-		var variable = new TestClass() {
+		var variable = new TestClass () {
 			Property = ""Value1"",
-			Children = new System.Collections.Generic.List<TestClass>() {
-				new TestClass(),
-				new TestClass(),
-				new TestClass()
+			Children = new System.Collections.Generic.List<TestClass> () {
+				new TestClass (),
+				new TestClass (),
+				new TestClass ()
 			}
 		};
 	}
@@ -306,9 +305,9 @@ class TestClass
 }", baseText + @"
 		var variable = new TestClass () {
 			Property = ""Value"",
-			Nested = new TestClass() {
+			Nested = new TestClass () {
 				Property = ""NestedValue"",
-				Nested = new TestClass() {
+				Nested = new TestClass () {
 					Property = ""NestedNestedValue""
 				}
 			}
@@ -330,7 +329,7 @@ class TestClass
 		var variable = new TestClass () {
 			Property = ""Value"",
 			Nested = {
-				Nested = new TestClass() {
+				Nested = new TestClass () {
 					Property = ""NestedNestedValue""
 				}
 			}
@@ -393,7 +392,7 @@ class TestClass
 }", baseText + @"
 		var variable = new TestClass () {
 			Property = ""Value"",
-			Nested = new TestClass()
+			Nested = new TestClass ()
 		};
 		System.Console.WriteLine("""");
 		variable.Nested.Property = ""NestedValue"";
@@ -413,7 +412,7 @@ class TestClass
 }", baseText + @"
 		var variable = new TestClass () {
 			Property = ""Value"",
-			Nested = new TestClass()
+			Nested = new TestClass ()
 		};
 		variable.Nested.Property = variable.ToString();
 	}
@@ -454,9 +453,9 @@ class TestClass
 }", baseText + @"
 		var tc = new TestClass();
 		tc.Property = ""1"";
-		var tc2 = new TestClass() {
+		var tc2 = new TestClass () {
 			Property = ""2"",
-			Nested = new TestClass() {
+			Nested = new TestClass () {
 				Property = ""3""
 			}
 		};
@@ -479,7 +478,7 @@ class TestClass
 }", baseText + @"
 		var tc = new TestClass();
 		tc.Property = ""1"";
-		var tc2 = new TestClass() {
+		var tc2 = new TestClass () {
 			Property = ""2"",
 			Nested = tc
 		};
@@ -499,7 +498,7 @@ class TestClass
 	}
 }", baseText + @"
 		var variable = new TestClass () {
-			Nested = new TestClass()
+			Nested = new TestClass ()
 		};
 	}
 }");
@@ -534,7 +533,7 @@ class TestClass
 		var tc = new TestClass () {
 			Property = ""Value""
 		};
-		var _variable = new Test$Class ();
+		var _variable = new TestClass ();
 		var variable = _variable;
 	}
 }");
@@ -552,7 +551,7 @@ class TestClass
 	}
 }", baseText + @"
 		Nested = new TestClass () {
-			Nested = new TestClass(),
+			Nested = new TestClass (),
 			Property = ""Value""
 		};
 		Nested.Nested.Property = Nested.Property;
@@ -579,12 +578,12 @@ class TestClass
 	}
 }", baseText + @"
 		var collection = new System.Collections.Generic.List<string> () {
-			new TestClass() {
+			new TestClass () {
 				Property = ""Value1""
 			},
-			new TestClass() {
+			new TestClass () {
 				Property = ""Value2"",
-				Nested = new TestClass() {
+				Nested = new TestClass () {
 					Property = ""Value3""
 				}
 			}
