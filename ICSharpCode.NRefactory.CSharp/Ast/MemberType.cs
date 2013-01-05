@@ -115,7 +115,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			MemberType o = other as MemberType;
-			return o != null && this.IsDoubleColon == o.IsDoubleColon && MatchString(this.MemberName, o.MemberName) && this.Target.DoMatch(o.Target, match);
+			return o != null && this.IsDoubleColon == o.IsDoubleColon
+				&& MatchString(this.MemberName, o.MemberName) && this.Target.DoMatch(o.Target, match)
+				&& this.TypeArguments.DoMatch(o.TypeArguments, match);
 		}
 		
 		public override string ToString()
