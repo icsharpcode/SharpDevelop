@@ -99,6 +99,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (derivedType == null)
 				throw new ArgumentNullException("derivedType");
 			
+			if (baseMember.Compilation != derivedType.Compilation)
+				throw new ArgumentException("baseMember and derivedType must be from the same compilation");
+			
 			baseMember = baseMember.MemberDefinition;
 			bool includeInterfaces = baseMember.DeclaringTypeDefinition.Kind == TypeKind.Interface;
 			IMethod method = baseMember as IMethod;
