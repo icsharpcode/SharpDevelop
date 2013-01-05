@@ -101,7 +101,11 @@ namespace ICSharpCode.NRefactory.CSharp
 					
 					if (first) {
 						first = false;
-						AddAttributeSection(Unit, mc);
+						if (mc.OptAttributes != null) {
+							foreach (var attr in mc.OptAttributes.Sections) {
+								unit.AddChild (ConvertAttributeSection (attr), SyntaxTree.MemberRole);
+							}
+						}
 					}
 					
 					if (nspace.Containers != null) {
@@ -934,12 +938,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddAttributeSection (parent, a.OptAttributes);
 			}
 			
-			public void AddAttributeSection (AstNode parent, Attributes attrs, Role role)
+			public void AddAttributeSection (AstNode parent, Attributes attrs, Role<AttributeSection> role)
 			{
 				if (attrs == null)
 					return;
 				foreach (var attr in attrs.Sections) {
-					parent.AddChild (ConvertAttributeSection (attr), EntityDeclaration.AttributeRole);
+					parent.AddChild (ConvertAttributeSection (attr), role);
 				}
 			}
 
