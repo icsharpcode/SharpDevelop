@@ -130,12 +130,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public string Summary {
-			get {
-				if (!String.IsNullOrEmpty(package.Summary)) {
-					return package.Summary;
-				}
-				return package.Description;
-			}
+			get { return package.SummaryOrDescription(); }
 		}
 		
 		public SemanticVersion Version {
