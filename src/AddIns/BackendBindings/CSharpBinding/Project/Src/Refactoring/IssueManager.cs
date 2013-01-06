@@ -162,7 +162,7 @@ namespace CSharpBinding.Refactoring
 			{
 				int startOffset = InspectedVersion.MoveOffsetTo(document.Version, this.StartOffset, AnchorMovementType.Default);
 				int endOffset = InspectedVersion.MoveOffsetTo(document.Version, this.EndOffset, AnchorMovementType.Default);
-				if (startOffset >= endOffset)
+				if (this.StartOffset != this.EndOffset && startOffset >= endOffset)
 					return;
 				marker = markerService.Create(startOffset, endOffset - startOffset);
 				marker.ToolTip = this.Description;

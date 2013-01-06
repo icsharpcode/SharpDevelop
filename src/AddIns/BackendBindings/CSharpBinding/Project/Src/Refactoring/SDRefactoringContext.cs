@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel.Design;
 using System.Threading;
 
+using ICSharpCode.NRefactory.Utils;
 using CSharpBinding.Parser;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
@@ -100,6 +101,15 @@ namespace CSharpBinding.Refactoring
 				return new DocumentScript(document, formattingOptions, this.TextEditorOptions);
 		}
 		
+		public IDocument Document {
+			get {
+				IDocument result = LazyInit.VolatileRead(ref document);
+				if (result != null)
+					return result;
+				return LazyInit.GetOrSet(ref document, new ReadOnlyDocument(textSource, resolver.UnresolvedFile.FileName));
+			}
+		}
+		
 		public override TextLocation Location {
 			get { return location; }
 		}
@@ -142,23 +152,17 @@ namespace CSharpBinding.Refactoring
 		
 		public override IDocumentLine GetLineByOffset(int offset)
 		{
-			if (document == null)
-				document = new ReadOnlyDocument(textSource, resolver.UnresolvedFile.FileName);
-			return document.GetLineByOffset(offset);
+			return Document.GetLineByOffset(offset);
 		}
 		
 		public override int GetOffset(TextLocation location)
 		{
-			if (document == null)
-				document = new ReadOnlyDocument(textSource, resolver.UnresolvedFile.FileName);
-			return document.GetOffset(location);
+			return Document.GetOffset(location);
 		}
 		
 		public override TextLocation GetLocation(int offset)
 		{
-			if (document == null)
-				document = new ReadOnlyDocument(textSource, resolver.UnresolvedFile.FileName);
-			return document.GetLocation(offset);
+			return Document.GetLocation(offset);
 		}
 		
 		public override AstType CreateShortType(IType fullType)
