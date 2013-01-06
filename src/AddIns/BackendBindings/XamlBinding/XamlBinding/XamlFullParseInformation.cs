@@ -37,5 +37,10 @@ namespace ICSharpCode.XamlBinding
 		public ITextSource Text {
 			get { return text; }
 		}
+		
+		// XAML does not use IParser-based folding, but uses XML folding.
+		public override bool SupportsFolding {
+			get { return false; }
+		}
 	}
 }
