@@ -203,6 +203,7 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseVarKeywordIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ValueParameterUnusedIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.VariableDeclaredInWideScopeIssue" />
+		<Class class = "CSharpBinding.Refactoring.CSharpSyntaxIssue" />
 	</Path>
 	
 	<Path path = "/SharpDevelop/ViewContent/TextEditor/C#/ContextActions">
