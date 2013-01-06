@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 			}
 		}
 		
-		public const string ContextMenuPath = "/SharpDevelop/ViewContent/TextEditor/EntityContextMenu";
+		public const string ContextMenuPath = "/SharpDevelop/EntityContextMenu";
 		
 		public virtual IImage Image {
 			get { return ClassBrowserIconService.GetIcon(entity); }
@@ -54,10 +54,15 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 		public virtual void MouseDown(MouseButtonEventArgs e)
 		{
 			if (e.ChangedButton == MouseButton.Left) {
-				var f = SD.AnalyticsMonitor.TrackFeature("ICSharpCode.SharpDevelop.Editor.Bookmarks.EntityBookmark.ShowContextMenu");
-				var ctx = MenuService.ShowContextMenu(e.Source as UIElement, entity, ContextMenuPath);
-				ctx.Closed += delegate { f.EndTracking(); };
-				e.Handled = true;
+				var entityModel = entity.GetModel();
+				if (entityModel == null) {
+					SD.Log.Warn("Could not find model for entity");
+				} else {
+					var f = SD.AnalyticsMonitor.TrackFeature("ICSharpCode.SharpDevelop.Editor.Bookmarks.EntityBookmark.ShowContextMenu");
+					var ctx = MenuService.ShowContextMenu(e.Source as UIElement, entityModel, ContextMenuPath);
+					ctx.Closed += delegate { f.EndTracking(); };
+					e.Handled = true;
+				}
 			}
 		}
 		

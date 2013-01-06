@@ -13,13 +13,13 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Xml;
 using System.Xml.Linq;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
@@ -368,8 +368,114 @@ namespace ICSharpCode.SharpDevelop
 			else
 				return AmbienceService.GetCurrentAmbience();
 		}
+		
+		/// <summary>
+		/// Retrieves the model instance for the given entity.
+		/// May return null if there is no model for the specified entity.
+		/// </summary>
+		public static IEntityModel GetModel(this IEntity entity)
+		{
+			if (entity == null)
+				throw new ArgumentNullException("entity");
+			
+			if (entity is ITypeDefinition)
+				return GetModel((ITypeDefinition)entity);
+			else if (entity is IMember)
+				return GetModel((IMember)entity);
+			else
+				return null;
+		}
+		
+		/// <summary>
+		/// Retrieves the model instance for the given type definition.
+		/// May return null if there is no model for the specified type definition.
+		/// </summary>
+		public static ITypeDefinitionModel GetModel(this ITypeDefinition typeDefinition)
+		{
+			if (typeDefinition == null)
+				throw new ArgumentNullException("typeDefinition");
+			
+			IProject project = typeDefinition.ParentAssembly.GetProject();
+			if (project != null)
+				return project.TypeDefinitionModels[typeDefinition.FullTypeName];
+			else
+				return null;
+		}
+		
+		/// <summary>
+		/// Retrieves the model instance for the given member.
+		/// May return null if there is no model for the specified member.
+		/// </summary>
+		public static IMemberModel GetModel(this IMember member)
+		{
+			if (member == null)
+				throw new ArgumentNullException("member");
+			
+			if (member.DeclaringTypeDefinition == null)
+				return null;
+			
+			var snapshot = member.Compilation.SolutionSnapshot as ISolutionSnapshotWithProjectMapping;
+			if (snapshot == null)
+				return null;
+			
+			ITypeDefinitionModel typeModel = GetModel(member.DeclaringTypeDefinition);
+			if (typeModel == null)
+				return null;
+			
+			foreach (var memberModel in typeModel.Members) {
+				if (memberModel.Name == member.Name) {
+					if (memberModel.Resolve(snapshot) == member.MemberDefinition) {
+						return memberModel;
+					}
+				}
+			}
+			return null;
+		}
+		
+		/// <summary>
+		/// Retrieves the model instance the given unresolved entity.
+		/// </summary>
+		/// <param name="entity">The unresolved entity</param>
+		/// <param name="project">The project in which the entity is defined.
+		/// If this parameter is null, the project will be determined based on the file name.</param>
+		/// <returns>The entity model if it could be found; or null otherwise.</returns>
+		public static IEntityModel GetModel(this IUnresolvedEntity entity, IProject project = null)
+		{
+			if (project == null) {
+				if (entity.Region.FileName == null || ProjectService.OpenSolution == null)
+					return null;
+				project = ProjectService.OpenSolution.FindProjectContainingFile(entity.Region.FileName);
+				if (project == null)
+					return null;
+			}
+			IUnresolvedTypeDefinition unresolvedTypeDefinition = entity as IUnresolvedTypeDefinition ?? entity.DeclaringTypeDefinition;
+			if (unresolvedTypeDefinition == null)
+				return null;
+			ITypeDefinitionModel typeModel = project.TypeDefinitionModels[unresolvedTypeDefinition.FullTypeName];
+			if (entity is IUnresolvedTypeDefinition || typeModel == null)
+				return typeModel;
+			
+			ITypeDefinition typeDefinition = typeModel.Resolve();
+			IUnresolvedMember unresolvedMember = entity as IUnresolvedMember;
+			if (typeDefinition == null || unresolvedMember == null)
+				return null;
+			
+			IMember member = unresolvedMember.Resolve(new SimpleTypeResolveContext(typeDefinition));
+			if (member == null)
+				return null;
+			var snapshot = member.Compilation.SolutionSnapshot as ISolutionSnapshotWithProjectMapping;
+			
+			foreach (var memberModel in typeModel.Members) {
+				if (memberModel.Name == unresolvedMember.Name) {
+					if (memberModel.Resolve(snapshot) == member.MemberDefinition) {
+						return memberModel;
+					}
+				}
+			}
+			return null;
+		}
 		#endregion
-				
+		
 		#region DPI independence
 		public static Rect TransformToDevice(this Rect rect, Visual visual)
 		{
