@@ -144,6 +144,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return true;
 				return false;
 			}
+			
+			public override void VisitLambdaExpression(LambdaExpression lambdaExpression)
+			{
+				// ignore lambdas
+			}
+			
+			public override void VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression)
+			{
+				// ignore anonymous methods
+			}
 		}
 	}
 }

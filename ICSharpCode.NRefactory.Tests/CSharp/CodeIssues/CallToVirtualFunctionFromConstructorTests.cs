@@ -113,6 +113,25 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 			var issues = GetIssues(new CallToVirtualFunctionFromConstructorIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
+		
+		[Test]
+		public void IgnoresEventHandlers()
+		{
+			var input = @"class Foo
+{
+	Foo()
+	{
+		SomeEvent += delegate { Bar(); };
+	}
+
+	virtual void Bar ()
+	{
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new CallToVirtualFunctionFromConstructorIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
 	}
 }
 
