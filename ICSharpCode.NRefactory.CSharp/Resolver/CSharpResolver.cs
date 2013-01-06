@@ -1188,18 +1188,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		static bool IsComparisonOperator(IMethod m)
 		{
 			var type = OperatorDeclaration.GetOperatorType(m.Name);
-			if (type.HasValue) {
-				switch (type.Value) {
-					case OperatorType.Equality:
-					case OperatorType.Inequality:
-					case OperatorType.GreaterThan:
-					case OperatorType.LessThan:
-					case OperatorType.GreaterThanOrEqual:
-					case OperatorType.LessThanOrEqual:
-						return true;
-				}
-			}
-			return false;
+			return type.HasValue && type.Value.IsComparisonOperator();
 		}
 		
 		sealed class LiftedUserDefinedOperator : SpecializedMethod, OverloadResolution.ILiftedOperator
