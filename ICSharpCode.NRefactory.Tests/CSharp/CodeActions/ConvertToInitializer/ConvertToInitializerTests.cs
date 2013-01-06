@@ -664,6 +664,20 @@ class TestClass
 	}
 }");
 		}
+		
+		[Test]
+		public void DoesNotCrashOnVariableDeclarationWithoutInitializer()
+		{
+			TestWrongContext<ConvertToInitializerAction>(@"
+class TestClass
+{
+	void F()
+	{
+		TestClass $s1 = new TestClass();
+		TestClass s2;
+	}
+}");
+		}
 	}
 }
 

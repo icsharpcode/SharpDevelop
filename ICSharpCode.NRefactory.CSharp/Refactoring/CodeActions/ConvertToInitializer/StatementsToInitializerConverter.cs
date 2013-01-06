@@ -124,12 +124,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return false;
 			}
 			variableInitializer = variableDeclarationStatement.Variables.FirstOrNullObject();
-			if (variableInitializer.IsNull)
+			if (variableInitializer.IsNull || variableInitializer.Initializer.IsNull)
 				return false;
 			var sourceResolveResult = context.Resolve(variableInitializer.Initializer) as LocalResolveResult;
 			if (HasDependency(variableInitializer.Initializer) && !CanReplaceDependent(sourceResolveResult))
 				return false;
 			var targetResolveResult = context.Resolve(variableInitializer) as LocalResolveResult;
+			if (targetResolveResult == null)
+				return false;
 			AddNewVariable(targetResolveResult.Variable, variableInitializer.Initializer, node);
 			return true;
 		}
