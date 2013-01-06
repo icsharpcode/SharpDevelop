@@ -244,7 +244,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				} else {
 					firstInvalidLine = int.MaxValue;
 				}
-				OnHighlightStateChanged(lineNumber, lineNumber);
+				if (lineNumber + 1 < document.LineCount)
+					OnHighlightStateChanged(lineNumber + 1, lineNumber + 1);
 			} else if (firstInvalidLine == lineNumber) {
 				isValid[lineNumber] = true;
 				firstInvalidLine = isValid.IndexOf(false);
@@ -284,7 +285,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		protected virtual void OnHighlightStateChanged(int fromLineNumber, int toLineNumber)
 		{
 			if (HighlightingStateChanged != null)
-				HighlightingStateChanged(this, fromLineNumber, toLineNumber);
+				HighlightingStateChanged(fromLineNumber, toLineNumber);
 		}
 		
 		#region Highlighting Engine

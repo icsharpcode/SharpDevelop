@@ -557,8 +557,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				if (item != null) {
 					if (item.ParentDefinition != null) {
 						var highlighter = new CustomizingHighlighter(
-							textView, customizationsForCurrentLanguage,
-							new DocumentHighlighter(textView.Document, item.ParentDefinition)
+							new DocumentHighlighter(textView.Document, item.ParentDefinition),
+							customizationsForCurrentLanguage
 						);
 						colorizer = new HighlightingColorizer(highlighter);
 						textView.LineTransformers.Add(colorizer);

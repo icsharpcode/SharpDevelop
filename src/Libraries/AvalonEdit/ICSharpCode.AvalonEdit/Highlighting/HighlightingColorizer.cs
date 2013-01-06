@@ -3,12 +3,9 @@
 
 using System;
 using System.Diagnostics;
-using System.Windows;
 using System.Windows.Media;
-using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
-using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {
@@ -147,11 +144,13 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			if (highlighter != null) {
 				// Force update of highlighting state up to the position where we start generating visual lines.
 				// This is necessary in case the document gets modified above the FirstLineInView so that the highlighting state changes.
-				// We need to detect this case and issue a redraw (through TextViewDocumentHighligher.OnHighlightStateChanged)
+				// We need to detect this case and issue a redraw (through OnHighlightStateChanged)
 				// before the visual line construction reuses existing lines that were built using the invalid highlighting state.
 				lineNumberBeingColorized = e.FirstLineInView.LineNumber - 1;
 				if (!isInHighlightingGroup) {
 					// avoid opening group twice if there was an exception during the previous visual line construction
+					// (not ideal, but better than throwing InvalidOperationException "group already open"
+					// without any way of recovering)
 					highlighter.BeginHighlighting();
 					isInHighlightingGroup = true;
 				}
@@ -254,13 +253,15 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// Hey, the user typed "/*". Don't just recreate that line, but also the next one
 		/// because my highlighting state (at end of line) changed!
 		/// </remarks>
-		void OnHighlightStateChanged(IHighlighter sender, int fromlineNumber, int toLineNumber)
+		void OnHighlightStateChanged(int fromLineNumber, int toLineNumber)
 		{
-			if (lineNumberBeingColorized < fromlineNumber || lineNumberBeingColorized > toLineNumber) {
+			if (lineNumberBeingColorized != 0) {
 				// Ignore notifications for any line except the one we're interested in.
 				// This improves the performance as Redraw() can take quite some time when called repeatedly
 				// while scanning the document (above the visible area) for highlighting changes.
-				return;
+				if (toLineNumber <= lineNumberBeingColorized) {
+					return;
+				}
 			}
 			
 			// The user may have inserted "/*" into the current line, and so far only that line got redrawn.
@@ -268,7 +269,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			// If the highlighting state change applies to the lines below, too, the construction of each line
 			// will invalidate the next line, and the construction pass will regenerate all lines.
 			
-			Debug.WriteLine("OnHighlightStateChanged forces redraw of lines {0} to {1}", fromlineNumber + 1, toLineNumber + 1);
+			Debug.WriteLine("OnHighlightStateChanged forces redraw of lines {0} to {1}", fromLineNumber, toLineNumber);
 			
 			// If the VisualLine construction is in progress, we have to avoid sending redraw commands for
 			// anything above the line currently being constructed.
@@ -309,9 +310,17 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			// so it will always invalidate the next visual line when a folded line is constructed
 			// and the highlighting stack has changed.
 			
-			for (int lineNumber = fromlineNumber; lineNumber <= toLineNumber; lineNumber++) {
-				if (lineNumber + 1 <= textView.Document.LineCount)
-					textView.Redraw(textView.Document.GetLineByNumber(lineNumber + 1), DispatcherPriority.Normal);
+			if (fromLineNumber == toLineNumber) {
+				textView.Redraw(textView.Document.GetLineByNumber(fromLineNumber));
+			} else {
+				// If there are multiple lines marked as changed; only the first one really matters
+				// for the highlighting during rendering.
+				// However this callback is also called outside of the rendering process, e.g. when a highlighter
+				// decides to re-highlight some section based on external feedback (e.g. semantic highlighting).
+				var fromLine = textView.Document.GetLineByNumber(fromLineNumber);
+				var toLine = textView.Document.GetLineByNumber(toLineNumber);
+				int startOffset = fromLine.Offset;
+				textView.Redraw(startOffset, toLine.EndOffset - startOffset);
 			}
 			
 			/*

@@ -233,7 +233,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 							src.StreamSource = memoryStream;
 							src.EndInit();
 							Image = src;
-						
+							
 						} catch (OutOfMemoryException) {
 							Image = null;
 							MessageService.ShowErrorFormatted("${res:Dialog.ProjectOptions.ApplicationSettings.InvalidIconFile}",
@@ -282,7 +282,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			// Because this event is raised while the combobox is still switching to the "<create>" or "<browse>" value,
 			// we cannot set comboBox.Text within this event handler.
 			// To avoid this problem, we invoke the operation after the combobox has finished switching to the new value.
-			WorkbenchSingleton.SafeThreadAsyncCall(
+			Dispatcher.BeginInvoke(new Action(
 				delegate {
 					if (applicationManifestComboBox.SelectedIndex == applicationManifestComboBox.Items.Count - 2) {
 						CreateManifest();
@@ -292,7 +292,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 						// we need to store re-load the changed property value.
 						applicationManifestComboBox.Text = this.ApplicationManifest.Value;
 					}
-				});
+				}));
 		}
 		
 		void CreateManifest()

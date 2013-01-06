@@ -121,57 +121,32 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		#endregion
 		
-		readonly TextView textView;
 		readonly IEnumerable<CustomizedHighlightingColor> customizations;
 		readonly IHighlighter baseHighlighter;
-		readonly IDocument document;
 		
-		public CustomizingHighlighter(TextView textView, IEnumerable<CustomizedHighlightingColor> customizations, IHighlighter baseHighlighter)
+		public CustomizingHighlighter(IHighlighter baseHighlighter, IEnumerable<CustomizedHighlightingColor> customizations)
 		{
-			if (textView == null)
-				throw new ArgumentNullException("textView");
-			if (customizations == null)
-				throw new ArgumentNullException("customizations");
 			if (baseHighlighter == null)
 				throw new ArgumentNullException("baseHighlighter");
-			
-			this.textView = textView;
-			this.document = textView.Document;
-			this.customizations = customizations;
-			this.baseHighlighter = baseHighlighter;
-			baseHighlighter.HighlightingStateChanged += highlighter_HighlightingStateChanged;
-		}
-		
-		public CustomizingHighlighter(IDocument document, IEnumerable<CustomizedHighlightingColor> customizations, IHighlighter baseHighlighter)
-		{
-			if (document == null)
-				throw new ArgumentNullException("document");
 			if (customizations == null)
 				throw new ArgumentNullException("customizations");
-			if (baseHighlighter == null)
-				throw new ArgumentNullException("baseHighlighter");
 			
-			this.document = document;
 			this.customizations = customizations;
 			this.baseHighlighter = baseHighlighter;
-			baseHighlighter.HighlightingStateChanged += highlighter_HighlightingStateChanged;
 		}
 
 		public IDocument Document {
 			get { return baseHighlighter.Document; }
 		}
 		
-		public event HighlightingStateChangedEventHandler HighlightingStateChanged;
+		public event HighlightingStateChangedEventHandler HighlightingStateChanged {
+			add { baseHighlighter.HighlightingStateChanged += value; }
+			remove { baseHighlighter.HighlightingStateChanged -= value; }
+		}
 		
 		public void UpdateHighlightingState(int lineNumber)
 		{
 			baseHighlighter.UpdateHighlightingState(lineNumber);
-		}
-		
-		void highlighter_HighlightingStateChanged(IHighlighter sender, int fromLineNumber, int toLineNumber)
-		{
-			if (HighlightingStateChanged != null)
-				HighlightingStateChanged(this, fromLineNumber, toLineNumber);
 		}
 		
 		public IEnumerable<string> GetSpanColorNamesFromLineStart(int lineNumber)
@@ -198,25 +173,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return line;
 		}
 
-		public void InvalidateLine(IDocumentLine line)
-		{
-			if (textView == null)
-				throw new InvalidOperationException("IHighlighter has no TextView assigned!");
-			textView.Redraw(line, DispatcherPriority.Background);
-		}
-		
-		public void InvalidateAll()
-		{
-			if (textView == null)
-				throw new InvalidOperationException("IHighlighter has no TextView assigned!");
-			textView.Redraw(DispatcherPriority.Background);
-		}
-		
-		public event EventHandler VisibleDocumentLinesChanged {
-			add { textView.VisualLinesChanged += value; }
-			remove { textView.VisualLinesChanged -= value; }
-		}
-		
+		/*
 		public IEnumerable<IDocumentLine> GetVisibleDocumentLines()
 		{
 			if (textView == null)
@@ -239,7 +196,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			}
 			return result;
-		}
+		}*/
 		
 		public HighlightingColor GetNamedColor(string name)
 		{
