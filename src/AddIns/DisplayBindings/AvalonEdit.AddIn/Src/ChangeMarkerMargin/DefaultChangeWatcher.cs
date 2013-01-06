@@ -191,7 +191,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 		}
 		
-		bool disposed = false;
+		bool disposed;
 		
 		public void Dispose()
 		{

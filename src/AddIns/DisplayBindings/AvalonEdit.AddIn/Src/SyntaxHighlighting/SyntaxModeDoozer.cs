@@ -2,10 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Xml;
 
 using ICSharpCode.AvalonEdit.Highlighting;

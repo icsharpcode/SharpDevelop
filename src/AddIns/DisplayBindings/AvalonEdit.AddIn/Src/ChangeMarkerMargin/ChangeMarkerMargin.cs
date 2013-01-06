@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -13,7 +12,6 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
-using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
@@ -36,7 +34,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			changeWatcher.ChangeOccurred += ChangeOccurred;
 		}
 		
-		bool disposed = false;
+		bool disposed;
 		
 		public void Dispose()
 		{
@@ -156,7 +154,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		#region Diffs tooltip
 		
-		Popup tooltip = new Popup() { StaysOpen = false };
+		Popup tooltip = new Popup { StaysOpen = false };
 		ITextMarker marker;
 		ITextMarkerService markerService;
 		MouseHoverLogic hoverLogic;
@@ -230,8 +228,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					differ.editor.Visibility = Visibility.Collapsed;
 					differ.copyButton.Visibility = Visibility.Collapsed;
 				} else {
-					var baseDocument = new ReadOnlyDocument(changeWatcher.BaseDocument, TextView.Document.FileName);
 					if (differ.editor.SyntaxHighlighting != null) {
+						var baseDocument = new ReadOnlyDocument(changeWatcher.BaseDocument, TextView.Document.FileName);
 						var mainHighlighter = new DocumentHighlighter(baseDocument, differ.editor.SyntaxHighlighting);
 						var popupHighlighter = differ.editor.TextArea.GetService(typeof(IHighlighter)) as DocumentHighlighter;
 						
@@ -246,10 +244,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					}
 				};
 				
-				tooltip.Child = new Border() {
+				const double borderThickness = 1;
+				tooltip.Child = new Border {
 					Child = differ,
 					BorderBrush = editor.TextArea.Foreground,
-					BorderThickness = new Thickness(1)
+					BorderThickness = new Thickness(borderThickness)
 				};
 				
 				if (tooltip.IsOpen)
@@ -258,7 +257,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				tooltip.Closed += delegate {
 					if (marker != null) markerService.Remove(marker);
 				};
-				tooltip.HorizontalOffset = -10;
+				tooltip.HorizontalOffset = -borderThickness - TextView.ScrollOffset.X;
 				tooltip.VerticalOffset =
 					TextView.GetVisualTopByDocumentLine(startLine) - TextView.ScrollOffset.Y;
 				tooltip.Placement = PlacementMode.Top;

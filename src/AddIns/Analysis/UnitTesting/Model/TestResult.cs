@@ -45,7 +45,7 @@ namespace ICSharpCode.UnitTesting
 			this.name = ParseName(name, out values);
 		}
 		
-		string ParseName(string name, out string values)
+		static string ParseName(string name, out string values)
 		{
 			int i = name.IndexOf('(');
 			values = "";

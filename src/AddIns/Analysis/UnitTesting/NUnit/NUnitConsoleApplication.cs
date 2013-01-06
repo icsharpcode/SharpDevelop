@@ -234,7 +234,7 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Checks that the project's PlatformTarget is x32 for the active configuration.
 		/// </summary>
-		bool IsPlatformTarget32BitOrAnyCPU(IProject project)
+		static bool IsPlatformTarget32BitOrAnyCPU(IProject project)
 		{
 			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
 			if (msbuildProject != null) {
@@ -245,7 +245,7 @@ namespace ICSharpCode.UnitTesting
 			return false;
 		}
 		
-		bool ProjectUsesDotnet20Runtime(IProject project)
+		static bool ProjectUsesDotnet20Runtime(IProject project)
 		{
 			var p = project as ICSharpCode.SharpDevelop.Project.Converter.IUpgradableProject;
 			if (p != null && p.CurrentTargetFramework != null) {
