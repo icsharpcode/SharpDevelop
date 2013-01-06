@@ -180,6 +180,8 @@ namespace CSharpBinding.Parser
 		#region Comments
 		public override void VisitComment(Comment comment)
 		{
+			if (comment.CommentType == CommentType.InactiveCode)
+				return; // don't fold the inactive code comment; instead fold the preprocessor directives
 			if (AreTwoSinglelineCommentsInConsecutiveLines(comment.PrevSibling as Comment, comment))
 				return; // already handled by previous comment
 			Comment lastComment = comment;
@@ -202,9 +204,6 @@ namespace CSharpBinding.Parser
 							break;
 						case CommentType.Documentation:
 							folding.Name = "/// ...";
-							break;
-						case CommentType.InactiveCode:
-							folding.Name = "inactive code";
 							break;
 						case CommentType.MultiLineDocumentation:
 							folding.Name = "/** ... */";

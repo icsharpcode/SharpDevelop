@@ -119,6 +119,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			void ProcessParameter(ParameterDeclaration parameter, AstNode rootResolutionNode, TypeCriteriaCollector collector)
 			{
 				var localResolveResult = ctx.Resolve(parameter) as LocalResolveResult;
+				if (localResolveResult == null)
+					return;
 				var variable = localResolveResult.Variable;
 				var typeKind = variable.Type.Kind;
 				if (!(typeKind == TypeKind.Class ||
