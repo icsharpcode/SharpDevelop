@@ -45,6 +45,19 @@ class TestClass {
 		}
 		
 		[Test]
+		public void TestUnusedParameterMethodGetsCalled ()
+		{
+			var input = @"
+class TestClass {
+	void TestMethod (int i)
+	{
+		TestMethod(0);
+	}
+}";
+			Test<ParameterNotUsedIssue> (input, 1);
+		}
+		
+		[Test]
 		public void TestInterfaceImplementation ()
 		{
 			var input = @"
@@ -129,6 +142,41 @@ class TestClass {
 	void FooBar (object sender, EventArgs e) {}
 }";
 			Test<ParameterNotUsedIssue> (input, 0);
+		}
+		
+		[Test]
+		public void TestMethodLooksLikeEventHandlerButNotUsedAsSuch ()
+		{
+			var input = @"using System;
+class TestClass {
+	void FooBar (object sender, EventArgs e) {}
+}";
+			Test<ParameterNotUsedIssue> (input, 2);
+		}
+		
+		[Test]
+		public void TestMethodUsedAsDelegateInOtherPart ()
+		{
+			// This test doesn't add the second part;
+			// but the issue doesn't look at other files after all;
+			// we just rely on heuristics if the class is partial
+			var input = @"using System;
+partial class TestClass {
+	void FooBar (object sender, EventArgs e) {}
+}";
+			Test<ParameterNotUsedIssue> (input, 0);
+		}
+		
+		[Test]
+		public void UnusedParameterInConstructor()
+		{
+			var input = @"
+class TestClass {
+	public TestClass(int i)
+	{
+	}
+}";
+			Test<ParameterNotUsedIssue> (input, 1);
 		}
 	}
 }

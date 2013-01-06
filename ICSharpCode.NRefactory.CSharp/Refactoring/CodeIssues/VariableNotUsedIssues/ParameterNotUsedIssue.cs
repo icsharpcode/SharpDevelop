@@ -34,10 +34,10 @@ using System;
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	[IssueDescription ("Unused parameter",
-					   Description = "Parameter is never used.",
-					   Category = IssueCategories.Redundancies,
-					   Severity = Severity.Warning,
-					   IssueMarker = IssueMarker.GrayOut)]
+	                   Description = "Parameter is never used.",
+	                   Category = IssueCategories.Redundancies,
+	                   Severity = Severity.Warning,
+	                   IssueMarker = IssueMarker.GrayOut)]
 	public class ParameterNotUsedIssue : ICodeIssueProvider
 	{
 		#region ICodeIssueProvider implementation
@@ -63,28 +63,47 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			public override void VisitIdentifierExpression(IdentifierExpression identifierExpression)
 			{
-				var mgr = ctx.Resolve (identifierExpression) as MethodGroupResolveResult;
-				if (mgr != null)
-					UsedMethods.AddRange (mgr.Methods);
+				if (!IsTargetOfInvocation(identifierExpression)) {
+					var mgr = ctx.Resolve (identifierExpression) as MethodGroupResolveResult;
+					if (mgr != null)
+						UsedMethods.AddRange (mgr.Methods);
+				}
 				base.VisitIdentifierExpression(identifierExpression);
 			}
 
 			public override void VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression)
 			{
-				var mgr = ctx.Resolve (memberReferenceExpression) as MethodGroupResolveResult;
-				if (mgr != null)
-					UsedMethods.AddRange (mgr.Methods);
+				if (!IsTargetOfInvocation(memberReferenceExpression)) {
+					var mgr = ctx.Resolve (memberReferenceExpression) as MethodGroupResolveResult;
+					if (mgr != null)
+						UsedMethods.AddRange (mgr.Methods);
+				}
 				base.VisitMemberReferenceExpression(memberReferenceExpression);
+			}
+			
+			static bool IsTargetOfInvocation(AstNode node)
+			{
+				return node.Role == Roles.TargetExpression && node.Parent is InvocationExpression;
 			}
 		}
 
 		class GatherVisitor : GatherVisitorBase
 		{
 			GetDelgateUsagesVisitor usedDelegates;
+			bool currentTypeIsPartial;
+			
 			public GatherVisitor (BaseRefactoringContext ctx, GetDelgateUsagesVisitor usedDelegates)
 				: base (ctx)
 			{
 				this.usedDelegates = usedDelegates;
+			}
+			
+			public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
+			{
+				bool outerTypeIsPartial = currentTypeIsPartial;
+				currentTypeIsPartial = typeDeclaration.HasModifier(Modifiers.Partial);
+				base.VisitTypeDeclaration(typeDeclaration);
+				currentTypeIsPartial = outerTypeIsPartial;
 			}
 
 			public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
@@ -101,17 +120,23 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				if (member.ImplementedInterfaceMembers.Any ())
 					return;
-				if (usedDelegates.UsedMethods.Any (m => m.Region.Begin == methodDeclaration.StartLocation))
+				if (usedDelegates.UsedMethods.Any (m => m.MemberDefinition == member))
 					return;
+				if (currentTypeIsPartial && methodDeclaration.Parameters.Count == 2) {
+					if (methodDeclaration.Parameters.First().Name == "sender") {
+						// Looks like an event handler; the registration might be in the designer part
+						return;
+					}
+				}
 				foreach (var parameter in methodDeclaration.Parameters)
 					parameter.AcceptVisitor (this);
 			}
 
 			public override void VisitParameterDeclaration (ParameterDeclaration parameterDeclaration)
 			{
- 				base.VisitParameterDeclaration (parameterDeclaration);
+				base.VisitParameterDeclaration (parameterDeclaration);
 
-				if (!(parameterDeclaration.Parent is MethodDeclaration))
+				if (!(parameterDeclaration.Parent is MethodDeclaration || parameterDeclaration.Parent is ConstructorDeclaration))
 					return;
 
 				var resolveResult = ctx.Resolve (parameterDeclaration) as LocalResolveResult;
