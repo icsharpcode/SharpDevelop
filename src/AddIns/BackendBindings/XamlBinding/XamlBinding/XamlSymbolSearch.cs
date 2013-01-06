@@ -107,7 +107,8 @@ namespace ICSharpCode.XamlBinding
 			if (highlighter != null) {
 				highlighter.Dispose();
 			}
-			callback(new SearchedFile(fileName, results));
+			if (results.Count > 0)
+				callback(new SearchedFile(fileName, results));
 		}
 	}
 }
