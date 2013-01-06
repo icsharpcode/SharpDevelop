@@ -194,7 +194,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
-			GetFileEntry(fileName, true).AddOwnerProject(project, isLinkedFile);
+			var entry = GetFileEntry(fileName, true);
+			entry.AddOwnerProject(project, isLinkedFile);
+			if (startAsyncParse)
+				entry.ParseFileAsync(null, project, CancellationToken.None).FireAndForget();
 		}
 		
 		public void RemoveOwnerProject(FileName fileName, IProject project)
