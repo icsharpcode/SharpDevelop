@@ -161,9 +161,7 @@ namespace CSharpBinding.Refactoring
 					if (document == null) {
 						document = new ReadOnlyDocument(fileContent, fileName);
 						highlighter = SD.EditorControlService.CreateHighlighter(document);
-						if (highlighter != null) {
-							highlighter.BeginHighlighting();
-						}
+						highlighter.BeginHighlighting();
 					}
 					results.Add(SearchResultMatch.Create(document, issue.Start, issue.End, highlighter));
 				}
@@ -237,8 +235,7 @@ namespace CSharpBinding.Refactoring
 			}
 			if (allIssues.Count > 0) {
 				using (var highlighter = SD.EditorControlService.CreateHighlighter(document)) {
-					if (highlighter != null)
-						highlighter.BeginHighlighting();
+					highlighter.BeginHighlighting();
 					return allIssues.Select(issue => SearchResultMatch.Create(document, issue.Start, issue.End, highlighter)).ToList();
 				}
 			} else {

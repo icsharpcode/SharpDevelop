@@ -2,29 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Widgets.MyersDiff;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
-	public interface IChangeWatcher : IDisposable
-	{
-		event EventHandler ChangeOccurred;
-		
-		/// <summary>
-		/// Returns the change information for a given line.
-		/// Pass 0 to get the changes before the first line.
-		/// </summary>
-		LineChangeInfo GetChange(int lineNumber);
-		void Initialize(IDocument document, FileName fileName);
-		string GetOldVersionFromLine(int lineNumber, out int newStartLine, out bool added);
-		bool GetNewVersionFromLine(int lineNumber, out int offset, out int length);
-		IDocument CurrentDocument { get; }
-		IDocument BaseDocument { get; }
-	}
-
 	public struct LineChangeInfo : IEquatable<LineChangeInfo>
 	{
 		public static readonly LineChangeInfo EMPTY = new LineChangeInfo(ChangeType.None, 1, 1);

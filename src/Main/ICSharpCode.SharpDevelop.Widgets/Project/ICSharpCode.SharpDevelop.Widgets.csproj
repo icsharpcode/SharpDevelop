@@ -72,6 +72,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="CustomWindowsFormsHost.cs" />
     <Compile Include="DragListener.cs" />
+    <Compile Include="ExtendedPopup.cs" />
     <Compile Include="ListViewSorting\AbstractListViewParseableColumnComparer.cs" />
     <Compile Include="ListViewSorting\AbstractListViewSubItemComparer.cs" />
     <Compile Include="ListViewSorting\ListViewIntegerParseColumnComparer.cs" />

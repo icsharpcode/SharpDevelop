@@ -71,7 +71,6 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ExtendedPopup.cs" />
     <Compile Include="GlobalStyles.cs" />
     <Compile Include="Menu\MenuCheckBox.cs" />
     <Compile Include="NotBoolConverter.cs" />

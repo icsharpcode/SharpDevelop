@@ -24,9 +24,10 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		public new void Focus()
 		{
 			var firstButton = WpfTreeNavigation.TryFindChild<Button>(this);
-			if (firstButton == null)
-				return;
-			firstButton.Focus();
+			if (firstButton != null)
+				firstButton.Focus();
+			else
+				TreeView.Focus();
 		}
 		
 		void TreeViewLoaded(object sender, RoutedEventArgs e)

@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			int startOffset = document.GetOffset(startLocation);
 			int endOffset = document.GetOffset(endLocation);
 			var inlineBuilder = SearchResultsPad.CreateInlineBuilder(startLocation, endLocation, document, highlighter);
-			var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
+			var defaultTextColor = highlighter.DefaultTextColor;
 			return new SearchResultMatch(FileName.Create(document.FileName),
 			                             startLocation, endLocation,
 			                             startOffset, endOffset - startOffset,

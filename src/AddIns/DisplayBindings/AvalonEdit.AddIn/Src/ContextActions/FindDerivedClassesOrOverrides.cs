@@ -40,7 +40,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 			popupViewModel.Title = MenuService.ConvertLabel(StringParser.Parse(
 				"${res:SharpDevelop.Refactoring.ClassesDerivingFrom}", new StringTagPair("Name", baseClass.Name)));
 			popupViewModel.Actions = BuildTreeViewModel(derivedClassesTree.Children);
-			return new ContextActionsPopup { Actions = popupViewModel, Symbol = baseClass };
+			return new ContextActionsPopup { Actions = popupViewModel };
 		}
 		
 		static ObservableCollection<ContextActionViewModel> BuildTreeViewModel(IEnumerable<ITreeNode<ITypeDefinition>> classTree)
@@ -61,7 +61,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 					new StringTagPair("Name", member.FullName))
 				                                )};
 			popupViewModel.Actions = new OverridesPopupTreeViewModelBuilder(member).BuildTreeViewModel(derivedClassesTree.Children);
-			return new ContextActionsPopup { Actions = popupViewModel, Symbol = member };
+			return new ContextActionsPopup { Actions = popupViewModel };
 		}
 		
 		class OverridesPopupTreeViewModelBuilder

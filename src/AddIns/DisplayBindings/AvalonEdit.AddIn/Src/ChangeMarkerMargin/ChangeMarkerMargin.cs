@@ -223,9 +223,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 				
 				DiffControl differ = new DiffControl();
-				differ.CopyEditorSettings(editor);
-				differ.editor.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
-				differ.editor.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
+				differ.CopyEditorSettingsAndHighlighting(editor);
 				differ.editor.Document.Text = oldText;
 				
 				if (oldText == string.Empty) {
@@ -257,8 +255,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (tooltip.IsOpen)
 					tooltip.IsOpen = false;
 				
-				tooltip.IsOpen = true;
-				
 				tooltip.Closed += delegate {
 					if (marker != null) markerService.Remove(marker);
 				};
@@ -267,6 +263,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					TextView.GetVisualTopByDocumentLine(startLine) - TextView.ScrollOffset.Y;
 				tooltip.Placement = PlacementMode.Top;
 				tooltip.PlacementTarget = this.TextView;
+				
+				tooltip.IsOpen = true;
 			}
 		}
 		

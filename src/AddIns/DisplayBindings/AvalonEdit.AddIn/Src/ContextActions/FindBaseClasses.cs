@@ -34,7 +34,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 			popupViewModel.Title = MenuService.ConvertLabel(StringParser.Parse(
 				"${res:SharpDevelop.Refactoring.BaseClassesOf}", new StringTagPair("Name", @class.Name)));
 			popupViewModel.Actions = BuildListViewModel(baseClassList);
-			return new ContextActionsPopup { Actions = popupViewModel, Symbol = @class };
+			return new ContextActionsPopup { Actions = popupViewModel };
 		}
 		
 		static ObservableCollection<ContextActionViewModel> BuildListViewModel(IEnumerable<ITypeDefinition> classList)

@@ -50,8 +50,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		public IList<HighlightedSection> Sections { get; private set; }
 		
-		[Conditional("DEBUG")]
-		void ValidateInvariants()
+		/// <summary>
+		/// Validates that the sections are sorted correctly, and that they are not overlapping.
+		/// </summary>
+		/// <seealso cref="Sections"/>
+		public void ValidateInvariants()
 		{
 			var line = this;
 			int lineStartOffset = line.DocumentLine.Offset;
@@ -81,8 +84,10 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		{
 			if (additionalLine == null)
 				return;
+			#if DEBUG
 			ValidateInvariants();
 			additionalLine.ValidateInvariants();
+			#endif
 			
 			int pos = 0;
 			Stack<int> activeSectionEndOffsets = new Stack<int>();
@@ -124,7 +129,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				Insert(ref i, ref newSectionStart, newSection.Offset + newSection.Length, newSection.Color, insertionStack);
 			}
 			
+			#if DEBUG
 			ValidateInvariants();
+			#endif
 		}
 		
 		void Insert(ref int pos, ref int newSectionStart, int insertionEndPos, HighlightingColor color, Stack<int> insertionStack)
@@ -268,12 +275,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			int startOffset = DocumentLine.Offset;
 			// copy only the foreground and background colors
 			foreach (HighlightedSection section in Sections) {
-				if (section.Color.Foreground != null) {
-					builder.SetForeground(section.Offset - startOffset, section.Length, section.Color.Foreground.GetBrush(null));
-				}
-				if (section.Color.Background != null) {
-					builder.SetBackground(section.Offset - startOffset, section.Length, section.Color.Background.GetBrush(null));
-				}
+				builder.SetHighlighting(section.Offset - startOffset, section.Length, section.Color);
 			}
 			return builder;
 		}

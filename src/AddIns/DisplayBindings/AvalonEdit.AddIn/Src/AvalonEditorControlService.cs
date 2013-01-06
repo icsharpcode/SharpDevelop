@@ -37,10 +37,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public IHighlighter CreateHighlighter(IDocument document)
 		{
 			if (document.FileName == null)
-				return null;
+				return new MultiHighlighter(document);
 			var def = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(document.FileName));
 			if (def == null)
-				return null;
+				return new MultiHighlighter(document);
 			List<IHighlighter> highlighters = new List<IHighlighter>();
 			var textDocument = document as TextDocument;
 			var readOnlyDocument = document as ReadOnlyDocument;

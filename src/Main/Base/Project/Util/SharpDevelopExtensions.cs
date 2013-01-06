@@ -93,6 +93,30 @@ namespace ICSharpCode.SharpDevelop
 		}
 		#endregion
 		
+		#region CoerceValue
+		/// <summary>
+		/// Forces the value to stay between mininum and maximum.
+		/// </summary>
+		/// <returns>minimum, if value is less than minimum.
+		/// Maximum, if value is greater than maximum.
+		/// Otherwise, value.</returns>
+		public static double CoerceValue(this double value, double minimum, double maximum)
+		{
+			return Math.Max(Math.Min(value, maximum), minimum);
+		}
+		
+		/// <summary>
+		/// Forces the value to stay between mininum and maximum.
+		/// </summary>
+		/// <returns>minimum, if value is less than minimum.
+		/// Maximum, if value is greater than maximum.
+		/// Otherwise, value.</returns>
+		public static int CoerceValue(this int value, int minimum, int maximum)
+		{
+			return Math.Max(Math.Min(value, maximum), minimum);
+		}
+		#endregion
+		
 		#region Collections
 		/// <summary>
 		/// Obsolete. Please use a regular foreach loop instead. ForEach() is executed for its side-effects, and side-effects mix poorly with a functional programming style.

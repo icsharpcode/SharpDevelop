@@ -354,8 +354,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					buffer = SD.FileService.GetFileContent(r.FileName);
 					document = new ReadOnlyDocument(buffer, r.FileName);
 					highlighter = SD.EditorControlService.CreateHighlighter(document);
-					if (highlighter != null)
-						highlighter.BeginHighlighting();
+					highlighter.BeginHighlighting();
 				}
 				var start = r.StartLocation;
 				var end = r.EndLocation;

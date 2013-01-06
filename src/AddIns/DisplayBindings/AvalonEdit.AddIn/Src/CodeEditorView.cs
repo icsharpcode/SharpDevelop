@@ -82,7 +82,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public virtual void Dispose()
 		{
 			contextActionsRenderer.Dispose();
-			hiddenDefinitionRenderer.Dispose();
+			hiddenDefinitionRenderer.ClosePopup();
 		}
 		
 		public IList<IContextActionProvider> ContextActionProviders {
@@ -131,8 +131,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						this.bracketRenderer.SetHighlight(null);
 					}
 					if (CodeEditorOptions.Instance.ShowHiddenDefinitions) {
-						this.hiddenDefinitionRenderer.BracketSearchResult = bracketSearchResult;
-						this.hiddenDefinitionRenderer.Show();
+						this.hiddenDefinitionRenderer.Show(bracketSearchResult);
 					} else {
 						this.hiddenDefinitionRenderer.ClosePopup();
 					}
@@ -524,19 +523,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return null;
 		}
 		
-		// TODO: move this into SharpDevelopTextEditor
 		public void UpdateCustomizedHighlighting()
 		{
 			string language = this.SyntaxHighlighting != null ? this.SyntaxHighlighting.Name : null;
-			CustomizingHighlighter.ApplyCustomizationsToDefaultElements(this, FetchCustomizations(language));
-			BracketHighlightRenderer.ApplyCustomizationsToRendering(this.bracketRenderer, FetchCustomizations(language));
-			HighlightingOptions.ApplyToRendering(this, FetchCustomizations(language));
+			var customizations = CustomizedHighlightingColor.FetchCustomizations(language);
+			CustomizingHighlighter.ApplyCustomizationsToDefaultElements(this, customizations);
+			BracketHighlightRenderer.ApplyCustomizationsToRendering(this.bracketRenderer, customizations);
+			HighlightingOptions.ApplyToRendering(this, customizations);
 			this.TextArea.TextView.Redraw(); // manually redraw if default elements didn't change but customized highlightings did
-		}
-		
-		static IEnumerable<CustomizedHighlightingColor> FetchCustomizations(string languageName)
-		{
-			return CustomizedHighlightingColor.FetchCustomizations(languageName);
 		}
 	}
 }

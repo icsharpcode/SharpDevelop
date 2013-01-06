@@ -35,7 +35,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// <inheritdoc />
 		public Point GetScreenPosition(int line, int column)
 		{
-			var positionInPixels =	 textView.PointToScreen(
+			var positionInPixels = textView.PointToScreen(
 				textView.GetVisualPosition(new TextViewPosition(line, column), VisualYPosition.LineBottom) - textView.ScrollOffset);
 			return positionInPixels.TransformFromDevice(textView);
 		}

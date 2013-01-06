@@ -41,6 +41,18 @@ namespace ICSharpCode.SharpDevelop.Editor
 
 		public int ClosingBracketLength { get; private set; }
 		
+		/// <summary>
+		/// Gets/Sets the offset of the definition belonging to the brackets.
+		/// The definition header gets shown by the <see cref="HiddenDefinitionRenderer"/>.
+		/// </summary>
+		public int DefinitionHeaderOffset { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets the length of the definition header belonging to the brackets.
+		/// The definition header gets shown by the <see cref="HiddenDefinitionRenderer"/>.
+		/// </summary>
+		public int DefinitionHeaderLength { get; set; }
+		
 		public BracketSearchResult(int openingBracketOffset, int openingBracketLength,
 		                           int closingBracketOffset, int closingBracketLength)
 		{

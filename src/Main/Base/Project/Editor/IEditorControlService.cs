@@ -18,6 +18,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 	{
 		ITextEditor CreateEditor(out object control);
 		ITextEditorOptions GlobalOptions { get; }
+		
+		/// <summary>
+		/// Creates a highlighter for the specified document.
+		/// This method never returns null.
+		/// </summary>
 		IHighlighter CreateHighlighter(IDocument document);
 	}
 	
