@@ -17,7 +17,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		public static ContextActionViewModel MakeViewModel(IEntity entity, ObservableCollection<ContextActionViewModel> childActions)
 		{
 			var ambience = AmbienceService.GetCurrentAmbience();
-			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
+			ambience.ConversionFlags = ConversionFlags.ShowDeclaringType | ConversionFlags.ShowTypeParameterList;
 			return new ContextActionViewModel {
 				Action = new GoToEntityAction(entity, ambience.ConvertEntity(entity)),
 				Image = CompletionImage.GetImage(entity),
