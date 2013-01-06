@@ -56,10 +56,13 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			if (controlFlowGraph == null)
 				throw new ArgumentNullException("controlFlowGraph");
 			ReachabilityAnalysis ra = new ReachabilityAnalysis();
-			ra.stack.Push(controlFlowGraph[0]);
-			while (ra.stack.Count > 0) {
-				cancellationToken.ThrowIfCancellationRequested();
-				ra.MarkReachable(ra.stack.Pop());
+			// Analysing a null node can result in an empty control flow graph
+			if (controlFlowGraph.Count > 0) {
+				ra.stack.Push(controlFlowGraph[0]);
+				while (ra.stack.Count > 0) {
+					cancellationToken.ThrowIfCancellationRequested();
+					ra.MarkReachable(ra.stack.Pop());
+				}
 			}
 			ra.stack = null;
 			ra.visitedNodes = null;

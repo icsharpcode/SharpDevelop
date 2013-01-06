@@ -129,11 +129,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return newVariableDeclarationStatement;
 		}
 
-		List<Type> scopeContainers = new List<Type>() {
-			typeof (MethodDeclaration),
-			typeof (Accessor)
-		};
-
 		AstNode FindCurrentScopeEntryNode(Statement startNode)
 		{
 			// Start one node up in the tree, otherwise we may stop at the BlockStatement
@@ -143,9 +138,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			do {
 				lastNode = currentNode;
 				currentNode = currentNode.Parent;
-				if (scopeContainers.Contains(currentNode.GetType()))
+				if (currentNode == null)
 					return null;
-			} while (currentNode.GetType() != typeof(BlockStatement));
+			} while (!(currentNode is BlockStatement));
 			return lastNode;
 		}
 		#endregion

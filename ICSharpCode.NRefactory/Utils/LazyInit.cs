@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.Utils
 		}
 		
 		/// <summary>
-		/// Atomatically performs the following operation:
+		/// Atomically performs the following operation:
 		/// - If target is null: stores newValue in target and returns newValue.
 		/// - If target is not null: returns target.
 		/// </summary>
