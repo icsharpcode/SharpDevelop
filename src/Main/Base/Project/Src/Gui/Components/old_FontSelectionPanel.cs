@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public old_FontSelectionPanel()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.SharpDevelop.Resources.FontSelectionPanel.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.SharpDevelop.Resources.old_FontSelectionPanel.xfrm"));
 
 			for (int i = 6; i <= 24; ++i) {
 				((ComboBox)ControlDictionary["fontSizeComboBox"]).Items.Add(i);
