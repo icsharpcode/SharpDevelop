@@ -379,10 +379,12 @@ namespace ICSharpCode.AvalonEdit.Search
 		/// </summary>
 		public void Open()
 		{
+			if (!IsClosed) return;
 			var layer = AdornerLayer.GetAdornerLayer(textArea);
 			if (layer != null)
 				layer.Add(adorner);
 			textArea.TextView.BackgroundRenderers.Add(renderer);
+			IsClosed = false;
 		}
 		
 		/// <summary>
@@ -391,7 +393,7 @@ namespace ICSharpCode.AvalonEdit.Search
 		public event EventHandler<SearchOptionsChangedEventArgs> SearchOptionsChanged;
 		
 		/// <summary>
-		/// Raises the <see cref="SearchOptionsChanged" /> event.
+		/// Raises the <see cref="SearchPanel.SearchOptionsChanged" /> event.
 		/// </summary>
 		protected virtual void OnSearchOptionsChanged(SearchOptionsChangedEventArgs e)
 		{
