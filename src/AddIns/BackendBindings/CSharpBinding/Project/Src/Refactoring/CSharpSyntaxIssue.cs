@@ -12,6 +12,11 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace CSharpBinding.Refactoring
 {
+	[IssueDescription("C# syntax error",
+	                  Description = "Displays syntax errors",
+	                  Category = IssueCategories.CompilerErrors,
+	                  Severity = Severity.Error,
+	                  IssueMarker = IssueMarker.Underline)]
 	public class CSharpSyntaxIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
