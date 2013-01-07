@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -210,8 +209,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			properties = PropertyService.NestedProperties(OutputWindowOptionsPanelXaml.OutputWindowsProperty);
 			
 			SetTextEditorFont();
-//			textEditor.FontFamily = new FontFamily(font.FontFamily.Name);
-//			textEditor.FontSize = Math.Round(font.Size * 96.0 / 72.0);
+			
 			properties.PropertyChanged += new PropertyChangedEventHandler(PropertyChanged);
 			
 			MessageViewLinkElementGenerator.RegisterGenerators(textEditor.TextArea.TextView);
@@ -247,10 +245,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		private void SetTextEditorFont()
 		{
-			var font =  OutputWindowOptionsPanelXaml.ParseFont(properties.Get("DefaultFont",
-			                                                               SD.WinForms.DefaultMonospacedFont.ToString()).ToString());
-			textEditor.FontFamily = new FontFamily(font.FontFamily.Name);
-			textEditor.FontSize = Math.Round(font.Size * 96.0 / 72.0);
+			var fontDescription =  OutputWindowOptionsPanelXaml.DefaultFontDescription();
+			textEditor.FontFamily = new FontFamily(fontDescription.Item1);
+			textEditor.FontSize = fontDescription.Item2;
 		}
 		
 		#region Category handling
@@ -414,8 +411,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			if (e.PropertyName == "DefaultFont") {
 				SetTextEditorFont();
-//				textEditor.FontFamily = new FontFamily(font.FontFamily.Name);
-//				textEditor.FontSize = Math.Round(font.Size * 96.0 / 72.0);
 			}
 		}
 		
@@ -437,6 +432,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public event EventHandler SelectedCategoryIndexChanged;
 		
 		#region ICSharpCode.SharpDevelop.Gui.IClipboardHandler interface implementation
+		
 		public bool EnableCut {
 			get {
 				return false;

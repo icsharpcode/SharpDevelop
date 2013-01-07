@@ -31,14 +31,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			base.LoadOptions();
 			CodeEditorOptions options = CodeEditorOptions.Instance;
 			fontSelectionPanel.SelectedFontName = options.FontFamily;
-			fontSelectionPanel.SelectedFontSize = SDFontSizeConverter.FromDouble(options.FontSize);
+			fontSelectionPanel.SelectedFontSize = SDFontSizeConverter.ToWinFormsFontSize(options.FontSize);
 		}
 		
 		public override bool SaveOptions()
 		{
 			CodeEditorOptions options = CodeEditorOptions.Instance;
 			options.FontFamily = fontSelectionPanel.SelectedFontName;
-			options.FontSize = SDFontSizeConverter.ToDouble(fontSelectionPanel.SelectedFontSize);
+			options.FontSize = SDFontSizeConverter.ToWpfFontSize(fontSelectionPanel.SelectedFontSize);
 			return base.SaveOptions();
 		}
 	}

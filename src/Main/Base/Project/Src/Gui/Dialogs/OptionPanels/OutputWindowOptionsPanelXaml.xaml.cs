@@ -7,7 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Drawing;
+using System.Windows.Media;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels 
@@ -18,6 +18,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	public partial class OutputWindowOptionsPanelXaml :  OptionPanel
 	{
 		public static readonly string OutputWindowsProperty = "SharpDevelop.UI.OutputWindowOptions";
+	
+		private static readonly string FontFamilyName = "FontFamily";
+		private static readonly string FontSizeName = "FontSize";
 		
 		public OutputWindowOptionsPanelXaml()
 		{
@@ -31,23 +34,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			base.LoadOptions();
 			var properties = PropertyService.NestedProperties(OutputWindowsProperty);
 			WordWrap = properties.Get("WordWrap", true);
-			var fontStr = properties.Get("DefaultFont", SD.WinForms.DefaultMonospacedFont.ToString()).ToString();
-			var font = ParseFont(fontStr);
-			fontSelectionPanel.SelectedFontFamily = new System.Windows.Media.FontFamily(font.Name);
-			fontSelectionPanel.SelectedFontSize = (int)font.Size;
-			font.Dispose();
-		}
-		
-		
-		public static Font ParseFont(string font)
-		{
-			try {
-				string[] descr = font.Split(new char[]{',', '='});
-				return new Font(descr[1], Single.Parse(descr[3]));
-			} catch (Exception ex) {
-				LoggingService.Warn(ex);
-				return SD.WinForms.DefaultMonospacedFont;
-			}
+			
+			var fontDescription =  OutputWindowOptionsPanelXaml.DefaultFontDescription();
+			fontSelectionPanel.SelectedFontFamily = new FontFamily(fontDescription.Item1);
+			fontSelectionPanel.SelectedFontSize = fontDescription.Item2;
 		}
 		
 		
@@ -55,14 +45,16 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			var properties = PropertyService.NestedProperties(OutputWindowsProperty);
 			properties.Set("WordWrap", WordWrap);
-		
-			var font = new Font(new System.Drawing.FontFamily(fontSelectionPanel.SelectedFontName),
-			                     (float)fontSelectionPanel.SelectedFontSize);
-			if (font != null) {
-				properties.Set("DefaultFont", font.ToString());
-			}
-			font.Dispose();
+			properties.Set(FontFamilyName,fontSelectionPanel.SelectedFontFamily);
+			properties.Set(FontSizeName,fontSelectionPanel.SelectedFontSize);
 			return base.SaveOptions();
+		}
+		
+		
+		public static Tuple<string,int> DefaultFontDescription()
+		{
+			var properties = PropertyService.NestedProperties(OutputWindowsProperty);
+			return new Tuple<string,int>(properties.Get(FontFamilyName,"Consolas"),properties.Get(FontSizeName,13));
 		}
 		
 		
