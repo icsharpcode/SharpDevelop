@@ -80,6 +80,7 @@ namespace PackageManagement.Tests
 		{
 			CreateRegisteredPackageRepositories();
 			packageSourcesHelper.AddOnePackageSource();
+			
 			bool result = registeredRepositories.HasMultiplePackageSources;
 			
 			Assert.IsFalse(result);
@@ -90,9 +91,22 @@ namespace PackageManagement.Tests
 		{
 			CreateRegisteredPackageRepositories();
 			packageSourcesHelper.AddTwoPackageSources();
+			
 			bool result = registeredRepositories.HasMultiplePackageSources;
 			
 			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void HasMultiplePackageSources_TwoPackageSourcesButOneIsDisabled_ReturnsFalse()
+		{
+			CreateRegisteredPackageRepositories();
+			packageSourcesHelper.AddTwoPackageSources();
+			packageSourcesHelper.RegisteredPackageSources[0].IsEnabled = false;
+			
+			bool result = registeredRepositories.HasMultiplePackageSources;
+			
+			Assert.IsFalse(result);
 		}
 		
 		[Test]

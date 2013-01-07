@@ -48,8 +48,8 @@ namespace ICSharpCode.PackageManagement
 			get { return Count == 0; }
 		}
 		
-		public bool HasMultiplePackageSources {
-			get { return Count > 1; }
+		public bool HasMultipleEnabledPackageSources {
+			get { return GetEnabledPackageSources().Count() > 1; }
 		}
 		
 		public IEnumerable<PackageSource> GetEnabledPackageSources()
