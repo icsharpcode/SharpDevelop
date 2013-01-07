@@ -26,7 +26,7 @@ namespace ICSharpCode.PackageManagement
 				taskFactory)
 		{
 			this.selectedProjects = new PackageManagementSelectedProjects(solution);
-			ShowPackageSources = registeredPackageRepositories.HasMultiplePackageSources;
+			ShowPackageSources = true;
 		}
 		
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
