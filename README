@@ -9,7 +9,8 @@ How to download:
 
 How to compile:
 	1. Get Mono.Cecil
-		Download Cecil from https://github.com/jbevain/cecil/ and unzip it into a directory named "Mono.Cecil"
+		Get Cecil from https://github.com/jbevain/cecil ('git clone git://github.com/jbevain/cecil.git')
+		or download Cecil from https://github.com/jbevain/cecil/ and unzip it into a directory named "cecil"
 		next to the directory containing NRefactory.
 	2. Open NRefactory.sln in your favorite .NET IDE and compile.
 
