@@ -211,14 +211,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 	{
 		void Activate(out int clientId);
 		void Deactivate();
-		void CreateDocumentMgr(out object docMgr);
-		void EnumDocumentMgrs(out object enumDocMgrs);
-		void GetFocus(out object docMgr);
-		void SetFocus(object docMgr);
-		void AssociateFocus(IntPtr hwnd, object newDocMgr, out object prevDocMgr);
+		void CreateDocumentMgr(out IntPtr docMgr);
+		void EnumDocumentMgrs(out IntPtr enumDocMgrs);
+		void GetFocus(out IntPtr docMgr);
+		void SetFocus(IntPtr docMgr);
+		void AssociateFocus(IntPtr hwnd, IntPtr newDocMgr, out IntPtr prevDocMgr);
 		void IsThreadFocus([MarshalAs(UnmanagedType.Bool)] out bool isFocus);
-		void GetFunctionProvider(ref Guid classId, out object funcProvider);
-		void EnumFunctionProviders(out object enumProviders);
-		void GetGlobalCompartment(out object compartmentMgr);
+		void GetFunctionProvider(ref Guid classId, out IntPtr funcProvider);
+		void EnumFunctionProviders(out IntPtr enumProviders);
+		void GetGlobalCompartment(out IntPtr compartmentMgr);
 	}
 }
