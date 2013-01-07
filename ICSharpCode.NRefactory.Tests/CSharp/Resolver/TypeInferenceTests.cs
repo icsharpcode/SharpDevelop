@@ -30,7 +30,7 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	[TestFixture]
-	public class TypeInferenceTests
+	public class TypeInferenceTests : ResolverTestBase
 	{
 		readonly ICompilation compilation = new SimpleCompilation(CecilLoaderTests.Mscorlib);
 		TypeInference ti;
@@ -460,5 +460,46 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				FindAllTypesInBounds(Resolve(), Resolve(typeof(IEnumerable<ICloneable>), typeof(IEnumerable<IComparable>), typeof(IList))));
 		}
 		#endregion
+
+
+		
+		/// <summary>
+		/// Bug 9300 - Unknown Resolve Error
+		/// </summary>
+		[Test]
+		public void TestBug9300()
+		{
+			string program = @"struct S
+{
+	public static implicit operator string (S s)
+	{
+		return ""a"";
+	}
+}
+
+interface I<in T>
+{
+}
+
+class C : I<string>
+{
+	static T Foo<T> (T a, I<T> b)
+	{
+		return a;
+	}
+	
+	public static int Main ()
+	{
+		S s = new S ();
+		I<string> i = new C ();
+		var result = Foo (s, i);
+		Console.WriteLine ($result$);
+		return 0;
+	}
+}
+";
+			var mrr = Resolve<LocalResolveResult>(program);
+			Assert.AreEqual("System.String", mrr.Type.FullName);
+		}
 	}
 }

@@ -776,6 +776,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Log.WriteLine("  T was fixed " + (types.Count >= 1 ? "successfully" : "(with errors)") + " to " + tp.FixedTo);
 				return types.Count >= 1;
 			} else {
+				if (types.Count > 1) {
+					// Try to search a unique type among the candidate types from which there is an implicit conversion
+					// to all other candate types.
+					IType uniqueType = null;
+					for (int i = 0; i < types.Count; i++) {
+						if (types.All (t => conversions.ImplicitConversion (t, types[i]).IsValid)) {
+							if (uniqueType != null) {
+								Log.WriteLine("Can't determine a single unique type!");
+								uniqueType = null;
+								break;
+							}
+							uniqueType = types[i];
+						}
+					}
+					if (uniqueType != null) {
+						tp.FixedTo = uniqueType;
+						Log.WriteLine("  T was fixed successfully to " + tp.FixedTo);
+						return true;
+					}
+					// fixing with errors
+				}
+
 				tp.FixedTo = GetFirstTypePreferNonInterfaces(types);
 				Log.WriteLine("  T was fixed " + (types.Count == 1 ? "successfully" : "(with errors)") + " to " + tp.FixedTo);
 				return types.Count == 1;
@@ -857,10 +879,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				.Where(c => lowerBounds.All(b => conversions.ImplicitConversion(b, c).IsValid))
 				.Where(c => upperBounds.All(b => conversions.ImplicitConversion(c, b).IsValid))
 				.ToList(); // evaluate the query only once
-			
+
 			candidateTypes = candidateTypes.Where(
-				c => candidateTypes.All(o => conversions.ImplicitConversion(c, o).IsValid)
+				c => candidateTypes.All(o => conversions.ImplicitConversion(o, c).IsValid)
 			).ToList();
+
 			// If the specified algorithm produces a single candidate, we return
 			// that candidate.
 			// We also return the whole candidate list if we're not using the improved
