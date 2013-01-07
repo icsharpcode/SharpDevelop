@@ -605,6 +605,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(0, p.Attributes.Count);
 			Assert.AreEqual(4, p.ConstantValue);
 		}
+
+		[Test]
+		public void MethodWithExplicitOptionalParameter()
+		{
+			IParameter p = GetTypeDefinition(typeof(ParameterTests)).Methods.Single(m => m.Name == "MethodWithExplicitOptionalParameter").Parameters.Single();
+			Assert.IsTrue(p.IsOptional);
+			Assert.IsFalse(p.IsRef);
+			Assert.IsFalse(p.IsOut);
+			Assert.IsFalse(p.IsParams);
+			Assert.AreEqual(1, p.Attributes.Count);
+		}
 		
 		[Test]
 		public void MethodWithEnumOptionalParameter()

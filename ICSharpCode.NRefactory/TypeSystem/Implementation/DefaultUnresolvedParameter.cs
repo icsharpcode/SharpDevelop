@@ -190,6 +190,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 			return b.ToString();
 		}
+
+		static bool IsOptionalAttribute (IType attributeType)
+		{
+			return attributeType.Name == "OptionalAttribute" && attributeType.Namespace == "System.Runtime.InteropServices";
+		}
 		
 		public IParameter CreateResolvedParameter(ITypeResolveContext context)
 		{
@@ -205,8 +210,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					IsParams = this.IsParams
 				};
 			} else {
-				return new DefaultParameter(type.Resolve(context), name, region,
-				                            attributes.CreateResolvedAttributes(context), IsRef, IsOut, IsParams);
+				var resolvedAttributes = attributes.CreateResolvedAttributes (context);
+				bool isOptional = resolvedAttributes != null && resolvedAttributes.Any (a => IsOptionalAttribute (a.AttributeType));
+				return new DefaultParameter (type.Resolve (context), name, region,
+				                            resolvedAttributes, IsRef, IsOut, IsParams, isOptional);
 			}
 		}
 		
