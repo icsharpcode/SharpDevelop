@@ -414,6 +414,35 @@ class TestClass
 }
 ");
 		}
+
+		/// <summary>
+		/// Bug 8835 - missing "extract method" in the code editor
+		/// </summary>
+		[Test()]
+		public void TestBug8835 ()
+		{
+			Test<ExtractMethodAction>(@"class TestClass
+{
+	void TestMethod ()
+	{
+		<-// comment
+		Foo ();->
+	}
+}
+", @"class TestClass
+{
+	static void NewMethod ()
+	{
+		// comment
+		Foo ();
+	}
+	void TestMethod ()
+	{
+		NewMethod ();
+	}
+}
+");
+		}
 	}
 }
 

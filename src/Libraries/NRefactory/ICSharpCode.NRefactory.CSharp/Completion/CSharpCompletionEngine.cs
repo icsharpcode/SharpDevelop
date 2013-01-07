@@ -129,7 +129,39 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			return Enumerable.Empty<ICompletionData>();
 		}
-		
+
+		/// <summary>
+		/// Gets the types that needs to be imported via using or full type name.
+		/// </summary>
+		public IEnumerable<ICompletionData> GetImportCompletionData(int offset)
+		{
+			var generalLookup = new MemberLookup (null, Compilation.MainAssembly);
+			SetOffset(offset);
+
+			// flatten usings
+			var namespaces = new List<INamespace>();
+			for (var n = ctx.CurrentUsingScope; n != null; n = n.Parent) {
+				namespaces.Add (n.Namespace);
+				foreach (var u in n.Usings)
+					namespaces.Add (u);
+			}
+
+			foreach (var type in Compilation.GetAllTypeDefinitions ()) {
+				if (!generalLookup.IsAccessible (type, false))
+					continue;	
+				if (namespaces.Any (n => n.FullName == type.Namespace))
+					continue;
+				bool useFullName = false;
+				foreach (var ns in namespaces) {
+					if (ns.GetTypeDefinition (type.Name, type.TypeParameterCount) != null) {
+						useFullName = true;
+						break;
+					}
+				}
+				yield return factory.CreateImportCompletionData (type, useFullName);
+			}
+		}
+
 		IEnumerable<string> GenerateNameProposals(AstType type)
 		{
 			if (type is PrimitiveType) {
@@ -189,7 +221,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			if (expr == null) 
 				return null;
-			
 			// do not complete <number>. (but <number>.<number>.)
 			if (expr.Node is PrimitiveExpression) {
 				var pexpr = (PrimitiveExpression)expr.Node;
@@ -721,6 +752,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					CSharpResolver csResolver;
 					AstNode n = identifierStart.Node;
+					if (n.Parent is NamedArgumentExpression)
+						n = n.Parent;
 					if (n != null && n.Parent is AnonymousTypeCreateExpression) {
 						AutoSelect = false;
 					}
@@ -1926,6 +1959,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					case "sealed":
 					case "override":
 					case "partial":
+					case "async":
 						declarationBegin = j;
 						break;
 					case "static":
@@ -1955,6 +1989,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					case "internal":
 					case "sealed":
 					case "override":
+					case "async":
 						declarationBegin = j;
 						break;
 					case "static":
@@ -2256,12 +2291,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				CreateFieldAction.GetValidTypes(astResolver, exprParent) .FirstOrDefault() :
 					null;
 			var result = new CompletionDataWrapper(this);
+			var lookup = new MemberLookup(
+				ctx.CurrentTypeDefinition,
+				Compilation.MainAssembly
+				);
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
-				var lookup = new MemberLookup(
-					ctx.CurrentTypeDefinition,
-					Compilation.MainAssembly
-					);
 				if (!(resolvedNode.Parent is UsingDeclaration || resolvedNode.Parent != null && resolvedNode.Parent.Parent is UsingDeclaration)) {
 					foreach (var cl in nr.Namespace.Types) {
 						if (hintType != null && hintType.Kind != TypeKind.Array && cl.Kind == TypeKind.Interface) {
@@ -2281,6 +2316,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (hintType != null && hintType.Kind != TypeKind.Array && nested.Kind == TypeKind.Interface) {
 						continue;
 					}
+					var def = nested.GetDefinition();
+					if (def != null && !lookup.IsAccessible (def, false))
+						continue;
 					result.AddType(nested, false);
 				}
 			}
@@ -2376,12 +2414,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (resolveResult == null /*|| resolveResult.IsError*/) {
 				return null;
 			}
-
+			
 			var lookup = new MemberLookup(
 				ctx.CurrentTypeDefinition,
 				Compilation.MainAssembly
 				);
-			
+
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
 				var namespaceContents = new CompletionDataWrapper(this);
@@ -3139,7 +3177,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			"unchecked", "const", "continue", "do", "finally", "fixed", "for", "foreach",
 			"goto", "if", "lock", "return", "stackalloc", "switch", "throw", "try", "unsafe", 
 			"using", "while", "yield",
-			"catch"
+			"catch", "await"
 		};
 		static string[] globalLevelKeywords = new string [] {
 			"namespace", "using", "extern", "public", "internal", 
@@ -3147,10 +3185,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			"abstract", "sealed", "static", "unsafe", "partial"
 		};
 		static string[] accessorModifierKeywords = new string [] {
-			"public", "internal", "protected", "private"
+			"public", "internal", "protected", "private", "async"
 		};
 		static string[] typeLevelKeywords = new string [] {
-			"public", "internal", "protected", "private",
+			"public", "internal", "protected", "private", "async",
 			"class", "interface", "struct", "enum", "delegate",
 			"abstract", "sealed", "static", "unsafe", "partial",
 			"const", "event", "extern", "fixed","new", 

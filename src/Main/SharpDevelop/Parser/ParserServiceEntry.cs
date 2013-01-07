@@ -83,15 +83,26 @@ namespace ICSharpCode.SharpDevelop.Parser
 		public void RemoveOwnerProject(IProject project)
 		{
 			Debug.Assert(project != null);
+			ProjectEntry oldEntry;
+			bool removedLastOwner = false;
 			lock (this) {
 				int index = FindIndexForProject(project);
 				if (index < 0)
 					throw new InvalidOperationException("The project does not own the file");
+				oldEntry = entries[index];
 				if (entries.Count == 1) {
 					entries[0] = default(ProjectEntry);
+					removedLastOwner = true;
 				} else {
 					entries.RemoveAt(index);
 				}
+			}
+			if (oldEntry.UnresolvedFile != null) {
+				project.OnParseInformationUpdated(new ParseInformationEventArgs(project, oldEntry.UnresolvedFile, null));
+			}
+			if (removedLastOwner) {
+				// allow the parser service to forget this entry
+				parserService.RegisterForCacheExpiry(this);
 			}
 		}
 		#endregion
@@ -348,7 +359,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			if (unresolvedFile == null)
 				throw new ArgumentNullException("unresolvedFile");
 			FreezableHelper.Freeze(unresolvedFile);
-			var newParseInfo = new ParseInformation(unresolvedFile, false);
+			var newParseInfo = new ParseInformation(unresolvedFile, null, false);
 			lock (this) {
 				int index = FindIndexForProject(project);
 				if (index >= 0) {

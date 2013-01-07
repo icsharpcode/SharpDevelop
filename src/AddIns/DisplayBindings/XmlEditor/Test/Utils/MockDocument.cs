@@ -177,7 +177,10 @@ namespace XmlEditor.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public event EventHandler ChangeCompleted;
+		public event EventHandler ChangeCompleted { 
+			add { throw new NotImplementedException(); } 
+			remove { throw new NotImplementedException(); }
+		}
 		
 		public IDocument CreateDocumentSnapshot()
 		{

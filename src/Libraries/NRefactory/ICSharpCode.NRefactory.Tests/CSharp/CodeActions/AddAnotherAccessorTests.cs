@@ -1,4 +1,4 @@
-// 
+﻿// 
 // AddAnotherAccessorTests.cs
 //  
 // Author:
@@ -33,7 +33,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class AddAnotherAccessorTests : ContextActionTestBase
 	{
-		[Ignore("Broken")]
 		[Test()]
 		public void TestAddSet ()
 		{

@@ -79,8 +79,6 @@ namespace ICSharpCode.NRefactory.Editor
 			
 			public bool BelongsToSameDocumentAs(ITextSourceVersion other)
 			{
-				if (other == null)
-					throw new ArgumentNullException("other");
 				Version o = other as Version;
 				return o != null && provider == o.provider;
 			}

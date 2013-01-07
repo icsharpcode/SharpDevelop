@@ -213,8 +213,11 @@ class Calls {
 		#endregion
 
 		#region Await
+
+		#if NET_4_5
+
 		const string awaitTest = @"using System;
-class MyAwaiter {
+class MyAwaiter : System.Runtime.CompilerServices.INotifyCompletion {
 	public bool IsCompleted { get { return false; } }
 	public void OnCompleted(Action continuation) {}
 	public int GetResult() { return 0; }
@@ -268,6 +271,34 @@ public class C {
 			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 3 && r is PropertyDeclaration));
 			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 13 && r is UnaryOperatorExpression));
 		}
+
+		[Test]
+		public void UnsafeOnCompletedReferenceInAwaitExpressionIsFound() {
+			Init(@"using System;
+class MyAwaiter : System.Runtime.CompilerServices.ICriticalNotifyCompletion {
+	public bool IsCompleted { get { return false; } }
+	public void OnCompleted(Action continuation) {}
+	public void UnsafeOnCompleted(Action continuation) {}
+	public int GetResult() { return 0; }
+}
+class MyAwaitable {
+	public MyAwaiter GetAwaiter() { return null; }
+}
+public class C {
+	public async void M() {
+		MyAwaitable x = null;
+		int i = await x;
+	}
+}");
+			var test = compilation.MainAssembly.TopLevelTypeDefinitions.Single(t => t.Name == "MyAwaiter");
+			var method = test.Methods.Single(m => m.Name == "UnsafeOnCompleted");
+			var actual = FindReferences(method).ToList();
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 5 && r is MethodDeclaration));
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 14 && r is UnaryOperatorExpression));
+		}
+
+		#endif // NET_4_5
+
 		#endregion
 	}
 }

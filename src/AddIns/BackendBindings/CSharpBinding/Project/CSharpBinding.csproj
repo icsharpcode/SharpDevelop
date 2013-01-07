@@ -69,10 +69,12 @@
     <Compile Include="Src\Completion\CSharpCompletionContext.cs" />
     <Compile Include="Src\Completion\CSharpInsightItem.cs" />
     <Compile Include="Src\Completion\CSharpMethodInsight.cs" />
+    <Compile Include="Src\Completion\ImportCompletionData.cs" />
     <Compile Include="Src\Completion\OverrideCompletionData.cs" />
     <Compile Include="Src\Completion\SegmentTrackingOutputFormatter.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormatter.cs" />
     <Compile Include="Src\Parser\FoldingVisitor.cs" />
+    <Compile Include="Src\Refactoring\CSharpSyntaxIssue.cs" />
     <Compile Include="Src\Refactoring\InsertionPoint.cs" />
     <Compile Include="Src\Refactoring\IssueOptions.xaml.cs">
       <DependentUpon>IssueOptions.xaml</DependentUpon>

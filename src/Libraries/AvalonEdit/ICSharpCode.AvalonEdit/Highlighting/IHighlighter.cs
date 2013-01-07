@@ -45,20 +45,29 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		void UpdateHighlightingState(int lineNumber);
 		
 		/// <summary>
-		/// Notification when the highlighter detects that the highlighting state at the end of a line
-		/// has changed.
-		/// This event gets raised for each line as it is processed by the highlighter
-		/// unless the highlighting state for the line is equal to the old state (when the same line was highlighted previously).
+		/// Notification when the highlighter detects that the highlighting state at the
+		/// <b>beginning</b> of the specified lines has changed.
+		/// <c>fromLineNumber</c> and <c>toLineNumber</c> are both inclusive;
+		/// the common case of a single-line change is represented by <c>fromLineNumber == toLineNumber</c>.
+		/// 
+		/// During highlighting, the highlighting of line X will cause this event to be raised
+		/// for line X+1 if the highlighting state at the end of line X has changed from its previous state.
+		/// This event may also be raised outside of the highlighting process to signalize that
+		/// changes to external data (not the document text; but e.g. semantic information)
+		/// require a re-highlighting of the specified lines.
 		/// </summary>
 		/// <remarks>
-		/// For implementers: there is the requirement that, if there was no state changed reported at line X,
-		/// and there were no document changes between line X and Y (with Y > X), then
-		/// this event must not be raised for any line between X and Y.
+		/// For implementers: there is the requirement that, during highlighting,
+		/// if there was no state changed reported for the beginning of line X,
+		/// and there were no document changes between the start of line X and the start of line Y (with Y > X),
+		/// then this event must not be raised for any line between X and Y (inclusive).
 		/// 
 		/// Equal input state + unchanged line = Equal output state.
 		/// 
 		/// See the comment in the HighlightingColorizer.OnHighlightStateChanged implementation
 		/// for details about the requirements for a correct custom IHighlighter.
+		/// 
+		/// Outside of the highlighting process, this event can be raised without such restrictions.
 		/// </remarks>
 		event HighlightingStateChangedEventHandler HighlightingStateChanged;
 		
@@ -94,5 +103,5 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// <summary>
 	/// Event handler for <see cref="IHighlighter.HighlightingStateChanged"/>
 	/// </summary>
-	public delegate void HighlightingStateChangedEventHandler(IHighlighter sender, int fromLineNumber, int toLineNumber);
+	public delegate void HighlightingStateChangedEventHandler(int fromLineNumber, int toLineNumber);
 }

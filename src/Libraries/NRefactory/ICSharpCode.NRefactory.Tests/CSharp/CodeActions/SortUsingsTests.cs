@@ -105,5 +105,22 @@ using System;", @"using System;
 
 using System.Linq;");
 		}
+		
+		
+		[Test]
+		public void TestPreservesPreprocessorDirectives()
+		{
+			Test<SortUsingsAction>(@"$using D;
+using A;
+#if true
+using C;
+using B;
+#endif", @"using A;
+using D;
+#if true
+using B;
+using C;
+#endif");
+		}
 	}
 }

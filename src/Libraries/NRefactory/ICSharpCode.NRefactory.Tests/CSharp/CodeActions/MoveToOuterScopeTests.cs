@@ -136,6 +136,19 @@ class A
 	});
 ");
 		}
+		
+		[Test]
+		public void IgnoresDeclarationDirectlyInConstructorBody()
+		{
+			TestWrongContext<MoveToOuterScopeAction>(@"
+class A
+{
+	public A()
+	{
+		int $i = 2;
+	}
+}");
+		}
 	}
 }
 

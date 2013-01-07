@@ -92,7 +92,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			ComposedType o = other as ComposedType;
-			return o != null && this.HasNullableSpecifier == o.HasNullableSpecifier && this.PointerRank == o.PointerRank && this.ArraySpecifiers.DoMatch(o.ArraySpecifiers, match);
+			return o != null && this.HasNullableSpecifier == o.HasNullableSpecifier && this.PointerRank == o.PointerRank
+				&& this.BaseType.DoMatch(o.BaseType, match)
+				&& this.ArraySpecifiers.DoMatch(o.ArraySpecifiers, match);
 		}
 		
 		public override string ToString()

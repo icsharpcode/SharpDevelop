@@ -118,6 +118,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 				public static void Collect (GatherVisitor visitor, BlockStatement body)
 				{
+					if (body.IsNull)
+						return;
 					var reachability = visitor.ctx.CreateReachabilityAnalysis (body);
 
 					var collector = new StatementIssueCollector (visitor, reachability);

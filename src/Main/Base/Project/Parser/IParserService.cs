@@ -262,13 +262,20 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// The parser services tries to use the project that contains the file directly (non-linked)
 		/// as the primary parent project.
 		/// </param>
+		/// <remarks>
+		/// If the file was already parsed (e.g. because it also belongs to another project),
+		/// this method invokes <c>project.UpdateParseInformation(null, existingUnresolvedFile);</c>.
+		/// Otherwise, the project will be notified of the new file the next time it is parsed.
+		/// </remarks>
 		void AddOwnerProject(FileName fileName, IProject project, bool startAsyncParse, bool isLinkedFile);
 		
 		/// <summary>
 		/// Removes a project from the owners of the file.
+		/// </summary>
+		/// <remarks>
 		/// This method invokes <c>project.UpdateParseInformation(existingUnresolvedFile, null);</c>.
 		/// (unless existingUnresolvedFile==null)
-		/// </summary>
+		/// </remarks>
 		void RemoveOwnerProject(FileName fileName, IProject project);
 		
 		/// <summary>

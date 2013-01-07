@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpFormattingOptions.cs
 //  
 // Author:
@@ -66,6 +66,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		DoNotCare,
 		NewLine,
 		SameLine
+	}
+
+	public enum UsingPlacement {
+		TopOfFile,
+		InsideNamespace
 	}
 
 	public class CSharpFormattingOptions
@@ -854,6 +859,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 
 		public bool IndexerDeclarationClosingBracketOnNewLine {
+			get;
+			set;
+		}
+		#endregion
+
+		#region Using Declarations
+		public UsingPlacement UsingPlacement {
 			get;
 			set;
 		}

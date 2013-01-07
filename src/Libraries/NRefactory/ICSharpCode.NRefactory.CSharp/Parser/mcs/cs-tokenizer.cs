@@ -1572,7 +1572,7 @@ namespace Mono.CSharp
 #endif
 			number_pos = 0;
 			var loc = Location;
-//			bool hasLeadingDot = c == '.';
+			bool hasLeadingDot = c == '.';
 
 			if (c >= '0' && c <= '9'){
 				if (c == '0'){

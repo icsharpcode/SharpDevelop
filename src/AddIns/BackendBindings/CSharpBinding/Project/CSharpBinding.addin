@@ -140,8 +140,8 @@
 	</Path>
 	
 	<Path path = "/SharpDevelop/ViewContent/TextEditor/C#/IssueProviders">
-		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.AccessToDisposedClosureIssue" />
-		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.AccessToModifiedClosureIssue" />
+		<!--<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.AccessToDisposedClosureIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.AccessToModifiedClosureIssue" />-->
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.AssignmentMadeToSameVariableIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.BitwiseOperationOnNonFlagsEnumIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.CallToObjectEqualsViaBaseIssue" />
@@ -203,6 +203,7 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseVarKeywordIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ValueParameterUnusedIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.VariableDeclaredInWideScopeIssue" />
+		<Class class = "CSharpBinding.Refactoring.CSharpSyntaxIssue" />
 	</Path>
 	
 	<Path path = "/SharpDevelop/ViewContent/TextEditor/C#/ContextActions">
@@ -210,6 +211,7 @@
 		     or you can add NR5 code action providers using <CSharpCodeActionProvider> -->
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.AddAnotherAccessorAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.AddCatchTypeAction" />
+		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.AddUsingAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CheckIfParameterIsNullAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertAnonymousDelegateToLambdaAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertAsToCastAction" />

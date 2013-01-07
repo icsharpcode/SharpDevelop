@@ -2,22 +2,37 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Windows;
+using System.Windows.Input;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 {
 	/// <summary>
 	/// The popup for context actions.
 	/// </summary>
-	public class ContextActionsBulbPopup : ContextActionsPopupBase
+	public class ContextActionsBulbPopup : ExtendedPopup
 	{
-		public ContextActionsBulbPopup()
+		public ContextActionsBulbPopup(UIElement parent) : base(parent)
 		{
 			this.StaysOpen = true;
 			this.AllowsTransparency = true;
 			this.ChildControl = new ContextActionsBulbControl();
 			// Close when any action excecuted
-			this.ChildControl.ActionExecuted += delegate { this.Close(); };
+			this.ChildControl.ActionExecuted += delegate { Close(); };
+		}
+		
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+			if (e.Key == Key.Escape)
+				this.IsOpenIfFocused = false;
+		}
+		
+		public void Close()
+		{
+			this.IsOpenIfFocused = false;
 		}
 		
 		private ContextActionsBulbControl ChildControl
@@ -47,8 +62,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		
 		public void OpenAtLineStart(ITextEditor editor)
 		{
-			OpenAtPosition(editor, editor.Caret.Line, 1, false);
+			ContextActionsPopup.SetPosition(this, editor, editor.Caret.Line, 1);
 			this.VerticalOffset -= 16;
+			this.IsOpenIfFocused = true;
 		}
 	}
 }

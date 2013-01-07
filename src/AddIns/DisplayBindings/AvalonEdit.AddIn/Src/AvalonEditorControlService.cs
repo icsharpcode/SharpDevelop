@@ -37,10 +37,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public IHighlighter CreateHighlighter(IDocument document)
 		{
 			if (document.FileName == null)
-				return null;
+				return new MultiHighlighter(document);
 			var def = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(document.FileName));
 			if (def == null)
-				return null;
+				return new MultiHighlighter(document);
 			List<IHighlighter> highlighters = new List<IHighlighter>();
 			var textDocument = document as TextDocument;
 			var readOnlyDocument = document as ReadOnlyDocument;
@@ -52,9 +52,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// add additional highlighters
 			highlighters.AddRange(SD.AddInTree.BuildItems<IHighlighter>(HighlighterDoozer.AddInPath, document, false));
 			var multiHighlighter = new MultiHighlighter(document, highlighters.ToArray());
-			return new CustomizingHighlighter(
-				document, CustomizedHighlightingColor.FetchCustomizations(def.Name),
-				multiHighlighter);
+			return new CustomizingHighlighter(multiHighlighter, CustomizedHighlightingColor.FetchCustomizations(def.Name));
 		}
 	}
 

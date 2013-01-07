@@ -106,8 +106,7 @@ namespace CSharpBinding
 					if (document == null) {
 						document = new ReadOnlyDocument(textSource, fileName);
 						highlighter = SD.EditorControlService.CreateHighlighter(document);
-						if (highlighter != null)
-							highlighter.BeginHighlighting();
+						highlighter.BeginHighlighting();
 					}
 					Identifier identifier = node.GetChildByRole(Roles.Identifier);
 					if (!identifier.IsNull)

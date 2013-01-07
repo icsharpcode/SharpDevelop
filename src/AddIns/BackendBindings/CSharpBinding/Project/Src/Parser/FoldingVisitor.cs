@@ -24,6 +24,8 @@ namespace CSharpBinding.Parser
 		
 		NewFolding AddFolding(TextLocation start, TextLocation end, bool isDefinition = false)
 		{
+			if (end.Line <= start.Line)
+				return null;
 			NewFolding folding = new NewFolding(GetOffset(start), GetOffset(end));
 			folding.IsDefinition = isDefinition;
 			foldings.Add(folding);
@@ -45,8 +47,10 @@ namespace CSharpBinding.Parser
 			}
 			if (firstChild != node) {
 				NewFolding folding = AddFolding(firstChild.StartLocation, node.EndLocation);
-				folding.Name = "using...";
-				folding.DefaultClosed = true;
+				if (folding != null) {
+					folding.Name = "using...";
+					folding.DefaultClosed = true;
+				}
 			}
 		}
 		public override void VisitSyntaxTree (SyntaxTree unit)
@@ -176,43 +180,45 @@ namespace CSharpBinding.Parser
 		#region Comments
 		public override void VisitComment(Comment comment)
 		{
-			if (AreTwoSinglelineCommentsInConsequtiveLines(comment.PrevSibling as Comment, comment))
+			if (comment.CommentType == CommentType.InactiveCode)
+				return; // don't fold the inactive code comment; instead fold the preprocessor directives
+			if (AreTwoSinglelineCommentsInConsecutiveLines(comment.PrevSibling as Comment, comment))
 				return; // already handled by previous comment
 			Comment lastComment = comment;
 			Comment nextComment;
 			while (true) {
 				nextComment = lastComment.NextSibling as Comment;
-				if (!AreTwoSinglelineCommentsInConsequtiveLines(lastComment, nextComment))
+				if (!AreTwoSinglelineCommentsInConsecutiveLines(lastComment, nextComment))
 					break;
 				lastComment = nextComment;
 			}
 			if (lastComment.EndLocation.Line - comment.StartLocation.Line > 2) {
 				var folding = AddFolding(comment.StartLocation, lastComment.EndLocation);
-				switch (comment.CommentType) {
-					case CommentType.SingleLine:
-						folding.Name = "// ...";
-						break;
-					case CommentType.MultiLine:
-						folding.Name = "/* ... */";
-						break;
-					case CommentType.Documentation:
-						folding.Name = "/// ...";
-						break;
-					case CommentType.InactiveCode:
-						folding.Name = "inactive code";
-						break;
-					case CommentType.MultiLineDocumentation:
-						folding.Name = "/** ... */";
-						break;
+				if (folding != null) {
+					switch (comment.CommentType) {
+						case CommentType.SingleLine:
+							folding.Name = "// ...";
+							break;
+						case CommentType.MultiLine:
+							folding.Name = "/* ... */";
+							break;
+						case CommentType.Documentation:
+							folding.Name = "/// ...";
+							break;
+						case CommentType.MultiLineDocumentation:
+							folding.Name = "/** ... */";
+							break;
+					}
 				}
 			}
 		}
 		
-		bool AreTwoSinglelineCommentsInConsequtiveLines(Comment comment1, Comment comment2)
+		bool AreTwoSinglelineCommentsInConsecutiveLines(Comment comment1, Comment comment2)
 		{
 			if (comment1 == null || comment2 == null)
 				return false;
-			return comment1.StartLocation.Line == comment1.EndLocation.Line
+			return comment1.CommentType == comment2.CommentType
+				&& comment1.StartLocation.Line == comment1.EndLocation.Line
 				&& comment1.EndLocation.Line + 1 == comment2.StartLocation.Line
 				&& comment1.StartLocation.Column == comment2.StartLocation.Column
 				&& comment2.StartLocation.Line == comment2.EndLocation.Line;

@@ -1952,12 +1952,13 @@
 	
 	<!-- TEXT EDITOR -->
 	
-	<Path name = "/SharpDevelop/ViewContent/TextEditor/EntityContextMenu">
+	<Path name = "/SharpDevelop/EntityContextMenu">
 		<MenuItem id = "FindReferences"
 		          label = "${res:SharpDevelop.Refactoring.FindReferencesCommand}"
 		          class = "ICSharpCode.SharpDevelop.Editor.Commands.FindReferencesCommand"/>
 	</Path>
 	
+	<!--
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Common">
 		<MenuItem id = "Rename"
 		          label = "${res:SharpDevelop.Refactoring.RenameCommand}"
@@ -1981,7 +1982,7 @@
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Parameter">
 		<Include id = "Common" path = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Common"/>
-	</Path>
+	</Path>-->
 	
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
 		<Include id = "Cut" item = "/SharpDevelop/Workbench/MainMenu/Edit/Cut"/>

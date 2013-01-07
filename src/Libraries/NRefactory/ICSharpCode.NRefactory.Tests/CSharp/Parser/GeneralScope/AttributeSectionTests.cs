@@ -51,6 +51,7 @@ public class Form1 {
 			AttributeSection decl = ParseUtilCSharp.ParseGlobal<AttributeSection>(program);
 			Assert.AreEqual(new TextLocation(1, 1), decl.StartLocation);
 			Assert.AreEqual("assembly", decl.AttributeTarget);
+			Assert.AreEqual(SyntaxTree.MemberRole, decl.Role);
 		}
 		
 		[Test]
@@ -60,6 +61,7 @@ public class Form1 {
 			AttributeSection decl = ParseUtilCSharp.ParseGlobal<AttributeSection>(program);
 			Assert.AreEqual(new TextLocation(1, 1), decl.StartLocation);
 			Assert.AreEqual("module", decl.AttributeTarget);
+			Assert.AreEqual(SyntaxTree.MemberRole, decl.Role);
 		}
 		
 		[Test]

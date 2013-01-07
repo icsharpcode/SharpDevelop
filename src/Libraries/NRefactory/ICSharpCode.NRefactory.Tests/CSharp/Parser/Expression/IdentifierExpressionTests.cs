@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			CheckIdentifier(@"l\U00000065xer", "lexer");
 		}
 		
-		[Test, Ignore("The @ should not be part of IdentifierExpression.Identifier")]
+		[Test]
 		public void TestKeyWordAsIdentifier()
 		{
 			CheckIdentifier("@int", "int");
@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			CheckIdentifier(@"i\u006et", "int");
 		}
 		
-		[Test, Ignore("The @ should not be part of IdentifierExpression.Identifier")]
+		[Test]
 		public void TestKeyWordAsIdentifierStartingWithUnderscore()
 		{
 			CheckIdentifier("@_int", "_int");

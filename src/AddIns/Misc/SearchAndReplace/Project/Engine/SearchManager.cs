@@ -206,14 +206,12 @@ namespace SearchAndReplace
 					if (document == null) {
 						document = new ReadOnlyDocument(source, fileName);
 						highlighter = SD.EditorControlService.CreateHighlighter(document);
-						if (highlighter != null)
-							highlighter.BeginHighlighting();
+						highlighter.BeginHighlighting();
 					}
 					var start = document.GetLocation(result.Offset);
 					var end = document.GetLocation(result.Offset + result.Length);
 					var builder = SearchResultsPad.CreateInlineBuilder(start, end, document, highlighter);
-					var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
-					results.Add(new AvalonEditSearchResultMatch(fileName, start, end, result.Offset, result.Length, builder, defaultTextColor, result));
+					results.Add(new AvalonEditSearchResultMatch(fileName, start, end, result.Offset, result.Length, builder, highlighter.DefaultTextColor, result));
 				}
 				if (highlighter != null) {
 					highlighter.Dispose();

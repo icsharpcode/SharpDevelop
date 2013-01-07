@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			act (provider);
 		}
 		
-		class TestFactory
+		public class TestFactory
 		: ICompletionDataFactory
 		{
 			readonly CSharpResolver state;
@@ -80,7 +80,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				builder.ConvertUnboundTypeArguments = true;
 			}
 
-			class CompletionData
+			public class CompletionData
 			: ICompletionData
 			{
 				#region ICompletionData implementation
@@ -137,7 +137,26 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 					DisplayText = CompletionText = Description = text;
 				}
 			}
-			
+
+			public class ImportCompletionData : CompletionData
+			{
+				public IType Type {
+					get;
+					private set;
+				}
+
+				public bool UseFullName {
+					get;
+					private set;
+				}
+
+				public ImportCompletionData(IType type, bool useFullName) : base (type.Name)
+				{
+					this.Type = type;
+					this.UseFullName = useFullName;
+				}
+			}
+
 			#region ICompletionDataFactory implementation
 			public ICompletionData CreateEntityCompletionData (ICSharpCode.NRefactory.TypeSystem.IEntity entity)
 			{
@@ -204,7 +223,12 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			{
 				return new CompletionData (m.Name);
 			}
-			
+
+			public ICompletionData CreateImportCompletionData(IType type, bool useFullName)
+			{
+				return new ImportCompletionData (type, useFullName);
+			}
+
 			public System.Collections.Generic.IEnumerable<ICompletionData> CreateCodeTemplateCompletionData ()
 			{
 				return Enumerable.Empty<ICompletionData> ();
@@ -5802,6 +5826,57 @@ namespace TestConsole
 ", provider => {
 				Assert.IsNotNull(provider.Find("NamedInt"));
 				Assert.IsNull(provider.Find("delegate"));
+			});
+		}
+
+		/// <summary>
+		/// Bug 9026 - Completion shows inaccesible members 
+		/// </summary>
+		[Test]
+		public void TestBug9026 ()
+		{
+			
+			CombinedProviderTest(
+				@"using System;
+class Test { class Foo {} }
+
+class MainClass
+{
+	public static void Main (string[] args)
+	{
+		$new Test.$
+	}
+}
+
+
+", provider => {
+				Assert.IsNull(provider.Find("Foo"));
+			});
+		}
+
+		/// <summary>
+		/// Bug 9115 - Code completion fumbles on named lambda parameters.
+		/// </summary>
+		[Test]
+		public void TestBug9115 ()
+		{
+			
+			CombinedProviderTest(
+				@"using System;
+
+class MainClass
+{
+
+	static void Run(Action<int> act) { }
+	public static void Main (string[] args)
+	{
+		$Run(act: i$
+	}
+}
+
+
+", provider => {
+				Assert.IsFalse(provider.AutoSelect);
 			});
 		}
 	}

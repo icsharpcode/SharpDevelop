@@ -13,6 +13,6 @@
 				Content="{sd:Localize ProjectComponent.ContextMenu.AddExistingFiles.Copy}"
 				ToolTip="{sd:Localize ProjectComponent.ContextMenu.AddExistingFiles.Copy}" />
 		</ToolBar>
-		<ae:TextEditor x:Name="editor" IsReadOnly="True" />
+		<ae:TextEditor x:Name="editor" IsReadOnly="True" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" />
 	</StackPanel>
 </UserControl>

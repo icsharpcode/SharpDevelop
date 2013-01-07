@@ -167,7 +167,7 @@ namespace CSharpBinding
 			cachedLines.Clear();
 			invalidLines.Clear();
 			forceParseOnNextRefresh = true;
-			OnHighlightingStateChanged(0, document.LineCount);
+			OnHighlightingStateChanged(1, document.LineCount);
 		}
 		
 		void ParserService_ParseInformationUpdated(object sender, ParseInformationEventArgs e)
@@ -190,7 +190,7 @@ namespace CSharpBinding
 		protected virtual void OnHighlightingStateChanged(int fromLineNumber, int toLineNumber)
 		{
 			if (HighlightingStateChanged != null) {
-				HighlightingStateChanged(this, fromLineNumber, toLineNumber);
+				HighlightingStateChanged(fromLineNumber, toLineNumber);
 			}
 		}
 		

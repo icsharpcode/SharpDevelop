@@ -249,6 +249,8 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		#region Create*Node
 		ControlFlowNode CreateStartNode(Statement statement)
 		{
+			if (statement.IsNull)
+				return null;
 			ControlFlowNode node = CreateNode(null, statement, ControlFlowNodeType.StartNode);
 			nodes.Add(node);
 			return node;
@@ -295,6 +297,8 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		/// <returns>The constant value of the expression; or null if the expression is not a constant.</returns>
 		ResolveResult EvaluateConstant(Expression expr)
 		{
+			if (expr.IsNull)
+				return null;
 			if (EvaluateOnlyPrimitiveConstants) {
 				if (!(expr is PrimitiveExpression || expr is NullReferenceExpression))
 					return null;
@@ -337,6 +341,8 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			
 			internal ControlFlowEdge Connect(ControlFlowNode from, ControlFlowNode to, ControlFlowEdgeType type = ControlFlowEdgeType.Normal)
 			{
+				if (from == null || to == null)
+					return null;
 				ControlFlowEdge edge = builder.CreateEdge(from, to, type);
 				from.Outgoing.Add(edge);
 				to.Incoming.Add(edge);
@@ -406,30 +412,21 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			
 			public override ControlFlowNode VisitIfElseStatement(IfElseStatement ifElseStatement, ControlFlowNode data)
 			{
-				bool? cond = ifElseStatement.Condition.IsNull ? true : builder.EvaluateCondition(ifElseStatement.Condition);
-				if (ifElseStatement.TrueStatement.IsNull)
-					return data;
-				ControlFlowNode trueBegin;
-				if (ifElseStatement.TrueStatement.IsNull) {
-					trueBegin = null;
-				} else {
-					trueBegin = builder.CreateStartNode(ifElseStatement.TrueStatement);
-				}
-				if (cond != false && trueBegin != null)
+				bool? cond = builder.EvaluateCondition(ifElseStatement.Condition);
+				
+				ControlFlowNode trueBegin = builder.CreateStartNode(ifElseStatement.TrueStatement);
+				if (cond != false)
 					Connect(data, trueBegin, ControlFlowEdgeType.ConditionTrue);
-				ControlFlowNode trueEnd = trueBegin != null ? ifElseStatement.TrueStatement.AcceptVisitor(this, trueBegin) : null;
-				ControlFlowNode falseEnd;
-				if (ifElseStatement.FalseStatement.IsNull) {
-					falseEnd = null;
-				} else {
-					ControlFlowNode falseBegin = builder.CreateStartNode(ifElseStatement.FalseStatement);
-					if (cond != true)
-						Connect(data, falseBegin, ControlFlowEdgeType.ConditionFalse);
-					falseEnd = ifElseStatement.FalseStatement.AcceptVisitor(this, falseBegin);
-				}
+				ControlFlowNode trueEnd = ifElseStatement.TrueStatement.AcceptVisitor(this, trueBegin);
+				
+				ControlFlowNode falseBegin = builder.CreateStartNode(ifElseStatement.FalseStatement);
+				if (cond != true)
+					Connect(data, falseBegin, ControlFlowEdgeType.ConditionFalse);
+				ControlFlowNode falseEnd = ifElseStatement.FalseStatement.AcceptVisitor(this, falseBegin);
+				// (if no else statement exists, both falseBegin and falseEnd will be null)
+				
 				ControlFlowNode end = builder.CreateEndNode(ifElseStatement);
-				if (trueEnd != null)
-					Connect(trueEnd, end);
+				Connect(trueEnd, end);
 				if (falseEnd != null) {
 					Connect(falseEnd, end);
 				} else if (cond != true) {
@@ -543,7 +540,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				
 				Connect(data, conditionNode);
 				
-				bool? cond = whileStatement.Condition.IsNull ? true : builder.EvaluateCondition(whileStatement.Condition);
+				bool? cond = builder.EvaluateCondition(whileStatement.Condition);
 				ControlFlowNode bodyStart = builder.CreateStartNode(whileStatement.EmbeddedStatement);
 				if (cond != false)
 					Connect(conditionNode, bodyStart, ControlFlowEdgeType.ConditionTrue);
@@ -571,7 +568,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				ControlFlowNode bodyEnd = doWhileStatement.EmbeddedStatement.AcceptVisitor(this, bodyStart);
 				Connect(bodyEnd, conditionNode);
 				
-				bool? cond = doWhileStatement.Condition.IsNull ? true : builder.EvaluateCondition(doWhileStatement.Condition);
+				bool? cond = builder.EvaluateCondition(doWhileStatement.Condition);
 				if (cond != false)
 					Connect(conditionNode, bodyStart, ControlFlowEdgeType.ConditionTrue);
 				if (cond != true)
@@ -607,8 +604,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				
 				ControlFlowNode bodyStart = builder.CreateStartNode(forStatement.EmbeddedStatement);
 				ControlFlowNode bodyEnd = forStatement.EmbeddedStatement.AcceptVisitor(this, bodyStart);
-				if (bodyEnd != null)
-					Connect(bodyEnd, iteratorStart);
+				Connect(bodyEnd, iteratorStart);
 				
 				breakTargets.Pop();
 				continueTargets.Pop();

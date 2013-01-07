@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public UsingDeclaration (string nameSpace)
 		{
-			AddChild (new SimpleType (nameSpace), ImportRole);
+			AddChild (AstType.Create (nameSpace), ImportRole);
 		}
 		
 		public UsingDeclaration (AstType import)

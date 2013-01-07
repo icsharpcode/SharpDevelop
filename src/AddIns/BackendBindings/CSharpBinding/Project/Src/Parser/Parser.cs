@@ -85,7 +85,7 @@ namespace CSharpBinding.Parser
 			if (fullParseInformationRequested)
 				parseInfo = new CSharpFullParseInformation(file, fileContent.Version, cu);
 			else
-				parseInfo = new ParseInformation(file, fullParseInformationRequested);
+				parseInfo = new ParseInformation(file, fileContent.Version, fullParseInformationRequested);
 			
 			IDocument document = fileContent as IDocument;
 			AddCommentTags(cu, parseInfo.TagComments, fileContent, parseInfo.FileName, ref document);
@@ -164,8 +164,7 @@ namespace CSharpBinding.Parser
 					if (document == null) {
 						document = new ReadOnlyDocument(fileContent, parseInfo.FileName);
 						highlighter = SD.EditorControlService.CreateHighlighter(document);
-						if (highlighter != null)
-							highlighter.BeginHighlighting();
+						highlighter.BeginHighlighting();
 					}
 					var region = new DomRegion(parseInfo.FileName, node.StartLocation, node.EndLocation);
 					int offset = document.GetOffset(node.StartLocation);

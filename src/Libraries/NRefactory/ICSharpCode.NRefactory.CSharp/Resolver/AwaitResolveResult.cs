@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	public class AwaitResolveResult : ResolveResult
 	{
 		/// <summary>
-		/// The method representing the GetAwaiter() call. Can be null if the GetAwaiter method was not found.
+		/// The method representing the GetAwaiter() call. Can be an <see cref="InvocationResolveResult"/> or a <see cref="DynamicInvocationResolveResult"/>.
 		/// </summary>
 		public readonly ResolveResult GetAwaiterInvocation;
 
@@ -47,6 +47,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 
 		/// <summary>
 		/// Method representing the OnCompleted method on the awaiter type. Can be null if the awaiter type or the method was not found, or when awaiting a dynamic expression.
+		/// This can also refer to an UnsafeOnCompleted method, if the awaiter type implements <c>System.Runtime.CompilerServices.ICriticalNotifyCompletion</c>.
 		/// </summary>
 		public readonly IMethod OnCompletedMethod;
 		

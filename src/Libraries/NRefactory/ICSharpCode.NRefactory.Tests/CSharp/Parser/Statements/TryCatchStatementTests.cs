@@ -86,7 +86,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 			Assert.IsFalse(c2.IsMatch(c1)); // and vice versa
 		}
 
-		[Test, Ignore("broken")]
+		[Test]
 		public void CommentBeforeTryCatchFinally()
 		{
 			var stmt = ParseUtilCSharp.ParseStatement<BlockStatement>(

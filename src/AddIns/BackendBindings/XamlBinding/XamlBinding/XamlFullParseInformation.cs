@@ -14,7 +14,7 @@ namespace ICSharpCode.XamlBinding
 		readonly ITextSource text;
 		
 		public XamlFullParseInformation(XamlUnresolvedFile unresolvedFile, AXmlDocument document, ITextSource text)
-			: base(unresolvedFile, true)
+			: base(unresolvedFile, text.Version, true)
 		{
 			if (unresolvedFile == null)
 				throw new ArgumentNullException("unresolvedFile");
@@ -36,6 +36,11 @@ namespace ICSharpCode.XamlBinding
 		
 		public ITextSource Text {
 			get { return text; }
+		}
+		
+		// XAML does not use IParser-based folding, but uses XML folding.
+		public override bool SupportsFolding {
+			get { return false; }
 		}
 	}
 }

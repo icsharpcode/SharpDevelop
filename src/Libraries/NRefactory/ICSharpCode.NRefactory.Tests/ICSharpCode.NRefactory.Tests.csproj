@@ -75,6 +75,10 @@
     </Compile>
     <Compile Include="CSharp\Analysis\DefiniteAssignmentTests.cs" />
     <Compile Include="CSharp\AstStructureTests.cs" />
+    <Compile Include="CSharp\CodeActions\AddUsing\AddUsingActionAlphabeticalTests.cs" />
+    <Compile Include="CSharp\CodeActions\AddUsing\AddUsingActionInsideNamespaceTests.cs" />
+    <Compile Include="CSharp\CodeActions\AddUsing\AddUsingRunActionTests.cs" />
+    <Compile Include="CSharp\CodeActions\AddUsing\AddUsingActionTests.cs" />
     <Compile Include="CSharp\CodeActions\ConvertAsToCastTests.cs" />
     <Compile Include="CSharp\CodeActions\ConvertCastToAsTests.cs" />
     <Compile Include="CSharp\CodeActions\ConvertConditionalToIfTests.cs" />
@@ -363,6 +367,7 @@
     <Compile Include="CSharp\CodeActions\SortUsingsTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateEventInvocatorTests.cs" />
     <Compile Include="IndentationTests\IndentationTests.cs" />
+    <Compile Include="CSharp\CodeCompletion\ImportCompletionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
@@ -387,6 +392,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />
+    <Folder Include="CSharp\CodeActions\AddUsing" />
     <Folder Include="CSharp\Parser\" />
     <Folder Include="CSharp\CodeIssues\" />
     <Folder Include="CSharp\CodeActions\" />

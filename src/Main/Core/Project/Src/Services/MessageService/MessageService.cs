@@ -49,7 +49,6 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static void ShowWarning(string message)
 		{
-			LoggingService.Warn(message);
 			Service.ShowWarning(message);
 		}
 		

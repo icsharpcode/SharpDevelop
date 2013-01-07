@@ -9056,7 +9056,7 @@ void case_903()
 void case_904()
 #line 6041 "cs-parser.jay"
 {
-		yyVal = new TryFinally (new TryCatch ((Block) yyVals[-3+yyTop], (List<Catch>) yyVals[-2+yyTop], Location.Null, true), (Block) yyVals[0+yyTop], GetLocation (yyVals[-4+yyTop]));
+		yyVal = new TryFinally (new TryCatch ((Block) yyVals[-3+yyTop], (List<Catch>) yyVals[-2+yyTop], GetLocation (yyVals[-4+yyTop]), true), (Block) yyVals[0+yyTop], GetLocation (yyVals[-4+yyTop]));
 		lbag.AddStatement (yyVal, GetLocation (yyVals[-1+yyTop]));
 	  }
 

@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public ITypeDefinitionModel this[FullTypeName fullTypeName] {
 			get {
 				ITypeDefinitionModel model = this[fullTypeName.TopLevelTypeName];
-				for (int i = 0; i < fullTypeName.NestingLevel; i++) {
+				for (int i = 0; i < fullTypeName.NestingLevel && model != null; i++) {
 					string name = fullTypeName.GetNestedTypeName(i);
 					int atpc = fullTypeName.GetNestedTypeAdditionalTypeParameterCount(i);
 					model = model.GetNestedType(name, atpc);

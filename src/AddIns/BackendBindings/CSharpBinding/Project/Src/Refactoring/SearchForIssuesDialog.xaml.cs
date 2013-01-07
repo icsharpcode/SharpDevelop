@@ -68,7 +68,8 @@ namespace CSharpBinding.Refactoring
 		{
 			internal RootTreeNode(IEnumerable<IssueManager.IssueProvider> providers)
 			{
-				this.Children.AddRange(providers.GroupBy(p => p.Attribute.Category, (key, g) => new CategoryTreeNode(key, g)));
+				this.Children.AddRange(providers.Where(p => p.Attribute != null)
+				                       .GroupBy(p => p.Attribute.Category, (key, g) => new CategoryTreeNode(key, g)));
 				this.IsChecked = false;
 				this.IsExpanded = true;
 			}

@@ -157,6 +157,64 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 				});
 		}
 		
+		
+		[Test]
+		public void GenericMethodWithTwoConstraints()
+		{
+			ParseUtilCSharp.AssertTypeMember(
+				"void MyMethod<A, B>() where A : IA where B : IB {} ",
+				new MethodDeclaration {
+					ReturnType = new PrimitiveType("void"),
+					Name = "MyMethod",
+					TypeParameters = {
+						new TypeParameterDeclaration { Name = "A" },
+						new TypeParameterDeclaration { Name = "B" }
+					},
+					Constraints = {
+						new Constraint {
+							TypeParameter = new SimpleType("A"),
+							BaseTypes = { new SimpleType("IA") }
+						},
+						new Constraint {
+							TypeParameter = new SimpleType("B"),
+							BaseTypes = { new SimpleType("IB") }
+						}
+					},
+					Body = new BlockStatement()
+				});
+		}
+		
+		[Test]
+		public void GenericMethodDeclarationWithThreeConstraintsTest()
+		{
+			ParseUtilCSharp.AssertTypeMember(
+				"A MyMethod<A, B, C>() where B : BB where A : BA, IA where C : class {} ",
+				new MethodDeclaration {
+					ReturnType = new SimpleType("A"),
+					Name = "MyMethod",
+					TypeParameters = {
+						new TypeParameterDeclaration { Name = "A" },
+						new TypeParameterDeclaration { Name = "B" },
+						new TypeParameterDeclaration { Name = "C" }
+					},
+					Constraints = {
+						new Constraint {
+							TypeParameter = new SimpleType ("B"),
+							BaseTypes = { new SimpleType("BB") }
+						},
+						new Constraint {
+							TypeParameter = new SimpleType ("A"),
+							BaseTypes = { new SimpleType("BA"), new SimpleType("IA") }
+						},
+						new Constraint {
+							TypeParameter = new SimpleType ("C"),
+							BaseTypes = { new PrimitiveType("class") }
+						}
+					},
+					Body = new BlockStatement()
+				});
+		}
+		
 		[Test]
 		public void GenericMethodInInterface()
 		{
@@ -279,30 +337,6 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 					Name = "MyMethod",
 					Body = new BlockStatement()
 				});
-		}
-		
-		[Test, Ignore("Parser bug: constraints added in wrong order")]
-		public void GenericMethodWithMultipleConstraints()
-		{
-			ParseUtilCSharp.AssertTypeMember(
-				"void MyMethod<A, B>() where A : IA where B : IB {} ",
-				new MethodDeclaration {
-					ReturnType = new PrimitiveType("void"),
-					Name = "MyMethod",
-					TypeParameters = {
-						new TypeParameterDeclaration { Name = "A" },
-						new TypeParameterDeclaration { Name = "B" }
-					},
-					Constraints = {
-						new Constraint {
-							TypeParameter = new SimpleType("A"),
-							BaseTypes = { new SimpleType("IA") }
-						},
-						new Constraint {
-							TypeParameter = new SimpleType("B"),
-							BaseTypes = { new SimpleType("IB") }
-						}
-					}});
 		}
 		
 		[Test]

@@ -103,14 +103,23 @@ namespace CSharpBinding.Completion
 			return new CompletionData("TODO: partial completion");
 		}
 		
-		public IEnumerable<ICompletionData> CreateCodeTemplateCompletionData()
+		IEnumerable<ICompletionData> ICompletionDataFactory.CreateCodeTemplateCompletionData()
 		{
 			yield break;
 		}
 		
-		public IEnumerable<ICompletionData> CreatePreProcessorDefinesCompletionData()
+		IEnumerable<ICompletionData> ICompletionDataFactory.CreatePreProcessorDefinesCompletionData()
 		{
 			yield break;
+		}
+		
+		ICompletionData ICompletionDataFactory.CreateImportCompletionData(IType type, bool useFullName)
+		{
+			ITypeDefinition typeDef = type.GetDefinition();
+			if (typeDef != null)
+				return new ImportCompletionData(typeDef, contextAtCaret, useFullName);
+			else
+				throw new InvalidOperationException("Should never happen");
 		}
 		#endregion
 		

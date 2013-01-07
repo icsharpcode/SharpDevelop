@@ -152,12 +152,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		public static HighlightedInlineBuilder CreateInlineBuilder(TextLocation startPosition, TextLocation endPosition, IDocument document, IHighlighter highlighter)
 		{
 			if (startPosition.Line >= 1 && startPosition.Line <= document.LineCount) {
-				HighlightedInlineBuilder inlineBuilder;
-				if (highlighter != null) {
-					inlineBuilder = highlighter.HighlightLine(startPosition.Line).ToInlineBuilder();
-				} else {
-					inlineBuilder = new HighlightedInlineBuilder(document.GetText(document.GetLineByNumber(startPosition.Line)));
-				}
+				var inlineBuilder = highlighter.HighlightLine(startPosition.Line).ToInlineBuilder();
+				// reset bold/italics
+				inlineBuilder.SetFontWeight(0, inlineBuilder.Text.Length, FontWeights.Normal);
+				inlineBuilder.SetFontStyle(0, inlineBuilder.Text.Length, FontStyles.Normal);
 				
 				// now highlight the match in bold
 				if (startPosition.Column >= 1) {

@@ -788,7 +788,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			foreach (var cecilAttribute in attributes) {
 				TypeReference type = cecilAttribute.AttributeType;
 				if (type.Namespace == "System.Runtime.CompilerServices") {
-					if (type.Name == "DynamicAttribute" || type.Name == "ExtensionAttribute")
+					if (type.Name == "DynamicAttribute" || type.Name == "ExtensionAttribute" || type.Name == "DecimalConstantAttribute")
 						continue;
 				} else if (type.Name == "ParamArrayAttribute" && type.Namespace == "System") {
 					continue;
@@ -2074,6 +2074,42 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				|| att == FieldAttributes.Family
 				|| att == FieldAttributes.FamORAssem;
 		}
+
+		decimal? TryDecodeDecimalConstantAttribute(CustomAttribute attribute)
+		{
+			if (attribute.ConstructorArguments.Count != 5)
+				return null;
+
+			BlobReader reader = new BlobReader(attribute.GetBlob(), null);
+			if (reader.ReadUInt16() != 0x0001) {
+				Debug.WriteLine("Unknown blob prolog");
+				return null;
+			}
+
+			// DecimalConstantAttribute has the arguments (byte scale, byte sign, uint hi, uint mid, uint low) or (byte scale, byte sign, int hi, int mid, int low)
+			// Both of these invoke the Decimal constructor (int lo, int mid, int hi, bool isNegative, byte scale) with explicit argument conversions if required.
+			var ctorArgs = new object[attribute.ConstructorArguments.Count];
+			for (int i = 0; i < ctorArgs.Length; i++) {
+				switch (attribute.ConstructorArguments[i].Type.FullName) {
+					case "System.Byte":
+						ctorArgs[i] = reader.ReadByte();
+						break;
+					case "System.Int32":
+						ctorArgs[i] = reader.ReadInt32();
+						break;
+					case "System.UInt32":
+						ctorArgs[i] = unchecked((int)reader.ReadUInt32());
+						break;
+					default:
+						return null;
+				}
+			}
+
+			if (!ctorArgs.Select(a => a.GetType()).SequenceEqual(new[] { typeof(byte), typeof(byte), typeof(int), typeof(int), typeof(int) }))
+				return null;
+
+			return new decimal((int)ctorArgs[4], (int)ctorArgs[3], (int)ctorArgs[2], (byte)ctorArgs[1] != 0, (byte)ctorArgs[0]);
+		}
 		
 		[CLSCompliant(false)]
 		public IUnresolvedField ReadField(FieldDefinition field, IUnresolvedTypeDefinition parentType)
@@ -2090,6 +2126,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			f.ReturnType = ReadTypeReference(field.FieldType, typeAttributes: field);
 			if (field.HasConstant) {
 				f.ConstantValue = CreateSimpleConstantValue(f.ReturnType, field.Constant);
+			}
+			else {
+				var decConstant = field.CustomAttributes.FirstOrDefault(a => a.AttributeType.FullName == "System.Runtime.CompilerServices.DecimalConstantAttribute");
+				if (decConstant != null) {
+					var constValue = TryDecodeDecimalConstantAttribute(decConstant);
+					if (constValue != null)
+						f.ConstantValue = CreateSimpleConstantValue(f.ReturnType, constValue);
+				}
 			}
 			AddAttributes(field, f);
 			

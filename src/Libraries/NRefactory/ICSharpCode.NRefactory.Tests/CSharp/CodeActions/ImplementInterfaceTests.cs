@@ -298,6 +298,95 @@ class Foo : $ITest
 }
 ");
 		}
+
+		/// <summary>
+		/// Bug 9117 - [3.0.5] C#: Implementing interfaces inheriting from other interfaces
+		/// </summary>
+		[Test()]
+		public void TestBug9117()
+		{
+			Test<ImplementInterfaceAction>(@"using System;
+ public interface IAncestor
+{
+	string X { get; set; }
+	void DoThings();
+}
+
+public interface IDescendant: IAncestor
+{
+	string Y { get; set; }
+	string Z { get; set; }
+}
+
+class Foo : $IDescendant
+{
+}
+", @"using System;
+ public interface IAncestor
+{
+	string X { get; set; }
+	void DoThings();
+}
+
+public interface IDescendant: IAncestor
+{
+	string Y { get; set; }
+	string Z { get; set; }
+}
+
+class Foo : IDescendant
+{
+	#region IAncestor implementation
+	public void DoThings ()
+	{
+		throw new NotImplementedException ();
+	}
+	public string X {
+		get {
+			throw new NotImplementedException ();
+		}
+		set {
+			throw new NotImplementedException ();
+		}
+	}
+	#endregion
+	#region IDescendant implementation
+	public string Y {
+		get {
+			throw new NotImplementedException ();
+		}
+		set {
+			throw new NotImplementedException ();
+		}
+	}
+	public string Z {
+		get {
+			throw new NotImplementedException ();
+		}
+		set {
+			throw new NotImplementedException ();
+		}
+	}
+	#endregion
+}
+");
+			
+			TestWrongContext<ImplementInterfaceAction>(@"using System;
+interface ITest {
+	void OnScenesAdded (params ITest[] scenes);
+}
+
+class Foo : $ITest
+{
+	#region ITest implementation
+	public void OnScenesAdded (params ITest[] scenes)
+	{
+		throw new NotImplementedException ();
+	}
+	#endregion
+}
+");
+		}
 	}
 }
 

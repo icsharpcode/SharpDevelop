@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +16,6 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Refactoring;
 
@@ -52,6 +50,8 @@ namespace CSharpBinding.Refactoring
 				if (attributes.Length == 1) {
 					this.Attribute = (IssueDescriptionAttribute)attributes[0];
 					defaultSeverity = this.Attribute.Severity;
+				} else {
+					SD.Log.Warn("Issue provider without attribute: " + ProviderType);
 				}
 				var properties = PropertyService.NestedProperties("CSharpIssueSeveritySettings");
 				this.CurrentSeverity = properties.Get(ProviderType.FullName, defaultSeverity);
@@ -162,7 +162,7 @@ namespace CSharpBinding.Refactoring
 			{
 				int startOffset = InspectedVersion.MoveOffsetTo(document.Version, this.StartOffset, AnchorMovementType.Default);
 				int endOffset = InspectedVersion.MoveOffsetTo(document.Version, this.EndOffset, AnchorMovementType.Default);
-				if (startOffset >= endOffset)
+				if (this.StartOffset != this.EndOffset && startOffset >= endOffset)
 					return;
 				marker = markerService.Create(startOffset, endOffset - startOffset);
 				marker.ToolTip = this.Description;
@@ -256,6 +256,11 @@ namespace CSharpBinding.Refactoring
 								continue;
 							
 							foreach (var issue in issueProvider.GetIssues(context)) {
+								if (issue.Start.IsEmpty || issue.End.IsEmpty) {
+									// Issues can occur on invalid locations when analyzing incomplete code.
+									// We'll just ignore them.
+									continue;
+								}
 								results.Add(new InspectionTag(
 									this,
 									issueProvider,

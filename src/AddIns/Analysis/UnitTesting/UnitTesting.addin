@@ -41,7 +41,7 @@
 		     defaultPosition="Right, Hidden" />
 	</Path>
 	
-	<Path name="/SharpDevelop/ViewContent/TextEditor/EntityContextMenu">
+	<Path name="/SharpDevelop/EntityContextMenu">
 		<Condition name="Testable">
 			<MenuItem id="UnitTestMenu" type="Menu" label="${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}" icon="PadIcons.NUnitTest" insertbefore="MenuBuilder">
 				<Include id="CommonTestCommands" path="/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands"/>

@@ -759,6 +759,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case "GetAwaiter":
 				case "GetResult":
 				case "OnCompleted":
+				case "UnsafeOnCompleted":
 					specialNodeType = typeof(UnaryOperatorExpression);
 					break;
 				default:

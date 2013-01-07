@@ -78,13 +78,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (!func(leftLength, rightLength))
 					AddIssue(objectCreateExpression,
 					         context.TranslateString("The parameters are in the wrong order"),
-					         GetActions(objectCreateExpression, firstParam, secondParam));
+					         GetAction(objectCreateExpression, firstParam, secondParam));
 			}
 
-			IEnumerable<CodeAction> GetActions(ObjectCreateExpression objectCreateExpression,
+			CodeAction GetAction(ObjectCreateExpression objectCreateExpression,
 			                                   PrimitiveExpression firstParam, PrimitiveExpression secondParam)
 			{
-				yield return new CodeAction(context.TranslateString("Swap parameters"), script =>  {
+				return new CodeAction(context.TranslateString("Swap parameters"), script => {
 					var newOCE = objectCreateExpression.Clone() as ObjectCreateExpression;
 					newOCE.Arguments.Clear();
 					newOCE.Arguments.Add(secondParam.Clone());

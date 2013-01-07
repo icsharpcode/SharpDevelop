@@ -118,7 +118,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 				"typeof(MyStruct?)",
 				new TypeOfExpression {
 					Type = new ComposedType {
-						BaseType = new SimpleType("MyType"),
+						BaseType = new SimpleType("MyStruct"),
 						HasNullableSpecifier = true
 					}});
 		}

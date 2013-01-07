@@ -44,19 +44,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		public void CopyEditorSettings(TextEditor source)
+		public void CopyEditorSettingsAndHighlighting(TextEditor source)
 		{
+			editor.CopySettingsFrom(source);
 			string language = source.SyntaxHighlighting != null ? source.SyntaxHighlighting.Name : null;
 			editor.TextArea.TextView.LineTransformers.RemoveAll(x => x is HighlightingColorizer);
 			var customizedHighlighter = new CustomizingHighlighter(
-				editor.TextArea.TextView,
-				CustomizedHighlightingColor.FetchCustomizations(language),
-				new DocumentHighlighter(editor.Document, source.SyntaxHighlighting)
+				new DocumentHighlighter(editor.Document, source.SyntaxHighlighting),
+				CustomizedHighlightingColor.FetchCustomizations(language)
 			);
 			editor.TextArea.TextView.LineTransformers.Insert(0, new HighlightingColorizer(customizedHighlighter));
-			CustomizingHighlighter.ApplyCustomizationsToDefaultElements(editor, CustomizedHighlightingColor.FetchCustomizations(language));
-			HighlightingOptions.ApplyToRendering(editor, CustomizedHighlightingColor.FetchCustomizations(language));
-			editor.TextArea.TextView.Redraw(); // manually redraw if default elements didn't change but customized highlightings did
 		}
 	}
 }

@@ -158,6 +158,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 		public ICompletionData AddMember (IMember member)
 		{
+			if (data.ContainsKey (member.Name))
+				return null;
+
 			var newData = Factory.CreateEntityCompletionData (member);
 			
 			if (member.ParentAssembly != completion.ctx.CurrentAssembly && !member.IsBrowsable ())
