@@ -1,0 +1,103 @@
+﻿<Window
+	x:Class="ICSharpCode.AddInManager2.View.AddInManagerView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:core="clr-namespace:ICSharpCode.Core.Presentation;assembly=ICSharpCode.Core.Presentation"
+	xmlns:aimview="clr-namespace:ICSharpCode.AddInManager2.View"
+	xmlns:aimvm="clr-namespace:ICSharpCode.AddInManager2.ViewModel"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Height="480"
+	Width="640"
+	MinHeight="380"
+	MinWidth="440"
+	Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
+	WindowStartupLocation="CenterOwner">
+	
+	<Window.Resources>
+		<Style TargetType="Button" BasedOn="{x:Static core:GlobalStyles.ButtonStyle}"/>
+		<aimvm:AddInManagerViewModel x:Key="ViewModel"/>
+		<BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+		
+		<BitmapImage x:Key="ErrorIcon"
+		             UriSource="pack://application:,,,/ICSharpCode.AddInManager2;component/Resources/exclamation.png"/>
+		
+		<Style x:Key="tabHeaderTextStyle" TargetType="{x:Type TextBlock}">
+			<Style.Triggers>
+				<DataTrigger Binding="{Binding DataContext.HasHighlightCount}" Value="True">
+					<Setter Property="FontWeight" Value="Bold" />
+				</DataTrigger>
+			</Style.Triggers>
+			<Setter Property="Text" Value="{Binding DataContext.TitleWithHighlight}" />
+		</Style>
+		
+		<DataTemplate x:Key="tabItemHeaderTemplate">
+			<Grid>
+				<TextBlock Style="{StaticResource tabHeaderTextStyle}" />
+			</Grid>
+		</DataTemplate>
+		
+		<Style TargetType="{x:Type TabItem}">
+			<Setter Property="HeaderTemplate" Value="{Binding Source={StaticResource tabItemHeaderTemplate}}" />
+		</Style>
+	</Window.Resources>
+	
+	<Window.DataContext>
+		<Binding Source="{StaticResource ViewModel}" />
+	</Window.DataContext>
+	
+	<Window.Title>
+		<Binding Path="Title"/>
+	</Window.Title>
+	
+	<DockPanel x:Name="MainPanel">
+		<Grid
+			DockPanel.Dock="Bottom"
+			Margin="4, 4">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="Auto"/>
+			</Grid.ColumnDefinitions>
+			<StackPanel>
+				<Image
+					Margin="4, 4"
+					Visibility="{Binding Path=HasError, Converter={StaticResource BoolToVisibility}}"
+					Source="{StaticResource ErrorIcon}"/>
+			</StackPanel>
+			<TextBlock
+				Grid.Column="1"
+				Margin="4, 4"
+				TextTrimming="CharacterEllipsis"
+				Text="{Binding Path=Message}"/>
+			<Button
+				Grid.Column="2"
+				Content="{core:Localize Global.CloseButtonText}"
+				IsCancel="True"/>
+		</Grid>
+		<TabControl>
+			<TabItem>
+				<TabItem.Header>
+					<TextBlock Style="{StaticResource tabHeaderTextStyle}" DataContext="{Binding InstalledAddInsViewModel}" />
+				</TabItem.Header>
+				<aimview:AddInsView
+					x:Name="InstalledPackagesView"
+					DataContext="{Binding InstalledAddInsViewModel}" />
+			</TabItem>
+			<TabItem>
+				<TabItem.Header>
+					<TextBlock Style="{StaticResource tabHeaderTextStyle}" DataContext="{Binding UpdatedAddInsViewModel}" />
+				</TabItem.Header>
+				<aimview:AddInsView
+					x:Name="PackageUpdatesView"
+					DataContext="{Binding UpdatedAddInsViewModel}" />
+			</TabItem>
+			<TabItem>
+				<TabItem.Header>
+					<TextBlock Style="{StaticResource tabHeaderTextStyle}" DataContext="{Binding AvailableAddInsViewModel}" />
+				</TabItem.Header>
+				<aimview:AddInsView
+					x:Name="AvailablePackagesView"
+					DataContext="{Binding AvailableAddInsViewModel}" />
+			</TabItem>
+		</TabControl>
+	</DockPanel>
+</Window>

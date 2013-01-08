@@ -1,0 +1,66 @@
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Text;
+using System.Windows.Input;
+using ICSharpCode.AddInManager2.Model;
+using ICSharpCode.Core;
+using NuGet;
+
+namespace ICSharpCode.AddInManager2.ViewModel
+{	
+	public class AvailableAddInsViewModel : NuGetAddInsViewModelBase
+	{
+		public AvailableAddInsViewModel()
+			: base()
+		{
+			IsSearchable = true;
+			ShowPackageSources = true;
+			Title = ResourceService.GetString("AddInManager2.Views.Available");
+			
+			AddInManager.Events.AddInInstalled += AddInInstallationStateChanged;
+			AddInManager.Events.AddInUninstalled += AddInInstallationStateChanged;
+			AddInManager.Events.AddInStateChanged += AddInInstallationStateChanged;
+		}
+		
+		protected override void OnDispose()
+		{
+			AddInManager.Events.AddInInstalled -= AddInInstallationStateChanged;
+			AddInManager.Events.AddInUninstalled -= AddInInstallationStateChanged;
+			AddInManager.Events.AddInStateChanged += AddInInstallationStateChanged;
+		}
+
+		protected override IQueryable<IPackage> GetAllPackages()
+		{
+			return AddInManager.Repositories.Active.GetPackages();
+		}
+		
+		protected override IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(IQueryable<IPackage> allPackages)
+		{
+			return base.GetFilteredPackagesBeforePagingResults(allPackages)
+				.Where(package => AddInManager.NuGet.PackageContainsAddIn(package))
+				.Where(package => package.IsReleaseVersion())
+				.DistinctLast(PackageEqualityComparer.Id);
+		}
+		
+		protected override IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
+		{
+			return packages.OrderByDescending(package => package.DownloadCount);
+		}
+		
+		protected override void UpdatePrereleaseFilter()
+		{
+			ReadPackages();
+		}
+		
+		private void AddInInstallationStateChanged(object sender, AddInInstallationEventArgs e)
+		{
+			UpdateInstallationState();
+		}
+	}
+}
