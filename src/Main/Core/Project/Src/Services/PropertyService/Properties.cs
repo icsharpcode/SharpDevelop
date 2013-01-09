@@ -80,7 +80,7 @@ namespace ICSharpCode.Core
 		{
 			var handler = Volatile.Read(ref PropertyChanged);
 			if (handler != null)
-				handler(this, new PropertyChangedEventArgs("key"));
+				handler(this, new PropertyChangedEventArgs(key));
 		}
 		#endregion
 		
