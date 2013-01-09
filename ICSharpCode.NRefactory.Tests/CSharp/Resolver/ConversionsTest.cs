@@ -832,6 +832,66 @@ class Test {
 			Assert.AreEqual("System.Object", c.Method.Parameters.Single().Type.FullName);
 		}
 
+		[Test, Ignore("expression-based user-defined conversions not implemented")]
+		public void UserDefined_IntLiteral_ViaUInt_ToCustomStruct()
+		{
+			string program = @"using System;
+struct T {
+	public static implicit operator T(uint a) { return new T(); }
+}
+class Test {
+	static void M() {
+		T t = $1$;
+	}
+
+
+
+
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsUserDefined);
+		}
+		
+		[Test]
+		public void UserDefined_NullLiteral_ViaString_ToCustomStruct()
+		{
+			string program = @"using System;
+struct T {
+	public static implicit operator T(string a) { return new T(); }
+
+}
+
+class Test {
+	static void M() {
+		T t = $null$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsUserDefined);
+		}
+
+		
+		[Test]
+		public void UserDefined_CanUseLiftedEvenIfReturnTypeAlreadyNullable()
+		{
+			string program = @"using System;
+struct S {
+	public static implicit operator short?(S s) { return 0; }
+}
+
+class Test {
+	static void M(S? s) {
+		int? i = $s$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsUserDefined);
+			Assert.IsTrue(c.IsLifted);
+		}
+
 		[Test]
 		public void UserDefinedImplicitConversion_PicksExactSourceTypeIfPossible() {
 			string program = @"using System;
@@ -989,6 +1049,46 @@ class Test {
 			Assert.IsTrue(c.IsValid);
 			Assert.IsTrue(c.IsUserDefined);
 			Assert.AreEqual("ui", c.Method.Parameters[0].Name);
+		}
+		
+		[Test]
+		public void UserDefinedImplicitConversion_UseShortResult_BecauseNullableCannotBeUnpacked()
+		{
+			string program = @"using System;
+class Test {
+	public static implicit operator int?(Test i) { return 0; }
+	public static implicit operator short(Test s) { return 0; }
+}
+class Program {
+	public static void Main(string[] args)
+	{
+		int x = $new Test()$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsUserDefined);
+			Assert.AreEqual("System.Int16", c.Method.ReturnType.FullName);
+		}
+		
+		[Test]
+		public void UserDefinedImplicitConversion_UseShortResult_X()
+		{
+			string program = @"using System;
+class Test {
+	public static implicit operator short(Test d) { return 0; }
+	public static implicit operator byte?(Test d) { return 0; }
+}
+class Program {
+	public static void Main(string[] args)
+	{
+		int? x = $new Test()$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsUserDefined);
+			Assert.AreEqual("System.Int16", c.Method.ReturnType.FullName);
 		}
 	}
 }
