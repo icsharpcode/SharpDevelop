@@ -711,7 +711,7 @@ class Test {
 			Assert.AreEqual("ni", rr.Conversion.Method.Parameters[0].Name);
 		}
 
-		[Test, Ignore("TODO: The 'most encompassing' algorithm should pick the long overload, but csc picks the uint one.")]
+		[Test]
 		public void UserDefinedExplicitConversion_UIntConstant() {
 			string program = @"using System;
 class Convertible {

@@ -832,7 +832,7 @@ class Test {
 			Assert.AreEqual("System.Object", c.Method.Parameters.Single().Type.FullName);
 		}
 
-		[Test, Ignore("expression-based user-defined conversions not implemented")]
+		[Test]
 		public void UserDefined_IntLiteral_ViaUInt_ToCustomStruct()
 		{
 			string program = @"using System;
@@ -843,10 +843,6 @@ class Test {
 	static void M() {
 		T t = $1$;
 	}
-
-
-
-
 }";
 			var c = GetConversion(program);
 			Assert.IsTrue(c.IsValid);
@@ -861,7 +857,6 @@ struct T {
 	public static implicit operator T(string a) { return new T(); }
 
 }
-
 class Test {
 	static void M() {
 		T t = $null$;
@@ -1033,7 +1028,7 @@ class Test {
 			Assert.AreEqual("ni", c.Method.Parameters[0].Name);
 		}
 
-		[Test, Ignore("TODO: The 'most encompassing' algorithm should pick the long overload, but csc picks the uint one.")]
+		[Test]
 		public void UserDefinedImplicitConversion_UIntConstant() {
 			string program = @"using System;
 class Convertible {
