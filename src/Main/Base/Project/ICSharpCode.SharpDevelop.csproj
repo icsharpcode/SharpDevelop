@@ -225,8 +225,8 @@
       <DependentUpon>AbstractAttachToProcessForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\OutputWindowOptionsPanelXaml.xaml.cs">
-      <DependentUpon>OutputWindowOptionsPanelXaml.xaml</DependentUpon>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\OutputWindowOptionsPanel.xaml.cs">
+      <DependentUpon>OutputWindowOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Services\FileChangeWatcher.cs" />
@@ -839,7 +839,7 @@
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\EditStandardHeaderPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectStylePanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml" />
-    <Page Include="Src\Gui\Dialogs\OptionPanels\OutputWindowOptionsPanelXaml.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\OutputWindowOptionsPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildAdvanced.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.xaml" />

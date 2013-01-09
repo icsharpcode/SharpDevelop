@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// <summary>
 	/// Interaction logic for OutputWindowOptionsPanelXaml.xaml
 	/// </summary>
-	public partial class OutputWindowOptionsPanelXaml :  OptionPanel
+	public partial class OutputWindowOptionsPanel :  OptionPanel
 	{
 		public static readonly string OutputWindowsProperty = "SharpDevelop.UI.OutputWindowOptions";
 	
@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public static readonly string WordWrapName = "WordWrap";
 		
 		
-		public OutputWindowOptionsPanelXaml()
+		public OutputWindowOptionsPanel()
 		{
 			InitializeComponent();
 			this.DataContext = this;
@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			var properties = PropertyService.NestedProperties(OutputWindowsProperty);
 			WordWrap = properties.Get(WordWrapName, true);
 			
-			var fontDescription =  OutputWindowOptionsPanelXaml.DefaultFontDescription();
+			var fontDescription =  OutputWindowOptionsPanel.DefaultFontDescription();
 			fontSelectionPanel.SelectedFontFamily = new FontFamily(fontDescription.Item1);
 			fontSelectionPanel.SelectedFontSize = fontDescription.Item2;
 		}

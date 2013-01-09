@@ -206,7 +206,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			textEditor.ContextMenu = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/CompilerMessageView/ContextMenu");
 			
-			properties = PropertyService.NestedProperties(OutputWindowOptionsPanelXaml.OutputWindowsProperty);
+			properties = PropertyService.NestedProperties(OutputWindowOptionsPanel.OutputWindowsProperty);
 			
 			SetTextEditorFont();
 			
@@ -238,7 +238,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		private bool IsFontChanged (string propName)
 		{
-			if ((propName == OutputWindowOptionsPanelXaml.FontSizeName) || (propName == OutputWindowOptionsPanelXaml.FontFamilyName)) {
+			if ((propName == OutputWindowOptionsPanel.FontSizeName) || (propName == OutputWindowOptionsPanel.FontFamilyName)) {
 				return true;
 			}
 			return false;
@@ -253,7 +253,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		private void SetTextEditorFont()
 		{
-			var fontDescription =  OutputWindowOptionsPanelXaml.DefaultFontDescription();
+			var fontDescription =  OutputWindowOptionsPanel.DefaultFontDescription();
 			textEditor.FontFamily = new FontFamily(fontDescription.Item1);
 			textEditor.FontSize = fontDescription.Item2;
 		}
@@ -413,7 +413,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		void PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == OutputWindowOptionsPanelXaml.WordWrapName) {
+			if (e.PropertyName == OutputWindowOptionsPanel.WordWrapName) {
 				SetWordWrap();
 				ToolBarService.UpdateStatus(toolStrip.Items);
 			}
