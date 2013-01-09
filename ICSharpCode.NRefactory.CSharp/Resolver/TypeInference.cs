@@ -624,6 +624,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				tp.LowerBounds.Add(U);
 				return;
 			}
+			// Handle nullable covariance:
+			if (NullableType.IsNullable(U) && NullableType.IsNullable(V)) {
+				MakeLowerBoundInference(NullableType.GetUnderlyingType(U), NullableType.GetUnderlyingType(V));
+				return;
+			}
 			
 			// Handle array types:
 			ArrayType arrU = U as ArrayType;
@@ -776,28 +781,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Log.WriteLine("  T was fixed " + (types.Count >= 1 ? "successfully" : "(with errors)") + " to " + tp.FixedTo);
 				return types.Count >= 1;
 			} else {
-				if (types.Count > 1) {
-					// Try to search a unique type among the candidate types from which there is an implicit conversion
-					// to all other candate types.
-					IType uniqueType = null;
-					for (int i = 0; i < types.Count; i++) {
-						if (types.All (t => conversions.ImplicitConversion (t, types[i]).IsValid)) {
-							if (uniqueType != null) {
-								Log.WriteLine("Can't determine a single unique type!");
-								uniqueType = null;
-								break;
-							}
-							uniqueType = types[i];
-						}
-					}
-					if (uniqueType != null) {
-						tp.FixedTo = uniqueType;
-						Log.WriteLine("  T was fixed successfully to " + tp.FixedTo);
-						return true;
-					}
-					// fixing with errors
-				}
-
 				tp.FixedTo = GetFirstTypePreferNonInterfaces(types);
 				Log.WriteLine("  T was fixed " + (types.Count == 1 ? "successfully" : "(with errors)") + " to " + tp.FixedTo);
 				return types.Count == 1;
@@ -880,6 +863,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				.Where(c => upperBounds.All(b => conversions.ImplicitConversion(c, b).IsValid))
 				.ToList(); // evaluate the query only once
 
+			Log.WriteCollection("FindTypesInBound, Candidates=", candidateTypes);
+			
+			// According to the C# specification, we need to pick the most specific
+			// of the candidate types. (the type which has conversions to all others)
+			// However, csc actually seems to choose the least specific.
 			candidateTypes = candidateTypes.Where(
 				c => candidateTypes.All(o => conversions.ImplicitConversion(o, c).IsValid)
 			).ToList();
@@ -939,8 +927,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				Log.WriteLine("Candidate type: " + candidate);
 				
-				if (lowerBounds.Count > 0) {
-					// if there were lower bounds, we aim for the most specific candidate:
+				if (upperBounds.Count == 0) {
+					// if there were only lower bounds, we aim for the most specific candidate:
 					
 					// if this candidate isn't made redundant by an existing, more specific candidate:
 					if (!candidateTypes.Any(c => c.GetDefinition().IsDerivedFrom(candidateDef))) {
@@ -950,7 +938,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						candidateTypes.Add(candidate);
 					}
 				} else {
-					// if there only were upper bounds, we aim for the least specific candidate:
+					// if there were upper bounds, we aim for the least specific candidate:
 					
 					// if this candidate isn't made redundant by an existing, less specific candidate:
 					if (!candidateTypes.Any(c => candidateDef.IsDerivedFrom(c.GetDefinition()))) {
