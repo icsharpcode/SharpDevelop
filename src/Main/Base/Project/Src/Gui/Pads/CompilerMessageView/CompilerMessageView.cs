@@ -236,6 +236,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		
+		private bool IsFontChanged (string propName)
+		{
+			if ((propName == OutputWindowOptionsPanelXaml.FontSizeName) || (propName == OutputWindowOptionsPanelXaml.FontFamilyName)) {
+				return true;
+			}
+			return false;
+		}
+		
 		private void SetWordWrap()
 		{
 			bool wordWrap = this.WordWrap;
@@ -405,14 +413,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		void PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "WordWrap") {
+			if (e.PropertyName == OutputWindowOptionsPanelXaml.WordWrapName) {
 				SetWordWrap();
 				ToolBarService.UpdateStatus(toolStrip.Items);
 			}
-			if (e.PropertyName == "DefaultFont") {
+			if (IsFontChanged(e.PropertyName)) {
 				SetTextEditorFont();
 			}
 		}
+		
 		
 		protected virtual void OnMessageCategoryAdded(EventArgs e)
 		{

@@ -157,7 +157,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (value == null)
 				throw new ArgumentNullException("value");
 			if (value is int)
-				return ToWpfFontSize((int)value);
+				return ToPoints((int)value);
 			throw new NotSupportedException("Cannot convert value of type " + value.GetType());
 		}
 		
@@ -166,16 +166,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (value == null)
 				throw new ArgumentNullException("value");
 			if (value is double)
-				return ToWinFormsFontSize((double)value);
+				return FromPoints((double)value);
 			throw new NotSupportedException("Cannot convert value of type " + value.GetType());
 		}
 		
-		public static int ToWinFormsFontSize(double value)
+		public static int FromPoints(double value)
 		{
 			return (int)Math.Round(value * 72.0 / 96.0);
 		}
-		
-		public static double ToWpfFontSize(int value)
+
+		public static double ToPoints(int value)
 		{
 			return Math.Round(value * 96.0 / 72.0);
 		}

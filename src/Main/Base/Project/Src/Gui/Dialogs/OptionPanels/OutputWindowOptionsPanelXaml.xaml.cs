@@ -19,8 +19,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	{
 		public static readonly string OutputWindowsProperty = "SharpDevelop.UI.OutputWindowOptions";
 	
-		private static readonly string FontFamilyName = "FontFamily";
-		private static readonly string FontSizeName = "FontSize";
+		public static readonly string FontFamilyName = "FontFamily";
+		public static readonly string FontSizeName = "FontSize";
+		public static readonly string WordWrapName = "WordWrap";
+		
 		
 		public OutputWindowOptionsPanelXaml()
 		{
@@ -33,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			base.LoadOptions();
 			var properties = PropertyService.NestedProperties(OutputWindowsProperty);
-			WordWrap = properties.Get("WordWrap", true);
+			WordWrap = properties.Get(WordWrapName, true);
 			
 			var fontDescription =  OutputWindowOptionsPanelXaml.DefaultFontDescription();
 			fontSelectionPanel.SelectedFontFamily = new FontFamily(fontDescription.Item1);
@@ -44,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public override bool SaveOptions()
 		{
 			var properties = PropertyService.NestedProperties(OutputWindowsProperty);
-			properties.Set("WordWrap", WordWrap);
+			properties.Set(WordWrapName, WordWrap);
 			properties.Set(FontFamilyName,fontSelectionPanel.SelectedFontFamily);
 			properties.Set(FontSizeName,fontSelectionPanel.SelectedFontSize);
 			return base.SaveOptions();
