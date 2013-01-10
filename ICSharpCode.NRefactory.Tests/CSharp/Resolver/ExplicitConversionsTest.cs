@@ -703,6 +703,23 @@ class Test {
 			Assert.IsTrue(rr.Conversion.IsLifted);
 		}
 		
+		[Test]
+		public void UserDefinedExplicitConversionFollowedByImplicitNullableConversion() {
+			string program = @"using System;
+struct Convertible {
+	public static explicit operator Convertible(int i) {return new Convertible(); }
+}
+class Test {
+	public void M(int i) {
+		 a = $(Convertible?)i$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.IsFalse(rr.Conversion.IsLifted);
+		}
+		
 		[Test, Ignore("Explicit conversions with nullables are currently broken")]
 		public void UserDefinedExplicitConversion_ExplicitNullable_ThenUserDefined() {
 			string program = @"using System;
