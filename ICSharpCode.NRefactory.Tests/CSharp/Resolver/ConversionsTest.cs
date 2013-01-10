@@ -1045,7 +1045,25 @@ class Test {
 			Assert.IsTrue(c.IsUserDefined);
 			Assert.AreEqual("ui", c.Method.Parameters[0].Name);
 		}
-		
+
+		[Test]
+		public void UserDefinedImplicitConversion_NullableUIntConstant() {
+			string program = @"using System;
+class Convertible {
+	public static implicit operator Convertible(long? l) {return new Convertible(); }
+	public static implicit operator Convertible(uint? ui) {return new Convertible(); }
+}
+class Test {
+	public void M() {
+		Convertible a = $33$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsUserDefined);
+			Assert.AreEqual("ui", c.Method.Parameters[0].Name);
+		}
+
 		[Test]
 		public void UserDefinedImplicitConversion_UseShortResult_BecauseNullableCannotBeUnpacked()
 		{

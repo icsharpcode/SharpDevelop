@@ -686,7 +686,7 @@ class Test {
 			Assert.IsFalse(rr.Conversion.IsValid);
 		}
 
-		[Test, Ignore("We detect an ambiguity where csc and mcs can compile the code; but given that csc and mcs compile the code differently, the ambiguity may be an acceptable choice...")]
+		[Test]
 		public void UserDefinedExplicitConversion_DefinedNullableTakesPrecedenceOverLifted() {
 			string program = @"using System;
 struct Convertible {
@@ -698,12 +698,6 @@ class Test {
 		 a = $(Convertible?)(int?)33$;
 	}
 }";
-			// There are three applicable conversions in this test:
-			// 1) int? -> Convertible? via lifted form of the first user-defined operator
-			// 2) int? -> Convertible? via second user-defined operator
-			// 3) int? -> int -> Convertible -> Convertible?  (explicit nullable, first user defined, implicit nullable)
-			// csc picks option 2; mcs picks option 1.
-			// NRefactory currently fails with an ambiguity between 2 and 3.
 			var rr = Resolve<ConversionResolveResult>(program);
 			Assert.IsTrue(rr.Conversion.IsValid);
 			Assert.IsTrue(rr.Conversion.IsUserDefined);
@@ -727,6 +721,61 @@ class Test {
 			Assert.IsTrue(rr.Conversion.IsValid);
 			Assert.IsTrue(rr.Conversion.IsUserDefined);
 			Assert.AreEqual("ui", rr.Conversion.Method.Parameters[0].Name);
+		}
+
+		[Test]
+		public void UserDefinedExplicitConversion_NullableUIntConstant() {
+			string program = @"using System;
+class Convertible {
+	public static explicit operator Convertible(long? l) {return new Convertible(); }
+	public static explicit operator Convertible(uint? ui) {return new Convertible(); }
+}
+class Test {
+	public void M() {
+		Convertible a = $(Convertible)33$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.AreEqual("ui", rr.Conversion.Method.Parameters[0].Name);
+		}
+
+		[Test]
+		public void UseDefinedExplicitConversion_Lifted() {
+			string program = @"
+struct Convertible {
+    public static explicit operator Convertible(int i) { return new Convertible(); }
+}
+class Test {
+    public void M(int? i) {
+         a = $(Convertible?)i$;
+    }
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.IsTrue(rr.Conversion.IsLifted);
+			Assert.IsTrue(rr.Input is LocalResolveResult);
+		}
+
+		[Test]
+		public void UserDefinedImplicitConversion_UseShortResult_X() {
+			string program = @"using System;
+class Test {
+	public static implicit operator short(Test d) { return 0; }
+	public static implicit operator byte?(Test d) { return 0; }
+}
+class Program {
+	public static void Main(string[] args)
+	{
+		int? x = $new Test()$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsUserDefined);
+			Assert.AreEqual("System.Int16", c.Method.ReturnType.FullName);
 		}
 	}
 }
