@@ -1085,5 +1085,58 @@ class Program {
 			Assert.IsTrue(c.IsUserDefined);
 			Assert.AreEqual("System.Int16", c.Method.ReturnType.FullName);
 		}
+		
+		
+		[Test]
+		public void PreferUserDefinedConversionOverReferenceConversion()
+		{
+			// actually this is not because user-defined conversions are better;
+			// but because string is a better conversion target
+			string program = @"
+class AA {
+	public static implicit operator string(AA a) { return null; }
+}
+class Test {
+	static void M(object obj) {}
+	static void M(string str) {}
+	
+	static void Main() {
+		$M(new AA())$;
+	}
+}";
+
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("str", rr.Member.Parameters[0].Name);
+		}
+		
+		[Test]
+		public void PreferAmbiguousConversionOverReferenceConversion()
+		{
+			// Ambiguous conversions are a compiler error; but they are not
+			// preventing the overload from being chosen.
+			
+			// The user-defined conversion wins because BB is a better conversion target than object.
+			string program = @"
+class AA {
+	public static implicit operator BB(AA a) { return null; }
+}
+class BB {
+	public static implicit operator BB(AA a) { return null; }
+}
+
+class Test {
+	static void M(BB b) {}
+	static void M(object o) {}
+	
+	static void Main() {
+		M($new AA()$);
+	}
+}";
+
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsUserDefined);
+			Assert.IsFalse(c.IsValid);
+		}
 	}
 }

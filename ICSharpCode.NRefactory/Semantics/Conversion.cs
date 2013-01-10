@@ -74,18 +74,27 @@ namespace ICSharpCode.NRefactory.Semantics
 		/// </summary>
 		public static readonly Conversion TryCast = new BuiltinConversion(false, 9);
 		
+		[Obsolete("Use UserDefinedConversion() instead")]
 		public static Conversion UserDefinedImplicitConversion(IMethod operatorMethod, bool isLifted)
 		{
 			if (operatorMethod == null)
 				throw new ArgumentNullException("operatorMethod");
-			return new UserDefinedConversion(true, operatorMethod, isLifted);
+			return new UserDefinedConv(true, operatorMethod, isLifted, false);
 		}
 		
+		[Obsolete("Use UserDefinedConversion() instead")]
 		public static Conversion UserDefinedExplicitConversion(IMethod operatorMethod, bool isLifted)
 		{
 			if (operatorMethod == null)
 				throw new ArgumentNullException("operatorMethod");
-			return new UserDefinedConversion(false, operatorMethod, isLifted);
+			return new UserDefinedConv(false, operatorMethod, isLifted, false);
+		}
+		
+		public static Conversion UserDefinedConversion(IMethod operatorMethod, bool isImplicit, bool isLifted = false, bool isAmbiguous = false)
+		{
+			if (operatorMethod == null)
+				throw new ArgumentNullException("operatorMethod");
+			return new UserDefinedConv(isImplicit, operatorMethod, isLifted, isAmbiguous);
 		}
 		
 		public static Conversion MethodGroupConversion(IMethod chosenMethod, bool isVirtualMethodLookup)
@@ -262,17 +271,23 @@ namespace ICSharpCode.NRefactory.Semantics
 			}
 		}
 		
-		sealed class UserDefinedConversion : Conversion
+		sealed class UserDefinedConv : Conversion
 		{
 			readonly IMethod method;
 			readonly bool isLifted;
 			readonly bool isImplicit;
+			readonly bool isValid;
 			
-			public UserDefinedConversion(bool isImplicit, IMethod method, bool isLifted)
+			public UserDefinedConv(bool isImplicit, IMethod method, bool isLifted, bool isAmbiguous)
 			{
 				this.method = method;
 				this.isLifted = isLifted;
 				this.isImplicit = isImplicit;
+				this.isValid = !isAmbiguous;
+			}
+			
+			public override bool IsValid {
+				get { return isValid; }
 			}
 			
 			public override bool IsImplicit {
@@ -297,19 +312,20 @@ namespace ICSharpCode.NRefactory.Semantics
 			
 			public override bool Equals(Conversion other)
 			{
-				UserDefinedConversion o = other as UserDefinedConversion;
-				return o != null && isLifted == o.isLifted && isImplicit == o.isImplicit && method.Equals(o.method);
+				UserDefinedConv o = other as UserDefinedConv;
+				return o != null && isLifted == o.isLifted && isImplicit == o.isImplicit && isValid == o.isValid && method.Equals(o.method);
 			}
 			
 			public override int GetHashCode()
 			{
-				return unchecked(method.GetHashCode() * (isLifted ? 31 : 27) * (isImplicit ? 71 : 61));
+				return unchecked(method.GetHashCode() + (isLifted ? 31 : 27) + (isImplicit ? 71 : 61) + (isValid ? 107 : 109));
 			}
 			
 			public override string ToString()
 			{
 				return (isImplicit ? "implicit" : "explicit")
 					+ (isLifted ? " lifted" : "")
+					+ (isValid ? "" : " ambiguous")
 					+ "user-defined conversion (" + method + ")";
 			}
 		}

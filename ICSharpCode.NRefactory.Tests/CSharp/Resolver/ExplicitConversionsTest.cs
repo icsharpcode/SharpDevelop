@@ -686,7 +686,43 @@ class Test {
 			Assert.IsFalse(rr.Conversion.IsValid);
 		}
 
-		[Test, Ignore("We detect an ambiguity where csc and mcs can compile the code; but given that csc and mcs compile the code differently, the ambiguity may be an acceptable choice...")]
+		[Test, Ignore("Explicit conversions with nullables are currently broken")]
+		public void UserDefinedExplicitConversion_Lifted() {
+			string program = @"using System;
+struct Convertible {
+	public static explicit operator Convertible(int i) {return new Convertible(); }
+}
+class Test {
+	public void M(int? i) {
+		 a = $(Convertible?)i$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.IsTrue(rr.Conversion.IsLifted);
+		}
+		
+		[Test, Ignore("Explicit conversions with nullables are currently broken")]
+		public void UserDefinedExplicitConversion_ExplicitNullable_ThenUserDefined() {
+			string program = @"using System;
+struct Convertible {
+	public static explicit operator Convertible(int i) {return new Convertible(); }
+	public static explicit operator Convertible?(int? ni) {return new Convertible(); }
+}
+class Test {
+	public void M(int? i) {
+		 a = $(Convertible)i$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.IsFalse(rr.Conversion.IsLifted);
+			Assert.AreEqual("i", rr.Conversion.Method.Parameters[0].Name);
+		}
+		
+		[Test, Ignore("Explicit conversions with nullables are currently broken")]
 		public void UserDefinedExplicitConversion_DefinedNullableTakesPrecedenceOverLifted() {
 			string program = @"using System;
 struct Convertible {
