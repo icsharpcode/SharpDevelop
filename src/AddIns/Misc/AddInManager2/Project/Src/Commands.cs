@@ -38,7 +38,7 @@ namespace ICSharpCode.AddInManager2
 			SD.ResourceService.RegisterStrings("ICSharpCode.AddInManager2.Resources.StringResources", GetType().Assembly);
 			
 			// Remove all unreferenced NuGet packages
-			AddInManager.Setup.RemoveUnreferencedNuGetPackages();
+			AddInManagerServices.Setup.RemoveUnreferencedNuGetPackages();
 		}
 	}
 }

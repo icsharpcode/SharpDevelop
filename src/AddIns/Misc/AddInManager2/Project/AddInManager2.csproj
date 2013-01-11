@@ -88,7 +88,7 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\AddInManager.cs" />
+    <Compile Include="Src\AddInManagerServices.cs" />
     <Compile Include="Src\AddInManagerTask.cs" />
     <Compile Include="Src\BooleanToFontWeightConverter.cs" />
     <Compile Include="Src\Commands.cs" />
@@ -97,6 +97,7 @@
     <Compile Include="Src\Model\AcceptLicensesEventArgs.cs" />
     <Compile Include="Src\Model\AddInDependency.cs" />
     <Compile Include="Src\Model\AddInInstallationEventArgs.cs" />
+    <Compile Include="Src\Model\Interfaces\IAddInManagerServices.cs" />
     <Compile Include="Src\Model\ManagedAddIn.cs" />
     <Compile Include="Src\Model\Interfaces\IAddInManagerEvents.cs" />
     <Compile Include="Src\Model\Interfaces\IAddInPackage.cs" />
