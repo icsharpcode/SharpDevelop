@@ -38,8 +38,8 @@ namespace ICSharpCode.NRefactory.Semantics
 		readonly ResolveResult targetResult;
 		readonly bool isVirtualCall;
 		
-		public MemberResolveResult(ResolveResult targetResult, IMember member)
-			: base(member.EntityType == EntityType.Constructor ? member.DeclaringType : member.ReturnType)
+		public MemberResolveResult(ResolveResult targetResult, IMember member, IType returnTypeOverride = null)
+			: base(returnTypeOverride ?? (member.EntityType == EntityType.Constructor ? member.DeclaringType : member.ReturnType))
 		{
 			this.targetResult = targetResult;
 			this.member = member;
@@ -54,8 +54,8 @@ namespace ICSharpCode.NRefactory.Semantics
 			}
 		}
 		
-		public MemberResolveResult(ResolveResult targetResult, IMember member, bool isVirtualCall)
-			: base(member.EntityType == EntityType.Constructor ? member.DeclaringType : member.ReturnType)
+		public MemberResolveResult(ResolveResult targetResult, IMember member, bool isVirtualCall, IType returnTypeOverride = null)
+			: base(returnTypeOverride ?? (member.EntityType == EntityType.Constructor ? member.DeclaringType : member.ReturnType))
 		{
 			this.targetResult = targetResult;
 			this.member = member;
