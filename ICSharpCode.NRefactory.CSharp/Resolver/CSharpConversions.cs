@@ -99,10 +99,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region ImplicitConversion
-		public Conversion ImplicitConversion(ResolveResult resolveResult, IType toType)
+		private Conversion ImplicitConversion(ResolveResult resolveResult, IType toType, bool allowUserDefined)
 		{
-			if (resolveResult == null)
-				throw new ArgumentNullException("resolveResult");
 			Conversion c;
 			if (resolveResult.IsCompileTimeConstant) {
 				c = ImplicitEnumerationConversion(resolveResult, toType);
@@ -111,10 +109,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return Conversion.ImplicitConstantExpressionConversion;
 				c = StandardImplicitConversion(resolveResult.Type, toType);
 				if (c != Conversion.None) return c;
-				c = UserDefinedImplicitConversion(resolveResult, resolveResult.Type, toType);
-				if (c != Conversion.None) return c;
+				if (allowUserDefined) {
+					c = UserDefinedImplicitConversion(resolveResult, resolveResult.Type, toType);
+					if (c != Conversion.None) return c;
+				}
 			} else {
-				c = ImplicitConversion(resolveResult.Type, toType);
+				c = ImplicitConversion(resolveResult.Type, toType, allowUserDefined);
 				if (c != Conversion.None) return c;
 			}
 			if (resolveResult.Type.Kind == TypeKind.Dynamic)
@@ -125,6 +125,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return c;
 		}
 		
+		private Conversion ImplicitConversion(IType fromType, IType toType, bool allowUserDefined)
+		{
+			// C# 4.0 spec: §6.1
+			var c = StandardImplicitConversion(fromType, toType);
+			if (c == Conversion.None && allowUserDefined) {
+				c = UserDefinedImplicitConversion(null, fromType, toType);
+			}
+			return c;
+		}
+
+		public Conversion ImplicitConversion(ResolveResult resolveResult, IType toType)
+		{
+			if (resolveResult == null)
+				throw new ArgumentNullException("resolveResult");
+			return ImplicitConversion(resolveResult, toType, allowUserDefined: true);
+		}
+
 		public Conversion ImplicitConversion(IType fromType, IType toType)
 		{
 			if (fromType == null)
@@ -136,12 +153,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Conversion c;
 			if (implicitConversionCache.TryGetValue(pair, out c))
 				return c;
-			
-			// C# 4.0 spec: §6.1
-			c = StandardImplicitConversion(fromType, toType);
-			if (c == Conversion.None) {
-				c = UserDefinedImplicitConversion(null, fromType, toType);
-			}
+
+			c = ImplicitConversion(fromType, toType, allowUserDefined: true);
+
 			implicitConversionCache[pair] = c;
 			return c;
 		}
@@ -216,7 +230,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			if (resolveResult.Type.Kind == TypeKind.Dynamic)
 				return Conversion.ExplicitDynamicConversion;
-			Conversion c = ImplicitConversion(resolveResult, toType);
+			Conversion c = ImplicitConversion(resolveResult, toType, allowUserDefined: false);
 			if (c != Conversion.None)
 				return c;
 			c = ExplicitConversionImpl(resolveResult.Type, toType);
@@ -232,7 +246,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (toType == null)
 				throw new ArgumentNullException("toType");
 			
-			Conversion c = ImplicitConversion(fromType, toType);
+			Conversion c = ImplicitConversion(fromType, toType, allowUserDefined: false);
 			if (c != Conversion.None)
 				return c;
 			c = ExplicitConversionImpl(fromType, toType);

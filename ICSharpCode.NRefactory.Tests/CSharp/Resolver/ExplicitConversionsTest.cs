@@ -851,5 +851,24 @@ class Program {
 			Assert.IsTrue(rr.Conversion.IsUserDefined);
 			Assert.AreEqual("s", rr.Conversion.Method.Parameters[0].Name);
 		}
+
+		[Test]
+		public void ExplicitConversionOperatorsCanOverrideApplicableImplicitOnes()
+		{
+			string program = @"
+struct Convertible {
+    public static explicit operator int(Convertible ci) {return 0; }
+    public static implicit operator short(Convertible cs) {return 0; }
+}
+class Test {
+    static void Main() {
+        int i = $(int)new Convertible()$; // csc uses the explicit conversion operator
+    }
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.AreEqual("ci", rr.Conversion.Method.Parameters[0].Name);
+		}
 	}
 }
