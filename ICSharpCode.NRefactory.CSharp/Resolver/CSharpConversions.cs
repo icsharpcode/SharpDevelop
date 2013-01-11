@@ -819,10 +819,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (operators.Count > 0) {
 				var mostSpecificSource = operators.Any(op => op.SourceType.Equals(fromType)) ? fromType : FindMostEncompassedType(operators.Select(op => op.SourceType));
 				if (mostSpecificSource == null)
-					return Conversion.None;
+					return Conversion.UserDefinedConversion(operators[0].Method, isImplicit: true, isLifted: operators[0].IsLifted, isAmbiguous: true);
 				var mostSpecificTarget = operators.Any(op => op.TargetType.Equals(toType)) ? toType : FindMostEncompassingType(operators.Select(op => op.TargetType));
-				if (mostSpecificTarget == null)
-					return NullableType.IsNullable(toType) ? UserDefinedImplicitConversion(fromResult, fromType, NullableType.GetUnderlyingType(toType)) : Conversion.None;
+				if (mostSpecificTarget == null) {
+					if (NullableType.IsNullable(toType))
+						return UserDefinedImplicitConversion(fromResult, fromType, NullableType.GetUnderlyingType(toType));
+					else
+						return Conversion.UserDefinedConversion(operators[0].Method, isImplicit: true, isLifted: operators[0].IsLifted, isAmbiguous: true);
+				}
 
 				var selected = SelectOperator(mostSpecificSource, mostSpecificTarget, operators, true);
 				if (selected != Conversion.None) {
@@ -860,7 +864,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						mostSpecificSource = FindMostEncompassingType(operators.Select(op => op.SourceType));
 				}
 				if (mostSpecificSource == null)
-					return Conversion.None;
+					return Conversion.UserDefinedConversion(operators[0].Method, isImplicit: false, isLifted: operators[0].IsLifted, isAmbiguous: true);
 
 				IType mostSpecificTarget;
 				if (operators.Any(op => op.TargetType.Equals(toType)))
@@ -869,8 +873,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					mostSpecificTarget = FindMostEncompassingType(operators.Where(op => IsEncompassedBy(op.TargetType, toType)).Select(op => op.TargetType));
 				else
 					mostSpecificTarget = FindMostEncompassedType(operators.Select(op => op.TargetType));
-				if (mostSpecificTarget == null)
-					return NullableType.IsNullable(toType) ? UserDefinedExplicitConversion(fromResult, fromType, NullableType.GetUnderlyingType(toType)) : Conversion.None;
+				if (mostSpecificTarget == null) {
+					if (NullableType.IsNullable(toType))
+						return UserDefinedExplicitConversion(fromResult, fromType, NullableType.GetUnderlyingType(toType));
+					else
+						return Conversion.UserDefinedConversion(operators[0].Method, isImplicit: false, isLifted: operators[0].IsLifted, isAmbiguous: true);
+				}
 
 				var selected = SelectOperator(mostSpecificSource, mostSpecificTarget, operators, false);
 				if (selected != Conversion.None) {

@@ -1144,7 +1144,7 @@ class Program {
 			Assert.AreEqual("i", c.Method.Parameters[0].Name);
 		}
 		
-		[Test, Ignore("This is currently broken. The conversion is invalid because there is no most encompassed type (options are int?, long? and long), but we report it as Conversion.None")]
+		[Test]
 		public void UserDefinedImplicitConversion_NullableInt_Or_Long_Source()
 		{
 			string program = @"using System;
@@ -1163,7 +1163,7 @@ class Program {
 			Assert.IsTrue(c.IsUserDefined);
 		}
 		
-		[Test, Ignore("This is currently broken. Should be an ambiguous conversion but returns Conversion.None")]
+		[Test]
 		public void UserDefinedImplicitConversion_NullableInt_Or_Long_Constant_Source() {
 			string program = @"using System;
 class Test {
