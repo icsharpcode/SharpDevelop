@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	static class Log
 	{
-		const bool logEnabled = true;
+		const bool logEnabled = false;
 #if __MonoCS__
 		[Conditional("DEBUG")]
 #else

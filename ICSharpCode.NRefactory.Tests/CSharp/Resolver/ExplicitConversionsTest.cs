@@ -687,6 +687,59 @@ class Test {
 		}
 
 		[Test]
+		public void UserDefinedExplicitConversion_Lifted() {
+			string program = @"using System;
+struct Convertible {
+	public static explicit operator Convertible(int i) {return new Convertible(); }
+}
+class Test {
+	public void M(int? i) {
+		 a = $(Convertible?)i$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.IsTrue(rr.Conversion.IsLifted);
+		}
+		
+		[Test]
+		public void UserDefinedExplicitConversionFollowedByImplicitNullableConversion() {
+			string program = @"using System;
+struct Convertible {
+	public static explicit operator Convertible(int i) {return new Convertible(); }
+}
+class Test {
+	public void M(int i) {
+		 a = $(Convertible?)i$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.IsFalse(rr.Conversion.IsLifted);
+		}
+		
+		[Test]
+		public void UserDefinedExplicitConversion_ExplicitNullable_ThenUserDefined() {
+			string program = @"using System;
+struct Convertible {
+	public static explicit operator Convertible(int i) {return new Convertible(); }
+	public static explicit operator Convertible?(int? ni) {return new Convertible(); }
+}
+class Test {
+	public void M(int? i) {
+		 a = $(Convertible)i$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.IsFalse(rr.Conversion.IsLifted);
+			Assert.AreEqual("i", rr.Conversion.Method.Parameters[0].Name);
+		}
+		
+		[Test]
 		public void UserDefinedExplicitConversion_DefinedNullableTakesPrecedenceOverLifted() {
 			string program = @"using System;
 struct Convertible {
@@ -760,22 +813,43 @@ class Test {
 		}
 
 		[Test]
-		public void UserDefinedImplicitConversion_UseShortResult_X() {
+		public void UserDefinedExplicitConversion_Short_Or_NullableByte_Target()
+		{
 			string program = @"using System;
 class Test {
-	public static implicit operator short(Test d) { return 0; }
-	public static implicit operator byte?(Test d) { return 0; }
+	public static explicit operator short(Test s) { return 0; }
+	public static explicit operator byte?(Test b) { return 0; }
 }
 class Program {
 	public static void Main(string[] args)
 	{
-		int? x = $new Test()$;
+		int? x = $(int?)new Test()$;
 	}
 }";
-			var c = GetConversion(program);
-			Assert.IsTrue(c.IsValid);
-			Assert.IsTrue(c.IsUserDefined);
-			Assert.AreEqual("System.Int16", c.Method.ReturnType.FullName);
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.AreEqual("System.Int16", rr.Conversion.Method.ReturnType.FullName);
+		}
+		
+		[Test]
+		public void UserDefinedExplicitConversion_Byte_Or_NullableShort_Target()
+		{
+			string program = @"using System;
+class Test {
+	public static explicit operator byte(Test b) { return 0; }
+	public static explicit operator short?(Test s) { return 0; }
+}
+class Program {
+	public static void Main(string[] args)
+	{
+		int? x = $(int?)new Test()$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.AreEqual("s", rr.Conversion.Method.Parameters[0].Name);
 		}
 	}
 }

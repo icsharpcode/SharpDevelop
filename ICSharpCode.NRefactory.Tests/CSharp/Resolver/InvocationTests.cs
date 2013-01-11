@@ -735,5 +735,24 @@ public class C {
 			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
 		}
+		
+		[Test]
+		public void OverloadResolutionIsAmbiguousEvenIfNotDelegateCompatible() {
+			string program = @"
+class Test {
+	static void M(Func<int> o) {}
+	static void M(Action o) {}
+	
+	static int K() { return 0; }
+	
+	static void Main() {
+		$M(K)$;
+	}
+}";
+			// K is only delegate-compatible with one of the overloads; yet we get an invalid match.
+			// This is because the conversion exists even though it is invalid.
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.AreEqual(OverloadResolutionErrors.AmbiguousMatch, rr.OverloadResolutionErrors);
+		}
 	}
 }
