@@ -1067,12 +1067,12 @@ class Program {
 		}
 		
 		[Test]
-		public void UserDefinedImplicitConversion_UseShortResult_X()
+		public void UserDefinedImplicitConversion_Short_Or_NullableByte_Target()
 		{
 			string program = @"using System;
 class Test {
-	public static implicit operator short(Test d) { return 0; }
-	public static implicit operator byte?(Test d) { return 0; }
+	public static implicit operator short(Test s) { return 0; }
+	public static implicit operator byte?(Test b) { return 0; }
 }
 class Program {
 	public static void Main(string[] args)
@@ -1086,6 +1086,84 @@ class Program {
 			Assert.AreEqual("System.Int16", c.Method.ReturnType.FullName);
 		}
 		
+		[Test]
+		public void UserDefinedImplicitConversion_Byte_Or_NullableShort_Target()
+		{
+			string program = @"using System;
+class Test {
+	public static implicit operator byte(Test b) { return 0; }
+	public static implicit operator short?(Test s) { return 0; }
+}
+class Program {
+	public static void Main(string[] args)
+	{
+		int? x = $new Test()$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsUserDefined);
+			Assert.AreEqual("s", c.Method.Parameters[0].Name);
+		}
+		
+		[Test]
+		public void UserDefinedImplicitConversion_Int_Or_NullableLong_Source()
+		{
+			string program = @"using System;
+class Test {
+	public static implicit operator Test(int i) { return new Test(); }
+	public static implicit operator Test(long? l) { return new Test(); }
+}
+class Program {
+	static void Main() {
+		short s = 0;
+		Test t = $s$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsUserDefined);
+			Assert.AreEqual("i", c.Method.Parameters[0].Name);
+		}
+		
+		[Test, Ignore("This is currently broken; not sure why csc sees this case as ambiguous (but not most others)")]
+		public void UserDefinedImplicitConversion_NullableInt_Or_Long_Source()
+		{
+			string program = @"using System;
+class Test {
+	public static implicit operator Test(int? i) { return new Test(); }
+	public static implicit operator Test(long l) { return new Test(); }
+}
+class Program {
+	static void Main() {
+		short s = 0;
+		Test t = $s$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsFalse(c.IsValid);
+			Assert.IsTrue(c.IsUserDefined);
+		}
+		
+		[Test]
+		public void UserDefinedImplicitConversion_NullableInt_Or_NullableLong_Source()
+		{
+			string program = @"using System;
+class Test {
+	public static implicit operator Test(int? i) { return new Test(); }
+	public static implicit operator Test(long? l) { return new Test(); }
+}
+class Program {
+	static void Main() {
+		short s = 0;
+		Test t = $s$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsUserDefined);
+			Assert.AreEqual("i", c.Method.Parameters[0].Name);
+		}
 		
 		[Test]
 		public void PreferUserDefinedConversionOverReferenceConversion()
