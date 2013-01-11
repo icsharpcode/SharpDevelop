@@ -933,8 +933,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <param name="initializerStatements">
 		/// Statements for Objects/Collections initializer.
 		/// <see cref="InvocationResolveResult.InitializerStatements"/>
+		/// <param name="returnTypeOverride">
+		/// If not null, use this instead of the ReturnType of the member as the type of the created resolve result.
 		/// </param>
-		public CSharpInvocationResolveResult CreateResolveResult(ResolveResult targetResolveResult, IList<ResolveResult> initializerStatements = null)
+		/// </param>
+		public CSharpInvocationResolveResult CreateResolveResult(ResolveResult targetResolveResult, IList<ResolveResult> initializerStatements = null, IType returnTypeOverride = null)
 		{
 			IParameterizedMember member = GetBestCandidateWithSubstitutedTypeArguments();
 			if (member == null)
@@ -949,7 +952,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				this.BestCandidateIsExpandedForm,
 				isDelegateInvocation: false,
 				argumentToParameterMap: this.GetArgumentToParameterMap(),
-				initializerStatements: initializerStatements);
+				initializerStatements: initializerStatements,
+				returnTypeOverride: returnTypeOverride);
 		}
 		#endregion
 	}

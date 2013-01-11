@@ -110,8 +110,8 @@ class TestClass {
 		public void InvocationWithDynamicArgumentWithOneApplicableMethod() {
 			string program = @"using System;
 class TestClass {
-	public void SomeMethod(int a) {}
-	public void SomeMethod(int a, string b) {}
+	public int SomeMethod(int a) {}
+	public int SomeMethod(int a, string b) {}
 
 	void F() {
 		dynamic obj = null;
@@ -119,10 +119,38 @@ class TestClass {
 	}
 }";
 			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.That(rr, Is.Not.Null);
 			Assert.That(rr.Member.Name, Is.EqualTo("SomeMethod"));
+			Assert.That(rr.Type.Kind == TypeKind.Dynamic);
 			Assert.That(((IParameterizedMember)rr.Member).Parameters.Count, Is.EqualTo(1));
 			Assert.That(rr.Arguments.Count, Is.EqualTo(1));
 			var cr = rr.Arguments[0] as ConversionResolveResult;
+			Assert.That(cr, Is.Not.Null);
+			Assert.That(cr.Conversion.IsImplicit, Is.True);
+			Assert.That(cr.Conversion.IsDynamicConversion, Is.True);
+			Assert.That(cr.Input is LocalResolveResult && ((LocalResolveResult)cr.Input).Variable.Name == "obj");
+		}
+
+		[Test]
+		public void InvocationWithDynamicArgumentWithOneApplicableMethodReturningVoid() {
+			string program = @"using System;
+class TestClass {
+	public void SomeMethod(int a) {}
+
+	void F() {
+		dynamic obj = null;
+		var x = $this.SomeMethod(obj)$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.That(rr.IsError, Is.False);
+			Assert.That(rr.Type.Kind, Is.EqualTo(TypeKind.Dynamic));
+			var irr = rr.Input as CSharpInvocationResolveResult;
+			Assert.That(irr, Is.Not.Null);
+			Assert.That(irr.Member.Name, Is.EqualTo("SomeMethod"));
+			Assert.That(((IParameterizedMember)irr.Member).Parameters.Count, Is.EqualTo(1));
+			Assert.That(irr.Arguments.Count, Is.EqualTo(1));
+			var cr = irr.Arguments[0] as ConversionResolveResult;
 			Assert.That(cr, Is.Not.Null);
 			Assert.That(cr.Conversion.IsImplicit, Is.True);
 			Assert.That(cr.Conversion.IsDynamicConversion, Is.True);
@@ -286,7 +314,7 @@ class TestClass {
 		var x = $this.SomeMethod(obj)$;
 	}
 }";
-			var rr = Resolve(program);
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.That(rr.IsError, Is.True);
 		}
 

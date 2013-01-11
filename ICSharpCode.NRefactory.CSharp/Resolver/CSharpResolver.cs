@@ -1933,9 +1933,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return new DynamicInvocationResolveResult(target, DynamicInvocationType.Invocation, AddArgumentNamesIfNecessary(arguments, argumentNames));
 			}
 			
+			bool isDynamic = arguments.Any(a => a.Type.Kind == TypeKind.Dynamic);
 			MethodGroupResolveResult mgrr = target as MethodGroupResolveResult;
 			if (mgrr != null) {
-				if (arguments.Any(a => a.Type.Kind == TypeKind.Dynamic)) {
+				if (isDynamic) {
 					// If we have dynamic arguments, we need to represent the invocation as a dynamic invocation if there is more than one applicable method.
 					var or2 = CreateOverloadResolution(arguments, argumentNames, mgrr.TypeArguments.ToArray());
 					var applicableMethods = mgrr.MethodsGroupedByDeclaringType.SelectMany(m => m, (x, m) => new { x.DeclaringType, Method = m }).Where(x => OverloadResolution.IsApplicable(or2.AddCandidate(x.Method))).ToList();
@@ -1960,9 +1961,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				OverloadResolution or = mgrr.PerformOverloadResolution(compilation, arguments, argumentNames, checkForOverflow: checkForOverflow, conversions: conversions, allowOptionalParameters: allowOptionalParameters);
 				if (or.BestCandidate != null) {
 					if (or.BestCandidate.IsStatic && !or.IsExtensionMethodInvocation && !(mgrr.TargetResult is TypeResolveResult))
-						return or.CreateResolveResult(new TypeResolveResult(mgrr.TargetType));
+						return or.CreateResolveResult(new TypeResolveResult(mgrr.TargetType), returnTypeOverride: isDynamic ? SpecialType.Dynamic : null);
 					else
-						return or.CreateResolveResult(mgrr.TargetResult);
+						return or.CreateResolveResult(mgrr.TargetResult, returnTypeOverride: isDynamic ? SpecialType.Dynamic : null);
 				} else {
 					// No candidate found at all (not even an inapplicable one).
 					// This can happen with empty method groups (as sometimes used with extension methods)
@@ -1987,7 +1988,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					or.GetArgumentsWithConversionsAndNames(), or.BestCandidateErrors,
 					isExpandedForm: or.BestCandidateIsExpandedForm,
 					isDelegateInvocation: true,
-					argumentToParameterMap: or.GetArgumentToParameterMap());
+					argumentToParameterMap: or.GetArgumentToParameterMap(),
+					returnTypeOverride: isDynamic ? SpecialType.Dynamic : null);
 			}
 			return ErrorResult;
 		}
