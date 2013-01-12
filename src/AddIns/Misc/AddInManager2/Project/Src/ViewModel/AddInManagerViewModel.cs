@@ -23,7 +23,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		public AddInManagerViewModel()
 		{
 			// Visuals
-			this.Title = ResourceService.GetString("AddInManager.Title");
+			this.Title = SD.ResourceService.GetString("AddInManager.Title");
 			
 			// Add event handlers
 			AddInManager.Events.OperationStarted += AddInManager_Events_OperationStarted;

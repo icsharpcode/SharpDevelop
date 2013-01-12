@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows.Input;
 using ICSharpCode.AddInManager2.Model;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using NuGet;
 
 namespace ICSharpCode.AddInManager2.ViewModel
@@ -214,20 +215,20 @@ namespace ICSharpCode.AddInManager2.ViewModel
 				{
 					if (IsUpdate)
 					{
-						return ResourceService.GetString("AddInManager.AddInUpdated");
+						return SD.ResourceService.GetString("AddInManager.AddInUpdated");
 					}
 					else
 					{
-						return SurroundWithParantheses(ResourceService.GetString("AddInManager.AddInInstalled"));
+						return SurroundWithParantheses(SD.ResourceService.GetString("AddInManager.AddInInstalled"));
 					}
 				}
 				else if (IsRemoved)
 				{
-					return SurroundWithParantheses(ResourceService.GetString("AddInManager.AddInRemoved"));
+					return SurroundWithParantheses(SD.ResourceService.GetString("AddInManager.AddInRemoved"));
 				}
 				else if (!IsEnabled)
 				{
-					return SurroundWithParantheses(ResourceService.GetString("AddInManager.AddInDisabled"));
+					return SurroundWithParantheses(SD.ResourceService.GetString("AddInManager.AddInDisabled"));
 				}
 				else
 				{

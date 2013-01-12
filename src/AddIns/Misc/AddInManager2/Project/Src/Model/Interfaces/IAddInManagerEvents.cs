@@ -37,5 +37,8 @@ namespace ICSharpCode.AddInManager2.Model
 		
 		event EventHandler<AcceptLicensesEventArgs> AcceptLicenses;
 		void OnAcceptLicenses(AcceptLicensesEventArgs e);
+		
+		event EventHandler<EventArgs> PackageSourcesChanged;
+		void OnPackageSourcesChanged(EventArgs e);
 	}
 }

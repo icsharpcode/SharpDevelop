@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -19,10 +21,15 @@ namespace ICSharpCode.AddInManager2.Model
 		private IPackageRepository _activeRepository;
 		private PackageSource _activeSource;
 		private List<PackageSource> _registeredPackageSources;
+		
+		private IAddInManagerEvents _events;
 
-		public PackageRepositories()
+		public PackageRepositories(IAddInManagerEvents events)
 		{
+			_events = events;
+			
 			_registeredPackageSources = new List<PackageSource>();
+			
 			LoadPackageSources();
 			UpdateCurrentRepository();
 			UpdateActiveRepository();
@@ -68,6 +75,9 @@ namespace ICSharpCode.AddInManager2.Model
 				_registeredPackageSources.Clear();
 				_registeredPackageSources.AddRange(value);
 				SavePackageSources();
+				
+				// Send around the update
+				_events.OnPackageSourcesChanged(new EventArgs());
 			}
 		}
 		
@@ -92,16 +102,19 @@ namespace ICSharpCode.AddInManager2.Model
 			{
 				// If we don't have any repositories, so add the default one
 				PackageSource defaultPackageSource =
-					new PackageSource("https://nuget.org/api/v2", ResourceService.GetString("AddInManager2.DefaultRepository"));
+					new PackageSource("https://nuget.org/api/v2", SD.ResourceService.GetString("AddInManager2.DefaultRepository"));
 				_registeredPackageSources.Add(defaultPackageSource);
 				SavePackageSources();
 			}
+			
+			// Send around the update
+			_events.OnPackageSourcesChanged(new EventArgs());
 		}
 		
 		private void SavePackageSources()
 		{
 			var savedRepositories = _registeredPackageSources.Select(ps => ps.Name + "=" + ps.Source);
-			PropertyService.Set<string[]>("AddInManager2.PackageRepositories", savedRepositories.ToArray());
+			SD.PropertyService.Set<string[]>("AddInManager2.PackageRepositories", savedRepositories.ToArray());
 			UpdateCurrentRepository();
 		}
 		
@@ -113,11 +126,16 @@ namespace ICSharpCode.AddInManager2.Model
 			{
 				_currentRepository = new AggregateRepository(repositories);
 			}
+			else
+			{
+				// We have no repositories in configuration -> then we can't have an active source
+				ActiveSource = null;
+			}
 		}
 		
 		private void UpdateActiveRepository()
 		{
-			if ((_activeSource == null) && (_registeredPackageSources != null))
+			if ((_activeSource == null) && (_registeredPackageSources != null) && _registeredPackageSources.Any())
 			{
 				_activeSource = _registeredPackageSources[0];
 			}

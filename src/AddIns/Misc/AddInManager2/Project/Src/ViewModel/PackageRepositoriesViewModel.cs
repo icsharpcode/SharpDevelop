@@ -109,7 +109,6 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		public void Load()
 		{
 			packageSources.Clear();
-//			packageSources.AddRange(AddInManager.Repositories.RegisteredPackageSources);
 			NuGet.CollectionExtensions.AddRange(packageSources, AddInManager.Repositories.RegisteredPackageSources);
 			foreach (PackageSource packageSource in packageSources)
 			{

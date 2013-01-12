@@ -23,7 +23,7 @@
 		<OptionPanel
 			id="AddInManager2"
 			label="${res:AddInManager2.OptionPanel.Tree.AddIns}"
-			insertafter="FormsDesignerOptions">
+			insertafter="ToolsOptions">
 			<OptionPanel
 				id="AddInRepositories"
 				label="${res:AddInManager2.OptionPanel.Tree.Repositories}"

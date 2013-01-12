@@ -45,7 +45,7 @@ namespace ICSharpCode.AddInManager2
 		{
         	_container = new AddInManagerServiceContainer();
 			_container.Events = new AddInManagerEvents();
-			_container.Repositories = new PackageRepositories();
+			_container.Repositories = new PackageRepositories(_container.Events);
 			_container.NuGet = new NuGetPackageManager(_container.Repositories, _container.Events);
 			_container.Setup = new AddInSetup(_container.Events, _container.NuGet);
 		}

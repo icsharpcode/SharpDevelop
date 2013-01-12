@@ -10,6 +10,7 @@ using System.Text;
 using System.Windows.Input;
 using ICSharpCode.AddInManager2.Model;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using Microsoft.Win32;
 using NuGet;
 
@@ -22,7 +23,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		{
 			AllowInstallFromArchive = true;
 			HasFilterForPreinstalled = true;
-			Title = ResourceService.GetString("AddInManager2.Views.Installed");
+			Title = SD.ResourceService.GetString("AddInManager2.Views.Installed");
 
 			// Load preinstalled AddIn filter
 			LoadPreinstalledAddInFilter();
@@ -139,18 +140,18 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		private void LoadPreinstalledAddInFilter()
 		{
-			ShowPreinstalledAddIns = PropertyService.Get<bool>("AddInManager2.ShowPreinstalledAddIns", false);
+			ShowPreinstalledAddIns = SD.PropertyService.Get<bool>("AddInManager2.ShowPreinstalledAddIns", false);
 		}
 		
 		private void SavePreinstalledAddInFilter()
 		{
-			PropertyService.Set<bool>("AddInManager2.ShowPreinstalledAddIns", ShowPreinstalledAddIns);
+			SD.PropertyService.Set<bool>("AddInManager2.ShowPreinstalledAddIns", ShowPreinstalledAddIns);
 		}
 		
 		protected override void InstallFromArchive()
 		{
 			OpenFileDialog dlg = new OpenFileDialog();
-			dlg.Filter = ResourceService.GetString("AddInManager2.SDAddInFileFilter");
+			dlg.Filter = SD.ResourceService.GetString("AddInManager2.SDAddInFileFilter");
 			dlg.Multiselect = true;
 			var showDialogResult = dlg.ShowDialog();
 			if (showDialogResult.HasValue && showDialogResult.Value)

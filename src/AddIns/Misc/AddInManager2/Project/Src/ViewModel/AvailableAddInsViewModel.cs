@@ -10,6 +10,7 @@ using System.Text;
 using System.Windows.Input;
 using ICSharpCode.AddInManager2.Model;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using NuGet;
 
 namespace ICSharpCode.AddInManager2.ViewModel
@@ -21,7 +22,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		{
 			IsSearchable = true;
 			ShowPackageSources = true;
-			Title = ResourceService.GetString("AddInManager2.Views.Available");
+			Title = SD.ResourceService.GetString("AddInManager2.Views.Available");
 			
 			AddInManager.Events.AddInInstalled += AddInInstallationStateChanged;
 			AddInManager.Events.AddInUninstalled += AddInInstallationStateChanged;

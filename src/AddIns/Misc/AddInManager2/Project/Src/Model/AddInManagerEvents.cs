@@ -100,5 +100,15 @@ namespace ICSharpCode.AddInManager2.Model
 				AcceptLicenses(this, e);
 			}
 		}
+		
+		public event EventHandler<EventArgs> PackageSourcesChanged;
+		
+		public void OnPackageSourcesChanged(EventArgs e)
+		{
+			if (PackageSourcesChanged != null)
+			{
+				PackageSourcesChanged(this, e);
+			}
+		}
 	}
 }

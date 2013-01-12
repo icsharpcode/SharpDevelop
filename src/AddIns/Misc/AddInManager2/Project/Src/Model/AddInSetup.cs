@@ -108,7 +108,7 @@ namespace ICSharpCode.AddInManager2.Model
 				{
 					if (addIn.Manifest.PrimaryIdentity == null)
 					{
-						throw new AddInLoadException(ResourceService.GetString("AddInManager.AddInMustHaveIdentity"));
+						throw new AddInLoadException(SD.ResourceService.GetString("AddInManager.AddInMustHaveIdentity"));
 					}
 
 					// Try to find this AddIn in current registry
@@ -178,7 +178,7 @@ namespace ICSharpCode.AddInManager2.Model
 				AddIn addIn = AddIn.Load(SD.AddInTree, addInManifestFile);
 				if (addIn.Manifest.PrimaryIdentity == null)
 				{
-					throw new AddInLoadException(ResourceService.GetString("AddInManager.AddInMustHaveIdentity"));
+					throw new AddInLoadException(SD.ResourceService.GetString("AddInManager.AddInMustHaveIdentity"));
 				}
 
 				// Try to find this AddIn in current registry

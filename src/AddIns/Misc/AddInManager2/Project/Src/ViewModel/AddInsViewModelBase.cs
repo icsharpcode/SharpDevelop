@@ -19,12 +19,20 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		private int _highlightCount;
 		private string _title;
 		
+		private ObservableCollection<PackageSource> _packageSources;
+		
 		public AddInsViewModelBase()
 		{
+			// Initialization of internal lists
 			_pages = new Pages();
 			_highlightCount = 0;
 			AddInPackages = new ObservableCollection<AddInPackageViewModelBase>();
+			_packageSources = new ObservableCollection<PackageSource>();
 			ErrorMessage = String.Empty;
+			
+			// Update package sources list and ensure that it's updated automatically from now
+			UpdatePackageSources();
+			AddInManager.Events.PackageSourcesChanged += AddInManager_Events_PackageSourcesChanged;
 			
 			CreateCommands();
 		}
@@ -382,14 +390,29 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			set;
 		}
 		
-		public IEnumerable<PackageSource> PackageSources
+		public ObservableCollection<PackageSource> PackageSources
 		{
 			get
 			{
-				foreach (PackageSource packageSource in AddInManager.Repositories.RegisteredPackageSources)
-				{
-					yield return packageSource;
-				}
+				return _packageSources;
+			}
+		}
+		
+		private void UpdatePackageSources()
+		{
+			PackageSource oldValue = SelectedPackageSource;
+			
+			// Refill package sources list
+			_packageSources.Clear();
+			foreach (PackageSource packageSource in AddInManager.Repositories.RegisteredPackageSources)
+			{
+				_packageSources.Add(packageSource);
+			}
+			
+			// Try to select the same active source, again
+			if ((oldValue != null) && _packageSources.Contains(oldValue) && (oldValue != SelectedPackageSource))
+			{
+				SelectedPackageSource = oldValue;
 			}
 		}
 		
@@ -403,6 +426,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			{
 				AddInManager.Repositories.ActiveSource = value;
 				ReadPackages();
+				OnPropertyChanged(m => m.SelectedPackageSource);
 			}
 		}
 		
@@ -425,6 +449,13 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			{
 				packageViewModel.UpdateInstallationState();
 			}
+		}
+		
+		
+		private void AddInManager_Events_PackageSourcesChanged(object sender, EventArgs e)
+		{
+			// Update the list of package sources
+			UpdatePackageSources();
 		}
 	}
 }

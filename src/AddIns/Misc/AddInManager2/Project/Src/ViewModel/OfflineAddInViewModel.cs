@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows.Input;
 using ICSharpCode.AddInManager2.Model;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using NuGet;
 
 namespace ICSharpCode.AddInManager2.ViewModel
@@ -287,38 +288,38 @@ namespace ICSharpCode.AddInManager2.ViewModel
 				{
 					if (_addIn.Action == AddInAction.Install)
 					{
-						return SurroundWithParantheses(ResourceService.GetString("AddInManager.AddInInstalled"));
+						return SurroundWithParantheses(SD.ResourceService.GetString("AddInManager.AddInInstalled"));
 					}
 					else if (_addIn.Action == AddInAction.Update)
 					{
-						return ResourceService.GetString("AddInManager.AddInUpdated");
+						return SD.ResourceService.GetString("AddInManager.AddInUpdated");
 					}
 					else if (HasDependencyConflicts)
 					{
-						return SurroundWithParantheses(ResourceService.GetString("AddInManager.AddInDependencyFailed"));
+						return SurroundWithParantheses(SD.ResourceService.GetString("AddInManager.AddInDependencyFailed"));
 					}
 					else if (IsRemoved)
 					{
-						return SurroundWithParantheses(ResourceService.GetString("AddInManager.AddInRemoved"));
+						return SurroundWithParantheses(SD.ResourceService.GetString("AddInManager.AddInRemoved"));
 					}
 					else if (IsEnabled && !_addIn.Enabled)
 					{
-						return SurroundWithParantheses(ResourceService.GetString("AddInManager.AddInEnabled"));
+						return SurroundWithParantheses(SD.ResourceService.GetString("AddInManager.AddInEnabled"));
 					}
 					else if (!IsEnabled)
 					{
 						if (_addIn.Enabled)
 						{
-							return SurroundWithParantheses(ResourceService.GetString("AddInManager.AddInWillBeDisabled"));
+							return SurroundWithParantheses(SD.ResourceService.GetString("AddInManager.AddInWillBeDisabled"));
 						}
 						else
 						{
-							return SurroundWithParantheses(ResourceService.GetString("AddInManager.AddInDisabled"));
+							return SurroundWithParantheses(SD.ResourceService.GetString("AddInManager.AddInDisabled"));
 						}
 					}
 					else if (_addIn.Action == AddInAction.InstalledTwice)
 					{
-						return SurroundWithParantheses(ResourceService.GetString("AddInManager.AddInInstalledTwice"));
+						return SurroundWithParantheses(SD.ResourceService.GetString("AddInManager.AddInInstalledTwice"));
 					}
 					else
 					{
@@ -520,7 +521,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 				}
 			}
 			ICSharpCode.SharpDevelop.Commands.OptionsCommand.ShowTabbedOptions(
-				_addIn.Name + " " + ResourceService.GetString("AddInManager.Options"),
+				_addIn.Name + " " + SD.ResourceService.GetString("AddInManager.Options"),
 				dummyNode);
 		}
 	}
