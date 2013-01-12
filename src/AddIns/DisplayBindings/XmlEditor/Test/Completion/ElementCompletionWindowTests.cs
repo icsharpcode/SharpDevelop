@@ -13,7 +13,6 @@ using XmlEditor.Tests.Utils;
 namespace XmlEditor.Tests.Completion
 {
 	[TestFixture]
-	[Ignore("Test needs to be adjusted to SD5")]
 	public class ElementCompletionWindowTests
 	{
 		MockTextEditor textEditor;
@@ -39,29 +38,54 @@ namespace XmlEditor.Tests.Completion
 			completionBinding = new XmlCodeCompletionBinding(associations);
 		}
 		
-		[Test]
-		public void HandleKeyPress_LessThanKeyPressed_KeyPressResultIsCompletedAfterPressingLessThanSign()
+		void CharacterTypedIntoTextEditor(char ch)
 		{
-			keyPressResult = completionBinding.HandleKeyPress(textEditor, '<');
-			Assert.AreEqual(CodeCompletionKeyPressResult.EatKey, keyPressResult);
+			textEditor.Document.Text += ch.ToString();
+			textEditor.Caret.Offset++;
 		}
 		
 		[Test]
-		public void HandleKeyPress_LessThanKeyPressed_CompletionWindowWidthIsNotSetToMatchLongestNamespaceTextWidth()
+		public void HandleKeyPress_AnyKey_ReturnsNone()
 		{
-			completionBinding.HandleKeyPress(textEditor, '<');
+			keyPressResult = completionBinding.HandleKeyPress(textEditor, 'a');
+			
+			Assert.AreEqual(CodeCompletionKeyPressResult.None, keyPressResult);
+		}
+		
+		[Test]
+		public void HandleKeyPressed_LessThanKeyPressed_ReturnsTrue()
+		{
+			CharacterTypedIntoTextEditor('<');
+			bool result = completionBinding.HandleKeyPressed(textEditor, '<');
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void HandleKeyPressed_SpaceCharacterPressed_ReturnsFalse()
+		{
+			CharacterTypedIntoTextEditor(' ');
+			bool result = completionBinding.HandleKeyPressed(textEditor, ' ');
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void HandleKeyPressed_LessThanKeyPressed_CompletionWindowWidthIsNotSetToMatchLongestNamespaceTextWidth()
+		{
+			CharacterTypedIntoTextEditor('<');
+			completionBinding.HandleKeyPressed(textEditor, '<');
+			
 			Assert.AreNotEqual(double.NaN, textEditor.CompletionWindowDisplayed.Width);
 		}
 		
 		[Test]
-		public void HandleKeyPress_LessThanKeyPressedInsideRootHtmlElement_BodyElementExistsInChildCompletionItems()
+		public void HandleKeyPressed_LessThanKeyPressedInsideRootHtmlElement_BodyElementExistsInChildCompletionItems()
 		{
 			textEditor.Document.Text = 
 				"<html><\r\n" +
 				"</html>";
-			textEditor.Caret.Offset = 6;
+			textEditor.Caret.Offset = 7;
 			
-			completionBinding.HandleKeyPress(textEditor, '<');
+			completionBinding.HandleKeyPressed(textEditor, '<');
 			ICompletionItem[] items = textEditor.CompletionItemsDisplayedToArray();
 			
 			XmlCompletionItem expectedItem = new XmlCompletionItem("body", XmlCompletionItemType.XmlElement);
