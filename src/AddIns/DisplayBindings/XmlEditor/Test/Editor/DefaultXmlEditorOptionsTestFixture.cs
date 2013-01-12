@@ -15,7 +15,6 @@ using XmlEditor.Tests.Utils;
 namespace XmlEditor.Tests.Editor
 {
 	[TestFixture]
-	[Ignore("Test needs to be adjusted to SD5")]
 	public class DefaultXmlEditorOptionsTestFixture
 	{
 		XmlSchemaFileAssociations associations;
@@ -37,12 +36,13 @@ namespace XmlEditor.Tests.Editor
 		
 		DefaultXmlSchemaFileAssociations CreateDefaultXmlSchemaFileExtensions()
 		{
-			string addinXml = "<AddIn name     = 'Xml Editor'\r\n" +
-       								"author      = ''\r\n" +
-       								"copyright   = 'prj:///doc/copyright.txt'\r\n" +
-       								"description = ''\r\n" +
-       								"addInManagerHidden = 'preinstalled'>\r\n" +
-								"</AddIn>";
+			string addinXml =
+				"<AddIn name     = 'Xml Editor'\r\n" +
+				"       author      = ''\r\n" +
+				"       copyright   = 'prj:///doc/copyright.txt'\r\n" +
+				"       description = ''\r\n" +
+				"       addInManagerHidden = 'preinstalled'>\r\n" +
+				"</AddIn>";
 
 			using (StringReader reader = new StringReader(addinXml)) {
 				var addInTree = MockRepository.GenerateStrictMock<IAddInTree>();

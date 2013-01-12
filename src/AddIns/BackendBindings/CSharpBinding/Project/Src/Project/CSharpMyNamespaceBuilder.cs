@@ -78,7 +78,7 @@ namespace CSharpBinding
 								output.AppendLine(indentation);
 							}
 						}
-					} else if (trimmedLine.StartsWith("#if ")) {
+					} else if (trimmedLine.StartsWith("#if ", StringComparison.Ordinal)) {
 						outputActive = trimmedLine.Substring(4) == projectType;
 					} else {
 						output.AppendLine(StringParser.Parse(line.Replace("MyNamespace", ns)));

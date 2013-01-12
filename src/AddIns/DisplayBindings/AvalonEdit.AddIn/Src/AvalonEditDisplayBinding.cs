@@ -51,7 +51,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public double AutoDetectFileContent(FileName fileName, Stream fileContent, string detectedMimeType)
 		{
-			return detectedMimeType.StartsWith("text/") ? 0.5 : 0;
+			return detectedMimeType.StartsWith("text/", StringComparison.Ordinal) ? 0.5 : 0;
 		}
 	}
 	

@@ -4,6 +4,7 @@
 using System;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
@@ -19,6 +20,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 	{
 		public ContextActionsPopup()
 		{
+			this.UseLayoutRounding = true;
+			TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
+			
 			// Close on lost focus
 			this.StaysOpen = false;
 			this.AllowsTransparency = true;

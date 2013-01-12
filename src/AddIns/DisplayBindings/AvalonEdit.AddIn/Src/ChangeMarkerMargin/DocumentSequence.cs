@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Widgets.MyersDiff;
 
 namespace ICSharpCode.AvalonEdit.AddIn

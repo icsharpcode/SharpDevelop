@@ -32,7 +32,10 @@ namespace ICSharpCode.XmlEditor
 		public void RemoveXPathNodeTextMarkers()
 		{
 			foreach (IViewContent view in workbench.ViewContentCollection) {
-				XPathNodeTextMarker.RemoveMarkers(view);
+				ITextEditor textEditor = view.GetService<ITextEditor>();
+				if (textEditor != null) {
+					XPathNodeTextMarker.RemoveMarkers(textEditor);
+				}
 			}
 		}
 	}

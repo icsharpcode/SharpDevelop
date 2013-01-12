@@ -4,6 +4,8 @@
 using System;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Widgets;
 
@@ -16,6 +18,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 	{
 		public ContextActionsBulbPopup(UIElement parent) : base(parent)
 		{
+			this.UseLayoutRounding = true;
+			TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
+			
 			this.StaysOpen = true;
 			this.AllowsTransparency = true;
 			this.ChildControl = new ContextActionsBulbControl();

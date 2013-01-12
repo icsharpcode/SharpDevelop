@@ -51,7 +51,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// Moves the section start by <paramref name="delta"/> positions;
 		/// and removes the sections outside the (newLineStart,newLineEnd) range.
 		/// </summary>
-		static void MoveSections(IEnumerable<HighlightedSection> sections, int delta, int newLineStart, int newLineEnd, IList<HighlightedSection> result)
+		static void MoveSections(IEnumerable<HighlightedSection> sections, int delta, int newLineStart, int newLineEnd, ICollection<HighlightedSection> result)
 		{
 			foreach (var section in sections) {
 				int newOffset = section.Offset + delta;

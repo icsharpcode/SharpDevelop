@@ -179,6 +179,9 @@ namespace XmlEditor.Tests.Utils
 		
 		public object GetService(Type serviceType)
 		{
+			if (serviceType == typeof(ITextEditor)) {
+				return this;
+			}
 			return document.GetService(serviceType);
 		}
 		

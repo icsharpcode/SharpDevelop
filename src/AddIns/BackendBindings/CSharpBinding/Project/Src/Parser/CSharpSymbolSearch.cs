@@ -100,8 +100,17 @@ namespace CSharpBinding
 			ReadOnlyDocument document = null;
 			IHighlighter highlighter = null;
 			List<Reference> results = new List<Reference>();
+			
+			// Grab the unresolved file matching the compilation version
+			// (this may differ from the version created by re-parsing the project)
+			CSharpUnresolvedFile unresolvedFile = null;
+			IProjectContent pc = compilation.MainAssembly.UnresolvedAssembly as IProjectContent;
+			if (pc != null) {
+				unresolvedFile = pc.GetFile(fileName) as CSharpUnresolvedFile;
+			}
+			
 			fr.FindReferencesInFile(
-				searchScope, parseInfo.UnresolvedFile, parseInfo.SyntaxTree, compilation,
+				searchScope, unresolvedFile, parseInfo.SyntaxTree, compilation,
 				delegate (AstNode node, ResolveResult result) {
 					if (document == null) {
 						document = new ReadOnlyDocument(textSource, fileName);

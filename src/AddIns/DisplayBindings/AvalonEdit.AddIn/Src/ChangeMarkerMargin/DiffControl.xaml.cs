@@ -2,19 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 
-using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.AvalonEdit.Rendering;
-using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.AvalonEdit.AddIn

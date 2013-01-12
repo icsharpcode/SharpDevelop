@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Windows;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.UnitTesting
@@ -48,6 +48,11 @@ namespace ICSharpCode.UnitTesting
 			return test;
 		}
 		
+		public override void ActivateItem(RoutedEventArgs e)
+		{
+			test.GoToDefinition.Execute(e);
+		}
+		
 		#region Manage Children
 		public override bool ShowExpander {
 			get { return test.CanExpandNestedTests && base.ShowExpander; }
@@ -62,8 +67,8 @@ namespace ICSharpCode.UnitTesting
 		
 		void InsertNestedTests(IEnumerable<ITest> nestedTests)
 		{
-			foreach (var test in nestedTests) {
-				var treeNode = SD.TreeNodeFactory.CreateTreeNode(test);
+			foreach (var nestedTest in nestedTests) {
+				var treeNode = SD.TreeNodeFactory.CreateTreeNode(nestedTest);
 				if (treeNode != null)
 					Children.OrderedInsert(treeNode, NodeTextComparer);
 			}
