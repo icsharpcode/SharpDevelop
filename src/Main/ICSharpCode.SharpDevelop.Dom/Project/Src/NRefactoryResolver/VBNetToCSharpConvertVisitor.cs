@@ -226,6 +226,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 									backingField.Fields.Add(new VariableDeclaration(
 										"withEventsField_" + field.Name, field.Initializer, fieldDeclaration.GetTypeForField(i)));
 									backingField.Modifier = Modifiers.Private;
+									backingField.Modifier |= (fieldDeclaration.Modifier & Modifiers.Static);
 									InsertAfterSibling(insertAfter, backingField);
 									createdProperty = new PropertyDeclaration(fieldDeclaration.Modifier, null, field.Name, null);
 									createdProperty.TypeReference = fieldDeclaration.GetTypeForField(i);
