@@ -36,7 +36,7 @@ namespace ICSharpCode.TextTemplating
 		
 		public void BringErrorsPadToFront()
 		{
-			WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+			SD.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 		}
 		
 		public void DebugLog(string message, Exception ex)
