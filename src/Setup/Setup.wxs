@@ -466,11 +466,11 @@
 				<ComponentRef Id="JQuery172NuGetPackage"/>
 				<ComponentRef Id="Modernizr253NuGetPackage"/>
 			
-				<!--<ComponentRef Id="MonoTextTemplatingDll"/>
+				<ComponentRef Id="MonoTextTemplatingDll"/>
 				<ComponentRef Id="TextTemplatingAddin"/>
 				<ComponentRef Id="TextTemplatingDll"/>
 				<ComponentRef Id="CSharpTextTemplateFileTemplate"/>
-				<ComponentRef Id="VBTextTemplateFileTemplate"/>-->
+				<ComponentRef Id="VBTextTemplateFileTemplate"/>
 			
 				<!--
 				<ComponentRef Id="MachineSpecificationsAddIn"/>
