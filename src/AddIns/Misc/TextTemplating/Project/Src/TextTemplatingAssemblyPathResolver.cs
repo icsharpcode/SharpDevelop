@@ -40,7 +40,8 @@ namespace ICSharpCode.TextTemplating
 			
 			string resolvedAssemblyFileName = ResolveAssemblyFromProject(assemblyReference);
 			if (resolvedAssemblyFileName == null) {
-				resolvedAssemblyFileName = ResolveAssemblyFromGac(assemblyReference);
+				// TODO GAC assembly reference.
+				//resolvedAssemblyFileName = ResolveAssemblyFromGac(assemblyReference);
 			}
 			if (resolvedAssemblyFileName != null) {
 				return resolvedAssemblyFileName;

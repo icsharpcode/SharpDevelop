@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		{
 			string textcontent = condition.Properties["textcontent"];
 			var editor = SD.GetActiveViewContentService<ICSharpCode.AvalonEdit.TextEditor>();
-			if (editor != null) {
+			if (editor != null && editor.SyntaxHighlighting != null) {
 				return string.Equals(textcontent, editor.SyntaxHighlighting.Name, StringComparison.OrdinalIgnoreCase);
 			}
 			return false;

@@ -2,11 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
@@ -14,6 +14,7 @@ using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Converter;
 using ICSharpCode.SharpDevelop.Refactoring;
+using Microsoft.CSharp;
 
 namespace CSharpBinding
 {
@@ -134,6 +135,11 @@ namespace CSharpBinding
 		protected override ProjectBehavior CreateDefaultBehavior()
 		{
 			return new CSharpProjectBehavior(this, base.CreateDefaultBehavior());
+		}
+		
+		public override CodeDomProvider CreateCodeDomProvider()
+		{
+			return new CSharpCodeProvider();
 		}
 	}
 	

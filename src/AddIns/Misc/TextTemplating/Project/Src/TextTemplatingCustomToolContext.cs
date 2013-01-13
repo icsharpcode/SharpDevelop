@@ -29,14 +29,14 @@ namespace ICSharpCode.TextTemplating
 			TaskService.ClearExceptCommentTasks();
 		}
 		
-		public void AddTask(Task task)
+		public void AddTask(SDTask task)
 		{
 			TaskService.Add(task);
 		}
 		
 		public void BringErrorsPadToFront()
 		{
-			WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+			SD.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 		}
 		
 		public void DebugLog(string message, Exception ex)

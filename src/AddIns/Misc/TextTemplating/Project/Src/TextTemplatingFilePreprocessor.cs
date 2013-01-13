@@ -6,7 +6,10 @@ using System.CodeDom.Compiler;
 using System.IO;
 using System.Text;
 
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
+using Microsoft.CSharp;
 
 namespace ICSharpCode.TextTemplating
 {
@@ -72,7 +75,7 @@ namespace ICSharpCode.TextTemplating
 					outputFileName,
 					Encoding.UTF8,
 					out language,
-					out references);			
+					out references);
 			} catch (Exception ex) {
 				AddCompilerErrorToTemplatingHost(ex, inputFileName);
 				DebugLogException(ex, inputFileName);
@@ -88,11 +91,23 @@ namespace ICSharpCode.TextTemplating
 		
 		string CreateValidClassName(string className)
 		{
-			return TemplateFile
-				.Project
-				.LanguageProperties
-				.CodeDomProvider
-				.CreateValidIdentifier(className);
+			return CreateCodeDomProvider().CreateValidIdentifier(className);
+		}
+		
+		CodeDomProvider CreateCodeDomProvider()
+		{
+			CodeDomProvider provider = TemplateFile.Project.CreateCodeDomProvider();
+			if (provider != null) {
+				return provider;
+			}
+			AddMissingCodeDomProviderTask();
+			return new CSharpCodeProvider();
+		}
+		
+		void AddMissingCodeDomProviderTask()
+		{
+			string message = "Project does not provide a CodeDomProvider. Using C# provider by default";
+			Context.AddTask(new SDTask(null, message, 0, 0, TaskType.Warning));
 		}
 	}
 }
