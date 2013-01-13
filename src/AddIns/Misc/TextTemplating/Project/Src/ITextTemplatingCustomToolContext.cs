@@ -12,7 +12,7 @@ namespace ICSharpCode.TextTemplating
 		FileProjectItem EnsureOutputFileIsInProject(FileProjectItem baseItem, string outputFileName);
 		
 		void ClearTasksExceptCommentTasks();
-		void AddTask(Task task);
+		void AddTask(SDTask task);
 		void BringErrorsPadToFront();
 		void DebugLog(string message, Exception ex);
 		

@@ -2,8 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.TextTemplating
@@ -12,8 +13,9 @@ namespace ICSharpCode.TextTemplating
 	{
 		public IReflectionProjectContent GetReflectionProjectContentForReference(ReferenceProjectItem item)
 		{
-			IProjectContent projectContent = AssemblyParserService.GetProjectContentForReference(item);
-			return new TextTemplatingReflectionProjectContent(projectContent);
+			//IProjectContent projectContent = SD.AssemblyParserService.GetProjectContentForReference(item);
+			//return new TextTemplatingReflectionProjectContent(projectContent);
+			return null;
 		}
 	}
 }

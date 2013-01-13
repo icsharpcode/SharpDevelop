@@ -29,7 +29,7 @@ namespace ICSharpCode.TextTemplating
 			TaskService.ClearExceptCommentTasks();
 		}
 		
-		public void AddTask(Task task)
+		public void AddTask(SDTask task)
 		{
 			TaskService.Add(task);
 		}

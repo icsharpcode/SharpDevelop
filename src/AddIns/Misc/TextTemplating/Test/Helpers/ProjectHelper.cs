@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -13,7 +14,7 @@ namespace TextTemplating.Tests.Helpers
 		{
 			var info = new ProjectCreateInformation();
 			info.Solution = new Solution(new MockProjectChangeWatcher());
-			info.OutputProjectFileName = @"d:\projects\MyProject\MyProject.csproj";
+			info.OutputProjectFileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
 			info.ProjectName = "MyProject";
 			return new TestableProject(info);
 		}

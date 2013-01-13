@@ -90,8 +90,7 @@ namespace ICSharpCode.TextTemplating
 		{
 			return TemplateFile
 				.Project
-				.LanguageProperties
-				.CodeDomProvider
+				.CreateCodeDomProvider()
 				.CreateValidIdentifier(className);
 		}
 	}
