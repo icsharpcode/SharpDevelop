@@ -24,9 +24,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// <summary>
 	/// Interaction logic for DebuggingSymbolsPanelXaml.xaml
 	/// </summary>
-	public partial class DebuggingSymbolsPanelXaml : OptionPanel
+	public partial class DebuggingSymbolsPanel : OptionPanel
 	{
-		public DebuggingSymbolsPanelXaml()
+		public DebuggingSymbolsPanel()
 		{
 			InitializeComponent();
 			this.DataContext = this;
