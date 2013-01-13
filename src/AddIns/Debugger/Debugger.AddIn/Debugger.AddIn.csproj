@@ -103,6 +103,10 @@
       <DependentUpon>DebuggingOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Options\DebuggingSymbolsPanelXaml.xaml.cs">
+      <DependentUpon>DebuggingSymbolsPanelXaml.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Pads\AutoCompleteTextBox.cs" />
     <Compile Include="Pads\CallStackPad.cs">
       <SubType>Code</SubType>
@@ -217,6 +221,7 @@
   <ItemGroup>
     <Folder Include="Tooltips" />
     <Page Include="Options\DebuggingOptionsPanel.xaml" />
+    <Page Include="Options\DebuggingSymbolsPanelXaml.xaml" />
     <Page Include="Pads\CommonResources.xaml" />
     <Page Include="Service\EditBreakpointScriptWindow.xaml" />
     <Page Include="Tooltips\DebuggerTooltipControl.xaml" />

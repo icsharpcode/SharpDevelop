@@ -135,6 +135,9 @@
 			<OptionPanel id    = "Symbols"
 			             label = "${res:Dialog.Options.IDEOptions.Debugging.Symbols}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebuggingSymbolsPanel"/>
+		<OptionPanel id    = "Symbols1"
+			             label = "${res:Dialog.Options.IDEOptions.Debugging.Symbols}"
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebuggingSymbolsPanelXaml"/>
 		</OptionPanel>
 	</Path>
 	

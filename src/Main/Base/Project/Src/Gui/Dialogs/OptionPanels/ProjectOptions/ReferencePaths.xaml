@@ -7,7 +7,9 @@
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
 	xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project"
 	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui"
-	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels">
+	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
+
+>
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
 		<Grid>
 			<Grid.ColumnDefinitions>
