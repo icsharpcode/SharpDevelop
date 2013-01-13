@@ -35,9 +35,11 @@ namespace TextTemplating.Tests.Helpers
 			set { rootNamespace = value; }
 		}
 		
+		public CodeDomProvider CodeDomProviderToReturn = new CSharpCodeProvider();
+		
 		public override CodeDomProvider CreateCodeDomProvider()
 		{
-			return new CSharpCodeProvider();
+			return CodeDomProviderToReturn;
 		}
 	}
 }

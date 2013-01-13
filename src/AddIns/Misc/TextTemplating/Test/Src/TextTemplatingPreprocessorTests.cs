@@ -263,5 +263,28 @@ namespace TextTemplating.Tests
 			
 			Assert.AreEqual("_class", templatingHost.ClassNamePassedToPreprocessTemplate);
 		}
+		
+		[Test]
+		public void PreprocessTemplate_ProjectHasNoCodeDomProvider_CSharpCodeDomProviderUsedByDefaultAndClassNameChangedToValidClassName()
+		{
+			TestableFileProjectItem projectFile = CreatePreprocessor(@"d:\class.tt");
+			projectFile.TestableProject.CodeDomProviderToReturn = null;
+			
+			preprocessor.PreprocessTemplate();
+			
+			Assert.AreEqual("_class", templatingHost.ClassNamePassedToPreprocessTemplate);
+		}
+		
+		[Test]
+		public void PreprocessTemplate_ProjectHasNoCodeDomProvider_WarningTaskAdded()
+		{
+			TestableFileProjectItem projectFile = CreatePreprocessor(@"d:\test.tt");
+			projectFile.TestableProject.CodeDomProviderToReturn = null;
+			
+			preprocessor.PreprocessTemplate();
+			
+			SDTask task = customToolContext.FirstTaskAdded;
+			Assert.AreEqual(TaskType.Warning, task.TaskType);
+		}
 	}
 }
