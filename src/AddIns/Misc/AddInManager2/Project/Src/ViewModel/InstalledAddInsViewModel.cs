@@ -21,6 +21,17 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		public InstalledAddInsViewModel()
 			: base()
 		{
+			Initialize();
+		}
+		
+		public InstalledAddInsViewModel(IAddInManagerServices services)
+			: base(services)
+		{
+			Initialize();
+		}
+		
+		private void Initialize()
+		{
 			AllowInstallFromArchive = true;
 			HasFilterForPreinstalled = true;
 			Title = SD.ResourceService.GetString("AddInManager2.Views.Installed");
@@ -140,12 +151,12 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		private void LoadPreinstalledAddInFilter()
 		{
-			ShowPreinstalledAddIns = SD.PropertyService.Get<bool>("AddInManager2.ShowPreinstalledAddIns", false);
+			ShowPreinstalledAddIns = AddInManager.Settings.ShowPreinstalledAddIns;
 		}
 		
 		private void SavePreinstalledAddInFilter()
 		{
-			SD.PropertyService.Set<bool>("AddInManager2.ShowPreinstalledAddIns", ShowPreinstalledAddIns);
+			AddInManager.Settings.ShowPreinstalledAddIns = ShowPreinstalledAddIns;
 		}
 		
 		protected override void InstallFromArchive()

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using NuGet;
 
 namespace ICSharpCode.AddInManager2.Model
@@ -44,7 +45,7 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			_repositories = repositories;
 			_events = events;
-			_packageOutputDirectory = Path.Combine(PropertyService.ConfigDirectory, "NuGet");
+			_packageOutputDirectory = Path.Combine(SD.PropertyService.ConfigDirectory, "NuGet");
 			
 			_logger = new PackageMessageLogger(_events);
 			

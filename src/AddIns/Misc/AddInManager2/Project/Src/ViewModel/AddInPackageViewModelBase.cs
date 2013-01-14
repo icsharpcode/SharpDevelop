@@ -22,6 +22,13 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		private DelegateCommand optionsCommand;
 
 		public AddInPackageViewModelBase()
+			: base()
+		{
+			CreateCommands();
+		}
+		
+		public AddInPackageViewModelBase(IAddInManagerServices services)
+			: base(services)
 		{
 			CreateCommands();
 		}

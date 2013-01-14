@@ -97,7 +97,9 @@
     <Compile Include="Src\Model\AcceptLicensesEventArgs.cs" />
     <Compile Include="Src\Model\AddInDependency.cs" />
     <Compile Include="Src\Model\AddInInstallationEventArgs.cs" />
+    <Compile Include="Src\Model\AddInManagerSettings.cs" />
     <Compile Include="Src\Model\Interfaces\IAddInManagerServices.cs" />
+    <Compile Include="Src\Model\Interfaces\IAddInManagerSettings.cs" />
     <Compile Include="Src\Model\ManagedAddIn.cs" />
     <Compile Include="Src\Model\Interfaces\IAddInManagerEvents.cs" />
     <Compile Include="Src\Model\Interfaces\IAddInPackage.cs" />

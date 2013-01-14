@@ -22,6 +22,18 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		private ObservableCollection<PackageSource> _packageSources;
 		
 		public AddInsViewModelBase()
+			:base()
+		{
+			Initialize();
+		}
+		
+		public AddInsViewModelBase(IAddInManagerServices services)
+			: base(services)
+		{
+			Initialize();
+		}
+		
+		private void Initialize()
 		{
 			// Initialization of internal lists
 			_pages = new Pages();
@@ -37,7 +49,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			CreateCommands();
 		}
 		
-		void CreateCommands()
+		private void CreateCommands()
 		{
 			ShowNextPageCommand = new DelegateCommand(param => ShowNextPage());
 			ShowPreviousPageCommand = new DelegateCommand(param => ShowPreviousPage());

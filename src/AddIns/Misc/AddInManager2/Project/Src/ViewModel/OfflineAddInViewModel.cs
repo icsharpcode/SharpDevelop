@@ -36,6 +36,17 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		public OfflineAddInsViewModelBase(ManagedAddIn addIn)
 			: base()
 		{
+			Initialize(addIn);
+		}
+		
+		public OfflineAddInsViewModelBase(IAddInManagerServices services, ManagedAddIn addIn)
+			: base(services)
+		{
+			Initialize(addIn);
+		}
+		
+		private void Initialize(ManagedAddIn addIn)
+		{
 			_markedAddIn = addIn;
 			if (_markedAddIn != null)
 			{

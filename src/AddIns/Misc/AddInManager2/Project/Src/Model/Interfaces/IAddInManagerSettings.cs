@@ -6,33 +6,26 @@ using System;
 namespace ICSharpCode.AddInManager2.Model
 {
 	/// <summary>
-	/// Basic interface providing instances to all services of AddInManager AddIn.
+	/// Description of ISettings.
 	/// </summary>
-	public interface IAddInManagerServices
+	public interface IAddInManagerSettings
 	{
-		IAddInManagerEvents Events
+		string[] PackageRepositories
 		{
 			get;
-		}
-
-		IPackageRepositories Repositories
-		{
-			get;
-		}
-
-		IAddInSetup Setup
-		{
-			get;
-		}
-
-		INuGetPackageManager NuGet
-		{
-			get;
+			set;
 		}
 		
-		IAddInManagerSettings Settings
+		bool ShowPreinstalledAddIns
 		{
 			get;
+			set;
+		}
+		
+		bool ShowPrereleases
+		{
+			get;
+			set;
 		}
 	}
 }

@@ -23,10 +23,12 @@ namespace ICSharpCode.AddInManager2.Model
 		private List<PackageSource> _registeredPackageSources;
 		
 		private IAddInManagerEvents _events;
+		private IAddInManagerSettings _settings;
 
-		public PackageRepositories(IAddInManagerEvents events)
+		public PackageRepositories(IAddInManagerEvents events, IAddInManagerSettings settings)
 		{
 			_events = events;
+			_settings = settings;
 			
 			_registeredPackageSources = new List<PackageSource>();
 			
@@ -84,7 +86,7 @@ namespace ICSharpCode.AddInManager2.Model
 		private void LoadPackageSources()
 		{
 			_registeredPackageSources.Clear();
-			var savedRepositories = SD.PropertyService.Get<string[]>("AddInManager2.PackageRepositories", null);
+			var savedRepositories = _settings.PackageRepositories;
 			if ((savedRepositories != null) && (savedRepositories.Length > 0))
 			{
 				foreach (string repositoryEntry in savedRepositories)
@@ -114,7 +116,7 @@ namespace ICSharpCode.AddInManager2.Model
 		private void SavePackageSources()
 		{
 			var savedRepositories = _registeredPackageSources.Select(ps => ps.Name + "=" + ps.Source);
-			SD.PropertyService.Set<string[]>("AddInManager2.PackageRepositories", savedRepositories.ToArray());
+			_settings.PackageRepositories = savedRepositories.ToArray();
 			UpdateCurrentRepository();
 		}
 		

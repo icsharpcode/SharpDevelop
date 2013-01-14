@@ -31,6 +31,18 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		PackageRepository selectedPackageRepository;
 		
 		public PackageRepositoriesViewModel()
+			: base()
+		{
+			Initialize();
+		}
+		
+		public PackageRepositoriesViewModel(IAddInManagerServices services)
+			: base(services)
+		{
+			Initialize();
+		}
+		
+		private void Initialize()
 		{
 			this.packageSources = new ObservableCollection<PackageSource>();
 			CreateCommands();

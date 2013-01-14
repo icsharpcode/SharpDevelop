@@ -23,6 +23,11 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		{
 		}
 		
+		public NuGetAddInsViewModelBase(IAddInManagerServices services)
+			: base(services)
+		{
+		}
+		
 		/// <summary>
 		/// Returns all the packages.
 		/// </summary>

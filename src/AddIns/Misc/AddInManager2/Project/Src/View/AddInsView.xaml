@@ -535,7 +535,7 @@
 								x:Name="prereleaseAddInsCheckBox"
 								Margin="4"
 								Content="{core:Localize AddInManager2.AddInsView.ShowPrereleaseAddIns}"
-								IsChecked="{Binding Path=ShowPrereleaseAddins, UpdateSourceTrigger=PropertyChanged}"
+								IsChecked="{Binding Path=ShowPrereleases, UpdateSourceTrigger=PropertyChanged}"
 								Command="{Binding Path=UpdatePrereleaseFilterCommand}" />
 						</Grid>
 					</StackPanel>

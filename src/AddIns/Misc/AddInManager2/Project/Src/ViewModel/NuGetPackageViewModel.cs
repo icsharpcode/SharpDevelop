@@ -23,6 +23,12 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		{
 			this._package = package;
 		}
+		
+		public NuGetPackageViewModel(IAddInManagerServices services, IPackage package)
+			: base(services)
+		{
+			this._package = package;
+		}
 
 		public IPackage Package
 		{

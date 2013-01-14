@@ -3,7 +3,6 @@
 
 using System;
 using ICSharpCode.AddInManager2.Model;
-using ICSharpCode.AddInManager2.Model.Interfaces;
 
 namespace ICSharpCode.AddInManager2
 {
@@ -37,6 +36,12 @@ namespace ICSharpCode.AddInManager2
 				get;
 				set;
 			}
+    		
+			public IAddInManagerSettings Settings
+			{
+				get;
+				set;
+			}
     	}
     	
     	private static AddInManagerServiceContainer _container;
@@ -44,8 +49,9 @@ namespace ICSharpCode.AddInManager2
         static AddInManagerServices()
 		{
         	_container = new AddInManagerServiceContainer();
+        	_container.Settings = new AddInManagerSettings();
 			_container.Events = new AddInManagerEvents();
-			_container.Repositories = new PackageRepositories(_container.Events);
+			_container.Repositories = new PackageRepositories(_container.Events, _container.Settings);
 			_container.NuGet = new NuGetPackageManager(_container.Repositories, _container.Events);
 			_container.Setup = new AddInSetup(_container.Events, _container.NuGet);
 		}
@@ -79,6 +85,14 @@ namespace ICSharpCode.AddInManager2
             get
             {
                 return _container.NuGet;
+            }
+        }
+        
+        public static IAddInManagerSettings Settings
+        {
+            get
+            {
+                return _container.Settings;
             }
         }
         

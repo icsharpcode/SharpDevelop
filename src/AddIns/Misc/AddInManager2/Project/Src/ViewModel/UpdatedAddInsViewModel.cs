@@ -24,9 +24,22 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		public UpdatedAddInsViewModel()
 			: base()
 		{
+			Initialize();
+		}
+		
+		public UpdatedAddInsViewModel(IAddInManagerServices services)
+			: base(services)
+		{
+			Initialize();
+		}
+		
+		private void Initialize()
+		{
 			IsSearchable = true;
 			HasFilterForPrereleases = true;
-			Title = SD.ResourceService.GetString("AddInManager2.Views.Updates");;
+			Title = SD.ResourceService.GetString("AddInManager2.Views.Updates");
+			
+			ShowPrereleases = AddInManager.Settings.ShowPrereleases;
 			
 			AddInManager.Events.AddInInstalled += NuGetPackagesChanged;
 			AddInManager.Events.AddInUninstalled += NuGetPackagesChanged;
@@ -93,6 +106,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		protected override void UpdatePrereleaseFilter()
 		{
+			AddInManager.Settings.ShowPrereleases = ShowPrereleases;
 			ReadPackages();
 		}
 		

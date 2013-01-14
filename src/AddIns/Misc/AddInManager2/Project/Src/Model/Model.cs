@@ -4,15 +4,25 @@
 using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
-using ICSharpCode.AddInManager2.Model.Interfaces;
 
 namespace ICSharpCode.AddInManager2.Model
 {
 	public abstract class Model<TModel> : INotifyPropertyChanged
 	{
-		private IAddInManagerServices _addInManager = null;
+		private IAddInManagerServices _services = null;
 		
 		public event PropertyChangedEventHandler PropertyChanged;
+		
+		public Model()
+		{
+			// Use default services container
+			_services = AddInManagerServices.Services;
+		}
+		
+		public Model(IAddInManagerServices services)
+		{
+			_services = services;
+		}
 		
 		public string PropertyChangedFor<TProperty>(Expression<Func<TModel, TProperty>> expression)
 		{
@@ -47,18 +57,11 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			get
 			{
-				if (_addInManager == null)
-				{
-					return AddInManagerServices.Services;
-				}
-				else
-				{
-					return _addInManager;
-				}
+				return _services;
 			}
 			set
 			{
-				_addInManager = value;
+				_services = value;
 			}
 		}
 	}

@@ -21,6 +21,18 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		private bool _hasError;
 		
 		public AddInManagerViewModel()
+			: base()
+		{
+			Initialize();
+		}
+		
+		public AddInManagerViewModel(IAddInManagerServices services)
+			: base(services)
+		{
+			Initialize();
+		}
+		
+		private void Initialize()
 		{
 			// Visuals
 			this.Title = SD.ResourceService.GetString("AddInManager.Title");

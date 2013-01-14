@@ -20,6 +20,17 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		public AvailableAddInsViewModel()
 			: base()
 		{
+			Initialize();
+		}
+		
+		public AvailableAddInsViewModel(IAddInManagerServices services)
+			: base(services)
+		{
+			Initialize();
+		}
+		
+		private void Initialize()
+		{
 			IsSearchable = true;
 			ShowPackageSources = true;
 			Title = SD.ResourceService.GetString("AddInManager2.Views.Available");
