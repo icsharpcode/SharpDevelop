@@ -1862,7 +1862,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			Action<ICompletionData, IType> typeCallback = null;
 			var inferredTypesCategory = new Category("Inferred Types", null);
 			var derivedTypesCategory = new Category("Derived Types", null);
-			
 			if (hintType != null) {
 				if (hintType.Kind != TypeKind.Unknown) {
 					var lookup = new MemberLookup(
@@ -1884,23 +1883,27 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						// check for valid constructors
 						if (t.GetConstructors().Count() > 0) {
 							bool isProtectedAllowed = currentType != null ? 
-								currentType.Resolve(ctx).GetDefinition().IsDerivedFrom(t.GetDefinition()) : 
-									false;
-							if (!t.GetConstructors().Any(m => lookup.IsAccessible(
-								m,
-								isProtectedAllowed
-								)
-							                             )) {
+								currentType.Resolve(ctx).GetDefinition().IsDerivedFrom(t.GetDefinition()) : false;
+							if (!t.GetConstructors().Any(m => lookup.IsAccessible(m, isProtectedAllowed))) {
 								return null;
 							}
 						}
+
+						// check derived types
+						var typeDef = t.GetDefinition();
+						var hintDef = hintType.GetDefinition();
+						if (typeDef != null && hintDef != null && typeDef.IsDerivedFrom(hintDef)) {
+							var newType = wrapper.AddType(t, true);
+							if (newType != null) {
+								newType.CompletionCategory = inferredTypesCategory;
+							}
+						}
 						
+						// check type inference
 						var typeInference = new TypeInference(Compilation);
 						typeInference.Algorithm = TypeInferenceAlgorithm.ImprovedReturnAllResults;
-						var inferedType = typeInference.FindTypeInBounds(
-							new [] { t },
-						new [] { hintType }
-						);
+
+						var inferedType = typeInference.FindTypeInBounds (new [] { t }, new [] { hintType });
 						if (inferedType != SpecialType.UnknownType) {
 							var newType = wrapper.AddType(inferedType, true);
 							if (newType != null) {
