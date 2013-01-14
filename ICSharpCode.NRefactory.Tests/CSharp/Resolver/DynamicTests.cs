@@ -142,15 +142,13 @@ class TestClass {
 		var x = $this.SomeMethod(obj)$;
 	}
 }";
-			var rr = Resolve<ConversionResolveResult>(program);
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.That(rr.IsError, Is.False);
 			Assert.That(rr.Type.Kind, Is.EqualTo(TypeKind.Dynamic));
-			var irr = rr.Input as CSharpInvocationResolveResult;
-			Assert.That(irr, Is.Not.Null);
-			Assert.That(irr.Member.Name, Is.EqualTo("SomeMethod"));
-			Assert.That(((IParameterizedMember)irr.Member).Parameters.Count, Is.EqualTo(1));
-			Assert.That(irr.Arguments.Count, Is.EqualTo(1));
-			var cr = irr.Arguments[0] as ConversionResolveResult;
+			Assert.That(rr.Member.Name, Is.EqualTo("SomeMethod"));
+			Assert.That(rr.Member.Parameters.Count, Is.EqualTo(1));
+			Assert.That(rr.Arguments.Count, Is.EqualTo(1));
+			var cr = rr.Arguments[0] as ConversionResolveResult;
 			Assert.That(cr, Is.Not.Null);
 			Assert.That(cr.Conversion.IsImplicit, Is.True);
 			Assert.That(cr.Conversion.IsDynamicConversion, Is.True);
