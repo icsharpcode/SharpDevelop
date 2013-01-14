@@ -1517,7 +1517,7 @@ class Test
 				Assert.IsNull (provider.Find ("TestMethod"), "'TestMethod' found.");
 			});
 		}
-
+		
 		[Test]
 		public void TestVariableHiding ()
 		{
@@ -1535,6 +1535,31 @@ class Test
 }
 ", provider => {
 				Assert.AreEqual (1, provider.Data.Count (p => p.DisplayText == "test"));
+			});
+		}
+
+		[Test]
+		public void TestOverloadCount ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (@"
+using System;
+
+class Test
+{
+	static void Foo () {}
+	static void Foo (int i) {}
+	static void Foo (int i, string s) {}
+
+	public static void Main (int test)
+	{
+		$f$	
+	}
+}
+", provider => {
+				Assert.AreEqual (1, provider.Data.Count (p => p.DisplayText == "Foo"));
+				var data = provider.Find ("Foo");
+				Assert.AreEqual (3, data.OverloadedData.Count ());
+
 			});
 		}
 	}

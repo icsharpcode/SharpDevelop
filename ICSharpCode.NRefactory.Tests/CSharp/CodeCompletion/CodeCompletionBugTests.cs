@@ -138,6 +138,27 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				}
 			}
 
+			public class EntityCompletionData : CompletionData, IEntityCompletionData
+			{
+				#region IEntityCompletionData implementation
+
+				public IEntity Entity {
+					get;
+					private set;
+				}
+
+				#endregion
+
+				public EntityCompletionData(IEntity entity) : this(entity, entity.Name)
+				{
+				}
+
+				public EntityCompletionData(IEntity entity, string txt) : base(txt)
+				{
+					this.Entity = entity;
+				}
+			}
+
 			public class ImportCompletionData : CompletionData
 			{
 				public IType Type {
@@ -160,7 +181,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			#region ICompletionDataFactory implementation
 			public ICompletionData CreateEntityCompletionData (ICSharpCode.NRefactory.TypeSystem.IEntity entity)
 			{
-				return new CompletionData (entity.Name);
+				return new EntityCompletionData (entity);
 			}
 
 			public ICompletionData CreateEntityCompletionData (ICSharpCode.NRefactory.TypeSystem.IEntity entity, string text)
@@ -185,7 +206,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			public ICompletionData CreateMemberCompletionData(IType type, IEntity member)
 			{
 				string name = builder.ConvertType(type).GetText(); 
-				return new CompletionData (name + "."+ member.Name);
+				return new EntityCompletionData (member, name + "."+ member.Name);
 			}
 
 

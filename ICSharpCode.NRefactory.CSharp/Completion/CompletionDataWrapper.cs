@@ -111,7 +111,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			ICompletionData usedType;
 			var data = Factory.CreateTypeCompletionData(type, showFullName, isInAttributeContext);
 			var text = data.DisplayText;
-
 			if (typeDisplayText.TryGetValue(text, out usedType)) {
 				usedType.AddOverload(data);
 				return usedType;
@@ -158,9 +157,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 		public ICompletionData AddMember (IMember member)
 		{
-			if (data.ContainsKey (member.Name))
-				return null;
-
 			var newData = Factory.CreateEntityCompletionData (member);
 			
 			if (member.ParentAssembly != completion.ctx.CurrentAssembly && !member.IsBrowsable ())
@@ -175,8 +171,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			List<ICompletionData> existingData;
 			data.TryGetValue (memberKey, out existingData);
-			
 			if (existingData != null) {
+				if (member.EntityType == EntityType.Field || member.EntityType == EntityType.Property || member.EntityType == EntityType.Event)
+					return null;
 				var a = member as IEntity;
 				foreach (var d in existingData) {
 					if (!(d is IEntityCompletionData))
