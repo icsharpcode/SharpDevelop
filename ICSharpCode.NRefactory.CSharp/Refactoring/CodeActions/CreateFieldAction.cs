@@ -272,7 +272,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return Enumerable.Empty<IType>();
 		}
 		static readonly IType[] emptyTypes = new IType[0];
-		internal static AstType GuessAstType(RefactoringContext context, Expression expr)
+		public static AstType GuessAstType(RefactoringContext context, Expression expr)
 		{
 			var type = GetValidTypes(context.Resolver, expr).ToArray();
 			var typeInference = new TypeInference(context.Compilation);
@@ -283,7 +283,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return context.CreateShortType(inferedType);
 		}
 
-		internal static IType GuessType(RefactoringContext context, Expression expr)
+		public static IType GuessType(RefactoringContext context, Expression expr)
 		{
 			var type = GetValidTypes(context.Resolver, expr).ToArray();
 			var typeInference = new TypeInference(context.Compilation);
