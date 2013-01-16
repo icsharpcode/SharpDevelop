@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -102,7 +103,36 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 		}
 		
+		
 		void ShowLayoutEditor()
+		{
+			var editor = new StringListEditorDialog();
+			editor.Owner =  ((WpfWorkbench)SD.Workbench).MainWindow;
+			editor.Title = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.EditLayouts.Title}");
+			editor.TitleText = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.EditLayouts.Label}");
+			editor.ListCaption = "List:";
+			editor.AddButtonText = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.EditLayouts.AddLayout}");
+			editor.ShowDialog();
+			if (editor.DialogResult ?? false) {
+				IList<string> oldNames = new List<string>(CustomLayoutNames);
+				IList<string> newNames = editor.GetList();
+				// add newly added layouts
+				foreach (string newLayoutName in newNames) {
+					if (!oldNames.Contains(newLayoutName)) {
+						oldNames.Add(newLayoutName);
+						LayoutConfiguration.CreateCustom(newLayoutName);
+					}
+				}
+				// remove deleted layouts
+				LayoutConfiguration.Layouts.RemoveAll(delegate(LayoutConfiguration lc) {
+				                                      	return lc.Custom && !newNames.Contains(lc.Name);
+				                                      });
+				LayoutConfiguration.SaveCustomLayoutConfiguration();
+			}
+		}
+				
+		/*		
+		void aa_howLayoutEditor()
 		{
 			using (Form frm = new Form()) {
 				frm.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.EditLayouts.Title}");
@@ -160,6 +190,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				}
 			}
 		}
+		
+		*/
 		
 		void ResetToDefaults()
 		{
