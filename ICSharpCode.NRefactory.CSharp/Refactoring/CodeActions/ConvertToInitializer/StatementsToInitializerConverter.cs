@@ -47,14 +47,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			this.context = context;
 		}
 
-		void Initialize(AstNode targetNode)
+		bool Initialize(AstNode targetNode)
 		{
 			var target = context.Resolve(targetNode);
 			var targetInitializerPath = AccessPath.FromResolveResult(target);
 			if (targetInitializerPath == null)
-				throw new ArgumentException(string.Format("Could not create the main initializer path from resolve result ({0})", target));
+				return false;
 
 			mainAccessPath = targetInitializerPath;
+			return true;
 		}
 
 		public VariableInitializer ConvertToInitializer(VariableInitializer variableInitializer, ref IList<AstNode> statements)
@@ -64,7 +65,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (statements == null)
 				throw new ArgumentNullException("statements");
 
-			Initialize(variableInitializer);
+			if (!Initialize(variableInitializer))
+				return null;
 			accessPaths [mainAccessPath] = variableInitializer.Initializer.Clone();
 
 			Convert(statements);
@@ -81,7 +83,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (!(assignmentExpression.Right is ObjectCreateExpression))
 				throw new ArgumentException("assignmentExpression.Right must be an ObjectCreateExpression", "assignmentExpression");
 
-			Initialize(assignmentExpression.Left);
+			if (!Initialize(assignmentExpression.Left))
+				return null;
 			accessPaths [mainAccessPath] = assignmentExpression.Right.Clone();
 
 			Convert(statements);
@@ -178,7 +181,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		bool TryHandleAssignmentExpression(ExpressionStatement expressionStatement)
 		{
 			var assignmentExpression = expressionStatement.Expression as AssignmentExpression;
-			if (assignmentExpression == null)
+			if (assignmentExpression == null || assignmentExpression.Operator != AssignmentOperatorType.Assign)
 				return false;
 			var resolveResult = context.Resolve(assignmentExpression.Right);
 			if (HasDependency(assignmentExpression.Right) && !CanReplaceDependent(resolveResult))

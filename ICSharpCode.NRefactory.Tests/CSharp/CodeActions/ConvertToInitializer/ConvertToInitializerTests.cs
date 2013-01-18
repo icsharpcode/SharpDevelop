@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	{
 		// TODO: Remove this when the formatter handles object and collection initializers
 		// This tests the expected code vs the actual code based on their ASTs instead of the text they produce.
-		public new void Test<T>(string input, string output, int action = 0, bool expectErrors = false) 
+		public new void Test<T>(string input, string output, int action = 0, bool expectErrors = false)
 			where T : ICodeActionProvider, new ()
 		{
 			string result = RunContextAction(new T(), HomogenizeEol(input), action, expectErrors);
@@ -677,6 +677,27 @@ class TestClass
 		TestClass s2;
 	}
 }");
+		}
+		
+		[Test]
+		public void DoesNotCrashOnDelegateAssignment()
+		{
+			TestWrongContext<ConvertToInitializerAction>(@"
+using System;
+using System.Collections.Generic;
+class TestClass {
+	void F() {
+		((CheckBox)ControlDictionary[""ReplaceCheckBox""]).CheckedChanged = new E$ventHandler(ReplaceCheckBox_CheckedChanged);
+	}
+	Dictionary<string, Control> ControlDictionary;
+	void ReplaceCheckBox_CheckedChanged(object sender, EventArgs e) {}
+}
+class Control {}
+class CheckBox : Control {
+	public EventHandler CheckedChanged;
+}
+");
+			
 		}
 	}
 }
