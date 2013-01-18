@@ -234,6 +234,7 @@
     <Compile Include="Util\CustomThreadPoolTaskScheduler.cs" />
     <Compile Include="Util\DebugTimer.cs" />
     <Compile Include="Util\DotnetDetection.cs" />
+    <Compile Include="Util\EasyCodeDom.cs" />
     <Compile Include="Util\EnumBinding.cs" />
     <Compile Include="Util\SharpDevelopExtensions.cs" />
     <Compile Include="Util\GenericConverter.cs" />

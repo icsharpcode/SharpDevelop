@@ -13,6 +13,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SettingsEditor
 {
@@ -50,7 +51,7 @@ namespace ICSharpCode.SettingsEditor
 				return;
 			FileName appConfigFileName = CompilableProject.GetAppConfigFile(p, createIfNotExists);
 			if (appConfigFileName != null) {
-				appConfigFile = FileService.GetOrCreateOpenedFile(appConfigFileName);
+				appConfigFile = SD.FileService.GetOrCreateOpenedFile(appConfigFileName);
 				this.Files.Add(appConfigFile);
 				if (createIfNotExists)
 					appConfigFile.MakeDirty();
@@ -72,7 +73,7 @@ namespace ICSharpCode.SettingsEditor
 				}
 			} else if (file == appConfigFile) {
 				appConfigStream = new MemoryStream();
-				stream.WriteTo(appConfigStream);
+				stream.CopyTo(appConfigStream);
 			}
 		}
 		

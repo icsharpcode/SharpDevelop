@@ -6,6 +6,8 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
@@ -46,15 +48,18 @@ namespace ICSharpCode.SettingsEditor
 		List<string> typeNames = new List<string>();
 		List<Type> types = new List<Type>();
 		IAmbience ambience;
+		ICompilation compilation;
 		
 		public SettingsView()
 		{
 			InitializeComponent();
 			
 			ambience = AmbienceService.GetCurrentAmbience();
+			compilation = MinimalCorlib.Instance.CreateCompilation();
+			
 			foreach (Type type in defaultAvailableTypes) {
 				types.Add(type);
-				typeNames.Add(ambience.GetIntrinsicTypeName(type.FullName));
+				typeNames.Add(ambience.ConvertType(type.ToTypeReference().Resolve(compilation)));
 			}
 			foreach (SpecialTypeDescriptor d in SpecialTypeDescriptor.Descriptors) {
 				types.Add(d.type);
@@ -147,7 +152,7 @@ namespace ICSharpCode.SettingsEditor
 				if (type == d.type)
 					return d.name;
 			}
-			return ambience.GetIntrinsicTypeName(type.FullName);
+			return ambience.ConvertType(type.ToTypeReference().Resolve(compilation));
 		}
 		
 		Type ISettingsEntryHost.GetTypeByDisplayName(string displayName)
