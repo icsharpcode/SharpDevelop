@@ -23,7 +23,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		static string BuildHeader(int startHTML, int endHTML, int startFragment, int endFragment)
 		{
 			StringBuilder b = new StringBuilder();
-			b.AppendLine("Version:1.0");
+			b.AppendLine("Version:0.9");
 			b.AppendLine("StartHTML:" + startHTML.ToString("d8", CultureInfo.InvariantCulture));
 			b.AppendLine("EndHTML:" + endHTML.ToString("d8", CultureInfo.InvariantCulture));
 			b.AppendLine("StartFragment:" + startFragment.ToString("d8", CultureInfo.InvariantCulture));
