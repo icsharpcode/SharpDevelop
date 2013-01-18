@@ -614,7 +614,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.IsFalse(p.IsRef);
 			Assert.IsFalse(p.IsOut);
 			Assert.IsFalse(p.IsParams);
-			Assert.AreEqual(1, p.Attributes.Count);
+			// explicit optional parameter appears in type system if it's read from C#, but not when read from IL
+			//Assert.AreEqual(1, p.Attributes.Count);
 		}
 		
 		[Test]
