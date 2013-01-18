@@ -87,8 +87,6 @@ namespace Plugins.RegExpTk {
 			((ListView)ControlDictionary["GroupListView"]).SelectedIndexChanged += new EventHandler(GroupListView_SelectedIndexChanged);
 			((ListView)ControlDictionary["GroupListView"]).DoubleClick += new EventHandler(GroupListView_DoubleClick);
 			((ListView)ControlDictionary["GroupListView"]).MouseUp += new MouseEventHandler(GroupListView_MouseUp);
-			((Button)ControlDictionary["ChooseAssemblyFileCompileButton"]).Click += new EventHandler(ChooseAssemblyFileCompileButton_Click);
-			((Button)ControlDictionary["CreateAssemblyFileCompileButton"]).Click += new EventHandler(CreateAssemblyFile);
 			((Button)ControlDictionary["quickInsertButton"]).MouseDown += new MouseEventHandler(showQuickInsertMenu);
 			((Button)ControlDictionary["quickInsertButton"]).Image = WinFormsResourceService.GetBitmap("Icons.16x16.PasteIcon");
 			ControlDictionary["RegularExpressionTextBox"].KeyPress += delegate(object sender, KeyPressEventArgs e) {
@@ -100,13 +98,7 @@ namespace Plugins.RegExpTk {
 
 			this.Width=Screen.PrimaryScreen.WorkingArea.Width / 2;
 			
-			((TextBox)ControlDictionary["RegularExpressionTextBox"]).TextChanged+=new EventHandler(SetRegEx);
 			FormLocationHelper.Apply(this, "RegExpTk.WindowBounds", true);
-		}
-		
-		
-		private void SetRegEx(object sender, EventArgs ea) {
-			((TextBox)ControlDictionary["RegularExpressionCompileTextBox"]).Text=((TextBox)ControlDictionary["RegularExpressionTextBox"]).Text;
 		}
 		
 		
@@ -150,109 +142,6 @@ namespace Plugins.RegExpTk {
 			((TextBox)ControlDictionary["RegularExpressionTextBox"]).Select();
 			Point cords = new Point(((Button)ControlDictionary["quickInsertButton"]).Left + e.X, ((Button)ControlDictionary["quickInsertButton"]).Top + e.Y + 30);
 			quickInsertMenu.Show(this, cords);
-		}
-		
-		private void CreateAssemblyFile(object sender, EventArgs e)
-		{
-			RegexOptions options = RegexOptions.Compiled;
-			
-			if(compileErrorProvider != null) {
-				compileErrorProvider.Dispose();
-				compileErrorProvider = null;
-			}
-			compileErrorProvider = new ErrorProvider();
-			
-			// validate input
-			
-			bool error = false;
-			
-			if(((TextBox)ControlDictionary["ClassNameCompileTextBox"]).Text == "") {
-				compileErrorProvider.SetError((TextBox)ControlDictionary["ClassNameCompileTextBox"], ResourceService.GetString("RegExpTk.Messages.ClassNameMissing"));
-				error = true;
-			}
-			
-			if(ControlDictionary["RegularExpressionCompileTextBox"].Text == "") {
-				compileErrorProvider.SetError((TextBox)ControlDictionary["RegularExpressionCompileTextBox"], ResourceService.GetString("RegExpTk.Messages.RegexMissing"));
-				error = true;
-			}
-			
-			if(((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"]).Text == "") {
-				compileErrorProvider.SetError((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"], ResourceService.GetString("RegExpTk.Messages.FilenameMissing"));
-				error = true;
-			}
-			
-			string file_ = ((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"]).Text;
-			
-			if(! FileUtility.IsValidPath(((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"]).Text)) {
-				compileErrorProvider.SetError((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"], ResourceService.GetString("RegExpTk.Messages.FilenameInvalid"));
-				error = true;
-			}
-			
-			if(error) return;
-			
-			// set options
-			if(((CheckBox)ControlDictionary["IgnoreCaseCompileCheckBox"]).Checked)
-				options = options | RegexOptions.IgnoreCase;
-			
-			if(((CheckBox)ControlDictionary["SingleLineCompileCheckBox"]).Checked)
-				options = options | RegexOptions.Singleline;
-			
-			if(((CheckBox)ControlDictionary["IgnoreWhitespaceCompileCheckBox"]).Checked)
-				options = options | RegexOptions.IgnorePatternWhitespace;
-			
-			if(((CheckBox)ControlDictionary["ExplicitCaptureCompileCheckBox"]).Checked)
-				options = options | RegexOptions.ExplicitCapture;
-			
-			if(((CheckBox)ControlDictionary["EcmaScriptCompileCheckBox"]).Checked)
-				options = options | RegexOptions.ECMAScript;
-			
-			if(((CheckBox)ControlDictionary["MultilineCompileCheckBox"]).Checked)
-				options = options | RegexOptions.Multiline;
-			
-			if(((CheckBox)ControlDictionary["RightToLeftCompileCheckBox"]).Checked)
-				options = options | RegexOptions.RightToLeft;
-			
-			try {
-				Regex re = new Regex(((TextBox)ControlDictionary["RegularExpressionCompileTextBox"]).Text, options);
-			} catch (ArgumentException ae) {
-				MessageService.ShowError(ResourceService.GetString("RegExpTk.Messages.CreationError") + " " + ae.Message);
-				return;
-			}
-			
-			RegexCompilationInfo rci = new RegexCompilationInfo(((TextBox)ControlDictionary["RegularExpressionCompileTextBox"]).Text,
-			                                                     options,
-			                                                     ((TextBox)ControlDictionary["ClassNameCompileTextBox"]).Text,
-			                                                     ((TextBox)ControlDictionary["NamespaceCompileTextBox"]).Text,
-			                                                     ((CheckBox)ControlDictionary["PublibVisibleCompileCheckBox"]).Checked);
-			
-			AssemblyName asmName = new AssemblyName();
-			asmName.Name = Path.GetFileNameWithoutExtension(((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"]).Text);
-			
-			RegexCompilationInfo[] rciArray = new RegexCompilationInfo[] { rci };
-			
-			try {
-				Regex.CompileToAssembly(rciArray, asmName);
-			} catch (ArgumentException ae) {
-				MessageService.ShowError(ResourceService.GetString("RegExpTk.Messages.CompilationError") + " " + ae.Message);
-				return;
-			}
-			
-			string aboluteFileName = FileUtility.NormalizePath(((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"]).Text);
-			((StatusBar)ControlDictionary["StatusBar"]).Text = ResourceService.GetString("RegExpTk.Messages.FileCreated") + " " + aboluteFileName;
-		}
-		
-		private void ChooseAssemblyFileCompileButton_Click(object sender, EventArgs e)
-		{
-			SaveFileDialog sfd = new SaveFileDialog();
-			
-			sfd.InitialDirectory = "c:\\";
-			sfd.Filter = ResourceService.GetString("RegExpTk.MainDialog.Assemblies");
-			sfd.DefaultExt = "dll";
-			sfd.CheckPathExists = true;
-			
-			if (sfd.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
-				((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"]).Text = sfd.FileName;
-			}
 		}
 		
 		private void OkButton_Click(object sender, System.EventArgs e)
