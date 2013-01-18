@@ -381,8 +381,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (searchScopes == null)
 				throw new ArgumentNullException("searchScopes");
-			if (unresolvedFile == null)
-				throw new ArgumentNullException("unresolvedFile");
 			if (syntaxTree == null)
 				throw new ArgumentNullException("syntaxTree");
 			if (compilation == null)
