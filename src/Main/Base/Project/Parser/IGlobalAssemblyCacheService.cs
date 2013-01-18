@@ -28,5 +28,11 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// Returns null if the assembly cannot be found.
 		/// </summary>
 		FileName FindAssemblyInNetGac(DomAssemblyName reference);
+		
+		/// <summary>
+		/// Gets the full display name of the GAC assembly of the specified short name.
+		/// Returns null if the assembly cannot be found.
+		/// </summary>
+		DomAssemblyName FindBestMatchingAssemblyName(DomAssemblyName reference);
 	}
 }

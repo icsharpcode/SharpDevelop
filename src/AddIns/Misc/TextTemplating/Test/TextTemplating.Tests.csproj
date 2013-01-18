@@ -63,8 +63,6 @@
     <Compile Include="Helpers\FakeAddInRuntime.cs" />
     <Compile Include="Helpers\FakeAddInTree.cs" />
     <Compile Include="Helpers\FakeAppDomain.cs" />
-    <Compile Include="Helpers\FakeAssemblyParserService.cs" />
-    <Compile Include="Helpers\FakeReflectionProjectContent.cs" />
     <Compile Include="Helpers\FakeServiceProvider.cs" />
     <Compile Include="Helpers\FakeTextTemplatingAppDomain.cs" />
     <Compile Include="Helpers\FakeTextTemplatingAppDomainFactory.cs" />
@@ -101,7 +99,6 @@
     <Compile Include="Src\TextTemplatingHostTests.cs" />
     <Compile Include="Src\TextTemplatingPathResolverTests.cs" />
     <Compile Include="Src\TextTemplatingPreprocessorTests.cs" />
-    <Compile Include="Src\TextTemplatingReflectionProjectContentTests.cs" />
     <Compile Include="Src\TextTemplatingServiceProviderTests.cs" />
     <Compile Include="Src\TextTemplatingVariableLocationTests.cs" />
     <Compile Include="Src\TextTemplatingVariablesTests.cs" />

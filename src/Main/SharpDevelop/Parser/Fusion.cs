@@ -101,6 +101,12 @@ namespace ICSharpCode.SharpDevelop.Parser
 		                                              uint dwFlags,
 		                                              int pvReserved);
 		
+		[DllImport("fusion.dll", CharSet=CharSet.Auto)]
+		internal static extern int CreateAssemblyNameObject(out IAssemblyName ppName,
+		                                                    string szAssemblyName,
+		                                                    uint dwFlags,
+		                                                    int pvReserved);
+		
 		[DllImport("fusion.dll")]
 		internal static extern int GetCachePath(uint flags,
 		                                        [MarshalAs(UnmanagedType.LPWStr)] StringBuilder wzDir,

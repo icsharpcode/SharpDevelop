@@ -59,8 +59,6 @@
     <Compile Include="Src\IAddInRuntime.cs" />
     <Compile Include="Src\IAddInTree.cs" />
     <Compile Include="Src\IAppDomain.cs" />
-    <Compile Include="Src\IAssemblyParserService.cs" />
-    <Compile Include="Src\IReflectionProjectContent.cs" />
     <Compile Include="Src\ITextTemplatingAppDomain.cs" />
     <Compile Include="Src\ITextTemplatingAppDomainFactory.cs" />
     <Compile Include="Src\ITextTemplatingAssemblyPathResolver.cs" />
@@ -81,7 +79,6 @@
     <Compile Include="Src\TextTemplatingAddInTree.cs" />
     <Compile Include="Src\TextTemplatingAppDomain.cs" />
     <Compile Include="Src\TextTemplatingAppDomainFactory.cs" />
-    <Compile Include="Src\TextTemplatingAssemblyParserService.cs" />
     <Compile Include="Src\TextTemplatingAssemblyPathResolver.cs" />
     <Compile Include="Src\TextTemplatingAssemblyResolver.cs" />
     <Compile Include="Src\TextTemplatingCustomTool.cs" />
@@ -99,7 +96,6 @@
     <Compile Include="Src\TextTemplatingHostAppDomainAssemblyResolver.cs" />
     <Compile Include="Src\TextTemplatingHostContext.cs" />
     <Compile Include="Src\TextTemplatingPathResolver.cs" />
-    <Compile Include="Src\TextTemplatingReflectionProjectContent.cs" />
     <Compile Include="Src\TextTemplatingServiceProvider.cs" />
     <Compile Include="Src\TextTemplatingStringParser.cs" />
     <Compile Include="Src\TextTemplatingVariableLocation.cs" />
