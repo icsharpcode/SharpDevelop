@@ -409,7 +409,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			Breakpoint breakpoint = null;
 			
-			if (bookmark is DecompiledBreakpointBookmark) {
+			#warning decompiler
+			/*if (bookmark is DecompiledBreakpointBookmark) {
 				try {
 					if (debuggerDecompilerService == null) {
 						LoggingService.Warn("No IDebuggerDecompilerService found!");
@@ -429,16 +430,15 @@ namespace ICSharpCode.SharpDevelop.Services
 					
 					int[] ilRanges;
 					int methodToken;
-					#warning decompiler
 //					if (debuggerDecompilerService.GetILAndTokenByLineNumber(token, dbb.LineNumber, out ilRanges, out methodToken)) {
 //						CurrentDebugger.AddILBreakpoint(memberReference.FullName, dbb.LineNumber, memberReference.MetadataToken.ToInt32(), methodToken, ilRanges[0], dbb.IsEnabled);
 //					}
 				} catch (System.Exception ex) {
 					LoggingService.Error("Error on DecompiledBreakpointBookmark: " + ex.Message);
 				}
-			} else {
-				breakpoint = CurrentDebugger.AddBreakpoint(bookmark.FileName, bookmark.LineNumber, 0, bookmark.IsEnabled);
-			}
+			} else {*/
+			breakpoint = CurrentDebugger.AddBreakpoint(bookmark.FileName, bookmark.LineNumber, 0, bookmark.IsEnabled);
+			//}
 			
 			if (breakpoint == null) {
 				LoggingService.Warn(string.Format("unable to create breakpoint: {0}", bookmark.ToString()));

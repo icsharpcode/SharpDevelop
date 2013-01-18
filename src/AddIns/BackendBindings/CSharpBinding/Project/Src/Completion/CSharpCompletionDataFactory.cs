@@ -149,9 +149,9 @@ namespace CSharpBinding.Completion
 			return CreateMethodDataProvider(startOffset, new[] { type.GetDelegateInvokeMethod() });
 		}
 		
-		IParameterDataProvider IParameterCompletionDataFactory.CreateIndexerParameterDataProvider(int startOffset, IType type, AstNode resolvedNode)
+		IParameterDataProvider IParameterCompletionDataFactory.CreateIndexerParameterDataProvider(int startOffset, IType type, IEnumerable<IProperty> accessibleIndexers, AstNode resolvedNode)
 		{
-			return CreateMethodDataProvider(startOffset, type.GetProperties(p => p.IsIndexer));
+			return CreateMethodDataProvider(startOffset, accessibleIndexers);
 		}
 		
 		IParameterDataProvider IParameterCompletionDataFactory.CreateTypeParameterDataProvider(int startOffset, IEnumerable<IType> types)

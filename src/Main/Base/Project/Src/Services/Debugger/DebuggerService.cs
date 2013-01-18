@@ -10,7 +10,6 @@ using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
@@ -239,6 +238,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	[SDService]
 	public interface IDebuggerDecompilerService
 	{
+		/*
 		/// <summary>
 		/// Gets or sets the current method token and IL offset. Used for step in/out.
 		/// </summary>
@@ -280,5 +280,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// <param name="assemblyFile">Assembly file path.</param>
 		/// <returns>An <see cref="IAssemblyResolver"/>.</returns>
 		IAssemblyResolver GetAssemblyResolver(string assemblyFile);
+		*/
 	}
 }

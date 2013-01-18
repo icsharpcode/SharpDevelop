@@ -4,10 +4,10 @@ using System;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Debugging;
-using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 {
+	/*
 	public class DecompiledBreakpointBookmark : BreakpointBookmark
 	{
 		public const string SEPARATOR = ","; // don't use '.'
@@ -69,4 +69,5 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 			return true;
 		}
 	}
+	*/
 }

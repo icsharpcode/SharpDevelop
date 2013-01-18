@@ -28,7 +28,7 @@ namespace CSharpBinding.Refactoring
 		readonly ITextEditor editor;
 		readonly ITextSource textSource;
 		readonly TextLocation location;
-		volatile IDocument document;
+		IDocument document;
 		int selectionStart, selectionLength;
 		
 		public static SDRefactoringContext Create(ITextEditor editor, CancellationToken cancellationToken)

@@ -12,7 +12,6 @@ using ICSharpCode.Build.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
-using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -55,8 +54,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		ColumnSorter sorter;
 		BackgroundWorker worker;
 		List<ListViewItem> resultList = new List<ListViewItem>();
-		Dictionary<string, AssemblyDefinition> assembliesCache = new Dictionary<string, AssemblyDefinition>();
-		DefaultAssemblyResolver resolver = new DefaultAssemblyResolver();
 		
 		public GacReferencePanel(ISelectReferenceDialog selectDialog)
 		{
@@ -151,14 +148,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				worker = null;
 				
 				// clear all cached data
-				assembliesCache = null;
 				resultList = null;
 				selectDialog = null;
-				resolver = null;
 				fullItemList = null;
-				
-				// force a collection to reclam memory
-				GC.Collect();
 			}
 			base.Dispose(disposing);
 		}
