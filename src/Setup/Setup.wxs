@@ -399,11 +399,9 @@
 				<ComponentRef Id="FSharpConsoleProjectTemplate"/>	
 				<ComponentRef Id="FSharpEmptyClassTemplate"/>
 				
-				<!--
 				<ComponentRef Id="SharpDevelopSourceAnalysisTargets"/>
 				<ComponentRef Id="SourceAnalysisAddin"/>
 				<ComponentRef Id="SourceAnalysisDll"/>
-				-->
 			
 				<ComponentRef Id="HexEditorAddin"/>
 				<ComponentRef Id="HexEditorDll"/>

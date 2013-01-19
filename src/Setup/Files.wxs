@@ -781,7 +781,7 @@
 										<File Source="..\..\AddIns\Analysis\UnitTesting\UnitTesting.dll" Id="UnitTesting.dll" Name="UnitTesting.dll" Assembly=".net" AssemblyApplication="UnitTesting.dll" AssemblyManifest="UnitTesting.dll" KeyPath="yes" />
 										<File Source="..\..\AddIns\Analysis\UnitTesting\UnitTesting.addin" Id="UnitTesting.addin" Name="UnitTesting.addin" />
 									</Component>
-								</Directory><!--
+								</Directory>
 								<Directory Id="SourceAnalysis" Name="SourceAnalysis">
 									<Component Guid="C9D099BC-CF4D-404A-BB2F-B13D4541DA0F" Id="SharpDevelopSourceAnalysisTargets" DiskId="1">
 										<File Source="..\..\AddIns\Analysis\SourceAnalysis\SharpDevelop.SourceAnalysis.targets" Name="SharpDevelop.SourceAnalysis.targets" Id="SharpDevelop.SourceAnalysis.targets" KeyPath="yes" />
@@ -792,7 +792,7 @@
 									<Component Guid="C4A33C3E-91B6-4984-86B1-07C5C49C180D" Id="SourceAnalysisDll" DiskId="1">
 										<File Source="..\..\AddIns\Analysis\SourceAnalysis\SourceAnalysis.dll" Name="SourceAnalysis.dll" Id="SourceAnalysis.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="SourceAnalysis.dll" AssemblyManifest="SourceAnalysis.dll" />
 									</Component>
-								</Directory>
+								</Directory><!--
 								<Directory Id="MachineSpecifications" Name="MachineSpecifications">
 									<Component Id="MachineSpecificationsAddIn" Guid="03FD4FCC-670F-4298-8CEB-C957AD1BC7A8" DiskId="1">
 										<File Id="MachineSpecifications.addin" Name="MachineSpecifications.addin" Source="..\..\AddIns\Analysis\MachineSpecifications\MachineSpecifications.addin" KeyPath="yes" />
