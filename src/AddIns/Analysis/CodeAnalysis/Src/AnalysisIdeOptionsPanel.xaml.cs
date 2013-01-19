@@ -9,15 +9,10 @@ using System;
 using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.OptionPanels;
-using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Win32;
 
 namespace ICSharpCode.CodeAnalysis
 {
-	/// <summary>
-	/// Interaction logic for AnalysisIdeOptionsPanelXaml.xaml
-	/// </summary>
 	public partial class AnalysisIdeOptionsPanel : OptionPanel
 	{
 		public AnalysisIdeOptionsPanel()
@@ -25,7 +20,6 @@ namespace ICSharpCode.CodeAnalysis
 			InitializeComponent();
 			ShowStatus();
 		}
-		
 		
 		private void ShowStatus()
 		{
@@ -37,7 +31,6 @@ namespace ICSharpCode.CodeAnalysis
 					+ Environment.NewLine + path;
 			}
 		}
-		
 		
 		private void FindFxCopPath_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
@@ -55,14 +48,9 @@ namespace ICSharpCode.CodeAnalysis
 			ShowStatus();
 		}
 		
-		
 		public static string FxCopPath {
-			get {
-				return PropertyService.Get("CodeAnalysis.FxCopPath");
-			}
-			set {
-				PropertyService.Set("CodeAnalysis.FxCopPath", value);
-			}
+			get { return PropertyService.Get("CodeAnalysis.FxCopPath", String.Empty); }
+			set { PropertyService.Set("CodeAnalysis.FxCopPath", value); }
 		}
 	}
 }

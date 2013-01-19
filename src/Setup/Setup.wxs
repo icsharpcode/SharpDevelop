@@ -310,8 +310,8 @@
 				<ComponentRef Id="AddInManagerFiles"/>
 				<ComponentRef Id="AddInManagerSharpZipLibDll"/>
 				<ComponentRef Id="AddInScoutFiles"/>
-				<!--<ComponentRef Id="CodeAnalysisFiles"/>
-				<ComponentRef Id="CodeQualityFiles"/>
+				<ComponentRef Id="CodeAnalysisFiles"/>
+				<!--<ComponentRef Id="CodeQualityFiles"/>
 				<ComponentRef Id="CodeCoverageFiles"/>-->
 				<ComponentRef Id="DebuggerAddInFiles"/>
 				<ComponentRef Id="FiletypeIcons"/>

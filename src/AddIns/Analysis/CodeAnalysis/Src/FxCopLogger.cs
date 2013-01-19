@@ -47,7 +47,7 @@ namespace ICSharpCode.CodeAnalysis
 				{
 					error.FileName = null;
 				}
-				IProject project = ProjectService.GetProject(engineWorker.ProjectFileName);
+				IProject project = ProjectService.GetProject(new FileName(engineWorker.ProjectFileName));
 				if (project != null) {
 					if (error.FileName != null) {
 						int pos = error.FileName.IndexOf("positionof#", StringComparison.Ordinal);

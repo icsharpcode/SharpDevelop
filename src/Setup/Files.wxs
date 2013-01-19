@@ -763,13 +763,13 @@
 								<File Source="..\..\AddIns\ICSharpCode.SharpDevelop.addin" Id="ICSharpCode.SharpDevelop.addin" Name="ICSharpCode.SharpDevelop.addin" />
 							</Component>
 							<Directory Id="AnalysisFolder" Name="Analysis">
-								<!--
 								<Directory Id="CodeAnalysisFolder" Name="CodeAnalysis">
 									<Component Guid="6CF33D51-953D-4E5F-840C-7FDCFD757520" Id="CodeAnalysisFiles" DiskId="1">
 										<File Source="..\..\AddIns\Analysis\CodeAnalysis\CodeAnalysis.dll" Id="CodeAnalysis.dll" Name="CodeAnalysis.dll" Assembly=".net" AssemblyApplication="CodeAnalysis.dll" AssemblyManifest="CodeAnalysis.dll" KeyPath="yes" />
 										<File Source="..\..\AddIns\Analysis\CodeAnalysis\CodeAnalysis.addin" Id="CodeAnalysis.addin" Name="CodeAnalysis.addin" />
 									</Component>
 								</Directory>
+								<!--
 								<Directory Id="CodeCoverageFolder" Name="CodeCoverage">
 									<Component Guid="86A8B8D1-9FFD-46A4-84F8-2BD530E1F83E" Id="CodeCoverageFiles" DiskId="1">
 										<File Source="..\..\AddIns\Analysis\CodeCoverage\CodeCoverage.dll" Id="CodeCoverage.dll" Name="CodeCoverage.dll" Assembly=".net" AssemblyApplication="CodeCoverage.dll" AssemblyManifest="CodeCoverage.dll" KeyPath="yes" />
