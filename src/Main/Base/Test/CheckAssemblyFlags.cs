@@ -42,11 +42,5 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			Assert.IsTrue(Get32BitFlags("SharpDevelop.exe"));
 		}
-		
-		[Test]
-		public void CheckBooCompiler32Bit()
-		{
-			Assert.IsTrue(Get32BitFlags(@"..\src\AddIns\BackendBindings\Boo\RequiredLibraries\booc.exe"));
-		}
 	}
 }
