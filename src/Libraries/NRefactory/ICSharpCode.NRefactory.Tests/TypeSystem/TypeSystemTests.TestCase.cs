@@ -149,6 +149,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public void MethodWithOutParameter(out int x) { x = 0; }
 		public void MethodWithParamsArray(params object[] x) {}
 		public void MethodWithOptionalParameter(int x = 4) {}
+		public void MethodWithExplicitOptionalParameter([Optional] int x) {}
 		public void MethodWithEnumOptionalParameter(StringComparison x = StringComparison.OrdinalIgnoreCase) {}
 	}
 	

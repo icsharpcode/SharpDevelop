@@ -21,7 +21,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-
+using System.Runtime.CompilerServices;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -30,9 +30,8 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	[TestFixture]
-	public class TypeInferenceTests
+	public class TypeInferenceTests : ResolverTestBase
 	{
-		readonly ICompilation compilation = new SimpleCompilation(CecilLoaderTests.Mscorlib);
 		TypeInference ti;
 		
 		[SetUp]
@@ -456,9 +455,102 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void CommonSubTypeIEnumerableClonableIEnumerableComparableList()
 		{
 			Assert.AreEqual(
-				Resolve(typeof(List<string>), typeof(List<Version>), typeof(Collection<string>), typeof(Collection<Version>), typeof(ReadOnlyCollection<string>), typeof(ReadOnlyCollection<Version>)),
+				Resolve(typeof(List<string>), typeof(List<Version>), typeof(Collection<string>), typeof(Collection<Version>),
+				        typeof(ReadOnlyCollectionBuilder<string>), typeof(ReadOnlyCollectionBuilder<Version>),
+				        typeof(ReadOnlyCollection<string>), typeof(ReadOnlyCollection<Version>)),
 				FindAllTypesInBounds(Resolve(), Resolve(typeof(IEnumerable<ICloneable>), typeof(IEnumerable<IComparable>), typeof(IList))));
 		}
 		#endregion
+
+		[Test]
+		public void NullablePick()
+		{
+				string program = @"
+interface ICo<out T> {}
+interface IContra<in T> {}
+class Test
+{
+	static T Pick<T> (T? a, T? b)
+	{
+		return a;
+	}
+	public static void Test(int? i, long? l)
+	{
+		$Pick(i, l)$;
+	}
+}
+";
+			var mrr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.AreEqual("System.Int64", mrr.Type.FullName);
+			Assert.IsFalse(mrr.IsError);
+		}
+		
+		[Test]
+		public void CoContraPick()
+		{
+			string program = @"
+interface ICo<out T> {}
+interface IContra<in T> {}
+class Test
+{
+	static T Pick<T> (ICo<T> a, IContra<T> b)
+	{
+		return a;
+	}
+	public static void Test(ICo<string> i, IContra<object> l)
+	{
+		$Pick(i, l)$;
+	}
+}
+";
+			// String and Object are both valid choices; and csc ends up picking object,
+			// even though the C# specification says it should pick string:
+			// 7.5.2.11 Fixing - both string and object are in the candidate set;
+			// string has a conversion to object (the other candidate),
+			// object doesn't have that; so string should be chosen as the result.
+			
+			// We follow the csc behavior.
+			var mrr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.AreEqual("System.Object", mrr.Type.FullName);
+			Assert.IsFalse(mrr.IsError);
+		}
+		
+		/// <summary>
+		/// Bug 9300 - Unknown Resolve Error
+		/// </summary>
+		[Test]
+		public void TestBug9300()
+		{
+			string program = @"struct S
+{
+	public static implicit operator string (S s)
+	{
+		return ""a"";
+	}
+}
+
+interface I<in T>
+{
+}
+
+class C : I<string>
+{
+	static T Foo<T> (T a, I<T> b)
+	{
+		return a;
+	}
+	
+	public static void Main ()
+	{
+		S s = new S ();
+		I<string> i = new C ();
+		var result = $Foo (s, i)$;
+	}
+}
+";
+			var mrr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.AreEqual("System.String", mrr.Type.FullName);
+			Assert.IsFalse(mrr.IsError);
+		}
 	}
 }

@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 		IParameterDataProvider CreateDelegateDataProvider (int startOffset, IType type);
 		
-		IParameterDataProvider CreateIndexerParameterDataProvider (int startOffset, IType type, AstNode resolvedNode);
+		IParameterDataProvider CreateIndexerParameterDataProvider (int startOffset, IType type, IEnumerable<IProperty> accessibleIndexers, AstNode resolvedNode);
 		
 		IParameterDataProvider CreateTypeParameterDataProvider (int startOffset, IEnumerable<IType> types);
 	}

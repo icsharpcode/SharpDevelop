@@ -109,6 +109,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (resolvedNode is IdentifierExpression && currentMember != null && currentMember.IsStatic || resolveResult.TargetResult is TypeResolveResult) {
 				onlyStatic = true;
 			}
+			var methods = new List<IMethod>();
 			foreach (var method in resolveResult.Methods) {
 				if (method.IsConstructor) {
 					continue;
@@ -118,14 +119,46 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (onlyStatic && !method.IsStatic) {
 					continue;
 				}
-				yield return method;	
+				if (method.IsShadowing) {
+					for (int j = 0; j < methods.Count; j++) {
+						if (ParameterListComparer.Instance.Equals(methods[j].Parameters, method.Parameters)) {
+							methods.RemoveAt (j);
+							j--;
+						}
+					}
+				}
+				methods.Add (method);
 			}
-			
+			foreach (var m in methods)
+				yield return m;
 			foreach (var extMethods in resolveResult.GetEligibleExtensionMethods (true)) {
 				foreach (var method in extMethods) {
 					yield return method;
 				}
 			}
+		}
+
+		IEnumerable<IProperty> GetAccessibleIndexers(IType type)
+		{
+			var lookup = new MemberLookup(ctx.CurrentTypeDefinition, Compilation.MainAssembly);
+			var properties = new List<IProperty>();
+			foreach (var property in type.GetProperties ()) {
+				if (!property.IsIndexer)
+					continue;
+				if (!lookup.IsAccessible (property, true))
+					continue;
+				if (property.IsShadowing) {
+					for (int j = 0; j < properties.Count; j++) {
+						if (ParameterListComparer.Instance.Equals(properties[j].Parameters, property.Parameters)) {
+							properties.RemoveAt (j);
+							j--;
+						}
+					}
+				}
+
+				properties.Add (property);
+			}
+			return properties;
 		}
 		
 		public IParameterDataProvider GetParameterDataProvider(int offset, char completionChar)
@@ -259,7 +292,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 					}
 					if (resolveResult != null) {
-						return factory.CreateIndexerParameterDataProvider(document.GetOffset(invoke.Node.StartLocation), resolveResult.Type, invoke.Node);
+						return factory.CreateIndexerParameterDataProvider(document.GetOffset(invoke.Node.StartLocation), resolveResult.Type, GetAccessibleIndexers (resolveResult.Type), invoke.Node);
 					}
 					break;
 				case '<':
@@ -285,7 +318,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (indexerExpression == null || indexerExpression.Item1 == null || indexerExpression.Item1.IsError) {
 						return null;
 					}
-					return factory.CreateIndexerParameterDataProvider(document.GetOffset(invoke.Node.StartLocation), indexerExpression.Item1.Type, invoke.Node);
+					return factory.CreateIndexerParameterDataProvider(document.GetOffset(invoke.Node.StartLocation), indexerExpression.Item1.Type, GetAccessibleIndexers (indexerExpression.Item1.Type), invoke.Node);
 			}
 			return null;
 		}

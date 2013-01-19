@@ -90,6 +90,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		[Test]
+		public void PreferUIntOverLong_FromIntLiteral()
+		{
+			ResolveResult[] args = { new ConstantResolveResult(compilation.FindType(KnownTypeCode.Int32), 1) };
+			OverloadResolution r = new OverloadResolution(compilation, args);
+			var c1 = MakeMethod(typeof(uint));
+			Assert.AreEqual(OverloadResolutionErrors.None, r.AddCandidate(c1));
+			Assert.AreEqual(OverloadResolutionErrors.None, r.AddCandidate(MakeMethod(typeof(long))));
+			Assert.IsFalse(r.IsAmbiguous);
+			Assert.AreSame(c1, r.BestCandidate);
+		}
+		
+		[Test]
 		public void NullableIntAndNullableUIntIsAmbiguous()
 		{
 			OverloadResolution r = new OverloadResolution(compilation, MakeArgumentList(typeof(ushort?)));

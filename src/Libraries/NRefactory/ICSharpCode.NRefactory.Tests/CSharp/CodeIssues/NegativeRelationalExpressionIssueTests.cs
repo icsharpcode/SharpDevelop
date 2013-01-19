@@ -103,5 +103,38 @@ class TestClass
 }";
 			Test<NegativeRelationalExpressionIssue> (input, 0);
 		}
+		
+		[Test]
+		public void TestFloatingPointEquality ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod (double d)
+	{
+		var x = !(d == 0.1);
+	}
+}";
+			Test<NegativeRelationalExpressionIssue> (input, 1);
+		}
+		
+		[Test]
+		public void TestUserDefinedOperator ()
+		{
+			var input = @"
+struct LineChangeInfo
+{
+	public static bool operator ==(LineChangeInfo lhs, LineChangeInfo rhs)
+	{
+		return lhs.Equals(rhs);
+	}
+	
+	public static bool operator !=(LineChangeInfo lhs, LineChangeInfo rhs)
+	{
+		return !(lhs == rhs);
+	}
+}";
+			Test<NegativeRelationalExpressionIssue> (input, 0);
+		}
 	}
 }

@@ -262,13 +262,13 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				};
 			}
 			
-			public IParameterDataProvider CreateIndexerParameterDataProvider(int startOffset, IType type, AstNode resolvedNode)
+			public IParameterDataProvider CreateIndexerParameterDataProvider(int startOffset, IType type, IEnumerable<IProperty> accessibleIndexers, AstNode resolvedNode)
 			{
 				Assert.IsTrue(type.Kind != TypeKind.Unknown);
 				if (type.Kind == TypeKind.Array)
 					return new ArrayProvider ();
 				return new IndexerProvider () {
-					Data = type.GetProperties (p => p.IsIndexer)
+					Data = accessibleIndexers
 				};
 			}
 			
@@ -1040,7 +1040,7 @@ class TestClass
 			Assert.IsTrue (provider == null || provider.Count == 0);
 		}
 
-		[Test()]
+		[Test]
 		public void TestJaggedArrayCreationCase2()
 		{
 			IParameterDataProvider provider = CreateProvider(
@@ -1055,6 +1055,79 @@ class TestClass
 }
 ");
 			Assert.IsTrue (provider == null || provider.Count == 0);
+		}
+
+		/// <summary>
+		/// Bug 9301 - Inaccessible indexer overload in completion 
+		/// </summary>
+		[Test]
+		public void TestBug9301()
+		{
+			IParameterDataProvider provider = CreateProvider(
+				@"using System;
+
+public class A
+{
+	public virtual int this [int i, string s] {
+		get {
+			return 1;
+		}
+	}
+}
+
+public class B : A
+{
+	public new bool this [int i, string s2] {
+		get {
+			return true;
+		}
+	}
+}
+
+public class Test
+{
+	public static int Main ()
+	{
+		B p = new B ();
+		$p[$
+		return 0;
+	}
+}
+");
+			Assert.AreEqual (1, provider.Count);
+		}
+
+		[Test]
+		public void TestBug9301Case2()
+		{
+			IParameterDataProvider provider = CreateProvider(
+				@"using System;
+
+public class A
+{
+	public virtual int Test (int i, string s) {
+		return 1;
+	}
+}
+
+public class B : A
+{
+	public new bool Test (int i, string s2) {
+		return true;
+	}
+}
+
+public class Test
+{
+	public static int Main ()
+	{
+		B p = new B ();
+		$p.Test($
+		return 0;
+	}
+}
+");
+			Assert.AreEqual (1, provider.Count);
 		}
 
 	}

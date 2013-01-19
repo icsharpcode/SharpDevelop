@@ -47,8 +47,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				!(left.Value is string) || !(right.Value is string) || !node.OperatorToken.Contains(context.Location))
 				return null;
 
-			var isLeftVerbatim = left.LiteralValue.StartsWith ("@");
-			var isRightVerbatime = right.LiteralValue.StartsWith ("@");
+			var isLeftVerbatim = left.LiteralValue.StartsWith("@", System.StringComparison.Ordinal);
+			var isRightVerbatime = right.LiteralValue.StartsWith("@", System.StringComparison.Ordinal);
 			if (isLeftVerbatim != isRightVerbatime)
 				return null;
 

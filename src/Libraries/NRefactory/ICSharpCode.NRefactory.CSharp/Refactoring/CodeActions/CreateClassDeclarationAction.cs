@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CreateClassDeclarationAction.cs
 //  
 // Author:
@@ -86,7 +86,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			string className = simpleType.Identifier;
 
 			if (simpleType.Parent is Attribute) {
-				if (!className.EndsWith("Attribute"))
+				if (!className.EndsWith("Attribute", System.StringComparison.Ordinal))
 					className += "Attribute";
 			}
 

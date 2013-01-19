@@ -99,27 +99,49 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region ImplicitConversion
-		public Conversion ImplicitConversion(ResolveResult resolveResult, IType toType)
+		private Conversion ImplicitConversion(ResolveResult resolveResult, IType toType, bool allowUserDefined)
 		{
-			if (resolveResult == null)
-				throw new ArgumentNullException("resolveResult");
 			Conversion c;
 			if (resolveResult.IsCompileTimeConstant) {
 				c = ImplicitEnumerationConversion(resolveResult, toType);
 				if (c.IsValid) return c;
 				if (ImplicitConstantExpressionConversion(resolveResult, toType))
 					return Conversion.ImplicitConstantExpressionConversion;
+				c = StandardImplicitConversion(resolveResult.Type, toType);
+				if (c != Conversion.None) return c;
+				if (allowUserDefined) {
+					c = UserDefinedImplicitConversion(resolveResult, resolveResult.Type, toType);
+					if (c != Conversion.None) return c;
+				}
+			} else {
+				c = ImplicitConversion(resolveResult.Type, toType, allowUserDefined);
+				if (c != Conversion.None) return c;
 			}
-			c = ImplicitConversion(resolveResult.Type, toType);
-			if (c.IsValid) return c;
 			if (resolveResult.Type.Kind == TypeKind.Dynamic)
 				return Conversion.ImplicitDynamicConversion;
 			c = AnonymousFunctionConversion(resolveResult, toType);
-			if (c.IsValid) return c;
+			if (c != Conversion.None) return c;
 			c = MethodGroupConversion(resolveResult, toType);
 			return c;
 		}
 		
+		private Conversion ImplicitConversion(IType fromType, IType toType, bool allowUserDefined)
+		{
+			// C# 4.0 spec: §6.1
+			var c = StandardImplicitConversion(fromType, toType);
+			if (c == Conversion.None && allowUserDefined) {
+				c = UserDefinedImplicitConversion(null, fromType, toType);
+			}
+			return c;
+		}
+
+		public Conversion ImplicitConversion(ResolveResult resolveResult, IType toType)
+		{
+			if (resolveResult == null)
+				throw new ArgumentNullException("resolveResult");
+			return ImplicitConversion(resolveResult, toType, allowUserDefined: true);
+		}
+
 		public Conversion ImplicitConversion(IType fromType, IType toType)
 		{
 			if (fromType == null)
@@ -131,12 +153,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Conversion c;
 			if (implicitConversionCache.TryGetValue(pair, out c))
 				return c;
-			
-			// C# 4.0 spec: §6.1
-			c = StandardImplicitConversion(fromType, toType);
-			if (!c.IsValid) {
-				c = UserDefinedImplicitConversion(fromType, toType);
-			}
+
+			c = ImplicitConversion(fromType, toType, allowUserDefined: true);
+
 			implicitConversionCache[pair] = c;
 			return c;
 		}
@@ -153,7 +172,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (ImplicitNumericConversion(fromType, toType))
 				return Conversion.ImplicitNumericConversion;
 			Conversion c = ImplicitNullableConversion(fromType, toType);
-			if (c.IsValid)
+			if (c != Conversion.None)
 				return c;
 			if (NullLiteralConversion(fromType, toType))
 				return Conversion.NullLiteralConversion;
@@ -211,11 +230,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			if (resolveResult.Type.Kind == TypeKind.Dynamic)
 				return Conversion.ExplicitDynamicConversion;
-			Conversion c = ImplicitConversion(resolveResult, toType);
-			if (c.IsValid)
+			Conversion c = ImplicitConversion(resolveResult, toType, allowUserDefined: false);
+			if (c != Conversion.None)
 				return c;
-			else
-				return ExplicitConversionImpl(resolveResult.Type, toType);
+			c = ExplicitConversionImpl(resolveResult.Type, toType);
+			if (c != Conversion.None)
+				return c;
+			return UserDefinedExplicitConversion(resolveResult, resolveResult.Type, toType);
 		}
 		
 		public Conversion ExplicitConversion(IType fromType, IType toType)
@@ -225,11 +246,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (toType == null)
 				throw new ArgumentNullException("toType");
 			
-			Conversion c = ImplicitConversion(fromType, toType);
-			if (c.IsValid)
+			Conversion c = ImplicitConversion(fromType, toType, allowUserDefined: false);
+			if (c != Conversion.None)
 				return c;
-			else
-				return ExplicitConversionImpl(fromType, toType);
+			c = ExplicitConversionImpl(fromType, toType);
+			if (c != Conversion.None)
+				return c;
+			return UserDefinedExplicitConversion(null, fromType, toType);
 		}
 		
 		Conversion ExplicitConversionImpl(IType fromType, IType toType)
@@ -241,18 +264,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (ExplicitEnumerationConversion(fromType, toType))
 				return Conversion.EnumerationConversion(false, false);
 			Conversion c = ExplicitNullableConversion(fromType, toType);
-			if (c.IsValid)
+			if (c != Conversion.None)
 				return c;
 			if (ExplicitReferenceConversion(fromType, toType))
 				return Conversion.ExplicitReferenceConversion;
 			if (UnboxingConversion(fromType, toType))
 				return Conversion.UnboxingConversion;
 			c = ExplicitTypeParameterConversion(fromType, toType);
-			if (c.IsValid)
+			if (c != Conversion.None)
 				return c;
 			if (ExplicitPointerConversion(fromType, toType))
 				return Conversion.ExplicitPointerConversion;
-			return UserDefinedExplicitConversion(fromType, toType);
+			return Conversion.None;
 		}
 		#endregion
 		
@@ -643,8 +666,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Implicit Constant-Expression Conversion
 		bool ImplicitConstantExpressionConversion(ResolveResult rr, IType toType)
 		{
+			if (rr == null || !rr.IsCompileTimeConstant)
+				return false;
 			// C# 4.0 spec: §6.1.9
-			Debug.Assert(rr.IsCompileTimeConstant);
 			TypeCode fromTypeCode = ReflectionHelper.GetTypeCode(rr.Type);
 			TypeCode toTypeCode = ReflectionHelper.GetTypeCode(NullableType.GetUnderlyingType(toType));
 			if (fromTypeCode == TypeCode.Int64) {
@@ -744,27 +768,138 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return a.Kind != TypeKind.Interface && b.Kind != TypeKind.Interface
 				&& (StandardImplicitConversion(a, b).IsValid || StandardImplicitConversion(b, a).IsValid);
 		}
-		
-		Conversion UserDefinedImplicitConversion(IType fromType, IType toType)
+
+		IType FindMostEncompassedType(IEnumerable<IType> candidates)
+		{
+			IType best = null;
+			foreach (var current in candidates) {
+				if (best == null || IsEncompassedBy(current, best))
+					best = current;
+				else if (!IsEncompassedBy(best, current))
+					return null;	// Ambiguous
+			}
+			return best;
+		}
+
+		IType FindMostEncompassingType(IEnumerable<IType> candidates)
+		{
+			IType best = null;
+			foreach (var current in candidates) {
+				if (best == null || IsEncompassedBy(best, current))
+					best = current;
+				else if (!IsEncompassedBy(current, best))
+					return null;	// Ambiguous
+			}
+			return best;
+		}
+
+		Conversion SelectOperator(IType mostSpecificSource, IType mostSpecificTarget, IList<OperatorInfo> operators, bool isImplicit)
+		{
+			var selected = operators.Where(op => op.SourceType.Equals(mostSpecificSource) && op.TargetType.Equals(mostSpecificTarget)).ToList();
+			if (selected.Count == 0)
+				return Conversion.None;
+
+			if (selected.Count == 1)
+				return Conversion.UserDefinedConversion(selected[0].Method, isLifted: selected[0].IsLifted, isImplicit: isImplicit);
+
+			int nNonLifted = selected.Count(s => !s.IsLifted);
+			if (nNonLifted == 1) {
+				var op = selected.First(s => !s.IsLifted);
+				return Conversion.UserDefinedConversion(op.Method, isLifted: op.IsLifted, isImplicit: isImplicit);
+			}
+			
+			return Conversion.UserDefinedConversion(selected[0].Method, isLifted: selected[0].IsLifted, isImplicit: isImplicit, isAmbiguous: true);
+		}
+
+		Conversion UserDefinedImplicitConversion(ResolveResult fromResult, IType fromType, IType toType)
 		{
 			// C# 4.0 spec §6.4.4 User-defined implicit conversions
-			var operators = GetApplicableConversionOperators(fromType, toType, false);
-			// TODO: Find most specific conversion
-			if (operators.Count > 0)
-				return Conversion.UserDefinedImplicitConversion(operators[0].Method, operators[0].IsLifted);
-			else
+			var operators = GetApplicableConversionOperators(fromResult, fromType, toType, false);
+
+			if (operators.Count > 0) {
+				var mostSpecificSource = operators.Any(op => op.SourceType.Equals(fromType)) ? fromType : FindMostEncompassedType(operators.Select(op => op.SourceType));
+				if (mostSpecificSource == null)
+					return Conversion.UserDefinedConversion(operators[0].Method, isImplicit: true, isLifted: operators[0].IsLifted, isAmbiguous: true);
+				var mostSpecificTarget = operators.Any(op => op.TargetType.Equals(toType)) ? toType : FindMostEncompassingType(operators.Select(op => op.TargetType));
+				if (mostSpecificTarget == null) {
+					if (NullableType.IsNullable(toType))
+						return UserDefinedImplicitConversion(fromResult, fromType, NullableType.GetUnderlyingType(toType));
+					else
+						return Conversion.UserDefinedConversion(operators[0].Method, isImplicit: true, isLifted: operators[0].IsLifted, isAmbiguous: true);
+				}
+
+				var selected = SelectOperator(mostSpecificSource, mostSpecificTarget, operators, true);
+				if (selected != Conversion.None) {
+					if (selected.IsLifted && NullableType.IsNullable(toType)) {
+						// Prefer A -> B -> B? over A -> A? -> B?
+						var other = UserDefinedImplicitConversion(fromResult, fromType, NullableType.GetUnderlyingType(toType));
+						if (other != Conversion.None)
+							return other;
+					}
+					return selected;
+				}
+				else if (NullableType.IsNullable(toType))
+					return UserDefinedImplicitConversion(fromResult, fromType, NullableType.GetUnderlyingType(toType));
+				else
+					return Conversion.None;
+			}
+			else {
 				return Conversion.None;
+			}
 		}
 		
-		Conversion UserDefinedExplicitConversion(IType fromType, IType toType)
+		Conversion UserDefinedExplicitConversion(ResolveResult fromResult, IType fromType, IType toType)
 		{
 			// C# 4.0 spec §6.4.5 User-defined implicit conversions
-			var operators = GetApplicableConversionOperators(fromType, toType, true);
-			// TODO: Find most specific conversion
-			if (operators.Count > 0)
-				return Conversion.UserDefinedExplicitConversion(operators[0].Method, operators[0].IsLifted);
-			else
+			var operators = GetApplicableConversionOperators(fromResult, fromType, toType, true);
+			if (operators.Count > 0) {
+				IType mostSpecificSource;
+				if (operators.Any(op => op.SourceType.Equals(fromType))) {
+					mostSpecificSource = fromType;
+				} else {
+					var operatorsWithSourceEncompassingFromType = operators.Where(op => IsEncompassedBy(fromType, op.SourceType) || ImplicitConstantExpressionConversion(fromResult, NullableType.GetUnderlyingType(op.SourceType))).ToList();
+					if (operatorsWithSourceEncompassingFromType.Any())
+						mostSpecificSource = FindMostEncompassedType(operatorsWithSourceEncompassingFromType.Select(op => op.SourceType));
+					else
+						mostSpecificSource = FindMostEncompassingType(operators.Select(op => op.SourceType));
+				}
+				if (mostSpecificSource == null)
+					return Conversion.UserDefinedConversion(operators[0].Method, isImplicit: false, isLifted: operators[0].IsLifted, isAmbiguous: true);
+
+				IType mostSpecificTarget;
+				if (operators.Any(op => op.TargetType.Equals(toType)))
+					mostSpecificTarget = toType;
+				else if (operators.Any(op => IsEncompassedBy(op.TargetType, toType)))
+					mostSpecificTarget = FindMostEncompassingType(operators.Where(op => IsEncompassedBy(op.TargetType, toType)).Select(op => op.TargetType));
+				else
+					mostSpecificTarget = FindMostEncompassedType(operators.Select(op => op.TargetType));
+				if (mostSpecificTarget == null) {
+					if (NullableType.IsNullable(toType))
+						return UserDefinedExplicitConversion(fromResult, fromType, NullableType.GetUnderlyingType(toType));
+					else
+						return Conversion.UserDefinedConversion(operators[0].Method, isImplicit: false, isLifted: operators[0].IsLifted, isAmbiguous: true);
+				}
+
+				var selected = SelectOperator(mostSpecificSource, mostSpecificTarget, operators, false);
+				if (selected != Conversion.None) {
+					if (selected.IsLifted && NullableType.IsNullable(toType)) {
+						// Prefer A -> B -> B? over A -> A? -> B?
+						var other = UserDefinedImplicitConversion(fromResult, fromType, NullableType.GetUnderlyingType(toType));
+						if (other != Conversion.None)
+							return other;
+					}
+					return selected;
+				}
+				else if (NullableType.IsNullable(toType))
+					return UserDefinedExplicitConversion(fromResult, fromType, NullableType.GetUnderlyingType(toType));
+				else if (NullableType.IsNullable(fromType))
+					return UserDefinedExplicitConversion(null, NullableType.GetUnderlyingType(fromType), toType);	// A? -> A -> B
+				else
+					return Conversion.None;
+			}
+			else {
 				return Conversion.None;
+			}
 		}
 		
 		class OperatorInfo
@@ -783,7 +918,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		List<OperatorInfo> GetApplicableConversionOperators(IType fromType, IType toType, bool isExplicit)
+		List<OperatorInfo> GetApplicableConversionOperators(ResolveResult fromResult, IType fromType, IType toType, bool isExplicit)
 		{
 			// Find the candidate operators:
 			Predicate<IUnresolvedMethod> opFilter;
@@ -802,26 +937,27 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// Try if the operator is applicable:
 				bool isApplicable;
 				if (isExplicit) {
-					isApplicable = IsEncompassingOrEncompassedBy(fromType, sourceType)
+					isApplicable = (IsEncompassingOrEncompassedBy(fromType, sourceType) || ImplicitConstantExpressionConversion(fromResult, sourceType))
 						&& IsEncompassingOrEncompassedBy(targetType, toType);
 				} else {
-					isApplicable = IsEncompassedBy(fromType, sourceType) && IsEncompassedBy(targetType, toType);
+					isApplicable = (IsEncompassedBy(fromType, sourceType) || ImplicitConstantExpressionConversion(fromResult, sourceType))
+						&& IsEncompassedBy(targetType, toType);
 				}
+				// Try if the operator is applicable in lifted form:
 				if (isApplicable) {
 					result.Add(new OperatorInfo(op, sourceType, targetType, false));
 				}
-				// Try if the operator is applicable in lifted form:
-				if (NullableType.IsNonNullableValueType(sourceType)
-				    && NullableType.IsNonNullableValueType(targetType))
-				{
+				if (NullableType.IsNonNullableValueType(sourceType)) {
+					// An operator can be applicable in both lifted and non-lifted form in case of explicit conversions
 					IType liftedSourceType = NullableType.Create(compilation, sourceType);
-					IType liftedTargetType = NullableType.Create(compilation, targetType);
+					IType liftedTargetType = NullableType.IsNonNullableValueType(targetType) ? NullableType.Create(compilation, targetType) : targetType;
 					if (isExplicit) {
 						isApplicable = IsEncompassingOrEncompassedBy(fromType, liftedSourceType)
 							&& IsEncompassingOrEncompassedBy(liftedTargetType, toType);
 					} else {
 						isApplicable = IsEncompassedBy(fromType, liftedSourceType) && IsEncompassedBy(liftedTargetType, toType);
 					}
+
 					if (isApplicable) {
 						result.Add(new OperatorInfo(op, liftedSourceType, liftedTargetType, true));
 					}

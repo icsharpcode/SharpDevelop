@@ -74,13 +74,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (negatedOp == BinaryOperatorType.Any)
 					return;
 
-				if (IsFloatingPoint (binaryOperatorExpr.Left) || IsFloatingPoint (binaryOperatorExpr.Right))
-					return;
+				if (IsFloatingPoint (binaryOperatorExpr.Left) || IsFloatingPoint (binaryOperatorExpr.Right)) {
+					if (negatedOp != BinaryOperatorType.Equality && negatedOp != BinaryOperatorType.InEquality)
+						return;
+				}
 
 				AddIssue (unaryOperatorExpression, ctx.TranslateString ("Simplify negative relational expression"),
 					script => script.Replace (unaryOperatorExpression,
 						new BinaryOperatorExpression (binaryOperatorExpr.Left.Clone (), negatedOp,
 					          	binaryOperatorExpr.Right.Clone ())));
+			}
+			
+			public override void VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration)
+			{
+				if (operatorDeclaration.OperatorType.IsComparisonOperator()) {
+					// Ignore operator declaration; within them it's common to define one operator
+					// by negating another.
+					return;
+				}
+				base.VisitOperatorDeclaration(operatorDeclaration);
 			}
 		}
 	}

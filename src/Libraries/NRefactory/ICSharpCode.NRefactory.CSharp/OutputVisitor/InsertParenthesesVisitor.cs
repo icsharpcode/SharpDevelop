@@ -235,7 +235,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					ParenthesizeIfRequired(binaryOperatorExpression.Left, Primary);
 					ParenthesizeIfRequired(binaryOperatorExpression.Right, Primary);
 				} else {
-					// ?? is right-associate
+					// ?? is right-associative
 					ParenthesizeIfRequired(binaryOperatorExpression.Left, precedence + 1);
 					ParenthesizeIfRequired(binaryOperatorExpression.Right, precedence);
 				}

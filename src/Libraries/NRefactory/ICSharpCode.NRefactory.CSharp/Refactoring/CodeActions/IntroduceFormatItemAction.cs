@@ -50,8 +50,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (pexpr == null || !(pexpr.Value is string)) {
 				yield break;
 			}
-			if (pexpr.LiteralValue.StartsWith("@")) {
-				if (!(pexpr.StartLocation < new TextLocation (context.Location.Line, context.Location.Column - 1) && new TextLocation (context.Location.Line, context.Location.Column + 1) < pexpr.EndLocation)) {
+			if (pexpr.LiteralValue.StartsWith("@", StringComparison.Ordinal)) {
+				if (!(pexpr.StartLocation < new TextLocation(context.Location.Line, context.Location.Column - 1) && new TextLocation(context.Location.Line, context.Location.Column + 1) < pexpr.EndLocation)) {
 					yield break;
 				}
 			} else {

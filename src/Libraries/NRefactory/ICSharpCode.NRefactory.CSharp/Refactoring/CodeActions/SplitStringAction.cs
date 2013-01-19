@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (pexpr == null || !(pexpr.Value is string)) {
 				yield break;
 			}
-			if (pexpr.LiteralValue.StartsWith("@")) {
+			if (pexpr.LiteralValue.StartsWith("@", StringComparison.Ordinal)) {
 				if (!(pexpr.StartLocation < new TextLocation(context.Location.Line, context.Location.Column - 2) &&
 					new TextLocation(context.Location.Line, context.Location.Column + 2) < pexpr.EndLocation)) {
 					yield break;
@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			yield return new CodeAction(context.TranslateString("Split string literal"), script => {
 				int offset = context.GetOffset (context.Location);
-				script.InsertText (offset, pexpr.LiteralValue.StartsWith ("@") ? "\" + @\"" : "\" + \"");
+				script.InsertText (offset, pexpr.LiteralValue.StartsWith("@", StringComparison.Ordinal) ? "\" + @\"" : "\" + \"");
 			});
 		}
 	}

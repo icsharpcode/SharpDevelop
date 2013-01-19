@@ -735,5 +735,68 @@ public class C {
 			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
 		}
+		
+		[Test]
+		public void OverloadResolutionIsAmbiguousEvenIfNotDelegateCompatible() {
+			string program = @"
+class Test {
+	static void M(Func<int> o) {}
+	static void M(Action o) {}
+	
+	static int K() { return 0; }
+	
+	static void Main() {
+		$M(K)$;
+	}
+}";
+			// K is only delegate-compatible with one of the overloads; yet we get an invalid match.
+			// This is because the conversion exists even though it is invalid.
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.AreEqual(OverloadResolutionErrors.AmbiguousMatch, rr.OverloadResolutionErrors);
+		}
+		
+		[Test]
+		public void IndexerWithMoreSpecificParameterTypesIsPreferred()
+		{
+			string program = @"
+class A {
+	public static void Test(B<object> b) {
+		x = $b[4]$;
+	}
+}
+public class B<T> {
+	public string this[T key] {
+		get { return ""1""; }
+	}
+	public int this[object key] {
+		get { return 2; }
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("System.Int32", rr.Member.ReturnType.FullName);
+		}
+		
+		[Test]
+		public void MethodWithMoreSpecificParameterTypesIsPreferred()
+		{
+			string program = @"
+class A {
+	public static void Test(B<object> b) {
+		$b.M(4)$;
+	}
+}
+public class B<T> {
+	public string M(T key) {
+		return ""1"";
+	}
+	public int M(object key) {
+		return 2;
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("System.Int32", rr.Member.ReturnType.FullName);
+		}
 	}
 }
