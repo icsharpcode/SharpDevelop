@@ -372,6 +372,20 @@
 							Margin="4, 4"
 							ItemsSource="{Binding Path=Dependencies}"/>
 					</StackPanel>
+					<Grid
+						Visibility="{Binding Path=IsOffline, Converter={StaticResource BoolToVisibility}}"
+						Margin="0, 4">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
+						<TextBlock
+							Grid.Column="0"
+							Margin="0, 0, 4, 0"
+							Text="{core:Localize AddInManager2.Details.FileName}"
+							FontWeight="Bold"/>
+						<TextBlock Grid.Column="1" Text="{Binding Path=FileName}" TextWrapping="Wrap" />
+					</Grid>
 					<Grid Margin="0,20,0,0">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="Auto" />

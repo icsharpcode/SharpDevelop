@@ -390,7 +390,6 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			}
 		}
 		
-		
 		public virtual bool HasOptions
 		{
 			get
@@ -412,6 +411,14 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		public abstract DateTime? LastUpdated
 		{
 			get;
+		}
+		
+		public virtual string FileName
+		{
+			get
+			{
+				return null;
+			}
 		}
 		
 		protected string SurroundWithParantheses(string content)

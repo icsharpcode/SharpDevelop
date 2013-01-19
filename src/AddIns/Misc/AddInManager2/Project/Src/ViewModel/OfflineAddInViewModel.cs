@@ -392,6 +392,21 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			}
 		}
 		
+		public override string FileName
+		{
+			get
+			{
+				if (_addIn != null)
+				{
+					return FileUtility.NormalizePath(_addIn.FileName);
+				}
+				else
+				{
+					return null;
+				}
+			}
+		}
+		
 		public override bool HasDependencyConflicts
 		{
 			get

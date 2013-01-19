@@ -251,4 +251,7 @@ The application will try to download and install them, as well. Do you want to c
   <data name="AddInManager2.AddInsView.Repository" xml:space="preserve">
     <value>Repository:</value>
   </data>
+  <data name="AddInManager2.Details.FileName" xml:space="preserve">
+    <value>File name:</value>
+  </data>
 </root>
