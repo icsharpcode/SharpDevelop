@@ -21,7 +21,7 @@ namespace ICSharpCode.PackageManagement
 			: base(registeredPackageRepositories, packageViewModelFactory, taskFactory)
 		{
 			IsSearchable = true;
-			ShowPackageSources = registeredPackageRepositories.HasMultiplePackageSources;
+			ShowPackageSources = true;
 		}
 		
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()

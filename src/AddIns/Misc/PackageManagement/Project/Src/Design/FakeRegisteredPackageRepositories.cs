@@ -70,9 +70,11 @@ namespace ICSharpCode.PackageManagement.Design
 			PackageSources.AddRange(sources);
 		}
 		
-		public FakePackage AddFakePackageWithVersionToAggregrateRepository(string version)
+		public FakePackage AddFakePackageWithVersionToActiveRepository(string version)
 		{
-			return AddFakePackageWithVersionToAggregrateRepository("Test", version);
+			var package = FakePackage.CreatePackageWithVersion("Test", version);
+			FakeActiveRepository.FakePackages.Add(package);
+			return package;
 		}
 		
 		public FakePackage AddFakePackageWithVersionToAggregrateRepository(string id, string version)

@@ -134,6 +134,7 @@
     <Compile Include="Src\Helpers\UsingHelper.cs" />
     <Compile Include="Src\Helpers\UsingScopeHelper.cs" />
     <Compile Include="Src\InstalledPackageViewModelTests.cs" />
+    <Compile Include="Src\IPackageExtensionsTests.cs" />
     <Compile Include="Src\ManagePackagesCommandTests.cs" />
     <Compile Include="Src\ConsolePackageActionRunnerTests.cs" />
     <Compile Include="Src\DefaultProjectTemplatePackageSourceTests.cs" />

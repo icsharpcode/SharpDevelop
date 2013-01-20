@@ -310,7 +310,7 @@
 				<RowDefinition />
 			</Grid.RowDefinitions>
 			<Grid
-				Visibility="{Binding Path=IsSearchable, Converter={StaticResource BoolToVisibility}}">
+				Visibility="{Binding Path=ShowPackageSources, Converter={StaticResource BoolToVisibility}}">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition />
 					<ColumnDefinition Width="Auto"/>
@@ -330,6 +330,7 @@
 				<TextBox
 					Grid.Row="1"
 					Grid.Column="0"
+					Visibility="{Binding Path=IsSearchable, Converter={StaticResource BoolToVisibility}}"
 					Text="{Binding Path=SearchTerms, UpdateSourceTrigger=PropertyChanged}">
 					<TextBox.InputBindings>
 						<KeyBinding
@@ -340,7 +341,8 @@
 				<TextBlock 
 					Grid.Row="1"
 					Grid.Column="1"
-					Margin="4">
+					Margin="4"
+					Visibility="{Binding Path=IsSearchable, Converter={StaticResource BoolToVisibility}}">
 					<Hyperlink 
 						TextDecorations="{x:Null}"
 						Command="{Binding Path=SearchCommand}">

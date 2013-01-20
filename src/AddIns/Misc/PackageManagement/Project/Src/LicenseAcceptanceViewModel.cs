@@ -10,14 +10,16 @@ namespace ICSharpCode.PackageManagement
 {
 	public class LicenseAcceptanceViewModel : ViewModelBase<LicenseAcceptanceViewModel>
 	{
-		IList<IPackage> packages;
+		IList<PackageLicenseViewModel> packages;
 		
 		public LicenseAcceptanceViewModel(IEnumerable<IPackage> packages)
 		{
-			this.packages = packages.ToList();
+			this.packages = packages
+				.Select(p => new PackageLicenseViewModel(p))
+				.ToList();
 		}
 		
-		public IEnumerable<IPackage> Packages {
+		public IEnumerable<PackageLicenseViewModel> Packages {
 			get { return packages; }
 		}
 		

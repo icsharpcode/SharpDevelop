@@ -43,7 +43,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public bool HasMultiplePackageSources {
-			get { return registeredPackageSources.HasMultiplePackageSources; }
+			get { return registeredPackageSources.HasMultipleEnabledPackageSources; }
 		}
 		
 		public PackageSource ActivePackageSource {

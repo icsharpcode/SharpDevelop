@@ -175,11 +175,11 @@ namespace PackageManagement.Tests
 				Id = "Test",
 				Version = new SemanticVersion("2.0.0.0")
 			};
-			fakeRegisteredPackageRepositories.FakeAggregateRepository.FakePackages.Add(newPackage);
+			fakeRegisteredPackageRepositories.FakeActiveRepository.FakePackages.Add(newPackage);
 			
 			CreateViewModel(fakeSolution);
 			
-			List<FakePackage> expectedPackages = fakeRegisteredPackageRepositories.FakeAggregateRepository.FakePackages;
+			List<FakePackage> expectedPackages = fakeRegisteredPackageRepositories.FakeActiveRepository.FakePackages;
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.UpdatedPackagesViewModel.PackageViewModels);
 		}
