@@ -25,7 +25,6 @@ namespace ICSharpCode.UnitTesting
 		TextReader reader;
 		readonly NamedPipeServerStream namedPipe;
 		readonly string pipeName;
-		TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
 		
 		public TestResultsReader()
 		{
