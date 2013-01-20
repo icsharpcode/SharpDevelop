@@ -237,9 +237,9 @@ namespace NUnit.ConsoleRunner
 			
 			if (testResult.IsFailure || testResult.IsError) 
 			{
-				testResultWriter.WriteLine("Result: Failure");
 				testResultWriter.WriteLine("Message: " + EncodeText(testResult.Message));
 				testResultWriter.WriteLine("StackTrace: " + EncodeText(StackTraceFilter.Filter(testResult.StackTrace)));
+				testResultWriter.WriteLine("Result: Failure");
 			} 
 			else if (!testResult.Executed)
 			{
