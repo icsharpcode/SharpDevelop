@@ -18,6 +18,7 @@
 		
 		<TextBox x:Name="headerTextBox"
 		         TextChanged="HeaderTextBox_TextChanged"
+		         AcceptsReturn="True"
 		         Margin="0,2,0,0" Height="200"></TextBox>
 	
 	</StackPanel>
