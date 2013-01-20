@@ -86,7 +86,7 @@
 			extensions="*.vbhtml"/>
 	</Path>
 	
-	<Path name="/SharpDevelop/Workbench/LanguageBindings">
+	<!--<Path name="/SharpDevelop/Workbench/LanguageBindings">
 		<LanguageBinding
 			id="WebForms"
 			class="ICSharpCode.AspNet.Mvc.Folding.WebFormsLanguageBinding"
@@ -99,7 +99,7 @@
 			id="VisualBasic.Razor"
 			class="ICSharpCode.AspNet.Mvc.Folding.VisualBasicRazorLanguageBinding"
 			extensions=".vbhtml" />
-	</Path>
+	</Path>-->
 
 	<Path name="/SharpDevelop/Workbench/ProjectBehaviors">
 		<ComplexCondition>

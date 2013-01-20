@@ -1127,7 +1127,6 @@
 										</Component>
 									</Directory>
 								</Directory>
-								<!--
 								<Directory Id="AspNet.Mvc" Name="AspNet.Mvc">
 									<Component Id="AspNetMvcAddin" Guid="2ADAB116-3E40-4A12-B6CD-EE41C482807A" DiskId="1">
 										<File Id="AspNet.Mvc.addin" Name="AspNet.Mvc.addin" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\AspNet.Mvc.addin" KeyPath="yes" />
@@ -1249,6 +1248,7 @@
 										</Directory>
 									</Directory>
 								</Directory>
+								<!--
 								<Directory Id="JavaScriptBinding" Name="JavaScriptBinding">
 									<Component Id="Antlr3RuntimeDll" Guid="CD73166D-0ACB-4A3D-8023-06DAC6CB903A" DiskId="1">
 										<File Id="Antlr3.Runtime.dll" Name="Antlr3.Runtime.dll" Source="..\..\AddIns\BackendBindings\JavaScriptBinding\Antlr3.Runtime.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Antlr3.Runtime.dll" AssemblyManifest="Antlr3.Runtime.dll" />

@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace AspNet.Mvc.Tests
 {
-	public class MvcProjectFileTests
+	public class MvcProjectFileTests : MvcTestsBase
 	{
 		TestableProject project;
 		MvcProjectFile file;

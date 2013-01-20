@@ -29,7 +29,7 @@ namespace AspNet.Mvc.Tests.Helpers
 		
 		public void SetIsNotModelClass()
 		{
-			isModelClass = false;	
+			isModelClass = false;
 		}
 		
 		public bool IsModelClass()

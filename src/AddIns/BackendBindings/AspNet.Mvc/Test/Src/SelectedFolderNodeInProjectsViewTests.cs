@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace AspNet.Mvc.Tests
 {
 	[TestFixture]
-	public class SelectedFolderNodeInProjectsViewTests
+	public class SelectedFolderNodeInProjectsViewTests : MvcTestsBase
 	{
 		SelectedFolderNodeInProjectsView selectedFolderNode;
 		TestableProject projectForSelectedFolder;

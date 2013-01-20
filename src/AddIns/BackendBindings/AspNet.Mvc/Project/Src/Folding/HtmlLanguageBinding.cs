@@ -26,10 +26,6 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 			get { return new DefaultFormattingStrategy(); }
 		}
 		
-		public override LanguageProperties Properties {
-			get { return LanguageProperties.None; }
-		}
-		
 		public override void Attach(ITextEditor editor)
 		{
 			Attach(textEditorFactory.CreateTextEditor(editor));

@@ -484,7 +484,7 @@
 				<ComponentRef Id="MspecExe"/>
 				-->
 				
-				<!--<ComponentRef Id="AspNetMvcAddin"/>
+				<ComponentRef Id="AspNetMvcAddin"/>
 				<ComponentRef Id="AspNetMvcDll"/>
 				<ComponentRef Id="AspNetMvcMonoTextTemplatingDll"/>
 				<ComponentRef Id="SystemWebRazorDll"/>
@@ -514,7 +514,7 @@
 				<ComponentRef Id="AspNetMvcRazorVisualBasicDetailsTemplate"/>
 				<ComponentRef Id="AspNetMvcRazorVisualBasicEditTemplate"/>
 				<ComponentRef Id="AspNetMvcRazorVisualBasicEmptyTemplate"/>
-				<ComponentRef Id="AspNetMvcRazorVisualBasicListTemplate"/>-->
+				<ComponentRef Id="AspNetMvcRazorVisualBasicListTemplate"/>
 				<ComponentRef Id="CSharpMvcRazorLayoutPageFileTemplate"/>
 				<ComponentRef Id="CSharpMvcRazorPartialPageFileTemplate"/>
 				<ComponentRef Id="CSharpMvcRazorViewPageFileTemplate"/>
