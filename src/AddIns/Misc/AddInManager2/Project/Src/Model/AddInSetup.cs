@@ -94,21 +94,34 @@ namespace ICSharpCode.AddInManager2.Model
 			{
 				// Try to load the *.sdaddin file as ZIP archive
 				AddIn addIn = null;
-				ZipFile zipFile = new ZipFile(archiveFileName);
+				ZipFile zipFile = null;
 				try
 				{
+					zipFile = new ZipFile(archiveFileName);
 					addIn = LoadAddInFromZip(zipFile);
+				}
+				catch (Exception ex)
+				{
+					// Report the exception
+					_events.OnAddInOperationError(new AddInExceptionEventArgs(ex));
+					return null;
 				}
 				finally
 				{
-					zipFile.Close();
+					if (zipFile != null)
+					{
+						zipFile.Close();
+					}
 				}
 				
 				if (addIn != null)
 				{
-					if (addIn.Manifest.PrimaryIdentity == null)
+					if ((addIn.Manifest == null) || (addIn.Manifest.PrimaryIdentity == null))
 					{
-						throw new AddInLoadException(SD.ResourceService.GetString("AddInManager.AddInMustHaveIdentity"));
+						_events.OnAddInOperationError(
+							new AddInExceptionEventArgs(
+								new AddInLoadException(SD.ResourceService.GetString("AddInManager.AddInMustHaveIdentity"))));
+						return null;
 					}
 
 					// Try to find this AddIn in current registry
@@ -162,7 +175,7 @@ namespace ICSharpCode.AddInManager2.Model
 				else
 				{
 					// This is not a valid SharpDevelop AddIn package!
-					// TODO Throw something.
+					// TODO Show a message to user!
 				}
 			}
 
@@ -178,7 +191,10 @@ namespace ICSharpCode.AddInManager2.Model
 				AddIn addIn = AddIn.Load(SD.AddInTree, addInManifestFile);
 				if (addIn.Manifest.PrimaryIdentity == null)
 				{
-					throw new AddInLoadException(SD.ResourceService.GetString("AddInManager.AddInMustHaveIdentity"));
+					_events.OnAddInOperationError(
+						new AddInExceptionEventArgs(
+							new AddInLoadException(SD.ResourceService.GetString("AddInManager.AddInMustHaveIdentity"))));
+					return null;
 				}
 
 				// Try to find this AddIn in current registry
@@ -240,22 +256,29 @@ namespace ICSharpCode.AddInManager2.Model
 		
 		private bool CopyAddInFromZip(AddIn addIn, string zipFile)
 		{
-			try
+			if ((addIn != null) && (addIn.Manifest != null))
 			{
-				string targetDir = Path.Combine(ICSharpCode.Core.AddInManager.AddInInstallTemp,
-				                                addIn.Manifest.PrimaryIdentity);
-				if (Directory.Exists(targetDir))
+				try
 				{
-					Directory.Delete(targetDir, true);
+					string targetDir = Path.Combine(ICSharpCode.Core.AddInManager.AddInInstallTemp,
+					                                addIn.Manifest.PrimaryIdentity);
+					if (Directory.Exists(targetDir))
+					{
+						Directory.Delete(targetDir, true);
+					}
+					Directory.CreateDirectory(targetDir);
+					FastZip fastZip = new FastZip();
+					fastZip.CreateEmptyDirectories = true;
+					fastZip.ExtractZip(zipFile, targetDir, null);
+					
+					return true;
 				}
-				Directory.CreateDirectory(targetDir);
-				FastZip fastZip = new FastZip();
-				fastZip.CreateEmptyDirectories = true;
-				fastZip.ExtractZip(zipFile, targetDir, null);
-				
-				return true;
+				catch (Exception)
+				{
+					return false;
+				}
 			}
-			catch (Exception)
+			else
 			{
 				return false;
 			}
@@ -316,7 +339,7 @@ namespace ICSharpCode.AddInManager2.Model
 		
 		private void CancelPendingUpdate(AddIn addIn)
 		{
-			if (addIn != null)
+			if ((addIn != null) && (addIn.Manifest != null))
 			{
 				foreach (string identity in addIn.Manifest.Identities.Keys)
 				{
@@ -350,7 +373,7 @@ namespace ICSharpCode.AddInManager2.Model
 		
 		public void CancelUninstallation(AddIn addIn)
 		{
-			if (addIn != null)
+			if ((addIn != null) && (addIn.Manifest != null))
 			{
 				// Abort uninstallation of this AddIn
 				foreach (string identity in addIn.Manifest.Identities.Keys)
@@ -364,7 +387,7 @@ namespace ICSharpCode.AddInManager2.Model
 
 		public void UninstallAddIn(AddIn addIn)
 		{
-			if (addIn != null)
+			if ((addIn != null) && (addIn.Manifest != null))
 			{
 				List<AddIn> addInList = new List<AddIn>();
 				addInList.Add(addIn);
@@ -445,23 +468,20 @@ namespace ICSharpCode.AddInManager2.Model
 		
 		public bool IsAddInInstalled(AddIn addIn)
 		{
-			if ((addIn == null) || (addIn.Manifest == null))
+			if (addIn == null)
 			{
-				// Without a valid AddIn instance or a manifest we can't do anything...
+				// Without a valid AddIn instance we can't do anything...
 				return false;
 			}
 			
-			string identity = addIn.Manifest.PrimaryIdentity;
-			if (!String.IsNullOrEmpty(identity))
+			string identity = null;
+			if (addIn.Manifest != null)
 			{
-				return (SD.AddInTree.AddIns
-				        .Where(a => (addIn == a) || ((a.Manifest != null) && a.Manifest.Identities.ContainsKey(identity)))
-				        .FirstOrDefault() != null);
+				identity = addIn.Manifest.PrimaryIdentity;
 			}
-			else
-			{
-				return false;
-			}
+			return (SD.AddInTree.AddIns
+			        .Where(a => (addIn == a) || ((identity != null) && (a.Manifest != null) && a.Manifest.Identities.ContainsKey(identity)))
+			        .FirstOrDefault() != null);
 		}
 		
 		public bool IsAddInPreinstalled(AddIn addIn)
