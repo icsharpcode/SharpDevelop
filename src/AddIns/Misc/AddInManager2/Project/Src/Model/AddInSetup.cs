@@ -19,13 +19,15 @@ namespace ICSharpCode.AddInManager2.Model
 	{
 		private IAddInManagerEvents _events = null;
 		private INuGetPackageManager _nuGet = null;
+		private ISDAddInManagement _sdAddInManagement = null;
 		
 		private List<ManagedAddIn> _addInsMarkedForInstall;
 		
-		public AddInSetup(IAddInManagerEvents events, INuGetPackageManager nuGet)
+		public AddInSetup(IAddInManagerEvents events, INuGetPackageManager nuGet, ISDAddInManagement sdAddInManagement)
 		{
 			_events = events;
 			_nuGet = nuGet;
+			_sdAddInManagement = sdAddInManagement;
 			
 			_addInsMarkedForInstall = new List<ManagedAddIn>();
 			
@@ -37,7 +39,7 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			get
 			{
-				return SD.AddInTree.AddIns.Select(a => new ManagedAddIn(a) { IsTemporary = false, IsUpdate = false })
+				return _sdAddInManagement.AddIns.Select(a => new ManagedAddIn(a) { IsTemporary = false, IsUpdate = false })
 					.GroupJoin(
 						_addInsMarkedForInstall,
 						installedAddIn => installedAddIn.AddIn.Manifest.PrimaryIdentity,
@@ -81,7 +83,7 @@ namespace ICSharpCode.AddInManager2.Model
 			{
 				using (StreamReader r = new StreamReader(s))
 				{
-					resultAddIn = AddIn.Load(SD.AddInTree, r);
+					resultAddIn = _sdAddInManagement.Load(r);
 				}
 			}
 			
@@ -127,7 +129,7 @@ namespace ICSharpCode.AddInManager2.Model
 					// Try to find this AddIn in current registry
 					string identity = addIn.Manifest.PrimaryIdentity;
 					AddIn foundAddIn = null;
-					foreach (AddIn treeAddIn in SD.AddInTree.AddIns)
+					foreach (AddIn treeAddIn in _sdAddInManagement.AddIns)
 					{
 						if (treeAddIn.Manifest.Identities.ContainsKey(identity))
 						{
@@ -139,7 +141,7 @@ namespace ICSharpCode.AddInManager2.Model
 					// Prevent this AddIn from being uninstalled, if marked for deinstallation
 					foreach (string installedIdentity in addIn.Manifest.Identities.Keys)
 					{
-						ICSharpCode.Core.AddInManager.AbortRemoveUserAddInOnNextStart(installedIdentity);
+						_sdAddInManagement.AbortRemoveUserAddInOnNextStart(installedIdentity);
 					}
 					
 					// Create target directory for AddIn in user profile & copy package contents there
@@ -153,7 +155,7 @@ namespace ICSharpCode.AddInManager2.Model
 					else
 					{
 						addIn.Action = AddInAction.Install;
-						((AddInTreeImpl)SD.AddInTree).InsertAddIn(addIn);
+						_sdAddInManagement.AddToTree(addIn);
 					}
 					
 					// Mark this AddIn
@@ -188,7 +190,7 @@ namespace ICSharpCode.AddInManager2.Model
 			var addInManifestFile = Directory.EnumerateFiles(packageDirectory, "*.addin", SearchOption.TopDirectoryOnly).FirstOrDefault();
 			if (addInManifestFile != null)
 			{
-				AddIn addIn = AddIn.Load(SD.AddInTree, addInManifestFile);
+				AddIn addIn = _sdAddInManagement.Load(addInManifestFile);
 				if (addIn.Manifest.PrimaryIdentity == null)
 				{
 					_events.OnAddInOperationError(
@@ -200,7 +202,7 @@ namespace ICSharpCode.AddInManager2.Model
 				// Try to find this AddIn in current registry
 				string identity = addIn.Manifest.PrimaryIdentity;
 				AddIn foundAddIn = null;
-				foreach (AddIn treeAddIn in SD.AddInTree.AddIns)
+				foreach (AddIn treeAddIn in _sdAddInManagement.AddIns)
 				{
 					if (treeAddIn.Manifest.Identities.ContainsKey(identity))
 					{
@@ -212,7 +214,7 @@ namespace ICSharpCode.AddInManager2.Model
 				// Prevent this AddIn from being uninstalled, if marked for deinstallation
 				foreach (string installedIdentity in addIn.Manifest.Identities.Keys)
 				{
-					ICSharpCode.Core.AddInManager.AbortRemoveUserAddInOnNextStart(installedIdentity);
+					_sdAddInManagement.AbortRemoveUserAddInOnNextStart(installedIdentity);
 				}
 				
 				// Create target directory for AddIn in user profile & copy package contents there
@@ -226,7 +228,7 @@ namespace ICSharpCode.AddInManager2.Model
 				else
 				{
 					addIn.Action = AddInAction.Install;
-					((AddInTreeImpl)SD.AddInTree).InsertAddIn(addIn);
+					_sdAddInManagement.AddToTree(addIn);
 				}
 				
 				// Mark this AddIn
@@ -260,7 +262,7 @@ namespace ICSharpCode.AddInManager2.Model
 			{
 				try
 				{
-					string targetDir = Path.Combine(ICSharpCode.Core.AddInManager.AddInInstallTemp,
+					string targetDir = Path.Combine(_sdAddInManagement.TempInstallDirectory,
 					                                addIn.Manifest.PrimaryIdentity);
 					if (Directory.Exists(targetDir))
 					{
@@ -288,7 +290,7 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			try
 			{
-				string targetDir = Path.Combine(ICSharpCode.Core.AddInManager.AddInInstallTemp,
+				string targetDir = Path.Combine(_sdAddInManagement.TempInstallDirectory,
 				                                addIn.Manifest.PrimaryIdentity);
 				if (Directory.Exists(targetDir))
 				{
@@ -344,7 +346,7 @@ namespace ICSharpCode.AddInManager2.Model
 				foreach (string identity in addIn.Manifest.Identities.Keys)
 				{
 					// Delete from installation temp (if installation or update is pending)
-					string targetDir = Path.Combine(ICSharpCode.Core.AddInManager.AddInInstallTemp, identity);
+					string targetDir = Path.Combine(_sdAddInManagement.TempInstallDirectory, identity);
 					if (Directory.Exists(targetDir))
 					{
 						Directory.Delete(targetDir, true);
@@ -378,9 +380,9 @@ namespace ICSharpCode.AddInManager2.Model
 				// Abort uninstallation of this AddIn
 				foreach (string identity in addIn.Manifest.Identities.Keys)
 				{
-					ICSharpCode.Core.AddInManager.AbortRemoveUserAddInOnNextStart(identity);
+					_sdAddInManagement.AbortRemoveUserAddInOnNextStart(identity);
 				}
-				ICSharpCode.Core.AddInManager.Enable(new AddIn[] { addIn });
+				_sdAddInManagement.Enable(new AddIn[] { addIn });
 				_events.OnAddInStateChanged(new AddInInstallationEventArgs(addIn));
 			}
 		}
@@ -391,13 +393,13 @@ namespace ICSharpCode.AddInManager2.Model
 			{
 				List<AddIn> addInList = new List<AddIn>();
 				addInList.Add(addIn);
-				ICSharpCode.Core.AddInManager.RemoveExternalAddIns(addInList);
+				_sdAddInManagement.RemoveExternalAddIns(addInList);
 				
 				CancelPendingUpdate(addIn);
 				foreach (string identity in addIn.Manifest.Identities.Keys)
 				{
 					// Remove the user AddIn
-					string targetDir = Path.Combine(ICSharpCode.Core.AddInManager.UserAddInPath, identity);
+					string targetDir = Path.Combine(_sdAddInManagement.UserInstallDirectory, identity);
 					if (Directory.Exists(targetDir))
 					{
 						if (!addIn.Enabled)
@@ -413,7 +415,7 @@ namespace ICSharpCode.AddInManager2.Model
 							}
 						}
 						
-						ICSharpCode.Core.AddInManager.RemoveUserAddInOnNextStart(identity);
+						_sdAddInManagement.RemoveUserAddInOnNextStart(identity);
 					}
 				}
 				
@@ -441,11 +443,11 @@ namespace ICSharpCode.AddInManager2.Model
 				
 				if (disable)
 				{
-					ICSharpCode.Core.AddInManager.Disable(new AddIn[] { addIn });
+					_sdAddInManagement.Disable(new AddIn[] { addIn });
 				}
 				else
 				{
-					ICSharpCode.Core.AddInManager.Enable(new AddIn[] { addIn });
+					_sdAddInManagement.Enable(new AddIn[] { addIn });
 				}
 				
 				_events.OnAddInStateChanged(new AddInInstallationEventArgs(addIn));
@@ -456,7 +458,7 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			if (!String.IsNullOrEmpty(identity))
 			{
-				return SD.AddInTree.AddIns
+				return _sdAddInManagement.AddIns
 					.Where(a => (a.Manifest != null) && a.Manifest.Identities.ContainsKey(identity))
 					.FirstOrDefault();
 			}
@@ -479,7 +481,7 @@ namespace ICSharpCode.AddInManager2.Model
 			{
 				identity = addIn.Manifest.PrimaryIdentity;
 			}
-			return (SD.AddInTree.AddIns
+			return (_sdAddInManagement.AddIns
 			        .Where(a => (addIn == a) || ((identity != null) && (a.Manifest != null) && a.Manifest.Identities.ContainsKey(identity)))
 			        .FirstOrDefault() != null);
 		}
@@ -562,7 +564,7 @@ namespace ICSharpCode.AddInManager2.Model
 				throw new ArgumentNullException("package");
 			}
 			
-			AddIn foundAddIn = SD.AddInTree.AddIns.Where(
+			AddIn foundAddIn = _sdAddInManagement.AddIns.Where(
 				a => ((a.Manifest != null) && (a.Manifest.PrimaryIdentity == package.Id))
 				|| (a.Properties.Contains("nuGetPackageID") && (a.Properties["nuGetPackageID"] == package.Id)))
 				.FirstOrDefault();
@@ -639,37 +641,5 @@ namespace ICSharpCode.AddInManager2.Model
 				}
 			}
 		}
-		
-//		private void LoadMappings()
-//		{
-//			var savedMappings = PropertyService.Get<string[]>("AddInManager2.AddInPackageMappings", null);
-//			if (savedMappings != null)
-//			{
-//				foreach (var mapping in savedMappings)
-//				{
-//					string[] mappingParts = mapping.Split(new char[] { '|' }, 2);
-//					if ((mappingParts != null) && (mappingParts.Length == 2))
-//					{
-//						_addInToNuGetMapping[mappingParts[0]] = mappingParts[1];
-//					}
-//				}
-//			}
-//			else
-//			{
-//				// Save empty mapping
-//				SaveMappings();
-//			}
-//		}
-//
-//		private void SaveMappings()
-//		{
-//			List<string> mappingList = new List<string>();
-//			foreach (var mapping in _addInToNuGetMapping)
-//			{
-//				mappingList.Add(mapping.Key + "|" + mapping.Value);
-//			}
-//
-//			PropertyService.Set<string[]>("AddInManager2.AddInPackageMappings", mappingList.ToArray());
-//		}
 	}
 }

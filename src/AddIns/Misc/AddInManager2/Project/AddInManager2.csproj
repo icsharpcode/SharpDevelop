@@ -100,6 +100,7 @@
     <Compile Include="Src\Model\AddInManagerSettings.cs" />
     <Compile Include="Src\Model\Interfaces\IAddInManagerServices.cs" />
     <Compile Include="Src\Model\Interfaces\IAddInManagerSettings.cs" />
+    <Compile Include="Src\Model\Interfaces\ISDAddInManagement.cs" />
     <Compile Include="Src\Model\ManagedAddIn.cs" />
     <Compile Include="Src\Model\Interfaces\IAddInManagerEvents.cs" />
     <Compile Include="Src\Model\Interfaces\IAddInPackage.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="Src\Model\Pages.cs" />
     <Compile Include="Src\Model\Model.cs" />
     <Compile Include="Src\Model\ReadPackagesResult.cs" />
+    <Compile Include="Src\Model\SDAddInManagement.cs" />
     <Compile Include="Src\ViewModel\AddInManagerViewModel.cs" />
     <Compile Include="Src\ViewModel\AddInPackageViewModelBase.cs" />
     <Compile Include="Src\ViewModel\AddInsViewModelBase.cs" />

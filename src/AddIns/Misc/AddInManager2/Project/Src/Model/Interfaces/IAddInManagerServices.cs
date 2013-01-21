@@ -34,5 +34,9 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			get;
 		}
+		ISDAddInManagement SDAddInManagement
+		{
+			get;
+		}
 	}
 }

@@ -42,6 +42,12 @@ namespace ICSharpCode.AddInManager2
 				get;
 				set;
 			}
+			
+			public ISDAddInManagement SDAddInManagement
+			{
+				get;
+				set;
+			}
     	}
     	
     	private static AddInManagerServiceContainer _container;
@@ -53,7 +59,8 @@ namespace ICSharpCode.AddInManager2
 			_container.Events = new AddInManagerEvents();
 			_container.Repositories = new PackageRepositories(_container.Events, _container.Settings);
 			_container.NuGet = new NuGetPackageManager(_container.Repositories, _container.Events);
-			_container.Setup = new AddInSetup(_container.Events, _container.NuGet);
+			_container.SDAddInManagement = new SDAddInManagement();
+			_container.Setup = new AddInSetup(_container.Events, _container.NuGet, _container.SDAddInManagement);
 		}
 
         public static IAddInManagerEvents Events
