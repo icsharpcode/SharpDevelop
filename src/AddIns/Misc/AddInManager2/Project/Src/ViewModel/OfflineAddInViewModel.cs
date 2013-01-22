@@ -217,7 +217,16 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		{
 			get
 			{
-				return !IsPreinstalled;
+				return !IsPreinstalled && (Id != null);
+			}
+		}
+		
+		public override bool IsDisablingPossible
+		{
+			get
+			{
+				// Disabling is only possible if this AddIn has an identity!
+				return (Id != null);
 			}
 		}
 		

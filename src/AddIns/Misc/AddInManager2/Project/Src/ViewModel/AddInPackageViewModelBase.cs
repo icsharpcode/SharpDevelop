@@ -49,7 +49,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			);
 			disablePackageCommand = new DelegateCommand(
 				param => DisablePackage(),
-				param => !IsAdded && !IsRemoved && IsInstalled && IsOffline
+				param => !IsAdded && !IsRemoved && IsInstalled && IsOffline && IsDisablingPossible
 			);
 			cancelInstallationCommand = new DelegateCommand(
 				param => CancelInstallation(),
@@ -335,6 +335,11 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		}
 		
 		public abstract bool IsUninstallable
+		{
+			get;
+		}
+		
+		public abstract bool IsDisablingPossible
 		{
 			get;
 		}

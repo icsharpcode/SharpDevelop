@@ -70,14 +70,18 @@ namespace ICSharpCode.AddInManager2.Model
 				{
 					if (addInEntry != null)
 					{
-						throw new AddInLoadException("The package may only contain one .addin file.");
+						_events.OnAddInOperationError(
+							new AddInExceptionEventArgs(
+								new AddInLoadException("The package may only contain one .addin file.")));
 					}
 					addInEntry = entry;
 				}
 			}
 			if (addInEntry == null)
 			{
-				throw new AddInLoadException("The package must contain one .addin file.");
+				_events.OnAddInOperationError(
+					new AddInExceptionEventArgs(
+						new AddInLoadException("The package must contain one .addin file.")));
 			}
 			using (Stream s = file.GetInputStream(addInEntry))
 			{
@@ -90,30 +94,54 @@ namespace ICSharpCode.AddInManager2.Model
 			return resultAddIn;
 		}
 		
-		public AddIn InstallAddIn(string archiveFileName)
+		public AddIn InstallAddIn(string fileName)
 		{
-			if (archiveFileName != null)
+			if (fileName != null)
 			{
-				// Try to load the *.sdaddin file as ZIP archive
 				AddIn addIn = null;
-				ZipFile zipFile = null;
-				try
+				
+				switch (Path.GetExtension(fileName).ToLowerInvariant())
 				{
-					zipFile = new ZipFile(archiveFileName);
-					addIn = LoadAddInFromZip(zipFile);
-				}
-				catch (Exception ex)
-				{
-					// Report the exception
-					_events.OnAddInOperationError(new AddInExceptionEventArgs(ex));
-					return null;
-				}
-				finally
-				{
-					if (zipFile != null)
-					{
-						zipFile.Close();
-					}
+					case ".addin":
+						if (FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, fileName))
+						{
+							// TODO Send around the error message
+//							MessageService.ShowMessage("${res:AddInManager.CannotInstallIntoApplicationDirectory}");
+							return null;
+						}
+						
+						// Load directly from location
+						addIn = _sdAddInManagement.Load(fileName);
+						
+						break;
+						
+					case ".sdaddin":
+						// Try to load the *.sdaddin file as ZIP archive
+						ZipFile zipFile = null;
+						try
+						{
+							zipFile = new ZipFile(fileName);
+							addIn = LoadAddInFromZip(zipFile);
+						}
+						catch (Exception ex)
+						{
+							// Report the exception
+							_events.OnAddInOperationError(new AddInExceptionEventArgs(ex));
+							return null;
+						}
+						finally
+						{
+							if (zipFile != null)
+							{
+								zipFile.Close();
+							}
+						}
+						break;
+						
+					default:
+						// TODO Send around the error message
+//							MessageService.ShowMessage("${res:AddInManager.UnknownFileFormat} " + Path.GetExtension(file));
+						return null;
 				}
 				
 				if (addIn != null)
@@ -145,7 +173,7 @@ namespace ICSharpCode.AddInManager2.Model
 					}
 					
 					// Create target directory for AddIn in user profile & copy package contents there
-					CopyAddInFromZip(addIn, archiveFileName);
+					CopyAddInFromZip(addIn, fileName);
 					
 					// Install the AddIn using manifest
 					if (foundAddIn != null)
@@ -389,7 +417,7 @@ namespace ICSharpCode.AddInManager2.Model
 
 		public void UninstallAddIn(AddIn addIn)
 		{
-			if ((addIn != null) && (addIn.Manifest != null))
+			if ((addIn != null) && (addIn.Manifest.PrimaryIdentity != null))
 			{
 				List<AddIn> addInList = new List<AddIn>();
 				addInList.Add(addIn);

@@ -143,6 +143,14 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			}
 		}
 		
+		public override bool IsDisablingPossible
+		{
+			get
+			{
+				return false;
+			}
+		}
+		
 		public override bool IsEnabled
 		{
 			get
