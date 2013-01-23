@@ -85,6 +85,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			ISet<Statement> refStatements, BaseRefactoringContext context)
 		{
 			var cfg = cfgBuilder.BuildControlFlowGraph (statement, context.Resolver, context.CancellationToken);
+			if (cfg.Count == 0)
+				return new VariableReferenceNode ();
 			return cfgVrNodeBuilder.Build (cfg [0], references, refStatements, context.Resolver);
 		}
 
@@ -92,6 +94,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		                                           ISet<Statement> refStatements, CSharpAstResolver resolver, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var cfg = cfgBuilder.BuildControlFlowGraph (statement, resolver, cancellationToken);
+			if (cfg.Count == 0)
+				return new VariableReferenceNode();
 			return cfgVrNodeBuilder.Build (cfg [0], references, refStatements, resolver);
 		}
 
