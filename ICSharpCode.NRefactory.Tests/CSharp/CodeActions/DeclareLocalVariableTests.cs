@@ -217,6 +217,53 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 }");
 		}
 
-			
+		[Test]
+		public void TestRemoveParens ()
+		{
+			TestRefactoringContext.UseExplict = true;
+			Test<DeclareLocalVariableAction> (@"class TestClass
+{
+	void Test ()
+	{
+		Console.WriteLine ((<- 1 + 9 ->).ToString ());
+	}
+}
+", @"class TestClass
+{
+	void Test ()
+	{
+		int i = 1 + 9;
+		Console.WriteLine (i.ToString ());
+	}
+}
+");
+		}
+
+		[Test]
+		public void TestRemoveParensComplexCase ()
+		{
+			TestRefactoringContext.UseExplict = true;
+			Test<DeclareLocalVariableAction> (@"class TestClass
+{
+	void Test ()
+	{
+		int a = <-1 + 9->;
+		Console.WriteLine ((1 + 9).ToString ());
+		Console.WriteLine ((1 + 9));
+	}
+}
+", @"class TestClass
+{
+	void Test ()
+	{
+		int i = 1 + 9;
+		int a = i;
+		Console.WriteLine (i.ToString ());
+		Console.WriteLine (i);
+	}
+}
+", 1);
+		}
+
 	}
 }
