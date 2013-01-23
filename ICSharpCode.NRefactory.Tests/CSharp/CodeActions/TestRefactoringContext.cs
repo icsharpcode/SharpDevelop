@@ -121,7 +121,11 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				var startOffset = GetCurrentOffset (insertType.LBraceToken.EndLocation);
 				foreach (var node in nodes.Reverse ()) {
 					var output = OutputNode (1, node, true);
-					InsertText (startOffset, output.Text);
+					if (parentType.Kind == TypeKind.Enum) {
+						InsertText (startOffset, output.Text +",");
+					} else {
+						InsertText (startOffset, output.Text);
+					}
 					output.RegisterTrackedSegments (this, startOffset);
 				}
 				var tcs = new TaskCompletionSource<object> ();

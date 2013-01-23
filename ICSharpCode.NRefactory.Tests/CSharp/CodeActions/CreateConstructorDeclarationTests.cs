@@ -154,5 +154,31 @@ class TestClass
 }
 ");
 		}
+
+		[Test]
+		public void TestBug9664  ()
+		{
+			TestWrongContext<CreateConstructorDeclarationAction> (
+				@"enum Foo
+{
+    Bar,
+}
+
+class Baz
+{
+    public Baz (Foo foo)
+    {
+    }
+}
+
+class Program
+{
+    public void Main ()
+    {
+        var b = new Baz (Foo.$Something);
+    }
+}
+");
+		}
 	}
 }
