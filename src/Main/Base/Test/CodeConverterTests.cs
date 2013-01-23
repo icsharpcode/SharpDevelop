@@ -265,6 +265,36 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                 "  }\n" +
 			                 "}");
 		}
+		
+		[Test]
+		public void HandlesStaticEvent()
+		{
+			TestProgramVB2CS("Class Test\n" +
+			                 "  Shared WithEvents timer As Timers.Timer\n" +
+			                 "  Shared Sub timer_Elapsed(sender As Object, e As Timers.ElapsedEventArgs) Handles timer.Elapsed\n" +
+			                 "  End Sub\n" +
+			                 "End Class",
+			                 DefaultUsingsCSharp +
+			                 "class Test\n" +
+			                 "{\n" +
+			                 "  private static Timers.Timer withEventsField_timer;\n" +
+			                 "  public static Timers.Timer timer {\n" +
+			                 "    get { return withEventsField_timer; }\n" +
+			                 "    set {\n" +
+			                 "      if (withEventsField_timer != null) {\n" +
+			                 "        withEventsField_timer.Elapsed -= timer_Elapsed;\n" +
+			                 "      }\n" +
+			                 "      withEventsField_timer = value;\n" +
+			                 "      if (withEventsField_timer != null) {\n" +
+			                 "        withEventsField_timer.Elapsed += timer_Elapsed;\n" +
+			                 "      }\n" +
+			                 "    }\n" +
+			                 "  }\n" +
+			                 "  public static void timer_Elapsed(object sender, Timers.ElapsedEventArgs e)\n" +
+			                 "  {\n" +
+			                 "  }\n" +
+			                 "}");
+		}
 		#endregion
 		
 		#region ReferenceEqualityAndValueEquality
