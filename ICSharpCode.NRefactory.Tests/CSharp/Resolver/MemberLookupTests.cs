@@ -489,5 +489,58 @@ class C : B {
 			var trr = Resolve<TypeResolveResult>(program);
 			Assert.AreEqual("B+F", trr.Type.ReflectionName);
 		}
+
+		/// <summary>
+		/// Bug 9604 - Completion problem with indexers
+		/// </summary>
+		[Test]
+		public void TestBug9604()
+		{
+			string program = @"class Item
+{
+    public static int Foo = 42;
+
+    public class Builder
+    {
+        public int Foo
+        {
+            get { return $Item.Foo$; }
+        }
+
+        public object this[int field, int i]
+        {
+            get { return null; }
+        }
+    }
+}
+";
+			var result = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("Item.Foo", result.Member.FullName);
+		}
+
+		[Test]
+		public void Test9604OperatorCase()
+		{
+			string program = @"class op_Addition
+{
+    public static int Foo = 42;
+
+    public class Builder
+    {
+        public int Foo
+        {
+            get { return $op_Addition.Foo$; }
+        }
+
+        public static int operator + (Builder a, Builder b) 
+		{
+			return 0;
+		}
+    }
+}
+";
+			var result = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("op_Addition.Foo", result.Member.FullName);
+		}
 	}
 }

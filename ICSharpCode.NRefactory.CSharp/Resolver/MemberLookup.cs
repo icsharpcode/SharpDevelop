@@ -337,7 +337,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return entity.Name == name && IsAccessible(entity, allowProtectedAccess);
 			};
 			Predicate<IUnresolvedMember> memberFilter = delegate(IUnresolvedMember entity) {
-				return entity.Name == name;
+				// NOTE: Atm destructors can be looked up with 'Finalize'
+				return entity.EntityType != EntityType.Indexer &&
+				       entity.EntityType != EntityType.Operator && 
+				       entity.Name == name;
 			};
 			
 			List<LookupGroup> lookupGroups = new List<LookupGroup>();
