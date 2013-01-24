@@ -77,6 +77,7 @@
     <Resource Include="Resources\sd_packageicon.png" />
     <Resource Include="Resources\accept.png" />
     <Resource Include="Resources\exclamation.png" />
+    <Resource Include="Resources\external_addin_small.png" />
     <None Include="Resources\license.txt" />
     <Resource Include="Resources\magnifier.png" />
     <Resource Include="Resources\packageicon.png" />
@@ -110,7 +111,7 @@
     <Compile Include="Src\Model\NuGetPackageManager.cs" />
     <Compile Include="Src\Model\AddInSetup.cs" />
     <Compile Include="Src\Model\AddInManagerEvents.cs" />
-    <Compile Include="Src\Model\AddInExceptionEventArgs.cs" />
+    <Compile Include="Src\Model\AddInOperationErrorEventArgs.cs" />
     <Compile Include="Src\Model\NuGetPackageOperationEventArgs.cs" />
     <Compile Include="Src\Model\PackageMessageLoggedEventArgs.cs" />
     <Compile Include="Src\Model\PackageRepositories.cs" />

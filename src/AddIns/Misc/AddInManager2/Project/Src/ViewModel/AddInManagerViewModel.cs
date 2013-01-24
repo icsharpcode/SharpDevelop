@@ -39,7 +39,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			
 			// Add event handlers
 			AddInManager.Events.OperationStarted += AddInManager_Events_OperationStarted;
-			AddInManager.Events.AddInOperationError += AddInManager_Events_NuGetPackageOperationError;
+			AddInManager.Events.AddInOperationError += AddInManager_Events_AddInOperationError;
 			AddInManager.Events.AcceptLicenses += AddInManager_Events_AcceptLicenses;
 			
 			AvailableAddInsViewModel = new AvailableAddInsViewModel();
@@ -79,7 +79,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		public void Dispose()
 		{
-			AddInManager.Events.AddInOperationError -= AddInManager_Events_NuGetPackageOperationError;
+			AddInManager.Events.OperationStarted -= AddInManager_Events_OperationStarted;
+			AddInManager.Events.AddInOperationError -= AddInManager_Events_AddInOperationError;
 			AddInManager.Events.AcceptLicenses -= AddInManager_Events_AcceptLicenses;
 		}
 		
@@ -126,9 +127,9 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			this.HasError = false;
 		}
 		
-		private void AddInManager_Events_NuGetPackageOperationError(object sender, AddInExceptionEventArgs e)
+		private void AddInManager_Events_AddInOperationError(object sender, AddInOperationErrorEventArgs e)
 		{
-			ShowErrorMessage(e.Exception.Message);
+			ShowErrorMessage(e.Message);
 		}
 		
 		private void AddInManager_Events_AcceptLicenses(object sender, AcceptLicensesEventArgs e)

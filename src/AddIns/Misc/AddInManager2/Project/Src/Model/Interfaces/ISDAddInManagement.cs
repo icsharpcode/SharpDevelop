@@ -35,5 +35,6 @@ namespace ICSharpCode.AddInManager2.Model
 		void RemoveUserAddInOnNextStart(string identity);
 		AddIn Load(TextReader textReader);
 		AddIn Load(string fileName);
+		void AddExternalAddIns(IList<AddIn> addIns);
 	}
 }

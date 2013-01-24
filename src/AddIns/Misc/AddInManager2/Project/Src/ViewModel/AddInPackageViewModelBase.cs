@@ -220,6 +220,14 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			get;
 		}
 		
+		public virtual bool IsExternallyReferenced
+		{
+			get
+			{
+				return false;
+			}
+		}
+		
 		public abstract bool IsPreinstalled
 		{
 			get;

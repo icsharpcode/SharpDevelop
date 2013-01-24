@@ -13,6 +13,14 @@ namespace ICSharpCode.AddInManager2.Model
 	{
 		public event EventHandler OperationStarted;
 		
+		public void OnOperationStarted()
+		{
+			if (OperationStarted != null)
+			{
+				OperationStarted(this, new EventArgs());
+			}
+		}
+		
 		public void OnOperationStarted(EventArgs e)
 		{
 			if (OperationStarted != null)
@@ -41,9 +49,9 @@ namespace ICSharpCode.AddInManager2.Model
 			}
 		}
 		
-		public event EventHandler<AddInExceptionEventArgs> AddInOperationError;
+		public event EventHandler<AddInOperationErrorEventArgs> AddInOperationError;
 		
-		public void OnAddInOperationError(AddInExceptionEventArgs e)
+		public void OnAddInOperationError(AddInOperationErrorEventArgs e)
 		{
 			if (AddInOperationError != null)
 			{

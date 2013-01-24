@@ -12,7 +12,7 @@ using NuGet;
 
 namespace ICSharpCode.AddInManager2.ViewModel
 {
-	public class OfflineAddInsViewModelBase : AddInPackageViewModelBase
+	public class OfflineAddInsViewModel : AddInPackageViewModelBase
 	{
 		private AddIn _addIn;
 		private ManagedAddIn _markedAddIn;
@@ -33,13 +33,13 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		private string _description;
 		private DateTime? _lastUpdated;
 		
-		public OfflineAddInsViewModelBase(ManagedAddIn addIn)
+		public OfflineAddInsViewModel(ManagedAddIn addIn)
 			: base()
 		{
 			Initialize(addIn);
 		}
 		
-		public OfflineAddInsViewModelBase(IAddInManagerServices services, ManagedAddIn addIn)
+		public OfflineAddInsViewModel(IAddInManagerServices services, ManagedAddIn addIn)
 			: base(services)
 		{
 			Initialize(addIn);
@@ -148,6 +148,24 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			get
 			{
 				return true;
+			}
+		}
+		
+		public override bool IsExternallyReferenced
+		{
+			get
+			{
+				if (_addIn != null)
+				{
+					// The AddIn is externally referenced, if it's .addin file doesn't reside in
+					// somewhere in application path (preinstalled AddIns) or in config path (usually installed AddIns).
+					return !FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, _addIn.FileName)
+						&& !FileUtility.IsBaseDirectory(SD.PropertyService.ConfigDirectory, _addIn.FileName);
+				}
+				else
+				{
+					return false;
+				}
 			}
 		}
 		
@@ -452,6 +470,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 
 		public override void RemovePackage()
 		{
+			ClearReportedMessages();
+			
 			if (_addIn.Manifest.PrimaryIdentity == "ICSharpCode.AddInManager2")
 			{
 				MessageService.ShowMessage("${res:AddInManager2.CannotRemoveAddInManager}", "${res:AddInManager.Title}");
@@ -481,21 +501,29 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		public override void CancelInstallation()
 		{
+			ClearReportedMessages();
+			
 			AddInManager.Setup.CancelInstallation(_addIn);
 		}
 		
 		public override void CancelUpdate()
 		{
+			ClearReportedMessages();
+			
 			AddInManager.Setup.CancelUpdate(_addIn);
 		}
 		
 		public override void CancelUninstallation()
 		{
+			ClearReportedMessages();
+			
 			AddInManager.Setup.CancelUninstallation(_addIn);
 		}
 
 		public override void DisablePackage()
 		{
+			ClearReportedMessages();
+			
 			if (_addIn == null)
 			{
 				return;
@@ -547,6 +575,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		public override void ShowOptions()
 		{
+			ClearReportedMessages();
+			
 			AddInTreeNode dummyNode = new AddInTreeNode();
 			foreach (KeyValuePair<string, ExtensionPath> pair in _addIn.Paths)
 			{
@@ -558,6 +588,12 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			ICSharpCode.SharpDevelop.Commands.OptionsCommand.ShowTabbedOptions(
 				_addIn.Name + " " + SD.ResourceService.GetString("AddInManager.Options"),
 				dummyNode);
+		}
+		
+		private void ClearReportedMessages()
+		{
+			// Notify about new operation
+			AddInManager.Events.OnOperationStarted();
 		}
 	}
 }

@@ -236,7 +236,7 @@ If you do not agree to the license terms click "I Decline".</value>
     <value>License Agreements</value>
   </data>
   <data name="AddInManager2.SDAddInFileFilter" xml:space="preserve">
-    <value>SharpDevelop AddIns|*.sdaddin|All files|*.*</value>
+    <value>SharpDevelop AddIns|*.sdaddin;*.addin|All files|*.*</value>
   </data>
   <data name="AddInManager2.InstallDependentMessage" xml:space="preserve">
     <value>Package "{0}" needs at least one additional package:
@@ -253,5 +253,8 @@ The application will try to download and install them, as well. Do you want to c
   </data>
   <data name="AddInManager2.Details.FileName" xml:space="preserve">
     <value>File name:</value>
+  </data>
+  <data name="AddInManager2.InvalidPackage" xml:space="preserve">
+    <value>Selected package doesn't contain a valid SharpDevelop AddIn.</value>
   </data>
 </root>

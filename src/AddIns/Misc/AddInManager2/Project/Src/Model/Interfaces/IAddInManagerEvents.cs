@@ -13,6 +13,7 @@ namespace ICSharpCode.AddInManager2.Model
 	{
 		event EventHandler OperationStarted;
 		void OnOperationStarted(EventArgs e);
+		void OnOperationStarted();
 		
 		event EventHandler<AddInInstallationEventArgs> AddInInstalled;
 		void OnAddInInstalled(AddInInstallationEventArgs e);
@@ -20,8 +21,8 @@ namespace ICSharpCode.AddInManager2.Model
 		event EventHandler<AddInInstallationEventArgs> AddInUninstalled;
 		void OnAddInUninstalled(AddInInstallationEventArgs e);
 		
-		event EventHandler<AddInExceptionEventArgs> AddInOperationError;
-		void OnAddInOperationError(AddInExceptionEventArgs e);
+		event EventHandler<AddInOperationErrorEventArgs> AddInOperationError;
+		void OnAddInOperationError(AddInOperationErrorEventArgs e);
 		
 		event EventHandler<PackageOperationEventArgs> AddInPackageDownloaded;
 		void OnAddInPackageDownloaded(PackageOperationEventArgs e);

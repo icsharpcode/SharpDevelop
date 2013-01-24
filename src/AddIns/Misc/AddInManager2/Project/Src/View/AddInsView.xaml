@@ -19,6 +19,8 @@
 		             UriSource="pack://application:,,,/ICSharpCode.AddInManager2;component/Resources/packageicon_small.png"/>
 		<BitmapImage x:Key="SDPackageIcon"
 		             UriSource="pack://application:,,,/ICSharpCode.AddInManager2;component/Resources/sd_packageicon.png"/>
+		<BitmapImage x:Key="SmallExternalAddInIcon"
+		             UriSource="pack://application:,,,/ICSharpCode.AddInManager2;component/Resources/external_addin_small.png"/>
 		<BitmapImage x:Key="PackageAddedIcon"
 		             UriSource="pack://application:,,,/ICSharpCode.AddInManager2;component/Resources/accept.png"/>
 		<BitmapImage x:Key="SearchIcon"
@@ -46,6 +48,16 @@
 		<Style x:Key="AddInOnlineStateImageStyle" TargetType="{x:Type Image}">
 			<Setter Property="Source" Value="{StaticResource SmallPackageIcon}" />
 			<Setter Property="Visibility" Value="{Binding Path=HasNuGetConnection, Converter={StaticResource BoolToVisibility}}" />
+			<Style.Triggers>
+				<DataTrigger Binding="{Binding IsEnabled}" Value="False">
+					<Setter Property="Opacity" Value="0.5" />
+				</DataTrigger>
+			</Style.Triggers>
+		</Style>
+		
+		<Style x:Key="AddInExternalStateImageStyle" TargetType="{x:Type Image}">
+			<Setter Property="Source" Value="{StaticResource SmallExternalAddInIcon}" />
+			<Setter Property="Visibility" Value="{Binding Path=IsExternallyReferenced, Converter={StaticResource BoolToVisibility}}" />
 			<Style.Triggers>
 				<DataTrigger Binding="{Binding IsEnabled}" Value="False">
 					<Setter Property="Opacity" Value="0.5" />
@@ -97,6 +109,12 @@
 					Margin="36,0,0,0"
 					VerticalAlignment="Top"
 					Style="{StaticResource AddInOnlineStateImageStyle}" />
+				<Image
+					Grid.Column="0"
+					Height="16"
+					Margin="36,0,0,0"
+					VerticalAlignment="Top"
+					Style="{StaticResource AddInExternalStateImageStyle}" />
 				<StackPanel
 					Grid.Column="1"
 					Margin="4, 0">

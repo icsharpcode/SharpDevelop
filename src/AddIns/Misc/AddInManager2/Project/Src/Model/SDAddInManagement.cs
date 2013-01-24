@@ -84,5 +84,10 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			return AddIn.Load(SD.AddInTree, fileName);
 		}
+		
+		public void AddExternalAddIns(IList<AddIn> addIns)
+		{
+			ICSharpCode.Core.AddInManager.AddExternalAddIns(addIns);
+		}
 	}
 }

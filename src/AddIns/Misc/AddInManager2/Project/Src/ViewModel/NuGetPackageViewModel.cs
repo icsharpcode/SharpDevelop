@@ -307,7 +307,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 
 		private void ClearReportedMessages()
 		{
-			//			packageManagementEvents.OnPackageOperationsStarting();
+			// Notify about new operation
+			AddInManager.Events.OnOperationStarted();
 		}
 
 		private void GetPackageOperations()
@@ -417,11 +418,12 @@ namespace ICSharpCode.AddInManager2.ViewModel
 
 		private void ReportError(Exception ex)
 		{
-			AddInManager.Events.OnAddInOperationError(new AddInExceptionEventArgs(ex));
+			AddInManager.Events.OnAddInOperationError(new AddInOperationErrorEventArgs(ex));
 		}
 
 		public override void RemovePackage()
 		{
+			ClearReportedMessages();
 			TryUninstallingPackage();
 		}
 
@@ -451,6 +453,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		public override void CancelInstallation()
 		{
+			ClearReportedMessages();
+			
 			AddIn addIn = AddInManager.Setup.GetAddInForNuGetPackage(_package, true);
 			if (addIn != null)
 			{
@@ -460,6 +464,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		public override void CancelUpdate()
 		{
+			ClearReportedMessages();
+			
 			AddIn addIn = AddInManager.Setup.GetAddInForNuGetPackage(_package, true);
 			if (addIn != null)
 			{
@@ -469,6 +475,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		public override void CancelUninstallation()
 		{
+			ClearReportedMessages();
+			
 			AddIn addIn = AddInManager.Setup.GetAddInForNuGetPackage(_package);
 			if (addIn != null)
 			{

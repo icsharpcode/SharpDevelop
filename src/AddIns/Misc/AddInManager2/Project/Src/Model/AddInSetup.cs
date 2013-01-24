@@ -56,7 +56,7 @@ namespace ICSharpCode.AddInManager2.Model
 			}
 			catch (Exception ex)
 			{
-				_events.OnAddInOperationError(new AddInExceptionEventArgs(ex));
+				_events.OnAddInOperationError(new AddInOperationErrorEventArgs(ex));
 			}
 		}
 		
@@ -71,8 +71,9 @@ namespace ICSharpCode.AddInManager2.Model
 					if (addInEntry != null)
 					{
 						_events.OnAddInOperationError(
-							new AddInExceptionEventArgs(
-								new AddInLoadException("The package may only contain one .addin file.")));
+							new AddInOperationErrorEventArgs(
+								SD.ResourceService.GetString("AddInManager2.InvalidPackage")));
+						return null;
 					}
 					addInEntry = entry;
 				}
@@ -80,8 +81,9 @@ namespace ICSharpCode.AddInManager2.Model
 			if (addInEntry == null)
 			{
 				_events.OnAddInOperationError(
-					new AddInExceptionEventArgs(
-						new AddInLoadException("The package must contain one .addin file.")));
+					new AddInOperationErrorEventArgs(
+						SD.ResourceService.GetString("AddInManager2.InvalidPackage")));
+				return null;
 			}
 			using (Stream s = file.GetInputStream(addInEntry))
 			{
@@ -100,22 +102,28 @@ namespace ICSharpCode.AddInManager2.Model
 			{
 				AddIn addIn = null;
 				
+				bool installAsExternal = false;
+				
 				switch (Path.GetExtension(fileName).ToLowerInvariant())
 				{
 					case ".addin":
 						if (FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, fileName))
 						{
-							// TODO Send around the error message
-//							MessageService.ShowMessage("${res:AddInManager.CannotInstallIntoApplicationDirectory}");
+							// Don't allow to install AddIns from application root path
+							_events.OnAddInOperationError(
+								new AddInOperationErrorEventArgs(
+									SD.ResourceService.GetString("AddInManager.CannotInstallIntoApplicationDirectory")));
 							return null;
 						}
 						
 						// Load directly from location
 						addIn = _sdAddInManagement.Load(fileName);
+						installAsExternal = true;
 						
 						break;
 						
 					case ".sdaddin":
+					case ".zip":
 						// Try to load the *.sdaddin file as ZIP archive
 						ZipFile zipFile = null;
 						try
@@ -123,10 +131,12 @@ namespace ICSharpCode.AddInManager2.Model
 							zipFile = new ZipFile(fileName);
 							addIn = LoadAddInFromZip(zipFile);
 						}
-						catch (Exception ex)
+						catch (Exception)
 						{
-							// Report the exception
-							_events.OnAddInOperationError(new AddInExceptionEventArgs(ex));
+							// ZIP file seems not to be valid
+							_events.OnAddInOperationError(
+								new AddInOperationErrorEventArgs(
+									SD.ResourceService.GetString("AddInManager2.InvalidPackage")));
 							return null;
 						}
 						finally
@@ -139,8 +149,10 @@ namespace ICSharpCode.AddInManager2.Model
 						break;
 						
 					default:
-						// TODO Send around the error message
-//							MessageService.ShowMessage("${res:AddInManager.UnknownFileFormat} " + Path.GetExtension(file));
+						// Unknown format of file
+						_events.OnAddInOperationError(
+							new AddInOperationErrorEventArgs(
+								SD.ResourceService.GetString("AddInManager.UnknownFileFormat") + " " + Path.GetExtension(fileName)));
 						return null;
 				}
 				
@@ -149,7 +161,7 @@ namespace ICSharpCode.AddInManager2.Model
 					if ((addIn.Manifest == null) || (addIn.Manifest.PrimaryIdentity == null))
 					{
 						_events.OnAddInOperationError(
-							new AddInExceptionEventArgs(
+							new AddInOperationErrorEventArgs(
 								new AddInLoadException(SD.ResourceService.GetString("AddInManager.AddInMustHaveIdentity"))));
 						return null;
 					}
@@ -172,18 +184,26 @@ namespace ICSharpCode.AddInManager2.Model
 						_sdAddInManagement.AbortRemoveUserAddInOnNextStart(installedIdentity);
 					}
 					
-					// Create target directory for AddIn in user profile & copy package contents there
-					CopyAddInFromZip(addIn, fileName);
-					
-					// Install the AddIn using manifest
-					if (foundAddIn != null)
+					if (!installAsExternal)
 					{
-						addIn.Action = AddInAction.Update;
+						// Create target directory for AddIn in user profile & copy package contents there
+						CopyAddInFromZip(addIn, fileName);
+						
+						// Install the AddIn using manifest
+						if (foundAddIn != null)
+						{
+							addIn.Action = AddInAction.Update;
+						}
+						else
+						{
+							addIn.Action = AddInAction.Install;
+							_sdAddInManagement.AddToTree(addIn);
+						}
 					}
 					else
 					{
-						addIn.Action = AddInAction.Install;
-						_sdAddInManagement.AddToTree(addIn);
+						// Only add a reference to an external manifest
+						_sdAddInManagement.AddExternalAddIns(new AddIn[] { addIn });
 					}
 					
 					// Mark this AddIn
@@ -202,13 +222,9 @@ namespace ICSharpCode.AddInManager2.Model
 					
 					return addIn;
 				}
-				else
-				{
-					// This is not a valid SharpDevelop AddIn package!
-					// TODO Show a message to user!
-				}
 			}
 
+			// In successful cases we should have exited somewhere else, in error cases the error event was already fired.
 			return null;
 		}
 		
@@ -222,7 +238,7 @@ namespace ICSharpCode.AddInManager2.Model
 				if (addIn.Manifest.PrimaryIdentity == null)
 				{
 					_events.OnAddInOperationError(
-						new AddInExceptionEventArgs(
+						new AddInOperationErrorEventArgs(
 							new AddInLoadException(SD.ResourceService.GetString("AddInManager.AddInMustHaveIdentity"))));
 					return null;
 				}
@@ -278,7 +294,9 @@ namespace ICSharpCode.AddInManager2.Model
 			else
 			{
 				// This is not a valid SharpDevelop AddIn package!
-				// TODO Throw something.
+				_events.OnAddInOperationError(
+					new AddInOperationErrorEventArgs(
+						SD.ResourceService.GetString("AddInManager2.InvalidPackage")));
 			}
 
 			return null;

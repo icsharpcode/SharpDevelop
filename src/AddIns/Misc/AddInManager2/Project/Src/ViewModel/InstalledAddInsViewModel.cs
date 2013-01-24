@@ -125,7 +125,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 					}
 				}
 				
-				addInPackage = new OfflineAddInsViewModelBase(addIn);
+				addInPackage = new OfflineAddInsViewModel(addIn);
 				yield return addInPackage;
 			}
 		}

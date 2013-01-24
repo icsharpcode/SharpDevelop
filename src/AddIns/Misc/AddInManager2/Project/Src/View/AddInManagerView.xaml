@@ -20,6 +20,25 @@
 		<BitmapImage x:Key="ErrorIcon"
 		             UriSource="pack://application:,,,/ICSharpCode.AddInManager2;component/Resources/exclamation.png"/>
 		
+		<Style x:Key="errorImageStyle" TargetType="{x:Type Image}">
+			<Setter Property="Visibility" Value="{Binding Path=HasError, Converter={StaticResource BoolToVisibility}}" />
+			<Setter Property="Source" Value="{StaticResource ErrorIcon}" />
+			<Style.Triggers>
+				<DataTrigger Binding="{Binding Path=HasError}" Value="True">
+					<DataTrigger.EnterActions>
+						<BeginStoryboard Name="BlinkingIconStoryboard">
+							<Storyboard>
+								<DoubleAnimation
+									RepeatBehavior="Forever" AutoReverse="True"
+									From="1" To="0" Duration="0:0:0.75"
+									Storyboard.TargetProperty="Opacity" />
+							</Storyboard>
+						</BeginStoryboard>
+					</DataTrigger.EnterActions>
+				</DataTrigger>
+			</Style.Triggers>
+		</Style>
+		
 		<Style x:Key="tabHeaderTextStyle" TargetType="{x:Type TextBlock}">
 			<Style.Triggers>
 				<DataTrigger Binding="{Binding DataContext.HasHighlightCount}" Value="True">
@@ -60,8 +79,7 @@
 			<StackPanel>
 				<Image
 					Margin="4, 4"
-					Visibility="{Binding Path=HasError, Converter={StaticResource BoolToVisibility}}"
-					Source="{StaticResource ErrorIcon}"/>
+					Style="{StaticResource errorImageStyle}" />
 			</StackPanel>
 			<TextBlock
 				Grid.Column="1"
