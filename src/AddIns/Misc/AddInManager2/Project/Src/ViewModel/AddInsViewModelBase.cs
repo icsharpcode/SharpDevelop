@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Input;
 using ICSharpCode.AddInManager2.Model;
+using ICSharpCode.SharpDevelop;
 using NuGet;
 
 namespace ICSharpCode.AddInManager2.ViewModel
@@ -18,6 +19,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		private Pages _pages;
 		private int _highlightCount;
 		private string _title;
+		private PackageSource _activePackageSource;
+		private IPackageRepository _activePackageRepository;
 		
 		private ObservableCollection<PackageSource> _packageSources;
 		
@@ -35,6 +38,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		private void Initialize()
 		{
+			_activePackageRepository = null;
+			
 			// Initialization of internal lists
 			_pages = new Pages();
 			_highlightCount = 0;
@@ -249,7 +254,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		protected void UpdatePackageViewModels(IEnumerable<AddInPackageViewModelBase> newPackageViewModels)
 		{
 			ClearPackages();
-			AddInPackages.AddRange(newPackageViewModels);
+			NuGet.CollectionExtensions.AddRange(AddInPackages, newPackageViewModels);
 			UpdateInstallationState();
 		}
 		
@@ -426,19 +431,33 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			{
 				SelectedPackageSource = oldValue;
 			}
+			else
+			{
+				// Select first source
+				SelectedPackageSource = _packageSources.FirstOrDefault();
+			}
 		}
 		
 		public PackageSource SelectedPackageSource
 		{
 			get
 			{
-				return AddInManager.Repositories.ActiveSource;
+				return _activePackageSource;
 			}
 			set
 			{
-				AddInManager.Repositories.ActiveSource = value;
+				_activePackageSource = value;
+				_activePackageRepository = AddInManager.Repositories.GetRepositoryFromSource(_activePackageSource);
 				ReadPackages();
 				OnPropertyChanged(m => m.SelectedPackageSource);
+			}
+		}
+		
+		public IPackageRepository ActiveRepository
+		{
+			get
+			{
+				return _activePackageRepository;
 			}
 		}
 		

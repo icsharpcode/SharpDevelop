@@ -14,20 +14,23 @@ namespace ICSharpCode.AddInManager2.Model
 			get;
 		}
 		
-		IPackageRepository Active
-		{
-			get;
-		}
+//		IPackageRepository Active
+//		{
+//			get;
+//		}
+//		
+//		PackageSource ActiveSource
+//		{
+//			get;
+//			set;
+//		}
 		
-		PackageSource ActiveSource
-		{
-			get;
-			set;
-		}
 		IEnumerable<PackageSource> RegisteredPackageSources
 		{
 			get;
 			set;
 		}
+		
+		IPackageRepository GetRepositoryFromSource(PackageSource packageSource);
 	}
 }

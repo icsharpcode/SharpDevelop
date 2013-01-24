@@ -36,6 +36,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		private void Initialize()
 		{
 			IsSearchable = true;
+			ShowPackageSources = true;
 			HasFilterForPrereleases = true;
 			Title = SD.ResourceService.GetString("AddInManager2.Views.Updates");
 			
@@ -84,7 +85,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		{
 			IQueryable<IPackage> localPackages = installedPackages;
 			localPackages = FilterPackages(localPackages);
-			var updatedPackages = GetUpdatedPackages(AddInManager.Repositories.Registered, localPackages);
+			var updatedPackages = GetUpdatedPackages(ActiveRepository ?? AddInManager.Repositories.Registered, localPackages);
 			HighlightCount = updatedPackages.Count();
 			return updatedPackages.AsQueryable();
 		}

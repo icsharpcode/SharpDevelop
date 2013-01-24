@@ -83,6 +83,22 @@ namespace ICSharpCode.AddInManager2.Model
 			}
 		}
 		
+		public IPackageRepository GetRepositoryFromSource(PackageSource packageSource)
+		{
+			IPackageRepository resultRepository = null;
+			if (packageSource != null)
+			{
+				resultRepository = PackageRepositoryFactory.Default.CreateRepository(packageSource.Source);
+			}
+			else
+			{
+				// If no active repository is set, get packages from all repositories
+				resultRepository = _currentRepository;
+			}
+			
+			return resultRepository;
+		}
+		
 		private void LoadPackageSources()
 		{
 			_registeredPackageSources.Clear();
