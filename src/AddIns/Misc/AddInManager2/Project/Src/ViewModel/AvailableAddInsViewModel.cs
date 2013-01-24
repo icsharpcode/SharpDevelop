@@ -55,7 +55,6 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		protected override IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(IQueryable<IPackage> allPackages)
 		{
 			return base.GetFilteredPackagesBeforePagingResults(allPackages)
-				.Where(package => AddInManager.NuGet.PackageContainsAddIn(package))
 				.Where(package => package.IsReleaseVersion())
 				.DistinctLast(PackageEqualityComparer.Id);
 		}

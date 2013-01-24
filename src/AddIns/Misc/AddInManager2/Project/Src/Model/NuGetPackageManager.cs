@@ -77,11 +77,6 @@ namespace ICSharpCode.AddInManager2.Model
 			}
 		}
 		
-		public bool PackageContainsAddIn(IPackage package)
-		{
-			return (package != null) && (package.Tags != null) && package.Tags.ToLowerInvariant().Contains("sharpdevelopaddin");
-		}
-		
 		public IPackageOperationResolver CreateInstallPackageOperationResolver(bool allowPrereleaseVersions)
 		{
 			EnsurePackageManagerInstance();

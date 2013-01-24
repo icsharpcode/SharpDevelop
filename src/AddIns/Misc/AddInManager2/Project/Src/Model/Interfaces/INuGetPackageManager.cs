@@ -17,7 +17,6 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			get;
 		}
-		bool PackageContainsAddIn(IPackage package);
 		IPackageOperationResolver CreateInstallPackageOperationResolver(bool allowPrereleaseVersions);
 		void ExecuteOperation(PackageOperation operation);
 	}

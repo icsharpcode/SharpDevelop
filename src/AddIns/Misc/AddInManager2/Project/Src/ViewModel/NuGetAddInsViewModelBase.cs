@@ -122,6 +122,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			{
 				IQueryable<IPackage> packages = GetAllPackages();
 				packages = OrderPackages(packages);
+				packages = FilterPackagesByStaticFilter(packages);
 				packages = FilterPackagesBySearchCriteria(packages);
 				TotalItems = packages.Count();
 				_allPackages = GetFilteredPackagesBeforePagingResults(packages);
@@ -139,6 +140,12 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		{
 			string searchCriteria = GetSearchCriteria();
 			return FilterPackagesBySearchCriteria(packages, searchCriteria);
+		}
+		
+		private IQueryable<IPackage> FilterPackagesByStaticFilter(IQueryable<IPackage> packages)
+		{
+			// Look for "SharpDevelopAddIn" tag to show only SD AddIn packages
+			return packages.Find(new string[] { "Tags" }, "sharpdevelopaddin");
 		}
 		
 		private string GetSearchCriteria()
