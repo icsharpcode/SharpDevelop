@@ -58,10 +58,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 				AddIssue (objectCreateExpression.LParToken.StartLocation, objectCreateExpression.RParToken.EndLocation,
 					ctx.TranslateString ("Remove redundant empty argument list"), script => {
-						var expr = new ObjectCreateExpression (objectCreateExpression.Type.Clone ()) {
-							Initializer = (ArrayInitializerExpression)objectCreateExpression.Initializer.Clone ()
-						};
-						script.Replace (objectCreateExpression, expr);
+						var l1 = objectCreateExpression.LParToken.GetPrevNode ().EndLocation;
+						var l2 = objectCreateExpression.RParToken.GetNextNode ().StartLocation;
+						var o1 = script.GetCurrentOffset (l1);
+						var o2 = script.GetCurrentOffset (l2);
+
+						script.Replace (o1, o2 - o1, " ");
 					});
 			}
 		}

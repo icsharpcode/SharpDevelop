@@ -53,8 +53,8 @@ class TestClass
 	void TestMethod ()
 	{
 		var x = new TestClass {
-	Prop = 1
-};
+			Prop = 1
+		};
 	}
 }";
 			Test<RedundantObjectCreationArgumentListIssue> (input, 1, output);
