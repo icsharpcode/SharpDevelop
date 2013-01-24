@@ -148,6 +148,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					 orderby GetInheritanceDepth(type) ascending
 					 select type).ToList();
 				if (validTypes.Any()) {
+					// don't demote an array to IList
+					if (variable.Type.Kind == TypeKind.Array && validTypes.Any (t => t.Namespace == "System.Collections" && t.Name == "IList")) {
+						return;
+					}
 					AddIssue(parameter, ctx.TranslateString("Parameter can be demoted to base class"), GetActions(parameter, validTypes));
 					MembersWithIssues++;
 				}

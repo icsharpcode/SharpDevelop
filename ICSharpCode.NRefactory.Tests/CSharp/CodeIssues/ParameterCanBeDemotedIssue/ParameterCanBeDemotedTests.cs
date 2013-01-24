@@ -921,6 +921,21 @@ class Test : TestBase
 	}
 }");
 		}
+
+		/// <summary>
+		/// Bug 9617 - Incorrect "parameter can be demoted to base class" warning for arrays
+		/// </summary>
+		[Test]
+		public void TestBug9617()
+		{
+			Test<ParameterCanBeDemotedIssue>(@"class Test
+{
+	object Foo (object[] arr)
+	{
+	    return arr [0];
+	}
+}", 0);
+		}
 	}
 }
 
