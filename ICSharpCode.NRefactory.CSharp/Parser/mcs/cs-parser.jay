@@ -3804,15 +3804,17 @@ unbound_type_name
 	: identifier_inside_body generic_dimension
 	  {  
 		var lt = (Tokenizer.LocatedToken) $1;
-
-		$$ = new SimpleName (lt.Value, (int) $2, lt.Location);
+		var sn = new SimpleName (lt.Value, (int) $2, lt.Location);
+		$$ = sn;
+		lbag.AddLocation (sn.TypeArguments, Lexer.GetGenericDimensionLocations ());
 	  }
 	| qualified_alias_member identifier_inside_body generic_dimension
 	  {
 		var lt1 = (Tokenizer.LocatedToken) $1;
 		var lt2 = (Tokenizer.LocatedToken) $2;
-
-		$$ = new QualifiedAliasMember (lt1.Value, lt2.Value, (int) $3, lt1.Location);
+		var qam = new QualifiedAliasMember (lt1.Value, lt2.Value, (int) $3, lt1.Location);
+		$$ = qam;
+		lbag.AddLocation (qam.TypeArguments, Lexer.GetGenericDimensionLocations ());
 		lbag.AddLocation ($$, GetLocation ($2));
 	  }
 	| unbound_type_name DOT identifier_inside_body
@@ -3827,9 +3829,11 @@ unbound_type_name
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
 		
-		$$ = new MemberAccess ((Expression) $1, lt.Value, (int) $4, lt.Location) {
+		var ma = new MemberAccess ((Expression) $1, lt.Value, (int) $4, lt.Location) {
 			DotLocation = GetLocation ($2)
 		};
+		$$ = ma;
+		lbag.AddLocation (ma.TypeArguments, Lexer.GetGenericDimensionLocations ());
 	  }
 	| namespace_or_type_expr DOT identifier_inside_body generic_dimension
 	  {
@@ -3838,9 +3842,11 @@ unbound_type_name
 			Error_TypeExpected (GetLocation ($4));
 
 		var lt = (Tokenizer.LocatedToken) $3;
-		$$ = new MemberAccess (tne, lt.Value, (int) $4, lt.Location) {
+		var ma = new MemberAccess (tne, lt.Value, (int) $4, lt.Location) {
 			DotLocation = GetLocation ($2)
 		};		
+		$$ = ma;
+		lbag.AddLocation (ma.TypeArguments, Lexer.GetGenericDimensionLocations ());
 	  }
 	;
 

@@ -1182,16 +1182,26 @@ namespace Mono.CSharp
 			return false;
 		}
 
+		List<Location> genericLocs = new List<Location> ();
+
+		public List<Location> GetGenericDimensionLocations ()
+		{
+			return genericLocs;
+		}
+
 		bool parse_generic_dimension (out int dimension)
 		{
 			dimension = 1;
 
 		again:
 			int the_token = token ();
-			if (the_token == Token.OP_GENERICS_GT)
+			if (the_token == Token.OP_GENERICS_GT) {
+				genericLocs.Add (Location);
 				return true;
+			}
 			else if (the_token == Token.COMMA) {
 				dimension++;
+				genericLocs.Add (Location);
 				goto again;
 			}
 
@@ -3674,6 +3684,8 @@ namespace Mono.CSharp
 		{
 			int d;
 			if (handle_typeof) {
+				genericLocs.Clear ();
+				genericLocs.Add (Location);
 				PushPosition ();
 				if (parse_generic_dimension (out d)) {
 					val = d;
