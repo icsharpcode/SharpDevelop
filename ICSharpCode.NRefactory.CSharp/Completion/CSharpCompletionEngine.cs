@@ -1146,7 +1146,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 			public override void VisitPreProcessorDirective(PreProcessorDirective preProcessorDirective)
 			{
-				Console.WriteLine("visit directiv:"+preProcessorDirective.GetText ());
 				if (preProcessorDirective.Type == PreProcessorDirectiveType.If) {
 					ifStack.Push (preProcessorDirective);
 				} else if (preProcessorDirective.Type == PreProcessorDirectiveType.Endif) {
@@ -1154,7 +1153,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return;
 					var ifDirective = ifStack.Pop ();
 					if (ifDirective.StartLocation < loc && loc < preProcessorDirective.EndLocation) {
-						Console.WriteLine ("if :"+ ifDirective.Argument);
 						Check (ifDirective.Argument);
 					}
 
