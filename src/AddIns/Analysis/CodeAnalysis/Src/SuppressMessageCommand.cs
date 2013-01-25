@@ -72,6 +72,8 @@ namespace ICSharpCode.CodeAnalysis
 				IMember m = GetMember(type, memberName);
 				if (m != null)
 					return m.Region;
+				
+				return type.Region;
 			}
 			return DomRegion.Empty;
 		}
