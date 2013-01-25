@@ -28,7 +28,7 @@ using ICSharpCode.NRefactory.Semantics;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
-namespace ICSharpCode.NRefactory.CSharp
+namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	/// <summary>
 	/// Represents a namespace resolve result that's resolved using an alias.
