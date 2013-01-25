@@ -191,6 +191,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return 1000000013 * baseMember.GetHashCode() + 1000000009 * substitutionWithoutSpecializedTypeParameters.GetHashCode();
 			}
 		}
+
+		public IMethod GetDefinition ()
+		{
+			return methodDefinition;
+		}
 		
 		public override string ToString()
 		{
