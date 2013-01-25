@@ -510,6 +510,8 @@
     <Compile Include="Refactoring\CodeActions\SortUsingsAction.cs" />
     <Compile Include="Formatter\CSharpIndentEngine.cs" />
     <Compile Include="Refactoring\CodeActions\CreateEnumValue.cs" />
+    <Compile Include="Resolver\AliasTypeResolveResult.cs" />
+    <Compile Include="Resolver\AliasNamespaceResolveResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
