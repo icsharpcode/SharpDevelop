@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -59,20 +61,28 @@ namespace ICSharpCode.CodeAnalysis
 			}
 		}
 		
-		/*
-		internal static FilePosition GetPosition(IProjectContent pc, string className, string memberName)
+		internal static DomRegion GetPosition(ICompilation compilation, string className, string memberName)
 		{
-			IClass c = pc.GetClassByReflectionName(className, false);
-			if (string.IsNullOrEmpty(memberName))
-				return pc.GetPosition(c);
-			if (c != null) {
-				IMember m = DefaultProjectContent.GetMemberByReflectionName(c, memberName);
+			var typeName = new TopLevelTypeName(className);
+			ITypeDefinition type = compilation.MainAssembly.GetTypeDefinition(typeName);
+			if (type != null) {
+				if (string.IsNullOrEmpty(memberName))
+					return type.Region;
+				
+				IMember m = GetMember(type, memberName);
 				if (m != null)
-					return pc.GetPosition(m);
+					return m.Region;
 			}
-			return FilePosition.Empty;
+			return DomRegion.Empty;
 		}
 		
+		static IMember GetMember(ITypeDefinition type, string memberName)
+		{
+			string fullName = type.ReflectionName + "." + memberName;
+			return type.GetMembers(m => m.ReflectionName == fullName).FirstOrDefault();
+		}
+		
+		/*
 		FilePosition GetAssemblyAttributeInsertionPosition(IProjectContent pc)
 		{
 			FilePosition best = FilePosition.Empty;

@@ -95,16 +95,14 @@ namespace ICSharpCode.CodeAnalysis
 			
 			static DomRegion GetPosition(ICompilation compilation, string memberName)
 			{
-				throw new NotImplementedException();
-				/*
 				// memberName is a special syntax used by our FxCop task:
 				// className#memberName
 				int pos = memberName.IndexOf('#');
 				if (pos <= 0)
-					return FilePosition.Empty;
+					return DomRegion.Empty;
 				string className = memberName.Substring(0, pos);
 				memberName = memberName.Substring(pos + 1);
-				return SuppressMessageCommand.GetPosition(pc, className, memberName);*/
+				return SuppressMessageCommand.GetPosition(compilation, className, memberName);
 			}
 		}
 	}
