@@ -66,7 +66,7 @@ namespace ICSharpCode.AddInManager2
 		{
 			get
 			{
-				return task.IsCanceled;
+				return cancellationTokenSource.IsCancellationRequested;
 			}
 		}
 		

@@ -21,6 +21,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		private string _title;
 		private PackageSource _activePackageSource;
 		private IPackageRepository _activePackageRepository;
+		private bool _isReadingPackages;
 		
 		private ObservableCollection<PackageSource> _packageSources;
 		
@@ -39,6 +40,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		private void Initialize()
 		{
 			_activePackageRepository = null;
+			_isReadingPackages = false;
 			
 			// Initialization of internal lists
 			_pages = new Pages();
@@ -212,8 +214,15 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		public bool IsReadingPackages
 		{
-			get;
-			protected set;
+			get
+			{
+				return _isReadingPackages;
+			}
+			protected set
+			{
+				_isReadingPackages = value;
+				OnPropertyChanged(m => m.IsReadingPackages);
+			}
 		}
 		
 		public virtual void ReadPackages()
@@ -446,6 +455,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			}
 			set
 			{
+				SD.Log.Debug("AddInsViewModelBase: Changed package source");
+				
 				_activePackageSource = value;
 				_activePackageRepository = AddInManager.Repositories.GetRepositoryFromSource(_activePackageSource);
 				ReadPackages();
