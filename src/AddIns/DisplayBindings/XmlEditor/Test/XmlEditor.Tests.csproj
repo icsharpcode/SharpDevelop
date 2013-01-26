@@ -168,6 +168,7 @@
     <Compile Include="Schema\SingleElementSchemaTestFixture.cs" />
     <Compile Include="Schema\ElementWithAttributeSchemaTestFixture.cs" />
     <Compile Include="Schema\NestedElementSchemaTestFixture.cs" />
+    <Compile Include="Schema\SubstitutionGroupTests.cs" />
     <Compile Include="Schema\XsltSchemaTests.cs" />
     <Compile Include="Schema\TwoElementSchemaTestFixture.cs" />
     <Compile Include="Schema\ReferencedElementsTestFixture.cs" />

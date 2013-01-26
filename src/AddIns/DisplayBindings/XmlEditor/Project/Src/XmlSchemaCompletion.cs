@@ -347,7 +347,9 @@ namespace ICSharpCode.XmlEditor
 		{
 			if (!element.SubstitutionGroup.IsEmpty) {
 				XmlSchemaElement substitutedElement = FindElement(element.SubstitutionGroup);
-				return GetElementAsComplexType(substitutedElement);
+				if (substitutedElement != null) {
+					return GetElementAsComplexType(substitutedElement);
+				}
 			}
 			return null;
 		}
