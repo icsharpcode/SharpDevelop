@@ -114,8 +114,11 @@ namespace Debugger.AddIn
 			if (importedMember == null)
 				throw new GetValueException("Member not found!");
 			Value target = null;
-			if (!importedMember.IsStatic)
+			if (!importedMember.IsStatic) {
+				if (result.TargetResult == null)
+					throw new GetValueException("An object reference is required for the non-static field, method, or property '" + importedMember.FullName + "'");
 				target = Convert(result.TargetResult);
+			}
 			Value val = Value.GetMemberValue(evalThread, target, importedMember);
 			if (val == null)
 				throw new GetValueException("Member not found!");
