@@ -602,63 +602,6 @@ namespace Debugger
 		
 		#endregion
 		
-		/// <summary> Is this method in form 'return this.field;'? </summary>
-		internal static uint GetBackingFieldToken(IMethod method)
-		{
-			ICorDebugFunction corFunction = method.ToCorFunction();
-			
-			ICorDebugCode corCode;
-			try {
-				corCode = corFunction.GetILCode();
-			} catch (COMException) {
-				return 0;
-			}
-			
-			if (corCode == null || corCode.IsIL() == 0 || corCode.GetSize() > 12)
-				return 0;
-			
-			List<byte> code = new List<byte>(corCode.GetCode());
-			
-			uint token = 0;
-			
-			bool success =
-				(Read(code, 0x00) || true) &&                     // nop || nothing
-				(Read(code, 0x02, 0x7B) || Read(code, 0x7E)) &&   // ldarg.0; ldfld || ldsfld
-				ReadToken(code, ref token) &&                     //   <field token>
-				(Read(code, 0x0A, 0x2B, 0x00, 0x06) || true) &&   // stloc.0; br.s; offset+00; ldloc.0 || nothing
-				Read(code, 0x2A);                                 // ret
-			
-			if (!success)
-				return 0;
-			
-			return token;
-		}
-		
-		// Read expected sequence of bytes
-		static bool Read(List<byte> code, params byte[] expected)
-		{
-			if (code.Count < expected.Length)
-				return false;
-			for(int i = 0; i < expected.Length; i++) {
-				if (code[i] != expected[i])
-					return false;
-			}
-			code.RemoveRange(0, expected.Length);
-			return true;
-		}
-		
-		// Read field token
-		static bool ReadToken(List<byte> code, ref uint token)
-		{
-			if (code.Count < 4)
-				return false;
-			if (code[3] != 0x04) // field token
-				return false;
-			token = ((uint)code[0]) + ((uint)code[1] << 8) + ((uint)code[2] << 16) + ((uint)code[3] << 24);
-			code.RemoveRange(0, 4);
-			return true;
-		}
-		
 		public override string ToString()
 		{
 			return this.AsString();

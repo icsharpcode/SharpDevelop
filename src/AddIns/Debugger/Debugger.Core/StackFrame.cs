@@ -391,7 +391,7 @@ namespace Debugger
 					if (this.MethodInfo.IsAccessor) return true;
 				}
 				if (opt.StepOverFieldAccessProperties) {
-					if (this.MethodInfo.IsAccessor && Value.GetBackingFieldToken(this.MethodInfo) != 0) return true;
+					if (this.MethodInfo.IsAccessor && this.Module.GetBackingFieldToken(this.CorFunction) != 0) return true;
 				}
 				return false;
 			}

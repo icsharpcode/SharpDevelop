@@ -522,5 +522,12 @@ namespace Debugger
 			}
 			return unresolvedMethod.Resolve(new SimpleTypeResolveContext(module.Assembly));
 		}
+		
+		public static IField ImportField(this IType declaringType, uint fieldToken)
+		{
+			var module = declaringType.GetDefinition().ParentAssembly.GetModule();
+			var info = GetInfo(module.Assembly);
+			return declaringType.GetFields(f => info.GetMetadataToken(f) == fieldToken, GetMemberOptions.IgnoreInheritedMembers).SingleOrDefault();
+		}
 	}
 }
