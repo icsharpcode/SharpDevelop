@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		protected virtual void StartThread(ThreadStart start)
 		{
-			var t = new Thread(RunThread);
+			var t = new Thread(start);
 			t.IsBackground = true;
 			t.Start();
 		}
