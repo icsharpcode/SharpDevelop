@@ -102,10 +102,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// TODO: I think we should provide an overload so that an existing CSharpAstResolver can be reused
 			CSharpAstResolver resolver = new CSharpAstResolver(compilation.Value, syntaxTree, unresolvedFile);
 			ResolveResult rr = resolver.Resolve(node, cancellationToken);
-			if (rr is MethodGroupResolveResult && parentInvocation != null)
-				return resolver.Resolve(parentInvocation);
-			else
-				return rr;
+			MethodGroupResolveResult mgrr = rr as MethodGroupResolveResult;
+			if (mgrr != null) {
+				// For method groups, resolve the parent invocation instead.
+				if (parentInvocation != null)
+					return resolver.Resolve(parentInvocation);
+				if (node is Expression) {
+					// If it's not an invocation, try if it's a conversion to a delegate type:
+					Conversion c = resolver.GetConversion((Expression)node, cancellationToken);
+					if (c.IsMethodGroupConversion)
+						return new MemberResolveResult(mgrr.TargetResult, c.Method);
+				}
+			}
+			return rr;
 		}
 	}
 }

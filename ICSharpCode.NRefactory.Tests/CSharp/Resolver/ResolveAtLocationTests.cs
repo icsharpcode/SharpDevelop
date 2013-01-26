@@ -136,7 +136,7 @@ class A { public A() : ba$se() {} }");
 		[Test]
 		public void TestBug5114()
 		{
-			var rr = ResolveAtLocation<MethodGroupResolveResult>(
+			var rr = ResolveAtLocation<MemberResolveResult>(
 				@"using System;
 
 namespace Bug5114 
@@ -159,7 +159,7 @@ namespace Bug5114
 	}
 }
 ");
-			Assert.AreEqual("HandleLongPressGesture", rr.MethodName);
+			Assert.AreEqual("HandleLongPressGesture", rr.Member.Name);
 		}
 
 		[Test]
@@ -202,5 +202,41 @@ namespace TestCrash
 			Assert.AreEqual("A", rr.Type.Name);
 		}
 
+		
+		[Test]
+		public void CreateDelegateFromOverloadedMethod()
+		{
+			var rr = ResolveAtLocation<MemberResolveResult>(
+				@"using System;                                                                   
+class Test {
+	public void Method() {}
+	public void Method(int a) {}
+	
+	public Test() {
+		Action a = Meth$od;
+	}
+}
+");
+			Assert.AreEqual("Method", rr.Member.Name);
+			Assert.AreEqual(0, ((IMethod)rr.Member).Parameters.Count);
+		}
+		
+		[Test]
+		public void ExplicitlyCreateDelegateFromOverloadedMethod()
+		{
+			var rr = ResolveAtLocation<MemberResolveResult>(
+				@"using System;                                                                   
+class Test {
+	public void Method() {}
+	public void Method(int a) {}
+	
+	public Test() {
+		Action a = new Action(Meth$od);
+	}
+}
+");
+			Assert.AreEqual("Method", rr.Member.Name);
+			Assert.AreEqual(0, ((IMethod)rr.Member).Parameters.Count);
+		}
 	}
 }
