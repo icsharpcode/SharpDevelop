@@ -134,11 +134,7 @@ namespace Debugger
 			
 			appDomain.Process.activeEvals.Add(this);
 			
-			if (appDomain.Process.Options.SuspendOtherThreads) {
-				appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep, new Thread[] { evalThread }, CorDebugThreadState.THREAD_SUSPEND);
-			} else {
-				appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep, this.Process.UnsuspendedThreads, CorDebugThreadState.THREAD_RUN);
-			}
+			appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep);
 		}
 
 		/// <exception cref="DebuggerException">Evaluation can not be stopped</exception>

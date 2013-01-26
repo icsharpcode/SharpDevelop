@@ -17,7 +17,6 @@ namespace Debugger
 			StepOverFieldAccessProperties = true;
 			Verbose = false;
 			SymbolsSearchPaths = new string[0];
-			SuspendOtherThreads = true;
 			PauseOnHandledExceptions = false;
 		}
 		
@@ -29,7 +28,6 @@ namespace Debugger
 		public bool StepOverFieldAccessProperties { get; set; }
 		public bool Verbose { get; set; }
 		public string[] SymbolsSearchPaths { get; set; }
-		public bool SuspendOtherThreads { get; set; }
 		public bool PauseOnHandledExceptions { get; set; }
 		bool decompileCodeWithoutSymbols;
 		

@@ -63,7 +63,7 @@ namespace Debugger
 				process.TraceMessage("Processing post-break callback");
 				// Decrese the "break count" from 2 to 1 - does not actually continue
 				// TODO: This inccorectly marks the debugger as running
-				process.AsyncContinue(DebuggeeStateAction.Keep, new Thread[] {}, null);
+				process.AsyncContinue(DebuggeeStateAction.Keep);
 				// Make sure we stay paused after the callback is handled
 				pauseOnNextExit = true;
 				return;
@@ -95,10 +95,10 @@ namespace Debugger
 				process.TraceMessage("Process has queued callbacks");
 			
 			if (hasQueuedCallbacks) {
-				process.AsyncContinue(DebuggeeStateAction.Keep, null, null);
+				process.AsyncContinue(DebuggeeStateAction.Keep);
 			} else if (process.Evaluating) {
 				// Ignore events during property evaluation
-				process.AsyncContinue(DebuggeeStateAction.Keep, null, null);
+				process.AsyncContinue(DebuggeeStateAction.Keep);
 			} else if (pauseOnNextExit) {
 				if (process.Options.Verbose)
 					process.TraceMessage("Callback exit: Paused");
@@ -117,7 +117,7 @@ namespace Debugger
 				pauseOnNextExit = false;
 				pausedEventArgs = null;
 			} else {
-				process.AsyncContinue(DebuggeeStateAction.Keep, null, null);
+				process.AsyncContinue(DebuggeeStateAction.Keep);
 			}
 			
 			isInCallback = false;
@@ -402,8 +402,6 @@ namespace Debugger
 			
 			Thread thread = new Thread(process, pThread);
 			process.threads.Add(thread);
-			
-			thread.CorThread.SetDebugState(process.NewThreadState);
 			
 			ExitCallback();
 		}

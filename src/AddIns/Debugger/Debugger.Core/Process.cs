@@ -461,58 +461,19 @@ namespace Debugger
 			}
 		}
 		
-		internal Thread[] UnsuspendedThreads {
-			get {
-				List<Thread> unsuspendedThreads = new List<Thread>();
-				foreach(Thread t in this.Threads) {
-					if (!t.Suspended)
-						unsuspendedThreads.Add(t);
-				}
-				return unsuspendedThreads.ToArray();
-			}
-		}
-		
 		/// <summary>
 		/// Resume execution and run all threads not marked by the user as susspended.
 		/// </summary>
 		public void AsyncContinue()
 		{
-			AsyncContinue(DebuggeeStateAction.Clear, this.UnsuspendedThreads, CorDebugThreadState.THREAD_RUN);
+			AsyncContinue(DebuggeeStateAction.Clear);
 		}
-		
-		internal CorDebugThreadState NewThreadState = CorDebugThreadState.THREAD_RUN;
 		
 		/// <param name="threadsToRun"> Null to keep current setting </param>
 		/// <param name="newThreadState"> What happens to created threads.  Null to keep current setting </param>
-		internal void AsyncContinue(DebuggeeStateAction action, Thread[] threadsToRun, CorDebugThreadState? newThreadState)
+		internal void AsyncContinue(DebuggeeStateAction action)
 		{
 			AssertPaused();
-			
-			if (threadsToRun != null) {
-//				corProcess.SetAllThreadsDebugState(CorDebugThreadState.THREAD_SUSPEND, null);
-//				Note: There is unreported thread, stopping it prevents the debugee from exiting
-//				      It is not corProcess.GetHelperThreadID
-//				ICorDebugThread[] ts = new ICorDebugThread[corProcess.EnumerateThreads().GetCount()];
-//				corProcess.EnumerateThreads().Next((uint)ts.Length, ts);
-				foreach(Thread t in this.Threads) {
-					CorDebugThreadState state = Array.IndexOf(threadsToRun, t) == -1 ? CorDebugThreadState.THREAD_SUSPEND : CorDebugThreadState.THREAD_RUN;
-					try {
-						t.CorThread.SetDebugState(state);
-					} catch (COMException e) {
-						// The state of the thread is invalid. (Exception from HRESULT: 0x8013132D)
-						// It can happen for example when thread has not started yet
-						if ((uint)e.ErrorCode == 0x8013132D) {
-							// TraceMessage("Can not suspend thread - The state of the thread is invalid.  Thread ID = " + t.CorThread.GetID());
-						} else {
-							throw;
-						}
-					}
-				}
-			}
-			
-			if (newThreadState != null) {
-				this.NewThreadState = newThreadState.Value;
-			}
 			
 			NotifyResumed(action);
 			corProcess.Continue(0);

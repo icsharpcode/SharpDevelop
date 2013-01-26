@@ -638,16 +638,13 @@ namespace ICSharpCode.SharpDevelop.Services
 
 		public void JumpToCurrentLine()
 		{
-			if (CurrentThread == null)
+			if (CurrentStackFrame == null)
 				return;
 			
 			SD.Workbench.MainWindow.Activate();
 			
 			// if (debuggedProcess.IsSelectedFrameForced()) {
-			if (CurrentThread != null && CurrentStackFrame.HasSymbols) {
-				if (CurrentProcess == null || CurrentStackFrame == null)
-					return;
-				
+			if (CurrentStackFrame.HasSymbols) {			
 				SourcecodeSegment nextStatement = CurrentStackFrame.NextStatement;
 				if (nextStatement != null) {
 					DebuggerService.RemoveCurrentLineMarker();
