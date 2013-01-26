@@ -118,6 +118,7 @@
     <Compile Include="Src\SyntaxHighlighting\MultiHighlighter.cs" />
     <Compile Include="Src\Snippets\CodeSnippetComparer.cs" />
     <Compile Include="Src\SyntaxHighlighting\SyntaxModeDoozer.cs" />
+    <Compile Include="Src\TextMarkerToolTipProvider.cs" />
     <Compile Include="Src\Utils.cs" />
     <Compile Include="Src\XmlDoc\DocumentationUIBuilder.cs" />
     <Compile Include="Src\XmlDoc\XmlDocTooltipProvider.cs" />
