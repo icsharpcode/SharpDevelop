@@ -4,6 +4,7 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -140,6 +141,16 @@ namespace CSharpBinding
 		public override CodeDomProvider CreateCodeDomProvider()
 		{
 			return new CSharpCodeProvider();
+		}
+		
+		Refactoring.CSharpCodeGenerator generator;
+		
+		public override ICSharpCode.SharpDevelop.Refactoring.ICodeGenerator CodeGenerator {
+			get {
+				if (generator == null)
+					generator = new Refactoring.CSharpCodeGenerator(this);
+				return generator;
+			}
 		}
 	}
 	

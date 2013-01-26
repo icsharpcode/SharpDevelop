@@ -152,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	[ValueConversion(typeof(int), typeof(double))]
 	public class SDFontSizeConverter : IValueConverter
 	{
-		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			if (value == null)
 				throw new ArgumentNullException("value");
@@ -161,7 +161,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			throw new NotSupportedException("Cannot convert value of type " + value.GetType());
 		}
 		
-		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			if (value == null)
 				throw new ArgumentNullException("value");

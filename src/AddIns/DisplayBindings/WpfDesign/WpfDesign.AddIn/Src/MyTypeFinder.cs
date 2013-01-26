@@ -2,12 +2,16 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.WpfDesign.XamlDom;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
-using TypeResolutionService = ICSharpCode.FormsDesigner.Services.TypeResolutionService;
+using TypeResolutionService = ICSharpCode.SharpDevelop.Designer.TypeResolutionService;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
@@ -27,9 +31,9 @@ namespace ICSharpCode.WpfDesign.AddIn
 		public override Assembly LoadAssembly(string name)
 		{
 			if (string.IsNullOrEmpty(name)) {
-				IProjectContent pc = GetProjectContent(file);
+				IProject pc = GetProject(file);
 				if (pc != null) {
-					return this.typeResolutionService.LoadAssembly(pc);
+					return typeResolutionService.LoadAssembly(pc);
 				}
 				return null;
 			} else {
@@ -43,19 +47,19 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		Assembly FindAssemblyInProjectReferences(string name)
 		{
-			IProjectContent pc = GetProjectContent(file);
+			IProject pc = GetProject(file);
 			if (pc != null) {
 				return FindAssemblyInProjectReferences(pc, name);
 			}
 			return null;
 		}
 		
-		Assembly FindAssemblyInProjectReferences(IProjectContent pc, string name)
+		Assembly FindAssemblyInProjectReferences(IProject pc, string name)
 		{
-			foreach (IProjectContent referencedProjectContent in pc.ThreadSafeGetReferencedContents()) {
-				if (name == referencedProjectContent.AssemblyName) {
-					return this.typeResolutionService.LoadAssembly(referencedProjectContent);
-				}
+			ICompilation compilation = SD.ParserService.GetCompilation(pc);
+			IAssembly assembly = compilation.ReferencedAssemblies.FirstOrDefault(asm => asm.AssemblyName == name);
+			if (assembly != null) {
+				return typeResolutionService.LoadAssembly(assembly);
 			}
 			return null;
 		}
@@ -68,15 +72,12 @@ namespace ICSharpCode.WpfDesign.AddIn
 			return copy;
 		}
 		
-		internal static IProjectContent GetProjectContent(OpenedFile file)
+		internal static IProject GetProject(OpenedFile file)
 		{
 			if (ProjectService.OpenSolution != null && file != null) {
-				IProject p = ProjectService.OpenSolution.FindProjectContainingFile(file.FileName);
-				if (p != null) {
-					return ParserService.GetProjectContent(p);
-				}
+				return ProjectService.OpenSolution.FindProjectContainingFile(file.FileName);
 			}
-			return ParserService.DefaultProjectContent;
+			return null;
 		}
 	}
 }

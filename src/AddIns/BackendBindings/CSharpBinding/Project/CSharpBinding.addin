@@ -279,5 +279,6 @@
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseExplicitTypeAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseStringFormatAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseVarKeywordAction" />
+		<Class class="CSharpBinding.Refactoring.MoveTypeToFileContextAction" />
 	</Path>
 </AddIn>

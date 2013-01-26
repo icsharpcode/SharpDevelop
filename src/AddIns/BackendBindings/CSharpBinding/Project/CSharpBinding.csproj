@@ -74,6 +74,7 @@
     <Compile Include="Src\Completion\SegmentTrackingOutputFormatter.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormatter.cs" />
     <Compile Include="Src\Parser\FoldingVisitor.cs" />
+    <Compile Include="Src\Refactoring\CSharpCodeGenerator.cs" />
     <Compile Include="Src\Refactoring\CSharpSyntaxIssue.cs" />
     <Compile Include="Src\Refactoring\InsertionPoint.cs" />
     <Compile Include="Src\Refactoring\IssueOptions.xaml.cs">
@@ -83,6 +84,7 @@
     <Compile Include="Src\Refactoring\CSharpContextActionWrapper.cs" />
     <Compile Include="Src\Refactoring\IssueManager.cs" />
     <Compile Include="Src\Refactoring\IssueOptionsViewModel.cs" />
+    <Compile Include="Src\Refactoring\MoveTypeToFileContextAction.cs" />
     <Compile Include="Src\Refactoring\SDNamingConventionService.cs" />
     <Compile Include="Src\Refactoring\SDRedundantUsingIssue.cs" />
     <Compile Include="Src\Refactoring\EditorScript.cs" />

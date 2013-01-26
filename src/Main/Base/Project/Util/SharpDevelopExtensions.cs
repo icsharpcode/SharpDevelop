@@ -380,6 +380,14 @@ namespace ICSharpCode.SharpDevelop
 			return FileName.Create(assembly.UnresolvedAssembly.Location);
 		}
 		
+		public static bool IsGacAssembly(this IAssembly assembly)
+		{
+			if (assembly == null)
+				throw new ArgumentNullException("assembly");
+			return !(assembly.UnresolvedAssembly is IProjectContent)
+				&& SD.GlobalAssemblyCache.FindAssemblyInNetGac(new DomAssemblyName(assembly.FullAssemblyName)) != null;
+		}
+		
 		/// <summary>
 		/// Gets the ambience for the specified compilation.
 		/// Never returns null.
@@ -605,6 +613,19 @@ namespace ICSharpCode.SharpDevelop
 			return s.Substring(0, length) + "...";
 		}
 
+		/// <summary>
+		/// Removes any character given in the array from the given string.
+		/// </summary>
+		public static string RemoveAny(this string s, params char[] chars)
+		{
+			if (string.IsNullOrEmpty(s))
+				return s;
+			var b = new StringBuilder(s);
+			foreach (char ch in chars) {
+				b.Replace(ch.ToString(), "");
+			}
+			return b.ToString();
+		}
 		
 		public static string Replace(this string original, string pattern, string replacement, StringComparison comparisonType)
 		{
