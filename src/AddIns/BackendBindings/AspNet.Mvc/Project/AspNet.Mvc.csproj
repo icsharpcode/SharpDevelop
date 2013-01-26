@@ -133,7 +133,6 @@
     <Compile Include="Src\Completion\RazorCSharpResolver.cs" />
     <Compile Include="Src\CurrentAppDomain.cs" />
     <Compile Include="Src\CurrentAppDomainFactory.cs" />
-    <Compile Include="Src\DelegateCommand.cs" />
     <Compile Include="Src\FileSystem.cs" />
     <Compile Include="Src\Folding\CharacterReader.cs" />
     <Compile Include="Src\Folding\HtmlFoldParser.cs" />

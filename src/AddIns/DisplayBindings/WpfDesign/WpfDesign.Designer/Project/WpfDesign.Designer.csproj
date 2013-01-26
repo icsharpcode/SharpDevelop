@@ -108,7 +108,6 @@
     <Compile Include="Controls\WindowClone.cs" />
     <Compile Include="Controls\ZoomControl.cs" />
     <Compile Include="Converters.cs" />
-    <Compile Include="DesignCommand.cs" />
     <Compile Include="DesignPanel.cs" />
     <Compile Include="DesignSurface.xaml.cs">
       <DependentUpon>DesignSurface.xaml</DependentUpon>
