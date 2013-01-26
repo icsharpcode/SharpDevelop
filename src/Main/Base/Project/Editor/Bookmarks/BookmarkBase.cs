@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -20,6 +21,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 		IDocument document;
 		ITextAnchor anchor;
 		
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public IDocument Document {
 			get {
 				return document;

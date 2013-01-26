@@ -43,6 +43,10 @@ namespace Debugger
 		
 		public string TypeName { get; protected set; }
 		
+		internal Breakpoint()
+		{
+		}
+		
 		internal Breakpoint(string fileName, int line, int column, bool enabled)
 		{
 			this.FileName = fileName;
