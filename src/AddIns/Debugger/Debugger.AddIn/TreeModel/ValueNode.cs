@@ -320,23 +320,29 @@ namespace Debugger.AddIn.TreeModel
 				);
 			}
 			
-			if (shownType.GetAllBaseTypeDefinitions().Any(t => t.IsKnownType(typeof(IList)))) {
+			// IList
+			if (shownType.GetAllBaseTypeDefinitions().Any(t => t.IsKnownType(KnownTypeCode.IList))) {
 				yield return new TreeNode(
 					"IList",
 					() => GetIListChildren(GetValue)
 				);
-			} else {
-				//DebugType iEnumerableType, itemType;
-				#warning reimplement this!
-//				if (shownType.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
-//					yield return new TreeNode(
-//						null,
-//						"IEnumerable",
-//						"Expanding will enumerate the IEnumerable",
-//						string.Empty,
-//						() => GetIListChildren(() => DebuggerHelpers.CreateListFromIEnumerable(GetValue()))
-//					);
-//				}
+			}
+			
+			// IEnumberable<T> (pottentially several of them)
+			var ienumerableTypes = shownType.GetAllBaseTypes().OfType<ParameterizedType>().Where(p => p.IsKnownType(KnownTypeCode.IEnumerableOfT));
+			foreach(var ienumerableType in ienumerableTypes) {
+				var ienumerableTypeCopy = ienumerableType;
+				yield return new TreeNode(
+					null,
+					ienumerableType.Name,
+					ienumerableType.ReflectionName,
+					string.Empty,
+					() => {
+						// Note that this will bind to the current content forever and it will not reeveluate
+						Value list = CreateListFromIEnumerable(ienumerableTypeCopy, GetValue()).GetPermanentReferenceOfHeapValue();
+						return GetIListChildren(() => list);
+					}
+				);
 			}
 			
 			foreach(TreeNode node in GetMembers(publicInstance)) {
@@ -372,6 +378,16 @@ namespace Debugger.AddIn.TreeModel
 			} else {
 				return Enumerable.Range(0, count).Select(i => new ValueNode(ClassBrowserIconService.Field, "[" + i + "]", () => getValue().GetPropertyValue(WindowsDebugger.EvalThread, itemProp, Eval.CreateValue(WindowsDebugger.EvalThread, i))));
 			}
+		}
+		
+		/// <summary> Evaluates 'new List&lt;T&gt;(iEnumerableValue)' in the debuggee. </summary>
+		public static Value CreateListFromIEnumerable(ParameterizedType ienumerableType, Value iEnumerableValue)
+		{
+			var ilistDef = ienumerableType.Compilation.FindType(typeof(List<>)).GetDefinition();
+			var ilistType = new ParameterizedType(ilistDef, ienumerableType.TypeArguments);
+			var ctors = ilistType.GetConstructors(m => m.Parameters.Count == 1);
+			var ctor = ctors.Single(m => m.Parameters[0].Type.IsKnownType(KnownTypeCode.IEnumerableOfT));
+			return Eval.NewObject(WindowsDebugger.EvalThread, ctor, new Value[] { iEnumerableValue });
 		}
 		
 		IEnumerable<TreeNode> GetArrayChildren(uint[] dimBase, uint[] dimSize)
