@@ -18,8 +18,6 @@ namespace ICSharpCode.AddInManager2.Model
 	public class PackageRepositories : IPackageRepositories
 	{
 		private IPackageRepository _currentRepository;
-		private IPackageRepository _activeRepository;
-		private PackageSource _activeSource;
 		private List<PackageSource> _registeredPackageSources;
 		
 		private IAddInManagerEvents _events;
@@ -34,7 +32,6 @@ namespace ICSharpCode.AddInManager2.Model
 			
 			LoadPackageSources();
 			UpdateCurrentRepository();
-			UpdateActiveRepository();
 		}
 
 		public IPackageRepository Registered
@@ -42,27 +39,6 @@ namespace ICSharpCode.AddInManager2.Model
 			get
 			{
 				return _currentRepository;
-			}
-		}
-		
-		public IPackageRepository Active
-		{
-			get
-			{
-				return _activeRepository;
-			}
-		}
-		
-		public PackageSource ActiveSource
-		{
-			get
-			{
-				return _activeSource;
-			}
-			set
-			{
-				_activeSource = value;
-				UpdateActiveRepository();
 			}
 		}
 		
@@ -75,7 +51,10 @@ namespace ICSharpCode.AddInManager2.Model
 			set
 			{
 				_registeredPackageSources.Clear();
-				_registeredPackageSources.AddRange(value);
+				if (value != null)
+				{
+					_registeredPackageSources.AddRange(value);
+				}
 				SavePackageSources();
 				
 				// Send around the update
@@ -110,9 +89,19 @@ namespace ICSharpCode.AddInManager2.Model
 					string[] splittedEntry = repositoryEntry.Split(new char[] { '=' }, 2);
 					if ((splittedEntry != null) && (splittedEntry.Length == 2))
 					{
-						// Create PackageSource from this entry
-						PackageSource savedPackageSource = new PackageSource(splittedEntry[1], splittedEntry[0]);
-						_registeredPackageSources.Add(savedPackageSource);
+						if (!String.IsNullOrEmpty(splittedEntry[0]) && !String.IsNullOrEmpty(splittedEntry[1]))
+						{
+							// Create PackageSource from this entry
+							try
+							{
+								PackageSource savedPackageSource = new PackageSource(splittedEntry[1], splittedEntry[0]);
+								_registeredPackageSources.Add(savedPackageSource);
+							}
+							catch (Exception)
+							{
+								SD.Log.WarnFormatted("URL '{0}' can't be used as valid package source.", splittedEntry[1]);
+							}
+						}
 					}
 				}
 			}
@@ -143,29 +132,6 @@ namespace ICSharpCode.AddInManager2.Model
 			if (repositories.Any())
 			{
 				_currentRepository = new AggregateRepository(repositories);
-			}
-			else
-			{
-				// We have no repositories in configuration -> then we can't have an active source
-				ActiveSource = null;
-			}
-		}
-		
-		private void UpdateActiveRepository()
-		{
-			if ((_activeSource == null) && (_registeredPackageSources != null) && _registeredPackageSources.Any())
-			{
-				_activeSource = _registeredPackageSources[0];
-			}
-			
-			if (_activeSource != null)
-			{
-				_activeRepository = PackageRepositoryFactory.Default.CreateRepository(_activeSource.Source);
-			}
-			else
-			{
-				// If no active repository is set, get packages from all repositories
-				_activeRepository = _currentRepository;
 			}
 		}
 	}
