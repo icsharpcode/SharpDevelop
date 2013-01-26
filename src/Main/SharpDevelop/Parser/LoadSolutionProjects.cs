@@ -40,11 +40,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 		void RaiseThreadStarted()
 		{
 			threadRunningTime = Stopwatch.StartNew();
-			SD.MainThread.InvokeAsync(
-				delegate {
-					IsRunning = true;
-					Started(this, EventArgs.Empty);
-				}).FireAndForget();
+			SD.MainThread.InvokeAsyncAndForget(delegate {
+				IsRunning = true;
+				Started(this, EventArgs.Empty);
+			});
 		}
 		
 		void RaiseThreadEnded()

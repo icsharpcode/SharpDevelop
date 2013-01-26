@@ -4,6 +4,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -19,7 +20,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public System.Windows.Threading.Dispatcher Dispatcher {
+		public Dispatcher Dispatcher {
 			get {
 				throw new NotImplementedException();
 			}
@@ -55,12 +56,12 @@ namespace ICSharpCode.SharpDevelop
 			callback();
 		}
 		
-		public void InvokeIfRequired(Action callback, System.Windows.Threading.DispatcherPriority priority)
+		public void InvokeIfRequired(Action callback, DispatcherPriority priority)
 		{
 			callback();
 		}
 		
-		public void InvokeIfRequired(Action callback, System.Windows.Threading.DispatcherPriority priority, CancellationToken cancellationToken)
+		public void InvokeIfRequired(Action callback, DispatcherPriority priority, CancellationToken cancellationToken)
 		{
 			callback();
 		}
@@ -70,12 +71,12 @@ namespace ICSharpCode.SharpDevelop
 			return callback();
 		}
 		
-		public T InvokeIfRequired<T>(Func<T> callback, System.Windows.Threading.DispatcherPriority priority)
+		public T InvokeIfRequired<T>(Func<T> callback, DispatcherPriority priority)
 		{
 			return callback();
 		}
 		
-		public T InvokeIfRequired<T>(Func<T> callback, System.Windows.Threading.DispatcherPriority priority, CancellationToken cancellationToken)
+		public T InvokeIfRequired<T>(Func<T> callback, DispatcherPriority priority, CancellationToken cancellationToken)
 		{
 			return callback();
 		}
@@ -85,12 +86,12 @@ namespace ICSharpCode.SharpDevelop
 			throw new NotImplementedException();
 		}
 		
-		public Task InvokeAsync(Action callback, System.Windows.Threading.DispatcherPriority priority)
+		public Task InvokeAsync(Action callback, DispatcherPriority priority)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public Task InvokeAsync(Action callback, System.Windows.Threading.DispatcherPriority priority, CancellationToken cancellationToken)
+		public Task InvokeAsync(Action callback, DispatcherPriority priority, CancellationToken cancellationToken)
 		{
 			throw new NotImplementedException();
 		}
@@ -100,12 +101,22 @@ namespace ICSharpCode.SharpDevelop
 			throw new NotImplementedException();
 		}
 		
-		public Task<T> InvokeAsync<T>(Func<T> callback, System.Windows.Threading.DispatcherPriority priority)
+		public Task<T> InvokeAsync<T>(Func<T> callback, DispatcherPriority priority)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public Task<T> InvokeAsync<T>(Func<T> callback, System.Windows.Threading.DispatcherPriority priority, CancellationToken cancellationToken)
+		public Task<T> InvokeAsync<T>(Func<T> callback, DispatcherPriority priority, CancellationToken cancellationToken)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void InvokeAsyncAndForget(Action callback)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void InvokeAsyncAndForget(Action callback, DispatcherPriority priority)
 		{
 			throw new NotImplementedException();
 		}

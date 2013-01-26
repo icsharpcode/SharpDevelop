@@ -124,6 +124,8 @@ namespace CSharpBinding.Refactoring
 						if (resultForFile != null) {
 							callback(resultForFile);
 						}
+					} catch (IOException) {
+						// ignore IO exceptions (e.g. a file is missing)
 					} catch (OperationCanceledException) {
 						throw;
 					} catch (Exception ex) {

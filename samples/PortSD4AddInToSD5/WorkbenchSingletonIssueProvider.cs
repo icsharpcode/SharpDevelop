@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.PatternMatching;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.SharpDevelop;
@@ -102,8 +103,7 @@ namespace PortSD4AddInToSD5
 								script => {
 									script.Replace(invocationExpression,
 									               new IdentifierExpression("SD").Member("MainThread")
-									               .Invoke("InvokeAsync", arg)
-									               .Invoke("FireAndForget"));
+									               .Invoke("InvokeAsyncAndForget", arg));
 								});
 							break;
 						}
@@ -122,6 +122,22 @@ namespace PortSD4AddInToSD5
 								});
 							break;
 						}
+					case "ICSharpCode.SharpDevelop.IMessageLoop.InvokeAsync":
+						// We used to recommend SD.MainThread.InvokeAsync(...).FireAndForget(),
+						// but it's better to use SD.MainThread.InvokeAsyncAndForget(...)
+						if (invocationExpression.Clone().Invoke("FireAndForget").IsMatch(invocationExpression.Parent.Parent)) {
+							var ident = invocationExpression.Parent.GetChildByRole(Roles.Identifier);
+							yield return new CodeIssue(
+								"Use InvokeAsyncAndForget() instead",
+								ident.StartLocation, ident.EndLocation,
+								new CodeAction("Use InvokeAsyncAndForget() instead",
+								               script => {
+								               	var newInvocation = (InvocationExpression)invocationExpression.Clone();
+								               	((MemberReferenceExpression)newInvocation.Target).MemberName = "InvokeAsyncAndForget";
+								               	script.Replace(invocationExpression.Parent.Parent, newInvocation);
+								               }));
+						}
+						break;
 				}
 			}
 		}

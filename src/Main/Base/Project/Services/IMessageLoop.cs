@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop
 	public interface IMessageLoop
 	{
 		/// <summary>
-		/// Gets the thread corresponding to this message loop.
+		/// Gets the thread that runs this message loop.
 		/// </summary>
 		Thread Thread { get; }
 		
@@ -77,9 +77,12 @@ namespace ICSharpCode.SharpDevelop
 		T InvokeIfRequired<T>(Func<T> callback, DispatcherPriority priority, CancellationToken cancellationToken);
 		
 		/// <summary>
-		/// Invokes the specified callback.
+		/// Invokes the specified callback on the message loop.
 		/// </summary>
 		/// <returns>Returns a task that is signalled when the execution of the callback is completed.</returns>
+		/// <remarks>
+		/// If the callback method causes an exception; the exception gets stored in the task object.
+		/// </remarks>
 		Task InvokeAsync(Action callback);
 		/// <inheritdoc see="InvokeAsync(Action)"/>
 		Task InvokeAsync(Action callback, DispatcherPriority priority);
@@ -92,6 +95,18 @@ namespace ICSharpCode.SharpDevelop
 		Task<T> InvokeAsync<T>(Func<T> callback, DispatcherPriority priority);
 		/// <inheritdoc see="InvokeAsync(Action)"/>
 		Task<T> InvokeAsync<T>(Func<T> callback, DispatcherPriority priority, CancellationToken cancellationToken);
+		
+		/// <summary>
+		/// Invokes the specified callback on the message loop.
+		/// </summary>
+		/// <remarks>
+		/// This method does not wait for the callback complete execution.
+		/// If this method is used on the main thread; the message loop must be pumped before the callback gets to run.
+		/// If the callback causes an exception, it is left unhandled.
+		/// </remarks>
+		void InvokeAsyncAndForget(Action callback);
+		/// <inheritdoc see="InvokeAsyncAndForget(Action)"/>
+		void InvokeAsyncAndForget(Action callback, DispatcherPriority priority);
 		
 		/// <summary>
 		/// Waits <paramref name="delay"/>, then executed <paramref name="method"/> on the message loop thread.
