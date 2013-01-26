@@ -86,7 +86,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="nunit.framework">
-      <HintPath>..\..\Mono.Cecil\Test\libs\nunit-2.5.10\nunit.framework.dll</HintPath>
+      <HintPath>..\..\cecil\Test\libs\nunit-2.5.10\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

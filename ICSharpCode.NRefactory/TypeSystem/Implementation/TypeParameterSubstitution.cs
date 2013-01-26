@@ -23,7 +23,7 @@ using System.Text;
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
-	/// Substitues class and method type parameters.
+	/// Substitutes class and method type parameters.
 	/// </summary>
 	public class TypeParameterSubstitution : TypeVisitor
 	{

@@ -198,6 +198,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the declaring type name.
 		/// </summary>
 		/// <exception cref="InvalidOperationException">This is a top-level type name.</exception>
+		/// <example><c>new FullTypeName("NS.A+B+C").GetDeclaringType()</c> will return <c>new FullTypeName("NS.A+B")</c></example>
 		public FullTypeName GetDeclaringType()
 		{
 			if (nestedTypes == null)
@@ -210,8 +211,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		/// <summary>
-		/// Gets a nested type name.
+		/// Creates a nested type name.
 		/// </summary>
+		/// <example><c>new FullTypeName("NS.A+B").NestedType("C", 1)</c> will return <c>new FullTypeName("NS.A+B+C`1")</c></example>
 		public FullTypeName NestedType(string name, int additionalTypeParameterCount)
 		{
 			if (name == null)

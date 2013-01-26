@@ -327,10 +327,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				if (ta != null)
 					ta[i] = r;
 			}
-			if (ta == null)
+			if (def == genericType && ta == null)
 				return this;
 			else
-				return new ParameterizedType(def, ta);
+				return new ParameterizedType(def, ta ?? typeArguments);
 		}
 	}
 	
