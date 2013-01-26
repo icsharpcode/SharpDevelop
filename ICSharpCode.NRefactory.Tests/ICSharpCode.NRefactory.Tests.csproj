@@ -233,6 +233,7 @@
     <Compile Include="CSharp\Resolver\CastTests.cs" />
     <Compile Include="CSharp\Resolver\ComTests.cs" />
     <Compile Include="CSharp\Resolver\ConditionalOperatorTests.cs" />
+    <Compile Include="CSharp\Resolver\SizeOfTests.cs" />
     <Compile Include="CSharp\Resolver\DynamicTests.cs" />
     <Compile Include="CSharp\Resolver\ExplicitConversionsTest.cs" />
     <Compile Include="CSharp\Resolver\ExtensionMethodTests.cs" />

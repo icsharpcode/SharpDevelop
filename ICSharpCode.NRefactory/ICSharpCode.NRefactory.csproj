@@ -111,6 +111,7 @@
     <Compile Include="Semantics\ByReferenceResolveResult.cs" />
     <Compile Include="Semantics\ConstantResolveResult.cs" />
     <Compile Include="Semantics\ConversionResolveResult.cs" />
+    <Compile Include="Semantics\SizeOfResolveResult.cs" />
     <Compile Include="Semantics\ErrorResolveResult.cs" />
     <Compile Include="Semantics\Conversion.cs" />
     <Compile Include="Semantics\ForEachResolveResult.cs" />

@@ -1263,6 +1263,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			AssertConstantField<double>(type, "Cd", 42);
 			AssertConstantField<float>(type, "Cf", 42);
 			AssertConstantField<decimal>(type, "Cm", 42);
+			AssertConstantField<string>(type, "S", "hello, world");
+
+			AssertConstantField<int>(type, "SOsb", sizeof(sbyte));
+			AssertConstantField<int>(type, "SOb", sizeof(byte));
+			AssertConstantField<int>(type, "SOs", sizeof(short));
+			AssertConstantField<int>(type, "SOus", sizeof(ushort));
+			AssertConstantField<int>(type, "SOi", sizeof(int));
+			AssertConstantField<int>(type, "SOui", sizeof(uint));
+			AssertConstantField<int>(type, "SOl", sizeof(long));
+			AssertConstantField<int>(type, "SOul", sizeof(ulong));
+			AssertConstantField<int>(type, "SOc", sizeof(char));
+			AssertConstantField<int>(type, "SOf", sizeof(float));
+			AssertConstantField<int>(type, "SOd", sizeof(double));
+			AssertConstantField<int>(type, "SObl", sizeof(bool));
+			AssertConstantField<int>(type, "SOe", sizeof(MyEnum));
 		}
 	}
 }
