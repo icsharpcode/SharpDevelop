@@ -426,7 +426,7 @@
 				<ComponentRef Id="ICSharpCodeWpfDesignDesignerDll"/>
 				<ComponentRef Id="ICSharpCodeWpfDesignDll"/>
 				<ComponentRef Id="ICSharpCodeWpfDesignXamlDomDll"/>
-				<ComponentRef Id="WpfDesignAddin"/>
+				<ComponentRef Id="WpfDesignAddin"/>-->
 				
 				<ComponentRef Id="ICSharpCodeDataAddin"/>
 				<ComponentRef Id="ICSharpCodeDataAddinDll"/>
@@ -435,7 +435,7 @@
 				<ComponentRef Id="ICSharpCodeDataEDMDesignerCoreDll"/>
 				<ComponentRef Id="ICSharpCodeDataEDMDesignerCoreUIDll"/>
 				<ComponentRef Id="ICSharpCodeDataSQLServerDll"/>
-				<ComponentRef Id="CSharpEDMXXft"/>-->
+				<ComponentRef Id="CSharpEDMXXft"/>
 				
 				<ComponentRef Id="UDCSystemDataSQLiteDll"/>
 				<ComponentRef Id="UsageDataCollectorAddin"/>

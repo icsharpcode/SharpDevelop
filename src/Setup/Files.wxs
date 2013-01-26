@@ -1342,6 +1342,7 @@
 										<File Source="..\..\AddIns\DisplayBindings\WpfDesign\WpfDesign.addin" Name="WpfDesign.addin" Id="WpfDesign.addin" KeyPath="yes" />
 									</Component>
 								</Directory>
+								-->
 								<Directory Id="Data" Name="Data">
 									<Component Guid="16E65D48-658D-4C6B-BCCB-9B5450727CFD" Id="ICSharpCodeDataAddin" DiskId="1">
 										<File Source="..\..\AddIns\DisplayBindings\Data\ICSharpCode.Data.addin" Name="ICSharpCode.Data.addin" Id="ICSharpCode.Data.addin" KeyPath="yes" />
@@ -1372,6 +1373,7 @@
 										</Directory>
 									</Directory>
 								</Directory>
+								<!--
 								<Directory Id="SettingsEditor" Name="SettingsEditor">
 									<Component Id="SettingsEditorFiles" Guid="4A12129A-6BB5-4CC7-A105-C1F6FDF345F2" DiskId="1">
 										<File Id="SettingsEditor.dll" Name="SettingsEditor.dll" Source="..\..\AddIns\DisplayBindings\SettingsEditor\SettingsEditor.dll" KeyPath="yes" />
