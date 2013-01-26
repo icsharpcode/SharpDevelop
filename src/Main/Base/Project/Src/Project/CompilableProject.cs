@@ -372,8 +372,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override ITypeDefinitionModelCollection TypeDefinitionModels {
 			get {
 				SD.MainThread.VerifyAccess();
-				if (typeDefinitionModels == null)
+				if (typeDefinitionModels == null) {
 					typeDefinitionModels = SD.GetRequiredService<IModelFactory>().CreateTopLevelTypeDefinitionCollection(new ProjectEntityModelContext(this, ".cs"));
+					var pc = ProjectContent;
+					if (pc != null) {
+						// Add the already loaded files into the model
+						foreach (var file in pc.Files) {
+							typeDefinitionModels.Update(null, file);
+						}
+					}
+				}
 				return typeDefinitionModels;
 			}
 		}

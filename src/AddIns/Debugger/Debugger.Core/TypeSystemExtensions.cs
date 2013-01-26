@@ -436,12 +436,6 @@ namespace Debugger
 			return false;
 		}
 		
-		public static bool IsKnownType(this IType type, KnownTypeCode knownType)
-		{
-			var def = type.GetDefinition();
-			return def != null && def.KnownTypeCode == knownType;
-		}
-		
 		public static bool IsKnownType(this IType type, Type knownType)
 		{
 			var def = type.GetDefinition();
