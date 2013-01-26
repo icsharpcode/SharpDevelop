@@ -157,31 +157,46 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Loads the assembly definition into a project content.
 		/// </summary>
-		/// <returns>IProjectContent that represents the assembly</returns>
+		/// <returns>Unresolved type system representing the assembly</returns>
 		[CLSCompliant(false)]
 		public IUnresolvedAssembly LoadAssembly(AssemblyDefinition assemblyDefinition)
 		{
 			if (assemblyDefinition == null)
 				throw new ArgumentNullException("assemblyDefinition");
+			return LoadModule(assemblyDefinition.MainModule);
+		}
+		
+		/// <summary>
+		/// Loads the module definition into a project content.
+		/// </summary>
+		/// <returns>Unresolved type system representing the assembly</returns>
+		[CLSCompliant(false)]
+		public IUnresolvedAssembly LoadModule(ModuleDefinition moduleDefinition)
+		{
+			if (moduleDefinition == null)
+				throw new ArgumentNullException("moduleDefinition");
 			
-			this.currentModule = assemblyDefinition.MainModule;
+			this.currentModule = moduleDefinition;
 			
 			// Read assembly and module attributes
 			IList<IUnresolvedAttribute> assemblyAttributes = new List<IUnresolvedAttribute>();
 			IList<IUnresolvedAttribute> moduleAttributes = new List<IUnresolvedAttribute>();
-			AddAttributes(assemblyDefinition, assemblyAttributes);
-			AddAttributes(assemblyDefinition.MainModule, moduleAttributes);
+			AssemblyDefinition assemblyDefinition = moduleDefinition.Assembly;
+			if (assemblyDefinition != null) {
+				AddAttributes(assemblyDefinition, assemblyAttributes);
+			}
+			AddAttributes(moduleDefinition, moduleAttributes);
 			
 			assemblyAttributes = interningProvider.InternList(assemblyAttributes);
 			moduleAttributes = interningProvider.InternList(moduleAttributes);
 			
-			this.currentAssembly = new CecilUnresolvedAssembly(assemblyDefinition.Name, this.DocumentationProvider);
-			currentAssembly.Location = assemblyDefinition.MainModule.FullyQualifiedName;
+			this.currentAssembly = new CecilUnresolvedAssembly(assemblyDefinition != null ? assemblyDefinition.Name.FullName : moduleDefinition.Name, this.DocumentationProvider);
+			currentAssembly.Location = moduleDefinition.FullyQualifiedName;
 			currentAssembly.AssemblyAttributes.AddRange(assemblyAttributes);
 			currentAssembly.ModuleAttributes.AddRange(assemblyAttributes);
 			
 			// Register type forwarders:
-			foreach (ExportedType type in assemblyDefinition.MainModule.ExportedTypes) {
+			foreach (ExportedType type in moduleDefinition.ExportedTypes) {
 				if (type.IsForwarder) {
 					int typeParameterCount;
 					string ns = type.Namespace;
@@ -199,25 +214,23 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			CecilLoader cecilLoaderCloneForLazyLoading = LazyLoad ? new CecilLoader(this) : null;
 			List<TypeDefinition> cecilTypeDefs = new List<TypeDefinition>();
 			List<DefaultUnresolvedTypeDefinition> typeDefs = new List<DefaultUnresolvedTypeDefinition>();
-			foreach (ModuleDefinition module in assemblyDefinition.Modules) {
-				foreach (TypeDefinition td in module.Types) {
-					this.CancellationToken.ThrowIfCancellationRequested();
-					if (this.IncludeInternalMembers || (td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.Public) {
-						string name = td.Name;
-						if (name.Length == 0)
-							continue;
-						
-						if (this.LazyLoad) {
-							var t = new LazyCecilTypeDefinition(cecilLoaderCloneForLazyLoading, td);
-							currentAssembly.AddTypeDefinition(t);
-							RegisterCecilObject(t, td);
-						} else {
-							var t = CreateTopLevelTypeDefinition(td);
-							cecilTypeDefs.Add(td);
-							typeDefs.Add(t);
-							currentAssembly.AddTypeDefinition(t);
-							// The registration will happen after the members are initialized
-						}
+			foreach (TypeDefinition td in moduleDefinition.Types) {
+				this.CancellationToken.ThrowIfCancellationRequested();
+				if (this.IncludeInternalMembers || (td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.Public) {
+					string name = td.Name;
+					if (name.Length == 0)
+						continue;
+					
+					if (this.LazyLoad) {
+						var t = new LazyCecilTypeDefinition(cecilLoaderCloneForLazyLoading, td);
+						currentAssembly.AddTypeDefinition(t);
+						RegisterCecilObject(t, td);
+					} else {
+						var t = CreateTopLevelTypeDefinition(td);
+						cecilTypeDefs.Add(td);
+						typeDefs.Add(t);
+						currentAssembly.AddTypeDefinition(t);
+						// The registration will happen after the members are initialized
 					}
 				}
 			}
@@ -276,10 +289,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			readonly IDocumentationProvider documentationProvider;
 			
-			public CecilUnresolvedAssembly(AssemblyNameDefinition assemblyName, IDocumentationProvider documentationProvider)
-				: base(assemblyName.FullName)
+			public CecilUnresolvedAssembly(string fullAssemblyName, IDocumentationProvider documentationProvider)
+				: base(fullAssemblyName)
 			{
-				Debug.Assert(assemblyName != null);
 				this.documentationProvider = documentationProvider;
 			}
 			
@@ -299,8 +311,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
 			var param = new ReaderParameters { AssemblyResolver = new DummyAssemblyResolver() };
-			AssemblyDefinition asm = AssemblyDefinition.ReadAssembly(fileName, param);
-			return LoadAssembly(asm);
+			ModuleDefinition module = ModuleDefinition.ReadModule(fileName, param);
+			return LoadModule(module);
 		}
 		
 		// used to prevent Cecil from loading referenced assemblies
