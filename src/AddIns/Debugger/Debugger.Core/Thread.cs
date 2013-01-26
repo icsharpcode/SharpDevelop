@@ -11,6 +11,14 @@ using Debugger.Interop.CorDebug;
 
 namespace Debugger
 {
+	public enum ExceptionType
+	{
+		FirstChance = 1,
+		UserFirstChance = 2,
+		CatchHandlerFound = 3,
+		Unhandled = 4,
+	}
+		
 	public class Thread: DebuggerObject
 	{
 		// AppDomain for thread can be changing
@@ -43,6 +51,16 @@ namespace Debugger
 		internal Stepper CurrentStepIn {
 			get { return currentStepIn; }
 			set { currentStepIn = value; }
+		}
+		
+		[Debugger.Tests.Ignore]
+		public ExceptionType CurrentExceptionType { get; set; }
+		
+		[Debugger.Tests.Ignore]
+		public Value CurrentException {
+			get {
+				return new Value(this.AppDomain, this.CorThread.GetCurrentException());
+			}
 		}
 		
 		/// <summary> From time to time the thread may be in invalid state. </summary>
@@ -143,11 +161,9 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> Tryies to intercept the current exception.
-		/// The intercepted expression stays available through the CurrentException property. </summary>
-		/// <returns> False, if the exception was already intercepted or 
-		/// if it can not be intercepted. </returns>
-		public bool InterceptException(Exception exception)
+		/// <summary> Tryies to intercept the current exception. </summary>
+		/// <returns> False, if the exception can not be intercepted. </returns>
+		public bool InterceptException()
 		{
 			if (!(this.CorThread is ICorDebugThread2)) return false; // Is the debuggee .NET 2.0?
 			if (this.CorThread.GetCurrentException() == null) return false; // Is there any exception
@@ -166,8 +182,6 @@ namespace Debugger
 			if (mostRecentUnoptimized == null) return false;
 			
 			try {
-				// Interception will expire the CorValue so keep permanent reference
-				exception.MakeValuePermanent();
 				((ICorDebugThread2)this.CorThread).InterceptCurrentException(mostRecentUnoptimized.CorILFrame);
 			} catch (COMException e) {
 				// 0x80131C02: Cannot intercept this exception

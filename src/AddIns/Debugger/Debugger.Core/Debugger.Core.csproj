@@ -69,7 +69,6 @@
     <Compile Include="Breakpoint.cs" />
     <Compile Include="DebuggerException.cs" />
     <Compile Include="Eval.cs" />
-    <Compile Include="Exception.cs" />
     <Compile Include="Interop\Common.cs" />
     <Compile Include="Interop\CorDebug.cs" />
     <Compile Include="Interop\CorDebugExtensionMethods.cs" />

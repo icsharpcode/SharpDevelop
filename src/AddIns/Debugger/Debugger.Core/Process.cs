@@ -402,7 +402,7 @@ namespace Debugger
 			corProcess.Stop(uint.MaxValue); // Infinite; ignored anyway
 			
 			NotifyPaused();
-			OnPaused(new DebuggerPausedEventArgs() { Process = this });
+			OnPaused(new DebuggerPausedEventArgs(this) { Break = true });
 		}
 		
 		public void Detach()

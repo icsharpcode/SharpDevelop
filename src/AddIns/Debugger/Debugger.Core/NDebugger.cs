@@ -320,11 +320,18 @@ namespace Debugger
 		/// <summary> Breakpoints hit </summary>
 		public List<Breakpoint> BreakpointsHit { get; set; }
 		
-		/// <summary> Exception thrown </summary>
-		public Exception ExceptionThrown { get; set; }
+		/// <summary> Threads which have exceptions </summary>
+		public List<Thread> ExceptionsThrown { get; set; }
 		
 		/// <summary> Break, stepper or any other pause reason. </summary>
 		public bool Break { get; set; }
+		
+		public DebuggerPausedEventArgs(Process process)
+		{
+			this.Process = process;
+			this.BreakpointsHit = new List<Breakpoint>();
+			this.ExceptionsThrown = new List<Thread>();
+		}
 	}
 	
 	[Serializable]
