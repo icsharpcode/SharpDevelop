@@ -192,11 +192,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 
-		public IMethod GetDefinition ()
-		{
-			return methodDefinition;
-		}
-		
 		public override string ToString()
 		{
 			StringBuilder b = new StringBuilder("[");

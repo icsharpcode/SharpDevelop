@@ -1,4 +1,4 @@
-//
+﻿//
 // AliasTypeResolveResult.cs
 //
 // Author:
@@ -44,19 +44,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			private set;
 		}
 		
-		/// <summary>
-		/// The type reference that was aliased.
-		/// </summary>
-		public TypeOrNamespaceReference Reference {
-			get;
-			private set;
-		}
-		
-		public AliasTypeResolveResult(string alias, TypeOrNamespaceReference reference, TypeResolveResult underlyingResult) : base (underlyingResult.Type)
+		public AliasTypeResolveResult(string alias, TypeResolveResult underlyingResult) : base (underlyingResult.Type)
 		{
 			this.Alias = alias;
-			this.Reference = reference;
 		}
 	}
-	
 }
