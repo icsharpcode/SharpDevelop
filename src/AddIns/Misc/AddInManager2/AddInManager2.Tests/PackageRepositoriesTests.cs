@@ -39,6 +39,25 @@ namespace ICSharpCode.AddInManager2.Tests
 			Assert.That(packageSources.ElementAt(1).Source, Is.EqualTo(@"C:\Repositories\Repository2"));
 		}
 		
+		[Test, Description("Invalid repository configuration must be handled without exceptions.")]
+		public void ReadInvalidRepositoriesFromConfiguration()
+		{
+			FakeAddInManagerSettings settings = new FakeAddInManagerSettings();
+			settings.PackageRepositories = new string[]
+			{
+				@"Repository1|C:\Repositories\Repository1",
+				"=",
+				""
+			};
+			
+			AddInManagerEvents events = new AddInManagerEvents();
+			PackageRepositories packageRepositories = new PackageRepositories(events, settings);
+			
+			var packageSources = packageRepositories.RegisteredPackageSources;
+			Assert.That(packageSources, Is.Not.Null);
+			Assert.That(packageSources.Count(), Is.EqualTo(0));
+		}
+		
 		[Test, Description("Configured repositories must be correctly saved to settings.")]
 		public void SaveRepositoriesToConfiguration()
 		{
@@ -62,6 +81,27 @@ namespace ICSharpCode.AddInManager2.Tests
 			Assert.That(packageRepositoriesSetting.Count(), Is.GreaterThan(0));
 			Assert.That(packageRepositoriesSetting.ElementAt(0), Is.EqualTo(@"Repository3=C:\Repositories\Repository3"));
 			Assert.That(packageRepositoriesSetting.ElementAt(1), Is.EqualTo(@"Repository4=C:\Repositories\Repository4"));
+		}
+		
+		[Test, Description("Configured invalid package sources list must be handled without exceptions.")]
+		public void SaveInvalidRepositoryListToConfiguration()
+		{
+			FakeAddInManagerSettings settings = new FakeAddInManagerSettings();
+			settings.PackageRepositories = new string[]
+			{
+				@"Repository1=C:\Repositories\Repository1",
+				@"Repository2=C:\Repositories\Repository2"
+			};
+			
+			AddInManagerEvents events = new AddInManagerEvents();
+			PackageRepositories packageRepositories = new PackageRepositories(events, settings);
+
+			// Setting invalid package source collection (null)			
+			packageRepositories.RegisteredPackageSources = null;
+			
+			var packageRepositoriesSetting = settings.PackageRepositories;
+			Assert.That(packageRepositoriesSetting, Is.Not.Null);
+			Assert.That(packageRepositoriesSetting.Count(), Is.EqualTo(0));
 		}
 	}
 }
