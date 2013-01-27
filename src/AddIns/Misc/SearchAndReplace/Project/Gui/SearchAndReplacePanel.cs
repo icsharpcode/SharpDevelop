@@ -109,7 +109,7 @@ namespace SearchAndReplace
 				return;
 			}
 			// No using block for the monitor; it is disposed when the asynchronous search finishes
-			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
+			var monitor = SD.StatusBar.CreateProgressMonitor();
 			monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
 			var results = SearchManager.FindAllParallel(strategy, location, monitor);
 			SearchManager.ShowSearchResults(SearchOptions.FindPattern, results);
@@ -127,7 +127,7 @@ namespace SearchAndReplace
 				return;
 			}
 			// No using block for the monitor; it is disposed when the asynchronous search finishes
-			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
+			var monitor = SD.StatusBar.CreateProgressMonitor();
 			monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
 			var results = SearchManager.FindAllParallel(strategy, location, monitor);
 			SearchManager.MarkAll(results);

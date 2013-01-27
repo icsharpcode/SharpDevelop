@@ -184,7 +184,7 @@ namespace ICSharpCode.Svn
 						client = new SvnClientWrapper();
 					} catch (Exception ex) {
 						subversionDisabled = true;
-						SD.MainThread.InvokeAsync(() => MessageService.ShowWarning("Error initializing Subversion library:\n" + ex.ToString())).FireAndForget();
+						SD.MainThread.InvokeAsyncAndForget(() => MessageService.ShowWarning("Error initializing Subversion library:\n" + ex.ToString()));
 						return StatusKind.None;
 					}
 				}
@@ -220,9 +220,9 @@ namespace ICSharpCode.Svn
 				}
 			}
 			
-			SD.MainThread.InvokeAsync(delegate {
+			SD.MainThread.InvokeAsyncAndForget(delegate {
 				node.Overlay = GetImage(status);
-			}).FireAndForget();
+			});
 		}
 	}
 }

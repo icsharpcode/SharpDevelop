@@ -120,9 +120,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			// call async because the Debugger seems to use Application.DoEvents(), but we don't want to process events
 			// because Drag'N'Drop operation has finished
-			SD.MainThread.InvokeAsync(delegate {
+			SD.MainThread.InvokeAsyncAndForget(delegate {
 				DebuggerService.CurrentDebugger.SetInstructionPointer(this.FileName, lineNumber, 1, false);
-			}).FireAndForget();
+			});
 		}
 	}
 }

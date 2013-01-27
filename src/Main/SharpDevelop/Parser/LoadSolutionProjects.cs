@@ -50,11 +50,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			if (threadRunningTime != null)
 				LoggingService.Debug("LoadSolutionProjectsThread finished after " + threadRunningTime.Elapsed);
-			SD.MainThread.InvokeAsync(
-				delegate {
-					IsRunning = false;
-					Finished(this, EventArgs.Empty);
-				}).FireAndForget();
+			SD.MainThread.InvokeAsyncAndForget(delegate {
+				IsRunning = false;
+				Finished(this, EventArgs.Empty);
+			});
 		}
 		
 		static string GetLoadReferenceTaskTitle(string projectName)
@@ -83,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			jobs.AddJob(new JobTask(action, name, cost));
 			// Start the thread with a bit delay so that the SD UI gets responsive first,
 			// and so that the total cost is known for showing the progress bar.
-			SD.MainThread.InvokeAsync(jobs.StartRunningIfRequired, DispatcherPriority.Background).FireAndForget();
+			SD.MainThread.InvokeAsyncAndForget(jobs.StartRunningIfRequired, DispatcherPriority.Background);
 		}
 		
 		public void CancelAllJobs()
@@ -163,7 +162,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 							if (actions.Count > 0) {
 								actions.Dequeue(); // dequeue the null
 								if (actions.Count > 0)
-									SD.MainThread.InvokeAsync(StartRunningIfRequired).FireAndForget();
+									SD.MainThread.InvokeAsyncAndForget(StartRunningIfRequired);
 								else
 									loadSolutionProjects.RaiseThreadEnded();
 							} else {

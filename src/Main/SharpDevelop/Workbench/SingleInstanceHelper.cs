@@ -68,18 +68,17 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				return new IntPtr(RESULT_PROJECT_IS_OPEN);
 			} else {
 				try {
-					SD.MainThread.InvokeAsync(
-						delegate {
-							var win32Window = PresentationSource.FromVisual(SD.Workbench.MainWindow) as System.Windows.Interop.IWin32Window;
-							if (win32Window != null)
-								NativeMethods.SetForegroundWindow(win32Window.Handle);
+					SD.MainThread.InvokeAsyncAndForget(delegate {
+						var win32Window = PresentationSource.FromVisual(SD.Workbench.MainWindow) as System.Windows.Interop.IWin32Window;
+						if (win32Window != null) {
+							NativeMethods.SetForegroundWindow(win32Window.Handle);
 						}
-					).FireAndForget();
+					});
 					string tempFileName = Path.Combine(Path.GetTempPath(), "sd" + fileNumber + ".tmp");
 					foreach (string file in File.ReadAllLines(tempFileName)) {
-						SD.MainThread.InvokeAsync(
-							delegate { SharpDevelop.FileService.OpenFile(file); }
-						).FireAndForget();
+						SD.MainThread.InvokeAsyncAndForget(delegate {
+							SharpDevelop.FileService.OpenFile(file);
+						});
 					}
 				} catch (Exception ex) {
 					LoggingService.Warn(ex);

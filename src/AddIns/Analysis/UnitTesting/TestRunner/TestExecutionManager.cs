@@ -163,7 +163,9 @@ namespace ICSharpCode.UnitTesting.Frameworks
 		
 		void testRunner_TestFinished(object sender, TestFinishedEventArgs e)
 		{
-			mainThread.InvokeAsync(delegate { ShowResult(e.Result); }).FireAndForget();
+			mainThread.InvokeAsyncAndForget(delegate {
+				ShowResult(e.Result);
+			});
 		}
 		
 		protected void ShowResult(TestResult result)

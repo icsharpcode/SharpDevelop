@@ -32,9 +32,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void ReportError(BuildError error)
 		{
-			SD.MainThread.InvokeAsync(delegate {
+			SD.MainThread.InvokeAsyncAndForget(delegate {
 				TaskService.Add(new SDTask(error));
-			}).FireAndForget();
+			});
 		}
 		
 		public void ReportMessage(string message)

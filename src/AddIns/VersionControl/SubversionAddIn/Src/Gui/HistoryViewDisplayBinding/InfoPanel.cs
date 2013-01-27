@@ -158,7 +158,7 @@ namespace ICSharpCode.Svn
 				}
 				loadChangedPathsItem = null;
 				isLoadingChangedPaths = false;
-				SD.MainThread.InvokeAsync(() => this.RevisionListViewSelectionChanged(null, EventArgs.Empty)).FireAndForget();
+				SD.MainThread.InvokeAsyncAndForget(() => this.RevisionListViewSelectionChanged(null, EventArgs.Empty));
 			} catch (Exception ex) {
 				MessageService.ShowException(ex);
 			}
@@ -171,7 +171,7 @@ namespace ICSharpCode.Svn
 		
 		void ReceiveAllChangedPaths(LogMessage logMessage)
 		{
-			SD.MainThread.InvokeAsync(() => this.ReceiveAllChangedPathsInvoked(logMessage)).FireAndForget();
+			SD.MainThread.InvokeAsyncAndForget(() => this.ReceiveAllChangedPathsInvoked(logMessage));
 		}
 		
 		void ReceiveAllChangedPathsInvoked(LogMessage logMessage)

@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				txtStatusBarPanel.Content = message;
 			};
 			if (SD.MainThread.InvokeRequired) {
-				SD.MainThread.InvokeAsync(setMessageAction).FireAndForget();
+				SD.MainThread.InvokeAsyncAndForget(setMessageAction);
 			} else {
 				setMessageAction();
 			}

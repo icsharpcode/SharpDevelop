@@ -464,7 +464,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			} catch (GetValueException e) {
 				string errorMessage = "Error while evaluating breakpoint condition " + code + ":\n" + e.Message + "\n";
 				DebuggerService.PrintDebugMessage(errorMessage);
-				SD.MainThread.InvokeAsync(() => MessageService.ShowWarning(errorMessage)).FireAndForget();
+				SD.MainThread.InvokeAsyncAndForget(() => MessageService.ShowWarning(errorMessage));
 				return true;
 			}
 		}

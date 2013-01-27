@@ -393,12 +393,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				c.ParseInformationUpdated(args.OldUnresolvedFile, args.NewUnresolvedFile);
 			// OnParseInformationUpdated is called inside a lock, but we don't want to raise the event inside that lock.
 			// To ensure events are raised in the same order, we always invoke on the main thread.
-			SD.MainThread.InvokeAsync(
-				delegate {
-					if (typeDefinitionModels != null)
-						typeDefinitionModels.Update(args.OldUnresolvedFile, args.NewUnresolvedFile);
-					ParseInformationUpdated(null, args);
-				}).FireAndForget();
+			SD.MainThread.InvokeAsyncAndForget(delegate {
+				if (typeDefinitionModels != null) {
+					typeDefinitionModels.Update(args.OldUnresolvedFile, args.NewUnresolvedFile);
+				}
+				ParseInformationUpdated(null, args);
+			});
 		}
 		
 		public override event EventHandler<ParseInformationEventArgs> ParseInformationUpdated = delegate {};
