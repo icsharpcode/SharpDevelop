@@ -17,6 +17,8 @@ namespace Debugger.AddIn.Visualizers.Utils
 {
 	public static class DebuggerHelpers
 	{
+		// Object graph visualizer: collection support temp disabled (porting to new NRefactory).
+		/*
 		/// <summary>
 		/// Creates an expression which, when evaluated, creates a List&lt;T&gt; in the debugee
 		/// filled with contents of IEnumerable&lt;T&gt; from the debugee.
@@ -32,7 +34,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 			// explicitely cast the variable to IEnumerable<T>, where T is itemType
 			Expression iEnumerableVariableExplicitCast = new CastExpression(iEnumerableType.GetTypeReference() , iEnumerableVariable, CastType.Cast);
 			return new ObjectCreateExpression(listType.GetTypeReference(), iEnumerableVariableExplicitCast.SingleItemList());
-		}
+		}*/
 		
 		/// <summary>
 		/// Evaluates 'new List&lt;T&gt;(iEnumerableValue)' in the debuggee.
@@ -82,7 +84,6 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// System.Runtime.CompilerServices.GetHashCode method, for obtaining non-overriden hash codes from debuggee.
 		/// </summary>
 		private static DebugMethodInfo hashCodeMethod;
-		
 		/// <summary>
 		/// Invokes RuntimeHelpers.GetHashCode on given value, that is a default hashCode ignoring user overrides.
 		/// </summary>
@@ -117,6 +118,8 @@ namespace Debugger.AddIn.Visualizers.Utils
 			}
 		}
 		
+		// Object graph visualizer: collection support temp disabled (porting to new NRefactory).
+		/*
 		/// <summary>
 		/// Evaluates 'System.Collections.ICollection.Count' on given Value.
 		/// </summary>
@@ -128,8 +131,10 @@ namespace Debugger.AddIn.Visualizers.Utils
 				throw new GetValueException("Object does not implement System.Collections.ICollection");
 			// Do not get string representation since it can be printed in hex
 			return (int)list.GetPropertyValue(WindowsDebugger.EvalThread, iCollectionType.GetProperty("Count")).PrimitiveValue;
-		}
+		}*/
 		
+		// Object graph visualizer: collection support temp disabled (porting to new NRefactory).
+		/*
 		/// <summary>
 		/// Evaluates 'System.Collection.IList.Item(i)' on given Value.
 		/// </summary>
@@ -145,8 +150,10 @@ namespace Debugger.AddIn.Visualizers.Utils
 			if (indexerProperty == null)
 				throw new GetValueException("The object does not have an indexer property");
 			return target.GetPropertyValue(WindowsDebugger.EvalThread, indexerProperty, Eval.CreateValue(WindowsDebugger.EvalThread, index));
-		}
+		}*/
 		
+		// Object graph visualizer: collection support temp disabled (porting to new NRefactory).
+		/*
 		/// <summary>
 		/// Prepends a cast to IList before the given Expression.
 		/// </summary>
@@ -157,6 +164,6 @@ namespace Debugger.AddIn.Visualizers.Utils
 				expr.Parenthesize(),
 				CastType.Cast
 			);
-		}
+		}*/
 	}
 }

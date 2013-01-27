@@ -10,7 +10,6 @@ using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Services;
 
@@ -86,7 +85,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 			
 			Value rootValue = expression.GetValue();
-			if (rootValue.IsNull)	{
+			if (rootValue.IsNull) {
 				throw new DebuggerVisualizerException(expression + " is null.");
 			}
 			return buildGraphForValue(rootValue.GetPermanentReference(WindowsDebugger.EvalThread), expression, expandedNodes);
@@ -122,8 +121,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			createdNew = false;
 			ObjectGraphNode nodeForValue = getExistingNodeForValue(value);
-			if (nodeForValue == null)
-			{
+			if (nodeForValue == null) {
 				// if no node for memberValue exists, create it
 				nodeForValue = createNewNode(value, expression);
 				loadContent(nodeForValue);
@@ -135,13 +133,13 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
 		/// Fills node Content property tree.
 		/// </summary>
-		/// <param name="thisNode"></param>
 		private void loadContent(ObjectGraphNode thisNode)
 		{
 			var contentRoot = new ThisNode();
 			thisNode.Content = contentRoot;
 			
-			DebugType collectionType;
+			// Object graph visualizer: collection support temp disabled (porting to new NRefactory).
+			/*DebugType collectionType;
 			DebugType itemType;
 			if (thisNode.PermanentReference.Type.ResolveIListImplementation(out collectionType, out itemType))
 			{
@@ -157,20 +155,20 @@ namespace Debugger.AddIn.Visualizers.Graph
 					() => DebuggerHelpers.CreateListFromIEnumerable(thisNode.Expression.GetValue())
 				);
 				LoadNodeCollectionContent(contentRoot, debugListExpression, debugListType);
-			} else {
+			} else*/ {
 				// it is an object
 				LoadNodeObjectContent(contentRoot, thisNode.Expression, thisNode.PermanentReference.Type);
 			}
 		}
 
-		void AddRawViewNode(AbstractNode contentRoot, ObjectGraphNode thisNode)
-		{
+		void AddRawViewNode(AbstractNode contentRoot, ObjectGraphNode thisNode) {
 			var rawViewNode = new RawViewNode();
 			contentRoot.AddChild(rawViewNode);
 			LoadNodeObjectContent(rawViewNode, thisNode.Expression, thisNode.PermanentReference.Type);
 		}
 		
-		void LoadNodeCollectionContent(AbstractNode node, GraphExpression thisObject, DebugType iListType)
+		// Object graph visualizer: collection support temp disabled (porting to new NRefactory).
+		/*void LoadNodeCollectionContent(AbstractNode node, GraphExpression thisObject, DebugType iListType)
 		{
 			var thisObjectAsIList = new GraphExpression(thisObject.Expr.CastToIList(), thisObject.GetValue);
 			int listCount = thisObjectAsIList.GetValue().GetIListCount();
@@ -187,13 +185,12 @@ namespace Debugger.AddIn.Visualizers.Graph
 					new ObjectGraphProperty { Name = "[" + i + "]", MemberInfo = indexerProp, Expression = itemExpr, Value = "", IsAtomic = true, TargetNode = null });
 				node.AddChild(itemNode);
 			}
-		}
+		}*/
 		
 		void LoadNodeObjectContent(AbstractNode node, GraphExpression expression, DebugType type)
 		{
 			// base
-			if (type.BaseType != null && type.BaseType.FullName != "System.Object")
-			{
+			if (type.BaseType != null && type.BaseType.FullName != "System.Object") {
 				var baseClassNode = new BaseClassNode(type.BaseType.FullName, type.BaseType.Name);
 				node.AddChild(baseClassNode);
 				LoadNodeObjectContent(baseClassNode, expression, (DebugType)type.BaseType);
@@ -201,19 +198,16 @@ namespace Debugger.AddIn.Visualizers.Graph
 			
 			// non-public members
 			var nonPublicProperties = getProperties(expression, type, this.nonPublicInstanceMemberFlags);
-			if (nonPublicProperties.Count > 0)
-			{
+			if (nonPublicProperties.Count > 0) {
 				var nonPublicMembersNode = new NonPublicMembersNode();
 				node.AddChild(nonPublicMembersNode);
-				foreach (var nonPublicProperty in nonPublicProperties)
-				{
+				foreach (var nonPublicProperty in nonPublicProperties) {
 					nonPublicMembersNode.AddChild(new PropertyNode(nonPublicProperty));
 				}
 			}
 			
 			// public members
-			foreach (var property in getProperties(expression, type, this.publicInstanceMemberFlags))
-			{
+			foreach (var property in getProperties(expression, type, this.publicInstanceMemberFlags)) {
 				node.AddChild(new PropertyNode(property));
 			}
 		}
@@ -222,8 +216,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			List<ObjectGraphProperty> propertyList = new List<ObjectGraphProperty>();
 			
-			foreach (MemberInfo memberProp in shownType.GetFieldsAndNonIndexedProperties(flags))
-			{
+			foreach (MemberInfo memberProp in shownType.GetFieldsAndNonIndexedProperties(flags)) {
 				if (memberProp.Name.Contains("<")) {
 					// skip backing fields
 					continue;
@@ -237,7 +230,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 				// to know whether it is expanded, and to evaluate
 				var propExpression = new GraphExpression(
 					expression.Expr.AppendMemberReference((IDebugMemberInfo)memberProp),
-					() => expression.GetValue().GetMemberValue(WindowsDebugger.EvalThread, memberProp)  // EXPR-EVAL
+					() => expression.GetValue().GetMemberValue(WindowsDebugger.EvalThread, memberProp)
 				);
 				// Value, IsAtomic are lazy evaluated
 				propertyList.Add(new ObjectGraphProperty
@@ -250,45 +243,34 @@ namespace Debugger.AddIn.Visualizers.Graph
 		}
 		
 		/// <summary>
-		/// For each complex property of this node, create s neighbor graph node if needed and connects the neighbor to ObjectProperty.TargetNode.
+		/// For each complex property of this node, creates a neighbor graph node if needed and connects 
+		/// it using to ObjectProperty.TargetNode.
 		/// </summary>
-		/// <param name="thisNode"></param>
-		/// <param name="expandedNodes"></param>
 		private void loadNeighborsRecursive(ObjectGraphNode thisNode, ExpandedExpressions expandedNodes)
 		{
 			// evaluate properties first in case property getters are changing some fields - the fields will then have correct values
-			foreach(ObjectGraphProperty complexProperty in thisNode.PropertiesFirstThenFields)
-			{
+			foreach(ObjectGraphProperty complexProperty in thisNode.PropertiesFirstThenFields) {
 				ObjectGraphNode targetNode = null;
 				// We are only evaluating expanded nodes here.
 				// We have to do this to know the "shape" of the graph.
 				// We do not evaluate atomic and non-expanded properties, those will be lazy evaluated when drawn.
-				if (expandedNodes.IsExpanded(complexProperty.Expression.Expr))
-				{
+				if (expandedNodes.IsExpanded(complexProperty.Expression.Expr)) {
 					// if expanded, evaluate this property
 					Value memberValue = complexProperty.Expression.GetValue();
-					if (memberValue.IsNull)
-					{
+					if (memberValue.IsNull) {
 						continue;
-					}
-					else
-					{
+					} else {
 						// if property value is not null, create neighbor
 						memberValue = memberValue.GetPermanentReference(WindowsDebugger.EvalThread);
 						
 						bool createdNew;
 						// get existing node (loop) or create new
 						targetNode = ObtainNodeForValue(memberValue, complexProperty.Expression, out createdNew);
-						if (createdNew)
-						{
+						if (createdNew) {
 							// if member node is new, recursively build its subtree
 							loadNeighborsRecursive(targetNode, expandedNodes);
 						}
 					}
-				}
-				else
-				{
-					targetNode = null;
 				}
 				// connect property to target ObjectGraphNode
 				complexProperty.TargetNode = targetNode;
@@ -326,18 +308,14 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// Finds node that represents the same instance as given value.
 		/// </summary>
 		/// <param name="value">Valid value representing an instance.</param>
-		/// <returns></returns>
-		private ObjectGraphNode getExistingNodeForValue(Value value)
+		private ObjectGraphNode getExistingNodeForValue(Value value) 
 		{
 			int objectHashCode = value.InvokeDefaultGetHashCode();
 			// are there any nodes with the same hash code?
 			LookupValueCollection<ObjectGraphNode> nodesWithSameHashCode = objectNodesForHashCode[objectHashCode];
-			if (nodesWithSameHashCode == null)
-			{
+			if (nodesWithSameHashCode == null) {
 				return null;
-			}
-			else
-			{
+			} else {
 				// if there is a node with same hash code, check if it has also the same address
 				// (hash codes are not uniqe - http://stackoverflow.com/questions/750947/-net-unique-object-identifier)
 				ulong objectAddress = value.GetObjectAddress();

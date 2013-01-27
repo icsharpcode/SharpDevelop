@@ -1,7 +1,6 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
-using Expression = ICSharpCode.NRefactory.Ast.Expression;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +43,9 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		public IEnumerable<ObjectGraphProperty> Properties
 		{
-			get	{ return this.Content.FlattenPropertyNodes().Select(node => {return node.Property; });	}
+			get	{ 
+				return this.Content.FlattenPropertyNodes().Select(node => node.Property);
+			}
 		}
 		
 		/// <summary>
@@ -52,7 +53,9 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		public IEnumerable<ObjectGraphProperty> PropertiesFirstThenFields
 		{
-			get { return this.Properties.OrderBy(prop => prop.MemberInfo, PropertiesFirstComparer.Instance); }
+			get { 
+				return this.Properties.OrderBy(prop => prop.MemberInfo, PropertiesFirstComparer.Instance); 
+			}
 		}
 	}
 }
