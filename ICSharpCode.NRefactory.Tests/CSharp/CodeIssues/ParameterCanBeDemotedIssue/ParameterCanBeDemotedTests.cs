@@ -423,22 +423,7 @@ class Test
 }";
 			TestRefactoringContext context;
 			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
-			Assert.AreEqual(1, issues.Count);
-			var issue = issues [0];
-			Assert.AreEqual(1, issue.Actions.Count);
-			
-			CheckFix(context, issues [0], baseInput + @"
-class Test
-{
-	void F(IA b)
-	{
-		Generic (b);
-	}
-
-	void Generic<T> (T arg) where T : IA
-	{
-	}
-}");
+			Assert.AreEqual(0, issues.Count);
 		}
 
 		[Test]
@@ -459,23 +444,7 @@ class Test
 }";
 			TestRefactoringContext context;
 			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
-			Assert.AreEqual(1, issues.Count);
-			var issue = issues [0];
-			Assert.AreEqual(1, issue.Actions.Count);
-			
-			CheckFix(context, issues [0], baseInput + @"
-class Test
-{
-	void Foo (IA b)
-	{
-		var b2 = b;
-		Foo (b2);
-	}
-
-	void Foo (IA a)
-	{
-	}
-}");
+			Assert.AreEqual(0, issues.Count);
 		}
 
 		[Test]
@@ -935,6 +904,24 @@ class Test : TestBase
 	    return arr [0];
 	}
 }", 0);
+		}
+		
+		[Test]
+		public void DoNotDemoteStringComparisonToReferenceComparison_WithinLambda()
+		{
+			Test<ParameterCanBeDemotedIssue>(@"using System; using System.Linq; using System.Collections.Generic;
+class Test
+{
+	IEnumerable<User> users;
+	User GetUser (String id)
+	{
+		return users.Where(u => u.Name == id).SingleOrDefault();
+	}
+}
+class User {
+	public string Name;
+}
+", 0);
 		}
 	}
 }

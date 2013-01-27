@@ -185,30 +185,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		void CheckForCriterion(Expression expression, IVariable variable)
 		{
-			if (ConstructHasLocalIndependentTyping(expression)) {
-				AddCriterion(variable, new IsTypeCriterion(context.GetExpectedType(expression)));
-			}
-		}
-
-		bool ConstructHasLocalIndependentTyping(AstNode astNode)
-		{
-			// TODO: Implement this thing correctly
-			var parent = astNode.Parent;
-			while (!(parent is InvocationExpression || parent is ObjectCreateExpression || parent is Statement))
-				parent = parent.Parent;
-			if (parent is InvocationExpression || parent is ObjectCreateExpression) {
-				var resolveResult = context.Resolve(parent) as InvocationResolveResult;
-				if (resolveResult == null)
-					return true;
-				var specializedMember = resolveResult.Member as SpecializedMethod;
-				return specializedMember == null || specializedMember.TypeParameters.Count == 0;
-			}
-			var initializer = parent as VariableDeclarationStatement;
-			if (initializer != null) {
-				return initializer.Type.GetText() != "var";
-			}
-
-			return true;
+			AddCriterion(variable, new IsTypeCriterion(context.GetExpectedType(expression)));
 		}
 
 		class ConjunctionCriteria : ITypeCriterion
