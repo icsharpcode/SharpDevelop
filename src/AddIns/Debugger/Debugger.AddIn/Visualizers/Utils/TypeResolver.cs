@@ -21,10 +21,9 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// <param name="iListType">Result found implementation of System.Collections.Generic.IList.</param>
 		/// <param name="itemType">The only generic argument of <paramref name="implementation"/></param>
 		/// <returns>True if found, false otherwise.</returns>
-		public static bool ResolveIListImplementation(this IType type, out IType iListType, out IType itemType)
+		public static bool ResolveIListImplementation(this IType type, out ParameterizedType iListType, out IType itemType)
 		{
-			return type.ResolveGenericInterfaceImplementation(
-				"System.Collections.Generic.IList", out iListType, out itemType);
+			return type.ResolveKnownBaseType(KnownTypeCode.IListOfT, out iListType, out itemType);
 		}
 		
 		/// <summary>
@@ -33,27 +32,26 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// <param name="iEnumerableType">Result found implementation of System.Collections.Generic.IEnumerable.</param>
 		/// <param name="itemType">The only generic argument of <paramref name="implementation"/></param>
 		/// <returns>True if found, false otherwise.</returns>
-		public static bool ResolveIEnumerableImplementation(this IType type, out IType iEnumerableType, out IType itemType)
+		public static bool ResolveIEnumerableImplementation(this IType type, out ParameterizedType iEnumerableType, out IType itemType)
 		{
-			return type.ResolveGenericInterfaceImplementation(
-				"System.Collections.Generic.IEnumerable", out iEnumerableType, out itemType);
+			return type.ResolveKnownBaseType(KnownTypeCode.IEnumerableOfT, out iEnumerableType, out itemType);
 		}
 		
 		/// <summary>
-		/// Resolves implementation of a single-generic-argument interface on this type.
+		/// Finds IList&lt;T&gt; or IEnumerable&lt;T&gt; base type.
 		/// </summary>
-		/// <param name="fullNamePrefix">Interface name to search for (eg. "System.Collections.Generic.IList")</param>
-		/// <param name="implementation">Result found implementation.</param>
+		/// <param name="fullNamePrefix">Type code to search for (IList&lt;T&gt; or IEnumerable&lt;T&gt;)</param></param>
+		/// <param name="implementation">Found implementation.</param>
 		/// <param name="itemType">The only generic argument of <paramref name="implementation"/></param>
 		/// <returns>True if found, false otherwise.</returns>
-		public static bool ResolveGenericInterfaceImplementation(this IType type, string fullNamePrefix, out ParameterizedType implementation, out IType itemType)
+		private static bool ResolveKnownBaseType(this IType type, KnownTypeCode knownTypeCode, out ParameterizedType implementation, out IType itemType)
 		{
 			if (type == null) throw new ArgumentNullException("type");
 			implementation = null;
 			itemType = null;
 			implementation = 
 				type.GetAllBaseTypes().OfType<ParameterizedType>().
-				Where(t => t.FullName.StartsWith(fullNamePrefix) && t.TypeParameterCount == 1)
+				Where(t => t.IsKnownType(knownTypeCode) && t.TypeParameterCount == 1)
 				.FirstOrDefault();
 			if (implementation != null) {
 				itemType = implementation.GetTypeArgument(0);

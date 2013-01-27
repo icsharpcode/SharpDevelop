@@ -10,6 +10,7 @@ using Debugger.AddIn.Visualizers.PresentationBindings;
 using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Services;
 
@@ -40,7 +41,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				
 				Value shownValue = getValue();
 				
-				DebugType iListType, iEnumerableType, itemType;
+				IType iListType, iEnumerableType, itemType;
 				// Value is IList
 				if (shownValue.Type.ResolveIListImplementation(out iListType, out itemType)) {
 					// Ok
