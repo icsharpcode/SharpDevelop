@@ -29,9 +29,8 @@ namespace Debugger.AddIn.Visualizers
 				if (isVisible == value) return;
 				isVisible = value;
 				OnPropertyChanged();
-				var isVisibleChanged = this.IsVisibleChanged;
-				if (isVisibleChanged != null) {
-					isVisibleChanged(this, EventArgs.Empty);
+				if (IsVisibleChanged != null) {
+					IsVisibleChanged(this, EventArgs.Empty);
 				}
 			}
 		}

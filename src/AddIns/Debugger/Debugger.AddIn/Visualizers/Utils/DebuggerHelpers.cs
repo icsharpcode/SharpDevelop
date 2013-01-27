@@ -66,23 +66,15 @@ namespace Debugger.AddIn.Visualizers.Utils
 		}
 		
 		/// <summary>
-		/// Returns true if this type is enum.
-		/// </summary>
-		public static bool IsEnum(this IType type)
-		{
-			return type.DirectBaseTypes.Select(t => t.FullName).Contains("System.Enum");
-		}
-		
-		/// <summary>
 		/// Returns true is this type is System.Object.
 		/// </summary>
 		public static bool IsSystemDotObject(this IType type)
 		{
-			return type.FullName == "System.Object";
+			return type.IsKnownType(KnownTypeCode.Object);
 		}
 		
 		/// <summary>
-		/// Checks whether given type is a primitive type, String, or enum.
+		/// Returns true if given type is a primitive type, String, or enum.
 		/// </summary>
 		public static bool IsAtomic(this IType type)
 		{
