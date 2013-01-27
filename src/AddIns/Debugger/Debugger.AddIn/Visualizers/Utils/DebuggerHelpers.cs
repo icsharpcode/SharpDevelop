@@ -10,6 +10,7 @@ using System.Reflection;
 using Debugger;
 using Debugger.MetaData;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Services;
 
@@ -41,12 +42,12 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// </summary>
 		public static Value CreateListFromIEnumerable(Value iEnumerableValue)
 		{
-			DebugType iEnumerableType, itemType;
+			IType iEnumerableType, itemType;
 			if (!iEnumerableValue.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType))
 				throw new GetValueException("Value is not IEnumerable");
-			    	
-			DebugType listType = DebugType.CreateFromType(iEnumerableValue.AppDomain, typeof(System.Collections.Generic.List<>), itemType);
-			DebugConstructorInfo ctor = (DebugConstructorInfo)listType.GetConstructor(BindingFlags.Default, null, CallingConventions.Any, new System.Type[] { iEnumerableType }, null);
+			// FIXME    	
+			IType listType = DebugType.CreateFromType(iEnumerableValue.AppDomain, typeof(System.Collections.Generic.List<>), itemType);
+			DebugConstructorInfo ctor = listType.GetConstructor(BindingFlags.Default, null, CallingConventions.Any, new System.Type[] { iEnumerableType }, null);
 			if (ctor == null)
 				throw new DebuggerException("List<T> constructor not found");
 			
@@ -67,23 +68,31 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// <summary>
 		/// Returns true if this type is enum.
 		/// </summary>
-		public static bool IsEnum(this DebugType type)
+		public static bool IsEnum(this IType type)
 		{
-			return (type.BaseType != null) && (type.BaseType.FullName == "System.Enum");
+			return type.DirectBaseTypes.Select(t => t.FullName).Contains("System.Enum");
 		}
 		
 		/// <summary>
-		/// Returns true is this type is just System.Object.
+		/// Returns true is this type is System.Object.
 		/// </summary>
-		public static bool IsSystemDotObject(this DebugType type)
+		public static bool IsSystemDotObject(this IType type)
 		{
 			return type.FullName == "System.Object";
 		}
 		
 		/// <summary>
+		/// Checks whether given type is a primitive type, String, or enum.
+		/// </summary>
+		public static bool IsAtomic(this IType type)
+		{
+			return TypeSystemExtensions.IsPrimitiveType(type) || type.FullName == "System.String" || type.Kind == TypeKind.Enum;
+		}
+		
+		/// <summary>
 		/// System.Runtime.CompilerServices.GetHashCode method, for obtaining non-overriden hash codes from debuggee.
 		/// </summary>
-		private static DebugMethodInfo hashCodeMethod;
+		private static IMethod hashCodeMethod;
 		/// <summary>
 		/// Invokes RuntimeHelpers.GetHashCode on given value, that is a default hashCode ignoring user overrides.
 		/// </summary>
@@ -91,17 +100,16 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// <returns>Hash code of the object in the debugee.</returns>
 		public static int InvokeDefaultGetHashCode(this Value value)
 		{
-			if (hashCodeMethod == null || hashCodeMethod.Process.HasExited) {
-				DebugType typeRuntimeHelpers = DebugType.CreateFromType(value.AppDomain, typeof(System.Runtime.CompilerServices.RuntimeHelpers));
-				hashCodeMethod = (DebugMethodInfo)typeRuntimeHelpers.GetMethod("GetHashCode", BindingFlags.Public | BindingFlags.Static);
+			// TODO reimplement check for Process.HasExited (debuggee restarted)
+			if (hashCodeMethod == null /*|| hashCodeMethod.Process.HasExited*/) {
+				IType runtimeHelpers = DebugType.CreateFromType(value.AppDomain, typeof(System.Runtime.CompilerServices.RuntimeHelpers));
+				hashCodeMethod = runtimeHelpers.GetMethods(m => m.FullName == "GetHashCode").FirstOrDefault();
 				if (hashCodeMethod == null) {
-					throw new DebuggerException("Cannot obtain method System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode");
+					throw new DebuggerException(
+						"Cannot find method System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode().");
 				}
 			}
 			Value defaultHashCode = Eval.InvokeMethod(WindowsDebugger.EvalThread, DebuggerHelpers.hashCodeMethod, null, new Value[]{value});
-			
-			//MethodInfo method = value.Type.GetMember("GetHashCode", BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
-			//string hashCode = value.InvokeMethod(method, null).AsString;
 			return (int)defaultHashCode.PrimitiveValue;
 		}
 		

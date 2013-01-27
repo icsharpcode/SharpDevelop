@@ -10,6 +10,7 @@ using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Services;
 
@@ -187,10 +188,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 		}*/
 		
-		void LoadNodeObjectContent(AbstractNode node, GraphExpression expression, DebugType type)
+		void LoadNodeObjectContent(AbstractNode node, GraphExpression expression, IType type)
 		{
 			// base
-			if (type.BaseType != null && type.BaseType.FullName != "System.Object") {
+			if (type.BaseType != null && !type.IsSystemDotObject()) {
 				var baseClassNode = new BaseClassNode(type.BaseType.FullName, type.BaseType.Name);
 				node.AddChild(baseClassNode);
 				LoadNodeObjectContent(baseClassNode, expression, (DebugType)type.BaseType);
@@ -212,7 +213,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 		}
 		
-		private List<ObjectGraphProperty> getProperties(GraphExpression expression, DebugType shownType, BindingFlags flags)
+		private List<ObjectGraphProperty> getProperties(GraphExpression expression, IType shownType, BindingFlags flags)
 		{
 			List<ObjectGraphProperty> propertyList = new List<ObjectGraphProperty>();
 			

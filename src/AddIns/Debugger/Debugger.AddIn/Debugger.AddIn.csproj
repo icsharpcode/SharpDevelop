@@ -216,7 +216,6 @@
     <Compile Include="Visualizers\PresentationBindings\GridViewHideableColumn.cs" />
     <Compile Include="Visualizers\PresentationBindings\TooltipVisibilityConverter.cs" />
     <Compile Include="Visualizers\TextVisualizer\TextVisualizerWindow.xaml.cs" />
-    <Compile Include="Visualizers\Utils\AtomicType.cs" />
     <Compile Include="Visualizers\Utils\DebuggerHelpers.cs" />
     <Compile Include="Visualizers\Utils\DictionaryExtensions.cs" />
     <Compile Include="Visualizers\Utils\IEnumerableExtensions.cs" />

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Debugging;
 using System;
 using System.Collections.Generic;
@@ -15,12 +16,10 @@ namespace Debugger.AddIn.Visualizers
 {
 	public class GridVisualizerDescriptor : IVisualizerDescriptor
 	{
-		public bool IsVisualizerAvailable(DebugType type)
+		public bool IsVisualizerAvailable(IType type)
 		{
-			if (type.IsAtomic()) {
-				return false;
-			}
-			DebugType collectionType, itemType;
+			if (type.IsAtomic()) return false;
+			IType collectionType, itemType;
 			// Visualizer available for IEnumerable<T> (that is, also IList<T>)
 			return type.ResolveIEnumerableImplementation(out collectionType, out itemType);
 		}
@@ -36,7 +35,8 @@ namespace Debugger.AddIn.Visualizers
 	/// </summary>
 	public class GridVisualizerCommand : ExpressionVisualizerCommand
 	{
-		public GridVisualizerCommand(string valueName, Func<Value> getValue) : base(valueName, getValue)
+		public GridVisualizerCommand(string valueName, Func<Value> getValue)
+			: base(valueName, getValue)
 		{
 		}
 		

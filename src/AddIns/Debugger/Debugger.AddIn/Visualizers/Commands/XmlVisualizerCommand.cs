@@ -8,6 +8,7 @@ using System.Linq;
 using Debugger.AddIn.TreeModel;
 using Debugger.AddIn.Visualizers.TextVisualizer;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
 
@@ -15,7 +16,7 @@ namespace Debugger.AddIn.Visualizers
 {
 	public class XmlVisualizerDescriptor : IVisualizerDescriptor
 	{
-		public bool IsVisualizerAvailable(DebugType type)
+		public bool IsVisualizerAvailable(IType type)
 		{
 			return type.FullName == typeof(string).FullName;
 		}

@@ -8,6 +8,7 @@ using System.Linq;
 using Debugger.AddIn.TreeModel;
 using Debugger.AddIn.Visualizers.Graph;
 using Debugger.MetaData;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Debugging;
 using Debugger.AddIn.Visualizers.Utils;
 using ICSharpCode.SharpDevelop.Services;
@@ -16,7 +17,7 @@ namespace Debugger.AddIn.Visualizers
 {
 	public class ObjectGraphVisualizerDescriptor : IVisualizerDescriptor
 	{
-		public bool IsVisualizerAvailable(DebugType type)
+		public bool IsVisualizerAvailable(IType type)
 		{
 			return !type.IsAtomic() && !type.IsSystemDotObject();
 		}
@@ -44,7 +45,7 @@ namespace Debugger.AddIn.Visualizers
 		public override void Execute()
 		{
 			var objectGraphWindow = ObjectGraphWindow.EnsureShown();
-			objectGraphWindow.ShownExpression = new GraphExpression(new IdentifierExpression(this.ValueName), this.GetValue);
+			objectGraphWindow.ShownExpression = new GraphExpression(this.ValueName, this.GetValue);
 		}
 	}
 }
