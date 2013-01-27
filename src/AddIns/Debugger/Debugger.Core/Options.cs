@@ -13,31 +13,17 @@ namespace Debugger
 			StepOverNoSymbols = true;
 			StepOverDebuggerAttributes = true;
 			StepOverAllProperties = false;
-			StepOverSingleLineProperties = false;
 			StepOverFieldAccessProperties = true;
-			Verbose = false;
 			SymbolsSearchPaths = new string[0];
 			PauseOnHandledExceptions = false;
 		}
 		
 		public bool EnableJustMyCode { get; set; }
-		public bool StepOverNoSymbols { get; set; }
+		public bool StepOverNoSymbols { get; set; } // Decompilation
 		public bool StepOverDebuggerAttributes { get; set; }
 		public bool StepOverAllProperties { get; set; }
-		public bool StepOverSingleLineProperties { get; set; }
 		public bool StepOverFieldAccessProperties { get; set; }
-		public bool Verbose { get; set; }
 		public string[] SymbolsSearchPaths { get; set; }
 		public bool PauseOnHandledExceptions { get; set; }
-		bool decompileCodeWithoutSymbols;
-		
-		public bool DecompileCodeWithoutSymbols {
-			get { return decompileCodeWithoutSymbols; }
-			set {
-				decompileCodeWithoutSymbols = value;
-				EnableJustMyCode = !decompileCodeWithoutSymbols;
-				StepOverNoSymbols = !decompileCodeWithoutSymbols;
-			}
-		}
 	}
 }

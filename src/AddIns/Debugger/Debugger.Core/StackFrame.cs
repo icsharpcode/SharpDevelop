@@ -373,9 +373,6 @@ namespace Debugger
 			get {
 				Options opt = this.Process.Options;
 				
-				if (opt.DecompileCodeWithoutSymbols)
-					return false;
-				
 				if (opt.StepOverNoSymbols) {
 					if (this.SymMethod == null) return true;
 				}
@@ -401,10 +398,6 @@ namespace Debugger
 		internal void MarkAsNonUserCode()
 		{
 			((ICorDebugFunction2)this.CorFunction).SetJMCStatus(0 /* false */);
-			
-			if (this.Process.Options.Verbose) {
-				this.Process.TraceMessage("Funciton {0} marked as non-user code", this.MethodInfo.FullName);
-			}
 		}
 		
 		public override bool Equals(object obj)

@@ -477,9 +477,7 @@ namespace Debugger
 			
 			NotifyResumed(action);
 			corProcess.Continue(0);
-			if (this.Options.Verbose) {
-				this.TraceMessage("Continue");
-			}
+			// this.TraceMessage("Continue");
 			
 			if (action == DebuggeeStateAction.Clear) {
 				OnResumed();

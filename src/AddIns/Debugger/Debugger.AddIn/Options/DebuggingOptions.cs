@@ -10,7 +10,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
-	public enum ShowIntegersAs { Decimal, Hexadecimal, Both, Auto };
+	public enum ShowIntegersAs { Decimal, Hexadecimal, Both };
 	
 	[Serializable]
 	public class DebuggingOptions: Options
@@ -21,9 +21,9 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		protected DebuggingOptions()
+		public DebuggingOptions()
 		{
-			ShowIntegersAs = ShowIntegersAs.Auto;
+			ShowIntegersAs = ShowIntegersAs.Decimal;
 			DebuggerEventWindowState = FormWindowState.Normal;
 			DebuggeeExceptionWindowState = FormWindowState.Normal;
 		}
