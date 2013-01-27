@@ -107,8 +107,8 @@ namespace Debugger.AddIn.Visualizers.Graph
 					RefreshView();
 					return;
 				}
-				if (shownExpression == null || value.Expr.PrettyPrint() != shownExpression.Expr.PrettyPrint()) {
-					txtExpression.Text = value.Expr.PrettyPrint();
+				if (shownExpression == null || value.Expr != shownExpression.Expr) {
+					txtExpression.Text = value.Expr;
 					RefreshView();
 				}
 			}

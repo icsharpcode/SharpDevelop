@@ -19,8 +19,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		public System.Windows.Rect BoundingRect
 		{
-			get
-			{
+			get {
 				double minX = nodes.Select(node => node.Left).Min();
 				double maxX = nodes.Select(node => node.Left + node.Width).Max();
 				double minY = nodes.Select(node => node.Top).Min();
@@ -48,12 +47,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// </summary>
 		public IEnumerable<PositionedEdge> Edges
 		{
-			get
-			{
-				foreach	(PositionedNode node in this.Nodes)
-				{
-					foreach (PositionedEdge edge in node.Edges)
-					{
+			get {
+				foreach	(PositionedNode node in this.Nodes) {
+					foreach (PositionedEdge edge in node.Edges) {
 						yield return edge;
 					}
 				}

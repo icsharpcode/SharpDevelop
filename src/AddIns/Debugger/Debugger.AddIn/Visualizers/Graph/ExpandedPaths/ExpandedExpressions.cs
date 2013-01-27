@@ -11,7 +11,7 @@ using ICSharpCode.NRefactory.Ast;
 namespace Debugger.AddIn.Visualizers.Graph
 {
 	/// <summary>
-	/// Remembers which properties the user has expanded in the <see cref="PositionedGraph">.
+	/// Holds the expand state of fields and properties in <see cref="PositionedGraph">.
 	/// </summary>
 	public class ExpandedExpressions
 	{
@@ -21,19 +21,19 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 		}
 		
-		public bool IsExpanded(Expression expression)
+		public bool IsExpanded(String expression)
 		{
-			return expanded.IsExpanded(expression.PrettyPrint());
+			return expanded.IsExpanded(expression);
 		}
 		
-		public void SetExpanded(Expression expression)
+		public void SetExpanded(String expression)
 		{
-			expanded.SetExpanded(expression.PrettyPrint());
+			expanded.SetExpanded(expression);
 		}
 		
-		public void SetCollapsed(Expression expression)
+		public void SetCollapsed(String expression)
 		{
-			expanded.SetCollapsed(expression.PrettyPrint());
+			expanded.SetCollapsed(expression);
 		}
 	}
 }

@@ -13,9 +13,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 	{
 		private Dictionary<string, bool> expandedPaths = new Dictionary<string, bool>();
 		
-		public ExpandedPaths()
-		{
-		}
+		public ExpandedPaths() {}
 		
 		public bool IsExpanded(string path)
 		{

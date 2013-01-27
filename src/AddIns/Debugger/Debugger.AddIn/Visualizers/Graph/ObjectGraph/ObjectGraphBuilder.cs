@@ -226,8 +226,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 					continue;
 				}
 
-				// ObjectGraphProperty needs an expression
-				// to know whether it is expanded, and to evaluate
+				// ObjectGraphProperty needs string representation to know whether it is expanded
 				var propExpression = new GraphExpression(
 					expression.Expr.AppendMemberReference((IDebugMemberInfo)memberProp),
 					() => expression.GetValue().GetMemberValue(WindowsDebugger.EvalThread, memberProp)

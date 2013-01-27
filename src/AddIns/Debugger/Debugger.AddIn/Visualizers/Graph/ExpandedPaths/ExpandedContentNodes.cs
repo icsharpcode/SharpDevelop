@@ -9,15 +9,13 @@ using System.Linq;
 namespace Debugger.AddIn.Visualizers.Graph
 {
 	/// <summary>
-	/// Remembers which content nodes the user has expanded in the <see cref="PositionedGraph">.
+	/// Holds the expand state of the trees inside nodes of <see cref="PositionedGraph">.
 	/// </summary>
 	public class ExpandedContentNodes
 	{
 		private ExpandedPaths expanded = new ExpandedPaths();
 		
-		public ExpandedContentNodes()
-		{
-		}
+		public ExpandedContentNodes() {}
 		
 		public bool IsExpanded(ContentNode contentNode)
 		{

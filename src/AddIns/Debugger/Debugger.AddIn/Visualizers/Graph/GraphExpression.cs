@@ -14,12 +14,12 @@ namespace Debugger.AddIn.Visualizers.Graph
 	/// </summary>
 	public class GraphExpression
 	{
-		public Expression Expr { get; set; }
+		public String Expr { get; set; }
 		public Func<Value> GetValue { get; set; }
 		
-		public GraphExpression(Expression expr, Func<Value> getValue)
+		public GraphExpression(String expr, Func<Value> getValue)
 		{
-			if (expr == null) throw new ArgumentNullException("expr");
+			if (String.IsNullOrEmpty(expr)) throw new ArgumentNullException("expr");
 			if (getValue == null) throw new ArgumentNullException("getValue");
 			this.Expr = expr;
 			this.GetValue = getValue;
