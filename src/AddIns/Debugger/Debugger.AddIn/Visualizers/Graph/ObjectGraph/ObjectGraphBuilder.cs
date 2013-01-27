@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Debugger.AddIn.TreeModel;
 using Debugger.AddIn.Visualizers.Graph.Layout;
@@ -54,7 +55,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
 		/// Given hash code, lookup already existing node(s) with this hash code.
 		/// </summary>
-		private Lookup<int, ObjectGraphNode> objectNodesForHashCode = new Lookup<int, ObjectGraphNode>();
+		private Multimap<int, ObjectGraphNode> objectNodesForHashCode = new Multimap<int, ObjectGraphNode>();
 		
 		/// <summary>
 		/// Binding flags for getting member expressions.
@@ -191,10 +192,11 @@ namespace Debugger.AddIn.Visualizers.Graph
 		void LoadNodeObjectContent(AbstractNode node, GraphExpression expression, IType type)
 		{
 			// base
-			if (type.BaseType != null && !type.IsSystemDotObject()) {
-				var baseClassNode = new BaseClassNode(type.BaseType.FullName, type.BaseType.Name);
+			var baseType = type.DirectBaseTypes.FirstOrDefault();
+			if (baseType != null) {
+				var baseClassNode = new BaseClassNode(baseType.FullName, baseType.Name);
 				node.AddChild(baseClassNode);
-				LoadNodeObjectContent(baseClassNode, expression, (DebugType)type.BaseType);
+				LoadNodeObjectContent(baseClassNode, expression, baseType);
 			}
 			
 			// non-public members
@@ -312,15 +314,15 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			int objectHashCode = value.InvokeDefaultGetHashCode();
 			// are there any nodes with the same hash code?
-			LookupValueCollection<ObjectGraphNode> nodesWithSameHashCode = objectNodesForHashCode[objectHashCode];
+			IList<ObjectGraphNode> nodesWithSameHashCode = objectNodesForHashCode[objectHashCode];
 			if (nodesWithSameHashCode == null) {
 				return null;
 			} else {
 				// if there is a node with same hash code, check if it has also the same address
 				// (hash codes are not uniqe - http://stackoverflow.com/questions/750947/-net-unique-object-identifier)
 				ulong objectAddress = value.GetObjectAddress();
-				ObjectGraphNode nodeWithSameAddress = nodesWithSameHashCode.Find(
-					node => { return node.PermanentReference.GetObjectAddress() == objectAddress; } );
+				ObjectGraphNode nodeWithSameAddress = 
+					nodesWithSameHashCode.FirstOrDefault(node => node.PermanentReference.GetObjectAddress() == objectAddress);
 				return nodeWithSameAddress;
 			}
 		}

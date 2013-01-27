@@ -2,6 +2,7 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -58,8 +59,8 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				shownValue = shownValue.GetPermanentReference(WindowsDebugger.EvalThread);
 				
 				MemberInfo[] members = itemType.GetFieldsAndNonIndexedProperties(BindingFlags.Public | BindingFlags.Instance);
-				PropertyInfo itemGetter = iListType.GetProperty("Item");
-				int rowCount = (int)shownValue.GetPropertyValue(WindowsDebugger.EvalThread, iListType.GetProperty("Count")).PrimitiveValue;
+				IProperty indexerProperty = iListType.GetProperties(p => p.Name == "Item").Single();
+				int rowCount = (int)shownValue.GetPropertyValue(WindowsDebugger.EvalThread, iListType.GetProperties(p => p.Name == "Count").Single()).PrimitiveValue;
 				int columnCount = members.Length + 1;
 				
 				var rowCollection = new VirtualizingCollection<VirtualizingCollection<string>>(
@@ -70,7 +71,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 							if (columnIndex == members.Length)
 								return "[" + rowIndex + "]";
 							try {
-								var rowValue = shownValue.GetPropertyValue(WindowsDebugger.EvalThread, itemGetter, Eval.CreateValue(WindowsDebugger.EvalThread, rowIndex));
+								var rowValue = shownValue.GetPropertyValue(WindowsDebugger.EvalThread, indexerProperty, Eval.CreateValue(WindowsDebugger.EvalThread, rowIndex));
 								return rowValue.GetMemberValue(WindowsDebugger.EvalThread, members[columnIndex]).InvokeToString(WindowsDebugger.EvalThread);
 							} catch (GetValueException e) {
 								return "Exception: " + e.Message;

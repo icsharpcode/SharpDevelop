@@ -108,14 +108,9 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// <summary>
 		/// Formats System.Type to the C# format, that is generic parameters in angle brackets.
 		/// </summary>
-		public static string FormatNameCSharp(this Type type)
+		public static string FormatNameCSharp(this IType type)
 		{
-			string typeName = type.Name.CutoffEnd("`");	// get rid of the `n in generic type names
-			if (type.IsGenericType) {
-				return typeName + "<" + string.Join(", ", type.GetGenericArguments().Select(a => FormatNameCSharp(a))) + ">";
-			} else {
-				return typeName;
-			}
+			return type.ToString();  // TODO use an existing C# IType formatter?
 		}
 		
 		// Object graph visualizer: collection support temp disabled (porting to new NRefactory).

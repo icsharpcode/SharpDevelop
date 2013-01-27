@@ -74,14 +74,14 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		void EvalMemberIcon()
 		{
-			// should never be null, just to be sure
-			if ((this.Property != null) && (this.Property.ObjectGraphProperty != null)) {
+			// TODO reimplement
+			/*if ((this.Property != null) && (this.Property.ObjectGraphProperty != null)) {
 				var memberInfo = (IDebugMemberInfo)this.Property.ObjectGraphProperty.MemberInfo;
 				if (memberInfo != null) {
 					var image = new ResourceServiceImage(ValueNode.GetImageForMember(memberInfo));
 					this.MemberIcon = image.ImageSource;
 				}
-			}
+			}*/
 		}
 	}
 }

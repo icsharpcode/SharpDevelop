@@ -222,8 +222,7 @@
     <Compile Include="Visualizers\Utils\ITreeNode.cs" />
     <Compile Include="Visualizers\Utils\LinqUtils.cs" />
     <Compile Include="Visualizers\Utils\ListHelper.cs" />
-    <Compile Include="Visualizers\Utils\Lookup.cs" />
-    <Compile Include="Visualizers\Utils\LookupValueCollection.cs" />
+    <Compile Include="Visualizers\Utils\Multimap.cs" />
     <Compile Include="Visualizers\Utils\StringHelper.cs" />
     <Compile Include="Visualizers\Utils\TreeFlattener.cs" />
     <Compile Include="Visualizers\Utils\TypeResolver.cs" />
