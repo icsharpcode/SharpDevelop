@@ -52,10 +52,8 @@ namespace Debugger.AddIn.Visualizers.Utils
 			implementation = null;
 			itemType = null;
 			implementation = 
-				type.GetAllBaseTypes().
-				Where(t => (t is ParameterizedType) && t.FullName.StartsWith(fullNamePrefix)).
-				Select(t => (ParameterizedType)t).
-				Where(t => t.TypeParameterCount == 1)
+				type.GetAllBaseTypes().OfType<ParameterizedType>().
+				Where(t => t.FullName.StartsWith(fullNamePrefix) && t.TypeParameterCount == 1)
 				.FirstOrDefault();
 			if (implementation != null) {
 				itemType = implementation.GetTypeArgument(0);
