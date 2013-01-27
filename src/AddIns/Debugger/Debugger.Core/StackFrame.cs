@@ -109,7 +109,8 @@ namespace Debugger
 				if (corILFramePauseSession != this.Process.PauseSession) {
 					// Reobtain the stackframe
 					StackFrame stackFrame = this.Thread.GetStackFrameAt(this.ChainIndex, this.FrameIndex);
-					if (stackFrame.MethodInfo != this.MethodInfo) throw new DebuggerException("The stack frame on the thread does not represent the same method anymore");
+					if (stackFrame.MethodInfo.UnresolvedMember != this.MethodInfo.UnresolvedMember)
+						throw new DebuggerException("The stack frame on the thread does not represent the same method anymore");
 					corILFrame = stackFrame.corILFrame;
 					corILFramePauseSession = stackFrame.corILFramePauseSession;
 				}
