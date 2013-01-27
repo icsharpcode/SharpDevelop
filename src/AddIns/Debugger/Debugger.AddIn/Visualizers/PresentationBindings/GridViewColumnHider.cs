@@ -26,10 +26,12 @@ namespace Debugger.AddIn.Visualizers
 		{
 			get { return isVisible; }
 			set {
-				if (isVisible != value)	{
-					isVisible = value;
-					RaisePropertyChanged(() => IsVisible);
-					ExtensionMethods.RaiseEvent(IsVisibleChanged, this, EventArgs.Empty);
+				if (isVisible == value) return;
+				isVisible = value;
+				OnPropertyChanged("IsVisible");
+				var isVisibleChanged = this.IsVisibleChanged;
+				if (isVisibleChanged != null) {
+					isVisibleChanged(this, EventArgs.Empty);
 				}
 			}
 		}
@@ -53,8 +55,7 @@ namespace Debugger.AddIn.Visualizers
 
 		void initializeColumns()
 		{
-			foreach (var column in gridView.Columns)
-			{
+			foreach (var column in gridView.Columns) {
 				// show / hide right in the beginning if supported
 				bool isDefaultVisible = (column is GridViewHideableColumn) ? ((GridViewHideableColumn)column).IsVisibleDefault : true;
 				// wrap into our ViewModel
@@ -106,20 +107,17 @@ namespace Debugger.AddIn.Visualizers
 		void showColumn(string header)
 		{
 			int columnsVisibleBefore = 0;
-			foreach (var columnVis in this.allColumns)
-			{
-				if (columnVis.Header == header)
-				{
+			foreach (var columnVis in this.allColumns) {
+				if (columnVis.Header == header) {
 					columnVis.IsVisible = true;
 					gridView.Columns.Insert(columnsVisibleBefore, columnVis.Column);
 					return;
 				}
-				if (columnVis.IsVisible)
-				{
+				if (columnVis.IsVisible) {
 					columnsVisibleBefore++;
 				}
 			}
-			throw new ArgumentException("Column not found");
+			throw new ArgumentException("Column '" + header + "' not found.");
 		}
 	}
 }

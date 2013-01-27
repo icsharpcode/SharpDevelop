@@ -112,7 +112,7 @@ namespace Debugger.AddIn.TreeModel
 		protected virtual void OnPropertyRead(string name)
 		{
 			if (PropertyRead != null) {
-				PropertyRead(this, new PropertyEventArgs() { Name = name});
+				PropertyRead(this, new PropertyEventArgs() { Name = name });
 			}
 		}
 		
