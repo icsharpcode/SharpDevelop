@@ -978,6 +978,10 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				return interningProvider.Intern(
 					new PrimitiveConstantExpression(KnownTypeReference.Object, null));
 			}
+
+			public override ConstantExpression VisitSizeOfExpression(SizeOfExpression sizeOfExpression) {
+				return new SizeOfConstantValue(sizeOfExpression.Type.ToTypeReference(NameLookupMode.Type, interningProvider));
+			}
 			
 			public override ConstantExpression VisitPrimitiveExpression(PrimitiveExpression primitiveExpression)
 			{

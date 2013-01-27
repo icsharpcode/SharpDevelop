@@ -358,5 +358,20 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public const double Cd = 42;
 		public const float Cf = 42;
 		public const decimal Cm = 42;
+		public const string S = "hello, world";
+
+		public const int SOsb = sizeof(sbyte);
+		public const int SOb  = sizeof(byte);
+		public const int SOs  = sizeof(short);
+		public const int SOus = sizeof(ushort);
+		public const int SOi  = sizeof(int);
+		public const int SOui = sizeof(uint);
+		public const int SOl  = sizeof(long);
+		public const int SOul = sizeof(ulong);
+		public const int SOc  = sizeof(char);
+		public const int SOf  = sizeof(float);
+		public const int SOd  = sizeof(double);
+		public const int SObl = sizeof(bool);
+		public const int SOe  = sizeof(MyEnum);
 	}
 }

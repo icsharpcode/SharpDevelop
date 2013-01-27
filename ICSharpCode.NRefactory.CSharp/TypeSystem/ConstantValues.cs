@@ -488,4 +488,25 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 			}
 		}
 	}
+
+	/// <summary>
+	/// Used for sizeof() expressions in constants.
+	/// </summary>
+	[Serializable]
+	public sealed class SizeOfConstantValue : ConstantExpression
+	{
+		readonly ITypeReference type;
+		
+		public SizeOfConstantValue(ITypeReference type)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			this.type = type;
+		}
+		
+		public override ResolveResult Resolve(CSharpResolver resolver)
+		{
+			return resolver.ResolveSizeOf(type.Resolve(resolver.CurrentTypeResolveContext));
+		}
+	}
 }

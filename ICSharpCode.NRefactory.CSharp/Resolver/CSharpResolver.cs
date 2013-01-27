@@ -2233,8 +2233,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public ResolveResult ResolveSizeOf(IType type)
 		{
 			IType int32 = compilation.FindType(KnownTypeCode.Int32);
-			int size;
-			switch (ReflectionHelper.GetTypeCode(type)) {
+			int? size = null;
+			var typeForConstant = (type.Kind == TypeKind.Enum) ? type.GetDefinition().EnumUnderlyingType : type;
+
+			switch (ReflectionHelper.GetTypeCode(typeForConstant)) {
 				case TypeCode.Boolean:
 				case TypeCode.SByte:
 				case TypeCode.Byte:
@@ -2255,10 +2257,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case TypeCode.Double:
 					size = 8;
 					break;
-				default:
-					return new ResolveResult(int32);
 			}
-			return new ConstantResolveResult(int32, size);
+			return new SizeOfResolveResult(int32, type, size);
 		}
 		#endregion
 		
