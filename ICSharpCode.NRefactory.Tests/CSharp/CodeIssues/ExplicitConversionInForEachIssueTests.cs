@@ -66,10 +66,15 @@ class Foo {
 		foreach (IDisposable element in c) { }
 	}
 }";
-
-			TestRefactoringContext context;
-			var issues = GetIssues (new ExplicitConversionInForEachIssue (), input, out context);
-			Assert.AreEqual (1, issues.Count);
+			string output = @"using System.Collections.Generic;
+class Foo {
+	void Bar (IList<IList<IDisposable>> c)
+	{
+		foreach (IList<IDisposable> element in c) { }
+	}
+}";
+			
+			Test<ExplicitConversionInForEachIssue>(input, output);
 		}
 	}
 }

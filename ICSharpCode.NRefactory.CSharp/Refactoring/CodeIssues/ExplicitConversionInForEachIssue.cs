@@ -63,8 +63,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var builder = new TypeSystemAstBuilder(csResolver);
 				AstType elementType = builder.ConvertType(rr.ElementType);
 				AstType variableType = foreachStatement.VariableType;
-				string text = ctx.TranslateString("Collection element type '{0}' is not implicitly convertible to '{1}'");
-				AddIssue(variableType, string.Format(text, elementType.GetText(), variableType.GetText()));
+				string issueText = ctx.TranslateString("Collection element type '{0}' is not implicitly convertible to '{1}'");
+				string fixText = ctx.TranslateString("Use type '{0}'");
+				AddIssue(variableType, string.Format(issueText, elementType.GetText(), variableType.GetText()),
+				         new CodeAction(string.Format(fixText, elementType.GetText()),
+				                        script => script.Replace(variableType, elementType)));
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // InspectionActionTestBase.cs
 //  
 // Author:
@@ -81,7 +81,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 				CheckFix (context, issues [issueToFix], output);
 		}
 
-		protected static void Test<T> (string input, string output, int fixIndex)
+		protected static void Test<T> (string input, string output, int fixIndex = 0)
 			where T : ICodeIssueProvider, new ()
 		{
 			TestRefactoringContext context;
