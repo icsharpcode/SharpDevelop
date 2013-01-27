@@ -33,7 +33,7 @@ namespace Debugger
 		
 		string debuggeeVersion;
 		
-		Options options;
+		Options options = new Options();
 		
 		public MTA2STA MTA2STA {
 			get {

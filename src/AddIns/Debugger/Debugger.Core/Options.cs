@@ -4,14 +4,25 @@ using System.Collections.Generic;
 
 namespace Debugger
 {
-	public abstract class Options
+	public class Options
 	{
-		public abstract bool EnableJustMyCode { get; set; }
-		public abstract bool StepOverNoSymbols { get; set; }
-		public abstract bool StepOverDebuggerAttributes { get; set; }
-		public abstract bool StepOverAllProperties { get; set; }
-		public abstract bool StepOverFieldAccessProperties { get; set; }
-		public abstract IEnumerable<string> SymbolsSearchPaths { get; set; }
-		public abstract bool PauseOnHandledExceptions { get; set; }
+		public Options()
+		{
+			EnableJustMyCode = true;
+			StepOverNoSymbols = true;
+			StepOverDebuggerAttributes = true;
+			StepOverAllProperties = false;
+			StepOverFieldAccessProperties = true;
+			SymbolsSearchPaths = new string[0];
+			PauseOnHandledExceptions = false;
+		}
+		
+		public virtual bool EnableJustMyCode { get; set; }
+		public virtual bool StepOverNoSymbols { get; set; }
+		public virtual bool StepOverDebuggerAttributes { get; set; }
+		public virtual bool StepOverAllProperties { get; set; }
+		public virtual bool StepOverFieldAccessProperties { get; set; }
+		public virtual IEnumerable<string> SymbolsSearchPaths { get; set; }
+		public virtual bool PauseOnHandledExceptions { get; set; }
 	}
 }
