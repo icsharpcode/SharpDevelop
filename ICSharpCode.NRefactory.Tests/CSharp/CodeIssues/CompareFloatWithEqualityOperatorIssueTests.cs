@@ -94,5 +94,40 @@ class TestClass
 }";
 			Test<CompareFloatWithEqualityOperatorIssue> (input, 4, output);
 		}
+		
+		
+		[Test]
+		public void TestPositiveInfinity ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod (double x, float y)
+	{
+		bool test = x == System.Double.PositiveInfinity;
+		bool test2 = x != double.PositiveInfinity;
+		bool test3 = y == float.PositiveInfinity;
+		bool test4 = x != float.PositiveInfinity;
+	}
+}";
+			Test<CompareFloatWithEqualityOperatorIssue> (input, 0);
+		}
+		
+		[Test]
+		public void TestNegativeInfinity ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod (double x, float y)
+	{
+		bool test = x == System.Double.NegativeInfinity;
+		bool test2 = x != double.NegativeInfinity;
+		bool test3 = y == float.NegativeInfinity;
+		bool test4 = x != float.NegativeInfinity;
+	}
+}";
+			Test<CompareFloatWithEqualityOperatorIssue> (input, 0);
+		}
 	}
 }

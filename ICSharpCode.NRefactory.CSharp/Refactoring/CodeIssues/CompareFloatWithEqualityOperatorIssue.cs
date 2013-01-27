@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
@@ -58,6 +59,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			bool IsFloatingPoint(AstNode node)
 			{
 				return IsFloatingPointType (ctx.Resolve (node).Type);
+			}
+
+			bool IsConstantInfinity(AstNode node)
+			{
+				ResolveResult rr = ctx.Resolve(node);
+				if (!rr.IsCompileTimeConstant)
+					return false;
+				if (rr.ConstantValue is float)
+					return float.IsInfinity((float)rr.ConstantValue);
+				else if (rr.ConstantValue is double)
+					return double.IsInfinity((double)rr.ConstantValue);
+				else
+					return false;
 			}
 
 			bool IsNaN (AstNode node, out string floatType)
@@ -105,6 +119,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				} else if (IsNaN (binaryOperatorExpression.Right, out floatType)) {
 					AddIsNaNIssue (binaryOperatorExpression, binaryOperatorExpression.Left, floatType);
 				} else if (IsFloatingPoint(binaryOperatorExpression.Left) || IsFloatingPoint(binaryOperatorExpression.Right)) {
+					if (IsConstantInfinity(binaryOperatorExpression.Left) || IsConstantInfinity(binaryOperatorExpression.Right))
+						return;
 					AddIssue (binaryOperatorExpression, ctx.TranslateString ("Compare a difference with EPSILON"),
 						script => {
 							// Math.Abs(diff) op EPSILON
