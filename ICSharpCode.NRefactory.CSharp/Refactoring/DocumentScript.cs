@@ -52,9 +52,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		public override void Dispose()
 		{
+			// Since base.Dispose() reformats some nodes; we need to include it in the undo group
+			base.Dispose();
 			if (undoGroup != null)
 				undoGroup.Dispose();
-			base.Dispose();
 		}
 		
 		public override void Remove(AstNode node, bool removeEmptyLine)
