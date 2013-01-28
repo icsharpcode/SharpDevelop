@@ -16,6 +16,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Services;
 
@@ -29,6 +30,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public DebuggingSymbolsPanel()
 		{
 			InitializeComponent();
+			editor.TitleText = StringParser.Parse("${res:Global.Folder}:");
+			editor.ListCaption = StringParser.Parse("${res:Dialog.Options.IDEOptions.Debugging.Symbols.ListCaption}");
 			this.DataContext = this;
 		}
 		
