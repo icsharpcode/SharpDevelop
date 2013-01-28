@@ -21,7 +21,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// <param name="iListType">Result found implementation of System.Collections.Generic.IList.</param>
 		/// <param name="itemType">The only generic argument of <paramref name="implementation"/></param>
 		/// <returns>True if found, false otherwise.</returns>
-		public static bool ResolveIListImplementation(this IType type, out IType iListType, out IType itemType)
+		public static bool ResolveIListImplementation(this IType type, out ParameterizedType iListType, out IType itemType)
 		{
 			return type.ResolveKnownBaseType(KnownTypeCode.IListOfT, out iListType, out itemType);
 		}
@@ -32,7 +32,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// <param name="iEnumerableType">Result found implementation of System.Collections.Generic.IEnumerable.</param>
 		/// <param name="itemType">The only generic argument of <paramref name="implementation"/></param>
 		/// <returns>True if found, false otherwise.</returns>
-		public static bool ResolveIEnumerableImplementation(this IType type, out IType iEnumerableType, out IType itemType)
+		public static bool ResolveIEnumerableImplementation(this IType type, out ParameterizedType iEnumerableType, out IType itemType)
 		{
 			return type.ResolveKnownBaseType(KnownTypeCode.IEnumerableOfT, out iEnumerableType, out itemType);
 		}
@@ -44,7 +44,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// <param name="implementation">Found implementation.</param>
 		/// <param name="itemType">The only generic argument of <paramref name="implementation"/></param>
 		/// <returns>True if found, false otherwise.</returns>
-		private static bool ResolveKnownBaseType(this IType type, KnownTypeCode knownTypeCode, out IType implementation, out IType itemType)
+		private static bool ResolveKnownBaseType(this IType type, KnownTypeCode knownTypeCode, out ParameterizedType implementation, out IType itemType)
 		{
 			if (type == null) throw new ArgumentNullException("type");
 			implementation = null;

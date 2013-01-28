@@ -10,7 +10,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 namespace Debugger.AddIn.Visualizers.Graph
 {
 	/// <summary>
-	/// Compares members - .NET properties come before .NET fields.
+	/// Compares members - properties come before fields.
 	/// </summary>
 	public sealed class PropertiesFirstComparer : IComparer<IMember>
 	{

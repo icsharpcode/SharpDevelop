@@ -2,6 +2,7 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System.Linq;
+using Debugger.AddIn.TreeModel;
 using Debugger.AddIn.Visualizers.Graph;
 using Debugger.Interop.CorDebug;
 using System;
@@ -42,17 +43,11 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// </summary>
 		public static Value CreateListFromIEnumerable(Value iEnumerableValue)
 		{
-			IType iEnumerableType, itemType;
+			ParameterizedType iEnumerableType;
+			IType itemType;
 			if (!iEnumerableValue.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType))
 				throw new GetValueException("Value is not IEnumerable");
-			// FIXME    	
-			IType listType = DebugType.CreateFromType(iEnumerableValue.AppDomain, typeof(System.Collections.Generic.List<>), itemType);
-			DebugConstructorInfo ctor = listType.GetConstructor(BindingFlags.Default, null, CallingConventions.Any, new System.Type[] { iEnumerableType }, null);
-			if (ctor == null)
-				throw new DebuggerException("List<T> constructor not found");
-			
-			// Keep reference since we do not want to keep reenumerating it
-			return Value.InvokeMethod(WindowsDebugger.EvalThread, null, ctor.MethodInfo, new Value[] { iEnumerableValue }).GetPermanentReferenceOfHeapValue();
+			return ValueNode.CreateListFromIEnumerable(iEnumerableType, iEnumerableValue).GetPermanentReferenceOfHeapValue();
 		}
 		
 		/// <summary>
@@ -94,7 +89,10 @@ namespace Debugger.AddIn.Visualizers.Utils
 		{
 			// TODO reimplement check for Process.HasExited (debuggee restarted)
 			if (hashCodeMethod == null /*|| hashCodeMethod.Process.HasExited*/) {
-				IType runtimeHelpers = DebugType.CreateFromType(value.AppDomain, typeof(System.Runtime.CompilerServices.RuntimeHelpers));
+				IType runtimeHelpers =
+					value.Type.GetDefinition().Compilation.FindType(
+						typeof(System.Runtime.CompilerServices.RuntimeHelpers)
+					).GetDefinition();
 				hashCodeMethod = runtimeHelpers.GetMethods(m => m.FullName == "GetHashCode").FirstOrDefault();
 				if (hashCodeMethod == null) {
 					throw new DebuggerException(

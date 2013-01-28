@@ -19,7 +19,8 @@ namespace Debugger.AddIn.Visualizers
 		public bool IsVisualizerAvailable(IType type)
 		{
 			if (type.IsAtomic()) return false;
-			IType collectionType, itemType;
+			ParameterizedType collectionType;
+			IType itemType;
 			// Visualizer available for IEnumerable<T> (that is, also IList<T>)
 			return type.ResolveIEnumerableImplementation(out collectionType, out itemType);
 		}

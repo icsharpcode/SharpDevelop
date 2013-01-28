@@ -42,7 +42,8 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				
 				Value shownValue = getValue();
 				
-				IType iListType, iEnumerableType, itemType;
+				ParameterizedType iListType, iEnumerableType;
+				IType itemType;
 				// Value is IList
 				if (shownValue.Type.ResolveIListImplementation(out iListType, out itemType)) {
 					// Ok
@@ -58,7 +59,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				}
 				shownValue = shownValue.GetPermanentReference(WindowsDebugger.EvalThread);
 				
-				MemberInfo[] members = itemType.GetFieldsAndNonIndexedProperties(BindingFlags.Public | BindingFlags.Instance);
+				var members = itemType.GetFieldsAndNonIndexedProperties().Where(m => m.IsPublic && !m.IsStatic);
 				IProperty indexerProperty = iListType.GetProperties(p => p.Name == "Item").Single();
 				int rowCount = (int)shownValue.GetPropertyValue(WindowsDebugger.EvalThread, iListType.GetProperties(p => p.Name == "Count").Single()).PrimitiveValue;
 				int columnCount = members.Length + 1;
