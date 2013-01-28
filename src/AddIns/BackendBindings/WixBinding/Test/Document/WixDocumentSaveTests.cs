@@ -22,6 +22,7 @@ namespace WixBinding.Tests.Document
 		[SetUp]
 		public void Init()
 		{
+			MessageLoopHelper.InitializeForUnitTests();
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			document = new WixDocument(project, new DefaultFileLoader());
 			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'><Product Name='MySetup'></Product></Wix>";

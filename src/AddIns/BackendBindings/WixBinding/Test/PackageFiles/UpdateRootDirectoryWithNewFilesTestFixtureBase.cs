@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using WixBinding.Tests.Utils;
@@ -18,6 +19,8 @@ namespace WixBinding.Tests.PackageFiles
 		[SetUp]
 		public void Init()
 		{
+			SD.InitializeForUnitTests();
+			MessageLoopHelper.InitializeForUnitTests();
 			textEditor = new MockTextEditor();
 			MockTextEditorViewContent viewContent = new MockTextEditorViewContent();
 			viewContent.TextEditor = textEditor;

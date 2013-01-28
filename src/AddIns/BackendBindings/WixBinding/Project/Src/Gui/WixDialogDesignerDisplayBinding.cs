@@ -4,7 +4,7 @@
 using System;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.WixBinding
 {
@@ -32,7 +32,8 @@ namespace ICSharpCode.WixBinding
 		
 		public IViewContent[] CreateSecondaryViewContent(IViewContent view)
 		{
-			return new IViewContent[] {new WixDialogDesigner(view)};
+			//return new IViewContent[] {new WixDialogDesigner(view)};
+			return null;
 		}
 		
 		bool IsViewTextEditorProvider(IViewContent view)

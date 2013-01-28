@@ -23,7 +23,8 @@ namespace WixBinding.Tests.Document
 
 		[TestFixtureSetUp]
 		public void SetUpFixture()
-		{			
+		{
+			MessageLoopHelper.InitializeForUnitTests();
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
 			projectDirectory = p.Directory;
 			p.Name = "MySetup";

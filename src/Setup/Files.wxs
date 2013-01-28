@@ -855,6 +855,7 @@
 										<File Source="..\..\AddIns\BackendBindings\VBNetBinding\VBNetBinding.addin" Id="VBNetBinding.addin" Name="VBNetBinding.addin" />
 									</Component>
 								</Directory>
+								-->
 								<Directory Id="WixBindingFolder" Name="WixBinding">
 									<Component Guid="A54D7821-BBFD-49E9-8FFB-1AB224E25521" Id="WixBindingFiles" DiskId="1">
 										<File Source="..\..\AddIns\BackendBindings\WixBinding\WixBinding.dll" Id="WixBinding.dll" Name="WixBinding.dll" Assembly=".net" AssemblyApplication="WixBinding.dll" AssemblyManifest="WixBinding.dll" KeyPath="yes" />
@@ -891,6 +892,7 @@
 										</Component>
 									</Directory>
 								</Directory>
+								<!--
 								<Directory Id="PythonBinding" Name="PythonBinding">
 									<Component Guid="AF97A77A-F986-4284-BC0A-9568B1419FC1" Id="IpyExe" DiskId="1">
 										<File Source="..\..\AddIns\BackendBindings\PythonBinding\ipy.exe" Name="ipy.exe" Id="ipy.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="ipy.exe" AssemblyManifest="ipy.exe">

@@ -2,8 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.WixBinding
 {
@@ -63,7 +63,7 @@ namespace ICSharpCode.WixBinding
 		
 		static WixDocumentLineSegment ConvertRegionToSingleLineSegment(IDocument document, DomRegion region)
 		{
-			IDocumentLine documentLine = document.GetLine(region.BeginLine);
+			IDocumentLine documentLine = document.GetLineByNumber(region.BeginLine);
 			return new WixDocumentLineSegment(documentLine.Offset + region.BeginColumn - 1, 
 					region.EndColumn - region.BeginColumn + 1);
 		}
@@ -73,7 +73,7 @@ namespace ICSharpCode.WixBinding
 			int length = 0;
 			int startOffset = 0;
 			for (int line = region.BeginLine; line <= region.EndLine; ++line) {
-				IDocumentLine currentDocumentLine = document.GetLine(line);
+				IDocumentLine currentDocumentLine = document.GetLineByNumber(line);
 				if (line == region.BeginLine) {
 					length += currentDocumentLine.TotalLength - region.BeginColumn;
 					startOffset = currentDocumentLine.Offset + region.BeginColumn - 1;

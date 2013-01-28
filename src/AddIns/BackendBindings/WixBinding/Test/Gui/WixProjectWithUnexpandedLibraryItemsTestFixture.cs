@@ -28,6 +28,7 @@ namespace WixBinding.Tests.Gui
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			MessageLoopHelper.InitializeForUnitTests();
 			wixProject = WixBindingTestsHelper.CreateEmptyWixProject();
 			
 			// Add wix library item.

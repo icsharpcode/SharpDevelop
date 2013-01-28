@@ -7,6 +7,7 @@ using System.IO;
 using System.Resources;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
@@ -45,7 +46,7 @@ namespace WixBinding.Tests.Utils
 			ProjectCreateInformation info = new ProjectCreateInformation();
 			info.Solution = new Solution(new MockProjectChangeWatcher());
 			info.ProjectName = "Test";
-			info.OutputProjectFileName = @"C:\Projects\Test\Test.wixproj";
+			info.OutputProjectFileName = new FileName(@"C:\Projects\Test\Test.wixproj");
 
 			return new DummyWixProject(info);
 		}
@@ -88,8 +89,9 @@ namespace WixBinding.Tests.Utils
 		/// </summary>
 		public static void RegisterResourceStringsWithSharpDevelopResourceManager()
 		{
+			ResourceServiceHelper.InitializeForUnitTests();
 			ResourceManager rm = new ResourceManager("WixBinding.Tests.Strings", typeof(WixBindingTestsHelper).Assembly);
-			ResourceService.RegisterNeutralStrings(rm);
+			SD.ResourceService.RegisterNeutralStrings(rm);
 		}
 	}
 }

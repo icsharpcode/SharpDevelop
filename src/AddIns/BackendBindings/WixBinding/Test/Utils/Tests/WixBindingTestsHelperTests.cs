@@ -3,7 +3,7 @@
 
 using System;
 using System.ComponentModel;
-
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using WixBinding.Tests.Utils;
@@ -18,6 +18,8 @@ namespace WixBinding.Tests.Utils.Tests
 		[SetUp]
 		public void Init()
 		{
+			SD.InitializeForUnitTests();
+			MessageLoopHelper.InitializeForUnitTests();
 			project = WixBindingTestsHelper.CreateEmptyWixProject();
 		}
 		
@@ -42,7 +44,7 @@ namespace WixBinding.Tests.Utils.Tests
 		[Test]
 		public void WixProjectHasFileName()
 		{
-			Assert.AreEqual(@"C:\Projects\Test\Test.wixproj", project.FileName);
+			Assert.AreEqual(@"C:\Projects\Test\Test.wixproj", project.FileName.ToString());
 		}
 	}
 }

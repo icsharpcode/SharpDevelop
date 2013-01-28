@@ -27,7 +27,7 @@ namespace WixBinding.Tests.Utils.Tests
 
 			textEditor.JumpTo(line, col);
 			
-			Location expectedLocation = new Location(col, line);
+			var expectedLocation = new TextLocation(col, line);
 		
 			Assert.AreEqual(expectedLocation, textEditor.LocationJumpedTo);
 		}
@@ -55,10 +55,10 @@ namespace WixBinding.Tests.Utils.Tests
 			int col = 2;
 			int line = 1;
 			textEditor.Document.Text = "abc\r\ndef\r\nghi";
-			textEditor.Caret.Position = new Location(col, line);
+			textEditor.Caret.Location = new TextLocation(col, line);
 			
-			Location expectedLocation = new Location(col, line);
-			Assert.AreEqual(expectedLocation, textEditor.Caret.Position);
+			var expectedLocation = new TextLocation(col, line);
+			Assert.AreEqual(expectedLocation, textEditor.Caret.Location);
 		}
 		
 		[Test]

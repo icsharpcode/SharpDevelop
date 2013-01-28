@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
@@ -25,13 +26,14 @@ namespace WixBinding.Tests.Gui
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			MessageLoopHelper.InitializeForUnitTests();
 			WixBindingTestsHelper.InitMSBuildEngine();
 			
 			// create the project.
 			ProjectCreateInformation info = new ProjectCreateInformation();
 			info.Solution = new Solution(new MockProjectChangeWatcher());
 			info.ProjectName = "Test";
-			info.OutputProjectFileName = @"C:\Projects\Test\Test.wixproj";
+			info.OutputProjectFileName = new FileName(@"C:\Projects\Test\Test.wixproj");
 
 			wixProject = new WixProjectWithOverriddenSave(info);
 			

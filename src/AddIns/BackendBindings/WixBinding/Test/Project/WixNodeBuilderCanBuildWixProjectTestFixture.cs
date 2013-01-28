@@ -1,11 +1,12 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
-using System;
 using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Project
@@ -16,7 +17,14 @@ namespace WixBinding.Tests.Project
 	/// </summary>
 	[TestFixture]
 	public class WixNodeBuilderCanBuildWixProjectTestFixture
-	{	
+	{
+		[TestFixtureSetUp]
+		public void SetUp()
+		{
+			SD.InitializeForUnitTests();
+			MessageLoopHelper.InitializeForUnitTests();
+		}
+		
 		[Test]
 		public void CanBuildWixProject()
 		{

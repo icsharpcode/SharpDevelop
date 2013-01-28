@@ -2,19 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.IO;
-using System.Windows.Forms;
 using System.Xml;
-
-using ICSharpCode.AvalonEdit;
-using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.WixBinding
 {
@@ -215,7 +208,7 @@ namespace ICSharpCode.WixBinding
 				return;
 			}
 			
-			Location location = FindProductElementEndLocation(textEditor, document);
+			TextLocation location = FindProductElementEndLocation(textEditor, document);
 			if (!location.IsEmpty) {
 				documentEditor.InsertIndented(location, String.Concat(xml, "\r\n"));
 			}
@@ -230,7 +223,7 @@ namespace ICSharpCode.WixBinding
 			documentEditor.ReplaceElement(rootDirectoryRef.Id, WixDirectoryRefElement.DirectoryRefElementName, xml);
 		}
 		
-		Location FindProductElementEndLocation(ITextEditor textEditor, WixDocument document)
+		TextLocation FindProductElementEndLocation(ITextEditor textEditor, WixDocument document)
 		{
 			XmlElement productElement = document.GetProduct();
 			string productId = productElement.GetAttribute("Id");

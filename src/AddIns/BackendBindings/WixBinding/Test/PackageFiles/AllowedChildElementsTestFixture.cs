@@ -25,6 +25,7 @@ namespace WixBinding.Tests.PackageFiles
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			MessageLoopHelper.InitializeForUnitTests();
 			base.InitFixture();
 			childElementAllowedWhenNoItemSelected = new string[view.AllowedChildElements.Count];
 			view.AllowedChildElements.CopyTo(childElementAllowedWhenNoItemSelected, 0);

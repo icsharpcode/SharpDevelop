@@ -55,10 +55,6 @@ namespace ICSharpCode.WixBinding
 			get { return WixProjectBinding.LanguageName; }
 		}
 		
-		public override LanguageProperties LanguageProperties {
-			get { return LanguageProperties.None; }
-		}
-		
 		/// <summary>
 		/// Returns the filename extension based on the project's output type.
 		/// </summary>

@@ -21,6 +21,7 @@ namespace WixBinding.Tests.Document
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			MessageLoopHelper.InitializeForUnitTests();
 			document = new WixDocument();
 			document.LoadXml(GetWixXml());
 		}
