@@ -5,30 +5,27 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace Debugger.AddIn.Visualizers.Graph
 {
 	/// <summary>
 	/// Compares members - .NET properties come before .NET fields.
 	/// </summary>
-	public sealed class PropertiesFirstComparer : IComparer<MemberInfo>
+	public sealed class PropertiesFirstComparer : IComparer<IMember>
 	{
 		private static PropertiesFirstComparer instance = new PropertiesFirstComparer();
 		
 		public static PropertiesFirstComparer Instance {
-			get {
-				return instance;
-			}
+			get { return instance; }
 		}
 		
-		private PropertiesFirstComparer()
-		{
-		}
+		private PropertiesFirstComparer() {}
 		
-		public int Compare(MemberInfo x, MemberInfo y)
+		public int Compare(IMember x, IMember y)
 		{
-			if ((x is PropertyInfo) && (y is FieldInfo)) return -1;
-			if ((y is PropertyInfo) && (x is FieldInfo)) return 1;
+			if ((x is IProperty) && (y is IField)) return -1;
+			if ((x is IField) && (y is IProperty)) return 1;
 			return x.Name.CompareTo(y.Name);
 		}
 	}

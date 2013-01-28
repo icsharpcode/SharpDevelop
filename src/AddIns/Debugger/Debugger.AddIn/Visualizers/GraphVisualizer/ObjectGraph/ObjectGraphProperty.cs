@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using Debugger.AddIn.Visualizers.Utils;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Services;
 using ICSharpCode.NRefactory.Ast;
 
@@ -27,7 +28,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
         /// MemberInfo used for obtaining value of this property
         /// </summary>
-        public MemberInfo MemberInfo { get; set; }
+        public IMember MemberInfo { get; set; }
         
         /// <summary>
         /// Has this property been evaluated? (Has Evaluate been called?)

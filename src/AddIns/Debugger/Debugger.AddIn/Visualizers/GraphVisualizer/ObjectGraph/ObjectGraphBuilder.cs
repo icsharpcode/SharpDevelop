@@ -58,15 +58,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 		private Multimap<int, ObjectGraphNode> objectNodesForHashCode = new Multimap<int, ObjectGraphNode>();
 		
 		/// <summary>
-		/// Binding flags for getting member expressions.
-		/// </summary>
-		private readonly BindingFlags publicInstanceMemberFlags =
-			BindingFlags.Public | BindingFlags.Instance;
-		
-		private readonly BindingFlags nonPublicInstanceMemberFlags =
-			BindingFlags.NonPublic | BindingFlags.Instance;
-		
-		/// <summary>
 		/// Creates ObjectGraphBuilder.
 		/// </summary>
 		/// <param name="debuggerService">Debugger service.</param>
@@ -199,8 +190,9 @@ namespace Debugger.AddIn.Visualizers.Graph
 				LoadNodeObjectContent(baseClassNode, expression, baseType);
 			}
 			
+			var members = type.GetFieldsAndNonIndexedProperties(GetMemberOptions.IgnoreInheritedMembers).ToList();
 			// non-public members
-			var nonPublicProperties = getProperties(expression, type, this.nonPublicInstanceMemberFlags);
+			var nonPublicProperties = createProperties(expression, members.Where(m => !m.IsPublic));
 			if (nonPublicProperties.Count > 0) {
 				var nonPublicMembersNode = new NonPublicMembersNode();
 				node.AddChild(nonPublicMembersNode);
@@ -210,35 +202,29 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 			
 			// public members
-			foreach (var property in getProperties(expression, type, this.publicInstanceMemberFlags)) {
+			foreach (var property in createProperties(expression, members.Where(m => m.IsPublic))) {
 				node.AddChild(new PropertyNode(property));
 			}
 		}
 		
-		private List<ObjectGraphProperty> getProperties(GraphExpression expression, IType shownType, BindingFlags flags)
+		private List<ObjectGraphProperty> createProperties(GraphExpression expression, IEnumerable<IMember> members)
 		{
 			List<ObjectGraphProperty> propertyList = new List<ObjectGraphProperty>();
-			
-			foreach (MemberInfo memberProp in shownType.GetFieldsAndNonIndexedProperties(flags)) {
-				if (memberProp.Name.Contains("<")) {
+			foreach (IMember member in members) {
+				/*if (member.Name.Contains("<")) {
 					// skip backing fields
 					continue;
-				}
-				if (memberProp.DeclaringType != shownType) {
-					// skip properties declared in the base type
-					continue;
-				}
-
+				}*/
 				// ObjectGraphProperty needs string representation to know whether it is expanded
 				var propExpression = new GraphExpression(
-					expression.Expr.AppendMemberReference((IDebugMemberInfo)memberProp),
-					() => expression.GetValue().GetMemberValue(WindowsDebugger.EvalThread, memberProp)
+					expression.Expr + "." + member.Name,
+					() => expression.GetValue().GetMemberValue(WindowsDebugger.EvalThread, member)
 				);
 				// Value, IsAtomic are lazy evaluated
 				propertyList.Add(new ObjectGraphProperty
-				                 { Name = memberProp.Name,
+				                 { Name = member.Name,
 				                 	Expression = propExpression, Value = "",
-				                 	MemberInfo = memberProp, IsAtomic = true, TargetNode = null });
+				                 	MemberInfo = member, IsAtomic = true, TargetNode = null });
 				
 			}
 			return propertyList.Sorted(ObjectPropertyComparer.Instance);

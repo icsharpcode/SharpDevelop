@@ -113,6 +113,12 @@ namespace Debugger.AddIn.Visualizers.Utils
 			return type.ToString();  // TODO use an existing C# IType formatter?
 		}
 		
+		public static IEnumerable<IMember> GetFieldsAndNonIndexedProperties(this IType type, GetMemberOptions options = GetMemberOptions.None) {
+			IEnumerable<IMember> fields = type.GetFields(f => !f.IsConst, options);
+			IEnumerable<IMember> properties = type.GetProperties(p => p.CanGet && p.Parameters.Count == 0, options);
+			return fields.Concat(properties);
+		}
+		
 		// Object graph visualizer: collection support temp disabled (porting to new NRefactory).
 		/*
 		/// <summary>
