@@ -18,8 +18,7 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 		public override bool Equals(object obj)
 		{
 			var other = obj as EdgeStartEnd;
-			if (other == null)
-				return false;
+			if (other == null) return false;
 			return (this.From == other.From && this.To == other.To) || (this.From == other.To && this.To == other.From);
 		}
 		

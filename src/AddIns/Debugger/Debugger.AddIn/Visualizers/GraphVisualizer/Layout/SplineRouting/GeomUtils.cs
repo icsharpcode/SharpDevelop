@@ -8,16 +8,9 @@ using System.Windows;
 
 namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 {
-	/// <summary>
-	/// Description of GeomUtils.
-	/// </summary>
-	public class GeomUtils
+	public static class GeomUtils
 	{
 		static readonly double eps = 1e-8;
-		
-		public GeomUtils()
-		{
-		}
 		
 		public static IPoint RectCenter(IRect rect)
 		{

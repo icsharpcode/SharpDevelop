@@ -17,10 +17,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	{
 		EdgeRouter router = new EdgeRouter();
 		
-		public GraphEdgeRouter()
-		{
-		}
-		
 		public void RouteEdges(PositionedGraph posGraph)
 		{
 			Dictionary<PositionedEdge, RoutedEdge> routedEdges = router.RouteEdges(posGraph.Nodes, posGraph.Edges);

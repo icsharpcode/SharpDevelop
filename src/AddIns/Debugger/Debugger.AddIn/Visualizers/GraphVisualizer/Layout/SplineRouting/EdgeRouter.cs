@@ -12,10 +12,6 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 	/// </summary>
 	public class EdgeRouter
 	{
-		public EdgeRouter()
-		{
-		}
-		
 		/// <summary>
 		/// Calculates routes for edges in a graph, so that they avoid nodes.
 		/// </summary>

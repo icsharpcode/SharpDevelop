@@ -145,8 +145,7 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 				for (int j = i + 1; j < this.Vertices.Count; j++) {
 					var vertex = this.Vertices[i];
 					var vertex2 = this.Vertices[j];
-					if (Visible(vertex, vertex2))
-					{
+					if (Visible(vertex, vertex2)) {
 						// bidirectional edge
 						vertex.AddNeighbor(vertex2);
 						vertex2.AddNeighbor(vertex);
@@ -159,8 +158,7 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 		{
 			// test for intersection with every box
 			foreach (var rect in this.Boxes) {
-				if (GeomUtils.LineRectIntersection(vertex, vertex2, rect) != null)
-					return false;
+				if (GeomUtils.LineRectIntersection(vertex, vertex2, rect) != null) return false;
 			}
 			return true;
 		}

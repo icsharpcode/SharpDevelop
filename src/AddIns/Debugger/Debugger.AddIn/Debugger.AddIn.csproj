@@ -158,10 +158,10 @@
     <Compile Include="Visualizers\Common\ObjectPropertyComparer.cs" />
     <Compile Include="Visualizers\Common\VirtualizingCollection.cs" />
     <Compile Include="Visualizers\Common\VirtualizingObservableCollection.cs" />
-    <Compile Include="Visualizers\GraphVisualizer\Drawing\BoolToBoldConverter.cs" />
-    <Compile Include="Visualizers\GraphVisualizer\Drawing\CanvasLocationAdapter.cs" />
-    <Compile Include="Visualizers\GraphVisualizer\Drawing\GraphDrawer.cs" />
-    <Compile Include="Visualizers\GraphVisualizer\Drawing\PositionedGraphNodeControl.xaml.cs" />
+    <Compile Include="Visualizers\GraphVisualizer\Presentation\BoolToBoldConverter.cs" />
+    <Compile Include="Visualizers\GraphVisualizer\Presentation\CanvasLocationAdapter.cs" />
+    <Compile Include="Visualizers\GraphVisualizer\Presentation\GraphDrawer.cs" />
+    <Compile Include="Visualizers\GraphVisualizer\Presentation\PositionedGraphNodeControl.xaml.cs" />
     <Compile Include="Visualizers\GraphVisualizer\ExpandedPaths\Expanded.cs" />
     <Compile Include="Visualizers\GraphVisualizer\ExpandedPaths\ExpandedContentNodes.cs" />
     <Compile Include="Visualizers\GraphVisualizer\ExpandedPaths\ExpandedExpressions.cs" />
@@ -294,7 +294,7 @@
     <Folder Include="Visualizers\Commands" />
     <Folder Include="Visualizers\Common" />
     <Folder Include="Visualizers\GraphVisualizer" />
-    <Folder Include="Visualizers\GraphVisualizer\Drawing" />
+    <Folder Include="Visualizers\GraphVisualizer\Presentation" />
     <Folder Include="Visualizers\GraphVisualizer\ExpandedPaths" />
     <Folder Include="Visualizers\GraphVisualizer\Layout" />
     <Folder Include="Visualizers\GraphVisualizer\Layout\SplineRouting" />
@@ -314,8 +314,8 @@
     <Page Include="Service\EditBreakpointScriptWindow.xaml" />
     <Page Include="Tooltips\DebuggerTooltipControl.xaml" />
     <Page Include="Tooltips\VisualizerPicker.xaml" />
-    <Page Include="Visualizers\GraphVisualizer\Drawing\NodeControlResources.xaml" />
-    <Page Include="Visualizers\GraphVisualizer\Drawing\PositionedGraphNodeControl.xaml" />
+    <Page Include="Visualizers\GraphVisualizer\Presentation\NodeControlResources.xaml" />
+    <Page Include="Visualizers\GraphVisualizer\Presentation\PositionedGraphNodeControl.xaml" />
     <Page Include="Visualizers\GraphVisualizer\ObjectGraphControl.xaml" />
     <Page Include="Visualizers\GraphVisualizer\ObjectGraphWindow.xaml" />
     <Page Include="Visualizers\GridVisualizer\ColumnPicker.xaml" />

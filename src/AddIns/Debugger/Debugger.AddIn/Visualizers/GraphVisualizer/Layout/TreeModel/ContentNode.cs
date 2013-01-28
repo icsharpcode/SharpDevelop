@@ -21,7 +21,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		{
 			if (containingNode == null)
 				throw new ArgumentNullException("containingNode");
-			
 			this.containingNode = containingNode;
 			this.parent = parent;
 		}
@@ -163,12 +162,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.IsExpanded = (source is ThisNode) || expanded.ContentNodes.IsExpanded(this);
 				
 			foreach (AbstractNode child in source.Children) {
-				ContentNode newChild = null;
-				if (child is PropertyNode) {
-					newChild = new ContentPropertyNode(this.ContainingNode, this);
-				} else {
-					newChild = new ContentNode(this.ContainingNode, this);
-				}
+				ContentNode newChild = child is PropertyNode ?
+					new ContentPropertyNode(this.ContainingNode, this) :
+					new ContentNode(this.ContainingNode, this);
 				newChild.InitOverride(child, expanded);
 				this.Children.Add(newChild);
 			}

@@ -28,8 +28,7 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 			}
 			start.Distance = 0;
 			bool reached = false;
-			while (!reached)
-			{
+			while (!reached) {
 				RouteVertex minVertex = null;
 				foreach (var minCandidate in graph.Vertices.Where(v => !v.IsPermanent && v.IsAvailable)) {
 					if (minVertex == null || minCandidate.Distance < minVertex.Distance) {

@@ -44,8 +44,7 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 		public IRect Inflated(double padding)
 		{
 			//if (inflatedCache.ContainsKey(padding))
-			if (inflatedCache == null)
-			{
+			if (inflatedCache == null) {
 				inflatedCache = GeomUtils.InflateRect(this, padding);
 			}
 			return inflatedCache;

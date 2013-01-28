@@ -145,8 +145,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		SplineRouting.Box box;
 		public SplineRouting.IRect Inflated(double padding)
 		{
-			if (box == null)
+			if (box == null) {
 				box = new SplineRouting.Box(this);
+			}
 			return box.Inflated(padding);
 		}
 		

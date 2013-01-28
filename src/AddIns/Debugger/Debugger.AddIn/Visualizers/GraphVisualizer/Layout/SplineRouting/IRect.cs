@@ -9,7 +9,7 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 {
 	/// <summary>
 	/// The node in a graph.
-	/// Enables passing generic graphs <see cref="EdgeRouter />.
+	/// Enables passing generic graphs to <see cref="EdgeRouter />.
 	/// </summary>
 	public interface IRect
 	{

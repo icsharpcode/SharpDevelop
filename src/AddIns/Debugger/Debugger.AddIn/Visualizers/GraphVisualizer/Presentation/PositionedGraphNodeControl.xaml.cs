@@ -93,7 +93,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			}
 			
 			PositionedNodeProperty property = clickedNode.Property;
-			clickedButton.Content = property.IsPropertyExpanded ? "-" : "+";	// could be done with a converter
+			clickedButton.Content = property.IsPropertyExpanded ? "-" : "+";	// could be done using a converter
 			
 			if (property.IsPropertyExpanded) {
 				OnPropertyExpanded(property);
@@ -108,25 +108,20 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			var clickedNode = clickedButton.DataContext as ContentNode;
 			if (clickedNode == null) return;
 			int clickedIndex = this.items.IndexOf(clickedNode);
-			clickedButton.Content = clickedNode.IsExpanded ? "-" : "+";	// could be done by a converter
+			clickedButton.Content = clickedNode.IsExpanded ? "-" : "+";	// could be done using a converter
 
-			if (clickedNode.IsExpanded)
-			{
+			if (clickedNode.IsExpanded) {
 				// insert children
 				int i = 1;
-				foreach (var childNode in clickedNode.Children)
-				{
+				foreach (var childNode in clickedNode.Children) {
 					this.items.Insert(clickedIndex + i, childNode);
 					i++;
 				}
 				OnContentNodeExpanded(clickedNode);
-			}
-			else
-			{
+			} else {
 				// remove whole subtree
 				int size = SubtreeSize(clickedNode) - 1;
-				for (int i = 0; i < size; i++)
-				{
+				for (int i = 0; i < size; i++) {
 					this.items.RemoveAt(clickedIndex + 1);
 				}
 				OnContentNodeCollapsed(clickedNode);

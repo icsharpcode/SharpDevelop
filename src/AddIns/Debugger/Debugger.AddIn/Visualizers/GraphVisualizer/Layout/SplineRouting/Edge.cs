@@ -13,10 +13,6 @@ namespace Debugger.AddIn.Visualizers.Graph.SplineRouting
 	/// </summary>
 	public class Edge : IEdge
 	{
-		public Edge()
-		{
-		}
-		
 		public IRect From { get; set; }
 		public IRect To { get; set; }
 		public IPoint StartPoint { get; set; }
