@@ -2311,7 +2311,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (!c.IsValid) {
 				var opTrue = input.Type.GetMethods(m => m.IsOperator && m.Name == "op_True").FirstOrDefault();
 				if (opTrue != null) {
-					c = Conversion.UserDefinedConversion(opTrue, isImplicit: true);
+					c = Conversion.UserDefinedConversion(opTrue, isImplicit: true, conversionBeforeUserDefinedOperator: Conversion.None, conversionAfterUserDefinedOperator: Conversion.None);
 				}
 			}
 			return Convert(input, boolean, c);
@@ -2331,7 +2331,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (!c.IsValid) {
 				var opFalse = input.Type.GetMethods(m => m.IsOperator && m.Name == "op_False").FirstOrDefault();
 				if (opFalse != null) {
-					c = Conversion.UserDefinedConversion(opFalse, isImplicit: true);
+					c = Conversion.UserDefinedConversion(opFalse, isImplicit: true, conversionBeforeUserDefinedOperator: Conversion.None, conversionAfterUserDefinedOperator: Conversion.None);
 					return Convert(input, boolean, c);
 				}
 			}

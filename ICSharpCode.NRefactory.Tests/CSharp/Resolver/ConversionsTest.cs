@@ -1251,5 +1251,44 @@ class Test {
 			Assert.IsTrue(c.IsUserDefined);
 			Assert.IsFalse(c.IsValid);
 		}
+
+		[Test]
+		public void UserDefinedImplicitConversion_ConversionBeforeUserDefinedOperatorIsCorrect() {
+			string program = @"using System;
+class Convertible {
+	public static implicit operator Convertible(long l) {return new Convertible(); }
+}
+class Test {
+	public void M() {
+		int i = 33;
+		Convertible a = $i$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.ConversionBeforeUserDefinedOperator.IsImplicit);
+			Assert.IsTrue(c.ConversionBeforeUserDefinedOperator.IsNumericConversion);
+			Assert.IsTrue(c.ConversionBeforeUserDefinedOperator.IsValid);
+			Assert.IsTrue(c.ConversionAfterUserDefinedOperator.IsIdentityConversion);
+		}
+
+		[Test]
+		public void UserDefinedImplicitConversion_ConversionAfterUserDefinedOperatorIsCorrect() {
+			string program = @"using System;
+class Convertible {
+	public static implicit operator int(Convertible i) {return 0; }
+}
+class Test {
+	public void M() {
+		long a = $new Convertible()$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.ConversionBeforeUserDefinedOperator.IsIdentityConversion);
+			Assert.IsTrue(c.ConversionAfterUserDefinedOperator.IsImplicit);
+			Assert.IsTrue(c.ConversionAfterUserDefinedOperator.IsNumericConversion);
+			Assert.IsTrue(c.ConversionAfterUserDefinedOperator.IsValid);
+		}
 	}
 }
