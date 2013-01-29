@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Media.Animation;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
@@ -29,10 +30,10 @@ namespace CSharpBinding.Refactoring
 	/// </summary>
 	public class CSharpCodeGenerator : ICodeGenerator
 	{
-		CSharpProject project;
+		IProject project;
 		ProjectEntityModelContext model;
 		
-		public CSharpCodeGenerator(CSharpProject project)
+		public CSharpCodeGenerator(IProject project)
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
@@ -42,15 +43,22 @@ namespace CSharpBinding.Refactoring
 		
 		public void AddAttribute(IEntity target, IAttribute attribute)
 		{
-			var view = SD.FileService.OpenFile(new FileName(target.Region.FileName), false);
-			var editor = view.GetRequiredService<ITextEditor>();
-			var context = SDRefactoringContext.Create(editor, CancellationToken.None);
-			var node = context.RootNode.GetNodeAt<EntityDeclaration>(target.Region.Begin);
-			var resolver = context.GetResolverStateBefore(node);
-			var builder = new TypeSystemAstBuilder(resolver);
-			
-			editor.Document.Insert(editor.Document.GetOffset(target.BodyRegion.Begin),
-			                       PrintAst(builder.ConvertAttribute(attribute)));
+			AddAttribute(target.Region, attribute);
+		}
+		
+		public void AddAssemblyAttribute(IAttribute attribute)
+		{
+			// FIXME : will fail if there are no assembly attributes
+			ICompilation compilation = SD.ParserService.GetCompilation(project);
+			IAttribute target = compilation.MainAssembly.AssemblyAttributes.LastOrDefault();
+			if (target == null)
+				throw new InvalidOperationException("no assembly attributes found, cannot continue!");
+			AddAttribute(target.Region, attribute, "assembly");
+		}
+
+		public void AddReturnTypeAttribute(IMethod target, IAttribute attribute)
+		{
+			AddAttribute(target.Region, attribute, "return");
 		}
 		
 		public void InsertEventHandler(ITypeDefinition target, string name, IEvent eventDefinition, bool jumpTo)
@@ -69,25 +77,52 @@ namespace CSharpBinding.Refactoring
 			
 			var view = SD.FileService.OpenFile(new FileName(match.Region.FileName), jumpTo);
 			var editor = view.GetRequiredService<ITextEditor>();
-			var context = SDRefactoringContext.Create(editor, CancellationToken.None);
+			var last = match.Members.LastOrDefault() ?? (IUnresolvedEntity)match;
+			var context = SDRefactoringContext.Create(editor.FileName, editor.Document, last.BodyRegion.End, CancellationToken.None);
 			
-			IEntity last = (IEntity)target.GetMembers().LastOrDefault() ?? (IEntity)target;
 			var node = context.RootNode.GetNodeAt<EntityDeclaration>(last.Region.Begin);
 			var resolver = context.GetResolverStateAfter(node);
 			var builder = new TypeSystemAstBuilder(resolver);
+			var delegateDecl = builder.ConvertEntity(eventDefinition.ReturnType.GetDefinition()) as DelegateDeclaration;
+			if (delegateDecl == null) return;
+			var decl = new MethodDeclaration() {
+				ReturnType = delegateDecl.ReturnType.Clone(),
+				Name = name,
+				Body = new BlockStatement() {
+					new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
+				}
+			};
+			var param = delegateDecl.Parameters.Select(p => p.Clone()).OfType<ParameterDeclaration>().ToArray();
+			decl.Parameters.AddRange(param);
 			
-			#warning implement code generation!
-			string eventHandler = "<generated code>";
-			
-			editor.Document.Insert(editor.Document.GetOffset(target.Region.End), eventHandler);
+			using (Script script = context.StartScript()) {
+				// FIXME : will not work properly if there are no members.
+				if (last == match) {
+					throw new NotImplementedException();
+					// TODO InsertWithCursor not implemented!
+					//script.InsertWithCursor("Insert event handler", Script.InsertPosition.End, decl).RunSynchronously();
+				} else {
+					script.InsertAfter(node, decl);
+				}
+			}
 		}
-
-		string PrintAst(AstNode node)
+		
+		void AddAttribute(DomRegion region, IAttribute attribute, string target = "")
 		{
-			StringBuilder sb = new StringBuilder();
-			CSharpOutputVisitor visitor = new CSharpOutputVisitor(new StringWriter(sb), FormattingOptionsFactory.CreateSharpDevelop());
-			node.AcceptVisitor(visitor);
-			return sb.ToString();
+			var view = SD.FileService.OpenFile(new FileName(region.FileName), false);
+			var editor = view.GetRequiredService<ITextEditor>();
+			var context = SDRefactoringContext.Create(editor.FileName, editor.Document, region.Begin, CancellationToken.None);
+			var node = context.RootNode.GetNodeAt<AstNode>(region.Begin);
+			if (node is ICSharpCode.NRefactory.CSharp.Attribute) node = node.Parent;
+			var resolver = context.GetResolverStateBefore(node);
+			var builder = new TypeSystemAstBuilder(resolver);
+			
+			using (Script script = context.StartScript()) {
+				var attr = new AttributeSection();
+				attr.AttributeTarget = target;
+				attr.Attributes.Add(builder.ConvertAttribute(attribute));
+				script.InsertBefore(node, attr);
+			}
 		}
 	}
 }

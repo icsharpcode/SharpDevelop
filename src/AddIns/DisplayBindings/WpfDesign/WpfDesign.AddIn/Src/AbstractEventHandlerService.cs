@@ -44,7 +44,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			if (xamlContext != null) {
 				string className = xamlContext.ClassName;
 				if (!string.IsNullOrEmpty(className)) {
-					return compilation.FindType(Type.GetType(className));
+					return compilation.FindType(new FullTypeName(className));
 				}
 			}
 			return null;

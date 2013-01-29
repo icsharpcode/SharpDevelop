@@ -47,7 +47,7 @@ namespace CSharpBinding.Refactoring
 				// create dummy refactoring context
 				resolver = new CSharpAstResolver(compilation, new SyntaxTree());
 			}
-			var context = new SDRefactoringContext(textSource, resolver, new TextLocation(0, 0), 0, 0, cancellationToken);
+			var context = new SDRefactoringContext(textSource, resolver, location, 0, 0, cancellationToken);
 			return context;
 		}
 		

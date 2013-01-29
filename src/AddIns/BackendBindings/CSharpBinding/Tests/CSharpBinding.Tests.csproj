@@ -69,6 +69,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CSharpCodeGeneratorTests.cs" />
     <Compile Include="CSharpFormattingTests.cs" />
     <Compile Include="RegistrationTests.cs" />
     <Compile Include="MockTextEditor.cs" />
