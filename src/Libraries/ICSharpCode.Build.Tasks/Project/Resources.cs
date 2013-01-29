@@ -36,7 +36,11 @@ namespace ICSharpCode.Build.Tasks
 			}
 			if (resourceService != null) {
 				const BindingFlags flags = BindingFlags.InvokeMethod | BindingFlags.Public | BindingFlags.Static;
-				return (string)resourceService.InvokeMember("Parse", flags, null, null, new object[] { key });
+				string translation = (string)resourceService.InvokeMember("Parse", flags, null, null, new object[] { key });
+				if (translation != null && translation.StartsWith("${res")) {
+					return null;
+				}
+				return translation;
 			} else {
 				return null;
 			}
