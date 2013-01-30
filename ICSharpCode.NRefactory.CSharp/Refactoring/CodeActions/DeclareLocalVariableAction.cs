@@ -142,7 +142,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 
 				
-		class SearchNodeVisitior : DepthFirstAstVisitor
+		internal class SearchNodeVisitior : DepthFirstAstVisitor
 		{
 			readonly AstNode searchForNode;
 			public readonly List<AstNode> Matches = new List<AstNode> ();
