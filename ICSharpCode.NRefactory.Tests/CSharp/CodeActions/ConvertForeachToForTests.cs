@@ -113,5 +113,36 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"}"
 			);
 		}
+
+		/// <summary>
+		/// Bug 9876 - Convert to for loop created invalid code if iteration variable is called i
+		/// </summary>
+		[Test]
+		public void TestBug9876 ()
+		{
+			Test<ConvertForeachToForAction> (@"class TestClass
+{
+	void TestMethod ()
+	{
+		$foreach (var i in new[] { 1, 2, 3 }) {
+			Console.WriteLine (i);
+		}
+	}
+}", @"class TestClass
+{
+	void TestMethod ()
+	{
+		var list = new[] {
+			1,
+			2,
+			3
+		};
+		for (int j = 0; j < list.Length; j++) {
+			var i = list [j];
+			Console.WriteLine (i);
+		}
+	}
+}");
+		}
 	}
 }
