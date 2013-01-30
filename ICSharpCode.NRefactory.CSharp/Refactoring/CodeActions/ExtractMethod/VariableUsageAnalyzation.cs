@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 {
@@ -40,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 	
 	public class VariableUsageAnalyzation : DepthFirstAstVisitor
 	{
-//		readonly RefactoringContext context;
+		readonly RefactoringContext context;
 		readonly List<IVariable> usedVariables;
 		
 		Dictionary<IVariable, VariableState> states = new Dictionary<IVariable, VariableState> ();
@@ -50,7 +51,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 		
 		public VariableUsageAnalyzation (RefactoringContext context, List<IVariable> usedVariables)
 		{
-//			this.context = context;
+			this.context = context;
 			this.usedVariables = usedVariables;
 		}
 
@@ -95,7 +96,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 		public override void VisitIdentifierExpression(IdentifierExpression identifierExpression)
 		{
 			if (startLocation.IsEmpty || startLocation <= identifierExpression.StartLocation && identifierExpression.EndLocation <= endLocation) {
-				SetState (identifierExpression.Identifier, VariableState.Used);
+				var result = context.Resolve(identifierExpression) as LocalResolveResult;
+				if (result != null && usedVariables.Contains (result.Variable))
+					SetState (identifierExpression.Identifier, VariableState.Used);
 			}
 		}
 		
@@ -103,8 +106,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 		{
 			if (startLocation.IsEmpty || startLocation <= assignmentExpression.StartLocation && assignmentExpression.EndLocation <= endLocation) {
 				var left = assignmentExpression.Left as IdentifierExpression;
-				if (left != null)
-					SetState(left.Identifier, VariableState.Changed);
+				if (left != null) {
+					var result = context.Resolve(left) as LocalResolveResult;
+					if (result != null && usedVariables.Contains (result.Variable))
+						SetState(left.Identifier, VariableState.Changed);
+				}
 			}
 			base.VisitAssignmentExpression (assignmentExpression);
 		}
@@ -113,8 +119,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 		{
 			if (startLocation.IsEmpty || startLocation <= directionExpression.StartLocation && directionExpression.EndLocation <= endLocation) {
 				var expr = directionExpression.Expression as IdentifierExpression;
-				if (expr != null)
-					SetState(expr.Identifier, VariableState.Changed);
+				if (expr != null) {
+					var result = context.Resolve(expr) as LocalResolveResult;
+					if (result != null && usedVariables.Contains (result.Variable))
+						SetState(expr.Identifier, VariableState.Changed);
+				}
 			}
 			base.VisitDirectionExpression (directionExpression);
 		}
@@ -122,7 +131,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 		public override void VisitVariableInitializer(VariableInitializer variableInitializer)
 		{
 			if (startLocation.IsEmpty || startLocation <= variableInitializer.StartLocation && variableInitializer.EndLocation <= endLocation) {
-				SetState(variableInitializer.Name, variableInitializer.Initializer.IsNull ?  VariableState.None : VariableState.Changed);
+				var result = context.Resolve(variableInitializer) as LocalResolveResult;
+				if (result != null && usedVariables.Contains (result.Variable)) {
+					SetState(variableInitializer.Name, variableInitializer.Initializer.IsNull ?  VariableState.None : VariableState.Changed);
+				}
 			}
 
 			base.VisitVariableInitializer(variableInitializer);
@@ -134,8 +146,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 				if (unaryOperatorExpression.Operator == UnaryOperatorType.Increment || unaryOperatorExpression.Operator == UnaryOperatorType.Decrement ||
 					unaryOperatorExpression.Operator == UnaryOperatorType.PostIncrement || unaryOperatorExpression.Operator == UnaryOperatorType.PostDecrement) {
 					var expr = unaryOperatorExpression.Expression as IdentifierExpression;
-					if (expr != null)
-						SetState(expr.Identifier, VariableState.Changed);
+					if (expr != null) {
+						var result = context.Resolve(expr) as LocalResolveResult;
+						if (result != null && usedVariables.Contains (result.Variable))
+							SetState(expr.Identifier, VariableState.Changed);
+					}
 				}
 			}
 			base.VisitUnaryOperatorExpression (unaryOperatorExpression);

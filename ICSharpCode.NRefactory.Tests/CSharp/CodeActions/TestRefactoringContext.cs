@@ -262,6 +262,10 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			var parser = new CSharpParser();
 			var unit = parser.Parse(content, "program.cs");
 			if (!expectErrors) {
+				if (parser.HasErrors) {
+					Console.WriteLine (content);
+					Console.WriteLine ("----");
+				}
 				foreach (var error in parser.Errors) {
 					Console.WriteLine(error.Message);
 				}
