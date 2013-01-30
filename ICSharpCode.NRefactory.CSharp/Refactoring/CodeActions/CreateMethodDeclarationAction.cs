@@ -291,14 +291,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				} else {
 					return char.ToLower(type.Name [0]).ToString();
 				}
+			} else if (node is ArrayCreateExpression) {
+				name = "arr";
 			} else {
 				if (type.Kind == TypeKind.Unknown)
 					return "par";
 				name = GuessNameFromType(type);
 			}
-
-			name = char.ToLower(name [0]) + name.Substring(1);
-			return name;
+			var sb = new StringBuilder ();
+			sb.Append (char.ToLower(name [0]));
+			for (int i = 1; i < name.Length; i++) {
+				var ch = name[i];
+				if (char.IsLetterOrDigit (ch) || ch == '_')
+					sb.Append (ch);
+			}
+			return sb.ToString ();
 		}
 
 		static string GuessNameFromType(IType returnType)

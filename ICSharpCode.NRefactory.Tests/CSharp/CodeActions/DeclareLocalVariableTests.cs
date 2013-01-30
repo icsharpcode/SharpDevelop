@@ -265,5 +265,38 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 ", 1);
 		}
 
+
+		/// <summary>
+		/// Bug 9873 - Declare local creates invalid code for implicitly typed array 
+		/// </summary>
+		[Test()]
+		public void TestBug9873 ()
+		{
+			TestRefactoringContext.UseExplict = true;
+			Test<DeclareLocalVariableAction> (@"class TestClass
+{
+	void DoStuff() 
+	{
+	    foreach (var i in <-new[] { 1, 2, 3 }->) {
+	        Console.WriteLine (i);
+	    }
+	}
+}", 
+			                                  @"class TestClass
+{
+	void DoStuff() 
+	{
+		int[] arr = new[] {
+			1,
+			2,
+			3
+		};
+		foreach (var i in arr) {
+			Console.WriteLine (i);
+		}
+	}
+}");
+		}
+
 	}
 }
