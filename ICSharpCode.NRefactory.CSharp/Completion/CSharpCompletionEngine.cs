@@ -295,17 +295,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						// case 3)
 						return contextList.Result;
 					}
-					
 					var lookup = new MemberLookup(ctx.CurrentTypeDefinition, Compilation.MainAssembly);
-					bool isProtectedAllowed = ctx.CurrentTypeDefinition != null ? 
-						ctx.CurrentTypeDefinition.IsDerivedFrom(initializerResult.Item1.Type.GetDefinition()) : 
+					var initializerType = initializerResult.Item1.Type;
+					bool isProtectedAllowed = ctx.CurrentTypeDefinition != null && initializerType.GetDefinition() != null ? 
+						ctx.CurrentTypeDefinition.IsDerivedFrom(initializerType.GetDefinition()) : 
 							false;
 
-					foreach (var m in initializerResult.Item1.Type.GetMembers (m => m.EntityType == EntityType.Field)) {
+					foreach (var m in initializerType.GetMembers (m => m.EntityType == EntityType.Field)) {
 						if (lookup.IsAccessible (m, isProtectedAllowed))
 							contextList.AddMember(m);
 					}
-					foreach (IProperty m in initializerResult.Item1.Type.GetMembers (m => m.EntityType == EntityType.Property)) {
+					foreach (IProperty m in initializerType.GetMembers (m => m.EntityType == EntityType.Property)) {
 						if (m.CanSet && lookup.IsAccessible (m.Setter, isProtectedAllowed))
 							contextList.AddMember(m);
 					}
@@ -319,8 +319,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					
 					// check if the object is a list, if not only provide object initalizers
 					var list = typeof(System.Collections.IList).ToTypeReference().Resolve(Compilation);
-					if (initializerResult.Item1.Type.Kind != TypeKind.Array && list != null) {
-						var def = initializerResult.Item1.Type.GetDefinition(); 
+					if (initializerType.Kind != TypeKind.Array && list != null) {
+						var def = initializerType.GetDefinition(); 
 						if (def != null && !def.IsDerivedFrom(list.GetDefinition()))
 							return contextList.Result;
 					}

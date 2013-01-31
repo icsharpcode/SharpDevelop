@@ -645,6 +645,42 @@ class C : S
 			Assert.IsNotNull(provider.Find("Bar"), "'Bar' not found.");
 		}
 
+
+		/// <summary>
+		/// Bug 9910 - Completion not working in object initializer
+		/// </summary>
+		[Ignore("FIX ME !")]
+		[Test]
+		public void TestBug9910()
+		{
+			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider(
+				@"class Test 
+{
+    Test(int i) { }
+    Test(char c) { }
+
+    static Test foo(dynamic d)
+    {
+        return new Test(d) {
+            $f$
+        };
+    }
+
+    public static void Main(string [] args)
+    {
+    }
+
+    int fld;
+    int fld2;
+}
+
+");
+			Assert.IsNotNull(provider.Find("fld"), "'fld' found.");
+			Assert.IsNotNull(provider.Find("fld2"), "'fld2' not found.");
+		}
+
+
+
 	}
 
 }
