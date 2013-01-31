@@ -4,6 +4,7 @@
 using System;
 using System.Windows;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement
@@ -34,7 +35,7 @@ namespace ICSharpCode.PackageManagement
 		protected virtual IManagePackagesView CreateManagePackagesView()
 		{
 			return new ManagePackagesView() {
-				Owner = WorkbenchSingleton.MainWindow
+				Owner = SD.Workbench.MainWindow
 			};
 		}
 	}

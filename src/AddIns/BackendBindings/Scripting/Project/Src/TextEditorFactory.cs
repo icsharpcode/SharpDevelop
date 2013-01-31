@@ -5,6 +5,7 @@ using System;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.Scripting
@@ -14,7 +15,7 @@ namespace ICSharpCode.Scripting
 		public static TextEditor CreateTextEditor()
 		{
 			object control;
-			EditorControlService.CreateEditor(out control);
+			SD.EditorControlService.CreateEditor(out control);
 			var textEditor = (TextEditor)control;
 			
 			textEditor.Options = new TextEditorOptions();

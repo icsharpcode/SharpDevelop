@@ -19,7 +19,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		}
 		
 		TestableThreadSafeScriptingConsole(IScriptingConsole nonThreadSafeScriptingConsole,
-			ThreadSafeScriptingConsoleEvents consoleEvents,		                                   
+			ThreadSafeScriptingConsoleEvents consoleEvents,
 			IControlDispatcher dispatcher)
 			: base(nonThreadSafeScriptingConsole, consoleEvents, dispatcher)
 		{

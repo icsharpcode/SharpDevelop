@@ -33,7 +33,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public PackageManagementOptions()
-			: this(PropertyService.Get("PackageManagementSettings", new Properties()))
+			: this(PropertyService.NestedProperties("PackageManagementSettings"))
 		{
 		}
 		

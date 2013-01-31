@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Commands;
@@ -32,12 +32,20 @@ namespace ICSharpCode.PackageManagement
 		
 		public void RefreshProjectBrowser()
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				WorkbenchSingleton.SafeThreadAsyncCall(RefreshProjectBrowser);
-			} else {
+			SD.MainThread.InvokeIfRequired(() => {
 				var refreshCommand = new RefreshProjectBrowser();
 				refreshCommand.Run();
-			}
+			});
+		}
+		
+		void InvokeIfRequired(Action action)
+		{
+			SD.MainThread.InvokeIfRequired(action);
+		}
+		
+		T InvokeIfRequired<T>(Func<T> callback)
+		{
+			return SD.MainThread.InvokeIfRequired(callback);
 		}
 		
 		public IEnumerable<IProject> GetOpenProjects()
@@ -51,48 +59,28 @@ namespace ICSharpCode.PackageManagement
 		
 		public void AddProjectItem(IProject project, ProjectItem item)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				Action<IProject, ProjectItem> action = AddProjectItem;
-				WorkbenchSingleton.SafeThreadCall<IProject, ProjectItem>(action, project, item);
-			} else {
-				ProjectService.AddProjectItem(project, item);
-			}
+			InvokeIfRequired(() => ProjectService.AddProjectItem(project, item));
 		}
 		
 		public void RemoveProjectItem(IProject project, ProjectItem item)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				Action<IProject, ProjectItem> action = RemoveProjectItem;
-				WorkbenchSingleton.SafeThreadCall<IProject, ProjectItem>(action, project, item);
-			} else {
-				ProjectService.RemoveProjectItem(project, item);
-			}
+			InvokeIfRequired(() => ProjectService.RemoveProjectItem(project, item));
 		}
 		
 		public void Save(IProject project)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				Action<IProject> action = Save;
-				WorkbenchSingleton.SafeThreadCall<IProject>(action, project);
-			} else {
-				project.Save();
-			}
+			InvokeIfRequired(() => project.Save());
 		}
 		
 		public void Save(Solution solution)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				Action<Solution> action = Save;
-				WorkbenchSingleton.SafeThreadCall<Solution>(action, solution);
-			} else {
-				solution.Save();
-			}
+			InvokeIfRequired(() => solution.Save());
 		}
 		
-		public IProjectContent GetProjectContent(IProject project)
-		{
-			return ParserService.GetProjectContent(project);
-		}
+//		public IProjectContent GetProjectContent(IProject project)
+//		{
+//			return SD.ParserService.GetProjectContent(project);
+//		}
 		
 		public event ProjectEventHandler ProjectAdded {
 			add { ProjectService.ProjectAdded += value; }

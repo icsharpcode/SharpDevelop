@@ -1523,7 +1523,7 @@
 									<Component Guid="A105D4E4-2AF4-43BE-AA71-15F14DA4163B" Id="ITextSharpDll" DiskId="1">
 										<File Source="..\..\AddIns\Misc\SharpDevelopReports\itextsharp.dll" Name="itextsharp.dll" Id="itextsharp.dll" KeyPath="yes" />
 									</Component>
-								</Directory>
+								</Directory>-->
 								<Directory Id="PackageManagement" Name="PackageManagement">
 									<Component Id="NuGetCoreDll" Guid="AA347D26-712F-4BF7-BB74-517F6BFC563F" DiskId="1">
 										<File Id="NuGet.Core.dll" Name="NuGet.Core.dll" Source="..\..\AddIns\Misc\PackageManagement\NuGet.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="NuGet.Core.dll" AssemblyManifest="NuGet.Core.dll" />
@@ -1537,7 +1537,7 @@
 									<Component Id="PackageManagementDll" Guid="24C9BEEB-0B51-42F9-A3FA-C4830B28BABD" DiskId="1">
 										<File Id="PackageManagement.dll" Name="PackageManagement.dll" Source="..\..\AddIns\Misc\PackageManagement\PackageManagement.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="PackageManagement.dll" AssemblyManifest="PackageManagement.dll" />
 									</Component>
-									<Component Id="AboutNuGetCmdletsHelpTxt" Guid="9A761C90-C10B-4E69-A0C3-6E417CBBAE94" DiskId="1">
+									<!--<Component Id="AboutNuGetCmdletsHelpTxt" Guid="9A761C90-C10B-4E69-A0C3-6E417CBBAE94" DiskId="1">
 										<File Id="about_NuGet.Cmdlets.help.txt" Name="about_NuGet.Cmdlets.help.txt" Source="..\..\AddIns\Misc\PackageManagement\about_NuGet.Cmdlets.help.txt" KeyPath="yes" />
 									</Component>
 									<Component Id="PackageManagementCmdletsDll" Guid="BAFE4038-7ADC-4E67-A73E-BA335860168E" DiskId="1">
@@ -1559,8 +1559,8 @@
 									</Component>
 									<Component Id="PackageManagementICSharpCodeSharpDevelopDomDll" Guid="70460742-D237-4742-B563-7127376C56CB" DiskId="1">
 										<File Id="PackageManagement.ICSharpCode.SharpDevelop.Dom.dll" Name="ICSharpCode.SharpDevelop.Dom.dll" Source="..\..\AddIns\Misc\PackageManagement\ICSharpCode.SharpDevelop.Dom.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="PackageManagement.ICSharpCode.SharpDevelop.Dom.dll" AssemblyManifest="PackageManagement.ICSharpCode.SharpDevelop.Dom.dll" />
-									</Component>
-								</Directory>-->
+									</Component>-->
+								</Directory>
 								<Directory Id="TextTemplating" Name="TextTemplating">
 									<Component Id="MonoTextTemplatingDll" Guid="07BFBED7-FC7B-4CF3-BD00-DCA8E8E7C17B" DiskId="1">
 										<File Id="Mono.TextTemplating.dll" Name="Mono.TextTemplating.dll" Source="..\..\AddIns\Misc\TextTemplating\Mono.TextTemplating.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Mono.TextTemplating.dll" AssemblyManifest="Mono.TextTemplating.dll" />

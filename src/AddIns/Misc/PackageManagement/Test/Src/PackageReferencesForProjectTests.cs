@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
@@ -71,7 +72,7 @@ namespace PackageManagement.Tests
 		public void InstallPackages_OnePackageReferenceInPackageConfigFile_OpensPackageConfigFileInProjectDirectory()
 		{
 			TestableProject project = CreateProject();
-			project.FileName = @"d:\projects\myproject\myproject.csproj";
+			project.FileName = new FileName(@"d:\projects\myproject\myproject.csproj");
 			CreatePackageReferencesForProject(project);
 			AddPackageReference("PackageId", "1.0.3.2");
 			

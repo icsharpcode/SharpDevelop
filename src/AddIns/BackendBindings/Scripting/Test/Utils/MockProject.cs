@@ -3,13 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
-using UnitTesting.Tests.Utils;
 
 namespace ICSharpCode.Scripting.Tests.Utils
 {
@@ -23,50 +20,63 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		{
 		}
 		
-		#region IProject
-		public event EventHandler DirtyChanged;
-		
-		protected virtual void OnDirtyChanged(EventArgs e)
-		{
-			if (DirtyChanged != null) {
-				DirtyChanged(this, e);
-			}
-		}
-		
-		public ReadOnlyCollection<ProjectItem> Items {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
 		public bool ReadOnly {
 			get { return false; }
 		}
 		
-		public ICollection<ItemType> AvailableFileItemTypes {
+		public string Directory {
+			get { return directory; }
+			set { directory = value; }
+		}
+		
+		public string RootNamespace {
+			get { return rootNamespace; }
+			set { rootNamespace = value; }
+		}
+		
+		string language = String.Empty;
+		
+		public string Language {
+			get {
+				return language;
+			}
+			set {
+				language = value;
+			}
+		}
+		
+		public event EventHandler ActiveConfigurationChanged { add {} remove {} }
+		public event EventHandler ActivePlatformChanged { add {} remove {} }
+		
+		public object SyncRoot {
+			get { return syncRoot; }
+		}
+		
+		public Solution ParentSolution {
+			get { return new Solution(new MockProjectChangeWatcher()); }
+		}
+		
+		public event EventHandler<ICSharpCode.SharpDevelop.Parser.ParseInformationEventArgs> ParseInformationUpdated { add {} remove {} }
+		
+		public IReadOnlyCollection<ProjectItem> Items {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public System.Collections.Generic.List<ProjectSection> ProjectSections {
+		public IReadOnlyCollection<ItemType> AvailableFileItemTypes {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
+		public List<ProjectSection> ProjectSections {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public ICSharpCode.SharpDevelop.Dom.IAmbience GetAmbience()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public string FileName {
+		public FileName FileName {
 			get {
 				throw new NotImplementedException();
 			}
@@ -75,9 +85,13 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			}
 		}
 		
-		public string Directory {
-			get { return directory; }
-			set { directory = value; }
+		public string Name {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
 		}
 		
 		public string AssemblyName {
@@ -89,25 +103,9 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			}
 		}
 		
-		public string RootNamespace {
-			get { return rootNamespace; }
-			set { rootNamespace = value; }
-		}
-		
 		public string OutputAssemblyFullPath {
 			get {
 				throw new NotImplementedException();
-			}
-		}
-		
-		string language = String.Empty;
-		
-		public string Language {
-			get {
-				return language;
-			}
-			set {
-				language = value;
 			}
 		}
 		
@@ -135,17 +133,13 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			}
 		}
 		
-		public event EventHandler ActiveConfigurationChanged { add {} remove {} }
-		
-		public event EventHandler ActivePlatformChanged { add {} remove {} }
-		
-		public ICollection<string> ConfigurationNames {
+		public IReadOnlyCollection<string> ConfigurationNames {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public ICollection<string> PlatformNames {
+		public IReadOnlyCollection<string> PlatformNames {
 			get {
 				throw new NotImplementedException();
 			}
@@ -157,8 +151,34 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			}
 		}
 		
-		public object SyncRoot {
-			get { return syncRoot; }
+		public Properties ProjectSpecificProperties {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public int MinimumSolutionVersion {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public IProjectContent ProjectContent {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public ICSharpCode.SharpDevelop.Refactoring.ICodeGenerator CodeGenerator {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public ICSharpCode.SharpDevelop.Dom.ITypeDefinitionModelCollection TypeDefinitionModels {
+			get {
+				throw new NotImplementedException();
+			}
 		}
 		
 		public ISolutionFolderContainer Parent {
@@ -168,10 +188,6 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			set {
 				throw new NotImplementedException();
 			}
-		}
-		
-		public Solution ParentSolution {
-			get { return new Solution(new MockProjectChangeWatcher()); }
 		}
 		
 		public string TypeGuid {
@@ -197,27 +213,6 @@ namespace ICSharpCode.Scripting.Tests.Utils
 				throw new NotImplementedException();
 			}
 			set {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public string Name {
-			get { return String.Empty; }
-			set {
-			}
-		}
-		
-		public bool IsDirty {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public Properties ProjectSpecificProperties {
-			get {
 				throw new NotImplementedException();
 			}
 		}
@@ -252,53 +247,12 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public ParseProjectContent CreateProjectContent()
-		{
-			throw new NotImplementedException();
-		}
-		
 		public ProjectItem CreateProjectItem(IProjectItemBackendStore item)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public void Dispose()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public Properties CreateMemento()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void SetMemento(ICSharpCode.Core.Properties memento)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public int MinimumSolutionVersion {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public void ResolveAssemblyReferences()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public ICollection<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)
+		public IEnumerable<ReferenceProjectItem> ResolveAssemblyReferences(System.Threading.CancellationToken cancellationToken)
 		{
 			throw new NotImplementedException();
 		}
@@ -317,6 +271,70 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
-		#endregion
+		
+		public bool HasProjectType(Guid projectTypeGuid)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public string GetDefaultNamespace(string fileName)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public System.CodeDom.Compiler.CodeDomProvider CreateCodeDomProvider()
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void GenerateCodeFromCodeDom(System.CodeDom.CodeCompileUnit compileUnit, System.IO.TextWriter writer)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public IAmbience GetAmbience()
+		{
+			throw new NotImplementedException();
+		}
+		
+		public ICSharpCode.SharpDevelop.Refactoring.ISymbolSearch PrepareSymbolSearch(IEntity entity)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void OnParseInformationUpdated(ICSharpCode.SharpDevelop.Parser.ParseInformationEventArgs args)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public IEnumerable<IBuildable> GetBuildDependencies(ProjectBuildOptions buildOptions)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public System.Threading.Tasks.Task<bool> BuildAsync(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IProgressMonitor progressMonitor)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void Dispose()
+		{
+			throw new NotImplementedException();
+		}
+		
+		public Properties CreateMemento()
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void SetMemento(Properties memento)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
