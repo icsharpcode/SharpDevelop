@@ -302,6 +302,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							false;
 
 					foreach (var m in initializerType.GetMembers (m => m.EntityType == EntityType.Field)) {
+						var f = m as IField;
+						if (f != null && (f.IsReadOnly || f.IsConst))
+						    continue;
 						if (lookup.IsAccessible (m, isProtectedAllowed))
 							contextList.AddMember(m);
 					}
