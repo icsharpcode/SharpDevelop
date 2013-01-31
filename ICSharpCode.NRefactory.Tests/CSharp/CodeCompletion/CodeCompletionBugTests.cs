@@ -5925,5 +5925,27 @@ public class Testing
 				Assert.IsTrue(provider == null || provider.Count == 0);
 			});
 		}
+
+		/// <summary>
+		///Bug 9905 - Cannot type new() constraint 
+		/// </summary>
+		[Test]
+		public void TestBug9905 ()
+		{
+			
+			CombinedProviderTest(
+				@"using System; 
+
+public class Testing 
+{ 
+    public static void DoNothing<T>() where T : class$, n$
+	{
+	} 
+}
+
+", provider => {
+				Assert.IsNotNull(provider.Find("new()"));
+			});
+		}
 	}
 }

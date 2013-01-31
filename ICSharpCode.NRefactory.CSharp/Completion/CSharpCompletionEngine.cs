@@ -1547,6 +1547,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					wrapper.AddNamespace(lookup, curNs);
 				}
 			}
+
+			if (node is AstType && node.Parent is Constraint) {
+				wrapper.AddCustom ("new()");
+			}
 		}
 		
 		IEnumerable<ICompletionData> HandleKeywordCompletion(int wordStart, string word)
