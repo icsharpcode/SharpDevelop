@@ -2439,6 +2439,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return namespaceContents.Result;
 			}
 			IType type = resolveResult.Type;
+
+			if (type.Namespace == "System" && type.Name == "Void")
+				return null;
+
 			if (resolvedNode.Parent is PointerReferenceExpression && (type is PointerType)) {
 				resolveResult = new OperatorResolveResult (((PointerType)type).ElementType, System.Linq.Expressions.ExpressionType.Extension, resolveResult);
 			}

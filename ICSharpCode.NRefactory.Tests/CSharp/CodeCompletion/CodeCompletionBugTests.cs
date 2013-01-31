@@ -5900,5 +5900,30 @@ class MainClass
 				Assert.IsFalse(provider.AutoSelect);
 			});
 		}
+
+		/// <summary>
+		/// Bug 9896 - Wrong dot completion
+		/// </summary>
+		[Test]
+		public void TestBug9896 ()
+		{
+			
+			CombinedProviderTest(
+				@"using System; 
+
+public class Testing 
+{ 
+    public static void DoNothing() {} 
+
+    public static void Main() 
+    { 
+        $DoNothing ().$
+    } 
+}
+
+", provider => {
+				Assert.IsTrue(provider == null || provider.Count == 0);
+			});
+		}
 	}
 }
