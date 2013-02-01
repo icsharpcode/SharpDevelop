@@ -950,6 +950,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (member == null)
 				throw new InvalidOperationException();
 			
+			if (this.IsExtensionMethodInvocation)
+				((SpecializedMethod)member).IsExtendedExtensionMethod = true;
 			return new CSharpInvocationResolveResult(
 				this.IsExtensionMethodInvocation ? new TypeResolveResult(member.DeclaringType) : targetResolveResult,
 				member,
