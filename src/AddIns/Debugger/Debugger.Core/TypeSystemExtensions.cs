@@ -461,7 +461,7 @@ namespace Debugger
 		
 		public static ICorDebugFunction ToCorFunction(this IMethod method)
 		{
-			Module module = method.DeclaringType.GetDefinition().ParentAssembly.GetModule();
+			Module module = method.ParentAssembly.GetModule();
 			return module.CorModule.GetFunctionFromToken(method.GetMetadataToken());
 		}
 		

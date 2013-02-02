@@ -338,13 +338,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		public bool SetInstructionPointer(string filename, int line, int column, bool dryRun)
 		{
 			if (CurrentStackFrame != null) {
-				SourcecodeSegment seg = CurrentStackFrame.SetIP(filename, line, column, dryRun);
-				WindowsDebugger.RefreshPads();
-				JumpToCurrentLine();
-				return seg != null;
-			} else {
-				return false;
+				if (CurrentStackFrame.SetIP(filename, line, column, dryRun)) {
+					WindowsDebugger.RefreshPads();
+					JumpToCurrentLine();
+				}
 			}
+			return false;
 		}
 		
 		public void Dispose()
@@ -645,7 +644,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			// if (debuggedProcess.IsSelectedFrameForced()) {
 			if (CurrentStackFrame.HasSymbols) {			
-				SourcecodeSegment nextStatement = CurrentStackFrame.NextStatement;
+				SequencePoint nextStatement = CurrentStackFrame.NextStatement;
 				if (nextStatement != null) {
 					DebuggerService.RemoveCurrentLineMarker();
 					DebuggerService.JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);

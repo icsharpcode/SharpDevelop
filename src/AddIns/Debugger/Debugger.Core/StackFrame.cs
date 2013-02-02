@@ -5,11 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Debugger.Interop.CorSym;
-using Debugger.MetaData;
-using Debugger.Interop.CorDebug;
-using Debugger.Interop.MetaData;
 using ICSharpCode.NRefactory.TypeSystem;
+using Debugger.Interop.CorDebug;
+using Debugger.MetaData;
 
 namespace Debugger
 {
@@ -45,30 +43,14 @@ namespace Debugger
 		
 		internal ICorDebugFunction CorFunction { get; private set; }
 		
-		/// <summary> True if the stack frame has symbols defined.
-		/// (That is has accesss to the .pdb file) </summary>
+		/// <summary> True if the stack frame has symbols defined. </summary>
 		public bool HasSymbols {
 			get {
-				return GetSegmentForOffset(0) != null;
+				return PDBSymbolSource.HasSymbols(this.MethodInfo);
 			}
 		}
 		
-		internal ISymUnmanagedMethod SymMethod {
-			get {
-				if (this.Module.SymReader == null) {
-					return null;
-				}
-				try {
-					return this.Module.SymReader.GetMethod(this.CorFunction.GetToken());
-				} catch (COMException) {
-					// Can not find the method
-					// eg. Compiler generated constructors are not in symbol store
-					return null;
-				}
-			}
-		}
-		
-		/// <summary> Returns true is this incance can not be used any more. </summary>
+		/// <summary> Returns true if this instance can not be used any more. </summary>
 		public bool IsInvalid {
 			get {
 				try {
@@ -128,17 +110,6 @@ namespace Debugger
 			}
 		}
 		
-		public int[] ILRanges { get; set; }
-		
-		public int SourceCodeLine { get; set; }
-		
-		SourcecodeSegment GetSegmentForOffset(int offset)
-		{
-			if (SourceCodeLine != 0)
-				return SourcecodeSegment.ResolveForIL(this.Module, this.CorFunction, SourceCodeLine, offset, ILRanges);
-			return SourcecodeSegment.Resolve(this.Module, this.SymMethod, this.CorFunction, offset);
-		}
-		
 		/// <summary> Step into next instruction </summary>
 		public void StepInto()
 		{
@@ -182,19 +153,26 @@ namespace Debugger
 		
 		void AsyncStep(bool stepIn)
 		{
-			int[] stepRanges;
-			if (ILRanges == null) {
-				SourcecodeSegment nextSt = NextStatement;
-				if (nextSt == null) {
-					throw new DebuggerException("Unable to step. Next statement not aviable");
-				}
-				stepRanges = nextSt.StepRanges;
-			} else {
-				stepRanges = ILRanges;
+			List<ILRange> stepRanges = new List<ILRange>();
+			var seq = PDBSymbolSource.GetSequencePoint(this.MethodInfo, this.IP);
+			if (seq != null) {
+				stepRanges.AddRange(seq.ILRanges);
+				stepRanges.AddRange(PDBSymbolSource.GetIgnoredILRanges(this.MethodInfo));
 			}
 			
+			// Remove overlapping and connected ranges
+			List<int> fromToList = new List<int>();
+			foreach(var range in stepRanges.OrderBy(r => r.From)) {
+				if (fromToList.Count > 0 && range.From <= fromToList[fromToList.Count - 1]) {
+					fromToList[fromToList.Count - 1] = Math.Max(range.To, fromToList[fromToList.Count - 1]);
+				} else {
+					fromToList.Add(range.From);
+					fromToList.Add(range.To);
+				}
+			}
+
 			if (stepIn) {
-				Stepper stepInStepper = Stepper.StepIn(this, stepRanges, "normal");
+				Stepper stepInStepper = Stepper.StepIn(this, fromToList.ToArray(), "normal");
 				this.Thread.CurrentStepIn = stepInStepper;
 				Stepper clearCurrentStepIn = Stepper.StepOut(this, "clear current step in");
 				clearCurrentStepIn.StepComplete += delegate {
@@ -204,7 +182,7 @@ namespace Debugger
 				};
 				clearCurrentStepIn.Ignore = true;
 			} else {
-				Stepper.StepOver(this, stepRanges, "normal");
+				Stepper.StepOver(this, fromToList.ToArray(), "normal");
 			}
 			
 			this.Process.AsyncContinue(DebuggeeStateAction.Clear);
@@ -215,34 +193,33 @@ namespace Debugger
 		/// 
 		/// Returns null on error.
 		/// </summary>
-		public SourcecodeSegment NextStatement {
+		public SequencePoint NextStatement {
 			get {
-				return GetSegmentForOffset(IP);
+				return PDBSymbolSource.GetSequencePoint(this.MethodInfo, this.IP);
 			}
 		}
 		
-		public SourcecodeSegment SetIP(string filename, int line, int column, bool dryRun)
+		public bool SetIP(string filename, int line, int column, bool dryRun)
 		{
 			this.Process.AssertPaused();
 			
-			SourcecodeSegment segment = SourcecodeSegment.Resolve(this.Module, filename, line, column);
-			
-			if (segment != null && segment.CorFunction.GetToken() == this.MethodInfo.GetMetadataToken()) {
+			var seq = PDBSymbolSource.GetSequencePoint(this.Module, filename, line, column);
+			if (seq != null && seq.MethodDefToken == this.MethodInfo.GetMetadataToken()) {
 				try {
 					if (dryRun) {
-						CorILFrame.CanSetIP((uint)segment.ILStart);
+						CorILFrame.CanSetIP((uint)seq.ILOffset);
 					} else {
-						CorILFrame.SetIP((uint)segment.ILStart);
+						CorILFrame.SetIP((uint)seq.ILOffset);
 						// Invalidates all frames and chains for the current thread
 						this.Process.NotifyResumed(DebuggeeStateAction.Keep);
 						this.Process.NotifyPaused();
 					}
 				} catch {
-					return null;
+					return false;
 				}
-				return segment;
+				return true;
 			}
-			return null;
+			return false;
 		}
 		
 		/// <summary> Get instance of 'this'. </summary>
@@ -341,28 +318,24 @@ namespace Debugger
 		/// <summary> Get all local variables </summary>
 		public IEnumerable<LocalVariable> GetLocalVariables()
 		{
+			// Note that the user might load symbols later
 			if (localVariables == null) {
-				var symMethod = this.SymMethod;
-				// Note that the user might load symbols later
-				if (symMethod == null)
-					return new List<LocalVariable>();
-				
-				localVariables = LocalVariable.GetLocalVariables(this.MethodInfo, symMethod);
+				localVariables = LocalVariable.GetLocalVariables(this.MethodInfo);
 			}
-			return localVariables;
+			return localVariables ?? new List<LocalVariable>();
 		}
 		
 		/// <summary> Get local variables valid at the given IL offset </summary>
 		public IEnumerable<LocalVariable> GetLocalVariables(int offset)
 		{
-			return GetLocalVariables().Where(v => v.StartOffset <= offset && offset < v.EndOffset);
+			return GetLocalVariables().Where(v => v.ILRanges.Any(r => r.From <= offset && offset < r.To));
 		}
 		
 		/// <summary> Get local variable with given name which is valid at the current IP </summary>
 		/// <returns> Null if not found </returns>
 		public Value GetLocalVariableValue(string name)
 		{
-			var loc = GetLocalVariables(this.IP).Where(v => v.Name == name).FirstOrDefault();
+			var loc = GetLocalVariables(this.IP).FirstOrDefault(v => v.Name == name);
 			if (loc == null)
 				throw new GetValueException("Local variable \"{0}\" not found", name);
 			return loc.GetValue(this);
@@ -374,7 +347,7 @@ namespace Debugger
 				Options opt = this.Process.Options;
 				
 				if (opt.StepOverNoSymbols) {
-					if (this.SymMethod == null) return true;
+					if (!PDBSymbolSource.HasSymbols(this.MethodInfo)) return true;
 				}
 				if (opt.StepOverDebuggerAttributes) {
 					string[] debuggerAttributes = {

@@ -26,9 +26,11 @@ namespace Debugger.Tests {
 		{
 			StartTest();
 			
-			Assert.IsNotNull(this.CurrentStackFrame.SetIP("StackFrame_SetIP.cs", 12, 0, true));
-			Assert.IsNull(this.CurrentStackFrame.SetIP("StackFrame_SetIP.cs", 100, 0, true));
-			this.CurrentStackFrame.SetIP("StackFrame_SetIP.cs", 12, 0, false);
+			string filename = this.CurrentStackFrame.NextStatement.Filename;
+			
+			Assert.IsNotNull(this.CurrentStackFrame.SetIP(filename, 12, 0, true));
+			Assert.IsFalse(this.CurrentStackFrame.SetIP(filename, 100, 0, true));
+			this.CurrentStackFrame.SetIP(filename, 12, 0, false);
 			process.Continue();
 			Assert.AreEqual("1\r\n1\r\n", log);
 			
