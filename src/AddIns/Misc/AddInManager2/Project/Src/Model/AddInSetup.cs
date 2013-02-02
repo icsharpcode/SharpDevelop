@@ -107,6 +107,9 @@ namespace ICSharpCode.AddInManager2.Model
 				switch (Path.GetExtension(fileName).ToLowerInvariant())
 				{
 					case ".addin":
+						
+						SD.Log.DebugFormatted("[AddInManager2] Loading {0} as manifest.", fileName);
+						
 						if (FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, fileName))
 						{
 							// Don't allow to install AddIns from application root path
@@ -124,6 +127,9 @@ namespace ICSharpCode.AddInManager2.Model
 						
 					case ".sdaddin":
 					case ".zip":
+						
+						SD.Log.DebugFormatted("[AddInManager2] Trying to load {0} as local AddIn package.", fileName);
+						
 						// Try to load the *.sdaddin file as ZIP archive
 						ZipFile zipFile = null;
 						try
@@ -146,6 +152,7 @@ namespace ICSharpCode.AddInManager2.Model
 								zipFile.Close();
 							}
 						}
+						
 						break;
 						
 					default:
@@ -234,6 +241,8 @@ namespace ICSharpCode.AddInManager2.Model
 			var addInManifestFile = Directory.EnumerateFiles(packageDirectory, "*.addin", SearchOption.TopDirectoryOnly).FirstOrDefault();
 			if (addInManifestFile != null)
 			{
+				SD.Log.DebugFormatted("[AddInManager2] Installing AddIn from package {0} {1}", package.Id, package.Version.ToString());
+				
 				AddIn addIn = _sdAddInManagement.Load(addInManifestFile);
 				if (addIn.Manifest.PrimaryIdentity == null)
 				{
@@ -268,6 +277,8 @@ namespace ICSharpCode.AddInManager2.Model
 				if (foundAddIn != null)
 				{
 					addIn.Action = AddInAction.Update;
+					
+					SD.Log.DebugFormatted("[AddInManager2] Marked AddIn {0} for update.", addIn.Name);
 				}
 				else
 				{
@@ -389,6 +400,8 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			if ((addIn != null) && (addIn.Manifest != null))
 			{
+				SD.Log.DebugFormatted("[AddInManager2] Cancelling update for {0}", addIn.Name);
+				
 				foreach (string identity in addIn.Manifest.Identities.Keys)
 				{
 					// Delete from installation temp (if installation or update is pending)
@@ -407,6 +420,8 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			if (addIn != null)
 			{
+				SD.Log.DebugFormatted("[AddInManager2] Cancelling installation of {0}", addIn.Name);
+				
 				_addInsMarkedForInstall.RemoveAll(markedAddIn => markedAddIn.AddIn == addIn);
 				UninstallAddIn(addIn);
 				
@@ -423,6 +438,8 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			if ((addIn != null) && (addIn.Manifest != null))
 			{
+				SD.Log.DebugFormatted("[AddInManager2] Cancelling uninstallation of {0}", addIn.Name);
+				
 				// Abort uninstallation of this AddIn
 				foreach (string identity in addIn.Manifest.Identities.Keys)
 				{
@@ -437,6 +454,8 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			if ((addIn != null) && (addIn.Manifest.PrimaryIdentity != null))
 			{
+				SD.Log.DebugFormatted("[AddInManager2] Uninstalling AddIn {0}", addIn.Name);
+				
 				List<AddIn> addInList = new List<AddIn>();
 				addInList.Add(addIn);
 				_sdAddInManagement.RemoveExternalAddIns(addInList);
@@ -680,7 +699,7 @@ namespace ICSharpCode.AddInManager2.Model
 					if (removeThisPackage)
 					{
 						// We decided to remove this package
-						LoggingService.InfoFormatted("Removing unreferenced NuGet package {0} {1}.",
+						SD.Log.InfoFormatted("[AddInManager2] Removing unreferenced NuGet package {0} {1}.",
 						                             installedPackage.Id, installedPackage.Version.ToString());
 						_nuGet.Packages.UninstallPackage(installedPackage, true, false);
 					}

@@ -46,32 +46,50 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			if (addIn != null)
 			{
+				SD.Log.DebugFormatted(
+					"[AddInManager2.SD] Added {0} AddIn {1} to tree.", ((addIn.Action == AddInAction.Update) ? "updated" : "new"), addIn.Name);
+				
 				((AddInTreeImpl)SD.AddInTree).InsertAddIn(addIn);
 			}
 		}
 		
 		public void AbortRemoveUserAddInOnNextStart(string identity)
 		{
+			SD.Log.DebugFormatted(
+				"[AddInManager2.SD] Aborting removal of AddIn {0}", identity);
+			
 			ICSharpCode.Core.AddInManager.AbortRemoveUserAddInOnNextStart(identity);
 		}
 		
 		public void Enable(IList<AddIn> addIns)
 		{
+			SD.Log.DebugFormatted(
+				"[AddInManager2.SD] Enabling AddIn {0}", addIns[0].Name);
+			
 			ICSharpCode.Core.AddInManager.Enable(addIns);
 		}
 		
 		public void Disable(IList<AddIn> addIns)
 		{
+			SD.Log.DebugFormatted(
+				"[AddInManager2.SD] Disabling AddIn {0}", addIns[0].Name);
+			
 			ICSharpCode.Core.AddInManager.Disable(addIns);
 		}
 		
 		public void RemoveExternalAddIns(IList<AddIn> addIns)
 		{
+			SD.Log.DebugFormatted(
+				"[AddInManager2.SD] Removing external AddIn {0}", addIns[0]);
+			
 			ICSharpCode.Core.AddInManager.RemoveExternalAddIns(addIns);
 		}
 		
 		public void RemoveUserAddInOnNextStart(string identity)
 		{
+			SD.Log.DebugFormatted(
+				"[AddInManager2.SD] Marking AddIn {0} for removal", identity);
+			
 			ICSharpCode.Core.AddInManager.RemoveUserAddInOnNextStart(identity);
 		}
 		
@@ -82,11 +100,17 @@ namespace ICSharpCode.AddInManager2.Model
 		
 		public AddIn Load(string fileName)
 		{
+			SD.Log.DebugFormatted(
+				"[AddInManager2.SD] Loading manifest from '{0}'", fileName);
+			
 			return AddIn.Load(SD.AddInTree, fileName);
 		}
 		
 		public void AddExternalAddIns(IList<AddIn> addIns)
 		{
+			SD.Log.DebugFormatted(
+				"[AddInManager2.SD] Adding external AddIn {0}", addIns[0].Name);
+			
 			ICSharpCode.Core.AddInManager.AddExternalAddIns(addIns);
 		}
 	}

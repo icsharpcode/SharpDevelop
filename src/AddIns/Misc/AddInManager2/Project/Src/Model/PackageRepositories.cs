@@ -99,7 +99,7 @@ namespace ICSharpCode.AddInManager2.Model
 							}
 							catch (Exception)
 							{
-								SD.Log.WarnFormatted("URL '{0}' can't be used as valid package source.", splittedEntry[1]);
+								SD.Log.WarnFormatted("[AddInManager2] URL '{0}' can't be used as valid package source.", splittedEntry[1]);
 							}
 						}
 					}

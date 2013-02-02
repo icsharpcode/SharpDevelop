@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop;
 using NuGet;
 
 namespace ICSharpCode.AddInManager2.Model
@@ -17,6 +18,7 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			if (OperationStarted != null)
 			{
+				SD.Log.DebugFormatted("[AddInManager2.Events] Operation started.");
 				OperationStarted(this, new EventArgs());
 			}
 		}
@@ -25,6 +27,7 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			if (OperationStarted != null)
 			{
+				SD.Log.DebugFormatted("[AddInManager2.Events] Operation started.");
 				OperationStarted(this, e);
 			}
 		}
@@ -35,6 +38,7 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			if (AddInInstalled != null)
 			{
+				SD.Log.DebugFormatted("[AddInManager2.Events] AddIn installed: {0}", e.AddIn.Name);
 				AddInInstalled(this, e);
 			}
 		}
@@ -45,6 +49,7 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			if (AddInUninstalled != null)
 			{
+				SD.Log.DebugFormatted("[AddInManager2.Events] AddIn uninstalled: {0}", e.AddIn.Name);
 				AddInUninstalled(this, e);
 			}
 		}
@@ -55,6 +60,7 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			if (AddInOperationError != null)
 			{
+				SD.Log.DebugFormatted("[AddInManager2.Events] Operation error: {0}", e.Message);
 				AddInOperationError(this, e);
 			}
 		}
@@ -65,6 +71,7 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			if (AddInPackageDownloaded != null)
 			{
+				SD.Log.DebugFormatted("[AddInManager2.Events] Package download finished: {0} {1}", e.Package.Id, e.Package.Version.ToString());
 				AddInPackageDownloaded(this, e);
 			}
 		}
@@ -75,6 +82,7 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			if (AddInPackageRemoved != null)
 			{
+				SD.Log.DebugFormatted("[AddInManager2.Events] Package removed: {0} {1}", e.Package.Id, e.Package.Version.ToString());
 				AddInPackageRemoved(this, e);
 			}
 		}
@@ -85,6 +93,7 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			if (AddInStateChanged != null)
 			{
+				SD.Log.DebugFormatted("[AddInManager2.Events] AddIn state changed: {0}", e.AddIn.Name);
 				AddInStateChanged(this, e);
 			}
 		}
@@ -105,6 +114,7 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			if (AcceptLicenses != null)
 			{
+				SD.Log.DebugFormatted("[AddInManager2.Events] Accept license.");
 				AcceptLicenses(this, e);
 			}
 		}
@@ -115,6 +125,7 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			if (PackageSourcesChanged != null)
 			{
+				SD.Log.DebugFormatted("[AddInManager2.Events] Package sources changed.");
 				PackageSourcesChanged(this, e);
 			}
 		}

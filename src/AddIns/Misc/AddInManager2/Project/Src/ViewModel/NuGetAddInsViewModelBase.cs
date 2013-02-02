@@ -53,7 +53,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			CancelReadPackagesTask();
 			CreateReadPackagesTask();
 			_task.Start();
-			SD.Log.Debug("NuGetAddInsViewModelBase: Started task");
+			SD.Log.Debug("[AddInManager2] NuGetAddInsViewModelBase: Started task");
 		}
 		
 		protected virtual void UpdateRepositoryBeforeReadPackagesTaskStarts()
@@ -64,7 +64,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		{
 			if (_task != null)
 			{
-				SD.Log.Debug("NuGetAddInsViewModelBase: Cancelled task");
+				SD.Log.Debug("[AddInManager2] NuGetAddInsViewModelBase: Cancelled task");
 				_task.Cancel();
 			}
 		}
@@ -74,7 +74,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			_task = AddInManagerTask.Create(
 				() => GetPackagesForSelectedPageResult(),
 				(result) => OnPackagesReadForSelectedPage(result));
-			SD.Log.Debug("NuGetAddInsViewModelBase: Created task");
+			SD.Log.Debug("[AddInManager2] NuGetAddInsViewModelBase: Created task");
 		}
 		
 		private ReadPackagesResult GetPackagesForSelectedPageResult()
@@ -85,7 +85,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		private void OnPackagesReadForSelectedPage(AddInManagerTask<ReadPackagesResult> task)
 		{
-			SD.Log.Debug("NuGetAddInsViewModelBase: Task has returned");
+			SD.Log.Debug("[AddInManager2] NuGetAddInsViewModelBase: Task has returned");
 			
 			IsReadingPackages = false;
 			if (task.IsFaulted)
@@ -95,7 +95,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			else if (task.IsCancelled)
 			{
 				// Ignore
-				SD.Log.Debug("NuGetAddInsViewModelBase: Task ignored, because cancelled");
+				SD.Log.Debug("[AddInManager2] NuGetAddInsViewModelBase: Task ignored, because cancelled");
 			}
 			else
 			{

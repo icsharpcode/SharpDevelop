@@ -235,6 +235,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			HasError = true;
 			ErrorMessage = GetErrorMessage(ex);
 			ICSharpCode.Core.LoggingService.Debug(ex);
+			
+			SD.Log.DebugFormatted("[AddInManager2] Showing error: {0}", ex.Message);
 		}
 		
 		protected string GetErrorMessage(AggregateException ex)
@@ -455,7 +457,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			}
 			set
 			{
-				SD.Log.Debug("AddInsViewModelBase: Changed package source");
+				SD.Log.Debug("[AddInManager2] AddInsViewModelBase: Changed package source");
 				
 				_activePackageSource = value;
 				_activePackageRepository = AddInManager.Repositories.GetRepositoryFromSource(_activePackageSource);
