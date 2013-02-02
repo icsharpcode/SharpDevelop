@@ -276,7 +276,7 @@ namespace Debugger
 					return GetArgumentValue(i);
 				}
 			}
-			return null;
+			throw new GetValueException("Argument \"{0}\" not found", name);
 		}
 		
 		/// <summary> Gets argument with a given index </summary>
