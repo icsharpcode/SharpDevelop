@@ -8,7 +8,8 @@
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
-	xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project">
+	xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project"
+>
 
 	<optionpanels:ProjectOptionPanel.Resources>
 		<optionpanels:StorageLocationConverter x:Key="locationConverter" />
