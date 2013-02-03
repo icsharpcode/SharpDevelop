@@ -3,41 +3,34 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
-using Debugger.Interop.CorDebug;
-using Debugger.Interop.CorSym;
-using Debugger.Interop.MetaData;
 using ICSharpCode.NRefactory.TypeSystem;
+using Debugger.Interop.CorDebug;
 
 namespace Debugger.MetaData
 {
 	public class LocalVariable
 	{
+		delegate Value Getter(StackFrame context);
+	
 		public IMethod Method { get; private set; }
 		/// <summary> Index of the local variable in method. -1 for captured variables </summary>
 		public int Index { get; private set; }
 		public IType Type { get; private set; }
-		public string Name { get; internal set; }
-		/// <summary> IL offset of the start of the variable scope (inclusive) </summary>
-		public int StartOffset { get; private set; }
-		/// <summary> IL offset of the end of the variable scope (exclusive) </summary>
-		public int EndOffset { get; private set; }
-		public bool IsThis { get; internal set; }
-		public bool IsCaptured { get; internal set; }
+		public string Name { get; private set; }
+		public ILRange[] ILRanges { get; private set; }
+		public bool IsThis { get; private set; }
+		public bool IsCaptured { get; private set; }
 		
-		ValueGetter getter { get; set; }
+		Getter getter { get; set; }
 		
-		public LocalVariable(IMethod method, int index, IType type, string name, int startOffset, int endOffset, ValueGetter getter)
+		LocalVariable(IMethod method, int index, IType type, string name, ILRange[] ilranges, Getter getter)
 		{
 			this.Method = method;
 			this.Index = index;
 			this.Type = type;
 			this.Name = name;
-			this.StartOffset = startOffset;
-			this.EndOffset = endOffset;
+			this.ILRanges = ilranges;
 			this.getter = getter;
 		}
 		
@@ -53,29 +46,47 @@ namespace Debugger.MetaData
 		
 		public override string ToString()
 		{
-			string msg = this.Type.Name + " " + this.Name;
-			if (IsCaptured)
-				msg += " (captured)";
-			return msg;
+			return this.Type.Name + " " + this.Name + (this.IsCaptured ? " (captured)" : "");
 		}
 		
-		public static List<LocalVariable> GetLocalVariables(IMethod method, ISymUnmanagedMethod symMethod)
+		public static List<LocalVariable> GetLocalVariables(IMethod method)
 		{
-			List<LocalVariable> localVariables;
+			if (!PDBSymbolSource.HasSymbols(method))
+				return null;
 			
-			// Generated constructor may not have any symbols
-			if (symMethod == null)
-				return new List<LocalVariable>();
+			List<LocalVariable> localVariables = new List<LocalVariable>();
 			
-			localVariables = GetLocalVariablesInScope(method, symMethod.GetRootScope());
+			foreach (ILLocalVariable ilvar in PDBSymbolSource.GetLocalVariables(method)) {
+				int index = ilvar.Index;
+				// NB: Display class does not have the compiler-generated flag
+				if (ilvar.IsCompilerGenerated || ilvar.Name.StartsWith("CS$")) {
+					// Get display class from local variable
+					AddCapturedLocalVariables(
+						localVariables,
+						method,
+						ilvar.ILRanges,
+						context => GetLocalVariableValue(context, index),
+						ilvar.Type
+					);
+				} else {
+					LocalVariable locVar = new LocalVariable(
+						method,
+						ilvar.Index,
+						ilvar.Type,
+						ilvar.Name,
+						ilvar.ILRanges,
+						context => GetLocalVariableValue(context, index)
+					);
+					localVariables.Add(locVar);
+				}
+			}
 			
 			if (method.DeclaringType.IsDisplayClass()) {
-				// Get display class from self
+				// Get display class from 'this'
 				AddCapturedLocalVariables(
 					localVariables,
 					method,
-					0,
-					int.MaxValue,
+					new [] { new ILRange(0, int.MaxValue) },
 					context => context.GetThisValue(false),
 					method.DeclaringType
 				);
@@ -85,8 +96,7 @@ namespace Debugger.MetaData
 					AddCapturedLocalVariables(
 						localVariables,
 						method,
-						0,
-						int.MaxValue,
+						new [] { new ILRange(0, int.MaxValue) },
 						// TODO: Use eval thread
 						context => context.GetThisValue(false).GetFieldValue(context.Thread, fieldInfoCopy),
 						fieldInfo.Type
@@ -100,18 +110,18 @@ namespace Debugger.MetaData
 						-1,
 						method.DeclaringType,
 						"this",
-						0,
-						int.MaxValue,
+						new [] { new ILRange(0, int.MaxValue) },
 						context => context.GetThisValue(false)
 					);
 					thisVar.IsThis = true;
 					localVariables.Add(thisVar);
 				}
 			}
+			
 			return localVariables;
 		}
 		
-		static void AddCapturedLocalVariables(List<LocalVariable> vars, IMethod method, int scopeStartOffset, int scopeEndOffset, ValueGetter getCaptureClass, IType captureClassType)
+		static void AddCapturedLocalVariables(List<LocalVariable> vars, IMethod method, ILRange[] ilranges, ValueGetter getCaptureClass, IType captureClassType)
 		{
 			if (captureClassType.IsDisplayClass()) {
 				foreach(IField fieldInfo in captureClassType.GetFields()) {
@@ -122,8 +132,7 @@ namespace Debugger.MetaData
 						-1,
 						fieldInfo.Type,
 						fieldInfo.Name,
-						scopeStartOffset,
-						scopeEndOffset,
+						ilranges,
 						// TODO: Use eval thread
 						context => getCaptureClass(context).GetFieldValue(context.Thread, fieldInfoCopy)
 					);
@@ -146,49 +155,11 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		static List<LocalVariable> GetLocalVariablesInScope(IMethod method, ISymUnmanagedScope symScope)
-		{
-			List<LocalVariable> vars = new List<LocalVariable>();
-			foreach (ISymUnmanagedVariable symVar in symScope.GetLocals()) {
-				uint address = (uint)symVar.GetAddressField1();
-				IType type = method.GetLocalVariableType((int)address);
-				// Compiler generated?
-				// NB: Display class does not have the compiler-generated flag
-				if ((symVar.GetAttributes() & 1) == 1 || symVar.GetName().StartsWith("CS$")) {
-					// Get display class from local variable
-					AddCapturedLocalVariables(
-						vars,
-						method,
-						(int)symScope.GetStartOffset(),
-						(int)symScope.GetEndOffset(),
-						context => GetLocalVariableValue(context, address),
-						type
-					);
-				} else {
-					LocalVariable locVar = new LocalVariable(
-						method,
-						(int)address,
-						type,
-						symVar.GetName(),
-						// symVar also has Get*Offset methods, but the are not implemented
-						(int)symScope.GetStartOffset(),
-						(int)symScope.GetEndOffset(),
-						context => GetLocalVariableValue(context, address)
-					);
-					vars.Add(locVar);
-				}
-			}
-			foreach(ISymUnmanagedScope childScope in symScope.GetChildren()) {
-				vars.AddRange(GetLocalVariablesInScope(method, childScope));
-			}
-			return vars;
-		}
-		
-		public static Value GetLocalVariableValue(StackFrame context, uint address)
+		public static Value GetLocalVariableValue(StackFrame context, int index)
 		{
 			context.Process.AssertPaused();
 			try {
-				return new Value(context.AppDomain, context.CorILFrame.GetLocalVariable(address));
+				return new Value(context.AppDomain, context.CorILFrame.GetLocalVariable((uint)index));
 			} catch (COMException e) {
 				if ((uint)e.ErrorCode == 0x80131304) throw new GetValueException("Unavailable in optimized code");
 				throw;

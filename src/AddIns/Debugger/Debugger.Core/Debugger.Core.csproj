@@ -88,7 +88,7 @@
     <Compile Include="NDebugger.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Process.cs" />
-    <Compile Include="SourcecodeSegment.cs" />
+    <Compile Include="PDBSymbolSource.cs" />
     <Compile Include="StackFrame.cs" />
     <Compile Include="Stepper.cs" />
     <Compile Include="Thread.cs" />

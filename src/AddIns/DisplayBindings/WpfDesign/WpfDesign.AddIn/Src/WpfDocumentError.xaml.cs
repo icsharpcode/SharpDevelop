@@ -5,7 +5,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
@@ -25,7 +25,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		void ViewXaml(object sender,RoutedEventArgs e)
 		{
-			WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.SwitchView(0);
+			SD.Workbench.ActiveWorkbenchWindow.SwitchView(0);
 		}
 	}
 }

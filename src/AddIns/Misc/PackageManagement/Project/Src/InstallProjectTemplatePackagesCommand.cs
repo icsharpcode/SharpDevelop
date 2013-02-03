@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
-using ICSharpCode.Core.Services;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -21,8 +21,8 @@ namespace ICSharpCode.PackageManagement
 			: this(
 				PackageManagementServices.ProjectTemplatePackageRepositoryCache,
 				PackageManagementServices.ProjectService,
-				ServiceManager.Instance.MessageService,
-				ServiceManager.Instance.LoggingService)
+				SD.MessageService,
+				SD.Log)
 		{
 		}
 		

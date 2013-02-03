@@ -150,7 +150,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			}
 			
 			if (xamlErrorService.Errors.Count != 0) {
-				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+				SD.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 			}
 		}
 		

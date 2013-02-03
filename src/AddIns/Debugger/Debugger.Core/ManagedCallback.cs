@@ -100,8 +100,7 @@ namespace Debugger
 				// Ignore events during property evaluation
 				process.AsyncContinue(DebuggeeStateAction.Keep);
 			} else if (pauseOnNextExit) {
-				if (process.Options.Verbose)
-					process.TraceMessage("Callback exit: Paused");
+				// process.TraceMessage("Callback exit: Paused");
 
 				process.DisableAllSteppers();
 				if (pausedEventArgs != null) {
@@ -333,8 +332,8 @@ namespace Debugger
 			EnterCallback("CreateProcess", pProcess);
 
 			// Process is added in NDebugger.Start
-			// disable NGen
-			if (!this.process.Options.EnableJustMyCode && !this.process.Options.StepOverNoSymbols) {
+			// disable NGen if we want to do decompilation
+			if (!this.process.Options.StepOverNoSymbols) {
 				ICorDebugProcess2 pProcess2 = pProcess as ICorDebugProcess2;
 				if (pProcess2 != null && Process.DebugMode == DebugModeFlag.Debug) {
 					try {

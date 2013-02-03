@@ -14,6 +14,7 @@ using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
@@ -74,7 +75,7 @@ namespace ICSharpCode.CodeCoverage
 					showSourceCodePanel = value;
 					OnShowSourceCodePanelChanged();
 					UpdateDisplay();
-					DisplaySelectedItem(treeView.SelectedNode as CodeCoverageTreeNode);					
+					DisplaySelectedItem(treeView.SelectedNode as CodeCoverageTreeNode);
 				}
 			}
 		}
@@ -192,7 +193,7 @@ namespace ICSharpCode.CodeCoverage
 			if (Controls.Contains(toolStrip)) {
 				Controls.Remove(toolStrip);
 			}
-			Controls.Add(toolStrip);	
+			Controls.Add(toolStrip);
 		}
 		
 		void CodeCoverageTreeViewAfterSelect(object sender, TreeViewEventArgs e)

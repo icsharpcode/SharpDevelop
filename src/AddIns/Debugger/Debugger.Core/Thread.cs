@@ -300,7 +300,7 @@ namespace Debugger
 		{
 			StringBuilder stackTrace = new StringBuilder();
 			foreach(StackFrame stackFrame in this.GetCallstack(100)) {
-				SourcecodeSegment loc = stackFrame.NextStatement;
+				SequencePoint loc = stackFrame.NextStatement;
 				stackTrace.Append("   ");
 				if (loc != null) {
 					stackTrace.AppendFormat(formatSymbols, stackFrame.MethodInfo.FullName, loc.Filename, loc.StartLine);

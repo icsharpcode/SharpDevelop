@@ -12,12 +12,13 @@ namespace Debugger
 	public class Breakpoint: DebuggerObject
 	{
 		bool enabled;
-		protected List<ICorDebugFunctionBreakpoint> corBreakpoints = new List<ICorDebugFunctionBreakpoint>();
+		List<ICorDebugFunctionBreakpoint> corBreakpoints = new List<ICorDebugFunctionBreakpoint>();
 		
+		[Tests.Ignore]
 		public string FileName { get; private set; }
 		public int Line { get; set; }
 		public int Column { get; set; }
-		public SourcecodeSegment OriginalLocation { get; private set; }
+		public byte[] Checksum { get; private set; }
 		
 		public bool IsEnabled {
 			get { return enabled; }
@@ -40,8 +41,6 @@ namespace Debugger
 		public bool IsSet {
 			get { return corBreakpoints.Count > 0; }
 		}
-		
-		public string TypeName { get; protected set; }
 		
 		internal Breakpoint()
 		{
@@ -70,18 +69,15 @@ namespace Debugger
 		
 		public virtual bool SetBreakpoint(Module module)
 		{
-			SourcecodeSegment segment = SourcecodeSegment.Resolve(module, FileName, Line, Column);
-			if (segment == null)
-				return false;
-			
-			OriginalLocation = segment;
-			
-			ICorDebugFunctionBreakpoint corBreakpoint = segment.CorFunction.GetILCode().CreateBreakpoint((uint)segment.ILStart);
-			corBreakpoint.Activate(enabled ? 1 : 0);
-			
-			corBreakpoints.Add(corBreakpoint);
-			
-			return true;
+			var seq = PDBSymbolSource.GetSequencePoint(module, this.FileName, this.Line, this.Column);
+			if (seq != null) {
+				ICorDebugFunction corFuction = module.CorModule.GetFunctionFromToken(seq.MethodDefToken);
+				ICorDebugFunctionBreakpoint corBreakpoint = corFuction.GetILCode().CreateBreakpoint((uint)seq.ILOffset);
+				corBreakpoint.Activate(enabled ? 1 : 0);
+				corBreakpoints.Add(corBreakpoint);
+				return true;
+			}
+			return false;
 		}
 	}
 	/*

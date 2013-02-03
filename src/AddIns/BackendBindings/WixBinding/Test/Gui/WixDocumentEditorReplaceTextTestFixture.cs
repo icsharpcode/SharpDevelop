@@ -3,8 +3,8 @@
 
 using System;
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using WixBinding.Tests.Utils;
@@ -17,7 +17,7 @@ namespace WixBinding.Tests.Gui
 		IDocument document;
 		MockTextEditor textEditor;
 		string originalXml;
-		string initialDocumentRegionText;		
+		string initialDocumentRegionText;
 		
 		[SetUp]
 		public void Init()
@@ -51,7 +51,7 @@ namespace WixBinding.Tests.Gui
 			// End column is the column containing the '>' of the </child> element.
 			int endColumn = 9;
 			
-			DomRegion region = new DomRegion(line, column, endLine, endColumn);
+			var region = new DomRegion(line, column, endLine, endColumn);
 			
 			WixDocumentLineSegment lineSegment = WixDocumentLineSegment.ConvertRegionToSegment(textEditor.Document, region);
 			initialDocumentRegionText = textEditor.Document.GetText(lineSegment.Offset, lineSegment.Length);
@@ -76,7 +76,7 @@ namespace WixBinding.Tests.Gui
 		{
 			int column = 1;
 			int line = 2;
-			Location expectedLocation = new Location(column, line);
+			var expectedLocation = new TextLocation(column, line);
 			Assert.AreEqual(expectedLocation, textEditor.LocationJumpedTo);
 		}
 		

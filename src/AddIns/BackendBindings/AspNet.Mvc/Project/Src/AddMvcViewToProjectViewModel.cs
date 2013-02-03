@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
+using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.AspNet.Mvc
 {
@@ -63,10 +64,10 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		void CreateCommands()
 		{
-			AddMvcViewCommand = new DelegateCommand(param => AddMvcView(), param => CanAddMvcView());
-			OpenSelectMasterPageViewCommand = new DelegateCommand(param => OpenSelectMasterPageView());
-			CloseSelectMasterPageViewCommand = new DelegateCommand(param => CloseSelectMasterPageView());
-			SelectMasterPageCommand = new DelegateCommand(param => SelectMasterPage(), param => CanSelectMasterPage());
+			AddMvcViewCommand = new RelayCommand(AddMvcView, CanAddMvcView);
+			OpenSelectMasterPageViewCommand = new RelayCommand(OpenSelectMasterPageView);
+			CloseSelectMasterPageViewCommand = new RelayCommand(CloseSelectMasterPageView);
+			SelectMasterPageCommand = new RelayCommand(SelectMasterPage, CanSelectMasterPage);
 		}
 		
 		public ICommand AddMvcViewCommand { get; private set; }

@@ -18,7 +18,7 @@ namespace WixBinding.Tests.PackageFiles
 	/// </summary>
 	[TestFixture]
 	public class ComponentDiskIdSetBeforeFilesAddedTestFixture : PackageFilesTestFixtureBase
-	{		
+	{
 		XmlElement componentElement;
 		
 		[SetUp]

@@ -3,7 +3,9 @@
 
 using System;
 using System.Windows.Forms;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.WixBinding
 {
@@ -17,7 +19,7 @@ namespace ICSharpCode.WixBinding
 		ActivePackageFilesView activePackageFilesView;
 		
 		public AddElementCommand(string name) 
-			: this(name, WorkbenchSingleton.Workbench)
+			: this(name, SD.Workbench)
 		{
 		}
 		

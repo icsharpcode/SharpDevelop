@@ -74,7 +74,7 @@ namespace ICSharpCode.GitAddIn
 					p.Exited += delegate {
 						p.Dispose();
 						if (callback != null) {
-							SD.MainThread.InvokeAsync(callback).FireAndForget();
+							SD.MainThread.InvokeAsyncAndForget(callback);
 						}
 					};
 //					p.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) {

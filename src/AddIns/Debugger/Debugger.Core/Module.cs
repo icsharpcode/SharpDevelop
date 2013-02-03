@@ -204,7 +204,7 @@ namespace Debugger
 		/// <summary>
 		/// Load symblos for on-disk module
 		/// </summary>
-		public void LoadSymbolsFromDisk(string[] symbolsSearchPaths)
+		public void LoadSymbolsFromDisk(IEnumerable<string> symbolsSearchPaths)
 		{
 			if (!IsDynamic && !IsInMemory) {
 				if (symReader == null) {

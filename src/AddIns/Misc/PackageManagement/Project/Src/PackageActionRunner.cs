@@ -33,13 +33,13 @@ namespace ICSharpCode.PackageManagement
 		
 		public void Run(IEnumerable<ProcessPackageAction> actions)
 		{
-			if (ShouldRunActionsInConsole(actions)) {
-				consolePackageActionRunner.Run(actions);
-			} else {
+			//if (ShouldRunActionsInConsole(actions)) {
+			//	consolePackageActionRunner.Run(actions);
+			//} else {
 				foreach (ProcessPackageAction action in actions) {
 					action.Execute();
 				}
-			}
+			//}
 		}
 		
 		bool ShouldRunActionsInConsole(IEnumerable<ProcessPackageAction> actions)
@@ -54,11 +54,11 @@ namespace ICSharpCode.PackageManagement
 		
 		public void Run(ProcessPackageAction action)
 		{
-			if (ShouldRunActionInConsole(action)) {
-				consolePackageActionRunner.Run(action);
-			} else {
+			//if (ShouldRunActionInConsole(action)) {
+			//	consolePackageActionRunner.Run(action);
+			//} else {
 				action.Execute();
-			}
+			//}
 		}
 		
 		bool ShouldRunActionInConsole(ProcessPackageAction action)

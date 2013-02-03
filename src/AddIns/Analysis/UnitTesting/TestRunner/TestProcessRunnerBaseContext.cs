@@ -8,29 +8,37 @@ using ICSharpCode.SharpDevelop;
 namespace ICSharpCode.UnitTesting
 {
 	public class TestProcessRunnerBaseContext
-	{		
+	{
+		TestExecutionOptions executionOptions;
 		IUnitTestProcessRunner processRunner;
 		ITestResultsReader testResultsReader;
 		IFileSystem fileSystem;
 		IMessageService messageService;
 		
-		public TestProcessRunnerBaseContext()
-			: this(new UnitTestProcessRunner(),
+		public TestProcessRunnerBaseContext(TestExecutionOptions executionOptions)
+			: this(executionOptions,
+				new UnitTestProcessRunner(),
 				new TestResultsReader(),
 				new UnitTestFileService(),
 				SD.MessageService)
 		{
 		}
-				
-		public TestProcessRunnerBaseContext(IUnitTestProcessRunner processRunner,
+		
+		public TestProcessRunnerBaseContext(TestExecutionOptions executionOptions,
+			IUnitTestProcessRunner processRunner,
 			ITestResultsReader testResultsMonitor,
 			IFileSystem fileSystem,
 			IMessageService messageService)
 		{
+			this.executionOptions = executionOptions;
 			this.processRunner = processRunner;
 			this.testResultsReader = testResultsMonitor;
 			this.fileSystem = fileSystem;
 			this.messageService = messageService;
+		}
+		
+		public TestExecutionOptions ExecutionOptions {
+			get { return executionOptions; }
 		}
 		
 		public IUnitTestProcessRunner TestProcessRunner {

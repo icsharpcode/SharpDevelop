@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 using Debugger.Interop.CorDebug;
 using Debugger.Interop.CorSym;
@@ -106,13 +105,16 @@ namespace Debugger
 			get { return workingDirectory; }
 		}
 		
+		public string Filename { get; private set; }
+		
 		public static DebugModeFlag DebugMode { get; set; }
 		
-		internal Process(NDebugger debugger, ICorDebugProcess corProcess, string workingDirectory)
+		internal Process(NDebugger debugger, ICorDebugProcess corProcess, string filename, string workingDirectory)
 		{
 			this.debugger = debugger;
 			this.corProcess = corProcess;
 			this.workingDirectory = workingDirectory;
+			this.Filename = System.IO.Path.GetFullPath(filename); // normalize path
 			
 			this.callbackInterface = new ManagedCallback(this);
 		}
@@ -127,7 +129,7 @@ namespace Debugger
 			
 			ICorDebugProcess outProcess;
 			
-			if (workingDirectory == null || workingDirectory == "") {
+			if (string.IsNullOrEmpty(workingDirectory)) {
 				workingDirectory = System.IO.Path.GetDirectoryName(filename);
 			}
 			
@@ -136,25 +138,26 @@ namespace Debugger
 			secAttr.lpSecurityDescriptor = IntPtr.Zero;
 			secAttr.nLength = (uint)sizeof(_SECURITY_ATTRIBUTES);
 			
-			fixed (uint* pprocessStartupInfo = processStartupInfo)
-				fixed (uint* pprocessInfo = processInfo)
-				outProcess =
-				debugger.CorDebug.CreateProcess(
-					filename,   // lpApplicationName
-					// If we do not prepend " ", the first argument migh just get lost
-					" " + arguments,                       // lpCommandLine
-					ref secAttr,                       // lpProcessAttributes
-					ref secAttr,                      // lpThreadAttributes
-					1,//TRUE                    // bInheritHandles
-					0x00000010 /*CREATE_NEW_CONSOLE*/,    // dwCreationFlags
-					IntPtr.Zero,                       // lpEnvironment
-					workingDirectory,                       // lpCurrentDirectory
-					(uint)pprocessStartupInfo,        // lpStartupInfo
-					(uint)pprocessInfo,               // lpProcessInformation,
-					CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS   // debuggingFlags
-				);
+			fixed (uint* pprocessStartupInfo = processStartupInfo) {
+				fixed (uint* pprocessInfo = processInfo) {
+					outProcess = debugger.CorDebug.CreateProcess(
+						filename,   // lpApplicationName
+						// If we do not prepend " ", the first argument migh just get lost
+						" " + arguments,                       // lpCommandLine
+						ref secAttr,                       // lpProcessAttributes
+						ref secAttr,                      // lpThreadAttributes
+						1,//TRUE                    // bInheritHandles
+						0x00000010 /*CREATE_NEW_CONSOLE*/,    // dwCreationFlags
+						IntPtr.Zero,                       // lpEnvironment
+						workingDirectory,                       // lpCurrentDirectory
+						(uint)pprocessStartupInfo,        // lpStartupInfo
+						(uint)pprocessInfo,               // lpProcessInformation,
+						CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS   // debuggingFlags
+					);
+				}
+			}
 			
-			return new Process(debugger, outProcess, workingDirectory);
+			return new Process(debugger, outProcess, filename, workingDirectory);
 		}
 		
 		internal void OnLogMessage(MessageEventArgs arg)
@@ -449,9 +452,10 @@ namespace Debugger
 		public void RunTo(string fileName, int line, int column)
 		{
 			foreach(Module module in this.Modules) {
-				SourcecodeSegment segment = SourcecodeSegment.Resolve(module, fileName, line, column);
-				if (segment != null) {
-					ICorDebugFunctionBreakpoint corBreakpoint = segment.CorFunction.GetILCode().CreateBreakpoint((uint)segment.ILStart);
+				SequencePoint seq = PDBSymbolSource.GetSequencePoint(module, fileName, line, column);
+				if (seq != null) {
+					ICorDebugFunction corFunction = module.CorModule.GetFunctionFromToken(seq.MethodDefToken);
+					ICorDebugFunctionBreakpoint corBreakpoint = corFunction.GetILCode().CreateBreakpoint((uint)seq.ILOffset);
 					corBreakpoint.Activate(1);
 					this.tempBreakpoints.Add(corBreakpoint);		
 				}
@@ -477,9 +481,7 @@ namespace Debugger
 			
 			NotifyResumed(action);
 			corProcess.Continue(0);
-			if (this.Options.Verbose) {
-				this.TraceMessage("Continue");
-			}
+			// this.TraceMessage("Continue");
 			
 			if (action == DebuggeeStateAction.Clear) {
 				OnResumed();

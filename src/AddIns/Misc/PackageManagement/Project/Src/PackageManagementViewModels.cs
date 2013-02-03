@@ -14,7 +14,7 @@ namespace ICSharpCode.PackageManagement
 		RegisteredPackageSourcesViewModel registeredPackageSourcesViewModel;
 		RegisteredPackageSourcesViewModel registeredProjectTemplatePackageSourcesViewModel;
 		PackageManagementOptionsViewModel packageManagementOptionsViewModel;
-		PackageManagementConsoleViewModel packageManagementConsoleViewModel;
+		//PackageManagementConsoleViewModel packageManagementConsoleViewModel;
 		IPackageManagementSolution solution;
 		IRegisteredPackageRepositories registeredPackageRepositories;
 		
@@ -149,25 +149,25 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		public PackageManagementConsoleViewModel PackageManagementConsoleViewModel {
-			get { 
-				if (packageManagementConsoleViewModel == null) {
-					CreatePackageManagementConsoleViewModel();
-				}
-				return packageManagementConsoleViewModel;
-			}
-		}
+//		public PackageManagementConsoleViewModel PackageManagementConsoleViewModel {
+//			get { 
+//				if (packageManagementConsoleViewModel == null) {
+//					CreatePackageManagementConsoleViewModel();
+//				}
+//				return packageManagementConsoleViewModel;
+//			}
+//		}
 		
 		void CreatePackageManagementConsoleViewModel()
 		{
-			CreateSolution();
-			CreateRegisteredPackageRepositories();
-			var consoleHost = PackageManagementServices.ConsoleHost;
-			packageManagementConsoleViewModel = 
-				new PackageManagementConsoleViewModel(
-					registeredPackageRepositories.PackageSources,
-					PackageManagementServices.ProjectService,
-					consoleHost);
+//			CreateSolution();
+//			CreateRegisteredPackageRepositories();
+//			var consoleHost = PackageManagementServices.ConsoleHost;
+//			packageManagementConsoleViewModel = 
+//				new PackageManagementConsoleViewModel(
+//					registeredPackageRepositories.PackageSources,
+//					PackageManagementServices.ProjectService,
+//					consoleHost);
 		}
 	}
 }

@@ -30,7 +30,18 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			}
 		}
 		
-		public Location Position {
+		public TextLocation Position {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public event EventHandler LocationChanged { add {} remove {} }
+		
+		public TextLocation Location {
 			get {
 				throw new NotImplementedException();
 			}

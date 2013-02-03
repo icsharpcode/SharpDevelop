@@ -4,11 +4,14 @@
 using System;
 using System.IO;
 using System.Runtime.Versioning;
-
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests
 {
@@ -20,6 +23,7 @@ namespace PackageManagement.Tests
 		
 		void CreateProjectSystem(MSBuildBasedProject project)
 		{
+			SD.Services.AddService(typeof(IWorkbench), MockRepository.GenerateStub<IWorkbench>());
 			projectSystem = new TestableSharpDevelopProjectSystem(project);
 		}
 		
@@ -41,7 +45,7 @@ namespace PackageManagement.Tests
 		void CreateTestProject(string fileName)
 		{
 			CreateTestProject();
-			project.FileName = fileName;
+			project.FileName = new FileName(fileName);
 		}
 		
 		void AddFileToProject(string fileName)
@@ -339,7 +343,7 @@ namespace PackageManagement.Tests
 		public void AddReference_ReferenceFileNameIsRelativePath_ReferenceAddedToProject()
 		{
 			CreateTestProject();
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			project.FileName = new FileName(@"d:\projects\MyProject\MyProject.csproj");
 			CreateProjectSystem(project);
 			project.IsSaved = false;
 			

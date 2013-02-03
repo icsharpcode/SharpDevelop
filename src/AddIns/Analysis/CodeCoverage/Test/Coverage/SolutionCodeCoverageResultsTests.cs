@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 
 using ICSharpCode.CodeCoverage.Tests.Utils;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using Rhino.Mocks;
@@ -15,7 +17,7 @@ using UnitTesting.Tests.Utils;
 namespace ICSharpCode.CodeCoverage.Tests.Coverage
 {
 	[TestFixture]
-	public class SolutionCodeCoverageResultsTests
+	public class SolutionCodeCoverageResultsTests : SDTestFixtureBase
 	{
 		SolutionCodeCoverageResults solutionCodeCoverageResults;
 		Solution solution;
@@ -36,7 +38,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		void AddProject(string fileName)
 		{
 			var project = new MockCSharpProject(solution, Path.GetFileNameWithoutExtension(fileName));
-			project.FileName = fileName;
+			project.FileName = new FileName(fileName);
 			solution.Folders.Add(project);
 		}
 		

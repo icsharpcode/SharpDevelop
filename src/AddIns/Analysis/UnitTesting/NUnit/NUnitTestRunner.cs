@@ -14,13 +14,14 @@ namespace ICSharpCode.UnitTesting
 	{
 		UnitTestingOptions options;
 		
-		public NUnitTestRunner()
-			: this(new TestProcessRunnerBaseContext(),
+		public NUnitTestRunner(TestExecutionOptions executionOptions)
+			: this(new TestProcessRunnerBaseContext(executionOptions),
 			       UnitTestingOptions.Instance.Clone())
 		{
 		}
 		
-		public NUnitTestRunner(TestProcessRunnerBaseContext context, UnitTestingOptions options)
+		public NUnitTestRunner(TestProcessRunnerBaseContext context,
+			UnitTestingOptions options)
 			: base(context)
 		{
 			this.options = options;

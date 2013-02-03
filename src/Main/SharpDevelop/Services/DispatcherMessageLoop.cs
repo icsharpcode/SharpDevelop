@@ -128,15 +128,25 @@ namespace ICSharpCode.SharpDevelop
 			return dispatcher.InvokeAsync(callback, priority, cancellationToken).Task;
 		}
 		
+		public void InvokeAsyncAndForget(Action callback)
+		{
+			dispatcher.BeginInvoke(callback);
+		}
+		
+		public void InvokeAsyncAndForget(Action callback, DispatcherPriority priority)
+		{
+			dispatcher.BeginInvoke(callback, priority);
+		}
+		
 		public async void CallLater(TimeSpan delay, Action method)
 		{
 			await Task.Delay(delay).ConfigureAwait(false);
-			InvokeAsync(method).FireAndForget();
+			InvokeAsyncAndForget(method);
 		}
 		
 		IAsyncResult ISynchronizeInvoke.BeginInvoke(Delegate method, object[] args)
 		{
-			return dispatcher.InvokeAsync<object>(() => method.DynamicInvoke(args)).Task;
+			return dispatcher.BeginInvoke(method, args).Task;
 		}
 		
 		object ISynchronizeInvoke.EndInvoke(IAsyncResult result)
@@ -146,7 +156,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		object ISynchronizeInvoke.Invoke(Delegate method, object[] args)
 		{
-			return dispatcher.Invoke(() => method.DynamicInvoke(args));
+			return dispatcher.Invoke(method, args);
 		}
 	}
 }

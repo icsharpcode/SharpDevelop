@@ -1,14 +1,15 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using Microsoft.Build.Construction;
 using System;
 using System.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
+using Microsoft.Build.Construction;
 using NUnit.Framework;
 using WixBinding.Tests.Utils;
 
@@ -26,12 +27,14 @@ namespace WixBinding.Tests.Project
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			SD.InitializeForUnitTests();
+			MessageLoopHelper.InitializeForUnitTests();
 			WixBindingTestsHelper.InitMSBuildEngine();
 			
 			info = new ProjectCreateInformation();
 			info.Solution = new Solution(new MockProjectChangeWatcher());
 			info.ProjectName = "Test";
-			info.OutputProjectFileName = @"C:\Projects\Test\Test.wixproj";
+			info.OutputProjectFileName = new FileName(@"C:\Projects\Test\Test.wixproj");
 			info.RootNamespace = "Test";
 
 			project = new WixProject(info);
@@ -121,12 +124,6 @@ namespace WixBinding.Tests.Project
 		{
 			IWixPropertyValueProvider provider = (IWixPropertyValueProvider)project;
 			Assert.IsNull(provider.GetValue("UnknownMSBuildProperty"));
-		}
-		
-		[Test]
-		public void ProjectLanguageProperties()
-		{
-			Assert.AreEqual(LanguageProperties.None, project.LanguageProperties);
 		}
 		
 		/// <summary>

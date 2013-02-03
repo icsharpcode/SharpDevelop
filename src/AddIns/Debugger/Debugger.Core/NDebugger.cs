@@ -241,7 +241,7 @@ namespace Debugger
 			lock(ProcessIsBeingCreatedLock) {
 				ICorDebugProcess corDebugProcess = corDebug.DebugActiveProcess((uint)existingProcess.Id, 0);
 				// TODO: Can we get the acutal working directory?
-				Process process = new Process(this, corDebugProcess, Path.GetDirectoryName(mainModule));
+				Process process = new Process(this, corDebugProcess, mainModule, Path.GetDirectoryName(mainModule));
 				this.processes.Add(process);
 				return process;
 			}

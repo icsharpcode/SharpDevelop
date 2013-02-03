@@ -8,7 +8,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.WpfDesign.PropertyGrid;
 
 namespace ICSharpCode.WpfDesign.AddIn.ImageSourceEditor
@@ -40,7 +40,7 @@ namespace ICSharpCode.WpfDesign.AddIn.ImageSourceEditor
 			}
 			ChooseImageDialog cid = new ChooseImageDialog();
 			cid.SelectedFileName = fileName;
-			cid.Owner = WorkbenchSingleton.MainWindow;
+			cid.Owner = SD.Workbench.MainWindow;
 			if (cid.ShowDialog() == true) {
 				fileName = cid.SelectedFileName;
 				if (fileName == null) {

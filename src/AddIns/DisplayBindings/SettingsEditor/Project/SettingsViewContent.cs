@@ -19,7 +19,8 @@ namespace ICSharpCode.SettingsEditor
 {
 	public class SettingsViewContent : AbstractViewContentHandlingLoadErrors, IHasPropertyContainer
 	{
-		SettingsView view = new SettingsView();
+//		SettingsView view = new SettingsView();
+		SettingsViewXaml view = new SettingsViewXaml();
 		PropertyContainer propertyContainer = new PropertyContainer();
 		SettingsDocument setDoc = new SettingsDocument();
 		MemoryStream appConfigStream;
@@ -28,6 +29,7 @@ namespace ICSharpCode.SettingsEditor
 		public SettingsViewContent(OpenedFile file) : base(file)
 		{
 			TryOpenAppConfig(false);
+		/*
 			view.SelectionChanged += delegate {
 				propertyContainer.SelectedObjects = view.GetSelectedEntriesForPropertyGrid().ToArray();
 			};
@@ -37,7 +39,26 @@ namespace ICSharpCode.SettingsEditor
 				if (appConfigFile != null)
 					appConfigFile.MakeDirty();
 			};
+			 */
+			
 			this.UserContent = view;
+			
+			view.SelectionChanged += ((s,e) =>
+			                          {
+			                          	Console.WriteLine("SettingsViewContent.SelectionChanged");
+			                          	propertyContainer.SelectedObjects = view.GetSelectedEntriesForPropertyGrid().ToArray();
+			                          });
+			
+			
+			view.SettingsChanged += ((s,e) =>
+			                         {
+			                         	Console.WriteLine("SettingsViewContent.SettingsChanged");
+			                         	if (this.PrimaryFile != null)
+			                         		this.PrimaryFile.MakeDirty();
+			                         	if (appConfigFile != null)
+			                         		appConfigFile.MakeDirty();
+			                         });
+			                        
 		}
 		
 		void TryOpenAppConfig(bool createIfNotExists)
@@ -61,6 +82,8 @@ namespace ICSharpCode.SettingsEditor
 		
 		protected override void LoadInternal(OpenedFile file, Stream stream)
 		{
+			Console.WriteLine ("LoadInternal");
+			
 			if (file == PrimaryFile) {
 				try {
 					XmlDocument doc = new XmlDocument();
@@ -75,6 +98,7 @@ namespace ICSharpCode.SettingsEditor
 				appConfigStream = new MemoryStream();
 				stream.CopyTo(appConfigStream);
 			}
+			
 		}
 		
 		void ShowLoadError(string message)
@@ -117,11 +141,14 @@ namespace ICSharpCode.SettingsEditor
 					appConfigStream.WriteTo(stream);
 				}
 			}
+			
 		}
 		
 		#region Update app.config
 		void UpdateAppConfig(XDocument appConfigDoc)
 		{
+			Console.WriteLine("UpdateAppConfig(XDocument appConfigDoc)");
+			/*
 			var entries = view.GetAllEntries();
 			var userEntries = entries.Where(e => e.Scope == SettingScope.User);
 			var appEntries = entries.Where(e => e.Scope == SettingScope.Application);
@@ -147,6 +174,7 @@ namespace ICSharpCode.SettingsEditor
 			if (appSettings != null) {
 				UpdateSettings(appSettings, appEntries);
 			}
+			*/
 		}
 		
 		void RegisterAppConfigSection(XElement configSections, bool hasUserEntries, bool hasAppEntries)

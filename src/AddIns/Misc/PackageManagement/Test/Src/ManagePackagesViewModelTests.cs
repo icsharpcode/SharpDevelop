@@ -32,6 +32,7 @@ namespace PackageManagement.Tests
 		
 		void CreateSolution()
 		{
+			MessageLoopHelper.InitializeForUnitTests();
 			fakeSolution = new FakePackageManagementSolution();
 			fakeRegisteredPackageRepositories = new FakeRegisteredPackageRepositories();
 			fakeSolution.FakeActiveMSBuildProject = ProjectHelper.CreateTestProject();

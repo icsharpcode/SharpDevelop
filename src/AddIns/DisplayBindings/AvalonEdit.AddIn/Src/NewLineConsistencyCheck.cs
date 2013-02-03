@@ -62,7 +62,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// don't allow mac-style newlines; accept either unix or windows-style newlines but avoid mixing them
 			bool isConsistent = (numCR == 0) && (numLF == 0 || numCRLF == 0);
 			if (!isConsistent) {
-				SD.MainThread.InvokeAsync(() => ShowInconsistentWarning(numLF > numCRLF)).FireAndForget();
+				SD.MainThread.InvokeAsyncAndForget(() => ShowInconsistentWarning(numLF > numCRLF));
 			}
 		}
 		

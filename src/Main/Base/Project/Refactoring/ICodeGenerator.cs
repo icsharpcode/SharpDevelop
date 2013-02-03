@@ -13,6 +13,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	public interface ICodeGenerator
 	{
 		void AddAttribute(IEntity target, IAttribute attribute);
+		void AddAssemblyAttribute(IAttribute attribute);
+		void AddReturnTypeAttribute(IMethod target, IAttribute attribute);
 		void InsertEventHandler(ITypeDefinition target, string name, IEvent eventDefinition, bool jumpTo);
 	}
 }

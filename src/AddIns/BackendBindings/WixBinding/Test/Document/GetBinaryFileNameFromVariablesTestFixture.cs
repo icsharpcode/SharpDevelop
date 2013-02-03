@@ -20,6 +20,7 @@ namespace WixBinding.Tests.Document
 		[SetUp]
 		public void Init()
 		{
+			MessageLoopHelper.InitializeForUnitTests();
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			project.SetProperty("DefineConstants", @"DATADIR=Bitmaps;");
 			document = new WixDocument(project);

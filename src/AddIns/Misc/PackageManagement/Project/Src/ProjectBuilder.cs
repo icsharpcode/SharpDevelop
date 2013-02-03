@@ -4,6 +4,8 @@
 using System;
 using System.Linq;
 using System.Threading;
+
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Commands;
@@ -26,7 +28,7 @@ namespace ICSharpCode.PackageManagement
 			var build = new BuildProject(project);
 			build.BuildComplete += BuildComplete;
 			buildCompleteEvent.Reset();
-			WorkbenchSingleton.SafeThreadAsyncCall(() => build.Run());
+			SD.MainThread.InvokeAsyncAndForget(() => build.Run());
 			if (buildCompleteEvent.WaitOne(DefaultBuildTimeout)) {
 				BuildResults = build.LastBuildResults;
 			} else {

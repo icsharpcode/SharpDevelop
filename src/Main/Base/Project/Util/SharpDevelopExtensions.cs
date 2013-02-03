@@ -465,7 +465,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Retrieves the model instance the given unresolved entity.
+		/// Retrieves the model instance for the given unresolved entity.
 		/// </summary>
 		/// <param name="entity">The unresolved entity</param>
 		/// <param name="project">The project in which the entity is defined.

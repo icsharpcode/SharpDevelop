@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Scripting
 {
@@ -15,8 +16,8 @@ namespace ICSharpCode.Scripting
 		public ScriptingWorkbench(Type consolePadType)
 		{
 			this.consolePadType = consolePadType;
-			workbench = WorkbenchSingleton.Workbench;
-		}		
+			workbench = SD.Workbench;
+		}
 		
 		public IViewContent ActiveViewContent {
 			get { return workbench.ActiveViewContent; }

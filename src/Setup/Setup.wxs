@@ -212,12 +212,11 @@
 				<ComponentRef Id="WixVSSchema"/>
 				<ComponentRef Id="WixFirewallSchema"/>
 				<ComponentRef Id="WixGamingSchema"/>
-				<!--
 				<ComponentRef Id="EmptyWixFileTemplate"/>
 				<ComponentRef Id="WixDefaultLicenseRtf"/>
 				<ComponentRef Id="EmptyWixProjectTemplate"/>
 				<ComponentRef Id="EmptyWixDialogTemplate"/>
-				<ComponentRef Id="WixDialogTemplate"/>-->
+				<ComponentRef Id="WixDialogTemplate"/>
 
 				<ComponentRef Id="NUnitUtilDll"/>
 				<ComponentRef Id="NUnitConsoleFiles"/>
@@ -285,13 +284,13 @@
 				<ComponentRef Id="ICSharpCode.SharpDevelop.addin"/>
 				<ComponentRef Id="CSharpBindingFiles"/>
 				<!--
-				<ComponentRef Id="VBNetBindingFiles"/>
+				<ComponentRef Id="VBNetBindingFiles"/>-->
 				<ComponentRef Id="WixBindingFiles"/>
 				<ComponentRef Id="WixUIMondoProjectTemplate"/>
 				<ComponentRef Id="WixUIMinimalProjectTemplate"/>
 				<ComponentRef Id="WixUIInstallDirProjectTemplate"/>
 				<ComponentRef Id="WixUIFeatureTreeProjectTemplate"/>
-				<ComponentRef Id="FormsDesignerFiles"/>-->
+				<!--<ComponentRef Id="FormsDesignerFiles"/>-->
 				<ComponentRef Id="IconEditorFiles"/>
 				<!--<ComponentRef Id="ResourceEditorFiles"/>
 				<ComponentRef Id="SettingsEditorFiles"/>
@@ -311,8 +310,8 @@
 				<ComponentRef Id="AddInManagerSharpZipLibDll"/>
 				<ComponentRef Id="AddInScoutFiles"/>
 				<ComponentRef Id="CodeAnalysisFiles"/>
-				<!--<ComponentRef Id="CodeQualityFiles"/>
-				<ComponentRef Id="CodeCoverageFiles"/>-->
+				<!--<ComponentRef Id="CodeQualityFiles"/>-->
+				<ComponentRef Id="CodeCoverageFiles"/>
 				<ComponentRef Id="DebuggerAddInFiles"/>
 				<ComponentRef Id="FiletypeIcons"/>
 				<ComponentRef Id="FiletypeRegistererFiles"/>
@@ -449,17 +448,17 @@
 				<ComponentRef Id="ITextSharpDll"/>-->
 			
 				<!--<ComponentRef Id="AboutNuGetCmdletsHelpTxt"/>
-				<ComponentRef Id="NuGetConsoleTypesDll"/>
-				<ComponentRef Id="NuGetCoreDll"/>-->
+				<ComponentRef Id="NuGetConsoleTypesDll"/>-->
+				<ComponentRef Id="NuGetCoreDll"/>
 				<ComponentRef Id="NuGetNuspecSchema"/>
-				<!--<ComponentRef Id="NuGetLicenseTxt"/>
-				<ComponentRef Id="PackageFormatPs1Xml"/>
+				<ComponentRef Id="NuGetLicenseTxt"/>
+				<!--<ComponentRef Id="PackageFormatPs1Xml"/>-->
 				<ComponentRef Id="PackageManagementAddin"/>
-				<ComponentRef Id="PackageManagementCmdletsDll"/>
-				<ComponentRef Id="PackageManagementCmdletsDllHelpXml"/>
+				<!--<ComponentRef Id="PackageManagementCmdletsDll"/>
+				<ComponentRef Id="PackageManagementCmdletsDllHelpXml"/>-->
 				<ComponentRef Id="PackageManagementDll"/>
-				<ComponentRef Id="SharpDevelopEnvDteDll"/>
-				<ComponentRef Id="PackageManagementPowerShellDll"/>
+				<!--<ComponentRef Id="SharpDevelopEnvDteDll"/>-->
+				<!--<ComponentRef Id="PackageManagementPowerShellDll"/>
 				<ComponentRef Id="PackageManagementICSharpCodeSharpDevelopDomDll"/>-->
 				<ComponentRef Id="JQuery172NuGetPackage"/>
 				<ComponentRef Id="Modernizr253NuGetPackage"/>
