@@ -2980,24 +2980,24 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		#region Xml Comments
 		static readonly List<string> commentTags = new List<string>(new string[] {
-			"c",
 			"code",
+			"c",
 			"example",
 			"exception",
 			"include",
-			"list",
 			"listheader",
+			"list",
 			"item",
 			"term",
 			"description",
-			"para",
-			"param",
 			"paramref",
+			"param",
+			"para",
 			"permission",
 			"remarks",
 			"returns",
-			"see",
 			"seealso",
+			"see",
 			"summary",
 			"value"
 		}
