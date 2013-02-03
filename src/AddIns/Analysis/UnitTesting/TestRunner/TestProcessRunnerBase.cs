@@ -12,6 +12,7 @@ namespace ICSharpCode.UnitTesting
 {
 	public abstract class TestProcessRunnerBase : TestRunnerBase
 	{
+		TestExecutionOptions executionOptions;
 		IUnitTestProcessRunner processRunner;
 		ITestResultsReader testResultsReader;
 		IFileSystem fileSystem;
@@ -19,6 +20,7 @@ namespace ICSharpCode.UnitTesting
 		
 		public TestProcessRunnerBase(TestProcessRunnerBaseContext context)
 		{
+			this.executionOptions = context.ExecutionOptions;
 			this.processRunner = context.TestProcessRunner;
 			this.testResultsReader = context.TestResultsReader;
 			this.fileSystem = context.FileSystem;
@@ -47,7 +49,13 @@ namespace ICSharpCode.UnitTesting
 		public override void Start(IEnumerable<ITest> selectedTests)
 		{
 			ProcessStartInfo startInfo = GetProcessStartInfo(selectedTests);
-			Start(startInfo);
+			ProcessStartInfo modifiedStartInfo = ModifyProcessStartInfoBeforeRun(startInfo, selectedTests);
+			Start(modifiedStartInfo);
+		}
+		
+		ProcessStartInfo ModifyProcessStartInfoBeforeRun(ProcessStartInfo startInfo, IEnumerable<ITest> selectedTests)
+		{
+			return executionOptions.ModifyProcessStartInfoBeforeTestRun(startInfo, selectedTests);
 		}
 		
 		void Start(ProcessStartInfo processStartInfo)

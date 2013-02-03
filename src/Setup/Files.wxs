@@ -769,13 +769,12 @@
 										<File Source="..\..\AddIns\Analysis\CodeAnalysis\CodeAnalysis.addin" Id="CodeAnalysis.addin" Name="CodeAnalysis.addin" />
 									</Component>
 								</Directory>
-								<!--
 								<Directory Id="CodeCoverageFolder" Name="CodeCoverage">
 									<Component Guid="86A8B8D1-9FFD-46A4-84F8-2BD530E1F83E" Id="CodeCoverageFiles" DiskId="1">
 										<File Source="..\..\AddIns\Analysis\CodeCoverage\CodeCoverage.dll" Id="CodeCoverage.dll" Name="CodeCoverage.dll" Assembly=".net" AssemblyApplication="CodeCoverage.dll" AssemblyManifest="CodeCoverage.dll" KeyPath="yes" />
 										<File Source="..\..\AddIns\Analysis\CodeCoverage\CodeCoverage.addin" Id="CodeCoverage.addin" Name="CodeCoverage.addin" />
 									</Component>
-								</Directory>-->
+								</Directory>
 								<Directory Id="UnitTestingFolder" Name="UnitTesting">
 									<Component Guid="F2F7F12D-1920-49BC-86B0-65B5A1B76516" Id="UnitTestingAddInFiles" DiskId="1">
 										<File Source="..\..\AddIns\Analysis\UnitTesting\UnitTesting.dll" Id="UnitTesting.dll" Name="UnitTesting.dll" Assembly=".net" AssemblyApplication="UnitTesting.dll" AssemblyManifest="UnitTesting.dll" KeyPath="yes" />
