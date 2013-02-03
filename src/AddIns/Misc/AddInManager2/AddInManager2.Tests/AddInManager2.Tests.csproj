@@ -71,13 +71,20 @@
     <Compile Include="AddInSetupTests.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Fakes\FakeAddInSetup.cs" />
+    <Compile Include="Fakes\FakeAddInTree.cs" />
+    <Compile Include="Fakes\FakeCorePackageRepository.cs" />
     <Compile Include="Fakes\FakeNuGetCorePackageManager.cs" />
     <Compile Include="Fakes\FakeNuGetPackageManager.cs" />
+    <Compile Include="Fakes\FakePackage.cs" />
+    <Compile Include="Fakes\FakePackageOperationResolver.cs" />
     <Compile Include="Fakes\FakePackageRepositories.cs" />
     <Compile Include="Fakes\FakeAddInManagerSettings.cs" />
+    <Compile Include="Fakes\FakeSDAddInManagement.cs" />
     <Compile Include="PackageRepositoriesTests.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="TestResources" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
@@ -105,6 +112,7 @@
       <Link>SharpDevelop.exe</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Resource Include="TestResources\AddInManager2Test.addin" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

@@ -7,40 +7,63 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NuGet;
 
 namespace ICSharpCode.AddInManager2.Tests.Fakes
 {
     public class FakeNuGetPackageManager : INuGetPackageManager
     {
+    	private FakeNuGetCorePackageManager _corePackageManager;
+    	private FakePackageOperationResolver _packageOperationResolver;
+    	
+    	public FakeNuGetPackageManager()
+    	{
+    		_corePackageManager = new FakeNuGetCorePackageManager();
+    		_packageOperationResolver = new FakePackageOperationResolver();
+    	}
+    	
         public NuGet.IPackageManager Packages
         {
             get
             {
-                throw new NotImplementedException();
+                return _corePackageManager;
             }
         }
 
         public string PackageOutputDirectory
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get;
+            set;
+        }
+        
+        public bool FakePackageContainsAddIn
+        {
+        	get;
+        	set;
         }
 
         public bool PackageContainsAddIn(NuGet.IPackage package)
         {
-            throw new NotImplementedException();
+            return FakePackageContainsAddIn;
         }
 
         public NuGet.IPackageOperationResolver CreateInstallPackageOperationResolver(bool allowPrereleaseVersions)
         {
-            throw new NotImplementedException();
+            return _packageOperationResolver;
         }
 
         public void ExecuteOperation(NuGet.PackageOperation operation)
         {
-            throw new NotImplementedException();
+            if (ExecuteOperationCallback != null)
+            {
+            	ExecuteOperationCallback(operation);
+            }
         }
+        
+       	public Action<PackageOperation> ExecuteOperationCallback
+       	{
+       		get;
+       		set;
+       	}
     }
 }
