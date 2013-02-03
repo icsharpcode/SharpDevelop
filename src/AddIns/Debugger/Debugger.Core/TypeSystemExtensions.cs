@@ -436,12 +436,6 @@ namespace Debugger
 			return false;
 		}
 		
-		public static bool IsKnownType(this IType type, KnownTypeCode knownType)
-		{
-			var def = type.GetDefinition();
-			return def != null && def.KnownTypeCode == knownType;
-		}
-		
 		public static bool IsKnownType(this IType type, Type knownType)
 		{
 			var def = type.GetDefinition();
@@ -467,7 +461,7 @@ namespace Debugger
 		
 		public static ICorDebugFunction ToCorFunction(this IMethod method)
 		{
-			Module module = method.DeclaringType.GetDefinition().ParentAssembly.GetModule();
+			Module module = method.ParentAssembly.GetModule();
 			return module.CorModule.GetFunctionFromToken(method.GetMetadataToken());
 		}
 		
@@ -521,6 +515,13 @@ namespace Debugger
 					throw new InvalidOperationException("Could not find function with token " + functionToken);
 			}
 			return unresolvedMethod.Resolve(new SimpleTypeResolveContext(module.Assembly));
+		}
+		
+		public static IField ImportField(this IType declaringType, uint fieldToken)
+		{
+			var module = declaringType.GetDefinition().ParentAssembly.GetModule();
+			var info = GetInfo(module.Assembly);
+			return declaringType.GetFields(f => info.GetMetadataToken(f) == fieldToken, GetMemberOptions.IgnoreInheritedMembers).SingleOrDefault();
 		}
 	}
 }

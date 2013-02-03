@@ -28,10 +28,12 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void Breakpoint_Tests()
 		{
-			Breakpoint breakpoint1 = debugger.AddBreakpoint(@"Breakpoint_Tests.cs", 14);
-			Breakpoint breakpoint2 = debugger.AddBreakpoint(@"Breakpoint_Tests.cs", 15);
-			
 			StartTest();
+			
+			string filename = CurrentStackFrame.NextStatement.Filename;
+			
+			Breakpoint breakpoint1 = debugger.AddBreakpoint(filename, 14);
+			Breakpoint breakpoint2 = debugger.AddBreakpoint(filename, 15);
 			
 			Assert.IsTrue(breakpoint1.IsSet);
 			Assert.IsTrue(breakpoint2.IsSet);
@@ -64,19 +66,15 @@ namespace Debugger.Tests {
     <Paused>Breakpoint_Tests.cs:12,4-12,40</Paused>
     <Breakpoint1>
       <Breakpoint
-        FileName="Breakpoint_Tests.cs"
         IsEnabled="True"
         IsSet="True"
-        Line="14"
-        OriginalLocation="Breakpoint_Tests.cs:14,4-14,49" />
+        Line="14" />
     </Breakpoint1>
     <Breakpoint2>
       <Breakpoint
-        FileName="Breakpoint_Tests.cs"
         IsEnabled="True"
         IsSet="True"
-        Line="15"
-        OriginalLocation="Breakpoint_Tests.cs:16,4-16,49" />
+        Line="15" />
     </Breakpoint2>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
@@ -89,17 +87,13 @@ namespace Debugger.Tests {
     <Exited />
     <Breakpoint1>
       <Breakpoint
-        FileName="Breakpoint_Tests.cs"
         IsEnabled="True"
-        Line="14"
-        OriginalLocation="Breakpoint_Tests.cs:14,4-14,49" />
+        Line="14" />
     </Breakpoint1>
     <Breakpoint2>
       <Breakpoint
-        FileName="Breakpoint_Tests.cs"
         IsEnabled="True"
-        Line="15"
-        OriginalLocation="Breakpoint_Tests.cs:16,4-16,49" />
+        Line="15" />
     </Breakpoint2>
   </Test>
 </DebuggerTests>

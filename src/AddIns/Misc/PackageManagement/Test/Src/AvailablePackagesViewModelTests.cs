@@ -221,13 +221,13 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void ShowPackageSources_OnePackageSources_ReturnsFalse()
+		public void ShowPackageSources_OnePackageSources_ReturnsTrue()
 		{
 			CreateRegisteredPackageRepositories();
 			AddOnePackageSourceToRegisteredSources();
 			CreateViewModel(registeredPackageRepositories);
 			
-			Assert.IsFalse(viewModel.ShowPackageSources);
+			Assert.IsTrue(viewModel.ShowPackageSources);
 		}
 		
 		[Test]

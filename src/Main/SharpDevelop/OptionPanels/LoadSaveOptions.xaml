@@ -4,6 +4,7 @@
                  xmlns:core="http://icsharpcode.net/sharpdevelop/core"
                  xmlns:sd="clr-namespace:ICSharpCode.SharpDevelop;assembly=ICSharpCode.SharpDevelop"
                  xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+                 xmlns:sdwb="clr-namespace:ICSharpCode.SharpDevelop.Workbench;assembly=ICSharpCode.SharpDevelop"
                  xmlns:wb="clr-namespace:ICSharpCode.SharpDevelop.Workbench"
                  xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -15,11 +16,11 @@
 				          IsChecked="{core:OptionBinding wb:WpfWorkbench.LoadDocumentProperties}" />
 				<CheckBox Name="detectExternalChanges"
 				          Content="{core:Localize Dialog.Options.IDEOptions.LoadSaveOptions.DetectExternalChanges}"
-				          IsChecked="{core:OptionBinding sd:FileChangeWatcher.DetectExternalChangesOption}" />
+				          IsChecked="{core:OptionBinding sdwb:FileChangeWatcher.DetectExternalChangesOption}" />
 				<CheckBox Content="{core:Localize Dialog.Options.IDEOptions.LoadSaveOptions.AutoLoadExternalChanges}"
 				          Margin="18,0,0,0"
 				          IsEnabled="{Binding IsChecked, ElementName=detectExternalChanges}"
-				          IsChecked="{core:OptionBinding sd:FileChangeWatcher.AutoLoadExternalChangesOption}" />
+				          IsChecked="{core:OptionBinding sdwb:FileChangeWatcher.AutoLoadExternalChangesOption}" />
 			</widgets:StackPanelWithSpacing>
 		</GroupBox>
 		<GroupBox Header="{core:Localize Dialog.Options.IDEOptions.LoadSaveOptions.SaveLabel}">

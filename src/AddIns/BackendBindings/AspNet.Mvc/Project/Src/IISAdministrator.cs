@@ -4,7 +4,8 @@
 using System;
 using System.Reflection;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.AspNet.Mvc
 {
@@ -51,7 +52,7 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		protected Assembly GetWebAdminstrationAssembly()
 		{
-			foreach(DomAssemblyName assembly in GacInterop.GetAssemblyList()) {
+			foreach (DomAssemblyName assembly in SD.GlobalAssemblyCache.Assemblies) {
 				if (assembly.FullName.Contains("Microsoft.Web.Administration")) {
 					if (IsServerManagementVersionRequired(assembly)) {
 						return Assembly.Load(assembly.FullName);

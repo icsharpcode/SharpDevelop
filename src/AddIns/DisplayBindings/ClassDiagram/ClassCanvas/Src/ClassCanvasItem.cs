@@ -625,7 +625,7 @@ namespace ClassDiagram
 		{
 			base.LoadFromXml(navigator);
 			
-			Collapsed = bool.Parse(navigator.GetAttribute("Collapsed", ""));
+			Collapsed = navigator.GetBooleanAttribute("Collapsed");
 			
 			XPathNodeIterator compNI = navigator.Select("Compartments/Compartment");
 			while (compNI.MoveNext())
@@ -634,7 +634,7 @@ namespace ClassDiagram
 				InteractiveHeaderedItem grp;
 				if (groupsByName.TryGetValue(compNav.GetAttribute("Name", ""), out grp))
 				{
-					grp.Collapsed = bool.Parse(compNav.GetAttribute("Collapsed", ""));
+					grp.Collapsed = compNav.GetBooleanAttribute("Collapsed");
 				}
 			}
 		}

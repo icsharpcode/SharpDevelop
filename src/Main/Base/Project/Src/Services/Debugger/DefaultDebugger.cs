@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			attachedProcess.Exited -= new EventHandler(AttachedProcessExited);
 			attachedProcess.Dispose();
 			attachedProcess = null;
-			SD.MainThread.InvokeAsync(() => new Action<EventArgs>(OnDebugStopped)(EventArgs.Empty)).FireAndForget();
+			SD.MainThread.InvokeAsyncAndForget(() => new Action<EventArgs>(OnDebugStopped)(EventArgs.Empty));
 		}
 		
 		public void StartWithoutDebugging(ProcessStartInfo processStartInfo)

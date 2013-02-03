@@ -136,32 +136,36 @@ namespace ICSharpCode.XamlBinding
 		
 		ResolveResult ResolveAttributeValue(IMember propertyOrEvent, AXmlAttribute attribute)
 		{
-			IType type = parseInfo.UnresolvedFile.GetTopLevelTypeDefinition(location).Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
-			if (propertyOrEvent is IEvent) {
-				var memberLookup = new MemberLookup(type.GetDefinition(), compilation.MainAssembly);
-				var rr = memberLookup.Lookup(new ThisResolveResult(type), attribute.Value, EmptyList<IType>.Instance, false);
-				if (rr is MethodGroupResolveResult) {
-					Conversion conversion = CSharpConversions.Get(compilation).ImplicitConversion(rr, propertyOrEvent.ReturnType);
-					IMethod method = conversion.Method;
-					if (method == null)
-						method = ((MethodGroupResolveResult)rr).Methods.FirstOrDefault();
-					if (method != null)
-						return new MemberResolveResult(null, method);
+			IUnresolvedTypeDefinition typeDefinition = parseInfo.UnresolvedFile.GetTopLevelTypeDefinition(location);
+			if (typeDefinition != null) {
+				IType type = typeDefinition.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
+				if (propertyOrEvent is IEvent) {
+					var memberLookup = new MemberLookup(type.GetDefinition(), compilation.MainAssembly);
+					var rr = memberLookup.Lookup(new ThisResolveResult(type), attribute.Value, EmptyList<IType>.Instance, false);
+					if (rr is MethodGroupResolveResult) {
+						Conversion conversion = CSharpConversions.Get(compilation).ImplicitConversion(rr, propertyOrEvent.ReturnType);
+						IMethod method = conversion.Method;
+						if (method == null)
+							method = ((MethodGroupResolveResult)rr).Methods.FirstOrDefault();
+						if (method != null)
+							return new MemberResolveResult(null, method);
+					}
+					return rr;
+				} else {
+					if (propertyOrEvent.Name == "Name") {
+						IField field = type.GetFields(f => f.Name == attribute.Value).FirstOrDefault();
+						if (field != null)
+							return new MemberResolveResult(null, field);
+					}
+					if (propertyOrEvent.ReturnType.Kind == TypeKind.Enum) {
+						IField field = propertyOrEvent.ReturnType.GetFields(f => f.Name == attribute.Value).FirstOrDefault();
+						if (field != null)
+							return new MemberResolveResult(null, field);
+					}
 				}
-				return rr;
-			} else {
-				if (propertyOrEvent.Name == "Name") {
-					IField field = type.GetFields(f => f.Name == attribute.Value).FirstOrDefault();
-					if (field != null)
-						return new MemberResolveResult(null, field);
-				}
-				if (propertyOrEvent.ReturnType.Kind == TypeKind.Enum) {
-					IField field = propertyOrEvent.ReturnType.GetFields(f => f.Name == attribute.Value).FirstOrDefault();
-					if (field != null)
-						return new MemberResolveResult(null, field);
-				}
+				return new UnknownMemberResolveResult(type, attribute.Value, EmptyList<IType>.Instance);
 			}
-			return new UnknownMemberResolveResult(type, attribute.Value, EmptyList<IType>.Instance);
+			return ErrorResolveResult.UnknownError;
 		}
 		
 		ITypeReference CreateTypeReference(string @namespace, string localName)

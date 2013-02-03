@@ -3,16 +3,17 @@
 
 using System;
 using System.IO;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using System.Xml;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
 	public class WpfPrimaryDisplayBinding : IDisplayBinding
 	{
-		public bool CanCreateContentForFile(string fileName)
+		public bool CanCreateContentForFile(FileName fileName)
 		{
 			return Path.GetExtension(fileName).Equals(".xaml", StringComparison.OrdinalIgnoreCase);
 		}
@@ -22,12 +23,12 @@ namespace ICSharpCode.WpfDesign.AddIn
 			return new WpfViewContent(file);
 		}
 		
-		public bool IsPreferredBindingForFile(string fileName)
+		public bool IsPreferredBindingForFile(FileName fileName)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		public double AutoDetectFileContent(FileName fileName, Stream fileContent, string detectedMimeType)
 		{
 			throw new NotImplementedException();
 		}

@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -16,6 +15,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -303,6 +303,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Never returns null.
 		/// </remarks>
 		IAmbience GetAmbience();
+		
+		/// <summary>
+		/// Returns the ICodeGenerator implementation for this project.
+		/// </summary>
+		ICodeGenerator CodeGenerator { get; }
 		
 		/// <summary>
 		/// Prepares searching for references to the specified entity.

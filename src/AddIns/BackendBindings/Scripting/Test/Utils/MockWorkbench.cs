@@ -14,7 +14,7 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace ICSharpCode.Scripting.Tests.Utils
 {
 	public class MockWorkbench : IScriptingWorkbench
-	{		
+	{
 		public FakeScriptingConsolePad FakeScriptingConsolePad = new FakeScriptingConsolePad();
 		public MockEditableViewContent ActiveMockEditableViewContent;
 		
@@ -22,7 +22,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		{
 			MockEditableViewContent viewContent = new MockEditableViewContent();
 			viewContent.PrimaryFileName = new FileName(fileName);
-						
+			
 			MockWorkbench workbench = new MockWorkbench();
 			workbench.ActiveMockEditableViewContent = viewContent;
 			
@@ -31,8 +31,8 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		
 		public IViewContent ActiveViewContent {
 			get { return ActiveMockEditableViewContent; }
-		}		
-				
+		}
+		
 		public IScriptingConsolePad GetScriptingConsolePad()
 		{
 			return FakeScriptingConsolePad;

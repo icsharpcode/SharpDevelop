@@ -78,6 +78,7 @@
     <Compile Include="Shapes\RouteInheritanceShape.cs" />
     <Compile Include="Shapes\RouteShape.cs" />
     <Compile Include="Shapes\PropertyShape.cs" />
+    <Compile Include="Src\XPathNavigatorExtensions.cs" />
     <EmbeddedResource Include="Src\ClassCanvas.resx">
       <DependentUpon>ClassCanvas.Designer.cs</DependentUpon>
     </EmbeddedResource>

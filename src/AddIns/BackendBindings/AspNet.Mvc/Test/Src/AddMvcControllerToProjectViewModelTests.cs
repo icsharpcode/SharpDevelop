@@ -7,13 +7,14 @@ using System.Linq;
 
 using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 
 namespace AspNet.Mvc.Tests
 {
 	[TestFixture]
-	public class AddMvcControllerToProjectControllerModelTests
+	public class AddMvcControllerToProjectControllerModelTests : MvcTestsBase
 	{
 		AddMvcControllerToProjectViewModel viewModel;
 		FakeMvcControllerFileGenerator fakeControllerGenerator;

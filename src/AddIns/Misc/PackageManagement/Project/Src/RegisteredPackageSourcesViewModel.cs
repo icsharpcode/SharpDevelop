@@ -170,7 +170,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public bool CanRemovePackageSource {
-			get { return selectedPackageSourceViewModel != null; }
+			get { return IsPackageSourceSelected(); }
 		}
 		
 		void RemoveSelectedPackageSourceViewModel()
@@ -192,8 +192,15 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool CanMovePackageSourceUp {
 			get {
-				return HasAtLeastTwoPackageSources() && !IsFirstPackageSourceSelected();
+				return HasAtLeastTwoPackageSources() &&
+					IsPackageSourceSelected() &&
+					!IsFirstPackageSourceSelected();
 			}
+		}
+		
+		bool IsPackageSourceSelected()
+		{
+			return selectedPackageSourceViewModel != null;
 		}
 		
 		bool IsFirstPackageSourceSelected()
@@ -210,7 +217,9 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool CanMovePackageSourceDown {
 			get {
-				return HasAtLeastTwoPackageSources() && !IsLastPackageSourceSelected();
+				return HasAtLeastTwoPackageSources() &&
+					IsPackageSourceSelected() &&
+					!IsLastPackageSourceSelected();
 			}
 		}
 		

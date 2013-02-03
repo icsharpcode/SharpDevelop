@@ -134,11 +134,7 @@ namespace Debugger
 			
 			appDomain.Process.activeEvals.Add(this);
 			
-			if (appDomain.Process.Options.SuspendOtherThreads) {
-				appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep, new Thread[] { evalThread }, CorDebugThreadState.THREAD_SUSPEND);
-			} else {
-				appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep, this.Process.UnsuspendedThreads, CorDebugThreadState.THREAD_RUN);
-			}
+			appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep);
 		}
 
 		/// <exception cref="DebuggerException">Evaluation can not be stopped</exception>
@@ -191,12 +187,15 @@ namespace Debugger
 		/// <summary> Synchronously calls a function and returns its return value </summary>
 		public static Value InvokeMethod(Thread evalThread, IMethod method, Value thisValue, Value[] args)
 		{
-			#warning Fast property eval
-//			var field = Value.GetBackingField(method);
-//			if (field != null) {
-//				evalThread.Process.TraceMessage("Using backing field for " + method.FullName);
-//				return Value.GetMemberValue(evalThread, thisValue, field, args);
-//			}
+			Module module = method.DeclaringTypeDefinition.ParentAssembly.GetModule();
+			uint fieldToken = module.GetBackingFieldToken(method.ToCorFunction());
+			if (fieldToken != 0) {
+				var field = method.DeclaringType.ImportField(fieldToken);
+				if (field != null) {
+					evalThread.Process.TraceMessage("Using backing field for " + method.FullName);
+					return Value.GetMemberValue(evalThread, thisValue, field, args);
+				}
+			}
 			return AsyncInvokeMethod(evalThread, method, thisValue, args).WaitForResult();
 		}
 		

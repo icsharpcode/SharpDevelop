@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -76,7 +76,7 @@ namespace ICSharpCode.AspNet.Mvc
 				string processName = WebProjectService.GetWorkerProcessName(properties);
 				
 				// try find the worker process directly or using the process monitor callback
-				Process[] processes = System.Diagnostics.Process.GetProcesses();
+				List<Process> processes = System.Diagnostics.Process.GetProcesses().ToList();
 				int index = processes.FindIndex(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
 				if (index > -1) {
 					if (withDebugging)
@@ -96,7 +96,7 @@ namespace ICSharpCode.AspNet.Mvc
 						DisposeProcessMonitor();
 						this.monitor = new ProcessMonitor(processName);
 						this.monitor.ProcessCreated += delegate {
-							WorkbenchSingleton.SafeThreadCall((Action)(() => OnProcessCreated(properties, withDebugging)));
+							SD.MainThread.InvokeIfRequired((Action)(() => OnProcessCreated(properties, withDebugging)));
 						};
 						this.monitor.Start();
 					}
@@ -151,7 +151,7 @@ namespace ICSharpCode.AspNet.Mvc
 		void OnProcessCreated(WebProjectProperties properties, bool withDebugging)
 		{
 			string processName = WebProjectService.GetWorkerProcessName(properties);
-			Process[] processes = Process.GetProcesses();
+			List<Process> processes = Process.GetProcesses().ToList();
 			int index = processes.FindIndex(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
 			if (index == -1)
 				return;

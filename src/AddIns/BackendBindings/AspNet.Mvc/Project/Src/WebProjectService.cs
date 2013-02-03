@@ -5,8 +5,8 @@ using System;
 using System.EnterpriseServices.Internal;
 using System.IO;
 using System.Reflection;
-
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using Microsoft.Win32;
 
@@ -151,30 +151,51 @@ namespace ICSharpCode.AspNet.Mvc
 		{
 			string location = FRAMEWORK_LOCATION + (Environment.Is64BitOperatingSystem ? FRAMEWORK64 : FRAMEWORK32);
 			
-			string frameworkString = "";
-			
-			RegistryService.GetRegistryValue<string>(
-				RegistryHive.LocalMachine,
-				ASPNET_REG_PATH,
-				ASPNET_ROOT_VER,
-				RegistryValueKind.String,
-				out frameworkString);
+			string frameworkString = GetRegistryStringValue(ASPNET_REG_PATH, ASPNET_ROOT_VER);
 			int ind = frameworkString.LastIndexOf('.');
 			location += "v" + frameworkString.Substring(0, ind) + "\\";
 			return location;
 		}
 		
+		static string GetRegistryStringValue(string keyName, string valueName)
+		{
+			object value = GetRegistryValue(keyName, valueName);
+			if (value != null) {
+				return value.ToString();
+			}
+			return String.Empty;
+		}
+		
+		static object GetRegistryValue(string keyName, string valueName)
+		{
+			try {
+				using (RegistryKey registryKey = Registry.LocalMachine.OpenSubKey(keyName)) {
+					if (registryKey != null) {
+						return registryKey.GetValue(valueName);
+					}
+				}
+			} catch {
+				// Do nothing.
+			}
+			return null;
+		}
+		
+		static int GetRegistryIntegerValue(string keyName, string valueName)
+		{
+			object value = GetRegistryValue(keyName, valueName);
+			if (value != null) {
+				try {
+					return Convert.ToInt32(value);
+				} catch {
+					// Do nothing.
+				}
+			}
+			return 0;
+		}
+		
 		public static string GetDefaultIISWorkerProcessLocation()
 		{
-			string regValue = "";
-			
-			RegistryService.GetRegistryValue<string>(
-				RegistryHive.LocalMachine,
-				IIS_LOCATION,
-				IIS_INSTALL_PATH,
-				RegistryValueKind.String,
-				out regValue);
-			return regValue + "\\";
+			return GetRegistryValue(IIS_LOCATION, IIS_INSTALL_PATH) + @"\";
 		}
 		
 		/// <summary>
@@ -198,15 +219,7 @@ namespace ICSharpCode.AspNet.Mvc
 		public static IISVersion IISVersion
 		{
 			get {
-				int regValue = 0;
-				
-				RegistryService.GetRegistryValue<int>(
-					RegistryHive.LocalMachine,
-					IIS_LOCATION,
-					IIS_MAJOR_VERSION,
-					RegistryValueKind.DWord,
-					out regValue);
-				
+				int regValue = GetRegistryIntegerValue(IIS_LOCATION, IIS_MAJOR_VERSION);
 				if (regValue > 4)
 					return (IISVersion)regValue;
 				

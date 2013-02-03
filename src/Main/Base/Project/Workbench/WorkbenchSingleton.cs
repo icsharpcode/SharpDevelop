@@ -184,7 +184,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		[Obsolete("Use SD.MainThread.InvokeAsync().FireAndForget() instead")]
 		public static void SafeThreadAsyncCall(Action method)
 		{
-			SD.MainThread.InvokeAsync(method).FireAndForget();
+			SD.MainThread.InvokeAsyncAndForget(method);
 		}
 		
 		/// <summary>
@@ -193,7 +193,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		[Obsolete("Use SD.MainThread.InvokeAsync().FireAndForget() instead")]
 		public static void SafeThreadAsyncCall<A>(Action<A> method, A arg1)
 		{
-			SD.MainThread.InvokeAsync(() => method(arg1)).FireAndForget();
+			SD.MainThread.InvokeAsyncAndForget(() => method(arg1));
 		}
 		
 		/// <summary>
@@ -202,7 +202,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		[Obsolete("Use SD.MainThread.InvokeAsync().FireAndForget() instead")]
 		public static void SafeThreadAsyncCall<A, B>(Action<A, B> method, A arg1, B arg2)
 		{
-			SD.MainThread.InvokeAsync(() => method(arg1, arg2)).FireAndForget();
+			SD.MainThread.InvokeAsyncAndForget(() => method(arg1, arg2));
 		}
 		
 		/// <summary>
@@ -211,7 +211,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		[Obsolete("Use SD.MainThread.InvokeAsync().FireAndForget() instead")]
 		public static void SafeThreadAsyncCall<A, B, C>(Action<A, B, C> method, A arg1, B arg2, C arg3)
 		{
-			SD.MainThread.InvokeAsync(() => method(arg1, arg2, arg3)).FireAndForget();
+			SD.MainThread.InvokeAsyncAndForget(() => method(arg1, arg2, arg3));
 		}
 		
 		/// <summary>

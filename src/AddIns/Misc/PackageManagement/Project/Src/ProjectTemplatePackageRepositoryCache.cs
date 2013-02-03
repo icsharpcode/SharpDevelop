@@ -41,9 +41,14 @@ namespace ICSharpCode.PackageManagement
 		
 		IEnumerable<IPackageRepository> GetRegisteredPackageRepositories()
 		{
-			foreach (PackageSource packageSource in registeredPackageSources.PackageSources) {
+			foreach (PackageSource packageSource in GetEnabledPackageSources()) {
 				yield return CreateRepository(packageSource.Source);
 			}
+		}
+		
+		public IEnumerable<PackageSource> GetEnabledPackageSources()
+		{
+			return registeredPackageSources.PackageSources.GetEnabledPackageSources();
 		}
 		
 		public ISharedPackageRepository CreateSharedRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem, IFileSystem configSettingsFileSystem)

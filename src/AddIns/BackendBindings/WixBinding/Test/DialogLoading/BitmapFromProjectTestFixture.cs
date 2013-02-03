@@ -25,6 +25,7 @@ namespace WixBinding.Tests.Document
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			MessageLoopHelper.InitializeForUnitTests();
 			BitmapFileNamesRequested.Clear();
 			CreatedComponents.Clear();
 			

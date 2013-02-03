@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	class BuildModifiedProjectsOnlyService
 	{
-		static readonly Dictionary<IProject, CompilationPass> unmodifiedProjects = new Dictionary<IProject, CompilationPass>();
+		readonly Dictionary<IProject, CompilationPass> unmodifiedProjects = new Dictionary<IProject, CompilationPass>();
 		
 		public BuildModifiedProjectsOnlyService(IBuildService buildService)
 		{
@@ -83,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.Project
 							LoggingService.Debug(pair.Key.Name + ": " + pair.Value);
 						}
 					}
-					return new WrapperFactory(setting).GetWrapper(buildable);
+					return new WrapperFactory(this, setting).GetWrapper(buildable);
 				case BuildDetection.RegularBuild:
 					return buildable;
 				default:
@@ -141,10 +141,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			public readonly BuildDetection Setting;
 			public readonly CompilationPass CurrentPass = new CompilationPass();
+			internal readonly BuildModifiedProjectsOnlyService Service;
 			readonly Dictionary<IBuildable, IBuildable> dict = new Dictionary<IBuildable, IBuildable>();
 			
-			public WrapperFactory(BuildDetection setting)
+			public WrapperFactory(BuildModifiedProjectsOnlyService service, BuildDetection setting)
 			{
+				this.Service = service;
 				this.Setting = setting;
 			}
 			
@@ -163,11 +165,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			internal readonly IBuildable wrapped;
 			internal readonly WrapperFactory factory;
+			internal readonly BuildModifiedProjectsOnlyService service;
 			
 			public Wrapper(IBuildable wrapped, WrapperFactory factory)
 			{
 				this.wrapped = wrapped;
 				this.factory = factory;
+				this.service = factory.Service;
 			}
 			
 			public string Name {
@@ -217,8 +221,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (p == null) {
 					return await wrapped.BuildAsync(options, feedbackSink, progressMonitor);
 				} else {
-					lock (unmodifiedProjects) {
-						if (!unmodifiedProjects.TryGetValue(p, out lastCompilationPass)) {
+					lock (service.unmodifiedProjects) {
+						if (!service.unmodifiedProjects.TryGetValue(p, out lastCompilationPass)) {
 							lastCompilationPass = null;
 						}
 					}
@@ -240,8 +244,8 @@ namespace ICSharpCode.SharpDevelop.Project
 						lastCompilationPass = factory.CurrentPass;
 						var success = await wrapped.BuildAsync(options, feedbackSink, progressMonitor);
 						if (success) {
-							lock (unmodifiedProjects) {
-								unmodifiedProjects[p] = factory.CurrentPass;
+							lock (service.unmodifiedProjects) {
+								service.unmodifiedProjects[p] = factory.CurrentPass;
 							}
 						}
 						return success;

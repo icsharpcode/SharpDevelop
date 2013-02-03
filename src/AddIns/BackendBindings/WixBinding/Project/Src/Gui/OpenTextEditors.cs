@@ -3,8 +3,9 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.WixBinding
 {
@@ -20,11 +21,9 @@ namespace ICSharpCode.WixBinding
 		public ITextEditor FindTextEditorForDocument(WixDocument document)
 		{
 			foreach (IViewContent view in workbench.ViewContentCollection) {
-				ITextEditorProvider textEditorProvider = view as ITextEditorProvider;
-				if (textEditorProvider != null) {
-					if (AreFileNamesEqual(view.PrimaryFileName, document.FileName)) {
-						return textEditorProvider.TextEditor;
-					}
+				ITextEditor textEditor = view.GetService<ITextEditor>();
+				if (AreFileNamesEqual(view.PrimaryFileName, document.FileName)) {
+					return textEditor;
 				}
 			}
 			return null;

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
@@ -88,10 +89,10 @@ namespace ICSharpCode.PackageManagement.Design
 			SavedSolution = solution;
 		}
 		
-		public IProjectContent GetProjectContent(IProject project)
-		{
-			return new DefaultProjectContent();
-		}
+//		public IProjectContent GetProjectContent(IProject project)
+//		{
+//			return new DefaultProjectContent();
+//		}
 		
 		public IProjectBrowserUpdater ProjectBrowserUpdater;
 		

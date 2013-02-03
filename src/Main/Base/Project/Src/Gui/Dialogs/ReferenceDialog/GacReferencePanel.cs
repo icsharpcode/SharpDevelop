@@ -274,7 +274,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			MSBuildInternals.ResolveAssemblyReferences(project, referenceItems.ToArray(), resolveOnlyAdditionalReferences: true, logErrorsToOutputPad: false);
 			
-			SD.MainThread.InvokeAsync(delegate {
+			SD.MainThread.InvokeAsyncAndForget(delegate {
 				if (IsDisposed) {
 					return;
 				}
@@ -283,7 +283,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						itemsToResolveVersion [i].SubItems [1].Text = referenceItems [i].Version.ToString();
 					}
 				}
-			}).FireAndForget();
+			});
 		}
 		
 		#if DEBUG

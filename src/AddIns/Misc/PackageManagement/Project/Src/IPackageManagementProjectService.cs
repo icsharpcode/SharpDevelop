@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -27,7 +28,7 @@ namespace ICSharpCode.PackageManagement
 		
 		IEnumerable<IProject> GetOpenProjects();
 		
-		IProjectContent GetProjectContent(IProject project);
+		//IProjectContent GetProjectContent(IProject project);
 		
 		IProjectBrowserUpdater CreateProjectBrowserUpdater();
 		

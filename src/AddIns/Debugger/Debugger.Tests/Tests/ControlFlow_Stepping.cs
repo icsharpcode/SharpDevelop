@@ -119,7 +119,7 @@ namespace Debugger.Tests {
 		{
 			StartTest();
 			
-			SourcecodeSegment start = this.CurrentStackFrame.NextStatement;
+			SequencePoint start = this.CurrentStackFrame.NextStatement;
 			
 			foreach (bool jmcEnabled in new bool[] {true, true, false}) {
 				ObjectDump("Log", "Starting run with JMC=" + jmcEnabled.ToString());

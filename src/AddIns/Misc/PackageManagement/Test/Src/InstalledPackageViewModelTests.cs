@@ -24,6 +24,7 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModel()
 		{
+			MessageLoopHelper.InitializeForUnitTests();
 			viewModel = new TestableInstalledPackageViewModel();
 			fakeSolution = viewModel.FakeSolution;
 			fakeActionRunner = viewModel.FakeActionRunner;
@@ -88,7 +89,7 @@ namespace PackageManagement.Tests
 		}
 		
 		void AddTwoProjectsSelected(string projectName1, string projectName2)
-		{			
+		{
 			AddProjectToSolution();
 			AddProjectToSolution();
 			fakeSolution.FakeMSBuildProjects[0].Name = projectName1;

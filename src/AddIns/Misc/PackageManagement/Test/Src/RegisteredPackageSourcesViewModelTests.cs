@@ -446,6 +446,30 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void CanMovePackageSourceUp_TwoPackageSourcesAndNothingIsSelected_ReturnsFalse()
+		{
+			CreateViewModelWithTwoPackageSources();
+			viewModel.Load();
+			viewModel.SelectedPackageSourceViewModel = null;
+			
+			bool result = viewModel.CanMovePackageSourceUp;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void CanMovePackageSourceDown_TwoPackageSourcesAndNothingIsSelected_ReturnsFalse()
+		{
+			CreateViewModelWithTwoPackageSources();
+			viewModel.Load();
+			viewModel.SelectedPackageSourceViewModel = null;
+			
+			bool result = viewModel.CanMovePackageSourceDown;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
 		public void SelectedPackageSourceViewModel_PropertyChanged_FiresPropertyChangedEvent()
 		{
 			CreateViewModelWithOnePackageSource();

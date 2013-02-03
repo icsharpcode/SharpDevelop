@@ -104,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (item.Frame.Process.IsPaused) {
 				if (item.Frame != null) {
 					// check for options - if these options are enabled, selecting the frame should not continue
-					if (!item.Frame.HasSymbols && !item.Frame.Process.Options.DecompileCodeWithoutSymbols) {
+					if (!item.Frame.HasSymbols && !item.Frame.Process.Options.StepOverNoSymbols) {
 						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions}",
 						                           "${res:MainWindow.Windows.Debug.CallStack.FunctionSwitch}");
 						return;

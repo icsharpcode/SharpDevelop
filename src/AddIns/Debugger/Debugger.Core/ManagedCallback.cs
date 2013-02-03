@@ -48,12 +48,7 @@ namespace Debugger
 		// The event will be raised as soon as the callback queue is drained.
 		DebuggerPausedEventArgs GetPausedEventArgs()
 		{
-			if (pausedEventArgs == null) {
-				pausedEventArgs = new DebuggerPausedEventArgs();
-				pausedEventArgs.Process = process;
-				pausedEventArgs.BreakpointsHit = new List<Breakpoint>();
-			}
-			return pausedEventArgs;
+			return pausedEventArgs ?? (pausedEventArgs = new DebuggerPausedEventArgs(process));
 		}
 		
 		void EnterCallback(string name, ICorDebugProcess pProcess)
@@ -67,8 +62,9 @@ namespace Debugger
 			if (process.IsPaused) {
 				process.TraceMessage("Processing post-break callback");
 				// Decrese the "break count" from 2 to 1 - does not actually continue
-				process.AsyncContinue(DebuggeeStateAction.Keep, new Thread[] {}, null);
-				// Make sure we stay pauses after the callback is handled
+				// TODO: This inccorectly marks the debugger as running
+				process.AsyncContinue(DebuggeeStateAction.Keep);
+				// Make sure we stay paused after the callback is handled
 				pauseOnNextExit = true;
 				return;
 			}
@@ -98,16 +94,13 @@ namespace Debugger
 			if (hasQueuedCallbacks)
 				process.TraceMessage("Process has queued callbacks");
 			
-			// TODO: Can we drain the queue?
-			if (hasQueuedCallbacks && (pausedEventArgs == null || pausedEventArgs.ExceptionThrown == null)) {
-				// Process queued callbacks if no exception occurred
-				process.AsyncContinue(DebuggeeStateAction.Keep, null, null);
+			if (hasQueuedCallbacks) {
+				process.AsyncContinue(DebuggeeStateAction.Keep);
 			} else if (process.Evaluating) {
 				// Ignore events during property evaluation
-				process.AsyncContinue(DebuggeeStateAction.Keep, null, null);
+				process.AsyncContinue(DebuggeeStateAction.Keep);
 			} else if (pauseOnNextExit) {
-				if (process.Options.Verbose)
-					process.TraceMessage("Callback exit: Paused");
+				// process.TraceMessage("Callback exit: Paused");
 
 				process.DisableAllSteppers();
 				if (pausedEventArgs != null) {
@@ -123,7 +116,7 @@ namespace Debugger
 				pauseOnNextExit = false;
 				pausedEventArgs = null;
 			} else {
-				process.AsyncContinue(DebuggeeStateAction.Keep, null, null);
+				process.AsyncContinue(DebuggeeStateAction.Keep);
 			}
 			
 			isInCallback = false;
@@ -339,8 +332,8 @@ namespace Debugger
 			EnterCallback("CreateProcess", pProcess);
 
 			// Process is added in NDebugger.Start
-			// disable NGen
-			if (!this.process.Options.EnableJustMyCode && !this.process.Options.StepOverNoSymbols) {
+			// disable NGen if we want to do decompilation
+			if (!this.process.Options.StepOverNoSymbols) {
 				ICorDebugProcess2 pProcess2 = pProcess as ICorDebugProcess2;
 				if (pProcess2 != null && Process.DebugMode == DebugModeFlag.Debug) {
 					try {
@@ -408,8 +401,6 @@ namespace Debugger
 			
 			Thread thread = new Thread(process, pThread);
 			process.threads.Add(thread);
-			
-			thread.CorThread.SetDebugState(process.NewThreadState);
 			
 			ExitCallback();
 		}
@@ -534,11 +525,12 @@ namespace Debugger
 			bool pauseOnHandled = !process.Evaluating && process.Options != null && process.Options.PauseOnHandledExceptions;
 			
 			if (exceptionType == ExceptionType.Unhandled || (pauseOnHandled && exceptionType == ExceptionType.CatchHandlerFound)) {
-				Value value = new Value(process.GetAppDomain(pAppDomain), pThread.GetCurrentException()).GetPermanentReferenceOfHeapValue();
 				
-				if (GetPausedEventArgs().ExceptionThrown != null)
-					throw new DebuggerException("Exception is already being processed");
-				GetPausedEventArgs().ExceptionThrown = new Exception(value, exceptionType);
+				// Multiple exceptions can happen at the same time on multiple threads
+				// (I have managed to create a test application to trigger it)
+				Thread thread = process.GetThread(pThread);
+				thread.CurrentExceptionType = exceptionType;
+				GetPausedEventArgs().ExceptionsThrown.Add(thread);
 				
 				pauseOnNextExit = true;
 			}

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 
@@ -12,16 +13,23 @@ namespace UnitTesting.Tests.TestRunner
 	[TestFixture]
 	public class TestResultsReaderTests
 	{
+		List<TestResult> ReadTestResults(string resultsText)
+		{
+			var reader = new TestResultsReader(new StringReader(resultsText));
+			var results = new List<TestResult>();
+			reader.TestFinished += (sender, e) => results.Add(e.Result);
+			reader.Run();
+			return results;
+		}
+		
 		[Test]
 		public void OneTestPass()
 		{
-			string resultsText = "Name: MyTest\r\n" +
+			string resultsText =
+				"Name: MyTest\r\n" +
 				"Result: Success\r\n";
-
-			TestResultsReader reader = new TestResultsReader(new StringReader(resultsText));
-			List<TestResult> results = new List<TestResult>();
-			reader.TestFinished += (sender, e) => results.Add(e.Result);
-			reader.Run();
+			
+			List<TestResult> results = ReadTestResults(resultsText);
 			
 			Assert.AreEqual(1, results.Count);
 			
@@ -34,13 +42,11 @@ namespace UnitTesting.Tests.TestRunner
 		[Test]
 		public void OneTestIgnored()
 		{
-			string resultsText = "Name: MyTest\r\n" +
+			string resultsText =
+				"Name: MyTest\r\n" +
 				"Result: Ignored\r\n";
-
-			TestResultsReader reader = new TestResultsReader(new StringReader(resultsText));
-			List<TestResult> results = new List<TestResult>();
-			reader.TestFinished += (sender, e) => results.Add(e.Result);
-			reader.Run();
+			
+			List<TestResult> results = ReadTestResults(resultsText);
 			
 			Assert.AreEqual(1, results.Count);
 			
@@ -50,23 +56,25 @@ namespace UnitTesting.Tests.TestRunner
 			Assert.IsFalse(result.IsSuccess);
 			Assert.AreEqual(TestResultType.Ignored, result.ResultType);
 		}
-		/*
+		
 		[Test]
 		public void OneTestPassInParts()
 		{
-			string resultsText = "Name: MyTest\r\n" +
+			string resultsText =
+				"Name: MyTest\r\n" +
 				"Result: Success\r\n";
-
-			TestResultsReader reader = new TestResultsReader();
 			
-			List<TestResult> results = new List<TestResult>();
+			var stream = new MemoryStream();
+			var streamReader = new StreamReader(stream);
+			var reader = new TestResultsReader(streamReader);
+			var results = new List<TestResult>();
+			reader.TestFinished += (sender, e) => results.Add(e.Result);
+			
 			foreach (char ch in resultsText) {
-				TestResult[] readResults = reader.Read(ch.ToString());
-				if (readResults.Length > 0) {
-					foreach (TestResult readResult in readResults) {
-						results.Add(readResult);
-					}
-				}
+				byte[] bytes = Encoding.UTF8.GetBytes(new char[] { ch });
+				stream.Write(bytes, 0, bytes.Length);
+				stream.Position--;
+				reader.Run();
 			}
 			
 			Assert.AreEqual(1, results.Count);
@@ -75,17 +83,15 @@ namespace UnitTesting.Tests.TestRunner
 			Assert.AreEqual("MyTest", result.Name);
 			Assert.IsTrue(result.IsSuccess);
 		}
-		*/
+		
 		[Test]
 		public void OneTestFailure()
 		{
-			string resultsText = "Name: MyTest\r\n" +
+			string resultsText =
+				"Name: MyTest\r\n" +
 				"Result: Failure\r\n";
-
-			TestResultsReader reader = new TestResultsReader(new StringReader(resultsText));
-			List<TestResult> results = new List<TestResult>();
-			reader.TestFinished += (sender, e) => results.Add(e.Result);
-			reader.Run();
+			
+			List<TestResult> results = ReadTestResults(resultsText);
 			
 			Assert.AreEqual(1, results.Count);
 			
@@ -100,14 +106,12 @@ namespace UnitTesting.Tests.TestRunner
 		[Test]
 		public void TestMessage()
 		{
-			string resultsText = "Name: Test\r\n" +
+			string resultsText =
+				"Name: Test\r\n" +
 				"Message: Should not be 0.\r\n" +
 				"Result: Failure\r\n";
-
-			TestResultsReader reader = new TestResultsReader(new StringReader(resultsText));
-			List<TestResult> results = new List<TestResult>();
-			reader.TestFinished += (sender, e) => results.Add(e.Result);
-			reader.Run();
+			
+			List<TestResult> results = ReadTestResults(resultsText);
 			
 			Assert.AreEqual(1, results.Count);
 			
@@ -120,14 +124,12 @@ namespace UnitTesting.Tests.TestRunner
 		[Test]
 		public void TestStackTrace()
 		{
-			string resultsText = "Name: Test\r\n" +
+			string resultsText =
+				"Name: Test\r\n" +
 				"StackTrace: stack trace\r\n" +
 				"Result: Failure\r\n";
-
-			TestResultsReader reader = new TestResultsReader(new StringReader(resultsText));
-			List<TestResult> results = new List<TestResult>();
-			reader.TestFinished += (sender, e) => results.Add(e.Result);
-			reader.Run();
+			
+			List<TestResult> results = ReadTestResults(resultsText);
 			
 			Assert.AreEqual(1, results.Count);
 			
@@ -141,11 +143,8 @@ namespace UnitTesting.Tests.TestRunner
 		public void ResultWithNoTestName()
 		{
 			string resultsText = "Result: Failure\r\n";
-
-			TestResultsReader reader = new TestResultsReader(new StringReader(resultsText));
-			List<TestResult> results = new List<TestResult>();
-			reader.TestFinished += (sender, e) => results.Add(e.Result);
-			reader.Run();
+			
+			List<TestResult> results = ReadTestResults(resultsText);
 			
 			Assert.AreEqual(0, results.Count);
 		}
@@ -153,14 +152,12 @@ namespace UnitTesting.Tests.TestRunner
 		[Test]
 		public void MissingNameValuePairOnFirstLine()
 		{
-			string resultsText = "MissingNameValuePair\r\n" +
+			string resultsText =
+				"MissingNameValuePair\r\n" +
 				"Name: Test\r\n" +
 				"Result: Failure\r\n";
-
-			TestResultsReader reader = new TestResultsReader(new StringReader(resultsText));
-			List<TestResult> results = new List<TestResult>();
-			reader.TestFinished += (sender, e) => results.Add(e.Result);
-			reader.Run();
+			
+			List<TestResult> results = ReadTestResults(resultsText);
 			
 			Assert.AreEqual(1, results.Count);
 			
@@ -172,15 +169,13 @@ namespace UnitTesting.Tests.TestRunner
 		[Test]
 		public void TwoLineTestMessage()
 		{
-			string resultsText = "Name: Test\r\n" +
+			string resultsText =
+				"Name: Test\r\n" +
 				"Message: Should not be 0.\r\n" +
 				" Should be 1.\r\n" +
 				"Result: Failure\r\n";
-
-			TestResultsReader reader = new TestResultsReader(new StringReader(resultsText));
-			List<TestResult> results = new List<TestResult>();
-			reader.TestFinished += (sender, e) => results.Add(e.Result);
-			reader.Run();
+			
+			List<TestResult> results = ReadTestResults(resultsText);
 			
 			Assert.AreEqual(1, results.Count);
 			
@@ -193,16 +188,14 @@ namespace UnitTesting.Tests.TestRunner
 		[Test]
 		public void ThreeLineTestMessage()
 		{
-			string resultsText = "Name: Test\r\n" +
+			string resultsText =
+				"Name: Test\r\n" +
 				"Message: Should not be 0.\r\n" +
 				" Should be 1.\r\n" +
 				" End of message.\r\n" +
 				"Result: Failure\r\n";
-
-			TestResultsReader reader = new TestResultsReader(new StringReader(resultsText));
-			List<TestResult> results = new List<TestResult>();
-			reader.TestFinished += (sender, e) => results.Add(e.Result);
-			reader.Run();
+			
+			List<TestResult> results = ReadTestResults(resultsText);
 			
 			Assert.AreEqual(1, results.Count);
 			
@@ -215,15 +208,13 @@ namespace UnitTesting.Tests.TestRunner
 		[Test]
 		public void TwoTestFailures()
 		{
-			string resultsText = "Name: MyTest1\r\n" +
+			string resultsText =
+				"Name: MyTest1\r\n" +
 				"Result: Failure\r\n" +
 				"Name: MyTest2\r\n" +
 				"Result: Failure\r\n";
-
-			TestResultsReader reader = new TestResultsReader(new StringReader(resultsText));
-			List<TestResult> results = new List<TestResult>();
-			reader.TestFinished += (sender, e) => results.Add(e.Result);
-			reader.Run();
+			
+			List<TestResult> results = ReadTestResults(resultsText);
 			
 			Assert.AreEqual(2, results.Count);
 			
@@ -239,7 +230,8 @@ namespace UnitTesting.Tests.TestRunner
 		[Test]
 		public void TwoTestFailuresWithMultilineMessages()
 		{
-			string resultsText = "Name: MyTest1\r\n" +
+			string resultsText =
+				"Name: MyTest1\r\n" +
 				"Message: FirstLine\r\n" +
 				" SecondLine\r\n" +
 				"Result: Failure\r\n" +
@@ -248,11 +240,8 @@ namespace UnitTesting.Tests.TestRunner
 				" SecondLine\r\n" +
 				" ThirdLine\r\n" +
 				"Result: Failure\r\n";
-
-			TestResultsReader reader = new TestResultsReader(new StringReader(resultsText));
-			List<TestResult> results = new List<TestResult>();
-			reader.TestFinished += (sender, e) => results.Add(e.Result);
-			reader.Run();
+			
+			List<TestResult> results = ReadTestResults(resultsText);
 			
 			Assert.AreEqual(2, results.Count);
 			

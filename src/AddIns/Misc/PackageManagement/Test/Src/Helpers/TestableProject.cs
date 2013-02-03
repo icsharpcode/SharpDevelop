@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -20,7 +22,7 @@ namespace PackageManagement.Tests.Helpers
 			set { TestableProjectBehaviour.ItemTypeToReturnFromGetDefaultItemType = value; }
 		}
 		
-		public ReadOnlyCollection<ProjectItem> ItemsWhenSaved;
+		public IReadOnlyCollection<ProjectItem> ItemsWhenSaved;
 		
 		public TestableProject(ProjectCreateInformation createInfo)
 			: base(createInfo)

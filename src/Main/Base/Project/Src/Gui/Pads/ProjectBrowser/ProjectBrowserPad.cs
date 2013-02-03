@@ -151,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			// do the potentially expensive selection of the item in the tree view only once after the last change
 			if (!activeContentChangedEnqueued) {
 				activeContentChangedEnqueued = true;
-				SD.MainThread.InvokeAsync(ActiveContentChangedInvoked).FireAndForget();
+				SD.MainThread.InvokeAsyncAndForget(ActiveContentChangedInvoked);
 			}
 		}
 		
@@ -266,10 +266,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (refreshViewEnqueued || instance == null)
 				return;
 			refreshViewEnqueued = true;
-			SD.MainThread.InvokeAsync(delegate {
+			SD.MainThread.InvokeAsyncAndForget(delegate {
 				refreshViewEnqueued = false;
 				instance.ProjectBrowserControl.RefreshView();
-			}).FireAndForget();
+			});
 		}
 	}
 }

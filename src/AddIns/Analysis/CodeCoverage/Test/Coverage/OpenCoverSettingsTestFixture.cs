@@ -8,6 +8,7 @@ using System.Xml;
 
 using ICSharpCode.CodeCoverage;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
@@ -16,12 +17,12 @@ using UnitTesting.Tests.Utils;
 namespace ICSharpCode.CodeCoverage.Tests.Coverage
 {
 	/// <summary>
-	/// Tests the saving and loading of the PartCover settings file. This
+	/// Tests the saving and loading of the OpenCover settings file. This
 	/// file is used to stores the includes and excludes regular expressions
-	/// that PartCover uses.
+	/// that OpenCover uses.
 	/// </summary>
 	[TestFixture]
-	public class OpenCoverSettingsTestFixture
+	public class OpenCoverSettingsTestFixture : SDTestFixtureBase
 	{
 		OpenCoverSettings settings;
 		OpenCoverSettings savedSettings;
@@ -62,7 +63,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 			MSBuildBasedProject project = new MSBuildBasedProject(
 				new ProjectCreateInformation {
 					Solution = new Solution(new MockProjectChangeWatcher()),
-					OutputProjectFileName = @"C:\temp\test.csproj",
+					OutputProjectFileName = new FileName(@"C:\temp\test.csproj"),
 					ProjectName = "test"
 				});
 			

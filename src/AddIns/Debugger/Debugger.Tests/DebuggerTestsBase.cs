@@ -218,16 +218,12 @@ namespace Debugger.Tests
 				} else {
 					this.CurrentStackFrame = null;
 				}
-				if (e.ExceptionThrown != null) {
-					StringBuilder msg = new StringBuilder();
-					if (CurrentThread.InterceptException(e.ExceptionThrown)) {
-						msg.Append(e.ExceptionThrown.ToString());
-					} else {
-						// For example, happens on stack overflow
-						msg.Append("Could not intercept: ");
-						msg.Append(e.ExceptionThrown.ToString());
+				foreach(Thread exceptionThread in e.ExceptionsThrown) {
+					Value exception = exceptionThread.CurrentException;
+					LogEvent("ExceptionThrown", exception.Type.FullName);
+					if (!exceptionThread.InterceptException()) {
+						LogEvent("CanNotInterceptException", exception.Type.FullName);
 					}
-					LogEvent("ExceptionThrown", msg.ToString());
 				}
 				LogEvent("Paused", CurrentStackFrame != null && CurrentStackFrame.NextStatement != null ? CurrentStackFrame.NextStatement.ToString() : string.Empty);
 			};

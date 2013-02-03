@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace AspNet.Mvc.Tests
 {
 	[TestFixture]
-	public class SelectedMvcViewFolderTests
+	public class SelectedMvcViewFolderTests : MvcTestsBase
 	{
 		TestableSelectedMvcViewFolder selectedFolder;
 		FakeMvcProject projectForSelectedFolder;

@@ -2,10 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.AvalonEdit;
-using ICSharpCode.SharpDevelop;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Scripting.Tests.Utils
 {
@@ -23,9 +23,9 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		
 		public string Text { get; set; }
 		
-		public ITextBuffer CreateSnapshot()
+		public ITextSource CreateSnapshot()
 		{
-			return new StringTextBuffer(Text);
+			return new StringTextSource(Text);
 		}
 		
 		public ITextEditorOptions TextEditorOptions {
@@ -44,6 +44,14 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		public IDocument GetDocumentForFile(OpenedFile file)
 		{
 			throw new NotImplementedException();
+		}
+		
+		public override object GetService(Type serviceType)
+		{
+			if (serviceType == typeof(ITextEditor)) {
+				return MockTextEditor;
+			}
+			return null;
 		}
 	}
 }

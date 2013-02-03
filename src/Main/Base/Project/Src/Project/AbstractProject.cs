@@ -19,6 +19,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -312,6 +313,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				return this.Name;
 			}
 			set {
+			}
+		}
+		
+		[Browsable(false)]
+		public virtual ICodeGenerator CodeGenerator {
+			get {
+				throw new NotSupportedException("This project does not support code generation!");
 			}
 		}
 		

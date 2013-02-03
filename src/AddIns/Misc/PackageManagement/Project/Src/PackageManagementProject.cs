@@ -119,10 +119,10 @@ namespace ICSharpCode.PackageManagement
 			return new UpdatePackageAction(this, packageManagementEvents);
 		}
 		
-		public Project ConvertToDTEProject()
-		{
-			return new Project(msbuildProject);
-		}
+//		public Project ConvertToDTEProject()
+//		{
+//			return new Project(msbuildProject);
+//		}
 		
 		public IEnumerable<IPackage> GetPackagesInReverseDependencyOrder()
 		{

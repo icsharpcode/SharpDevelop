@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 using Debugger.Interop.CorDebug;
 using Debugger.Interop.CorSym;
@@ -106,13 +105,16 @@ namespace Debugger
 			get { return workingDirectory; }
 		}
 		
+		public string Filename { get; private set; }
+		
 		public static DebugModeFlag DebugMode { get; set; }
 		
-		internal Process(NDebugger debugger, ICorDebugProcess corProcess, string workingDirectory)
+		internal Process(NDebugger debugger, ICorDebugProcess corProcess, string filename, string workingDirectory)
 		{
 			this.debugger = debugger;
 			this.corProcess = corProcess;
 			this.workingDirectory = workingDirectory;
+			this.Filename = System.IO.Path.GetFullPath(filename); // normalize path
 			
 			this.callbackInterface = new ManagedCallback(this);
 		}
@@ -127,7 +129,7 @@ namespace Debugger
 			
 			ICorDebugProcess outProcess;
 			
-			if (workingDirectory == null || workingDirectory == "") {
+			if (string.IsNullOrEmpty(workingDirectory)) {
 				workingDirectory = System.IO.Path.GetDirectoryName(filename);
 			}
 			
@@ -136,25 +138,26 @@ namespace Debugger
 			secAttr.lpSecurityDescriptor = IntPtr.Zero;
 			secAttr.nLength = (uint)sizeof(_SECURITY_ATTRIBUTES);
 			
-			fixed (uint* pprocessStartupInfo = processStartupInfo)
-				fixed (uint* pprocessInfo = processInfo)
-				outProcess =
-				debugger.CorDebug.CreateProcess(
-					filename,   // lpApplicationName
-					// If we do not prepend " ", the first argument migh just get lost
-					" " + arguments,                       // lpCommandLine
-					ref secAttr,                       // lpProcessAttributes
-					ref secAttr,                      // lpThreadAttributes
-					1,//TRUE                    // bInheritHandles
-					0x00000010 /*CREATE_NEW_CONSOLE*/,    // dwCreationFlags
-					IntPtr.Zero,                       // lpEnvironment
-					workingDirectory,                       // lpCurrentDirectory
-					(uint)pprocessStartupInfo,        // lpStartupInfo
-					(uint)pprocessInfo,               // lpProcessInformation,
-					CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS   // debuggingFlags
-				);
+			fixed (uint* pprocessStartupInfo = processStartupInfo) {
+				fixed (uint* pprocessInfo = processInfo) {
+					outProcess = debugger.CorDebug.CreateProcess(
+						filename,   // lpApplicationName
+						// If we do not prepend " ", the first argument migh just get lost
+						" " + arguments,                       // lpCommandLine
+						ref secAttr,                       // lpProcessAttributes
+						ref secAttr,                      // lpThreadAttributes
+						1,//TRUE                    // bInheritHandles
+						0x00000010 /*CREATE_NEW_CONSOLE*/,    // dwCreationFlags
+						IntPtr.Zero,                       // lpEnvironment
+						workingDirectory,                       // lpCurrentDirectory
+						(uint)pprocessStartupInfo,        // lpStartupInfo
+						(uint)pprocessInfo,               // lpProcessInformation,
+						CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS   // debuggingFlags
+					);
+				}
+			}
 			
-			return new Process(debugger, outProcess, workingDirectory);
+			return new Process(debugger, outProcess, filename, workingDirectory);
 		}
 		
 		internal void OnLogMessage(MessageEventArgs arg)
@@ -402,7 +405,7 @@ namespace Debugger
 			corProcess.Stop(uint.MaxValue); // Infinite; ignored anyway
 			
 			NotifyPaused();
-			OnPaused(new DebuggerPausedEventArgs() { Process = this });
+			OnPaused(new DebuggerPausedEventArgs(this) { Break = true });
 		}
 		
 		public void Detach()
@@ -449,9 +452,10 @@ namespace Debugger
 		public void RunTo(string fileName, int line, int column)
 		{
 			foreach(Module module in this.Modules) {
-				SourcecodeSegment segment = SourcecodeSegment.Resolve(module, fileName, line, column);
-				if (segment != null) {
-					ICorDebugFunctionBreakpoint corBreakpoint = segment.CorFunction.GetILCode().CreateBreakpoint((uint)segment.ILStart);
+				SequencePoint seq = PDBSymbolSource.GetSequencePoint(module, fileName, line, column);
+				if (seq != null) {
+					ICorDebugFunction corFunction = module.CorModule.GetFunctionFromToken(seq.MethodDefToken);
+					ICorDebugFunctionBreakpoint corBreakpoint = corFunction.GetILCode().CreateBreakpoint((uint)seq.ILOffset);
 					corBreakpoint.Activate(1);
 					this.tempBreakpoints.Add(corBreakpoint);		
 				}
@@ -461,64 +465,23 @@ namespace Debugger
 			}
 		}
 		
-		internal Thread[] UnsuspendedThreads {
-			get {
-				List<Thread> unsuspendedThreads = new List<Thread>();
-				foreach(Thread t in this.Threads) {
-					if (!t.Suspended)
-						unsuspendedThreads.Add(t);
-				}
-				return unsuspendedThreads.ToArray();
-			}
-		}
-		
 		/// <summary>
 		/// Resume execution and run all threads not marked by the user as susspended.
 		/// </summary>
 		public void AsyncContinue()
 		{
-			AsyncContinue(DebuggeeStateAction.Clear, this.UnsuspendedThreads, CorDebugThreadState.THREAD_RUN);
+			AsyncContinue(DebuggeeStateAction.Clear);
 		}
-		
-		internal CorDebugThreadState NewThreadState = CorDebugThreadState.THREAD_RUN;
 		
 		/// <param name="threadsToRun"> Null to keep current setting </param>
 		/// <param name="newThreadState"> What happens to created threads.  Null to keep current setting </param>
-		internal void AsyncContinue(DebuggeeStateAction action, Thread[] threadsToRun, CorDebugThreadState? newThreadState)
+		internal void AsyncContinue(DebuggeeStateAction action)
 		{
 			AssertPaused();
 			
-			if (threadsToRun != null) {
-//				corProcess.SetAllThreadsDebugState(CorDebugThreadState.THREAD_SUSPEND, null);
-//				Note: There is unreported thread, stopping it prevents the debugee from exiting
-//				      It is not corProcess.GetHelperThreadID
-//				ICorDebugThread[] ts = new ICorDebugThread[corProcess.EnumerateThreads().GetCount()];
-//				corProcess.EnumerateThreads().Next((uint)ts.Length, ts);
-				foreach(Thread t in this.Threads) {
-					CorDebugThreadState state = Array.IndexOf(threadsToRun, t) == -1 ? CorDebugThreadState.THREAD_SUSPEND : CorDebugThreadState.THREAD_RUN;
-					try {
-						t.CorThread.SetDebugState(state);
-					} catch (COMException e) {
-						// The state of the thread is invalid. (Exception from HRESULT: 0x8013132D)
-						// It can happen for example when thread has not started yet
-						if ((uint)e.ErrorCode == 0x8013132D) {
-							// TraceMessage("Can not suspend thread - The state of the thread is invalid.  Thread ID = " + t.CorThread.GetID());
-						} else {
-							throw;
-						}
-					}
-				}
-			}
-			
-			if (newThreadState != null) {
-				this.NewThreadState = newThreadState.Value;
-			}
-			
 			NotifyResumed(action);
 			corProcess.Continue(0);
-			if (this.Options.Verbose) {
-				this.TraceMessage("Continue");
-			}
+			// this.TraceMessage("Continue");
 			
 			if (action == DebuggeeStateAction.Clear) {
 				OnResumed();

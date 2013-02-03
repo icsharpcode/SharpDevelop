@@ -11,7 +11,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Workbench
 {
-	internal sealed class FileChangeWatcher : IDisposable
+	public sealed class FileChangeWatcher : IDisposable
 	{
 		public static bool DetectExternalChangesOption {
 			get {

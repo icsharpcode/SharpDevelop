@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -15,5 +17,11 @@ namespace ICSharpCode.UnitTesting
 		/// The default is <c>false</c>.
 		/// </summary>
 		public bool UseDebugger { get; set; }
+		
+		/// <summary>
+		/// Modifies the ProcessStartInfo before the tests are run.
+		/// </summary>
+		public Func<ProcessStartInfo, IEnumerable<ITest>, ProcessStartInfo> ModifyProcessStartInfoBeforeTestRun
+			= (startInfo, tests) => startInfo;
 	}
 }

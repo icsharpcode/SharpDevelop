@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="Dom\ModelFactory.cs" />
     <Compile Include="Dom\MemberModel.cs" />
+    <Compile Include="Dom\NestedTypeDefinitionModelCollection.cs" />
     <Compile Include="Dom\TopLevelTypeDefinitionModelCollection.cs" />
     <Compile Include="Dom\TreeNodeFactoryService.cs" />
     <Compile Include="Dom\TypeDefinitionModel.cs" />

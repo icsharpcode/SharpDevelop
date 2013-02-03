@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace AspNet.Mvc.Tests
 {
 	[TestFixture]
-	public class IsMvcControllerFolderSelectedConditionEvaluatorTests
+	public class IsMvcControllerFolderSelectedConditionEvaluatorTests : MvcTestsBase
 	{
 		IsMvcControllerFolderSelectedConditionEvaluator conditionEvaluator;
 		

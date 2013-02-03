@@ -12,7 +12,7 @@ using Rhino.Mocks;
 namespace AspNet.Mvc.Tests
 {
 	[TestFixture]
-	public class MvcViewFileGeneratorTests
+	public class MvcViewFileGeneratorTests : MvcTestsBase
 	{
 		MvcViewFileGenerator generator;
 		FakeMvcProject projectUsedByGenerator;

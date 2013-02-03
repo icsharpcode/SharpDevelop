@@ -130,7 +130,7 @@ namespace ICSharpCode.GitAddIn
 				}
 			}
 			
-			SD.MainThread.InvokeAsync(delegate {
+			SD.MainThread.InvokeAsyncAndForget(delegate {
 				Image image = GetImage(status);
 				if (image != null) {
 					node.Overlay = image;
@@ -139,7 +139,7 @@ namespace ICSharpCode.GitAddIn
 					// reset overlay to null only if the old overlay belongs to the OverlayIconManager
 					node.Overlay = null;
 				}
-			}).FireAndForget();
+			});
 		}
 		
 		public static Image GetImage(GitStatus status)

@@ -1246,5 +1246,28 @@ namespace PackageManagement.Tests
 			ILogger actualLogger = project.Logger;
 			Assert.AreEqual(expectedLogger, actualLogger);
 		}
+		
+		[Test]
+		public void Summary_PackageHasSummary_PackageSummaryReturned()
+		{
+			CreateViewModel();
+			fakePackage.Summary = "Expected summary";
+			
+			string summary = viewModel.Summary;
+			
+			Assert.AreEqual("Expected summary", summary);
+		}
+		
+		[Test]
+		public void Summary_PackageHasDescriptionButNoSummary_PackageDescriptionReturned()
+		{
+			CreateViewModel();
+			fakePackage.Summary = String.Empty;
+			fakePackage.Description = "Expected description";
+			
+			string summary = viewModel.Summary;
+			
+			Assert.AreEqual("Expected description", summary);
+		}
 	}
 }

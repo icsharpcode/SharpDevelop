@@ -4,30 +4,30 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Input;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace WixBinding.Tests.Utils
 {
 	public class MockTextEditor : ITextEditor
 	{
 		TextDocument textDocument = new TextDocument();
-		AvalonEditDocumentAdapter documentAdapter;
 		MockCaret caret = new MockCaret();
-		Location locationJumpedTo = Location.Empty;
+		TextLocation locationJumpedTo = TextLocation.Empty;
 		Selection selection;
 		MockTextEditorOptions options = new MockTextEditorOptions();
 		TextArea textArea;
-				
+		
 		public MockTextEditor()
 		{
-			documentAdapter = new AvalonEditDocumentAdapter(textDocument, null);
 			textArea = new TextArea();
 			textArea.Document = textDocument;
 			selection = Selection.Create(textArea, -1, -1);
@@ -58,7 +58,7 @@ namespace WixBinding.Tests.Utils
 		}
 		
 		public IDocument Document {
-			get { return documentAdapter; }
+			get { return textDocument; }
 		}
 		
 		public ITextEditorCaret Caret {
@@ -82,7 +82,7 @@ namespace WixBinding.Tests.Utils
 		public int OptionsIndentationSize {
 			get { return options.IndentationSize; }
 			set { options.IndentationSize = value; }
-		}		
+		}
 		
 		public ILanguageBinding Language {
 			get {
@@ -107,7 +107,7 @@ namespace WixBinding.Tests.Utils
 				if (selection.IsEmpty) {
 					return String.Empty;
 				}
-				return documentAdapter.GetText(selection.SurroundingSegment.Offset, selection.Length);
+				return textDocument.GetText(selection.SurroundingSegment.Offset, selection.Length);
 			}
 			set {
 				throw new NotImplementedException();
@@ -139,13 +139,13 @@ namespace WixBinding.Tests.Utils
 		
 		public void JumpTo(int line, int column)
 		{
-			locationJumpedTo = new Location(column, line);
+			locationJumpedTo = new TextLocation(column, line);
 			selection = Selection.Create(textArea, -1, -1);
 		}
 		
-		public Location LocationJumpedTo {
+		public TextLocation LocationJumpedTo {
 			get { return locationJumpedTo; }
-		}		
+		}
 		
 		public ICompletionListWindow ShowCompletionWindow(ICompletionItemList data)
 		{
@@ -170,6 +170,12 @@ namespace WixBinding.Tests.Utils
 		public void Undo()
 		{
 			textDocument.UndoStack.Undo();
+		}
+		
+		public IList<IContextActionProvider> ContextActionProviders {
+			get {
+				throw new NotImplementedException();
+			}
 		}
 	}
 }

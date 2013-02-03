@@ -18,6 +18,8 @@ namespace WixBinding.Tests.Gui
 		[SetUp]
 		public void Init()
 		{
+			MessageLoopHelper.InitializeForUnitTests();
+			
 			workbench = new MockWorkbench();
 			factory = new MockPackageFilesViewFactory();
 			project = WixBindingTestsHelper.CreateEmptyWixProject();

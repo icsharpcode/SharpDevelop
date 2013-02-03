@@ -2,10 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Internal.Templates;
-using Dom = ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
+using Dom = ICSharpCode.SharpDevelop.Dom;
 
 namespace AspNet.Mvc.Tests.Helpers
 {
@@ -29,12 +30,8 @@ namespace AspNet.Mvc.Tests.Helpers
 			var createInfo = new ProjectCreateInformation();
 			createInfo.Solution = new Solution(null);
 			createInfo.ProjectName = projectName;
-			createInfo.OutputProjectFileName = fileName;
+			createInfo.OutputProjectFileName = new FileName(fileName);
 			return new TestableProject(createInfo);
-		}
-		
-		public override LanguageProperties LanguageProperties {
-			get { return Dom.LanguageProperties.CSharp; }
 		}
 		
 		public override string Language {

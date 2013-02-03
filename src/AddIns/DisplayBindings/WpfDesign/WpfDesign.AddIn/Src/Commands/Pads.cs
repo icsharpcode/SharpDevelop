@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.WpfDesign.AddIn.Commands
@@ -14,7 +15,7 @@ namespace ICSharpCode.WpfDesign.AddIn.Commands
     {
         public override void Run()
         {
-            WorkbenchSingleton.Workbench.GetPad(typeof(ToolsPad)).BringPadToFront();
+            SD.Workbench.GetPad(typeof(ToolsPad)).BringPadToFront();
         }
     }
 	
@@ -25,7 +26,7 @@ namespace ICSharpCode.WpfDesign.AddIn.Commands
     {
         public override void Run()
         {
-            WorkbenchSingleton.Workbench.GetPad(typeof(PropertyPad)).BringPadToFront();
+            SD.Workbench.GetPad(typeof(PropertyPad)).BringPadToFront();
         }
     }
 	
@@ -36,7 +37,7 @@ namespace ICSharpCode.WpfDesign.AddIn.Commands
     {
         public override void Run()
         {
-            WorkbenchSingleton.Workbench.GetPad(typeof(OutlinePad)).BringPadToFront();
+            SD.Workbench.GetPad(typeof(OutlinePad)).BringPadToFront();
         }
     }
 }

@@ -2,8 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using WixBinding.Tests.Utils;

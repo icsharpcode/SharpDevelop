@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -337,13 +338,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		public bool SetInstructionPointer(string filename, int line, int column, bool dryRun)
 		{
 			if (CurrentStackFrame != null) {
-				SourcecodeSegment seg = CurrentStackFrame.SetIP(filename, line, column, dryRun);
-				WindowsDebugger.RefreshPads();
-				JumpToCurrentLine();
-				return seg != null;
-			} else {
-				return false;
+				if (CurrentStackFrame.SetIP(filename, line, column, dryRun)) {
+					WindowsDebugger.RefreshPads();
+					JumpToCurrentLine();
+				}
 			}
+			return false;
 		}
 		
 		public void Dispose()
@@ -463,7 +463,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			} catch (GetValueException e) {
 				string errorMessage = "Error while evaluating breakpoint condition " + code + ":\n" + e.Message + "\n";
 				DebuggerService.PrintDebugMessage(errorMessage);
-				SD.MainThread.InvokeAsync(() => MessageService.ShowWarning(errorMessage)).FireAndForget();
+				SD.MainThread.InvokeAsyncAndForget(() => MessageService.ShowWarning(errorMessage));
 				return true;
 			}
 		}
@@ -512,35 +512,106 @@ namespace ICSharpCode.SharpDevelop.Services
 			CurrentThread = e.Thread;
 			CurrentStackFrame = CurrentThread != null ? CurrentThread.MostRecentUserStackFrame : null;
 			
-			if (e.ExceptionThrown != null) {
-				HandleException(e);
-				return;
+			// We can have several events happening at the same time
+			bool breakProcess = e.Break;
+			
+			// Handle thrown exceptions
+			foreach(Thread exceptionThread in e.ExceptionsThrown) {
+				
+				JumpToCurrentLine();
+				
+				Thread evalThread = exceptionThread;
+				
+				bool isUnhandled = (exceptionThread.CurrentExceptionType == ExceptionType.Unhandled);
+				Value exception = exceptionThread.CurrentException.GetPermanentReferenceOfHeapValue();
+				List<Value> innerExceptions = new List<Value>();
+				for(Value innerException = exception; !innerException.IsNull; innerException = innerException.GetFieldValue("_innerException")) {
+					innerExceptions.Add(innerException.GetPermanentReferenceOfHeapValue());
+				}
+				
+				// Get the exception description
+				string stacktrace = string.Empty;
+				for(int i = 0; i < innerExceptions.Count; i++) {
+					if (i > 0) {
+						stacktrace += " ---> ";
+					}
+					stacktrace += innerExceptions[i].Type.FullName;
+					Value messageValue = innerExceptions[i].GetFieldValue("_message");
+					if (!messageValue.IsNull) {
+						stacktrace += ": " + messageValue.AsString();
+					}
+				}
+				stacktrace += Environment.NewLine + Environment.NewLine;
+				
+				// Get the stacktrace
+				string formatSymbols   = StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.Symbols}");
+				string formatNoSymbols = StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.NoSymbols}");
+				if (isUnhandled) {
+					// Need to intercept now so that we can evaluate properties
+					// Intercept may fail (eg StackOverflow)
+					if (exceptionThread.InterceptException()) {
+						try {
+							// Try to evaluate the StackTrace property to get the .NET formated stacktrace
+							for(int i = innerExceptions.Count - 1; i >= 0; i--) {
+								Value stackTraceValue = innerExceptions[i].GetPropertyValue(evalThread, "StackTrace");
+								if (!stackTraceValue.IsNull) {
+									stacktrace += stackTraceValue.AsString() + Environment.NewLine;
+								}
+								if (i > 0) {
+									stacktrace += "   " + StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.EndOfInnerException}") + Environment.NewLine;
+								}
+							}
+						} catch (GetValueException) {
+							stacktrace += exceptionThread.GetStackTrace(formatSymbols, formatNoSymbols);
+						}
+					} else {
+						stacktrace += StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException}") + Environment.NewLine + Environment.NewLine;
+						stacktrace += exceptionThread.GetStackTrace(formatSymbols, formatNoSymbols);
+					}
+				} else {
+					// Do not intercept handled expetions
+					stacktrace += exceptionThread.GetStackTrace(formatSymbols, formatNoSymbols);
+				}
+				
+				string title = isUnhandled ? StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Title.Unhandled}") : StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Title.Handled}");
+				string type = string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Message}"), exception.Type);
+				Bitmap icon = WinFormsResourceService.GetBitmap(isUnhandled ? "Icons.32x32.Error" : "Icons.32x32.Warning");
+				
+				if (DebuggeeExceptionForm.Show(e.Process, title, type, stacktrace, icon, isUnhandled)) {
+					breakProcess = true;
+					// The dialog box is allowed to kill the process
+					if (e.Process.HasExited) {
+						return;
+					}
+					// Intercept handled exception *after* the user decided to break
+					if (!isUnhandled) {
+						if (!exceptionThread.InterceptException()) {
+							MessageService.ShowError("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptHandledException}");
+						}
+					}
+				}
 			}
 			
-			bool breakpointHit = false;
+			// Handle breakpoints
 			foreach (Breakpoint breakpoint in e.BreakpointsHit) {
 				var bookmark = SD.BookmarkManager.Bookmarks.OfType<BreakpointBookmark>().First(bm => bm.InternalBreakpointObject == breakpoint);
 				
 				if (string.IsNullOrEmpty(bookmark.Condition)) {
-					breakpointHit = true;
+					breakProcess = true;
 				} else {
 					if (EvaluateCondition(bookmark.Condition)) {
-						breakpointHit = true;
+						breakProcess = true;
 						DebuggerService.PrintDebugMessage(string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAtBecause}") + "\n", bookmark.LineNumber, bookmark.FileName, bookmark.Condition));
 					}
 				}
 			}
 			
-			// We can have several, potentially conditional, breakpoints at the same time
-			// ... as well as stepper happening on the same line
-			if (e.Break || breakpointHit) {
-				LoggingService.Info("Jump to current line");
+			if (breakProcess) {
 				JumpToCurrentLine();
+				RefreshPads();
 			} else {
 				e.Process.AsyncContinue();
 			}
-			
-			RefreshPads();
 		}
 		
 		void debuggedProcess_DebuggingResumed(object sender, DebuggerEventArgs e)
@@ -552,53 +623,6 @@ namespace ICSharpCode.SharpDevelop.Services
 			CurrentStackFrame = null;
 			
 			RefreshPads();
-		}
-		
-		void HandleException(DebuggerPausedEventArgs e)
-		{
-			JumpToCurrentLine();
-			
-			StringBuilder stacktraceBuilder = new StringBuilder();
-			
-			if (e.ExceptionThrown.IsUnhandled) {
-				// Need to intercept now so that we can evaluate properties
-				if (e.Thread.InterceptException(e.ExceptionThrown)) {
-					stacktraceBuilder.AppendLine(e.ExceptionThrown.ToString());
-					string stackTrace;
-					try {
-						stackTrace = e.ExceptionThrown.GetStackTrace(e.Thread, StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.EndOfInnerException}"));
-					} catch (GetValueException) {
-						stackTrace = e.Thread.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.Symbols}"), StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.NoSymbols}"));
-					}
-					stacktraceBuilder.Append(stackTrace);
-				} else {
-					// For example, happens on stack overflow
-					stacktraceBuilder.AppendLine(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException}"));
-					stacktraceBuilder.AppendLine(e.ExceptionThrown.ToString());
-					stacktraceBuilder.Append(e.Thread.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.Symbols}"), StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.NoSymbols}")));
-				}
-			} else {
-				stacktraceBuilder.AppendLine(e.ExceptionThrown.ToString());
-				stacktraceBuilder.Append(e.Thread.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.Symbols}"), StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.NoSymbols}")));
-			}
-			
-			string title = e.ExceptionThrown.IsUnhandled ? StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Title.Unhandled}") : StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Title.Handled}");
-			string message = string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Message}"), e.ExceptionThrown.Type);
-			Bitmap icon = WinFormsResourceService.GetBitmap(e.ExceptionThrown.IsUnhandled ? "Icons.32x32.Error" : "Icons.32x32.Warning");
-			
-			DebuggeeExceptionForm.Show(e.Process, title, message, stacktraceBuilder.ToString(), icon, e.ExceptionThrown.IsUnhandled, e.ExceptionThrown);
-			
-			RefreshPads();
-		}
-		
-		public bool BreakAndInterceptHandledException(Debugger.Exception exception)
-		{
-			if (!CurrentThread.InterceptException(exception)) {
-				MessageService.ShowError("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptHandledException}");
-				return false;
-			}
-			JumpToCurrentLine();
-			return true;
 		}
 		
 		public static Value Evaluate(string code)
@@ -613,14 +637,18 @@ namespace ICSharpCode.SharpDevelop.Services
 
 		public void JumpToCurrentLine()
 		{
-			if (CurrentThread == null)
+			if (CurrentStackFrame == null)
 				return;
 			
 			SD.Workbench.MainWindow.Activate();
 			
 			// if (debuggedProcess.IsSelectedFrameForced()) {
-			if (CurrentThread != null && CurrentStackFrame.HasSymbols) {
-				JumpToSourceCode();
+			if (CurrentStackFrame.HasSymbols) {			
+				SequencePoint nextStatement = CurrentStackFrame.NextStatement;
+				if (nextStatement != null) {
+					DebuggerService.RemoveCurrentLineMarker();
+					DebuggerService.JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
+				}
 			} else {
 				#warning		JumpToDecompiledCode(CurrentStackFrame);
 			}
@@ -634,18 +662,6 @@ namespace ICSharpCode.SharpDevelop.Services
 //					JumpToDecompiledCode(debuggedProcess.SelectedThread.MostRecentStackFrame);
 //				}
 //			}
-		}
-
-		void JumpToSourceCode()
-		{
-			if (CurrentProcess == null || CurrentStackFrame == null)
-				return;
-			
-			SourcecodeSegment nextStatement = CurrentStackFrame.NextStatement;
-			if (nextStatement != null) {
-				DebuggerService.RemoveCurrentLineMarker();
-				DebuggerService.JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
-			}
 		}
 		
 		/*

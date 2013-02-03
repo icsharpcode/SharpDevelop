@@ -36,12 +36,12 @@ namespace ICSharpCode.CodeAnalysis
 		}
 		
 		public ProjectProperty<string> CodeAnalysisRuleAssemblies {
-			get { return GetProperty("CodeAnalysisRuleAssemblies","",TextBoxEditMode.EditEvaluatedProperty); }
+			get { return GetProperty("CodeAnalysisRuleAssemblies", "", TextBoxEditMode.EditEvaluatedProperty); }
 		}
 		
 		
 		public ProjectProperty<string> CodeAnalysisRules {
-			get { return GetProperty("CodeAnalysisRules","",TextBoxEditMode.EditEvaluatedProperty); }
+			get { return GetProperty("CodeAnalysisRules", "", TextBoxEditMode.EditRawProperty); }
 		}
 		
 		#region Rule Assemblies Property

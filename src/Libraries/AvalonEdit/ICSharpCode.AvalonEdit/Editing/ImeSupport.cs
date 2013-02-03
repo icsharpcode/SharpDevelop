@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -77,7 +78,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				if (threadMgr != null) {
 					// Even though the docu says passing null is invalid, this seems to help
 					// activating the IME on the default input context that is shared with WPF
-					threadMgr.SetFocus(null);
+					threadMgr.SetFocus(IntPtr.Zero);
 				}
 			}
 		}

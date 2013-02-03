@@ -208,7 +208,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			RunAsync(delegate {
 			         	CodeCompileUnit ccu = func();
-			         	SD.MainThread.InvokeAsync(() => WriteCodeDomToFile(baseItem, outputFileName, ccu)).FireAndForget();
+			         	SD.MainThread.InvokeAsyncAndForget(() => WriteCodeDomToFile(baseItem, outputFileName, ccu));
 			         });
 		}
 		
@@ -485,7 +485,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		internal static void NotifyAsyncFinish(CustomToolContext context)
 		{
-			SD.MainThread.InvokeAsync(delegate {
+			SD.MainThread.InvokeAsyncAndForget(delegate {
 				activeToolRun = null;
 				if (toolRuns.Count > 0) {
 					CustomToolRun nextRun = toolRuns.Dequeue();
@@ -493,7 +493,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						RunCustomTool(nextRun);
 					}
 				}
-			}).FireAndForget();
+			});
 		}
 	}
 	#endregion

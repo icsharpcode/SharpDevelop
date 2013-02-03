@@ -95,6 +95,8 @@
     <Compile Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\ExtendedBinaryReader.cs">
       <Link>Src\Project\MSBuildEngine\ExtendedBinaryReader.cs</Link>
     </Compile>
+    <Compile Include="Designer\IDesignerTypeResolutionService.cs" />
+    <Compile Include="Designer\TypeResolutionService.cs" />
     <Compile Include="Dom\ConcatModelCollection.cs" />
     <Compile Include="Dom\FilterModelCollection.cs" />
     <Compile Include="Dom\IEntityModelContext.cs" />
@@ -163,6 +165,7 @@
     <Compile Include="Project\Build\IBuildService.cs" />
     <Compile Include="Project\Build\MultipleProjectBuildable.cs" />
     <Compile Include="Project\Build\ProjectBuildOptions.cs" />
+    <Compile Include="Refactoring\ICodeGenerator.cs" />
     <Compile Include="Services\IClipboard.cs" />
     <Compile Include="Services\IMessageLoop.cs" />
     <Compile Include="Services\SD.cs" />
@@ -229,7 +232,6 @@
       <DependentUpon>OutputWindowOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Services\FileChangeWatcher.cs" />
     <Compile Include="Util\AtomicBoolean.cs" />
     <Compile Include="Util\ComparerExtensions.cs" />
     <Compile Include="Util\CustomThreadPoolTaskScheduler.cs" />
@@ -277,6 +279,7 @@
     <Compile Include="Workbench\DisplayBinding\IDisplayBindingService.cs" />
     <Compile Include="Workbench\DisplayBinding\ISecondaryDisplayBinding.cs" />
     <Compile Include="Workbench\FakeXmlViewContent.cs" />
+    <Compile Include="Workbench\FileChangeWatcher.cs" />
     <Compile Include="Workbench\File\FileService.cs" />
     <Compile Include="Workbench\File\IRecentOpen.cs" />
     <Compile Include="Workbench\ICustomizedCommands.cs" />
@@ -504,10 +507,10 @@
     <Compile Include="Src\Project\ProjectUpgradeException.cs" />
     <Compile Include="Src\Project\Solution\Project_TypeGuids.cs" />
     <Compile Include="Src\Project\TargetFramework.cs" />
-    <Compile Include="Src\Refactoring\ContextAction.cs" />
-    <Compile Include="Src\Refactoring\EditorRefactoringContext.cs" />
-    <Compile Include="Src\Refactoring\IContextAction.cs" />
-    <Compile Include="Src\Refactoring\IContextActionProvider.cs" />
+    <Compile Include="Refactoring\ContextAction.cs" />
+    <Compile Include="Refactoring\EditorRefactoringContext.cs" />
+    <Compile Include="Refactoring\IContextAction.cs" />
+    <Compile Include="Refactoring\IContextActionProvider.cs" />
     <Compile Include="Src\Services\AmbienceService\DefaultAmbience.cs" />
     <Compile Include="Src\Services\ClassBrowserIcons\ImageSourceImage.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
@@ -829,6 +832,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Designer" />
     <Folder Include="Workbench\DisplayBinding" />
     <Page Include="Editor\Bookmarks\BookmarkPadContent.xaml" />
     <Page Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml" />
@@ -891,7 +895,7 @@
     <Folder Include="WinForms" />
     <Folder Include="Workbench" />
     <Folder Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference" />
-    <Folder Include="Src\Refactoring" />
+    <Folder Include="Refactoring" />
     <Folder Include="Src\Project\Behaviors" />
     <Folder Include="Src\Project\PortableLibrary" />
     <Folder Include="themes" />

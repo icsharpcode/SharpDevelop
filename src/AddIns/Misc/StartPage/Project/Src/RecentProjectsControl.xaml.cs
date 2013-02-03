@@ -64,10 +64,10 @@ namespace ICSharpCode.StartPage
 				}
 			}
 			if (items.Count > 0) {
-				SD.MainThread.InvokeAsync(new Action(delegate {
+				SD.MainThread.InvokeAsyncAndForget(new Action(delegate {
 					lastProjectsListView.ItemsSource = items;
 					lastProjectsListView.Visibility = Visibility.Visible;
-				})).FireAndForget();
+				}));
 			}
 		}
 		

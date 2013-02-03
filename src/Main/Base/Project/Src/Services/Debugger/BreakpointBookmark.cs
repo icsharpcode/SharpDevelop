@@ -2,9 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Media;
-
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
@@ -18,7 +18,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	{
 		bool isHealthy = true;
 		bool isEnabled = true;
-		string tooltip;
 		string condition;
 		
 		public event EventHandler<EventArgs> ConditionChanged;
@@ -35,8 +34,10 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public object InternalBreakpointObject { get; set; }
 		
+		[DefaultValue(true)]
 		public virtual bool IsHealthy {
 			get {
 				return isHealthy;
@@ -49,6 +50,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
+		[DefaultValue(true)]
 		public virtual bool IsEnabled {
 			get {
 				return isEnabled;
@@ -64,11 +66,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		}
 		
 		public event EventHandler IsEnabledChanged;
-		
-		public string Tooltip {
-			get { return tooltip; }
-			set { tooltip = value; }
-		}
 		
 		/// <summary>
 		/// parameter-less ctor is necessary for deserialization

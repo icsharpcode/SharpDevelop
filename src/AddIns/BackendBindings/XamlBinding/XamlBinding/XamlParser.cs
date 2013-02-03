@@ -68,7 +68,7 @@ namespace ICSharpCode.XamlBinding
 			XamlUnresolvedFile unresolvedFile = XamlUnresolvedFile.Create(fileName, fileContent, document);
 			ParseInformation parseInfo;
 			if (fullParseInformationRequested)
-				parseInfo = new XamlFullParseInformation(unresolvedFile, document, fileContent);
+				parseInfo = new XamlFullParseInformation(unresolvedFile, document, fileContent.CreateSnapshot());
 			else
 				parseInfo = new ParseInformation(unresolvedFile, fileContent.Version, false);
 			AddTagComments(document, parseInfo, fileContent);

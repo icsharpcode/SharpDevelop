@@ -83,5 +83,23 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(expectedRepositories, repositories);
 		}
+		
+		[Test]
+		public void CreateAggregatePackageRepository_TwoRegisteredPackageSourcesButOneDisabled_ReturnsAggregateRepositoryCreatedWithOnlyEnabledPackageSource()
+		{
+			CreateCache();
+			ClearRegisteredPackageSources();
+			FakePackageRepository fakeRepository1 = AddRegisteredPackageRepository("http://sharpdevelop.com", "Test");
+			FakePackageRepository fakeRepository2 = AddRegisteredPackageRepository("http://test", "Test2");
+			registeredPackageSources.PackageSources[0].IsEnabled = false;
+			
+			IPackageRepository repository = cache.CreateAggregateRepository();
+			
+			IEnumerable<IPackageRepository> repositories = fakeMainCache.RepositoriesPassedToCreateAggregateRepository;
+			var expectedRepositories = new List<IPackageRepository>();
+			expectedRepositories.Add(fakeRepository2);
+			
+			Assert.AreEqual(expectedRepositories, repositories);
+		}
 	}
 }

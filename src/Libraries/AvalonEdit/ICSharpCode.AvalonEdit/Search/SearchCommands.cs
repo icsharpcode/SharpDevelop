@@ -73,9 +73,7 @@ namespace ICSharpCode.AvalonEdit.Search
 		
 		void ExecuteFind(object sender, ExecutedRoutedEventArgs e)
 		{
-			if (panel.IsClosed) {
-				panel.Open();
-			}
+			panel.Open();
 			panel.SearchPattern = TextArea.Selection.GetText();
 			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Input, (Action)delegate { panel.Reactivate(); });
 		}

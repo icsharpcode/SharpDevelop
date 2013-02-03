@@ -395,5 +395,17 @@ namespace PackageManagement.Tests
 			Assert.AreEqual(1, supportedFrameworks.Count);
 			Assert.AreEqual(expectedFramework, supportedFrameworks[0]);
 		}
+		
+		[Test]
+		public void ToString_PackageHasIdAndVersion_ReturnsWrappedPackageToString()
+		{
+			CreatePackage();
+			fakePackage.Id = "MyPackage";
+			fakePackage.Version = new SemanticVersion("1.1");
+			
+			string result = package.ToString();
+			
+			Assert.AreEqual("MyPackage 1.1", result);
+		}
 	}
 }

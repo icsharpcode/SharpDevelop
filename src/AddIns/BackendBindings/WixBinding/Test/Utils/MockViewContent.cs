@@ -4,11 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace WixBinding.Tests.Utils
 {
@@ -175,6 +174,12 @@ namespace WixBinding.Tests.Utils
 		
 		public object GetService(Type serviceType)
 		{
+			if (serviceType == typeof(ITextEditor)) {
+				var textEditorView = this as MockTextEditorViewContent;
+				if (textEditorView != null) {
+					return textEditorView.TextEditor;
+				}
+			}
 			return null;
 		}
 	}

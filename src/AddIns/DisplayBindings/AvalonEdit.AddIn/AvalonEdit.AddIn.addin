@@ -36,6 +36,12 @@
 		         class="ICSharpCode.AvalonEdit.AddIn.AvalonEditorControlService"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/ToolTips">
+		<Class id = "DefaultTextMarkerToolTips"
+		       insertafter="DefaultDebuggerToolTips"
+		       class = "ICSharpCode.AvalonEdit.AddIn.TextMarkerToolTipProvider"/>
+	</Path>
+	
 	<!--
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
 		<Condition name = "WindowActive" activewindow="ICSharpCode.AvalonEdit.AddIn.ICodeEditorProvider">

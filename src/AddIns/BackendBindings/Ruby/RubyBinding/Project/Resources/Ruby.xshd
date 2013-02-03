@@ -1,174 +1,202 @@
-<SyntaxDefinition name="Ruby" extensions=".rb">
+<SyntaxDefinition name="Ruby" extensions=".rb" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
 	
-	<Properties>
-		<Property name="LineComment" value="#"/>
-	</Properties>
+	<Color name="Digits" foreground="DarkBlue" exampleText="0123456789" />
+	<Color name="Char" foreground="Magenta" exampleText="char linefeed = '\n'" />
+	<Color name="DocComment" foreground="Green" exampleText='""" comment' />
+	<Color name="MultiLineComment" foreground="Green" exampleText="= comment" />
+	<Color name="LineComment" foreground="Green" exampleText="// comment" />
+	<Color name="String" foreground="Blue" exampleText='name = "Joe"' />
+	<Color name="Punctuation" exampleText="a(b.c);" />
+	<Color name="MethodCall" fontWeight="bold" foreground="MidnightBlue" exampleText="method(" />
+	<Color name="BuiltInStatements" fontWeight="bold" foreground="MidnightBlue" exampleText="print 'hello'" />
+	<Color name="ClassStatement" foreground="Blue" fontWeight="bold" exampleText="class Foo" />
+	<Color name="ExceptionHandlingStatements" fontWeight="bold" foreground="Teal" exampleText="raise 'error'" />
+	<Color name="FunctionDefinition" fontWeight="bold" foreground="Blue" exampleText="def MyFunction" />
+	<Color name="Imports" fontWeight="bold" foreground="Green" exampleText='require "System.Xml"' />
+	<Color name="IterationStatements" fontWeight="bold" foreground="Blue" exampleText="for i in 0..5" />
+	<Color name="JumpStatements" foreground="Navy" exampleText="return val" />
+	<Color name="OperatorStatements" fontWeight="bold" foreground="DarkCyan" exampleText="not(a &amp;&amp; b)" />
+	<Color name="NullStatement" foreground="Gray" exampleText="return nil" />
+	<Color name="SelectionStatements" fontWeight="bold" foreground="Blue" exampleText="if (a)" />
+	<Color name="BooleanStatements" foreground="DarkViolet" exampleText="return true" />
+	<Color name="DefinedStatement" foreground="DarkViolet" exampleText="defined? a" />
+	<Color name="ClassSelfStatement" foreground="DarkViolet" exampleText="self.a = ''" />
+	<Color name="ClassInheritanceStatement" foreground="DarkViolet" exampleText="super(value)" />
+
+	<Property name="LineComment" value="#"/>
+
+	<RuleSet ignoreCase="false">
+			
+		<Span color="Char">
+			<Begin>'</Begin>
+			<End>'</End>
+			<RuleSet>
+				<!-- span for escape sequences -->
+				<Span begin="\\" end="."/>
+			</RuleSet>
+		</Span>
+		
+		<Span color="DocComment" multiline="true">
+			<Begin>"""</Begin>
+			<End>"""</End>
+		</Span>
+		
+		<Span color="MultiLineComment" multiline="true">
+			<Begin>=begin</Begin>
+			<End>=end</End>
+		</Span>
+		
+		<Span color="LineComment">
+			<Begin>\#</Begin>
+		</Span>
+		
+		<Span color="String">
+			<Begin>"</Begin>
+			<End>"</End>
+			<RuleSet>
+				<!-- span for escape sequences -->
+				<Span begin="\\" end="."/>
+			</RuleSet>
+		</Span>
+		
+		<Keywords color="BuiltInStatements">
+			<Word>abort</Word>
+			<Word>Array</Word>
+			<Word>at_exit</Word>
+			<Word>autoload</Word>
+			<Word>binding</Word>
+			<Word>callcc</Word>
+			<Word>caller</Word>
+			<Word>chomp</Word>
+			<Word>chop</Word>
+			<Word>eval</Word>
+			<Word>exec</Word>
+			<Word>exit</Word>
+			<Word>fail</Word>
+			<Word>Float</Word>
+			<Word>fork</Word>
+			<Word>format</Word>
+			<Word>gets</Word>
+			<Word>global_variables</Word>
+			<Word>gsub</Word>
+			<Word>Integer</Word>
+			<Word>lambda</Word>
+			<Word>proc</Word>
+			<Word>load</Word>
+			<Word>local_variables</Word>
+			<Word>loop</Word>
+			<Word>open</Word>
+			<Word>p</Word>
+			<Word>print</Word>
+			<Word>print</Word>
+			<Word>printf</Word>
+			<Word>putc</Word>
+			<Word>puts</Word>
+			<Word>rand</Word>
+			<Word>readline</Word>
+			<Word>scan</Word>
+			<Word>select</Word>
+			<Word>set_trace_func</Word>
+			<Word>sleep</Word>
+			<Word>split</Word>
+			<Word>sprintf</Word>
+			<Word>srand</Word>
+			<Word>String</Word>
+			<Word>syscall</Word>
+			<Word>system</Word>
+			<Word>sub</Word>
+			<Word>test</Word>
+			<Word>throw</Word>
+			<Word>trace_var</Word>
+			<Word>trap</Word>
+			<Word>untrace_var</Word>
+		</Keywords>
+		
+		<Keywords color="ClassStatement">
+			<Word>class</Word>
+			<Word>module</Word>
+			<Word>public</Word>
+			<Word>protected</Word>
+			<Word>private</Word>
+		</Keywords>
+		
+		<Keywords color="ExceptionHandlingStatements">
+			<Word>begin</Word>
+			<Word>rescue</Word>
+			<Word>ensure</Word>
+			<Word>raise</Word>
+			<Word>catch</Word>
+		</Keywords>
+		
+		<Keywords color="FunctionDefinition">
+			<Word>def</Word>
+			<Word>end</Word>
+			<Word>undef</Word>
+		</Keywords>
+		
+		<Keywords color="Imports">
+			<Word>require</Word>
+			<Word>alias</Word>
+		</Keywords>
+		
+		<Keywords color="IterationStatements">
+			<Word>for</Word>
+			<Word>do</Word>
+			<Word>in</Word>
+			<Word>while</Word>
+			<Word>until</Word>
+		</Keywords>
+		
+		<Keywords color="JumpStatements">
+			<Word>break</Word>
+			<Word>yield</Word>
+			<Word>redo</Word>
+			<Word>return</Word>
+			<Word>retry</Word>
+			<Word>next</Word>
+		</Keywords>
 	
-	<Digits name="Digits" color="DarkBlue"/>
-
-	<RuleSets>
-		<RuleSet ignorecase="false">
-			
-			<Delimiters>()[]{}@,:.`=;+-*/%~ &amp;|^&gt;&lt;</Delimiters>
-			
-			<Span name="Char" stopateol="true" color="Magenta" escapecharacter="\">
-				<Begin>'</Begin>
-				<End>'</End>
-			</Span>
-			
-			<Span name="DocComment" color="Green">
-				<Begin>"""</Begin>
-				<End>"""</End>
-			</Span>
-			
-			<Span name="MultiLineComment" color="Green">
-				<Begin>=begin</Begin>
-				<End>=end</End>
-			</Span>
-			
-			<Span name="LineComment" stopateol="true" color="Green">
-				<Begin>#</Begin>
-			</Span>
-			
-			<Span name="String" stopateol="true" color="Blue" escapecharacter="\">
-				<Begin>"</Begin>
-				<End>"</End>
-			</Span>
-			
-			<MarkPrevious bold="true" color="MidnightBlue">(</MarkPrevious>
-
-			<KeyWords name="BuiltInStatements" bold="true" color="MidnightBlue">
-				<Key word="abort"/>
-				<Key word="Array"/>
-				<Key word="at_exit"/>
-				<Key word="autoload"/>
-				<Key word="binding"/>
-				<Key word="callcc"/>
-				<Key word="caller"/>
-				<Key word="chomp"/>
-				<Key word="chop"/>
-				<Key word="eval"/>
-				<Key word="exec"/>
-				<Key word="exit"/>
-				<Key word="fail"/>
-				<Key word="Float"/>
-				<Key word="fork"/>
-				<Key word="format"/>
-				<Key word="gets"/>
-				<Key word="global_variables"/>
-				<Key word="gsub"/>
-				<Key word="Integer"/>
-				<Key word="lambda"/>
-				<Key word="proc"/>
-				<Key word="load"/>
-				<Key word="local_variables"/>
-				<Key word="loop"/>
-				<Key word="open"/>
-				<Key word="p"/>
-				<Key word="print"/>
-				<Key word="print"/>
-				<Key word="printf"/>
-				<Key word="putc"/>
-				<Key word="puts"/>
-				<Key word="rand"/>
-				<Key word="readline"/>
-				<Key word="scan"/>
-				<Key word="select"/>
-				<Key word="set_trace_func"/>
-				<Key word="sleep"/>
-				<Key word="split"/>
-				<Key word="sprintf"/>
-				<Key word="srand"/>
-				<Key word="String"/>
-				<Key word="syscall"/>
-				<Key word="system"/>
-				<Key word="sub"/>
-				<Key word="test"/>
-				<Key word="throw"/>
-				<Key word="trace_var"/>
-				<Key word="trap"/>
-				<Key word="untrace_var"/>
-			</KeyWords>
-			
-			<KeyWords name="ClassStatement" color="Blue" bold="true">
-				<Key word="class"/>
-				<Key word="module"/>
-				<Key word="public"/>
-				<Key word="protected"/>
-				<Key word="private"/>
-			</KeyWords>
-			
-			<KeyWords name="ExceptionHandlingStatements" bold="true" color="Teal">
-				<Key word="begin"/>
-				<Key word="rescue"/>
-				<Key word="ensure"/>
-				<Key word="raise"/>
-				<Key word="catch"/>
-			</KeyWords>
-			
-			<KeyWords name="FunctionDefinition" bold="true" color="Blue">
-				<Key word="def"/>
-				<Key word="end"/>
-				<Key word="undef"/>
-			</KeyWords>
-			
-			<KeyWords name="Imports" bold="true" color="Green">
-				<Key word="import"/>
-				<Key word="alias"/>
-			</KeyWords>
-			
-			<KeyWords name="IterationStatements" bold="true" color="Blue">
-				<Key word="for"/>
-				<Key word="do"/>
-				<Key word="in"/>
-				<Key word="while"/>
-				<Key word="until"/>
-			</KeyWords>
-			
-			<KeyWords name="JumpStatements" color="Navy">
-				<Key word="break"/>
-				<Key word="yield"/>
-				<Key word="redo"/>
-				<Key word="return"/>
-				<Key word="retry"/>
-				<Key word="next"/>
-			</KeyWords>
+		<Keywords color="OperatorStatements">
+			<Word>and</Word>
+			<Word>not</Word>
+			<Word>or</Word>
+		</Keywords>
 		
-			<KeyWords name="OperatorStatements" bold="true" color="DarkCyan">
-				<Key word="and"/>
-				<Key word="not"/>
-				<Key word="or"/>
-			</KeyWords>
-			
-			<KeyWords name="NullStatement" color="Gray">
-				<Key word="nil"/>
-			</KeyWords>			
+		<Keywords color="NullStatement">
+			<Word>nil</Word>
+		</Keywords>
+	
+		<Keywords color="SelectionStatements">
+			<Word>elsif</Word>
+			<Word>else</Word>
+			<Word>if</Word>
+			<Word>then</Word>
+			<Word>case</Word>
+			<Word>unless</Word>
+		</Keywords>
+	
+		<Keywords color="BooleanStatements">
+			<Word>true</Word>
+			<Word>false</Word>
+		</Keywords>
 		
-			<KeyWords name="SelectionStatements" bold="true" color="Blue">
-				<Key word="elsif"/>
-				<Key word="else"/>
-				<Key word="if"/>
-				<Key word="then"/>
-				<Key word="case"/>
-				<Key word="unless"/>
-			</KeyWords>
+		<Keywords color="DefinedStatement">
+			<Word>defined</Word>
+		</Keywords>
 		
-			<KeyWords name="BooleanStatements" color="DarkViolet">
-				<Key word="true"/>
-				<Key word="false"/>
-			</KeyWords>
-			
-			<KeyWords name="DefinedStatement" color="DarkViolet">
-				<Key word="defined"/>
-			</KeyWords>
-			
-			<KeyWords name="ClassSelfStatement" color="DarkViolet">
-				<Key word="self"/>
-			</KeyWords>
-			
-			<KeyWords name="ClassInheritanceStatement" color="DarkViolet">
-				<Key word="super"/>
-			</KeyWords>
-		</RuleSet>
-	</RuleSets>
+		<Keywords  color="ClassSelfStatement">
+			<Word>self</Word>
+		</Keywords>
+		
+		<Keywords color="ClassInheritanceStatement">
+			<Word>super</Word>
+		</Keywords>
+		
+		<Rule color="MethodCall">\b[\d\w_]+(?=(\s*\())</Rule>
+		<Rule color="Digits">\b0[xX][0-9a-fA-F]+|(\b\d+(\.[0-9]+)?|\.[0-9]+)([eE][+-]?[0-9]+)?</Rule>
+		
+		<Rule color="Punctuation">
+			[?,.;()\[\]{}+\-/%*&lt;&gt;^+~!|&amp;]+
+		</Rule>
+	</RuleSet>
 </SyntaxDefinition>

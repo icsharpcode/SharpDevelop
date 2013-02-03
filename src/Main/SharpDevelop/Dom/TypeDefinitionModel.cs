@@ -6,7 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Parser;
@@ -218,15 +217,30 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#endregion
 		
 		#region Nested Types collection
+		NestedTypeDefinitionModelCollection nestedTypes;
+		
 		public IModelCollection<ITypeDefinitionModel> NestedTypes {
 			get {
-				throw new NotImplementedException();
+				if (nestedTypes == null) {
+					nestedTypes = new NestedTypeDefinitionModelCollection(context);
+					foreach (var part in parts) {
+						nestedTypes.Update(null, part.NestedTypes);
+					}
+				}
+				return nestedTypes;
 			}
 		}
 		
 		public ITypeDefinitionModel GetNestedType(string name, int atpc)
 		{
-			throw new NotImplementedException();
+			foreach (var nestedType in this.NestedTypes) {
+				if (nestedType.Name == name) {
+					var nestedTypeFullName = nestedType.FullTypeName;
+					if (nestedTypeFullName.GetNestedTypeAdditionalTypeParameterCount(nestedTypeFullName.NestingLevel - 1) == atpc)
+						return nestedType;
+				}
+			}
+			return null;
 		}
 		#endregion
 		
@@ -263,6 +277,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 					if (members != null)
 						members.UpdatePart(partIndex, newPart);
 				}
+			}
+			if (nestedTypes != null) {
+				nestedTypes.Update(oldPart != null ? oldPart.NestedTypes : null, newPart != null ? newPart.NestedTypes : null);
 			}
 		}
 		#endregion

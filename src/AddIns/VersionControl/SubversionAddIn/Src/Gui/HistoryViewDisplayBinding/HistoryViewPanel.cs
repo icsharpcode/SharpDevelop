@@ -99,7 +99,7 @@ namespace ICSharpCode.Svn
 				// if exceptions aren't caught here, they force SD to exit
 				if (ex is SvnClientException || ex is System.Runtime.InteropServices.SEHException) {
 					LoggingService.Warn(ex);
-					SD.MainThread.InvokeAsync(() => infoPanel.ShowError(ex)).FireAndForget();
+					SD.MainThread.InvokeAsyncAndForget(() => infoPanel.ShowError(ex));
 				} else {
 					MessageService.ShowException(ex);
 				}
@@ -109,7 +109,7 @@ namespace ICSharpCode.Svn
 		void ReceiveLogMessage(LogMessage logMessage)
 		{
 			if (infoPanel != null) {
-				SD.MainThread.InvokeAsync(() => infoPanel.AddLogMessage(logMessage)).FireAndForget();
+				SD.MainThread.InvokeAsyncAndForget(() => infoPanel.AddLogMessage(logMessage));
 			}
 //			if (diffPanel != null) {
 //				WorkbenchSingleton.SafeThreadAsyncCall(diffPanel.AddLogMessage, logMessage);

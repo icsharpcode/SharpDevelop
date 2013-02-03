@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -27,12 +29,14 @@ namespace PackageManagement.Tests.Helpers
 			string name,
 			string fileName = @"d:\projects\Test\TestProject\TestProject.csproj")
 		{
+			SD.InitializeForUnitTests();
+			MessageLoopHelper.InitializeForUnitTests();
 			ProjectCreateInformation createInfo = new ProjectCreateInformation();
 			createInfo.Solution = parentSolution;
 			createInfo.ProjectName = name;
 			createInfo.SolutionPath = @"d:\projects\Test";
 			createInfo.ProjectBasePath = @"d:\projects\Test\TestProject";
-			createInfo.OutputProjectFileName = fileName;
+			createInfo.OutputProjectFileName = new FileName(fileName);
 			
 			var project = new TestableProject(createInfo);
 			project.Parent = parentSolution;

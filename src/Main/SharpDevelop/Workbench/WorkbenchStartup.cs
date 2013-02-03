@@ -147,10 +147,10 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			// a project more responsive.
 			// (and parallelism doesn't really help here; we're mostly waiting for the disk to load the code)
 			// So we do our work in the background while the user decides which project to open.
-			SD.MainThread.InvokeAsync(
+			SD.MainThread.InvokeAsyncAndForget(
 				() => new Thread(PreloadThread) { IsBackground = true, Priority = ThreadPriority.BelowNormal }.Start(),
 				DispatcherPriority.ApplicationIdle
-			).FireAndForget();
+			);
 		}
 		
 		void PreloadThread()

@@ -66,18 +66,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get { return member.Name; }
 		}
 		
-		/// <summary>
-		/// Gets the full type name of the type that declares this member.
-		/// </summary>
-		public FullTypeName DeclaringTypeName {
-			get {
-				if (member.DeclaringTypeDefinition != null)
-					return member.DeclaringTypeDefinition.FullTypeName;
-				else
-					return new TopLevelTypeName(string.Empty, string.Empty);
-			}
-		}
-		
 		#region Resolve
 		public IMember Resolve()
 		{
