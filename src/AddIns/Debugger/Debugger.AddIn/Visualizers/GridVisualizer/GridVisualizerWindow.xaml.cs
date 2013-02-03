@@ -2,11 +2,13 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+
 using Debugger.AddIn.Visualizers.PresentationBindings;
 using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
@@ -51,7 +53,9 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 					// Value is IEnumerable
 					if (shownValue.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
 						shownValue = DebuggerHelpers.CreateListFromIEnumerable(shownValue);
-						iListType = DebugType.CreateFromType(shownValue.AppDomain, typeof(System.Collections.Generic.IList<>), itemType);
+						shownValue.Type.ResolveIListImplementation(out iListType, out itemType);
+						//var ilistDef = iEnumerableType.Compilation.FindType(typeof(List<>)).GetDefinition();
+			            //var ilistType = new ParameterizedType(ilistDef, ienumerableType.TypeArguments);
 					} else	{
 						// Not IList or IEnumerable<T> - can't be displayed in GridVisualizer
 						return;
@@ -59,18 +63,19 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				}
 				shownValue = shownValue.GetPermanentReference(WindowsDebugger.EvalThread);
 				
-				var members = itemType.GetFieldsAndNonIndexedProperties().Where(m => m.IsPublic && !m.IsStatic);
+				var members = itemType.GetFieldsAndNonIndexedProperties().Where(m => m.IsPublic && !m.IsStatic).ToList();
 				IProperty indexerProperty = iListType.GetProperties(p => p.Name == "Item").Single();
 				int rowCount = (int)shownValue.GetPropertyValue(WindowsDebugger.EvalThread, iListType.GetProperties(p => p.Name == "Count").Single()).PrimitiveValue;
-				int columnCount = members.Length + 1;
+				int columnCount = members.Count + 1;
 				
 				var rowCollection = new VirtualizingCollection<VirtualizingCollection<string>>(
 					rowCount,
 					(rowIndex) => new VirtualizingCollection<string>(
 						columnCount,
 						(columnIndex) => {
-							if (columnIndex == members.Length)
+							if (columnIndex == columnCount - 1) {
 								return "[" + rowIndex + "]";
+							}
 							try {
 								var rowValue = shownValue.GetPropertyValue(WindowsDebugger.EvalThread, indexerProperty, Eval.CreateValue(WindowsDebugger.EvalThread, rowIndex));
 								return rowValue.GetMemberValue(WindowsDebugger.EvalThread, members[columnIndex]).InvokeToString(WindowsDebugger.EvalThread);
@@ -92,7 +97,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			}
 		}
 		
-		void InitializeColumns(GridView gridView, MemberInfo[] members)
+		void InitializeColumns(GridView gridView, IList<IMember> members)
 		{
 			gridView.Columns.Clear();
 			
@@ -101,15 +106,15 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			indexColumn.CanBeHidden = false;
 			indexColumn.Width = 36;
 			indexColumn.Header = string.Empty;
-			indexColumn.DisplayMemberBinding = new Binding("[" + members.Length + "]");
+			indexColumn.DisplayMemberBinding = new Binding("[" + members.Count + "]");
 			gridView.Columns.Add(indexColumn);
 			
 			// Member columns
-			for (int i = 0; i < members.Length; i++) {				
+			for (int i = 0; i < members.Count; i++) {				
 				var memberColumn = new GridViewHideableColumn();
 				memberColumn.CanBeHidden = true;
 				memberColumn.Header = members[i].Name;
-				memberColumn.IsVisibleDefault = ((IDebugMemberInfo)members[i]).IsPublic;
+				memberColumn.IsVisibleDefault = members[i].IsPublic;
 				memberColumn.DisplayMemberBinding = new Binding("[" + i + "]");
 				gridView.Columns.Add(memberColumn);
 			}
