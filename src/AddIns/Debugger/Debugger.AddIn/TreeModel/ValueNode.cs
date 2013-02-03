@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+using Debugger.AddIn.Visualizers;
 using Debugger.MetaData;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -161,10 +162,10 @@ namespace Debugger.AddIn.TreeModel
 				this.Type = val.Type.Name;
 				
 				if (!val.IsNull) {
-					#warning					this.VisualizerCommands = VisualizerDescriptors.GetAllDescriptors()
-//						.Where(descriptor => descriptor.IsVisualizerAvailable(val.Type))
-//						.Select(descriptor => descriptor.CreateVisualizerCommand(this.Name, this.GetValue))
-//						.ToList();
+					this.VisualizerCommands = VisualizerDescriptors.GetAllDescriptors()
+						.Where(descriptor => descriptor.IsVisualizerAvailable(val.Type))
+						.Select(descriptor => descriptor.CreateVisualizerCommand(this.Name, this.GetValue))
+						.ToList();
 				}
 				
 				LoggingService.InfoFormatted("Evaluated node '{0}' in {1} ms", this.Name, watch.ElapsedMilliseconds);
@@ -174,7 +175,7 @@ namespace Debugger.AddIn.TreeModel
 				this.Value = e.Message;
 				this.Type  = string.Empty;
 				this.GetChildren = null;
-				#warning				this.VisualizerCommands = null;
+				this.VisualizerCommands = null;
 			}
 		}
 		

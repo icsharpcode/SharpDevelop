@@ -8,7 +8,7 @@ using System.Linq;
 namespace ICSharpCode.SharpDevelop.Debugging
 {
 	/// <summary>
-	/// Command called from <see cref="VisualizerPicker"/>.
+	/// Command called from debugger tooltip's <see cref="VisualizerPicker"/>.
 	/// </summary>
 	public interface IVisualizerCommand
 	{

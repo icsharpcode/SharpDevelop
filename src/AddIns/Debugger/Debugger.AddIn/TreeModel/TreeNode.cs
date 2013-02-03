@@ -90,9 +90,13 @@ namespace Debugger.AddIn.TreeModel
 			get { return GetChildren != null; }
 		}
 		
-//		public IEnumerable<IVisualizerCommand> VisualizerCommands { get; protected set; }
+		public IEnumerable<IVisualizerCommand> VisualizerCommands { get; protected set; }
 		
-		public bool HasVisualizerCommands { get; protected set; }
+		public bool HasVisualizerCommands { 
+			get {
+				 return (VisualizerCommands != null) && (VisualizerCommands.Count() > 0);
+			}
+		}
 		
 		public TreeNode(string name, Func<IEnumerable<TreeNode>> getChildren)
 		{
