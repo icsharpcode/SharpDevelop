@@ -298,6 +298,15 @@ namespace Mono.CSharp
 			return true;
 		}
 
+		public virtual void ExpandBaseInterfaces ()
+		{
+			if (containers != null) {
+				foreach (TypeContainer tc in containers) {
+					tc.ExpandBaseInterfaces ();
+				}
+			}
+		}
+
 		protected virtual void DefineNamespace ()
 		{
 			if (containers != null) {
@@ -673,6 +682,12 @@ namespace Mono.CSharp
 		public bool IsPartial {
 			get {
 				return (ModFlags & Modifiers.PARTIAL) != 0;
+			}
+		}
+
+		bool ITypeDefinition.IsTypeForwarder {
+			get {
+				return false;
 			}
 		}
 
@@ -1483,12 +1498,14 @@ namespace Mono.CSharp
 					    GetSignatureForError (), cycle.GetSignatureForError ());
 
 					iface_exprs = null;
+					PartialContainer.iface_exprs = null;
 				} else {
 					Report.Error (146, Location,
 						"Circular base class dependency involving `{0}' and `{1}'",
 						GetSignatureForError (), cycle.GetSignatureForError ());
 
 					base_type = null;
+					PartialContainer.base_type = null;
 				}
 			}
 
@@ -1502,26 +1519,6 @@ namespace Mono.CSharp
 						continue;
 
 					TypeBuilder.AddInterfaceImplementation (iface_type.GetMetaInfo ());
-
-					// Ensure the base is always setup
-					var compiled_iface = iface_type.MemberDefinition as Interface;
-					if (compiled_iface != null) {
-						// TODO: Need DefineBaseType only
-						compiled_iface.DefineContainer ();
-					}
-
-					if (iface_type.Interfaces != null) {
-						var base_ifaces = new List<TypeSpec> (iface_type.Interfaces);
-						for (int i = 0; i < base_ifaces.Count; ++i) {
-							var ii_iface_type = base_ifaces[i];
-							if (spec.AddInterfaceDefined (ii_iface_type)) {
-								TypeBuilder.AddInterfaceImplementation (ii_iface_type.GetMetaInfo ());
-
-								if (ii_iface_type.Interfaces != null)
-									base_ifaces.AddRange (ii_iface_type.Interfaces);
-							}
-						}
-					}
 				}
 			}
 
@@ -1542,6 +1539,70 @@ namespace Mono.CSharp
 			}
 
 			return true;
+		}
+
+		public override void ExpandBaseInterfaces ()
+		{
+			if (!IsPartialPart)
+				DoExpandBaseInterfaces ();
+
+			base.ExpandBaseInterfaces ();
+		}
+
+		public void DoExpandBaseInterfaces ()
+		{
+			if ((caching_flags & Flags.InterfacesExpanded) != 0)
+				return;
+
+			caching_flags |= Flags.InterfacesExpanded;
+
+			//
+			// Expand base interfaces. It cannot be done earlier because all partial
+			// interface parts need to be defined before the type they are used from
+			//
+			if (iface_exprs != null) {
+				foreach (var iface in iface_exprs) {
+					if (iface == null)
+						continue;
+
+					var td = iface.MemberDefinition as TypeDefinition;
+					if (td != null)
+						td.DoExpandBaseInterfaces ();
+
+					if (iface.Interfaces == null)
+						continue;
+
+					foreach (var biface in iface.Interfaces) {
+						if (spec.AddInterfaceDefined (biface)) {
+							TypeBuilder.AddInterfaceImplementation (biface.GetMetaInfo ());
+						}
+					}
+				}
+			}
+
+			//
+			// Include all base type interfaces too, see ImportTypeBase for details
+			//
+			if (base_type != null) {
+				var td = base_type.MemberDefinition as TypeDefinition;
+				if (td != null)
+					td.DoExpandBaseInterfaces ();
+
+				//
+				// Simply use base interfaces only, they are all expanded which makes
+				// it easy to handle generic type argument propagation with single
+				// inflator only.
+				//
+				// interface IA<T> : IB<T>
+				// interface IB<U> : IC<U>
+				// interface IC<V>
+				//
+				if (base_type.Interfaces != null) {
+					foreach (var iface in base_type.Interfaces) {
+						spec.AddInterfaceDefined (iface);
+					}
+				}
+			}
 		}
 
 		public override void PrepareEmit ()
@@ -1727,9 +1788,6 @@ namespace Mono.CSharp
 					if (compiled_iface != null)
 						compiled_iface.Define ();
 
-					if (Kind == MemberKind.Interface)
-						MemberCache.AddInterface (iface_type);
-
 					ObsoleteAttribute oa = iface_type.GetAttributeObsolete ();
 					if (oa != null && !IsObsolete)
 						AttributeTester.Report_ObsoleteMessage (oa, iface_type.GetSignatureForError (), Location, Report);
@@ -1747,19 +1805,23 @@ namespace Mono.CSharp
 					}
 
 					if (iface_type.IsGenericOrParentIsGeneric) {
-						if (spec.Interfaces != null) {
-							foreach (var prev_iface in iface_exprs) {
-								if (prev_iface == iface_type)
-									break;
+						foreach (var prev_iface in iface_exprs) {
+							if (prev_iface == iface_type || prev_iface == null)
+								break;
 
-								if (!TypeSpecComparer.Unify.IsEqual (iface_type, prev_iface))
-									continue;
+							if (!TypeSpecComparer.Unify.IsEqual (iface_type, prev_iface))
+								continue;
 
-								Report.Error (695, Location,
-									"`{0}' cannot implement both `{1}' and `{2}' because they may unify for some type parameter substitutions",
-									GetSignatureForError (), prev_iface.GetSignatureForError (), iface_type.GetSignatureForError ());
-							}
+							Report.Error (695, Location,
+								"`{0}' cannot implement both `{1}' and `{2}' because they may unify for some type parameter substitutions",
+								GetSignatureForError (), prev_iface.GetSignatureForError (), iface_type.GetSignatureForError ());
 						}
+					}
+				}
+
+				if (Kind == MemberKind.Interface) {
+					foreach (var iface in spec.Interfaces) {
+						MemberCache.AddInterface (iface);
 					}
 				}
 			}
@@ -1778,11 +1840,6 @@ namespace Mono.CSharp
 							"A generic type cannot derive from `{0}' because it is an attribute class",
 							base_type.GetSignatureForError ());
 					}
-				}
-
-				if (base_type.Interfaces != null) {
-					foreach (var iface in base_type.Interfaces)
-						spec.AddInterface (iface);
 				}
 
 				var baseContainer = base_type.MemberDefinition as ClassOrStruct;

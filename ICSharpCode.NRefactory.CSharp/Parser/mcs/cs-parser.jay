@@ -529,7 +529,7 @@ namespace_declaration
 		if (doc_support)
 			Lexer.doc_state = XmlCommentState.Allowed;
 	  }
-	  opt_extern_alias_directives opt_using_directives opt_namespace_or_type_declarations CLOSE_BRACE opt_semicolon
+	  opt_extern_alias_directives opt_using_directives opt_namespace_or_type_declarations CLOSE_BRACE opt_semicolon_error
 	  {
 		if ($11 != null)
 			lbag.AddLocation (current_container, GetLocation ($2), GetLocation ($5), GetLocation ($10), GetLocation ($11));
@@ -546,6 +546,16 @@ namespace_declaration
 		var ns = new NamespaceContainer (name, current_namespace);
 		lbag.AddLocation (ns, GetLocation ($2));
 		current_namespace.AddTypeContainer (ns);
+	  }
+	;
+
+opt_semicolon_error
+	: /* empty */
+	| SEMICOLON
+	| error
+	  {
+		Error_SyntaxError (yyToken);
+	  	$$ = null;
 	  }
 	;
 
@@ -3285,17 +3295,16 @@ object_or_collection_initializer
 	: OPEN_BRACE opt_member_initializer_list close_brace_or_complete_completion
 	  {
 	  	if ($2 == null) {
-	  		$$ = new CollectionOrObjectInitializers (new List<Expression> (), GetLocation ($1));
-	  		lbag.AddLocation ($$, GetLocation ($1), GetLocation ($3));
+	  		$$ = new CollectionOrObjectInitializers (GetLocation ($1));
 	  	} else {
 	  		$$ = new CollectionOrObjectInitializers ((List<Expression>) $2, GetLocation ($1));
-	  		lbag.AddLocation ($$, GetLocation ($1), GetLocation ($3));
 	  	}
+ 		lbag.AddLocation ($$, GetLocation ($3));
 	  }
 	| OPEN_BRACE member_initializer_list COMMA CLOSE_BRACE
 	  {
 	  	$$ = new CollectionOrObjectInitializers ((List<Expression>) $2, GetLocation ($1));
-	  	lbag.AddLocation ($$, GetLocation ($1), GetLocation ($3), GetLocation ($4));
+	  	lbag.AddLocation ($$, GetLocation ($3), GetLocation ($4));
 	  }
 	;
 
@@ -4554,6 +4563,8 @@ lambda_expression_body
 	  {
 	  	// Handles only cases like foo = x.FirstOrDefault (l => );
 	  	// where we must restore current_variable
+		Block b = end_block (Location.Null);
+		b.IsCompilerGenerated = true;
 
 		Error_SyntaxError (yyToken);
 		$$ = null;
@@ -5492,8 +5503,9 @@ statement_expression
 	  {
 		ExpressionStatement s = $1 as ExpressionStatement;
 		if (s == null) {
-			Expression.Error_InvalidExpressionStatement (report, GetLocation ($1));
-			$$ = new StatementErrorExpression ($1 as Expression);
+			var expr = $1 as Expression;
+			expr.Error_InvalidExpressionStatement (report);
+			$$ = new StatementErrorExpression (expr);
 		} else {
 			$$ = new StatementExpression (s);
 		}
@@ -7005,7 +7017,7 @@ void Error_ExpectingTypeName (Expression expr)
 	if (expr is Invocation){
 		report.Error (1002, expr.Location, "Expecting `;'");
 	} else {
-		Expression.Error_InvalidExpressionStatement (report, expr.Location);
+		expr.Error_InvalidExpressionStatement (report);
 	}
 }
 

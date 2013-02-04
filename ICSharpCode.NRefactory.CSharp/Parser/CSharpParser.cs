@@ -2766,8 +2766,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				var initLoc = LocationsBag.GetLocations(minit);
 				var commaLoc = LocationsBag.GetLocations(minit.Initializers);
 				int curComma = 0;
-				if (initLoc != null)
-					init.AddChild(new CSharpTokenNode(Convert(initLoc [0]), Roles.LBrace), Roles.LBrace);
+				init.AddChild(new CSharpTokenNode(Convert(minit.Location), Roles.LBrace), Roles.LBrace);
 				foreach (var expr in minit.Initializers) {
 					var collectionInit = expr as CollectionElementInitializer;
 					if (collectionInit != null) {
@@ -2829,8 +2828,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 
 				if (initLoc != null) {
-					if (initLoc.Count == 3) // optional comma
-						init.AddChild(new CSharpTokenNode(Convert(initLoc [1]), Roles.Comma), Roles.Comma);
+					if (initLoc.Count == 2) // optional comma
+						init.AddChild(new CSharpTokenNode(Convert(initLoc [0]), Roles.Comma), Roles.Comma);
 					init.AddChild(new CSharpTokenNode(Convert(initLoc [initLoc.Count - 1]), Roles.RBrace), Roles.RBrace);
 				}
 			}
