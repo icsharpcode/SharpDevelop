@@ -286,6 +286,27 @@ namespace ICSharpCode.AddInManager2.Model
 					_sdAddInManagement.AddToTree(addIn);
 				}
 				
+				// Some debug output about AddIn's manifest
+				if ((addIn.Manifest != null) && !String.IsNullOrEmpty(addIn.Manifest.PrimaryIdentity))
+				{
+					SD.Log.DebugFormatted("[AddInManager2] AddIn's manifest states identity '{0}'",
+					                      addIn.Manifest.PrimaryIdentity);
+				}
+				else
+				{
+					SD.Log.DebugFormatted("[AddInManager2] AddIn's manifest states no identity.");
+				}
+				
+				if (addIn.Properties.Contains("nuGetPackageID"))
+				{
+					SD.Log.DebugFormatted("[AddInManager2] AddIn's manifest states NuGet ID '{0}'",
+					                      addIn.Properties["nuGetPackageID"]);
+				}
+				else
+				{
+					SD.Log.DebugFormatted("[AddInManager2] AddIn's manifest states no NuGet ID.");
+				}
+				
 				// Mark this AddIn
 				ManagedAddIn markedAddIn = new ManagedAddIn(addIn)
 				{
@@ -700,7 +721,7 @@ namespace ICSharpCode.AddInManager2.Model
 					{
 						// We decided to remove this package
 						SD.Log.InfoFormatted("[AddInManager2] Removing unreferenced NuGet package {0} {1}.",
-						                             installedPackage.Id, installedPackage.Version.ToString());
+						                     installedPackage.Id, installedPackage.Version.ToString());
 						_nuGet.Packages.UninstallPackage(installedPackage, true, false);
 					}
 				}
