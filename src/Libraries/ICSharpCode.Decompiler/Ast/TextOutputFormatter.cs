@@ -265,8 +265,7 @@ namespace ICSharpCode.Decompiler.Ast
 		}
 		
 		Stack<TextLocation> startLocations = new Stack<TextLocation>();
-		MemberMapping currentMemberMapping;
-		Stack<MemberMapping> parentMemberMappings = new Stack<MemberMapping>();
+		Stack<MethodDebugSymbols> symbolsStack = new Stack<MethodDebugSymbols>();
 		
 		public void StartNode(AstNode node)
 		{
@@ -284,11 +283,10 @@ namespace ICSharpCode.Decompiler.Ast
 			
 			if (node is EntityDeclaration && node.Annotation<MemberReference>() != null && node.GetChildByRole(Roles.Identifier).IsNull)
 				output.WriteDefinition("", node.Annotation<MemberReference>(), false);
-			
-			MemberMapping mapping = node.Annotation<MemberMapping>();
-			if (mapping != null) {
-				parentMemberMappings.Push(currentMemberMapping);
-				currentMemberMapping = mapping;
+
+			if (node.Annotation<MethodDebugSymbols>() != null) {
+				symbolsStack.Push(node.Annotation<MethodDebugSymbols>());
+				symbolsStack.Peek().StartLocation = startLocations.Peek();
 			}
 		}
 		
@@ -305,26 +303,19 @@ namespace ICSharpCode.Decompiler.Ast
 			var startLocation = startLocations.Pop();
 			
 			// code mappings
-			if (currentMemberMapping != null) {
-				var ranges = node.Annotation<List<ILRange>>();
-				if (ranges != null && ranges.Count > 0) {
-					// add all ranges
-					foreach (var range in ranges) {
-						currentMemberMapping.MemberCodeMappings.Add(
-							new SourceCodeMapping {
-								ILInstructionOffset = range,
-								StartLocation = startLocation,
-								EndLocation = output.Location,
-								MemberMapping = currentMemberMapping
-							});
-					}
-				}
+			var ranges = node.Annotation<List<ILRange>>();
+			if (symbolsStack.Count > 0 && ranges != null && ranges.Count > 0) {
+				symbolsStack.Peek().SequencePoints.Add(
+					new SequencePoint() {
+						ILRanges = ranges,
+						StartLocation = startLocation,
+						EndLocation = output.Location
+					});
 			}
 			
-			
-			if (node.Annotation<MemberMapping>() != null) {
-				output.AddDebuggerMemberMapping(currentMemberMapping);
-				currentMemberMapping = parentMemberMappings.Pop();
+			if (node.Annotation<MethodDebugSymbols>() != null) {
+				symbolsStack.Peek().EndLocation = output.Location;
+				output.AddDebugSymbols(symbolsStack.Pop());
 			}
 		}
 		
