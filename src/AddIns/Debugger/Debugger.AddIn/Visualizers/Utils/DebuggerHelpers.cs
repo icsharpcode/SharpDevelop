@@ -93,7 +93,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 					value.Type.GetDefinition().Compilation.FindType(
 						typeof(System.Runtime.CompilerServices.RuntimeHelpers)
 					).GetDefinition();
-				hashCodeMethod = runtimeHelpers.GetMethods(m => m.FullName == "GetHashCode").FirstOrDefault();
+				hashCodeMethod = runtimeHelpers.GetMethods(m => m.Name == "GetHashCode" && m.Parameters.Count == 1).FirstOrDefault();
 				if (hashCodeMethod == null) {
 					throw new DebuggerException(
 						"Cannot find method System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode().");

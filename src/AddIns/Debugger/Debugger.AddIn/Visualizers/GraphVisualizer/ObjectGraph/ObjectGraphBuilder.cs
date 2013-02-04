@@ -190,7 +190,9 @@ namespace Debugger.AddIn.Visualizers.Graph
 				LoadNodeObjectContent(baseClassNode, expression, baseType);
 			}
 			
-			var members = type.GetFieldsAndNonIndexedProperties(GetMemberOptions.IgnoreInheritedMembers).Where(m => !m.IsStatic).ToList();
+			var members = type.GetFieldsAndNonIndexedProperties(GetMemberOptions.IgnoreInheritedMembers).
+				Where(m => !m.IsStatic && !m.IsSynthetic && !m.Name.EndsWith(">k__BackingField")).
+				ToList();
 			// non-public members
 			var nonPublicProperties = createProperties(expression, members.Where(m => !m.IsPublic));
 			if (nonPublicProperties.Count > 0) {
