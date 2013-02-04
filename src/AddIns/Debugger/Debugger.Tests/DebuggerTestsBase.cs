@@ -200,6 +200,15 @@ namespace Debugger.Tests
 			testNode.SetAttribute("name", testName);
 			shapshotID = 0;
 			
+			debugger.Options = new Options();
+			debugger.Options.EnableJustMyCode = true;
+			debugger.Options.StepOverNoSymbols = true;
+			debugger.Options.StepOverDebuggerAttributes = true;
+			debugger.Options.StepOverAllProperties = false;
+			debugger.Options.StepOverFieldAccessProperties = true;
+			debugger.Options.SymbolsSearchPaths = new string[0];
+			debugger.Options.PauseOnHandledExceptions = false;
+			
 			log = "";
 			lastLogMessage = null;
 			process = debugger.Start(exeFilename, Path.GetDirectoryName(exeFilename), testName, false);

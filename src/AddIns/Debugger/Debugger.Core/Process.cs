@@ -107,6 +107,8 @@ namespace Debugger
 		
 		public string Filename { get; private set; }
 		
+		public ISymbolSource SymbolSource { get; set; }
+		
 		public static DebugModeFlag DebugMode { get; set; }
 		
 		internal Process(NDebugger debugger, ICorDebugProcess corProcess, string filename, string workingDirectory)
@@ -115,6 +117,7 @@ namespace Debugger
 			this.corProcess = corProcess;
 			this.workingDirectory = workingDirectory;
 			this.Filename = System.IO.Path.GetFullPath(filename); // normalize path
+			this.SymbolSource = new PdbSymbolSource();
 			
 			this.callbackInterface = new ManagedCallback(this);
 		}
@@ -452,7 +455,7 @@ namespace Debugger
 		public void RunTo(string fileName, int line, int column)
 		{
 			foreach(Module module in this.Modules) {
-				SequencePoint seq = PDBSymbolSource.GetSequencePoint(module, fileName, line, column);
+				SequencePoint seq = this.SymbolSource.GetSequencePoint(module, fileName, line, column);
 				if (seq != null) {
 					ICorDebugFunction corFunction = module.CorModule.GetFunctionFromToken(seq.MethodDefToken);
 					ICorDebugFunctionBreakpoint corBreakpoint = corFunction.GetILCode().CreateBreakpoint((uint)seq.ILOffset);

@@ -515,7 +515,6 @@
     <Compile Include="Src\Services\ClassBrowserIcons\ImageSourceImage.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
-    <Compile Include="Src\Services\Debugger\DecompiledBreakpointBookmark.cs" />
     <Compile Include="Workbench\File\IFileService.cs" />
     <Compile Include="Workbench\File\OpenedFile.cs" />
     <Compile Include="Src\Services\LanguageBinding\AggregatedLanguageBinding.cs" />

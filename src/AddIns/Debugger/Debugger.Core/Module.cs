@@ -46,6 +46,10 @@ namespace Debugger
 			get { return process; }
 		}
 		
+		public ISymbolSource SymbolSource {
+			get { return this.Process.SymbolSource; }
+		}
+		
 		NDebugger Debugger {
 			get { return this.AppDomain.Process.Debugger; }
 		}

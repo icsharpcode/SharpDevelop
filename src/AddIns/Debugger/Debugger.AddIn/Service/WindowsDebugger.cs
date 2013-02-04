@@ -2,34 +2,25 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
 using System.Windows.Forms;
 using Debugger;
 using Debugger.AddIn;
 using Debugger.AddIn.Tooltips;
 using Debugger.AddIn.TreeModel;
 using Debugger.Interop.CorPublish;
-using Debugger.MetaData;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
-using Mono.Cecil;
 using Process = Debugger.Process;
 using StackFrame = Debugger.StackFrame;
 using TreeNode = Debugger.AddIn.TreeModel.TreeNode;
@@ -87,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		ICorPublish corPublish;
 		
-		internal IDebuggerDecompilerService debuggerDecompilerService;
+		List<ISymbolSource> symbolSources = new List<ISymbolSource>();
 		
 		/// <inheritdoc/>
 		public bool BreakAtBeginning { get; set; }
@@ -357,8 +348,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void InitializeService()
 		{
-			// get decompiler service
-			debuggerDecompilerService = SD.GetService<IDebuggerDecompilerService>();
+			symbolSources.Add(new PdbSymbolSource());
+			symbolSources.AddRange(AddInTree.BuildItems<ISymbolSource>("/SharpDevelop/Services/DebuggerService/SymbolSource", null, false));
 			
 			// init NDebugger
 			CurrentDebugger = new NDebugger();
@@ -407,44 +398,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void AddBreakpoint(BreakpointBookmark bookmark)
 		{
-			Breakpoint breakpoint = null;
-			
-			#warning decompiler
-			/*if (bookmark is DecompiledBreakpointBookmark) {
-				try {
-					if (debuggerDecompilerService == null) {
-						LoggingService.Warn("No IDebuggerDecompilerService found!");
-						return;
-					}
-					var dbb = (DecompiledBreakpointBookmark)bookmark;
-					MemberReference memberReference = null;
-					
-					string assemblyFile, typeName;
-					if (DecompiledBreakpointBookmark.GetAssemblyAndType(dbb.FileName, out assemblyFile, out typeName)) {
-						memberReference = dbb.GetMemberReference(debuggerDecompilerService.GetAssemblyResolver(assemblyFile));
-					}
-					
-					int token = memberReference.MetadataToken.ToInt32();
-					if (!debuggerDecompilerService.CheckMappings(token))
-						debuggerDecompilerService.DecompileOnDemand(memberReference as TypeDefinition);
-					
-					int[] ilRanges;
-					int methodToken;
-//					if (debuggerDecompilerService.GetILAndTokenByLineNumber(token, dbb.LineNumber, out ilRanges, out methodToken)) {
-//						CurrentDebugger.AddILBreakpoint(memberReference.FullName, dbb.LineNumber, memberReference.MetadataToken.ToInt32(), methodToken, ilRanges[0], dbb.IsEnabled);
-//					}
-				} catch (System.Exception ex) {
-					LoggingService.Error("Error on DecompiledBreakpointBookmark: " + ex.Message);
-				}
-			} else {*/
-			breakpoint = CurrentDebugger.AddBreakpoint(bookmark.FileName, bookmark.LineNumber, 0, bookmark.IsEnabled);
-			//}
-			
-			if (breakpoint == null) {
-				LoggingService.Warn(string.Format("unable to create breakpoint: {0}", bookmark.ToString()));
-				return;
-			}
-			
+			Breakpoint breakpoint = CurrentDebugger.AddBreakpoint(bookmark.FileName, bookmark.LineNumber, 0, bookmark.IsEnabled);
 			bookmark.InternalBreakpointObject = breakpoint;
 			bookmark.IsHealthy = (CurrentProcess == null) || breakpoint.IsSet;
 			bookmark.IsEnabledChanged += delegate { breakpoint.IsEnabled = bookmark.IsEnabled; };
@@ -511,6 +465,10 @@ namespace ICSharpCode.SharpDevelop.Services
 			CurrentProcess = e.Process;
 			CurrentThread = e.Thread;
 			CurrentStackFrame = CurrentThread != null ? CurrentThread.MostRecentUserStackFrame : null;
+			
+			// Select the symbol source
+			var symbolSource = symbolSources.FirstOrDefault(s => CurrentStackFrame == null || s.HasSymbols(CurrentStackFrame.MethodInfo));
+			CurrentProcess.SymbolSource = symbolSource ?? symbolSources.First();
 			
 			// We can have several events happening at the same time
 			bool breakProcess = e.Break;
@@ -642,73 +600,14 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			SD.Workbench.MainWindow.Activate();
 			
-			// if (debuggedProcess.IsSelectedFrameForced()) {
 			if (CurrentStackFrame.HasSymbols) {			
 				SequencePoint nextStatement = CurrentStackFrame.NextStatement;
 				if (nextStatement != null) {
 					DebuggerService.RemoveCurrentLineMarker();
 					DebuggerService.JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
 				}
-			} else {
-				#warning		JumpToDecompiledCode(CurrentStackFrame);
-			}
-//			} else {
-//				var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
-//				// other pause reasons
-//				if (frame != null && frame.HasSymbols) {
-//					JumpToSourceCode();
-//				} else {
-//					// use most recent stack frame because we don't have the symbols
-//					JumpToDecompiledCode(debuggedProcess.SelectedThread.MostRecentStackFrame);
-//				}
-//			}
-		}
-		
-		/*
-		void JumpToDecompiledCode(Debugger.StackFrame frame)
-		{
-			if (frame == null) {
-				LoggingService.Error("No stack frame!");
-				return;
-			}
-			
-			if (debuggerDecompilerService == null) {
-				LoggingService.Warn("No IDebuggerDecompilerService found!");
-				return;
-			}
-			
-			// check for options - if these options are enabled, debugging decompiled code should not continue
-			if (!CurrentProcess.Options.DecompileCodeWithoutSymbols) {
-				LoggingService.Info("Decompiled code debugging is disabled!");
-				return;
-			}
-			DebuggerService.RemoveCurrentLineMarker();
-			// get external data
-			int typeToken = frame.MethodInfo.DeclaringType.MetadataToken;
-			int methodToken = frame.MethodInfo.MetadataToken;
-			int ilOffset = frame.IP;
-			int[] ilRanges = null;
-			int line = -1;
-			bool isMatch = false;
-			var debugType = (DebugType)frame.MethodInfo.DeclaringType;
-			debuggerDecompilerService.DebugStepInformation = Tuple.Create(methodToken, ilOffset);
-			
-			if (debuggerDecompilerService.GetILAndLineNumber(typeToken, methodToken, ilOffset, out ilRanges, out line, out isMatch)) {
-				// update marker & navigate to line
-				NavigationService.NavigateTo(debugType.DebugModule.FullPath,
-				                             debugType.FullNameWithoutGenericArguments,
-				                             IDStringProvider.GetIDString(frame.MethodInfo),
-				                             line);
-			} else
-			{
-				// no line => do decompilation
-				NavigationService.NavigateTo(debugType.DebugModule.FullPath,
-				                             debugType.FullNameWithoutGenericArguments,
-				                             IDStringProvider.GetIDString(frame.MethodInfo));
-				
 			}
 		}
-		 */
 		
 		StopAttachedProcessDialogResult ShowStopAttachedProcessDialog()
 		{

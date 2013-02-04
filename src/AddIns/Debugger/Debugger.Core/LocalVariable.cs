@@ -51,12 +51,13 @@ namespace Debugger.MetaData
 		
 		public static List<LocalVariable> GetLocalVariables(IMethod method)
 		{
-			if (!PDBSymbolSource.HasSymbols(method))
+			var module = method.ParentAssembly.GetModule();
+			if (!module.SymbolSource.HasSymbols(method))
 				return null;
 			
 			List<LocalVariable> localVariables = new List<LocalVariable>();
 			
-			foreach (ILLocalVariable ilvar in PDBSymbolSource.GetLocalVariables(method)) {
+			foreach (ILLocalVariable ilvar in module.SymbolSource.GetLocalVariables(method)) {
 				int index = ilvar.Index;
 				// NB: Display class does not have the compiler-generated flag
 				if (ilvar.IsCompilerGenerated || ilvar.Name.StartsWith("CS$")) {

@@ -46,7 +46,7 @@ namespace Debugger
 		/// <summary> True if the stack frame has symbols defined. </summary>
 		public bool HasSymbols {
 			get {
-				return PDBSymbolSource.HasSymbols(this.MethodInfo);
+				return this.Module.SymbolSource.HasSymbols(this.MethodInfo);
 			}
 		}
 		
@@ -154,10 +154,10 @@ namespace Debugger
 		void AsyncStep(bool stepIn)
 		{
 			List<ILRange> stepRanges = new List<ILRange>();
-			var seq = PDBSymbolSource.GetSequencePoint(this.MethodInfo, this.IP);
+			var seq = this.Module.SymbolSource.GetSequencePoint(this.MethodInfo, this.IP);
 			if (seq != null) {
 				stepRanges.AddRange(seq.ILRanges);
-				stepRanges.AddRange(PDBSymbolSource.GetIgnoredILRanges(this.MethodInfo));
+				stepRanges.AddRange(this.Module.SymbolSource.GetIgnoredILRanges(this.MethodInfo));
 			}
 			
 			// Remove overlapping and connected ranges
@@ -195,7 +195,7 @@ namespace Debugger
 		/// </summary>
 		public SequencePoint NextStatement {
 			get {
-				return PDBSymbolSource.GetSequencePoint(this.MethodInfo, this.IP);
+				return this.Module.SymbolSource.GetSequencePoint(this.MethodInfo, this.IP);
 			}
 		}
 		
@@ -203,7 +203,7 @@ namespace Debugger
 		{
 			this.Process.AssertPaused();
 			
-			var seq = PDBSymbolSource.GetSequencePoint(this.Module, filename, line, column);
+			var seq = this.Module.SymbolSource.GetSequencePoint(this.Module, filename, line, column);
 			if (seq != null && seq.MethodDefToken == this.MethodInfo.GetMetadataToken()) {
 				try {
 					if (dryRun) {
@@ -347,7 +347,7 @@ namespace Debugger
 				Options opt = this.Process.Options;
 				
 				if (opt.StepOverNoSymbols) {
-					if (!PDBSymbolSource.HasSymbols(this.MethodInfo)) return true;
+					if (!this.Module.SymbolSource.HasSymbols(this.MethodInfo)) return true;
 				}
 				if (opt.StepOverDebuggerAttributes) {
 					string[] debuggerAttributes = {

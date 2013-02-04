@@ -56,7 +56,25 @@ namespace Debugger
 		public ILRange[] ILRanges { get; set; }
 	}
 	
-	public class PDBSymbolSource
+	public interface ISymbolSource
+	{
+		/// <summary> Find sequence point by IL offset </summary>
+		SequencePoint GetSequencePoint(IMethod method, int iloffset);
+		
+		/// <summary> Find sequence point by source code location </summary>
+		SequencePoint GetSequencePoint(Module module, string filename, int line, int column);
+		
+		/// <summary> Determine whether the method is debugable </summary>
+		bool HasSymbols(IMethod method);
+		
+		/// <summary> Get IL ranges that should be always stepped over by the debugger </summary>
+		IEnumerable<ILRange> GetIgnoredILRanges(IMethod method);
+		
+		/// <summary> Get local variable metadata </summary>
+		IEnumerable<ILLocalVariable> GetLocalVariables(IMethod method);
+	}
+	
+	public class PdbSymbolSource : ISymbolSource
 	{
 		/// <summary>
 		/// Get absolute source code path for the specified document.
@@ -118,7 +136,7 @@ namespace Debugger
 			}
 		}
 		
-		public static SequencePoint GetSequencePoint(IMethod method, int iloffset)
+		public SequencePoint GetSequencePoint(IMethod method, int iloffset)
 		{
 			var symMethod = method.GetSymMethod();
 			if (symMethod == null)
@@ -149,13 +167,10 @@ namespace Debugger
 			return sequencePoint;
 		}
 		
-		public static SequencePoint GetSequencePoint(Module module, string filename, int line, int column)
+		public SequencePoint GetSequencePoint(Module module, string filename, int line, int column)
 		{
 			// Do not use ISymUnmanagedReader.GetDocument!  It is broken if two files have the same name
 			// Do not use ISymUnmanagedMethod.GetOffset!  It sometimes returns negative offset
-			
-			if (filename == null || !Path.IsPathRooted(filename))
-				throw new DebuggerException("Invalid filename. Absolute path is required.");
 			
 			ISymUnmanagedReader symReader = module.SymReader;
 			if (symReader == null)
@@ -181,9 +196,7 @@ namespace Debugger
 			int codesize = (int)corFunction.GetILCode().GetSize();
 			var seqPoints = symMethod.GetSequencePoints(codesize).Where(s => s.StartLine != 0xFEEFEE);
 			SequencePoint seqPoint = null;
-			if (column == 0) {
-				seqPoint = seqPoints.FirstOrDefault(s => s.StartLine <= line && line <= s.EndLine);
-			} else {
+			if (column != 0) {
 				seqPoint = seqPoints.FirstOrDefault(s => (s.StartLine < line || (s.StartLine == line && s.StartColumn <= column)) &&
 				                                         (line < s.EndLine || (line == s.EndLine && column <= s.EndColumn)));
 			}
@@ -191,12 +204,12 @@ namespace Debugger
 			return seqPoint;
 		}
 		
-		public static bool HasSymbols(IMethod method)
+		public bool HasSymbols(IMethod method)
 		{
 			return method.GetSymMethod() != null;
 		}
 		
-		public static IEnumerable<ILRange> GetIgnoredILRanges(IMethod method)
+		public IEnumerable<ILRange> GetIgnoredILRanges(IMethod method)
 		{
 			var symMethod = method.GetSymMethod();
 			if (symMethod == null)
@@ -206,7 +219,7 @@ namespace Debugger
 			return symMethod.GetSequencePoints(codeSize).Where(p => p.StartLine == 0xFEEFEE).SelectMany(p => p.ILRanges).ToList();
 		}
 		
-		public static IEnumerable<ILLocalVariable> GetLocalVariables(IMethod method)
+		public IEnumerable<ILLocalVariable> GetLocalVariables(IMethod method)
 		{
 			var symMethod = method.GetSymMethod();
 			if (symMethod == null)

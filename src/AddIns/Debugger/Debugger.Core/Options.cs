@@ -6,17 +6,6 @@ namespace Debugger
 {
 	public class Options
 	{
-		public Options()
-		{
-			EnableJustMyCode = true;
-			StepOverNoSymbols = true;
-			StepOverDebuggerAttributes = true;
-			StepOverAllProperties = false;
-			StepOverFieldAccessProperties = true;
-			SymbolsSearchPaths = new string[0];
-			PauseOnHandledExceptions = false;
-		}
-		
 		public virtual bool EnableJustMyCode { get; set; }
 		public virtual bool StepOverNoSymbols { get; set; }
 		public virtual bool StepOverDebuggerAttributes { get; set; }
