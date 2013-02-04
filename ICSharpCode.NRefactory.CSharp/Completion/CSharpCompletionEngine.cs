@@ -2696,6 +2696,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return new ExpressionResult((AstNode)pref.Target, baseUnit);
 				}
 			}
+
+			if (mref == null) {
+				baseUnit = ParseStub("A a;", false);
+				var type = baseUnit.GetNodeAt<MemberType>(location);
+				if (type != null) {
+					return new ExpressionResult((AstNode)type.Target, baseUnit);
+				}
+			}
+
 			AstNode expr = null;
 			if (mref != null) {
 				expr = mref.Target;

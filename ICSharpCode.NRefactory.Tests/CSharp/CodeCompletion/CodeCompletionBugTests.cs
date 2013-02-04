@@ -827,7 +827,6 @@ class Test
 		/// <summary>
 		/// Bug 405000 - Namespace alias qualifier operator (::) does not trigger code completion
 		/// </summary>
-		[Ignore("GOT BROKEN! FIXME")]
 		[Test]
 		public void TestBug405000 ()
 		{
