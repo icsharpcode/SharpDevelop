@@ -139,7 +139,7 @@ namespace Mono.CSharp
 		//
 		LocationsBag lbag;
 		List<Tuple<Modifiers, Location>> mod_locations;
-		Location parameterModifierLocation, savedLocation, savedOpenLocation, savedCloseLocation;
+		Location parameterModifierLocation, savedLocation, savedOpenLocation, savedCloseLocation, savedEventAssignLocation;
 		Location savedAttrParenOpenLocation, savedAttrParenCloseLocation, savedOperatorLocation;
 		Stack<List<Location>> locationListStack = new Stack<List<Location>> (); // used for type parameters
 		Stack<Location> opt_intoStack = new Stack<Location> ();
@@ -2387,8 +2387,11 @@ event_declaration
 			current_event_field.DocComment = Lexer.consume_doc_comment ();
 			Lexer.doc_state = XmlCommentState.Allowed;
 		}
-		
-		lbag.AddMember (current_event_field, GetModifierLocations (), GetLocation ($3), GetLocation ($9));
+		if (current_event_field.Initializer != null) {
+			lbag.AddMember (current_event_field, GetModifierLocations (), GetLocation ($3), savedEventAssignLocation, GetLocation ($9));
+		} else {
+			lbag.AddMember (current_event_field, GetModifierLocations (), GetLocation ($3), GetLocation ($9));
+		}
 		current_event_field = null;
 	  }
 	| opt_attributes
@@ -2439,6 +2442,7 @@ opt_event_initializer
 	  event_variable_initializer
 	  {
 	  	--lexer.parsing_block;
+	  	savedEventAssignLocation = GetLocation ($1);
 		current_event_field.Initializer = (Expression) $3;
 	  }
 	;

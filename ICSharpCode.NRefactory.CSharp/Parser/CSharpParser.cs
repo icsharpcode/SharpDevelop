@@ -1246,18 +1246,19 @@ namespace ICSharpCode.NRefactory.CSharp
 				EventDeclaration newEvent = new EventDeclaration ();
 				AddAttributeSection (newEvent, e);
 				var location = LocationsBag.GetMemberLocation (e);
+				int l = 0;
 				AddModifiers (newEvent, location);
 				
 				if (location != null && location.Count > 0)
-					newEvent.AddChild (new CSharpTokenNode (Convert (location [0]), EventDeclaration.EventKeywordRole), EventDeclaration.EventKeywordRole);
+					newEvent.AddChild (new CSharpTokenNode (Convert (location [l++]), EventDeclaration.EventKeywordRole), EventDeclaration.EventKeywordRole);
 				newEvent.AddChild (ConvertToType (e.TypeExpression), Roles.Type);
 				
 				VariableInitializer variable = new VariableInitializer ();
 				variable.AddChild (Identifier.Create (e.MemberName.Name, Convert (e.MemberName.Location)), Roles.Identifier);
 				
 				if (e.Initializer != null) {
-					if (location != null && location.Count > 0)
-						variable.AddChild (new CSharpTokenNode (Convert (location [0]), Roles.Assign), Roles.Assign);
+					if (location != null && location.Count > l)
+						variable.AddChild (new CSharpTokenNode (Convert (location [l++]), Roles.Assign), Roles.Assign);
 					variable.AddChild ((Expression)e.Initializer.Accept (this), Roles.Expression);
 				}
 				newEvent.AddChild (variable, Roles.Variable);
@@ -1279,8 +1280,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 				}
 				
-				if (location != null && location.Count > 1)
-					newEvent.AddChild (new CSharpTokenNode (Convert (location [1]), Roles.Semicolon), Roles.Semicolon);
+				if (location != null && location.Count > l)
+					newEvent.AddChild (new CSharpTokenNode (Convert (location [l++]), Roles.Semicolon), Roles.Semicolon);
 				
 				typeStack.Peek ().AddChild (newEvent, Roles.TypeMemberRole);
 			}
