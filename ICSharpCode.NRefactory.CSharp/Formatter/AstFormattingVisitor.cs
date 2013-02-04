@@ -1664,8 +1664,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override void VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression)
 		{
 			if (!anonymousMethodExpression.Body.IsNull) {
-				if (anonymousMethodExpression.Body.LBraceToken.StartLocation.Line != anonymousMethodExpression.Body.RBraceToken.StartLocation.Line)
+				if (anonymousMethodExpression.Body.LBraceToken.GetNextNode () != anonymousMethodExpression.Body.RBraceToken) {
 					EnforceBraceStyle(policy.AnonymousMethodBraceStyle, anonymousMethodExpression.Body.LBraceToken, anonymousMethodExpression.Body.RBraceToken);
+				}
 				VisitBlockWithoutFixingBraces(anonymousMethodExpression.Body, policy.IndentBlocks);
 				return;
 			}
