@@ -99,6 +99,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 						"Cannot find method System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode().");
 				}
 			}
+			#warning Encountered "COM object has been separated from its underlying RCW" here
 			Value defaultHashCode = Eval.InvokeMethod(WindowsDebugger.EvalThread, DebuggerHelpers.hashCodeMethod, null, new Value[]{value});
 			return (int)defaultHashCode.PrimitiveValue;
 		}
