@@ -196,10 +196,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (typeName is Mono.CSharp.QualifiedAliasMember) {
 					var qam = (Mono.CSharp.QualifiedAliasMember)typeName;
+					var loc = LocationsBag.GetLocations (typeName);
 					var memberType = new MemberType ();
 					memberType.Target = new SimpleType (qam.alias, Convert (qam.Location));
 					memberType.IsDoubleColon = true;
-					memberType.MemberName = qam.Name;
+
+					if (loc != null && loc.Count > 0)
+						memberType.AddChild (new CSharpTokenNode (Convert (loc [0]), Roles.DoubleColon), Roles.DoubleColon);
+
+					memberType.MemberNameToken = Identifier.Create (qam.Name, loc != null ? Convert (loc[1]) : TextLocation.Empty);
 					return memberType;
 				}
 				
@@ -2150,7 +2155,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.Target = new SimpleType (qualifiedAliasMember.alias, Convert (qualifiedAliasMember.Location));
 				result.IsDoubleColon = true;
 				var location = LocationsBag.GetLocations (qualifiedAliasMember);
-				result.AddChild (Identifier.Create (qualifiedAliasMember.Name, location != null ? Convert (location [0]) : TextLocation.Empty), Roles.Identifier);
+				if (location != null && location.Count > 0)
+					result.AddChild (new CSharpTokenNode (Convert (location [0]), Roles.DoubleColon), Roles.DoubleColon);
+
+				result.AddChild (Identifier.Create (qualifiedAliasMember.Name, location != null && location.Count > 1 ? Convert (location [1]) : TextLocation.Empty), Roles.Identifier);
 				return  new TypeReferenceExpression () { Type = result };
 			}
 			

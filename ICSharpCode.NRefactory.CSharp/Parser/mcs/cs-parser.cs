@@ -6254,7 +6254,7 @@ void case_339()
 		var lt2 = (Tokenizer.LocatedToken) yyVals[-1+yyTop];
 		
 		yyVal = new QualifiedAliasMember (lt1.Value, lt2.Value, (TypeArguments) yyVals[0+yyTop], lt1.Location);
-		lbag.AddLocation (yyVal, GetLocation (yyVals[-1+yyTop]));
+		lbag.AddLocation (yyVal, savedLocation, GetLocation (yyVals[-1+yyTop]));
 	  }
 
 void case_341()
@@ -6364,7 +6364,7 @@ void case_356()
 		var lt2 = (Tokenizer.LocatedToken) yyVals[-2+yyTop];
 
 		yyVal = new QualifiedAliasMember (lt1.Value, lt2.Value, (TypeArguments) yyVals[-1+yyTop], lt1.Location);
-		lbag.AddLocation (yyVal, GetLocation (yyVals[0+yyTop]));
+		lbag.AddLocation (yyVal, savedLocation, GetLocation (yyVals[0+yyTop]));
 	  }
 
 void case_357()
@@ -6550,7 +6550,7 @@ void case_436()
 		var lt2 = (Tokenizer.LocatedToken) yyVals[-1+yyTop];
 
 		yyVal = new QualifiedAliasMember (lt1.Value, lt2.Value, (TypeArguments) yyVals[0+yyTop], lt1.Location);
-		lbag.AddLocation (yyVal, GetLocation (yyVals[-1+yyTop]));
+		lbag.AddLocation (yyVal, savedLocation, GetLocation (yyVals[-1+yyTop]));
 	  }
 
 void case_438()
@@ -7058,7 +7058,7 @@ void case_531()
 		var qam = new QualifiedAliasMember (lt1.Value, lt2.Value, (int) yyVals[0+yyTop], lt1.Location);
 		yyVal = qam;
 		lbag.AddLocation (qam.TypeArguments, Lexer.GetGenericDimensionLocations ());
-		lbag.AddLocation (yyVal, GetLocation (yyVals[-1+yyTop]));
+		lbag.AddLocation (yyVal, savedLocation, GetLocation (yyVals[-1+yyTop]));
 	  }
 
 void case_532()
@@ -7113,7 +7113,7 @@ void case_536()
 		var lt = (Tokenizer.LocatedToken) yyVals[-1+yyTop];
 		if (lang_version == LanguageVersion.ISO_1)
 			FeatureIsNotAvailable (lt.Location, "namespace alias qualifier");
-
+		savedLocation = GetLocation (yyVals[0+yyTop]);
 		yyVal = lt;		
 	  }
 

@@ -2806,7 +2806,7 @@ namespace_or_type_expr
 		var lt2 = (Tokenizer.LocatedToken) $2;
 		
 		$$ = new QualifiedAliasMember (lt1.Value, lt2.Value, (TypeArguments) $3, lt1.Location);
-		lbag.AddLocation ($$, GetLocation ($2));
+		lbag.AddLocation ($$, savedLocation, GetLocation ($2));
 	  }
 	;
 
@@ -2930,7 +2930,7 @@ explicit_interface
 		var lt2 = (Tokenizer.LocatedToken) $2;
 
 		$$ = new QualifiedAliasMember (lt1.Value, lt2.Value, (TypeArguments) $3, lt1.Location);
-		lbag.AddLocation ($$, GetLocation ($4));
+		lbag.AddLocation ($$, savedLocation, GetLocation ($4));
 	  }
 	| explicit_interface IDENTIFIER opt_type_argument_list DOT
 	  {
@@ -3245,7 +3245,7 @@ member_access
 		var lt2 = (Tokenizer.LocatedToken) $2;
 
 		$$ = new QualifiedAliasMember (lt1.Value, lt2.Value, (TypeArguments) $3, lt1.Location);
-		lbag.AddLocation ($$, GetLocation ($2));
+		lbag.AddLocation ($$, savedLocation, GetLocation ($2));
 	  }
 	| primary_expression DOT GENERATE_COMPLETION {
 		$$ = new CompletionMemberAccess ((Expression) $1, null,GetLocation ($3));
@@ -3828,7 +3828,7 @@ unbound_type_name
 		var qam = new QualifiedAliasMember (lt1.Value, lt2.Value, (int) $3, lt1.Location);
 		$$ = qam;
 		lbag.AddLocation (qam.TypeArguments, Lexer.GetGenericDimensionLocations ());
-		lbag.AddLocation ($$, GetLocation ($2));
+		lbag.AddLocation ($$, savedLocation, GetLocation ($2));
 	  }
 	| unbound_type_name DOT identifier_inside_body
 	  {
@@ -3879,7 +3879,7 @@ qualified_alias_member
 		var lt = (Tokenizer.LocatedToken) $1;
 		if (lang_version == LanguageVersion.ISO_1)
 			FeatureIsNotAvailable (lt.Location, "namespace alias qualifier");
-
+		savedLocation = GetLocation ($2);
 		$$ = lt;		
 	  }
 	;
