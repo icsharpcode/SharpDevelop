@@ -15,7 +15,8 @@ namespace ICSharpCode.ILSpyAddIn
 	{
 		public static MethodDebugSymbols GetSymbols(IMethod method)
 		{
-			var id = IdStringProvider.GetIdString(method);
+			// Use the non-specialised method definition to look up decompiled symbols
+			var id = IdStringProvider.GetIdString(method.MemberDefinition);
 			var content = DecompiledViewContent.Get(method);
 			if (content != null && content.DebugSymbols.ContainsKey(id)) {
 				return content.DebugSymbols[id];
@@ -31,7 +32,11 @@ namespace ICSharpCode.ILSpyAddIn
 			
 			var content = DecompiledViewContent.Get(method);
 			var seq = symbols.SequencePoints.FirstOrDefault(p => p.ILRanges.Any(r => r.From <= iloffset && iloffset < r.To));
-			return seq.ToDebugger(symbols, content.VirtualFileName);
+			if (seq == null)
+				seq = symbols.SequencePoints.FirstOrDefault(p => iloffset <= p.ILOffset);
+			if (seq != null)
+				return seq.ToDebugger(symbols, content.VirtualFileName);
+			return null;
 		}
 		
 		public Debugger.SequencePoint GetSequencePoint(Module module, string filename, int line, int column)

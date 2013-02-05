@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.Decompiler;
 using Mono.Cecil;
@@ -66,6 +67,7 @@ namespace ICSharpCode.ILSpyAddIn
 		public void AddDebugSymbols(MethodDebugSymbols methodDebugSymbols)
 		{
 			var id = XmlDocKeyProvider.GetKey(methodDebugSymbols.CecilMethod);
+			methodDebugSymbols.SequencePoints = methodDebugSymbols.SequencePoints.OrderBy(s => s.ILOffset).ToList();
 			this.DebugSymbols.Add(id, methodDebugSymbols);
 			output.AddDebugSymbols(methodDebugSymbols);
 		}

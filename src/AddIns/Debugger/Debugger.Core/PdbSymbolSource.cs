@@ -28,10 +28,11 @@ namespace Debugger
 		
 		public override string ToString()
 		{
-			return string.Format("{0}:{1},{2}-{3},{4}",
+			return string.Format("{0}:{1},{2}-{3},{4} IL:{5}",
 			                     Path.GetFileName(this.Filename ?? string.Empty),
 			                     this.StartLine, this.StartColumn,
-			                     this.EndLine, this.EndColumn);
+			                     this.EndLine, this.EndColumn,
+			                     string.Join(" ", this.ILRanges));
 		}
 	}
 	
@@ -44,6 +45,11 @@ namespace Debugger
 		{
 			this.From = from;
 			this.To = to;
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("{0:X2}-{1:X2}", From, To);
 		}
 	}
 	

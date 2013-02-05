@@ -13,6 +13,7 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
+using ICSharpCode.Decompiler.Disassembler;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.ILSpyAddIn.LaunchILSpy;
@@ -234,6 +235,9 @@ namespace ICSharpCode.ILSpyAddIn
 			AstBuilder astBuilder = new AstBuilder(context);
 			astBuilder.AddType(typeDefinition);
 			astBuilder.GenerateCode(textOutput);
+			
+			// ReflectionDisassembler disasm = new ReflectionDisassembler(textOutput, true, cancellationToken);
+			// disasm.DisassembleType(typeDefinition);
 			
 			// save decompilation data
 			memberLocations = textOutput.MemberLocations;
