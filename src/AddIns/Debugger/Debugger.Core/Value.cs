@@ -14,6 +14,10 @@ namespace Debugger
 {
 	public delegate Value ValueGetter(StackFrame context);
 	
+	/// <summary>
+	/// Thrown when Value can not be obtained.
+	/// Methods should throw this exception instead of returning null.
+	/// </summary>
 	public class GetValueException: DebuggerException
 	{
 		public GetValueException(string error) : base(error) {}
@@ -240,13 +244,13 @@ namespace Debugger
 		}
 		
 		/// <summary> Dereferences a pointer type </summary>
-		/// <returns> Returns null for a null pointer </returns>
 		public Value Dereference()
 		{
-			if (this.Type.Kind != TypeKind.Pointer) throw new DebuggerException("Not a pointer");
+			if (this.Type.Kind != TypeKind.Pointer)
+				throw new DebuggerException("Not a pointer");
 			ICorDebugReferenceValue corRef = (ICorDebugReferenceValue)this.CorValue;
 			if (corRef.GetValue() == 0 || corRef.Dereference() == null) {
-				return null;
+				throw new GetValueException("Null pointer");
 			} else {
 				return new Value(this.AppDomain, corRef.Dereference());
 			}
@@ -393,18 +397,6 @@ namespace Debugger
 					throw new GetValueException("Object is not of type " + memberInfo.DeclaringType.FullName);
 			}
 		}
-		
-		/*
-		/// <summary> Get a field or property of an object with a given name. </summary>
-		/// <returns> Null if not found </returns>
-		public Value GetMemberValue(Thread evalThread, string name)
-		{
-			MemberInfo memberInfo = this.Type.GetMembers(m => m.Name == name && (m.IsFieldOrNonIndexedProperty), GetMemberOptions.None);
-			if (memberInfo == null)
-				return null;
-			return GetMemberValue(evalThread, memberInfo);
-		}
-		*/
 		
 		/// <summary> Get the value of given member. </summary>
 		public Value GetMemberValue(Thread evalThread, IMember memberInfo, params Value[] arguments)

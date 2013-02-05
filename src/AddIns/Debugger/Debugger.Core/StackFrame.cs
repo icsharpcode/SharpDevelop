@@ -232,7 +232,7 @@ namespace Debugger
 					if (loc.IsThis)
 						return loc.GetValue(this);
 				}
-				return null;
+				throw new GetValueException("The current method does not have 'this'.");
 			} else {
 				return new Value(this.AppDomain, GetThisCorValue());
 			}
@@ -240,7 +240,8 @@ namespace Debugger
 		
 		ICorDebugValue GetThisCorValue()
 		{
-			if (this.MethodInfo.IsStatic) throw new GetValueException("Static method does not have 'this'.");
+			if (this.MethodInfo.IsStatic)
+				throw new GetValueException("Static method does not have 'this'.");
 			ICorDebugValue corValue;
 			try {
 				corValue = CorILFrame.GetArgument(0);
