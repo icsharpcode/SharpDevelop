@@ -2987,6 +2987,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			"value"
 		}
 		);
+
+		public static IEnumerable<string> CommentTags {
+			get {
+				return commentTags;
+			}
+		}
 		
 		string GetLastClosingXmlCommentTag()
 		{
