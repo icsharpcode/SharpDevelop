@@ -44,8 +44,14 @@ namespace ICSharpCode.Decompiler
 	
 	public class SequencePoint
 	{
-		public List<ILRange> ILRanges { get; set; }
+		public ILRange[] ILRanges { get; set; }
 		public TextLocation StartLocation { get; set; }
 		public TextLocation EndLocation { get; set; }
+		public int ILOffset { get { return this.ILRanges[0].From; } }
+		
+		public override string ToString()
+		{
+			return string.Join(" ", this.ILRanges) + " " + this.StartLocation + "-" + this.EndLocation;
+		}
 	}
 }

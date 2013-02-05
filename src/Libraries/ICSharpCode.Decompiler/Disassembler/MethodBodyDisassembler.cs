@@ -94,7 +94,7 @@ namespace ICSharpCode.Decompiler.Disassembler
 							new SequencePoint() {
 								StartLocation = output.Location,
 								EndLocation = output.Location,
-								ILRanges = new List<ILRange>() { new ILRange { From = inst.Offset, To = inst.Next == null ? method.Body.CodeSize : inst.Next.Offset } }
+								ILRanges = new ILRange[] { new ILRange(inst.Offset, inst.Next == null ? method.Body.CodeSize : inst.Next.Offset) }
 							});
 					}
 					
@@ -198,7 +198,7 @@ namespace ICSharpCode.Decompiler.Disassembler
 							new SequencePoint() {
 								StartLocation = startLocation,
 								EndLocation = output.Location,
-								ILRanges = new List<ILRange>() { new ILRange { From = inst.Offset, To = inst.Next == null ? codeSize : inst.Next.Offset } }
+								ILRanges = new ILRange[] { new ILRange(inst.Offset, inst.Next == null ? codeSize : inst.Next.Offset) }
 							});
 					}
 					
