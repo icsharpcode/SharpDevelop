@@ -310,6 +310,7 @@ namespace ICSharpCode.AddInManager2.Model
 				// Mark this AddIn
 				ManagedAddIn markedAddIn = new ManagedAddIn(addIn)
 				{
+					InstallationSource = AddInInstallationSource.NuGetRepository,
 					IsTemporary = true,
 					IsUpdate = (foundAddIn != null),
 					OldVersion = (foundAddIn != null) ? foundAddIn.Version : null
