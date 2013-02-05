@@ -150,6 +150,7 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 			if (addIns != null)
 			{
 				_addedExternalAddIns.AddRange(addIns);
+				_registeredAddIns.AddRange(addIns);
 			}
 		}
 	}
