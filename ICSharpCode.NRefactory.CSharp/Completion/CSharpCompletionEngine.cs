@@ -334,7 +334,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			return null;
 		}
-		
+
 		IEnumerable<ICompletionData> MagicKeyCompletion(char completionChar, bool controlSpace)
 		{
 			Tuple<ResolveResult, CSharpResolver> resolveResult;
@@ -365,30 +365,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							return HandleMemberReferenceCompletion(GetExpressionBeforeCursor());
 						}
 						return null;
-					}
-					string lineText = document.GetText(document.GetLineByNumber(location.Line));
-					int startIndex = Math.Min(location.Column - 1, lineText.Length - 1);
-					while (startIndex >= 0 && lineText [startIndex] != '<') {
-						--startIndex;
-						if (lineText [startIndex] == '/') {
-							// already closed.
-							startIndex = -1;
-							break;
-						}
-					}
-					
-					if (startIndex >= 0) {
-						int endIndex = startIndex;
-						while (endIndex <= location.Column && endIndex < lineText.Length && !Char.IsWhiteSpace (lineText [endIndex])) {
-							endIndex++;
-						}
-						string tag = endIndex - startIndex - 1 > 0 ? lineText.Substring(
-							startIndex + 1,
-							endIndex - startIndex - 2
-						) : null;
-						if (!string.IsNullOrEmpty(tag) && commentTags.IndexOf(tag) >= 0) {
-							document.Insert(offset, "</" + tag + ">", AnchorMovementType.BeforeInsertion);
-						}
 					}
 					return null;
 					
