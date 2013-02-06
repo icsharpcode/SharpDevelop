@@ -208,11 +208,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public bool IsAccessor {
 			get { return ((IUnresolvedMethod)unresolved).AccessorOwner != null; }
 		}
-
-		public IMethod ReducedFrom { 
-			get { return null; } 
-		}
-
+		
 		public IMember AccessorOwner {
 			get { 
 				var reference = ((IUnresolvedMethod)unresolved).AccessorOwner; 

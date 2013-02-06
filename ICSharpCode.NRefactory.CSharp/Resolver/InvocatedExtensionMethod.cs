@@ -1,5 +1,5 @@
 //
-// ReducedExtensionMethod.cs
+// InvocatedExtensionMethod.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -35,64 +35,26 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// It's used to hide the internals of extension method invocation in certain situation to simulate the 
 	/// syntactic way of writing extension methods on semantic level.
 	/// </summary>
-	public class ReducedExtensionMethod : IMethod
+	public class InvocatedExtensionMethod : IMethod
 	{
 		readonly IMethod baseMethod;
 
-		public ReducedExtensionMethod(IMethod baseMethod)
+		public IMethod InvocatedMethod {
+			get {
+				return baseMethod;
+			}
+		}
+
+		public InvocatedExtensionMethod(IMethod baseMethod)
 		{
 			this.baseMethod = baseMethod;
 		}
 
-		public override bool Equals(object obj)
-		{
-			var other = obj as ReducedExtensionMethod;
-			if (other == null)
-				return false;
-			return baseMethod.Equals(other.baseMethod);
-		}
-		
-		public override int GetHashCode()
-		{
-			unchecked {
-				return baseMethod.GetHashCode() + 1;
-			}
-		}
-
-		public override string ToString()
-		{
-			return string.Format("[ReducedExtensionMethod: ReducedFrom={0}]", ReducedFrom);
-		}
-
 		#region IMember implementation
-
-		[Serializable]
-		public sealed class ReducedExtensionMethodMemberReference : IMemberReference
-		{
-			readonly IMethod baseMethod;
-
-			public ReducedExtensionMethodMemberReference (IMethod baseMethod)
-			{
-				this.baseMethod = baseMethod;
-			}
-
-			#region IMemberReference implementation
-			public IMember Resolve(ITypeResolveContext context)
-			{
-				return new ReducedExtensionMethod ((IMethod)baseMethod.ToMemberReference ().Resolve (context));
-			}
-
-			public ITypeReference DeclaringTypeReference {
-				get {
-					return baseMethod.ToMemberReference ().DeclaringTypeReference;
-				}
-			}
-			#endregion
-		}
 
 		public IMemberReference ToMemberReference()
 		{
-			return new ReducedExtensionMethodMemberReference (baseMethod);
+			return baseMethod.ToMemberReference ();
 		}
 
 		public IMember MemberDefinition {
@@ -167,7 +129,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public bool IsExtensionMethod {
 			get {
-				return false;
+				return baseMethod.IsExtensionMethod;
 			}
 		}
 
@@ -217,10 +179,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			get {
 				return baseMethod.AccessorOwner;
 			}
-		}
-
-		public IMethod ReducedFrom { 
-			get { return baseMethod; } 
 		}
 
 		#endregion
