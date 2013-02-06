@@ -400,7 +400,7 @@ namespace ICSharpCode.AddInManager2.Model
 
 		public void CancelUpdate(AddIn addIn)
 		{
-			if (addIn != null)
+			if ((addIn != null) && (addIn.Action == AddInAction.Update))
 			{
 				CancelPendingUpdate(addIn);
 				
@@ -594,6 +594,12 @@ namespace ICSharpCode.AddInManager2.Model
 				throw new ArgumentNullException("addIn");
 			}
 			
+			if (_nuGet.Packages.LocalRepository == null)
+			{
+				// Without a local NuGet repository we can't find a package
+				return null;
+			}
+			
 			IPackage package = null;
 			string nuGetPackageID = null;
 			if (addIn.Properties.Contains("nuGetPackageID"))
@@ -606,22 +612,19 @@ namespace ICSharpCode.AddInManager2.Model
 				primaryIdentity = addIn.Manifest.PrimaryIdentity;
 			}
 			
-			if (!String.IsNullOrEmpty(nuGetPackageID))
+			// Find installed package with mapped NuGet package ID
+			var matchingPackages = _nuGet.Packages.LocalRepository.GetPackages()
+				.Where(p => (p.Id == primaryIdentity) || (p.Id == nuGetPackageID))
+				.OrderBy(p => p.Version);
+			if (getLatest)
 			{
-				// Find installed package with mapped NuGet package ID
-				var matchingPackages = _nuGet.Packages.LocalRepository.GetPackages()
-					.Where(p => (p.Id == primaryIdentity) || (p.Id == nuGetPackageID))
-					.OrderBy(p => p.Version);
-				if (getLatest)
-				{
-					// Return latest package version
-					package = matchingPackages.LastOrDefault();
-				}
-				else
-				{
-					// Return oldest installed package version
-					package = matchingPackages.FirstOrDefault();
-				}
+				// Return latest package version
+				package = matchingPackages.LastOrDefault();
+			}
+			else
+			{
+				// Return oldest installed package version
+				package = matchingPackages.FirstOrDefault();
 			}
 			
 			return package;
