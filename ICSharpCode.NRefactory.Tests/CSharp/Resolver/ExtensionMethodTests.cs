@@ -54,22 +54,19 @@ namespace XN {
 			InvocationResolveResult mrr;
 			
 			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$a.F(1)$"));
-			var member = ((InvocatedExtensionMethod)mrr.Member).InvocatedMethod;
-			Assert.AreEqual("XN.XC.F", member.FullName);
-			Assert.AreEqual("System.Int32", member.Parameters [1].Type.FullName);
+			Assert.AreEqual("XN.XC.F", mrr.Member.FullName);
+			Assert.AreEqual("System.Int32", mrr.Member.Parameters[1].Type.FullName);
 			
 			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$a.F(\"text\")$"));
-			member = ((InvocatedExtensionMethod)mrr.Member).InvocatedMethod;
-			Assert.AreEqual("XN.XC.F", member.FullName);
-			Assert.AreEqual("System.String", member.Parameters[1].Type.FullName);
+			Assert.AreEqual("XN.XC.F", mrr.Member.FullName);
+			Assert.AreEqual("System.String", mrr.Member.Parameters[1].Type.FullName);
 			
 			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$b.F(1)$"));
 			Assert.AreEqual("B.F", mrr.Member.FullName);
 			
 			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$b.F(\"text\")$"));
-			member = ((InvocatedExtensionMethod)mrr.Member).InvocatedMethod;
-			Assert.AreEqual("XN.XC.F", member.FullName);
-			Assert.AreEqual("System.String", member.Parameters[1].Type.FullName);
+			Assert.AreEqual("XN.XC.F", mrr.Member.FullName);
+			Assert.AreEqual("System.String", mrr.Member.Parameters[1].Type.FullName);
 			
 			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$c.F(1)$"));
 			Assert.AreEqual("C.F", mrr.Member.FullName);
@@ -146,9 +143,8 @@ public static class XC {
 ";
 			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("A[]", rr.Type.ReflectionName);
-			var member = ((InvocatedExtensionMethod)rr.Member).InvocatedMethod;
-			Assert.AreEqual("System.Linq.Enumerable.ToArray", member.FullName);
-			Assert.AreEqual("A", ((SpecializedMethod)member).TypeArguments.Single().ReflectionName);
+			Assert.AreEqual("System.Linq.Enumerable.ToArray", rr.Member.FullName);
+			Assert.AreEqual("A", ((SpecializedMethod)rr.Member).TypeArguments.Single().ReflectionName);
 		}
 		
 		[Test]

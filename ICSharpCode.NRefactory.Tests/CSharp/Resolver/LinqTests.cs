@@ -349,10 +349,9 @@ class TestClass
 }";
 			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
-			var member = ((InvocatedExtensionMethod)rr.Member).InvocatedMethod;
-			Assert.AreEqual("SelectMany", member.Name);
-			Assert.AreEqual(3, member.Parameters.Count);
-			var typeArguments = ((SpecializedMethod)member).TypeArguments;
+			Assert.AreEqual("SelectMany", rr.Member.Name);
+			Assert.AreEqual(3, rr.Member.Parameters.Count);
+			var typeArguments = ((SpecializedMethod)rr.Member).TypeArguments;
 			Assert.AreEqual(3, typeArguments.Count);
 			Assert.AreEqual("System.String", typeArguments[0].ReflectionName, "TSource");
 			Assert.AreEqual("System.Char", typeArguments[1].ReflectionName, "TCollection");
@@ -372,10 +371,9 @@ class TestClass
 }";
 			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
-			var member = ((InvocatedExtensionMethod)rr.Member).InvocatedMethod;
-			Assert.AreEqual("SelectMany", member.Name);
-			Assert.AreEqual(3, member.Parameters.Count);
-			var typeArguments = ((SpecializedMethod)member).TypeArguments;
+			Assert.AreEqual("SelectMany", rr.Member.Name);
+			Assert.AreEqual(3, rr.Member.Parameters.Count);
+			var typeArguments = ((SpecializedMethod)rr.Member).TypeArguments;
 			Assert.AreEqual(3, typeArguments.Count);
 			Assert.AreEqual("System.String", typeArguments[0].ReflectionName, "TSource");
 			Assert.AreEqual("System.Char", typeArguments[1].ReflectionName, "TCollection");

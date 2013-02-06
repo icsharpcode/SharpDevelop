@@ -512,7 +512,6 @@
     <Compile Include="Refactoring\CodeActions\CreateEnumValue.cs" />
     <Compile Include="Resolver\AliasTypeResolveResult.cs" />
     <Compile Include="Resolver\AliasNamespaceResolveResult.cs" />
-    <Compile Include="Resolver\InvocatedExtensionMethod.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
