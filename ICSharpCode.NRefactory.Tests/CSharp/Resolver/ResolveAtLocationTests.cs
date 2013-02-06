@@ -238,5 +238,17 @@ class Test {
 			Assert.AreEqual("Method", rr.Member.Name);
 			Assert.AreEqual(0, ((IMethod)rr.Member).Parameters.Count);
 		}
+
+		[Test]
+		public void MemberTypeTarget()
+		{
+			var rr = ResolveAtLocation<TypeResolveResult>(
+				@"using System;                                                                   
+class Test {
+	E$nvironment.SpecialFolder folder;
+}
+");
+			Assert.AreEqual("System.Environment", rr.Type.FullName);
+		}
 	}
 }

@@ -213,7 +213,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					
 					var memberType = new MemberType ();
 					memberType.AddChild (ConvertToType (ma.LeftExpression), MemberType.TargetRole);
-					memberType.AddChild (new CSharpTokenNode (Convert (ma.DotLocation), Roles.Dot), Roles.Dot);
+					if (!ma.DotLocation.IsNull)
+						memberType.AddChild (new CSharpTokenNode (Convert (ma.DotLocation), Roles.Dot), Roles.Dot);
 					
 					memberType.MemberNameToken = Identifier.Create (ma.Name, Convert (ma.Location));
 					
