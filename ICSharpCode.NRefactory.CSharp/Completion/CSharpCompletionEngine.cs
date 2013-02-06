@@ -619,7 +619,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (IsInsideCommentStringOrDirective()) {
 						tokenIndex = offset;
 						token = GetPreviousToken(ref tokenIndex, false);
-						if (IsInPreprocessorDirective() && (token.Length == 1 || controlSpace)) {
+						if (IsInPreprocessorDirective() && (token.Length == 1 && char.IsLetter (completionChar) || controlSpace)) {
 							while (token != null && document.GetCharAt (tokenIndex - 1) != '#') {
 								token = GetPreviousToken(ref tokenIndex, false);
 							}
