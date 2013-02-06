@@ -153,14 +153,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				accessorOwner = value;
 			}
 		}
-
-		/// <summary>
-		/// Gets/Sets whether the method is an extension method that are being called using extension method syntax.
-		/// </summary>
-		public bool IsExtendedExtensionMethod {
-			get;
-			set;
-		}
 		
 		public override IMemberReference ToMemberReference()
 		{
