@@ -46,21 +46,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				yield break;
 			}
 			yield return new CodeAction (pdecl.Setter.IsNull ? context.TranslateString("Add setter") : context.TranslateString("Add getter"), script => {
-				var accessorStatement = BuildAccessorStatement(context, pdecl);
+				Statement accessorStatement = null;
 			
-				Accessor accessor = new Accessor () {
-					Body = new BlockStatement { accessorStatement }
-				};
+				var accessor = new Accessor ();
+				if (!pdecl.Getter.IsNull && !pdecl.Getter.Body.IsNull || !pdecl.Setter.IsNull && !pdecl.Setter.Body.IsNull) {
+					accessorStatement = BuildAccessorStatement(context, pdecl);
+					accessor.Body = new BlockStatement { accessorStatement };
+				}
+
 				accessor.Role = pdecl.Setter.IsNull ? PropertyDeclaration.SetterRole : PropertyDeclaration.GetterRole;
 
 				if (pdecl.Setter.IsNull && !pdecl.Getter.IsNull) {
-					script.InsertBefore(pdecl.RBraceToken, accessor);
+					script.InsertAfter(pdecl.Getter, accessor);
 				} else if (pdecl.Getter.IsNull && !pdecl.Setter.IsNull) {
 					script.InsertBefore(pdecl.Setter, accessor);
 				} else {
 					script.InsertBefore(pdecl.Getter, accessor);
 				}
-				script.Select(accessorStatement);
+				if (accessorStatement != null)
+					script.Select(accessorStatement);
 				script.FormatText(pdecl);
 			});
 		}
