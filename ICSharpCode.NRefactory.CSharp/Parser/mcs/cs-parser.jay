@@ -2815,8 +2815,9 @@ member_name
 	| namespace_or_type_expr DOT IDENTIFIER opt_type_argument_list
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
-		$$ = new MemberAccess ((Expression) $1, lt.Value, (TypeArguments) $4, lt.Location);
-		lbag.AddLocation ($$, GetLocation ($2));
+		$$ = new MemberAccess ((Expression) $1, lt.Value, (TypeArguments) $4, lt.Location) {
+			DotLocation = GetLocation ($2)
+		};
 	  }
 	;
 
