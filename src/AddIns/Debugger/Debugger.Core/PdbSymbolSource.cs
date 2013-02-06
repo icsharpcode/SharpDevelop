@@ -45,6 +45,11 @@ namespace Debugger
 			this.From = from;
 			this.To = to;
 		}
+		
+		public override string ToString()
+		{
+			return string.Format("{0:X2}-{1:X2}", From, To);
+		}
 	}
 	
 	public class ILLocalVariable

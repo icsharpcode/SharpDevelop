@@ -307,7 +307,7 @@ namespace ICSharpCode.Decompiler.Ast
 			if (symbolsStack.Count > 0 && ranges != null && ranges.Count > 0) {
 				symbolsStack.Peek().SequencePoints.Add(
 					new SequencePoint() {
-						ILRanges = ranges,
+						ILRanges = ILRange.OrderAndJoin(ranges).ToArray(),
 						StartLocation = startLocation,
 						EndLocation = output.Location
 					});
