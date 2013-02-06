@@ -136,7 +136,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public bool IsAccessor {
 			get { return methodDefinition.IsAccessor; }
 		}
-		
+
+		public IMethod ReducedFrom { 
+			get { return null; } 
+		}
+
 		IMember accessorOwner;
 		
 		public IMember AccessorOwner {

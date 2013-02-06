@@ -1,4 +1,4 @@
-﻿// 
+// 
 // CSharpCompletionEngine.cs
 //  
 // Author:
@@ -2570,7 +2570,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					foreach (var m in meths) {
 						if (!lookup.IsAccessible(m, isProtectedAllowed))
 							continue;
-						result.AddMember(new InvocatedExtensionMethod (m));
+						result.AddMember(new ReducedExtensionMethod (m));
 					}
 				}
 			}

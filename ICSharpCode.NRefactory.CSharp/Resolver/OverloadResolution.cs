@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -951,7 +951,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new InvalidOperationException();
 			
 			if (this.IsExtensionMethodInvocation && member is IMethod)
-				member =new InvocatedExtensionMethod ((IMethod)member);
+				member =new ReducedExtensionMethod ((IMethod)member);
 			return new CSharpInvocationResolveResult(
 				this.IsExtensionMethodInvocation ? new TypeResolveResult(member.DeclaringType) : targetResolveResult,
 				member,
