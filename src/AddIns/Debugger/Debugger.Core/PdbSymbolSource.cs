@@ -28,11 +28,10 @@ namespace Debugger
 		
 		public override string ToString()
 		{
-			return string.Format("{0}:{1},{2}-{3},{4} IL:{5}",
+			return string.Format("{0}:{1},{2}-{3},{4}",
 			                     Path.GetFileName(this.Filename ?? string.Empty),
 			                     this.StartLine, this.StartColumn,
-			                     this.EndLine, this.EndColumn,
-			                     string.Join(" ", this.ILRanges));
+			                     this.EndLine, this.EndColumn);
 		}
 	}
 	

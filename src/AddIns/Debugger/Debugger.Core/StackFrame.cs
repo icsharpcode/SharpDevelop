@@ -156,7 +156,7 @@ namespace Debugger
 			List<ILRange> stepRanges = new List<ILRange>();
 			var seq = this.Module.SymbolSource.GetSequencePoint(this.MethodInfo, this.IP);
 			if (seq != null) {
-				Process.TraceMessage("Step over: {0}", seq);
+				Process.TraceMessage("Step over: {0} IL:{1}", seq, string.Join(" ", seq.ILRanges));
 				stepRanges.AddRange(seq.ILRanges);
 				stepRanges.AddRange(this.Module.SymbolSource.GetIgnoredILRanges(this.MethodInfo));
 			}
