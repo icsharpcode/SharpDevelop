@@ -29,6 +29,14 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
                 return _corePackageManager;
             }
         }
+        
+        public FakeNuGetCorePackageManager FakeCorePackageManager
+        {
+            get
+            {
+                return _corePackageManager;
+            }
+        }
 
         public string PackageOutputDirectory
         {

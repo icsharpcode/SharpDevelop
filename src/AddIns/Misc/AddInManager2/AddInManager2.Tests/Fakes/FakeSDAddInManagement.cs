@@ -124,6 +124,10 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 			if (addIns != null)
 			{
 				_removedExternalAddIns.AddRange(addIns);
+				foreach (var removedAddIn in addIns)
+				{
+					_registeredAddIns.Remove(removedAddIn);
+				}
 			}
 		}
 		

@@ -136,6 +136,7 @@
     <None Include="TestResources\AddInManager2Test_New.sdaddin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="TestResources\AddInManager2Test_noIdentity.addin" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
