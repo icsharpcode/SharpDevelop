@@ -9,14 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Text;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -28,7 +21,7 @@ namespace ICSharpCode.SettingsEditor
 	/// <summary>
 	/// Interaction logic for SettingsViewXaml.xaml
 	/// </summary>
-	public partial class SettingsViewXaml : UserControl,ISettingsEntryHost
+	public partial class SettingsView : UserControl,ISettingsEntryHost
 	{
 		public event EventHandler SettingsChanged;
 		public event EventHandler SelectionChanged;
@@ -65,7 +58,7 @@ namespace ICSharpCode.SettingsEditor
 		IAmbience ambience;
 		ICompilation compilation;
 		
-		public SettingsViewXaml()
+		public SettingsView()
 		{
 			
 			InitializeComponent();
