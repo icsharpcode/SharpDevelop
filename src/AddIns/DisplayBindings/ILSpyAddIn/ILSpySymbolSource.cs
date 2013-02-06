@@ -31,11 +31,18 @@ namespace ICSharpCode.ILSpyAddIn
 				return null;
 			
 			var content = DecompiledViewContent.Get(method);
-			var seq = symbols.SequencePoints.FirstOrDefault(p => p.ILRanges.Any(r => r.From <= iloffset && iloffset < r.To));
+			var seqs = symbols.SequencePoints;
+			var seq = seqs.FirstOrDefault(p => p.ILRanges.Any(r => r.From <= iloffset && iloffset < r.To));
 			if (seq == null)
-				seq = symbols.SequencePoints.FirstOrDefault(p => iloffset <= p.ILOffset);
-			if (seq != null)
+				seq = seqs.FirstOrDefault(p => iloffset <= p.ILOffset);
+			if (seq != null) {
+				// Use the widest sequence point containing the IL offset
+				iloffset = seq.ILOffset;
+				seq = seqs.Where(p => p.ILRanges.Any(r => r.From <= iloffset && iloffset < r.To))
+				          .OrderByDescending(p => p.ILRanges.Last().To - p.ILRanges.First().From)
+				          .FirstOrDefault();
 				return seq.ToDebugger(symbols, content.VirtualFileName);
+			}
 			return null;
 		}
 		

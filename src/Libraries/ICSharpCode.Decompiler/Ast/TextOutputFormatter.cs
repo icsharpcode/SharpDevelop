@@ -36,6 +36,8 @@ namespace ICSharpCode.Decompiler.Ast
 		bool firstUsingDeclaration;
 		bool lastUsingDeclaration;
 		
+		TextLocation? lastEndOfLine;
+		
 		public bool FoldBraces = false;
 		
 		public TextOutputFormatter(ITextOutput output)
@@ -217,6 +219,7 @@ namespace ICSharpCode.Decompiler.Ast
 				output.MarkFoldEnd();
 				lastUsingDeclaration = false;
 			}
+			lastEndOfLine = output.Location;
 			output.WriteLine();
 		}
 		
@@ -305,11 +308,13 @@ namespace ICSharpCode.Decompiler.Ast
 			// code mappings
 			var ranges = node.Annotation<List<ILRange>>();
 			if (symbolsStack.Count > 0 && ranges != null && ranges.Count > 0) {
+				// Ignore the newline which was printed at the end of the statement
+				TextLocation endLocation = (node is Statement) ? (lastEndOfLine ?? output.Location) : output.Location;
 				symbolsStack.Peek().SequencePoints.Add(
 					new SequencePoint() {
 						ILRanges = ILRange.OrderAndJoin(ranges).ToArray(),
 						StartLocation = startLocation,
-						EndLocation = output.Location
+						EndLocation = endLocation
 					});
 			}
 			
