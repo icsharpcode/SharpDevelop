@@ -419,8 +419,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					int tokenIndex = offset;
 					string token = GetPreviousToken(ref tokenIndex, false);
 					if (IsInsideCommentStringOrDirective()) {
-						if (IsInPreprocessorDirective())
-							return HandleKeywordCompletion(tokenIndex, token);
 						return null;
 					}
 					// check propose name, for context <variable name> <ctrl+space> (but only in control space context)
@@ -619,6 +617,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					// Automatic completion
 				default:
 					if (IsInsideCommentStringOrDirective()) {
+						tokenIndex = offset;
+						token = GetPreviousToken(ref tokenIndex, false);
+						if (IsInPreprocessorDirective() && (token.Length == 1 || controlSpace)) {
+							while (token != null && document.GetCharAt (tokenIndex - 1) != '#') {
+								token = GetPreviousToken(ref tokenIndex, false);
+							}
+							if (token != null)
+								return HandleKeywordCompletion(tokenIndex, token);
+						}
 						return null;
 					}
 					if (IsInLinqContext(offset)) {
