@@ -126,6 +126,15 @@ namespace ICSharpCode.UnitTesting
 		{
 			string name = nameBuilder.ToString();
 			if (name == "Name") {
+				// Remove arguments from valueBuilder result to match result name with test method name
+				int leftDelimiterIndex = valueBuilder.ToString().IndexOf('(');
+				if ( leftDelimiterIndex > 0 ) {
+					int rightDelimiterIndex = valueBuilder.ToString().IndexOf(')',leftDelimiterIndex);
+					if ( rightDelimiterIndex > leftDelimiterIndex
+					    && rightDelimiterIndex == valueBuilder.Length - 1 ) {
+						valueBuilder.Remove( leftDelimiterIndex, rightDelimiterIndex - leftDelimiterIndex + 1 );
+					}
+				}
 				result = new TestResult(valueBuilder.ToString());
 			} else if (result != null) {
 				if (name == "Message") {

@@ -99,6 +99,17 @@ namespace ICSharpCode.UnitTesting
 			return @class.Methods.Where(IsTestMethod).Select(member => new TestMember(member));
 		}
 		
+		// Single static table for all NUnit parametrised test MethodAttributes and ParameterAttributes
+		// Assumption is that NUnit test class will never compile with wrong attributes
+		static HashSet<string> ParametrisedTestAttributesSet = new HashSet<string> ( new List<string> {
+			"NUnit.Framework.TestCaseAttribute",
+			"NUnit.Framework.RandomAttribute",
+			"NUnit.Framework.RangeAttribute",
+			"NUnit.Framework.ValuesAttribute",
+			"NUnit.Framework.TestCaseSourceAttribute",
+			"NUnit.Framework.ValueSourceAttribute"
+			} );
+
 		static bool IsTestMethod(IMethod method)
 		{
 			var nameComparer = GetNameComparer(method.DeclaringType);
@@ -109,6 +120,22 @@ namespace ICSharpCode.UnitTesting
 						if (method.Parameters.Count == 0) {
 							return true;
 						}
+						// Check if Parameter is attributed with NUnit parametrised-test-attribute
+						else {
+							foreach ( var parameter in method.Parameters )
+							{
+								foreach ( var parameterAttribute in parameter.Attributes )
+								{
+									if ( ParametrisedTestAttributesSet.Contains ( parameterAttribute.AttributeType.FullyQualifiedName ) ) {
+										return true;
+									}
+								}
+							}
+						}
+					}
+					// Check if Method is attributed with NUnit parametrised-test-attribute
+					else if ( ParametrisedTestAttributesSet.Contains ( attribute.AttributeType.FullyQualifiedName ) ){
+						return true;
 					}
 				}
 			}
