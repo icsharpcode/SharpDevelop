@@ -167,7 +167,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public bool IsExtensionMethod {
 			get {
-				return false;
+				return true;
 			}
 		}
 
@@ -289,7 +289,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public bool IsStatic {
 			get {
-				return baseMethod.IsStatic;
+				return false;
 			}
 		}
 
