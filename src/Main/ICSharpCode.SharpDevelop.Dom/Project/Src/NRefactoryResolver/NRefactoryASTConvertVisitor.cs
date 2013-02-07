@@ -251,7 +251,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return base.VisitOptionDeclaration(optionDeclaration, data);
 		}
 		
-		void ConvertAttributes(AST.AttributedNode from, AbstractEntity to)
+		static void ConvertAttributes(AST.AttributedNode from, AbstractEntity to)
 		{
 			if (from.Attributes.Count == 0) {
 				to.Attributes = DefaultAttribute.EmptyAttributeList;
@@ -267,7 +267,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		List<IAttribute> VisitAttributes(IList<AST.AttributeSection> attributes, ClassFinder context)
+		static void ConvertAttributes(AST.ParameterDeclarationExpression from, DefaultParameter to, IClass c )
+		{
+			if (from.Attributes.Count == 0) {
+				to.Attributes = DefaultAttribute.EmptyAttributeList;
+			} else {
+				ICSharpCode.NRefactory.Location location = from.Attributes[0].StartLocation;
+				ClassFinder context = new ClassFinder(c, location.Line, location.Column);
+				to.Attributes = VisitAttributes(from.Attributes, context);
+			}
+		}
+
+		static List<IAttribute> VisitAttributes(IList<AST.AttributeSection> attributes, ClassFinder context)
 		{
 			// TODO Expressions???
 			List<IAttribute> result = new List<IAttribute>();
@@ -322,7 +333,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					result.Add(new DefaultAttribute(new AttributeReturnType(context, attribute.Name),
 					                                target, positionalArguments, namedArguments)
 					           {
-					           	CompilationUnit = cu,
+					           	CompilationUnit = context.CallingClass.CompilationUnit,
 					           	Region = GetRegion(attribute.StartLocation, attribute.EndLocation)
 					           });
 				}
@@ -568,6 +579,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			IReturnType parType = CreateReturnType(par.TypeReference, method, currentClass, cu, TypeVisitor.ReturnTypeOptions.None);
 			DefaultParameter p = new DefaultParameter(par.ParameterName, parType, GetRegion(par.StartLocation, par.EndLocation));
 			p.Modifiers = (ParameterModifiers)par.ParamModifier;
+			ConvertAttributes ( par, p, currentClass );
 			return p;
 		}
 		
