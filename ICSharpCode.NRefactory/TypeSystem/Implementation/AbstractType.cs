@@ -58,7 +58,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual int TypeParameterCount {
 			get { return 0; }
 		}
-		
+
+		readonly static IList<IType> emptyTypeArguments = new IType[0];
+		IList<IType> IType.TypeArguments {
+			get { return emptyTypeArguments; }
+		}
+
 		public virtual IType DeclaringType {
 			get { return null; }
 		}
@@ -128,6 +133,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return EmptyList<IMethod>.Instance;
 		}
 		
+		public TypeParameterSubstitution GetSubstitution()
+		{
+			return TypeParameterSubstitution.Identity;
+		}
+		
+		public TypeParameterSubstitution GetSubstitution(IList<IType> methodTypeArguments)
+		{
+			return TypeParameterSubstitution.Identity;
+		}
+
 		public override sealed bool Equals(object obj)
 		{
 			return Equals(obj as IType);

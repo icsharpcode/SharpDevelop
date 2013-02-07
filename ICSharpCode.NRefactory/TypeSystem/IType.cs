@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -80,7 +81,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the number of type parameters.
 		/// </summary>
 		int TypeParameterCount { get; }
-		
+
+		/// <summary>
+		/// Gets the type arguments passed to this type.
+		/// If only the type parameters for the class were specified and the generic type
+		/// itself is not specialized yet or the TypeParameterCount is 0, this property will return an empty list.
+		/// NOTE: The type will change to IReadOnlyList<IType> in future versions.
+		/// </summary>
+		IList<IType> TypeArguments { get; }
+
 		/// <summary>
 		/// Calls ITypeVisitor.Visit for this type.
 		/// </summary>
@@ -110,6 +119,22 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Otherwise, the main resolve context of a compilation is sufficient.
 		/// </remarks>
 		ITypeReference ToTypeReference();
+
+		/// <summary>
+		/// Gets a type visitor that performs the substitution of class type parameters with the type arguments
+		/// of this parameterized type.
+		/// Returns TypeParameterSubstitution.Identity if the type is not parametrized.
+		/// </summary>
+		TypeParameterSubstitution GetSubstitution();
+		
+		/// <summary>
+		/// Gets a type visitor that performs the substitution of class type parameters with the type arguments
+		/// of this parameterized type,
+		/// and also substitutes method type parameters with the specified method type arguments.
+		/// Returns TypeParameterSubstitution.Identity if the type is not parametrized.
+		/// </summary>
+		TypeParameterSubstitution GetSubstitution(IList<IType> methodTypeArguments);
+
 		
 		/// <summary>
 		/// Gets inner classes (including inherited inner classes).

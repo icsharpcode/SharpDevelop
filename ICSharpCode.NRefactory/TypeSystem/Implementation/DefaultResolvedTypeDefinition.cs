@@ -492,7 +492,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public int TypeParameterCount {
 			get { return parts[0].TypeParameters.Count; }
 		}
-		
+
+		readonly static IList<IType> emptyTypeArguments = new IType[0];
+		IList<IType> IType.TypeArguments {
+			get { return emptyTypeArguments; }
+		}
+
 		#region DirectBaseTypes
 		IList<IType> directBaseTypes;
 		
@@ -904,6 +909,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		#endregion
 		
+		public TypeParameterSubstitution GetSubstitution()
+		{
+			return TypeParameterSubstitution.Identity;
+		}
+		
+		public TypeParameterSubstitution GetSubstitution(IList<IType> methodTypeArguments)
+		{
+			return TypeParameterSubstitution.Identity;
+		}
+
 		public bool Equals(IType other)
 		{
 			return this == other;

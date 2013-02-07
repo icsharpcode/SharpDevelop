@@ -137,12 +137,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return ReflectionName;
 		}
 		
-		public ReadOnlyCollection<IType> TypeArguments {
+		public IList<IType> TypeArguments {
 			get {
-				return Array.AsReadOnly(typeArguments);
+				return typeArguments;
 			}
 		}
-		
+
 		/// <summary>
 		/// Same as 'parameterizedType.TypeArguments[index]', but is a bit more efficient (doesn't require the read-only wrapper).
 		/// </summary>

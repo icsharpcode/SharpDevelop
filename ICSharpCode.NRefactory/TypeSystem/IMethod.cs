@@ -88,20 +88,27 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the unresolved method parts.
 		/// For partial methods, this returns all parts.
 		/// Otherwise, this returns an array with a single element (new[] { UnresolvedMember }).
+		/// NOTE: The type will change to IReadOnlyList<IUnresolvedMethod> in future versions.
 		/// </summary>
 		IList<IUnresolvedMethod> Parts { get; }
 		
 		/// <summary>
 		/// Gets the attributes associated with the return type. (e.g. [return: MarshalAs(...)])
+		/// NOTE: The type will change to IReadOnlyList<IAttribute> in future versions.
 		/// </summary>
 		IList<IAttribute> ReturnTypeAttributes { get; }
-		
+
+
+		/// <summary>
+		/// NOTE: The type will change to IReadOnlyList<ITypeParameter> in future versions.
+		/// </summary>
 		IList<ITypeParameter> TypeParameters { get; }
 
 		/// <summary>
 		/// Gets the type arguments passed to this method.
 		/// If only the type parameters for the class were specified and the generic method
 		/// itself is not specialized yet, this property will return an empty list.
+		/// NOTE: The type will change to IReadOnlyList<IType> in future versions.
 		/// </summary>
 		IList<IType> TypeArguments {
 			get;
