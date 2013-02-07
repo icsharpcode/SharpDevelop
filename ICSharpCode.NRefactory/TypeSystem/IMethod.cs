@@ -132,5 +132,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Otherwise, returns null.
 		/// </summary>
 		IMember AccessorOwner { get; }
+
+		/// <summary>
+		/// If this method is reduced from an extension method return the original method, <c>null</c> otherwhise.
+		/// </summary>
+		IMethod ReducedFrom { get; }
 	}
 }

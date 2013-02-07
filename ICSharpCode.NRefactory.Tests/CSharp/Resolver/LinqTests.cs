@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -349,7 +349,7 @@ class TestClass
 }";
 			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
-			var member = ((InvocatedExtensionMethod)rr.Member).InvocatedMethod;
+			var member = ((IMethod)rr.Member).ReducedFrom;
 			Assert.AreEqual("SelectMany", member.Name);
 			Assert.AreEqual(3, member.Parameters.Count);
 			var typeArguments = ((SpecializedMethod)member).TypeArguments;
@@ -372,7 +372,7 @@ class TestClass
 }";
 			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
-			var member = ((InvocatedExtensionMethod)rr.Member).InvocatedMethod;
+			var member = ((IMethod)rr.Member).ReducedFrom;
 			Assert.AreEqual("SelectMany", member.Name);
 			Assert.AreEqual(3, member.Parameters.Count);
 			var typeArguments = ((SpecializedMethod)member).TypeArguments;

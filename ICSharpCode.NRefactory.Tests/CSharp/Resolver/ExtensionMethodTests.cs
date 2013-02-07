@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -54,12 +54,12 @@ namespace XN {
 			InvocationResolveResult mrr;
 			
 			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$a.F(1)$"));
-			var member = ((InvocatedExtensionMethod)mrr.Member).InvocatedMethod;
+			var member = ((IMethod)mrr.Member).ReducedFrom;
 			Assert.AreEqual("XN.XC.F", member.FullName);
 			Assert.AreEqual("System.Int32", member.Parameters [1].Type.FullName);
 			
 			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$a.F(\"text\")$"));
-			member = ((InvocatedExtensionMethod)mrr.Member).InvocatedMethod;
+			member = ((IMethod)mrr.Member).ReducedFrom;
 			Assert.AreEqual("XN.XC.F", member.FullName);
 			Assert.AreEqual("System.String", member.Parameters[1].Type.FullName);
 			
@@ -67,7 +67,7 @@ namespace XN {
 			Assert.AreEqual("B.F", mrr.Member.FullName);
 			
 			mrr = Resolve<CSharpInvocationResolveResult>(program.Replace("$", "$b.F(\"text\")$"));
-			member = ((InvocatedExtensionMethod)mrr.Member).InvocatedMethod;
+			member = ((IMethod)mrr.Member).ReducedFrom;
 			Assert.AreEqual("XN.XC.F", member.FullName);
 			Assert.AreEqual("System.String", member.Parameters[1].Type.FullName);
 			
@@ -146,7 +146,7 @@ public static class XC {
 ";
 			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("A[]", rr.Type.ReflectionName);
-			var member = ((InvocatedExtensionMethod)rr.Member).InvocatedMethod;
+			var member = ((IMethod)rr.Member).ReducedFrom;
 			Assert.AreEqual("System.Linq.Enumerable.ToArray", member.FullName);
 			Assert.AreEqual("A", ((SpecializedMethod)member).TypeArguments.Single().ReflectionName);
 		}
