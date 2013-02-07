@@ -117,7 +117,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public bool IsOverridable {
 			get { return unresolved.IsOverridable; }
 		}
-		
+
+		public TypeParameterSubstitution Substitution {
+			get { return TypeParameterSubstitution.Identity; }
+		}
+
 		public virtual IMemberReference ToMemberReference()
 		{
 			var declTypeRef = this.DeclaringType.ToTypeReference();

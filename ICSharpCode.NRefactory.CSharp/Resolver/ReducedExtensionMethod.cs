@@ -27,6 +27,7 @@ using System;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -143,6 +144,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
+		public TypeParameterSubstitution Substitution {
+			get {
+				return baseMethod.Substitution;
+			}
+		}
+
+
 		#endregion
 
 		#region IMethod implementation
@@ -220,9 +228,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 
 		public IMethod ReducedFrom { 
-			get { return baseMethod; } 
+			get {
+				return baseMethod;
+			} 
 		}
 
+		public IList<IType> TypeArguments {
+			get {
+				return baseMethod.TypeArguments;
+			}
+		}
 		#endregion
 
 		#region IParameterizedMember implementation

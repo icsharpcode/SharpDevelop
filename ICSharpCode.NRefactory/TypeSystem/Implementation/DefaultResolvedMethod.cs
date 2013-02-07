@@ -172,7 +172,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IList<IParameter> Parameters { get; private set; }
 		public IList<IAttribute> ReturnTypeAttributes { get; private set; }
 		public IList<ITypeParameter> TypeParameters { get; private set; }
-		
+
+		static readonly IList<IType> emptyArguments = new IType[0];
+		public IList<IType> TypeArguments { get { return emptyArguments; } }
+
 		public bool IsExtensionMethod { get; private set; }
 		
 		public IList<IUnresolvedMethod> Parts {

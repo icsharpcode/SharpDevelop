@@ -97,7 +97,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IList<IAttribute> ReturnTypeAttributes { get; }
 		
 		IList<ITypeParameter> TypeParameters { get; }
-		
+
+		/// <summary>
+		/// Gets the type arguments passed to this method.
+		/// If only the type parameters for the class were specified and the generic method
+		/// itself is not specialized yet, this property will return an empty list.
+		/// </summary>
+		IList<IType> TypeArguments {
+			get;
+		}
+
 		bool IsExtensionMethod { get; }
 		bool IsConstructor { get; }
 		bool IsDestructor { get; }
