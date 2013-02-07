@@ -103,7 +103,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public int TypeParameterCount {
 			get { return typeArguments.Length; }
 		}
-		
+
+		public IList<ITypeParameter> TypeParameters {
+			get { return genericType.TypeParameters; }
+		}
+
 		public string FullName {
 			get { return genericType.FullName; }
 		}
