@@ -234,6 +234,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 
+			bool IMember.IsSpecialized {
+				get { return false; }
+			}
+
 			string INamedElement.FullName {
 				get { return "operator"; }
 			}

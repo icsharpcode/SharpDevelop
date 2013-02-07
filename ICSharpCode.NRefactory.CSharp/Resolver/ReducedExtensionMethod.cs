@@ -150,6 +150,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
+		public bool IsSpecialized {
+			get {
+				return baseMethod.IsSpecialized;
+			}
+		}
 
 		#endregion
 
