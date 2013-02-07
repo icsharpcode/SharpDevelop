@@ -301,7 +301,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IAssembly ParentAssembly {
 			get { return baseMember.ParentAssembly; }
 		}
-		
+
+		public bool IsSpecialized {
+			get { return true; }
+		}
+
 		public override bool Equals(object obj)
 		{
 			SpecializedMember other = obj as SpecializedMember;

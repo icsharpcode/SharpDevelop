@@ -65,14 +65,18 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 
 		readonly static IList<IType> emptyTypeArguments = new IType[0];
-		IList<IType> IType.TypeArguments {
+		public virtual IList<IType> TypeArguments {
 			get { return emptyTypeArguments; }
 		}
 
 		public virtual IType DeclaringType {
 			get { return null; }
 		}
-		
+
+		public virtual bool IsParameterized { 
+			get { return false; }
+		}
+
 		public virtual ITypeDefinition GetDefinition()
 		{
 			return null;

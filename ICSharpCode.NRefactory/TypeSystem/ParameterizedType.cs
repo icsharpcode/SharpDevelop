@@ -147,6 +147,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 
+		public bool IsParameterized { 
+			get {
+				return true;
+			}
+		}
+
 		/// <summary>
 		/// Same as 'parameterizedType.TypeArguments[index]', but is a bit more efficient (doesn't require the read-only wrapper).
 		/// </summary>

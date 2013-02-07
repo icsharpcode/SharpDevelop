@@ -122,6 +122,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return TypeParameterSubstitution.Identity; }
 		}
 
+		public bool IsSpecialized {
+			get { return false; }
+		}
+
 		public virtual IMemberReference ToMemberReference()
 		{
 			var declTypeRef = this.DeclaringType.ToTypeReference();

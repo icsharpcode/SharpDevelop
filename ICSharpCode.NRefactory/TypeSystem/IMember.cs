@@ -179,5 +179,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			get;
 		}
 
+		/// <summary>
+		/// If true a type substitution on this member has been performed.
+		/// </summary>
+		bool IsSpecialized {
+			get;
+		}
 	}
 }

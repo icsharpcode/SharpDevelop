@@ -97,6 +97,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IList<IType> TypeArguments { get; }
 
 		/// <summary>
+		/// If true the type represents an instance of a generic type.
+		/// </summary>
+		bool IsParameterized { get; }
+
+		/// <summary>
 		/// Calls ITypeVisitor.Visit for this type.
 		/// </summary>
 		/// <returns>The return value of the ITypeVisitor.Visit call</returns>

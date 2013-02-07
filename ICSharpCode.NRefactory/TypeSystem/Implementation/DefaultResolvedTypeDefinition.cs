@@ -494,8 +494,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 
 		readonly static IList<IType> emptyTypeArguments = new IType[0];
-		IList<IType> IType.TypeArguments {
+		public IList<IType> TypeArguments {
 			get { return emptyTypeArguments; }
+		}
+
+		public bool IsParameterized { 
+			get { return false; }
 		}
 
 		#region DirectBaseTypes

@@ -207,6 +207,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return 0; }
 		}
 
+		bool IType.IsParameterized { 
+			get { return false; }
+		}
+
 		readonly static IList<ITypeParameter> emptyTypeParameters = new ITypeParameter[0];
 		IList<ITypeParameter> IType.TypeParameters {
 			get { return emptyTypeParameters; }
