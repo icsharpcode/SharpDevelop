@@ -134,7 +134,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IMember AccessorOwner { get; }
 
 		/// <summary>
-		/// If this method is reduced from an extension method return the original method, <c>null</c> otherwhise.
+		/// If this method is reduced from an extension method return the original method, <c>null</c> otherwise.
+		/// A reduced method doesn't contain the extension method parameter. That means that has one parameter less than it's definition.
 		/// </summary>
 		IMethod ReducedFrom { get; }
 	}
