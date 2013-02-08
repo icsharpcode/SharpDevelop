@@ -950,7 +950,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (member == null)
 				throw new InvalidOperationException();
 
-			var result = new CSharpInvocationResolveResult(
+			return new CSharpInvocationResolveResult(
 				this.IsExtensionMethodInvocation ? new TypeResolveResult(member.DeclaringType) : targetResolveResult,
 				member,
 				GetArgumentsWithConversions(targetResolveResult, member),
@@ -961,9 +961,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				argumentToParameterMap: this.GetArgumentToParameterMap(),
 				initializerStatements: initializerStatements,
 				returnTypeOverride: returnTypeOverride);
-			if (this.IsExtensionMethodInvocation && member is IMethod)
-				result.ReducedMethod = new ReducedExtensionMethod ((IMethod)member);
-			return result;
 		}
 		#endregion
 	}

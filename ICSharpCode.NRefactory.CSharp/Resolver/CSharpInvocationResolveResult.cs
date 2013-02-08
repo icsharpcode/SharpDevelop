@@ -52,9 +52,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// If IsExtensionMethodInvocation is true this property holds the reduced method.
 		/// </summary>
+		IMethod reducedMethod;
 		public IMethod ReducedMethod {
-			get;
-			internal set;
+			get {
+				if (!IsExtensionMethodInvocation)
+					return null;
+				if (reducedMethod == null && Member is IMethod)
+					reducedMethod = new ReducedExtensionMethod ((IMethod)Member);
+				return reducedMethod;
+			}
 		}
 		
 		public CSharpInvocationResolveResult(
