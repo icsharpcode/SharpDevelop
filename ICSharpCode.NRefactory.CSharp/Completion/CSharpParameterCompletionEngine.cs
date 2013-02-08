@@ -129,11 +129,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				methods.Add (method);
 			}
-			foreach (var m in methods)
+			foreach (var m in methods) {
 				yield return m;
+			}
 			foreach (var extMethods in resolveResult.GetEligibleExtensionMethods (true)) {
 				foreach (var method in extMethods) {
-					yield return method;
+					if (methods.Contains (method))
+						continue;
+					yield return new ReducedExtensionMethod (method);
 				}
 			}
 		}

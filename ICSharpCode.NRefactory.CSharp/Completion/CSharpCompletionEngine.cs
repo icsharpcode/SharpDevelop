@@ -2326,6 +2326,30 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				yield return factory.CreateNamespaceCompletionData(ns);
 			}
 		}
+
+		void CreateParameterForInvocation(CompletionDataWrapper result, IMethod method, CSharpResolver state, int parameter, HashSet<string> addedEnums, HashSet<string> addedDelegates)
+		{
+			if (method.Parameters.Count <= parameter) {
+				return;
+			}
+			var resolvedType = method.Parameters[parameter].Type;
+			if (resolvedType.Kind == TypeKind.Enum) {
+				if (addedEnums.Contains(resolvedType.ReflectionName)) {
+					return;
+				}
+				addedEnums.Add(resolvedType.ReflectionName);
+				AddEnumMembers(result, resolvedType, state);
+				return;
+			}
+
+			if (resolvedType.Kind == TypeKind.Delegate) {
+				if (addedDelegates.Contains(resolvedType.ReflectionName))
+				return;
+				string parameterDefinition = AddDelegateHandlers(result, resolvedType, false);
+				string varName = "Handle" + method.Parameters[parameter].Type.Name + method.Parameters[parameter].Name;
+				result.Result.Add(factory.CreateEventCreationCompletionData(varName, resolvedType, null, parameterDefinition, currentMember, currentType));
+			}
+		}
 		
 		IEnumerable<ICompletionData> CreateParameterCompletion(MethodGroupResolveResult resolveResult, CSharpResolver state, AstNode invocation, SyntaxTree unit, int parameter, bool controlSpace)
 		{
@@ -2334,30 +2358,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var addedDelegates = new HashSet<string>();
 			
 			foreach (var method in resolveResult.Methods) {
-				if (method.Parameters.Count <= parameter) {
-					continue;
-				}
-				var resolvedType = method.Parameters [parameter].Type;
-				if (resolvedType.Kind == TypeKind.Enum) {
-					if (addedEnums.Contains(resolvedType.ReflectionName)) {
+				CreateParameterForInvocation(result, method, state, parameter, addedEnums, addedDelegates);
+			}
+			foreach (var methods in resolveResult.GetEligibleExtensionMethods (true)) {
+				foreach (var method in methods) {
+					if (resolveResult.Methods.Contains (method))
 						continue;
-					}
-					addedEnums.Add(resolvedType.ReflectionName);
-					AddEnumMembers(result, resolvedType, state);
-				} else if (resolvedType.Kind == TypeKind.Delegate) {
-					if (addedDelegates.Contains(resolvedType.ReflectionName))
-						continue;
-					string parameterDefinition = AddDelegateHandlers(result, resolvedType, false);
-					string varName = "Handle" + method.Parameters [parameter].Type.Name + method.Parameters [parameter].Name;
-					result.Result.Add(
-						factory.CreateEventCreationCompletionData(
-						varName,
-						resolvedType,
-						null,
-						parameterDefinition,
-						currentMember,
-						currentType)
-						);
+					CreateParameterForInvocation(result, new ReducedExtensionMethod (method), state, parameter, addedEnums, addedDelegates);
 				}
 			}
 			

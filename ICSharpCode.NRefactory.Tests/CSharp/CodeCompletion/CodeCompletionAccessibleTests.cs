@@ -1131,6 +1131,46 @@ class TestClass
 			Assert.IsNotNull (provider.Find ("TestEnum.C"), "enum 'TestEnum.C' not found.");
 		}
 	
+		[Test]
+		public void TestEnumInExtensionMethod()
+		{
+			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider(@"
+public enum TestEnum { A, B, C}
+static class Ext { public static void Foo(this object o, TestEnum str) {} }
+class Test
+{
+	public static void Main (string[] args)
+	{
+		$args.Foo($
+	}
+}");
+			Assert.IsNotNull (provider.Find ("TestEnum"), "enum 'TestEnum' not found.");
+			Assert.IsNotNull (provider.Find ("TestEnum.A"), "enum 'TestEnum.A' not found.");
+			Assert.IsNotNull (provider.Find ("TestEnum.B"), "enum 'TestEnum.B' not found.");
+			Assert.IsNotNull (provider.Find ("TestEnum.C"), "enum 'TestEnum.C' not found.");
+		}
+		
+		
+		[Test]
+		public void TestEnumInExtensionMethodStaticInvocation()
+		{
+			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider(@"
+public enum TestEnum { A, B, C}
+static class Ext { public static void Foo(this object o, TestEnum str) {} }
+class Test
+{
+	public static void Main (string[] args)
+	{
+		$Ext.Foo(args, $
+	}
+}");
+			Assert.IsNotNull (provider.Find ("TestEnum"), "enum 'TestEnum' not found.");
+			Assert.IsNotNull (provider.Find ("TestEnum.A"), "enum 'TestEnum.A' not found.");
+			Assert.IsNotNull (provider.Find ("TestEnum.B"), "enum 'TestEnum.B' not found.");
+			Assert.IsNotNull (provider.Find ("TestEnum.C"), "enum 'TestEnum.C' not found.");
+		}
+
+
 		[Test()]
 		public void TestEnumAsParameterCase2 ()
 		{
