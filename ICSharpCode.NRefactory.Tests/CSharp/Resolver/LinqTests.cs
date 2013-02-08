@@ -349,7 +349,7 @@ class TestClass
 }";
 			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
-			var member = ((IMethod)rr.Member).ReducedFrom;
+			var member = (IMethod)rr.Member;
 			Assert.AreEqual("SelectMany", member.Name);
 			Assert.AreEqual(3, member.Parameters.Count);
 			var typeArguments = ((SpecializedMethod)member).TypeArguments;
@@ -372,7 +372,7 @@ class TestClass
 }";
 			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
-			var member = ((IMethod)rr.Member).ReducedFrom;
+			var member = (IMethod)rr.Member;
 			Assert.AreEqual("SelectMany", member.Name);
 			Assert.AreEqual(3, member.Parameters.Count);
 			var typeArguments = ((SpecializedMethod)member).TypeArguments;
