@@ -83,12 +83,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		int TypeParameterCount { get; }
 
 		/// <summary>
-		/// If the type has type parameters it's the same as GetDefinition ().TypeParameters otherwise it returns an empty list.
-		/// NOTE: The type will change to IReadOnlyList<ITypeParameter> in future versions.
-		/// </summary>
-		IList<ITypeParameter> TypeParameters { get; }
-
-		/// <summary>
 		/// Gets the type arguments passed to this type.
 		/// If only the type parameters for the class were specified and the generic type
 		/// itself is not specialized yet or the TypeParameterCount is 0, this property will return an empty list.

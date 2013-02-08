@@ -59,11 +59,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return 0; }
 		}
 
-		readonly static IList<ITypeParameter> emptyTypeParameters = new ITypeParameter[0];
-		public virtual IList<ITypeParameter> TypeParameters {
-			get { return emptyTypeParameters; }
-		}
-
 		readonly static IList<IType> emptyTypeArguments = new IType[0];
 		public virtual IList<IType> TypeArguments {
 			get { return emptyTypeArguments; }
