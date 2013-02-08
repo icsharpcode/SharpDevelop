@@ -48,6 +48,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public readonly bool IsExpandedForm;
 		
 		readonly IList<int> argumentToParameterMap;
+
+		/// <summary>
+		/// If IsExtensionMethodInvocation is true this property holds the reduced method.
+		/// </summary>
+		public IMethod ReducedMethod {
+			get;
+			internal set;
+		}
 		
 		public CSharpInvocationResolveResult(
 			ResolveResult targetResult, IParameterizedMember member,

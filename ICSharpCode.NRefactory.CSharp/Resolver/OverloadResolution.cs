@@ -949,10 +949,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IParameterizedMember member = GetBestCandidateWithSubstitutedTypeArguments();
 			if (member == null)
 				throw new InvalidOperationException();
-			
-			if (this.IsExtensionMethodInvocation && member is IMethod)
-				member =new ReducedExtensionMethod ((IMethod)member);
-			return new CSharpInvocationResolveResult(
+
+			var result = new CSharpInvocationResolveResult(
 				this.IsExtensionMethodInvocation ? new TypeResolveResult(member.DeclaringType) : targetResolveResult,
 				member,
 				GetArgumentsWithConversions(targetResolveResult, member),
@@ -963,6 +961,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				argumentToParameterMap: this.GetArgumentToParameterMap(),
 				initializerStatements: initializerStatements,
 				returnTypeOverride: returnTypeOverride);
+			if (this.IsExtensionMethodInvocation && member is IMethod)
+				result.ReducedMethod = new ReducedExtensionMethod ((IMethod)member);
+			return result;
 		}
 		#endregion
 	}
