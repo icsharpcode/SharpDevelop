@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.Utils;
+using Mono.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -493,9 +494,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return parts[0].TypeParameters.Count; }
 		}
 
-		readonly static IList<IType> emptyTypeArguments = new IType[0];
+		IList<IType> typeArguments;
 		public IList<IType> TypeArguments {
-			get { return emptyTypeArguments; }
+			get { 
+				if (typeArguments == null)
+					typeArguments = new ReadOnlyCollection<IType> (TypeParameters.Cast<IType> ().ToArray ());
+				return typeArguments; 
+			}
 		}
 
 		public bool IsParameterized { 
