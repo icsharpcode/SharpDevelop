@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpZipLib.Zip;
@@ -17,11 +18,14 @@ namespace ICSharpCode.AddInManager2.Model
 	/// </summary>
 	public class AddInSetup : IAddInSetup
 	{
+		private const string NuGetPackageIDManifestAttribute = "__nuGetPackageID";
+		
 		private IAddInManagerEvents _events = null;
 		private INuGetPackageManager _nuGet = null;
 		private ISDAddInManagement _sdAddInManagement = null;
 		
 		private List<ManagedAddIn> _addInsMarkedForInstall;
+		private Dictionary<string, string> _nuGetToAddInMappings;
 		
 		public AddInSetup(IAddInManagerEvents events, INuGetPackageManager nuGet, ISDAddInManagement sdAddInManagement)
 		{
@@ -30,6 +34,7 @@ namespace ICSharpCode.AddInManager2.Model
 			_sdAddInManagement = sdAddInManagement;
 			
 			_addInsMarkedForInstall = new List<ManagedAddIn>();
+			_nuGetToAddInMappings = new Dictionary<string, string>();
 			
 			// Register event handlers
 			_events.AddInPackageDownloaded += events_AddInPackageDownloaded;
@@ -243,6 +248,15 @@ namespace ICSharpCode.AddInManager2.Model
 			{
 				SD.Log.DebugFormatted("[AddInManager2] Installing AddIn from package {0} {1}", package.Id, package.Version.ToString());
 				
+				// Patch metadata of AddIn to have a permanent link to the NuGet package
+				if (!PatchAddInManifest(addInManifestFile, package))
+				{
+					_events.OnAddInOperationError(
+						new AddInOperationErrorEventArgs(
+							SD.ResourceService.GetString("AddInManager2.InvalidPackage")));
+					return null;
+				}
+				
 				AddIn addIn = _sdAddInManagement.Load(addInManifestFile);
 				if (addIn.Manifest.PrimaryIdentity == null)
 				{
@@ -297,10 +311,10 @@ namespace ICSharpCode.AddInManager2.Model
 					SD.Log.DebugFormatted("[AddInManager2] AddIn's manifest states no identity.");
 				}
 				
-				if (addIn.Properties.Contains("nuGetPackageID"))
+				if (addIn.Properties.Contains(NuGetPackageIDManifestAttribute))
 				{
 					SD.Log.DebugFormatted("[AddInManager2] AddIn's manifest states NuGet ID '{0}'",
-					                      addIn.Properties["nuGetPackageID"]);
+					                      addIn.Properties[NuGetPackageIDManifestAttribute]);
 				}
 				else
 				{
@@ -333,6 +347,32 @@ namespace ICSharpCode.AddInManager2.Model
 			}
 
 			return null;
+		}
+		
+		private bool PatchAddInManifest(string addInManifestFile, IPackage package)
+		{
+			if (!File.Exists(addInManifestFile))
+			{
+				return false;
+			}
+			
+			try
+			{
+				XmlDocument addInManifestDoc = new XmlDocument();
+				addInManifestDoc.Load(addInManifestFile);
+				
+				// Set our special attribute in root
+				XmlAttribute nuGetPackageIDAttribute = addInManifestDoc.CreateAttribute(NuGetPackageIDManifestAttribute);
+				nuGetPackageIDAttribute.Value = package.Id;
+				addInManifestDoc.DocumentElement.Attributes.Append(nuGetPackageIDAttribute);
+				addInManifestDoc.Save(addInManifestFile);
+				
+				return true;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
 		}
 		
 		private bool CopyAddInFromZip(AddIn addIn, string zipFile)
@@ -602,9 +642,9 @@ namespace ICSharpCode.AddInManager2.Model
 			
 			IPackage package = null;
 			string nuGetPackageID = null;
-			if (addIn.Properties.Contains("nuGetPackageID"))
+			if (addIn.Properties.Contains(NuGetPackageIDManifestAttribute))
 			{
-				nuGetPackageID = addIn.Properties["nuGetPackageID"];
+				nuGetPackageID = addIn.Properties[NuGetPackageIDManifestAttribute];
 			}
 			string primaryIdentity = null;
 			if (addIn.Manifest != null)
@@ -656,7 +696,7 @@ namespace ICSharpCode.AddInManager2.Model
 			
 			AddIn foundAddIn = _sdAddInManagement.AddIns.Where(
 				a => ((a.Manifest != null) && (a.Manifest.PrimaryIdentity == package.Id))
-				|| (a.Properties.Contains("nuGetPackageID") && (a.Properties["nuGetPackageID"] == package.Id)))
+				|| (a.Properties.Contains(NuGetPackageIDManifestAttribute) && (a.Properties[NuGetPackageIDManifestAttribute] == package.Id)))
 				.FirstOrDefault();
 			
 			return foundAddIn;
@@ -671,7 +711,7 @@ namespace ICSharpCode.AddInManager2.Model
 			
 			ManagedAddIn foundAddIn = AddInsWithMarkedForInstallation.Where(
 				a => ((a.AddIn.Manifest != null) && (a.AddIn.Manifest.PrimaryIdentity == package.Id))
-				|| (a.AddIn.Properties.Contains("nuGetPackageID") && (a.AddIn.Properties["nuGetPackageID"] == package.Id)))
+				|| (a.AddIn.Properties.Contains(NuGetPackageIDManifestAttribute) && (a.AddIn.Properties[NuGetPackageIDManifestAttribute] == package.Id)))
 				.FirstOrDefault();
 			
 			return (foundAddIn != null) ? foundAddIn.AddIn : null;
