@@ -47,9 +47,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var whereResolve = ctx.Resolve (whereInvoke) as InvocationResolveResult;
 				if (whereResolve == null || whereResolve.Member.Name != "Where" || !IsQueryExtensionClass(whereResolve.Member.DeclaringTypeDefinition))
 					return;
-				if (whereResolve.Member.Parameters.Count != 1)
+				if (whereResolve.Member.Parameters.Count != 2)
 					return;
-				var predResolve = whereResolve.Member.Parameters [0];
+				var predResolve = whereResolve.Member.Parameters [1];
 				if (predResolve.Type.TypeParameterCount != 2)
 					return;
 				
