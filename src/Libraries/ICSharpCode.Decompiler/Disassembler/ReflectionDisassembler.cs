@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using ICSharpCode.NRefactory;
 using Mono.Cecil;
 using Mono.Collections.Generic;
 
@@ -113,6 +114,8 @@ namespace ICSharpCode.Decompiler.Disassembler
 			//    .method public hidebysig  specialname
 			//               instance default class [mscorlib]System.IO.TextWriter get_BaseWriter ()  cil managed
 			//
+			
+			TextLocation startLocation = output.Location;
 			
 			//emit flags
 			WriteEnum(method.Attributes & MethodAttributes.MemberAccessMask, methodVisibility);
@@ -217,9 +220,11 @@ namespace ICSharpCode.Decompiler.Disassembler
 			
 			if (method.HasBody) {
 				// create IL code mappings - used in debugger
-				MemberMapping methodMapping = new MemberMapping(method);
-				methodBodyDisassembler.Disassemble(method.Body, methodMapping);
-				output.AddDebuggerMemberMapping(methodMapping);
+				MethodDebugSymbols debugSymbols = new MethodDebugSymbols(method);
+				debugSymbols.StartLocation = startLocation;
+				methodBodyDisassembler.Disassemble(method.Body, debugSymbols);
+				debugSymbols.EndLocation = output.Location;
+				output.AddDebugSymbols(debugSymbols);
 			}
 			
 			CloseBlock("end of method " + DisassemblerHelpers.Escape(method.DeclaringType.Name) + "::" + DisassemblerHelpers.Escape(method.Name));

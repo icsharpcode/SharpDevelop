@@ -12,6 +12,10 @@
 		<Import assembly = "ILSpyAddIn.dll"/>
 	</Runtime>
 	
+	<Path name="/SharpDevelop/Services/DebuggerService/SymbolSource">
+		<Class id="ILSpy" class="ICSharpCode.ILSpyAddIn.ILSpySymbolSource"/>
+	</Path>
+	
 	<Path name="/SharpDevelop/Services/NavigateToEntityService">
 		<Class id="ILSpy" class="ICSharpCode.ILSpyAddIn.NavigateToDecompiledEntityService"/>
 	</Path>

@@ -256,23 +256,6 @@ namespace Debugger.AddIn.TreeModel
 				}
 			} else {
 				WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-				#warning decompiler
-				/*
-				if (debugger.debuggerDecompilerService != null) {
-					int typeToken = stackFrame.MethodInfo.DeclaringType.MetadataToken;
-					int methodToken = stackFrame.MethodInfo.MetadataToken;
-					foreach (var localVar in debugger.debuggerDecompilerService.GetLocalVariables(typeToken, methodToken)) {
-						int index = ((int[])debugger.debuggerDecompilerService.GetLocalVariableIndex(typeToken, methodToken, localVar))[0];
-						yield return new ValueNode("Icons.16x16.Local", localVar, () => {
-						    var newStackFrame = GetCurrentStackFrame();
-							if (newStackFrame.MethodInfo != stackFrame.MethodInfo)
-								throw new GetValueException("Expected stack frame: " + stackFrame.MethodInfo.ToString());
-							
-							return newStackFrame.GetLocalVariableValue((uint)index);
-						});
-					}
-				}
-				 */
 			}
 		}
 		

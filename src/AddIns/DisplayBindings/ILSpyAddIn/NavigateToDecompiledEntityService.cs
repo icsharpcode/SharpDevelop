@@ -8,7 +8,6 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.ILSpyAddIn
 {
@@ -54,45 +53,5 @@ namespace ICSharpCode.ILSpyAddIn
 			}
 			SD.Workbench.ShowView(new DecompiledViewContent(assemblyFile, typeName, entityIdString));
 		}
-		
-		/*
-		public bool NavigateToMember(FileName assemblyFile, string typeName, string entityTag, int lineNumber, bool updateMarker)
-		{
-			if (string.IsNullOrEmpty(assemblyFile))
-				throw new ArgumentException("assemblyFile is null or empty");
-			
-			if (string.IsNullOrEmpty(typeName))
-				throw new ArgumentException("typeName is null or empty");
-			
-			// jump to line number if the decompiled view content exists - no need for a new decompilation
-			foreach (var viewContent in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
-				if (string.Equals(viewContent.AssemblyFile, assemblyFile, StringComparison.OrdinalIgnoreCase) && typeName == viewContent.FullTypeName) {
-					if (updateMarker) {
-						viewContent.UpdateDebuggingUI();
-					}
-					if (lineNumber > 0)
-						viewContent.JumpToLineNumber(lineNumber);
-					else
-						viewContent.JumpToEntity(entityTag);
-					viewContent.WorkbenchWindow.SelectWindow();
-					return true;
-				}
-			}
-			
-			// create a new decompiled view
-			var decompiledView = new DecompiledViewContent(assemblyFile, typeName, entityTag);
-			decompiledView.DecompilationFinished += delegate {
-				if (updateMarker) {
-					decompiledView.UpdateDebuggingUI();
-				}
-				if (lineNumber > 0)
-					decompiledView.JumpToLineNumber(lineNumber);
-				else
-					decompiledView.JumpToEntity(entityTag);
-			};
-			WorkbenchSingleton.Workbench.ShowView(decompiledView);
-			return true;
-		}
-		*/
 	}
 }

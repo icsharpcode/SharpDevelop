@@ -52,9 +52,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			if (startColumn < 1)
 				startColumn = 1;
 			
-			IDocumentLine line = document.GetLineByNumber(startLine);
-			if (endColumn < 1 || endColumn > line.Length)
-				endColumn = line.Length;
 			instance = new CurrentLineBookmark();
 			instance.Location = new TextLocation(startLine, startColumn);
 			instance.FileName = fileName;
@@ -96,8 +93,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		protected override ITextMarker CreateMarker(ITextMarkerService markerService)
 		{
-			IDocumentLine line = this.Document.GetLineByNumber(startLine);
-			ITextMarker marker = markerService.Create(line.Offset + startColumn - 1, Math.Max(endColumn - startColumn, 1));
+			IDocumentLine sLine = this.Document.GetLineByNumber(startLine);
+			IDocumentLine eLine = this.Document.GetLineByNumber(endLine);
+			int sOffset = Math.Min(sLine.Offset + startColumn - 1, sLine.EndOffset);
+			int eOffset = Math.Min(eLine.Offset + endColumn - 1, eLine.EndOffset);
+			ITextMarker marker = markerService.Create(sOffset, Math.Max(eOffset - sOffset, 1));
 			IHighlighter highlighter = this.Document.GetService(typeof(IHighlighter)) as IHighlighter;
 			marker.BackgroundColor = DefaultBackground;
 			marker.ForegroundColor = DefaultForeground;

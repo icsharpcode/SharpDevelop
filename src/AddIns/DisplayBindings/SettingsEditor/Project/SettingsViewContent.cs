@@ -19,8 +19,7 @@ namespace ICSharpCode.SettingsEditor
 {
 	public class SettingsViewContent : AbstractViewContentHandlingLoadErrors, IHasPropertyContainer
 	{
-//		SettingsView view = new SettingsView();
-		SettingsViewXaml view = new SettingsViewXaml();
+		SettingsView view = new SettingsView();
 		PropertyContainer propertyContainer = new PropertyContainer();
 		SettingsDocument setDoc = new SettingsDocument();
 		MemoryStream appConfigStream;
@@ -29,30 +28,17 @@ namespace ICSharpCode.SettingsEditor
 		public SettingsViewContent(OpenedFile file) : base(file)
 		{
 			TryOpenAppConfig(false);
-		/*
-			view.SelectionChanged += delegate {
-				propertyContainer.SelectedObjects = view.GetSelectedEntriesForPropertyGrid().ToArray();
-			};
-			view.SettingsChanged += delegate {
-				if (this.PrimaryFile != null)
-					this.PrimaryFile.MakeDirty();
-				if (appConfigFile != null)
-					appConfigFile.MakeDirty();
-			};
-			 */
-			
+		
 			this.UserContent = view;
 			
 			view.SelectionChanged += ((s,e) =>
 			                          {
-			                          	Console.WriteLine("SettingsViewContent.SelectionChanged");
 			                          	propertyContainer.SelectedObjects = view.GetSelectedEntriesForPropertyGrid().ToArray();
 			                          });
 			
 			
 			view.SettingsChanged += ((s,e) =>
 			                         {
-			                         	Console.WriteLine("SettingsViewContent.SettingsChanged");
 			                         	if (this.PrimaryFile != null)
 			                         		this.PrimaryFile.MakeDirty();
 			                         	if (appConfigFile != null)
@@ -60,6 +46,7 @@ namespace ICSharpCode.SettingsEditor
 			                         });
 			                        
 		}
+		
 		
 		void TryOpenAppConfig(bool createIfNotExists)
 		{
@@ -79,6 +66,7 @@ namespace ICSharpCode.SettingsEditor
 				appConfigFile.ForceInitializeView(this);
 			}
 		}
+		
 		
 		protected override void LoadInternal(OpenedFile file, Stream stream)
 		{
@@ -100,6 +88,7 @@ namespace ICSharpCode.SettingsEditor
 			}
 			
 		}
+		
 		
 		void ShowLoadError(string message)
 		{

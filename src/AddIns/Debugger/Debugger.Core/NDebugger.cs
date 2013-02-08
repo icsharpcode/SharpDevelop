@@ -170,13 +170,6 @@ namespace Debugger
 			return breakpoint;
 		}
 		
-//		public ILBreakpoint AddILBreakpoint(string typeName, int line, int metadataToken, int memberToken, int offset, bool enabled)
-//		{
-//			ILBreakpoint breakpoint = new ILBreakpoint(typeName, line, metadataToken, memberToken, offset, enabled);
-//			AddBreakpoint(breakpoint);
-//			return breakpoint;
-//		}
-		
 		void AddBreakpoint(Breakpoint breakpoint)
 		{
 			this.breakpoints.Add(breakpoint);

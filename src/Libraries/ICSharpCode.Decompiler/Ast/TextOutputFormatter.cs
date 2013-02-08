@@ -36,6 +36,8 @@ namespace ICSharpCode.Decompiler.Ast
 		bool firstUsingDeclaration;
 		bool lastUsingDeclaration;
 		
+		TextLocation? lastEndOfLine;
+		
 		public bool FoldBraces = false;
 		
 		public TextOutputFormatter(ITextOutput output)
@@ -217,6 +219,7 @@ namespace ICSharpCode.Decompiler.Ast
 				output.MarkFoldEnd();
 				lastUsingDeclaration = false;
 			}
+			lastEndOfLine = output.Location;
 			output.WriteLine();
 		}
 		
@@ -265,8 +268,7 @@ namespace ICSharpCode.Decompiler.Ast
 		}
 		
 		Stack<TextLocation> startLocations = new Stack<TextLocation>();
-		MemberMapping currentMemberMapping;
-		Stack<MemberMapping> parentMemberMappings = new Stack<MemberMapping>();
+		Stack<MethodDebugSymbols> symbolsStack = new Stack<MethodDebugSymbols>();
 		
 		public void StartNode(AstNode node)
 		{
@@ -284,11 +286,10 @@ namespace ICSharpCode.Decompiler.Ast
 			
 			if (node is EntityDeclaration && node.Annotation<MemberReference>() != null && node.GetChildByRole(Roles.Identifier).IsNull)
 				output.WriteDefinition("", node.Annotation<MemberReference>(), false);
-			
-			MemberMapping mapping = node.Annotation<MemberMapping>();
-			if (mapping != null) {
-				parentMemberMappings.Push(currentMemberMapping);
-				currentMemberMapping = mapping;
+
+			if (node.Annotation<MethodDebugSymbols>() != null) {
+				symbolsStack.Push(node.Annotation<MethodDebugSymbols>());
+				symbolsStack.Peek().StartLocation = startLocations.Peek();
 			}
 		}
 		
@@ -305,26 +306,21 @@ namespace ICSharpCode.Decompiler.Ast
 			var startLocation = startLocations.Pop();
 			
 			// code mappings
-			if (currentMemberMapping != null) {
-				var ranges = node.Annotation<List<ILRange>>();
-				if (ranges != null && ranges.Count > 0) {
-					// add all ranges
-					foreach (var range in ranges) {
-						currentMemberMapping.MemberCodeMappings.Add(
-							new SourceCodeMapping {
-								ILInstructionOffset = range,
-								StartLocation = startLocation,
-								EndLocation = output.Location,
-								MemberMapping = currentMemberMapping
-							});
-					}
-				}
+			var ranges = node.Annotation<List<ILRange>>();
+			if (symbolsStack.Count > 0 && ranges != null && ranges.Count > 0) {
+				// Ignore the newline which was printed at the end of the statement
+				TextLocation endLocation = (node is Statement) ? (lastEndOfLine ?? output.Location) : output.Location;
+				symbolsStack.Peek().SequencePoints.Add(
+					new SequencePoint() {
+						ILRanges = ILRange.OrderAndJoin(ranges).ToArray(),
+						StartLocation = startLocation,
+						EndLocation = endLocation
+					});
 			}
 			
-			
-			if (node.Annotation<MemberMapping>() != null) {
-				output.AddDebuggerMemberMapping(currentMemberMapping);
-				currentMemberMapping = parentMemberMappings.Pop();
+			if (node.Annotation<MethodDebugSymbols>() != null) {
+				symbolsStack.Peek().EndLocation = output.Location;
+				output.AddDebugSymbols(symbolsStack.Pop());
 			}
 		}
 		

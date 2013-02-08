@@ -46,7 +46,7 @@ namespace Debugger
 		/// <summary> True if the stack frame has symbols defined. </summary>
 		public bool HasSymbols {
 			get {
-				return PDBSymbolSource.HasSymbols(this.MethodInfo);
+				return this.Module.SymbolSource.HasSymbols(this.MethodInfo);
 			}
 		}
 		
@@ -154,10 +154,11 @@ namespace Debugger
 		void AsyncStep(bool stepIn)
 		{
 			List<ILRange> stepRanges = new List<ILRange>();
-			var seq = PDBSymbolSource.GetSequencePoint(this.MethodInfo, this.IP);
+			var seq = this.Module.SymbolSource.GetSequencePoint(this.MethodInfo, this.IP);
 			if (seq != null) {
+				Process.TraceMessage("Step over: {0} IL:{1}", seq, string.Join(" ", seq.ILRanges));
 				stepRanges.AddRange(seq.ILRanges);
-				stepRanges.AddRange(PDBSymbolSource.GetIgnoredILRanges(this.MethodInfo));
+				stepRanges.AddRange(this.Module.SymbolSource.GetIgnoredILRanges(this.MethodInfo));
 			}
 			
 			// Remove overlapping and connected ranges
@@ -195,7 +196,7 @@ namespace Debugger
 		/// </summary>
 		public SequencePoint NextStatement {
 			get {
-				return PDBSymbolSource.GetSequencePoint(this.MethodInfo, this.IP);
+				return this.Module.SymbolSource.GetSequencePoint(this.MethodInfo, this.IP);
 			}
 		}
 		
@@ -203,7 +204,7 @@ namespace Debugger
 		{
 			this.Process.AssertPaused();
 			
-			var seq = PDBSymbolSource.GetSequencePoint(this.Module, filename, line, column);
+			var seq = this.Module.SymbolSource.GetSequencePoint(this.Module, filename, line, column);
 			if (seq != null && seq.MethodDefToken == this.MethodInfo.GetMetadataToken()) {
 				try {
 					if (dryRun) {
@@ -232,7 +233,7 @@ namespace Debugger
 					if (loc.IsThis)
 						return loc.GetValue(this);
 				}
-				return null;
+				throw new GetValueException("The current method does not have 'this'.");
 			} else {
 				return new Value(this.AppDomain, GetThisCorValue());
 			}
@@ -240,7 +241,8 @@ namespace Debugger
 		
 		ICorDebugValue GetThisCorValue()
 		{
-			if (this.MethodInfo.IsStatic) throw new GetValueException("Static method does not have 'this'.");
+			if (this.MethodInfo.IsStatic)
+				throw new GetValueException("Static method does not have 'this'.");
 			ICorDebugValue corValue;
 			try {
 				corValue = CorILFrame.GetArgument(0);
@@ -347,7 +349,7 @@ namespace Debugger
 				Options opt = this.Process.Options;
 				
 				if (opt.StepOverNoSymbols) {
-					if (!PDBSymbolSource.HasSymbols(this.MethodInfo)) return true;
+					if (!this.Module.SymbolSource.HasSymbols(this.MethodInfo)) return true;
 				}
 				if (opt.StepOverDebuggerAttributes) {
 					string[] debuggerAttributes = {

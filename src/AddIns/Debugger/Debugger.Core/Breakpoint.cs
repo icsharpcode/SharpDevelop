@@ -69,7 +69,7 @@ namespace Debugger
 		
 		public virtual bool SetBreakpoint(Module module)
 		{
-			var seq = PDBSymbolSource.GetSequencePoint(module, this.FileName, this.Line, this.Column);
+			var seq = module.SymbolSource.GetSequencePoint(module, this.FileName, this.Line, this.Column);
 			if (seq != null) {
 				ICorDebugFunction corFuction = module.CorModule.GetFunctionFromToken(seq.MethodDefToken);
 				ICorDebugFunctionBreakpoint corBreakpoint = corFuction.GetILCode().CreateBreakpoint((uint)seq.ILOffset);
@@ -80,45 +80,4 @@ namespace Debugger
 			return false;
 		}
 	}
-	/*
-	public class ILBreakpoint : Breakpoint
-	{
-		public ILBreakpoint(string typeName, int line, int metadataToken, int memberToken, int offset, bool enabled)
-			: base(null, line, 0, enabled)
-		{
-			this.TypeName = typeName;
-			this.MetadataToken = metadataToken;
-			this.MemberMetadataToken = memberToken;
-			this.ILOffset = offset;
-			this.IsEnabled = enabled;
-		}
-		
-		public int MetadataToken { get; private set; }
-		
-		public int MemberMetadataToken { get; private set; }
-		
-		public int ILOffset { get; private set; }
-		
-		public override bool SetBreakpoint(Module module)
-		{
-			var currentModuleTypes = module.GetNamesOfDefinedTypes();
-			// set the breakpoint only if the module contains the type
-			if (!currentModuleTypes.Contains(this.TypeName))
-				return false;
-					
-			SourcecodeSegment segment = SourcecodeSegment.CreateForIL(module, this.Line, MemberMetadataToken, ILOffset);
-			if (segment == null)
-				return false;
-			try {
-				ICorDebugFunctionBreakpoint corBreakpoint = segment.CorFunction.GetILCode().CreateBreakpoint((uint)segment.ILStart);
-				corBreakpoint.Activate(this.IsEnabled ? 1 : 0);
-				corBreakpoints.Add(corBreakpoint);
-				
-				return true;
-			} catch {
-				return false;
-			}
-		}
-	}
-	*/
 }
