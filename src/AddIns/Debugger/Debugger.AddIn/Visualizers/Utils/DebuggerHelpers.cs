@@ -2,6 +2,7 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System.Linq;
+using System.Runtime.InteropServices;
 using Debugger.AddIn.TreeModel;
 using Debugger.AddIn.Visualizers.Graph;
 using Debugger.Interop.CorDebug;
@@ -87,21 +88,32 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// <returns>Hash code of the object in the debugee.</returns>
 		public static int InvokeDefaultGetHashCode(this Value value)
 		{
-			// TODO reimplement check for Process.HasExited (debuggee restarted)
-			if (hashCodeMethod == null /*|| hashCodeMethod.Process.HasExited*/) {
-				IType runtimeHelpers =
-					value.Type.GetDefinition().Compilation.FindType(
-						typeof(System.Runtime.CompilerServices.RuntimeHelpers)
-					).GetDefinition();
-				hashCodeMethod = runtimeHelpers.GetMethods(m => m.Name == "GetHashCode" && m.Parameters.Count == 1).FirstOrDefault();
-				if (hashCodeMethod == null) {
-					throw new DebuggerException(
-						"Cannot find method System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode().");
-				}
+			if (hashCodeMethod == null) {
+				hashCodeMethod = findDebuggeeHashCodeMethod(value);
 			}
-			#warning Encountered "COM object has been separated from its underlying RCW" here
-			Value defaultHashCode = Eval.InvokeMethod(WindowsDebugger.EvalThread, DebuggerHelpers.hashCodeMethod, null, new Value[]{value});
-			return (int)defaultHashCode.PrimitiveValue;
+			Value valueHashCode;
+			try {
+				valueHashCode = Eval.InvokeMethod(WindowsDebugger.EvalThread, hashCodeMethod, null, new Value[]{value});
+			} catch(InvalidComObjectException ex) {
+				// debuggee was restarted
+				hashCodeMethod = findDebuggeeHashCodeMethod(value);
+				valueHashCode = Eval.InvokeMethod(WindowsDebugger.EvalThread, hashCodeMethod, null, new Value[]{value});
+			}
+			return (int)valueHashCode.PrimitiveValue;
+		}
+		
+		private static IMethod findDebuggeeHashCodeMethod(Value value)
+		{
+			IType runtimeHelpers =
+				value.Type.GetDefinition().Compilation.FindType(
+					typeof(System.Runtime.CompilerServices.RuntimeHelpers)
+				).GetDefinition();
+			hashCodeMethod = runtimeHelpers.GetMethods(m => m.Name == "GetHashCode" && m.Parameters.Count == 1).FirstOrDefault();
+			if (hashCodeMethod == null) {
+				throw new DebuggerException(
+					"Cannot find method System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode().");
+			}
+			return hashCodeMethod;
 		}
 		
 		/// <summary>
