@@ -236,5 +236,48 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 }");
 		}
 
+		[Test]
+		public void TestExtensionMethod()
+		{
+			Test<CreateLocalVariableAction>(@"static class Ext { public static void Foo(this object o, string str) {} }
+class Test
+{
+	public static void Main (string[] args)
+	{
+		args.Foo($foo);
+	}
+}", @"static class Ext { public static void Foo(this object o, string str) {} }
+class Test
+{
+	public static void Main (string[] args)
+	{
+		string foo;
+		args.Foo(foo);
+	}
+}");
+		}
+
+
+		[Test]
+		public void TestExtensionMethodStaticInvocation()
+		{
+			Test<CreateLocalVariableAction>(@"static class Ext { public static void Foo(this object o, string str) {} }
+class Test
+{
+	public static void Main (string[] args)
+	{
+		Ext.Foo(args, $foo);
+	}
+}", @"static class Ext { public static void Foo(this object o, string str) {} }
+class Test
+{
+	public static void Main (string[] args)
+	{
+		string foo;
+		Ext.Foo(args, foo);
+	}
+}");
+		}
+
 	}
 }
