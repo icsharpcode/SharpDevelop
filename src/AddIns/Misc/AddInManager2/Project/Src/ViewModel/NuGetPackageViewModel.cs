@@ -258,6 +258,30 @@ namespace ICSharpCode.AddInManager2.ViewModel
 				return _package.Version.Version;
 			}
 		}
+		
+		public override Version OldVersion
+		{
+			get
+			{
+				AddIn installedAddIn = AddInManager.Setup.GetAddInForNuGetPackage(_package);
+				if ((installedAddIn != null) && IsUpdate)
+				{
+					return installedAddIn.Version;
+				}
+				else
+				{
+					return null;
+				}
+			}
+		}
+		
+		public override bool ShowSplittedVersions
+		{
+			get
+			{
+				return IsUpdate;
+			}
+		}
 
 		public override int DownloadCount
 		{
