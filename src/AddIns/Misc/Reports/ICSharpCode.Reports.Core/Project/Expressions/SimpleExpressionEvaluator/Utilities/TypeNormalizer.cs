@@ -122,14 +122,23 @@ namespace SimpleExpressionEvaluator.Utilities
             {
             	return converter.ConvertFrom(value);
             }
-            */
+            
             try
             {
                 return Convert.ChangeType(value, targetType);
             }
-            catch
+            catch e
             { }
-            return nullValue;
+            */
+           try {
+           	return Convert.ChangeType(value, targetType);
+           } catch (Exception e) {
+           	
+           	Console.WriteLine("TypeNormalizer {0} - {1}",value.ToString(),e.Message);
+           	return value.ToString();
+//throw new Exception(String.Format("TypeNormalizer for  <{0}> - {1}",value.ToString(),e.Message));
+           }
+//            return nullValue;
         }
     }
 }

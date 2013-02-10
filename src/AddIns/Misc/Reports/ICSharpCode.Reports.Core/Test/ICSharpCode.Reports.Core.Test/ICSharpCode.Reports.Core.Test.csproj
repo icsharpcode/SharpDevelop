@@ -89,7 +89,7 @@
     <Compile Include="Printing\SinglePageFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReportingLanguage\ExpressionEvaluatorFixture.cs" />
-    <Compile Include="ReportingLanguage\FunctionsFixture.cs" />
+    <Compile Include="ReportingLanguage\DateTimeFunctionsFixture.cs" />
     <Compile Include="ReportingLanguage\IntegrationTests\AggregateFunctionsFixture.cs" />
     <Compile Include="ReportingLanguage\IntegrationTests\AggregateFunctionsFromIListFixture.cs" />
     <Compile Include="ReportingLanguage\IntegrationTests\ConcatFieldsFixture.cs" />

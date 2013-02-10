@@ -23,8 +23,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		                                     string dataType, string nullValue )
 		{
 			TypeCode typeCode = TypeHelpers.TypeCodeFromString(dataType);
-			return StandardFormatter.FormatItem(valueToFormat,format,
-			                                    typeCode,nullValue);
+			return FormatItem(valueToFormat,format,typeCode,nullValue);                                    
 		}
 		
 		

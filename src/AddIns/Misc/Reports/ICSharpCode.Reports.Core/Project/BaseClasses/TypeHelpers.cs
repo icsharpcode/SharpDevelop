@@ -67,6 +67,9 @@ namespace ICSharpCode.Reports.Core.Project.BaseClasses
 			if (String.IsNullOrEmpty(type)) {
 				throw new ArgumentNullException("type");
 			}
+			
+			var s = Type.GetTypeCode( Type.GetType(type));
+			Console.WriteLine ("typeCode for {0} - {1}",type,s);
 			return Type.GetTypeCode( Type.GetType(type));
 		}
 	}

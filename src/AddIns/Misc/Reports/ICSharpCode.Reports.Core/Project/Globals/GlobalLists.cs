@@ -64,6 +64,7 @@ namespace ICSharpCode.Reports.Core.Globals
 		private static readonly string[] MyDataTypeList = new string[] {
 			"System.String",
 			"System.DateTime",
+			"System.TimeSpan",
 			"System.Decimal",
 			"System.Int"};
 		#endregion
