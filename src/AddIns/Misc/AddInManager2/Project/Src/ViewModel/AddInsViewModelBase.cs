@@ -19,11 +19,11 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		private Pages _pages;
 		private int _highlightCount;
 		private string _title;
-		private PackageSource _activePackageSource;
+		private PackageRepository _activePackageSource;
 		private IPackageRepository _activePackageRepository;
 		private bool _isReadingPackages;
 		
-		private ObservableCollection<PackageSource> _packageSources;
+		private ObservableCollection<PackageRepository> _packageRepositories;
 		
 		public AddInsViewModelBase()
 			:base()
@@ -46,7 +46,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			_pages = new Pages();
 			_highlightCount = 0;
 			AddInPackages = new ObservableCollection<AddInPackageViewModelBase>();
-			_packageSources = new ObservableCollection<PackageSource>();
+			_packageRepositories = new ObservableCollection<PackageRepository>();
 			ErrorMessage = String.Empty;
 			
 			// Update package sources list and ensure that it's updated automatically from now
@@ -418,38 +418,38 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			set;
 		}
 		
-		public ObservableCollection<PackageSource> PackageSources
+		public ObservableCollection<PackageRepository> PackageRepositories
 		{
 			get
 			{
-				return _packageSources;
+				return _packageRepositories;
 			}
 		}
 		
 		private void UpdatePackageSources()
 		{
-			PackageSource oldValue = SelectedPackageSource;
+			PackageRepository oldValue = SelectedPackageSource;
 			
 			// Refill package sources list
-			_packageSources.Clear();
+			_packageRepositories.Clear();
 			foreach (PackageSource packageSource in AddInManager.Repositories.RegisteredPackageSources)
 			{
-				_packageSources.Add(packageSource);
+				_packageRepositories.Add(new PackageRepository(packageSource));
 			}
 			
 			// Try to select the same active source, again
-			if ((oldValue != null) && _packageSources.Contains(oldValue) && (oldValue != SelectedPackageSource))
+			if ((oldValue != null) && _packageRepositories.Contains(oldValue) && (oldValue != SelectedPackageSource))
 			{
 				SelectedPackageSource = oldValue;
 			}
 			else
 			{
 				// Select first source
-				SelectedPackageSource = _packageSources.FirstOrDefault();
+				SelectedPackageSource = _packageRepositories.FirstOrDefault();
 			}
 		}
 		
-		public PackageSource SelectedPackageSource
+		public PackageRepository SelectedPackageSource
 		{
 			get
 			{
@@ -460,7 +460,14 @@ namespace ICSharpCode.AddInManager2.ViewModel
 				SD.Log.Debug("[AddInManager2] AddInsViewModelBase: Changed package source");
 				
 				_activePackageSource = value;
-				_activePackageRepository = AddInManager.Repositories.GetRepositoryFromSource(_activePackageSource);
+				if (_activePackageSource != null)
+				{
+					_activePackageRepository = AddInManager.Repositories.GetRepositoryFromSource(_activePackageSource.ToPackageSource());
+				}
+				else
+				{
+					_activePackageRepository = null;
+				}
 				ReadPackages();
 				OnPropertyChanged(m => m.SelectedPackageSource);
 			}

@@ -49,7 +49,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 
 		protected override IQueryable<IPackage> GetAllPackages()
 		{
-			return (ActiveRepository ?? AddInManager.Repositories.Registered).GetPackages();
+			return (ActiveRepository ?? AddInManager.Repositories.AllRegistered).GetPackages();
 		}
 		
 		protected override IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(IQueryable<IPackage> allPackages)

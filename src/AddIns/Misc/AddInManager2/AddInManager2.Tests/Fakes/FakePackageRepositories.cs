@@ -9,7 +9,7 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 {
     public class FakePackageRepositories : IPackageRepositories
     {
-        public NuGet.IPackageRepository Registered
+        public NuGet.IPackageRepository AllRegistered
         {
             get
             {
@@ -28,6 +28,14 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
                 throw new NotImplementedException();
             }
         }
+    	
+		public IEnumerable<NuGet.IPackageRepository> RegisteredPackageRepositories
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+		}
     	
 		public NuGet.IPackageRepository GetRepositoryFromSource(NuGet.PackageSource packageSource)
 		{

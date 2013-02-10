@@ -110,7 +110,7 @@ namespace ICSharpCode.AddInManager2.Model
 			}
 
 			// Create new package manager instance
-			_packageManager = new NuGetPackageManagerImplementation(_repositories.Registered, _packageOutputDirectory);
+			_packageManager = new NuGetPackageManagerImplementation(_repositories.AllRegistered, _packageOutputDirectory);
 			_packageManager.PackageInstalled += _packageEvents_NuGetPackageInstalled;
 			_packageManager.PackageUninstalled += _packageEvents_NuGetPackageUninstalled;
 			return _packageManager;

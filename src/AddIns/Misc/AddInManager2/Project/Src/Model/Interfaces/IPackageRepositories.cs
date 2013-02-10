@@ -9,7 +9,7 @@ namespace ICSharpCode.AddInManager2.Model
 {
 	public interface IPackageRepositories
 	{
-		IPackageRepository Registered
+		IPackageRepository AllRegistered
 		{
 			get;
 		}
@@ -18,6 +18,11 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			get;
 			set;
+		}
+		
+		IEnumerable<IPackageRepository> RegisteredPackageRepositories
+		{
+			get;
 		}
 		
 		IPackageRepository GetRepositoryFromSource(PackageSource packageSource);

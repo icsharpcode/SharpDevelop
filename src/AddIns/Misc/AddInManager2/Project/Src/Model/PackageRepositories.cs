@@ -17,8 +17,9 @@ namespace ICSharpCode.AddInManager2.Model
 	/// </summary>
 	public class PackageRepositories : IPackageRepositories
 	{
-		private IPackageRepository _currentRepository;
+		private IPackageRepository _aggregatedRepository;
 		private List<PackageSource> _registeredPackageSources;
+		private IEnumerable<IPackageRepository> _registeredPackageRepositories;
 		
 		private IAddInManagerEvents _events;
 		private IAddInManagerSettings _settings;
@@ -34,11 +35,11 @@ namespace ICSharpCode.AddInManager2.Model
 			UpdateCurrentRepository();
 		}
 
-		public IPackageRepository Registered
+		public IPackageRepository AllRegistered
 		{
 			get
 			{
-				return _currentRepository;
+				return _aggregatedRepository;
 			}
 		}
 		
@@ -62,6 +63,14 @@ namespace ICSharpCode.AddInManager2.Model
 			}
 		}
 		
+		public IEnumerable<IPackageRepository> RegisteredPackageRepositories
+		{
+			get
+			{
+				return _registeredPackageRepositories;
+			}
+		}
+		
 		public IPackageRepository GetRepositoryFromSource(PackageSource packageSource)
 		{
 			IPackageRepository resultRepository = null;
@@ -72,7 +81,7 @@ namespace ICSharpCode.AddInManager2.Model
 			else
 			{
 				// If no active repository is set, get packages from all repositories
-				resultRepository = _currentRepository;
+				resultRepository = _aggregatedRepository;
 			}
 			
 			return resultRepository;
@@ -127,11 +136,11 @@ namespace ICSharpCode.AddInManager2.Model
 		
 		private void UpdateCurrentRepository()
 		{
-			var repositories =
+			_registeredPackageRepositories =
 				_registeredPackageSources.Select(packageSource => PackageRepositoryFactory.Default.CreateRepository(packageSource.Source));
-			if (repositories.Any())
+			if (_registeredPackageRepositories.Any())
 			{
-				_currentRepository = new AggregateRepository(repositories);
+				_aggregatedRepository = new AggregateRepository(_registeredPackageRepositories);
 			}
 		}
 	}

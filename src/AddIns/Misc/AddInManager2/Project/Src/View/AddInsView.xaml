@@ -28,7 +28,17 @@
 		<BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
 		
 		<DataTemplate x:Key="PackageSourceComboBoxItemTemplate">
-			<TextBlock Text="{Binding Path=Name}"/>
+			<TextBlock Text="{Binding Path=NameWithHighlight}">
+				<TextBlock.Style>
+					<Style TargetType="TextBlock">
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding HasHighlightCount}" Value="True">
+								<Setter Property="FontWeight" Value="Bold" />
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</TextBlock.Style>
+			</TextBlock>
 		</DataTemplate>
 		
 		<Style x:Key="AddInImageStyle" TargetType="{x:Type Image}">
@@ -88,7 +98,7 @@
 		</Style>
 		
 		<Style x:Key="PackageSourceComboBoxStyle" TargetType="{x:Type ComboBox}">
-<!--			<Style.Triggers>
+			<!--			<Style.Triggers>
 				<DataTrigger Binding="{Binding IsReadingPackages}" Value="True">
 					<Setter Property="IsEnabled" Value="False" />
 				</DataTrigger>
@@ -473,7 +483,7 @@
 						Grid.Column="0"
 						VerticalAlignment="Center"
 						Margin="2, 0, 5, 2"
-						Visibility="{Binding Path=ShowPackageSources, Converter={StaticResource BoolToVisibility}}"
+						Visibility="{Binding Path=ShowPackageRepositories, Converter={StaticResource BoolToVisibility}}"
 						Text="{core:Localize AddInManager2.AddInsView.Repository}" />
 					<ComboBox
 						Grid.Row="0"
@@ -482,9 +492,9 @@
 						Margin="2, 0, 0, 2"
 						Style="{StaticResource PackageSourceComboBoxStyle}"
 						SelectedItem="{Binding Path=SelectedPackageSource}"
-						ItemsSource="{Binding Path=PackageSources}"
+						ItemsSource="{Binding Path=PackageRepositories}"
 						ItemTemplate="{StaticResource PackageSourceComboBoxItemTemplate}"
-						Visibility="{Binding Path=ShowPackageSources, Converter={StaticResource BoolToVisibility}}"/>
+						Visibility="{Binding Path=ShowPackageRepositories, Converter={StaticResource BoolToVisibility}}"/>
 					
 					<TextBlock
 						Grid.Row="1"

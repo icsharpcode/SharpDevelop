@@ -85,8 +85,43 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		{
 			IQueryable<IPackage> localPackages = installedPackages;
 			localPackages = FilterPackages(localPackages);
-			var updatedPackages = GetUpdatedPackages(ActiveRepository ?? AddInManager.Repositories.Registered, localPackages);
-			HighlightCount = updatedPackages.Count();
+			
+			int allUpdatesCount = 0;
+			IEnumerable<IPackage> updatedPackages = null;
+			
+			var allRepositories = AddInManager.Repositories.RegisteredPackageRepositories;
+			if (allRepositories != null)
+			{
+				// Run through all repositories and collect counts of updated packages
+				foreach (var repository in allRepositories)
+				{
+					var updatesForThisRepository = GetUpdatedPackages(repository, localPackages);
+					
+					if (ActiveRepository.Source == repository.Source)
+					{
+						// This is also the user-selected repository we need the package list from
+						updatedPackages = updatesForThisRepository;
+					}
+					
+					// Set update count for repository in list
+					var packageRepositoryModel = PackageRepositories.Where(pr => pr.SourceUrl == repository.Source).FirstOrDefault();
+					if (packageRepositoryModel != null)
+					{
+						int updatesCount = updatesForThisRepository.Count();
+						packageRepositoryModel.HighlightCount = updatesCount;
+						allUpdatesCount += updatesCount;
+					}
+				}
+			}
+			
+			if (updatedPackages == null)
+			{
+				// Just as fallback, if something goes wrong in upper loop
+				updatedPackages = GetUpdatedPackages(AddInManager.Repositories.AllRegistered, localPackages);
+				allUpdatesCount = updatedPackages.Count();
+			}
+			
+			HighlightCount = allUpdatesCount;
 			return updatedPackages.AsQueryable();
 		}
 		

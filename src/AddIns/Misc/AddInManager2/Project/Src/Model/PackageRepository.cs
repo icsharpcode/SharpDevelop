@@ -8,7 +8,7 @@ namespace ICSharpCode.AddInManager2.Model
 {
 	public class PackageRepository : Model<PackageRepository>
 	{
-//		RegisteredPackageSource packageSource;
+		private int _highlightCount;
 		
 		public PackageRepository()
 		{
@@ -16,41 +16,58 @@ namespace ICSharpCode.AddInManager2.Model
 		
 		public PackageRepository(PackageSource packageSource)
 		{
-//			this.packageSource = new RegisteredPackageSource(packageSource);
 			Name = packageSource.Name;
 			SourceUrl = packageSource.Source;
 		}
 		
 		public string Name
 		{
-//			get
-//			{
-//				return packageSource.Name;
-				// TODO
-//				return null;
-//			}
-//			set
-//			{
-//				packageSource.Name = value;
-//			}
 			get;
 			set;
 		}
 		
 		public string SourceUrl
 		{
-//			get
-//			{
-//				return packageSource.Source;
-				// TODO
-//				return null;
-//			}
-//			set
-//			{
-//				packageSource.Source = value;
-//			}
 			get;
 			set;
+		}
+		
+		public int HighlightCount
+		{
+			get
+			{
+				return _highlightCount;
+			}
+			set
+			{
+				_highlightCount = value;
+				OnPropertyChanged(vm => vm.HighlightCount);
+				OnPropertyChanged(vm => vm.HasHighlightCount);
+				OnPropertyChanged(vm => vm.NameWithHighlight);
+			}
+		}
+		
+		public bool HasHighlightCount
+		{
+			get
+			{
+				return (_highlightCount > 0);
+			}
+		}
+		
+		public string NameWithHighlight
+		{
+			get
+			{
+				if (_highlightCount > 0)
+				{
+					return String.Format("{0} ({1})", Name, _highlightCount);
+				}
+				else
+				{
+					return Name;
+				}
+			}
 		}
 		
 		public PackageSource ToPackageSource()
