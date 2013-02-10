@@ -174,8 +174,10 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 
 		public override void Dispose()
 		{
-			if (CSDLDatabaseTreeViewAdditionalNode.Instance.CSDLViews.Contains(_edmView.CSDL))
-				CSDLDatabaseTreeViewAdditionalNode.Instance.CSDLViews.Remove(_edmView.CSDL);
+			if (_edmView != null) {
+				if (CSDLDatabaseTreeViewAdditionalNode.Instance.CSDLViews.Contains(_edmView.CSDL))
+					CSDLDatabaseTreeViewAdditionalNode.Instance.CSDLViews.Remove(_edmView.CSDL);
+			}
 
 			EDMDesignerChangeWatcher.RemoveEDMDesignerViewContent(this);
 		}
