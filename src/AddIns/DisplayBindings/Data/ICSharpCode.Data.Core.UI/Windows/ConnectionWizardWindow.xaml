@@ -84,7 +84,7 @@
         <TextBlock Grid.Row="5" Margin="3">Database:</TextBlock>
 
         <ComboBox x:Name="cboDatabases" Grid.Row="5" Grid.Column="1" Margin="3" SelectedItem="{Binding SelectedDatabase, ElementName=This}" 
-            ItemsSource="{Binding SelectedDatasource.Databases, ElementName=This}" SelectionChanged="cboDatabases_SelectionChanged">
+            ItemsSource="{Binding SelectedDatasource.Databases, ElementName=This}">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Name}" />
