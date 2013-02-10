@@ -92,6 +92,7 @@ namespace ICSharpCode.Data.Core.UI.Windows
 			set
 			{
 				_selectedDatabase = value;
+				btnAdd.IsEnabled = (_selectedDatabase != null);
 				OnPropertyChanged("SelectedDatabase");
 			}
 		}
@@ -210,11 +211,6 @@ namespace ICSharpCode.Data.Core.UI.Windows
 					SelectedDatasource = SelectedDatabaseDriver.AddNewDatasource(cboDatasources.Text);
 				}
 			}
-		}
-
-		private void cboDatabases_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			btnAdd.IsEnabled = true;
 		}
 
 		private void btnAdd_Click(object sender, RoutedEventArgs e)

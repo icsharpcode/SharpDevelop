@@ -25,10 +25,6 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
 {
     public class MSLIO : IO
     {
-        #region Methods
-
-        #region Read
-
         public static XDocument GenerateTypeMapping(XDocument mslDocument)
         {
             XElement mappingElement = mslDocument.Element(XName.Get("Mapping", mslNamespace.NamespaceName));
@@ -41,8 +37,10 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
             if (entityContainerMappingElement == null || entityContainerMappingElement.IsEmpty)
                 return null;
 
-            foreach (XElement entitySetMapping in entityContainerMappingElement.Elements(mslNamespace + "EntitySetMapping"))
-            {
+            foreach (XElement entitySetMapping in entityContainerMappingElement.Elements(mslNamespace + "EntitySetMapping")) {
+            	if (entitySetMapping.HasEntityTypeMappingChildElement())
+            		continue;
+            	
                 string name = entitySetMapping.Attribute("Name").Value;
                 string storeEntitySet = entitySetMapping.Attribute("StoreEntitySet").Value;
                 string typeName = entitySetMapping.Attribute("TypeName").Value;
@@ -61,7 +59,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
 
             return mslDocument;
         }
-
+        
         public static CSDLContainer IntegrateMSLInCSDLContainer(CSDLContainer csdlContainer, SSDLContainer ssdlContainer, XElement edmxRuntime)
         {
             XElement mappingsElement = edmxRuntime.Element(XName.Get("Mappings", edmxNamespace.NamespaceName));
@@ -262,10 +260,6 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                 cudFunctionParametersMapping[scalarProperty] = functionParameterMapping;
             }
         }
-
-        #endregion
-
-        #region Write
 
         public static XElement Write(EDM edm)
         {
@@ -533,10 +527,6 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                     new XAttribute("ColumnName", result.Value));
             }
         }
-
-        #endregion 
-
-        #endregion
     }
 
     #region Extension methods
@@ -560,6 +550,11 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
 
             return element;
         }
+        
+		public static bool HasEntityTypeMappingChildElement(this XElement entitySetMapping)
+		{
+			return entitySetMapping.Elements().Any(e => e.Name.LocalName == "EntityTypeMapping");
+		}
     }
 
     #endregion
