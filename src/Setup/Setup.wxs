@@ -292,9 +292,9 @@
 				<ComponentRef Id="WixUIFeatureTreeProjectTemplate"/>
 				<!--<ComponentRef Id="FormsDesignerFiles"/>-->
 				<ComponentRef Id="IconEditorFiles"/>
-				<!--<ComponentRef Id="ResourceEditorFiles"/>
+				<!--<ComponentRef Id="ResourceEditorFiles"/>-->
 				<ComponentRef Id="SettingsEditorFiles"/>
-				<ComponentRef Id="ClassDiagramResources"/>
+				<!--<ComponentRef Id="ClassDiagramResources"/>
 				<ComponentRef Id="ClassDiagramAddInFiles"/>
 				<ComponentRef Id="ClassCanvasDll"/>
 				<ComponentRef Id="DiagramsDll"/>-->
@@ -421,11 +421,11 @@
 				<ComponentRef Id="CppBindingDll"/>
 				<ComponentRef Id="CppBindingTemplates"/>
 				
-				<!--<ComponentRef Id="ICSharpCodeWpfDesignAddInDll"/>
+				<ComponentRef Id="ICSharpCodeWpfDesignAddInDll"/>
 				<ComponentRef Id="ICSharpCodeWpfDesignDesignerDll"/>
 				<ComponentRef Id="ICSharpCodeWpfDesignDll"/>
 				<ComponentRef Id="ICSharpCodeWpfDesignXamlDomDll"/>
-				<ComponentRef Id="WpfDesignAddin"/>-->
+				<ComponentRef Id="WpfDesignAddin"/>
 				
 				<ComponentRef Id="ICSharpCodeDataAddin"/>
 				<ComponentRef Id="ICSharpCodeDataAddinDll"/>

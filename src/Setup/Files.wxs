@@ -1325,7 +1325,6 @@
 										<File Source="..\..\AddIns\DisplayBindings\HexEditor\HexEditor.dll" Name="HexEditor.dll" Id="HexEditor.dll" KeyPath="yes" />
 									</Component>
 								</Directory>
-								<!--
 								<Directory Id="WpfDesign" Name="WpfDesign">
 									<Component Guid="E529AC6C-30BE-4406-9F26-B55CAA110D3F" Id="ICSharpCodeWpfDesignAddInDll" DiskId="1">
 										<File Source="..\..\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.AddIn.dll" Name="ICSharpCode.WpfDesign.AddIn.dll" Id="ICSharpCode.WpfDesign.AddIn.dll" KeyPath="yes" />
@@ -1343,7 +1342,6 @@
 										<File Source="..\..\AddIns\DisplayBindings\WpfDesign\WpfDesign.addin" Name="WpfDesign.addin" Id="WpfDesign.addin" KeyPath="yes" />
 									</Component>
 								</Directory>
-								-->
 								<Directory Id="Data" Name="Data">
 									<Component Guid="16E65D48-658D-4C6B-BCCB-9B5450727CFD" Id="ICSharpCodeDataAddin" DiskId="1">
 										<File Source="..\..\AddIns\DisplayBindings\Data\ICSharpCode.Data.addin" Name="ICSharpCode.Data.addin" Id="ICSharpCode.Data.addin" KeyPath="yes" />
@@ -1374,7 +1372,6 @@
 										</Directory>
 									</Directory>
 								</Directory>
-								<!--
 								<Directory Id="SettingsEditor" Name="SettingsEditor">
 									<Component Id="SettingsEditorFiles" Guid="4A12129A-6BB5-4CC7-A105-C1F6FDF345F2" DiskId="1">
 										<File Id="SettingsEditor.dll" Name="SettingsEditor.dll" Source="..\..\AddIns\DisplayBindings\SettingsEditor\SettingsEditor.dll" KeyPath="yes" />
@@ -1382,7 +1379,6 @@
 										<File Id="EmptySettingsFile.xft" Name="EmptySettingsFile.xft" Source="..\..\AddIns\DisplayBindings\SettingsEditor\EmptySettingsFile.xft" />
 									</Component>
 								</Directory>
-								-->
 								<Directory Id="Decompiler" Name="Decompiler">
 									<Component Id="ILSpyAddInFiles" Guid="F1422563-5927-4D98-B4D4-33FE5576C665" DiskId="1">
 										<File Id="ILSpyAddIn.dll" Name="ILSpyAddIn.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ILSpyAddIn.dll" KeyPath="yes" />
