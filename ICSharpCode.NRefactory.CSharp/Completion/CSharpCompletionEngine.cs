@@ -1980,6 +1980,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					case "internal":
 					case "sealed":
 					case "override":
+					case "partial":
 					case "async":
 						declarationBegin = j;
 						break;

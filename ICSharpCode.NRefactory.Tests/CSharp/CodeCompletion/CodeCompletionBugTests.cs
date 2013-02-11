@@ -138,6 +138,19 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				}
 			}
 
+			public class OverrideCompletionData : CompletionData
+			{
+				public int DeclarationBegin {
+					get;
+					set;
+				}
+
+				public OverrideCompletionData (string text, int declarationBegin) : base(text)
+				{
+					this.DeclarationBegin = declarationBegin;
+				}
+			}
+
 			public class EntityCompletionData : CompletionData, IEntityCompletionData
 			{
 				#region IEntityCompletionData implementation
@@ -237,12 +250,12 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 
 			public ICompletionData CreateNewOverrideCompletionData (int declarationBegin, ICSharpCode.NRefactory.TypeSystem.IUnresolvedTypeDefinition type, ICSharpCode.NRefactory.TypeSystem.IMember m)
 			{
-				return new CompletionData (m.Name);
+				return new OverrideCompletionData (m.Name, declarationBegin);
 			}
 			
 			public ICompletionData CreateNewPartialCompletionData (int declarationBegin, IUnresolvedTypeDefinition type, IUnresolvedMember m)
 			{
-				return new CompletionData (m.Name);
+				return new OverrideCompletionData (m.Name, declarationBegin);
 			}
 
 			public ICompletionData CreateImportCompletionData(IType type, bool useFullName)
