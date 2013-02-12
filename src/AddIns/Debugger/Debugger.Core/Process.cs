@@ -3,36 +3,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
+using ICSharpCode.NRefactory.TypeSystem;
 using Debugger.Interop.CorDebug;
 using Debugger.Interop.CorSym;
 
 namespace Debugger
 {
 	internal enum DebuggeeStateAction { Keep, Clear }
-	
-	/// <summary>
-	/// Debug Mode Flags.
-	/// </summary>
-	public enum DebugModeFlag
-	{
-		/// <summary>
-		/// Run in the same mode as without debugger.
-		/// </summary>
-		Default,
-		/// <summary>
-		/// Run in forced optimized mode.
-		/// </summary>
-		Optimized,
-		/// <summary>
-		/// Run in debug mode (easy inspection) but slower.
-		/// </summary>
-		Debug,
-		/// <summary>
-		/// Run in ENC mode (ENC possible) but even slower than debug
-		/// </summary>
-		Enc
-	}
 	
 	public class Process: DebuggerObject
 	{
@@ -106,18 +85,13 @@ namespace Debugger
 		}
 		
 		public string Filename { get; private set; }
-		
-		public ISymbolSource SymbolSource { get; set; }
-		
-		public static DebugModeFlag DebugMode { get; set; }
-		
+				
 		internal Process(NDebugger debugger, ICorDebugProcess corProcess, string filename, string workingDirectory)
 		{
 			this.debugger = debugger;
 			this.corProcess = corProcess;
 			this.workingDirectory = workingDirectory;
 			this.Filename = System.IO.Path.GetFullPath(filename); // normalize path
-			this.SymbolSource = new PdbSymbolSource();
 			
 			this.callbackInterface = new ManagedCallback(this);
 		}
@@ -229,6 +203,11 @@ namespace Debugger
 			Thread newThread = new Thread(this, corThread);
 			this.threads.Add(newThread);
 			return newThread;
+		}
+		
+		public ISymbolSource GetSymbolSource(IMethod method)
+		{
+			return this.Debugger.SymbolSources.FirstOrDefault(s => s.Handles(method)) ?? this.Debugger.SymbolSources.First();
 		}
 		
 		/// <summary> Read the specified amount of memory at the given memory address </summary>
@@ -454,17 +433,21 @@ namespace Debugger
 		
 		public void RunTo(string fileName, int line, int column)
 		{
-			foreach(Module module in this.Modules) {
-				SequencePoint seq = this.SymbolSource.GetSequencePoint(module, fileName, line, column);
-				if (seq != null) {
-					ICorDebugFunction corFunction = module.CorModule.GetFunctionFromToken(seq.MethodDefToken);
-					ICorDebugFunctionBreakpoint corBreakpoint = corFunction.GetILCode().CreateBreakpoint((uint)seq.ILOffset);
-					corBreakpoint.Activate(1);
-					this.tempBreakpoints.Add(corBreakpoint);		
+			foreach(var symbolSource in this.Debugger.SymbolSources) {
+				foreach(Module module in this.Modules) {
+					// Note the we might get multiple matches
+					SequencePoint seq = symbolSource.GetSequencePoint(module, fileName, line, column);
+					if (seq != null) {
+						ICorDebugFunction corFunction = module.CorModule.GetFunctionFromToken(seq.MethodDefToken);
+						ICorDebugFunctionBreakpoint corBreakpoint = corFunction.GetILCode().CreateBreakpoint((uint)seq.ILOffset);
+						corBreakpoint.Activate(1);
+						this.tempBreakpoints.Add(corBreakpoint);
+						
+						if (this.IsPaused) {
+							AsyncContinue();
+						}
+					}
 				}
-			}
-			if (this.IsPaused) {
-				AsyncContinue();
 			}
 		}
 		

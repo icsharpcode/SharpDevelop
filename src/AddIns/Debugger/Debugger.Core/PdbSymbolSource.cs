@@ -63,16 +63,21 @@ namespace Debugger
 	
 	public interface ISymbolSource
 	{
+		/// <summary> Use this symbol store handle the method </summary>
+		bool Handles(IMethod method);
+		
+		/// <summary> Does this method correspond to any source code? </summary>
+		bool IsCompilerGenerated(IMethod method);
+		
 		/// <summary> Find sequence point by IL offset </summary>
 		SequencePoint GetSequencePoint(IMethod method, int iloffset);
 		
 		/// <summary> Find sequence point by source code location </summary>
+		/// <remarks> Only source files corresponding to the given module are searched </remarks>
 		SequencePoint GetSequencePoint(Module module, string filename, int line, int column);
 		
-		/// <summary> Determine whether the method is debugable </summary>
-		bool HasSymbols(IMethod method);
-		
 		/// <summary> Get IL ranges that should be always stepped over by the debugger </summary>
+		/// <remarks> This is used for compiler generated code </remarks>
 		IEnumerable<ILRange> GetIgnoredILRanges(IMethod method);
 		
 		/// <summary> Get local variable metadata </summary>
@@ -81,6 +86,16 @@ namespace Debugger
 	
 	public class PdbSymbolSource : ISymbolSource
 	{
+		public bool Handles(IMethod method)
+		{
+			return method.ParentAssembly.GetModule().SymReader != null;
+		}
+		
+		public bool IsCompilerGenerated(IMethod method)
+		{
+			return method.GetSymMethod() == null;
+		}
+		
 		/// <summary>
 		/// Get absolute source code path for the specified document.
 		/// If the file is not found, some effort will be made to locate it.
@@ -209,11 +224,6 @@ namespace Debugger
 			return seqPoint;
 		}
 		
-		public bool HasSymbols(IMethod method)
-		{
-			return method.GetSymMethod() != null;
-		}
-		
 		public IEnumerable<ILRange> GetIgnoredILRanges(IMethod method)
 		{
 			var symMethod = method.GetSymMethod();
@@ -226,11 +236,11 @@ namespace Debugger
 		
 		public IEnumerable<ILLocalVariable> GetLocalVariables(IMethod method)
 		{
+			List<ILLocalVariable> vars = new List<ILLocalVariable>();
 			var symMethod = method.GetSymMethod();
 			if (symMethod == null)
-				return null;
+				return vars;
 			
-			List<ILLocalVariable> vars = new List<ILLocalVariable>();
 			Stack<ISymUnmanagedScope> scopes = new Stack<ISymUnmanagedScope>();
 			scopes.Push(symMethod.GetRootScope());
 			while(scopes.Count > 0) {

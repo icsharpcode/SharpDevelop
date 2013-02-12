@@ -36,6 +36,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		public static Thread     CurrentThread { get; set; }
 		public static StackFrame CurrentStackFrame { get; set; }
 		
+		public static PdbSymbolSource PdbSymbolSource = new PdbSymbolSource();
+		
 		public static Action RefreshingPads;
 		
 		public static void RefreshPads()
@@ -77,8 +79,6 @@ namespace ICSharpCode.SharpDevelop.Services
 		bool attached;
 		
 		ICorPublish corPublish;
-		
-		List<ISymbolSource> symbolSources = new List<ISymbolSource>();
 		
 		/// <inheritdoc/>
 		public bool BreakAtBeginning { get; set; }
@@ -152,8 +152,6 @@ namespace ICSharpCode.SharpDevelop.Services
 				UpdateBreakpointLines();
 				
 				try {
-					// set the JIT flag for evaluating optimized code
-					Process.DebugMode = DebugModeFlag.Debug;
 					CurrentProcess = CurrentDebugger.Start(processStartInfo.FileName, processStartInfo.WorkingDirectory, processStartInfo.Arguments, this.BreakAtBeginning);
 					debugger_ProcessStarted();
 				} catch (System.Exception e) {
@@ -213,8 +211,6 @@ namespace ICSharpCode.SharpDevelop.Services
 				UpdateBreakpointLines();
 				
 				try {
-					// set the JIT flag for evaluating optimized code
-					Process.DebugMode = DebugModeFlag.Debug;
 					CurrentProcess = CurrentDebugger.Attach(existingProcess);
 					debugger_ProcessStarted();
 					attached = true;
@@ -348,12 +344,14 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void InitializeService()
 		{
-			symbolSources.Add(new PdbSymbolSource());
+			List<ISymbolSource> symbolSources = new List<ISymbolSource>();
+			symbolSources.Add(PdbSymbolSource);
 			symbolSources.AddRange(AddInTree.BuildItems<ISymbolSource>("/SharpDevelop/Services/DebuggerService/SymbolSource", null, false));
 			
 			// init NDebugger
 			CurrentDebugger = new NDebugger();
 			CurrentDebugger.Options = DebuggingOptions.Instance;
+			CurrentDebugger.SymbolSources = symbolSources;
 			
 			foreach (BreakpointBookmark b in SD.BookmarkManager.Bookmarks.OfType<BreakpointBookmark>()) {
 				AddBreakpoint(b);
@@ -465,10 +463,6 @@ namespace ICSharpCode.SharpDevelop.Services
 			CurrentProcess = e.Process;
 			CurrentThread = e.Thread;
 			CurrentStackFrame = CurrentThread != null ? CurrentThread.MostRecentUserStackFrame : null;
-			
-			// Select the symbol source
-			var symbolSource = symbolSources.FirstOrDefault(s => CurrentStackFrame == null || s.HasSymbols(CurrentStackFrame.MethodInfo));
-			CurrentProcess.SymbolSource = symbolSource ?? symbolSources.First();
 			
 			// We can have several events happening at the same time
 			bool breakProcess = e.Break;
@@ -599,13 +593,10 @@ namespace ICSharpCode.SharpDevelop.Services
 				return;
 			
 			SD.Workbench.MainWindow.Activate();
-			
-			if (CurrentStackFrame.HasSymbols) {			
-				SequencePoint nextStatement = CurrentStackFrame.NextStatement;
-				if (nextStatement != null) {
-					DebuggerService.RemoveCurrentLineMarker();
-					DebuggerService.JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
-				}
+			DebuggerService.RemoveCurrentLineMarker();
+			SequencePoint nextStatement = CurrentStackFrame.NextStatement;
+			if (nextStatement != null) {
+				DebuggerService.JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
 			}
 		}
 		

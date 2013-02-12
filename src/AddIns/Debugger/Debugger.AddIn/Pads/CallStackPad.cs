@@ -103,12 +103,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			if (item.Frame.Process.IsPaused) {
 				if (item.Frame != null) {
-					// check for options - if these options are enabled, selecting the frame should not continue
-					if (!item.Frame.HasSymbols && !item.Frame.Process.Options.StepOverNoSymbols) {
-						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions}",
-						                           "${res:MainWindow.Windows.Debug.CallStack.FunctionSwitch}");
-						return;
-					}
 					WindowsDebugger.CurrentStackFrame = item.Frame;
 					WindowsDebugger.Instance.JumpToCurrentLine();
 					WindowsDebugger.RefreshPads();
@@ -138,13 +132,16 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		CallStackItem CreateItem(StackFrame frame, ref bool previousItemIsExternalMethod)
 		{
 			bool showExternalMethods = DebuggingOptions.Instance.ShowExternalMethods;
-			if (frame.HasSymbols || showExternalMethods) {
+			var symSource = WindowsDebugger.PdbSymbolSource;
+			bool hasSymbols = symSource.Handles(frame.MethodInfo) && !symSource.IsCompilerGenerated(frame.MethodInfo);
+			if (showExternalMethods || hasSymbols) {
 				// Show the method in the list
 				previousItemIsExternalMethod = false;
 				return new CallStackItem() {
 					Frame = frame,
 					ImageSource = SD.ResourceService.GetImageSource("Icons.16x16.Method"),
-					Name = GetFullName(frame)
+					Name = GetFullName(frame),
+					HasSymbols = hasSymbols,
 				};
 			} else {
 				// Show [External methods] in the list
@@ -152,7 +149,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					return null;
 				previousItemIsExternalMethod = true;
 				return new CallStackItem() {
-					Name = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ExternalMethods")
+					Name = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ExternalMethods"),
+					HasSymbols = false
 				};
 			}
 		}
@@ -204,9 +202,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		public StackFrame Frame { get; set; }
 		public ImageSource ImageSource { get; set; }
 		public string Name { get; set; }
+		public bool HasSymbols { get; set; }
 		
 		public Brush FontColor {
-			get { return this.Frame == null || this.Frame.HasSymbols ? Brushes.Black : Brushes.Gray; }
+			get { return this.HasSymbols ? Brushes.Black : Brushes.Gray; }
 		}
 	}
 }

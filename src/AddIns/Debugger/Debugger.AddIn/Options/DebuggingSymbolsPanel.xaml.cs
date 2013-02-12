@@ -45,11 +45,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public override bool SaveOptions()
 		{
 			DebuggingOptions.Instance.SymbolsSearchPaths = editor.GetList();
-			DebuggingOptions.ResetStatus(
-				proc => {
-					proc.Debugger.ReloadModuleSymbols();
-					proc.Debugger.ResetJustMyCodeStatus();
-				});
+			if (WindowsDebugger.CurrentDebugger != null)
+				WindowsDebugger.CurrentDebugger.ReloadOptions();
 			return base.SaveOptions();
 		}
 	}

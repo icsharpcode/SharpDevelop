@@ -66,6 +66,12 @@ namespace Debugger
 			get { return this.processes; }
 		}
 		
+		/// <summary>
+		/// The debugger might use one or more symbol sources.
+		/// The first symbol source willing to handle a given method will be used.
+		/// </summary>
+		public IEnumerable<ISymbolSource> SymbolSources { get; set; }
+		
 		public NDebugger()
 		{
 			if (ApartmentState.STA == System.Threading.Thread.CurrentThread.GetApartmentState()) {
@@ -73,6 +79,7 @@ namespace Debugger
 			} else {
 				mta2sta.CallMethod = CallMethod.DirectCall;
 			}
+			SymbolSources = new ISymbolSource[] { new PdbSymbolSource() };
 		}
 		
 		internal Process GetProcess(ICorDebugProcess corProcess) {
@@ -270,26 +277,26 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary> Try to load module symbols using the search path defined in the options </summary>
-		public void ReloadModuleSymbols()
+		/// <summary>
+		/// Notify the the debugger that the options have changed
+		/// </summary>
+		public void ReloadOptions()
 		{
 			foreach(Process process in this.Processes) {
+				bool isPaused = process.IsPaused;
+				if (!isPaused)
+					process.Break();
+
+				// We need to be paused for this				
 				foreach(Module module in process.Modules) {
-					module.LoadSymbolsFromDisk(process.Options.SymbolsSearchPaths);
+					module.LoadSymbolsFromDisk(this.Options.SymbolsSearchPaths);
+					module.ResetJustMyCode();
 				}
+				
+				if (!isPaused)
+					process.AsyncContinue();
 			}
-			TraceMessage("Reloaded symbols");
-		}
-		
-		/// <summary> Reset the just my code status of modules.  Use this after changing any stepping options. </summary>
-		public void ResetJustMyCodeStatus()
-		{
-			foreach(Process process in this.Processes) {
-				foreach(Module module in process.Modules) {
-					module.ResetJustMyCodeStatus();
-				}
-			}
-			TraceMessage("Just my code reseted");
+			TraceMessage("Reloaded options");
 		}
 	}
 	

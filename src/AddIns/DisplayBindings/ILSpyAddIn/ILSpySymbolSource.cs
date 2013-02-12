@@ -13,6 +13,17 @@ namespace ICSharpCode.ILSpyAddIn
 {
 	public class ILSpySymbolSource : ISymbolSource
 	{
+		public bool Handles(IMethod method)
+		{
+			return true;
+		}
+		
+		public bool IsCompilerGenerated(IMethod method)
+		{
+			var symbols = GetSymbols(method);
+			return symbols == null || symbols.SequencePoints.Count == 0;
+		}
+		
 		public static MethodDebugSymbols GetSymbols(IMethod method)
 		{
 			// Use the non-specialised method definition to look up decompiled symbols
@@ -65,12 +76,6 @@ namespace ICSharpCode.ILSpyAddIn
 					return seq.ToDebugger(symbols, content.VirtualFileName);
 			}
 			return null;
-		}
-		
-		public bool HasSymbols(IMethod method)
-		{
-			var symbols = GetSymbols(method);
-			return symbols != null && symbols.SequencePoints.Any();
 		}
 		
 		public IEnumerable<ILRange> GetIgnoredILRanges(IMethod method)

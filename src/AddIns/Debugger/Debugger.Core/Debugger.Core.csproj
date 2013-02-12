@@ -92,6 +92,7 @@
     <Compile Include="StackFrame.cs" />
     <Compile Include="Stepper.cs" />
     <Compile Include="Thread.cs" />
+    <Compile Include="Util.cs" />
     <Compile Include="Value.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -29,10 +29,19 @@ namespace ICSharpCode.SharpDevelop.Services
 			set { PS.Set<bool>("Debugger.EnableJustMyCode", value); }
 		}
 		
-		// This enables decompilation
-		public override bool StepOverNoSymbols {
-			get { return PS.Get<bool>("Debugger.StepOverNoSymbols", true); }
-			set { PS.Set<bool>("Debugger.StepOverNoSymbols", value); }
+		public override bool EnableEditAndContinue {
+			get { return PS.Get<bool>("Debugger.EnableEditAndContinue", true); }
+			set { PS.Set<bool>("Debugger.EnableEditAndContinue", value); }
+		}
+		
+		public override bool SuppressJITOptimization {
+			get { return PS.Get<bool>("Debugger.SuppressJITOptimization", true); }
+			set { PS.Set<bool>("Debugger.SuppressJITOptimization", value); }
+		}
+		
+		public override bool SuppressNGENOptimization {
+			get { return PS.Get<bool>("Debugger.SuppressNGENOptimization", true); }
+			set { PS.Set<bool>("Debugger.SuppressNGENOptimization", value); }
 		}
 		
 		public override bool StepOverDebuggerAttributes {
@@ -98,27 +107,6 @@ namespace ICSharpCode.SharpDevelop.Services
 		public FormWindowState DebuggeeExceptionWindowState {
 			get { return PS.Get<FormWindowState>("Debugger.DebuggeeExceptionWindowState", FormWindowState.Normal); }
 			set { PS.Set<FormWindowState>("Debugger.DebuggeeExceptionWindowState", value); }
-		}
-		
-		/// <summary>
-		/// Used to update status of some debugger properties while debugger is running.
-		/// </summary>
-		internal static void ResetStatus(Action<Process> resetStatus)
-		{
-			Process proc = WindowsDebugger.CurrentProcess;
-			// debug session is running
-			if (proc != null) {
-				bool wasPausedNow = false;
-				// if it is not paused, break execution
-				if (!proc.IsPaused) {
-					proc.Break();
-					wasPausedNow = true;
-				}
-				resetStatus(proc);
-				// continue if it was not paused before
-				if (wasPausedNow)
-					proc.AsyncContinue();
-			}
 		}
 	}
 }

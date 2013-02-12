@@ -49,15 +49,13 @@ namespace Debugger.MetaData
 			return this.Type.Name + " " + this.Name + (this.IsCaptured ? " (captured)" : "");
 		}
 		
-		public static List<LocalVariable> GetLocalVariables(IMethod method)
+		public static List<LocalVariable> GetLocalVariables(ISymbolSource symbolSource, IMethod method)
 		{
 			var module = method.ParentAssembly.GetModule();
-			if (!module.SymbolSource.HasSymbols(method))
-				return null;
 			
 			List<LocalVariable> localVariables = new List<LocalVariable>();
 			
-			foreach (ILLocalVariable ilvar in module.SymbolSource.GetLocalVariables(method)) {
+			foreach (ILLocalVariable ilvar in symbolSource.GetLocalVariables(method)) {
 				int index = ilvar.Index;
 				// NB: Display class does not have the compiler-generated flag
 				if (ilvar.IsCompilerGenerated || ilvar.Name.StartsWith("CS$")) {

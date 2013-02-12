@@ -249,13 +249,9 @@ namespace Debugger.AddIn.TreeModel
 				var parCopy = par;
 				yield return new ValueNode(ClassBrowserIconService.Parameter, par.Param.Name, () => GetCurrentStackFrame().GetArgumentValue(par.Index));
 			}
-			if (stackFrame.HasSymbols) {
-				foreach(LocalVariable locVar in stackFrame.GetLocalVariables(stackFrame.IP)) {
-					var locVarCopy = locVar;
-					yield return new ValueNode(ClassBrowserIconService.LocalVariable, locVar.Name, () => locVarCopy.GetValue(GetCurrentStackFrame()));
-				}
-			} else {
-				WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+			foreach(LocalVariable locVar in stackFrame.GetLocalVariables(stackFrame.IP)) {
+				var locVarCopy = locVar;
+				yield return new ValueNode(ClassBrowserIconService.LocalVariable, locVar.Name, () => locVarCopy.GetValue(GetCurrentStackFrame()));
 			}
 		}
 		

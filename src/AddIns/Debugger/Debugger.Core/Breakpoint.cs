@@ -67,17 +67,17 @@ namespace Debugger
 			corBreakpoints.Clear();
 		}
 		
-		public virtual bool SetBreakpoint(Module module)
+		public void SetBreakpoint(Module module)
 		{
-			var seq = module.SymbolSource.GetSequencePoint(module, this.FileName, this.Line, this.Column);
-			if (seq != null) {
-				ICorDebugFunction corFuction = module.CorModule.GetFunctionFromToken(seq.MethodDefToken);
-				ICorDebugFunctionBreakpoint corBreakpoint = corFuction.GetILCode().CreateBreakpoint((uint)seq.ILOffset);
-				corBreakpoint.Activate(enabled ? 1 : 0);
-				corBreakpoints.Add(corBreakpoint);
-				return true;
+			foreach(var symbolSource in module.Process.Debugger.SymbolSources) {
+				var seq = symbolSource.GetSequencePoint(module, this.FileName, this.Line, this.Column);
+				if (seq != null) {
+					ICorDebugFunction corFuction = module.CorModule.GetFunctionFromToken(seq.MethodDefToken);
+					ICorDebugFunctionBreakpoint corBreakpoint = corFuction.GetILCode().CreateBreakpoint((uint)seq.ILOffset);
+					corBreakpoint.Activate(enabled ? 1 : 0);
+					corBreakpoints.Add(corBreakpoint);
+				}
 			}
-			return false;
 		}
 	}
 }

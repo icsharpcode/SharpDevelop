@@ -187,8 +187,7 @@ namespace Debugger
 		/// <summary> Synchronously calls a function and returns its return value </summary>
 		public static Value InvokeMethod(Thread evalThread, IMethod method, Value thisValue, Value[] args)
 		{
-			Module module = method.DeclaringTypeDefinition.ParentAssembly.GetModule();
-			uint fieldToken = module.GetBackingFieldToken(method.ToCorFunction());
+			uint fieldToken = method.GetBackingFieldToken();
 			if (fieldToken != 0) {
 				var field = method.DeclaringType.ImportField(fieldToken);
 				if (field != null) {

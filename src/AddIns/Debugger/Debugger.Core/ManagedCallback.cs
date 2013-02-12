@@ -332,10 +332,10 @@ namespace Debugger
 			EnterCallback("CreateProcess", pProcess);
 
 			// Process is added in NDebugger.Start
-			// disable NGen if we want to do decompilation
-			if (!this.process.Options.StepOverNoSymbols) {
+			
+			if (this.process.Options.SuppressNGENOptimization) {
 				ICorDebugProcess2 pProcess2 = pProcess as ICorDebugProcess2;
-				if (pProcess2 != null && Process.DebugMode == DebugModeFlag.Debug) {
+				if (pProcess2 != null) {
 					try {
 						pProcess2.SetDesiredNGENCompilerFlags((uint)CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION);
 					} catch (COMException) {

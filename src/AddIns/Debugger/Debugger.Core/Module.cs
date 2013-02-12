@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Linq;
 using Debugger.Interop;
 using Debugger.Interop.CorDebug;
 using Debugger.Interop.CorSym;
@@ -44,10 +45,6 @@ namespace Debugger
 		
 		public Process Process {
 			get { return process; }
-		}
-		
-		public ISymbolSource SymbolSource {
-			get { return this.Process.SymbolSource; }
 		}
 		
 		NDebugger Debugger {
@@ -188,7 +185,7 @@ namespace Debugger
 			SetJITCompilerFlags();
 			
 			LoadSymbolsFromDisk(process.Options.SymbolsSearchPaths);
-			ResetJustMyCodeStatus();
+			ResetJustMyCode();
 			LoadSymbolsDynamic();
 		}
 		
@@ -269,48 +266,50 @@ namespace Debugger
 			foreach (Breakpoint b in this.Debugger.Breakpoints) {
 				b.SetBreakpoint(this);
 			}
-			ResetJustMyCodeStatus();
+			ResetJustMyCode();
 		}
 		
 		void SetJITCompilerFlags()
 		{
-			if (Process.DebugMode != DebugModeFlag.Default) {
-				// translate DebugModeFlags to JITCompilerFlags
-				CorDebugJITCompilerFlags jcf = MapDebugModeToJITCompilerFlags(Process.DebugMode);
-
-				try
-				{
-					this.JITCompilerFlags = jcf;
-
-					// Flags may succeed but not set all bits, so requery.
-					CorDebugJITCompilerFlags jcfActual = this.JITCompilerFlags;
-					
-					#if DEBUG
-					if (jcf != jcfActual)
-						Console.WriteLine("Couldn't set all flags. Actual flags:" + jcfActual.ToString());
-					else
-						Console.WriteLine("Actual flags:" + jcfActual.ToString());
-					#endif
-				}
-				catch (COMException ex)
-				{
-					// we'll ignore the error if we cannot set the jit flags
-					Console.WriteLine(string.Format("Failed to set flags with hr=0x{0:x}", ex.ErrorCode));
-				}
+			CorDebugJITCompilerFlags flags;
+			if (this.Process.Options.EnableEditAndContinue) {
+				flags = CorDebugJITCompilerFlags.CORDEBUG_JIT_ENABLE_ENC;
+			} else if (this.Process.Options.SuppressJITOptimization) {
+				flags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
+			} else {
+				flags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DEFAULT;
 			}
+
+			try
+			{
+				this.JITCompilerFlags = flags;
+			}
+			catch (COMException ex)
+			{
+				Console.WriteLine(string.Format("Failed to set flags with hr=0x{0:x}", ex.ErrorCode));
+			}
+			
+			CorDebugJITCompilerFlags actual = this.JITCompilerFlags;
+			if (flags != actual)
+				this.Process.TraceMessage("Couldn't set JIT flags to {0}. Actual flags: {1}", flags, actual);
+			else
+				this.Process.TraceMessage("JIT flags: {0}", actual);
 		}
 		
-		/// <summary> Sets all code as being 'my code'.  The code will be gradually
-		/// set to not-user-code as encountered according to stepping options </summary>
-		public void ResetJustMyCodeStatus()
+		/// <summary>
+		/// Sets all code as being 'my code'.  The code will be gradually switch
+		/// to not-user-code as encountered according to stepping options.
+		/// </summary>
+		public void ResetJustMyCode()
 		{
 			uint unused = 0;
-			if (process.Options.StepOverNoSymbols && !this.HasSymbols) {
+			if (this.Process.Debugger.SymbolSources.All(s => s is PdbSymbolSource) && this.SymReader == null) {
 				// Optimization - set the code as non-user right away
 				this.CorModule2.SetJMCStatus(0, 0, ref unused);
 				return;
 			}
 			try {
+				// Reqires the process to be synchronized!
 				this.CorModule2.SetJMCStatus(process.Options.EnableJustMyCode ? 1 : 0, 0, ref unused);
 			} catch (COMException e) {
 				// Cannot use JMC on this code (likely wrong JIT settings).
@@ -336,95 +335,6 @@ namespace Debugger
 		public override string ToString()
 		{
 			return string.Format("{0}", this.Name);
-		}
-		
-		public static CorDebugJITCompilerFlags MapDebugModeToJITCompilerFlags(DebugModeFlag debugMode)
-		{
-			CorDebugJITCompilerFlags jcf;
-			switch (debugMode)
-			{
-				case DebugModeFlag.Optimized:
-					jcf = CorDebugJITCompilerFlags.CORDEBUG_JIT_DEFAULT; // DEFAULT really means force optimized.
-					break;
-				case DebugModeFlag.Debug:
-					jcf = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
-					break;
-				case DebugModeFlag.Enc:
-					jcf = CorDebugJITCompilerFlags.CORDEBUG_JIT_ENABLE_ENC;
-					break;
-				default:
-					// we don't have mapping from default to "default",
-					// therefore we'll use DISABLE_OPTIMIZATION.
-					jcf = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
-					break;
-			}
-			return jcf;
-		}
-		
-		Dictionary<ICorDebugFunction, uint> backingFieldCache = new Dictionary<ICorDebugFunction, uint>();
-		
-		/// <summary> Is this method in form 'return this.field;'? </summary>
-		internal uint GetBackingFieldToken(ICorDebugFunction corFunction)
-		{
-			uint token;
-			if (backingFieldCache.TryGetValue(corFunction, out token)) {
-				return token;
-			}
-			
-			ICorDebugCode corCode;
-			try {
-				corCode = corFunction.GetILCode();
-			} catch (COMException) {
-				backingFieldCache[corFunction] = 0;
-				return 0;
-			}
-			
-			if (corCode == null || corCode.IsIL() == 0 || corCode.GetSize() > 12) {
-				backingFieldCache[corFunction] = 0;
-				return 0;
-			}
-			
-			List<byte> code = new List<byte>(corCode.GetCode());
-			
-			bool success =
-				(Read(code, 0x00) || true) &&                     // nop || nothing
-				(Read(code, 0x02, 0x7B) || Read(code, 0x7E)) &&   // ldarg.0; ldfld || ldsfld
-				ReadToken(code, ref token) &&                     //   <field token>
-				(Read(code, 0x0A, 0x2B, 0x00, 0x06) || true) &&   // stloc.0; br.s; offset+00; ldloc.0 || nothing
-				Read(code, 0x2A);                                 // ret
-			
-			if (!success) {
-				backingFieldCache[corFunction] = 0;
-				return 0;
-			}
-			
-			backingFieldCache[corFunction] = token;
-			return token;
-		}
-		
-		// Read expected sequence of bytes
-		static bool Read(List<byte> code, params byte[] expected)
-		{
-			if (code.Count < expected.Length)
-				return false;
-			for(int i = 0; i < expected.Length; i++) {
-				if (code[i] != expected[i])
-					return false;
-			}
-			code.RemoveRange(0, expected.Length);
-			return true;
-		}
-		
-		// Read field token
-		static bool ReadToken(List<byte> code, ref uint token)
-		{
-			if (code.Count < 4)
-				return false;
-			if (code[3] != 0x04) // field token
-				return false;
-			token = ((uint)code[0]) + ((uint)code[1] << 8) + ((uint)code[2] << 16) + ((uint)code[3] << 24);
-			code.RemoveRange(0, 4);
-			return true;
 		}
 	}
 }

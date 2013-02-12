@@ -202,7 +202,7 @@ namespace Debugger.Tests
 			
 			debugger.Options = new Options();
 			debugger.Options.EnableJustMyCode = true;
-			debugger.Options.StepOverNoSymbols = true;
+			debugger.Options.SuppressJITOptimization = true;
 			debugger.Options.StepOverDebuggerAttributes = true;
 			debugger.Options.StepOverAllProperties = false;
 			debugger.Options.StepOverFieldAccessProperties = true;

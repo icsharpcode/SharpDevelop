@@ -30,7 +30,8 @@ namespace Debugger.AddIn.Options
 		public override bool SaveOptions()
 		{
 			bool result = base.SaveOptions();
-			DebuggingOptions.ResetStatus(proc => proc.Debugger.ResetJustMyCodeStatus());
+			if (WindowsDebugger.CurrentDebugger != null)
+				WindowsDebugger.CurrentDebugger.ReloadOptions();
 			return result;
 		}
 	}

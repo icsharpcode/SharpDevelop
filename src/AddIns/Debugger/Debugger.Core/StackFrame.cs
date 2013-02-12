@@ -20,8 +20,6 @@ namespace Debugger
 		ICorDebugILFrame  corILFrame;
 		long              corILFramePauseSession;
 		
-		List<LocalVariable> localVariables;
-		
 		/// <summary> The process in which this stack frame is executed </summary>
 		public AppDomain AppDomain { get; private set; }
 		
@@ -42,13 +40,6 @@ namespace Debugger
 		public IMethod MethodInfo { get; private set; }
 		
 		internal ICorDebugFunction CorFunction { get; private set; }
-		
-		/// <summary> True if the stack frame has symbols defined. </summary>
-		public bool HasSymbols {
-			get {
-				return this.Module.SymbolSource.HasSymbols(this.MethodInfo);
-			}
-		}
 		
 		/// <summary> Returns true if this instance can not be used any more. </summary>
 		public bool IsInvalid {
@@ -154,11 +145,12 @@ namespace Debugger
 		void AsyncStep(bool stepIn)
 		{
 			List<ILRange> stepRanges = new List<ILRange>();
-			var seq = this.Module.SymbolSource.GetSequencePoint(this.MethodInfo, this.IP);
+			var symbolSource = this.Process.GetSymbolSource(this.MethodInfo);
+			var seq = symbolSource.GetSequencePoint(this.MethodInfo, this.IP);
 			if (seq != null) {
 				Process.TraceMessage("Step over: {0} IL:{1}", seq, string.Join(" ", seq.ILRanges));
 				stepRanges.AddRange(seq.ILRanges);
-				stepRanges.AddRange(this.Module.SymbolSource.GetIgnoredILRanges(this.MethodInfo));
+				stepRanges.AddRange(symbolSource.GetIgnoredILRanges(this.MethodInfo));
 			}
 			
 			// Remove overlapping and connected ranges
@@ -196,7 +188,8 @@ namespace Debugger
 		/// </summary>
 		public SequencePoint NextStatement {
 			get {
-				return this.Module.SymbolSource.GetSequencePoint(this.MethodInfo, this.IP);
+				var symbolSource = this.Process.GetSymbolSource(this.MethodInfo);
+				return symbolSource.GetSequencePoint(this.MethodInfo, this.IP);
 			}
 		}
 		
@@ -204,21 +197,23 @@ namespace Debugger
 		{
 			this.Process.AssertPaused();
 			
-			var seq = this.Module.SymbolSource.GetSequencePoint(this.Module, filename, line, column);
-			if (seq != null && seq.MethodDefToken == this.MethodInfo.GetMetadataToken()) {
-				try {
-					if (dryRun) {
-						CorILFrame.CanSetIP((uint)seq.ILOffset);
-					} else {
-						CorILFrame.SetIP((uint)seq.ILOffset);
-						// Invalidates all frames and chains for the current thread
-						this.Process.NotifyResumed(DebuggeeStateAction.Keep);
-						this.Process.NotifyPaused();
+			foreach(var symbolSource in this.Process.Debugger.SymbolSources) {
+				var seq = symbolSource.GetSequencePoint(this.Module, filename, line, column);
+				if (seq != null && seq.MethodDefToken == this.MethodInfo.GetMetadataToken()) {
+					try {
+						if (dryRun) {
+							CorILFrame.CanSetIP((uint)seq.ILOffset);
+						} else {
+							CorILFrame.SetIP((uint)seq.ILOffset);
+							// Invalidates all frames and chains for the current thread
+							this.Process.NotifyResumed(DebuggeeStateAction.Keep);
+							this.Process.NotifyPaused();
+						}
+					} catch {
+						return false;
 					}
-				} catch {
-					return false;
+					return true;
 				}
-				return true;
 			}
 			return false;
 		}
@@ -320,11 +315,9 @@ namespace Debugger
 		/// <summary> Get all local variables </summary>
 		public IEnumerable<LocalVariable> GetLocalVariables()
 		{
-			// Note that the user might load symbols later
-			if (localVariables == null) {
-				localVariables = LocalVariable.GetLocalVariables(this.MethodInfo);
-			}
-			return localVariables ?? new List<LocalVariable>();
+			// TODO: This needs caching, however, note that the symbols might be chaning
+			var symbolSource = this.Process.GetSymbolSource(this.MethodInfo);
+			return LocalVariable.GetLocalVariables(symbolSource, this.MethodInfo);
 		}
 		
 		/// <summary> Get local variables valid at the given IL offset </summary>
@@ -347,25 +340,18 @@ namespace Debugger
 		public bool IsNonUserCode {
 			get {
 				Options opt = this.Process.Options;
+				var symbolSource = this.Process.GetSymbolSource(this.MethodInfo);
 				
-				if (opt.StepOverNoSymbols) {
-					if (!this.Module.SymbolSource.HasSymbols(this.MethodInfo)) return true;
-				}
-				if (opt.StepOverDebuggerAttributes) {
-					string[] debuggerAttributes = {
-						typeof(System.Diagnostics.DebuggerStepThroughAttribute).FullName,
-						typeof(System.Diagnostics.DebuggerNonUserCodeAttribute).FullName,
-						typeof(System.Diagnostics.DebuggerHiddenAttribute).FullName
-					};
-					if (this.MethodInfo.Attributes.Any(a => debuggerAttributes.Contains(a.AttributeType.FullName))) return true;
-					if (this.MethodInfo.DeclaringType.GetDefinition().Attributes.Any(a => debuggerAttributes.Contains(a.AttributeType.FullName))) return true;
-				}
-				if (opt.StepOverAllProperties) {
-					if (this.MethodInfo.IsAccessor) return true;
-				}
-				if (opt.StepOverFieldAccessProperties) {
-					if (this.MethodInfo.IsAccessor && this.Module.GetBackingFieldToken(this.CorFunction) != 0) return true;
-				}
+				if (!symbolSource.Handles(this.MethodInfo))
+					return true;
+				if (symbolSource.IsCompilerGenerated(this.MethodInfo))
+					return true;
+				if (opt.StepOverDebuggerAttributes && this.MethodInfo.HasStepOverAttribute())
+					return true;
+				if (opt.StepOverAllProperties && this.MethodInfo.IsAccessor)
+					return true;
+				if (opt.StepOverFieldAccessProperties && this.MethodInfo.IsAccessor && this.MethodInfo.GetBackingFieldToken() != 0)
+					return true;
 				return false;
 			}
 		}
