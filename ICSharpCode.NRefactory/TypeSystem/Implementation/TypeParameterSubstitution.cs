@@ -148,7 +148,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public override IType VisitTypeParameter(ITypeParameter type)
 		{
 			int index = type.Index;
+
 			if (classTypeArguments != null && type.OwnerType == EntityType.TypeDefinition) {
+				// Don't substitute type parameters that are part of the type arguments.
+				if (classTypeArguments.Contains (type))
+					return type;
 				if (index >= 0 && index < classTypeArguments.Count)
 					return classTypeArguments[index];
 				else
