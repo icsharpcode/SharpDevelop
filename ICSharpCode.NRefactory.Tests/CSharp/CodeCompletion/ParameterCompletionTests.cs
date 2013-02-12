@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 	[TestFixture()]
 	public class ParameterCompletionTests : TestBase
 	{
-		class TestFactory : IParameterCompletionDataFactory
+		internal class TestFactory : IParameterCompletionDataFactory
 		{
 			IProjectContent ctx;
 			
@@ -295,7 +295,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				cursorPosition = endPos - 1; 
 			}
 			var doc = new ReadOnlyDocument(editorText);
-			
+
 			IProjectContent pctx = new CSharpProjectContent();
 			pctx = pctx.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			
