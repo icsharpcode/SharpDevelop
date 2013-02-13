@@ -96,6 +96,11 @@ namespace ICSharpCode.AddInManager2.Model
 			_packageManager.ExecuteOperation(operation);
 		}
 		
+		public string GetLocalPackageDirectory(IPackage package)
+		{
+			return Path.Combine(PackageOutputDirectory, package.Id + "." + package.Version.Version.ToString());
+		}
+		
 		private IPackageManager EnsurePackageManagerInstance()
 		{
 			if (_packageManager != null)
@@ -110,7 +115,7 @@ namespace ICSharpCode.AddInManager2.Model
 			}
 
 			// Create new package manager instance
-			_packageManager = new NuGetPackageManagerImplementation(_repositories.AllRegistered, _packageOutputDirectory);
+			_packageManager = new NuGetPackageManagerImplementation(_repositories.AllRegistered, _packageOutputDirectory, this);
 			_packageManager.PackageInstalled += _packageEvents_NuGetPackageInstalled;
 			_packageManager.PackageUninstalled += _packageEvents_NuGetPackageUninstalled;
 			return _packageManager;
@@ -136,15 +141,29 @@ namespace ICSharpCode.AddInManager2.Model
 		
 		private class NuGetPackageManagerImplementation : PackageManager
 		{
-			public NuGetPackageManagerImplementation(IPackageRepository sourceRepository, string path)
+			private INuGetPackageManager _internalPackageManager;
+			
+			public NuGetPackageManagerImplementation(IPackageRepository sourceRepository, string path, INuGetPackageManager internalPackageManager)
 				: base(sourceRepository, path)
 			{
+				_internalPackageManager = internalPackageManager;
 			}
 			
 			public void ExecuteOperation(PackageOperation operation)
 			{
 				// Allow to call this method from outside of the class
 				base.Execute(operation);
+			}
+			
+			public override void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies)
+			{
+				base.UninstallPackage(package, forceRemove, removeDependencies);
+				string localPackageDirectory = _internalPackageManager.GetLocalPackageDirectory(package);
+				if (Directory.Exists(localPackageDirectory))
+				{
+					// Directory still exists after removing the package -> try to delete it explicitly
+					Directory.Delete(localPackageDirectory, true);
+				}
 			}
 		}
 	}

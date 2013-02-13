@@ -73,5 +73,16 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
        		get;
        		set;
        	}
+       	
+       	public string LocalPackageDirectory
+       	{
+       		get;
+       		set;
+       	}
+    	
+		public string GetLocalPackageDirectory(IPackage package)
+		{
+			return LocalPackageDirectory;
+		}
     }
 }

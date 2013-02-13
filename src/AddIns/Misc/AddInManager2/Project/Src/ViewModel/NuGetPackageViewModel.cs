@@ -411,9 +411,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 				if (IsPackageInstalled())
 				{
 					// Package is already installed, but seems to be not registered as SD AddIn
-					string assumedPackageOutputDir =
-						Path.Combine(AddInManager.NuGet.PackageOutputDirectory, _package.Id + "." + _package.Version.Version.ToString());
-					AddInManager.Setup.InstallAddIn(_package, assumedPackageOutputDir);
+					AddInManager.Setup.InstallAddIn(_package, AddInManager.NuGet.GetLocalPackageDirectory(_package));
 				}
 				else
 				{

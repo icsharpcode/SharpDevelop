@@ -19,5 +19,6 @@ namespace ICSharpCode.AddInManager2.Model
 		}
 		IPackageOperationResolver CreateInstallPackageOperationResolver(bool allowPrereleaseVersions);
 		void ExecuteOperation(PackageOperation operation);
+		string GetLocalPackageDirectory(IPackage package);
 	}
 }
