@@ -196,12 +196,18 @@ namespace ICSharpCode.Core.Presentation
 			
 			object instance = isStatic ? null : FetchInstance(propertyDeclaringType);
 			if (propertyInfo is PropertyInfo) {
-				(propertyInfo as PropertyInfo).SetValue(instance, value, null);
+				// Set only if the value is different from current value or default
+				if (!(propertyInfo as PropertyInfo).GetValue(instance, null).Equals(value)) {
+					(propertyInfo as PropertyInfo).SetValue(instance, value, null);
+				}
 				return true;
 			}
 			
 			if (propertyInfo is FieldInfo) {
-				(propertyInfo as FieldInfo).SetValue(instance, value);
+				// Set only if the value is different from current value or default
+				if (!(propertyInfo as FieldInfo).GetValue(instance).Equals(value)) {
+					(propertyInfo as FieldInfo).SetValue(instance, value);
+				}
 				return true;
 			}
 			
