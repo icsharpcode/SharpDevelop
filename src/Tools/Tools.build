@@ -57,6 +57,11 @@
 		<Exec Command="UpdateAssemblyInfo.exe --REVISION" WorkingDirectory = "UpdateAssemblyInfo\bin\Debug" Timeout = "60000" Condition = " '$(BranchName)' == '' "/>
 	</Target>
 	
+	<Target Name="PrepareXcopyZip">
+		<MSBuild Projects="ZipFromMsi\ZipFromMsi.csproj" Targets="Build" Properties="Configuration=Debug"/>
+		<Exec Command="ZipFromMsi.exe" WorkingDirectory = "ZipFromMsi\bin\Debug" Timeout = "60000" />
+	</Target>
+	
 	<ItemGroup>
 		<CleanupFiles Include="..\..\bin\*"/>
 		<CleanupFiles Include="..\Main\GlobalAssemblyInfo.cs"/>

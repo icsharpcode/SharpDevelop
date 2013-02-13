@@ -17,7 +17,7 @@ namespace ZipFromMsi
         private const string ElementNameComponent = "Component";
         private const string ElementNameFile = "File";
 
-        // TODO: Promote to parameters / app-computed local variables
+        // NOTE: App has to be started in bin\Debug working directory, otherwise those paths don't work
         private const string WxsFilename = "../../../../Setup/Files.wxs";
         public static string RelativePathToolToSetupFolder = "..\\..\\..\\";
 
@@ -27,12 +27,7 @@ namespace ZipFromMsi
 
         static void Main(string[] args)
         {
-            // TODO: Pass name of zip file 
-            // TODO: Auto-detect relative path (maybe see UpdateAssemblyInfo)
-
-            string zipFileName = DateTime.Now.Ticks.ToString() + ".Standalone.zip";
-
-            CreateZip(zipFileName, LoadWxsFile(WxsFilename));
+            CreateZip("SharpDevelopStandalone.zip", LoadWxsFile(WxsFilename));
         }
 
         static void CreateZip(string zipFileName, XDocument doc)
