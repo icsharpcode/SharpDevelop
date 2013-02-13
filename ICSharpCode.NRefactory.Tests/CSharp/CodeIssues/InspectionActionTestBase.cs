@@ -47,6 +47,12 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		{
 			using (var script = ctx.StartScript ())
 				issue.Actions[fixIndex].Run (script);
+			if (expectedOutput != ctx.Text) {
+				Console.WriteLine("expected:");
+				Console.WriteLine(expectedOutput);
+				Console.WriteLine("got:");
+				Console.WriteLine(ctx.Text);
+			}
 			Assert.AreEqual (expectedOutput, ctx.Text);
 		}
 
