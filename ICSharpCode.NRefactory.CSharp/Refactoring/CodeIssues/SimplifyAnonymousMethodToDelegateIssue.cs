@@ -70,6 +70,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 
 				var lambdaParameters = lambdaExpression.Parameters.ToList();
+				if (lambdaParameters.Count != invocation.Arguments.Count)
+					return;
 				int i = 0;
 				foreach (var param in invocation.Arguments) {
 					var id = param as IdentifierExpression;
@@ -95,6 +97,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 
 				var lambdaParameters = anonymousMethodExpression.Parameters.ToList();
+				if (lambdaParameters.Count != invocation.Arguments.Count)
+					return;
 				int i = 0;
 				foreach (var param in invocation.Arguments) {
 					var id = param as IdentifierExpression;
