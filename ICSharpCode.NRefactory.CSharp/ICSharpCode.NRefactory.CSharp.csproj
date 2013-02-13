@@ -513,6 +513,7 @@
     <Compile Include="Resolver\AliasTypeResolveResult.cs" />
     <Compile Include="Resolver\AliasNamespaceResolveResult.cs" />
     <Compile Include="Resolver\ReducedExtensionMethod.cs" />
+    <Compile Include="Refactoring\CodeIssues\SimplifyAnonymousMethodToDelegateIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
