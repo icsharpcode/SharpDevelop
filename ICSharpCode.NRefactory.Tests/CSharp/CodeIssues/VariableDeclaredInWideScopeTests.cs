@@ -187,7 +187,7 @@ class A
 		public void IfElseIf()
 		{
 			TestStatements(@"
-		int val = GetValue ();
+		int val = 12;
 		if (condition) {
 			int val2 = GetValue ();
 			Console.WriteLine(val2);
@@ -199,7 +199,7 @@ class A
 			int val2 = GetValue ();
 			Console.WriteLine(val2);
 		} else if (!condition) {
-			int val = GetValue ();
+			int val = 12;
 			Console.WriteLine(val);
 		}
 ");
@@ -303,57 +303,17 @@ class A
 		}
 		
 		[Test]
-		public void SuggestsMovingMethodCallInitializer ()
-		{	
-				TestStatements(@"
-		int j = GetValue ();
-		if (true) {
-			Console.WriteLine(j);
-		}
-", 1, @"
-		if (true) {
-			int j = GetValue ();
-			Console.WriteLine(j);
-		}
-");
-		}
-
-		[Test]
-		public void DoesNotReorderMethodCalls ()
-		{	
-			TestStatements(@"
-		int k = GetValue ();
-		if (b > 3) {
-			if (a < 2) {
-				// This should block any move past this point
-				SetValue (2);
-			}
-			Console.WriteLine(k);
-		}
-", 1, @"
-		if (b > 3) {
-			int k = GetValue ();
-			if (a < 2) {
-				// This should block any move past this point
-				SetValue (2);
-			}
-			Console.WriteLine(k);
-		}
-");
-		}
-		
-		[Test]
 		public void CommonParentStatement ()
 		{	
 			TestStatements(@"
-		int k = GetValue ();
+		int k = 12;
 		{
 			SetValue (k);
 			SetValue (k);
 		}
 ", 1, @"
 		{
-			int k = GetValue ();
+			int k = 12;
 			SetValue (k);
 			SetValue (k);
 		}
@@ -364,7 +324,7 @@ class A
 		public void CaseTarget ()
 		{	
 			TestStatements(@"
-		int j = GetValue ();
+		int j = 12;
 		switch (a) {
 		case 2:
 			SetValue (j + 1);
@@ -373,7 +333,7 @@ class A
 ", 1, @"
 		switch (a) {
 		case 2:
-			int j = GetValue ();
+			int j = 12;
 			SetValue (j + 1);
 			break;
 		}
@@ -395,14 +355,14 @@ class A
 		public void DoesNotExpandForStatement ()
 		{	
 			TestStatements(@"
-		var val = GetValue ();
+		var val = 12;
 		if (false) {
 			for (var i = GetValue (); ; i++)
 				System.Console.WriteLine (val);
 		}
 ", 1, @"
 		if (false) {
-			var val = GetValue ();
+			var val = 12;
 			for (var i = GetValue (); ; i++)
 				System.Console.WriteLine (val);
 		}
@@ -453,6 +413,18 @@ class A
 			Assert.AreEqual(0, issues.Count);
 		}
 
+		
+		[Test]
+		public void DoesNotSuggestMovingMethodCallInitializer()
+		{
+			// Method calls can have side effects therefore it's generally not possible to move them.
+			TestStatements(@"
+		int val = GetValue ();
+		if (true) {
+			System.Console.WriteLine(val);
+		}
+");
+		}
 
 
 	}
