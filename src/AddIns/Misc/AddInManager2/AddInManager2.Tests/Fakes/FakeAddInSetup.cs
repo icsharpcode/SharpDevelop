@@ -91,5 +91,10 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
         {
             throw new NotImplementedException();
         }
+    	
+		public int CompareAddInToPackageVersion(ICSharpCode.Core.AddIn addIn, NuGet.IPackage nuGetPackage)
+		{
+			throw new NotImplementedException();
+		}
     }
 }

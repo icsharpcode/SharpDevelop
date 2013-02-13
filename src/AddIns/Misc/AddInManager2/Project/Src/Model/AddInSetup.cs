@@ -18,8 +18,6 @@ namespace ICSharpCode.AddInManager2.Model
 	/// </summary>
 	public class AddInSetup : IAddInSetup
 	{
-		private const string NuGetPackageIDManifestAttribute = "__nuGetPackageID";
-		
 		private IAddInManagerEvents _events = null;
 		private INuGetPackageManager _nuGet = null;
 		private ISDAddInManagement _sdAddInManagement = null;
@@ -311,10 +309,10 @@ namespace ICSharpCode.AddInManager2.Model
 					SD.Log.DebugFormatted("[AddInManager2] AddIn's manifest states no identity.");
 				}
 				
-				if (addIn.Properties.Contains(NuGetPackageIDManifestAttribute))
+				if (addIn.Properties.Contains(ManagedAddIn.NuGetPackageIDManifestAttribute))
 				{
 					SD.Log.DebugFormatted("[AddInManager2] AddIn's manifest states NuGet ID '{0}'",
-					                      addIn.Properties[NuGetPackageIDManifestAttribute]);
+					                      addIn.Properties[ManagedAddIn.NuGetPackageIDManifestAttribute]);
 				}
 				else
 				{
@@ -361,10 +359,16 @@ namespace ICSharpCode.AddInManager2.Model
 				XmlDocument addInManifestDoc = new XmlDocument();
 				addInManifestDoc.Load(addInManifestFile);
 				
-				// Set our special attribute in root
-				XmlAttribute nuGetPackageIDAttribute = addInManifestDoc.CreateAttribute(NuGetPackageIDManifestAttribute);
+				// Set our special attributes in root
+				XmlAttribute nuGetPackageIDAttribute = addInManifestDoc.CreateAttribute(ManagedAddIn.NuGetPackageIDManifestAttribute);
 				nuGetPackageIDAttribute.Value = package.Id;
 				addInManifestDoc.DocumentElement.Attributes.Append(nuGetPackageIDAttribute);
+				if (package.Version != null)
+				{
+					XmlAttribute nuGetPackageVersionAttribute = addInManifestDoc.CreateAttribute(ManagedAddIn.NuGetPackageVersionManifestAttribute);
+					nuGetPackageVersionAttribute.Value = package.Version.Version.ToString();
+					addInManifestDoc.DocumentElement.Attributes.Append(nuGetPackageVersionAttribute);
+				}
 				addInManifestDoc.Save(addInManifestFile);
 				
 				return true;
@@ -642,9 +646,9 @@ namespace ICSharpCode.AddInManager2.Model
 			
 			IPackage package = null;
 			string nuGetPackageID = null;
-			if (addIn.Properties.Contains(NuGetPackageIDManifestAttribute))
+			if (addIn.Properties.Contains(ManagedAddIn.NuGetPackageIDManifestAttribute))
 			{
-				nuGetPackageID = addIn.Properties[NuGetPackageIDManifestAttribute];
+				nuGetPackageID = addIn.Properties[ManagedAddIn.NuGetPackageIDManifestAttribute];
 			}
 			string primaryIdentity = null;
 			if (addIn.Manifest != null)
@@ -696,7 +700,8 @@ namespace ICSharpCode.AddInManager2.Model
 			
 			AddIn foundAddIn = _sdAddInManagement.AddIns.Where(
 				a => ((a.Manifest != null) && (a.Manifest.PrimaryIdentity == package.Id))
-				|| (a.Properties.Contains(NuGetPackageIDManifestAttribute) && (a.Properties[NuGetPackageIDManifestAttribute] == package.Id)))
+				|| (a.Properties.Contains(ManagedAddIn.NuGetPackageIDManifestAttribute)
+				    && (a.Properties[ManagedAddIn.NuGetPackageIDManifestAttribute] == package.Id)))
 				.FirstOrDefault();
 			
 			return foundAddIn;
@@ -711,7 +716,8 @@ namespace ICSharpCode.AddInManager2.Model
 			
 			ManagedAddIn foundAddIn = AddInsWithMarkedForInstallation.Where(
 				a => ((a.AddIn.Manifest != null) && (a.AddIn.Manifest.PrimaryIdentity == package.Id))
-				|| (a.AddIn.Properties.Contains(NuGetPackageIDManifestAttribute) && (a.AddIn.Properties[NuGetPackageIDManifestAttribute] == package.Id)))
+				|| (a.AddIn.Properties.Contains(ManagedAddIn.NuGetPackageIDManifestAttribute)
+				    && (a.AddIn.Properties[ManagedAddIn.NuGetPackageIDManifestAttribute] == package.Id)))
 				.FirstOrDefault();
 			
 			return (foundAddIn != null) ? foundAddIn.AddIn : null;
@@ -729,6 +735,45 @@ namespace ICSharpCode.AddInManager2.Model
 			}
 			
 			return null;
+		}
+		
+		public int CompareAddInToPackageVersion(AddIn addIn, IPackage nuGetPackage)
+		{
+			if ((addIn == null) || (nuGetPackage == null))
+			{
+				// Consider this as equal (?)
+				return 0;
+			}
+			
+			// Look if AddIn has a NuGet version tag in manifest
+			Version addInVersion = addIn.Version;
+			if (addIn.Properties.Contains(ManagedAddIn.NuGetPackageVersionManifestAttribute))
+			{
+				try
+				{
+					addInVersion = new Version(addIn.Properties[ManagedAddIn.NuGetPackageVersionManifestAttribute]);
+				}
+				catch (Exception)
+				{
+					addInVersion = addIn.Version;
+				}
+			}
+			
+			if (addInVersion == null)
+			{
+				if (nuGetPackage == null)
+				{
+					// Both versions are null -> equal
+					return 0;
+				}
+				else
+				{
+					// Non-null version is greater
+					return -1;
+				}
+			}
+			
+			return addIn.Version.CompareTo(nuGetPackage.Version.Version);
 		}
 		
 		public void RemoveUnreferencedNuGetPackages()

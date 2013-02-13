@@ -26,6 +26,7 @@ namespace ICSharpCode.AddInManager2.Model
 		AddIn GetInstalledAddInByIdentity(string identity);
 		bool IsAddInInstalled(AddIn addIn);
 		bool IsAddInPreinstalled(AddIn addin);
+		int CompareAddInToPackageVersion(AddIn addIn, IPackage nuGetPackage);
 		IPackage GetNuGetPackageForAddIn(AddIn addIn, bool getLatest);
 		AddIn GetAddInForNuGetPackage(IPackage package);
 		AddIn GetAddInForNuGetPackage(IPackage package, bool withAddInsMarkedForInstallation);

@@ -17,6 +17,9 @@ namespace ICSharpCode.AddInManager2.Model
 	/// </summary>
 	public class ManagedAddIn
 	{
+		public const string NuGetPackageIDManifestAttribute = "__nuGetPackageID";
+		public const string NuGetPackageVersionManifestAttribute = "__nuGetPackageVersion";
+		
 		private AddIn _addIn;
 		
 		public ManagedAddIn(AddIn addIn)
@@ -54,6 +57,38 @@ namespace ICSharpCode.AddInManager2.Model
 			get
 			{
 				return _addIn;
+			}
+		}
+		
+		public string LinkedNuGetPackageID
+		{
+			get
+			{
+				if (_addIn != null)
+				{
+					if (_addIn.Properties.Contains(NuGetPackageIDManifestAttribute))
+					{
+						return _addIn.Properties[NuGetPackageIDManifestAttribute];
+					}
+				}
+				
+				return null;
+			}
+		}
+		
+		public string LinkedNuGetPackageVersion
+		{
+			get
+			{
+				if (_addIn != null)
+				{
+					if (_addIn.Properties.Contains(NuGetPackageVersionManifestAttribute))
+					{
+						return _addIn.Properties[NuGetPackageVersionManifestAttribute];
+					}
+				}
+				
+				return null;
 			}
 		}
 	}

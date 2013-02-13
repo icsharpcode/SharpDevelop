@@ -114,7 +114,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 				
 				return (installedAddIn != null)
 					&& AddInManager.Setup.IsAddInInstalled(installedAddIn)
-					&& (installedAddIn.Version < _package.Version.Version);
+					&& (AddInManager.Setup.CompareAddInToPackageVersion(installedAddIn, _package) < 0);
 			}
 		}
 		

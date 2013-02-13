@@ -116,7 +116,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 					continue;
 				}
 				
-				string nuGetPackageID = addIn.AddIn.Properties["nuGetPackageID"];
+				string nuGetPackageID = addIn.LinkedNuGetPackageID;
 				if (!string.IsNullOrEmpty(nuGetPackageID))
 				{
 					if (nuGetPackageIDs.Contains(nuGetPackageID))
