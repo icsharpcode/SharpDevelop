@@ -83,10 +83,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (!returnStatement.Expression.IsNull) {
 					AddIssue(
 						returnStatement, 
-						ctx.TranslateString("Remove returned expression"),
-						script => {
-							script.Remove(returnStatement.Expression); 
-						}
+						string.Format (ctx.TranslateString("`{0}': A return keyword must not be followed by any expression when method returns void"), currentMethod.Name),
+						new CodeAction (
+							ctx.TranslateString("Remove returned expression"),
+							script => {
+								script.Remove(returnStatement.Expression); 
+							}
+						)
 					);
 				}
 			}
