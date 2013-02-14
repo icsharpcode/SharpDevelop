@@ -183,7 +183,6 @@ namespace ICSharpCode.AvalonEdit.Search
 			DataContext = this;
 			
 			renderer = new SearchResultBackgroundRenderer();
-			textArea.TextView.BackgroundRenderers.Add(renderer);
 			currentDocument = textArea.Document;
 			currentDocument.TextChanged += textArea_Document_TextChanged;
 			textArea.DocumentChanged += textArea_DocumentChanged;
