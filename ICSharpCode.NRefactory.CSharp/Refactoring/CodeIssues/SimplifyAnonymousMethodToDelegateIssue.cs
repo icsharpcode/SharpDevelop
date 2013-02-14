@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public GatherVisitor (BaseRefactoringContext ctx) : base (ctx)
 			{
 			}
-
+			
 			static Pattern pattern = new Choice {
 				new BlockStatement {
 					new ReturnStatement (new AnyNode ("invoke")) 

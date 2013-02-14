@@ -514,6 +514,7 @@
     <Compile Include="Resolver\AliasNamespaceResolveResult.cs" />
     <Compile Include="Resolver\ReducedExtensionMethod.cs" />
     <Compile Include="Refactoring\CodeIssues\SimplifyAnonymousMethodToDelegateIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\CompilerErrors\CS0127ReturnMustNotBeFollowedByAnyExpression.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -529,6 +530,7 @@
     <Folder Include="Refactoring\CodeActions\ExtractMethod\" />
     <Folder Include="Refactoring\CodeActions\ConvertToInitializer\" />
     <Folder Include="Refactoring\CodeIssues\FormatStringIssues\" />
+    <Folder Include="Refactoring\CodeIssues\CompilerErrors\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

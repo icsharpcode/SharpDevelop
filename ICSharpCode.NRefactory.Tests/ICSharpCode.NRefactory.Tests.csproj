@@ -392,6 +392,7 @@
     <Compile Include="CSharp\CodeActions\CreateEnumValueTests.cs" />
     <Compile Include="CSharp\CodeCompletion\GetCurrentParameterIndexTests.cs" />
     <Compile Include="CSharp\CodeIssues\SimplifyAnonymousMethodToDelegateIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\CS0127ReturnMustNotBeFollowedByAnyExpressionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">
