@@ -928,7 +928,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 				}
 			} else {
-				foreach (var arg in parameters) {
+				foreach (var arg in parameters.Skip (1)) {
 					if (arg.PrevSibling != null) {
 						if (methodCallArgumentWrapping == Wrapping.DoNotWrap) {
 							ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);

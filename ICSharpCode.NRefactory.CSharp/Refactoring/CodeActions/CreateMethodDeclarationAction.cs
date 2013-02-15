@@ -240,7 +240,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					nameCounter [name]++;
 					name += nameCounter [name].ToString();
 				}
-				var type = resolveResult.Type.Kind == TypeKind.Unknown ? new PrimitiveType("object") : context.CreateShortType(resolveResult.Type);
+				var type = resolveResult.Type.Kind == TypeKind.Unknown || resolveResult.Type.Kind == TypeKind.Null ? new PrimitiveType("object") : context.CreateShortType(resolveResult.Type);
 
 				yield return new ParameterDeclaration(type, name) { ParameterModifier = direction};
 			}
@@ -278,6 +278,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public static string CreateBaseName(AstNode node, IType type)
 		{
 			string name = null;
+			if (node is NullReferenceExpression)
+				return "o";
 			if (node is DirectionExpression)
 				node = ((DirectionExpression)node).Expression;
 			if (node is IdentifierExpression) {
