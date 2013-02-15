@@ -349,8 +349,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							if (nextCh == '/') {
 								i++;
 								IsInSingleComment = true;
+								IsInPreprocessorDirective = false;
 							}
-							if (nextCh == '*')
+							if (nextCh == '*' && !IsInPreprocessorDirective)
 								IsInMultiLineComment = true;
 							break;
 						case '*':

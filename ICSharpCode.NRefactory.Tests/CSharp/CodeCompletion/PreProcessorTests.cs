@@ -90,5 +90,16 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			provider = CodeCompletionBugTests.CreateProvider (@"$#if TRUE && $", true);
 			Assert.IsNotNull (provider.Find ("DEBUG"), "define 'DEBUG' not found.");
 		}	
+
+
+		/// <summary>
+		/// Bug 10294 - Comments in preprocessor directives are not handler correctly
+		/// </summary>
+		[Test]
+		public void TestBug10294 ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (@"$#if TRUE // D$",true);
+			Assert.IsTrue (provider == null || provider.Count == 0);
+		}
 	}
 }
