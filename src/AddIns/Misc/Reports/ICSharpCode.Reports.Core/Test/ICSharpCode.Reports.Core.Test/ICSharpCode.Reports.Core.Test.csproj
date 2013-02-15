@@ -81,6 +81,7 @@
     <Compile Include="DataManager\TableStragy\TableDataManagerFixture.cs" />
     <Compile Include="DataManager\TableStragy\TableStrategyFixture.cs" />
     <Compile Include="Globals\ServiceContainerFixture.cs" />
+    <Compile Include="Printing\FormattingFixture.cs" />
     <Compile Include="Printing\SectionBoundFixture.cs" />
     <Compile Include="Printing\Shapes\BaseLineFixture.cs" />
     <Compile Include="Printing\Shapes\EllipseShapeFixture.cs" />

@@ -107,38 +107,23 @@ namespace SimpleExpressionEvaluator.Utilities
 
         public static object EnsureType(object value,Type targetType,object nullValue)
         {
-            if (value == null)
-                return nullValue;
-            
-            if (targetType == typeof(object))
-                return value;
+        	if (value == null)
+        		return nullValue;
+        	
+        	if (targetType == typeof(object))
+        		return value;
 
-            if (value.GetType() == targetType)
-                return value;
+        	if (value.GetType() == targetType)
+        		return value;
 
-            /*
-            TypeConverter converter = TypeDescriptor.GetConverter(targetType);
-            if (converter != null && converter.CanConvertFrom(value.GetType()))
-            {
-            	return converter.ConvertFrom(value);
-            }
-            
-            try
-            {
-                return Convert.ChangeType(value, targetType);
-            }
-            catch e
-            { }
-            */
-           try {
-           	return Convert.ChangeType(value, targetType);
-           } catch (Exception e) {
-           	
-           	Console.WriteLine("TypeNormalizer {0} - {1}",value.ToString(),e.Message);
-           	return value.ToString();
-//throw new Exception(String.Format("TypeNormalizer for  <{0}> - {1}",value.ToString(),e.Message));
-           }
-//            return nullValue;
+        	try {
+        		return Convert.ChangeType(value, targetType);
+        	} catch (Exception e) {
+        		
+        		Console.WriteLine("TypeNormalizer {0} - {1}",value.ToString(),e.Message);
+        		return value.ToString();
+        		//throw new Exception()String.Format("TypeNormalizer for  <{0}> - {1}",value.ToString(),e.Message));
+        	}
         }
     }
 }

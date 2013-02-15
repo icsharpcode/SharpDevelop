@@ -18,28 +18,26 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 	internal static class StandardFormatter
 	{
 		
-		
 		public static string FormatOutput(string valueToFormat,string format,
 		                                     string dataType, string nullValue )
 		{
-			TypeCode typeCode = TypeHelpers.TypeCodeFromString(dataType);
-			return FormatItem(valueToFormat,format,typeCode,nullValue);                                    
-		}
-		
-		
-		public static string FormatItem (string valueToFormat,string format,
-		                         TypeCode typeCode,string nullValue)
-		{
-			string retValue = String.Empty;
-			
 			if (String.IsNullOrEmpty(format)) {
-				retValue = valueToFormat;
-				return retValue;
+				return valueToFormat;
 			}
 			
 			if (String.IsNullOrEmpty(valueToFormat)) {
 				return nullValue;
 			}
+			
+			TypeCode typeCode = TypeHelpers.TypeCodeFromString(dataType);
+			return FormatItem(valueToFormat,format,typeCode,nullValue);                                    
+		}
+		
+		
+		private static string FormatItem (string valueToFormat,string format,
+		                         TypeCode typeCode,string nullValue)
+		{
+			string retValue = String.Empty;
 			
 			switch (typeCode) {
 				case TypeCode.Int16:
@@ -123,23 +121,29 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			return str;
 		}
 		
+//		http://stackoverflow.com/questions/4710455/i-need-code-to-validate-any-time-in-c-sharp-in-hhmmss-format
 		
 		private static string FormatDate(string toFormat, string format)
 		{
-			try {
-				DateTime date = DateTime.Parse (toFormat.Trim(),
-				                                CultureInfo.CurrentCulture.DateTimeFormat);
+			DateTime date;
+			if (DateTime.TryParse(toFormat, out date))
+			{
 				string str = date.ToString(format,
 				                           DateTimeFormatInfo.CurrentInfo);
-				
 				return str.Trim();
-			} catch (System.FormatException ) {
-//					string s = String.Format("< {0} > {1}",toFormat,e.Message);
-//					System.Console.WriteLine("\t\tDateValue {0}",s);
 			}
-			
-			return toFormat.Trim();
+
+			TimeSpan time;
+			bool valid = TimeSpan.TryParseExact(toFormat,
+			                                    "g",
+			                                    CultureInfo.CurrentCulture,
+			                                    out time);
+			if (valid) {
+				return time.ToString("g");
+			}
+			return toFormat;
 		}
+		
 		
 		private static bool CheckValue (string toFormat)
 		{
