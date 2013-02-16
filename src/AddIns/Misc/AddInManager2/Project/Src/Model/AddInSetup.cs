@@ -545,9 +545,9 @@ namespace ICSharpCode.AddInManager2.Model
 								// TODO Throw something?
 							}
 						}
-						
-						_sdAddInManagement.RemoveUserAddInOnNextStart(identity);
 					}
+					
+					_sdAddInManagement.RemoveUserAddInOnNextStart(identity);
 				}
 				
 				// Successfully uninstalled
