@@ -603,5 +603,97 @@ namespace ICSharpCode.AddInManager2.Tests
 			Assert.That(addInUninstalledEventReceived, Is.False, "AddInUninstalled event sent with correct AddIn");
 			Assert.That(nuGetPackageUninstalled, Is.False, "Downloaded NuGet package should be uninstalled.");
 		}
+		
+		[Test, Description("External AddIn must be uninstalled. Pending uninstallation must be cancellable.")]
+		public void UninstallValidAddInFromManifestAndCancel()
+		{
+			CreateAddIns();
+
+			// Prepare all (fake) services needed for AddInSetup and its instance, itself
+			PrepareAddInSetup();
+			
+			// Prepare event handlers
+			bool addInUninstalledEventReceived = false;
+			_events.AddInUninstalled += delegate(object sender, AddInInstallationEventArgs e)
+			{
+				if (e.AddIn.Manifest.PrimaryIdentity == _addIn1.Manifest.PrimaryIdentity)
+				{
+					addInUninstalledEventReceived = true;
+				}
+			};
+			
+			// Simulate an installed external AddIn
+			_sdAddInManagement.TempInstallDirectory = "";
+			_sdAddInManagement.UserInstallDirectory = "";
+			_sdAddInManagement.RegisteredAddIns.Add(_addIn1);
+			
+			// Remove the AddIn
+			_addInSetup.UninstallAddIn(_addIn1);
+			
+			Assert.That(_sdAddInManagement.RemovedExternalAddIns, Contains.Item(_addIn1), "AddIn must have been removed from external AddIns list.");
+			Assert.That(_sdAddInManagement.AddInsMarkedForRemoval, Contains.Item(_addIn1.Manifest.PrimaryIdentity), "AddIn must have been marked for removal on next startup.");
+			
+			Assert.That(addInUninstalledEventReceived, "AddInUninstalled event sent with correct AddIn");
+			
+			// Cancel the uninstallation
+			_addInSetup.CancelUninstallation(_addIn1);
+			
+			// Check if uninstallation has been reverted
+			Assert.That(_sdAddInManagement.AddInsMarkedForRemoval.Contains(_addIn1.Manifest.PrimaryIdentity), Is.False, "AddIn must not be marked for removal any more.");
+		}
+		
+		[Test, Description("AddIn installed from a NuGet package must be uninstalled.")]
+		public void UninstallValidNuGetAddIn()
+		{
+			CreateAddIns();
+			
+			// Create a fake package
+			FakePackage fakePackage = new FakePackage()
+			{
+				Id = _addIn1.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion(_addIn1.Version)
+			};
+
+			// Prepare all (fake) services needed for AddInSetup and its instance, itself
+			PrepareAddInSetup();
+			
+			// Prepare event handlers
+			bool addInUninstalledEventReceived = false;
+			_events.AddInUninstalled += delegate(object sender, AddInInstallationEventArgs e)
+			{
+				if (e.AddIn.Manifest.PrimaryIdentity == _addIn1.Manifest.PrimaryIdentity)
+				{
+					addInUninstalledEventReceived = true;
+				}
+			};
+			
+			// Simulate an installed AddIn
+			_sdAddInManagement.TempInstallDirectory = "";
+			_sdAddInManagement.UserInstallDirectory = "";
+			_sdAddInManagement.RegisteredAddIns.Add(_addIn1);
+			
+			// Simulate the installed NuGet package in local repository
+			FakeCorePackageRepository localRepository = new FakeCorePackageRepository();
+			_nuGet.FakeCorePackageManager.LocalRepository = localRepository;
+			localRepository.ReturnedPackages = (new IPackage[] { fakePackage }).AsQueryable();
+			bool nuGetPackageUninstalled = false;
+			_nuGet.FakeCorePackageManager.UninstallPackageCallback = delegate(IPackage package, bool forceRemove, bool removeDependencies)
+			{
+				if ((package == fakePackage) && forceRemove && !removeDependencies)
+				{
+					nuGetPackageUninstalled = true;
+				}
+			};
+			
+			// Remove the AddIn
+			_addInSetup.UninstallAddIn(_addIn1);
+			
+			Assert.That(addInUninstalledEventReceived, "AddInUninstalled event sent with correct AddIn");
+			
+			// Simulate removing unreferenced NuGet packages
+			_addInSetup.RemoveUnreferencedNuGetPackages();
+			
+			Assert.That(nuGetPackageUninstalled, Is.True, "NuGet package must be removed after restart.");
+		}
 	}
 }

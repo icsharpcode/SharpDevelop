@@ -69,7 +69,9 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AddInSetupTests.cs" />
+    <Compile Include="AvailableAddInsViewModelTests.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Fakes\FakeAddInManagerServices.cs" />
     <Compile Include="Fakes\FakeAddInSetup.cs" />
     <Compile Include="Fakes\FakeAddInTree.cs" />
     <Compile Include="Fakes\FakeCorePackageRepository.cs" />
@@ -80,7 +82,9 @@
     <Compile Include="Fakes\FakePackageRepositories.cs" />
     <Compile Include="Fakes\FakeAddInManagerSettings.cs" />
     <Compile Include="Fakes\FakeSDAddInManagement.cs" />
+    <Compile Include="InstalledAddInsViewModelTests.cs" />
     <Compile Include="PackageRepositoriesTests.cs" />
+    <Compile Include="UpdatedAddInsViewModelTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="TestResources" />
