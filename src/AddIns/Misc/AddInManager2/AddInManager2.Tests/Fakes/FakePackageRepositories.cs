@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NuGet;
 
 namespace ICSharpCode.AddInManager2.Tests.Fakes
 {
@@ -11,35 +12,38 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
     {
         public NuGet.IPackageRepository AllRegistered
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get;
+            set;
         }
 
         public IEnumerable<NuGet.PackageSource> RegisteredPackageSources
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get;
+            set;
         }
     	
 		public IEnumerable<NuGet.IPackageRepository> RegisteredPackageRepositories
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
+			get;
+			set;
 		}
     	
 		public NuGet.IPackageRepository GetRepositoryFromSource(NuGet.PackageSource packageSource)
 		{
-			throw new NotImplementedException();
+			if (GetRepositoryFromSourceCallback != null)
+			{
+				return GetRepositoryFromSourceCallback(packageSource);
+			}
+			else
+			{
+				return null;
+			}
+		}
+		
+		public Func<NuGet.PackageSource, NuGet.IPackageRepository> GetRepositoryFromSourceCallback
+		{
+			get;
+			set;
 		}
     }
 }

@@ -28,6 +28,7 @@ namespace ICSharpCode.AddInManager2.Tests
 		AddIn _addIn1_new;
 		AddIn _addIn2;
 		AddIn _addIn2_new;
+		AddIn _addIn_noIdentity;
 		
 		public AddInSetupTests()
 		{
@@ -64,6 +65,11 @@ namespace ICSharpCode.AddInManager2.Tests
 			using (StreamReader streamReader = new StreamReader(@"TestResources\AddInManager2Test_2_New.addin"))
 			{
 				_addIn2_new = AddIn.Load(_addInTree, streamReader);
+			}
+			
+			using (StreamReader streamReader = new StreamReader(@"TestResources\AddInManager2Test_noIdentity.addin"))
+			{
+				_addIn_noIdentity = AddIn.Load(_addInTree, streamReader);
 			}
 		}
 		
@@ -129,6 +135,32 @@ namespace ICSharpCode.AddInManager2.Tests
 			Assert.That(_sdAddInManagement.RemovedExternalAddIns, Contains.Item(_addIn1), "External AddIn has been removed.");
 			
 			Assert.That(addInUninstalledEventReceived, "AddInUninstalled event sent with correct AddIn");
+		}
+		
+		[Test, Description("AddIn without identity should not be installed, but must be handled with an error event.")]
+		public void InstallInvalidAddInFromManifest()
+		{
+			CreateAddIns();
+
+			// Prepare all (fake) services needed for AddInSetup and its instance, itself
+			PrepareAddInSetup();
+			
+			// Prepare event handlers
+			bool addInOperationErrorReceived = false;
+			_events.AddInOperationError += delegate(object sender, AddInOperationErrorEventArgs e)
+			{
+				addInOperationErrorReceived = true;
+			};
+			
+			// Install the AddIn from external .addin manifest
+			_sdAddInManagement.AddInToLoad = _addIn_noIdentity;
+			AddIn installedAddIn = _addInSetup.InstallAddIn(@"TestResources\AddInManager2Test_noIdentity.addin");
+			
+			// The AddIn must have been added to AddInTree
+			Assert.That(installedAddIn, Is.Null, "InstallAddIn() returns valid AddIn object");
+			Assert.That(_sdAddInManagement.RegisteredAddIns.Contains(_addIn1), Is.False, "AddIn object added to AddInTree");
+			
+			Assert.That(addInOperationErrorReceived, "AddInOperationError event sent");
 		}
 		
 		[Test, Description("AddIn must be installed from offline *.sdaddin package. Pending installation must be cancellable.")]

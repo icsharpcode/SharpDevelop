@@ -12,40 +12,80 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 		{
 		}
 		
+		public FakePackageRepositories FakeRepositories
+		{
+			get;
+			set;
+		}
+		
+		public FakeAddInSetup FakeSetup 
+		{
+			get;
+			set;
+		}
+		
+		public FakeNuGetPackageManager FakeNuGet
+		{
+			get;
+			set;
+		}
+		
+		public FakeAddInManagerSettings FakeSettings
+		{
+			get;
+			set;
+		}
+		
+		public FakeSDAddInManagement FakeSDAddInManagement
+		{
+			get;
+			set;
+		}
+		
 		public IAddInManagerEvents Events
 		{
 			get;
-			set
+			set;
 		}
 		
 		public IPackageRepositories Repositories
 		{
-			get;
-			set
+			get
+			{
+				return FakeRepositories;
+			}
 		}
 		
 		public IAddInSetup Setup 
 		{
-			get;
-			set
+			get
+			{
+				return FakeSetup;
+			}
 		}
 		
 		public INuGetPackageManager NuGet
 		{
-			get;
-			set
+			get
+			{
+				return FakeNuGet;
+			}
 		}
 		
 		public IAddInManagerSettings Settings
 		{
-			get;
-			set
+			get
+			{
+				return FakeSettings;
+			}
 		}
 		
 		public ISDAddInManagement SDAddInManagement
 		{
-			get;
-			set
+			get
+			{
+				return FakeSDAddInManagement;
+			}
 		}
 	}
 }
