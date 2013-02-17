@@ -25,6 +25,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		private ObservableCollection<PackageRepository> _packageRepositories;
 		
+		public event EventHandler AddInsListUpdated;
+		
 		public AddInsViewModelBase()
 			:base()
 		{
@@ -65,6 +67,14 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			UpdatePreinstalledFilterCommand = new DelegateCommand(param => UpdatePreinstalledFilter());
 			UpdatePrereleaseFilterCommand = new DelegateCommand(param => UpdatePrereleaseFilter());
 			InstallFromArchiveCommand = new DelegateCommand(param => InstallFromArchive());
+		}
+		
+				private void OnAddInsListUpdated()
+		{
+			if (AddInsListUpdated != null)
+			{
+				AddInsListUpdated(this, new EventArgs());
+			}
 		}
 		
 		public ICommand ShowNextPageCommand

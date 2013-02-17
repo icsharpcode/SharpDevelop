@@ -36,5 +36,6 @@ namespace ICSharpCode.AddInManager2.Model
 		AddIn Load(TextReader textReader);
 		AddIn Load(string fileName);
 		void AddExternalAddIns(IList<AddIn> addIns);
+		bool IsAddInManifestInExternalPath(AddIn addIn);
 	}
 }

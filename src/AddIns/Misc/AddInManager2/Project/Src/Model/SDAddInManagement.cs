@@ -113,5 +113,17 @@ namespace ICSharpCode.AddInManager2.Model
 			
 			ICSharpCode.Core.AddInManager.AddExternalAddIns(addIns);
 		}
+		
+		public bool IsAddInManifestInExternalPath(AddIn addIn)
+		{
+			if (addIn == null)
+			{
+				// Without a valid AddIn simply return false... really ok?
+				return false;
+			}
+			
+			return !FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, addIn.FileName)
+				&& !FileUtility.IsBaseDirectory(SD.PropertyService.ConfigDirectory, addIn.FileName);
+		}
 	}
 }

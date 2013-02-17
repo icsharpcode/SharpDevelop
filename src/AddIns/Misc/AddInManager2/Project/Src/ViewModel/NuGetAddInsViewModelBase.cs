@@ -102,6 +102,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 				UpdatePackagesForSelectedPage(task.Result);
 			}
 			base.OnPropertyChanged(null);
+			
+			
 		}
 
 		private void UpdatePackagesForSelectedPage(ReadPackagesResult result)
@@ -209,7 +211,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		protected virtual AddInPackageViewModelBase CreateAddInViewModel(IPackage package)
 		{
-			return new NuGetPackageViewModel(package);
+			return new NuGetPackageViewModel(AddInManager, package);
 		}
 		
 		public override int SelectedPageNumber

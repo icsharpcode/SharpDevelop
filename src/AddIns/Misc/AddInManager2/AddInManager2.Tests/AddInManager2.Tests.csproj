@@ -85,6 +85,7 @@
     <Compile Include="InstalledAddInsViewModelTests.cs" />
     <Compile Include="PackageRepositoriesTests.cs" />
     <Compile Include="UpdatedAddInsViewModelTests.cs" />
+    <Compile Include="ViewModelTestingExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="TestResources" />

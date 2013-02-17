@@ -159,8 +159,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 				{
 					// The AddIn is externally referenced, if it's .addin file doesn't reside in
 					// somewhere in application path (preinstalled AddIns) or in config path (usually installed AddIns).
-					return !FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, _addIn.FileName)
-						&& !FileUtility.IsBaseDirectory(SD.PropertyService.ConfigDirectory, _addIn.FileName);
+					return AddInManager.SDAddInManagement.IsAddInManifestInExternalPath(_addIn);
 				}
 				else
 				{

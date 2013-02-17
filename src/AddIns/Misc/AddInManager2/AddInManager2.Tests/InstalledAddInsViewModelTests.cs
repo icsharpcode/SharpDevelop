@@ -3,10 +3,14 @@
 
 using System;
 using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using ICSharpCode.AddInManager2.Model;
 using ICSharpCode.AddInManager2.Tests.Fakes;
 using ICSharpCode.AddInManager2.ViewModel;
 using ICSharpCode.Core;
+using NuGet;
 using NUnit.Framework;
 
 namespace ICSharpCode.AddInManager2.Tests
@@ -19,8 +23,6 @@ namespace ICSharpCode.AddInManager2.Tests
 		AddIn _addIn1_new;
 		AddIn _addIn2;
 		AddIn _addIn2_new;
-		
-		InstalledAddInsViewModel _viewModel;
 		
 		public InstalledAddInsViewModelTests()
 		{
@@ -63,19 +65,49 @@ namespace ICSharpCode.AddInManager2.Tests
 			_services.FakeRepositories = new FakePackageRepositories();
 			_services.FakeNuGet = new FakeNuGetPackageManager();
 			
-			_viewModel = new InstalledAddInsViewModel(_services);
+			// Create SynchronizationContext needed for the view model
+			SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
 		}
 		
 		[Test]
-		public void ShowInstalledAddIns()
+		public void ShowInstalledOfflineAddIns()
 		{
 			CreateAddIns();
+			_addIn1.Enabled = true;
+			
+			// Empty list of NuGet repositories
+			_services.FakeRepositories.RegisteredPackageSources = new List<PackageSource>();
+			_services.FakeRepositories.RegisteredPackageRepositories = new List<IPackageRepository>();
+			FakeCorePackageRepository localRepository = new FakeCorePackageRepository();
+			_services.FakeNuGet.FakeCorePackageManager.LocalRepository = localRepository;
+			localRepository.ReturnedPackages = (new IPackage[] { }).AsQueryable();
 			
 			// Simulate list of AddIns
 			_services.FakeSDAddInManagement.RegisteredAddIns.Add(_addIn1);
 			_services.FakeSDAddInManagement.RegisteredAddIns.Add(_addIn2);
 			
-			_viewModel.ReadPackages();
+			var viewModel = new InstalledAddInsViewModel(_services);
+			viewModel.ReadPackagesAndWaitForUpdate();
+			
+			Assert.That(viewModel.AddInPackages.Count, Is.EqualTo(2), "AddIn list must contain 2 items.");
+			
+			AddInPackageViewModelBase firstAddIn = viewModel.AddInPackages[0];
+			Assert.That(firstAddIn.Id, Is.EqualTo(_addIn1.Manifest.PrimaryIdentity), "Primary identity of 1st AddIn");
+			Assert.That(firstAddIn.Name, Is.EqualTo(_addIn1.Name), "Name of 1st AddIn");
+			Assert.That(firstAddIn.Version, Is.EqualTo(_addIn1.Version), "Version of 1st AddIn");
+			Assert.That(firstAddIn.IsInstalled, Is.True, "1st AddIn must be 'installed''");
+			Assert.That(firstAddIn.IsOffline, Is.True, "1st AddIn must be 'offline'");
+			Assert.That(firstAddIn.IsEnabled, Is.True, "1st AddIn must be 'enabled'");
+			Assert.That(firstAddIn.IsUpdate, Is.False, "1st AddIn must not be 'update'");
+			Assert.That(firstAddIn.IsAdded, Is.False, "1st AddIn must not be 'added'");
+			Assert.That(firstAddIn.IsRemoved, Is.False, "1st AddIn must not be 'removed'");
+			Assert.That(firstAddIn.HasNuGetConnection, Is.False, "1st AddIn must not have 'NuGet connection'");
+			
+			// Check 'externally referenced' status of both AddIns
+			// (simulating that IsAddInManifestIinExternalPath() returns true for 1st AddIn and false for 2nd)
+			_services.FakeSDAddInManagement.IsAddInManifestInExternalPathCallback = (addIn) => addIn == _addIn1;
+			Assert.That(viewModel.AddInPackages[0].IsExternallyReferenced, Is.True, "1st AddIn must be 'externally referenced'");
+			Assert.That(viewModel.AddInPackages[1].IsExternallyReferenced, Is.False, "2nd AddIn must not be 'externally referenced'");
 		}
 	}
 }

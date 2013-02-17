@@ -157,5 +157,23 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 				_registeredAddIns.AddRange(addIns);
 			}
 		}
+		
+		public bool IsAddInManifestInExternalPath(AddIn addIn)
+		{
+			if (IsAddInManifestInExternalPathCallback != null)
+			{
+				return IsAddInManifestInExternalPathCallback(addIn);
+			}
+			else
+			{
+				return false;
+			}
+		}
+		
+		public Func<AddIn, bool> IsAddInManifestInExternalPathCallback
+		{
+			get;
+			set;
+		}
 	}
 }
