@@ -142,6 +142,21 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 			Assert.AreEqual (0, issues.Count);
 		}
 		
+		[Test]
+		public void TestOperatorFalsePositives ()
+		{
+			var input = @"class Foo
+{
+	public static bool operator == (Foo left, Foo right)
+	{
+		return true;
+	}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new CS0127ReturnMustNotBeFollowedByAnyExpression (), input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
 
 
 	}

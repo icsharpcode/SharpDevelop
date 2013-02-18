@@ -58,6 +58,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				base.VisitMethodDeclaration(methodDeclaration);
 			}
 
+			public override void VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration)
+			{
+			}
+
 			public override void VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
 			{
 			}
