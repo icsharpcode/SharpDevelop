@@ -5960,5 +5960,41 @@ public class Testing
 				Assert.IsNotNull(provider.Find("new()"));
 			});
 		}
+
+		/// <summary>
+		/// Bug 10361 - No completion for optional attribute arguments
+		/// </summary>
+		[Test]
+		public void TestBug10361 ()
+		{
+			CombinedProviderTest(
+				@"using System;
+		
+		namespace test {
+			class RequestAttribute : Attribute {
+				public int RequestId { get; set; }
+				public bool RequireLogin { get; set; }
+				
+				public RequestAttribute (int requestId, bool requireLogin = false) {
+					RequestId = requestId;
+					RequireLogin = requireLogin;
+				}
+			}
+			
+			class MainClass {
+				[RequestAttribute(5$, r$)]
+				public static void Main (string[] args) {
+					Console.WriteLine(""Hello World!"");
+				}
+			}
+		}
+", provider => {
+				Assert.IsNotNull(provider.Find("requireLogin:"));
+			});
+		}
+
+
+
+
 	}
 }

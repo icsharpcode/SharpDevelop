@@ -917,8 +917,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 						// add attribute properties.
 						if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute) {
-							var resolved = astResolver.Resolve(n.Parent);
-							AddAttributeProperties(contextList, resolved);
+							var rr = ResolveExpression(n.Parent);
+							if (rr != null)
+								AddAttributeProperties(contextList, rr.Item1);
 						}
 					} else {
 						csResolver = GetState();
@@ -1291,6 +1292,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			foreach (var field in resolved.Type.GetFields (p => p.Accessibility == Accessibility.Public)) {
 				wrapper.AddMember(field);
+			}
+			foreach (var constructor in resolved.Type.GetConstructors (p => p.Accessibility == Accessibility.Public)) {
+				foreach (var p in constructor.Parameters) {
+					wrapper.AddNamedParameterVariable(p);
+				}
 			}
 		}
 		
