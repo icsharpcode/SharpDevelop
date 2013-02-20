@@ -664,6 +664,7 @@ namespace ICSharpCode.AddInManager2.Tests
 			
 			Assert.That(_sdAddInManagement.RemovedExternalAddIns, Contains.Item(_addIn1), "AddIn must have been removed from external AddIns list.");
 			Assert.That(_sdAddInManagement.AddInsMarkedForRemoval, Contains.Item(_addIn1.Manifest.PrimaryIdentity), "AddIn must have been marked for removal on next startup.");
+			Assert.That(_addIn1.Action, Is.EqualTo(AddInAction.Uninstall), "AddIn action must be set to 'Uninstall'");
 			
 			Assert.That(addInUninstalledEventReceived, "AddInUninstalled event sent with correct AddIn");
 			
@@ -721,6 +722,7 @@ namespace ICSharpCode.AddInManager2.Tests
 			_addInSetup.UninstallAddIn(_addIn1);
 			
 			Assert.That(addInUninstalledEventReceived, "AddInUninstalled event sent with correct AddIn");
+			Assert.That(_addIn1.Action, Is.EqualTo(AddInAction.Uninstall), "AddIn action must be set to 'Uninstall'");
 			
 			// Simulate removing unreferenced NuGet packages
 			_addInSetup.RemoveUnreferencedNuGetPackages();

@@ -127,6 +127,7 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 				foreach (var removedAddIn in addIns)
 				{
 					_registeredAddIns.Remove(removedAddIn);
+					removedAddIn.Action = AddInAction.Uninstall;
 				}
 			}
 		}
