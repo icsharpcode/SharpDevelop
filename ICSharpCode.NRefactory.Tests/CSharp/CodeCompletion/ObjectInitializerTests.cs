@@ -704,9 +704,49 @@ class C : S
 			Assert.IsNull(provider.Find("MinValue"), "'MinValue' found.");
 		}
 
+		[Test]
+		public void TestAnonymousTypes()
+		{
+			CodeCompletionBugTests.CombinedProviderTest(
+				@"class Test 
+{
+   
+    public static void Main(string [] args)
+    {
+		var mm = new {
+            $b$
+        };
 
+    }
+}
 
+", provider => {
+				Assert.IsTrue(provider == null || provider.Count == 0);
+			});
+			
+		}
+
+		[Test]
+		public void TestAnonymousTypesCase2()
+		{
+			CodeCompletionBugTests.CombinedProviderTest(
+				@"class Test 
+{
+   
+    public static void Main(string [] args)
+    {
+		var mm = new {
+            $bar = a$
+        };
+
+    }
+}
+
+", provider => {
+				Assert.IsNotNull(provider.Find("args"), "'args' not found.");
+			});
+			
+		}
 	}
-
 }
 

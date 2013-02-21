@@ -619,7 +619,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (IsInsideCommentStringOrDirective()) {
 						tokenIndex = offset;
 						token = GetPreviousToken(ref tokenIndex, false);
-						if (IsInPreprocessorDirective() && (token.Length == 1 && char.IsLetter (completionChar) || controlSpace)) {
+						if (IsInPreprocessorDirective() && (token.Length == 1 && char.IsLetter(completionChar) || controlSpace)) {
 							while (token != null && document.GetCharAt (tokenIndex - 1) != '#') {
 								token = GetPreviousToken(ref tokenIndex, false);
 							}
@@ -671,8 +671,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 								new ExpressionResult(
 								((MemberReferenceExpression)identifierStart.Node).Target,
 								identifierStart.Unit
-								)
-								);
+							)
+							);
 						}
 						
 						if (identifierStart.Node is Identifier) {
@@ -728,7 +728,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							return HandleKeywordCompletion(tokenIndex, token);
 						}
 					}
-					
 					if (identifierStart == null) {
 						var accCtx = HandleAccessorContext();
 						if (accCtx != null) {
@@ -744,6 +743,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						AutoSelect = false;
 					}
 
+					// new { b$ } 
+					if (n is IdentifierExpression && n.Parent is AnonymousTypeCreateExpression)
+						return null;
+
 					// Handle foreach (type name _
 					if (n is IdentifierExpression) {
 						var prev = n.GetPrevNode() as ForeachStatement;
@@ -755,7 +758,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							return null;
 						}
 					}
-					
 					// Handle object/enumerable initialzer expressions: "new O () { P$"
 					if (n is IdentifierExpression && n.Parent is ArrayInitializerExpression && !(n.Parent.Parent is ArrayCreateExpression)) {
 						var result = HandleObjectInitializer(identifierStart.Unit, n);
