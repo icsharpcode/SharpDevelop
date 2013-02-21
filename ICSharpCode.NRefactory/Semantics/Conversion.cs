@@ -75,26 +75,26 @@ namespace ICSharpCode.NRefactory.Semantics
 		public static readonly Conversion TryCast = new BuiltinConversion(false, 9);
 		
 		[Obsolete("Use UserDefinedConversion() instead")]
-		public static Conversion UserDefinedImplicitConversion(IMethod operatorMethod, bool isLifted)
+		public static Conversion UserDefinedImplicitConversion(IMethod operatorMethod, Conversion conversionBeforeUserDefinedOperator, Conversion conversionAfterUserDefinedOperator, bool isLifted)
 		{
 			if (operatorMethod == null)
 				throw new ArgumentNullException("operatorMethod");
-			return new UserDefinedConv(true, operatorMethod, isLifted, false);
+			return new UserDefinedConv(true, operatorMethod, conversionBeforeUserDefinedOperator, conversionAfterUserDefinedOperator, isLifted, false);
 		}
 		
 		[Obsolete("Use UserDefinedConversion() instead")]
-		public static Conversion UserDefinedExplicitConversion(IMethod operatorMethod, bool isLifted)
+		public static Conversion UserDefinedExplicitConversion(IMethod operatorMethod, Conversion conversionBeforeUserDefinedOperator, Conversion conversionAfterUserDefinedOperator, bool isLifted)
 		{
 			if (operatorMethod == null)
 				throw new ArgumentNullException("operatorMethod");
-			return new UserDefinedConv(false, operatorMethod, isLifted, false);
+			return new UserDefinedConv(false, operatorMethod, conversionBeforeUserDefinedOperator, conversionAfterUserDefinedOperator, isLifted, false);
 		}
 		
-		public static Conversion UserDefinedConversion(IMethod operatorMethod, bool isImplicit, bool isLifted = false, bool isAmbiguous = false)
+		public static Conversion UserDefinedConversion(IMethod operatorMethod, bool isImplicit, Conversion conversionBeforeUserDefinedOperator, Conversion conversionAfterUserDefinedOperator, bool isLifted = false, bool isAmbiguous = false)
 		{
 			if (operatorMethod == null)
 				throw new ArgumentNullException("operatorMethod");
-			return new UserDefinedConv(isImplicit, operatorMethod, isLifted, isAmbiguous);
+			return new UserDefinedConv(isImplicit, operatorMethod, conversionBeforeUserDefinedOperator, conversionAfterUserDefinedOperator, isLifted, isAmbiguous);
 		}
 		
 		public static Conversion MethodGroupConversion(IMethod chosenMethod, bool isVirtualMethodLookup)
@@ -275,13 +275,17 @@ namespace ICSharpCode.NRefactory.Semantics
 		{
 			readonly IMethod method;
 			readonly bool isLifted;
+			readonly Conversion conversionBeforeUserDefinedOperator;
+			readonly Conversion conversionAfterUserDefinedOperator;
 			readonly bool isImplicit;
 			readonly bool isValid;
 			
-			public UserDefinedConv(bool isImplicit, IMethod method, bool isLifted, bool isAmbiguous)
+			public UserDefinedConv(bool isImplicit, IMethod method, Conversion conversionBeforeUserDefinedOperator, Conversion conversionAfterUserDefinedOperator, bool isLifted, bool isAmbiguous)
 			{
 				this.method = method;
 				this.isLifted = isLifted;
+				this.conversionBeforeUserDefinedOperator = conversionBeforeUserDefinedOperator;
+				this.conversionAfterUserDefinedOperator = conversionAfterUserDefinedOperator;
 				this.isImplicit = isImplicit;
 				this.isValid = !isAmbiguous;
 			}
@@ -306,6 +310,14 @@ namespace ICSharpCode.NRefactory.Semantics
 				get { return true; }
 			}
 			
+			public override Conversion ConversionBeforeUserDefinedOperator {
+				get { return conversionBeforeUserDefinedOperator; }
+			}
+		
+			public override Conversion ConversionAfterUserDefinedOperator {
+				get { return conversionAfterUserDefinedOperator; }
+			}
+
 			public override IMethod Method {
 				get { return method; }
 			}
@@ -456,7 +468,21 @@ namespace ICSharpCode.NRefactory.Semantics
 		public virtual bool IsUserDefined {
 			get { return false; }
 		}
+
+		/// <summary>
+		/// The conversion that is applied to the input before the user-defined conversion operator is invoked.
+		/// </summary>
+		public virtual Conversion ConversionBeforeUserDefinedOperator {
+			get { return null; }
+		}
 		
+		/// <summary>
+		/// The conversion that is applied to the result of the user-defined conversion operator.
+		/// </summary>
+		public virtual Conversion ConversionAfterUserDefinedOperator {
+			get { return null; }
+		}
+
 		/// <summary>
 		/// Gets whether this conversion is a boxing conversion.
 		/// </summary>
