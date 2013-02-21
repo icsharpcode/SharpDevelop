@@ -52,6 +52,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		#region Result properties
 		public bool AutoCompleteEmptyMatch;
+
+		/// <summary>
+		/// The auto complete empty match on curly bracket. (only taken into account when AutoCompleteEmptyMatch is true )
+		/// </summary>
+		public bool AutoCompleteEmptyMatchOnCurlyBracket = true;
+
 		public bool AutoSelect;
 		public string DefaultCompletionString;
 		public bool CloseOnSquareBrackets;
@@ -1938,6 +1944,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			CloseOnSquareBrackets = true;
 			AutoCompleteEmptyMatch = true;
+			AutoCompleteEmptyMatchOnCurlyBracket = false;
 			return wrapper.Result;
 		}
 		
