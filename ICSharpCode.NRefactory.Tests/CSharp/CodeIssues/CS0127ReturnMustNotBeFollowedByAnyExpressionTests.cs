@@ -1,4 +1,4 @@
-//
+﻿//
 // CS0127ReturnMustNotBeFollowedByAnyExpressionTests.cs
 //
 // Author:
@@ -158,7 +158,37 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 			Assert.AreEqual (0, issues.Count);
 		}
 
-
+		[Test]
+		public void TestConstructor ()
+		{
+			var input = @"class Foo
+{
+	Foo ()
+	{
+		return 1;
+	}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new CS0127ReturnMustNotBeFollowedByAnyExpression (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+		}
+		
+		[Test]
+		public void TestDestructor ()
+		{
+			var input = @"class Foo
+{
+	~Foo ()
+	{
+		return 1;
+	}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new CS0127ReturnMustNotBeFollowedByAnyExpression (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+		}
 	}
 }
 

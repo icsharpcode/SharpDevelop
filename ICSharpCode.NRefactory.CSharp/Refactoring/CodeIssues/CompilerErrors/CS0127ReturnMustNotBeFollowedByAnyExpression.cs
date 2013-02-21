@@ -1,4 +1,4 @@
-//
+﻿//
 // CS0127ReturnMustNotBeFollowedByAnyExpression.cs
 //
 // Author:
@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			MethodDeclaration currentMethod;
+			string currentMethodName;
 
 			public GatherVisitor (BaseRefactoringContext ctx) : base (ctx)
 			{
@@ -54,8 +54,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var primitiveType = methodDeclaration.ReturnType as PrimitiveType;
 				if (primitiveType == null || primitiveType.Keyword != "void")
 					return;
-				currentMethod = methodDeclaration;
+				currentMethodName = methodDeclaration.Name;
 				base.VisitMethodDeclaration(methodDeclaration);
+			}
+
+			public override void VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
+			{
+				currentMethodName = constructorDeclaration.Name;
+				base.VisitConstructorDeclaration(constructorDeclaration);
+			}
+
+			public override void VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration)
+			{
+				currentMethodName = "~" + destructorDeclaration.Name;
+				base.VisitDestructorDeclaration(destructorDeclaration);
 			}
 
 			public override void VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration)
@@ -87,7 +99,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (!returnStatement.Expression.IsNull) {
 					AddIssue(
 						returnStatement, 
-						string.Format (ctx.TranslateString("`{0}': A return keyword must not be followed by any expression when method returns void"), currentMethod.Name),
+						string.Format (ctx.TranslateString("`{0}': A return keyword must not be followed by any expression when method returns void"), currentMethodName),
 						new CodeAction (
 							ctx.TranslateString("Remove returned expression"),
 							script => {
