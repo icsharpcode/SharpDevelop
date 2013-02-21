@@ -30,8 +30,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public SpecializedProperty(IProperty propertyDefinition, TypeParameterSubstitution substitution)
 			: base(propertyDefinition)
 		{
+			this.propertyDefinition = propertyDefinition;
 			AddSubstitution(substitution);
-			this.propertyDefinition = (IProperty)base.baseMember;
 		}
 		
 		public bool CanGet {

@@ -234,8 +234,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 
-			bool IMember.IsSpecialized {
-				get { return false; }
+			IMember IMember.Specialize(TypeParameterSubstitution substitution)
+			{
+				throw new NotSupportedException();
 			}
 
 			string INamedElement.FullName {

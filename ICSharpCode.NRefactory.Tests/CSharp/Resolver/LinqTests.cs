@@ -352,7 +352,7 @@ class TestClass
 			var member = (IMethod)rr.Member;
 			Assert.AreEqual("SelectMany", member.Name);
 			Assert.AreEqual(3, member.Parameters.Count);
-			var typeArguments = ((SpecializedMethod)member).TypeArguments;
+			var typeArguments = member.TypeArguments;
 			Assert.AreEqual(3, typeArguments.Count);
 			Assert.AreEqual("System.String", typeArguments[0].ReflectionName, "TSource");
 			Assert.AreEqual("System.Char", typeArguments[1].ReflectionName, "TCollection");
@@ -375,7 +375,7 @@ class TestClass
 			var member = (IMethod)rr.Member;
 			Assert.AreEqual("SelectMany", member.Name);
 			Assert.AreEqual(3, member.Parameters.Count);
-			var typeArguments = ((SpecializedMethod)member).TypeArguments;
+			var typeArguments = member.TypeArguments;
 			Assert.AreEqual(3, typeArguments.Count);
 			Assert.AreEqual("System.String", typeArguments[0].ReflectionName, "TSource");
 			Assert.AreEqual("System.Char", typeArguments[1].ReflectionName, "TCollection");

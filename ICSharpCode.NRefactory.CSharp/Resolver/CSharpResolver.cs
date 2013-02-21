@@ -1786,13 +1786,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (typeArguments != null && typeArguments.Count > 0) {
 						if (method.TypeParameters.Count != typeArguments.Count)
 							continue;
-						SpecializedMethod sm = new SpecializedMethod(method, new TypeParameterSubstitution(null, typeArguments));
+						var sm = method.Specialize(new TypeParameterSubstitution(null, typeArguments));
 						if (IsEligibleExtensionMethod(compilation, conversions, targetType, sm, false, out inferredTypes))
 							outputGroup.Add(sm);
 					} else {
 						if (IsEligibleExtensionMethod(compilation, conversions, targetType, method, true, out inferredTypes)) {
 							if (substituteInferredTypes && inferredTypes != null) {
-								outputGroup.Add(new SpecializedMethod(method, new TypeParameterSubstitution(null, inferredTypes)));
+								outputGroup.Add(method.Specialize(new TypeParameterSubstitution(null, inferredTypes)));
 							} else {
 								outputGroup.Add(method);
 							}
@@ -1811,7 +1811,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <param name="targetType">Target type that is passed as first argument to the extension method.</param>
 		/// <param name="method">The extension method.</param>
 		/// <param name="useTypeInference">Whether to perform type inference for the method.
-		/// Use <c>false</c> if <paramref name="method"/> is already specialized (e.g. when type arguments were given explicitly).
+		/// Use <c>false</c> if <paramref name="method"/> is already parameterized (e.g. when type arguments were given explicitly).
 		/// Otherwise, use <c>true</c>.
 		/// </param>
 		/// <param name="outInferredTypes">If the method is generic and <paramref name="useTypeInference"/> is <c>true</c>,

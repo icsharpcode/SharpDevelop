@@ -494,12 +494,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return parts[0].TypeParameters.Count; }
 		}
 
-		IList<IType> typeArguments;
 		public IList<IType> TypeArguments {
 			get { 
-				if (typeArguments == null)
-					typeArguments = new ReadOnlyCollection<IType> (TypeParameters.Cast<IType> ().ToArray ());
-				return typeArguments; 
+				// ToList() call is necessary because IList<> isn't covariant
+				return TypeParameters.ToList<IType>();
 			}
 		}
 
@@ -797,7 +795,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				using (var busyLock = BusyManager.Enter(this)) {
 					if (busyLock.Success) {
 						return coClass.GetConstructors(filter, options)
-							.Select(m => new SpecializedMethod(m, TypeParameterSubstitution.Identity) { DeclaringType = this });
+							.Select(m => new SpecializedMethod(m, m.Substitution) { DeclaringType = this });
 					}
 				}
 				return EmptyList<IMethod>.Instance;

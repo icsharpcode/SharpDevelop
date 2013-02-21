@@ -24,7 +24,6 @@ using System.Runtime.Serialization;
 using System.Xml;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.Documentation
 {

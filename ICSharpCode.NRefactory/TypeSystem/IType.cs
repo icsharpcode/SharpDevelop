@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -84,9 +83,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 
 		/// <summary>
 		/// Gets the type arguments passed to this type.
-		/// If only the type parameters for the class were specified and the generic type
-		/// itself is not specialized yet or the TypeParameterCount is 0, this property will return an empty list.
-		/// NOTE: The type will change to IReadOnlyList<IType> in future versions.
+		/// If this type is a generic type definition that is not parameterized, this property returns the type parameters,
+		/// as if the type was parameterized with its own type arguments (<c>class C&lt;T&gt; { C&lt;T&gt; field; }</c>).
+		/// 
+		/// NOTE: The type will change to IReadOnlyList&lt;IType&gt; in future versions.
 		/// </summary>
 		IList<IType> TypeArguments { get; }
 

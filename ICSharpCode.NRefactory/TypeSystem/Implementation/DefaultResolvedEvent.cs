@@ -58,5 +58,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IMethod InvokeAccessor {
 			get { return GetAccessor(ref invokeAccessor, unresolved.InvokeAccessor); }
 		}
+		
+		public override IMember Specialize(TypeParameterSubstitution substitution)
+		{
+			return new SpecializedEvent(this, substitution);
+		}
 	}
 }

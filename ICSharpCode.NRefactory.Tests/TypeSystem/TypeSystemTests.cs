@@ -203,7 +203,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			var testClass = GetTypeDefinition(typeof(GenericClass<,>));
 			var methodDef = testClass.Methods.Single(me => me.Name == "GetIndex");
-			var m = new SpecializedMethod(methodDef, new TypeParameterSubstitution(
+			var m = methodDef.Specialize(new TypeParameterSubstitution(
 				new[] { compilation.FindType(KnownTypeCode.Int16), compilation.FindType(KnownTypeCode.Int32) },
 				null
 			));
@@ -228,18 +228,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var methodDef = testClass.Methods.Single(me => me.Name == "GetIndex");
 			
 			// GenericClass<B, A>.GetIndex<A>
-			var m1 = new SpecializedMethod(methodDef, new TypeParameterSubstitution(
+			var m1 = methodDef.Specialize(new TypeParameterSubstitution(
 				new[] { testClass.TypeParameters[1], testClass.TypeParameters[0] },
 				new[] { testClass.TypeParameters[0] }
 			));
 			// GenericClass<string, int>.GetIndex<int>
-			var m2 = new SpecializedMethod(m1, new TypeParameterSubstitution(
+			var m2 = m1.Specialize(new TypeParameterSubstitution(
 				new[] { compilation.FindType(KnownTypeCode.Int32), compilation.FindType(KnownTypeCode.String) },
 				null
 			));
 			
 			// GenericClass<string, int>.GetIndex<int>
-			var m12 = new SpecializedMethod(methodDef, new TypeParameterSubstitution(
+			var m12 = methodDef.Specialize(new TypeParameterSubstitution(
 				new[] { compilation.FindType(KnownTypeCode.String), compilation.FindType(KnownTypeCode.Int32) },
 				new[] { compilation.FindType(KnownTypeCode.Int32) }
 			));
@@ -253,7 +253,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreSame(method.TypeParameters[0], method.Parameters[0].Type);
 			Assert.AreSame(method, method.TypeParameters[0].Owner);
 			Assert.IsInstanceOf<SpecializedMethod>(method);
-			Assert.AreEqual(0, ((SpecializedMethod)method).TypeArguments.Count); // the method itself is not specialized
+			Assert.IsFalse(method.IsParameterized); // the method itself is not specialized
+			Assert.AreEqual(method.TypeParameters, method.TypeArguments);
 			var methodReference = method.ToMemberReference();
 			var resolvedMethod = methodReference.Resolve(compilation.TypeResolveContext);
 			Assert.AreEqual(method, resolvedMethod);
@@ -264,13 +265,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			var genericClass = compilation.FindType(typeof(GenericClass<string, object>));
 			IType[] methodTypeArguments = { DummyTypeParameter.GetMethodTypeParameter(0) };
-			var method = (SpecializedMethod)genericClass.GetMethods(methodTypeArguments, m => m.Name == "GetIndex").Single();
+			var method = genericClass.GetMethods(methodTypeArguments, m => m.Name == "GetIndex").Single();
 			// GenericClass<string,object>.GetIndex<!!0>()
 			Assert.AreSame(method, method.TypeParameters[0].Owner);
 			Assert.AreNotEqual(method.TypeParameters[0], method.TypeArguments[0]);
 			Assert.IsNull(((ITypeParameter)method.TypeArguments[0]).Owner);
 			// Now apply identity substitution:
-			var method2 = new SpecializedMethod(method, TypeParameterSubstitution.Identity);
+			var method2 = method.Specialize(TypeParameterSubstitution.Identity);
 			Assert.AreSame(method2, method2.TypeParameters[0].Owner);
 			Assert.AreNotEqual(method2.TypeParameters[0], method2.TypeArguments[0]);
 			Assert.IsNull(((ITypeParameter)method2.TypeArguments[0]).Owner);

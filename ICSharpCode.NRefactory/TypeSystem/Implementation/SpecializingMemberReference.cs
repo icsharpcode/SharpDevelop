@@ -40,8 +40,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IMember Resolve(ITypeResolveContext context)
 		{
 			var memberDefinition = memberDefinitionReference.Resolve(context);
-			return SpecializedMember.Create(
-				memberDefinition,
+			return memberDefinition.Specialize(
 				new TypeParameterSubstitution(
 					classTypeArgumentReferences != null ? classTypeArgumentReferences.Resolve(context) : null,
 					methodTypeArgumentReferences != null ? methodTypeArgumentReferences.Resolve(context) : null

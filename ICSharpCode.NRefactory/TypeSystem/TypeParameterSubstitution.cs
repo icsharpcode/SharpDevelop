@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ICSharpCode.NRefactory.TypeSystem.Implementation
+namespace ICSharpCode.NRefactory.TypeSystem
 {
 	/// <summary>
 	/// Substitutes class and method type parameters.

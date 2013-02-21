@@ -404,10 +404,10 @@ class TestClass {
 			var conversion = GetConversion(program);
 			Assert.IsTrue(conversion.IsValid);
 			Assert.IsTrue(conversion.IsMethodGroupConversion);
-			Assert.IsInstanceOf<SpecializedMethod>(conversion.Method);
+			Assert.IsTrue(conversion.Method.IsParameterized);
 			Assert.AreEqual(
 				new[] { "System.Int32" },
-				((SpecializedMethod)conversion.Method).TypeArguments.Select(t => t.ReflectionName).ToArray());
+				conversion.Method.TypeArguments.Select(t => t.ReflectionName).ToArray());
 		}
 		
 		[Test]

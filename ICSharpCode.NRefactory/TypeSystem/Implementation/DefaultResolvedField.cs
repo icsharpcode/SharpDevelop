@@ -67,5 +67,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return rr.ConstantValue;
 			}
 		}
+		
+		public override IMember Specialize(TypeParameterSubstitution substitution)
+		{
+			return new SpecializedField(this, substitution);
+		}
 	}
 }

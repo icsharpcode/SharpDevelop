@@ -1,4 +1,4 @@
-//
+﻿//
 // ReducedExtensionMethod.cs
 //
 // Author:
@@ -150,10 +150,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		public bool IsSpecialized {
-			get {
-				return baseMethod.IsSpecialized;
-			}
+		public IMethod Specialize(TypeParameterSubstitution substitution)
+		{
+			return new ReducedExtensionMethod((IMethod)baseMethod.Specialize(substitution));
+		}
+		
+		IMember IMember.Specialize(TypeParameterSubstitution substitution)
+		{
+			return Specialize(substitution);
+		}
+		
+		public bool IsParameterized {
+			get  { return baseMethod.IsParameterized; }
 		}
 
 		#endregion

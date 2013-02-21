@@ -30,8 +30,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public SpecializedEvent(IEvent eventDefinition, TypeParameterSubstitution substitution)
 			: base(eventDefinition)
 		{
+			this.eventDefinition = eventDefinition;
 			AddSubstitution(substitution);
-			this.eventDefinition = (IEvent)base.baseMember;
 		}
 		
 		public bool CanAdd {

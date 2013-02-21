@@ -887,7 +887,7 @@ class B
 			var rr = Resolve<MethodGroupResolveResult>(program);
 			Assert.AreEqual("X", rr.TypeArguments.Single().Name);
 			
-			var m = (SpecializedMethod)rr.Methods.Single();
+			var m = rr.Methods.Single();
 			Assert.AreSame(rr.TypeArguments.Single(), m.TypeArguments.Single());
 			Assert.AreEqual("T", m.Parameters[0].Type.Name);
 			Assert.AreEqual("X", m.Parameters[1].Type.Name);

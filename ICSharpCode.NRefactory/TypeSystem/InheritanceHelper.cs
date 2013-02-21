@@ -57,6 +57,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				yield return member;
 			}
 			
+			// TODO: can we get rid of this upcast?
 			SpecializedMember specializedMember = member as SpecializedMember;
 			member = member.MemberDefinition;
 			
@@ -79,7 +80,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				foreach (IMember baseMember in baseMembers) {
 					if (SignatureComparer.Ordinal.Equals(member, baseMember)) {
 						if (specializedMember != null)
-							yield return SpecializedMember.Create(baseMember, specializedMember.Substitution);
+							yield return baseMember.Specialize(specializedMember.Substitution);
 						else
 							yield return baseMember;
 					}

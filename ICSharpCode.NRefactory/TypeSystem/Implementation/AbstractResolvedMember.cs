@@ -122,9 +122,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return TypeParameterSubstitution.Identity; }
 		}
 
-		public bool IsSpecialized {
-			get { return false; }
-		}
+		public abstract IMember Specialize(TypeParameterSubstitution substitution);
 
 		public virtual IMemberReference ToMemberReference()
 		{
