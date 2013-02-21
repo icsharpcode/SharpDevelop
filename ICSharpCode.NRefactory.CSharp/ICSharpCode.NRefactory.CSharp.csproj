@@ -88,6 +88,7 @@
     <Compile Include="Analysis\ControlFlow.cs" />
     <Compile Include="Analysis\DefiniteAssignmentAnalysis.cs" />
     <Compile Include="Analysis\ReachabilityAnalysis.cs" />
+    <Compile Include="Analysis\SemanticHighlightingVisitor.cs" />
     <Compile Include="Ast\AstNode.cs" />
     <Compile Include="Ast\AstNodeCollection.cs" />
     <Compile Include="Ast\AstType.cs" />
