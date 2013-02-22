@@ -17,30 +17,82 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	[Serializable]
 	public class HighlightingColor : ISerializable
 	{
+		string name;
+		FontWeight? fontWeight;
+		FontStyle? fontStyle;
+		HighlightingBrush foreground;
+		HighlightingBrush background;
+		bool frozen;
+		
 		/// <summary>
 		/// Gets/Sets the name of the color.
 		/// </summary>
-		public string Name { get; set; }
+		public string Name {
+			get {
+				return name;
+			}
+			set {
+				if (frozen)
+					throw new InvalidOperationException();
+				name = value;
+			}
+		}
 		
 		/// <summary>
 		/// Gets/sets the font weight. Null if the highlighting color does not change the font weight.
 		/// </summary>
-		public FontWeight? FontWeight { get; set; }
+		public FontWeight? FontWeight {
+			get {
+				return fontWeight;
+			}
+			set {
+				if (frozen)
+					throw new InvalidOperationException();
+				fontWeight = value;
+			}
+		}
 		
 		/// <summary>
 		/// Gets/sets the font style. Null if the highlighting color does not change the font style.
 		/// </summary>
-		public FontStyle? FontStyle { get; set; }
+		public FontStyle? FontStyle {
+			get {
+				return fontStyle;
+			}
+			set {
+				if (frozen)
+					throw new InvalidOperationException();
+				fontStyle = value;
+			}
+		}
 		
 		/// <summary>
 		/// Gets/sets the foreground color applied by the highlighting.
 		/// </summary>
-		public HighlightingBrush Foreground { get; set; }
+		public HighlightingBrush Foreground {
+			get {
+				return foreground;
+			}
+			set {
+				if (frozen)
+					throw new InvalidOperationException();
+				foreground = value;
+			}
+		}
 		
 		/// <summary>
 		/// Gets/sets the background color applied by the highlighting.
 		/// </summary>
-		public HighlightingBrush Background { get; set; }
+		public HighlightingBrush Background {
+			get {
+				return background;
+			}
+			set {
+				if (frozen)
+					throw new InvalidOperationException();
+				background = value;
+			}
+		}
 		
 		/// <summary>
 		/// Creates a new HighlightingColor instance.
@@ -118,6 +170,21 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		public override string ToString()
 		{
 			return "[" + GetType().Name + " " + (string.IsNullOrEmpty(this.Name) ? ToCss() : this.Name) + "]";
+		}
+		
+		/// <summary>
+		/// Prevent further changes to this highlighting color.
+		/// </summary>
+		public void Freeze()
+		{
+			frozen = true;
+		}
+		
+		/// <summary>
+		/// Gets whether this HighlightingColor instance is frozen.
+		/// </summary>
+		public bool IsFrozen {
+			get { return frozen; }
 		}
 	}
 }
