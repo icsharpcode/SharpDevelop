@@ -40,8 +40,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			get { return originalDocument; }
 		}
 		readonly IDisposable undoGroup;
-
-
+		
+		
 		public DocumentScript(IDocument document, CSharpFormattingOptions formattingOptions, TextEditorOptions options) : base(formattingOptions, options)
 		{
 			this.originalDocument = document.CreateDocumentSnapshot();
@@ -101,15 +101,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public override void FormatText(IEnumerable<AstNode> nodes)
 		{
 			var syntaxTree = SyntaxTree.Parse(currentDocument, "dummy.cs");
+			var formatter = new AstFormattingVisitor(FormattingOptions, currentDocument, Options);
+			var segments = new List<ISegment>();
 			foreach (var node in nodes.OrderByDescending (n => n.StartLocation)) {
 				var segment = GetSegment(node);
-				var formatter = new AstFormattingVisitor(FormattingOptions, currentDocument, Options);
-
-				formatter.FormattingRegion = new ICSharpCode.NRefactory.TypeSystem.DomRegion (
+				
+				formatter.AddFormattingRegion (new ICSharpCode.NRefactory.TypeSystem.DomRegion (
 					currentDocument.GetLocation (segment.Offset), 
 					currentDocument.GetLocation (segment.EndOffset)
-				);
-				syntaxTree.AcceptVisitor(formatter);
+					));
+				segments.Add(segment);
+			}
+			syntaxTree.AcceptVisitor(formatter);
+			foreach (var segment in segments) {
 				formatter.ApplyChanges(segment.Offset, segment.Length);
 			}
 		}

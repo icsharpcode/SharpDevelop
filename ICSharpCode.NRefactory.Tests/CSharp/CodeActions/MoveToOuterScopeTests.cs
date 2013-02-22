@@ -58,8 +58,8 @@ class A
 		int $i = 2;
 	}
 ", @"
-	int i = 2;
-		while (true) {
+		int i = 2;
+	while (true) {
 	}
 ");
 		}
@@ -86,8 +86,8 @@ class A
 	}
 ", @"
 	int i = 2;
-		while (true) {
-		int j = 3;
+	while (true) {
+			int j = 3;
 		}
 ");
 		}
@@ -100,8 +100,8 @@ class A
 		i$nt i = 2, j = 3;
 	}
 ", @"
-	int i = 2, j = 3;
-		while (true) {
+		int i = 2, j = 3;
+	while (true) {
 	}
 ");
 		}
@@ -115,11 +115,11 @@ class A
 		int j$ = i;
 	}
 ", @"
-	int j;
+		int j;
 		while (true) {
 		int i = 2;
 		j = i;
-		}
+	}
 ");
 		}
 		
@@ -131,8 +131,8 @@ class A
 		int j$ = 2;
 	});
 ", @"
-	int j = 2;
-		var action = new Action<int>(i => {
+		int j = 2;
+	var action = new Action<int>(i => {
 	});
 ");
 		}

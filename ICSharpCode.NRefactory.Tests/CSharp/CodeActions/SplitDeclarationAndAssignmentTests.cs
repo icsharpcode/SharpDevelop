@@ -101,7 +101,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"	{" + Environment.NewLine +
 				"		int i;" + Environment.NewLine +
 				"		for (i = 1; i < 10; i++) {" + Environment.NewLine +
-				"		" + Environment.NewLine +
 				"		}" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"}", result);

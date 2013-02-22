@@ -31,6 +31,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -190,6 +191,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (child == null)
 					return TextLocation.Empty;
 				return child.EndLocation;
+			}
+		}
+
+		public DomRegion Region {
+			get {
+				return new DomRegion (StartLocation, EndLocation);
 			}
 		}
 		
