@@ -17,7 +17,7 @@
 	<Color name="NullOrValueKeywords" fontWeight="bold" exampleText="if (value == null)"/>
 	<Color name="Keywords" fontWeight="bold" foreground="Blue" exampleText="if (a) {} else {}"/>
 	<Color name="GotoKeywords" foreground="Navy" exampleText="continue; return null;"/>
-	<Color name="ContextKeywords" foreground="Navy" exampleText="var a = from x in y select z;"/>
+	<Color name="QueryKeywords" foreground="Navy" exampleText="from x in y select z;"/>
 	<Color name="ExceptionKeywords" fontWeight="bold" foreground="Teal" exampleText="try {} catch {} finally {}"/>
 	<Color name="CheckedKeyword" fontWeight="bold" foreground="DarkGray" exampleText="checked {}"/>
 	<Color name="UnsafeKeywords" foreground="Olive" exampleText="unsafe { fixed (..) {} }"/>
@@ -35,7 +35,7 @@
 	<Color name="ValueTypes" fontWeight="bold" foreground="#004085" exampleText="System.#{#DateTime#}# date;"/>
 	<Color name="MethodCall" foreground="MidnightBlue" fontWeight="bold" exampleText="o.#{#ToString#}#();"/>
 	<Color name="FieldAccess" fontStyle="italic" exampleText="return this.#{#name#}#;"/>
-	<Color name="InactiveCode" foreground="Gray" exampleText="Deactivated by #if"/>
+	<Color name="InactiveCode" foreground="Gray" exampleText="#{#Deactivated by #if#}#"/>
 	
 	<RuleSet name="CommentMarkerSet">
 		<Keywords fontWeight="bold" foreground="Red">
@@ -151,6 +151,11 @@
 			<Word>in</Word>
 			<Word>while</Word>
 			<Word>lock</Word>
+			<Word>global</Word>
+			<Word>var</Word>
+			<Word>dynamic</Word>
+			<Word>await</Word>
+			<Word>where</Word>
 		</Keywords>
 		
 		<Keywords color="GotoKeywords">
@@ -158,13 +163,10 @@
 			<Word>continue</Word>
 			<Word>goto</Word>
 			<Word>return</Word>
+			<Word>yield</Word>
 		</Keywords>
 		
-		<Keywords color="ContextKeywords">
-			<Word>yield</Word>
-			<Word>partial</Word>
-			<Word>global</Word>
-			<Word>where</Word>
+		<Keywords color="QueryKeywords">
 			<Word>select</Word>
 			<Word>group</Word>
 			<Word>by</Word>
@@ -177,9 +179,6 @@
 			<Word>join</Word>
 			<Word>on</Word>
 			<Word>equals</Word>
-			<Word>var</Word>
-			<Word>dynamic</Word>
-			<Word>await</Word>
 		</Keywords>
 		
 		<Keywords color="ExceptionKeywords">
@@ -250,6 +249,7 @@
 			<Word>virtual</Word>
 			<Word>volatile</Word>
 			<Word>async</Word>
+			<Word>partial</Word>
 		</Keywords>
 		
 		<Keywords color="Visibility">

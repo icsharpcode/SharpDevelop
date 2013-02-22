@@ -108,7 +108,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			var fileName = FileName.Create(variable.Region.FileName);
 			List<Reference> references = new List<Reference>();
 			await SD.ParserService.FindLocalReferencesAsync(
-				fileName, variable, 
+				fileName, variable,
 				r => { lock (references) references.Add(r); },
 				cancellationToken: progressMonitor.CancellationToken);
 			return new SearchedFile(fileName, references);
@@ -173,7 +173,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			var graph = BuildTypeInheritanceGraph(compilations);
 			TypeGraphNode node;
 			if (graph.TryGetValue(new AssemblyQualifiedTypeName(baseType), out node)) {
-				node.BaseTypes.Clear(); // only derived types were requested, so don't return the base types
+				// only derived types were requested, so don't return the base types
+				// (this helps the GC to collect the unused parts of the graph more quickly)
+				node.BaseTypes.Clear();
 				return node;
 			} else {
 				return new TypeGraphNode(baseType);
