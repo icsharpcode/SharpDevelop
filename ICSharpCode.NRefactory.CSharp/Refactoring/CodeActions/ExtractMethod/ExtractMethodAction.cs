@@ -70,20 +70,40 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 			
 			return new CodeAction(context.TranslateString("Extract method"), script => {
 				string methodName = "NewMethod";
-				var method = new MethodDeclaration() {
+				var method = new MethodDeclaration {
 					ReturnType = context.CreateShortType(resolveResult.Type),
 					Name = methodName,
-					Body = new BlockStatement() {
+					Body = new BlockStatement {
 						new ReturnStatement(expression.Clone())
 					}
 				};
 				if (!StaticVisitor.UsesNotStaticMember(context, expression))
 					method.Modifiers |= Modifiers.Static;
+
+				var usedVariables = VariableLookupVisitor.Analyze(context, expression);
+				
+				var inExtractedRegion = new VariableUsageAnalyzation (context, usedVariables);
+
+				usedVariables.Sort ((l, r) => l.Region.Begin.CompareTo (r.Region.Begin));
+				var target = new IdentifierExpression(methodName);
+				var invocation = new InvocationExpression(target);
+				foreach (var variable in usedVariables) {
+					Expression argumentExpression = new IdentifierExpression(variable.Name); 
+					
+					var mod = ParameterModifier.None;
+					if (inExtractedRegion.GetStatus (variable) == VariableState.Changed) {
+						mod = ParameterModifier.Ref;
+						argumentExpression = new DirectionExpression(FieldDirection.Ref, argumentExpression);
+					}
+					
+					method.Parameters.Add(new ParameterDeclaration(context.CreateShortType(variable.Type), variable.Name, mod));
+					invocation.Arguments.Add(argumentExpression);
+				}
+
 				var task = script.InsertWithCursor(context.TranslateString("Extract method"), Script.InsertPosition.Before, method);
 
 				Action<Task> replaceStatements = delegate {
-					var target = new IdentifierExpression(methodName);
-					script.Replace(expression, new InvocationExpression(target));
+					script.Replace(expression, invocation);
 					script.Link(target, method.NameToken);
 				};
 

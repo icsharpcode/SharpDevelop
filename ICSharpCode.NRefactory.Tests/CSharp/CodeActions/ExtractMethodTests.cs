@@ -487,6 +487,30 @@ class TestClass
 	}
 }");
 		}
+
+		[Test]
+		public void TestStaticSimpleExtractMethodFromExpression ()
+		{
+			Test<ExtractMethodAction> (@"class TestClass
+{
+	public static void TestMethod ()
+	{
+		int i;
+		var f = <-i % 5 == 0->;
+	}
+}", @"class TestClass
+{
+	static bool NewMethod (int i)
+	{
+		return i % 5 == 0;
+	}
+	public static void TestMethod ()
+	{
+		int i;
+		var f = NewMethod (i);
+	}
+}");
+		}
 	}
 }
 
