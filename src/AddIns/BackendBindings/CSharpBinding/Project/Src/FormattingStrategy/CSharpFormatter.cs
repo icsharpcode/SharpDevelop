@@ -18,7 +18,7 @@ namespace CSharpBinding.FormattingStrategy
 		{
 			var syntaxTree = new CSharpParser().Parse(editor.Document);
 			var fv = new AstFormattingVisitor(options, editor.Document, editor.ToEditorOptions());
-			fv.FormattingRegion = new DomRegion(editor.Document.GetLocation(offset), editor.Document.GetLocation(offset + length));
+			fv.AddFormattingRegion(new DomRegion(editor.Document.GetLocation(offset), editor.Document.GetLocation(offset + length)));
 			syntaxTree.AcceptVisitor(fv);
 			fv.ApplyChanges(offset, length);
 		}

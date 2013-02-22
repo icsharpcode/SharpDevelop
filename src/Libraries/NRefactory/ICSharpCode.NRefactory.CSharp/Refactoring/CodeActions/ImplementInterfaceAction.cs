@@ -158,9 +158,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					bool needsExplicitly = explicitly;
 					alreadyImplemented = false;
 					foreach (var t in implementingType.GetAllBaseTypeDefinitions ()) {
-						if (t.Kind == TypeKind.Interface)
+						if (t.Kind == TypeKind.Interface) {
+							foreach (var cprop in t.Properties) {
+								if (cprop.Name == prop.Name && cprop.IsShadowing) {
+									if (!needsExplicitly && !cprop.ReturnType.Equals(prop.ReturnType))
+										needsExplicitly = true;
+								}
+							}
 							continue;
-						foreach (IProperty cprop in t.Properties) {
+						}
+						foreach (var cprop in t.Properties) {
 							if (cprop.Name == prop.Name) {
 								if (!needsExplicitly && !cprop.ReturnType.Equals(prop.ReturnType))
 									needsExplicitly = true;

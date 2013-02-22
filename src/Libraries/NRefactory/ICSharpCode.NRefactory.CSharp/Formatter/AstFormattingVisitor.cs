@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		OnTheFly,
 		Intrusive
 	}
-
+	
 	public class AstFormattingVisitor : DepthFirstAstVisitor
 	{
 		sealed class TextReplaceAction
@@ -47,11 +47,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			internal readonly int RemovalLength;
 			internal readonly string NewText;
 			internal TextReplaceAction DependsOn;
-
-#if DEBUG
+			
+			#if DEBUG
 			internal readonly string StackTrace;
-#endif
-
+			#endif
+			
 			public TextReplaceAction (int offset, int removalLength, string newText)
 			{
 				this.Offset = offset;
@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				return 0;
 			}
-
+			
 			public override string ToString()
 			{
 				return string.Format("[TextReplaceAction: Offset={0}, RemovalLength={1}, NewText={2}]", Offset, RemovalLength, NewText);
@@ -92,15 +92,28 @@ namespace ICSharpCode.NRefactory.CSharp
 			get;
 			set;
 		}
-
+		
 		public bool HadErrors {
 			get;
 			set;
 		}
-
-		public DomRegion FormattingRegion {
-			get;
-			set;
+		
+		List<DomRegion> formattingRegions = new List<DomRegion> ();
+		TextLocation lastFormattingLocation = new TextLocation(int.MaxValue, int.MaxValue);
+		public IEnumerable<DomRegion> FormattingRegions {
+			get {
+				return formattingRegions;
+			}
+		}
+		
+		public void AddFormattingRegion (DomRegion region)
+		{
+			formattingRegions.Add(region);
+			if (formattingRegions.Count == 1) {
+				lastFormattingLocation = region.End;
+			} else {
+				lastFormattingLocation = lastFormattingLocation < region.End ? region.End : lastFormattingLocation;
+			}
 		}
 		
 		public AstFormattingVisitor(CSharpFormattingOptions policy, IDocument document, TextEditorOptions options = null)
@@ -116,25 +129,34 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.options = options ?? TextEditorOptions.Default;
 			curIndent = new Indent(this.options);
 		}
-
-		protected override void VisitChildren (AstNode node)
+		
+		void VisitChildrenToFormat (AstNode parent, Action<AstNode> callback)
 		{
 			AstNode next;
-			for (var child = node.FirstChild; child != null; child = next) {
+			for (var child = parent.FirstChild; child != null; child = next) {
 				// Store next to allow the loop to continue
 				// if the visitor removes/replaces child.
 				next = child.NextSibling;
-
-				if (!FormattingRegion.IsEmpty) {
-					if (child.EndLocation < FormattingRegion.Begin) {
-						continue;
+				
+				if (formattingRegions.Count > 0) {
+					if (formattingRegions.Any(r => r.IsInside(child.StartLocation) || r.IsInside(child.EndLocation))) {
+						callback(child);
+					} else {
+						var childRegion = child.Region;
+						if (formattingRegions.Any(r => childRegion.IsInside(r.Begin) || childRegion.IsInside(r.End)))
+						    callback(child);
 					}
-					if (child.StartLocation > FormattingRegion.End) {
+					if (child.StartLocation > lastFormattingLocation)
 						break;
-					}
+				} else {
+					callback(child);
 				}
-				child.AcceptVisitor (this);
 			}
+		}
+		
+		protected override void VisitChildren (AstNode node)
+		{
+			VisitChildrenToFormat (node, n => n.AcceptVisitor (this));
 		}
 		
 		/// <summary>
@@ -166,6 +188,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void ApplyChanges(int startOffset, int length, Action<int, int, string> documentReplace, Func<int, int, string, bool> filter = null)
 		{
 			int endOffset = startOffset + length;
+//			Console.WriteLine ("apply:"+ startOffset + "->" + endOffset);
+//			Console.WriteLine (document.Text.Substring (0, startOffset) + new string ('x',length) + document.Text.Substring (startOffset+ length));
+
 			TextReplaceAction previousChange = null;
 			int delta = 0;
 			var depChanges = new List<TextReplaceAction> ();
@@ -179,7 +204,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						#if DEBUG
 						Console.WriteLine ("change 1:" + change + " at " + document.GetLocation (change.Offset));
 						Console.WriteLine (change.StackTrace);
-
+						
 						Console.WriteLine ("change 2:" + previousChange + " at " + document.GetLocation (previousChange.Offset));
 						Console.WriteLine (previousChange.StackTrace);
 						#endif
@@ -187,11 +212,9 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 				}
 				previousChange = change;
-				
-				bool skipChange = change.Offset < startOffset || change.Offset > endOffset;
+				bool skipChange = change.Offset + change.RemovalLength < startOffset || change.Offset > endOffset;
 				skipChange |= filter != null && filter(change.Offset + delta, change.RemovalLength, change.NewText);
 				skipChange &= !depChanges.Contains(change);
-
 				if (!skipChange) {
 					documentReplace(change.Offset + delta, change.RemovalLength, change.NewText);
 					delta += change.NewText.Length - change.RemovalLength;
@@ -202,12 +225,20 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			changes.Clear();
 		}
-
+		
 		public override void VisitSyntaxTree(SyntaxTree unit)
 		{
-			base.VisitSyntaxTree(unit);
+			AstNode next;
+			for (var child = unit.FirstChild; child != null; child = next) {
+				// Store next to allow the loop to continue
+				// if the visitor removes/replaces child.
+				next = child.NextSibling;
+				if (child is EntityDeclaration)
+					FormatAttributedNode(child);
+				child.AcceptVisitor (this);
+			}
 		}
-
+		
 		public void EnsureBlankLinesAfter(AstNode node, int blankLines)
 		{
 			if (FormattingMode != FormattingMode.Intrusive)
@@ -237,7 +268,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			AddChange(start, removedChars, sb.ToString());
 		}
-
+		
 		public void EnsureBlankLinesBefore(AstNode node, int blankLines)
 		{
 			if (FormattingMode != FormattingMode.Intrusive)
@@ -257,7 +288,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return;
 			AddChange(start, end - start, sb.ToString());
 		}
-
+		
 		public override void VisitUsingDeclaration(UsingDeclaration usingDeclaration)
 		{
 			if (usingDeclaration.PrevSibling != null && !(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling is UsingAliasDeclaration)) {
@@ -270,7 +301,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				FixIndentationForceNewLine(usingDeclaration.StartLocation);
 			}
 		}
-
+		
 		public override void VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration)
 		{
 			if (usingDeclaration.PrevSibling != null && !(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) {
@@ -282,7 +313,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				FixIndentationForceNewLine(usingDeclaration.StartLocation);
 			}
 		}
-
+		
 		public override void VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration)
 		{
 			var firstNsMember = namespaceDeclaration.Members.FirstOrDefault();
@@ -294,16 +325,25 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (policy.IndentNamespaceBody) {
 				curIndent.Push(IndentType.Block);
 			}
-			base.VisitNamespaceDeclaration(namespaceDeclaration);
+			
+			AstNode next;
+			for (var child = namespaceDeclaration.FirstChild; child != null; child = next) {
+				// Store next to allow the loop to continue
+				// if the visitor removes/replaces child.
+				next = child.NextSibling;
+				if (child is EntityDeclaration)
+					FormatAttributedNode(child);
+				child.AcceptVisitor (this);
+			}
+			
 			if (policy.IndentNamespaceBody) {
 				curIndent.Pop ();
 			}
 			FixIndentation(namespaceDeclaration.RBraceToken.StartLocation);
 		}
-
+		
 		public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
 		{
-			FormatAttributedNode(typeDeclaration);
 			BraceStyle braceStyle;
 			bool indentBody = false;
 			switch (typeDeclaration.ClassType) {
@@ -326,13 +366,19 @@ namespace ICSharpCode.NRefactory.CSharp
 				default:
 					throw new InvalidOperationException("unsupported class type : " + typeDeclaration.ClassType);
 			}
-
+			
 			EnforceBraceStyle(braceStyle, typeDeclaration.LBraceToken, typeDeclaration.RBraceToken);
 			
 			if (indentBody) {
 				curIndent.Push(IndentType.Block);
 			}
-			base.VisitTypeDeclaration(typeDeclaration);
+			
+			VisitChildrenToFormat (typeDeclaration, child => {
+				if (child is EntityDeclaration)
+					FormatAttributedNode(child);
+				child.AcceptVisitor (this);
+			});
+			
 			if (indentBody) {
 				curIndent.Pop ();
 			}
@@ -340,9 +386,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (typeDeclaration.NextSibling is TypeDeclaration || typeDeclaration.NextSibling is DelegateDeclaration) {
 				EnsureBlankLinesAfter(typeDeclaration, policy.BlankLinesBetweenTypes);
 			}
-
+			
 		}
-
+		
 		bool IsSimpleAccessor(Accessor accessor)
 		{
 			if (accessor.IsNull || accessor.Body.IsNull || accessor.Body.FirstChild == null) {
@@ -354,7 +400,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return !(accessor.Body.Statements.FirstOrDefault() is BlockStatement);
 			
 		}
-
+		
 		bool IsSpacing(char ch)
 		{
 			return ch == ' ' || ch == '\t';
@@ -370,7 +416,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			return true;
 		}
-
+		
 		int SearchLastNonWsChar(int startOffset, int endOffset)
 		{
 			startOffset = System.Math.Max(0, startOffset);
@@ -405,25 +451,25 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			return result;
 		}
-
+		
 		void ForceSpace(int startOffset, int endOffset, bool forceSpace)
 		{
 			int lastNonWs = SearchLastNonWsChar(startOffset, endOffset);
 			if (lastNonWs >= 0)
 				AddChange(lastNonWs + 1, System.Math.Max(0, endOffset - lastNonWs - 1), forceSpace ? " " : "");
 		}
-//		void ForceSpacesAfter (AstNode n, bool forceSpaces)
-//		{
-//			if (n == null)
-//				return;
-//			AstLocation location = n.EndLocation;
-//			int offset = data.LocationToOffset (location.Line, location.Column);
-//			int i = offset;
-//			while (i < data.Length && IsSpacing (data.GetCharAt (i))) {
-//				i++;
-//			}
-//			ForceSpace (offset - 1, i, forceSpaces);
-//		}
+		//		void ForceSpacesAfter (AstNode n, bool forceSpaces)
+		//		{
+		//			if (n == null)
+		//				return;
+		//			AstLocation location = n.EndLocation;
+		//			int offset = data.LocationToOffset (location.Line, location.Column);
+		//			int i = offset;
+		//			while (i < data.Length && IsSpacing (data.GetCharAt (i))) {
+		//				i++;
+		//			}
+		//			ForceSpace (offset - 1, i, forceSpaces);
+		//		}
 		
 		void ForceSpacesAfter(AstNode n, bool forceSpaces)
 		{
@@ -442,21 +488,21 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpace(offset - 1, i, forceSpaces);
 		}
 		
-//		int ForceSpacesBefore (AstNode n, bool forceSpaces)
-//		{
-//			if (n == null || n.IsNull)
-//				return 0;
-//			AstLocation location = n.StartLocation;
-//
-//			int offset = data.LocationToOffset (location.Line, location.Column);
-//			int i = offset - 1;
-//
-//			while (i >= 0 && IsSpacing (data.GetCharAt (i))) {
-//				i--;
-//			}
-//			ForceSpace (i, offset, forceSpaces);
-//			return i;
-//		}
+		//		int ForceSpacesBefore (AstNode n, bool forceSpaces)
+		//		{
+		//			if (n == null || n.IsNull)
+		//				return 0;
+		//			AstLocation location = n.StartLocation;
+		//
+		//			int offset = data.LocationToOffset (location.Line, location.Column);
+		//			int i = offset - 1;
+		//
+		//			while (i >= 0 && IsSpacing (data.GetCharAt (i))) {
+		//				i--;
+		//			}
+		//			ForceSpace (i, offset, forceSpaces);
+		//			return i;
+		//		}
 		
 		int ForceSpacesBefore(AstNode n, bool forceSpaces)
 		{
@@ -477,7 +523,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpace(i, offset, forceSpaces);
 			return i;
 		}
-
+		
 		int ForceSpacesBeforeRemoveNewLines(AstNode n, bool forceSpace = true)
 		{
 			if (n == null || n.IsNull) {
@@ -495,10 +541,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			AddChange(i + 1, length, forceSpace ? " " : "");
 			return i;
 		}
-
+		
 		public override void VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
 		{
-			FormatAttributedNode(propertyDeclaration);
 			bool oneLine = false;
 			switch (policy.PropertyFormatting) {
 				case PropertyFormatting.AllowOneLine:
@@ -529,17 +574,17 @@ namespace ICSharpCode.NRefactory.CSharp
 					isSimple = IsSimpleAccessor(propertyDeclaration.Getter) && IsSimpleAccessor(propertyDeclaration.Setter);
 					if (isSimple) {
 						int offset = this.document.GetOffset(propertyDeclaration.LBraceToken.StartLocation);
-					
+						
 						int start = SearchWhitespaceStart(offset);
 						int end = SearchWhitespaceEnd(offset);
 						AddChange(start, offset - start, " ");
 						AddChange(offset + 1, end - offset - 2, " ");
-					
+						
 						offset = this.document.GetOffset(propertyDeclaration.RBraceToken.StartLocation);
 						start = SearchWhitespaceStart(offset);
 						AddChange(start, offset - start, " ");
 						oneLine = true;
-				
+						
 					} else {
 						EnforceBraceStyle(policy.PropertyBraceStyle, propertyDeclaration.LBraceToken, propertyDeclaration.RBraceToken);
 					}
@@ -612,15 +657,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				EnsureBlankLinesAfter(propertyDeclaration, policy.BlankLinesBetweenMembers);
 			}
 		}
-
+		
 		public override void VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration)
 		{
 			ForceSpacesBefore(indexerDeclaration.LBracketToken, policy.SpaceBeforeIndexerDeclarationBracket);
 			ForceSpacesAfter(indexerDeclaration.LBracketToken, policy.SpaceWithinIndexerDeclarationBracket);
-
+			
 			FormatParameters(indexerDeclaration);
-
-			FormatAttributedNode(indexerDeclaration);
+			
 			EnforceBraceStyle(policy.PropertyBraceStyle, indexerDeclaration.LBraceToken, indexerDeclaration.RBraceToken);
 			if (policy.IndentPropertyBody) {
 				curIndent.Push(IndentType.Block);
@@ -656,15 +700,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				EnsureBlankLinesAfter(indexerDeclaration, policy.BlankLinesBetweenMembers);
 			}
 		}
-
+		
 		static bool IsSimpleEvent(AstNode node)
 		{
 			return node is EventDeclaration;
 		}
-
+		
 		public override void VisitCustomEventDeclaration(CustomEventDeclaration eventDeclaration)
 		{
-			FormatAttributedNode(eventDeclaration);
 			EnforceBraceStyle(policy.EventBraceStyle, eventDeclaration.LBraceToken, eventDeclaration.RBraceToken);
 			if (policy.IndentEventBody) {
 				curIndent.Push(IndentType.Block);
@@ -705,16 +748,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				EnsureBlankLinesAfter(eventDeclaration, policy.BlankLinesBetweenMembers);
 			}
 		}
-
+		
 		public override void VisitEventDeclaration(EventDeclaration eventDeclaration)
 		{
-			FormatAttributedNode(eventDeclaration);
-			if (eventDeclaration.NextSibling is EventDeclaration && IsSimpleEvent(eventDeclaration) && IsSimpleEvent(eventDeclaration.NextSibling)) {
-				EnsureBlankLinesAfter(eventDeclaration, policy.BlankLinesBetweenEventFields);
-			} else if (IsMember(eventDeclaration.NextSibling)) {
-				EnsureBlankLinesAfter(eventDeclaration, policy.BlankLinesBetweenMembers);
-			}
-			
 			var lastLoc = eventDeclaration.StartLocation;
 			curIndent.Push(IndentType.Block);
 			foreach (var initializer in eventDeclaration.Variables) {
@@ -725,17 +761,22 @@ namespace ICSharpCode.NRefactory.CSharp
 				initializer.AcceptVisitor(this);
 			}
 			curIndent.Pop ();
+			if (eventDeclaration.NextSibling is EventDeclaration && IsSimpleEvent(eventDeclaration) && IsSimpleEvent(eventDeclaration.NextSibling)) {
+				EnsureBlankLinesAfter(eventDeclaration, policy.BlankLinesBetweenEventFields);
+			} else if (IsMember(eventDeclaration.NextSibling)) {
+				EnsureBlankLinesAfter(eventDeclaration, policy.BlankLinesBetweenMembers);
+			}
 		}
-
+		
+		
 		public override void VisitAccessor(Accessor accessor)
 		{
 			FixIndentationForceNewLine(accessor.StartLocation);
 			base.VisitAccessor(accessor);
 		}
-
+		
 		public override void VisitFieldDeclaration(FieldDeclaration fieldDeclaration)
 		{
-			FormatAttributedNode(fieldDeclaration);
 			fieldDeclaration.ReturnType.AcceptVisitor(this);
 			FormatCommas(fieldDeclaration, policy.SpaceBeforeFieldDeclarationComma, policy.SpaceAfterFieldDeclarationComma);
 			if (fieldDeclaration.NextSibling is FieldDeclaration || fieldDeclaration.NextSibling is FixedFieldDeclaration) {
@@ -755,10 +796,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				initializer.AcceptVisitor(this);
 			}
 		}
-
+		
 		public override void VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration)
 		{
-			FormatAttributedNode(fixedFieldDeclaration);
 			FormatCommas(fixedFieldDeclaration, policy.SpaceBeforeFieldDeclarationComma, policy.SpaceAfterFieldDeclarationComma);
 			if (fixedFieldDeclaration.NextSibling is FieldDeclaration || fixedFieldDeclaration.NextSibling is FixedFieldDeclaration) {
 				EnsureBlankLinesAfter(fixedFieldDeclaration, policy.BlankLinesBetweenFields);
@@ -777,17 +817,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			curIndent.Pop ();
 		}
-
+		
 		public override void VisitEnumMemberDeclaration(EnumMemberDeclaration enumMemberDeclaration)
 		{
-			FormatAttributedNode(enumMemberDeclaration);
 			base.VisitEnumMemberDeclaration(enumMemberDeclaration);
 		}
-
+		
 		public override void VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration)
 		{
-			FormatAttributedNode(delegateDeclaration);
-			
 			ForceSpacesBefore(delegateDeclaration.LParToken, policy.SpaceBeforeDelegateDeclarationParentheses);
 			if (delegateDeclaration.Parameters.Any()) {
 				ForceSpacesAfter(delegateDeclaration.LParToken, policy.SpaceWithinDelegateDeclarationParentheses);
@@ -797,16 +834,16 @@ namespace ICSharpCode.NRefactory.CSharp
 				ForceSpacesBefore(delegateDeclaration.RParToken, policy.SpaceBetweenEmptyDelegateDeclarationParentheses);
 			}
 			FormatCommas(delegateDeclaration, policy.SpaceBeforeDelegateDeclarationParameterComma, policy.SpaceAfterDelegateDeclarationParameterComma);
-
+			
 			if (delegateDeclaration.NextSibling is TypeDeclaration || delegateDeclaration.NextSibling is DelegateDeclaration) {
 				EnsureBlankLinesAfter(delegateDeclaration, policy.BlankLinesBetweenTypes);
 			} else if (IsMember(delegateDeclaration.NextSibling)) {
 				EnsureBlankLinesAfter(delegateDeclaration, policy.BlankLinesBetweenMembers);
 			}
-
+			
 			base.VisitDelegateDeclaration(delegateDeclaration);
 		}
-
+		
 		static bool IsMember(AstNode nextSibling)
 		{
 			return nextSibling != null && nextSibling.NodeType == NodeType.Member;
@@ -826,8 +863,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				FixIndentationForceNewLine(child.StartLocation);
 			}
 		}
-
-
+		
+		
 		void FormatParameters(AstNode node)
 		{
 			Wrapping methodCallArgumentWrapping;
@@ -836,16 +873,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			bool spaceWithinMethodCallParentheses;
 			bool spaceAfterMethodCallParameterComma;
 			bool spaceBeforeMethodCallParameterComma;
-				
+			
 			CSharpTokenNode rParToken;
 			AstNodeCollection<ParameterDeclaration> parameters;
-
+			
 			var constructorDeclaration = node as ConstructorDeclaration;
 			if (constructorDeclaration != null) {
 				methodCallArgumentWrapping = policy.MethodDeclarationParameterWrapping;
 				newLineAferMethodCallOpenParentheses = policy.NewLineAferMethodDeclarationOpenParentheses;
 				methodClosingParenthesesOnNewLine = policy.MethodDeclarationClosingParenthesesOnNewLine;
-
+				
 				spaceWithinMethodCallParentheses = policy.SpaceWithinConstructorDeclarationParentheses;
 				spaceAfterMethodCallParameterComma = policy.SpaceAfterConstructorDeclarationParameterComma;
 				spaceBeforeMethodCallParameterComma = policy.SpaceBeforeConstructorDeclarationParameterComma;
@@ -856,7 +893,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				methodCallArgumentWrapping = policy.IndexerDeclarationParameterWrapping;
 				newLineAferMethodCallOpenParentheses = policy.NewLineAferIndexerDeclarationOpenBracket;
 				methodClosingParenthesesOnNewLine = policy.IndexerDeclarationClosingBracketOnNewLine;
-
+				
 				spaceWithinMethodCallParentheses = policy.SpaceWithinIndexerDeclarationBracket;
 				spaceAfterMethodCallParameterComma = policy.SpaceAfterIndexerDeclarationParameterComma;
 				spaceBeforeMethodCallParameterComma = policy.SpaceBeforeIndexerDeclarationParameterComma;
@@ -885,7 +922,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			if (FormattingMode == ICSharpCode.NRefactory.CSharp.FormattingMode.OnTheFly)
 				methodCallArgumentWrapping = Wrapping.DoNotChange;
-
+			
 			bool wrapMethodCall = DoWrap(methodCallArgumentWrapping, rParToken, parameters.Count);
 			if (wrapMethodCall && parameters.Any()) {
 				if (newLineAferMethodCallOpenParentheses) {
@@ -910,7 +947,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 				}
 			} else {
-				foreach (var arg in parameters) {
+				foreach (var arg in parameters.Skip (1)) {
 					if (arg.PrevSibling != null) {
 						if (methodCallArgumentWrapping == Wrapping.DoNotWrap) {
 							ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
@@ -939,11 +976,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 		}
-
+		
 		public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 		{
-			FormatAttributedNode(methodDeclaration);
-			
 			ForceSpacesBefore(methodDeclaration.LParToken, policy.SpaceBeforeMethodDeclarationParentheses);
 			if (methodDeclaration.Parameters.Any()) {
 				ForceSpacesAfter(methodDeclaration.LParToken, policy.SpaceWithinMethodDeclarationParentheses);
@@ -952,7 +987,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				ForceSpacesAfter(methodDeclaration.LParToken, policy.SpaceBetweenEmptyMethodDeclarationParentheses);
 				ForceSpacesBefore(methodDeclaration.RParToken, policy.SpaceBetweenEmptyMethodDeclarationParentheses);
 			}
-
+			
 			if (!methodDeclaration.Body.IsNull) {
 				EnforceBraceStyle(policy.MethodBraceStyle, methodDeclaration.Body.LBraceToken, methodDeclaration.Body.RBraceToken);
 				VisitBlockWithoutFixingBraces(methodDeclaration.Body, policy.IndentMethodBody);
@@ -961,11 +996,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				EnsureBlankLinesAfter(methodDeclaration, policy.BlankLinesBetweenMembers);
 			}
 		}
-
+		
 		public override void VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration)
 		{
-			FormatAttributedNode(operatorDeclaration);
-			
 			ForceSpacesBefore(operatorDeclaration.LParToken, policy.SpaceBeforeMethodDeclarationParentheses);
 			if (operatorDeclaration.Parameters.Any()) {
 				ForceSpacesAfter(operatorDeclaration.LParToken, policy.SpaceWithinMethodDeclarationParentheses);
@@ -974,7 +1007,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				ForceSpacesAfter(operatorDeclaration.LParToken, policy.SpaceBetweenEmptyMethodDeclarationParentheses);
 				ForceSpacesBefore(operatorDeclaration.RParToken, policy.SpaceBetweenEmptyMethodDeclarationParentheses);
 			}
-
+			
 			if (!operatorDeclaration.Body.IsNull) {
 				EnforceBraceStyle(policy.MethodBraceStyle, operatorDeclaration.Body.LBraceToken, operatorDeclaration.Body.RBraceToken);
 				VisitBlockWithoutFixingBraces(operatorDeclaration.Body, policy.IndentMethodBody);
@@ -983,11 +1016,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				EnsureBlankLinesAfter(operatorDeclaration, policy.BlankLinesBetweenMembers);
 			}
 		}
-
+		
 		public override void VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
 		{
-			FormatAttributedNode(constructorDeclaration);
-			
 			ForceSpacesBefore(constructorDeclaration.LParToken, policy.SpaceBeforeConstructorDeclarationParentheses);
 			if (constructorDeclaration.Parameters.Any()) {
 				ForceSpacesAfter(constructorDeclaration.LParToken, policy.SpaceWithinConstructorDeclarationParentheses);
@@ -996,7 +1027,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				ForceSpacesAfter(constructorDeclaration.LParToken, policy.SpaceBetweenEmptyConstructorDeclarationParentheses);
 				ForceSpacesBefore(constructorDeclaration.RParToken, policy.SpaceBetweenEmptyConstructorDeclarationParentheses);
 			}
-
+			
 			if (!constructorDeclaration.Body.IsNull) {
 				EnforceBraceStyle(policy.ConstructorBraceStyle, constructorDeclaration.Body.LBraceToken, constructorDeclaration.Body.RBraceToken);
 				VisitBlockWithoutFixingBraces(constructorDeclaration.Body, policy.IndentMethodBody);
@@ -1005,11 +1036,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				EnsureBlankLinesAfter(constructorDeclaration, policy.BlankLinesBetweenMembers);
 			}
 		}
-
+		
 		public override void VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration)
 		{
-			FormatAttributedNode(destructorDeclaration);
-			
 			CSharpTokenNode lParen = destructorDeclaration.LParToken;
 			int offset = this.document.GetOffset(lParen.StartLocation);
 			ForceSpaceBefore(offset, policy.SpaceBeforeConstructorDeclarationParentheses);
@@ -1022,23 +1051,25 @@ namespace ICSharpCode.NRefactory.CSharp
 				EnsureBlankLinesAfter(destructorDeclaration, policy.BlankLinesBetweenMembers);
 			}
 		}
-
+		
 		#region Statements
 		public override void VisitExpressionStatement(ExpressionStatement expressionStatement)
 		{
 			base.VisitExpressionStatement(expressionStatement);
 			FixSemicolon(expressionStatement.SemicolonToken);
 		}
-
+		
 		void VisitBlockWithoutFixingBraces(BlockStatement blockStatement, bool indent)
 		{
 			if (indent) {
 				curIndent.Push(IndentType.Block);
 			}
-			foreach (var child in blockStatement.Children) {
+			
+			VisitChildrenToFormat (blockStatement, child => {
 				if (child.Role == Roles.LBrace || child.Role == Roles.RBrace) {
-					continue;
+					return;
 				}
+				
 				if (child is Statement) {
 					FixStatementIndentation(child.StartLocation);
 					child.AcceptVisitor(this);
@@ -1051,66 +1082,67 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (child.StartLocation.Column > 1)
 						FixStatementIndentation(child.StartLocation);
 				}
-			}
+			});
+			
 			if (indent) {
 				curIndent.Pop ();
 			}
 		}
-
+		
 		public override void VisitBlockStatement(BlockStatement blockStatement)
 		{
 			FixIndentation(blockStatement.StartLocation);
 			VisitBlockWithoutFixingBraces(blockStatement, policy.IndentBlocks);
 			FixIndentation(blockStatement.EndLocation, -1);
 		}
-
+		
 		public override void VisitComment(Comment comment)
 		{
 			if (comment.StartsLine && !HadErrors && (!policy.KeepCommentsAtFirstColumn || comment.StartLocation.Column > 1)) {
 				FixIndentation(comment.StartLocation);
 			}
 		}
-
+		
 		public override void VisitBreakStatement(BreakStatement breakStatement)
 		{
 			FixSemicolon(breakStatement.SemicolonToken);
 		}
-
+		
 		public override void VisitCheckedStatement(CheckedStatement checkedStatement)
 		{
 			FixEmbeddedStatment(policy.StatementBraceStyle, policy.FixedBraceForcement, checkedStatement.Body);
 		}
-
+		
 		public override void VisitContinueStatement(ContinueStatement continueStatement)
 		{
 			FixSemicolon(continueStatement.SemicolonToken);
 		}
-
+		
 		public override void VisitEmptyStatement(EmptyStatement emptyStatement)
 		{
 			// Empty
 		}
-
+		
 		public override void VisitFixedStatement(FixedStatement fixedStatement)
 		{
 			FixEmbeddedStatment(policy.StatementBraceStyle, policy.FixedBraceForcement, fixedStatement.EmbeddedStatement);
 		}
-
+		
 		public override void VisitForeachStatement(ForeachStatement foreachStatement)
 		{
 			ForceSpacesBefore(foreachStatement.LParToken, policy.SpaceBeforeForeachParentheses);
-
+			
 			ForceSpacesAfter(foreachStatement.LParToken, policy.SpacesWithinForeachParentheses);
 			ForceSpacesBefore(foreachStatement.RParToken, policy.SpacesWithinForeachParentheses);
-
+			
 			FixEmbeddedStatment(policy.StatementBraceStyle, policy.ForEachBraceForcement, foreachStatement.EmbeddedStatement);
 		}
-
+		
 		void FixEmbeddedStatment(BraceStyle braceStyle, BraceForcement braceForcement, AstNode node)
 		{
 			FixEmbeddedStatment(braceStyle, braceForcement, null, false, node);
 		}
-
+		
 		void FixEmbeddedStatment(BraceStyle braceStyle, BraceForcement braceForcement, CSharpTokenNode token, bool allowInLine, AstNode node, bool statementAlreadyIndented = false)
 		{
 			if (node == null) {
@@ -1119,7 +1151,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			bool isBlock = node is BlockStatement;
 			TextReplaceAction beginBraceAction = null;
 			TextReplaceAction endBraceAction = null;
-
+			
 			switch (braceForcement) {
 				case BraceForcement.DoNotChange:
 					//nothing
@@ -1233,7 +1265,7 @@ namespace ICSharpCode.NRefactory.CSharp
 								startBrace = this.options.EolMarker + curIndent.IndentString + "}";
 								curIndent.Pop ();
 								break;
-
+								
 						}
 						if (startBrace != null) {
 							endBraceAction = AddChange(offset, 0, startBrace);
@@ -1246,7 +1278,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				endBraceAction.DependsOn = beginBraceAction;
 			}
 		}
-
+		
 		void EnforceBraceStyle(BraceStyle braceStyle, AstNode lbrace, AstNode rbrace)
 		{
 			if (lbrace.IsNull || rbrace.IsNull) {
@@ -1275,7 +1307,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (prevNode is Comment) {
 						// delete old bracket
 						AddChange(whitespaceStart, lbraceOffset - whitespaceStart + 1, "");
-					
+						
 						while (prevNode is Comment) {
 							prevNode = prevNode.GetPrevNode();
 						}
@@ -1294,7 +1326,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (prevNode is Comment) {
 						// delete old bracket
 						AddChange(whitespaceStart, lbraceOffset - whitespaceStart + 1, "");
-					
+						
 						while (prevNode is Comment) {
 							prevNode = prevNode.GetPrevNode();
 						}
@@ -1326,7 +1358,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddChange(whitespaceEnd, rbraceOffset - whitespaceEnd, endIndent);
 			}
 		}
-
+		
 		TextReplaceAction AddChange(int offset, int removedChars, string insertedText)
 		{
 			if (removedChars == 0 && string.IsNullOrEmpty (insertedText))
@@ -1335,12 +1367,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			changes.Add(action);
 			return action;
 		}
-
+		
 		public bool IsLineIsEmptyUpToEol(TextLocation startLocation)
 		{
 			return IsLineIsEmptyUpToEol(document.GetOffset(startLocation) - 1);
 		}
-
+		
 		bool IsLineIsEmptyUpToEol(int startOffset)
 		{
 			for (int offset = startOffset - 1; offset >= 0; offset--) {
@@ -1351,7 +1383,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			return true;
 		}
-
+		
 		int SearchWhitespaceStart(int startOffset)
 		{
 			if (startOffset < 0) {
@@ -1365,7 +1397,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			return 0;
 		}
-
+		
 		int SearchWhitespaceEnd(int startOffset)
 		{
 			if (startOffset > document.TextLength) {
@@ -1379,7 +1411,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			return document.TextLength - 1;
 		}
-
+		
 		int SearchWhitespaceLineStart(int startOffset)
 		{
 			if (startOffset < 0) {
@@ -1393,7 +1425,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			return 0;
 		}
-
+		
 		public override void VisitForStatement(ForStatement forStatement)
 		{
 			foreach (AstNode node in forStatement.Children) {
@@ -1405,28 +1437,28 @@ namespace ICSharpCode.NRefactory.CSharp
 					ForceSpacesAfter(node, policy.SpaceAfterForSemicolon);
 				}
 			}
-
+			
 			ForceSpacesBefore(forStatement.LParToken, policy.SpaceBeforeForParentheses);
-
+			
 			ForceSpacesAfter(forStatement.LParToken, policy.SpacesWithinForParentheses);
 			ForceSpacesBefore(forStatement.RParToken, policy.SpacesWithinForParentheses);
-
+			
 			FixEmbeddedStatment(policy.StatementBraceStyle, policy.ForBraceForcement, forStatement.EmbeddedStatement);
 		}
-
+		
 		public override void VisitGotoStatement(GotoStatement gotoStatement)
 		{
 			VisitChildren(gotoStatement);
 			FixSemicolon(gotoStatement.SemicolonToken);
 		}
-
+		
 		public override void VisitIfElseStatement(IfElseStatement ifElseStatement)
 		{
 			ForceSpacesBefore(ifElseStatement.LParToken, policy.SpaceBeforeIfParentheses);
-
+			
 			ForceSpacesAfter(ifElseStatement.LParToken, policy.SpacesWithinIfParentheses);
 			ForceSpacesBefore(ifElseStatement.RParToken, policy.SpacesWithinIfParentheses);
-
+			
 			if (!(ifElseStatement.Parent is IfElseStatement && ((IfElseStatement)ifElseStatement.Parent).FalseStatement == ifElseStatement)) {
 				FixStatementIndentation(ifElseStatement.StartLocation);
 			}
@@ -1452,40 +1484,40 @@ namespace ICSharpCode.NRefactory.CSharp
 				FixEmbeddedStatment(policy.StatementBraceStyle, forcement, ifElseStatement.ElseToken, policy.AllowIfBlockInline, ifElseStatement.FalseStatement, ifElseStatement.FalseStatement is IfElseStatement);
 			}
 		}
-
+		
 		public override void VisitLabelStatement(LabelStatement labelStatement)
 		{
 			// TODO
 			VisitChildren(labelStatement);
 		}
-
+		
 		public override void VisitLockStatement(LockStatement lockStatement)
 		{
 			ForceSpacesBefore(lockStatement.LParToken, policy.SpaceBeforeLockParentheses);
-
+			
 			ForceSpacesAfter(lockStatement.LParToken, policy.SpacesWithinLockParentheses);
 			ForceSpacesBefore(lockStatement.RParToken, policy.SpacesWithinLockParentheses);
-
+			
 			FixEmbeddedStatment(policy.StatementBraceStyle, policy.FixedBraceForcement, lockStatement.EmbeddedStatement);
 		}
-
+		
 		public override void VisitReturnStatement(ReturnStatement returnStatement)
 		{
 			VisitChildren(returnStatement);
 			FixSemicolon(returnStatement.SemicolonToken);
 		}
-
+		
 		public override void VisitSwitchStatement(SwitchStatement switchStatement)
 		{
 			ForceSpacesBefore(switchStatement.LParToken, policy.SpaceBeforeSwitchParentheses);
-
+			
 			ForceSpacesAfter(switchStatement.LParToken, policy.SpacesWithinSwitchParentheses);
 			ForceSpacesBefore(switchStatement.RParToken, policy.SpacesWithinSwitchParentheses);
-
+			
 			EnforceBraceStyle(policy.StatementBraceStyle, switchStatement.LBraceToken, switchStatement.RBraceToken);
 			VisitChildren(switchStatement);
 		}
-
+		
 		public override void VisitSwitchSection(SwitchSection switchSection)
 		{
 			if (policy.IndentSwitchBody) {
@@ -1519,18 +1551,18 @@ namespace ICSharpCode.NRefactory.CSharp
 				curIndent.Pop ();
 			}
 		}
-
+		
 		public override void VisitCaseLabel(CaseLabel caseLabel)
 		{
 			FixSemicolon(caseLabel.ColonToken);
 		}
-
+		
 		public override void VisitThrowStatement(ThrowStatement throwStatement)
 		{
 			VisitChildren(throwStatement);
 			FixSemicolon(throwStatement.SemicolonToken);
 		}
-
+		
 		public override void VisitTryCatchStatement(TryCatchStatement tryCatchStatement)
 		{
 			if (!tryCatchStatement.TryBlock.IsNull) {
@@ -1541,7 +1573,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				PlaceOnNewLine(policy.CatchNewLinePlacement, clause.CatchToken);
 				if (!clause.LParToken.IsNull) {
 					ForceSpacesBefore(clause.LParToken, policy.SpaceBeforeCatchParentheses);
-
+					
 					ForceSpacesAfter(clause.LParToken, policy.SpacesWithinCatchParentheses);
 					ForceSpacesBefore(clause.RParToken, policy.SpacesWithinCatchParentheses);
 				}
@@ -1555,32 +1587,32 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			
 		}
-
+		
 		public override void VisitCatchClause(CatchClause catchClause)
 		{
 			// Handled in TryCatchStatement
 		}
-
+		
 		public override void VisitUncheckedStatement(UncheckedStatement uncheckedStatement)
 		{
 			FixEmbeddedStatment(policy.StatementBraceStyle, policy.FixedBraceForcement, uncheckedStatement.Body);
 		}
-
+		
 		public override void VisitUnsafeStatement(UnsafeStatement unsafeStatement)
 		{
 			FixEmbeddedStatment(policy.StatementBraceStyle, BraceForcement.DoNotChange, unsafeStatement.Body);
 		}
-
+		
 		public override void VisitUsingStatement(UsingStatement usingStatement)
 		{
 			ForceSpacesBefore(usingStatement.LParToken, policy.SpaceBeforeUsingParentheses);
-
+			
 			ForceSpacesAfter(usingStatement.LParToken, policy.SpacesWithinUsingParentheses);
 			ForceSpacesBefore(usingStatement.RParToken, policy.SpacesWithinUsingParentheses);
-
+			
 			FixEmbeddedStatment(policy.StatementBraceStyle, policy.UsingBraceForcement, usingStatement.EmbeddedStatement);
 		}
-
+		
 		public override void VisitVariableDeclarationStatement(VariableDeclarationStatement variableDeclarationStatement)
 		{
 			if ((variableDeclarationStatement.Modifiers & Modifiers.Const) == Modifiers.Const) {
@@ -1596,38 +1628,38 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				initializer.AcceptVisitor(this);
 			}
-
+			
 			FormatCommas(variableDeclarationStatement, policy.SpaceBeforeLocalVariableDeclarationComma, policy.SpaceAfterLocalVariableDeclarationComma);
 			FixSemicolon(variableDeclarationStatement.SemicolonToken);
 		}
-
+		
 		public override void VisitDoWhileStatement(DoWhileStatement doWhileStatement)
 		{
 			PlaceOnNewLine(policy.WhileNewLinePlacement, doWhileStatement.WhileToken);
 			FixEmbeddedStatment(policy.StatementBraceStyle, policy.WhileBraceForcement, doWhileStatement.EmbeddedStatement);
 		}
-
+		
 		public override void VisitWhileStatement(WhileStatement whileStatement)
 		{
 			ForceSpacesBefore(whileStatement.LParToken, policy.SpaceBeforeWhileParentheses);
-
+			
 			ForceSpacesAfter(whileStatement.LParToken, policy.SpacesWithinWhileParentheses);
 			ForceSpacesBefore(whileStatement.RParToken, policy.SpacesWithinWhileParentheses);
-
+			
 			FixEmbeddedStatment(policy.StatementBraceStyle, policy.WhileBraceForcement, whileStatement.EmbeddedStatement);
 		}
-
+		
 		public override void VisitYieldBreakStatement(YieldBreakStatement yieldBreakStatement)
 		{
 			FixSemicolon(yieldBreakStatement.SemicolonToken);
 		}
-
+		
 		public override void VisitYieldReturnStatement(YieldReturnStatement yieldStatement)
 		{
 			yieldStatement.Expression.AcceptVisitor(this);
 			FixSemicolon(yieldStatement.SemicolonToken);
 		}
-
+		
 		public override void VisitVariableInitializer(VariableInitializer variableInitializer)
 		{
 			if (!variableInitializer.AssignToken.IsNull) {
@@ -1637,7 +1669,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				variableInitializer.Initializer.AcceptVisitor(this);
 			}
 		}
-
+		
 		#endregion
 		
 		#region Expressions
@@ -1647,26 +1679,28 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (spec != null) {
 				ForceSpacesBefore(spec.LBracketToken, policy.SpaceBeforeArrayDeclarationBrackets);
 			}
-
+			
 			base.VisitComposedType(composedType);
 		}
-
+		
 		public override void VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression)
 		{
 			if (!anonymousMethodExpression.Body.IsNull) {
-				EnforceBraceStyle(policy.AnonymousMethodBraceStyle, anonymousMethodExpression.Body.LBraceToken, anonymousMethodExpression.Body.RBraceToken);
+				if (anonymousMethodExpression.Body.LBraceToken.GetNextNode () != anonymousMethodExpression.Body.RBraceToken) {
+					EnforceBraceStyle(policy.AnonymousMethodBraceStyle, anonymousMethodExpression.Body.LBraceToken, anonymousMethodExpression.Body.RBraceToken);
+				}
 				VisitBlockWithoutFixingBraces(anonymousMethodExpression.Body, policy.IndentBlocks);
 				return;
 			}
 			base.VisitAnonymousMethodExpression(anonymousMethodExpression);
 		}
-
+		
 		public override void VisitAssignmentExpression(AssignmentExpression assignmentExpression)
 		{
 			ForceSpacesAround(assignmentExpression.OperatorToken, policy.SpaceAroundAssignment);
 			base.VisitAssignmentExpression(assignmentExpression);
 		}
-
+		
 		public override void VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression)
 		{
 			bool forceSpaces = false;
@@ -1721,7 +1755,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				curIndent.Pop ();
 			}
 		}
-
+		
 		public override void VisitConditionalExpression(ConditionalExpression conditionalExpression)
 		{
 			ForceSpacesBefore(conditionalExpression.QuestionMarkToken, policy.SpaceBeforeConditionalOperatorCondition);
@@ -1730,18 +1764,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesAfter(conditionalExpression.ColonToken, policy.SpaceAfterConditionalOperatorSeparator);
 			base.VisitConditionalExpression(conditionalExpression);
 		}
-
+		
 		public override void VisitCastExpression(CastExpression castExpression)
 		{
 			if (castExpression.RParToken != null) {
 				ForceSpacesAfter(castExpression.LParToken, policy.SpacesWithinCastParentheses);
 				ForceSpacesBefore(castExpression.RParToken, policy.SpacesWithinCastParentheses);
-
+				
 				ForceSpacesAfter(castExpression.RParToken, policy.SpaceAfterTypecast);
 			}
 			base.VisitCastExpression(castExpression);
 		}
-
+		
 		void ForceSpacesAround(AstNode node, bool forceSpaces)
 		{
 			if (node.IsNull) {
@@ -1750,7 +1784,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesBefore(node, forceSpaces);
 			ForceSpacesAfter(node, forceSpaces);
 		}
-
+		
 		void FormatCommas(AstNode parent, bool before, bool after)
 		{
 			if (parent.IsNull) {
@@ -1761,13 +1795,13 @@ namespace ICSharpCode.NRefactory.CSharp
 				ForceSpacesBefore(comma, before);
 			}
 		}
-
+		
 		bool DoWrap (Wrapping wrapping, AstNode wrapNode, int argumentCount)
 		{
 			return wrapping == Wrapping.WrapAlways || 
 				options.WrapLineLength > 0 && argumentCount > 1 && wrapping == Wrapping.WrapIfTooLong && wrapNode.StartLocation.Column >= options.WrapLineLength;
 		}
-
+		
 		void FormatArguments(AstNode node)
 		{
 			Wrapping methodCallArgumentWrapping;
@@ -1777,7 +1811,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			bool spaceWithinEmptyParentheses;
 			bool spaceAfterMethodCallParameterComma;
 			bool spaceBeforeMethodCallParameterComma;
-				
+			
 			CSharpTokenNode rParToken;
 			AstNodeCollection<Expression> arguments;
 			var indexer = node as IndexerExpression;
@@ -1800,7 +1834,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				spaceAfterMethodCallParameterComma = policy.SpaceAfterNewParameterComma;
 				spaceBeforeMethodCallParameterComma = policy.SpaceBeforeNewParameterComma;
 				spaceWithinEmptyParentheses = policy.SpacesBetweenEmptyNewParentheses;
-
+				
 				rParToken = oce.RParToken;
 				arguments = oce.Arguments;
 			} else {
@@ -1812,14 +1846,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				spaceAfterMethodCallParameterComma = policy.SpaceAfterMethodCallParameterComma;
 				spaceBeforeMethodCallParameterComma = policy.SpaceBeforeMethodCallParameterComma;
 				spaceWithinEmptyParentheses = policy.SpaceBetweenEmptyMethodCallParentheses;
-
+				
 				rParToken = invocationExpression.RParToken;
 				arguments = invocationExpression.Arguments;
 			}
-
+			
 			if (FormattingMode == ICSharpCode.NRefactory.CSharp.FormattingMode.OnTheFly)
 				methodCallArgumentWrapping = Wrapping.DoNotChange;
-
+			
 			bool wrapMethodCall = DoWrap(methodCallArgumentWrapping, rParToken, arguments.Count);
 			if (wrapMethodCall && arguments.Any()) {
 				if (newLineAferMethodCallOpenParentheses) {
@@ -1873,7 +1907,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 		}
-
+		
 		public override void VisitInvocationExpression(InvocationExpression invocationExpression)
 		{
 			ForceSpacesBefore(invocationExpression.LParToken, policy.SpaceBeforeMethodCallParentheses);
@@ -1883,10 +1917,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				ForceSpacesAfter(invocationExpression.LParToken, policy.SpaceBetweenEmptyMethodCallParentheses);
 				ForceSpacesBefore(invocationExpression.RParToken, policy.SpaceBetweenEmptyMethodCallParentheses);
 			}
-
+			
 			if (!invocationExpression.Target.IsNull)
 				invocationExpression.Target.AcceptVisitor(this);
-
+			
 			if (invocationExpression.Target is MemberReferenceExpression) {
 				var mt = (MemberReferenceExpression)invocationExpression.Target;
 				if (mt.Target is InvocationExpression) {
@@ -1902,28 +1936,28 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			FormatArguments(invocationExpression);
 		}
-
+		
 		public override void VisitIndexerExpression(IndexerExpression indexerExpression)
 		{
 			ForceSpacesBefore(indexerExpression.LBracketToken, policy.SpacesBeforeBrackets);
 			ForceSpacesAfter(indexerExpression.LBracketToken, policy.SpacesWithinBrackets);
-
+			
 			if (!indexerExpression.Target.IsNull)
 				indexerExpression.Target.AcceptVisitor(this);
-
+			
 			FormatArguments(indexerExpression);
-
-
-
+			
+			
+			
 		}
-
+		
 		public override void VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression)
 		{
 			ForceSpacesAfter(parenthesizedExpression.LParToken, policy.SpacesWithinParentheses);
 			ForceSpacesBefore(parenthesizedExpression.RParToken, policy.SpacesWithinParentheses);
 			base.VisitParenthesizedExpression(parenthesizedExpression);
 		}
-
+		
 		public override void VisitSizeOfExpression(SizeOfExpression sizeOfExpression)
 		{
 			ForceSpacesBefore(sizeOfExpression.LParToken, policy.SpaceBeforeSizeOfParentheses);
@@ -1931,7 +1965,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesBefore(sizeOfExpression.RParToken, policy.SpacesWithinSizeOfParentheses);
 			base.VisitSizeOfExpression(sizeOfExpression);
 		}
-
+		
 		public override void VisitTypeOfExpression(TypeOfExpression typeOfExpression)
 		{
 			ForceSpacesBefore(typeOfExpression.LParToken, policy.SpaceBeforeTypeOfParentheses);
@@ -1939,21 +1973,21 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesBefore(typeOfExpression.RParToken, policy.SpacesWithinTypeOfParentheses);
 			base.VisitTypeOfExpression(typeOfExpression);
 		}
-
+		
 		public override void VisitCheckedExpression(CheckedExpression checkedExpression)
 		{
 			ForceSpacesAfter(checkedExpression.LParToken, policy.SpacesWithinCheckedExpressionParantheses);
 			ForceSpacesBefore(checkedExpression.RParToken, policy.SpacesWithinCheckedExpressionParantheses);
 			base.VisitCheckedExpression(checkedExpression);
 		}
-
+		
 		public override void VisitUncheckedExpression(UncheckedExpression uncheckedExpression)
 		{
 			ForceSpacesAfter(uncheckedExpression.LParToken, policy.SpacesWithinCheckedExpressionParantheses);
 			ForceSpacesBefore(uncheckedExpression.RParToken, policy.SpacesWithinCheckedExpressionParantheses);
 			base.VisitUncheckedExpression(uncheckedExpression);
 		}
-
+		
 		public override void VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression)
 		{
 			ForceSpacesBefore(objectCreateExpression.LParToken, policy.SpaceBeforeNewParentheses);
@@ -1965,20 +1999,20 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (!objectCreateExpression.LParToken.IsNull)
 					ForceSpacesAfter(objectCreateExpression.LParToken, policy.SpacesBetweenEmptyNewParentheses);
 			}
-
+			
 			if (!objectCreateExpression.Type.IsNull)
 				objectCreateExpression.Type.AcceptVisitor(this);
-
+			
 			FormatArguments(objectCreateExpression);
-
+			
 		}
-
+		
 		public override void VisitArrayCreateExpression(ArrayCreateExpression arrayObjectCreateExpression)
 		{
 			FormatCommas(arrayObjectCreateExpression, policy.SpaceBeforeMethodCallParameterComma, policy.SpaceAfterMethodCallParameterComma);
 			base.VisitArrayCreateExpression(arrayObjectCreateExpression);
 		}
-
+		
 		public override void VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression)
 		{
 			if (DoWrap(policy.ArrayInitializerWrapping, arrayInitializerExpression.RBraceToken, arrayInitializerExpression.Elements.Count)) {
@@ -2000,27 +2034,27 @@ namespace ICSharpCode.NRefactory.CSharp
 				base.VisitArrayInitializerExpression(arrayInitializerExpression);
 			}
 		}
-
+		
 		public override void VisitLambdaExpression(LambdaExpression lambdaExpression)
 		{
 			ForceSpacesAfter(lambdaExpression.ArrowToken, true);
 			ForceSpacesBefore(lambdaExpression.ArrowToken, true);
-
+			
 			base.VisitLambdaExpression(lambdaExpression);
 		}
-
+		
 		public override void VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression)
 		{
 			ForceSpacesAfter(namedArgumentExpression.ColonToken, policy.SpaceInNamedArgumentAfterDoubleColon);
 			base.VisitNamedArgumentExpression(namedArgumentExpression);
 		}
-
+		
 		public override void VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression)
 		{
 			ForceSpacesAfter(memberReferenceExpression.DotToken, false);
 			base.VisitMemberReferenceExpression(memberReferenceExpression);
 		}
-
+		
 		#endregion
 		
 		void ForceSpaceBefore(int offset, bool forceSpace)
@@ -2046,13 +2080,13 @@ namespace ICSharpCode.NRefactory.CSharp
 						AddChange(offset, 1, null);
 					}
 				}
-
+				
 				offset--;
 			} while (offset >= 0);
 		}
-
 		
-
+		
+		
 		/*
 		int GetLastNonWsChar (LineSegment line, int lastColumn)
 		{
@@ -2096,26 +2130,26 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddChange(offset, endOffset - offset, null);
 			}
 		}
-
+		
 		void PlaceOnNewLine(NewLinePlacement newLine, AstNode keywordNode)
 		{
 			if (keywordNode == null || newLine == NewLinePlacement.DoNotCare) {
 				return;
 			}
-
+			
 			var prev = keywordNode.GetPrevNode ();
 			if (prev is Comment || prev is PreProcessorDirective)
 				return;
-
+			
 			int offset = document.GetOffset(keywordNode.StartLocation);
 			
 			int whitespaceStart = SearchWhitespaceStart(offset);
 			string indentString = newLine == NewLinePlacement.NewLine ? this.options.EolMarker + this.curIndent.IndentString : " ";
 			AddChange(whitespaceStart, offset - whitespaceStart, indentString);
 		}
-
+		
 		string nextStatementIndent = null;
-
+		
 		void FixStatementIndentation(TextLocation location)
 		{
 			if (location.Line < 1 || location.Column < 1) {
@@ -2134,12 +2168,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			nextStatementIndent = null;
 			AddChange(lineStart, offset - lineStart, indentString);
 		}
-
+		
 		void FixIndentation(TextLocation location)
 		{
 			FixIndentation(location, 0);
 		}
-
+		
 		void FixIndentation(TextLocation location, int relOffset)
 		{
 			if (location.Line < 1 || location.Line > document.LineCount) {
@@ -2154,7 +2188,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddChange(document.GetOffset(location.Line, 1), lineIndent.Length, indentString);
 			}
 		}
-
+		
 		void FixIndentationForceNewLine(TextLocation location)
 		{
 			string lineIndent = GetIndentation(location.Line);
@@ -2174,7 +2208,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					} else if (ch == '\r') {
 						start--;
 					}
-					AddChange(start, offset - start, this.options.EolMarker + indentString);
+					if (changes.Count > 0 && changes[changes.Count - 1].Offset == start) {
+						// may be overlapping with "blank line" changes
+						changes[changes.Count - 1] = new TextReplaceAction (start, changes[changes.Count - 1].RemovalLength, changes[changes.Count - 1].NewText + this.options.EolMarker + indentString);
+					} else {
+						AddChange(start, offset - start, this.options.EolMarker + indentString);
+					}
 				}
 			}
 		}

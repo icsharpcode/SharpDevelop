@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.Utils;
+using Mono.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -492,7 +493,18 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public int TypeParameterCount {
 			get { return parts[0].TypeParameters.Count; }
 		}
-		
+
+		public IList<IType> TypeArguments {
+			get { 
+				// ToList() call is necessary because IList<> isn't covariant
+				return TypeParameters.ToList<IType>();
+			}
+		}
+
+		public bool IsParameterized { 
+			get { return false; }
+		}
+
 		#region DirectBaseTypes
 		IList<IType> directBaseTypes;
 		
@@ -783,7 +795,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				using (var busyLock = BusyManager.Enter(this)) {
 					if (busyLock.Success) {
 						return coClass.GetConstructors(filter, options)
-							.Select(m => new SpecializedMethod(m, TypeParameterSubstitution.Identity) { DeclaringType = this });
+							.Select(m => new SpecializedMethod(m, m.Substitution) { DeclaringType = this });
 					}
 				}
 				return EmptyList<IMethod>.Instance;
@@ -904,6 +916,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		#endregion
 		
+		public TypeParameterSubstitution GetSubstitution()
+		{
+			return TypeParameterSubstitution.Identity;
+		}
+		
+		public TypeParameterSubstitution GetSubstitution(IList<IType> methodTypeArguments)
+		{
+			return TypeParameterSubstitution.Identity;
+		}
+
 		public bool Equals(IType other)
 		{
 			return this == other;

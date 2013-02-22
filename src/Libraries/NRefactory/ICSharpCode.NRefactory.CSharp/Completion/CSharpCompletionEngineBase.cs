@@ -155,14 +155,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		public int GetCurrentParameterIndex (int triggerOffset, int endOffset, out List<string> usedNamedParameters)
 		{
 			usedNamedParameters =new List<string> ();
-			char lastChar = document.GetCharAt (endOffset - 1);
-			if (lastChar == '(' || lastChar == '<') { 
-				return 0;
-			}
 			var parameter = new Stack<int> ();
 			var bracketStack = new Stack<Stack<int>> ();
 			bool inSingleComment = false, inString = false, inVerbatimString = false, inChar = false, inMultiLineComment = false;
 			var word = new StringBuilder ();
+			bool foundCharAfterOpenBracket = false;
 			for (int i = triggerOffset; i < endOffset; i++) {
 				char ch = document.GetCharAt (i);
 				char nextCh = i + 1 < document.TextLength ? document.GetCharAt (i + 1) : '\0';
@@ -176,6 +173,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				} else {
 					word.Length = 0;
 				}
+				if (!char.IsWhiteSpace(ch) && parameter.Count > 0)
+					foundCharAfterOpenBracket = true;
 				switch (ch) {
 					case '{':
 						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
@@ -303,10 +302,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						break;
 				}
 			}
-			if (parameter.Count == 0 || bracketStack.Count > 0) {
+			if (parameter.Count != 1 || bracketStack.Count > 0) {
 				return -1;
 			}
-
+			if (!foundCharAfterOpenBracket)
+				return 0;
 			return parameter.Pop() + 1;
 		}
 
@@ -349,8 +349,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							if (nextCh == '/') {
 								i++;
 								IsInSingleComment = true;
+								IsInPreprocessorDirective = false;
 							}
-							if (nextCh == '*')
+							if (nextCh == '*' && !IsInPreprocessorDirective)
 								IsInMultiLineComment = true;
 							break;
 						case '*':

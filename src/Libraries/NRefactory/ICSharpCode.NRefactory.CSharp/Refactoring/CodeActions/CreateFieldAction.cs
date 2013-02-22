@@ -113,11 +113,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (index < 0)
 				yield break;
 					
-			var targetResult = resolver.Resolve(invoke.Target);
-			if (targetResult is MethodGroupResolveResult) {
-				foreach (var method in ((MethodGroupResolveResult)targetResult).Methods) {
+			var targetResult = resolver.Resolve(invoke.Target) as MethodGroupResolveResult;
+			if (targetResult != null) {
+				foreach (var method in targetResult.Methods) {
 					if (index < method.Parameters.Count) {
 						yield return method.Parameters [index].Type;
+					}
+				}
+				foreach (var extMethods in targetResult.GetExtensionMethods ()) {
+					foreach (var extMethod in extMethods) {
+						if (index + 1 < extMethod.Parameters.Count) {
+							yield return extMethod.Parameters [index + 1].Type;
+						}
 					}
 				}
 			}

@@ -58,9 +58,42 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				yield break;
 			}
 			yield return new CodeAction(context.TranslateString("Inline local variable"), script => {
-				refFinder.FindLocalReferences(resolveResult.Variable, context.UnresolvedFile, unit, context.Compilation, (n, r) => script.Replace(n, initializer.Initializer.Clone()), default(CancellationToken));
+				refFinder.FindLocalReferences(resolveResult.Variable, context.UnresolvedFile, unit, context.Compilation, (n, r) => script.Replace(n, AddParensIfRequired (n, initializer.Initializer.Clone())), default(CancellationToken));
 				script.Remove(node);
 			});
+		}
+
+		public static bool RequiresParens(AstNode replaceNode, AstNode replaceWithNode)
+		{
+			if (!(replaceWithNode is BinaryOperatorExpression) &&
+			    !(replaceWithNode is AsExpression) &&
+			    !(replaceWithNode is IsExpression) &&
+				!(replaceWithNode is ConditionalExpression)) {
+				return false;
+			}
+
+			var cond = replaceNode.Parent as ConditionalExpression;
+			if (cond != null && cond.Condition == replaceNode)
+				return true;
+
+			var indexer = replaceNode.Parent as IndexerExpression;
+			if (indexer != null && indexer.Target == replaceNode)
+				return true;
+
+			return replaceNode.Parent is BinaryOperatorExpression || 
+				replaceNode.Parent is UnaryOperatorExpression || 
+				replaceNode.Parent is MemberReferenceExpression ||
+				replaceNode.Parent is AsExpression || 
+				replaceNode.Parent is IsExpression || 
+				replaceNode.Parent is CastExpression ||
+				replaceNode.Parent is PointerReferenceExpression;
+		}
+
+		static Expression AddParensIfRequired(AstNode replaceNode, Expression expression)
+		{
+			if (RequiresParens(replaceNode, expression))
+				return new ParenthesizedExpression(expression);
+			return expression;
 		}
 	}
 }

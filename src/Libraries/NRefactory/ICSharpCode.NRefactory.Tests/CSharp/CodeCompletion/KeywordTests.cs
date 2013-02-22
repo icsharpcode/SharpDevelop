@@ -489,7 +489,7 @@ class Test
 		}
 		
 		
-		[Test()]
+		[Test]
 		public void ForeachInKeywordTest ()
 		{
 			CodeCompletionBugTests.CombinedProviderTest (
@@ -506,6 +506,32 @@ class Test
 				if (provider.Count > 0)
 					Assert.IsNotNull (provider.Find ("in"), "keyword 'in' not found.");
 			});
+		}
+
+		[Test]
+		public void OverrideCompletionDeclarationBeginTest ()
+		{
+			var start = @"class A { public virtual void FooBar () {} }
+class Test : A
+{
+	";
+			var provider = CodeCompletionBugTests.CreateProvider (start + "$override $\n}");
+			
+			var data = provider.Find("FooBar") as CodeCompletionBugTests.TestFactory.OverrideCompletionData;
+			Assert.AreEqual(start.Length, data.DeclarationBegin);
+		}
+
+		[Test]
+		public void PartialCompletionDeclarationBeginTest ()
+		{
+			var start = @"partial class A { partial void FooBar (); }
+partial class A
+{
+	";
+			var provider = CodeCompletionBugTests.CreateProvider (start + "$partial $\n}");
+			
+			var data = provider.Find("FooBar") as CodeCompletionBugTests.TestFactory.OverrideCompletionData;
+			Assert.AreEqual(start.Length, data.DeclarationBegin);
 		}
 	}
 }

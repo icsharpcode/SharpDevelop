@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class AddAnotherAccessorTests : ContextActionTestBase
 	{
-		[Test()]
+		[Test]
 		public void TestAddSet ()
 		{
 			string result = RunContextAction (
@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"}", result);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestAddGet ()
 		{
 			string result = RunContextAction (
@@ -93,6 +93,18 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"		}" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"}", result);
+		}
+
+		[Test()]
+		public void TestAutoProperty ()
+		{
+			Test<AddAnotherAccessorAction> (@"class TestClass
+{
+	string $Test { get; }
+}", @"class TestClass
+{
+	string Test { get; set; }
+}");
 		}
 	}
 }

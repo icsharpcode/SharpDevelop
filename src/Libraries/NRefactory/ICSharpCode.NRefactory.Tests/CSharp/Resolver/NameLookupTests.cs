@@ -438,7 +438,7 @@ class TestClass {
 		{
 			NamespaceResolveResult ns;
 			string program = "using COL = System.Collections;\r\nclass A {\r\n$.ArrayList a;\r\n}\r\n";
-			ns = Resolve<NamespaceResolveResult>(program.Replace("$", "$COL$"));
+			ns = Resolve<AliasNamespaceResolveResult>(program.Replace("$", "$COL$"));
 			Assert.AreEqual("System.Collections", ns.NamespaceName, "COL");
 			ns = Resolve<NamespaceResolveResult>(program.Replace("$", "$COL.Generic$"));
 			Assert.AreEqual("System.Collections.Generic", ns.NamespaceName, "COL.Generic");
@@ -455,7 +455,7 @@ class TestClass {
 	}
 }
 ";
-			TypeResolveResult trr = Resolve<TypeResolveResult>(program.Replace("COL a", "$COL$ a"));
+			TypeResolveResult trr = Resolve<AliasTypeResolveResult>(program.Replace("COL a", "$COL$ a"));
 			Assert.AreEqual("System.Collections.ArrayList", trr.Type.FullName, "COL");
 			ResolveResult rr = Resolve<CSharpInvocationResolveResult>(program.Replace("new COL()", "$new COL()$"));
 			Assert.AreEqual("System.Collections.ArrayList", rr.Type.FullName, "a");
@@ -887,7 +887,7 @@ class B
 			var rr = Resolve<MethodGroupResolveResult>(program);
 			Assert.AreEqual("X", rr.TypeArguments.Single().Name);
 			
-			var m = (SpecializedMethod)rr.Methods.Single();
+			var m = rr.Methods.Single();
 			Assert.AreSame(rr.TypeArguments.Single(), m.TypeArguments.Single());
 			Assert.AreEqual("T", m.Parameters[0].Type.Name);
 			Assert.AreEqual("X", m.Parameters[1].Type.Name);

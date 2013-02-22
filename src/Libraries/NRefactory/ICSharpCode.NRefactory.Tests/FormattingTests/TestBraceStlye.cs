@@ -76,7 +76,7 @@ namespace B {
 {
 	void Foo ()
 	{
-		EventHandler handler = delegate(object sender, EventArgs e){};
+		EventHandler handler = delegate(object sender, EventArgs e){foo ();};
 	}
 }",
 @"class Test
@@ -84,6 +84,7 @@ namespace B {
 	void Foo ()
 	{
 		EventHandler handler = delegate(object sender, EventArgs e) {
+			foo ();
 		};
 	}
 }");

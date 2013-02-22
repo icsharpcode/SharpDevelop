@@ -89,5 +89,29 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	}
 }", 1);
 		}
+
+
+		[Test()]
+		public void TestLocalConstantReplaceAll ()
+		{
+			Test<IntroduceConstantAction> (@"class TestClass
+{
+	public void Hello ()
+	{
+		System.Console.WriteLine ($""Hello World"");
+		System.Console.WriteLine (""Hello World"");
+		System.Console.WriteLine (""Hello World"");
+	}
+}", @"class TestClass
+{
+	public void Hello ()
+	{
+		const string helloWorld = ""Hello World"";
+		System.Console.WriteLine (helloWorld);
+		System.Console.WriteLine (helloWorld);
+		System.Console.WriteLine (helloWorld);
+	}
+}", 2);
+		}
 	}
 }

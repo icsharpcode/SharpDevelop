@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 	[TestFixture()]
 	public class ParameterCompletionTests : TestBase
 	{
-		class TestFactory : IParameterCompletionDataFactory
+		internal class TestFactory : IParameterCompletionDataFactory
 		{
 			IProjectContent ctx;
 			
@@ -295,7 +295,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				cursorPosition = endPos - 1; 
 			}
 			var doc = new ReadOnlyDocument(editorText);
-			
+
 			IProjectContent pctx = new CSharpProjectContent();
 			pctx = pctx.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			
@@ -1128,6 +1128,37 @@ public class Test
 }
 ");
 			Assert.AreEqual (1, provider.Count);
+		}
+
+		[Test]
+		public void TestExtensionMethod()
+		{
+			var provider = CreateProvider(@"static class Ext { public static void Foo(this object o, string str) {} }
+class Test
+{
+	public static void Main (string[] args)
+	{
+		$args.Foo($
+	}
+}");
+			Assert.AreEqual (1, provider.Count);
+			Assert.AreEqual (1, provider.GetParameterCount (0));
+		}
+		
+		
+		[Test]
+		public void TestExtensionMethodStaticInvocation()
+		{
+			var provider = CreateProvider(@"static class Ext { public static void Foo(this object o, string str) {} }
+class Test
+{
+	public static void Main (string[] args)
+	{
+		$Ext.Foo($
+	}
+}");
+			Assert.AreEqual (1, provider.Count);
+			Assert.AreEqual (2, provider.GetParameterCount (0));
 		}
 
 	}

@@ -404,10 +404,10 @@ class TestClass {
 			var conversion = GetConversion(program);
 			Assert.IsTrue(conversion.IsValid);
 			Assert.IsTrue(conversion.IsMethodGroupConversion);
-			Assert.IsInstanceOf<SpecializedMethod>(conversion.Method);
+			Assert.IsTrue(conversion.Method.IsParameterized);
 			Assert.AreEqual(
 				new[] { "System.Int32" },
-				((SpecializedMethod)conversion.Method).TypeArguments.Select(t => t.ReflectionName).ToArray());
+				conversion.Method.TypeArguments.Select(t => t.ReflectionName).ToArray());
 		}
 		
 		[Test]
@@ -488,6 +488,80 @@ class C : B {
 }";
 			var trr = Resolve<TypeResolveResult>(program);
 			Assert.AreEqual("B+F", trr.Type.ReflectionName);
+		}
+
+		/// <summary>
+		/// Bug 9604 - Completion problem with indexers
+		/// </summary>
+		[Test]
+		public void TestBug9604()
+		{
+			string program = @"class Item
+{
+    public static int Foo = 42;
+
+    public class Builder
+    {
+        public int Foo
+        {
+            get { return $Item.Foo$; }
+        }
+
+        public object this[int field, int i]
+        {
+            get { return null; }
+        }
+    }
+}
+";
+			var result = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("Item.Foo", result.Member.FullName);
+		}
+
+		[Test]
+		public void Test9604OperatorCase()
+		{
+			string program = @"class op_Addition
+{
+    public static int Foo = 42;
+
+    public class Builder
+    {
+        public int Foo
+        {
+            get { return $op_Addition.Foo$; }
+        }
+
+        public static int operator + (Builder a, Builder b) 
+		{
+			return 0;
+		}
+    }
+}
+";
+			var result = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("op_Addition.Foo", result.Member.FullName);
+		}
+
+		/// <summary>
+		/// Bug 10201 - Wrong generics expansion for base recursive types
+		/// </summary>
+		[Test]
+		public void TestBug10201()
+		{
+			string program = @"public interface IA<T>
+{
+}
+public class G<U, V> : IA<$G<V, string>$> 
+{}
+";
+			var rr = Resolve<TypeResolveResult>(program);
+			var baseType = rr.Type.DirectBaseTypes.First().TypeArguments.First () as ParameterizedType;
+			Assert.AreEqual("G", baseType.Name);
+			
+			Assert.AreEqual(2, baseType.TypeParameterCount);
+			Assert.AreEqual("System.String", baseType.TypeArguments [0].FullName);
+			Assert.AreEqual("System.String", baseType.TypeArguments [1].FullName);
 		}
 	}
 }

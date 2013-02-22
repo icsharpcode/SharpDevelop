@@ -302,7 +302,7 @@ class DerivedClass : MiddleClass {
 			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
 			
-			var m = (SpecializedMethod)rr.Member;
+			var m = (IMethod)rr.Member;
 			Assert.AreEqual("X", m.TypeArguments.Single().Name);
 			Assert.AreEqual("T", m.Parameters[0].Type.Name);
 			Assert.AreEqual("X", m.Parameters[1].Type.Name);
@@ -489,7 +489,7 @@ class Test : IVisitor<object, object> {
 }";
 			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
-			var typeArguments = ((SpecializedMethod)rr.Member).TypeArguments;
+			var typeArguments = ((IMethod)rr.Member).TypeArguments;
 			Assert.AreEqual("System.Object", typeArguments[0].ReflectionName);
 			Assert.AreEqual("System.Object", typeArguments[1].ReflectionName);
 		}

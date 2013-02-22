@@ -137,12 +137,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return ReflectionName;
 		}
 		
-		public ReadOnlyCollection<IType> TypeArguments {
+		public IList<IType> TypeArguments {
 			get {
-				return Array.AsReadOnly(typeArguments);
+				return typeArguments;
 			}
 		}
-		
+
+		public bool IsParameterized { 
+			get {
+				return true;
+			}
+		}
+
 		/// <summary>
 		/// Same as 'parameterizedType.TypeArguments[index]', but is a bit more efficient (doesn't require the read-only wrapper).
 		/// </summary>
@@ -327,10 +333,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				if (ta != null)
 					ta[i] = r;
 			}
-			if (ta == null)
+			if (def == genericType && ta == null)
 				return this;
 			else
-				return new ParameterizedType(def, ta);
+				return new ParameterizedType(def, ta ?? typeArguments);
 		}
 	}
 	

@@ -138,6 +138,19 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				}
 			}
 
+			public class OverrideCompletionData : CompletionData
+			{
+				public int DeclarationBegin {
+					get;
+					set;
+				}
+
+				public OverrideCompletionData (string text, int declarationBegin) : base(text)
+				{
+					this.DeclarationBegin = declarationBegin;
+				}
+			}
+
 			public class EntityCompletionData : CompletionData, IEntityCompletionData
 			{
 				#region IEntityCompletionData implementation
@@ -237,12 +250,12 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 
 			public ICompletionData CreateNewOverrideCompletionData (int declarationBegin, ICSharpCode.NRefactory.TypeSystem.IUnresolvedTypeDefinition type, ICSharpCode.NRefactory.TypeSystem.IMember m)
 			{
-				return new CompletionData (m.Name);
+				return new OverrideCompletionData (m.Name, declarationBegin);
 			}
 			
 			public ICompletionData CreateNewPartialCompletionData (int declarationBegin, IUnresolvedTypeDefinition type, IUnresolvedMember m)
 			{
-				return new CompletionData (m.Name);
+				return new OverrideCompletionData (m.Name, declarationBegin);
 			}
 
 			public ICompletionData CreateImportCompletionData(IType type, bool useFullName)
@@ -5900,5 +5913,88 @@ class MainClass
 				Assert.IsFalse(provider.AutoSelect);
 			});
 		}
+
+		/// <summary>
+		/// Bug 9896 - Wrong dot completion
+		/// </summary>
+		[Test]
+		public void TestBug9896 ()
+		{
+			
+			CombinedProviderTest(
+				@"using System; 
+
+public class Testing 
+{ 
+    public static void DoNothing() {} 
+
+    public static void Main() 
+    { 
+        $DoNothing ().$
+    } 
+}
+
+", provider => {
+				Assert.IsTrue(provider == null || provider.Count == 0);
+			});
+		}
+
+		/// <summary>
+		///Bug 9905 - Cannot type new() constraint 
+		/// </summary>
+		[Test]
+		public void TestBug9905 ()
+		{
+			
+			CombinedProviderTest(
+				@"using System; 
+
+public class Testing 
+{ 
+    public static void DoNothing<T>() where T : class$, n$
+	{
+	} 
+}
+
+", provider => {
+				Assert.IsNotNull(provider.Find("new()"));
+			});
+		}
+
+		/// <summary>
+		/// Bug 10361 - No completion for optional attribute arguments
+		/// </summary>
+		[Test]
+		public void TestBug10361 ()
+		{
+			CombinedProviderTest(
+				@"using System;
+		
+		namespace test {
+			class RequestAttribute : Attribute {
+				public int RequestId { get; set; }
+				public bool RequireLogin { get; set; }
+				
+				public RequestAttribute (int requestId, bool requireLogin = false) {
+					RequestId = requestId;
+					RequireLogin = requireLogin;
+				}
+			}
+			
+			class MainClass {
+				[RequestAttribute(5$, r$)]
+				public static void Main (string[] args) {
+					Console.WriteLine(""Hello World!"");
+				}
+			}
+		}
+", provider => {
+				Assert.IsNotNull(provider.Find("requireLogin:"));
+			});
+		}
+
+
+
+
 	}
 }

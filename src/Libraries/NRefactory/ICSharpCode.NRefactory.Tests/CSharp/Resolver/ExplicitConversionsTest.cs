@@ -870,5 +870,44 @@ class Test {
 			Assert.IsTrue(rr.Conversion.IsUserDefined);
 			Assert.AreEqual("ci", rr.Conversion.Method.Parameters[0].Name);
 		}
+
+		[Test]
+		public void UserDefinedExplicitConversion_ConversionBeforeUserDefinedOperatorIsCorrect() {
+			string program = @"using System;
+class Convertible {
+	public static implicit operator Convertible(int l) {return new Convertible(); }
+}
+class Test {
+	public void M() {
+		long i = 33;
+		Convertible a = $(Convertible)i$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.ConversionBeforeUserDefinedOperator.IsValid);
+			Assert.IsTrue(rr.Conversion.ConversionBeforeUserDefinedOperator.IsExplicit);
+			Assert.IsTrue(rr.Conversion.ConversionBeforeUserDefinedOperator.IsNumericConversion);
+			Assert.IsTrue(rr.Conversion.ConversionAfterUserDefinedOperator.IsIdentityConversion);
+		}
+
+		[Test]
+		public void UserDefinedExplicitConversion_ConversionAfterUserDefinedOperatorIsCorrect() {
+			string program = @"using System;
+class Convertible {
+	public static implicit operator long(Convertible i) {return 0; }
+}
+class Test {
+	public void M() {
+		int a = $(int)new Convertible()$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.ConversionBeforeUserDefinedOperator.IsIdentityConversion);
+			Assert.IsTrue(rr.Conversion.ConversionAfterUserDefinedOperator.IsValid);
+			Assert.IsTrue(rr.Conversion.ConversionAfterUserDefinedOperator.IsExplicit);
+			Assert.IsTrue(rr.Conversion.ConversionAfterUserDefinedOperator.IsNumericConversion);
+		}
 	}
 }

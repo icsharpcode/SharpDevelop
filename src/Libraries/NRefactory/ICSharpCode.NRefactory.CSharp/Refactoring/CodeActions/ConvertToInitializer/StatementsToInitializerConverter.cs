@@ -357,7 +357,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		bool VariableHasBeenConverted(IVariable variable)
 		{
-			return accessPaths.Any(item => item.Key.VariableRoot.Equals(variable));
+			if (variable == null)
+				throw new ArgumentNullException("variable");
+			return accessPaths.Any(item => item.Key != null && item.Key.VariableRoot != null && item.Key.VariableRoot.Equals(variable));
 		}
 
 		bool InsertImplicitInitializersForPath(AccessPath path)

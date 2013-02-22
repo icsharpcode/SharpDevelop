@@ -72,5 +72,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					this.Parameters.Select(p => p.Type.ToTypeReference()).ToList());
 			}
 		}
+		
+		public override IMember Specialize(TypeParameterSubstitution substitution)
+		{
+			return new SpecializedProperty(this, substitution);
+		}
 	}
 }

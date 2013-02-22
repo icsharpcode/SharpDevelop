@@ -40,13 +40,12 @@
     <DefineConstants>TRACE;FULL_AST;NET_4_0</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>PdbOnly</DebugType>
-    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugType>Full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Debug' ">
@@ -56,9 +55,10 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_4_5_Debug|AnyCPU' ">
-    <DebugType>Full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Release' ">
     <Optimize>True</Optimize>
@@ -67,9 +67,9 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_4_5_Release|AnyCPU' ">
-    <DebugType>PdbOnly</DebugType>
-    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -88,6 +88,7 @@
     <Compile Include="Analysis\ControlFlow.cs" />
     <Compile Include="Analysis\DefiniteAssignmentAnalysis.cs" />
     <Compile Include="Analysis\ReachabilityAnalysis.cs" />
+    <Compile Include="Analysis\SemanticHighlightingVisitor.cs" />
     <Compile Include="Ast\AstNode.cs" />
     <Compile Include="Ast\AstNodeCollection.cs" />
     <Compile Include="Ast\AstType.cs" />
@@ -509,6 +510,12 @@
     <Compile Include="Refactoring\LocalReferenceFinder.cs" />
     <Compile Include="Refactoring\CodeActions\SortUsingsAction.cs" />
     <Compile Include="Formatter\CSharpIndentEngine.cs" />
+    <Compile Include="Refactoring\CodeActions\CreateEnumValue.cs" />
+    <Compile Include="Resolver\AliasTypeResolveResult.cs" />
+    <Compile Include="Resolver\AliasNamespaceResolveResult.cs" />
+    <Compile Include="Resolver\ReducedExtensionMethod.cs" />
+    <Compile Include="Refactoring\CodeIssues\SimplifyAnonymousMethodToDelegateIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\CompilerErrors\CS0127ReturnMustNotBeFollowedByAnyExpression.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -524,6 +531,7 @@
     <Folder Include="Refactoring\CodeActions\ExtractMethod\" />
     <Folder Include="Refactoring\CodeActions\ConvertToInitializer\" />
     <Folder Include="Refactoring\CodeIssues\FormatStringIssues\" />
+    <Folder Include="Refactoring\CodeIssues\CompilerErrors\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

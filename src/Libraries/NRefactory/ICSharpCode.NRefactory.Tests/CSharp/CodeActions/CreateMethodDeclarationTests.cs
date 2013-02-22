@@ -714,6 +714,29 @@ class Foo
 ");
 		}
 
+		[Test]
+		public void TestPassNullArgument ()
+		{
+			Test<CreateMethodDeclarationAction> (@"class TestClass
+{
+	void TestMethod ()
+	{
+		$NonExistantMethod (null);
+	}
+}", @"class TestClass
+{
+	void NonExistantMethod (object o)
+	{
+		throw new System.NotImplementedException ();
+	}
+	void TestMethod ()
+	{
+		NonExistantMethod (null);
+	}
+}");
+		}
+
+
 
 	}
 }

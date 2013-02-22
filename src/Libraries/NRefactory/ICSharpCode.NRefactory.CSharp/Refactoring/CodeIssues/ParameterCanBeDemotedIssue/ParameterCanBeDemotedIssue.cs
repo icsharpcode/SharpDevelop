@@ -145,9 +145,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var validTypes = 
 					(from type in possibleTypes
 					 where !tryResolve || TypeChangeResolvesCorrectly(parameter, rootResolutionNode, type)
-					 orderby GetInheritanceDepth(type) ascending
 					 select type).ToList();
 				if (validTypes.Any()) {
+					// don't demote an array to IList
+					if (variable.Type.Kind == TypeKind.Array && validTypes.Any (t => t.Namespace == "System.Collections" && t.Name == "IList")) {
+						return;
+					}
 					AddIssue(parameter, ctx.TranslateString("Parameter can be demoted to base class"), GetActions(parameter, validTypes));
 					MembersWithIssues++;
 				}
@@ -180,16 +183,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						script.Replace(parameter.Type, astBuilder.ConvertType(localType));
 					});
 				}
-			}
-
-			int GetInheritanceDepth(IType declaringType)
-			{
-				var depth = 0;
-				foreach (var baseType in declaringType.DirectBaseTypes) {
-					var newDepth = GetInheritanceDepth(baseType);
-					depth = Math.Max(depth, newDepth);
-				}
-				return depth;
 			}
 		}
 

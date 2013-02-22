@@ -449,13 +449,11 @@ namespace Debugger
 		public static ICorDebugType[] GetTypeArguments(this IMethod method)
 		{
 			List<ICorDebugType> typeArgs = new List<ICorDebugType>();
-			var specMethod = method as SpecializedMethod;
-			if (specMethod != null) {
-				if (specMethod.Substitution.ClassTypeArguments != null)
-					typeArgs.AddRange(specMethod.Substitution.ClassTypeArguments.Select(t => t.ToCorDebug()));
-				if (specMethod.Substitution.MethodTypeArguments != null)
-					typeArgs.AddRange(specMethod.Substitution.MethodTypeArguments.Select(t => t.ToCorDebug()));
-			}
+			var substitution = method.Substitution;
+			if (substitution.ClassTypeArguments != null)
+				typeArgs.AddRange(substitution.ClassTypeArguments.Select(t => t.ToCorDebug()));
+			if (substitution.MethodTypeArguments != null)
+				typeArgs.AddRange(substitution.MethodTypeArguments.Select(t => t.ToCorDebug()));
 			return typeArgs.ToArray();
 		}
 		
@@ -467,7 +465,7 @@ namespace Debugger
 		
 		public static bool IsDisplayClass(this IType type)
 		{
-			if (type.Name.StartsWith("<>") && type.Name.Contains("__DisplayClass")) {
+			if (type.Name.StartsWith("<>", StringComparison.Ordinal) && type.Name.Contains("__DisplayClass")) {
 				return true; // Anonymous method or lambda
 			}
 			

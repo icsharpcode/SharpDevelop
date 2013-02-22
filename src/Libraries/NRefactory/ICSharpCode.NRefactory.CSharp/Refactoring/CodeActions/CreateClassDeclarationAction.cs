@@ -44,6 +44,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (simpleType != null && !(simpleType.Parent is EventDeclaration || simpleType.Parent is CustomEventDeclaration)) 
 				return GetActions(context, simpleType);
 
+			var identifier = context.GetNode<IdentifierExpression>();
+			if (identifier != null && (identifier.Parent is MemberReferenceExpression)) 
+				return GetActions(context, identifier);
+
 			return Enumerable.Empty<CodeAction>();
 		}
 
@@ -73,11 +77,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		static TypeDeclaration CreateType(RefactoringContext context, NamingConventionService service, AstNode node)
 		{
-			var result = node is SimpleType ?
-				CreateClassFromType(context, (SimpleType)node) : 
-				CreateClassFromObjectCreation(context, (ObjectCreateExpression)node);
+			TypeDeclaration result;
+			if (node is SimpleType) {
+				result = CreateClassFromType(context, (SimpleType)node);
+			} else if (node is ObjectCreateExpression) {
+				result = CreateClassFromObjectCreation(context, (ObjectCreateExpression)node);
+			} else {
+				result = CreateClassFromIdentifier(context, (IdentifierExpression)node);
+			}
 
 			return AddBaseTypesAccordingToNamingRules(context, service, result);
+		}
+
+		static TypeDeclaration CreateClassFromIdentifier(RefactoringContext context, IdentifierExpression identifierExpression)
+		{
+			var result = new TypeDeclaration { Name = identifierExpression.Identifier };
+			var entity = identifierExpression.GetParent<EntityDeclaration>();
+			if (entity != null)
+				result.Modifiers |= entity.Modifiers & Modifiers.Public;
+			return result;
 		}
 
 		static TypeDeclaration CreateClassFromType(RefactoringContext context, SimpleType simpleType)
@@ -90,11 +108,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					className += "Attribute";
 			}
 
-			result = new TypeDeclaration() { Name = className };
+			result = new TypeDeclaration { Name = className };
 			var entity = simpleType.GetParent<EntityDeclaration>();
 			if (entity != null)
 				result.Modifiers |= entity.Modifiers & Modifiers.Public;
-
+			
 			return result;
 		}
 
@@ -103,16 +121,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			TypeDeclaration result;
 			string className = createExpression.Type.GetText();
 			if (!createExpression.Arguments.Any()) {
-				result = new TypeDeclaration() { Name = className };
+				result = new TypeDeclaration { Name = className };
 			} else {
-				var decl = new ConstructorDeclaration() {
+				var decl = new ConstructorDeclaration {
 					Name = className,
 					Modifiers = Modifiers.Public,
-					Body = new BlockStatement() {
+					Body = new BlockStatement {
 						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
 					}
 				};
-				result = new TypeDeclaration() {
+				result = new TypeDeclaration {
 					Name = className,
 					Members = {
 						decl
@@ -150,13 +168,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return Modifiers.Override;
 		}
 
-		static void AddImplementation(RefactoringContext context, TypeDeclaration result, ICSharpCode.NRefactory.TypeSystem.IType guessedType)
+		static void AddImplementation(RefactoringContext context, TypeDeclaration result, IType guessedType)
 		{
 			foreach (var property in guessedType.GetProperties ()) {
 				if (!property.IsAbstract)
 					continue;
 				if (property.IsIndexer) {
-					var indexerDecl = new IndexerDeclaration() {
+					var indexerDecl = new IndexerDeclaration {
 						ReturnType = context.CreateShortType(property.ReturnType),
 						Modifiers = GetModifiers(property),
 						Name = property.Name
@@ -169,7 +187,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					result.AddChild(indexerDecl, Roles.TypeMemberRole);
 					continue;
 				}
-				var propDecl = new PropertyDeclaration() {
+				var propDecl = new PropertyDeclaration {
 					ReturnType = context.CreateShortType(property.ReturnType),
 					Modifiers = GetModifiers (property),
 					Name = property.Name
@@ -184,11 +202,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			foreach (var method in guessedType.GetMethods ()) {
 				if (!method.IsAbstract)
 					continue;
-				var decl = new MethodDeclaration() {
+				var decl = new MethodDeclaration {
 					ReturnType = context.CreateShortType(method.ReturnType),
 					Modifiers = GetModifiers (method),
 					Name = method.Name,
-					Body = new BlockStatement() {
+					Body = new BlockStatement {
 						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
 					}
 				};
@@ -199,7 +217,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			foreach (var evt in guessedType.GetEvents ()) {
 				if (!evt.IsAbstract)
 					continue;
-				var decl = new EventDeclaration() {
+				var decl = new EventDeclaration {
 					ReturnType = context.CreateShortType(evt.ReturnType),
 					Modifiers = GetModifiers (evt),
 					Name = evt.Name

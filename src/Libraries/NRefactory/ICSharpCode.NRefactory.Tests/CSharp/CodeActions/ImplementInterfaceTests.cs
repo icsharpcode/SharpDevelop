@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class ImplementInterfaceTests : ContextActionTestBase
 	{
-		[Test()]
+		[Test]
 		public void TestSimpleInterface()
 		{
 			Test<ImplementInterfaceAction>(@"using System;
@@ -56,7 +56,7 @@ class Foo : IDisposable
 		/// <summary>
 		/// Bug 663842 - Interface implementation does not include constraints
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug663842()
 		{
 			Test<ImplementInterfaceAction>(@"using System;
@@ -105,7 +105,7 @@ class Foo : ITest
 		/// <summary>
 		/// Bug 683007 - "Refactor/Implement implicit" creates explicit implementations of methods with same names
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug683007()
 		{
 			Test<ImplementInterfaceAction>(@"interface ITest {
@@ -138,7 +138,7 @@ class Foo : ITest
 		/// <summary>
 		/// Bug 243 - Implement implicit interface doesn't handle overloads correctly. 
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug243()
 		{
 			Test<ImplementInterfaceAction>(@"interface ITest {
@@ -174,7 +174,7 @@ class Foo : ITest
 		/// <summary>
 		/// Bug 2074 - [Regression] Implement Interface implicitly does not check the methods already exist 
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug2074()
 		{
 			Test<ImplementInterfaceAction>(@"interface ITest {
@@ -205,7 +205,7 @@ class Foo : ITest
 		/// <summary>
 		/// Bug 3365 - MD cannot implement IEnumerable interface correctly  - MD cannot implement IEnumerable interface correctly 
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug3365()
 		{
 			Test<ImplementInterfaceAction>(@"using System;
@@ -255,7 +255,7 @@ class Foo : ITest
 		/// <summary>
 		/// Bug 4818 - Implement implicit does not handle 'params' types 
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug4818()
 		{
 			Test<ImplementInterfaceAction>(@"using System;
@@ -302,7 +302,7 @@ class Foo : $ITest
 		/// <summary>
 		/// Bug 9117 - [3.0.5] C#: Implementing interfaces inheriting from other interfaces
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug9117()
 		{
 			Test<ImplementInterfaceAction>(@"using System;
@@ -386,6 +386,63 @@ class Foo : $ITest
 	#endregion
 }
 ");
+		}
+
+		/// <summary>
+		/// Bug 9603 - Implement interface cannot deal with member hidding
+		/// </summary>
+		[Test]
+		public void TestBug9603()
+		{
+			Test<ImplementInterfaceAction>(@"using System;
+
+public interface IA
+{
+    string this[int index] { get; set; }
+}
+
+public interface IB : IA
+{
+    new int this[int index] { get; set; }
+}
+
+class M : $IB
+{
+}", @"using System;
+
+public interface IA
+{
+    string this[int index] { get; set; }
+}
+
+public interface IB : IA
+{
+    new int this[int index] { get; set; }
+}
+
+class M : IB
+{
+	#region IB implementation
+	public int this [int index] {
+		get {
+			throw new NotImplementedException ();
+		}
+		set {
+			throw new NotImplementedException ();
+		}
+	}
+	#endregion
+	#region IA implementation
+	string IA.this [int index] {
+		get {
+			throw new NotImplementedException ();
+		}
+		set {
+			throw new NotImplementedException ();
+		}
+	}
+	#endregion
+}");
 		}
 	}
 }

@@ -811,10 +811,11 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		static void ApplyModifiers(AbstractUnresolvedMember m, Modifiers modifiers)
 		{
-			// members from interfaces are always Public+Abstract.
+			// members from interfaces are always Public+Abstract. (NOTE: 'new' modifier is valid in interfaces as well.)
 			if (m.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
 				m.Accessibility = Accessibility.Public;
 				m.IsAbstract = true;
+				m.IsShadowing = (modifiers & Modifiers.New) != 0;
 				return;
 			}
 			m.Accessibility = GetAccessibility(modifiers) ?? Accessibility.Private;
@@ -976,6 +977,10 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			{
 				return interningProvider.Intern(
 					new PrimitiveConstantExpression(KnownTypeReference.Object, null));
+			}
+
+			public override ConstantExpression VisitSizeOfExpression(SizeOfExpression sizeOfExpression) {
+				return new SizeOfConstantValue(sizeOfExpression.Type.ToTypeReference(NameLookupMode.Type, interningProvider));
 			}
 			
 			public override ConstantExpression VisitPrimitiveExpression(PrimitiveExpression primitiveExpression)

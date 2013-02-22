@@ -913,7 +913,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return null;
 			IMethod method = bestCandidate.Member as IMethod;
 			if (method != null && method.TypeParameters.Count > 0) {
-				return new SpecializedMethod((IMethod)method.MemberDefinition, GetSubstitution(bestCandidate));
+				return ((IMethod)method.MemberDefinition).Specialize(GetSubstitution(bestCandidate));
 			} else {
 				return bestCandidate.Member;
 			}
@@ -921,14 +921,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		TypeParameterSubstitution GetSubstitution(Candidate candidate)
 		{
-			SpecializedMethod sm = candidate.Member as SpecializedMethod;
-			if (sm != null) {
-				// Do not compose the substitutions, but merge them.
-				// This is required for InvocationTests.SubstituteClassAndMethodTypeParametersAtOnce
-				return new TypeParameterSubstitution(sm.Substitution.ClassTypeArguments, candidate.InferredTypes);
-			} else {
-				return new TypeParameterSubstitution(null, candidate.InferredTypes);
-			}
+			// Do not compose the substitutions, but merge them.
+			// This is required for InvocationTests.SubstituteClassAndMethodTypeParametersAtOnce
+			return new TypeParameterSubstitution(candidate.Member.Substitution.ClassTypeArguments, candidate.InferredTypes);
 		}
 		
 		/// <summary>
@@ -949,7 +944,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IParameterizedMember member = GetBestCandidateWithSubstitutedTypeArguments();
 			if (member == null)
 				throw new InvalidOperationException();
-			
+
 			return new CSharpInvocationResolveResult(
 				this.IsExtensionMethodInvocation ? new TypeResolveResult(member.DeclaringType) : targetResolveResult,
 				member,

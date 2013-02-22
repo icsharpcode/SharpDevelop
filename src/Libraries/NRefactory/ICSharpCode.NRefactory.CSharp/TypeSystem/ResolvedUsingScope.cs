@@ -116,9 +116,15 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					CSharpResolver resolver = new CSharpResolver(parentContext.WithUsingScope(this));
 					result = new KeyValuePair<string, ResolveResult>[usingScope.UsingAliases.Count];
 					for (int i = 0; i < result.Count; i++) {
+						var rr = usingScope.UsingAliases[i].Value.Resolve(resolver);
+						if (rr is TypeResolveResult) {
+							rr = new AliasTypeResolveResult (usingScope.UsingAliases[i].Key, (TypeResolveResult)rr);
+						} else if (rr is NamespaceResolveResult) {
+							rr = new AliasNamespaceResolveResult (usingScope.UsingAliases[i].Key, (NamespaceResolveResult)rr);
+						}
 						result[i] = new KeyValuePair<string, ResolveResult>(
 							usingScope.UsingAliases[i].Key,
-							usingScope.UsingAliases[i].Value.Resolve(resolver)
+							rr
 						);
 					}
 					return LazyInit.GetOrSet(ref this.usingAliases, result);

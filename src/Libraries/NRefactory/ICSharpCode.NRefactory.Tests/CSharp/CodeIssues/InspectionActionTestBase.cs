@@ -1,4 +1,4 @@
-// 
+﻿// 
 // InspectionActionTestBase.cs
 //  
 // Author:
@@ -47,6 +47,12 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		{
 			using (var script = ctx.StartScript ())
 				issue.Actions[fixIndex].Run (script);
+			if (expectedOutput != ctx.Text) {
+				Console.WriteLine("expected:");
+				Console.WriteLine(expectedOutput);
+				Console.WriteLine("got:");
+				Console.WriteLine(ctx.Text);
+			}
 			Assert.AreEqual (expectedOutput, ctx.Text);
 		}
 
@@ -81,7 +87,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 				CheckFix (context, issues [issueToFix], output);
 		}
 
-		protected static void Test<T> (string input, string output, int fixIndex)
+		protected static void Test<T> (string input, string output, int fixIndex = 0)
 			where T : ICodeIssueProvider, new ()
 		{
 			TestRefactoringContext context;

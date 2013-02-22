@@ -20,10 +20,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ICSharpCode.NRefactory.TypeSystem.Implementation
+namespace ICSharpCode.NRefactory.TypeSystem
 {
 	/// <summary>
-	/// Substitues class and method type parameters.
+	/// Substitutes class and method type parameters.
 	/// </summary>
 	public class TypeParameterSubstitution : TypeVisitor
 	{

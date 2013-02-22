@@ -196,10 +196,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (typeName is Mono.CSharp.QualifiedAliasMember) {
 					var qam = (Mono.CSharp.QualifiedAliasMember)typeName;
+					var loc = LocationsBag.GetLocations (typeName);
 					var memberType = new MemberType ();
 					memberType.Target = new SimpleType (qam.alias, Convert (qam.Location));
 					memberType.IsDoubleColon = true;
-					memberType.MemberName = qam.Name;
+
+					if (loc != null && loc.Count > 0)
+						memberType.AddChild (new CSharpTokenNode (Convert (loc [0]), Roles.DoubleColon), Roles.DoubleColon);
+
+					memberType.MemberNameToken = Identifier.Create (qam.Name, loc != null ? Convert (loc[1]) : TextLocation.Empty);
 					return memberType;
 				}
 				
@@ -208,7 +213,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					
 					var memberType = new MemberType ();
 					memberType.AddChild (ConvertToType (ma.LeftExpression), MemberType.TargetRole);
-					memberType.AddChild (new CSharpTokenNode (Convert (ma.DotLocation), Roles.Dot), Roles.Dot);
+					if (!ma.DotLocation.IsNull)
+						memberType.AddChild (new CSharpTokenNode (Convert (ma.DotLocation), Roles.Dot), Roles.Dot);
 					
 					memberType.MemberNameToken = Identifier.Create (ma.Name, Convert (ma.Location));
 					
@@ -1246,18 +1252,19 @@ namespace ICSharpCode.NRefactory.CSharp
 				EventDeclaration newEvent = new EventDeclaration ();
 				AddAttributeSection (newEvent, e);
 				var location = LocationsBag.GetMemberLocation (e);
+				int l = 0;
 				AddModifiers (newEvent, location);
 				
 				if (location != null && location.Count > 0)
-					newEvent.AddChild (new CSharpTokenNode (Convert (location [0]), EventDeclaration.EventKeywordRole), EventDeclaration.EventKeywordRole);
+					newEvent.AddChild (new CSharpTokenNode (Convert (location [l++]), EventDeclaration.EventKeywordRole), EventDeclaration.EventKeywordRole);
 				newEvent.AddChild (ConvertToType (e.TypeExpression), Roles.Type);
 				
 				VariableInitializer variable = new VariableInitializer ();
 				variable.AddChild (Identifier.Create (e.MemberName.Name, Convert (e.MemberName.Location)), Roles.Identifier);
 				
 				if (e.Initializer != null) {
-					if (location != null && location.Count > 0)
-						variable.AddChild (new CSharpTokenNode (Convert (location [0]), Roles.Assign), Roles.Assign);
+					if (location != null && location.Count > l)
+						variable.AddChild (new CSharpTokenNode (Convert (location [l++]), Roles.Assign), Roles.Assign);
 					variable.AddChild ((Expression)e.Initializer.Accept (this), Roles.Expression);
 				}
 				newEvent.AddChild (variable, Roles.Variable);
@@ -1279,8 +1286,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 				}
 				
-				if (location != null && location.Count > 1)
-					newEvent.AddChild (new CSharpTokenNode (Convert (location [1]), Roles.Semicolon), Roles.Semicolon);
+				if (location != null && location.Count > l)
+					newEvent.AddChild (new CSharpTokenNode (Convert (location [l++]), Roles.Semicolon), Roles.Semicolon);
 				
 				typeStack.Peek ().AddChild (newEvent, Roles.TypeMemberRole);
 			}
@@ -2149,7 +2156,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.Target = new SimpleType (qualifiedAliasMember.alias, Convert (qualifiedAliasMember.Location));
 				result.IsDoubleColon = true;
 				var location = LocationsBag.GetLocations (qualifiedAliasMember);
-				result.AddChild (Identifier.Create (qualifiedAliasMember.Name, location != null ? Convert (location [0]) : TextLocation.Empty), Roles.Identifier);
+				if (location != null && location.Count > 0)
+					result.AddChild (new CSharpTokenNode (Convert (location [0]), Roles.DoubleColon), Roles.DoubleColon);
+
+				result.AddChild (Identifier.Create (qualifiedAliasMember.Name, location != null && location.Count > 1 ? Convert (location [1]) : TextLocation.Empty), Roles.Identifier);
 				return  new TypeReferenceExpression () { Type = result };
 			}
 			
@@ -2765,8 +2775,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				var initLoc = LocationsBag.GetLocations(minit);
 				var commaLoc = LocationsBag.GetLocations(minit.Initializers);
 				int curComma = 0;
-				if (initLoc != null)
-					init.AddChild(new CSharpTokenNode(Convert(initLoc [0]), Roles.LBrace), Roles.LBrace);
+				init.AddChild(new CSharpTokenNode(Convert(minit.Location), Roles.LBrace), Roles.LBrace);
 				foreach (var expr in minit.Initializers) {
 					var collectionInit = expr as CollectionElementInitializer;
 					if (collectionInit != null) {
@@ -2828,8 +2837,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 
 				if (initLoc != null) {
-					if (initLoc.Count == 3) // optional comma
-						init.AddChild(new CSharpTokenNode(Convert(initLoc [1]), Roles.Comma), Roles.Comma);
+					if (initLoc.Count == 2) // optional comma
+						init.AddChild(new CSharpTokenNode(Convert(initLoc [0]), Roles.Comma), Roles.Comma);
 					init.AddChild(new CSharpTokenNode(Convert(initLoc [initLoc.Count - 1]), Roles.RBrace), Roles.RBrace);
 				}
 			}

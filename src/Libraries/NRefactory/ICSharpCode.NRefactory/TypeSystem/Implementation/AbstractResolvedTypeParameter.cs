@@ -206,7 +206,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		int IType.TypeParameterCount {
 			get { return 0; }
 		}
-		
+
+		bool IType.IsParameterized { 
+			get { return false; }
+		}
+
+		readonly static IList<IType> emptyTypeArguments = new IType[0];
+		IList<IType> IType.TypeArguments {
+			get { return emptyTypeArguments; }
+		}
+
 		public abstract IEnumerable<IType> DirectBaseTypes { get; }
 		
 		public string Name {
@@ -326,7 +335,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			else
 				return GetMembersHelper.GetAccessors(this, FilterNonStatic(filter), options);
 		}
+
+		public TypeParameterSubstitution GetSubstitution()
+		{
+			return TypeParameterSubstitution.Identity;
+		}
 		
+		public TypeParameterSubstitution GetSubstitution(IList<IType> methodTypeArguments)
+		{
+			return TypeParameterSubstitution.Identity;
+		}
+
 		static Predicate<T> FilterNonStatic<T>(Predicate<T> filter) where T : class, IUnresolvedMember
 		{
 			if (filter == null)

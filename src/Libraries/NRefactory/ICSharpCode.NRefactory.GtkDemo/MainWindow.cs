@@ -34,7 +34,6 @@ using ICSharpCode.NRefactory.Semantics;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Threading.Tasks;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using Gdk;
 using System.Threading;
 using System.Diagnostics;

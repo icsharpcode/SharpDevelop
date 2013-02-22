@@ -240,7 +240,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					nameCounter [name]++;
 					name += nameCounter [name].ToString();
 				}
-				var type = resolveResult.Type.Kind == TypeKind.Unknown ? new PrimitiveType("object") : context.CreateShortType(resolveResult.Type);
+				var type = resolveResult.Type.Kind == TypeKind.Unknown || resolveResult.Type.Kind == TypeKind.Null ? new PrimitiveType("object") : context.CreateShortType(resolveResult.Type);
 
 				yield return new ParameterDeclaration(type, name) { ParameterModifier = direction};
 			}
@@ -278,6 +278,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public static string CreateBaseName(AstNode node, IType type)
 		{
 			string name = null;
+			if (node is NullReferenceExpression)
+				return "o";
 			if (node is DirectionExpression)
 				node = ((DirectionExpression)node).Expression;
 			if (node is IdentifierExpression) {
@@ -291,14 +293,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				} else {
 					return char.ToLower(type.Name [0]).ToString();
 				}
+			} else if (node is ArrayCreateExpression) {
+				name = "arr";
 			} else {
 				if (type.Kind == TypeKind.Unknown)
 					return "par";
 				name = GuessNameFromType(type);
 			}
-
-			name = char.ToLower(name [0]) + name.Substring(1);
-			return name;
+			var sb = new StringBuilder ();
+			sb.Append (char.ToLower(name [0]));
+			for (int i = 1; i < name.Length; i++) {
+				var ch = name[i];
+				if (char.IsLetterOrDigit (ch) || ch == '_')
+					sb.Append (ch);
+			}
+			return sb.ToString ();
 		}
 
 		static string GuessNameFromType(IType returnType)

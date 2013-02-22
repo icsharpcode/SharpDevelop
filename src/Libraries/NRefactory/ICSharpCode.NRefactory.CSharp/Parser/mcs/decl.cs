@@ -300,7 +300,8 @@ namespace Mono.CSharp {
 			HasStructLayout	= 1 << 15,			// Has StructLayoutAttribute
 			HasInstanceConstructor = 1 << 16,
 			HasUserOperators = 1 << 17,
-			CanBeReused = 1 << 18
+			CanBeReused = 1 << 18,
+			InterfacesExpanded = 1 << 19
 		}
 
 		/// <summary>
@@ -972,7 +973,10 @@ namespace Mono.CSharp {
 			this.definition = definition;
 			this.modifiers = modifiers;
 
-			state = StateFlags.Obsolete_Undetected | StateFlags.CLSCompliant_Undetected | StateFlags.MissingDependency_Undetected;
+			if (kind == MemberKind.MissingType)
+				state = StateFlags.MissingDependency;
+			else
+				state = StateFlags.Obsolete_Undetected | StateFlags.CLSCompliant_Undetected | StateFlags.MissingDependency_Undetected;
 		}
 
 		#region Properties

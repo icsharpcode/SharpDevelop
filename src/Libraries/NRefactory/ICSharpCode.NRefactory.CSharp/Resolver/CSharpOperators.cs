@@ -227,7 +227,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				throw new NotSupportedException();
 			}
-			
+
+			TypeParameterSubstitution IMember.Substitution {
+				get {
+					return TypeParameterSubstitution.Identity;
+				}
+			}
+
+			IMember IMember.Specialize(TypeParameterSubstitution substitution)
+			{
+				throw new NotSupportedException();
+			}
+
 			string INamedElement.FullName {
 				get { return "operator"; }
 			}

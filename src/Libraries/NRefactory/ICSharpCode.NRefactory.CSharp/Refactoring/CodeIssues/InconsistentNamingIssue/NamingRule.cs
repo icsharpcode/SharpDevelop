@@ -122,9 +122,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				case NamingStyle.AllUpper:
 					return !id.Any(ch => char.IsLetter(ch) && char.IsLower(ch));
 				case NamingStyle.CamelCase:
-					return id.Length == 0 || (char.IsLower(id [0]) && NoUnderscoreWithoutNumber(id));
+					return id.Length == 0 || (char.IsLower(id [0]) && NoUnderscore(id));
 				case NamingStyle.PascalCase:
-					return id.Length == 0 || (char.IsUpper(id [0]) && NoUnderscoreWithoutNumber(id));
+					return id.Length == 0 || (char.IsUpper(id [0]) && NoUnderscore(id));
 				case NamingStyle.FirstUpper:
 					return id.Length == 0 && char.IsUpper(id [0]) && !id.Skip(1).Any(ch => char.IsLetter(ch) && char.IsUpper(ch));
 			}
@@ -139,17 +139,22 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			IncludeInstanceMembers = true;
 		}
 
-		static bool NoUnderscoreWithoutNumber(string id)
+		static bool NoUnderscore(string id)
 		{
-			int idx = id.IndexOf('_');
-			while (idx >= 0 && idx < id.Length) {
-				if ((idx + 2 >= id.Length || !char.IsDigit(id [idx + 1])) && (idx == 0 || !char.IsDigit(id [idx - 1]))) {
-					return false;
-				}
-				idx = id.IndexOf('_', idx + 1);
-			}
-			return true;
+			return id.IndexOf('_') < 0;
 		}
+
+//		static bool NoUnderscoreWithoutNumber(string id)
+//		{
+//			int idx = id.IndexOf('_');
+//			while (idx >= 0 && idx < id.Length) {
+//				if ((idx + 2 >= id.Length || !char.IsDigit(id [idx + 1])) && (idx == 0 || !char.IsDigit(id [idx - 1]))) {
+//					return false;
+//				}
+//				idx = id.IndexOf('_', idx + 1);
+//			}
+//			return true;
+//		}
 
 
 		public string GetErrorMessage(BaseRefactoringContext ctx, string name, out IList<string> suggestedNames)
@@ -224,7 +229,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				case NamingStyle.CamelCase:
 					if (id.Length > 0 && char.IsUpper(id [0])) {
 						errorMessage = string.Format(ctx.TranslateString("'{0}' should start with a lower case letter."), name);
-					} else if (!NoUnderscoreWithoutNumber(id)) {
+					} else if (!NoUnderscore(id)) {
 						errorMessage = string.Format(ctx.TranslateString("'{0}' should not separate words with an underscore."), name);
 					} else {
 						suggestedNames.Add(id);
@@ -235,7 +240,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				case NamingStyle.PascalCase:
 					if (id.Length > 0 && char.IsLower(id [0])) {
 						errorMessage = string.Format(ctx.TranslateString("'{0}' should start with an upper case letter."), name);
-					} else if (!NoUnderscoreWithoutNumber(id)) {
+					} else if (!NoUnderscore(id)) {
 						errorMessage = string.Format(ctx.TranslateString("'{0}' should not separate words with an underscore."), name);
 					} else {
 						suggestedNames.Add(id);
@@ -310,8 +315,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var sb = new StringBuilder ();
 			sb.Append (words[0].ToLower ());
 			for (int i = 1; i < words.Count; i++) {
-				if (sb.Length > 0 && (char.IsDigit (sb[sb.Length-1]) || char.IsDigit (words[i][0])))
-					sb.Append ('_');
+//				if (sb.Length > 0 && (char.IsDigit (sb[sb.Length-1]) || char.IsDigit (words[i][0])))
+//					sb.Append ('_');
 				AppendCapitalized (words[i], sb);
 			}
 			return sb.ToString ();
@@ -321,8 +326,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			var sb = new StringBuilder ();
 			for (int i = 0; i < words.Count; i++) {
-				if (sb.Length > 0 && (char.IsDigit (sb[sb.Length-1]) || char.IsDigit (words[i][0])))
-					sb.Append ('_');
+//				if (sb.Length > 0 && (char.IsDigit (sb[sb.Length-1]) || char.IsDigit (words[i][0])))
+//					sb.Append ('_');
 				AppendCapitalized (words[i], sb);
 			}
 			return sb.ToString ();

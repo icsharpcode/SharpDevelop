@@ -42,15 +42,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			if (memberDefinition == null)
 				throw new ArgumentNullException("memberDefinition");
+			if (memberDefinition is SpecializedMember)
+				throw new ArgumentException("Member definition cannot be specialized. Please use IMember.Specialize() instead of directly constructing SpecializedMember instances.");
 			
-			SpecializedMember sm = memberDefinition as SpecializedMember;
-			if (sm != null) {
-				this.baseMember = sm.baseMember;
-				this.substitution = sm.substitution;
-			} else {
-				this.baseMember = memberDefinition;
-				this.substitution = TypeParameterSubstitution.Identity;
-			}
+			this.baseMember = memberDefinition;
+			this.substitution = TypeParameterSubstitution.Identity;
 		}
 		
 		/// <summary>
@@ -63,20 +59,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.substitution = TypeParameterSubstitution.Compose(newSubstitution, this.substitution);
 		}
 		
-		public static SpecializedMember Create(IMember memberDefinition, TypeParameterSubstitution substitution)
+		[Obsolete("Use IMember.Specialize() instead")]
+		public static IMember Create(IMember memberDefinition, TypeParameterSubstitution substitution)
 		{
 			if (memberDefinition == null) {
 				return null;
-			} else if (memberDefinition is IMethod) {
-				return new SpecializedMethod((IMethod)memberDefinition, substitution);
-			} else if (memberDefinition is IProperty) {
-				return new SpecializedProperty((IProperty)memberDefinition, substitution);
-			} else if (memberDefinition is IField) {
-				return new SpecializedField((IField)memberDefinition, substitution);
-			} else if (memberDefinition is IEvent) {
-				return new SpecializedEvent((IEvent)memberDefinition, substitution);
 			} else {
-				throw new NotSupportedException("Unknown IMember: " + memberDefinition);
+				return memberDefinition.Specialize(substitution);
 			}
 		}
 		
@@ -104,7 +93,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (result != null) {
 				return result;
 			} else {
-				var sm = new SpecializedMethod(accessorDefinition, substitution);
+				var sm = accessorDefinition.Specialize(substitution);
 				//sm.AccessorOwner = this;
 				return LazyInit.GetOrSet(ref cachingField, sm);
 			}
@@ -217,7 +206,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			var definitionImplementations = baseMember.ImplementedInterfaceMembers;
 			IMember[] result = new IMember[definitionImplementations.Count];
 			for (int i = 0; i < result.Length; i++) {
-				result[i] = SpecializedMember.Create(definitionImplementations[i], substitution);
+				result[i] = definitionImplementations[i].Specialize(substitution);
 			}
 			return result;
 		}
@@ -301,7 +290,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IAssembly ParentAssembly {
 			get { return baseMember.ParentAssembly; }
 		}
-		
+
+		public virtual IMember Specialize(TypeParameterSubstitution newSubstitution)
+		{
+			return baseMember.Specialize(TypeParameterSubstitution.Compose(newSubstitution, this.substitution));
+		}
+
 		public override bool Equals(object obj)
 		{
 			SpecializedMember other = obj as SpecializedMember;

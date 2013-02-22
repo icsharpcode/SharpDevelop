@@ -172,7 +172,18 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IList<IParameter> Parameters { get; private set; }
 		public IList<IAttribute> ReturnTypeAttributes { get; private set; }
 		public IList<ITypeParameter> TypeParameters { get; private set; }
+
+		public IList<IType> TypeArguments {
+			get {
+				// ToList() call is necessary because IList<> isn't covariant
+				return TypeParameters.ToList<IType>();
+			}
+		}
 		
+		bool IMethod.IsParameterized {
+			get { return false; }
+		}
+
 		public bool IsExtensionMethod { get; private set; }
 		
 		public IList<IUnresolvedMethod> Parts {
@@ -192,7 +203,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public bool IsOperator {
 			get { return ((IUnresolvedMethod)unresolved).IsOperator; }
 		}
-			
+		
 		public bool IsPartial {
 			get { return ((IUnresolvedMethod)unresolved).IsPartial; }
 		}
@@ -208,10 +219,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public bool IsAccessor {
 			get { return ((IUnresolvedMethod)unresolved).AccessorOwner != null; }
 		}
-		
+
+		IMethod IMethod.ReducedFrom {
+			get { return null; }
+		}
+
 		public IMember AccessorOwner {
-			get { 
-				var reference = ((IUnresolvedMethod)unresolved).AccessorOwner; 
+			get {
+				var reference = ((IUnresolvedMethod)unresolved).AccessorOwner;
 				if (reference != null)
 					return reference.Resolve(context);
 				else
@@ -229,6 +244,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					this.EntityType, declTypeRef, this.Name, this.TypeParameters.Count,
 					this.Parameters.Select(p => p.Type.ToTypeReference()).ToList());
 			}
+		}
+		
+		public override IMember Specialize(TypeParameterSubstitution substitution)
+		{
+			return new SpecializedMethod(this, substitution);
+		}
+		
+		IMethod IMethod.Specialize(TypeParameterSubstitution substitution)
+		{
+			return new SpecializedMethod(this, substitution);
 		}
 		
 		public override string ToString()

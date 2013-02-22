@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			var createExpression = context.GetNode<ObjectCreateExpression>();
+			var createExpression = context.GetNode<Expression>() as ObjectCreateExpression;
 			if (createExpression == null) 
 				yield break;
 			

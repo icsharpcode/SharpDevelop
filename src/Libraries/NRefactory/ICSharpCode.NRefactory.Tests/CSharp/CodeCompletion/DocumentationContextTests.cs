@@ -29,10 +29,10 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 {
-	[TestFixture()]
+	[TestFixture]
 	public class DocumentationContextTests
 	{
-		[Test()]
+		[Test]
 		public void TestClosingTag()
 		{
 			CodeCompletionBugTests.CombinedProviderTest(
@@ -50,11 +50,11 @@ public class Test
 			});
 		}
 
-		[Test()]
+		[Test]
 		public void TestClosingTagMultiLine()
 		{
 			CodeCompletionBugTests.CombinedProviderTest(
-@"using System;
+				@"using System;
 
 public class Test
 {
@@ -67,6 +67,30 @@ public class Test
 }
 ", provider => {
 				Assert.IsNotNull(provider.Find("/summary>"));
+			});
+		}
+
+		/// <summary>
+		/// Bug 9998 - Doc comments completion offers </para> as end tag for <param>
+		/// </summary>
+		[Test]
+		public void TestBug9998()
+		{
+			CodeCompletionBugTests.CombinedProviderTest(
+				@"using System;
+
+public class Test
+{
+		/// <summary>
+		/// </summary>
+		/// <param name=""args""> $<$
+		public static void Main(string[] args)
+		{
+	
+		}
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("/param>"));
 			});
 		}
 	}

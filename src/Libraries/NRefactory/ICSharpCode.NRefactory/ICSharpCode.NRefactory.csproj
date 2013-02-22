@@ -47,7 +47,7 @@
     <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>PdbOnly</DebugType>
+    <DebugType>none</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Debug' ">
     <Optimize>False</Optimize>
@@ -57,8 +57,9 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_4_5_Debug|AnyCPU' ">
-    <DebugType>Full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Release' ">
     <Optimize>True</Optimize>
@@ -67,8 +68,8 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_4_5_Release|AnyCPU' ">
-    <DebugType>PdbOnly</DebugType>
-    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -111,6 +112,7 @@
     <Compile Include="Semantics\ByReferenceResolveResult.cs" />
     <Compile Include="Semantics\ConstantResolveResult.cs" />
     <Compile Include="Semantics\ConversionResolveResult.cs" />
+    <Compile Include="Semantics\SizeOfResolveResult.cs" />
     <Compile Include="Semantics\ErrorResolveResult.cs" />
     <Compile Include="Semantics\Conversion.cs" />
     <Compile Include="Semantics\ForEachResolveResult.cs" />
@@ -137,6 +139,7 @@
     <Compile Include="TypeSystem\DefaultSolutionSnapshot.cs" />
     <Compile Include="TypeSystem\DomRegion.cs" />
     <Compile Include="TypeSystem\EntityType.cs" />
+    <Compile Include="TypeSystem\TypeParameterSubstitution.cs" />
     <Compile Include="TypeSystem\TypeSystemExtensions.cs" />
     <Compile Include="TypeSystem\FullTypeName.cs" />
     <Compile Include="TypeSystem\IAmbience.cs" />
@@ -198,7 +201,6 @@
     <Compile Include="TypeSystem\Implementation\SpecializedProperty.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializingMemberReference.cs" />
     <Compile Include="TypeSystem\Implementation\TypeParameterReference.cs" />
-    <Compile Include="TypeSystem\Implementation\TypeParameterSubstitution.cs" />
     <Compile Include="TypeSystem\Implementation\TypeWithElementType.cs" />
     <Compile Include="TypeSystem\Implementation\UnknownType.cs" />
     <Compile Include="TypeSystem\Implementation\VoidTypeDefinition.cs" />

@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class ExtractMethodTests : ContextActionTestBase
 	{
-		[Test()]
+		[Test]
 		public void SimpleArgument()
 		{
 			Test<ExtractMethodAction>(@"class TestClass
@@ -56,7 +56,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 }
 ");
 		}
-		[Test()]
+
+		[Test]
 		public void NoArgument()
 		{
 			Test<ExtractMethodAction>(@"class TestClass
@@ -82,7 +83,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 ");
 		}
 
-		[Test()]
+		[Test]
 		public void ExtractMethodResultStatementTest()
 		{
 			Test<ExtractMethodAction>(@"class TestClass
@@ -112,7 +113,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 ");
 		}
 		
-		[Test()]
+		[Test]
 		public void ExtractMethodResultExpressionTest()
 		{
 			Test<ExtractMethodAction>(@"class TestClass
@@ -140,7 +141,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 ");
 		}
 		
-		[Test()]
+		[Test]
 		public void ExtractMethodStaticResultStatementTest()
 		{
 			Test<ExtractMethodAction>(@"class TestClass
@@ -168,7 +169,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 ");
 		}
 		
-		[Test()]
+		[Test]
 		public void ExtractMethodStaticResultExpressionTest()
 		{
 			Test<ExtractMethodAction>(@"class TestClass
@@ -194,7 +195,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 ");
 		}
 		
-		[Test()]
+		[Test]
 		public void ExtractMethodMultiVariableTest()
 		{
 			Test<ExtractMethodAction>(@"class TestClass
@@ -229,7 +230,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		/// <summary>
 		/// Bug 607990 - "Extract Method" refactoring sometimes tries to pass in unnecessary parameter depending on selection
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug607990()
 		{
 			Test<ExtractMethodAction>(@"using System;
@@ -261,7 +262,7 @@ class TestClass
 		/// <summary>
 		/// Bug 616193 - Extract method passes param with does not exists any more in main method
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug616193()
 		{
 			Test<ExtractMethodAction>(@"class TestClass
@@ -296,7 +297,7 @@ class TestClass
 		/// <summary>
 		/// Bug 616199 - Extract method forgets to return a local var which is used in main method
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug616199()
 		{
 			Test<ExtractMethodAction>(@"class TestClass
@@ -326,7 +327,7 @@ class TestClass
 		/// <summary>
 		/// Bug 666271 - "Extract Method" on single line adds two semi-colons in method, none in replaced text
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug666271()
 		{
 			Test<ExtractMethodAction>(@"class TestClass
@@ -354,7 +355,7 @@ class TestClass
 		/// <summary>
 		/// Bug 693944 - Extracted method returns void instead of the correct type
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug693944()
 		{
 			Test<ExtractMethodAction>(@"class TestClass
@@ -379,7 +380,7 @@ class TestClass
 		}
 		
 		[Ignore("Fix me!")]
-		[Test()]
+		[Test]
 		public void ExtractMethodMultiVariableWithLocalReturnVariableTest()
 		{
 			Test<ExtractMethodAction>(@"class TestClass
@@ -418,7 +419,7 @@ class TestClass
 		/// <summary>
 		/// Bug 8835 - missing "extract method" in the code editor
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug8835 ()
 		{
 			Test<ExtractMethodAction>(@"class TestClass
@@ -442,6 +443,73 @@ class TestClass
 	}
 }
 ");
+		}
+
+		/// <summary>
+		/// Bug 9881 - Extract method is broken
+		/// </summary>
+		[Test]
+		public void TestBug9881()
+		{
+			Test<ExtractMethodAction>(@"using System.Linq;
+class TestClass
+{
+	void Foo ()
+	{
+		var val = Enumerable.Range (0, 10).ToList ();
+		<-for (int j = 0; j < val.Count; j++) {
+			int i = val [j];
+			Console.WriteLine (i);
+		}->
+
+		foreach (var i in val) {
+			Console.WriteLine (i + 2);
+		}
+	}
+}", @"using System.Linq;
+class TestClass
+{
+	static void NewMethod (System.Collections.Generic.List<int> val)
+	{
+		for (int j = 0; j < val.Count; j++) {
+			int i = val [j];
+			Console.WriteLine (i);
+		}
+	}
+	void Foo ()
+	{
+		var val = Enumerable.Range (0, 10).ToList ();
+		NewMethod (val);
+
+		foreach (var i in val) {
+			Console.WriteLine (i + 2);
+		}
+	}
+}");
+		}
+
+		[Test]
+		public void TestStaticSimpleExtractMethodFromExpression ()
+		{
+			Test<ExtractMethodAction> (@"class TestClass
+{
+	public static void TestMethod ()
+	{
+		int i;
+		var f = <-i % 5 == 0->;
+	}
+}", @"class TestClass
+{
+	static bool NewMethod (int i)
+	{
+		return i % 5 == 0;
+	}
+	public static void TestMethod ()
+	{
+		int i;
+		var f = NewMethod (i);
+	}
+}");
 		}
 	}
 }

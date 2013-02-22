@@ -18,9 +18,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -170,5 +168,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Otherwise, the main resolve context of a compilation is sufficient.
 		/// </remarks>
 		IMemberReference ToMemberReference();
+
+		/// <summary>
+		/// Gets the substitution belonging to this specialized member.
+		/// Returns TypeParameterSubstitution.Identity for not specialized members.
+		/// </summary>
+		TypeParameterSubstitution Substitution {
+			get;
+		}
+
+		/// <summary>
+		/// Specializes this member with the given substitution.
+		/// If this member is already specialized, the new substitution is composed with the existing substition.
+		/// </summary>
+		IMember Specialize(TypeParameterSubstitution substitution);
 	}
 }

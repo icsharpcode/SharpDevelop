@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 {
 	public class PreProcessorTests: TestBase
 	{
-		[Test()]
+		[Test]
 		public void TestPreProcessorContext ()
 		{
 			CodeCompletionBugTests.CombinedProviderTest (@"$#$", provider => {
@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			});
 		}
 		
-		[Test()]
+		[Test]
 		public void TestPreProcessorContext2 ()
 		{
 			CodeCompletionBugTests.CombinedProviderTest (@"// $#$", provider => {
@@ -49,20 +49,57 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 		}
 		
 		
-		[Test()]
+		[Test]
 		public void TestIfContext ()
 		{
-			CodeCompletionBugTests.CombinedProviderTest (@"$#if $", provider => {
+			CodeCompletionBugTests.CombinedProviderTest (@"$#if D$", provider => {
 				Assert.IsNotNull (provider.Find ("DEBUG"), "define 'DEBUG' not found.");
 			});
 		}	
 
-		[Test()]
+		[Test]
 		public void TestIfInsideComment ()
 		{
-			CodeCompletionBugTests.CombinedProviderTest (@"$// #if $", provider => {
+			CodeCompletionBugTests.CombinedProviderTest (@"$// #if D$", provider => {
 				Assert.IsNull (provider.Find ("DEBUG"), "define 'DEBUG' found.");
 			});
+		}
+
+		/// <summary>
+		/// Bug 10051 - Cannot type negate conditional
+		/// </summary>
+		[Test]
+		public void TestBug10051 ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (@"$#if $");
+			Assert.IsTrue (provider == null || provider.Count == 0);
+			
+			provider = CodeCompletionBugTests.CreateProvider (@"$#if $", true);
+			Assert.IsNotNull (provider.Find ("DEBUG"), "define 'DEBUG' not found.");
 		}	
+
+		/// <summary>
+		///Bug 10079 - Cannot type && conditional
+		/// </summary>
+		[Test]
+		public void TestBug10079 ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (@"$#if TRUE &$");
+			Assert.IsTrue (provider == null || provider.Count == 0);
+			
+			provider = CodeCompletionBugTests.CreateProvider (@"$#if TRUE && $", true);
+			Assert.IsNotNull (provider.Find ("DEBUG"), "define 'DEBUG' not found.");
+		}	
+
+
+		/// <summary>
+		/// Bug 10294 - Comments in preprocessor directives are not handler correctly
+		/// </summary>
+		[Test]
+		public void TestBug10294 ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (@"$#if TRUE // D$",true);
+			Assert.IsTrue (provider == null || provider.Count == 0);
+		}
 	}
 }

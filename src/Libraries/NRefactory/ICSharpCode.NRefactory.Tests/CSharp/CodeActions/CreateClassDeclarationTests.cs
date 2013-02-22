@@ -224,7 +224,7 @@ class TestClass
 ");
 		}
 
-		[Test()]
+		[Test]
 		public void TestNotShowInEventTypes()
 		{
 			TestWrongContext<CreateClassDeclarationAction>(
@@ -236,7 +236,7 @@ class TestClass
 ");
 		}
 
-		[Test()]
+		[Test]
 		public void TestCreateClassImplementingInterface()
 		{
 			Test<CreateClassDeclarationAction>(
@@ -266,7 +266,7 @@ class TestClass
 ");
 		}
 
-		[Test()]
+		[Test]
 		public void TestCreateClassExtendingAbstractClass()
 		{
 			Test<CreateClassDeclarationAction>(
@@ -301,7 +301,7 @@ class TestClass
 ");
 		}
 
-		[Test()]
+		[Test]
 		public void TestModifierBug ()
 		{
 			Test<CreateClassDeclarationAction> (
@@ -321,6 +321,32 @@ class TestClass
 ");
 		}
 
+
+		[Test]
+		public void TestCreateClassFromMemberReferenceExpression ()
+		{
+			Test<CreateClassDeclarationAction> (
+				@"
+class TestClass
+{
+	void TestMethod ()
+	{
+		$Foo.Bar (1);
+	}
+}
+", @"
+class Foo
+{
+}
+class TestClass
+{
+	void TestMethod ()
+	{
+		Foo.Bar (1);
+	}
+}
+");
+		}
 
 	}
 }

@@ -63,7 +63,33 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				typeof(LambdaExpression),
 				typeof(LockStatement)
 			};
-		
+
+			class CheckInitializer : DepthFirstAstVisitor
+			{
+				public bool IsValid {
+					get;
+					private set;
+				}
+
+				public CheckInitializer()
+				{
+					IsValid = true;
+				}
+
+				public override void VisitInvocationExpression(InvocationExpression invocationExpression)
+				{
+					base.VisitInvocationExpression(invocationExpression);
+					IsValid = false;
+				}
+			}
+			
+			bool CheckForInvocations(Expression initializer)
+			{
+				var visitor = new CheckInitializer();
+				initializer.AcceptVisitor(visitor);
+				return visitor.IsValid;
+			}
+
 			public override void VisitVariableDeclarationStatement(VariableDeclarationStatement variableDeclarationStatement)
 			{
 				base.VisitVariableDeclarationStatement(variableDeclarationStatement);
@@ -82,6 +108,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 				if (identifiers.Count == 0)
 					// variable is not used
+					return;
+
+				if (!CheckForInvocations(variableInitializer.Initializer))
 					return;
 
 				AstNode deepestCommonAncestor = GetDeepestCommonAncestor(rootNode, identifiers);

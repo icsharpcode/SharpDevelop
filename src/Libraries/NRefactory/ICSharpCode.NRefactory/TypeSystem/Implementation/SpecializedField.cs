@@ -30,8 +30,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public SpecializedField(IField fieldDefinition, TypeParameterSubstitution substitution)
 			: base(fieldDefinition)
 		{
+			this.fieldDefinition = fieldDefinition;
 			AddSubstitution(substitution);
-			this.fieldDefinition = (IField)base.baseMember;
 		}
 		
 		public bool IsReadOnly {

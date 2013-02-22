@@ -376,7 +376,7 @@ class TestClass {
 }";
 			var rr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(rr.IsError);
-			SpecializedMethod m = (SpecializedMethod)rr.Member;
+			var m = (IMethod)rr.Member;
 			Assert.AreEqual("System.Int32", m.TypeArguments[0].ReflectionName);
 			Assert.AreEqual("System.Converter`2[[``0],[System.Int32]]", m.Parameters[0].Type.ReflectionName);
 			

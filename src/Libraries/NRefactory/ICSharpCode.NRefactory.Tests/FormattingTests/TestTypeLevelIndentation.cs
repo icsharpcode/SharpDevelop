@@ -574,13 +574,13 @@ set;
 }");
 		}
 
-		[Test()]
+		[Test]
 		public void TestPropertyCorrection()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.PropertyFormatting = PropertyFormatting.ForceNewLine;
 			Test(policy, 
-@"class Test
+			     @"class Test
 {
 				public int Prop { get;          private set; }
 }", @"class Test
@@ -591,10 +591,8 @@ set;
 	}
 }");
 		}
-		
 
-		
-		[Test()]
+		[Test]
 		public void TestIndentEventBody ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -635,6 +633,26 @@ remove {
 		;
 	}
 	}
+}");
+		}
+
+		
+		/// <summary>
+		/// Bug 9990 - Formatting a document on save splits event into 'e vent'
+		/// </summary>
+		[Test]
+		public void TestBug9990()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			policy.PropertyFormatting = PropertyFormatting.ForceNewLine;
+			Test(policy, 
+			     @"class Test
+{
+		public event EventHandler UpdateStarted = delegate { }; public event EventHandler<UpdateFinishedEventArgs> UpdateFinished = delegate { };
+}", @"class Test
+{
+	public event EventHandler UpdateStarted = delegate { };
+	public event EventHandler<UpdateFinishedEventArgs> UpdateFinished = delegate { };
 }");
 		}
 	}
