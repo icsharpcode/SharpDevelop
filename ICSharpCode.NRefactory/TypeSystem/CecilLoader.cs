@@ -1798,11 +1798,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				set { throw new NotSupportedException(); }
 			}
 			
-			public override string FullName {
-				// This works because LazyCecilTypeDefinition is only used for top-level types
-				get { return cecilTypeDef.FullName; }
-			}
-			
 			public override string ReflectionName {
 				get { return cecilTypeDef.FullName; }
 			}

@@ -201,7 +201,6 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			VisitChildrenUntil(memberReferenceExpression, memberNameToken);
 			ResolveResult rr = resolver.Resolve(memberReferenceExpression);
 			Colorize(memberNameToken, rr);
-			VisitChildren(memberReferenceExpression);
 			VisitChildrenAfter(memberReferenceExpression, memberNameToken);
 		}
 		
