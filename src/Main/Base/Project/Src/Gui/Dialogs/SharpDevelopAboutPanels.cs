@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
@@ -79,6 +80,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			#if DEBUG
 			if (e.KeyData == (Keys.Control | Keys.Shift | Keys.E)) {
 				throw new ClownFishException();
+			} else if (e.KeyData == (Keys.Control | Keys.Shift | Keys.A)) {
+				Trace.Fail("Trace failure");
 			} else if (e.KeyData == (Keys.Control | Keys.Shift | Keys.G)) {
 				GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
 				GC.WaitForPendingFinalizers();

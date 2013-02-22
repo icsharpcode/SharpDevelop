@@ -207,6 +207,7 @@ namespace ICSharpCode.SharpDevelop.Startup
 				for (int i = 0; i < fileList.Length; i++) {
 					workbenchSettings.InitialFileList.Add(fileList[i]);
 				}
+				SDTraceListener.Install();
 				host.RunWorkbench(workbenchSettings);
 			} finally {
 				LoggingService.Info("Leaving RunApplication()");

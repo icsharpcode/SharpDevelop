@@ -76,18 +76,17 @@ namespace ICSharpCode.SharpDevelop.Logging
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		static void ShowErrorBox(Exception exception, string message, bool mustTerminate)
 		{
-			if (exception == null)
-				throw new ArgumentNullException("exception");
-			
 			// ignore reentrant calls (e.g. when there's an exception in OnRender)
 			if (showingBox)
 				return;
 			showingBox = true;
 			try {
-				try {
-					SD.AnalyticsMonitor.TrackException(exception);
-				} catch (Exception ex) {
-					LoggingService.Warn("Error tracking exception", ex);
+				if (exception != null) {
+					try {
+						SD.AnalyticsMonitor.TrackException(exception);
+					} catch (Exception ex) {
+						LoggingService.Warn("Error tracking exception", ex);
+					}
 				}
 				using (ExceptionBox box = new ExceptionBox(exception, message, mustTerminate)) {
 					if (SD.MainThread.InvokeRequired) {
@@ -98,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.Logging
 				}
 			} catch (Exception ex) {
 				LoggingService.Warn("Error showing ExceptionBox", ex);
-				MessageBox.Show(exception.ToString(), message, MessageBoxButtons.OK,
+				MessageBox.Show(exception != null ? exception.ToString() : "Error", message, MessageBoxButtons.OK,
 				                MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
 			} finally {
 				showingBox = false;
@@ -155,8 +154,10 @@ namespace ICSharpCode.SharpDevelop.Logging
 			if (message != null) {
 				sb.AppendLine(message);
 			}
-			sb.AppendLine("Exception thrown:");
-			sb.AppendLine(exceptionThrown.ToString());
+			if (exceptionThrown != null) {
+				sb.AppendLine("Exception thrown:");
+				sb.AppendLine(exceptionThrown.ToString());
+			}
 			sb.AppendLine();
 			sb.AppendLine("---- Recent log messages:");
 			try {

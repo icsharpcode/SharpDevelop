@@ -91,6 +91,7 @@
     <Compile Include="Editor\Bookmarks\BookmarkMenuCommands.cs" />
     <Compile Include="Editor\TextContentCondition.cs" />
     <Compile Include="Editor\TextSelectedCondition.cs" />
+    <Compile Include="Logging\SDTraceListener.cs" />
     <Compile Include="OptionPanels\LoadSaveOptions.xaml.cs">
       <DependentUpon>LoadSaveOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
