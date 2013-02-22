@@ -151,6 +151,7 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.CompareFloatWithEqualityOperatorIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConditionalToNullCoalescingIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConstantConditionIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.CS0127ReturnMustNotBeFollowedByAnyExpression" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.DoubleNegationIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ExceptionRethrowIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ExplicitConversionInForEachIssue" />
@@ -195,6 +196,7 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ReferenceEqualsCalledWithValueTypeIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ReferenceToStaticMemberViaDerivedTypeIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ResultOfAsyncCallShouldNotBeIgnoredIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.SimplifyAnonymousMethodToDelegateIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.StaticFieldInGenericTypeIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.StringIsNullOrEmptyIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ThreadStaticOnInstanceFieldIssue" />
@@ -235,6 +237,7 @@
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateConstructorDeclarationAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateCustomEventImplementationAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateDelegateAction" />
+		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateEnumValue" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateEventInvocatorAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateFieldAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateIndexerAction" />
