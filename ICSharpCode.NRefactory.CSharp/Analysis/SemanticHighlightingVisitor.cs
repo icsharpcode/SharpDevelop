@@ -23,6 +23,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Analysis
 {
@@ -31,12 +32,37 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 	/// </summary>
 	public abstract class SemanticHighlightingVisitor<TColor> : DepthFirstAstVisitor
 	{
+		protected CancellationToken cancellationToken = default (CancellationToken);
+		
 		protected TColor defaultTextColor;
 		protected TColor referenceTypeColor;
 		protected TColor valueTypeColor;
+		protected TColor interfaceTypeColor;
+		protected TColor enumerationTypeColor;
+		protected TColor typeParameterTypeColor;
+		
+		protected TColor delegateDeclarationColor;
+		
 		protected TColor methodCallColor;
+		protected TColor methodDeclarationColor;
+		
+		protected TColor eventDeclarationColor;
+		protected TColor eventAccessColor;
+		
+		protected TColor propertyDeclarationColor;
+		protected TColor propertyAccessColor;
+		
+		protected TColor fieldDeclarationColor;
 		protected TColor fieldAccessColor;
+		
+		protected TColor variableDeclarationColor;
+		protected TColor variableAccessColor;
+		
+		protected TColor parameterDeclarationColor;
+		protected TColor parameterAccessColor;
+		
 		protected TColor valueKeywordColor;
+		protected TColor externAliasKeywordColor;
 		
 		/// <summary>
 		/// Used for 'in' modifiers on type parameters.
@@ -52,6 +78,8 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		/// </summary>
 		protected TColor inactiveCodeColor;
 		
+		protected TColor syntaxErrorColor;
+		
 		protected TextLocation regionStart;
 		protected TextLocation regionEnd;
 		
@@ -65,20 +93,38 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		{
 			if (identifier.IsNull)
 				return;
-			if (rr is TypeResolveResult) {
-				if (rr.Type.IsReferenceType == false)
-					Colorize(identifier, valueTypeColor);
-				else
-					Colorize(identifier, referenceTypeColor);
+			if (rr.IsError) {
+				Colorize(identifier, syntaxErrorColor);
 				return;
 			}
-			MemberResolveResult mrr = rr as MemberResolveResult;
+			if (rr is TypeResolveResult) {
+				Colorize(identifier, GetTypeHighlighting (rr.Type.Kind));
+				return;
+			}
+			var mrr = rr as MemberResolveResult;
 			if (mrr != null) {
-				if (mrr.Member is IField) {
-					Colorize(identifier, fieldAccessColor);
+				TColor color;
+				if (TryGetMemberColor (mrr.Member, out color)) {
+					Colorize(identifier, color);
 					return;
 				}
 			}
+			
+			if (rr is MethodGroupResolveResult) {
+				Colorize (identifier, methodCallColor);
+				return;
+			}
+			
+			var localResult = rr as LocalResolveResult;
+			if (localResult != null) {
+				if (localResult.Variable is IParameter) {
+					Colorize (identifier, parameterAccessColor);
+				} else {
+					Colorize (identifier, variableAccessColor);
+				}
+			}
+			
+			
 			VisitIdentifier(identifier); // un-colorize contextual keywords
 		}
 		
@@ -107,7 +153,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			if (end.IsNull)
 				return;
 			Debug.Assert(node == end.Parent);
-			for (var child = node.FirstChild; child != end; child = child.NextSibling) {
+			for (var child = node.FirstChild; child != end && !cancellationToken.IsCancellationRequested; child = child.NextSibling) {
 				if (child.StartLocation < regionEnd && child.EndLocation > regionStart)
 					child.AcceptVisitor(this);
 			}
@@ -120,7 +166,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		protected void VisitChildrenAfter(AstNode node, AstNode start)
 		{
 			Debug.Assert(start.IsNull || start.Parent == node);
-			for (var child = (start.IsNull ? node.FirstChild : start.NextSibling); child != null; child = child.NextSibling) {
+			for (var child = (start.IsNull ? node.FirstChild : start.NextSibling); child != null && !cancellationToken.IsCancellationRequested; child = child.NextSibling) {
 				if (child.StartLocation < regionEnd && child.EndLocation > regionStart)
 					child.AcceptVisitor(this);
 			}
@@ -171,7 +217,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		{
 			var identifierToken = simpleType.IdentifierToken;
 			VisitChildrenUntil(simpleType, identifierToken);
-			Colorize(identifierToken, resolver.Resolve(simpleType));
+			Colorize(identifierToken, resolver.Resolve(simpleType, cancellationToken));
 			VisitChildrenAfter(simpleType, identifierToken);
 		}
 		
@@ -179,7 +225,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		{
 			var memberNameToken = memberType.MemberNameToken;
 			VisitChildrenUntil(memberType, memberNameToken);
-			Colorize(memberNameToken, resolver.Resolve(memberType));
+			Colorize(memberNameToken, resolver.Resolve(memberType, cancellationToken));
 			VisitChildrenAfter(memberType, memberNameToken);
 		}
 		
@@ -190,7 +236,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			if (isInAccessor && identifierExpression.Identifier == "value") {
 				Colorize(identifier, valueKeywordColor);
 			} else {
-				Colorize(identifier, resolver.Resolve(identifierExpression));
+				Colorize(identifier, resolver.Resolve(identifierExpression, cancellationToken));
 			}
 			VisitChildrenAfter(identifierExpression, identifier);
 		}
@@ -199,7 +245,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		{
 			var memberNameToken = memberReferenceExpression.MemberNameToken;
 			VisitChildrenUntil(memberReferenceExpression, memberNameToken);
-			ResolveResult rr = resolver.Resolve(memberReferenceExpression);
+			ResolveResult rr = resolver.Resolve(memberReferenceExpression, cancellationToken);
 			Colorize(memberNameToken, rr);
 			VisitChildrenAfter(memberReferenceExpression, memberNameToken);
 		}
@@ -208,7 +254,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		{
 			Expression target = invocationExpression.Target;
 			if (target is IdentifierExpression || target is MemberReferenceExpression || target is PointerReferenceExpression) {
-				var invocationRR = resolver.Resolve(invocationExpression) as CSharpInvocationResolveResult;
+				var invocationRR = resolver.Resolve(invocationExpression, cancellationToken) as CSharpInvocationResolveResult;
 				if (invocationRR != null && IsInactiveConditionalMethod(invocationRR.Member)) {
 					// mark the whole invocation expression as inactive code
 					Colorize(invocationExpression, inactiveCodeColor);
@@ -223,7 +269,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				if (invocationRR != null && !invocationRR.IsDelegateInvocation) {
 					Colorize(identifier, methodCallColor);
 				} else {
-					ResolveResult targetRR = resolver.Resolve(target);
+					ResolveResult targetRR = resolver.Resolve(target, cancellationToken);
 					Colorize(identifier, targetRR);
 				}
 				VisitChildrenAfter(target, identifier);
@@ -263,6 +309,14 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		}
 		#endregion
 		
+		public override void VisitExternAliasDeclaration (ExternAliasDeclaration externAliasDeclaration)
+		{
+			var aliasToken = externAliasDeclaration.AliasToken;
+			VisitChildrenUntil(externAliasDeclaration, aliasToken);
+			Colorize (aliasToken, externAliasKeywordColor);
+			VisitChildrenAfter(externAliasDeclaration, aliasToken);
+		}
+		
 		public override void VisitAccessor(Accessor accessor)
 		{
 			isInAccessor = true;
@@ -273,12 +327,98 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			}
 		}
 		
+		bool CheckInterfaceImplementation (EntityDeclaration entityDeclaration)
+		{
+			var result = resolver.Resolve (entityDeclaration, cancellationToken) as MemberResolveResult;
+			if (result.Member.ImplementedInterfaceMembers.Count == 0) {
+				Colorize (entityDeclaration.NameToken, syntaxErrorColor);
+				return false;
+			}
+			return true;
+		}
+		
 		public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 		{
 			var nameToken = methodDeclaration.NameToken;
 			VisitChildrenUntil(methodDeclaration, nameToken);
-			Colorize(nameToken, methodCallColor);
+			if (!methodDeclaration.PrivateImplementationType.IsNull) {
+				if (!CheckInterfaceImplementation (methodDeclaration)) {
+					VisitChildrenAfter(methodDeclaration, nameToken);
+					return;
+				}
+			}
+			Colorize(nameToken, methodDeclarationColor);
 			VisitChildrenAfter(methodDeclaration, nameToken);
+		}
+		
+		public override void VisitParameterDeclaration(ParameterDeclaration parameterDeclaration)
+		{
+			var nameToken = parameterDeclaration.NameToken;
+			VisitChildrenUntil(parameterDeclaration, nameToken);
+			Colorize(nameToken, parameterDeclarationColor);
+			VisitChildrenAfter(parameterDeclaration, nameToken);
+		}
+		
+		public override void VisitEventDeclaration(EventDeclaration eventDeclaration)
+		{
+			var nameToken = eventDeclaration.NameToken;
+			VisitChildrenUntil(eventDeclaration, nameToken);
+			Colorize(nameToken, eventDeclarationColor);
+			VisitChildrenAfter(eventDeclaration, nameToken);
+		}
+		
+		public override void VisitCustomEventDeclaration(CustomEventDeclaration eventDeclaration)
+		{
+			var nameToken = eventDeclaration.NameToken;
+			VisitChildrenUntil(eventDeclaration, nameToken);
+			if (!eventDeclaration.PrivateImplementationType.IsNull) {
+				if (!CheckInterfaceImplementation (eventDeclaration)) {
+					VisitChildrenAfter(eventDeclaration, nameToken);
+					return;
+				}
+			}
+			Colorize(nameToken, eventDeclarationColor);
+			VisitChildrenAfter(eventDeclaration, nameToken);
+		}
+		
+		public override void VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
+		{
+			var nameToken = propertyDeclaration.NameToken;
+			VisitChildrenUntil(propertyDeclaration, nameToken);
+			if (!propertyDeclaration.PrivateImplementationType.IsNull) {
+				if (!CheckInterfaceImplementation (propertyDeclaration)) {
+					VisitChildrenAfter(propertyDeclaration, nameToken);
+					return;
+				}
+			}
+			Colorize(nameToken, propertyDeclarationColor);
+			VisitChildrenAfter(propertyDeclaration, nameToken);
+		}
+		
+		public override void VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration)
+		{
+			base.VisitIndexerDeclaration(indexerDeclaration);
+			if (!indexerDeclaration.PrivateImplementationType.IsNull) {
+				CheckInterfaceImplementation (indexerDeclaration);
+			}
+		}
+		
+		public override void VisitFieldDeclaration(FieldDeclaration fieldDeclaration)
+		{
+			fieldDeclaration.ReturnType.AcceptVisitor (this);
+			foreach (var init in fieldDeclaration.Variables) {
+				Colorize (init.NameToken, fieldDeclarationColor);
+				init.Initializer.AcceptVisitor (this);
+			}
+		}
+		
+		public override void VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration)
+		{
+			fixedFieldDeclaration.ReturnType.AcceptVisitor (this);
+			foreach (var init in fixedFieldDeclaration.Variables) {
+				Colorize (init.NameToken, fieldDeclarationColor);
+				init.CountExpression.AcceptVisitor (this);
+			}
 		}
 		
 		public override void VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
@@ -297,22 +437,77 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			VisitChildrenUntil(constructorDeclaration, nameToken);
 			var currentTypeDef = resolver.GetResolverStateBefore(constructorDeclaration).CurrentTypeDefinition;
 			if (currentTypeDef != null && nameToken.Name == currentTypeDef.Name) {
-				if (currentTypeDef.IsReferenceType == true)
-					Colorize(nameToken, referenceTypeColor);
-				else if (currentTypeDef.IsReferenceType == false)
-					Colorize(nameToken, valueTypeColor);
+				Colorize(nameToken, GetTypeHighlighting (currentTypeDef.Kind));
 			}
 			VisitChildrenAfter(constructorDeclaration, nameToken);
+		}
+		
+		bool TryGetMemberColor(IMember member, out TColor color)
+		{
+			switch (member.EntityType) {
+				case EntityType.Field:
+					color = fieldAccessColor;
+					return true;
+				case EntityType.Property:
+					color = propertyAccessColor;
+					return true;
+				case EntityType.Event:
+					color = eventAccessColor;
+					return true;
+				case EntityType.Method:
+					color = methodCallColor;
+					return true;
+				case EntityType.Constructor:
+					color = GetTypeHighlighting (member.DeclaringType.Kind);
+					return true;
+				case EntityType.Destructor:
+					color = GetTypeHighlighting (member.DeclaringType.Kind);
+					return true;
+				default:
+					color = default (TColor);
+					return false;
+			}
+		}
+		
+		TColor GetTypeHighlighting (ClassType classType)
+		{
+			switch (classType) {
+				case ClassType.Class:
+					return referenceTypeColor;
+				case ClassType.Struct:
+					return valueTypeColor;
+				case ClassType.Interface:
+					return interfaceTypeColor;
+				case ClassType.Enum:
+					return enumerationTypeColor;
+				default:
+					throw new InvalidOperationException ("Unknown class type :" + classType);
+			}
+		}
+		
+		TColor GetTypeHighlighting (TypeKind kind)
+		{
+			switch (kind) {
+				case TypeKind.Class:
+					return referenceTypeColor;
+				case TypeKind.Struct:
+					return valueTypeColor;
+				case TypeKind.Interface:
+					return interfaceTypeColor;
+				case TypeKind.Enum:
+					return enumerationTypeColor;
+				case TypeKind.TypeParameter:
+					return typeParameterTypeColor;
+				default:
+					throw new InvalidOperationException ("Unknown class type kind :" + kind);
+			}
 		}
 		
 		public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
 		{
 			var nameToken = typeDeclaration.NameToken;
 			VisitChildrenUntil(typeDeclaration, nameToken);
-			if (typeDeclaration.ClassType == ClassType.Enum || typeDeclaration.ClassType == ClassType.Struct)
-				Colorize(nameToken, valueTypeColor);
-			else
-				Colorize(nameToken, referenceTypeColor);
+			Colorize(nameToken, GetTypeHighlighting (typeDeclaration.ClassType));
 			VisitChildrenAfter(typeDeclaration, nameToken);
 		}
 		
@@ -321,25 +516,33 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			if (typeParameterDeclaration.Variance == VarianceModifier.Contravariant)
 				Colorize(typeParameterDeclaration.VarianceToken, parameterModifierColor);
 			
-			bool isValueType = false;
-			if (typeParameterDeclaration.Parent != null) {
-				foreach (var constraint in typeParameterDeclaration.Parent.GetChildrenByRole(Roles.Constraint)) {
-					if (constraint.TypeParameter.Identifier == typeParameterDeclaration.Name) {
-						isValueType = constraint.BaseTypes.OfType<PrimitiveType>().Any(p => p.Keyword == "struct");
-					}
-				}
-			}
+			//			bool isValueType = false;
+			//			if (typeParameterDeclaration.Parent != null) {
+			//				foreach (var constraint in typeParameterDeclaration.Parent.GetChildrenByRole(Roles.Constraint)) {
+			//					if (constraint.TypeParameter.Identifier == typeParameterDeclaration.Name) {
+			//						isValueType = constraint.BaseTypes.OfType<PrimitiveType>().Any(p => p.Keyword == "struct");
+			//					}
+			//				}
+			//			}
 			var nameToken = typeParameterDeclaration.NameToken;
 			VisitChildrenUntil(typeParameterDeclaration, nameToken);
-			Colorize(nameToken, isValueType ? valueTypeColor : referenceTypeColor);
+			Colorize(nameToken, typeParameterTypeColor);  /*isValueType ? valueTypeColor : referenceTypeColor*/
 			VisitChildrenAfter(typeParameterDeclaration, nameToken);
+		}
+		
+		public override void VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration)
+		{
+			var nameToken = delegateDeclaration.NameToken;
+			VisitChildrenUntil(delegateDeclaration, nameToken);
+			Colorize(nameToken, delegateDeclarationColor);
+			VisitChildrenAfter(delegateDeclaration, nameToken);
 		}
 		
 		public override void VisitVariableInitializer(VariableInitializer variableInitializer)
 		{
 			if (variableInitializer.Parent is FieldDeclaration) {
 				VisitChildrenUntil(variableInitializer, variableInitializer.NameToken);
-				Colorize(variableInitializer.NameToken, fieldAccessColor);
+				Colorize(variableInitializer.NameToken, variableDeclarationColor);
 				VisitChildrenAfter(variableInitializer, variableInitializer.NameToken);
 			} else {
 				VisitChildren(variableInitializer);
@@ -353,13 +556,32 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			}
 		}
 		
+		public override void VisitPreProcessorDirective(PreProcessorDirective preProcessorDirective)
+		{
+		}
+		
 		public override void VisitAttribute(ICSharpCode.NRefactory.CSharp.Attribute attribute)
 		{
-			ITypeDefinition attrDef = resolver.Resolve(attribute.Type).Type.GetDefinition();
+			ITypeDefinition attrDef = resolver.Resolve(attribute.Type, cancellationToken).Type.GetDefinition();
 			if (attrDef != null && IsInactiveConditional(attrDef.Attributes)) {
 				Colorize(attribute, inactiveCodeColor);
 			} else {
 				VisitChildren(attribute);
+			}
+		}
+		
+		public override void VisitArrayInitializerExpression (ArrayInitializerExpression arrayInitializerExpression)
+		{
+			foreach (var a in arrayInitializerExpression.Elements) {
+				var namedElement = a as NamedExpression;
+				if (namedElement != null) {
+					var result = resolver.Resolve (namedElement, cancellationToken);
+					if (result.IsError)
+						Colorize (namedElement.NameToken, syntaxErrorColor);
+					namedElement.Expression.AcceptVisitor (this);
+				} else {
+					a.AcceptVisitor (this);
+				}
 			}
 		}
 	}
