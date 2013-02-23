@@ -40,8 +40,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		protected TColor interfaceTypeColor;
 		protected TColor enumerationTypeColor;
 		protected TColor typeParameterTypeColor;
-		
-		protected TColor delegateDeclarationColor;
+		protected TColor delegateTypeColor;
 		
 		protected TColor methodCallColor;
 		protected TColor methodDeclarationColor;
@@ -498,6 +497,8 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 					return enumerationTypeColor;
 				case TypeKind.TypeParameter:
 					return typeParameterTypeColor;
+				case TypeKind.Delegate:
+					return delegateTypeColor;
 				default:
 					throw new InvalidOperationException ("Unknown class type kind :" + kind);
 			}
@@ -534,7 +535,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		{
 			var nameToken = delegateDeclaration.NameToken;
 			VisitChildrenUntil(delegateDeclaration, nameToken);
-			Colorize(nameToken, delegateDeclarationColor);
+			Colorize(nameToken, delegateTypeColor);
 			VisitChildrenAfter(delegateDeclaration, nameToken);
 		}
 		
