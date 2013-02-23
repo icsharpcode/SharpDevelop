@@ -137,6 +137,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			} else {
 				applicationManifestComboBox.Text = this.ApplicationManifest.Value;
 			}
+			this.projectInformation.OutputTypeName = AssemblyName.Value + CompilableProject.GetExtension(OutputType.Value);
 			IsDirty = false;
 		}
 		
