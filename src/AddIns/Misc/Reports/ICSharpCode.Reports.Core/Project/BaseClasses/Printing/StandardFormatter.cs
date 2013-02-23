@@ -128,8 +128,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			DateTime date;
 			if (DateTime.TryParse(toFormat, out date))
 			{
-				string str = date.ToString(format,
-				                           DateTimeFormatInfo.CurrentInfo);
+				string str = date.ToString(format,DateTimeFormatInfo.CurrentInfo);                   
 				return str.Trim();
 			}
 
