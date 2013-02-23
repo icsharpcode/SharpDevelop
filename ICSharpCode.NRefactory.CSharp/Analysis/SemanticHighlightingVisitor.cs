@@ -255,8 +255,8 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			if (target is IdentifierExpression || target is MemberReferenceExpression || target is PointerReferenceExpression) {
 				var invocationRR = resolver.Resolve(invocationExpression, cancellationToken) as CSharpInvocationResolveResult;
 				if (invocationRR != null && IsInactiveConditionalMethod(invocationRR.Member)) {
-					// mark the whole invocation expression as inactive code
-					Colorize(invocationExpression, inactiveCodeColor);
+					// mark the whole invocation statement as inactive code
+					Colorize(invocationExpression.Parent, inactiveCodeColor);
 					return;
 				}
 				
@@ -338,6 +338,12 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		
 		public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 		{
+			var result = resolver.Resolve (methodDeclaration, cancellationToken) as MemberResolveResult;
+			if (IsInactiveConditionalMethod(result.Member as IMethod)) {
+				Colorize(methodDeclaration, inactiveCodeColor);
+				return;
+			}
+			
 			var nameToken = methodDeclaration.NameToken;
 			VisitChildrenUntil(methodDeclaration, nameToken);
 			if (!methodDeclaration.PrivateImplementationType.IsNull) {
