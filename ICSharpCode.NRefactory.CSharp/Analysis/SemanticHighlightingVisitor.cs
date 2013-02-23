@@ -547,13 +547,14 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		
 		public override void VisitVariableInitializer(VariableInitializer variableInitializer)
 		{
+			var nameToken = variableInitializer.NameToken;
+			VisitChildrenUntil(variableInitializer, nameToken);
 			if (variableInitializer.Parent is FieldDeclaration) {
-				VisitChildrenUntil(variableInitializer, variableInitializer.NameToken);
-				Colorize(variableInitializer.NameToken, variableDeclarationColor);
-				VisitChildrenAfter(variableInitializer, variableInitializer.NameToken);
+				Colorize(nameToken, fieldDeclarationColor);
 			} else {
-				VisitChildren(variableInitializer);
+				Colorize(nameToken, variableDeclarationColor);
 			}
+			VisitChildrenAfter(variableInitializer, nameToken);
 		}
 		
 		public override void VisitComment(Comment comment)
