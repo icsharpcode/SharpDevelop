@@ -73,7 +73,7 @@
 		
 		<TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3"
 		         IsEnabled="{Binding EditEnable}"
-		         Text="{Binding SelectedTool.MenuCommand}">
+		         Text="{Binding SelectedTool.MenuCommand,UpdateSourceTrigger=PropertyChanged}">
 		</TextBox>
 		
 		<Label Grid.Row="4" IsEnabled="{Binding EditEnable}"
@@ -82,10 +82,10 @@
 		
 		<TextBox x:Name="commandTextBox" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2"
 		         IsEnabled="{Binding EditEnable}"
-		         Text="{Binding SelectedTool.Command}">
+		         Text="{Binding SelectedTool.Command,UpdateSourceTrigger=PropertyChanged}">
 		</TextBox>
 		
-		<Button x:Name="browseButton" Grid.Row="4" Grid.Column="4"  Margin="5,0,5,0"
+		<Button  Grid.Row="4" Grid.Column="4"  Margin="5,0,5,0"
 		        IsEnabled="{Binding EditEnable}"
 		        Click="BrowseButton_Click"
 		        Content="...">
@@ -97,7 +97,7 @@
 		
 		<TextBox x:Name="argumentTextBox" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2"
 		         IsEnabled="{Binding EditEnable}"
-		         Text="{Binding SelectedTool.Arguments}">
+		         Text="{Binding SelectedTool.Arguments,UpdateSourceTrigger=PropertyChanged}">
 			<TextBox.ContextMenu >
 				<ContextMenu ItemsSource="{Binding ArgumentContextMenu}"
 				             MenuItem.Click="ArgumentTextBoxMenuItem_Click">
@@ -106,12 +106,11 @@
 							<MenuItem Header="{Binding Key}"></MenuItem>
 						</DataTemplate>
 					</ContextMenu.ItemTemplate>
-				
 				</ContextMenu>
 			</TextBox.ContextMenu>
 		</TextBox>
 		
-		<Button x:Name="argumentQuickInsertButton" Grid.Row="5" Grid.Column="4"  Margin="5,0,5,0"
+		<Button Grid.Row="5" Grid.Column="4"  Margin="5,0,5,0"
 		        IsEnabled="{Binding EditEnable}"
 		        Content="&gt;"
 		        Click="ArgumentQuickInsertButton_Click">
@@ -124,8 +123,8 @@
 		
 		<TextBox x:Name="workingDirTextBox" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2"
 		         IsEnabled="{Binding EditEnable}"
-		         Text="{Binding SelectedTool.InitialDirectory}">
-		<TextBox.ContextMenu>
+		         Text="{Binding SelectedTool.InitialDirectory,UpdateSourceTrigger=PropertyChanged}">
+			<TextBox.ContextMenu>
 				<ContextMenu ItemsSource="{Binding WorkingDirContextMenu}"
 				             MenuItem.Click="WorkingDirTextBoxMenuItem_Click">
 					
@@ -139,7 +138,7 @@
 			</TextBox.ContextMenu>
 		</TextBox>
 		
-		<Button x:Name="workingDirQuickInsertButton" Grid.Row="6" Grid.Column="4"  Margin="5,0,5,0"
+		<Button Grid.Row="6" Grid.Column="4"  Margin="5,0,5,0"
 		        IsEnabled="{Binding EditEnable}"
 		        Click="WorkingDirQuickInsertButton_Click"
 		        Content="&gt;">

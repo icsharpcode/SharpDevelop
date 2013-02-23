@@ -1,9 +1,8 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-#region Usings
-
 using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -11,8 +10,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Xml.Linq;
 
+using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Common;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.ChangeWatcher;
+using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL;
+using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL.Property;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL.Type;
 using ICSharpCode.Data.EDMDesigner.Core.IO;
 using ICSharpCode.Data.EDMDesigner.Core.UI.UserControls;
@@ -22,29 +24,22 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Workbench;
 
-#endregion
-
 namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 {
 	public class EDMDesignerViewContent : AbstractViewContent, IHasPropertyContainer, IToolsHost, IEDMDesignerChangeWatcherObserver
 	{
-		#region Fields
-
-		private ScrollViewer _scrollViewer = new ScrollViewer() { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
+		private ScrollViewer _scrollViewer = new ScrollViewer() {
+			HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+			VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+		};
 		private DesignerCanvas _designerCanvas = null;
 		private PropertyContainer _propertyContainer = new PropertyContainer();
 		private EDMView _edmView = null;
 		private object _selection = null;
 
-		#endregion
-
-		#region Properties
-
-		public object Selection
-		{
+		public object Selection {
 			get { return _selection; }
-			set
-			{
+			set {
 				if (_selection == null)
 					_propertyContainer.Clear();
 				else
@@ -54,30 +49,22 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 			}
 		}
 
-		public Window Window
-		{
+		public Window Window {
 			get { return Application.Current.MainWindow; }
 		}
 
-		public EDMView EDMView
-		{
+		public EDMView EDMView {
 			get { return _edmView; }
 		}
 		
-		public override object Control
-		{
+		public override object Control {
 			get { return _scrollViewer; }
 		}
 		
-		public DesignerCanvas DesignerCanvas
-		{
+		public DesignerCanvas DesignerCanvas {
 			get { return _designerCanvas; }
 		}
-
-		#endregion
-
-		#region Constructor
-
+		
 		public EDMDesignerViewContent(OpenedFile primaryFile)
 			: base(primaryFile)
 		{
@@ -88,10 +75,6 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 
 			EDMDesignerChangeWatcher.AddEDMDesignerViewContent(this);
 		}
-
-		#endregion
-
-		#region Methods
 
 		public override void Load(OpenedFile file, Stream stream)
 		{
@@ -105,17 +88,13 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 			_edmView = new EDMView(stream, readMoreAction);
 			
 			// If EDMX is empty run EDM Wizard
-			if (_edmView.EDM.IsEmpty)
-			{
+			if (_edmView.EDM.IsEmpty) {
 				edmxElement = null;
 				
 				string ns = String.Empty;
-				if (ProjectService.CurrentProject == null)
-				{
+				if (ProjectService.CurrentProject == null) {
 					ns = ICSharpCode.Core.MessageService.ShowInputBox("EDMDesigner","Enter NameSpace","DefaultNamespace");
-				}
-				else
-				{
+				} else {
 					ns = ProjectService.CurrentProject.RootNamespace;
 				}
 				
@@ -132,8 +111,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 
 			XElement designerViewsElement = null;
 
-			if (edmxElement == null || (designerViewsElement = EDMXIO.ReadSection(edmxElement, EDMXIO.EDMXSection.DesignerViews)) == null)
-			{
+			if (edmxElement == null || (designerViewsElement = EDMXIO.ReadSection(edmxElement, EDMXIO.EDMXSection.DesignerViews)) == null) {
 				designerViewsElement = DesignerIO.GenerateNewDesignerViewsFromCSDLView(_edmView);
 			}
 
@@ -147,9 +125,13 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 			_scrollViewer.Content = _designerCanvas;
 			
 			// Register CSDL of EDMX in CSDL DatabaseTreeView
-			CSDLDatabaseTreeViewAdditionalNode.Instance.CSDLViews.Add(_edmView.CSDL);
+			CSDLViews.Add(_edmView.CSDL);
 			
 			EDMDesignerChangeWatcher.Init = false;
+		}
+		
+		ObservableCollection<CSDLView> CSDLViews {
+			get { return CSDLDatabaseTreeViewAdditionalNode.Instance.CSDLViews; }
 		}
 		
 		public override void Save(OpenedFile file, Stream stream)
@@ -159,7 +141,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 		
 		private EDMWizardWindow RunWizard(OpenedFile file, string projectStandardNamespace)
 		{
-			EDMWizardWindow wizard = new EDMWizardWindow(file, projectStandardNamespace);
+			var wizard = new EDMWizardWindow(file, projectStandardNamespace);
 			wizard.Owner = Application.Current.MainWindow;
 			wizard.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 			wizard.ShowDialog();
@@ -169,21 +151,20 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 
 		public override void Dispose()
 		{
-			if (CSDLDatabaseTreeViewAdditionalNode.Instance.CSDLViews.Contains(_edmView.CSDL))
-				CSDLDatabaseTreeViewAdditionalNode.Instance.CSDLViews.Remove(_edmView.CSDL);
+			if (_edmView != null) {
+				CSDLViews.Remove(_edmView.CSDL);
+			}
 
 			EDMDesignerChangeWatcher.RemoveEDMDesignerViewContent(this);
 		}
 
 		public void ShowMappingTab(IUIType uiType)
-		{ }
-
-		#endregion
+		{
+		}
 
 		#region IHasPropertyContainer
 
-		public PropertyContainer PropertyContainer
-		{
+		public PropertyContainer PropertyContainer {
 			get { return _propertyContainer; }
 		}
 
@@ -191,8 +172,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 
 		#region IToolsHost
 
-		object IToolsHost.ToolsContent
-		{
+		object IToolsHost.ToolsContent {
 			get { return null; }
 		}
 
@@ -202,18 +182,14 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 
 		public bool ObjectChanged(object changedObject)
 		{
-			foreach (DesignerView designerView in _edmView.DesignerViews)
-			{
-				foreach (ITypeDesigner uiType in designerView)
-				{
-					if (uiType == changedObject || uiType.UIType.BusinessInstance == changedObject)
-					{
+			foreach (DesignerView designerView in _edmView.DesignerViews) {
+				foreach (ITypeDesigner uiType in designerView) {
+					if (uiType == changedObject || uiType.UIType.BusinessInstance == changedObject) {
 						PrimaryFile.IsDirty = true;
 						return true;
 					}
 				}
 			}
-
 			return false;
 		}
 

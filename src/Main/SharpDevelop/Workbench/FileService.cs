@@ -231,7 +231,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			if (openedFileDict.ContainsKey(newName)) {
 				OpenedFile oldFile = openedFileDict[newName];
 				if (oldFile.CurrentView != null) {
-					oldFile.CurrentView.WorkbenchWindow.CloseWindow(true);
+					if (oldFile.CurrentView.WorkbenchWindow != null)
+						oldFile.CurrentView.WorkbenchWindow.CloseWindow(true);
 				} else {
 					throw new ArgumentException("there already is a file with the newName");
 				}

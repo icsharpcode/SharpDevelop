@@ -119,5 +119,21 @@ End Module";
 			
 			TestCtrlSpace(text, true, list => Assert.IsFalse(list.Items.Any(i => i.Text == "InnerException")));
 		}
+		
+		[Test]
+		public void TestLocalVariablesAvailableAtEndOfForLoop()
+		{
+			string text = @"Module Test
+	Public Sub f()
+		Dim cheeses = { ""cheddar"", ""brie"", ""edam"" }
+		For Each cheese As String In cheeses
+			Dim gouda = ""is tasty""
+			|
+		Next
+   End Sub
+End Module";
+			
+			TestKeyPress(text, 'g', CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion, list => Assert.IsTrue(list.Items.Any(i => i.Text == "gouda")));
+		}
 	}
 }

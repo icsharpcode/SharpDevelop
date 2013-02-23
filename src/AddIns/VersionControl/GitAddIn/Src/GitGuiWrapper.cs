@@ -99,5 +99,10 @@ namespace ICSharpCode.GitAddIn
 		{
 			Proc("diff", fileName, callback);
 		}
+		
+		public static void Log(string fileName, Action callback)
+		{
+			Proc("log", fileName, callback);
+		}
 	}
 }

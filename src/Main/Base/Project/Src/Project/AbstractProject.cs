@@ -139,7 +139,8 @@ namespace ICSharpCode.SharpDevelop.Project
 					return ((FileAttributes.ReadOnly & attributes) == FileAttributes.ReadOnly);
 				} catch (FileNotFoundException) {
 					return false;
-				} catch (DirectoryNotFoundException) {
+				} catch (IOException) {
+					// directory not found, network path not available, etc.
 					return true;
 				}
 			}

@@ -36,6 +36,10 @@
 			          label = "Git ${res:AddIns.Subversion.Diff}..."
 			          icon  = "Svn.Diff"
 			          class = "ICSharpCode.GitAddIn.GitDiffCommand"/>
+		
+			<MenuItem id = "GitLog"
+			          label = "Git ${res:AddIns.Subversion.ShowLog}..."
+			          class = "ICSharpCode.GitAddIn.GitLogCommand"/>
 		</Condition>
 	</Path>
 	

@@ -93,4 +93,12 @@ namespace ICSharpCode.GitAddIn
 			GitGuiWrapper.Diff(filename, callback);
 		}
 	}
+	
+	public class GitLogCommand : GitCommand
+	{
+		protected override void Run(string filename, Action callback)
+		{
+			GitGuiWrapper.Log(filename, callback);
+		}
+	}
 }
