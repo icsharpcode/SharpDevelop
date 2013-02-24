@@ -155,7 +155,8 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			if (end.IsNull)
 				return;
 			Debug.Assert(node == end.Parent);
-			for (var child = node.FirstChild; child != end && !cancellationToken.IsCancellationRequested; child = child.NextSibling) {
+			for (var child = node.FirstChild; child != end; child = child.NextSibling) {
+				cancellationToken.ThrowIfCancellationRequested();
 				if (child.StartLocation < regionEnd && child.EndLocation > regionStart)
 					child.AcceptVisitor(this);
 			}
@@ -168,7 +169,8 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		protected void VisitChildrenAfter(AstNode node, AstNode start)
 		{
 			Debug.Assert(start.IsNull || start.Parent == node);
-			for (var child = (start.IsNull ? node.FirstChild : start.NextSibling); child != null && !cancellationToken.IsCancellationRequested; child = child.NextSibling) {
+			for (var child = (start.IsNull ? node.FirstChild : start.NextSibling); child != null; child = child.NextSibling) {
+				cancellationToken.ThrowIfCancellationRequested();
 				if (child.StartLocation < regionEnd && child.EndLocation > regionStart)
 					child.AcceptVisitor(this);
 			}
@@ -213,6 +215,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 					break;
 			}
 			// "value" is handled in VisitIdentifierExpression()
+			// "alias" is handled in VisitExternAliasDeclaration()
 		}
 		
 		public override void VisitSimpleType(SimpleType simpleType)
@@ -257,7 +260,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			Expression target = invocationExpression.Target;
 			if (target is IdentifierExpression || target is MemberReferenceExpression || target is PointerReferenceExpression) {
 				var invocationRR = resolver.Resolve(invocationExpression, cancellationToken) as CSharpInvocationResolveResult;
-				if (invocationRR != null && IsInactiveConditionalMethod(invocationRR.Member)) {
+				if (invocationRR != null && invocationExpression.Parent is ExpressionStatement && IsInactiveConditionalMethod(invocationRR.Member)) {
 					// mark the whole invocation statement as inactive code
 					Colorize(invocationExpression.Parent, inactiveCodeColor);
 					return;
@@ -342,12 +345,6 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		
 		public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 		{
-//			var result = resolver.Resolve (methodDeclaration, cancellationToken) as MemberResolveResult;
-//			if (IsInactiveConditionalMethod(result.Member as IMethod)) {
-//				Colorize(methodDeclaration, inactiveCodeColor);
-//				return;
-//			}
-//			
 			var nameToken = methodDeclaration.NameToken;
 			VisitChildrenUntil(methodDeclaration, nameToken);
 			if (!methodDeclaration.PrivateImplementationType.IsNull) {
