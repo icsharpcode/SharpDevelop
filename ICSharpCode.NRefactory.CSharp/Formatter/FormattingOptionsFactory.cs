@@ -309,7 +309,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				SpaceAfterConditionalOperatorCondition = true,
 				SpaceBeforeConditionalOperatorSeparator = true,
 				SpaceAfterConditionalOperatorSeparator = true,
-	
+				SpaceBeforeArrayDeclarationBrackets = false,
+
 				SpacesWithinBrackets = false,
 				SpacesBeforeBrackets = true,
 				SpaceBeforeBracketComma = false,
