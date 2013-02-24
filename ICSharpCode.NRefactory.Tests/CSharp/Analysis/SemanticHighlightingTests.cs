@@ -35,20 +35,36 @@ using ICSharpCode.NRefactory.Editor;
 namespace ICSharpCode.NRefactory.CSharp.Analysis
 {
 	[TestFixture]
-	public class SemanticHighlightingTests
+	public class SemanticHighlightingTests : SemanticHighlightingVisitor<FieldInfo>
 	{
+		static void SetupColors(object o)
+		{
+			var fields = typeof(SemanticHighlightingVisitor<FieldInfo>).GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+			foreach (var field in fields) {
+				if (field.FieldType == typeof(FieldInfo))
+					field.SetValue(o, field);
+			}
+		}
+		protected override void Colorize(TextLocation start, TextLocation end, FieldInfo color)
+		{
+			throw new NotImplementedException ();
+		}
+
+		[SetUp]
+		public void Setup ()
+		{
+			SetupColors (this);
+		}
+
 		class TestSemanticHighlightingVisitor : SemanticHighlightingVisitor<FieldInfo>
 		{
+
 			public TestSemanticHighlightingVisitor(CSharpAstResolver resolver)
 			{
 				base.resolver = resolver;
 				this.regionStart = new TextLocation (1, 1);
 				this.regionEnd = new TextLocation (int.MaxValue, int.MaxValue);
-				var fields = typeof (TestSemanticHighlightingVisitor).GetFields (BindingFlags.NonPublic | BindingFlags.Instance);
-				foreach (var field in fields) {
-					if (field.FieldType == typeof (FieldInfo))
-						field.SetValue (this, field);
-				}
+				SetupColors(this);
 			}
 
 			List<Tuple<DomRegion, string>> colors = new List<Tuple<DomRegion, string>> ();
@@ -85,7 +101,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			return result;
 		}
 
-		void TestColor(string text, string keywordColor)
+		void TestColor(string text, FieldInfo keywordColor)
 		{
 			var sb = new StringBuilder ();
 			var offsets = new List<int> ();
@@ -102,24 +118,96 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			foreach (var offset in offsets) {
 				var loc = doc.GetLocation (offset);
 				var color = visitor.GetColor (loc);
-				Assert.AreEqual (keywordColor, color, "Color at " + loc + " is wrong:" + color);
+				Assert.AreEqual (keywordColor.Name, color, "Color at " + loc + " is wrong:" + color);
 			}
 		}
 
 		[Test]
-		public void TestValueInPropertySetter()
+		public void TestClassDeclaration()
 		{
-			TestColor (@"class Class { int Property { get {} set { test = $value; } } }", "valueKeywordColor");
+			TestColor (@"class $Class { }", referenceTypeColor);
 		}
 
 		[Test]
-		public void TestValueInPropertyGetter()
+		public void TestStructDeclaration()
 		{
-			TestColor (@"class Class { int value; int Property { get { return $value; } set { } } }", "fieldAccessColor");
+			TestColor (@"struct $Class { }", valueTypeColor);
+		}
+		
+		[Test]
+		public void TestInterfaceDeclaration()
+		{
+			TestColor (@"interface $Class { }", interfaceTypeColor);
+		}
+		
+		[Test]
+		public void TestEnumDeclaration()
+		{
+			TestColor (@"enum $Class { }", enumerationTypeColor);
 		}
 
 		[Test]
-		public void TestValueInCustomEvent()
+		public void TestDelegateDeclaration()
+		{
+			TestColor (@"delegate void $Class();", delegateTypeColor);
+		}
+
+		[Test]
+		public void TestMethodDeclaration()
+		{
+			TestColor (@"class Class { void $Foo () {} }", methodDeclarationColor);
+		}
+
+		[Test]
+		public void TestFieldDeclaration()
+		{
+			TestColor (@"class Class { int $foo; }", fieldDeclarationColor);
+		}
+
+		[Test]
+		public void TestPropertyDeclaration()
+		{
+			TestColor (@"class Class { int $Foo { get; set; } }", propertyDeclarationColor);
+		}
+
+		[Test]
+		public void TestEventDeclaration()
+		{
+			TestColor (@"class Class { event System.EventHandler $Foo, $Bar; }", eventDeclarationColor);
+		}
+
+		[Test]
+		public void TestCustomEventDeclaration()
+		{
+			TestColor (@"class Class { event System.EventHandler $Foo { add {} remove {} } }", eventDeclarationColor);
+		}
+
+		[Test]
+		public void TestMethodParameterDeclaration()
+		{
+			TestColor (@"class Class { void Foo (int $a, string $b) {} }", parameterDeclarationColor);
+		}
+
+		[Test]
+		public void TestIndexerParameterDeclaration()
+		{
+			TestColor (@"class Class { int this[int $a, string $b] { get { } } }", parameterDeclarationColor);
+		}
+
+		[Test]
+		public void TestValueKeywordInPropertySetter()
+		{
+			TestColor (@"class Class { int Property { get {} set { test = $value; } } }", valueKeywordColor);
+		}
+
+		[Test]
+		public void TestValueKeywordInPropertyGetter()
+		{
+			TestColor (@"class Class { int value; int Property { get { return $value; } set { } } }", fieldAccessColor);
+		}
+
+		[Test]
+		public void TestValueKeywordInCustomEvent()
 		{
 			TestColor (@"using System;
 class Class {
@@ -127,14 +215,15 @@ class Class {
 		add { Console.WriteLine ($value); } 
 		remove { Console.WriteLine ($value); }
 	}
-}", "valueKeywordColor");
+}", valueKeywordColor);
 		}
 	
 		[Test]
-		public void TestExternAliasColor()
+		public void TestExternAliasKeyword()
 		{
-			TestColor (@"extern $alias FooBar;", "externAliasKeywordColor");
+			TestColor (@"extern $alias FooBar;", externAliasKeywordColor);
 		}
+
 	}
 }
 

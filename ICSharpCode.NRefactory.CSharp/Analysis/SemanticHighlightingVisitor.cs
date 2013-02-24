@@ -561,6 +561,8 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			VisitChildrenUntil(variableInitializer, nameToken);
 			if (variableInitializer.Parent is FieldDeclaration) {
 				Colorize(nameToken, fieldDeclarationColor);
+			} else if (variableInitializer.Parent is EventDeclaration) {
+				Colorize(nameToken, eventDeclarationColor);
 			} else {
 				Colorize(nameToken, variableDeclarationColor);
 			}
