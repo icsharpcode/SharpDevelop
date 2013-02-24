@@ -313,7 +313,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				SpaceBeforeArrayDeclarationBrackets = false,
 
 				SpacesWithinBrackets = false,
-				SpacesBeforeBrackets = true,
+				SpacesBeforeBrackets = false,
 				SpaceBeforeBracketComma = false,
 				SpaceAfterBracketComma = true,
 						
