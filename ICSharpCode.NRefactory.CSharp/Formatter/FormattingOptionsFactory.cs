@@ -263,6 +263,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				SpaceBeforeMethodDeclarationParentheses = false,
 				SpaceBeforeConstructorDeclarationParentheses = false,
 				SpaceBeforeDelegateDeclarationParentheses = false,
+				SpaceBeforeIndexerDeclarationBracket = false,
 				SpaceAfterMethodCallParameterComma = true,
 				SpaceAfterConstructorDeclarationParameterComma = true,
 				
@@ -331,7 +332,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				SpaceBeforeLocalVariableDeclarationComma = false,
 				SpaceAfterLocalVariableDeclarationComma = true,
 				
-				SpaceBeforeIndexerDeclarationBracket = true,
 				SpaceWithinIndexerDeclarationBracket = false,
 				SpaceBeforeIndexerDeclarationParameterComma = false,
 				SpaceInNamedArgumentAfterDoubleColon = true,
