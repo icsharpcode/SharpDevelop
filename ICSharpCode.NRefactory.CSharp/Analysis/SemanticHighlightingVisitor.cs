@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		protected TextLocation regionEnd;
 		
 		protected CSharpAstResolver resolver;
-		bool isInAccessor;
+		bool isInAccessorContainingValueParameter;
 		
 		protected abstract void Colorize(TextLocation start, TextLocation end, TColor color);
 		
@@ -97,7 +97,10 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				return;
 			}
 			if (rr is TypeResolveResult) {
-				Colorize(identifier, GetTypeHighlighting (rr.Type.Kind));
+				TColor color;
+				if (TryGetTypeHighlighting (rr.Type.Kind, out color)) {
+					Colorize(identifier, color);
+				}
 				return;
 			}
 			var mrr = rr as MemberResolveResult;
@@ -232,7 +235,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		{
 			var identifier = identifierExpression.IdentifierToken;
 			VisitChildrenUntil(identifierExpression, identifier);
-			if (isInAccessor && identifierExpression.Identifier == "value") {
+			if (isInAccessorContainingValueParameter && identifierExpression.Identifier == "value") {
 				Colorize(identifier, valueKeywordColor);
 			} else {
 				Colorize(identifier, resolver.Resolve(identifierExpression, cancellationToken));
@@ -304,6 +307,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 					}
 				}
 			}
+
 			return hasConditionalAttribute;
 		}
 		#endregion
@@ -318,11 +322,11 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		
 		public override void VisitAccessor(Accessor accessor)
 		{
-			isInAccessor = true;
+			isInAccessorContainingValueParameter = accessor.Role != PropertyDeclaration.GetterRole;
 			try {
 				VisitChildren(accessor);
 			} finally {
-				isInAccessor = false;
+				isInAccessorContainingValueParameter = false;
 			}
 		}
 		
@@ -442,7 +446,9 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			VisitChildrenUntil(constructorDeclaration, nameToken);
 			var currentTypeDef = resolver.GetResolverStateBefore(constructorDeclaration).CurrentTypeDefinition;
 			if (currentTypeDef != null && nameToken.Name == currentTypeDef.Name) {
-				Colorize(nameToken, GetTypeHighlighting (currentTypeDef.Kind));
+				TColor color;
+				if (TryGetTypeHighlighting (currentTypeDef.Kind, out color))
+					Colorize(nameToken, color);
 			}
 			VisitChildrenAfter(constructorDeclaration, nameToken);
 		}
@@ -463,11 +469,8 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 					color = methodCallColor;
 					return true;
 				case EntityType.Constructor:
-					color = GetTypeHighlighting (member.DeclaringType.Kind);
-					return true;
 				case EntityType.Destructor:
-					color = GetTypeHighlighting (member.DeclaringType.Kind);
-					return true;
+					return TryGetTypeHighlighting (member.DeclaringType.Kind, out color);
 				default:
 					color = default (TColor);
 					return false;
@@ -490,23 +493,30 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			}
 		}
 		
-		TColor GetTypeHighlighting (TypeKind kind)
+		bool TryGetTypeHighlighting (TypeKind kind, out TColor color)
 		{
 			switch (kind) {
 				case TypeKind.Class:
-					return referenceTypeColor;
+					color = referenceTypeColor;
+					return true;
 				case TypeKind.Struct:
-					return valueTypeColor;
+					color = valueTypeColor;
+					return true;
 				case TypeKind.Interface:
-					return interfaceTypeColor;
+					color = interfaceTypeColor;
+					return true;
 				case TypeKind.Enum:
-					return enumerationTypeColor;
+					color = enumerationTypeColor;
+					return true;
 				case TypeKind.TypeParameter:
-					return typeParameterTypeColor;
+					color = typeParameterTypeColor;
+					return true;
 				case TypeKind.Delegate:
-					return delegateTypeColor;
+					color = delegateTypeColor;
+					return true;
 				default:
-					throw new InvalidOperationException ("Unknown class type kind :" + kind);
+					color = default (TColor);
+					return false;
 			}
 		}
 		
