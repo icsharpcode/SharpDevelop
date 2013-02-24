@@ -153,9 +153,21 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		}
 
 		[Test]
+		public void TestTypeParameter()
+		{
+			TestColor (@"class Class<$T> where $T : class { void Foo<$Tx> () where $Tx : $T {} } ", typeParameterTypeColor);
+		}
+
+		[Test]
 		public void TestMethodDeclaration()
 		{
 			TestColor (@"class Class { void $Foo () {} }", methodDeclarationColor);
+		}
+		
+		[Test]
+		public void TestMethodCall()
+		{
+			TestColor (@"class Class { void Foo () { $Foo (); } }", methodCallColor);
 		}
 
 		[Test]
@@ -165,9 +177,21 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		}
 
 		[Test]
+		public void TestFieldAccess()
+		{
+			TestColor (@"using System; class Class {  int Bar; void Foo () { Console.WriteLine ($Bar); } }", fieldAccessColor);
+		}
+
+		[Test]
 		public void TestPropertyDeclaration()
 		{
 			TestColor (@"class Class { int $Foo { get; set; } }", propertyDeclarationColor);
+		}
+
+		[Test]
+		public void TestPropertyAccess()
+		{
+			TestColor (@"using System; class Class { int Bar {get; set; } void Foo () { Console.WriteLine ($Bar); } }", propertyAccessColor);
 		}
 
 		[Test]
@@ -182,16 +206,46 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			TestColor (@"class Class { event System.EventHandler $Foo { add {} remove {} } }", eventDeclarationColor);
 		}
 
+		
+		[Test]
+		public void TestEventAccess()
+		{
+			TestColor (@"class Class {  event System.EventHandler Bar; void Foo () { $Bar += (o, s) => {}; } }", eventAccessColor);
+		}
+
 		[Test]
 		public void TestMethodParameterDeclaration()
 		{
 			TestColor (@"class Class { void Foo (int $a, string $b) {} }", parameterDeclarationColor);
+		}
+		[Test]
+		public void TestMethodParameterAccess()
+		{
+			TestColor (@"class Class { void Foo (int a, string b) { int c = $a + $b;} }", parameterAccessColor);
 		}
 
 		[Test]
 		public void TestIndexerParameterDeclaration()
 		{
 			TestColor (@"class Class { int this[int $a, string $b] { get { } } }", parameterDeclarationColor);
+		}
+
+		[Test]
+		public void TestIndexerParameterAccess()
+		{
+			TestColor (@"class Class { int this[int a, string b] { get { return $a + $b; } } }", parameterAccessColor);
+		}
+
+		[Test]
+		public void TestVariableDeclaration()
+		{
+			TestColor (@"class Class { void Test () { int $bar, $foo; } }", variableDeclarationColor);
+		}
+
+		[Test]
+		public void TestVariableAccess()
+		{
+			TestColor (@"class Class { void Test () { int bar, foo; int c = $foo + $bar; } }", variableAccessColor);
 		}
 
 		[Test]
