@@ -342,12 +342,12 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		
 		public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 		{
-			var result = resolver.Resolve (methodDeclaration, cancellationToken) as MemberResolveResult;
-			if (IsInactiveConditionalMethod(result.Member as IMethod)) {
-				Colorize(methodDeclaration, inactiveCodeColor);
-				return;
-			}
-			
+//			var result = resolver.Resolve (methodDeclaration, cancellationToken) as MemberResolveResult;
+//			if (IsInactiveConditionalMethod(result.Member as IMethod)) {
+//				Colorize(methodDeclaration, inactiveCodeColor);
+//				return;
+//			}
+//			
 			var nameToken = methodDeclaration.NameToken;
 			VisitChildrenUntil(methodDeclaration, nameToken);
 			if (!methodDeclaration.PrivateImplementationType.IsNull) {
