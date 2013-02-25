@@ -2601,6 +2601,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					for (int i = 0; i < returnValues.Count; i++) {
 						returnValues[i] = resolveResultCache[returnExpressions[i]];
 					}
+
+					// async lambdas without return statements are resolved as Task return types.
+					if (returnExpressions.Count == 0 && isAsync) {
+						inferredReturnType = resolver.Compilation.FindType(KnownTypeCode.Task);
+						Log.WriteLine("Lambda return type was inferred to: " + inferredReturnType);
+						return;
+					} 
+
 					TypeInference ti = new TypeInference(resolver.Compilation, resolver.conversions);
 					bool tiSuccess;
 					inferredReturnType = ti.GetBestCommonType(returnValues, out tiSuccess);

@@ -635,5 +635,38 @@ class TestClass {
 			Assert.IsFalse(mrr.IsError);
 			Assert.AreEqual("System.Int32", mrr.Type.ReflectionName);
 		}
+
+		[Test]
+		public void AsyncLambdaWithAwait()
+		{
+			string program = @"
+using System;
+using System.Threading.Tasks;
+
+class A
+{
+	public Task OpenAsync ()
+	{
+		return null;
+	}
+}
+
+class C
+{
+	async void Foo ()
+	{
+			await $Test (async () => { await new A().OpenAsync (); })$;
+	}
+	
+	T Test<T> (Func<T> func)
+	{
+		return default (T);
+	}
+}
+";
+			var mrr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(mrr.IsError);
+			Assert.AreEqual("System.Threading.Tasks.Task", mrr.Type.ReflectionName);
+		}
 	}
 }
