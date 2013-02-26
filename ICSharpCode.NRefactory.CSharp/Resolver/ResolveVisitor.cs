@@ -2032,9 +2032,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						Analyze();
 						if (returnValues.Count == 1) {
 							bodyRR = returnValues[0];
-							var conv = storedContext.conversions.ImplicitConversion(bodyRR, actualReturnType);
-							if (!conv.IsIdentityConversion)
-								bodyRR = new ConversionResolveResult(actualReturnType, bodyRR, conv, storedContext.CheckForOverflow);
+							if (!actualReturnType.Equals(SpecialType.UnknownType)) {
+								var conv = storedContext.conversions.ImplicitConversion(bodyRR, actualReturnType);
+								if (!conv.IsIdentityConversion)
+									bodyRR = new ConversionResolveResult(actualReturnType, bodyRR, conv, storedContext.CheckForOverflow);
+							}
 							return bodyRR;
 						}
 					}
@@ -2465,9 +2467,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				lambda.parameters = lambdaParameters; // replace untyped parameters with typed parameters
 				if (lambda.BodyExpression is Expression && returnValues.Count == 1) {
 					lambda.bodyResult = returnValues[0];
-					var conv = storedContext.conversions.ImplicitConversion(lambda.bodyResult, returnType);
-					if (!conv.IsIdentityConversion)
-						lambda.bodyResult = new ConversionResolveResult(returnType, lambda.bodyResult, conv, storedContext.CheckForOverflow);
+					if (!returnType.IsKnownType(KnownTypeCode.Void)) {
+						var conv = storedContext.conversions.ImplicitConversion(lambda.bodyResult, returnType);
+						if (!conv.IsIdentityConversion)
+							lambda.bodyResult = new ConversionResolveResult(returnType, lambda.bodyResult, conv, storedContext.CheckForOverflow);
+					}
 				}
 				
 				Log.WriteLine("Applying return type {0} to implicitly-typed lambda {1}", returnType, lambda.LambdaExpression);

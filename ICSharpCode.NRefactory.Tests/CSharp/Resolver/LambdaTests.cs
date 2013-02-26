@@ -670,7 +670,7 @@ class C
 		}
 
 		[Test]
-		public void ConversionInExplicitLambdaResult() {
+		public void ConversionInExplicitlyTypedLambdaBody() {
 			string program = @"using System;
 class Test {
 	public object M() {
@@ -683,7 +683,7 @@ class Test {
 		}
 
 		[Test]
-		public void ConversionInImplicitLambdaResult() {
+		public void ConversionInImplicitlyTypedLambdaBody() {
 			string program = @"using System;
 class Test {
 	public object M() {
@@ -693,6 +693,30 @@ class Test {
 			var rr = Resolve<LambdaResolveResult>(program);
 			Assert.IsInstanceOf<ConversionResolveResult>(rr.Body);
 			Assert.That(((ConversionResolveResult)rr.Body).Conversion.IsNullLiteralConversion);
+		}
+
+		[Test]
+		public void NoConversionInVoidExplicitlyTypedLambdaBody() {
+			string program = @"using System;
+class Test {
+	public object M() {
+		System.Action<int, string> f = $(int i) => i++$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<OperatorResolveResult>(rr.Body);
+		}
+
+		[Test]
+		public void NoConversionInVoidImplicitlyTypedLambdaBody() {
+			string program = @"using System;
+class Test {
+	public object M() {
+		System.Action<int> f = $i => i++$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<OperatorResolveResult>(rr.Body);
 		}
 	}
 }
