@@ -123,7 +123,28 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		}
 
 		[Test]
-		public void TestSimpleInvalidAnonymousMethod ()
+		public void TestSkipComplexCase ()
+		{
+			var input = @"using System;
+using System.Linq;
+
+class Foo
+{
+	int MyMethod (int x, int y) { return x * y; }
+
+	void Bar (string str)
+	{
+		var action = $() => str.Where (c => c != 'a').ToArray ();
+	}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new SimplifyAnonymousMethodToDelegateIssue (), input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
+
+		[Test]
+		public void TestComplexCase ()
 		{
 			var input = @"class Foo
 {
