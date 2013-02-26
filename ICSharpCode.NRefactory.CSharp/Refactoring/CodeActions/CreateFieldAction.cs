@@ -297,8 +297,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var argumentNumber = expr.Parent.GetChildrenByRole (Roles.TypeArgument).TakeWhile (c => c != expr).Count ();
 
 				var mgrr = rr as MethodGroupResolveResult;
-				Console.WriteLine (argumentNumber);
-				Console.WriteLine (mgrr.Methods.First ().TypeArguments.Count);
 				if (mgrr != null && mgrr.Methods.Any () && mgrr.Methods.First ().TypeArguments.Count > argumentNumber) {
 					return mgrr.Methods.First ().TypeParameters[argumentNumber]; 
 				}

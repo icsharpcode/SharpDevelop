@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (service != null && !service.IsValidName(resolveResult.Identifier, AffectedEntity.Class)) { 
 				yield break;
 			}
-			ClassType classType = GuessClassTypeByName(context, node);
+			ClassType classType = GuessClassTypeByName(service, node);
 			ModifyClassTypeBasedOnTypeGuessing(context, node, ref classType);
 
 			string message;
@@ -103,9 +103,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 		
-		static ClassType GuessClassTypeByName(RefactoringContext context, string identifier)
+		static ClassType GuessClassTypeByName(NamingConventionService service,  string identifier)
 		{
-			var service = (NamingConventionService)context.GetService (typeof (NamingConventionService));
 			if (service == null)
 				return ClassType.Class;
 			if (service.IsValidName (identifier, AffectedEntity.Interface, Modifiers.Public))
@@ -116,12 +115,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return ClassType.Class;
 		}
 
-		static ClassType GuessClassTypeByName(RefactoringContext context, AstNode node)
+		static ClassType GuessClassTypeByName(NamingConventionService service, AstNode node)
 		{
 			if (node is SimpleType) 
-				return GuessClassTypeByName (context, ((SimpleType)node).Identifier);
+				return GuessClassTypeByName (service, ((SimpleType)node).Identifier);
 			if (node is IdentifierExpression) 
-				return GuessClassTypeByName (context, ((IdentifierExpression)node).Identifier);
+				return GuessClassTypeByName (service, ((IdentifierExpression)node).Identifier);
 			return ClassType.Class;
 		}
 
