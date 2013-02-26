@@ -700,7 +700,7 @@ class Test {
 			string program = @"using System;
 class Test {
 	public object M() {
-		System.Action<int, string> f = $(int i) => i++$;
+		System.Action<int> f = $(int i) => i++$;
 	}
 }";
 			var rr = Resolve<LambdaResolveResult>(program);

@@ -2032,7 +2032,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						Analyze();
 						if (returnValues.Count == 1) {
 							bodyRR = returnValues[0];
-							if (!actualReturnType.Equals(SpecialType.UnknownType)) {
+							if (!actualReturnType.IsKnownType(KnownTypeCode.Void)) {
 								var conv = storedContext.conversions.ImplicitConversion(bodyRR, actualReturnType);
 								if (!conv.IsIdentityConversion)
 									bodyRR = new ConversionResolveResult(actualReturnType, bodyRR, conv, storedContext.CheckForOverflow);
