@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
@@ -30,6 +31,8 @@ namespace WixBinding.Tests.Gui
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			SD.InitializeForUnitTests();
+			MessageLoopHelper.RegisterStubService();
 			WixBindingTestsHelper.RegisterResourceStringsWithSharpDevelopResourceManager();
 
 			wixProject = WixBindingTestsHelper.CreateEmptyWixProject();

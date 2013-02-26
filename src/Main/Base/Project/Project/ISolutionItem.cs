@@ -32,10 +32,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// in order to move the item to another solution.
 		/// </remarks>
 		ISolution ParentSolution { get; }
+		
+		Guid IdGuid { get; }
 	}
 	
 	public interface ISolutionFileItem : ISolutionItem
 	{
-		FileName FileName { get; }
+		FileName FileName { get; set; }
 	}
 }

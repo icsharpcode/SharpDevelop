@@ -6,18 +6,18 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public class SolutionFolderRemoveVisitor : ProjectBrowserTreeNodeVisitor
+	public class SolutionItemRemoveVisitor : ProjectBrowserTreeNodeVisitor
 	{
 		ISolutionItem folder;
 		
-		public SolutionFolderRemoveVisitor(ISolutionItem folder)
+		public SolutionItemRemoveVisitor(ISolutionItem folder)
 		{
 			this.folder = folder;
 		}
 		
 		public override object Visit(SolutionFolderNode solutionFolderNode, object data)
 		{
-			if (folder == solutionFolderNode.SolutionItem) {
+			if (folder == solutionFolderNode.Folder) {
 				ExtTreeNode parent = solutionFolderNode.Parent as ExtTreeNode;
 				solutionFolderNode.Remove();
 				if (parent != null) {

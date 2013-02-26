@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		void ProjectServiceSolutionFolderRemoved(object sender, SolutionFolderEventArgs e)
 		{
-			CallVisitor(new SolutionFolderRemoveVisitor(e.SolutionFolder));
+			CallVisitor(new SolutionItemRemoveVisitor(e.SolutionFolder));
 		}
 		void ProjectServiceProjectItemAdded(object sender, ProjectItemEventArgs e)
 		{
@@ -384,7 +384,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (treeObject is IProject) {
 					NodeBuilders.AddProjectNode(solutionNode, (IProject)treeObject);
 				} else {
-					SolutionFolderNode folderNode = new SolutionFolderNode(solution, (ISolutionFolder)treeObject);
+					SolutionFolderNode folderNode = new SolutionFolderNode((ISolutionFolder)treeObject);
 					folderNode.InsertSorted(solutionNode);
 				}
 			}

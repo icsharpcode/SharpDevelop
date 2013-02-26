@@ -2,12 +2,15 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
+using Microsoft.Build.Evaluation;
 using NUnit.Framework;
 using System;
 using System.Windows.Forms;
+using Rhino.Mocks;
 using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Gui
@@ -26,12 +29,13 @@ namespace WixBinding.Tests.Gui
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MessageLoopHelper.InitializeForUnitTests();
+			SD.InitializeForUnitTests();
+			MessageLoopHelper.RegisterStubService();
 			WixBindingTestsHelper.InitMSBuildEngine();
 			
 			// create the project.
 			ProjectCreateInformation info = new ProjectCreateInformation();
-			info.Solution = new Solution(new MockProjectChangeWatcher());
+			info.Solution = MockSolution.Create();
 			info.ProjectName = "Test";
 			info.OutputProjectFileName = new FileName(@"C:\Projects\Test\Test.wixproj");
 

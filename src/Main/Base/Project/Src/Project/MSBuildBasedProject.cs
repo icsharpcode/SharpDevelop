@@ -37,10 +37,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// The project collection that contains this project.
 		/// </summary>
-		ProjectCollection projectCollection;
-		
 		internal ProjectCollection MSBuildProjectCollection {
-			get { return projectCollection; }
+			get { return ParentSolution.MSBuildProjectCollection; }
 		}
 		
 		/// <summary>
@@ -154,11 +152,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#region Create new project
 		public MSBuildBasedProject(ProjectCreateInformation information)
+			: base(information.Solution)
 		{
-			this.projectCollection = information.Solution.MSBuildProjectCollection;
-			this.projectFile = ProjectRootElement.Create(projectCollection);
-			this.userProjectFile = ProjectRootElement.Create(projectCollection);
-			this.ActivePlatform = information.Platform;
+			this.projectFile = ProjectRootElement.Create(MSBuildProjectCollection);
+			this.userProjectFile = ProjectRootElement.Create(MSBuildProjectCollection);
+			this.ActiveConfiguration = new ConfigurationAndPlatform("Debug", information.Platform);
 			
 			Name = information.ProjectName;
 			FileName = information.OutputProjectFileName;
@@ -168,13 +166,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			projectFile.DefaultTargets = "Build";
 			userProjectFile.FullPath = information.OutputProjectFileName + ".user";
 			
-			base.IdGuid = "{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}";
-			projectFile.AddProperty(ProjectGuidPropertyName, IdGuid);
+			base.IdGuid = Guid.NewGuid();
+			projectFile.AddProperty(ProjectGuidPropertyName, IdGuid.ToString("B").ToUpperInvariant());
 			AddGuardedProperty("Configuration", "Debug");
 			AddGuardedProperty("Platform", information.Platform);
 			
-			this.ActiveConfiguration = "Debug";
-			this.ActivePlatform = information.Platform;
 			if (information.Platform == "x86")
 				SetProperty(null, information.Platform, "PlatformTarget", "x86", PropertyStorageLocations.PlatformSpecific, false);
 			else
@@ -287,7 +283,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <returns>The raw value of the property, or null if the property doesn't exist</returns>
 		public string GetUnevalatedProperty(string propertyName)
 		{
-			return GetUnevalatedProperty(this.ActiveConfiguration, this.ActivePlatform, propertyName);
+			return GetUnevalatedProperty(this.ActiveConfiguration.Configuration, this.ActiveConfiguration.Platform, propertyName);
 		}
 		
 		/// <summary>
@@ -345,7 +341,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		void UnloadCurrentlyOpenProject()
 		{
 			if (currentlyOpenProject != null) {
-				MSBuildInternals.UnloadProject(projectCollection, currentlyOpenProject);
+				MSBuildInternals.UnloadProject(MSBuildProjectCollection, currentlyOpenProject);
 				currentlyOpenProject = null;
 			}
 		}
@@ -404,7 +400,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				InitializeMSBuildProjectProperties(globalProps);
 				globalProps["Configuration"] = configuration;
 				globalProps["Platform"] = platform;
-				MSBuild.Project project = MSBuildInternals.LoadProject(projectCollection, projectFile, globalProps);
+				MSBuild.Project project = MSBuildInternals.LoadProject(MSBuildProjectCollection, projectFile, globalProps);
 				if (openCurrentConfiguration)
 					currentlyOpenProject = project;
 				return new ConfiguredProject(this, project, !openCurrentConfiguration);
@@ -456,7 +452,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				try {
 					if (unloadProjectOnDispose) {
-						MSBuildInternals.UnloadProject(p.projectCollection, this.Project);
+						MSBuildInternals.UnloadProject(p.MSBuildProjectCollection, this.Project);
 					}
 				} finally {
 					System.Threading.Monitor.Exit(p.SyncRoot);
@@ -530,10 +526,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				var property = g.Properties.FirstOrDefault(p => MSBuildInternals.PropertyNameComparer.Equals(p.Name, propertyName));
 				if (property == null)
 					continue;
-				string gConfiguration, gPlatform;
-				MSBuildInternals.GetConfigurationAndPlatformFromCondition(g.Condition,
-				                                                          out gConfiguration,
-				                                                          out gPlatform);
+				var configFromCondition = ConfigurationAndPlatform.FromCondition(g.Condition);
+				string gConfiguration = configFromCondition.Configuration;
+				string gPlatform = configFromCondition.Platform;
 				if ((configuration == null || configuration == gConfiguration || gConfiguration == null)
 				    && (platform == null || platform == gPlatform || gPlatform == null))
 				{
@@ -635,7 +630,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </param>
 		public void SetProperty(string propertyName, string newValue, bool treatPropertyValueAsLiteral)
 		{
-			SetProperty(ActiveConfiguration, ActivePlatform, propertyName, newValue,
+			SetProperty(ActiveConfiguration.Configuration, ActiveConfiguration.Platform, propertyName, newValue,
 			            PropertyStorageLocations.Unchanged, treatPropertyValueAsLiteral);
 		}
 		
@@ -725,7 +720,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						foreach (KeyValuePair<string, string> pair in oldValuesConf) {
 							if (pair.Value != null) {
 								MSBuildSetProperty(targetProject, propertyName, pair.Value,
-								                   CreateCondition(pair.Key, null, location),
+								                   ConfigurationAndPlatform.CreateCondition(pair.Key, null, location),
 								                   propertyInsertionPosition,
 								                   false);
 							}
@@ -745,7 +740,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						foreach (KeyValuePair<string, string> pair in oldValuesPlat) {
 							if (pair.Value != null) {
 								MSBuildSetProperty(targetProject, propertyName, pair.Value,
-								                   CreateCondition(null, pair.Key, location),
+								                   ConfigurationAndPlatform.CreateCondition(null, pair.Key, location),
 								                   propertyInsertionPosition,
 								                   false);
 							}
@@ -767,7 +762,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						foreach (KeyValuePair<StringPair, string> pair in oldValues) {
 							if (pair.Value != null) {
 								MSBuildSetProperty(targetProject, propertyName, pair.Value,
-								                   CreateCondition(pair.Key.Item1, pair.Key.Item2, location),
+								                   ConfigurationAndPlatform.CreateCondition(pair.Key.Item1, pair.Key.Item2, location),
 								                   propertyInsertionPosition,
 								                   false);
 							}
@@ -813,7 +808,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			} else if (newValue != null) {
 				// create new property
 				MSBuildSetProperty(targetProject, propertyName, newValue,
-				                   CreateCondition(configuration, platform, location),
+				                   ConfigurationAndPlatform.CreateCondition(configuration, platform, location),
 				                   propertyInsertionPosition,
 				                   treatPropertyValueAsLiteral);
 			}
@@ -912,47 +907,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				if (propertyRemoved && propertyGroup.Children.Count() == 0)
 					project.RemoveChild(propertyGroup);
-			}
-		}
-		
-		/// <summary>
-		/// Creates an MSBuild condition string.
-		/// At most one of configuration and platform can be null.
-		/// </summary>
-		internal static string CreateCondition(string configuration, string platform)
-		{
-			if (configuration == null)
-				return CreateCondition(configuration, platform, PropertyStorageLocations.PlatformSpecific);
-			else if (platform == null)
-				return CreateCondition(configuration, platform, PropertyStorageLocations.ConfigurationSpecific);
-			else
-				return CreateCondition(configuration, platform, PropertyStorageLocations.ConfigurationAndPlatformSpecific);
-		}
-		
-		/// <summary>
-		/// Creates an MSBuild condition string.
-		/// configuration and platform may be only <c>null</c> if they are not required (as specified by the
-		/// storage location), otherwise an ArgumentNullException is thrown.
-		/// </summary>
-		internal static string CreateCondition(string configuration, string platform, PropertyStorageLocations location)
-		{
-			switch (location & PropertyStorageLocations.ConfigurationAndPlatformSpecific) {
-				case PropertyStorageLocations.ConfigurationSpecific:
-					if (configuration == null)
-						throw new ArgumentNullException("configuration");
-					return " '$(Configuration)' == '" + configuration + "' ";
-				case PropertyStorageLocations.PlatformSpecific:
-					if (platform == null)
-						throw new ArgumentNullException("platform");
-					return " '$(Platform)' == '" + platform + "' ";
-				case PropertyStorageLocations.ConfigurationAndPlatformSpecific:
-					if (platform == null)
-						throw new ArgumentNullException("platform");
-					if (configuration == null)
-						throw new ArgumentNullException("configuration");
-					return " '$(Configuration)|$(Platform)' == '" + configuration + "|" + platform + "' ";
-				default:
-					return null;
 			}
 		}
 		#endregion
@@ -1127,18 +1081,19 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			ProjectBuildOptions projectOptions = base.CreateProjectBuildOptions(options, isRootBuildable);
 			ISolution solution = this.ParentSolution;
-			string solutionConfiguration = options.SolutionConfiguration ?? solution.ActiveConfiguration.Configuration;
-			string solutionPlatform = options.SolutionPlatform ?? solution.ActiveConfiguration.Platform;
+			var solutionConfiguration = new ConfigurationAndPlatform(
+				options.SolutionConfiguration ?? solution.ActiveConfiguration.Configuration,
+				options.SolutionPlatform ?? solution.ActiveConfiguration.Platform);
 			
-			var configMatchings = solution.GetActiveConfigurationsAndPlatformsForProjects(solutionConfiguration, solutionPlatform);
 			// Find the project configuration, and build an XML string containing all configurations from the solution
 			StringWriter solutionConfigurationXml = new StringWriter();
 			using (XmlTextWriter solutionConfigurationWriter = new XmlTextWriter(solutionConfigurationXml)) {
 				solutionConfigurationWriter.WriteStartElement("SolutionConfiguration");
-				foreach (var matching in configMatchings) {
+				foreach (var project in solution.Projects) {
+					var projectConfiguration = project.ConfigurationMapping.GetProjectConfiguration(solutionConfiguration);
 					solutionConfigurationWriter.WriteStartElement("ProjectConfiguration");
-					solutionConfigurationWriter.WriteAttributeString("Project", matching.Project.IdGuid);
-					solutionConfigurationWriter.WriteValue(matching.Configuration + "|" + MSBuildInternals.FixPlatformNameForProject(matching.Platform));
+					solutionConfigurationWriter.WriteAttributeString("Project", project.IdGuid.ToString("B").ToUpperInvariant());
+					solutionConfigurationWriter.WriteValue(projectConfiguration.ToString());
 					solutionConfigurationWriter.WriteEndElement();
 				}
 				solutionConfigurationWriter.WriteEndElement();
@@ -1147,7 +1102,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			// which is necessary to resolve the referenced project's OutputPath.
 			projectOptions.Properties["CurrentSolutionConfigurationContents"] = solutionConfigurationXml.ToString();
 			
-			solution.AddMSBuildSolutionProperties(projectOptions.Properties);
+			MSBuildInternals.AddMSBuildSolutionProperties(solution, projectOptions.Properties);
 			
 			return projectOptions;
 		}
@@ -1179,9 +1134,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		public MSBuildBasedProject(ProjectLoadInformation loadInformation)
+			: base(loadInformation.Solution)
 		{
-			if (loadInformation == null)
-				throw new ArgumentNullException("loadInformation");
 			this.Name = loadInformation.ProjectName;
 			isLoading = true;
 			try {
@@ -1244,14 +1198,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void LoadProjectInternal(ProjectLoadInformation loadInformation)
 		{
-			this.projectCollection = loadInformation.MSBuildProjectCollection;
 			this.FileName = loadInformation.FileName;
-			if (loadInformation.Configuration != null)
-				this.ActiveConfiguration = loadInformation.Configuration;
-			if (loadInformation.Platform != null)
-				this.ActivePlatform = loadInformation.Platform;
+			this.ActiveConfiguration = loadInformation.Configuration;
 			
-			projectFile = ProjectRootElement.Open(loadInformation.FileName, projectCollection);
+			projectFile = ProjectRootElement.Open(loadInformation.FileName, MSBuildProjectCollection);
 			if (loadInformation.upgradeToolsVersion == true && CanUpgradeToolsVersion()) {
 				projectFile.ToolsVersion = autoUpgradeNewToolsVersion;
 			}
@@ -1259,30 +1209,33 @@ namespace ICSharpCode.SharpDevelop.Project
 			string userFileName = loadInformation.FileName + ".user";
 			if (File.Exists(userFileName)) {
 				try {
-					userProjectFile = ProjectRootElement.Open(userFileName, projectCollection);
+					userProjectFile = ProjectRootElement.Open(userFileName, MSBuildProjectCollection);
 				} catch (InvalidProjectFileException ex) {
 					throw new ProjectLoadException("Error loading user part " + userFileName + ":\n" + ex.Message, ex);
 				}
 			} else {
-				userProjectFile = ProjectRootElement.Create(userFileName, projectCollection);
+				userProjectFile = ProjectRootElement.Create(userFileName, MSBuildProjectCollection);
 			}
 			
-			this.ActiveConfiguration = GetEvaluatedProperty("Configuration") ?? this.ActiveConfiguration;
-			this.ActivePlatform = GetEvaluatedProperty("Platform") ?? this.ActivePlatform;
+			this.ActiveConfiguration = new ConfigurationAndPlatform(
+				GetEvaluatedProperty("Configuration") ?? this.ActiveConfiguration.Configuration,
+				GetEvaluatedProperty("Platform") ?? this.ActiveConfiguration.Platform);
 			
 			CreateItemsListFromMSBuild();
 			LoadConfigurationPlatformNamesFromMSBuild();
 			
-			base.IdGuid = GetEvaluatedProperty(ProjectGuidPropertyName);
+			Guid guid;
+			if (Guid.TryParse(GetEvaluatedProperty(ProjectGuidPropertyName), out guid))
+				base.IdGuid = guid;
 		}
 		
 		[Browsable(false)]
-		public override string IdGuid {
+		public override Guid IdGuid {
 			get { return base.IdGuid; }
 			set {
 				if (base.IdGuid == null) {
 					// Save the GUID in the project if the project does not yet have a GUID.
-					SetPropertyInternal(null, null, ProjectGuidPropertyName, value, PropertyStorageLocations.Base, true);
+					SetPropertyInternal(null, null, ProjectGuidPropertyName, value.ToString("B").ToUpperInvariant(), PropertyStorageLocations.Base, true);
 				}
 				base.IdGuid = value;
 			}
@@ -1348,7 +1301,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 		}
-		*/
+		 */
 		protected void InvalidateConfigurationPlatformNames()
 		{
 			lock (SyncRoot) {
@@ -1396,13 +1349,12 @@ namespace ICSharpCode.SharpDevelop.Project
 						platformNames.Add(prop.Value);
 					}
 				} else {
-					string gConfiguration, gPlatform;
-					MSBuildInternals.GetConfigurationAndPlatformFromCondition(g.Condition, out gConfiguration, out gPlatform);
-					if (gConfiguration != null) {
-						configurationNames.Add(gConfiguration);
+					var configFromCondition = ConfigurationAndPlatform.FromCondition(g.Condition);
+					if (configFromCondition.Configuration != null) {
+						configurationNames.Add(configFromCondition.Configuration);
 					}
-					if (gPlatform != null) {
-						platformNames.Add(gPlatform);
+					if (configFromCondition.Platform != null) {
+						platformNames.Add(configFromCondition.Platform);
 					}
 				}
 			}
@@ -1600,7 +1552,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				return true;
 			}
 		}
-		*/
+		 */
 		#endregion
 		
 		#region ProjectExtensions
@@ -1677,7 +1629,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			string guidList = GetEvaluatedProperty("ProjectTypeGuids");
 			if (string.IsNullOrEmpty(guidList))
-				guidList = this.TypeGuid;
+				guidList = this.TypeGuid.ToString("B").ToUpperInvariant();
 			SetProperty("ProjectTypeGuids", guidList + ";" + projectTypeGuid.ToString("B").ToUpperInvariant(), false);
 			InvalidateBehavior();
 		}

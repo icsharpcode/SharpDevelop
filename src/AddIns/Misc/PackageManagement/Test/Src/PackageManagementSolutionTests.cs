@@ -5,11 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 using NUnit.Framework;
+using Rhino.Mocks;
 using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests
@@ -326,7 +328,7 @@ namespace PackageManagement.Tests
 		public void IsOpen_SolutionIsOpen_ReturnsTrue()
 		{
 			CreateSolution();
-			fakeProjectService.OpenSolution = new Solution(new MockProjectChangeWatcher());
+			fakeProjectService.OpenSolution = MockRepository.GenerateStrictMock<ISolution>();
 			
 			bool open = solution.IsOpen;
 			
@@ -374,12 +376,12 @@ namespace PackageManagement.Tests
 		public void FileName_SolutionHasFileName_ReturnsSolutionFileName()
 		{
 			CreateSolution();
-			var solution = new Solution(new MockProjectChangeWatcher());
+			var solution = MockRepository.GenerateStrictMock<ISolution>();
 			string expectedFileName = @"d:\projects\myproject\Project.sln";
-			solution.FileName = expectedFileName;
+			solution.Stub(s => s.FileName).Return(FileName.Create(expectedFileName));
 			fakeProjectService.OpenSolution = solution;
 			
-			string fileName = solution.FileName;
+			string fileName = this.solution.FileName;
 			
 			Assert.AreEqual(expectedFileName, fileName);
 		}

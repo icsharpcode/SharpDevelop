@@ -9,7 +9,7 @@ using System.Windows.Threading;
 namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
-	/// A fake message lop that always has <c>InvokeRequired=false</c> and synchronously invokes
+	/// A fake IMessageLoop implementation that always has <c>InvokeRequired=false</c> and synchronously invokes
 	/// the callback passed to <c>InvokeIfRequired</c>.
 	/// </summary>
 	public class FakeMessageLoop : IMessageLoop

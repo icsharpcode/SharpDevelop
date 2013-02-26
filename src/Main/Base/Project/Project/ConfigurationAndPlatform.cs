@@ -96,9 +96,53 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
+		/// <summary>
+		/// Converts configuration and platform to a string in the 'configuration|platform' format.
+		/// </summary>
 		public override string ToString()
 		{
 			return configuration + "|" + platform;
+		}
+		
+		/// <summary>
+		/// Creates an MSBuild condition string.
+		/// At most one of configuration and platform can be null.
+		/// </summary>
+		public string ToCondition()
+		{
+			if (configuration == null)
+				return CreateCondition(configuration, platform, PropertyStorageLocations.PlatformSpecific);
+			else if (platform == null)
+				return CreateCondition(configuration, platform, PropertyStorageLocations.ConfigurationSpecific);
+			else
+				return CreateCondition(configuration, platform, PropertyStorageLocations.ConfigurationAndPlatformSpecific);
+		}
+		
+		/// <summary>
+		/// Creates an MSBuild condition string.
+		/// configuration and platform may be only <c>null</c> if they are not required (as specified by the
+		/// storage location), otherwise an ArgumentNullException is thrown.
+		/// </summary>
+		internal static string CreateCondition(string configuration, string platform, PropertyStorageLocations location)
+		{
+			switch (location & PropertyStorageLocations.ConfigurationAndPlatformSpecific) {
+				case PropertyStorageLocations.ConfigurationSpecific:
+					if (configuration == null)
+						throw new ArgumentNullException("configuration");
+					return " '$(Configuration)' == '" + configuration + "' ";
+				case PropertyStorageLocations.PlatformSpecific:
+					if (platform == null)
+						throw new ArgumentNullException("platform");
+					return " '$(Platform)' == '" + platform + "' ";
+				case PropertyStorageLocations.ConfigurationAndPlatformSpecific:
+					if (platform == null)
+						throw new ArgumentNullException("platform");
+					if (configuration == null)
+						throw new ArgumentNullException("configuration");
+					return " '$(Configuration)|$(Platform)' == '" + configuration + "|" + platform + "' ";
+				default:
+					return null;
+			}
 		}
 	}
 }

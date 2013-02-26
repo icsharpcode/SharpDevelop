@@ -173,11 +173,11 @@ namespace ICSharpCode.CppBinding.Project
 			ProjectRootElement file = MSBuildProjectFile;
 			ProjectItemGroupElement configItemGroup = file.AddItemGroup();
 			configItemGroup.Label = "ProjectConfigurations";
-			foreach (string target in new string[] { "Debug|Win32", "Release|Win32" })
+			foreach (var target in new [] { new ConfigurationAndPlatform("Debug", "Win32"), new ConfigurationAndPlatform("Release", "Win32") })
 			{
-				ProjectItemElement prjConfiguration = configItemGroup.AddItem("ProjectConfiguration", target);
-				prjConfiguration.AddMetadata("Configuration", GetConfigurationNameFromKey(target));
-				prjConfiguration.AddMetadata("Platform", GetPlatformNameFromKey(target));
+				ProjectItemElement prjConfiguration = configItemGroup.AddItem("ProjectConfiguration", target.ToString());
+				prjConfiguration.AddMetadata("Configuration", target.Configuration);
+				prjConfiguration.AddMetadata("Platform", target.Platform);
 			}
 		}
 		

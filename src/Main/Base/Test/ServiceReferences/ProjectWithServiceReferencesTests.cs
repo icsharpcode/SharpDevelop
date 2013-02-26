@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		
 		void SetProjectDirectory(string directory)
 		{
-			fakeProject.Stub(p => p.Directory).Return(directory);			
+			fakeProject.Stub(p => p.Directory).Return(DirectoryName.Create(directory));
 		}
 		
 		ProjectItem GetFirstServiceReferenceFileInMSBuildProject(ServiceReferenceFileName fileName)

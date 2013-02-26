@@ -74,10 +74,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		internal static IProject GetProject(OpenedFile file)
 		{
-			if (ProjectService.OpenSolution != null && file != null) {
-				return ProjectService.OpenSolution.FindProjectContainingFile(file.FileName);
-			}
-			return null;
+			return SD.ProjectService.FindProjectContainingFile(file.FileName);
 		}
 	}
 }

@@ -474,9 +474,9 @@ namespace ICSharpCode.SharpDevelop
 		public static IEntityModel GetModel(this IUnresolvedEntity entity, IProject project = null)
 		{
 			if (project == null) {
-				if (entity.Region.FileName == null || ProjectService.OpenSolution == null)
+				if (entity.Region.FileName == null)
 					return null;
-				project = ProjectService.OpenSolution.FindProjectContainingFile(entity.Region.FileName);
+				project = SD.ProjectService.FindProjectContainingFile(FileName.Create(entity.Region.FileName));
 				if (project == null)
 					return null;
 			}

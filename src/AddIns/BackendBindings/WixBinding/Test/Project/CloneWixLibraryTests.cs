@@ -20,7 +20,7 @@ namespace WixBinding.Tests.Project
 		public void SetUp()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.InitializeForUnitTests();
+			MessageLoopHelper.RegisterStubService();
 		}
 		
 		[Test]

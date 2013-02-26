@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -27,5 +28,26 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public class SimpleModelCollection<T> : ObservableCollection<T>, IMutableModelCollection<T>
 	{
+		public SimpleModelCollection()
+		{
+		}
+		
+		public SimpleModelCollection(IEnumerable<T> items)
+			: base(items)
+		{
+		}
+	}
+	
+	/// <summary>
+	/// A model collection implementation that is based on a ReadOnlyCollection.
+	/// </summary>
+	public class ReadOnlyModelCollection<T> : ReadOnlyCollection<T>, IModelCollection<T>
+	{
+		public ReadOnlyModelCollection(IEnumerable<T> items)
+			: base(items.ToList())
+		{
+		}
+		
+		event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged { add {} remove {} }
 	}
 }

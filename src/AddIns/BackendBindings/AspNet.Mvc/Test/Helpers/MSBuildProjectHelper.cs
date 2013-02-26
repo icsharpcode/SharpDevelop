@@ -14,7 +14,7 @@ namespace AspNet.Mvc.Tests.Helpers
 		public static MSBuildBasedProject CreateCSharpProject()
 		{
 			var createInfo = new ProjectCreateInformation();
-			createInfo.Solution = new Solution(MockRepository.GenerateStub<IProjectChangeWatcher>());
+			createInfo.Solution = FakeSolution.Create();
 			createInfo.OutputProjectFileName = new FileName(@"d:\projects\MyProject\MyProject.csproj");
 			return new MSBuildBasedProject(createInfo);
 		}

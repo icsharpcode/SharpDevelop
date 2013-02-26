@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		void UpdateText()
 		{
 			Text = ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.ProjectBrowser.SolutionNodeText") + " " + solution.Name;
-			if (solution.ReadOnly) {
+			if (solution.IsReadOnly) {
 				Text += StringParser.Parse(" (${res:Global.ReadOnly})");
 			}
 		}
@@ -71,17 +71,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			SolutionFolderNode node = null;
 			foreach (TreeNode n in Nodes) {
 				node = n as SolutionFolderNode;
-				if (node != null && node.SolutionItem.Name == folderName) {
+				if (node != null && node.Folder.Name == folderName) {
 					break;
 				}
 				node = null;
 			}
 			if (node == null) {
-				SolutionFolder newSolutionFolder = solution.CreateFolder(folderName);
-				solution.AddFolder(newSolutionFolder);
+				ISolutionFolder newSolutionFolder = solution.CreateFolder(folderName);
 				solution.Save();
 				
-				node = new SolutionFolderNode(solution, newSolutionFolder);
+				node = new SolutionFolderNode(newSolutionFolder);
 				node.InsertSorted(this);
 			}
 			node.AddItem(fileName);
@@ -93,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (dataObject.GetDataPresent(typeof(SolutionFolderNode))) {
 				SolutionFolderNode folderNode = (SolutionFolderNode)dataObject.GetData(typeof(SolutionFolderNode));
 				
-				if (folderNode.SolutionItem.Parent != solution) {
+				if (folderNode.Folder.ParentFolder != solution) {
 					return DragDropEffects.All;
 				}
 			}
@@ -120,7 +119,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				folderNode.Remove();
 				folderNode.InsertSorted(this);
 				
-				this.solution.AddFolder(folderNode.SolutionItem);
+				this.solution.Items.Add(folderNode.Folder);
 			}
 			if (dataObject.GetDataPresent(typeof(ProjectNode))) {
 				ProjectNode projectNode = (ProjectNode)dataObject.GetData(typeof(ProjectNode));
@@ -129,7 +128,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				projectNode.Remove();
 				projectNode.InsertSorted(this);
 				projectNode.EnsureVisible();
-				this.solution.AddFolder(projectNode.Project);
+				this.solution.Items.Add(projectNode.Project);
 			}
 			
 			if (parentNode != null) {

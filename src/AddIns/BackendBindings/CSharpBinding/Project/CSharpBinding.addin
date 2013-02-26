@@ -48,7 +48,6 @@
 		<FileFilter id         = "CSharpProject"
 		            insertbefore="AllFiles"
 		            name       = "${res:SharpDevelop.FileFilter.CSharpPrjFiles} (*.csproj)"
-		            class      = "ICSharpCode.SharpDevelop.Project.LoadProject"
 		            extensions = "*.csproj"/>
 	</Path>
 	

@@ -74,6 +74,8 @@
 		         class="ICSharpCode.SharpDevelop.ClipboardWrapper"/>
 		<Service id="ICSharpCode.SharpDevelop.Project.IBuildService"
 		         class="ICSharpCode.SharpDevelop.Project.BuildService"/>
+		<Service id="ICSharpCode.SharpDevelop.Project.IProjectService"
+		         class="ICSharpCode.SharpDevelop.Project.SDProjectService"/>
 		<Service id="ICSharpCode.SharpDevelop.Editor.Bookmarks.IBookmarkManager"
 		         class="ICSharpCode.SharpDevelop.Editor.Bookmarks.BookmarkManager"/>
 		
@@ -198,7 +200,6 @@
 	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
 		<FileFilter id         = "Solution"
 		            name       = "${res:SharpDevelop.FileFilter.SolutionFiles}"
-		            class      = "ICSharpCode.SharpDevelop.Project.LoadSolution"
 		            extensions = "*.sln"/>
 		
 		<FileFilter id         = "AllFiles"

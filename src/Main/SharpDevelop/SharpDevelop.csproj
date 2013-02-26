@@ -103,6 +103,7 @@
     <Compile Include="Project\Build\BuildModifiedProjectsOnlyService.cs" />
     <Compile Include="Project\Build\BuildService.cs" />
     <Compile Include="Project\Build\UIBuildFeedbackSink.cs" />
+    <Compile Include="Project\ProjectService.cs" />
     <Compile Include="Services\ClipboardWrapper.cs" />
     <Compile Include="Services\DispatcherMessageLoop.cs" />
     <Compile Include="Startup\App.xaml.cs" />

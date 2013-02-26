@@ -32,10 +32,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		IProject FindProjectContainingFile()
 		{
-			if (ProjectService.OpenSolution != null) {
-				return ProjectService.OpenSolution.FindProjectContainingFile(viewContent.PrimaryFileName);
-			}
-			return null;
+			return SD.ProjectService.FindProjectContainingFile(viewContent.PrimaryFileName);
 		}
 		
 		protected IType GetDesignedClass(ICompilation compilation)

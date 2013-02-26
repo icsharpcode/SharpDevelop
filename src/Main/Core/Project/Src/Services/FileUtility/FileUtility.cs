@@ -560,8 +560,8 @@ namespace ICSharpCode.Core
 
 		public static bool MatchesPattern(string filename, string pattern)
 		{
-			filename = filename.ToUpper();
-			pattern = pattern.ToUpper();
+			filename = filename.ToUpperInvariant();
+			pattern = pattern.ToUpperInvariant();
 			string[] patterns = pattern.Split(';');
 			foreach (string p in patterns) {
 				if (Match(filename, p)) {

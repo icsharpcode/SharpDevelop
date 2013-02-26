@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop
 			IProjectBinding binding = ProjectBindingService.GetBindingPerProjectFile(location);
 			IProject newProject;
 			if (!(binding != null && binding.HandlingMissingProject) && !File.Exists(location)) {
-				newProject = new MissingProject(location, title);
+				newProject = new MissingProject(loadInformation.Solution, location, title);
 				newProject.TypeGuid = loadInformation.TypeGuid;
 			} else {
 				if (binding != null) {
@@ -107,13 +107,13 @@ namespace ICSharpCode.SharpDevelop
 					} catch (ProjectLoadException ex) {
 						LoggingService.Warn("Project load error", ex);
 						progressMonitor.ShowingDialog = true;
-						newProject = new UnknownProject(location, title, ex.Message, true);
+						newProject = new UnknownProject(loadInformation.Solution, location, title, ex.Message, true);
 						newProject.TypeGuid = loadInformation.TypeGuid;
 						progressMonitor.ShowingDialog = false;
 					} catch (UnauthorizedAccessException ex) {
 						LoggingService.Warn("Project load error", ex);
 						progressMonitor.ShowingDialog = true;
-						newProject = new UnknownProject(location, title, ex.Message, true);
+						newProject = new UnknownProject(loadInformation.Solution, location, title, ex.Message, true);
 						newProject.TypeGuid = loadInformation.TypeGuid;
 						progressMonitor.ShowingDialog = false;
 					}
@@ -122,10 +122,10 @@ namespace ICSharpCode.SharpDevelop
 					if (".proj".Equals(ext, StringComparison.OrdinalIgnoreCase)
 					    || ".build".Equals(ext, StringComparison.OrdinalIgnoreCase))
 					{
-						newProject = new MSBuildFileProject(location, title);
+						newProject = new MSBuildFileProject(loadInformation.Solution, location, title);
 						newProject.TypeGuid = loadInformation.TypeGuid;
 					} else {
-						newProject = new UnknownProject(location, title);
+						newProject = new UnknownProject(loadInformation.Solution, location, title);
 						newProject.TypeGuid = loadInformation.TypeGuid;
 					}
 				}

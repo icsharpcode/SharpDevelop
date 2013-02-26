@@ -653,11 +653,11 @@ namespace ICSharpCode.SharpDevelop.Workbench
 						return;
 					foreach (string file in files) {
 						if (File.Exists(file)) {
-							Project.IProjectLoader loader = Project.ProjectService.GetProjectLoader(file);
-							if (loader != null) {
-								FileUtility.ObservedLoad(new NamedFileOperationDelegate(loader.Load), file);
+							var fileName = FileName.Create(file);
+							if (SD.ProjectService.IsProjectOrSolutionFile(fileName)) {
+								SD.ProjectService.OpenSolutionOrProject(fileName);
 							} else {
-								SharpDevelop.FileService.OpenFile(file);
+								SD.FileService.OpenFile(fileName);
 							}
 						}
 					}

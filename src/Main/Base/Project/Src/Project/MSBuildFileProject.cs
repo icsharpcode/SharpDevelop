@@ -13,11 +13,10 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public class MSBuildFileProject : AbstractProject
 	{
-		public MSBuildFileProject(FileName fileName, string title)
+		public MSBuildFileProject(ISolution parentSolution, FileName fileName, string title) : base(parentSolution)
 		{
 			Name     = title;
 			FileName = fileName;
-			TypeGuid = "{00000000-0000-0000-0000-000000000000}";
 		}
 		
 		public override Task<bool> BuildAsync(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IProgressMonitor progressMonitor)

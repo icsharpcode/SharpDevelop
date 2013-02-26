@@ -9,10 +9,9 @@ namespace WixBinding.Tests.Utils
 {
 	public static class MessageLoopHelper
 	{
-		public static void InitializeForUnitTests()
+		public static void RegisterStubService()
 		{
 			IMessageLoop messageLoop = MockRepository.GenerateStub<IMessageLoop>();
-			SD.Services.RemoveService(typeof(IMessageLoop));
 			SD.Services.AddService(typeof(IMessageLoop), messageLoop);
 		}
 	}

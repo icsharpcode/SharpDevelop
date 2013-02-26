@@ -63,6 +63,50 @@ namespace ICSharpCode.Core
 			return normalizedFileName;
 		}
 		
+		/// <summary>
+		/// Gets the directory name.
+		/// </summary>
+		/// <remarks>
+		/// Corresponds to <c>System.IO.Path.GetDirectoryName</c>
+		/// </remarks>
+		public DirectoryName GetParentDirectory()
+		{
+			return DirectoryName.Create(Path.GetDirectoryName(normalizedFileName));
+		}
+		
+		/// <summary>
+		/// Gets the file name (not the full path).
+		/// </summary>
+		/// <remarks>
+		/// Corresponds to <c>System.IO.Path.GetFileName</c>
+		/// </remarks>
+		public string GetFileName()
+		{
+			return Path.GetFileName(normalizedFileName);
+		}
+		
+		/// <summary>
+		/// Gets the file extension.
+		/// </summary>
+		/// <remarks>
+		/// Corresponds to <c>System.IO.Path.GetExtension</c>
+		/// </remarks>
+		public string GetExtension()
+		{
+			return Path.GetExtension(normalizedFileName);
+		}
+		
+		/// <summary>
+		/// Gets the file name without extension.
+		/// </summary>
+		/// <remarks>
+		/// Corresponds to <c>System.IO.Path.GetFileNameWithoutExtension</c>
+		/// </remarks>
+		public string GetFileNameWithoutExtension()
+		{
+			return Path.GetFileNameWithoutExtension(normalizedFileName);
+		}
+		
 		#region Equals and GetHashCode implementation
 		public override bool Equals(object obj)
 		{

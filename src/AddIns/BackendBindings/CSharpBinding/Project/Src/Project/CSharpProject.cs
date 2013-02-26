@@ -84,7 +84,7 @@ namespace CSharpBinding
 		
 		public override Task<bool> BuildAsync(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IProgressMonitor progressMonitor)
 		{
-			if (this.MinimumSolutionVersion == ISolution.SolutionVersionVS2005) {
+			if (this.MinimumSolutionVersion == SolutionFormatVersion.VS2005) {
 				return MSBuildEngine.BuildAsync(
 					this, options, feedbackSink, progressMonitor.CancellationToken,
 					MSBuildEngine.AdditionalTargetFiles.Concat(
@@ -177,12 +177,12 @@ namespace CSharpBinding
 		public override CompilerVersion CurrentCompilerVersion {
 			get {
 				switch (Project.MinimumSolutionVersion) {
-					case ISolution.SolutionVersionVS2005:
+					case SolutionFormatVersion.VS2005:
 						return msbuild20;
-					case ISolution.SolutionVersionVS2008:
+					case SolutionFormatVersion.VS2008:
 						return msbuild35;
-					case ISolution.SolutionVersionVS2010:
-					case ISolution.SolutionVersionVS2012:
+					case SolutionFormatVersion.VS2010:
+					case SolutionFormatVersion.VS2012:
 						return msbuild40;
 					default:
 						throw new NotSupportedException();

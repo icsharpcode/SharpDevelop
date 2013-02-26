@@ -3,8 +3,8 @@
 
 using System;
 using System.Resources;
-
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using WixBinding.Tests.Utils;
@@ -17,6 +17,7 @@ namespace WixBinding.Tests.Document
 		[TestFixtureSetUp]
 		public void SetupFixture()
 		{
+			SD.InitializeForUnitTests();
 			WixBindingTestsHelper.RegisterResourceStringsWithSharpDevelopResourceManager();
 		}
 

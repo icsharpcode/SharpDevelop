@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 						}
 						
 						// use the newly created IdGuid instead of the copied one
-						tp.SetProperty(MSBuildBasedProject.ProjectGuidPropertyName, tp.IdGuid);
+						tp.SetProperty(MSBuildBasedProject.ProjectGuidPropertyName, tp.IdGuid.ToString("B").ToUpperInvariant());
 					}
 				}
 			}
@@ -199,7 +199,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			while (node != null) {
 				if (node is ISolutionFolderNode) {
 					var solutionFolderNode = (ISolutionFolderNode)node;
-					solutionFolderNode.Solution.AddExistingProject(targetProject.FileName, solutionFolderNode.Folder);
+					solutionFolderNode.Folder.AddExistingProject(targetProject.FileName);
 					ProjectService.SaveSolution();
 					break;
 				}

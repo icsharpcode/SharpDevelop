@@ -37,7 +37,7 @@ namespace ICSharpCode.CppBinding.Project
 	
 		void SetOutputTypeCombo()
 		{
-			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(base.Project, base.Project.ActiveConfiguration, base.Project.ActivePlatform);
+			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(base.Project, base.Project.ActiveConfiguration);
 			string subsystem = group.GetElementMetadata("Link", "SubSystem");
 			string configurationType = base.Project.GetEvaluatedProperty("ConfigurationType");
 			OutputType validOutputType = ConfigurationTypeToOutputType(configurationType, subsystem);
@@ -61,7 +61,7 @@ namespace ICSharpCode.CppBinding.Project
 		void project_MinimumSolutionVersionChanged(object sender, EventArgs e)
 		{
 			// embedding manifests requires the project to target MSBuild 3.5 or higher
-			applicationManifestComboBox.IsEnabled = base.Project.MinimumSolutionVersion >= ISolution.SolutionVersionVS2008;
+			applicationManifestComboBox.IsEnabled = base.Project.MinimumSolutionVersion >= SolutionFormatVersion.VS2008;
 		}
 		
 		
@@ -171,8 +171,7 @@ namespace ICSharpCode.CppBinding.Project
 			OutputType outputType = values[this.outputTypeComboBox.SelectedIndex];
 			
 			string subsystem = OutputTypeToSubsystem(outputType);
-			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(base.Project,
-			                                                                  base.Project.ActiveConfiguration, base.Project.ActivePlatform);
+			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(base.Project, base.Project.ActiveConfiguration);
 			group.SetElementMetadata("Link", "SubSystem", subsystem);
 			
 			return OutputTypeToConfigurationType(outputType);

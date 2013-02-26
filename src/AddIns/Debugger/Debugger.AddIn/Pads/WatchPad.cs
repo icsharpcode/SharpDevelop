@@ -66,7 +66,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void LoadNodes()
 		{
 			if (ProjectService.OpenSolution != null) {
-				var props = ProjectService.OpenSolution.Preferences.Properties.NestedProperties("Watches");
+				var props = ProjectService.OpenSolution.Preferences.NestedProperties("Watches");
 				foreach (var key in props.Keys) {
 					this.Items.Add(new TreeNode(props.Get(key, ""), () => null).ToSharpTreeNode());
 				}
@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			if (ProjectService.OpenSolution != null) {
 				var props = new Properties();
-				ProjectService.OpenSolution.Preferences.Properties.SetNestedProperties("Watches", props);
+				ProjectService.OpenSolution.Preferences.SetNestedProperties("Watches", props);
 				foreach(var node in this.Items.OfType<TreeNode>()) {
 					props.Set(node.Name, (object)null);
 				}

@@ -25,7 +25,7 @@ namespace WixBinding.Tests.Project
 		public void SetUpFixture()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.InitializeForUnitTests();
+			MessageLoopHelper.RegisterStubService();
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
 			
 			FileProjectItem item = new FileProjectItem(p, ItemType.None);

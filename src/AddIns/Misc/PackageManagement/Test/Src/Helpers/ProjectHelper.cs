@@ -2,15 +2,29 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests.Helpers
 {
 	public static class ProjectHelper
 	{
+		public static ISolution CreateSolution()
+		{
+			SD.InitializeForUnitTests();
+			MessageLoopHelper.InitializeForUnitTests();
+			ISolution solution = MockRepository.GenerateStrictMock<ISolution>();
+			solution.Stub(s => s.MSBuildProjectCollection).Return(new Microsoft.Build.Evaluation.ProjectCollection());
+			solution.Stub(s => s.Projects).Return(new SimpleModelCollection<IProject>());
+			//solution.Stub(s => s.FileName).Return(FileName.Create(@"d:\projects\Test\TestSolution.sln"));
+			return solution;
+		}
+		
 		public static TestableProject CreateTestProject()
 		{
 			return CreateTestProject("TestProject");
@@ -18,8 +32,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public static TestableProject CreateTestProject(string name)
 		{
-			ISolution solution = new Solution(new MockProjectChangeWatcher());
-			solution.FileName = @"d:\projects\Test\TestSolution.sln";
+			ISolution solution = CreateSolution();
 			
 			return CreateTestProject(solution, name);
 		}
@@ -27,20 +40,17 @@ namespace PackageManagement.Tests.Helpers
 		public static TestableProject CreateTestProject(
 			ISolution parentSolution,
 			string name,
-			string fileName = @"d:\projects\Test\TestProject\TestProject.csproj")
+			string fileName = null)
 		{
-			SD.InitializeForUnitTests();
-			MessageLoopHelper.InitializeForUnitTests();
 			ProjectCreateInformation createInfo = new ProjectCreateInformation();
 			createInfo.Solution = parentSolution;
 			createInfo.ProjectName = name;
 			createInfo.SolutionPath = @"d:\projects\Test";
 			createInfo.ProjectBasePath = @"d:\projects\Test\TestProject";
-			createInfo.OutputProjectFileName = new FileName(fileName);
+			createInfo.OutputProjectFileName = new FileName(fileName ?? (@"d:\projects\Test\TestProject\" + name + ".csproj"));
 			
 			var project = new TestableProject(createInfo);
-			project.Parent = parentSolution;
-			parentSolution.AddFolder(project);
+			((ICollection<IProject>)parentSolution.Projects).Add(project);
 			return project;
 		}
 		
@@ -68,9 +78,9 @@ namespace PackageManagement.Tests.Helpers
 			AddProjectType(project, ProjectTypeGuids.WebSite);
 		}
 		
-		public static void AddProjectType(MSBuildBasedProject project, string guidText)
+		public static void AddProjectType(MSBuildBasedProject project, Guid guid)
 		{
-			project.AddProjectType(Guid.Parse(guidText));
+			project.AddProjectType(guid);
 		}
 		
 		public static void AddReference(MSBuildBasedProject project, string referenceName)

@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using WixBinding.Tests.Utils;
@@ -19,7 +20,8 @@ namespace WixBinding.Tests.Gui
 		[SetUp]
 		public void Init()
 		{
-			MessageLoopHelper.InitializeForUnitTests();
+			SD.InitializeForUnitTests();
+			MessageLoopHelper.RegisterStubService();
 			textEditor = new MockTextEditor();
 			textEditor.Document.Text = GetWixXml();
 			

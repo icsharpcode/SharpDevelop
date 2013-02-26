@@ -39,6 +39,7 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build" />
     <Reference Include="Mono.TextTemplating">
       <HintPath>..\Project\lib\Mono.TextTemplating.dll</HintPath>
     </Reference>

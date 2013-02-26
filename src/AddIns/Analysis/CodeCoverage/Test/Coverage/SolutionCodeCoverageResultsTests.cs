@@ -25,7 +25,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		
 		void CreateSolutionCodeCoverageResults()
 		{
-			solution = new Solution(new MockProjectChangeWatcher());
+			solution = MockSolution.Create();
 			fakeFileSystem = MockRepository.GenerateStub<IFileSystem>();
 			solutionCodeCoverageResults = new SolutionCodeCoverageResults(solution, fakeFileSystem);
 		}
@@ -39,7 +39,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		{
 			var project = new MockCSharpProject(solution, Path.GetFileNameWithoutExtension(fileName));
 			project.FileName = new FileName(fileName);
-			solution.Folders.Add(project);
+			((ICollection<IProject>)solution.Projects).Add(project);
 		}
 		
 		void AddCodeCoverageFile(string fileName)

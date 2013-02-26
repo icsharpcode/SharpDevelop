@@ -62,7 +62,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		{
 			MSBuildBasedProject project = new MSBuildBasedProject(
 				new ProjectCreateInformation {
-					Solution = new Solution(new MockProjectChangeWatcher()),
+					Solution = MockSolution.Create(),
 					OutputProjectFileName = new FileName(@"C:\temp\test.csproj"),
 					ProjectName = "test"
 				});

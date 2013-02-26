@@ -17,7 +17,7 @@ namespace UnitTesting.Tests.Utils
 		IProjectContent projectContent;
 		
 		public MockCSharpProject()
-			: this(new Solution(new MockProjectChangeWatcher()), "MyTests")
+			: this(MockSolution.Create(), "MyTests")
 		{
 		}
 		

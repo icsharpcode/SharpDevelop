@@ -83,6 +83,7 @@
     <Compile Include="Helpers\FakeMvcViewFileGenerator.cs" />
     <Compile Include="Helpers\FakeSelectedFolderNodeInProjectsView.cs" />
     <Compile Include="Helpers\FakeSelectedMvcFolder.cs" />
+    <Compile Include="Helpers\FakeSolution.cs" />
     <Compile Include="Helpers\MSBuildProjectHelper.cs" />
     <Compile Include="Helpers\MvcControllerTextTemplateCollectionAssert.cs" />
     <Compile Include="Helpers\MvcProjectFileAssert.cs" />

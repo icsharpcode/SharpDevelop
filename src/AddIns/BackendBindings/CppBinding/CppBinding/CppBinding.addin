@@ -42,7 +42,6 @@
 		<FileFilter id="C++Project"
 					insertbefore="AllFiles"
 					name="C++ project files (*.vcxproj)"
-					class="ICSharpCode.SharpDevelop.Project.LoadProject"
 					extensions="*.vcxproj" />
 	</Path>
 

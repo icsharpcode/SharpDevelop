@@ -38,6 +38,7 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="NuGet.Console.Types">
       <HintPath>..\RequiredLibraries\NuGet.Console.Types.dll</HintPath>

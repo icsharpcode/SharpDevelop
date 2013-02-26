@@ -8,15 +8,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class SolutionConfiguration : MarshalByRefObject, global::EnvDTE.SolutionConfiguration
 	{
-		SolutionPreferences preferences;
+		ISolution solution;
 		
-		public SolutionConfiguration(SolutionPreferences preferences)
+		public SolutionConfiguration(ISolution solution)
 		{
-			this.preferences = preferences;
+			this.solution = solution;
 		}
 		
 		public string Name {
-			get { return preferences.ActiveConfiguration; }
+			get { return solution.ActiveConfiguration.Configuration; }
 		}
 	}
 }

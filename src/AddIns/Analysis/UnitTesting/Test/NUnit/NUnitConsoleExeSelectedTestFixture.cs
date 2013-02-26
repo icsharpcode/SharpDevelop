@@ -52,8 +52,7 @@ namespace UnitTesting.Tests.NUnit
 		[Test]
 		public void TargetCpuAnyCPUDotnet2()
 		{
-			project.ActiveConfiguration = "Debug";
-			project.ActivePlatform = "AnyCPU";
+			project.ActiveConfiguration = new ConfigurationAndPlatform("Debug", "AnyCPU");
 			project.SetProperty("PlatformTarget", "AnyCPU");
 			project.SetProperty("TargetFrameworkVersion", "v3.5");
 			
@@ -65,8 +64,7 @@ namespace UnitTesting.Tests.NUnit
 		[Test]
 		public void TargetCpuAnyCPUDotnet45()
 		{
-			project.ActiveConfiguration = "Debug";
-			project.ActivePlatform = "AnyCPU";
+			project.ActiveConfiguration = new ConfigurationAndPlatform("Debug", "AnyCPU");
 			project.SetProperty("PlatformTarget", "AnyCPU");
 			project.SetProperty("TargetFrameworkVersion", "v4.5");
 			
@@ -78,8 +76,7 @@ namespace UnitTesting.Tests.NUnit
 		[Test]
 		public void TargetCpuX64Dotnet2()
 		{
-			project.ActiveConfiguration = "Debug";
-			project.ActivePlatform = "AnyCPU";
+			project.ActiveConfiguration = new ConfigurationAndPlatform("Debug", "AnyCPU");
 			project.SetProperty("PlatformTarget", "x64");
 			project.SetProperty("TargetFrameworkVersion", "v3.5");
 			
@@ -90,8 +87,7 @@ namespace UnitTesting.Tests.NUnit
 		[Test]
 		public void TargetCpuX64Dotnet45()
 		{
-			project.ActiveConfiguration = "Debug";
-			project.ActivePlatform = "AnyCPU";
+			project.ActiveConfiguration = new ConfigurationAndPlatform("Debug", "AnyCPU");
 			project.SetProperty("PlatformTarget", "x64");
 			project.SetProperty("TargetFrameworkVersion", "v4.5");
 			
@@ -102,8 +98,7 @@ namespace UnitTesting.Tests.NUnit
 		[Test]
 		public void NUnitConsole32BitUsedWhenTargetCpuIs32BitDotnet2()
 		{
-			project.ActiveConfiguration = "Debug";
-			project.ActivePlatform = "AnyCPU";
+			project.ActiveConfiguration = new ConfigurationAndPlatform("Debug", "AnyCPU");
 			project.SetProperty("PlatformTarget", "x86");
 			project.SetProperty("TargetFrameworkVersion", "v3.5");
 			
@@ -114,8 +109,7 @@ namespace UnitTesting.Tests.NUnit
 		[Test]
 		public void NUnitConsole32BitUsedWhenTargetCpuIs32Bit()
 		{
-			project.ActiveConfiguration = "Debug";
-			project.ActivePlatform = "AnyCPU";
+			project.ActiveConfiguration = new ConfigurationAndPlatform("Debug", "AnyCPU");
 			project.SetProperty("PlatformTarget", "x86");
 			
 			NUnitConsoleApplication app = new NUnitConsoleApplication(new[] { testProject });
@@ -125,7 +119,7 @@ namespace UnitTesting.Tests.NUnit
 		[Test]
 		public void NotMSBuildBasedProject()
 		{
-			MissingProject project = new MissingProject(FileName.Create(@"C:\Projects\Test.proj"), "Test");
+			MissingProject project = new MissingProject(MockSolution.Create(), FileName.Create(@"C:\Projects\Test.proj"), "Test");
 			ITestProject testProject = new NUnitTestProject(project);
 			NUnitConsoleApplication app = new NUnitConsoleApplication(new[] { testProject });
 			

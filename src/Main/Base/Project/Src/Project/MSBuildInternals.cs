@@ -59,6 +59,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		public static void AddMSBuildSolutionProperties(ISolution solution, IDictionary<string, string> propertyDict)
+		{
+			propertyDict["SolutionDir"] = solution.Directory.ToStringWithTrailingBackslash();
+			propertyDict["SolutionExt"] = ".sln";
+			propertyDict["SolutionFileName"] = solution.FileName.GetFileName();
+			propertyDict["SolutionName"] = solution.Name ?? string.Empty;
+			propertyDict["SolutionPath"] = solution.FileName;
+		}
+		
 		public const string MSBuildXmlNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
 		
 		#region Escaping
@@ -174,7 +183,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			List<string> targets = new List<string>();
-			if (baseProject.MinimumSolutionVersion >= ISolution.SolutionVersionVS2010) {
+			if (baseProject.MinimumSolutionVersion >= SolutionFormatVersion.VS2010) {
 				targets.Add("ResolveReferences");
 				targets.Add("DesignTimeResolveAssemblyReferences");
 			} else {

@@ -11,6 +11,7 @@ using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 using NUnit.Framework;
+using Rhino.Mocks;
 using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests.Scripting
@@ -109,10 +110,7 @@ namespace PackageManagement.Tests.Scripting
 		ISolution CreateSolutionWithOneProject()
 		{
 			TestableProject project = ProjectHelper.CreateTestProject();
-			ISolution solution = project.ParentSolution;
-			solution.AddFolder(project);
-			
-			return solution;
+			return project.ParentSolution;
 		}
 		
 		PackageSource AddOnePackageSourceAndRemoveAnyExistingPackageSources()
@@ -149,7 +147,7 @@ namespace PackageManagement.Tests.Scripting
 		ISolution CreateViewModelWithEmptySolutionOpen()
 		{
 			CreateConsoleHost();
-			var solution = new Solution(new MockProjectChangeWatcher());
+			var solution = ProjectHelper.CreateSolution();
 			projectService = new FakePackageManagementProjectService();
 			projectService.OpenSolution = solution;
 			CreateViewModel(consoleHost, projectService);
@@ -158,8 +156,7 @@ namespace PackageManagement.Tests.Scripting
 		
 		TestableProject AddProjectToSolution(ISolution solution)
 		{
-			var project = ProjectHelper.CreateTestProject();
-			solution.AddFolder(project);
+			var project = ProjectHelper.CreateTestProject(solution, "TestProject");
 			return project;
 		}
 		
@@ -178,7 +175,7 @@ namespace PackageManagement.Tests.Scripting
 		IProject RemoveProjectFromSolution(ISolution solution)
 		{
 			var project = solution.Projects.FirstOrDefault();
-			solution.RemoveFolder(project);
+			((ICollection<IProject>)solution.Projects).Remove(project);
 			return project;
 		}
 		
@@ -312,7 +309,7 @@ namespace PackageManagement.Tests.Scripting
 		{
 			CreateConsoleHost();
 			projectService = new FakePackageManagementProjectService();
-			var solution = new Solution(new MockProjectChangeWatcher());
+			var solution = ProjectHelper.CreateSolution();
 			projectService.OpenSolution = solution;
 
 			Assert.DoesNotThrow(() => CreateViewModel(consoleHost, projectService));
@@ -443,7 +440,7 @@ namespace PackageManagement.Tests.Scripting
 		public void Projects_SolutionFolderRemovedFromSolution_ProjectListIsUnchanged()
 		{
 			var solution = CreateViewModelWithOneProjectOpen();
-			var solutionFolder = new SolutionFolder("Test", "Location", "Guid");
+			var solutionFolder = MockRepository.GenerateStrictMock<ISolutionFolder>();
 			projectService.FireSolutionFolderRemoved(solutionFolder);
 			
 			int count = viewModel.Projects.Count;

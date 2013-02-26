@@ -625,7 +625,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			get {
 				var fileName = this.PrimaryFileName;
 				return fileName == null
-					|| Project.ProjectService.OpenSolution.FindProjectContainingFile(fileName) != null;
+					|| SD.ProjectService.FindProjectContainingFile(fileName) != null;
 			}
 		}
 	}

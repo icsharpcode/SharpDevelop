@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the full path of the directory containing the .sln file.
 		/// </summary>
-		string Directory { get; }
+		DirectoryName Directory { get; }
 		
 		/// <summary>
 		/// Gets/Sets the startup project.
@@ -47,19 +47,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		IModelCollection<IProject> Projects { get; }
 		
 		/// <summary>
-		/// Loads an existing project from disk and adds it to this solution.
-		/// </summary>
-		/// <param name="fileName">Path to the project file</param>
-		/// <param name="parentFolder">
-		/// Optional: The parent folder to which the new project should be added.
-		/// If this parameter is not specified, the project is added to the root folder of the solution.
-		/// </param>
-		void AddExistingProject(FileName fileName, ISolutionFolder parentFolder = null);
-		
-		/// <summary>
 		/// Gets all file items in the solution.
 		/// </summary>
 		IModelCollection<ISolutionFileItem> FileItems { get; }
+		
+		/// <summary>
+		/// Finds the item with the specified <see cref="ISolutionItem.IdGuid"/>;
+		/// or returns null if no such item exists.
+		/// </summary>
+		ISolutionItem GetItemByGuid(Guid guid);
 		
 		/// <summary>
 		/// Gets a container that can be used to store data about the solution.
@@ -82,7 +78,5 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// This will also save all modified projects within this solution.
 		/// </summary>
 		void Save();
-		
-		
 	}
 }

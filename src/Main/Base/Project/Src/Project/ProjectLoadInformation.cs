@@ -12,11 +12,11 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public class ProjectLoadInformation
 	{
-		public ISolution ParentSolution { get; private set; }
+		public ISolution Solution { get; private set; }
 		public FileName FileName { get; private set; }
 		public ConfigurationAndPlatform Configuration { get; set; }
 		public string ProjectName { get; private set; }
-		public string TypeGuid { get; set; }
+		public Guid TypeGuid { get; set; }
 		public IList<ProjectSection> ProjectSections {get; set;}
 		
 		/// <summary>
@@ -53,7 +53,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				throw new ArgumentNullException("fileName");
 			if (projectName == null)
 				throw new ArgumentNullException("projectName");
-			this.ParentSolution = parentSolution;
+			this.Solution = parentSolution;
 			this.FileName = fileName;
 			this.ProjectName = projectName;
 			this.InitializeTypeSystem = true;

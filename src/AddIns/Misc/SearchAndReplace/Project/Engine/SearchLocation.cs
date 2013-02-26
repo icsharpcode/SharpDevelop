@@ -72,8 +72,8 @@ namespace SearchAndReplace
 				case SearchTarget.WholeSolution:
 					if (ProjectService.OpenSolution == null)
 						break;
-					foreach (var item in ProjectService.OpenSolution.SolutionFolderContainers.Select(f => f.SolutionItems).SelectMany(si => si.Items))
-						files.Add(new FileName(Path.Combine(ProjectService.OpenSolution.Directory, item.Location)));
+					foreach (var item in ProjectService.OpenSolution.FileItems)
+						files.Add(item.FileName);
 					foreach (var item in ProjectService.OpenSolution.Projects.SelectMany(p => p.Items).OfType<FileProjectItem>())
 						files.Add(new FileName(item.FileName));
 					break;

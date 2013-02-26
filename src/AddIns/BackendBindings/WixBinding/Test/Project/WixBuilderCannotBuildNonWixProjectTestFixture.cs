@@ -25,16 +25,16 @@ namespace WixBinding.Tests.Project
 		public void SetUpFixture()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.InitializeForUnitTests();
+			MessageLoopHelper.RegisterStubService();
 			wixNodeBuilder = new WixProjectNodeBuilder();
 			project = new MSBuildBasedProject(
 				new ProjectCreateInformation {
 					OutputProjectFileName = new FileName(@"C:\Projects\Test\test.csproj"),
-					Solution = new Solution(new MockProjectChangeWatcher()),
+					Solution = MockSolution.Create(),
 					ProjectName = "test"
 				}
 			);
-			project.IdGuid = "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF";
+			project.IdGuid = Guid.Parse("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
 		}
 		
 		[Test]

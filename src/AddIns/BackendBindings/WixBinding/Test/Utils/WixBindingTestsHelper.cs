@@ -11,6 +11,8 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
+using Microsoft.Build.Evaluation;
+using Rhino.Mocks;
 
 namespace WixBinding.Tests.Utils
 {
@@ -44,7 +46,8 @@ namespace WixBinding.Tests.Utils
 			
 			// create the project.
 			ProjectCreateInformation info = new ProjectCreateInformation();
-			info.Solution = new Solution(new MockProjectChangeWatcher());
+			info.Solution = MockRepository.GenerateStub<ISolution>();
+			info.Solution.Stub(s => s.MSBuildProjectCollection).Return(new ProjectCollection());
 			info.ProjectName = "Test";
 			info.OutputProjectFileName = new FileName(@"C:\Projects\Test\Test.wixproj");
 

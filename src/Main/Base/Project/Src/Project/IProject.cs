@@ -29,6 +29,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		: IBuildable, ISolutionItem, IDisposable, IMementoCapable, IConfigurable
 	{
 		/// <summary>
+		/// Gets the object used for thread-safe synchronization.
+		/// Thread-safe members lock on this object, but if you manipulate underlying structures
+		/// (such as the MSBuild project for MSBuildBasedProjects) directly, you will have to lock on this object.
+		/// </summary>
+		object SyncRoot {
+			get;
+		}
+		
+		/// <summary>
 		/// Gets the list of items in the project. This member is thread-safe.
 		/// The returned collection is guaranteed not to change - adding new items or removing existing items
 		/// will create a new collection.
@@ -80,8 +89,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Only the getter is thread-safe.
 		/// </summary>
 		/// <remarks>
-		/// Name already exists in ISolutionFolder, it's repeated here to prevent
-		/// the ambiguity with IBuildable.Name.
+		/// Name already exists in IBuildable; we're adding the setter here.
 		/// </remarks>
 		new string Name {
 			get;
@@ -95,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// 
 		/// This member is thread-safe.
 		/// </summary>
-		string Directory {
+		DirectoryName Directory {
 			get;
 		}
 		
@@ -303,6 +311,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Never returns null, but may return a permanently empty collection if this project does not support such models.
 		/// </summary>
 		ITypeDefinitionModelCollection TypeDefinitionModels { get; }
+		
+		/// <summary>
+		/// Gets/Sets the primary type GUID of the project.
+		/// </summary>
+		Guid TypeGuid { get; set; }
 	}
 	
 	/// <summary>

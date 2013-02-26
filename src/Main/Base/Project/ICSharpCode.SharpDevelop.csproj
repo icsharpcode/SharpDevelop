@@ -240,6 +240,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Project\Solution\ProjectSection.cs" />
+    <Compile Include="Src\Project\Solution\Project_TypeGuids.cs" />
     <Compile Include="Src\Project\Solution\SolutionItem.cs" />
     <Compile Include="Util\AtomicBoolean.cs" />
     <Compile Include="Util\ComparerExtensions.cs" />

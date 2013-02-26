@@ -20,7 +20,7 @@ namespace WixBinding.Tests.PackageFiles
 		public void Init()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.InitializeForUnitTests();
+			MessageLoopHelper.RegisterStubService();
 			workbench = new MockWorkbench();
 			project = WixBindingTestsHelper.CreateEmptyWixProject();
 			packageFilesView = new PackageFilesView(project, workbench);

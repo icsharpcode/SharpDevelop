@@ -5,11 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 using NUnit.Framework;
+using Rhino.Mocks;
 using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests
@@ -25,8 +27,9 @@ namespace PackageManagement.Tests
 		
 		void CreateSolution(string fileName)
 		{
-			solution = new Solution(new MockProjectChangeWatcher());
-			solution.FileName = fileName;
+			solution = MockRepository.GenerateStrictMock<ISolution>();
+			solution.Stub(s => s.FileName).Return(FileName.Create(fileName));
+			solution.Stub(s => s.Directory).Return(DirectoryName.Create(System.IO.Path.GetDirectoryName(fileName)));
 		}
 		
 		void CreateFakeRepositoryFactory()
@@ -54,8 +57,7 @@ namespace PackageManagement.Tests
 		
 		void CreateRepository()
 		{
-			solution = new Solution(new MockProjectChangeWatcher());
-			solution.FileName = @"d:\projects\test\myproject\myproject.sln";
+			CreateSolution(@"d:\projects\test\myproject\myproject.sln");
 			CreateRepository(solution);
 		}
 		

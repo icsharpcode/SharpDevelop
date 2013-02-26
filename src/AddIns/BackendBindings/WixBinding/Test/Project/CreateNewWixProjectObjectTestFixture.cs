@@ -10,7 +10,9 @@ using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
 using Microsoft.Build.Construction;
+using Microsoft.Build.Evaluation;
 using NUnit.Framework;
+using Rhino.Mocks;
 using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Project
@@ -28,11 +30,11 @@ namespace WixBinding.Tests.Project
 		public void SetUpFixture()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.InitializeForUnitTests();
+			MessageLoopHelper.RegisterStubService();
 			WixBindingTestsHelper.InitMSBuildEngine();
 			
 			info = new ProjectCreateInformation();
-			info.Solution = new Solution(new MockProjectChangeWatcher());
+			info.Solution = MockSolution.Create();
 			info.ProjectName = "Test";
 			info.OutputProjectFileName = new FileName(@"C:\Projects\Test\Test.wixproj");
 			info.RootNamespace = "Test";

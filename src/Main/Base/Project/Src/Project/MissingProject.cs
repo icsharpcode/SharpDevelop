@@ -8,11 +8,10 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public class MissingProject : AbstractProject
 	{
-		public MissingProject(FileName fileName, string title)
+		public MissingProject(ISolution parentSolution, FileName fileName, string title) : base(parentSolution)
 		{
 			Name     = title;
 			FileName = fileName;
-			TypeGuid = "{00000000-0000-0000-0000-000000000000}";
 		}
 		
 		public override bool IsReadOnly {

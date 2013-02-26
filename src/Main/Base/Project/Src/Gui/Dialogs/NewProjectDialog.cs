@@ -358,9 +358,9 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				
 				NewProjectLocation = cinfo.createdProjects.Count > 0 ? cinfo.createdProjects[0].FileName : "";
 				if (createNewSolution) {
-					ProjectService.LoadSolution(NewSolutionLocation);
+					SD.ProjectService.OpenSolutionOrProject(FileName.Create(NewSolutionLocation));
 				} else {
-					AddExistingProjectToSolution.AddProject(SolutionFolderNode, FileName.Create(NewProjectLocation));
+					SolutionFolderNode.Folder.AddExistingProject(FileName.Create(NewProjectLocation));
 					ProjectService.SaveSolution();
 				}
 				item.Template.RunOpenActions(cinfo);

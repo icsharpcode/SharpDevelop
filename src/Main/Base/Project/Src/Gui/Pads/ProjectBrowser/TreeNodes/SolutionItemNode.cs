@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
-
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -12,21 +12,21 @@ namespace ICSharpCode.SharpDevelop.Project
 	public class SolutionItemNode : CustomFolderNode
 	{
 		ISolution     solution;
-		ISolutionItem item;
+		ISolutionFileItem item;
 		
-		public ISolutionItem SolutionItem {
+		public ISolutionFileItem SolutionItem {
 			get {
 				return item;
 			}
 		}
 		
-		public string FileName {
+		public FileName FileName {
 			get {
-				return Path.Combine(solution.Directory, item.Location);
+				return item.FileName;
 			}
 		}
 		
-		public SolutionItemNode(ISolutionItem item)
+		public SolutionItemNode(ISolutionFileItem item)
 		{
 			sortOrder = 2;
 			canLabelEdit = true;
@@ -71,8 +71,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Delete()
 		{
-			ISolutionFolderNode folderNode = Parent as ISolutionFolderNode;
-			folderNode.Container.SolutionItems.Items.Remove(item);
+			item.ParentFolder.Items.Remove(item);
 			base.Remove();
 		}
 		

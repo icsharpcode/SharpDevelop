@@ -28,7 +28,7 @@ namespace ICSharpCode.CppBinding.Project
 		
 		private static void SpecifyRuntimeLibrary(MSBuildBasedProject project, string configuration, string runtime)
 		{
-			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(project, configuration, null);
+			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(project, new ConfigurationAndPlatform(configuration, null));
 			group.SetElementMetadata("ClCompile", "RuntimeLibrary", runtime);
 		}
 	}

@@ -37,12 +37,12 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		static IDebugger GetCompatibleDebugger()
 		{
 			GetDescriptors();
-			IProject project = null;
-			if (ProjectService.OpenSolution != null) {
-				project = ProjectService.OpenSolution.StartupProject;
-			}
+//			IProject project = null;
+//			if (ProjectService.OpenSolution != null) {
+//				project = ProjectService.OpenSolution.StartupProject;
+//			}
 			foreach (DebuggerDescriptor d in debuggers) {
-				if (d.Debugger != null && d.Debugger.CanDebug(project)) {
+				if (d.Debugger != null /*&& d.Debugger.CanDebug(project)*/) {
 					return d.Debugger;
 				}
 			}

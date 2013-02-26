@@ -40,16 +40,14 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			{
 				// Create sub projects
 				foreach (SolutionFolderDescriptor folderDescriptor in solutionFoldersDescriptors) {
-					SolutionFolder folder = solution.CreateFolder(folderDescriptor.name);
-					parentFolder.AddFolder(folder);
+					ISolutionFolder folder = parentFolder.CreateFolder(folderDescriptor.name);
 					folderDescriptor.AddContents(solution, projectCreateInformation, defaultLanguage, folder);
 				}
 				foreach (ProjectDescriptor projectDescriptor in projectDescriptors) {
 					IProject newProject = projectDescriptor.CreateProject(projectCreateInformation, defaultLanguage);
 					if (newProject == null)
 						return false;
-					newProject.Location = FileUtility.GetRelativePath(projectCreateInformation.SolutionPath, newProject.FileName);
-					parentFolder.AddFolder(newProject);
+					parentFolder.Items.Add(newProject);
 				}
 				return true;
 			}
@@ -110,10 +108,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			
 			string solutionLocation = Path.Combine(projectCreateInformation.SolutionPath, newSolutionName + ".sln");
 			
-			ISolution newSolution = new Solution(new ProjectChangeWatcher(solutionLocation));
+			ISolution newSolution = SD.ProjectService.CreateEmptySolutionFile(FileName.Create(solutionLocation));
 			projectCreateInformation.Solution = newSolution;
-			
-			newSolution.Name = newSolutionName;
 			
 			if (!mainFolder.AddContents(newSolution, projectCreateInformation, defaultLanguage, newSolution)) {
 				newSolution.Dispose();
@@ -126,10 +122,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				string question = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Internal.Templates.CombineDescriptor.OverwriteProjectQuestion}",
 				                                     new StringTagPair("combineLocation", solutionLocation));
 				if (MessageService.AskQuestion(question)) {
-					newSolution.Save(solutionLocation);
+					newSolution.Save();
 				}
 			} else {
-				newSolution.Save(solutionLocation);
+				newSolution.Save();
 			}
 			ProjectService.OnSolutionCreated(new SolutionEventArgs(newSolution));
 			newSolution.Dispose();

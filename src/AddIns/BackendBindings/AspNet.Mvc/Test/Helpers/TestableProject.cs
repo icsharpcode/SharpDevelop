@@ -6,6 +6,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
+using Rhino.Mocks;
 using Dom = ICSharpCode.SharpDevelop.Dom;
 
 namespace AspNet.Mvc.Tests.Helpers
@@ -28,7 +29,7 @@ namespace AspNet.Mvc.Tests.Helpers
 		public static TestableProject CreateProject(string fileName, string projectName)
 		{
 			var createInfo = new ProjectCreateInformation();
-			createInfo.Solution = new Solution(null);
+			createInfo.Solution = FakeSolution.Create();
 			createInfo.ProjectName = projectName;
 			createInfo.OutputProjectFileName = new FileName(fileName);
 			return new TestableProject(createInfo);

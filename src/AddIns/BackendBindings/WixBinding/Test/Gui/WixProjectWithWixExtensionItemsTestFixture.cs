@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
@@ -27,7 +28,8 @@ namespace WixBinding.Tests.Gui
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MessageLoopHelper.InitializeForUnitTests();
+			SD.InitializeForUnitTests();
+			MessageLoopHelper.RegisterStubService();
 			wixProject = WixBindingTestsHelper.CreateEmptyWixProject();
 			
 			// Add wix Extension item.

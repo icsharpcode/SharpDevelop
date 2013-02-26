@@ -31,21 +31,14 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		// Member documentation: see IProject members.
 		
-		#region static methods - DO NOT BELONG HERE; PLEASE MOVE
-		public static string GetConfigurationNameFromKey(string key)
-		{
-			int pos = key.IndexOf('|');
-			if (pos < 0)
-				return key;
-			else
-				return key.Substring(0, pos);
-		}
+		readonly ISolution parentSolution;
 		
-		public static string GetPlatformNameFromKey(string key)
+		protected AbstractProject(ISolution parentSolution)
 		{
-			return key.Substring(key.IndexOf('|') + 1);
+			if (parentSolution == null)
+				throw new ArgumentNullException("parentSolution");
+			this.parentSolution = parentSolution;
 		}
-		#endregion
 		
 		#region IDisposable implementation
 		bool isDisposed;
@@ -89,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#region Filename / Directory
 		volatile FileName fileName;
-		string cachedDirectoryName;
+		DirectoryName cachedDirectoryName;
 		protected IProjectChangeWatcher watcher;
 		
 		/// <summary>
@@ -154,15 +147,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// This member is thread-safe.
 		/// </summary>
 		[Browsable(false)]
-		public string Directory {
+		public DirectoryName Directory {
 			get {
 				lock (SyncRoot) {
 					if (cachedDirectoryName == null) {
-						try {
-							cachedDirectoryName = Path.GetDirectoryName(this.FileName);
-						} catch (Exception) {
-							cachedDirectoryName = "";
-						}
+						cachedDirectoryName = this.FileName.GetParentDirectory();
 					}
 					return cachedDirectoryName;
 				}
@@ -211,17 +200,43 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		sealed class ReadOnlyConfigurationOrPlatformNameCollection : ReadOnlyModelCollection<string>, IConfigurationOrPlatformNameCollection
+		{
+			public ReadOnlyConfigurationOrPlatformNameCollection(IEnumerable<string> items)
+				: base(items)
+			{
+			}
+			
+			public string ValidateName(string name)
+			{
+				return Contains(name) ? name : null;
+			}
+			
+			public void Add(string newName, string copyFrom)
+			{
+				throw new NotSupportedException();
+			}
+			
+			public void Remove(string name)
+			{
+				throw new NotSupportedException();
+			}
+			
+			public void Rename(string oldName, string newName)
+			{
+				throw new NotSupportedException();
+			}
+		}
+		
 		public virtual IConfigurationOrPlatformNameCollection ConfigurationNames {
 			get {
-				throw new NotImplementedException();
-				//return new string[] { "Debug", "Release" };
+				return new ReadOnlyConfigurationOrPlatformNameCollection(new[] { "Debug", "Release" });
 			}
 		}
 		
 		public virtual IConfigurationOrPlatformNameCollection PlatformNames {
 			get {
-				throw new NotImplementedException();
-				//return new string[] { "AnyCPU" };
+				return new ReadOnlyConfigurationOrPlatformNameCollection(new[] { "AnyCPU" });
 			}
 		}
 		
@@ -499,9 +514,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				foreach (ProjectSection section in this.ProjectSections) {
 					if (section.Name == "ProjectDependencies") {
 						foreach (SolutionItem item in section.Items) {
-							foreach (IProject p in ParentSolution.Projects) {
-								if (p.IdGuid == item.Name) {
-									result.Add(p);
+							Guid guid;
+							if (Guid.TryParse(item.Name, out guid)) {
+								foreach (IProject p in ParentSolution.Projects) {
+									if (p.IdGuid == guid) {
+										result.Add(p);
+									}
 								}
 							}
 						}
@@ -515,25 +533,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (options == null)
 				throw new ArgumentNullException("options");
-			string solutionConfiguration = options.SolutionConfiguration ?? ParentSolution.Preferences.ActiveConfiguration;
-			string solutionPlatform = options.SolutionPlatform ?? ParentSolution.Preferences.ActivePlatform;
+			string solutionConfiguration = options.SolutionConfiguration ?? ParentSolution.ActiveConfiguration.Configuration;
+			string solutionPlatform = options.SolutionPlatform ?? ParentSolution.ActiveConfiguration.Platform;
 			
 			// start of default implementation
-			var configMatchings = this.ParentSolution.GetActiveConfigurationsAndPlatformsForProjects(solutionConfiguration, solutionPlatform);
+			var projectConfig = this.ConfigurationMapping.GetProjectConfiguration(new ConfigurationAndPlatform(solutionConfiguration, solutionPlatform));
+			
 			ProjectBuildOptions projectOptions = new ProjectBuildOptions(isRootBuildable ? options.ProjectTarget : options.TargetForDependencies);
 			projectOptions.BuildOutputVerbosity = options.BuildOutputVerbosity;
-			// find the project configuration
-			foreach (var matching in configMatchings) {
-				if (matching.Project == this) {
-					projectOptions.Configuration = matching.Configuration;
-					projectOptions.Platform = matching.Platform;
-				}
-			}
-			// fall back to solution config if we don't find any entries for the project
-			if (string.IsNullOrEmpty(projectOptions.Configuration))
-				projectOptions.Configuration = solutionConfiguration;
-			if (string.IsNullOrEmpty(projectOptions.Platform))
-				projectOptions.Platform = solutionPlatform;
+			projectOptions.Configuration = projectConfig.Configuration;
+			projectOptions.Platform = projectConfig.Platform;
 			
 			// copy global properties to project options
 			foreach (var pair in options.GlobalAdditionalProperties)
@@ -652,12 +661,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual bool HasProjectType(Guid projectTypeGuid)
 		{
-			Guid myGuid;
-			if (Guid.TryParse(this.TypeGuid, out myGuid)) {
-				return myGuid == projectTypeGuid;
-			} else {
-				return false;
-			}
+			return projectTypeGuid == this.TypeGuid;
 		}
 		
 		[Browsable(false)]
@@ -668,53 +672,26 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[Browsable(false)]
-		public virtual string TypeGuid {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
+		public virtual Guid TypeGuid { get; set; }
 		
 		[Browsable(false)]
-		public virtual string IdGuid {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
+		public virtual Guid IdGuid { get; set; }
 		
-		public string Name {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
+		[Browsable(false)]
+		public string Name { get; set; }
 		
-		public ISolutionFolder ParentFolder {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
+		[Browsable(false)]
+		public ISolutionFolder ParentFolder { get; set; }
 		
+		[Browsable(false)]
 		public ISolution ParentSolution {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return parentSolution; }
 		}
+		
+		readonly object syncRoot = new object();
 		
 		public object SyncRoot {
-			get { 
-				throw new NotImplementedException();
-			}
+			get { return syncRoot; }
 		}
 	}
 }

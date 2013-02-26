@@ -60,7 +60,6 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			WorkbenchSingleton.OnWorkbenchCreated();
 			
 			// initialize workbench-dependent services:
-			Project.ProjectService.InitializeService();
 			NavigationService.InitializeService();
 			
 			workbench.ActiveContentChanged += delegate {
@@ -92,11 +91,10 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				LoggingService.Info("Open file " + file);
 				didLoadSolutionOrFile = true;
 				try {
-					string fullFileName = Path.GetFullPath(file);
+					var fullFileName = FileName.Create(Path.GetFullPath(file));
 					
-					IProjectLoader loader = ProjectService.GetProjectLoader(fullFileName);
-					if (loader != null) {
-						loader.Load(fullFileName);
+					if (SD.ProjectService.IsProjectOrSolutionFile(fullFileName)) {
+						SD.ProjectService.OpenSolutionOrProject(fullFileName);
 					} else {
 						SharpDevelop.FileService.OpenFile(fullFileName);
 					}

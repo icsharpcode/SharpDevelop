@@ -241,7 +241,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[Browsable(false)]
-		public override string TypeGuid {
+		public override Guid TypeGuid {
 			get {
 				return ProjectBindingService.GetCodonPerLanguageName(Language).Guid;
 			}
@@ -282,7 +282,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public virtual bool UpgradeDesired {
 			get {
-				return MinimumSolutionVersion < ISolution.SolutionVersionVS2010;
+				return MinimumSolutionVersion < SolutionFormatVersion.VS2010;
 			}
 		}
 		

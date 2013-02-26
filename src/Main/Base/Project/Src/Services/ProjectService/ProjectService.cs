@@ -18,13 +18,10 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public static class ProjectService
 	{
-		volatile static ISolution openSolution;
-		volatile static IProject currentProject;
-		
 		public static ISolution OpenSolution {
 			[System.Diagnostics.DebuggerStepThrough]
 			get {
-				return openSolution;
+				return SD.ProjectService.OpenSolution;
 			}
 		}
 		
@@ -36,16 +33,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static IProject CurrentProject {
 			[System.Diagnostics.DebuggerStepThrough]
 			get {
-				return currentProject;
+				return SD.ProjectService.CurrentProject;
 			}
 			set {
-				SD.MainThread.VerifyAccess();
-				if (currentProject != value) {
-					LoggingService.Info("CurrentProject changed to " + (value == null ? "null" : value.Name));
-					currentProject = value;
-					OnCurrentProjectChanged(new ProjectEventArgs(currentProject));
-					CommandManager.InvalidateRequerySuggested();
-				}
+				SD.ProjectService.CurrentProject = value;
 			}
 		}
 		
@@ -54,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static IProject GetProject(FileName projectFilename)
 		{
-			ISolution sln = openSolution;
+			ISolution sln = SD.ProjectService.OpenSolution;
 			if (sln == null)
 				return null;
 			foreach (IProject project in sln.Projects) {
@@ -65,38 +56,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			return null;
 		}
 		
-		static bool initialized;
-		
-		public static void InitializeService()
-		{
-			if (!initialized) {
-				initialized = true;
-				SD.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
-				FileService.FileRenamed += FileServiceFileRenamed;
-				FileService.FileRemoved += FileServiceFileRemoved;
-				
-				var applicationStateInfoService = SD.GetService<ApplicationStateInfoService>();
-				if (applicationStateInfoService != null) {
-					applicationStateInfoService.RegisterStateGetter("ProjectService.OpenSolution", delegate { return OpenSolution; });
-					applicationStateInfoService.RegisterStateGetter("ProjectService.CurrentProject", delegate { return CurrentProject; });
-				}
-			}
-		}
-
 		/// <summary>
 		/// Returns if a project loader exists for the given file. This method works even in early
 		/// startup (before service initialization)
 		/// </summary>
+		[Obsolete("Use SD.ProjectService.IsProjectOrSolutionFile instead")]
 		public static bool HasProjectLoader(string fileName)
 		{
-			AddInTreeNode addinTreeNode = AddInTree.GetTreeNode("/SharpDevelop/Workbench/Combine/FileFilter");
-			foreach (Codon codon in addinTreeNode.Codons) {
-				string pattern = codon.Properties.Get("extensions", "");
-				if (FileUtility.MatchesPattern(fileName, pattern) && codon.Properties.Contains("class")) {
-					return true;
-				}
-			}
-			return false;
+			return SD.ProjectService.IsProjectOrSolutionFile(FileName.Create(fileName));
 		}
 		
 		/*
@@ -115,12 +82,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void LoadSolutionOrProject(string fileName)
 		{
-			IProjectLoader loader = GetProjectLoader(fileName);
+			SD.ProjectService.OpenSolutionOrProject(FileName.Create(fileName));
+			/*IProjectLoader loader = GetProjectLoader(fileName);
 			if (loader != null)	{
 				loader.Load(fileName);
 			} else {
 				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new StringTagPair("FileName", fileName)));
-			}
+			}*/
 		}
 		
 		static void FileServiceFileRenamed(object sender, FileRenameEventArgs e)
@@ -130,23 +98,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			string oldName = e.SourceFile;
 			string newName = e.TargetFile;
-			long x = 0;
-			foreach (ISolutionFolder container in OpenSolution.SolutionFolderContainers) {
-				foreach (SolutionItem item in container.SolutionItems.Items) {
-					string oldFullName  = Path.Combine(OpenSolution.Directory, item.Name);
-					++x;
-					if (FileUtility.IsBaseDirectory(oldName, oldFullName)) {
-						string newFullName = FileUtility.RenameBaseDirectory(oldFullName, oldName, newName);
-						item.Name = item.Location = FileUtility.GetRelativePath(OpenSolution.Directory, newFullName);
-					}
+			foreach (ISolutionFileItem fileItem in OpenSolution.FileItems) {
+				if (FileUtility.IsBaseDirectory(oldName, fileItem.FileName)) {
+					string newFullName = FileUtility.RenameBaseDirectory(fileItem.FileName, oldName, newName);
+					fileItem.FileName = FileName.Create(newFullName);
 				}
 			}
 			
-			long y = 0;
 			foreach (IProject project in OpenSolution.Projects) {
 				if (FileUtility.IsBaseDirectory(project.Directory, oldName)) {
 					foreach (ProjectItem item in project.Items) {
-						++y;
 						if (FileUtility.IsBaseDirectory(oldName, item.FileName)) {
 							OnProjectItemRemoved(new ProjectItemEventArgs(project, item));
 							item.FileName = FileUtility.RenameBaseDirectory(item.FileName, oldName, newName);
@@ -164,14 +125,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			string fileName = e.FileName;
 			
-			foreach (ISolutionFolder container in OpenSolution.SolutionFolderContainers) {
-				for (int i = 0; i < container.SolutionItems.Items.Count;) {
-					SolutionItem item = container.SolutionItems.Items[i];
-					if (FileUtility.IsBaseDirectory(fileName, Path.Combine(OpenSolution.Directory, item.Name))) {
-						container.SolutionItems.Items.RemoveAt(i);
-					} else {
-						++i;
-					}
+			foreach (ISolutionFileItem fileItem in OpenSolution.FileItems.ToArray()) {
+				if (FileUtility.IsBaseDirectory(fileName, fileItem.FileName)) {
+					fileItem.ParentFolder.Items.Remove(fileItem);
 				}
 			}
 			
@@ -196,23 +152,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (OpenSolution == null || viewContent == null) {
 				return;
 			}
-			string fileName = viewContent.PrimaryFileName;
+			FileName fileName = viewContent.PrimaryFileName;
 			if (fileName == null) {
 				return;
 			}
-			CurrentProject = OpenSolution.FindProjectContainingFile(fileName) ?? CurrentProject;
-		}
-		
-		public static void AddProject(ISolutionFolderNode solutionFolderNode, IProject newProject)
-		{
-			if (solutionFolderNode.Solution.SolutionFolders.Any(
-				folder => string.Equals(folder.IdGuid, newProject.IdGuid, StringComparison.OrdinalIgnoreCase)))
-			{
-				LoggingService.Warn("ProjectService.AddProject: Duplicate IdGuid detected");
-				newProject.IdGuid = Guid.NewGuid().ToString().ToUpperInvariant();
-			}
-			solutionFolderNode.Container.AddFolder(newProject);
-			OnProjectAdded(new ProjectEventArgs(newProject));
+			CurrentProject = SD.ProjectService.FindProjectContainingFile(fileName) ?? CurrentProject;
 		}
 		
 		/// <summary>
@@ -247,6 +191,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		/*
 		static void BeforeLoadSolution()
 		{
 			if (openSolution != null && !IsClosingCanceled()) {
@@ -255,6 +200,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				CloseSolution();
 			}
 		}
+		*/
 		
 		[Obsolete("Use SD.ProjectService.OpenSolutionOrProject() instead")]
 		public static void LoadSolution(string fileName)
@@ -344,7 +290,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 		}
-		*/
+		 */
 		
 		/// <summary>
 		/// Load a single project as solution.
@@ -429,9 +375,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void SaveSolution()
 		{
-			if (openSolution != null) {
-				openSolution.Save();
-			/*	foreach (IProject project in openSolution.Projects) {
+			if (SD.ProjectService.OpenSolution != null) {
+				SD.ProjectService.OpenSolution.Save();
+				/*	foreach (IProject project in openSolution.Projects) {
 					project.Save();
 				}
 				OnSolutionSaved(new SolutionEventArgs(openSolution));*/
@@ -485,7 +431,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void SaveSolutionPreferences()
 		{
-			if (openSolution == null)
+			throw new NotImplementedException();
+			/*if (openSolution == null)
 				return;
 			string directory = Path.Combine(PropertyService.ConfigDirectory, "preferences");
 			if (!Directory.Exists(directory)) {
@@ -517,7 +464,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					FileUtility.ObservedSave(new NamedFileOperationDelegate(memento.Save), fullFileName, FileErrorPolicy.Inform);
 					#endif
 				}
-			}
+			}*/
 		}
 		
 		/// <summary>
@@ -528,7 +475,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		internal static bool IsClosingCanceled()
 		{
 			// run onbefore closing
-			var beforeClosingArgs = new SolutionCancelEventArgs(openSolution);
+			var beforeClosingArgs = new SolutionCancelEventArgs(OpenSolution);
 			OnBeforeSolutionClosing(beforeClosingArgs);
 			
 			return beforeClosingArgs.Cancel;
@@ -543,7 +490,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		internal static void CloseSolution()
 		{
-			// If a build is running, cancel it.
+			throw new NotImplementedException();
+			/*// If a build is running, cancel it.
 			// If we would let a build run but unload the MSBuild projects, the next project.StartBuild call
 			// could cause an exception.
 			SD.BuildService.CancelBuild();
@@ -557,14 +505,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				OnSolutionClosed(EventArgs.Empty);
 				CommandManager.InvalidateRequerySuggested();
-			}
-		}
-		
-		static void OnCurrentProjectChanged(ProjectEventArgs e)
-		{
-			if (CurrentProjectChanged != null) {
-				CurrentProjectChanged(null, e);
-			}
+			}*/
 		}
 		
 		static void OnSolutionClosed(EventArgs e)
@@ -623,6 +564,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		/*
 		public static void RemoveSolutionFolder(string guid)
 		{
 			if (OpenSolution == null) {
@@ -658,6 +600,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				SolutionFolderRemoved(null, e);
 			}
 		}
+		 */
 		
 		static void OnProjectItemAdded(ProjectItemEventArgs e)
 		{
@@ -752,7 +695,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static event EventHandler<SolutionEventArgs> SolutionPreferencesSaving;
 		
-		public static event EventHandler<ProjectEventArgs> CurrentProjectChanged;
+		public static event EventHandler<ProjectEventArgs> CurrentProjectChanged {
+			add { SD.ProjectService.CurrentProjectChanged += value; }
+			remove { SD.ProjectService.CurrentProjectChanged -= value; }
+		}
 		
 		public static event EventHandler<ProjectItemEventArgs> ProjectItemAdded;
 		public static event EventHandler<ProjectItemEventArgs> ProjectItemRemoved;

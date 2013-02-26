@@ -99,6 +99,7 @@
     <Compile Include="Src\ExtensionMethods.cs" />
     <Compile Include="Src\Services\AnalyticsMonitorService.cs" />
     <Compile Include="Src\Services\ApplicationStateInfoService.cs" />
+    <Compile Include="Src\Services\FileUtility\DirectoryName.cs" />
     <Compile Include="Src\Services\PropertyService\IPropertyService.cs" />
     <Compile Include="Src\Services\PropertyService\PropertyService.cs" />
     <Compile Include="Src\Services\PropertyService\PropertyServiceImpl.cs" />

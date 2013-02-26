@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.WixBinding;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
@@ -25,7 +26,8 @@ namespace WixBinding.Tests.Document
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MessageLoopHelper.InitializeForUnitTests();
+			SD.InitializeForUnitTests();
+			MessageLoopHelper.RegisterStubService();
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
 			projectDirectory = p.Directory;
 			p.Name = "MySetup";

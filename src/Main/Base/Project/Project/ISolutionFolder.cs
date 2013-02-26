@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -33,8 +34,37 @@ namespace ICSharpCode.SharpDevelop.Project
 		 */
 		
 		/// <summary>
+		/// Gets whether this solution folder is the ancestor of the specified solution item.
+		/// </summary>
+		bool IsAncestorOf(ISolutionItem item);
+		
+		/// <summary>
 		/// Gets the list of direct child items in this solution folder.
 		/// </summary>
 		IMutableModelCollection<ISolutionItem> Items { get; }
+		
+		/// <summary>
+		/// Loads an existing project from disk and adds it to this solution.
+		/// </summary>
+		/// <param name="fileName">Path to the project file</param>
+		IProject AddExistingProject(FileName fileName);
+		
+		/* 		if (solutionFolderNode.Solution.SolutionFolders.Any(
+				folder => string.Equals(folder.IdGuid, newProject.IdGuid, StringComparison.OrdinalIgnoreCase)))
+			{
+				LoggingService.Warn("ProjectService.AddProject: Duplicate IdGuid detected");
+				newProject.IdGuid = Guid.NewGuid();
+			}
+			*/
+		
+		/// <summary>
+		/// Adds a link to a file as a solution item.
+		/// </summary>
+		ISolutionFileItem AddFile(FileName fileName);
+		
+		/// <summary>
+		/// Creates a new solution folder with the specified name.
+		/// </summary>
+		ISolutionFolder CreateFolder(string name);
 	}
 }

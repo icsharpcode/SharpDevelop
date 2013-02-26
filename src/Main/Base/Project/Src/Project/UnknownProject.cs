@@ -27,8 +27,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			MessageService.ShowError("Error loading " + this.FileName + ":\n" + warningText);
 		}
 		
-		public UnknownProject(FileName fileName, string title, string warningText, bool displayWarningToUser)
-			: this(fileName, title)
+		public UnknownProject(ISolution parentSolution, FileName fileName, string title, string warningText, bool displayWarningToUser)
+			: this(parentSolution, fileName, title)
 		{
 			this.warningText = warningText;
 			if (displayWarningToUser) {
@@ -36,11 +36,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public UnknownProject(FileName fileName, string title)
+		public UnknownProject(ISolution parentSolution, FileName fileName, string title)
+			: base(parentSolution)
 		{
 			Name     = title;
 			FileName = fileName;
-			TypeGuid = "{00000000-0000-0000-0000-000000000000}";
 		}
 		
 		protected override ProjectBehavior GetOrCreateBehavior()

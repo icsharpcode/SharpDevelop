@@ -54,8 +54,7 @@ namespace ICSharpCode.CppBinding.Project
 		
 		protected override void Initialize()
 		{
-			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(base.Project,
-			                                                                  base.Project.ActiveConfiguration, base.Project.ActivePlatform);
+			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(base.Project, base.Project.ActiveConfiguration);
 			
 			this.defineTextBox.Text = GetElementMetaData(group,"PreprocessorDefinitions");
 			
@@ -75,8 +74,7 @@ namespace ICSharpCode.CppBinding.Project
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
-			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(project,
-			                                                                  project.ActiveConfiguration, project.ActivePlatform);
+			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(project, project.ActiveConfiguration);
 			
 			SetElementMetaData(group,"PreprocessorDefinitions",this.defineTextBox.Text);
 			

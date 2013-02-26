@@ -20,7 +20,6 @@
 		<FileFilter id           = "WixProject"
 		            insertbefore = "AllFiles"
 		            name         = "${res:ICSharpCode.WixBinding.WixProjectFilesFilterName} (*.wixproj)"
-		            class        = "ICSharpCode.SharpDevelop.Project.LoadProject"
 		            extensions   = "*.wixproj"/>
 	</Path>
 	

@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Tests.Utils;
@@ -30,9 +31,8 @@ namespace ICSharpCode.SharpDevelop.Tests.Project
 		
 		void CreateSolution(params IProject[] projects)
 		{
-			IProjectChangeWatcher watcher = MockRepository.GenerateStub<IProjectChangeWatcher>();
-			solution = new Solution(watcher);
-			projects.ForEach(p => solution.Folders.Add(p));
+			solution = MockRepository.GenerateStrictMock<ISolution>();
+			solution.Stub(s => s.Projects).Return(new SimpleModelCollection<IProject>(projects));
 		}
 		
 		void ConfigureCustomToolFileNamesForProject(string fileNames)

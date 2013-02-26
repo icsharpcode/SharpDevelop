@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			
 			public TestProject(string languageName)
 				: base(new ProjectCreateInformation {
-				       	Solution = new Solution(new MockProjectChangeWatcher()),
+				       	Solution = MockSolution.Create(),
 				       	ProjectName = "TestProject",
 				       	OutputProjectFileName = FileName.Create("c:\\temp\\TestProject.csproj")
 				       })

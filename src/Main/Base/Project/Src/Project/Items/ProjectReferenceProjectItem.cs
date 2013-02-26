@@ -23,12 +23,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[ReadOnly(true)]
-		public string ProjectGuid {
+		public Guid ProjectGuid {
 			get {
-				return GetEvaluatedMetadata("Project");
+				Guid guid;
+				if (Guid.TryParse(GetEvaluatedMetadata("Project"), out guid))
+					return guid;
+				else
+					return Guid.Empty;
 			}
 			set {
-				SetEvaluatedMetadata("Project", value);
+				SetEvaluatedMetadata("Project", value.ToString("B").ToUpperInvariant());
 			}
 		}
 		

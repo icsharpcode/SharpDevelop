@@ -150,7 +150,6 @@
     <Compile Include="Utils\MockMemberProvider.cs" />
     <Compile Include="Utils\MockMethod.cs" />
     <Compile Include="Utils\MockOpenedFile.cs" />
-    <Compile Include="Utils\MockProject.cs" />
     <Compile Include="Utils\MockProjectContent.cs" />
     <Compile Include="Utils\MockPropertyDescriptor.cs" />
     <Compile Include="Utils\MockResourceReader.cs" />

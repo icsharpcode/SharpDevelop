@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.isInitialized = true;
 		}
 
-		void ProjectServiceCurrentProjectChanged(object sender, ProjectEventArgs e)
+		void ProjectServiceCurrentProjectChanged(object sender, EventArgs e)
 		{
 			if (isInitialized)
 				UpdateItems();

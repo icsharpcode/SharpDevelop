@@ -76,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					fdiag.InitialDirectory = AddNewProjectToSolution.GetInitialDirectorySuggestion(solutionFolderNode.Folder);
 					if (fdiag.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 						foreach (string fileName in fdiag.FileNames) {
-							solutionFolderNode.Solution.AddExistingProject(FileName.Create(fileName), solutionFolderNode.Folder);
+							solutionFolderNode.Folder.AddExistingProject(FileName.Create(fileName));
 						}
 						ProjectService.SaveSolution();
 					}
@@ -115,11 +115,10 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
 			ISolutionFolderNode solutionFolderNode = node as ISolutionFolderNode;
 			if (node != null) {
-				SolutionFolder newSolutionFolder = solutionFolderNode.Solution.CreateFolder(ResourceService.GetString("ProjectComponent.NewFolderString"));
-				solutionFolderNode.Container.AddFolder(newSolutionFolder);
+				ISolutionFolder newSolutionFolder = solutionFolderNode.Folder.CreateFolder(ResourceService.GetString("ProjectComponent.NewFolderString"));
 				solutionFolderNode.Solution.Save();
 				
-				SolutionFolderNode newSolutionFolderNode = new SolutionFolderNode(solutionFolderNode.Solution, newSolutionFolder);
+				SolutionFolderNode newSolutionFolderNode = new SolutionFolderNode(newSolutionFolder);
 				newSolutionFolderNode.InsertSorted(node);
 				ProjectBrowserPad.Instance.StartLabelEdit(newSolutionFolderNode);
 			}

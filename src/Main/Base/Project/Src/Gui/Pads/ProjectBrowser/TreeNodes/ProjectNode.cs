@@ -68,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			Tag = project;
 			
 			if (project.ParentSolution != null) {
-				project.ParentSolution.Preferences.StartupProjectChanged += OnStartupProjectChanged;
+				project.ParentSolution.StartupProjectChanged += OnStartupProjectChanged;
 				OnStartupProjectChanged(null, null);
 			}
 		}
@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			base.Dispose();
 			if (project.ParentSolution != null) {
-				project.ParentSolution.Preferences.StartupProjectChanged -= OnStartupProjectChanged;
+				project.ParentSolution.StartupProjectChanged -= OnStartupProjectChanged;
 			}
 		}
 		
@@ -85,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void OnStartupProjectChanged(object sender, EventArgs e)
 		{
-			bool newIsStartupProject = (this.project == project.ParentSolution.Preferences.StartupProject);
+			bool newIsStartupProject = (this.project == project.ParentSolution.StartupProject);
 			if (newIsStartupProject != isStartupProject) {
 				isStartupProject = newIsStartupProject;
 				drawDefault = !isStartupProject;
@@ -140,8 +140,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Delete()
 		{
-			ProjectService.RemoveSolutionFolder(Project.IdGuid);
-			ProjectService.SaveSolution();
+			project.ParentFolder.Items.Remove(project);
 		}
 		
 		public override bool EnableCopy {

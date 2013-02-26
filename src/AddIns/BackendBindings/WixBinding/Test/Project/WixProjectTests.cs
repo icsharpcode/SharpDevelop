@@ -18,7 +18,7 @@ namespace WixBinding.Tests.Project
 		void CreateProject()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.InitializeForUnitTests();
+			MessageLoopHelper.RegisterStubService();
 			project = WixBindingTestsHelper.CreateEmptyWixProject();
 		}
 		
