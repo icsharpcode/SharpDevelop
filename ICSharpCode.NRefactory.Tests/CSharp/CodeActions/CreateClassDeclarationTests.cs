@@ -391,7 +391,99 @@ class TestClass
 ");
 		}
 
+		/// <summary>
+		/// Bug 10672 - Auto-Fix of Generate Class to fill Generic params does not take in account constraints
+		/// </summary>
+		[Test]
+		public void TestBug10672 ()
+		{
+			Test<CreateClassDeclarationAction> (
+				@"
+namespace TestConsole
+{
+    public interface IBase
+    {
+    }
+    public class Test 
+    {
+        public void Generate<S, T>() where T:IBase, new()
+        {
 
+        }
+    }
+    class MainClass
+    {
+        public static void Main (string[] args)
+        {
+            var testConsole = new Test ();
+            testConsole.Generate<int, $Data> ();
+        }
+    }
+}
+", @"
+public class Data : IBase
+{
+	public Data ()
+	{
+	}
+}
+namespace TestConsole
+{
+    public interface IBase
+    {
+    }
+    public class Test 
+    {
+        public void Generate<S, T>() where T:IBase, new()
+        {
+
+        }
+    }
+    class MainClass
+    {
+        public static void Main (string[] args)
+        {
+            var testConsole = new Test ();
+            testConsole.Generate<int, Data> ();
+        }
+    }
+}
+");
+		}
+		
+		[Test]
+		public void TestStructConstraint ()
+		{
+			Test<CreateClassDeclarationAction> (
+				@"
+public class Test 
+{
+	public void Generate<T> () where T : struct
+	{
+	}
+
+	public void FooBar ()
+	{
+		Generate<$Data> ();
+	}
+}
+", @"
+public struct Data
+{
+}
+public class Test 
+{
+	public void Generate<T> () where T : struct
+	{
+	}
+
+	public void FooBar ()
+	{
+		Generate<Data> ();
+	}
+}
+");
+		}
 
 	}
 }

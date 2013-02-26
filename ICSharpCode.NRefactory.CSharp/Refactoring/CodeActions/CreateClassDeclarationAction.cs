@@ -61,7 +61,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (service != null && !service.IsValidName(resolveResult.Identifier, AffectedEntity.Class)) { 
 				yield break;
 			}
-			ClassType classType = GuessClassType (context, node);
+			ClassType classType = GuessClassTypeByName(context, node);
+			ModifyClassTypeBasedOnTypeGuessing(context, node, ref classType);
+
 			string message;
 			switch (classType) {
 				case ClassType.Struct:
@@ -89,6 +91,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			});
 		}
 
+		static void ModifyClassTypeBasedOnTypeGuessing(RefactoringContext context, AstNode node, ref ClassType classType)
+		{
+			var guessedType = CreateFieldAction.GuessType(context, node);
+			if (guessedType.Kind == TypeKind.TypeParameter) {
+				var tp = (ITypeParameter)guessedType;
+				if (tp.HasValueTypeConstraint)
+					classType = ClassType.Struct;
+				if (tp.HasReferenceTypeConstraint)
+					classType = ClassType.Class;
+			}
+		}
+		
 		static ClassType GuessClassTypeByName(RefactoringContext context, string identifier)
 		{
 			var service = (NamingConventionService)context.GetService (typeof (NamingConventionService));
@@ -102,7 +116,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return ClassType.Class;
 		}
 
-		static ClassType GuessClassType(RefactoringContext context, AstNode node)
+		static ClassType GuessClassTypeByName(RefactoringContext context, AstNode node)
 		{
 			if (node is SimpleType) 
 				return GuessClassTypeByName (context, ((SimpleType)node).Identifier);
@@ -148,8 +162,28 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var entity = simpleType.GetParent<EntityDeclaration>();
 			if (entity != null)
 				result.Modifiers |= entity.Modifiers & Modifiers.Public;
-			
+
+			var guessedType = CreateFieldAction.GuessType (context, simpleType);
+			if (guessedType.Kind == TypeKind.TypeParameter)
+				ImplementConstraints (context, result, (ITypeParameter)guessedType);
 			return result;
+		}
+
+		static void ImplementConstraints(RefactoringContext context, TypeDeclaration result, ITypeParameter tp)
+		{
+			if (tp.HasValueTypeConstraint)
+				result.ClassType = ClassType.Struct;
+			if (tp.HasReferenceTypeConstraint)
+				result.ClassType = ClassType.Class;
+			if (tp.HasDefaultConstructorConstraint)
+				result.AddChild (new ConstructorDeclaration { Modifiers = Modifiers.Public, Body = new BlockStatement () }, Roles.TypeMemberRole);
+			foreach (var baseType in tp.DirectBaseTypes) {
+				if (baseType.Namespace == "System") {
+					if (baseType.Name == "Object" || baseType.Name == "ValueType")
+						continue;
+				}
+				result.BaseTypes.Add (context.CreateShortType (baseType));
+			}
 		}
 
 		static TypeDeclaration CreateClassFromObjectCreation(RefactoringContext context, ObjectCreateExpression createExpression)
