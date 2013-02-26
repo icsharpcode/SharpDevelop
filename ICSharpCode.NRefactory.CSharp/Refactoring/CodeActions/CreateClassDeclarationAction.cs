@@ -61,13 +61,24 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (service != null && !service.IsValidName(resolveResult.Identifier, AffectedEntity.Class)) { 
 				yield break;
 			}
-			ClassType classType = GuessClassType (node);
-
-			yield return new CodeAction(classType == ClassType.Interface ? context.TranslateString("Create interface") : context.TranslateString("Create class"), script => {
+			ClassType classType = GuessClassType (context, node);
+			string message;
+			switch (classType) {
+				case ClassType.Struct:
+					message = context.TranslateString("Create struct");
+					break;
+				case ClassType.Interface:
+					message = context.TranslateString("Create interface");
+					break;
+				default:
+					message = context.TranslateString("Create class");
+					break;
+			}
+			yield return new CodeAction(message, script => {
 				script.CreateNewType(CreateType(context, service, node, classType));
 			});
 
-			if (node.Parent is TypeDeclaration || classType == ClassType.Interface)
+			if (node.Parent is TypeDeclaration || classType != ClassType.Class)
 				yield break;
 			yield return new CodeAction(context.TranslateString("Create nested class"), script => {
 				script.InsertWithCursor(
@@ -78,19 +89,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			});
 		}
 
-		static ClassType GuessClassTypeByName(string identifier)
+		static ClassType GuessClassTypeByName(RefactoringContext context, string identifier)
 		{
-			if (identifier.Length > 0 && identifier[0] == 'I' && char.IsUpper (identifier[1]))
+			var service = (NamingConventionService)context.GetService (typeof (NamingConventionService));
+			if (service == null)
+				return ClassType.Class;
+			if (service.IsValidName (identifier, AffectedEntity.Interface, Modifiers.Public))
 				return ClassType.Interface;
+			if (!service.IsValidName (identifier, AffectedEntity.Class, Modifiers.Public) &&
+			     service.IsValidName (identifier, AffectedEntity.Struct, Modifiers.Public))
+				return ClassType.Struct;
 			return ClassType.Class;
 		}
 
-		static ClassType GuessClassType(AstNode node)
+		static ClassType GuessClassType(RefactoringContext context, AstNode node)
 		{
 			if (node is SimpleType) 
-				return GuessClassTypeByName (((SimpleType)node).Identifier);
+				return GuessClassTypeByName (context, ((SimpleType)node).Identifier);
 			if (node is IdentifierExpression) 
-				return GuessClassTypeByName (((IdentifierExpression)node).Identifier);
+				return GuessClassTypeByName (context, ((IdentifierExpression)node).Identifier);
 			return ClassType.Class;
 		}
 
