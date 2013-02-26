@@ -12,15 +12,11 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public interface ISolutionFolderNode
 	{
-		Solution Solution {
+		ISolution Solution {
 			get;
 		}
 		
 		ISolutionFolder Folder {
-			get;
-		}
-		
-		ISolutionFolderContainer Container {
 			get;
 		}
 		
@@ -29,10 +25,10 @@ namespace ICSharpCode.SharpDevelop.Project
 	
 	public class SolutionFolderNode : CustomFolderNode, ISolutionFolderNode
 	{
-		Solution       solution;
-		SolutionFolder folder;
+		ISolution       solution;
+		ISolutionFolder folder;
 		
-		public override Solution Solution {
+		public override ISolution Solution {
 			get {
 				Debug.Assert(solution != null);
 				return solution;
@@ -41,18 +37,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public ISolutionFolder Folder {
 			get {
-				Debug.Assert(folder != null);
 				return folder;
 			}
 		}
 		
-		public ISolutionFolderContainer Container {
-			get {
-				return folder;
-			}
-		}
-		
-		public SolutionFolderNode(Solution solution, SolutionFolder folder)
+		public SolutionFolderNode(ISolution solution, ISolutionFolder folder)
 		{
 			sortOrder = 0;
 			canLabelEdit = true;
@@ -103,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			// add solution items (=files) from project sections.
 			foreach (SolutionItem item in folder.SolutionItems.Items) {
-				new SolutionItemNode(Solution, item).InsertSorted(this);
+				new SolutionItemNode(ISolution, item).InsertSorted(this);
 			}
 			base.Initialize();
 		}
@@ -140,7 +129,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			SD.Clipboard.SetDataObject(new DataObject(typeof(ISolutionFolder).ToString(), folder.IdGuid));
+			SD.Clipboard.SetDataObject(new DataObject(typeof(ISolutionItem).ToString(), folder.IdGuid));
 		}
 		
 		public static bool DoEnablePaste(ISolutionFolderNode container)
@@ -153,14 +142,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (dataObject == null) {
 				return false;
 			}
-			if (dataObject.GetDataPresent(typeof(ISolutionFolder).ToString())) {
-				string guid = dataObject.GetData(typeof(ISolutionFolder).ToString()).ToString();
-				ISolutionFolder solutionFolder = container.Solution.GetSolutionFolder(guid);
+			if (dataObject.GetDataPresent(typeof(ISolutionItem).ToString())) {
+				string guid = dataObject.GetData(typeof(ISolutionItem).ToString()).ToString();
+				ISolutionItem solutionFolder = container.Solution.GetSolutionFolder(guid);
 				if (solutionFolder == null || solutionFolder == container)
 					return false;
-				if (solutionFolder is ISolutionFolderContainer) {
+				if (solutionFolder is ISolutionFolder) {
 					return solutionFolder.Parent != container
-						&& !((ISolutionFolderContainer)solutionFolder).IsAncestorOf(container.Folder);
+						&& !((ISolutionFolder)solutionFolder).IsAncestorOf(container.Folder);
 				} else {
 					return solutionFolder.Parent != container;
 				}
@@ -178,9 +167,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			ExtTreeNode folderTreeNode = (ExtTreeNode)folderNode;
 			
-			if (dataObject.GetDataPresent(typeof(ISolutionFolder).ToString())) {
-				string guid = dataObject.GetData(typeof(ISolutionFolder).ToString()).ToString();
-				ISolutionFolder solutionFolder = folderNode.Solution.GetSolutionFolder(guid);
+			if (dataObject.GetDataPresent(typeof(ISolutionItem).ToString())) {
+				string guid = dataObject.GetData(typeof(ISolutionItem).ToString()).ToString();
+				ISolutionItem solutionFolder = folderNode.Solution.GetSolutionFolder(guid);
 				if (solutionFolder != null) {
 					folderNode.Container.AddFolder(solutionFolder);
 					ExtTreeView treeView = (ExtTreeView)folderTreeNode.TreeView;
@@ -223,7 +212,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (dataObject.GetDataPresent(typeof(SolutionFolderNode))) {
 				SolutionFolderNode folderNode = (SolutionFolderNode)dataObject.GetData(typeof(SolutionFolderNode));
 				
-				if (folderNode.Folder.Parent != this.folder && !folderNode.Container.IsAncestorOf(Folder)) {
+				if (folderNode.SolutionItem.Parent != this.folder && !folderNode.Folder.IsAncestorOf(SolutionItem)) {
 					return DragDropEffects.Move;
 				}
 			}
@@ -261,7 +250,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				folderNode.Remove();
 				folderNode.InsertSorted(this);
 				folderNode.EnsureVisible();
-				this.folder.AddFolder(folderNode.Folder);
+				this.folder.AddFolder(folderNode.SolutionItem);
 				if (parentNode != null) {
 					parentNode.Refresh();
 				}
@@ -272,7 +261,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				ISolutionFolderNode folderNode = (ISolutionFolderNode)solutionItemNode.Parent;
 				folderNode.Container.SolutionItems.Items.Remove(solutionItemNode.SolutionItem);
-				Container.SolutionItems.Items.Add(solutionItemNode.SolutionItem);
+				Folder.SolutionItems.Items.Add(solutionItemNode.SolutionItem);
 				
 				solutionItemNode.Remove();
 				solutionItemNode.InsertSorted(this);

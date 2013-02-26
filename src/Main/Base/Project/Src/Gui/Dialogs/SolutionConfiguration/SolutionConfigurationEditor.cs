@@ -13,11 +13,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public partial class SolutionConfigurationEditor
 	{
-		Solution solution;
+		ISolution solution;
 		
 		bool inUpdate;
 		int configurationComboBoxEditIndex;
 		int platformComboBoxEditIndex;
+		ConfigurationAndPlatform solutionConfig;
 		
 		public SolutionConfigurationEditor()
 		{
@@ -52,10 +53,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void UpdateAvailableSolutionConfigurationPlatforms()
 		{
-			SetItems(configurationComboBox.Items, solution.GetConfigurationNames());
-			SetItems(platformComboBox.Items, solution.GetPlatformNames());
-			SelectElement(configurationComboBox, solution.Preferences.ActiveConfiguration);
-			SelectElement(platformComboBox, solution.Preferences.ActivePlatform);
+			SetItems(configurationComboBox.Items, solution.ConfigurationNames);
+			SetItems(platformComboBox.Items, solution.PlatformNames);
+			SelectElement(configurationComboBox, solution.ActiveConfiguration.Configuration);
+			SelectElement(platformComboBox, solution.ActiveConfiguration.Platform);
 			
 			string editItemText = EditTag.Instance.ToString();
 			configurationComboBoxEditIndex = configurationComboBox.Items.Add(editItemText);
@@ -99,32 +100,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			inUpdate = true;
 			
-			Dictionary<IProject, Solution.ProjectConfigurationPlatformMatching> matchingDict =
-				new Dictionary<IProject, Solution.ProjectConfigurationPlatformMatching>();
-			foreach (Solution.ProjectConfigurationPlatformMatching matching in
-			         solution.GetActiveConfigurationsAndPlatformsForProjects(configurationComboBox.Text,
-			                                                                 platformComboBox.Text))
-			{
-				matchingDict[matching.Project] = matching;
-			}
+			solutionConfig = new ConfigurationAndPlatform(configurationComboBox.Text, platformComboBox.Text);
 			
 			foreach (DataGridViewRow row in grid.Rows) {
 				IProject p = (IProject)row.Tag;
 				
-				Solution.ProjectConfigurationPlatformMatching matching;
-				if (!matchingDict.TryGetValue(p, out matching)) {
-					matching = new Solution.ProjectConfigurationPlatformMatching(p, p.ActiveConfiguration, p.ActivePlatform, null);
-				}
+				var projectConfig = p.ConfigurationMapping.GetProjectConfiguration(solutionConfig);
+				
 				DataGridViewComboBoxCell c1 = (DataGridViewComboBoxCell)row.Cells[1];
-				c1.Tag = matching;
 				SetItems(c1.Items, p.ConfigurationNames);
-				SelectElement(c1, matching.Configuration);
+				SelectElement(c1, projectConfig.Configuration);
 				c1.Items.Add(EditTag.Instance);
 				
 				DataGridViewComboBoxCell c2 = (DataGridViewComboBoxCell)row.Cells[2];
-				c2.Tag = matching;
 				SetItems(c2.Items, p.PlatformNames);
-				SelectElement(c2, matching.Platform);
+				SelectElement(c2, projectConfig.Platform);
 				c2.Items.Add(EditTag.Instance);
 			}
 			inUpdate = false;
@@ -167,26 +157,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (!inUpdate && e.RowIndex >= 0) {
 				DataGridViewRow row = grid.Rows[e.RowIndex];
-				DataGridViewCell cell = row.Cells[e.ColumnIndex];
-				Solution.ProjectConfigurationPlatformMatching matching = cell.Tag as Solution.ProjectConfigurationPlatformMatching;
-				if (matching != null) {
-					if (e.ColumnIndex == configurationColumn.Index) {
-						matching.Configuration = cell.Value.ToString();
-					} else {
-						matching.Platform = cell.Value.ToString();
-					}
-					if (matching.Platform == "AnyCPU") {
-						matching.Platform = "Any CPU";
-					}
-					
-					if (matching.SolutionItem == null) {
-						matching.SolutionItem = solution.CreateMatchingItem(configurationComboBox.Text,
-						                                                    platformComboBox.Text,
-						                                                    matching.Project, "");
-					}
-					matching.SetProjectConfigurationPlatform(solution.GetProjectConfigurationsSection(),
-					                                         matching.Configuration, matching.Platform);
-				}
+				IProject project = (IProject)row.Tag;
+				
+				var newConfig = new ConfigurationAndPlatform(
+					row.Cells[configurationColumn.Index].ToString(),
+					row.Cells[platformColumn.Index].ToString());
+				
+				project.ConfigurationMapping.SetProjectConfiguration(solutionConfig, newConfig);
 			}
 		}
 		
@@ -216,32 +193,31 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (gridEditingControl.SelectedItem == EditTag.Instance) {
 				DataGridViewComboBoxCell cell = grid.CurrentCell as DataGridViewComboBoxCell;
 				if (cell == null) return;
-				Solution.ProjectConfigurationPlatformMatching matching = cell.Tag as Solution.ProjectConfigurationPlatformMatching;
-				if (matching != null) {
-					inUpdate = true;
-					using (Form dlg = new EditAvailableConfigurationsDialog(matching.Project,
-					                                                        cell.ColumnIndex != configurationColumn.Index))
-					{
-						dlg.ShowDialog(this);
-					}
-					
-					grid.EndEdit();
-					
-					inUpdate = true;
-					
-					// end edit to allow updating the grid
-					grid.EndEdit();
-					
-					// we need to change the current cell because otherwise UpdateGrid cannot change the
-					// list of combobox items in this cell
-					grid.CurrentCell = grid.Rows[cell.RowIndex].Cells[0];
-					
-					// remove cell.Value because otherwise the grid view crashes in UpdateGrid
-					cell.Value = null;
-					
-					UpdateAvailableSolutionConfigurationPlatforms();
-					UpdateGrid();
+				IProject project = (IProject)cell.OwningRow.Tag;
+				
+				inUpdate = true;
+				using (Form dlg = new EditAvailableConfigurationsDialog(project,
+				                                                        cell.ColumnIndex != configurationColumn.Index))
+				{
+					dlg.ShowDialog(this);
 				}
+				
+				grid.EndEdit();
+				
+				inUpdate = true;
+				
+				// end edit to allow updating the grid
+				grid.EndEdit();
+				
+				// we need to change the current cell because otherwise UpdateGrid cannot change the
+				// list of combobox items in this cell
+				grid.CurrentCell = grid.Rows[cell.RowIndex].Cells[0];
+				
+				// remove cell.Value because otherwise the grid view crashes in UpdateGrid
+				cell.Value = null;
+				
+				UpdateAvailableSolutionConfigurationPlatforms();
+				UpdateGrid();
 			}
 		}
 	}

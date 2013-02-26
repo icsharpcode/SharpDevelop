@@ -14,11 +14,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public partial class EditAvailableConfigurationsDialog
 	{
-		Solution solution;
-		IProject project;
-		bool editPlatforms;
+		readonly IConfigurable configurable;
+		readonly bool editPlatforms;
+		readonly IConfigurationOrPlatformNameCollection editedCollection;
 		
-		private EditAvailableConfigurationsDialog()
+		public EditAvailableConfigurationsDialog(IConfigurable configurable, bool editPlatforms)
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
@@ -28,49 +28,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 			foreach (Control ctl in this.Controls) {
 				ctl.Text = StringParser.Parse(ctl.Text);
 			}
-		}
-		
-		public EditAvailableConfigurationsDialog(Solution solution, bool editPlatforms)
-			: this()
-		{
-			this.solution = solution;
-			this.editPlatforms = editPlatforms;
-			InitList();
 			
-			if (editPlatforms)
+			if (editPlatforms) {
 				this.Text = StringParser.Parse("${res:Dialog.EditAvailableConfigurationsDialog.EditSolutionPlatforms}");
-			else
+				this.editedCollection = configurable.ConfigurationNames;
+			} else {
 				this.Text = StringParser.Parse("${res:Dialog.EditAvailableConfigurationsDialog.EditSolutionConfigurations}");
-		}
-		
-		public EditAvailableConfigurationsDialog(IProject project, bool editPlatforms)
-			: this()
-		{
-			this.project = project;
-			this.solution = project.ParentSolution;
-			this.editPlatforms = editPlatforms;
+				this.editedCollection = configurable.PlatformNames;
+			}
 			InitList();
-			
-			if (editPlatforms)
-				this.Text = StringParser.Parse("${res:Dialog.EditAvailableConfigurationsDialog.EditProjectPlatforms}");
-			else
-				this.Text = StringParser.Parse("${res:Dialog.EditAvailableConfigurationsDialog.EditProjectConfigurations}");
 		}
 		
 		void InitList()
 		{
-			if (project != null) {
-				if (editPlatforms) {
-					ShowEntries(project.PlatformNames, project.ActivePlatform);
-				} else {
-					ShowEntries(project.ConfigurationNames, project.ActiveConfiguration);
-				}
+			if (editPlatforms) {
+				ShowEntries(configurable.PlatformNames, configurable.ActiveConfiguration.Platform);
 			} else {
-				if (editPlatforms) {
-					ShowEntries(solution.GetPlatformNames(), solution.Preferences.ActivePlatform);
-				} else {
-					ShowEntries(solution.GetConfigurationNames(), solution.Preferences.ActiveConfiguration);
-				}
+				ShowEntries(configurable.ConfigurationNames, configurable.ActiveConfiguration.Configuration);
 			}
 		}
 		
@@ -95,30 +69,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (MessageService.AskQuestion(StringParser.Format(
 				"${res:Dialog.EditAvailableConfigurationsDialog.ConfirmRemoveConfigurationOrPlatform}", name)))
 			{
-				if (project != null) {
-					Remove(project, name, editPlatforms);
-				} else {
-					Remove(solution, name, editPlatforms);
-				}
+				editedCollection.Remove(name);
 				InitList();
-			}
-		}
-		
-		static void Remove(IProject project, string name, bool isPlatform)
-		{
-			if (isPlatform) {
-				project.ParentSolution.RemoveProjectPlatform(project, name);
-			} else {
-				project.ParentSolution.RemoveProjectConfiguration(project, name);
-			}
-		}
-		
-		static void Remove(Solution solution, string name, bool isPlatform)
-		{
-			if (isPlatform) {
-				solution.RemoveSolutionPlatform(name);
-			} else {
-				solution.RemoveSolutionConfiguration(name);
 			}
 		}
 		
@@ -131,106 +83,50 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return;
 			if (!EnsureCorrectName(ref newName))
 				return;
-			if (project != null) {
-				Rename(project, oldName, newName);
-			} else {
-				if (editPlatforms) {
-					solution.RenameSolutionPlatform(oldName, newName);
-					if (solution.Preferences.ActivePlatform == oldName) {
-						solution.Preferences.ActivePlatform = newName;
-					}
-				} else {
-					solution.RenameSolutionConfiguration(oldName, newName);
-					if (solution.Preferences.ActiveConfiguration == oldName) {
-						solution.Preferences.ActiveConfiguration = newName;
-					}
-				}
+			editedCollection.Rename(oldName, newName);
+			ISolution solution = configurable as ISolution;
+			if (solution != null) {
 				// Solution platform name => project platform name
 				foreach (IProject p in solution.Projects) {
-					Rename(p, oldName, newName);
+					if (editPlatforms) {
+						p.PlatformNames.Rename(oldName, newName);
+					} else {
+						p.ConfigurationNames.Rename(oldName, newName);
+					}
 				}
 			}
 			InitList();
 		}
 		
-		void Rename(IProject project, string oldName, string newName)
-		{
-			if (editPlatforms) {
-				if (project.PlatformNames.Contains(newName))
-					return;
-				solution.RenameProjectPlatform(project, oldName, newName);
-			} else {
-				if (project.ConfigurationNames.Contains(newName))
-					return;
-				solution.RenameProjectConfiguration(project, oldName, newName);
-			}
-		}
-		
 		bool EnsureCorrectName(ref string newName)
 		{
-			newName = newName.Trim();
-			if (editPlatforms && string.Equals(newName, "AnyCPU", StringComparison.OrdinalIgnoreCase))
-				newName = "Any CPU";
+			newName = editedCollection.ValidateName(newName);
+			if (newName == null) {
+				MessageService.ShowMessage("${res:Dialog.EditAvailableConfigurationsDialog.InvalidName}");
+				return false;
+			}
 			foreach (string item in listBox.Items) {
 				if (string.Equals(item, newName, StringComparison.OrdinalIgnoreCase)) {
 					MessageService.ShowMessage("${res:Dialog.EditAvailableConfigurationsDialog.DuplicateName}");
 					return false;
 				}
 			}
-			if (MSBuildInternals.Escape(newName) != newName
-			    || !FileUtility.IsValidDirectoryEntryName(newName)
-			    || newName.Contains("'"))
-			{
-				MessageService.ShowMessage("${res:Dialog.EditAvailableConfigurationsDialog.InvalidName}");
-				return false;
-			}
 			return true;
 		}
 		
 		void AddButtonClick(object sender, EventArgs e)
 		{
-			IEnumerable<string> availableSourceItems;
-			if (project != null) {
-				if (editPlatforms) {
-					availableSourceItems = project.PlatformNames;
-				} else {
-					availableSourceItems = project.ConfigurationNames;
-				}
-			} else {
-				if (editPlatforms) {
-					availableSourceItems = solution.GetPlatformNames();
-				} else {
-					availableSourceItems = solution.GetConfigurationNames();
-				}
-			}
-			
 			using (AddNewConfigurationDialog dlg = new AddNewConfigurationDialog
-			       (project == null, editPlatforms,
-			        availableSourceItems,
+			       (configurable is ISolution, editPlatforms,
+			        editedCollection,
 			        delegate (string name) { return EnsureCorrectName(ref name); }
 			       ))
 			{
 				if (dlg.ShowDialog(this) == DialogResult.OK) {
-					string newName = dlg.NewName;
-					// fix up the new name
-					if (!EnsureCorrectName(ref newName))
-						return;
-					
-					if (project != null) {
-						IProjectAllowChangeConfigurations pacc = project as IProjectAllowChangeConfigurations;
-						if (pacc != null) {
-							if (editPlatforms) {
-								pacc.AddProjectPlatform(MSBuildInternals.FixPlatformNameForProject(newName), dlg.CopyFrom);
-							} else {
-								pacc.AddProjectConfiguration(newName, dlg.CopyFrom);
-							}
-						}
-					} else {
-						if (editPlatforms) {
-							solution.AddSolutionPlatform(newName, dlg.CopyFrom, dlg.CreateInAllProjects);
-						} else {
-							solution.AddSolutionConfiguration(newName, dlg.CopyFrom, dlg.CreateInAllProjects);
-						}
+					editedCollection.Add(dlg.NewName, dlg.CopyFrom);
+					if (dlg.CreateInAllProjects) {
+						#warning
+						throw new NotImplementedException();
 					}
 					InitList();
 				}

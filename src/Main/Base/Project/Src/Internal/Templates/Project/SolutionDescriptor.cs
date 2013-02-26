@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				}
 			}
 			
-			internal bool AddContents(Solution solution, ProjectCreateInformation projectCreateInformation, string defaultLanguage, ISolutionFolderContainer parentFolder)
+			internal bool AddContents(ISolution solution, ProjectCreateInformation projectCreateInformation, string defaultLanguage, ISolutionFolder parentFolder)
 			{
 				// Create sub projects
 				foreach (SolutionFolderDescriptor folderDescriptor in solutionFoldersDescriptors) {
@@ -110,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			
 			string solutionLocation = Path.Combine(projectCreateInformation.SolutionPath, newSolutionName + ".sln");
 			
-			Solution newSolution = new Solution(new ProjectChangeWatcher(solutionLocation));
+			ISolution newSolution = new Solution(new ProjectChangeWatcher(solutionLocation));
 			projectCreateInformation.Solution = newSolution;
 			
 			newSolution.Name = newSolutionName;

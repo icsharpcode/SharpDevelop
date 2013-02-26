@@ -44,7 +44,7 @@ namespace ICSharpCode.PackageManagement
 			get { return OpenSolution.FileName; }
 		}
 		
-		Solution OpenSolution {
+		ISolution OpenSolution {
 			get { return projectService.OpenSolution; }
 		}
 		

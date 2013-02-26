@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -224,8 +225,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			if (ProjectService.OpenSolution == null)
 				return new MenuItem[0];
-			IList<string> configurationNames = ProjectService.OpenSolution.GetConfigurationNames();
-			string activeConfiguration = ProjectService.OpenSolution.Preferences.ActiveConfiguration;
+			var configurationNames = ProjectService.OpenSolution.ConfigurationNames.ToList();
+			string activeConfiguration = ProjectService.OpenSolution.ActiveConfiguration.Configuration;
 			MenuItem[] items = new MenuItem[configurationNames.Count];
 			for (int i = 0; i < items.Length; i++) {
 				items[i] = new MenuItem {
@@ -237,12 +238,11 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			return items;
 		}
 		
-		void SetConfigurationItemClick(object sender, EventArgs e)
+		static void SetConfigurationItemClick(object sender, EventArgs e)
 		{
 			MenuItem item = (MenuItem)sender;
-			ProjectService.OpenSolution.Preferences.ActiveConfiguration = (string)item.Header;
-			ProjectService.OpenSolution.ApplySolutionConfigurationAndPlatformToProjects();
-			ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
+			ISolution solution = ProjectService.OpenSolution;
+			solution.ActiveConfiguration = new ConfigurationAndPlatform((string)item.Header, solution.ActiveConfiguration.Platform);
 		}
 	}
 	
@@ -252,8 +252,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			if (ProjectService.OpenSolution == null)
 				return new MenuItem[0];
-			IList<string> platformNames = ProjectService.OpenSolution.GetPlatformNames();
-			string activePlatform = ProjectService.OpenSolution.Preferences.ActivePlatform;
+			IList<string> platformNames = ProjectService.OpenSolution.PlatformNames.ToList();
+			string activePlatform = ProjectService.OpenSolution.ActiveConfiguration.Platform;
 			MenuItem[] items = new MenuItem[platformNames.Count];
 			for (int i = 0; i < items.Length; i++) {
 				items[i] = new MenuItem {
@@ -265,12 +265,11 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			return items;
 		}
 		
-		void SetPlatformItemClick(object sender, EventArgs e)
+		static void SetPlatformItemClick(object sender, EventArgs e)
 		{
 			MenuItem item = (MenuItem)sender;
-			ProjectService.OpenSolution.Preferences.ActivePlatform = (string)item.Header;
-			ProjectService.OpenSolution.ApplySolutionConfigurationAndPlatformToProjects();
-			ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
+			ISolution solution = ProjectService.OpenSolution;
+			solution.ActiveConfiguration = new ConfigurationAndPlatform(solution.ActiveConfiguration.Configuration, (string)item.Header);
 		}
 	}
 	
@@ -281,8 +280,6 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			using (SolutionConfigurationEditor sce = new SolutionConfigurationEditor()) {
 				sce.ShowDialog(SD.WinForms.MainWin32Window);
 				ProjectService.SaveSolution();
-				ProjectService.OpenSolution.ApplySolutionConfigurationAndPlatformToProjects();
-				ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
 			}
 		}
 	}

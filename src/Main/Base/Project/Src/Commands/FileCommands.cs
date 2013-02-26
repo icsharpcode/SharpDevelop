@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			ProjectNode node = ProjectBrowserPad.Instance.CurrentProject;
 			if (node != null) {
-				if (node.Project.ReadOnly)
+				if (node.Project.IsReadOnly)
 				{
 					MessageService.ShowWarningFormatted("${res:Dialog.NewFile.ReadOnlyProjectWarning}", node.Project.FileName);
 				}

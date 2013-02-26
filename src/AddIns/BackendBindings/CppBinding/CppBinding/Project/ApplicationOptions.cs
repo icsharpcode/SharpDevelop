@@ -61,7 +61,7 @@ namespace ICSharpCode.CppBinding.Project
 		void project_MinimumSolutionVersionChanged(object sender, EventArgs e)
 		{
 			// embedding manifests requires the project to target MSBuild 3.5 or higher
-			applicationManifestComboBox.IsEnabled = base.Project.MinimumSolutionVersion >= Solution.SolutionVersionVS2008;
+			applicationManifestComboBox.IsEnabled = base.Project.MinimumSolutionVersion >= ISolution.SolutionVersionVS2008;
 		}
 		
 		

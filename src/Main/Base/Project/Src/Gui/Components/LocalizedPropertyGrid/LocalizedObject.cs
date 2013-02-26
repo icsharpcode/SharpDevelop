@@ -124,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return this;
 		}
 		
-		public virtual void InformSetValue(PropertyDescriptor propertyDescriptor, object component, object value)
+		protected internal virtual void InformSetValue(PropertyDescriptor propertyDescriptor, object value)
 		{
 			
 		}

@@ -26,7 +26,7 @@ namespace ICSharpCode.PackageManagement
 			this.options = options;
 		}
 		
-		public ISolutionPackageRepository CreateSolutionPackageRepository(Solution solution)
+		public ISolutionPackageRepository CreateSolutionPackageRepository(ISolution solution)
 		{
 			return new SolutionPackageRepository(solution, repositoryFactory, options);
 		}

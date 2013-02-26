@@ -205,5 +205,10 @@ namespace ICSharpCode.SharpDevelop
 		public static IDisplayBindingService DisplayBindingService {
 			get { return GetRequiredService<IDisplayBindingService>(); }
 		}
+		
+		/// <inheritdoc see="IProjectService"/>
+		public static IProjectService ProjectService {
+			get { return GetRequiredService<IProjectService>(); }
+		}
 	}
 }

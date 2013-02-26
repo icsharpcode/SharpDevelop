@@ -44,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		public string SolutionPath { get; set; }
 		public string ProjectBasePath { get; set; }
 		public TargetFramework TargetFramework { get; set; }
-		public Solution Solution { get; set; }
+		public ISolution Solution { get; set; }
 		
 		/// <summary>
 		/// Whether to initialize the type system for the newly created project.

@@ -301,6 +301,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 
 		public string CreateProject(ProjectCreateInformation projectCreateInformation)
 		{
+			throw new NotImplementedException();
+			/*
 			LoggingService.Info("Creating project from template '" + this.Category + "/" + this.Subcategory + "/" + this.Name + "'");
 			if (solutionDescriptor != null) {
 				return solutionDescriptor.CreateSolution(projectCreateInformation, this.languagename);
@@ -331,7 +333,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				}
 			} else {
 				return null;
-			}
+			}*/
 		}
 		
 		public void RunOpenActions(ProjectCreateInformation projectCreateInformation)

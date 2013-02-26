@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public void ViewSolution(Solution solution)
+		public void ViewSolution(ISolution solution)
 		{
 			UpdateToolStrip(null);
 			projectBrowserControl.ViewSolution(solution);

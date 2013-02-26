@@ -12,10 +12,10 @@ namespace ICSharpCode.PackageManagement
 	public interface IPackageManagementProjectService
 	{
 		IProject CurrentProject { get; }
-		Solution OpenSolution { get; }
+		ISolution OpenSolution { get; }
 		IProjectBuilder ProjectBuilder { get; }
 		
-		event ProjectEventHandler ProjectAdded;
+		event EventHandler<ProjectEventArgs> ProjectAdded;
 		event SolutionFolderEventHandler SolutionFolderRemoved;
 		event EventHandler SolutionClosed;
 		event EventHandler<SolutionEventArgs> SolutionLoaded;
@@ -24,7 +24,7 @@ namespace ICSharpCode.PackageManagement
 		void AddProjectItem(IProject project, ProjectItem item);
 		void RemoveProjectItem(IProject project, ProjectItem item);
 		void Save(IProject project);
-		void Save(Solution solution);
+		void Save(ISolution solution);
 		
 		IEnumerable<IProject> GetOpenProjects();
 		

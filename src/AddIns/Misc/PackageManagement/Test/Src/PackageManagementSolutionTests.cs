@@ -415,8 +415,8 @@ namespace PackageManagement.Tests
 			
 			solution.IsPackageInstalled(package);
 			
-			Solution expectedSolution = fakeProjectService.OpenSolution;
-			Solution solutionUsedToCreateSolutionPackageRepository = 
+			ISolution expectedSolution = fakeProjectService.OpenSolution;
+			ISolution solutionUsedToCreateSolutionPackageRepository = 
 				fakeSolutionPackageRepositoryFactory.SolutionPassedToCreateSolutionPackageRepository;
 			
 			Assert.AreEqual(expectedSolution, solutionUsedToCreateSolutionPackageRepository);

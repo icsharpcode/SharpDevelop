@@ -360,7 +360,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void OnFileSaved(object sender, FileNameEventArgs e)
 		{
-			Solution solution = ProjectService.OpenSolution;
+			ISolution solution = ProjectService.OpenSolution;
 			if (solution == null) return;
 			IProject project = solution.FindProjectContainingFile(e.FileName);
 			if (project == null) return;

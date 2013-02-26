@@ -119,9 +119,9 @@ namespace ICSharpCode.Svn.Commands
 		protected sealed class ProjectWatcher
 		{
 			List<ProjectEntry> list = new List<ProjectEntry>();
-			Solution solution;
+			ISolution solution;
 			
-			internal ProjectWatcher(Solution solution)
+			internal ProjectWatcher(ISolution solution)
 			{
 				this.solution = solution;
 				if (AddInOptions.AutomaticallyReloadProject && solution != null)

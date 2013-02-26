@@ -19,7 +19,7 @@ namespace PackageManagement.Tests
 	{
 		SolutionPackageRepository repository;
 		TestablePackageManagementOptions options;
-		Solution solution;
+		ISolution solution;
 		FakePackageRepositoryFactory fakeRepositoryFactory;
 		FakeSharedPackageRepository fakeSharedRepository;
 		
@@ -40,13 +40,13 @@ namespace PackageManagement.Tests
 			options = new TestablePackageManagementOptions();
 		}
 		
-		void CreateRepository(Solution solution, TestablePackageManagementOptions options)
+		void CreateRepository(ISolution solution, TestablePackageManagementOptions options)
 		{
 			CreateFakeRepositoryFactory();
 			repository = new SolutionPackageRepository(solution, fakeRepositoryFactory, options);
 		}
 		
-		void CreateRepository(Solution solution)
+		void CreateRepository(ISolution solution)
 		{
 			CreateOptions();
 			CreateRepository(solution, options);

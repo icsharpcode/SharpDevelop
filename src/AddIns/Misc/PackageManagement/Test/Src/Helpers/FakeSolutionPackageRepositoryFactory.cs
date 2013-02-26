@@ -10,9 +10,9 @@ namespace PackageManagement.Tests.Helpers
 	public class FakeSolutionPackageRepositoryFactory : ISolutionPackageRepositoryFactory
 	{
 		public FakeSolutionPackageRepository FakeSolutionPackageRepository = new FakeSolutionPackageRepository();
-		public Solution SolutionPassedToCreateSolutionPackageRepository;
+		public ISolution SolutionPassedToCreateSolutionPackageRepository;
 		
-		public ISolutionPackageRepository CreateSolutionPackageRepository(Solution solution)
+		public ISolutionPackageRepository CreateSolutionPackageRepository(ISolution solution)
 		{
 			SolutionPassedToCreateSolutionPackageRepository = solution;
 			return FakeSolutionPackageRepository;

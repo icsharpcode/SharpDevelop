@@ -198,7 +198,8 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			}
 			while (node != null) {
 				if (node is ISolutionFolderNode) {
-					AddExistingProjectToSolution.AddProject((ISolutionFolderNode)node, targetProject.FileName);
+					var solutionFolderNode = (ISolutionFolderNode)node;
+					solutionFolderNode.Solution.AddExistingProject(targetProject.FileName, solutionFolderNode.Folder);
 					ProjectService.SaveSolution();
 					break;
 				}

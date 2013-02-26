@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		Task<BuildResults> BuildAsync(IEnumerable<IProject> projects, BuildOptions options);
 		
 		Task<BuildResults> BuildAsync(IProject project, BuildOptions options);
-		Task<BuildResults> BuildAsync(Solution solution, BuildOptions options);
+		Task<BuildResults> BuildAsync(ISolution solution, BuildOptions options);
 		
 		/// <summary>
 		/// Raised when a build is started.

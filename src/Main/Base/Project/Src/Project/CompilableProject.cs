@@ -119,7 +119,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					if (string.IsNullOrEmpty(outputPath)) {
 						outputPath = "obj";
 					}
-					outputPath = Path.Combine(outputPath, this.ActiveConfiguration);
+					outputPath = Path.Combine(outputPath, this.ActiveConfiguration.Configuration);
 				}
 				return Path.Combine(Directory, outputPath);
 			}
@@ -211,14 +211,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		protected override void OnActivePlatformChanged(EventArgs e)
-		{
-			base.OnActivePlatformChanged(e);
-			if (!isLoading) {
-				Reparse(true, true);
-			}
-		}
-		
 		protected override void OnPropertyChanged(ProjectPropertyChangedEventArgs e)
 		{
 			base.OnPropertyChanged(e);
@@ -290,7 +282,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public virtual bool UpgradeDesired {
 			get {
-				return MinimumSolutionVersion < Solution.SolutionVersionVS2010;
+				return MinimumSolutionVersion < ISolution.SolutionVersionVS2010;
 			}
 		}
 		
@@ -314,7 +306,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework)
 		{
-			if (!ReadOnly)
+			if (!IsReadOnly)
 				GetOrCreateBehavior().UpgradeProject(newVersion, newFramework);
 		}
 		

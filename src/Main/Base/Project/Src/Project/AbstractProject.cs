@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// <summary>
 	/// Default implementation of the IProject interface.
 	/// </summary>
-	public abstract class AbstractProject : AbstractSolutionFolder, IProject
+	public abstract class AbstractProject : IProject
 	{
 		// Member documentation: see IProject members.
 		
@@ -132,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// True if the file that contains the project is readonly.
 		/// </summary>
 		[ReadOnly(true)]
-		public virtual bool ReadOnly {
+		public virtual bool IsReadOnly {
 			get {
 				try {
 					FileAttributes attributes = File.GetAttributes(FileName);
@@ -183,12 +183,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Configuration / Platform management
-		string activeConfiguration = "Debug";
-		string activePlatform = "AnyCPU";
+		ConfigurationAndPlatform activeConfiguration = new ConfigurationAndPlatform("Debug", "AnyCPU");
 		
 		[ReadOnly(true)]
 		[LocalizedProperty("${res:Dialog.Options.CombineOptions.Configurations.ConfigurationColumnHeader}")]
-		public string ActiveConfiguration {
+		public ConfigurationAndPlatform ActiveConfiguration {
 			get { return activeConfiguration; }
 			set {
 				SD.MainThread.VerifyAccess();
@@ -212,43 +211,23 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		[ReadOnly(true)]
-		[LocalizedProperty("${res:Dialog.ProjectOptions.Platform}")]
-		public string ActivePlatform {
-			get { return activePlatform; }
-			set {
-				SD.MainThread.VerifyAccess();
-				if (value == null)
-					throw new ArgumentNullException();
-				
-				if (activePlatform != value) {
-					activePlatform = value;
-					
-					OnActivePlatformChanged(EventArgs.Empty);
-				}
-			}
-		}
-		
-		public event EventHandler ActivePlatformChanged;
-		
-		protected virtual void OnActivePlatformChanged(EventArgs e)
-		{
-			if (ActivePlatformChanged != null) {
-				ActivePlatformChanged(this, e);
-			}
-		}
-		
-		[Browsable(false)]
-		public virtual IReadOnlyCollection<string> ConfigurationNames {
+		public virtual IConfigurationOrPlatformNameCollection ConfigurationNames {
 			get {
-				return new string[] { "Debug", "Release" };
+				throw new NotImplementedException();
+				//return new string[] { "Debug", "Release" };
 			}
 		}
 		
-		[Browsable(false)]
-		public virtual IReadOnlyCollection<string> PlatformNames {
+		public virtual IConfigurationOrPlatformNameCollection PlatformNames {
 			get {
-				return new string[] { "AnyCPU" };
+				throw new NotImplementedException();
+				//return new string[] { "AnyCPU" };
+			}
+		}
+		
+		public virtual IConfigurationMapping ConfigurationMapping {
+			get {
+				throw new NotImplementedException();
 			}
 		}
 		#endregion
@@ -478,8 +457,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[Browsable(false)]
-		public virtual int MinimumSolutionVersion {
-			get { return Solution.SolutionVersionVS2005; }
+		public virtual SolutionFormatVersion MinimumSolutionVersion {
+			get { return SolutionFormatVersion.VS2005; }
 		}
 		
 		/// <summary>
@@ -685,6 +664,56 @@ namespace ICSharpCode.SharpDevelop.Project
 		public virtual ICSharpCode.SharpDevelop.Dom.ITypeDefinitionModelCollection TypeDefinitionModels {
 			get {
 				return EmptyTypeDefinitionModelCollection.Instance;
+			}
+		}
+		
+		[Browsable(false)]
+		public virtual string TypeGuid {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		[Browsable(false)]
+		public virtual string IdGuid {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public string Name {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public ISolutionFolder ParentFolder {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public ISolution ParentSolution {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public object SyncRoot {
+			get { 
+				throw new NotImplementedException();
 			}
 		}
 	}

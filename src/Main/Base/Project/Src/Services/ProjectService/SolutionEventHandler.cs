@@ -8,15 +8,15 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public class SolutionEventArgs : EventArgs
 	{
-		Solution solution;
+		ISolution solution;
 		
-		public Solution Solution {
+		public ISolution Solution {
 			get {
 				return solution;
 			}
 		}
 		
-		public SolutionEventArgs(Solution solution)
+		public SolutionEventArgs(ISolution solution)
 		{
 			this.solution = solution;
 		}
@@ -24,15 +24,15 @@ namespace ICSharpCode.SharpDevelop.Project
 	
 	public class SolutionCancelEventArgs : CancelEventArgs
 	{
-		Solution solution;
+		ISolution solution;
 		
-		public Solution Solution {
+		public ISolution Solution {
 			get {
 				return solution;
 			}
 		}
 		
-		public SolutionCancelEventArgs(Solution solution)
+		public SolutionCancelEventArgs(ISolution solution)
 		{
 			this.solution = solution;
 		}

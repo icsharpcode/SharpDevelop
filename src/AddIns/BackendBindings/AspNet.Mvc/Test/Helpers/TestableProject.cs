@@ -50,7 +50,7 @@ namespace AspNet.Mvc.Tests.Helpers
 			IsSaved = true;
 		}
 		
-		public override bool ReadOnly {
+		public override bool IsReadOnly {
 			get { return false; }
 		}
 		

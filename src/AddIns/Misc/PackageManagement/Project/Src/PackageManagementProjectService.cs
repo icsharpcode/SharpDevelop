@@ -24,7 +24,7 @@ namespace ICSharpCode.PackageManagement
 			get { return ProjectService.CurrentProject; }
 		}
 		
-		public Solution OpenSolution {
+		public ISolution OpenSolution {
 			get { return ProjectService.OpenSolution; }
 		}
 		
@@ -50,7 +50,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public IEnumerable<IProject> GetOpenProjects()
 		{
-			Solution solution = OpenSolution;
+			ISolution solution = OpenSolution;
 			if (solution != null) {
 				return solution.Projects;
 			}
@@ -72,7 +72,7 @@ namespace ICSharpCode.PackageManagement
 			InvokeIfRequired(() => project.Save());
 		}
 		
-		public void Save(Solution solution)
+		public void Save(ISolution solution)
 		{
 			InvokeIfRequired(() => solution.Save());
 		}
@@ -82,7 +82,7 @@ namespace ICSharpCode.PackageManagement
 //			return SD.ParserService.GetProjectContent(project);
 //		}
 		
-		public event ProjectEventHandler ProjectAdded {
+		public event EventHandler<ProjectEventArgs> ProjectAdded {
 			add { ProjectService.ProjectAdded += value; }
 			remove { ProjectService.ProjectAdded -= value; }
 		}

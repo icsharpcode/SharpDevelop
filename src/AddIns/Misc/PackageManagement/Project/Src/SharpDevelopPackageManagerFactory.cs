@@ -46,7 +46,7 @@ namespace ICSharpCode.PackageManagement
 				packageOperationResolverFactory);
 		}
 		
-		SolutionPackageRepository CreateSolutionPackageRepository(Solution solution)
+		SolutionPackageRepository CreateSolutionPackageRepository(ISolution solution)
 		{
 			return new SolutionPackageRepository(solution, packageRepositoryFactory, options);
 		}

@@ -15,9 +15,9 @@ namespace ICSharpCode.PackageManagement.Design
 		public bool IsRefreshProjectBrowserCalled;
 		
 		public IProject CurrentProject { get; set; }
-		public Solution OpenSolution { get; set; }
+		public ISolution OpenSolution { get; set; }
 		
-		public event ProjectEventHandler ProjectAdded;
+		public event EventHandler<ProjectEventArgs> ProjectAdded;
 		public event SolutionFolderEventHandler SolutionFolderRemoved;
 		public event EventHandler SolutionClosed;
 		public event EventHandler<SolutionEventArgs> SolutionLoaded;
@@ -41,14 +41,14 @@ namespace ICSharpCode.PackageManagement.Design
 			}
 		}
 		
-		public void FireSolutionLoadedEvent(Solution solution)
+		public void FireSolutionLoadedEvent(ISolution solution)
 		{
 			if (SolutionLoaded != null) {
 				SolutionLoaded(this, new SolutionEventArgs(solution));
 			}
 		}
 		
-		public void FireSolutionFolderRemoved(ISolutionFolder solutionFolder)
+		public void FireSolutionFolderRemoved(ISolutionItem solutionFolder)
 		{
 			if (SolutionFolderRemoved != null) {
 				SolutionFolderRemoved(this, new SolutionFolderEventArgs(solutionFolder));
@@ -82,9 +82,9 @@ namespace ICSharpCode.PackageManagement.Design
 			project.Save();
 		}
 		
-		public Solution SavedSolution;
+		public ISolution SavedSolution;
 		
-		public void Save(Solution solution)
+		public void Save(ISolution solution)
 		{
 			SavedSolution = solution;
 		}

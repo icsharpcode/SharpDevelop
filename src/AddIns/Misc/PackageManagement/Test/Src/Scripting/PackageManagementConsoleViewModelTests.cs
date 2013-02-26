@@ -95,10 +95,10 @@ namespace PackageManagement.Tests.Scripting
 			return enabledPackageSource;
 		}
 		
-		Solution CreateViewModelWithOneProjectOpen()
+		ISolution CreateViewModelWithOneProjectOpen()
 		{
 			CreateConsoleHost();
-			Solution solution = CreateSolutionWithOneProject();
+			ISolution solution = CreateSolutionWithOneProject();
 			projectService = new FakePackageManagementProjectService();
 			projectService.OpenSolution = solution;
 			CreateViewModel(consoleHost, projectService);
@@ -106,10 +106,10 @@ namespace PackageManagement.Tests.Scripting
 			return solution;
 		}
 		
-		Solution CreateSolutionWithOneProject()
+		ISolution CreateSolutionWithOneProject()
 		{
 			TestableProject project = ProjectHelper.CreateTestProject();
-			Solution solution = project.ParentSolution;
+			ISolution solution = project.ParentSolution;
 			solution.AddFolder(project);
 			
 			return solution;
@@ -146,7 +146,7 @@ namespace PackageManagement.Tests.Scripting
 			viewModel.PropertyChanged += (sender, e) => propertiesChanged.Add(e.PropertyName);
 		}
 		
-		Solution CreateViewModelWithEmptySolutionOpen()
+		ISolution CreateViewModelWithEmptySolutionOpen()
 		{
 			CreateConsoleHost();
 			var solution = new Solution(new MockProjectChangeWatcher());
@@ -156,7 +156,7 @@ namespace PackageManagement.Tests.Scripting
 			return solution;
 		}
 		
-		TestableProject AddProjectToSolution(Solution solution)
+		TestableProject AddProjectToSolution(ISolution solution)
 		{
 			var project = ProjectHelper.CreateTestProject();
 			solution.AddFolder(project);
@@ -169,13 +169,13 @@ namespace PackageManagement.Tests.Scripting
 			projectService.FireSolutionClosedEvent();
 		}
 		
-		void OpenSolution(Solution solution)
+		void OpenSolution(ISolution solution)
 		{
 			projectService.OpenSolution = solution;
 			projectService.FireSolutionLoadedEvent(solution);
 		}
 		
-		IProject RemoveProjectFromSolution(Solution solution)
+		IProject RemoveProjectFromSolution(ISolution solution)
 		{
 			var project = solution.Projects.FirstOrDefault();
 			solution.RemoveFolder(project);

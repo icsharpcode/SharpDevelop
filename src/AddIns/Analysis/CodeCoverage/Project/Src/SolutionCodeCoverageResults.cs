@@ -11,15 +11,15 @@ namespace ICSharpCode.CodeCoverage
 {
 	public class SolutionCodeCoverageResults
 	{
-		Solution solution;
+		ISolution solution;
 		IFileSystem fileSystem;
 		
-		public SolutionCodeCoverageResults(Solution solution)
+		public SolutionCodeCoverageResults(ISolution solution)
 			: this(solution, new FileSystem())
 		{
 		}
 		
-		public SolutionCodeCoverageResults(Solution solution, IFileSystem fileSystem)
+		public SolutionCodeCoverageResults(ISolution solution, IFileSystem fileSystem)
 		{
 			this.solution = solution;
 			this.fileSystem = fileSystem;

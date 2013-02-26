@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop
 			if (caller is ISolutionFolderNode)
 				return ProjectService.OpenSolution != null && !ProjectService.OpenSolution.ReadOnly;
 			IProject project = (caller as IProject) ?? ProjectService.CurrentProject;
-			return project != null && !project.ReadOnly;
+			return project != null && !project.IsReadOnly;
 		}
 	}
 }

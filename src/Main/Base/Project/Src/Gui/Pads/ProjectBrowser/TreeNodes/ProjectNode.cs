@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.project = project;
 			
 			Text = project.Name;
-			if (project.ReadOnly) {
+			if (project.IsReadOnly) {
 				Text += StringParser.Parse(" (${res:Global.ReadOnly})");
 			}
 			
@@ -166,7 +166,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			SD.Clipboard.SetDataObject(new DataObject(typeof(ISolutionFolder).ToString(), project.IdGuid));
+			SD.Clipboard.SetDataObject(new DataObject(typeof(ISolutionItem).ToString(), project.IdGuid));
 		}
 		// Paste is inherited from DirectoryNode.
 		

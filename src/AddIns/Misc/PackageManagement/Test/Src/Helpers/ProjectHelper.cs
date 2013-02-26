@@ -18,14 +18,14 @@ namespace PackageManagement.Tests.Helpers
 		
 		public static TestableProject CreateTestProject(string name)
 		{
-			Solution solution = new Solution(new MockProjectChangeWatcher());
+			ISolution solution = new Solution(new MockProjectChangeWatcher());
 			solution.FileName = @"d:\projects\Test\TestSolution.sln";
 			
 			return CreateTestProject(solution, name);
 		}
 		
 		public static TestableProject CreateTestProject(
-			Solution parentSolution,
+			ISolution parentSolution,
 			string name,
 			string fileName = @"d:\projects\Test\TestProject\TestProject.csproj")
 		{

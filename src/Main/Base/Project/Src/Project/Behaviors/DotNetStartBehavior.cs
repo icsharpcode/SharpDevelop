@@ -136,12 +136,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override CompilerVersion CurrentCompilerVersion {
 			get {
 				switch (Project.MinimumSolutionVersion) {
-					case Solution.SolutionVersionVS2005:
+					case ISolution.SolutionVersionVS2005:
 						return CompilerVersion.MSBuild20;
-					case Solution.SolutionVersionVS2008:
+					case ISolution.SolutionVersionVS2008:
 						return CompilerVersion.MSBuild35;
-					case Solution.SolutionVersionVS2010:
-					case Solution.SolutionVersionVS2012:
+					case ISolution.SolutionVersionVS2010:
+					case ISolution.SolutionVersionVS2012:
 						return CompilerVersion.MSBuild40;
 					default:
 						throw new NotSupportedException();
@@ -184,7 +184,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework)
 		{
-			if (!Project.ReadOnly) {
+			if (!Project.IsReadOnly) {
 				lock (Project.SyncRoot) {
 					TargetFramework oldFramework = Project.CurrentTargetFramework;
 					if (newVersion != null && GetAvailableCompilerVersions().Contains(newVersion)) {

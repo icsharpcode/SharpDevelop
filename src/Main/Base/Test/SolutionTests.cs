@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 	[TestFixture]
 	public class SolutionTests
 	{
-		Solution solution;
+		ISolution solution;
 		
 		void CreateSolution()
 		{

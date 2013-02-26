@@ -9,15 +9,15 @@ namespace ICSharpCode.SharpDevelop.Project
 	
 	public class SolutionFolderEventArgs : EventArgs
 	{
-		ISolutionFolder solutionFolder;
+		ISolutionItem solutionFolder;
 		
-		public ISolutionFolder SolutionFolder {
+		public ISolutionItem SolutionFolder {
 			get {
 				return solutionFolder;
 			}
 		}
 		
-		public SolutionFolderEventArgs(ISolutionFolder solutionFolder)
+		public SolutionFolderEventArgs(ISolutionItem solutionFolder)
 		{
 			this.solutionFolder = solutionFolder;
 		}

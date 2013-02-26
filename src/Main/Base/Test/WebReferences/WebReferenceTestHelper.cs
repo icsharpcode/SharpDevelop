@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 				get { return languageName; }
 			}
 			
-			public override bool ReadOnly {
+			public override bool IsReadOnly {
 				get { return readOnly; }
 			}
 			

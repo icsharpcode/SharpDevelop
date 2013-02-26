@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public IMSBuildChainedLoggerFilter CreateFilter(MSBuildEngine engine, IMSBuildChainedLoggerFilter nextFilter)
 		{
-			if (engine.ProjectMinimumSolutionVersion >= Solution.SolutionVersionVS2010) {
+			if (engine.ProjectMinimumSolutionVersion >= ISolution.SolutionVersionVS2010) {
 				return new TargetingPackWarningWorkaroundChainEntry(nextFilter);
 			} else {
 				return nextFilter;

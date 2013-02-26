@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		#region FindReferences
 		static IEnumerable<IProject> GetProjectsThatCouldReferenceEntity(IEntity entity)
 		{
-			Solution solution = ProjectService.OpenSolution;
+			ISolution solution = ProjectService.OpenSolution;
 			if (solution == null)
 				yield break;
 			foreach (IProject project in solution.Projects) {

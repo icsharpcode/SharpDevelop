@@ -106,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				return Task.FromResult(new BuildResults { Result = BuildResultCode.Error });
 		}
 		
-		public Task<BuildResults> BuildAsync(Solution solution, BuildOptions options)
+		public Task<BuildResults> BuildAsync(ISolution solution, BuildOptions options)
 		{
 			if (solution != null)
 				return BuildAsync(solution.Projects, options);

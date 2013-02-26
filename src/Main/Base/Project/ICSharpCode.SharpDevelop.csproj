@@ -108,7 +108,6 @@
     <Compile Include="Dom\IEntityModel.cs" />
     <Compile Include="Dom\IModelCollection.cs" />
     <Compile Include="Dom\ITreeNodeFactory.cs" />
-    <Compile Include="Dom\SimpleModelCollection.cs" />
     <Compile Include="Editor\AvalonEditTextEditorAdapter.cs" />
     <Compile Include="Editor\Bookmarks\BookmarkBase.cs" />
     <Compile Include="Editor\Bookmarks\BookmarkEventArgs.cs" />
@@ -165,6 +164,14 @@
     <Compile Include="Project\Build\IBuildService.cs" />
     <Compile Include="Project\Build\MultipleProjectBuildable.cs" />
     <Compile Include="Project\Build\ProjectBuildOptions.cs" />
+    <Compile Include="Project\ConfigurationAndPlatform.cs" />
+    <Compile Include="Project\IConfigurable.cs" />
+    <Compile Include="Project\IConfigurationMapping.cs" />
+    <Compile Include="Project\IConfigurationOrPlatformNameCollection.cs" />
+    <Compile Include="Project\IProjectService.cs" />
+    <Compile Include="Project\ISolution.cs" />
+    <Compile Include="Project\ISolutionFolder.cs" />
+    <Compile Include="Project\ISolutionItem.cs" />
     <Compile Include="Refactoring\ICodeGenerator.cs" />
     <Compile Include="Services\IClipboard.cs" />
     <Compile Include="Services\IMessageLoop.cs" />
@@ -232,6 +239,8 @@
       <DependentUpon>OutputWindowOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Project\Solution\ProjectSection.cs" />
+    <Compile Include="Src\Project\Solution\SolutionItem.cs" />
     <Compile Include="Util\AtomicBoolean.cs" />
     <Compile Include="Util\ComparerExtensions.cs" />
     <Compile Include="Util\CustomThreadPoolTaskScheduler.cs" />
@@ -505,7 +514,6 @@
     <Compile Include="Src\Project\ProjectLoadException.cs" />
     <Compile Include="Src\Project\ProjectPropertyChangedEventArgs.cs" />
     <Compile Include="Src\Project\ProjectUpgradeException.cs" />
-    <Compile Include="Src\Project\Solution\Project_TypeGuids.cs" />
     <Compile Include="Src\Project\TargetFramework.cs" />
     <Compile Include="Refactoring\ContextAction.cs" />
     <Compile Include="Refactoring\EditorRefactoringContext.cs" />
@@ -653,7 +661,6 @@
     <Compile Include="Src\Project\IProject.cs" />
     <Compile Include="Src\Project\Items\ProjectItem.cs" />
     <Compile Include="Src\Project\Items\ReferenceProjectItem.cs" />
-    <Compile Include="Src\Project\Solution\Solution.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectService.cs" />
     <Compile Include="Src\Services\ProjectService\SolutionEventHandler.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectEventHandler.cs" />
@@ -705,13 +712,7 @@
     </Compile>
     <Compile Include="Src\Gui\Components\ExtTreeView\ExtFolderNode.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\TextEventHandler.cs" />
-    <Compile Include="Src\Project\Solution\SolutionFolder.cs" />
-    <Compile Include="Src\Project\Solution\SolutionItem.cs" />
-    <Compile Include="Src\Project\Solution\ProjectSection.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\SolutionFolderNode.cs" />
-    <Compile Include="Src\Project\Solution\ISolutionFolderContainer.cs" />
-    <Compile Include="Src\Project\Solution\ISolutionFolder.cs" />
-    <Compile Include="Src\Project\Solution\AbstractSolutionFolder.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\SolutionItemNode.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\ClipboardHandlerNodeCommands.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\Util\ProjectBrowserTreeNodeVisitor.cs" />
@@ -755,7 +756,6 @@
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserCommands.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserLocationConditionEvaluator.cs" />
     <Compile Include="Src\Services\Debugger\DebuggerDoozer.cs" />
-    <Compile Include="Src\Project\Solution\SolutionPreferences.cs" />
     <Compile Include="Src\Project\ConfigurationGuiHelper.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AbstractXmlFormsProjectOptionPanel.cs">
       <SubType>UserControl</SubType>
@@ -788,7 +788,6 @@
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\WebServiceDiscoveryClientProtocol.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AsyncDiscoveryState.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\DiscoveryNetworkCredential.cs" />
-    <Compile Include="Src\Services\ProjectService\ProjectLoader.cs" />
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
@@ -832,6 +831,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Designer" />
+    <Folder Include="Src\Project\Solution" />
     <Folder Include="Workbench\DisplayBinding" />
     <Page Include="Editor\Bookmarks\BookmarkPadContent.xaml" />
     <Page Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml" />

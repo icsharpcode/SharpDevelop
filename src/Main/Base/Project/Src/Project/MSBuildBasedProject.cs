@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// require locking on the SyncRoot. Methods that return underlying MSBuild objects require that
 	/// the caller locks on the SyncRoot.
 	/// </summary>
-	public class MSBuildBasedProject : AbstractProject, IProjectItemListProvider, IProjectAllowChangeConfigurations
+	public class MSBuildBasedProject : AbstractProject, IProjectItemListProvider
 	{
 		/// <summary>
 		/// The project collection that contains this project.
@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public override int MinimumSolutionVersion {
+		public override SolutionFormatVersion MinimumSolutionVersion {
 			get {
 				lock (SyncRoot) {
 					// This property is called by CSharpProject.StartBuild (and other derived StartBuild methods),
@@ -107,11 +107,11 @@ namespace ICSharpCode.SharpDevelop.Project
 					if (projectFile == null)
 						throw new ObjectDisposedException("MSBuildBasedProject");
 					if (string.IsNullOrEmpty(projectFile.ToolsVersion) || projectFile.ToolsVersion == "2.0") {
-						return Solution.SolutionVersionVS2005;
+						return SolutionFormatVersion.VS2005;
 					} else if (projectFile.ToolsVersion == "3.0" || projectFile.ToolsVersion == "3.5") {
-						return Solution.SolutionVersionVS2008;
+						return SolutionFormatVersion.VS2008;
 					} else {
-						return Solution.SolutionVersionVS2010;
+						return SolutionFormatVersion.VS2010;
 					}
 				}
 			}
@@ -388,11 +388,11 @@ namespace ICSharpCode.SharpDevelop.Project
 					throw new ObjectDisposedException("MSBuildBasedProject");
 				
 				if (configuration == null)
-					configuration = this.ActiveConfiguration;
+					configuration = this.ActiveConfiguration.Configuration;
 				if (platform == null)
-					platform = this.ActivePlatform;
+					platform = this.ActiveConfiguration.Platform;
 				
-				bool openCurrentConfiguration = configuration == this.ActiveConfiguration && platform == this.ActivePlatform;
+				bool openCurrentConfiguration = configuration == this.ActiveConfiguration.Configuration && platform == this.ActiveConfiguration.Platform;
 				
 				if (currentlyOpenProject != null && openCurrentConfiguration) {
 					// use currently open project
@@ -1126,9 +1126,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)
 		{
 			ProjectBuildOptions projectOptions = base.CreateProjectBuildOptions(options, isRootBuildable);
-			Solution solution = this.ParentSolution;
-			string solutionConfiguration = options.SolutionConfiguration ?? solution.Preferences.ActiveConfiguration;
-			string solutionPlatform = options.SolutionPlatform ?? solution.Preferences.ActivePlatform;
+			ISolution solution = this.ParentSolution;
+			string solutionConfiguration = options.SolutionConfiguration ?? solution.ActiveConfiguration.Configuration;
+			string solutionPlatform = options.SolutionPlatform ?? solution.ActiveConfiguration.Platform;
 			
 			var configMatchings = solution.GetActiveConfigurationsAndPlatformsForProjects(solutionConfiguration, solutionPlatform);
 			// Find the project configuration, and build an XML string containing all configurations from the solution
@@ -1244,7 +1244,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void LoadProjectInternal(ProjectLoadInformation loadInformation)
 		{
-			this.projectCollection = loadInformation.ParentSolution.MSBuildProjectCollection;
+			this.projectCollection = loadInformation.MSBuildProjectCollection;
 			this.FileName = loadInformation.FileName;
 			if (loadInformation.Configuration != null)
 				this.ActiveConfiguration = loadInformation.Configuration;
@@ -1322,23 +1322,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			base.OnActiveConfigurationChanged(e);
 		}
-		
-		protected override void OnActivePlatformChanged(EventArgs e)
-		{
-			if (!isLoading) {
-				lock (SyncRoot) {
-					UnloadCurrentlyOpenProject();
-					CreateItemsListFromMSBuild();
-				}
-			}
-			base.OnActivePlatformChanged(e);
-		}
 		#endregion
 		
 		#region GetConfigurationNames / GetPlatformNames
 		IReadOnlyCollection<string> configurationNames, platformNames;
 		
-		public override IReadOnlyCollection<string> ConfigurationNames {
+		/*public override IReadOnlyCollection<string> ConfigurationNames {
 			get {
 				lock (SyncRoot) {
 					if (configurationNames == null) {
@@ -1359,7 +1348,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 		}
-		
+		*/
 		protected void InvalidateConfigurationPlatformNames()
 		{
 			lock (SyncRoot) {
@@ -1421,6 +1410,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region IProjectAllowChangeConfigurations interface implementation
+		/*
 		bool IProjectAllowChangeConfigurations.RenameProjectConfiguration(string oldName, string newName)
 		{
 			lock (SyncRoot) {
@@ -1610,6 +1600,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				return true;
 			}
 		}
+		*/
 		#endregion
 		
 		#region ProjectExtensions

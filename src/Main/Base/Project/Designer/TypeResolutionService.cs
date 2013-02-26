@@ -74,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Designer
 		}
 
 		
-		string formSourceFileName;
+		FileName formSourceFileName;
 		IProject callingProject;
 		/// <summary>
 		/// Dictionary of file name -> hash of loaded assemblies for the currently designed document.
@@ -89,10 +89,7 @@ namespace ICSharpCode.SharpDevelop.Designer
 		public IProject CallingProject {
 			get {
 				if (formSourceFileName != null) {
-					if (ProjectService.OpenSolution != null) {
-						return ProjectService.OpenSolution.FindProjectContainingFile(formSourceFileName);
-					}
-					formSourceFileName = null;
+					return SD.ProjectService.FindProjectContainingFile(formSourceFileName);
 				}
 				return callingProject;
 			}
@@ -102,7 +99,7 @@ namespace ICSharpCode.SharpDevelop.Designer
 		{
 		}
 		
-		public TypeResolutionService(string formSourceFileName)
+		public TypeResolutionService(FileName formSourceFileName)
 		{
 			this.formSourceFileName = formSourceFileName;
 		}

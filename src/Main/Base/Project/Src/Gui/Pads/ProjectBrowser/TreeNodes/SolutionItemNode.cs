@@ -11,10 +11,10 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public class SolutionItemNode : CustomFolderNode
 	{
-		Solution     solution;
-		SolutionItem item;
+		ISolution     solution;
+		ISolutionItem item;
 		
-		public SolutionItem SolutionItem {
+		public ISolutionItem SolutionItem {
 			get {
 				return item;
 			}
@@ -26,14 +26,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public SolutionItemNode(Solution solution, SolutionItem item)
+		public SolutionItemNode(ISolutionItem item)
 		{
 			sortOrder = 2;
 			canLabelEdit = true;
 			
 			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionItemNode";
 			
-			this.solution = solution;
+			this.solution = item.ParentSolution;
 			this.item = item;
 			this.Text = Path.GetFileName(FileName);
 			SetIcon(IconService.GetImageForFile(FileName));

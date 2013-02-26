@@ -462,9 +462,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public override void InformSetValue(PropertyDescriptor propertyDescriptor, object component, object value)
+		protected internal override void InformSetValue(PropertyDescriptor propertyDescriptor, object value)
 		{
-			base.InformSetValue(propertyDescriptor, component, value);
+			base.InformSetValue(propertyDescriptor, value);
 			if (project != null) {
 				project.Save();
 			}

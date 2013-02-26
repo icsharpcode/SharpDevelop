@@ -17,14 +17,14 @@ namespace PackageManagement.Tests
 		SolutionPackageRepositoryPath repositoryPath;
 		IProject testProject;
 		PackageManagementOptions options;
-		Solution solution;
+		ISolution solution;
 		
 		void CreateSolutionPackageRepositoryPath()
 		{
 			repositoryPath = new SolutionPackageRepositoryPath(testProject, options);
 		}
 		
-		void CreateSolutionPackageRepositoryPath(Solution solution)
+		void CreateSolutionPackageRepositoryPath(ISolution solution)
 		{
 			repositoryPath = new SolutionPackageRepositoryPath(solution, options);
 		}

@@ -34,7 +34,7 @@ namespace PackageManagement.Tests
 			TestableProject project1 = ProjectHelper.CreateTestProject("Test1");
 			TestableProject project2 = ProjectHelper.CreateTestProject("Test2");
 			
-			Solution solution = project1.ParentSolution;
+			ISolution solution = project1.ParentSolution;
 			project2.Parent = solution;
 			
 			fakeSolution.FakeMSBuildProjects.Add(project1);

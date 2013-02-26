@@ -127,36 +127,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			return location;
 		}
 		
-		readonly static Regex configurationRegEx = new Regex(@"'(?<property>[^']*)'\s*==\s*'(?<value>[^']*)'", RegexOptions.Compiled);
-		
-		internal static void GetConfigurationAndPlatformFromCondition(string condition,
-		                                                              out string configuration,
-		                                                              out string platform)
-		{
-			Match match = configurationRegEx.Match(condition);
-			if (match.Success) {
-				string conditionProperty = match.Result("${property}");
-				string conditionValue = match.Result("${value}");
-				if (conditionProperty == "$(Configuration)|$(Platform)") {
-					// configuration is ok
-					configuration = MSBuildBasedProject.GetConfigurationNameFromKey(conditionValue);
-					platform = MSBuildBasedProject.GetPlatformNameFromKey(conditionValue);
-				} else if (conditionProperty == "$(Configuration)") {
-					configuration = conditionValue;
-					platform = null;
-				} else if (conditionProperty == "$(Platform)") {
-					configuration = null;
-					platform = conditionValue;
-				} else {
-					configuration = null;
-					platform = null;
-				}
-			} else {
-				configuration = null;
-				platform = null;
-			}
-		}
-		
 		/// <summary>
 		/// Resolves the location of the reference files.
 		/// </summary>
@@ -204,7 +174,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			List<string> targets = new List<string>();
-			if (baseProject.MinimumSolutionVersion >= Solution.SolutionVersionVS2010) {
+			if (baseProject.MinimumSolutionVersion >= ISolution.SolutionVersionVS2010) {
 				targets.Add("ResolveReferences");
 				targets.Add("DesignTimeResolveAssemblyReferences");
 			} else {

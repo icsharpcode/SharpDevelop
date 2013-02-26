@@ -100,12 +100,11 @@ namespace ICSharpCode.SharpDevelop.Project
 					string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 					foreach (string file in files) {
 						try {
-							IProjectLoader loader = ProjectService.GetProjectLoader(file);
-							if (loader != null) {
-								FileUtility.ObservedLoad(new NamedFileOperationDelegate(loader.Load), file);
-							} else {
-								FileService.OpenFile(file);
-							}
+							var fileName = FileName.Create(file);
+							if (SD.ProjectService.IsProjectOrSolutionFile(fileName))
+								SD.ProjectService.OpenSolutionOrProject(fileName);
+							else
+								FileService.OpenFile(fileName);
 						} catch (Exception ex) {
 							MessageService.ShowException(ex, "unable to open file " + file);
 						}
@@ -281,12 +280,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		TreeNode FindDeepestOpenNodeForPath(string fileName)
 		{
 			//LoggingService.DebugFormatted("Finding Deepest for '{0}'", fileName);
-			Solution solution = ProjectService.OpenSolution;
+			ISolution solution = ProjectService.OpenSolution;
 			if (solution == null) {
 				return null;
 			}
 
-			IProject project = solution.FindProjectContainingFile(FileName.Create(fileName));
+			IProject project = SD.ProjectService.FindProjectContainingFile(FileName.Create(fileName));
 			if (project == null) {
 				//LoggingService.Debug("no IProject found");
 				return null;
@@ -375,17 +374,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-		public void ViewSolution(Solution solution)
+		public void ViewSolution(ISolution solution)
 		{
 			AbstractProjectBrowserTreeNode solutionNode = new SolutionNode(solution);
 			treeView.Clear();
 			solutionNode.AddTo(treeView);
 			
-			foreach (object treeObject in solution.Folders) {
+			foreach (var treeObject in solution.Items) {
 				if (treeObject is IProject) {
 					NodeBuilders.AddProjectNode(solutionNode, (IProject)treeObject);
 				} else {
-					SolutionFolderNode folderNode = new SolutionFolderNode(solution, (SolutionFolder)treeObject);
+					SolutionFolderNode folderNode = new SolutionFolderNode(solution, (ISolutionFolder)treeObject);
 					folderNode.InsertSorted(solutionNode);
 				}
 			}

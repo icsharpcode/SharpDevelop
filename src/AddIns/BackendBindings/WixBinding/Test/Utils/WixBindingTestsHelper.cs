@@ -25,7 +25,7 @@ namespace WixBinding.Tests.Utils
 			{
 			}
 			
-			public override bool ReadOnly {
+			public override bool IsReadOnly {
 				get { return false; }
 			}
 		}

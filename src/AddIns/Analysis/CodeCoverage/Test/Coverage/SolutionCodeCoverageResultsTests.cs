@@ -20,7 +20,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 	public class SolutionCodeCoverageResultsTests : SDTestFixtureBase
 	{
 		SolutionCodeCoverageResults solutionCodeCoverageResults;
-		Solution solution;
+		ISolution solution;
 		IFileSystem fakeFileSystem;
 		
 		void CreateSolutionCodeCoverageResults()

@@ -8,16 +8,16 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public class SolutionFolderRemoveVisitor : ProjectBrowserTreeNodeVisitor
 	{
-		ISolutionFolder folder;
+		ISolutionItem folder;
 		
-		public SolutionFolderRemoveVisitor(ISolutionFolder folder)
+		public SolutionFolderRemoveVisitor(ISolutionItem folder)
 		{
 			this.folder = folder;
 		}
 		
 		public override object Visit(SolutionFolderNode solutionFolderNode, object data)
 		{
-			if (folder == solutionFolderNode.Folder) {
+			if (folder == solutionFolderNode.SolutionItem) {
 				ExtTreeNode parent = solutionFolderNode.Parent as ExtTreeNode;
 				solutionFolderNode.Remove();
 				if (parent != null) {

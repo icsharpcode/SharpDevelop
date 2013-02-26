@@ -12,10 +12,9 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public class ProjectLoadInformation
 	{
-		public Solution ParentSolution { get; private set; }
+		public ISolution ParentSolution { get; private set; }
 		public FileName FileName { get; private set; }
-		public string Configuration { get; internal set; }
-		public string Platform { get; internal set; }
+		public ConfigurationAndPlatform Configuration { get; set; }
 		public string ProjectName { get; private set; }
 		public string TypeGuid { get; set; }
 		public IList<ProjectSection> ProjectSections {get; set;}
@@ -25,6 +24,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// The default is <c>true</c>.
 		/// </summary>
 		public bool InitializeTypeSystem { get; set; }
+		#warning this property is unused?
 		
 		internal string Guid { get; set; }
 		
@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public ProjectLoadInformation(Solution parentSolution, FileName fileName, string projectName)
+		public ProjectLoadInformation(ISolution parentSolution, FileName fileName, string projectName)
 		{
 			if (parentSolution == null)
 				throw new ArgumentNullException("parentSolution");

@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Project
 	{
 		ProjectHelper projectHelper;
 		BeforeBuildCustomToolProjectItems beforeBuildCustomToolProjectItems;
-		Solution solution;
+		ISolution solution;
 		
 		IProject CreateProject(string fileName = @"d:\MyProject\MyProject.csproj")
 		{

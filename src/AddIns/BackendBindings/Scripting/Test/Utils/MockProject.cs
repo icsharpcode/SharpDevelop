@@ -52,7 +52,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			get { return syncRoot; }
 		}
 		
-		public Solution ParentSolution {
+		public ISolution ParentSolution {
 			get { return new Solution(new MockProjectChangeWatcher()); }
 		}
 		
@@ -181,7 +181,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			}
 		}
 		
-		public ISolutionFolderContainer Parent {
+		public ISolutionFolder Parent {
 			get {
 				throw new NotImplementedException();
 			}

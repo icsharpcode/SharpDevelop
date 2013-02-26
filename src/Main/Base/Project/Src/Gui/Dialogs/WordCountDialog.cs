@@ -147,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			UpdateList(0);
 		}
 		
-		void CountSolution(Solution solution, ref Report all)
+		void CountSolution(ISolution solution, ref Report all)
 		{
 			foreach (IProject project in solution.Projects) {
 				CountProject(project, ref all);

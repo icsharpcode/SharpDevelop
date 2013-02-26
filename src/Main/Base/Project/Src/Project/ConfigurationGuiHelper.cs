@@ -48,8 +48,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			this.project = project;
 			this.controlDictionary = controlDictionary;
-			this.configuration = project.ActiveConfiguration;
-			this.platform = project.ActivePlatform;
+			this.configuration = project.ActiveConfiguration.Configuration;
+			this.platform = project.ActiveConfiguration.Platform;
 		}
 		
 		public MSBuildBasedProject Project {

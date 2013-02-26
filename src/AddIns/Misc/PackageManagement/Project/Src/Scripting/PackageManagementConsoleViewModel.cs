@@ -139,7 +139,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		void AddProjects()
 		{
-			Solution solution = projectService.OpenSolution;
+			ISolution solution = projectService.OpenSolution;
 			if (solution != null) {
 				AddProjects(solution);
 			}
@@ -151,7 +151,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 			DefaultProject = projects.FirstOrDefault();
 		}
 		
-		void AddProjects(Solution solution)
+		void AddProjects(ISolution solution)
 		{
 			foreach (IProject project in solution.Projects) {
 				projects.Add(project);

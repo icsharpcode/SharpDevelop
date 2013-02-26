@@ -21,7 +21,7 @@ namespace UnitTesting.Tests.Utils
 		{
 		}
 		
-		public MockCSharpProject(Solution solution, string name)
+		public MockCSharpProject(ISolution solution, string name)
 			: base(new ProjectCreateInformation {
 			       	Solution = solution,
 			       	ProjectName = name,

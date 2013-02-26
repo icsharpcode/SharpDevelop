@@ -104,14 +104,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			MSBuildEngine engine = new MSBuildEngine(project, options, feedbackSink);
 			engine.additionalTargetFiles = additionalTargetFiles.ToList();
-			if (project.MinimumSolutionVersion >= Solution.SolutionVersionVS2010) {
+			if (project.MinimumSolutionVersion >= SolutionFormatVersion.VS2010) {
 				engine.additionalTargetFiles.Add(Path.Combine(Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location), "SharpDevelop.TargetingPack.targets"));
 			}
 			return engine.RunBuildAsync(cancellationToken);
 		}
 		
 		readonly string projectFileName;
-		readonly int projectMinimumSolutionVersion;
+		readonly SolutionFormatVersion projectMinimumSolutionVersion;
 		ProjectBuildOptions options;
 		IBuildFeedbackSink feedbackSink;
 		List<string> additionalTargetFiles;
@@ -174,7 +174,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the minimum solution version (VS version) required to open the project.
 		/// </summary>
-		public int ProjectMinimumSolutionVersion {
+		public SolutionFormatVersion ProjectMinimumSolutionVersion {
 			get { return projectMinimumSolutionVersion; }
 		}
 		
@@ -267,7 +267,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			tcs = new TaskCompletionSource<bool>();
-			if (projectMinimumSolutionVersion <= Solution.SolutionVersionVS2008) {
+			if (projectMinimumSolutionVersion <= ISolution.SolutionVersionVS2008) {
 				if (DotnetDetection.IsDotnet35SP1Installed()) {
 					BuildWorkerManager.MSBuild35.RunBuildJob(job, loggerChain, OnDone, cancellationToken);
 				} else {
@@ -319,7 +319,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				// 'MsTestToolsTargets' is preferred because it's at the end of the MSBuild 3.5 and 4.0 target file,
 				// but on MSBuild 2.0 we need to fall back to 'CodeAnalysisTargets'.
 				string hijackedProperty = "MsTestToolsTargets";
-				if (projectMinimumSolutionVersion == Solution.SolutionVersionVS2005)
+				if (projectMinimumSolutionVersion == ISolution.SolutionVersionVS2005)
 					hijackedProperty = "CodeAnalysisTargets";
 				
 				// because we'll replace the hijackedProperty, manually write the corresponding include

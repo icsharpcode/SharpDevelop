@@ -89,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		public ICompilation GetCompilationForFile(FileName fileName)
 		{
-			Solution solution = ProjectService.OpenSolution;
+			ISolution solution = ProjectService.OpenSolution;
 			IProject project = solution != null ? solution.FindProjectContainingFile(fileName) : null;
 			if (project != null)
 				return GetCompilation(project);

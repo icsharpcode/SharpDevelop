@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (node != null) {
 				using (NewProjectDialog npdlg = new NewProjectDialog(false)) {
 					npdlg.SolutionFolderNode = solutionFolderNode;
-					npdlg.InitialProjectLocationDirectory = GetInitialDirectorySuggestion(solutionFolderNode);
+					npdlg.InitialProjectLocationDirectory = GetInitialDirectorySuggestion(solutionFolderNode.Folder);
 					
 					// show the dialog to request project type and name
 					if (npdlg.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
@@ -34,12 +34,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 		}
 		
-		internal static string GetInitialDirectorySuggestion(ISolutionFolderNode solutionFolderNode)
+		internal static string GetInitialDirectorySuggestion(ISolutionFolder solutionFolder)
 		{
 			// Detect the correct folder to place the new project in:
 			int projectCount = 0;
 			string initialDirectory = null;
-			foreach (ISolutionFolder folderEntry in solutionFolderNode.Container.Folders) {
+			foreach (ISolutionItem folderEntry in solutionFolder.Items) {
 				IProject project = folderEntry as IProject;
 				if (project != null) {
 					if (projectCount == 0)
@@ -56,33 +56,13 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					return initialDirectory;
 				}
 			} else {
-				return solutionFolderNode.Solution.Directory;
+				return solutionFolder.ParentSolution.Directory;
 			}
 		}
 	}
 	
 	public class AddExistingProjectToSolution : AbstractMenuCommand
 	{
-		public static void AddProject(ISolutionFolderNode solutionFolderNode, FileName fileName)
-		{
-			if (solutionFolderNode == null)
-				throw new ArgumentNullException("solutionFolderNode");
-			ProjectLoadInformation loadInfo = new ProjectLoadInformation(solutionFolderNode.Solution, fileName, Path.GetFileNameWithoutExtension(fileName));
-			AddProject(solutionFolderNode, ProjectBindingService.LoadProject(loadInfo));
-		}
-		
-		public static void AddProject(ISolutionFolderNode solutionFolderNode, IProject newProject)
-		{
-			if (solutionFolderNode == null)
-				throw new ArgumentNullException("solutionFolderNode");
-			if (newProject != null) {
-				newProject.Location = FileUtility.GetRelativePath(solutionFolderNode.Solution.Directory, newProject.FileName);
-				ProjectService.AddProject(solutionFolderNode, newProject);
-				NodeBuilders.AddProjectNode((TreeNode)solutionFolderNode, newProject).EnsureVisible();
-				solutionFolderNode.Solution.ApplySolutionConfigurationAndPlatformToProjects();
-			}
-		}
-		
 		public override void Run()
 		{
 			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
@@ -93,10 +73,10 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					fdiag.Filter = ProjectService.GetAllProjectsFilter(this, false);
 					fdiag.Multiselect     = true;
 					fdiag.CheckFileExists = true;
-					fdiag.InitialDirectory = AddNewProjectToSolution.GetInitialDirectorySuggestion(solutionFolderNode);
+					fdiag.InitialDirectory = AddNewProjectToSolution.GetInitialDirectorySuggestion(solutionFolderNode.Folder);
 					if (fdiag.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 						foreach (string fileName in fdiag.FileNames) {
-							AddProject(solutionFolderNode, FileName.Create(fileName));
+							solutionFolderNode.Solution.AddExistingProject(FileName.Create(fileName), solutionFolderNode.Folder);
 						}
 						ProjectService.SaveSolution();
 					}

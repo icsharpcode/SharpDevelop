@@ -645,7 +645,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			FileProjectItem newItem = AddExistingItemsToProject.CopyFile(fileName, this, true);
-			IProject sourceProject = Solution.FindProjectContainingFile(fileName);
+			IProject sourceProject = ISolution.FindProjectContainingFile(fileName);
 			if (sourceProject != null) {
 				string sourceDirectory = Path.GetDirectoryName(fileName);
 				bool dependendElementsCopied = false;

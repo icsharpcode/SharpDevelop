@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// When you implement IProject, you should also implement IProjectItemListProvider and IProjectAllowChangeConfigurations
 	/// </summary>
 	public interface IProject
-		: IBuildable, ISolutionFolder, IDisposable, IMementoCapable
+		: IBuildable, ISolutionItem, IDisposable, IMementoCapable, IConfigurable
 	{
 		/// <summary>
 		/// Gets the list of items in the project. This member is thread-safe.
@@ -108,7 +108,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </para>
 		/// <para>This member is thread-safe.</para>
 		/// </summary>
-		bool ReadOnly {
+		bool IsReadOnly {
 			get;
 		}
 		
@@ -156,42 +156,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-		#region Configuration / Platform management
 		/// <summary>
-		/// Gets/Sets the active configuration.
+		/// Gets the configuration mapping.
 		/// </summary>
-		string ActiveConfiguration {
-			get;
-			set;
-		}
-		
-		/// <summary>
-		/// Gets/Sets the active platform.
-		/// </summary>
-		string ActivePlatform {
-			get;
-			set;
-		}
-		/// <summary>
-		/// Gets the list of available configuration names.
-		/// </summary>
-		IReadOnlyCollection<string> ConfigurationNames { get; }
-		
-		/// <summary>
-		/// Gets the list of available platform names.
-		/// </summary>
-		IReadOnlyCollection<string> PlatformNames { get; }
-		
-		/// <summary>
-		/// Is raised after the ActiveConfiguration property has changed.
-		/// </summary>
-		event EventHandler ActiveConfigurationChanged;
-		
-		/// <summary>
-		/// Is raised after the ActivePlatform property has changed.
-		/// </summary>
-		event EventHandler ActivePlatformChanged;
-		#endregion
+		IConfigurationMapping ConfigurationMapping { get; }
 		
 		/// <summary>
 		/// Saves the project using its current file name.
@@ -238,7 +206,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the minimum version the solution must have to support this project type.
 		/// </summary>
-		int MinimumSolutionVersion { get; }
+		SolutionFormatVersion MinimumSolutionVersion { get; }
 		
 		/// <summary>
 		/// Resolves assembly references for this project.
@@ -335,12 +303,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Never returns null, but may return a permanently empty collection if this project does not support such models.
 		/// </summary>
 		ITypeDefinitionModelCollection TypeDefinitionModels { get; }
-		
-		/// <summary>
-		/// Gets the parent solution.
-		/// This property is thread-safe.
-		/// </summary>
-		Solution ParentSolution { get; }
 	}
 	
 	/// <summary>
@@ -368,20 +330,5 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Removes an entry from the Items-collection
 		/// </summary>
 		bool RemoveProjectItem(ProjectItem item);
-	}
-	
-	/// <summary>
-	/// Interface for changing project or solution configuration.
-	/// IProject implementors should implement this interface, but only the SharpDevelop methods
-	/// Solution.RenameProjectPlatform etc. may call the interface members.
-	/// </summary>
-	public interface IProjectAllowChangeConfigurations
-	{
-		bool RenameProjectConfiguration(string oldName, string newName);
-		bool RenameProjectPlatform(string oldName, string newName);
-		bool AddProjectConfiguration(string newName, string copyFrom);
-		bool AddProjectPlatform(string newName, string copyFrom);
-		bool RemoveProjectConfiguration(string name);
-		bool RemoveProjectPlatform(string name);
 	}
 }
