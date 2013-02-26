@@ -61,54 +61,73 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (service != null && !service.IsValidName(resolveResult.Identifier, AffectedEntity.Class)) { 
 				yield break;
 			}
+			ClassType classType = GuessClassType (node);
 
-			yield return new CodeAction(context.TranslateString("Create class"), script => {
-				script.CreateNewType(CreateType(context, service, node));
+			yield return new CodeAction(classType == ClassType.Interface ? context.TranslateString("Create interface") : context.TranslateString("Create class"), script => {
+				script.CreateNewType(CreateType(context, service, node, classType));
 			});
 
+			if (node.Parent is TypeDeclaration || classType == ClassType.Interface)
+				yield break;
 			yield return new CodeAction(context.TranslateString("Create nested class"), script => {
 				script.InsertWithCursor(
 					context.TranslateString("Create nested class"),
 					Script.InsertPosition.Before,
-					CreateType(context, service, node)
+					CreateType(context, service, node, classType)
 				);
 			});
 		}
 
-		static TypeDeclaration CreateType(RefactoringContext context, NamingConventionService service, AstNode node)
+		static ClassType GuessClassTypeByName(string identifier)
+		{
+			if (identifier.Length > 0 && identifier[0] == 'I' && char.IsUpper (identifier[1]))
+				return ClassType.Interface;
+			return ClassType.Class;
+		}
+
+		static ClassType GuessClassType(AstNode node)
+		{
+			if (node is SimpleType) 
+				return GuessClassTypeByName (((SimpleType)node).Identifier);
+			if (node is IdentifierExpression) 
+				return GuessClassTypeByName (((IdentifierExpression)node).Identifier);
+			return ClassType.Class;
+		}
+
+		static TypeDeclaration CreateType(RefactoringContext context, NamingConventionService service, AstNode node, ClassType classType)
 		{
 			TypeDeclaration result;
 			if (node is SimpleType) {
-				result = CreateClassFromType(context, (SimpleType)node);
+				result = CreateClassFromType(context, classType, (SimpleType)node);
 			} else if (node is ObjectCreateExpression) {
 				result = CreateClassFromObjectCreation(context, (ObjectCreateExpression)node);
 			} else {
-				result = CreateClassFromIdentifier(context, (IdentifierExpression)node);
+				result = CreateClassFromIdentifier(context, classType, (IdentifierExpression)node);
 			}
 
 			return AddBaseTypesAccordingToNamingRules(context, service, result);
 		}
 
-		static TypeDeclaration CreateClassFromIdentifier(RefactoringContext context, IdentifierExpression identifierExpression)
+		static TypeDeclaration CreateClassFromIdentifier(RefactoringContext context, ClassType classType, IdentifierExpression identifierExpression)
 		{
-			var result = new TypeDeclaration { Name = identifierExpression.Identifier };
+			var result = new TypeDeclaration { Name = identifierExpression.Identifier, ClassType = classType };
 			var entity = identifierExpression.GetParent<EntityDeclaration>();
 			if (entity != null)
 				result.Modifiers |= entity.Modifiers & Modifiers.Public;
 			return result;
 		}
 
-		static TypeDeclaration CreateClassFromType(RefactoringContext context, SimpleType simpleType)
+		static TypeDeclaration CreateClassFromType(RefactoringContext context, ClassType classType, SimpleType simpleType)
 		{
 			TypeDeclaration result;
 			string className = simpleType.Identifier;
 
-			if (simpleType.Parent is Attribute) {
+			if (simpleType.Parent is Attribute && classType == ClassType.Class) {
 				if (!className.EndsWith("Attribute", System.StringComparison.Ordinal))
 					className += "Attribute";
 			}
 
-			result = new TypeDeclaration { Name = className };
+			result = new TypeDeclaration { Name = className, ClassType = classType };
 			var entity = simpleType.GetParent<EntityDeclaration>();
 			if (entity != null)
 				result.Modifiers |= entity.Modifiers & Modifiers.Public;
