@@ -36,13 +36,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			var createExpression = context.GetNode<ObjectCreateExpression>();
-			if (createExpression != null) 
-				return GetActions(context, createExpression);
-			
 			var simpleType = context.GetNode<SimpleType>();
 			if (simpleType != null && !(simpleType.Parent is EventDeclaration || simpleType.Parent is CustomEventDeclaration)) 
 				return GetActions(context, simpleType);
+
+			var createExpression = context.GetNode<ObjectCreateExpression>();
+			if (createExpression != null) 
+				return GetActions(context, createExpression);
 
 			var identifier = context.GetNode<IdentifierExpression>();
 			if (identifier != null && (identifier.Parent is MemberReferenceExpression)) 

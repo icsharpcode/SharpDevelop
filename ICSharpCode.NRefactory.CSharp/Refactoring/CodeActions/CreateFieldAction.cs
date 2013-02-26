@@ -292,13 +292,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		public static IType GuessType(RefactoringContext context, AstNode expr)
 		{
-			if (expr is SimpleType && expr.Role == Roles.TypeArgument && (expr.Parent is MemberReferenceExpression || expr.Parent is IdentifierExpression)) {
-				var rr = context.Resolve (expr.Parent);
-				var argumentNumber = expr.Parent.GetChildrenByRole (Roles.TypeArgument).TakeWhile (c => c != expr).Count ();
-
-				var mgrr = rr as MethodGroupResolveResult;
-				if (mgrr != null && mgrr.Methods.Any () && mgrr.Methods.First ().TypeArguments.Count > argumentNumber) {
-					return mgrr.Methods.First ().TypeParameters[argumentNumber]; 
+			if (expr is SimpleType && expr.Role == Roles.TypeArgument) {
+				if (expr.Parent is MemberReferenceExpression || expr.Parent is IdentifierExpression) {
+					var rr = context.Resolve (expr.Parent);
+					var argumentNumber = expr.Parent.GetChildrenByRole (Roles.TypeArgument).TakeWhile (c => c != expr).Count ();
+					
+					var mgrr = rr as MethodGroupResolveResult;
+					if (mgrr != null && mgrr.Methods.Any () && mgrr.Methods.First ().TypeArguments.Count > argumentNumber)
+						return mgrr.Methods.First ().TypeParameters[argumentNumber]; 
+				} else if (expr.Parent is MemberType || expr.Parent is SimpleType) {
+					var rr = context.Resolve (expr.Parent);
+					var argumentNumber = expr.Parent.GetChildrenByRole (Roles.TypeArgument).TakeWhile (c => c != expr).Count ();
+					var mgrr = rr as TypeResolveResult;
+					if (mgrr != null &&  mgrr.Type.TypeParameterCount > argumentNumber) {
+						return mgrr.Type.GetDefinition ().TypeParameters[argumentNumber]; 
+					}
 				}
 			}
 

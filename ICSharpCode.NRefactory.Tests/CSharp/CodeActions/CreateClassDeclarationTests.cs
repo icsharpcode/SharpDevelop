@@ -485,5 +485,66 @@ public class Test
 ");
 		}
 
+		[Test]
+		public void TestClassTypeParameter ()
+		{
+			Test<CreateClassDeclarationAction> (
+				@"
+public class Test 
+{
+	public class Generate<T> where T : struct {}
+
+	public void FooBar ()
+	{
+		Generate<$Data> foo;
+	}
+}
+", @"
+public struct Data
+{
+}
+public class Test 
+{
+	public class Generate<T> where T : struct {}
+
+	public void FooBar ()
+	{
+		Generate<Data> foo;
+	}
+}
+");
+		}
+		[Test]
+		public void TestClassTypeParameterCase2 ()
+		{
+			Test<CreateClassDeclarationAction> (
+				@"
+public class Test 
+{
+	public class Generate<T> where T : struct {}
+
+	public void FooBar ()
+	{
+		new Generate<$Data> ();
+	}
+}
+", @"
+public struct Data
+{
+}
+public class Test 
+{
+	public class Generate<T> where T : struct {}
+
+	public void FooBar ()
+	{
+		new Generate<Data> ();
+	}
+}
+");
+		}
+
+
+
 	}
 }
