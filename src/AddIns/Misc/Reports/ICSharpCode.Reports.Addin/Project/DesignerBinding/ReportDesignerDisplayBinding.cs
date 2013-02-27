@@ -2,9 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.IO;
+using ICSharpCode.Reports.Addin.ReportWizard;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.Reports.Addin.ReportWizard;
+using ICSharpCode.SharpDevelop.Workbench;
+
 namespace ICSharpCode.Reports.Addin
 {
 	/// <summary>
@@ -12,14 +15,12 @@ namespace ICSharpCode.Reports.Addin
 	/// </summary>
 	public class ReportDesignerDisplayBinding:IDisplayBinding
 	{
-		public ReportDesignerDisplayBinding()
+		
+		public bool CanCreateContentForFile(ICSharpCode.Core.FileName fileName)
 		{
+			return Path.GetExtension(fileName).Equals(".srd", StringComparison.OrdinalIgnoreCase);
 		}
 		
-		public bool CanCreateContentForFile(string fileName)
-		{
-			return true; // definition in .addin does extension-based filtering
-		}
 		
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
@@ -34,15 +35,16 @@ namespace ICSharpCode.Reports.Addin
 			ReportDesignerView view = ICSharpCode.Reports.Addin.Commands.StartViewCommand.SetupDesigner(file);
 			return view;
 		}
-		
-		public bool IsPreferredBindingForFile(string fileName)
+
+		public bool IsPreferredBindingForFile(ICSharpCode.Core.FileName fileName)
 		{
 			return true;
 		}
 		
-		public double AutoDetectFileContent(string fileName, System.IO.Stream fileContent, string detectedMimeType)
+		
+		public double AutoDetectFileContent(ICSharpCode.Core.FileName fileName, System.IO.Stream fileContent, string detectedMimeType)
 		{
-			return 1;
+			throw new NotImplementedException();
 		}
 	}
 }

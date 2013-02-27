@@ -17,6 +17,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 	/// Description of GenerateListWithGroupFixture.
 	/// </summary>
 	[TestFixture]
+	[Ignore]
 	public class GenerateListWithGroupFixture
 	{
 		

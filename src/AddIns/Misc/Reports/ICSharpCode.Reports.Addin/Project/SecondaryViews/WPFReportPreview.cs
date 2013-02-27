@@ -12,7 +12,9 @@ using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.WpfReportViewer;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Reports.Addin.SecondaryViews
 {

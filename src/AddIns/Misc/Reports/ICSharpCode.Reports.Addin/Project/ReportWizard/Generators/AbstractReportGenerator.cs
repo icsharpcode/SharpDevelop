@@ -52,9 +52,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			if (properties == null) {
 				throw new ArgumentNullException("customizer");
 			}
+			throw new NotImplementedException("Fix me AbstractReportGenerator");
 			this.ReportModel = reportModel;
 			this.Properties = properties;
-			ReportStructure = (ReportStructure)properties.Get("Generator");
+//			ReportStructure = (ReportStructure)properties.Get("Generator");
 			
 			this.AvailableFieldsCollection.Clear();
 			this.ReportItemCollection.Clear();

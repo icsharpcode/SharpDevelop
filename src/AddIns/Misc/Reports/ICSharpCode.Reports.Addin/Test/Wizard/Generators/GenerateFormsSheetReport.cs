@@ -12,6 +12,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 {
 	
 	[TestFixture]
+	[Ignore]
 	public class GenerateFormsSheetReportFixture
 	{
 		

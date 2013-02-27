@@ -12,6 +12,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Reports.Addin
 {

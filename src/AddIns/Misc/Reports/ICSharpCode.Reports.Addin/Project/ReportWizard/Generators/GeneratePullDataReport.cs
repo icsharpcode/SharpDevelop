@@ -37,12 +37,12 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			base.ReportModel.ReportSettings.DataModel = GlobalEnums.PushPullModel.PullData;
 			base.GenerateReport();
 		
-			GlobalEnums.ReportLayout reportLayout = (GlobalEnums.ReportLayout)base.Properties.Get("ReportLayout");
-			AbstractLayout layout = LayoutFactory.CreateGenerator(reportLayout,base.ReportModel,base.ReportItemCollection);
-			layout.CreateReportHeader();
-			layout.CreatePageHeader();
-			layout.CreateDataSection(base.ReportModel.DetailSection);
-			layout.CreatePageFooter();
+//			GlobalEnums.ReportLayout reportLayout = (GlobalEnums.ReportLayout)base.Properties.Get("ReportLayout");
+//			AbstractLayout layout = LayoutFactory.CreateGenerator(reportLayout,base.ReportModel,base.ReportItemCollection);
+//			layout.CreateReportHeader();
+//			layout.CreatePageHeader();
+//			layout.CreateDataSection(base.ReportModel.DetailSection);
+//			layout.CreatePageFooter();
 			base.WriteToXml();
 		}
 	}

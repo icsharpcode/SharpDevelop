@@ -159,7 +159,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard{
 		{
 			if (customizer == null) {
 				customizer = (Properties)base.CustomizationObject;
-				generator = (ReportStructure)customizer.Get("Generator");
+//				generator = (ReportStructure)customizer.Get("Generator");
 			}
 
 			generator.ReportName = txtReportName.Text;

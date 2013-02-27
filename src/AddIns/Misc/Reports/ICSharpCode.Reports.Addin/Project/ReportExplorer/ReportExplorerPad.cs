@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Reports.Addin
 {

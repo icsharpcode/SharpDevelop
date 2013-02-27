@@ -78,7 +78,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		{
 			if (customizer == null) {
 				customizer = (Properties)base.CustomizationObject;
-				reportStructure = (ReportStructure)customizer.Get("Generator");
+//				reportStructure = (ReportStructure)customizer.Get("Generator");
 			}
 			
 			if (message == DialogMessage.Next) {

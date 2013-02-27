@@ -51,7 +51,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.LanguageTests
         {
         	const string expression = "dateSubtract('09.02.2013','10.02.2013')";
         	IExpression expr = CreateExpression(expression);
-        	Assert.That(expr.Evaluate(null), Is.EqualTo(new TimeSpan(1,0,0,0)));
+        	Assert.That(expr.Evaluate(null), Is.EqualTo(new TimeSpan(-1,0,0,0)));
         }
         
         [Test]

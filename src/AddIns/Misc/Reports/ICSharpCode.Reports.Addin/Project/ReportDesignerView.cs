@@ -23,6 +23,8 @@ using ICSharpCode.Reports.Core.Factories;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Reports.Addin
 {
@@ -391,10 +393,14 @@ namespace ICSharpCode.Reports.Addin
 		
 		#region IHasPropertyContainer impementation
 		
-		PropertyContainer propertyContainer = new PropertyContainer();
+//		PropertyContainer propertyContainer = new PropertyContainer();
+		PropertyContainer propertyContainer;
 		
 		public PropertyContainer PropertyContainer {
 			get {
+				if (propertyContainer == null) {
+					propertyContainer = new PropertyContainer();
+				}
 				return propertyContainer;
 			}
 		}
@@ -665,7 +671,7 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
-		public override void Save(ICSharpCode.SharpDevelop.OpenedFile file,Stream stream)
+		public override void Save(OpenedFile file,Stream stream)
 		{
 			LoggingService.Debug("ReportDesigner: Save to: " + file.FileName);
 			

@@ -43,15 +43,15 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 			if (message == DialogMessage.Activated) {
 				
-				this.layoutControl.ReportLayout = (GlobalEnums.ReportLayout)customizer.Get("ReportLayout");
-				reportStructure = (ReportStructure)customizer.Get("Generator");
+//				this.layoutControl.ReportLayout = (GlobalEnums.ReportLayout)customizer.Get("ReportLayout");
+//				reportStructure = (ReportStructure)customizer.Get("Generator");
 				layoutControl.AvailableFieldsCollection = reportStructure.AvailableFieldsCollection;
 			}
 			
 			else if (message == DialogMessage.Finish)
 			{
-				customizer.Set ("ReportLayout",this.layoutControl.ReportLayout);
-				var reportStructure = (ReportStructure)customizer.Get("Generator");
+//				customizer.Set ("ReportLayout",this.layoutControl.ReportLayout);
+//				var reportStructure = (ReportStructure)customizer.Get("Generator");
 				reportStructure.Grouping = layoutControl.GroupName;
 			}
 			return true;

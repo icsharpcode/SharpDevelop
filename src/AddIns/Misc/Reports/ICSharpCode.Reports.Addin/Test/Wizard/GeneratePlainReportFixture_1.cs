@@ -15,9 +15,11 @@ using NUnit.Framework;
 namespace ICSharpCode.Reports.Addin.Test.Wizard
 {
 	[TestFixture]
+	[Ignore]
 	public class GeneratePlainReportFixture
 	{
 		[Test]
+		
 		public void GeneratePlainReport_1()
 		{
 			ReportModel model = ReportModel.Create();

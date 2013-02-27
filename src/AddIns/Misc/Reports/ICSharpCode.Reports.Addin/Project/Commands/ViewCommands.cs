@@ -12,6 +12,7 @@ using ICSharpCode.Reports.Core.Dialogs;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Reports.Addin.Commands
 {
@@ -35,9 +36,10 @@ namespace ICSharpCode.Reports.Addin.Commands
 			IReportGenerator generator = new GeneratePlainReport(model,customizer);
 			generator.GenerateReport();
 			
-			OpenedFile file = FileService.CreateUntitledOpenedFile(GlobalValues.PlainFileName,new byte[0]);
-			file.SetData(generator.Generated.ToArray());
-			return SetupDesigner(file);
+//			OpenedFile file = FileService.CreateUntitledOpenedFile(GlobalValues.PlainFileName,new byte[0]);
+//			file.SetData(generator.Generated.ToArray());
+//			return SetupDesigner(file);
+			return SetupDesigner(null);
 		}
 		
 		

@@ -10,6 +10,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Reports.Addin.Commands
 {
@@ -110,8 +111,8 @@ namespace ICSharpCode.Reports.Addin.Commands
 		}
 		
 	}
-	
-	public class DesignerVerbSubmenuBuilder : ISubmenuBuilder
+	/*
+	public class DesignerVerbSubmenuBuilder : IMenuItemBuilder
 	{
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
@@ -154,7 +155,7 @@ namespace ICSharpCode.Reports.Addin.Commands
 			}
 		}
 	}
-	
+	*/
 	
 	#region Align Commands
 	/*
