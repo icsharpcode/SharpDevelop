@@ -94,9 +94,9 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 		public void NegativeTimeSpan_HH_mm_ss ()
 		{
 			string toFormat = "-5:50:10";
-			string format = "HH:mm:ss";
+			string format = "H:mm:ss";
 			var result = StandardFormatter.FormatOutput(toFormat,format,dateTimetype,nullValue);
-			Assert.That(result,Is.EqualTo("-05:50:10"));
+			Assert.That(result,Is.EqualTo("-5:50:10"));
 		}
 		
 		
