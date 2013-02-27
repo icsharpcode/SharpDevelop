@@ -98,6 +98,22 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 		
 		
 		[Test]
+		public void NegativeTimeSpan_HH_mm_ss ()
+		{
+			TimeSpan time;
+			string toFormat = "-5:50:10";
+			string format = "H:mm:ss";
+			var result = StandardFormatter.FormatOutput(toFormat,format,dateTimetype,nullValue);
+			Assert.That(result,Is.EqualTo("-5:50:10"));
+			bool valid = TimeSpan.TryParseExact(result,
+			                                    "c",
+			                                    CultureInfo.CurrentCulture,
+			                                    out time);
+			Assert.That(valid,Is.True);
+		}
+		
+		
+		[Test]
 		public void TimeSpan_D_H_mm_ss ()
 		{
 			string toFormat = "1,5:50:10";
