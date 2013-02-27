@@ -853,7 +853,7 @@ namespace Mono.CSharp {
 
 				if (ec.CurrentIterator != null) {
 					Error_ReturnFromIterator (ec);
-				} else {
+				} else if (ec.ReturnType != InternalType.ErrorType) {
 					ec.Report.Error (126, loc,
 						"An object of a type convertible to `{0}' is required for the return statement",
 						ec.ReturnType.GetSignatureForError ());
@@ -2303,10 +2303,9 @@ namespace Mono.CSharp {
 
 				if (!s.Resolve (ec)) {
 					ok = false;
-					if (ec.IsInProbingMode)
-						break;
+					if (!ec.IsInProbingMode)
+						statements [ix] = new EmptyStatement (s.loc);
 
-					statements [ix] = new EmptyStatement (s.loc);
 					continue;
 				}
 
@@ -2560,12 +2559,14 @@ namespace Mono.CSharp {
 
 					if (b.Explicit == b.Explicit.ParametersBlock && b.Explicit.ParametersBlock.StateMachine != null) {
 						storey.HoistedThis = b.Explicit.ParametersBlock.StateMachine.HoistedThis;
-						break;
+
+						if (storey.HoistedThis != null)
+							break;
 					}
 				}
-
+				
 				//
-				// We are the first storey on path and this has to be hoisted
+				// We are the first storey on path and 'this' has to be hoisted
 				//
 				if (storey.HoistedThis == null) {
 					foreach (ExplicitBlock ref_block in Original.ParametersBlock.TopBlock.ThisReferencesFromChildrenBlock) {
@@ -2581,8 +2582,9 @@ namespace Mono.CSharp {
 						if (block_on_path == null)
 							continue;
 
-						if (storey.HoistedThis == null)
+						if (storey.HoistedThis == null) {
 							storey.AddCapturedThisField (ec);
+						}
 
 						for (ExplicitBlock b = ref_block; b.AnonymousMethodStorey != storey; b = b.Parent.Explicit) {
 							if (b.AnonymousMethodStorey != null) {
@@ -2605,7 +2607,7 @@ namespace Mono.CSharp {
 
 								pb.StateMachine.AddParentStoreyReference (ec, storey);
 							}
-
+							
 							b.HasCapturedVariable = true;
 						}
 					}
@@ -4190,11 +4192,17 @@ namespace Mono.CSharp {
 					constant_section = default_section;
 			} else {
 				//
-				// Store switch expression for comparission purposes
+				// Store switch expression for comparison purposes
 				//
 				value = new_expr as VariableReference;
-				if (value == null)
+				if (value == null) {
+					// Create temporary variable inside switch scope
+					var block = ec.CurrentBlock;
+					ec.CurrentBlock = Block;
 					value = TemporaryVariableReference.Create (SwitchType, ec.CurrentBlock, loc);
+					value.Resolve (ec);
+					ec.CurrentBlock = block;
+				}
 			}
 
 			bool first = true;
@@ -6126,7 +6134,7 @@ namespace Mono.CSharp {
 				if (mg != null) {
 					mg.InstanceExpression = expr;
 					Arguments args = new Arguments (0);
-					mg = mg.OverloadResolve (rc, ref args, this, OverloadResolver.Restrictions.None);
+					mg = mg.OverloadResolve (rc, ref args, this, OverloadResolver.Restrictions.ProbingOnly);
 
 					// For ambiguous GetEnumerator name warning CS0278 was reported, but Option 2 could still apply
 					if (ambiguous_getenumerator_name)
