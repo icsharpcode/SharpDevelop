@@ -140,12 +140,40 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				ProcessNodes (startNode);
 			}
 
+			class SearchInvocationsVisitor  : DepthFirstAstVisitor
+			{
+				bool foundInvocations;
+
+				public bool ContainsInvocations(AstNode node)
+				{
+					foundInvocations = false;
+					node.AcceptVisitor (this);
+					return foundInvocations;
+				}
+
+				protected override void VisitChildren (AstNode node)
+				{
+					AstNode next;
+					for (var child = node.FirstChild; child != null && !foundInvocations; child = next) {
+						next = child.NextSibling;
+						child.AcceptVisitor (this);
+					}
+				}
+
+				public override void VisitInvocationExpression(InvocationExpression invocationExpression)
+				{
+					foundInvocations = true;
+				}
+			}
+
 			void AddIssue (AstNode node)
 			{
 				var title = ctx.TranslateString ("Remove redundant assignment");
 
 				var variableInitializer = node as VariableInitializer;
 				if (variableInitializer != null) {
+					if (new SearchInvocationsVisitor ().ContainsInvocations (variableInitializer.Initializer))
+						return;
 					AddIssue (variableInitializer.Initializer, title,
 						script => {
 							var replacement = (VariableInitializer)node.Clone ();
