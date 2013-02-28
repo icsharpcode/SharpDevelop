@@ -78,7 +78,6 @@
     <Compile Include="Helpers\FakeTextTemplatingPathResolver.cs" />
     <Compile Include="Helpers\FakeTextTemplatingStringParser.cs" />
     <Compile Include="Helpers\FakeTextTemplatingVariables.cs" />
-    <Compile Include="Helpers\MessageLoopHelper.cs" />
     <Compile Include="Helpers\ProjectHelper.cs" />
     <Compile Include="Helpers\TestableFileProjectItem.cs" />
     <Compile Include="Helpers\TestableProject.cs" />

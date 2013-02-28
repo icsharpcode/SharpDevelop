@@ -20,7 +20,6 @@ namespace WixBinding.Tests.Gui
 		public void Init()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 			
 			workbench = new MockWorkbench();
 			factory = new MockPackageFilesViewFactory();

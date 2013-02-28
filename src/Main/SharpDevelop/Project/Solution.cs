@@ -12,20 +12,21 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	class Solution : SolutionFolder, ISolution
 	{
-		#warning reimplement ProjectChangeWatcher for solution file
 		FileName fileName;
 		DirectoryName directory;
+		IProjectChangeWatcher changeWatcher;
 		
-		public Solution(FileName fileName)
+		public Solution(FileName fileName, IProjectChangeWatcher changeWatcher)
 		{
-			this.FileName = fileName;
-			this.MSBuildProjectCollection = new Microsoft.Build.Evaluation.ProjectCollection();
+			this.changeWatcher = changeWatcher;
 			this.ConfigurationNames = new SolutionConfigurationOrPlatformNameCollection(this, false);
 			this.PlatformNames = new SolutionConfigurationOrPlatformNameCollection(this, true);
+			this.FileName = fileName;
 		}
 		
 		public void Dispose()
 		{
+			changeWatcher.Dispose();
 			foreach (var project in this.Projects) {
 				project.Dispose();
 			}
@@ -40,6 +41,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (fileName != value) {
 					this.fileName = value;
 					this.directory = value.GetParentDirectory();
+					UpdateMSBuildProperties();
 					FileNameChanged(this, EventArgs.Empty);
 				}
 			}
@@ -67,6 +69,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					throw new ArgumentException();
 				if (startupProject != value) {
 					startupProject = value;
+					preferences.Set("StartupProject", value.IdGuid.ToString());
 					StartupProjectChanged(this, EventArgs.Empty);
 				}
 			}
@@ -74,6 +77,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		IProject AutoDetectStartupProject()
 		{
+			string startupProjectGuidText = preferences.Get("StartupProject", string.Empty);
+			Guid startupProjectGuid;
+			if (Guid.TryParse(startupProjectGuidText, out startupProjectGuid)) {
+				var project = projects.FirstOrDefault(p => p.IdGuid == startupProjectGuid);
+				if (project != null)
+					return project;
+			}
 			return projects.FirstOrDefault(p => p.IsStartable);
 		}
 		#endregion
@@ -142,6 +152,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public ISolutionItem GetItemByGuid(Guid guid)
 		{
+			// Maybe we should maintain a dictionary to make these lookups faster?
+			// But I don't think lookups by GUID are commonly used...
 			return this.AllItems.FirstOrDefault(i => i.IdGuid == guid);
 		}
 		
@@ -149,19 +161,31 @@ namespace ICSharpCode.SharpDevelop.Project
 		Properties preferences;
 		
 		public Properties Preferences {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return preferences; }
 		}
 		
-		public void LoadPreferences()
+		internal void LoadPreferences()
 		{
-			
+			try {
+				preferences = new Properties();
+			} catch (IOException) {
+				
+			}
+			// Load active configuration from preferences
+			CreateDefaultConfigurationsIfMissing();
+			this.ActiveConfiguration = ConfigurationAndPlatform.FromKey(preferences.Get("ActiveConfiguration", "Debug|Any CPU"));
+			ValidateConfiguration();
+			// We can't set the startup project property yet; LoadPreferences() is called before
+			// the projects are loaded into the solution.
+			// This is necessary so that the projects can be loaded in the correct configuration
+			// - we avoid an expensive configuration switch during solution load.
 		}
 		
 		public void SavePreferences()
 		{
-			throw new NotImplementedException();
+			preferences.Set("ActiveConfiguration.Configuration", activeConfiguration.Configuration);
+			preferences.Set("ActiveConfiguration.Platform", activeConfiguration.Platform);
+			// TODO: save to disk
 		}
 		#endregion
 		
@@ -172,13 +196,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				project.Save();
 			}
 			try {
-				//changeWatcher.Disable();
+				changeWatcher.Disable();
 				using (var solutionWriter = new SolutionWriter(fileName)) {
 					solutionWriter.WriteFormatHeader(ComputeSolutionVersion());
 					solutionWriter.WriteSolutionItems(this);
 					solutionWriter.WriteGlobalSections(this);
 				}
-				//changeWatcher.Enable();
+				changeWatcher.Enable();
 			} catch (IOException ex) {
 				MessageService.ShowErrorFormatted("${res:SharpDevelop.Solution.CannotSave.IOException}", fileName, ex.Message);
 			} catch (UnauthorizedAccessException ex) {
@@ -205,11 +229,33 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-		public Microsoft.Build.Evaluation.ProjectCollection MSBuildProjectCollection { get; private set; }
+		#region MSBuildProjectCollection
+		readonly Microsoft.Build.Evaluation.ProjectCollection msBuildProjectCollection = new Microsoft.Build.Evaluation.ProjectCollection();
+		
+		public Microsoft.Build.Evaluation.ProjectCollection MSBuildProjectCollection {
+			get { return msBuildProjectCollection; }
+		}
+		
+		void UpdateMSBuildProperties()
+		{
+			var dict = new Dictionary<string, string>();
+			MSBuildInternals.AddMSBuildSolutionProperties(this, dict);
+			foreach (var pair in dict) {
+				msBuildProjectCollection.SetGlobalProperty(pair.Key, pair.Value);
+			}
+		}
+		#endregion
 		
 		public bool IsReadOnly {
 			get {
-				throw new NotImplementedException();
+				try {
+					FileAttributes attributes = File.GetAttributes(fileName);
+					return ((FileAttributes.ReadOnly & attributes) == FileAttributes.ReadOnly);
+				} catch (FileNotFoundException) {
+					return false;
+				} catch (DirectoryNotFoundException) {
+					return true;
+				}
 			}
 		}
 		
@@ -219,7 +265,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		public ConfigurationAndPlatform ActiveConfiguration {
 			get { return activeConfiguration; }
 			set {
-				SD.MainThread.VerifyAccess();
 				if (value.Configuration == null || value.Platform == null)
 					throw new ArgumentNullException();
 				
@@ -241,15 +286,26 @@ namespace ICSharpCode.SharpDevelop.Project
 		public IConfigurationOrPlatformNameCollection ConfigurationNames { get; private set; }
 		public IConfigurationOrPlatformNameCollection PlatformNames { get; private set; }
 		
-		internal static void CreateDefaultConfigurationsIfMissing(IConfigurable solution)
+		void CreateDefaultConfigurationsIfMissing()
 		{
-			if (solution.ConfigurationNames.Count == 0) {
-				solution.ConfigurationNames.Add("Debug");
-				solution.ConfigurationNames.Add("Release");
+			if (this.ConfigurationNames.Count == 0) {
+				this.ConfigurationNames.Add("Debug");
+				this.ConfigurationNames.Add("Release");
 			}
-			if (solution.PlatformNames.Count == 0) {
-				solution.PlatformNames.Add("Any CPU");
+			if (this.PlatformNames.Count == 0) {
+				this.PlatformNames.Add("Any CPU");
 			}
+		}
+		
+		void ValidateConfiguration()
+		{
+			string config = this.ActiveConfiguration.Configuration;
+			string platform = this.ActiveConfiguration.Platform;
+			if (!this.ConfigurationNames.Contains(config))
+				config = this.ConfigurationNames.First();
+			if (!this.PlatformNames.Contains(platform))
+				platform = this.PlatformNames.First();
+			this.ActiveConfiguration = new ConfigurationAndPlatform(config, platform);
 		}
 		#endregion
 		
@@ -271,5 +327,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		#endregion
+		
+		public override string ToString()
+		{
+			return "[Solution " + fileName + " with " + projects.Count + " projects]";
+		}
 	}
 }

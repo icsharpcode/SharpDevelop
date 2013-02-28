@@ -32,7 +32,6 @@ namespace WixBinding.Tests.Gui
 		public void SetUpFixture()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 			WixBindingTestsHelper.RegisterResourceStringsWithSharpDevelopResourceManager();
 
 			wixProject = WixBindingTestsHelper.CreateEmptyWixProject();

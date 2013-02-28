@@ -177,14 +177,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// This member is thread-safe.
 		/// </summary>
 		/// <param name="fileName">The <b>fully qualified</b> file name of the file</param>
-		bool IsFileInProject(string fileName);
+		bool IsFileInProject(FileName fileName);
 		
 		/// <summary>
 		/// Returns the project item for a specific file; or null if the file is not found in the project.
 		/// This member is thread-safe.
 		/// </summary>
 		/// <param name="fileName">The <b>fully qualified</b> file name of the file</param>
-		FileProjectItem FindFile(string fileName);
+		FileProjectItem FindFile(FileName fileName);
 		
 		/// <summary>
 		/// Gets if the project can be started.

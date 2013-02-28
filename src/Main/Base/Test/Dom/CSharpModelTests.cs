@@ -30,8 +30,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			SD.InitializeForUnitTests();
 			SD.Services.AddStrictMockService<IParserService>();
-			SD.Services.AddStrictMockService<IMessageLoop>();
-			SD.MainThread.Stub(m => m.VerifyAccess());
 			project = MockRepository.GenerateStrictMock<IProject>();
 			projectContent = new CSharpProjectContent().AddAssemblyReferences(AssemblyLoader.Corlib);
 			context = new ProjectEntityModelContext(project, ".cs");

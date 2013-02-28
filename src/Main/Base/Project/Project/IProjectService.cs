@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </remarks>
 		ISolution OpenSolution { get; }
 		
-		event EventHandler<SolutionEventArgs> OpenSolutionChanged;
+		event PropertyChangedEventHandler<ISolution> OpenSolutionChanged;
 		
 		/// <summary>
 		/// Gets/Sets the project that is currently considered 'active' within the IDE.
@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </remarks>
 		IProject CurrentProject { get; set; }
 		
-		event EventHandler<ProjectEventArgs> CurrentProjectChanged;
+		event PropertyChangedEventHandler<IProject> CurrentProjectChanged;
 		
 		/// <summary>
 		/// Finds the project that contains the specified file.

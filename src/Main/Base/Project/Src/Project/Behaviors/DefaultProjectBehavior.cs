@@ -94,7 +94,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			Properties properties = new Properties();
 			properties.SetList("bookmarks", SD.BookmarkManager.GetProjectBookmarks(Project));
 			List<string> files = new List<string>();
-			foreach (string fileName in FileService.GetOpenFiles()) {
+			foreach (var fileName in FileService.GetOpenFiles()) {
 				if (fileName != null && Project.IsFileInProject(fileName)) {
 					files.Add(fileName);
 				}

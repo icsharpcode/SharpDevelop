@@ -27,7 +27,6 @@ namespace WixBinding.Tests.Document
 		public void SetUpFixture()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
 			projectDirectory = p.Directory;
 			p.Name = "MySetup";

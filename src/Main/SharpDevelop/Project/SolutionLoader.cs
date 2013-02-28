@@ -62,16 +62,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		#region ReadSolution
-		public Solution ReadSolution(IProgressMonitor progress)
+		public void ReadSolution(Solution solution, IProgressMonitor progress)
 		{
 			ReadFormatHeader();
-			Solution solution = new Solution(fileName);
 			
 			// Read solution folder and project entries:
 			var solutionEntries = new List<ProjectLoadInformation>();
 			var projectInfoDict = new Dictionary<Guid, ProjectLoadInformation>();
 			var solutionFolderDict = new Dictionary<Guid, SolutionFolder>();
 			int projectCount = 0;
+			bool fixedGuidConflicts = false;
 			
 			ProjectLoadInformation information;
 			while ((information = ReadProjectEntry(solution)) != null) {
@@ -79,6 +79,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (projectInfoDict.ContainsKey(information.IdGuid)) {
 					// resolve GUID conflicts
 					information.IdGuid = Guid.NewGuid();
+					fixedGuidConflicts = true;
 				}
 				projectInfoDict.Add(information.IdGuid, information);
 				
@@ -152,8 +153,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			
-			solution.IsDirty = false;
-			return solution;
+			solution.IsDirty = fixedGuidConflicts; // reset IsDirty=false unless we've fixed GUID conflicts
 		}
 		#endregion
 		

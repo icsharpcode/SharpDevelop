@@ -12,6 +12,7 @@ using System.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Util;
 using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -82,6 +83,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void LoadSolutionOrProject(string fileName)
 		{
+			SD.ProjectService.CloseSolution();
 			SD.ProjectService.OpenSolutionOrProject(FileName.Create(fileName));
 			/*IProjectLoader loader = GetProjectLoader(fileName);
 			if (loader != null)	{
@@ -200,7 +202,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				CloseSolution();
 			}
 		}
-		*/
+		 */
 		
 		[Obsolete("Use SD.ProjectService.OpenSolutionOrProject() instead")]
 		public static void LoadSolution(string fileName)
@@ -695,9 +697,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static event EventHandler<SolutionEventArgs> SolutionPreferencesSaving;
 		
+		static EventAdapter<IProjectService, PropertyChangedEventHandler<IProject>, EventHandler<ProjectEventArgs>> currentProjectChangedAdapter =
+			new EventAdapter<IProjectService, PropertyChangedEventHandler<IProject>, EventHandler<ProjectEventArgs>>(
+				SD.GetService<IProjectService>(), (s, v) => s.CurrentProjectChanged += v, (s, v) => s.CurrentProjectChanged -= v,
+				handler => (sender, e) => handler(null, new ProjectEventArgs(e.NewValue)));
+		
 		public static event EventHandler<ProjectEventArgs> CurrentProjectChanged {
-			add { SD.ProjectService.CurrentProjectChanged += value; }
-			remove { SD.ProjectService.CurrentProjectChanged -= value; }
+			add { currentProjectChangedAdapter.Add(value); }
+			remove { currentProjectChangedAdapter.Remove(value); }
 		}
 		
 		public static event EventHandler<ProjectItemEventArgs> ProjectItemAdded;

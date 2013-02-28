@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop
 	/// A fake IMessageLoop implementation that always has <c>InvokeRequired=false</c> and synchronously invokes
 	/// the callback passed to <c>InvokeIfRequired</c>.
 	/// </summary>
-	public class FakeMessageLoop : IMessageLoop
+	sealed class FakeMessageLoop : IMessageLoop
 	{
 		public Thread Thread {
 			get {

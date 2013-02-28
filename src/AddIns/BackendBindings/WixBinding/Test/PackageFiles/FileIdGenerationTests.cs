@@ -19,7 +19,6 @@ namespace WixBinding.Tests.PackageFiles
 		public void SetupFixture()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 			doc = new WixDocument();
 			doc.FileName = @"C:\Projects\Setup\Setup.wxs";
 			doc.LoadXml("<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'/>");

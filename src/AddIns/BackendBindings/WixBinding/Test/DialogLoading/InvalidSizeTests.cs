@@ -27,7 +27,6 @@ namespace WixBinding.Tests.DialogLoading
 		public void SetupFixture()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 			WixBindingTestsHelper.RegisterResourceStringsWithSharpDevelopResourceManager();
 		}
 		

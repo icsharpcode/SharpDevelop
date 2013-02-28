@@ -25,7 +25,6 @@ namespace WixBinding.Tests.Project
 		public void SetUpFixture()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 			string fileName1 = @"C:\Projects\Test\wixlibs\test.wixlib";
 			string fileName2 = @"C:\Projects\Test\mainlibs\main.wixlib";
 			project = WixBindingTestsHelper.CreateEmptyWixProject();

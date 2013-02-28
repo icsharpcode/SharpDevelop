@@ -21,7 +21,6 @@ namespace WixBinding.Tests.Gui
 		public void Init()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 			textEditor = new MockTextEditor();
 			textEditor.Document.Text = GetWixXml();
 			

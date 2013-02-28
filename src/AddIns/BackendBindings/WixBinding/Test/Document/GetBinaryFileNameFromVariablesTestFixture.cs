@@ -22,7 +22,6 @@ namespace WixBinding.Tests.Document
 		public void Init()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			project.SetProperty("DefineConstants", @"DATADIR=Bitmaps;");
 			document = new WixDocument(project);

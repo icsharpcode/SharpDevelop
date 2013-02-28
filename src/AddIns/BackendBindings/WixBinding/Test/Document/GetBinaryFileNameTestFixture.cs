@@ -23,7 +23,6 @@ namespace WixBinding.Tests.Document
 		public void SetUpFixture()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 			document = new WixDocument();
 			document.LoadXml(GetWixXml());
 		}

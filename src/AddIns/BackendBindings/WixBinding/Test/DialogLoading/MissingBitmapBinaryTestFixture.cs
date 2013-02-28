@@ -31,7 +31,6 @@ namespace WixBinding.Tests.DialogLoading
 		public void SetUpFixture()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 			BitmapFileNamesRequested.Clear();
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			WixDocument doc = new WixDocument(project, this);

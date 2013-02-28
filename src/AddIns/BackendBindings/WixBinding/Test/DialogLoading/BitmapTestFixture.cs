@@ -27,7 +27,6 @@ namespace WixBinding.Tests.DialogLoading
 		public void SetUpFixture()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 			
 			BitmapFileNamesRequested.Clear();
 			CreatedComponents.Clear();

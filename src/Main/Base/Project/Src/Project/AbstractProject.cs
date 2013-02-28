@@ -59,6 +59,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.FileName = information.FileName;
 			this.idGuid = information.IdGuid;
 			this.TypeGuid = information.TypeGuid;
+			if (information.ProjectSections != null)
+				this.projectSections.AddRange(information.ProjectSections);
 		}
 		
 		#region IDisposable implementation
@@ -125,11 +127,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				lock (SyncRoot) {
 					if (watcher == null) {
-						if (SD.Services.GetService(typeof(IWorkbench)) == null)
+						if (SD.Services.GetService(typeof(IWorkbench)) == null) {
 							watcher = new MockProjectChangeWatcher();
-						
-						watcher = new ProjectChangeWatcher(value);
-						watcher.Enable();
+						} else {
+							watcher = new ProjectChangeWatcher(value);
+							watcher.Enable();
+						}
 					} else {
 						watcher.Disable();
 						watcher.Rename(value);
@@ -391,7 +394,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// This member is thread-safe.
 		/// </summary>
 		/// <param name="fileName">The <b>fully qualified</b> file name of the file</param>
-		public bool IsFileInProject(string fileName)
+		public bool IsFileInProject(FileName fileName)
 		{
 			return FindFile(fileName) != null;
 		}
@@ -410,7 +413,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// This member is thread-safe.
 		/// </summary>
 		/// <param name="fileName">The <b>fully qualified</b> file name of the file</param>
-		public FileProjectItem FindFile(string fileName)
+		public FileProjectItem FindFile(FileName fileName)
 		{
 			lock (SyncRoot) {
 				if (findFileCache == null) {
@@ -422,7 +425,6 @@ namespace ICSharpCode.SharpDevelop.Project
 						}
 					}
 				}
-				fileName = FileUtility.NormalizePath(fileName);
 				FileProjectItem outputItem;
 				findFileCache.TryGetValue(fileName, out outputItem);
 				return outputItem;

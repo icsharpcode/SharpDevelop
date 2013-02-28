@@ -24,6 +24,7 @@ namespace PackageManagement.Tests
 		void CreateProjectSystem(MSBuildBasedProject project)
 		{
 			SD.Services.AddService(typeof(IWorkbench), MockRepository.GenerateStub<IWorkbench>());
+			SD.Services.AddService(typeof(IMessageLoop), MockRepository.GenerateStub<IMessageLoop>());
 			projectSystem = new TestableSharpDevelopProjectSystem(project);
 		}
 		

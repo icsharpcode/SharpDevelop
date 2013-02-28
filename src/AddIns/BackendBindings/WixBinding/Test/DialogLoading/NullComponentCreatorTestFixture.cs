@@ -25,7 +25,6 @@ namespace WixBinding.Tests.DialogLoading
 		public void CreateDialog()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			WixDocument doc = new WixDocument(project);
 			doc.LoadXml(GetWixXml());

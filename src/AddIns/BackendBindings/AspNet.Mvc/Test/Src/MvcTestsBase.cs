@@ -14,14 +14,6 @@ namespace AspNet.Mvc.Tests
 		public void Init()
 		{
 			SD.InitializeForUnitTests();
-			InitializeMessageLoop();
-		}
-		
-		void InitializeMessageLoop()
-		{
-			IMessageLoop messageLoop = MockRepository.GenerateStub<IMessageLoop>();
-			SD.Services.RemoveService(typeof(IMessageLoop));
-			SD.Services.AddService(typeof(IMessageLoop), messageLoop);
 		}
 		
 		[TearDown]

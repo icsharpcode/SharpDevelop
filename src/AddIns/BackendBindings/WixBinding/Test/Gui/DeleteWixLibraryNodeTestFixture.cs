@@ -30,12 +30,12 @@ namespace WixBinding.Tests.Gui
 		public void SetUpFixture()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 			WixBindingTestsHelper.InitMSBuildEngine();
 			
 			// create the project.
 			ProjectCreateInformation info = new ProjectCreateInformation();
 			info.Solution = MockSolution.Create();
+			info.ConfigurationMapping = MockRepository.GenerateStub<IConfigurationMapping>();
 			info.ProjectName = "Test";
 			info.OutputProjectFileName = new FileName(@"C:\Projects\Test\Test.wixproj");
 

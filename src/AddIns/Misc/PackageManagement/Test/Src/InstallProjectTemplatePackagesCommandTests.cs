@@ -18,7 +18,6 @@ namespace PackageManagement.Tests
 		
 		void CreateCommand()
 		{
-			MessageLoopHelper.InitializeForUnitTests();
 			command = new TestableInstallProjectTemplatePackagesCommand();
 		}
 		

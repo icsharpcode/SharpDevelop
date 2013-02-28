@@ -23,7 +23,6 @@ namespace WixBinding.Tests.Project
 		public void Init()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 			project = WixBindingTestsHelper.CreateEmptyWixProject();
 		}
 		

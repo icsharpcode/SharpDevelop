@@ -119,7 +119,6 @@
     <Compile Include="Src\Helpers\FakeSolutionPackageRepositoryFactory.cs" />
     <Compile Include="Src\Helpers\FakeUpdatePackageActions.cs" />
     <Compile Include="Src\Helpers\FakeUpdatePackageActionsFactory.cs" />
-    <Compile Include="Src\Helpers\MessageLoopHelper.cs" />
     <Compile Include="Src\Helpers\MethodHelper.cs" />
     <Compile Include="Src\Helpers\MethodOrPropertyHelper.cs" />
     <Compile Include="Src\Helpers\ParameterHelper.cs" />

@@ -108,7 +108,7 @@ namespace ICSharpCode.CppBinding.Project
 		/// </summary>
 		/// <param name="fileName">name of the file for which the check is being performed.
 		/// If this is null, then only project default include location will be returned.</param>
-		public IList<string> GetIncludeDirectories(string fileName)
+		public IList<string> GetIncludeDirectories(FileName fileName)
 		{
 			IList<string> result = GetEvaluatedProperty("IncludePath")
 				.Split(";".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
@@ -135,7 +135,7 @@ namespace ICSharpCode.CppBinding.Project
 		/// </summary>
 		/// <param name="fileName">name of the file</param>
 		/// <returns>a list of symbols defined in project file, or an empty list if file doesn't exist in project</returns>
-		public IList<string> GetProjectDefines(string fileName)
+		public IList<string> GetProjectDefines(FileName fileName)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
@@ -150,7 +150,7 @@ namespace ICSharpCode.CppBinding.Project
 			return result;
 		}
 		
-		public IList<string> GetProjectUndefines(string fileName)
+		public IList<string> GetProjectUndefines(FileName fileName)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");

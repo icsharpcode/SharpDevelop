@@ -29,7 +29,6 @@ namespace WixBinding.Tests.Gui
 		public void SetUpFixture()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 			wixProject = WixBindingTestsHelper.CreateEmptyWixProject();
 			
 			// Add wix library item.

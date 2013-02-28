@@ -23,7 +23,6 @@ namespace TextTemplating.Tests
 		public void Init()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.InitializeForUnitTests();
 		}
 		
 		[TearDown]

@@ -24,7 +24,6 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModel()
 		{
-			MessageLoopHelper.InitializeForUnitTests();
 			viewModel = new TestableInstalledPackageViewModel();
 			fakeSolution = viewModel.FakeSolution;
 			fakeActionRunner = viewModel.FakeActionRunner;

@@ -21,7 +21,6 @@ namespace WixBinding.Tests.PackageFiles
 		public void Init()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 			existingTextEditor = new MockTextEditor();
 			MockTextEditorViewContent viewContent = new MockTextEditorViewContent();
 			viewContent.TextEditor = existingTextEditor;

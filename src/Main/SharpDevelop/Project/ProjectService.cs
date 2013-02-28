@@ -29,18 +29,18 @@ namespace ICSharpCode.SharpDevelop.Project
 		volatile static ISolution openSolution;
 		volatile static IProject currentProject;
 		
-		public event EventHandler<SolutionEventArgs> OpenSolutionChanged;
-		public event EventHandler<ProjectEventArgs> CurrentProjectChanged;
+		public event PropertyChangedEventHandler<ISolution> OpenSolutionChanged = delegate { };
+		public event PropertyChangedEventHandler<IProject> CurrentProjectChanged = delegate { };
 		
 		public ISolution OpenSolution {
 			[DebuggerStepThrough]
 			get { return openSolution; }
 			private set {
 				SD.MainThread.VerifyAccess();
-				if (openSolution != value) {
+				var oldValue = openSolution;
+				if (oldValue != value) {
 					openSolution = value;
-					if (OpenSolutionChanged != null)
-						OpenSolutionChanged(this, new SolutionEventArgs(value));
+					OpenSolutionChanged(this, new PropertyChangedEventArgs<ISolution>("OpenSolution", oldValue, value));
 					CommandManager.InvalidateRequerySuggested();
 				}
 			}
@@ -51,25 +51,40 @@ namespace ICSharpCode.SharpDevelop.Project
 			get { return currentProject; }
 			set {
 				SD.MainThread.VerifyAccess();
-				if (currentProject != value) {
+				var oldValue = currentProject;
+				if (oldValue != value) {
 					LoggingService.Info("CurrentProject changed to " + (value == null ? "null" : value.Name));
 					currentProject = value;
-					if (CurrentProjectChanged != null)
-						CurrentProjectChanged(this, new ProjectEventArgs(value));
+					CurrentProjectChanged(this, new PropertyChangedEventArgs<IProject>("CurrentProject", oldValue, value));
 					CommandManager.InvalidateRequerySuggested();
 				}
 			}
 		}
 		
-		ConcatModelCollection<IProject> allProjects = new ConcatModelCollection<IProject>();
-		
-		public IModelCollection<IProject> Projects {
-			get { return allProjects; }
-		}
-		
 		public IProject FindProjectContainingFile(FileName fileName)
 		{
-			throw new NotImplementedException();
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+			
+			IProject currentProject = this.CurrentProject;
+			if (currentProject != null && currentProject.IsFileInProject(fileName))
+				return currentProject;
+			
+			ISolution openSolution = this.OpenSolution;
+			if (openSolution == null)
+				return null;
+			// Try all project's in the solution.
+			IProject linkedProject = null;
+			foreach (IProject project in openSolution.Projects) {
+				FileProjectItem file = project.FindFile(fileName);
+				if (file != null) {
+					if (file.IsLink)
+						linkedProject = project;
+					else
+						return project; // prefer projects with non-links over projects with links
+				}
+			}
+			return linkedProject;
 		}
 		
 		public void OpenSolutionOrProject(FileName fileName)
@@ -105,19 +120,25 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public ISolution LoadSolutionFile(FileName fileName, IProgressMonitor progress)
 		{
-			using (var loader = new SolutionLoader(fileName)) {
-				return loader.ReadSolution(progress);
+			Solution solution = new Solution(fileName, new ProjectChangeWatcher(fileName));
+			bool ok = false;
+			try {
+				using (var loader = new SolutionLoader(fileName)) {
+					loader.ReadSolution(solution, progress);
+				}
+				ok = true;
+			} finally {
+				if (!ok)
+					solution.Dispose();
 			}
+			return solution;
 		}
 		
 		public ISolution CreateEmptySolutionFile(FileName fileName)
 		{
-			Solution solution = new Solution(fileName);
+			Solution solution = new Solution(fileName, new ProjectChangeWatcher(fileName));
 			solution.LoadPreferences();
 			return solution;
 		}
-		
-		
-		
 	}
 }

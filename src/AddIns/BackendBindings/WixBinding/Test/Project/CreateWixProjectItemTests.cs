@@ -69,7 +69,6 @@ namespace WixBinding.Tests.Project
 		public void SetUp()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 		}
 		
 		[Test]

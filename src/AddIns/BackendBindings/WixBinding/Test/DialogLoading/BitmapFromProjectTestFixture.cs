@@ -27,7 +27,6 @@ namespace WixBinding.Tests.Document
 		public void SetUpFixture()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 			BitmapFileNamesRequested.Clear();
 			CreatedComponents.Clear();
 			

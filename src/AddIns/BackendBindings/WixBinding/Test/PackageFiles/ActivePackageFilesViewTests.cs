@@ -19,7 +19,6 @@ namespace WixBinding.Tests.PackageFiles
 		public void Init()
 		{
 			SD.InitializeForUnitTests();
-			MessageLoopHelper.RegisterStubService();
 			workbench = new MockWorkbench();
 			activePackageFilesView = new ActivePackageFilesView(workbench);
 		}

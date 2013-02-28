@@ -212,7 +212,7 @@ namespace ICSharpCode.PackageManagement
 		bool FileExistsInProject(string path)
 		{
 			string fullPath = GetFullPath(path);
-			return project.IsFileInProject(fullPath);
+			return project.IsFileInProject(FileName.Create(fullPath));
 		}
 		
 		void AddFileToProject(string path)

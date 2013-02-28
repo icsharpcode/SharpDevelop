@@ -122,7 +122,6 @@
     <Compile Include="StringTagProvider\NullProjectStringTagProviderTestFixture.cs" />
     <Compile Include="StringTagProvider\ProjectTagsTestFixture.cs" />
     <Compile Include="Utils\AssemblyLoader.cs" />
-    <Compile Include="Utils\FakeMessageLoop.cs" />
     <Compile Include="Utils\MockAssembly.cs" />
     <Compile Include="Utils\MockComponent.cs" />
     <Compile Include="Utils\MockOpenedFile.cs" />

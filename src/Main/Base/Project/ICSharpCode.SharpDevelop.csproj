@@ -248,6 +248,9 @@
     <Compile Include="Util\DotnetDetection.cs" />
     <Compile Include="Util\EasyCodeDom.cs" />
     <Compile Include="Util\EnumBinding.cs" />
+    <Compile Include="Util\EventAdapter.cs" />
+    <Compile Include="Util\FakeMessageLoop.cs" />
+    <Compile Include="Util\PropertyChangedEventArgs.cs" />
     <Compile Include="Util\SharpDevelopExtensions.cs" />
     <Compile Include="Util\GenericConverter.cs" />
     <Compile Include="Util\ICanBeDirty.cs" />
@@ -831,7 +834,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Designer" />
-    <Folder Include="Src\Project\Solution" />
     <Folder Include="Workbench\DisplayBinding" />
     <Page Include="Editor\Bookmarks\BookmarkPadContent.xaml" />
     <Page Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml" />

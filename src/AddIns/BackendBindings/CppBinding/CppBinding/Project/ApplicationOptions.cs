@@ -413,7 +413,7 @@ namespace ICSharpCode.CppBinding.Project
 				FileService.FireFileCreated(manifestFile, false);
 			}
 			
-			if (!base.Project.IsFileInProject(manifestFile)) {
+			if (!base.Project.IsFileInProject(FileName.Create(manifestFile))) {
 				FileProjectItem newItem = new FileProjectItem(base.Project, ItemType.None);
 				newItem.Include = "app.manifest";
 				ProjectService.AddProjectItem(base.Project, newItem);

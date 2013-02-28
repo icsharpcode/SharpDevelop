@@ -130,14 +130,14 @@ namespace ICSharpCode.SharpDevelop.Project
 					additionalExtension = "";
 				}
 			}
-			if (!newExtension.StartsWith(".")) {
+			if (!newExtension.StartsWith(".", StringComparison.Ordinal)) {
 				newExtension = "." + newExtension;
 			}
 			
 			string newFileName = Path.ChangeExtension(baseItem.FileName, additionalExtension + newExtension);
 			int retryIndex = 0;
 			while (true) {
-				FileProjectItem item = project.FindFile(newFileName);
+				FileProjectItem item = project.FindFile(FileName.Create(newFileName));
 				// If the file does not exist in the project, we can use that name.
 				if (item == null)
 					return newFileName;
@@ -170,7 +170,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					baseItem.SetEvaluatedMetadata("LastGenOutput", Path.GetFileName(outputFileName));
 				}
 			}
-			FileProjectItem outputItem = project.FindFile(outputFileName);
+			FileProjectItem outputItem = project.FindFile(FileName.Create(outputFileName));
 			if (outputItem == null) {
 				outputItem = new FileProjectItem(project, ItemType.Compile);
 				outputItem.FileName = outputFileName;
