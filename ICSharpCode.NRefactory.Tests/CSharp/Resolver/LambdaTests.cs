@@ -668,5 +668,55 @@ class C
 			Assert.IsFalse(mrr.IsError);
 			Assert.AreEqual("System.Threading.Tasks.Task", mrr.Type.ReflectionName);
 		}
+
+		[Test]
+		public void ConversionInExplicitlyTypedLambdaBody() {
+			string program = @"using System;
+class Test {
+	public object M() {
+		System.Func<int, string> f = $(int i) => null$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<ConversionResolveResult>(rr.Body);
+			Assert.That(((ConversionResolveResult)rr.Body).Conversion.IsNullLiteralConversion);
+		}
+
+		[Test]
+		public void ConversionInImplicitlyTypedLambdaBody() {
+			string program = @"using System;
+class Test {
+	public object M() {
+		System.Func<int, string> f = $i => null$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<ConversionResolveResult>(rr.Body);
+			Assert.That(((ConversionResolveResult)rr.Body).Conversion.IsNullLiteralConversion);
+		}
+
+		[Test]
+		public void NoConversionInVoidExplicitlyTypedLambdaBody() {
+			string program = @"using System;
+class Test {
+	public object M() {
+		System.Action<int> f = $(int i) => i++$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<OperatorResolveResult>(rr.Body);
+		}
+
+		[Test]
+		public void NoConversionInVoidImplicitlyTypedLambdaBody() {
+			string program = @"using System;
+class Test {
+	public object M() {
+		System.Action<int> f = $i => i++$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<OperatorResolveResult>(rr.Body);
+		}
 	}
 }
