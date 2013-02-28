@@ -13,7 +13,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public abstract class KeyedModelCollection<TKey, TItem> : KeyedCollection<TKey, TItem>, IModelCollection<TItem>
 	{
 		// TODO: do we still need this class? maybe we should remove it?
-		// It's less useful than I initially thought because the indexer throws exceptions and there's no TryGetValue
+		
+		public bool TryGetValue(TKey key, out TItem item)
+		{
+			return Dictionary.TryGetValue(key, out item);
+		}
 		
 		protected override void ClearItems()
 		{

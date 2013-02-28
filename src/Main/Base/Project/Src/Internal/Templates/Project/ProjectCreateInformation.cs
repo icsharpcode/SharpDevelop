@@ -28,21 +28,22 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		public ProjectCreateInformation(IEnumerable<IProject> projects)
 		{
-			Platform = "AnyCPU";
+			this.ProjectConfiguration = new ConfigurationAndPlatform("Debug", "AnyCPU");
 			createdProjects.AddRange(projects);
-		}		
+		}
 		
 		public IReadOnlyList<IProject> CreatedProjects {
 			get { return createdProjects.AsReadOnly(); }
 		}
 		
 		public FileName OutputProjectFileName { get; set; }
-		public string Platform { get; set; }
+		public IConfigurationMapping ConfigurationMapping { get; set; }
+		public ConfigurationAndPlatform ProjectConfiguration { get; set; }
 		public string ProjectName { get; set; }
 		public string SolutionName { get; set; }
 		public string RootNamespace { get; set; }
-		public string SolutionPath { get; set; }
-		public string ProjectBasePath { get; set; }
+		public DirectoryName SolutionPath { get; set; }
+		public DirectoryName ProjectBasePath { get; set; }
 		public TargetFramework TargetFramework { get; set; }
 		public ISolution Solution { get; set; }
 		

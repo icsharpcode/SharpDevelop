@@ -152,7 +152,6 @@
 			<Word>while</Word>
 			<Word>lock</Word>
 			<Word>global</Word>
-			<Word>var</Word>
 			<Word>dynamic</Word>
 			<Word>await</Word>
 			<Word>where</Word>

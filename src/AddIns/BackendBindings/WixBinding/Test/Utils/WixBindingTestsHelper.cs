@@ -48,6 +48,7 @@ namespace WixBinding.Tests.Utils
 			ProjectCreateInformation info = new ProjectCreateInformation();
 			info.Solution = MockRepository.GenerateStub<ISolution>();
 			info.Solution.Stub(s => s.MSBuildProjectCollection).Return(new ProjectCollection());
+			info.ConfigurationMapping = MockRepository.GenerateStub<IConfigurationMapping>();
 			info.ProjectName = "Test";
 			info.OutputProjectFileName = new FileName(@"C:\Projects\Test\Test.wixproj");
 

@@ -18,6 +18,7 @@ using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.SharpDevelop.Workbench;
@@ -27,17 +28,37 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// <summary>
 	/// Default implementation of the IProject interface.
 	/// </summary>
-	public abstract class AbstractProject : IProject
+	public abstract class AbstractProject : LocalizedObject, IProject
 	{
 		// Member documentation: see IProject members.
 		
 		readonly ISolution parentSolution;
+		readonly IConfigurationMapping configurationMapping;
 		
-		protected AbstractProject(ISolution parentSolution)
+		protected AbstractProject(ProjectCreateInformation information)
 		{
-			if (parentSolution == null)
-				throw new ArgumentNullException("parentSolution");
-			this.parentSolution = parentSolution;
+			if (information == null)
+				throw new ArgumentNullException("information");
+			this.parentSolution = information.Solution;
+			this.configurationMapping = information.ConfigurationMapping;
+			this.activeConfiguration = information.ProjectConfiguration;
+			this.Name = information.ProjectName;
+			this.FileName = information.OutputProjectFileName;
+			this.idGuid = Guid.NewGuid();
+			Debug.Assert(configurationMapping != null);
+		}
+		
+		protected AbstractProject(ProjectLoadInformation information)
+		{
+			if (information == null)
+				throw new ArgumentNullException("information");
+			this.parentSolution = information.Solution;
+			this.configurationMapping = information.ConfigurationMapping;
+			this.activeConfiguration = information.ProjectConfiguration;
+			this.Name = information.ProjectName;
+			this.FileName = information.FileName;
+			this.idGuid = information.IdGuid;
+			this.TypeGuid = information.TypeGuid;
 		}
 		
 		#region IDisposable implementation
@@ -82,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#region Filename / Directory
 		volatile FileName fileName;
-		DirectoryName cachedDirectoryName;
+		volatile DirectoryName directoryName;
 		protected IProjectChangeWatcher watcher;
 		
 		/// <summary>
@@ -102,21 +123,21 @@ namespace ICSharpCode.SharpDevelop.Project
 				SD.MainThread.VerifyAccess();
 				Debug.Assert(FileUtility.IsUrl(value) || Path.IsPathRooted(value));
 				
-				if (SD.Services.GetService(typeof(IWorkbench)) == null)
-					watcher = new MockProjectChangeWatcher();
-				
-				if (watcher == null) {
-					watcher = new ProjectChangeWatcher(value);
-					watcher.Enable();
-				} else {
-					watcher.Disable();
-					watcher.Rename(value);
-					watcher.Enable();
-				}
-				
-				lock (SyncRoot) { // locking still required for Directory
+				lock (SyncRoot) {
+					if (watcher == null) {
+						if (SD.Services.GetService(typeof(IWorkbench)) == null)
+							watcher = new MockProjectChangeWatcher();
+						
+						watcher = new ProjectChangeWatcher(value);
+						watcher.Enable();
+					} else {
+						watcher.Disable();
+						watcher.Rename(value);
+						watcher.Enable();
+					}
+					
 					fileName = value;
-					cachedDirectoryName = null;
+					directoryName = value.GetParentDirectory();
 				}
 			}
 		}
@@ -148,22 +169,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		[Browsable(false)]
 		public DirectoryName Directory {
-			get {
-				lock (SyncRoot) {
-					if (cachedDirectoryName == null) {
-						cachedDirectoryName = this.FileName.GetParentDirectory();
-					}
-					return cachedDirectoryName;
-				}
-			}
+			get { return directoryName; }
 		}
 		#endregion
 		
 		#region ProjectSections
-		List<ProjectSection> projectSections = new List<ProjectSection>();
+		List<SolutionSection> projectSections = new List<SolutionSection>();
 		
 		[Browsable(false)]
-		public List<ProjectSection> ProjectSections {
+		public IList<SolutionSection> ProjectSections {
 			get {
 				SD.MainThread.VerifyAccess();
 				return projectSections;
@@ -180,7 +194,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			get { return activeConfiguration; }
 			set {
 				SD.MainThread.VerifyAccess();
-				if (value == null)
+				if (value.Configuration == null || value.Platform == null)
 					throw new ArgumentNullException();
 				
 				if (activeConfiguration != value) {
@@ -511,11 +525,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			lock (SyncRoot) {
 				List<IBuildable> result = new List<IBuildable>();
-				foreach (ProjectSection section in this.ProjectSections) {
-					if (section.Name == "ProjectDependencies") {
-						foreach (SolutionItem item in section.Items) {
+				foreach (SolutionSection section in this.ProjectSections) {
+					if (section.SectionName == "ProjectDependencies") {
+						foreach (var entry in section) {
 							Guid guid;
-							if (Guid.TryParse(item.Name, out guid)) {
+							if (Guid.TryParse(entry.Key, out guid)) {
 								foreach (IProject p in ParentSolution.Projects) {
 									if (p.IdGuid == guid) {
 										result.Add(p);
@@ -672,10 +686,19 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[Browsable(false)]
-		public virtual Guid TypeGuid { get; set; }
+		public Guid TypeGuid { get; private set; }
+		
+		Guid idGuid;
 		
 		[Browsable(false)]
-		public virtual Guid IdGuid { get; set; }
+		public virtual Guid IdGuid {
+			get {
+				return idGuid;
+			}
+			set {
+				idGuid = value;
+			}
+		}
 		
 		[Browsable(false)]
 		public string Name { get; set; }

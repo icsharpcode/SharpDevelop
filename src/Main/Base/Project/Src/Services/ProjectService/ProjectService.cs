@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			string oldName = e.SourceFile;
 			string newName = e.TargetFile;
-			foreach (ISolutionFileItem fileItem in OpenSolution.FileItems) {
+			foreach (ISolutionFileItem fileItem in OpenSolution.AllItems.OfType<ISolutionFileItem>().ToArray()) {
 				if (FileUtility.IsBaseDirectory(oldName, fileItem.FileName)) {
 					string newFullName = FileUtility.RenameBaseDirectory(fileItem.FileName, oldName, newName);
 					fileItem.FileName = FileName.Create(newFullName);
@@ -125,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			string fileName = e.FileName;
 			
-			foreach (ISolutionFileItem fileItem in OpenSolution.FileItems.ToArray()) {
+			foreach (ISolutionFileItem fileItem in OpenSolution.AllItems.OfType<ISolutionFileItem>().ToArray()) {
 				if (FileUtility.IsBaseDirectory(fileName, fileItem.FileName)) {
 					fileItem.ParentFolder.Items.Remove(fileItem);
 				}

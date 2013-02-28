@@ -13,10 +13,8 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public class MSBuildFileProject : AbstractProject
 	{
-		public MSBuildFileProject(ISolution parentSolution, FileName fileName, string title) : base(parentSolution)
+		public MSBuildFileProject(ProjectLoadInformation information) : base(information)
 		{
-			Name     = title;
-			FileName = fileName;
 		}
 		
 		public override Task<bool> BuildAsync(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IProgressMonitor progressMonitor)

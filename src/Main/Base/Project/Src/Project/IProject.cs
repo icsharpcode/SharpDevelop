@@ -68,9 +68,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets a list of project sections stored in the solution file for this project.
 		/// </summary>
-		List<ProjectSection> ProjectSections {
-			get;
-		}
+		IList<SolutionSection> ProjectSections { get; }
 		
 		/// <summary>
 		/// Gets the name of the project file.
@@ -311,11 +309,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Never returns null, but may return a permanently empty collection if this project does not support such models.
 		/// </summary>
 		ITypeDefinitionModelCollection TypeDefinitionModels { get; }
-		
-		/// <summary>
-		/// Gets/Sets the primary type GUID of the project.
-		/// </summary>
-		Guid TypeGuid { get; set; }
 	}
 	
 	/// <summary>

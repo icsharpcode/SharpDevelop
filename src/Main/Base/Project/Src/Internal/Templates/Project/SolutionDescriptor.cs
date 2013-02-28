@@ -88,21 +88,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		public string CreateSolution(ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
-			string oldSolutionPath = projectCreateInformation.SolutionPath;
-			string oldProjectPath = projectCreateInformation.ProjectBasePath;
 			if (relativeDirectory != null && relativeDirectory.Length > 0 && relativeDirectory != ".") {
-				projectCreateInformation.SolutionPath     = Path.Combine(projectCreateInformation.SolutionPath, relativeDirectory);
-				projectCreateInformation.ProjectBasePath = Path.Combine(projectCreateInformation.SolutionPath, relativeDirectory);
-				if (!Directory.Exists(projectCreateInformation.SolutionPath)) {
-					Directory.CreateDirectory(projectCreateInformation.SolutionPath);
-				}
-				if (!Directory.Exists(projectCreateInformation.ProjectBasePath)) {
-					Directory.CreateDirectory(projectCreateInformation.ProjectBasePath);
-				}
+				string path = Path.Combine(projectCreateInformation.SolutionPath, relativeDirectory);
+				Directory.CreateDirectory(path);
 			}
-			
-			projectCreateInformation.SolutionPath = oldSolutionPath;
-			projectCreateInformation.ProjectBasePath = oldProjectPath;
 			
 			string newSolutionName = StringParser.Parse(name, new StringTagPair("ProjectName", projectCreateInformation.SolutionName));
 			

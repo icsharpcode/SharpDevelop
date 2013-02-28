@@ -17,6 +17,7 @@ namespace TextTemplating.Tests.Helpers
 			var info = new ProjectCreateInformation();
 			info.Solution = MockRepository.GenerateStub<ISolution>();
 			info.Solution.Stub(s => s.MSBuildProjectCollection).Return(new ProjectCollection());
+			info.ConfigurationMapping = MockRepository.GenerateStub<IConfigurationMapping>();
 			info.OutputProjectFileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
 			info.ProjectName = "MyProject";
 			return new TestableProject(info);

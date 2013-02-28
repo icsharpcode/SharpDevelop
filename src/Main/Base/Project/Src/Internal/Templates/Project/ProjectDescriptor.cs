@@ -273,11 +273,11 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		public IProject CreateProject(ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
 			// remember old outerProjectBasePath
-			string outerProjectBasePath = projectCreateInformation.ProjectBasePath;
-			string outerProjectName = projectCreateInformation.ProjectName;
+			var outerProjectBasePath = projectCreateInformation.ProjectBasePath;
+			var outerProjectName = projectCreateInformation.ProjectName;
 			try
 			{
-				projectCreateInformation.ProjectBasePath = Path.Combine(projectCreateInformation.ProjectBasePath, GetRelativePath(projectCreateInformation));
+				projectCreateInformation.ProjectBasePath = DirectoryName.Create(Path.Combine(projectCreateInformation.ProjectBasePath, GetRelativePath(projectCreateInformation)));
 				if (!Directory.Exists(projectCreateInformation.ProjectBasePath)) {
 					Directory.CreateDirectory(projectCreateInformation.ProjectBasePath);
 				}
@@ -327,7 +327,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				projectCreateInformation.RootNamespace = standardNamespace.ToString();
 				projectCreateInformation.ProjectName = newProjectName;
 				if (!string.IsNullOrEmpty(defaultPlatform))
-					projectCreateInformation.Platform = defaultPlatform;
+					projectCreateInformation.ProjectConfiguration = new ConfigurationAndPlatform("Debug", defaultPlatform);
 				
 				RunPreCreateActions(projectCreateInformation);
 				

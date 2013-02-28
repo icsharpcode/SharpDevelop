@@ -7,7 +7,7 @@ using Microsoft.Build.Execution;
 using NUnit.Framework;
 using Rhino.Mocks;
 
-namespace ICSharpCode.SharpDevelop.Tests
+namespace ICSharpCode.SharpDevelop
 {
 	[TestFixture]
 	public class SolutionTests

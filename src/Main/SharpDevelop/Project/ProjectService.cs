@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.Windows.Input;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -72,7 +74,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void OpenSolutionOrProject(FileName fileName)
 		{
-			throw new NotImplementedException();
+			CloseSolution();
+			FileUtility.ObservedLoad(OpenSolutionOrProjectInternal, fileName);
+		}
+		
+		void OpenSolutionOrProjectInternal(string fileName)
+		{
+			using (var progress = AsynchronousWaitDialog.ShowWaitDialog("Loading Solution")) {
+				ISolution solution = LoadSolutionFile(FileName.Create(fileName), progress);
+				throw new NotImplementedException();
+			}
 		}
 		
 		public void CloseSolution()
@@ -92,14 +103,21 @@ namespace ICSharpCode.SharpDevelop.Project
 			return false;
 		}
 		
-		public ISolution LoadSolutionFile(FileName fileName)
+		public ISolution LoadSolutionFile(FileName fileName, IProgressMonitor progress)
 		{
-			throw new NotImplementedException();
+			using (var loader = new SolutionLoader(fileName)) {
+				return loader.ReadSolution(progress);
+			}
 		}
 		
 		public ISolution CreateEmptySolutionFile(FileName fileName)
 		{
-			throw new NotImplementedException();
+			Solution solution = new Solution(fileName);
+			solution.LoadPreferences();
+			return solution;
 		}
+		
+		
+		
 	}
 }

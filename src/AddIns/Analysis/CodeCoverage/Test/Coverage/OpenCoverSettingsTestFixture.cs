@@ -12,6 +12,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
+using Rhino.Mocks;
 using UnitTesting.Tests.Utils;
 
 namespace ICSharpCode.CodeCoverage.Tests.Coverage
@@ -63,6 +64,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 			MSBuildBasedProject project = new MSBuildBasedProject(
 				new ProjectCreateInformation {
 					Solution = MockSolution.Create(),
+					ConfigurationMapping = MockRepository.GenerateStub<IConfigurationMapping>(),
 					OutputProjectFileName = new FileName(@"C:\temp\test.csproj"),
 					ProjectName = "test"
 				});

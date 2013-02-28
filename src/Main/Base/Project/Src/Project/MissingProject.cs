@@ -8,10 +8,8 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public class MissingProject : AbstractProject
 	{
-		public MissingProject(ISolution parentSolution, FileName fileName, string title) : base(parentSolution)
+		public MissingProject(ProjectLoadInformation information) : base(information)
 		{
-			Name     = title;
-			FileName = fileName;
 		}
 		
 		public override bool IsReadOnly {
@@ -33,6 +31,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override bool HasProjectType(Guid projectTypeGuid)
 		{
+			// Don't report true for this.TypeGuid
 			return false;
 		}
 	}

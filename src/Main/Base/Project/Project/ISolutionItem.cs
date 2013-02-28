@@ -33,7 +33,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </remarks>
 		ISolution ParentSolution { get; }
 		
+		/// <summary>
+		/// Gets the ID GUID of this solution item.
+		/// </summary>
 		Guid IdGuid { get; }
+		
+		/// <summary>
+		/// Gets the type GUID of this solution item.
+		/// </summary>
+		Guid TypeGuid { get; }
 	}
 	
 	public interface ISolutionFileItem : ISolutionItem

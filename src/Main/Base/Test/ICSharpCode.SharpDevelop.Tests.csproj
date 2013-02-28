@@ -93,7 +93,9 @@
     <Compile Include="Project\BeforeBuildCustomToolProjectItemsTests.cs" />
     <Compile Include="Project\MockSolution.cs" />
     <Compile Include="Project\ProjectCustomToolOptionsTests.cs" />
+    <Compile Include="Project\SolutionLoaderTests.cs" />
     <Compile Include="Project\SolutionTests.cs" />
+    <Compile Include="Project\SolutionWriterTests.cs" />
     <Compile Include="PropertyPadSortingTests.cs" />
     <Compile Include="ReadOnlyDocumentTests.cs" />
     <Compile Include="ReflectionLayerTests.cs" />

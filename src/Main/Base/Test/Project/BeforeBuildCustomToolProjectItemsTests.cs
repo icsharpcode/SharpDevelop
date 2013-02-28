@@ -14,7 +14,7 @@ using ICSharpCode.SharpDevelop.Tests.Utils;
 using NUnit.Framework;
 using Rhino.Mocks;
 
-namespace ICSharpCode.SharpDevelop.Tests.Project
+namespace ICSharpCode.SharpDevelop.Project
 {
 	[TestFixture]
 	public class BeforeBuildCustomToolProjectItemsTests

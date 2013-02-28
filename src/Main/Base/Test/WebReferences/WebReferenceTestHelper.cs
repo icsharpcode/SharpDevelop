@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+using Rhino.Mocks;
 using ICSharpCode.SharpDevelop.Tests.Utils;
 
 namespace ICSharpCode.SharpDevelop.Tests.WebReferences
@@ -29,6 +30,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			public TestProject(string languageName)
 				: base(new ProjectCreateInformation {
 				       	Solution = MockSolution.Create(),
+				       	ConfigurationMapping = MockRepository.GenerateStub<IConfigurationMapping>(),
 				       	ProjectName = "TestProject",
 				       	OutputProjectFileName = FileName.Create("c:\\temp\\TestProject.csproj")
 				       })

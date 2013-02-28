@@ -18,14 +18,14 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			while (node != null && !(node is ISolutionFolderNode))
 				node = node.Parent;
 			ISolutionFolderNode solutionFolderNode = node as ISolutionFolderNode;
-			if (node != null) {
+			if (solutionFolderNode != null) {
 				using (NewProjectDialog npdlg = new NewProjectDialog(false)) {
 					npdlg.SolutionFolderNode = solutionFolderNode;
 					npdlg.InitialProjectLocationDirectory = GetInitialDirectorySuggestion(solutionFolderNode.Folder);
 					
 					// show the dialog to request project type and name
 					if (npdlg.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
-						if (npdlg.NewProjectLocation.Length == 0) {
+						if (npdlg.NewProjectLocation == null) {
 							MessageService.ShowError("No project has been created, there is nothing to add.");
 							return;
 						}

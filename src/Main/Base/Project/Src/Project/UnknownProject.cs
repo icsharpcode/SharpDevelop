@@ -27,8 +27,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			MessageService.ShowError("Error loading " + this.FileName + ":\n" + warningText);
 		}
 		
-		public UnknownProject(ISolution parentSolution, FileName fileName, string title, string warningText, bool displayWarningToUser)
-			: this(parentSolution, fileName, title)
+		public UnknownProject(ProjectLoadInformation information, string warningText, bool displayWarningToUser)
+			: this(information)
 		{
 			this.warningText = warningText;
 			if (displayWarningToUser) {
@@ -36,11 +36,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public UnknownProject(ISolution parentSolution, FileName fileName, string title)
-			: base(parentSolution)
+		public UnknownProject(ProjectLoadInformation information)
+			: base(information)
 		{
-			Name     = title;
-			FileName = fileName;
 		}
 		
 		protected override ProjectBehavior GetOrCreateBehavior()
@@ -55,6 +53,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override bool HasProjectType(Guid projectTypeGuid)
 		{
+			// Don't report true for this.TypeGuid
 			return false;
 		}
 	}

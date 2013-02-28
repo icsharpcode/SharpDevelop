@@ -15,6 +15,7 @@ namespace AspNet.Mvc.Tests.Helpers
 		{
 			var createInfo = new ProjectCreateInformation();
 			createInfo.Solution = FakeSolution.Create();
+			createInfo.ConfigurationMapping = MockRepository.GenerateStub<IConfigurationMapping>();
 			createInfo.OutputProjectFileName = new FileName(@"d:\projects\MyProject\MyProject.csproj");
 			return new MSBuildBasedProject(createInfo);
 		}

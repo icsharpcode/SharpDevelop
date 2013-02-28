@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		public abstract string TargetLanguageName { get; }
 		
-		protected virtual IProject CreateProject(string targetProjectDirectory, IProject sourceProject)
+		protected virtual IProject CreateProject(DirectoryName targetProjectDirectory, IProject sourceProject)
 		{
 			ProjectCreateInformation info = new ProjectCreateInformation();
 			info.Solution = sourceProject.ParentSolution;
@@ -158,7 +158,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			conversionLog.AppendLine();
 			conversionLog.AppendLine();
 			MSBuildBasedProject sourceProject = ProjectService.CurrentProject as MSBuildBasedProject;
-			string targetProjectDirectory = sourceProject.Directory + ".ConvertedTo" + TargetLanguageName;
+			DirectoryName targetProjectDirectory = DirectoryName.Create(sourceProject.Directory + ".ConvertedTo" + TargetLanguageName);
 			if (Directory.Exists(targetProjectDirectory)) {
 				MessageService.ShowMessageFormatted(translatedTitle, "${res:ICSharpCode.SharpDevelop.Commands.Convert.TargetAlreadyExists}", targetProjectDirectory);
 				return;
@@ -175,7 +175,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			}
 		}
 		
-		void PerformConversion(string translatedTitle, MSBuildBasedProject sourceProject, string targetProjectDirectory)
+		void PerformConversion(string translatedTitle, MSBuildBasedProject sourceProject, DirectoryName targetProjectDirectory)
 		{
 			IProject targetProject;
 			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog(translatedTitle, "Converting", true)) {

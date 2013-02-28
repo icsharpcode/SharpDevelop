@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Settings will be copied from the existing configuration/platform <paramref name="copyFrom"/>.
 		/// If <paramref name="copyFrom"/> is null, no settings will be copied.
 		/// </summary>
-		void Add(string newName, string copyFrom);
+		void Add(string newName, string copyFrom = null);
 		
 		/// <summary>
 		/// Removes the configuration/platform with the specified name.

@@ -152,29 +152,25 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#region Create new project
 		public MSBuildBasedProject(ProjectCreateInformation information)
-			: base(information.Solution)
+			: base(information)
 		{
 			this.projectFile = ProjectRootElement.Create(MSBuildProjectCollection);
 			this.userProjectFile = ProjectRootElement.Create(MSBuildProjectCollection);
-			this.ActiveConfiguration = new ConfigurationAndPlatform("Debug", information.Platform);
-			
-			Name = information.ProjectName;
-			FileName = information.OutputProjectFileName;
 			
 			projectFile.FullPath = information.OutputProjectFileName;
 			projectFile.ToolsVersion = "4.0";
 			projectFile.DefaultTargets = "Build";
 			userProjectFile.FullPath = information.OutputProjectFileName + ".user";
 			
-			base.IdGuid = Guid.NewGuid();
 			projectFile.AddProperty(ProjectGuidPropertyName, IdGuid.ToString("B").ToUpperInvariant());
-			AddGuardedProperty("Configuration", "Debug");
-			AddGuardedProperty("Platform", information.Platform);
+			AddGuardedProperty("Configuration", information.ProjectConfiguration.Configuration);
+			AddGuardedProperty("Platform", information.ProjectConfiguration.Platform);
 			
-			if (information.Platform == "x86")
-				SetProperty(null, information.Platform, "PlatformTarget", "x86", PropertyStorageLocations.PlatformSpecific, false);
+			string platform = information.ProjectConfiguration.Platform;
+			if (platform == "x86")
+				SetProperty(null, platform, "PlatformTarget", "x86", PropertyStorageLocations.PlatformSpecific, false);
 			else
-				SetProperty(null, information.Platform, "PlatformTarget", "AnyCPU", PropertyStorageLocations.PlatformSpecific, false);
+				SetProperty(null, platform, "PlatformTarget", "AnyCPU", PropertyStorageLocations.PlatformSpecific, false);
 		}
 		
 		/// <summary>
@@ -1134,9 +1130,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		public MSBuildBasedProject(ProjectLoadInformation loadInformation)
-			: base(loadInformation.Solution)
+			: base(loadInformation)
 		{
-			this.Name = loadInformation.ProjectName;
 			isLoading = true;
 			try {
 				try {
@@ -1198,9 +1193,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void LoadProjectInternal(ProjectLoadInformation loadInformation)
 		{
-			this.FileName = loadInformation.FileName;
-			this.ActiveConfiguration = loadInformation.Configuration;
-			
 			projectFile = ProjectRootElement.Open(loadInformation.FileName, MSBuildProjectCollection);
 			if (loadInformation.upgradeToolsVersion == true && CanUpgradeToolsVersion()) {
 				projectFile.ToolsVersion = autoUpgradeNewToolsVersion;
@@ -1217,28 +1209,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				userProjectFile = ProjectRootElement.Create(userFileName, MSBuildProjectCollection);
 			}
 			
-			this.ActiveConfiguration = new ConfigurationAndPlatform(
-				GetEvaluatedProperty("Configuration") ?? this.ActiveConfiguration.Configuration,
-				GetEvaluatedProperty("Platform") ?? this.ActiveConfiguration.Platform);
-			
 			CreateItemsListFromMSBuild();
 			LoadConfigurationPlatformNamesFromMSBuild();
-			
-			Guid guid;
-			if (Guid.TryParse(GetEvaluatedProperty(ProjectGuidPropertyName), out guid))
-				base.IdGuid = guid;
-		}
-		
-		[Browsable(false)]
-		public override Guid IdGuid {
-			get { return base.IdGuid; }
-			set {
-				if (base.IdGuid == null) {
-					// Save the GUID in the project if the project does not yet have a GUID.
-					SetPropertyInternal(null, null, ProjectGuidPropertyName, value.ToString("B").ToUpperInvariant(), PropertyStorageLocations.Base, true);
-				}
-				base.IdGuid = value;
-			}
 		}
 		#endregion
 		
@@ -1280,6 +1252,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region GetConfigurationNames / GetPlatformNames
 		IReadOnlyCollection<string> configurationNames, platformNames;
 		
+		#warning reimplement configuration management
 		/*public override IReadOnlyCollection<string> ConfigurationNames {
 			get {
 				lock (SyncRoot) {

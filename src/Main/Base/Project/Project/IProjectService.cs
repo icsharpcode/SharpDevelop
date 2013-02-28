@@ -82,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <remarks>
 		/// This method is thread-safe.
 		/// </remarks>
-		ISolution LoadSolutionFile(FileName fileName);
+		ISolution LoadSolutionFile(FileName fileName, IProgressMonitor progress);
 		
 		/// <summary>
 		/// Creates a new, empty solution and loads it without opening it in the IDE.

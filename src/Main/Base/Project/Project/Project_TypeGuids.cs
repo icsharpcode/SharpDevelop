@@ -15,6 +15,8 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public static class ProjectTypeGuids
 	{
+		public static readonly Guid SolutionFolder = Guid.Parse("{2150E333-8FDC-42A3-9474-1A3956D46DE8}");
+		
 		public static readonly Guid CSharp    = Guid.Parse("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}");
 		public static readonly Guid VBNet     = Guid.Parse("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}");
 		public static readonly Guid CPlusPlus = Guid.Parse("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}");

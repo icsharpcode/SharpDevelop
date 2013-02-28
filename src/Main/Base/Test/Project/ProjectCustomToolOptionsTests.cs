@@ -8,7 +8,7 @@ using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using Rhino.Mocks;
 
-namespace ICSharpCode.SharpDevelop.Tests.Project
+namespace ICSharpCode.SharpDevelop.Project
 {
 	[TestFixture]
 	public class ProjectCustomToolOptionsTests

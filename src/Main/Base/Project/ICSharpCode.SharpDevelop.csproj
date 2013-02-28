@@ -172,6 +172,8 @@
     <Compile Include="Project\ISolution.cs" />
     <Compile Include="Project\ISolutionFolder.cs" />
     <Compile Include="Project\ISolutionItem.cs" />
+    <Compile Include="Project\Project_TypeGuids.cs" />
+    <Compile Include="Project\SolutionSection.cs" />
     <Compile Include="Refactoring\ICodeGenerator.cs" />
     <Compile Include="Services\IClipboard.cs" />
     <Compile Include="Services\IMessageLoop.cs" />
@@ -239,9 +241,6 @@
       <DependentUpon>OutputWindowOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Project\Solution\ProjectSection.cs" />
-    <Compile Include="Src\Project\Solution\Project_TypeGuids.cs" />
-    <Compile Include="Src\Project\Solution\SolutionItem.cs" />
     <Compile Include="Util\AtomicBoolean.cs" />
     <Compile Include="Util\ComparerExtensions.cs" />
     <Compile Include="Util\CustomThreadPoolTaskScheduler.cs" />

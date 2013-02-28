@@ -27,7 +27,7 @@ namespace ICSharpCode.CppBinding
 		}
 		
 		public IProject CreateProject(ProjectCreateInformation info) {
-			info.Platform = "Win32";
+			info.ProjectConfiguration = new ConfigurationAndPlatform("Debug", "Win32");
 			return new CppProject(info);
 		}
 		

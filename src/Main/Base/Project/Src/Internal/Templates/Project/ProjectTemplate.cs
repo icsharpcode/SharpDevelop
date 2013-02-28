@@ -299,26 +299,22 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 //		string startupProject = null;
 
-		public string CreateProject(ProjectCreateInformation projectCreateInformation)
+		public FileName CreateProject(ProjectCreateInformation projectCreateInformation)
 		{
-			throw new NotImplementedException();
-			/*
 			LoggingService.Info("Creating project from template '" + this.Category + "/" + this.Subcategory + "/" + this.Name + "'");
 			if (solutionDescriptor != null) {
-				return solutionDescriptor.CreateSolution(projectCreateInformation, this.languagename);
+				return FileName.Create(solutionDescriptor.CreateSolution(projectCreateInformation, this.languagename));
 			} else if (projectDescriptor != null) {
 				bool createNewSolution = projectCreateInformation.Solution == null;
 				if (createNewSolution) {
-					string fileName = Path.Combine(projectCreateInformation.SolutionPath, projectCreateInformation.SolutionName + ".sln");
-					projectCreateInformation.Solution = new Solution(new ProjectChangeWatcher(fileName));
-					projectCreateInformation.Solution.Name = projectCreateInformation.SolutionName;
-					projectCreateInformation.Solution.FileName = fileName;
+					FileName fileName = FileName.Create(Path.Combine(projectCreateInformation.SolutionPath, projectCreateInformation.SolutionName + ".sln"));
+					projectCreateInformation.Solution = SD.ProjectService.CreateEmptySolutionFile(fileName);
 				}
 				IProject project = projectDescriptor.CreateProject(projectCreateInformation, this.languagename);
 				if (project != null) {
-					string solutionLocation = projectCreateInformation.Solution.FileName;
+					FileName solutionLocation = projectCreateInformation.Solution.FileName;
 					if (createNewSolution) {
-						projectCreateInformation.Solution.AddFolder(project);
+						projectCreateInformation.Solution.Items.Add(project);
 						projectCreateInformation.Solution.Save();
 						ProjectService.OnSolutionCreated(new SolutionEventArgs(projectCreateInformation.Solution));
 						projectCreateInformation.Solution.Dispose();
@@ -333,7 +329,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				}
 			} else {
 				return null;
-			}*/
+			}
 		}
 		
 		public void RunOpenActions(ProjectCreateInformation projectCreateInformation)

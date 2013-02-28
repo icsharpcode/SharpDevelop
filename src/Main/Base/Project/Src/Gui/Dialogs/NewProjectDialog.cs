@@ -274,8 +274,8 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			templateListView.View = smallIconsRadioButton.Checked ? View.List : View.LargeIcon;
 		}
 		
-		public string NewProjectLocation;
-		public string NewSolutionLocation;
+		public FileName NewProjectLocation;
+		public FileName NewSolutionLocation;
 		public ISolutionFolderNode SolutionFolderNode { get; set; }
 		
 		string CheckProjectName(string solution, string name, string location)
@@ -336,10 +336,10 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				ProjectCreateInformation cinfo = new ProjectCreateInformation();
 				if (!createNewSolution) {
 					cinfo.Solution = ProjectService.OpenSolution;
-					cinfo.SolutionPath = Path.GetDirectoryName(cinfo.Solution.FileName);
+					cinfo.SolutionPath = cinfo.Solution.Directory;
 					cinfo.SolutionName = cinfo.Solution.Name;
 				} else {
-					cinfo.SolutionPath = NewSolutionDirectory;
+					cinfo.SolutionPath = DirectoryName.Create(NewSolutionDirectory);
 				}
 				
 				if (item.Template.HasSupportedTargetFrameworks) {
@@ -347,20 +347,20 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 					PropertyService.Set("Dialogs.NewProjectDialog.TargetFramework", cinfo.TargetFramework.Name);
 				}
 				
-				cinfo.ProjectBasePath = NewProjectDirectory;
+				cinfo.ProjectBasePath = DirectoryName.Create(NewProjectDirectory);
 				cinfo.SolutionName    = solution;
 				cinfo.ProjectName     = name;
 				
 				NewSolutionLocation = item.Template.CreateProject(cinfo);
-				if (NewSolutionLocation == null || NewSolutionLocation.Length == 0) {
+				if (NewSolutionLocation == null) {
 					return;
 				}
 				
-				NewProjectLocation = cinfo.createdProjects.Count > 0 ? cinfo.createdProjects[0].FileName : "";
+				NewProjectLocation = cinfo.createdProjects.Count > 0 ? cinfo.createdProjects[0].FileName : null;
 				if (createNewSolution) {
-					SD.ProjectService.OpenSolutionOrProject(FileName.Create(NewSolutionLocation));
+					SD.ProjectService.OpenSolutionOrProject(NewSolutionLocation);
 				} else {
-					SolutionFolderNode.Folder.AddExistingProject(FileName.Create(NewProjectLocation));
+					SolutionFolderNode.Folder.AddExistingProject(NewProjectLocation);
 					ProjectService.SaveSolution();
 				}
 				item.Template.RunOpenActions(cinfo);

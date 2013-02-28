@@ -3,6 +3,7 @@
 
 using System;
 using System.Text.RegularExpressions;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -11,6 +12,18 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public struct ConfigurationAndPlatform : IEquatable<ConfigurationAndPlatform>
 	{
+		public static readonly StringComparer ConfigurationNameComparer = StringComparer.Ordinal;
+		
+		public static bool IsValidName(string name)
+		{
+			return !string.IsNullOrEmpty(name)
+				&& MSBuildInternals.Escape(name) == name
+				&& name.Trim() == name
+				&& FileUtility.IsValidDirectoryEntryName(name)
+				&& name.IndexOf('\'') < 0
+				&& name.IndexOf('.') < 0;
+		}
+		
 		readonly static Regex configurationRegEx = new Regex(@"'(?<property>[^']*)'\s*==\s*'(?<value>[^']*)'", RegexOptions.Compiled);
 		
 		/// <summary>
@@ -77,12 +90,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public bool Equals(ConfigurationAndPlatform other)
 		{
-			return this.configuration == other.configuration && this.platform == other.platform;
+			return ConfigurationNameComparer.Equals(this.configuration, other.configuration) && ConfigurationNameComparer.Equals(this.platform, other.platform);
 		}
 		
 		public override int GetHashCode()
 		{
-			return (configuration != null ? configuration.GetHashCode() : 0) ^ (platform != null ? platform.GetHashCode() : 0);
+			return (configuration != null ? ConfigurationNameComparer.GetHashCode(configuration) : 0) ^ (platform != null ? ConfigurationNameComparer.GetHashCode(platform) : 0);
 		}
 		
 		public static bool operator ==(ConfigurationAndPlatform left, ConfigurationAndPlatform right)

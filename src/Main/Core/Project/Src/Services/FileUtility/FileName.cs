@@ -97,6 +97,18 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
+		/// Gets whether this file name has the specified extension.
+		/// </summary>
+		public bool HasExtension(string extension)
+		{
+			if (extension == null)
+				throw new ArgumentNullException("extension");
+			if (extension.Length == 0 || extension[0] != '.')
+				throw new ArgumentException("extension must start with '.'");
+			return normalizedFileName.EndsWith(extension, StringComparison.OrdinalIgnoreCase);
+		}
+		
+		/// <summary>
 		/// Gets the file name without extension.
 		/// </summary>
 		/// <remarks>

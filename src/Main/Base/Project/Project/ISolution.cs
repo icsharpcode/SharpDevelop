@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 
@@ -47,9 +48,18 @@ namespace ICSharpCode.SharpDevelop.Project
 		IModelCollection<IProject> Projects { get; }
 		
 		/// <summary>
-		/// Gets all file items in the solution.
+		/// Gets all items in the solution; including those nested within solution folders.
 		/// </summary>
-		IModelCollection<ISolutionFileItem> FileItems { get; }
+		/// <remarks>
+		/// The enumerator performs a pre-order walk of the solution folder tree.
+		/// </remarks>
+		IEnumerable<ISolutionItem> AllItems { get; }
+		
+		/// <summary>
+		/// Gets the list of global sections.
+		/// These can be used to store additional data within the solution file.
+		/// </summary>
+		IList<SolutionSection> GlobalSections { get; }
 		
 		/// <summary>
 		/// Finds the item with the specified <see cref="ISolutionItem.IdGuid"/>;

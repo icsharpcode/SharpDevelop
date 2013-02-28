@@ -6,6 +6,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using ICSharpCode.UnitTesting;
+using Rhino.Mocks;
 using UnitTesting.Tests.Utils;
 using ICSharpCode.SharpDevelop;
 
@@ -119,7 +120,10 @@ namespace UnitTesting.Tests.NUnit
 		[Test]
 		public void NotMSBuildBasedProject()
 		{
-			MissingProject project = new MissingProject(MockSolution.Create(), FileName.Create(@"C:\Projects\Test.proj"), "Test");
+			ProjectLoadInformation info = new ProjectLoadInformation(MockSolution.Create(), FileName.Create(@"C:\Projects\Test.proj"), "Test");
+			info.ConfigurationMapping = MockRepository.GenerateStub<IConfigurationMapping>();
+			
+			MissingProject project = new MissingProject(info);
 			ITestProject testProject = new NUnitTestProject(project);
 			NUnitConsoleApplication app = new NUnitConsoleApplication(new[] { testProject });
 			

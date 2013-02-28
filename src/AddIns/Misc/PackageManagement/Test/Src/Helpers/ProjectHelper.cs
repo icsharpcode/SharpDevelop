@@ -44,9 +44,10 @@ namespace PackageManagement.Tests.Helpers
 		{
 			ProjectCreateInformation createInfo = new ProjectCreateInformation();
 			createInfo.Solution = parentSolution;
+			createInfo.ConfigurationMapping = MockRepository.GenerateStub<IConfigurationMapping>();
 			createInfo.ProjectName = name;
-			createInfo.SolutionPath = @"d:\projects\Test";
-			createInfo.ProjectBasePath = @"d:\projects\Test\TestProject";
+			createInfo.SolutionPath = DirectoryName.Create(@"d:\projects\Test");
+			createInfo.ProjectBasePath = DirectoryName.Create(@"d:\projects\Test\TestProject");
 			createInfo.OutputProjectFileName = new FileName(fileName ?? (@"d:\projects\Test\TestProject\" + name + ".csproj"));
 			
 			var project = new TestableProject(createInfo);

@@ -240,16 +240,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		[Browsable(false)]
-		public override Guid TypeGuid {
-			get {
-				return ProjectBindingService.GetCodonPerLanguageName(Language).Guid;
-			}
-			set {
-				throw new NotSupportedException();
-			}
-		}
-		
 		public StartAction StartAction {
 			get {
 				try {

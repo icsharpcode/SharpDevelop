@@ -103,7 +103,14 @@
     <Compile Include="Project\Build\BuildModifiedProjectsOnlyService.cs" />
     <Compile Include="Project\Build\BuildService.cs" />
     <Compile Include="Project\Build\UIBuildFeedbackSink.cs" />
+    <Compile Include="Project\ConfigurationMapping.cs" />
     <Compile Include="Project\ProjectService.cs" />
+    <Compile Include="Project\Solution.cs" />
+    <Compile Include="Project\SolutionConfigurationOrPlatformNameCollection.cs" />
+    <Compile Include="Project\SolutionFileItem.cs" />
+    <Compile Include="Project\SolutionFolder.cs" />
+    <Compile Include="Project\SolutionLoader.cs" />
+    <Compile Include="Project\SolutionWriter.cs" />
     <Compile Include="Services\ClipboardWrapper.cs" />
     <Compile Include="Services\DispatcherMessageLoop.cs" />
     <Compile Include="Startup\App.xaml.cs" />

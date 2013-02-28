@@ -8,6 +8,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
+using Rhino.Mocks;
 
 namespace UnitTesting.Tests.Utils
 {
@@ -24,8 +25,9 @@ namespace UnitTesting.Tests.Utils
 		public MockCSharpProject(ISolution solution, string name)
 			: base(new ProjectCreateInformation {
 			       	Solution = solution,
+			       	ConfigurationMapping = MockRepository.GenerateStub<IConfigurationMapping>(),
 			       	ProjectName = name,
-			       	Platform = "x86",
+			       	ProjectConfiguration = new ConfigurationAndPlatform("Debug", "x86"),
 			       	TargetFramework = TargetFramework.Net40Client,
 			       	OutputProjectFileName = FileName.Create("c:\\projects\\" + name + "\\" + name + ".csproj")
 			       })
