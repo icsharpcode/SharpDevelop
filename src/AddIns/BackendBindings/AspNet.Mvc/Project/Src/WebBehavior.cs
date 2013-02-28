@@ -30,6 +30,16 @@ namespace ICSharpCode.AspNet.Mvc
 			set { SetProjectProperty("StartURL", value); }
 		}
 		
+		public string StartArguments {
+			get { return GetProjectProperty("StartArguments"); }
+			set { SetProjectProperty("StartArguments", value); }
+		}
+		
+		public string StartWorkingDirectory {
+			get { return GetProjectProperty("StartWorkingDirectory"); }
+			set { SetProjectProperty("StartWorkingDirectory", value); }
+		}
+		
 		string GetProjectProperty(string name)
 		{
 			return MSBuildProject.GetEvaluatedProperty(name) ?? String.Empty;
@@ -37,7 +47,7 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		void SetProjectProperty(string name, string value)
 		{
-			MSBuildProject.SetProperty("StartProgram", String.IsNullOrEmpty(value) ? null : value);
+			MSBuildProject.SetProperty(name, String.IsNullOrEmpty(value) ? null : value);
 		}
 		
 		MSBuildBasedProject MSBuildProject {
@@ -68,38 +78,10 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		public override void Start(bool withDebugging)
 		{
-			if (!CheckWebProjectStartInfo())
-				return;
-			
 			try {
 				WebProjectProperties properties = WebProject.GetWebProjectProperties();
-				string processName = WebProjectService.GetWorkerProcessName(properties);
-				
-				// try find the worker process directly or using the process monitor callback
-				Process[] processes = System.Diagnostics.Process.GetProcesses();
-				int index = processes.FindIndex(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
-				if (index > -1) {
-					if (withDebugging)
-						DebuggerService.CurrentDebugger.Attach(processes[index]);
-				} else {
-					if (properties.UseIISExpress) {
-						// start IIS express and attach to it
-						if (WebProjectService.IsIISExpressInstalled) {
-							ProcessStartInfo processInfo = IISExpressProcessStartInfo.Create(WebProject);
-							DebuggerService.CurrentDebugger.Start(processInfo);
-						} else {
-							DisposeProcessMonitor();
-							MessageService.ShowError("${res:ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction}");
-							return;
-						}
-					} else {
-						DisposeProcessMonitor();
-						this.monitor = new ProcessMonitor(processName);
-						this.monitor.ProcessCreated += delegate {
-							WorkbenchSingleton.SafeThreadCall((Action)(() => OnProcessCreated(properties, withDebugging)));
-						};
-						this.monitor.Start();
-					}
+				if (CheckWebProjectStartInfo()) {
+					AttachToWebWorkerProcessOrStartIISExpress(properties, withDebugging);
 				}
 				
 				// start default application(e.g. browser) or the one specified
@@ -113,7 +95,12 @@ namespace ICSharpCode.AspNet.Mvc
 						}
 						break;
 					case StartAction.Program:
-						Process.Start(StartProgram);
+						ProcessStartInfo processInfo = DotNetStartBehavior.CreateStartInfo(StartProgram, Project.Directory, StartWorkingDirectory, StartArguments);
+						if (withDebugging) {
+							DebuggerService.CurrentDebugger.Start(processInfo);
+						} else {
+							Process.Start(processInfo);
+						}
 						break;
 					case StartAction.StartURL:
 						if (FileUtility.IsUrl(StartUrl)) {
@@ -139,12 +126,42 @@ namespace ICSharpCode.AspNet.Mvc
 			}
 		}
 		
+		void AttachToWebWorkerProcessOrStartIISExpress(WebProjectProperties properties, bool withDebugging)
+		{
+			string processName = WebProjectService.GetWorkerProcessName(properties);
+			
+			// try find the worker process directly or using the process monitor callback
+			Process[] processes = System.Diagnostics.Process.GetProcesses();
+			int index = processes.FindIndex(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
+			if (index > -1) {
+				if (withDebugging)
+					DebuggerService.CurrentDebugger.Attach(processes[index]);
+			} else {
+				if (properties.UseIISExpress) {
+					// start IIS express and attach to it
+					if (WebProjectService.IsIISExpressInstalled) {
+						ProcessStartInfo processInfo = IISExpressProcessStartInfo.Create(WebProject);
+						if (withDebugging)
+							DebuggerService.CurrentDebugger.Start(processInfo);
+						else
+							Process.Start(processInfo);
+					}
+				} else {
+					DisposeProcessMonitor();
+					this.monitor = new ProcessMonitor(processName);
+					this.monitor.ProcessCreated += delegate {
+						WorkbenchSingleton.SafeThreadCall((Action)(() => OnProcessCreated(properties, withDebugging)));
+					};
+					this.monitor.Start();
+				}
+			}
+		}
+		
 		bool CheckWebProjectStartInfo()
 		{
 			if (WebProject.HasWebProjectProperties() && WebProject.GetWebProjectProperties().IsConfigured()) {
 				return true;
 			}
-			MessageService.ShowError("${res:ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction}");
 			return false;
 		}
 		
