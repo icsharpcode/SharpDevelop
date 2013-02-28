@@ -73,6 +73,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(0, method.Parameters.Count);
 			Assert.AreEqual(0, method.Attributes.Count);
 			Assert.IsTrue(method.HasBody);
+			Assert.IsNull(method.AccessorOwner);
 		}
 		
 		[Test]
@@ -244,6 +245,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				new[] { compilation.FindType(KnownTypeCode.Int32) }
 			));
 			Assert.AreEqual(m12, m2);
+		}
+		
+		[Test]
+		public void SpecializedMethod_AccessorOwner()
+		{
+			// NRefactory bug #143 - Accessor Owner throws null reference exception in some cases now
+			var method = compilation.FindType(typeof(GenericClass<string, object>)).GetMethods(m => m.Name == "GetIndex").Single();
+			Assert.IsNull(method.AccessorOwner);
 		}
 		
 		[Test]

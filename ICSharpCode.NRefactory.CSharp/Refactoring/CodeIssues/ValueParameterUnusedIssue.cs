@@ -66,8 +66,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				// don't warn on empty custom events
 				if (addAccessor.Body.Statements.Count == 0 && removeAccessor.Body.Statements.Count == 0)
 					return;
-				FindIssuesInNode(addAccessor, addAccessor.Body, "add accessor");
-				FindIssuesInNode(removeAccessor, removeAccessor.Body, "remove accessor");
+				FindIssuesInAccessor(addAccessor, "add accessor");
+				FindIssuesInAccessor(removeAccessor, "remove accessor");
 			}
 
 			void FindIssuesInAccessor(Accessor accessor, string accessorName = "setter")
