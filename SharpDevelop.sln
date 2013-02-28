@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 5.0
+# SharpDevelop 4.3
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Main", "Main", "{256F5C28-532C-44C0-8AB8-D8EC5E492E01}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
@@ -117,7 +117,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageManagement", "src\Ad
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageManagement.PowerShell", "src\AddIns\Misc\PackageManagement\PowerShell\Project\PackageManagement.PowerShell.csproj", "{A406803B-C584-43A3-BCEE-A0BB3132CB5F}"
 EndProject
-Project("") = "SharpDevelop.EnvDTE", "src\AddIns\Misc\PackageManagement\SharpDevelop.EnvDTE\SharpDevelop.EnvDTE.vbproj", "752BD058-5517-48A1-BB27-5ED186FA052B"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "SharpDevelop.EnvDTE", "src\AddIns\Misc\PackageManagement\SharpDevelop.EnvDTE\SharpDevelop.EnvDTE.vbproj", "752BD058-5517-48A1-BB27-5ED186FA052B"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Reports.Core", "src\AddIns\Misc\Reports\ICSharpCode.Reports.Core\ICSharpCode.Reports.Core.csproj", "{4B2239FF-8FD6-431D-9D22-1B8049BA6917}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Reports.Addin", "src\AddIns\Misc\Reports\ICSharpCode.Reports.Addin\ICSharpCode.Reports.Addin.csproj", "{35D002D7-C78B-44FB-92AA-104BEB431678}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Display Bindings", "Display Bindings", "{11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}"
 	ProjectSection(SolutionItems) = postProject
@@ -697,6 +701,22 @@ Global
 		752BD058-5517-48A1-BB27-5ED186FA052B.Release|Any CPU.ActiveCfg = Release|Any CPU
 		752BD058-5517-48A1-BB27-5ED186FA052B.Release|x86.Build.0 = Release|Any CPU
 		752BD058-5517-48A1-BB27-5ED186FA052B.Release|x86.ActiveCfg = Release|Any CPU
+		{4B2239FF-8FD6-431D-9D22-1B8049BA6917}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B2239FF-8FD6-431D-9D22-1B8049BA6917}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B2239FF-8FD6-431D-9D22-1B8049BA6917}.Debug|x86.Build.0 = Debug|Any CPU
+		{4B2239FF-8FD6-431D-9D22-1B8049BA6917}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4B2239FF-8FD6-431D-9D22-1B8049BA6917}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B2239FF-8FD6-431D-9D22-1B8049BA6917}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B2239FF-8FD6-431D-9D22-1B8049BA6917}.Release|x86.Build.0 = Release|Any CPU
+		{4B2239FF-8FD6-431D-9D22-1B8049BA6917}.Release|x86.ActiveCfg = Release|Any CPU
+		{35D002D7-C78B-44FB-92AA-104BEB431678}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35D002D7-C78B-44FB-92AA-104BEB431678}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35D002D7-C78B-44FB-92AA-104BEB431678}.Debug|x86.Build.0 = Debug|Any CPU
+		{35D002D7-C78B-44FB-92AA-104BEB431678}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{35D002D7-C78B-44FB-92AA-104BEB431678}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35D002D7-C78B-44FB-92AA-104BEB431678}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35D002D7-C78B-44FB-92AA-104BEB431678}.Release|x86.Build.0 = Release|Any CPU
+		{35D002D7-C78B-44FB-92AA-104BEB431678}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -746,6 +766,8 @@ Global
 		{E2FD63DA-8478-4066-934C-DA82A852C83A} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
 		{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
 		{87D549AF-8FCD-4E84-9C33-3DB6E42FEF6D} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
+		{4B2239FF-8FD6-431D-9D22-1B8049BA6917} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
+		{35D002D7-C78B-44FB-92AA-104BEB431678} = {F3662720-9EA2-4591-BBC6-97361DCE50A9}
 		{6B1CFE35-DA17-4DEB-9C6E-227E5E251DA0} = {59A30AA6-D600-41AB-B7A1-9543469DBE36}
 		{0008FCE9-9EB4-4E2E-979B-553278E5BBA6} = {59A30AA6-D600-41AB-B7A1-9543469DBE36}
 		{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1} = {87D549AF-8FCD-4E84-9C33-3DB6E42FEF6D}
