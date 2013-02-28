@@ -416,10 +416,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			return
 				from n in node.DescendantsAndSelf
-					from annotation in n.Annotations
-					let replacementAnnotation = annotation as ReplacementNodeAnnotation
-					where replacementAnnotation != null
-					select replacementAnnotation;
+				from replacementAnnotation in n.Annotations.OfType<ReplacementNodeAnnotation>()
+				select replacementAnnotation;
 		}
 
 		public static IList<AstNode> GetReplacedNodes(AstNode expression)
