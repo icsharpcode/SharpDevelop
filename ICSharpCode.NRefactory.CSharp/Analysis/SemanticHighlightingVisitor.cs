@@ -289,8 +289,11 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		{
 			if (member.EntityType != EntityType.Method || member.ReturnType.Kind != TypeKind.Void)
 				return false;
-			while (member.IsOverride)
+			while (member.IsOverride) {
 				member = (IParameterizedMember)InheritanceHelper.GetBaseMember(member);
+				if (member == null)
+					return false;
+			}
 			return IsInactiveConditional(member.Attributes);
 		}
 		

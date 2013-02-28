@@ -28,7 +28,11 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// Represents the children of an AstNode that have a specific role.
 	/// </summary>
-	public class AstNodeCollection<T> : ICollection<T> where T : AstNode
+	public class AstNodeCollection<T> : ICollection<T>
+		#if NET_4_5
+		, IReadOnlyCollection<T>
+		#endif
+		where T : AstNode
 	{
 		readonly AstNode node;
 		readonly Role<T> role;
