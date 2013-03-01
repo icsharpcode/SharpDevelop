@@ -51,18 +51,44 @@ namespace ICSharpCode.NRefactory.CSharp
 		Incompatible
 	}
 
+	[Serializable]
+	public sealed class AbiEventArgs : EventArgs
+	{
+		public string Message { get; set; }
+
+		public AbiEventArgs(string message)
+		{
+			this.Message = message;
+		}
+	}
+
 	/// <summary>
 	/// The Abi comparer checks the public API of two compilation and determines the compatibility state.
 	/// </summary>
 	public class AbiComparer
 	{
-		void CheckContstraints(ITypeParameter p1, ITypeParameter p2, ref AbiCompatibility compatibility)
+		public bool StopOnIncompatibility {
+			get; 
+			set;
+		}
+		void CheckContstraints(IType otype, ITypeParameter p1, ITypeParameter p2, ref AbiCompatibility compatibility)
 		{
 			if (p1.DirectBaseTypes.Count () != p2.DirectBaseTypes.Count () ||
 			    p1.HasReferenceTypeConstraint != p2.HasReferenceTypeConstraint ||
 			    p1.HasValueTypeConstraint != p2.HasValueTypeConstraint ||
 			    p1.HasDefaultConstructorConstraint != p2.HasDefaultConstructorConstraint) {
-				IncompatibilityFound ("Constraints are not compatible.");
+				OnIncompatibilityFound (new AbiEventArgs (string.Format (TranslateString ("Type parameter constraints of type {0} have changed."), otype.FullName)));
+				compatibility = AbiCompatibility.Incompatible;
+			}
+		}
+
+		void CheckContstraints(IMethod omethod, ITypeParameter p1, ITypeParameter p2, ref AbiCompatibility compatibility)
+		{
+			if (p1.DirectBaseTypes.Count () != p2.DirectBaseTypes.Count () ||
+			    p1.HasReferenceTypeConstraint != p2.HasReferenceTypeConstraint ||
+			    p1.HasValueTypeConstraint != p2.HasValueTypeConstraint ||
+			    p1.HasDefaultConstructorConstraint != p2.HasDefaultConstructorConstraint) {
+				OnIncompatibilityFound (new AbiEventArgs (string.Format (TranslateString ("Type parameter constraints of method {0} have changed."), omethod.FullName)));
 				compatibility = AbiCompatibility.Incompatible;
 			}
 		}
@@ -75,8 +101,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				pred = m => (m.IsPublic || m.IsProtected) && !m.IsOverride && !m.IsSynthetic;
 
 			for (int i = 0; i < oType.TypeParameterCount; i++) {
-				CheckContstraints (oType.TypeParameters[i], nType.TypeParameters[i], ref compatibility);
-				if (compatibility == AbiCompatibility.Incompatible)
+				CheckContstraints (oType, oType.TypeParameters[i], nType.TypeParameters[i], ref compatibility);
+				if (compatibility == AbiCompatibility.Incompatible && StopOnIncompatibility)
 					return;
 			}
 
@@ -85,13 +111,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				var equalMember = newMember.FirstOrDefault (m => SignatureComparer.Ordinal.Equals (member, m));
 				if (equalMember == null) {
 					compatibility = AbiCompatibility.Incompatible;
-					return;
+					if (StopOnIncompatibility)
+						return;
+					continue;
 				}
 				var om = member as IMethod;
 				if (om != null) {
 					for (int i = 0; i < om.TypeParameters.Count; i++) {
-						CheckContstraints (om.TypeParameters[i], ((IMethod)equalMember).TypeParameters[i], ref compatibility);
-						if (compatibility == AbiCompatibility.Incompatible)
+						CheckContstraints (om, om.TypeParameters[i], ((IMethod)equalMember).TypeParameters[i], ref compatibility);
+						if (compatibility == AbiCompatibility.Incompatible && StopOnIncompatibility)
 							return;
 					}
 				}
@@ -102,10 +130,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				return;
 			if (oldMemberCount != nType.GetMembers (pred, GetMemberOptions.IgnoreInheritedMembers).Count ()) {
 				if (oType.Kind == TypeKind.Interface) {
-					IncompatibilityFound ("Interface " + oType.FullName + " changed.");
+					OnIncompatibilityFound (new AbiEventArgs (string.Format (TranslateString ("Interafce {0} has changed."), oType.FullName)));
 					compatibility = AbiCompatibility.Incompatible;
 				} else {
-					compatibility = AbiCompatibility.Bigger;
+					if (compatibility == AbiCompatibility.Equal)
+						compatibility = AbiCompatibility.Bigger;
 				}
 			}
 		}
@@ -117,12 +146,14 @@ namespace ICSharpCode.NRefactory.CSharp
 					continue;
 				var newType = nNs.GetTypeDefinition (type.Name, type.TypeParameterCount);
 				if (newType == null) {
-					IncompatibilityFound ("Type definition "+ type.FullName +" is missing.");
+					OnIncompatibilityFound (new AbiEventArgs (string.Format (TranslateString ("Type definition {0} is missing."), type.FullName)));
 					compatibility = AbiCompatibility.Incompatible;
-					return;
+					if (StopOnIncompatibility) 
+						return;
+					continue;
 				}
 				CheckTypes (type, newType, ref compatibility);
-				if (compatibility == AbiCompatibility.Incompatible)
+				if (compatibility == AbiCompatibility.Incompatible && StopOnIncompatibility)
 					return;
 			}
 
@@ -132,7 +163,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (!type.IsPublic && !type.IsProtected)
 					continue;
 				if (oNs.GetTypeDefinition (type.Name, type.TypeParameterCount) == null) {
-					compatibility = AbiCompatibility.Bigger;
+					if (compatibility == AbiCompatibility.Equal)
+						compatibility = AbiCompatibility.Bigger;
 					return;
 				}
 			}
@@ -170,13 +202,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				var nNs = newStack.Pop ();
 
 				CheckNamespace (oNs, nNs, ref compatibility);
-				if (compatibility == AbiCompatibility.Incompatible)
+				if (compatibility == AbiCompatibility.Incompatible && StopOnIncompatibility)
 					return AbiCompatibility.Incompatible;
 				foreach (var child in oNs.ChildNamespaces) {
 					var newChild = nNs.GetChildNamespace (child.Name);
 					if (newChild == null) {
-						IncompatibilityFound ("Namespace "+ child.FullName +" is missing.");
-						return AbiCompatibility.Incompatible;
+						OnIncompatibilityFound (new AbiEventArgs (string.Format (TranslateString ("Namespace {0} is missing."), child.FullName)));
+						if (StopOnIncompatibility)
+							return AbiCompatibility.Incompatible;
+						continue;
 					}
 					oldStack.Push (child);
 					newStack.Push (newChild);
@@ -186,7 +220,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (compatibility != AbiCompatibility.Bigger) {
 					foreach (var child in nNs.ChildNamespaces) {
 						if (oNs.GetChildNamespace (child.Name) == null) {
-							if (ContainsPublicTypes (child))
+							if (compatibility == AbiCompatibility.Equal && ContainsPublicTypes (child))
 								compatibility = AbiCompatibility.Bigger;
 							break;
 						}
@@ -196,9 +230,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			return compatibility;
 		}
 
-		void IncompatibilityFound(string str)
+		public virtual string TranslateString(string str)
 		{
-			Console.WriteLine (str);
+			return str;
+		}
+
+		public event EventHandler<AbiEventArgs> IncompatibilityFound;
+
+		protected virtual void OnIncompatibilityFound(AbiEventArgs e)
+		{
+			var handler = IncompatibilityFound;
+			if (handler != null)
+				handler(this, e);
 		}
 	}
 }
