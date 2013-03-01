@@ -443,23 +443,23 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 		}
 		
-		public bool CloseAllSolutionViews()
+		public bool CloseAllSolutionViews(bool force)
 		{
 			bool result = true;
 			foreach (IWorkbenchWindow window in this.WorkbenchWindowCollection.ToArray()) {
 				if (window.ActiveViewContent != null && window.ActiveViewContent.CloseWithSolution)
-					result &= window.CloseWindow(false);
+					result &= window.CloseWindow(force);
 			}
 			return result;
 		}
 		
 		#region ViewContent Memento Handling
-		string viewContentMementosFileName;
+		FileName viewContentMementosFileName;
 		
-		string ViewContentMementosFileName {
+		FileName ViewContentMementosFileName {
 			get {
 				if (viewContentMementosFileName == null) {
-					viewContentMementosFileName = Path.Combine(PropertyService.ConfigDirectory, "LastViewStates.xml");
+					viewContentMementosFileName = FileName.Create(Path.Combine(PropertyService.ConfigDirectory, "LastViewStates.xml"));
 				}
 				return viewContentMementosFileName;
 			}
@@ -568,31 +568,20 @@ namespace ICSharpCode.SharpDevelop.Workbench
 					return;
 				}
 				
-				if (!Project.ProjectService.IsClosingCanceled()) {
-					// save preferences
-					Project.ProjectService.SaveSolutionPreferences();
-					
-					while (SD.Workbench.WorkbenchWindowCollection.Count > 0) {
-						IWorkbenchWindow window = SD.Workbench.WorkbenchWindowCollection [0];
-						if (!window.CloseWindow(false)) {
-							e.Cancel = true;
-							return;
-						}
-					}
-					
-					Project.ProjectService.CloseSolution();
-					((ParserService)SD.ParserService).StopParserThread();
-					
-					restoreBoundsBeforeClosing = this.RestoreBounds;
-					
-					this.WorkbenchLayout = null;
-					
-					shutdownService.SignalShutdownToken();
-					foreach (PadDescriptor padDescriptor in this.PadContentCollection) {
-						padDescriptor.Dispose();
-					}
-				} else {
+				if (!SD.ProjectService.CloseSolution()) {
 					e.Cancel = true;
+					return;
+				}
+				
+				((ParserService)SD.ParserService).StopParserThread();
+				
+				restoreBoundsBeforeClosing = this.RestoreBounds;
+				
+				this.WorkbenchLayout = null;
+				
+				shutdownService.SignalShutdownToken();
+				foreach (PadDescriptor padDescriptor in this.PadContentCollection) {
+					padDescriptor.Dispose();
 				}
 			}
 		}

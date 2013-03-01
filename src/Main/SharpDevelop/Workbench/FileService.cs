@@ -332,9 +332,9 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				this.switchToOpenedView = switchToOpenedView;
 			}
 			
-			public void Invoke(string fileName)
+			public void Invoke(FileName fileName)
 			{
-				OpenedFile file = SD.FileService.GetOrCreateOpenedFile(FileName.Create(fileName));
+				OpenedFile file = SD.FileService.GetOrCreateOpenedFile(fileName);
 				try {
 					IViewContent newContent = binding.CreateContentForFile(file);
 					if (newContent != null) {

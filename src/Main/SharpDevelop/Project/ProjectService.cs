@@ -21,30 +21,43 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			var applicationStateInfoService = SD.GetService<ApplicationStateInfoService>();
 			if (applicationStateInfoService != null) {
-				applicationStateInfoService.RegisterStateGetter("ProjectService.OpenSolution", delegate { return OpenSolution; });
+				applicationStateInfoService.RegisterStateGetter("ProjectService.CurrentSolution", delegate { return CurrentSolution; });
 				applicationStateInfoService.RegisterStateGetter("ProjectService.CurrentProject", delegate { return CurrentProject; });
 			}
 		}
 		
-		volatile static ISolution openSolution;
-		volatile static IProject currentProject;
+		#region CurrentSolution property + AllProjects collection
+		volatile static ISolution currentSolution;
+		ConcatModelCollection<IProject> allProjects = new ConcatModelCollection<IProject>();
 		
-		public event PropertyChangedEventHandler<ISolution> OpenSolutionChanged = delegate { };
-		public event PropertyChangedEventHandler<IProject> CurrentProjectChanged = delegate { };
+		public event PropertyChangedEventHandler<ISolution> CurrentSolutionChanged = delegate { };
 		
-		public ISolution OpenSolution {
+		public ISolution CurrentSolution {
 			[DebuggerStepThrough]
-			get { return openSolution; }
+			get { return currentSolution; }
 			private set {
 				SD.MainThread.VerifyAccess();
-				var oldValue = openSolution;
+				var oldValue = currentSolution;
 				if (oldValue != value) {
-					openSolution = value;
-					OpenSolutionChanged(this, new PropertyChangedEventArgs<ISolution>("OpenSolution", oldValue, value));
+					currentSolution = value;
+					if (oldValue != null)
+						allProjects.Inputs.Remove(oldValue.Projects);
+					CurrentSolutionChanged(this, new PropertyChangedEventArgs<ISolution>(oldValue, value));
+					if (value != null)
+						allProjects.Inputs.Add(value.Projects);
 					CommandManager.InvalidateRequerySuggested();
 				}
 			}
 		}
+		
+		public IModelCollection<IProject> AllProjects {
+			get { return allProjects; }
+		}
+		#endregion
+		
+		#region CurrentProject property
+		volatile static IProject currentProject;
+		public event PropertyChangedEventHandler<IProject> CurrentProjectChanged = delegate { };
 		
 		public IProject CurrentProject {
 			[DebuggerStepThrough]
@@ -55,12 +68,14 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (oldValue != value) {
 					LoggingService.Info("CurrentProject changed to " + (value == null ? "null" : value.Name));
 					currentProject = value;
-					CurrentProjectChanged(this, new PropertyChangedEventArgs<IProject>("CurrentProject", oldValue, value));
+					CurrentProjectChanged(this, new PropertyChangedEventArgs<IProject>(oldValue, value));
 					CommandManager.InvalidateRequerySuggested();
 				}
 			}
 		}
+		#endregion
 		
+		#region FindProjectContainingFile
 		public IProject FindProjectContainingFile(FileName fileName)
 		{
 			if (fileName == null)
@@ -70,12 +85,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (currentProject != null && currentProject.IsFileInProject(fileName))
 				return currentProject;
 			
-			ISolution openSolution = this.OpenSolution;
-			if (openSolution == null)
+			ISolution solution = this.CurrentSolution;
+			if (solution == null)
 				return null;
 			// Try all project's in the solution.
 			IProject linkedProject = null;
-			foreach (IProject project in openSolution.Projects) {
+			foreach (IProject project in solution.Projects) {
 				FileProjectItem file = project.FindFile(fileName);
 				if (file != null) {
 					if (file.IsLink)
@@ -86,26 +101,64 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return linkedProject;
 		}
+		#endregion
 		
+		#region OpenSolutionOrProject
 		public void OpenSolutionOrProject(FileName fileName)
 		{
-			CloseSolution();
+			if (!IsProjectOrSolutionFile(fileName)) {
+				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new StringTagPair("FileName", fileName)));
+				return;
+			}
+			if (!CloseSolution(allowCancel: true))
+				return;
 			FileUtility.ObservedLoad(OpenSolutionOrProjectInternal, fileName);
 		}
 		
-		void OpenSolutionOrProjectInternal(string fileName)
+		void OpenSolutionOrProjectInternal(FileName fileName)
 		{
 			using (var progress = AsynchronousWaitDialog.ShowWaitDialog("Loading Solution")) {
-				ISolution solution = LoadSolutionFile(FileName.Create(fileName), progress);
+				
+				ISolution solution = LoadSolutionFile(fileName, progress);
 				throw new NotImplementedException();
 			}
 		}
+		#endregion
 		
-		public void CloseSolution()
+		#region CloseSolution
+		public event EventHandler<SolutionClosingEventArgs> SolutionClosing = delegate { };
+		public event EventHandler<SolutionEventArgs> SolutionClosed = delegate { };
+		
+		public bool CloseSolution(bool allowCancel)
 		{
-			throw new NotImplementedException();
+			SD.MainThread.VerifyAccess();
+			var solution = this.CurrentSolution;
+			if (solution == null)
+				return true;
+			
+			var cancelEventArgs = new SolutionClosingEventArgs(solution, allowCancel);
+			SolutionClosing(this, cancelEventArgs);
+			if (allowCancel && cancelEventArgs.Cancel)
+				return false;
+			
+			if (!SD.Workbench.CloseAllSolutionViews(force: !allowCancel))
+				return false;
+			
+			// If a build is running, cancel it.
+			// If we would let a build run but unload the MSBuild projects, the next project.StartBuild call
+			// could cause an exception.
+			SD.BuildService.CancelBuild();
+			
+			CurrentProject = null;
+			
+			this.CurrentSolution = null; // this will fire the CurrentSolutionChanged event
+			SolutionClosed(this, new SolutionEventArgs(solution));
+			solution.Dispose();
+			return true;
 		}
+		#endregion
 		
+		#region IsProjectOrSolutionFile
 		public bool IsProjectOrSolutionFile(FileName fileName)
 		{
 			AddInTreeNode addinTreeNode = SD.AddInTree.GetTreeNode("/SharpDevelop/Workbench/Combine/FileFilter");
@@ -117,10 +170,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return false;
 		}
+		#endregion
 		
+		#region LoadSolutionFile + CreateEmptySolutionFile
 		public ISolution LoadSolutionFile(FileName fileName, IProgressMonitor progress)
 		{
-			Solution solution = new Solution(fileName, new ProjectChangeWatcher(fileName));
+			Solution solution = new Solution(fileName, new ProjectChangeWatcher(fileName), SD.FileService);
 			bool ok = false;
 			try {
 				using (var loader = new SolutionLoader(fileName)) {
@@ -136,9 +191,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public ISolution CreateEmptySolutionFile(FileName fileName)
 		{
-			Solution solution = new Solution(fileName, new ProjectChangeWatcher(fileName));
+			Solution solution = new Solution(fileName, new ProjectChangeWatcher(fileName), SD.FileService);
 			solution.LoadPreferences();
 			return solution;
 		}
+		#endregion
 	}
 }

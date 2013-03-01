@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
@@ -38,7 +40,7 @@ namespace PackageManagement.Tests
 			var createInfo = new ProjectCreateInformation(projects);
 			createInfo.Solution = projects[0].ParentSolution;
 			
-			command.FakeProjectService.FakeOpenProjects.AddRange(projects);
+			command.FakeProjectService.AllProjects.Inputs.Add(new ReadOnlyModelCollection<IProject>(projects));
 			
 			RunCommandWithProjectCreateInfoAsOwner(createInfo);
 		}
@@ -80,7 +82,7 @@ namespace PackageManagement.Tests
 			var createInfo = new ProjectCreateInformation(projects);
 			
 			TestableProject expectedProject = ProjectHelper.CreateTestProject("TEST");
-			command.FakeProjectService.FakeOpenProjects.Add(expectedProject);
+			command.FakeProjectService.AddProject(expectedProject);
 			
 			RunCommandWithProjectCreateInfoAsOwner(createInfo);
 			

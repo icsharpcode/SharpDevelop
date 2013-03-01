@@ -175,7 +175,7 @@ namespace WixBinding.Tests.Utils
 			}
 		}
 		
-		public bool CloseAllSolutionViews()
+		public bool CloseAllSolutionViews(bool force)
 		{
 			throw new NotImplementedException();
 		}

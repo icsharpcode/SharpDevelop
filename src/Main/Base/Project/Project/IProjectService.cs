@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 
@@ -20,9 +21,19 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <remarks>
 		/// This property is thread-safe.
 		/// </remarks>
-		ISolution OpenSolution { get; }
+		ISolution CurrentSolution { get; }
 		
-		event PropertyChangedEventHandler<ISolution> OpenSolutionChanged;
+		event PropertyChangedEventHandler<ISolution> CurrentSolutionChanged;
+		
+		/// <summary>
+		/// This event is raised before a solution is closed.
+		/// </summary>
+		event EventHandler<SolutionClosingEventArgs> SolutionClosing;
+		
+		/// <summary>
+		/// This event is raised after a solution is closed.
+		/// </summary>
+		event EventHandler<SolutionEventArgs> SolutionClosed;
 		
 		/// <summary>
 		/// Gets/Sets the project that is currently considered 'active' within the IDE.
@@ -33,6 +44,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		IProject CurrentProject { get; set; }
 		
 		event PropertyChangedEventHandler<IProject> CurrentProjectChanged;
+		
+		/// <summary>
+		/// A collection that contains all projects in the currently open solution.
+		/// 
+		/// The collection instance is reused when the solution is closed and another is opened.
+		/// </summary>
+		IModelCollection<IProject> AllProjects { get; }
 		
 		/// <summary>
 		/// Finds the project that contains the specified file.
@@ -56,12 +74,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		void OpenSolutionOrProject(FileName fileName);
 		
 		/// <summary>
-		/// Closes the currently open solution.
+		/// Closes the solution: cancels build, clears solution data, fires the SolutionClosing and SolutionClosed events.
 		/// </summary>
+		/// <param name="allowCancel">Whether to allow the user to cancel closing the solution.</param>
+		/// <returns>
+		/// True if the solution was closed successfully; false if the operation was aborted.
+		/// </returns>
 		/// <remarks>
 		/// This method may only be called on the main thread.
 		/// </remarks>
-		void CloseSolution();
+		bool CloseSolution(bool allowCancel = true);
 		
 		/// <summary>
 		/// Returns if the given file is considered a project or solution file.
@@ -85,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		ISolution LoadSolutionFile(FileName fileName, IProgressMonitor progress);
 		
 		/// <summary>
-		/// Creates a new, empty solution and loads it without opening it in the IDE.
+		/// Creates a new, empty solution without opening it in the IDE.
 		/// The file is not saved to disk until <see cref="ISolution.Save"/> is called.
 		/// </summary>
 		/// <remarks>

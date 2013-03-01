@@ -10,6 +10,8 @@ using System.Windows.Input;
 
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.Scripting;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
@@ -25,8 +27,6 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		ObservableCollection<PackageSourceViewModel> packageSources = new ObservableCollection<PackageSourceViewModel>();
 		PackageSourceViewModel activePackageSource;
-		
-		ObservableCollection<IProject> projects = new ObservableCollection<IProject>();
 		
 		PackageManagementConsole packageManagementConsole;
 		
@@ -47,7 +47,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 			CreateCommands();
 			UpdatePackageSourceViewModels();
 			ReceiveNotificationsWhenPackageSourcesUpdated();
-			AddProjects();
+			UpdateDefaultProject();
 			ReceiveNotificationsWhenSolutionIsUpdated();
 			InitConsoleHost();
 		}
@@ -137,57 +137,18 @@ namespace ICSharpCode.PackageManagement.Scripting
 			UpdatePackageSourceViewModels();
 		}
 		
-		void AddProjects()
-		{
-			ISolution solution = projectService.OpenSolution;
-			if (solution != null) {
-				AddProjects(solution);
-			}
-			UpdateDefaultProject();
-		}
-
 		void UpdateDefaultProject()
 		{
-			DefaultProject = projects.FirstOrDefault();
-		}
-		
-		void AddProjects(ISolution solution)
-		{
-			foreach (IProject project in solution.Projects) {
-				projects.Add(project);
-			}
+			DefaultProject = this.Projects.FirstOrDefault();
 		}
 		
 		void ReceiveNotificationsWhenSolutionIsUpdated()
 		{
-			projectService.ProjectAdded += ProjectAdded;
-			projectService.SolutionClosed += SolutionClosed;
-			projectService.SolutionLoaded += SolutionLoaded;
-			projectService.SolutionFolderRemoved += SolutionFolderRemoved;
+			projectService.AllProjects.CollectionChanged += OnProjectCollectionChanged;
 		}
 		
-		void ProjectAdded(object sender, ProjectEventArgs e)
+		void OnProjectCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			projects.Add(e.Project);
-			UpdateDefaultProject();
-		}
-		
-		void SolutionClosed(object sender, EventArgs e)
-		{
-			projects.Clear();
-			DefaultProject = null;
-		}
-		
-		void SolutionLoaded(object sender, SolutionEventArgs e)
-		{
-			AddProjects(e.Solution);
-			UpdateDefaultProject();
-		}
-		
-		void SolutionFolderRemoved(object sender, SolutionFolderEventArgs e)
-		{
-			IProject project = e.SolutionFolder as IProject;
-			projects.Remove(project);
 			UpdateDefaultProject();
 		}
 		
@@ -212,8 +173,8 @@ namespace ICSharpCode.PackageManagement.Scripting
 			return null;
 		}
 		
-		public ObservableCollection<IProject> Projects {
-			get { return projects; }
+		public IModelCollection<IProject> Projects {
+			get { return projectService.AllProjects; }
 		}
 		
 		public IProject DefaultProject {

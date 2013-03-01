@@ -21,13 +21,34 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		readonly Dictionary<IProject, CompilationPass> unmodifiedProjects = new Dictionary<IProject, CompilationPass>();
 		
-		public BuildModifiedProjectsOnlyService(IBuildService buildService)
+		public BuildModifiedProjectsOnlyService(IBuildService buildService, IProjectService projectService)
 		{
-			// these actions cause a full recompilation:
-			ProjectService.SolutionClosed += MarkAllForRecompilation;
+			projectService.CurrentSolutionChanged += OnSolutionChanged;
 			buildService.BuildFinished += BuildService_BuildFinished;
 			
 			FileUtility.FileSaved += OnFileSaved;
+		}
+		
+		void OnSolutionChanged(object sender, PropertyChangedEventArgs<ISolution> e)
+		{
+			lock (unmodifiedProjects) {
+				unmodifiedProjects.Clear();
+			}
+			if (e.OldValue != null) {
+				e.OldValue.ActiveConfigurationChanged -= MarkAllForRecompilation;
+				e.OldValue.IsDirtyChanged -= MarkAllForRecompilation;
+			}
+			if (e.NewValue != null) {
+				e.NewValue.ActiveConfigurationChanged += MarkAllForRecompilation;
+				e.NewValue.IsDirtyChanged += MarkAllForRecompilation;
+			}
+		}
+		
+		void MarkAllForRecompilation(object sender, EventArgs e)
+		{
+			lock (unmodifiedProjects) {
+				unmodifiedProjects.Clear();
+			}
 		}
 		
 		void BuildService_BuildFinished(object sender, BuildEventArgs e)
@@ -46,13 +67,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				lock (unmodifiedProjects) {
 					unmodifiedProjects.Clear();
 				}
-			}
-		}
-		
-		void MarkAllForRecompilation(object sender, EventArgs e)
-		{
-			lock (unmodifiedProjects) {
-				unmodifiedProjects.Clear();
 			}
 		}
 		

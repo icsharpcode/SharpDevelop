@@ -583,7 +583,7 @@ namespace ICSharpCode.Core
 			return result.ToArray();
 		}
 		
-		public void Save(string fileName)
+		public void Save(FileName fileName)
 		{
 			new XDocument(Save()).Save(fileName);
 		}

@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Implementation;
 using ICSharpCode.SharpDevelop.Dom;
@@ -53,6 +54,9 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static void TearDownForUnitTests()
 		{
+			var disposableServiceContainer = ServiceSingleton.ServiceProvider as IDisposable;
+			if (disposableServiceContainer != null)
+				disposableServiceContainer.Dispose();
 			ServiceSingleton.ServiceProvider = ServiceSingleton.FallbackServiceProvider;
 		}
 		
@@ -70,6 +74,20 @@ namespace ICSharpCode.SharpDevelop
 		public static T GetRequiredService<T>() where T : class
 		{
 			return ServiceSingleton.ServiceProvider.GetRequiredService<T>();
+		}
+		
+		/// <summary>
+		/// Returns a task that gets completed when the service is initialized.
+		/// 
+		/// This method does not try to initialize the service -- if no other code forces the service
+		/// to be initialized, the task will never complete.
+		/// </summary>
+		/// <remarks>
+		/// This method can be used to solve cyclic dependencies in service initialization.
+		/// </remarks>
+		public static Task<T> GetFutureService<T>() where T : class
+		{
+			throw new NotImplementedException();
 		}
 		
 		/// <summary>

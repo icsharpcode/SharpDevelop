@@ -76,7 +76,7 @@ namespace ICSharpCode.UnitTesting.Frameworks
 			cancellationToken.ThrowIfCancellationRequested();
 			using (IProgressMonitor progressMonitor = statusBarService.CreateProgressMonitor(cancellationToken)) {
 				int projectsLeftToRun = testsByProject.Count;
-				foreach (IGrouping<ITestProject, ITest> g in testsByProject) {
+				foreach (IGrouping<ITestProject, ITest> g in testsByProject.OrderBy(g => g.Key.DisplayName)) {
 					currentProjectBeingTested = g.Key;
 					progressMonitor.TaskName = GetProgressMonitorLabel(currentProjectBeingTested);
 					progressMonitor.Progress = GetProgress(projectsLeftToRun);

@@ -129,7 +129,7 @@ namespace ICSharpCode.Core
 			if (string.IsNullOrEmpty(configDirectory) || string.IsNullOrEmpty(propertyFileName))
 				throw new InvalidOperationException("No file name was specified on service creation");
 			
-			string fileName = Path.Combine(configDirectory, propertyFileName);
+			var fileName = FileName.Create(Path.Combine(configDirectory, propertyFileName));
 			using (LockPropertyFile()) {
 				properties.Save(fileName);
 			}

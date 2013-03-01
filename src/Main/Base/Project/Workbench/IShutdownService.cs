@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// Attemps to close the IDE.
 		/// </summary>
 		/// <remarks>
-		/// This method will
+		/// This method will:
 		/// - Check if <see cref="PreventShutdown"/> was called and abort the shutdown if it was.
 		/// - Prompt the user to save the open files. The user has the option to cancel the shutdown at that point.
 		/// - Closes the solution.

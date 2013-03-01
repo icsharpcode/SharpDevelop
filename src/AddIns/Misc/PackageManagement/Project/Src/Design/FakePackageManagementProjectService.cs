@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -17,54 +18,29 @@ namespace ICSharpCode.PackageManagement.Design
 		public IProject CurrentProject { get; set; }
 		public ISolution OpenSolution { get; set; }
 		
-		public event EventHandler<ProjectEventArgs> ProjectAdded;
-		public event SolutionFolderEventHandler SolutionFolderRemoved;
-		public event EventHandler SolutionClosed;
-		public event EventHandler<SolutionEventArgs> SolutionLoaded;
+		public event EventHandler<SolutionEventArgs> SolutionClosed;
 		
 		public void RefreshProjectBrowser()
 		{
 			IsRefreshProjectBrowserCalled = true;
-		}		
-		
-		public void FireProjectAddedEvent(IProject project)
-		{
-			if (ProjectAdded != null) {
-				ProjectAdded(this, new ProjectEventArgs(project));
-			}
 		}
 		
-		public void FireSolutionClosedEvent()
+		public void FireSolutionClosedEvent(ISolution solution)
 		{
 			if (SolutionClosed != null) {
-				SolutionClosed(this, new EventArgs());
+				SolutionClosed(this, new SolutionEventArgs(solution));
 			}
 		}
 		
-		public void FireSolutionLoadedEvent(ISolution solution)
-		{
-			if (SolutionLoaded != null) {
-				SolutionLoaded(this, new SolutionEventArgs(solution));
-			}
+		public readonly ConcatModelCollection<IProject> AllProjects = new ConcatModelCollection<IProject>();
+		
+		IModelCollection<IProject> IPackageManagementProjectService.AllProjects {
+			get { return AllProjects; }
 		}
 		
-		public void FireSolutionFolderRemoved(ISolutionItem solutionFolder)
+		public void AddProject(IProject project)
 		{
-			if (SolutionFolderRemoved != null) {
-				SolutionFolderRemoved(this, new SolutionFolderEventArgs(solutionFolder));
-			}
-		}
-		
-		public List<IProject> FakeOpenProjects = new List<IProject>();
-		
-		public void AddFakeProject(IProject project)
-		{
-			FakeOpenProjects.Add(project);
-		}
-		
-		public IEnumerable<IProject> GetOpenProjects()
-		{
-			return FakeOpenProjects;
+			AllProjects.Inputs.Add(new ReadOnlyModelCollection<IProject>(new[] { project }));
 		}
 		
 		public void AddProjectItem(IProject project, ProjectItem item)

@@ -152,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// <returns>
 		/// 	True if all views were closed properly, false if closing was aborted.
 		/// </returns>
-		bool CloseAllSolutionViews();
+		bool CloseAllSolutionViews(bool force);
 		
 		/// <summary>
 		/// Gets/Sets the name of the current layout configuration.

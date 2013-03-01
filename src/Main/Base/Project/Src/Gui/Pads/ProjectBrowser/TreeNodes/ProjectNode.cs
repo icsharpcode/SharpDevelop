@@ -140,8 +140,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Delete()
 		{
-			((ISolutionFolderNode)Parent).Folder.Items.Remove(project);
+			var parentFolder = ((ISolutionFolderNode)Parent).Folder;
+			parentFolder.Items.Remove(project);
 			base.Remove();
+			parentFolder.ParentSolution.Save();
 		}
 		
 		public override bool EnableCopy {

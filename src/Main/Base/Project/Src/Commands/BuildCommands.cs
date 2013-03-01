@@ -277,8 +277,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			if (SD.ProjectService.OpenSolution != null)
-				SD.UIService.ShowSolutionConfigurationEditorDialog(SD.ProjectService.OpenSolution);
+			if (SD.ProjectService.CurrentSolution != null)
+				SD.UIService.ShowSolutionConfigurationEditorDialog(SD.ProjectService.CurrentSolution);
 		}
 	}
 }

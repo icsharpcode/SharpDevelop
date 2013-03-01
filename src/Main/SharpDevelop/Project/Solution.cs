@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Threading;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -14,18 +16,26 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		FileName fileName;
 		DirectoryName directory;
-		IProjectChangeWatcher changeWatcher;
+		readonly IProjectChangeWatcher changeWatcher;
+		readonly IFileService fileService;
 		
-		public Solution(FileName fileName, IProjectChangeWatcher changeWatcher)
+		public Solution(FileName fileName, IProjectChangeWatcher changeWatcher, IFileService fileService)
 		{
 			this.changeWatcher = changeWatcher;
+			this.fileService = fileService;
 			this.ConfigurationNames = new SolutionConfigurationOrPlatformNameCollection(this, false);
 			this.PlatformNames = new SolutionConfigurationOrPlatformNameCollection(this, true);
 			this.FileName = fileName;
+			
+			fileService.FileRenamed += FileServiceFileRenamed;
+			fileService.FileRemoved += FileServiceFileRemoved;
 		}
 		
 		public void Dispose()
 		{
+			fileService.FileRenamed -= FileServiceFileRenamed;
+			fileService.FileRemoved -= FileServiceFileRemoved;
+			
 			changeWatcher.Dispose();
 			foreach (var project in this.Projects) {
 				project.Dispose();
@@ -111,6 +121,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			projects.Remove(project);
 			if (wasStartupProject)
 				StartupProjectChanged(this, EventArgs.Empty);
+			
+			// HACK: ensure the project gets disposed
+			SD.MainThread.InvokeAsyncAndForget(
+				delegate {
+					project.Dispose();
+				}, DispatcherPriority.Background);
 		}
 		
 		internal void ReportRemovedItem(ISolutionItem oldItem)
@@ -239,6 +255,57 @@ namespace ICSharpCode.SharpDevelop.Project
 			MSBuildInternals.AddMSBuildSolutionProperties(this, dict);
 			foreach (var pair in dict) {
 				msBuildProjectCollection.SetGlobalProperty(pair.Key, pair.Value);
+			}
+		}
+		#endregion
+		
+		#region Handle FileService.FileRenamed / FileRemoved
+		void FileServiceFileRenamed(object sender, FileRenameEventArgs e)
+		{
+			string oldName = e.SourceFile;
+			string newName = e.TargetFile;
+			foreach (ISolutionFileItem fileItem in this.AllItems.OfType<ISolutionFileItem>()) {
+				if (FileUtility.IsBaseDirectory(oldName, fileItem.FileName)) {
+					string newFullName = FileUtility.RenameBaseDirectory(fileItem.FileName, oldName, newName);
+					fileItem.FileName = FileName.Create(newFullName);
+				}
+			}
+			
+			foreach (IProject project in this.Projects) {
+				if (FileUtility.IsBaseDirectory(project.Directory, oldName)) {
+					foreach (ProjectItem item in project.Items) {
+						if (FileUtility.IsBaseDirectory(oldName, item.FileName)) {
+							ProjectService.OnProjectItemRemoved(new ProjectItemEventArgs(project, item));
+							item.FileName = FileUtility.RenameBaseDirectory(item.FileName, oldName, newName);
+							ProjectService.OnProjectItemAdded(new ProjectItemEventArgs(project, item));
+						}
+					}
+				}
+			}
+		}
+		
+		void FileServiceFileRemoved(object sender, FileEventArgs e)
+		{
+			string fileName = e.FileName;
+			
+			foreach (ISolutionFileItem fileItem in this.AllItems.OfType<ISolutionFileItem>().ToArray()) {
+				if (FileUtility.IsBaseDirectory(fileName, fileItem.FileName)) {
+					fileItem.ParentFolder.Items.Remove(fileItem);
+				}
+			}
+			
+			foreach (IProject project in this.Projects) {
+				if (FileUtility.IsBaseDirectory(project.Directory, fileName)) {
+					IProjectItemListProvider provider = project as IProjectItemListProvider;
+					if (provider != null) {
+						foreach (ProjectItem item in provider.Items.ToArray()) {
+							if (FileUtility.IsBaseDirectory(fileName, item.FileName)) {
+								provider.RemoveProjectItem(item);
+								ProjectService.OnProjectItemRemoved(new ProjectItemEventArgs(project, item));
+							}
+						}
+					}
+				}
 			}
 		}
 		#endregion

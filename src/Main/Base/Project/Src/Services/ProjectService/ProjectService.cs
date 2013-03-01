@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static ISolution OpenSolution {
 			[System.Diagnostics.DebuggerStepThrough]
 			get {
-				return SD.ProjectService.OpenSolution;
+				return SD.ProjectService.CurrentSolution;
 			}
 		}
 		
@@ -46,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static IProject GetProject(FileName projectFilename)
 		{
-			ISolution sln = SD.ProjectService.OpenSolution;
+			ISolution sln = SD.ProjectService.CurrentSolution;
 			if (sln == null)
 				return null;
 			foreach (IProject project in sln.Projects) {
@@ -83,69 +83,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void LoadSolutionOrProject(string fileName)
 		{
-			SD.ProjectService.CloseSolution();
 			SD.ProjectService.OpenSolutionOrProject(FileName.Create(fileName));
-			/*IProjectLoader loader = GetProjectLoader(fileName);
-			if (loader != null)	{
-				loader.Load(fileName);
-			} else {
-				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new StringTagPair("FileName", fileName)));
-			}*/
-		}
-		
-		static void FileServiceFileRenamed(object sender, FileRenameEventArgs e)
-		{
-			if (OpenSolution == null) {
-				return;
-			}
-			string oldName = e.SourceFile;
-			string newName = e.TargetFile;
-			foreach (ISolutionFileItem fileItem in OpenSolution.AllItems.OfType<ISolutionFileItem>().ToArray()) {
-				if (FileUtility.IsBaseDirectory(oldName, fileItem.FileName)) {
-					string newFullName = FileUtility.RenameBaseDirectory(fileItem.FileName, oldName, newName);
-					fileItem.FileName = FileName.Create(newFullName);
-				}
-			}
-			
-			foreach (IProject project in OpenSolution.Projects) {
-				if (FileUtility.IsBaseDirectory(project.Directory, oldName)) {
-					foreach (ProjectItem item in project.Items) {
-						if (FileUtility.IsBaseDirectory(oldName, item.FileName)) {
-							OnProjectItemRemoved(new ProjectItemEventArgs(project, item));
-							item.FileName = FileUtility.RenameBaseDirectory(item.FileName, oldName, newName);
-							OnProjectItemAdded(new ProjectItemEventArgs(project, item));
-						}
-					}
-				}
-			}
-		}
-		
-		static void FileServiceFileRemoved(object sender, FileEventArgs e)
-		{
-			if (OpenSolution == null) {
-				return;
-			}
-			string fileName = e.FileName;
-			
-			foreach (ISolutionFileItem fileItem in OpenSolution.AllItems.OfType<ISolutionFileItem>().ToArray()) {
-				if (FileUtility.IsBaseDirectory(fileName, fileItem.FileName)) {
-					fileItem.ParentFolder.Items.Remove(fileItem);
-				}
-			}
-			
-			foreach (IProject project in OpenSolution.Projects) {
-				if (FileUtility.IsBaseDirectory(project.Directory, fileName)) {
-					IProjectItemListProvider provider = project as IProjectItemListProvider;
-					if (provider != null) {
-						foreach (ProjectItem item in provider.Items.ToArray()) {
-							if (FileUtility.IsBaseDirectory(fileName, item.FileName)) {
-								provider.RemoveProjectItem(item);
-								OnProjectItemRemoved(new ProjectItemEventArgs(project, item));
-							}
-						}
-					}
-				}
-			}
 		}
 		
 		static void ActiveViewContentChanged(object sender, EventArgs e)
@@ -377,7 +315,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void SaveSolution()
 		{
-			var openSolution = SD.ProjectService.OpenSolution;
+			var openSolution = SD.ProjectService.CurrentSolution;
 			if (openSolution != null) {
 				openSolution.Save();
 				foreach (IProject project in openSolution.Projects) {
@@ -469,68 +407,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}*/
 		}
 		
-		/// <summary>
-		/// Executes the OnBeforeSolutionClosing event.
-		/// </summary>
-		/// <remarks>This method must be used after CloseSolution is called.</remarks>
-		/// <returns><c>true</c>, if closing solution was canceled; <c>false</c>, otherwise.</returns>
-		internal static bool IsClosingCanceled()
-		{
-			// run onbefore closing
-			var beforeClosingArgs = new SolutionCancelEventArgs(OpenSolution);
-			OnBeforeSolutionClosing(beforeClosingArgs);
-			
-			return beforeClosingArgs.Cancel;
-		}
-		
-		/// <summary>
-		/// Closes the solution: cancels build, clears solution data, fires the SolutionClosing and SolutionClosed events.
-		/// <remarks>
-		/// 	Before invoking this method, one should check if the closing was canceled (<see cref="IsClosingCanceled"/>),
-		/// 	save solution and project data (e.g. files, bookmarks), then invoke CloseSolution().
-		/// </remarks>
-		/// </summary>
-		internal static void CloseSolution()
-		{
-			throw new NotImplementedException();
-			/*// If a build is running, cancel it.
-			// If we would let a build run but unload the MSBuild projects, the next project.StartBuild call
-			// could cause an exception.
-			SD.BuildService.CancelBuild();
-			
-			if (openSolution != null) {
-				CurrentProject = null;
-				OnSolutionClosing(new SolutionEventArgs(openSolution));
-				
-				openSolution.Dispose();
-				openSolution = null;
-				
-				OnSolutionClosed(EventArgs.Empty);
-				CommandManager.InvalidateRequerySuggested();
-			}*/
-		}
-		
-		static void OnSolutionClosed(EventArgs e)
-		{
-			if (SolutionClosed != null) {
-				SolutionClosed(null, e);
-			}
-		}
-		
-		static void OnSolutionClosing(SolutionEventArgs e)
-		{
-			if (SolutionClosing != null) {
-				SolutionClosing(null, e);
-			}
-		}
-		
-		static void OnBeforeSolutionClosing(SolutionCancelEventArgs e)
-		{
-			if (BeforeSolutionClosing != null) {
-				BeforeSolutionClosing(null, e);
-			}
-		}
-		
 		static void OnSolutionLoading(string fileName)
 		{
 			if (SolutionLoading != null) {
@@ -552,51 +428,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		/*
-		public static void RemoveSolutionFolder(string guid)
-		{
-			if (OpenSolution == null) {
-				return;
-			}
-			foreach (ISolutionItem folder in OpenSolution.SolutionFolders) {
-				if (folder.IdGuid == guid) {
-					folder.Parent.RemoveFolder(folder);
-					OnSolutionFolderRemoved(new SolutionFolderEventArgs(folder));
-					HandleRemovedSolutionFolder(folder);
-					break;
-				}
-			}
-		}
-		
-		static void HandleRemovedSolutionFolder(ISolutionItem folder)
-		{
-			IProject project = folder as IProject;
-			if (project != null) {
-				OpenSolution.RemoveProjectConfigurations(project.IdGuid);
-				OnProjectRemoved(new ProjectEventArgs(project));
-				project.Dispose();
-			}
-			if (folder is ISolutionFolder) {
-				// recurse into child folders that were also removed
-				((ISolutionFolder)folder).Folders.ForEach(HandleRemovedSolutionFolder);
-			}
-		}
-		
-		static void OnSolutionFolderRemoved(SolutionFolderEventArgs e)
-		{
-			if (SolutionFolderRemoved != null) {
-				SolutionFolderRemoved(null, e);
-			}
-		}
-		 */
-		
-		static void OnProjectItemAdded(ProjectItemEventArgs e)
+		internal static void OnProjectItemAdded(ProjectItemEventArgs e)
 		{
 			if (ProjectItemAdded != null) {
 				ProjectItemAdded(null, e);
 			}
 		}
-		static void OnProjectItemRemoved(ProjectItemEventArgs e)
+		internal static void OnProjectItemRemoved(ProjectItemEventArgs e)
 		{
 			if (ProjectItemRemoved != null) {
 				ProjectItemRemoved(null, e);
@@ -640,12 +478,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static event EventHandler<ProjectEventArgs> ProjectRemoved;
 		
-		/// <summary>
-		/// Is raised when a solution folder is removed from the solution.
-		/// This might remove multiple projects from the solution.
-		/// </summary>
-		public static event SolutionFolderEventHandler SolutionFolderRemoved;
-		
 		[Obsolete("Use SD.BuildService.BuildStarted instead")]
 		public static event EventHandler<BuildEventArgs> BuildStarted {
 			add { SD.BuildService.BuildStarted += value; }
@@ -662,17 +494,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static event EventHandler                    SolutionLoading;
 		public static event EventHandler<SolutionEventArgs> SolutionLoaded;
 		
-		public static event EventHandler<SolutionEventArgs> SolutionClosing;
-		public static event EventHandler                    SolutionClosed;
+		public static event EventHandler<SolutionEventArgs> SolutionClosed {
+			add { SD.ProjectService.SolutionClosed += value; }
+			remove { SD.ProjectService.SolutionClosed -= value; }
+		}
 		
-		/// <summary>
-		/// Raised before SolutionClosing.
-		/// <remarks>
-		/// When one modifies the e.Cancel property, should have in mind that other consumers might want to cancel the closing.<br/>
-		/// Setting e.Cancel = false might override other consumers (if they exist) e.Cancel = true, and might break other functionalities.
-		/// </remarks>
-		/// </summary>
-		public static event EventHandler<SolutionCancelEventArgs> BeforeSolutionClosing;
+		public static event EventHandler<SolutionClosingEventArgs> SolutionClosing {
+			add { SD.ProjectService.SolutionClosing += value; }
+			remove { SD.ProjectService.SolutionClosing -= value; }
+		}
 		
 		/// <summary>
 		/// Raised before the solution preferences are being saved. Allows you to save

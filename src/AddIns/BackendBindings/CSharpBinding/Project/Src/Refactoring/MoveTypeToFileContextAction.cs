@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.Editor;
@@ -49,7 +50,7 @@ namespace CSharpBinding.Refactoring
 			EntityDeclaration node = (EntityDeclaration)st.GetNodeAt(context.CaretLocation, n => n is TypeDeclaration || n is DelegateDeclaration);
 			IDocument document = context.Editor.Document;
 			
-			string newFileName = Path.Combine(Path.GetDirectoryName(context.FileName), MakeValidFileName(node.Name));
+			FileName newFileName = FileName.Create(Path.Combine(Path.GetDirectoryName(context.FileName), MakeValidFileName(node.Name)));
 			string header = CopyFileHeader(document, info);
 			string footer = CopyFileEnd(document, info);
 			

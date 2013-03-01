@@ -39,12 +39,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			if (!ProjectService.IsClosingCanceled()) {
-				ProjectService.SaveSolutionPreferences();
-				if (SD.Workbench.CloseAllSolutionViews()) {
-					ProjectService.CloseSolution();
-				}
-			}
+			SD.ProjectService.CloseSolution();
 		}
 	}
 }

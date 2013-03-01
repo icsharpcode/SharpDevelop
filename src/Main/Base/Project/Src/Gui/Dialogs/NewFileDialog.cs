@@ -405,7 +405,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 				if (Path.IsPathRooted(unresolvedFileName)) {
 					Directory.CreateDirectory(Path.GetDirectoryName(unresolvedFileName));
-					viewContent.PrimaryFile.SaveToDisk(unresolvedFileName);
+					viewContent.PrimaryFile.SaveToDisk(FileName.Create(unresolvedFileName));
 				}
 			}
 			createdFiles.Add(new KeyValuePair<string, FileDescriptionTemplate>(unresolvedFileName, newfile));
@@ -513,7 +513,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 							} else {
 								SaveFile(newFile, scriptRunner.CompileScript(item.Template, newFile), null);
 							}
-						}, StringParser.Parse(newFile.Name)
+						}, FileName.Create(StringParser.Parse(newFile.Name))
 					);
 					if (result != FileOperationResult.OK)
 						return;

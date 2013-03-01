@@ -85,7 +85,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			FileService.FileRemoved += FileServiceFileRemoved;
 			
 			ProjectService.ProjectItemAdded += ProjectServiceProjectItemAdded;
-			ProjectService.SolutionFolderRemoved += ProjectServiceSolutionFolderRemoved;
 			treeView.DrawNode += TreeViewDrawNode;
 			treeView.DragDrop += TreeViewDragDrop;
 		}
@@ -131,10 +130,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				treeNode.AcceptVisitor(visitor, null);
 			}
 		}
-		void ProjectServiceSolutionFolderRemoved(object sender, SolutionFolderEventArgs e)
-		{
-			CallVisitor(new SolutionItemRemoveVisitor(e.SolutionFolder));
-		}
+		
 		void ProjectServiceProjectItemAdded(object sender, ProjectItemEventArgs e)
 		{
 			if (e.ProjectItem is ReferenceProjectItem)  {

@@ -97,8 +97,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			doc.LoadXml("<SideBarConfig version=\"1.0\"/>");
 			doc.DocumentElement.AppendChild(WriteConfig(doc));
 			
-			FileUtility.ObservedSave(new NamedFileOperationDelegate(doc.Save),
-			                         Path.Combine(PropertyService.ConfigDirectory, "SideBarConfig.xml"),
+			FileUtility.ObservedSave(fileName => doc.Save(fileName),
+			                         FileName.Create(Path.Combine(PropertyService.ConfigDirectory, "SideBarConfig.xml")),
 			                         FileErrorPolicy.ProvideAlternative);
 		}
 		

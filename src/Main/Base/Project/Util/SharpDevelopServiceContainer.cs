@@ -38,7 +38,9 @@ namespace ICSharpCode.SharpDevelop
 						SD.Log.Debug("Service startup: " + serviceType);
 						instance = callback(this, serviceType);
 						if (instance != null) {
-							servicesToDispose.Add(instance as IDisposable);
+							IDisposable disposableService = instance as IDisposable;
+							if (disposableService != null)
+								servicesToDispose.Add(disposableService);
 							services[serviceType] = instance;
 						} else {
 							services.Remove(serviceType);
@@ -63,22 +65,17 @@ namespace ICSharpCode.SharpDevelop
 			}
 			// dispose services in reverse order of their creation
 			foreach (IDisposable disposable in disposables.Reverse()) {
-				if (disposable != null) {
-					loggingService.Debug("Service shutdown: " + disposable.GetType());
-					disposable.Dispose();
-				}
+				loggingService.Debug("Service shutdown: " + disposable.GetType());
+				disposable.Dispose();
 			}
-			var eh = Disposed;
-			if (eh != null)
-				eh(this, EventArgs.Empty);
 		}
-		
-		public event EventHandler Disposed;
 		
 		public void AddService(Type serviceType, object serviceInstance)
 		{
 			lock (services) {
-				servicesToDispose.Add(serviceInstance as IDisposable);
+				IDisposable disposableService = serviceInstance as IDisposable;
+				if (disposableService != null)
+					servicesToDispose.Add(disposableService);
 				services.Add(serviceType, serviceInstance);
 			}
 		}

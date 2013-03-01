@@ -71,8 +71,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Delete()
 		{
-			((ISolutionFolderNode)Parent).Folder.Items.Remove(item);
+			var parentFolder = ((ISolutionFolderNode)Parent).Folder;
+			parentFolder.Items.Remove(item);
 			base.Remove();
+			parentFolder.ParentSolution.Save();
 		}
 		
 		public override bool EnablePaste {

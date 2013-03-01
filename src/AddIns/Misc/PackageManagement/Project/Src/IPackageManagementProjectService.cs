@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -15,10 +16,7 @@ namespace ICSharpCode.PackageManagement
 		ISolution OpenSolution { get; }
 		IProjectBuilder ProjectBuilder { get; }
 		
-		event EventHandler<ProjectEventArgs> ProjectAdded;
-		event SolutionFolderEventHandler SolutionFolderRemoved;
-		event EventHandler SolutionClosed;
-		event EventHandler<SolutionEventArgs> SolutionLoaded;
+		event EventHandler<SolutionEventArgs> SolutionClosed;
 		
 		void RefreshProjectBrowser();
 		void AddProjectItem(IProject project, ProjectItem item);
@@ -26,7 +24,7 @@ namespace ICSharpCode.PackageManagement
 		void Save(IProject project);
 		void Save(ISolution solution);
 		
-		IEnumerable<IProject> GetOpenProjects();
+		IModelCollection<IProject> AllProjects { get; }
 		
 		//IProjectContent GetProjectContent(IProject project);
 		

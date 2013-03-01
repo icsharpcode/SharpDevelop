@@ -71,17 +71,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			get { return isDisposed; }
 		}
 		
-		public event EventHandler Disposed;
+		//public event EventHandler Disposed = delegate {};
 		
 		public virtual void Dispose()
 		{
 			SD.MainThread.VerifyAccess();
-			if (watcher != null)
-				watcher.Dispose();
-			isDisposed = true;
-			if (Disposed != null) {
-				Disposed(this, EventArgs.Empty);
+			lock (SyncRoot) {
+				if (isDisposed)
+					return;
+				isDisposed = true;
+				if (watcher != null)
+					watcher.Dispose();
 			}
+			//Disposed(this, EventArgs.Empty);
 		}
 		#endregion
 		

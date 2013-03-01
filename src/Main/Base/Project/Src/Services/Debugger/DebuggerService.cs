@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				ClearDebugMessages();
 			};
 			
-			ProjectService.BeforeSolutionClosing += OnBeforeSolutionClosing;
+			SD.ProjectService.SolutionClosing += OnSolutionClosing;
 		}
 		
 		static void GetDescriptors()
@@ -151,12 +151,16 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			debugCategory.AppendText(msg);
 		}
 		
-		static void OnBeforeSolutionClosing(object sender, SolutionCancelEventArgs e)
+		static void OnSolutionClosing(object sender, SolutionClosingEventArgs e)
 		{
 			if (currentDebugger == null)
 				return;
 			
 			if (currentDebugger.IsDebugging) {
+				if (!e.AllowCancel) {
+					currentDebugger.Stop();
+					return;
+				}
 				string caption = StringParser.Parse("${res:XML.MainMenu.DebugMenu.Stop}");
 				string message = StringParser.Parse("${res:MainWindow.Windows.Debug.StopDebugging.Message}");
 				string[] buttonLabels = new string[] { StringParser.Parse("${res:Global.Yes}"), StringParser.Parse("${res:Global.No}") };

@@ -196,10 +196,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				codeOutput = writer.ToString();
 			}
 			
-			FileUtility.ObservedSave(delegate(string fileName) {
+			FileUtility.ObservedSave(delegate(FileName fileName) {
 			                         	File.WriteAllText(fileName, codeOutput, Encoding.UTF8);
 			                         },
-			                         outputFileName, FileErrorPolicy.Inform);
+			                         FileName.Create(outputFileName), FileErrorPolicy.Inform);
 			EnsureOutputFileIsInProject(baseItem, outputFileName);
 			SD.ParserService.ParseAsync(FileName.Create(outputFileName), new StringTextSource(codeOutput)).FireAndForget();
 		}

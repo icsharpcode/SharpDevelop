@@ -102,9 +102,9 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// <summary>
 		/// Use this method to save the file to disk using a new name.
 		/// </summary>
-		public void SaveToDisk(string newFileName)
+		public void SaveToDisk(FileName newFileName)
 		{
-			this.FileName = new FileName(newFileName);
+			this.FileName = newFileName;
 			this.IsUntitled = false;
 			SaveToDisk();
 		}

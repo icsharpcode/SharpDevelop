@@ -181,7 +181,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					if (!FileService.CheckFileName(fileName)) {
 						return;
 					}
-					if (FileUtility.ObservedSave(new NamedFileOperationDelegate(file.SaveToDisk), fileName) == FileOperationResult.OK) {
+					if (FileUtility.ObservedSave(new NamedFileOperationDelegate(file.SaveToDisk), FileName.Create(fileName)) == FileOperationResult.OK) {
 						SD.FileService.RecentOpen.AddRecentFile(fileName);
 						MessageService.ShowMessage(fileName, "${res:ICSharpCode.SharpDevelop.Commands.SaveFile.FileSaved}");
 					}

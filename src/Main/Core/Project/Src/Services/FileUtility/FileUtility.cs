@@ -25,7 +25,7 @@ namespace ICSharpCode.Core
 	
 	public delegate void FileOperationDelegate();
 	
-	public delegate void NamedFileOperationDelegate(string fileName);
+	public delegate void NamedFileOperationDelegate(FileName fileName);
 	
 	/// <summary>
 	/// A utility class related to file utilities.
@@ -573,7 +573,7 @@ namespace ICSharpCode.Core
 		}
 
 		// Observe SAVE functions
-		public static FileOperationResult ObservedSave(FileOperationDelegate saveFile, string fileName, string message, FileErrorPolicy policy = FileErrorPolicy.Inform)
+		public static FileOperationResult ObservedSave(FileOperationDelegate saveFile, FileName fileName, string message, FileErrorPolicy policy = FileErrorPolicy.Inform)
 		{
 			System.Diagnostics.Debug.Assert(IsValidPath(fileName));
 			try {
@@ -587,7 +587,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		static FileOperationResult ObservedSaveHandleException(Exception e, FileOperationDelegate saveFile, string fileName, string message, FileErrorPolicy policy)
+		static FileOperationResult ObservedSaveHandleException(Exception e, FileOperationDelegate saveFile, FileName fileName, string message, FileErrorPolicy policy)
 		{
 			var messageService = ServiceSingleton.GetRequiredService<IMessageService>();
 			switch (policy) {
@@ -606,7 +606,7 @@ namespace ICSharpCode.Core
 			return FileOperationResult.Failed;
 		}
 		
-		public static FileOperationResult ObservedSave(FileOperationDelegate saveFile, string fileName, FileErrorPolicy policy = FileErrorPolicy.Inform)
+		public static FileOperationResult ObservedSave(FileOperationDelegate saveFile, FileName fileName, FileErrorPolicy policy = FileErrorPolicy.Inform)
 		{
 			return ObservedSave(saveFile,
 			                    fileName,
@@ -614,14 +614,11 @@ namespace ICSharpCode.Core
 			                    policy);
 		}
 		
-		public static FileOperationResult ObservedSave(NamedFileOperationDelegate saveFileAs, string fileName, string message, FileErrorPolicy policy = FileErrorPolicy.Inform)
+		public static FileOperationResult ObservedSave(NamedFileOperationDelegate saveFileAs, FileName fileName, string message, FileErrorPolicy policy = FileErrorPolicy.Inform)
 		{
 			System.Diagnostics.Debug.Assert(IsValidPath(fileName));
 			try {
-				string directory = Path.GetDirectoryName(fileName);
-				if (!Directory.Exists(directory)) {
-					Directory.CreateDirectory(directory);
-				}
+				Directory.CreateDirectory(fileName.GetParentDirectory());
 				saveFileAs(fileName);
 				RaiseFileSaved(new FileNameEventArgs(fileName));
 				return FileOperationResult.OK;
@@ -632,7 +629,7 @@ namespace ICSharpCode.Core
 			}
 		}
 
-		static FileOperationResult ObservedSaveHandleError(Exception e, NamedFileOperationDelegate saveFileAs, string fileName, string message, FileErrorPolicy policy)
+		static FileOperationResult ObservedSaveHandleError(Exception e, NamedFileOperationDelegate saveFileAs, FileName fileName, string message, FileErrorPolicy policy)
 		{
 			var messageService = ServiceSingleton.GetRequiredService<IMessageService>();
 			switch (policy) {
@@ -653,7 +650,7 @@ namespace ICSharpCode.Core
 			return FileOperationResult.Failed;
 		}
 		
-		public static FileOperationResult ObservedSave(NamedFileOperationDelegate saveFileAs, string fileName, FileErrorPolicy policy = FileErrorPolicy.Inform)
+		public static FileOperationResult ObservedSave(NamedFileOperationDelegate saveFileAs, FileName fileName, FileErrorPolicy policy = FileErrorPolicy.Inform)
 		{
 			return ObservedSave(saveFileAs,
 			                    fileName,
@@ -662,7 +659,7 @@ namespace ICSharpCode.Core
 		}
 		
 		// Observe LOAD functions
-		public static FileOperationResult ObservedLoad(FileOperationDelegate loadFile, string fileName, string message, FileErrorPolicy policy)
+		public static FileOperationResult ObservedLoad(FileOperationDelegate loadFile, FileName fileName, string message, FileErrorPolicy policy)
 		{
 			try {
 				loadFile();
@@ -675,7 +672,7 @@ namespace ICSharpCode.Core
 			}
 		}
 
-		static FileOperationResult ObservedLoadHandleException(Exception e, FileOperationDelegate loadFile, string fileName, string message, FileErrorPolicy policy)
+		static FileOperationResult ObservedLoadHandleException(Exception e, FileOperationDelegate loadFile, FileName fileName, string message, FileErrorPolicy policy)
 		{
 			var messageService = ServiceSingleton.GetRequiredService<IMessageService>();
 			switch (policy) {
@@ -693,7 +690,7 @@ namespace ICSharpCode.Core
 			return FileOperationResult.Failed;
 		}
 		
-		public static FileOperationResult ObservedLoad(FileOperationDelegate loadFile, string fileName, FileErrorPolicy policy = FileErrorPolicy.Inform)
+		public static FileOperationResult ObservedLoad(FileOperationDelegate loadFile, FileName fileName, FileErrorPolicy policy = FileErrorPolicy.Inform)
 		{
 			return ObservedLoad(loadFile,
 			                    fileName,
@@ -701,12 +698,12 @@ namespace ICSharpCode.Core
 			                    policy);
 		}
 		
-		public static FileOperationResult ObservedLoad(NamedFileOperationDelegate saveFileAs, string fileName, string message, FileErrorPolicy policy = FileErrorPolicy.Inform)
+		public static FileOperationResult ObservedLoad(NamedFileOperationDelegate saveFileAs, FileName fileName, string message, FileErrorPolicy policy = FileErrorPolicy.Inform)
 		{
 			return ObservedLoad(new FileOperationDelegate(delegate { saveFileAs(fileName); }), fileName, message, policy);
 		}
 		
-		public static FileOperationResult ObservedLoad(NamedFileOperationDelegate saveFileAs, string fileName, FileErrorPolicy policy = FileErrorPolicy.Inform)
+		public static FileOperationResult ObservedLoad(NamedFileOperationDelegate saveFileAs, FileName fileName, FileErrorPolicy policy = FileErrorPolicy.Inform)
 		{
 			return ObservedLoad(saveFileAs,
 			                    fileName,

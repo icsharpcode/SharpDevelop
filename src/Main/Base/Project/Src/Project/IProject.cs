@@ -309,6 +309,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Never returns null, but may return a permanently empty collection if this project does not support such models.
 		/// </summary>
 		ITypeDefinitionModelCollection TypeDefinitionModels { get; }
+		
+		/// <summary>
+		/// Gets whether this project was unloaded.
+		/// </summary>
+		bool IsDisposed { get; }
 	}
 	
 	/// <summary>

@@ -76,6 +76,8 @@
 		         class="ICSharpCode.SharpDevelop.Project.BuildService"/>
 		<Service id="ICSharpCode.SharpDevelop.Project.IProjectService"
 		         class="ICSharpCode.SharpDevelop.Project.SDProjectService"/>
+		<Service id="ICSharpCode.SharpDevelop.Project.IMSBuildEngine"
+		         class="ICSharpCode.SharpDevelop.Project.MSBuildEngine"/>
 		<Service id="ICSharpCode.SharpDevelop.Editor.Bookmarks.IBookmarkManager"
 		         class="ICSharpCode.SharpDevelop.Editor.Bookmarks.BookmarkManager"/>
 		

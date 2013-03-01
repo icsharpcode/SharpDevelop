@@ -167,7 +167,7 @@ namespace ICSharpCode.Core.WinForms
 			return result;
 		}
 		
-		public void InformSaveError(string fileName, string message, string dialogName, Exception exceptionGot)
+		public void InformSaveError(FileName fileName, string message, string dialogName, Exception exceptionGot)
 		{
 			BeginInvoke(
 				delegate {
@@ -177,7 +177,7 @@ namespace ICSharpCode.Core.WinForms
 				});
 		}
 		
-		public ChooseSaveErrorResult ChooseSaveError(string fileName, string message, string dialogName, Exception exceptionGot, bool chooseLocationEnabled)
+		public ChooseSaveErrorResult ChooseSaveError(FileName fileName, string message, string dialogName, Exception exceptionGot, bool chooseLocationEnabled)
 		{
 			ChooseSaveErrorResult r = ChooseSaveErrorResult.Ignore;
 			Invoke(
@@ -195,7 +195,7 @@ namespace ICSharpCode.Core.WinForms
 									fdiag.Title           = "Choose alternate file name";
 									fdiag.FileName        = fileName;
 									if (fdiag.ShowDialog() == DialogResult.OK) {
-										r = ChooseSaveErrorResult.SaveAlternative(fdiag.FileName);
+										r = ChooseSaveErrorResult.SaveAlternative(FileName.Create(fdiag.FileName));
 										break;
 									} else {
 										goto restartlabel;

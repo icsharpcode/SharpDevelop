@@ -161,6 +161,7 @@
     <Compile Include="Project\ISolutionFolder.cs" />
     <Compile Include="Project\ISolutionItem.cs" />
     <Compile Include="Project\Project_TypeGuids.cs" />
+    <Compile Include="Project\SolutionEventArgs.cs" />
     <Compile Include="Project\SolutionSection.cs" />
     <Compile Include="Refactoring\ICodeGenerator.cs" />
     <Compile Include="Services\IClipboard.cs" />
@@ -707,7 +708,6 @@
     <Compile Include="Workbench\File\FileRenameEventArgs.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\Util\FileRemoveTreeNodeVisitor.cs" />
     <Compile Include="Src\Services\ProjectService\SolutionFolderEventHandler.cs" />
-    <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\Util\SolutionFolderRemoveVisitor.cs" />
     <Compile Include="Src\Gui\Components\ExtTreeView\ExtTreeViewComparer.cs" />
     <Compile Include="Src\Project\WebReferenceUrl.cs" />
     <EmbeddedResource Include="Resources\CommonAboutDialog.xfrm" />

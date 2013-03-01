@@ -102,6 +102,7 @@ namespace PackageManagement.Tests.Scripting
 			ISolution solution = CreateSolutionWithOneProject();
 			projectService = new FakePackageManagementProjectService();
 			projectService.OpenSolution = solution;
+			projectService.AllProjects.Inputs.Add(solution.Projects);
 			CreateViewModel(consoleHost, projectService);
 			
 			return solution;
@@ -150,6 +151,7 @@ namespace PackageManagement.Tests.Scripting
 			var solution = ProjectHelper.CreateSolution();
 			projectService = new FakePackageManagementProjectService();
 			projectService.OpenSolution = solution;
+			projectService.AllProjects.Inputs.Add(solution.Projects);
 			CreateViewModel(consoleHost, projectService);
 			return solution;
 		}
@@ -162,14 +164,16 @@ namespace PackageManagement.Tests.Scripting
 		
 		void CloseSolution()
 		{
+			ISolution solution = projectService.OpenSolution;
 			projectService.OpenSolution = null;
-			projectService.FireSolutionClosedEvent();
+			projectService.AllProjects.Inputs.Remove(solution.Projects);
+			projectService.FireSolutionClosedEvent(solution);
 		}
 		
 		void OpenSolution(ISolution solution)
 		{
 			projectService.OpenSolution = solution;
-			projectService.FireSolutionLoadedEvent(solution);
+			projectService.AllProjects.Inputs.Add(solution.Projects);
 		}
 		
 		IProject RemoveProjectFromSolution(ISolution solution)
@@ -320,7 +324,6 @@ namespace PackageManagement.Tests.Scripting
 		{
 			var solution = CreateViewModelWithEmptySolutionOpen();
 			var project = AddProjectToSolution(solution);
-			projectService.FireProjectAddedEvent(project);
 			
 			var actualProjects = viewModel.Projects;
 			var expectedProjects = solution.Projects;
@@ -333,7 +336,6 @@ namespace PackageManagement.Tests.Scripting
 		{
 			var solution = CreateViewModelWithEmptySolutionOpen();
 			var project = AddProjectToSolution(solution);
-			projectService.FireProjectAddedEvent(project);
 			
 			var actualProject = viewModel.DefaultProject;
 			
@@ -393,7 +395,7 @@ namespace PackageManagement.Tests.Scripting
 			OpenSolution(solution);
 			
 			var actualProject = viewModel.DefaultProject;
-			var expectedProject = viewModel.Projects[0];
+			var expectedProject = viewModel.Projects.FirstOrDefault();
 			
 			Assert.AreEqual(expectedProject, actualProject);
 		}
@@ -416,7 +418,6 @@ namespace PackageManagement.Tests.Scripting
 		{
 			var solution = CreateViewModelWithOneProjectOpen();
 			var project = RemoveProjectFromSolution(solution);
-			projectService.FireSolutionFolderRemoved(project);
 			
 			var actualProjects = viewModel.Projects;
 			var expectedProjects = solution.Projects;
@@ -429,23 +430,10 @@ namespace PackageManagement.Tests.Scripting
 		{
 			var solution = CreateViewModelWithOneProjectOpen();
 			var project = RemoveProjectFromSolution(solution);
-			projectService.FireSolutionFolderRemoved(project);
 			
 			var actualProject = viewModel.DefaultProject;
 			
 			Assert.IsNull(actualProject);
-		}
-		
-		[Test]
-		public void Projects_SolutionFolderRemovedFromSolution_ProjectListIsUnchanged()
-		{
-			var solution = CreateViewModelWithOneProjectOpen();
-			var solutionFolder = MockRepository.GenerateStrictMock<ISolutionFolder>();
-			projectService.FireSolutionFolderRemoved(solutionFolder);
-			
-			int count = viewModel.Projects.Count;
-			
-			Assert.AreEqual(1, count);
 		}
 		
 		[Test]

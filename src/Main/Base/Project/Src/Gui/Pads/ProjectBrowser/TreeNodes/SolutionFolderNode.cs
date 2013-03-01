@@ -102,8 +102,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Delete()
 		{
-			folder.ParentFolder.Items.Remove(folder);
-			solution.Save();
+			var parentFolder = ((ISolutionFolderNode)Parent).Folder;
+			parentFolder.Items.Remove(folder);
+			base.Remove();
+			parentFolder.ParentSolution.Save();
 		}
 		
 		public override bool EnableCopy {

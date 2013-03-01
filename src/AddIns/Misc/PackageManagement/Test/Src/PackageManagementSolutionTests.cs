@@ -63,7 +63,7 @@ namespace PackageManagement.Tests
 		TestableProject AddProjectToOpenProjects(string projectName)
 		{
 			TestableProject project = ProjectHelper.CreateTestProject(projectName);
-			fakeProjectService.FakeOpenProjects.Add(project);
+			fakeProjectService.AddProject(project);
 			return project;
 		}
 		
@@ -308,7 +308,7 @@ namespace PackageManagement.Tests
 			AddProjectToOpenProjects("B");
 			
 			IEnumerable<IProject> projects = solution.GetMSBuildProjects();
-			List<IProject> expectedProjects = fakeProjectService.FakeOpenProjects;
+			IEnumerable<IProject> expectedProjects = fakeProjectService.AllProjects;
 			
 			CollectionAssert.AreEqual(expectedProjects, projects);
 		}
@@ -351,7 +351,7 @@ namespace PackageManagement.Tests
 		{
 			CreateSolution();
 			TestableProject project = ProjectHelper.CreateTestProject();
-			fakeProjectService.AddFakeProject(project);
+			fakeProjectService.AddProject(project);
 			
 			bool hasMultipleProjects = solution.HasMultipleProjects();
 			
@@ -363,9 +363,9 @@ namespace PackageManagement.Tests
 		{
 			CreateSolution();
 			TestableProject project1 = ProjectHelper.CreateTestProject();
-			fakeProjectService.AddFakeProject(project1);
+			fakeProjectService.AddProject(project1);
 			TestableProject project2 = ProjectHelper.CreateTestProject();
-			fakeProjectService.AddFakeProject(project2);
+			fakeProjectService.AddProject(project2);
 			
 			bool hasMultipleProjects = solution.HasMultipleProjects();
 			

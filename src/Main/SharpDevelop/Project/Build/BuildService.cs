@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public BuildService()
 		{
-			this.buildModifiedProjectsOnly = new BuildModifiedProjectsOnlyService(this);
+			this.buildModifiedProjectsOnly = new BuildModifiedProjectsOnlyService(this, SD.ProjectService);
 		}
 		
 		public event EventHandler<BuildEventArgs> BuildStarted;
