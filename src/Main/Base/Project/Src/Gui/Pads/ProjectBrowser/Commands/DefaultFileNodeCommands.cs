@@ -159,7 +159,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				fileName = Path.GetDirectoryName(fileName);
 			else if (!Directory.Exists(fileName))
 				return;
-			Process.Start("cmd.exe", "/k cd \"" + fileName + "\"");
+			Process.Start(new ProcessStartInfo("cmd.exe") { WorkingDirectory = fileName });
 		}
 	}
 	
