@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -16,6 +17,7 @@ namespace ICSharpCode.SharpDevelop
 		readonly IServiceProvider parentProvider;
 		readonly Dictionary<Type, object> services = new Dictionary<Type, object>();
 		readonly List<IDisposable> servicesToDispose = new List<IDisposable>();
+		readonly Dictionary<Type, object> taskCompletionSources = new Dictionary<Type, object>(); // object = TaskCompletionSource<T> for various T
 		
 		public SharpDevelopServiceContainer()
 		{
@@ -38,10 +40,8 @@ namespace ICSharpCode.SharpDevelop
 						SD.Log.Debug("Service startup: " + serviceType);
 						instance = callback(this, serviceType);
 						if (instance != null) {
-							IDisposable disposableService = instance as IDisposable;
-							if (disposableService != null)
-								servicesToDispose.Add(disposableService);
 							services[serviceType] = instance;
+							OnServiceInitialized(serviceType, instance);
 						} else {
 							services.Remove(serviceType);
 						}
@@ -70,13 +70,24 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		void OnServiceInitialized(Type serviceType, object serviceInstance)
+		{
+			IDisposable disposableService = serviceInstance as IDisposable;
+			if (disposableService != null)
+				servicesToDispose.Add(disposableService);
+			
+			dynamic taskCompletionSource;
+			if (taskCompletionSources.TryGetValue(serviceType, out taskCompletionSource)) {
+				taskCompletionSources.Remove(serviceType);
+				taskCompletionSource.SetResult((dynamic)serviceInstance);
+			}
+		}
+		
 		public void AddService(Type serviceType, object serviceInstance)
 		{
 			lock (services) {
-				IDisposable disposableService = serviceInstance as IDisposable;
-				if (disposableService != null)
-					servicesToDispose.Add(disposableService);
 				services.Add(serviceType, serviceInstance);
+				OnServiceInitialized(serviceType, serviceInstance);
 			}
 		}
 		
@@ -107,6 +118,26 @@ namespace ICSharpCode.SharpDevelop
 		public void RemoveService(Type serviceType, bool promote)
 		{
 			RemoveService(serviceType);
+		}
+		
+		public Task<T> GetFutureService<T>()
+		{
+			Type serviceType = typeof(T);
+			lock (services) {
+				object instance;
+				if (services.TryGetValue(serviceType, out instance)) {
+					return Task.FromResult((T)instance);
+				} else {
+					object taskCompletionSource;
+					if (taskCompletionSources.TryGetValue(serviceType, out taskCompletionSource)) {
+						return ((TaskCompletionSource<T>)taskCompletionSource).Task;
+					} else {
+						var tcs = new TaskCompletionSource<T>();
+						taskCompletionSources.Add(serviceType, tcs);
+						return tcs.Task;
+					}
+				}
+			}
 		}
 	}
 }

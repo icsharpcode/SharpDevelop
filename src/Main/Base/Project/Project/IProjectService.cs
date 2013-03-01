@@ -26,6 +26,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		event PropertyChangedEventHandler<ISolution> CurrentSolutionChanged;
 		
 		/// <summary>
+		/// This event is raised after a solution is opened.
+		/// </summary>
+		event EventHandler<SolutionEventArgs> SolutionLoaded;
+		
+		/// <summary>
 		/// This event is raised before a solution is closed.
 		/// </summary>
 		event EventHandler<SolutionClosingEventArgs> SolutionClosing;

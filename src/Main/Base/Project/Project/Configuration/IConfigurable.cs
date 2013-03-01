@@ -1,18 +1,10 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Daniel
- * Date: 2/26/2013
- * Time: 16:27
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	/// <summary>
-	/// Description of IConfigurable.
-	/// </summary>
 	public interface IConfigurable
 	{
 		/// <summary>

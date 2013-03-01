@@ -14,6 +14,8 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public class SolutionSection : IReadOnlyDictionary<string, string>
 	{
+		// TODO: expose some change event so that the solution can be marked as dirty when a section is changed
+		
 		static readonly char[] forbiddenChars = { '\n', '\r', '\0', '=' };
 		
 		static void Validate(string key, string value)

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -30,15 +31,12 @@ namespace ICSharpCode.UnitTesting
 				throw new ArgumentNullException("resourceService");
 			this.testService = testService;
 			this.resourceService = resourceService;
-			ProjectService.SolutionLoaded += ProjectService_SolutionLoaded;
-			ProjectService.SolutionClosed += ProjectService_SolutionClosed;
-			ProjectService.ProjectAdded += ProjectService_ProjectAdded;
-			ProjectService.ProjectRemoved += ProjectService_ProjectRemoved;
+			SD.ProjectService.AllProjects.CollectionChanged += OnProjectsCollectionChanged;
 			SD.ParserService.LoadSolutionProjectsThread.Finished += SD_ParserService_LoadSolutionProjectsThread_Finished;
-			if (ProjectService.OpenSolution != null) {
-				ProjectService_SolutionLoaded(null, new SolutionEventArgs(ProjectService.OpenSolution));
-				SD_ParserService_LoadSolutionProjectsThread_Finished(null, null);
+			foreach (var project in SD.ProjectService.AllProjects) {
+				AddProject(project);
 			}
+			SD_ParserService_LoadSolutionProjectsThread_Finished(null, null);
 		}
 		
 		public override string DisplayName {
@@ -138,9 +136,31 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
-		void ProjectService_ProjectAdded(object sender, ProjectEventArgs e)
+		void OnProjectsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			AddProject(e.Project);
+			if (e.Action == NotifyCollectionChangedAction.Reset) {
+				for (int i = 0; i < changeListeners.Count; i++) {
+					changeListeners[i].Stop();
+				}
+				changeListeners.Clear();
+				foreach (var project in SD.ProjectService.AllProjects) {
+					AddProject(project);
+				}
+			} else {
+				if (e.OldItems != null) {
+					for (int i = 0; i < changeListeners.Count; i++) {
+						if (e.OldItems.Contains(changeListeners[i].project)) {
+							changeListeners[i].Stop();
+							changeListeners.RemoveAt(i--);
+						}
+					}
+				}
+				if (e.NewItems != null) {
+					foreach (var project in e.NewItems.OfType<IProject>()) {
+						AddProject(project);
+					}
+				}
+			}
 		}
 		
 		void AddProject(IProject project)
@@ -148,33 +168,6 @@ namespace ICSharpCode.UnitTesting
 			ProjectChangeListener listener = new ProjectChangeListener(this, project);
 			changeListeners.Add(listener);
 			listener.Start();
-		}
-		
-		void ProjectService_ProjectRemoved(object sender, ProjectEventArgs e)
-		{
-			for (int i = 0; i < changeListeners.Count; i++) {
-				if (changeListeners[i].project == e.Project) {
-					changeListeners[i].Stop();
-					changeListeners.RemoveAt(i);
-					break;
-				}
-			}
-		}
-		
-		void ProjectService_SolutionClosed(object sender, EventArgs e)
-		{
-			for (int i = 0; i < changeListeners.Count; i++) {
-				changeListeners[i].Stop();
-			}
-			changeListeners.Clear();
-		}
-
-		void ProjectService_SolutionLoaded(object sender, SolutionEventArgs e)
-		{
-			ProjectService_SolutionClosed(sender, e);
-			foreach (var project in e.Solution.Projects) {
-				AddProject(project);
-			}
 		}
 		
 		void SD_ParserService_LoadSolutionProjectsThread_Finished(object sender, EventArgs e)

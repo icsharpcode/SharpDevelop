@@ -134,12 +134,25 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public IProject AddExistingProject(FileName fileName)
 		{
-			throw new NotImplementedException();
+			ProjectLoadInformation loadInfo = new ProjectLoadInformation(parentSolution, fileName, fileName.GetFileNameWithoutExtension());
+			loadInfo.ConfigurationMapping = new ConfigurationMapping(parentSolution);
+			loadInfo.ProjectConfiguration = loadInfo.ConfigurationMapping.GetProjectConfiguration(parentSolution.ActiveConfiguration);
+			var descriptor = ProjectBindingService.GetCodonPerProjectFile(fileName);
+			if (descriptor != null) {
+				loadInfo.TypeGuid = descriptor.Guid;
+			}
+			IProject project = ProjectBindingService.LoadProject(loadInfo);
+			Debug.Assert(project.IdGuid != Guid.Empty);
+			this.Items.Add(project);
+			return project;
 		}
 		
 		public ISolutionFileItem AddFile(FileName fileName)
 		{
-			throw new NotImplementedException();
+			var newItem = new SolutionFileItem(parentSolution);
+			newItem.FileName = fileName;
+			this.Items.Add(newItem);
+			return newItem;
 		}
 		
 		public ISolutionFolder CreateFolder(string name)

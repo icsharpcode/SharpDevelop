@@ -91,4 +91,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		void Save();
 	}
+	
+	/// <summary>
+	/// This is a HACK to make project creation work; I don't think we should expose this method.
+	/// Maybe make IConfigurationMapping a concrete class and use an event for setting the solution's dirty flag?
+	/// </summary>
+	internal interface ISolutionInternal : ISolution
+	{
+		IConfigurationMapping CreateMappingForNewProject();
+	}
 }

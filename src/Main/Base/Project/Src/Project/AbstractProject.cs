@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			get { return isDisposed; }
 		}
 		
-		//public event EventHandler Disposed = delegate {};
+		public event EventHandler Disposed;
 		
 		public virtual void Dispose()
 		{
@@ -83,7 +83,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (watcher != null)
 					watcher.Dispose();
 			}
-			//Disposed(this, EventArgs.Empty);
+			if (Disposed != null)
+				Disposed(this, EventArgs.Empty);
 		}
 		#endregion
 		
@@ -179,10 +180,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region ProjectSections
-		List<SolutionSection> projectSections = new List<SolutionSection>();
+		SimpleModelCollection<SolutionSection> projectSections = new SimpleModelCollection<SolutionSection>();
 		
 		[Browsable(false)]
-		public IList<SolutionSection> ProjectSections {
+		public IMutableModelCollection<SolutionSection> ProjectSections {
 			get {
 				SD.MainThread.VerifyAccess();
 				return projectSections;
@@ -259,10 +260,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public virtual IConfigurationMapping ConfigurationMapping {
-			get {
-				throw new NotImplementedException();
-			}
+		public IConfigurationMapping ConfigurationMapping {
+			get { return configurationMapping; }
 		}
 		#endregion
 		

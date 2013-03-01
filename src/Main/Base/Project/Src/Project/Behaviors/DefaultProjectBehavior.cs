@@ -66,11 +66,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			return new UnknownProjectItem(Project, item);
 		}
 		
-		public override void ProjectCreationComplete()
-		{
-			
-		}
-		
 		public override IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
 		{
 			return Enumerable.Empty<CompilerVersion>();
@@ -124,8 +119,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				System.Windows.Threading.DispatcherPriority.Background,
 				new Action(
 					delegate {
+						NavigationService.SuspendLogging();
 						foreach (string file in filesToOpen)
 							FileService.OpenFile(file);
+						NavigationService.ResumeLogging();
 					}));
 			
 			base.SetMemento(memento);

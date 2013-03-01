@@ -33,18 +33,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Thread-safe members lock on this object, but if you manipulate underlying structures
 		/// (such as the MSBuild project for MSBuildBasedProjects) directly, you will have to lock on this object.
 		/// </summary>
-		object SyncRoot {
-			get;
-		}
+		object SyncRoot { get; }
 		
 		/// <summary>
 		/// Gets the list of items in the project. This member is thread-safe.
 		/// The returned collection is guaranteed not to change - adding new items or removing existing items
 		/// will create a new collection.
 		/// </summary>
-		IReadOnlyCollection<ProjectItem> Items {
-			get;
-		}
+		IReadOnlyCollection<ProjectItem> Items { get; }
 		
 		/// <summary>
 		/// Gets all items in the project that have the specified item type.
@@ -61,14 +57,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the list of available file item types. This member is thread-safe.
 		/// </summary>
-		IReadOnlyCollection<ItemType> AvailableFileItemTypes {
-			get;
-		}
+		IReadOnlyCollection<ItemType> AvailableFileItemTypes { get; }
 		
 		/// <summary>
 		/// Gets a list of project sections stored in the solution file for this project.
 		/// </summary>
-		IList<SolutionSection> ProjectSections { get; }
+		IMutableModelCollection<SolutionSection> ProjectSections { get; }
 		
 		/// <summary>
 		/// Gets the name of the project file.
@@ -76,10 +70,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// 
 		/// Only the getter is thread-safe.
 		/// </summary>
-		FileName FileName {
-			get;
-			set;
-		}
+		FileName FileName { get; set; }
 		
 		/// <summary>
 		/// Gets/Sets the name of the project.
@@ -89,10 +80,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <remarks>
 		/// Name already exists in IBuildable; we're adding the setter here.
 		/// </remarks>
-		new string Name {
-			get;
-			set;
-		}
+		new string Name { get; set; }
 		
 		/// <summary>
 		/// Gets the directory of the project file.
@@ -101,9 +89,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// 
 		/// This member is thread-safe.
 		/// </summary>
-		DirectoryName Directory {
-			get;
-		}
+		DirectoryName Directory { get; }
 		
 		/// <summary>
 		/// <para>
@@ -114,9 +100,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </para>
 		/// <para>This member is thread-safe.</para>
 		/// </summary>
-		bool IsReadOnly {
-			get;
-		}
+		bool IsReadOnly { get; }
 		
 		#region MSBuild properties used inside SharpDevelop base
 		/// <summary>
@@ -228,14 +212,23 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Loads the project extension content with the specified name.
 		/// </summary>
+		/// <remarks>
+		/// Project extensions are custom XML elements that are stored within the .csproj file.
+		/// </remarks>
 		XElement LoadProjectExtensions(string name);
 		
 		/// <summary>
 		/// Saves the project extension content with the specified name.
 		/// </summary>
+		/// <remarks>
+		/// Project extensions are custom XML elements that are stored within the .csproj file.
+		/// </remarks>
 		void SaveProjectExtensions(string name, XElement element);
 		
-		// TODO:
+		/// <summary>
+		/// Determines whether this project has the specified type.
+		/// Projects may have multiple type GUIDs.
+		/// </summary>
 		bool HasProjectType(Guid projectTypeGuid);
 		
 		/// <summary>
@@ -314,6 +307,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets whether this project was unloaded.
 		/// </summary>
 		bool IsDisposed { get; }
+		
+		event EventHandler Disposed;
 	}
 	
 	/// <summary>

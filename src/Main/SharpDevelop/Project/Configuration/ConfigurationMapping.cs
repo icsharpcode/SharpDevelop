@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics;
 using System.Linq;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -49,6 +51,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void SetProjectConfiguration(ConfigurationAndPlatform solutionConfiguration, ConfigurationAndPlatform projectConfiguration)
 		{
+			Debug.Assert(projectConfiguration.Platform != "Any CPU");
 			GetEntry(solutionConfiguration).Config = projectConfiguration;
 			if (parentSolution != null)
 				parentSolution.IsDirty = true;
@@ -69,6 +72,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void RenameSolutionConfig(string oldName, string newName, bool isPlatform)
 		{
+			throw new NotImplementedException();
 			lock (dict) {
 				foreach (var pair in dict.ToArray()) {
 					if (oldName == (isPlatform ? pair.Key.Platform : pair.Key.Configuration)) {

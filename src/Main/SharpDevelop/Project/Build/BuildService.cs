@@ -108,10 +108,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public Task<BuildResults> BuildAsync(ISolution solution, BuildOptions options)
 		{
-			if (solution != null)
-				return BuildAsync(solution.Projects, options);
-			else
+			if (solution != null) {
+				var solutionConfiguration = new ConfigurationAndPlatform(options.SolutionConfiguration ?? solution.ActiveConfiguration.Configuration,
+			                                                         options.SolutionPlatform ?? solution.ActiveConfiguration.Platform);
+				return BuildAsync(solution.Projects.Where(p => p.ConfigurationMapping.IsBuildEnabled(solutionConfiguration)), options);
+			} else {
 				return Task.FromResult(new BuildResults { Result = BuildResultCode.Error });
+			}
 		}
 		
 		public Task<BuildResults> BuildInBackgroundAsync(IBuildable buildable, BuildOptions options, IBuildFeedbackSink buildFeedbackSink, IProgressMonitor progressMonitor)

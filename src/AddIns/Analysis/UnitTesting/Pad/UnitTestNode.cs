@@ -50,7 +50,8 @@ namespace ICSharpCode.UnitTesting
 		
 		public override void ActivateItem(RoutedEventArgs e)
 		{
-			test.GoToDefinition.Execute(e);
+			if (test.GoToDefinition.CanExecute(e))
+				test.GoToDefinition.Execute(e);
 		}
 		
 		#region Manage Children

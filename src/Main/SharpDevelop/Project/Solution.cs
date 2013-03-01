@@ -12,7 +12,7 @@ using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	class Solution : SolutionFolder, ISolution
+	class Solution : SolutionFolder, ISolution, ISolutionInternal
 	{
 		FileName fileName;
 		DirectoryName directory;
@@ -109,12 +109,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		void OnProjectAdded(IProject project)
 		{
 			projects.Add(project);
+			project.ProjectSections.CollectionChanged += OnProjectSectionsChanged;
 			if (startupProject == null && AutoDetectStartupProject() == project)
 				this.StartupProject = project; // when there's no startable project in the solution and one is added, we mark that it as the startup project
 		}
 		
 		void OnProjectRemoved(IProject project)
 		{
+			project.ProjectSections.CollectionChanged -= OnProjectSectionsChanged;
 			bool wasStartupProject = (startupProject == project);
 			if (wasStartupProject)
 				startupProject = null; // this will force auto-detection on the next property access
@@ -127,6 +129,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				delegate {
 					project.Dispose();
 				}, DispatcherPriority.Background);
+		}
+		
+		void OnProjectSectionsChanged(object sender, EventArgs e)
+		{
+			this.IsDirty = true;
+			// TODO: also monitor changes within the project section
 		}
 		
 		internal void ReportRemovedItem(ISolutionItem oldItem)
@@ -149,7 +157,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					ReportAddedItem(childItem);
 				}
 			} else if (newItem is IProject) {
-				OnProjectRemoved((IProject)newItem);
+				OnProjectAdded((IProject)newItem);
 			}
 		}
 		#endregion
@@ -197,11 +205,86 @@ namespace ICSharpCode.SharpDevelop.Project
 			// - we avoid an expensive configuration switch during solution load.
 		}
 		
+		/*
+		
+		static Properties LoadSolutionPreferences(string solutionFileName)
+		{
+			try {
+				string file = GetPreferenceFileName(solutionFileName);
+				if (FileUtility.IsValidPath(file) && File.Exists(file)) {
+					try {
+						return Properties.Load(file);
+					} catch (IOException) {
+					} catch (UnauthorizedAccessException) {
+					} catch (XmlException) {
+						// ignore errors about inaccessible or malformed files
+					}
+				}
+			} catch (Exception ex) {
+				MessageService.ShowException(ex);
+			}
+			return new Properties();
+		}
+		
+		static void ApplyConfigurationAndReadProjectPreferences()
+		{
+			openSolution.ApplySolutionConfigurationAndPlatformToProjects();
+			foreach (IProject project in openSolution.Projects) {
+				string file = GetPreferenceFileName(project.FileName);
+				if (FileUtility.IsValidPath(file) && File.Exists(file)) {
+					Properties properties = null;
+					try {
+						properties = Properties.Load(file);
+					} catch (IOException) {
+					} catch (UnauthorizedAccessException) {
+					} catch (XmlException) {
+						// ignore errors about inaccessible or malformed files
+					}
+					if (properties != null)
+						project.SetMemento(properties);
+				}
+			}
+		}
+		 */
+		
+		
 		public void SavePreferences()
 		{
 			preferences.Set("ActiveConfiguration.Configuration", activeConfiguration.Configuration);
 			preferences.Set("ActiveConfiguration.Platform", activeConfiguration.Platform);
 			// TODO: save to disk
+			/*
+			string directory = Path.Combine(PropertyService.ConfigDirectory, "preferences");
+			if (!Directory.Exists(directory)) {
+				Directory.CreateDirectory(directory);
+			}
+			
+			if (SolutionPreferencesSaving != null)
+				SolutionPreferencesSaving(null, new SolutionEventArgs(openSolution));
+			Properties memento = openSolution.Preferences.Clone();
+			
+			string fullFileName = GetPreferenceFileName(openSolution.FileName);
+			if (FileUtility.IsValidPath(fullFileName)) {
+				#if DEBUG
+				memento.Save(fullFileName);
+				#else
+				FileUtility.ObservedSave(new NamedFileOperationDelegate(memento.Save), fullFileName, FileErrorPolicy.Inform);
+				#endif
+			}
+			
+			foreach (IProject project in OpenSolution.Projects) {
+				memento = project.CreateMemento();
+				if (memento == null) continue;
+				
+				fullFileName = GetPreferenceFileName(project.FileName);
+				if (FileUtility.IsValidPath(fullFileName)) {
+					#if DEBUG
+					memento.Save(fullFileName);
+					#else
+					FileUtility.ObservedSave(new NamedFileOperationDelegate(memento.Save), fullFileName, FileErrorPolicy.Inform);
+					#endif
+				}
+			}*/
 		}
 		#endregion
 		
@@ -390,6 +473,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 		}
+		#endregion
+		
+		#region ISolutionInternal implementation
+
+		IConfigurationMapping ISolutionInternal.CreateMappingForNewProject()
+		{
+			return new ConfigurationMapping(this);
+		}
+
 		#endregion
 		
 		public override string ToString()

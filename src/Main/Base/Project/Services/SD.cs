@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </remarks>
 		public static Task<T> GetFutureService<T>() where T : class
 		{
-			throw new NotImplementedException();
+			return GetRequiredService<SharpDevelopServiceContainer>().GetFutureService<T>();
 		}
 		
 		/// <summary>

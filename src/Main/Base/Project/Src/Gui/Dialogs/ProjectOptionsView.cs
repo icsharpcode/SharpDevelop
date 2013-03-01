@@ -41,12 +41,12 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			tabControl.IsDirtyChanged += delegate { RaiseIsDirtyChanged(); };
 			tabControl.AddOptionPanels(node.BuildChildItems<IOptionPanelDescriptor>(project));
 			
-			ProjectService.ProjectRemoved += ProjectService_ProjectRemoved;
+			project.Disposed += Project_Disposed;
 		}
 		
-		void ProjectService_ProjectRemoved(object sender, ProjectEventArgs e)
+		void Project_Disposed(object sender, EventArgs e)
 		{
-			if (e.Project == project && this.WorkbenchWindow != null)
+			if (this.WorkbenchWindow != null)
 				WorkbenchWindow.CloseWindow(true);
 		}
 		
@@ -76,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		
 		public override void Dispose()
 		{
-			ProjectService.ProjectRemoved -= ProjectService_ProjectRemoved;
+			project.Disposed -= Project_Disposed;
 			foreach (IDisposable op in tabControl.OptionPanels.OfType<IDisposable>()) {
 				op.Dispose();
 			}

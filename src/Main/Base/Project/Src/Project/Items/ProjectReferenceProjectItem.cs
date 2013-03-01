@@ -18,7 +18,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			get {
 				// must be thread-safe because it's used by LoadSolutionProjectsThread,
 				// and by IAssemblyReference.Resolve()
-				return ProjectService.GetProject(Core.FileName.Create(this.FileName));
+				IProject parentProject = this.Project;
+				if (parentProject == null)
+					return null;
+				var fileName = Core.FileName.Create(this.FileName);
+				foreach (var project in parentProject.ParentSolution.Projects) {
+					if (project.FileName == fileName)
+						return project;
+				}
+				return null;
 			}
 		}
 		

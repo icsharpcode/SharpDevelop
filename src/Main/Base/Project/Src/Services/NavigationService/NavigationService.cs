@@ -72,10 +72,6 @@ namespace ICSharpCode.SharpDevelop
 				// trap changes in the secondary tab via the workbench's ActiveViewContentChanged event
 				SD.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
 				
-				// ignore files opened as part of loading a solution.
-				ProjectService.SolutionLoading += ProjectService_SolutionLoading;
-				SD.ParserService.LoadSolutionProjectsThread.Finished += LoadSolutionProjectsThreadEnded;
-				
 				FileService.FileRenamed += FileService_FileRenamed;
 				ProjectService.SolutionClosed += ProjectService_SolutionClosed;
 				serviceInitialized = true;
@@ -364,22 +360,6 @@ namespace ICSharpCode.SharpDevelop
 		// how to test code triggered by the user interacting with the workbench
 		#region event trapping
 
-		/// <summary>
-		/// Prepares the NavigationService to load a new solution.
-		/// </summary>
-		static void ProjectService_SolutionLoading(object sender, EventArgs e)
-		{
-			SuspendLogging();
-		}
-
-		/// <summary>
-		/// Prepares the NavigationService for working with a newly loaded solution
-		/// </summary>
-		static void LoadSolutionProjectsThreadEnded(object sender, EventArgs e)
-		{
-			ResumeLogging();
-		}
-		
 		/// <summary>
 		/// Respond to changes in the <see cref="IWorkbench.ActiveViewContent">
 		/// ActiveViewContent</see> by logging the new <see cref="IViewContent"/>.

@@ -415,6 +415,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				#region Create Project
 				IProject project;
 				try {
+					projectCreateInformation.ConfigurationMapping = ((ISolutionInternal)projectCreateInformation.Solution).CreateMappingForNewProject();
 					project = languageinfo.CreateProject(projectCreateInformation);
 				} catch (ProjectLoadException ex) {
 					MessageService.ShowError(ex.Message);
