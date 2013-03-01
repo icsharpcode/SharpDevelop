@@ -277,10 +277,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			using (SolutionConfigurationEditor sce = new SolutionConfigurationEditor()) {
-				sce.ShowDialog(SD.WinForms.MainWin32Window);
-				ProjectService.SaveSolution();
-			}
+			if (SD.ProjectService.OpenSolution != null)
+				SD.UIService.ShowSolutionConfigurationEditorDialog(SD.ProjectService.OpenSolution);
 		}
 	}
 }

@@ -147,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			ReferenceProjectItem[] additionalItems = {
 				new ReferenceProjectItem(this, "mscorlib")
 			};
-			return MSBuildInternals.ResolveAssemblyReferences(this, additionalItems);
+			return SD.MSBuildEngine.ResolveAssemblyReferences(this, additionalItems);
 		}
 		
 		#region Create new project
@@ -393,7 +393,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				
 				Dictionary<string, string> globalProps = new Dictionary<string, string>();
-				InitializeMSBuildProjectProperties(globalProps);
+				var msbuildEngine = SD.Services.GetService<IMSBuildEngine>();
+				if (msbuildEngine != null)
+					globalProps.AddRange(msbuildEngine.GlobalBuildProperties);
 				globalProps["Configuration"] = configuration;
 				globalProps["Platform"] = platform;
 				MSBuild.Project project = MSBuildInternals.LoadProject(MSBuildProjectCollection, projectFile, globalProps);
@@ -1070,7 +1072,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override Task<bool> BuildAsync(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IProgressMonitor progressMonitor)
 		{
-			return MSBuildEngine.BuildAsync(this, options, feedbackSink, progressMonitor.CancellationToken, MSBuildEngine.AdditionalTargetFiles);
+			return SD.MSBuildEngine.BuildAsync(this, options, feedbackSink, progressMonitor.CancellationToken);
 		}
 		
 		public override ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)
@@ -1106,28 +1108,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#region Loading
 		protected bool isLoading;
-		
-		/// <summary>
-		/// Set compilation properties (MSBuildProperties and AddInTree/AdditionalPropertiesPath).
-		/// </summary>
-		internal static void InitializeMSBuildProjectProperties(IDictionary<string, string> globalProperties)
-		{
-			foreach (KeyValuePair<string, string> entry in MSBuildEngine.MSBuildProperties) {
-				globalProperties[entry.Key] = entry.Value;
-			}
-			// re-load these properties from AddInTree every time because "text" might contain
-			// SharpDevelop properties resolved by the StringParser (e.g. ${property:FxCopPath})
-			AddInTreeNode node = AddInTree.GetTreeNode(MSBuildEngine.AdditionalPropertiesPath, false);
-			if (node != null) {
-				foreach (Codon codon in node.Codons) {
-					object item = node.BuildChildItem(codon, null);
-					if (item != null) {
-						string text = item.ToString();
-						globalProperties[codon.Id] = text;
-					}
-				}
-			}
-		}
 		
 		public MSBuildBasedProject(ProjectLoadInformation loadInformation)
 			: base(loadInformation)

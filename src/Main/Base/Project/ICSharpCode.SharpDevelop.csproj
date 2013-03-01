@@ -45,7 +45,7 @@
     <DefineConstants>TRACE;PUBLICINTERPROCESS</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Build.Tasks.v4.0" />
+    <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -69,7 +69,6 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xaml" />
-    <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -82,18 +81,6 @@
   <ItemGroup>
     <Compile Include="..\..\..\Libraries\ICSharpCode.Build.Tasks\Project\KnownFrameworkAssemblies.cs">
       <Link>Src\Gui\Dialogs\ReferenceDialog\KnownFrameworkAssemblies.cs</Link>
-    </Compile>
-    <Compile Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\BuildJob.cs">
-      <Link>Src\Project\MSBuildEngine\BuildJob.cs</Link>
-    </Compile>
-    <Compile Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\EventSource.cs">
-      <Link>Src\Project\MSBuildEngine\EventSource.cs</Link>
-    </Compile>
-    <Compile Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\EventTypes.cs">
-      <Link>Src\Project\MSBuildEngine\EventTypes.cs</Link>
-    </Compile>
-    <Compile Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\ExtendedBinaryReader.cs">
-      <Link>Src\Project\MSBuildEngine\ExtendedBinaryReader.cs</Link>
     </Compile>
     <Compile Include="Designer\IDesignerTypeResolutionService.cs" />
     <Compile Include="Designer\TypeResolutionService.cs" />
@@ -162,12 +149,13 @@
     <Compile Include="Project\Build\IBuildable.cs" />
     <Compile Include="Project\Build\IBuildFeedbackSink.cs" />
     <Compile Include="Project\Build\IBuildService.cs" />
+    <Compile Include="Project\Build\IMSBuildEngine.cs" />
     <Compile Include="Project\Build\MultipleProjectBuildable.cs" />
     <Compile Include="Project\Build\ProjectBuildOptions.cs" />
-    <Compile Include="Project\ConfigurationAndPlatform.cs" />
-    <Compile Include="Project\IConfigurable.cs" />
-    <Compile Include="Project\IConfigurationMapping.cs" />
-    <Compile Include="Project\IConfigurationOrPlatformNameCollection.cs" />
+    <Compile Include="Project\Configuration\ConfigurationAndPlatform.cs" />
+    <Compile Include="Project\Configuration\IConfigurable.cs" />
+    <Compile Include="Project\Configuration\IConfigurationMapping.cs" />
+    <Compile Include="Project\Configuration\IConfigurationOrPlatformNameCollection.cs" />
     <Compile Include="Project\IProjectService.cs" />
     <Compile Include="Project\ISolution.cs" />
     <Compile Include="Project\ISolutionFolder.cs" />
@@ -177,6 +165,7 @@
     <Compile Include="Refactoring\ICodeGenerator.cs" />
     <Compile Include="Services\IClipboard.cs" />
     <Compile Include="Services\IMessageLoop.cs" />
+    <Compile Include="Services\IUIService.cs" />
     <Compile Include="Services\SD.cs" />
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
     <Compile Include="Src\Commands\ViewInBrowser.cs" />
@@ -271,7 +260,6 @@
     <Compile Include="Util\SimpleTaskScheduler.cs" />
     <Compile Include="Util\TreeNode.cs" />
     <Compile Include="Util\UnclosableStream.cs" />
-    <Compile Include="Util\WeakCollection.cs" />
     <Compile Include="WinForms\IClipboardHandler.cs" />
     <Compile Include="WinForms\IContextHelpProvider.cs" />
     <Compile Include="WinForms\IPrintable.cs" />
@@ -439,10 +427,6 @@
       <DependentUpon>ToolNotFoundDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\XmlFormsOptionPanel.cs" />
-    <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.cs" />
-    <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.Designer.cs">
-      <DependentUpon>AddNewConfigurationDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="Src\Gui\Dialogs\TabbedOptionsDialog.xaml.cs">
       <DependentUpon>TabbedOptionsDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -489,27 +473,20 @@
     <Compile Include="Src\Project\IProjectItemBackendStore.cs" />
     <Compile Include="Src\Project\Items\ServiceReferenceProjectItem.cs" />
     <Compile Include="Src\Project\Items\ServiceReferencesProjectItem.cs" />
-    <Compile Include="Src\Project\MSBuildEngine\MSBuildAdditionalLogger.cs" />
-    <Compile Include="Src\Project\MSBuildEngine\MSBuildLoggerFilter.cs" />
-    <Compile Include="Src\Project\MSBuildEngine\SDConsoleLogger.cs" />
-    <Compile Include="Src\Project\MSBuildEngine\BuildWorkerManager.cs" />
-    <Compile Include="Src\Project\MSBuildEngine\MSBuildEngine.cs" />
-    <Compile Include="Src\Project\MSBuildEngine\TargetingPackWarningWorkaround.cs" />
-    <Compile Include="Src\Project\MSBuildEngine\WorkerProcess.cs" />
     <Compile Include="Src\Project\MSBuildFileProject.cs" />
     <Compile Include="Src\Project\MSBuildItemWrapper.cs" />
-    <Compile Include="Src\Project\PortableLibrary\CheckPortableLibraryInstalled.cs" />
-    <Compile Include="Src\Project\PortableLibrary\ConvertToPortableLibraryProjectBehavior.cs" />
-    <Compile Include="Src\Project\PortableLibrary\PickPortableTargetFramework.cs" />
-    <Compile Include="Src\Project\PortableLibrary\PortableLibraryProjectBehavior.cs" />
-    <Compile Include="Src\Project\PortableLibrary\PortableTargetFramework.cs" />
-    <Compile Include="Src\Project\PortableLibrary\Profile.cs" />
-    <Compile Include="Src\Project\PortableLibrary\ProfileList.cs" />
-    <Compile Include="Src\Project\PortableLibrary\SelectProfileDialog.xaml.cs">
+    <Compile Include="Project\PortableLibrary\CheckPortableLibraryInstalled.cs" />
+    <Compile Include="Project\PortableLibrary\ConvertToPortableLibraryProjectBehavior.cs" />
+    <Compile Include="Project\PortableLibrary\PickPortableTargetFramework.cs" />
+    <Compile Include="Project\PortableLibrary\PortableLibraryProjectBehavior.cs" />
+    <Compile Include="Project\PortableLibrary\PortableTargetFramework.cs" />
+    <Compile Include="Project\PortableLibrary\Profile.cs" />
+    <Compile Include="Project\PortableLibrary\ProfileList.cs" />
+    <Compile Include="Project\PortableLibrary\SelectProfileDialog.xaml.cs">
       <DependentUpon>SelectProfileDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Project\PortableLibrary\SupportedFramework.cs" />
+    <Compile Include="Project\PortableLibrary\SupportedFramework.cs" />
     <Compile Include="Src\Project\ProjectChangeWatcher.cs" />
     <Compile Include="Src\Project\ProjectCustomToolOptions.cs" />
     <Compile Include="Src\Project\ProjectLoadInformation.cs" />
@@ -804,16 +781,8 @@
     <Compile Include="Src\Services\HelpProvider.cs" />
     <Compile Include="Src\Services\ParserService\CodeCompletionOptions.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\CompareProjectPropertyConditionEvaluator.cs" />
-    <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\SolutionConfigurationEditor.Designer.cs">
-      <DependentUpon>SolutionConfigurationEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\SolutionConfigurationEditor.cs" />
     <Compile Include="Src\Gui\Dialogs\SharpDevelopColorDialog.cs" />
     <Compile Include="Src\Project\CustomTool.cs" />
-    <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\EditAvailableConfigurationsDialog.Designer.cs">
-      <DependentUpon>EditAvailableConfigurationsDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\EditAvailableConfigurationsDialog.cs" />
     <Compile Include="Src\Project\MSBuildBasedProject.cs" />
     <Compile Include="Src\Project\MSBuildItemDefinitionGroup.cs" />
     <Compile Include="Src\Project\AbstractProject.cs" />
@@ -828,12 +797,10 @@
     <EmbeddedResource Include="Src\Gui\Dialogs\NewProjectDialog.resx">
       <DependentUpon>NewProjectDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.resx">
-      <DependentUpon>AddNewConfigurationDialog.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Designer" />
+    <Folder Include="Project\Configuration" />
     <Folder Include="Workbench\DisplayBinding" />
     <Page Include="Editor\Bookmarks\BookmarkPadContent.xaml" />
     <Page Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml" />
@@ -863,7 +830,7 @@
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AddServiceReferenceDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AdvancedServiceDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceOptionsPanel.xaml" />
-    <Page Include="Src\Project\PortableLibrary\SelectProfileDialog.xaml" />
+    <Page Include="Project\PortableLibrary\SelectProfileDialog.xaml" />
     <Page Include="themes\generic.xaml" />
     <ProjectReference Include="..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
@@ -898,7 +865,7 @@
     <Folder Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference" />
     <Folder Include="Refactoring" />
     <Folder Include="Src\Project\Behaviors" />
-    <Folder Include="Src\Project\PortableLibrary" />
+    <Folder Include="Project\PortableLibrary" />
     <Folder Include="themes" />
     <Folder Include="Src\Editor\AvalonEdit" />
     <Folder Include="Editor\CodeCompletion" />
@@ -911,7 +878,6 @@
       <Name>ICSharpCode.Core.Presentation</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Folder Include="Src\Gui\Dialogs\SolutionConfiguration" />
     <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>

@@ -10,9 +10,9 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Project
 {
-	public partial class EditAvailableConfigurationsDialog
+	internal partial class EditAvailableConfigurationsDialog
 	{
 		readonly IConfigurable configurable;
 		readonly bool editPlatforms;

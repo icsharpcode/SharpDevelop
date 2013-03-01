@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Resources;
@@ -85,7 +86,10 @@ namespace WixBinding.Tests.Utils
 			string codeBase = typeof(WixBindingTestsHelper).Assembly.CodeBase.Replace("file:///", String.Empty);
 			string folder = Path.GetDirectoryName(codeBase);
 			string fileName = Path.Combine(folder, "wix2010.targets");
-			MSBuildEngine.MSBuildProperties["WixTargetsPath"] = fileName;
+			SD.Services.RemoveService(typeof(IMSBuildEngine));
+			SD.Services.AddService(typeof(IMSBuildEngine), MockRepository.GenerateStrictMock<IMSBuildEngine>());
+			var globalBuildProperties = new Dictionary<string, string> { { "WixTargetsPath", fileName } };
+			SD.MSBuildEngine.Stub(e => e.GlobalBuildProperties).Return(globalBuildProperties);
 		}
 		
 		/// <summary>

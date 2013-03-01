@@ -8,12 +8,12 @@ using System.Linq;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Project
 {
 	/// <summary>
 	/// Dialog for adding a new configuration or platform to a solution or project.
 	/// </summary>
-	public partial class AddNewConfigurationDialog
+	internal partial class AddNewConfigurationDialog
 	{
 		Predicate<string> checkNameValid;
 		

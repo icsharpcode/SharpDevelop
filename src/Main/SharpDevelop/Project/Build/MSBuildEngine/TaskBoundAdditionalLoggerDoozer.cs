@@ -8,14 +8,6 @@ using Microsoft.Build.Framework;
 namespace ICSharpCode.SharpDevelop.Project
 {
 	/// <summary>
-	/// Interface for elements in /SharpDevelop/MSBuildEngine/AdditionalLoggers
-	/// </summary>
-	public interface IMSBuildAdditionalLogger
-	{
-		ILogger CreateLogger(MSBuildEngine engine);
-	}
-	
-	/// <summary>
 	/// Creates <see cref="IMSBuildAdditionalLogger"/> objects that are only
 	/// activated when a specific MSBuild task is running.
 	/// </summary>
@@ -37,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// A IMSBuildAdditionalLogger object that lazy-loads the specified
 	/// IMSBuildAdditionalLogger when the specified task is running.
 	/// </returns>
-	public class TaskBoundAdditionalLoggerDoozer : IDoozer
+	class TaskBoundAdditionalLoggerDoozer : IDoozer
 	{
 		public bool HandleConditions {
 			get {
@@ -63,24 +55,24 @@ namespace ICSharpCode.SharpDevelop.Project
 				addIn = codon.AddIn;
 			}
 			
-			public ILogger CreateLogger(MSBuildEngine engine)
+			public ILogger CreateLogger(IMSBuildLoggerContext context)
 			{
-				engine.InterestingTasks.Add(taskname);
-				return new TaskBoundAdditionalLogger(this, engine);
+				context.InterestingTasks.Add(taskname);
+				return new TaskBoundAdditionalLogger(this, context);
 			}
 		}
 		
 		private class TaskBoundAdditionalLogger : ILogger
 		{
 			TaskBoundAdditionalLoggerDescriptor desc;
-			MSBuildEngine engine;
+			IMSBuildLoggerContext context;
 			ILogger baseLogger;
 			bool isActive;
 			
-			public TaskBoundAdditionalLogger(TaskBoundAdditionalLoggerDescriptor desc, MSBuildEngine engine)
+			public TaskBoundAdditionalLogger(TaskBoundAdditionalLoggerDescriptor desc, IMSBuildLoggerContext context)
 			{
 				this.desc = desc;
-				this.engine = engine;
+				this.context = context;
 			}
 			
 			void CreateBaseLogger()
@@ -90,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					baseLogger = obj as ILogger;
 					IMSBuildAdditionalLogger addLog = obj as IMSBuildAdditionalLogger;
 					if (addLog != null) {
-						baseLogger = addLog.CreateLogger(engine);
+						baseLogger = addLog.CreateLogger(context);
 					}
 				}
 			}

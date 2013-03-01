@@ -9,22 +9,22 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Project
 {
-	public partial class SolutionConfigurationEditor
+	internal partial class SolutionConfigurationEditor
 	{
-		ISolution solution;
+		readonly ISolution solution;
 		
 		bool inUpdate;
 		int configurationComboBoxEditIndex;
 		int platformComboBoxEditIndex;
 		ConfigurationAndPlatform solutionConfig;
 		
-		public SolutionConfigurationEditor()
+		public SolutionConfigurationEditor(ISolution solution)
 		{
-			this.solution = ProjectService.OpenSolution;
 			if (solution == null)
-				throw new Exception("A solution must be opened");
+				throw new ArgumentNullException("solution");
+			this.solution = solution;
 			
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.

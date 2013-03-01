@@ -312,11 +312,6 @@ namespace ICSharpCode.SharpDevelop.Sda
 		public event EventHandler SolutionClosed;
 		
 		/// <summary>
-		/// Event when the active solution configuration was changed.
-		/// </summary>
-		public event EventHandler SolutionConfigurationChanged;
-		
-		/// <summary>
 		/// Event when a file was loaded inside SharpDevelop.
 		/// </summary>
 		public event EventHandler<FileEventArgs> FileLoaded;
@@ -394,12 +389,6 @@ namespace ICSharpCode.SharpDevelop.Sda
 			{
 				if (InvokeRequired) { Invoke(SolutionClosed); return; }
 				if (host.SolutionClosed != null) host.SolutionClosed(host, EventArgs.Empty);
-			}
-			
-			internal void SolutionConfigurationChanged()
-			{
-				if (InvokeRequired) { Invoke(SolutionConfigurationChanged); return; }
-				if (host.SolutionConfigurationChanged != null) host.SolutionConfigurationChanged(host, EventArgs.Empty);
 			}
 			
 			internal void FileLoaded(string fileName)

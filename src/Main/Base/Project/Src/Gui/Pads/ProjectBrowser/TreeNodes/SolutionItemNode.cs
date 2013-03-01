@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Delete()
 		{
-			item.ParentFolder.Items.Remove(item);
+			((ISolutionFolderNode)Parent).Folder.Items.Remove(item);
 			base.Remove();
 		}
 		

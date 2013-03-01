@@ -8,24 +8,6 @@ using Microsoft.Build.Framework;
 namespace ICSharpCode.SharpDevelop.Project
 {
 	/// <summary>
-	/// Interface for elements in /SharpDevelop/MSBuildEngine/LoggerFilters
-	/// </summary>
-	public interface IMSBuildLoggerFilter
-	{
-		IMSBuildChainedLoggerFilter CreateFilter(MSBuildEngine engine, IMSBuildChainedLoggerFilter nextFilter);
-	}
-	
-	/// <summary>
-	/// Element in the logger filter chain.
-	/// Receives build events and errors and forwards them to the next element in the chain (possibly after modifying the event).
-	/// </summary>
-	public interface IMSBuildChainedLoggerFilter
-	{
-		void HandleError(BuildError error);
-		void HandleBuildEvent(Microsoft.Build.Framework.BuildEventArgs e);
-	}
-	
-	/// <summary>
 	/// Creates <see cref="IMSBuildLoggerFilter"/> objects that are only
 	/// activated when a specific MSBuild task is running.
 	/// </summary>
@@ -73,30 +55,30 @@ namespace ICSharpCode.SharpDevelop.Project
 				addIn = codon.AddIn;
 			}
 			
-			public IMSBuildChainedLoggerFilter CreateFilter(MSBuildEngine engine, IMSBuildChainedLoggerFilter nextFilter)
+			public IMSBuildChainedLoggerFilter CreateFilter(IMSBuildLoggerContext context, IMSBuildChainedLoggerFilter nextFilter)
 			{
 				if (nextFilter == null)
 					throw new ArgumentNullException("nextFilter");
 				// ensure the engine gets notified about start/end of this task
-				engine.InterestingTasks.Add(taskname);
+				context.InterestingTasks.Add(taskname);
 				// Create a Filter that tracks whether the task is active.
 				// If active, forward to 'baseFilter', otherwise forward to 'nextFilter'.
-				return new TaskBoundLoggerFilter(this, engine, nextFilter);
+				return new TaskBoundLoggerFilter(this, context, nextFilter);
 			}
 		}
 		
 		sealed class TaskBoundLoggerFilter : IMSBuildChainedLoggerFilter
 		{
 			readonly TaskBoundLoggerFilterDescriptor desc;
-			readonly MSBuildEngine engine;
+			readonly IMSBuildLoggerContext context;
 			readonly IMSBuildChainedLoggerFilter nextFilter;
 			IMSBuildChainedLoggerFilter baseFilter = null;
 			bool insideTask = false;
 			
-			public TaskBoundLoggerFilter(TaskBoundLoggerFilterDescriptor desc, MSBuildEngine engine, IMSBuildChainedLoggerFilter nextFilter)
+			public TaskBoundLoggerFilter(TaskBoundLoggerFilterDescriptor desc, IMSBuildLoggerContext context, IMSBuildChainedLoggerFilter nextFilter)
 			{
 				this.desc = desc;
-				this.engine = engine;
+				this.context = context;
 				this.nextFilter = nextFilter;
 			}
 			
@@ -116,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					if (baseFilter == null) {
 						IMSBuildLoggerFilter baseLoggerFilter = (IMSBuildLoggerFilter)desc.addIn.CreateObject(desc.classname);
 						if (baseLoggerFilter != null)
-							baseFilter = baseLoggerFilter.CreateFilter(engine, nextFilter) ?? nextFilter;
+							baseFilter = baseLoggerFilter.CreateFilter(context, nextFilter) ?? nextFilter;
 						else
 							baseFilter = nextFilter;
 					}

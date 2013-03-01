@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
@@ -85,10 +86,9 @@ namespace CSharpBinding
 		public override Task<bool> BuildAsync(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IProgressMonitor progressMonitor)
 		{
 			if (this.MinimumSolutionVersion == SolutionFormatVersion.VS2005) {
-				return MSBuildEngine.BuildAsync(
+				return SD.MSBuildEngine.BuildAsync(
 					this, options, feedbackSink, progressMonitor.CancellationToken,
-					MSBuildEngine.AdditionalTargetFiles.Concat(
-						new [] { Path.Combine(MSBuildEngine.SharpDevelopBinPath, "SharpDevelop.CheckMSBuild35Features.targets") }));
+					new [] { Path.Combine(FileUtility.ApplicationRootPath, @"bin\SharpDevelop.CheckMSBuild35Features.targets") });
 			} else {
 				return base.BuildAsync(options, feedbackSink, progressMonitor);
 			}

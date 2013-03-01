@@ -49,6 +49,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		string contextMenuAddInTreeEntry;
 		string subcategory;
 		string helpKeyword;
+		IProject parentProject;
 		
 		public string HelpKeyword {
 			get { return helpKeyword; }
@@ -113,6 +114,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		public bool IsMessage {
 			get { return isMessage; }
 			set { isMessage = value; }
+		}
+		
+		/// <summary>
+		/// The project that contains this error. This property can be null.
+		/// </summary>
+		public IProject ParentProject {
+			get { return parentProject; }
+			set { parentProject = value; }
 		}
 		
 		/// <summary>

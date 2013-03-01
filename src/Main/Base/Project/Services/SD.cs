@@ -210,5 +210,15 @@ namespace ICSharpCode.SharpDevelop
 		public static IProjectService ProjectService {
 			get { return GetRequiredService<IProjectService>(); }
 		}
+		
+		/// <inheritdoc see="IUIService"/>
+		public static IUIService UIService {
+			get { return GetRequiredService<IUIService>(); }
+		}
+		
+		/// <inheritdoc see="IUIService"/>
+		public static IMSBuildEngine MSBuildEngine {
+			get { return GetRequiredService<IMSBuildEngine>(); }
+		}
 	}
 }

@@ -368,10 +368,9 @@ namespace ICSharpCode.Core
 		{
 			// If Directory.GetFiles() searches the 8.3 name as well as the full name so if the filemask is
 			// "*.xpt" it will return "Template.xpt~"
-			bool isExtMatch = Regex.IsMatch(filemask, @"^\*\..{3}$");
+			bool isExtMatch = filemask != null && Regex.IsMatch(filemask, @"^\*\.[\w\d_]{3}$");
 			string ext = null;
-			if (isExtMatch) ext = filemask.Remove(0,1);
-			string[] empty = new string[0];
+			if (isExtMatch) ext = filemask.Substring(1);
 			IEnumerable<string> dir = new[] { directory };
 			
 			if (searchSubdirectories)
@@ -379,11 +378,11 @@ namespace ICSharpCode.Core
 					d => {
 						try {
 							if (ignoreHidden)
-								return Directory.EnumerateDirectories(d).Where(child => IsNotHidden(child));
+								return Directory.EnumerateDirectories(d).Where(IsNotHidden);
 							else
 								return Directory.EnumerateDirectories(d);
 						} catch (UnauthorizedAccessException) {
-							return empty;
+							return new string[0];
 						}
 					});
 			foreach (string d in dir) {
@@ -394,6 +393,8 @@ namespace ICSharpCode.Core
 					continue;
 				}
 				foreach (string f in files) {
+					if (ext != null && !f.EndsWith(ext, StringComparison.OrdinalIgnoreCase))
+						continue; // file extension didn't match
 					if (!ignoreHidden || IsNotHidden(f))
 						yield return new FileName(f);
 				}
@@ -464,8 +465,8 @@ namespace ICSharpCode.Core
 			
 			char ch = nameWithoutExtension.Length == 4 ? nameWithoutExtension[3] : '\0';
 			
-			return !((nameWithoutExtension.StartsWith("COM") ||
-			          nameWithoutExtension.StartsWith("LPT")) &&
+			return !((nameWithoutExtension.StartsWith("COM", StringComparison.Ordinal) ||
+			          nameWithoutExtension.StartsWith("LPT", StringComparison.Ordinal)) &&
 			         Char.IsDigit(ch));
 		}
 		

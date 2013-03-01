@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
@@ -166,9 +167,9 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		string IWixPropertyValueProvider.GetValue(string name)
 		{
-			string propertyValue;
-			if (MSBuildEngine.MSBuildProperties.TryGetValue(name, out propertyValue)) {
-				return propertyValue;
+			foreach (var pair in SD.MSBuildEngine.GlobalBuildProperties) {
+				if (MSBuildInternals.PropertyNameComparer.Equals(pair.Key, name))
+					return pair.Value;
 			}
 			return null;
 		}

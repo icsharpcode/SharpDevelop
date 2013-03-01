@@ -4,15 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Parser;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Execution;
-using Microsoft.Build.Framework;
-using Microsoft.Build.Logging;
 using MSBuild = Microsoft.Build;
-using ProjectCollection = Microsoft.Build.Evaluation.ProjectCollection;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -23,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		/// <summary>
 		/// SharpDevelop uses one project collection per solution.
-		/// Code accessing one of those collection (even if indirectly through MSBuild) should lock on
+		/// Code accessing one of those collections (even if indirectly through MSBuild) should lock on
 		/// MSBuildInternals.SolutionProjectCollectionLock.
 		/// </summary>
 		public readonly static object SolutionProjectCollectionLock = new object();
@@ -134,145 +128,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (condition.Contains("$(Platform)"))
 				location |= PropertyStorageLocations.PlatformSpecific;
 			return location;
-		}
-		
-		/// <summary>
-		/// Resolves the location of the reference files.
-		/// </summary>
-		/// <param name="baseProject">The base project.</param>
-		/// <param name="referenceReplacements">A different set of references to use instead of those in the project.
-		/// Used by the GacReferencePanel.</param>
-		public static IList<ReferenceProjectItem> ResolveAssemblyReferences(
-			MSBuildBasedProject baseProject,
-			ReferenceProjectItem[] additionalReferences = null, bool resolveOnlyAdditionalReferences = false,
-			bool logErrorsToOutputPad = true)
-		{
-			ProjectInstance project = baseProject.CreateProjectInstance();
-			project.SetProperty("BuildingProject", "false");
-			project.SetProperty("DesignTimeBuild", "true");
-			
-			List<ProjectItemInstance> references = (
-				from item in project.Items
-				where ItemType.ReferenceItemTypes.Contains(new ItemType(item.ItemType))
-				select item
-			).ToList();
-			
-			List<ReferenceProjectItem> referenceProjectItems;
-			
-			if (resolveOnlyAdditionalReferences) {
-				// Remove existing references from project
-				foreach (ProjectItemInstance reference in references) {
-					project.RemoveItem(reference);
-				}
-				references.Clear();
-				referenceProjectItems = new List<ReferenceProjectItem>();
-			} else {
-				// Remove the "Private" meta data.
-				// This is necessary to detect the default value for "Private"
-				foreach (ProjectItemInstance reference in references) {
-					reference.RemoveMetadata("Private");
-				}
-				referenceProjectItems = baseProject.Items.OfType<ReferenceProjectItem>().ToList();
-			}
-			
-			if (additionalReferences != null) {
-				referenceProjectItems.AddRange(additionalReferences);
-				foreach (ReferenceProjectItem item in additionalReferences) {
-					references.Add(project.AddItem("Reference", item.Include));
-				}
-			}
-			
-			List<string> targets = new List<string>();
-			if (baseProject.MinimumSolutionVersion >= SolutionFormatVersion.VS2010) {
-				targets.Add("ResolveReferences");
-				targets.Add("DesignTimeResolveAssemblyReferences");
-			} else {
-				targets.Add("ResolveAssemblyReferences");
-			}
-			BuildRequestData requestData = new BuildRequestData(project, targets.ToArray(), new HostServices());
-			List<ILogger> loggers = new List<ILogger>();
-			//loggers.Add(new ConsoleLogger(LoggerVerbosity.Diagnostic));
-			if (logErrorsToOutputPad)
-				loggers.Add(new SimpleErrorLogger());
-			lock (SolutionProjectCollectionLock) {
-				BuildParameters parameters = new BuildParameters(baseProject.MSBuildProjectCollection);
-				parameters.Loggers = loggers;
-				
-				//LoggingService.Debug("Started build for ResolveAssemblyReferences");
-				BuildResult result = BuildManager.DefaultBuildManager.Build(parameters, requestData);
-				if (result == null)
-					throw new InvalidOperationException("BuildResult is null");
-				//LoggingService.Debug("Build for ResolveAssemblyReferences finished: " + result.OverallResult);
-			}
-			
-			IEnumerable<ProjectItemInstance> resolvedAssemblyProjectItems = project.GetItems("_ResolveAssemblyReferenceResolvedFiles");
-			
-			var query =
-				from msbuildItem in resolvedAssemblyProjectItems
-				where msbuildItem.GetMetadataValue("ReferenceSourceTarget") != "ProjectReference"
-				let originalInclude = msbuildItem.GetMetadataValue("OriginalItemSpec")
-				join item in referenceProjectItems.Where(p => p.ItemType != ItemType.ProjectReference) on originalInclude equals item.Include into referenceItems
-				select new {
-				OriginalInclude = originalInclude,
-				AssemblyName = new DomAssemblyName(msbuildItem.GetMetadataValue("FusionName")),
-				FullPath = FileUtility.GetAbsolutePath(baseProject.Directory, msbuildItem.GetMetadataValue("Identity")),
-				Redist = msbuildItem.GetMetadataValue("Redist"),
-				CopyLocal = bool.Parse(msbuildItem.GetMetadataValue("CopyLocal")),
-				ReferenceItems = referenceItems
-			};
-			// HACK: mscorlib is reported twice for portable library projects (even if we don't specify it as additionalReference)
-			query = query.DistinctBy(asm => asm.FullPath);
-			List<ReferenceProjectItem> resolvedAssemblies = new List<ReferenceProjectItem>();
-			List<ReferenceProjectItem> handledReferenceItems = new List<ReferenceProjectItem>();
-			foreach (var assembly in query) {
-				//LoggingService.Debug("Got information about " + assembly.OriginalInclude + "; fullpath=" + assembly.FullPath);
-				foreach (var referenceItem in assembly.ReferenceItems) {
-					referenceItem.AssemblyName = assembly.AssemblyName;
-					referenceItem.FileName = assembly.FullPath;
-					referenceItem.Redist = assembly.Redist;
-					referenceItem.DefaultCopyLocalValue = assembly.CopyLocal;
-					handledReferenceItems.Add(referenceItem);
-				}
-				ReferenceProjectItem firstItem = assembly.ReferenceItems.FirstOrDefault();
-				if (firstItem != null) {
-					resolvedAssemblies.Add(firstItem);
-				} else {
-					resolvedAssemblies.Add(new ReferenceProjectItem(baseProject, assembly.OriginalInclude) { FileName = assembly.FullPath });
-				}
-			}
-			// Add any assemblies that weren't resolved yet. This is important - for example, this adds back project references.
-			foreach (var referenceItem in referenceProjectItems.Except(handledReferenceItems)) {
-				resolvedAssemblies.Add(referenceItem);
-			}
-			return resolvedAssemblies;
-		}
-		
-		sealed class SimpleErrorLogger : ILogger
-		{
-			#region ILogger interface implementation
-			public LoggerVerbosity Verbosity { get; set; }
-			public string Parameters { get; set; }
-			
-			public void Initialize(IEventSource eventSource)
-			{
-				eventSource.ErrorRaised += OnError;
-				eventSource.WarningRaised += OnWarning;
-			}
-			
-			public void Shutdown()
-			{
-			}
-			#endregion
-			
-			void OnError(object sender, BuildErrorEventArgs e)
-			{
-				TaskService.BuildMessageViewCategory.AppendLine(e.Message);
-			}
-			
-			void OnWarning(object sender, BuildWarningEventArgs e)
-			{
-				TaskService.BuildMessageViewCategory.AppendLine(e.Message);
-			}
 		}
 	}
 }

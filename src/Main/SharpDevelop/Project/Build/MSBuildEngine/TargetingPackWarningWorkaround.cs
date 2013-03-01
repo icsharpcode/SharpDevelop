@@ -8,7 +8,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// <summary>
 	/// Suppresses the warning MSB3644.
 	/// </summary>
-	public sealed class TargetingPackWarningWorkaround : IMSBuildLoggerFilter
+	sealed class TargetingPackWarningWorkaround : IMSBuildLoggerFilter
 	{
 		/*
 		 * Warning MSB3644: The reference assemblies for framework
@@ -20,9 +20,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		 * Therefore your assembly may not be correctly targeted for the framework you intend.
 		 */
 		
-		public IMSBuildChainedLoggerFilter CreateFilter(MSBuildEngine engine, IMSBuildChainedLoggerFilter nextFilter)
+		public IMSBuildChainedLoggerFilter CreateFilter(IMSBuildLoggerContext context, IMSBuildChainedLoggerFilter nextFilter)
 		{
-			if (engine.ProjectMinimumSolutionVersion >= SolutionFormatVersion.VS2010) {
+			if (context.Project.MinimumSolutionVersion >= SolutionFormatVersion.VS2010) {
 				return new TargetingPackWarningWorkaroundChainEntry(nextFilter);
 			} else {
 				return nextFilter;

@@ -25,8 +25,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			// these actions cause a full recompilation:
 			ProjectService.SolutionClosed += MarkAllForRecompilation;
-			ProjectService.SolutionConfigurationChanged += MarkAllForRecompilation;
-			ProjectService.SolutionSaved += MarkAllForRecompilation;
 			buildService.BuildFinished += BuildService_BuildFinished;
 			
 			FileUtility.FileSaved += OnFileSaved;

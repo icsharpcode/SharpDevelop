@@ -377,12 +377,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void SaveSolution()
 		{
-			if (SD.ProjectService.OpenSolution != null) {
-				SD.ProjectService.OpenSolution.Save();
-				/*	foreach (IProject project in openSolution.Projects) {
+			var openSolution = SD.ProjectService.OpenSolution;
+			if (openSolution != null) {
+				openSolution.Save();
+				foreach (IProject project in openSolution.Projects) {
 					project.Save();
 				}
-				OnSolutionSaved(new SolutionEventArgs(openSolution));*/
 			}
 		}
 		
@@ -545,20 +545,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static void OnSolutionSaved(SolutionEventArgs e)
-		{
-			if (SolutionSaved != null) {
-				SolutionSaved(null, e);
-			}
-		}
-		
-		internal static void OnSolutionConfigurationChanged(SolutionConfigurationEventArgs e)
-		{
-			if (SolutionConfigurationChanged != null) {
-				SolutionConfigurationChanged(null, e);
-			}
-		}
-		
 		[Obsolete]
 		public static bool IsBuilding {
 			get {
@@ -671,13 +657,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			remove { SD.BuildService.BuildFinished -= value; }
 		}
 		
-		public static event SolutionConfigurationEventHandler SolutionConfigurationChanged;
-		
 		public static event EventHandler<SolutionEventArgs> SolutionCreated;
 		
 		public static event EventHandler                    SolutionLoading;
 		public static event EventHandler<SolutionEventArgs> SolutionLoaded;
-		public static event EventHandler<SolutionEventArgs> SolutionSaved;
 		
 		public static event EventHandler<SolutionEventArgs> SolutionClosing;
 		public static event EventHandler                    SolutionClosed;

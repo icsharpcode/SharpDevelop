@@ -1,5 +1,5 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)using System;
 
 using System;
 using System.Collections.Generic;
@@ -11,182 +11,52 @@ using System.Threading.Tasks;
 using System.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.BuildWorker;
-using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Build.Framework;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	/// <summary>
-	/// Class responsible for building a project using MSBuild.
-	/// Is called by MSBuildProject.
-	/// </summary>
-	public sealed class MSBuildEngine
+	class MSBuildEngineWorker : IMSBuildLoggerContext
 	{
-		const string CompileTaskNamesPath = "/SharpDevelop/MSBuildEngine/CompileTaskNames";
-		const string AdditionalTargetFilesPath = "/SharpDevelop/MSBuildEngine/AdditionalTargetFiles";
-		const string AdditionalLoggersPath = "/SharpDevelop/MSBuildEngine/AdditionalLoggers";
-		const string LoggerFiltersPath = "/SharpDevelop/MSBuildEngine/LoggerFilters";
-		internal const string AdditionalPropertiesPath = "/SharpDevelop/MSBuildEngine/AdditionalProperties";
-		
-		/// <summary>
-		/// Gets a list of the task names that cause a "Compiling ..." log message.
-		/// You can add items to this list by putting strings into
-		/// "/SharpDevelop/MSBuildEngine/CompileTaskNames".
-		/// </summary>
-		public static readonly ICollection<string> CompileTaskNames;
-		
-		/// <summary>
-		/// Gets a list where addins can add additional properties for use in MSBuild.
-		/// </summary>
-		/// <remarks>
-		/// Please use the AddIn Tree path "/SharpDevelop/MSBuildEngine/AdditionalProperties"
-		/// instead of this list.
-		/// </remarks>
-		public static readonly IDictionary<string, string> MSBuildProperties = new SortedList<string, string> {
-			{ "SharpDevelopBinPath", SharpDevelopBinPath },
-			// 'BuildingSolutionFile' tells MSBuild that we took care of building a project's dependencies
-			// before trying to build the project itself. This speeds up compilation because it prevents MSBuild from
-			// repeatedly looking if a project needs to be rebuilt.
-			{ "BuildingSolutionFile", "true" },
-			// BuildingSolutionFile does not work in MSBuild 4.0 anymore, but BuildingInsideVisualStudio
-			// can be used to get the same effect.
-			{ "BuildingInsideVisualStudio", "true" }
-		};
-		
-		/// <summary>
-		/// Gets a list of additional target files that are automatically loaded into all projects.
-		/// You can add items into this list by putting strings into
-		/// "/SharpDevelop/MSBuildEngine/AdditionalTargetFiles"
-		/// </summary>
-		public static readonly IList<string> AdditionalTargetFiles;
-		
-		/// <summary>
-		/// Gets a list of additional MSBuild loggers.
-		/// You can register your loggers by putting them into
-		/// "/SharpDevelop/MSBuildEngine/AdditionalLoggers"
-		/// </summary>
-		public static readonly IList<IMSBuildAdditionalLogger> AdditionalMSBuildLoggers;
-		
-		/// <summary>
-		/// Gets a list of MSBuild logger filter.
-		/// You can register your loggers by putting them into
-		/// "/SharpDevelop/MSBuildEngine/LoggerFilters"
-		/// </summary>
-		public static readonly IList<IMSBuildLoggerFilter> MSBuildLoggerFilters;
-		
-		public static string SharpDevelopBinPath {
-			get {
-				return Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location);
-			}
-		}
-		
-		static MSBuildEngine()
-		{
-			CompileTaskNames = new SortedSet<string>(
-				AddInTree.BuildItems<string>(CompileTaskNamesPath, null, false),
-				StringComparer.OrdinalIgnoreCase
-			);
-			AdditionalTargetFiles = AddInTree.BuildItems<string>(AdditionalTargetFilesPath, null, false);
-			AdditionalMSBuildLoggers = AddInTree.BuildItems<IMSBuildAdditionalLogger>(AdditionalLoggersPath, null, false);
-			MSBuildLoggerFilters = AddInTree.BuildItems<IMSBuildLoggerFilter>(LoggerFiltersPath, null, false);
-		}
-		
-		public static Task<bool> BuildAsync(IProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, CancellationToken cancellationToken, IEnumerable<string> additionalTargetFiles)
-		{
-			if (project == null)
-				throw new ArgumentNullException("project");
-			if (options == null)
-				throw new ArgumentNullException("options");
-			if (feedbackSink == null)
-				throw new ArgumentNullException("feedbackSink");
-			if (additionalTargetFiles == null)
-				throw new ArgumentNullException("additionalTargetFiles");
-			
-			MSBuildEngine engine = new MSBuildEngine(project, options, feedbackSink);
-			engine.additionalTargetFiles = additionalTargetFiles.ToList();
-			if (project.MinimumSolutionVersion >= SolutionFormatVersion.VS2010) {
-				engine.additionalTargetFiles.Add(Path.Combine(Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location), "SharpDevelop.TargetingPack.targets"));
-			}
-			return engine.RunBuildAsync(cancellationToken);
-		}
-		
-		readonly string projectFileName;
+		readonly IMSBuildEngine parentBuildEngine;
+		readonly FileName projectFileName;
+		readonly IProject project;
 		readonly SolutionFormatVersion projectMinimumSolutionVersion;
 		ProjectBuildOptions options;
 		IBuildFeedbackSink feedbackSink;
 		List<string> additionalTargetFiles;
 		
-		private MSBuildEngine(IProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		internal MSBuildEngineWorker(IMSBuildEngine parentBuildEngine, IProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, List<string> additionalTargetFiles)
 		{
+			this.parentBuildEngine = parentBuildEngine;
+			this.project = project;
 			this.projectFileName = project.FileName;
 			this.projectMinimumSolutionVersion = project.MinimumSolutionVersion;
 			this.options = options;
 			this.feedbackSink = feedbackSink;
+			this.additionalTargetFiles = additionalTargetFiles;
 		}
 		
 		const EventTypes ControllableEvents = EventTypes.Message | EventTypes.TargetStarted | EventTypes.TargetFinished
 			| EventTypes.TaskStarted | EventTypes.TaskFinished | EventTypes.Unknown;
 		
-		/// <summary>
-		/// Controls whether messages should be made available to loggers.
-		/// Logger AddIns should set this property in their CreateLogger method.
-		/// </summary>
-		public bool ReportMessageEvents { get; set; }
-		
-		/// <summary>
-		/// Controls whether the TargetStarted event should be made available to loggers.
-		/// Logger AddIns should set this property in their CreateLogger method.
-		/// </summary>
-		public bool ReportTargetStartedEvents { get; set; }
-		
-		/// <summary>
-		/// Controls whether the TargetStarted event should be made available to loggers.
-		/// Logger AddIns should set this property in their CreateLogger method.
-		/// </summary>
-		public bool ReportTargetFinishedEvents { get; set; }
-		
-		/// <summary>
-		/// Controls whether all TaskStarted events should be made available to loggers.
-		/// Logger AddIns should set this property in their CreateLogger method.
-		/// </summary>
-		public bool ReportAllTaskStartedEvents { get; set; }
-		
-		/// <summary>
-		/// Controls whether all TaskFinished events should be made available to loggers.
-		/// Logger AddIns should set this property in their CreateLogger method.
-		/// </summary>
-		public bool ReportAllTaskFinishedEvents { get; set; }
-		
-		/// <summary>
-		/// Controls whether the AnyEventRaised and StatusEventRaised events should
-		/// be called for unknown events.
-		/// Logger AddIns should set this property in their CreateLogger method.
-		/// </summary>
-		public bool ReportUnknownEvents { get; set; }
-		
-		/// <summary>
-		/// Gets the name of the project file being compiled by this engine.
-		/// </summary>
-		public string ProjectFileName {
+		public IProject Project {
+			get { return project; }
+		}
+		public FileName ProjectFileName {
 			get { return projectFileName; }
 		}
 		
-		/// <summary>
-		/// Gets the minimum solution version (VS version) required to open the project.
-		/// </summary>
-		public SolutionFormatVersion ProjectMinimumSolutionVersion {
-			get { return projectMinimumSolutionVersion; }
-		}
+		public bool ReportMessageEvents { get; set; }
+		public bool ReportTargetStartedEvents { get; set; }
+		public bool ReportTargetFinishedEvents { get; set; }
+		public bool ReportAllTaskStartedEvents { get; set; }
+		public bool ReportAllTaskFinishedEvents { get; set; }
+		public bool ReportUnknownEvents { get; set; }
 		
 		HashSet<string> interestingTasks = new HashSet<string>();
 		string temporaryFileName;
 		
-		/// <summary>
-		/// The list of task names for which TaskStarted and TaskFinished events should be
-		/// made available to loggers.
-		/// Logger AddIns should add entries in their CreateLogger method.
-		/// </summary>
-		public ICollection<string> InterestingTasks {
+		public ISet<string> InterestingTasks {
 			get { return interestingTasks; }
 		}
 		
@@ -194,10 +64,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		List<ILogger> loggers = new List<ILogger>();
 		IMSBuildChainedLoggerFilter loggerChain;
 		
-		Task<bool> RunBuildAsync(CancellationToken cancellationToken)
+		internal Task<bool> RunBuildAsync(CancellationToken cancellationToken)
 		{
 			Dictionary<string, string> globalProperties = new Dictionary<string, string>();
-			MSBuildBasedProject.InitializeMSBuildProjectProperties(globalProperties);
+			globalProperties.AddRange(SD.MSBuildEngine.GlobalBuildProperties);
 			
 			foreach (KeyValuePair<string, string> pair in options.Properties) {
 				LoggingService.Debug("Setting property " + pair.Key + " to '" + pair.Value + "'");
@@ -209,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			else
 				globalProperties["Platform"] = options.Platform;
 			
-			InterestingTasks.AddRange(MSBuildEngine.CompileTaskNames);
+			InterestingTasks.AddRange(parentBuildEngine.CompileTaskNames);
 			
 			loggers.Add(new SharpDevelopLogger(this));
 			if (options.BuildOutputVerbosity == BuildOutputVerbosity.Diagnostic) {
@@ -223,12 +93,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				globalProperties["MSBuildTargetsVerbose"] = "true";
 			}
 			//loggers.Add(new BuildLogFileLogger(project.FileName + ".log", LoggerVerbosity.Diagnostic));
-			foreach (IMSBuildAdditionalLogger loggerProvider in MSBuildEngine.AdditionalMSBuildLoggers) {
+			foreach (IMSBuildAdditionalLogger loggerProvider in parentBuildEngine.AdditionalMSBuildLoggers) {
 				loggers.Add(loggerProvider.CreateLogger(this));
 			}
 			
 			loggerChain = new EndOfChain(this);
-			foreach (IMSBuildLoggerFilter loggerFilter in MSBuildEngine.MSBuildLoggerFilters) {
+			foreach (IMSBuildLoggerFilter loggerFilter in parentBuildEngine.MSBuildLoggerFilters) {
 				loggerChain = loggerFilter.CreateFilter(this, loggerChain) ?? loggerChain;
 			}
 			
@@ -353,9 +223,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		sealed class EndOfChain : IMSBuildChainedLoggerFilter
 		{
-			readonly MSBuildEngine engine;
+			readonly MSBuildEngineWorker engine;
 			
-			public EndOfChain(MSBuildEngine engine)
+			public EndOfChain(MSBuildEngineWorker engine)
 			{
 				this.engine = engine;
 			}
@@ -373,9 +243,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		sealed class SharpDevelopLogger : ILogger
 		{
-			MSBuildEngine engine;
+			readonly MSBuildEngineWorker engine;
 			
-			public SharpDevelopLogger(MSBuildEngine engine)
+			public SharpDevelopLogger(MSBuildEngineWorker engine)
 			{
 				this.engine = engine;
 			}
@@ -385,7 +255,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			void OnTaskStarted(object sender, TaskStartedEventArgs e)
 			{
 				activeTaskName = e.TaskName;
-				if (MSBuildEngine.CompileTaskNames.Contains(e.TaskName.ToLowerInvariant())) {
+				if (engine.parentBuildEngine.CompileTaskNames.Contains(e.TaskName)) {
 					engine.OutputTextLine(StringParser.Parse("${res:MainWindow.CompilerMessages.CompileVerb} " + Path.GetFileNameWithoutExtension(e.ProjectFile)));
 				}
 			}

@@ -85,7 +85,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		/// <summary>
 		/// Saves the solution.
-		/// This will also save all modified projects within this solution.
+		/// 
+		/// This method will not save the project files. Use <see cref="ProjectService.SaveSolution"/> instead to save the solution
+		/// and all open projects.
 		/// </summary>
 		void Save();
 	}

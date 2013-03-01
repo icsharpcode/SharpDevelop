@@ -18,20 +18,20 @@ namespace ICSharpCode.CodeAnalysis
 	/// </summary>
 	public class FxCopLogger : IMSBuildLoggerFilter
 	{
-		public IMSBuildChainedLoggerFilter CreateFilter(MSBuildEngine engine, IMSBuildChainedLoggerFilter nextFilter)
+		public IMSBuildChainedLoggerFilter CreateFilter(IMSBuildLoggerContext context, IMSBuildChainedLoggerFilter nextFilter)
 		{
-			engine.OutputTextLine(StringParser.Parse("${res:ICSharpCode.CodeAnalysis.RunningFxCopOn} " + Path.GetFileNameWithoutExtension(engine.ProjectFileName)));
-			return new FxCopLoggerImpl(engine, nextFilter);
+			context.OutputTextLine(StringParser.Parse("${res:ICSharpCode.CodeAnalysis.RunningFxCopOn} " + context.ProjectFileName.GetFileNameWithoutExtension()));
+			return new FxCopLoggerImpl(context, nextFilter);
 		}
 		
 		sealed class FxCopLoggerImpl : IMSBuildChainedLoggerFilter
 		{
-			readonly MSBuildEngine engineWorker;
+			readonly IMSBuildLoggerContext context;
 			readonly IMSBuildChainedLoggerFilter nextChainElement;
 			
-			public FxCopLoggerImpl(MSBuildEngine engineWorker, IMSBuildChainedLoggerFilter nextChainElement)
+			public FxCopLoggerImpl(IMSBuildLoggerContext context, IMSBuildChainedLoggerFilter nextChainElement)
 			{
-				this.engineWorker = engineWorker;
+				this.context = context;
 				this.nextChainElement = nextChainElement;
 			}
 			
@@ -47,7 +47,7 @@ namespace ICSharpCode.CodeAnalysis
 				{
 					error.FileName = null;
 				}
-				IProject project = ProjectService.GetProject(new FileName(engineWorker.ProjectFileName));
+				var project = context.Project;
 				if (project != null) {
 					if (error.FileName != null) {
 						int pos = error.FileName.IndexOf("positionof#", StringComparison.Ordinal);

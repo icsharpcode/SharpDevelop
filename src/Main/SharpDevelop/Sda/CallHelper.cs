@@ -97,7 +97,6 @@ namespace ICSharpCode.SharpDevelop.Sda
 			Project.ProjectService.BuildFinished  += delegate { this.callback.EndBuild(); };
 			Project.ProjectService.SolutionLoaded += delegate { this.callback.SolutionLoaded(); };
 			Project.ProjectService.SolutionClosed += delegate { this.callback.SolutionClosed(); };
-			Project.ProjectService.SolutionConfigurationChanged += delegate { this.callback.SolutionConfigurationChanged(); };
 			FileUtility.FileLoaded += delegate(object sender, FileNameEventArgs e) { this.callback.FileLoaded(e.FileName); };
 			FileUtility.FileSaved  += delegate(object sender, FileNameEventArgs e) { this.callback.FileSaved(e.FileName); };
 			

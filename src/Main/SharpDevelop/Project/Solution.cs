@@ -192,9 +192,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Save
 		public void Save()
 		{
-			foreach (var project in this.Projects) {
-				project.Save();
-			}
 			try {
 				changeWatcher.Disable();
 				using (var solutionWriter = new SolutionWriter(fileName)) {

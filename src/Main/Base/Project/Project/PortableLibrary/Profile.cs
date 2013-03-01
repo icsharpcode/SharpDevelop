@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 			this.DisplayName = PortableSubsetDisplayName + " (" + string.Join(", ", supportedFrameworks) + ")";
 		}
 		
-		public bool Supports(IList<SupportedFramework> frameworks)
+		public bool Supports(IEnumerable<SupportedFramework> frameworks)
 		{
 			return frameworks.All(
 				requiredFx => SupportedFrameworks.Any(fx => fx.IsMoreGeneralThan(requiredFx))
