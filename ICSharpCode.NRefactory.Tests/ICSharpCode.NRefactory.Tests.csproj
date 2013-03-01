@@ -394,6 +394,7 @@
     <Compile Include="CSharp\CodeIssues\SimplifyAnonymousMethodToDelegateIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\CS0127ReturnMustNotBeFollowedByAnyExpressionTests.cs" />
     <Compile Include="CSharp\Analysis\SemanticHighlightingTests.cs" />
+    <Compile Include="CSharp\Analysis\AbiComparerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">
