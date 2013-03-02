@@ -2360,6 +2360,12 @@ Yeni dosyayı, ${CurrentProjectName} projesine eklemek istiyor musunuz?</value>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.Any" xml:space="preserve">
     <value>Herhangi bir işlemci</value>
   </data>
+  <data name="Dialog.ProjectOptions.Build.TargetCPU.Any32" xml:space="preserve">
+    <value>Herhangi bir işlemci (32 bit tercih)</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Build.TargetCPU.Any64" xml:space="preserve">
+    <value>Herhangi bir işlemci (64 bit tercih)</value>
+  </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.Itanium" xml:space="preserve">
     <value>Intel 64-bit Itanium işlemci</value>
   </data>
