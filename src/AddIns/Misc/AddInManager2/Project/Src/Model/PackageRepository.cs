@@ -11,10 +11,24 @@ namespace ICSharpCode.AddInManager2.Model
 		private int _highlightCount;
 		
 		public PackageRepository()
+			: base()
+		{
+		}
+		
+		public PackageRepository(IAddInManagerServices services)
+			: base(services)
 		{
 		}
 		
 		public PackageRepository(PackageSource packageSource)
+			: base()
+		{
+			Name = packageSource.Name;
+			SourceUrl = packageSource.Source;
+		}
+		
+		public PackageRepository(IAddInManagerServices services, PackageSource packageSource)
+			: base(services)
 		{
 			Name = packageSource.Name;
 			SourceUrl = packageSource.Source;

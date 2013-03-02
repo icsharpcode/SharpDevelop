@@ -444,7 +444,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			_packageRepositories.Clear();
 			foreach (PackageSource packageSource in AddInManager.Repositories.RegisteredPackageSources)
 			{
-				_packageRepositories.Add(new PackageRepository(packageSource));
+				_packageRepositories.Add(new PackageRepository(AddInManager, packageSource));
 			}
 			
 			// Try to select the same active source, again
