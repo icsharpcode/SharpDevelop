@@ -128,7 +128,6 @@
     <Compile Include="Project\Configuration\AddNewConfigurationDialog.Designer.cs">
       <DependentUpon>AddNewConfigurationDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Project\Configuration\ConfigurationMapping.cs" />
     <Compile Include="Project\Configuration\EditAvailableConfigurationsDialog.cs" />
     <Compile Include="Project\Configuration\EditAvailableConfigurationsDialog.Designer.cs">
       <DependentUpon>EditAvailableConfigurationsDialog.cs</DependentUpon>

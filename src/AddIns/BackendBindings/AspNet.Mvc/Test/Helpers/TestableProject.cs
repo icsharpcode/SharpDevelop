@@ -28,11 +28,8 @@ namespace AspNet.Mvc.Tests.Helpers
 		
 		public static TestableProject CreateProject(string fileName, string projectName)
 		{
-			var createInfo = new ProjectCreateInformation();
-			createInfo.Solution = FakeSolution.Create();
-			createInfo.ConfigurationMapping = MockRepository.GenerateStub<IConfigurationMapping>();
+			var createInfo = new ProjectCreateInformation(FakeSolution.Create(), new FileName(fileName));
 			createInfo.ProjectName = projectName;
-			createInfo.OutputProjectFileName = new FileName(fileName);
 			return new TestableProject(createInfo);
 		}
 		

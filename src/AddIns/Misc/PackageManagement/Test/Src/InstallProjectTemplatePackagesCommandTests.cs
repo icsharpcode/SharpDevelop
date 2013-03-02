@@ -37,12 +37,13 @@ namespace PackageManagement.Tests
 		
 		void RunCommandWithProjectCreateInfoAsOwner(List<TestableProject> projects)
 		{
-			var createInfo = new ProjectCreateInformation(projects);
+			throw new NotImplementedException();
+			/*var createInfo = new ProjectCreateInformation(projects);
 			createInfo.Solution = projects[0].ParentSolution;
 			
 			command.FakeProjectService.AllProjects.Inputs.Add(new ReadOnlyModelCollection<IProject>(projects));
 			
-			RunCommandWithProjectCreateInfoAsOwner(createInfo);
+			RunCommandWithProjectCreateInfoAsOwner(createInfo);*/
 		}
 		
 		void RunCommandWithProjectCreateInfoAsOwner(ProjectCreateInformation createInfo)
@@ -79,7 +80,9 @@ namespace PackageManagement.Tests
 			TestableProject createInfoProject = CreateFakeProject("Test");
 			var projects = new List<IProject>();
 			projects.Add(createInfoProject);
-			var createInfo = new ProjectCreateInformation(projects);
+			throw new NotImplementedException();
+			
+			/*var createInfo = new ProjectCreateInformation(projects);
 			
 			TestableProject expectedProject = ProjectHelper.CreateTestProject("TEST");
 			command.FakeProjectService.AddProject(expectedProject);
@@ -88,7 +91,7 @@ namespace PackageManagement.Tests
 			
 			MSBuildBasedProject project = command.ProjectPassedToCreatePackageReferencesForProject;
 			
-			Assert.AreEqual(expectedProject, project);
+			Assert.AreEqual(expectedProject, project);*/
 		}
 		
 		[Test]

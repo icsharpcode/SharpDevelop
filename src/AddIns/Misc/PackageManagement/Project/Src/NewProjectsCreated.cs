@@ -30,12 +30,16 @@ namespace ICSharpCode.PackageManagement
 		
 		public IEnumerable<MSBuildBasedProject> GetProjects()
 		{
-			foreach (IProject project in createInfo.CreatedProjects) {
+			// ProjectCreateInformation is no longer used to collect the results of the whole solution creation,
+			// there now is a separate instance per project.
+			#warning Reimplement PackageManagement.NewProjectsCreated
+			throw new NotImplementedException();
+			/*foreach (IProject project in createInfo.CreatedProjects) {
 				MSBuildBasedProject openProject = FindProject(project.Name);
 				if (openProject != null) {
 					yield return openProject;
 				}
-			}
+			}*/
 		}
 		
 		MSBuildBasedProject FindProject(string name)

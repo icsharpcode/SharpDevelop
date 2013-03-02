@@ -29,17 +29,15 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		protected virtual IProject CreateProject(DirectoryName targetProjectDirectory, IProject sourceProject)
 		{
-			ProjectCreateInformation info = new ProjectCreateInformation();
-			info.Solution = sourceProject.ParentSolution;
-			info.ProjectBasePath = targetProjectDirectory;
-			info.ProjectName = sourceProject.Name + ".Converted";
-			info.RootNamespace = sourceProject.RootNamespace;
-			
 			ProjectBindingDescriptor descriptor = ProjectBindingService.GetCodonPerLanguageName(TargetLanguageName);
 			if (descriptor == null || descriptor.Binding == null)
 				throw new InvalidOperationException("Cannot get Language Binding for " + TargetLanguageName);
 			
-			info.OutputProjectFileName = FileName.Create(Path.Combine(targetProjectDirectory, info.ProjectName + descriptor.ProjectFileExtension));
+			string projectName = sourceProject.Name + ".Converted";
+			FileName fileName = FileName.Create(Path.Combine(targetProjectDirectory, projectName + descriptor.ProjectFileExtension));
+			
+			ProjectCreateInformation info = new ProjectCreateInformation(sourceProject.ParentSolution, fileName);
+			info.RootNamespace = sourceProject.RootNamespace;
 			
 			return descriptor.Binding.CreateProject(info);
 		}

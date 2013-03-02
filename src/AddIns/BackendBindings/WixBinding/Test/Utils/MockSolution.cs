@@ -22,6 +22,7 @@ namespace WixBinding.Tests.Utils
 		{
 			ISolution solution = MockRepository.GenerateStrictMock<ISolution>();
 			solution.Stub(s => s.MSBuildProjectCollection).Return(new ProjectCollection());
+			solution.Stub(s => s.ActiveConfiguration).Return(new ConfigurationAndPlatform("Debug", "Any CPU"));
 			return solution;
 		}
 	}

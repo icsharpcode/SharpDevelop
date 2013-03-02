@@ -28,12 +28,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			bool readOnly = false;
 			
 			public TestProject(string languageName)
-				: base(new ProjectCreateInformation {
-				       	Solution = MockSolution.Create(),
-				       	ConfigurationMapping = MockRepository.GenerateStub<IConfigurationMapping>(),
-				       	ProjectName = "TestProject",
-				       	OutputProjectFileName = FileName.Create("c:\\temp\\TestProject.csproj")
-				       })
+				: base(new ProjectCreateInformation(MockSolution.Create(), FileName.Create("c:\\temp\\TestProject.csproj")))
 			{
 				this.languageName = languageName;
 			}

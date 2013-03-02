@@ -19,6 +19,15 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
+	public class ProjectCreateOptions
+	{
+		public DirectoryName SolutionPath { get; set; }
+		public DirectoryName ProjectBasePath { get; set; }
+		public string SolutionName { get; set; }
+		public string ProjectName { get; set; }
+		public TargetFramework TargetFramework { get; set; }
+	}
+	
 	/// <summary>
 	/// This class defines and holds the new project templates.
 	/// </summary>
@@ -80,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		bool newProjectDialogVisible = true;
 		
-		List<Action<ProjectCreateInformation>> openActions = new List<Action<ProjectCreateInformation>>();
+		List<Action<ProjectCreateOptions>> openActions = new List<Action<ProjectCreateOptions>>();
 		
 		SolutionDescriptor solutionDescriptor = null;
 		ProjectDescriptor projectDescriptor = null;
@@ -231,14 +240,14 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			// Read Actions;
 			if (templateElement["Actions"] != null) {
 				foreach (XmlElement el in templateElement["Actions"]) {
-					Action<ProjectCreateInformation> action = ReadAction(el);
+					Action<ProjectCreateOptions> action = ReadAction(el);
 					if (action != null)
 						openActions.Add(action);
 				}
 			}
 		}
 		
-		static Action<ProjectCreateInformation> ReadAction(XmlElement el)
+		static Action<ProjectCreateOptions> ReadAction(XmlElement el)
 		{
 			switch (el.Name) {
 				case "Open":
@@ -299,42 +308,44 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 //		string startupProject = null;
 
-		public FileName CreateProject(ProjectCreateInformation projectCreateInformation)
+		public ISolution CreateSolution(ProjectCreateOptions projectCreateInformation)
 		{
-			LoggingService.Info("Creating project from template '" + this.Category + "/" + this.Subcategory + "/" + this.Name + "'");
+			LoggingService.Info("Creating solution from template '" + this.Category + "/" + this.Subcategory + "/" + this.Name + "'");
 			if (solutionDescriptor != null) {
-				return FileName.Create(solutionDescriptor.CreateSolution(projectCreateInformation, this.languagename));
-			} else if (projectDescriptor != null) {
-				bool createNewSolution = projectCreateInformation.Solution == null;
-				if (createNewSolution) {
-					FileName fileName = FileName.Create(Path.Combine(projectCreateInformation.SolutionPath, projectCreateInformation.SolutionName + ".sln"));
-					projectCreateInformation.Solution = SD.ProjectService.CreateEmptySolutionFile(fileName);
-				}
-				IProject project = projectDescriptor.CreateProject(projectCreateInformation, this.languagename);
+				return solutionDescriptor.CreateSolution(projectCreateInformation, this.languagename);
+			} else {
+				FileName fileName = FileName.Create(Path.Combine(projectCreateInformation.SolutionPath, projectCreateInformation.SolutionName + ".sln"));
+				ISolution solution = SD.ProjectService.CreateEmptySolutionFile(fileName);
+				IProject project = projectDescriptor.CreateProject(solution, projectCreateInformation, this.languagename);
 				if (project != null) {
-					FileName solutionLocation = projectCreateInformation.Solution.FileName;
-					if (createNewSolution) {
-						projectCreateInformation.Solution.Items.Add(project);
-						projectCreateInformation.Solution.Save();
-						ProjectService.OnSolutionCreated(new SolutionEventArgs(projectCreateInformation.Solution));
-						projectCreateInformation.Solution.Dispose();
-					} else {
-						project.Dispose();
-					}
-					return solutionLocation;
+					solution.Items.Add(project);
+					solution.Save();
+					ProjectService.OnSolutionCreated(new SolutionEventArgs(solution));
+					return solution;
 				} else {
-					if (createNewSolution)
-						projectCreateInformation.Solution.Dispose();
+					solution.Dispose();
 					return null;
 				}
+			}
+		}
+		
+		public IProject CreateProject(ISolution solution, ProjectCreateOptions projectCreateInformation)
+		{
+			if (solution == null) {
+				throw new ArgumentNullException("solution");
+			}
+			if (solutionDescriptor != null) {
+				throw new InvalidOperationException("Cannot create an individual project from a solution template");
+			} else if (projectDescriptor != null) {
+				return projectDescriptor.CreateProject(solution, projectCreateInformation, this.languagename);
 			} else {
 				return null;
 			}
 		}
 		
-		public void RunOpenActions(ProjectCreateInformation projectCreateInformation)
+		public void RunOpenActions(ProjectCreateOptions projectCreateInformation)
 		{
-			foreach (Action<ProjectCreateInformation> action in openActions) {
+			foreach (var action in openActions) {
 				action(projectCreateInformation);
 			}
 		}

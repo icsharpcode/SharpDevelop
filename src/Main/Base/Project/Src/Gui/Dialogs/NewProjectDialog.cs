@@ -333,13 +333,13 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 					return;
 				}
 				
-				ProjectCreateInformation cinfo = new ProjectCreateInformation();
+				ProjectCreateOptions cinfo = new ProjectCreateOptions();
 				if (!createNewSolution) {
-					cinfo.Solution = ProjectService.OpenSolution;
-					cinfo.SolutionPath = cinfo.Solution.Directory;
-					cinfo.SolutionName = cinfo.Solution.Name;
+					cinfo.SolutionPath = ProjectService.OpenSolution.Directory;
+					cinfo.SolutionName = ProjectService.OpenSolution.Name;
 				} else {
 					cinfo.SolutionPath = DirectoryName.Create(NewSolutionDirectory);
+					cinfo.SolutionName = solution;
 				}
 				
 				if (item.Template.HasSupportedTargetFrameworks) {
@@ -348,21 +348,27 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				}
 				
 				cinfo.ProjectBasePath = DirectoryName.Create(NewProjectDirectory);
-				cinfo.SolutionName    = solution;
 				cinfo.ProjectName     = name;
 				
-				NewSolutionLocation = item.Template.CreateProject(cinfo);
-				if (NewSolutionLocation == null) {
-					return;
+				NewSolutionLocation = null;
+				NewProjectLocation = null;
+				if (createNewSolution) {
+					using (ISolution createdSolution = item.Template.CreateSolution(cinfo)) {
+						if (createdSolution != null)
+							NewSolutionLocation = createdSolution.FileName;
+					}
+					if (NewSolutionLocation != null)
+						SD.ProjectService.OpenSolutionOrProject(NewSolutionLocation);
+				} else {
+					using (IProject project = item.Template.CreateProject(SD.ProjectService.CurrentSolution, cinfo)) {
+						NewProjectLocation = project.FileName;
+					}
+					if (NewProjectLocation != null) {
+						SolutionFolderNode.Folder.AddExistingProject(NewProjectLocation);
+						ProjectService.SaveSolution();
+					}
 				}
 				
-				NewProjectLocation = cinfo.createdProjects.Count > 0 ? cinfo.createdProjects[0].FileName : null;
-				if (createNewSolution) {
-					SD.ProjectService.OpenSolutionOrProject(NewSolutionLocation);
-				} else {
-					SolutionFolderNode.Folder.AddExistingProject(NewProjectLocation);
-					ProjectService.SaveSolution();
-				}
 				item.Template.RunOpenActions(cinfo);
 				
 				DialogResult = DialogResult.OK;

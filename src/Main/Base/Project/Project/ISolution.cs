@@ -8,7 +8,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public enum SolutionFormatVersion // TODO: change IProject.MinimumSolutionFormatVersion to this enum type
+	public enum SolutionFormatVersion
 	{
 		VS2005 = 9,
 		VS2008 = 10,
@@ -90,14 +90,5 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// and all open projects.
 		/// </summary>
 		void Save();
-	}
-	
-	/// <summary>
-	/// This is a HACK to make project creation work; I don't think we should expose this method.
-	/// Maybe make IConfigurationMapping a concrete class and use an event for setting the solution's dirty flag?
-	/// </summary>
-	internal interface ISolutionInternal : ISolution
-	{
-		IConfigurationMapping CreateMappingForNewProject();
 	}
 }

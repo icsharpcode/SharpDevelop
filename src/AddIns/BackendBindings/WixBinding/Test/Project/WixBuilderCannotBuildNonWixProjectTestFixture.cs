@@ -29,12 +29,7 @@ namespace WixBinding.Tests.Project
 			SD.InitializeForUnitTests();
 			wixNodeBuilder = new WixProjectNodeBuilder();
 			project = new MSBuildBasedProject(
-				new ProjectCreateInformation {
-					OutputProjectFileName = new FileName(@"C:\Projects\Test\test.csproj"),
-					Solution = MockSolution.Create(),
-					ConfigurationMapping = MockRepository.GenerateStub<IConfigurationMapping>(),
-					ProjectName = "test"
-				}
+				new ProjectCreateInformation(MockSolution.Create(), new FileName(@"C:\Projects\Test\test.csproj"))
 			);
 			project.IdGuid = Guid.Parse("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
 		}

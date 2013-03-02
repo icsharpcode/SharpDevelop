@@ -66,7 +66,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (pos < 0)
 				throw new ArgumentException();
 			foreach (var project in solution.Projects) {
-				((ConfigurationMapping)project.ConfigurationMapping).RenameSolutionConfig(oldName, newName, isPlatform);
+				throw new NotImplementedException();
+				//project.ConfigurationMapping.RenameSolutionConfig(oldName, newName, isPlatform);
 			}
 			this[pos] = newName;
 		}

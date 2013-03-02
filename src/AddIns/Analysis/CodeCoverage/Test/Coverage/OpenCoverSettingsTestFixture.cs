@@ -62,12 +62,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void OpenCoverSettingsFileName()
 		{
 			MSBuildBasedProject project = new MSBuildBasedProject(
-				new ProjectCreateInformation {
-					Solution = MockSolution.Create(),
-					ConfigurationMapping = MockRepository.GenerateStub<IConfigurationMapping>(),
-					OutputProjectFileName = new FileName(@"C:\temp\test.csproj"),
-					ProjectName = "test"
-				});
+				new ProjectCreateInformation(MockSolution.Create(), new FileName(@"C:\temp\test.csproj")));
 			
 			Assert.AreEqual(@"C:\temp\test.OpenCover.Settings", OpenCoverSettings.GetFileName(project));
 		}

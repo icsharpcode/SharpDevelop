@@ -33,11 +33,7 @@ namespace WixBinding.Tests.Gui
 			WixBindingTestsHelper.InitMSBuildEngine();
 			
 			// create the project.
-			ProjectCreateInformation info = new ProjectCreateInformation();
-			info.Solution = MockSolution.Create();
-			info.ConfigurationMapping = MockRepository.GenerateStub<IConfigurationMapping>();
-			info.ProjectName = "Test";
-			info.OutputProjectFileName = new FileName(@"C:\Projects\Test\Test.wixproj");
+			ProjectCreateInformation info = new ProjectCreateInformation(MockSolution.Create(), new FileName(@"C:\Projects\Test\Test.wixproj"));
 
 			wixProject = new WixProjectWithOverriddenSave(info);
 			

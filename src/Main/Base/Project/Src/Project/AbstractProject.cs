@@ -33,28 +33,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		// Member documentation: see IProject members.
 		
 		readonly ISolution parentSolution;
-		readonly IConfigurationMapping configurationMapping;
+		readonly ConfigurationMapping configurationMapping;
 		
-		protected AbstractProject(ProjectCreateInformation information)
+		protected AbstractProject(ProjectInformation information)
 		{
 			if (information == null)
 				throw new ArgumentNullException("information");
 			this.parentSolution = information.Solution;
-			this.configurationMapping = information.ConfigurationMapping;
-			this.activeConfiguration = information.ProjectConfiguration;
-			this.Name = information.ProjectName;
-			this.FileName = information.OutputProjectFileName;
-			this.idGuid = Guid.NewGuid();
-			Debug.Assert(configurationMapping != null);
-		}
-		
-		protected AbstractProject(ProjectLoadInformation information)
-		{
-			if (information == null)
-				throw new ArgumentNullException("information");
-			this.parentSolution = information.Solution;
-			this.configurationMapping = information.ConfigurationMapping;
-			this.activeConfiguration = information.ProjectConfiguration;
+			this.activeConfiguration = information.ActiveProjectConfiguration;
+			this.configurationMapping = information.ConfigurationMapping ?? new ConfigurationMapping();
 			this.Name = information.ProjectName;
 			this.FileName = information.FileName;
 			this.idGuid = information.IdGuid;
@@ -260,7 +247,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public IConfigurationMapping ConfigurationMapping {
+		public ConfigurationMapping ConfigurationMapping {
 			get { return configurationMapping; }
 		}
 		#endregion

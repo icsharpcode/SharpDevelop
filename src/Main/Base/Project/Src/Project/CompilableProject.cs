@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		protected readonly ISet<string> reparseCodeSensitiveProperties = new SortedSet<string>();
 		
-		protected CompilableProject(ICSharpCode.SharpDevelop.Internal.Templates.ProjectCreateInformation information)
+		protected CompilableProject(ProjectCreateInformation information)
 			: base(information)
 		{
 			this.OutputType = OutputType.Exe;

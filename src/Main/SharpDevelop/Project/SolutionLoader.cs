@@ -136,7 +136,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					solutionItem = solutionFolderDict[projectInfo.IdGuid];
 				} else {
 					// Load project:
-					projectInfo.ProjectConfiguration = projectInfo.ConfigurationMapping.GetProjectConfiguration(solution.ActiveConfiguration);
+					projectInfo.ActiveProjectConfiguration = projectInfo.ConfigurationMapping.GetProjectConfiguration(solution.ActiveConfiguration);
 					progress.TaskName = "Loading " + projectInfo.ProjectName;
 					using (projectInfo.ProgressMonitor = progress.CreateSubTask(1.0 / projectCount)) {
 						solutionItem = ProjectBindingService.LoadProject(projectInfo);
@@ -229,7 +229,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region ReadProjectEntry
 		static readonly Regex projectLinePattern = new Regex("^\\s*Project\\(\"(?<TypeGuid>.*)\"\\)\\s+=\\s+\"(?<Title>.*)\",\\s*\"(?<Location>.*)\",\\s*\"(?<IdGuid>.*)\"\\s*$");
 		
-		public ProjectLoadInformation ReadProjectEntry(Solution parentSolution)
+		public ProjectLoadInformation ReadProjectEntry(ISolution parentSolution)
 		{
 			if (currentLine == null)
 				return null;
@@ -243,7 +243,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			var loadInformation = new ProjectLoadInformation(parentSolution, projectFileName, title);
 			loadInformation.TypeGuid = Guid.Parse(match.Groups["TypeGuid"].Value);
 			loadInformation.IdGuid = Guid.Parse(match.Groups["IdGuid"].Value);
-			loadInformation.ConfigurationMapping = new ConfigurationMapping(parentSolution);
 			SolutionSection section;
 			while ((section = ReadSection(isGlobal: false)) != null) {
 				loadInformation.ProjectSections.Add(section);

@@ -157,16 +157,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.projectFile = ProjectRootElement.Create(MSBuildProjectCollection);
 			this.userProjectFile = ProjectRootElement.Create(MSBuildProjectCollection);
 			
-			projectFile.FullPath = information.OutputProjectFileName;
+			projectFile.FullPath = information.FileName;
 			projectFile.ToolsVersion = "4.0";
 			projectFile.DefaultTargets = "Build";
-			userProjectFile.FullPath = information.OutputProjectFileName + ".user";
+			userProjectFile.FullPath = information.FileName + ".user";
 			
 			projectFile.AddProperty(ProjectGuidPropertyName, IdGuid.ToString("B").ToUpperInvariant());
-			AddGuardedProperty("Configuration", information.ProjectConfiguration.Configuration);
-			AddGuardedProperty("Platform", information.ProjectConfiguration.Platform);
+			AddGuardedProperty("Configuration", information.ActiveProjectConfiguration.Configuration);
+			AddGuardedProperty("Platform", information.ActiveProjectConfiguration.Platform);
 			
-			string platform = information.ProjectConfiguration.Platform;
+			string platform = information.ActiveProjectConfiguration.Platform;
 			if (platform == "x86")
 				SetProperty(null, platform, "PlatformTarget", "x86", PropertyStorageLocations.PlatformSpecific, false);
 			else

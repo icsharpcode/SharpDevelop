@@ -36,15 +36,16 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				}
 			}
 			
-			internal bool AddContents(ISolution solution, ProjectCreateInformation projectCreateInformation, string defaultLanguage, ISolutionFolder parentFolder)
+			internal bool AddContents(ISolutionFolder parentFolder, ProjectCreateOptions projectCreateOptions, string defaultLanguage)
 			{
 				// Create sub projects
 				foreach (SolutionFolderDescriptor folderDescriptor in solutionFoldersDescriptors) {
 					ISolutionFolder folder = parentFolder.CreateFolder(folderDescriptor.name);
-					folderDescriptor.AddContents(solution, projectCreateInformation, defaultLanguage, folder);
+					if (!folderDescriptor.AddContents(folder, projectCreateOptions, defaultLanguage))
+						return false;
 				}
 				foreach (ProjectDescriptor projectDescriptor in projectDescriptors) {
-					IProject newProject = projectDescriptor.CreateProject(projectCreateInformation, defaultLanguage);
+					IProject newProject = projectDescriptor.CreateProject(parentFolder.ParentSolution, projectCreateOptions, defaultLanguage);
 					if (newProject == null)
 						return false;
 					parentFolder.Items.Add(newProject);
@@ -65,7 +66,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		string name;
 		string startupProject    = null;
-		string relativeDirectory = null;
 		
 		#region public properties
 		public string StartupProject {
@@ -86,21 +86,15 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			this.name = name;
 		}
 		
-		public string CreateSolution(ProjectCreateInformation projectCreateInformation, string defaultLanguage)
+		public ISolution CreateSolution(ProjectCreateOptions projectCreateInformation, string defaultLanguage)
 		{
-			if (relativeDirectory != null && relativeDirectory.Length > 0 && relativeDirectory != ".") {
-				string path = Path.Combine(projectCreateInformation.SolutionPath, relativeDirectory);
-				Directory.CreateDirectory(path);
-			}
-			
 			string newSolutionName = StringParser.Parse(name, new StringTagPair("ProjectName", projectCreateInformation.SolutionName));
 			
 			string solutionLocation = Path.Combine(projectCreateInformation.SolutionPath, newSolutionName + ".sln");
 			
 			ISolution newSolution = SD.ProjectService.CreateEmptySolutionFile(FileName.Create(solutionLocation));
-			projectCreateInformation.Solution = newSolution;
 			
-			if (!mainFolder.AddContents(newSolution, projectCreateInformation, defaultLanguage, newSolution)) {
+			if (!mainFolder.AddContents(newSolution, projectCreateInformation, defaultLanguage)) {
 				newSolution.Dispose();
 				return null;
 			}
@@ -117,17 +111,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				newSolution.Save();
 			}
 			ProjectService.OnSolutionCreated(new SolutionEventArgs(newSolution));
-			newSolution.Dispose();
-			return solutionLocation;
+			return newSolution;
 		}
 		
 		public static SolutionDescriptor CreateSolutionDescriptor(XmlElement element, string hintPath)
 		{
 			SolutionDescriptor solutionDescriptor = new SolutionDescriptor(element.Attributes["name"].InnerText);
-			
-			if (element.Attributes["directory"] != null) {
-				solutionDescriptor.relativeDirectory = element.Attributes["directory"].InnerText;
-			}
 			
 			if (element["Options"] != null && element["Options"]["StartupProject"] != null) {
 				solutionDescriptor.startupProject = element["Options"]["StartupProject"].InnerText;

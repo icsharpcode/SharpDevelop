@@ -23,13 +23,10 @@ namespace UnitTesting.Tests.Utils
 		}
 		
 		public MockCSharpProject(ISolution solution, string name)
-			: base(new ProjectCreateInformation {
-			       	Solution = solution,
-			       	ConfigurationMapping = MockRepository.GenerateStub<IConfigurationMapping>(),
+			: base(new ProjectCreateInformation(solution, FileName.Create("c:\\projects\\" + name + "\\" + name + ".csproj")) {
 			       	ProjectName = name,
-			       	ProjectConfiguration = new ConfigurationAndPlatform("Debug", "x86"),
+			       	ActiveProjectConfiguration = new ConfigurationAndPlatform("Debug", "x86"),
 			       	TargetFramework = TargetFramework.Net40Client,
-			       	OutputProjectFileName = FileName.Create("c:\\projects\\" + name + "\\" + name + ".csproj")
 			       })
 		{
 			OutputType = OutputType.Library;

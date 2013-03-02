@@ -20,6 +20,7 @@ namespace PackageManagement.Tests.Helpers
 			ISolution solution = MockRepository.GenerateStrictMock<ISolution>();
 			solution.Stub(s => s.MSBuildProjectCollection).Return(new Microsoft.Build.Evaluation.ProjectCollection());
 			solution.Stub(s => s.Projects).Return(new SimpleModelCollection<IProject>());
+			solution.Stub(s => s.ActiveConfiguration).Return(new ConfigurationAndPlatform("Debug", "Any CPU"));
 			//solution.Stub(s => s.FileName).Return(FileName.Create(@"d:\projects\Test\TestSolution.sln"));
 			return solution;
 		}
@@ -41,13 +42,7 @@ namespace PackageManagement.Tests.Helpers
 			string name,
 			string fileName = null)
 		{
-			ProjectCreateInformation createInfo = new ProjectCreateInformation();
-			createInfo.Solution = parentSolution;
-			createInfo.ConfigurationMapping = MockRepository.GenerateStub<IConfigurationMapping>();
-			createInfo.ProjectName = name;
-			createInfo.SolutionPath = DirectoryName.Create(@"d:\projects\Test");
-			createInfo.ProjectBasePath = DirectoryName.Create(@"d:\projects\Test\TestProject");
-			createInfo.OutputProjectFileName = new FileName(fileName ?? (@"d:\projects\Test\TestProject\" + name + ".csproj"));
+			ProjectCreateInformation createInfo = new ProjectCreateInformation(parentSolution, new FileName(fileName ?? (@"d:\projects\Test\TestProject\" + name + ".csproj")));
 			
 			var project = new TestableProject(createInfo);
 			((ICollection<IProject>)parentSolution.Projects).Add(project);

@@ -32,11 +32,7 @@ namespace WixBinding.Tests.Project
 			SD.InitializeForUnitTests();
 			WixBindingTestsHelper.InitMSBuildEngine();
 			
-			info = new ProjectCreateInformation();
-			info.Solution = MockSolution.Create();
-			info.ConfigurationMapping = MockRepository.GenerateStub<IConfigurationMapping>();
-			info.ProjectName = "Test";
-			info.OutputProjectFileName = new FileName(@"C:\Projects\Test\Test.wixproj");
+			info = new ProjectCreateInformation(MockSolution.Create(), new FileName(@"C:\Projects\Test\Test.wixproj"));
 			info.RootNamespace = "Test";
 
 			project = new WixProject(info);
@@ -112,7 +108,7 @@ namespace WixBinding.Tests.Project
 		[Test]
 		public void FileName()
 		{
-			Assert.AreEqual(info.OutputProjectFileName, project.FileName);
+			Assert.AreEqual(info.FileName, project.FileName);
 		}
 		
 		[Test]

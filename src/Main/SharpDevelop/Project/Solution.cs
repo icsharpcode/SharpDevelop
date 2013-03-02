@@ -12,7 +12,7 @@ using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	class Solution : SolutionFolder, ISolution, ISolutionInternal
+	class Solution : SolutionFolder, ISolution
 	{
 		FileName fileName;
 		DirectoryName directory;
@@ -473,15 +473,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 		}
-		#endregion
-		
-		#region ISolutionInternal implementation
-
-		IConfigurationMapping ISolutionInternal.CreateMappingForNewProject()
-		{
-			return new ConfigurationMapping(this);
-		}
-
 		#endregion
 		
 		public override string ToString()

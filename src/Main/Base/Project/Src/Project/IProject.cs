@@ -149,7 +149,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the configuration mapping.
 		/// </summary>
-		IConfigurationMapping ConfigurationMapping { get; }
+		ConfigurationMapping ConfigurationMapping { get; }
 		
 		/// <summary>
 		/// Saves the project using its current file name.

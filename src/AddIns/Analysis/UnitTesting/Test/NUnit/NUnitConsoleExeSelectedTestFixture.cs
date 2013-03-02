@@ -121,7 +121,6 @@ namespace UnitTesting.Tests.NUnit
 		public void NotMSBuildBasedProject()
 		{
 			ProjectLoadInformation info = new ProjectLoadInformation(MockSolution.Create(), FileName.Create(@"C:\Projects\Test.proj"), "Test");
-			info.ConfigurationMapping = MockRepository.GenerateStub<IConfigurationMapping>();
 			
 			MissingProject project = new MissingProject(info);
 			ITestProject testProject = new NUnitTestProject(project);

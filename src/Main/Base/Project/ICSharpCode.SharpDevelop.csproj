@@ -154,12 +154,13 @@
     <Compile Include="Project\Build\ProjectBuildOptions.cs" />
     <Compile Include="Project\Configuration\ConfigurationAndPlatform.cs" />
     <Compile Include="Project\Configuration\IConfigurable.cs" />
-    <Compile Include="Project\Configuration\IConfigurationMapping.cs" />
+    <Compile Include="Project\Configuration\ConfigurationMapping.cs" />
     <Compile Include="Project\Configuration\IConfigurationOrPlatformNameCollection.cs" />
     <Compile Include="Project\IProjectService.cs" />
     <Compile Include="Project\ISolution.cs" />
     <Compile Include="Project\ISolutionFolder.cs" />
     <Compile Include="Project\ISolutionItem.cs" />
+    <Compile Include="Project\ProjectInformation.cs" />
     <Compile Include="Project\Project_TypeGuids.cs" />
     <Compile Include="Project\SolutionEventArgs.cs" />
     <Compile Include="Project\SolutionSection.cs" />
@@ -490,7 +491,6 @@
     <Compile Include="Project\PortableLibrary\SupportedFramework.cs" />
     <Compile Include="Src\Project\ProjectChangeWatcher.cs" />
     <Compile Include="Src\Project\ProjectCustomToolOptions.cs" />
-    <Compile Include="Src\Project\ProjectLoadInformation.cs" />
     <Compile Include="Src\Project\ProjectStartException.cs" />
     <Compile Include="Src\Project\ProjectLoadException.cs" />
     <Compile Include="Src\Project\ProjectPropertyChangedEventArgs.cs" />
@@ -528,7 +528,6 @@
     <Compile Include="Src\Services\Tasks\TaskService.cs" />
     <Compile Include="Src\Internal\ExternalTool\ToolLoader.cs" />
     <Compile Include="Src\Services\ProjectBinding\IProjectBinding.cs" />
-    <Compile Include="Src\Internal\Templates\Project\ProjectCreateInformation.cs" />
     <Compile Include="Src\Services\ProjectBinding\ProjectBindingService.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\CombineOpenEvaluator.cs" />
     <Compile Include="Src\Services\ProjectBinding\ProjectBindingDoozer.cs" />

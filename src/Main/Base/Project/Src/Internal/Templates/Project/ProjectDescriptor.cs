@@ -43,7 +43,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		}
 		
 		string name;
-		string relativePath;
 		string defaultPlatform;
 		
 		/// <summary>
@@ -77,11 +76,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				name = element.GetAttribute("name");
 			} else {
 				name = "${ProjectName}";
-			}
-			if (element.HasAttribute("directory")) {
-				relativePath = element.GetAttribute("directory");
-			} else {
-				relativePath = ".";
 			}
 			languageName = element.GetAttribute("language");
 			if (string.IsNullOrEmpty(languageName)) {
@@ -270,18 +264,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		#region Create new project from template
 		//Show prompt, create files from template, create project, execute command, save project
-		public IProject CreateProject(ProjectCreateInformation projectCreateInformation, string defaultLanguage)
+		public IProject CreateProject(ISolution parentSolution, ProjectCreateOptions projectCreateOptions, string defaultLanguage)
 		{
-			// remember old outerProjectBasePath
-			var outerProjectBasePath = projectCreateInformation.ProjectBasePath;
-			var outerProjectName = projectCreateInformation.ProjectName;
+			IProject project = null;
+			bool success = false;
 			try
 			{
-				projectCreateInformation.ProjectBasePath = DirectoryName.Create(Path.Combine(projectCreateInformation.ProjectBasePath, GetRelativePath(projectCreateInformation)));
-				if (!Directory.Exists(projectCreateInformation.ProjectBasePath)) {
-					Directory.CreateDirectory(projectCreateInformation.ProjectBasePath);
-				}
-				
 				string language = string.IsNullOrEmpty(languageName) ? defaultLanguage : languageName;
 				ProjectBindingDescriptor descriptor = ProjectBindingService.GetCodonPerLanguageName(language);
 				IProjectBinding languageinfo = (descriptor != null) ? descriptor.Binding : null;
@@ -293,10 +281,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					return null;
 				}
 				
-				string newProjectName = StringParser.Parse(name, new StringTagPair("ProjectName", projectCreateInformation.ProjectName));
-				string projectLocation = Path.GetFullPath(Path.Combine(projectCreateInformation.ProjectBasePath,
-				                                                       newProjectName + ProjectBindingService.GetProjectFileExtension(language)));
-				
+				DirectoryName projectBasePath = projectCreateOptions.ProjectBasePath;
+				string newProjectName = StringParser.Parse(name, new StringTagPair("ProjectName", projectCreateOptions.ProjectName));
+				Directory.CreateDirectory(projectBasePath);
+				FileName projectLocation = FileName.Create(Path.Combine(projectBasePath,
+				                                                        newProjectName + ProjectBindingService.GetProjectFileExtension(language)));
+				ProjectCreateInformation info = new ProjectCreateInformation(parentSolution, projectLocation);
 				
 				StringBuilder standardNamespace = new StringBuilder();
 				// filter 'illegal' chars from standard namespace
@@ -323,15 +313,14 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					}
 				}
 				
-				projectCreateInformation.OutputProjectFileName = FileName.Create(projectLocation);
-				projectCreateInformation.RootNamespace = standardNamespace.ToString();
-				projectCreateInformation.ProjectName = newProjectName;
+				info.RootNamespace = standardNamespace.ToString();
+				info.ProjectName = newProjectName;
 				if (!string.IsNullOrEmpty(defaultPlatform))
-					projectCreateInformation.ProjectConfiguration = new ConfigurationAndPlatform("Debug", defaultPlatform);
+					info.ActiveProjectConfiguration = new ConfigurationAndPlatform("Debug", defaultPlatform);
 				
-				RunPreCreateActions(projectCreateInformation);
+				RunPreCreateActions(info);
 				
-				StringParserPropertyContainer.FileCreation["StandardNamespace"] = projectCreateInformation.RootNamespace;
+				StringParserPropertyContainer.FileCreation["StandardNamespace"] = info.RootNamespace;
 				
 				if (File.Exists(projectLocation))
 				{
@@ -349,7 +338,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				StringBuilder existingFileNames = new StringBuilder();
 				foreach (FileDescriptionTemplate file in files)
 				{
-					string fileName = Path.Combine(projectCreateInformation.ProjectBasePath, StringParser.Parse(file.Name, new StringTagPair("ProjectName", projectCreateInformation.ProjectName)));
+					string fileName = Path.Combine(projectBasePath, StringParser.Parse(file.Name, new StringTagPair("ProjectName", info.ProjectName)));
 					
 					if (File.Exists(fileName))
 					{
@@ -376,7 +365,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				#region Copy files to target directory
 				foreach (FileDescriptionTemplate file in files)
 				{
-					string fileName = Path.Combine(projectCreateInformation.ProjectBasePath, StringParser.Parse(file.Name, new StringTagPair("ProjectName", projectCreateInformation.ProjectName)));
+					string fileName = Path.Combine(projectBasePath, StringParser.Parse(file.Name, new StringTagPair("ProjectName", info.ProjectName)));
 					if (File.Exists(fileName) && !overwriteFiles)
 					{
 						continue;
@@ -393,10 +382,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 						} else {
 							// Textual content
 							StreamWriter sr = new StreamWriter(File.Create(fileName), SD.FileService.DefaultFileEncoding);
-							string fileContent = StringParser.Parse(file.Content, 
-								new StringTagPair("ProjectName", projectCreateInformation.ProjectName),
-								new StringTagPair("SolutionName", projectCreateInformation.SolutionName),
-								new StringTagPair("FileName", fileName));
+							string fileContent = StringParser.Parse(file.Content,
+							                                        new StringTagPair("ProjectName", projectCreateOptions.ProjectName),
+							                                        new StringTagPair("SolutionName", projectCreateOptions.SolutionName),
+							                                        new StringTagPair("FileName", fileName));
 							fileContent = StringParser.Parse(fileContent);
 							if (SD.EditorControlService.GlobalOptions.IndentationString != "\t") {
 								fileContent = fileContent.Replace("\t", SD.EditorControlService.GlobalOptions.IndentationString);
@@ -413,10 +402,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				#endregion
 				
 				#region Create Project
-				IProject project;
 				try {
-					projectCreateInformation.ConfigurationMapping = ((ISolutionInternal)projectCreateInformation.Solution).CreateMappingForNewProject();
-					project = languageinfo.CreateProject(projectCreateInformation);
+					project = languageinfo.CreateProject(info);
 				} catch (ProjectLoadException ex) {
 					MessageService.ShowError(ex.Message);
 					return null;
@@ -432,8 +419,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 							project,
 							StringParser.Parse(projectItem.ItemType.ItemName),
 							StringParser.Parse(projectItem.Include,
-								new StringTagPair("ProjectName", projectCreateInformation.ProjectName),
-								new StringTagPair("SolutionName", projectCreateInformation.SolutionName))
+							                   new StringTagPair("ProjectName", projectCreateOptions.ProjectName),
+							                   new StringTagPair("SolutionName", projectCreateOptions.SolutionName))
 						);
 						foreach (string metadataName in projectItem.MetadataNames) {
 							string metadataValue = projectItem.GetMetadata(metadataName);
@@ -498,7 +485,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				if (project is IProjectItemListProvider) {
 					
 					foreach (FileDescriptionTemplate file in files) {
-						string fileName = Path.Combine(projectCreateInformation.ProjectBasePath, StringParser.Parse(file.Name, new StringTagPair("ProjectName", projectCreateInformation.ProjectName)));
+						string fileName = Path.Combine(projectBasePath, StringParser.Parse(file.Name, new StringTagPair("ProjectName", projectCreateOptions.ProjectName)));
 						FileProjectItem projectFile = new FileProjectItem(project, project.GetDefaultItemType(fileName));
 						
 						projectFile.Include = FileUtility.GetRelativePath(project.Directory, fileName);
@@ -519,21 +506,13 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				project.Save();
 				
 				
-				projectCreateInformation.createdProjects.Add(project);
 				ProjectService.OnProjectCreated(new ProjectEventArgs(project));
+				success = true;
 				return project;
+			} finally {
+				if (project != null && !success)
+					project.Dispose();
 			}
-			finally
-			{
-				// set back outerProjectBasePath
-				projectCreateInformation.ProjectBasePath = outerProjectBasePath;
-				projectCreateInformation.ProjectName = outerProjectName;
-			}
-		}
-		
-		string GetRelativePath(ProjectCreateInformation projectCreateInformation)
-		{
-			return StringParser.Parse(this.relativePath, new StringTagPair("ProjectName", projectCreateInformation.ProjectName));
 		}
 		
 		void RunPreCreateActions(ProjectCreateInformation projectCreateInformation)

@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public class SolutionSection : IReadOnlyDictionary<string, string>
 	{
-		// TODO: expose some change event so that the solution can be marked as dirty when a section is changed
+		public event EventHandler Changed = delegate { };
 		
 		static readonly char[] forbiddenChars = { '\n', '\r', '\0', '=' };
 		
@@ -30,23 +30,47 @@ namespace ICSharpCode.SharpDevelop.Project
 				throw new ArgumentException("value contains invalid characters", "value");
 		}
 		
-		/// <summary>
-		/// Gets/Sets the section name
-		/// </summary>
-		public string SectionName { get; set; }
-		
-		/// <summary>
-		/// Gets/Sets the section type (e.g. 'preProject'/'postProject'/'preSolution'/'postSolution')
-		/// </summary>
-		public string SectionType { get; set; }
-		
+		string sectionName;
+		string sectionType;
 		List<KeyValuePair<string, string>> entries = new List<KeyValuePair<string, string>>();
 		
 		public SolutionSection(string sectionName, string sectionType)
 		{
 			Validate(sectionName, sectionType);
-			this.SectionName = sectionName;
-			this.SectionType = sectionType;
+			this.sectionName = sectionName;
+			this.sectionType = sectionType;
+		}
+		
+		/// <summary>
+		/// Gets/Sets the section name
+		/// </summary>
+		public string SectionName {
+			get {
+				return sectionName;
+			}
+			set {
+				if (sectionName != value) {
+					Validate(value, sectionType);
+					sectionName = value;
+					Changed(this, EventArgs.Empty);
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Gets/Sets the section type (e.g. 'preProject'/'postProject'/'preSolution'/'postSolution')
+		/// </summary>
+		public string SectionType {
+			get {
+				return sectionType;
+			}
+			set {
+				if (sectionType != value) {
+					Validate(sectionName, value);
+					sectionType = value;
+					Changed(this, EventArgs.Empty);
+				}
+			}
 		}
 		
 		public int Count {
@@ -57,16 +81,23 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			Validate(key, value);
 			entries.Add(new KeyValuePair<string, string>(key, value));
+			Changed(this, EventArgs.Empty);
 		}
 
 		public bool Remove(string key)
 		{
-			return entries.RemoveAll(e => e.Key == key) > 0;
+			if (entries.RemoveAll(e => e.Key == key) > 0) {
+				Changed(this, EventArgs.Empty);
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		public void Clear()
 		{
 			entries.Clear();
+			Changed(this, EventArgs.Empty);
 		}
 
 		public bool ContainsKey(string key)
@@ -104,6 +135,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				for (int i = 0; i < entries.Count; i++) {
 					if (entries[i].Key == key) {
 						entries[i] = new KeyValuePair<string, string>(key, value);
+						Changed(this, EventArgs.Empty);
 						return;
 					}
 				}
