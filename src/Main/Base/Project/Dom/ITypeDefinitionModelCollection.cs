@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public static readonly EmptyTypeDefinitionModelCollection Instance = new EmptyTypeDefinitionModelCollection();
 		
-		event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged {
+		event ModelCollectionChangedEventHandler<ITypeDefinitionModel> IModelCollection<ITypeDefinitionModel>.CollectionChanged {
 			add { }
 			remove { }
 		}

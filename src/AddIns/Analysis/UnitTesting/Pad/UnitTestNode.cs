@@ -75,30 +75,14 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
-		void test_NestedTests_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void test_NestedTests_CollectionChanged(IReadOnlyCollection<ITest> removedItems, IReadOnlyCollection<ITest> addedItems)
 		{
 			if (!IsVisible) {
 				SwitchBackToLazyLoading();
 				return;
 			}
-			switch (e.Action) {
-				case NotifyCollectionChangedAction.Add:
-					InsertNestedTests(e.NewItems.Cast<ITest>());
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					Children.RemoveAll(n => e.OldItems.Contains(n.Model));
-					break;
-				case NotifyCollectionChangedAction.Reset:
-					if (IsExpanded) {
-						Children.Clear();
-						InsertNestedTests(test.NestedTests);
-					} else {
-						SwitchBackToLazyLoading();
-					}
-					break;
-				default:
-					throw new NotSupportedException("Invalid value for NotifyCollectionChangedAction");
-			}
+			Children.RemoveAll(n => removedItems.Contains(n.Model));
+			InsertNestedTests(addedItems);
 		}
 		
 		void SwitchBackToLazyLoading()

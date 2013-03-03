@@ -136,30 +136,16 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
-		void OnProjectsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void OnProjectsCollectionChanged(IReadOnlyCollection<IProject> removedItems, IReadOnlyCollection<IProject> addedItems)
 		{
-			if (e.Action == NotifyCollectionChangedAction.Reset) {
-				for (int i = 0; i < changeListeners.Count; i++) {
+			for (int i = 0; i < changeListeners.Count; i++) {
+				if (removedItems.Contains(changeListeners[i].project)) {
 					changeListeners[i].Stop();
+					changeListeners.RemoveAt(i--);
 				}
-				changeListeners.Clear();
-				foreach (var project in SD.ProjectService.AllProjects) {
-					AddProject(project);
-				}
-			} else {
-				if (e.OldItems != null) {
-					for (int i = 0; i < changeListeners.Count; i++) {
-						if (e.OldItems.Contains(changeListeners[i].project)) {
-							changeListeners[i].Stop();
-							changeListeners.RemoveAt(i--);
-						}
-					}
-				}
-				if (e.NewItems != null) {
-					foreach (var project in e.NewItems.OfType<IProject>()) {
-						AddProject(project);
-					}
-				}
+			}
+			foreach (var project in addedItems) {
+				AddProject(project);
 			}
 		}
 		

@@ -2,15 +2,21 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Dom;
 using Microsoft.Build.Logging;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	class SolutionConfigurationOrPlatformNameCollection : ObservableCollection<string>, IConfigurationOrPlatformNameCollection
+	class SolutionConfigurationOrPlatformNameCollection : IConfigurationOrPlatformNameCollection
 	{
+		public event ModelCollectionChangedEventHandler<string> CollectionChanged;
+
+		readonly List<string> list = new List<string>();
 		readonly Solution solution;
 		readonly bool isPlatform;
 		
@@ -19,6 +25,24 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.solution = solution;
 			this.isPlatform = isPlatform;
 		}
+		
+		#region IReadOnlyCollection implementation
+
+		public int Count {
+			get { return list.Count; }
+		}
+
+		public IEnumerator<string> GetEnumerator()
+		{
+			return list.GetEnumerator();
+		}
+
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		{
+			return list.GetEnumerator();
+		}
+
+		#endregion
 		
 		public string ValidateName(string name)
 		{
@@ -38,13 +62,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			newName = ValidateName(newName);
 			if (newName == null)
 				throw new ArgumentException();
-			Add(newName);
+			list.Add(newName);
+			if (copyFrom != null)
+				throw new NotImplementedException();
+			OnCollectionChanged(EmptyList<string>.Instance, new[] { newName });
 		}
 		
 		int GetIndex(string name)
 		{
-			for (int i = 0; i < this.Count; i++) {
-				if (ConfigurationAndPlatform.ConfigurationNameComparer.Equals(this[i], name))
+			for (int i = 0; i < list.Count; i++) {
+				if (ConfigurationAndPlatform.ConfigurationNameComparer.Equals(list[i], name))
 					return i;
 			}
 			return -1;
@@ -53,8 +80,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		void IConfigurationOrPlatformNameCollection.Remove(string name)
 		{
 			int pos = GetIndex(name);
-			if (pos >= 0)
-				RemoveAt(pos);
+			if (pos >= 0) {
+				name = list[pos]; // get the name in original case
+				list.RemoveAt(pos);
+				OnCollectionChanged(new[] { name }, EmptyList<string>.Instance);
+			}
 		}
 		
 		void IConfigurationOrPlatformNameCollection.Rename(string oldName, string newName)
@@ -65,16 +95,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			int pos = GetIndex(oldName);
 			if (pos < 0)
 				throw new ArgumentException();
+			oldName = list[pos]; // get oldName in original case
 			foreach (var project in solution.Projects) {
 				throw new NotImplementedException();
 				//project.ConfigurationMapping.RenameSolutionConfig(oldName, newName, isPlatform);
 			}
-			this[pos] = newName;
+			list[pos] = newName;
+			OnCollectionChanged(new[] { oldName }, new[] { newName });
 		}
 		
-		protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
+		void OnCollectionChanged(IReadOnlyCollection<string> oldItems, IReadOnlyCollection<string> newItems)
 		{
-			base.OnCollectionChanged(e);
+			if (CollectionChanged != null)
+				CollectionChanged(oldItems, newItems);
 			solution.IsDirty = true;
 		}
 	}

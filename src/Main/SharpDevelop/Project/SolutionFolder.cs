@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -40,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				this.folder = folder;
 			}
 			
-			void ValidateItem(ISolutionItem item)
+			protected override void ValidateItem(ISolutionItem item)
 			{
 				if (item == null)
 					throw new ArgumentNullException("item");
@@ -50,52 +51,17 @@ namespace ICSharpCode.SharpDevelop.Project
 					throw new ArgumentException("The item already has a parent folder");
 			}
 			
-			protected override void ClearItems()
+			protected override void OnCollectionChanged(IReadOnlyCollection<ISolutionItem> removedItems, IReadOnlyCollection<ISolutionItem> addedItems)
 			{
-				var oldItems = this.ToArray();
-				base.ClearItems();
-				using (BlockReentrancy()) {
-					foreach (var item in oldItems) {
-						folder.parentSolution.ReportRemovedItem(item);
-						item.ParentFolder = null;
-					}
+				foreach (ISolutionItem item in removedItems) {
+					folder.parentSolution.ReportRemovedItem(item);
+					item.ParentFolder = null;
 				}
-			}
-			
-			protected override void InsertItem(int index, ISolutionItem item)
-			{
-				ValidateItem(item);
-				base.InsertItem(index, item);
-			}
-			
-			protected override void SetItem(int index, ISolutionItem item)
-			{
-				ValidateItem(item);
-				base.SetItem(index, item);
-			}
-			
-			protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
-			{
-				switch (e.Action) {
-					case NotifyCollectionChangedAction.Add:
-					case NotifyCollectionChangedAction.Remove:
-					case NotifyCollectionChangedAction.Replace:
-						if (e.OldItems != null) {
-							foreach (ISolutionItem item in e.OldItems) {
-								folder.parentSolution.ReportRemovedItem(item);
-								item.ParentFolder = null;
-							}
-						}
-						if (e.NewItems != null) {
-							foreach (ISolutionItem item in e.NewItems) {
-								item.ParentFolder = folder;
-								folder.parentSolution.ReportAddedItem(item);
-							}
-						}
-						break;
-						// ignore Move; and Reset is special-cased in ClearItems()
+				foreach (ISolutionItem item in addedItems) {
+					item.ParentFolder = folder;
+					folder.parentSolution.ReportAddedItem(item);
 				}
-				base.OnCollectionChanged(e);
+				base.OnCollectionChanged(removedItems, addedItems);
 				folder.parentSolution.IsDirty = true;
 			}
 		}

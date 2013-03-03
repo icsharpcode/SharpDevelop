@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.SharpDevelop.Dom
@@ -16,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		readonly IEntityModelContext context;
 		Dictionary<TopLevelTypeName, TypeDefinitionModel> dict = new Dictionary<TopLevelTypeName, TypeDefinitionModel>();
-		public event NotifyCollectionChangedEventHandler CollectionChanged;
+		public event ModelCollectionChangedEventHandler<ITypeDefinitionModel> CollectionChanged;
 		
 		public TopLevelTypeDefinitionModelCollection(IEntityModelContext context)
 		{
@@ -114,13 +115,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			// Raise the event if necessary:
-			if (CollectionChanged != null) {
-				if (oldModels != null && newModels != null)
-					CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newModels, oldModels));
-				else if (oldModels != null)
-					CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldModels));
-				else if (newModels != null)
-					CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newModels));
+			if (CollectionChanged != null && (oldModels != null || newModels != null)) {
+				IReadOnlyCollection<ITypeDefinitionModel> emptyList = EmptyList<ITypeDefinitionModel>.Instance;
+				CollectionChanged(oldModels ?? emptyList, newModels ?? emptyList);
 			}
 		}
 		

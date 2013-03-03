@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// <summary>
 	/// Represents a collection of configuration or platform names.
 	/// </summary>
-	public interface IConfigurationOrPlatformNameCollection : IReadOnlyCollection<string>, INotifyCollectionChanged
+	public interface IConfigurationOrPlatformNameCollection : IModelCollection<string>
 	{
 		/// <summary>
 		/// Validates the input name.

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Threading;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Workbench;
 
@@ -109,14 +110,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		void OnProjectAdded(IProject project)
 		{
 			projects.Add(project);
-			project.ProjectSections.CollectionChanged += OnProjectSectionsChanged;
+			project.ProjectSections.CollectionChanged += OnSolutionSectionCollectionChanged;
+			OnSolutionSectionCollectionChanged(EmptyList<SolutionSection>.Instance, project.ProjectSections);
 			if (startupProject == null && AutoDetectStartupProject() == project)
 				this.StartupProject = project; // when there's no startable project in the solution and one is added, we mark that it as the startup project
 		}
 		
 		void OnProjectRemoved(IProject project)
 		{
-			project.ProjectSections.CollectionChanged -= OnProjectSectionsChanged;
+			project.ProjectSections.CollectionChanged -= OnSolutionSectionCollectionChanged;
+			OnSolutionSectionCollectionChanged(project.ProjectSections, EmptyList<SolutionSection>.Instance);
 			bool wasStartupProject = (startupProject == project);
 			if (wasStartupProject)
 				startupProject = null; // this will force auto-detection on the next property access
@@ -129,12 +132,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				delegate {
 					project.Dispose();
 				}, DispatcherPriority.Background);
-		}
-		
-		void OnProjectSectionsChanged(object sender, EventArgs e)
-		{
-			this.IsDirty = true;
-			// TODO: also monitor changes within the project section
 		}
 		
 		internal void ReportRemovedItem(ISolutionItem oldItem)
@@ -168,10 +165,26 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		List<SolutionSection> globalSections = new List<SolutionSection>();
+		SimpleModelCollection<SolutionSection> globalSections = new SimpleModelCollection<SolutionSection>();
 		
-		public IList<SolutionSection> GlobalSections {
+		public IMutableModelCollection<SolutionSection> GlobalSections {
 			get { return globalSections; }
+		}
+		
+		void OnSolutionSectionCollectionChanged(IReadOnlyCollection<SolutionSection> oldItems, IReadOnlyCollection<SolutionSection> newItems)
+		{
+			this.IsDirty = true;
+			foreach (var section in oldItems) {
+				section.Changed -= OnSolutionSectionChanged;
+			}
+			foreach (var section in newItems) {
+				section.Changed += OnSolutionSectionChanged;
+			}
+		}
+		
+		void OnSolutionSectionChanged(object sender, EventArgs e)
+		{
+			this.IsDirty = true;
 		}
 		
 		public ISolutionItem GetItemByGuid(Guid guid)

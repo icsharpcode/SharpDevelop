@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
@@ -98,7 +99,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				lists.Insert(partIndex, newItems);
 				if (collectionChanged != null)
-					collectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItems, GetCount(partIndex)));
+					collectionChanged(EmptyList<MemberModel>.Instance, newItems);
 			}
 			
 			public void RemovePart(int partIndex)
@@ -106,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				var oldItems = lists[partIndex];
 				lists.RemoveAt(partIndex);
 				if (collectionChanged != null)
-					collectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItems, GetCount(partIndex)));
+					collectionChanged(oldItems, EmptyList<MemberModel>.Instance);
 			}
 			
 			public void UpdatePart(int partIndex, IUnresolvedTypeDefinition newPart)
@@ -143,8 +144,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 					newItems[i].strongParentCollectionReference = this;
 				}
 				list.InsertRange(startPos, newItems);
-				if (collectionChanged != null)
-					collectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, oldItems, GetCount(partIndex) + startPos));
+				if (collectionChanged != null && (oldItems.Count > 0 || newItems.Length > 0)) {
+					collectionChanged(oldItems, newItems);
+				}
 			}
 			
 			static bool IsMatch(MemberModel memberModel, IUnresolvedMember newMember)
@@ -152,9 +154,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return memberModel.EntityType == newMember.EntityType && memberModel.Name == newMember.Name;
 			}
 			
-			NotifyCollectionChangedEventHandler collectionChanged;
+			ModelCollectionChangedEventHandler<MemberModel> collectionChanged;
 			
-			public event NotifyCollectionChangedEventHandler CollectionChanged {
+			public event ModelCollectionChangedEventHandler<MemberModel> CollectionChanged {
 				add {
 					collectionChanged += value;
 					// Set strong reference to collection while there are event listeners

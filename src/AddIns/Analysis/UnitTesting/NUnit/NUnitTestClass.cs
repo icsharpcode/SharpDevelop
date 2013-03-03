@@ -111,13 +111,8 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public NUnitTestMethod FindTestMethodWithShortName(string name)
 		{
-			// Go backwards because base class tests come first
-			for (int i = this.NestedTestCollection.Count - 1; i >= 0; i--) {
-				var method = this.NestedTestCollection[i] as NUnitTestMethod;
-				if (method != null && method.MethodName == name)
-					return method;
-			}
-			return null;
+			// Use last match because base class tests come first
+			return this.NestedTestCollection.OfType<NUnitTestMethod>().LastOrDefault(method => method.MethodName == name);
 		}
 		
 		/// <summary>

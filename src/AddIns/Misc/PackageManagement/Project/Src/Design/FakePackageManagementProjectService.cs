@@ -32,15 +32,20 @@ namespace ICSharpCode.PackageManagement.Design
 			}
 		}
 		
-		public readonly ConcatModelCollection<IProject> AllProjects = new ConcatModelCollection<IProject>();
+		public readonly SimpleModelCollection<IModelCollection<IProject>> ProjectCollections = new SimpleModelCollection<IModelCollection<IProject>>();
+		IModelCollection<IProject> allProjects;
 		
-		IModelCollection<IProject> IPackageManagementProjectService.AllProjects {
-			get { return AllProjects; }
+		public IModelCollection<IProject> AllProjects {
+			get { 
+				if (allProjects == null)
+					allProjects = ProjectCollections.SelectMany(c => c);
+				return allProjects; 
+			}
 		}
 		
 		public void AddProject(IProject project)
 		{
-			AllProjects.Inputs.Add(new ReadOnlyModelCollection<IProject>(new[] { project }));
+			ProjectCollections.Add(new ReadOnlyModelCollection<IProject>(new[] { project }));
 		}
 		
 		public void AddProjectItem(IProject project, ProjectItem item)

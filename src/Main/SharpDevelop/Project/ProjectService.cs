@@ -24,11 +24,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				applicationStateInfoService.RegisterStateGetter("ProjectService.CurrentSolution", delegate { return CurrentSolution; });
 				applicationStateInfoService.RegisterStateGetter("ProjectService.CurrentProject", delegate { return CurrentProject; });
 			}
+			
+			allSolutions = new SimpleModelCollection<ISolution>();
+			allProjects = allSolutions.SelectMany(s => s.Projects);
 		}
 		
 		#region CurrentSolution property + AllProjects collection
 		volatile static ISolution currentSolution;
-		ConcatModelCollection<IProject> allProjects = new ConcatModelCollection<IProject>();
+		readonly SimpleModelCollection<ISolution> allSolutions;
+		readonly IModelCollection<IProject> allProjects;
 		
 		public event PropertyChangedEventHandler<ISolution> CurrentSolutionChanged = delegate { };
 		
@@ -41,10 +45,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (oldValue != value) {
 					currentSolution = value;
 					if (oldValue != null)
-						allProjects.Inputs.Remove(oldValue.Projects);
+						allSolutions.Remove(oldValue);
 					CurrentSolutionChanged(this, new PropertyChangedEventArgs<ISolution>(oldValue, value));
 					if (value != null)
-						allProjects.Inputs.Add(value.Projects);
+						allSolutions.Add(value);
 					CommandManager.InvalidateRequerySuggested();
 					SD.ParserService.InvalidateCurrentSolutionSnapshot();
 				}

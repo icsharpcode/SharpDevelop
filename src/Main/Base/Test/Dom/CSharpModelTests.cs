@@ -22,7 +22,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IProjectContent projectContent;
 		IEntityModelContext context;
 		TopLevelTypeDefinitionModelCollection topLevelTypeModels;
-		List<NotifyCollectionChangedEventArgs> topLevelChangeEventArgs = new List<NotifyCollectionChangedEventArgs>();
+		List<RemovedAndAddedPair<ITypeDefinitionModel>> topLevelChangeEventArgs = new List<RemovedAndAddedPair<ITypeDefinitionModel>>();
+		
+		class RemovedAndAddedPair<T>
+		{
+			public IReadOnlyCollection<T> OldItems { get; private set; }
+			public IReadOnlyCollection<T> NewItems { get; private set; }
+			
+			public RemovedAndAddedPair(IReadOnlyCollection<T> oldItems, IReadOnlyCollection<T> newItems)
+			{
+				this.OldItems = oldItems;
+				this.NewItems = newItems;
+			}
+		}
 		
 		#region SetUp and other helper methods
 		[SetUp]
@@ -37,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			SD.ParserService.Stub(p => p.GetCompilation(project)).WhenCalled(c => c.ReturnValue = projectContent.CreateCompilation());
 			topLevelChangeEventArgs.Clear();
-			topLevelTypeModels.CollectionChanged += (sender, e) => topLevelChangeEventArgs.Add(e);
+			topLevelTypeModels.CollectionChanged += (oldItems, newItems) => topLevelChangeEventArgs.Add(new RemovedAndAddedPair<ITypeDefinitionModel>(oldItems, newItems));
 		}
 		
 		[TearDown]
@@ -94,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			AddCodeFile("test.cs", @"class SimpleClass {}");
 			Assert.AreEqual(1, topLevelTypeModels.Count);
 			var simpleClass = topLevelTypeModels.Single();
-			Assert.AreEqual(NotifyCollectionChangedAction.Add, topLevelChangeEventArgs.Single().Action);
+			Assert.IsEmpty(topLevelChangeEventArgs.Single().OldItems);
 			Assert.AreEqual(new[] { simpleClass }, topLevelChangeEventArgs.Single().NewItems);
 			topLevelChangeEventArgs.Clear(); // clear for follow-up tests
 		}
@@ -119,7 +131,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			UpdateCodeFile("test.cs", "class OtherClass { }");
 			var otherClass = topLevelTypeModels.Single();
 			Assert.AreNotSame(simpleClass, otherClass);
-			Assert.AreEqual(NotifyCollectionChangedAction.Replace, topLevelChangeEventArgs.Single().Action);
 			Assert.AreEqual(new[] { simpleClass }, topLevelChangeEventArgs.Single().OldItems);
 			Assert.AreEqual(new[] { otherClass }, topLevelChangeEventArgs.Single().NewItems);
 		}
@@ -132,8 +143,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			RemoveCodeFile("test.cs");
 			Assert.IsEmpty(topLevelTypeModels);
 			// check removal event
-			Assert.AreEqual(NotifyCollectionChangedAction.Remove, topLevelChangeEventArgs.Single().Action);
 			Assert.AreEqual(new[] { simpleClass }, topLevelChangeEventArgs.Single().OldItems);
+			Assert.IsEmpty(topLevelChangeEventArgs.Single().NewItems);
 			
 			// test that accessing properties of a removed class still works
 			Assert.AreEqual(new FullTypeName("SimpleClass"), simpleClass.FullTypeName);

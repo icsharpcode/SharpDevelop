@@ -185,12 +185,10 @@ namespace RootNamespace {
 			Assert.AreEqual("NewMethod", testClass.NestedTests.Single().DisplayName);
 		}
 		
-		void testProject_TestClasses_CollectionChanged(object source, NotifyCollectionChangedEventArgs e)
+		void testProject_TestClasses_CollectionChanged(IReadOnlyCollection<ITest> removedItems, IReadOnlyCollection<ITest> addedItems)
 		{
-			if (e.Action == NotifyCollectionChangedAction.Add)
-				classesAdded.AddRange(e.NewItems.Cast<NUnitTestClass>());
-			else if (e.Action == NotifyCollectionChangedAction.Remove)
-				classesRemoved.AddRange(e.OldItems.Cast<NUnitTestClass>());
+			classesRemoved.AddRange(removedItems.Cast<NUnitTestClass>());
+			classesAdded.AddRange(addedItems.Cast<NUnitTestClass>());
 		}
 	}
 }

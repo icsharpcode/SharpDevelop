@@ -10,10 +10,25 @@ using System.Linq;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>
+	/// Event handler for the <see cref="IModelCollection{T}.CollectionChanged"/> event.
+	/// </summary>
+	/// <remarks>
+	/// We don't use the classic 'EventArgs' model for this event, because a EventArgs-class couldn't be covariant.
+	/// </remarks>
+	public delegate void ModelCollectionChangedEventHandler<in T>(IReadOnlyCollection<T> removedItems, IReadOnlyCollection<T> addedItems);
+	
+	/// <summary>
 	/// A read-only collection that provides change notifications.
 	/// </summary>
-	public interface IModelCollection<out T> : IReadOnlyCollection<T>, INotifyCollectionChanged
+	/// <remarks>
+	/// We don't use INotifyCollectionChanged because that has the annoying 'Reset' update,
+	/// where it's impossible for to detect what kind of changes happened unless the event consumer
+	/// maintains a copy of the list.
+	/// Also, INotifyCollectionChanged isn't type-safe.
+	/// </remarks>
+	public interface IModelCollection<out T> : IReadOnlyCollection<T>
 	{
+		event ModelCollectionChangedEventHandler<T> CollectionChanged;
 	}
 	
 	/// <summary>
@@ -21,33 +36,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public interface IMutableModelCollection<T> : IModelCollection<T>, ICollection<T>
 	{
-	}
-	
-	/// <summary>
-	/// A model collection implementation that is based on a ObservableCollection.
-	/// </summary>
-	public class SimpleModelCollection<T> : ObservableCollection<T>, IMutableModelCollection<T>
-	{
-		public SimpleModelCollection()
-		{
-		}
+		/// <summary>
+		/// Adds the specified items to the collection.
+		/// </summary>
+		void AddRange(IEnumerable<T> items);
 		
-		public SimpleModelCollection(IEnumerable<T> items)
-			: base(items)
-		{
-		}
-	}
-	
-	/// <summary>
-	/// A model collection implementation that is based on a ReadOnlyCollection.
-	/// </summary>
-	public class ReadOnlyModelCollection<T> : ReadOnlyCollection<T>, IModelCollection<T>
-	{
-		public ReadOnlyModelCollection(IEnumerable<T> items)
-			: base(items.ToList())
-		{
-		}
+		/// <summary>
+		/// Removes all items matching the specified precidate.
+		/// </summary>
+		int RemoveAll(Predicate<T> predicate);
 		
-		event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged { add {} remove {} }
+		/// <summary>
+		/// Can be used to group several operations into a batch update.
+		/// The <see cref="CollectionChanged"/> event will not fire during the batch update;
+		/// instead the event will be raised a single time after the batch update finishes.
+		/// </summary>
+		IDisposable BatchUpdate();
 	}
 }

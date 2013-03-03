@@ -44,11 +44,13 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		void Init()
 		{
+			projectService.AllProjects.CollectionChanged += OnProjectCollectionChanged;
+			projects = new ObservableCollection<IProject>(projectService.AllProjects);
+			
 			CreateCommands();
 			UpdatePackageSourceViewModels();
 			ReceiveNotificationsWhenPackageSourcesUpdated();
 			UpdateDefaultProject();
-			ReceiveNotificationsWhenSolutionIsUpdated();
 			InitConsoleHost();
 		}
 		
@@ -142,13 +144,14 @@ namespace ICSharpCode.PackageManagement.Scripting
 			DefaultProject = this.Projects.FirstOrDefault();
 		}
 		
-		void ReceiveNotificationsWhenSolutionIsUpdated()
+		void OnProjectCollectionChanged(IReadOnlyCollection<IProject> removedItems, IReadOnlyCollection<IProject> addedItems)
 		{
-			projectService.AllProjects.CollectionChanged += OnProjectCollectionChanged;
-		}
-		
-		void OnProjectCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
+			foreach (var removedProject in removedItems) {
+				projects.Remove(removedProject);
+			}
+			foreach (var addedProject in addedItems) {
+				projects.Add(addedProject);
+			}
 			UpdateDefaultProject();
 		}
 		
@@ -173,8 +176,10 @@ namespace ICSharpCode.PackageManagement.Scripting
 			return null;
 		}
 		
-		public IModelCollection<IProject> Projects {
-			get { return projectService.AllProjects; }
+		ObservableCollection<IProject> projects;
+		
+		public ObservableCollection<IProject> Projects {
+			get { return projects; }
 		}
 		
 		public IProject DefaultProject {

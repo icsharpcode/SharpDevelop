@@ -84,17 +84,17 @@
     </Compile>
     <Compile Include="Designer\IDesignerTypeResolutionService.cs" />
     <Compile Include="Designer\TypeResolutionService.cs" />
-    <Compile Include="Dom\ConcatModelCollection.cs" />
-    <Compile Include="Dom\FilterModelCollection.cs" />
     <Compile Include="Dom\IEntityModelContext.cs" />
     <Compile Include="Dom\IMemberModel.cs" />
     <Compile Include="Dom\IModelFactory.cs" />
     <Compile Include="Dom\ITypeDefinitionModel.cs" />
     <Compile Include="Dom\ITypeDefinitionModelCollection.cs" />
-    <Compile Include="Dom\KeyedModelCollection.cs" />
     <Compile Include="Dom\IEntityModel.cs" />
     <Compile Include="Dom\IModelCollection.cs" />
     <Compile Include="Dom\ITreeNodeFactory.cs" />
+    <Compile Include="Dom\ModelCollectionLinq.cs" />
+    <Compile Include="Dom\ReadOnlyModelCollection.cs" />
+    <Compile Include="Dom\SimpleModelCollection.cs" />
     <Compile Include="Editor\AvalonEditTextEditorAdapter.cs" />
     <Compile Include="Editor\Bookmarks\BookmarkBase.cs" />
     <Compile Include="Editor\Bookmarks\BookmarkEventArgs.cs" />

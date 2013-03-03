@@ -102,7 +102,7 @@ namespace PackageManagement.Tests.Scripting
 			ISolution solution = CreateSolutionWithOneProject();
 			projectService = new FakePackageManagementProjectService();
 			projectService.OpenSolution = solution;
-			projectService.AllProjects.Inputs.Add(solution.Projects);
+			projectService.ProjectCollections.Add(solution.Projects);
 			CreateViewModel(consoleHost, projectService);
 			
 			return solution;
@@ -151,7 +151,7 @@ namespace PackageManagement.Tests.Scripting
 			var solution = ProjectHelper.CreateSolution();
 			projectService = new FakePackageManagementProjectService();
 			projectService.OpenSolution = solution;
-			projectService.AllProjects.Inputs.Add(solution.Projects);
+			projectService.ProjectCollections.Add(solution.Projects);
 			CreateViewModel(consoleHost, projectService);
 			return solution;
 		}
@@ -166,14 +166,14 @@ namespace PackageManagement.Tests.Scripting
 		{
 			ISolution solution = projectService.OpenSolution;
 			projectService.OpenSolution = null;
-			projectService.AllProjects.Inputs.Remove(solution.Projects);
+			projectService.ProjectCollections.Remove(solution.Projects);
 			projectService.FireSolutionClosedEvent(solution);
 		}
 		
 		void OpenSolution(ISolution solution)
 		{
 			projectService.OpenSolution = solution;
-			projectService.AllProjects.Inputs.Add(solution.Projects);
+			projectService.ProjectCollections.Add(solution.Projects);
 		}
 		
 		IProject RemoveProjectFromSolution(ISolution solution)
