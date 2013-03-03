@@ -334,7 +334,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			WriteToken(tokenRole.Token, tokenRole);
 		}
-			
+		
 		void WriteToken(string token, Role tokenRole)
 		{
 			WriteSpecialsUpToRole(tokenRole);
@@ -2043,9 +2043,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			WriteAttributes(constructorDeclaration.Attributes);
 			WriteModifiers(constructorDeclaration.ModifierTokens);
 			TypeDeclaration type = constructorDeclaration.Parent as TypeDeclaration;
-			StartNode(constructorDeclaration.NameToken);
+			var nameToken = constructorDeclaration.NameToken;
+			if (!nameToken.IsNull)
+				StartNode(nameToken);
 			WriteIdentifier(type != null ? type.Name : constructorDeclaration.Name);
-			EndNode(constructorDeclaration.NameToken);
+			if (!nameToken.IsNull)
+				EndNode(nameToken);
 			Space(policy.SpaceBeforeConstructorDeclarationParentheses);
 			WriteCommaSeparatedListInParenthesis(constructorDeclaration.Parameters, policy.SpaceWithinMethodDeclarationParentheses);
 			if (!constructorDeclaration.Initializer.IsNull) {
@@ -2078,9 +2081,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			WriteModifiers(destructorDeclaration.ModifierTokens);
 			WriteToken(DestructorDeclaration.TildeRole);
 			TypeDeclaration type = destructorDeclaration.Parent as TypeDeclaration;
-			StartNode(destructorDeclaration.NameToken);
+			var nameToken = destructorDeclaration.NameToken;
+			if (!nameToken.IsNull)
+				StartNode(nameToken);
 			WriteIdentifier(type != null ? type.Name : destructorDeclaration.Name);
-			EndNode(destructorDeclaration.NameToken);
+			if (!nameToken.IsNull)
+				EndNode(nameToken);
 			Space(policy.SpaceBeforeConstructorDeclarationParentheses);
 			LPar();
 			RPar();
