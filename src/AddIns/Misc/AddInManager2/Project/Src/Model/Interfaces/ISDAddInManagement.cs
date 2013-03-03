@@ -26,6 +26,10 @@ namespace ICSharpCode.AddInManager2.Model
 		{
 			get;
 		}
+		string ConfigDirectory
+		{
+			get;
+		}
 		
 		void AddToTree(AddIn addIn);
 		void AbortRemoveUserAddInOnNextStart(string identity);

@@ -81,6 +81,12 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 			set;
 		}
 		
+		public string ConfigDirectory
+		{
+			get;
+			set;
+		}
+		
 		public void AddToTree(ICSharpCode.Core.AddIn addIn)
 		{
 			if (addIn != null)

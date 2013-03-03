@@ -58,8 +58,8 @@ namespace ICSharpCode.AddInManager2
         	_container.Settings = new AddInManagerSettings();
 			_container.Events = new AddInManagerEvents();
 			_container.Repositories = new PackageRepositories(_container.Events, _container.Settings);
-			_container.NuGet = new NuGetPackageManager(_container.Repositories, _container.Events);
 			_container.SDAddInManagement = new SDAddInManagement();
+			_container.NuGet = new NuGetPackageManager(_container.Repositories, _container.Events, _container.SDAddInManagement);
 			_container.Setup = new AddInSetup(_container.Events, _container.NuGet, _container.SDAddInManagement);
 		}
 

@@ -42,6 +42,14 @@ namespace ICSharpCode.AddInManager2.Model
 			}
 		}
 		
+		public string ConfigDirectory
+		{
+			get
+			{
+				return SD.PropertyService.ConfigDirectory;
+			}
+		}
+		
 		public void AddToTree(AddIn addIn)
 		{
 			if (addIn != null)

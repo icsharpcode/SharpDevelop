@@ -38,14 +38,16 @@ namespace ICSharpCode.AddInManager2.Model
 		private NuGetPackageManagerImplementation _packageManager = null;
 		private IPackageRepositories _repositories = null;
 		private IAddInManagerEvents _events = null;
+		private ISDAddInManagement _sdAddInManagement = null;
 		private ILogger _logger = null;
 		private string _packageOutputDirectory;
 
-		public NuGetPackageManager(IPackageRepositories repositories, IAddInManagerEvents events)
+		public NuGetPackageManager(IPackageRepositories repositories, IAddInManagerEvents events, ISDAddInManagement sdAddInManagement)
 		{
 			_repositories = repositories;
 			_events = events;
-			_packageOutputDirectory = Path.Combine(SD.PropertyService.ConfigDirectory, "NuGet");
+			_sdAddInManagement = sdAddInManagement;
+			_packageOutputDirectory = Path.Combine(_sdAddInManagement.ConfigDirectory, "NuGet");
 			
 			_logger = new PackageMessageLogger(_events);
 			
@@ -98,7 +100,7 @@ namespace ICSharpCode.AddInManager2.Model
 		
 		public string GetLocalPackageDirectory(IPackage package)
 		{
-			return Path.Combine(PackageOutputDirectory, package.Id + "." + package.Version.Version.ToString());
+			return Path.Combine(PackageOutputDirectory, package.Id + "." + package.Version.ToString());
 		}
 		
 		private IPackageManager EnsurePackageManagerInstance()

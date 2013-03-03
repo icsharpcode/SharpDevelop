@@ -83,6 +83,7 @@
     <Compile Include="Fakes\FakeAddInManagerSettings.cs" />
     <Compile Include="Fakes\FakeSDAddInManagement.cs" />
     <Compile Include="InstalledAddInsViewModelTests.cs" />
+    <Compile Include="NuGetPackageManagerTests.cs" />
     <Compile Include="PackageRepositoriesTests.cs" />
     <Compile Include="UpdatedAddInsViewModelTests.cs" />
     <Compile Include="ViewModelTestingExtensions.cs" />
