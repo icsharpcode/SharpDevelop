@@ -142,8 +142,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (result != null) {
 				return result;
 			} else {
-				return LazyInit.GetOrSet(ref accessorField, (IMethod)unresolvedAccessor.CreateResolved(context));
+				return LazyInit.GetOrSet(ref accessorField, CreateResolvedAccessor(unresolvedAccessor));
 			}
+		}
+		
+		protected virtual IMethod CreateResolvedAccessor(IUnresolvedMethod unresolvedAccessor)
+		{
+			return (IMethod)unresolvedAccessor.CreateResolved(context);
 		}
 	}
 }

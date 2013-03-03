@@ -57,8 +57,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return parentContext.CurrentTypeDefinition; }
 		}
 		
-		public IType DeclaringType {
-			get { return parentContext.CurrentTypeDefinition; }
+		public virtual IType DeclaringType {
+			get { return parentContext.CurrentTypeDefinition ?? (IType)SpecialType.UnknownType; }
 		}
 		
 		public IAssembly ParentAssembly {

@@ -224,7 +224,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return null; }
 		}
 
-		public IMember AccessorOwner {
+		public virtual IMember AccessorOwner {
 			get {
 				var reference = ((IUnresolvedMethod)unresolved).AccessorOwner;
 				if (reference != null)
@@ -261,8 +261,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			StringBuilder b = new StringBuilder("[");
 			b.Append(this.EntityType);
 			b.Append(' ');
-			b.Append(this.DeclaringType.ReflectionName);
-			b.Append('.');
+			if (this.DeclaringType.Kind != TypeKind.Unknown) {
+				b.Append(this.DeclaringType.ReflectionName);
+				b.Append('.');
+			}
 			b.Append(this.Name);
 			if (this.TypeParameters.Count > 0) {
 				b.Append("``");

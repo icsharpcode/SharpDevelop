@@ -1,4 +1,4 @@
-// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -1161,15 +1161,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (resolveExpr != null) {
 					var initRR = Resolve(resolveExpr);
 					var returnTypeRef = initRR.Type.ToTypeReference();
-					var property = new DefaultUnresolvedProperty {
-						Name = name,
+					var property = new DefaultUnresolvedProperty();
+					property.Name = name;
+					property.Accessibility = Accessibility.Public;
+					property.ReturnType = returnTypeRef;
+					property.Getter = new DefaultUnresolvedMethod {
+						Name = "get_" + name,
 						Accessibility = Accessibility.Public,
 						ReturnType = returnTypeRef,
-						Getter = new DefaultUnresolvedMethod {
-							Name = "get_" + name,
-							Accessibility = Accessibility.Public,
-							ReturnType = returnTypeRef
-						}
+						EntityType = EntityType.Accessor,
+						AccessorOwner = property
 					};
 					unresolvedProperties.Add(property);
 					members.Add(new AnonymousTypeMember(expr, initRR));
