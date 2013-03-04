@@ -120,6 +120,23 @@ namespace ICSharpCode.NRefactory.CSharp
 			Assert.IsFalse(parser.HasErrors);
 			return ConvertTypeDeclaration((EntityDeclaration)syntaxTree.Children.Single());
 		}
+		
+		string ConvertSyntaxTree(SyntaxTree syntaxTree)
+		{
+			return ConvertHelper(syntaxTree, (p,obj,w,opt) => p.GenerateCodeFromCompileUnit((CodeCompileUnit)obj, w, opt));
+		}
+		
+		string ConvertSyntaxTree(string code)
+		{
+			CSharpParser parser = new CSharpParser();
+			var syntaxTree = parser.Parse(code, "program.cs");
+			Assert.IsFalse(parser.HasErrors);
+			var result = ConvertSyntaxTree(syntaxTree);
+			var idx = result.IndexOf("namespace", StringComparison.Ordinal);
+			if (idx > 0)
+				result = result.Substring (idx);
+			return result;
+		}
 		#endregion
 		
 		#region Type References
@@ -452,6 +469,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			                " protected event System.EventHandler A;" +
 			                " protected event System.EventHandler B; }",
 			                ConvertMember("public class X { protected event EventHandler A, B; }"));
+		}
+		#endregion
+		
+		#region SyntaxTrees
+		[Test]
+		public void TestGlobalNamespaceFix ()
+		{
+			Assert.AreEqual("namespace A { using System; public class AClass { } } namespace B { using System.IO; using System; public class AClass { } }",
+			                ConvertSyntaxTree("using System; namespace A { public class AClass {} } namespace B { using System.IO; public class AClass {} }"));
 		}
 		#endregion
 	}
