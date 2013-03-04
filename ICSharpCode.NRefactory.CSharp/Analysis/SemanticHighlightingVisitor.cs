@@ -514,6 +514,10 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				case TypeKind.Delegate:
 					color = delegateTypeColor;
 					return true;
+				case TypeKind.Unknown:
+				case TypeKind.Null:
+					color = syntaxErrorColor;
+					return true;
 				default:
 					color = default (TColor);
 					return false;

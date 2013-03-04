@@ -303,6 +303,22 @@ class Class {
 			TestColor (code, syntaxErrorColor);
 		}
 
+		[Test]
+		public void TestNullTypeError()
+		{
+			string code =@"
+		class A
+		{
+			public static void Main ()
+			{
+				$var a = null;
+			}
+		}
+";
+			TestColor (code, syntaxErrorColor);
+		}
+
+
 
 
 	}
