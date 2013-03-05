@@ -67,9 +67,16 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			
 			_id = _addIn.Manifest.PrimaryIdentity;
 			_name = _addIn.Name;
-			if (_addIn.Version != null)
+			if (HasNuGetConnection && (_markedAddIn.LinkedNuGetPackageVersion != null))
 			{
-				_version = _addIn.Version;
+				_version = new Version(_markedAddIn.LinkedNuGetPackageVersion);
+			}
+			else
+			{
+				if (_addIn.Version != null)
+				{
+					_version = _addIn.Version;
+				}
 			}
 			_description = _addIn.Properties["description"];
 			_summary = _addIn.Properties["description"];

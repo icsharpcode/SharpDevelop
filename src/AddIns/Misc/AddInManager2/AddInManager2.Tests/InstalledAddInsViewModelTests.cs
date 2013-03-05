@@ -25,6 +25,7 @@ namespace ICSharpCode.AddInManager2.Tests
 		AddIn _addIn1_new;
 		AddIn _addIn2;
 		AddIn _addIn2_new;
+		AddIn _addIn_noVersion;
 		
 		public InstalledAddInsViewModelTests()
 		{
@@ -50,9 +51,14 @@ namespace ICSharpCode.AddInManager2.Tests
 				_addIn2 = AddIn.Load(_addInTree, streamReader);
 			}
 			
-			using (StreamReader streamReader = new StreamReader(@"TestResources\AddInManager2Test_2_New.addin"))
+//			using (StreamReader streamReader = new StreamReader(@"TestResources\AddInManager2Test_2_New.addin"))
+//			{
+//				_addIn2_new = AddIn.Load(_addInTree, streamReader);
+//			}
+			
+			using (StreamReader streamReader = new StreamReader(@"TestResources\AddInManager2Test_noVersion.addin"))
 			{
-				_addIn2_new = AddIn.Load(_addInTree, streamReader);
+				_addIn_noVersion = AddIn.Load(_addInTree, streamReader);
 			}
 		}
 		
@@ -189,7 +195,7 @@ namespace ICSharpCode.AddInManager2.Tests
 			AddInPackageViewModelBase firstAddIn = viewModel.AddInPackages[0];
 			Assert.That(firstAddIn.Id, Is.EqualTo(_addIn1.Manifest.PrimaryIdentity), "Primary identity of 1st AddIn");
 			Assert.That(firstAddIn.Name, Is.EqualTo(_addIn1.Name), "Name of 1st AddIn");
-			Assert.That(firstAddIn.Version, Is.EqualTo(_addIn1.Version), "Version of 1st AddIn");
+			Assert.That(firstAddIn.Version, Is.EqualTo(fakePackage.Version.Version), "NuGet (!) version of 1st AddIn");
 			Assert.That(firstAddIn.IsInstalled, Is.True, "1st AddIn must be 'installed''");
 			Assert.That(firstAddIn.IsOffline, Is.True, "1st AddIn must be 'offline'");
 			Assert.That(firstAddIn.IsEnabled, Is.True, "1st AddIn must be 'enabled'");
@@ -197,6 +203,50 @@ namespace ICSharpCode.AddInManager2.Tests
 			Assert.That(firstAddIn.IsAdded, Is.False, "1st AddIn must not be 'added'");
 			Assert.That(firstAddIn.IsRemoved, Is.False, "1st AddIn must not be 'removed'");
 			Assert.That(firstAddIn.HasNuGetConnection, Is.True, "1st AddIn must have 'NuGet connection'");
+		}
+		
+		[Test]
+		public void ShowingNuGetVersionIfAddInVersionIsEmpty()
+		{
+			CreateAddIns();
+			_addIn1.Enabled = true;
+			
+			// Create a fake package
+			FakePackage fakePackage = new FakePackage()
+			{
+				Id = _addIn1.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion("1.0.2.0"),
+				Tags = SharpDevelopAddInTag
+			};
+			_addIn1.Properties.Set(ManagedAddIn.NuGetPackageIDManifestAttribute, fakePackage.Id);
+			_addIn1.Properties.Set(ManagedAddIn.NuGetPackageVersionManifestAttribute, fakePackage.Version.ToString());
+			
+			// Empty list of NuGet repositories
+			_services.FakeRepositories.RegisteredPackageSources = new List<PackageSource>();
+			_services.FakeRepositories.RegisteredPackageRepositories = new List<IPackageRepository>();
+			FakeCorePackageRepository localRepository = new FakeCorePackageRepository();
+			_services.FakeNuGet.FakeCorePackageManager.LocalRepository = localRepository;
+			localRepository.ReturnedPackages = (new IPackage[] { fakePackage }).AsQueryable();
+			
+			// Simulate list of AddIns
+			_services.FakeSDAddInManagement.RegisteredAddIns.Add(_addIn1);
+			
+			var viewModel = new InstalledAddInsViewModel(_services);
+			viewModel.ReadPackagesAndWaitForUpdate();
+			
+			Assert.That(viewModel.AddInPackages.Count, Is.EqualTo(1), "AddIn list must contain 1 item.");
+			
+			AddInPackageViewModelBase firstAddIn = viewModel.AddInPackages[0];
+			Assert.That(firstAddIn.Id, Is.EqualTo(_addIn1.Manifest.PrimaryIdentity), "Primary identity of AddIn");
+			Assert.That(firstAddIn.Name, Is.EqualTo(_addIn1.Name), "Name of AddIn");
+			Assert.That(firstAddIn.Version, Is.EqualTo(fakePackage.Version.Version), "NuGet (!) version of AddIn");
+			Assert.That(firstAddIn.IsInstalled, Is.True, "AddIn must be 'installed''");
+			Assert.That(firstAddIn.IsOffline, Is.True, "AddIn must be 'offline'");
+			Assert.That(firstAddIn.IsEnabled, Is.True, "AddIn must be 'enabled'");
+			Assert.That(firstAddIn.IsUpdate, Is.False, "AddIn must not be 'update'");
+			Assert.That(firstAddIn.IsAdded, Is.False, "AddIn must not be 'added'");
+			Assert.That(firstAddIn.IsRemoved, Is.False, "AddIn must not be 'removed'");
+			Assert.That(firstAddIn.HasNuGetConnection, Is.True, "AddIn must have 'NuGet connection'");
 		}
 		
 		[Test]
@@ -243,7 +293,7 @@ namespace ICSharpCode.AddInManager2.Tests
 			AddInPackageViewModelBase firstAddIn = viewModel.AddInPackages[0];
 			Assert.That(firstAddIn.Id, Is.EqualTo(_addIn1.Manifest.PrimaryIdentity), "Primary identity of 1st AddIn");
 			Assert.That(firstAddIn.Name, Is.EqualTo(_addIn1.Name), "Name of 1st AddIn");
-			Assert.That(firstAddIn.Version, Is.EqualTo(_addIn1.Version), "Version of 1st AddIn must be the one of the update");
+			Assert.That(firstAddIn.Version, Is.EqualTo(fakePackage.Version.Version), "NuGet (!) Version of 1st AddIn");
 			Assert.That(firstAddIn.IsInstalled, Is.True, "1st AddIn must be 'installed''");
 			Assert.That(firstAddIn.IsOffline, Is.True, "1st AddIn must be 'offline'");
 			Assert.That(firstAddIn.IsEnabled, Is.True, "1st AddIn must be 'enabled'");
