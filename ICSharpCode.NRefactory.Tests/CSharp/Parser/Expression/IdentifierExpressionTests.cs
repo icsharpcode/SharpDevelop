@@ -98,5 +98,17 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 					}
 				}.IsMatch(ident));
 		}
+
+		
+		[Test]
+		public void TestVerbatimIdentifier()
+		{
+			var tree = SyntaxTree.Parse ("class @foo {}");
+			var ident = tree.GetNodeAt<Identifier> (1, 8);
+			Assert.IsNotNull (ident);
+			Assert.IsTrue (ident.IsVerbatim);
+			Assert.AreEqual (new TextLocation (1, 7), ident.StartLocation);
+			Assert.AreEqual (new TextLocation (1, 11), ident.EndLocation);
+		}
 	}
 }
