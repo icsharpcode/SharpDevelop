@@ -80,13 +80,30 @@ namespace ICSharpCode.AddInManager2.Tests
 		}
 		
 		[Test]
-		public void CompareAddInToPackageVersion()
+		public void CompareAddInToPackageVersionWithRealService()
 		{
 			CreateAddIns();
 			
 			// Prepare all (fake) services needed for AddInSetup and its instance, itself
 			PrepareAddInSetup();
 			
+			CompareAddInToPackageVersionForAddInSetupInstance(_addInSetup);
+		}
+		
+		[Test]
+		public void CompareAddInToPackageVersionWithFakeService()
+		{
+			CreateAddIns();
+			
+			// Prepare all (fake) services and the FakeAddInSetup to test
+			PrepareAddInSetup();
+			FakeAddInSetup fakeAddInSetup = new FakeAddInSetup(_sdAddInManagement);
+			
+			CompareAddInToPackageVersionForAddInSetupInstance(fakeAddInSetup);
+		}
+		
+		private void CompareAddInToPackageVersionForAddInSetupInstance(IAddInSetup addInSetup)
+		{
 			// Create fake packages
 			FakePackage fakePackageEqual = new FakePackage()
 			{
@@ -110,16 +127,16 @@ namespace ICSharpCode.AddInManager2.Tests
 				_addIn1.Properties.Remove(ManagedAddIn.NuGetPackageVersionManifestAttribute);
 			}
 			
-			Assert.That(_addInSetup.CompareAddInToPackageVersion(_addIn1, fakePackageEqual), Is.EqualTo(0), "Comparing AddIn 1.0.0.0 and NuGet package 1.0.0.0");
-			Assert.That(_addInSetup.CompareAddInToPackageVersion(_addIn1, fakePackageGreater), Is.LessThan(0), "Comparing AddIn 1.0.0.0 and NuGet package 9.9.9.9");
-			Assert.That(_addInSetup.CompareAddInToPackageVersion(_addIn1, fakePackageLess), Is.GreaterThan(0), "Comparing AddIn 1.0.0.0 and NuGet package 0.0.0.0");
+			Assert.That(addInSetup.CompareAddInToPackageVersion(_addIn1, fakePackageEqual), Is.EqualTo(0), "Comparing AddIn 1.0.0.0 and NuGet package 1.0.0.0");
+			Assert.That(addInSetup.CompareAddInToPackageVersion(_addIn1, fakePackageGreater), Is.LessThan(0), "Comparing AddIn 1.0.0.0 and NuGet package 9.9.9.9");
+			Assert.That(addInSetup.CompareAddInToPackageVersion(_addIn1, fakePackageLess), Is.GreaterThan(0), "Comparing AddIn 1.0.0.0 and NuGet package 0.0.0.0");
 			
 			// Comparison if there's no version in manifest
-			Assert.That(_addInSetup.CompareAddInToPackageVersion(_addIn_noVersion, fakePackageEqual), Is.LessThan(0), "Comparing AddIn <null> and NuGet package 1.0.0.0");
+			Assert.That(addInSetup.CompareAddInToPackageVersion(_addIn_noVersion, fakePackageEqual), Is.LessThan(0), "Comparing AddIn <null> and NuGet package 1.0.0.0");
 			
 			// Comparison if there's no regular version in manifest, but there is one in __nuGet... attribute
 			_addIn_noVersion.Properties.Set(ManagedAddIn.NuGetPackageVersionManifestAttribute, fakePackageEqual.Version.ToString());
-			Assert.That(_addInSetup.CompareAddInToPackageVersion(_addIn_noVersion, fakePackageEqual), Is.EqualTo(0), "Comparing AddIn <null> (NuGet: 1.0.0.0) and NuGet package 1.0.0.0");
+			Assert.That(addInSetup.CompareAddInToPackageVersion(_addIn_noVersion, fakePackageEqual), Is.EqualTo(0), "Comparing AddIn <null> (NuGet: 1.0.0.0) and NuGet package 1.0.0.0");
 		}
 		
 		[Test, Description("AddIn must be installed from external *.addin manifest file. Pending installation must be cancellable.")]
