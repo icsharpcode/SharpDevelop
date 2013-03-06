@@ -29,6 +29,7 @@ namespace ICSharpCode.AddInManager2.Tests
 		AddIn _addIn2;
 		AddIn _addIn2_new;
 		AddIn _addIn_noIdentity;
+		AddIn _addIn_noVersion;
 		
 		public AddInSetupTests()
 		{
@@ -71,6 +72,54 @@ namespace ICSharpCode.AddInManager2.Tests
 			{
 				_addIn_noIdentity = AddIn.Load(_addInTree, streamReader);
 			}
+			
+			using (StreamReader streamReader = new StreamReader(@"TestResources\AddInManager2Test_noVersion.addin"))
+			{
+				_addIn_noVersion = AddIn.Load(_addInTree, streamReader);
+			}
+		}
+		
+		[Test]
+		public void CompareAddInToPackageVersion()
+		{
+			CreateAddIns();
+			
+			// Prepare all (fake) services needed for AddInSetup and its instance, itself
+			PrepareAddInSetup();
+			
+			// Create fake packages
+			FakePackage fakePackageEqual = new FakePackage()
+			{
+				Id = _addIn1.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion(_addIn1.Version)
+			};
+			FakePackage fakePackageGreater = new FakePackage()
+			{
+				Id = _addIn1.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion("9.9.9.9")
+			};
+			FakePackage fakePackageLess = new FakePackage()
+			{
+				Id = _addIn1.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion("0.0.0.0")
+			};
+			
+			// Ensure we have no __nuGet... attributes in manifest
+			if (_addIn1.Properties.Contains(ManagedAddIn.NuGetPackageVersionManifestAttribute))
+			{
+				_addIn1.Properties.Remove(ManagedAddIn.NuGetPackageVersionManifestAttribute);
+			}
+			
+			Assert.That(_addInSetup.CompareAddInToPackageVersion(_addIn1, fakePackageEqual), Is.EqualTo(0), "Comparing AddIn 1.0.0.0 and NuGet package 1.0.0.0");
+			Assert.That(_addInSetup.CompareAddInToPackageVersion(_addIn1, fakePackageGreater), Is.LessThan(0), "Comparing AddIn 1.0.0.0 and NuGet package 9.9.9.9");
+			Assert.That(_addInSetup.CompareAddInToPackageVersion(_addIn1, fakePackageLess), Is.GreaterThan(0), "Comparing AddIn 1.0.0.0 and NuGet package 0.0.0.0");
+			
+			// Comparison if there's no version in manifest
+			Assert.That(_addInSetup.CompareAddInToPackageVersion(_addIn_noVersion, fakePackageEqual), Is.LessThan(0), "Comparing AddIn <null> and NuGet package 1.0.0.0");
+			
+			// Comparison if there's no regular version in manifest, but there is one in __nuGet... attribute
+			_addIn_noVersion.Properties.Set(ManagedAddIn.NuGetPackageVersionManifestAttribute, fakePackageEqual.Version.ToString());
+			Assert.That(_addInSetup.CompareAddInToPackageVersion(_addIn_noVersion, fakePackageEqual), Is.EqualTo(0), "Comparing AddIn <null> (NuGet: 1.0.0.0) and NuGet package 1.0.0.0");
 		}
 		
 		[Test, Description("AddIn must be installed from external *.addin manifest file. Pending installation must be cancellable.")]

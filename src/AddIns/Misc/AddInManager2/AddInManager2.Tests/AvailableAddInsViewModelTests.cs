@@ -25,6 +25,7 @@ namespace ICSharpCode.AddInManager2.Tests
 		AddIn _addIn1_new;
 		AddIn _addIn2;
 		AddIn _addIn2_new;
+		AddIn _addIn_noVersion;
 		
 		public AvailableAddInsViewModelTests()
 		{
@@ -53,6 +54,11 @@ namespace ICSharpCode.AddInManager2.Tests
 			using (StreamReader streamReader = new StreamReader(@"TestResources\AddInManager2Test_2_New.addin"))
 			{
 				_addIn2_new = AddIn.Load(_addInTree, streamReader);
+			}
+			
+			using (StreamReader streamReader = new StreamReader(@"TestResources\AddInManager2Test_noVersion.addin"))
+			{
+				_addIn_noVersion = AddIn.Load(_addInTree, streamReader);
 			}
 		}
 		
@@ -249,6 +255,200 @@ namespace ICSharpCode.AddInManager2.Tests
 			_addIn1.Enabled = true;
 			
 			// Package to be shown in repository
+			FakePackage fakePackage1 = new FakePackage()
+			{
+				Id = _addIn1.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion(_addIn1.Version),
+				Tags = SharpDevelopAddInTag
+			};
+			FakePackage fakePackage2 = new FakePackage()
+			{
+				Id = _addIn2.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion(_addIn2.Version),
+				Tags = SharpDevelopAddInTag
+			};
+			
+			_addIn1.Properties.Set(ManagedAddIn.NuGetPackageIDManifestAttribute, fakePackage1.Id);
+			_addIn1.Properties.Set(ManagedAddIn.NuGetPackageVersionManifestAttribute, fakePackage1.Version.ToString());
+			_addIn2.Properties.Set(ManagedAddIn.NuGetPackageIDManifestAttribute, fakePackage2.Id);
+			_addIn2.Properties.Set(ManagedAddIn.NuGetPackageVersionManifestAttribute, fakePackage2.Version.ToString());
+			
+			// List of NuGet repositories
+			List<PackageSource> registeredPackageSources = new List<PackageSource>();
+			registeredPackageSources.Add(new PackageSource("", "Test Repository"));
+			_services.FakeRepositories.RegisteredPackageSources = registeredPackageSources;
+			
+			List<IPackageRepository> registeredPackageRepositories = new List<IPackageRepository>();
+			FakeCorePackageRepository remoteRepository = new FakeCorePackageRepository();
+			remoteRepository.Source = registeredPackageSources[0].Source;
+			remoteRepository.ReturnedPackages = (new IPackage[] { fakePackage1, fakePackage2 }).AsQueryable();
+			_services.FakeRepositories.RegisteredPackageRepositories = registeredPackageRepositories;
+			
+			// PackageRepository service should return remoteRepository instance
+			_services.FakeRepositories.GetRepositoryFromSourceCallback = delegate(PackageSource packageSource)
+			{
+				return remoteRepository;
+			};
+			
+			FakeCorePackageRepository localRepository = new FakeCorePackageRepository();
+			_services.FakeNuGet.FakeCorePackageManager.LocalRepository = localRepository;
+			localRepository.ReturnedPackages = (new IPackage[] { fakePackage1, fakePackage2 }).AsQueryable();
+			
+			// Simulate list of AddIns
+			_services.FakeSDAddInManagement.RegisteredAddIns.Add(_addIn1);
+			_services.FakeSDAddInManagement.RegisteredAddIns.Add(_addIn2);
+			
+			// Simulation of resolving AddIns <-> NuGet packages
+			_services.FakeSetup.GetAddInForNuGetPackageCallback = delegate(IPackage package, bool withAddInsMarkedForInstallation)
+			{
+				if (package.Id == _addIn1.Properties[ManagedAddIn.NuGetPackageIDManifestAttribute])
+				{
+					return _addIn1;
+				}
+				else if (package.Id == _addIn2.Properties[ManagedAddIn.NuGetPackageIDManifestAttribute])
+				{
+					return _addIn2;
+				}
+				
+				return null;
+			};
+			
+			var viewModel = new AvailableAddInsViewModel(_services);
+			viewModel.ReadPackagesAndWaitForUpdate();
+			
+			Assert.That(viewModel.AddInPackages.Count, Is.EqualTo(2), "AddIn list must contain 2 items.");
+			
+			AddInPackageViewModelBase firstAddIn = viewModel.AddInPackages[0];
+			Assert.That(firstAddIn.Id, Is.EqualTo(_addIn1.Manifest.PrimaryIdentity), "Primary identity of 1st AddIn");
+			Assert.That(firstAddIn.Name, Is.EqualTo(_addIn1.Manifest.PrimaryIdentity), "Name of 1st AddIn");
+			Assert.That(firstAddIn.Version, Is.EqualTo(_addIn1.Version), "Version of 1st AddIn");
+			Assert.That(firstAddIn.IsInstalled, Is.True, "1st AddIn must be 'installed''");
+			Assert.That(firstAddIn.IsOffline, Is.False, "1st AddIn must not be 'offline'");
+			Assert.That(firstAddIn.IsEnabled, Is.True, "1st AddIn must be 'enabled'");
+			Assert.That(firstAddIn.IsUpdate, Is.False, "1st AddIn must not be 'update'");
+			Assert.That(firstAddIn.IsAdded, Is.False, "1st AddIn must not be 'added'");
+			Assert.That(firstAddIn.IsRemoved, Is.False, "1st AddIn must not be 'removed'");
+			Assert.That(firstAddIn.HasNuGetConnection, Is.False, "1st AddIn must not have 'NuGet connection'");
+			Assert.That(viewModel.AddInPackages[0].IsExternallyReferenced, Is.False, "1st AddIn must not be 'externally referenced'");
+			Assert.That(viewModel.AddInPackages[1].IsExternallyReferenced, Is.False, "2nd AddIn must not be 'externally referenced'");
+			
+			AddInPackageViewModelBase secondAddIn = viewModel.AddInPackages[1];
+			Assert.That(secondAddIn.Id, Is.EqualTo(_addIn2.Manifest.PrimaryIdentity), "Primary identity of 2nd AddIn");
+			Assert.That(secondAddIn.Name, Is.EqualTo(_addIn2.Manifest.PrimaryIdentity), "Name of 2nd AddIn");
+			Assert.That(secondAddIn.Version, Is.EqualTo(_addIn2.Version), "Version of 2nd AddIn");
+			Assert.That(secondAddIn.IsInstalled, Is.True, "2nd AddIn must be 'installed''");
+			Assert.That(secondAddIn.IsOffline, Is.False, "2nd AddIn must not be 'offline'");
+			Assert.That(secondAddIn.IsEnabled, Is.True, "2nd AddIn must be 'enabled'");
+			Assert.That(secondAddIn.IsUpdate, Is.False, "2nd AddIn mustnot  be 'update'");
+			Assert.That(secondAddIn.IsAdded, Is.False, "2nd AddIn must not be 'added'");
+			Assert.That(secondAddIn.IsRemoved, Is.False, "2nd AddIn must not be 'removed'");
+			Assert.That(secondAddIn.HasNuGetConnection, Is.False, "2nd AddIn must not have 'NuGet connection'");
+		}
+		
+		[Test]
+		public void ShowAlreadyInstalledAddInsWithoutManifestVersion()
+		{
+			CreateAddIns();
+			_addIn_noVersion.Enabled = true;
+			
+			// Package to be shown in repository
+			FakePackage fakePackage1 = new FakePackage()
+			{
+				Id = _addIn_noVersion.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion("1.0.2.0"),
+				Tags = SharpDevelopAddInTag
+			};
+			FakePackage fakePackage2 = new FakePackage()
+			{
+				Id = _addIn2.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion(_addIn2.Version),
+				Tags = SharpDevelopAddInTag
+			};
+			
+			_addIn_noVersion.Properties.Set(ManagedAddIn.NuGetPackageIDManifestAttribute, fakePackage1.Id);
+			_addIn_noVersion.Properties.Set(ManagedAddIn.NuGetPackageVersionManifestAttribute, fakePackage1.Version.ToString());
+			_addIn2.Properties.Set(ManagedAddIn.NuGetPackageIDManifestAttribute, fakePackage2.Id);
+			_addIn2.Properties.Set(ManagedAddIn.NuGetPackageVersionManifestAttribute, fakePackage2.Version.ToString());
+			
+			// List of NuGet repositories
+			List<PackageSource> registeredPackageSources = new List<PackageSource>();
+			registeredPackageSources.Add(new PackageSource("", "Test Repository"));
+			_services.FakeRepositories.RegisteredPackageSources = registeredPackageSources;
+			
+			List<IPackageRepository> registeredPackageRepositories = new List<IPackageRepository>();
+			FakeCorePackageRepository remoteRepository = new FakeCorePackageRepository();
+			remoteRepository.Source = registeredPackageSources[0].Source;
+			remoteRepository.ReturnedPackages = (new IPackage[] { fakePackage1, fakePackage2 }).AsQueryable();
+			_services.FakeRepositories.RegisteredPackageRepositories = registeredPackageRepositories;
+			
+			// PackageRepository service should return remoteRepository instance
+			_services.FakeRepositories.GetRepositoryFromSourceCallback = delegate(PackageSource packageSource)
+			{
+				return remoteRepository;
+			};
+			
+			FakeCorePackageRepository localRepository = new FakeCorePackageRepository();
+			_services.FakeNuGet.FakeCorePackageManager.LocalRepository = localRepository;
+			localRepository.ReturnedPackages = (new IPackage[] { fakePackage1, fakePackage2 }).AsQueryable();
+			
+			// Simulate list of AddIns
+			_services.FakeSDAddInManagement.RegisteredAddIns.Add(_addIn_noVersion);
+			_services.FakeSDAddInManagement.RegisteredAddIns.Add(_addIn2);
+			
+			// Simulation of resolving AddIns <-> NuGet packages
+			_services.FakeSetup.GetAddInForNuGetPackageCallback = delegate(IPackage package, bool withAddInsMarkedForInstallation)
+			{
+				if (package.Id == _addIn_noVersion.Properties[ManagedAddIn.NuGetPackageIDManifestAttribute])
+				{
+					return _addIn_noVersion;
+				}
+				else if (package.Id == _addIn2.Properties[ManagedAddIn.NuGetPackageIDManifestAttribute])
+				{
+					return _addIn2;
+				}
+				
+				return null;
+			};
+			
+			var viewModel = new AvailableAddInsViewModel(_services);
+			viewModel.ReadPackagesAndWaitForUpdate();
+			
+			Assert.That(viewModel.AddInPackages.Count, Is.EqualTo(2), "AddIn list must contain 2 items.");
+			
+			AddInPackageViewModelBase firstAddIn = viewModel.AddInPackages[0];
+			Assert.That(firstAddIn.Id, Is.EqualTo(_addIn_noVersion.Manifest.PrimaryIdentity), "Primary identity of 1st AddIn");
+			Assert.That(firstAddIn.Name, Is.EqualTo(_addIn_noVersion.Manifest.PrimaryIdentity), "Name of 1st AddIn");
+			Assert.That(firstAddIn.Version, Is.EqualTo(fakePackage1.Version.Version), "Version of 1st AddIn");
+			Assert.That(firstAddIn.IsInstalled, Is.True, "1st AddIn must be 'installed''");
+			Assert.That(firstAddIn.IsOffline, Is.False, "1st AddIn must not be 'offline'");
+			Assert.That(firstAddIn.IsEnabled, Is.True, "1st AddIn must be 'enabled'");
+			Assert.That(firstAddIn.IsUpdate, Is.False, "1st AddIn must not be 'update'");
+			Assert.That(firstAddIn.IsAdded, Is.False, "1st AddIn must not be 'added'");
+			Assert.That(firstAddIn.IsRemoved, Is.False, "1st AddIn must not be 'removed'");
+			Assert.That(firstAddIn.HasNuGetConnection, Is.False, "1st AddIn must not have 'NuGet connection'");
+			Assert.That(viewModel.AddInPackages[0].IsExternallyReferenced, Is.False, "1st AddIn must not be 'externally referenced'");
+			Assert.That(viewModel.AddInPackages[1].IsExternallyReferenced, Is.False, "2nd AddIn must not be 'externally referenced'");
+			
+			AddInPackageViewModelBase secondAddIn = viewModel.AddInPackages[1];
+			Assert.That(secondAddIn.Id, Is.EqualTo(_addIn2.Manifest.PrimaryIdentity), "Primary identity of 2nd AddIn");
+			Assert.That(secondAddIn.Name, Is.EqualTo(_addIn2.Manifest.PrimaryIdentity), "Name of 2nd AddIn");
+			Assert.That(secondAddIn.Version, Is.EqualTo(_addIn2.Version), "Version of 2nd AddIn");
+			Assert.That(secondAddIn.IsInstalled, Is.True, "2nd AddIn must be 'installed''");
+			Assert.That(secondAddIn.IsOffline, Is.False, "2nd AddIn must not be 'offline'");
+			Assert.That(secondAddIn.IsEnabled, Is.True, "2nd AddIn must be 'enabled'");
+			Assert.That(secondAddIn.IsUpdate, Is.False, "2nd AddIn mustnot  be 'update'");
+			Assert.That(secondAddIn.IsAdded, Is.False, "2nd AddIn must not be 'added'");
+			Assert.That(secondAddIn.IsRemoved, Is.False, "2nd AddIn must not be 'removed'");
+			Assert.That(secondAddIn.HasNuGetConnection, Is.False, "2nd AddIn must not have 'NuGet connection'");
+		}
+		
+		[Test]
+		public void ShowUpdatableAddIns()
+		{
+			CreateAddIns();
+			_addIn1.Enabled = true;
+			
+			// Package to be shown in repository
 			FakePackage fakePackage1_old = new FakePackage()
 			{
 				Id = _addIn1.Manifest.PrimaryIdentity,
@@ -271,6 +471,7 @@ namespace ICSharpCode.AddInManager2.Tests
 			_addIn1.Properties.Set(ManagedAddIn.NuGetPackageIDManifestAttribute, fakePackage1_old.Id);
 			_addIn1.Properties.Set(ManagedAddIn.NuGetPackageVersionManifestAttribute, fakePackage1_old.Version.ToString());
 			_addIn2.Properties.Set(ManagedAddIn.NuGetPackageIDManifestAttribute, fakePackage2.Id);
+			_addIn2.Properties.Set(ManagedAddIn.NuGetPackageVersionManifestAttribute, fakePackage2.Version.ToString());
 			
 			// List of NuGet repositories
 			List<PackageSource> registeredPackageSources = new List<PackageSource>();

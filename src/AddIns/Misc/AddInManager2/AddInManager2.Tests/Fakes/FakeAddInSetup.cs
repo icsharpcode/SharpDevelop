@@ -288,7 +288,7 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 				}
 			}
 			
-			return addIn.Version.CompareTo(nuGetPackage.Version.Version);
+			return addInVersion.CompareTo(nuGetPackage.Version.Version);
 		}
     }
 }

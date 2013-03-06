@@ -773,7 +773,7 @@ namespace ICSharpCode.AddInManager2.Model
 				}
 			}
 			
-			return addIn.Version.CompareTo(nuGetPackage.Version.Version);
+			return addInVersion.CompareTo(nuGetPackage.Version.Version);
 		}
 		
 		public void RemoveUnreferencedNuGetPackages()
