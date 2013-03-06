@@ -511,6 +511,44 @@ class TestClass
 	}
 }");
 		}
+
+		/// <summary>
+		/// Bug 10858 - Extract Method should use return, not out
+		/// </summary>
+		[Test]
+		[Ignore ("FIXME")]
+		public void TestBug10858 ()
+		{
+			Test<ExtractMethodAction> (@"class TestClass
+{
+	public static void TestMethod ()
+	{
+		int i = 5, j, k = 7;
+		
+		<-j = i + k;->
+
+		System.Console.WriteLine (j);
+
+	}
+}", @"class TestClass
+{
+	static int NewMethod (int i, int k)
+	{
+		int j;
+		j = i + k;
+		return j
+	}
+	public static void TestMethod ()
+	{
+		int i = 5, j, k = 7;
+		
+		j = NewMethod (i, k);
+
+		System.Console.WriteLine (j);
+
+	}
+}");
+		}
 	}
 }
 
