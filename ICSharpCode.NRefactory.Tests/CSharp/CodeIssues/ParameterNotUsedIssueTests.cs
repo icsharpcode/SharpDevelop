@@ -178,5 +178,43 @@ class TestClass {
 }";
 			Test<ParameterNotUsedIssue> (input, 1);
 		}
+
+		[Test]
+		public void TestUnusedParameterInVirtualMethod ()
+		{
+			var input = @"
+class TestClass {
+	public virtual void TestMethod (int i)
+	{
+	}
+}";
+			Test<ParameterNotUsedIssue> (input, 0);
+		}
+		
+		[Test]
+		public void TestUnusedParameterInShadowedMethod ()
+		{
+			var input = @"
+class TestClass {
+	public new void TestMethod (int i)
+	{
+	}
+}";
+			Test<ParameterNotUsedIssue> (input, 0);
+		}
+
+		
+		[Test]
+		public void TestUnusedParameterInPartialMethod ()
+		{
+			var input = @"
+partial class TestClass {
+	partial void TestMethod (int i)
+	{
+	}
+}";
+			Test<ParameterNotUsedIssue> (input, 0);
+		}
+
 	}
 }
