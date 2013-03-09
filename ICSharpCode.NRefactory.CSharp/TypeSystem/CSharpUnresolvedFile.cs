@@ -182,11 +182,6 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			return rctx;
 		}
 		
-		ITypeResolveContext IUnresolvedFile.GetTypeResolveContext (ICompilation compilation, TextLocation loc)
-		{
-			return GetTypeResolveContext (compilation, loc);
-		}
-
 		public ICSharpCode.NRefactory.CSharp.Resolver.CSharpResolver GetResolver (ICompilation compilation, TextLocation loc)
 		{
 			return new ICSharpCode.NRefactory.CSharp.Resolver.CSharpResolver (GetTypeResolveContext (compilation, loc));
