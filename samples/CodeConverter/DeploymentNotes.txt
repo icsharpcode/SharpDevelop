@@ -1,0 +1,6 @@
+If you get the following error:
+
+Could not load file or assembly 'PythonBinding' or one of its dependencies. An attempt was made to load a program with an incorrect format.
+
+See AppPoolSettings.png (DLR languages are compiled to x86, which, on x64 IIS leads to aforementioned error message)
+
