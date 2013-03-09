@@ -68,11 +68,11 @@ namespace LineCounterAddin
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, System.Collections.ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-			return new CountingAlgorithmDescriptor(codon.AddIn,
-			                                       codon.Properties["extensions"],
-			                                       codon.Properties["class"]);
+			return new CountingAlgorithmDescriptor(args.Codon.AddIn,
+			                                       args.Codon.Properties["extensions"],
+			                                       args.Codon.Properties["class"]);
 		}
 	}
 
