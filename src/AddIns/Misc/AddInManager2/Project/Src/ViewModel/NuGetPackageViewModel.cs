@@ -255,7 +255,14 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		{
 			get
 			{
-				return _package.Version.Version;
+				if (_package.Version != null)
+				{
+					return new Version(_package.Version.ToString());
+				}
+				else
+				{
+					return null;
+				}
 			}
 		}
 		
@@ -266,7 +273,14 @@ namespace ICSharpCode.AddInManager2.ViewModel
 				AddIn installedAddIn = AddInManager.Setup.GetAddInForNuGetPackage(_package);
 				if ((installedAddIn != null) && IsUpdate)
 				{
-					return installedAddIn.Version;
+					if (installedAddIn.Properties.Contains(ManagedAddIn.NuGetPackageVersionManifestAttribute))
+					{
+						return new Version(installedAddIn.Properties[ManagedAddIn.NuGetPackageVersionManifestAttribute]);
+					}
+					else
+					{
+						return installedAddIn.Version;
+					}
 				}
 				else
 				{

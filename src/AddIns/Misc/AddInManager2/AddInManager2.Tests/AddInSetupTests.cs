@@ -43,6 +43,12 @@ namespace ICSharpCode.AddInManager2.Tests
 			_addInSetup = new AddInSetup(_events, _nuGet, _sdAddInManagement);
 		}
 		
+		private void ClearAddInNuGetProperties(AddIn addIn)
+		{
+			addIn.Properties.Remove(ManagedAddIn.NuGetPackageIDManifestAttribute);
+			addIn.Properties.Remove(ManagedAddIn.NuGetPackageVersionManifestAttribute);
+		}
+		
 		private void CreateAddIns()
 		{
 			// Create AddIn objects from *.addin files available in this assembly's output directory
@@ -51,31 +57,37 @@ namespace ICSharpCode.AddInManager2.Tests
 			using (StreamReader streamReader = new StreamReader(@"TestResources\AddInManager2Test.addin"))
 			{
 				_addIn1 = AddIn.Load(_addInTree, streamReader);
+				ClearAddInNuGetProperties(_addIn1);
 			}
 			
 			using (StreamReader streamReader = new StreamReader(@"TestResources\AddInManager2Test_New.addin"))
 			{
 				_addIn1_new = AddIn.Load(_addInTree, streamReader);
+				ClearAddInNuGetProperties(_addIn1_new);
 			}
 			
 			using (StreamReader streamReader = new StreamReader(@"TestResources\AddInManager2Test_2.addin"))
 			{
 				_addIn2 = AddIn.Load(_addInTree, streamReader);
+				ClearAddInNuGetProperties(_addIn2);
 			}
 			
 			using (StreamReader streamReader = new StreamReader(@"TestResources\AddInManager2Test_2_New.addin"))
 			{
 				_addIn2_new = AddIn.Load(_addInTree, streamReader);
+				ClearAddInNuGetProperties(_addIn2_new);
 			}
 			
 			using (StreamReader streamReader = new StreamReader(@"TestResources\AddInManager2Test_noIdentity.addin"))
 			{
 				_addIn_noIdentity = AddIn.Load(_addInTree, streamReader);
+				ClearAddInNuGetProperties(_addIn_noIdentity);
 			}
 			
 			using (StreamReader streamReader = new StreamReader(@"TestResources\AddInManager2Test_noVersion.addin"))
 			{
 				_addIn_noVersion = AddIn.Load(_addInTree, streamReader);
+				ClearAddInNuGetProperties(_addIn_noVersion);
 			}
 		}
 		
@@ -702,6 +714,190 @@ namespace ICSharpCode.AddInManager2.Tests
 			Assert.That(nuGetPackageUninstalled, Is.False, "Downloaded NuGet package should be uninstalled.");
 		}
 		
+		[Test, Description("AddIn installed from a NuGet package must be updated from an offline *.sdaddin file. Pending update must be cancellable.")]
+		public void UpdateAddInFromDownloadedNuGetPackageWithOfflineAddInAndCancel()
+		{
+			CreateAddIns();
+			
+			// Create fake packages
+			FakePackage fakePackage = new FakePackage()
+			{
+				Id = _addIn1.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion(_addIn1.Version)
+			};
+			_addIn1.Properties[ManagedAddIn.NuGetPackageIDManifestAttribute] = _addIn1.Manifest.PrimaryIdentity;
+			_addIn1.Properties[ManagedAddIn.NuGetPackageVersionManifestAttribute] = _addIn1.Version.ToString();
+			
+			// Prepare all (fake) services needed for AddInSetup and its instance, itself
+			PrepareAddInSetup();
+			
+			// Prepare event handlers
+			bool addInInstalledEventReceived = false;
+			_events.AddInInstalled += delegate(object sender, AddInInstallationEventArgs e)
+			{
+				if (e.AddIn.Manifest.PrimaryIdentity == _addIn1_new.Manifest.PrimaryIdentity)
+				{
+					addInInstalledEventReceived = true;
+				}
+			};
+			bool addInUninstalledEventReceived = false;
+			_events.AddInUninstalled += delegate(object sender, AddInInstallationEventArgs e)
+			{
+				if (e.AddIn.Manifest.PrimaryIdentity == _addIn1_new.Manifest.PrimaryIdentity)
+				{
+					addInUninstalledEventReceived = true;
+				}
+			};
+			bool nuGetPackageUninstalled = false;
+			_nuGet.FakeCorePackageManager.UninstallPackageCallback = delegate(IPackage package, bool forceRemove, bool removeDependencies)
+			{
+				if ((package == fakePackage) && forceRemove && !removeDependencies)
+				{
+					nuGetPackageUninstalled = true;
+				}
+			};
+			
+			// This AddIn is already installed
+			_sdAddInManagement.RegisteredAddIns.Add(_addIn1);
+			FakeCorePackageRepository localRepository = new FakeCorePackageRepository();
+			_nuGet.FakeCorePackageManager.LocalRepository = localRepository;
+			localRepository.ReturnedPackages = (new IPackage[] { fakePackage }).AsQueryable();
+			
+			// Install the new version of AddIn from manifest
+			_sdAddInManagement.AddInToLoad = _addIn1_new;
+			AddIn installedAddIn = _addInSetup.InstallAddIn(@"TestResources\AddInManager2Test_New.sdaddin");
+			
+			// Test updated AddIn in AddInTree
+			Assert.That(installedAddIn, Is.Not.Null, "InstallAddIn() returns valid AddIn object");
+			Assert.That(_sdAddInManagement.RegisteredAddIns, Contains.Item(_addIn1), "Old AddIn object still in AddInTree");
+			Assert.That(_sdAddInManagement.RegisteredAddIns.Contains(_addIn1_new), Is.Not.True,
+			            "New AddIn object not in AddInTree");
+			
+			// Look if we find a ManagedAddIn object for the new AddIn
+			var foundAddIns =
+				_addInSetup.AddInsWithMarkedForInstallation.Where(ma => ma.AddIn.Manifest.PrimaryIdentity == _addIn1.Manifest.PrimaryIdentity);
+			
+			Assert.That(foundAddIns.Any(), "ManagedAddIn found in AddInsWithMarkedForInstallation");
+			
+			var foundAddIn = foundAddIns.First();
+			Assert.That(foundAddIn.AddIn.Version, Is.EqualTo(_addIn1_new.Version), "ManagedAddIn must have new version");
+			Assert.That(foundAddIn.OldVersion, Is.EqualTo(_addIn1.Version), "ManagedAddIn must know installed (old) version");
+			Assert.That(foundAddIn.IsTemporary, Is.True, "ManagedAddIn is temporary");
+			Assert.That(foundAddIn.IsUpdate, Is.True, "ManagedAddIn is an update");
+			Assert.That(foundAddIn.InstallationSource, Is.EqualTo(AddInInstallationSource.Offline), "ManagedAddIn's installation source is 'offline'");
+			
+			Assert.That(addInInstalledEventReceived, "AddInInstalled event sent with correct AddIn");
+			
+			// Cancel the update
+			_sdAddInManagement.TempInstallDirectory = "";
+			_sdAddInManagement.UserInstallDirectory = "";
+			_addInSetup.CancelUpdate(_addIn1_new);
+			
+			// Now check AddInTree, again
+			foundAddIns =
+				_addInSetup.AddInsWithMarkedForInstallation.Where(ma => ma.AddIn.Manifest.PrimaryIdentity == _addIn1.Manifest.PrimaryIdentity);
+			
+			Assert.That(foundAddIns.Any(), "ManagedAddIn still found in AddInsWithMarkedForInstallation after cancel");
+			
+			foundAddIn = foundAddIns.First();
+			Assert.That(foundAddIn.AddIn.Version, Is.EqualTo(_addIn1.Version), "ManagedAddIn now has old version");
+			
+			Assert.That(addInUninstalledEventReceived, "AddInUninstalled event sent with correct AddIn");
+			Assert.That(nuGetPackageUninstalled, Is.False, "Already installed NuGet package must not be removed.");
+		}
+		
+		[Test, Description("AddIn installed from a NuGet package must be updated from an offline *.sdaddin file with an older version. Pending update must be cancellable.")]
+		public void UpdateAddInFromDownloadedNuGetPackageWithOlderOfflineAddInAndCancel()
+		{
+			CreateAddIns();
+			
+			// Create fake packages
+			FakePackage fakePackage = new FakePackage()
+			{
+				Id = _addIn1_new.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion(_addIn1_new.Version)
+			};
+			_addIn1_new.Properties[ManagedAddIn.NuGetPackageIDManifestAttribute] = _addIn1_new.Manifest.PrimaryIdentity;
+			_addIn1_new.Properties[ManagedAddIn.NuGetPackageVersionManifestAttribute] = _addIn1_new.Version.ToString();
+			
+			// Prepare all (fake) services needed for AddInSetup and its instance, itself
+			PrepareAddInSetup();
+			
+			// Prepare event handlers
+			bool addInInstalledEventReceived = false;
+			_events.AddInInstalled += delegate(object sender, AddInInstallationEventArgs e)
+			{
+				if (e.AddIn.Manifest.PrimaryIdentity == _addIn1_new.Manifest.PrimaryIdentity)
+				{
+					addInInstalledEventReceived = true;
+				}
+			};
+			bool addInUninstalledEventReceived = false;
+			_events.AddInUninstalled += delegate(object sender, AddInInstallationEventArgs e)
+			{
+				if (e.AddIn.Manifest.PrimaryIdentity == _addIn1_new.Manifest.PrimaryIdentity)
+				{
+					addInUninstalledEventReceived = true;
+				}
+			};
+			bool nuGetPackageUninstalled = false;
+			_nuGet.FakeCorePackageManager.UninstallPackageCallback = delegate(IPackage package, bool forceRemove, bool removeDependencies)
+			{
+				if ((package == fakePackage) && forceRemove && !removeDependencies)
+				{
+					nuGetPackageUninstalled = true;
+				}
+			};
+			
+			// This AddIn is already installed
+			_sdAddInManagement.RegisteredAddIns.Add(_addIn1_new);
+			FakeCorePackageRepository localRepository = new FakeCorePackageRepository();
+			_nuGet.FakeCorePackageManager.LocalRepository = localRepository;
+			localRepository.ReturnedPackages = (new IPackage[] { fakePackage }).AsQueryable();
+			
+			// Install the new version of AddIn from manifest
+			_sdAddInManagement.AddInToLoad = _addIn1;
+			AddIn installedAddIn = _addInSetup.InstallAddIn(@"TestResources\AddInManager2Test.sdaddin");
+			
+			// Test updated AddIn in AddInTree
+			Assert.That(installedAddIn, Is.Not.Null, "InstallAddIn() returns valid AddIn object");
+			Assert.That(_sdAddInManagement.RegisteredAddIns, Contains.Item(_addIn1_new), "Old AddIn object still in AddInTree");
+			Assert.That(_sdAddInManagement.RegisteredAddIns.Contains(_addIn1), Is.Not.True,
+			            "New AddIn object not in AddInTree");
+			
+			// Look if we find a ManagedAddIn object for the new AddIn
+			var foundAddIns =
+				_addInSetup.AddInsWithMarkedForInstallation.Where(ma => ma.AddIn.Manifest.PrimaryIdentity == _addIn1_new.Manifest.PrimaryIdentity);
+			
+			Assert.That(foundAddIns.Any(), "ManagedAddIn found in AddInsWithMarkedForInstallation");
+			
+			var foundAddIn = foundAddIns.First();
+			Assert.That(foundAddIn.AddIn.Version, Is.EqualTo(_addIn1.Version), "ManagedAddIn must have new version");
+			Assert.That(foundAddIn.OldVersion, Is.EqualTo(_addIn1_new.Version), "ManagedAddIn must know installed (old) version");
+			Assert.That(foundAddIn.IsTemporary, Is.True, "ManagedAddIn is temporary");
+			Assert.That(foundAddIn.IsUpdate, Is.True, "ManagedAddIn is an update");
+			Assert.That(foundAddIn.InstallationSource, Is.EqualTo(AddInInstallationSource.Offline), "ManagedAddIn's installation source is 'offline'");
+			
+			Assert.That(addInInstalledEventReceived, "AddInInstalled event sent with correct AddIn");
+			
+			// Cancel the update
+			_sdAddInManagement.TempInstallDirectory = "";
+			_sdAddInManagement.UserInstallDirectory = "";
+			_addInSetup.CancelUpdate(_addIn1);
+			
+			// Now check AddInTree, again
+			foundAddIns =
+				_addInSetup.AddInsWithMarkedForInstallation.Where(ma => ma.AddIn.Manifest.PrimaryIdentity == _addIn1_new.Manifest.PrimaryIdentity);
+			
+			Assert.That(foundAddIns.Any(), "ManagedAddIn still found in AddInsWithMarkedForInstallation after cancel");
+			
+			foundAddIn = foundAddIns.First();
+			Assert.That(foundAddIn.AddIn.Version, Is.EqualTo(_addIn1_new.Version), "ManagedAddIn now has old version");
+			
+			Assert.That(addInUninstalledEventReceived, "AddInUninstalled event sent with correct AddIn");
+			Assert.That(nuGetPackageUninstalled, Is.False, "Already installed NuGet package must not be removed.");
+		}
+		
 		[Test, Description("External AddIn must be uninstalled. Pending uninstallation must be cancellable.")]
 		public void UninstallValidAddInFromManifestAndCancel()
 		{
@@ -794,6 +990,119 @@ namespace ICSharpCode.AddInManager2.Tests
 			_addInSetup.RemoveUnreferencedNuGetPackages();
 			
 			Assert.That(nuGetPackageUninstalled, Is.True, "NuGet package must be removed after restart.");
+		}
+		
+		[Test]
+		public void RemoveUnreferencedNuGetPackage()
+		{
+			CreateAddIns();
+			
+			// Create a fake package
+			FakePackage fakePackage1 = new FakePackage()
+			{
+				Id = _addIn1.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion(_addIn1.Version)
+			};
+			_addIn1.Properties.Set(ManagedAddIn.NuGetPackageIDManifestAttribute, fakePackage1.Id);
+			_addIn1.Properties.Set(ManagedAddIn.NuGetPackageVersionManifestAttribute, fakePackage1.Version.ToString());
+			FakePackage fakePackage1_new = new FakePackage()
+			{
+				Id = _addIn1_new.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion(_addIn1_new.Version)
+			};
+			_addIn1_new.Properties.Set(ManagedAddIn.NuGetPackageIDManifestAttribute, fakePackage1_new.Id);
+			_addIn1_new.Properties.Set(ManagedAddIn.NuGetPackageVersionManifestAttribute, fakePackage1_new.Version.ToString());
+			FakePackage fakePackage2 = new FakePackage()
+			{
+				Id = _addIn2.Manifest.PrimaryIdentity,
+				Version = new SemanticVersion(_addIn2.Version)
+			};
+			_addIn2.Properties.Set(ManagedAddIn.NuGetPackageIDManifestAttribute, fakePackage2.Id);
+			_addIn2.Properties.Set(ManagedAddIn.NuGetPackageVersionManifestAttribute, fakePackage2.Version.ToString());
+
+			// Prepare all (fake) services needed for AddInSetup and its instance, itself
+			PrepareAddInSetup();
+			
+			// Simulate an installed AddIn, which is not related to installed NuGet package
+			_sdAddInManagement.TempInstallDirectory = "";
+			_sdAddInManagement.UserInstallDirectory = "";
+			
+			// Simulate the installed NuGet package in local repository
+			FakeCorePackageRepository localRepository = new FakeCorePackageRepository();
+			_nuGet.FakeCorePackageManager.LocalRepository = localRepository;
+			bool nuGetPackageUninstalled = false;
+			IPackage packageForUninstallEvent = null;
+			_nuGet.FakeCorePackageManager.UninstallPackageCallback = delegate(IPackage package, bool forceRemove, bool removeDependencies)
+			{
+				if ((package == packageForUninstallEvent) && forceRemove && !removeDependencies)
+				{
+					nuGetPackageUninstalled = true;
+				}
+			};
+			
+			// Case 1: AddIn of local NuGet package is completely same as installed
+			nuGetPackageUninstalled = false;
+			localRepository.ReturnedPackages = (new IPackage[] { fakePackage1 }).AsQueryable();
+			packageForUninstallEvent = fakePackage1;
+			_sdAddInManagement.RegisteredAddIns.Clear();
+			_sdAddInManagement.RegisteredAddIns.Add(_addIn1);
+			_addInSetup.RemoveUnreferencedNuGetPackages();
+			Assert.That(nuGetPackageUninstalled, Is.False, "fakePackage1 must not be removed, because identical to installed.");
+			
+			// Case 2: AddIn of local NuGet package not installed at all
+			nuGetPackageUninstalled = false;
+			localRepository.ReturnedPackages = (new IPackage[] { fakePackage1 }).AsQueryable();
+			packageForUninstallEvent = fakePackage1;
+			_sdAddInManagement.RegisteredAddIns.Clear();
+			_sdAddInManagement.RegisteredAddIns.Add(_addIn2);
+			_addInSetup.RemoveUnreferencedNuGetPackages();
+			Assert.That(nuGetPackageUninstalled, Is.True, "fakePackage1 must be removed, because unreferenced.");
+			
+			// Case 3a: AddIn of local NuGet package is older than the one installed
+			nuGetPackageUninstalled = false;
+			localRepository.ReturnedPackages = (new IPackage[] { fakePackage1 }).AsQueryable();
+			packageForUninstallEvent = fakePackage1;
+			_sdAddInManagement.RegisteredAddIns.Clear();
+			_sdAddInManagement.RegisteredAddIns.Add(_addIn1_new);
+			_addInSetup.RemoveUnreferencedNuGetPackages();
+			Assert.That(nuGetPackageUninstalled, Is.False, "fakePackage1 must not be removed, because older but the only one.");
+			
+			// Case 3b: There exists a local NuGet package identical to installed AddIn and an older one
+			nuGetPackageUninstalled = false;
+			localRepository.ReturnedPackages = (new IPackage[] { fakePackage1, fakePackage1_new }).AsQueryable();
+			packageForUninstallEvent = fakePackage1;
+			_sdAddInManagement.RegisteredAddIns.Clear();
+			_sdAddInManagement.RegisteredAddIns.Add(_addIn1_new);
+			_addInSetup.RemoveUnreferencedNuGetPackages();
+			Assert.That(nuGetPackageUninstalled, Is.True, "fakePackage1 must be removed, because older and a better fitting package exists.");
+			
+			// Case 4a: AddIn of local NuGet package is newer than the one installed
+			nuGetPackageUninstalled = false;
+			localRepository.ReturnedPackages = (new IPackage[] { fakePackage1_new }).AsQueryable();
+			packageForUninstallEvent = fakePackage1_new;
+			_sdAddInManagement.RegisteredAddIns.Clear();
+			_sdAddInManagement.RegisteredAddIns.Add(_addIn1);
+			_addInSetup.RemoveUnreferencedNuGetPackages();
+			Assert.That(nuGetPackageUninstalled, Is.False, "fakePackage1_new must not be removed, because newer but the only one.");
+			
+			// Case 4b: There exists a local NuGet package identical to installed AddIn and a newer one
+			nuGetPackageUninstalled = false;
+			localRepository.ReturnedPackages = (new IPackage[] { fakePackage1, fakePackage1_new }).AsQueryable();
+			packageForUninstallEvent = fakePackage1_new;
+			_sdAddInManagement.RegisteredAddIns.Clear();
+			_sdAddInManagement.RegisteredAddIns.Add(_addIn1);
+			_addInSetup.RemoveUnreferencedNuGetPackages();
+			Assert.That(nuGetPackageUninstalled, Is.True, "fakePackage1_new must be removed, because newer and a better fitting package exists.");
+			
+			// Case 5: Installed AddIn has no NuGet version tag in manifest, and there are two versions of local NuGet packages
+			nuGetPackageUninstalled = false;
+			_addIn1.Properties.Remove(ManagedAddIn.NuGetPackageVersionManifestAttribute);
+			localRepository.ReturnedPackages = (new IPackage[] { fakePackage1, fakePackage1_new }).AsQueryable();
+			packageForUninstallEvent = fakePackage1;
+			_sdAddInManagement.RegisteredAddIns.Clear();
+			_sdAddInManagement.RegisteredAddIns.Add(_addIn1);
+			_addInSetup.RemoveUnreferencedNuGetPackages();
+			Assert.That(nuGetPackageUninstalled, Is.True, "fakePackage1 must be removed, only the latest package is left for AddIn without version info.");
 		}
 	}
 }

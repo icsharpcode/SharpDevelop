@@ -23,5 +23,17 @@ namespace ICSharpCode.AddInManager2.Tests
 			// Clean up
 			viewModel.AddInsListUpdated -= addInsListUpdatedHandler;
 		}
+		
+		internal static void SetPageAndWaitForUpdate(this AddInsViewModelBase viewModel, int page)
+		{
+			ManualResetEvent updateDone = new ManualResetEvent(false);
+			EventHandler addInsListUpdatedHandler = delegate { updateDone.Set(); };
+			viewModel.AddInsListUpdated += addInsListUpdatedHandler;
+			viewModel.SelectedPageNumber = page;
+			updateDone.WaitOne(5000);
+			
+			// Clean up
+			viewModel.AddInsListUpdated -= addInsListUpdatedHandler;
+		}
 	}
 }

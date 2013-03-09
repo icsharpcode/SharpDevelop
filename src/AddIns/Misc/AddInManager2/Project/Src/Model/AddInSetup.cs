@@ -263,6 +263,9 @@ namespace ICSharpCode.AddInManager2.Model
 							new AddInLoadException(SD.ResourceService.GetString("AddInManager.AddInMustHaveIdentity"))));
 					return null;
 				}
+				
+				// Just for safety also patch the properties of AddIn object directly
+				PatchAddInProperties(addIn, package);
 
 				// Try to find this AddIn in current registry
 				string identity = addIn.Manifest.PrimaryIdentity;
@@ -320,12 +323,14 @@ namespace ICSharpCode.AddInManager2.Model
 				}
 				
 				// Mark this AddIn
+				ManagedAddIn foundAddInManaged = new ManagedAddIn(foundAddIn);
 				ManagedAddIn markedAddIn = new ManagedAddIn(addIn)
 				{
 					InstallationSource = AddInInstallationSource.NuGetRepository,
 					IsTemporary = true,
 					IsUpdate = (foundAddIn != null),
-					OldVersion = (foundAddIn != null) ? foundAddIn.Version : null
+					OldVersion = (foundAddIn != null) ?
+						new Version(foundAddInManaged.LinkedNuGetPackageVersion ?? foundAddIn.Version.ToString()) : null
 				};
 				_addInsMarkedForInstall.Add(markedAddIn);
 				
@@ -366,7 +371,7 @@ namespace ICSharpCode.AddInManager2.Model
 				if (package.Version != null)
 				{
 					XmlAttribute nuGetPackageVersionAttribute = addInManifestDoc.CreateAttribute(ManagedAddIn.NuGetPackageVersionManifestAttribute);
-					nuGetPackageVersionAttribute.Value = package.Version.Version.ToString();
+					nuGetPackageVersionAttribute.Value = package.Version.ToString();
 					addInManifestDoc.DocumentElement.Attributes.Append(nuGetPackageVersionAttribute);
 				}
 				addInManifestDoc.Save(addInManifestFile);
@@ -374,6 +379,27 @@ namespace ICSharpCode.AddInManager2.Model
 				return true;
 			}
 			catch (Exception)
+			{
+				return false;
+			}
+		}
+		
+		private bool PatchAddInProperties(AddIn addIn, IPackage package)
+		{
+			if ((addIn != null) && (package != null))
+			{
+				if (!addIn.Properties.Contains(ManagedAddIn.NuGetPackageIDManifestAttribute))
+				{
+					addIn.Properties.Set(ManagedAddIn.NuGetPackageIDManifestAttribute, package.Id);
+				}
+				if (!addIn.Properties.Contains(ManagedAddIn.NuGetPackageVersionManifestAttribute))
+				{
+					addIn.Properties.Set(ManagedAddIn.NuGetPackageVersionManifestAttribute, package.Version.ToString());
+				}
+				
+				return true;
+			}
+			else
 			{
 				return false;
 			}
@@ -452,7 +478,16 @@ namespace ICSharpCode.AddInManager2.Model
 				IPackage addInPackage = GetNuGetPackageForAddIn(addIn, true);
 				if (addInPackage != null)
 				{
-					_nuGet.Packages.UninstallPackage(addInPackage, true, false);
+					// Only remove this package, if really the same version is installed
+					string nuGetVersionInManifest = null;
+					if (addIn.Properties.Contains(ManagedAddIn.NuGetPackageVersionManifestAttribute))
+					{
+						nuGetVersionInManifest = addIn.Properties[ManagedAddIn.NuGetPackageVersionManifestAttribute];
+					}
+					if (nuGetVersionInManifest == addInPackage.Version.ToString())
+					{
+						_nuGet.Packages.UninstallPackage(addInPackage, true, false);
+					}
 				}
 				
 				AddInInstallationEventArgs eventArgs = new AddInInstallationEventArgs(addIn);
@@ -794,15 +829,35 @@ namespace ICSharpCode.AddInManager2.Model
 					}
 					else
 					{
-						// Try to get the most recent (= with highest version) package for this AddIn
-						IPackage latestPackage = installedNuGetPackages
+						// Count NuGet packages with current ID
+						int allPackagesOfThisNuGetID = installedNuGetPackages
 							.Where(p => p.Id == installedPackage.Id)
-							.OrderBy(p => p.Version)
-							.LastOrDefault();
-						if (latestPackage.Version != installedPackage.Version)
+							.Count();
+						
+						if (allPackagesOfThisNuGetID > 1)
 						{
-							// This is not the most recent installed package for this AddIn -> remove it
-							removeThisPackage = true;
+							// Compare version of package with version of installed AddIn
+							if (addIn.Properties.Contains(ManagedAddIn.NuGetPackageVersionManifestAttribute))
+							{
+								if (addIn.Properties[ManagedAddIn.NuGetPackageVersionManifestAttribute] != installedPackage.Version.ToString())
+								{
+									// AddIn has a NuGet version tag in its manifest, but not this one
+									removeThisPackage = true;
+								}
+							}
+							else
+							{
+								// AddIn has no NuGet version tag, so simply leave the latest NuGet package and remove all others
+								IPackage latestPackage = installedNuGetPackages
+									.Where(p => p.Id == installedPackage.Id)
+									.OrderBy(p => p.Version)
+									.LastOrDefault();
+								if (latestPackage.Version != installedPackage.Version)
+								{
+									// This is not the most recent installed package for this AddIn -> remove it
+									removeThisPackage = true;
+								}
+							}
 						}
 					}
 					

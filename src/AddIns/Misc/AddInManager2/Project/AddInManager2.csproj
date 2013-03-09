@@ -186,7 +186,9 @@
     <Page Include="Src\View\AddInsView.xaml" />
     <Page Include="Src\View\LicenseAcceptanceView.xaml" />
     <Page Include="Src\View\PagedResultsView.xaml" />
-    <Page Include="Src\View\PackageRepositoriesView.xaml" />
+    <Page Include="Src\View\PackageRepositoriesView.xaml">
+      <DependentUpon>PagedResultsView.xaml</DependentUpon>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.resx" />
