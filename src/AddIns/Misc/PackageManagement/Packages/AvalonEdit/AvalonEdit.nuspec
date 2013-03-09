@@ -11,7 +11,7 @@
 		<requireLicenseAcceptance>true</requireLicenseAcceptance>
 		<description>AvalonEdit is the WPF-based text editor used in SharpDevelop. There are two builds of AvalonEdit included in this package. One that targets .NET 4.0 and  one that targets .NET 3.5.</description>
 		<summary>AvalonEdit is the WPF-based text editor used in SharpDevelop</summary>
-		<releaseNotes>AvalonEdit 4.3 adds support for input method editors (IME); and adds a built-in search feature (disabled by default).</releaseNotes>
+		<releaseNotes>AvalonEdit 4.3 adds support for input method editors (IME); and fixes a major bug that sometimes caused "InvalidOperationException: Trying to build visual line from collapsed line" when updating existing foldings.</releaseNotes>
 		<language>en-US</language>
 		<tags>WPF Text Editor SharpDevelop AvalonEdit</tags>
   </metadata>
