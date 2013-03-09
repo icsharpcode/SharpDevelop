@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCSite", "CCSite\CCSite.csproj", "{6597D0F8-916A-45EB-98D1-831064914B77}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeConvertServiceClient", "CCClient\CodeConvertServiceClient.csproj", "{93D91711-636F-4796-8572-F043D4CF8FA5}"

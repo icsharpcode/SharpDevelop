@@ -2,6 +2,7 @@
 	<ItemGroup>
 		<GenericDeps Include="..\..\..\bin\ICSharpCode.NRefactory.dll"/>
 		<GenericDeps Include="..\..\..\bin\ICSharpCode.SharpDevelop.Dom.dll"/>
+		<GenericDeps Include="..\..\..\bin\Mono.Cecil.dll"/>
 
 		<GenericDeps Include="..\..\..\bin\ICSharpCode.AvalonEdit.dll"/>
 		<GenericDeps Include="..\..\..\bin\log4net.dll"/>
