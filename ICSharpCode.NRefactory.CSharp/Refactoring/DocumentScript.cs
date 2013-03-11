@@ -112,6 +112,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					));
 				segments.Add(segment);
 			}
+			if (segments.Count == 0)
+				return;
 			syntaxTree.AcceptVisitor(formatter);
 			foreach (var segment in segments) {
 				formatter.ApplyChanges(segment.Offset, segment.Length);
