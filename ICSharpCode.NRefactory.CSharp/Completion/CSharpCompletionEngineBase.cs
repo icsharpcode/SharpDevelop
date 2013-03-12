@@ -344,7 +344,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 								IsInPreprocessorDirective = true;
 							break;
 						case '/':
-							if (IsInString || IsInChar || IsInVerbatimString)
+							if (IsInString || IsInChar || IsInVerbatimString || IsInSingleComment)
 								break;
 							if (nextCh == '/') {
 								i++;
