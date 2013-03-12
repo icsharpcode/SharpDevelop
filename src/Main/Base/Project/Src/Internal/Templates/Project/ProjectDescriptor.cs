@@ -506,7 +506,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				project.Save();
 				
 				
-				ProjectService.OnProjectCreated(new ProjectEventArgs(project));
+				SD.GetRequiredService<IProjectServiceRaiseEvents>().RaiseProjectCreated(new ProjectEventArgs(project));
 				projectCreateOptions.CreatedProjects.Add(project);
 				success = true;
 				return project;

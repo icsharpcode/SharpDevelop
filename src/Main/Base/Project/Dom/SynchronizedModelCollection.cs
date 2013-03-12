@@ -89,7 +89,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#endregion
 
 		#region ICollection implementation
-
+		public IReadOnlyCollection<T> CreateSnapshot()
+		{
+			lock (syncRoot) {
+				return underlyingCollection.CreateSnapshot();
+			}
+		}
+		
 		public bool Contains(T item)
 		{
 			lock (syncRoot) {
@@ -124,9 +130,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			IEnumerable<T> snapshot;
 			lock (syncRoot) {
-				T[] array = new T[underlyingCollection.Count];
-				underlyingCollection.CopyTo(array, 0);
-				snapshot = array;
+				snapshot = underlyingCollection.CreateSnapshot();
 			}
 			return snapshot.GetEnumerator();
 		}

@@ -21,6 +21,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public event ModelCollectionChangedEventHandler<ITypeDefinitionModel> CollectionChanged;
 		
+		public IReadOnlyCollection<ITypeDefinitionModel> CreateSnapshot()
+		{
+			return list.ToArray();
+		}
+		
 		public IEnumerator<ITypeDefinitionModel> GetEnumerator()
 		{
 			return list.GetEnumerator();

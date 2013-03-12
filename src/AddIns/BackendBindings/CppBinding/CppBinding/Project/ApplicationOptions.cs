@@ -329,7 +329,7 @@ namespace ICSharpCode.CppBinding.Project
 			string fileName = Path.Combine(project.Directory, rcFileName);
 			FileProjectItem rcFileItem = new FileProjectItem(project, project.GetDefaultItemType(fileName));
 			rcFileItem.Include = FileUtility.GetRelativePath(project.Directory, fileName);
-			((IProjectItemListProvider)project).AddProjectItem(rcFileItem);
+			ProjectService.AddProjectItem(project, rcFileItem);
 			return fileName;
 		}
 		

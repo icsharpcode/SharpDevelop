@@ -110,7 +110,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			} else {
 				newSolution.Save();
 			}
-			ProjectService.OnSolutionCreated(new SolutionEventArgs(newSolution));
 			return newSolution;
 		}
 		

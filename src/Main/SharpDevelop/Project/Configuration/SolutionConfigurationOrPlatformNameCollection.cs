@@ -45,6 +45,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#region IReadOnlyCollection implementation
 		
+		public IReadOnlyCollection<string> CreateSnapshot()
+		{
+			return listSnapshot;
+		}
+		
 		public int Count {
 			get {
 				return listSnapshot.Count;

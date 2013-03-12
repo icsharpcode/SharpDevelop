@@ -41,7 +41,7 @@ namespace PackageManagement.Tests
 			var createInfo = new ProjectCreateOptions();
 			createInfo.CreatedProjects.AddRange(projects);
 			
-			command.FakeProjectService.ProjectCollections.Add(new ReadOnlyModelCollection<IProject>(projects));
+			command.FakeProjectService.ProjectCollections.Add(new ImmutableModelCollection<IProject>(projects));
 			
 			RunCommandWithProjectCreateInfoAsOwner(createInfo);
 		}

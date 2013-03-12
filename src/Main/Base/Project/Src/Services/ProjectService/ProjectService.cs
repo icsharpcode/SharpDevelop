@@ -63,7 +63,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			IProjectItemListProvider provider = project as IProjectItemListProvider;
 			if (provider != null) {
 				provider.AddProjectItem(item);
-				OnProjectItemAdded(new ProjectItemEventArgs(project, item));
+				IProjectServiceRaiseEvents re = SD.GetService<IProjectServiceRaiseEvents>();
+				if (re != null)
+					re.RaiseProjectItemAdded(new ProjectItemEventArgs(project, item));
 			}
 		}
 		
@@ -79,7 +81,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			IProjectItemListProvider provider = project as IProjectItemListProvider;
 			if (provider != null) {
 				if (provider.RemoveProjectItem(item)) {
-					OnProjectItemRemoved(new ProjectItemEventArgs(project, item));
+					IProjectServiceRaiseEvents re = SD.GetService<IProjectServiceRaiseEvents>();
+					if (re != null)
+						re.RaiseProjectItemRemoved(new ProjectItemEventArgs(project, item));
 				}
 			}
 		}
@@ -101,6 +105,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			//FileUtility.ObservedLoad(LoadProjectInternal, fileName);
 		}
 		
+		/// <summary>
+		/// Saves the current solution and all of its projects.
+		/// </summary>
 		public static void SaveSolution()
 		{
 			var openSolution = SD.ProjectService.CurrentSolution;
@@ -148,75 +155,57 @@ namespace ICSharpCode.SharpDevelop.Project
 			return b.ToString();
 		}
 		
-		[Obsolete]
+		[Obsolete("Use SD.BuildService.IsBuilding instead")]
 		public static bool IsBuilding {
 			get {
 				return SD.BuildService.IsBuilding;
 			}
 		}
 		
-		internal static void OnProjectItemAdded(ProjectItemEventArgs e)
-		{
-			if (ProjectItemAdded != null) {
-				ProjectItemAdded(null, e);
-			}
-		}
-		internal static void OnProjectItemRemoved(ProjectItemEventArgs e)
-		{
-			if (ProjectItemRemoved != null) {
-				ProjectItemRemoved(null, e);
-			}
-		}
-		
-		internal static void OnProjectCreated(ProjectEventArgs e)
-		{
-			if (ProjectCreated != null) {
-				ProjectCreated(null, e);
-			}
-		}
-		internal static void OnSolutionCreated(SolutionEventArgs e)
-		{
-			if (SolutionCreated != null) {
-				SolutionCreated(null, e);
-			}
-		}
-		
 		/// <summary>
 		/// Is raised when a new project is created.
 		/// </summary>
-		public static event EventHandler<ProjectEventArgs> ProjectCreated;
-		public static event EventHandler<SolutionEventArgs> SolutionCreated;
+		[Obsolete("Use SD.ProjectService.ProjectCreated instead")]
+		public static event EventHandler<ProjectEventArgs> ProjectCreated {
+			add { SD.ProjectService.ProjectCreated += value; }
+			remove { SD.ProjectService.ProjectCreated -= value; }
+		}
 		
+		[Obsolete("Use SD.ProjectService.SolutionCreated instead")]
+		public static event EventHandler<SolutionEventArgs> SolutionCreated {
+			add { SD.ProjectService.SolutionCreated += value; }
+			remove { SD.ProjectService.SolutionCreated -= value; }
+		}
+		
+		[Obsolete("Use SD.BuildService.BuildStarted instead")]
 		public static event EventHandler<BuildEventArgs> BuildStarted {
 			add { SD.BuildService.BuildStarted += value; }
 			remove { SD.BuildService.BuildStarted -= value; }
 		}
 		
+		[Obsolete("Use SD.BuildService.BuildFinished instead")]
 		public static event EventHandler<BuildEventArgs> BuildFinished {
 			add { SD.BuildService.BuildFinished += value; }
 			remove { SD.BuildService.BuildFinished -= value; }
 		}
 		
+		[Obsolete("Use SD.ProjectService.SolutionOpened instead")]
 		public static event EventHandler<SolutionEventArgs> SolutionLoaded {
 			add { SD.ProjectService.SolutionOpened += value; }
 			remove { SD.ProjectService.SolutionOpened -= value; }
 		}
 		
+		[Obsolete("Use SD.ProjectService.SolutionClosed instead")]
 		public static event EventHandler<SolutionEventArgs> SolutionClosed {
 			add { SD.ProjectService.SolutionClosed += value; }
 			remove { SD.ProjectService.SolutionClosed -= value; }
 		}
 		
+		[Obsolete("Use SD.ProjectService.SolutionClosing instead")]
 		public static event EventHandler<SolutionClosingEventArgs> SolutionClosing {
 			add { SD.ProjectService.SolutionClosing += value; }
 			remove { SD.ProjectService.SolutionClosing -= value; }
 		}
-		
-		/// <summary>
-		/// Raised before the solution preferences are being saved. Allows you to save
-		/// your additional properties in the solution preferences.
-		/// </summary>
-		public static event EventHandler<SolutionEventArgs> SolutionPreferencesSaving;
 		
 		static EventAdapter<IProjectService, PropertyChangedEventHandler<IProject>, EventHandler<ProjectEventArgs>> currentProjectChangedAdapter =
 			new EventAdapter<IProjectService, PropertyChangedEventHandler<IProject>, EventHandler<ProjectEventArgs>>(
@@ -229,7 +218,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			remove { currentProjectChangedAdapter.Remove(value); }
 		}
 		
-		public static event EventHandler<ProjectItemEventArgs> ProjectItemAdded;
-		public static event EventHandler<ProjectItemEventArgs> ProjectItemRemoved;
+		[Obsolete("Use SD.ProjectService.ProjectItemAdded instead")]
+		public static event EventHandler<ProjectItemEventArgs> ProjectItemAdded {
+			add { SD.ProjectService.ProjectItemAdded += value; }
+			remove { SD.ProjectService.ProjectItemAdded -= value; }
+		}
+		[Obsolete("Use SD.ProjectService.ProjectItemRemoved instead")]
+		public static event EventHandler<ProjectItemEventArgs> ProjectItemRemoved {
+			add { SD.ProjectService.ProjectItemRemoved += value; }
+			remove { SD.ProjectService.ProjectItemRemoved -= value; }
+		}
 	}
 }

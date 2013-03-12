@@ -78,7 +78,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			instance = this;
 			ProjectService.SolutionLoaded += ProjectServiceSolutionLoaded;
 			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
-			ProjectService.SolutionPreferencesSaving += ProjectServiceSolutionPreferencesSaving;
 			
 			SD.Workbench.ActiveContentChanged += ActiveContentChanged;
 			if (ProjectService.OpenSolution != null) {
@@ -92,9 +91,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			ProjectBrowserControl.TreeView.StartLabelEdit(node);
 		}
 		
-		void ProjectServiceSolutionPreferencesSaving(object sender, SolutionEventArgs e)
+		void SolutionPreferencesSaving(object sender, EventArgs e)
 		{
-			projectBrowserPanel.StoreViewState(e.Solution.Preferences);
+			projectBrowserPanel.StoreViewState(((ISolution)sender).Preferences);
 		}
 		
 		void ProjectServiceSolutionLoaded(object sender, SolutionEventArgs e)
@@ -117,6 +116,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				this.solutionToLoadWhenHandleIsCreated = null;
 				projectBrowserPanel.ViewSolution(solution);
 				projectBrowserPanel.ReadViewState(solution.Preferences);
+				solution.PreferencesSaving += SolutionPreferencesSaving;
 			}
 		}
 		

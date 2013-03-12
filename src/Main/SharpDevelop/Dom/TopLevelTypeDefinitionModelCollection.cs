@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 
@@ -17,13 +18,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		readonly IEntityModelContext context;
 		Dictionary<TopLevelTypeName, TypeDefinitionModel> dict = new Dictionary<TopLevelTypeName, TypeDefinitionModel>();
-		public event ModelCollectionChangedEventHandler<ITypeDefinitionModel> CollectionChanged;
 		
 		public TopLevelTypeDefinitionModelCollection(IEntityModelContext context)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
 			this.context = context;
+		}
+		
+		public event ModelCollectionChangedEventHandler<ITypeDefinitionModel> CollectionChanged;
+		
+		public IReadOnlyCollection<ITypeDefinitionModel> CreateSnapshot()
+		{
+			return dict.Values.ToArray();
 		}
 		
 		public int Count {

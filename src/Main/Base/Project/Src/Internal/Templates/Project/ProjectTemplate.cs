@@ -318,22 +318,24 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		public ISolution CreateSolution(ProjectCreateOptions projectCreateInformation)
 		{
 			LoggingService.Info("Creating solution from template '" + this.Category + "/" + this.Subcategory + "/" + this.Name + "'");
+			ISolution solution;
 			if (solutionDescriptor != null) {
-				return solutionDescriptor.CreateSolution(projectCreateInformation, this.languagename);
+				solution = solutionDescriptor.CreateSolution(projectCreateInformation, this.languagename);
 			} else {
 				FileName fileName = FileName.Create(Path.Combine(projectCreateInformation.SolutionPath, projectCreateInformation.SolutionName + ".sln"));
-				ISolution solution = SD.ProjectService.CreateEmptySolutionFile(fileName);
+				solution = SD.ProjectService.CreateEmptySolutionFile(fileName);
 				IProject project = projectDescriptor.CreateProject(solution, projectCreateInformation, this.languagename);
 				if (project != null) {
 					solution.Items.Add(project);
 					solution.Save();
-					ProjectService.OnSolutionCreated(new SolutionEventArgs(solution));
-					return solution;
 				} else {
 					solution.Dispose();
-					return null;
+					solution = null;
 				}
 			}
+			if (solution != null)
+				SD.GetRequiredService<IProjectServiceRaiseEvents>().RaiseSolutionCreated(new SolutionEventArgs(solution));
+			return solution;
 		}
 		
 		public IProject CreateProject(ISolution solution, ProjectCreateOptions projectCreateInformation)

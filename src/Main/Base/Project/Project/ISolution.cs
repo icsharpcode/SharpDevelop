@@ -79,6 +79,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		Properties Preferences { get; }
 		
 		/// <summary>
+		/// This event is raised by <see cref="SavePreferences"/> immediately before the preferences are saved to disk.
+		/// It can be used to set additional data on the preferences at the last moment.
+		/// </summary>
+		event EventHandler PreferencesSaving;
+		
+		/// <summary>
 		/// Saves the preferences for this solution; and also for any projects within this solution.
 		/// </summary>
 		void SavePreferences();

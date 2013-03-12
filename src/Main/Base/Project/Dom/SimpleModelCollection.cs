@@ -85,6 +85,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		#region Read-Only list access
 		
+		public IReadOnlyCollection<T> CreateSnapshot()
+		{
+			return list.ToArray();
+		}
+		
 		public int Count {
 			get { return list.Count; }
 		}

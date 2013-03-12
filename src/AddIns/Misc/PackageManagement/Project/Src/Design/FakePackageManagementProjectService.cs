@@ -45,7 +45,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public void AddProject(IProject project)
 		{
-			ProjectCollections.Add(new ReadOnlyModelCollection<IProject>(new[] { project }));
+			ProjectCollections.Add(new ImmutableModelCollection<IProject>(new[] { project }));
 		}
 		
 		public void AddProjectItem(IProject project, ProjectItem item)

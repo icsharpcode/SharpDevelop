@@ -13,10 +13,13 @@ using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	sealed class SDProjectService : IProjectService
+	sealed class SDProjectService : IProjectService, IProjectServiceRaiseEvents
 	{
 		public SDProjectService()
 		{
+			allSolutions = new SimpleModelCollection<ISolution>();
+			allProjects = allSolutions.SelectMany(s => s.Projects);
+			
 			SD.GetFutureService<IWorkbench>().ContinueWith(t => t.Result.ActiveViewContentChanged += ActiveViewContentChanged);
 			
 			var applicationStateInfoService = SD.GetService<ApplicationStateInfoService>();
@@ -25,8 +28,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				applicationStateInfoService.RegisterStateGetter("ProjectService.CurrentProject", delegate { return CurrentProject; });
 			}
 			
-			allSolutions = new SimpleModelCollection<ISolution>();
-			allProjects = allSolutions.SelectMany(s => s.Projects);
+			SD.Services.AddService(typeof(IProjectServiceRaiseEvents), this);
 		}
 		
 		#region CurrentSolution property + AllProjects collection
@@ -331,6 +333,33 @@ namespace ICSharpCode.SharpDevelop.Project
 			Solution solution = new Solution(fileName, new ProjectChangeWatcher(fileName), SD.FileService);
 			solution.LoadPreferences();
 			return solution;
+		}
+		#endregion
+		
+		#region IProjectServiceRaiseEvents
+		public event EventHandler<ProjectEventArgs> ProjectCreated = delegate { };
+		public event EventHandler<SolutionEventArgs> SolutionCreated = delegate { };
+		public event EventHandler<ProjectItemEventArgs> ProjectItemAdded = delegate { };
+		public event EventHandler<ProjectItemEventArgs> ProjectItemRemoved = delegate { };
+		
+		void IProjectServiceRaiseEvents.RaiseProjectCreated(ProjectEventArgs e)
+		{
+			ProjectCreated(this, e);
+		}
+
+		void IProjectServiceRaiseEvents.RaiseSolutionCreated(SolutionEventArgs e)
+		{
+			SolutionCreated(this, e);
+		}
+		
+		void IProjectServiceRaiseEvents.RaiseProjectItemAdded(ProjectItemEventArgs e)
+		{
+			ProjectItemAdded(this, e);
+		}
+
+		void IProjectServiceRaiseEvents.RaiseProjectItemRemoved(ProjectItemEventArgs e)
+		{
+			ProjectItemRemoved(this, e);
 		}
 		#endregion
 	}

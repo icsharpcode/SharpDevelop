@@ -277,11 +277,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		 */
 		
+		public event EventHandler PreferencesSaving = delegate { };
 		
 		public void SavePreferences()
 		{
 			preferences.Set("ActiveConfiguration.Configuration", activeConfiguration.Configuration);
 			preferences.Set("ActiveConfiguration.Platform", activeConfiguration.Platform);
+			PreferencesSaving(this, EventArgs.Empty);
 			// TODO: save to disk
 			/*
 			string directory = Path.Combine(PropertyService.ConfigDirectory, "preferences");
@@ -388,9 +390,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (FileUtility.IsBaseDirectory(project.Directory, oldName)) {
 					foreach (ProjectItem item in project.Items) {
 						if (FileUtility.IsBaseDirectory(oldName, item.FileName)) {
-							ProjectService.OnProjectItemRemoved(new ProjectItemEventArgs(project, item));
+							SD.GetRequiredService<IProjectServiceRaiseEvents>().RaiseProjectItemRemoved(new ProjectItemEventArgs(project, item));
 							item.FileName = FileUtility.RenameBaseDirectory(item.FileName, oldName, newName);
-							ProjectService.OnProjectItemAdded(new ProjectItemEventArgs(project, item));
+							SD.GetRequiredService<IProjectServiceRaiseEvents>().RaiseProjectItemAdded(new ProjectItemEventArgs(project, item));
 						}
 					}
 				}
@@ -414,7 +416,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						foreach (ProjectItem item in provider.Items.ToArray()) {
 							if (FileUtility.IsBaseDirectory(fileName, item.FileName)) {
 								provider.RemoveProjectItem(item);
-								ProjectService.OnProjectItemRemoved(new ProjectItemEventArgs(project, item));
+								SD.GetRequiredService<IProjectServiceRaiseEvents>().RaiseProjectItemRemoved(new ProjectItemEventArgs(project, item));
 							}
 						}
 					}

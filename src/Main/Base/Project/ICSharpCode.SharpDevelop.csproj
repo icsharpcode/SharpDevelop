@@ -93,7 +93,7 @@
     <Compile Include="Dom\IModelCollection.cs" />
     <Compile Include="Dom\ITreeNodeFactory.cs" />
     <Compile Include="Dom\ModelCollectionLinq.cs" />
-    <Compile Include="Dom\ReadOnlyModelCollection.cs" />
+    <Compile Include="Dom\ImmutableModelCollection.cs" />
     <Compile Include="Dom\SimpleModelCollection.cs" />
     <Compile Include="Dom\SynchronizedModelCollection.cs" />
     <Compile Include="Editor\AvalonEditTextEditorAdapter.cs" />

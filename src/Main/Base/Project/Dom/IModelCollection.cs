@@ -29,6 +29,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public interface IModelCollection<out T> : IReadOnlyCollection<T>
 	{
 		event ModelCollectionChangedEventHandler<T> CollectionChanged;
+		
+		/// <summary>
+		/// Creates an immutable snapshot of the collection.
+		/// </summary>
+		IReadOnlyCollection<T> CreateSnapshot();
 	}
 	
 	/// <summary>

@@ -207,7 +207,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		sealed class ReadOnlyConfigurationOrPlatformNameCollection : ReadOnlyModelCollection<string>, IConfigurationOrPlatformNameCollection
+		sealed class ReadOnlyConfigurationOrPlatformNameCollection : ImmutableModelCollection<string>, IConfigurationOrPlatformNameCollection
 		{
 			public ReadOnlyConfigurationOrPlatformNameCollection(IEnumerable<string> items)
 				: base(items)

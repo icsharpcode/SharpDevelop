@@ -43,6 +43,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			remove { }
 		}
 		
+		IReadOnlyCollection<ITypeDefinitionModel> IModelCollection<ITypeDefinitionModel>.CreateSnapshot()
+		{
+			return this; // already immutable
+		}
+		
 		ITypeDefinitionModel ITypeDefinitionModelCollection.this[FullTypeName name] {
 			get { return null; }
 		}

@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public static IModelCollection<TResult> Select<TSource, TResult>(this IModelCollection<TSource> source, Func<TSource, TResult> selector)
 		{
 			// HACK: emulating Select with SelectMany is much less efficient than a direct implementation could be
-			return SelectMany(source, item => new ReadOnlyModelCollection<TSource>(new[] { item }), (a, b) => selector(b));
+			return SelectMany(source, item => new ImmutableModelCollection<TSource>(new[] { item }), (a, b) => selector(b));
 		}
 		#endregion
 		
@@ -168,6 +168,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				{
 					parent.OnCollectionChanged(GetResults(removedItems), GetResults(addedItems));
 				}
+			}
+			
+			IReadOnlyCollection<TResult> IModelCollection<TResult>.CreateSnapshot()
+			{
+				return this.ToList();
 			}
 			
 			public IEnumerator<TResult> GetEnumerator()

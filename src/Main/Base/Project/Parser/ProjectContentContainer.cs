@@ -286,7 +286,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				}
 			}
 
-			double scalingFactor = 1.0 / (project.Items.Count + LoadingReferencesWorkAmount);
+			double scalingFactor = 1.0 / (projectItems.Count + LoadingReferencesWorkAmount);
 			using (IProgressMonitor initReferencesProgressMonitor = progressMonitor.CreateSubTask(LoadingReferencesWorkAmount * scalingFactor),
 			       parseProgressMonitor = progressMonitor.CreateSubTask(projectItems.Count * scalingFactor))
 			{

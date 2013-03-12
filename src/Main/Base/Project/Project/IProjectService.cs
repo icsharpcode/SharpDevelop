@@ -129,5 +129,24 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// This method is thread-safe.
 		/// </remarks>
 		ISolution CreateEmptySolutionFile(FileName fileName);
+		
+		/// <summary>
+		/// Is raised when a new project is created.
+		/// </summary>
+		event EventHandler<ProjectEventArgs> ProjectCreated;
+		
+		event EventHandler<SolutionEventArgs> SolutionCreated;
+		
+		event EventHandler<ProjectItemEventArgs> ProjectItemAdded;
+		event EventHandler<ProjectItemEventArgs> ProjectItemRemoved;
+	}
+	
+	public interface IProjectServiceRaiseEvents
+	{
+		void RaiseProjectCreated(ProjectEventArgs e);
+		void RaiseSolutionCreated(SolutionEventArgs e);
+		
+		void RaiseProjectItemAdded(ProjectItemEventArgs e);
+		void RaiseProjectItemRemoved(ProjectItemEventArgs e);
 	}
 }

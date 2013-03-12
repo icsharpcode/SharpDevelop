@@ -183,6 +183,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				get { return GetCount(lists.Count); }
 			}
 			
+			public IReadOnlyCollection<MemberModel> CreateSnapshot()
+			{
+				return this.ToArray();
+			}
+			
 			public IEnumerator<MemberModel> GetEnumerator()
 			{
 				return lists.SelectMany(i => i).GetEnumerator();
