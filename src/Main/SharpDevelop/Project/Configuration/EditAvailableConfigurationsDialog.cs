@@ -106,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				return false;
 			}
 			foreach (string item in listBox.Items) {
-				if (string.Equals(item, newName, StringComparison.OrdinalIgnoreCase)) {
+				if (ConfigurationAndPlatform.ConfigurationNameComparer.Equals(item, newName)) {
 					MessageService.ShowMessage("${res:Dialog.EditAvailableConfigurationsDialog.DuplicateName}");
 					return false;
 				}

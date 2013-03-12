@@ -55,7 +55,8 @@ namespace AspNet.Mvc.Tests
 		{
 			var fileContentsBuilder = new StringBuilder();
 			var stringWriter = new StringWriter(fileContentsBuilder);
-			msbuildProject.MSBuildProjectFile.Save(stringWriter);
+			lock (msbuildProject.SyncRoot)
+				msbuildProject.MSBuildProjectFile.Save(stringWriter);
 			
 			return GetProjectExtensions(fileContentsBuilder.ToString());
 		}

@@ -80,6 +80,8 @@
 		         class="ICSharpCode.SharpDevelop.Project.MSBuildEngine"/>
 		<Service id="ICSharpCode.SharpDevelop.Editor.Bookmarks.IBookmarkManager"
 		         class="ICSharpCode.SharpDevelop.Editor.Bookmarks.BookmarkManager"/>
+		<Service id="ICSharpCode.SharpDevelop.IUIService"
+		         class="ICSharpCode.SharpDevelop.UIService"/>
 		
 		<Service id="ICSharpCode.SharpDevelop.WinForms.IWinFormsService"
 		         class="ICSharpCode.SharpDevelop.WinForms.WinFormsService"/>

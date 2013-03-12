@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			            PropertyStorageLocations.ConfigurationSpecific, true);
 			SetProperty("Release", null, "OutputPath", @"bin\Release\",
 			            PropertyStorageLocations.ConfigurationSpecific, true);
-			InvalidateConfigurationPlatformNames();
+			LoadConfigurationPlatformNamesFromMSBuild();
 			
 			SetProperty("Debug", null, "DebugSymbols", "True",
 			            PropertyStorageLocations.ConfigurationSpecific, true);

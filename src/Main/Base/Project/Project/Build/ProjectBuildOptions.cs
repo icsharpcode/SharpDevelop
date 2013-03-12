@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	public class ProjectBuildOptions
 	{
 		BuildTarget target;
-		IDictionary<string, string> properties = new SortedList<string, string>();
+		IDictionary<string, string> properties = new SortedList<string, string>(MSBuildInternals.PropertyNameComparer);
 		
 		public BuildTarget Target {
 			get { return target; }

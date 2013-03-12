@@ -233,6 +233,7 @@
       <DependentUpon>OutputWindowOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Project\MSBuildConfigurationOrPlatformNameCollection.cs" />
     <Compile Include="Util\AtomicBoolean.cs" />
     <Compile Include="Util\ComparerExtensions.cs" />
     <Compile Include="Util\CustomThreadPoolTaskScheduler.cs" />

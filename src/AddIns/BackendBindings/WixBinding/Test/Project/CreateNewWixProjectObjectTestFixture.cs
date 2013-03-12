@@ -129,10 +129,12 @@ namespace WixBinding.Tests.Project
 		/// </summary>
 		ProjectPropertyElement GetMSBuildProperty(string name)
 		{
-			foreach (ProjectPropertyGroupElement propertyGroup in project.MSBuildProjectFile.PropertyGroups) {
-				foreach (ProjectPropertyElement element in propertyGroup.Properties) {
-					if (element.Name == name) {
-						return element;
+			lock (project.SyncRoot) {
+				foreach (ProjectPropertyGroupElement propertyGroup in project.MSBuildProjectFile.PropertyGroups) {
+					foreach (ProjectPropertyElement element in propertyGroup.Properties) {
+						if (element.Name == name) {
+							return element;
+						}
 					}
 				}
 			}
@@ -145,10 +147,12 @@ namespace WixBinding.Tests.Project
 		ProjectPropertyElement GetLastMSBuildProperty(string name)
 		{
 			ProjectPropertyElement matchedElement = null;
-			foreach (ProjectPropertyGroupElement propertyGroup in project.MSBuildProjectFile.PropertyGroups) {
-				foreach (ProjectPropertyElement element in propertyGroup.Properties) {
-					if (element.Name == name) {
-						matchedElement = element;
+			lock (project.SyncRoot) {
+				foreach (ProjectPropertyGroupElement propertyGroup in project.MSBuildProjectFile.PropertyGroups) {
+					foreach (ProjectPropertyElement element in propertyGroup.Properties) {
+						if (element.Name == name) {
+							matchedElement = element;
+						}
 					}
 				}
 			}

@@ -25,6 +25,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		// TODO: I think MSBuild actually uses OrdinalIgnoreCase. SharpDevelop 3.x just used string.operator ==, so I'm keeping
 		// that setting until all code is ported to use PropertyNameComparer and we've verified what MSBuild is actually using.
 		public readonly static StringComparer PropertyNameComparer = StringComparer.Ordinal;
+		public readonly static StringComparer ConfigurationNameComparer = ConfigurationAndPlatform.ConfigurationNameComparer;
 		
 		internal static void UnloadProject(MSBuild.Evaluation.ProjectCollection projectCollection, MSBuild.Evaluation.Project project)
 		{
@@ -123,9 +124,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				return PropertyStorageLocations.Base;
 			}
 			PropertyStorageLocations location = 0; // 0 is unknown
-			if (condition.Contains("$(Configuration)"))
+			if (condition.IndexOf("$(Configuration)", StringComparison.OrdinalIgnoreCase) >= 0)
 				location |= PropertyStorageLocations.ConfigurationSpecific;
-			if (condition.Contains("$(Platform)"))
+			if (condition.IndexOf("$(Platform)", StringComparison.OrdinalIgnoreCase) >= 0)
 				location |= PropertyStorageLocations.PlatformSpecific;
 			return location;
 		}

@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public struct ConfigurationAndPlatform : IEquatable<ConfigurationAndPlatform>
 	{
-		public static readonly StringComparer ConfigurationNameComparer = StringComparer.Ordinal;
+		public static readonly StringComparer ConfigurationNameComparer = StringComparer.OrdinalIgnoreCase;
 		
 		public static bool IsValidName(string name)
 		{
