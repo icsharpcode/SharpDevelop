@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using Rhino.Mocks;
 
@@ -22,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			Project
 				.Stub(p => p.Items)
 				.Return(null)
-				.WhenCalled(mi => mi.ReturnValue = new ReadOnlyCollection<ProjectItem>(ProjectItems));
+				.WhenCalled(mi => mi.ReturnValue = new ImmutableModelCollection<ProjectItem>(ProjectItems));
 			
 			Project.Stub(p => p.ProjectSpecificProperties).Return(new Properties());
 			

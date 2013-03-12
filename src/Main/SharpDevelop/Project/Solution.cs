@@ -411,13 +411,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			foreach (IProject project in this.Projects) {
 				if (FileUtility.IsBaseDirectory(project.Directory, fileName)) {
-					IProjectItemListProvider provider = project as IProjectItemListProvider;
-					if (provider != null) {
-						foreach (ProjectItem item in provider.Items.ToArray()) {
-							if (FileUtility.IsBaseDirectory(fileName, item.FileName)) {
-								provider.RemoveProjectItem(item);
-								SD.GetRequiredService<IProjectServiceRaiseEvents>().RaiseProjectItemRemoved(new ProjectItemEventArgs(project, item));
-							}
+					foreach (ProjectItem item in project.Items.ToArray()) {
+						if (FileUtility.IsBaseDirectory(fileName, item.FileName)) {
+							project.Items.Remove(item);
 						}
 					}
 				}

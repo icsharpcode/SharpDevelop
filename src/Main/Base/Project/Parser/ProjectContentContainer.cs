@@ -279,7 +279,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		#region Initialize
 		void Initialize(IProgressMonitor progressMonitor, List<FileName> filesToParse)
 		{
-			IReadOnlyCollection<ProjectItem> projectItems = project.Items;
+			IReadOnlyCollection<ProjectItem> projectItems = project.Items.CreateSnapshot();
 			lock (lockObj) {
 				if (disposed) {
 					return;

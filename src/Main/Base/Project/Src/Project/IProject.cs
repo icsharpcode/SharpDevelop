@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// The returned collection is guaranteed not to change - adding new items or removing existing items
 		/// will create a new collection.
 		/// </summary>
-		IReadOnlyCollection<ProjectItem> Items { get; }
+		IMutableModelCollection<ProjectItem> Items { get; }
 		
 		/// <summary>
 		/// Gets all items in the project that have the specified item type.
@@ -309,32 +309,5 @@ namespace ICSharpCode.SharpDevelop.Project
 		bool IsDisposed { get; }
 		
 		event EventHandler Disposed;
-	}
-	
-	/// <summary>
-	/// Interface for adding and removing items from a project. Not part of the IProject
-	/// interface because in nearly all cases, ProjectService.Add/RemoveProjectItem should
-	/// be used instead!
-	/// So IProject implementors should implement this interface, but only the SharpDevelop methods
-	/// ProjectService.AddProjectItem and RemoveProjectItem may call the interface members.
-	/// </summary>
-	public interface IProjectItemListProvider
-	{
-		/// <summary>
-		/// Gets a list of items in the project.
-		/// </summary>
-		IReadOnlyCollection<ProjectItem> Items {
-			get;
-		}
-		
-		/// <summary>
-		/// Adds a new entry to the Items-collection
-		/// </summary>
-		void AddProjectItem(ProjectItem item);
-		
-		/// <summary>
-		/// Removes an entry from the Items-collection
-		/// </summary>
-		bool RemoveProjectItem(ProjectItem item);
 	}
 }

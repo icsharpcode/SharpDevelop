@@ -60,13 +60,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (project == null) throw new ArgumentNullException("project");
 			if (item == null)    throw new ArgumentNullException("item");
-			IProjectItemListProvider provider = project as IProjectItemListProvider;
-			if (provider != null) {
-				provider.AddProjectItem(item);
-				IProjectServiceRaiseEvents re = SD.GetService<IProjectServiceRaiseEvents>();
-				if (re != null)
-					re.RaiseProjectItemAdded(new ProjectItemEventArgs(project, item));
-			}
+			project.Items.Add(item);
 		}
 		
 		/// <summary>
@@ -78,14 +72,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (project == null) throw new ArgumentNullException("project");
 			if (item == null)    throw new ArgumentNullException("item");
-			IProjectItemListProvider provider = project as IProjectItemListProvider;
-			if (provider != null) {
-				if (provider.RemoveProjectItem(item)) {
-					IProjectServiceRaiseEvents re = SD.GetService<IProjectServiceRaiseEvents>();
-					if (re != null)
-						re.RaiseProjectItemRemoved(new ProjectItemEventArgs(project, item));
-				}
-			}
+			project.Items.Remove(item);
 		}
 		
 		[Obsolete("Use SD.ProjectService.OpenSolutionOrProject() instead")]

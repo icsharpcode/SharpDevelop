@@ -279,9 +279,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// will create a new collection.
 		/// </summary>
 		[Browsable(false)]
-		public virtual IReadOnlyCollection<ProjectItem> Items {
+		public virtual IMutableModelCollection<ProjectItem> Items {
 			get {
-				return new ProjectItem[0];
+				return new ImmutableModelCollection<ProjectItem>(Enumerable.Empty<ProjectItem>());
 			}
 		}
 		

@@ -13,8 +13,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using Microsoft.Build.Construction;
@@ -32,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// require locking on the SyncRoot. Methods that return underlying MSBuild objects require that
 	/// the caller locks on the SyncRoot.
 	/// </summary>
-	public class MSBuildBasedProject : AbstractProject, IProjectItemListProvider
+	public class MSBuildBasedProject : AbstractProject
 	{
 		/// <summary>
 		/// The project collection that contains this project.
@@ -159,6 +160,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public MSBuildBasedProject(ProjectCreateInformation information)
 			: base(information)
 		{
+			this.itemsCollection = new ProjectItemCollection(this);
 			this.projectFile = ProjectRootElement.Create(MSBuildProjectCollection);
 			this.userProjectFile = ProjectRootElement.Create(MSBuildProjectCollection);
 			
@@ -914,26 +916,114 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-		#region IProjectItemListProvider interface
-		List<ProjectItem> items = new List<ProjectItem>();
-		volatile IReadOnlyCollection<ProjectItem> itemsReadOnly;
-		volatile IReadOnlyCollection<ItemType> availableFileItemTypes = ItemType.DefaultFileItems;
-		
-		/// <summary>
-		/// Gets the list of items in the project. This member is thread-safe.
-		/// The returned collection is guaranteed not to change - adding new items or removing existing items
-		/// will create a new collection.
-		/// </summary>
-		public override IReadOnlyCollection<ProjectItem> Items {
-			get {
-				IReadOnlyCollection<ProjectItem> c = itemsReadOnly;
+		#region Item management
+		class ProjectItemCollection : IMutableModelCollection<ProjectItem>
+		{
+			readonly MSBuildBasedProject project;
+			
+			public ProjectItemCollection(MSBuildBasedProject project)
+			{
+				this.project = project;
+			}
+			
+			public IReadOnlyCollection<ProjectItem> CreateSnapshot()
+			{
+				IReadOnlyCollection<ProjectItem> c = project.itemsReadOnly;
 				if (c == null) {
-					lock (SyncRoot) {
-						itemsReadOnly = c = items.ToArray();
+					lock (project.SyncRoot) {
+						project.itemsReadOnly = c = project.items.ToArray();
 					}
 				}
 				return c;
 			}
+			
+			public event ModelCollectionChangedEventHandler<ProjectItem> CollectionChanged = delegate {};
+			
+			public int Count {
+				get { return CreateSnapshot().Count; }
+			}
+			
+			bool ICollection<ProjectItem>.IsReadOnly {
+				get { return false; }
+			}
+			
+			void IMutableModelCollection<ProjectItem>.AddRange(IEnumerable<ProjectItem> items)
+			{
+				var newItems = items.ToList();
+				lock (project.SyncRoot) {
+					foreach (var item in newItems)
+						project.AddProjectItem(item);
+				}
+				CollectionChanged(EmptyList<ProjectItem>.Instance, newItems);
+			}
+			
+			int IMutableModelCollection<ProjectItem>.RemoveAll(Predicate<ProjectItem> predicate)
+			{
+				List<ProjectItem> removed = new List<ProjectItem>();
+				foreach (var item in CreateSnapshot()) {
+					if (predicate(item)) {
+						if (project.RemoveProjectItem(item))
+							removed.Add(item);
+					}
+				}
+				CollectionChanged(removed, EmptyList<ProjectItem>.Instance);
+				return removed.Count;
+			}
+			
+			IDisposable IMutableModelCollection<ProjectItem>.BatchUpdate()
+			{
+				return null; // not supported
+			}
+			
+			IEnumerator<ProjectItem> IEnumerable<ProjectItem>.GetEnumerator()
+			{
+				return CreateSnapshot().GetEnumerator();
+			}
+			
+			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			{
+				return CreateSnapshot().GetEnumerator();
+			}
+			
+			void ICollection<ProjectItem>.Add(ProjectItem item)
+			{
+				project.AddProjectItem(item);
+				CollectionChanged(EmptyList<ProjectItem>.Instance, new[] { item });
+			}
+			
+			void ICollection<ProjectItem>.Clear()
+			{
+				throw new NotImplementedException();
+			}
+			
+			bool ICollection<ProjectItem>.Contains(ProjectItem item)
+			{
+				return CreateSnapshot().Contains(item);
+			}
+			
+			void ICollection<ProjectItem>.CopyTo(ProjectItem[] array, int arrayIndex)
+			{
+				foreach (var item in CreateSnapshot())
+					array[arrayIndex++] = item;
+			}
+			
+			bool ICollection<ProjectItem>.Remove(ProjectItem item)
+			{
+				if (project.RemoveProjectItem(item)) {
+					CollectionChanged(new[] { item }, EmptyList<ProjectItem>.Instance);
+					return true;
+				}
+				return false;
+			}
+		}
+		
+		readonly List<ProjectItem> items = new List<ProjectItem>();
+		volatile IReadOnlyCollection<ProjectItem> itemsReadOnly;
+		readonly ProjectItemCollection itemsCollection;
+		volatile IReadOnlyCollection<ItemType> availableFileItemTypes = ItemType.DefaultFileItems;
+		
+		public override IMutableModelCollection<ProjectItem> Items {
+			get { return itemsCollection; }
 		}
 		
 		/// <summary>
@@ -973,6 +1063,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				
 				ClearFindFileCache();
+				// TODO: raise the CollectionChanged event with the appropriate arguments
 			}
 			
 			// refresh project browser to make sure references and other project items are still valid
@@ -981,7 +1072,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				ProjectBrowserPad.RefreshViewAsync();
 		}
 		
-		void IProjectItemListProvider.AddProjectItem(ProjectItem item)
+		void AddProjectItem(ProjectItem item)
 		{
 			if (item == null)
 				throw new ArgumentNullException("item");
@@ -994,31 +1085,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			using (var c = OpenCurrentConfiguration()) {
 				items.Add(item);
 				itemsReadOnly = null; // remove readonly variant of item list - will regenerate on next Items call
-				/*foreach (var g in projectFile.ItemGroups) {
-					if (!string.IsNullOrEmpty(g.Condition) || g.Count == 0)
-						continue;
-					var firstItemInGroup = g.Items.First();
-					if (firstItemInGroup.Name == item.ItemType.ItemName) {
-						MSBuildInternals.AddItemToGroup(g, item);
-						return;
-					}
-					if (firstItemInGroup.ItemType == ItemType.Reference.ItemName)
-						continue;
-					if (ItemType.DefaultFileItems.Contains(new ItemType(firstItemInGroup.ItemType))) {
-						if (ItemType.DefaultFileItems.Contains(item.ItemType)) {
-							MSBuildInternals.AddItemToGroup(g, item);
-							return;
-						} else {
-							continue;
-						}
-					}
-					
-					MSBuildInternals.AddItemToGroup(g, item);
-					return;
-				}
-				var newGroup = projectFile.AddItemGroup();
-				MSBuildInternals.AddItemToGroup(newGroup, item);*/
-				
 				
 				string newInclude = item.TreatIncludeAsLiteral ? MSBuildInternals.Escape(item.Include) : item.Include;
 				var newMetadata = new Dictionary<string, string>();
@@ -1031,9 +1097,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				item.BuildItem = new MSBuildItemWrapper((MSBuildBasedProject)item.Project, newItems[0]);
 				Debug.Assert(item.IsAddedToProject);
 			}
+			IProjectServiceRaiseEvents re = SD.GetService<IProjectServiceRaiseEvents>();
+			if (re != null)
+				re.RaiseProjectItemAdded(new ProjectItemEventArgs(this, item));
 		}
 		
-		bool IProjectItemListProvider.RemoveProjectItem(ProjectItem item)
+		bool RemoveProjectItem(ProjectItem item)
 		{
 			if (item == null)
 				throw new ArgumentNullException("item");
@@ -1048,11 +1117,14 @@ namespace ICSharpCode.SharpDevelop.Project
 					itemsReadOnly = null; // remove readonly variant of item list - will regenerate on next Items call
 					c.Project.RemoveItem(backend.MSBuildItem);
 					item.BuildItem = null; // make the item free again
-					return true;
 				} else {
 					throw new InvalidOperationException("Expected that the item is added to this project!");
 				}
 			}
+			IProjectServiceRaiseEvents re = SD.GetService<IProjectServiceRaiseEvents>();
+			if (re != null)
+				re.RaiseProjectItemRemoved(new ProjectItemEventArgs(this, item));
+			return true;
 		}
 		#endregion
 		
@@ -1117,6 +1189,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public MSBuildBasedProject(ProjectLoadInformation loadInformation)
 			: base(loadInformation)
 		{
+			this.itemsCollection = new ProjectItemCollection(this);
 			isLoading = true;
 			bool success = false;
 			try {

@@ -110,11 +110,8 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				throw new ArgumentNullException("sourceProject");
 			if (targetProject == null)
 				throw new ArgumentNullException("targetProject");
-			IProjectItemListProvider targetProjectItems = targetProject as IProjectItemListProvider;
-			if (targetProjectItems == null)
-				throw new ArgumentNullException("targetProjectItems");
 			
-			IReadOnlyCollection<ProjectItem> sourceItems = sourceProject.Items;
+			IReadOnlyCollection<ProjectItem> sourceItems = sourceProject.Items.CreateSnapshot();
 			double totalWork = 0;
 			foreach (ProjectItem item in sourceItems) {
 				totalWork += GetRequiredWork(item);
@@ -136,9 +133,9 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 							throw new ConversionException("Error converting " + fileItem.FileName, ex);
 						}
 					}
-					targetProjectItems.AddProjectItem(targetItem);
+					targetProject.Items.Add(targetItem);
 				} else {
-					targetProjectItems.AddProjectItem(item.CloneFor(targetProject));
+					targetProject.Items.Add(item.CloneFor(targetProject));
 				}
 				monitor.CancellationToken.ThrowIfCancellationRequested();
 				monitor.Progress += GetRequiredWork(item) / totalWork;

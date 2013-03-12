@@ -412,7 +412,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				
 				#region Create Project Items, Imports and Files
 				// Add Project items
-				if (project is IProjectItemListProvider)
+				if (!project.Items.IsReadOnly)
 				{
 					foreach (ProjectItem projectItem in projectItems) {
 						ProjectItem newProjectItem = new UnknownProjectItem(
@@ -431,7 +431,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 							else
 								newProjectItem.SetEvaluatedMetadata(StringParser.Parse(metadataName), StringParser.Parse(metadataValue));
 						}
-						((IProjectItemListProvider)project).AddProjectItem(newProjectItem);
+						project.Items.Add(newProjectItem);
 					}
 				}
 				
@@ -482,7 +482,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				}
 				
 				// Add Files
-				if (project is IProjectItemListProvider) {
+				if (!project.Items.IsReadOnly) {
 					
 					foreach (FileDescriptionTemplate file in files) {
 						string fileName = Path.Combine(projectBasePath, StringParser.Parse(file.Name, new StringTagPair("ProjectName", projectCreateOptions.ProjectName)));
@@ -492,7 +492,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 						
 						file.SetProjectItemProperties(projectFile);
 						
-						((IProjectItemListProvider)project).AddProjectItem(projectFile);
+						project.Items.Add(projectFile);
 					}
 				}
 				
