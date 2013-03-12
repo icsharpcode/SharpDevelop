@@ -63,6 +63,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Dispose()
 		{
+			DisposeThisClass();
+		}
+		
+		void DisposeThisClass()
+		{
 			base.Dispose();
 			UnloadCurrentlyOpenProject();
 			// unload project + userProject:
@@ -1113,6 +1118,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			: base(loadInformation)
 		{
 			isLoading = true;
+			bool success = false;
 			try {
 				try {
 					LoadProjectInternal(loadInformation);
@@ -1121,12 +1127,14 @@ namespace ICSharpCode.SharpDevelop.Project
 						throw;
 					}
 				}
+				success = true;
 			} catch (InvalidProjectFileException ex) {
 				LoggingService.Warn(ex);
 				LoggingService.Warn("ErrorCode = " + ex.ErrorCode);
-				Dispose();
 				throw new ProjectLoadException(ex.Message, ex);
 			} finally {
+				if (!success)
+					DisposeThisClass();
 				isLoading = false;
 			}
 		}

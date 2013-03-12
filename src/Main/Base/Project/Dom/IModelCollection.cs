@@ -37,6 +37,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public interface IMutableModelCollection<T> : IModelCollection<T>, ICollection<T>
 	{
 		/// <summary>
+		/// Gets the number of items in the collection.
+		/// </summary>
+		/// <remarks>
+		/// Disambiguates between IReadOnlyCollection.Count and ICollection.Count
+		/// </remarks>
+		new int Count { get; }
+		
+		/// <summary>
 		/// Adds the specified items to the collection.
 		/// </summary>
 		void AddRange(IEnumerable<T> items);

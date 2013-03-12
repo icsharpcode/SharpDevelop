@@ -202,5 +202,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 
 		#endregion
 	}
+	
+	/// <summary>
+	/// A model collection implementation that disallows null values.
+	/// </summary>
+	public class NullSafeSimpleModelCollection<T> : SimpleModelCollection<T> where T : class
+	{
+		protected override void ValidateItem(T item)
+		{
+			if (item == null)
+				throw new ArgumentNullException("item");
+			base.ValidateItem(item);
+		}
+	}
 }
 

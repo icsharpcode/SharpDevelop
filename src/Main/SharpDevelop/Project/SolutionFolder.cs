@@ -53,13 +53,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			protected override void OnCollectionChanged(IReadOnlyCollection<ISolutionItem> removedItems, IReadOnlyCollection<ISolutionItem> addedItems)
 			{
-				foreach (ISolutionItem item in removedItems) {
-					folder.parentSolution.ReportRemovedItem(item);
-					item.ParentFolder = null;
-				}
-				foreach (ISolutionItem item in addedItems) {
-					item.ParentFolder = folder;
-					folder.parentSolution.ReportAddedItem(item);
+				using (folder.parentSolution.ReportBatch()) {
+					foreach (ISolutionItem item in removedItems) {
+						folder.parentSolution.ReportRemovedItem(item);
+						item.ParentFolder = null;
+					}
+					foreach (ISolutionItem item in addedItems) {
+						item.ParentFolder = folder;
+						folder.parentSolution.ReportAddedItem(item);
+					}
 				}
 				base.OnCollectionChanged(removedItems, addedItems);
 				folder.parentSolution.IsDirty = true;
@@ -73,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-		public string Name { get; set; }
+		public virtual string Name { get; set; }
 		
 		public ISolutionFolder ParentFolder { get; set; }
 		

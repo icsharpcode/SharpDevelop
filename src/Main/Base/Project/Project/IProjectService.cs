@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// This event is raised after a solution is opened.
 		/// </summary>
-		event EventHandler<SolutionEventArgs> SolutionLoaded;
+		event EventHandler<SolutionEventArgs> SolutionOpened;
 		
 		/// <summary>
 		/// This event is raised before a solution is closed.
@@ -76,7 +76,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// This method may only be called on the main thread.
 		/// If any errors occur, this method may display an error dialog.
 		/// </remarks>
-		void OpenSolutionOrProject(FileName fileName);
+		bool OpenSolutionOrProject(FileName fileName);
+		
+		/// <summary>
+		/// Opens a solution in the IDE.
+		/// </summary>
+		bool OpenSolution(FileName fileName);
+		
+		/// <summary>
+		/// Opens a solution in the IDE that was created/loaded earlier.
+		/// </summary>
+		bool OpenSolution(ISolution solution);
 		
 		/// <summary>
 		/// Closes the solution: cancels build, clears solution data, fires the SolutionClosing and SolutionClosed events.
@@ -91,13 +101,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		bool CloseSolution(bool allowCancel = true);
 		
 		/// <summary>
-		/// Returns if the given file is considered a project or solution file.
+		/// Returns if the given file is considered a solution or project file.
 		/// This method looks at the list of registered file extensions in /SharpDevelop/Workbench/ProjectBinding.
 		/// </summary>
 		/// <remarks>
 		/// This method is thread-safe.
 		/// </remarks>
-		bool IsProjectOrSolutionFile(FileName fileName);
+		bool IsSolutionOrProjectFile(FileName fileName);
 		
 		/// <summary>
 		/// Loads a solution file without opening it in the IDE.

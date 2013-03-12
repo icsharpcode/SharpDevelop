@@ -43,11 +43,38 @@ namespace ICSharpCode.SharpDevelop
 		#endregion
 		
 		#region Create Observable from Task + Callback Delegate
+		/// <summary>
+		/// Converts an async function that produces a result collection using callbacks,
+		/// into an IObservable.
+		/// </summary>
+		/// <param name="func">
+		/// The async function will run once for each subscription on the observable.
+		/// </param>
+		/// <remarks>
+		/// The async function gets passed a cancellation token. This token will get signalled when the observable subscription is cancelled.
+		/// </remarks>
 		public static IObservable<T> CreateObservable<T>(Func<CancellationToken, Action<T>, Task> func)
 		{
 			return new AnonymousObservable<T>(observer => new TaskToObserverSubscription<T>(func, observer));
 		}
 		
+		/// <summary>
+		/// Converts an async function that produces a result collection using callbacks,
+		/// into an IObservable.
+		/// </summary>
+		/// <param name="func">
+		/// The async function will run once for each subscription on the observable.
+		/// </param>
+		/// <param name="progressMonitor">
+		/// The progress monitor used to report progress. The monitor will be disposed after the async function
+		/// completes.
+		/// The async function is given a child monitor of this progress monitor: it forwards all
+		/// calls to the parent progress monitor, but uses a cancellation token that gets signalled
+		/// when the observable subscription is cancelled.
+		/// </param>
+		/// <remarks>
+		/// Multiple subscriptions on the observable do not work well together with progress reporting.
+		/// </remarks>
 		public static IObservable<T> CreateObservable<T>(Func<IProgressMonitor, Action<T>, Task> func, IProgressMonitor progressMonitor)
 		{
 			return new AnonymousObservable<T>(observer => new TaskToObserverSubscription<T>(func, progressMonitor, observer));
@@ -101,11 +128,122 @@ namespace ICSharpCode.SharpDevelop
 		}
 		#endregion
 		
+		#region First/Single/Last
+		public static Task<T> FirstAsync<T>(this IObservable<T> source, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return FirstInternalAsync(source, cancellationToken, true);
+		}
+		
+		public static Task<T> FirstOrDefaultAsync<T>(this IObservable<T> source, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return FirstInternalAsync(source, cancellationToken, false);
+		}
+		
+		static async Task<T> FirstInternalAsync<T>(IObservable<T> source, CancellationToken cancellationToken, bool throwIfEmpty)
+		{
+			var tcs = new TaskCompletionSource<T>();
+			Action onCompleted;
+			if (throwIfEmpty)
+				onCompleted = () => tcs.TrySetException(new InvalidOperationException());
+			else
+				onCompleted = () => tcs.TrySetResult(default(T));
+			using (source.Subscribe(item => tcs.TrySetResult(item),
+			                        exception => tcs.TrySetException(exception),
+			                        onCompleted))
+			{
+				using (cancellationToken.Register(() => tcs.TrySetCanceled())) {
+					return await tcs.Task.ConfigureAwait(false);
+				}
+			}
+		}
+		
+		public static Task<T> SingleAsync<T>(this IObservable<T> source, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return SingleInternalAsync(source, cancellationToken, true);
+		}
+		
+		public static Task<T> SingleOrDefaultAsync<T>(this IObservable<T> source, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return SingleInternalAsync(source, cancellationToken, false);
+		}
+		
+		static async Task<T> SingleInternalAsync<T>(IObservable<T> source, CancellationToken cancellationToken, bool throwIfEmpty)
+		{
+			SemaphoreSlim gate = new SemaphoreSlim(0);
+			T value = default(T);
+			bool isEmpty = true;
+			Exception ex = null;
+			using (source.Subscribe(
+				item => {
+					if (isEmpty) {
+						value = item;
+						isEmpty = false;
+					} else {
+						ex = new InvalidOperationException("Sequence contains more than one element.");
+						gate.Release();
+					}
+				},
+				exception => {
+					ex = exception;
+					gate.Release();
+				},
+				() => {
+					gate.Release();
+				}))
+			{
+				await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+			}
+			if (ex != null)
+				throw ex;
+			if (isEmpty && throwIfEmpty)
+				throw new InvalidOperationException("Sequence contains no elements.");
+			return value;
+		}
+		
+		public static Task<T> LastAsync<T>(this IObservable<T> source, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return LastInternalAsync(source, cancellationToken, true);
+		}
+		
+		public static Task<T> LastOrDefaultAsync<T>(this IObservable<T> source, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return LastInternalAsync(source, cancellationToken, false);
+		}
+		
+		static async Task<T> LastInternalAsync<T>(IObservable<T> source, CancellationToken cancellationToken, bool throwIfEmpty)
+		{
+			SemaphoreSlim gate = new SemaphoreSlim(0);
+			T value = default(T);
+			bool isEmpty = true;
+			Exception ex = null;
+			using (source.Subscribe(
+				item => {
+					value = item;
+					isEmpty = false;
+				},
+				exception => {
+					ex = exception;
+					gate.Release();
+				},
+				() => {
+					gate.Release();
+				}))
+			{
+				await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+			}
+			if (ex != null)
+				throw ex;
+			if (isEmpty && throwIfEmpty)
+				throw new InvalidOperationException("Sequence contains no elements.");
+			return value;
+		}
+		#endregion
+		
 		#region ToListAsync
 		/// <summary>
 		/// Converts the observable into a List.
 		/// </summary>
-		public static async Task<List<T>> ToListAsync<T>(this IObservable<T> source, CancellationToken cancellationToken)
+		public static async Task<List<T>> ToListAsync<T>(this IObservable<T> source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var tcs = new TaskCompletionSource<List<T>>();
 			List<T> results = new List<T>();

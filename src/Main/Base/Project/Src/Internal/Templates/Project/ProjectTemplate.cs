@@ -26,6 +26,13 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		public string SolutionName { get; set; }
 		public string ProjectName { get; set; }
 		public TargetFramework TargetFramework { get; set; }
+		
+		public IList<IProject> CreatedProjects { get; private set; }
+		
+		public ProjectCreateOptions()
+		{
+			this.CreatedProjects = new List<IProject>();
+		}
 	}
 	
 	/// <summary>

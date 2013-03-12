@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Obsolete("Use SD.ProjectService.IsProjectOrSolutionFile instead")]
 		public static bool HasProjectLoader(string fileName)
 		{
-			return SD.ProjectService.IsProjectOrSolutionFile(FileName.Create(fileName));
+			return SD.ProjectService.IsSolutionOrProjectFile(FileName.Create(fileName));
 		}
 		
 		[Obsolete("Use SD.ProjectService.OpenSolutionOrProject instead")]
@@ -198,8 +198,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		public static event EventHandler<SolutionEventArgs> SolutionLoaded {
-			add { SD.ProjectService.SolutionLoaded += value; }
-			remove { SD.ProjectService.SolutionLoaded -= value; }
+			add { SD.ProjectService.SolutionOpened += value; }
+			remove { SD.ProjectService.SolutionOpened -= value; }
 		}
 		
 		public static event EventHandler<SolutionEventArgs> SolutionClosed {

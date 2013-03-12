@@ -44,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.configurationMapping = information.ConfigurationMapping ?? new ConfigurationMapping();
 			this.Name = information.ProjectName;
 			this.FileName = information.FileName;
-			this.idGuid = information.IdGuid;
+			this.idGuid = (information.IdGuid != Guid.Empty ? information.IdGuid : Guid.NewGuid());
 			this.TypeGuid = information.TypeGuid;
 			if (information.ProjectSections != null)
 				this.projectSections.AddRange(information.ProjectSections);

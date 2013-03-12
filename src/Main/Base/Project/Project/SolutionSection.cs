@@ -74,47 +74,56 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		public int Count {
-			get { return entries.Count; }
+			get {
+				lock (entries)
+					return entries.Count;
+			}
 		}
 		
 		public void Add(string key, string value)
 		{
 			Validate(key, value);
-			entries.Add(new KeyValuePair<string, string>(key, value));
+			lock (entries)
+				entries.Add(new KeyValuePair<string, string>(key, value));
 			Changed(this, EventArgs.Empty);
 		}
 
 		public bool Remove(string key)
 		{
-			if (entries.RemoveAll(e => e.Key == key) > 0) {
+			bool result;
+			lock (entries)
+				result = entries.RemoveAll(e => e.Key == key) > 0;
+			if (result)
 				Changed(this, EventArgs.Empty);
-				return true;
-			} else {
-				return false;
-			}
+			return result;
 		}
 
 		public void Clear()
 		{
-			entries.Clear();
+			lock (entries)
+				entries.Clear();
 			Changed(this, EventArgs.Empty);
 		}
 
 		public bool ContainsKey(string key)
 		{
-			for (int i = 0; i < entries.Count; i++) {
-				if (entries[i].Key == key)
-					return true;
+			lock (entries) {
+				for (int i = 0; i < entries.Count; i++) {
+					if (entries[i].Key == key)
+						return true;
+				}
 			}
 			return false;
 		}
 
 		public bool TryGetValue(string key, out string value)
 		{
-			for (int i = 0; i < entries.Count; i++) {
-				if (entries[i].Key == key) {
-					value = entries[i].Value;
-					return true;
+			lock (entries) {
+				for (int i = 0; i < entries.Count; i++) {
+					if (entries[i].Key == key) {
+						value = entries[i].Value;
+						return true;
+					}
 				}
 			}
 			value = null;
@@ -123,46 +132,56 @@ namespace ICSharpCode.SharpDevelop.Project
 
 		public string this[string key] {
 			get {
-				for (int i = 0; i < entries.Count; i++) {
-					if (entries[i].Key == key) {
-						return entries[i].Value;
+				lock (entries) {
+					for (int i = 0; i < entries.Count; i++) {
+						if (entries[i].Key == key) {
+							return entries[i].Value;
+						}
 					}
 				}
 				return null;
 			}
 			set {
 				Validate(key, value);
-				for (int i = 0; i < entries.Count; i++) {
-					if (entries[i].Key == key) {
-						entries[i] = new KeyValuePair<string, string>(key, value);
-						Changed(this, EventArgs.Empty);
-						return;
+				lock (entries) {
+					bool found = false;
+					for (int i = 0; i < entries.Count; i++) {
+						if (entries[i].Key == key) {
+							entries[i] = new KeyValuePair<string, string>(key, value);
+							found = true;
+							break;
+						}
 					}
+					if (!found)
+						entries.Add(new KeyValuePair<string, string>(key, value));
 				}
-				Add(key, value);
+				Changed(this, EventArgs.Empty);
 			}
 		}
 
 		public IEnumerable<string> Keys {
 			get {
-				return entries.Select(e => e.Key);
+				lock (entries)
+					return entries.Select(e => e.Key).ToArray();
 			}
 		}
 
 		public IEnumerable<string> Values {
 			get {
-				return entries.Select(e => e.Value);
+				lock (entries)
+					return entries.Select(e => e.Value).ToArray();
 			}
 		}
 		
 		public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
 		{
-			return entries.GetEnumerator();
+			lock (entries)
+				return entries.ToList().GetEnumerator();
 		}
 		
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return entries.GetEnumerator();
+			return GetEnumerator();
 		}
 	}
 }

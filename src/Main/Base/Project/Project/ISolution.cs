@@ -19,6 +19,11 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// <summary>
 	/// Represents a solution.
 	/// </summary>
+	/// <remarks>
+	/// This interface is thread-safe for read-access. Background threads may read from ISolution
+	/// even while the main thread is modifying the solution.
+	/// However, only the main thread is allowed to modify the solution.
+	/// </remarks>
 	public interface ISolution : ISolutionFolder, ICanBeDirty, IConfigurable, IDisposable
 	{
 		Microsoft.Build.Evaluation.ProjectCollection MSBuildProjectCollection { get; }

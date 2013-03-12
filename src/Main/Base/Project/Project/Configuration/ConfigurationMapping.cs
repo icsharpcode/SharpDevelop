@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// The configuration mapping was changed.
 		/// </summary>
-		public event EventHandler Changed;
+		public event EventHandler Changed = delegate { };
 		
 		Dictionary<ConfigurationAndPlatform, Entry> dict = new Dictionary<ConfigurationAndPlatform, Entry>();
 		
@@ -66,10 +66,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (string.IsNullOrEmpty(projectConfiguration.Configuration))
 				throw new ArgumentException("Invalid project configuration");
-			if (string.IsNullOrEmpty(projectConfiguration.Platform) || projectConfiguration.Platform == "Any CPU")
+			if (string.IsNullOrEmpty(projectConfiguration.Platform))
 				throw new ArgumentException("Invalid project platform");
 			lock (dict) {
-				GetOrCreateEntry(solutionConfiguration).Config = projectConfiguration;
+				GetOrCreateEntry(solutionConfiguration).Config = new ConfigurationAndPlatform(
+					projectConfiguration.Configuration,
+					MSBuildInternals.FixPlatformNameForProject(projectConfiguration.Platform)
+				);
 			}
 			Changed(this, EventArgs.Empty);
 		}

@@ -57,7 +57,8 @@ namespace CSharpBinding
 			: base(loadInformation)
 		{
 			Init();
-			InitializeProjectContent(new CSharpProjectContent());
+			if (loadInformation.InitializeTypeSystem)
+				InitializeProjectContent(new CSharpProjectContent());
 		}
 		
 		public const string DefaultTargetsFile = @"$(MSBuildToolsPath)\Microsoft.CSharp.targets";

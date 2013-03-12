@@ -93,7 +93,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				try {
 					var fullFileName = FileName.Create(Path.GetFullPath(file));
 					
-					if (SD.ProjectService.IsProjectOrSolutionFile(fullFileName)) {
+					if (SD.ProjectService.IsSolutionOrProjectFile(fullFileName)) {
 						SD.ProjectService.OpenSolutionOrProject(fullFileName);
 					} else {
 						SharpDevelop.FileService.OpenFile(fullFileName);

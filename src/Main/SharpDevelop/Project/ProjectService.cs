@@ -124,20 +124,21 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region OpenSolutionOrProject
-		public event EventHandler<SolutionEventArgs> SolutionLoaded = delegate {};
+		public event EventHandler<SolutionEventArgs> SolutionOpened = delegate {};
 		
-		public void OpenSolutionOrProject(FileName fileName)
+		public bool OpenSolutionOrProject(FileName fileName)
 		{
-			if (!IsProjectOrSolutionFile(fileName)) {
+			if (!IsSolutionOrProjectFile(fileName)) {
 				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new StringTagPair("FileName", fileName)));
-				return;
+				return false;
 			}
 			if (!CloseSolution(allowCancel: true))
-				return;
-			FileUtility.ObservedLoad(OpenSolutionOrProjectInternal, fileName);
+				return false;
+			FileUtility.ObservedLoad(OpenSolutionInternal, fileName);
+			return currentSolution != null;
 		}
 		
-		void OpenSolutionOrProjectInternal(FileName fileName)
+		void OpenSolutionInternal(FileName fileName)
 		{
 			ISolution solution;
 			using (var progress = AsynchronousWaitDialog.ShowWaitDialog("Loading Solution...")) {
@@ -153,7 +154,29 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				this.CurrentSolution = solution;
 			}
-			SolutionLoaded(this, new SolutionEventArgs(solution));
+			OnSolutionOpened(solution);
+		}
+		
+		public bool OpenSolution(FileName fileName)
+		{
+			if (!CloseSolution(allowCancel: true))
+				return false;
+			FileUtility.ObservedLoad(OpenSolutionInternal, fileName);
+			return currentSolution != null;
+		}
+		
+		public bool OpenSolution(ISolution solution)
+		{
+			if (!CloseSolution(allowCancel: true))
+				return false;
+			this.CurrentSolution = solution;
+			OnSolutionOpened(solution);
+			return true;
+		}
+		
+		void OnSolutionOpened(ISolution solution)
+		{
+			SolutionOpened(this, new SolutionEventArgs(solution));
 			SD.FileService.RecentOpen.AddRecentProject(solution.FileName);
 			Project.Converter.UpgradeViewContent.ShowIfRequired(solution);
 		}
@@ -266,8 +289,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-		#region IsProjectOrSolutionFile
-		public bool IsProjectOrSolutionFile(FileName fileName)
+		#region IsSolutionOrProjectFile
+		public bool IsSolutionOrProjectFile(FileName fileName)
 		{
 			AddInTreeNode addinTreeNode = SD.AddInTree.GetTreeNode("/SharpDevelop/Workbench/Combine/FileFilter");
 			foreach (Codon codon in addinTreeNode.Codons) {

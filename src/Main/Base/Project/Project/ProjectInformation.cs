@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -24,23 +25,47 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.ProjectSections = new List<SolutionSection>();
 			this.ConfigurationMapping = new ConfigurationMapping();
 			var solutionConfig = solution.ActiveConfiguration;
-			// In unit tests, ActiveConfiguration mayb return null
+			// In unit tests, ActiveConfiguration maybe return null
 			if (solutionConfig.Configuration != null && solutionConfig.Platform != null)
 				this.ActiveProjectConfiguration = this.ConfigurationMapping.GetProjectConfiguration(solution.ActiveConfiguration);
 			else
 				this.ActiveProjectConfiguration = new ConfigurationAndPlatform("Debug", "AnyCPU");
+			this.InitializeTypeSystem = true;
 		}
 		
 		public ISolution Solution { get; private set; }
 		public FileName FileName { get; private set; }
+		
+		/// <summary>
+		/// Specifies the mapping between solution configurations and project configurations.
+		/// </summary>
 		public ConfigurationMapping ConfigurationMapping { get; set; }
+		
+		/// <summary>
+		/// Specified the project configuration that should be initially active when the project is loaded.
+		/// </summary>
 		public ConfigurationAndPlatform ActiveProjectConfiguration { get; set; }
+		
 		public IList<SolutionSection> ProjectSections { get; private set; }
 		public string ProjectName { get; set; }
 		
+		/// <summary>
+		/// Specified the ID GUID for the project.
+		/// If this property isn't set (stays at Guid.Empty), the project should generate a new GUID. (see AbstractProject ctor)
+		/// </summary>
 		public Guid IdGuid { get; set; }
+		
+		/// <summary>
+		/// Specifies the type GUID for the project.
+		/// Necessary for both project creation and loading.
+		/// </summary>
 		public Guid TypeGuid { get; set; }
 		
+		/// <summary>
+		/// Specifies whether to initialize the type system for the project.
+		/// The default is <c>true</c>.
+		/// </summary>
+		public bool InitializeTypeSystem { get; set; }
 	}
 	
 	/// <summary>
@@ -91,6 +116,5 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public string RootNamespace { get; set; }
 		public TargetFramework TargetFramework { get; set; }
-		public bool InitializeTypeSystem { get; set; }
 	}
 }

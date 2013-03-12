@@ -100,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					foreach (string file in files) {
 						try {
 							var fileName = FileName.Create(file);
-							if (SD.ProjectService.IsProjectOrSolutionFile(fileName))
+							if (SD.ProjectService.IsSolutionOrProjectFile(fileName))
 								SD.ProjectService.OpenSolutionOrProject(fileName);
 							else
 								FileService.OpenFile(fileName);

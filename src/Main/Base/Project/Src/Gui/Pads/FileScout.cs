@@ -399,7 +399,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			foreach (FileList.FileListItem item in filelister.SelectedItems) {
 				var fileName = FileName.Create(item.FullName);
-				if (SD.ProjectService.IsProjectOrSolutionFile(fileName))
+				if (SD.ProjectService.IsSolutionOrProjectFile(fileName))
 					SD.ProjectService.OpenSolutionOrProject(fileName);
 				else
 					FileService.OpenFile(fileName);

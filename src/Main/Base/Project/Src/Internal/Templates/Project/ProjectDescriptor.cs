@@ -507,6 +507,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				
 				
 				ProjectService.OnProjectCreated(new ProjectEventArgs(project));
+				projectCreateOptions.CreatedProjects.Add(project);
 				success = true;
 				return project;
 			} finally {

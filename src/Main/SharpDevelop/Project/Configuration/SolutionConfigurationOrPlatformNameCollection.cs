@@ -12,36 +12,55 @@ using Microsoft.Build.Logging;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
+	/// <summary>
+	/// Implementation for the <see cref="ISolution.ConfigurationNames"/> and <see cref="ISolution.PlatformNames"/> lists.
+	/// </summary>
+	/// <remarks>
+	/// This class provides thread-safe read access even if there is a concurrent write operation.
+	/// However, multiple concurrent writes are not supported.
+	/// The intended use is that only the main thread will write to this collection; but background threads may read at any time.
+	/// </remarks>
 	class SolutionConfigurationOrPlatformNameCollection : IConfigurationOrPlatformNameCollection
 	{
 		public event ModelCollectionChangedEventHandler<string> CollectionChanged;
-
+		
 		readonly List<string> list = new List<string>();
-		readonly Solution solution;
+		volatile IReadOnlyList<string> listSnapshot = EmptyList<string>.Instance;
+		readonly ISolution solution;
 		readonly bool isPlatform;
 		
-		public SolutionConfigurationOrPlatformNameCollection(Solution solution, bool isPlatform)
+		public SolutionConfigurationOrPlatformNameCollection(ISolution solution, bool isPlatform)
 		{
 			this.solution = solution;
 			this.isPlatform = isPlatform;
 		}
 		
-		#region IReadOnlyCollection implementation
-
-		public int Count {
-			get { return list.Count; }
+		void OnCollectionChanged(IReadOnlyCollection<string> oldItems, IReadOnlyCollection<string> newItems)
+		{
+			this.listSnapshot = list.ToArray();
+			var eh = CollectionChanged;
+			if (eh != null)
+				eh(oldItems, newItems);
 		}
-
+		
+		#region IReadOnlyCollection implementation
+		
+		public int Count {
+			get {
+				return listSnapshot.Count;
+			}
+		}
+		
 		public IEnumerator<string> GetEnumerator()
 		{
-			return list.GetEnumerator();
+			return listSnapshot.GetEnumerator();
 		}
-
+		
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
-			return list.GetEnumerator();
+			return listSnapshot.GetEnumerator();
 		}
-
+		
 		#endregion
 		
 		public string ValidateName(string name)
@@ -59,6 +78,7 @@ namespace ICSharpCode.SharpDevelop.Project
 
 		void IConfigurationOrPlatformNameCollection.Add(string newName, string copyFrom)
 		{
+			SD.MainThread.VerifyAccess();
 			newName = ValidateName(newName);
 			if (newName == null)
 				throw new ArgumentException();
@@ -79,12 +99,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void IConfigurationOrPlatformNameCollection.Remove(string name)
 		{
+			SD.MainThread.VerifyAccess();
 			int pos = GetIndex(name);
-			if (pos >= 0) {
-				name = list[pos]; // get the name in original case
-				list.RemoveAt(pos);
-				OnCollectionChanged(new[] { name }, EmptyList<string>.Instance);
-			}
+			if (pos < 0)
+				return;
+			name = list[pos]; // get the name in original case
+			list.RemoveAt(pos);
+			OnCollectionChanged(new[] { name }, EmptyList<string>.Instance);
 		}
 		
 		void IConfigurationOrPlatformNameCollection.Rename(string oldName, string newName)
@@ -96,19 +117,22 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (pos < 0)
 				throw new ArgumentException();
 			oldName = list[pos]; // get oldName in original case
-			foreach (var project in solution.Projects) {
-				throw new NotImplementedException();
-				//project.ConfigurationMapping.RenameSolutionConfig(oldName, newName, isPlatform);
-			}
 			list[pos] = newName;
+			listSnapshot = null;
 			OnCollectionChanged(new[] { oldName }, new[] { newName });
-		}
-		
-		void OnCollectionChanged(IReadOnlyCollection<string> oldItems, IReadOnlyCollection<string> newItems)
-		{
-			if (CollectionChanged != null)
-				CollectionChanged(oldItems, newItems);
-			solution.IsDirty = true;
+			
+			foreach (var project in solution.Projects) {
+				var mapping = project.ConfigurationMapping;
+				foreach (string otherName in isPlatform ? solution.ConfigurationNames : solution.PlatformNames) {
+					var oldSolutionConfig = isPlatform ? new ConfigurationAndPlatform(otherName, oldName) : new ConfigurationAndPlatform(oldName, otherName);
+					var newSolutionConfig = isPlatform ? new ConfigurationAndPlatform(otherName, newName) : new ConfigurationAndPlatform(newName, otherName);
+					var projectConfig = mapping.GetProjectConfiguration(oldSolutionConfig);
+					var buildEnabled = mapping.IsBuildEnabled(oldSolutionConfig);
+					mapping.Remove(oldSolutionConfig);
+					mapping.SetProjectConfiguration(newSolutionConfig, projectConfig);
+					mapping.SetBuildEnabled(newSolutionConfig, buildEnabled);
+				}
+			}
 		}
 	}
 }

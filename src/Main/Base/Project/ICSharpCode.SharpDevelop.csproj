@@ -95,6 +95,7 @@
     <Compile Include="Dom\ModelCollectionLinq.cs" />
     <Compile Include="Dom\ReadOnlyModelCollection.cs" />
     <Compile Include="Dom\SimpleModelCollection.cs" />
+    <Compile Include="Dom\SynchronizedModelCollection.cs" />
     <Compile Include="Editor\AvalonEditTextEditorAdapter.cs" />
     <Compile Include="Editor\Bookmarks\BookmarkBase.cs" />
     <Compile Include="Editor\Bookmarks\BookmarkEventArgs.cs" />

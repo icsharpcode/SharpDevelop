@@ -27,6 +27,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.ConfigurationNames = new SolutionConfigurationOrPlatformNameCollection(this, false);
 			this.PlatformNames = new SolutionConfigurationOrPlatformNameCollection(this, true);
 			this.FileName = fileName;
+			base.Name = fileName.GetFileNameWithoutExtension();
+			
+			this.globalSections = new SynchronizedModelCollection<SolutionSection>(new NullSafeSimpleModelCollection<SolutionSection>());
+			globalSections.CollectionChanged += OnSolutionSectionCollectionChanged;
 			
 			fileService.FileRenamed += FileServiceFileRenamed;
 			fileService.FileRemoved += FileServiceFileRemoved;
@@ -60,6 +64,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public DirectoryName Directory {
 			get { return directory; }
+		}
+		
+		public override string Name {
+			get {
+				return base.Name;
+			}
+			set {
+				throw new NotImplementedException();
+			}
 		}
 		#endregion
 		
@@ -100,8 +113,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Project list
-		SimpleModelCollection<IProject> projects = new SimpleModelCollection<IProject>();
-		// TODO: thread-safety?
+		IMutableModelCollection<IProject> projects = new SynchronizedModelCollection<IProject>(new SimpleModelCollection<IProject>());
 		
 		public IModelCollection<IProject> Projects {
 			get { return projects; }
@@ -132,6 +144,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				delegate {
 					project.Dispose();
 				}, DispatcherPriority.Background);
+		}
+		
+		internal IDisposable ReportBatch()
+		{
+			return projects.BatchUpdate();
 		}
 		
 		internal void ReportRemovedItem(ISolutionItem oldItem)
@@ -165,7 +182,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		SimpleModelCollection<SolutionSection> globalSections = new SimpleModelCollection<SolutionSection>();
+		readonly IMutableModelCollection<SolutionSection> globalSections;
 		
 		public IMutableModelCollection<SolutionSection> GlobalSections {
 			get { return globalSections; }

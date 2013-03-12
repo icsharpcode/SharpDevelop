@@ -226,7 +226,6 @@
     <Compile Include="Src\PackageManagementServiceProvider.cs" />
     <Compile Include="Src\ProjectBuilder.cs" />
     <Compile Include="Src\VirtualMethodUpdater.cs" />
-    <Compile Include="Src\NewProjectsCreated.cs" />
     <Compile Include="Src\OpenMSBuildProjects.cs" />
     <Compile Include="Src\PackageActionRunner.cs" />
     <Compile Include="Src\PackageActionsToRun.cs" />

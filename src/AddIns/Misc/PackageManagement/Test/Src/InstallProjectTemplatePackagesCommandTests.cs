@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Input;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -37,20 +38,18 @@ namespace PackageManagement.Tests
 		
 		void RunCommandWithProjectCreateInfoAsOwner(List<TestableProject> projects)
 		{
-			throw new NotImplementedException();
-			/*var createInfo = new ProjectCreateInformation(projects);
-			createInfo.Solution = projects[0].ParentSolution;
+			var createInfo = new ProjectCreateOptions();
+			createInfo.CreatedProjects.AddRange(projects);
 			
-			command.FakeProjectService.AllProjects.Inputs.Add(new ReadOnlyModelCollection<IProject>(projects));
+			command.FakeProjectService.ProjectCollections.Add(new ReadOnlyModelCollection<IProject>(projects));
 			
-			RunCommandWithProjectCreateInfoAsOwner(createInfo);*/
+			RunCommandWithProjectCreateInfoAsOwner(createInfo);
 		}
 		
-		void RunCommandWithProjectCreateInfoAsOwner(ProjectCreateInformation createInfo)
+		void RunCommandWithProjectCreateInfoAsOwner(ProjectCreateOptions createInfo)
 		{
-			command.Owner = createInfo;
-			command.Run();
-		}		
+			((ICommand)command).Execute(createInfo);
+		}
 		
 		void RunCommandWithExceptionThrowingPackageReferences(Exception exception)
 		{
@@ -71,27 +70,6 @@ namespace PackageManagement.Tests
 			MSBuildBasedProject project = command.ProjectPassedToCreatePackageReferencesForProject;
 			
 			Assert.AreEqual(expectedProject, project);
-		}
-		
-		[Test]
-		public void Run_OneProjectCreatedByNewProjectDialog_ProjectUsedToCreatePackageReferencesIsTakenFromOpenProjectsNotCreateInfo()
-		{
-			CreateCommand();
-			TestableProject createInfoProject = CreateFakeProject("Test");
-			var projects = new List<IProject>();
-			projects.Add(createInfoProject);
-			throw new NotImplementedException();
-			
-			/*var createInfo = new ProjectCreateInformation(projects);
-			
-			TestableProject expectedProject = ProjectHelper.CreateTestProject("TEST");
-			command.FakeProjectService.AddProject(expectedProject);
-			
-			RunCommandWithProjectCreateInfoAsOwner(createInfo);
-			
-			MSBuildBasedProject project = command.ProjectPassedToCreatePackageReferencesForProject;
-			
-			Assert.AreEqual(expectedProject, project);*/
 		}
 		
 		[Test]

@@ -643,7 +643,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 					foreach (string file in files) {
 						if (File.Exists(file)) {
 							var fileName = FileName.Create(file);
-							if (SD.ProjectService.IsProjectOrSolutionFile(fileName)) {
+							if (SD.ProjectService.IsSolutionOrProjectFile(fileName)) {
 								SD.ProjectService.OpenSolutionOrProject(fileName);
 							} else {
 								SD.FileService.OpenFile(fileName);

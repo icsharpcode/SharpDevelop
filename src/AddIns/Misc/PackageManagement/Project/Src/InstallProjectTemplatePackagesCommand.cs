@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Templates;
@@ -64,9 +65,8 @@ namespace ICSharpCode.PackageManagement
 		
 		IEnumerable<MSBuildBasedProject> GetCreatedProjects()
 		{
-			var createInfo = Owner as ProjectCreateInformation;
-			var newCreatedProjects = new NewProjectsCreated(createInfo, projectService);
-			return newCreatedProjects.GetProjects();
+			var createInfo = Owner as ProjectCreateOptions;
+			return createInfo != null ? createInfo.CreatedProjects.OfType<MSBuildBasedProject>() : Enumerable.Empty<MSBuildBasedProject>();
 		}
 		
 		IPackageReferencesForProject CreatePackageReferencesForProject(MSBuildBasedProject project)

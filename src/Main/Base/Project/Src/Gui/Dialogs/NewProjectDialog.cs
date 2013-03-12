@@ -353,20 +353,21 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				NewSolutionLocation = null;
 				NewProjectLocation = null;
 				if (createNewSolution) {
-					using (ISolution createdSolution = item.Template.CreateSolution(cinfo)) {
-						if (createdSolution != null)
-							NewSolutionLocation = createdSolution.FileName;
+					if (!SD.ProjectService.CloseSolution())
+						return;
+					ISolution createdSolution = item.Template.CreateSolution(cinfo);
+					if (createdSolution != null) {
+						NewSolutionLocation = createdSolution.FileName;
+						if (!SD.ProjectService.OpenSolution(createdSolution)) {
+							createdSolution.Dispose();
+							return;
+						}
 					}
-					if (NewSolutionLocation != null)
-						SD.ProjectService.OpenSolutionOrProject(NewSolutionLocation);
 				} else {
-					using (IProject project = item.Template.CreateProject(SD.ProjectService.CurrentSolution, cinfo)) {
-						NewProjectLocation = project.FileName;
-					}
-					if (NewProjectLocation != null) {
-						SolutionFolderNode.Folder.AddExistingProject(NewProjectLocation);
-						ProjectService.SaveSolution();
-					}
+					IProject project = item.Template.CreateProject(SD.ProjectService.CurrentSolution, cinfo);
+					NewProjectLocation = project.FileName;
+					SolutionFolderNode.Folder.Items.Add(project);
+					ProjectService.SaveSolution();
 				}
 				
 				item.Template.RunOpenActions(cinfo);

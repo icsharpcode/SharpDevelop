@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static string FixPlatformNameForProject(string platformName)
 		{
-			if (platformName == "Any CPU") {
+			if (ConfigurationAndPlatform.ConfigurationNameComparer.Equals(platformName, "Any CPU")) {
 				return "AnyCPU";
 			} else {
 				return platformName;
@@ -100,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static string FixPlatformNameForSolution(string platformName)
 		{
-			if (platformName == "AnyCPU") {
+			if (ConfigurationAndPlatform.ConfigurationNameComparer.Equals(platformName, "AnyCPU")) {
 				return "Any CPU";
 			} else {
 				return platformName;
