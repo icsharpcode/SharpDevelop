@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				handler(removedItems, addedItems);
 		}
 		
-		public IDisposable BatchUpdate()
+		public virtual IDisposable BatchUpdate()
 		{
 			if (isWithinBatchOperation)
 				return null;

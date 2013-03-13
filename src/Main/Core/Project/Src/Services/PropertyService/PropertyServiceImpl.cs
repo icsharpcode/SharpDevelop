@@ -36,7 +36,7 @@ namespace ICSharpCode.Core
 			this.dataDirectory = dataDirectory;
 			this.propertyFileName = propertiesName + ".xml";
 			Directory.CreateDirectory(configDirectory);
-			LoadPropertiesFromStream(Path.Combine(configDirectory, propertyFileName));
+			LoadPropertiesFromStream(FileName.Create(Path.Combine(configDirectory, propertyFileName)));
 		}
 		
 		public string ConfigDirectory {
@@ -105,7 +105,7 @@ namespace ICSharpCode.Core
 			properties.Remove(key);
 		}
 		
-		bool LoadPropertiesFromStream(string fileName)
+		bool LoadPropertiesFromStream(FileName fileName)
 		{
 			if (!File.Exists(fileName)) {
 				properties = new Properties();

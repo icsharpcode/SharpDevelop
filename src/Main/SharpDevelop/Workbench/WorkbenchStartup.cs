@@ -194,12 +194,12 @@ class Test {
 				resolver.Resolve(node);
 			}
 			// warm up AvalonEdit (must be done on main thread)
-			SD.MainThread.InvokeAsync(
+			SD.MainThread.InvokeAsyncAndForget(
 				delegate {
 					object editor;
 					SD.EditorControlService.CreateEditor(out editor);
 					LoggingService.Debug("Preload-Thread finished.");
-				}, DispatcherPriority.Background);
+				}, DispatcherPriority.ApplicationIdle);
 		}
 		#endregion
 	}

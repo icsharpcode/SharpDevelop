@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -75,21 +76,50 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-		#region IMementoCapable implementation
-		/// <summary>
-		/// Saves project preferences (currently opened files, bookmarks etc.) to the
-		/// a property container.
-		/// </summary>
-		public virtual Properties CreateMemento()
-		{
-			return GetOrCreateBehavior().CreateMemento();
+		#region Preferences
+		Properties preferences;
+		
+		public Properties Preferences {
+			get {
+				lock (syncRoot) {
+					if (preferences == null) {
+						preferences = new Properties(); // in case of errors, use empty properties container
+						FileName preferencesFile = GetPreferenceFileName(fileName);
+						if (FileUtility.IsValidPath(preferencesFile) && File.Exists(preferencesFile)) {
+							try {
+								preferences = Properties.Load(preferencesFile);
+							} catch (IOException) {
+							} catch (UnauthorizedAccessException) {
+							} catch (XmlException) {
+								// ignore errors about inaccessible or malformed files
+							}
+						}
+					}
+					return preferences;
+				}
+			}
 		}
 		
-		public virtual void SetMemento(Properties memento)
+		static FileName GetPreferenceFileName(string projectFileName)
 		{
-			// other project data
-			this.ProjectSpecificProperties = memento.NestedProperties("projectSavedData");
-			GetOrCreateBehavior().SetMemento(memento);
+			string directory = Path.Combine(PropertyService.ConfigDirectory, "preferences");
+			return FileName.Create(Path.Combine(directory,
+			                                    Path.GetFileName(projectFileName)
+			                                    + "." + projectFileName.ToUpperInvariant().GetStableHashCode().ToString("x")
+			                                    + ".xml"));
+		}
+		
+		public void SavePreferences()
+		{
+			var p = this.Preferences;
+			GetOrCreateBehavior().SavePreferences(p);
+			try {
+				FileName preferencesFile = GetPreferenceFileName(fileName);
+				System.IO.Directory.CreateDirectory(preferencesFile.GetParentDirectory());
+				p.Save(preferencesFile);
+			} catch (IOException) {
+			} catch (UnauthorizedAccessException) {
+			}
 		}
 		#endregion
 		
@@ -565,6 +595,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			GetOrCreateBehavior().ProjectCreationComplete();
 		}
 		
+		public virtual void ProjectLoaded()
+		{
+			GetOrCreateBehavior().ProjectLoaded();
+		}
+		
 		public virtual XElement LoadProjectExtensions(string name)
 		{
 			return new XElement(name);
@@ -577,18 +612,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		public virtual bool ContainsProjectExtension(string name)
 		{
 			return false;
-		}
-		
-		Properties projectSpecificProperties = new Properties();
-		
-		[Browsable(false)]
-		public Properties ProjectSpecificProperties {
-			get { return projectSpecificProperties; }
-			set {
-				if (value == null)
-					throw new ArgumentNullException();
-				projectSpecificProperties = value;
-			}
 		}
 		
 		public virtual string GetDefaultNamespace(string fileName)

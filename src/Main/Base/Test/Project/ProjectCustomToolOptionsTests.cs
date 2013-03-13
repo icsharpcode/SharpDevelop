@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			projectSpecificProperties = new Properties();
 			project = MockRepository.GenerateStub<IProject>();
-			project.Stub(p => p.ProjectSpecificProperties).Return(projectSpecificProperties);
+			project.Stub(p => p.Preferences).Return(projectSpecificProperties);
 		}
 		
 		void CreateProjectWithExistingCustomToolProperties(string fileNames)

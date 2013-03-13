@@ -80,9 +80,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			IDisposable disposable = underlyingCollection.BatchUpdate();
 			return new CallbackOnDispose(
 				delegate {
-					if (disposable != null)
-						disposable.Dispose();
-					Monitor.Exit(syncRoot);
+					try {
+						if (disposable != null)
+							disposable.Dispose();
+					} finally {
+						Monitor.Exit(syncRoot);
+					}
 				});
 		}
 

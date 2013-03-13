@@ -76,12 +76,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			throw new NotSupportedException();
 		}
 		
-		
-		/// <summary>
-		/// Saves project preferences (currently opened files, bookmarks etc.) to the
-		/// a property container.
-		/// </summary>
-		public override Properties CreateMemento()
+		public override void SavePreferences(Properties preferences)
 		{
 			SD.MainThread.VerifyAccess();
 			
@@ -94,18 +89,14 @@ namespace ICSharpCode.SharpDevelop.Project
 					files.Add(fileName);
 				}
 			}
-			properties.SetList("files", files);
-			
-			// other project data
-			properties.SetNestedProperties("projectSavedData", Project.ProjectSpecificProperties.Clone());
-			
-			return properties;
+			properties.SetList("openFiles", files);
 		}
 		
-		public override void SetMemento(Properties memento)
+		public override void ProjectLoaded()
 		{
 			SD.MainThread.VerifyAccess();
 			
+			var memento = Project.Preferences;
 			foreach (var mark in memento.GetList<ICSharpCode.SharpDevelop.Editor.Bookmarks.SDBookmark>("bookmarks")) {
 				SD.BookmarkManager.AddMark(mark);
 			}
@@ -124,8 +115,6 @@ namespace ICSharpCode.SharpDevelop.Project
 							FileService.OpenFile(file);
 						NavigationService.ResumeLogging();
 					}));
-			
-			base.SetMemento(memento);
 		}
 	}
 }

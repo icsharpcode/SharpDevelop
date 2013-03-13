@@ -236,6 +236,7 @@
     <Compile Include="Src\Project\MSBuildConfigurationOrPlatformNameCollection.cs" />
     <Compile Include="Util\AtomicBoolean.cs" />
     <Compile Include="Util\ComparerExtensions.cs" />
+    <Compile Include="Util\CompositeDisposable.cs" />
     <Compile Include="Util\CustomThreadPoolTaskScheduler.cs" />
     <Compile Include="Util\DebugTimer.cs" />
     <Compile Include="Util\DotnetDetection.cs" />

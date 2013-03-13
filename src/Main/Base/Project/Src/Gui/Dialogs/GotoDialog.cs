@@ -52,9 +52,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void ParserService_LoadSolutionProjectsThreadEnded(object sender, EventArgs e)
 		{
 			// refresh the list box contents when parsing has completed
-			Dispatcher.BeginInvoke(
-				System.Windows.Threading.DispatcherPriority.Background,
-				new Action(delegate { textBoxTextChanged(null, null); }));
+			textBoxTextChanged(null, null);
 		}
 		
 		class GotoEntry : IComparable<GotoEntry>

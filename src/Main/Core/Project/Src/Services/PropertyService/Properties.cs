@@ -527,7 +527,7 @@ namespace ICSharpCode.Core
 		#endregion
 		
 		#region Load/Save
-		public static Properties Load(string fileName)
+		public static Properties Load(FileName fileName)
 		{
 			return Load(XDocument.Load(fileName).Root);
 		}

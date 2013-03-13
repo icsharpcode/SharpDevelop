@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 				.Return(null)
 				.WhenCalled(mi => mi.ReturnValue = new ImmutableModelCollection<ProjectItem>(ProjectItems));
 			
-			Project.Stub(p => p.ProjectSpecificProperties).Return(new Properties());
+			Project.Stub(p => p.Preferences).Return(new Properties());
 			
 			Project.Stub(p => p.SyncRoot).Return(new Object());
 		}

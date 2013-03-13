@@ -85,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		event EventHandler PreferencesSaving;
 		
 		/// <summary>
-		/// Saves the preferences for this solution; and also for any projects within this solution.
+		/// Saves the preferences for this solution.
 		/// </summary>
 		void SavePreferences();
 		

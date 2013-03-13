@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// When you implement IProject, you should also implement IProjectItemListProvider and IProjectAllowChangeConfigurations
 	/// </summary>
 	public interface IProject
-		: IBuildable, ISolutionItem, IDisposable, IMementoCapable, IConfigurable
+		: IBuildable, ISolutionItem, IDisposable, IConfigurable
 	{
 		/// <summary>
 		/// Gets the object used for thread-safe synchronization.
@@ -179,8 +179,18 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets project specific properties.
 		/// These are saved in as part of the SharpDevelop configuration in the AppData folder.
 		/// </summary>
-		/// <remarks>This property never returns null.</remarks>
-		Properties ProjectSpecificProperties { get; }
+		/// <remarks>
+		/// This property never returns null.
+		/// 
+		/// Use <see cref="LoadProjectExtensions"/> instead to store settings that are for multiple users.
+		/// </remarks>
+		Properties Preferences { get; }
+		
+		/// <summary>
+		/// Saves the <see cref="Preferences"/> to disk.
+		/// This method is called by SharpDevelop when the solution is closed.
+		/// </summary>
+		void SavePreferences();
 		
 		/// <summary>
 		/// Starts the project.
@@ -207,13 +217,28 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Notifies the project that it was succesfully created from a project template.
 		/// </summary>
+		/// <remarks>
+		/// TODO This method is currently called before the project is added to the solution;
+		/// but we might change that so that it is called later.
+		/// </remarks>
 		void ProjectCreationComplete();
+		
+		/// <summary>
+		/// Notifies the project that it was loaded in the IDE.
+		/// This method is called after the whole solution has finished loading; and when existing projects are added to the open solution.
+		/// It is not called for newly created projects; and not if the solution was loaded in the background
+		/// (<see cref="IProjectService.LoadSolutionFile"/> vs. <see cref="IProjectService.OpenSolution"/>).
+		/// </summary>
+		void ProjectLoaded();
 		
 		/// <summary>
 		/// Loads the project extension content with the specified name.
 		/// </summary>
 		/// <remarks>
 		/// Project extensions are custom XML elements that are stored within the .csproj file.
+		/// They are intended for settings that are not specific to a user/machine.
+		/// 
+		/// Use <see cref="Preferences"/> instead to store per-user settings.
 		/// </remarks>
 		XElement LoadProjectExtensions(string name);
 		
@@ -222,6 +247,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		/// <remarks>
 		/// Project extensions are custom XML elements that are stored within the .csproj file.
+		/// They are intended for settings that are not specific to a user/machine.
+		/// 
+		/// Use <see cref="Preferences"/> instead to store per-user settings.
 		/// </remarks>
 		void SaveProjectExtensions(string name, XElement element);
 		

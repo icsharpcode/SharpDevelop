@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Threading;
+using System.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom;
@@ -26,6 +27,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.fileService = fileService;
 			this.ConfigurationNames = new SolutionConfigurationOrPlatformNameCollection(this, false);
 			this.PlatformNames = new SolutionConfigurationOrPlatformNameCollection(this, true);
+			this.projects = new SynchronizedModelCollection<IProject>(new ProjectModelCollection(this));
 			this.FileName = fileName;
 			base.Name = fileName.GetFileNameWithoutExtension();
 			
@@ -113,37 +115,45 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Project list
-		IMutableModelCollection<IProject> projects = new SynchronizedModelCollection<IProject>(new SimpleModelCollection<IProject>());
+		readonly IMutableModelCollection<IProject> projects; // = new SynchronizedModelCollection<IProject>(new ProjectModelCollection(this));
+		
+		sealed class ProjectModelCollection : SimpleModelCollection<IProject>
+		{
+			Solution solution;
+			
+			public ProjectModelCollection(Solution solution)
+			{
+				this.solution = solution;
+			}
+			
+			protected override void OnCollectionChanged(IReadOnlyCollection<IProject> removedItems, IReadOnlyCollection<IProject> addedItems)
+			{
+				foreach (var project in addedItems) {
+					project.ProjectSections.CollectionChanged += solution.OnSolutionSectionCollectionChanged;
+					solution.OnSolutionSectionCollectionChanged(EmptyList<SolutionSection>.Instance, project.ProjectSections);
+				}
+				foreach (var project in removedItems) {
+					project.ProjectSections.CollectionChanged -= solution.OnSolutionSectionCollectionChanged;
+					solution.OnSolutionSectionCollectionChanged(project.ProjectSections, EmptyList<SolutionSection>.Instance);
+				}
+				// If the startup project was removed, reset that property
+				bool startupProjectWasRemoved = removedItems.Contains(solution.startupProject);
+				if (startupProjectWasRemoved)
+					solution.startupProject = null; // this will force auto-detection on the next property access
+				base.OnCollectionChanged(removedItems, addedItems);
+				// After the event is raised; dispose any removed projects.
+				// Note that this method is only called at the end of a batch update.
+				// When moving a project from one folder to another, a batch update
+				// must be used to prevent the project from being disposed.
+				foreach (var project in removedItems)
+					project.Dispose();
+				if (startupProjectWasRemoved || (solution.startupProject == null && addedItems.Contains(solution.AutoDetectStartupProject())))
+					solution.StartupProjectChanged(this, EventArgs.Empty);
+			}
+		}
 		
 		public IModelCollection<IProject> Projects {
 			get { return projects; }
-		}
-		
-		void OnProjectAdded(IProject project)
-		{
-			projects.Add(project);
-			project.ProjectSections.CollectionChanged += OnSolutionSectionCollectionChanged;
-			OnSolutionSectionCollectionChanged(EmptyList<SolutionSection>.Instance, project.ProjectSections);
-			if (startupProject == null && AutoDetectStartupProject() == project)
-				this.StartupProject = project; // when there's no startable project in the solution and one is added, we mark that it as the startup project
-		}
-		
-		void OnProjectRemoved(IProject project)
-		{
-			project.ProjectSections.CollectionChanged -= OnSolutionSectionCollectionChanged;
-			OnSolutionSectionCollectionChanged(project.ProjectSections, EmptyList<SolutionSection>.Instance);
-			bool wasStartupProject = (startupProject == project);
-			if (wasStartupProject)
-				startupProject = null; // this will force auto-detection on the next property access
-			projects.Remove(project);
-			if (wasStartupProject)
-				StartupProjectChanged(this, EventArgs.Empty);
-			
-			// HACK: ensure the project gets disposed
-			SD.MainThread.InvokeAsyncAndForget(
-				delegate {
-					project.Dispose();
-				}, DispatcherPriority.Background);
 		}
 		
 		internal IDisposable ReportBatch()
@@ -159,7 +169,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					ReportRemovedItem(childItem);
 				}
 			} else if (oldItem is IProject) {
-				OnProjectRemoved((IProject)oldItem);
+				projects.Remove((IProject)oldItem);
 			}
 		}
 		
@@ -171,7 +181,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					ReportAddedItem(childItem);
 				}
 			} else if (newItem is IProject) {
-				OnProjectAdded((IProject)newItem);
+				projects.Add((IProject)newItem);
 			}
 		}
 		#endregion
@@ -212,18 +222,32 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		#region Preferences
-		Properties preferences;
+		Properties preferences = new Properties();
 		
 		public Properties Preferences {
 			get { return preferences; }
 		}
 		
+		static FileName GetPreferenceFileName(string projectFileName)
+		{
+			string directory = Path.Combine(PropertyService.ConfigDirectory, "preferences");
+			return FileName.Create(Path.Combine(directory,
+			                                    Path.GetFileName(projectFileName)
+			                                    + "." + projectFileName.ToUpperInvariant().GetStableHashCode().ToString("x")
+			                                    + ".xml"));
+		}
+		
 		internal void LoadPreferences()
 		{
-			try {
-				preferences = new Properties();
-			} catch (IOException) {
-				
+			FileName preferencesFile = GetPreferenceFileName(fileName);
+			if (FileUtility.IsValidPath(preferencesFile) && File.Exists(preferencesFile)) {
+				try {
+					preferences = Properties.Load(preferencesFile);
+				} catch (IOException) {
+				} catch (UnauthorizedAccessException) {
+				} catch (XmlException) {
+					// ignore errors about inaccessible or malformed files
+				}
 			}
 			// Load active configuration from preferences
 			CreateDefaultConfigurationsIfMissing();
@@ -236,26 +260,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		/*
-		
-		static Properties LoadSolutionPreferences(string solutionFileName)
-		{
-			try {
-				string file = GetPreferenceFileName(solutionFileName);
-				if (FileUtility.IsValidPath(file) && File.Exists(file)) {
-					try {
-						return Properties.Load(file);
-					} catch (IOException) {
-					} catch (UnauthorizedAccessException) {
-					} catch (XmlException) {
-						// ignore errors about inaccessible or malformed files
-					}
-				}
-			} catch (Exception ex) {
-				MessageService.ShowException(ex);
-			}
-			return new Properties();
-		}
-		
 		static void ApplyConfigurationAndReadProjectPreferences()
 		{
 			openSolution.ApplySolutionConfigurationAndPlatformToProjects();
@@ -284,39 +288,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			preferences.Set("ActiveConfiguration.Configuration", activeConfiguration.Configuration);
 			preferences.Set("ActiveConfiguration.Platform", activeConfiguration.Platform);
 			PreferencesSaving(this, EventArgs.Empty);
-			// TODO: save to disk
-			/*
-			string directory = Path.Combine(PropertyService.ConfigDirectory, "preferences");
-			if (!Directory.Exists(directory)) {
-				Directory.CreateDirectory(directory);
+			
+			FileName preferencesFile = GetPreferenceFileName(fileName);
+			System.IO.Directory.CreateDirectory(preferencesFile.GetParentDirectory());
+			try {
+				preferences.Save(preferencesFile);
+			} catch (IOException) {
+			} catch (UnauthorizedAccessException) {
 			}
-			
-			if (SolutionPreferencesSaving != null)
-				SolutionPreferencesSaving(null, new SolutionEventArgs(openSolution));
-			Properties memento = openSolution.Preferences.Clone();
-			
-			string fullFileName = GetPreferenceFileName(openSolution.FileName);
-			if (FileUtility.IsValidPath(fullFileName)) {
-				#if DEBUG
-				memento.Save(fullFileName);
-				#else
-				FileUtility.ObservedSave(new NamedFileOperationDelegate(memento.Save), fullFileName, FileErrorPolicy.Inform);
-				#endif
-			}
-			
-			foreach (IProject project in OpenSolution.Projects) {
-				memento = project.CreateMemento();
-				if (memento == null) continue;
-				
-				fullFileName = GetPreferenceFileName(project.FileName);
-				if (FileUtility.IsValidPath(fullFileName)) {
-					#if DEBUG
-					memento.Save(fullFileName);
-					#else
-					FileUtility.ObservedSave(new NamedFileOperationDelegate(memento.Save), fullFileName, FileErrorPolicy.Inform);
-					#endif
-				}
-			}*/
 		}
 		#endregion
 		

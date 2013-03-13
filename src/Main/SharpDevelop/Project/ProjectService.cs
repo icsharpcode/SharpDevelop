@@ -179,6 +179,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		void OnSolutionOpened(ISolution solution)
 		{
 			SolutionOpened(this, new SolutionEventArgs(solution));
+			foreach (var project in solution.Projects)
+				project.ProjectLoaded();
 			SD.FileService.RecentOpen.AddRecentProject(solution.FileName);
 			Project.Converter.UpgradeViewContent.ShowIfRequired(solution);
 		}
@@ -272,6 +274,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (allowCancel && cancelEventArgs.Cancel)
 				return false;
 			
+			foreach (var project in solution.Projects)
+				project.SavePreferences();
 			solution.SavePreferences();
 			
 			if (!SD.Workbench.CloseAllSolutionViews(force: !allowCancel))

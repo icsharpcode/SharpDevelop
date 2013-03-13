@@ -51,6 +51,23 @@ namespace ICSharpCode.SharpDevelop.Project
 					throw new ArgumentException("The item already has a parent folder");
 			}
 			
+			public override IDisposable BatchUpdate()
+			{
+				// This method exists to allow moving a project from one folder to another without
+				// raising the ISolution.Projects.CollectionChanged event.
+				// The batch update within OnCollectionChanged() is not sufficient as it is per-folder,
+				// while we need a batch across multiple folders.
+				// To allow users to create such a batch update across folders without explicitly exposing solution.ReportBatch()
+				// in the API; we call ReportBatch() here.
+				// API consumers should open batches on both the source and target folder,
+				
+				
+				// Note that the base.BatchUpdate must be disposed first:
+				// doing so will call OnCollectionChanged() and update ISolution.Projects;
+				// and only then the solution batch may be disposed.
+				return new CompositeDisposable(base.BatchUpdate(), folder.parentSolution.ReportBatch());
+			}
+			
 			protected override void OnCollectionChanged(IReadOnlyCollection<ISolutionItem> removedItems, IReadOnlyCollection<ISolutionItem> addedItems)
 			{
 				using (folder.parentSolution.ReportBatch()) {
@@ -110,6 +127,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			IProject project = ProjectBindingService.LoadProject(loadInfo);
 			Debug.Assert(project.IdGuid != Guid.Empty);
 			this.Items.Add(project);
+			project.ProjectLoaded();
 			return project;
 		}
 		
