@@ -356,9 +356,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void ComboBoxSelectedIndexChanged(object sender, EventArgs e)
 		{
-			if (!inUpdate) {
-				if (host!=null) {
-					ISelectionService selectionService = (ISelectionService)host.GetService(typeof(ISelectionService));
+			if (!inUpdate && host!=null) {
+				ISelectionService selectionService = (ISelectionService)host.GetService(typeof(ISelectionService));
+				if (selectionService != null) {
 					if (comboBox.SelectedIndex >= 0) {
 						selectionService.SetSelectedComponents(new object[] { GetComboBoxItem(comboBox.SelectedIndex) });
 					} else {
