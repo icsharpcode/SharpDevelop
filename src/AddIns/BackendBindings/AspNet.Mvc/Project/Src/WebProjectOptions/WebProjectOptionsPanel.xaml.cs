@@ -176,7 +176,9 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		void PortTextBox_KeyUp(object sender, KeyEventArgs e)
 		{
-			properties.DevelopmentServerPort = Int32.Parse(PortTextBox.Text);
+			int port;
+			if (int.TryParse(PortTextBox.Text, out port))
+				properties.DevelopmentServerPort = port;
 			properties.IISUrl = String.Format(@"{0}:{1}/", WebBehavior.LocalHost, PortTextBox.Text);
 		}
 	}
