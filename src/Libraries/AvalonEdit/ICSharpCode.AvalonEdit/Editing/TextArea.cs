@@ -596,6 +596,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				if (value == null)
 					throw new ArgumentNullException("value");
 				readOnlySectionProvider = value;
+				CommandManager.InvalidateRequerySuggested(); // the read-only status effects Paste.CanExecute and the IME
 			}
 		}
 		#endregion
