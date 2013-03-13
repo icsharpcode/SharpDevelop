@@ -76,21 +76,15 @@ namespace ICSharpCode.AvalonEdit.Editing
 		public const int WM_IME_SETCONTEXT = 0x281;
 		public const int WM_INPUTLANGCHANGE = 0x51;
 		
-//		[DllImport("imm32.dll")]
-//		public static extern IntPtr ImmCreateContext();
-//
-//		[DllImport("imm32.dll")]
-//		[return: MarshalAs(UnmanagedType.Bool)]
-//		public static extern bool ImmDestroyContext(IntPtr hIMC);
-		
-//		[DllImport("imm32.dll")]
-//		public static extern IntPtr ImmAssociateContext(IntPtr hWnd, IntPtr hIMC);
-		
 		[DllImport("imm32.dll")]
-		static extern IntPtr ImmGetContext(IntPtr hWnd);
+		public static extern IntPtr ImmAssociateContext(IntPtr hWnd, IntPtr hIMC);
+		[DllImport("imm32.dll")]
+		internal static extern IntPtr ImmGetContext(IntPtr hWnd);
+		[DllImport("imm32.dll")]
+		internal static extern IntPtr ImmGetDefaultIMEWnd(IntPtr hWnd);
 		[DllImport("imm32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		static extern bool ImmReleaseContext(IntPtr hWnd, IntPtr hIMC);
+		internal static extern bool ImmReleaseContext(IntPtr hWnd, IntPtr hIMC);
 		[DllImport("imm32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		static extern bool ImmNotifyIME(IntPtr hIMC, int dwAction, int dwIndex, int dwValue = 0);
@@ -122,18 +116,6 @@ namespace ICSharpCode.AvalonEdit.Editing
 		public static bool NotifyIme(IntPtr hIMC)
 		{
 			return ImmNotifyIME(hIMC, NI_COMPOSITIONSTR, CPS_CANCEL);
-		}
-		
-		public static IntPtr GetContext(HwndSource source)
-		{
-			if (source == null)
-				return IntPtr.Zero;
-			return ImmGetContext(source.Handle);
-		}
-		
-		public static bool ReleaseContext(HwndSource source, IntPtr hIMC)
-		{
-			return source != null && hIMC != IntPtr.Zero && ImmReleaseContext(source.Handle, hIMC);
 		}
 		
 		public static bool SetCompositionWindow(HwndSource source, IntPtr hIMC, TextArea textArea)

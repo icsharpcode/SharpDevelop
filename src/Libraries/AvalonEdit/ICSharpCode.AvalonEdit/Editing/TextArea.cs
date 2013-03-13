@@ -758,7 +758,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			base.OnGotKeyboardFocus(e);
 			// First activate IME, then show caret
-			ime.OnGotFocus(e);
+			ime.OnGotKeyboardFocus(e);
 			caret.Show();
 		}
 		
@@ -767,7 +767,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			base.OnLostKeyboardFocus(e);
 			caret.Hide();
-			ime.OnLostFocus(e);
+			ime.OnLostKeyboardFocus(e);
 		}
 		#endregion
 		

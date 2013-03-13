@@ -24,7 +24,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 	{
 		readonly TextArea textArea;
 		IntPtr currentContext;
-		//IntPtr previousContext;
+		IntPtr previousContext;
+		IntPtr defaultImeWnd;
 		HwndSource hwndSource;
 		
 		public ImeSupport(TextArea textArea)
@@ -47,16 +48,16 @@ namespace ICSharpCode.AvalonEdit.Editing
 		void ClearContext()
 		{
 			if (hwndSource != null) {
-				//ImeNativeWrapper.AssociateContext(hwndSource, previousContext);
-				//ImeNativeWrapper.ImmDestroyContext(currentContext);
-				ImeNativeWrapper.ReleaseContext(hwndSource, currentContext);
+				ImeNativeWrapper.ImmAssociateContext(hwndSource.Handle, previousContext);
+				ImeNativeWrapper.ImmReleaseContext(defaultImeWnd, currentContext);
 				currentContext = IntPtr.Zero;
+				defaultImeWnd = IntPtr.Zero;
 				hwndSource.RemoveHook(WndProc);
 				hwndSource = null;
 			}
 		}
 		
-		public void OnGotFocus(KeyboardFocusChangedEventArgs e)
+		public void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
 		{
 			CreateContext();
 		}
@@ -68,9 +69,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 				return;
 			hwndSource = (HwndSource)PresentationSource.FromVisual(this.textArea);
 			if (hwndSource != null) {
-				//currentContext = ImeNativeWrapper.ImmCreateContext();
-				//previousContext = ImeNativeWrapper.AssociateContext(hwndSource, currentContext);
-				currentContext = ImeNativeWrapper.GetContext(hwndSource);
+				defaultImeWnd = ImeNativeWrapper.ImmGetDefaultIMEWnd(IntPtr.Zero);
+				currentContext = ImeNativeWrapper.ImmGetContext(defaultImeWnd);
+				previousContext = ImeNativeWrapper.ImmAssociateContext(hwndSource.Handle, currentContext);
+				Debug.Assert(hwndSource != null);
+				Debug.Assert(currentContext != null);
 				hwndSource.AddHook(WndProc);
 				// UpdateCompositionWindow() will be called by the caret becoming visible
 				
@@ -83,7 +86,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			}
 		}
 		
-		public void OnLostFocus(KeyboardFocusChangedEventArgs e)
+		public void OnLostKeyboardFocus(KeyboardFocusChangedEventArgs e)
 		{
 			if (e.OldFocus == textArea && currentContext != IntPtr.Zero)
 				ImeNativeWrapper.NotifyIme(currentContext);
