@@ -736,39 +736,50 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 			}
 			
-			try {
-				if (isSingle) {
-					return new Token(Tokens.LiteralSingle, x, y, sb.ToString(), Single.Parse(digit, CultureInfo.InvariantCulture), LiteralFormat.DecimalNumber);
+			string stringValue = sb.ToString();
+			if (isSingle) {
+				float num;
+				if (float.TryParse(digit, NumberStyles.Any, CultureInfo.InvariantCulture, out num)) {
+					return new Token(Tokens.LiteralSingle, x, y, stringValue, num, LiteralFormat.DecimalNumber);
+				} else {
+					errors.Error(y, x, String.Format("Can't parse float {0}", digit));
+					return new Token(Tokens.LiteralSingle, x, y, stringValue, 0f, LiteralFormat.DecimalNumber);
 				}
-				if (isDecimal) {
-					return new Token(Tokens.LiteralDecimal, x, y, sb.ToString(), Decimal.Parse(digit, NumberStyles.Currency | NumberStyles.AllowExponent, CultureInfo.InvariantCulture), LiteralFormat.DecimalNumber);
-				}
-				if (isDouble) {
-					return new Token(Tokens.LiteralDouble, x, y, sb.ToString(), Double.Parse(digit, CultureInfo.InvariantCulture), LiteralFormat.DecimalNumber);
-				}
-			} catch (FormatException) {
-				errors.Error(Line, Col, String.Format("{0} is not a parseable number", digit));
-				if (isSingle)
-					return new Token(Tokens.LiteralSingle, x, y, sb.ToString(), 0f, LiteralFormat.DecimalNumber);
-				if (isDecimal)
-					return new Token(Tokens.LiteralDecimal, x, y, sb.ToString(), 0m, LiteralFormat.DecimalNumber);
-				if (isDouble)
-					return new Token(Tokens.LiteralDouble, x, y, sb.ToString(), 0.0, LiteralFormat.DecimalNumber);
 			}
+			if (isDecimal) {
+				decimal num;
+				if (decimal.TryParse(digit, NumberStyles.Any, CultureInfo.InvariantCulture, out num)) {
+					return new Token(Tokens.LiteralDecimal, x, y, stringValue, num, LiteralFormat.DecimalNumber);
+				} else {
+					errors.Error(y, x, String.Format("Can't parse decimal {0}", digit));
+					return new Token(Tokens.LiteralDecimal, x, y, stringValue, 0m, LiteralFormat.DecimalNumber);
+				}
+			}
+			if (isDouble) {
+				double num;
+				if (double.TryParse(digit, NumberStyles.Any, CultureInfo.InvariantCulture, out num)) {
+					return new Token(Tokens.LiteralDouble, x, y, stringValue, num, LiteralFormat.DecimalNumber);
+				} else {
+					errors.Error(y, x, String.Format("Can't parse double {0}", digit));
+					return new Token(Tokens.LiteralDouble, x, y, stringValue, 0d, LiteralFormat.DecimalNumber);
+				}
+			}
+			
 			Token token;
-			try {
-				token = new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int32.Parse(digit, isHex ? NumberStyles.HexNumber : NumberStyles.Number), isHex ? LiteralFormat.HexadecimalNumber : LiteralFormat.DecimalNumber);
-			} catch (Exception) {
+			int intVal;
+			if (int.TryParse(digit, isHex ? NumberStyles.HexNumber : NumberStyles.Number, CultureInfo.InvariantCulture, out intVal)) {
+				token = new Token(Tokens.LiteralInteger, x, y, stringValue, intVal, isHex ? LiteralFormat.HexadecimalNumber : LiteralFormat.DecimalNumber);
+			} else {
 				try {
-					token = new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int64.Parse(digit, isHex ? NumberStyles.HexNumber : NumberStyles.Number), isHex ? LiteralFormat.HexadecimalNumber : LiteralFormat.DecimalNumber);
+					token = new Token(Tokens.LiteralInteger, x, y, stringValue, Int64.Parse(digit, isHex ? NumberStyles.HexNumber : NumberStyles.Number), isHex ? LiteralFormat.HexadecimalNumber : LiteralFormat.DecimalNumber);
 				} catch (FormatException) {
 					errors.Error(Line, Col, String.Format("{0} is not a parseable number", digit));
 					// fallback, when nothing helps :)
-					token = new Token(Tokens.LiteralInteger, x, y, sb.ToString(), 0, LiteralFormat.DecimalNumber);
+					token = new Token(Tokens.LiteralInteger, x, y, stringValue, 0, LiteralFormat.DecimalNumber);
 				} catch (OverflowException) {
 					errors.Error(Line, Col, String.Format("{0} is too long for a integer literal", digit));
 					// fallback, when nothing helps :)
-					token = new Token(Tokens.LiteralInteger, x, y, sb.ToString(), 0, LiteralFormat.DecimalNumber);
+					token = new Token(Tokens.LiteralInteger, x, y, stringValue, 0, LiteralFormat.DecimalNumber);
 				}
 			}
 			token.next = nextToken;
