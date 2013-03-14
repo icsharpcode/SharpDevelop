@@ -140,7 +140,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 					TextViewPosition oldPosition = textArea.Caret.Position;
 					MoveCaret(textArea, direction);
 					textArea.Selection = textArea.Selection.StartSelectionOrSetEndpoint(oldPosition, textArea.Caret.Position);
-					textArea.Caret.BringCaretToView();
+					if (!textArea.Document.IsInUpdate) // if we're inside a larger update (e.g. called by EditingCommandHandler.OnDelete()), avoid calculating the caret rectangle now
+						textArea.Caret.BringCaretToView();
 				}
 			};
 		}
