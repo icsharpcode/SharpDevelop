@@ -107,8 +107,6 @@ namespace ICSharpCode.AvalonEdit.Editing
 					currentContext = ImeNativeWrapper.ImmGetContext(defaultImeWnd);
 				}
 				previousContext = ImeNativeWrapper.ImmAssociateContext(hwndSource.Handle, currentContext);
-				Debug.Assert(hwndSource != null);
-				Debug.Assert(currentContext != null);
 				hwndSource.AddHook(WndProc);
 				// UpdateCompositionWindow() will be called by the caret becoming visible
 				
