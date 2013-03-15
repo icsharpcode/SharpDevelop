@@ -10,7 +10,6 @@ using System.Xml;
 
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Globals;
-using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.Reports.Addin
 {
@@ -26,6 +25,7 @@ namespace ICSharpCode.Reports.Addin
 
 		public ReportDesignerLoader(IDesignerGenerator generator, Stream stream)		
 		{
+			Console.WriteLine("ReportDesignerLoader:Ctor");
 			if (stream == null)
 				throw new ArgumentNullException("stream");
 			if (generator == null) {
@@ -83,6 +83,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		public ReportModel CreateRenderableModel()
 		{
+			Console.WriteLine("ReportDesignerLoader:CreateRenderableModel");
 			ReportModel m = new ReportModel();
 			generator.MergeFormChanges((System.CodeDom.CodeCompileUnit)null);
 			XmlDocument doc = new XmlDocument();
@@ -122,6 +123,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		public static Type GetReportType(Type baseType)
 		{
+			Console.WriteLine("ReportLoader:GetReportType");
 			if (baseType == null) return null;
 			if (baseToReport == null) {
 				baseToReport = new Dictionary<Type, Type>();

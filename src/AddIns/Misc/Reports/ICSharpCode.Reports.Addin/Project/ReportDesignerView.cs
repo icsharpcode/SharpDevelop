@@ -69,6 +69,7 @@ namespace ICSharpCode.Reports.Addin
 			if (generator == null) {
 				throw new ArgumentNullException("generator");
 			}
+			Console.WriteLine("ReportDesignerView");
 			this.generator = generator;
 			this.generator.Attach(this);
 			base.TabPageText = ResourceService.GetString("SharpReport.Design");
@@ -88,6 +89,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void SetupSecondaryView ()
 		{
+			Console.WriteLine("SetupSecondaryView ()");
 			xmlView = new XmlView(generator,this);
 			SecondaryViewContents.Add(xmlView);
 			preview = new ReportPreview(loader,this);
@@ -106,6 +108,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void LoadDesigner(Stream stream)
 		{
+			Console.WriteLine("LoadDesigner(Stream stream)");
 			LoggingService.Info("Form Designer: BEGIN INITIALIZE");
 			CreatePanel();
 			defaultServiceContainer = new DefaultServiceContainer();
@@ -247,6 +250,7 @@ namespace ICSharpCode.Reports.Addin
 
 		private void MergeFormChanges()
 		{
+			LoggingService.Info("MergeFormChanges()");
 			System.Diagnostics.Trace.WriteLine("View:MergeFormChanges()");
 			this.designSurface.Flush();
 			generator.MergeFormChanges(null);
@@ -268,6 +272,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void StartReportExplorer ()
 		{
+			LoggingService.Info("StartReportExplorer ()");
 			ReportExplorerPad explorerPad = CheckReportExplorer();
 			WorkbenchSingleton.Workbench.GetPad(typeof(ReportExplorerPad)).BringPadToFront();
 			explorerPad.AddContent(this.loader.ReportModel);
@@ -277,6 +282,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void ReportExplorer_PropertyChanged (object sender,System.ComponentModel.PropertyChangedEventArgs e)
 		{
+			Console.WriteLine("ReportExplorer_PropertyChanged");
 			this.MakeDirty();
 			ReportExplorerPad explorerPad = CheckReportExplorer();
 			IComponentChangeService change = Host.GetService(typeof(IComponentChangeService)) as IComponentChangeService;
@@ -369,6 +375,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void UpdatePropertyPad()
 		{
+			Console.WriteLine("UpdatePropertyPad()");
 			if (IsFormsDesignerVisible && Host != null) {
 				propertyContainer.Host = Host;
 				propertyContainer.SelectableObjects = Host.Container.Components;
@@ -550,6 +557,9 @@ namespace ICSharpCode.Reports.Addin
 		public PrintDocument PrintDocument
 		{
 			get {
+				Console.WriteLine("");
+				Console.WriteLine("----ReportdesignerView:PrintDocument------");
+				Console.WriteLine("");
 				ReportModel model = loader.CreateRenderableModel();
 				IReportCreator reportCreator = null;
 				var  paramCmd = new CollectParametersCommand(model);

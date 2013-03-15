@@ -32,6 +32,7 @@ namespace ICSharpCode.Reports.Addin
 			if (stream == null) {
 				throw new ArgumentNullException("stream");
 			}
+			Console.WriteLine("ReportDefinitionDeserializer");
 			this.host = host;
 			this.stream = stream;
 		}
@@ -40,7 +41,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		public ReportModel LoadObjectFromFileDefinition()
 		{
-			
+			Console.WriteLine("LoadObjectFromFileDefinition()");
 			XmlDocument doc = new XmlDocument();
 			doc.Load(this.stream);
 			if (doc.FirstChild.NodeType == XmlNodeType.XmlDeclaration)
@@ -54,6 +55,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		private ReportModel LoadObjectFromXmlDocument(XmlElement elem)
 		{
+			Console.WriteLine("LoadObjectFromXmlDocumen)");
 			//ReportSettings
 			OpenedFile file =(OpenedFile) host.GetService(typeof(OpenedFile));
 			BaseItemLoader baseItemLoader = new BaseItemLoader();
