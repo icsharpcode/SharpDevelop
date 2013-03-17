@@ -54,7 +54,7 @@ namespace ICSharpCode.SettingsEditor
 				return;
 			if (ProjectService.OpenSolution == null)
 				return;
-			IProject p = ProjectService.OpenSolution.FindProjectContainingFile(this.PrimaryFileName);
+			IProject p = SD.ProjectService.FindProjectContainingFile(this.PrimaryFileName);
 			if (p == null)
 				return;
 			FileName appConfigFileName = CompilableProject.GetAppConfigFile(p, createIfNotExists);
