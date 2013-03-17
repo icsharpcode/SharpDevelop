@@ -1,5 +1,5 @@
-// SharpDevelop samples
-// Copyright (c) 2008, AlphaSierraPapa
+﻿// SharpDevelop samples
+// Copyright (c) 2013, AlphaSierraPapa
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are
@@ -26,21 +26,29 @@
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
-using System.Drawing;
-using System.Windows.Forms;
+using System.Threading;
+using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpSnippetCompiler
+namespace ICSharpCode.SharpSnippetCompiler.Core
 {
-	public partial class NewFileDialog : Form
+	public class StatusBarService : IStatusBarService
 	{
-		public NewFileDialog()
+		public void SetCaretPosition(int x, int y, int charOffset)
 		{
-			InitializeComponent();
 		}
 		
-		public string FileName {
-			get { return fileNameTextBox.Text; }
-			set { fileNameTextBox.Text = value; }
+		public void SetMessage(string message, bool highlighted, ICSharpCode.SharpDevelop.IImage icon)
+		{
+		}
+		
+		public IProgressMonitor CreateProgressMonitor(CancellationToken cancellationToken)
+		{
+			return new DummyProgressMonitor();
+		}
+		
+		public void AddProgress(ProgressCollector progress)
+		{
+		
 		}
 	}
 }

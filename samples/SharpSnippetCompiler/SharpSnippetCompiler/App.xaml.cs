@@ -1,5 +1,5 @@
-// SharpDevelop samples
-// Copyright (c) 2008, AlphaSierraPapa
+﻿// SharpDevelop samples
+// Copyright (c) 2013, AlphaSierraPapa
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are
@@ -25,22 +25,13 @@
 // IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+
 using System;
-using System.Drawing;
-using System.Windows.Forms;
+using System.Windows;
 
 namespace ICSharpCode.SharpSnippetCompiler
 {
-	public partial class NewFileDialog : Form
+	public partial class App : Application
 	{
-		public NewFileDialog()
-		{
-			InitializeComponent();
-		}
-		
-		public string FileName {
-			get { return fileNameTextBox.Text; }
-			set { fileNameTextBox.Text = value; }
-		}
 	}
 }
