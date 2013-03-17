@@ -259,28 +259,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			// - we avoid an expensive configuration switch during solution load.
 		}
 		
-		/*
-		static void ApplyConfigurationAndReadProjectPreferences()
-		{
-			openSolution.ApplySolutionConfigurationAndPlatformToProjects();
-			foreach (IProject project in openSolution.Projects) {
-				string file = GetPreferenceFileName(project.FileName);
-				if (FileUtility.IsValidPath(file) && File.Exists(file)) {
-					Properties properties = null;
-					try {
-						properties = Properties.Load(file);
-					} catch (IOException) {
-					} catch (UnauthorizedAccessException) {
-					} catch (XmlException) {
-						// ignore errors about inaccessible or malformed files
-					}
-					if (properties != null)
-						project.SetMemento(properties);
-				}
-			}
-		}
-		 */
-		
 		public event EventHandler PreferencesSaving = delegate { };
 		
 		public void SavePreferences()

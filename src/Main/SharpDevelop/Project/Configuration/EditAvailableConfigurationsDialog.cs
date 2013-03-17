@@ -125,8 +125,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (dlg.ShowDialog(this) == DialogResult.OK) {
 					editedCollection.Add(dlg.NewName, dlg.CopyFrom);
 					if (dlg.CreateInAllProjects) {
-						#warning
-						throw new NotImplementedException();
+						foreach (var project in ((ISolution)configurable).Projects) {
+							if (editPlatforms)
+								project.PlatformNames.Add(dlg.NewName, dlg.CopyFrom);
+							else
+								project.ConfigurationNames.Add(dlg.NewName, dlg.CopyFrom);
+						}
 					}
 					InitList();
 				}

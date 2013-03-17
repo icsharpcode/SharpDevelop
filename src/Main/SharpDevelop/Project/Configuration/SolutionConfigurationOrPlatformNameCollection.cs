@@ -88,9 +88,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (newName == null)
 				throw new ArgumentException();
 			list.Add(newName);
-			if (copyFrom != null)
-				throw new NotImplementedException();
 			OnCollectionChanged(EmptyList<string>.Instance, new[] { newName });
+			
+			if (copyFrom != null) {
+				foreach (var project in solution.Projects) {
+					var mapping = project.ConfigurationMapping;
+					foreach (string otherName in isPlatform ? solution.ConfigurationNames : solution.PlatformNames) {
+						var sourceSolutionConfig = isPlatform ? new ConfigurationAndPlatform(otherName, copyFrom) : new ConfigurationAndPlatform(copyFrom, otherName);
+						var newSolutionConfig = isPlatform ? new ConfigurationAndPlatform(otherName, newName) : new ConfigurationAndPlatform(newName, otherName);
+						mapping.SetProjectConfiguration(newSolutionConfig, mapping.GetProjectConfiguration(sourceSolutionConfig));
+						mapping.SetBuildEnabled(newSolutionConfig, mapping.IsBuildEnabled(sourceSolutionConfig));
+					}
+				}
+			}
 		}
 		
 		int GetIndex(string name)
@@ -111,6 +121,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			name = list[pos]; // get the name in original case
 			list.RemoveAt(pos);
 			OnCollectionChanged(new[] { name }, EmptyList<string>.Instance);
+			
+			foreach (var project in solution.Projects) {
+				var mapping = project.ConfigurationMapping;
+				foreach (string otherName in isPlatform ? solution.ConfigurationNames : solution.PlatformNames) {
+					var oldSolutionConfig = isPlatform ? new ConfigurationAndPlatform(otherName, name) : new ConfigurationAndPlatform(name, otherName);
+					mapping.Remove(oldSolutionConfig);
+				}
+			}
 		}
 		
 		void IConfigurationOrPlatformNameCollection.Rename(string oldName, string newName)
