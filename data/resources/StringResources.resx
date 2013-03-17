@@ -1933,6 +1933,12 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
     <value>Debugging</value>
     <comment>The root node in the options dialog</comment>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.EnableDecompiler" xml:space="preserve">
+    <value>Enable decompiler</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.EnableEditAndContinue" xml:space="preserve">
+    <value>Enable Edit and Continue</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
     <value>Exceptions</value>
   </data>
@@ -1962,6 +1968,12 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping.StepOverSingleLineProperties" xml:space="preserve">
     <value>Step over single-line properties</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.SuppressJITOptimization" xml:space="preserve">
+    <value>Suppress JIT optimization</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.SuppressNGENOptimization" xml:space="preserve">
+    <value>Suppress NGEN optimization</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Symbols" xml:space="preserve">
     <value>Symbols</value>
@@ -2799,6 +2811,9 @@ You can also choose to store the setting in the .user-file instead of the projec
   </data>
   <data name="FormsDesigner.DesignTabPages.SourceTabPage" xml:space="preserve">
     <value>Source</value>
+  </data>
+  <data name="Gloabl.Advanced" xml:space="preserve">
+    <value>Advanced</value>
   </data>
   <data name="Global.AbortButtonText" xml:space="preserve">
     <value>Abort</value>

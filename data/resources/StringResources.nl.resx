@@ -1875,6 +1875,12 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Foutopsporing</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.EnableDecompiler" xml:space="preserve">
+    <value>Decompiler inschakelen</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.EnableEditAndContinue" xml:space="preserve">
+    <value>Bewerken en Doorgaan inschakelen</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
     <value>Uitzonderingen</value>
   </data>
@@ -1904,6 +1910,12 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping.StepOverSingleLineProperties" xml:space="preserve">
     <value>Stap over éénregelige eigenschappen</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.SuppressJITOptimization" xml:space="preserve">
+    <value>Onderdruk JIT optimalisering</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.SuppressNGENOptimization" xml:space="preserve">
+    <value>Onderdruk NGEN optimalisering</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Symbols" xml:space="preserve">
     <value>Symbolen</value>
@@ -2364,6 +2376,12 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.Any" xml:space="preserve">
     <value>Elke processor</value>
   </data>
+  <data name="Dialog.ProjectOptions.Build.TargetCPU.Any32" xml:space="preserve">
+    <value>Elke processor (voorkeur 32-bit)</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Build.TargetCPU.Any64" xml:space="preserve">
+    <value>Elke processor (voorkeur 64-bit)</value>
+  </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.Itanium" xml:space="preserve">
     <value>Intel 64-bit Itanium processor</value>
   </data>
@@ -2715,6 +2733,9 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   </data>
   <data name="FormsDesigner.DesignTabPages.SourceTabPage" xml:space="preserve">
     <value>Bron</value>
+  </data>
+  <data name="Gloabl.Advanced" xml:space="preserve">
+    <value>Uitgebreid</value>
   </data>
   <data name="Global.AbortButtonText" xml:space="preserve">
     <value>Afbreken</value>
@@ -5139,10 +5160,10 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>Prioriteit</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.Priority.AboveNormal" xml:space="preserve">
-    <value>Bovengemiddeld</value>
+    <value>Boven normaal</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.Priority.BelowNormal" xml:space="preserve">
-    <value>Benedengemiddeld</value>
+    <value>Beneden normaal</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.Priority.Highest" xml:space="preserve">
     <value>Hoogste</value>

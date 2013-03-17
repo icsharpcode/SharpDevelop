@@ -19,6 +19,8 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 		private const string stringType  = "System.String";
 		private const string dateTimetype = "System.DateTime";
 		private const string nullValue ="NullValue";
+		
+		
 		[Test]
 		public void String_Is_Not_Formatted()
 		{
@@ -87,6 +89,27 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 			Assert.That(result,Is.EqualTo("05:50:10"));
 		}
 
+		
+		[Test]
+		public void NegativeTimeSpan_HH_mm_ss ()
+		{
+			string toFormat = "-5:50:10";
+			string format = "H:mm:ss";
+			var result = StandardFormatter.FormatOutput(toFormat,format,dateTimetype,nullValue);
+			Assert.That(result,Is.EqualTo("-5:50:10"));
+		}
+		
+		
+		[Test]
+		public void TimeSpan_HH_mm ()
+		{
+			string toFormat = "5:50:10";
+			string format = "HH:mm";
+			var result = StandardFormatter.FormatOutput(toFormat,format,dateTimetype,nullValue);
+			Assert.That(result,Is.EqualTo("05:50"));
+		}
+		
+		
 		[Test]
 		public void TimeSpan_H_mm_ss ()
 		{

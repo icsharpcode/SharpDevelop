@@ -2,6 +2,7 @@
 	<ItemGroup>
 		<GenericDeps Include="..\..\..\bin\ICSharpCode.NRefactory.dll"/>
 		<GenericDeps Include="..\..\..\bin\ICSharpCode.SharpDevelop.Dom.dll"/>
+		<GenericDeps Include="..\..\..\bin\Mono.Cecil.dll"/>
 
 		<GenericDeps Include="..\..\..\bin\ICSharpCode.AvalonEdit.dll"/>
 		<GenericDeps Include="..\..\..\bin\log4net.dll"/>
@@ -10,6 +11,7 @@
 		<BooDeps Include="..\..\..\AddIns\BackendBindings\BooBinding\Boo.Lang.Compiler.dll"/>
 		<BooDeps Include="..\..\..\AddIns\BackendBindings\BooBinding\NRefactoryToBooConverter.dll"/>
 
+		<PyDeps Include="..\..\..\bin\ICSharpCode.Scripting.dll"/>
 		<PyDeps Include="..\..\..\AddIns\BackendBindings\PythonBinding\PythonBinding.dll"/>
 
 		<IrDeps Include="..\..\..\AddIns\BackendBindings\RubyBinding\RubyBinding.dll"/>

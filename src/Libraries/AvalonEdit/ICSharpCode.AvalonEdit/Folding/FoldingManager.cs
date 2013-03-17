@@ -81,7 +81,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 			foreach (FoldingSection fs in foldings) {
 				if (fs.collapsedSections != null) {
 					Array.Resize(ref fs.collapsedSections, textViews.Count);
-					fs.collapsedSections[fs.collapsedSections.Length - 1] = fs.CollapseSection(textView);
+					fs.ValidateCollapsedLineSections();
 				}
 			}
 		}

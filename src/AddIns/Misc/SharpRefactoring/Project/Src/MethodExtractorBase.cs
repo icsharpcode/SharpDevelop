@@ -137,6 +137,8 @@ namespace SharpRefactoring
 		
 		protected bool IsInCurrentSelection(Location location)
 		{
+			if (location.IsEmpty)
+				return false;
 			return IsInCurrentSelection(textEditor.Document.PositionToOffset(location.Line, location.Column));
 		}
 		

@@ -422,6 +422,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void TextAreaCaretPositionChanged(object sender, EventArgs e)
 		{
+			if (document == null)
+				return; // can happen if the editor is closed with Ctrl+F4 while selecting text
 			Debug.Assert(sender is Caret);
 			Debug.Assert(!document.IsInUpdate);
 			if (sender == this.ActiveTextEditor.TextArea.Caret) {
