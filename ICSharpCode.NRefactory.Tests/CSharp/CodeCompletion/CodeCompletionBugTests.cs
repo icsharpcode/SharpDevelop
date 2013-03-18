@@ -6009,7 +6009,17 @@ public class Testing
 			});
 		}
 
-
+		/// <summary>
+		/// NullReferenceException when inserting space after 'in' modifier
+		/// </summary>
+		[Test]
+		public void TestCrashContravariantTypeParameter ()
+		{
+			CompletionDataList provider = CreateProvider (
+				@"public delegate void ModelCollectionChangedEventHandler<in$ $T>();
+");
+			Assert.AreEqual(0, provider.Count);
+		}
 
 
 	}

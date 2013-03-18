@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpCompletionEngine.cs
 //  
 // Author:
@@ -1806,6 +1806,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					var inList = new CompletionDataWrapper(this);
 					
 					var expr = GetExpressionAtCursor();
+					if (expr == null)
+						return null;
 					var rr = ResolveExpression(expr);
 					
 					AddContextCompletion(
