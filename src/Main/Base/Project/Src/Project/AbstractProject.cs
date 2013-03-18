@@ -46,7 +46,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.Name = information.ProjectName;
 			this.FileName = information.FileName;
 			this.idGuid = (information.IdGuid != Guid.Empty ? information.IdGuid : Guid.NewGuid());
-			Debug.Assert(information.TypeGuid != Guid.Empty);
 			this.TypeGuid = information.TypeGuid;
 			if (information.ProjectSections != null)
 				this.projectSections.AddRange(information.ProjectSections);

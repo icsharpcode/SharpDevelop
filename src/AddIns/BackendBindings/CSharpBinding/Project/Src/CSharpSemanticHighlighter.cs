@@ -47,11 +47,23 @@ namespace CSharpBinding
 			//this.defaultTextColor = ???;
 			this.referenceTypeColor = highlighting.GetNamedColor("ReferenceTypes");
 			this.valueTypeColor = highlighting.GetNamedColor("ValueTypes");
-			this.methodCallColor = highlighting.GetNamedColor("MethodCall");
-			this.fieldAccessColor = highlighting.GetNamedColor("FieldAccess");
+			this.interfaceTypeColor = this.referenceTypeColor;
+			this.enumerationTypeColor = this.valueKeywordColor;
+			this.typeParameterTypeColor = this.referenceTypeColor;
+			this.delegateTypeColor = this.referenceTypeColor;
+			
+			this.methodDeclarationColor = this.methodCallColor = highlighting.GetNamedColor("MethodCall");
+			//this.eventDeclarationColor = this.eventAccessColor = defaultTextColor;
+			//this.propertyDeclarationColor = this.propertyAccessColor = defaultTextColor;
+			this.fieldDeclarationColor = this.fieldAccessColor = highlighting.GetNamedColor("FieldAccess");
+			//this.variableDeclarationColor = this.variableAccessColor = defaultTextColor;
+			//this.parameterDeclarationColor = this.parameterAccessColor = defaultTextColor;
 			this.valueKeywordColor = highlighting.GetNamedColor("NullOrValueKeywords");
+			//this.externAliasKeywordColor = ...;
+			
 			this.parameterModifierColor = highlighting.GetNamedColor("ParameterModifiers");
 			this.inactiveCodeColor = highlighting.GetNamedColor("InactiveCode");
+			this.syntaxErrorColor = highlighting.GetNamedColor("SemanticError");
 			
 			if (document is TextDocument && SD.MainThread.CheckAccess()) {
 				// Use the cache only for the live AvalonEdit document
