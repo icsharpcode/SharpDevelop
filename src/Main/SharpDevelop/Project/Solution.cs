@@ -130,10 +130,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				foreach (var project in addedItems) {
 					project.ProjectSections.CollectionChanged += solution.OnSolutionSectionCollectionChanged;
+					project.ConfigurationMapping.Changed += solution.OnProjectConfigurationMappingChanged;
 					solution.OnSolutionSectionCollectionChanged(EmptyList<SolutionSection>.Instance, project.ProjectSections);
 				}
 				foreach (var project in removedItems) {
 					project.ProjectSections.CollectionChanged -= solution.OnSolutionSectionCollectionChanged;
+					project.ConfigurationMapping.Changed -= solution.OnProjectConfigurationMappingChanged;
 					solution.OnSolutionSectionCollectionChanged(project.ProjectSections, EmptyList<SolutionSection>.Instance);
 				}
 				// If the startup project was removed, reset that property
@@ -196,6 +198,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public IMutableModelCollection<SolutionSection> GlobalSections {
 			get { return globalSections; }
+		}
+		
+		void OnProjectConfigurationMappingChanged(object sender, EventArgs e) 
+		{
+			this.IsDirty = true;
 		}
 		
 		void OnSolutionSectionCollectionChanged(IReadOnlyCollection<SolutionSection> oldItems, IReadOnlyCollection<SolutionSection> newItems)

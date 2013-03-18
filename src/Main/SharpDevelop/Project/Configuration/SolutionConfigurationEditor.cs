@@ -160,8 +160,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				IProject project = (IProject)row.Tag;
 				
 				var newConfig = new ConfigurationAndPlatform(
-					row.Cells[configurationColumn.Index].ToString(),
-					row.Cells[platformColumn.Index].ToString());
+					row.Cells[configurationColumn.Index].Value.ToString(),
+					row.Cells[platformColumn.Index].Value.ToString());
 				
 				project.ConfigurationMapping.SetProjectConfiguration(solutionConfig, newConfig);
 			}

@@ -109,6 +109,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				var userProjectFile = project.MSBuildUserProjectFile;
 				bool copiedGroupInMainFile = false;
 				if (copyFrom != null) {
+					copyFrom = MSBuildInternals.FixPlatformNameForProject(copyFrom);
 					foreach (ProjectPropertyGroupElement g in projectFile.PropertyGroups.ToList()) {
 						var gConfig = ConfigurationAndPlatform.FromCondition(g.Condition);
 						if (HasName(gConfig, copyFrom)) {
@@ -181,7 +182,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				string otherName = null;
 				foreach (string configName in this) {
 					if (!ConfigurationAndPlatform.ConfigurationNameComparer.Equals(configName, name)) {
-						otherName = name;
+						otherName = configName;
 						break;
 					}
 				}

@@ -29,12 +29,14 @@ namespace ICSharpCode.SharpDevelop.Project
 				ctl.Text = StringParser.Parse(ctl.Text);
 			}
 			
+			this.configurable = configurable;
+			this.editPlatforms = editPlatforms;
 			if (editPlatforms) {
 				this.Text = StringParser.Parse("${res:Dialog.EditAvailableConfigurationsDialog.EditSolutionPlatforms}");
-				this.editedCollection = configurable.ConfigurationNames;
+				this.editedCollection = configurable.PlatformNames;
 			} else {
 				this.Text = StringParser.Parse("${res:Dialog.EditAvailableConfigurationsDialog.EditSolutionConfigurations}");
-				this.editedCollection = configurable.PlatformNames;
+				this.editedCollection = configurable.ConfigurationNames;
 			}
 			InitList();
 		}

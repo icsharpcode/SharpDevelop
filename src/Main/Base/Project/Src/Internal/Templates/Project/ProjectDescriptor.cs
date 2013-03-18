@@ -313,6 +313,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					}
 				}
 				
+				info.TypeGuid = descriptor.Guid;
 				info.RootNamespace = standardNamespace.ToString();
 				info.ProjectName = newProjectName;
 				if (!string.IsNullOrEmpty(defaultPlatform))

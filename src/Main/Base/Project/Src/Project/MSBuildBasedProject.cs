@@ -171,6 +171,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			userProjectFile.FullPath = information.FileName + ".user";
 			
 			projectFile.AddProperty(ProjectGuidPropertyName, IdGuid.ToString("B").ToUpperInvariant());
+			projectFile.AddProperty("ProjectTypeGuids", TypeGuid.ToString("B").ToUpperInvariant());
 			AddGuardedProperty("Configuration", information.ActiveProjectConfiguration.Configuration);
 			AddGuardedProperty("Platform", information.ActiveProjectConfiguration.Platform);
 			
