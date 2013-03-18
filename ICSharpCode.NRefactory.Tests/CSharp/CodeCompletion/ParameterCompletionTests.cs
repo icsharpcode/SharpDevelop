@@ -190,38 +190,83 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				public IEnumerable<IType> Data { get; set; }
 				#region IParameterDataProvider implementation
 				public int StartOffset { get { return 0; } }
-
+				
 				public string GetHeading (int overload, string[] parameterDescription, int currentParameter)
 				{
 					return "";
 				}
-
+				
 				public string GetDescription (int overload, int currentParameter)
 				{
 					return "";
 				}
-
+				
 				public string GetParameterDescription (int overload, int paramIndex)
 				{
 					return "";
 				}
-
+				
 				public string GetParameterName(int overload, int currentParameter)
 				{
 					return "";
 				}
-
+				
 				public int GetParameterCount (int overload)
 				{
 					var data = Data.ElementAt (overload);
 					return data.TypeParameterCount;
 				}
-
+				
 				public bool AllowParameterList (int overload)
 				{
 					return false;
 				}
+				
+				public int Count {
+					get {
+						return Data.Count ();
+					}
+				}
+				#endregion
+			}
 
+			class MethodTypeParameterDataProvider : IParameterDataProvider
+			{
+				public IEnumerable<IMethod> Data { get; set; }
+				#region IParameterDataProvider implementation
+				public int StartOffset { get { return 0; } }
+				
+				public string GetHeading (int overload, string[] parameterDescription, int currentParameter)
+				{
+					return "";
+				}
+				
+				public string GetDescription (int overload, int currentParameter)
+				{
+					return "";
+				}
+				
+				public string GetParameterDescription (int overload, int paramIndex)
+				{
+					return "";
+				}
+				
+				public string GetParameterName(int overload, int currentParameter)
+				{
+					return "";
+				}
+				
+				public int GetParameterCount (int overload)
+				{
+					var data = Data.ElementAt (overload);
+					return data.TypeArguments.Count;
+				}
+				
+				public bool AllowParameterList (int overload)
+				{
+					return false;
+				}
+				
 				public int Count {
 					get {
 						return Data.Count ();
@@ -276,6 +321,13 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			{
 				return new TypeParameterDataProvider () {
 					Data = types
+				};
+			}
+
+			public IParameterDataProvider CreateTypeParameterDataProvider (int startOffset, IEnumerable<IMethod> methods)
+			{
+				return new MethodTypeParameterDataProvider () {
+					Data = methods
 				};
 			}
 			#endregion
@@ -1161,5 +1213,20 @@ class Test
 			Assert.AreEqual (2, provider.GetParameterCount (0));
 		}
 
+		[Test]
+		public void TypeArgumentsInIncompleteMethodCall ()
+		{
+			var provider = CreateProvider (
+				@"using System.Collections.Generic;
+using System.Linq;
+class NUnitTestClass {
+    public ICollection<ITest> NestedTestCollection { get; set; }
+    public NUnitTestMethod FindTestMethodWithShortName(string name)
+    {
+        this.NestedTestCollection$.OfType<$.LastOrDefault(
+    }
+}");
+			Assert.AreEqual (1, provider.Count);
+		}
 	}
 }

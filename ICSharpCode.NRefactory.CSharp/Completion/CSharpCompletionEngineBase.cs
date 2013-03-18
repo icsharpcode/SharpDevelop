@@ -315,12 +315,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			readonly string text;
 
-			public bool IsFistNonWs = true;
-			public bool IsInSingleComment = false;
-			public bool IsInString = false;
-			public bool IsInVerbatimString = false;
-			public bool IsInChar = false;
-			public bool IsInMultiLineComment = false;
+			public bool IsFistNonWs               = true;
+			public bool IsInSingleComment         = false;
+			public bool IsInString                = false;
+			public bool IsInVerbatimString        = false;
+			public bool IsInChar                  = false;
+			public bool IsInMultiLineComment      = false;
 			public bool IsInPreprocessorDirective = false;
 
 			public MiniLexer(string text)
@@ -342,7 +342,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						case '#':
 							if (IsFistNonWs)
 								IsInPreprocessorDirective = true;
-							break;
+							break; 
 						case '/':
 							if (IsInString || IsInChar || IsInVerbatimString || IsInSingleComment)
 								break;
@@ -351,8 +351,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 								IsInSingleComment = true;
 								IsInPreprocessorDirective = false;
 							}
-							if (nextCh == '*' && !IsInPreprocessorDirective)
+							if (nextCh == '*' && !IsInPreprocessorDirective) {
 								IsInMultiLineComment = true;
+								i++;
+							}
 							break;
 						case '*':
 							if (IsInString || IsInChar || IsInVerbatimString || IsInSingleComment)

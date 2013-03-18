@@ -102,6 +102,23 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return new ExpressionResult((AstNode)expr, baseUnit);
 		}
 
+		public ExpressionResult GetMethodTypeArgumentInvocationBeforeCursor()
+		{
+			SyntaxTree baseUnit;
+			if (currentMember == null && currentType == null) { 
+				return null;
+			}
+			baseUnit = ParseStub("x>.A ()");
+			
+			//var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
+			var expr = baseUnit.GetNodeAt<MemberReferenceExpression>(location.Line, location.Column + 1);
+			if (expr == null)
+				return null;
+			return new ExpressionResult((AstNode)expr, baseUnit);
+		}
+
+
+
 		IEnumerable<IMethod> CollectMethods(AstNode resolvedNode, MethodGroupResolveResult resolveResult)
 		{
 			var lookup = new MemberLookup(ctx.CurrentTypeDefinition, Compilation.MainAssembly);
@@ -299,15 +316,22 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					break;
 				case '<':
+					invoke = GetMethodTypeArgumentInvocationBeforeCursor();
+					if (invoke != null) {
+						var tExpr2 = ResolveExpression(invoke);
+						if (tExpr2 != null && tExpr2.Item1 is MethodGroupResolveResult && !tExpr2.Item1.IsError) {
+							return factory.CreateTypeParameterDataProvider(document.GetOffset(invoke.Node.StartLocation), CollectMethods(invoke.Node, tExpr2.Item1 as MethodGroupResolveResult));
+						}
+					}
 					invoke = GetTypeBeforeCursor();
-					if (invoke == null) {
+					if (invoke == null || invoke.Node.StartLocation.IsEmpty) {
 						return null;
 					}
 					var tExpr = ResolveExpression(invoke);
 					if (tExpr == null || tExpr.Item1 == null || tExpr.Item1.IsError) {
 						return null;
 					}
-					
+
 					return factory.CreateTypeParameterDataProvider(document.GetOffset(invoke.Node.StartLocation), CollectAllTypes(tExpr.Item1.Type));
 				case '[':
 					invoke = GetIndexerBeforeCursor();
