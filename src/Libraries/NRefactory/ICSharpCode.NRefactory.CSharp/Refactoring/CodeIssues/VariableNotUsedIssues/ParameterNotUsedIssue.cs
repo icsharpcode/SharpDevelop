@@ -112,6 +112,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 				if (methodDeclaration.Body.IsNull)
 					return;
+				if (methodDeclaration.Modifiers.HasFlag (Modifiers.Virtual) || 
+				    methodDeclaration.Modifiers.HasFlag (Modifiers.New) ||
+				    methodDeclaration.Modifiers.HasFlag (Modifiers.Partial))
+					return;
 				var methodResolveResult = ctx.Resolve(methodDeclaration) as MemberResolveResult;
 				if (methodResolveResult == null)
 					return;

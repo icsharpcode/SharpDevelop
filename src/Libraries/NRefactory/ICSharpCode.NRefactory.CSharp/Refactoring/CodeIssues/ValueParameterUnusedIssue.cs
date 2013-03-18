@@ -51,12 +51,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration)
 			{
-				FindIssuesInNode(indexerDeclaration.Setter, indexerDeclaration.Setter.Body);
+				FindIssuesInAccessor(indexerDeclaration.Setter);
 			}
 
 			public override void VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
 			{
-				FindIssuesInNode(propertyDeclaration.Setter, propertyDeclaration.Setter.Body);
+				FindIssuesInAccessor(propertyDeclaration.Setter);
 			}
 
 			public override void VisitCustomEventDeclaration(CustomEventDeclaration eventDeclaration)
@@ -66,12 +66,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				// don't warn on empty custom events
 				if (addAccessor.Body.Statements.Count == 0 && removeAccessor.Body.Statements.Count == 0)
 					return;
-				FindIssuesInNode(addAccessor, addAccessor.Body, "add accessor");
-				FindIssuesInNode(removeAccessor, removeAccessor.Body, "remove accessor");
+				FindIssuesInAccessor(addAccessor, "add accessor");
+				FindIssuesInAccessor(removeAccessor, "remove accessor");
 			}
 
-			void FindIssuesInNode(AstNode anchor, BlockStatement body, string accessorName = "setter")
+			void FindIssuesInAccessor(Accessor accessor, string accessorName = "setter")
 			{
+				var body = accessor.Body;
 				if (!IsEligible(body))
 					return;
 
@@ -90,7 +91,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 
 				if(!referenceFound)
-					AddIssue(anchor, ctx.TranslateString("The " + accessorName + " does not use the 'value' parameter"));
+					AddIssue(accessor.Keyword, ctx.TranslateString("The " + accessorName + " does not use the 'value' parameter"));
 			}
 
 			static bool IsEligible(BlockStatement body)

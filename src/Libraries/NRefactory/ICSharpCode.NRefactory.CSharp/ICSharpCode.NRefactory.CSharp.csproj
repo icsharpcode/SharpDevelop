@@ -156,7 +156,6 @@
     <Compile Include="Ast\Modifiers.cs" />
     <Compile Include="Ast\NodeType.cs" />
     <Compile Include="Ast\ObservableAstVisitor.cs" />
-    <Compile Include="Ast\old_ObservableAstVisitor.cs" />
     <Compile Include="Ast\PrimitiveType.cs" />
     <Compile Include="Ast\SimpleType.cs" />
     <Compile Include="Ast\Statements\BlockStatement.cs" />
@@ -516,6 +515,7 @@
     <Compile Include="Resolver\ReducedExtensionMethod.cs" />
     <Compile Include="Refactoring\CodeIssues\SimplifyAnonymousMethodToDelegateIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\CompilerErrors\CS0127ReturnMustNotBeFollowedByAnyExpression.cs" />
+    <Compile Include="Analysis\AbiComparer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

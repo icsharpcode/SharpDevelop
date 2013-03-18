@@ -244,7 +244,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		/// <summary>
-		/// Gets the expected type for the specified node. This is the type being that a node is being converted to.
+		/// Gets the expected type for the specified node. This is the type that a node is being converted to.
 		/// </summary>
 		public IType GetExpectedType(Expression expr, CancellationToken cancellationToken = default(CancellationToken))
 		{

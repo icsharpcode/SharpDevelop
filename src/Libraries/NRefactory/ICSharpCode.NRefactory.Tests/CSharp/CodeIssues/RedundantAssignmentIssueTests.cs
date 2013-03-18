@@ -393,5 +393,21 @@ class TestClass
 }";
 			Test<RedundantAssignmentIssue> (input, 0);
 		}
+
+		[Test]
+		public void TestAssignmentWithFunction ()
+		{
+			var input = @"using System;
+class TestClass
+{
+    void Test(TestClass a) { }
+	TestClass  Func () { return null; }
+	void TestMethod ()
+	{
+		var a = Func ();
+	}
+}";
+			Test<RedundantAssignmentIssue> (input, 0);
+		}
 	}
 }

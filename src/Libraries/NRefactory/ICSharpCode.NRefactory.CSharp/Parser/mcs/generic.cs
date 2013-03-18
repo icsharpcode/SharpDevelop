@@ -364,7 +364,7 @@ namespace Mono.CSharp {
 		
 		Constraints constraints;
 		GenericTypeParameterBuilder builder;
-		TypeParameterSpec spec;
+		readonly TypeParameterSpec spec;
 
 		public TypeParameter (int index, MemberName name, Constraints constraints, Attributes attrs, Variance variance)
 			: base (null, name, attrs)
@@ -381,7 +381,7 @@ namespace Mono.CSharp {
 		{
 			this.spec = new TypeParameterSpec (null, -1, this, SpecialConstraint.None, variance, null);
 		}
-
+		
 		public TypeParameter (TypeParameterSpec spec, TypeSpec parentSpec, MemberName name, Attributes attrs)
 			: base (null, name, attrs)
 		{
@@ -391,7 +391,7 @@ namespace Mono.CSharp {
 				TypeArguments = spec.TypeArguments
 			};
 		}
-
+		
 		#region Properties
 
 		public override AttributeTargets AttributeTargets {
@@ -1480,6 +1480,7 @@ namespace Mono.CSharp {
 	{
 		readonly TypeParameters mvar;
 		readonly TypeParameters var;
+		readonly TypeParameterSpec[] src;
 		Dictionary<TypeSpec, TypeSpec> mutated_typespec;
 
 		public TypeParameterMutator (TypeParameters mvar, TypeParameters var)
@@ -1489,6 +1490,15 @@ namespace Mono.CSharp {
 
 			this.mvar = mvar;
 			this.var = var;
+		}
+
+		public TypeParameterMutator (TypeParameterSpec[] srcVar, TypeParameters destVar)
+		{
+			if (srcVar.Length != destVar.Count)
+				throw new ArgumentException ();
+
+			this.src = srcVar;
+			this.var = destVar;
 		}
 
 		#region Properties
@@ -1530,9 +1540,16 @@ namespace Mono.CSharp {
 
 		public TypeParameterSpec Mutate (TypeParameterSpec tp)
 		{
-			for (int i = 0; i < mvar.Count; ++i) {
-				if (mvar[i].Type == tp)
-					return var[i].Type;
+			if (mvar != null) {
+				for (int i = 0; i < mvar.Count; ++i) {
+					if (mvar[i].Type == tp)
+						return var[i].Type;
+				}
+			} else {
+				for (int i = 0; i < src.Length; ++i) {
+					if (src[i] == tp)
+						return var[i].Type;
+				}
 			}
 
 			return tp;
@@ -3233,7 +3250,7 @@ namespace Mono.CSharp {
 			AParametersCollection d_parameters = invoke.Parameters;
 			return AllTypesAreFixed (d_parameters.Types);
 		}
-		
+
 		bool IsFixed (TypeSpec type)
 		{
 			return IsUnfixed (type) == -1;
@@ -3440,7 +3457,7 @@ namespace Mono.CSharp {
 				var invoke = Delegate.GetInvokeMethod (t);
 				TypeSpec rtype = invoke.ReturnType;
 
-				if (!rtype.IsGenericParameter && !TypeManager.IsGenericType (rtype))
+				if (!IsReturnTypeNonDependent (ec, invoke, rtype))
 					return 0;
 
 				// LAMESPEC: Standard does not specify that all methodgroup arguments
@@ -3451,9 +3468,6 @@ namespace Mono.CSharp {
 				for (int i = 0; i < param_types.Length; ++i) {
 					var inflated = InflateGenericArgument (ec, invoke.Parameters.Types[i]);
 					if (inflated == null)
-						return 0;
-
-					if (IsUnfixed (inflated) >= 0)
 						return 0;
 
 					param_types[i] = inflated;

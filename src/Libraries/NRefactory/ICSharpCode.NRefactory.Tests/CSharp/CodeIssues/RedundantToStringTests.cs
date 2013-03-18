@@ -246,9 +246,9 @@ class Foo
 {
 	void Bar (int i)
 	{
-		var w = new System.IO.StringWriter();
-		w.Write(i.ToString());
-		w.WriteLine(i.ToString());
+		var w = new System.IO.StringWriter ();
+		w.Write (i.ToString());
+		w.WriteLine (i.ToString());
 	}
 }";
 			
@@ -260,7 +260,7 @@ class Foo
 {
 	void Bar (int i)
 	{
-		var w = new System.IO.StringWriter();
+		var w = new System.IO.StringWriter ();
 		w.Write (i);
 		w.WriteLine (i);
 	}

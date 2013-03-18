@@ -142,7 +142,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				if (result != null) {
 					return result;
 				} else {
-					result = methodDefinition.AccessorOwner.Specialize(this.Substitution);
+					var ownerDefinition = methodDefinition.AccessorOwner;
+					if (ownerDefinition == null)
+						return null;
+					result = ownerDefinition.Specialize(this.Substitution);
 					return LazyInit.GetOrSet(ref accessorOwner, result);
 				}
 			}

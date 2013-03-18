@@ -635,5 +635,88 @@ class TestClass {
 			Assert.IsFalse(mrr.IsError);
 			Assert.AreEqual("System.Int32", mrr.Type.ReflectionName);
 		}
+
+		[Test]
+		public void AsyncLambdaWithAwait()
+		{
+			string program = @"
+using System;
+using System.Threading.Tasks;
+
+class A
+{
+	public Task OpenAsync ()
+	{
+		return null;
+	}
+}
+
+class C
+{
+	async void Foo ()
+	{
+			await $Test (async () => { await new A().OpenAsync (); })$;
+	}
+	
+	T Test<T> (Func<T> func)
+	{
+		return default (T);
+	}
+}
+";
+			var mrr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(mrr.IsError);
+			Assert.AreEqual("System.Threading.Tasks.Task", mrr.Type.ReflectionName);
+		}
+
+		[Test]
+		public void ConversionInExplicitlyTypedLambdaBody() {
+			string program = @"using System;
+class Test {
+	public object M() {
+		System.Func<int, string> f = $(int i) => null$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<ConversionResolveResult>(rr.Body);
+			Assert.That(((ConversionResolveResult)rr.Body).Conversion.IsNullLiteralConversion);
+		}
+
+		[Test]
+		public void ConversionInImplicitlyTypedLambdaBody() {
+			string program = @"using System;
+class Test {
+	public object M() {
+		System.Func<int, string> f = $i => null$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<ConversionResolveResult>(rr.Body);
+			Assert.That(((ConversionResolveResult)rr.Body).Conversion.IsNullLiteralConversion);
+		}
+
+		[Test]
+		public void NoConversionInVoidExplicitlyTypedLambdaBody() {
+			string program = @"using System;
+class Test {
+	public object M() {
+		System.Action<int> f = $(int i) => i++$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<OperatorResolveResult>(rr.Body);
+		}
+
+		[Test]
+		public void NoConversionInVoidImplicitlyTypedLambdaBody() {
+			string program = @"using System;
+class Test {
+	public object M() {
+		System.Action<int> f = $i => i++$;
+	}
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsInstanceOf<OperatorResolveResult>(rr.Body);
+		}
 	}
 }

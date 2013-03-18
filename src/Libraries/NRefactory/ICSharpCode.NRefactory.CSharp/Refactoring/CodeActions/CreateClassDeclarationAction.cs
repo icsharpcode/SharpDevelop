@@ -36,13 +36,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			var createExpression = context.GetNode<ObjectCreateExpression>();
-			if (createExpression != null) 
-				return GetActions(context, createExpression);
-			
 			var simpleType = context.GetNode<SimpleType>();
 			if (simpleType != null && !(simpleType.Parent is EventDeclaration || simpleType.Parent is CustomEventDeclaration)) 
 				return GetActions(context, simpleType);
+
+			var createExpression = context.GetNode<ObjectCreateExpression>();
+			if (createExpression != null) 
+				return GetActions(context, createExpression);
 
 			var identifier = context.GetNode<IdentifierExpression>();
 			if (identifier != null && (identifier.Parent is MemberReferenceExpression)) 
@@ -61,59 +61,128 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (service != null && !service.IsValidName(resolveResult.Identifier, AffectedEntity.Class)) { 
 				yield break;
 			}
+			ClassType classType = GuessClassTypeByName(service, node);
+			ModifyClassTypeBasedOnTypeGuessing(context, node, ref classType);
 
-			yield return new CodeAction(context.TranslateString("Create class"), script => {
-				script.CreateNewType(CreateType(context, service, node));
+			string message;
+			switch (classType) {
+				case ClassType.Struct:
+					message = context.TranslateString("Create struct");
+					break;
+				case ClassType.Interface:
+					message = context.TranslateString("Create interface");
+					break;
+				default:
+					message = context.TranslateString("Create class");
+					break;
+			}
+			yield return new CodeAction(message, script => {
+				script.CreateNewType(CreateType(context, service, node, classType));
 			});
 
+			if (node.Parent is TypeDeclaration || classType != ClassType.Class)
+				yield break;
 			yield return new CodeAction(context.TranslateString("Create nested class"), script => {
 				script.InsertWithCursor(
 					context.TranslateString("Create nested class"),
 					Script.InsertPosition.Before,
-					CreateType(context, service, node)
+					CreateType(context, service, node, classType)
 				);
 			});
 		}
 
-		static TypeDeclaration CreateType(RefactoringContext context, NamingConventionService service, AstNode node)
+		static void ModifyClassTypeBasedOnTypeGuessing(RefactoringContext context, AstNode node, ref ClassType classType)
+		{
+			var guessedType = CreateFieldAction.GuessType(context, node);
+			if (guessedType.Kind == TypeKind.TypeParameter) {
+				var tp = (ITypeParameter)guessedType;
+				if (tp.HasValueTypeConstraint)
+					classType = ClassType.Struct;
+				if (tp.HasReferenceTypeConstraint)
+					classType = ClassType.Class;
+			}
+		}
+		
+		static ClassType GuessClassTypeByName(NamingConventionService service,  string identifier)
+		{
+			if (service == null)
+				return ClassType.Class;
+			if (service.IsValidName (identifier, AffectedEntity.Interface, Modifiers.Public))
+				return ClassType.Interface;
+			if (!service.IsValidName (identifier, AffectedEntity.Class, Modifiers.Public) &&
+			     service.IsValidName (identifier, AffectedEntity.Struct, Modifiers.Public))
+				return ClassType.Struct;
+			return ClassType.Class;
+		}
+
+		static ClassType GuessClassTypeByName(NamingConventionService service, AstNode node)
+		{
+			if (node is SimpleType) 
+				return GuessClassTypeByName (service, ((SimpleType)node).Identifier);
+			if (node is IdentifierExpression) 
+				return GuessClassTypeByName (service, ((IdentifierExpression)node).Identifier);
+			return ClassType.Class;
+		}
+
+		static TypeDeclaration CreateType(RefactoringContext context, NamingConventionService service, AstNode node, ClassType classType)
 		{
 			TypeDeclaration result;
 			if (node is SimpleType) {
-				result = CreateClassFromType(context, (SimpleType)node);
+				result = CreateClassFromType(context, classType, (SimpleType)node);
 			} else if (node is ObjectCreateExpression) {
 				result = CreateClassFromObjectCreation(context, (ObjectCreateExpression)node);
 			} else {
-				result = CreateClassFromIdentifier(context, (IdentifierExpression)node);
+				result = CreateClassFromIdentifier(context, classType, (IdentifierExpression)node);
 			}
 
 			return AddBaseTypesAccordingToNamingRules(context, service, result);
 		}
 
-		static TypeDeclaration CreateClassFromIdentifier(RefactoringContext context, IdentifierExpression identifierExpression)
+		static TypeDeclaration CreateClassFromIdentifier(RefactoringContext context, ClassType classType, IdentifierExpression identifierExpression)
 		{
-			var result = new TypeDeclaration { Name = identifierExpression.Identifier };
+			var result = new TypeDeclaration { Name = identifierExpression.Identifier, ClassType = classType };
 			var entity = identifierExpression.GetParent<EntityDeclaration>();
 			if (entity != null)
 				result.Modifiers |= entity.Modifiers & Modifiers.Public;
 			return result;
 		}
 
-		static TypeDeclaration CreateClassFromType(RefactoringContext context, SimpleType simpleType)
+		static TypeDeclaration CreateClassFromType(RefactoringContext context, ClassType classType, SimpleType simpleType)
 		{
 			TypeDeclaration result;
 			string className = simpleType.Identifier;
 
-			if (simpleType.Parent is Attribute) {
+			if (simpleType.Parent is Attribute && classType == ClassType.Class) {
 				if (!className.EndsWith("Attribute", System.StringComparison.Ordinal))
 					className += "Attribute";
 			}
 
-			result = new TypeDeclaration { Name = className };
+			result = new TypeDeclaration { Name = className, ClassType = classType };
 			var entity = simpleType.GetParent<EntityDeclaration>();
 			if (entity != null)
 				result.Modifiers |= entity.Modifiers & Modifiers.Public;
-			
+
+			var guessedType = CreateFieldAction.GuessType (context, simpleType);
+			if (guessedType.Kind == TypeKind.TypeParameter)
+				ImplementConstraints (context, result, (ITypeParameter)guessedType);
 			return result;
+		}
+
+		static void ImplementConstraints(RefactoringContext context, TypeDeclaration result, ITypeParameter tp)
+		{
+			if (tp.HasValueTypeConstraint)
+				result.ClassType = ClassType.Struct;
+			if (tp.HasReferenceTypeConstraint)
+				result.ClassType = ClassType.Class;
+			if (tp.HasDefaultConstructorConstraint)
+				result.AddChild (new ConstructorDeclaration { Modifiers = Modifiers.Public, Body = new BlockStatement () }, Roles.TypeMemberRole);
+			foreach (var baseType in tp.DirectBaseTypes) {
+				if (baseType.Namespace == "System") {
+					if (baseType.Name == "Object" || baseType.Name == "ValueType")
+						continue;
+				}
+				result.BaseTypes.Add (context.CreateShortType (baseType));
+			}
 		}
 
 		static TypeDeclaration CreateClassFromObjectCreation(RefactoringContext context, ObjectCreateExpression createExpression)

@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			this.resolvedProperties = new ProjectedList<ITypeResolveContext, IUnresolvedProperty, IProperty>(context, unresolvedProperties, (c, p) => new AnonymousTypeProperty(p, c, this));
 		}
 		
-		sealed class AnonymousTypeProperty : DefaultResolvedProperty, IEntity
+		sealed class AnonymousTypeProperty : DefaultResolvedProperty
 		{
 			readonly AnonymousType declaringType;
 			
@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				this.declaringType = declaringType;
 			}
 			
-			IType IEntity.DeclaringType {
+			public override IType DeclaringType {
 				get { return declaringType; }
 			}
 			
@@ -68,6 +68,41 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			public override int GetHashCode()
 			{
 				return declaringType.GetHashCode() ^ unchecked(27 * this.Name.GetHashCode());
+			}
+			
+			protected override IMethod CreateResolvedAccessor(IUnresolvedMethod unresolvedAccessor)
+			{
+				return new AnonymousTypeAccessor(unresolvedAccessor, context, this);
+			}
+		}
+		
+		sealed class AnonymousTypeAccessor : DefaultResolvedMethod
+		{
+			readonly AnonymousTypeProperty owner;
+			
+			public AnonymousTypeAccessor(IUnresolvedMethod unresolved, ITypeResolveContext parentContext, AnonymousTypeProperty owner)
+				: base(unresolved, parentContext, isExtensionMethod: false)
+			{
+				this.owner = owner;
+			}
+			
+			public override IMember AccessorOwner {
+				get { return owner; }
+			}
+			
+			public override IType DeclaringType {
+				get { return owner.DeclaringType; }
+			}
+			
+			public override bool Equals(object obj)
+			{
+				AnonymousTypeAccessor p = obj as AnonymousTypeAccessor;
+				return p != null && this.Name == p.Name && owner.DeclaringType.Equals(p.owner.DeclaringType);
+			}
+			
+			public override int GetHashCode()
+			{
+				return owner.DeclaringType.GetHashCode() ^ unchecked(27 * this.Name.GetHashCode());
 			}
 		}
 		

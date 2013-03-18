@@ -52,13 +52,16 @@ namespace ICSharpCode.NRefactory.Documentation
 				this.entries = new KeyValuePair<string, string>[size];
 			}
 			
-			internal string Get(string key)
+			internal bool TryGet(string key, out string value)
 			{
 				foreach (var pair in entries) {
-					if (pair.Key == key)
-						return pair.Value;
+					if (pair.Key == key) {
+						value = pair.Value;
+						return true;
+					}
 				}
-				return null;
+				value = null;
+				return false;
 			}
 			
 			internal void Add(string key, string value)
@@ -146,7 +149,7 @@ namespace ICSharpCode.NRefactory.Documentation
 			corSysDir = AppendDirectorySeparator(corSysDir);
 			
 			var fileName = target.Replace ("%PROGRAMFILESDIR%", programFilesDir)
-			                     .Replace ("%CORSYSDIR%", corSysDir);
+				.Replace ("%CORSYSDIR%", corSysDir);
 			if (!Path.IsPathRooted (fileName))
 				fileName = Path.Combine (Path.GetDirectoryName (xmlFileName), fileName);
 			return LookupLocalizedXmlDoc(fileName);
@@ -305,8 +308,8 @@ namespace ICSharpCode.NRefactory.Documentation
 			
 			XmlDocumentationCache cache = this.cache;
 			lock (cache) {
-				string val = cache.Get(key);
-				if (val == null) {
+				string val;
+				if (!cache.TryGet(key, out val)) {
 					// go through all items that have the correct hash
 					while (++m < index.Length && index[m].HashCode == hashcode) {
 						val = LoadDocumentation(key, index[m].PositionInFile);

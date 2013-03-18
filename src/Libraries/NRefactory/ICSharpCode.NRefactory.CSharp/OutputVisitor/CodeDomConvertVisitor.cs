@@ -1243,6 +1243,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		CodeObject IAstVisitor<CodeObject>.VisitSyntaxTree(SyntaxTree syntaxTree)
 		{
 			CodeCompileUnit cu = new CodeCompileUnit();
+			var globalImports = new List<CodeNamespaceImport> ();
 			foreach (AstNode node in syntaxTree.Children) {
 				CodeObject o = node.AcceptVisitor(this);
 				
@@ -1253,6 +1254,20 @@ namespace ICSharpCode.NRefactory.CSharp
 				CodeTypeDeclaration td = o as CodeTypeDeclaration;
 				if (td != null) {
 					cu.Namespaces.Add(new CodeNamespace() { Types = { td } });
+				}
+				
+				var import = o as CodeNamespaceImport;
+				if (import != null)
+					globalImports.Add (import);
+			}
+			foreach (var gi in globalImports) {
+				for (int j = 0; j < cu.Namespaces.Count; j++) {
+					var cn = cu.Namespaces [j];
+					bool found = cn.Imports
+						.Cast<CodeNamespaceImport> ()
+							.Any (ns => ns.Namespace == gi.Namespace);
+					if (!found)
+						cn.Imports.Add (gi);
 				}
 			}
 			return cu;

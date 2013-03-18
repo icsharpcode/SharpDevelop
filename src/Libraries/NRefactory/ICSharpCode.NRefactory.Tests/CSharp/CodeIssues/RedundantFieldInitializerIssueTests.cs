@@ -153,7 +153,7 @@ class TestClass
 }";
 			Test<RedundantFieldInitializerIssue> (input, 1, output);
 		}
-
+		
 		[Test]
 		public void TestRedundantNullableInitializer ()
 		{
@@ -169,5 +169,14 @@ class TestClass
 }";
 			Test<RedundantFieldInitializerIssue> (input, 1, output);
 		}
+		
+		
+		[Test]
+		public void TestRedundantConstantBug ()
+		{
+			Test<RedundantFieldInitializerIssue> (@"class Test { const int foo = 0;  }", 0);
+		}
+		
+
 	}
 }

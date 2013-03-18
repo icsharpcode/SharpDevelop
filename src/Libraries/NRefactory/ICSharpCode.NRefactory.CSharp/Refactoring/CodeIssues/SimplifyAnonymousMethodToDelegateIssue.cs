@@ -62,14 +62,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return null;
 			}
 
-			public override void VisitLambdaExpression(LambdaExpression lambdaExpression)
+			static bool IsSimpleTarget(Expression target)
 			{
-				base.VisitLambdaExpression(lambdaExpression);
-				var invocation = AnalyzeBody(lambdaExpression.Body);
+				if (target is IdentifierExpression)
+					return true;
+				var mref = target as MemberReferenceExpression;
+				if (mref != null)
+					return IsSimpleTarget (mref.Target);
+				var pref = target as PointerReferenceExpression;
+				if (pref != null)
+					return IsSimpleTarget (pref.Target);
+				return false;
+			}
+
+			void AnalyzeExpression(AstNode expression, AstNode body, AstNodeCollection<ParameterDeclaration> parameters)
+			{
+				var invocation = AnalyzeBody(body);
 				if (invocation == null)
 					return;
-
-				var lambdaParameters = lambdaExpression.Parameters.ToList();
+				if (!IsSimpleTarget (invocation.Target))
+					return;
+				var lambdaParameters = parameters.ToList();
 				if (lambdaParameters.Count != invocation.Arguments.Count)
 					return;
 				int i = 0;
@@ -77,42 +90,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var id = param as IdentifierExpression;
 					if (id == null)
 						return;
-					if (lambdaParameters [i].Name != id.Identifier)
+					if (lambdaParameters[i].Name != id.Identifier)
 						return;
 					i++;
 				}
-				
-				AddIssue(
-					lambdaExpression, 
-					ctx.TranslateString("Expression can be reduced to delegate"),
-					script => { script.Replace (lambdaExpression, invocation.Target.Clone ()); });
+				AddIssue(expression, ctx.TranslateString("Expression can be reduced to delegate"), script =>  {
+					script.Replace(expression, invocation.Target.Clone());
+				});
+			}
+
+			public override void VisitLambdaExpression(LambdaExpression lambdaExpression)
+			{
+				base.VisitLambdaExpression(lambdaExpression);
+				AnalyzeExpression(lambdaExpression, lambdaExpression.Body, lambdaExpression.Parameters);
 			}
 
 			public override void VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression)
 			{
 				base.VisitAnonymousMethodExpression(anonymousMethodExpression);
-
-				var invocation = AnalyzeBody(anonymousMethodExpression.Body);
-				if (invocation == null)
-					return;
-
-				var lambdaParameters = anonymousMethodExpression.Parameters.ToList();
-				if (lambdaParameters.Count != invocation.Arguments.Count)
-					return;
-				int i = 0;
-				foreach (var param in invocation.Arguments) {
-					var id = param as IdentifierExpression;
-					if (id == null)
-						return;
-					if (lambdaParameters [i].Name != id.Identifier)
-						return;
-					i++;
-				}
-				
-				AddIssue(
-					anonymousMethodExpression, 
-					ctx.TranslateString("Expression can be reduced to delegate"),
-					script => { script.Replace (anonymousMethodExpression, invocation.Target.Clone ()); });
+				AnalyzeExpression(anonymousMethodExpression, anonymousMethodExpression.Body, anonymousMethodExpression.Parameters);
 			}
 		}
 	}
