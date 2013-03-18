@@ -340,8 +340,13 @@ namespace CSharpBinding
 				int endOffset = lineStartOffset + (end.Line == lineNumber ? end.Column - 1 : line.DocumentLine.Length);
 				if (line.Sections.Count > 0) {
 					HighlightedSection prevSection = line.Sections.Last();
-					if (startOffset < prevSection.Offset + prevSection.Length)
-						throw new InvalidOperationException("Cannot create unordered highlighting section");
+					if (startOffset < prevSection.Offset + prevSection.Length) {
+						// The mcs parser sometimes creates strange ASTs with duplicate nodes
+						// when there are syntax errors (e.g. "int A() public static void Main() {}"),
+						// so we'll silently ignore duplicate colorization.
+						return;
+						//throw new InvalidOperationException("Cannot create unordered highlighting section");
+					}
 				}
 				line.Sections.Add(new HighlightedSection {
 				                  	Offset = startOffset,
