@@ -5,8 +5,8 @@
 	xmlns:snippet="clr-namespace:ICSharpCode.SharpSnippetCompiler"
 	DataContext="{x:Static snippet:ViewModels.MainViewModel}"
 	Title="Sharp Snippet Compiler"
-	Height="480"
-	Width="640">
+	Height="768"
+	Width="1024">
 	
 	<Window.InputBindings>
 		<KeyBinding
