@@ -46,7 +46,7 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 			SetProperty("Debug", null, "CheckForOverflowUnderflow", "True", PropertyStorageLocations.ConfigurationSpecific, true);
 			SetProperty("Release", null, "CheckForOverflowUnderflow", "False", PropertyStorageLocations.ConfigurationSpecific, true);
 			
-			SetProperty("Debug", null, "DefineConstants", "DEBUG;TRACE",PropertyStorageLocations.ConfigurationSpecific, false);
+			SetProperty("Debug", null, "DefineConstants", "DEBUG;TRACE", PropertyStorageLocations.ConfigurationSpecific, false);
 			SetProperty("Release", null, "DefineConstants", "TRACE", PropertyStorageLocations.ConfigurationSpecific, false);
 		}
 
@@ -87,7 +87,8 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 			return new ProjectCreateInformation {
 				Solution = new Solution(new ProjectChangeWatcher(String.Empty)),
 				OutputProjectFileName = Path.Combine(PropertyService.ConfigDirectory, "SharpSnippet.exe"),
-				ProjectName = "SharpSnippet"
+				ProjectName = "SharpSnippet",
+				Platform = "x86"
 			};
 		}
 		
