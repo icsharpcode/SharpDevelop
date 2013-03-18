@@ -156,7 +156,6 @@
     <Compile Include="Ast\Modifiers.cs" />
     <Compile Include="Ast\NodeType.cs" />
     <Compile Include="Ast\ObservableAstVisitor.cs" />
-    <Compile Include="Ast\old_ObservableAstVisitor.cs" />
     <Compile Include="Ast\PrimitiveType.cs" />
     <Compile Include="Ast\SimpleType.cs" />
     <Compile Include="Ast\Statements\BlockStatement.cs" />
