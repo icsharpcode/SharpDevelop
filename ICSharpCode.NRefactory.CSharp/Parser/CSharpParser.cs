@@ -1822,40 +1822,31 @@ namespace ICSharpCode.NRefactory.CSharp
 					result.AddChild (new CSharpTokenNode (Convert (location [1]), Roles.RPar), Roles.RPar);
 				if (location != null && location.Count > 2)
 					result.AddChild (new CSharpTokenNode (Convert (location [2]), Roles.LBrace), Roles.LBrace);
-				if (switchStatement.Sections != null) {
-					foreach (var section in switchStatement.Sections) {
-						var newSection = new SwitchSection ();
-						if (section.Labels != null) {
-							foreach (var caseLabel in section.Labels) {
-								var newLabel = new CaseLabel ();
-								if (caseLabel.Label != null) {
-									newLabel.AddChild (new CSharpTokenNode (Convert (caseLabel.Location), CaseLabel.CaseKeywordRole), CaseLabel.CaseKeywordRole);
-									if (caseLabel.Label != null)
-										newLabel.AddChild ((Expression)caseLabel.Label.Accept (this), Roles.Expression);
-									var colonLocation = LocationsBag.GetLocations (caseLabel);
-									if (colonLocation != null)
-										newLabel.AddChild (new CSharpTokenNode (Convert (colonLocation [0]), Roles.Colon), Roles.Colon);
-								} else {
-									newLabel.AddChild (new CSharpTokenNode (Convert (caseLabel.Location), CaseLabel.DefaultKeywordRole), CaseLabel.DefaultKeywordRole);
-									newLabel.AddChild (new CSharpTokenNode (new TextLocation (caseLabel.Location.Row, caseLabel.Location.Column + "default".Length), Roles.Colon), Roles.Colon);
-								}
-								newSection.AddChild (newLabel, SwitchSection.CaseLabelRole);
-							}
+				SwitchSection newSection = null;
+				bool lastWasCase = false, added = true;
+
+				foreach (var child in switchStatement.Block.Statements) {
+					var statement = child.Accept(this);
+					var caseLabel = statement as CaseLabel;
+					if (caseLabel != null) {
+						if (!lastWasCase) {
+							newSection = new SwitchSection();
+							added = false;
 						}
-						
-						var blockStatement = section.Block;
-						var bodyBlock = new BlockStatement ();
-						int curLocal = 0;
-						AddBlockChildren (bodyBlock, blockStatement, ref curLocal);
-						foreach (var statement in bodyBlock.Statements) {
-							statement.Remove ();
-							newSection.AddChild (statement, Roles.EmbeddedStatement);
-							
+						newSection.AddChild (caseLabel, SwitchSection.CaseLabelRole);
+						lastWasCase = true;
+					} else {
+						if (lastWasCase) {
+							result.AddChild (newSection, SwitchStatement.SwitchSectionRole);
+							lastWasCase = false;
+							added = true;
 						}
-						result.AddChild (newSection, SwitchStatement.SwitchSectionRole);
+						newSection.AddChild((Statement)statement, Roles.EmbeddedStatement);
 					}
 				}
-				
+				if (!added)
+					result.AddChild (newSection, SwitchStatement.SwitchSectionRole);
+
 				if (location != null && location.Count > 3) {
 					result.AddChild (new CSharpTokenNode (Convert (location [3]), Roles.RBrace), Roles.RBrace);
 				} else {
@@ -1865,7 +1856,25 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				return result;
 			}
-			
+
+			public override object Visit(SwitchLabel switchLabel)
+			{
+				var newLabel = new CaseLabel ();
+				if (!switchLabel.IsDefault) {
+					newLabel.AddChild (new CSharpTokenNode (Convert (switchLabel.Location), CaseLabel.CaseKeywordRole), CaseLabel.CaseKeywordRole);
+					if (switchLabel.Label != null)
+						newLabel.AddChild ((Expression)switchLabel.Label.Accept (this), Roles.Expression);
+					var colonLocation = LocationsBag.GetLocations (switchLabel);
+					if (colonLocation != null)
+						newLabel.AddChild (new CSharpTokenNode (Convert (colonLocation [0]), Roles.Colon), Roles.Colon);
+				} else {
+					newLabel.AddChild (new CSharpTokenNode (Convert (switchLabel.Location), CaseLabel.DefaultKeywordRole), CaseLabel.DefaultKeywordRole);
+					newLabel.AddChild (new CSharpTokenNode (new TextLocation (switchLabel.Location.Row, switchLabel.Location.Column + "default".Length), Roles.Colon), Roles.Colon);
+				}
+				return newLabel;
+			}
+
+
 			public override object Visit (Lock lockStatement)
 			{
 				var result = new LockStatement ();
