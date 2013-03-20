@@ -15,7 +15,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	public class LayoutPanel: AbstractWizardPanel
 	{
 		private LayoutPanelControl layoutControl;
-		private Properties customizer;
 		private ReportStructure reportStructure;
 		
 		public LayoutPanel()
@@ -37,21 +36,15 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			base.IsLastPanel = true;
 			base.EnablePrevious = true;
 			
-			if (customizer == null) {
-				customizer = (Properties)base.CustomizationObject;
+			if (reportStructure == null) {
+				reportStructure = (ReportStructure)base.CustomizationObject;
 			}
-			
 			if (message == DialogMessage.Activated) {
-				
-//				this.layoutControl.ReportLayout = (GlobalEnums.ReportLayout)customizer.Get("ReportLayout");
-//				reportStructure = (ReportStructure)customizer.Get("Generator");
 				layoutControl.AvailableFieldsCollection = reportStructure.AvailableFieldsCollection;
 			}
 			
 			else if (message == DialogMessage.Finish)
 			{
-//				customizer.Set ("ReportLayout",this.layoutControl.ReportLayout);
-//				var reportStructure = (ReportStructure)customizer.Get("Generator");
 				reportStructure.Grouping = layoutControl.GroupName;
 			}
 			return true;

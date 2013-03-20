@@ -49,7 +49,7 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 			Assert.IsTrue(displayBinding.IsPreferredBindingForFile(filename));
 		}
 		
-		
+		/*
 		[Test]
 		[Ignore]
 		public void CanCreateContentFromFile ()
@@ -66,7 +66,7 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 			//ICSharpCode.SharpDevelop.Gui.IViewContent v = displayBinding.CreateContentForFile(new MockOpenedFile("test.srd"));
 			//Assert.IsNotNull(v,"View should not be 'null'");
 		}
-		
+		*/
 		
 	}
 }

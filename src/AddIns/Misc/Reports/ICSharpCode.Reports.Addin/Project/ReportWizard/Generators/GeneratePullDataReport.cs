@@ -17,7 +17,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		
 		public GeneratePullDataReport(ReportModel reportModel,	                             
-		                              Properties properties):base(reportModel,properties)
+		                              ReportStructure properties):base(reportModel,properties)
 		                              	
 		{
 			if (reportModel == null) {

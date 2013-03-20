@@ -71,7 +71,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 			Assert.AreEqual(0,s.Items.Count);
 		}
 		
-		
+		/*
 		private ReportModel CreateModel()
 		{
 			ReportModel m = ReportModel.Create();
@@ -93,11 +93,11 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 			}
 			return model;
 		}
-		
+	
 		[TestFixtureSetUp]
 		public void CreateModels ()
 		{
 			this.mockReportModel = CreateModel();
-		}
+		}	*/
 	}
 }

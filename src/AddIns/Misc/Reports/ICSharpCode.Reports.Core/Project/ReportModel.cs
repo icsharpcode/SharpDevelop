@@ -9,7 +9,6 @@ using ICSharpCode.Reports.Core.Interfaces;
 namespace ICSharpCode.Reports.Core
 {
 	
-	
 	public class ReportModel :IReportModel, IDisposable
 	{
 		ReportSettings reportSettings ;

@@ -16,7 +16,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	public class GenerateFormSheetReport:GeneratePlainReport
 	{
 		public GenerateFormSheetReport(ReportModel reportModel,                              
-		                               Properties customizer):base(reportModel,customizer)
+		                               ReportStructure customizer):base(reportModel,customizer)
 		{
 		                             	
 			if (reportModel == null) {

@@ -9,6 +9,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Addin.Test.Wizard
 {
+	/*
 	[TestFixture]
 	public class ReportStructureFixture
 	{
@@ -57,4 +58,5 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 			return m;
 		}
 	}
+	*/
 }

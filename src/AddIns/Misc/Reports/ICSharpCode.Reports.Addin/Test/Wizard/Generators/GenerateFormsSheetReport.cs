@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Addin.Test.Wizard
 {
-	
+	/*
 	[TestFixture]
 	[Ignore]
 	public class GenerateFormsSheetReportFixture
@@ -93,4 +93,5 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 			this.model = this.CreateModel();
 		}
 	}
+	*/
 }

@@ -43,7 +43,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		private ColumnCollection groupColumnCollection;
 		
-		protected AbstractReportGenerator(ReportModel reportModel,Properties properties)
+		protected AbstractReportGenerator(ReportModel reportModel,ReportStructure properties)
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
@@ -52,11 +52,12 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			if (properties == null) {
 				throw new ArgumentNullException("customizer");
 			}
-			throw new NotImplementedException("Fix me AbstractReportGenerator");
+
 			this.ReportModel = reportModel;
-			this.Properties = properties;
+//			this.Properties = properties;
 //			ReportStructure = (ReportStructure)properties.Get("Generator");
-			
+//			ReportStructure = (ReportStructure)base.CustomizationObject;
+			ReportStructure = properties;
 			this.AvailableFieldsCollection.Clear();
 			this.ReportItemCollection.Clear();
 			this.GroupColumnCollection.Clear();

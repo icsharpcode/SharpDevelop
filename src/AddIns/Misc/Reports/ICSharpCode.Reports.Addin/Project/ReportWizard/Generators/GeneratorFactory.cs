@@ -35,18 +35,18 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	public static class GeneratorFactory
 	{
 
-		public static IReportGenerator Create (ReportModel model,		                                     
-		                                       Properties customizer)
+		public static IReportGenerator Create (ReportModel model,ReportStructure customizer)
+		                                      
 		{	
 			IReportGenerator reportGenerator = null;
 				switch (model.DataModel) {
-				case GlobalEnums.PushPullModel.PullData:
-					reportGenerator = new GeneratePullDataReport(model,customizer);
-					
-					break;
-				case GlobalEnums.PushPullModel.PushData:
-					reportGenerator = new GeneratePushDataReport(model,customizer);
-					break;
+//				case GlobalEnums.PushPullModel.PullData:
+//					reportGenerator = new GeneratePullDataReport(model,customizer);
+//					
+//					break;
+//				case GlobalEnums.PushPullModel.PushData:
+//					reportGenerator = new GeneratePushDataReport(model,customizer);
+//					break;
 				case GlobalEnums.PushPullModel.FormSheet:
 					reportGenerator = new GenerateFormSheetReport (model,customizer);
 					break;

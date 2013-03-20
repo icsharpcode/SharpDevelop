@@ -25,7 +25,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		/// Default constructor - initializes all fields to default values
 		/// </summary>
 		public GeneratePushDataReport(ReportModel reportModel,		                              
-		                              Properties properties):base(reportModel,properties)
+		                              ReportStructure properties):base(reportModel,properties)
 		{
 			
 			base.UpdateGenerator();

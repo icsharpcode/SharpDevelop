@@ -28,8 +28,9 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		private System.Windows.Forms.Label label3;
 		private bool firstDrag;
 		private string connectionString;
+		
 		private ReportStructure reportStructure;
-		private Properties customizer;		
+		
 		private IDatabaseObjectBase currentNode;
         private ElementHost databasesTreeHost;
         private DatabasesTreeView databasesTree;
@@ -76,15 +77,13 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		public override bool ReceiveDialogMessage(DialogMessage message)
 		{
-			if (customizer == null) {
-				customizer = (Properties)base.CustomizationObject;
-//				reportStructure = (ReportStructure)customizer.Get("Generator");
+			if (reportStructure == null) {
+				reportStructure = (ReportStructure)base.CustomizationObject;
 			}
 			
 			if (message == DialogMessage.Next) {
-				customizer.Set("SqlString", this.txtSqlString.Text.Trim());
-				reportStructure.SqlString = this.txtSqlString.Text.Trim();
 				reportStructure.ConnectionString = connectionString;
+				reportStructure.SqlString = this.txtSqlString.Text.Trim();
 				base.EnableFinish = true;
 			}
 			return true;
@@ -165,6 +164,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 					this.txtSqlString.Clear();
 					ITable table = draggedObject as ITable;
 					this.txtSqlString.Text = "SELECT * FROM " + table.Name;
+//					reportStructure.CommandType = CommandType.Text;
+//					reportStructure.IDatabaseObjectBase = table;
 					reportStructure.CommandType = CommandType.Text;
 					reportStructure.IDatabaseObjectBase = table;
 					break;

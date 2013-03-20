@@ -15,7 +15,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	public class GeneratePlainReport:AbstractReportGenerator
 	{
 		
-		public GeneratePlainReport(ReportModel reportModel,Properties customizer):base(reportModel,customizer)
+		public GeneratePlainReport(ReportModel reportModel,ReportStructure customizer):base(reportModel,customizer)
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");

@@ -18,6 +18,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 	[Ignore]
 	public class GeneratePlainReportFixture
 	{
+		/*
 		[Test]
 		
 		public void GeneratePlainReport_1()
@@ -49,6 +50,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 		}
 			
 		}
+		
 		
 		[Test]
 		public void CheckReportSettings ()
@@ -83,7 +85,8 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 			}
 			Assert.AreEqual (5,sq1.Count(),"Should be 5 times a 'BaseSection'");
 		}
-		
+		*/
+		/*
 		private XmlDocument CreateXmlFromModel ()
 		{
 			ReportModel model = ReportModel.Create();
@@ -94,5 +97,6 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 			generator.GenerateReport();
 			return generator.XmlReport;
 		}
+		*/
 	}
 }
