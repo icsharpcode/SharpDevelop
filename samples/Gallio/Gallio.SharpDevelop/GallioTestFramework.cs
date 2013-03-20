@@ -6,6 +6,9 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
@@ -78,12 +81,26 @@ namespace Gallio.SharpDevelop
 			return null;
 		}
 		
+		public bool IsTestMember(IMember member)
+		{
+			var method = member as IMethod;
+			if (method != null) {
+				return IsTestMethod(method);
+			}
+			return false;
+		}
+		
+		public IEnumerable<TestMember> GetTestMembersFor(IClass c)
+		{
+			return c.Methods.Where(IsTestMethod).Select(member => new TestMember(member));
+		}
+		
 		/// <summary>
 		/// Determines whether the method is a test method. A method
 		/// is considered to be a test method if it contains the NUnit Test attribute.
 		/// If the method has parameters it cannot be a test method.
 		/// </summary>
-		public bool IsTestMethod(IMember member)
+		bool IsTestMethod(IMember member)
 		{
 			if (member == null) {
 				return false;

@@ -15,7 +15,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 {
 	[TestFixture]
 
-	[SetCulture("en-US")]
+//	[SetCulture("en-US")]
 	public class AggregateFunctionsFromTableFixture
 	{
 		
@@ -107,7 +107,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 			const string expression = "=max(amount)";
 			//var s = this.evaluator.Evaluate(expression);
 			Assert.That(this.evaluator.Evaluate(expression),
-			            Is.EqualTo("400.5"));
+			            Is.EqualTo("400,5"));
 		}
 		
 		
@@ -134,8 +134,6 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		[TestFixtureSetUp]
 		public void Init()
 		{
-			
-			
 			this.singlePage = TestHelper.CreateSinglePage();
 			this.evaluator = new ExpressionEvaluatorFacade(this.singlePage);
 
@@ -151,6 +149,5 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 			this.dataManager = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.testTable, new ReportSettings());
 			this.singlePage.IDataNavigator = this.dataManager.GetNavigator;
 		}
-		
 	}
 }

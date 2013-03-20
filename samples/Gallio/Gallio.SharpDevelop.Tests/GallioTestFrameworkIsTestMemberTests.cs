@@ -17,7 +17,7 @@ using UnitTesting.Tests.Utils;
 namespace Gallio.SharpDevelop.Tests
 {
 	[TestFixture]
-	public class GallioTestFrameworkIsTestMethodTests
+	public class GallioTestFrameworkIsTestMemberTests
 	{
 		GallioTestFramework testFramework;
 		
@@ -28,44 +28,44 @@ namespace Gallio.SharpDevelop.Tests
 		}
 		
 		[Test]
-		public void IsTestMethodReturnsFalseWhenMethodHasNoAttributes()
+		public void IsTestMemberReturnsFalseWhenMethodHasNoAttributes()
 		{
 			MockMethod mockMethod = MockMethod.CreateMockMethodWithoutAnyAttributes();
-			Assert.IsFalse(testFramework.IsTestMethod(mockMethod));
+			Assert.IsFalse(testFramework.IsTestMember(mockMethod));
 		}
 		
 		[Test]
-		public void IsTestMethodReturnsTrueWhenMethodHasTestAttributeWithoutAttributePart()
+		public void IsTestMemberReturnsTrueWhenMethodHasTestAttributeWithoutAttributePart()
 		{
 			MockAttribute testAttribute = new MockAttribute("Test");
 			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(testAttribute);
-			Assert.IsTrue(testFramework.IsTestMethod(mockMethod));
+			Assert.IsTrue(testFramework.IsTestMember(mockMethod));
 		}
 		
 		[Test]
-		public void IsTestMethodReturnsTrueWhenMethodHasTestAttributeAttribute()
+		public void IsTestMemberReturnsTrueWhenMethodHasTestAttributeAttribute()
 		{
 			MockAttribute testAttribute = new MockAttribute("TestAttribute");
 			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(testAttribute);
-			Assert.IsTrue(testFramework.IsTestMethod(mockMethod));
+			Assert.IsTrue(testFramework.IsTestMember(mockMethod));
 		}
 
 		[Test]
-		public void IsTestMethodReturnsTrueWhenMethodHasFullyQualifiedNUnitTestAttribute()
+		public void IsTestMemberReturnsTrueWhenMethodHasFullyQualifiedNUnitTestAttribute()
 		{
 			MockAttribute testAttribute = new MockAttribute("MbUnit.Framework.TestAttribute");
 			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(testAttribute);
-			Assert.IsTrue(testFramework.IsTestMethod(mockMethod));
+			Assert.IsTrue(testFramework.IsTestMember(mockMethod));
 		}
 		
 		[Test]
-		public void IsTestMethodReturnsFalseWhenMethodIsNull()
+		public void IsTestMemberReturnsFalseWhenMethodIsNull()
 		{
-			Assert.IsFalse(testFramework.IsTestMethod(null));
+			Assert.IsFalse(testFramework.IsTestMember(null));
 		}
 		
 		[Test]
-		public void IsTestMethodReturnsFalseWhenProjectContentLanguageHasNullNameComparer()
+		public void IsTestMemberReturnsFalseWhenProjectContentLanguageHasNullNameComparer()
 		{
 			IProject project = new MockCSharpProject();
 			MockProjectContent mockProjectContent = new MockProjectContent();
@@ -75,7 +75,7 @@ namespace Gallio.SharpDevelop.Tests
 			MockMethod mockMethod = new MockMethod(mockClass);
 			mockMethod.Attributes.Add(new MockAttribute("Test"));
 			
-			Assert.IsFalse(testFramework.IsTestMethod(mockMethod));
+			Assert.IsFalse(testFramework.IsTestMember(mockMethod));
 		}
 		
 		/// <summary>
@@ -83,26 +83,26 @@ namespace Gallio.SharpDevelop.Tests
 		/// flagged as a TestMethod.
 		/// </summary>
 		[Test]
-		public void IsTestMethodReturnsTrueWhenProjectIsNull()
+		public void IsTestMemberReturnsTrueWhenProjectIsNull()
 		{
 			MockAttribute testAttribute = new MockAttribute("Test");
 			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(testAttribute);
 			MockProjectContent mockProjectContent = (MockProjectContent)mockMethod.DeclaringType.ProjectContent;
 			mockProjectContent.Project = null;
 
-			Assert.IsTrue(testFramework.IsTestMethod(mockMethod));
+			Assert.IsTrue(testFramework.IsTestMember(mockMethod));
 		}
 		
 		[Test]
-		public void IsTestMethodReturnsFalseWhenMethodHasNullDeclaringType()
+		public void IsTestMemberReturnsFalseWhenMethodHasNullDeclaringType()
 		{
 			MockMethod mockMethod = new MockMethod(new MockClass());
 			
-			Assert.IsFalse(testFramework.IsTestMethod(mockMethod));
+			Assert.IsFalse(testFramework.IsTestMember(mockMethod));
 		}
 		
 		[Test]
-		public void IsTestMethodReturnsFalseWhenMethodHasNullLanguage()
+		public void IsTestMemberReturnsFalseWhenMethodHasNullLanguage()
 		{
 			IProject project = new MockCSharpProject();
 			MockProjectContent mockProjectContent = new MockProjectContent();
@@ -110,18 +110,18 @@ namespace Gallio.SharpDevelop.Tests
 			MockClass mockClass = new MockClass(mockProjectContent);
 			MockMethod mockMethod = new MockMethod(mockClass);
 			
-			Assert.IsFalse(testFramework.IsTestMethod(mockMethod));
+			Assert.IsFalse(testFramework.IsTestMember(mockMethod));
 		}
 		
 		[Test]
-		public void IsTestMethodReturnsFalseWhenMethodHasHasParameters()
+		public void IsTestMemberReturnsFalseWhenMethodHasHasParameters()
 		{
 			MockAttribute testAttribute = new MockAttribute("Test");
 			MockMethod mockMethod = MockMethod.CreateMockMethodWithAttribute(testAttribute);
 			MockParameter mockParameter = new MockParameter();
 			mockMethod.Parameters.Add(mockParameter);
 			
-			Assert.IsFalse(testFramework.IsTestMethod(mockMethod));
+			Assert.IsFalse(testFramework.IsTestMember(mockMethod));
 		}
 	}
 }

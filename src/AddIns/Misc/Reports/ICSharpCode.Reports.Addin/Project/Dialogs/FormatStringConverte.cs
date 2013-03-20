@@ -38,10 +38,7 @@ namespace ICSharpCode.Reports.Addin.Dialogs
 		
 		public override TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
 		{
-//			return new StandardValuesCollection(
-//				new string[] { "entry1", "entry2", "entry3" });
 			return new StandardValuesCollection(GlobalLists.Formats());
-			
 		}
 
 	}

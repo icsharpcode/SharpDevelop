@@ -120,6 +120,7 @@ namespace ICSharpCode.AvalonEdit.Document
 					} else {
 						nodeLength = value;
 					}
+					OnSegmentChanged();
 				}
 			}
 		}
@@ -155,10 +156,21 @@ namespace ICSharpCode.AvalonEdit.Document
 			set {
 				if (value < 0)
 					throw new ArgumentOutOfRangeException("value", "Length must not be negative");
-				segmentLength = value;
-				if (ownerTree != null)
-					ownerTree.UpdateAugmentedData(this);
+				if (segmentLength != value) {
+					segmentLength = value;
+					if (ownerTree != null)
+						ownerTree.UpdateAugmentedData(this);
+					OnSegmentChanged();
+				}
 			}
+		}
+		
+		/// <summary>
+		/// This method gets called when the StartOffset/Length/EndOffset properties are set.
+		/// It is not called when StartOffset/Length/EndOffset change due to document changes
+		/// </summary>
+		protected virtual void OnSegmentChanged()
+		{
 		}
 		
 		internal TextSegment LeftMost {

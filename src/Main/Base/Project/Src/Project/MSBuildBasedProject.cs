@@ -602,12 +602,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		PropertyStorageLocations FindExistingPropertyInAllConfigurations(string propertyName)
 		{
 			foreach (var g in projectFile.PropertyGroups) {
-				if (g.Properties.Any(p => MSBuildInternals.PropertyNameComparer.Equals(p.Name == propertyName))) {
+				if (g.Properties.Any(p => MSBuildInternals.PropertyNameComparer.Equals(p.Name, propertyName))) {
 					return MSBuildInternals.GetLocationFromCondition(g.Condition);
 				}
 			}
 			foreach (var g in userProjectFile.PropertyGroups) {
-				if (g.Properties.Any(p => MSBuildInternals.PropertyNameComparer.Equals(p.Name == propertyName))) {
+				if (g.Properties.Any(p => MSBuildInternals.PropertyNameComparer.Equals(p.Name, propertyName))) {
 					return MSBuildInternals.GetLocationFromCondition(g.Condition)
 						| PropertyStorageLocations.UserFile;
 				}

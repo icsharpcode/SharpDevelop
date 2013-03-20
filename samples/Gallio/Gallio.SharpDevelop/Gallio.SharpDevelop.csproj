@@ -58,8 +58,7 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="UnitTesting">
-      <HintPath>..\..\..\AddIns\AddIns\Misc\UnitTesting\UnitTesting.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\AddIns\Analysis\UnitTesting\UnitTesting.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

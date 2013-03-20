@@ -105,6 +105,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public ResolveResult ResolveExpression(Expression expression)
 		{
+			if (expression.EndLocation.IsEmpty)
+				return null;
 			ExpressionResult expr = GetExpressionAt(this.Editor, expression.EndLocation.Line, expression.EndLocation.Column);
 			return ResolveExpression(expr, this.Editor, expression.EndLocation.Line, expression.EndLocation.Column);
 		}

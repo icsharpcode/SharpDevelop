@@ -45,5 +45,15 @@ namespace AlternateEditor
 		{
 			return new Editor(file);
 		}
+		
+		public bool IsPreferredBindingForFile(string fileName)
+		{
+			return true;
+		}
+		
+		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		{
+			return 0;
+		}
 	}
 }
