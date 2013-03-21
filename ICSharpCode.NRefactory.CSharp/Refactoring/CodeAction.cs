@@ -72,8 +72,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				throw new ArgumentNullException ("action");
 			if (description == null)
 				throw new ArgumentNullException ("description");
-			if (astNode == null)
-				throw new ArgumentNullException ("astNode");
 			Description = description;
 			Run = action;
 			AstNode = astNode;
