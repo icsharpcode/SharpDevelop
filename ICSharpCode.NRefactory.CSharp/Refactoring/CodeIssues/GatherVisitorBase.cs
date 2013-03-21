@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		protected void AddIssue(TextLocation start, TextLocation end, string title, System.Action<Script> fix = null)
 		{
-			FoundIssues.Add(new CodeIssue(title, start, end, fix != null ? new CodeAction(title, fix, null) : null));
+			FoundIssues.Add(new CodeIssue(title, start, end, fix != null ? new CodeAction(title, fix, start, end) : null));
 		}
 
 		protected void AddIssue(AstNode node, string title, CodeAction fix)

@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Analysis;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -158,15 +159,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							var startOffset = script.GetCurrentOffset (prevEnd);
 							var endOffset = script.GetCurrentOffset (end);
 							script.RemoveText (startOffset, endOffset - startOffset);
-						}, null);
-					var commentAction = new CodeAction (visitor.ctx.TranslateString ("Comment unreachable code"),
+						}, collectedStatements.First().StartLocation, collectedStatements.Last().EndLocation);
+					var commentAction = new CodeAction(visitor.ctx.TranslateString("Comment unreachable code"),
 						script =>
-						{
-							var startOffset = script.GetCurrentOffset (prevEnd);
-							script.InsertText (startOffset, Environment.NewLine + "/*");
-							var endOffset = script.GetCurrentOffset (end);
-							script.InsertText (endOffset, Environment.NewLine + "*/");
-						}, null);
+					{
+						var startOffset = script.GetCurrentOffset(prevEnd);
+						script.InsertText(startOffset, Environment.NewLine + "/*");
+						var endOffset = script.GetCurrentOffset(end);
+						script.InsertText(endOffset, Environment.NewLine + "*/");
+					}, collectedStatements.First().StartLocation, collectedStatements.Last().EndLocation);
 					var actions = new [] { removeAction, commentAction };
 					visitor.AddIssue (start, end, visitor.ctx.TranslateString ("Code is unreachable"), actions);
 					return true;

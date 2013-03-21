@@ -49,10 +49,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 
 		/// <summary>
-		/// Gets the ast node the action acts upon. 
-		/// Note: τhis value may be null if the action isn't specific to a single node.
+		/// Gets the action start location.
 		/// </summary>
-		public AstNode AstNode {
+		public TextLocation Start {
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Gets the action end location.
+		/// </summary>
+		public TextLocation End {
 			get;
 			private set;
 		}
@@ -72,9 +79,33 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				throw new ArgumentNullException ("action");
 			if (description == null)
 				throw new ArgumentNullException ("description");
+			if (astNode == null)
+				throw new ArgumentNullException("astNode");
 			Description = description;
 			Run = action;
-			AstNode = astNode;
+			Start = astNode.StartLocation;
+			End = astNode.EndLocation;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction"/> class.
+		/// </summary>
+		/// <param name='description'>
+		/// The description.
+		/// </param>
+		/// <param name='action'>
+		/// The code transformation.
+		/// </param>
+		public CodeAction (string description, Action<Script> action, TextLocation start, TextLocation end)
+		{
+			if (action == null)
+				throw new ArgumentNullException ("action");
+			if (description == null)
+				throw new ArgumentNullException ("description");
+			Description = description;
+			Run = action;
+			this.Start = start;
+			this.End = end;
 		}
 	}
 }

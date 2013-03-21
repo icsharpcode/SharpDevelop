@@ -625,10 +625,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (!propertyDeclaration.Setter.IsNull) {
 				if (!oneLine) {
 					if (!IsLineIsEmptyUpToEol(propertyDeclaration.Setter.StartLocation)) {
-						int offset = this.document.GetOffset(propertyDeclaration.Setter.StartLocation);
+						int offset = document.GetOffset(propertyDeclaration.Setter.StartLocation);
 						int start = SearchWhitespaceStart(offset);
-						string indentString = this.curIndent.IndentString;
-						AddChange(start, offset - start, this.options.EolMarker + indentString);
+						string indentString = curIndent.IndentString;
+						AddChange(start, offset - start, options.EolMarker + indentString);
 					} else {
 						FixIndentation(propertyDeclaration.Setter.StartLocation);
 					}

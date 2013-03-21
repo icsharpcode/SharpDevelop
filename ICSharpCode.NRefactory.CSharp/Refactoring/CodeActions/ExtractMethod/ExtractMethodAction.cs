@@ -112,7 +112,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 				} else {
 					task.ContinueWith (replaceStatements, TaskScheduler.FromCurrentSynchronizationContext ());
 				}
-			}, null);
+			}, expression);
 		}
 		
 		CodeAction CreateFromStatements(RefactoringContext context, List<AstNode> statements)
@@ -225,7 +225,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 				} else {
 					task.ContinueWith (replaceStatements, TaskScheduler.FromCurrentSynchronizationContext ());
 				}
-			}, null);
+			}, statements.First ().StartLocation, statements.Last ().EndLocation);
 		}
 	}
 }
