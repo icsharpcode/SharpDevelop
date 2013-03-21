@@ -317,7 +317,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 					Dictionary<string, object> namedArguments = new Dictionary<string, object>();
 					foreach (AST.NamedArgumentExpression namedArgumentExpression in attribute.NamedArguments) {
-						namedArguments.Add(namedArgumentExpression.Name, ConvertAttributeArgument(namedArgumentExpression.Expression));
+						namedArguments[namedArgumentExpression.Name] = ConvertAttributeArgument(namedArgumentExpression.Expression);
 					}
 					result.Add(new DefaultAttribute(new AttributeReturnType(context, attribute.Name),
 					                                target, positionalArguments, namedArguments)
