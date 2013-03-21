@@ -158,7 +158,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							var startOffset = script.GetCurrentOffset (prevEnd);
 							var endOffset = script.GetCurrentOffset (end);
 							script.RemoveText (startOffset, endOffset - startOffset);
-						});
+						}, null);
 					var commentAction = new CodeAction (visitor.ctx.TranslateString ("Comment unreachable code"),
 						script =>
 						{
@@ -166,7 +166,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							script.InsertText (startOffset, Environment.NewLine + "/*");
 							var endOffset = script.GetCurrentOffset (end);
 							script.InsertText (endOffset, Environment.NewLine + "*/");
-						});
+						}, null);
 					var actions = new [] { removeAction, commentAction };
 					visitor.AddIssue (start, end, visitor.ctx.TranslateString ("Code is unreachable"), actions);
 					return true;

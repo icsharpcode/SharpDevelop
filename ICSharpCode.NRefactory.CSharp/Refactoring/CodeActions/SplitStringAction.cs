@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			yield return new CodeAction(context.TranslateString("Split string literal"), script => {
 				int offset = context.GetOffset (context.Location);
 				script.InsertText (offset, pexpr.LiteralValue.StartsWith("@", StringComparison.Ordinal) ? "\" + @\"" : "\" + \"");
-			});
+			}, pexpr);
 		}
 	}
 }

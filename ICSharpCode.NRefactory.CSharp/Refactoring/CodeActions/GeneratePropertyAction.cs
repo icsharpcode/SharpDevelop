@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				script.InsertWithCursor(
 					context.TranslateString("Create property"),
 					Script.InsertPosition.After, GeneratePropertyDeclaration(context, field, fieldName));
-			});
+			}, initializer);
 		}
 		
 		static PropertyDeclaration GeneratePropertyDeclaration (RefactoringContext context, FieldDeclaration field, string fieldName)

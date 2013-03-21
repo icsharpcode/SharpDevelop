@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (accessorStatement != null)
 					script.Select(accessorStatement);
 				script.FormatText(pdecl);
-			});
+			}, pdecl.NameToken);
 		}
 		
 		static Statement BuildAccessorStatement (RefactoringContext context, PropertyDeclaration pdecl)

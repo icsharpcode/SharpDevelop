@@ -73,11 +73,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var args = Enumerable.Concat(new [] { new ThisReferenceExpression() }, invocationExpression.Arguments.Select(arg => arg.Clone()));
 					var newInvocation = MakeInvocation("object.ReferenceEquals", args);
 					script.Replace(invocationExpression, newInvocation);
-				});
+				}, invocationExpression);
 				yield return new CodeAction(ctx.TranslateString("Remove 'base.'"), script => {
 					var newInvocation = MakeInvocation("Equals", invocationExpression.Arguments.Select(arg => arg.Clone()));
 					script.Replace(invocationExpression, newInvocation);
-				});
+				}, invocationExpression);
 			}
 
 			static InvocationExpression MakeInvocation(string memberName, IEnumerable<Expression> unClonedArguments)

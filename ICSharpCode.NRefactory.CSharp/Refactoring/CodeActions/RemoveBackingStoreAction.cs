@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				script.Rename((IEntity)field, newProperty.Name);
 				script.Remove (context.RootNode.GetNodeAt<FieldDeclaration> (field.Region.Begin));
 				script.Replace (property, newProperty);
-			});
+			}, property.NameToken);
 		}
 		
 //		void ReplaceBackingFieldReferences (MDRefactoringContext context, IField backingStore, PropertyDeclaration property)

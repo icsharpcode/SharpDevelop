@@ -90,7 +90,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					newOCE.Arguments.Add(secondParam.Clone());
 					newOCE.Arguments.Add(firstParam.Clone());
 					script.Replace(objectCreateExpression, newOCE);
-				});
+				}, objectCreateExpression);
 			}
 		}
 	}

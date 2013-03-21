@@ -101,7 +101,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				foreach (var statement in toRemove)
 					script.Remove(statement);
 				script.Replace(oldNode, replacementNode);
-			});
+			}, oldNode);
 		}
 		#endregion
 	}

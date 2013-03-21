@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					}
 				}
 				script.Replace(node, lambda);
-			});
+			}, node);
 		}
 		#endregion
 	}

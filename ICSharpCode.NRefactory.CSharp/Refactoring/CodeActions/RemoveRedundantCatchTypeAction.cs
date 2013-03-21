@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				script.Replace(catchClause, new CatchClause() {
 					Body = catchClause.Body.Clone() as BlockStatement
 				});
-			});
+			}, catchClause.Type);
 		}
 
 		bool IsReferenced(IVariable variable, AstNode node, SyntaxTree syntaxTree, RefactoringContext context)

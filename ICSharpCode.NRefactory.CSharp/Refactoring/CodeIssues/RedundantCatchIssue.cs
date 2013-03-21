@@ -59,27 +59,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 
 				if (hasNonRedundantCatch || !tryCatchStatement.FinallyBlock.IsNull) {
-					AddIssuesForClauses(redundantCatchClauses);
+					AddIssuesForClauses(tryCatchStatement, redundantCatchClauses);
 				} else {
 					AddIssueForTryCatchStatement(tryCatchStatement);
 				}
 			}
 
-			void AddIssuesForClauses(List<CatchClause> redundantCatchClauses)
+			void AddIssuesForClauses(AstNode node, List<CatchClause> redundantCatchClauses)
 			{
 				var allCatchClausesMessage = ctx.TranslateString("Remove all '{0}' redundant catches");
 				var removeAllRedundantClausesAction = new CodeAction(allCatchClausesMessage, script => {
 					foreach (var redundantCatchClause in redundantCatchClauses) {
 						script.Remove(redundantCatchClause);
 					}
-				});
+				}, node);
 				var singleCatchClauseMessage = ctx.TranslateString("Remove redundant catch clause");
 				var redundantCatchClauseMessage = ctx.TranslateString("A catch clause containing a single empty throw statement is redundant.");
 				foreach (var redundantCatchClause in redundantCatchClauses) {
 					var closureLocalCatchClause = redundantCatchClause;
 					var removeRedundantClauseAction = new CodeAction(singleCatchClauseMessage, script => {
 						script.Remove(closureLocalCatchClause);
-					});
+					}, node);
 					var actions = new List<CodeAction>();
 					actions.Add(removeRedundantClauseAction);
 					if (redundantCatchClauses.Count > 1) {
@@ -113,7 +113,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					}
 					// The replace and insert script functions does not format these things well on their own
 					script.FormatText(tryCatchStatement.Parent);
-				});
+				}, tryCatchStatement);
 
 				var fixes = new [] {
 					removeTryStatementAction

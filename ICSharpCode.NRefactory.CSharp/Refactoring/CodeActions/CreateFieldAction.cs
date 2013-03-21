@@ -83,14 +83,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 //			}
 
 			yield return new CodeAction(context.TranslateString("Create field"), script => {
-				var decl = new FieldDeclaration() {
+				var decl = new FieldDeclaration {
 					ReturnType = guessedType,
 					Variables = { new VariableInitializer(propertyName) }
 				};
 				if (isStatic)
 					decl.Modifiers |= Modifiers.Static;
 				script.InsertWithCursor(context.TranslateString("Create field"), Script.InsertPosition.Before, decl);
-			});
+			}, expr);
 
 		}
 

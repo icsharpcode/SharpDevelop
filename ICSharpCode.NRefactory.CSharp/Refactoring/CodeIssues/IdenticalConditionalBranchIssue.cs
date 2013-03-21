@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (!conditionalExpression.TrueExpression.Match (conditionalExpression.FalseExpression).Success)
 					return;
 				var action = new CodeAction (ctx.TranslateString ("Replace '?:' with branch"),
-					script => script.Replace (conditionalExpression, conditionalExpression.TrueExpression.Clone ()));
+					script => script.Replace (conditionalExpression, conditionalExpression.TrueExpression.Clone ()), conditionalExpression.QuestionMarkToken);
 				AddIssue (conditionalExpression, 
 					ctx.TranslateString ("'?:' expression has identical true and false branches"), new [] { action });
 			}

@@ -54,7 +54,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var implementedInterface = method.ImplementedInterfaceMembers [0].DeclaringType;
 					explicitImpl.PrivateImplementationType = context.CreateShortType (implementedInterface);
 					script.Replace (node, explicitImpl);
-				});
+				},
+				node.NameToken
+			);
 		}
 	}
 }

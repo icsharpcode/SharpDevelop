@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			yield return new CodeAction(context.TranslateString("Convert hex to dec"), script => {
 				script.Replace(pexpr, new PrimitiveExpression (pexpr.Value));
-			});
+			}, pexpr);
 		}
 	}
 }

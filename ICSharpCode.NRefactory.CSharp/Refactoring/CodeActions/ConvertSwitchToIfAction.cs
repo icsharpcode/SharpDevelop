@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					}
 					script.Replace (node, ifStatement);
 					script.FormatText (ifStatement);
-				});
+				}, node);
 		}
 
 		static Expression CollectCondition(Expression switchExpr, AstNodeCollection<CaseLabel> caseLabels)

@@ -341,7 +341,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						script.FormatText(parent);
 					}
 					script.Remove(oldStatement);
-				});
+				}, oldStatement);
 			}
 
 			AstNode GetDeepestCommonAncestor(AstNode assumedRoot, IEnumerable<AstNode> leaves)

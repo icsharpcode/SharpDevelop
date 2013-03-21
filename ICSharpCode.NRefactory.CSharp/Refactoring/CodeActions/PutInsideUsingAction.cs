@@ -120,7 +120,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					remainingVariables.Variables.Remove (
 						remainingVariables.Variables.FirstOrDefault (v => v.Name == node.Name));
 					script.InsertBefore (usingStatement, remainingVariables);
-				});
+				}, node.NameToken);
 		}
 
 		static bool IsIDisposable (IType type)

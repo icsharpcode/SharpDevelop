@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						script.InsertBefore (eventDecl, newEventDecl);
 					}
 					script.Replace (eventDecl, e);
-				});
+				}, node.NameToken);
 		}
 	}
 }

@@ -109,7 +109,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 				script.Link (textNodes.ToArray ());
 			};
-			yield return new CodeAction (context.TranslateString ("Copy to local variable"), action);
+			yield return new CodeAction (context.TranslateString ("Copy to local variable"), action, env.AstNode);
 		}
 	}
 }

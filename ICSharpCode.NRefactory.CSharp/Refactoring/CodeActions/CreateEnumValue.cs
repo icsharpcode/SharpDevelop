@@ -77,7 +77,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					Name = propertyName
 				};
 				script.InsertWithCursor(context.TranslateString("Create enum value"), guessedType.GetDefinition (), decl);
-			});
+			}, expr);
 			
 		}
 		

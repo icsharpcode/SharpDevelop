@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var variableUsage = new IdentifierExpression(name);
 				script.Replace(pexpr, variableUsage);
 				script.Link(initializer.NameToken, variableUsage);
-			});
+			}, pexpr);
 			
 			yield return new CodeAction(context.TranslateString("Create constant field"), script => {
 				string name = CreateMethodDeclarationAction.CreateBaseName(pexpr, resolveResult.Type);
@@ -88,7 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				script.Replace(pexpr, variableUsage);
 				//				script.Link(initializer.NameToken, variableUsage);
 				script.InsertWithCursor(context.TranslateString("Create constant"), Script.InsertPosition.Before, decl);
-			});
+			}, pexpr);
 
 			if (visitor.Matches.Count > 1) {
 				yield return new CodeAction(string.Format(context.TranslateString("Create local constant (replace '{0}' occurrences)"), visitor.Matches.Count), script => {
@@ -114,7 +114,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						script.Replace(visitor.Matches [i], identifierExpression);
 					}
 					script.Link(linkedNodes.ToArray ());
-				});
+				}, pexpr);
 				
 				yield return new CodeAction(string.Format(context.TranslateString("Create constant field (replace '{0}' occurrences)"), visitor.Matches.Count), script => {
 					string name = CreateMethodDeclarationAction.CreateBaseName(pexpr, resolveResult.Type);
@@ -138,7 +138,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						script.Replace(visitor.Matches [i], identifierExpression);
 					}
 					script.InsertWithCursor(context.TranslateString("Create constant"), Script.InsertPosition.Before, decl);
-				});
+				}, pexpr);
 			}
 		}
 	}

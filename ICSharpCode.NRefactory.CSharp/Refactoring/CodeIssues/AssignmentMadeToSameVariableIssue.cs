@@ -85,7 +85,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					action = script => script.Replace (assignmentExpression, assignmentExpression.Left.Clone ());
 				}
 				AddIssue (node, ctx.TranslateString ("CS1717:Assignment made to same variable"),
-					new [] { new CodeAction (ctx.TranslateString ("Remove assignment"), action) });
+					new [] { new CodeAction (ctx.TranslateString ("Remove assignment"), action, node) });
 			}
 
 			static bool AreEquivalent(ResolveResult first, ResolveResult second)

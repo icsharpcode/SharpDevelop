@@ -66,8 +66,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				string issueText = ctx.TranslateString("Collection element type '{0}' is not implicitly convertible to '{1}'");
 				string fixText = ctx.TranslateString("Use type '{0}'");
 				AddIssue(variableType, string.Format(issueText, elementType.GetText(), variableType.GetText()),
-				         new CodeAction(string.Format(fixText, elementType.GetText()),
-				                        script => script.Replace(variableType, elementType)));
+				         new CodeAction(
+								string.Format(fixText, elementType.GetText()),
+								script => script.Replace(variableType, elementType),
+								foreachStatement));
 			}
 		}
 	}

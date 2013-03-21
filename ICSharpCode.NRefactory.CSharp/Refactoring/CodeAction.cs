@@ -49,6 +49,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 
 		/// <summary>
+		/// Gets the ast node the action acts upon. 
+		/// Note: τhis value may be null if the action isn't specific to a single node.
+		/// </summary>
+		public AstNode AstNode {
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction"/> class.
 		/// </summary>
 		/// <param name='description'>
@@ -57,16 +66,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// <param name='action'>
 		/// The code transformation.
 		/// </param>
-		public CodeAction (string description, Action<Script> action)
+		public CodeAction (string description, Action<Script> action, AstNode astNode)
 		{
-			if (action == null) {
+			if (action == null)
 				throw new ArgumentNullException ("action");
-			}
-			if (description == null) {
+			if (description == null)
 				throw new ArgumentNullException ("description");
-			}
+			if (astNode == null)
+				throw new ArgumentNullException ("astNode");
 			Description = description;
 			Run = action;
+			AstNode = astNode;
 		}
 	}
 }

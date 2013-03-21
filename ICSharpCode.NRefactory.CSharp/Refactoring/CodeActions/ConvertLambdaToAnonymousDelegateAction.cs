@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 				var method = new AnonymousMethodExpression (newBody, GetParameters(lambdaResolveResult.Parameters, context));
 				script.Replace(node, method);
-			});
+			}, node);
 		}
 		#endregion
 

@@ -88,14 +88,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					} else {
 						script.Remove(attributeSection);
 					}
-				});
+				}, attribute);
 
 				var makeStaticMessage = ctx.TranslateString("Make the field static");
 				yield return new CodeAction(makeStaticMessage, script => {
 					var newDeclaration = (FieldDeclaration)fieldDeclaration.Clone();
 					newDeclaration.Modifiers |= Modifiers.Static;
 					script.Replace(fieldDeclaration, newDeclaration);
-				});
+				}, fieldDeclaration.NameToken);
 			}
 		}
 	}

@@ -85,7 +85,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		CodeAction NewUsingAction(RefactoringContext context, AstNode node, string ns)
 		{
-			return new CodeAction("using " + ns + ";", s => UsingHelper.InsertUsingAndRemoveRedundantNamespaceUsage(context, s, ns));
+			return new CodeAction("using " + ns + ";", s => UsingHelper.InsertUsingAndRemoveRedundantNamespaceUsage(context, s, ns), node);
 		}
 		
 		CodeAction ReplaceWithFullTypeNameAction(RefactoringContext context, AstNode node, ITypeDefinition typeDefinition)
@@ -95,7 +95,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			foreach (var typeArg in node.GetChildrenByRole(Roles.TypeArgument)) {
 				astType.AddChild(typeArg.Clone(), Roles.TypeArgument);
 			}
-			return new CodeAction(textWithoutGenerics, s => s.Replace(node, astType));
+			return new CodeAction(textWithoutGenerics, s => s.Replace(node, astType), node);
 		}
 		
 		IEnumerable<CodeAction> GetActionsForExtensionMethodInvocation(RefactoringContext context, InvocationExpression invocation)

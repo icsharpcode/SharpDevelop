@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					};
 					mergedIfStatement.Condition.AcceptVisitor (insertParenthesesVisitor);
 					script.Replace (outerIfStatement, mergedIfStatement);
-				});
+				}, node);
 		}
 
 		static IfElseStatement GetOuterIfStatement (IfElseStatement node)

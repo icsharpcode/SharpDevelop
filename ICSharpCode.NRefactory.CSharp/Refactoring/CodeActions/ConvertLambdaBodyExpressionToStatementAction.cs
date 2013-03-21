@@ -49,7 +49,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						body.Add (new ExpressionStatement (bodyExpr.Clone ()));
 					}
 					script.Replace (bodyExpr, body);
-				});
+				},
+				node
+			);
 		}
 
 		static bool RequireReturnStatement (RefactoringContext context, LambdaExpression lambda)

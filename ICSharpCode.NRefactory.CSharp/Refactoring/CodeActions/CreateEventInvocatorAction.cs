@@ -113,7 +113,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					Script.InsertPosition.After,
 					methodDeclaration
 				);
-			});
+			}, initializer);
 		}
 		
 			

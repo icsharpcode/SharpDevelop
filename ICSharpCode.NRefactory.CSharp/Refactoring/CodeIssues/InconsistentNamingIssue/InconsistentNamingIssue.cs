@@ -156,7 +156,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							} else { 
 								script.Replace(identifier, Identifier.Create(n));
 							}
-						})));
+						}, identifier)));
 
 						if (entity != AffectedEntity.Namespace && entity != AffectedEntity.Label) {
 							actions.Add(new CodeAction(string.Format(ctx.TranslateString("Rename '{0}'..."), identifier.Name), (Script script) => {
@@ -174,7 +174,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 								} else if (resolveResult is LocalResolveResult) {
 									script.Rename(((LocalResolveResult)resolveResult).Variable);
 								}
-							}));
+							}, identifier));
 						}
 
 						AddIssue(identifier, msg, actions);

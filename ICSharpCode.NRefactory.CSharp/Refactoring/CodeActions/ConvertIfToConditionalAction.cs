@@ -118,7 +118,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					// remove implicit false statement
 					if (falseStatement != ifElseStatement.FalseStatement)
 						script.Remove (falseStatement);
-				});
+				}, 
+				ifElseStatement
+			);
 		}
 
 		static T GetNode<T> (Statement node, Func<Statement, T> extract)

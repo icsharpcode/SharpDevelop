@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					s.Remove(nodeToRemove, true);
 					s.InsertWithCursor(context.TranslateString("Insert new field"),Script.InsertPosition.Before,field);
 					s.FormatText(varInit.Parent);
-				});
+				}, varInit);
 			}
 			
 			var idntf = context.GetNode<Identifier>();
@@ -74,7 +74,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				yield return new CodeAction(context.TranslateString("Assign to new field"), s=>{
 					s.InsertWithCursor(context.TranslateString("Insert new field"),Script.InsertPosition.Before,field);
 					s.AddTo(ctor.Body, statement);
-				});
+				}, paramDec);
 			}
 		}
 		

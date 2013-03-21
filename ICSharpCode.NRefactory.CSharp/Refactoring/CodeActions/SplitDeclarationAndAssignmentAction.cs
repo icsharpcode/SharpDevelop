@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				
 				script.InsertBefore(varDecl, newVarDecl);
 				script.Replace(varDecl, varDecl.Parent is ForStatement ? (AstNode)assign : new ExpressionStatement (assign));
-			});
+			}, varDecl.Variables.First ().AssignToken);
 		}
 		
 		static VariableDeclarationStatement GetVariableDeclarationStatement (RefactoringContext context, out AstType resolvedType, CancellationToken cancellationToken = default(CancellationToken))

@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					Body = catchClause.Body.Clone() as BlockStatement
 				});
 				script.Select(newType);
-			});
+			}, catchClause);
 		}
 
 		#endregion

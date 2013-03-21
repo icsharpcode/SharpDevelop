@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						newVariableDecl.Variables.Add ((VariableInitializer) variable.Clone ());
 					script.Replace (variableDecl, newVariableDecl);
 				}
-			});
+			}, node.NameToken);
 		}
 	}
 }

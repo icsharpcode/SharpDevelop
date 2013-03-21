@@ -104,7 +104,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							ctx.TranslateString("Remove returned expression"),
 							script => {
 								script.Remove(returnStatement.Expression); 
-							}
+							},
+							returnStatement
 						)
 					);
 				}

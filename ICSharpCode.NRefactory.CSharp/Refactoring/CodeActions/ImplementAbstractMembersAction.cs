@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						return entity;
 					})
 				);
-			});
+			}, type);
 		}
 
 		public static List<IMember> CollectMembersToImplement(ITypeDefinition implementingType, IType abstractType)

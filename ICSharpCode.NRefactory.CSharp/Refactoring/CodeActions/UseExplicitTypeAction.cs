@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var foreachStatement = GetForeachStatement (context);
 					script.Replace (foreachStatement.VariableType, context.CreateShortType (type));
 				}
-			});
+			}, varDecl);
 		}
 		
 		static readonly AstType varType = new SimpleType ("var");

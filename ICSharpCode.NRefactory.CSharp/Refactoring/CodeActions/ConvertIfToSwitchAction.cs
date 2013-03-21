@@ -54,7 +54,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var switchStatement = new SwitchStatement { Expression = switchExpr.Clone () };
 					switchStatement.SwitchSections.AddRange (switchSections);
 					script.Replace (node, switchStatement);
-				});
+				},
+				node
+			);
 		}
 
 		static Expression GetSwitchExpression (RefactoringContext context, Expression expr)

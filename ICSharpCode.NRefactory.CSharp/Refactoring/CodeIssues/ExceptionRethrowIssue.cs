@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var title = ctx.TranslateString("The exception is rethrown with explicit usage of the variable");
 					var action = new CodeAction(ctx.TranslateString("Change to 'throw;'"), script => {
 						script.Replace(localThrowStatement, new ThrowStatement());
-					});
+					}, catchClause);
 					AddIssue(localThrowStatement, title, action);
 				}
 			}

@@ -70,12 +70,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		protected void AddIssue(AstNode node, string title, System.Action<Script> fix = null)
 		{
-			FoundIssues.Add(new CodeIssue (title, node.StartLocation, node.EndLocation, fix != null ? new CodeAction (title, fix) : null));
+			FoundIssues.Add(new CodeIssue (title, node.StartLocation, node.EndLocation, fix != null ? new CodeAction (title, fix, node) : null));
 		}
 
 		protected void AddIssue(TextLocation start, TextLocation end, string title, System.Action<Script> fix = null)
 		{
-			FoundIssues.Add(new CodeIssue(title, start, end, fix != null ? new CodeAction(title, fix) : null));
+			FoundIssues.Add(new CodeIssue(title, start, end, fix != null ? new CodeAction(title, fix, null) : null));
 		}
 
 		protected void AddIssue(AstNode node, string title, CodeAction fix)

@@ -107,7 +107,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				string description = string.Format("{0} '{1}'", context.TranslateString("Use base class"), newType.GetText());
 				return new CodeAction(description, script => {
 					script.Replace(targetExpression, newType);
-				});
+				}, targetExpression);
 			}
 			
 			sealed class ContainsTypeVisitor : TypeVisitor

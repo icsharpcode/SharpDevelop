@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			yield return new CodeAction(context.TranslateString("Inline local variable"), script => {
 				refFinder.FindLocalReferences(resolveResult.Variable, context.UnresolvedFile, unit, context.Compilation, (n, r) => script.Replace(n, AddParensIfRequired (n, initializer.Initializer.Clone())), default(CancellationToken));
 				script.Remove(node);
-			});
+			}, initializer);
 		}
 
 		public static bool RequiresParens(AstNode replaceNode, AstNode replaceWithNode)

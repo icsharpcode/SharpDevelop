@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					context.TranslateString("Create getter"),
 					Script.InsertPosition.After,
 					GeneratePropertyDeclaration(context, field, initializer));
-			});
+			}, initializer);
 		}
 		
 		static PropertyDeclaration GeneratePropertyDeclaration (RefactoringContext context, FieldDeclaration field, VariableInitializer initializer)

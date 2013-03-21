@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					castExpr.AcceptVisitor (insertParentheses);
 					script.Replace (node, castExpr);
 				}
-			});
+			}, node);
 		}
 	}
 }

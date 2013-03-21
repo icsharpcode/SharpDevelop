@@ -181,7 +181,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var message = string.Format(ctx.TranslateString("Demote parameter to '{0}'"), type.FullName);
 					yield return new CodeAction(message, script => {
 						script.Replace(parameter.Type, astBuilder.ConvertType(localType));
-					});
+					}, parameter.NameToken);
 				}
 			}
 		}

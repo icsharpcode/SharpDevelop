@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					for (var i = 0; i < originalNodes.Length; ++i)
 						script.Replace(originalNodes[i], sortedNodes[i].Clone());
 				}
-			});
+			}, usingNode);
 		}
 
 		private static AstNode FindUsingNodeAtCursor(RefactoringContext context)
