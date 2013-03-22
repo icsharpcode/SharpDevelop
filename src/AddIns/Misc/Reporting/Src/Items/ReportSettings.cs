@@ -20,7 +20,7 @@ namespace ICSharpCode.Reporting.Items
 		
 		public ReportSettings()
 		{
-			this.PageSize = Globals.GlobalValues.DefaultPageSize;
+			this.pageSize = Globals.GlobalValues.DefaultPageSize;
 			BaseValues();
 		}
 		
@@ -73,8 +73,23 @@ namespace ICSharpCode.Reporting.Items
 			}
 		}
 		
+		private Size pageSize;
+		
+		public Size PageSize {
+			get {
+				if (!Landscape) {
+					return pageSize;
+				} else {
+					return new Size(pageSize.Height,pageSize.Width);
+				}
+				 }
+			set { pageSize = value; }
+		}
 		
 //		[Category("Page Settings")]
-		public Size PageSize {get;set;}
+//		public Size PageSize {get;set;}
+		
+//		[Category("Page Settings")]
+		public bool Landscape {get;set;}
 	}
 }

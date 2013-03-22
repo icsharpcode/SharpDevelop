@@ -7,9 +7,12 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.Generic;
+using System.Collections;
 using System.IO;
 using System.Xml;
 
+using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.Xml;
 
@@ -25,7 +28,13 @@ namespace ICSharpCode.Reporting
 		}
 		
 		
-		public ReportModel LoadReport (Stream stream)
+		public IReportCreator CreatePageBuilder (Stream stream, IList list)
+		{
+			return null;
+		}
+			
+		
+		internal ReportModel LoadReport (Stream stream)
 		{
 			Console.WriteLine("ReportEngine:LoadReportModel_2");
 			var doc = new XmlDocument();

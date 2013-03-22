@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Drawing;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Items;
 using NUnit.Framework;
@@ -16,20 +17,35 @@ namespace ICSharpCode.Reporting.Tests
 	[TestFixture]
 	public class ReportSettingsFixture
 	{
+		ReportSettings reportSettings;
+		
 		[Test]
 		public void DefaultConstructureShouldReturnStandardValues()
 		{
-			ReportSettings rs = new ReportSettings();
-			Assert.IsNotNull(rs,"Should not be 'null'");
-			Assert.AreEqual(GlobalValues.DefaultReportName,rs.ReportName);
+			Assert.IsNotNull(reportSettings,"Should not be 'null'");
+			Assert.AreEqual(GlobalValues.DefaultReportName,reportSettings.ReportName);
 		}
 		
 		
 		[Test]
 		public void DefaultPageSize ()
 		{
-			ReportSettings rs = new ReportSettings();
-			Assert.AreEqual(GlobalValues.DefaultPageSize,rs.PageSize);
+			Assert.AreEqual(GlobalValues.DefaultPageSize,reportSettings.PageSize);
+		}
+		
+		
+		[Test]
+		public void LandScape_True_Return_PageSize_For_LandScape ()
+		{
+			reportSettings.Landscape = true;
+			var landscapeSize = new Size(Globals.GlobalValues.DefaultPageSize.Height,
+			                             Globals.GlobalValues.DefaultPageSize.Width);
+			Assert.That(reportSettings.PageSize,Is.EqualTo(landscapeSize));
+		}
+		
+		[SetUp]
+		public void Setup () {
+			reportSettings = new ReportSettings();
 		}
 	}
 }

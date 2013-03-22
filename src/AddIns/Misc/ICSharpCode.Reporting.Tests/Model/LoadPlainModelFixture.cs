@@ -36,6 +36,7 @@ namespace ICSharpCode.Reporting.Tests.Model
 			Assert.IsNotNull(model);
 		}
 		
+		
 		[Test]
 		public void ReportSettingsFromPlainModel()
 		{
@@ -61,6 +62,7 @@ namespace ICSharpCode.Reporting.Tests.Model
 			var model = rf.LoadReport(stream);
 			Assert.That(model.ReportSettings.PageSize,Is.EqualTo(Globals.GlobalValues.DefaultPageSize));
 		}
+		
 		
 		
 		[SetUp]
