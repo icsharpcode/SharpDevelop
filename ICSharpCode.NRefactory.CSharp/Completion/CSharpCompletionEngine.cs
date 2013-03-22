@@ -1676,6 +1676,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						null,
 						t => t.GetDefinition() == null || def == null || t.GetDefinition().IsDerivedFrom(def) ? t : null,
 						m => false);
+					AddKeywords(isAsWrapper, primitiveTypesKeywords);
 					return isAsWrapper.Result;
 					//					{
 					//						CompletionDataList completionList = new ProjectDomCompletionDataList ();
