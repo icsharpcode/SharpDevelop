@@ -193,6 +193,7 @@
     <Compile Include="Highlighting\HighlightingColorizer.cs" />
     <Compile Include="Highlighting\HighlightingDefinitionInvalidException.cs" />
     <Compile Include="Highlighting\HighlightingDefinitionTypeConverter.cs" />
+    <Compile Include="Highlighting\HighlightingEngine.cs" />
     <Compile Include="Highlighting\HighlightingManager.cs" />
     <Compile Include="Highlighting\HtmlClipboard.cs" />
     <Compile Include="Highlighting\IHighlighter.cs" />

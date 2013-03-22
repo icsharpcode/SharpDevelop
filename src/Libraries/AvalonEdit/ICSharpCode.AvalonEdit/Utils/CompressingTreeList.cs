@@ -115,6 +115,18 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// </summary>
 		/// <param name="comparisonFunc">A function that checks two values for equality. If this
 		/// function returns true, a single node may be used to store the two values.</param>
+		public CompressingTreeList(IEqualityComparer<T> equalityComparer)
+		{
+			if (equalityComparer == null)
+				throw new ArgumentNullException("equalityComparer");
+			this.comparisonFunc = equalityComparer.Equals;
+		}
+		
+		/// <summary>
+		/// Creates a new CompressingTreeList instance.
+		/// </summary>
+		/// <param name="comparisonFunc">A function that checks two values for equality. If this
+		/// function returns true, a single node may be used to store the two values.</param>
 		public CompressingTreeList(Func<T, T, bool> comparisonFunc)
 		{
 			if (comparisonFunc == null)
