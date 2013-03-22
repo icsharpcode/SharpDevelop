@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Bugs
 		/// <summary>
 		/// Bug 4252 - override bug in mcs ast
 		/// </summary>
-		[Ignore("Still open")]
+		[Ignore("Still open 03/2013")]
 		[Test]
 		public void TestBug4242()
 		{
@@ -119,7 +119,7 @@ class TestClass
 		/// <summary>
 		/// Bug 3952 - Syntax errors that causes AST not inserted 
 		/// </summary>
-		[Ignore("Still open")]
+		[Ignore("Still open 03/2013")]
 		[Test]
 		public void TestBug3952()
 		{
@@ -321,7 +321,6 @@ class Test
 		/// <summary>
 		/// Bug 4556 - AST broken for unclosed invocation
 		/// </summary>
-		[Ignore ()]
 		[Test]
 		public void TestBug4556()
 		{
@@ -337,8 +336,7 @@ class Foo
 }
 ";
 			var unit = SyntaxTree.Parse(code);
-			
-			var type = unit.Members.First() as TypeDeclaration;
+			var type = unit.Members.First(m => m is TypeDeclaration) as TypeDeclaration;
 			var method = type.Members.First() as MethodDeclaration;
 			bool passed = !method.Body.IsNull;
 			if (!passed) {
@@ -351,7 +349,6 @@ class Foo
 		/// <summary>
 		/// Bug 5064 - Autocomplete doesn't include object initializer properties in yield return 
 		/// </summary>
-		[Ignore("Still open")]
 		[Test]
 		public void TestBug5064()
 		{
@@ -365,15 +362,32 @@ class Foo
 }";
 			var unit = SyntaxTree.Parse(code);
 			
-			bool passed = unit.GetText().Trim() == @"public class Bar
+			string text = unit.GetText().Trim();
+			string expected = @"public class Bar
 {
 	public IEnumerable<Foo> GetFoos()
 	{
 		yield return new Foo { };
 	}
 }";
+			int i = 0, j = 0;
+			while (i < text.Length && j < expected.Length) {
+				if (char.IsWhiteSpace (text[i])) {
+					i++;
+					continue;
+				}
+				if (char.IsWhiteSpace (expected[j])) {
+					j++;
+					continue;
+				}
+				if (text [i] != expected [j]) {
+					break;
+				}
+				i++;j++;
+			}
+			bool passed = i == text.Length && j == expected.Length;
 			if (!passed) {
-				Console.WriteLine("Expected:" + code);
+				Console.WriteLine("Expected:" + expected);
 				Console.WriteLine("Was:" + unit.GetText());
 			}
 			Assert.IsTrue(passed);
@@ -382,7 +396,6 @@ class Foo
 		/// <summary>
 		/// Bug 5389 - Code completion does not work well inside a dictionary initializer
 		/// </summary>
-		[Ignore("Still open")]
 		[Test()]
 		public void TestBug5389()
 		{
