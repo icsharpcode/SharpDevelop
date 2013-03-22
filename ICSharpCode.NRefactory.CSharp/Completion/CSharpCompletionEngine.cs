@@ -657,15 +657,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						AddKeywords(dataList, linqKeywords);
 						return dataList.Result;
 					}
-					var contextList = new CompletionDataWrapper(this);
-					var identifierStart = GetExpressionAtCursor();
-					
-					if (currentType != null && currentType.Kind == TypeKind.Enum && identifierStart == null) {
+					if (currentType != null && currentType.Kind == TypeKind.Enum) {
 						if (!char.IsLetter(completionChar))
 							return null;
 						return HandleEnumContext();
 					}
-
+					var contextList = new CompletionDataWrapper(this);
+					var identifierStart = GetExpressionAtCursor();
 					if (!(char.IsLetter(completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null)) {
 						return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
 					}
@@ -1080,15 +1078,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 
 			var attribute = syntaxTree.GetNodeAt<Attribute>(location);
-			Console.WriteLine(syntaxTree.GetText ());
-			Console.WriteLine("---");
-			Console.WriteLine("attr:"+attribute);
 			if (attribute != null) {
 				var contextList = new CompletionDataWrapper(this);
 				var astResolver = CompletionContextProvider.GetResolver(GetState (), syntaxTree);
-
 				var csResolver = astResolver.GetResolverStateBefore(attribute);
-
 				AddContextCompletion(
 					contextList,
 					csResolver,
