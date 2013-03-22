@@ -282,6 +282,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					
 					if (attr.PositionalArguments != null) {
 						foreach (var arg in attr.PositionalArguments) {
+							if (arg == null)
+								continue;
 							var na = arg as NamedArgument;
 							if (na != null) {
 								var newArg = new NamedArgumentExpression ();
