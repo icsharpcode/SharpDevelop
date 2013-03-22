@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 //
 		static readonly Version csharp3 = new Version(3, 0);
 		
-		static IField GetBackingField (RefactoringContext context)
+		internal static IField GetBackingField (RefactoringContext context)
 		{
 			var propertyDeclaration = context.GetNode<PropertyDeclaration> ();
 			// automatic properties always need getter & setter

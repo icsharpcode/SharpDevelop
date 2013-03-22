@@ -45,17 +45,17 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 				"public event EventHandler A = null, B = delegate {};",
 				new EventDeclaration {
 					Modifiers = Modifiers.Public,
-					ReturnType = new SimpleType("EventHandler"),
-					Variables = {
-						new VariableInitializer {
-							Name = "A",
-							Initializer = new NullReferenceExpression()
-						},
-						new VariableInitializer {
-							Name = "B",
-							Initializer = new AnonymousMethodExpression() { Body = new BlockStatement ()}
-						}
-					}});
+				ReturnType = new SimpleType("EventHandler"),
+				Variables = {
+					new VariableInitializer {
+						Name = "A",
+						Initializer = new NullReferenceExpression()
+					},
+					new VariableInitializer {
+						Name = "B",
+						Initializer = new AnonymousMethodExpression() { Body = new BlockStatement ()}
+					}
+				}});
 		}
 		
 		[Test]
