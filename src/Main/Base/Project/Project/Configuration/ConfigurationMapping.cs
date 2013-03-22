@@ -19,6 +19,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			public ConfigurationAndPlatform Config;
 			public bool Build = true;
+			public bool Deploy = false;
 			
 			public Entry(ConfigurationAndPlatform config)
 			{
@@ -99,6 +100,32 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			lock (dict) {
 				GetOrCreateEntry(solutionConfiguration).Build = value;
+			}
+			Changed(this, EventArgs.Empty);
+		}
+		
+		/// <summary>
+		/// Gets whether deploying the project is enabled in the given solution configuration.
+		/// </summary>
+		public bool IsDeployEnabled(ConfigurationAndPlatform solutionConfiguration)
+		{
+			lock (dict) {
+				Entry entry;
+				if (dict.TryGetValue(solutionConfiguration, out entry)) {
+					return entry.Build;
+				} else {
+					return false;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Sets whether deploying the project is enabled in the given solution configuration.
+		/// </summary>
+		public void SetDeployEnabled(ConfigurationAndPlatform solutionConfiguration, bool value)
+		{
+			lock (dict) {
+				GetOrCreateEntry(solutionConfiguration).Deploy = value;
 			}
 			Changed(this, EventArgs.Empty);
 		}

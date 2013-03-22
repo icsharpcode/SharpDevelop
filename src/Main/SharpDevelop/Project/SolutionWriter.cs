@@ -174,6 +174,8 @@ namespace ICSharpCode.SharpDevelop.Project
 						section.Add(key + ".ActiveCfg", value);
 						if (project.ConfigurationMapping.IsBuildEnabled(solutionConfig))
 							section.Add(key + ".Build.0", value);
+						if (project.ConfigurationMapping.IsDeployEnabled(solutionConfig))
+							section.Add(key + ".Deploy.0", value);
 					}
 				}
 			}

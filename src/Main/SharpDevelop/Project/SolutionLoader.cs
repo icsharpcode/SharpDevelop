@@ -281,18 +281,19 @@ namespace ICSharpCode.SharpDevelop.Project
 					projectInfo.ConfigurationMapping.SetBuildEnabled(solutionConfig, false);
 				}
 			}
-			// Re-enable build if we see a '.Build.0' entry:
+			// Enable build/deploy if we see the corresponding entries:
 			foreach (var pair in section) {
 				// pair is an entry like this: '{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}.Debug|Any CPU.Build.0 = Debug|Any CPU'
+				Guid guid;
+				ConfigurationAndPlatform solutionConfig;
+				if (!TryParseProjectConfigurationKey(pair.Key, out guid, out solutionConfig))
+					continue;
+				ProjectLoadInformation projectInfo;
+				if (!projectInfoDict.TryGetValue(guid, out projectInfo))
+					continue;
 				if (pair.Key.EndsWith(".Build.0", StringComparison.OrdinalIgnoreCase)) {
-					Guid guid;
-					ConfigurationAndPlatform solutionConfig;
-					if (!TryParseProjectConfigurationKey(pair.Key, out guid, out solutionConfig))
-						continue;
-					ProjectLoadInformation projectInfo;
-					if (!projectInfoDict.TryGetValue(guid, out projectInfo))
-						continue;
-					projectInfo.ConfigurationMapping.SetBuildEnabled(solutionConfig, true);
+				} else if (pair.Key.EndsWith(".Deploy.0", StringComparison.OrdinalIgnoreCase)) {
+					projectInfo.ConfigurationMapping.SetDeployEnabled(solutionConfig, true);
 				}
 			}
 		}

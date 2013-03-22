@@ -98,6 +98,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						var newSolutionConfig = isPlatform ? new ConfigurationAndPlatform(otherName, newName) : new ConfigurationAndPlatform(newName, otherName);
 						mapping.SetProjectConfiguration(newSolutionConfig, mapping.GetProjectConfiguration(sourceSolutionConfig));
 						mapping.SetBuildEnabled(newSolutionConfig, mapping.IsBuildEnabled(sourceSolutionConfig));
+						mapping.SetDeployEnabled(newSolutionConfig, mapping.IsDeployEnabled(sourceSolutionConfig));
 					}
 				}
 			}
@@ -151,9 +152,11 @@ namespace ICSharpCode.SharpDevelop.Project
 					var newSolutionConfig = isPlatform ? new ConfigurationAndPlatform(otherName, newName) : new ConfigurationAndPlatform(newName, otherName);
 					var projectConfig = mapping.GetProjectConfiguration(oldSolutionConfig);
 					var buildEnabled = mapping.IsBuildEnabled(oldSolutionConfig);
+					var deployEnabled = mapping.IsDeployEnabled(oldSolutionConfig);
 					mapping.Remove(oldSolutionConfig);
 					mapping.SetProjectConfiguration(newSolutionConfig, projectConfig);
 					mapping.SetBuildEnabled(newSolutionConfig, buildEnabled);
+					mapping.SetDeployEnabled(newSolutionConfig, deployEnabled);
 				}
 			}
 		}
