@@ -719,7 +719,7 @@ attribute_section_cont
 			$$ = new List<Attribute> (0);
 		else
 			$$ = $4;
-	  
+
 		current_attr_target = null;
 		lexer.parsing_attribute_section = false;
 		if ($5 != null) {
@@ -737,6 +737,22 @@ attribute_section_cont
 			locationListStack.Push (new List<Location>(new [] { savedOpenLocation, GetLocation ($3) }));
 		}
 	  }
+	| IDENTIFIER error
+	  {
+		Error_SyntaxError (yyToken);
+
+		var lt = (Tokenizer.LocatedToken) $1;
+		var tne = new SimpleName (lt.Value, null, lt.Location);
+
+		$$ = new List<Attribute> () {
+			new Attribute (null, tne, null, GetLocation ($1), false)
+		};
+	  }
+	| error
+	  {
+ 		$$ = CheckAttributeTarget (GetTokenName (yyToken), GetLocation ($1)); 
+ 		$$ = null;
+	  }
 	;	
 
 attribute_target
@@ -748,16 +764,6 @@ attribute_target
 	  }
 	| EVENT  { $$ = "event"; savedCloseLocation = GetLocation ($1); }
 	| RETURN { $$ = "return"; savedCloseLocation = GetLocation ($1); }
-	| error
-	  {
-		if (yyToken == Token.IDENTIFIER) {
-			Error_SyntaxError (yyToken);
-			$$ = null;
-		} else {
-			string name = GetTokenName (yyToken);
-			$$ = CheckAttributeTarget (name, GetLocation ($1));
-		}
-	  }
 	;
 
 attribute_list
@@ -865,6 +871,11 @@ positional_or_named_argument
 	  	$$ = new Argument ((Expression) $1);
 	  }
 	| named_argument
+	| error
+	  {
+		Error_SyntaxError (yyToken);
+		$$ = null;
+	  }
 	;
 
 named_attribute_argument
@@ -6488,13 +6499,27 @@ select_or_group_clause
 	  
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  }
-	  BY expression_or_error
+	  by_expression
 	  {
-		$$ = new Linq.GroupBy ((Linq.QueryBlock)current_block, (Expression)$3, linq_clause_blocks.Pop (), (Expression)$6, GetLocation ($1));
-		lbag.AddLocation ($$, GetLocation ($5));
+		var obj = (object[]) $5;
+
+		$$ = new Linq.GroupBy ((Linq.QueryBlock)current_block, (Expression)$3, linq_clause_blocks.Pop (), (Expression)obj[0], GetLocation ($1));
+		lbag.AddLocation ($$, (Location) obj[1]);
 		
 		current_block.SetEndLocation (lexer.Location);
 		current_block = current_block.Parent;
+	  }
+	;
+
+by_expression
+	: BY expression_or_error
+	  {
+	  	$$ = new object[] { $2, GetLocation ($1) };
+	  }
+	| error
+	  {
+		Error_SyntaxError (yyToken);
+		$$ = new object[2] { null, Location.Null };
 	  }
 	;
 	
