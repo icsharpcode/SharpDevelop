@@ -38,15 +38,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
 			var varDecl = GetVariableDeclarationStatement(context);
+			AstNode node;
 			IType type;
 			if (varDecl != null) {
 				type = context.Resolve(varDecl.Variables.First().Initializer).Type;
+				node = varDecl;
 			} else {
 				var foreachStatement = GetForeachStatement(context);
 				if (foreachStatement == null) {
 					yield break;
 				}
 				type = context.Resolve(foreachStatement.VariableType).Type;
+				node = foreachStatement;
 			}
 			
 			if (!(!type.Equals(SpecialType.NullType) && !type.Equals(SpecialType.UnknownType))) {
@@ -59,7 +62,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var foreachStatement = GetForeachStatement (context);
 					script.Replace (foreachStatement.VariableType, context.CreateShortType (type));
 				}
-			}, varDecl);
+			}, node);
 		}
 		
 		static readonly AstType varType = new SimpleType ("var");

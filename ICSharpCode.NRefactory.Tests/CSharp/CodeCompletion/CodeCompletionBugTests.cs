@@ -4768,12 +4768,11 @@ class MainClass
 			Assert.IsNotNull (provider.Find ("Math"), "'Math' not found.");
 		}
 		
-		[Ignore("Mcs bug")]
 		[Test]
 		public void TestConditionalExpression ()
 		{
 			CompletionDataList provider = CreateProvider (
-@"using System;
+				@"using System;
 
 class MainClass
 {
