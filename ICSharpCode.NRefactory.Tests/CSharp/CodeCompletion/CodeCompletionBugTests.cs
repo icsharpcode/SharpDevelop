@@ -5264,7 +5264,6 @@ public class Test
 		/// <summary>
 		/// Bug 4624 - [AutoComplete] Attribute autocomplete inserts entire attribute class name. 
 		/// </summary>
-		[Ignore("MCS BUG")]
 		[Test]
 		public void TestBug4624()
 		{

@@ -539,7 +539,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				typeStack.Push (newType);
 				base.Visit (c);
 				AddAttributeSection (newType, c.UnattachedAttributes, EntityDeclaration.UnattachedAttributeRole);
-				
+
 				if (location != null && curLoc < location.Count) {
 					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++]), Roles.RBrace), Roles.RBrace);
 					
@@ -733,6 +733,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					// parser error, set end node to max value.
 					newType.AddChild (new ErrorNode (), Roles.Error);
 				}
+
+				AddAttributeSection (newType, e.UnattachedAttributes, EntityDeclaration.UnattachedAttributeRole);
 				typeStack.Pop ();
 				AddType (newType);
 			}
