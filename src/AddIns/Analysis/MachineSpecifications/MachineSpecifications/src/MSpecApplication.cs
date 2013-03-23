@@ -9,13 +9,15 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.UnitTesting;
-using System.IO;
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
-using System.Text;
+using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.MachineSpecifications
 {
@@ -24,28 +26,30 @@ namespace ICSharpCode.MachineSpecifications
 	/// </summary>
 	public class MSpecApplication
 	{
-		public MSpecApplication(SelectedTests tests) {
+		public MSpecApplication(IEnumerable<ITest> tests)
+		{
 			InitializeFrom(tests);
 		}
 		
-		public ProcessStartInfo GetProcessStartInfo() {
-			var result = new ProcessStartInfo();
-			result.FileName = ExecutableFileName;
-			result.Arguments = GetArguments();
-			result.WorkingDirectory = WorkingDirectory;
-
-			return result;
+		public ProcessStartInfo GetProcessStartInfo()
+		{
+			return new ProcessStartInfo {
+				FileName = ExecutableFileName,
+				Arguments = GetArguments()
+			};
 		}
-
 	
-		public string Results {get;set;}
+		public string Results { get;set; }
 		
-		void InitializeFrom(SelectedTests tests) {
+		void InitializeFrom(IEnumerable<ITest> tests)
+		{
 			this.tests = tests;
-			project = tests.Project;
+			ITest test = tests.FirstOrDefault();
+			if (test != null)
+				project = test.ParentProject.Project;
 		}
 		
-		SelectedTests tests;
+		IEnumerable<ITest> tests;
 		IProject project;
 
 		string GetArguments()
@@ -66,7 +70,7 @@ namespace ICSharpCode.MachineSpecifications
 
 			builder.Append("\"");
 			builder.Append(project.OutputAssemblyFullPath);
-			builder.Append("\"");            
+			builder.Append("\"");
 
 			return builder.ToString();
 		}
@@ -74,8 +78,8 @@ namespace ICSharpCode.MachineSpecifications
 		string CreateFilterFile()
 		{
 			var classFilterBuilder = new ClassFilterBuilder();
-			var projectContent = ParserService.GetProjectContent(project);
-			var filter = classFilterBuilder.BuildFilterFor(tests, @using: projectContent);
+			//var projectContent = SD.ParserService.GetProjectContent(project);
+			var filter = classFilterBuilder.BuildFilterFor(tests);
 			
 			string path = null;
 			if (filter.Count > 0) {
@@ -83,7 +87,7 @@ namespace ICSharpCode.MachineSpecifications
 				using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
 				using (var writer = new StreamWriter(stream))
 					foreach (var testClassName in filter) {
-							writer.WriteLine(testClassName);
+						writer.WriteLine(testClassName);
 					}
 			}
 			return path;

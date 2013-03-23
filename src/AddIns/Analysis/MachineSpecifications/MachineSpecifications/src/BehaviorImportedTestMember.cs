@@ -7,19 +7,26 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.MachineSpecifications
 {
-	/// <summary>
-	/// Description of BehaviorImportedClass.
-	/// </summary>
-	public class BehaviorImportedTestMember : BaseTestMember
+	public class BehaviorImportedTestMember : MSpecTestMember
 	{
-		public BehaviorImportedTestMember(IClass testClass, IMember behaviorMember)
-			: base(testClass, behaviorMember, behaviorMember.Name)
+		IMember behavior;
+		
+		public BehaviorImportedTestMember(
+			MSpecTestProject parentProject,
+			IMember behavior)
+			: base(parentProject, behavior)
 		{
+			this.behavior = behavior;
+		}
+		
+		public override string DisplayName {
+			get { return behavior.DeclaringType.Name + "." + behavior.Name; }
 		}
 	}
 }

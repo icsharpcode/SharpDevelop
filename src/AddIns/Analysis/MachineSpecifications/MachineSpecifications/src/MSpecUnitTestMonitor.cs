@@ -9,9 +9,9 @@ using System.Xml;
 
 namespace ICSharpCode.MachineSpecifications
 {
-    public class MSpecUnitTestMonitor : ITestResultsMonitor
+    public class MSpecUnitTestMonitor : ITestResultsReader
     {
-        public event TestFinishedEventHandler TestFinished;
+		public event EventHandler<TestFinishedEventArgs> TestFinished;
         private FileSystemWatcher fileSystemWatcher;
         private ISet<string> reportedResults;
 
@@ -22,13 +22,13 @@ namespace ICSharpCode.MachineSpecifications
 
         public string FileName { get; set; }
 
-        public void Stop()
+        public void Join()
         {
             if (fileSystemWatcher != null)
             {
                 fileSystemWatcher.Dispose();
                 fileSystemWatcher = null;
-            }        
+            }
         }
 
         public void Start()
@@ -119,11 +119,9 @@ namespace ICSharpCode.MachineSpecifications
 		            }
         }
 
-		public long InitialFilePosition { get; set; }
-
         public void Dispose()
         {
-            Stop();
+            Join();
             try
             {
                 File.Delete(FileName);
@@ -133,5 +131,9 @@ namespace ICSharpCode.MachineSpecifications
                 LoggingService.Warn("Could delete temporary file.", e);
             }
         }
+		
+		public string PipeName {
+			get { return String.Empty; }
+		}
     }
 }

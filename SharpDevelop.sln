@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 5.0
+# SharpDevelop 4.3
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Main", "Main", "{256F5C28-532C-44C0-8AB8-D8EC5E492E01}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
@@ -117,7 +117,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageManagement", "src\Ad
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageManagement.PowerShell", "src\AddIns\Misc\PackageManagement\PowerShell\Project\PackageManagement.PowerShell.csproj", "{A406803B-C584-43A3-BCEE-A0BB3132CB5F}"
 EndProject
-Project("") = "SharpDevelop.EnvDTE", "src\AddIns\Misc\PackageManagement\SharpDevelop.EnvDTE\SharpDevelop.EnvDTE.vbproj", "752BD058-5517-48A1-BB27-5ED186FA052B"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "SharpDevelop.EnvDTE", "src\AddIns\Misc\PackageManagement\SharpDevelop.EnvDTE\SharpDevelop.EnvDTE.vbproj", "752BD058-5517-48A1-BB27-5ED186FA052B"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Display Bindings", "Display Bindings", "{11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}"
 	ProjectSection(SolutionItems) = postProject
@@ -174,6 +174,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceAnalysis", "src\AddIns\Analysis\SourceAnalysis\SourceAnalysis.csproj", "44FA68C9-DAD1-4C3C-90BB-3435F0D1D128"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCoverage", "src\AddIns\Analysis\CodeCoverage\Project\CodeCoverage.csproj", "{08CE9972-283B-44F4-82FA-966F7DFA6B7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MachineSpecifications", "src\AddIns\Analysis\MachineSpecifications\MachineSpecifications\MachineSpecifications.csproj", "{D1DA3B8F-7313-4BDA-8880-461C5F007751}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Debugger", "Debugger", "{49CE38B8-0460-46BF-9DFF-5B33A0F9EB5E}"
 	ProjectSection(SolutionItems) = postProject
@@ -697,6 +699,14 @@ Global
 		752BD058-5517-48A1-BB27-5ED186FA052B.Release|Any CPU.ActiveCfg = Release|Any CPU
 		752BD058-5517-48A1-BB27-5ED186FA052B.Release|x86.Build.0 = Release|Any CPU
 		752BD058-5517-48A1-BB27-5ED186FA052B.Release|x86.ActiveCfg = Release|Any CPU
+		{D1DA3B8F-7313-4BDA-8880-461C5F007751}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1DA3B8F-7313-4BDA-8880-461C5F007751}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1DA3B8F-7313-4BDA-8880-461C5F007751}.Debug|x86.Build.0 = Debug|Any CPU
+		{D1DA3B8F-7313-4BDA-8880-461C5F007751}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D1DA3B8F-7313-4BDA-8880-461C5F007751}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1DA3B8F-7313-4BDA-8880-461C5F007751}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1DA3B8F-7313-4BDA-8880-461C5F007751}.Release|x86.Build.0 = Release|Any CPU
+		{D1DA3B8F-7313-4BDA-8880-461C5F007751}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -773,6 +783,7 @@ Global
 		{3EAA45A9-735C-4AC7-A799-947B93EA449D} = {7019F43E-DFD7-4D1C-8C96-E75D55646DE7}
 		44FA68C9-DAD1-4C3C-90BB-3435F0D1D128 = {7019F43E-DFD7-4D1C-8C96-E75D55646DE7}
 		{08CE9972-283B-44F4-82FA-966F7DFA6B7A} = {7019F43E-DFD7-4D1C-8C96-E75D55646DE7}
+		{D1DA3B8F-7313-4BDA-8880-461C5F007751} = {7019F43E-DFD7-4D1C-8C96-E75D55646DE7}
 		{1D18D788-F7EE-4585-A23B-34DC8EC63CB8} = {49CE38B8-0460-46BF-9DFF-5B33A0F9EB5E}
 		{EC06F96A-AEEC-49D6-B03D-AB87C6EB674C} = {49CE38B8-0460-46BF-9DFF-5B33A0F9EB5E}
 	EndGlobalSection

@@ -14,10 +14,10 @@ namespace ICSharpCode.MachineSpecifications.Tests.Src
 		private Because of = () =>
 		                     	{
 									sut.Start();
-									sut.TestFinished += (source, e) => FinishedTests.Add(e.Result);;
+									sut.TestFinished += (source, e) => FinishedTests.Add(e.Result);
 		                     		sut.FileName = FILE_NAME;
 		                     		sut.Read();
-									sut.Stop();
+									sut.Join();
 		                     	};
 
 		private It should_create_test_result_for_passed_test_with_status_set_to_success = () =>

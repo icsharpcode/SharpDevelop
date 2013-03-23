@@ -18,26 +18,26 @@ namespace ICSharpCode.MachineSpecifications
 	/// </summary>
 	public class ClassFilterBuilder
 	{
-		public IList<string> BuildFilterFor(SelectedTests tests, IProjectContent @using) {
-			var projectContent = @using;
+		public IList<string> BuildFilterFor(IEnumerable<ITest> tests) {
+			//var projectContent = @using;
 			
 			var filter = new List<string>();
-			if (tests.Class != null)
-				filter.Add(tests.Class.DotNetName);
-			if (tests.NamespaceFilter != null)
-				foreach (var projectClass in projectContent.Classes)
-					if (projectClass.FullyQualifiedName.StartsWith(tests.NamespaceFilter + "."))
-						Add(projectClass, to: filter);
+//			if (tests.Class != null)
+//				filter.Add(tests.Class.DotNetName);
+//			if (tests.NamespaceFilter != null)
+//				foreach (var projectClass in projectContent.Classes)
+//					if (projectClass.FullyQualifiedName.StartsWith(tests.NamespaceFilter + "."))
+//						Add(projectClass, to: filter);
 			
 			return filter;
 		}
-
-		static void Add(IClass @class, IList<string> to)
-		{
-			var list = to;
-			to.Add(@class.DotNetName);
-			foreach (var innerClass in @class.InnerClasses)
-				Add(innerClass, to: list);
-		}
+//
+//		static void Add(IClass @class, IList<string> to)
+//		{
+//			var list = to;
+//			to.Add(@class.DotNetName);
+//			foreach (var innerClass in @class.InnerClasses)
+//				Add(innerClass, to: list);
+//		}
 	}
 }
