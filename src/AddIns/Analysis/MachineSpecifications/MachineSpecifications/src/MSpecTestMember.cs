@@ -43,6 +43,10 @@ namespace ICSharpCode.MachineSpecifications
 			this.Result = result.ResultType;
 		}
 		
+		public IMember Member {
+			get { return this.member; }
+		}
+		
 		public IMember Resolve()
 		{
 			ICompilation compilation = SD.ParserService.GetCompilation(parentProject.Project);

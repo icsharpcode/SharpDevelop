@@ -83,12 +83,12 @@ namespace ICSharpCode.MachineSpecifications
 			return member is IField && HasItReturnType(member as IField);
 		}
 		
-		public IEnumerable<ITest> GetTestMembersFor(ITypeDefinition typeDefinition)
+		public IEnumerable<MSpecTestMember> GetTestMembersFor(ITypeDefinition typeDefinition)
 		{
 			return GetTestMembers(typeDefinition, typeDefinition.Fields);
 		}
 
-		IEnumerable<ITest> GetTestMembers(ITypeDefinition testClass, IEnumerable<IField> fields)
+		IEnumerable<MSpecTestMember> GetTestMembers(ITypeDefinition testClass, IEnumerable<IField> fields)
 		{
 			List<MSpecTestMember> result = fields.Where(HasItReturnType).Select(field => new MSpecTestMember(this, field)).ToList();
 			foreach (IField field in fields) {
