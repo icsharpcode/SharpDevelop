@@ -112,7 +112,7 @@ namespace ICSharpCode.MachineSpecifications
 			if (TestFinished != null) {
 				foreach (TestResult result in testResults) {
 					if (!reportedResults.Contains(result.Name)) {
-						TestFinished(this, new TestFinishedEventArgs(result));
+						TestFinished(this, new TestFinishedEventArgs(new NUnitTestResult(result)));
 						reportedResults.Add(result.Name);
 					}
 				}
