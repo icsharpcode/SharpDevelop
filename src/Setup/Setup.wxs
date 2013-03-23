@@ -469,7 +469,6 @@
 				<ComponentRef Id="CSharpTextTemplateFileTemplate"/>
 				<ComponentRef Id="VBTextTemplateFileTemplate"/>
 			
-				<!--
 				<ComponentRef Id="MachineSpecificationsAddIn"/>
 				<ComponentRef Id="MachineSpecificationsCommandLineDll"/>
 				<ComponentRef Id="MachineSpecificationsDll"/>
@@ -481,7 +480,6 @@
 				<ComponentRef Id="Mspec_x86_clr4Exe"/>
 				<ComponentRef Id="Mspec_x86Exe"/>
 				<ComponentRef Id="MspecExe"/>
-				-->
 				
 				<ComponentRef Id="AspNetMvcAddin"/>
 				<ComponentRef Id="AspNetMvcDll"/>

@@ -791,7 +791,7 @@
 									<Component Guid="C4A33C3E-91B6-4984-86B1-07C5C49C180D" Id="SourceAnalysisDll" DiskId="1">
 										<File Source="..\..\AddIns\Analysis\SourceAnalysis\SourceAnalysis.dll" Name="SourceAnalysis.dll" Id="SourceAnalysis.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="SourceAnalysis.dll" AssemblyManifest="SourceAnalysis.dll" />
 									</Component>
-								</Directory><!--
+								</Directory>
 								<Directory Id="MachineSpecifications" Name="MachineSpecifications">
 									<Component Id="MachineSpecificationsAddIn" Guid="03FD4FCC-670F-4298-8CEB-C957AD1BC7A8" DiskId="1">
 										<File Id="MachineSpecifications.addin" Name="MachineSpecifications.addin" Source="..\..\AddIns\Analysis\MachineSpecifications\MachineSpecifications.addin" KeyPath="yes" />
@@ -830,7 +830,7 @@
 											</Component>
 										</Directory>
 									</Directory>
-								</Directory>
+								</Directory><!--
 								<Directory Id="CodeQualityFolder" Name="CodeQuality">
 									<Component Guid="E821D255-269F-44BB-992E-BC98B8349B1C" Id="CodeQualityFiles" DiskId="1">
 										<File Source="..\..\AddIns\Analysis\CodeQuality\ICSharpCode.CodeQuality.dll" Id="ICSharpCode.CodeQuality.dll" Name="ICSharpCode.CodeQuality.dll" Assembly=".net" AssemblyApplication="ICSharpCode.CodeQuality.dll" AssemblyManifest="ICSharpCode.CodeQuality.dll" KeyPath="yes" />
