@@ -2,7 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Windows.Input;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Widgets;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.MachineSpecifications
@@ -11,8 +14,9 @@ namespace ICSharpCode.MachineSpecifications
 	{
 		MSpecTestProject parentProject;
 		string displayName;
+		IMember member;
 		
-		public MSpecTestMember(MSpecTestProject parentProject, string displayName)
+		MSpecTestMember(MSpecTestProject parentProject, string displayName)
 		{
 			this.parentProject = parentProject;
 			this.displayName = displayName;
@@ -21,8 +25,9 @@ namespace ICSharpCode.MachineSpecifications
 		public MSpecTestMember(
 			MSpecTestProject parentProject,
 			IMember member)
-			: this(parentProject, member.DeclaringType.Name + "." + member.Name)
+			: this(parentProject, member.Name)
 		{
+			this.member = member;
 		}
 
 		public override ITestProject ParentProject {
@@ -36,6 +41,23 @@ namespace ICSharpCode.MachineSpecifications
 		public void UpdateTestResult(TestResult result)
 		{
 			this.Result = result.ResultType;
+		}
+		
+		public IMember Resolve()
+		{
+			ICompilation compilation = SD.ParserService.GetCompilation(parentProject.Project);
+			return member.UnresolvedMember.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
+		}
+		
+		public override ICommand GoToDefinition {
+			get {
+				return new RelayCommand(
+					delegate {
+						IMember member = Resolve();
+						if (member != null)
+							NavigationService.NavigateTo(member);
+					});
+			}
 		}
 	}
 }

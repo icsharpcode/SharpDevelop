@@ -90,7 +90,7 @@ namespace ICSharpCode.MachineSpecifications
 
 		IEnumerable<ITest> GetTestMembers(ITypeDefinition testClass, IEnumerable<IField> fields)
 		{
-			List<MSpecTestMember> result = fields.Where(HasItReturnType).Select(field => new MSpecTestMember(this, field.Name)).ToList();
+			List<MSpecTestMember> result = fields.Where(HasItReturnType).Select(field => new MSpecTestMember(this, field)).ToList();
 			foreach (IField field in fields) {
 				if (HasBehavesLikeReturnType(field)) {
 					IEnumerable<IField> behaviorFields = ResolveBehaviorFieldsOf(field);
