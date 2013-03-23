@@ -90,12 +90,12 @@ namespace ICSharpCode.MachineSpecifications
 
 		IEnumerable<ITest> GetTestMembers(ITypeDefinition testClass, IEnumerable<IField> fields)
 		{
-			var result = fields.Where(HasItReturnType).Select(field => new MSpecTestMember(this, field.Name)).ToList();
-			foreach (var field in fields) {
+			List<MSpecTestMember> result = fields.Where(HasItReturnType).Select(field => new MSpecTestMember(this, field.Name)).ToList();
+			foreach (IField field in fields) {
 				if (HasBehavesLikeReturnType(field)) {
-					var behaviorFields = ResolveBehaviorFieldsOf(field);
-					var behaviorMembers = behaviorFields.Where(HasItReturnType);
-					var testMembersFromBehavior = behaviorMembers.Select(testField => 
+					IEnumerable<IField> behaviorFields = ResolveBehaviorFieldsOf(field);
+					IEnumerable<IField> behaviorMembers = behaviorFields.Where(HasItReturnType);
+					IEnumerable<BehaviorImportedTestMember> testMembersFromBehavior = behaviorMembers.Select(testField => 
 						new BehaviorImportedTestMember(this, testField));
 					result.AddRange(testMembersFromBehavior);
 				}
@@ -105,32 +105,32 @@ namespace ICSharpCode.MachineSpecifications
 		
 		IEnumerable<IField> ResolveBehaviorFieldsOf(IField field)
 		{
-			var fieldReturnType = field.ReturnType;
+			IType fieldReturnType = field.ReturnType;
 			if (fieldReturnType == null) return new List<IField>();
 			if (fieldReturnType.TypeArguments.Count != 1)
 				LoggingService.Error(string.Format("Expected behavior specification {0} to have one type argument but {1} found.", field.FullName, fieldReturnType.TypeArguments.Count));
-			var behaviorClassType = fieldReturnType.TypeArguments.FirstOrDefault();
+			IType behaviorClassType = fieldReturnType.TypeArguments.FirstOrDefault();
 
 			return behaviorClassType != null ? behaviorClassType.GetFields() : new List<IField>();
 		}
 		
-		private bool HasSpecificationMembers(ITypeDefinition typeDefinition)
+		bool HasSpecificationMembers(ITypeDefinition typeDefinition)
 		{
 			return !typeDefinition.IsAbstract
 				&& typeDefinition.Fields.Any(f => HasItReturnType(f) || HasBehavesLikeReturnType(f));
 		}
 		
-		private bool HasBehavesLikeReturnType(IField field)
+		bool HasBehavesLikeReturnType(IField field)
 		{
 			return MSpecBehavesLikeFQName.Equals(field.ReturnType.FullName);
 		}
 		
-		private bool HasItReturnType(IField field)
+		bool HasItReturnType(IField field)
 		{
 			return MSpecItFQName.Equals(field.ReturnType.FullName);
 		}
 		
-		private bool HasBehaviorAttribute(ITypeDefinition typeDefinition)
+		bool HasBehaviorAttribute(ITypeDefinition typeDefinition)
 		{
 			return typeDefinition.Attributes.Any(
 				attribute => MSpecBehaviorsAttributeFQName.Equals(attribute.AttributeType.FullName));

@@ -16,9 +16,10 @@ namespace ICSharpCode.MachineSpecifications
 		public bool IsTestProject(IProject project)
 		{
 			if (project != null) {
-				foreach (ProjectItem item in project.Items)
+				foreach (ProjectItem item in project.Items) {
 					if (IsMSpecAssemblyReference(item))
 						return true;
+				}
 			}
 			return false;
 		}
@@ -28,7 +29,7 @@ namespace ICSharpCode.MachineSpecifications
 			return new MSpecTestProject(parentSolution, project);
 		}
 		
-		private bool IsMSpecAssemblyReference(ProjectItem projectItem)
+		bool IsMSpecAssemblyReference(ProjectItem projectItem)
 		{
 			if (projectItem is ReferenceProjectItem) {
 				var refProjectItem = projectItem as ReferenceProjectItem;

@@ -72,7 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Src\ClassFilterBuilder.cs" />
+    <Compile Include="Src\ClassFilterBuilderTests.cs" />
     <Compile Include="Src\MSpecTestFrameworkTests.cs" />
     <Compile Include="Src\MSpecUnitTestMonitorTests.cs" />
   </ItemGroup>

@@ -1,11 +1,6 @@
-﻿///*
-// * Created by SharpDevelop.
-// * User: trecio
-// * Date: 2011-06-18
-// * Time: 15:12
-// * 
-// * To change this template use Tools | Options | Coding | Edit Standard Headers.
-// */
+﻿//// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+//// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+//
 //using System;
 //using System.Collections.Generic;
 //using System.Collections.ObjectModel;
@@ -32,8 +27,7 @@
 //
 //		const string MSpecAssemblyName = "Machine.Specifications";
 //
-//		Establish ctx = () =>
-//		{
+//		Establish ctx = () => {
 //			testProject = fake.an<IProject>();
 //			var mspecReference = MockRepository.GenerateStub<ReferenceProjectItem>(testProject);
 //			mspecReference.setup(x => x.ShortName).Return(MSpecAssemblyName);
@@ -45,8 +39,7 @@
 //			nonTestProject.setup(x => x.Items).Return(new ReadOnlyCollection<ProjectItem>(new[] { otherReference }));
 //		};
 //
-//		Because of = () =>
-//		{
+//		Because of = () => {
 //			resultForTestProject = sut.IsTestProject(testProject);
 //			resultForNonTestProject = sut.IsTestProject(nonTestProject);
 //		};
@@ -62,8 +55,7 @@
 //	{
 //		protected static ICompilationUnit CompilationUnit;
 //
-//		Establish ctx = () =>
-//		{
+//		Establish ctx = () => {
 //			var ProjectContent = fake.an<IProjectContent>();
 //			ProjectContent.setup(x => x.SystemTypes).Return(new SystemTypes(ProjectContent));
 //			CompilationUnit = new DefaultCompilationUnit(ProjectContent);
@@ -117,16 +109,14 @@
 //		static bool resultForClassWithBehavior;
 //		static bool resultForClassWithoutSpecifications;
 //
-//		Establish ctx = () =>
-//		{
+//		Establish ctx = () => {
 //			classWithoutSpecificationMembers = SetupClass(false, new IField[0], new IAttribute[0]);
 //			classWithSpecificationMembers = SetupClass(false, new IField[] { SetupField(MSpecItTypeName) }, new IAttribute[0]);
 //			classWithBehavior = SetupClass(false, new IField[] { SetupField(MSpecBehavesTypeName) }, new IAttribute[0]);
 //			classWithSpecificationMembersAndBehaviorAttribute = SetupClass(false, new IField[] { SetupField(MSpecItTypeName) }, new IAttribute[] { SetupBehaviorAttribute() });
 //		};
 //
-//		Because of = () =>
-//		{
+//		Because of = () => {
 //			resultForClassWithoutSpecifications = sut.IsTestClass(classWithoutSpecificationMembers);
 //			resultForClassWithSpecifications = sut.IsTestClass(classWithSpecificationMembers);
 //			resultForClassWithBehavior = sut.IsTestClass(classWithBehavior);
@@ -160,8 +150,7 @@
 //
 //		const string BehaviorClassName = "Test.Behavior";
 //
-//		Establish ctx = () =>
-//		{
+//		Establish ctx = () => {
 //			var itReturnType = SetupReturnType(MSpecItTypeName);
 //			
 //			behaviorClass = new DefaultClass(CompilationUnit, "BehaviorClass");
