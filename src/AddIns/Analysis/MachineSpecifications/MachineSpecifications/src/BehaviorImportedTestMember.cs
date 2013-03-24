@@ -10,11 +10,20 @@ namespace ICSharpCode.MachineSpecifications
 {
 	public class BehaviorImportedTestMember : MSpecTestMember
 	{
+		IMember parent;
+		
 		public BehaviorImportedTestMember(
 			MSpecTestProject parentProject,
+			IMember parent,
 			IMember behavior)
 			: base(parentProject, behavior)
 		{
+			this.parent = parent;
+		}
+		
+		public override string GetTypeName()
+		{
+			return parent.DeclaringTypeDefinition.FullName;
 		}
 	}
 }

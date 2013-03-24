@@ -96,7 +96,7 @@ namespace ICSharpCode.MachineSpecifications
 					IEnumerable<IField> behaviorFields = ResolveBehaviorFieldsOf(field);
 					IEnumerable<IField> behaviorMembers = behaviorFields.Where(HasItReturnType);
 					IEnumerable<BehaviorImportedTestMember> testMembersFromBehavior = behaviorMembers.Select(testField => 
-						new BehaviorImportedTestMember(this, testField));
+						new BehaviorImportedTestMember(this, field, testField));
 					result.AddRange(testMembersFromBehavior);
 				}
 			}

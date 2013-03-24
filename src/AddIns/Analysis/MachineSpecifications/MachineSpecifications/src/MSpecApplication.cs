@@ -67,17 +67,17 @@ namespace ICSharpCode.MachineSpecifications
 		string CreateFilterFile()
 		{
 			var classFilterBuilder = new ClassFilterBuilder();
-			//var projectContent = SD.ParserService.GetProjectContent(project);
 			IList<string> filter = classFilterBuilder.BuildFilterFor(tests);
 			
 			string path = null;
 			if (filter.Count > 0) {
 				path = Path.GetTempFileName();
 				using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
-				using (var writer = new StreamWriter(stream))
+				using (var writer = new StreamWriter(stream)) {
 					foreach (string testClassName in filter) {
 						writer.WriteLine(testClassName);
 					}
+				}
 			}
 			return path;
 		}

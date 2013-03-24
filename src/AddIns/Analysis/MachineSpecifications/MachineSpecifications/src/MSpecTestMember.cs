@@ -10,7 +10,7 @@ using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.MachineSpecifications
 {
-	public class MSpecTestMember : TestBase
+	public class MSpecTestMember : TestBase, ITestWithAssociatedType
 	{
 		MSpecTestProject parentProject;
 		string displayName;
@@ -62,6 +62,11 @@ namespace ICSharpCode.MachineSpecifications
 							NavigationService.NavigateTo(member);
 					});
 			}
+		}
+		
+		public virtual string GetTypeName()
+		{
+			return member.DeclaringTypeDefinition.FullName;
 		}
 	}
 }

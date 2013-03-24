@@ -12,7 +12,7 @@ using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.MachineSpecifications
 {
-	public class MSpecTestClass : TestBase
+	public class MSpecTestClass : TestBase, ITestWithAssociatedType
 	{
 		MSpecTestProject parentProject;
 		FullTypeName fullTypeName;
@@ -22,6 +22,11 @@ namespace ICSharpCode.MachineSpecifications
 			this.parentProject = parentProject;
 			this.fullTypeName = fullTypeName;
 			BindResultToCompositeResultOfNestedTests();
+		}
+		
+		public string GetTypeName()
+		{
+			return fullTypeName.ReflectionName;
 		}
 		
 		public override ITestProject ParentProject {
