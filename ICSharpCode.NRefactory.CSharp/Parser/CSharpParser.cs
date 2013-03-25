@@ -361,8 +361,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				// optional comma
 				if (loc != null && pos < loc.Count - 1 && loc.Count == locCount + 1)
 					result.AddChild (new CSharpTokenNode (Convert (loc [pos++]), Roles.Comma), Roles.Comma);
-				foreach (var l in loc)
-					Console.WriteLine(	Convert (l));
 				if (loc != null && pos < loc.Count)
 					result.AddChild (new CSharpTokenNode (Convert (loc [pos++]), Roles.RBracket), Roles.RBracket);
 				return result;

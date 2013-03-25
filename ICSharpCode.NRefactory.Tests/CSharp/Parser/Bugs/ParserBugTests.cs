@@ -36,9 +36,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Bugs
 		/// <summary>
 		/// Bug 4252 - override bug in mcs ast
 		/// </summary>
-		[Ignore("Still open 03/2013")]
 		[Test]
-		public void TestBug4242()
+		public void TestBug4252()
 		{
 			string code = @"
 class Foo

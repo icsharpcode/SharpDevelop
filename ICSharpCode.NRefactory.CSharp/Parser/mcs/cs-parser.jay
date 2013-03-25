@@ -2638,6 +2638,7 @@ incomplete_member
 		FullNamedExpression type = (FullNamedExpression) $3;
 		current_field = new Field (current_type, type, (Modifiers) $2, MemberName.Null, (Attributes) $1);
 		current_type.AddField (current_field);
+		lbag.AddMember (current_field, GetModifierLocations ());
 		$$ = current_field;
 	  }
 	;

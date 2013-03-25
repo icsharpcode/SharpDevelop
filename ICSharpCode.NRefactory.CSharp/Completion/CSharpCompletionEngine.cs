@@ -282,7 +282,19 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (p != null) {
 				var contextList = new CompletionDataWrapper(this);
 				var initializerResult = ResolveExpression(p);
-				if (initializerResult != null && initializerResult.Item1.Type.Kind != TypeKind.Unknown) {
+				IType initializerType = null;
+
+				if (initializerResult.Item1 is DynamicInvocationResolveResult) {
+					var dr = (DynamicInvocationResolveResult)initializerResult.Item1;
+					var constructor = (dr.Target as MethodGroupResolveResult).Methods.FirstOrDefault();
+					if (constructor != null)
+						initializerType = constructor.DeclaringType;
+				} else {
+					initializerType = initializerResult != null ? initializerResult.Item1.Type : null;
+				}
+
+
+				if (initializerType != null && initializerType.Kind != TypeKind.Unknown) {
 					// check 3 cases:
 					// 1) New initalizer { xpr
 					// 2) Object initializer { prop = val1, field = val2, xpr
@@ -302,11 +314,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return contextList.Result;
 					}
 					var lookup = new MemberLookup(ctx.CurrentTypeDefinition, Compilation.MainAssembly);
-					var initializerType = initializerResult.Item1.Type;
 					bool isProtectedAllowed = ctx.CurrentTypeDefinition != null && initializerType.GetDefinition() != null ? 
 						ctx.CurrentTypeDefinition.IsDerivedFrom(initializerType.GetDefinition()) : 
 							false;
-
 					foreach (var m in initializerType.GetMembers (m => m.EntityType == EntityType.Field)) {
 						var f = m as IField;
 						if (f != null && (f.IsReadOnly || f.IsConst))
