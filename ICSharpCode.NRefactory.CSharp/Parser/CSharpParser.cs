@@ -327,6 +327,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			AttributeSection ConvertAttributeSection (IEnumerable<Mono.CSharp.Attribute> optAttributes)
 			{
+
 				if (optAttributes == null)
 					return null;
 				AttributeSection result = new AttributeSection ();
@@ -334,7 +335,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				int pos = 0;
 				if (loc != null)
 					result.AddChild (new CSharpTokenNode (Convert (loc [pos++]), Roles.LBracket), Roles.LBracket);
-				
 				var first = optAttributes.FirstOrDefault ();
 				string target = first != null ? first.ExplicitTarget : null;
 				
@@ -351,6 +351,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				int attributeCount = 0;
 				foreach (var attr in GetAttributes (optAttributes)) {
 					result.AddChild (attr, Roles.Attribute);
+					if (loc != null && pos + 1 < loc.Count)
+						result.AddChild (new CSharpTokenNode (Convert (loc [pos++]), Roles.Comma), Roles.Comma);
+
 					attributeCount++;
 				}
 				// Left and right bracket + commas between the attributes
@@ -358,6 +361,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				// optional comma
 				if (loc != null && pos < loc.Count - 1 && loc.Count == locCount + 1)
 					result.AddChild (new CSharpTokenNode (Convert (loc [pos++]), Roles.Comma), Roles.Comma);
+				foreach (var l in loc)
+					Console.WriteLine(	Convert (l));
 				if (loc != null && pos < loc.Count)
 					result.AddChild (new CSharpTokenNode (Convert (loc [pos++]), Roles.RBracket), Roles.RBracket);
 				return result;
@@ -508,7 +513,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				var newType = new TypeDeclaration ();
 				newType.ClassType = ClassType.Class;
 				AddAttributeSection(newType, c);
-				
 				var location = LocationsBag.GetMemberLocation(c);
 				AddModifiers(newType, location);
 				int curLoc = 0;

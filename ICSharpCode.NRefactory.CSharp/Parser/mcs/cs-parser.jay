@@ -148,6 +148,7 @@ namespace Mono.CSharp
 		List<Location> attributeCommas = new List<Location> ();
 		List<Location> attributeArgumentCommas = new List<Location> ();
 		List<Location> parameterListCommas = new List<Location> ();
+		Stack<Location> location_stack;
 %}
 
 %token EOF
@@ -672,7 +673,7 @@ attribute_sections
 		if (locationListStack.Count > 0)
 			lbag.AddLocation (sect, locationListStack.Pop ());
 		if (attributeCommas.Count > 0) {
-			lbag.AppendTo (sect, attributeCommas);
+			lbag.AddLocation (sect, attributeCommas);
 			attributeCommas.Clear ();
 		}
 	  }
@@ -694,6 +695,7 @@ attribute_sections
 attribute_section
 	: OPEN_BRACKET
 	  {
+	  	PushLocation (GetLocation ($1));
 		lexer.parsing_attribute_section = true;
 		savedOpenLocation = GetLocation ($1);
 	  }
@@ -720,21 +722,25 @@ attribute_section_cont
 		else
 			$$ = $4;
 
+		lbag.InsertLocation ($$, 0, PopLocation ());
+		if ($5 != null) {
+			lbag.AddLocation ($$, GetLocation ($2), GetLocation ($5), GetLocation ($6));
+		} else {
+			lbag.AddLocation ($$, GetLocation ($2), GetLocation ($6));
+		}
+
 		current_attr_target = null;
 		lexer.parsing_attribute_section = false;
-		if ($5 != null) {
-			locationListStack.Push (new List<Location>(new [] { savedOpenLocation, savedCloseLocation, GetLocation ($2), GetLocation ($5), GetLocation ($6) }));
-		} else {
-			locationListStack.Push (new List<Location>(new [] { savedOpenLocation, savedCloseLocation, GetLocation ($2), GetLocation ($6) }));
-		}
  	  }
 	| attribute_list opt_comma CLOSE_BRACKET
 	  {
 		$$ = $1;
+
+		lbag.InsertLocation ($$, 0, PopLocation ());
 		if ($2 != null) {
-			locationListStack.Push (new List<Location>(new [] { savedOpenLocation, GetLocation ($2), GetLocation ($3) }));
+			lbag.AddLocation ($$, GetLocation($2), GetLocation ($3));
 		} else {
-			locationListStack.Push (new List<Location>(new [] { savedOpenLocation, GetLocation ($3) }));
+			lbag.AddLocation ($$, GetLocation($3));
 		}
 	  }
 	| IDENTIFIER error
@@ -774,8 +780,10 @@ attribute_list
 	| attribute_list COMMA attribute
 	  {
 		var attrs = (List<Attribute>) $1;
-		attrs.Add ((Attribute) $3);
-		attributeCommas.Add (GetLocation ($2));
+		if (attrs != null) {
+			attrs.Add ((Attribute) $3);
+	  		lbag.AddLocation (attrs, GetLocation ($2));
+	  	}
 
 		$$ = attrs;
 	  }
@@ -947,13 +955,14 @@ class_member_declaration
 	| destructor_declaration
 	| type_declaration
 	| attributes_without_members
+	| incomplete_member
 	| error
 	  {
 		report.Error (1519, lexer.Location, "Unexpected symbol `{0}' in class, struct, or interface member declaration",
 			GetSymbolName (yyToken));
 		$$ = null;
 		lexer.parsing_generic_declaration = false;
-	  }
+	  }	
 	;
 
 struct_declaration
@@ -2075,7 +2084,7 @@ operator_declaration
 
 			lbag.AddMember (op, GetModifierLocations (), lbag.GetLocations (decl));
 			if ($5 == null) { // Semicolon
-				lbag.AppendTo (op, savedLocation); 
+				lbag.AddLocation (op, savedLocation); 
 			}
 		}
 		
@@ -2615,6 +2624,23 @@ attributes_without_members
 		lexer.putback ('}');
 	  }
 	;
+
+// For full ast try to recover incomplete ambiguous member
+// declaration in form on class X { public int }
+incomplete_member
+	: opt_attributes opt_modifiers member_type CLOSE_BRACE
+	  {
+		report.Error (1519, lexer.Location, "Unexpected symbol `}' in class, struct, or interface member declaration");
+ 
+		lexer.putback ('}');
+
+	  	lexer.parsing_generic_declaration = false;
+		FullNamedExpression type = (FullNamedExpression) $3;
+		current_field = new Field (current_type, type, (Modifiers) $2, MemberName.Null, (Attributes) $1);
+		current_type.AddField (current_field);
+		$$ = current_field;
+	  }
+	;
 	  
 enum_declaration
 	: opt_attributes
@@ -3103,7 +3129,7 @@ type_list
 	  {
 		var types = (List<FullNamedExpression>) $1;
 		types.Add ((FullNamedExpression) $3);
-		lbag.AppendTo (types, GetLocation ($2));
+		lbag.AddLocation (types, GetLocation ($2));
 		$$ = types;
 	  }
 	;
@@ -3339,7 +3365,7 @@ member_initializer_list
 	  {
 	  	var a = (List<Expression>)$1;
 	  	a.Add ((Expression) $3);
-		lbag.AppendTo (a, GetLocation ($2));
+		lbag.AddLocation (a, GetLocation ($2));
 	  	$$ = a;
 	  }
 	| member_initializer_list error {
@@ -3413,7 +3439,7 @@ argument_list
 			Error_NamedArgumentExpected ((NamedArgument) list [list.Count - 1]);
 		
 		list.Add ((Argument) $3);
-		lbag.AppendTo (list, GetLocation ($2));
+		lbag.AddLocation (list, GetLocation ($2));
 		$$ = list;
 	  }
 	| argument_list COMMA named_argument
@@ -3428,7 +3454,7 @@ argument_list
 		}
 		
 		list.Add (a);
-		lbag.AppendTo (list, GetLocation ($2));
+		lbag.AddLocation (list, GetLocation ($2));
 		$$ = list;
 	  }
 	| argument_list COMMA error
@@ -3504,22 +3530,18 @@ element_access
 	;
 
 expression_list
-	: expression
+	: expression_or_error
 	  {
 		var list = new List<Expression> (4);
 		list.Add ((Expression) $1);
 		$$ = list;
 	  }
-	| expression_list COMMA expression
+	| expression_list COMMA expression_or_error
 	  {
 		var list = (List<Expression>) $1;
 		list.Add ((Expression) $3);
-		lbag.AppendTo (list, GetLocation ($2));
+		lbag.AddLocation (list, GetLocation ($2));
 		$$ = list;
-	  }
-	| expression_list error {
-	  	Error_SyntaxError (yyToken);
-		$$ = $1;
 	  }
 	;
 	
@@ -3537,7 +3559,7 @@ expression_list_arguments
 			Error_NamedArgumentExpected ((NamedArgument) args [args.Count - 1]);
 	  
 		args.Add ((Argument) $3);
-		lbag.AppendTo (args, GetLocation ($2));
+		lbag.AddLocation (args, GetLocation ($2));
 		$$ = args;	  
 	  }
 	;
@@ -3690,7 +3712,7 @@ anonymous_type_parameters
 	  {
 	  	var a = (List<AnonymousTypeParameter>) $1;
 	  	a.Add ((AnonymousTypeParameter) $3);
-	  	lbag.AppendTo (a, GetLocation ($2));
+	  	lbag.AddLocation (a, GetLocation ($2));
 
 	  	$$ = a;
 	  }
@@ -3803,7 +3825,7 @@ variable_initializer_list
 	  {
 		var list = (List<Expression>) $1;
 		list.Add ((Expression) $3);
-		lbag.AppendTo (list, GetLocation ($2));
+		lbag.AddLocation (list, GetLocation ($2));
 		$$ = list;
 	  }
 	;
@@ -4453,6 +4475,14 @@ conditional_expression
 		$$ = new Conditional (new BooleanExpression ((Expression) $1), (Expression) $3, null, GetLocation ($2));
 		lbag.AddLocation ($$, GetLocation ($4));
 	  }
+	| null_coalescing_expression INTERR expression COLON CLOSE_BRACE
+	  {
+		Error_SyntaxError (Token.CLOSE_BRACE);
+
+		$$ = new Conditional (new BooleanExpression ((Expression) $1), (Expression) $3, null, GetLocation ($2));
+		lbag.AddLocation ($$, GetLocation ($4));
+		lexer.putback ('}');
+	  }
 	;
 
 assignment_expression
@@ -4980,7 +5010,7 @@ type_parameter_constraints
 		}
 
 		constraints.Add ((FullNamedExpression) $3);
-		lbag.AppendTo (constraints, GetLocation ($2));
+		lbag.AddLocation (constraints, GetLocation ($2));
 		$$ = constraints;
 	  }
 	;
@@ -5353,7 +5383,10 @@ block_variable_declaration
 	  {
 		$$ = current_variable;
 		current_variable = null;
-		lbag.AppendTo ($$, GetLocation ($6));
+		if ($4 != null)
+			lbag.AddLocation ($$, PopLocation (), GetLocation ($6));
+		else
+			lbag.AddLocation ($$, GetLocation ($6));
 	  }
 	| CONST variable_type identifier_inside_body
 	  {
@@ -5389,21 +5422,8 @@ opt_local_variable_initializer
 	| ASSIGN block_variable_initializer
 	  {
 		current_variable.Initializer = (Expression) $2;
-		lbag.AppendTo (current_variable, GetLocation ($1));
-	  }
-	| ASSIGN error
-	  {
-	  	if (yyToken == Token.OPEN_BRACKET_EXPR) {
-			report.Error (650, lexer.Location,
-				"Syntax error, bad array declarator. To declare a managed array the rank specifier precedes the variable's identifier. To declare a fixed size buffer field, use the fixed keyword before the field type");
-			current_variable.Initializer = ErrorExpression.Create (650, lexer.Location,
-					"Syntax error, bad array declarator. To declare a managed array the rank specifier precedes the variable's identifier. To declare a fixed size buffer field, use the fixed keyword before the field type");
-		} else {
-			Error_SyntaxError (yyToken);
-			current_variable.Initializer = ErrorExpression.Create (0, lexer.Location,
-					"Syntax error");
-		}
-		lbag.AppendTo (current_variable, GetLocation ($1));
+		PushLocation (GetLocation ($1));
+		$$ = current_variable;
 	  }
 	| error
 	  {
@@ -5733,7 +5753,7 @@ for_statement_cont
 	  {
 		For f =  (For) $0;
 		f.Initializer = (Statement) $1;
-		lbag.AppendTo (f, GetLocation ($2));
+		lbag.AddLocation (f, GetLocation ($2));
 		$$ = f;
 	  }
 	  for_statement_condition
@@ -5744,7 +5764,7 @@ for_statement_cont
 		report.Error (1525, GetLocation ($2), "Unexpected symbol ')', expected ';'");
 		For f =  (For) $0;
 		f.Initializer = (Statement) $1;
-		lbag.AppendTo (f, GetLocation ($2));
+		lbag.AddLocation (f, GetLocation ($2));
 		$$ = end_block (GetLocation ($2));
 	}
 	;
@@ -5754,7 +5774,7 @@ for_statement_condition
 	  {
 		For f =  (For) $0;
 		f.Condition = (BooleanExpression) $1;
-		lbag.AppendTo (f, GetLocation ($2));
+		lbag.AddLocation (f, GetLocation ($2));
 		$$ = f;
 	  }
 	  for_statement_end
@@ -5766,7 +5786,7 @@ for_statement_condition
 		report.Error (1525, GetLocation ($2), "Unexpected symbol ')', expected ';'");
 		For f =  (For) $0;
 		f.Condition = (BooleanExpression) $1;
-		lbag.AppendTo (f, GetLocation ($2));
+		lbag.AddLocation (f, GetLocation ($2));
 		$$ = end_block (GetLocation ($2));
 	}
 	;
@@ -5782,7 +5802,7 @@ for_statement_end
 			Warning_EmptyStatement (GetLocation ($3));
 	  
 		f.Statement = (Statement) $3;
-		lbag.AppendTo (f, GetLocation ($2));
+		lbag.AddLocation (f, GetLocation ($2));
 
 		$$ = end_block (GetLocation ($2));
 	  }
@@ -5809,6 +5829,9 @@ for_initializer
 	  opt_local_variable_initializer opt_variable_declarators
 	  {
 		$$ = current_variable;
+		if ($4 != null)
+			lbag.AddLocation (current_variable, PopLocation ());
+
 		current_variable = null;
 	  }
 	| statement_expression_list
@@ -5838,7 +5861,7 @@ statement_expression_list
 			lbag.AddStatement (sl, GetLocation ($2));
 	  	} else {
 	  		sl.Add ((Statement) $3);
-	  		lbag.AppendTo (sl, GetLocation ($2));
+	  		lbag.AddLocation (sl, GetLocation ($2));
 	  		
 	  	}
 	  		
@@ -6295,7 +6318,7 @@ using_or_fixed_variable_initializer
 	| ASSIGN variable_initializer
 	  {
 		current_variable.Initializer = (Expression) $2;
-		lbag.AppendTo (current_variable, GetLocation ($1));
+		lbag.AddLocation (current_variable, GetLocation ($1));
 		$$ = current_variable;
 	  }
 	;
@@ -7136,6 +7159,23 @@ List<Tuple<Modifiers, Location>> GetModifierLocations ()
 	var result = mod_locations;
 	mod_locations = null;
 	return result;
+}
+
+[System.Diagnostics.Conditional ("FULL_AST")]
+void PushLocation (Location loc)
+{
+	if (location_stack == null)
+		location_stack = new Stack<Location> ();
+
+	location_stack.Push (loc);
+}
+
+Location PopLocation ()
+{
+	if (location_stack == null)
+		return Location.Null;
+
+	return location_stack.Pop ();
 }
 
 string CheckAttributeTarget (string a, Location l)
