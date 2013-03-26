@@ -28,7 +28,8 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public enum IndentType {
+	public enum IndentType
+	{
 		Block,
 		DoubleBlock,
 		Continuation,
@@ -38,9 +39,8 @@ namespace ICSharpCode.NRefactory.CSharp
 
 	public class Indent
 	{
-		readonly Stack<IndentType> indentStack = new Stack<IndentType> ();
+		readonly Stack<IndentType> indentStack = new Stack<IndentType>();
 		readonly TextEditorOptions options;
-		
 		int curIndent;
 
 		public int CurIndent {
@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public Indent Clone()
 		{
-			var result = new Indent(options, new Stack<IndentType> (indentStack), curIndent);
+			var result = new Indent(options, new Stack<IndentType>(indentStack), curIndent);
 			result.indentString = indentString;
 			return result;
 		}
@@ -82,6 +82,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			Update();
 		}
 
+		public void Push(Indent indent)
+		{
+			foreach (var i in indent.indentStack)
+				Push(i);
+		}
+
 		public void Pop()
 		{
 			curIndent -= GetIndent(indentStack.Pop());
@@ -94,7 +100,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		public IndentType Peek ()
+		public IndentType Peek()
 		{
 			return indentStack.Peek();
 		}
@@ -123,7 +129,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				indentString = new string(' ', curIndent);
 				return;
 			}
-			indentString = new string('\t', curIndent / options.TabSize) + new string(' ', curIndent % options.TabSize) + new string (' ', ExtraSpaces);
+			indentString = new string('\t', curIndent / options.TabSize) + new string(' ', curIndent % options.TabSize) + new string(' ', ExtraSpaces);
 		}
 
 		int extraSpaces;
@@ -134,13 +140,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			set {
 				if (value < 0)
-					throw new ArgumentOutOfRangeException ("ExtraSpaces >= 0 but was " + value);
+					throw new ArgumentOutOfRangeException("ExtraSpaces >= 0 but was " + value);
 				extraSpaces = value;
 				Update();
 			}
 		}
 
 		string indentString;
+
 		public string IndentString {
 			get {
 				return indentString;
