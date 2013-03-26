@@ -155,7 +155,7 @@ namespace Debugger
 			loader.LazyLoad = true;
 			loader.OnEntityLoaded = moduleMetadataInfo.AddMember;
 			
-			var asm = loader.LoadAssembly(cecilModule.Assembly);
+			var asm = loader.LoadModule(cecilModule);
 			weakTable.Add(asm, moduleMetadataInfo);
 			return asm;
 		}
