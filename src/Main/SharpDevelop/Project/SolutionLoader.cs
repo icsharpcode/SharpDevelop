@@ -241,8 +241,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			string location = match.Groups["Location"].Value;
 			FileName projectFileName = FileName.Create(Path.Combine(parentSolution.Directory, location));
 			var loadInformation = new ProjectLoadInformation(parentSolution, projectFileName, title);
-			loadInformation.TypeGuid = Guid.Parse(match.Groups["TypeGuid"].Value);
-			loadInformation.IdGuid = Guid.Parse(match.Groups["IdGuid"].Value);
+			loadInformation.TypeGuid = ParseGuidDefaultEmpty(match.Groups["TypeGuid"].Value);
+			loadInformation.IdGuid = ParseGuidDefaultEmpty(match.Groups["IdGuid"].Value);
 			SolutionSection section;
 			while ((section = ReadSection(isGlobal: false)) != null) {
 				loadInformation.ProjectSections.Add(section);
@@ -251,6 +251,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				throw Error();
 			NextLine();
 			return loadInformation;
+		}
+		
+		static Guid ParseGuidDefaultEmpty(string value)
+		{
+			Guid guid;
+			if (Guid.TryParse(value, out guid))
+				return guid;
+			else
+				return Guid.Empty;
 		}
 		#endregion
 		
