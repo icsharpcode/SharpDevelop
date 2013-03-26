@@ -81,15 +81,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			SD.MainThread.VerifyAccess();
 			
 			// breakpoints and files
-			Properties properties = new Properties();
-			properties.SetList("bookmarks", SD.BookmarkManager.GetProjectBookmarks(Project));
+			preferences.SetList("bookmarks", SD.BookmarkManager.GetProjectBookmarks(Project));
 			List<string> files = new List<string>();
 			foreach (var fileName in FileService.GetOpenFiles()) {
 				if (fileName != null && Project.IsFileInProject(fileName)) {
 					files.Add(fileName);
 				}
 			}
-			properties.SetList("openFiles", files);
+			preferences.SetList("openFiles", files);
 		}
 		
 		public override void ProjectLoaded()
@@ -101,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				SD.BookmarkManager.AddMark(mark);
 			}
 			List<string> filesToOpen = new List<string>();
-			foreach (string fileName in memento.GetList<string>("files")) {
+			foreach (string fileName in memento.GetList<string>("openFiles")) {
 				if (File.Exists(fileName)) {
 					filesToOpen.Add(fileName);
 				}
