@@ -140,14 +140,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						return false;
 					if (collectedStatements.Contains (statement))
 						return true;
-					var prevEnd = statement.GetPrevNode ().EndLocation;
+					var prevEnd = statement.GetPrevNode (n => !(n is NewLineNode)).EndLocation;
 
 					// group multiple continuous statements into one issue
 					var start = statement.StartLocation;
 					collectedStatements.Add (statement);
 					visitor.unreachableNodes.Add (statement);
-					while (statement.NextSibling is Statement) {
-						statement = (Statement)statement.NextSibling;
+					while (statement.GetNextSibling (s => s is Statement) != null) {
+						statement = (Statement)statement.GetNextSibling (s => s is Statement);
 						collectedStatements.Add (statement);
 						visitor.unreachableNodes.Add (statement);
 					}

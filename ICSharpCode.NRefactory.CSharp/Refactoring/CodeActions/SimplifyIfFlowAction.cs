@@ -89,7 +89,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var parentMethod = (MethodDeclaration)result.Parent.Parent;
 			if (parentMethod.ReturnType.ToString() != "void")
 				return null;
-			var nextSibling = result.NextSibling.NextSibling;
+			var nextSibling = result.GetNextSibling(n => n is Statement);
+			if (nextSibling == null)
+				return result;
+			nextSibling = nextSibling.GetNextSibling (n => n is Statement);
 			if (nextSibling != null)
 				return null;
 			return result;

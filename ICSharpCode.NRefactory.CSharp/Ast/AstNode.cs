@@ -619,6 +619,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			return null;
 		}
 
+		/// <summary>
+		/// Gets the next node which fullfills a given predicate
+		/// </summary>
+		/// <returns>The next node.</returns>
+		/// <param name="pred">The predicate.</param>
+		public AstNode GetNextNode (Func<AstNode, bool> pred)
+		{
+			var next = GetNextNode();
+			while (next != null && !pred (next))
+				next = next.GetNextNode();
+			return next;
+		}
+
 		public AstNode GetPrevNode ()
 		{
 			if (PrevSibling != null)
@@ -626,6 +639,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (Parent != null)
 				return Parent.GetPrevNode ();
 			return null;
+		}
+
+		/// <summary>
+		/// Gets the previous node which fullfills a given predicate
+		/// </summary>
+		/// <returns>The next node.</returns>
+		/// <param name="pred">The predicate.</param>
+		public AstNode GetPrevNode (Func<AstNode, bool> pred)
+		{
+			var prev = GetPrevNode();
+			while (prev != null && !pred (prev))
+				prev = prev.GetPrevNode();
+			return prev;
 		}
 		// filters all non c# nodes (comments, white spaces or pre processor directives)
 		public AstNode GetCSharpNodeBefore (AstNode node)
@@ -637,6 +663,32 @@ namespace ICSharpCode.NRefactory.CSharp
 				n = n.GetPrevNode ();
 			}
 			return null;
+		}
+
+		/// <summary>
+		/// Gets the next sibling which fullfills a given predicate
+		/// </summary>
+		/// <returns>The next node.</returns>
+		/// <param name="pred">The predicate.</param>
+		public AstNode GetNextSibling (Func<AstNode, bool> pred)
+		{
+			var next = NextSibling;
+			while (next != null && !pred (next))
+				next = next.NextSibling;
+			return next;
+		}
+
+		/// <summary>
+		/// Gets the next sibling which fullfills a given predicate
+		/// </summary>
+		/// <returns>The next node.</returns>
+		/// <param name="pred">The predicate.</param>
+		public AstNode GetPrevSibling (Func<AstNode, bool> pred)
+		{
+			var prev = PrevSibling;
+			while (prev != null && !pred (prev))
+				prev = prev.PrevSibling;
+			return prev;
 		}
 		
 		#region GetNodeAt

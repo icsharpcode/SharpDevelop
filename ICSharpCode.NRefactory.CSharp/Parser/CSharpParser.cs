@@ -3607,6 +3607,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			#endregion
 		}
+
+		/// <summary>
+		/// If set the parser generates nodes for whitespace nodes (NOTE: Atm only new line nodes are supported).
+		/// </summary>
+		public bool EnableExperimentalWhitespaceInsertion {
+			get;
+			set;
+		}
 		
 		public CSharpParser ()
 		{
@@ -3636,7 +3644,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return GetOuterLeft (next);
 		}
 		
-		static void InsertComments (CompilerCompilationUnit top, ConversionVisitor conversionVisitor)
+		void InsertComments (CompilerCompilationUnit top, ConversionVisitor conversionVisitor)
 		{
 			var leaf = GetOuterLeft (conversionVisitor.Unit);
 			for (int i = 0; i < top.SpecialsBag.Specials.Count; i++) {
@@ -3667,14 +3675,14 @@ namespace ICSharpCode.NRefactory.CSharp
 							Take = directive.Take
 						};
 					} else {
-	/*					var newLine = special as SpecialsBag.NewLineToken;
-						if (newLine != null) {
+						var newLine = special as SpecialsBag.NewLineToken;
+						if (newLine != null && EnableExperimentalWhitespaceInsertion) {
 							if (newLine.NewLine == SpecialsBag.NewLine.Unix) {
-								newLeaf = new UnixNewLine (new TextLocation (newLine.Line, newLine.Col));
+								newLeaf = new UnixNewLine (new TextLocation (newLine.Line, newLine.Col + 1));
 							} else {
-								newLeaf = new WindowsNewLine (new TextLocation (newLine.Line, newLine.Col));
+								newLeaf = new WindowsNewLine (new TextLocation (newLine.Line, newLine.Col + 1));
 							}
-						}*/
+						}
 					}
 				}
 				if (newLeaf == null)

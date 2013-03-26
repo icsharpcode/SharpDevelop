@@ -91,7 +91,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		private static IEnumerable<AstNode> EnumerateUsingBlockNodes(AstNode firstNode)
 		{
-			for (var node = firstNode; IsUsingDeclaration(node); node = node.NextSibling)
+			for (var node = firstNode; IsUsingDeclaration(node); node = node.GetNextSibling (n => n.Role != Roles.NewLine))
 				yield return node;
 		}
 	}

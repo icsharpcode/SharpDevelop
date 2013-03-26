@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 				Console.WriteLine (error.Message);
 			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
 			
-			AstNode node = syntaxTree.Children.Single();
+			AstNode node = syntaxTree.Children.Single(c => c.Role != Roles.NewLine);
 			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(node.GetType()), String.Format("Parsed node was {0} instead of {1} ({2})", node.GetType(), type, node));
 			return (T)node;

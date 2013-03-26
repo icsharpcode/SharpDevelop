@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					AddIssue (ifElseStatement.ElseToken, ctx.TranslateString ("Remove redundant 'else'"),
 						script =>
 						{
-							int start = script.GetCurrentOffset(ifElseStatement.ElseToken.GetPrevNode ().EndLocation);
+							int start = script.GetCurrentOffset(ifElseStatement.ElseToken.GetPrevNode (n => !(n is NewLineNode)).EndLocation);
 							int end;
 
 							var blockStatement = ifElseStatement.FalseStatement as BlockStatement;

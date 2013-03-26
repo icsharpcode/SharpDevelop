@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				insertionPoint = usingParent.GetChildrenByRole(SyntaxTree.MemberRole).SkipWhile(CanAppearBeforeUsings).FirstOrDefault();
 			} else {
 				insertionPoint = blockStart;
-				while (IsUsingDeclaration(insertionPoint) && newUsingInfo.CompareTo(new UsingInfo(insertionPoint, context)) > 0)
+				while (IsUsingFollowing (ref insertionPoint) && newUsingInfo.CompareTo(new UsingInfo(insertionPoint, context)) > 0)
 					insertionPoint = insertionPoint.NextSibling;
 				if (!IsUsingDeclaration(insertionPoint)) {
 					// Insert after last using instead of before next node
@@ -87,6 +87,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					script.InsertBefore(insertionPoint, newUsing);
 			}
 		}
+
+		static bool IsUsingFollowing(ref AstNode insertionPoint)
+		{
+			var node = insertionPoint;
+			while (node != null && node.Role == Roles.NewLine)
+				node = node.NextSibling;
+			if (IsUsingDeclaration(node)) {
+				insertionPoint = node;
+				return true;
+			}
+			return false;
+		}
 		
 		static bool IsUsingDeclaration(AstNode node)
 		{
@@ -98,6 +110,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (node is ExternAliasDeclaration)
 				return true;
 			if (node is PreProcessorDirective)
+				return true;
+			if (node is NewLineNode)
 				return true;
 			Comment c = node as Comment;
 			if (c != null)

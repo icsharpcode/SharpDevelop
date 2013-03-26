@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var variableToMoveOutside = new List<VariableDeclarationStatement> ();
 
 					if (lastReference != node) {
-						var statements = CollectStatements (variableDecl.NextSibling as Statement, 
+						var statements = CollectStatements (variableDecl.GetNextSibling (n => n is Statement) as Statement, 
 															lastReference.EndLocation).ToArray();
 
 						// collect statements to put inside 'using' and variable declaration to move outside 'using'
@@ -134,7 +134,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				yield return statement;
 				if (statement.Contains (end))
 					break;
-				statement = statement.NextSibling as Statement;
+				statement = statement.GetNextSibling (n => n is Statement) as Statement;
 			}
 		}
 

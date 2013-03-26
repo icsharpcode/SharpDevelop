@@ -88,7 +88,7 @@ class A
 	int i = 2;
 	while (true) {
 			int j = 3;
-		}
+	}
 ");
 		}
 		
@@ -116,7 +116,7 @@ class A
 	}
 ", @"
 		int j;
-		while (true) {
+	while (true) {
 		int i = 2;
 		j = i;
 	}

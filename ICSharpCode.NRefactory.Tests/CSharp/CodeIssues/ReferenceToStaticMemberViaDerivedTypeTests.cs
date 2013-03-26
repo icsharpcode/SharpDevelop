@@ -160,7 +160,7 @@ class D
 {
 	void Main()
 	{
-		A.C.F();
+		A.C.F ();
 	}
 }";
 			TestRefactoringContext context;			

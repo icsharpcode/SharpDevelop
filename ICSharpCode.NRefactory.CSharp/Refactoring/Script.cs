@@ -302,7 +302,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var visitor = new CSharpOutputVisitor (formatter, formattingOptions);
 			node.AcceptVisitor (visitor);
 			string text = stringWriter.ToString().TrimEnd();
-			
 			return new NodeOutput(text, formatter.NewSegments);
 		}
 		

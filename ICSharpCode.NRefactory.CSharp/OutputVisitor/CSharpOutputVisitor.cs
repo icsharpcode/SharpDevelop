@@ -2409,9 +2409,9 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public void VisitNewLine(NewLineNode newLineNode)
 		{
-			formatter.StartNode(newLineNode);
-			formatter.NewLine();
-			formatter.EndNode(newLineNode);
+//			formatter.StartNode(newLineNode);
+//			formatter.NewLine();
+//			formatter.EndNode(newLineNode);
 		}
 
 		public void VisitWhitespace(WhitespaceNode whitespaceNode)

@@ -101,7 +101,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var statements = tryCatchStatement.TryBlock.Statements;
 					if (statements.Count == 1 || tryCatchStatement.Parent is BlockStatement) {
 						foreach (var statement in statements) {
-							script.InsertAfter(tryCatchStatement.PrevSibling, statement.Clone());
+							script.InsertAfter(tryCatchStatement.GetPrevSibling (s => !(s is NewLineNode)), statement.Clone());
 						}
 						script.Remove(tryCatchStatement);
 					} else {
