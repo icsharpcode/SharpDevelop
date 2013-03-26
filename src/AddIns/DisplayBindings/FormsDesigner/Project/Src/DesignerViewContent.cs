@@ -477,6 +477,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			this.typeResolutionService = null;
 			this.loader = null;
+			UpdatePropertyPad();
 			
 			foreach (KeyValuePair<Type, TypeDescriptionProvider> entry in this.addedTypeDescriptionProviders) {
 				TypeDescriptor.RemoveProvider(entry.Value, entry.Key);
@@ -767,6 +768,9 @@ namespace ICSharpCode.FormsDesigner
 				if (selectionService != null) {
 					UpdatePropertyPadSelection(selectionService);
 				}
+			} else {
+				propertyContainer.Host = null;
+				propertyContainer.SelectableObjects = null;
 			}
 		}
 
