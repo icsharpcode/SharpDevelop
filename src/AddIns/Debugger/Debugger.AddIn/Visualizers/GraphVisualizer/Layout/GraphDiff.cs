@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using ICSharpCode.SharpDevelop;
 using Debugger.AddIn.Visualizers.Utils;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
@@ -45,7 +46,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		public PositionedNode GetMatchingNewNode(PositionedNode oldNode)
 		{
-			return matching.GetValue(oldNode);
+			return matching.GetOrDefault(oldNode);
 		}
 		
 		internal void SetAdded(PositionedNode addedNode)

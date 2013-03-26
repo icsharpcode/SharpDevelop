@@ -218,7 +218,6 @@
     <Compile Include="Visualizers\TextVisualizer\TextVisualizerWindow.xaml.cs" />
     <Compile Include="Visualizers\Utils\DebuggerHelpers.cs" />
     <Compile Include="Visualizers\Utils\Util.cs" />
-    <Compile Include="Visualizers\Utils\Multimap.cs" />
     <Compile Include="Visualizers\Utils\TreeFlattener.cs" />
     <Compile Include="Visualizers\Utils\TypeResolver.cs" />
     <EmbeddedResource Include="Service\DebuggeeExceptionForm.resx">

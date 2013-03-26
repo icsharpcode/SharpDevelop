@@ -10,7 +10,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>
-	/// Provides LINQ operators for .
+	/// Provides LINQ operators for <see cref="IModelCollection{T}"/>.
 	/// </summary>
 	public static class ModelCollectionLinq
 	{
@@ -18,23 +18,34 @@ namespace ICSharpCode.SharpDevelop.Dom
 		// to implement that without leaking memory.
 		// The problem is that IModelCollection is unordered; but ObservableCollection requires us to maintain a stable order.
 		
-		#region Where
-		/*public static IModelCollection<TSource> Where<TSource>(this IModelCollection<TSource> source, Func<TSource, bool> predicate)
+		#region OfType / Cast
+		public static IModelCollection<TResult> OfType<TResult>(this IModelCollection<object> source)
 		{
-			
-		}*/
+			return SelectMany(source, item => item is TResult ? new ImmutableModelCollection<TResult>(new[] { (TResult)item }) : ImmutableModelCollection<TResult>.Empty);
+		}
+		
+		public static IModelCollection<TResult> Cast<TResult>(this IModelCollection<object> source)
+		{
+			return SelectMany(source, item => new ImmutableModelCollection<TResult>(new[] { (TResult)item }));
+		}
+		#endregion
+		
+		#region Where
+		public static IModelCollection<TSource> Where<TSource>(this IModelCollection<TSource> source, Func<TSource, bool> predicate)
+		{
+			return SelectMany(source, item => predicate(item) ? new ImmutableModelCollection<TSource>(new[] { item }) : ImmutableModelCollection<TSource>.Empty);
+		}
 		#endregion
 		
 		#region Select
 		public static IModelCollection<TResult> Select<TSource, TResult>(this IModelCollection<TSource> source, Func<TSource, TResult> selector)
 		{
-			// HACK: emulating Select with SelectMany is much less efficient than a direct implementation could be
-			return SelectMany(source, item => new ImmutableModelCollection<TSource>(new[] { item }), (a, b) => selector(b));
+			return SelectMany(source, item => new ImmutableModelCollection<TResult>(new[] { selector(item) }));
 		}
 		#endregion
 		
 		#region SelectMany
-		public static IModelCollection<S> SelectMany<T, S>(this IModelCollection<T> input, Func<T, IModelCollection<S>> selector)
+		public static IModelCollection<TResult> SelectMany<TSource, TResult>(this IModelCollection<TSource> input, Func<TSource, IModelCollection<TResult>> selector)
 		{
 			return SelectMany(input, selector, (a, b) => b);
 		}

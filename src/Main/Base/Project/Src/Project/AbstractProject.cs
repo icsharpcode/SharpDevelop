@@ -311,7 +311,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public virtual IMutableModelCollection<ProjectItem> Items {
 			get {
-				return new ImmutableModelCollection<ProjectItem>(Enumerable.Empty<ProjectItem>());
+				return new ImmutableModelCollectionImplementsMutableInterface<ProjectItem>(Enumerable.Empty<ProjectItem>());
 			}
 		}
 		

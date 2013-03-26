@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.SharpDevelop;
 using Debugger.AddIn.Visualizers.Utils;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
@@ -69,7 +70,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		PositionedNode MatchNode(PositionedNode oldNode, Dictionary<int, PositionedNode> newNodeMap)
 		{
-			PositionedNode newNodeFound = newNodeMap.GetValue(oldNode.ObjectNode.HashCode);
+			PositionedNode newNodeFound = newNodeMap.GetOrDefault(oldNode.ObjectNode.HashCode);
 			if ((newNodeFound != null) && IsSameAddress(oldNode, newNodeFound))	{
 				return newNodeFound;
 			} else {

@@ -31,12 +31,12 @@ namespace ICSharpCode.MachineSpecifications.Tests
 			testProject = fake.an<IProject>();
 			var mspecReference = MockRepository.GenerateStub<ReferenceProjectItem>(testProject);
 			mspecReference.setup(x => x.ShortName).Return(MSpecAssemblyName);
-			testProject.setup(x => x.Items).Return(new ImmutableModelCollection<ProjectItem>(new[] { mspecReference }));
+			testProject.setup(x => x.Items).Return(new SimpleModelCollection<ProjectItem>(new[] { mspecReference }));
 
 			nonTestProject = fake.an<IProject>();
 			var otherReference = MockRepository.GenerateStub<ReferenceProjectItem>(nonTestProject);
 			mspecReference.setup(x => x.ShortName).Return("System.Configuration");
-			nonTestProject.setup(x => x.Items).Return(new ImmutableModelCollection<ProjectItem>(new[] { otherReference }));
+			nonTestProject.setup(x => x.Items).Return(new SimpleModelCollection<ProjectItem>(new[] { otherReference }));
 		};
 
 		Because of = () => {

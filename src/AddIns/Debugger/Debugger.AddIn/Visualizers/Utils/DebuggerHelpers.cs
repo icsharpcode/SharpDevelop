@@ -3,6 +3,7 @@
 
 using System.Linq;
 using System.Runtime.InteropServices;
+using ICSharpCode.NRefactory.CSharp;
 using Debugger.AddIn.TreeModel;
 using Debugger.AddIn.Visualizers.Graph;
 using Debugger.Interop.CorDebug;
@@ -74,7 +75,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// </summary>
 		public static bool IsAtomic(this IType type)
 		{
-			return TypeSystemExtensions.IsPrimitiveType(type) || type.FullName == "System.String" || type.Kind == TypeKind.Enum;
+			return TypeSystemExtensions.IsPrimitiveType(type) || type.IsKnownType(KnownTypeCode.String) || type.Kind == TypeKind.Enum;
 		}
 		
 		/// <summary>
@@ -121,7 +122,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// </summary>
 		public static string FormatNameCSharp(this IType type)
 		{
-			return type.ToString();  // TODO use an existing C# IType formatter?
+			return new CSharpAmbience().ConvertType(type);
 		}
 		
 		public static IEnumerable<IMember> GetFieldsAndNonIndexedProperties(this IType type, GetMemberOptions options = GetMemberOptions.None) {

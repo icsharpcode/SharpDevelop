@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using ICSharpCode.NRefactory.Utils;
 using Debugger.AddIn.TreeModel;
 using Debugger.AddIn.Visualizers.Graph.Layout;
 using Debugger.AddIn.Visualizers.Utils;
@@ -55,7 +56,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
 		/// Given hash code, lookup already existing node(s) with this hash code.
 		/// </summary>
-		private Multimap<int, ObjectGraphNode> objectNodesForHashCode = new Multimap<int, ObjectGraphNode>();
+		private MultiDictionary<int, ObjectGraphNode> objectNodesForHashCode = new MultiDictionary<int, ObjectGraphNode>();
 		
 		/// <summary>
 		/// Creates ObjectGraphBuilder.
@@ -302,7 +303,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			int objectHashCode = value.InvokeDefaultGetHashCode();
 			// are there any nodes with the same hash code?
-			IList<ObjectGraphNode> nodesWithSameHashCode = objectNodesForHashCode[objectHashCode];
+			var nodesWithSameHashCode = objectNodesForHashCode[objectHashCode];
 			if (nodesWithSameHashCode == null) {
 				return null;
 			} else {

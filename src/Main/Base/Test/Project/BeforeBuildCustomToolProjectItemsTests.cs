@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		FileProjectItem AddFileToProject(string include)
 		{
 			var projectItem = new FileProjectItem(projectHelper.Project, ItemType.Compile, include);
-			projectHelper.AddProjectItem(projectItem);
+			projectHelper.Project.Items.Add(projectItem);
 			return projectItem;
 		}
 		
