@@ -122,11 +122,5 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override NodeType NodeType {
 			get { return NodeType.Statement; }
 		}
-		
-		// Make debugging easier by giving Statements a ToString() implementation
-		public override string ToString()
-		{
-			return DebugToString();
-		}
 	}
 }

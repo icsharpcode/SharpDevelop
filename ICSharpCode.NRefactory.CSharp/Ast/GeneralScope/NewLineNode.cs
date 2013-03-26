@@ -76,7 +76,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 		}
 
-		public override string GetText(CSharpFormattingOptions formattingOptions)
+		public override string ToString(CSharpFormattingOptions formattingOptions)
 		{
 			return "\n";
 		}
@@ -104,7 +104,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 		}
 
-		public override string GetText(CSharpFormattingOptions formattingOptions)
+		public override string ToString(CSharpFormattingOptions formattingOptions)
 		{
 			return "\r\n";
 		}
@@ -132,7 +132,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 		}
 
-		public override string GetText(CSharpFormattingOptions formattingOptions)
+		public override string ToString(CSharpFormattingOptions formattingOptions)
 		{
 			return "\r";
 		}

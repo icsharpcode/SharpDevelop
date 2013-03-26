@@ -74,13 +74,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			Attribute o = other as Attribute;
 			return o != null && this.Type.DoMatch (o.Type, match) && this.Arguments.DoMatch (o.Arguments, match);
 		}
-		
-		public override string ToString ()
+
+		public override string ToString(CSharpFormattingOptions formattingOptions)
 		{
 			if (IsNull)
 				return "Null";
-			else
-				return GetText();
+			return base.ToString(formattingOptions);
 		}
 	}
 }

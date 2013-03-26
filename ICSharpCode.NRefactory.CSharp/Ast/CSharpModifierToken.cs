@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		public override string GetText (CSharpFormattingOptions formattingOptions = null)
+		public override string ToString(CSharpFormattingOptions formattingOptions)
 		{
 			return GetModifierName (Modifier);
 		}

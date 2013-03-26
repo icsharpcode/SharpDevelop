@@ -147,17 +147,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			return o != null && MatchString(this.Identifier, o.Identifier) && this.TypeArguments.DoMatch(o.TypeArguments, match);
 		}
 		
-		public override string ToString()
-		{
-			StringBuilder b = new StringBuilder(this.Identifier);
-			if (this.TypeArguments.Any()) {
-				b.Append('<');
-				b.Append(string.Join(", ", this.TypeArguments));
-				b.Append('>');
-			}
-			return b.ToString();
-		}
-		
 		public override ITypeReference ToTypeReference(NameLookupMode lookupMode, InterningProvider interningProvider = null)
 		{
 			if (interningProvider == null)

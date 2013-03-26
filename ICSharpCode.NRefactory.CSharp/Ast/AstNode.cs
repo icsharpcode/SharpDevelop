@@ -877,14 +877,19 @@ namespace ICSharpCode.NRefactory.CSharp
 				node = next;
 			}
 		}
-		
+		[Obsolete("Use ToString(options).")]
+		public string GetText (CSharpFormattingOptions formattingOptions = null)
+		{
+			return ToString(formattingOptions);
+		}
+
 		/// <summary>
 		/// Gets the node as formatted C# output.
 		/// </summary>
 		/// <param name='formattingOptions'>
 		/// Formatting options.
 		/// </param>
-		public virtual string GetText (CSharpFormattingOptions formattingOptions = null)
+		public virtual string ToString (CSharpFormattingOptions formattingOptions)
 		{
 			if (IsNull)
 				return "";
@@ -892,7 +897,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			AcceptVisitor (new CSharpOutputVisitor (w, formattingOptions ?? FormattingOptionsFactory.CreateMono ()));
 			return w.ToString ();
 		}
-		
+
+		public sealed override string ToString()
+		{
+			return ToString(null);
+		}
+
 		/// <summary>
 		/// Returns true, if the given coordinates (line, column) are in the node.
 		/// </summary>

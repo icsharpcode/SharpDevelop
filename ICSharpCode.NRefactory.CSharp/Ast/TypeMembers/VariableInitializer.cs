@@ -163,15 +163,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return visitor.VisitVariableInitializer (this, data);
 		}
-		
-		public override string ToString()
-		{
-			if (this.Initializer.IsNull)
-				return "[VariableInitializer " + this.Name + "]";
-			else
-				return "[VariableInitializer " + this.Name + " = " + this.Initializer.ToString() + "]";
-		}
-		
+
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			VariableInitializer o = other as VariableInitializer;

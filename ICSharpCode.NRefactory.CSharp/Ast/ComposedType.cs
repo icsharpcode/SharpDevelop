@@ -96,8 +96,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				&& this.BaseType.DoMatch(o.BaseType, match)
 				&& this.ArraySpecifiers.DoMatch(o.ArraySpecifiers, match);
 		}
-		
-		public override string ToString()
+
+		public override string ToString(CSharpFormattingOptions formattingOptions)
 		{
 			StringBuilder b = new StringBuilder();
 			b.Append(this.BaseType.ToString());
@@ -210,8 +210,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			ArraySpecifier o = other as ArraySpecifier;
 			return o != null && this.Dimensions == o.Dimensions;
 		}
-		
-		public override string ToString()
+
+		public override string ToString(CSharpFormattingOptions formattingOptions)
 		{
 			return "[" + new string(',', this.Dimensions - 1) + "]";
 		}

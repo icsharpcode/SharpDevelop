@@ -99,8 +99,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (role != null)
 				this.flags |= role.TokenIndex << AstNodeFlagsUsedBits;
 		}
-		
-		public override string GetText (CSharpFormattingOptions formattingOptions = null)
+
+		public override string ToString(CSharpFormattingOptions formattingOptions)
 		{
 			return TokenRole.Tokens [(int)(this.flags >> AstNodeFlagsUsedBits)];
 		}
@@ -124,11 +124,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			CSharpTokenNode o = other as CSharpTokenNode;
 			return o != null && !o.IsNull && !(o is CSharpModifierToken);
-		}
-		
-		public override string ToString ()
-		{
-			return string.Format ("[CSharpTokenNode: StartLocation={0}, EndLocation={1}, Role={2}]", StartLocation, EndLocation, Role);
 		}
 	}
 }

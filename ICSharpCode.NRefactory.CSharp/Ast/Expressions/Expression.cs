@@ -118,13 +118,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return (Expression)base.Clone();
 		}
-		
-		// Make debugging easier by giving Expressions a ToString() implementation
-		public override string ToString()
-		{
-			return DebugToString();
-		}
-		
+
 		public Expression ReplaceWith(Func<Expression, Expression> replaceFunction)
 		{
 			if (replaceFunction == null)
