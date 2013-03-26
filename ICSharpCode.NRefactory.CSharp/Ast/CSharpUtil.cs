@@ -30,6 +30,10 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public static class CSharpUtil
 	{
+		/// <summary>
+		/// Inverts a boolean condition. Note: The condition object can be frozen (from AST) it's cloned internally.
+		/// </summary>
+		/// <param name="condition">The condition to invert.</param>
 		public static Expression InvertCondition (Expression condition)
 		{
 			return InvertConditionInternal (condition.Clone ());
