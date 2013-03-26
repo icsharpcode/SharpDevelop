@@ -112,7 +112,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			lock (dict) {
 				Entry entry;
 				if (dict.TryGetValue(solutionConfiguration, out entry)) {
-					return entry.Build;
+					return entry.Deploy;
 				} else {
 					return false;
 				}

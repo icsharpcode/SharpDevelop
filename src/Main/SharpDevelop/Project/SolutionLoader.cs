@@ -301,6 +301,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (!projectInfoDict.TryGetValue(guid, out projectInfo))
 					continue;
 				if (pair.Key.EndsWith(".Build.0", StringComparison.OrdinalIgnoreCase)) {
+					projectInfo.ConfigurationMapping.SetBuildEnabled(solutionConfig, true);
 				} else if (pair.Key.EndsWith(".Deploy.0", StringComparison.OrdinalIgnoreCase)) {
 					projectInfo.ConfigurationMapping.SetDeployEnabled(solutionConfig, true);
 				}
