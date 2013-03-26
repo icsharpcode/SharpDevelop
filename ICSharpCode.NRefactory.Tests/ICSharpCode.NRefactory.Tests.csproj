@@ -396,6 +396,8 @@
     <Compile Include="CSharp\Analysis\SemanticHighlightingTests.cs" />
     <Compile Include="CSharp\Analysis\AbiComparerTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateChangedEventTests.cs" />
+    <Compile Include="CSharp\CodeActions\SimplifyIfFlowTests.cs" />
+    <Compile Include="CSharp\CodeActions\SimplifyIfFlowInLoopsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">
