@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Diagnostics;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,19 +46,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			internal readonly int RemovalLength;
 			internal readonly string NewText;
 			internal TextReplaceAction DependsOn;
-			
-			#if DEBUG
-			internal readonly string StackTrace;
-			#endif
-			
+
 			public TextReplaceAction (int offset, int removalLength, string newText)
 			{
 				this.Offset = offset;
 				this.RemovalLength = removalLength;
 				this.NewText = newText ?? string.Empty;
-				#if DEBUG
-				this.StackTrace = Environment.StackTrace;
-				#endif
 			}
 			
 			public override bool Equals(object obj)
@@ -201,13 +193,6 @@ namespace ICSharpCode.NRefactory.CSharp
 						continue;
 					}
 					if (change.Offset < previousChange.Offset + previousChange.RemovalLength) {
-						#if DEBUG
-						Console.WriteLine ("change 1:" + change + " at " + document.GetLocation (change.Offset));
-						Console.WriteLine (change.StackTrace);
-						
-						Console.WriteLine ("change 2:" + previousChange + " at " + document.GetLocation (previousChange.Offset));
-						Console.WriteLine (previousChange.StackTrace);
-						#endif
 						throw new InvalidOperationException ("Detected overlapping changes " + change + "/" + previousChange);
 					}
 				}
@@ -778,6 +763,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override void VisitFieldDeclaration(FieldDeclaration fieldDeclaration)
 		{
 			fieldDeclaration.ReturnType.AcceptVisitor(this);
+			ForceSpacesAfter(fieldDeclaration.ReturnType, true);
+
 			FormatCommas(fieldDeclaration, policy.SpaceBeforeFieldDeclarationComma, policy.SpaceAfterFieldDeclarationComma);
 			if (fieldDeclaration.NextSibling is FieldDeclaration || fieldDeclaration.NextSibling is FixedFieldDeclaration) {
 				EnsureBlankLinesAfter(fieldDeclaration, policy.BlankLinesBetweenFields);
@@ -1615,10 +1602,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override void VisitVariableDeclarationStatement(VariableDeclarationStatement variableDeclarationStatement)
 		{
+			var returnType = variableDeclarationStatement.Type;
+			returnType.AcceptVisitor(this);
 			if ((variableDeclarationStatement.Modifiers & Modifiers.Const) == Modifiers.Const) {
-				ForceSpacesAround(variableDeclarationStatement.Type, true);
+				ForceSpacesAround(returnType, true);
 			} else {
-				ForceSpacesAfter(variableDeclarationStatement.Type, true);
+				ForceSpacesAfter(returnType, true);
 			}
 			var lastLoc = variableDeclarationStatement.StartLocation;
 			foreach (var initializer in variableDeclarationStatement.Variables) {
@@ -1676,10 +1665,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override void VisitComposedType(ComposedType composedType)
 		{
 			var spec = composedType.ArraySpecifiers.FirstOrDefault();
-			if (spec != null) {
+			if (spec != null)
 				ForceSpacesBefore(spec.LBracketToken, policy.SpaceBeforeArrayDeclarationBrackets);
-			}
-			
+
+			if (composedType.HasNullableSpecifier)
+				ForceSpacesBefore(composedType.NullableSpecifierToken, false);
+
+			if (composedType.PointerRank > 0)
+				foreach (var token in composedType.PointerTokens)
+				ForceSpacesBefore(token, false);
+
 			base.VisitComposedType(composedType);
 		}
 		
@@ -2054,7 +2049,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesAfter(memberReferenceExpression.DotToken, false);
 			base.VisitMemberReferenceExpression(memberReferenceExpression);
 		}
-		
+
 		#endregion
 		
 		void ForceSpaceBefore(int offset, bool forceSpace)

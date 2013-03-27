@@ -400,6 +400,7 @@
     <Compile Include="CSharp\CodeActions\SimplifyIfFlowInLoopsTests.cs" />
     <Compile Include="CSharp\CodeIssues\NoDefaultConstructorIssueTests.cs" />
     <Compile Include="CSharp\CodeActions\InvertIfAndSimplifyTests.cs" />
+    <Compile Include="FormattingTests\TestExpressionFormatting.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">

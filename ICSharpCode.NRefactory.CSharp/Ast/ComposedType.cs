@@ -50,6 +50,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				SetChildByRole(NullableRole, value ? new CSharpTokenNode(TextLocation.Empty, null) : null);
 			}
 		}
+
+		public CSharpTokenNode NullableSpecifierToken {
+			get {
+				return GetChildByRole(NullableRole);
+			}
+		}
 		
 		public int PointerRank {
 			get {
@@ -72,6 +78,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public AstNodeCollection<ArraySpecifier> ArraySpecifiers {
 			get { return GetChildrenByRole (ArraySpecifierRole); }
+		}
+
+		public AstNodeCollection<CSharpTokenNode> PointerTokens {
+			get { return GetChildrenByRole (PointerRole); }
 		}
 		
 		public override void AcceptVisitor (IAstVisitor visitor)
