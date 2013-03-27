@@ -48,6 +48,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				script, ifStatement), ifStatement);
 		}
 
+		static Statement GenerateNewTrueStatement(Statement falseStatement)
+		{
+			var blockStatement = falseStatement as BlockStatement;
+			if (blockStatement != null) {
+				if (blockStatement.Children.Count(n => n.Role != Roles.NewLine && n.Role != Roles.LBrace && n.Role != Roles.RBrace) == 1)
+					return blockStatement.Statements.First().Clone ();
+			}
+			return falseStatement.Clone();
+		}
+
 		void GenerateNewScript(Script script, IfElseStatement ifStatement)
 		{
 			var mergedIfStatement = new IfElseStatement
@@ -55,10 +65,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				Condition = CSharpUtil.InvertCondition(ifStatement.Condition)
 			};
 			var falseStatement = ifStatement.FalseStatement;
-			var blockStatement = falseStatement as BlockStatement;
-			mergedIfStatement.TrueStatement = blockStatement != null
-				? blockStatement.Statements.First().Clone()
-					: falseStatement.Clone();
+			mergedIfStatement.TrueStatement = GenerateNewTrueStatement(falseStatement);
 			mergedIfStatement.Condition.AcceptVisitor(_insertParenthesesVisitor);
 
 			script.Replace(ifStatement, mergedIfStatement);

@@ -48,19 +48,21 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		$if (true) {
 			Case1 ();
 		}
-        else 
-        {
-            return 0;
-            testDummyCode();
-        }
+		else 
+		{
+			return 0;
+			testDummyCode ();
+		}
 	}
 }",
 				@"class TestClass
 {
 	int Test ()
 	{
-		if (false)
+		if (false) {
 			return 0;
+			testDummyCode ();
+		}
 		Case1 ();
 	}
 }"
@@ -95,6 +97,39 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	}
 }"
 				);
+		}
+
+		[Test]
+		public void TestComment()
+		{
+			Test<InvertIfAndSimplify>(
+				@"class TestClass
+{
+	int Test ()
+	{
+		$if (true) {
+			Case1 ();
+		}
+		else 
+		{
+			//TestComment
+			return 0;
+		}
+	}
+}",
+				@"class TestClass
+{
+	int Test ()
+	{
+		if (false) {
+			//TestComment
+			return 0;
+		}
+		Case1 ();
+	}
+}"
+				);
+
 		}
 	}
 }
