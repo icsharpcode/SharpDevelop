@@ -520,6 +520,7 @@
     <Compile Include="Refactoring\CodeActions\SimplifyIfFlowAction.cs" />
     <Compile Include="Refactoring\CodeActions\SimplifyIfInLoopsFlowAction.cs" />
     <Compile Include="Refactoring\CodeIssues\NoDefaultConstructorIssue.cs" />
+    <Compile Include="Refactoring\CodeActions\InvertIfAndSimplify.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
