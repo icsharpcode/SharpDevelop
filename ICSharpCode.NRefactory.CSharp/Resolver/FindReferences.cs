@@ -1344,7 +1344,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal override bool CanMatch(AstNode node)
 			{
 				var nsd = node as NamespaceDeclaration;
-				if (nsd != null && nsd.FullName == ns.FullName)
+				if (nsd != null && nsd.FullName.StartsWith(ns.FullName, StringComparison.Ordinal))
 					return true;
 
 				var ud = node as UsingDeclaration;
@@ -1374,7 +1374,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal override bool IsMatch(ResolveResult rr)
 			{
 				var nsrr = rr as NamespaceResolveResult;
-				return nsrr != null && nsrr.NamespaceName == ns.FullName;
+				return nsrr != null && nsrr.NamespaceName.StartsWith(ns.FullName, StringComparison.Ordinal);
 			}
 		}
 		#endregion

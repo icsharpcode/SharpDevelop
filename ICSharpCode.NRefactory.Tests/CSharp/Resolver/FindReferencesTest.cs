@@ -355,6 +355,33 @@ namespace B
 			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 26 && r is MemberType));
 			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 29 && r is MemberType));
 		}
+
+		[Test]
+		public void FindSub()
+		{
+			Init(@"using System;
+using Foo.Bar;
+
+namespace Foo.Bar {
+	class MyTest { }
+}
+
+namespace Foo 
+{
+	class Test 
+	{
+		Foo.Bar.MyTest t;
+	}
+}
+");
+			var test = compilation.MainAssembly.RootNamespace.GetChildNamespace("Foo");
+			var actual = FindReferences(test).ToList();
+			Assert.AreEqual(4, actual.Count);
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 2 && r is SimpleType));
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 4 && r is NamespaceDeclaration));
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 8 && r is NamespaceDeclaration));
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 12 && r is SimpleType));
+		}
 		#endregion
 	}
 }
