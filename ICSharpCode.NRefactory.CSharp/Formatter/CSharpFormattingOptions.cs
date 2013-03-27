@@ -41,13 +41,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		BannerStyle
 	}
 
-	public enum BraceForcement
-	{
-		DoNotChange,
-		RemoveBraces,
-		AddBraces
-	}
-
 	public enum PropertyFormatting
 	{
 		AllowOneLine,
@@ -275,40 +268,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 
 		#endregion
-		
-		#region Force Braces
-		public BraceForcement IfElseBraceForcement { // tested
-			get;
-			set;
-		}
 
-		public BraceForcement ForBraceForcement { // tested
-			get;
-			set;
-		}
-
-		public BraceForcement ForEachBraceForcement { // tested
-			get;
-			set;
-		}
-
-		public BraceForcement WhileBraceForcement { // tested
-			get;
-			set;
-		}
-
-		public BraceForcement UsingBraceForcement { // tested
-			get;
-			set;
-		}
-
-		public BraceForcement FixedBraceForcement { // tested
-			get;
-			set;
-		}
-
-		#endregion
-		
 		#region NewLines
 		public NewLinePlacement ElseNewLinePlacement { // tested
 			get;

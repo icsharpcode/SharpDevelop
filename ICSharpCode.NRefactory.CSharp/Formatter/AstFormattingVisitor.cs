@@ -1097,7 +1097,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override void VisitCheckedStatement(CheckedStatement checkedStatement)
 		{
-			FixEmbeddedStatment(policy.StatementBraceStyle, policy.FixedBraceForcement, checkedStatement.Body);
+			FixEmbeddedStatment(policy.StatementBraceStyle, checkedStatement.Body);
 		}
 		
 		public override void VisitContinueStatement(ContinueStatement continueStatement)
@@ -1112,7 +1112,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override void VisitFixedStatement(FixedStatement fixedStatement)
 		{
-			FixEmbeddedStatment(policy.StatementBraceStyle, policy.FixedBraceForcement, fixedStatement.EmbeddedStatement);
+			FixEmbeddedStatment(policy.StatementBraceStyle, fixedStatement.EmbeddedStatement);
 		}
 		
 		public override void VisitForeachStatement(ForeachStatement foreachStatement)
@@ -1122,15 +1122,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesAfter(foreachStatement.LParToken, policy.SpacesWithinForeachParentheses);
 			ForceSpacesBefore(foreachStatement.RParToken, policy.SpacesWithinForeachParentheses);
 			
-			FixEmbeddedStatment(policy.StatementBraceStyle, policy.ForEachBraceForcement, foreachStatement.EmbeddedStatement);
+			FixEmbeddedStatment(policy.StatementBraceStyle, foreachStatement.EmbeddedStatement);
 		}
 		
-		void FixEmbeddedStatment(BraceStyle braceStyle, BraceForcement braceForcement, AstNode node)
+		void FixEmbeddedStatment(BraceStyle braceStyle, AstNode node)
 		{
-			FixEmbeddedStatment(braceStyle, braceForcement, null, false, node);
+			FixEmbeddedStatment(braceStyle, null, false, node);
 		}
 		
-		void FixEmbeddedStatment(BraceStyle braceStyle, BraceForcement braceForcement, CSharpTokenNode token, bool allowInLine, AstNode node, bool statementAlreadyIndented = false)
+		void FixEmbeddedStatment(BraceStyle braceStyle, CSharpTokenNode token, bool allowInLine, AstNode node, bool statementAlreadyIndented = false)
 		{
 			if (node == null) {
 				return;
@@ -1139,54 +1139,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			TextReplaceAction beginBraceAction = null;
 			TextReplaceAction endBraceAction = null;
 			
-			switch (braceForcement) {
-				case BraceForcement.DoNotChange:
-					//nothing
-					break;
-				case BraceForcement.AddBraces:
-					if (!isBlock) {
-						AstNode n = node.Parent.GetCSharpNodeBefore(node);
-						int start = document.GetOffset(n.EndLocation);
-						string startBrace = "";
-						switch (braceStyle) {
-							case BraceStyle.EndOfLineWithoutSpace:
-								startBrace = "{";
-								break;
-							case BraceStyle.BannerStyle:
-							case BraceStyle.EndOfLine:
-								startBrace = " {";
-								break;
-							case BraceStyle.NextLine:
-								startBrace = this.options.EolMarker + curIndent.IndentString + "{";
-								break;
-							case BraceStyle.NextLineShifted2:
-							case BraceStyle.NextLineShifted:
-								curIndent.Push(IndentType.Block);
-								startBrace = this.options.EolMarker + curIndent.IndentString + "{";
-								curIndent.Pop();
-								break;
-						}
-						beginBraceAction = AddChange(start, 0, startBrace);
-					}
-					break;
-				case BraceForcement.RemoveBraces:
-					if (isBlock) {
-						BlockStatement block = node as BlockStatement;
-						if (block.Statements.Count() == 1) {
-							int offset1 = document.GetOffset(node.StartLocation);
-							int start = SearchWhitespaceStart(offset1);
-							
-							int offset2 = document.GetOffset(node.EndLocation);
-							int end = SearchWhitespaceStart(offset2 - 1);
-							
-							beginBraceAction = AddChange(start, offset1 - start + 1, null);
-							endBraceAction = AddChange(end + 1, offset2 - end, null);
-							node = block.FirstChild;
-							isBlock = false;
-						}
-					}
-					break;
-			}
 			if (isBlock) {
 				BlockStatement block = node as BlockStatement;
 				if (allowInLine && block.StartLocation.Line == block.EndLocation.Line && block.Statements.Count() <= 1) {
@@ -1221,44 +1173,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			if (pushed) { 
 				curIndent.Pop();
-			}
-			switch (braceForcement) {
-				case BraceForcement.DoNotChange:
-					break;
-				case BraceForcement.AddBraces:
-					if (!isBlock) {
-						int offset = document.GetOffset(node.EndLocation);
-						if (!char.IsWhiteSpace(document.GetCharAt(offset))) {
-							offset++;
-						}
-						string startBrace = "";
-						switch (braceStyle) {
-							case BraceStyle.DoNotChange:
-								startBrace = null;
-								break;
-							case BraceStyle.EndOfLineWithoutSpace:
-								startBrace = this.options.EolMarker + curIndent.IndentString + "}";
-								break;
-							case BraceStyle.EndOfLine:
-								startBrace = this.options.EolMarker + curIndent.IndentString + "}";
-								break;
-							case BraceStyle.NextLine:
-								startBrace = this.options.EolMarker + curIndent.IndentString + "}";
-								break;
-							case BraceStyle.BannerStyle:
-							case BraceStyle.NextLineShifted2:
-							case BraceStyle.NextLineShifted:
-								curIndent.Push(IndentType.Block);
-								startBrace = this.options.EolMarker + curIndent.IndentString + "}";
-								curIndent.Pop ();
-								break;
-								
-						}
-						if (startBrace != null) {
-							endBraceAction = AddChange(offset, 0, startBrace);
-						}
-					}
-					break;
 			}
 			if (beginBraceAction != null && endBraceAction != null) {
 				beginBraceAction.DependsOn = endBraceAction;
@@ -1430,7 +1344,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesAfter(forStatement.LParToken, policy.SpacesWithinForParentheses);
 			ForceSpacesBefore(forStatement.RParToken, policy.SpacesWithinForParentheses);
 			
-			FixEmbeddedStatment(policy.StatementBraceStyle, policy.ForBraceForcement, forStatement.EmbeddedStatement);
+			FixEmbeddedStatment(policy.StatementBraceStyle, forStatement.EmbeddedStatement);
 		}
 		
 		public override void VisitGotoStatement(GotoStatement gotoStatement)
@@ -1455,20 +1369,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			
 			if (!ifElseStatement.TrueStatement.IsNull) {
-				FixEmbeddedStatment(policy.StatementBraceStyle, policy.IfElseBraceForcement, ifElseStatement.IfToken, policy.AllowIfBlockInline, ifElseStatement.TrueStatement);
+				FixEmbeddedStatment(policy.StatementBraceStyle, ifElseStatement.IfToken, policy.AllowIfBlockInline, ifElseStatement.TrueStatement);
 			}
 			
 			if (!ifElseStatement.FalseStatement.IsNull) {
 				var placeElseOnNewLine = policy.ElseNewLinePlacement;
-				if (!(ifElseStatement.TrueStatement is BlockStatement) && policy.IfElseBraceForcement != BraceForcement.AddBraces)
+				if (!(ifElseStatement.TrueStatement is BlockStatement))
 					placeElseOnNewLine = NewLinePlacement.NewLine;
 				PlaceOnNewLine(placeElseOnNewLine, ifElseStatement.ElseToken);
-				var forcement = policy.IfElseBraceForcement;
 				if (ifElseStatement.FalseStatement is IfElseStatement) {
-					forcement = BraceForcement.DoNotChange;
 					PlaceOnNewLine(policy.ElseIfNewLinePlacement, ((IfElseStatement)ifElseStatement.FalseStatement).IfToken);
 				}
-				FixEmbeddedStatment(policy.StatementBraceStyle, forcement, ifElseStatement.ElseToken, policy.AllowIfBlockInline, ifElseStatement.FalseStatement, ifElseStatement.FalseStatement is IfElseStatement);
+				FixEmbeddedStatment(policy.StatementBraceStyle, ifElseStatement.ElseToken, policy.AllowIfBlockInline, ifElseStatement.FalseStatement, ifElseStatement.FalseStatement is IfElseStatement);
 			}
 		}
 		
@@ -1485,7 +1397,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesAfter(lockStatement.LParToken, policy.SpacesWithinLockParentheses);
 			ForceSpacesBefore(lockStatement.RParToken, policy.SpacesWithinLockParentheses);
 			
-			FixEmbeddedStatment(policy.StatementBraceStyle, policy.FixedBraceForcement, lockStatement.EmbeddedStatement);
+			FixEmbeddedStatment(policy.StatementBraceStyle, lockStatement.EmbeddedStatement);
 		}
 		
 		public override void VisitReturnStatement(ReturnStatement returnStatement)
@@ -1553,7 +1465,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override void VisitTryCatchStatement(TryCatchStatement tryCatchStatement)
 		{
 			if (!tryCatchStatement.TryBlock.IsNull) {
-				FixEmbeddedStatment(policy.StatementBraceStyle, BraceForcement.DoNotChange, tryCatchStatement.TryBlock);
+				FixEmbeddedStatment(policy.StatementBraceStyle, tryCatchStatement.TryBlock);
 			}
 			
 			foreach (CatchClause clause in tryCatchStatement.CatchClauses) {
@@ -1564,13 +1476,13 @@ namespace ICSharpCode.NRefactory.CSharp
 					ForceSpacesAfter(clause.LParToken, policy.SpacesWithinCatchParentheses);
 					ForceSpacesBefore(clause.RParToken, policy.SpacesWithinCatchParentheses);
 				}
-				FixEmbeddedStatment(policy.StatementBraceStyle, BraceForcement.DoNotChange, clause.Body);
+				FixEmbeddedStatment(policy.StatementBraceStyle, clause.Body);
 			}
 			
 			if (!tryCatchStatement.FinallyBlock.IsNull) {
 				PlaceOnNewLine(policy.FinallyNewLinePlacement, tryCatchStatement.FinallyToken);
 				
-				FixEmbeddedStatment(policy.StatementBraceStyle, BraceForcement.DoNotChange, tryCatchStatement.FinallyBlock);
+				FixEmbeddedStatment(policy.StatementBraceStyle, tryCatchStatement.FinallyBlock);
 			}
 			
 		}
@@ -1582,12 +1494,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override void VisitUncheckedStatement(UncheckedStatement uncheckedStatement)
 		{
-			FixEmbeddedStatment(policy.StatementBraceStyle, policy.FixedBraceForcement, uncheckedStatement.Body);
+			FixEmbeddedStatment(policy.StatementBraceStyle, uncheckedStatement.Body);
 		}
 		
 		public override void VisitUnsafeStatement(UnsafeStatement unsafeStatement)
 		{
-			FixEmbeddedStatment(policy.StatementBraceStyle, BraceForcement.DoNotChange, unsafeStatement.Body);
+			FixEmbeddedStatment(policy.StatementBraceStyle, unsafeStatement.Body);
 		}
 		
 		public override void VisitUsingStatement(UsingStatement usingStatement)
@@ -1597,7 +1509,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesAfter(usingStatement.LParToken, policy.SpacesWithinUsingParentheses);
 			ForceSpacesBefore(usingStatement.RParToken, policy.SpacesWithinUsingParentheses);
 			
-			FixEmbeddedStatment(policy.StatementBraceStyle, policy.UsingBraceForcement, usingStatement.EmbeddedStatement);
+			FixEmbeddedStatment(policy.StatementBraceStyle, usingStatement.EmbeddedStatement);
 		}
 		
 		public override void VisitVariableDeclarationStatement(VariableDeclarationStatement variableDeclarationStatement)
@@ -1625,7 +1537,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override void VisitDoWhileStatement(DoWhileStatement doWhileStatement)
 		{
 			PlaceOnNewLine(policy.WhileNewLinePlacement, doWhileStatement.WhileToken);
-			FixEmbeddedStatment(policy.StatementBraceStyle, policy.WhileBraceForcement, doWhileStatement.EmbeddedStatement);
+			FixEmbeddedStatment(policy.StatementBraceStyle, doWhileStatement.EmbeddedStatement);
 		}
 		
 		public override void VisitWhileStatement(WhileStatement whileStatement)
@@ -1635,7 +1547,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesAfter(whileStatement.LParToken, policy.SpacesWithinWhileParentheses);
 			ForceSpacesBefore(whileStatement.RParToken, policy.SpacesWithinWhileParentheses);
 			
-			FixEmbeddedStatment(policy.StatementBraceStyle, policy.WhileBraceForcement, whileStatement.EmbeddedStatement);
+			FixEmbeddedStatment(policy.StatementBraceStyle, whileStatement.EmbeddedStatement);
 		}
 		
 		public override void VisitYieldBreakStatement(YieldBreakStatement yieldBreakStatement)

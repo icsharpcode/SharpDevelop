@@ -315,36 +315,6 @@ fixed (object* obj = &obj)
 		}
 
 		[Test()]
-		public void TestFixedForcementAdd ()
-		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
-			
-			policy.StatementBraceStyle = BraceStyle.EndOfLine;
-			policy.FixedBraceForcement = BraceForcement.AddBraces;
-			
-			Test (policy, @"class Test
-{
-	Test TestMethod ()
-	{
-		fixed (object* obj = &obj) {
-		}
-		fixed (object* obj = &obj) ;
-	}
-}",
-@"class Test
-{
-	Test TestMethod ()
-	{
-		fixed (object* obj = &obj) {
-		}
-		fixed (object* obj = &obj) {
-			;
-		}
-	}
-}");
-		}
-
-		[Test()]
 		public void TestForeachIndentation ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -573,65 +543,6 @@ using (var o = new MyObj()) {
 	{
 		using (var o = new MyObj()) {
 		}
-	}
-}");
-		}
-
-		[Test()]
-		public void TestUsingForcementAdd ()
-		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
-			
-			policy.StatementBraceStyle = BraceStyle.EndOfLine;
-			policy.UsingBraceForcement = BraceForcement.AddBraces;
-			
-			Test (policy, @"class Test
-{
-	Test TestMethod ()
-	{
-		using (var o = new MyObj()) {
-		}
-		using (var o = new MyObj()) ;
-	}
-}",
-@"class Test
-{
-	Test TestMethod ()
-	{
-		using (var o = new MyObj()) {
-		}
-		using (var o = new MyObj()) {
-			;
-		}
-	}
-}");
-		}
-
-		[Test()]
-		public void TestUsingForcementDoNotChange ()
-		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
-			
-			policy.StatementBraceStyle = BraceStyle.EndOfLine;
-			policy.UsingBraceForcement = BraceForcement.DoNotChange;
-			
-			Test (policy, @"class Test
-{
-	Test TestMethod ()
-	{
-		using (var o = new MyObj()) {
-		}
-		using (var o = new MyObj()) ;
-	}
-}",
-@"class Test
-{
-	Test TestMethod ()
-	{
-		using (var o = new MyObj()) {
-		}
-		using (var o = new MyObj())
-			;
 	}
 }");
 		}
@@ -883,109 +794,6 @@ do {
 		}
 
 		[Test()]
-		public void TestForEachBraceForcementAdd ()
-		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
-			
-			policy.StatementBraceStyle = BraceStyle.NextLine;
-			policy.ForEachBraceForcement = BraceForcement.AddBraces;
-			Test (policy, @"class Test
-{
-	Test TestMethod ()
-	{
-		foreach (var obj in col)
-		{
-		}
-		foreach (var obj in col) ;
-	}
-}",
-@"class Test
-{
-	Test TestMethod ()
-	{
-		foreach (var obj in col)
-		{
-		}
-		foreach (var obj in col)
-		{
-			;
-		}
-	}
-}");
-		}
-
-		[Test()]
-		public void TestForBraceForcementAdd ()
-		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
-			
-			policy.StatementBraceStyle = BraceStyle.NextLine;
-			policy.ForBraceForcement = BraceForcement.AddBraces;
-			
-			Test (policy, @"class Test
-{
-	Test TestMethod ()
-	{
-		for (;;)
-		{
-		}
-		for (;;) ;
-	}
-}",
-@"class Test
-{
-	Test TestMethod ()
-	{
-		for (;;)
-		{
-		}
-		for (;;)
-		{
-			;
-		}
-	}
-}");
-		}
-
-		[Test()]
-		[Ignore("Crashes due to overlapping changes")]
-		public void TestForEachBraceForcementRemove ()
-		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
-			
-			policy.StatementBraceStyle = BraceStyle.NextLine;
-			policy.ForEachBraceForcement = BraceForcement.RemoveBraces;
-			Test (policy, @"class Test
-{
-	Test TestMethod ()
-	{
-		foreach (var obj in col)
-		{
-			;
-			;
-		}
-		foreach (var obj in col)
-		{
-			;
-		}
-	}
-}",
-@"class Test
-{
-	Test TestMethod ()
-	{
-		foreach (var obj in col)
-		{
-			;
-			;
-		}
-		foreach (var obj in col)
-			;
-	}
-}");
-		}
-
-		[Test()]
 		public void TestIfBracketPlacement ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1105,45 +913,6 @@ do {
 		}
 
 		[Test()]
-		[Ignore("Crashes due to overlapping changes")]
-		public void TestIfForcementRemove ()
-		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
-			
-			policy.StatementBraceStyle = BraceStyle.NextLine;
-			policy.IfElseBraceForcement = BraceForcement.RemoveBraces;
-			
-			Test (policy, @"class Test
-{
-	Test TestMethod ()
-	{
-		if (true)
-		{
-			;
-			;
-		}
-		if (true)
-		{
-			;
-		}
-	}
-}",
-@"class Test
-{
-	Test TestMethod ()
-	{
-		if (true)
-		{
-			;
-			;
-		}
-		if (true)
-			;
-	}
-}");
-		}
-
-		[Test()]
 		public void TestIfAlignment ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1173,122 +942,6 @@ if (b) {
 		if (a)
 			if (b) {
 			}
-	}
-}");
-		}
-
-		[Test()]
-		public void TestIfForcementAdd ()
-		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
-			
-			policy.StatementBraceStyle = BraceStyle.EndOfLine;
-			policy.IfElseBraceForcement = BraceForcement.AddBraces;
-			
-			Test (policy, @"class Test
-{
-	void TestMethod ()
-	{
-		if (true)
-			Call ();
-	}
-}",
-@"class Test
-{
-	void TestMethod ()
-	{
-		if (true) {
-			Call ();
-		}
-	}
-}");
-		}
-
-		[Test()]
-		public void TestIfForcementWithComment ()
-		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
-			
-			policy.StatementBraceStyle = BraceStyle.EndOfLine;
-			policy.IfElseBraceForcement = BraceForcement.AddBraces;
-			
-			Test (policy, @"class Test
-{
-	void TestMethod ()
-	{
-		if (true) // TestComment
-			Call ();
-	}
-}",
-@"class Test
-{
-	void TestMethod ()
-	{
-		if (true) { // TestComment
-			Call ();
-		}
-	}
-}");
-		}
-
-		[Test()]
-		public void TestIfElseForcementAdd ()
-		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
-			
-			policy.StatementBraceStyle = BraceStyle.EndOfLine;
-			policy.IfElseBraceForcement = BraceForcement.AddBraces;
-			
-			Test (policy, @"class Test
-{
-	void TestMethod ()
-	{
-		if (true)
-			Call ();
-		else
-			Call2 ();
-	}
-}",
-@"class Test
-{
-	void TestMethod ()
-	{
-		if (true) {
-			Call ();
-		} else {
-			Call2 ();
-		}
-	}
-}");
-		}
-
-		[Test()]
-		public void TestIfElseIFForcementAdd ()
-		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
-			
-			policy.StatementBraceStyle = BraceStyle.EndOfLine;
-			policy.IfElseBraceForcement = BraceForcement.AddBraces;
-			
-			Test (policy, @"class Test
-{
-	void TestMethod ()
-	{
-		if (true)
-			Call ();
-		else if (false)
-			Call2 ();
-	}
-}",
-@"class Test
-{
-	void TestMethod ()
-	{
-		if (true) {
-			Call ();
-		} else if (false) {
-			Call2 ();
-		}
 	}
 }");
 		}
@@ -1414,59 +1067,19 @@ if (b) {
 		}
 
 		[Test()]
-		[Ignore("Crashes due to overlapping changes")]
-		public void TestWhileForcementRemove ()
-		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
-			
-			policy.StatementBraceStyle = BraceStyle.NextLine;
-			policy.WhileBraceForcement = BraceForcement.RemoveBraces;
-			
-			Test (policy, @"class Test
-{
-	Test TestMethod ()
-	{
-		while (true)
-		{
-			;
-			;
-		}
-		while (true)
-		{
-			;
-		}
-	}
-}",
-@"class Test
-{
-	Test TestMethod ()
-	{
-		while (true)
-		{
-			;
-			;
-		}
-		while (true)
-			;
-	}
-}");
-		}
-
-		[Test()]
 		public void TestFixedBracketPlacement ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			
 			policy.StatementBraceStyle = BraceStyle.NextLineShifted;
-			policy.FixedBraceForcement = BraceForcement.AddBraces;
-			
+
 			Test (policy, @"class Test
 {
 	Test TestMethod ()
 	{
-		fixed (object* obj = &obj)
+		fixed (object* obj = &obj){
 
-;
+;}
 	}
 }",
 @"class Test
