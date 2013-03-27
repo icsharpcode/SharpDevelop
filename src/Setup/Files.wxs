@@ -697,11 +697,17 @@
 										<Component Guid="084FDE9A-C356-4D88-8718-00D53478225A" Id="WPFAssemblyInfoTemplate" DiskId="1">
 											<File Source="..\..\data\templates\project\CSharp\WPFAssemblyInfo.cs" Id="WPFAssemblyInfoTemplate" Name="WPFAssemblyInfo.cs" />
 										</Component>
-										<Component Id="CSharpMvcWebProjectTemplate" Guid="82060284-5670-4B2F-8AB0-BE075D09D4BE" DiskId="1">
-											<File Id="CSharp.MvcWebProject.xpt" Name="MvcWebProject.xpt" Source="..\..\data\templates\project\CSharp\MvcWebProject.xpt" KeyPath="yes" />
+										<Component Id="CSharpMvc3WebProjectTemplate" Guid="9B2CB6D6-7C79-4324-88AA-4F61A8CBB0AD" DiskId="1">
+											<File Id="CSharp.Mvc3WebProject.xpt" Name="Mvc3WebProject.xpt" Source="..\..\data\templates\project\CSharp\Mvc3WebProject.xpt" KeyPath="yes" />
 										</Component>
-										<Component Id="EmptyCSharpMvcWebProjectTemplate" Guid="3EA7EF3D-F72A-446C-AA21-BA97EF9B321A" DiskId="1">
-											<File Id="Empty.CSharp.MvcWebProject.xpt" Name="EmptyMvcWebProject.xpt" Source="..\..\data\templates\project\CSharp\EmptyMvcWebProject.xpt" KeyPath="yes" />
+										<Component Id="CSharpMvc4WebProjectTemplate" Guid="A7390705-CDC6-4B4E-A0F9-0D985C76A5B3" DiskId="1">
+											<File Id="CSharp.Mvc4WebProject.xpt" Name="Mvc4WebProject.xpt" Source="..\..\data\templates\project\CSharp\Mvc4WebProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="EmptyCSharpMvc3WebProjectTemplate" Guid="0C0ADD18-C2A6-4CBC-85BA-8B206621536C" DiskId="1">
+											<File Id="Empty.CSharp.Mvc3WebProject.xpt" Name="EmptyMvc3WebProject.xpt" Source="..\..\data\templates\project\CSharp\EmptyMvc3WebProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="EmptyCSharpMvc4WebProjectTemplate" Guid="7445FCA3-B0C2-4341-9BBE-725E7B6B0C4C" DiskId="1">
+											<File Id="Empty.CSharp.Mvc4WebProject.xpt" Name="EmptyMvc4WebProject.xpt" Source="..\..\data\templates\project\CSharp\EmptyMvc4WebProject.xpt" KeyPath="yes" />
 										</Component>
 										<Component Id="CSharpWcfServiceProjectTemplate" Guid="D793DD78-BE0C-11E0-AC34-34D04824019B" DiskId="1">
 											<File Id="CSharp.WcfServiceProject.xpt" Name="CSharp.WcfServiceProject.xpt" Source="..\..\data\templates\project\CSharp\CSharp.WcfServiceProject.xpt" KeyPath="yes" />
@@ -709,8 +715,11 @@
 										<Component Id="CSharpWcfRestServiceProjectTemplate" Guid="8FEE65EC-DD9C-11E0-8968-81B84724019B" DiskId="1">
 											<File Id="CSharp.WcfRestServiceProject.xpt" Name="CSharp.WcfRestServiceProject.xpt" Source="..\..\data\templates\project\CSharp\CSharp.WcfRestServiceProject.xpt" KeyPath="yes" />
 										</Component>
-										<Component Id="CSharpMvcRazorProjectTemplate" Guid="827EB7DD-A67C-4043-81A4-F4AC9CE92F8D" DiskId="1">
-											<File Id="CSharp.MvcR.azorProject.xpt" Name="MvcRazorProject.xpt" Source="..\..\data\templates\project\CSharp\MvcRazorProject.xpt" KeyPath="yes" />
+										<Component Id="CSharpMvc3RazorProjectTemplate" Guid="E1292B77-CCF9-4668-AD02-ACA406328947" DiskId="1">
+											<File Id="CSharp.Mvc3RazorProject.xpt" Name="Mvc3RazorProject.xpt" Source="..\..\data\templates\project\CSharp\Mvc3RazorProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvc4RazorProjectTemplate" Guid="05F2230F-ACCC-42F3-8EFA-68595EB7ECFC" DiskId="1">
+											<File Id="CSharp.Mvc4RazorProject.xpt" Name="Mvc4RazorProject.xpt" Source="..\..\data\templates\project\CSharp\Mvc4RazorProject.xpt" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Directory Id="MiscProjectTemplatesFolder" Name="Misc">
@@ -744,11 +753,17 @@
 											<File Id="WPFAssemblyInfo.vb" Name="WPFAssemblyInfo.vb" Source="..\..\data\templates\project\VB\WPFAssemblyInfo.vb" />
 											<File Id="WPFNavigationApplication.xpt" Name="WPFNavigationApplication.xpt" Source="..\..\data\templates\project\VB\WPFNavigationApplication.xpt" />
 										</Component>
-										<Component Id="VBMvcWebProjectTemplate" Guid="FBDC313E-FC77-4500-84EC-35F0E19925C1" DiskId="1">
-											<File Id="VB.MvcWebProject.xpt" Name="MvcWebProject.xpt" Source="..\..\data\templates\project\VB\MvcWebProject.xpt" KeyPath="yes" />
+										<Component Id="VBMvc3WebProjectTemplate" Guid="ED880219-5D19-4224-928B-1323FF38ADD1" DiskId="1">
+											<File Id="VB.Mvc3WebProject.xpt" Name="Mvc3WebProject.xpt" Source="..\..\data\templates\project\VB\Mvc3WebProject.xpt" KeyPath="yes" />
 										</Component>
-										<Component Id="EmptyVBMvcWebProjectTemplate" Guid="DCCCBDDE-6F8A-4163-8294-F84E5E76917C" DiskId="1">
-											<File Id="Empty.VB.MvcWebProject.xpt" Name="EmptyMvcWebProject.xpt" Source="..\..\data\templates\project\VB\EmptyMvcWebProject.xpt" KeyPath="yes" />
+										<Component Id="VBMvc4WebProjectTemplate" Guid="2E9A64C8-CCCD-434D-B06C-3BFDA6032EBF" DiskId="1">
+											<File Id="VB.Mvc4WebProject.xpt" Name="Mvc4WebProject.xpt" Source="..\..\data\templates\project\VB\Mvc4WebProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="EmptyVBMvc3WebProjectTemplate" Guid="7E148426-CAB9-4940-9C0F-F32EEAA0F507" DiskId="1">
+											<File Id="Empty.VB.Mvc3WebProject.xpt" Name="EmptyMvc3WebProject.xpt" Source="..\..\data\templates\project\VB\EmptyMvc3WebProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="EmptyVBMvc4WebProjectTemplate" Guid="FB3D1D9D-F511-4AF0-BE34-5B8859710684" DiskId="1">
+											<File Id="Empty.VB.Mvc4WebProject.xpt" Name="EmptyMvc4WebProject.xpt" Source="..\..\data\templates\project\VB\EmptyMvc4WebProject.xpt" KeyPath="yes" />
 										</Component>
 										<Component Id="VBWcfServiceProjectTemplate" Guid="FF1C11DA-BE0C-11E0-A35E-6FD04824019B" DiskId="1">
 											<File Id="VB.WcfServiceProject.xpt" Name="VB.WcfServiceProject.xpt" Source="..\..\data\templates\project\VB\VB.WcfServiceProject.xpt" KeyPath="yes" />
@@ -756,8 +771,11 @@
 										<Component Id="VBWcfRestServiceProjectTemplate" Guid="A45203E0-DD9C-11E0-974A-93B84724019B" DiskId="1">
 											<File Id="VB.WcfRestServiceProject.xpt" Name="VB.WcfRestServiceProject.xpt" Source="..\..\data\templates\project\VB\VB.WcfRestServiceProject.xpt" KeyPath="yes" />
 										</Component>
-										<Component Id="VBMvcRazorProjectTemplate" Guid="253A22C3-31B7-44AD-8F4D-8B55511487A1" DiskId="1">
-											<File Id="VB.MvcRazorProject.xpt" Name="MvcRazorProject.xpt" Source="..\..\data\templates\project\VB\MvcRazorProject.xpt" KeyPath="yes" />
+										<Component Id="VBMvc3RazorProjectTemplate" Guid="A801A2B6-FA38-4EE2-B38C-DE970491C979" DiskId="1">
+											<File Id="VB.Mvc3RazorProject.xpt" Name="Mvc3RazorProject.xpt" Source="..\..\data\templates\project\VB\Mvc3RazorProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvc4RazorProjectTemplate" Guid="573888E6-5A19-402E-B814-66A4161570BD" DiskId="1">
+											<File Id="VB.Mvc4RazorProject.xpt" Name="Mvc4RazorProject.xpt" Source="..\..\data\templates\project\VB\Mvc4RazorProject.xpt" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Component Guid="73EAC135-57B6-46C0-9F24-70A347B9AAC8" Id="ExampleProjectTemplate" DiskId="1">
