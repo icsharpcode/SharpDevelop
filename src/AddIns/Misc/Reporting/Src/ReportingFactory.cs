@@ -7,11 +7,12 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
+using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.Xml;
@@ -28,13 +29,25 @@ namespace ICSharpCode.Reporting
 		}
 		
 		
-		public IReportCreator CreatePageBuilder (Stream stream, IList list)
+		public IReportCreator CreatePageBuilder (Stream stream)
 		{
+			IReportModel reportModel = LoadReportModel (stream);
+			IReportCreator builder = null;
+			if (reportModel.ReportSettings.DataModel == GlobalEnums.PushPullModel.FormSheet) {
+//				builder = FormPageBuilder.CreateInstance(reportModel);
+				Console.WriteLine("aaaaaaaaaaaaaaaaa");
+			}
+//			else {
+//				CheckForParameters(reportModel,reportParameters);
+//				IDataManager dataMan  = DataManagerFactory.CreateDataManager(reportModel,reportParameters);
+//				builder = DataPageBuilder.CreateInstance(reportModel, dataMan);
+//			}
+			return builder;
 			return null;
 		}
 			
 		
-		internal ReportModel LoadReport (Stream stream)
+		internal ReportModel LoadReportModel (Stream stream)
 		{
 			Console.WriteLine("ReportEngine:LoadReportModel_2");
 			var doc = new XmlDocument();

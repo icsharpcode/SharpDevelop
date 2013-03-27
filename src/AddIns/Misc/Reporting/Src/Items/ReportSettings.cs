@@ -8,6 +8,7 @@
  */
 using System;
 using System.Drawing;
+using ICSharpCode.Reporting.Globals;
 
 namespace ICSharpCode.Reporting.Items
 {
@@ -34,7 +35,7 @@ namespace ICSharpCode.Reporting.Items
 //			this.DefaultFont = GlobalValues.DefaultFont;
 //			this.ReportType = GlobalEnums.ReportType.FormSheet;
 //			
-//			this.DataModel = GlobalEnums.PushPullModel.FormSheet;
+			this.DataModel = GlobalEnums.PushPullModel.FormSheet;
 //			
 //			this.CommandType =  System.Data.CommandType.Text;
 //			this.ConnectionString = String.Empty;
@@ -91,5 +92,8 @@ namespace ICSharpCode.Reporting.Items
 		
 //		[Category("Page Settings")]
 		public bool Landscape {get;set;}
+		
+//		[Category("Data")]
+		public GlobalEnums.PushPullModel DataModel {get;set;}
 	}
 }

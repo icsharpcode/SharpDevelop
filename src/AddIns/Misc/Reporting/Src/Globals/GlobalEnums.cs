@@ -13,7 +13,7 @@ namespace ICSharpCode.Reporting.Globals
 	/// <summary>
 	/// Description of GlobalEnums.
 	/// </summary>
-	internal sealed class GlobalEnums
+	public  class GlobalEnums
 	{
 		internal enum ReportSection {
 			ReportHeader,
@@ -21,6 +21,18 @@ namespace ICSharpCode.Reporting.Globals
 			ReportDetail,
 			ReportPageFooter,
 			ReportFooter
+		}
+		
+		///<summary>Technics to get the data
+		/// Push : report get's a ready filld dataset or something tah implements IList
+		/// Pull : report has to fill data by themself
+		/// FormSheet : FormSheet report, just labels and images are allowed
+		/// </summary>
+		/// 
+		public enum PushPullModel {
+			PushData,
+			PullData,
+			FormSheet
 		}
 	}
 }

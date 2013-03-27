@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
+using ICSharpCode.Reporting.Globals;
 using NUnit.Framework;
 
 namespace ICSharpCode.Reporting.Tests.Model
@@ -32,7 +33,7 @@ namespace ICSharpCode.Reporting.Tests.Model
 		public void LoadPlainModel()
 		{
 			var rf = new ReportingFactory();
-			var model = rf.LoadReport(stream);
+			var model = rf.LoadReportModel(stream);
 			Assert.IsNotNull(model);
 		}
 		
@@ -41,7 +42,7 @@ namespace ICSharpCode.Reporting.Tests.Model
 		public void ReportSettingsFromPlainModel()
 		{
 			var rf = new ReportingFactory();
-			var model = rf.LoadReport(stream);
+			var model = rf.LoadReportModel(stream);
 			Assert.That(model.ReportSettings,Is.Not.Null);
 		}
 		
@@ -50,16 +51,24 @@ namespace ICSharpCode.Reporting.Tests.Model
 		public void ReportSettingsReportName()
 		{
 			var rf = new ReportingFactory();
-			var model = rf.LoadReport(stream);
+			var model = rf.LoadReportModel(stream);
 			Assert.That(model.ReportSettings.ReportName,Is.EqualTo(Globals.GlobalValues.DefaultReportName));
 		}
 		
 		
 		[Test]
+		public void ReportSettingsDataModelFormSheet()
+		{
+			var rf = new ReportingFactory();
+			var model = rf.LoadReportModel(stream);
+			Assert.That(model.ReportSettings.DataModel,Is.EqualTo(GlobalEnums.PushPullModel.FormSheet));
+		}
+		
+		[Test]
 		public void ReportSettingsPageSize()
 		{
 			var rf = new ReportingFactory();
-			var model = rf.LoadReport(stream);
+			var model = rf.LoadReportModel(stream);
 			Assert.That(model.ReportSettings.PageSize,Is.EqualTo(Globals.GlobalValues.DefaultPageSize));
 		}
 		
