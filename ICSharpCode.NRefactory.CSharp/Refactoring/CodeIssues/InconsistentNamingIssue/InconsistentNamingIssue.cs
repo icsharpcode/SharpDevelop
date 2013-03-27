@@ -153,12 +153,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 								}
 							} else if (resolveResult is LocalResolveResult) {
 								script.Rename(((LocalResolveResult)resolveResult).Variable, n);
+							} else if (resolveResult is NamespaceResolveResult) {
+								script.Rename(((NamespaceResolveResult)resolveResult).Namespace, n);
 							} else { 
 								script.Replace(identifier, Identifier.Create(n));
 							}
 						}, identifier)));
 
-						if (entity != AffectedEntity.Namespace && entity != AffectedEntity.Label) {
+						if (entity != AffectedEntity.Label) {
 							actions.Add(new CodeAction(string.Format(ctx.TranslateString("Rename '{0}'..."), identifier.Name), (Script script) => {
 								if (resolveResult == null)
 									resolveResult = ctx.Resolve (node);
@@ -173,6 +175,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 									}
 								} else if (resolveResult is LocalResolveResult) {
 									script.Rename(((LocalResolveResult)resolveResult).Variable);
+								} else if (resolveResult is NamespaceResolveResult) {
+									script.Rename(((NamespaceResolveResult)resolveResult).Namespace);
 								}
 							}, identifier));
 						}

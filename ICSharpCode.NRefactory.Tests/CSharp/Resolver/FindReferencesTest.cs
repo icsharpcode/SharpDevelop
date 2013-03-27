@@ -51,7 +51,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			                                    (node, rr) => result.Add(node), CancellationToken.None);
 			return result.OrderBy(n => n.StartLocation).ToArray();
 		}
-		
+
+		AstNode[] FindReferences(INamespace ns)
+		{
+			var result = new List<AstNode>();
+			var searchScopes = findReferences.GetSearchScopes(ns);
+			findReferences.FindReferencesInFile(searchScopes, unresolvedFile, syntaxTree, compilation,
+			                                    (node, rr) => result.Add(node), CancellationToken.None);
+			return result.OrderBy(n => n.StartLocation).ToArray();
+		}
+
 		#region Method Group
 		[Test]
 		public void FindMethodGroupReference()
@@ -299,6 +308,53 @@ public class C {
 
 		#endif // NET_4_5
 
+		#endregion
+	
+		#region Namespaces
+		[Test]
+		public void FindNamespaceTest()
+		{
+			Init(@"using System;
+using Foo.Bar;
+
+namespace Foo.Bar {
+	class MyTest { }
+}
+
+namespace Other.Bar {
+	class OtherTest {}
+}
+
+namespace Foo 
+{
+	class Test 
+	{
+		static void T()
+		{
+			Bar.MyTest test;
+			Other.Bar.OtherTest test2;
+		}
+	}
+}
+
+namespace B
+{
+	using f = Foo.Bar;
+	class Test2
+	{
+		Foo.Bar.MyTest a;
+	}
+}
+");
+			var test = compilation.MainAssembly.RootNamespace.GetChildNamespace("Foo").GetChildNamespace ("Bar");
+			var actual = FindReferences(test).ToList();
+			Assert.AreEqual(5, actual.Count);
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 2 && r is MemberType));
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 4 && r is NamespaceDeclaration));
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 18 && r is SimpleType));
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 26 && r is MemberType));
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 29 && r is MemberType));
+		}
 		#endregion
 	}
 }

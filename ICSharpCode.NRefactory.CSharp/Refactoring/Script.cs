@@ -383,7 +383,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public virtual void Rename(IVariable variable, string name = null)
 		{
 		}
-		
+
+		/// <summary>
+		/// Renames the specified namespace.
+		/// </summary>
+		/// <param name="ns">The namespace</param>
+		/// <param name='name'>
+		/// The new name, if null the user is prompted for a new name.
+		/// </param>
+		public virtual void Rename(INamespace ns, string name = null)
+		{
+		}
+
 		public virtual void Dispose()
 		{
 			FormatText (nodesToFormat);
