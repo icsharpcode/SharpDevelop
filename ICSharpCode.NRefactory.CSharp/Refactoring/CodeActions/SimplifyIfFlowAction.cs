@@ -51,8 +51,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var ifBody = ifStatement.TrueStatement.Clone();
 
 			if (ifBody is BlockStatement) {
-				Statement last = ifStatement;
-				foreach (var stmt in ((BlockStatement)ifBody).Statements) {
+				AstNode last = ifStatement;
+				foreach (var stmt in ((BlockStatement)ifBody).Children) {
+					if (stmt.Role == Roles.LBrace || stmt.Role == Roles.RBrace || stmt.Role == Roles.NewLine)
+						continue;
 					script.InsertAfter(last, stmt);
 					last = stmt;
 				}
