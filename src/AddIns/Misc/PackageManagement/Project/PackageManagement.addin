@@ -86,7 +86,7 @@
 	</Path>
 	
 	<!-- Package Management Console Pad -->
-	<!--<Path name="/SharpDevelop/Workbench/Pads">
+	<Path name="/SharpDevelop/Workbench/Pads">
 		<Pad
 			id="PackageManagementConsole"
 			category="Tools"
@@ -94,7 +94,7 @@
 			icon="PadIcons.Output"
 			defaultPosition="Bottom, Hidden"
 			class="ICSharpCode.PackageManagement.Scripting.PackageManagementConsolePad"/>
-	</Path>-->
+	</Path>
 
 	<!-- Project template command -->
 	<Path name="/AddIns/PackageManagement/TemplateCommands">
@@ -102,10 +102,10 @@
 			id="InstallPackages"
 			class="ICSharpCode.PackageManagement.InstallProjectTemplatePackagesCommand"/>
 	</Path>
-	<!--
+	
 	<Path name="/SharpDevelop/TextTemplating/ServiceProviders">
 		<Class
 			id="PackageManagementServiceProvider"
 			class="ICSharpCode.PackageManagement.PackageManagementServiceProvider"/>
-	</Path>-->
+	</Path>
 </AddIn>

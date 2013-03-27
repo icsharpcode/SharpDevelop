@@ -113,7 +113,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public void InvokeAsyncAndForget(Action callback)
 		{
-			throw new NotImplementedException();
+			callback();
 		}
 		
 		public void InvokeAsyncAndForget(Action callback, DispatcherPriority priority)

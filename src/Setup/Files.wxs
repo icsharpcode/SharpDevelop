@@ -306,13 +306,12 @@
 								</File>
 								<File Id="ICSharpCode.SharpDevelop.BuildWorker40.exe.config" Name="ICSharpCode.SharpDevelop.BuildWorker40.exe.config" Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker40.exe.config" />
 							</Component>
-							<!--
 							<Component Id="ICSharpCodeScriptingDll" Guid="62B44EFA-CCB4-4B73-B455-AE3C72B8121F" DiskId="1">
 								<File Id="ICSharpCode.Scripting.dll" Name="ICSharpCode.Scripting.dll" Source="..\..\bin\ICSharpCode.Scripting.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.Scripting.dll" AssemblyManifest="ICSharpCode.Scripting.dll" />
 							</Component>
 							<Component Id="SharpDevelopEnvDteDll" Guid="BEB5529F-D774-4C82-AA5A-AA877A64A79E" DiskId="1">
 								<File Id="SharpDevelop.EnvDTE.dll" Name="SharpDevelop.EnvDTE.dll" Source="..\..\bin\SharpDevelop.EnvDTE.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="SharpDevelop.EnvDTE.dll" AssemblyManifest="SharpDevelop.EnvDTE.dll" />
-							</Component>-->
+							</Component>
 						</Directory>
 						<Directory Id="DocFolder" Name="doc">
 							<Component Guid="9DCED5AC-B771-4A4F-B4FE-69867BF2EBDE" Id="SharpDevelopDocFiles" DiskId="1">
@@ -1532,7 +1531,7 @@
 									<Component Id="PackageManagementDll" Guid="24C9BEEB-0B51-42F9-A3FA-C4830B28BABD" DiskId="1">
 										<File Id="PackageManagement.dll" Name="PackageManagement.dll" Source="..\..\AddIns\Misc\PackageManagement\PackageManagement.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="PackageManagement.dll" AssemblyManifest="PackageManagement.dll" />
 									</Component>
-									<!--<Component Id="AboutNuGetCmdletsHelpTxt" Guid="9A761C90-C10B-4E69-A0C3-6E417CBBAE94" DiskId="1">
+									<Component Id="AboutNuGetCmdletsHelpTxt" Guid="9A761C90-C10B-4E69-A0C3-6E417CBBAE94" DiskId="1">
 										<File Id="about_NuGet.Cmdlets.help.txt" Name="about_NuGet.Cmdlets.help.txt" Source="..\..\AddIns\Misc\PackageManagement\about_NuGet.Cmdlets.help.txt" KeyPath="yes" />
 									</Component>
 									<Component Id="PackageManagementCmdletsDll" Guid="BAFE4038-7ADC-4E67-A73E-BA335860168E" DiskId="1">
@@ -1552,7 +1551,7 @@
 									<Component Id="NuGetConsoleTypesDll" Guid="7386637C-A6C6-4AD4-8EA3-C5E87AA3F552" DiskId="1">
 										<File Id="NuGet.Console.Types.dll" Name="NuGet.Console.Types.dll" Source="..\..\AddIns\Misc\PackageManagement\NuGet.Console.Types.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="NuGet.Console.Types.dll" AssemblyManifest="NuGet.Console.Types.dll" />
 									</Component>
-									<Component Id="PackageManagementICSharpCodeSharpDevelopDomDll" Guid="70460742-D237-4742-B563-7127376C56CB" DiskId="1">
+									<!--<Component Id="PackageManagementICSharpCodeSharpDevelopDomDll" Guid="70460742-D237-4742-B563-7127376C56CB" DiskId="1">
 										<File Id="PackageManagement.ICSharpCode.SharpDevelop.Dom.dll" Name="ICSharpCode.SharpDevelop.Dom.dll" Source="..\..\AddIns\Misc\PackageManagement\ICSharpCode.SharpDevelop.Dom.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="PackageManagement.ICSharpCode.SharpDevelop.Dom.dll" AssemblyManifest="PackageManagement.ICSharpCode.SharpDevelop.Dom.dll" />
 									</Component>-->
 								</Directory>

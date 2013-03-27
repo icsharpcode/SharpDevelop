@@ -42,7 +42,7 @@ namespace PackageManagement.Tests.Helpers
 			string name,
 			string fileName = null)
 		{
-			ProjectCreateInformation createInfo = new ProjectCreateInformation(parentSolution, new FileName(fileName ?? (@"d:\projects\Test\TestProject\" + name + ".csproj")));
+			var createInfo = new ProjectCreateInformation(parentSolution, new FileName(fileName ?? (@"d:\projects\Test\TestProject\" + name + ".csproj")));
 			
 			var project = new TestableProject(createInfo);
 			((ICollection<IProject>)parentSolution.Projects).Add(project);

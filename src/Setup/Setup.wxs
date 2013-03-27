@@ -333,8 +333,8 @@
 				<ComponentRef Id="CSharpProjectSharpDevelopCustomToolTemplates"/>
 				<ComponentRef Id="AppConfigFileTemplate"/>
 				
-				<!--
 				<ComponentRef Id="ICSharpCodeScriptingDll"/>
+				<!--
 				<ComponentRef Id="PythonConsoleProjectTemplate"/>
 				<ComponentRef Id="PythonEmptyClassTemplate"/>
 				<ComponentRef Id="PythonEmptyFormTemplate"/>
@@ -447,19 +447,19 @@
 				<ComponentRef Id="IronyDll"/>
 				<ComponentRef Id="ITextSharpDll"/>-->
 			
-				<!--<ComponentRef Id="AboutNuGetCmdletsHelpTxt"/>
-				<ComponentRef Id="NuGetConsoleTypesDll"/>-->
+				<ComponentRef Id="AboutNuGetCmdletsHelpTxt"/>
+				<ComponentRef Id="NuGetConsoleTypesDll"/>
 				<ComponentRef Id="NuGetCoreDll"/>
 				<ComponentRef Id="NuGetNuspecSchema"/>
 				<ComponentRef Id="NuGetLicenseTxt"/>
-				<!--<ComponentRef Id="PackageFormatPs1Xml"/>-->
+				<ComponentRef Id="PackageFormatPs1Xml"/>
 				<ComponentRef Id="PackageManagementAddin"/>
-				<!--<ComponentRef Id="PackageManagementCmdletsDll"/>
-				<ComponentRef Id="PackageManagementCmdletsDllHelpXml"/>-->
+				<ComponentRef Id="PackageManagementCmdletsDll"/>
+				<ComponentRef Id="PackageManagementCmdletsDllHelpXml"/>
 				<ComponentRef Id="PackageManagementDll"/>
-				<!--<ComponentRef Id="SharpDevelopEnvDteDll"/>-->
-				<!--<ComponentRef Id="PackageManagementPowerShellDll"/>
-				<ComponentRef Id="PackageManagementICSharpCodeSharpDevelopDomDll"/>-->
+				<ComponentRef Id="SharpDevelopEnvDteDll"/>
+				<ComponentRef Id="PackageManagementPowerShellDll"/>
+				<!--<ComponentRef Id="PackageManagementICSharpCodeSharpDevelopDomDll"/>-->
 				<ComponentRef Id="JQuery172NuGetPackage"/>
 				<ComponentRef Id="Modernizr253NuGetPackage"/>
 			
@@ -541,7 +541,7 @@
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"
 			         AllowAdvertise="no"
-				     InstallDefault="local"
+			         InstallDefault="local"
 			         Title="File Associations"
 			         Description="Registers file associations with SharpDevelop.">
 				<!-- 

@@ -17,6 +17,7 @@ namespace ICSharpCode.PackageManagement
 		IProjectBuilder ProjectBuilder { get; }
 		
 		event EventHandler<SolutionEventArgs> SolutionClosed;
+		event EventHandler<SolutionEventArgs> SolutionOpened;
 		
 		void RefreshProjectBrowser();
 		void AddProjectItem(IProject project, ProjectItem item);

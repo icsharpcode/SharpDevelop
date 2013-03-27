@@ -189,12 +189,12 @@ namespace ICSharpCode.PackageManagement.Design
 			}
 		}
 		
-//		public Project DTEProject;
-//		
-//		public Project ConvertToDTEProject()
-//		{
-//			return DTEProject;
-//		}
+		public Project DTEProject;
+		
+		public Project ConvertToDTEProject()
+		{
+			return DTEProject;
+		}
 		
 		public List<FakePackage> FakePackagesInReverseDependencyOrder = 
 			new List<FakePackage>();

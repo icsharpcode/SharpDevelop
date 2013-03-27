@@ -82,6 +82,11 @@ namespace ICSharpCode.PackageManagement
 			add { SD.ProjectService.SolutionClosed += value; }
 			remove { SD.ProjectService.SolutionClosed -= value; }
 		}
+		
+		public event EventHandler<SolutionEventArgs> SolutionOpened {
+			add { SD.ProjectService.SolutionOpened += value; }
+			remove { SD.ProjectService.SolutionOpened -= value; }
+		}
 	
 		public IProjectBrowserUpdater CreateProjectBrowserUpdater()
 		{

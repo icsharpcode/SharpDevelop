@@ -65,8 +65,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public void ParseFile(string fileName)
 		{
-			throw new NotImplementedException();
-			//SD.ParserService.ParseFile(fileName);
+			SD.ParserService.ParseFile(new FileName(fileName));
 		}
 		
 		public ICompilation GetCompilationUnit(string fileName)

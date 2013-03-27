@@ -21,7 +21,7 @@ namespace ICSharpCode.PackageManagement
 		ILogger Logger { get; set; }
 		IPackageRepository SourceRepository { get; }
 		
-		//Project ConvertToDTEProject();
+		Project ConvertToDTEProject();
 		
 		bool IsPackageInstalled(IPackage package);
 		bool IsPackageInstalled(string packageId);

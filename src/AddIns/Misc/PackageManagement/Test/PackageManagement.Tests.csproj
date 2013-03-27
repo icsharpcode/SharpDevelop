@@ -90,7 +90,9 @@
     <Compile Include="Src\EnvDTE\CodeFunctionTests.cs" />
     <Compile Include="Src\EnvDTE\CodeImportTests.cs" />
     <Compile Include="Src\EnvDTE\CodeInterfaceTests.cs" />
-    <Compile Include="Src\EnvDTE\CodeModelTests.cs" />
+    <Compile Include="Src\EnvDTE\CodeModelTests.cs">
+      <DependentUpon>CodeTypeTests.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\EnvDTE\CodeNamespaceTests.cs" />
     <Compile Include="Src\EnvDTE\CodeParameter2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeParameterTests.cs" />

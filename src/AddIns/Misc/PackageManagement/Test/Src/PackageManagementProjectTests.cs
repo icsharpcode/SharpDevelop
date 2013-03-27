@@ -493,16 +493,15 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		[Ignore("Implement")]
 		public void ConvertToDTEProject_MethodCalled_ReturnsProjectWithExpectedName()
 		{
 			CreateProject();
 			fakeMSBuildProject.Name = "Test";
-//			Project dteProject = project.ConvertToDTEProject();
+			Project dteProject = project.ConvertToDTEProject();
 			
-//			string name = dteProject.Name;
+			string name = dteProject.Name;
 			
-//			Assert.AreEqual("Test", name);
+			Assert.AreEqual("Test", name);
 		}
 		
 		[Test]

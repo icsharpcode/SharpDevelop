@@ -19,6 +19,7 @@ namespace ICSharpCode.PackageManagement.Design
 		public ISolution OpenSolution { get; set; }
 		
 		public event EventHandler<SolutionEventArgs> SolutionClosed;
+		public event EventHandler<SolutionEventArgs> SolutionOpened;
 		
 		public void RefreshProjectBrowser()
 		{
@@ -29,6 +30,13 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			if (SolutionClosed != null) {
 				SolutionClosed(this, new SolutionEventArgs(solution));
+			}
+		}
+		
+		public void FireSolutionOpenedEvent(ISolution solution)
+		{
+			if (SolutionOpened != null) {
+				SolutionOpened(this, new SolutionEventArgs(solution));
 			}
 		}
 		

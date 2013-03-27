@@ -76,7 +76,6 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		[Ignore("Disabled")]
 		public void Run_InstallActionHasOnePowerShellScript_ActionIsPassedToConsoleToRun()
 		{
 			CreateRunner();
@@ -90,7 +89,6 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		[Ignore("Disabled")]
 		public void Run_InstallActionHasOnePowerShellScript_ActionIsNotExecutedDirectly()
 		{
 			CreateRunner();
@@ -118,7 +116,6 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		[Ignore("Disabled")]
 		public void Run_InstallActionHasOnePowerShellScriptAndPowerShellIsNotInstalled_MessageIsReportedThatPowerShellScriptsCannotBeRun()
 		{
 			CreateRunner();
@@ -150,7 +147,6 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		[Ignore("Disabled")]
 		public void Run_TwoInstallActionsAndSecondHasOnePowerShellScript_AllActionsPassedToConsoleToRun()
 		{
 			CreateRunner();

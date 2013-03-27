@@ -60,6 +60,7 @@ namespace PackageManagement.Tests.Helpers
 		public ProjectReferenceProjectItem AddProjectReference(IProject referencedProject)
 		{
 			var referenceProjectItem = new ProjectReferenceProjectItem(this, referencedProject);
+			referenceProjectItem.FileName = referencedProject.FileName;
 			ProjectService.AddProjectItem(this, referenceProjectItem);
 			return referenceProjectItem;
 		}

@@ -10,13 +10,13 @@ namespace ICSharpCode.PackageManagement
 	{
 		static readonly PackageManagementOptions options;
 		static readonly PackageManagementSolution solution;
-		//static readonly PackageManagementConsoleHostProvider consoleHostProvider;
+		static readonly PackageManagementConsoleHostProvider consoleHostProvider;
 		static readonly RegisteredPackageRepositories registeredPackageRepositories;
 		static readonly PackageManagementEvents packageManagementEvents = new PackageManagementEvents();
 		static readonly PackageManagementProjectService projectService = new PackageManagementProjectService();
 		static readonly ProjectBrowserRefresher projectBrowserRefresher;
 		static readonly PackageManagementOutputMessagesView outputMessagesView;
-		//static readonly RunPackageInitializationScriptsOnSolutionOpen runPackageInitializationScripts;
+		static readonly RunPackageInitializationScriptsOnSolutionOpen runPackageInitializationScripts;
 		static readonly ResetPowerShellWorkingDirectoryOnSolutionClosed resetPowerShellWorkingDirectory;
 		static readonly PackageActionsToRun packageActionsToRun = new PackageActionsToRun();
 		static readonly PackageActionRunner packageActionRunner;
@@ -36,11 +36,10 @@ namespace ICSharpCode.PackageManagement
 			projectBrowserRefresher = new ProjectBrowserRefresher(projectService, packageManagementEvents);
 			solution = new PackageManagementSolution(registeredPackageRepositories, packageManagementEvents);
 			
-			//consoleHostProvider = new PackageManagementConsoleHostProvider(solution, registeredPackageRepositories);
-			//runPackageInitializationScripts = new RunPackageInitializationScriptsOnSolutionOpen(projectService);
-			//resetPowerShellWorkingDirectory = new ResetPowerShellWorkingDirectoryOnSolutionClosed(projectService, ConsoleHost);
-			//var consolePackageActionRunner = new ConsolePackageActionRunner(ConsoleHost, packageActionsToRun);
-			ConsolePackageActionRunner consolePackageActionRunner = null;
+			consoleHostProvider = new PackageManagementConsoleHostProvider(solution, registeredPackageRepositories);
+			runPackageInitializationScripts = new RunPackageInitializationScriptsOnSolutionOpen(projectService);
+			resetPowerShellWorkingDirectory = new ResetPowerShellWorkingDirectoryOnSolutionClosed(projectService, ConsoleHost);
+			var consolePackageActionRunner = new ConsolePackageActionRunner(ConsoleHost, packageActionsToRun);
 			packageActionRunner = new PackageActionRunner(consolePackageActionRunner, packageManagementEvents);
 		}
 		
@@ -52,9 +51,9 @@ namespace ICSharpCode.PackageManagement
 			get { return solution; }
 		}
 		
-//		public static IPackageManagementConsoleHost ConsoleHost {
-//			get { return consoleHostProvider.ConsoleHost; }
-//		}
+		public static IPackageManagementConsoleHost ConsoleHost {
+			get { return consoleHostProvider.ConsoleHost; }
+		}
 		
 		public static IRegisteredPackageRepositories RegisteredPackageRepositories {
 			get { return registeredPackageRepositories; }
