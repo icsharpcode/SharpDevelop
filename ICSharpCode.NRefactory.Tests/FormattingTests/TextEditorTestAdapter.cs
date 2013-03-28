@@ -35,11 +35,11 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			var options = new TextEditorOptions();
 			options.EolMarker = "\n";
 			options.WrapLineLength = 80;
-			var visitor = new AstFormattingVisitor (policy, document, options);
+			var visitor = new CSharpFormatter (policy, options);
 			visitor.FormattingMode = mode;
 			var syntaxTree = new CSharpParser ().Parse (document, "test.cs");
-			syntaxTree.AcceptVisitor (visitor);
-			visitor.ApplyChanges();
+			var changes = visitor.AnalyzeFormatting(document, syntaxTree);
+			changes.ApplyChanges();
 			return document;
 		}
 		
@@ -52,6 +52,19 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 				Console.WriteLine (expectedOutput);
 				Console.WriteLine ("got:");
 				Console.WriteLine (doc.Text);
+				for (int i = 0; i < expectedOutput.Length && i < doc.TextLength; i++) {
+					if (expectedOutput [i] != doc.GetCharAt(i)) {
+						Console.WriteLine (
+							"i:"+i+" differ:"+ 
+							expectedOutput[i].ToString ().Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t") +
+							" !=" + 
+							doc.GetCharAt(i).ToString ().Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t")
+						);
+						Console.WriteLine(">"+expectedOutput.Substring (i).Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t"));
+						Console.WriteLine(">"+doc.Text.Substring (i).Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t"));
+						break;
+					}
+				}
 			}
 			Assert.AreEqual (expectedOutput, doc.Text);
 			return doc;
@@ -67,12 +80,9 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			expectedOutput = NormalizeNewlines (expectedOutput);
 			var options = new TextEditorOptions ();
 			options.EolMarker = "\n";
-			var visitior = new AstFormattingVisitor (policy, document, options);
-			visitior.FormattingMode = formattingMode;
-			var syntaxTree = new CSharpParser ().Parse (document, "test.cs");
-			syntaxTree.AcceptVisitor (visitior);
-			visitior.ApplyChanges();
-			string newText = document.Text;
+			var formatter = new CSharpFormatter (policy, options);
+			formatter.FormattingMode = formattingMode;
+			string newText = formatter.Format (document);
 			if (expectedOutput != newText) {
 				Console.WriteLine (newText);
 			}

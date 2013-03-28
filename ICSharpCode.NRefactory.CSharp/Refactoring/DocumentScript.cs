@@ -101,7 +101,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public override void FormatText(IEnumerable<AstNode> nodes)
 		{
 			var syntaxTree = SyntaxTree.Parse(currentDocument, "dummy.cs");
-			var formatter = new AstFormattingVisitor(FormattingOptions, currentDocument, Options);
+			var formatter = new CSharpFormatter(FormattingOptions, Options);
 			var segments = new List<ISegment>();
 			foreach (var node in nodes.OrderByDescending (n => n.StartLocation)) {
 				var segment = GetSegment(node);
@@ -114,9 +114,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			if (segments.Count == 0)
 				return;
-			syntaxTree.AcceptVisitor(formatter);
+			var changes = formatter.AnalyzeFormatting (currentDocument, syntaxTree);
 			foreach (var segment in segments) {
-				formatter.ApplyChanges(segment.Offset, segment.Length - 1);
+				changes.ApplyChanges(segment.Offset, segment.Length - 1);
 			}
 		}
 		

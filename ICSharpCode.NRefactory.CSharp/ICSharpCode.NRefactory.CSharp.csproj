@@ -200,7 +200,6 @@
     <Compile Include="Ast\TypeMembers\PropertyDeclaration.cs" />
     <Compile Include="Ast\TypeMembers\VariableInitializer.cs" />
     <Compile Include="CSharpProjectContent.cs" />
-    <Compile Include="Formatter\AstFormattingVisitor.cs" />
     <Compile Include="Formatter\CSharpFormattingOptions.cs" />
     <Compile Include="Formatter\Indent.cs" />
     <Compile Include="OutputVisitor\CodeDomConvertVisitor.cs" />
@@ -521,6 +520,13 @@
     <Compile Include="Refactoring\CodeActions\SimplifyIfInLoopsFlowAction.cs" />
     <Compile Include="Refactoring\CodeIssues\NoDefaultConstructorIssue.cs" />
     <Compile Include="Refactoring\CodeActions\InvertIfAndSimplify.cs" />
+    <Compile Include="Formatter\CSharpFormatter.cs" />
+    <Compile Include="Formatter\FormattingVisitor.cs" />
+    <Compile Include="Formatter\FormattingVisitor_TypeMembers.cs" />
+    <Compile Include="Formatter\FormattingVisitor_Global.cs" />
+    <Compile Include="Formatter\FormattingVisitor_Statements.cs" />
+    <Compile Include="Formatter\FormattingVisitor_Expressions.cs" />
+    <Compile Include="Formatter\FormattingChanges.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 	[TestFixture()]
 	public class TestKeepReformattingRules : TestBase
 	{
-		[Test()]
+		[Test]
 		public void TestKeepCommentsAtFirstColumnTrue()
 		{
 			var policy = FormattingOptionsFactory.CreateMono();
@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 }");
 		}
 
-		[Test()]
+		[Test]
 		public void TestKeepCommentsAtFirstColumnFalse()
 		{
 			var policy = FormattingOptionsFactory.CreateMono();
@@ -79,7 +79,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		
 		}
 
-		[Test()]
+		[Test]
 		public void TestKeepCommentsAfterStatement()
 		{
 			var policy = FormattingOptionsFactory.CreateMono();
