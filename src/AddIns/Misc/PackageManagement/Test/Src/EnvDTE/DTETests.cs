@@ -34,7 +34,7 @@ namespace PackageManagement.Tests.EnvDTE
 		void OpenSolution(string fileName)
 		{
 			fakeSolution = MockRepository.GenerateStub<ISolution>();
-			var sections = new ImmutableModelCollection<SolutionSection>(new SolutionSection[0]);
+			var sections = new SimpleModelCollection<SolutionSection>(new SolutionSection[0]);
 			fakeSolution.Stub(s => s.GlobalSections).Return(sections);
 			fakeProjectService.OpenSolution = fakeSolution;
 			SetOpenSolutionFileName(fileName);
