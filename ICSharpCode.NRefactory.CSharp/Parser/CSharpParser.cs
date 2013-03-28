@@ -3608,14 +3608,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			#endregion
 		}
 
-		/// <summary>
-		/// If set the parser generates nodes for whitespace nodes (NOTE: Atm only new line nodes are supported).
-		/// </summary>
-		public bool EnableExperimentalWhitespaceInsertion {
-			get;
-			set;
-		}
-		
 		public CSharpParser ()
 		{
 			compilerSettings = new CompilerSettings();
@@ -3667,7 +3659,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						StartsLine = comment.StartsLine,
 						Content = isMultilineDocumentationComment ? comment.Content.Substring(1) : comment.Content
 					};
-				} else {
+				} else if (!GenerateTypeSystemMode) {
 					var directive = special as SpecialsBag.PreProcessorDirective;
 					if (directive != null) {
 						newLeaf = new PreProcessorDirective ((ICSharpCode.NRefactory.CSharp.PreProcessorDirectiveType)((int)directive.Cmd & 0xF), new TextLocation (directive.Line, directive.Col), new TextLocation (directive.EndLine, directive.EndCol)) {
@@ -3676,7 +3668,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						};
 					} else {
 						var newLine = special as SpecialsBag.NewLineToken;
-						if (newLine != null && EnableExperimentalWhitespaceInsertion) {
+						if (newLine != null) {
 							if (newLine.NewLine == SpecialsBag.NewLine.Unix) {
 								newLeaf = new UnixNewLine (new TextLocation (newLine.Line, newLine.Col + 1));
 							} else {
