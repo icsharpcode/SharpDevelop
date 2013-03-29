@@ -62,7 +62,8 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		
 		protected TColor valueKeywordColor;
 		protected TColor externAliasKeywordColor;
-		
+		protected TColor varKeywordTypeColor;
+
 		/// <summary>
 		/// Used for 'in' modifiers on type parameters.
 		/// </summary>
@@ -97,6 +98,11 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				return;
 			}
 			if (rr is TypeResolveResult) {
+				if (blockDepth > 0 && identifier.Name == "var" && rr.Type.Kind != TypeKind.Null && rr.Type.Name != "var" ) {
+					Colorize(identifier, varKeywordTypeColor);
+					return;
+				}
+
 				TColor color;
 				if (TryGetTypeHighlighting (rr.Type.Kind, out color)) {
 					Colorize(identifier, color);
@@ -579,7 +585,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				Colorize(comment, inactiveCodeColor);
 			}
 		}
-		
+
 		public override void VisitPreProcessorDirective(PreProcessorDirective preProcessorDirective)
 		{
 		}
@@ -607,6 +613,14 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 					a.AcceptVisitor (this);
 				}
 			}
+		}
+
+		int blockDepth;
+		public override void VisitBlockStatement(BlockStatement blockStatement)
+		{
+			blockDepth++;
+			base.VisitBlockStatement(blockStatement);
+			blockDepth--;
 		}
 	}
 }
