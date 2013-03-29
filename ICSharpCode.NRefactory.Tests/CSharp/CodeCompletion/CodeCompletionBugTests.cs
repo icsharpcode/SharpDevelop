@@ -6019,6 +6019,44 @@ public class Testing
 			Assert.AreEqual(0, provider.Count);
 		}
 
+		[Test]
+		public void TestSwitchCase ()
+		{
+
+			CombinedProviderTest(
+				@"using System;
+class Test
+{
+	public void Test (ConsoleColor color)
+	{
+		$switch (c$
+	}
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("color"));
+			});
+		}
+
+		[Test]
+		public void TestSwitchCaseCase ()
+		{
+
+			CombinedProviderTest(
+				@"using System;
+class Test
+{
+	public void Test (ConsoleColor color)
+	{
+		switch (color) {
+			$case $
+		}
+	}
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("ConsoleColor"));
+			});
+		}
+
 
 	}
 }

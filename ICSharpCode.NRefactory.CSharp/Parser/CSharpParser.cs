@@ -1830,24 +1830,25 @@ namespace ICSharpCode.NRefactory.CSharp
 					result.AddChild (new CSharpTokenNode (Convert (location [2]), Roles.LBrace), Roles.LBrace);
 				SwitchSection newSection = null;
 				bool lastWasCase = false, added = true;
-
-				foreach (var child in switchStatement.Block.Statements) {
-					var statement = child.Accept(this);
-					var caseLabel = statement as CaseLabel;
-					if (caseLabel != null) {
-						if (!lastWasCase) {
-							newSection = new SwitchSection();
-							added = false;
+				if (switchStatement.Block != null) {
+					foreach (var child in switchStatement.Block.Statements) {
+						var statement = child.Accept(this);
+						var caseLabel = statement as CaseLabel;
+						if (caseLabel != null) {
+							if (!lastWasCase) {
+								newSection = new SwitchSection();
+								added = false;
+							}
+							newSection.AddChild (caseLabel, SwitchSection.CaseLabelRole);
+							lastWasCase = true;
+						} else {
+							if (lastWasCase) {
+								result.AddChild (newSection, SwitchStatement.SwitchSectionRole);
+								lastWasCase = false;
+								added = true;
+							}
+							newSection.AddChild((Statement)statement, Roles.EmbeddedStatement);
 						}
-						newSection.AddChild (caseLabel, SwitchSection.CaseLabelRole);
-						lastWasCase = true;
-					} else {
-						if (lastWasCase) {
-							result.AddChild (newSection, SwitchStatement.SwitchSectionRole);
-							lastWasCase = false;
-							added = true;
-						}
-						newSection.AddChild((Statement)statement, Roles.EmbeddedStatement);
 					}
 				}
 				if (!added)
