@@ -27,7 +27,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 			Properties customizer = new Properties();
 			
 			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-			IReportGenerator generator = new GeneratePlainReport(model,customizer);
+			IReportGenerator generator = new GeneratePlainReport(model);
 			generator.GenerateReport();
 			
 			XDocument doc1 = XDocument.Load(new XmlNodeReader (generator.XmlReport));
@@ -93,7 +93,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 			Properties customizer = new Properties();
 			
 			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-			IReportGenerator generator = new GeneratePlainReport(model,customizer);
+			IReportGenerator generator = new GeneratePlainReport(model);
 			generator.GenerateReport();
 			return generator.XmlReport;
 		}

@@ -15,6 +15,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	public class LayoutPanel: AbstractWizardPanel
 	{
 		private LayoutPanelControl layoutControl;
+//		private Properties customizer;
 		private ReportStructure reportStructure;
 		
 		public LayoutPanel()
@@ -35,10 +36,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			base.EnableFinish = true;
 			base.IsLastPanel = true;
 			base.EnablePrevious = true;
-			
-			if (reportStructure == null) {
-				reportStructure = (ReportStructure)base.CustomizationObject;
-			}
+			reportStructure = (ReportStructure)base.CustomizationObject;
 			if (message == DialogMessage.Activated) {
 				layoutControl.AvailableFieldsCollection = reportStructure.AvailableFieldsCollection;
 			}

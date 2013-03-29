@@ -78,7 +78,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 			Properties customizer = new Properties();
 			
 			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-			IReportGenerator generator = new GeneratePlainReport(m,customizer);
+			IReportGenerator generator = new GeneratePlainReport(m);
 			generator.GenerateReport();
 			
 			ReportLoader rl = new ReportLoader();

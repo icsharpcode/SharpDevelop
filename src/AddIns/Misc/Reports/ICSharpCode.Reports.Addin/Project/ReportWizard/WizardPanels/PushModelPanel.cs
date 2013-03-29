@@ -23,8 +23,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		private System.Windows.Forms.Button btnPath;
 		private System.Windows.Forms.CheckedListBox checkedListBox;
 		private System.Windows.Forms.TextBox txtPath;
-		private DataSet resultDataSet;
+		
 		private ReportStructure reportStructure;
+//		private Properties customizer;
+		private DataSet resultDataSet;
 		
 		public PushModelPanel()
 		{
@@ -82,11 +84,12 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		public override bool ReceiveDialogMessage(DialogMessage message)
 		{
-//			if (customizer == null) {
-//				base.NextWizardPanelID = "Layout";
-//			}
+			
+			reportStructure = (ReportStructure)base.CustomizationObject;
 			base.NextWizardPanelID = "Layout";
-		 	if (message == DialogMessage.Activated) {
+			
+			
+			if (message == DialogMessage.Activated) {
 				WriteResult();
 				base.EnableNext = true;
 			}

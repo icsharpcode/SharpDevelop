@@ -57,7 +57,7 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 			ReportModel model = ReportModel.Create();
 			Properties customizer = new Properties();
 			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-			IReportGenerator generator = new GeneratePlainReport(model,customizer);
+			IReportGenerator generator = new GeneratePlainReport(model);
 			generator.GenerateReport();
 			MockOpenedFile mof = new MockOpenedFile(GlobalValues.PlainFileName);
 			OpenedFile file = new MockOpenedFile(GlobalValues.PlainFileName);

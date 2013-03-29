@@ -109,7 +109,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 			customizer.Set("Generator", structure);
 			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.TableLayout);
 			
-			IReportGenerator generator = new GeneratePushDataReport(m,customizer);
+			IReportGenerator generator = new GeneratePushDataReport(m);
 		
 			generator.GenerateReport();
 			

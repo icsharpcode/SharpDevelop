@@ -34,9 +34,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox txtSqlString;
-		
 		private ReportStructure reportStructure;
-//		private Properties customizer;
 		private ReportModel model;
 		private ConnectionObject connectionObject;
 		private DataSet resultDataSet;
@@ -232,12 +230,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		public override bool ReceiveDialogMessage(DialogMessage message)
 		{
-//			if (customizer == null) {
-//				customizer = (Properties)base.CustomizationObject;
-////				reportStructure = (ReportStructure)customizer.Get("Generator");
-//			}
-			reportStructure = (ReportStructure)base.CustomizationObject;
-			
+		
 			if (message == DialogMessage.Activated) 
 			{
 				ShowData();

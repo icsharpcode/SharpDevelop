@@ -24,33 +24,30 @@ namespace ICSharpCode.Reports.Addin.Commands
 		
 		public override void Run()
 		{
-//			WorkbenchSingleton.Workbench.ShowView(SetupDesigner());
-			throw new NotImplementedException("Run");
+			WorkbenchSingleton.Workbench.ShowView(SetupDesigner());
 		}
 		
-		/*
-		private static ReportDesignerView SetupDesigner ()
+		public static ReportDesignerView SetupDesigner ()
 		{
 			
 			ReportModel model = ReportModel.Create();
-			Properties properties = new Properties();
-			properties.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-			IReportGenerator generator = new GeneratePlainReport(model,properties);
+			Properties customizer = new Properties();
+			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
+			IReportGenerator generator = new GeneratePlainReport(model);
 			generator.GenerateReport();
-			Console.WriteLine("--Rework-----StartViewCommand----------");
+			
 //			OpenedFile file = FileService.CreateUntitledOpenedFile(GlobalValues.PlainFileName,new byte[0]);
 //			file.SetData(generator.Generated.ToArray());
 //			return SetupDesigner(file);
 			return SetupDesigner(null);
 		}
-		*/
+		
 		
 		public static ReportDesignerView SetupDesigner (OpenedFile file)
 		{
 			if (file == null) {
 				throw new ArgumentNullException("file");
 			}
-			Console.WriteLine("StartViewCommand.SetupDesigner");
 			IDesignerGenerator generator = new ReportDesignerGenerator();
 			return new ReportDesignerView(file, generator);
 		}

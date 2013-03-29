@@ -64,7 +64,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 			
 			customizer.Set("Generator", structure);
 			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-			IReportGenerator generator = new GeneratePushDataReport(m,customizer);
+			IReportGenerator generator = new GeneratePushDataReport(m);
 			generator.GenerateReport();
 			
 			ReportLoader rl = new ReportLoader();

@@ -12,7 +12,6 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 {
 	/*
 	[TestFixture]
-	[Ignore]
 	public class GenerateFormsSheetReportFixture
 	{
 		
@@ -71,7 +70,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 			Properties customizer = new Properties();
 			
 			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-			IReportGenerator generator = new GenerateFormSheetReport(m,customizer);
+			IReportGenerator generator = new GenerateFormSheetReport(m);
 			generator.GenerateReport();
 			
 			ReportLoader rl = new ReportLoader();

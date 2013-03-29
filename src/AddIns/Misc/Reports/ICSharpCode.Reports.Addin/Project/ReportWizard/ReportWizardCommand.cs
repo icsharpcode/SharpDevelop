@@ -23,6 +23,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		private OpenedFile file;
 		private ReportModel reportModel;
 		private IReportGenerator reportGenerator;
+		private Properties customizer = new Properties();
 		private ReportStructure reportStructure;
 		private bool canceled;
 		
@@ -36,12 +37,15 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		public override void Run()
 		{
 			reportStructure = new ReportStructure();
+//			customizer.Set("Generator", reportStructure);
+//			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
+			
 			if (GlobalValues.IsValidPrinter() == true) {
 				
 				using (WizardDialog wizard = new WizardDialog("Report Wizard", reportStructure, WizardPath)) {
 					if (wizard.ShowDialog() == DialogResult.OK) {
 						reportModel = reportStructure.CreateAndFillReportModel ();
-						CreateReportFromModel(reportModel,reportStructure);
+						CreateReportFromModel(reportModel);
 					}
 					else{
 						this.canceled = true;
@@ -53,7 +57,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 		
-		private void CreateReportFromModel (ReportModel model,ReportStructure customizer)
+		private void CreateReportFromModel (ReportModel model)
 		{
 			reportGenerator = GeneratorFactory.Create (model,customizer);
 			file.MakeDirty();
