@@ -218,7 +218,7 @@ namespace ICSharpCode.SharpDevelop.Startup
 		{
 			try {
 				foreach (string file in fileList) {
-					if (ProjectService.HasProjectLoader(file)) {
+					if (SD.ProjectService.IsSolutionOrProjectFile(FileName.Create(file))) {
 						return false;
 					}
 				}

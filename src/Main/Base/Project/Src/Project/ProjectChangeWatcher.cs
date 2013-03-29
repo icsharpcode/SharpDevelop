@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					showingMessageBox = false;
 					wasChangedExternally = false;
 					if (result == 0)
-						ProjectService.LoadSolution(ProjectService.OpenSolution.FileName);
+						SD.ProjectService.OpenSolutionOrProject(ProjectService.OpenSolution.FileName);
 					else if (result == 2)
 						new CloseSolution().Run();
 				} else {

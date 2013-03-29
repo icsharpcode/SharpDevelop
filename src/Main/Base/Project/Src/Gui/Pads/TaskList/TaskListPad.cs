@@ -79,9 +79,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				WorkbenchActiveViewContentChanged(null, null);
 			}
 			
-			ProjectService.SolutionLoaded += OnSolutionOpen;
-			ProjectService.SolutionClosed += OnSolutionClosed;
-			ProjectService.CurrentProjectChanged += ProjectServiceCurrentProjectChanged;
+			SD.ProjectService.SolutionOpened += OnSolutionOpen;
+			SD.ProjectService.SolutionClosed += OnSolutionClosed;
+			SD.ProjectService.CurrentProjectChanged += ProjectServiceCurrentProjectChanged;
 			
 			this.isInitialized = true;
 		}

@@ -72,8 +72,8 @@ namespace ICSharpCode.SharpDevelop
 				// trap changes in the secondary tab via the workbench's ActiveViewContentChanged event
 				SD.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
 				
-				FileService.FileRenamed += FileService_FileRenamed;
-				ProjectService.SolutionClosed += ProjectService_SolutionClosed;
+				SD.FileService.FileRenamed += FileService_FileRenamed;
+				SD.ProjectService.SolutionClosed += ProjectService_SolutionClosed;
 				serviceInitialized = true;
 			}
 		}

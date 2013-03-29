@@ -33,10 +33,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public void RefreshProjectBrowser()
 		{
-			SD.MainThread.InvokeIfRequired(() => {
-				var refreshCommand = new RefreshProjectBrowser();
-				refreshCommand.Run();
-			});
+			SD.MainThread.InvokeAsyncAndForget(ProjectBrowserPad.RefreshViewAsync);
 		}
 		
 		void InvokeIfRequired(Action action)

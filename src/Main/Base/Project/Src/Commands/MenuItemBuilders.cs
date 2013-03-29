@@ -173,13 +173,13 @@ namespace ICSharpCode.SharpDevelop.Commands
 				
 				for (int i = 0; i < recentOpen.RecentProjects.Count; ++i) {
 					// variable inside loop, so that anonymous method refers to correct recent file
-					string recentProject = recentOpen.RecentProjects[i];
+					FileName recentProject = recentOpen.RecentProjects[i];
 					string accelaratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10) + " " : "";
 					items[i] = new System.Windows.Controls.MenuItem() {
 						Header = accelaratorKeyPrefix + recentProject
 					};
 					items[i].Click += delegate {
-						ProjectService.LoadSolution(recentProject);
+						SD.ProjectService.OpenSolutionOrProject(recentProject);
 					};
 				}
 				return items;

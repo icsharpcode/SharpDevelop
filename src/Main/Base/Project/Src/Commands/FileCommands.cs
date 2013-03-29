@@ -177,11 +177,11 @@ namespace ICSharpCode.SharpDevelop.Commands
 				}
 				
 				if (fdiag.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
-					string fileName = fdiag.FileName;
+					FileName fileName = FileName.Create(fdiag.FileName);
 					if (!FileService.CheckFileName(fileName)) {
 						return;
 					}
-					if (FileUtility.ObservedSave(new NamedFileOperationDelegate(file.SaveToDisk), FileName.Create(fileName)) == FileOperationResult.OK) {
+					if (FileUtility.ObservedSave(new NamedFileOperationDelegate(file.SaveToDisk), fileName) == FileOperationResult.OK) {
 						SD.FileService.RecentOpen.AddRecentFile(fileName);
 						MessageService.ShowMessage(fileName, "${res:ICSharpCode.SharpDevelop.Commands.SaveFile.FileSaved}");
 					}

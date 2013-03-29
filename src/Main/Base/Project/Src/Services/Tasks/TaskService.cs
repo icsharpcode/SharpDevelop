@@ -79,8 +79,8 @@ namespace ICSharpCode.SharpDevelop
 			// avoid trouble with double initialization
 			SD.ParserService.ParseInformationUpdated -= ParserService_ParseInformationUpdated;
 			SD.ParserService.ParseInformationUpdated += ParserService_ParseInformationUpdated;
-			ProjectService.SolutionClosed -= ProjectServiceSolutionClosed;
-			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
+			SD.ProjectService.SolutionClosed -= ProjectServiceSolutionClosed;
+			SD.ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
 		}
 		
 		static void ParserService_ParseInformationUpdated(object sender, ParseInformationEventArgs e)

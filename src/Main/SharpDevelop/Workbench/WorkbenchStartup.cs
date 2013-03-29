@@ -106,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			// load previous solution
 			if (!didLoadSolutionOrFile && PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
 				if (SD.FileService.RecentOpen.RecentProjects.Count > 0) {
-					ProjectService.LoadSolution(SD.FileService.RecentOpen.RecentProjects[0]);
+					SD.ProjectService.OpenSolutionOrProject(SD.FileService.RecentOpen.RecentProjects[0]);
 					didLoadSolutionOrFile = true;
 				}
 			}

@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 
 		static DebuggerService()
 		{
-			ProjectService.SolutionLoaded += delegate {
+			SD.ProjectService.SolutionOpened += delegate {
 				ClearDebugMessages();
 			};
 			

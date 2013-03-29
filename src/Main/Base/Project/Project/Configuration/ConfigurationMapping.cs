@@ -25,6 +25,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				this.Config = config;
 			}
+			
+			public Entry Clone()
+			{
+				return (Entry)MemberwiseClone();
+			}
 		}
 		
 		/// <summary>
@@ -141,6 +146,35 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			if (result)
 				Changed(this, EventArgs.Empty);
+		}
+		
+		/// <summary>
+		/// Copies an entry.
+		/// </summary>
+		public void CopySolutionConfiguration(ConfigurationAndPlatform sourceSolutionConfiguration, ConfigurationAndPlatform targetSolutionConfiguration)
+		{
+			lock (dict) {
+				Entry entry;
+				if (dict.TryGetValue(sourceSolutionConfiguration, out entry)) {
+					dict[targetSolutionConfiguration] = entry.Clone();
+				}
+			}
+			Changed(this, EventArgs.Empty);
+		}
+		
+		/// <summary>
+		/// Renames an entry.
+		/// </summary>
+		public void RenameSolutionConfiguration(ConfigurationAndPlatform sourceSolutionConfiguration, ConfigurationAndPlatform targetSolutionConfiguration)
+		{
+			lock (dict) {
+				Entry entry;
+				if (dict.TryGetValue(sourceSolutionConfiguration, out entry)) {
+					dict.Remove(sourceSolutionConfiguration);
+					dict.Add(targetSolutionConfiguration, entry);
+				}
+			}
+			Changed(this, EventArgs.Empty);
 		}
 	}
 }

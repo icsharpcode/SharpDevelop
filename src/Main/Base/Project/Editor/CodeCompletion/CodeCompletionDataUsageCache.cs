@@ -57,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		static void LoadCache()
 		{
 			dict = new Dictionary<string, UsageStruct>();
-			ProjectService.SolutionClosed += delegate { SaveCache(); };
+			SD.ProjectService.SolutionClosed += delegate { SaveCache(); };
 			string cacheFileName = CodeCompletionDataUsageCache.CacheFilename;
 			if (string.IsNullOrEmpty(cacheFileName) || !File.Exists(cacheFileName))
 				return;

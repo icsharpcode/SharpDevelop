@@ -89,8 +89,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			};
 			
 			SD.BuildService.BuildFinished += ProjectServiceEndBuild;
-			ProjectService.SolutionLoaded += OnSolutionOpen;
-			ProjectService.SolutionClosed += OnSolutionClosed;
+			SD.ProjectService.SolutionOpened += OnSolutionOpen;
+			SD.ProjectService.SolutionClosed += OnSolutionClosed;
 			
 			taskView.CreateControl();
 			contentPanel.Controls.Add(taskView);

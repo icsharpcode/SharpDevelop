@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
+using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -89,7 +90,7 @@ namespace ICSharpCode.StartPage
 		{
 			RecentOpenItem item = (RecentOpenItem)lastProjectsListView.SelectedItem;
 			if (item != null) {
-				ProjectService.LoadSolutionOrProject(item.Path);
+				SD.ProjectService.OpenSolutionOrProject(FileName.Create(item.Path));
 			}
 		}
 		
@@ -103,7 +104,7 @@ namespace ICSharpCode.StartPage
 		void listViewHyperlinkClick(object sender, RoutedEventArgs e)
 		{
 			RecentOpenItem item = (RecentOpenItem)((Hyperlink)sender).Tag;
-			ProjectService.LoadSolutionOrProject(item.Path);
+			SD.ProjectService.OpenSolutionOrProject(FileName.Create(item.Path));
 		}
 		
 		void openSolutionClick(object sender, RoutedEventArgs e)

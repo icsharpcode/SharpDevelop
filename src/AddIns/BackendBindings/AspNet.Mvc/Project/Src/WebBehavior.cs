@@ -150,7 +150,7 @@ namespace ICSharpCode.AspNet.Mvc
 					DisposeProcessMonitor();
 					this.monitor = new ProcessMonitor(processName);
 					this.monitor.ProcessCreated += delegate {
-						WorkbenchSingleton.SafeThreadCall((Action)(() => OnProcessCreated(properties, withDebugging)));
+						SD.MainThread.InvokeAsyncAndForget(() => OnProcessCreated(properties, withDebugging));
 					};
 					this.monitor.Start();
 				}

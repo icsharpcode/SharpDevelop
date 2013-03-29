@@ -76,8 +76,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		public ProjectBrowserPad()
 		{
 			instance = this;
-			ProjectService.SolutionLoaded += ProjectServiceSolutionLoaded;
-			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
+			SD.ProjectService.SolutionOpened += ProjectServiceSolutionLoaded;
+			SD.ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
 			
 			SD.Workbench.ActiveContentChanged += ActiveContentChanged;
 			if (ProjectService.OpenSolution != null) {

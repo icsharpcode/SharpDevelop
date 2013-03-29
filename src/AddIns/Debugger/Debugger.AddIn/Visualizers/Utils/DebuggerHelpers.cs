@@ -95,7 +95,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 			Value valueHashCode;
 			try {
 				valueHashCode = Eval.InvokeMethod(WindowsDebugger.EvalThread, hashCodeMethod, null, new Value[]{value});
-			} catch(InvalidComObjectException ex) {
+			} catch(InvalidComObjectException) {
 				// debuggee was restarted
 				hashCodeMethod = findDebuggeeHashCodeMethod(value);
 				valueHashCode = Eval.InvokeMethod(WindowsDebugger.EvalThread, hashCodeMethod, null, new Value[]{value});

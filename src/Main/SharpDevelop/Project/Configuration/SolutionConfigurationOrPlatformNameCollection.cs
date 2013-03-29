@@ -96,9 +96,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					foreach (string otherName in isPlatform ? solution.ConfigurationNames : solution.PlatformNames) {
 						var sourceSolutionConfig = isPlatform ? new ConfigurationAndPlatform(otherName, copyFrom) : new ConfigurationAndPlatform(copyFrom, otherName);
 						var newSolutionConfig = isPlatform ? new ConfigurationAndPlatform(otherName, newName) : new ConfigurationAndPlatform(newName, otherName);
-						mapping.SetProjectConfiguration(newSolutionConfig, mapping.GetProjectConfiguration(sourceSolutionConfig));
-						mapping.SetBuildEnabled(newSolutionConfig, mapping.IsBuildEnabled(sourceSolutionConfig));
-						mapping.SetDeployEnabled(newSolutionConfig, mapping.IsDeployEnabled(sourceSolutionConfig));
+						mapping.CopySolutionConfiguration(sourceSolutionConfig, newSolutionConfig);
 					}
 				}
 			}
@@ -150,13 +148,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				foreach (string otherName in isPlatform ? solution.ConfigurationNames : solution.PlatformNames) {
 					var oldSolutionConfig = isPlatform ? new ConfigurationAndPlatform(otherName, oldName) : new ConfigurationAndPlatform(oldName, otherName);
 					var newSolutionConfig = isPlatform ? new ConfigurationAndPlatform(otherName, newName) : new ConfigurationAndPlatform(newName, otherName);
-					var projectConfig = mapping.GetProjectConfiguration(oldSolutionConfig);
-					var buildEnabled = mapping.IsBuildEnabled(oldSolutionConfig);
-					var deployEnabled = mapping.IsDeployEnabled(oldSolutionConfig);
-					mapping.Remove(oldSolutionConfig);
-					mapping.SetProjectConfiguration(newSolutionConfig, projectConfig);
-					mapping.SetBuildEnabled(newSolutionConfig, buildEnabled);
-					mapping.SetDeployEnabled(newSolutionConfig, deployEnabled);
+					mapping.RenameSolutionConfiguration(oldSolutionConfig, newSolutionConfig);
 				}
 			}
 		}

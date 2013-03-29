@@ -24,15 +24,15 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		int MAX_LENGTH = 10;
 		
-		ObservableCollection<string> recentFiles    = new ObservableCollection<string>();
-		ObservableCollection<string> recentProjects = new ObservableCollection<string>();
+		ObservableCollection<FileName> recentFiles    = new ObservableCollection<FileName>();
+		ObservableCollection<FileName> recentProjects = new ObservableCollection<FileName>();
 		Properties properties;
 		
-		public IReadOnlyList<string> RecentFiles {
+		public IReadOnlyList<FileName> RecentFiles {
 			get { return recentFiles; }
 		}
 
-		public IReadOnlyList<string> RecentProjects {
+		public IReadOnlyList<FileName> RecentProjects {
 			get { return recentProjects; }
 		}
 		
@@ -41,17 +41,13 @@ namespace ICSharpCode.SharpDevelop
 			// don't check whether files exist because that might be slow (e.g. if file is on network
 			// drive that's unavailable)
 			this.properties = p;
-			recentFiles.AddRange(p.GetList<string>("Files"));
-			recentProjects.AddRange(p.GetList<string>("Projects"));
+			recentFiles.AddRange(p.GetList<string>("Files").Select(FileName.Create));
+			recentProjects.AddRange(p.GetList<string>("Projects").Select(FileName.Create));
 		}
 		
-		public void AddRecentFile(string name)
+		public void AddRecentFile(FileName name)
 		{
-			for (int i = 0; i < recentFiles.Count; ++i) {
-				if (recentFiles[i].Equals(name, StringComparison.OrdinalIgnoreCase)) {
-					recentFiles.RemoveAt(i);
-				}
-			}
+			recentFiles.Remove(name); // remove if the filename is already in the list
 			
 			while (recentFiles.Count >= MAX_LENGTH) {
 				recentFiles.RemoveAt(recentFiles.Count - 1);
@@ -73,13 +69,9 @@ namespace ICSharpCode.SharpDevelop
 			properties.SetList("Projects", recentProjects);
 		}
 		
-		public void AddRecentProject(string name)
+		public void AddRecentProject(FileName name)
 		{
-			for (int i = 0; i < recentProjects.Count; ++i) {
-				if (recentProjects[i].ToString().Equals(name, StringComparison.OrdinalIgnoreCase)) {
-					recentProjects.RemoveAt(i);
-				}
-			}
+			recentProjects.Remove(name);
 			
 			while (recentProjects.Count >= MAX_LENGTH) {
 				recentProjects.RemoveAt(recentProjects.Count - 1);
@@ -107,7 +99,7 @@ namespace ICSharpCode.SharpDevelop
 				string file = recentFiles[i].ToString();
 				if (e.SourceFile == file) {
 					recentFiles.RemoveAt(i);
-					recentFiles.Insert(i, e.TargetFile);
+					recentFiles.Insert(i, FileName.Create(e.TargetFile));
 					break;
 				}
 			}

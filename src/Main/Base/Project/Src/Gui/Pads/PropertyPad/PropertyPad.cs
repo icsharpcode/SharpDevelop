@@ -184,7 +184,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			panel.Controls.Add(comboBox);
 			SD.WinForms.SetContent(contentControl, panel);
 			
-			ProjectService.SolutionClosed += SolutionClosedEvent;
+			SD.ProjectService.SolutionClosed += SolutionClosedEvent;
 			
 			grid.PropertyValueChanged += new PropertyValueChangedEventHandler(PropertyChanged);
 			grid.ContextMenuStrip = SD.WinForms.MenuService.CreateContextMenu(this, "/SharpDevelop/Views/PropertyPad/ContextMenu");
@@ -391,7 +391,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			base.Dispose();
 			if (grid != null) {
 				this.ideContainer.Disconnect();
-				ProjectService.SolutionClosed -= SolutionClosedEvent;
+				SD.ProjectService.SolutionClosed -= SolutionClosedEvent;
 				try {
 					grid.SelectedObjects = null;
 				} catch {}

@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			FileService.FileRenamed += FileServiceFileRenamed;
 			FileService.FileRemoved += FileServiceFileRemoved;
 			
-			ProjectService.ProjectItemAdded += ProjectServiceProjectItemAdded;
+			SD.ProjectService.ProjectItemAdded += ProjectServiceProjectItemAdded;
 			treeView.DrawNode += TreeViewDrawNode;
 			treeView.DragDrop += TreeViewDragDrop;
 		}

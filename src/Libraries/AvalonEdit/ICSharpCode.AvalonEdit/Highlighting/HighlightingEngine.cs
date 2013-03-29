@@ -20,6 +20,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		readonly HighlightingRuleSet mainRuleSet;
 		SpanStack spanStack = SpanStack.Empty;
 		
+		/// <summary>
+		/// Creates a new HighlightingEngine instance.
+		/// </summary>
 		public HighlightingEngine(HighlightingRuleSet mainRuleSet)
 		{
 			if (mainRuleSet == null)

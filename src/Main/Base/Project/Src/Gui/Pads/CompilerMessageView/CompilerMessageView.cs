@@ -223,12 +223,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			SetWordWrap();
 			DisplayActiveCategory();
-			ProjectService.SolutionLoaded += SolutionLoaded;
+			SD.ProjectService.CurrentSolutionChanged += OnSolutionLoaded;
 			
 			textEditor.TextArea.DefaultInputHandler.NestedInputHandlers.Add(new SearchInputHandler(textEditor.TextArea));
 		}
 
-		void SolutionLoaded(object sender, SolutionEventArgs e)
+		void OnSolutionLoaded(object sender, EventArgs e)
 		{
 			foreach (MessageViewCategory category in messageCategories) {
 				category.ClearText();

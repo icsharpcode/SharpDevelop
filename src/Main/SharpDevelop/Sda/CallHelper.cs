@@ -217,13 +217,12 @@ namespace ICSharpCode.SharpDevelop.Sda
 		
 		public void OpenProject(string fileName)
 		{
-			SD.MainThread.InvokeIfRequired(() => Project.ProjectService.LoadSolutionOrProject(fileName));
+			SD.MainThread.InvokeIfRequired(() => SD.ProjectService.OpenSolutionOrProject(FileName.Create(fileName)));
 		}
 		
-		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public bool IsSolutionOrProject(string fileName)
 		{
-			return Project.ProjectService.HasProjectLoader(fileName);
+			return SD.ProjectService.IsSolutionOrProjectFile(FileName.Create(fileName));
 		}
 		
 		public bool CloseWorkbench(bool force)

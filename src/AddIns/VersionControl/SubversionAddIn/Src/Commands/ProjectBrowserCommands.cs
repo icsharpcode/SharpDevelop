@@ -155,7 +155,7 @@ namespace ICSharpCode.Svn.Commands
 						"${res:ICSharpCode.SharpDevelop.Project.ReloadSolution}", "${res:ICSharpCode.SharpDevelop.Project.KeepOldSolution}")
 					    == 0)
 					{
-						ProjectService.LoadSolution(solution.FileName);
+						SD.ProjectService.OpenSolution(solution.FileName);
 					}
 				}
 			}

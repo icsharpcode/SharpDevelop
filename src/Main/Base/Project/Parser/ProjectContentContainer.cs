@@ -56,8 +56,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 			
 			this.cacheFileName = GetCacheFileName(project.FileName);
 			
-			ProjectService.ProjectItemAdded += OnProjectItemAdded;
-			ProjectService.ProjectItemRemoved += OnProjectItemRemoved;
+			SD.ProjectService.ProjectItemAdded += OnProjectItemAdded;
+			SD.ProjectService.ProjectItemRemoved += OnProjectItemRemoved;
 			
 			var parserService = SD.ParserService;
 			List<FileName> filesToParse = new List<FileName>();
@@ -76,8 +76,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		public void Dispose()
 		{
-			ProjectService.ProjectItemAdded   -= OnProjectItemAdded;
-			ProjectService.ProjectItemRemoved -= OnProjectItemRemoved;
+			SD.ProjectService.ProjectItemAdded   -= OnProjectItemAdded;
+			SD.ProjectService.ProjectItemRemoved -= OnProjectItemRemoved;
 			IProjectContent pc;
 			bool serializeOnDispose;
 			lock (lockObj) {
