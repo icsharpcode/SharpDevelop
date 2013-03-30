@@ -10,38 +10,33 @@
 	<Color name="LineBreak" background="LightGray" exampleText="end of line      \r\n2nd line   " />
 	
 	<RuleSet ignoreCase="true">
-		<Span color="Heading">
-			<Begin>^\#</Begin>
-		</Span>
-		<Span color="StrongEmphasis" multiline="true">
-			<Begin>\*\*</Begin>
-			<End>\*\*</End>
-		</Span>
-		<Span color="StrongEmphasis" multiline="true">
-			<Begin>__</Begin>
-			<End>__</End>
-		</Span>
-		<Span color="Emphasis" multiline="true">
-			<Begin>\*(?![ ])</Begin>
-			<End>\*</End>
-		</Span>
-		<Span color="Emphasis" multiline="true">
-			<Begin>_</Begin>
-			<End>_</End>
-		</Span>
-		<Span color="Code" ruleSet="C#/">
-			<Begin>`</Begin>
-			<End>`</End>
-		</Span>
-		<Span color="Code" ruleSet="C#/">
+		<Rule color="Heading">
+			^\#.*
+		</Rule>
+		<Rule color="StrongEmphasis">
+			\*\*.*\*\*
+		</Rule>
+		<Rule color="StrongEmphasis">
+			__.*__
+		</Rule>
+		<Rule color="Emphasis">
+			\*(?![ ]).*\*
+		</Rule>
+		<Rule color="Emphasis">
+			_.*_
+		</Rule>
+		<Rule color="Code">
+			`.*`
+		</Rule>
+		<Span color="Code" ruleSet="C#/" multiline="true">
 			<Begin>^\t</Begin>
 			<End>^(?!\t)</End>
 		</Span>
-		<Span color="Code" ruleSet="C#/">
+		<Span color="Code" ruleSet="C#/" multiline="true">
 			<Begin>^[ ]{4}</Begin>
 			<End>^(?![ ]{4})</End>
 		</Span>
-		<Span color="BlockQuote">
+		<Span color="BlockQuote" multiline="true">
 			<Begin>^&gt;</Begin>
 			<End>^(?!&gt;)</End>
 		</Span>
