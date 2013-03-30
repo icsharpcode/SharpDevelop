@@ -53,7 +53,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 				yield return codeAction;
 			}
 
-			Console.WriteLine(1);
 			foreach (var node in selected) {
 				if (!(node is Statement) && !(node is Comment) && !(node is NewLineNode) && !(node is PreProcessorDirective))
 					yield break;
