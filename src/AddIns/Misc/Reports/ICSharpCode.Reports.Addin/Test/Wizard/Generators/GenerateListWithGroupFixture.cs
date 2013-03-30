@@ -18,7 +18,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 	/// Description of GenerateListWithGroupFixture.
 	/// </summary>
 	[TestFixture]
-	[Ignore]
+//	[Ignore]
 	public class GenerateListWithGroupFixture
 	{
 		
@@ -94,6 +94,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		
 		
 		#endregion
+		
 	}
 }
 */

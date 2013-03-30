@@ -77,7 +77,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		Size CreateDetail()
 		{
-			var items = base.AddItemsToContainer();
+			var items = base.CreateItemsCollection();
 			Container.Items.AddRange(items);
 			return items[0].Size;
 		}

@@ -3,9 +3,6 @@
 
 using System;
 using System.Drawing;
-using ICSharpCode.Core;
-using ICSharpCode.Reports.Core;
-using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
 {
@@ -15,7 +12,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	public class LayoutPanel: AbstractWizardPanel
 	{
 		private LayoutPanelControl layoutControl;
-//		private Properties customizer;
 		private ReportStructure reportStructure;
 		
 		public LayoutPanel()
@@ -43,6 +39,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 			else if (message == DialogMessage.Finish)
 			{
+				reportStructure.ReportLayout = layoutControl.ReportLayout;
 				reportStructure.Grouping = layoutControl.GroupName;
 			}
 			return true;

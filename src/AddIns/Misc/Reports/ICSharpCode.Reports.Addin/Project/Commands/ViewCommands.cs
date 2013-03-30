@@ -24,16 +24,21 @@ namespace ICSharpCode.Reports.Addin.Commands
 		
 		public override void Run()
 		{
-			WorkbenchSingleton.Workbench.ShowView(SetupDesigner());
+			throw new NotImplementedException("StartViewCommand-Run");
+//			SD.Workbench.ShowView(SetupDesigner());
 		}
 		
+		/*
 		public static ReportDesignerView SetupDesigner ()
 		{
-			
+			throw new NotImplementedException("SetupDesigner");
 			ReportModel model = ReportModel.Create();
-			Properties customizer = new Properties();
-			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-			IReportGenerator generator = new GeneratePlainReport(model);
+			
+			var reportStructure = new ReportStructure()
+			{
+				ReportLayout = GlobalEnums.ReportLayout.ListLayout;
+			}
+			IReportGenerator generator = new GeneratePlainReport(model,reportStructure);
 			generator.GenerateReport();
 			
 //			OpenedFile file = FileService.CreateUntitledOpenedFile(GlobalValues.PlainFileName,new byte[0]);
@@ -41,7 +46,7 @@ namespace ICSharpCode.Reports.Addin.Commands
 //			return SetupDesigner(file);
 			return SetupDesigner(null);
 		}
-		
+		*/
 		
 		public static ReportDesignerView SetupDesigner (OpenedFile file)
 		{

@@ -66,7 +66,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			if (!String.IsNullOrEmpty(this.Grouping))
 			{
 				string s = "=[" + this.Grouping + "]";
-				//GroupColumn g = new GroupColumn(this.Grouping,1,System.ComponentModel.ListSortDirection.Ascending);
 				GroupColumn g = new GroupColumn(s,1,System.ComponentModel.ListSortDirection.Ascending);
 				settings.GroupColumnsCollection.Add(g);
 			}
@@ -138,11 +137,14 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		#endregion
 		
+		public GlobalEnums.ReportLayout ReportLayout {get;set;}
+		
 		#region Grouping
 		
 		public string Grouping {get;set;}
 		
 		#endregion
+		
 		
 		#region IDisposable
 		public void Dispose(){

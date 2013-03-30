@@ -18,16 +18,18 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 	[Ignore]
 	public class GeneratePlainReportFixture
 	{
-		/*
+		
 		[Test]
 		
 		public void GeneratePlainReport_1()
 		{
 			ReportModel model = ReportModel.Create();
-			Properties customizer = new Properties();
-			
-			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-			IReportGenerator generator = new GeneratePlainReport(model);
+
+			ReportStructure reportStructure = new ReportStructure()
+			{
+				ReportLayout = GlobalEnums.ReportLayout.ListLayout
+			};
+			IReportGenerator generator = new GeneratePlainReport(model,reportStructure);
 			generator.GenerateReport();
 			
 			XDocument doc1 = XDocument.Load(new XmlNodeReader (generator.XmlReport));
@@ -47,10 +49,9 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 			foreach (XElement a in sq)
 			{
 				Console.WriteLine (a.Name);
-		}
+			}
 			
 		}
-		
 		
 		[Test]
 		public void CheckReportSettings ()
@@ -85,18 +86,19 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 			}
 			Assert.AreEqual (5,sq1.Count(),"Should be 5 times a 'BaseSection'");
 		}
-		*/
-		/*
+		
 		private XmlDocument CreateXmlFromModel ()
 		{
 			ReportModel model = ReportModel.Create();
-			Properties customizer = new Properties();
-			
-			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-			IReportGenerator generator = new GeneratePlainReport(model);
+			ReportStructure reportStructure = new ReportStructure()
+			{
+				ReportLayout = GlobalEnums.ReportLayout.ListLayout
+			};
+			IReportGenerator generator = new GeneratePlainReport(model,reportStructure);
 			generator.GenerateReport();
 			return generator.XmlReport;
 		}
-		*/
+		
 	}
+	
 }

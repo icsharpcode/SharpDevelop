@@ -21,9 +21,9 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 	/*
 	[TestFixture]
 	[Ignore]
-	public class GenertaeTableWithGroupFixture
+	public class GenerateTableWithGroupFixture
 	{
-		
+		/*
 		private const string reportName = "TableBasedReport";
 		private ReportModel reportModel;
 		
@@ -136,7 +136,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		}
 		
 		#endregion
-		
+		*/
 	}
 	*/
 }

@@ -42,10 +42,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard{
 		private RadioButton radioStandardLayout;
 		private RadioButton radioLandscape;
 		
-		ReportStructure generator;
-//		Properties customizer;
-//ReportStructure	ReportStructure customizer;
-	
+		ReportStructure reportStructure;
 		bool initDone;
 	
 		public BaseSettingsPanel(){
@@ -158,37 +155,35 @@ namespace ICSharpCode.Reports.Addin.ReportWizard{
 		
 		private void UpdateGenerator ()
 		{
-//			if (customizer == null) {
-//				customizer = (ReportStructure)base.CustomizationObject;
-//				generator = (ReportStructure)customizer.Get("Generator");
-				generator = (ReportStructure)base.CustomizationObject;
-//			}
 
-			generator.ReportName = txtReportName.Text;
+			reportStructure = (ReportStructure)base.CustomizationObject;
+
+
+			reportStructure.ReportName = txtReportName.Text;
 			if (!this.txtFileName.Text.EndsWith(GlobalValues.ReportExtension,StringComparison.OrdinalIgnoreCase)){
-				generator.FileName = txtFileName.Text + GlobalValues.ReportExtension;
+				reportStructure.FileName = txtFileName.Text + GlobalValues.ReportExtension;
 			} else {
-				generator.FileName = txtFileName.Text;
+				reportStructure.FileName = txtFileName.Text;
 			}
-			generator.Path = this.txtPath.Text;
-			generator.GraphicsUnit = (GraphicsUnit)Enum.Parse(typeof(GraphicsUnit),
+			reportStructure.Path = this.txtPath.Text;
+			reportStructure.GraphicsUnit = (GraphicsUnit)Enum.Parse(typeof(GraphicsUnit),
 			                                                  this.cboGraphicsUnit.Text);
 
 			if (this.radioPullModell.Checked == true) {
 				base.NextWizardPanelID = "PullModel";
-				generator.DataModel = GlobalEnums.PushPullModel.PullData;
+				reportStructure.DataModel = GlobalEnums.PushPullModel.PullData;
 				GoOn();
 			} else if (this.radioPushModell.Checked == true){
 				base.NextWizardPanelID = "PushModel";
-				generator.DataModel = GlobalEnums.PushPullModel.PushData;
+				reportStructure.DataModel = GlobalEnums.PushPullModel.PushData;
 				GoOn();
 			} else if (this.radioFormSheet.Checked == true){
-				generator.DataModel = GlobalEnums.PushPullModel.FormSheet;
+				reportStructure.DataModel = GlobalEnums.PushPullModel.FormSheet;
 				base.EnableNext = false;
 				base.IsLastPanel = true;
 			}
 			
-			generator.Landscape = this.radioLandscape.Checked;
+			reportStructure.Landscape = this.radioLandscape.Checked;
 		}
 		
 		
@@ -198,11 +193,11 @@ namespace ICSharpCode.Reports.Addin.ReportWizard{
 				
 				if (this.radioPullModell.Checked == true) {
 					base.NextWizardPanelID = "PullModel";	
-					generator.DataModel = GlobalEnums.PushPullModel.PullData;
+					reportStructure.DataModel = GlobalEnums.PushPullModel.PullData;
 					GoOn();
 				} else if (this.radioPushModell.Checked == true){
 					base.NextWizardPanelID = "PushModel";
-					generator.DataModel = GlobalEnums.PushPullModel.PushData;
+					reportStructure.DataModel = GlobalEnums.PushPullModel.PushData;
 					GoOn();
 				} else if (this.radioFormSheet.Checked == true){
 //					generator.DataModel = GlobalEnums.PushPullModel.FormSheet;
@@ -210,10 +205,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard{
 					base.IsLastPanel = true;
 				} else if(this.radioStandardLayout.Checked == true) {
 					
-					generator.Landscape = false;
+					reportStructure.Landscape = false;
 					
 				} else if(this.radioLandscape.Checked == true) {
-					generator.Landscape = true;
+					reportStructure.Landscape = true;
 				}
 					
 				base.EnableFinish = true;

@@ -24,7 +24,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		/// <summary>
 		/// Default constructor - initializes all fields to default values
 		/// </summary>
-		public GeneratePushDataReport(ReportModel reportModel):base(reportModel){		                              		                      
+		public GeneratePushDataReport(ReportModel reportModel,ReportStructure reportStructure):base(reportModel,reportStructure){		                              		                      
 			base.UpdateGenerator();
 			base.UpdateModel();
 		}
@@ -35,14 +35,14 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			base.ReportModel.ReportSettings.ReportType = GlobalEnums.ReportType.DataReport;
 			base.ReportModel.ReportSettings.DataModel = GlobalEnums.PushPullModel.PushData;
 			base.GenerateReport();
-//			GlobalEnums.ReportLayout reportLayout = (GlobalEnums.ReportLayout)base.Properties.Get("ReportLayout");
+
+			GlobalEnums.ReportLayout reportLayout = ReportStructure.ReportLayout;
+			var layout = LayoutFactory.CreateGenerator(reportLayout,base.ReportModel,base.ReportItemCollection);
 			
-//			AbstractLayout layout = LayoutFactory.CreateGenerator(reportLayout,base.ReportModel,base.ReportItemCollection);
-//			
-//			layout.CreateReportHeader();
-//			layout.CreatePageHeader();
-//			layout.CreateDataSection(base.ReportModel.DetailSection);
-//			layout.CreatePageFooter();
+			layout.CreateReportHeader();
+			layout.CreatePageHeader();
+			layout.CreateDataSection(base.ReportModel.DetailSection);
+			layout.CreatePageFooter();
 			base.WriteToXml();
 		}
 	}

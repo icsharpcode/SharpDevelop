@@ -16,6 +16,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 	[Ignore]
 	public class GenerateTableReportFixture
 	{
+		/*
 		private const string reportName = "TableBasedReport";
 		ReportModel reportModel;
 		
@@ -135,7 +136,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		}
 		
 		#endregion
-		
+		*/
 	}
 	*/
 }

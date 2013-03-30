@@ -15,7 +15,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	public class GeneratePlainReport:AbstractReportGenerator
 	{
 		
-		public GeneratePlainReport(ReportModel reportModel):base(reportModel)
+		public GeneratePlainReport(ReportModel reportModel,ReportStructure reportStructure):base(reportModel,reportStructure)
 		{}
 		
 		

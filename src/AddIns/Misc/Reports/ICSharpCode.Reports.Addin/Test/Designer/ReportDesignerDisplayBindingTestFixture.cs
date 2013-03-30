@@ -13,7 +13,9 @@ using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Addin.Test.Designer
 {
+	
 	[TestFixture]
+
 	public class ReportDesignerDisplayBindingTestFixture
 	{
 		ReportDesignerDisplayBinding displayBinding;
@@ -49,15 +51,17 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 			Assert.IsTrue(displayBinding.IsPreferredBindingForFile(filename));
 		}
 		
-		/*
+		
 		[Test]
 		[Ignore]
 		public void CanCreateContentFromFile ()
 		{
 			ReportModel model = ReportModel.Create();
-			Properties customizer = new Properties();
-			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-			IReportGenerator generator = new GeneratePlainReport(model);
+		ReportStructure reportStructure = new ReportStructure()
+			{
+				ReportLayout = GlobalEnums.ReportLayout.ListLayout
+			};
+			IReportGenerator generator = new GeneratePlainReport(model,reportStructure);
 			generator.GenerateReport();
 			MockOpenedFile mof = new MockOpenedFile(GlobalValues.PlainFileName);
 			OpenedFile file = new MockOpenedFile(GlobalValues.PlainFileName);
@@ -66,7 +70,5 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 			//ICSharpCode.SharpDevelop.Gui.IViewContent v = displayBinding.CreateContentForFile(new MockOpenedFile("test.srd"));
 			//Assert.IsNotNull(v,"View should not be 'null'");
 		}
-		*/
-		
 	}
 }
