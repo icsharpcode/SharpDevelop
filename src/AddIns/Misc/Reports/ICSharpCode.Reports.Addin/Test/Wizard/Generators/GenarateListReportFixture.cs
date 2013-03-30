@@ -9,9 +9,8 @@ using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 {
-	/*
+	
 	[TestFixture]
-
 	public class GenerateListReportFixture
 	{
 		
@@ -188,5 +187,4 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		#endregion
 		
 	}
-	*/
 }

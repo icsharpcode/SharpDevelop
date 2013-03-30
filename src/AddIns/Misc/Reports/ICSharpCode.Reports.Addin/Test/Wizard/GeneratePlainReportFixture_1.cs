@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace ICSharpCode.Reports.Addin.Test.Wizard
 {
 	[TestFixture]
-	[Ignore]
 	public class GeneratePlainReportFixture
 	{
 		

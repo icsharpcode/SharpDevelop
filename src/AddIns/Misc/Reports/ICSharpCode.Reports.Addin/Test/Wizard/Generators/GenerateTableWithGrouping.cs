@@ -18,7 +18,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 {
-	/*
+	
 	[TestFixture]
 	[Ignore]
 	public class GenerateTableWithGroupFixture
@@ -138,5 +138,4 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		#endregion
 		*/
 	}
-	*/
 }

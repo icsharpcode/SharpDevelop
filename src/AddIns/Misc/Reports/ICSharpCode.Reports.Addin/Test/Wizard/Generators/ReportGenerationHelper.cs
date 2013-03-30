@@ -15,7 +15,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 	/// Description of ReportGenerationHelper.
 	/// </summary>
 	/// 
-	/*
+
 	public class ReportGenerationHelper
 	{
 		public static ReportModel FormSheetModel()
@@ -86,5 +86,5 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 			return structure;
 		}
 	}
-	*/
+
 }
