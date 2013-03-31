@@ -3,6 +3,7 @@
 
 using System;
 using System.Data;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.Reflection;
 using System.Windows.Forms;
@@ -12,7 +13,6 @@ using ICSharpCode.Core;
 using ICSharpCode.Data.Core.Interfaces;
 using ICSharpCode.Data.Core.UI.UserControls;
 using ICSharpCode.SharpDevelop;
-
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
 {
@@ -239,8 +239,13 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
                 {
                 	if (parentDatabase != null)
                 	{
-                		this.connectionString = "Provider=" + parentDatabase.Datasource.DatabaseDriver.ODBCProviderName + ";" + parentDatabase.ConnectionString;
-                		this.txtSqlString.Enabled = true;
+//                		this.connectionString =  + parentDatabase.ConnectionString;
+//     this.connectionString = "Driver={SQLServer};" +  "Provider=SQLOLEDB;" + parentDatabase.ConnectionString; 
+//var cs = new SqlConnection();
+//cs.
+      this.connectionString = "Provider=SQLOLEDB;" + parentDatabase.ConnectionString;  
+//       this.connectionString =  parentDatabase.ConnectionString;     
+this.txtSqlString.Enabled = true;
 
                 		if (this.firstDrag)
                 			this.txtSqlString.Text = string.Empty;

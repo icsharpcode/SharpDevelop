@@ -19,6 +19,7 @@ using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.DataAccess;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Project.BaseClasses;
+using ICSharpCode.Reports.Core.Project.Interfaces;
 using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
@@ -65,15 +66,16 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			DataSet dataSet = ResultPanel.CreateDataSet ();
 			
 			this.txtSqlString.Text = model.ReportSettings.CommandText;
+			
+			this.connectionObject = CreateConnection ();
+			var dataAccess = new SqlDataAccessStrategy(model.ReportSettings,connectionObject);
 			switch (model.ReportSettings.CommandType) {
 				case CommandType.Text:
-						this.connectionObject = CreateConnection ();
-						var dataAccess = new SqlDataAccessStrategy(model.ReportSettings,connectionObject);
-						dataSet = dataAccess.ReadData();
-						dataSet.Tables[0].TableName = CreateTableName (reportStructure);
+					dataSet = DatasetFromSqlText(dataAccess);
+						
 					break;
 				case CommandType.StoredProcedure:
-					dataSet = DatasetFromStoredProcedure();
+					dataSet = DatasetFromStoredProcedure(dataAccess);
 					break;
 				case CommandType.TableDirect:
 					MessageService.ShowError("TableDirect is not suppurted at the moment");
@@ -112,24 +114,27 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 		
-		DataSet DatasetFromStoredProcedure()
+		private DataSet DatasetFromSqlText(IDataAccessStrategy dataAccess)
 		{
-			this.connectionObject = CreateConnection();
+			var dataSet = dataAccess.ReadData();
+			dataSet.Tables[0].TableName = CreateTableName (reportStructure);
+			return dataSet;
+		}
+		
+		
+		private DataSet DatasetFromStoredProcedure(IDataAccessStrategy dataAccess)
+		{
 			DataSet dataSet = ResultPanel.CreateDataSet();
+			
 			IProcedure procedure = reportStructure.IDatabaseObjectBase as IProcedure;
-			
 			var paramCollection = CheckParameters(procedure);
-			
 			
 			if (paramCollection.Count > 0) {
 				FillParameters(paramCollection);
 				reportStructure.SqlQueryParameters.AddRange(paramCollection);
 			}
-			
-			var dataAccess = new SqlDataAccessStrategy(model.ReportSettings,connectionObject);
 			dataSet = dataAccess.ReadData();
 			dataSet.Tables[0].TableName = procedure.Name;
-			
 			return dataSet;
 		}
 		
@@ -137,7 +142,13 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		void FillParameters(ParameterCollection paramCollection)
 		{
-			model.ReportSettings.ParameterCollection.AddRange(paramCollection);
+			foreach (var param in paramCollection) {
+				SqlParameter s = new SqlParameter()
+				{
+					ParameterName = param.ParameterName,
+				};
+				model.ReportSettings.SqlParameters.Add(s);
+			}
 			CollectParametersCommand p = new CollectParametersCommand(model);
 			p.Run();
 		}
@@ -230,7 +241,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		public override bool ReceiveDialogMessage(DialogMessage message)
 		{
-		
+			reportStructure = (ReportStructure)base.CustomizationObject;
 			if (message == DialogMessage.Activated) 
 			{
 				ShowData();
