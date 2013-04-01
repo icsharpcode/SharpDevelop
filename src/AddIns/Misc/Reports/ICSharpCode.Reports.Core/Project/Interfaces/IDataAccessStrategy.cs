@@ -11,7 +11,6 @@ namespace ICSharpCode.Reports.Core.Project.Interfaces
 	/// </summary>
 	public interface IDataAccessStrategy
 	{
-		bool OpenConnection ();
 		DataSet ReadData();
 	}
 }

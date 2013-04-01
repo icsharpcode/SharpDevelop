@@ -207,58 +207,52 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 
 
-        private void databasesTree_SelectedItemChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<object> e)
-        {
-        	if (e.NewValue is IDatabaseObjectBase)
-            {
-                IDatabase parentDatabase = e.NewValue as IDatabase;
+		private void databasesTree_SelectedItemChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<object> e)
+		{
+			if (e.NewValue is IDatabaseObjectBase)
+			{
+				IDatabase parentDatabase = e.NewValue as IDatabase;
 
-                if (parentDatabase == null)
-                {
-                    IDatabaseObjectBase currentDatabaseObject = e.NewValue as IDatabaseObjectBase;
+				if (parentDatabase == null)
+				{
+					IDatabaseObjectBase currentDatabaseObject = e.NewValue as IDatabaseObjectBase;
 
-                    while (parentDatabase == null)
-                    {
-                        if (currentDatabaseObject.Parent == null)
-                            break;
-                        else if (currentDatabaseObject.Parent is IDatabase)
-                        {
-                            parentDatabase = currentDatabaseObject.Parent as IDatabase;
-                            break;
-                        }
-                        else
-                            currentDatabaseObject = currentDatabaseObject.Parent;                        
-                    }
-                }
+					while (parentDatabase == null)
+					{
+						if (currentDatabaseObject.Parent == null)
+							break;
+						else if (currentDatabaseObject.Parent is IDatabase)
+						{
+							parentDatabase = currentDatabaseObject.Parent as IDatabase;
+							break;
+						}
+						else
+							currentDatabaseObject = currentDatabaseObject.Parent;
+					}
+				}
 
+				if (parentDatabase != null)
+					this.currentNode = parentDatabase;
 
-                if (parentDatabase != null)
-                    this.currentNode = parentDatabase;
+				if (this.currentNode is IDatabase)
+				{
+					if (parentDatabase != null)
+					{
+						this.connectionString =  parentDatabase.ConnectionString;
+						this.txtSqlString.Enabled = true;
 
-                if (this.currentNode is IDatabase)
-                {
-                	if (parentDatabase != null)
-                	{
-//                		this.connectionString =  + parentDatabase.ConnectionString;
-//     this.connectionString = "Driver={SQLServer};" +  "Provider=SQLOLEDB;" + parentDatabase.ConnectionString; 
-//var cs = new SqlConnection();
-//cs.
-      this.connectionString = "Provider=SQLOLEDB;" + parentDatabase.ConnectionString;  
-//       this.connectionString =  parentDatabase.ConnectionString;     
-this.txtSqlString.Enabled = true;
-
-                		if (this.firstDrag)
-                			this.txtSqlString.Text = string.Empty;
-                		
-                		firstDrag = false;
-                	}
-                }
-                else
-                {
-                    this.EnableNext = false;
-                }
-            }
-        }
+						if (this.firstDrag)
+							this.txtSqlString.Text = string.Empty;
+						
+						firstDrag = false;
+					}
+				}
+				else
+				{
+					this.EnableNext = false;
+				}
+			}
+		}
 		
 		// check witch type of node we dragg
 		private static NodeType CheckCurrentNode (IDatabaseObjectBase node) {

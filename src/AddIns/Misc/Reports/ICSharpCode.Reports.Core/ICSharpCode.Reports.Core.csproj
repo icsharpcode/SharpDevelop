@@ -280,8 +280,7 @@
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Utilities\ReflectionExtensions.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Utilities\TypeNormalizer.cs" />
     <Compile Include="Project\Expressions\UnknownFunctionException.cs" />
-    <Compile Include="Project\Factories\ConnectionObjectFactory.cs" />
-    <Compile Include="Project\Factories\DataManagerFacrory.cs" />
+    <Compile Include="Project\Factories\DataManagerFactory.cs" />
     <Compile Include="Project\Factories\DisplayNameAttribute.cs" />
     <Compile Include="Project\Factories\RendererFactory.cs" />
     <Compile Include="Project\Factories\SectionFactory.cs" />

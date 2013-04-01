@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using System.Xml;
 using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.Exporter;
-using ICSharpCode.Reports.Core.Factories;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 

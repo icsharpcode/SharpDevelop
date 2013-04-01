@@ -30,12 +30,13 @@ namespace ICSharpCode.Reports.Core
 				connectionObject = reportParameters.ConnectionObject;
 			}
 			
-			if (connectionObject != null) {
-				accesStrategy = new SqlDataAccessStrategy(reportModel.ReportSettings,connectionObject);
-			} else {
-				accesStrategy = new SqlDataAccessStrategy(reportModel.ReportSettings,null);
-				
-			}
+//			if (connectionObject != null) {
+//				accesStrategy = new SqlDataAccessStrategy(reportModel.ReportSettings,connectionObject);
+//			} else {
+//				accesStrategy = new SqlDataAccessStrategy(reportModel.ReportSettings,null);
+//				
+//			}
+			accesStrategy = new SqlDataAccessStrategy(reportModel.ReportSettings);
 			dataManager = DataManager.CreateInstance(reportModel.ReportSettings,accesStrategy);
 			if (dataManager == null) {
 				throw new MissingDataManagerException();

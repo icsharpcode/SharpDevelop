@@ -37,7 +37,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		private System.Windows.Forms.TextBox txtSqlString;
 		private ReportStructure reportStructure;
 		private ReportModel model;
-		private ConnectionObject connectionObject;
 		private DataSet resultDataSet;
 		
 		
@@ -67,15 +66,14 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 			this.txtSqlString.Text = model.ReportSettings.CommandText;
 			
-			this.connectionObject = CreateConnection ();
-			var dataAccess = new SqlDataAccessStrategy(model.ReportSettings,connectionObject);
+			var dataAccess = new SqlDataAccessStrategy(model.ReportSettings);
+			
 			switch (model.ReportSettings.CommandType) {
 				case CommandType.Text:
-					dataSet = DatasetFromSqlText(dataAccess);
-						
+					dataSet = DataSetFromSqlText(dataAccess);	
 					break;
 				case CommandType.StoredProcedure:
-					dataSet = DatasetFromStoredProcedure(dataAccess);
+					dataSet = DataSetFromStoredProcedure(dataAccess);
 					break;
 				case CommandType.TableDirect:
 					MessageService.ShowError("TableDirect is not suppurted at the moment");
@@ -84,17 +82,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 					throw new Exception("Invalid value for CommandType");
 			}
 			return dataSet;
-		}
-		
-		
-		ConnectionObject CreateConnection()
-		{
-			
-			var conobj = ConnectionObject.CreateInstance(this.model.ReportSettings.ConnectionString,
-			                                             System.Data.Common.DbProviderFactories.GetFactory("System.Data.OleDb"));
-			conobj.QueryString = model.ReportSettings.CommandText;
-			return conobj;
-			
 		}
 		
 		
@@ -114,7 +101,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 		
-		private DataSet DatasetFromSqlText(IDataAccessStrategy dataAccess)
+		private DataSet DataSetFromSqlText(IDataAccessStrategy dataAccess)
 		{
 			var dataSet = dataAccess.ReadData();
 			dataSet.Tables[0].TableName = CreateTableName (reportStructure);
@@ -122,7 +109,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 		
-		private DataSet DatasetFromStoredProcedure(IDataAccessStrategy dataAccess)
+		private DataSet DataSetFromStoredProcedure(IDataAccessStrategy dataAccess)
 		{
 			DataSet dataSet = ResultPanel.CreateDataSet();
 			
@@ -131,7 +118,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 			if (paramCollection.Count > 0) {
 				FillParameters(paramCollection);
-				reportStructure.SqlQueryParameters.AddRange(paramCollection);
+				reportStructure.SqlQueryParameters.AddRange(model.ReportSettings.SqlParameters);
 			}
 			dataSet = dataAccess.ReadData();
 			dataSet.Tables[0].TableName = procedure.Name;
@@ -140,7 +127,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		
 		
-		void FillParameters(ParameterCollection paramCollection)
+		void  FillParameters(ParameterCollection paramCollection)
 		{
 			foreach (var param in paramCollection) {
 				SqlParameter s = new SqlParameter()

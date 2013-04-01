@@ -34,7 +34,7 @@ namespace ICSharpCode.Reports.Core
 		private string dataMember;
 		private IDataViewStrategy dataViewStrategy;
 		private IDataNavigator dataNavigator;
-		private IDataAccessStrategy dataAccess;
+//		private IDataAccessStrategy dataAccess;
 
 		
 		#region Constructor - DataAccess
@@ -55,15 +55,11 @@ namespace ICSharpCode.Reports.Core
 		
 		private DataManager (ReportSettings reportSettings,IDataAccessStrategy dataAccess)
 		{
-			this.dataAccess = dataAccess;
+			DataSet	 dataSet = dataAccess.ReadData();
+			this.Init(reportSettings,dataSet.Tables[0]);
+			this.dataViewStrategy = new TableStrategy((DataTable)this.dataSource,
+			                                          reportSettings);
 			
-			if (this.dataAccess.OpenConnection()) {
-				DataSet	 t = this.dataAccess.ReadData();
-				
-				this.Init(reportSettings,t.Tables[0]);
-				this.dataViewStrategy = new TableStrategy((DataTable)this.dataSource,
-				                                          reportSettings);
-			}
 		}
 		
 		#endregion

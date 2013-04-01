@@ -25,11 +25,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		private ReportItemCollection reportItemCollection;
 		private AvailableFieldsCollection availableFieldsCollection;
 		
-		private ParameterCollection queryParameters;
-		
 		
 		public ReportStructure()
 		{
+			SqlQueryParameters = new SqlParameterCollection();
 		}
 		
 		public ReportModel CreateAndFillReportModel ()
@@ -102,15 +101,15 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 		public IDatabaseObjectBase IDatabaseObjectBase {get;set;}
 		
-		public ParameterCollection SqlQueryParameters {
-			get {
-				if (this.queryParameters == null) {
-					this.queryParameters = new ParameterCollection();
-				}
-				return queryParameters;
-			}
-		}
-		
+//		public ParameterCollection SqlQueryParameters {
+//			get {
+//				if (this.queryParameters == null) {
+//					this.queryParameters = new ParameterCollection();
+//				}
+//				return queryParameters;
+//			}
+//		}
+		public SqlParameterCollection SqlQueryParameters {get;set;}
 		
 		#endregion
 		
@@ -166,9 +165,9 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 					this.availableFieldsCollection.Clear();
 					this.availableFieldsCollection = null;
 				}
-				if (this.queryParameters != null) {
-					this.queryParameters.Clear();
-					this.queryParameters = null;
+				if (this.SqlQueryParameters != null) {
+					this.SqlQueryParameters.Clear();
+					this.SqlQueryParameters = null;
 					
 				}
 			}
