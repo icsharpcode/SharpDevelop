@@ -5,11 +5,11 @@
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<Name>Razor MVC Application</Name>
+		<Name>Razor MVC 3 Application</Name>
 		<Category>VB</Category>
-		<Subcategory>ASP.NET MVC</Subcategory>
+		<Subcategory>ASP.NET MVC 3</Subcategory>
 		<Icon>VBNet.Project.MvcRazorProject</Icon>
-		<Description>ASP.NET MVC Application using Razor</Description>
+		<Description>ASP.NET MVC 3 Application using Razor</Description>
 		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 

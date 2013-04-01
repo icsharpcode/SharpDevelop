@@ -1,5 +1,5 @@
-// SharpDevelop samples
-// Copyright (c) 2008, AlphaSierraPapa
+﻿// SharpDevelop samples
+// Copyright (c) 2013, AlphaSierraPapa
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are
@@ -26,24 +26,15 @@
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
-using System.Windows.Forms;
-
-using ICSharpCode.SharpSnippetCompiler.Core;
 
 namespace ICSharpCode.SharpSnippetCompiler
 {
-	public class SnippetTabPage : TabPage
+	public static class ViewModels
 	{
-		SharpSnippetCompilerControl snippetControl;
+		static readonly MainViewModel mainViewModel = new MainViewModel();
 		
-		public SnippetTabPage(SharpSnippetCompilerControl snippetControl)
-		{
-			this.snippetControl = snippetControl;
-			Controls.Add(snippetControl);
-		}
-		
-		public SharpSnippetCompilerControl SnippetCompilerControl {
-			get { return snippetControl; }
+		public static MainViewModel MainViewModel {
+			get { return mainViewModel; }
 		}
 	}
 }

@@ -273,9 +273,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					if (el.HasAttribute("path")) {
 						try {
 							ICommand command = (ICommand)SD.AddInTree.BuildItem(el.GetAttribute("path"), null);
-							return projectCreateInformation => {
-								command.Execute(projectCreateInformation);
-							};
+							return command.Execute;
 						} catch (TreePathNotFoundException ex) {
 							MessageService.ShowWarning(ex.Message + " - in " + el.OwnerDocument.DocumentElement.GetAttribute("fileName"));
 							return null;

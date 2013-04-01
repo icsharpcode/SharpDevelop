@@ -1,41 +1,41 @@
 ﻿<Template
 	originator="Matt Ward"
 	created="04/06/2011"
-	lastModified="17/06/2011">
+	lastModified="27/03/2013">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<Name>MVC Application</Name>
-		<Category>VB</Category>
-		<Subcategory>ASP.NET MVC</Subcategory>
-		<Icon>VBNet.Project.WebProject</Icon>
-		<Description>ASP.NET MVC Application</Description>
+		<Name>MVC 4 Application</Name>
+		<Category>C#</Category>
+		<Subcategory>ASP.NET MVC 4</Subcategory>
+		<Icon>C#.Project.WebProject</Icon>
+		<Description>ASP.NET MVC 4 Application</Description>
 		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 
 	<!-- Actions -->
 	<Actions>
 		<Open filename="Views\Home\Index.aspx"/>
-		<Open filename="Controllers\HomeController.vb"/>
+		<Open filename="Controllers\HomeController.cs"/>
 		<RunCommand path="/AddIns/PackageManagement/TemplateCommands/InstallPackages"/>
 	</Actions>
 
-	<Project language="VBNet">
+	<Project language="C#">
 		<ProjectItems>
-			<Reference Include="Microsoft.VisualBasic" />
+			<Reference Include="Microsoft.CSharp" />
 			<Reference Include="System" />
 			<Reference Include="System.ComponentModel.DataAnnotations" />
 			<Reference Include="System.Web" />
 			<Reference Include="System.Web.Abstractions" />
 			<Reference Include="System.Web.Extensions" />
-			<Reference Include="System.Web.Helpers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-			<Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+			<Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+			<Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
 			<Reference Include="System.Xml" />
 		</ProjectItems>
 		
 		<PropertyGroup escapeValue="False">
 			<OutputType>Library</OutputType>
-			<ProjectTypeGuids>{E53F8FEA-EAE0-44A6-8774-FFD645390401};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+			<ProjectTypeGuids>{E3E379DF-F4C6-4180-9B81-6769533ABE47};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
 			<AppDesignerFolder>Properties</AppDesignerFolder>
 		</PropertyGroup>
 		
@@ -48,7 +48,7 @@
 		</PropertyGroup>
 		
 		<Files>
-			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb" />
+			<File name="Properties\AssemblyInfo.cs" src="DefaultAssemblyInfo.cs" />
 			<File name="Content\Site.css">
 <![CDATA[
 body
@@ -178,54 +178,62 @@ li
 }
 ]]>
 			</File>
-			<File name="Controllers\HomeController.vb">
-<![CDATA[${StandardHeader.VBNET}
-Imports System
-Imports System.Web.Mvc
+			<File name="Controllers\HomeController.cs">
+<![CDATA[${StandardHeader.C#}
+using System;
+using System.Web.Mvc;
 
-Public Class HomeController
-	Inherits Controller
-	
-	Function Index() As ActionResult
-		Return View()
-	End Function
+namespace ${StandardNamespace}.Controllers
+{
+	public class HomeController : Controller
+	{
+		public ActionResult Index()
+		{
+			return View();
+		}
 		
-	Function Contact() As ActionResult
-		Return View()
-	End Function
-End Class
+		public ActionResult Contact()
+		{
+			return View();
+		}
+	}
+}
 ]]>
 			</File>
 			<File name="Global.asax">
-<![CDATA[<%@ Application Codebehind="Global.asax.vb" Inherits="${StandardNamespace}.MvcApplication" Language="VB" %>
+<![CDATA[<%@ Application Codebehind="Global.asax.cs" Inherits="${StandardNamespace}.MvcApplication" Language="C#" %>
 ]]>
 			</File>
-			<File name="Global.asax.vb" DependentUpon="Global.asax">
-<![CDATA[${StandardHeader.VBNET}
-Imports System.Web
-Imports System.Web.Mvc
-Imports System.Web.Routing
+			<File name="Global.asax.cs" DependentUpon="Global.asax">
+<![CDATA[${StandardHeader.C#}
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Routing;
 
-Public Class MvcApplication 
-	Inherits HttpApplication
-
-		Shared Sub RegisterRoutes(ByVal routes as RouteCollection)
-			routes.Ignore("{resource}.axd/{*pathInfo}")
+namespace ${StandardNamespace}
+{
+	public class MvcApplication : HttpApplication
+	{
+		public static void RegisterRoutes(RouteCollection routes)
+		{
+			routes.Ignore("{resource}.axd/{*pathInfo}");
 			
-			routes.MapRoute( _
-				"Default", _
-				"{controller}/{action}/{id}", _
-				New With { _
-					.controller = "Home", _
-					.action = "Index", _
-					.id = UrlParameter.Optional _
-				})
-		End Sub
+			routes.MapRoute(
+				"Default",
+				"{controller}/{action}/{id}",
+				new {
+					controller = "Home",
+					action = "Index",
+					id = UrlParameter.Optional
+				});
+		}
 		
-		Sub Application_Start()
-			RegisterRoutes(RouteTable.Routes)
-		End Sub
-End Class
+		protected void Application_Start()
+		{
+			RegisterRoutes(RouteTable.Routes);
+		}
+	}
+}
 ]]>
 			</File>
 			<File name="Views\web.config">
@@ -239,9 +247,9 @@ End Class
 	</system.web>
 </configuration>
 ]]>
-			</File>
+		</File>
 			<File name="Views\Home\Contact.aspx">
-<![CDATA[<%@ Page Language="VB" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewPage" %>
+<![CDATA[<%@ Page Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewPage" %>
 
 <asp:Content id="ContactTitle" ContentPlaceHolderId="Title" runat="server">
 	ASP.NET MVC Application
@@ -259,7 +267,7 @@ End Class
 ]]>
 			</File>
 			<File name="Views\Home\Index.aspx">
-<![CDATA[<%@ Page Language="VB" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewPage" %>
+<![CDATA[<%@ Page Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewPage" %>
 
 <asp:Content id="HomeTitle" ContentPlaceHolderId="Title" runat="server">
 	ASP.NET MVC Application
@@ -277,7 +285,7 @@ End Class
 ]]>
 			</File>
 			<File name="Views\Shared\Site.Master">
-<![CDATA[<%@ Master Language="VB" Inherits="System.Web.Mvc.ViewMasterPage" %>
+<![CDATA[<%@ Master Language="C#" Inherits="System.Web.Mvc.ViewMasterPage" %>
 
 <!DOCTYPE html>
 <html>
@@ -321,7 +329,7 @@ End Class
 	<system.web>
 		<compilation debug="true" targetFramework="4.0">
 			<assemblies>
-				<add assembly="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+				<add assembly="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
 			</assemblies>
 		</compilation>
 	

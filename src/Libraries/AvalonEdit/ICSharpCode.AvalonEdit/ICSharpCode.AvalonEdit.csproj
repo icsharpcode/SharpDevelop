@@ -446,4 +446,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Highlighting\Resources\PowerShell.xshd" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Highlighting\Resources\MarkDown-Mode.xshd" />
+  </ItemGroup>
 </Project>

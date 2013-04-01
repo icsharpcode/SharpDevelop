@@ -1,15 +1,15 @@
 ﻿<Template
 	originator="Matt Ward"
 	created="21/01/2012"
-	lastModified="21/01/2012">
+	lastModified="27/03/2013">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<Name>Razor MVC Application</Name>
+		<Name>Razor MVC 4 Application</Name>
 		<Category>C#</Category>
-		<Subcategory>ASP.NET MVC</Subcategory>
+		<Subcategory>ASP.NET MVC 4</Subcategory>
 		<Icon>C#.Project.MvcRazorProject</Icon>
-		<Description>ASP.NET MVC Application using Razor</Description>
+		<Description>ASP.NET MVC 4 Application using Razor</Description>
 		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 
@@ -28,15 +28,15 @@
 			<Reference Include="System.Web" />
 			<Reference Include="System.Web.Abstractions" />
 			<Reference Include="System.Web.Extensions" />
-			<Reference Include="System.Web.Helpers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-			<Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-			<Reference Include="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+			<Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+			<Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+			<Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
 			<Reference Include="System.Xml" />
 		</ProjectItems>
 		
 		<PropertyGroup escapeValue="False">
 			<OutputType>Library</OutputType>
-			<ProjectTypeGuids>{E53F8FEA-EAE0-44A6-8774-FFD645390401};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+			<ProjectTypeGuids>{E3E379DF-F4C6-4180-9B81-6769533ABE47};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
 			<AppDesignerFolder>Properties</AppDesignerFolder>
 		</PropertyGroup>
 		
@@ -311,17 +311,24 @@ Aliquam suscipit tellus vel nunc elementum fringilla.</p>
 			</File>
 			<File name="web.config">
 <![CDATA[<configuration>
+	<appSettings>
+		<add key="webpages:Version" value="2.0.0.0" />
+		<add key="PreserveLoginUrl" value="true" />
+	</appSettings>
+	
 	<system.web>
 		<compilation debug="true" targetFramework="4.0">
 			<assemblies>
-				<add assembly="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+				<add assembly="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
 				<add assembly="System.Web.Routing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
-				<add assembly="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+				<add assembly="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+				<add assembly="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
 			</assemblies>
 		</compilation>
 	
 		<pages>
 			<namespaces>
+				<add namespace="System.Web.Helpers"/>
 				<add namespace="System.Web.Mvc"/>
 				<add namespace="System.Web.Mvc.Html"/>
 				<add namespace="System.Web.Routing"/>
@@ -339,14 +346,14 @@ Aliquam suscipit tellus vel nunc elementum fringilla.</p>
 			<File name="Views\web.config">
 <![CDATA[<configuration>
 	<configSections>
-		<sectionGroup name="system.web.webPages.razor" type="System.Web.WebPages.Razor.Configuration.RazorWebSectionGroup, System.Web.WebPages.Razor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
-			<section name="host" type="System.Web.WebPages.Razor.Configuration.HostSection, System.Web.WebPages.Razor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false"/>
-			<section name="pages" type="System.Web.WebPages.Razor.Configuration.RazorPagesSection, System.Web.WebPages.Razor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false"/>
+		<sectionGroup name="system.web.webPages.razor" type="System.Web.WebPages.Razor.Configuration.RazorWebSectionGroup, System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
+			<section name="host" type="System.Web.WebPages.Razor.Configuration.HostSection, System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false"/>
+			<section name="pages" type="System.Web.WebPages.Razor.Configuration.RazorPagesSection, System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false"/>
 		</sectionGroup>
 	</configSections>
 	
 	<system.web.webPages.razor>
-		<host factoryType="System.Web.Mvc.MvcWebRazorHostFactory, System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+		<host factoryType="System.Web.Mvc.MvcWebRazorHostFactory, System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
 		<pages pageBaseType="System.Web.Mvc.WebViewPage">
 			<namespaces>
 				<add namespace="System.Web.Mvc" />
@@ -355,6 +362,10 @@ Aliquam suscipit tellus vel nunc elementum fringilla.</p>
 			</namespaces>
 		</pages>
 	</system.web.webPages.razor>
+	
+	<appSettings>
+		<add key="webpages:Enabled" value="false" />
+	</appSettings>
 </configuration>
 ]]>
 			</File>

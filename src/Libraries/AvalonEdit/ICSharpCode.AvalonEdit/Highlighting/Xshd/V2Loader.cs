@@ -60,6 +60,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 				return;
 			while (reader.Read() && reader.NodeType != XmlNodeType.EndElement) {
 				Debug.Assert(reader.NodeType == XmlNodeType.Element);
+				if (reader.NamespaceURI != Namespace) {
+					if (!reader.IsEmptyElement)
+						reader.Skip();
+					continue;
+				}
 				switch (reader.Name) {
 					case "RuleSet":
 						c.Add(ParseRuleSet(reader));

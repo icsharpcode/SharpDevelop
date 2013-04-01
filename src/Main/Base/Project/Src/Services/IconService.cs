@@ -92,6 +92,12 @@ namespace ICSharpCode.SharpDevelop
 			return "Icons.16x16.MiscFiles";
 		}
 		
+		public static bool HasImageForFile(string fileName)
+		{
+			string extension = Path.GetExtension(fileName).ToUpperInvariant();
+			return extensionHashtable.ContainsKey(extension);
+		}
+		
 		static void InitializeIcons(AddInTreeNode treeNode)
 		{
 			extensionHashtable[".PRJX"] = "Icons.16x16.SolutionIcon";

@@ -1,5 +1,5 @@
-// SharpDevelop samples
-// Copyright (c) 2008, AlphaSierraPapa
+﻿// SharpDevelop samples
+// Copyright (c) 2013, AlphaSierraPapa
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are
@@ -26,21 +26,38 @@
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
-using System.Drawing;
-using System.Windows.Forms;
+using System.Windows.Controls;
+using System.Windows.Forms.Integration;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.SharpSnippetCompiler
 {
-	public partial class NewFileDialog : Form
+	public class PadViewModel
 	{
-		public NewFileDialog()
+		PadDescriptor padDescriptor;
+		object control;
+		
+		public PadViewModel(PadDescriptor padDescriptor)
 		{
-			InitializeComponent();
+			this.padDescriptor = padDescriptor;
+			this.padDescriptor.CreatePad();
+			
+			this.control = padDescriptor.PadContent.Control;
+			if (control is System.Windows.Forms.Control) {
+				var host = new WindowsFormsHost();
+				host.Child = (System.Windows.Forms.Control)padDescriptor.PadContent.Control;
+				this.control = host;
+			}
 		}
 		
-		public string FileName {
-			get { return fileNameTextBox.Text; }
-			set { fileNameTextBox.Text = value; }
+		public object Control {
+			get { return control; }
+		}
+		
+		public string Title {
+			get { return StringParser.Parse(padDescriptor.Title); }
 		}
 	}
 }

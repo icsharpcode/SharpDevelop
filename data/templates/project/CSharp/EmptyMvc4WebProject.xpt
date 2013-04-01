@@ -1,15 +1,15 @@
 ﻿<Template
 	originator="Matt Ward"
 	created="04/06/2011"
-	lastModified="12/02/2012">
+	lastModified="27/03/2013">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<Name>Empty MVC Application</Name>
+		<Name>Empty MVC 4 Application</Name>
 		<Category>C#</Category>
-		<Subcategory>ASP.NET MVC</Subcategory>
+		<Subcategory>ASP.NET MVC 4</Subcategory>
 		<Icon>C#.Project.WebProject</Icon>
-		<Description>Empty ASP.NET MVC Application</Description>
+		<Description>Empty ASP.NET MVC 4 Application</Description>
 		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 
@@ -18,13 +18,13 @@
 			<Reference Include="Microsoft.CSharp" />
 			<Reference Include="System" />
 			<Reference Include="System.Web" />
-			<Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+			<Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
 			<Reference Include="System.Xml" />
 		</ProjectItems>
 		
 		<PropertyGroup escapeValue="False">
 			<OutputType>Library</OutputType>
-			<ProjectTypeGuids>{E53F8FEA-EAE0-44A6-8774-FFD645390401};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+			<ProjectTypeGuids>{E3E379DF-F4C6-4180-9B81-6769533ABE47};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
 			<AppDesignerFolder>Properties</AppDesignerFolder>
 		</PropertyGroup>
 		
@@ -61,7 +61,7 @@ namespace ${StandardNamespace}
 	<system.web>
 		<compilation debug="true" targetFramework="4.0">
 			<assemblies>
-				<add assembly="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+				<add assembly="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
 			</assemblies>
 		</compilation>
 	

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Windows.Input;
 using System.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
@@ -95,6 +96,37 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		}
 	}
 	
+	public class FileTemplateOptions
+	{
+		/// <summary>
+		/// Gets/Sets whether the file being created will be untitled.
+		/// </summary>
+		public bool IsUntitled { get; set; }
+		
+		/// <summary>
+		/// The parent project to which this file is added.
+		/// Can be null when creating a file outside of a project.
+		/// </summary>
+		public IProject Project { get; set; }
+		
+		/// <summary>
+		/// The name of the file
+		/// </summary>
+		public FileName FileName { get; set; }
+		
+		/// <summary>
+		/// The default namespace to use for the newly created file.
+		/// </summary>
+		public string Namespace { get; set; }
+		
+		/// <summary>
+		/// The class name (generated from the file name).
+		/// </summary>
+		public string ClassName { get; set; }
+		
+		//IDictionary<string, string> properties;
+	}
+	
 	/// <summary>
 	/// This class defines and holds the new file templates.
 	/// </summary>
@@ -120,6 +152,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		List<ReferenceProjectItem> requiredAssemblyReferences = new List<ReferenceProjectItem>();
 		
 		XmlElement fileoptions = null;
+		Action<FileTemplateOptions> actions;
 		
 		int IComparable.CompareTo(object other)
 		{
@@ -165,6 +198,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				return description;
 			}
 		}
+		[Obsolete]
 		public string WizardPath {
 			get {
 				return wizardpath;
@@ -275,6 +309,14 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				}
 			}
 			
+			if (doc.DocumentElement["Actions"] != null) {
+				foreach (XmlElement el in doc.DocumentElement["Actions"]) {
+					Action<FileTemplateOptions> action = ReadAction(el);
+					if (action != null)
+						actions += action;
+				}
+			}
+			
 			fileoptions = doc.DocumentElement["AdditionalOptions"];
 			
 			doc.DocumentElement.SetAttribute("fileName", filename); // used for template loading warnings
@@ -287,6 +329,34 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					this.files.Add(new FileDescriptionTemplate((XmlElement)filenode, Path.GetDirectoryName(filename)));
 				}
 			}
+		}
+		
+		static Action<FileTemplateOptions> ReadAction(XmlElement el)
+		{
+			switch (el.Name) {
+				case "RunCommand":
+					if (el.HasAttribute("path")) {
+						try {
+							ICommand command = (ICommand)SD.AddInTree.BuildItem(el.GetAttribute("path"), null);
+							return command.Execute;
+						} catch (TreePathNotFoundException ex) {
+							MessageService.ShowWarning(ex.Message + " - in " + el.OwnerDocument.DocumentElement.GetAttribute("fileName"));
+							return null;
+						}
+					} else {
+						ProjectTemplate.WarnAttributeMissing(el, "path");
+						return null;
+					}
+				default:
+					ProjectTemplate.WarnObsoleteNode(el, "Unknown action element is ignored");
+					return null;
+			}
+		}
+		
+		public void RunActions(FileTemplateOptions options)
+		{
+			if (actions != null)
+				actions(options);
 		}
 		
 		public static void UpdateTemplates()
