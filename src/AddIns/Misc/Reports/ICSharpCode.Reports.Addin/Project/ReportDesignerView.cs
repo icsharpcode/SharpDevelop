@@ -561,7 +561,7 @@ namespace ICSharpCode.Reports.Addin
 				Console.WriteLine("");
 				ReportModel model = loader.CreateRenderableModel();
 				IReportCreator reportCreator = null;
-				var  paramCmd = new CollectParametersCommand(model);
+				var  paramCmd = new CollectParametersCommand(model.ReportSettings);
 				paramCmd.Run();
 				switch (model.DataModel) {
 						case GlobalEnums.PushPullModel.FormSheet :

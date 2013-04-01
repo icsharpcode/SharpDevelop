@@ -114,11 +114,13 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			DataSet dataSet = ResultPanel.CreateDataSet();
 			
 			IProcedure procedure = reportStructure.IDatabaseObjectBase as IProcedure;
-			var paramCollection = CheckParameters(procedure);
+			var sqlParamCollection = CreateSqlParameters(procedure);
 			
-			if (paramCollection.Count > 0) {
-				FillParameters(paramCollection);
-				reportStructure.SqlQueryParameters.AddRange(model.ReportSettings.SqlParameters);
+			if (sqlParamCollection.Count > 0) {
+				reportStructure.SqlQueryParameters.AddRange(sqlParamCollection);
+				model.ReportSettings.SqlParameters.AddRange(sqlParamCollection);
+				CollectParamValues(model.ReportSettings);
+
 			}
 			dataSet = dataAccess.ReadData();
 			dataSet.Tables[0].TableName = procedure.Name;
@@ -126,27 +128,18 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 		
-		
-		void  FillParameters(ParameterCollection paramCollection)
-		{
-			foreach (var param in paramCollection) {
-				SqlParameter s = new SqlParameter()
-				{
-					ParameterName = param.ParameterName,
-				};
-				model.ReportSettings.SqlParameters.Add(s);
-			}
-			CollectParametersCommand p = new CollectParametersCommand(model);
+		void CollectParamValues(ReportSettings reportSettings){
+
+			CollectParametersCommand p = new CollectParametersCommand(reportSettings);
 			p.Run();
 		}
 		
 		
-		ParameterCollection CheckParameters(IProcedure procedure)
+		SqlParameterCollection CreateSqlParameters(IProcedure procedure)
 		{
-			ParameterCollection col = new ParameterCollection();
+			SqlParameterCollection col = new SqlParameterCollection();
 			SqlParameter par = null;
 			foreach (var element in procedure.Items) {
-			
 				DbType dbType = TypeHelpers.DbTypeFromStringRepresenation(element.DataType);
 				par	 = new SqlParameter(element.Name,dbType,"",ParameterDirection.Input);
 				
@@ -154,9 +147,9 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 					par.ParameterDirection = ParameterDirection.Input;
 					
 				} else if (element.ParameterMode == ParameterMode. InOut){
-				par.ParameterDirection = ParameterDirection.InputOutput;
+					par.ParameterDirection = ParameterDirection.InputOutput;
 				}
-				col.Add(par);		
+				col.Add(par);
 			}
 			return col;
 		}

@@ -63,27 +63,27 @@ namespace ICSharpCode.Reports.Addin.Commands
 	
 	public class CollectParametersCommand :AbstractCommand
 	{
-		ReportModel model;
+		ReportSettings reportSettings;
 		
-		public CollectParametersCommand (ReportModel model)
+		public CollectParametersCommand (ReportSettings reportSettings)
 		{
-			if (model == null) {
-				throw new ArgumentNullException("model");
+			if (reportSettings == null) {
+				throw new ArgumentNullException("ReportSettings");
 			}
-			this.model = model;
+			this.reportSettings = reportSettings;
 		}
 		
 		
 		public override void Run()
 		{
-			if (model.ReportSettings.SqlParameters.Count > 0) {
-				using (ParameterDialog paramDialog = new ParameterDialog(model.ReportSettings.SqlParameters))
+			if (reportSettings.SqlParameters.Count > 0) {
+				using (ParameterDialog paramDialog = new ParameterDialog(reportSettings.SqlParameters))
 				{
 					paramDialog.ShowDialog();
 					if (paramDialog.DialogResult == System.Windows.Forms.DialogResult.OK) {
 						foreach (SqlParameter bp in paramDialog.SqlParameterCollection)
 						{
-							var p = model.ReportSettings.SqlParameters.Find (bp.ParameterName);
+							var p = reportSettings.SqlParameters.Find (bp.ParameterName);
 							p.ParameterValue = bp.ParameterValue;
 						}
 					}

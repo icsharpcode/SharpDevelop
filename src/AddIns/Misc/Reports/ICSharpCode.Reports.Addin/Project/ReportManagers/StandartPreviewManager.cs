@@ -64,7 +64,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		private AbstractRenderer StandartReportRenderer(ReportModel model)
 		{		
-			ICSharpCode.Reports.Addin.Commands.CollectParametersCommand cmd = new ICSharpCode.Reports.Addin.Commands.CollectParametersCommand(model);
+			ICSharpCode.Reports.Addin.Commands.CollectParametersCommand cmd = new ICSharpCode.Reports.Addin.Commands.CollectParametersCommand(model.ReportSettings);
 			cmd.Run();
 			return  base.SetupStandardRenderer (model,null);
 		}

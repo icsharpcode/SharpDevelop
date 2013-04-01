@@ -101,14 +101,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 		public IDatabaseObjectBase IDatabaseObjectBase {get;set;}
 		
-//		public ParameterCollection SqlQueryParameters {
-//			get {
-//				if (this.queryParameters == null) {
-//					this.queryParameters = new ParameterCollection();
-//				}
-//				return queryParameters;
-//			}
-//		}
+
 		public SqlParameterCollection SqlQueryParameters {get;set;}
 		
 		#endregion

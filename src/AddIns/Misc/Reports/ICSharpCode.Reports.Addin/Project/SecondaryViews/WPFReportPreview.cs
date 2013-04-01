@@ -43,7 +43,7 @@ namespace ICSharpCode.Reports.Addin.SecondaryViews
 		{
 			Pages.Clear();
 			ReportModel model = designerLoader.CreateRenderableModel();
-			var collectCmd = new CollectParametersCommand(model);
+			var collectCmd = new CollectParametersCommand(model.ReportSettings);
 			collectCmd.Run();
 			switch (model.DataModel)
 			{

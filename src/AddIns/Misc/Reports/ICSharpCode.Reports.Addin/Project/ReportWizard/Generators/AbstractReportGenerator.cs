@@ -63,7 +63,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				this.GroupColumnCollection.AddRange(ReportModel.ReportSettings.GroupColumnsCollection);
 			}
 			if (ReportStructure.SqlQueryParameters.Count > 0) {
-				ReportModel.ReportSettings.ParameterCollection.AddRange(ReportStructure.SqlQueryParameters);
+				ReportModel.ReportSettings.SqlParameters.AddRange(ReportStructure.SqlQueryParameters);
 			}
 		}
 		

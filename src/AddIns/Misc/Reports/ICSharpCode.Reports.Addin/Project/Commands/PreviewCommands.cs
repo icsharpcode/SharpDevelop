@@ -28,7 +28,7 @@ namespace ICSharpCode.Reports.Addin.Commands
 		
 		public override void Run()
 		{
-			CollectParametersCommand cmd = new CollectParametersCommand(Model);
+			CollectParametersCommand cmd = new CollectParametersCommand(Model.ReportSettings);
 			cmd.Run();
 		}
 		
