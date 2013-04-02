@@ -1375,6 +1375,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (!(node is AstType)) {
 				if (currentMember != null || node is Expression) {
 					AddKeywords(wrapper, statementStartKeywords);
+					if (LanguageVersion.Major >= 5) 
+						AddKeywords(wrapper, new [] { "await" });
 					AddKeywords(wrapper, expressionLevelKeywords);
 					if (node == null || node is TypeDeclaration)
 						AddKeywords(wrapper, typeLevelKeywords);
@@ -2181,6 +2183,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					"Creates anonymous delegate.",
 					"delegate {" + EolMarker + thisLineIndent + IndentString + "|" + delegateEndString
 					);
+				if (LanguageVersion.Major >= 5) {
+					completionList.AddCustom(
+						"async delegate",
+						"Creates anonymous async delegate.",
+						"async delegate {" + EolMarker + thisLineIndent + IndentString + "|" + delegateEndString
+						);
+				}
 			}
 			var sb = new StringBuilder("(");
 			var sbWithoutTypes = new StringBuilder("(");
@@ -2205,14 +2214,27 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				"delegate" + sb,
 				"Creates anonymous delegate.",
 				"delegate" + sb + " {" + EolMarker + thisLineIndent + IndentString + "|" + delegateEndString
+			);
+			if (LanguageVersion.Major >= 5) {
+				completionList.AddCustom(
+					"async delegate" + sb,
+					"Creates anonymous async delegate.",
+					"async delegate" + sb + " {" + EolMarker + thisLineIndent + IndentString + "|" + delegateEndString
 				);
-
+			}
 			if (!completionList.Result.Any(data => data.DisplayText == sb.ToString())) {
 				completionList.AddCustom(
 					sb.ToString(),
 					"Creates typed lambda expression.",
 					sb + " => |" + (addSemicolon ? ";" : "")
 					);
+				if (LanguageVersion.Major >= 5) {
+					completionList.AddCustom(
+						"async " + sb.ToString(),
+						"Creates typed async lambda expression.",
+						"async " + sb + " => |" + (addSemicolon ? ";" : "")
+					);
+				}
 			}
 
 			if (!delegateMethod.Parameters.Any(p => p.IsOut || p.IsRef) && !completionList.Result.Any(data => data.DisplayText == sbWithoutTypes.ToString())) {
@@ -2220,7 +2242,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					sbWithoutTypes.ToString(),
 					"Creates lambda expression.",
 					sbWithoutTypes + " => |" + (addSemicolon ? ";" : "")
+				);
+				if (LanguageVersion.Major >= 5) {
+					completionList.AddCustom(
+						"async " + sbWithoutTypes.ToString(),
+						"Creates async lambda expression.",
+						"async " + sbWithoutTypes + " => |" + (addSemicolon ? ";" : "")
 					);
+				}
 			}
 			/* TODO:Make factory method out of it.
 			// It's  needed to temporarly disable inserting auto matching bracket because the anonymous delegates are selectable with '('
@@ -3236,7 +3265,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			"unchecked", "const", "continue", "do", "finally", "fixed", "for", "foreach",
 			"goto", "if", "lock", "return", "stackalloc", "switch", "throw", "try", "unsafe", 
 			"using", "while", "yield",
-			"catch", "await"
+			"catch"
 		};
 		static string[] globalLevelKeywords = new string [] {
 			"namespace", "using", "extern", "public", "internal", 

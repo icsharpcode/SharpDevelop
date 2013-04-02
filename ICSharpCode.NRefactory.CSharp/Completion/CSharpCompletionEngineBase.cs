@@ -62,6 +62,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return compilation;
 			}
 		}
+
+		Version languageVersion = new Version (5, 0);
+		public Version LanguageVersion {
+			get {
+				return languageVersion;
+			}
+			private set {
+				languageVersion = value;
+			}
+		}
 		#endregion
 		
 		protected CSharpCompletionEngineBase(IProjectContent content, ICompletionContextProvider completionContextProvider, CSharpTypeResolveContext ctx)
