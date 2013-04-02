@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				return "";
 			}
 		}
-		public override string Directory {
+		public override DirectoryName Directory {
 			get {
 				return project.Directory;
 			}

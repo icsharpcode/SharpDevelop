@@ -73,7 +73,7 @@ namespace ICSharpCode.UnitTesting
 		
 		bool ApplicationFileNameExists(string fileName)
 		{
-			return fileSystem.FileExists(fileName);
+			return fileSystem.FileExists(FileName.Create(fileName));
 		}
 		
 		void ShowApplicationDoesNotExistMessage(string fileName)

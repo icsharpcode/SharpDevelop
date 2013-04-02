@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.CodeCoverage
@@ -15,7 +16,7 @@ namespace ICSharpCode.CodeCoverage
 		IFileSystem fileSystem;
 		
 		public SolutionCodeCoverageResults(ISolution solution)
-			: this(solution, new FileSystem())
+			: this(solution, SD.FileSystem)
 		{
 		}
 		
@@ -39,7 +40,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 			var fileName = new ProjectCodeCoverageResultsFileName(project);
 			if (fileSystem.FileExists(fileName.FileName)) {
-				TextReader reader = fileSystem.CreateTextReader(fileName.FileName);
+				TextReader reader = fileSystem.OpenText(fileName.FileName);
 				return new CodeCoverageResults(reader);
 			}
 			return null;

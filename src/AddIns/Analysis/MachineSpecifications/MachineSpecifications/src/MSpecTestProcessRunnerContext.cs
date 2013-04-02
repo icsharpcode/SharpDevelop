@@ -14,7 +14,7 @@ namespace ICSharpCode.MachineSpecifications
 				options,
 				new UnitTestProcessRunner(),
 				new MSpecUnitTestMonitor(),
-				new UnitTestFileService(),
+				SD.FileSystem,
 				SD.MessageService)
 		{
 		}

@@ -167,6 +167,7 @@
     <Compile Include="Project\SolutionSection.cs" />
     <Compile Include="Refactoring\ICodeGenerator.cs" />
     <Compile Include="Services\IClipboard.cs" />
+    <Compile Include="Services\IFileSystem.cs" />
     <Compile Include="Services\IMessageLoop.cs" />
     <Compile Include="Services\IUIService.cs" />
     <Compile Include="Services\SD.cs" />
@@ -234,7 +235,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Project\MSBuildConfigurationOrPlatformNameCollection.cs" />
+    <Compile Include="Templates\FileTemplate.cs" />
+    <Compile Include="Templates\FileTemplateOptions.cs" />
+    <Compile Include="Templates\ITemplateService.cs" />
+    <Compile Include="Templates\TemplateLoadException.cs" />
     <Compile Include="Util\AtomicBoolean.cs" />
+    <Compile Include="Util\ChrootFileSystem.cs" />
     <Compile Include="Util\ComparerExtensions.cs" />
     <Compile Include="Util\CompositeDisposable.cs" />
     <Compile Include="Util\CustomThreadPoolTaskScheduler.cs" />
@@ -791,7 +797,6 @@
     <Compile Include="Src\Project\CompilableProject.cs" />
     <Compile Include="Src\Project\MSBuildInternals.cs" />
     <Compile Include="Src\Project\Items\ItemType.cs" />
-    <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
     <EmbeddedResource Include="Resources\DefaultManifest.manifest" />
     <EmbeddedResource Include="Src\Gui\Dialogs\ExtractInterfaceDialog.resx">
       <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
@@ -802,6 +807,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Designer" />
+    <Folder Include="Templates" />
     <Folder Include="Project\Configuration" />
     <Folder Include="Workbench\DisplayBinding" />
     <Page Include="Editor\Bookmarks\BookmarkPadContent.xaml" />

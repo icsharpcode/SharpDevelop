@@ -133,7 +133,6 @@
     <Compile Include="Src\Completion\RazorCSharpResolver.cs" />
     <Compile Include="Src\CurrentAppDomain.cs" />
     <Compile Include="Src\CurrentAppDomainFactory.cs" />
-    <Compile Include="Src\FileSystem.cs" />
     <Compile Include="Src\Folding\CharacterReader.cs" />
     <Compile Include="Src\Folding\HtmlFoldParser.cs" />
     <Compile Include="Src\Folding\RazorFoldGeneratorFactory.cs" />
@@ -167,7 +166,6 @@
     <Compile Include="Src\Folding\WebFormsLanguageBinding.cs" />
     <Compile Include="Src\Folding\WebFormsMarkupCharacterReader.cs" />
     <Compile Include="Src\IAddMvcItemToProjectView.cs" />
-    <Compile Include="Src\IFileSystem.cs" />
     <Compile Include="Src\IIS6Administrator.cs" />
     <Compile Include="Src\IIS7Administrator.cs" />
     <Compile Include="Src\IISAdministrator.cs" />

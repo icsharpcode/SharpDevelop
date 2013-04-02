@@ -48,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// </remarks>
 		ITextSource GetFileContent(FileName fileName);
 		
-		/// <inheritdoc cref="GetParseableFileContent(FileName)"/>
+		/// <inheritdoc cref="GetFileContent(FileName)"/>
 		ITextSource GetFileContent(string fileName);
 		
 		/// <summary>

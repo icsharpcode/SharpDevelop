@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			ServiceReferenceNode node =
 				DirectoryNodeFactory.CreateDirectoryNode(parentServiceReferencesFolderNode, project, directory) as ServiceReferenceNode;
 			
-			Assert.AreEqual("ServiceReference1", node.Directory);
+			Assert.AreEqual("ServiceReference1", node.Directory.ToString());
 		}
 		
 		[Test]
@@ -96,7 +96,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			ServiceReferencesFolderNode referencesNode = 
 				DirectoryNodeFactory.CreateDirectoryNode(null, project, directory) as ServiceReferencesFolderNode;
 			
-			Assert.AreEqual(directory, referencesNode.Directory);
+			Assert.AreEqual(directory, referencesNode.Directory.ToString());
 		}
 		
 		[Test]
@@ -108,7 +108,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			
 			DirectoryNode node = DirectoryNodeFactory.CreateDirectoryNode(projectItem, FileNodeStatus.None);
 			
-			Assert.AreEqual(@"d:\projects\MyProject\MyFolder", node.Directory);
+			Assert.AreEqual(@"d:\projects\MyProject\MyFolder", node.Directory.ToString());
 		}
 		
 		[Test]
@@ -120,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			
 			DirectoryNode node = DirectoryNodeFactory.CreateDirectoryNode(projectItem, FileNodeStatus.None);
 			
-			Assert.AreEqual(@"d:\projects\MyProject\MyFolder", node.Directory);
+			Assert.AreEqual(@"d:\projects\MyProject\MyFolder", node.Directory.ToString());
 		}
 	}
 }

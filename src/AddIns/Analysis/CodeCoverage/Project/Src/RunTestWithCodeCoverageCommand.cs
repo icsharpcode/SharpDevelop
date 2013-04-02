@@ -25,7 +25,7 @@ namespace ICSharpCode.CodeCoverage
 	public class RunTestWithCodeCoverageCommand : AbstractMenuCommand
 	{
 		OpenCoverSettingsFactory settingsFactory = new OpenCoverSettingsFactory();
-		IFileSystem fileSystem = new FileSystem();
+		IFileSystem fileSystem = SD.FileSystem;
 		
 		public override void Run()
 		{
@@ -69,17 +69,15 @@ namespace ICSharpCode.CodeCoverage
 		
 		void RemoveExistingCodeCoverageResultsFile(string fileName)
 		{
-			if (fileSystem.FileExists(fileName)) {
-				fileSystem.DeleteFile(fileName);
+			if (fileSystem.FileExists(FileName.Create(fileName))) {
+				fileSystem.Delete(FileName.Create(fileName));
 			}
 		}
 		
 		void CreateDirectoryForCodeCoverageResultsFile(string fileName)
 		{
 			string directory = Path.GetDirectoryName(fileName);
-			if (!fileSystem.DirectoryExists(directory)) {
-				fileSystem.CreateDirectory(directory);
-			}
+			fileSystem.CreateDirectory(DirectoryName.Create(directory));
 		}
 		
 		Task AfterTestsRunTask(Task task, CodeCoverageResultsReader coverageResultsReader)

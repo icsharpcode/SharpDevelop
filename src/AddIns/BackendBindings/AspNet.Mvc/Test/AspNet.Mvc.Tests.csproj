@@ -67,7 +67,6 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Helpers\FakeAddMvcItemToProjectView.cs" />
-    <Compile Include="Helpers\FakeFileSystem.cs" />
     <Compile Include="Helpers\FakeMvcModelClassLocator.cs" />
     <Compile Include="Helpers\FakeMvcClass.cs" />
     <Compile Include="Helpers\FakeMvcControllerFileGenerator.cs" />

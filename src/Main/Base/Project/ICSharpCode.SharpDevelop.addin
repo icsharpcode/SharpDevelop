@@ -72,6 +72,8 @@
 		         class="ICSharpCode.SharpDevelop.Dom.ModelFactory"/>
 		<Service id="ICSharpCode.SharpDevelop.IClipboard"
 		         class="ICSharpCode.SharpDevelop.ClipboardWrapper"/>
+		<Service id="ICSharpCode.SharpDevelop.IFileSystem"
+		         class="ICSharpCode.SharpDevelop.FileSystem"/>
 		<Service id="ICSharpCode.SharpDevelop.Project.IBuildService"
 		         class="ICSharpCode.SharpDevelop.Project.BuildService"/>
 		<Service id="ICSharpCode.SharpDevelop.Project.IProjectService"

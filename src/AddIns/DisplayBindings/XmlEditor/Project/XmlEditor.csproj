@@ -90,14 +90,12 @@
     <Compile Include="Src\DefaultXmlSchemaFileAssociations.cs" />
     <Compile Include="Src\DeleteXmlTreeNode.cs" />
     <Compile Include="Src\EncodedStringWriter.cs" />
-    <Compile Include="Src\FileSystem.cs" />
     <Compile Include="Src\FoldingManagerAdapter.cs" />
     <Compile Include="Src\FoldingRegion.cs" />
     <Compile Include="Src\FormatXmlCommand.cs" />
     <Compile Include="Src\GoToSchemaDefinitionCommand.cs" />
     <Compile Include="Src\GoToSchemaDefinitionEditAction.cs" />
     <Compile Include="Src\IAddXmlNodeDialog.cs" />
-    <Compile Include="Src\IFileSystem.cs" />
     <Compile Include="Src\IFoldingManager.cs" />
     <Compile Include="Src\InsertCommentAfterCommand.cs" />
     <Compile Include="Src\InsertCommentBeforeCommand.cs" />

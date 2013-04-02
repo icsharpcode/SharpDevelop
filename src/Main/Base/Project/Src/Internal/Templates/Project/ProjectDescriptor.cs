@@ -14,6 +14,7 @@ using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Templates;
 using Microsoft.Build.Exceptions;
 using Import = System.Collections.Generic.KeyValuePair<string, string>;
 

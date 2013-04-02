@@ -19,7 +19,7 @@ namespace ICSharpCode.UnitTesting
 			: this(executionOptions,
 				new UnitTestProcessRunner(),
 				new TestResultsReader(),
-				new UnitTestFileService(),
+				SD.FileSystem,
 				SD.MessageService)
 		{
 		}

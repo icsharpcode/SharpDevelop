@@ -5,7 +5,7 @@ using System;
 using System.Runtime.Serialization;
 using System.Xml;
 
-namespace ICSharpCode.SharpDevelop.Internal.Templates
+namespace ICSharpCode.SharpDevelop.Templates
 {
 	/// <summary>
 	/// Exception thrown when loading an invalid template.

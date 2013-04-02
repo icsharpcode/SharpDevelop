@@ -45,14 +45,14 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		void AddCodeCoverageFile(string fileName)
 		{
 			string coverageXml = "<CodeCoverage></CodeCoverage>";
-			AddCodeCoverageFile(fileName, coverageXml);
+			AddCodeCoverageFile(FileName.Create(fileName), coverageXml);
 		}
 		
-		void AddCodeCoverageFile(string fileName, string coverageXml)
+		void AddCodeCoverageFile(FileName fileName, string coverageXml)
 		{
 			var stringReader = new StringReader(coverageXml);
 			fakeFileSystem.Stub(fs => fs.FileExists(fileName)).Return(true);
-			fakeFileSystem.Stub(fs => fs.CreateTextReader(fileName)).Return(stringReader);
+			fakeFileSystem.Stub(fs => fs.OpenText(fileName)).Return(stringReader);
 		}
 		
 		[Test]

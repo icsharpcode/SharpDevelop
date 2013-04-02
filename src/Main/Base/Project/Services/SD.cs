@@ -14,6 +14,7 @@ using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Templates;
 using ICSharpCode.SharpDevelop.WinForms;
 using ICSharpCode.SharpDevelop.Workbench;
 
@@ -234,9 +235,19 @@ namespace ICSharpCode.SharpDevelop
 			get { return GetRequiredService<IUIService>(); }
 		}
 		
-		/// <inheritdoc see="IUIService"/>
+		/// <inheritdoc see="IMSBuildEngine"/>
 		public static IMSBuildEngine MSBuildEngine {
 			get { return GetRequiredService<IMSBuildEngine>(); }
+		}
+		
+		/// <inheritdoc see="ITemplateService"/>
+		public static ITemplateService Templates {
+			get { return GetRequiredService<ITemplateService>(); }
+		}
+		
+		/// <inheritdoc see="IFileSystem"/>
+		public static IFileSystem FileSystem {
+			get { return GetRequiredService<IFileSystem>(); }
 		}
 	}
 }

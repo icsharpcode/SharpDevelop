@@ -4,13 +4,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.CodeCoverage
 {
 	public class CodeCoverageResultsReader
 	{
 		List<string> fileNames = new List<string>();
-		IFileSystem fileSystem = new FileSystem();
+		IFileSystem fileSystem = SD.FileSystem;
 		List<string> missingFileNames = new List<string>();
 		
 		public CodeCoverageResultsReader()
@@ -25,7 +27,7 @@ namespace ICSharpCode.CodeCoverage
 		public IEnumerable<CodeCoverageResults> GetResults()
 		{
 			foreach (string fileName in fileNames) {
-				if (fileSystem.FileExists(fileName)) {
+				if (fileSystem.FileExists(FileName.Create(fileName))) {
 					yield return ReadCodeCoverageResults(fileName);
 				} else {
 					missingFileNames.Add(fileName);
@@ -35,7 +37,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		CodeCoverageResults ReadCodeCoverageResults(string fileName)
 		{
-			TextReader reader = fileSystem.CreateTextReader(fileName);
+			TextReader reader = fileSystem.OpenText(FileName.Create(fileName));
 			return new CodeCoverageResults(reader);
 		}
 		

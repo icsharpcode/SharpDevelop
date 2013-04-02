@@ -9,27 +9,21 @@ using System.IO;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Represents a directory path or Directoryname.
+	/// Represents a path to a directory.
 	/// The equality operator is overloaded to compare for path equality (case insensitive, normalizing paths with '..\')
 	/// </summary>
 	[TypeConverter(typeof(DirectoryNameConverter))]
-	public sealed class DirectoryName : IEquatable<DirectoryName>
+	public sealed class DirectoryName : PathName
 	{
-		readonly string normalizedDirectoryName;
-		
-		public DirectoryName(string directoryName)
+		public DirectoryName(string path)
+			: base(path)
 		{
-			if (directoryName == null)
-				throw new ArgumentNullException("DirectoryName");
-			if (directoryName.Length == 0)
-				throw new ArgumentException("The empty string is not a valid DirectoryName");
-			this.normalizedDirectoryName = FileUtility.NormalizePath(directoryName);
 		}
 		
 		[Obsolete("The input already is a DirectoryName")]
-		public DirectoryName(DirectoryName directoryName)
+		public DirectoryName(DirectoryName path)
+			: base(path)
 		{
-			this.normalizedDirectoryName = directoryName.normalizedDirectoryName;
 		}
 		
 		/// <summary>
@@ -50,30 +44,55 @@ namespace ICSharpCode.Core
 			return directoryName;
 		}
 		
-		public DirectoryName GetParentDirectory()
+		/// <summary>
+		/// Combines this directory name with a relative path.
+		/// </summary>
+		public DirectoryName Combine(DirectoryName relativePath)
 		{
-			return DirectoryName.Create(Path.GetDirectoryName(normalizedDirectoryName));
-		}
-		
-		public static implicit operator string(DirectoryName directoryName)
-		{
-			if (directoryName != null)
-				return directoryName.normalizedDirectoryName;
-			else
+			if (relativePath == null)
 				return null;
+			return DirectoryName.Create(Path.Combine(normalizedPath, relativePath));
 		}
 		
+		/// <summary>
+		/// Combines this directory name with a relative path.
+		/// </summary>
+		public FileName Combine(FileName relativePath)
+		{
+			if (relativePath == null)
+				return null;
+			return FileName.Create(Path.Combine(normalizedPath, relativePath));
+		}
+		
+		/// <summary>
+		/// Converts the specified absolute path into a relative path (relative to <c>this</c>).
+		/// </summary>
+		public DirectoryName GetRelativePath(DirectoryName path)
+		{
+			if (path == null)
+				return null;
+			return DirectoryName.Create(FileUtility.GetRelativePath(normalizedPath, path));
+		}
+		
+		/// <summary>
+		/// Converts the specified absolute path into a relative path (relative to <c>this</c>).
+		/// </summary>
+		public FileName GetRelativePath(FileName path)
+		{
+			if (path == null)
+				return null;
+			return FileName.Create(FileUtility.GetRelativePath(normalizedPath, path));
+		}
+		
+		/// <summary>
+		/// Gets the directory name as a string, including a trailing backslash.
+		/// </summary>
 		public string ToStringWithTrailingBackslash()
 		{
-			if (normalizedDirectoryName.EndsWith("\\", StringComparison.Ordinal))
-				return normalizedDirectoryName; // trailing backslash exists in normalized version for root of drives ("C:\")
+			if (normalizedPath.EndsWith("\\", StringComparison.Ordinal))
+				return normalizedPath; // trailing backslash exists in normalized version for root of drives ("C:\")
 			else
-				return normalizedDirectoryName + "\\";
-		}
-		
-		public override string ToString()
-		{
-			return normalizedDirectoryName;
+				return normalizedPath + "\\";
 		}
 		
 		#region Equals and GetHashCode implementation
@@ -85,14 +104,14 @@ namespace ICSharpCode.Core
 		public bool Equals(DirectoryName other)
 		{
 			if (other != null)
-				return string.Equals(normalizedDirectoryName, other.normalizedDirectoryName, StringComparison.OrdinalIgnoreCase);
+				return string.Equals(normalizedPath, other.normalizedPath, StringComparison.OrdinalIgnoreCase);
 			else
 				return false;
 		}
 		
 		public override int GetHashCode()
 		{
-			return StringComparer.OrdinalIgnoreCase.GetHashCode(normalizedDirectoryName);
+			return StringComparer.OrdinalIgnoreCase.GetHashCode(normalizedPath);
 		}
 		
 		public static bool operator ==(DirectoryName left, DirectoryName right)

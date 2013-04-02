@@ -9,8 +9,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Input;
 using System.Xml;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Templates;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
@@ -94,37 +96,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				pairs[node.GetAttribute("name")] = node.GetAttribute("value");
 			}
 		}
-	}
-	
-	public class FileTemplateOptions
-	{
-		/// <summary>
-		/// Gets/Sets whether the file being created will be untitled.
-		/// </summary>
-		public bool IsUntitled { get; set; }
-		
-		/// <summary>
-		/// The parent project to which this file is added.
-		/// Can be null when creating a file outside of a project.
-		/// </summary>
-		public IProject Project { get; set; }
-		
-		/// <summary>
-		/// The name of the file
-		/// </summary>
-		public FileName FileName { get; set; }
-		
-		/// <summary>
-		/// The default namespace to use for the newly created file.
-		/// </summary>
-		public string Namespace { get; set; }
-		
-		/// <summary>
-		/// The class name (generated from the file name).
-		/// </summary>
-		public string ClassName { get; set; }
-		
-		//IDictionary<string, string> properties;
 	}
 	
 	/// <summary>

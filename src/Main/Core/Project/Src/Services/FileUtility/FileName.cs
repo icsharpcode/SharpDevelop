@@ -9,27 +9,21 @@ using System.IO;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Represents a directory path or filename.
+	/// Represents a path to a file.
 	/// The equality operator is overloaded to compare for path equality (case insensitive, normalizing paths with '..\')
 	/// </summary>
 	[TypeConverter(typeof(FileNameConverter))]
-	public sealed class FileName : IEquatable<FileName>
+	public sealed class FileName : PathName, IEquatable<FileName>
 	{
-		readonly string normalizedFileName;
-		
-		public FileName(string fileName)
+		public FileName(string path)
+			: base(path)
 		{
-			if (fileName == null)
-				throw new ArgumentNullException("fileName");
-			if (fileName.Length == 0)
-				throw new ArgumentException("The empty string is not a valid FileName");
-			this.normalizedFileName = FileUtility.NormalizePath(fileName);
 		}
 		
 		[Obsolete("The input already is a FileName")]
-		public FileName(FileName fileName)
+		public FileName(FileName path)
+			: base(path)
 		{
-			this.normalizedFileName = fileName.normalizedFileName;
 		}
 		
 		/// <summary>
@@ -50,30 +44,6 @@ namespace ICSharpCode.Core
 			return fileName;
 		}
 		
-		public static implicit operator string(FileName fileName)
-		{
-			if (fileName != null)
-				return fileName.normalizedFileName;
-			else
-				return null;
-		}
-		
-		public override string ToString()
-		{
-			return normalizedFileName;
-		}
-		
-		/// <summary>
-		/// Gets the directory name.
-		/// </summary>
-		/// <remarks>
-		/// Corresponds to <c>System.IO.Path.GetDirectoryName</c>
-		/// </remarks>
-		public DirectoryName GetParentDirectory()
-		{
-			return DirectoryName.Create(Path.GetDirectoryName(normalizedFileName));
-		}
-		
 		/// <summary>
 		/// Gets the file name (not the full path).
 		/// </summary>
@@ -82,7 +52,7 @@ namespace ICSharpCode.Core
 		/// </remarks>
 		public string GetFileName()
 		{
-			return Path.GetFileName(normalizedFileName);
+			return Path.GetFileName(normalizedPath);
 		}
 		
 		/// <summary>
@@ -93,7 +63,7 @@ namespace ICSharpCode.Core
 		/// </remarks>
 		public string GetExtension()
 		{
-			return Path.GetExtension(normalizedFileName);
+			return Path.GetExtension(normalizedPath);
 		}
 		
 		/// <summary>
@@ -105,7 +75,7 @@ namespace ICSharpCode.Core
 				throw new ArgumentNullException("extension");
 			if (extension.Length == 0 || extension[0] != '.')
 				throw new ArgumentException("extension must start with '.'");
-			return normalizedFileName.EndsWith(extension, StringComparison.OrdinalIgnoreCase);
+			return normalizedPath.EndsWith(extension, StringComparison.OrdinalIgnoreCase);
 		}
 		
 		/// <summary>
@@ -116,7 +86,7 @@ namespace ICSharpCode.Core
 		/// </remarks>
 		public string GetFileNameWithoutExtension()
 		{
-			return Path.GetFileNameWithoutExtension(normalizedFileName);
+			return Path.GetFileNameWithoutExtension(normalizedPath);
 		}
 		
 		#region Equals and GetHashCode implementation
@@ -128,14 +98,14 @@ namespace ICSharpCode.Core
 		public bool Equals(FileName other)
 		{
 			if (other != null)
-				return string.Equals(normalizedFileName, other.normalizedFileName, StringComparison.OrdinalIgnoreCase);
+				return string.Equals(normalizedPath, other.normalizedPath, StringComparison.OrdinalIgnoreCase);
 			else
 				return false;
 		}
 		
 		public override int GetHashCode()
 		{
-			return StringComparer.OrdinalIgnoreCase.GetHashCode(normalizedFileName);
+			return StringComparer.OrdinalIgnoreCase.GetHashCode(normalizedPath);
 		}
 		
 		public static bool operator ==(FileName left, FileName right)

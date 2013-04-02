@@ -188,8 +188,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		string directory = String.Empty;
-		public virtual string Directory {
+		DirectoryName directory;
+		public virtual DirectoryName Directory {
 			get {
 				return directory;
 			}
@@ -233,7 +233,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			sortOrder = 1;
 			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FolderNode";
-			this.Directory = directory.Trim('\\', '/');
+			this.Directory = DirectoryName.Create(directory);
 			this.fileNodeStatus = fileNodeStatus;
 			this.ProjectItem = projectItem;
 			
@@ -493,7 +493,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					return;
 				}
 				
-				this.directory = newPath;
+				this.directory = DirectoryName.Create(newPath);
 				Project.Save();
 			}
 		}

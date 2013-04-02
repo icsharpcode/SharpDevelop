@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 	{
 		IProjectWithServiceReferences project;
 		IServiceReferenceFileGenerator fileGenerator;
-		IFileSystem fileSystem;
+		IServiceReferenceFileSystem fileSystem;
 		IActiveTextEditors activeTextEditors;
 		string tempAppConfigFileName;
 		ServiceReferenceFileName referenceFileName;
@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		public ServiceReferenceGenerator(
 			IProjectWithServiceReferences project,
 			IServiceReferenceFileGenerator fileGenerator,
-			IFileSystem fileSystem,
+			IServiceReferenceFileSystem fileSystem,
 			IActiveTextEditors activeTextEditors)
 		{
 			this.project = project;
