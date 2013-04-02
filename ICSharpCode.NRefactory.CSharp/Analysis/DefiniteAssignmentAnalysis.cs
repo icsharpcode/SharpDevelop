@@ -444,6 +444,8 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				Debug.Assert(data == CleanSpecialValues(data));
 				DefiniteAssignmentStatus status = data;
 				for (AstNode child = node.FirstChild; child != null; child = child.NextSibling) {
+					if (child is WhitespaceNode || child is NewLineNode || child is CSharpTokenNode || child is TextNode)
+						continue;
 					analysis.analysisCancellationToken.ThrowIfCancellationRequested();
 					
 					Debug.Assert(!(child is Statement)); // statements are visited with the CFG, not with the visitor pattern
