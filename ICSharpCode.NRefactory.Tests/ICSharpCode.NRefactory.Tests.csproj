@@ -157,6 +157,7 @@
     <Compile Include="CSharp\CodeIssues\UnreachableCodeIssueTests.cs" />
     <Compile Include="CSharp\CSharpAmbienceTests.cs" />
     <Compile Include="CSharp\CodeDomConvertVisitorTests.cs" />
+    <Compile Include="CSharp\DepthFirstVisitorTests.cs" />
     <Compile Include="CSharp\InsertParenthesesVisitorTests.cs" />
     <Compile Include="CSharp\CSharpOutputVisitorTests.cs" />
     <Compile Include="CSharp\Parser\Expression\AnonymousTypeCreateExpressionTests.cs" />
