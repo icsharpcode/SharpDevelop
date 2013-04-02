@@ -44,11 +44,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		#endregion
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<VariableDeclaredInWideScopeIssue>
 		{
 			readonly BaseRefactoringContext context;
 			
-			public GatherVisitor(BaseRefactoringContext context, VariableDeclaredInWideScopeIssue inspector) : base (context)
+			public GatherVisitor(BaseRefactoringContext context, VariableDeclaredInWideScopeIssue issueProvider) : base (context, issueProvider)
 			{
 				this.context = context;
 			}

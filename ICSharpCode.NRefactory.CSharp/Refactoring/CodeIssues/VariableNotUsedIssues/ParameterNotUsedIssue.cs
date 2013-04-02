@@ -87,7 +87,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<ParameterNotUsedIssue>
 		{
 			GetDelgateUsagesVisitor usedDelegates;
 			bool currentTypeIsPartial;

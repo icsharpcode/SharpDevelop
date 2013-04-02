@@ -104,7 +104,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<MultipleEnumerationIssue>
 		{
 			HashSet<AstNode> collectedAstNodes;
 

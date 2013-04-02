@@ -42,7 +42,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	       Description= "Removes 'this.' references that are not required.",
 	       Category = IssueCategories.Redundancies,
 	       Severity = Severity.Hint,
-	       IssueMarker = IssueMarker.GrayOut)]
+	       IssueMarker = IssueMarker.GrayOut,
+	       ResharperDisableKeyword = "RedundantThisQualifier")]
 	public class RedundantThisIssue : ICodeIssueProvider
 	{
 		bool ignoreConstructors = true;
@@ -65,13 +66,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context, this).GetIssues();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<RedundantThisIssue>
 		{
-			readonly RedundantThisIssue inspector;
-			
-			public GatherVisitor (BaseRefactoringContext ctx, RedundantThisIssue inspector) : base (ctx)
+			public GatherVisitor (BaseRefactoringContext ctx, RedundantThisIssue issueProvider) : base (ctx, issueProvider)
 			{
-				this.inspector = inspector;
 			}
 
 			static IMember GetMember (ResolveResult result)
@@ -87,7 +85,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			public override void VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
 			{
-				if (inspector.IgnoreConstructors)
+				if (IssueProvider.IgnoreConstructors)
 					return;
 				base.VisitConstructorDeclaration(constructorDeclaration);
 			}

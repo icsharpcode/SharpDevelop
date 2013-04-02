@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return gv.CallFinder.FoundIssues;
 		}
 		
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<CallToVirtualFunctionFromConstructorIssue>
 		{
 			internal readonly VirtualCallFinderVisitor CallFinder;
 
@@ -109,7 +109,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 
-		class VirtualCallFinderVisitor: GatherVisitorBase
+		class VirtualCallFinderVisitor: GatherVisitorBase<CallToVirtualFunctionFromConstructorIssue>
 		{
 			readonly BaseRefactoringContext context;
 

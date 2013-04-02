@@ -34,12 +34,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   IssueMarker = IssueMarker.Underline)]
 	public class ParameterOnlyAssignedIssue : VariableOnlyAssignedIssue
 	{
-		internal override GatherVisitorBase GetGatherVisitor(BaseRefactoringContext ctx)
+		public override System.Collections.Generic.IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
-			return new GatherVisitor(ctx);
+			return new GatherVisitor(context).GetIssues ();
 		}
 
-		private class GatherVisitor : GatherVisitorBase
+		private class GatherVisitor : GatherVisitorBase<ParameterOnlyAssignedIssue>
 		{
 			public GatherVisitor(BaseRefactoringContext ctx)
 				: base (ctx)

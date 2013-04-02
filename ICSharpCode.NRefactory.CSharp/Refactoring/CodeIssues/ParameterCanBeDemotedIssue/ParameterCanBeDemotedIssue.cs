@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		#endregion
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<ParameterCanBeDemotedIssue>
 		{
 			bool tryResolve;
 			

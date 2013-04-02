@@ -46,13 +46,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context, this).GetIssues();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<RedundantInternalIssue>
 		{
-//			readonly RedundantInternalIssue inspector;
-			
-			public GatherVisitor (BaseRefactoringContext ctx, RedundantInternalIssue inspector) : base (ctx)
+			public GatherVisitor (BaseRefactoringContext ctx, RedundantInternalIssue issueProvider) : base (ctx, issueProvider)
 			{
-//				this.inspector = inspector;
 			}
 
 			public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)

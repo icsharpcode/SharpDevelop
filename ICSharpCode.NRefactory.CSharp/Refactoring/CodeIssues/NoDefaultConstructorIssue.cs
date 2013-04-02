@@ -18,7 +18,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context).GetIssues();
 		}
 
-		private class GatherVisitor : GatherVisitorBase
+		private class GatherVisitor : GatherVisitorBase<NoDefaultConstructorIssue>
 		{
 			private bool initializerInvoked;
 			private ConstructorInitializer initializer;

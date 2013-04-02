@@ -31,10 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public abstract class VariableOnlyAssignedIssue : ICodeIssueProvider
 	{
-		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
-		{
-			return GetGatherVisitor (context).GetIssues ();
-		}
+		public abstract IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context);
 
 		protected static bool TestOnlyAssigned(BaseRefactoringContext ctx, AstNode rootNode, IVariable variable)
 		{
@@ -85,6 +82,5 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return assignment && !nonAssignment;
 		}
 
-		internal abstract GatherVisitorBase GetGatherVisitor (BaseRefactoringContext ctx);
 	}
 }

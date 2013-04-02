@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor (context).GetIssues ();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<ExpressionIsAlwaysOfProvidedTypeIssue>
 		{
 			readonly CSharpConversions conversions;
 			public GatherVisitor (BaseRefactoringContext ctx)

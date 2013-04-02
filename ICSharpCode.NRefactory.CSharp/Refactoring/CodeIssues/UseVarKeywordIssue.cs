@@ -48,13 +48,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context, this).GetIssues();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<UseVarKeywordIssue>
 		{
-//			readonly UseVarKeywordIssue inspector;
-			
-			public GatherVisitor (BaseRefactoringContext ctx, UseVarKeywordIssue inspector) : base (ctx)
+			public GatherVisitor (BaseRefactoringContext ctx, UseVarKeywordIssue issueProvider) : base (ctx, issueProvider)
 			{
-//				this.inspector = inspector;
 			}
 
 			public override void VisitVariableDeclarationStatement(VariableDeclarationStatement variableDeclarationStatement)

@@ -1,4 +1,7 @@
 //
+using System.Diagnostics.CodeAnalysis;
+
+
 // StaticFieldInGenericTypeIssue.cs
 //
 // Author:
@@ -33,7 +36,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[IssueDescription("Static field in generic type",
 	                   Description = "Warns about static fields in generic types.",
 	                   Category = IssueCategories.Notifications,
-	                   Severity = Severity.Warning)]
+	                   Severity = Severity.Warning,
+	                  SuppressMessageCategory = "Microsoft.Design",
+	                  SuppressMessageCheckId  = "CA1000:DoNotDeclareStaticMembersOnGenericTypes"
+	                  )]
 	public class StaticFieldInGenericTypeIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
@@ -41,7 +47,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context).GetIssues();
 		}
 		
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<StaticFieldInGenericTypeIssue>
 		{
 			public GatherVisitor(BaseRefactoringContext context) : base (context)
 			{
@@ -90,6 +96,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitFieldDeclaration(FieldDeclaration fieldDeclaration)
 			{
+				base.VisitFieldDeclaration(fieldDeclaration);
 				if (fieldDeclaration.Modifiers.HasFlag(Modifiers.Static) && !UsesAllTypeParameters(fieldDeclaration)) {
 					AddIssue(fieldDeclaration, ctx.TranslateString("Static field in generic type"));
 				}

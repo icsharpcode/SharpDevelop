@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context).GetIssues();
 		}
 		
-		sealed class GatherVisitor : GatherVisitorBase
+		sealed class GatherVisitor : GatherVisitorBase<ResultOfAsyncCallShouldNotBeIgnoredIssue>
 		{
 			public GatherVisitor(BaseRefactoringContext ctx)
 				: base(ctx)

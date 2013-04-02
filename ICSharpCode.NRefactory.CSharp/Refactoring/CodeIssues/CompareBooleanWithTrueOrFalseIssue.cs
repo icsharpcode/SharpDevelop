@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor (context).GetIssues ();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<CompareBooleanWithTrueOrFalseIssue>
 		{
 			static readonly Pattern pattern = new Choice {
 				PatternHelper.CommutativeOperator(

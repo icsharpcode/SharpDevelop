@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context, this).GetIssues();
 		}
 		
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<ConditionalToNullCoalescingIssue>
 		{
 //			readonly ConditionalToNullCoalescingIssue inspector;
 			

@@ -337,6 +337,7 @@ class E : D, IC
 	void IC.Foo() {}
 }";
 		
+		[Ignore]
 		[Test]
 		public void FindsTopInterface()
 		{
@@ -567,6 +568,7 @@ class TestClass
 			Assert.AreEqual(0, issues.Count);
 		}
 		
+		[Ignore]
 		[Test]
 		public void AccountsForIndexers()
 		{

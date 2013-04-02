@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context, this).GetIssues();
 		}
 		
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<ValueParameterUnusedIssue>
 		{
 			public GatherVisitor(BaseRefactoringContext context, ValueParameterUnusedIssue inspector) : base (context)
 			{

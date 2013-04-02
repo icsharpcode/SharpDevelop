@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return visitor.FoundIssues;
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<InconsistentNamingIssue>
 		{
 			readonly NamingConventionService service;
 

@@ -42,13 +42,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context, this).GetIssues();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<NotImplementedExceptionIssue>
 		{
-//			readonly NotImplementedExceptionIssue inspector;
-			
-			public GatherVisitor (BaseRefactoringContext ctx, NotImplementedExceptionIssue inspector) : base (ctx)
+			public GatherVisitor (BaseRefactoringContext ctx, NotImplementedExceptionIssue issueProvider) : base (ctx, issueProvider)
 			{
-//				this.inspector = inspector;
 			}
 
 			public override void VisitThrowStatement(ThrowStatement throwStatement)
