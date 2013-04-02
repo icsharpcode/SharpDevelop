@@ -1341,12 +1341,12 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		CodeObject IAstVisitor<CodeObject>.VisitNewLine(NewLineNode newLineNode)
 		{
-			throw new NotSupportedException();
+			return null;
 		}
 
 		CodeObject IAstVisitor<CodeObject>.VisitWhitespace(WhitespaceNode whitespaceNode)
 		{
-			throw new NotSupportedException();
+			return null;
 		}
 
 		CodeObject IAstVisitor<CodeObject>.VisitText(TextNode textNode)
