@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop.Templates;
 
 namespace ICSharpCode.SharpDevelop.Project.Commands
 {
@@ -348,27 +348,13 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			node.Expand();
 			node.Expanding();
 			
-			List<FileProjectItem> addedItems = new List<FileProjectItem>();
-			
-			using (NewFileDialog nfd = new NewFileDialog(node.Directory)) {
-				if (nfd.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
-					bool additionalProperties = false;
-					foreach (KeyValuePair<string, FileDescriptionTemplate> createdFile in nfd.CreatedFiles) {
-						FileProjectItem item = node.AddNewFile(createdFile.Key);
-						addedItems.Add(item);
-						
-						if (createdFile.Value.SetProjectItemProperties(item)) {
-							additionalProperties = true;
-						}
-					}
-					if (additionalProperties) {
-						node.Project.Save();
-						node.RecreateSubNodes();
-					}
-				}
+			FileTemplateResult result = SD.UIService.ShowNewFileDialog(node.Project, node.Directory);
+			if (result != null) {
+				node.RecreateSubNodes();
+				return result.NewFiles.Select(node.Project.FindFile).Where(f => f != null).ToArray();
+			} else {
+				return null;
 			}
-			
-			return addedItems.AsReadOnly();
 		}
 	}
 	

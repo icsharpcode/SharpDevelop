@@ -25,14 +25,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	///  This class is for creating a new "empty" file
 	/// </summary>
-	public class NewFileDialog : BaseSharpDevelopForm
+	internal class NewFileDialog : BaseSharpDevelopForm
 	{
 		ArrayList alltemplates = new ArrayList();
 		ArrayList categories   = new ArrayList();
 		Hashtable icons        = new Hashtable();
 		bool allowUntitledFiles;
-		string basePath;
+		IProject project;
+		DirectoryName basePath;
 		List<KeyValuePair<string, FileDescriptionTemplate>> createdFiles = new List<KeyValuePair<string, FileDescriptionTemplate>>();
+		internal FileTemplateOptions options;
 		
 		public List<KeyValuePair<string, FileDescriptionTemplate>> CreatedFiles {
 			get {
@@ -40,9 +42,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public NewFileDialog(string basePath)
+		public NewFileDialog(IProject project, DirectoryName basePath)
 		{
 			StandardHeader.SetHeaders();
+			this.project = project;
 			this.basePath = basePath;
 			this.allowUntitledFiles = basePath == null;
 			try {
@@ -469,13 +472,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 					fileName = Path.Combine(basePath, fileName);
 					fileName = FileUtility.NormalizePath(fileName);
-					IProject project = ProjectService.CurrentProject;
 					if (project != null) {
 						StringParserPropertyContainer.FileCreation["StandardNamespace"] = CustomToolsService.GetDefaultNamespace(project, fileName);
 					}
 				}
 				
-				FileTemplateOptions options = new FileTemplateOptions();
+				options = new FileTemplateOptions();
 				options.ClassName = GenerateValidClassOrNamespaceName(Path.GetFileNameWithoutExtension(fileName), false);
 				options.FileName = FileName.Create(fileName);
 				options.IsUntitled = allowUntitledFiles;
@@ -490,20 +492,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 				StringParserPropertyContainer.FileCreation["ClassName"] = options.ClassName;
 				
 				// when adding a file to a project (but not when creating a standalone file while a project is open):
-				if (ProjectService.CurrentProject != null && !this.allowUntitledFiles) {
-					options.Project = ProjectService.CurrentProject;
+				if (project != null && !this.allowUntitledFiles) {
+					options.Project = project;
 					// add required assembly references to the project
 					bool changes = false;
 					foreach (ReferenceProjectItem reference in item.Template.RequiredAssemblyReferences) {
-						IEnumerable<ProjectItem> refs = ProjectService.CurrentProject.GetItemsOfType(ItemType.Reference);
+						IEnumerable<ProjectItem> refs = project.GetItemsOfType(ItemType.Reference);
 						if (!refs.Any(projItem => string.Equals(projItem.Include, reference.Include, StringComparison.OrdinalIgnoreCase))) {
-							ReferenceProjectItem projItem = (ReferenceProjectItem)reference.CloneFor(ProjectService.CurrentProject);
-							ProjectService.AddProjectItem(ProjectService.CurrentProject, projItem);
+							ReferenceProjectItem projItem = (ReferenceProjectItem)reference.CloneFor(project);
+							ProjectService.AddProjectItem(project, projItem);
 							changes = true;
 						}
 					}
 					if (changes) {
-						ProjectService.CurrentProject.Save();
+						project.Save();
 					}
 				}
 				

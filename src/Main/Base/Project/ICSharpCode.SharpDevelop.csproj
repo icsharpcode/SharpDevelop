@@ -237,6 +237,7 @@
     <Compile Include="Src\Project\MSBuildConfigurationOrPlatformNameCollection.cs" />
     <Compile Include="Templates\FileTemplate.cs" />
     <Compile Include="Templates\FileTemplateOptions.cs" />
+    <Compile Include="Templates\FileTemplateResult.cs" />
     <Compile Include="Templates\ITemplateService.cs" />
     <Compile Include="Templates\TemplateLoadException.cs" />
     <Compile Include="Util\AtomicBoolean.cs" />

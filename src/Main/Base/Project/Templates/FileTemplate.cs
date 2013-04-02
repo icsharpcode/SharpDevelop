@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Templates
 {
@@ -14,7 +15,15 @@ namespace ICSharpCode.SharpDevelop.Templates
 		public abstract string Description { get; }
 		public abstract IImage Icon { get; }
 		
-		public virtual bool NewFileDialogVisible { get { return true; } }
+		/// <summary>
+		/// Gets whether this template is available for the specified project.
+		/// </summary>
+		/// <param name="project">The project to which the new file should be added.
+		/// Can be <c>null</c> when creating a file outside of a project.</param>
+		public virtual bool IsVisible(IProject project)
+		{
+			return true;
+		}
 		
 		/// <summary>
 		/// Proposes a name for the new file.
@@ -31,5 +40,10 @@ namespace ICSharpCode.SharpDevelop.Templates
 		{
 			return null;
 		}
+		
+		/// <summary>
+		/// Instanciates the template, writes the new files to disk, and adds them to the project.
+		/// </summary>
+		public abstract FileTemplateResult Create(FileTemplateOptions options);
 	}
 }

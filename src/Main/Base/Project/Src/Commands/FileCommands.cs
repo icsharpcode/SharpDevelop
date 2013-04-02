@@ -41,9 +41,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				}
 				
 			}
-			using (NewFileDialog nfd = new NewFileDialog(null)) {
-				nfd.ShowDialog(SD.WinForms.MainWin32Window);
-			}
+			SD.UIService.ShowNewFileDialog(null, null);
 		}
 	}
 	
