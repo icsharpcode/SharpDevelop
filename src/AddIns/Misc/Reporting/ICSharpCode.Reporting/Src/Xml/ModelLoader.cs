@@ -14,7 +14,7 @@ namespace ICSharpCode.Reporting.Xml
 	/// <summary>
 	/// Description of ModelLoader.
 	/// </summary>
-	public class ModelLoader: MycroParser
+	internal class ModelLoader: MycroParser
 	{
 		
 		protected override Type GetTypeByName(string ns, string name)

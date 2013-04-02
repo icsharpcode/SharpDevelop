@@ -49,7 +49,6 @@ namespace ICSharpCode.Reporting
 		
 		internal ReportModel LoadReportModel (Stream stream)
 		{
-			Console.WriteLine("ReportEngine:LoadReportModel_2");
 			var doc = new XmlDocument();
 			doc.Load(stream);
 			var rm = LoadModel(doc);
@@ -58,7 +57,6 @@ namespace ICSharpCode.Reporting
 		
 		static ReportModel LoadModel(XmlDocument doc)
 		{
-			Console.WriteLine("ReportEngine:LoadModel");
 			var loader = new ModelLoader();
 			object root = loader.Load(doc.DocumentElement);
 
