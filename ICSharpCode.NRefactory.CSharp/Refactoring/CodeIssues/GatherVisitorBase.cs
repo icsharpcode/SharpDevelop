@@ -159,7 +159,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		bool IsSuppressed(TextLocation location)
+		protected bool IsSuppressed(TextLocation location)
 		{
 			return isDisabled || isGloballySuppressed || suppressedRegions.Any(r => r.IsInside(location));
 		}
