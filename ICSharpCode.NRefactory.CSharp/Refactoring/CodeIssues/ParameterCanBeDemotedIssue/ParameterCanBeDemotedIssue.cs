@@ -37,7 +37,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[IssueDescription("A parameter can be demoted to base class",
 	                   Description = "Finds parameters that can be demoted to a base class.",
 	                   Category = IssueCategories.Opportunities,
-	                   Severity = Severity.Suggestion)]
+	                   Severity = Severity.Suggestion,
+	                   SuppressMessageCategory="Microsoft.Design",
+	                   SuppressMessageCheckId="CA1011:ConsiderPassingBaseTypesAsParameters"
+	                  )]
 	public class ParameterCanBeDemotedIssue : ICodeIssueProvider
 	{
 		bool tryResolve;
@@ -76,6 +79,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 			{
+				methodDeclaration.Attributes.AcceptVisitor(this);
 				if (HasEntryPointSignature(methodDeclaration))
 					return;
 				var eligibleParameters = methodDeclaration.Parameters
@@ -92,7 +96,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 				var collector = new TypeCriteriaCollector(ctx);
 				methodDeclaration.AcceptVisitor(collector);
-				
+
 				foreach (var parameter in eligibleParameters) {
 					ProcessParameter(parameter, methodDeclaration.Body, collector);
 				}
