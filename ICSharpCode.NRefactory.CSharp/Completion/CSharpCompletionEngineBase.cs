@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			get {
 				return languageVersion;
 			}
-			private set {
+			set {
 				languageVersion = value;
 			}
 		}
