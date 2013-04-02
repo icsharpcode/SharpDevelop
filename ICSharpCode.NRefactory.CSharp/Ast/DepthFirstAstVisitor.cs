@@ -51,22 +51,22 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public virtual void VisitComment(Comment comment)
 		{
-			// leaf
+			VisitChildren(comment);
 		}
 
 		public virtual void VisitNewLine(NewLineNode newLineNode)
 		{
-			// leaf
+			VisitChildren(newLineNode);
 		}
 
 		public virtual void VisitWhitespace(WhitespaceNode whitespaceNode)
 		{
-			// leaf
+			VisitChildren(whitespaceNode);
 		}
 
 		public virtual void VisitText(TextNode textNode)
 		{
-			// leaf
+			VisitChildren(textNode);
 		}
 
 		public virtual void VisitDocumentationReference (DocumentationReference documentationReference)
@@ -86,7 +86,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public virtual void VisitCSharpTokenNode (CSharpTokenNode token)
 		{
-			// leaf
+			VisitChildren (token);
 		}
 		
 		public virtual void VisitPrimitiveType (PrimitiveType primitiveType)
@@ -649,26 +649,22 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public virtual T VisitComment (Comment comment)
 		{
-			// leaf
-			return default (T);
+			return VisitChildren (comment);
 		}
 		
 		public virtual T VisitNewLine(NewLineNode newLineNode)
 		{
-			// leaf
-			return default (T);
+			return VisitChildren(newLineNode);
 		}
 		
 		public virtual T VisitWhitespace(WhitespaceNode whitespaceNode)
 		{
-			// leaf
-			return default (T);
+			return VisitChildren(whitespaceNode);
 		}
 
 		public virtual T VisitText(TextNode textNode)
 		{
-			// leaf
-			return default (T);
+			return VisitChildren(textNode);
 		}
 
 		public virtual T VisitDocumentationReference (DocumentationReference documentationReference)
@@ -688,8 +684,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public virtual T VisitCSharpTokenNode (CSharpTokenNode token)
 		{
-			// leaf
-			return default (T);
+			return VisitChildren (token);
 		}
 		
 		public virtual T VisitPrimitiveType (PrimitiveType primitiveType)
@@ -1252,26 +1247,22 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public virtual S VisitComment (Comment comment, T data)
 		{
-			// leaf
-			return default (S);
+			return VisitChildren (comment, data);
 		}
 		
 		public virtual S VisitNewLine(NewLineNode newLineNode, T data)
 		{
-			// leaf
-			return default (S);
+			return VisitChildren(newLineNode, data);
 		}
 
 		public virtual S VisitWhitespace(WhitespaceNode whitespaceNode, T data)
 		{
-			// leaf
-			return default (S);
+			return VisitChildren(whitespaceNode, data);
 		}
 
 		public virtual S VisitText(TextNode textNode, T data)
 		{
-			// leaf
-			return default (S);
+			return VisitChildren(textNode, data);
 		}
 
 		public virtual S VisitDocumentationReference (DocumentationReference documentationReference, T data)
@@ -1291,8 +1282,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public virtual S VisitCSharpTokenNode (CSharpTokenNode token, T data)
 		{
-			// leaf
-			return default (S);
+			return VisitChildren (token, data);
 		}
 		
 		public virtual S VisitPrimitiveType (PrimitiveType primitiveType, T data)
