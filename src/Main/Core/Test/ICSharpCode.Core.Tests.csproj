@@ -59,10 +59,11 @@
   <ItemGroup>
     <Compile Include="AddInTreeTests\RuntimeLoadAssemblyTests.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="FileNameTests.cs" />
+    <Compile Include="FileUtilityTests.cs" />
     <Compile Include="TopologicalSortTest.cs" />
     <Compile Include="StringParserTests.cs" />
     <Compile Include="AddInTreeTests\AddInTreeLoadingTests.cs" />
-    <Compile Include="AddInTreeTests\ExtPathTests.cs" />
     <Compile Include="InvalidDirectoryNameTests.cs" />
     <Compile Include="Utils\DerivedRuntime.cs" />
     <Compile Include="Utils\Tests\DerivedRuntimeTests.cs" />

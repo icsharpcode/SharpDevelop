@@ -39,7 +39,7 @@
 	
 	<!-- WiX project and file templates -->
 	<Path name = "/SharpDevelop/BackendBindings/Templates">
-		<Directory id = "WiX" path = "./Templates" />
+		<TemplateFile id = "WiX" path = "./Templates" />
 	</Path>
 
 	<Path name = "/AddIns/FileTypeRegisterer/FileTypes">

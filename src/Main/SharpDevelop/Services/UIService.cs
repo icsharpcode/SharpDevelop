@@ -62,7 +62,7 @@ namespace ICSharpCode.SharpDevelop
 				
 				// show the dialog to request project type and name
 				if (npdlg.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
-					return new ProjectTemplateResult();
+					return npdlg.result;
 				} else {
 					return null;
 				}

@@ -8,6 +8,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Templates;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -65,8 +66,8 @@ namespace ICSharpCode.PackageManagement
 		
 		IEnumerable<MSBuildBasedProject> GetCreatedProjects()
 		{
-			var createInfo = Owner as ProjectCreateOptions;
-			return createInfo != null ? createInfo.CreatedProjects.OfType<MSBuildBasedProject>() : Enumerable.Empty<MSBuildBasedProject>();
+			var createInfo = Owner as ProjectTemplateResult;
+			return createInfo != null ? createInfo.NewProjects.OfType<MSBuildBasedProject>() : Enumerable.Empty<MSBuildBasedProject>();
 		}
 		
 		IPackageReferencesForProject CreatePackageReferencesForProject(MSBuildBasedProject project)

@@ -57,9 +57,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="EmptySettingsFile.xft">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <EmbeddedResource Include="EmptySettingsFile.xft">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="SettingsEditor.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

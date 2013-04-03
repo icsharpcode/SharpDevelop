@@ -48,6 +48,14 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual(@"http://danielgrunwald.de/path/", FileUtility.NormalizePath(@"http://danielgrunwald.de/path/"));
 			Assert.AreEqual(@"browser://http://danielgrunwald.de/path/", FileUtility.NormalizePath(@"browser://http://danielgrunwald.de/wrongpath/../path/"));
 		}
+		
+		[Test]
+		public void NormalizePath_Relative()
+		{
+			Assert.AreEqual(@"..\b", FileUtility.NormalizePath(@"..\a\..\b"));
+			Assert.AreEqual(@".", FileUtility.NormalizePath(@"."));
+			Assert.AreEqual(@".", FileUtility.NormalizePath(@"a\.."));
+		}
 		#endregion
 		
 		[Test]
@@ -69,6 +77,15 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.IsFalse(FileUtility.IsBaseDirectory(@"C:\b", @"C:\a\b\hello"));
 			Assert.IsFalse(FileUtility.IsBaseDirectory(@"C:\a\b\hello", @"C:\b"));
 			Assert.IsFalse(FileUtility.IsBaseDirectory(@"C:\a\x\fwufhweoe", @"C:\a\x\fwuFHweoex\a\b\hello"));
+			Assert.IsTrue(FileUtility.IsBaseDirectory(@"C:\", @"C:\"));
+			Assert.IsTrue(FileUtility.IsBaseDirectory(@"C:\", @"C:\a\b\hello"));
+			Assert.IsFalse(FileUtility.IsBaseDirectory(@"C:\", @"D:\a\b\hello"));
+			
+			Assert.IsTrue(FileUtility.IsBaseDirectory(@".", @"a\b"));
+			Assert.IsTrue(FileUtility.IsBaseDirectory(@".", @"a"));
+//			Assert.IsFalse(FileUtility.IsBaseDirectory(@".", @"..\a"));
+//			Assert.IsFalse(FileUtility.IsBaseDirectory(@".", @".."));
+			Assert.IsFalse(FileUtility.IsBaseDirectory(@".", @"c:\"));
 		}
 		
 		[Test]
@@ -84,6 +101,8 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual(@"blub", FileUtility.GetRelativePath(@"C:\hello\.\..\a", @"C:\.\a\blub"));
 			Assert.AreEqual(@"..\a\blub", FileUtility.GetRelativePath(@"C:\.\.\.\.\hello", @"C:\.\blub\.\..\.\a\.\blub"));
 			Assert.AreEqual(@"..\a\blub", FileUtility.GetRelativePath(@"C:\.\.\.\.\hello\", @"C:\.\blub\.\..\.\a\.\blub"));
+			Assert.AreEqual(@".", FileUtility.GetRelativePath(@"C:\hello", @"C:\.\hello"));
+			Assert.AreEqual(@".", FileUtility.GetRelativePath(@"C:\", @"C:\"));
 			
 			// casing troubles
 			Assert.AreEqual(@"blub", FileUtility.GetRelativePath(@"C:\hello\.\..\A", @"C:\.\a\blub"));
@@ -92,6 +111,16 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			
 			// Project filename could be an URL
 			Assert.AreEqual("http://example.com/vdir/", FileUtility.GetRelativePath("C:\\temp", "http://example.com/vdir/"));
+		}
+		
+		[Test]
+		public void RelativeGetRelativePath()
+		{
+			// Relative path
+			Assert.AreEqual(@"a", FileUtility.GetRelativePath(@".", @"a"));
+			Assert.AreEqual(@"..", FileUtility.GetRelativePath(@"a", @"."));
+			Assert.AreEqual(@"..\b", FileUtility.GetRelativePath(@"a", @"b"));
+//			Assert.AreEqual(@"..\..", FileUtility.GetRelativePath(@"a", @".."));
 		}
 		
 		[Test]

@@ -9,6 +9,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Templates;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 
@@ -38,15 +39,15 @@ namespace PackageManagement.Tests
 		
 		void RunCommandWithProjectCreateInfoAsOwner(List<TestableProject> projects)
 		{
-			var createInfo = new ProjectCreateOptions();
-			createInfo.CreatedProjects.AddRange(projects);
+			var createInfo = new ProjectTemplateResult(new ProjectTemplateOptions());
+			createInfo.NewProjects.AddRange(projects);
 			
 			command.FakeProjectService.ProjectCollections.Add(new ImmutableModelCollection<IProject>(projects));
 			
 			RunCommandWithProjectCreateInfoAsOwner(createInfo);
 		}
 		
-		void RunCommandWithProjectCreateInfoAsOwner(ProjectCreateOptions createInfo)
+		void RunCommandWithProjectCreateInfoAsOwner(ProjectTemplateResult createInfo)
 		{
 			((ICommand)command).Execute(createInfo);
 		}

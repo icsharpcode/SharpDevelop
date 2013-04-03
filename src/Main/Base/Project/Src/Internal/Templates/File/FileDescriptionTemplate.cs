@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		// Either content or contentData is set, the other is null
 		string content;
-		string binaryFileName;
+		FileName binaryFileName;
 		
 		string itemType;
 		Dictionary<string, string> metadata = new Dictionary<string, string>();
@@ -35,10 +35,13 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			"name", "language", "buildAction", "src", "binary"
 		};
 		
-		public FileDescriptionTemplate(XmlElement xml, string hintPath)
+		internal readonly IReadOnlyFileSystem FileSystem;
+		
+		public FileDescriptionTemplate(XmlElement xml, IReadOnlyFileSystem fileSystem)
 		{
 			TemplateLoadException.AssertAttributeExists(xml, "name");
 			
+			this.FileSystem = fileSystem;
 			name = xml.GetAttribute("name");
 			language = xml.GetAttribute("language");
 			if (xml.HasAttribute("buildAction")) {
@@ -48,15 +51,15 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				string attributeName = attribute.Name;
 				if (!knownAttributes.Contains(attributeName)) {
 					if (attributeName == "copyToOutputDirectory") {
-						ProjectTemplate.WarnObsoleteAttribute(xml, attributeName, "Use upper-case attribute names for MSBuild metadata values!");
+						ProjectTemplateImpl.WarnObsoleteAttribute(xml, attributeName, "Use upper-case attribute names for MSBuild metadata values!");
 						attributeName = "CopyToOutputDirectory";
 					}
 					if (attributeName == "dependentUpon") {
-						ProjectTemplate.WarnObsoleteAttribute(xml, attributeName, "Use upper-case attribute names for MSBuild metadata values!");
+						ProjectTemplateImpl.WarnObsoleteAttribute(xml, attributeName, "Use upper-case attribute names for MSBuild metadata values!");
 						attributeName = "DependentUpon";
 					}
 					if (attributeName == "subType") {
-						ProjectTemplate.WarnObsoleteAttribute(xml, attributeName, "Use upper-case attribute names for MSBuild metadata values!");
+						ProjectTemplateImpl.WarnObsoleteAttribute(xml, attributeName, "Use upper-case attribute names for MSBuild metadata values!");
 						attributeName = "SubType";
 					}
 					
@@ -64,12 +67,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				}
 			}
 			if (xml.HasAttribute("src")) {
-				string fileName = Path.Combine(hintPath, StringParser.Parse(xml.GetAttribute("src")));
+				FileName fileName = FileName.Create(StringParser.Parse(xml.GetAttribute("src")));
 				try {
 					if (xml.HasAttribute("binary") && bool.Parse(xml.GetAttribute("binary"))) {
 						binaryFileName = fileName;
 					} else {
-						content = File.ReadAllText(fileName);
+						content = fileSystem.ReadAllText(fileName);
 					}
 				} catch (Exception e) {
 					content = "Error reading content from " + fileName + ":\n" + e.ToString();
@@ -123,7 +126,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 		
-		public string BinaryFileName {
+		public FileName BinaryFileName {
 			get {
 				return binaryFileName;
 			}

@@ -1024,14 +1024,6 @@
 									<Component Guid="810CE373-569B-41C3-ADDA-D2F0E0EFD5DE" Id="FSharpBindingDll" DiskId="1">
 										<File Source="..\..\AddIns\BackendBindings\FSharpBinding\FSharpBinding.dll" Name="FSharpBinding.dll" Id="FSharpBinding.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="FSharpBinding.dll" AssemblyManifest="FSharpBinding.dll" />
 									</Component>
-									<Directory Id="FSharpBindingTemplates" Name="Templates">
-										<Component Guid="37A7695A-BA60-45A6-9BDB-FAE663D7A4C0" Id="FSharpConsoleProjectTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\FSharpBinding\Templates\ConsoleProject.xpt" Name="ConsoleProject.xpt" Id="FSharp.Templates.ConsoleProject.xpt" KeyPath="yes" />
-										</Component>
-										<Component Guid="33142421-A648-4415-8C22-0F73479E0840" Id="FSharpEmptyClassTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\FSharpBinding\Templates\EmptyClass.xft" Name="EmptyClass.xft" Id="FSharp.Templates.EmptyClass.xft" KeyPath="yes" />
-										</Component>
-									</Directory>
 								</Directory>
 								<!--
 								<Directory Id="RubyBinding" Name="RubyBinding">
@@ -1134,16 +1126,6 @@
 									<Component Guid="AC3EFDF3-3063-464A-9072-1285BAAD3579" Id="CppBindingDll" DiskId="1">
 										<File Source="..\..\AddIns\BackendBindings\CppBinding\CppBinding.dll" Name="CppBinding.dll" Id="CppBinding.dll" KeyPath="yes" />
 									</Component>
-									<Directory Id="CppTemplates" Name="Templates">
-										<Component Guid="CD1E49C5-7037-46B0-81CE-41C3E10759E6" Id="CppBindingTemplates" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\CppBinding\Templates\ConsoleProject.xpt" Name="ConsoleProject.xpt" Id="ConsoleProject.xpt" KeyPath="yes" />
-											<File Source="..\..\AddIns\BackendBindings\CppBinding\Templates\DefaultAssemblyInfo.cpp" Name="DefaultAssemblyInfo.cpp" Id="DefaultAssemblyInfo.cpp" />
-											<File Source="..\..\AddIns\BackendBindings\CppBinding\Templates\Empty.xft" Name="Empty.xft" Id="Templates.Empty1.xft" />
-											<File Source="..\..\AddIns\BackendBindings\CppBinding\Templates\EmptyClass.xft" Name="EmptyClass.xft" Id="Templates.EmptyClass1.xft" />
-											<File Source="..\..\AddIns\BackendBindings\CppBinding\Templates\Library.xpt" Name="Library.xpt" Id="Templates.Library.xpt" />
-											<File Source="..\..\AddIns\BackendBindings\CppBinding\Templates\UnmanagedConsoleProject.xpt" Name="UnmanagedConsoleProject.xpt" Id="UnmanagedConsoleProject.xpt" />
-										</Component>
-									</Directory>
 								</Directory>
 								<Directory Id="AspNet.Mvc" Name="AspNet.Mvc">
 									<Component Id="AspNetMvcAddin" Guid="2ADAB116-3E40-4A12-B6CD-EE41C482807A" DiskId="1">
@@ -1381,19 +1363,11 @@
 									<Component Guid="31400415-BB2A-49C9-90DF-58F7FD0A8154" Id="ICSharpCodeDataSQLServerDll" DiskId="1">
 										<File Source="..\..\AddIns\DisplayBindings\Data\ICSharpCode.Data.SQLServer.dll" Name="ICSharpCode.Data.SQLServer.dll" Id="ICSharpCode.Data.SQLServer.dll" KeyPath="yes" />
 									</Component>
-									<Directory Id="DataTemplates" Name="Templates">
-										<Directory Id="Files" Name="Files">
-											<Component Guid="2791081B-A45D-4729-952C-43C147753653" Id="CSharpEDMXXft" DiskId="1">
-												<File Source="..\..\AddIns\DisplayBindings\Data\Templates\Files\CSharp.EDMX.xft" Name="CSharp.EDMX.xft" Id="CSharp.EDMX.xft" KeyPath="yes" />
-											</Component>
-										</Directory>
-									</Directory>
 								</Directory>
 								<Directory Id="SettingsEditor" Name="SettingsEditor">
 									<Component Id="SettingsEditorFiles" Guid="4A12129A-6BB5-4CC7-A105-C1F6FDF345F2" DiskId="1">
 										<File Id="SettingsEditor.dll" Name="SettingsEditor.dll" Source="..\..\AddIns\DisplayBindings\SettingsEditor\SettingsEditor.dll" KeyPath="yes" />
 										<File Id="SettingsEditor.addin" Name="SettingsEditor.addin" Source="..\..\AddIns\DisplayBindings\SettingsEditor\SettingsEditor.addin" />
-										<File Id="EmptySettingsFile.xft" Name="EmptySettingsFile.xft" Source="..\..\AddIns\DisplayBindings\SettingsEditor\EmptySettingsFile.xft" />
 									</Component>
 								</Directory>
 								<Directory Id="Decompiler" Name="Decompiler">

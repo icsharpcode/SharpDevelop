@@ -46,6 +46,16 @@ namespace ICSharpCode.SharpDevelop
 		IEnumerable<FileName> GetFiles(DirectoryName directory, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly);
 	}
 	
+	public static class FileSystemExtensions
+	{
+		public static string ReadAllText(this IReadOnlyFileSystem fileSystem, FileName fileName)
+		{
+			using (var reader = fileSystem.OpenText(fileName)) {
+				return reader.ReadToEnd();
+			}
+		}
+	}
+	
 	sealed class EmptyFileSystem : IFileSystem
 	{
 		void IFileSystem.Delete(FileName path)

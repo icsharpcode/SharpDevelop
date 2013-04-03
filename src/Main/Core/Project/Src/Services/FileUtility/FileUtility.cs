@@ -276,30 +276,29 @@ namespace ICSharpCode.Core
 			baseDirectoryPath = NormalizePath(baseDirectoryPath);
 			absPath           = NormalizePath(absPath);
 			
-			string[] bPath = baseDirectoryPath.Split(separators);
-			string[] aPath = absPath.Split(separators);
+			string[] bPath = baseDirectoryPath != "." ? baseDirectoryPath.Split(separators) : new string[0];
+			string[] aPath = absPath != "." ? absPath.Split(separators) : new string[0];
 			int indx = 0;
 			for(; indx < Math.Min(bPath.Length, aPath.Length); ++indx){
 				if(!bPath[indx].Equals(aPath[indx], StringComparison.OrdinalIgnoreCase))
 					break;
 			}
 			
-			if (indx == 0) {
-				return absPath;
+//			if (indx == 0) {
+//				return absPath;
+//			}
+			
+			if(indx == bPath.Length && indx == aPath.Length) {
+				return ".";
 			}
-			
 			StringBuilder erg = new StringBuilder();
-			
-			if(indx == bPath.Length) {
-//				erg.Append('.');
-//				erg.Append(Path.DirectorySeparatorChar);
-			} else {
-				for (int i = indx; i < bPath.Length; ++i) {
-					erg.Append("..");
-					erg.Append(Path.DirectorySeparatorChar);
-				}
+			for (int i = indx; i < bPath.Length; ++i) {
+				erg.Append("..");
+				erg.Append(Path.DirectorySeparatorChar);
 			}
 			erg.Append(String.Join(Path.DirectorySeparatorChar.ToString(), aPath, indx, aPath.Length-indx));
+			if (erg[erg.Length - 1] == Path.DirectorySeparatorChar)
+				erg.Length -= 1;
 			return erg.ToString();
 		}
 		

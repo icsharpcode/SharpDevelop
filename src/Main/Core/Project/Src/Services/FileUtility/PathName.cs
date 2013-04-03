@@ -57,7 +57,10 @@ namespace ICSharpCode.Core
 		/// </remarks>
 		public DirectoryName GetParentDirectory()
 		{
-			return DirectoryName.Create(Path.GetDirectoryName(normalizedPath));
+			if (normalizedPath.Length < 2 || normalizedPath[1] != ':')
+				return DirectoryName.Create(Path.Combine(normalizedPath, ".."));
+			else
+				return DirectoryName.Create(Path.GetDirectoryName(normalizedPath));
 		}
 	}
 }

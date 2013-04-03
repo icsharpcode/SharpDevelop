@@ -240,6 +240,7 @@
     <Compile Include="Templates\FileTemplateResult.cs" />
     <Compile Include="Templates\ITemplateService.cs" />
     <Compile Include="Templates\ProjectTemplate.cs" />
+    <Compile Include="Templates\ProjectTemplateOptions.cs" />
     <Compile Include="Templates\ProjectTemplateResult.cs" />
     <Compile Include="Templates\TemplateBase.cs" />
     <Compile Include="Templates\TemplateLoadException.cs" />
@@ -251,6 +252,7 @@
     <Compile Include="Util\DebugTimer.cs" />
     <Compile Include="Util\DotnetDetection.cs" />
     <Compile Include="Util\EasyCodeDom.cs" />
+    <Compile Include="Util\EmbeddedResourceFileSystem.cs" />
     <Compile Include="Util\EnumBinding.cs" />
     <Compile Include="Util\EventAdapter.cs" />
     <Compile Include="Util\FakeMessageLoop.cs" />

@@ -97,7 +97,6 @@
     <Compile Include="Project\SolutionTests.cs" />
     <Compile Include="Project\SolutionWriterTests.cs" />
     <Compile Include="PropertyPadSortingTests.cs" />
-    <Compile Include="ReadOnlyDocumentTests.cs" />
     <Compile Include="ReflectionLayerTests.cs" />
     <Compile Include="GenericResolverTests.cs" />
     <Compile Include="InnerClassesResolverTests.cs" />

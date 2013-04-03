@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 	/// File that defines the sort order for the file and project template 
 	/// categories.
 	/// </summary>
-	public class TemplateCategorySortOrderFile
+	class TemplateCategorySortOrderFile
 	{
 		public const int UndefinedSortOrder = -1;
 
@@ -116,9 +116,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			projectCategorySortOrderFiles = new List<TemplateCategorySortOrderFile>();
 			string dataTemplateDir = Path.Combine(PropertyService.DataDirectory, "templates", "project");
 			List<string> files = FileUtility.SearchDirectory(dataTemplateDir, ProjectCategorySortOrderFileName);
-			foreach (string templateDirectory in AddInTree.BuildItems<string>(ProjectTemplate.TemplatePath, null, false)) {
-				files.AddRange(FileUtility.SearchDirectory(templateDirectory, ProjectCategorySortOrderFileName));
-			}
+			#warning Re-implement addin-defined category sort order
+//			foreach (string templateDirectory in AddInTree.BuildItems<string>(ProjectTemplate.TemplatePath, null, false)) {
+//				files.AddRange(FileUtility.SearchDirectory(templateDirectory, ProjectCategorySortOrderFileName));
+//			}
 			foreach (string fileName in files) {
 				try {
 					projectCategorySortOrderFiles.Add(new TemplateCategorySortOrderFile(fileName));
@@ -133,9 +134,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			fileCategorySortOrderFiles = new List<TemplateCategorySortOrderFile>();
 			string dataTemplateDir = Path.Combine(PropertyService.DataDirectory, "templates", "file");
 			List<string> files = FileUtility.SearchDirectory(dataTemplateDir, FileCategorySortOrderFileName);
-			foreach (string templateDirectory in AddInTree.BuildItems<string>(ProjectTemplate.TemplatePath, null, false)) {
-				files.AddRange(FileUtility.SearchDirectory(templateDirectory, FileCategorySortOrderFileName));
-			}
+//			foreach (string templateDirectory in AddInTree.BuildItems<string>(ProjectTemplate.TemplatePath, null, false)) {
+//				files.AddRange(FileUtility.SearchDirectory(templateDirectory, FileCategorySortOrderFileName));
+//			}
 			foreach (string fileName in files) {
 				try {
 					fileCategorySortOrderFiles.Add(new TemplateCategorySortOrderFile(fileName));

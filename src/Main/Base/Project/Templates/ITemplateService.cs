@@ -22,6 +22,11 @@ namespace ICSharpCode.SharpDevelop.Templates
 		IEnumerable<ProjectTemplate> ProjectTemplates { get; }
 		
 		/// <summary>
+		/// Reloads the <see cref="FileTemplates"/> and <see cref="ProjectTemplates"/>.
+		/// </summary>
+		void UpdateTemplates();
+		
+		/// <summary>
 		/// Loads a file template (.xft or .xpt file) from disk.
 		/// </summary>
 		/// <returns><see cref="FileTemplate"/> or <see cref="ProjectTemplate"/> instance.</returns>
@@ -34,10 +39,9 @@ namespace ICSharpCode.SharpDevelop.Templates
 		/// <param name="fileSystem">File system used to open referenced input files.
 		/// This should usually be a <see cref="ReadOnlyChrootFileSystem"/> so that the file template
 		/// can use relative paths.
-		/// The template will keep a reference to the file system instance and use it when it is used to create
-		/// files/projects.
+		/// The template will keep a reference to the file system instance and use it to create files/projects.
 		/// </param>
 		/// <returns><see cref="FileTemplate"/> or <see cref="ProjectTemplate"/> instance.</returns>
-		TemplateBase LoadTemplate(TextReader textReader, IReadOnlyFileSystem fileSystem);
+		TemplateBase LoadTemplate(Stream stream, IReadOnlyFileSystem fileSystem);
 	}
 }

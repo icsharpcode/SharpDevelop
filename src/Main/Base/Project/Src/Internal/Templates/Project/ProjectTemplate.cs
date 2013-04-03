@@ -2,67 +2,24 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Xml;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Templates;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
-	public class ProjectCreateOptions
-	{
-		public DirectoryName SolutionPath { get; set; }
-		public DirectoryName ProjectBasePath { get; set; }
-		public string SolutionName { get; set; }
-		public string ProjectName { get; set; }
-		public TargetFramework TargetFramework { get; set; }
-		
-		public IList<IProject> CreatedProjects { get; private set; }
-		
-		public ProjectCreateOptions()
-		{
-			this.CreatedProjects = new List<IProject>();
-		}
-	}
-	
 	/// <summary>
 	/// This class defines and holds the new project templates.
 	/// </summary>
-	internal class ProjectTemplate : IComparable
+	internal class ProjectTemplateImpl : ProjectTemplate
 	{
-		static List<ProjectTemplate> projectTemplates;
-		
-		/// <summary>
-		/// Gets the list of project templates. Not thread-safe!
-		/// </summary>
-		public static ReadOnlyCollection<ProjectTemplate> ProjectTemplates {
-			get {
-				SD.MainThread.VerifyAccess();
-				
-				#if DEBUG
-				// Always reload project templates if debugging.
-				// TODO: Make this a configurable option.
-				UpdateTemplates();
-				#else
-				if (projectTemplates == null) {
-					UpdateTemplates();
-				}
-				#endif
-				return projectTemplates.AsReadOnly();
-			}
-		}
-		
 		string originator;
 		string created;
 		string lastmodified;
@@ -70,34 +27,22 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		string category;
 		string languagename;
 		string description;
-		string icon;
+		IImage icon;
 		string subcategory;
 		TargetFramework[] supportedTargetFrameworks;
 		
-		internal bool HasSupportedTargetFrameworks {
-			get { return supportedTargetFrameworks != null; }
-		}
-		
-		internal bool SupportsTargetFramework(TargetFramework framework)
-		{
-			if (supportedTargetFrameworks == null)
-				return true;
-			// return true if framework is based on any of the supported target frameworks
-			return supportedTargetFrameworks.Any(framework.IsBasedOn);
-		}
-		
-		int IComparable.CompareTo(object other)
-		{
-			ProjectTemplate pt = other as ProjectTemplate;
-			if (pt == null) return -1;
-			int res = category.CompareTo(pt.category);
-			if (res != 0) return res;
-			return name.CompareTo(pt.name);
+		public override IEnumerable<TargetFramework> SupportedTargetFrameworks {
+			get { return supportedTargetFrameworks; }
 		}
 		
 		bool newProjectDialogVisible = true;
 		
-		List<Action<ProjectCreateOptions>> openActions = new List<Action<ProjectCreateOptions>>();
+		public override bool IsVisible(ISolution solution)
+		{
+			return newProjectDialogVisible && (solution == null || projectDescriptor != null);
+		}
+		
+		List<Action<ProjectTemplateResult>> openActions = new List<Action<ProjectTemplateResult>>();
 		
 		SolutionDescriptor solutionDescriptor = null;
 		ProjectDescriptor projectDescriptor = null;
@@ -121,19 +66,19 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 		
-		public string Name {
+		public override string Name {
 			get {
 				return name;
 			}
 		}
 		
-		public string Category {
+		public override string Category {
 			get {
 				return category;
 			}
 		}
 		
-		public string Subcategory {
+		public override string Subcategory {
 			get {
 				return subcategory;
 			}
@@ -145,13 +90,13 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 		
-		public string Description {
+		public override string Description {
 			get {
 				return description;
 			}
 		}
 		
-		public string Icon {
+		public override IImage Icon {
 			get {
 				return icon;
 			}
@@ -179,18 +124,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		}
 		#endregion
 		
-		protected ProjectTemplate(string fileName)
+		public ProjectTemplateImpl(XmlDocument doc, IReadOnlyFileSystem fileSystem)
 		{
-			XmlDocument doc = new XmlDocument();
-			doc.Load(fileName);
-			LoadFromXml(doc.DocumentElement, fileName);
-		}
-		
-		void LoadFromXml(XmlElement templateElement, string xmlFileName)
-		{
-			// required for warning messages for unknown elements
-			templateElement.SetAttribute("fileName", xmlFileName);
-			
+			var templateElement = doc.DocumentElement;
 			originator   = templateElement.GetAttribute("originator");
 			created      = templateElement.GetAttribute("created");
 			lastmodified = templateElement.GetAttribute("lastModified");
@@ -218,25 +154,28 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 			
 			if (config["Icon"] != null) {
-				icon = config["Icon"].InnerText;
+				icon = SD.ResourceService.GetImage(config["Icon"].InnerText);
 			}
 			
 			if (config["SupportedTargetFrameworks"] != null) {
-				supportedTargetFrameworks =
+				var specifiedTargetFrameworks =
 					config["SupportedTargetFrameworks"].InnerText.Split(';')
 					.Select<string,TargetFramework>(TargetFramework.GetByName).ToArray();
+				
+				supportedTargetFrameworks = TargetFramework.TargetFrameworks.Where(fx => specifiedTargetFrameworks.Any(s => fx.IsBasedOn(s))).ToArray();
+			} else {
+				supportedTargetFrameworks = new TargetFramework[0];
 			}
 			
-			string hintPath = Path.GetDirectoryName(xmlFileName);
 			if (templateElement["Solution"] != null) {
-				solutionDescriptor = SolutionDescriptor.CreateSolutionDescriptor(templateElement["Solution"], hintPath);
+				solutionDescriptor = SolutionDescriptor.CreateSolutionDescriptor(templateElement["Solution"], fileSystem);
 			} else if (templateElement["Combine"] != null) {
-				solutionDescriptor = SolutionDescriptor.CreateSolutionDescriptor(templateElement["Combine"], hintPath);
+				solutionDescriptor = SolutionDescriptor.CreateSolutionDescriptor(templateElement["Combine"], fileSystem);
 				WarnObsoleteNode(templateElement["Combine"], "Use <Solution> instead!");
 			}
 			
 			if (templateElement["Project"] != null) {
-				projectDescriptor = new ProjectDescriptor(templateElement["Project"], hintPath);
+				projectDescriptor = new ProjectDescriptor(templateElement["Project"], fileSystem);
 			}
 			
 			if (solutionDescriptor == null && projectDescriptor == null
@@ -248,20 +187,21 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			// Read Actions;
 			if (templateElement["Actions"] != null) {
 				foreach (XmlElement el in templateElement["Actions"]) {
-					Action<ProjectCreateOptions> action = ReadAction(el);
+					Action<ProjectTemplateResult> action = ReadAction(el);
 					if (action != null)
 						openActions.Add(action);
 				}
 			}
 		}
 		
-		static Action<ProjectCreateOptions> ReadAction(XmlElement el)
+		static Action<ProjectTemplateResult> ReadAction(XmlElement el)
 		{
 			switch (el.Name) {
 				case "Open":
 					if (el.HasAttribute("filename")) {
 						string fileName = el.GetAttribute("filename");
-						return projectCreateInformation => {
+						return projectTemplateResult => {
+							var projectCreateInformation = projectTemplateResult.Options;
 							string unresolvedFileName = StringParser.Parse(fileName, new StringTagPair("ProjectName", projectCreateInformation.ProjectName));
 							string path = Path.Combine(projectCreateInformation.ProjectBasePath, unresolvedFileName);
 							FileService.OpenFile(path);
@@ -312,74 +252,29 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			                           "'");
 		}
 		
-//		string startupProject = null;
-
-		public ISolution CreateSolution(ProjectCreateOptions projectCreateInformation)
+		public override ProjectTemplateResult CreateProjects(ProjectTemplateOptions options)
 		{
-			LoggingService.Info("Creating solution from template '" + this.Category + "/" + this.Subcategory + "/" + this.Name + "'");
-			ISolution solution;
+			var result = new ProjectTemplateResult(options);
 			if (solutionDescriptor != null) {
-				solution = solutionDescriptor.CreateSolution(projectCreateInformation, this.languagename);
-			} else {
-				FileName fileName = FileName.Create(Path.Combine(projectCreateInformation.SolutionPath, projectCreateInformation.SolutionName + ".sln"));
-				solution = SD.ProjectService.CreateEmptySolutionFile(fileName);
-				IProject project = projectDescriptor.CreateProject(solution, projectCreateInformation, this.languagename);
+				if (!solutionDescriptor.AddContents(options.SolutionFolder, result, languagename))
+					return null;
+			}
+			if (projectDescriptor != null) {
+				IProject project = projectDescriptor.CreateProject(result, languagename);
 				if (project != null) {
-					solution.Items.Add(project);
-					solution.Save();
+					options.SolutionFolder.Items.Add(project);
 				} else {
-					solution.Dispose();
-					solution = null;
+					return null;
 				}
 			}
-			if (solution != null)
-				SD.GetRequiredService<IProjectServiceRaiseEvents>().RaiseSolutionCreated(new SolutionEventArgs(solution));
-			return solution;
+			return result;
 		}
 		
-		public IProject CreateProject(ISolution solution, ProjectCreateOptions projectCreateInformation)
-		{
-			if (solution == null) {
-				throw new ArgumentNullException("solution");
-			}
-			if (solutionDescriptor != null) {
-				throw new InvalidOperationException("Cannot create an individual project from a solution template");
-			} else if (projectDescriptor != null) {
-				return projectDescriptor.CreateProject(solution, projectCreateInformation, this.languagename);
-			} else {
-				return null;
-			}
-		}
-		
-		public void RunOpenActions(ProjectCreateOptions projectCreateInformation)
+		public override void RunOpenActions(ProjectTemplateResult result)
 		{
 			foreach (var action in openActions) {
-				action(projectCreateInformation);
+				action(result);
 			}
-		}
-		
-		public const string TemplatePath = "/SharpDevelop/BackendBindings/Templates";
-		
-		public static void UpdateTemplates()
-		{
-			projectTemplates = new List<ProjectTemplate>();
-			string dataTemplateDir = Path.Combine(PropertyService.DataDirectory, "templates", "project");
-			List<string> files = FileUtility.SearchDirectory(dataTemplateDir, "*.xpt");
-			foreach (string templateDirectory in AddInTree.BuildItems<string>(TemplatePath, null, false)) {
-				files.AddRange(FileUtility.SearchDirectory(templateDirectory, "*.xpt"));
-			}
-			foreach (string fileName in files) {
-				try {
-					projectTemplates.Add(new ProjectTemplate(fileName));
-				} catch (XmlException e) {
-					MessageService.ShowError(ResourceService.GetString("Internal.Templates.ProjectTemplate.LoadingError") + "\n(" + fileName + ")\n" + e.Message);
-				} catch (TemplateLoadException e) {
-					MessageService.ShowError(ResourceService.GetString("Internal.Templates.ProjectTemplate.LoadingError") + "\n(" + fileName + ")\n" + e.ToString());
-				} catch (Exception e) {
-					MessageService.ShowException(e, ResourceService.GetString("Internal.Templates.ProjectTemplate.LoadingError") + "\n(" + fileName + ")\n");
-				}
-			}
-			projectTemplates.Sort();
 		}
 	}
 }

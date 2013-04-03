@@ -8,6 +8,7 @@ using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Templates;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
@@ -21,31 +22,31 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			internal List<ProjectDescriptor> projectDescriptors = new List<ProjectDescriptor>();
 			internal List<SolutionFolderDescriptor> solutionFoldersDescriptors = new List<SolutionFolderDescriptor>();
 			
-			internal void Read(XmlElement element, string hintPath)
+			internal void Read(XmlElement element, IReadOnlyFileSystem fileSystem)
 			{
 				name = element.GetAttribute("name");
 				foreach (XmlNode node in element.ChildNodes) {
 					switch (node.Name) {
 						case "Project":
-							projectDescriptors.Add(new ProjectDescriptor((XmlElement)node, hintPath));
+							projectDescriptors.Add(new ProjectDescriptor((XmlElement)node, fileSystem));
 							break;
 						case "SolutionFolder":
-							solutionFoldersDescriptors.Add(new SolutionFolderDescriptor((XmlElement)node, hintPath));
+							solutionFoldersDescriptors.Add(new SolutionFolderDescriptor((XmlElement)node, fileSystem));
 							break;
 					}
 				}
 			}
 			
-			internal bool AddContents(ISolutionFolder parentFolder, ProjectCreateOptions projectCreateOptions, string defaultLanguage)
+			internal bool AddContents(ISolutionFolder parentFolder, ProjectTemplateResult templateResult, string defaultLanguage)
 			{
 				// Create sub projects
 				foreach (SolutionFolderDescriptor folderDescriptor in solutionFoldersDescriptors) {
 					ISolutionFolder folder = parentFolder.CreateFolder(folderDescriptor.name);
-					if (!folderDescriptor.AddContents(folder, projectCreateOptions, defaultLanguage))
+					if (!folderDescriptor.AddContents(folder, templateResult, defaultLanguage))
 						return false;
 				}
 				foreach (ProjectDescriptor projectDescriptor in projectDescriptors) {
-					IProject newProject = projectDescriptor.CreateProject(parentFolder.ParentSolution, projectCreateOptions, defaultLanguage);
+					IProject newProject = projectDescriptor.CreateProject(templateResult, defaultLanguage);
 					if (newProject == null)
 						return false;
 					parentFolder.Items.Add(newProject);
@@ -53,9 +54,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				return true;
 			}
 			
-			public SolutionFolderDescriptor(XmlElement element, string hintPath)
+			public SolutionFolderDescriptor(XmlElement element, IReadOnlyFileSystem fileSystem)
 			{
-				Read(element, hintPath);
+				Read(element, fileSystem);
 			}
 			
 			public SolutionFolderDescriptor(string name)
@@ -86,34 +87,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			this.name = name;
 		}
 		
-		public ISolution CreateSolution(ProjectCreateOptions projectCreateInformation, string defaultLanguage)
+		internal bool AddContents(ISolutionFolder parentFolder, ProjectTemplateResult templateResult, string defaultLanguage)
 		{
-			string newSolutionName = StringParser.Parse(name, new StringTagPair("ProjectName", projectCreateInformation.SolutionName));
-			
-			string solutionLocation = Path.Combine(projectCreateInformation.SolutionPath, newSolutionName + ".sln");
-			
-			ISolution newSolution = SD.ProjectService.CreateEmptySolutionFile(FileName.Create(solutionLocation));
-			
-			if (!mainFolder.AddContents(newSolution, projectCreateInformation, defaultLanguage)) {
-				newSolution.Dispose();
-				return null;
-			}
-			
-			// Save solution
-			if (File.Exists(solutionLocation)) {
-				
-				string question = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Internal.Templates.CombineDescriptor.OverwriteProjectQuestion}",
-				                                     new StringTagPair("combineLocation", solutionLocation));
-				if (MessageService.AskQuestion(question)) {
-					newSolution.Save();
-				}
-			} else {
-				newSolution.Save();
-			}
-			return newSolution;
+			return mainFolder.AddContents(parentFolder, templateResult, defaultLanguage);
 		}
 		
-		public static SolutionDescriptor CreateSolutionDescriptor(XmlElement element, string hintPath)
+		public static SolutionDescriptor CreateSolutionDescriptor(XmlElement element, IReadOnlyFileSystem fileSystem)
 		{
 			SolutionDescriptor solutionDescriptor = new SolutionDescriptor(element.Attributes["name"].InnerText);
 			
@@ -121,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				solutionDescriptor.startupProject = element["Options"]["StartupProject"].InnerText;
 			}
 			
-			solutionDescriptor.mainFolder.Read(element, hintPath);
+			solutionDescriptor.mainFolder.Read(element, fileSystem);
 			return solutionDescriptor;
 		}
 	}

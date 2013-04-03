@@ -8,9 +8,6 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Templates
 {
-	/// <summary>
-	/// Description of FileTemplateResult.
-	/// </summary>
 	public class FileTemplateResult
 	{
 		readonly FileTemplateOptions options;

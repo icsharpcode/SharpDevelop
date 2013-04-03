@@ -30,7 +30,7 @@
 	</Path>	
 	
 	<Path name = "/SharpDevelop/BackendBindings/Templates">
-		<Directory id = "C++" path = "./Templates" />
+		<TemplateFile id = "C++" resourceNamespace = "ICSharpCode.CppBinding.Templates" />
 	</Path>
 
 	<Path name = "/SharpDevelop/BackendBindings/TemplateCommands">

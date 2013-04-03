@@ -66,12 +66,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		/// </summary>
 		/// <param name="element">The &lt;Project&gt; node of the xml template file.</param>
 		/// <param name="hintPath">The directory on which relative paths (e.g. for referenced files) are based.</param>
-		public ProjectDescriptor(XmlElement element, string hintPath)
+		public ProjectDescriptor(XmlElement element, IReadOnlyFileSystem fileSystem)
 		{
 			if (element == null)
 				throw new ArgumentNullException("element");
-			if (hintPath == null)
-				throw new ArgumentNullException("hintPath");
+			if (fileSystem == null)
+				throw new ArgumentNullException("fileSystem");
 			
 			if (element.HasAttribute("name")) {
 				name = element.GetAttribute("name");
@@ -80,18 +80,18 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 			languageName = element.GetAttribute("language");
 			if (string.IsNullOrEmpty(languageName)) {
-				ProjectTemplate.WarnAttributeMissing(element, "language");
+				ProjectTemplateImpl.WarnAttributeMissing(element, "language");
 			}
 			defaultPlatform = element.GetAttribute("defaultPlatform");
 			
-			LoadElementChildren(element, hintPath);
+			LoadElementChildren(element, fileSystem);
 		}
 		
 		#region Loading XML template
-		void LoadElementChildren(XmlElement parentElement, string hintPath)
+		void LoadElementChildren(XmlElement parentElement, IReadOnlyFileSystem fileSystem)
 		{
 			foreach (XmlElement node in ChildElements(parentElement)) {
-				LoadElement(node, hintPath);
+				LoadElement(node, fileSystem);
 			}
 		}
 		
@@ -100,11 +100,11 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			return parentElement.ChildNodes.OfType<XmlElement>();
 		}
 		
-		void LoadElement(XmlElement node, string hintPath)
+		void LoadElement(XmlElement node, IReadOnlyFileSystem fileSystem)
 		{
 			switch (node.Name) {
 				case "Options":
-					ProjectTemplate.WarnObsoleteNode(node, "Options are no longer supported, use properties instead.");
+					ProjectTemplateImpl.WarnObsoleteNode(node, "Options are no longer supported, use properties instead.");
 					break;
 				case "CreateActions":
 					LoadCreateActions(node);
@@ -116,7 +116,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					LoadProjectItems(node);
 					break;
 				case "Files":
-					LoadFiles(node, hintPath);
+					LoadFiles(node, fileSystem);
 					break;
 				case "Imports":
 					LoadImports(node);
@@ -126,15 +126,18 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					break;
 				case "Include":
 					TemplateLoadException.AssertAttributeExists(node, "src");
-					string includeFileName = Path.Combine(hintPath, node.GetAttribute("src"));
+					FileName includeFileName = FileName.Create(node.GetAttribute("src"));
 					try {
 						XmlDocument doc = new XmlDocument();
-						doc.Load(includeFileName);
+						using (var stream = fileSystem.OpenRead(includeFileName)) {
+							doc.Load(stream);
+						}
 						doc.DocumentElement.SetAttribute("fileName", includeFileName);
+						var fileSystemForInclude = new ReadOnlyChrootFileSystem(fileSystem, includeFileName.GetParentDirectory());
 						if (doc.DocumentElement.Name == "Include") {
-							LoadElementChildren(doc.DocumentElement, Path.GetDirectoryName(includeFileName));
+							LoadElementChildren(doc.DocumentElement, fileSystemForInclude);
 						} else {
-							LoadElement(doc.DocumentElement, Path.GetDirectoryName(includeFileName));
+							LoadElement(doc.DocumentElement, fileSystemForInclude);
 						}
 					} catch (XmlException ex) {
 						throw new TemplateLoadException("Error loading include file " + includeFileName, ex);
@@ -183,7 +186,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 							}
 						};
 					} else {
-						ProjectTemplate.WarnAttributeMissing(el, "path");
+						ProjectTemplateImpl.WarnAttributeMissing(el, "path");
 						return null;
 					}
 				default:
@@ -254,10 +257,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 		
-		void LoadFiles(XmlElement filesElement, string hintPath)
+		void LoadFiles(XmlElement filesElement, IReadOnlyFileSystem fileSystem)
 		{
 			foreach (XmlElement fileElement in ChildElements(filesElement)) {
-				files.Add(new FileDescriptionTemplate(fileElement, hintPath));
+				files.Add(new FileDescriptionTemplate(fileElement, fileSystem));
 			}
 		}
 		#endregion
@@ -265,8 +268,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		#region Create new project from template
 		//Show prompt, create files from template, create project, execute command, save project
-		public IProject CreateProject(ISolution parentSolution, ProjectCreateOptions projectCreateOptions, string defaultLanguage)
+		public IProject CreateProject(ProjectTemplateResult templateResults, string defaultLanguage)
 		{
+			var projectCreateOptions = templateResults.Options;
+			var parentSolution = templateResults.Options.Solution;
 			IProject project = null;
 			bool success = false;
 			try
@@ -509,7 +514,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				
 				
 				SD.GetRequiredService<IProjectServiceRaiseEvents>().RaiseProjectCreated(new ProjectEventArgs(project));
-				projectCreateOptions.CreatedProjects.Add(project);
+				templateResults.NewProjects.Add(project);
 				success = true;
 				return project;
 			} finally {

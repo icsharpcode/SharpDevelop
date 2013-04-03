@@ -12,5 +12,22 @@ namespace ICSharpCode.SharpDevelop.Templates
 	/// </summary>
 	public class ProjectTemplateResult
 	{
+		readonly ProjectTemplateOptions options;
+		readonly IList<IProject> newProjects = new List<IProject>();
+		
+		public ProjectTemplateResult(ProjectTemplateOptions options)
+		{
+			if (options == null)
+				throw new ArgumentNullException("options");
+			this.options = options;
+		}
+		
+		public ProjectTemplateOptions Options {
+			get { return options; }
+		}
+		
+		public IList<IProject> NewProjects {
+			get { return newProjects; }
+		}
 	}
 }

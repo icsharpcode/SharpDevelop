@@ -13,7 +13,7 @@
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/BackendBindings/Templates">
-		<Directory id = "settings" path = "." />
+		<TemplateFile id = "settings" resourceNamespace = "ICSharpCode.SettingsEditor" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/FileFilter">

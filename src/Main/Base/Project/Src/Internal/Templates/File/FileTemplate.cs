@@ -219,11 +219,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 		
-		public FileTemplate(string filename)
+		public FileTemplate(XmlDocument doc, IReadOnlyFileSystem fileSystem)
 		{
-			XmlDocument doc = new XmlDocument();
-			doc.Load(filename);
-			
 			author = doc.DocumentElement.GetAttribute("author");
 			
 			XmlElement config = doc.DocumentElement["Config"];
@@ -290,14 +287,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			
 			fileoptions = doc.DocumentElement["AdditionalOptions"];
 			
-			doc.DocumentElement.SetAttribute("fileName", filename); // used for template loading warnings
-			
 			// load the files
 			XmlElement files  = doc.DocumentElement["Files"];
 			XmlNodeList nodes = files.ChildNodes;
 			foreach (XmlNode filenode in nodes) {
 				if (filenode is XmlElement) {
-					this.files.Add(new FileDescriptionTemplate((XmlElement)filenode, Path.GetDirectoryName(filename)));
+					this.files.Add(new FileDescriptionTemplate((XmlElement)filenode, fileSystem));
 				}
 			}
 		}
@@ -315,11 +310,11 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 							return null;
 						}
 					} else {
-						ProjectTemplate.WarnAttributeMissing(el, "path");
+						ProjectTemplateImpl.WarnAttributeMissing(el, "path");
 						return null;
 					}
 				default:
-					ProjectTemplate.WarnObsoleteNode(el, "Unknown action element is ignored");
+					ProjectTemplateImpl.WarnObsoleteNode(el, "Unknown action element is ignored");
 					return null;
 			}
 		}
@@ -328,35 +323,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		{
 			if (actions != null)
 				actions(options);
-		}
-		
-		public static void UpdateTemplates()
-		{
-			string dataTemplateDir = Path.Combine(PropertyService.DataDirectory, "templates", "file");
-			List<string> files = FileUtility.SearchDirectory(dataTemplateDir, "*.xft");
-			foreach (string templateDirectory in AddInTree.BuildItems<string>(ProjectTemplate.TemplatePath, null, false)) {
-				if (!Directory.Exists(templateDirectory))
-					Directory.CreateDirectory(templateDirectory);
-				files.AddRange(FileUtility.SearchDirectory(templateDirectory, "*.xft"));
-			}
-			FileTemplates.Clear();
-			foreach (string file in files) {
-				try {
-					FileTemplates.Add(new FileTemplate(file));
-				} catch (XmlException ex) {
-					MessageService.ShowError("Error loading template file " + file + ":\n" + ex.Message);
-				} catch (TemplateLoadException ex) {
-					MessageService.ShowError("Error loading template file " + file + ":\n" + ex.ToString());
-				} catch(Exception e) {
-					MessageService.ShowException(e, "Error loading template file " + file + ".");
-				}
-			}
-			FileTemplates.Sort();
-		}
-		
-		static FileTemplate()
-		{
-			UpdateTemplates();
 		}
 	}
 }
