@@ -368,7 +368,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			if (!objectCreateExpression.Type.IsNull)
 				objectCreateExpression.Type.AcceptVisitor(this);
-
+			objectCreateExpression.Initializer.AcceptVisitor(this);
 			FormatArguments(objectCreateExpression);
 
 		}
@@ -398,7 +398,29 @@ namespace ICSharpCode.NRefactory.CSharp
 					init.AcceptVisitor(this);
 				}
 			} else {
-				base.VisitArrayInitializerExpression(arrayInitializerExpression);
+				foreach (var child in arrayInitializerExpression.Children) {
+					if (child.Role == Roles.LBrace) {
+						FixOpenBrace(policy.ArrayInitializerBraceStyle, child);
+						curIndent.Push(IndentType.Block);
+						continue;
+					}
+					if (child.Role == Roles.RBrace) {
+						curIndent.Pop();
+						FixClosingBrace(policy.ArrayInitializerBraceStyle, child);
+						continue;
+					}
+					if (child.Role == Roles.Expression) {
+						if (child.PrevSibling.Role == Roles.NewLine)
+							FixIndentation(child);
+						if (child.PrevSibling.Role == Roles.Comma)
+							ForceSpaceBefore(child, true);
+						if (child.NextSibling.Role == Roles.Comma)
+							ForceSpacesAfter(child, false);
+						continue;
+					}
+
+					child.AcceptVisitor(this);
+				}
 			}
 		}
 
