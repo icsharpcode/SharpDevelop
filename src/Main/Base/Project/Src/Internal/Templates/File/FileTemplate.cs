@@ -9,8 +9,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Input;
 using System.Xml;
-
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Templates;
 
@@ -101,15 +101,13 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 	/// <summary>
 	/// This class defines and holds the new file templates.
 	/// </summary>
-	internal class FileTemplate : IComparable
+	internal class FileTemplateImpl : FileTemplate
 	{
-		public static List<FileTemplate> FileTemplates = new List<FileTemplate>();
-		
 		string author       = null;
 		string name         = null;
 		string category     = null;
 		string languagename = null;
-		string icon         = null;
+		IImage icon         = null;
 		string description  = null;
 		string wizardpath   = null;
 		string defaultName  = null;
@@ -123,33 +121,24 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		List<ReferenceProjectItem> requiredAssemblyReferences = new List<ReferenceProjectItem>();
 		
 		XmlElement fileoptions = null;
-		Action<FileTemplateOptions> actions;
-		
-		int IComparable.CompareTo(object other)
-		{
-			FileTemplate pt = other as FileTemplate;
-			if (pt == null) return -1;
-			int res = category.CompareTo(pt.category);
-			if (res != 0) return res;
-			return name.CompareTo(pt.name);
-		}
+		Action<FileTemplateResult> actions;
 		
 		public string Author {
 			get {
 				return author;
 			}
 		}
-		public string Name {
+		public override string Name {
 			get {
 				return name;
 			}
 		}
-		public string Category {
+		public override string Category {
 			get {
 				return category;
 			}
 		}
-		public string Subcategory {
+		public override string Subcategory {
 			get {
 				return subcategory;
 			}
@@ -159,12 +148,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				return languagename;
 			}
 		}
-		public string Icon {
+		public override IImage Icon {
 			get {
 				return icon;
 			}
 		}
-		public string Description {
+		public override string Description {
 			get {
 				return description;
 			}
@@ -219,13 +208,13 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 		
-		public FileTemplate(XmlDocument doc, IReadOnlyFileSystem fileSystem)
+		public FileTemplateImpl(XmlDocument doc, IReadOnlyFileSystem fileSystem)
 		{
 			author = doc.DocumentElement.GetAttribute("author");
 			
 			XmlElement config = doc.DocumentElement["Config"];
 			name         = config.GetAttribute("name");
-			icon         = config.GetAttribute("icon");
+			icon         = SD.ResourceService.GetImage(config.GetAttribute("icon"));
 			category     = config.GetAttribute("category");
 			defaultName  = config.GetAttribute("defaultname");
 			languagename = config.GetAttribute("language");
@@ -279,7 +268,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			
 			if (doc.DocumentElement["Actions"] != null) {
 				foreach (XmlElement el in doc.DocumentElement["Actions"]) {
-					Action<FileTemplateOptions> action = ReadAction(el);
+					Action<FileTemplateResult> action = ReadAction(el);
 					if (action != null)
 						actions += action;
 				}
@@ -297,7 +286,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 		
-		static Action<FileTemplateOptions> ReadAction(XmlElement el)
+		static Action<FileTemplateResult> ReadAction(XmlElement el)
 		{
 			switch (el.Name) {
 				case "RunCommand":
@@ -319,10 +308,211 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 		
-		public void RunActions(FileTemplateOptions options)
+		public override void RunActions(FileTemplateResult result)
 		{
 			if (actions != null)
-				actions(options);
+				actions(result);
 		}
+		
+		public override string SuggestFileName(DirectoryName basePath)
+		{
+			if (defaultName.IndexOf("${Number}") >= 0) {
+				try {
+					int curNumber = 1;
+					
+					while (true) {
+						string fileName = StringParser.Parse(defaultName, new StringTagPair("Number", curNumber.ToString()));
+						if (basePath == null) {
+							bool found = false;
+							foreach (string openFile in FileService.GetOpenFiles()) {
+								if (Path.GetFileName(openFile) == fileName) {
+									found = true;
+									break;
+								}
+							}
+							if (found == false)
+								return fileName;
+						} else if (!File.Exists(Path.Combine(basePath, fileName))) {
+							return fileName;
+						}
+						++curNumber;
+					}
+				} catch (Exception e) {
+					MessageService.ShowException(e);
+				}
+			}
+			return StringParser.Parse(defaultName);
+		}
+		
+		public override object CreateCustomizationObject()
+		{
+			if (!HasProperties)
+				return null;
+			LocalizedTypeDescriptor localizedTypeDescriptor = new LocalizedTypeDescriptor();
+			foreach (TemplateProperty property in Properties) {
+				LocalizedProperty localizedProperty;
+				if (property.Type.StartsWith("Types:")) {
+					localizedProperty = new LocalizedProperty(property.Name, "System.Enum", property.Category, property.Description);
+					TemplateType type = null;
+					foreach (TemplateType templateType in CustomTypes) {
+						if (templateType.Name == property.Type.Substring("Types:".Length)) {
+							type = templateType;
+							break;
+						}
+					}
+					if (type == null) {
+						throw new Exception("type : " + property.Type + " not found.");
+					}
+					localizedProperty.TypeConverterObject = new CustomTypeConverter(type);
+					StringParserPropertyContainer.LocalizedProperty["Properties." + localizedProperty.Name] = property.DefaultValue;
+					localizedProperty.DefaultValue = property.DefaultValue; // localizedProperty.TypeConverterObject.ConvertFrom();
+				} else {
+					localizedProperty = new LocalizedProperty(property.Name, property.Type, property.Category, property.Description);
+					if (property.Type == "System.Boolean") {
+						localizedProperty.TypeConverterObject = new BooleanTypeConverter();
+						string defVal = property.DefaultValue == null ? null : property.DefaultValue.ToString();
+						if (defVal == null || defVal.Length == 0) {
+							defVal = "True";
+						}
+						StringParserPropertyContainer.LocalizedProperty["Properties." + localizedProperty.Name] = defVal;
+						localizedProperty.DefaultValue = Boolean.Parse(defVal);
+					} else {
+						string defVal = property.DefaultValue == null ? String.Empty : property.DefaultValue.ToString();
+						StringParserPropertyContainer.LocalizedProperty["Properties." + localizedProperty.Name] = defVal;
+						localizedProperty.DefaultValue = defVal;
+					}
+				}
+				localizedProperty.LocalizedName = property.LocalizedName;
+				localizedTypeDescriptor.Properties.Add(localizedProperty);
+			}
+			return localizedTypeDescriptor;
+		}
+		
+		public override FileTemplateResult Create(FileTemplateOptions options)
+		{
+			FileTemplateResult result = new FileTemplateResult(options);
+			
+			StringParserPropertyContainer.FileCreation["StandardNamespace"] = options.Namespace;
+			StringParserPropertyContainer.FileCreation["FullName"]                 = options.FileName;
+			StringParserPropertyContainer.FileCreation["FileName"]                 = Path.GetFileName(options.FileName);
+			StringParserPropertyContainer.FileCreation["FileNameWithoutExtension"] = Path.GetFileNameWithoutExtension(options.FileName);
+			StringParserPropertyContainer.FileCreation["Extension"]                = Path.GetExtension(options.FileName);
+			StringParserPropertyContainer.FileCreation["Path"]                     = Path.GetDirectoryName(options.FileName);
+			
+			StringParserPropertyContainer.FileCreation["ClassName"] = options.ClassName;
+			
+			// when adding a file to a project (but not when creating a standalone file while a project is open):
+			var project = options.Project;
+			if (project != null && !options.IsUntitled) {
+				// add required assembly references to the project
+				foreach (ReferenceProjectItem reference in RequiredAssemblyReferences) {
+					IEnumerable<ProjectItem> refs = project.GetItemsOfType(ItemType.Reference);
+					if (!refs.Any(projItem => string.Equals(projItem.Include, reference.Include, StringComparison.OrdinalIgnoreCase))) {
+						ReferenceProjectItem projItem = (ReferenceProjectItem)reference.CloneFor(project);
+						ProjectService.AddProjectItem(project, projItem);
+						ProjectBrowserPad.RefreshViewAsync();
+					}
+				}
+			}
+			
+			foreach (FileDescriptionTemplate newfile in FileDescriptionTemplates) {
+				if (!IsFilenameAvailable(StringParser.Parse(newfile.Name))) {
+					MessageService.ShowError(string.Format("Filename {0} is in use.\nChoose another one", StringParser.Parse(newfile.Name))); // TODO : translate
+					return null;
+				}
+			}
+			var createdFiles = new List<KeyValuePair<string, FileDescriptionTemplate>>();
+			ScriptRunner scriptRunner = new ScriptRunner();
+			foreach (FileDescriptionTemplate newFile in FileDescriptionTemplates) {
+				FileOperationResult opresult = FileUtility.ObservedSave(
+					() => {
+						string resultFile;
+						if (!String.IsNullOrEmpty(newFile.BinaryFileName)) {
+							resultFile = SaveFile(newFile, null, newFile.BinaryFileName);
+						} else {
+							resultFile = SaveFile(newFile, scriptRunner.CompileScript(this, newFile), null);
+						}
+						if (resultFile != null) {
+							result.NewFiles.Add(FileName.Create(resultFile));
+							createdFiles.Add(new KeyValuePair<string, FileDescriptionTemplate>(resultFile, newFile));
+						}
+					}, FileName.Create(StringParser.Parse(newFile.Name))
+				);
+				if (opresult != FileOperationResult.OK)
+					return null;
+			}
+			
+			if (project != null) {
+				foreach (KeyValuePair<string, FileDescriptionTemplate> createdFile in createdFiles) {
+					FileName fileName = FileName.Create(createdFile.Key);
+					ItemType type = project.GetDefaultItemType(fileName);
+					FileProjectItem newItem = new FileProjectItem(project, type);
+					newItem.FileName = fileName;
+					createdFile.Value.SetProjectItemProperties(newItem);
+					project.Items.Add(newItem);
+				}
+				project.Save();
+			}
+			
+			// raise FileCreated event for the new files.
+			foreach (var fileName in result.NewFiles) {
+				FileService.FireFileCreated(fileName, false);
+			}
+			return result;
+		}
+		
+		bool IsFilenameAvailable(string fileName)
+		{
+			if (Path.IsPathRooted(fileName)) {
+				return !File.Exists(fileName);
+			}
+			return true;
+		}
+		
+		string SaveFile(FileDescriptionTemplate newfile, string content, string binaryFileName)
+		{
+			string unresolvedFileName = StringParser.Parse(newfile.Name);
+			// Parse twice so that tags used in included standard header are parsed
+			string parsedContent = StringParser.Parse(StringParser.Parse(content));
+			
+			if (parsedContent != null) {
+				if (SD.EditorControlService.GlobalOptions.IndentationString != "\t") {
+					parsedContent = parsedContent.Replace("\t", SD.EditorControlService.GlobalOptions.IndentationString);
+				}
+			}
+			
+			
+			// when newFile.Name is "${Path}/${FileName}", there might be a useless '/' in front of the file name
+			// if the file is created when no project is opened. So we remove single '/' or '\', but not double
+			// '\\' (project is saved on network share).
+			if (unresolvedFileName.StartsWith("/") && !unresolvedFileName.StartsWith("//")
+			    || unresolvedFileName.StartsWith("\\") && !unresolvedFileName.StartsWith("\\\\"))
+			{
+				unresolvedFileName = unresolvedFileName.Substring(1);
+			}
+			
+			if (newfile.IsDependentFile && Path.IsPathRooted(unresolvedFileName)) {
+				Directory.CreateDirectory(Path.GetDirectoryName(unresolvedFileName));
+				if (!String.IsNullOrEmpty(binaryFileName))
+					File.Copy(binaryFileName, unresolvedFileName);
+				else
+					File.WriteAllText(unresolvedFileName, parsedContent, SD.FileService.DefaultFileEncoding);
+			} else {
+				if (!String.IsNullOrEmpty(binaryFileName)) {
+					LoggingService.Warn("binary file was skipped");
+					return null;
+				}
+				IViewContent viewContent = FileService.NewFile(Path.GetFileName(unresolvedFileName), parsedContent);
+				if (viewContent == null) {
+					return null;
+				}
+				if (Path.IsPathRooted(unresolvedFileName)) {
+					Directory.CreateDirectory(Path.GetDirectoryName(unresolvedFileName));
+					viewContent.PrimaryFile.SaveToDisk(FileName.Create(unresolvedFileName));
+				}
+			}
+			return unresolvedFileName;
+		}
+		
 	}
 }

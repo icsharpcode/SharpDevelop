@@ -56,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 				XmlDocument doc = new XmlDocument();
 				doc.Load(stream);
 				if (doc.DocumentElement["Files"] != null)
-					throw new NotImplementedException();
+					return new FileTemplateImpl(doc, fileSystem);
 				else if (doc.DocumentElement["Project"] != null || doc.DocumentElement["Solution"] != null)
 					return new ProjectTemplateImpl(doc, fileSystem);
 				else

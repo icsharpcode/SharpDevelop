@@ -29,20 +29,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		ArrayList alltemplates = new ArrayList();
 		ArrayList categories   = new ArrayList();
-		Hashtable icons        = new Hashtable();
+		Dictionary<IImage, int> icons = new Dictionary<IImage, int>();
 		bool allowUntitledFiles;
 		IProject project;
 		DirectoryName basePath;
-		List<KeyValuePair<string, FileDescriptionTemplate>> createdFiles = new List<KeyValuePair<string, FileDescriptionTemplate>>();
 		internal FileTemplateOptions options;
+		internal FileTemplateResult result;
 		
-		public List<KeyValuePair<string, FileDescriptionTemplate>> CreatedFiles {
-			get {
-				return createdFiles;
-			}
-		}
-		
-		public NewFileDialog(IProject project, DirectoryName basePath)
+		public NewFileDialog(IProject project, DirectoryName basePath, IEnumerable<FileTemplate> fileTemplates)
 		{
 			StandardHeader.SetHeaders();
 			this.project = project;
@@ -50,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.allowUntitledFiles = basePath == null;
 			try {
 				InitializeComponents();
-				InitializeTemplates();
+				InitializeTemplates(fileTemplates);
 				InitializeView();
 				
 				if (allowUntitledFiles)
@@ -76,20 +70,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 			imglist.Images.Add(IconService.GetBitmap("Icons.32x32.EmptyFileIcon"));
 			
 			int i = 0;
-			Hashtable tmp = new Hashtable(icons);
 			
-			foreach (DictionaryEntry entry in icons) {
-				Bitmap bitmap = IconService.GetBitmap(entry.Key.ToString());
+			foreach (var image in icons.Keys.ToArray()) {
+				Bitmap bitmap = image.Bitmap;
 				if (bitmap != null) {
 					smalllist.Images.Add(bitmap);
 					imglist.Images.Add(bitmap);
-					tmp[entry.Key] = ++i;
+					icons[image] = ++i;
 				} else {
-					LoggingService.Warn("NewFileDialog: can't load bitmap " + entry.Key.ToString() + " using default");
+					LoggingService.Warn("NewFileDialog: can't load bitmap " + image.ToString() + " using default");
 				}
 			}
 			
-			icons = tmp;
 			foreach (TemplateItem item in alltemplates) {
 				if (item.Template.Icon == null) {
 					item.ImageIndex = 0;
@@ -155,24 +147,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return newsubcategory;
 		}
 		
-		void InitializeTemplates()
+		void InitializeTemplates(IEnumerable<FileTemplate> fileTemplates)
 		{
-			foreach (FileTemplate template in FileTemplate.FileTemplates) {
+			foreach (FileTemplate template in fileTemplates) {
 				TemplateItem titem = new TemplateItem(template);
 				if (titem.Template.Icon != null) {
 					icons[titem.Template.Icon] = 0; // "create template icon"
 				}
-				if (template.NewFileDialogVisible == true) {
+				if (template.IsVisible(project)) {
 					Category cat = GetCategory(StringParser.Parse(titem.Template.Category), StringParser.Parse(titem.Template.Subcategory));
 					cat.Templates.Add(titem);
 					
 					cat.Selected = true;
-					if (!cat.HasSelectedTemplate && titem.Template.FileDescriptionTemplates.Count == 1) {
-						if (((FileDescriptionTemplate)titem.Template.FileDescriptionTemplates[0]).Name.StartsWith("Empty")) {
-							titem.Selected = true;
-							cat.HasSelectedTemplate = true;
-						}
-					}
 				}
 				alltemplates.Add(titem);
 			}
@@ -209,67 +195,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		const int GridWidth = 256;
 		const int GridMargin = 8;
 		PropertyGrid propertyGrid = new PropertyGrid();
-		LocalizedTypeDescriptor localizedTypeDescriptor = null;
-		
-		bool AllPropertiesHaveAValue {
-			get {
-				foreach (TemplateProperty property in SelectedTemplate.Properties) {
-					string val = StringParserPropertyContainer.LocalizedProperty["Properties." + property.Name];
-					if (val == null || val.Length == 0) {
-						return false;
-					}
-				}
-				return true;
-			}
-		}
+		object localizedTypeDescriptor = null;
 		
 		void ShowPropertyGrid()
 		{
-			if (localizedTypeDescriptor == null) {
-				localizedTypeDescriptor = new LocalizedTypeDescriptor();
-			}
-			
 			if (!Controls.Contains(propertyGrid)) {
 				this.SuspendLayout();
 				propertyGrid.Location = new Point(Width - GridMargin, GridMargin);
 				propertyGrid.Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
-				localizedTypeDescriptor.Properties.Clear();
-				foreach (TemplateProperty property in SelectedTemplate.Properties) {
-					LocalizedProperty localizedProperty;
-					if (property.Type.StartsWith("Types:")) {
-						localizedProperty = new LocalizedProperty(property.Name, "System.Enum", property.Category, property.Description);
-						TemplateType type = null;
-						foreach (TemplateType templateType in SelectedTemplate.CustomTypes) {
-							if (templateType.Name == property.Type.Substring("Types:".Length)) {
-								type = templateType;
-								break;
-							}
-						}
-						if (type == null) {
-							throw new Exception("type : " + property.Type + " not found.");
-						}
-						localizedProperty.TypeConverterObject = new CustomTypeConverter(type);
-						StringParserPropertyContainer.LocalizedProperty["Properties." + localizedProperty.Name] = property.DefaultValue;
-						localizedProperty.DefaultValue = property.DefaultValue; // localizedProperty.TypeConverterObject.ConvertFrom();
-					} else {
-						localizedProperty = new LocalizedProperty(property.Name, property.Type, property.Category, property.Description);
-						if (property.Type == "System.Boolean") {
-							localizedProperty.TypeConverterObject = new BooleanTypeConverter();
-							string defVal = property.DefaultValue == null ? null : property.DefaultValue.ToString();
-							if (defVal == null || defVal.Length == 0) {
-								defVal = "True";
-							}
-							StringParserPropertyContainer.LocalizedProperty["Properties." + localizedProperty.Name] = defVal;
-							localizedProperty.DefaultValue = Boolean.Parse(defVal);
-						} else {
-							string defVal = property.DefaultValue == null ? String.Empty : property.DefaultValue.ToString();
-							StringParserPropertyContainer.LocalizedProperty["Properties." + localizedProperty.Name] = defVal;
-							localizedProperty.DefaultValue = defVal;
-						}
-					}
-					localizedProperty.LocalizedName = property.LocalizedName;
-					localizedTypeDescriptor.Properties.Add(localizedProperty);
-				}
+				
 				propertyGrid.ToolbarVisible = false;
 				propertyGrid.SelectedObject = localizedTypeDescriptor;
 				propertyGrid.Size     = new Size(GridWidth, Height - GridMargin * 4);
@@ -300,32 +234,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		string GenerateCurrentFileName()
 		{
-			if (SelectedTemplate.DefaultName.IndexOf("${Number}") >= 0) {
-				try {
-					int curNumber = 1;
-					
-					while (true) {
-						string fileName = StringParser.Parse(SelectedTemplate.DefaultName, new StringTagPair("Number", curNumber.ToString()));
-						if (allowUntitledFiles) {
-							bool found = false;
-							foreach (string openFile in FileService.GetOpenFiles()) {
-								if (Path.GetFileName(openFile) == fileName) {
-									found = true;
-									break;
-								}
-							}
-							if (found == false)
-								return fileName;
-						} else if (!File.Exists(Path.Combine(basePath, fileName))) {
-							return fileName;
-						}
-						++curNumber;
-					}
-				} catch (Exception e) {
-					MessageService.ShowException(e);
-				}
-			}
-			return StringParser.Parse(SelectedTemplate.DefaultName);
+			return SelectedTemplate.SuggestFileName(basePath);
 		}
 		
 		bool isNameModified = false;
@@ -336,7 +245,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (templateListView.SelectedItems.Count == 1) {
 				ControlDictionary["descriptionLabel"].Text = StringParser.Parse(SelectedTemplate.Description);
 				ControlDictionary["openButton"].Enabled = true;
-				if (SelectedTemplate.HasProperties) {
+				localizedTypeDescriptor = SelectedTemplate.CreateCustomizationObject();
+				if (localizedTypeDescriptor != null) {
 					ShowPropertyGrid();
 				}
 				if (!this.allowUntitledFiles && !isNameModified) {
@@ -360,59 +270,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void CheckedChange(object sender, EventArgs e)
 		{
 			templateListView.View = ((RadioButton)ControlDictionary["smallIconsRadioButton"]).Checked ? View.List : View.LargeIcon;
-		}
-		
-		public bool IsFilenameAvailable(string fileName)
-		{
-			if (Path.IsPathRooted(fileName)) {
-				return !File.Exists(fileName);
-			}
-			return true;
-		}
-		
-		public void SaveFile(FileDescriptionTemplate newfile, string content, string binaryFileName)
-		{
-			string unresolvedFileName = StringParser.Parse(newfile.Name);
-			// Parse twice so that tags used in included standard header are parsed
-			string parsedContent = StringParser.Parse(StringParser.Parse(content));
-			
-			if (parsedContent != null) {
-				if (SD.EditorControlService.GlobalOptions.IndentationString != "\t") {
-					parsedContent = parsedContent.Replace("\t", SD.EditorControlService.GlobalOptions.IndentationString);
-				}
-			}
-			
-			
-			// when newFile.Name is "${Path}/${FileName}", there might be a useless '/' in front of the file name
-			// if the file is created when no project is opened. So we remove single '/' or '\', but not double
-			// '\\' (project is saved on network share).
-			if (unresolvedFileName.StartsWith("/") && !unresolvedFileName.StartsWith("//")
-			    || unresolvedFileName.StartsWith("\\") && !unresolvedFileName.StartsWith("\\\\"))
-			{
-				unresolvedFileName = unresolvedFileName.Substring(1);
-			}
-			
-			if (newfile.IsDependentFile && Path.IsPathRooted(unresolvedFileName)) {
-				Directory.CreateDirectory(Path.GetDirectoryName(unresolvedFileName));
-				if (!String.IsNullOrEmpty(binaryFileName))
-					File.Copy(binaryFileName, unresolvedFileName);
-				else
-					File.WriteAllText(unresolvedFileName, parsedContent, SD.FileService.DefaultFileEncoding);
-			} else {
-				if (!String.IsNullOrEmpty(binaryFileName)) {
-					LoggingService.Warn("binary file was skipped");
-					return;
-				}
-				IViewContent viewContent = FileService.NewFile(Path.GetFileName(unresolvedFileName), parsedContent);
-				if (viewContent == null) {
-					return;
-				}
-				if (Path.IsPathRooted(unresolvedFileName)) {
-					Directory.CreateDirectory(Path.GetDirectoryName(unresolvedFileName));
-					viewContent.PrimaryFile.SaveToDisk(FileName.Create(unresolvedFileName));
-				}
-			}
-			createdFiles.Add(new KeyValuePair<string, FileDescriptionTemplate>(unresolvedFileName, newfile));
 		}
 		
 		internal static string GenerateValidClassOrNamespaceName(string className, bool allowDot)
@@ -444,18 +301,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 				PropertyService.Set("Dialogs.NewFileDialog.CategoryViewState", TreeViewHelper.GetViewStateString(categoryTreeView));
 				PropertyService.Set("Dialogs.NewFileDialog.LastSelectedCategory", TreeViewHelper.GetPath(categoryTreeView.SelectedNode));
 			}
-			createdFiles.Clear();
 			if (templateListView.SelectedItems.Count == 1) {
-				if (!AllPropertiesHaveAValue) {
-					MessageService.ShowMessage("${res:Dialog.NewFile.FillOutFirstMessage}", "${res:Dialog.NewFile.FillOutFirstCaption}");
-					return;
-				}
 				TemplateItem item = (TemplateItem)templateListView.SelectedItems[0];
 				
 				PropertyService.Set("Dialogs.NewFileDialog.LastSelectedTemplate", item.Template.Name);
 				
 				string fileName;
-				StringParserPropertyContainer.FileCreation["StandardNamespace"] = "DefaultNamespace";
+				string standardNamespace = "DefaultNamespace";
 				if (allowUntitledFiles) {
 					fileName = GenerateCurrentFileName();
 				} else {
@@ -468,12 +320,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 						return;
 					}
 					if (Path.GetExtension(fileName).Length == 0) {
-						fileName += Path.GetExtension(item.Template.DefaultName);
+						fileName += Path.GetExtension(item.Template.SuggestFileName(null));
 					}
 					fileName = Path.Combine(basePath, fileName);
 					fileName = FileUtility.NormalizePath(fileName);
 					if (project != null) {
-						StringParserPropertyContainer.FileCreation["StandardNamespace"] = CustomToolsService.GetDefaultNamespace(project, fileName);
+						standardNamespace = CustomToolsService.GetDefaultNamespace(project, fileName);
 					}
 				}
 				
@@ -481,62 +333,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 				options.ClassName = GenerateValidClassOrNamespaceName(Path.GetFileNameWithoutExtension(fileName), false);
 				options.FileName = FileName.Create(fileName);
 				options.IsUntitled = allowUntitledFiles;
-				options.Namespace = StringParserPropertyContainer.FileCreation["StandardNamespace"];
+				options.Namespace = standardNamespace;
+				options.CustomizationObject = localizedTypeDescriptor;
+				options.Project = project;
 				
-				StringParserPropertyContainer.FileCreation["FullName"]                 = fileName;
-				StringParserPropertyContainer.FileCreation["FileName"]                 = Path.GetFileName(fileName);
-				StringParserPropertyContainer.FileCreation["FileNameWithoutExtension"] = Path.GetFileNameWithoutExtension(fileName);
-				StringParserPropertyContainer.FileCreation["Extension"]                = Path.GetExtension(fileName);
-				StringParserPropertyContainer.FileCreation["Path"]                     = Path.GetDirectoryName(fileName);
-				
-				StringParserPropertyContainer.FileCreation["ClassName"] = options.ClassName;
-				
-				// when adding a file to a project (but not when creating a standalone file while a project is open):
-				if (project != null && !this.allowUntitledFiles) {
-					options.Project = project;
-					// add required assembly references to the project
-					bool changes = false;
-					foreach (ReferenceProjectItem reference in item.Template.RequiredAssemblyReferences) {
-						IEnumerable<ProjectItem> refs = project.GetItemsOfType(ItemType.Reference);
-						if (!refs.Any(projItem => string.Equals(projItem.Include, reference.Include, StringComparison.OrdinalIgnoreCase))) {
-							ReferenceProjectItem projItem = (ReferenceProjectItem)reference.CloneFor(project);
-							ProjectService.AddProjectItem(project, projItem);
-							changes = true;
-						}
-					}
-					if (changes) {
-						project.Save();
-					}
-				}
-				
-				foreach (FileDescriptionTemplate newfile in item.Template.FileDescriptionTemplates) {
-					if (!IsFilenameAvailable(StringParser.Parse(newfile.Name))) {
-						MessageService.ShowError(string.Format("Filename {0} is in use.\nChoose another one", StringParser.Parse(newfile.Name))); // TODO : translate
-						return;
-					}
-				}
-				ScriptRunner scriptRunner = new ScriptRunner();
-				foreach (FileDescriptionTemplate newFile in item.Template.FileDescriptionTemplates) {
-					FileOperationResult result = FileUtility.ObservedSave(
-						() => {
-							if (!String.IsNullOrEmpty(newFile.BinaryFileName)) {
-								SaveFile(newFile, null, newFile.BinaryFileName);
-							} else {
-								SaveFile(newFile, scriptRunner.CompileScript(item.Template, newFile), null);
-							}
-						}, FileName.Create(StringParser.Parse(newFile.Name))
-					);
-					if (result != FileOperationResult.OK)
-						return;
-				}
-				
+				result = SelectedTemplate.Create(options);
 				DialogResult = DialogResult.OK;
-				
-				// raise FileCreated event for the new files.
-				foreach (KeyValuePair<string, FileDescriptionTemplate> entry in createdFiles) {
-					FileService.FireFileCreated(entry.Key, false);
-				}
-				item.Template.RunActions(options);
+				if (result != null)
+					SelectedTemplate.RunActions(result);
 			}
 		}
 		

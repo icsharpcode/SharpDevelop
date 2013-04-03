@@ -7,7 +7,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Templates
 {
-	public abstract class FileTemplate
+	public abstract class FileTemplate : TemplateBase
 	{
 		/// <summary>
 		/// Gets whether this template is available for the specified project.
@@ -39,5 +39,9 @@ namespace ICSharpCode.SharpDevelop.Templates
 		/// Instanciates the template, writes the new files to disk, and adds them to the project.
 		/// </summary>
 		public abstract FileTemplateResult Create(FileTemplateOptions options);
+		
+		public virtual void RunActions(FileTemplateResult result)
+		{
+		}
 	}
 }

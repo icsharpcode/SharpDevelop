@@ -30,7 +30,7 @@ namespace UpdateAssemblyInfo
 			},
 			new TemplateFile {
 				Input = "src/Main/SharpDevelop/app.template.config",
-				Output = "src/Main/SharpDevelop/SharpDevelop.exe.config"
+				Output = "src/Main/SharpDevelop/app.config"
 			},
 			new TemplateFile {
 				Input = "src/Setup/SharpDevelop.Setup.wixproj.user.template",

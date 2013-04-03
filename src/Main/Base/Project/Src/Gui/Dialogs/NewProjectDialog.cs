@@ -34,12 +34,12 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			set { locationTextBox.Text = value; }
 		}
 		
-		public NewProjectDialog(bool createNewSolution)
+		public NewProjectDialog(bool createNewSolution, IEnumerable<ProjectTemplate> projectTemplates)
 		{
 			this.createNewSolution = createNewSolution;
 			MyInitializeComponents();
 			
-			InitializeTemplates();
+			InitializeTemplates(projectTemplates);
 			InitializeView();
 			
 			locationTextBox.Text = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.DefaultPath", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SharpDevelop Projects"));
@@ -135,9 +135,9 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			return newsubcategory;
 		}
 		
-		protected virtual void InitializeTemplates()
+		protected virtual void InitializeTemplates(IEnumerable<ProjectTemplate> projectTemplates)
 		{
-			foreach (ProjectTemplate template in SD.Templates.ProjectTemplates) {
+			foreach (ProjectTemplate template in projectTemplates) {
 				if (!template.IsVisible(SolutionFolder != null ? SolutionFolder.ParentSolution : null)) {
 					// Do not show solution template when added a new project to existing solution
 					continue;

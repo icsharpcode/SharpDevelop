@@ -47,9 +47,12 @@ namespace ICSharpCode.SharpDevelop.Templates
 		{
 			var fileSystem = GetFileSystem(args);
 			var templates = new List<TemplateBase>();
-			foreach (var fileName in fileSystem.GetFiles(DirectoryName.Create("."), "*.xpt", SearchOption.AllDirectories)) {
+			var xpt = fileSystem.GetFiles(DirectoryName.Create("."), "*.xpt", SearchOption.AllDirectories);
+			var xft = fileSystem.GetFiles(DirectoryName.Create("."), "*.xft", SearchOption.AllDirectories);
+			foreach (var fileName in xpt.Concat(xft)) {
 				using (var stream = fileSystem.OpenRead(fileName)) {
-					templates.Add(SD.Templates.LoadTemplate(stream, fileSystem));
+					var relFileSystem = new ReadOnlyChrootFileSystem(fileSystem, fileName.GetParentDirectory());
+					templates.Add(SD.Templates.LoadTemplate(stream, relFileSystem));
 				}
 			}
 			if (templates.Count == 1)

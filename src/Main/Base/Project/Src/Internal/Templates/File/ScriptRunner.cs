@@ -15,12 +15,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
 	internal class ScriptRunner
 	{
-		FileTemplate item;
+		FileTemplateImpl item;
 		FileDescriptionTemplate file;
 		
 		readonly static Regex scriptRegex  = new Regex("<%.*?%>");
 		
-		public string CompileScript(FileTemplate item, FileDescriptionTemplate file)
+		public string CompileScript(FileTemplateImpl item, FileDescriptionTemplate file)
 		{
 			if (file.Content == null)
 				throw new ArgumentException("file must have textual content");

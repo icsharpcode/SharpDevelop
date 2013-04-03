@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Templates
 {
-	public class LocalizedProperty : PropertyDescriptor
+	internal class LocalizedProperty : PropertyDescriptor
 	{
 		string category;
 		string description;

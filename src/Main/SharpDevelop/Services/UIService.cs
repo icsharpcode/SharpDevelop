@@ -30,31 +30,19 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public FileTemplateResult ShowNewFileDialog(IProject project, DirectoryName directory, IEnumerable<ICSharpCode.SharpDevelop.Templates.FileTemplate> templates)
+		public FileTemplateResult ShowNewFileDialog(IProject project, DirectoryName directory, IEnumerable<FileTemplate> templates)
 		{
-			using (NewFileDialog nfd = new NewFileDialog(project, directory)) {
-				if (nfd.ShowDialog(SD.WinForms.MainWin32Window) != DialogResult.OK)
+			using (NewFileDialog nfd = new NewFileDialog(project, directory, templates ?? SD.Templates.FileTemplates)) {
+				if (nfd.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK)
+					return nfd.result;
+				else
 					return null;
-				if (project != null) {
-					foreach (KeyValuePair<string, FileDescriptionTemplate> createdFile in nfd.CreatedFiles) {
-						FileName fileName = FileName.Create(createdFile.Key);
-						ItemType type = project.GetDefaultItemType(fileName);
-						FileProjectItem newItem = new FileProjectItem(project, type);
-						newItem.FileName = fileName;
-						createdFile.Value.SetProjectItemProperties(newItem);
-						project.Items.Add(newItem);
-					}
-					project.Save();
-				}
-				var result = new FileTemplateResult(nfd.options);
-				result.NewFiles.AddRange(nfd.CreatedFiles.Select(p => FileName.Create(p.Key)));
-				return result;
 			}
 		}
 		
-		public ProjectTemplateResult ShowNewProjectDialog(ISolutionFolder solutionFolder, IEnumerable<ICSharpCode.SharpDevelop.Templates.ProjectTemplate> templates)
+		public ProjectTemplateResult ShowNewProjectDialog(ISolutionFolder solutionFolder, IEnumerable<ProjectTemplate> templates)
 		{
-			using (NewProjectDialog npdlg = new NewProjectDialog(createNewSolution: solutionFolder == null)) {
+			using (NewProjectDialog npdlg = new NewProjectDialog(createNewSolution: solutionFolder == null, projectTemplates: templates ?? SD.Templates.ProjectTemplates)) {
 				npdlg.SolutionFolder = solutionFolder;
 				if (solutionFolder != null) {
 					npdlg.InitialProjectLocationDirectory = AddNewProjectToSolution.GetInitialDirectorySuggestion(solutionFolder);

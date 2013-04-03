@@ -212,9 +212,9 @@
       <LogicalName>Resources.SplashScreen.jpg</LogicalName>
     </EmbeddedResource>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <None Include="SharpDevelop.exe.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <Content Include="app.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
       <DependentUpon>GlobalAssemblyInfo.template</DependentUpon>

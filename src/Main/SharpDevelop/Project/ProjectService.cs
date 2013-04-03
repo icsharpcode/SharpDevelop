@@ -315,7 +315,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				throw new ArgumentNullException("fileName");
 			if (progress == null)
 				throw new ArgumentNullException("progress");
-			if (!Path.IsPathRooted(fileName))
+			if (fileName.IsRelative)
 				throw new ArgumentException("Path must be rooted!");
 			Solution solution = new Solution(fileName, new ProjectChangeWatcher(fileName), SD.FileService);
 			bool ok = false;
@@ -333,6 +333,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public ISolution CreateEmptySolutionFile(FileName fileName)
 		{
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+			if (fileName.IsRelative)
+				throw new ArgumentException("Path must be rooted!");
 			Solution solution = new Solution(fileName, new ProjectChangeWatcher(fileName), SD.FileService);
 			solution.LoadPreferences();
 			return solution;
