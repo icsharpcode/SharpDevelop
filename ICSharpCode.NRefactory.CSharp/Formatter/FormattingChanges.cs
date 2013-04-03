@@ -114,8 +114,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (removedChars == 0 && string.IsNullOrEmpty (insertedText))
 				return null;
 			var action = new TextReplaceAction (offset, removedChars, insertedText);
-			if (offset == 40 || offset == 44)
-			Console.WriteLine("----" + action + Environment.NewLine + Environment.StackTrace);
 			changes.Add(action);
 			return action;
 		}
