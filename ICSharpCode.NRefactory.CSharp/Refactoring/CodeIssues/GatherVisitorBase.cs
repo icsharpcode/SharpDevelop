@@ -1,7 +1,4 @@
-﻿// 
-using ICSharpCode.NRefactory.TypeSystem;
-
-
+// 
 // GatherVisitorBase.cs
 //  
 // Author:
@@ -31,6 +28,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -93,20 +91,21 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			this.ctx = ctx;
 			this.IssueProvider = issueProvider;
-			foreach (var attr in this.ctx.Compilation.MainAssembly.AssemblyAttributes) {
-				if (attr.AttributeType.Name == "SuppressMessageAttribute" && attr.AttributeType.Namespace == "System.Diagnostics.CodeAnalysis") {
-					if (attr.PositionalArguments.Count < 2)
-						return;
-					var category = attr.PositionalArguments[0].ConstantValue;
-					if (category == null || category.ToString() != suppressMessageCategory)
-						continue;
-					var checkId = attr.PositionalArguments[1].ConstantValue;
-					if (checkId == null || checkId.ToString() != suppressMessageCheckId) 
-						continue;
-					isGloballySuppressed = true;
+			if (suppressMessageCheckId != null) {
+				foreach (var attr in this.ctx.Compilation.MainAssembly.AssemblyAttributes) {
+					if (attr.AttributeType.Name == "SuppressMessageAttribute" && attr.AttributeType.Namespace == "System.Diagnostics.CodeAnalysis") {
+						if (attr.PositionalArguments.Count < 2)
+							return;
+						var category = attr.PositionalArguments [0].ConstantValue;
+						if (category == null || category.ToString() != suppressMessageCategory)
+							continue;
+						var checkId = attr.PositionalArguments [1].ConstantValue;
+						if (checkId == null || checkId.ToString() != suppressMessageCheckId) 
+							continue;
+						isGloballySuppressed = true;
+					}
 				}
 			}
-			
 		}
 
 		/// <summary>
@@ -145,6 +144,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override void VisitAttribute(Attribute attribute)
 		{
 			base.VisitAttribute(attribute);
+			if (suppressMessageCheckId == null)
+				return;
 			var resolveResult = ctx.Resolve(attribute);
 			if (resolveResult.Type.Name == "SuppressMessageAttribute" && resolveResult.Type.Namespace == "System.Diagnostics.CodeAnalysis") {
 				if (attribute.Arguments.Count < 2)
