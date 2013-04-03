@@ -150,6 +150,7 @@
     <Compile Include="Startup\App.xaml.cs" />
     <Compile Include="Startup\SharpDevelopMain.cs" />
     <Compile Include="Startup\SplashScreen.cs" />
+    <Compile Include="Templates\TemplateService.cs" />
     <Compile Include="WinForms\SDWindowsFormsHost.cs" />
     <Compile Include="WinForms\WinFormsMenuService.cs" />
     <Compile Include="WinForms\WinFormsService.cs" />
@@ -283,6 +284,7 @@
     <Folder Include="Dom" />
     <Folder Include="Editor" />
     <Folder Include="Editor\Bookmarks" />
+    <Folder Include="Templates" />
     <Folder Include="Project" />
     <Folder Include="Project\Build" />
     <Folder Include="Project\Build\MSBuildEngine" />

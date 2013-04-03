@@ -18,13 +18,13 @@ namespace ICSharpCode.Core
 		/// Gets the configuration directory. (usually "%ApplicationData%\%ApplicationName%")
 		/// </summary>
 		/// <seealso cref="CoreStartup.ConfigDirectory"/>
-		string ConfigDirectory { get; }
+		DirectoryName ConfigDirectory { get; }
 		
 		/// <summary>
 		/// Gets the data directory (usually "ApplicationRootPath\data")
 		/// </summary>
 		/// <seealso cref="CoreStartup.DataDirectory"/>
-		string DataDirectory { get; }
+		DirectoryName DataDirectory { get; }
 		
 		/// <summary>
 		/// Gets the main properties container for this property service.

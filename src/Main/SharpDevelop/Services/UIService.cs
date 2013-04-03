@@ -5,10 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Project.Commands;
+using ICSharpCode.SharpDevelop.Project.Dialogs;
 using ICSharpCode.SharpDevelop.Templates;
 
 namespace ICSharpCode.SharpDevelop
@@ -46,6 +49,23 @@ namespace ICSharpCode.SharpDevelop
 				var result = new FileTemplateResult(nfd.options);
 				result.NewFiles.AddRange(nfd.CreatedFiles.Select(p => FileName.Create(p.Key)));
 				return result;
+			}
+		}
+		
+		public ProjectTemplateResult ShowNewProjectDialog(ISolutionFolder solutionFolder, IEnumerable<ICSharpCode.SharpDevelop.Templates.ProjectTemplate> templates)
+		{
+			using (NewProjectDialog npdlg = new NewProjectDialog(createNewSolution: solutionFolder == null)) {
+				npdlg.SolutionFolder = solutionFolder;
+				if (solutionFolder != null) {
+					npdlg.InitialProjectLocationDirectory = AddNewProjectToSolution.GetInitialDirectorySuggestion(solutionFolder);
+				}
+				
+				// show the dialog to request project type and name
+				if (npdlg.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
+					return new ProjectTemplateResult();
+				} else {
+					return null;
+				}
 			}
 		}
 	}

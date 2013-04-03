@@ -16,8 +16,8 @@ namespace ICSharpCode.Core
 	{
 		string propertyFileName;
 		
-		string configDirectory;
-		string dataDirectory;
+		DirectoryName configDirectory;
+		DirectoryName dataDirectory;
 		
 		Properties properties;
 		
@@ -30,7 +30,7 @@ namespace ICSharpCode.Core
 			properties = new Properties();
 		}
 
-		public PropertyServiceImpl(string configDirectory, string dataDirectory, string propertiesName)
+		public PropertyServiceImpl(DirectoryName configDirectory, DirectoryName dataDirectory, string propertiesName)
 		{
 			this.configDirectory = configDirectory;
 			this.dataDirectory = dataDirectory;
@@ -39,13 +39,13 @@ namespace ICSharpCode.Core
 			LoadPropertiesFromStream(FileName.Create(Path.Combine(configDirectory, propertyFileName)));
 		}
 		
-		public string ConfigDirectory {
+		public DirectoryName ConfigDirectory {
 			get {
 				return configDirectory;
 			}
 		}
 		
-		public string DataDirectory {
+		public DirectoryName DataDirectory {
 			get {
 				return dataDirectory;
 			}

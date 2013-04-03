@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 	/// <summary>
 	/// This class defines and holds the new project templates.
 	/// </summary>
-	public class ProjectTemplate : IComparable
+	internal class ProjectTemplate : IComparable
 	{
 		static List<ProjectTemplate> projectTemplates;
 		

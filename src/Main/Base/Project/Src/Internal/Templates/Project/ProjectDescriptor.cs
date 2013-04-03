@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 	/// <summary>
 	/// This class is used inside the solution templates for projects.
 	/// </summary>
-	public sealed class ProjectDescriptor
+	internal sealed class ProjectDescriptor
 	{
 		private class ProjectProperty
 		{

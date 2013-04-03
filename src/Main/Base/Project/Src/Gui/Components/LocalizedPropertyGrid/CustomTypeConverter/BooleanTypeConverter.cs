@@ -9,7 +9,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class BooleanTypeConverter : TypeConverter
+	internal class BooleanTypeConverter : TypeConverter
 	{
 		string True {
 			get {

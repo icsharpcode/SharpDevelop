@@ -11,7 +11,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
-	public class SolutionDescriptor
+	internal class SolutionDescriptor
 	{
 		SolutionFolderDescriptor mainFolder = new SolutionFolderDescriptor("");
 		

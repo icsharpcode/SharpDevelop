@@ -13,9 +13,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			using (NewProjectDialog npdlg = new NewProjectDialog(true)) {
-				npdlg.ShowDialog(SD.WinForms.MainWin32Window);
-			}
+			SD.UIService.ShowNewProjectDialog(null);
 		}
 	}
 	

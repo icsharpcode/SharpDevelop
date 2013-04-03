@@ -13,7 +13,7 @@ using ICSharpCode.SharpDevelop.Templates;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
-	public class FileDescriptionTemplate
+	internal class FileDescriptionTemplate
 	{
 		string name;
 		string language;

@@ -16,7 +16,7 @@ using Microsoft.Build.Exceptions;
 
 namespace ICSharpCode.SharpDevelop.Project.Dialogs
 {
-	public partial class NewProjectDialog : Form
+	internal partial class NewProjectDialog : Form
 	{
 		protected List<TemplateItem> alltemplates = new List<TemplateItem>();
 		protected List<Category> categories = new List<Category>();
@@ -276,7 +276,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		
 		public FileName NewProjectLocation;
 		public FileName NewSolutionLocation;
-		public ISolutionFolderNode SolutionFolderNode { get; set; }
+		public ISolutionFolder SolutionFolder;
 		
 		string CheckProjectName(string solution, string name, string location)
 		{
@@ -366,7 +366,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				} else {
 					IProject project = item.Template.CreateProject(SD.ProjectService.CurrentSolution, cinfo);
 					NewProjectLocation = project.FileName;
-					SolutionFolderNode.Folder.Items.Add(project);
+					SolutionFolder.Items.Add(project);
 					ProjectService.SaveSolution();
 				}
 				

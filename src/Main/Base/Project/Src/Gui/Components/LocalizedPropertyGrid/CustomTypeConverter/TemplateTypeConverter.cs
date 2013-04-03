@@ -10,7 +10,7 @@ using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class CustomTypeConverter : TypeConverter
+	internal class CustomTypeConverter : TypeConverter
 	{
 		TemplateType templateType;
 		

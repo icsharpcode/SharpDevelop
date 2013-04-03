@@ -13,7 +13,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
-	public class ScriptRunner
+	internal class ScriptRunner
 	{
 		FileTemplate item;
 		FileDescriptionTemplate file;

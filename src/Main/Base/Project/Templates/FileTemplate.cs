@@ -9,12 +9,6 @@ namespace ICSharpCode.SharpDevelop.Templates
 {
 	public abstract class FileTemplate
 	{
-		public abstract string Name { get; }
-		public abstract string Category { get; }
-		public abstract string Subcategory { get; }
-		public abstract string Description { get; }
-		public abstract IImage Icon { get; }
-		
 		/// <summary>
 		/// Gets whether this template is available for the specified project.
 		/// </summary>

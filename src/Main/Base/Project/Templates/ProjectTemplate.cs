@@ -3,7 +3,12 @@
 
 using System;
 
-namespace ICSharpCode.SharpDevelop.Internal.Templates
+namespace ICSharpCode.SharpDevelop.Templates
 {
-
+	public abstract class ProjectTemplate : TemplateBase
+	{
+		public ProjectTemplate()
+		{
+		}
+	}
 }

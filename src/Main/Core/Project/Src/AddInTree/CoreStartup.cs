@@ -205,8 +205,8 @@ namespace ICSharpCode.Core
 				                               applicationName);
 			var container = ServiceSingleton.GetRequiredService<IServiceContainer>();
 			var propertyService = new PropertyServiceImpl(
-				configDirectory,
-				dataDirectory ?? Path.Combine(FileUtility.ApplicationRootPath, "data"),
+				DirectoryName.Create(configDirectory),
+				DirectoryName.Create(dataDirectory ?? Path.Combine(FileUtility.ApplicationRootPath, "data")),
 				propertiesName);
 			var applicationStateInfoService = new ApplicationStateInfoService();
 			addInTree = new AddInTreeImpl(applicationStateInfoService);

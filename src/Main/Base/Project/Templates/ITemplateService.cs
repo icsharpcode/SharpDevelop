@@ -17,8 +17,27 @@ namespace ICSharpCode.SharpDevelop.Templates
 		IEnumerable<FileTemplate> FileTemplates { get; }
 		
 		/// <summary>
-		/// Loads a file template (.xft file) from a stream.
+		/// Gets the list of project templates that are available in the 'new project' dialog.
 		/// </summary>
-		FileTemplate LoadFileTemplate(Stream stream);
+		IEnumerable<ProjectTemplate> ProjectTemplates { get; }
+		
+		/// <summary>
+		/// Loads a file template (.xft or .xpt file) from disk.
+		/// </summary>
+		/// <returns><see cref="FileTemplate"/> or <see cref="ProjectTemplate"/> instance.</returns>
+		TemplateBase LoadTemplate(FileName fileName);
+		
+		/// <summary>
+		/// Loads a file template (.xft or .xpt file) from a text reader.
+		/// </summary>
+		/// <param name="stream">The stream containing the .xft/.xpt file.</param>
+		/// <param name="fileSystem">File system used to open referenced input files.
+		/// This should usually be a <see cref="ReadOnlyChrootFileSystem"/> so that the file template
+		/// can use relative paths.
+		/// The template will keep a reference to the file system instance and use it when it is used to create
+		/// files/projects.
+		/// </param>
+		/// <returns><see cref="FileTemplate"/> or <see cref="ProjectTemplate"/> instance.</returns>
+		TemplateBase LoadTemplate(TextReader textReader, IReadOnlyFileSystem fileSystem);
 	}
 }

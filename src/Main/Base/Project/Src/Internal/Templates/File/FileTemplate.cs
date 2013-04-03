@@ -16,7 +16,7 @@ using ICSharpCode.SharpDevelop.Templates;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
-	public class TemplateProperty
+	internal class TemplateProperty
 	{
 		string name;
 		string localizedName;
@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		}
 	}
 	
-	public class TemplateType
+	internal class TemplateType
 	{
 		string    name;
 		Hashtable pairs = new Hashtable();
@@ -101,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 	/// <summary>
 	/// This class defines and holds the new file templates.
 	/// </summary>
-	public class FileTemplate : IComparable
+	internal class FileTemplate : IComparable
 	{
 		public static List<FileTemplate> FileTemplates = new List<FileTemplate>();
 		

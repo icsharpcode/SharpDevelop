@@ -74,6 +74,8 @@
 		         class="ICSharpCode.SharpDevelop.ClipboardWrapper"/>
 		<Service id="ICSharpCode.SharpDevelop.IFileSystem"
 		         class="ICSharpCode.SharpDevelop.FileSystem"/>
+		<Service id="ICSharpCode.SharpDevelop.Templates.ITemplateService"
+		         class="ICSharpCode.SharpDevelop.Templates.TemplateService"/>
 		<Service id="ICSharpCode.SharpDevelop.Project.IBuildService"
 		         class="ICSharpCode.SharpDevelop.Project.BuildService"/>
 		<Service id="ICSharpCode.SharpDevelop.Project.IProjectService"

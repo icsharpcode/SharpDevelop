@@ -239,6 +239,9 @@
     <Compile Include="Templates\FileTemplateOptions.cs" />
     <Compile Include="Templates\FileTemplateResult.cs" />
     <Compile Include="Templates\ITemplateService.cs" />
+    <Compile Include="Templates\ProjectTemplate.cs" />
+    <Compile Include="Templates\ProjectTemplateResult.cs" />
+    <Compile Include="Templates\TemplateBase.cs" />
     <Compile Include="Templates\TemplateLoadException.cs" />
     <Compile Include="Util\AtomicBoolean.cs" />
     <Compile Include="Util\ChrootFileSystem.cs" />
@@ -464,7 +467,6 @@
     <Compile Include="Src\Internal\Templates\File\FileDescriptionTemplate.cs" />
     <Compile Include="Src\Internal\Templates\File\FileTemplate.cs" />
     <Compile Include="Src\Internal\Templates\TextTemplate.cs" />
-    <Compile Include="Src\Internal\Templates\File\INewFileCreator.cs" />
     <Compile Include="Src\Project\BeforeBuildCustomToolFileNameFilter.cs" />
     <Compile Include="Src\Project\BeforeBuildCustomToolProjectItems.cs" />
     <Compile Include="Src\Project\BeforeBuildCustomToolRunner.cs" />
