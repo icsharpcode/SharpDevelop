@@ -32,7 +32,7 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public static partial class FileUtility
 	{
-		readonly static char[] separators = { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar, Path.VolumeSeparatorChar };
+		readonly static char[] separators = { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar };
 		static string applicationRootPath = AppDomain.CurrentDomain.BaseDirectory;
 		const string fileNameRegEx = @"^([a-zA-Z]:)?[^:]+$";
 		
@@ -284,9 +284,9 @@ namespace ICSharpCode.Core
 					break;
 			}
 			
-//			if (indx == 0) {
-//				return absPath;
-//			}
+			if (indx == 0 && (Path.IsPathRooted(baseDirectoryPath) || Path.IsPathRooted(absPath))) {
+				return absPath;
+			}
 			
 			if(indx == bPath.Length && indx == aPath.Length) {
 				return ".";

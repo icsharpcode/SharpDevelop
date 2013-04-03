@@ -103,6 +103,8 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual(@"..\a\blub", FileUtility.GetRelativePath(@"C:\.\.\.\.\hello\", @"C:\.\blub\.\..\.\a\.\blub"));
 			Assert.AreEqual(@".", FileUtility.GetRelativePath(@"C:\hello", @"C:\.\hello"));
 			Assert.AreEqual(@".", FileUtility.GetRelativePath(@"C:\", @"C:\"));
+			Assert.AreEqual(@"D:\", FileUtility.GetRelativePath(@"C:\", @"D:\"));
+			Assert.AreEqual(@"D:\def", FileUtility.GetRelativePath(@"C:\abc", @"D:\def"));
 			
 			// casing troubles
 			Assert.AreEqual(@"blub", FileUtility.GetRelativePath(@"C:\hello\.\..\A", @"C:\.\a\blub"));
@@ -121,6 +123,10 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual(@"..", FileUtility.GetRelativePath(@"a", @"."));
 			Assert.AreEqual(@"..\b", FileUtility.GetRelativePath(@"a", @"b"));
 //			Assert.AreEqual(@"..\..", FileUtility.GetRelativePath(@"a", @".."));
+			
+			// Getting a path from an absolute path to a relative path isn't really possible;
+			// so we just keep the existing relative path (don't introduce incorrect '..\').
+			Assert.AreEqual(@"def", FileUtility.GetRelativePath(@"C:\abc", @"def"));
 		}
 		
 		[Test]
