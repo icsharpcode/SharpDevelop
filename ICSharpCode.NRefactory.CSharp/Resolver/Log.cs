@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	{
 		const bool logEnabled = false;
 #if __MonoCS__
-		[Conditional("DEBUG")]
+		[Conditional("MCS_DEBUG")]
 #else
 		[Conditional(logEnabled ? "DEBUG" : "LOG_DISABLED")]
 #endif
@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 #if __MonoCS__
-		[Conditional("DEBUG")]
+		[Conditional("MCS_DEBUG")]
 #else
 		[Conditional(logEnabled ? "DEBUG" : "LOG_DISABLED")]
 #endif
@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 #if __MonoCS__
-		[Conditional("DEBUG")]
+		[Conditional("MCS_DEBUG")]
 #else
 		[Conditional(logEnabled ? "DEBUG" : "LOG_DISABLED")]
 #endif
@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 #if __MonoCS__
-		[Conditional("DEBUG")]
+		[Conditional("MCS_DEBUG")]
 #else
 		[Conditional(logEnabled ? "DEBUG" : "LOG_DISABLED")]
 #endif
@@ -82,7 +82,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 #if __MonoCS__
-		[Conditional("DEBUG")]
+		[Conditional("MCS_DEBUG")]
 #else
 		[Conditional(logEnabled ? "DEBUG" : "LOG_DISABLED")]
 #endif
