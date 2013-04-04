@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
@@ -35,36 +34,34 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 	public class RedundantNullCheckTests : InspectionActionTestBase
 	{
 		[Test]
-		public void TestInspectorCase1 ()
+		public void TestInspectorCase1()
 		{
 			var input = @"using System;class Test {public void test(){int a = 0;if(a is int && a != null){a = 1;}}}";
 
 			TestRefactoringContext context;
-			var issues = GetIssues (new RedundantNullCheckIssue(), input, out context);
-			Assert.AreEqual (1, issues.Count);
+			var issues = GetIssues(new RedundantNullCheckIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
 
 			
-			CheckFix (context, issues, @"using System;class Test {public void test(){int a = 0;
+			CheckFix(context, issues, @"using System;class Test {public void test(){int a = 0;
 		if (a is int) {
 			a = 1;
 		}}}");
 		}
 
-        [Test]
-        public void TestInspectorCase2()
-        {
+		[Test]
+		public void TestInspectorCase2()
+		{
 			var input = @"using System;class Test {public void test(){int a = 0;while(a != null && a is int){a = 1;}}}";
 
 
-            TestRefactoringContext context;
+			TestRefactoringContext context;
 			var issues = GetIssues(new RedundantNullCheckIssue(), input, out context);
-            Assert.AreEqual (1, issues.Count);
-
-
+			Assert.AreEqual(1, issues.Count);
 			CheckFix(context, issues, @"using System;class Test {public void test(){int a = 0;
 		while (a is int) {
 			a = 1;
 		}}}");
-        }
+		}
 	}
 }

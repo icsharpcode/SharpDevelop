@@ -2,7 +2,7 @@
 // RedundantToStringIssue.cs
 //
 // Author:
-//       Ji Kun <jikun.nus@gmail.com>
+//	   Ji Kun <jikun.nus@gmail.com>
 //
 // Copyright (c) 2013 Ji Kun
 //
@@ -22,9 +22,7 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-
-using System;
+// THE SOFTWARE.using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.PatternMatching;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -42,34 +40,31 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					  IssueMarker = IssueMarker.GrayOut)]
 	public class RedundantNullCheckIssue : ICodeIssueProvider
 	{
-	    private static readonly Pattern pattern1
-            = new Choice
-	    {
-	        //  x is Record && x!= null     
-	        new BinaryOperatorExpression(
-	            new IsExpression
-	                {
-	                    Expression = new AnyNode("a"),
-	                    Type = new AnyNode("t")
-	                }, BinaryOperatorType.ConditionalAnd,
-	            PatternHelper.CommutativeOperator(new Backreference("a"),
-	                                                BinaryOperatorType.
-	                                                    InEquality,
-	                                                new NullReferenceExpression
-	                                                    ())
-	            )
-	    };
-
-        private static readonly Pattern pattern2
-           = new Choice
-	    {
+		private static readonly Pattern pattern1
+			= new Choice {
+			//  x is Record && x!= null	 
+			new BinaryOperatorExpression(
+				new IsExpression
+					{
+						Expression = new AnyNode("a"),
+						Type = new AnyNode("t")
+					}, BinaryOperatorType.ConditionalAnd,
+				PatternHelper.CommutativeOperator(new Backreference("a"),
+													BinaryOperatorType.
+														InEquality,
+													new NullReferenceExpression
+														())
+				)
+		};
+		private static readonly Pattern pattern2
+		   = new Choice {
 			//  x != null && x is Record
-            new BinaryOperatorExpression (
-                PatternHelper.CommutativeOperator (new AnyNode("a"), 
-                                                        BinaryOperatorType.InEquality, 
-                                                    new NullReferenceExpression())			
+			new BinaryOperatorExpression (
+				PatternHelper.CommutativeOperator (new AnyNode("a"), 
+														BinaryOperatorType.InEquality, 
+													new NullReferenceExpression())			
 				, BinaryOperatorType.ConditionalAnd,
-		        new IsExpression {
+				new IsExpression {
 					Expression = new Backreference("a"),
 					Type = new AnyNode("t")
 				}
@@ -81,40 +76,34 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context).GetIssues();
 		}
 
-        class GatherVisitor : GatherVisitorBase<RedundantNullCheckIssue>
+		class GatherVisitor : GatherVisitorBase<RedundantNullCheckIssue>
 		{
-            public GatherVisitor(BaseRefactoringContext ctx)
-                : base(ctx)
-            {
-            }
+			public GatherVisitor(BaseRefactoringContext ctx)
+				: base(ctx)
+			{
+			}
 
-            public override void VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression)
-            {
-                base.VisitBinaryOperatorExpression(binaryOperatorExpression);
-                Match m1 = pattern1.Match(binaryOperatorExpression);
-                if (m1.Success)
-                {
-                    AddIssue(binaryOperatorExpression, ctx.TranslateString("Remove redundant IsNULL check"), script =>
-                    {
-                        Expression expr = binaryOperatorExpression.Left;
-                        script.Replace(binaryOperatorExpression, expr);
-                    });
-                    return;
-                }
+			public override void VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression)
+			{
+				base.VisitBinaryOperatorExpression(binaryOperatorExpression);
+				Match m1 = pattern1.Match(binaryOperatorExpression);
+				if (m1.Success) {
+					AddIssue(binaryOperatorExpression, ctx.TranslateString("Remove redundant IsNULL check"), script => {
+						Expression expr = binaryOperatorExpression.Left;
+						script.Replace(binaryOperatorExpression, expr);
+					});
+					return;
+				}
 
-                Match m2 = pattern2.Match(binaryOperatorExpression);
-                if (m2.Success)
-                {
-                    AddIssue(binaryOperatorExpression, ctx.TranslateString("Remove redundant IsNULL check"), script =>
-                    {
-                        Expression expr = binaryOperatorExpression.Right;
-                        script.Replace(binaryOperatorExpression, expr);
-                    });
-                    return;
-                }
-
-            }
-
+				Match m2 = pattern2.Match(binaryOperatorExpression);
+				if (m2.Success) {
+					AddIssue(binaryOperatorExpression, ctx.TranslateString("Remove redundant IsNULL check"), script => {
+						Expression expr = binaryOperatorExpression.Right;
+						script.Replace(binaryOperatorExpression, expr);
+					});
+					return;
+				}
+			}
 		}
 	}
 }
