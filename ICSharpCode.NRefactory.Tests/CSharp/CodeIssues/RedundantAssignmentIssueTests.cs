@@ -434,5 +434,32 @@ class TestClass
 }";
 			Test<RedundantAssignmentIssue>(input, output);
 		}
+
+        [Test]
+        public void TestAssignmentWithFunctionUsedLater()
+        {
+            var input = @"using System;
+class TestClass
+{
+	TestClass  Func () { return null; }
+	void TestMethod ()
+	{
+		var a = Func ();
+        a = 2;
+	}
+}";
+            var output = @"using System;
+class TestClass
+{
+	TestClass  Func () { return null; }
+	void TestMethod ()
+	{
+		TestClass a;
+		Func ();
+        a = 2;
+	}
+}";
+            Test<RedundantAssignmentIssue>(input, 2, output, 0);
+        }
 	}
 }
