@@ -54,7 +54,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		{
 			var input = @"using System;class Test {public void test(){int a = 0;while(a != null && a is int){a = 1;}}}";
 
-
 			TestRefactoringContext context;
 			var issues = GetIssues(new RedundantNullCheckIssue(), input, out context);
 			Assert.AreEqual(1, issues.Count);
@@ -62,6 +61,64 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		while (a is int) {
 			a = 1;
 		}}}");
+		}
+
+		[Ignore("Missing")]
+		[Test]
+		public void TestCaseWithFullParens()
+		{
+			var input = 
+				@"using System;
+class TestClass
+{
+	public void Test(object o)
+	{
+		if (!((o is int) && (o != null))) {
+		}
+	}
+}";
+
+			TestRefactoringContext context;
+			var issues = GetIssues(new RedundantNullCheckIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			CheckFix(context, issues, @"using System;
+class TestClass
+{
+	public void Test(object o)
+	{
+		if (!(o is int)) {
+		}
+	}
+}");
+		}
+
+		[Ignore("Extended version")]
+		[Test]
+		public void TestNegatedCase()
+		{
+			var input = 
+				@"using System;
+class TestClass
+{
+	public void Test(object o)
+	{
+		if (null == o || !(o is int)) {
+		}
+	}
+}";
+
+			TestRefactoringContext context;
+			var issues = GetIssues(new RedundantNullCheckIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			CheckFix(context, issues, @"using System;
+class TestClass
+{
+	public void Test(object o)
+	{
+		if (!(o is int)) {
+		}
+	}
+}");
 		}
 	}
 }
