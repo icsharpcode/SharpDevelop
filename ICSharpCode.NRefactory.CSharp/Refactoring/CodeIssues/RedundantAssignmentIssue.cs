@@ -25,7 +25,9 @@
 // THE SOFTWARE.
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -170,8 +172,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				private bool foundInvocations;
 				private string _varName;
 
-				public bool ContainsRefOrOut(VariableInitializer variableInitializer)
-				{
+				public bool ContainsRefOrOut(VariableInitializer variableInitializer) 
+                {
 					var node = variableInitializer.Parent.Parent;
 					foundInvocations = false;
 					_varName = variableInitializer.Name;
@@ -179,8 +181,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return foundInvocations;
 				}
 
-				protected override void VisitChildren(AstNode node)
-				{
+				protected override void VisitChildren(AstNode node) 
+                {
 					AstNode next;
 					for (var child = node.FirstChild; child != null && !foundInvocations; child = next) {
 						next = child.NextSibling;
@@ -211,6 +213,37 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 
+            class SearchAssignmentForVarVisitor : DepthFirstAstVisitor
+            {
+                bool _foundInvocations;
+                private VariableInitializer _variableInitializer;
+
+                public bool ContainsLaterAssignments(VariableInitializer variableInitializer) {
+                    _foundInvocations = false;
+                    _variableInitializer = variableInitializer;
+                    variableInitializer.Parent.Parent.AcceptVisitor(this);
+                    return _foundInvocations;
+                }
+
+                protected override void VisitChildren(AstNode node) {
+                    AstNode next;
+                    for (var child = node.FirstChild; child != null && !_foundInvocations; child = next) {
+                        next = child.NextSibling;
+                        child.AcceptVisitor(this);
+                    }
+                }
+                public override void VisitAssignmentExpression(AssignmentExpression assignmentExpression)
+                {
+                    if (_foundInvocations)
+                        return;
+                    base.VisitAssignmentExpression(assignmentExpression);
+                    if (assignmentExpression.Left.ToString() == _variableInitializer.Name
+                        && assignmentExpression.StartLocation > _variableInitializer.StartLocation) {
+                        _foundInvocations = true;
+                    }
+                }
+            }
+
 			void AddIssue(AstNode node)
 			{
 				var title = ctx.TranslateString("Remove redundant assignment");
@@ -220,31 +253,52 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var containsInvocations =
 						new SearchInvocationsVisitor().ContainsInvocations(variableInitializer.Initializer);
 
+                    var varDecl = node.Parent as VariableDeclarationStatement;
 
-					var isDeclareStatement = node.Parent is VariableDeclarationStatement;
-					if (containsInvocations) {
-						if (!isDeclareStatement)
-							return;
-					}
+                    var isDeclareStatement = varDecl != null;
+                    var isUsingVar = isDeclareStatement && (varDecl.Type.ToString() == "var");
+
+                    var expressionType = ctx.Resolve(node).Type;
+
+                    var containsLaterAssignments = false;
+                    if (isDeclareStatement) {
+                        //if it is used later, the redundant removal should remove the assignment 
+                        //but not the variable
+                        containsLaterAssignments =
+                            new SearchAssignmentForVarVisitor().ContainsLaterAssignments(variableInitializer);
+                    }
+
 					AddIssue(variableInitializer.Initializer, title,
-					         script =>
-					{
+					         script => {
 						var variableNode = (VariableInitializer)node;
 						if (containsInvocations && isDeclareStatement) {
 							//add the column ';' that will be removed after the next line replacement
 							var expression = (InvocationExpression)variableNode.Initializer.Clone();
 							var invocation = new ExpressionStatement(expression);
-							script.Replace(node.Parent, invocation);
+						    if(containsLaterAssignments && varDecl !=null) {
+                                var clonedDefinition = (VariableDeclarationStatement)varDecl.Clone();
+
+                                var shortExpressionType = CreateShortType(ctx, expressionType, node);
+                                clonedDefinition.Type = shortExpressionType;
+						        var variableNodeClone = clonedDefinition.GetVariable(variableNode.Name);
+                                variableNodeClone.Initializer = null;
+                                script.InsertBefore(node.Parent, clonedDefinition);
+						    }
+						    script.Replace(node.Parent, invocation);
 							return;
 						}
 						var containsRefOrOut =
 							new SearchRefOrOutVisitor().ContainsRefOrOut(variableInitializer);
-						if (isDeclareStatement && !containsRefOrOut) {
-							script.Remove(node.Parent);
-							return;
-						}
+                        if (isDeclareStatement && !containsRefOrOut && !containsLaterAssignments) {
+                            script.Remove(node.Parent);
+                            return;
+                        }
 						var replacement = (VariableInitializer)variableNode.Clone();
 						replacement.Initializer = Expression.Null;
+                        if(isUsingVar) {
+                            var shortExpressionType = CreateShortType(ctx, expressionType, node);
+                            script.Replace(varDecl.Type, shortExpressionType);
+                        }
 						script.Replace(node, replacement);
 					});
 				}
@@ -260,7 +314,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 
-			static bool IsAssignment(AstNode node)
+		    private static AstType CreateShortType(BaseRefactoringContext refactoringContext, IType expressionType, AstNode node) {
+
+                var csResolver = refactoringContext.Resolver.GetResolverStateBefore(node);
+                var builder = new TypeSystemAstBuilder(csResolver);
+                return builder.ConvertType(expressionType);
+		    }
+
+		    static bool IsAssignment(AstNode node)
 			{
 				if (node is VariableInitializer)
 					return true;
