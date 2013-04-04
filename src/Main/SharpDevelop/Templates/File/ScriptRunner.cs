@@ -11,7 +11,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop.Internal.Templates
+namespace ICSharpCode.SharpDevelop.Templates
 {
 	internal class ScriptRunner
 	{

@@ -4,9 +4,10 @@
 using System;
 using System.IO;
 using System.Xml;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Templates;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -36,11 +37,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		private void Initialize()
 		{
-			foreach (TextTemplate template in TextTemplate.TextTemplates) {
+			foreach (TextTemplateGroup template in SD.Templates.TextTemplates) {
 				SideTab tab = new SideTab(this, template.Name);
 				tab.DisplayName = StringParser.Parse(tab.Name);
 				tab.CanSaved  = false;
-				foreach (TextTemplate.Entry entry in template.Entries)  {
+				foreach (TextTemplate entry in template.Entries)  {
 					tab.Items.Add(SideTabItemFactory.CreateSideTabItem(entry.Display, entry.Value));
 				}
 				tab.CanBeDeleted = tab.CanDragDrop = false;

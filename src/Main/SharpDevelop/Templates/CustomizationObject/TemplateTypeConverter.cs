@@ -6,9 +6,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
 
-using ICSharpCode.SharpDevelop.Internal.Templates;
-
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Templates
 {
 	internal class CustomTypeConverter : TypeConverter
 	{

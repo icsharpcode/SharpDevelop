@@ -13,7 +13,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Templates;
 
-namespace ICSharpCode.SharpDevelop.Internal.Templates
+namespace ICSharpCode.SharpDevelop.Templates
 {
 	/// <summary>
 	/// This class defines and holds the new project templates.

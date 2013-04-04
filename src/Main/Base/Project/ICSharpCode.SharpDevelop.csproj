@@ -213,7 +213,7 @@
       <DependentUpon>FontSelector.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\StringParserPropertyContainer.cs" />
+    <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\BooleanTypeConverter.cs" />
     <Compile Include="Src\Gui\Components\SideBar\TextEditorSideBar.cs" />
     <Compile Include="Src\Gui\Components\StringListEditorDialog.xaml.cs" />
     <Compile Include="Src\Gui\Components\StringListEditorXaml.xaml.cs">
@@ -234,6 +234,8 @@
       <DependentUpon>OutputWindowOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Internal\Templates\StringParserPropertyContainer.cs" />
+    <Compile Include="Src\Internal\Templates\TemplateCategoryComparer.cs" />
     <Compile Include="Src\Project\MSBuildConfigurationOrPlatformNameCollection.cs" />
     <Compile Include="Templates\FileTemplate.cs" />
     <Compile Include="Templates\FileTemplateOptions.cs" />
@@ -244,6 +246,7 @@
     <Compile Include="Templates\ProjectTemplateResult.cs" />
     <Compile Include="Templates\TemplateBase.cs" />
     <Compile Include="Templates\TemplateLoadException.cs" />
+    <Compile Include="Templates\TextTemplate.cs" />
     <Compile Include="Util\AtomicBoolean.cs" />
     <Compile Include="Util\ChrootFileSystem.cs" />
     <Compile Include="Util\ComparerExtensions.cs" />
@@ -465,10 +468,6 @@
     <Compile Include="Src\Internal\ConditionEvaluators\WriteableSolutionEvaluator.cs" />
     <Compile Include="Src\Internal\Doozers\IOptionPanel.cs" />
     <Compile Include="Src\Internal\ExternalTool\ExternalTool.cs" />
-    <Compile Include="Src\Internal\Templates\Project\ProjectTemplate.cs" />
-    <Compile Include="Src\Internal\Templates\File\FileDescriptionTemplate.cs" />
-    <Compile Include="Src\Internal\Templates\File\FileTemplate.cs" />
-    <Compile Include="Src\Internal\Templates\TextTemplate.cs" />
     <Compile Include="Src\Project\BeforeBuildCustomToolFileNameFilter.cs" />
     <Compile Include="Src\Project\BeforeBuildCustomToolProjectItems.cs" />
     <Compile Include="Src\Project\BeforeBuildCustomToolRunner.cs" />
@@ -549,8 +548,6 @@
     <Compile Include="Src\Internal\ConditionEvaluators\ProjectActiveEvaluator.cs" />
     <Compile Include="Src\Services\AmbienceService\AmbienceService.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WindowOpenEvaluator.cs" />
-    <Compile Include="Src\Internal\Templates\Project\ProjectDescriptor.cs" />
-    <Compile Include="Src\Internal\Templates\Project\SolutionDescriptor.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\IEditable.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\IPositionable.cs" />
     <Compile Include="Src\Commands\EditCommands.cs" />
@@ -634,12 +631,7 @@
     <Compile Include="Src\Internal\ConditionEvaluators\ActiveViewContentUntitledEvaluator.cs" />
     <Compile Include="Src\Services\Debugger\DebuggerService.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\CompilerMessageView.cs" />
-    <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\LocalizedTypeDescriptor.cs" />
-    <Compile Include="Src\Internal\Templates\File\ScriptRunner.cs" />
-    <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\CustomTypeConverter\BooleanTypeConverter.cs" />
-    <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\CustomTypeConverter\TemplateTypeConverter.cs" />
     <Compile Include="Src\Internal\Templates\StandardHeaders.cs" />
-    <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\LocalizedProperty.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\IsProcessRunningEvaluator.cs" />
     <Compile Include="Src\Internal\Doozers\PadDoozer.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\MessageViewCategory.cs" />
@@ -774,7 +766,6 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\WebReferenceNode.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\WebReferenceChanges.cs" />
     <Compile Include="Src\Project\Converter\LanguageConverter.cs" />
-    <Compile Include="Src\Gui\Dialogs\TemplateCategoryComparer.cs" />
     <Compile Include="Src\Internal\Templates\TemplateCategorySortOrderFile.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\HttpAuthenticationHeader.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\UserCredentialsDialog.cs" />

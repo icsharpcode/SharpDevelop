@@ -8,7 +8,6 @@ using System.Linq;
 using System.Xml;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Templates
 {
@@ -16,30 +15,43 @@ namespace ICSharpCode.SharpDevelop.Templates
 	{
 		const string TemplatePath = "/SharpDevelop/BackendBindings/Templates";
 		
-		Lazy<IReadOnlyList<TemplateBase>> allTemplates;
+		Lazy<IReadOnlyList<TemplateBase>> projectAndFileTemplates;
+		Lazy<IReadOnlyList<TextTemplateGroup>> textTemplates;
 		
 		public TemplateService()
 		{
-			allTemplates = new Lazy<IReadOnlyList<TemplateBase>>(LoadTemplates);
+			projectAndFileTemplates = new Lazy<IReadOnlyList<TemplateBase>>(LoadProjectAndFileTemplates);
 		}
 		
 		public IEnumerable<FileTemplate> FileTemplates {
-			get { return allTemplates.Value.OfType<FileTemplate>(); }
+			get { return projectAndFileTemplates.Value.OfType<FileTemplate>(); }
 		}
 		
 		public IEnumerable<ProjectTemplate> ProjectTemplates {
-			get { return allTemplates.Value.OfType<ProjectTemplate>(); }
+			get { return projectAndFileTemplates.Value.OfType<ProjectTemplate>(); }
 		}
 		
 		public void UpdateTemplates()
 		{
-			var newTemplates = LoadTemplates();
-			allTemplates = new Lazy<IReadOnlyList<TemplateBase>>(() => newTemplates);
+			var newTemplates = LoadProjectAndFileTemplates();
+			projectAndFileTemplates = new Lazy<IReadOnlyList<TemplateBase>>(() => newTemplates);
 		}
 		
-		IReadOnlyList<TemplateBase> LoadTemplates()
+		IReadOnlyList<TemplateBase> LoadProjectAndFileTemplates()
 		{
 			return SD.AddInTree.BuildItems<TemplateBase>(TemplatePath, this, false);
+		}
+		
+		public IEnumerable<TextTemplateGroup> TextTemplates {
+			get { return textTemplates.Value; }
+		}
+		
+		IReadOnlyList<TextTemplateGroup> LoadTextTemplates()
+		{
+			var dir = PropertyService.DataDirectory.Combine(DirectoryName.Create("options/textlib"));
+			return SD.FileSystem.GetFiles(dir, "*.xml")
+				.Select(file => TextTemplateGroup.Load(file))
+				.ToList();
 		}
 		
 		public TemplateBase LoadTemplate(FileName fileName)

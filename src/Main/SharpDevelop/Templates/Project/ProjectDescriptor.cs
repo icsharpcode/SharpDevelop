@@ -14,11 +14,10 @@ using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Templates;
 using Microsoft.Build.Exceptions;
 using Import = System.Collections.Generic.KeyValuePair<string, string>;
 
-namespace ICSharpCode.SharpDevelop.Internal.Templates
+namespace ICSharpCode.SharpDevelop.Templates
 {
 	/// <summary>
 	/// This class is used inside the solution templates for projects.

@@ -262,11 +262,92 @@ namespace ICSharpCode.SharpDevelop
 			return result;
 		}
 		
-		public static IEnumerable<T> DistinctBy<T, K>(this IEnumerable<T> input, Func<T, K> keySelector)
+		public static IEnumerable<T> DistinctBy<T, K>(this IEnumerable<T> source, Func<T, K> keySelector) where K : IEquatable<K>
 		{
-			return input.Distinct(KeyComparer.Create(keySelector));
+			// Don't just use .Distinct(KeyComparer.Create(keySelector)) - that would evaluate the keySelector multiple times.
+			var hashSet = new HashSet<K>();
+			foreach (var element in source) {
+				if (hashSet.Add(keySelector(element))) {
+					yield return element;
+				}
+			}
 		}
 		
+		/// <summary>
+		/// Returns the minimum element.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">The input sequence is empty</exception>
+		public static T MinBy<T, K>(this IEnumerable<T> source, Func<T, K> keySelector) where K : IComparable<K>
+		{
+			return source.MinBy(keySelector, Comparer<K>.Default);
+		}
+
+		/// <summary>
+		/// Returns the minimum element.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">The input sequence is empty</exception>
+		public static T MinBy<T, K>(this IEnumerable<T> source, Func<T, K> keySelector, IComparer<K> keyComparer)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+			if (keySelector == null)
+				throw new ArgumentNullException("selector");
+			if (keyComparer == null)
+				keyComparer = Comparer<K>.Default;
+			using (var enumerator = source.GetEnumerator()) {
+				if (!enumerator.MoveNext())
+					throw new InvalidOperationException("Sequence contains no elements");
+				T minElement = enumerator.Current;
+				K minKey = keySelector(minElement);
+				while (enumerator.MoveNext()) {
+					T element = enumerator.Current;
+					K key = keySelector(element);
+					if (keyComparer.Compare(key, minKey) < 0) {
+						minElement = element;
+						minKey = key;
+					}
+				}
+				return minElement;
+			}
+		}
+		
+		/// <summary>
+		/// Returns the maximum element.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">The input sequence is empty</exception>
+		public static T MaxBy<T, K>(this IEnumerable<T> source, Func<T, K> keySelector) where K : IComparable<K>
+		{
+			return source.MaxBy(keySelector, Comparer<K>.Default);
+		}
+
+		/// <summary>
+		/// Returns the maximum element.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">The input sequence is empty</exception>
+		public static T MaxBy<T, K>(this IEnumerable<T> source, Func<T, K> keySelector, IComparer<K> keyComparer)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+			if (keySelector == null)
+				throw new ArgumentNullException("selector");
+			if (keyComparer == null)
+				keyComparer = Comparer<K>.Default;
+			using (var enumerator = source.GetEnumerator()) {
+				if (!enumerator.MoveNext())
+					throw new InvalidOperationException("Sequence contains no elements");
+				T maxElement = enumerator.Current;
+				K maxKey = keySelector(maxElement);
+				while (enumerator.MoveNext()) {
+					T element = enumerator.Current;
+					K key = keySelector(element);
+					if (keyComparer.Compare(key, maxKey) > 0) {
+						maxElement = element;
+						maxKey = key;
+					}
+				}
+				return maxElement;
+			}
+		}
 		
 		/// <summary>
 		/// Returns the index of the first element for which <paramref name="predicate"/> returns true.

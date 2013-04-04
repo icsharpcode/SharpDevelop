@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;

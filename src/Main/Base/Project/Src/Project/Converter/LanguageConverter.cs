@@ -12,7 +12,6 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project.Commands;
 using Microsoft.Build.Construction;
 

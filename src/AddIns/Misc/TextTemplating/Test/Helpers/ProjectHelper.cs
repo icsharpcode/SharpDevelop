@@ -3,7 +3,6 @@
 
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Evaluation;
 using Rhino.Mocks;

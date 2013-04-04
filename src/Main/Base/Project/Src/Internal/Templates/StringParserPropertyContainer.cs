@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Templates
 {
 	/// <summary>
 	/// Contains values for localized properties.

@@ -27,6 +27,11 @@ namespace ICSharpCode.SharpDevelop.Templates
 		void UpdateTemplates();
 		
 		/// <summary>
+		/// Gets the list of text templates.
+		/// </summary>
+		IEnumerable<TextTemplateGroup> TextTemplates { get; }
+		
+		/// <summary>
 		/// Loads a file template (.xft or .xpt file) from disk.
 		/// </summary>
 		/// <returns><see cref="FileTemplate"/> or <see cref="ProjectTemplate"/> instance.</returns>

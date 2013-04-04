@@ -9,7 +9,6 @@ using System.Xml;
 using ICSharpCode.CodeCoverage;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using Rhino.Mocks;

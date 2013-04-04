@@ -8,7 +8,6 @@ using System.IO;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Templates;
 
 namespace ICSharpCode.SharpDevelop.Project.Commands

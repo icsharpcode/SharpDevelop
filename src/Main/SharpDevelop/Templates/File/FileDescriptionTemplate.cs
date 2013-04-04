@@ -9,9 +9,8 @@ using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Templates;
 
-namespace ICSharpCode.SharpDevelop.Internal.Templates
+namespace ICSharpCode.SharpDevelop.Templates
 {
 	internal class FileDescriptionTemplate
 	{

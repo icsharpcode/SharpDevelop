@@ -3,9 +3,8 @@
 
 using System;
 using System.Collections;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Templates
 {
 	public interface ICategory
 	{

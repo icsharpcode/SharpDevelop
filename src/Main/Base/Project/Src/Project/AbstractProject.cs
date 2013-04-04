@@ -19,7 +19,6 @@ using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.SharpDevelop.Workbench;

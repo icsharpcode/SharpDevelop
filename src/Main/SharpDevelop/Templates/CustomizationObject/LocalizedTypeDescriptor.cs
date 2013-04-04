@@ -5,9 +5,9 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Templates
 {
-	public class LocalizedTypeDescriptor : ICustomTypeDescriptor
+	class LocalizedTypeDescriptor : ICustomTypeDescriptor
 	{
 		string    defaultProperty = null;
 		ArrayList properties      = new ArrayList();

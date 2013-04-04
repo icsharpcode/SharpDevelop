@@ -20,8 +20,6 @@ using ICSharpCode.SharpDevelop.Templates;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	using ICSharpCode.SharpDevelop.Internal.Templates;
-	
 	/// <summary>
 	///  This class is for creating a new "empty" file
 	/// </summary>

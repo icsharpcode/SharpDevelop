@@ -8,7 +8,7 @@ using System.Xml;
 
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop.Internal.Templates
+namespace ICSharpCode.SharpDevelop.Templates
 {
 	/// <summary>
 	/// File that defines the sort order for the file and project template 

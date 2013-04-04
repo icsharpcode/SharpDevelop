@@ -5,7 +5,7 @@ using System;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop.Templates;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {

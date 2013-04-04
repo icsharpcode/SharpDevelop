@@ -7,7 +7,6 @@ using System.Windows.Input;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Templates;
 using NUnit.Framework;

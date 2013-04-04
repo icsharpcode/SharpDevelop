@@ -8,7 +8,6 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Commands;
 using ICSharpCode.SharpDevelop.Project.Dialogs;
@@ -32,6 +31,9 @@ namespace ICSharpCode.SharpDevelop
 		
 		public FileTemplateResult ShowNewFileDialog(IProject project, DirectoryName directory, IEnumerable<FileTemplate> templates)
 		{
+			#if DEBUG
+			SD.Templates.UpdateTemplates();
+			#endif
 			using (NewFileDialog nfd = new NewFileDialog(project, directory, templates ?? SD.Templates.FileTemplates)) {
 				if (nfd.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK)
 					return nfd.result;
@@ -42,6 +44,9 @@ namespace ICSharpCode.SharpDevelop
 		
 		public ProjectTemplateResult ShowNewProjectDialog(ISolutionFolder solutionFolder, IEnumerable<ProjectTemplate> templates)
 		{
+			#if DEBUG
+			SD.Templates.UpdateTemplates();
+			#endif
 			using (NewProjectDialog npdlg = new NewProjectDialog(createNewSolution: solutionFolder == null, projectTemplates: templates ?? SD.Templates.ProjectTemplates)) {
 				npdlg.SolutionFolder = solutionFolder;
 				if (solutionFolder != null) {
