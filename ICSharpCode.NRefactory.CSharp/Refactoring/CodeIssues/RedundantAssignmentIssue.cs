@@ -23,43 +23,42 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription ("Redundant assignment",
-					   Description = "Value assigned to a variable or parameter is not used in all execution path.",
-					   Category = IssueCategories.CodeQualityIssues,
-					   Severity = Severity.Warning,
-					   IssueMarker = IssueMarker.GrayOut)]
+	[IssueDescription("Redundant assignment",
+	                  Description = "Value assigned to a variable or parameter is not used in all execution path.",
+	                  Category = IssueCategories.CodeQualityIssues,
+	                  Severity = Severity.Warning,
+	                  IssueMarker = IssueMarker.GrayOut)]
 	public class RedundantAssignmentIssue : ICodeIssueProvider
 	{
-		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
+		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
 			var unit = context.RootNode as SyntaxTree;
 			if (unit == null)
-				return Enumerable.Empty<CodeIssue> ();
-			return new GatherVisitor (context).GetIssues ();
+				return Enumerable.Empty<CodeIssue>();
+			return new GatherVisitor(context).GetIssues();
 		}
 
 		class GatherVisitor : GatherVisitorBase<RedundantAssignmentIssue>
 		{
-			public GatherVisitor (BaseRefactoringContext ctx)
-				: base (ctx)
+			public GatherVisitor(BaseRefactoringContext ctx)
+				: base(ctx)
 			{
 			}
 
-			public override void VisitParameterDeclaration (ParameterDeclaration parameterDeclaration)
+			public override void VisitParameterDeclaration(ParameterDeclaration parameterDeclaration)
 			{
-				base.VisitParameterDeclaration (parameterDeclaration);
+				base.VisitParameterDeclaration(parameterDeclaration);
 				if (parameterDeclaration.ParameterModifier == ParameterModifier.Out ||
 					parameterDeclaration.ParameterModifier == ParameterModifier.Ref)
 					return;
 
-				var resolveResult = ctx.Resolve (parameterDeclaration) as LocalResolveResult;
+				var resolveResult = ctx.Resolve(parameterDeclaration) as LocalResolveResult;
 				BlockStatement rootStatement = null;
 				if (parameterDeclaration.Parent is MethodDeclaration) {
 					rootStatement = ((MethodDeclaration)parameterDeclaration.Parent).Body;
@@ -68,7 +67,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				} else if (parameterDeclaration.Parent is LambdaExpression) {
 					rootStatement = ((LambdaExpression)parameterDeclaration.Parent).Body as BlockStatement;
 				}
-				CollectIssues (parameterDeclaration, rootStatement, resolveResult);
+				CollectIssues(parameterDeclaration, rootStatement, resolveResult);
 			}
 
 			public override void VisitVariableInitializer(VariableInitializer variableInitializer)
@@ -85,20 +84,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public override void VisitUsingStatement(UsingStatement usingStatement)
 			{
 				inUsingStatementResourceAcquisition = true;
-				usingStatement.ResourceAcquisition.AcceptVisitor (this);
+				usingStatement.ResourceAcquisition.AcceptVisitor(this);
 				inUsingStatementResourceAcquisition = false;
-				usingStatement.EmbeddedStatement.AcceptVisitor (this);
+				usingStatement.EmbeddedStatement.AcceptVisitor(this);
 			}
 
-			void CollectIssues (AstNode variableDecl, BlockStatement rootStatement, LocalResolveResult resolveResult)
+			void CollectIssues(AstNode variableDecl, BlockStatement rootStatement, LocalResolveResult resolveResult)
 			{
 				if (rootStatement == null || resolveResult == null)
 					return;
 
-				var references = new HashSet<AstNode> ();
-				var refStatements = new HashSet<Statement> ();
+				var references = new HashSet<AstNode>();
+				var refStatements = new HashSet<Statement>();
 				var usedInLambda = false;
-				var results = ctx.FindReferences (rootStatement, resolveResult.Variable);
+				var results = ctx.FindReferences(rootStatement, resolveResult.Variable);
 				foreach (var result in results) {
 					var node = result.Node;
 					if (node == variableDecl)
@@ -112,8 +111,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 					var statement = parent as Statement;
 					if (statement != null) {
-						references.Add (node);
-						refStatements.Add (statement);
+						references.Add(node);
+						refStatements.Add(statement);
 					}
 
 					while (parent != null && parent != rootStatement) {
@@ -132,31 +131,31 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (usedInLambda)
 					return;
 
-				var startNode = new VariableReferenceGraphBuilder (ctx).Build (rootStatement, references, refStatements, ctx);
+				var startNode = new VariableReferenceGraphBuilder(ctx).Build(rootStatement, references, refStatements, ctx);
 				var variableInitializer = variableDecl as VariableInitializer;
 				if (variableInitializer != null && !variableInitializer.Initializer.IsNull)
-					startNode.References.Insert (0, variableInitializer);
+					startNode.References.Insert(0, variableInitializer);
 
-				ProcessNodes (startNode);
+				ProcessNodes(startNode);
 			}
 
-			class SearchInvocationsVisitor  : DepthFirstAstVisitor
+			class SearchInvocationsVisitor : DepthFirstAstVisitor
 			{
 				bool foundInvocations;
 
 				public bool ContainsInvocations(AstNode node)
 				{
 					foundInvocations = false;
-					node.AcceptVisitor (this);
+					node.AcceptVisitor(this);
 					return foundInvocations;
 				}
 
-				protected override void VisitChildren (AstNode node)
+				protected override void VisitChildren(AstNode node)
 				{
 					AstNode next;
 					for (var child = node.FirstChild; child != null && !foundInvocations; child = next) {
 						next = child.NextSibling;
-						child.AcceptVisitor (this);
+						child.AcceptVisitor(this);
 					}
 				}
 
@@ -166,34 +165,102 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 
-			void AddIssue (AstNode node)
+			private class SearchRefOrOutVisitor : DepthFirstAstVisitor
 			{
-				var title = ctx.TranslateString ("Remove redundant assignment");
+				private bool foundInvocations;
+				private string _varName;
+
+				public bool ContainsRefOrOut(VariableInitializer variableInitializer)
+				{
+					var node = variableInitializer.Parent.Parent;
+					foundInvocations = false;
+					_varName = variableInitializer.Name;
+					node.AcceptVisitor(this);
+					return foundInvocations;
+				}
+
+				protected override void VisitChildren(AstNode node)
+				{
+					AstNode next;
+					for (var child = node.FirstChild; child != null && !foundInvocations; child = next) {
+						next = child.NextSibling;
+						child.AcceptVisitor(this);
+					}
+				}
+
+				public override void VisitInvocationExpression(InvocationExpression methodDeclaration)
+				{
+					if (foundInvocations)
+						return;
+					if (methodDeclaration.Arguments.Count == 0)
+						return;
+					foreach (var argument in methodDeclaration.Arguments) {
+						var directionExpression = argument as DirectionExpression;
+						if (directionExpression == null)
+							continue;
+
+						if (directionExpression.FieldDirection != FieldDirection.Out && directionExpression.FieldDirection != FieldDirection.Ref)
+							continue;
+						var idExpression = (directionExpression.Expression) as IdentifierExpression;
+						if (idExpression == null)
+							continue;
+						foundInvocations = (idExpression.Identifier == _varName);
+
+						foundInvocations = true;
+					}
+				}
+			}
+
+			void AddIssue(AstNode node)
+			{
+				var title = ctx.TranslateString("Remove redundant assignment");
 
 				var variableInitializer = node as VariableInitializer;
 				if (variableInitializer != null) {
-					if (new SearchInvocationsVisitor ().ContainsInvocations (variableInitializer.Initializer))
-						return;
-					AddIssue (variableInitializer.Initializer, title,
-						script => {
-							var replacement = (VariableInitializer)node.Clone ();
-							replacement.Initializer = Expression.Null;
-							script.Replace (node, replacement);
-						});
+					var containsInvocations =
+						new SearchInvocationsVisitor().ContainsInvocations(variableInitializer.Initializer);
+
+
+					var isDeclareStatement = node.Parent is VariableDeclarationStatement;
+					if (containsInvocations) {
+						if (!isDeclareStatement)
+							return;
+					}
+					AddIssue(variableInitializer.Initializer, title,
+					         script =>
+					{
+						var variableNode = (VariableInitializer)node;
+						if (containsInvocations && isDeclareStatement) {
+							//add the column ';' that will be removed after the next line replacement
+							var expression = (InvocationExpression)variableNode.Initializer.Clone();
+							var invocation = new ExpressionStatement(expression);
+							script.Replace(node.Parent, invocation);
+							return;
+						}
+						var containsRefOrOut =
+							new SearchRefOrOutVisitor().ContainsRefOrOut(variableInitializer);
+						if (isDeclareStatement && !containsRefOrOut) {
+							script.Remove(node.Parent);
+							return;
+						}
+						var replacement = (VariableInitializer)variableNode.Clone();
+						replacement.Initializer = Expression.Null;
+						script.Replace(node, replacement);
+					});
 				}
 
 				var assignmentExpr = node.Parent as AssignmentExpression;
 				if (assignmentExpr == null)
 					return;
 				if (assignmentExpr.Parent is ExpressionStatement) {
-					AddIssue (assignmentExpr.Parent, title, script => script.Remove (assignmentExpr.Parent));
+					AddIssue(assignmentExpr.Parent, title, script => script.Remove(assignmentExpr.Parent));
 				} else {
-					AddIssue (assignmentExpr.Left.StartLocation, assignmentExpr.OperatorToken.EndLocation, title, 
-						script => script.Replace (assignmentExpr, assignmentExpr.Right.Clone ()));
+					AddIssue(assignmentExpr.Left.StartLocation, assignmentExpr.OperatorToken.EndLocation, title,
+					         script => script.Replace(assignmentExpr, assignmentExpr.Right.Clone()));
 				}
 			}
 
-			static bool IsAssignment (AstNode node)
+			static bool IsAssignment(AstNode node)
 			{
 				if (node is VariableInitializer)
 					return true;
@@ -209,76 +276,80 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return false;
 			}
 
-			static bool IsInsideTryBlock (AstNode node)
+			static bool IsInsideTryBlock(AstNode node)
 			{
-				var tryCatchStatement = node.GetParent<TryCatchStatement> ();
+				var tryCatchStatement = node.GetParent<TryCatchStatement>();
 				if (tryCatchStatement == null)
 					return false;
-				return tryCatchStatement.TryBlock.Contains (node.StartLocation.Line,node.StartLocation.Column);
+				return tryCatchStatement.TryBlock.Contains(node.StartLocation.Line, node.StartLocation.Column);
 			}
 
 			enum NodeState
 			{
-				None,
-				UsageReachable,
-				UsageUnreachable,
-				Processing,
+				None
+,
+				UsageReachable
+,
+				UsageUnreachable
+,
+				Processing
+,
 			}
 
-			void ProcessNodes (VariableReferenceNode startNode)
+			void ProcessNodes(VariableReferenceNode startNode)
 			{
 				// node state of a node indicates whether it is possible for an upstream node to reach any usage via
 				// the node
-				var nodeStates = new Dictionary<VariableReferenceNode, NodeState> ();
-				var assignments = new List<VariableReferenceNode> ();
+				var nodeStates = new Dictionary<VariableReferenceNode, NodeState>();
+				var assignments = new List<VariableReferenceNode>();
 
 				// dfs to preprocess all nodes and find nodes which end with assignment
-				var stack = new Stack<VariableReferenceNode> ();
-				stack.Push (startNode);
+				var stack = new Stack<VariableReferenceNode>();
+				stack.Push(startNode);
 				while (stack.Count > 0) {
-					var node = stack.Pop ();
+					var node = stack.Pop();
 					if (node.References.Count > 0) {
-						nodeStates [node] = IsAssignment (node.References [0]) ?
+						nodeStates [node] = IsAssignment(node.References [0]) ?
 							NodeState.UsageUnreachable : NodeState.UsageReachable;
 					} else {
 						nodeStates [node] = NodeState.None;
 					}
 
 					// find indices of all assignments in node.References
-					var assignmentIndices = new List<int> ();
+					var assignmentIndices = new List<int>();
 					for (int i = 0; i < node.References.Count; i++) {
-						if (IsAssignment (node.References [i]))
-							assignmentIndices.Add (i);
+						if (IsAssignment(node.References [i]))
+							assignmentIndices.Add(i);
 					}
 					// for two consecutive assignments, the first one is redundant
 					for (int i = 0; i < assignmentIndices.Count - 1; i++) {
 						var index1 = assignmentIndices [i];
 						var index2 = assignmentIndices [i + 1];
 						if (index1 + 1 == index2)
-							AddIssue (node.References [index1]);
+							AddIssue(node.References [index1]);
 					}
 					// if the node ends with an assignment, add it to assignments so as to check if it is redundant
 					// later
 					if (assignmentIndices.Count > 0 &&
 						assignmentIndices [assignmentIndices.Count - 1] == node.References.Count - 1)
-						assignments.Add (node);
+						assignments.Add(node);
 
 					foreach (var nextNode in node.NextNodes) {
-						if (!nodeStates.ContainsKey (nextNode))
-							stack.Push (nextNode);
+						if (!nodeStates.ContainsKey(nextNode))
+							stack.Push(nextNode);
 					}
 				}
 
 				foreach (var node in assignments) {
 					// we do not analyze an assignment inside a try block as it can jump to any catch block or finally block
-					if (IsInsideTryBlock(node.References[0]))
+					if (IsInsideTryBlock(node.References [0]))
 						continue;
 					ProcessNode(node, true, nodeStates);
 				}
 			}
 
-			void ProcessNode (VariableReferenceNode node, bool addIssue,
-				IDictionary<VariableReferenceNode, NodeState> nodeStates)
+			void ProcessNode(VariableReferenceNode node, bool addIssue,
+			                 IDictionary<VariableReferenceNode, NodeState> nodeStates)
 			{
 				if (nodeStates [node] == NodeState.None)
 					nodeStates [node] = NodeState.Processing;
@@ -286,7 +357,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				bool? reachable = false;
 				foreach (var nextNode in node.NextNodes) {
 					if (nodeStates [nextNode] == NodeState.None)
-						ProcessNode (nextNode, false, nodeStates);
+						ProcessNode(nextNode, false, nodeStates);
 
 					if (nodeStates [nextNode] == NodeState.UsageReachable) {
 						reachable = true;
@@ -300,9 +371,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 				// add issue if it is not possible to reach any usage via NextNodes
 				if (addIssue && reachable == false)
-					AddIssue (node.References [node.References.Count - 1]);
+					AddIssue(node.References [node.References.Count - 1]);
 
-				if (nodeStates [node] != NodeState.Processing) 
+				if (nodeStates [node] != NodeState.Processing)
 					return;
 
 				switch (reachable) {
