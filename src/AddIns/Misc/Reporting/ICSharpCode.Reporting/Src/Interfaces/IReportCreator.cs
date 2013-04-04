@@ -7,6 +7,8 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.Generic;
+using ICSharpCode.Reporting.BaseClasses;
 
 namespace ICSharpCode.Reporting.Interfaces
 {
@@ -16,6 +18,7 @@ namespace ICSharpCode.Reporting.Interfaces
 	public interface IReportCreator
 	{
 		void BuildExportList ();
+		List<IPage> Pages {get;}
 //		PagesCollection Pages{get;}
 //		event EventHandler<PageCreatedEventArgs> PageCreated;
 //		event EventHandler<SectionRenderEventArgs> SectionRendering;

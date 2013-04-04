@@ -15,6 +15,7 @@ using System.Xml;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
+using ICSharpCode.Reporting.PageBuilder;
 using ICSharpCode.Reporting.Xml;
 
 namespace ICSharpCode.Reporting
@@ -29,12 +30,13 @@ namespace ICSharpCode.Reporting
 		}
 		
 		
-		public IReportCreator CreatePageBuilder (Stream stream)
+		public IReportCreator ReportCreator (Stream stream)
 		{
 			IReportModel reportModel = LoadReportModel (stream);
 			IReportCreator builder = null;
 			if (reportModel.ReportSettings.DataModel == GlobalEnums.PushPullModel.FormSheet) {
 //				builder = FormPageBuilder.CreateInstance(reportModel);
+				builder =  new FormPageBuilder(reportModel);
 				Console.WriteLine("aaaaaaaaaaaaaaaaa");
 			}
 //			else {
@@ -43,7 +45,7 @@ namespace ICSharpCode.Reporting
 //				builder = DataPageBuilder.CreateInstance(reportModel, dataMan);
 //			}
 			return builder;
-			return null;
+//			return null;
 		}
 			
 		

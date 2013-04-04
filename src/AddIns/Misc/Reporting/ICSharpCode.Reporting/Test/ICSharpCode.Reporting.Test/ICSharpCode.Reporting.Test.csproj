@@ -61,11 +61,14 @@
     <Compile Include="src\Model\LoadPlainModelFixture.cs" />
     <Compile Include="src\Model\ReportModelFixture.cs" />
     <Compile Include="src\Model\ReportSettingsFixture.cs" />
+    <Compile Include="src\PageBuilder\PageBuilderFixture.cs" />
     <Compile Include="src\Properties\AssemblyInfo.cs" />
+    <Compile Include="src\TestHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src" />
     <Folder Include="src\Model" />
+    <Folder Include="src\PageBuilder" />
     <Folder Include="src\TestReports" />
   </ItemGroup>
   <ItemGroup>
