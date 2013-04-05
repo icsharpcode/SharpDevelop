@@ -47,18 +47,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			} while (currentLine != null && (currentLine.Length == 0 || currentLine[0] == '#'));
 		}
 		
-		InvalidProjectFileException Error()
-		{
-			return Error("${res:SharpDevelop.Solution.InvalidSolutionFile}");
-		}
-		
-		InvalidProjectFileException Error(string message, params object[] formatItems)
+		ProjectLoadException Error(string message, params object[] formatItems)
 		{
 			if (formatItems.Length > 0)
 				message = StringParser.Format(message, formatItems);
 			else
 				message = StringParser.Parse(message);
-			return new InvalidProjectFileException(fileName ?? string.Empty, lineNumber, 1, lineNumber, currentLine.Length + 1, message, string.Empty, string.Empty, string.Empty);
+			return new ProjectLoadException("Error reading from " + fileName + " at line " + lineNumber + ":" + Environment.NewLine + message);
 		}
 		
 		#region ReadSolution
@@ -93,8 +88,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			progress.CancellationToken.ThrowIfCancellationRequested();
 			
 			// Read global sections:
-			if (currentLine != "Global")
-				throw Error();
+			if (currentLine != "Global") {
+				if (currentLine == null)
+					throw Error("Unexpected end of file");
+				else
+					throw Error("Unknown line: " + currentLine);
+			}
 			NextLine();
 			
 			Dictionary<Guid, SolutionFolder> guidToParentFolderDict = null;
@@ -121,10 +120,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			if (currentLine != "EndGlobal")
-				throw Error();
+				throw Error("Expected 'EndGlobal'");
 			NextLine();
 			if (currentLine != null)
-				throw Error();
+				throw Error("Expected end of file");
 			
 			solution.LoadPreferences();
 			
@@ -162,9 +161,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public SolutionFormatVersion ReadFormatHeader()
 		{
+			if (currentLine == null) // can happen if the .sln is an empty file
+				throw Error("Solution file is empty");
 			Match match = versionPattern.Match(currentLine);
 			if (!match.Success)
-				throw Error();
+				throw Error("The file is not a valid solution file");
 			
 			SolutionFormatVersion version;
 			switch (match.Result("${Version}")) {
@@ -248,7 +249,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				loadInformation.ProjectSections.Add(section);
 			}
 			if (currentLine != "EndProject")
-				throw Error();
+				throw Error("Expected 'EndProject'");
 			NextLine();
 			return loadInformation;
 		}

@@ -169,7 +169,14 @@ namespace ICSharpCode.SharpDevelop.Project
 				Guid guid = Guid.Parse(dataObject.GetData(typeof(ISolutionItem).ToString()).ToString());
 				ISolutionItem solutionItem = folderNode.Solution.GetItemByGuid(guid);
 				if (solutionItem != null) {
-					folderNode.Folder.Items.Add(solutionItem);
+					// Use a batch update to move the item without causing projects
+					// be removed from the solution (and thus disposed).
+					using (solutionItem.ParentFolder.Items.BatchUpdate()) {
+						using (folderNode.Folder.Items.BatchUpdate()) {
+							solutionItem.ParentFolder.Items.Remove(solutionItem);
+							folderNode.Folder.Items.Add(solutionItem);
+						}
+					}
 					ExtTreeView treeView = (ExtTreeView)folderTreeNode.TreeView;
 					foreach (ExtTreeNode node in treeView.CutNodes) {
 						ExtTreeNode oldParent = node.Parent as ExtTreeNode;

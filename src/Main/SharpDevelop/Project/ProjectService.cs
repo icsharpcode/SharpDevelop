@@ -9,6 +9,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Workbench;
+using Microsoft.Build.Exceptions;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -136,6 +137,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (!CloseSolution(allowCancel: true))
 				return false;
 			FileUtility.ObservedLoad(OpenSolutionInternal, fileName);
+				
 			return currentSolution != null;
 		}
 		

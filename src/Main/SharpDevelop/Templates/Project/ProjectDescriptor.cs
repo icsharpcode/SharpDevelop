@@ -478,12 +478,13 @@ namespace ICSharpCode.SharpDevelop.Templates
 								
 							});
 					} catch (InvalidProjectFileException ex) {
+						string message;
 						if (string.IsNullOrEmpty(importsFailureMessage)) {
-							MessageService.ShowError("Error creating project:\n" + ex.Message);
+							message = "Error creating project:\n" + ex.Message;
 						} else {
-							MessageService.ShowError(importsFailureMessage + "\n\n" + ex.Message);
+							message = importsFailureMessage + "\n\n" + ex.Message;
 						}
-						return null;
+						throw new ProjectLoadException(message, ex);
 					}
 				}
 				

@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop
 	{
 		readonly IServiceProvider parentProvider;
 		readonly Dictionary<Type, object> services = new Dictionary<Type, object>();
-		readonly List<IDisposable> servicesToDispose = new List<IDisposable>();
+		readonly List<Type> servicesToDispose = new List<Type>();
 		readonly Dictionary<Type, object> taskCompletionSources = new Dictionary<Type, object>(); // object = TaskCompletionSource<T> for various T
 		
 		public SharpDevelopServiceContainer()
@@ -57,16 +57,27 @@ namespace ICSharpCode.SharpDevelop
 		public void Dispose()
 		{
 			var loggingService = SD.Log;
-			IDisposable[] disposables;
+			Type[] disposableTypes;
 			lock (services) {
-				disposables = servicesToDispose.ToArray();
-				services.Clear();
+				disposableTypes = servicesToDispose.ToArray();
+				//services.Clear();
 				servicesToDispose.Clear();
 			}
 			// dispose services in reverse order of their creation
-			foreach (IDisposable disposable in disposables.Reverse()) {
-				loggingService.Debug("Service shutdown: " + disposable.GetType());
-				disposable.Dispose();
+			for (int i = disposableTypes.Length - 1; i >= 0; i--) {
+				IDisposable disposable = null;
+				lock (services) {
+					object serviceInstance;
+					if (services.TryGetValue(disposableTypes[i], out serviceInstance)) {
+						disposable = serviceInstance as IDisposable;
+						if (disposable != null)
+							services.Remove(disposableTypes[i]);
+					}
+				}
+				if (disposable != null) {
+					loggingService.Debug("Service shutdown: " + disposableTypes[i]);
+					disposable.Dispose();
+				}
 			}
 		}
 		
@@ -74,7 +85,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			IDisposable disposableService = serviceInstance as IDisposable;
 			if (disposableService != null)
-				servicesToDispose.Add(disposableService);
+				servicesToDispose.Add(serviceType);
 			
 			dynamic taskCompletionSource;
 			if (taskCompletionSources.TryGetValue(serviceType, out taskCompletionSource)) {
@@ -111,7 +122,13 @@ namespace ICSharpCode.SharpDevelop
 		public void RemoveService(Type serviceType)
 		{
 			lock (services) {
-				services.Remove(serviceType);
+				object instance;
+				if (services.TryGetValue(serviceType, out instance)) {
+					services.Remove(serviceType);
+					IDisposable disposableInstance = instance as IDisposable;
+					if (disposableInstance != null)
+						servicesToDispose.Remove(serviceType);
+				}
 			}
 		}
 		

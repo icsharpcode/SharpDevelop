@@ -293,7 +293,10 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		{
 			try {
 				CreateProject();
-			} catch (InvalidProjectFileException ex) {
+			} catch (ProjectLoadException ex) {
+				LoggingService.Error("Unable to create new project.", ex);
+				MessageService.ShowError(ex.Message);
+			} catch (IOException ex) {
 				LoggingService.Error("Unable to create new project.", ex);
 				MessageService.ShowError(ex.Message);
 			}

@@ -47,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Loads an existing project from disk and adds it to this solution.
 		/// </summary>
 		/// <param name="fileName">Path to the project file</param>
-		/// <exception cref="InvalidProjectFileException">The specified file is not a valid project file</exception>
+		/// <exception cref="ProjectLoadException">The specified file is not a valid project file</exception>
 		/// <exception cref="IOException">Error reading from the specified project file</exception>
 		IProject AddExistingProject(FileName fileName);
 		

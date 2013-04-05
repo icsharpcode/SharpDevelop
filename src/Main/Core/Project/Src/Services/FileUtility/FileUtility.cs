@@ -668,6 +668,8 @@ namespace ICSharpCode.Core
 				return ObservedLoadHandleException(e, loadFile, fileName, message, policy);
 			}  catch (UnauthorizedAccessException e) {
 				return ObservedLoadHandleException(e, loadFile, fileName, message, policy);
+			} catch (FormatException e) {
+				return ObservedLoadHandleException(e, loadFile, fileName, message, policy);
 			}
 		}
 

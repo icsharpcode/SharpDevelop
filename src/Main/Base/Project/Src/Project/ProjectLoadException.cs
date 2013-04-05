@@ -10,7 +10,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// Exception used when loading of a project fails.
 	/// </summary>
 	[Serializable()]
-	public class ProjectLoadException : Exception
+	public class ProjectLoadException : FormatException
 	{
 		public ProjectLoadException() : base()
 		{

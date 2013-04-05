@@ -27,6 +27,16 @@ namespace ICSharpCode.SharpDevelop.Templates
 			get { return Enumerable.Empty<TargetFramework>(); }
 		}
 		
+		/// <summary>
+		/// Creates projects from the template; and adds them to the solution specified in the parameter object.
+		/// </summary>
+		/// <param name="options">Paramter object used to pass options for the template creation.</param>
+		/// <returns>
+		/// Returns a result object that describes the project that were created;
+		/// or null if the operation was aborted.
+		/// </returns>
+		/// <exception cref="IOException">Error writing the projects to disk</exception>
+		/// <exception cref="ProjectLoadException">Error creating the projects (e.g. a separate download is required for projects of this type [like the F# compiler])</exception>
 		public abstract ProjectTemplateResult CreateProjects(ProjectTemplateOptions options);
 		
 		internal ProjectTemplateResult CreateAndOpenSolution(ProjectTemplateOptions options, string solutionDirectory, string solutionName)
