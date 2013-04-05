@@ -36,7 +36,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public NewFileDialog(IProject project, DirectoryName basePath, IEnumerable<FileTemplate> fileTemplates)
 		{
-			StandardHeader.SetHeaders();
 			this.project = project;
 			this.basePath = basePath;
 			this.allowUntitledFiles = basePath == null;

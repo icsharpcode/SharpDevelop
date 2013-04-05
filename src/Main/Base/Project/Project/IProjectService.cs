@@ -86,6 +86,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Opens a solution in the IDE that was created/loaded earlier.
 		/// </summary>
+		/// <remarks>
+		/// The solution must be saved to disk before it can be opened.
+		/// </remarks>
 		bool OpenSolution(ISolution solution);
 		
 		/// <summary>

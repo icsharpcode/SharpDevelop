@@ -32,17 +32,26 @@ namespace ICSharpCode.SharpDevelop.Templates
 		internal ProjectTemplateResult CreateAndOpenSolution(ProjectTemplateOptions options, string solutionDirectory, string solutionName)
 		{
 			FileName solutionFileName = FileName.Create(Path.Combine(solutionDirectory, solutionName + ".sln"));
+			bool solutionOpened = false;
 			ISolution createdSolution = SD.ProjectService.CreateEmptySolutionFile(solutionFileName);
-			options.Solution = createdSolution;
-			options.SolutionFolder = createdSolution;
-			var result = CreateProjects(options);
-			if (result == null || !SD.ProjectService.OpenSolution(createdSolution)) {
-				createdSolution.Dispose();
-				return null;
-			} else {
-				createdSolution.Save();
-				SD.GetRequiredService<IProjectServiceRaiseEvents>().RaiseSolutionCreated(new SolutionEventArgs(createdSolution));
-				return result;
+			try {
+				options.Solution = createdSolution;
+				options.SolutionFolder = createdSolution;
+				var result = CreateProjects(options);
+				if (result == null) {
+					return null;
+				}
+				createdSolution.Save(); // solution must be saved before it can be opened
+				if (SD.ProjectService.OpenSolution(createdSolution)) {
+					solutionOpened = true;
+					SD.GetRequiredService<IProjectServiceRaiseEvents>().RaiseSolutionCreated(new SolutionEventArgs(createdSolution));
+					return result;
+				} else {
+					return null;
+				}
+			} finally {
+				if (!solutionOpened)
+					createdSolution.Dispose();
 			}
 		}
 		

@@ -255,6 +255,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 		public override ProjectTemplateResult CreateProjects(ProjectTemplateOptions options)
 		{
 			var result = new ProjectTemplateResult(options);
+			StandardHeader.SetHeaders();
 			if (solutionDescriptor != null) {
 				if (!solutionDescriptor.AddContents(options.SolutionFolder, result, languagename))
 					return null;

@@ -13,7 +13,8 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
-	/// File service.
+	/// Manages the list files opened by view contents so that multiple view contents opening the same file can synchronize.
+	/// Also provides events that can be used to listen to file operations performed in the IDE.
 	/// </summary>
 	[SDService("SD.FileService")]
 	public interface IFileService

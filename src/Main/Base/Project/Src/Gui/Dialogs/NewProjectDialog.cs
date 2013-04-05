@@ -275,13 +275,13 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			if (name.Length == 0 || !char.IsLetter(name[0]) && name[0] != '_') {
 				return "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.ProjectNameMustStartWithLetter}";
 			}
+			if (name.EndsWith(".", StringComparison.Ordinal)) {
+				return "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.ProjectNameMustNotEndWithDot}";
+			}
 			if (!FileUtility.IsValidDirectoryEntryName(solution)
 			    || !FileUtility.IsValidDirectoryEntryName(name))
 			{
 				return "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.IllegalProjectNameError}";
-			}
-			if (name.EndsWith(".")) {
-				return "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.ProjectNameMustNotEndWithDot}";
 			}
 			if (!FileUtility.IsValidPath(location) || !Path.IsPathRooted(location)) {
 				return "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.SpecifyValidLocation}";
@@ -349,6 +349,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				if (result != null)
 					item.Template.RunOpenActions(result);
 				
+				ProjectBrowserPad.RefreshViewAsync();
 				DialogResult = DialogResult.OK;
 			}
 		}

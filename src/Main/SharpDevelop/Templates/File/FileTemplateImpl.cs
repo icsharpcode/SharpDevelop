@@ -391,6 +391,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 		{
 			FileTemplateResult result = new FileTemplateResult(options);
 			
+			StandardHeader.SetHeaders();
 			StringParserPropertyContainer.FileCreation["StandardNamespace"] = options.Namespace;
 			StringParserPropertyContainer.FileCreation["FullName"]                 = options.FileName;
 			StringParserPropertyContainer.FileCreation["FileName"]                 = Path.GetFileName(options.FileName);

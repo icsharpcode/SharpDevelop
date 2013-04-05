@@ -128,6 +128,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			Debug.Assert(project.IdGuid != Guid.Empty);
 			this.Items.Add(project);
 			project.ProjectLoaded();
+			ProjectBrowserPad.RefreshViewAsync();
 			return project;
 		}
 		

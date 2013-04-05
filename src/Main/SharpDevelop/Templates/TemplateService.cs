@@ -21,6 +21,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 		public TemplateService()
 		{
 			projectAndFileTemplates = new Lazy<IReadOnlyList<TemplateBase>>(LoadProjectAndFileTemplates);
+			textTemplates = new Lazy<IReadOnlyList<TextTemplateGroup>>(LoadTextTemplates);
 		}
 		
 		public IEnumerable<FileTemplate> FileTemplates {

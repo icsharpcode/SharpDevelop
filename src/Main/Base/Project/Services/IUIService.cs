@@ -16,6 +16,10 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	public interface IUIService
 	{
+		// TODO: consider if we should move all the methods to other services, based on which SD components
+		// the dialogs belong to.
+		// Or, if we don't do that, consider moving UI-related methods from the services here (e.g. FileService.BrowseForFolder)
+		
 		/// <summary>
 		/// Shows the 'Edit Solution Configurations' dialog.
 		/// </summary>
