@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod;
+using ICSharpCode.NRefactory.Semantics;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -44,7 +46,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
                 var clonedDeclaration = (MethodDeclaration)methodDeclaration.Clone();
                 clonedDeclaration.Modifiers |= Modifiers.Static;
                 script.Replace(methodDeclaration, clonedDeclaration);
+				var rr = context.Resolve (methodDeclaration) as MemberResolveResult;
 
+				script.DoGlobalOperationOn(rr.Member, (fctx, fscript, fnode) => {
+					if (fnode is MemberReferenceExpression) {
+						var memberReference = new MemberReferenceExpression (
+							new TypeReferenceExpression (fctx.CreateShortType (rr.Member.DeclaringType)),
+							rr.Member.Name
+						);
+						fscript.Replace (fnode, memberReference);
+					}
+				});
 			}, methodDeclaration);
 		}
 
