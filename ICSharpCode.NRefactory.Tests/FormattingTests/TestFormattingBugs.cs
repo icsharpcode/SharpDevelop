@@ -318,6 +318,38 @@ foo ();
 	}
 }");
         }
+
+
+		/// <summary>
+		/// Bug 11601 - Formatting document moves "{" into the #endif line 
+		/// </summary>
+		[Test]
+		public void TestBug11601 ()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			policy.MethodBraceStyle = BraceStyle.EndOfLine;
+
+			Test (policy, @"class Test
+{
+	#if true
+	Test MyMethod () 
+	#else
+	Test MyMethod2 () 
+	#endif	
+	{
+	}
+}",
+@"class Test
+{
+	#if true
+	Test MyMethod () 
+	#else
+	Test MyMethod2 () 
+	#endif	
+	{
+	}
+}");
+		}
 	}
 }
 

@@ -552,6 +552,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					var prev = lbrace.GetPrevNode();
 					while (prev is NewLineNode)
 						prev = prev.GetPrevNode();
+					if (prev is PreProcessorDirective)
+						return;
 					int prevOffset = document.GetOffset(prev.EndLocation);
 
 					if (prev is Comment || prev is PreProcessorDirective) {
@@ -570,6 +572,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					prev = lbrace.GetPrevNode();
 					while (prev is NewLineNode)
 						prev = prev.GetPrevNode();
+					if (prev is PreProcessorDirective)
+						return;
 					prevOffset = document.GetOffset(prev.EndLocation);
 					int braceOffset = document.GetOffset(lbrace.StartLocation);
 					AddChange(prevOffset, braceOffset - prevOffset, "");
@@ -579,6 +583,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					prev = lbrace.GetPrevNode();
 					while (prev is NewLineNode)
 						prev = prev.GetPrevNode();
+					if (prev is PreProcessorDirective)
+						return;
 					prevOffset = document.GetOffset(prev.EndLocation);
 					braceOffset = document.GetOffset(lbrace.StartLocation);
 					AddChange(prevOffset, braceOffset - prevOffset, options.EolMarker + curIndent.IndentString);
@@ -587,6 +593,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					prev = lbrace.GetPrevNode();
 					while (prev is NewLineNode)
 						prev = prev.GetPrevNode();
+					if (prev is PreProcessorDirective)
+						return;
 					prevOffset = document.GetOffset(prev.EndLocation);
 					braceOffset = document.GetOffset(lbrace.StartLocation);
 					curIndent.Push(IndentType.Block);
@@ -597,6 +605,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					prev = lbrace.GetPrevNode();
 					while (prev is NewLineNode)
 						prev = prev.GetPrevNode();
+					if (prev is PreProcessorDirective)
+						return;
 					prevOffset = document.GetOffset(prev.EndLocation);
 					braceOffset = document.GetOffset(lbrace.StartLocation);
 					curIndent.Push(IndentType.Block);
