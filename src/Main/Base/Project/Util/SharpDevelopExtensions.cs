@@ -785,6 +785,15 @@ namespace ICSharpCode.SharpDevelop
 				return h;
 			}
 		}
+		
+		public static async Task CopyToAsync(this TextReader reader, TextWriter writer)
+		{
+			char[] buffer = new char[2048];
+			int read;
+			while ((read = await reader.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0) {
+				writer.Write(buffer, 0, read);
+			}
+		}
 		#endregion
 		
 		#region Service Provider Extensions

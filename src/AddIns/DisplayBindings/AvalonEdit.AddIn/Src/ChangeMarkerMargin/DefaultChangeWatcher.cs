@@ -143,7 +143,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		Stream GetBaseVersion(FileName fileName)
 		{
 			foreach (IDocumentVersionProvider provider in VersioningServices.Instance.DocumentVersionProviders) {
-				var result = provider.OpenBaseVersion(fileName);
+				var result = provider.OpenBaseVersionAsync(fileName).GetAwaiter().GetResult();
 				if (result != null) {
 					usedProvider = provider;
 					return result;

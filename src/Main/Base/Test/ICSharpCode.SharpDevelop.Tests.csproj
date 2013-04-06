@@ -74,9 +74,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractEntityIsOverridableTestFixture.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="CheckAssemblyFlags.cs" />
     <Compile Include="CodeConverterTests.cs" />
     <Compile Include="Dom\CSharpModelTests.cs" />
     <Compile Include="Dom\ProjectEntityModelContextTests.cs" />
@@ -90,6 +88,13 @@
     <Compile Include="OutputTextLineParserTests.cs" />
     <Compile Include="OverridableMethodsTestFixture.cs" />
     <Compile Include="OverridablePropertiesTestFixture.cs" />
+    <Compile Include="ProcessRunner\CancelLongRunningAppTestFixture.cs" />
+    <Compile Include="ProcessRunner\ConsoleAppTestFixtureBase.cs" />
+    <Compile Include="ProcessRunner\ExitCodeTestFixture.cs" />
+    <Compile Include="ProcessRunner\NoSuchExecutableTestFixture.cs" />
+    <Compile Include="ProcessRunner\ProcessExitedTestFixture.cs" />
+    <Compile Include="ProcessRunner\ProcessRunnerNotStartedTestFixture.cs" />
+    <Compile Include="ProcessRunner\StandardOutputFromProcessTestFixture.cs" />
     <Compile Include="Project\BeforeBuildCustomToolProjectItemsTests.cs" />
     <Compile Include="Project\MockSolution.cs" />
     <Compile Include="Project\ProjectCustomToolOptionsTests.cs" />
@@ -151,14 +156,6 @@
     <Compile Include="Templates\CategorySortOrderTests.cs" />
     <Compile Include="Templates\FileTemplateCategoryComparerTests.cs" />
     <Compile Include="WebReferences\HttpAuthenticationHeaderTests.cs" />
-    <Compile Include="StandardOutputFromProcessTestFixture.cs" />
-    <Compile Include="CancelLongRunningAppTestFixture.cs" />
-    <Compile Include="ExitCodeTestFixture.cs" />
-    <Compile Include="LineReceivedFromProcessTestFixture.cs" />
-    <Compile Include="NoSuchExecutableTestFixture.cs" />
-    <Compile Include="ProcessExitedTestFixture.cs" />
-    <Compile Include="ProcessRunnerNotStartedTestFixture.cs" />
-    <Compile Include="ConsoleAppTestFixtureBase.cs" />
     <Compile Include="NavigationServiceTests\INavigationPointTextFixture.cs" />
     <Compile Include="NavigationServiceTests\TestNavigationPoint.cs" />
     <Compile Include="NavigationServiceTests\NavigationServiceTestFixture.cs" />
@@ -196,6 +193,9 @@
   <ItemGroup>
     <EmbeddedResource Include="mime_utf-16_be_test.txt" />
     <EmbeddedResource Include="mime_utf-16_le_test.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ProcessRunner" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

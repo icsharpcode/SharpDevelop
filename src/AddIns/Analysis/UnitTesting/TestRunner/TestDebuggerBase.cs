@@ -91,7 +91,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			debugger.DebugStopped -= DebugStopped;
 			testResultsReader.Join();
-			OnAllTestsFinished(source, e);
+			OnAllTestsFinished();
 		}
 		
 		public override void Stop()

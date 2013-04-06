@@ -27,8 +27,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 		}
 		
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
-		//                   "Cannot start process because a file name has not been provided.")]
+		[ExpectedException(typeof(Win32Exception))]
+		//                   "The parameter is incorrect.")]
 		//					 - Message depends on system language.
 		public void RunBlankProcessFilename()
 		{

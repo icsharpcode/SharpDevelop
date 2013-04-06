@@ -234,6 +234,7 @@
       <DependentUpon>OutputWindowOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\Pads\CompilerMessageView\MessageViewCategoryTextWriter.cs" />
     <Compile Include="Src\Internal\Templates\StringParserPropertyContainer.cs" />
     <Compile Include="Src\Internal\Templates\TemplateCategoryComparer.cs" />
     <Compile Include="Src\Project\MSBuildConfigurationOrPlatformNameCollection.cs" />

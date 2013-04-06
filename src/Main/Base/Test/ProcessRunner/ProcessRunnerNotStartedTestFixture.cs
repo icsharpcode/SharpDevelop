@@ -11,7 +11,6 @@ namespace ICSharpCode.SharpDevelop.Tests
 	/// correctly if it has not been started.
 	/// </summary>
 	[TestFixture]
-	//[Ignore("Ignoring since need to run ConsoleApp.exe")]
 	public class ProcessRunnerNotStartedTestFixture
 	{
 		ProcessRunner runner;
@@ -23,21 +22,10 @@ namespace ICSharpCode.SharpDevelop.Tests
 		}
 		
 		[Test]
+		[ExpectedException(typeof(InvalidOperationException))]
 		public void ExitCode()
 		{
-			Assert.AreEqual(0, runner.ExitCode, "Exit code should be zero.");
-		}
-		
-		[Test]
-		public void StandardOutput()
-		{
-			Assert.AreEqual(String.Empty, runner.StandardOutput, "Standard output should be empty.");
-		}
-		
-		[Test]
-		public void StandardError()
-		{
-			Assert.AreEqual(String.Empty, runner.StandardError, "Standard error should be empty.");
+			int exit = runner.ExitCode;
 		}
 		
 		[Test]
@@ -45,6 +33,13 @@ namespace ICSharpCode.SharpDevelop.Tests
 		public void WaitForExit()
 		{
 			runner.WaitForExit();
+		}
+		
+		[Test]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public void WaitForExitAsync()
+		{
+			runner.WaitForExitAsync();
 		}
 	}
 }

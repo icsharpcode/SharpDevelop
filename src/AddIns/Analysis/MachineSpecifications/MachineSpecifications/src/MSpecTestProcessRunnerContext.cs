@@ -12,7 +12,7 @@ namespace ICSharpCode.MachineSpecifications
 		public MSpecTestProcessRunnerContext(TestExecutionOptions options)
 			: base(
 				options,
-				new UnitTestProcessRunner(),
+				new ProcessRunner(),
 				new MSpecUnitTestMonitor(),
 				SD.FileSystem,
 				SD.MessageService)

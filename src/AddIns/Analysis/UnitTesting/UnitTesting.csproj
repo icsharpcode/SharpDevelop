@@ -58,8 +58,6 @@
     <Compile Include="Commands\UnitTestCommands.cs" />
     <Compile Include="Pad\UnitTestNodeFactory.cs" />
     <Compile Include="Service\ITestService.cs" />
-    <Compile Include="Interfaces\IUnitTestProcessRunner.cs" />
-    <Compile Include="Interfaces\UnitTestProcessRunner.cs" />
     <Compile Include="Model\ITest.cs" />
     <Compile Include="Model\ITestFramework.cs" />
     <Compile Include="Model\ITestProject.cs" />
@@ -92,7 +90,6 @@
     <Compile Include="Service\TestFrameworkDoozer.cs" />
     <Compile Include="Service\SDTestService.cs" />
     <Compile Include="TestRunner\ITestRunner.cs" />
-    <Compile Include="TestRunner\MessageReceivedEventArgs.cs" />
     <Compile Include="TestRunner\TestDebuggerBase.cs" />
     <Compile Include="TestRunner\TestExecutionManager.cs" />
     <Compile Include="TestRunner\TestExecutionOptions.cs" />

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
+using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 
@@ -13,7 +14,7 @@ namespace ICSharpCode.UnitTesting
 	public abstract class TestProcessRunnerBase : TestRunnerBase
 	{
 		TestExecutionOptions executionOptions;
-		IUnitTestProcessRunner processRunner;
+		IProcessRunner processRunner;
 		ITestResultsReader testResultsReader;
 		IFileSystem fileSystem;
 		IMessageService messageService;
@@ -26,10 +27,6 @@ namespace ICSharpCode.UnitTesting
 			this.fileSystem = context.FileSystem;
 			this.messageService = context.MessageService;
 			
-			processRunner.LogStandardOutputAndError = false;
-			processRunner.OutputLineReceived += OutputLineReceived;
-			processRunner.ErrorLineReceived += OutputLineReceived;
-			processRunner.ProcessExited += OnAllTestsFinished;
 			testResultsReader.TestFinished += OnTestFinished;
 		}
 		
@@ -37,13 +34,8 @@ namespace ICSharpCode.UnitTesting
 			get { return testResultsReader; }
 		}
 		
-		protected IUnitTestProcessRunner ProcessRunner {
+		protected IProcessRunner ProcessRunner {
 			get { return processRunner; }
-		}
-		
-		void OutputLineReceived(object source, LineReceivedEventArgs e)
-		{
-			OnMessageReceived(e.Line);
 		}
 		
 		public override void Start(IEnumerable<ITest> selectedTests)
@@ -64,8 +56,12 @@ namespace ICSharpCode.UnitTesting
 			
 			if (ApplicationFileNameExists(processStartInfo.FileName)) {
 				testResultsReader.Start();
-				processRunner.WorkingDirectory = processStartInfo.WorkingDirectory;
-				processRunner.Start(processStartInfo.FileName, processStartInfo.Arguments);
+				processRunner.WorkingDirectory = DirectoryName.Create(processStartInfo.WorkingDirectory);
+				processRunner.RedirectStandardOutputAndErrorToSingleStream = true;
+				processRunner.StartCommandLine("\"" + processStartInfo.FileName + "\" " + processStartInfo.Arguments);
+				Task.WhenAll(
+					processRunner.OpenStandardOutputReader().CopyToAsync(output),
+					processRunner.WaitForExitAsync()).ContinueWith(_ => OnAllTestsFinished()).FireAndForget();
 			} else {
 				ShowApplicationDoesNotExistMessage(processStartInfo.FileName);
 			}
@@ -82,10 +78,10 @@ namespace ICSharpCode.UnitTesting
 			messageService.ShowErrorFormatted(resourceString, fileName);
 		}
 		
-		protected override void OnAllTestsFinished(object source, EventArgs e)
+		protected override void OnAllTestsFinished()
 		{
 			testResultsReader.Join();
-			base.OnAllTestsFinished(source, e);
+			base.OnAllTestsFinished();
 		}
 		
 		public override void Stop()
@@ -96,11 +92,8 @@ namespace ICSharpCode.UnitTesting
 		
 		public override void Dispose()
 		{
-			processRunner.Dispose();
 			testResultsReader.Dispose();
 			testResultsReader.TestFinished -= OnTestFinished;
-			processRunner.ErrorLineReceived -= OutputLineReceived;
-			processRunner.OutputLineReceived -= OutputLineReceived;
 		}
 	}
 }

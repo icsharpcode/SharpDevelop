@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,10 +19,12 @@ namespace ICSharpCode.UnitTesting
 		TaskCompletionSource<object> tcs;
 		CancellationTokenRegistration cancellationTokenRegistration;
 		bool wasCancelled;
+		protected TextWriter output;
 		
-		public Task RunAsync(IEnumerable<ITest> selectedTests, IProgress<double> progress, CancellationToken cancellationToken)
+		public Task RunAsync(IEnumerable<ITest> selectedTests, IProgress<double> progress, TextWriter output, CancellationToken cancellationToken)
 		{
 			this.progress = progress;
+			this.output = output;
 			progressPerTest = 1.0 / GetExpectedNumberOfTestResults(selectedTests);
 			tcs = new TaskCompletionSource<object>();
 			Start(selectedTests);
@@ -43,7 +46,7 @@ namespace ICSharpCode.UnitTesting
 		protected void LogCommandLine(ProcessStartInfo startInfo)
 		{
 			string commandLine = GetCommandLine(startInfo);
-			OnMessageReceived(commandLine);
+			output.WriteLine(commandLine);
 		}
 		
 		protected string GetCommandLine(ProcessStartInfo startInfo)
@@ -51,13 +54,13 @@ namespace ICSharpCode.UnitTesting
 			return String.Format("\"{0}\" {1}", startInfo.FileName, startInfo.Arguments);
 		}
 		
-		protected virtual void OnAllTestsFinished(object source, EventArgs e)
+		protected virtual void OnAllTestsFinished()
 		{
 			cancellationTokenRegistration.Dispose();
 			if (wasCancelled)
 				tcs.SetCanceled();
 			else
-				tcs.SetResult(e);
+				tcs.SetResult(null);
 		}
 		
 		public event EventHandler<TestFinishedEventArgs> TestFinished;
@@ -75,15 +78,6 @@ namespace ICSharpCode.UnitTesting
 		protected virtual TestResult CreateTestResultForTestFramework(TestResult testResult)
 		{
 			return testResult;
-		}
-		
-		public event EventHandler<MessageReceivedEventArgs> MessageReceived;
-		
-		protected virtual void OnMessageReceived(string message)
-		{
-			if (MessageReceived != null) {
-				MessageReceived(this, new MessageReceivedEventArgs(message));
-			}
 		}
 		
 		public abstract int GetExpectedNumberOfTestResults(IEnumerable<ITest> selectedTests);

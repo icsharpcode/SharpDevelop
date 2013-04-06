@@ -258,6 +258,28 @@ namespace ICSharpCode.SharpDevelop
 		}
 		#endregion
 		
+		#region ForEach
+		/// <summary>
+		/// Subscribes to the observable and runs an action for each element.
+		/// </summary>
+		public static async Task ForEachAsync<T>(this IObservable<T> source, Action<T> action)
+		{
+			TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+			using (source.Subscribe(delegate (T item) {
+			                        	try {
+			                        		action(item);
+			                        	} catch (Exception ex) {
+			                        		tcs.TrySetException(ex);
+			                        	}
+			                        },
+			                        exception => tcs.TrySetException(exception),
+			                        () => tcs.TrySetResult(null)))
+			{
+				await tcs.Task.ConfigureAwait(false);
+			}
+		}
+		#endregion
+		
 		#region AnonymousObserver
 		public static IDisposable Subscribe<T>(this IObservable<T> source, Action<T> onNext, Action<Exception> onError, Action onCompleted)
 		{

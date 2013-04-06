@@ -5,7 +5,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -229,48 +231,22 @@ namespace ICSharpCode.SharpDevelop.Commands
 					return;
 			}
 			
+			if (string.IsNullOrEmpty(args) || args.Trim('"', ' ').Length == 0) {
+				args = "";
+			}
+			
 			try {
+				ProcessRunner processRunner = new ProcessRunner();
+				processRunner.WorkingDirectory = DirectoryName.Create(StringParser.Parse(tool.InitialDirectory));
 				if (tool.UseOutputPad) {
-					ProcessRunner processRunner = new ProcessRunner();
-					processRunner.LogStandardOutputAndError = false;
-					processRunner.ProcessExited += ProcessExitEvent;
-					processRunner.OutputLineReceived += process_OutputLineReceived;
-					processRunner.ErrorLineReceived += process_OutputLineReceived;
-					processRunner.WorkingDirectory = StringParser.Parse(tool.InitialDirectory);
-					if (args == null || args.Length == 0 || args.Trim('"', ' ').Length == 0) {
-						processRunner.Start(command);
-					} else {
-						processRunner.Start(command, args);
-					}
+					processRunner.RunInOutputPadAsync(TaskService.BuildMessageViewCategory, command, ProcessRunner.CommandLineToArgumentArray(args)).FireAndForget();
 				} else {
-					ProcessStartInfo startinfo;
-					if (args == null || args.Length == 0 || args.Trim('"', ' ').Length == 0) {
-						startinfo = new ProcessStartInfo(command);
-					} else {
-						startinfo = new ProcessStartInfo(command, args);
-					}
-					startinfo.WorkingDirectory = StringParser.Parse(tool.InitialDirectory);
-					Process process = new Process();
-					process.StartInfo = startinfo;
-					process.Start();
+					processRunner.CreationFlags = ProcessCreationFlags.CreateNewConsole;
+					processRunner.Start(command, ProcessRunner.CommandLineToArgumentArray(args));
 				}
 			} catch (Exception ex) {
 				MessageService.ShowError("${res:XML.MainMenu.ToolMenu.ExternalTools.ExecutionFailed} '" + command + " " + args + "'\n" + ex.Message);
 			}
-		}
-
-		void ProcessExitEvent(object sender, EventArgs e)
-		{
-			SD.MainThread.InvokeAsyncAndForget(delegate {
-				ProcessRunner p = (ProcessRunner)sender;
-				TaskService.BuildMessageViewCategory.AppendLine(StringParser.Parse("${res:XML.MainMenu.ToolMenu.ExternalTools.ExitedWithCode} " + p.ExitCode));
-				p.Dispose();
-			});
-		}
-		
-		void process_OutputLineReceived(object sender, LineReceivedEventArgs e)
-		{
-			TaskService.BuildMessageViewCategory.AppendLine(e.Line);
 		}
 	}
 	

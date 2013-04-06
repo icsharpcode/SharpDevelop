@@ -2,14 +2,15 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Tests
 {
 	public class ConsoleAppTestFixtureBase
 	{
-		public static string GetConsoleAppFileName()
+		public static FileName GetConsoleAppFileName()
 		{
-			return typeof(ICSharpCode.NAntAddIn.Tests.ConsoleApp.ConsoleApp).Assembly.Location;
+			return FileName.Create(typeof(ICSharpCode.NAntAddIn.Tests.ConsoleApp.ConsoleApp).Assembly.Location);
 		}
 	}
 }
