@@ -1,5 +1,5 @@
 //
-// RedundantToStringIssue.cs
+// RedundantNullCheckIssue.cs
 //
 // Author:
 //	   Ji Kun <jikun.nus@gmail.com>
@@ -37,6 +37,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					  Description = "When 'is' keyword is used, which implicitly check null.",
 					  Category = IssueCategories.Redundancies,
 					  Severity = Severity.Suggestion,
+	                  ResharperDisableKeyword = "RedundantNullCheck",
 					  IssueMarker = IssueMarker.GrayOut)]
 	public class RedundantNullCheckIssue : ICodeIssueProvider
 	{

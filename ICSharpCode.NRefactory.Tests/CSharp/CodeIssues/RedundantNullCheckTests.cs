@@ -1,5 +1,5 @@
 // 
-// RedundantPrivateInspectorTests.cs
+// RedundantNullCheckTests.cs
 //  
 // Author:
 //       Ji Kun <jikun.nus@gmail.com>
@@ -47,6 +47,25 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		if (a is int) {
 			a = 1;
 		}}}");
+		}
+
+		[Test]
+		public void TestResharperDisable()
+		{
+			var input = @"using System;
+class Test {
+	public void test(){
+	int a = 0;
+	//Resharper disable RedundantNullCheck
+	if(a is int && a != null)
+	{a = 1;}
+	//Resharper restore RedundantNullCheck
+	}	
+	}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues(new RedundantNullCheckIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
 		}
 
 		[Test]
