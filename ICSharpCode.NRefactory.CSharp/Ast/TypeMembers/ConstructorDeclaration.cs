@@ -96,7 +96,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public static readonly TokenRole ThisKeywordRole = new TokenRole ("this");
 		
 		public static readonly new ConstructorInitializer Null = new NullConstructorInitializer ();
-		class NullConstructorInitializer : ConstructorInitializer
+		public class NullConstructorInitializer : ConstructorInitializer
 		{
 			public override NodeType NodeType {
 				get {
