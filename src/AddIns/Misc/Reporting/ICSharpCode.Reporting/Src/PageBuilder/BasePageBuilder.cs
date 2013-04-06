@@ -31,11 +31,25 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		
 		protected IPage InitNewPage(){
-			return new Page();
+			var pi = CreatePageInfo();
+			return new Page(pi);
+		}
+		
+		IPageInfo CreatePageInfo()
+		{
+			var pi = new PageInfo();
+			pi.PageNumber = Pages.Count +1;
+			pi.ReportName = ReportModel.ReportSettings.ReportName;
+		pi.ReportFileName = ReportModel.ReportSettings.FileName;
+//			pi.ReportName = ReportModel.ReportSettings.ReportName;
+			return pi;
 		}
 		
 
 		protected virtual  void AddPage(IPage page) {
+			if (Pages.Count == 0) {
+				page.IsFirstPage = true;
+			}
 			Pages.Add(page);
 		}
 		

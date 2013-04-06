@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Peter Forstmeier
- * Date: 19.03.2013
- * Time: 20:19
+ * Date: 06.04.2013
+ * Time: 20:15
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
@@ -12,20 +12,16 @@ using ICSharpCode.Reporting.Interfaces;
 namespace ICSharpCode.Reporting.Items
 {
 	/// <summary>
-	/// Description of BaseSection.
+	/// Description of ReportItem.
 	/// </summary>
-	public class BaseSection:ReportItem
+	public class ReportItem:IReportItem
 	{
-		#region Constructors
-		
-		public BaseSection()
-		{}
-		
-		public BaseSection (string sectionName) 
+		public ReportItem()
 		{
-			base.Name = sectionName;
 		}
 		
-		#endregion
+		
+		public string Name {get;set;}
+			
 	}
 }

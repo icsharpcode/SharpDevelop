@@ -21,5 +21,11 @@ namespace ICSharpCode.Reporting.Globals
 		
 		public static Size DefaultPageSize {get {return new Size(827,1169);}}
 		
+		public static string PlainFileName
+		{
+			get {
+				return DefaultReportName + ReportExtension;
+			}
+		}
 	}
 }

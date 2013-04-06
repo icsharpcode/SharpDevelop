@@ -35,9 +35,7 @@ namespace ICSharpCode.Reporting
 			IReportModel reportModel = LoadReportModel (stream);
 			IReportCreator builder = null;
 			if (reportModel.ReportSettings.DataModel == GlobalEnums.PushPullModel.FormSheet) {
-//				builder = FormPageBuilder.CreateInstance(reportModel);
 				builder =  new FormPageBuilder(reportModel);
-				Console.WriteLine("aaaaaaaaaaaaaaaaa");
 			}
 //			else {
 //				CheckForParameters(reportModel,reportParameters);

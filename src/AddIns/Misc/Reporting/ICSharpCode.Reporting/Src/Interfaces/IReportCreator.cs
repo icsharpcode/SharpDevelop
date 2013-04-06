@@ -19,6 +19,7 @@ namespace ICSharpCode.Reporting.Interfaces
 	{
 		void BuildExportList ();
 		List<IPage> Pages {get;}
+		
 //		PagesCollection Pages{get;}
 //		event EventHandler<PageCreatedEventArgs> PageCreated;
 //		event EventHandler<SectionRenderEventArgs> SectionRendering;

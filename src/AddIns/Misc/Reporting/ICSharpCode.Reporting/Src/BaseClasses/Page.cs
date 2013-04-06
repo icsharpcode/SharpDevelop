@@ -14,14 +14,33 @@ namespace ICSharpCode.Reporting.BaseClasses
 	/// Description of Page.
 	/// </summary>
 	/// 
+	
+	
+	
+	
+	
 	public interface IPage{
-		
+		bool IsFirstPage {get;set;}
+		IPageInfo PageInfo {get;}
 	}
+	
+	
+	
 	
 	public class Page:IPage
 	{
-		public Page()
+		public Page(IPageInfo pageInfo)
 		{
+			if (pageInfo == null) {
+				throw new ArgumentNullException("pageInfo");
+			}
+			PageInfo = pageInfo;
 		}
+		
+		public bool IsFirstPage {get;set;}
+		
+		
+		public IPageInfo PageInfo {get;private set;}
+		
 	}
 }

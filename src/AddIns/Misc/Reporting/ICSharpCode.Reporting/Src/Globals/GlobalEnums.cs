@@ -15,7 +15,7 @@ namespace ICSharpCode.Reporting.Globals
 	/// </summary>
 	public  class GlobalEnums
 	{
-		internal enum ReportSection {
+		public enum ReportSection {
 			ReportHeader,
 			ReportPageHeader,
 			ReportDetail,
@@ -34,5 +34,17 @@ namespace ICSharpCode.Reporting.Globals
 			PullData,
 			FormSheet
 		}
+		
+		
+		/// <summary>
+		/// FormSheet means a blank form with Labels, Lines and Checkboxes
+		/// DataReport handles all Reports with Data
+		/// </summary>
+		public enum ReportType {
+			FormSheet,
+			DataReport,
+		}
+		
+		
 	}
 }

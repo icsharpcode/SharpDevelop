@@ -8,6 +8,8 @@
  */
 using System;
 using System.Drawing;
+using System.IO;
+
 using ICSharpCode.Reporting.Globals;
 
 namespace ICSharpCode.Reporting.Items
@@ -33,7 +35,7 @@ namespace ICSharpCode.Reporting.Items
 //			this.GraphicsUnit = GraphicsUnit.Pixel;
 //			this.Padding = new Padding(5);
 //			this.DefaultFont = GlobalValues.DefaultFont;
-//			this.ReportType = GlobalEnums.ReportType.FormSheet;
+			this.ReportType = GlobalEnums.ReportType.FormSheet;
 //			
 			this.DataModel = GlobalEnums.PushPullModel.FormSheet;
 //			
@@ -74,6 +76,22 @@ namespace ICSharpCode.Reporting.Items
 			}
 		}
 		
+		private string fileName;
+//		[Category("Base Settings")]
+//		[XmlIgnoreAttribute]
+		public string FileName
+		{
+			get {
+				if (String.IsNullOrEmpty(fileName)) {
+					fileName = GlobalValues.PlainFileName;
+				}
+				return Path.GetFullPath(fileName);
+			}
+			set {
+				fileName = value;
+			}
+		}
+		
 		private Size pageSize;
 		
 		public Size PageSize {
@@ -95,5 +113,9 @@ namespace ICSharpCode.Reporting.Items
 		
 //		[Category("Data")]
 		public GlobalEnums.PushPullModel DataModel {get;set;}
+		
+		
+//		[Browsable(true), Category("Base Settings")]
+		public GlobalEnums.ReportType ReportType {get;set;}
 	}
 }

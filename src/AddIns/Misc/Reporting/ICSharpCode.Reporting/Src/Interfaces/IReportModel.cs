@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.Generic;
 using ICSharpCode.Reporting.Items;
 
 namespace ICSharpCode.Reporting.Interfaces
@@ -17,15 +18,16 @@ namespace ICSharpCode.Reporting.Interfaces
 	public interface IReportModel
 	{
 		ReportSettings ReportSettings {get;set;}
+		List<BaseSection> SectionCollection {get;}
 		/*
 		BaseSection ReportHeader {get;}
 		BaseSection PageHeader {get;}
-		BaseSection DetailSection {get;}
+		BasistSection DetailSection {get;}
 		BaseSection PageFooter {get;}
 		BaseSection ReportFooter {get;}
 		
 		GlobalEnums.PushPullModel DataModel {get;}
-		ReportSectionCollection SectionCollection {get;}
+		
 		*/
 	}
 }
