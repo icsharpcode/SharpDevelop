@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class CSharpTokenNode : AstNode
 	{
 		public static new readonly CSharpTokenNode Null = new NullCSharpTokenNode ();
-		public class NullCSharpTokenNode : CSharpTokenNode
+		class NullCSharpTokenNode : CSharpTokenNode
 		{
 			public override bool IsNull {
 				get {

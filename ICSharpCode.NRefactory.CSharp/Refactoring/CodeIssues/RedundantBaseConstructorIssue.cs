@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			return new GatherVisitor (context).GetIssues ();
 		}
-		
+
 		class GatherVisitor : GatherVisitorBase<RedundantAttributeParenthesesIssue>
 		{
 			public GatherVisitor (BaseRefactoringContext ctx)
@@ -49,11 +49,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
             {
                 base.VisitConstructorDeclaration(constructorDeclaration);
 
-                if(constructorDeclaration.Initializer == null)
-                    return;
                 if(constructorDeclaration.Initializer.ConstructorInitializerType != ConstructorInitializerType.Base)
                     return;
-                if (constructorDeclaration.Initializer is ConstructorInitializer.NullConstructorInitializer)
+                if (constructorDeclaration.Initializer.IsNull)
                     return;
                 if(constructorDeclaration.Initializer.Arguments.Count!=0)
                     return;
@@ -62,8 +60,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
                           script =>
                               {
                                   var clone = (ConstructorDeclaration)constructorDeclaration.Clone();
-                                  script.Replace(clone.ColonToken, new CSharpTokenNode.NullCSharpTokenNode());
-                                  script.Replace(constructorDeclaration.Initializer, new ConstructorInitializer.NullConstructorInitializer());
+                                  script.Replace(clone.ColonToken, CSharpTokenNode.Null.Clone());
+                                  script.Replace(constructorDeclaration.Initializer, ConstructorInitializer.Null.Clone());
                               });
 			}
 		}
