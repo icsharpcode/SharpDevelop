@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod;
+using ICSharpCode.NRefactory.Semantics;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -44,7 +46,26 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
                 var clonedDeclaration = (MethodDeclaration)methodDeclaration.Clone();
                 clonedDeclaration.Modifiers |= Modifiers.Static;
                 script.Replace(methodDeclaration, clonedDeclaration);
+				var rr = context.Resolve (methodDeclaration) as MemberResolveResult;
 
+				script.DoGlobalOperationOn(rr.Member, (fctx, fscript, fnode) => {
+					if (fnode is MemberReferenceExpression) {
+						var memberReference = new MemberReferenceExpression (
+							new TypeReferenceExpression (fctx.CreateShortType (rr.Member.DeclaringType)),
+							rr.Member.Name
+						);
+						fscript.Replace (fnode, memberReference);
+					} else if (fnode is InvocationExpression) {
+						var invoke = (InvocationExpression)fnode;
+						if (!(invoke.Target is MemberReferenceExpression))
+							return;
+						var memberReference = new MemberReferenceExpression (
+							new TypeReferenceExpression (fctx.CreateShortType (rr.Member.DeclaringType)),
+							rr.Member.Name
+						);
+						fscript.Replace (invoke.Target, memberReference);
+					}
+				});
 			}, methodDeclaration);
 		}
 
@@ -55,7 +76,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
                 return null;
             //unsafe transformation for now. For all other public instances the code should 
             //replace the variable.Call(...) to ClassName.Call()
-            const Modifiers ignoredModifiers = Modifiers.Public | Modifiers.Protected | Modifiers.Static;
+            const Modifiers ignoredModifiers = Modifiers.Override | Modifiers.Virtual | Modifiers.Static;
             if ((result.Modifiers & ignoredModifiers) != 0)
                 return null;
 

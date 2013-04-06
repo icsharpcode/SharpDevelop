@@ -23,18 +23,17 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 {
-	[TestFixture()]
+	[TestFixture]
 	public class DelegateContextTests : TestBase
 	{
 		/// <summary>
 		/// Bug 4483 - Completion too aggressive for anonymous methods
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug4483()
 		{
 			// note 'string bar = new Test ().ToString ()' would be valid.
@@ -53,7 +52,7 @@ public class Test
 			});
 		}
 
-		[Test()]
+		[Test]
 		public void TestParameterContext()
 		{
 			// note 'string bar = new Test ().ToString ()' would be valid.
@@ -76,7 +75,7 @@ public class Test
 		/// <summary>
 		/// Bug 5207 - [regression] delegate completion like event completion 
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug5207()
 		{
 			// note 'string bar = new Test ().ToString ()' would be valid.
@@ -99,7 +98,7 @@ public class Test
 		}
 
 
-		[Test()]
+		[Test]
 		public void TestRefOutParams()
 		{
 			CodeCompletionBugTests.CombinedProviderTest(
@@ -120,6 +119,34 @@ public class Test
 				Assert.IsNotNull(provider.Find("(out int foo, ref int bar, object[] additional)"));
 				Assert.IsNull(provider.Find("(foo, bar, additional)"));
 			});
+		}
+
+		/// <summary>
+		/// Bug 11603 - Event completion includes entries which are invalid
+		/// </summary>
+		[Test]
+		public void TestBug11603()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider(
+				@"using System;
+using System.Threading.Tasks;
+
+public class Test
+{
+	public static event Action foo;
+	
+	public static void Main (string[] args)
+	{
+		$foo += $
+	}
+	
+	static async Task TestAsync ()
+	{
+
+	}
+}
+");
+			Assert.IsNull(provider.Find(".ctor"));
 		}
 	}
 }

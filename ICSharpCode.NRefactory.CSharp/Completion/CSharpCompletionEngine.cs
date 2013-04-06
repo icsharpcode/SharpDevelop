@@ -2155,6 +2155,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		bool MatchDelegate(IType delegateType, IMethod method)
 		{
+			if (method.EntityType != EntityType.Method)
+				return false;
 			var delegateMethod = delegateType.GetDelegateInvokeMethod();
 			if (delegateMethod == null || delegateMethod.Parameters.Count != method.Parameters.Count) {
 				return false;

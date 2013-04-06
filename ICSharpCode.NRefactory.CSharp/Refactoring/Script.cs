@@ -395,6 +395,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 		}
 
+		public virtual void DoGlobalOperationOn(IEntity entity, Action<RefactoringContext, Script, AstNode> callback, string operationDescripton = null)
+		{
+		}
+
 		public virtual void Dispose()
 		{
 			FormatText (nodesToFormat);
