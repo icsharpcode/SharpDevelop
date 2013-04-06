@@ -491,7 +491,7 @@
 						<RowDefinition Height="Auto"/>
 					</Grid.RowDefinitions>
 					
-					<TextBlock
+<!--				<TextBlock
 						Grid.Row="0"
 						Grid.Column="0"
 						VerticalAlignment="Center"
@@ -507,7 +507,7 @@
 						SelectedItem="{Binding Path=SelectedPackageSource}"
 						ItemsSource="{Binding Path=PackageRepositories}"
 						ItemTemplate="{StaticResource PackageSourceComboBoxItemTemplate}"
-						Visibility="{Binding Path=ShowPackageRepositories, Converter={StaticResource BoolToVisibility}}"/>
+						Visibility="{Binding Path=ShowPackageRepositories, Converter={StaticResource BoolToVisibility}}"/>-->
 					
 					<TextBlock
 						Grid.Row="1"

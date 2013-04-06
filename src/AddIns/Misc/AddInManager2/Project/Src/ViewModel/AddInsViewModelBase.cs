@@ -22,6 +22,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		private PackageRepository _activePackageSource;
 		private IPackageRepository _activePackageRepository;
 		private bool _isReadingPackages;
+		private bool _isExpandedinView;
+		private bool _showPackageSources;
 		
 		private ObservableCollection<PackageRepository> _packageRepositories;
 		
@@ -43,6 +45,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		{
 			_activePackageRepository = null;
 			_isReadingPackages = false;
+			_isExpandedinView = false;
 			
 			// Initialization of internal lists
 			_pages = new Pages();
@@ -235,6 +238,19 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			}
 		}
 		
+		public bool IsExpandedInView
+		{
+			get
+			{
+				return _isExpandedinView;
+			}
+			set
+			{
+				_isExpandedinView = value;
+				OnPropertyChanged(m => m.IsExpandedInView);
+			}
+		}
+		
 		public virtual void ReadPackages()
 		{
 			_pages.SelectedPageNumber = 1;
@@ -424,8 +440,15 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		public bool ShowPackageSources
 		{
-			get;
-			set;
+			get
+			{
+				return _showPackageSources;
+			}
+			set
+			{
+				_showPackageSources = value;
+				UpdatePackageSources();
+			}
 		}
 		
 		public ObservableCollection<PackageRepository> PackageRepositories
@@ -438,6 +461,11 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		
 		private void UpdatePackageSources()
 		{
+			if (!ShowPackageSources)
+			{
+				return;
+			}
+			
 			PackageRepository oldValue = SelectedPackageSource;
 			
 			// Refill package sources list

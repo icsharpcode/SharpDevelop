@@ -4,8 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+
 using ICSharpCode.AddInManager2.Model;
 using ICSharpCode.AddInManager2.View;
 using ICSharpCode.Core;
@@ -19,6 +21,8 @@ namespace ICSharpCode.AddInManager2.ViewModel
 	{
 		private string _message;
 		private bool _hasError;
+		
+		private ObservableCollection<AddInsViewModelBase> _viewModels;
 		
 		public AddInManagerViewModel()
 			: base()
@@ -42,9 +46,24 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			AddInManager.Events.AddInOperationError += AddInManager_Events_AddInOperationError;
 			AddInManager.Events.AcceptLicenses += AddInManager_Events_AcceptLicenses;
 			
-			AvailableAddInsViewModel = new AvailableAddInsViewModel();
+			_viewModels = new ObservableCollection<AddInsViewModelBase>();
+			
+			// Create and collect the models
 			InstalledAddInsViewModel = new InstalledAddInsViewModel();
+			AvailableAddInsViewModel = new AvailableAddInsViewModel();
 			UpdatedAddInsViewModel = new UpdatedAddInsViewModel();
+			
+			_viewModels.Add(InstalledAddInsViewModel);
+			_viewModels.Add(AvailableAddInsViewModel);
+			_viewModels.Add(UpdatedAddInsViewModel);
+			
+			foreach (var viewModel in _viewModels)
+			{
+				viewModel.PropertyChanged += ViewModel_PropertyChanged;
+			}
+			
+			// Expand the first view
+			InstalledAddInsViewModel.IsExpandedInView = true;
 			
 			// Read the packages
 			AvailableAddInsViewModel.ReadPackages();
@@ -70,6 +89,14 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			private set;
 		}
 		
+		public ObservableCollection<AddInsViewModelBase> ViewModels
+		{
+			get
+			{
+				return _viewModels;
+			}
+		}
+		
 		public string Title
 		{
 //			get { return viewTitle.Title; }
@@ -82,6 +109,10 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			AddInManager.Events.OperationStarted -= AddInManager_Events_OperationStarted;
 			AddInManager.Events.AddInOperationError -= AddInManager_Events_AddInOperationError;
 			AddInManager.Events.AcceptLicenses -= AddInManager_Events_AcceptLicenses;
+			foreach (var viewModel in _viewModels)
+			{
+				viewModel.PropertyChanged -= ViewModel_PropertyChanged;
+			}
 		}
 		
 		private void ShowErrorMessage(string message)
@@ -152,6 +183,33 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			view.DataContext = viewModel;
 			view.Owner = SD.Workbench.MainWindow;
 			return view.ShowDialog() ?? false;
+		}
+		
+		private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == "IsExpandedInView")
+			{
+				AddInsViewModelBase expandedViewModel = sender as AddInsViewModelBase;
+				if (expandedViewModel != null)
+				{
+					if (expandedViewModel.IsExpandedInView)
+					{
+						// Unexpand all view models besides this one
+						foreach (var viewModel in _viewModels)
+						{
+							if (viewModel != expandedViewModel)
+							{
+								viewModel.IsExpandedInView = false;
+							}
+						}
+					}
+					else if (!expandedViewModel.IsExpandedInView && (_viewModels.Count(v => v.IsExpandedInView) == 0))
+					{
+						// This is the last unexpanded view => leave it open
+						expandedViewModel.IsExpandedInView = true;
+					}
+				}
+			}
 		}
 	}
 }
