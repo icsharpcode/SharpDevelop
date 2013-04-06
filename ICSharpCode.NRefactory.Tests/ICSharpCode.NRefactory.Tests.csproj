@@ -405,6 +405,8 @@
     <Compile Include="FormattingTests\TestExpressionFormatting.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantNullCheckTests.cs" />
     <Compile Include="CSharp\CodeIssues\StaticConstructorAccessModifierTest.cs" />
+
+	<Compile Include="CSharp\CodeIssues\RedundantBaseConstructorIssueTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">

@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.Utils;
-using Mono.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
