@@ -404,6 +404,7 @@
     <Compile Include="CSharp\CodeActions\InvertIfAndSimplifyTests.cs" />
     <Compile Include="FormattingTests\TestExpressionFormatting.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantNullCheckTests.cs" />
+    <Compile Include="CSharp\CodeIssues\StaticConstructorAccessModifierTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">
