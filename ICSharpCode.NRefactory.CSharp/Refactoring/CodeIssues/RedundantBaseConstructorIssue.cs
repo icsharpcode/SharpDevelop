@@ -32,7 +32,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	                    Description = "Remove base constructor call that is redundant",
 	                    Category = IssueCategories.Redundancies,
 	                    Severity = Severity.Suggestion,
-	                    IssueMarker = IssueMarker.GrayOut)]
+                        IssueMarker = IssueMarker.GrayOut, 
+                        ResharperDisableKeyword = "RedundantBaseConstructorCall")]
 	public class RedundantBaseConstructorIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
