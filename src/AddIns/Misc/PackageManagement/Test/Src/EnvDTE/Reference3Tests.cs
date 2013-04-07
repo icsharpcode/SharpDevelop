@@ -124,7 +124,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Path_SystemXmlReferenceInProjectReferences_ReturnsFullPathToSystemXml()
 		{
 			CreateReference("System.Xml");
-			referenceProjectItem.FileName = @"c:\Program Files\Microsoft\Reference Assemblies\v4\System.Xml.dll";
+			referenceProjectItem.FileName = FileName.Create(@"c:\Program Files\Microsoft\Reference Assemblies\v4\System.Xml.dll");
 			
 			string path = reference.Path;
 			

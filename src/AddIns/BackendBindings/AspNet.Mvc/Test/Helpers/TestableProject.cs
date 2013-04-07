@@ -55,13 +55,13 @@ namespace AspNet.Mvc.Tests.Helpers
 		public FileProjectItem AddFileToProject(string fileName)
 		{
 			var projectItem = new FileProjectItem(this, ItemType.Compile);
-			projectItem.FileName = fileName;
+			projectItem.FileName = FileName.Create(fileName);
 			ProjectService.AddProjectItem(this, projectItem);
 			return projectItem;
 		}
 		
-		public override string OutputAssemblyFullPath {
-			get { return outputAssemblyFullPath; }
+		public override FileName OutputAssemblyFullPath {
+			get { return FileName.Create(outputAssemblyFullPath); }
 		}
 		
 		public void SetOutputAssemblyFullPath(string path)

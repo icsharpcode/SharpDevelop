@@ -86,7 +86,7 @@ namespace PackageManagement.Tests.Helpers
 		public static void AddFile(MSBuildBasedProject project, string fileName)
 		{
 			var fileProjectItem = new FileProjectItem(project, ItemType.Compile);
-			fileProjectItem.FileName = fileName;
+			fileProjectItem.FileName = FileName.Create(fileName);
 			ProjectService.AddProjectItem(project, fileProjectItem);
 		}
 		

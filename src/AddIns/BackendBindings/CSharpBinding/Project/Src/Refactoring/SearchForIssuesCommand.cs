@@ -98,8 +98,8 @@ namespace CSharpBinding.Refactoring
 			if (project == null)
 				return Enumerable.Empty<FileName>();
 			return from item in project.GetItemsOfType(ItemType.Compile)
-				where item.FileName.EndsWith(".cs", StringComparison.OrdinalIgnoreCase)
-				select FileName.Create(item.FileName);
+				where item.FileName.HasExtension(".cs")
+				select item.FileName;
 		}
 		
 		Task SearchForIssuesAsync(List<FileName> fileNames, IEnumerable<IssueManager.IssueProvider> providers, Action<SearchedFile> callback, IProgressMonitor monitor)

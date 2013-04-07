@@ -94,7 +94,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			} else if (name == CustomToolPropertyName) {
 				return projectItem.CustomTool;
 			} else if (name == FullPathPropertyName) {
-				return projectItem.FileName;
+				return projectItem.FileName.ToString();
 			}
 			return String.Empty;
 		}

@@ -172,7 +172,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				//LoggingService.Debug("Got information about " + assembly.OriginalInclude + "; fullpath=" + assembly.FullPath);
 				foreach (var referenceItem in assembly.ReferenceItems) {
 					referenceItem.AssemblyName = assembly.AssemblyName;
-					referenceItem.FileName = assembly.FullPath;
+					referenceItem.FileName = FileName.Create(assembly.FullPath);
 					referenceItem.Redist = assembly.Redist;
 					referenceItem.DefaultCopyLocalValue = assembly.CopyLocal;
 					handledReferenceItems.Add(referenceItem);
@@ -181,7 +181,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (firstItem != null) {
 					resolvedAssemblies.Add(firstItem);
 				} else {
-					resolvedAssemblies.Add(new ReferenceProjectItem(baseProject, assembly.OriginalInclude) { FileName = assembly.FullPath });
+					resolvedAssemblies.Add(new ReferenceProjectItem(baseProject, assembly.OriginalInclude) { FileName = FileName.Create(assembly.FullPath) });
 				}
 			}
 			// Add any assemblies that weren't resolved yet. This is important - for example, this adds back project references.

@@ -100,10 +100,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public override string FileName {
+		public override FileName FileName {
 			get {
 				if (Project != null && RelPath != null) {
-					return Path.Combine(Project.Directory, RelPath.Trim('\\'));
+					return FileName.Create(Path.Combine(Project.Directory, RelPath.Trim('\\')));
 				}
 				return null;
 			}

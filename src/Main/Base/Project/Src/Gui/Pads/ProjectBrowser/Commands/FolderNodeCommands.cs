@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 								LoggingService.Debug("Found file " + virtualFullName);
 								FileProjectItem newItem = new FileProjectItem(node.Project, fileItem.ItemType);
 								if (FileUtility.IsBaseDirectory(directoryName, fileItem.FileName)) {
-									newItem.FileName = FileUtility.RenameBaseDirectory(fileItem.FileName, directoryName, copiedFileName);
+									newItem.FileName = FileName.Create(FileUtility.RenameBaseDirectory(fileItem.FileName, directoryName, copiedFileName));
 								} else {
 									newItem.FileName = fileItem.FileName;
 								}

@@ -357,7 +357,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Returns null when the project does not output any assembly.
 		/// </summary>
 		[Browsable(false)]
-		public virtual string OutputAssemblyFullPath {
+		public virtual FileName OutputAssemblyFullPath {
 			get {
 				return null;
 			}
@@ -528,7 +528,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			if (!mscorlib) {
-				referenceItems.Add(new ReferenceProjectItem(this, "mscorlib") { FileName = typeof(object).Module.FullyQualifiedName });
+				referenceItems.Add(new ReferenceProjectItem(this, "mscorlib") { FileName = FileName.Create(typeof(object).Module.FullyQualifiedName) });
 			}
 			return referenceItems;
 		}

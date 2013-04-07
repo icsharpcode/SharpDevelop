@@ -173,7 +173,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			FileProjectItem outputItem = project.FindFile(FileName.Create(outputFileName));
 			if (outputItem == null) {
 				outputItem = new FileProjectItem(project, ItemType.Compile);
-				outputItem.FileName = outputFileName;
+				outputItem.FileName = FileName.Create(outputFileName);
 				outputItem.DependentUpon = Path.GetFileName(baseItem.FileName);
 				outputItem.SetEvaluatedMetadata("AutoGen", "True");
 				ProjectService.AddProjectItem(project, outputItem);

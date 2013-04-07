@@ -226,7 +226,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			ItemType itemType = project.GetDefaultItemType(path);
 			var fileItem = new FileProjectItem(project, itemType);
-			fileItem.FileName = path;
+			fileItem.FileName = FileName.Create(path);
 			fileItem.CustomTool = projectService.GetDefaultCustomToolForFileName(fileItem);
 			return fileItem;
 		}

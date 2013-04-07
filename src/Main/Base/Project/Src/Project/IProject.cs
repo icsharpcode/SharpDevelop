@@ -124,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets the full path of the output assembly.
 		/// Returns null when the project does not output any assembly.
 		/// </summary>
-		string OutputAssemblyFullPath {
+		FileName OutputAssemblyFullPath {
 			get;
 		}
 		

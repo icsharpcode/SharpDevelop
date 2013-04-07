@@ -461,7 +461,7 @@ namespace PackageManagement.Tests.EnvDTE
 			var fileItem = msbuildProject.Items.First() as FileProjectItem;
 			
 			Assert.AreEqual(@"tools\test.cs", fileItem.Include);
-			Assert.AreEqual(@"d:\projects\myproject\tools\test.cs", fileItem.FileName);
+			Assert.AreEqual(@"d:\projects\myproject\tools\test.cs", fileItem.FileName.ToString());
 			Assert.AreEqual(ItemType.Page, fileItem.ItemType);
 			Assert.AreEqual(msbuildProject, fileItem.Project);
 		}
@@ -587,7 +587,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(@"tools\a.txt", item.Include);
 			Assert.AreEqual(ItemType.None, item.ItemType);
-			Assert.AreEqual(@"d:\projects\myproject\tools\a.txt", item.FileName);
+			Assert.AreEqual(@"d:\projects\myproject\tools\a.txt", item.FileName.ToString());
 			Assert.AreEqual(1, msbuildProject.Items.Count);
 		}
 		
@@ -638,7 +638,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(@"tools\packages", item.Include);
 			Assert.AreEqual(ItemType.Folder, item.ItemType);
-			Assert.AreEqual(@"d:\projects\myproject\tools\packages", item.FileName);
+			Assert.AreEqual(@"d:\projects\myproject\tools\packages", item.FileName.ToString());
 			Assert.AreEqual(1, msbuildProject.Items.Count);
 		}
 		
@@ -658,7 +658,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(@"tools\packages\a.txt", item.Include);
 			Assert.AreEqual(ItemType.None, item.ItemType);
-			Assert.AreEqual(@"d:\projects\myproject\tools\packages\a.txt", item.FileName);
+			Assert.AreEqual(@"d:\projects\myproject\tools\packages\a.txt", item.FileName.ToString());
 			Assert.AreEqual(1, msbuildProject.Items.Count);
 		}
 		
@@ -809,7 +809,7 @@ namespace PackageManagement.Tests.EnvDTE
 			string linkName = fileItem.GetEvaluatedMetadata("Link");
 			
 			Assert.AreEqual(@"..\anotherproject\test.cs", fileItem.Include);
-			Assert.AreEqual(fileName, fileItem.FileName);
+			Assert.AreEqual(fileName, fileItem.FileName.ToString());
 			Assert.AreEqual(ItemType.Page, fileItem.ItemType);
 			Assert.IsTrue(fileItem.IsLink);
 			Assert.AreEqual("test.cs", linkName);
@@ -853,7 +853,7 @@ namespace PackageManagement.Tests.EnvDTE
 			FileProjectItem fileItem = msbuildProject.FindFile(new FileName(fileName));
 			
 			Assert.AreEqual("MainForm.Designer.cs", fileItem.Include);
-			Assert.AreEqual(fileName, fileItem.FileName);
+			Assert.AreEqual(fileName, fileItem.FileName.ToString());
 			Assert.AreEqual(ItemType.Page, fileItem.ItemType);
 			Assert.AreEqual(msbuildProject, fileItem.Project);
 			Assert.AreEqual("MainForm.cs", fileItem.DependentUpon);

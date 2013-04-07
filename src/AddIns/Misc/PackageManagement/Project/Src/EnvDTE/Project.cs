@@ -175,7 +175,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		internal ProjectItem AddFileProjectItemWithDependentUsingFullPath(string path, string dependentUpon)
 		{
 			FileProjectItem fileProjectItem = CreateFileProjectItemUsingFullPath(path);
-			fileProjectItem.FileName = path;
+			fileProjectItem.FileName = ICSharpCode.Core.FileName.Create(path);
 			fileProjectItem.DependentUpon = dependentUpon;
 			AddProjectItemToMSBuildProject(fileProjectItem);
 			return new ProjectItem(this, fileProjectItem);
@@ -277,7 +277,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		FileProjectItem CreateMSBuildProjectItemForDirectory(string directory)
 		{
 			return new FileProjectItem(MSBuildProject, ItemType.Folder) {
-				FileName = directory
+				FileName = ICSharpCode.Core.FileName.Create(directory)
 			};
 		}
 		

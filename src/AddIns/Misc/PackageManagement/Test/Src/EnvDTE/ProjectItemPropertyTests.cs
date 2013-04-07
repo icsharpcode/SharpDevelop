@@ -139,7 +139,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Value_GetFullPath_ReturnsProjectItemFullFileName()
 		{
 			CreateProjectItemProperties();
-			msbuildFileProjectItem.FileName = @"d:\projects\test.cs";
+			msbuildFileProjectItem.FileName = ICSharpCode.Core.FileName.Create(@"d:\projects\test.cs");
 			
 			string path = properties.Item("FullPath").Value as string;
 			

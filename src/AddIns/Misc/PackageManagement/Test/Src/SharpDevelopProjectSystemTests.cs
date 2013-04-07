@@ -476,7 +476,7 @@ namespace PackageManagement.Tests
 			FileProjectItem fileItem = ProjectHelper.GetFile(project, fileName);
 			
 			FileProjectItem expectedFileItem = new FileProjectItem(project, ItemType.Compile);
-			expectedFileItem.FileName = fileName;
+			expectedFileItem.FileName = FileName.Create(fileName);
 			
 			FileProjectItemAssert.AreEqual(expectedFileItem, fileItem);
 		}
@@ -493,7 +493,7 @@ namespace PackageManagement.Tests
 			FileProjectItem fileItem = ProjectHelper.GetFile(project, fileName);
 			
 			FileProjectItem expectedFileItem = new FileProjectItem(project, ItemType.EmbeddedResource);
-			expectedFileItem.FileName = fileName;
+			expectedFileItem.FileName = FileName.Create(fileName);
 			
 			FileProjectItemAssert.AreEqual(expectedFileItem, fileItem);
 		}
@@ -511,7 +511,7 @@ namespace PackageManagement.Tests
 			FileProjectItem fileItem = ProjectHelper.GetFile(project, fileName);
 			
 			FileProjectItem expectedFileItem = new FileProjectItem(project, ItemType.Compile);
-			expectedFileItem.FileName = fileName;
+			expectedFileItem.FileName = FileName.Create(fileName);
 			
 			FileProjectItemAssert.AreEqual(expectedFileItem, fileItem);
 		}
@@ -529,7 +529,7 @@ namespace PackageManagement.Tests
 			FileProjectItem fileItem = ProjectHelper.GetFile(project, fileName);
 			
 			FileProjectItem expectedFileItem = new FileProjectItem(project, ItemType.Compile);
-			expectedFileItem.FileName = fileName;
+			expectedFileItem.FileName = FileName.Create(fileName);
 			
 			FileProjectItemAssert.AreEqual(expectedFileItem, fileItem);
 		}

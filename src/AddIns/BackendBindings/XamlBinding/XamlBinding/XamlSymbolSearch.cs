@@ -38,7 +38,7 @@ namespace ICSharpCode.XamlBinding
 			this.entity = entity;
 			compilation = SD.ParserService.GetCompilation(project);
 			interestingFileNames = new List<FileName>();
-			foreach (var item in project.ParentSolution.Projects.SelectMany(p => p.Items).OfType<FileProjectItem>().Where(i => i.FileName.EndsWith(".xaml", StringComparison.OrdinalIgnoreCase)))
+			foreach (var item in project.ParentSolution.Projects.SelectMany(p => p.Items).OfType<FileProjectItem>().Where(i => i.FileName.HasExtension(".xaml")))
 				interestingFileNames.Add(new FileName(item.FileName));
 			workAmount = interestingFileNames.Count;
 			workAmountInverse = 1.0 / workAmount;

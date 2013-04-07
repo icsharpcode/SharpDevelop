@@ -65,6 +65,26 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
+		/// Combines this directory name with a relative path.
+		/// </summary>
+		public FileName CombineFile(string relativeFileName)
+		{
+			if (relativeFileName == null)
+				return null;
+			return FileName.Create(Path.Combine(normalizedPath, relativeFileName));
+		}
+		
+		/// <summary>
+		/// Combines this directory name with a relative path.
+		/// </summary>
+		public DirectoryName CombineDirectory(string relativeDirectoryName)
+		{
+			if (relativeDirectoryName == null)
+				return null;
+			return DirectoryName.Create(Path.Combine(normalizedPath, relativeDirectoryName));
+		}
+		
+		/// <summary>
 		/// Converts the specified absolute path into a relative path (relative to <c>this</c>).
 		/// </summary>
 		public DirectoryName GetRelativePath(DirectoryName path)

@@ -355,7 +355,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					foreach (ProjectItem item in project.Items) {
 						if (FileUtility.IsBaseDirectory(oldName, item.FileName)) {
 							SD.GetRequiredService<IProjectServiceRaiseEvents>().RaiseProjectItemRemoved(new ProjectItemEventArgs(project, item));
-							item.FileName = FileUtility.RenameBaseDirectory(item.FileName, oldName, newName);
+							item.FileName = FileName.Create(FileUtility.RenameBaseDirectory(item.FileName, oldName, newName));
 							SD.GetRequiredService<IProjectServiceRaiseEvents>().RaiseProjectItemAdded(new ProjectItemEventArgs(project, item));
 						}
 					}

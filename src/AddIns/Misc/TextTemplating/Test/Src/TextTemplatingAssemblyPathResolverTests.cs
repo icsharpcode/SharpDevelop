@@ -108,7 +108,7 @@ namespace TextTemplating.Tests
 			CreateResolver();
 			ReferenceProjectItem reference = AddReferenceToProject("Test");
 			string expectedFileName = @"d:\projects\MyProject\lib\Test.dll";
-			reference.FileName = expectedFileName;
+			reference.FileName = FileName.Create(expectedFileName);
 			
 			string result = resolver.ResolvePath("Test");
 			

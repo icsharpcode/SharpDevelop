@@ -51,7 +51,7 @@ namespace ICSharpCode.CppBinding.Project
 //			get { return LanguageProperties.; }
 //		}
 
-		public override string OutputAssemblyFullPath
+		public override FileName OutputAssemblyFullPath
 		{
 			/// <summary>
 			/// For vcxprojs the output assembly location is stored in OutDir property.
@@ -61,19 +61,18 @@ namespace ICSharpCode.CppBinding.Project
 			{
 				string outputPath = GetEvaluatedProperty("OutDir") ?? "";
 				if (!Path.IsPathRooted(outputPath))
-					return FileUtility.NormalizePath(Path.Combine(ParentSolution.Directory, outputPath,
-					                                              AssemblyName + GetExtension(OutputType)));
+					return FileName.Create(Path.Combine(ParentSolution.Directory, outputPath,
+					                                    AssemblyName + GetExtension(OutputType)));
 				else
 				{
 					// this will be valid if there is an explicit OutDir property in vcxproj file.
-					if ((GetUnevalatedProperty("OutDir") ?? "").StartsWith("$(SolutionDir)"))
-					{
+					if ((GetUnevalatedProperty("OutDir") ?? "").StartsWith("$(SolutionDir)", StringComparison.OrdinalIgnoreCase)) {
 						// in #D every project is compiled by msbuild separately, this mean that SolutionDir will
 						// be equal to ProjectDir, so it has to be replaced with actual solution directory
 						string evaluatedSolutionDir = GetEvaluatedProperty("SolutionDir") ?? "";
 						outputPath = Path.Combine(ParentSolution.Directory, outputPath.Substring(evaluatedSolutionDir.Length));
 					}
-					return FileUtility.NormalizePath(Path.Combine(outputPath, AssemblyName + GetExtension(OutputType)));
+					return FileName.Create(Path.Combine(outputPath, AssemblyName + GetExtension(OutputType)));
 				}
 			}
 		}
