@@ -42,10 +42,6 @@
 		
 		<Style x:Key="expanderHeaderTextStyle" TargetType="{x:Type TextBlock}">
 			<Style.Triggers>
-				<!--				<DataTrigger Binding="{Binding IsExpandedInView}" Value="True">
-					<Setter Property="Background" Value="{x:Static SystemColors.HighlightBrush}" />
-					<Setter Property="Foreground" Value="{x:Static SystemColors.HighlightTextBrush}" />
-				</DataTrigger>-->
 				<DataTrigger Binding="{Binding HasHighlightCount}" Value="True">
 					<Setter Property="FontWeight" Value="Bold" />
 				</DataTrigger>
@@ -76,11 +72,19 @@
 		<Style x:Key="viewModelExpanderStyle" TargetType="{x:Type Expander}">
 			<Style.Triggers>
 				<DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsExpanded}" Value="True">
-					<Setter Property="Background" Value="White" />
-					<Setter Property="BorderBrush" Value="Black" />
+					<Setter Property="Background" Value="{x:Static SystemColors.WindowBrush}" />
+					<Setter Property="BorderBrush" Value="{x:Static SystemColors.WindowTextBrush}" />
 					<Setter Property="BorderThickness" Value="1" />
-					<Setter Property="Padding" Value="2" />
-					<Setter Property="Margin" Value="0,0,0,10" />
+				</DataTrigger>
+			</Style.Triggers>
+			<Setter Property="Padding" Value="2" />
+			<Setter Property="Margin" Value="0,5,0,5" />
+		</Style>
+		
+		<Style x:Key="viewModelExpanderListStyle" TargetType="{x:Type ListBox}">
+			<Style.Triggers>
+				<DataTrigger Binding="{Binding PackageRepositories.Count}" Value="0">
+					<Setter Property="Visibility" Value="Collapsed" />
 				</DataTrigger>
 			</Style.Triggers>
 		</Style>
@@ -92,12 +96,13 @@
 				Style="{StaticResource viewModelExpanderStyle}"
 				IsExpanded="{Binding IsExpandedInView}">
 				<ListBox
+					Style="{StaticResource viewModelExpanderListStyle}"
 					ItemsSource="{Binding PackageRepositories}"
 					ItemTemplate="{StaticResource packageRepositoryItemTemplate}"
 					SelectedItem="{Binding Path=SelectedPackageSource}"
 					BorderThickness="0"
 					Background="Transparent"
-					Margin="0,0,0,0"
+					Margin="1,1,1,1"
 					ScrollViewer.HorizontalScrollBarVisibility="Hidden"
 				/>
 			</Expander>
