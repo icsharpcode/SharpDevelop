@@ -481,5 +481,29 @@ select new { c.Name, o.OrderID, o.Total }",
 						}
 					}});
 		}
+		
+		[Test]
+		public void fSelect()
+		{
+			ParseUtilCSharp.AssertExpression(
+				"from arg in args where float.Parse(arg) == 1.0fselect arg",
+				new QueryExpression {
+					Clauses = {
+						new QueryFromClause {
+							Identifier = "arg",
+							Expression = new IdentifierExpression("args")
+						},
+						new QueryWhereClause {
+							Condition = new BinaryOperatorExpression(
+								new PrimitiveType("float").Invoke("Parse", new IdentifierExpression("arg")),
+								BinaryOperatorType.Equality,
+								new PrimitiveExpression(1.0f)
+							)
+						},
+						new QuerySelectClause {
+							Expression = new IdentifierExpression("arg")
+						}
+					}});
+		}
 	}
 }
