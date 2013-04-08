@@ -398,15 +398,28 @@ namespace ICSharpCode.NRefactory.CSharp
 					init.AcceptVisitor(this);
 				}
 			} else {
+				var lBrace = arrayInitializerExpression.LBraceToken;
+				var rBrace = arrayInitializerExpression.RBraceToken;
+
 				foreach (var child in arrayInitializerExpression.Children) {
 					if (child.Role == Roles.LBrace) {
-						FixOpenBrace(policy.ArrayInitializerBraceStyle, child);
+						if (lBrace.StartLocation.Line == rBrace.StartLocation.Line && policy.AllowOneLinedArrayInitialziers) {
+							ForceSpaceBefore(child, true);
+							ForceSpacesAfter(child, true);
+						} else {
+							FixOpenBrace(policy.ArrayInitializerBraceStyle, child);
+						}
 						curIndent.Push(IndentType.Block);
 						continue;
 					}
 					if (child.Role == Roles.RBrace) {
 						curIndent.Pop();
-						FixClosingBrace(policy.ArrayInitializerBraceStyle, child);
+						if (lBrace.StartLocation.Line == rBrace.StartLocation.Line && policy.AllowOneLinedArrayInitialziers) {
+							ForceSpaceBefore(child, true);
+
+						} else {
+							FixClosingBrace(policy.ArrayInitializerBraceStyle, child);
+						}
 						continue;
 					}
 					if (child.Role == Roles.Expression) {

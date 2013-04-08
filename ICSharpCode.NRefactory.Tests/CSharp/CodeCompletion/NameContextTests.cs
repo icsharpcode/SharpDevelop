@@ -28,79 +28,79 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 {
-	[TestFixture()]
+	[TestFixture]
 	public class NameContextTests : TestBase
 	{
-		[Test()]
+		[Test]
 		public void TestNamespaceName ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"$namespace n$");
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
-		[Test()]
+		[Test]
 		public void TestNamespaceNameCase2 ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"$namespace $");
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 
-		[Test()]
+		[Test]
 		public void TestNamespaceNameCase3 ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"$namespace Foo.b$");
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 
-		[Test()]
+		[Test]
 		public void TestNamespaceNameCase4 ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"$namespace Foo.$");
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 
-		[Test()]
+		[Test]
 		public void TestClassName ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"$class n$");
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestStructName ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"$struct n$");
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestInterfaceName ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"$interface n$");
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestEnumName ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"$enum n$");
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestDelegateName ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"$delegate void n$");
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestClassTypeParameter ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"$class MyClass<T$");
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestFieldName ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"class MyClass {
@@ -109,7 +109,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestParameterName ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"class MyClass {
@@ -118,7 +118,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestLocalVariableName ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"class MyClass {
@@ -130,7 +130,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestForeachLocalVariableName ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"class MyClass {
@@ -142,7 +142,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 
-		[Test()]
+		[Test]
 		public void TestForLoopLocalVariableName ()
 		{
 
@@ -155,7 +155,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 
-		[Test()]
+		[Test]
 		public void TestCatchExceptionName ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"class MyClass {
@@ -171,7 +171,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			/// <summary>
 		/// Bug 2198 - Typing generic argument to a class/method pops up type completion window
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug2198 ()
 		{
 			CodeCompletionBugTests.CombinedProviderTest (@"$class Klass <T$", provider => {
@@ -179,7 +179,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			});
 		}
 		
-		[Test()]
+		[Test]
 		public void TestBug2198Case2 ()
 		{
 			CodeCompletionBugTests.CombinedProviderTest (@"$class Klass { void Test<T$", provider => {
@@ -187,7 +187,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			});
 		}
 
-		[Test()]
+		[Test]
 		public void TestIndexerParameterName ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"class MyClass {
@@ -198,6 +198,33 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 	$public int this [int f, string x$
 }");
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
+		}
+
+		/// <summary>
+		/// Bug 11609 - Completion engine offers namespaces when user types anonymous method parameter name
+		/// </summary>
+		[Ignore]
+		[Test]
+		public void TestBug11609 ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (@"using System;
+
+namespace MyApplication
+{
+   class MyClass
+   {
+        void MyMethod ()
+        {
+            $SomeMethod (configurator: (Type s$
+        }
+
+        void SomeMethod (Action <Type> configurator)
+        {}
+    }
+}
+", provider => {
+				Assert.AreEqual (0, provider.Count, "provider needs to be empty");
+			});
 		}
 
 	}
