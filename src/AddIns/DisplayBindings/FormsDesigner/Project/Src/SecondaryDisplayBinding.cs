@@ -12,6 +12,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.FormsDesigner
 {
@@ -58,7 +59,7 @@ namespace ICSharpCode.FormsDesigner
 			return false;
 		}
 
-		public static bool IsDesignable(IParsedFile parsedFile, ICompilation compilation)
+		public static bool IsDesignable(IUnresolvedFile parsedFile, ICompilation compilation)
 		{
 			if (parsedFile == null)
 				return false;
@@ -77,17 +78,17 @@ namespace ICSharpCode.FormsDesigner
 		public bool CanAttachTo(IViewContent viewContent)
 		{
 			if (viewContent is ITextEditorProvider) {
-				ITextEditorProvider textEditorProvider = (ITextEditorProvider)viewContent;
 				FileName fileName      = viewContent.PrimaryFileName;
 				if (fileName == null)
 					return false;
 				
+				ITextEditor textEditor = viewContent.GetService<ITextEditor>();
 				string fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
 				
 				switch (fileExtension) {
 					case ".cs":
 //					case ".vb":
-						var parsedFile = SD.ParserService.ParseFile(fileName, textEditorProvider.TextEditor.Document);
+						var parsedFile = SD.ParserService.ParseFile(fileName, textEditor.Document);
 						var compilation = SD.ParserService.GetCompilationForFile(fileName);
 						if (IsDesignable(parsedFile, compilation))
 							return true;
@@ -99,6 +100,8 @@ namespace ICSharpCode.FormsDesigner
 		
 		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
 		{
+			return new IViewContent[0];
+			/*
 			if (viewContent.SecondaryViewContents.Any(c => c is FormsDesignerViewContent)) {
 				return new IViewContent[0];
 			}
@@ -125,7 +128,7 @@ namespace ICSharpCode.FormsDesigner
 				default:
 					throw new ApplicationException("Cannot create content for " + fileExtension);
 			}
-			return new IViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator) };
+			return new IViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator) }; */
 		}
 	}
 }

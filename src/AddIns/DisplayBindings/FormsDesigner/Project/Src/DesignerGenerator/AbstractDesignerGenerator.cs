@@ -19,9 +19,11 @@ using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.FormsDesigner
 {
+	/*
 	public abstract class AbstractDesignerGenerator : IDesignerGenerator
 	{
 		/// <summary>The currently open part of the class being designed.</summary>
@@ -81,11 +83,11 @@ namespace ICSharpCode.FormsDesigner
 					var initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(td);
 					if (initializeComponents != null) {
 						this.initializeComponents = (IUnresolvedMethod)initializeComponents.UnresolvedMember;
-						string designerFileName = this.initializeComponents.ParsedFile.FileName;
+						string designerFileName = this.initializeComponents.UnresolvedFile.FileName;
 						if (designerFileName != null) {
 							designerCodeFile = SD.FileService.GetOrCreateOpenedFile(designerFileName);
 							return td.Parts
-								.Select(p => SD.FileService.GetOrCreateOpenedFile(p.ParsedFile.FileName))
+								.Select(p => SD.FileService.GetOrCreateOpenedFile(p.UnresolvedFile.FileName))
 								.Distinct();
 						}
 					}
@@ -215,8 +217,6 @@ namespace ICSharpCode.FormsDesigner
 					return;
 				
 				// verify if we should rename the class
-				#warning Reimplement component renaming
-				/*
 				if (viewContent.Host.Container.Components[0] == component) {
 					ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameClass(this.formClass, newName);
 				} else {
@@ -226,7 +226,7 @@ namespace ICSharpCode.FormsDesigner
 						ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameMember(field, newName);
 					}
 				}
-				Reparse();*/
+				Reparse();
 			}
 		}
 		
@@ -444,7 +444,7 @@ namespace ICSharpCode.FormsDesigner
 			// Update currentClassPart from PrimaryFile
 			this.currentClassPart = null;
 			if (this.ViewContent.PrimaryFile != null && parsings.TryGetValue(this.ViewContent.PrimaryFile, out info)) {
-				foreach (var utd in info.ParsedFile.TopLevelTypeDefinitions) {
+				foreach (var utd in info.UnresolvedFile.TopLevelTypeDefinitions) {
 					var td = utd.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
 					if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(td)) {
 						if (FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(td) != null) {
@@ -471,7 +471,7 @@ namespace ICSharpCode.FormsDesigner
 				return null;
 			}
 			
-			var cu = info.ParsedFile;
+			var cu = info.UnresolvedFile;
 			foreach (var utd in cu.TopLevelTypeDefinitions) {
 				var td = utd.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
 				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(td)) {
@@ -574,7 +574,6 @@ namespace ICSharpCode.FormsDesigner
 			return strA == strB;
 		}
 		
-		/*
 		/// <summary>
 		/// Gets a method implementing the signature specified by the event descriptor
 		/// </summary>
@@ -602,7 +601,7 @@ namespace ICSharpCode.FormsDesigner
 				ConvertEventInvokeMethodToDom(context, eventType, methodName),
 				new ClassFinder(context, context.BodyRegion.BeginLine + 1, 1)
 			) as ICSharpCode.NRefactory.Ast.MethodDeclaration;
-		}*/
+		}
 		
 		protected virtual int GetEventHandlerInsertionLine(IUnresolvedTypeDefinition c)
 		{
@@ -646,5 +645,5 @@ namespace ICSharpCode.FormsDesigner
 			}
 			return null;
 		}
-	}
+	}*/
 }

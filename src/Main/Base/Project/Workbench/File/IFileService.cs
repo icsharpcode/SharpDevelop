@@ -93,20 +93,12 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// <summary>
 		/// Gets an opened file, or returns null if the file is not opened.
 		/// </summary>
-		OpenedFile GetOpenedFile(string fileName);
+		OpenedFile GetOpenedFile(FileName fileName);
 		
 		/// <summary>
 		/// Gets an opened file, or returns null if the file is not opened.
 		/// </summary>
-		OpenedFile GetOpenedFile(FileName fileName);
-		
-		/// <summary>
-		/// Gets or creates an opened file.
-		/// Warning: the opened file will be a file without any views attached.
-		/// Make sure to attach a view to it, or call CloseIfAllViewsClosed on the OpenedFile to
-		/// unload the OpenedFile instance if no views were attached to it.
-		/// </summary>
-		OpenedFile GetOrCreateOpenedFile(string fileName);
+		OpenedFile GetOpenedFile(string fileName);
 		
 		/// <summary>
 		/// Gets or creates an opened file.
@@ -115,6 +107,14 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// unload the OpenedFile instance if no views were attached to it.
 		/// </summary>
 		OpenedFile GetOrCreateOpenedFile(FileName fileName);
+		
+		/// <summary>
+		/// Gets or creates an opened file.
+		/// Warning: the opened file will be a file without any views attached.
+		/// Make sure to attach a view to it, or call CloseIfAllViewsClosed on the OpenedFile to
+		/// unload the OpenedFile instance if no views were attached to it.
+		/// </summary>
+		OpenedFile GetOrCreateOpenedFile(string fileName);
 		
 		/// <summary>
 		/// Creates a new untitled OpenedFile.

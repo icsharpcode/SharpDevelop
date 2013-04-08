@@ -48,7 +48,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		static void CreateToolboxService()
 		{
-			Debug.Assert(WorkbenchSingleton.InvokeRequired == false);
+			SD.MainThread.VerifyAccess();
 			if (toolboxService == null) {
 				sideBar = new SharpDevelopSideBar();
 				LoadToolbox();

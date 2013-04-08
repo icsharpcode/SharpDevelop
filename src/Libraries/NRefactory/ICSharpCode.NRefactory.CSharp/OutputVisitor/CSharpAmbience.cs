@@ -267,6 +267,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			astType.AcceptVisitor(new CSharpOutputVisitor(formatter, formattingPolicy));
 		}
 		
+		public string ConvertConstantValue(object constantValue)
+		{
+			return CSharpOutputVisitor.PrintPrimitiveValue(constantValue);
+		}
+		
 		public string WrapComment(string comment)
 		{
 			return "// " + comment;

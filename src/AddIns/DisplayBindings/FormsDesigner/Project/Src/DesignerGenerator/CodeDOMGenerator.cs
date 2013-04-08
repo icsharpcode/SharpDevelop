@@ -11,6 +11,7 @@ using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.FormsDesigner
 {
+	/*
 	/// <summary>
 	/// This class is able to generate a CodeDOM definition out of a XML file.
 	/// </summary>
@@ -76,5 +77,5 @@ namespace ICSharpCode.FormsDesigner
 			
 		}
 		
-	}
+	}*/
 }

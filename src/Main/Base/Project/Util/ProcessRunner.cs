@@ -484,7 +484,7 @@ namespace ICSharpCode.SharpDevelop
 			{
 				var currentProcess = new HandleRef(this, NativeMethods.GetCurrentProcess());
 				SafeWaitHandle safeWaitHandle;
-				if (!NativeMethods.DuplicateHandle(currentProcess, processHandle, currentProcess, out safeWaitHandle, 0, false, 2)) {
+				if (!NativeMethods.DuplicateHandle(currentProcess, processHandle, currentProcess, out safeWaitHandle, 0, false, NativeMethods.DUPLICATE_SAME_ACCESS)) {
 					throw new Win32Exception();
 				}
 				base.SafeWaitHandle = safeWaitHandle;

@@ -89,6 +89,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		string ConvertEntity(IEntity entity);
 		string ConvertType(IType type);
 		string ConvertVariable(IVariable variable);
+		string ConvertConstantValue(object constantValue);
 		
 		string WrapComment(string comment);
 	}

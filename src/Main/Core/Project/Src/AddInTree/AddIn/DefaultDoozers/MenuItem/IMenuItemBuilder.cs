@@ -13,4 +13,9 @@ namespace ICSharpCode.Core
 	{
 		IEnumerable<object> BuildItems(Codon codon, object parameter);
 	}
+	
+	[Obsolete("Use IMenuItemBuilder instead")]
+	public interface ISubmenuBuilder : IMenuItemBuilder
+	{
+	}
 }

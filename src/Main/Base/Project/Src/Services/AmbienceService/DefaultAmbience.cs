@@ -40,5 +40,16 @@ namespace ICSharpCode.SharpDevelop
 		{
 			return "// " + comment;
 		}
+		
+		public string ConvertConstantValue(object constantValue)
+		{
+			if (constantValue == null)
+				return "null";
+			if (constantValue is char)
+				return "'" + constantValue + "'";
+			if (constantValue is String)
+				return "\"" + constantValue + "\"";
+			return constantValue.ToString();
+		}
 	}
 }
