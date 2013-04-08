@@ -125,7 +125,7 @@ namespace ICSharpCode.NRefactory.Demo
 			int selectionEnd = selectionStart + csharpCodeTextBox.SelectionLength;
 			foreach (TreeNode t in c) {
 				AstNode node = t.Tag as AstNode;
-				if (node != null
+				if (node != null && !node.StartLocation.IsEmpty && !node.EndLocation.IsEmpty
 				    && selectionStart >= GetOffset(csharpCodeTextBox, node.StartLocation)
 				    && selectionEnd <= GetOffset(csharpCodeTextBox, node.EndLocation))
 				{
