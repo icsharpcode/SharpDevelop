@@ -65,6 +65,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
                                   script.Replace(constructorDeclaration.Initializer, ConstructorInitializer.Null.Clone());
                               });
 			}
+
+            public override void VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
+            {
+                //ignore properties
+            }
+            public override void  VisitFieldDeclaration(FieldDeclaration fieldDeclaration)
+            {
+                //ignore fields
+            }
+            public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
+            {
+                //ignore method declarations
+            }
 		}
 	}
 }
