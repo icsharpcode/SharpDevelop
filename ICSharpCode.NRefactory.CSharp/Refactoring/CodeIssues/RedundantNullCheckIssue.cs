@@ -37,7 +37,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					  Description = "When 'is' keyword is used, which implicitly check null.",
 					  Category = IssueCategories.Redundancies,
 					  Severity = Severity.Suggestion,
-					  IssueMarker = IssueMarker.GrayOut)]
+					  IssueMarker = IssueMarker.GrayOut,
+                      ResharperDisableKeyword = "ConditionIsAlwaysTrueOrFalse")]
 	public class RedundantNullCheckIssue : ICodeIssueProvider
 	{
 		private static readonly Pattern pattern1

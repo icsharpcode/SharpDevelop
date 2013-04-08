@@ -32,7 +32,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[IssueDescription("Call resolves to Object.GetHashCode, which is reference based",
 	                   Description = "Finds calls to Object.GetHashCode inside overridden GetHashCode.",
 	                   Category = IssueCategories.CodeQualityIssues,
-	                   Severity = Severity.Warning)]
+	                   Severity = Severity.Warning,
+                       ResharperDisableKeyword = "BaseObjectGetHashCodeCallInGetHashCode")]
 	public class IncorrectCallToObjectGetHashCodeIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)

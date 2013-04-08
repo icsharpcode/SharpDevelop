@@ -36,7 +36,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						Description = "Redundant type cast.",
 						Category = IssueCategories.Redundancies,
 						Severity = Severity.Warning,
-						IssueMarker = IssueMarker.GrayOut)]
+						IssueMarker = IssueMarker.GrayOut,
+                        ResharperDisableKeyword = "RedundantCast")]
 	public class RedundantTypeCastIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)

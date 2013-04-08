@@ -33,7 +33,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[IssueDescription("Simplify anonymous method to delegate",
 	                  Description = "Shows anonymous methods that can be simplified.",
 	                  Category = IssueCategories.CodeQualityIssues,
-	                  Severity = Severity.Warning)]
+	                  Severity = Severity.Warning,
+                      ResharperDisableKeyword = "ConvertClosureToMethodGroup")]
 	public class SimplifyAnonymousMethodToDelegateIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)

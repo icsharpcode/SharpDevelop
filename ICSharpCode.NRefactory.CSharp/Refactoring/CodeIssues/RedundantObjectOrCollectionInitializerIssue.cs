@@ -32,7 +32,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   Description = "Redundant empty object or collection initializer.",
 					   Category = IssueCategories.Redundancies,
 					   Severity = Severity.Suggestion,
-					   IssueMarker = IssueMarker.GrayOut)]
+					   IssueMarker = IssueMarker.GrayOut,
+                       ResharperDisableKeyword = "RedundantEmptyObjectOrCollectionInitializer")]
 	public class RedundantObjectOrCollectionInitializerIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
