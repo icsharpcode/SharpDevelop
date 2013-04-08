@@ -51,11 +51,11 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions {
                 );
         }
         [Test]
-        public void TestWithPublicFunction() {
+        public void TestWithVirtualFunction() {
             
             var input = @"class TestClass
 {
-	public void $Test ()
+	public virtual void $Test ()
 	{
 		int a = 2;
 	}
