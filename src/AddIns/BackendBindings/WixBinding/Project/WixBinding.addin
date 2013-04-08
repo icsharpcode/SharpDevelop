@@ -252,7 +252,7 @@
 				label = "Diff"
 				class = "ICSharpCode.WixBinding.ShowDiffCommand"/>
 		</ComplexCondition>
-		<!--<ComplexCondition action = "Exclude">
+		<ComplexCondition action = "Exclude">
 			<Or>
 				<Condition name = "Ownerstate" ownerstate = "ChildElementsAllowed"/> 
 				<Condition name = "Ownerstate" ownerstate = "NothingSelectedAndChildElementsAllowed"/>
@@ -264,7 +264,7 @@
 					 type = "Builder"
 					 class = "ICSharpCode.WixBinding.AddChildElementsMenuBuilder"/>
 			</MenuItem>
-		</ComplexCondition>-->
+		</ComplexCondition>
 		<ComplexCondition action = "Exclude">
 			<Or>
 				<Condition name = "Ownerstate" ownerstate = "ChildElementsAllowed"/> 

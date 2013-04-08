@@ -59,7 +59,7 @@ namespace WixBinding.Tests.Project
 		/// Tests that SharpDevelop constants (e.g. ${SharpDevelopBinPath}) 
 		/// are expanded if the preprocessor variable uses one.
 		/// </summary>
-		[Test, Ignore("See comment in WixProject.GetValue()")]
+		[Test]
 		public void VariableValueUsingSharpDevelopConstant()
 		{
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
