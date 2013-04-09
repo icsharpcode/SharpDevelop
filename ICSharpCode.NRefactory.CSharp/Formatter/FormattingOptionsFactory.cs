@@ -364,6 +364,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			baseOptions.EventRemoveBraceStyle = BraceStyle.NextLine;
 			baseOptions.StatementBraceStyle = BraceStyle.NextLine;
 			baseOptions.ArrayInitializerBraceStyle = BraceStyle.NextLine;
+
+			baseOptions.CatchNewLinePlacement = NewLinePlacement.NewLine;
+			baseOptions.ElseNewLinePlacement = NewLinePlacement.NewLine;
+			baseOptions.FinallyNewLinePlacement = NewLinePlacement.NewLine;
+			baseOptions.WhileNewLinePlacement = NewLinePlacement.DoNotCare;
+			baseOptions.ArrayInitializerWrapping = Wrapping.DoNotChange;
+
 			return baseOptions;
 		}
 	
