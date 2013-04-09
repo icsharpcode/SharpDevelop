@@ -59,27 +59,23 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
             public override void VisitTypeDeclaration(TypeDeclaration typedeclaration)
             {
                 var typeResolveResult = ctx.Resolve(typedeclaration) as TypeResolveResult;
-                var constructors = typeResolveResult.GetType().GetConstructors();
                 bool hasEmptyConstructor = false;
                 bool hasUnemptyConstructor = false;
                 ConstructorDeclaration emptyContructorNode = new ConstructorDeclaration();
 
-                foreach (var child in typedeclaration.Children)
+                foreach (var child in typedeclaration.Children.OfType<ConstructorDeclaration>())
                 {
-                    if (child is ConstructorDeclaration)
+					if (child.HasModifier(Modifiers.Static)) 
+						continue;
+					if (child.Body.Count() > 0 ||
+                         (child.Parameters.Count > 0))
                     {
-						if ((child as ConstructorDeclaration).HasModifier(Modifiers.Static)) 
-							continue;
-						if ((child as ConstructorDeclaration).Body.Count() > 0 ||
-                             ((child as ConstructorDeclaration).Parameters.Count > 0))
-                        {
-                            	hasUnemptyConstructor = true;
-                        }
-						else if ((child as ConstructorDeclaration).HasModifier(Modifiers.Public))
-                        {
-                            hasEmptyConstructor = true;
-                            emptyContructorNode = child as ConstructorDeclaration;
-                        }
+                        	hasUnemptyConstructor = true;
+                    }
+					else if (child.HasModifier(Modifiers.Public))
+                    {
+                        hasEmptyConstructor = true;
+                        emptyContructorNode = child;
                     }
                 }
 
