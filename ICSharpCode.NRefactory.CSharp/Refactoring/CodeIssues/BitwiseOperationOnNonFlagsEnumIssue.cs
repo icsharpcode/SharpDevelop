@@ -34,7 +34,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   Description = "Bitwise Operations on enum not marked with [Flags] attribute",
 					   Category = IssueCategories.CodeQualityIssues,
 					   Severity = Severity.Warning,
-					   IssueMarker = IssueMarker.Underline)]
+					   IssueMarker = IssueMarker.Underline,
+                       ResharperDisableKeyword = "BitwiseOperatorOnEnumWihtoutFlags")]
 	public class BitwiseOperationOnNonFlagsEnumIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)

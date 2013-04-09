@@ -33,7 +33,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[IssueDescription("The ThreadStatic attribute does nothing on instance fields",
 	                  Description = "Finds usages of ThreadStatic on instance fields.",
 	                  Category = IssueCategories.Notifications,
-	                  Severity = Severity.Warning)]
+	                  Severity = Severity.Warning,
+                      ResharperDisableKeyword = "ThreadStaticAtInstanceField")]
 	public class ThreadStaticOnInstanceFieldIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)

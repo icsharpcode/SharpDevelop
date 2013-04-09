@@ -33,7 +33,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[IssueDescription("A throw statement throws the caught exception by passing it explicitly",
 	                  Description = "Finds throws that throws the caught exception and therefore should be empty.",
 	                  Category = IssueCategories.CodeQualityIssues,
-	                  Severity = Severity.Warning)]
+	                  Severity = Severity.Warning,
+                      ResharperDisableKeyword = "PossibleIntendedRethrow")]
 	public class ExceptionRethrowIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)

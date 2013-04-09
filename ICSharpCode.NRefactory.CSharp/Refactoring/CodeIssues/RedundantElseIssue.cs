@@ -32,7 +32,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						Description = "Redundant 'else' keyword.",
 						Category = IssueCategories.Redundancies,
 						Severity = Severity.Warning,
-						IssueMarker = IssueMarker.GrayOut)]
+						IssueMarker = IssueMarker.GrayOut,
+                        ResharperDisableKeyword = "RedundantIfElseBlock")]
 	public class RedundantElseIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)

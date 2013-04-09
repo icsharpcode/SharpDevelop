@@ -34,7 +34,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   Description = "'?:' expression has identical true and false branches.",
 					   Category = IssueCategories.CodeQualityIssues,
 					   Severity = Severity.Warning,
-					   IssueMarker = IssueMarker.Underline)]
+					   IssueMarker = IssueMarker.Underline,
+                       ResharperDisableKeyword = "ConditionalTernaryEqualBranch")]
 	public class IdenticalConditionalBranchIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)

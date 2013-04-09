@@ -32,7 +32,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	                  Description = "Warns about catch clauses that only rethrows the exception.",
 	                  Category = IssueCategories.Redundancies,
 	                  Severity = Severity.Hint,
-	                  IssueMarker = IssueMarker.GrayOut)]
+	                  IssueMarker = IssueMarker.GrayOut,
+                      ResharperDisableKeyword = "RedundantCatchClause")]
 	public class RedundantCatchIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)

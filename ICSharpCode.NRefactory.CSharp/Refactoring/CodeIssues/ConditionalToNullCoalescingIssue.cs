@@ -37,7 +37,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[IssueDescription("'?:' expression can be converted to '??' expression",
 	                  Description="'?:' expression can be converted to '??' expression.",
 	                  Category = IssueCategories.Opportunities,
-	                  Severity = Severity.Suggestion)]
+	                  Severity = Severity.Suggestion,
+                      ResharperDisableKeyword = "ConvertConditionalTernaryToNullCoalescing")]
 	public class ConditionalToNullCoalescingIssue : ICodeIssueProvider
 	{
 		static readonly Pattern pattern = new Choice {

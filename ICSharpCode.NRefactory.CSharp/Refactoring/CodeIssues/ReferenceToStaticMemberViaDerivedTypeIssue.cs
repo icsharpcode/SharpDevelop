@@ -32,7 +32,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[IssueDescription("Call to static member via a derived class",
 	                   Description = "Suggests using the class declaring a static function when calling it.",
 	                   Category = IssueCategories.CodeQualityIssues,
-	                   Severity = Severity.Suggestion)]
+	                   Severity = Severity.Suggestion,
+                       ResharperDisableKeyword = "AccessToStaticMemberViaDerivedType")]
 	public class ReferenceToStaticMemberViaDerivedTypeIssue : ICodeIssueProvider
 	{
 		#region ICodeIssueProvider implementation

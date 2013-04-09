@@ -34,7 +34,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[IssueDescription("Inconsistent Naming",
 	       Description = "Name doesn't match the defined style for this entity.",
 	       Category = IssueCategories.ConstraintViolations,
-	       Severity = Severity.Warning)]
+	       Severity = Severity.Warning,
+           ResharperDisableKeyword = "CheckNamespace")]
 	public class InconsistentNamingIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)

@@ -35,7 +35,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   Description = "Method with optional parameter is hidden by overload",
 					   Category = IssueCategories.CodeQualityIssues,
 					   Severity = Severity.Warning,
-					   IssueMarker = IssueMarker.Underline)]
+					   IssueMarker = IssueMarker.Underline,
+                       ResharperDisableKeyword = "MethodOverloadWithOptionalParameter")]
 	public class MethodOverloadHidesOptionalParameterIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
