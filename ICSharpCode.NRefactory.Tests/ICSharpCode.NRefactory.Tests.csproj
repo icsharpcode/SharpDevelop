@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
     <ProjectGuid>{63D3B27A-D966-4902-90B3-30290E1692F1}</ProjectGuid>
@@ -403,10 +403,12 @@
     <Compile Include="CSharp\CodeIssues\NoDefaultConstructorIssueTests.cs" />
     <Compile Include="CSharp\CodeActions\InvertIfAndSimplifyTests.cs" />
     <Compile Include="FormattingTests\TestExpressionFormatting.cs" />
-    <Compile Include="CSharp\CodeIssues\RedundantNullCheckTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantNullCheckTests.cs">
+    </Compile>
     <Compile Include="CSharp\CodeIssues\StaticConstructorAccessModifierTest.cs" />
 
 	<Compile Include="CSharp\CodeIssues\RedundantBaseConstructorIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantConstructorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">
