@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,40 +32,39 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-    [IssueDescription("Static constructor should be without access modifier",
+	[IssueDescription("Static constructor should be without access modifier",
                        Description = "Static constructor should be without access modifier",
                        Category = IssueCategories.CompilerErrors,
                        Severity = Severity.Error,
                        ResharperDisableKeyword = "StaticConstructorAccessModifier",
                        IssueMarker = IssueMarker.Underline)]
-    public class StaticConstructorAccessModifierIssue : ICodeIssueProvider
-    {
-        public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
-        {
-            var unit = context.RootNode as SyntaxTree;
-            if (unit == null)
-                return Enumerable.Empty<CodeIssue>();
-            return new GatherVisitor(context).GetIssues();
-        }
+	public class StaticConstructorAccessModifierIssue : ICodeIssueProvider
+	{
+		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
+		{
+			var unit = context.RootNode as SyntaxTree;
+			if (unit == null)
+				return Enumerable.Empty<CodeIssue>();
+			return new GatherVisitor(context).GetIssues();
+		}
 
-        class GatherVisitor : GatherVisitorBase<StaticConstructorAccessModifierIssue>
-        {
-            public GatherVisitor(BaseRefactoringContext ctx)
+		class GatherVisitor : GatherVisitorBase<StaticConstructorAccessModifierIssue>
+		{
+			public GatherVisitor(BaseRefactoringContext ctx)
                 : base(ctx)
-            {
-            }
+			{
+			}
 
-            public override void VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
-            {
-                if (!constructorDeclaration.HasModifier(Modifiers.Static))
-                    return;
-                if (constructorDeclaration.HasModifier(Modifiers.Public) ||
-                    constructorDeclaration.HasModifier(Modifiers.Private) ||
-                    constructorDeclaration.HasModifier(Modifiers.Protected))
-                {
-                    AddIssue(constructorDeclaration, ctx.TranslateString("Static constructor cannot take access modifier"));
-                }
-            }
-        }
-    }
+			public override void VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
+			{
+				if (!constructorDeclaration.HasModifier(Modifiers.Static))
+					return;
+				if (constructorDeclaration.HasModifier(Modifiers.Public) ||
+					constructorDeclaration.HasModifier(Modifiers.Private) ||
+					constructorDeclaration.HasModifier(Modifiers.Protected)) {
+					AddIssue(constructorDeclaration, ctx.TranslateString("Static constructor cannot take access modifier"));
+				}
+			}
+		}
+	}
 }

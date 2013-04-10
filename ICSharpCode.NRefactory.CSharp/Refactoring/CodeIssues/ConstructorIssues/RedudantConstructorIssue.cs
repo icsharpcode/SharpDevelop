@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,62 +32,54 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-    [IssueDescription("An empty constructor is not necessary",
-                       Description = "An alone empty constructor is not necessary.",
+	[IssueDescription("An empty constructor is not necessary",
+	                   Description = "An alone empty constructor is not necessary.",
                        Category = IssueCategories.Redundancies,
                        Severity = Severity.Suggestion,
-	                   ResharperDisableKeyword = "RedundantConstructor",
+	     			   ResharperDisableKeyword = "RedundantConstructor",
                        IssueMarker = IssueMarker.GrayOut)]
-    public class RedundantConstructorIssue : ICodeIssueProvider
-    {
-        public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
-        {
-            var unit = context.RootNode as SyntaxTree;
-            if (unit == null)
-                return Enumerable.Empty<CodeIssue>();
-            return new GatherVisitor(context).GetIssues();
-        }
+	public class RedundantConstructorIssue : ICodeIssueProvider
+	{
+		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
+		{
+			var unit = context.RootNode as SyntaxTree;
+			if (unit == null)
+				return Enumerable.Empty<CodeIssue>();
+			return new GatherVisitor(context).GetIssues();
+		}
 
 		class GatherVisitor : GatherVisitorBase<RedundantConstructorIssue>
-        {
-            public GatherVisitor(BaseRefactoringContext ctx)
+		{
+			public GatherVisitor(BaseRefactoringContext ctx)
                 : base(ctx)
-            {
-            }
+			{
+			}
 
-            public override void VisitTypeDeclaration(TypeDeclaration typedeclaration)
-            {
-                var typeResolveResult = ctx.Resolve(typedeclaration) as TypeResolveResult;
-                bool hasEmptyConstructor = false;
-                bool hasUnemptyConstructor = false;
-                ConstructorDeclaration emptyContructorNode = new ConstructorDeclaration();
+			public override void VisitTypeDeclaration(TypeDeclaration typedeclaration)
+			{
+				bool hasEmptyConstructor = false;
+				bool hasUnemptyConstructor = false;
+				ConstructorDeclaration emptyContructorNode = new ConstructorDeclaration();
 
-                foreach (var child in typedeclaration.Children.OfType<ConstructorDeclaration>())
-                {
+				foreach (var child in typedeclaration.Children.OfType<ConstructorDeclaration>()) {
 					if (child.HasModifier(Modifiers.Static)) 
 						continue;
-					if (child.Body.Count() > 0 ||
-                         (child.Parameters.Count > 0))
-                    {
-                        	hasUnemptyConstructor = true;
-                    }
-					else if (child.HasModifier(Modifiers.Public))
-                    {
-                        hasEmptyConstructor = true;
-                        emptyContructorNode = child;
-                    }
-                }
+					if (child.Body.Count() > 0 || (child.Parameters.Count > 0)) {
+						hasUnemptyConstructor = true;
+					} else if (child.HasModifier(Modifiers.Public)) {
+						hasEmptyConstructor = true;
+						emptyContructorNode = child;
+					}
+				}
 
-                if (!hasUnemptyConstructor && hasEmptyConstructor) 
-                {
-                    AddIssue(emptyContructorNode, ctx.TranslateString("Remove redundant constructor"), script =>
-                    {
-                        script.Remove(emptyContructorNode);
-                    }
-                    );   
-                }
-                return;   
-            }
-        }
-    }
+				if (!hasUnemptyConstructor && hasEmptyConstructor) {
+					AddIssue(emptyContructorNode, ctx.TranslateString("Remove redundant constructor"), script =>
+					{
+						script.Remove(emptyContructorNode);
+					});   
+				}
+				return;   
+			}
+		}
+	}
 }
