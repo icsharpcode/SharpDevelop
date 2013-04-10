@@ -68,15 +68,25 @@ namespace ICSharpCode.SharpDevelop.Project
 				return new CompositeDisposable(base.BatchUpdate(), folder.parentSolution.ReportBatch());
 			}
 			
+			protected override void OnAdd(ISolutionItem item)
+			{
+				base.OnAdd(item);
+				item.ParentFolder = folder;
+			}
+			
+			protected override void OnRemove(ISolutionItem item)
+			{
+				base.OnRemove(item);
+				item.ParentFolder = null;
+			}
+			
 			protected override void OnCollectionChanged(IReadOnlyCollection<ISolutionItem> removedItems, IReadOnlyCollection<ISolutionItem> addedItems)
 			{
 				using (folder.parentSolution.ReportBatch()) {
 					foreach (ISolutionItem item in removedItems) {
 						folder.parentSolution.ReportRemovedItem(item);
-						item.ParentFolder = null;
 					}
 					foreach (ISolutionItem item in addedItems) {
-						item.ParentFolder = folder;
 						folder.parentSolution.ReportAddedItem(item);
 					}
 				}

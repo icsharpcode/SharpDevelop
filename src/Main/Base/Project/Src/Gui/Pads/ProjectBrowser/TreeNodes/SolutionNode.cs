@@ -119,7 +119,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				folderNode.Remove();
 				folderNode.InsertSorted(this);
 				
-				this.solution.Items.Add(folderNode.Folder);
+				SolutionFolderNode.MoveItem(folderNode.Folder, this.solution);
 			}
 			if (dataObject.GetDataPresent(typeof(ProjectNode))) {
 				ProjectNode projectNode = (ProjectNode)dataObject.GetData(typeof(ProjectNode));
@@ -128,7 +128,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				projectNode.Remove();
 				projectNode.InsertSorted(this);
 				projectNode.EnsureVisible();
-				this.solution.Items.Add(projectNode.Project);
+				SolutionFolderNode.MoveItem(projectNode.Project, this.solution);
 			}
 			
 			if (parentNode != null) {

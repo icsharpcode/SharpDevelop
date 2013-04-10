@@ -122,13 +122,39 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		#region IMutableModelCollection implementation
 		
+		/// <summary>
+		/// Called immediately when an item is removed; even within a batch.
+		/// The collection may be in an invalid state while this method is called.
+		/// </summary>
+		protected virtual void OnRemove(T item)
+		{
+			if (addedItems != null && addedItems.Remove(item))
+				return;
+			if (removedItems == null)
+				removedItems = new List<T>();
+			removedItems.Add(item);
+		}
+		
+		/// <summary>
+		/// Called immediately when an item is added; even within a batch.
+		/// The collection may be in an invalid state while this method is called.
+		/// </summary>
+		protected virtual void OnAdd(T item)
+		{
+			if (removedItems != null && removedItems.Remove(item))
+				return;
+			if (addedItems == null)
+				addedItems = new List<T>();
+			addedItems.Add(item);
+		}
+		
 		public void Clear()
 		{
 			CheckReentrancy();
 			addedItems = null;
-			if (removedItems == null)
-				removedItems = new List<T>();
-			removedItems.AddRange(list);
+			for (int i = 0; i < list.Count; i++) {
+				OnRemove(list[i]);
+			}
 			list.Clear();
 			RaiseEventIfNotInBatch();
 		}
@@ -137,11 +163,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			CheckReentrancy();
 			ValidateItem(item);
-			if (removedItems != null)
-				removedItems.Remove(item);
-			if (addedItems == null)
-				addedItems = new List<T>();
-			addedItems.Add(item);
+			OnAdd(item);
 			list.Add(item);
 			RaiseEventIfNotInBatch();
 		}
@@ -155,15 +177,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			for (int i = 0; i < itemsList.Count; i++) {
 				ValidateItem(itemsList[i]);
 			}
-			if (removedItems != null) {
-				for (int i = 0; i < itemsList.Count; i++) {
-					removedItems.Remove(itemsList[i]);
-				}
+			for (int i = 0; i < itemsList.Count; i++) {
+				OnAdd(itemsList[i]);
 			}
-			if (addedItems != null)
-				addedItems.AddRange(itemsList);
-			else
-				addedItems = itemsList;
 			list.AddRange(itemsList);
 			RaiseEventIfNotInBatch();
 		}
@@ -172,11 +188,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			CheckReentrancy();
 			if (list.Remove(item)) {
-				if (addedItems != null)
-					addedItems.Remove(item);
-				if (removedItems == null)
-					removedItems = new List<T>();
-				removedItems.Add(item);
+				OnRemove(item);
 				RaiseEventIfNotInBatch();
 				return true;
 			} else {
@@ -190,11 +202,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			int count = list.RemoveAll(
 				delegate(T obj) {
 					if (predicate(obj)) {
-						if (addedItems != null)
-							addedItems.Remove(obj);
-						if (removedItems == null)
-							removedItems = new List<T>();
-						removedItems.Add(obj);
+						OnRemove(obj);
 						return true;
 					} else {
 						return false;

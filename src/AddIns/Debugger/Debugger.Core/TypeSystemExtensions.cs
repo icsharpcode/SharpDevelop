@@ -237,7 +237,7 @@ namespace Debugger
 							0, elementType);
 					}
 				default:
-					throw new System.Exception("Invalid value for TypeKind");
+					throw new System.Exception("Invalid value for TypeKind: " + type.Kind);
 			}
 		}
 		

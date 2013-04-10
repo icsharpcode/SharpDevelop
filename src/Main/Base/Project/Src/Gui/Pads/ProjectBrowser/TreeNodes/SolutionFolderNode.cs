@@ -169,14 +169,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				Guid guid = Guid.Parse(dataObject.GetData(typeof(ISolutionItem).ToString()).ToString());
 				ISolutionItem solutionItem = folderNode.Solution.GetItemByGuid(guid);
 				if (solutionItem != null) {
-					// Use a batch update to move the item without causing projects
-					// be removed from the solution (and thus disposed).
-					using (solutionItem.ParentFolder.Items.BatchUpdate()) {
-						using (folderNode.Folder.Items.BatchUpdate()) {
-							solutionItem.ParentFolder.Items.Remove(solutionItem);
-							folderNode.Folder.Items.Add(solutionItem);
-						}
-					}
+					MoveItem(solutionItem, folderNode.Folder);
 					ExtTreeView treeView = (ExtTreeView)folderTreeNode.TreeView;
 					foreach (ExtTreeNode node in treeView.CutNodes) {
 						ExtTreeNode oldParent = node.Parent as ExtTreeNode;
@@ -192,7 +185,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			folderTreeNode.Expand();
 		}
-		
+
+		internal static void MoveItem(ISolutionItem solutionItem, ISolutionFolder folder)
+		{
+			// Use a batch update to move the item without causing projects
+			// be removed from the solution (and thus disposed).
+			using (solutionItem.ParentFolder.Items.BatchUpdate()) {
+				using (folder.Items.BatchUpdate()) {
+					solutionItem.ParentFolder.Items.Remove(solutionItem);
+					folder.Items.Add(solutionItem);
+				}
+			}
+		}
+
 		public override bool EnablePaste {
 			get {
 				return DoEnablePaste(this);
@@ -255,7 +260,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				folderNode.Remove();
 				folderNode.InsertSorted(this);
 				folderNode.EnsureVisible();
-				this.folder.Items.Add(folderNode.Folder);
+				MoveItem(folderNode.Folder, this.folder);
+				
 				if (parentNode != null) {
 					parentNode.Refresh();
 				}
@@ -264,9 +270,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (dataObject.GetDataPresent(typeof(SolutionItemNode))) {
 				SolutionItemNode solutionItemNode = (SolutionItemNode)dataObject.GetData(typeof(SolutionItemNode));
 				
-				ISolutionFolderNode folderNode = (ISolutionFolderNode)solutionItemNode.Parent;
-				folderNode.Folder.Items.Remove(solutionItemNode.SolutionItem);
-				Folder.Items.Add(solutionItemNode.SolutionItem);
+				MoveItem(solutionItemNode.SolutionItem, this.folder);
 				
 				solutionItemNode.Remove();
 				solutionItemNode.InsertSorted(this);
@@ -282,7 +286,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				projectNode.Remove();
 				projectNode.InsertSorted(this);
 				projectNode.EnsureVisible();
-				this.folder.Items.Add(projectNode.Project);
+				MoveItem(projectNode.Project, this.folder);
 				
 				if (projectNode.Parent != null) {
 					((ExtTreeNode)projectNode.Parent).Refresh();

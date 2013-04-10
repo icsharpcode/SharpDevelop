@@ -416,10 +416,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 				// OnDragDrop raises without OnDragOver for the node.
 				// So we have to call HandleDragOver to ensure that we don't call DoDragDrop for
 				// invalid operations.
-				HandleDragOver(e, node);
-				if (e.Effect != DragDropEffects.None) {
-					node.DoDragDrop(e.Data, e.Effect);
-					SortParentNodes(node);
+				try {
+					HandleDragOver(e, node);
+					if (e.Effect != DragDropEffects.None) {
+						node.DoDragDrop(e.Data, e.Effect);
+						SortParentNodes(node);
+					}
+				} catch (Exception ex) {
+					// WinForms silently discards exceptions in the drag'n'drop events; so we need to catch+report any errors
+					SD.MessageService.ShowException(ex);
 				}
 			}
 		}
