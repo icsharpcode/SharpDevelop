@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Drawing;
 
 namespace ICSharpCode.Reporting.Interfaces
 {
@@ -16,8 +17,8 @@ namespace ICSharpCode.Reporting.Interfaces
 	public interface IReportItem
 	{
 		string Name{get;set;}
-//		Size Size {get;set;}
-//		Point Location {get;set;}
+		Size Size {get;set;}
+		Point Location {get;set;}
 //		Font Font {get;set;}
 ////		bool VisibleInReport {get;set;}
 //		Color BackColor {get;set;}
@@ -25,5 +26,6 @@ namespace ICSharpCode.Reporting.Interfaces
 //		int SectionOffset {get;set;}
 //		bool CanGrow {get;set;}
 //		bool CanShrink {get;set;} 
+IExportColumn CreateExportColumn();
 	}
 }

@@ -58,17 +58,24 @@
     <Compile Include="Src\BaseClasses\Page.cs" />
     <Compile Include="Src\BaseClasses\PageInfo.cs" />
     <Compile Include="Src\Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\Factories\ExportColumnFactory.cs" />
     <Compile Include="Src\Factories\SectionFactory.cs" />
+    <Compile Include="Src\Interfaces\IExportColumn.cs" />
     <Compile Include="Src\Interfaces\IReportItem.cs" />
     <Compile Include="Src\Interfaces\IReportCreator.cs" />
+    <Compile Include="Src\Interfaces\ISection.cs" />
     <Compile Include="Src\Items\BaseSection.cs" />
     <Compile Include="Src\Globals\GlobalEnums.cs" />
     <Compile Include="Src\Globals\GlobalValues.cs" />
     <Compile Include="Src\Interfaces\IReportModel.cs" />
+    <Compile Include="Src\Items\BaseTextItem.cs" />
     <Compile Include="Src\Items\ReportItem.cs" />
     <Compile Include="Src\Items\ReportModel.cs" />
     <Compile Include="Src\Items\ReportSettings.cs" />
     <Compile Include="Src\PageBuilder\BasePageBuilder.cs" />
+    <Compile Include="Src\PageBuilder\Converter\SectionConverter.cs" />
+    <Compile Include="Src\PageBuilder\ExportColumns\BaseExportColumn.cs" />
+    <Compile Include="Src\PageBuilder\ExportColumns\ExportText.cs" />
     <Compile Include="Src\PageBuilder\FormPageBuilder.cs" />
     <Compile Include="Src\ReportingFactory.cs" />
     <Compile Include="Src\Xml\ModelLoader.cs" />
@@ -83,6 +90,8 @@
     <Folder Include="Src\BaseClasses" />
     <Folder Include="Src\Factories" />
     <Folder Include="Src\PageBuilder" />
+    <Folder Include="Src\PageBuilder\Converter" />
+    <Folder Include="Src\PageBuilder\ExportColumns" />
     <Folder Include="Src\Xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

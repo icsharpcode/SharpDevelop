@@ -7,8 +7,10 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Drawing;
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.Reporting.PageBuilder.Converter;
 
 namespace ICSharpCode.Reporting.PageBuilder
 {
@@ -22,7 +24,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		public FormPageBuilder(IReportModel reportModel):base(reportModel)
 		{
-			
 		}
 		
 		
@@ -30,6 +31,19 @@ namespace ICSharpCode.Reporting.PageBuilder
 		{
 			base.BuildExportList();
 			WritePages ();
+			BuildReportHeader();
+		}
+		
+		
+		void BuildReportHeader()
+		{
+			if (Pages.Count == 0) {
+				
+				CurrentLocation = new Point(10,10);
+				var sc = new SectionConverter(ReportModel.ReportHeader,base.CurrentLocation);
+				var itemsList = sc.Convert();
+				CurrentPage.Items.AddRange(itemsList);
+			}
 		}
 		
 		
@@ -38,12 +52,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			CurrentPage = base.InitNewPage();
 			this.BuildReportHeader();
 			base.AddPage(CurrentPage);
+			var x = ReportModel;
 		}
-		
-		void BuildReportHeader()
-		{
-			
-		}
-	
 	}
 }

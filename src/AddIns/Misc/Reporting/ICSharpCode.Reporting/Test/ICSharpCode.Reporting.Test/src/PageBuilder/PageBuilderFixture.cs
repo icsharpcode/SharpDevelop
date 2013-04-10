@@ -22,12 +22,16 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 
 		private IReportCreator reportCreator;
 		
+		
 		[Test]
 		public void CanCreateFormsPageBuilder()
 		{
 			Assert.IsNotNull(reportCreator);
 		}
 		
+		
+		
+		#region Pages
 		
 		[Test]
 		public void PagesCountIsZero () {
@@ -44,26 +48,22 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		
 		[Test]
 		public void CurrentPageIsSet() {
-			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
-			var stream = asm.GetManifestResourceStream(TestHelper.PlainReportFileName);
-			var reportingFactory = new ReportingFactory();
-			var reportCreator = (FormPageBuilder)reportingFactory.ReportCreator(stream);
+
 			reportCreator.BuildExportList();
-			Assert.That(reportCreator.CurrentPage,Is.Not.Null);
+			Assert.That(reportCreator.Pages[0],Is.Not.Null);
 		}
 		
 		
 		[Test]
 		public void CurrentPageIsFirstPage() {
-			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
-			var stream = asm.GetManifestResourceStream(TestHelper.PlainReportFileName);
-			var reportingFactory = new ReportingFactory();
-			var reportCreator = (FormPageBuilder)reportingFactory.ReportCreator(stream);
 			reportCreator.BuildExportList();
-			Assert.That(reportCreator.CurrentPage.IsFirstPage,Is.True);
+			Assert.That(reportCreator.Pages[0].IsFirstPage,Is.True);
 			Assert.That(reportCreator.Pages[0].IsFirstPage,Is.True);
 		}
 		
+		#endregion
+		
+		#region PageInfo
 		
 		[Test]
 		public void PageInfoPageNumberIsOne() {
@@ -73,7 +73,6 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		}
 
 	
-		
 		[Test]
 		public void PageInfoReportName() {
 			reportCreator.BuildExportList();
@@ -81,12 +80,13 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 			Assert.That(pi.ReportName,Is.EqualTo("Report1"));
 		}
 		
+		#endregion
 		
 		[SetUp]
 		public void LoadFromStream()
 		{
 			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
-			var stream = asm.GetManifestResourceStream(TestHelper.PlainReportFileName);
+			var stream = asm.GetManifestResourceStream(TestHelper.RepWithTwoItems);
 			var reportingFactory = new ReportingFactory();
 			reportCreator = reportingFactory.ReportCreator(stream);
 		}

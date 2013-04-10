@@ -8,6 +8,8 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Interfaces;
 
@@ -40,7 +42,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			var pi = new PageInfo();
 			pi.PageNumber = Pages.Count +1;
 			pi.ReportName = ReportModel.ReportSettings.ReportName;
-		pi.ReportFileName = ReportModel.ReportSettings.FileName;
+			pi.ReportFileName = ReportModel.ReportSettings.FileName;
 //			pi.ReportName = ReportModel.ReportSettings.ReportName;
 			return pi;
 		}
@@ -60,6 +62,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		protected IReportModel ReportModel {get; private set;}
+		
+		protected Point CurrentLocation {get; set;}
 		
 		public  IPage CurrentPage {get; protected set;}
 		

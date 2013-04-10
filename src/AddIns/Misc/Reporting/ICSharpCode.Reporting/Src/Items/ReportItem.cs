@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Drawing;
 using ICSharpCode.Reporting.Interfaces;
 
 namespace ICSharpCode.Reporting.Items
@@ -23,5 +24,12 @@ namespace ICSharpCode.Reporting.Items
 		
 		public string Name {get;set;}
 			
+		public Point Location {get;set;}
+		
+		public Size Size {get;set;}
+		
+		public virtual IExportColumn CreateExportColumn() {
+			return null;
+		}
 	}
 }

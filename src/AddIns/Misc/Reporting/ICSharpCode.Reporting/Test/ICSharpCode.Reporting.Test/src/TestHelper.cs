@@ -17,6 +17,7 @@ namespace ICSharpCode.Reporting.Test
 	{
 		private const string nameSpace = "ICSharpCode.Reporting.Test.src.TestReports.";
 		private const string plainReportName = "PlainModel.srd";
+		private const string rr = "ReportWithTwoItems.srd";
 		
 		public TestHelper()
 		{
@@ -24,6 +25,10 @@ namespace ICSharpCode.Reporting.Test
 		
 		public static string PlainReportFileName{
 			get{return nameSpace + plainReportName;}
+		}
+		
+		public static string RepWithTwoItems {
+			get {return nameSpace + rr;}
 		}
 	}
 }

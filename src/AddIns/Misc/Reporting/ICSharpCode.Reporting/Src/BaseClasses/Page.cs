@@ -7,6 +7,8 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.Generic;
+using ICSharpCode.Reporting.Interfaces;
 
 namespace ICSharpCode.Reporting.BaseClasses
 {
@@ -22,6 +24,7 @@ namespace ICSharpCode.Reporting.BaseClasses
 	public interface IPage{
 		bool IsFirstPage {get;set;}
 		IPageInfo PageInfo {get;}
+		List<IExportColumn> Items {get; set;}
 	}
 	
 	
@@ -35,6 +38,7 @@ namespace ICSharpCode.Reporting.BaseClasses
 				throw new ArgumentNullException("pageInfo");
 			}
 			PageInfo = pageInfo;
+			Items = new List<IExportColumn>();
 		}
 		
 		public bool IsFirstPage {get;set;}
@@ -42,5 +46,6 @@ namespace ICSharpCode.Reporting.BaseClasses
 		
 		public IPageInfo PageInfo {get;private set;}
 		
+		public List<IExportColumn> Items {get; set;}
 	}
 }
