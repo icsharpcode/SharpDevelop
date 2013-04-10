@@ -2010,6 +2010,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			bool isEndpointUnreachable;
 			
 			// The actual return type is set when the lambda is applied by the conversion.
+			// For async lambdas, this is the unpacked task type
 			IType actualReturnType;
 			
 			internal override bool IsUndecided {
@@ -2033,7 +2034,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						Analyze();
 						if (returnValues.Count == 1) {
 							bodyRR = returnValues[0];
-							if (!actualReturnType.IsKnownType(KnownTypeCode.Void)) {
+							if (actualReturnType.Kind != TypeKind.Void) {
 								var conv = storedContext.conversions.ImplicitConversion(bodyRR, actualReturnType);
 								if (!conv.IsIdentityConversion)
 									bodyRR = new ConversionResolveResult(actualReturnType, bodyRR, conv, storedContext.CheckForOverflow);
@@ -2135,6 +2136,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// Explicitly typed lambdas do not use a nested visitor
 					throw new InvalidOperationException();
 				}
+				if (isAsync)
+					returnType = parentVisitor.UnpackTask(returnType);
 				if (actualReturnType != null) {
 					if (actualReturnType.Equals(returnType))
 						return; // return type already set
@@ -2144,8 +2147,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				visitor.undecidedLambdas.Remove(this);
 				Analyze();
 				Log.WriteLine("Applying return type {0} to explicitly-typed lambda {1}", returnType, this.LambdaExpression);
-				if (isAsync)
-					returnType = parentVisitor.UnpackTask(returnType);
 				if (returnType.Kind != TypeKind.Void) {
 					for (int i = 0; i < returnExpressions.Count; i++) {
 						visitor.ProcessConversion(returnExpressions[i], returnValues[i], returnType);
@@ -2464,6 +2465,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				else if (lambda.winningHypothesis != null)
 					throw new InvalidOperationException("Trying to merge conflicting hypotheses");
 				
+				if (lambda.IsAsync)
+					returnType = parentVisitor.UnpackTask(returnType);
+				
 				lambda.winningHypothesis = this;
 				lambda.parameters = lambdaParameters; // replace untyped parameters with typed parameters
 				if (lambda.BodyExpression is Expression && returnValues.Count == 1) {
@@ -2476,8 +2480,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				
 				Log.WriteLine("Applying return type {0} to implicitly-typed lambda {1}", returnType, lambda.LambdaExpression);
-				if (lambda.IsAsync)
-					returnType = parentVisitor.UnpackTask(returnType);
 				if (returnType.Kind != TypeKind.Void) {
 					for (int i = 0; i < returnExpressions.Count; i++) {
 						visitor.ProcessConversion(returnExpressions[i], returnValues[i], returnType);
@@ -2697,6 +2699,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Gets the T in Task&lt;T&gt;.
 		/// Returns void for non-generic Task.
+		/// Any other type is returned unmodified.
 		/// </summary>
 		IType UnpackTask(IType type)
 		{

@@ -333,6 +333,52 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				new [] { compilation.FindType(KnownTypeCode.Int32) },
 				ti.InferTypeArguments(methodTypeParameters, arguments, parameterTypes, out success, classTypeArguments));
 		}
+		
+		[Test]
+		public void InferFromImplicitAsyncLambda()
+		{
+			string program = @"using System;
+using System.Threading.Tasks;
+
+class Test
+{
+	static T M<T>(Func<int, Task<T>> f)
+	{
+		return f(0);
+	}
+	public static void Test()
+	{
+		$M(async x => x + 1)$;
+	}
+}
+";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("System.Int32", ((IMethod)rr.Member).TypeArguments[0].FullName);
+		}
+		
+		[Test]
+		public void InferFromExplicitAsyncLambda()
+		{
+			string program = @"using System;
+using System.Threading.Tasks;
+
+class Test
+{
+	static T M<T>(Func<int, Task<T>> f)
+	{
+		return f(0);
+	}
+	public static void Test()
+	{
+		$M(async (int x) => x + 1)$;
+	}
+}
+";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("System.Int32", ((IMethod)rr.Member).TypeArguments[0].FullName);
+		}
 		#endregion
 		
 		#region FindTypeInBounds
