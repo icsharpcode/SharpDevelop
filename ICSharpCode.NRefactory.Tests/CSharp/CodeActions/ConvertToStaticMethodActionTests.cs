@@ -59,6 +59,22 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions {
 	{
 		int a = 2;
 	}
+}"; 
+            TestWrongContext<ConvertToStaticMethodAction>(input);
+        }
+
+        [Test]
+        public void TestWithInterface() {
+            
+            var input = @"interface IBase {
+    void Test();
+}
+class TestClass : IBase
+{
+	public virtual void $Test ()
+	{
+		int a = 2;
+	}
 }";
             TestWrongContext<ConvertToStaticMethodAction>(input);
         }

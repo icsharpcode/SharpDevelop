@@ -25,8 +25,10 @@
 // THE SOFTWARE.
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -38,16 +40,26 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			// TODO: Invert if without else
 			// ex. if (cond) DoSomething () == if (!cond) return; DoSomething ()
 			// beware of loop contexts return should be continue then.
-			var methodDeclaration = GetMethodDeclaration(context);
-			if (methodDeclaration == null)
+            var methodDeclaration = GetMethodDeclaration(context);
+            if (methodDeclaration == null)
+                yield break;
+
+            var resolved = context.Resolve(methodDeclaration) as MemberResolveResult;
+            if (resolved == null)
+                yield break;
+	        var isImplementingInterface = resolved.Member.ImplementedInterfaceMembers.Any();
+
+			if (isImplementingInterface)
 				yield break;
-            yield return new CodeAction(context.TranslateString("Make it static"), script =>
+            yield return new CodeAction(context.TranslateString(string.Format("Make '{0}' static", methodDeclaration.Name)), script =>
             {
                 var clonedDeclaration = (MethodDeclaration)methodDeclaration.Clone();
                 clonedDeclaration.Modifiers |= Modifiers.Static;
                 script.Replace(methodDeclaration, clonedDeclaration);
 				var rr = context.Resolve (methodDeclaration) as MemberResolveResult;
-
+                var method = (IMethod)rr.Member;
+                //method.ImplementedInterfaceMembers.Any(m => methodGroupResolveResult.Methods.Contains((IMethod)m));
+            
 				script.DoGlobalOperationOn(rr.Member, (fctx, fscript, fnode) => {
 					if (fnode is MemberReferenceExpression) {
 						var memberReference = new MemberReferenceExpression (
