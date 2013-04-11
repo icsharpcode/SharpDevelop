@@ -109,6 +109,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets the root namespace for this assembly.
 		/// </summary>
+		/// <remarks>
+		/// This always is the namespace without a name - it's unrelated to the 'root namespace' project setting.
+		/// </remarks>
 		INamespace RootNamespace { get; }
 		
 		/// <summary>

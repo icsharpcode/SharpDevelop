@@ -109,6 +109,31 @@ class Test
 	}
 }");
 		}
+
+
+		[Test]
+		public void TestAllowOneLinedArrayInitialziers ()
+		{
+			var policy = FormattingOptionsFactory.CreateMono ();
+			policy.AllowOneLinedArrayInitialziers = true;
+			Test (policy, @"using System.Collections.Generic;
+
+class Test
+{
+	void Init ()
+	{
+		var list = new List<int> {1, 2, 3            , 4 };
+	}
+}", @"using System.Collections.Generic;
+
+class Test
+{
+	void Init ()
+	{
+		var list = new List<int> { 1, 2, 3, 4 };
+	}
+}");
+		}
 	}
 }
 

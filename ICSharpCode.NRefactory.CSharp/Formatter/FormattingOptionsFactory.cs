@@ -88,7 +88,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				WhileNewLinePlacement = NewLinePlacement.SameLine,
 				ArrayInitializerWrapping = Wrapping.WrapIfTooLong,
 				ArrayInitializerBraceStyle = BraceStyle.EndOfLine,
-	
+				AllowOneLinedArrayInitialziers = true,
+
 				SpaceBeforeMethodCallParentheses = true,
 				SpaceBeforeMethodDeclarationParentheses = true,
 				SpaceBeforeConstructorDeclarationParentheses = true,
@@ -363,6 +364,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			baseOptions.EventRemoveBraceStyle = BraceStyle.NextLine;
 			baseOptions.StatementBraceStyle = BraceStyle.NextLine;
 			baseOptions.ArrayInitializerBraceStyle = BraceStyle.NextLine;
+
+			baseOptions.CatchNewLinePlacement = NewLinePlacement.NewLine;
+			baseOptions.ElseNewLinePlacement = NewLinePlacement.NewLine;
+			baseOptions.FinallyNewLinePlacement = NewLinePlacement.NewLine;
+			baseOptions.WhileNewLinePlacement = NewLinePlacement.DoNotCare;
+			baseOptions.ArrayInitializerWrapping = Wrapping.DoNotChange;
+
 			return baseOptions;
 		}
 	

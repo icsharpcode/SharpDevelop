@@ -529,7 +529,11 @@
     <Compile Include="Formatter\FormattingVisitor_Expressions.cs" />
     <Compile Include="Formatter\FormattingChanges.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantNullCheckIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\ConstructorIssues\StaticConstructorParameterIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\ConstructorIssues\StaticConstructorAccessModifierIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantBaseConstructorIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\ConstructorIssues\RedudantConstructorIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\ConstructorIssues\PublicConstructorInAbstractClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -546,6 +550,7 @@
     <Folder Include="Refactoring\CodeActions\ConvertToInitializer\" />
     <Folder Include="Refactoring\CodeIssues\FormatStringIssues\" />
     <Folder Include="Refactoring\CodeIssues\CompilerErrors\" />
+    <Folder Include="Refactoring\CodeIssues\ConstructorIssues\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

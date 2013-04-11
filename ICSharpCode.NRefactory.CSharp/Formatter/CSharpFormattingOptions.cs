@@ -267,6 +267,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
+		bool allowOneLinedArrayInitialziers = true;
+		public bool AllowOneLinedArrayInitialziers {
+			get {
+				return allowOneLinedArrayInitialziers;
+			}
+			set {
+				allowOneLinedArrayInitialziers = value;
+			}
+		}
 		#endregion
 
 		#region NewLines
