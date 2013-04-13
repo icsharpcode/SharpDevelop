@@ -172,6 +172,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			Wrapping methodCallArgumentWrapping;
 			bool newLineAferMethodCallOpenParentheses;
+			bool doAlignToFirstArgument;
 			bool methodClosingParenthesesOnNewLine;
 			bool spaceWithinMethodCallParentheses;
 			bool spaceWithinEmptyParentheses;
@@ -184,6 +185,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (indexer != null) {
 				methodCallArgumentWrapping = policy.IndexerArgumentWrapping;
 				newLineAferMethodCallOpenParentheses = policy.NewLineAferIndexerOpenBracket;
+				doAlignToFirstArgument = policy.AlignToFirstIndexerParameter;
 				methodClosingParenthesesOnNewLine = policy.IndexerClosingBracketOnNewLine;
 				spaceWithinMethodCallParentheses = policy.SpacesWithinBrackets;
 				spaceAfterMethodCallParameterComma = policy.SpaceAfterBracketComma;
@@ -195,6 +197,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				var oce = node as ObjectCreateExpression;
 				methodCallArgumentWrapping = policy.MethodCallArgumentWrapping;
 				newLineAferMethodCallOpenParentheses = policy.NewLineAferMethodCallOpenParentheses;
+				doAlignToFirstArgument = policy.AlignToFirstMethodCallParameter;
 				methodClosingParenthesesOnNewLine = policy.MethodCallClosingParenthesesOnNewLine;
 				spaceWithinMethodCallParentheses = policy.SpacesWithinNewParentheses;
 				spaceAfterMethodCallParameterComma = policy.SpaceAfterNewParameterComma;
@@ -208,6 +211,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				methodCallArgumentWrapping = policy.MethodCallArgumentWrapping;
 				newLineAferMethodCallOpenParentheses = policy.NewLineAferMethodCallOpenParentheses;
 				methodClosingParenthesesOnNewLine = policy.MethodCallClosingParenthesesOnNewLine;
+				doAlignToFirstArgument = policy.AlignToFirstMethodCallParameter;
 				spaceWithinMethodCallParentheses = policy.SpaceWithinMethodCallParentheses;
 				spaceAfterMethodCallParameterComma = policy.SpaceAfterMethodCallParameterComma;
 				spaceBeforeMethodCallParameterComma = policy.SpaceBeforeMethodCallParameterComma;
@@ -222,7 +226,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			bool wrapMethodCall = DoWrap(methodCallArgumentWrapping, rParToken, arguments.Count);
 			if (wrapMethodCall && arguments.Any()) {
-				if (newLineAferMethodCallOpenParentheses) {
+				if (newLineAferMethodCallOpenParentheses || !doAlignToFirstArgument) {
 					curIndent.Push(IndentType.Continuation);
 					foreach (var arg in arguments) {
 						FixStatementIndentation(arg.StartLocation);

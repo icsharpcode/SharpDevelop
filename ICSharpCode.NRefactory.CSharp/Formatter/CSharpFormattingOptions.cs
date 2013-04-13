@@ -831,6 +831,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			get;
 			set;
 		}
+
+		public bool AlignToFirstIndexerParameter {
+			get;
+			set;
+		}
+
+		public bool AlignToFirstMethodCallParameter {
+			get;
+			set;
+		}
+
 		#endregion
 
 		#region Using Declarations
