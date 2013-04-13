@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
@@ -31,59 +30,59 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-    [IssueDescription("Type cast expression of compatible type",
-        Description = "Type cast expression of compatible type",
-        Category = IssueCategories.CodeQualityIssues,
-        Severity = Severity.Warning,
-        IssueMarker = IssueMarker.Underline)]
-    public class ExpressionOfCompatibleTypeCastIssue : ICodeIssueProvider
-    {
-        public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
-        {
-            return new GatherVisitor(context).GetIssues();
-        }
+	[IssueDescription("Type cast expression of compatible type",
+		Description = "Type cast expression of compatible type",
+		Category = IssueCategories.CodeQualityIssues,
+		Severity = Severity.Warning,
+		IssueMarker = IssueMarker.Underline)]
+	public class ExpressionOfCompatibleTypeCastIssue : ICodeIssueProvider
+	{
+		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
+		{
+			return new GatherVisitor(context).GetIssues();
+		}
 
-        class GatherVisitor : GatherVisitorBase<CastExpressionOfIncompatibleTypeIssue>
-        {
-            readonly CSharpConversions conversion;
+		class GatherVisitor : GatherVisitorBase<CastExpressionOfIncompatibleTypeIssue>
+		{
+			readonly CSharpConversions conversion;
 
-            public GatherVisitor(BaseRefactoringContext ctx)
-                : base(ctx)
-            {
-                conversion = new CSharpConversions(ctx.Compilation);
-            }
-            public override void VisitAssignmentExpression(AssignmentExpression assignmentExpression)
-            {
-                base.VisitAssignmentExpression(assignmentExpression);
+			public GatherVisitor(BaseRefactoringContext ctx)
+				: base(ctx)
+			{
+				conversion = new CSharpConversions(ctx.Compilation);
+			}
 
-                VisitTypeCastExpression(assignmentExpression, ctx.Resolve(assignmentExpression.Left).Type,
-                                        ctx.Resolve(assignmentExpression.Right).Type);
-            }
+			public override void VisitAssignmentExpression(AssignmentExpression assignmentExpression)
+			{
+				base.VisitAssignmentExpression(assignmentExpression);
 
-            private AstType CreateShortType(AstNode node, IType fullType)
-            {
-                var builder = ctx.CreateTypeSytemAstBuilder(node);
-                return builder.ConvertType(fullType);
-            }
-		
-            void VisitTypeCastExpression(AssignmentExpression expression, IType exprType, IType castToType)
-            {
-                if (exprType.Kind == TypeKind.Unknown || castToType.Kind == TypeKind.Unknown)
-                    return;
-                var foundConversion = conversion.ExplicitConversion(exprType, castToType);
-                if (foundConversion == Conversion.None)
-                    return;
-                if (!foundConversion.IsExplicit)
-                    return;
+				VisitTypeCastExpression(assignmentExpression, ctx.Resolve(assignmentExpression.Left).Type,
+				                        ctx.Resolve(assignmentExpression.Right).Type);
+			}
 
-                AddIssue(expression, string.Format(ctx.TranslateString("Cast to '{0}'"),castToType.Name),
-                    script =>
-                    {
-                        var right = expression.Right.Clone();
-                        var castRight = right.CastTo(CreateShortType(expression, castToType));
-                        script.Replace(expression.Right, castRight);
-                    });
-            }
-        }
-    }
+			private AstType CreateShortType(AstNode node, IType fullType)
+			{
+				var builder = ctx.CreateTypeSytemAstBuilder(node);
+				return builder.ConvertType(fullType);
+			}
+
+			void VisitTypeCastExpression(AssignmentExpression expression, IType exprType, IType castToType)
+			{
+				if (exprType.Kind == TypeKind.Unknown || castToType.Kind == TypeKind.Unknown)
+					return;
+				var foundConversion = conversion.ExplicitConversion(exprType, castToType);
+				if (foundConversion == Conversion.None)
+					return;
+				if (!foundConversion.IsExplicit)
+					return;
+
+				AddIssue(expression, string.Format(ctx.TranslateString("Cast to '{0}'"), castToType.Name),
+				         script => {
+					var right = expression.Right.Clone();
+					var castRight = right.CastTo(CreateShortType(expression, castToType));
+					script.Replace(expression.Right, castRight);
+				});
+			}
+		}
+	}
 }

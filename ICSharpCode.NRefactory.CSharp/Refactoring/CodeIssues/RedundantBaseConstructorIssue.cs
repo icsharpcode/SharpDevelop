@@ -23,61 +23,63 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	[IssueDescription ("Remove redundant base call",
-	                    Description = "Remove base constructor call that is redundant",
-	                    Category = IssueCategories.Redundancies,
-	                    Severity = Severity.Suggestion,
-                        IssueMarker = IssueMarker.GrayOut, 
-                        ResharperDisableKeyword = "RedundantBaseConstructorCall")]
+	                   Description = "Remove base constructor call that is redundant",
+	                   Category = IssueCategories.Redundancies,
+	                   Severity = Severity.Suggestion,
+	                   IssueMarker = IssueMarker.GrayOut, 
+	                   ResharperDisableKeyword = "RedundantBaseConstructorCall")]
 	public class RedundantBaseConstructorIssue : ICodeIssueProvider
 	{
-		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
+		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
-			return new GatherVisitor (context).GetIssues ();
+			return new GatherVisitor(context).GetIssues();
 		}
 
 		class GatherVisitor : GatherVisitorBase<RedundantAttributeParenthesesIssue>
 		{
-			public GatherVisitor (BaseRefactoringContext ctx)
-				: base (ctx) {
-			}
-            public override void VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
-            {
-                base.VisitConstructorDeclaration(constructorDeclaration);
-
-                if(constructorDeclaration.Initializer.ConstructorInitializerType != ConstructorInitializerType.Base)
-                    return;
-                if (constructorDeclaration.Initializer.IsNull)
-                    return;
-                if(constructorDeclaration.Initializer.Arguments.Count!=0)
-                    return;
-                AddIssue(constructorDeclaration.Initializer.StartLocation, constructorDeclaration.Initializer.EndLocation,
-                          ctx.TranslateString("Remove redundant base constructor"),
-                          script =>
-                              {
-                                  var clone = (ConstructorDeclaration)constructorDeclaration.Clone();
-                                  script.Replace(clone.ColonToken, CSharpTokenNode.Null.Clone());
-                                  script.Replace(constructorDeclaration.Initializer, ConstructorInitializer.Null.Clone());
-                              });
+			public GatherVisitor(BaseRefactoringContext ctx)
+				: base (ctx)
+			{
 			}
 
-            public override void VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
-            {
-                //ignore properties
-            }
-            public override void  VisitFieldDeclaration(FieldDeclaration fieldDeclaration)
-            {
-                //ignore fields
-            }
-            public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
-            {
-                //ignore method declarations
-            }
+			public override void VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
+			{
+				base.VisitConstructorDeclaration(constructorDeclaration);
+
+				if (constructorDeclaration.Initializer.ConstructorInitializerType != ConstructorInitializerType.Base)
+					return;
+				if (constructorDeclaration.Initializer.IsNull)
+					return;
+				if (constructorDeclaration.Initializer.Arguments.Count != 0)
+					return;
+				AddIssue(constructorDeclaration.Initializer.StartLocation, constructorDeclaration.Initializer.EndLocation,
+				         ctx.TranslateString("Remove redundant base constructor"),
+				         script => {
+					var clone = (ConstructorDeclaration)constructorDeclaration.Clone();
+					script.Replace(clone.ColonToken, CSharpTokenNode.Null.Clone());
+					script.Replace(constructorDeclaration.Initializer, ConstructorInitializer.Null.Clone());
+				});
+			}
+
+			public override void VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
+			{
+				//ignore properties
+			}
+
+			public override void  VisitFieldDeclaration(FieldDeclaration fieldDeclaration)
+			{
+				//ignore fields
+			}
+
+			public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
+			{
+				//ignore method declarations
+			}
 		}
 	}
 }
