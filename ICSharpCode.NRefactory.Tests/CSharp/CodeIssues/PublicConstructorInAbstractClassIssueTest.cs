@@ -1,10 +1,10 @@
 // 
-// RedundantAssignmentIssueTests.cs
+// PublicConstructorInAbstractionClassIssueTests.cs
 // 
 // Author:
 //      Ji Kun <jikun.nus@gmail.com>
 // 
-// Copyright (c) 2012 Ji Kun 
+// Copyright (c) 2013 Ji Kun 
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -118,19 +118,19 @@ abstract class TestClass
 			CheckFix(context, issues, output);
 		}
 
-		[Ignore]
 		[Test]
 		public void TestResharperDisable()
 		{
 			var input = @"
+//Resharper disable PublicConstructorInAbstractClass
 abstract class TestClass
 {
-//Resharper disable PublicConstructorInAbstractClass
 	public TestClass ()
 	{
 	}
 //Resharper restore PublicConstructorInAbstractClass
-}";
+}
+";
 
 			TestRefactoringContext context;
 			var issues = GetIssues(new PublicConstructorInAbstractClassIssue(), input, out context);
