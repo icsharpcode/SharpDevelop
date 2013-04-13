@@ -29,7 +29,7 @@ enum Enum{ };
         x = (Enum)i;
 	}
 }";
-            Test<ExpressionOfCompatibleTypeIssueCast>(input, output);
+			Test<ExpressionOfCompatibleTypeCastIssue>(input, output);
         }
         [Test]
         public void TestClassConversion()
@@ -56,7 +56,7 @@ class TestClass
         x = (Test)i;
 	}
 }";
-            Test<ExpressionOfCompatibleTypeIssueCast>(input, output);
+			Test<ExpressionOfCompatibleTypeCastIssue>(input, output);
         }
 
     }
