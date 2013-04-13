@@ -47,8 +47,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context).GetIssues();
 		}
 		
-		class GatherVisitor : GatherVisitorBase<StaticConstructorAccessModifierIssue>
+		class GatherVisitor : GatherVisitorBase<PublicConstructorInAbstractClassIssue>
 		{
+
 			public GatherVisitor(BaseRefactoringContext ctx)
 				: base(ctx)
 			{
@@ -59,15 +60,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (!typeDeclaration.HasModifier(Modifiers.Abstract)) {
 					return;
 				}
+				foreach (var constructor in typeDeclaration.Children.OfType<ConstructorDeclaration>()){
+					VisitConstructorDeclaration(constructor);
+				}
+			}
 
-				foreach (var child in typeDeclaration.Children.OfType<ConstructorDeclaration>()) {
-					foreach (var token_ in child.ModifierTokens) {
-						var token = token_;
-						if (token.Modifier.Equals(Modifiers.Public)) {
-							AddIssue(token, ctx.TranslateString("Convert public to protected"), script => {
-								script.Replace(token, new CSharpModifierToken(TextLocation.Empty, Modifiers.Protected));
-							});
-						}
+			public override void VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
+			{
+				foreach (var token_ in constructorDeclaration.ModifierTokens) {
+					var token = token_;
+					if (token.Modifier.Equals(Modifiers.Public)) {
+						AddIssue(token, ctx.TranslateString("Convert public to protected"), script => {
+							script.Replace(token, new CSharpModifierToken(TextLocation.Empty, Modifiers.Protected));
+						});
 					}
 				}
 			}
