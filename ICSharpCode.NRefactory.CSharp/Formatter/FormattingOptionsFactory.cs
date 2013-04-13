@@ -176,7 +176,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				BlankLinesBetweenFields = 0,
 				BlankLinesBetweenEventFields = 0,
 				BlankLinesBetweenMembers = 1,
-	
+				AlignToFirstIndexerParameter = true,
+				AlignToFirstMethodCallParameter = true,
 				KeepCommentsAtFirstColumn = true,
 				ChainedMethodCallWrapping = Wrapping.DoNotChange,
 				MethodCallArgumentWrapping = Wrapping.DoNotChange,

@@ -226,9 +226,15 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			bool wrapMethodCall = DoWrap(methodCallArgumentWrapping, rParToken, arguments.Count);
 			if (wrapMethodCall && arguments.Any()) {
-				if (newLineAferMethodCallOpenParentheses || !doAlignToFirstArgument) {
+				if (newLineAferMethodCallOpenParentheses) {
 					curIndent.Push(IndentType.Continuation);
 					foreach (var arg in arguments) {
+						FixStatementIndentation(arg.StartLocation);
+					}
+					curIndent.Pop();
+				} else if (!doAlignToFirstArgument) {
+					curIndent.Push(IndentType.Continuation);
+					foreach (var arg in arguments.Skip (1)) {
 						FixStatementIndentation(arg.StartLocation);
 					}
 					curIndent.Pop();
