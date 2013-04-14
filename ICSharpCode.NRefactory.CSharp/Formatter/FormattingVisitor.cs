@@ -309,6 +309,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void FormatParameters(AstNode node)
 		{
 			Wrapping methodCallArgumentWrapping;
+			bool doAlignToFirstArgument;
 			NewLinePlacement newLineAferMethodCallOpenParentheses;
 			NewLinePlacement methodClosingParenthesesOnNewLine;
 			bool spaceWithinMethodCallParentheses;
@@ -323,7 +324,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				methodCallArgumentWrapping = policy.MethodDeclarationParameterWrapping;
 				newLineAferMethodCallOpenParentheses = policy.NewLineAferMethodDeclarationOpenParentheses;
 				methodClosingParenthesesOnNewLine = policy.MethodDeclarationClosingParenthesesOnNewLine;
-				
+				doAlignToFirstArgument = policy.AlignToFirstMethodDeclarationParameter;
 				spaceWithinMethodCallParentheses = policy.SpaceWithinConstructorDeclarationParentheses;
 				spaceAfterMethodCallParameterComma = policy.SpaceAfterConstructorDeclarationParameterComma;
 				spaceBeforeMethodCallParameterComma = policy.SpaceBeforeConstructorDeclarationParameterComma;
@@ -335,7 +336,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				methodCallArgumentWrapping = policy.IndexerDeclarationParameterWrapping;
 				newLineAferMethodCallOpenParentheses = policy.NewLineAferIndexerDeclarationOpenBracket;
 				methodClosingParenthesesOnNewLine = policy.IndexerDeclarationClosingBracketOnNewLine;
-				
+				doAlignToFirstArgument = policy.AlignToFirstIndexerDeclarationParameter;
 				spaceWithinMethodCallParentheses = policy.SpaceWithinIndexerDeclarationBracket;
 				spaceAfterMethodCallParameterComma = policy.SpaceAfterIndexerDeclarationParameterComma;
 				spaceBeforeMethodCallParameterComma = policy.SpaceBeforeIndexerDeclarationParameterComma;
@@ -347,6 +348,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				methodCallArgumentWrapping = policy.MethodDeclarationParameterWrapping;
 				newLineAferMethodCallOpenParentheses = policy.NewLineAferMethodDeclarationOpenParentheses;
 				methodClosingParenthesesOnNewLine = policy.MethodDeclarationClosingParenthesesOnNewLine;
+				doAlignToFirstArgument = policy.AlignToFirstMethodDeclarationParameter;
 				spaceWithinMethodCallParentheses = policy.SpaceWithinMethodDeclarationParentheses;
 				spaceAfterMethodCallParameterComma = policy.SpaceAfterMethodDeclarationParameterComma;
 				spaceBeforeMethodCallParameterComma = policy.SpaceBeforeMethodDeclarationParameterComma;
@@ -358,6 +360,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				methodCallArgumentWrapping = policy.MethodDeclarationParameterWrapping;
 				newLineAferMethodCallOpenParentheses = policy.NewLineAferMethodDeclarationOpenParentheses;
 				methodClosingParenthesesOnNewLine = policy.MethodDeclarationClosingParenthesesOnNewLine;
+				doAlignToFirstArgument = policy.AlignToFirstMethodDeclarationParameter;
 				spaceWithinMethodCallParentheses = policy.SpaceWithinMethodDeclarationParentheses;
 				spaceAfterMethodCallParameterComma = policy.SpaceAfterMethodDeclarationParameterComma;
 				spaceBeforeMethodCallParameterComma = policy.SpaceBeforeMethodDeclarationParameterComma;
@@ -377,12 +380,20 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					curIndent.Pop();
 				} else {
-					int extraSpaces = parameters.First().StartLocation.Column - 1 - curIndent.IndentString.Length;
-					curIndent.ExtraSpaces += extraSpaces;
-					foreach (var arg in parameters.Skip(1)) {
-						FixStatementIndentation(arg.StartLocation);
+					if (!doAlignToFirstArgument) {
+						curIndent.Push(IndentType.Continuation);
+						foreach (var arg in parameters.Skip(1)) {
+							FixStatementIndentation(arg.StartLocation);
+						}
+						curIndent.Pop();
+					} else {
+						int extraSpaces = parameters.First().StartLocation.Column - 1 - curIndent.IndentString.Length;
+						curIndent.ExtraSpaces += extraSpaces;
+						foreach (var arg in parameters.Skip(1)) {
+							FixStatementIndentation(arg.StartLocation);
+						}
+						curIndent.ExtraSpaces -= extraSpaces;
 					}
-					curIndent.ExtraSpaces -= extraSpaces;
 				}
 				if (!rParToken.IsNull) {
 					if (ShouldBreakLine (methodClosingParenthesesOnNewLine, rParToken)) {
@@ -397,7 +408,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						if (methodCallArgumentWrapping == Wrapping.DoNotWrap) {
 							ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.GetPrevSibling(NoWhitespacePredicate).Role == Roles.Comma);
 						} else {
-							if (arg.PrevSibling.Role == Roles.NewLine) {
+							if (!doAlignToFirstArgument && arg.PrevSibling.Role == Roles.NewLine) {
 								curIndent.Push(IndentType.Continuation);
 								FixStatementIndentation(arg.StartLocation);
 								curIndent.Pop();

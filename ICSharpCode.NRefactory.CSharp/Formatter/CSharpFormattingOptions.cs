@@ -832,12 +832,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public bool AlignToFirstIndexerParameter {
+		public bool AlignToFirstIndexerArgument {
 			get;
 			set;
 		}
 
-		public bool AlignToFirstMethodCallParameter {
+		public bool AlignToFirstIndexerDeclarationParameter {
+			get;
+			set;
+		}
+
+		public bool AlignToFirstMethodCallArgument {
+			get;
+			set;
+		}
+
+		public bool AlignToFirstMethodDeclarationParameter {
 			get;
 			set;
 		}

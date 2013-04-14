@@ -620,7 +620,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			policy.MethodCallArgumentWrapping = Wrapping.DoNotChange;
 			policy.NewLineAferMethodCallOpenParentheses = NewLinePlacement.DoNotCare;
 			policy.MethodCallClosingParenthesesOnNewLine = NewLinePlacement.DoNotCare;
-			policy.AlignToFirstMethodCallParameter = false;
+			policy.AlignToFirstMethodCallArgument = false;
 			Test(policy, @"class Test
 {
 	void TestMe ()
@@ -650,7 +650,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			policy.MethodDeclarationParameterWrapping = Wrapping.DoNotChange;
 			policy.NewLineAferMethodDeclarationOpenParentheses = NewLinePlacement.DoNotCare;
 			policy.MethodDeclarationClosingParenthesesOnNewLine = NewLinePlacement.DoNotCare;
-			policy.AlignToFirstMethodCallParameter = false;
+			policy.AlignToFirstMethodDeclarationParameter = false;
 			Test(policy, @"class Test
 {
 	void TestMe (int bar,
