@@ -476,13 +476,38 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		}
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	int this [
 		int i,
 		int j,
 		int k
 	] {
+		get {
+		}
+	}
+}");
+		}
+
+		[Test]
+		public void TestIndexerDeclarationAlignment()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.AlignToFirstIndexerDeclarationParameter = true;
+			Test(policy, @"class Test
+{
+	int this [int i,
+int j,
+ int k] {
+		get {
+		}
+	}
+}",
+			     @"class Test
+{
+	int this [int i,
+	          int j,
+	          int k] {
 		get {
 		}
 	}
@@ -578,13 +603,34 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 	}
 }");
 		}
-		
+
+		[Test]
+		public void TestDoNotTouchMethodDeclarationCase1 ()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+
+			var adapter = Test (policy, @"class Test
+{
+	int Foo (int i, double d, Action a)
+	{
+		a ();
+	}
+}",
+			                    @"class Test
+{
+	int Foo (int i, double d, Action a)
+	{
+		a ();
+	}
+}", FormattingMode.Intrusive);
+		}
+
 		[Test]
 		public void TestNoBlankLinesBetweenEndBraceAndEndParenthesis ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			policy.BlankLinesBetweenMembers = 1;
-			
+
 			var adapter = Test (policy, @"class Test
 {
 	int Foo (int i, double d, Action a)
@@ -598,7 +644,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		});
 	}
 }",
-@"class Test
+			                    @"class Test
 {
 	int Foo (int i, double d, Action a)
 	{
@@ -693,6 +739,27 @@ string fooo)
 	void TestMe (
 		int test,
 		string fooo)
+	{
+	}
+}");
+		}
+
+		[Test]
+		public void TestMethodDeclarationAlignment()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.AlignToFirstMethodDeclarationParameter = true;
+			Test(policy, @"class Test
+{
+	void TestMe (int test,
+string fooo)
+	{
+	}
+}",
+			     @"class Test
+{
+	void TestMe (int test,
+	             string fooo)
 	{
 	}
 }");

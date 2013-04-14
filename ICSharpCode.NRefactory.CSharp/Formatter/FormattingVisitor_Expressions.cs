@@ -320,7 +320,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 				}
 			} else {
-				foreach (var arg in arguments) {
+				foreach (var arg in arguments.Skip(argumentStart)) {
 					if (arg.GetPrevSibling(NoWhitespacePredicate) != null) {
 						if (methodCallArgumentWrapping == Wrapping.DoNotWrap) {
 							ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.GetPrevSibling(NoWhitespacePredicate).Role == Roles.Comma);
@@ -330,7 +330,14 @@ namespace ICSharpCode.NRefactory.CSharp
 								FixStatementIndentation(arg.StartLocation);
 								curIndent.Pop();
 							} else {
-								ForceSpacesBefore(arg, spaceAfterMethodCallParameterComma && arg.GetPrevSibling(NoWhitespacePredicate).Role == Roles.Comma);
+								if (arg.PrevSibling.StartLocation.Line == arg.StartLocation.Line) {
+									ForceSpacesBefore(arg, spaceAfterMethodCallParameterComma && arg.GetPrevSibling(NoWhitespacePredicate).Role == Roles.Comma);
+								} else {
+									int extraSpaces = arguments.First().StartLocation.Column - 1 - curIndent.IndentString.Length;
+									curIndent.ExtraSpaces += extraSpaces;
+									FixStatementIndentation(arg.StartLocation);
+									curIndent.ExtraSpaces -= extraSpaces;
+								}
 							}
 						}
 					}
