@@ -833,6 +833,45 @@ class Test {
 		}
 
 		[Test]
+		public void MethodGroupConversion_ExtensionMethod()
+		{
+			string program = @"using System;
+static class Ext {
+	public void M(this string s, int x) {}
+}
+class Test {
+	delegate void D(int a);
+	void F() {
+		string s = """";
+		D d = $s.M$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+			Assert.IsTrue(c.IsExtensionMethodGroupConversion);
+		}
+
+		[Test]
+		public void MethodGroupConversion_ExtensionMethodUsedAsStaticMethod()
+		{
+			string program = @"using System;
+static class Ext {
+	public void M(this string s, int x) {}
+}
+class Test {
+	delegate void D(string s, int a);
+	void F() {
+		D d = $Ext.M$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+			Assert.IsFalse(c.IsExtensionMethodGroupConversion);
+		}
+
+		[Test]
 		public void UserDefined_IntLiteral_ViaUInt_ToCustomStruct()
 		{
 			string program = @"using System;

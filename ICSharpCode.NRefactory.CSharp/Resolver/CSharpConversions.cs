@@ -1064,9 +1064,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				bool isVirtual = method.IsOverridable && !(thisRR != null && thisRR.CausesNonVirtualInvocation);
 				bool isValid = !or.IsAmbiguous && IsDelegateCompatible(method, invoke, or.IsExtensionMethodInvocation);
 				if (isValid)
-					return Conversion.MethodGroupConversion(method, isVirtual);
+					return Conversion.MethodGroupConversion(method, isVirtual, or.IsExtensionMethodInvocation);
 				else
-					return Conversion.InvalidMethodGroupConversion(method, isVirtual);
+					return Conversion.InvalidMethodGroupConversion(method, isVirtual, or.IsExtensionMethodInvocation);
 			} else {
 				return Conversion.None;
 			}
