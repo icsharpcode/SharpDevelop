@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -180,9 +181,62 @@ namespace ICSharpCode.NRefactory.CSharp
 			bool spaceBeforeMethodCallParameterComma;
 
 			CSharpTokenNode rParToken, lParToken;
-			AstNodeCollection<Expression> arguments;
-			var indexer = node as IndexerExpression;
-			if (indexer != null) {
+			List<AstNode> arguments;
+
+			var constructorDeclaration = node as ConstructorDeclaration;
+			if (constructorDeclaration != null) {
+				methodCallArgumentWrapping = policy.MethodDeclarationParameterWrapping;
+				newLineAferMethodCallOpenParentheses = policy.NewLineAferMethodDeclarationOpenParentheses;
+				methodClosingParenthesesOnNewLine = policy.MethodDeclarationClosingParenthesesOnNewLine;
+				doAlignToFirstArgument = policy.AlignToFirstMethodDeclarationParameter;
+				spaceWithinMethodCallParentheses = policy.SpaceWithinConstructorDeclarationParentheses;
+				spaceAfterMethodCallParameterComma = policy.SpaceAfterConstructorDeclarationParameterComma;
+				spaceBeforeMethodCallParameterComma = policy.SpaceBeforeConstructorDeclarationParameterComma;
+				spaceWithinEmptyParentheses = policy.SpaceBetweenEmptyMethodDeclarationParentheses;
+				lParToken = constructorDeclaration.LParToken;
+				rParToken = constructorDeclaration.RParToken;
+				arguments = constructorDeclaration.Parameters.Cast<AstNode> ().ToList ();
+			} else if (node is IndexerDeclaration) {
+				var indexer = (IndexerDeclaration)node;
+				methodCallArgumentWrapping = policy.IndexerDeclarationParameterWrapping;
+				newLineAferMethodCallOpenParentheses = policy.NewLineAferIndexerDeclarationOpenBracket;
+				methodClosingParenthesesOnNewLine = policy.IndexerDeclarationClosingBracketOnNewLine;
+				doAlignToFirstArgument = policy.AlignToFirstIndexerDeclarationParameter;
+				spaceWithinMethodCallParentheses = policy.SpaceWithinIndexerDeclarationBracket;
+				spaceAfterMethodCallParameterComma = policy.SpaceAfterIndexerDeclarationParameterComma;
+				spaceBeforeMethodCallParameterComma = policy.SpaceBeforeIndexerDeclarationParameterComma;
+				spaceWithinEmptyParentheses = policy.SpaceBetweenEmptyMethodDeclarationParentheses;
+				lParToken = indexer.LBracketToken;
+				rParToken = indexer.RBracketToken;
+				arguments = indexer.Parameters.Cast<AstNode> ().ToList ();
+			} else if (node is OperatorDeclaration) {
+				var op = (OperatorDeclaration)node;
+				methodCallArgumentWrapping = policy.MethodDeclarationParameterWrapping;
+				newLineAferMethodCallOpenParentheses = policy.NewLineAferMethodDeclarationOpenParentheses;
+				methodClosingParenthesesOnNewLine = policy.MethodDeclarationClosingParenthesesOnNewLine;
+				doAlignToFirstArgument = policy.AlignToFirstMethodDeclarationParameter;
+				spaceWithinMethodCallParentheses = policy.SpaceWithinMethodDeclarationParentheses;
+				spaceAfterMethodCallParameterComma = policy.SpaceAfterMethodDeclarationParameterComma;
+				spaceBeforeMethodCallParameterComma = policy.SpaceBeforeMethodDeclarationParameterComma;
+				spaceWithinEmptyParentheses = policy.SpaceBetweenEmptyMethodDeclarationParentheses;
+				lParToken = op.LParToken;
+				rParToken = op.RParToken;
+				arguments = op.Parameters.Cast<AstNode> ().ToList ();
+			} else if (node is MethodDeclaration)  {
+				var methodDeclaration = node as MethodDeclaration;
+				methodCallArgumentWrapping = policy.MethodDeclarationParameterWrapping;
+				newLineAferMethodCallOpenParentheses = policy.NewLineAferMethodDeclarationOpenParentheses;
+				methodClosingParenthesesOnNewLine = policy.MethodDeclarationClosingParenthesesOnNewLine;
+				doAlignToFirstArgument = policy.AlignToFirstMethodDeclarationParameter;
+				spaceWithinMethodCallParentheses = policy.SpaceWithinMethodDeclarationParentheses;
+				spaceAfterMethodCallParameterComma = policy.SpaceAfterMethodDeclarationParameterComma;
+				spaceBeforeMethodCallParameterComma = policy.SpaceBeforeMethodDeclarationParameterComma;
+				spaceWithinEmptyParentheses = policy.SpaceBetweenEmptyMethodDeclarationParentheses;
+				lParToken = methodDeclaration.LParToken;
+				rParToken = methodDeclaration.RParToken;
+				arguments = methodDeclaration.Parameters.Cast<AstNode> ().ToList ();
+			} else if (node is IndexerExpression) {
+				var indexer = (IndexerExpression)node;
 				methodCallArgumentWrapping = policy.IndexerArgumentWrapping;
 				newLineAferMethodCallOpenParentheses = policy.NewLineAferIndexerOpenBracket;
 				doAlignToFirstArgument = policy.AlignToFirstIndexerArgument;
@@ -193,7 +247,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				spaceBeforeMethodCallParameterComma = policy.SpaceBeforeBracketComma;
 				rParToken = indexer.RBracketToken;
 				lParToken = indexer.LBracketToken;
-				arguments = indexer.Arguments;
+				arguments = indexer.Arguments.Cast<AstNode> ().ToList ();
 			} else if (node is ObjectCreateExpression) {
 				var oce = node as ObjectCreateExpression;
 				methodCallArgumentWrapping = policy.MethodCallArgumentWrapping;
@@ -207,7 +261,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 				rParToken = oce.RParToken;
 				lParToken = oce.LParToken;
-				arguments = oce.Arguments;
+				arguments = oce.Arguments.Cast<AstNode> ().ToList ();
 			} else {
 				InvocationExpression invocationExpression = node as InvocationExpression;
 				methodCallArgumentWrapping = policy.MethodCallArgumentWrapping;
@@ -221,7 +275,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 				rParToken = invocationExpression.RParToken;
 				lParToken = invocationExpression.LParToken;
-				arguments = invocationExpression.Arguments;
+				arguments = invocationExpression.Arguments.Cast<AstNode> ().ToList ();
 			}
 
 			if (formatter.FormattingMode == ICSharpCode.NRefactory.CSharp.FormattingMode.OnTheFly)
@@ -287,7 +341,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (methodCallArgumentWrapping == Wrapping.DoNotWrap) {
 						ForceSpacesBeforeRemoveNewLines(rParToken, arguments.Any() ? spaceWithinMethodCallParentheses : spaceWithinEmptyParentheses);
 					} else {
-						bool sameLine = rParToken.GetPrevNode(n => n.Role == Roles.Argument || n.Role == Roles.LPar || n.Role == Roles.Comma).EndLocation.Line == rParToken.StartLocation.Line;
+						bool sameLine = rParToken.GetPrevNode(n => n.Role == Roles.Argument || n.Role == Roles.Parameter || n.Role == Roles.LPar || n.Role == Roles.Comma).EndLocation.Line == rParToken.StartLocation.Line;
 						if (sameLine) {
 							ForceSpacesBeforeRemoveNewLines(rParToken, arguments.Any() ? spaceWithinMethodCallParentheses : spaceWithinEmptyParentheses);
 						} else {

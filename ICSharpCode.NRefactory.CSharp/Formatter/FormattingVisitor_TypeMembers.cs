@@ -171,7 +171,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesBefore(indexerDeclaration.LBracketToken, policy.SpaceBeforeIndexerDeclarationBracket);
 			ForceSpacesAfter(indexerDeclaration.LBracketToken, policy.SpaceWithinIndexerDeclarationBracket);
 
-			FormatParameters(indexerDeclaration);
+			FormatArguments(indexerDeclaration);
 
 			FixOpenBrace(policy.PropertyBraceStyle, indexerDeclaration.LBraceToken);
 			if (policy.IndentPropertyBody)
@@ -327,7 +327,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesBefore(methodDeclaration.LParToken, policy.SpaceBeforeMethodDeclarationParentheses);
 			if (methodDeclaration.Parameters.Any()) {
 				ForceSpacesAfter(methodDeclaration.LParToken, policy.SpaceWithinMethodDeclarationParentheses);
-				FormatParameters(methodDeclaration);
+				FormatArguments(methodDeclaration);
 			} else {
 				ForceSpacesAfter(methodDeclaration.LParToken, policy.SpaceBetweenEmptyMethodDeclarationParentheses);
 				ForceSpacesBefore(methodDeclaration.RParToken, policy.SpaceBetweenEmptyMethodDeclarationParentheses);
@@ -347,7 +347,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesBefore(operatorDeclaration.LParToken, policy.SpaceBeforeMethodDeclarationParentheses);
 			if (operatorDeclaration.Parameters.Any()) {
 				ForceSpacesAfter(operatorDeclaration.LParToken, policy.SpaceWithinMethodDeclarationParentheses);
-				FormatParameters(operatorDeclaration);
+				FormatArguments(operatorDeclaration);
 			} else {
 				ForceSpacesAfter(operatorDeclaration.LParToken, policy.SpaceBetweenEmptyMethodDeclarationParentheses);
 				ForceSpacesBefore(operatorDeclaration.RParToken, policy.SpaceBetweenEmptyMethodDeclarationParentheses);
@@ -367,7 +367,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesBefore(constructorDeclaration.LParToken, policy.SpaceBeforeConstructorDeclarationParentheses);
 			if (constructorDeclaration.Parameters.Any()) {
 				ForceSpacesAfter(constructorDeclaration.LParToken, policy.SpaceWithinConstructorDeclarationParentheses);
-				FormatParameters(constructorDeclaration);
+				FormatArguments(constructorDeclaration);
 			} else {
 				ForceSpacesAfter(constructorDeclaration.LParToken, policy.SpaceBetweenEmptyConstructorDeclarationParentheses);
 				ForceSpacesBefore(constructorDeclaration.RParToken, policy.SpaceBetweenEmptyConstructorDeclarationParentheses);
