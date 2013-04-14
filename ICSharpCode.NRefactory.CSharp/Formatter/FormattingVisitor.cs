@@ -370,7 +370,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			if (formatter.FormattingMode == FormattingMode.OnTheFly)
 				methodCallArgumentWrapping = Wrapping.DoNotChange;
-			
+			int parameterStart = 1;
+			if (doAlignToFirstArgument) {
+				var firstarg = parameters.FirstOrDefault();
+				if (firstarg != null && firstarg.GetPrevNode().Role == Roles.NewLine) {
+					doAlignToFirstArgument = false;
+					parameterStart = 0;
+				}
+			}
 			bool wrapMethodCall = DoWrap(methodCallArgumentWrapping, rParToken, parameters.Count);
 			if (wrapMethodCall && parameters.Any()) {
 				if (ShouldBreakLine (newLineAferMethodCallOpenParentheses, lParToken)) {
@@ -403,7 +410,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 				}
 			} else {
-				foreach (var arg in parameters.Skip (1)) {
+				foreach (var arg in parameters.Skip (parameterStart)) {
 					if (arg.GetPrevSibling(NoWhitespacePredicate) != null) {
 						if (methodCallArgumentWrapping == Wrapping.DoNotWrap) {
 							ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.GetPrevSibling(NoWhitespacePredicate).Role == Roles.Comma);

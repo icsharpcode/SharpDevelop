@@ -643,6 +643,63 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 }");
 		}
 
+
+		[Test]
+		public void TestMethodCallNoAlignmentHasNoEffectInNewLineCase()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.MethodCallArgumentWrapping = Wrapping.DoNotChange;
+			policy.AlignToFirstMethodCallArgument = true;
+			Test(policy, @"class Test
+{
+	void TestMe ()
+	{
+		FooBarLongMethod (
+1,
+	2,
+3
+				);
+	}
+}",
+			     @"class Test
+{
+	void TestMe ()
+	{
+		FooBarLongMethod (
+			1,
+			2,
+			3
+		);
+	}
+}");
+		}
+
+		[Test]
+		public void TestMethodDeclarationNoAlignmentHasNoEffectInNewLineCase()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.MethodDeclarationParameterWrapping = Wrapping.DoNotChange;
+			policy.AlignToFirstMethodDeclarationParameter = true;
+			Test(policy, @"class Test
+{
+	void TestMe (
+int i,
+int j,
+		int z)
+	{
+	}
+}",
+			     @"class Test
+{
+	void TestMe (
+		int i,
+		int j,
+		int z)
+	{
+	}
+}");
+		}
+
 		[Test]
 		public void TestMethodDeclarationDoNotWrapCorrectionNoAlignment()
 		{

@@ -226,10 +226,17 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			if (formatter.FormattingMode == ICSharpCode.NRefactory.CSharp.FormattingMode.OnTheFly)
 				methodCallArgumentWrapping = Wrapping.DoNotChange;
+			int argumentStart = 1;
+			if (doAlignToFirstArgument) {
+				var firstarg = arguments.FirstOrDefault();
+				if (firstarg != null && firstarg.GetPrevNode().Role == Roles.NewLine) {
+					doAlignToFirstArgument = false;
+					argumentStart = 0;
+				}
+			}
 			bool wrapMethodCall = DoWrap(methodCallArgumentWrapping, rParToken, arguments.Count);
 			if (wrapMethodCall && arguments.Any()) {
 				if (ShouldBreakLine (newLineAferMethodCallOpenParentheses, lParToken)) {
-					Console.WriteLine ("should break !!!!");
 					curIndent.Push(IndentType.Continuation);
 					foreach (var arg in arguments) {
 						FixStatementIndentation(arg.StartLocation);
@@ -238,14 +245,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				} else {
 					if (!doAlignToFirstArgument) {
 						curIndent.Push(IndentType.Continuation);
-						foreach (var arg in arguments.Skip (1)) {
+						foreach (var arg in arguments.Skip (argumentStart)) {
 							FixStatementIndentation(arg.StartLocation);
 						}
 						curIndent.Pop();
 					} else {
 						int extraSpaces = arguments.First().StartLocation.Column - 1 - curIndent.IndentString.Length;
 						curIndent.ExtraSpaces += extraSpaces;
-						foreach (var arg in arguments.Skip(1)) {
+						foreach (var arg in arguments.Skip(argumentStart)) {
 							FixStatementIndentation(arg.StartLocation);
 						}
 						curIndent.ExtraSpaces -= extraSpaces;
