@@ -678,23 +678,45 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		public void TestMethodDeclarationNoAlignmentHasNoEffectInNewLineCase()
 		{
 			var policy = FormattingOptionsFactory.CreateMono();
-			policy.MethodDeclarationParameterWrapping = Wrapping.DoNotChange;
+			policy.MethodCallArgumentWrapping = Wrapping.DoNotChange;
 			policy.AlignToFirstMethodDeclarationParameter = true;
 			Test(policy, @"class Test
 {
 	void TestMe (
-int i,
-int j,
-		int z)
+int test,
+string fooo)
 	{
 	}
 }",
 			     @"class Test
 {
 	void TestMe (
-		int i,
-		int j,
-		int z)
+		int test,
+		string fooo)
+	{
+	}
+}");
+		}
+
+		[Test]
+		public void TestMethodDeclarationNoAlignmentHasNoEffectInNewLine2()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.MethodDeclarationParameterWrapping = Wrapping.WrapAlways;
+			policy.AlignToFirstMethodDeclarationParameter = false;
+			Test(policy, @"class Test
+{
+	public void LongMethodCallInMultiple (
+int test,string foo,double bar)
+	{
+	}
+}",
+			     @"class Test
+{
+	public void LongMethodCallInMultiple (
+		int test,
+		string foo,
+		double bar)
 	{
 	}
 }");

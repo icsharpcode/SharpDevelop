@@ -281,13 +281,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (formatter.FormattingMode == ICSharpCode.NRefactory.CSharp.FormattingMode.OnTheFly)
 				methodCallArgumentWrapping = Wrapping.DoNotChange;
 			int argumentStart = 1;
-			if (doAlignToFirstArgument) {
-				var firstarg = arguments.FirstOrDefault();
-				if (firstarg != null && firstarg.GetPrevNode().Role == Roles.NewLine) {
-					doAlignToFirstArgument = false;
-					argumentStart = 0;
-				}
+			var firstarg = arguments.FirstOrDefault();
+			if (firstarg != null && firstarg.GetPrevNode().Role == Roles.NewLine) {
+				doAlignToFirstArgument = false;
+				argumentStart = 0;
 			}
+
 			bool wrapMethodCall = DoWrap(methodCallArgumentWrapping, rParToken, arguments.Count);
 			if (wrapMethodCall && arguments.Any()) {
 				if (ShouldBreakLine (newLineAferMethodCallOpenParentheses, lParToken)) {
