@@ -777,12 +777,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public bool NewLineAferMethodCallOpenParentheses {
+		public NewLinePlacement NewLineAferMethodCallOpenParentheses {
 			get;
 			set;
 		}
 
-		public bool MethodCallClosingParenthesesOnNewLine {
+		public NewLinePlacement MethodCallClosingParenthesesOnNewLine {
 			get;
 			set;
 		}
@@ -792,12 +792,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public bool NewLineAferIndexerOpenBracket {
+		public NewLinePlacement NewLineAferIndexerOpenBracket {
 			get;
 			set;
 		}
 
-		public bool IndexerClosingBracketOnNewLine {
+		public NewLinePlacement IndexerClosingBracketOnNewLine {
 			get;
 			set;
 		}
@@ -807,12 +807,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public bool NewLineAferMethodDeclarationOpenParentheses {
+		public NewLinePlacement NewLineAferMethodDeclarationOpenParentheses {
 			get;
 			set;
 		}
 
-		public bool MethodDeclarationClosingParenthesesOnNewLine {
+		public NewLinePlacement MethodDeclarationClosingParenthesesOnNewLine {
 			get;
 			set;
 		}
@@ -822,12 +822,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public bool NewLineAferIndexerDeclarationOpenBracket {
+		public NewLinePlacement NewLineAferIndexerDeclarationOpenBracket {
 			get;
 			set;
 		}
 
-		public bool IndexerDeclarationClosingBracketOnNewLine {
+		public NewLinePlacement IndexerDeclarationClosingBracketOnNewLine {
 			get;
 			set;
 		}

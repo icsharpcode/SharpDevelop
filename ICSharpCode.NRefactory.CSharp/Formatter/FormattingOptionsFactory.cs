@@ -181,12 +181,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				KeepCommentsAtFirstColumn = true,
 				ChainedMethodCallWrapping = Wrapping.DoNotChange,
 				MethodCallArgumentWrapping = Wrapping.DoNotChange,
-				NewLineAferMethodCallOpenParentheses = true,
-				MethodCallClosingParenthesesOnNewLine = true,
+				NewLineAferMethodCallOpenParentheses = NewLinePlacement.DoNotCare,
+				MethodCallClosingParenthesesOnNewLine = NewLinePlacement.DoNotCare,
 
 				IndexerArgumentWrapping = Wrapping.DoNotChange,
-				NewLineAferIndexerOpenBracket = false,
-				IndexerClosingBracketOnNewLine = false
+				NewLineAferIndexerOpenBracket = NewLinePlacement.DoNotCare,
+				IndexerClosingBracketOnNewLine = NewLinePlacement.DoNotCare
 			};
 		}
 
@@ -339,12 +339,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				KeepCommentsAtFirstColumn = true,
 				ChainedMethodCallWrapping = Wrapping.DoNotChange,
 				MethodCallArgumentWrapping = Wrapping.DoNotChange,
-				NewLineAferMethodCallOpenParentheses = true,
-				MethodCallClosingParenthesesOnNewLine = true,
+				NewLineAferMethodCallOpenParentheses = NewLinePlacement.DoNotCare,
+				MethodCallClosingParenthesesOnNewLine = NewLinePlacement.DoNotCare,
 
 				IndexerArgumentWrapping = Wrapping.DoNotChange,
-				NewLineAferIndexerOpenBracket = false,
-				IndexerClosingBracketOnNewLine = false,
+				NewLineAferIndexerOpenBracket = NewLinePlacement.DoNotCare,
+				IndexerClosingBracketOnNewLine = NewLinePlacement.DoNotCare,
 
 			};
 		}
