@@ -58,9 +58,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					context.TranslateString("Create event invocator"),
 					Script.InsertPosition.After,
 					new AstNode[] { eventDeclaration, methodDeclaration }
-				);
-				script.InsertBefore (property.Setter.Body.RBraceToken, stmt);
-				script.FormatText (stmt);
+				).ContinueWith (delegate {
+					script.InsertBefore (property.Setter.Body.RBraceToken, stmt);
+					script.FormatText (stmt);
+				});
 			}, property.NameToken);
 		}
 
