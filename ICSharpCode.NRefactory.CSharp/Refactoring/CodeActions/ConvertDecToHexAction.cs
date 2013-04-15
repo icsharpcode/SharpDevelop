@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				yield break;
 
 			var value = pexpr.Value;
-			if (value is string)
+			if (value is string || value is bool || value is float || value is double || value is char)
 				yield break;
 
 			yield return new CodeAction(context.TranslateString("Convert dec to hex"), script => {
