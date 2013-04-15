@@ -50,15 +50,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			yield return new CodeAction(context.TranslateString("Create changed event"), script => {
 				var eventDeclaration = CreateChangedEventDeclaration (context, property);
 				var methodDeclaration = CreateEventInvocatorAction.CreateEventInvocator (context, type, eventDeclaration, eventDeclaration.Variables.First (), resolvedType.GetDelegateInvokeMethod (), false);
-				script.InsertBefore (property.Setter.Body.RBraceToken, new ExpressionStatement (new InvocationExpression (
+				var stmt = new ExpressionStatement (new InvocationExpression (
 					new IdentifierExpression (methodDeclaration.Name),
 					new MemberReferenceExpression (new TypeReferenceExpression (context.CreateShortType("System", "EventArgs")), "Empty")
-				)));
+				));
+				script.InsertBefore (property.Setter.Body.RBraceToken, stmt);
 				script.InsertWithCursor(
 					context.TranslateString("Create event invocator"),
 					Script.InsertPosition.After,
 					new AstNode[] { eventDeclaration, methodDeclaration }
 				);
+				script.FormatText (stmt);
 			}, property.NameToken);
 		}
 

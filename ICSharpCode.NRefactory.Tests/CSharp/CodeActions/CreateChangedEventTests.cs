@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		}
 		set {
 			test = value;
-		OnTestChanged (System.EventArgs.Empty);
+			OnTestChanged (System.EventArgs.Empty);
 		}
 	}
 }");
@@ -97,7 +97,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		}
 		set {
 			test = value;
-		OnTestChanged (System.EventArgs.Empty);
+			OnTestChanged (System.EventArgs.Empty);
 		}
 	}
 }");
@@ -133,7 +133,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		}
 		set {
 			test = value;
-		OnTestChanged (System.EventArgs.Empty);
+			OnTestChanged (System.EventArgs.Empty);
 		}
 	}
 }");
