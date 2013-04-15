@@ -105,13 +105,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var segments = new List<ISegment>();
 			foreach (var node in nodes.OrderByDescending (n => n.StartLocation)) {
 				var segment = GetSegment(node);
-				
 				formatter.AddFormattingRegion (new ICSharpCode.NRefactory.TypeSystem.DomRegion (
 					currentDocument.GetLocation (segment.Offset), 
 					currentDocument.GetLocation (segment.EndOffset)
 					));
+				Console.WriteLine(segment +"/"+currentDocument.GetText (segment));
 				segments.Add(segment);
 			}
+			Console.WriteLine(segments.Count);
 			if (segments.Count == 0)
 				return;
 			var changes = formatter.AnalyzeFormatting (currentDocument, syntaxTree);

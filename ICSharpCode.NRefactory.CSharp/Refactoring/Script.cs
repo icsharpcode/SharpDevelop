@@ -177,17 +177,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			CorrectFormatting (null, newNode);
 		}
 		
-		public virtual Task Link (params AstNode[] nodes)
+		public void Link (params AstNode[] nodes)
+		{
+			Link(null, nodes);
+		}
+
+		public virtual void Link (Action continuation, params AstNode[] nodes)
 		{
 			// Default implementation: do nothing
 			// Derived classes are supposed to enter the text editor's linked state.
-			
-			// Immediately signal the task as completed:
-			var tcs = new TaskCompletionSource<object>();
-			tcs.SetResult(null);
-			return tcs.Task;
 		}
-		
+
 		public void Replace (AstNode node, AstNode replaceWith)
 		{
 			var segment = GetSegment (node);
@@ -238,26 +238,36 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			End
 		}
 		
-		public virtual Task InsertWithCursor(string operation, InsertPosition defaultPosition, IEnumerable<AstNode> node)
+		public virtual void InsertWithCursor(string operation, InsertPosition defaultPosition, IEnumerable<AstNode> node, Action continuation = null)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public virtual Task InsertWithCursor(string operation, ITypeDefinition parentType, IEnumerable<AstNode> node)
+		public virtual void InsertWithCursor(string operation, ITypeDefinition parentType, IEnumerable<AstNode> node, Action continuation = null)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public Task InsertWithCursor(string operation, InsertPosition defaultPosition, params AstNode[] nodes)
+		public void InsertWithCursor(string operation, InsertPosition defaultPosition, params AstNode[] nodes)
 		{
-			return InsertWithCursor(operation, defaultPosition, (IEnumerable<AstNode>)nodes);
+			InsertWithCursor(operation, defaultPosition, (IEnumerable<AstNode>)nodes, null);
 		}
-		
-		public Task InsertWithCursor(string operation, ITypeDefinition parentType, params AstNode[] nodes)
+
+		public void InsertWithCursor(string operation, ITypeDefinition parentType, params AstNode[] nodes)
 		{
-			return InsertWithCursor(operation, parentType, (IEnumerable<AstNode>)nodes);
+			InsertWithCursor(operation, parentType, (IEnumerable<AstNode>)nodes, null);
 		}
-		
+
+		public void InsertWithCursor(string operation, InsertPosition defaultPosition, Action continuation, params AstNode[] nodes)
+		{
+			InsertWithCursor(operation, defaultPosition, (IEnumerable<AstNode>)nodes, continuation);
+		}
+
+		public void InsertWithCursor(string operation, ITypeDefinition parentType, Action continuation, params AstNode[] nodes)
+		{
+			InsertWithCursor(operation, parentType, (IEnumerable<AstNode>)nodes, continuation);
+		}
+
 		protected virtual int GetIndentLevelAt (int offset)
 		{
 			return 0;

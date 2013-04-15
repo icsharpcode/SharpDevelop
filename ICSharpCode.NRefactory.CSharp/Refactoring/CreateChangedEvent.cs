@@ -30,6 +30,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Threading;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -50,18 +51,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			yield return new CodeAction(context.TranslateString("Create changed event"), script => {
 				var eventDeclaration = CreateChangedEventDeclaration (context, property);
 				var methodDeclaration = CreateEventInvocatorAction.CreateEventInvocator (context, type, eventDeclaration, eventDeclaration.Variables.First (), resolvedType.GetDelegateInvokeMethod (), false);
-				var stmt = new ExpressionStatement (new InvocationExpression (
-					new IdentifierExpression (methodDeclaration.Name),
-					new MemberReferenceExpression (new TypeReferenceExpression (context.CreateShortType("System", "EventArgs")), "Empty")
-				));
 				script.InsertWithCursor(
 					context.TranslateString("Create event invocator"),
 					Script.InsertPosition.After,
-					new AstNode[] { eventDeclaration, methodDeclaration }
-				).ContinueWith (delegate {
-					script.InsertBefore (property.Setter.Body.RBraceToken, stmt);
-					script.FormatText (stmt);
-				});
+					new AstNode[] { eventDeclaration, methodDeclaration },
+					delegate {
+						var stmt = new ExpressionStatement (new InvocationExpression (
+							new IdentifierExpression (methodDeclaration.Name),
+							new MemberReferenceExpression (new TypeReferenceExpression (context.CreateShortType("System", "EventArgs")), "Empty")
+						));
+						script.InsertBefore (property.Setter.Body.RBraceToken, stmt);
+						script.FormatText ((AstNode)property.Setter.Body);
+					}
+				);
 			}, property.NameToken);
 		}
 
