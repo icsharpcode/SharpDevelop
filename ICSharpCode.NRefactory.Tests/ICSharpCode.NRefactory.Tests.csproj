@@ -411,6 +411,7 @@
     <Compile Include="CSharp\CodeIssues\ExpressionOfCompatibleTypeCastIssueTests.cs" />
     <Compile Include="CSharp\CodeActions\RemoveFieldRefactoryActionTests.cs" />
     <Compile Include="CSharp\CodeIssues\ConvertToStaticMethodIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\ParameterCanBeIEnumerableTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">
