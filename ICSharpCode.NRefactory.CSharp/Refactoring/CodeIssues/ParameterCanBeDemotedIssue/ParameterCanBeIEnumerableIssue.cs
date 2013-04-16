@@ -32,16 +32,14 @@ using System.Linq;
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 
-	[IssueDescription("A parameter can be demoted to base class",
-	                  Description = "Finds parameters that can be demoted to a base class.",
+	[IssueDescription("A parameter can IEnumerable/ICollection/IList<T>",
+	                  Description = "Finds parameters that can be demoted to a generic list.",
 	                  Category = IssueCategories.Opportunities,
-	                  Severity = Severity.Suggestion,
-	                  SuppressMessageCategory="Microsoft.Design",
-	                  SuppressMessageCheckId="CA1011:ConsiderPassingBaseTypesAsParameters"
+	                  Severity = Severity.Suggestion
 	                  )]
 	public class ParameterCanBeIEnumerableIssue : ICodeIssueProvider
 	{
-		bool tryResolve;
+	    readonly bool tryResolve;
 		
 		public ParameterCanBeIEnumerableIssue() : this (true)
 		{
@@ -108,9 +106,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (parameterCount != 1)
 					return false;
 				var parameterType = ctx.Resolve(methodDeclaration.Parameters.First()).Type as ArrayType;
-				if (parameterType == null || !parameterType.ElementType.IsKnownType(KnownTypeCode.String))
-					return false;
-				return true;
+				return parameterType != null && parameterType.ElementType.IsKnownType(KnownTypeCode.String);
 			}
 
             void ProcessParameter(ParameterDeclaration parameter, AstNode rootResolutionNode, TypeCriteriaCollector collector)
@@ -129,7 +125,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
                     return;
                 }
 
-                var candidateTypes = localResolveResult.Type.GetAllBaseTypes().Where(t => t.IsParameterized).ToList();
+                var candidateTypes = localResolveResult.Type.GetAllBaseTypes()
+                    .Where(t => t.IsParameterized)
+                    .ToList();
 
                 var validTypes =
                     (from type in candidateTypes
@@ -143,11 +141,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
                 AddIssue(parameter.NameToken, string.Format(ctx.TranslateString("Parameter can be {0}"),
                                                             foundType.Name),
-                         script =>
-                             {
-                                 script.Replace(parameter.Type, CreateShortType(ctx, foundType, parameter));
-
-                             });
+                         script => script.Replace(parameter.Type, CreateShortType(ctx, foundType, parameter)));
             }
 
 		    public static AstType CreateShortType(BaseRefactoringContext refactoringContext, IType expressionType, AstNode node)
