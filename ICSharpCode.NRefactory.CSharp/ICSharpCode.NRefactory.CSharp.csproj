@@ -535,6 +535,7 @@
     <Compile Include="Refactoring\CodeIssues\RedundantBaseConstructorIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ConstructorIssues\RedudantConstructorIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ConstructorIssues\PublicConstructorInAbstractClass.cs" />
+    <Compile Include="Refactoring\CodeActions\RemoveFieldRefactoryActionRefactoringAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
