@@ -13,10 +13,11 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 	/// <summary>
 	/// Description of ExportText.
 	/// </summary>
-	public class ExportText:BaseExportColumn
+	public class ExportText:ExportColumn
 	{
 		public ExportText()
 		{
 		}
+		
 	}
 }

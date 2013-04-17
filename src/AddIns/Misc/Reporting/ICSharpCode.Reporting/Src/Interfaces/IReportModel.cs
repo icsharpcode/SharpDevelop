@@ -19,15 +19,19 @@ namespace ICSharpCode.Reporting.Interfaces
 	{
 		ReportSettings ReportSettings {get;set;}
 		List<BaseSection> SectionCollection {get;}
-		
+		/*
 		ISection ReportHeader {get;}
 		ISection PageHeader {get;}
 		ISection DetailSection {get;}
 		ISection PageFooter {get;}
 		ISection ReportFooter {get;}
-		/*
+		
 		GlobalEnums.PushPullModel DataModel {get;}
 		*/
-		
+		IReportContainer ReportHeader {get;}
+		IReportContainer PageHeader {get;}
+		IReportContainer DetailSection {get;}
+		IReportContainer PageFooter {get;}
+		IReportContainer ReportFooter {get;}
 	}
 }

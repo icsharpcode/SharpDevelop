@@ -25,18 +25,26 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		public void CurrentPageContainOneItem() {
 			reportCreator.BuildExportList();
 			var page = reportCreator.Pages[0];
-			Assert.That(page.Items.Count, Is.EqualTo(1));
+			Assert.That(page.ExportedItems.Count, Is.EqualTo(3));
 		}
 		
 		
 		[Test]
-		public void PageItemIsBaseExportColumn() {
+		public void PageItemIsBaseExportContainer() {
 			reportCreator.BuildExportList();
 			var page = reportCreator.Pages[0];
-			Assert.That(page.Items[0],Is.InstanceOf(typeof(ExportText)));
+			Assert.That(page.ExportedItems[0],Is.InstanceOf(typeof(ExportContainer)));
 		}
 		
 		
+		[Test]
+		public void ExportContainerContainsExportText() {
+			reportCreator.BuildExportList();
+			var page = reportCreator.Pages[0];
+			var firstItem = (ExportContainer)page.ExportedItems[0];
+			var result = firstItem.ExportedItems[0];
+			Assert.That(result,Is.InstanceOf(typeof(ExportText)));
+		}
 		[SetUp]
 		public void LoadFromStream()
 		{

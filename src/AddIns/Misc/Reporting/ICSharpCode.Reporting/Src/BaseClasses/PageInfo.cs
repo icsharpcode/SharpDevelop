@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using ICSharpCode.Reporting.Interfaces.Export;
 
 namespace ICSharpCode.Reporting.BaseClasses
 {
@@ -14,17 +15,7 @@ namespace ICSharpCode.Reporting.BaseClasses
 	/// Description of PageInfo.
 	/// </summary>
 	/// 
-	public interface IPageInfo
-	{
-		int PageNumber {get;set;}
-		int TotalPages {get;set;}
-		string ReportName {get;set;}
-		string ReportFileName {get;set;}
-		string ReportFolder {get;}
-		DateTime ExecutionTime {get;set;}
-//		System.Collections.Hashtable ParameterHash {get;set;}
-//		IDataNavigator IDataNavigator {get;set;}
-	}
+
 	
 	
 	public class PageInfo:IPageInfo

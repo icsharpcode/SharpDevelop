@@ -12,6 +12,7 @@ using System.Drawing;
 
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.Reporting.Interfaces.Export;
 
 namespace ICSharpCode.Reporting.PageBuilder
 {
@@ -34,7 +35,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		protected IPage InitNewPage(){
 			var pi = CreatePageInfo();
-			return new Page(pi);
+			return new Page(pi,ReportModel.ReportSettings.PageSize);
 		}
 		
 		IPageInfo CreatePageInfo()
@@ -43,7 +44,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 			pi.PageNumber = Pages.Count +1;
 			pi.ReportName = ReportModel.ReportSettings.ReportName;
 			pi.ReportFileName = ReportModel.ReportSettings.FileName;
-//			pi.ReportName = ReportModel.ReportSettings.ReportName;
 			return pi;
 		}
 		

@@ -11,6 +11,7 @@ using System.IO;
 using System.Reflection;
 
 using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder;
 using NUnit.Framework;
 
@@ -28,7 +29,6 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		{
 			Assert.IsNotNull(reportCreator);
 		}
-		
 		
 		
 		#region Pages
@@ -58,7 +58,6 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		public void CurrentPageIsFirstPage() {
 			reportCreator.BuildExportList();
 			Assert.That(reportCreator.Pages[0].IsFirstPage,Is.True);
-			Assert.That(reportCreator.Pages[0].IsFirstPage,Is.True);
 		}
 		
 		#endregion
@@ -68,8 +67,8 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		[Test]
 		public void PageInfoPageNumberIsOne() {
 			reportCreator.BuildExportList();
-			var pi = reportCreator.Pages[0].PageInfo;
-			Assert.That(pi.PageNumber,Is.EqualTo(1));
+			var pageInfo = reportCreator.Pages[0].PageInfo;
+			Assert.That(pageInfo.PageNumber,Is.EqualTo(1));
 		}
 
 	
@@ -78,6 +77,26 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 			reportCreator.BuildExportList();
 			var pi = reportCreator.Pages[0].PageInfo;
 			Assert.That(pi.ReportName,Is.EqualTo("Report1"));
+			Console.WriteLine("----------------");
+			foreach (var page in reportCreator.Pages) {
+				ShowPage(page);
+			}
+		}
+		
+		
+		void ShowPage( IExportContainer container)
+		{
+			foreach (var item in container.ExportedItems) {
+				
+				if (item is IExportContainer) {
+					Console.WriteLine("DoContainer {0} - {1} - {2}",item.Name,item.Location,item.Size);
+					ShowPage(item as IExportContainer);
+				} else {
+					Console.WriteLine("\tItem {0} - {1} - {2}",item.Name,item.Location,item.Size);
+				}
+					
+				
+			}
 		}
 		
 		#endregion

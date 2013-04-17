@@ -22,15 +22,12 @@ namespace ICSharpCode.Reporting.Items
 		
 		public ReportModel() {
 			SectionCollection = new List<BaseSection>();
-//			foreach (GlobalEnums.ReportSection sec in Enum.GetValues(typeof(GlobalEnums.ReportSection))) {
-//				SectionCollection.Add (SectionFactory.Create(sec.ToString()));
-//			}
 		}
 			
 	
 		#region Sections
 		
-		public ISection ReportHeader
+		public IReportContainer ReportHeader
 		{
 			get {
 				return (BaseSection)SectionCollection[0];
@@ -38,7 +35,7 @@ namespace ICSharpCode.Reporting.Items
 		}
 		
 		
-		public ISection PageHeader
+		public IReportContainer PageHeader
 		{
 			get {
 				return (BaseSection)SectionCollection[1];
@@ -46,7 +43,7 @@ namespace ICSharpCode.Reporting.Items
 		}
 		
 		
-		public ISection DetailSection
+		public IReportContainer DetailSection
 		{
 			get {
 				return (BaseSection)SectionCollection[2];
@@ -54,14 +51,14 @@ namespace ICSharpCode.Reporting.Items
 		}
 		
 		
-		public ISection PageFooter
+		public IReportContainer PageFooter
 		{
 			get {
 				return (BaseSection)SectionCollection[3];
 			}
 		}
 		
-		public ISection ReportFooter
+		public IReportContainer ReportFooter
 		{
 			get {
 				return (BaseSection)SectionCollection[4];

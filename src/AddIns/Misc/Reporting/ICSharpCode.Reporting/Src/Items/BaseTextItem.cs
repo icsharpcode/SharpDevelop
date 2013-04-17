@@ -9,6 +9,7 @@
 using System;
 using System.Drawing;
 using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Items
@@ -16,12 +17,12 @@ namespace ICSharpCode.Reporting.Items
 	/// <summary>
 	/// Description of BaseTextItem.
 	/// </summary>
-	public interface  ITextItem:IReportItem
+	public interface  ITextItem:IPrintableObject
 	{
 		Font Font {get;set;}
 	}
 	
-	public class BaseTextItem:ReportItem,ITextItem
+	public class BaseTextItem:PrintableItem,ITextItem
 	{
 		public BaseTextItem(){
 		}
@@ -30,7 +31,11 @@ namespace ICSharpCode.Reporting.Items
 		
 		public override IExportColumn CreateExportColumn()
 		{
-			return new ExportText();
+			var ex = new ExportText();
+			ex.Name = Name;
+			ex.Location = Location;
+			ex.Size = Size;
+			return ex;
 		}
 	}
 }

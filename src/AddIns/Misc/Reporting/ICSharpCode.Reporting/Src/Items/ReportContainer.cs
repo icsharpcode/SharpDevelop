@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Peter Forstmeier
- * Date: 19.03.2013
- * Time: 20:19
+ * Date: 16.04.2013
+ * Time: 19:51
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
@@ -15,21 +15,26 @@ using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 namespace ICSharpCode.Reporting.Items
 {
 	/// <summary>
-	/// Description of BaseSection.
+	/// Description of ReportContainer.
 	/// </summary>
-	public class BaseSection:ReportContainer,IReportContainer
+	public class ReportContainer:ReportItem,IReportContainer
 	{
-		#region Constructors
-		
-		public BaseSection()
+		public ReportContainer()
 		{
-			Items = new List<IPrintableObject>();
 		}
 		
-		public BaseSection (string name) {
-			Name = name;
+		
+		public List<IPrintableObject> Items {get;set;}
+		
+		
+		
+		public IExportContainer CreateExportColumn()
+		{
+			return new ExportContainer(){
+			Name = this.Name,
+			Size = this.Size,
+			Location = this.Location
+			};
 		}
-	
-		#endregion
 	}
 }

@@ -7,7 +7,9 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
@@ -22,8 +24,9 @@ namespace ICSharpCode.Reporting.Factories
 		{
 		}
 		
-		public IExportColumn CreateItem (IReportItem item) {
-			return item.CreateExportColumn();
+		public IExportColumn CreateItem (IPrintableObject item) {
+			var export = item.CreateExportColumn();
+			return export;
 		}
 	}
 }

@@ -13,28 +13,11 @@ using ICSharpCode.Reporting.Interfaces.Export;
 
 namespace ICSharpCode.Reporting.Items
 {
-	/// <summary>
-	/// Description of ReportItem.
-	/// </summary>
-	
-	
-	
-	public class ReportItem : IReportObject
+	public class PrintableItem : ReportItem,IPrintableObject
 	{
-		public ReportItem()
+		public virtual IExportColumn CreateExportColumn()
 		{
+			return null;
 		}
-
-
-		public string Name { get; set; }
-
-		public Point Location { get; set; }
-
-		public Size Size { get; set; }
-
-		
 	}
-	
-	
-
 }

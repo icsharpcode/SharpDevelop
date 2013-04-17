@@ -8,37 +8,30 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+
 using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.Reporting.Interfaces.Export;
 
 namespace ICSharpCode.Reporting.BaseClasses
 {
 	/// <summary>
 	/// Description of Page.
 	/// </summary>
-	/// 
+	///
 	
-	
-	
-	
-	
-	public interface IPage{
-		bool IsFirstPage {get;set;}
-		IPageInfo PageInfo {get;}
-		List<IExportColumn> Items {get; set;}
-	}
-	
-	
-	
-	
+
 	public class Page:IPage
 	{
-		public Page(IPageInfo pageInfo)
+		public Page(IPageInfo pageInfo,Size pageSize)
 		{
 			if (pageInfo == null) {
 				throw new ArgumentNullException("pageInfo");
 			}
 			PageInfo = pageInfo;
-			Items = new List<IExportColumn>();
+			Name = "Page";
+			Size = pageSize;
+			ExportedItems = new List<IExportColumn>();
 		}
 		
 		public bool IsFirstPage {get;set;}
@@ -46,6 +39,22 @@ namespace ICSharpCode.Reporting.BaseClasses
 		
 		public IPageInfo PageInfo {get;private set;}
 		
-		public List<IExportColumn> Items {get; set;}
+
+		public string Name {get;set;}
+		
+		
+		public System.Drawing.Size Size {get;set;}
+
+		
+		public System.Drawing.Point Location {get;set;}
+			
+		
+		public List<IExportColumn> ExportedItems {get;set;}
+		
+		
+		public IExportContainer CreateExportColumn()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

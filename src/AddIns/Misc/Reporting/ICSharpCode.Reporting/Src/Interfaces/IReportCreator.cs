@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Reporting.BaseClasses;
+using ICSharpCode.Reporting.Interfaces.Export;
 
 namespace ICSharpCode.Reporting.Interfaces
 {

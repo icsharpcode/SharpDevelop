@@ -92,6 +92,24 @@ namespace ICSharpCode.Reporting.Items
 			}
 		}
 		
+		
+//		[Category("Page Settings")]
+		public int BottomMargin {get;set;}
+			
+		
+//		[Category("Page Settings")]
+		public int TopMargin  {get;set;}
+		
+		
+		
+//		[Category("Page Settings")]
+		public int LeftMargin {get;set;}
+		
+		
+		
+//		[Category("Page Settings")]
+		public int RightMargin  {get;set;}
+			
 		private Size pageSize;
 		
 		public Size PageSize {

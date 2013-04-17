@@ -7,14 +7,14 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using ICSharpCode.Reporting.BaseClasses;
 
-namespace ICSharpCode.Reporting.Interfaces
+namespace ICSharpCode.Reporting.Interfaces.Export
 {
 	/// <summary>
 	/// Description of IExportColumn.
 	/// </summary>
-	public interface IExportColumn
+	public interface IExportColumn:IReportObject
 	{
-		
 	}
 }
