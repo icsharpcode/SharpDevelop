@@ -71,6 +71,7 @@
     <Compile Include="AddInSetupTests.cs" />
     <Compile Include="AvailableAddInsViewModelTests.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="ExtensionsTests.cs" />
     <Compile Include="Fakes\FakeAddInManagerServices.cs" />
     <Compile Include="Fakes\FakeAddInSetup.cs" />
     <Compile Include="Fakes\FakeAddInTree.cs" />

@@ -31,4 +31,18 @@ namespace ICSharpCode.AddInManager2
 			}
 		}
 	}
+	
+	public static class SemanticVersionExtensions
+	{
+		public static Version ToVersion(this SemanticVersion semanticVersion)
+		{
+			string versionString = semanticVersion.ToString();
+			if (!String.IsNullOrEmpty(semanticVersion.SpecialVersion))
+			{
+				// Remove special version from string (-1 for the "-" added before the version)
+				versionString = versionString.Substring(0, versionString.Length - semanticVersion.SpecialVersion.Length - 1);
+			}
+			return new Version(versionString);
+		}
+	}
 }

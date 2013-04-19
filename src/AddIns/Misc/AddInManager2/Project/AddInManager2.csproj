@@ -94,7 +94,7 @@
     <Compile Include="Src\BooleanToFontWeightConverter.cs" />
     <Compile Include="Src\Commands.cs" />
     <Compile Include="Src\DelegateCommand.cs" />
-    <Compile Include="Src\EnumerableExtensions.cs" />
+    <Compile Include="Src\Extensions.cs" />
     <Compile Include="Src\Model\AcceptLicensesEventArgs.cs" />
     <Compile Include="Src\Model\AddInDependency.cs" />
     <Compile Include="Src\Model\AddInInstallationEventArgs.cs" />

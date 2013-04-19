@@ -257,7 +257,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			{
 				if (_package.Version != null)
 				{
-					return new Version(_package.Version.ToString());
+					return _package.Version.ToVersion();
 				}
 				else
 				{

@@ -186,7 +186,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		protected virtual IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(IQueryable<IPackage> allPackages)
 		{
 			return GetBufferedPackages(allPackages)
-				.Where(package => package.IsReleaseVersion())
+				.Where(package => ShowPrereleases || package.IsReleaseVersion())
 				.DistinctLast(PackageEqualityComparer.Id);
 		}
 		
