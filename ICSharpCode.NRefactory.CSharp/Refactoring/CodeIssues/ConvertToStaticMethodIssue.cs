@@ -23,9 +23,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using ICSharpCode.NRefactory.CSharp.Refactoring;
+
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod;
 using ICSharpCode.NRefactory.Semantics;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -49,8 +48,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
             private ConstructorInitializer initializer;
 
             public GatherVisitor(BaseRefactoringContext context)
-                : base(context)
-            {
+                : base(context) {
             }
 
             public override void VisitMethodDeclaration(MethodDeclaration declaration)
@@ -69,7 +67,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
                 if (isImplementingInterface)
                     return;
 
-                AddIssue(methodDeclaration.StartLocation, methodDeclaration.Body.StartLocation,
+                AddIssue(methodDeclaration.NameToken.StartLocation, methodDeclaration.NameToken.EndLocation,
                     context.TranslateString(string.Format("Make '{0}' static", methodDeclaration.Name)),
                     script => ExecuteScriptToFixStaticMethodIssue(script, context, methodDeclaration));
             }
@@ -92,8 +90,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
             private static void DoStaticMethodGlobalOperation(AstNode fnode, RefactoringContext fctx, MemberResolveResult rr,
                                                               Script fscript)
             {
-                if (fnode is MemberReferenceExpression)
-                {
+                if (fnode is MemberReferenceExpression) {
                     var memberReference = new MemberReferenceExpression
                         (
                         new TypeReferenceExpression(
@@ -102,8 +99,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
                         );
                     fscript.Replace(fnode, memberReference);
                 }
-                else
-                {
+                else {
                     var invoke = fnode as InvocationExpression;
                     if (invoke == null) return;
                     if ((invoke.Target is MemberReferenceExpression))
