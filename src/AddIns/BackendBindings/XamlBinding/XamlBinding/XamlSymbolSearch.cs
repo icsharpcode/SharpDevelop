@@ -39,7 +39,7 @@ namespace ICSharpCode.XamlBinding
 			compilation = SD.ParserService.GetCompilation(project);
 			interestingFileNames = new List<FileName>();
 			foreach (var item in project.ParentSolution.Projects.SelectMany(p => p.Items).OfType<FileProjectItem>().Where(i => i.FileName.HasExtension(".xaml")))
-				interestingFileNames.Add(new FileName(item.FileName));
+				interestingFileNames.Add(item.FileName);
 			workAmount = interestingFileNames.Count;
 			workAmountInverse = 1.0 / workAmount;
 		}
@@ -86,14 +86,14 @@ namespace ICSharpCode.XamlBinding
 			ReadOnlyDocument document = null;
 			IHighlighter highlighter = null;
 			List<Reference> results = new List<Reference>();
-			XamlResolver resolver = new XamlResolver();
+			XamlAstResolver resolver = new XamlAstResolver(compilation, parseInfo);
 			do {
 				if (document == null) {
 					document = new ReadOnlyDocument(textSource, fileName);
 					highlighter = SD.EditorControlService.CreateHighlighter(document);
 					highlighter.BeginHighlighting();
 				}
-				var result = resolver.Resolve(parseInfo, document.GetLocation(offset + entity.Name.Length / 2 + 1), compilation, cancellationToken);
+				var result = resolver.ResolveAtLocation(document.GetLocation(offset + entity.Name.Length / 2 + 1), cancellationToken);
 				int length = entity.Name.Length;
 				if ((result is TypeResolveResult && ((TypeResolveResult)result).Type.Equals(entity)) || (result is MemberResolveResult && ((MemberResolveResult)result).Member.Equals(entity))) {
 					var region = new DomRegion(fileName, document.GetLocation(offset), document.GetLocation(offset + length));

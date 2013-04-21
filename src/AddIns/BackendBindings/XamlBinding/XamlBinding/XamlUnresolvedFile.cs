@@ -63,15 +63,15 @@ namespace ICSharpCode.XamlBinding
 			set { lastWriteTime = value; }
 		}
 		
-		public IList<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
+		IList<IUnresolvedTypeDefinition> IUnresolvedFile.TopLevelTypeDefinitions {
 			get { return topLevel; }
 		}
 		
-		public IList<IUnresolvedAttribute> AssemblyAttributes {
+		IList<IUnresolvedAttribute> IUnresolvedFile.AssemblyAttributes {
 			get { return EmptyList<IUnresolvedAttribute>.Instance; }
 		}
 		
-		public IList<IUnresolvedAttribute> ModuleAttributes {
+		IList<IUnresolvedAttribute> IUnresolvedFile.ModuleAttributes {
 			get { return EmptyList<IUnresolvedAttribute>.Instance; }
 		}
 		
@@ -79,7 +79,7 @@ namespace ICSharpCode.XamlBinding
 			get { return errors; }
 		}
 		
-		public IUnresolvedTypeDefinition GetTopLevelTypeDefinition(TextLocation location)
+		IUnresolvedTypeDefinition IUnresolvedFile.GetTopLevelTypeDefinition(TextLocation location)
 		{
 			foreach (var td in topLevel) {
 				if (td.Region.IsInside(location))
@@ -88,14 +88,18 @@ namespace ICSharpCode.XamlBinding
 			return null;
 		}
 		
-		public IUnresolvedTypeDefinition GetInnermostTypeDefinition(TextLocation location)
+		public IUnresolvedTypeDefinition TypeDefinition {
+			get { return topLevel.FirstOrDefault(); }
+		}
+		
+		IUnresolvedTypeDefinition IUnresolvedFile.GetInnermostTypeDefinition(TextLocation location)
 		{
-			return GetTopLevelTypeDefinition(location);
+			return ((IUnresolvedFile)this).GetTopLevelTypeDefinition(location);
 		}
 		
 		public IUnresolvedMember GetMember(TextLocation location)
 		{
-			var td = GetInnermostTypeDefinition(location);
+			var td = ((IUnresolvedFile)this).GetInnermostTypeDefinition(location);
 			if (td != null) {
 				foreach (var md in td.Members) {
 					if (md.Region.IsInside(location))
@@ -105,9 +109,23 @@ namespace ICSharpCode.XamlBinding
 			return null;
 		}
 		
-		public ITypeResolveContext GetTypeResolveContext(ICompilation compilation, TextLocation loc)
+		public static ITypeReference CreateTypeReference(string @namespace, string localName)
 		{
-			throw new NotImplementedException();
+			if (@namespace.StartsWith("clr-namespace:", StringComparison.OrdinalIgnoreCase)) {
+				return CreateClrNamespaceTypeReference(@namespace.Substring("clr-namespace:".Length), localName);
+			}
+			return new XamlTypeReference(@namespace, localName);
+		}
+		
+		public static ITypeReference CreateClrNamespaceTypeReference(string @namespace, string localName)
+		{
+			int assemblyNameIndex = @namespace.IndexOf(";assembly=", StringComparison.OrdinalIgnoreCase);
+			IAssemblyReference asm = DefaultAssemblyReference.CurrentAssembly;
+			if (assemblyNameIndex > -1) {
+				asm = new DefaultAssemblyReference(@namespace.Substring(assemblyNameIndex + ";assembly=".Length));
+				@namespace = @namespace.Substring(0, assemblyNameIndex);
+			}
+			return new GetClassTypeReference(asm, @namespace, localName, 0);
 		}
 		
 		class XamlDocumentVisitor : AXmlVisitor
@@ -129,7 +147,7 @@ namespace ICSharpCode.XamlBinding
 				currentDocument = document;
 				AXmlElement rootElement = currentDocument.Children.OfType<AXmlElement>().FirstOrDefault();
 				if (rootElement != null) {
-					string className = rootElement.GetAttributeValue(XamlBehavior.XamlNamespace, "Class");
+					string className = rootElement.GetAttributeValue(XamlConst.XamlNamespace, "Class");
 					if (className != null) {
 						TypeDefinition = new DefaultUnresolvedTypeDefinition(className) {
 							Kind = TypeKind.Class,
@@ -148,9 +166,9 @@ namespace ICSharpCode.XamlBinding
 			
 			public override void VisitElement(AXmlElement element)
 			{
-				string name = element.GetAttributeValue(XamlBehavior.XamlNamespace, "Name") ??
+				string name = element.GetAttributeValue(XamlConst.XamlNamespace, "Name") ??
 					element.GetAttributeValue("Name");
-				string modifier = element.GetAttributeValue(XamlBehavior.XamlNamespace, "FieldModifier");
+				string modifier = element.GetAttributeValue(XamlConst.XamlNamespace, "FieldModifier");
 				
 				if (name != null && TypeDefinition != null) {
 					var field = new DefaultUnresolvedField(TypeDefinition, name);

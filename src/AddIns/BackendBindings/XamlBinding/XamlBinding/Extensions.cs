@@ -89,16 +89,6 @@ namespace ICSharpCode.XamlBinding
 				collection.Add(item);
 		}
 		
-		public static ElementWrapper ToWrapper(this AXmlElement element)
-		{
-			return new ElementWrapper(element);
-		}
-		
-		public static AttributeWrapper ToWrapper(this AXmlAttribute attribute)
-		{
-			return new AttributeWrapper(attribute);
-		}
-		
 		public static string[] Split(this string thisValue, StringSplitOptions options, params char[] delimiters)
 		{
 			if (thisValue == null)
@@ -308,7 +298,7 @@ namespace ICSharpCode.XamlBinding
 				foreach (IMethod method in field.DeclaringTypeDefinition.Methods) {
 					if (!method.IsPublic || !method.IsStatic || method.Name.Length <= 3)
 						continue;
-					if (!method.Name.StartsWith("Get") && !method.Name.StartsWith("Set"))
+					if (!method.Name.StartsWith("Get", StringComparison.Ordinal) && !method.Name.StartsWith("Set", StringComparison.Ordinal))
 						continue;
 					foundMethod = method.Name.Remove(0, 3) == fieldName;
 					if (foundMethod)
@@ -325,13 +315,6 @@ namespace ICSharpCode.XamlBinding
 				return true;
 			}
 			
-			return false;
-		}
-		
-		/// <remarks>Works only if fullyQualifiedClassName is the name of a class!</remarks>
-		public static bool DerivesFrom(this ITypeDefinition myClass, string fullyQualifiedClassName)
-		{
-//			return myClass.ClassInheritanceTreeClassesOnly.Any(c => c.FullyQualifiedName == fullyQualifiedClassName);
 			return false;
 		}
 		

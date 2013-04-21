@@ -64,8 +64,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttachedMemberResolveResult.cs" />
+    <Compile Include="CompletionData.cs" />
+    <Compile Include="CompletionDataGenerator.cs" />
+    <Compile Include="CompletionDataHelper.cs" />
+    <Compile Include="XamlAstResolver.cs" />
+    <Compile Include="XamlCodeCompletionBinding.cs" />
+    <Compile Include="XamlCompletionItem.cs" />
+    <Compile Include="XamlConst.cs" />
+    <Compile Include="XamlContextResolver.cs" />
     <Compile Include="XamlFullParseInformation.cs" />
-    <Compile Include="XamlParsedFile.cs" />
+    <Compile Include="XamlTypeReference.cs" />
+    <Compile Include="XamlUnresolvedFile.cs" />
     <Compile Include="XamlResolver.cs" />
     <Compile Include="XamlSymbolSearch.cs" />
     <None Include="XamlBinding.addin">
@@ -98,7 +108,6 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XamlBehavior.cs" />
-    <Compile Include="XamlCodeCompletionBinding.cs" />
     <Compile Include="XamlCompletionItemList.cs" />
     <Compile Include="XamlCompletionSettings.cs" />
     <Compile Include="XamlContext.cs" />

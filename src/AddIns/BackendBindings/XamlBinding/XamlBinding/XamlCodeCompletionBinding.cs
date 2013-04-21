@@ -4,7 +4,6 @@
 using ICSharpCode.XmlEditor;
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
@@ -16,156 +15,157 @@ namespace ICSharpCode.XamlBinding
 		
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
-//			XamlCompletionContext context = CompletionDataHelper.ResolveCompletionContext(editor, ch);
-//			XamlCompletionItemList list;
-//			
-//			if (context.Description == XamlContextDescription.InComment || context.Description == XamlContextDescription.InCData)
-//				return CodeCompletionKeyPressResult.None;
-//			
-//			switch (ch) {
-//				case '<':
-//					context.Description = (context.Description == XamlContextDescription.None) ? XamlContextDescription.AtTag : context.Description;
-//					list = CompletionDataHelper.CreateListForContext(context);
-//					editor.ShowCompletionWindow(list);
-//					return CodeCompletionKeyPressResult.Completed;
-//				case '>':
-//					return CodeCompletionKeyPressResult.None;
-//				case '\'':
-//				case '"':
-//					if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
-//						// count all " or ' chars before the next > char
-//						int search = editor.Caret.Offset + 1;
-//						int endMarkerCount = 1;
-//						char curCh = editor.Document.GetCharAt(search);
-//						while (search < editor.Document.TextLength - 1 && curCh != '>') {
-//							if (curCh == ch)
-//								endMarkerCount++;
-//							search++;
-//							curCh = editor.Document.GetCharAt(search);
-//						}
-//						// if the count is odd we need to add an additional " or ' char
-//						if (endMarkerCount % 2 != 0) {
-//							editor.Document.Insert(editor.Caret.Offset, ch.ToString());
-//							editor.Caret.Offset--;
-//							this.CtrlSpace(editor);
-//							return CodeCompletionKeyPressResult.Completed;
-//						}
-//					}
-//					break;
-//				case '{': // starting point for Markup Extension Completion
-//					if (context.Attribute != null
-//					    && XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)
-//					    && !(context.RawAttributeValue.StartsWith("{}", StringComparison.OrdinalIgnoreCase) && context.RawAttributeValue.Length != 2)) {
-//						
-//						if (editor.SelectionLength != 0)
-//							editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
-//						
-//						editor.Document.Insert(editor.Caret.Offset, "{}");
-//						editor.Caret.Offset--;
-//						
-//						this.CtrlSpace(editor);
-//						return CodeCompletionKeyPressResult.EatKey;
-//					}
-//					break;
-//				case '.':
-//					switch (context.Description) {
-//						case XamlContextDescription.AtTag:
-//						case XamlContextDescription.InTag:
-//							if (context.ActiveElement != null && !XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
-//								list = CompletionDataHelper.CreateListForContext(context);
-//								editor.ShowCompletionWindow(list);
+			XamlCompletionContext context = XamlContextResolver.ResolveCompletionContext(editor, ch);
+			CompletionDataGenerator generator = new CompletionDataGenerator();
+			XamlCompletionItemList list;
+			
+			if (context.Description == XamlContextDescription.InComment || context.Description == XamlContextDescription.InCData)
+				return CodeCompletionKeyPressResult.None;
+			
+			switch (ch) {
+				case '<':
+					context.Description = (context.Description == XamlContextDescription.None) ? XamlContextDescription.AtTag : context.Description;
+					list = generator.CreateListForContext(context);
+					editor.ShowCompletionWindow(list);
+					return CodeCompletionKeyPressResult.Completed;
+				case '>':
+					return CodeCompletionKeyPressResult.None;
+				case '\'':
+				case '"':
+					if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
+						// count all " or ' chars before the next > char
+						int search = editor.Caret.Offset + 1;
+						int endMarkerCount = 1;
+						char curCh = editor.Document.GetCharAt(search);
+						while (search < editor.Document.TextLength - 1 && curCh != '>') {
+							if (curCh == ch)
+								endMarkerCount++;
+							search++;
+							curCh = editor.Document.GetCharAt(search);
+						}
+						// if the count is odd we need to add an additional " or ' char
+						if (endMarkerCount % 2 != 0) {
+							editor.Document.Insert(editor.Caret.Offset, ch.ToString());
+							editor.Caret.Offset--;
+							this.CtrlSpace(editor);
+							return CodeCompletionKeyPressResult.Completed;
+						}
+					}
+					break;
+				case '{': // starting point for Markup Extension Completion
+					if (context.Attribute != null
+					    && XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)
+					    && !(context.RawAttributeValue.StartsWith("{}", StringComparison.OrdinalIgnoreCase) && context.RawAttributeValue.Length != 2)) {
+						
+						if (editor.SelectionLength != 0)
+							editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
+						
+						editor.Document.Insert(editor.Caret.Offset, "{}");
+						editor.Caret.Offset--;
+						
+						this.CtrlSpace(editor);
+						return CodeCompletionKeyPressResult.EatKey;
+					}
+					break;
+				case '.':
+					switch (context.Description) {
+						case XamlContextDescription.AtTag:
+						case XamlContextDescription.InTag:
+							if (context.ActiveElement != null && !XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
+								list = generator.CreateListForContext(context);
+								editor.ShowCompletionWindow(list);
+								return CodeCompletionKeyPressResult.Completed;
+							}
+							break;
+						case XamlContextDescription.InMarkupExtension:
+//							if (DoMarkupExtensionCompletion(context))
 //								return CodeCompletionKeyPressResult.Completed;
-//							}
-//							break;
-//						case XamlContextDescription.InMarkupExtension:
-////							if (DoMarkupExtensionCompletion(context))
-////								return CodeCompletionKeyPressResult.Completed;
-//							break;
-//						case XamlContextDescription.InAttributeValue:
-//							if (editor.SelectionLength != 0)
-//								editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
-//							
-//							editor.Document.Insert(editor.Caret.Offset, ".");
-//							
-//							this.CtrlSpace(editor);
-//							return CodeCompletionKeyPressResult.EatKey;
-//					}
-//					break;
-//				case '(':
-//				case '[':
-//					if (context.Description == XamlContextDescription.InAttributeValue) {
-//						if (editor.SelectionLength != 0)
-//							editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
-//						
-//						if (ch == '(')
-//							editor.Document.Insert(editor.Caret.Offset, "()");
-//						if (ch == '[')
-//							editor.Document.Insert(editor.Caret.Offset, "[]");
-//						editor.Caret.Offset--;
-//						
-//						this.CtrlSpace(editor);
-//						return CodeCompletionKeyPressResult.EatKey;
-//					}
-//					break;
-//				case ':':
-//					if (context.ActiveElement != null && XmlParser.GetQualifiedAttributeNameAtIndex(editor.Document.Text, editor.Caret.Offset) == null) {
-//						if (context.Attribute != null && !context.Attribute.Name.StartsWith("xmlns", StringComparison.OrdinalIgnoreCase)) {
-//							list = CompletionDataHelper.CreateListForContext(context);
-//							list.PreselectionLength = editor.GetWordBeforeCaretExtended().Length;
-//							editor.ShowCompletionWindow(list);
-//							return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
-//						}
-//					}
-//					break;
-//				case '/': // ignore '/' when trying to type '/>'
-//					return CodeCompletionKeyPressResult.None;
-//				case '=':
-//					if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
-//						int searchOffset = editor.Caret.Offset;
-//						
-//						if (editor.SelectionLength != 0)
-//							editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
-//						
-//						while (searchOffset < editor.Document.TextLength - 1) {
-//							searchOffset++;
-//							if (!char.IsWhiteSpace(editor.Document.GetCharAt(searchOffset)))
-//								break;
-//						}
-//						
-//						if (searchOffset >= editor.Document.TextLength || editor.Document.GetCharAt(searchOffset) != '"') {
-//							editor.Document.Insert(editor.Caret.Offset, "=\"\"");
-//							editor.Caret.Offset--;
-//						} else {
-//							editor.Document.Insert(editor.Caret.Offset, "=");
-//							editor.Caret.Offset++;
-//						}
-//						
-//						this.CtrlSpace(editor);
-//						return CodeCompletionKeyPressResult.EatKey;
-//					} else {
-////						DoMarkupExtensionCompletion(context);
-//						return CodeCompletionKeyPressResult.Completed;
-//					}
-//				default:
-//					if (context.Description != XamlContextDescription.None && !char.IsWhiteSpace(ch)) {
-//						string starter = editor.GetWordBeforeCaretExtended();
-//						if (!string.IsNullOrEmpty(starter))
-//							return CodeCompletionKeyPressResult.None;
-//						trackForced = false;
-//						
-//						string attributeName = (context.Attribute != null) ? context.Attribute.Name : string.Empty;
-//						
-//						if (!attributeName.StartsWith("xmlns", StringComparison.OrdinalIgnoreCase)) {
-//							return this.CtrlSpace(editor)
-//								? CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion
-//								: CodeCompletionKeyPressResult.None;
-//						}
-//						trackForced = true;
-//						return CodeCompletionKeyPressResult.None;
-//					}
-//					break;
-//			}
-//			
+							break;
+						case XamlContextDescription.InAttributeValue:
+							if (editor.SelectionLength != 0)
+								editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
+							
+							editor.Document.Insert(editor.Caret.Offset, ".");
+							
+							this.CtrlSpace(editor);
+							return CodeCompletionKeyPressResult.EatKey;
+					}
+					break;
+				case '(':
+				case '[':
+					if (context.Description == XamlContextDescription.InAttributeValue) {
+						if (editor.SelectionLength != 0)
+							editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
+						
+						if (ch == '(')
+							editor.Document.Insert(editor.Caret.Offset, "()");
+						if (ch == '[')
+							editor.Document.Insert(editor.Caret.Offset, "[]");
+						editor.Caret.Offset--;
+						
+						this.CtrlSpace(editor);
+						return CodeCompletionKeyPressResult.EatKey;
+					}
+					break;
+				case ':':
+					if (context.ActiveElement != null && XmlParser.GetQualifiedAttributeNameAtIndex(editor.Document.Text, editor.Caret.Offset) == null) {
+						if (context.Attribute != null && !context.Attribute.Name.StartsWith("xmlns", StringComparison.OrdinalIgnoreCase)) {
+							list = generator.CreateListForContext(context);
+							list.PreselectionLength = editor.GetWordBeforeCaretExtended().Length;
+							editor.ShowCompletionWindow(list);
+							return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
+						}
+					}
+					break;
+				case '/': // ignore '/' when trying to type '/>'
+					return CodeCompletionKeyPressResult.None;
+				case '=':
+					if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
+						int searchOffset = editor.Caret.Offset;
+						
+						if (editor.SelectionLength != 0)
+							editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
+						
+						while (searchOffset < editor.Document.TextLength - 1) {
+							searchOffset++;
+							if (!char.IsWhiteSpace(editor.Document.GetCharAt(searchOffset)))
+								break;
+						}
+						
+						if (searchOffset >= editor.Document.TextLength || editor.Document.GetCharAt(searchOffset) != '"') {
+							editor.Document.Insert(editor.Caret.Offset, "=\"\"");
+							editor.Caret.Offset--;
+						} else {
+							editor.Document.Insert(editor.Caret.Offset, "=");
+							editor.Caret.Offset++;
+						}
+						
+						this.CtrlSpace(editor);
+						return CodeCompletionKeyPressResult.EatKey;
+					} else {
+//						DoMarkupExtensionCompletion(context);
+						return CodeCompletionKeyPressResult.Completed;
+					}
+				default:
+					if (context.Description != XamlContextDescription.None && !char.IsWhiteSpace(ch)) {
+						string starter = editor.GetWordBeforeCaretExtended();
+						if (!string.IsNullOrEmpty(starter))
+							return CodeCompletionKeyPressResult.None;
+						trackForced = false;
+						
+						string attributeName = (context.Attribute != null) ? context.Attribute.Name : string.Empty;
+						
+						if (!attributeName.StartsWith("xmlns", StringComparison.OrdinalIgnoreCase)) {
+							return this.CtrlSpace(editor)
+								? CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion
+								: CodeCompletionKeyPressResult.None;
+						}
+						trackForced = true;
+						return CodeCompletionKeyPressResult.None;
+					}
+					break;
+			}
+			
 			return CodeCompletionKeyPressResult.None;
 		}
 		

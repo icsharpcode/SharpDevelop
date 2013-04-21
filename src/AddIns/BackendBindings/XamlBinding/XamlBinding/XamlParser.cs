@@ -45,7 +45,7 @@ namespace ICSharpCode.XamlBinding
 			return Path.GetExtension(fileName).Equals(".xaml", StringComparison.OrdinalIgnoreCase);
 		}
 
-		public bool CanParse(ICSharpCode.SharpDevelop.Project.IProject project)
+		public bool CanParse(IProject project)
 		{
 			return false;
 		}
@@ -99,7 +99,8 @@ namespace ICSharpCode.XamlBinding
 		
 		public ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken)
 		{
-			return new XamlResolver().Resolve((XamlFullParseInformation)parseInfo, location, compilation, cancellationToken);
+			return new XamlAstResolver(compilation, (XamlFullParseInformation)parseInfo)
+				.ResolveAtLocation(location, cancellationToken);
 		}
 		
 		public void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<Reference> callback, CancellationToken cancellationToken)

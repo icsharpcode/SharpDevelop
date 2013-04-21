@@ -94,6 +94,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			return type.GetAllBaseTypeDefinitions().Contains(baseType);
 		}
+		
+		/// <summary>
+		/// Gets whether this type definition is derived from a given known type.
+		/// </summary>
+		public static bool IsDerivedFrom(this ITypeDefinition type, KnownTypeCode baseType)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			if (baseType == KnownTypeCode.None)
+				return false;
+			return IsDerivedFrom(type, type.Compilation.FindType(baseType).GetDefinition());
+		}
 		#endregion
 		
 		#region IsOpen / IsUnbound / IsKnownType

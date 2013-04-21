@@ -31,7 +31,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public static string GetNamespacePrefix(string namespaceUri, XamlContext context)
 		{
-			var item = context.XmlnsDefinitions.FirstOrDefault(i => i.Value == namespaceUri);
+			var item = context.XmlnsDefinitions.FirstOrDefault(i => i.Value.XmlNamespace == namespaceUri);
 
 			if (item.Key != null)
 				return item.Key;
