@@ -45,18 +45,7 @@ class TestClass
         x = i;
 	}
 }";
-            var output = @"
-class Base {}
-class Test: Base {}
-class TestClass
-{
-	void TestMethod (Test i)
-	{
-		Base x;
-        x = (Test)i;
-	}
-}";
-			Test<ExpressionOfCompatibleTypeCastIssue>(input, output);
+			Test<ExpressionOfCompatibleTypeCastIssue>(input, 0);
         }
 
         [Test]

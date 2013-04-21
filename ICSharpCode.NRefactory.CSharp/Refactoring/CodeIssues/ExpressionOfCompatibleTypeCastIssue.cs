@@ -54,10 +54,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitAssignmentExpression(AssignmentExpression assignmentExpression)
 			{
-				base.VisitAssignmentExpression(assignmentExpression);
-
+                var rightExpressionType = ctx.Resolve(assignmentExpression.Right).Type;
+                if (rightExpressionType.Kind == TypeKind.Class)
+                    return;
 			    var leftExpressionType = ctx.Resolve(assignmentExpression.Left).Type;
-			    var rightExpressionType = ctx.Resolve(assignmentExpression.Right).Type;
 			    VisitTypeCastExpression(assignmentExpression, leftExpressionType,
 				                        rightExpressionType);
 			}
