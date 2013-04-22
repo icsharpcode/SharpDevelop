@@ -64,7 +64,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			this.MouseHover += TextEditorMouseHover;
 			this.MouseHoverStopped += TextEditorMouseHoverStopped;
+			this.MouseMove += TextEditorMouseMove;
 			this.MouseLeave += TextEditorMouseLeave;
+			this.Unloaded += OnUnloaded;
 			this.TextArea.TextView.MouseDown += TextViewMouseDown;
 			this.TextArea.Caret.PositionChanged += HighlightBrackets;
 			this.TextArea.TextView.VisualLinesChanged += CodeEditorView_VisualLinesChanged;
@@ -240,6 +242,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void TextEditorMouseHover(object sender, MouseEventArgs e)
 		{
 			Debug.Assert(sender == this);
+			
+			if (!TryCloseExistingPopup(false)) {
+				return;
+			}
+			
 			ToolTipRequestEventArgs args = new ToolTipRequestEventArgs(this.Adapter);
 			var pos = this.TextArea.TextView.GetPositionFloor(e.GetPosition(this.TextArea.TextView) + this.TextArea.TextView.ScrollOffset);
 			args.InDocument = pos.HasValue;
@@ -252,21 +259,19 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				ToolTipRequestService.RequestToolTip(args);
 			}
 			
-			if (!TryCloseExistingPopup(false)) {
-				return;
-			}
-			
 			if (args.ContentToShow != null) {
 				popupToolTip = args.ContentToShow as Popup;
 				
 				if (popupToolTip != null) {
 					var popupPosition = GetPopupPosition(e);
+					popupToolTip.Closed += ToolTipClosed;
 					popupToolTip.HorizontalOffset = popupPosition.X;
 					popupToolTip.VerticalOffset = popupPosition.Y;
 					popupToolTip.StaysOpen = true;  // We will close it ourselves
 					
 					e.Handled = true;
 					popupToolTip.IsOpen = true;
+					distanceToPopupLimit = double.PositiveInfinity; // reset limit; we'll re-calculate it on the next mouse movement
 				} else {
 					if (toolTip == null) {
 						toolTip = new ToolTip();
@@ -293,7 +298,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		bool TryCloseExistingPopup(bool mouseClick)
 		{
 			if (popupToolTip != null) {
-				if (popupToolTip.IsOpen && !mouseClick && popupToolTip is ITooltip && !((ITooltip)popupToolTip).CloseOnHoverEnd) {
+				if (popupToolTip.IsOpen && !mouseClick && popupToolTip is ITooltip && !((ITooltip)popupToolTip).CloseWhenMouseMovesAway) {
 					return false; // Popup does not want to be closed yet
 				}
 				popupToolTip.IsOpen = false;
@@ -324,10 +329,45 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void TextEditorMouseHoverStopped(object sender, MouseEventArgs e)
 		{
+			// Non-popup tooltips get closed as soon as the mouse starts moving again
 			if (toolTip != null) {
 				toolTip.IsOpen = false;
 				e.Handled = true;
 			}
+		}
+		
+		double distanceToPopupLimit;
+		const double MaxMovementAwayFromPopup = 5;
+		
+		void TextEditorMouseMove(object sender, MouseEventArgs e)
+		{
+			if (popupToolTip != null) {
+				double distanceToPopup = GetDistanceToPopup(e);
+				if (distanceToPopup > distanceToPopupLimit) {
+					// Close popup if mouse moved away, exceeding the limit
+					TryCloseExistingPopup(false);
+				} else {
+					// reduce distanceToPopupLimit
+					distanceToPopupLimit = Math.Min(distanceToPopupLimit, distanceToPopup + MaxMovementAwayFromPopup);
+				}
+			}
+		}
+		
+		double GetDistanceToPopup(MouseEventArgs e)
+		{
+			Point p = popupToolTip.Child.PointFromScreen(PointToScreen(e.GetPosition(this)));
+			Size size = popupToolTip.Child.RenderSize;
+			double x = 0;
+			if (p.X < 0)
+				x = -p.X;
+			else if (p.X > size.Width)
+				x = p.X - size.Width;
+			double y = 0;
+			if (p.Y < 0)
+				y = -p.Y;
+			else if (p.Y > size.Height)
+				y = p.Y - size.Height;
+			return Math.Sqrt(x * x + y * y);
 		}
 		
 		void TextEditorMouseLeave(object sender, MouseEventArgs e)
@@ -337,10 +377,25 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				TryCloseExistingPopup(false);
 			}
 		}
-
-		void ToolTipClosed(object sender, RoutedEventArgs e)
+		
+		void OnUnloaded(object sender, EventArgs e)
 		{
-			toolTip = null;
+			// Close popup when another document gets selected
+			// TextEditorMouseLeave is not sufficient for this because the mouse might be over the popup when the document switch happens (e.g. Ctrl+Tab)
+			TryCloseExistingPopup(true);
+		}
+
+		void ToolTipClosed(object sender, EventArgs e)
+		{
+			if (toolTip == sender) {
+				toolTip = null;
+			}
+			if (popupToolTip == sender) {
+				// Because popupToolTip instances are created by the tooltip provider,
+				// they might be reused; so we should detach the event handler
+				popupToolTip.Closed -= ToolTipClosed;
+				popupToolTip = null;
+			}
 		}
 		#endregion
 		

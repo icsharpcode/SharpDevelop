@@ -73,7 +73,7 @@ namespace Debugger.AddIn.Tooltips
 			}
 		}
 		
-		bool ITooltip.CloseOnHoverEnd {
+		bool ITooltip.CloseWhenMouseMovesAway {
 			get {
 				return this.ChildTooltip == null;
 			}

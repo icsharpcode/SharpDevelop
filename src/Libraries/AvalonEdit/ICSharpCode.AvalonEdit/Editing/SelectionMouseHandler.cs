@@ -247,7 +247,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			// we re-throw them later to allow the application's unhandled exception handler
 			// to catch them
 			textArea.Dispatcher.BeginInvoke(
-				DispatcherPriority.Normal,
+				DispatcherPriority.Send,
 				new Action(delegate {
 				           	throw new DragDropException("Exception during drag'n'drop", ex);
 				           }));

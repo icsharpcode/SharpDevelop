@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.NRefactory.Semantics;
@@ -56,8 +57,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 				document.FontSize = CodeEditorOptions.Instance.FontSize;
 			}
 			
-			public bool CloseOnHoverEnd {
-				get { return true; }
+			public bool CloseWhenMouseMovesAway {
+				get { return !this.IsKeyboardFocusWithin; }
+			}
+			
+			protected override void OnLostKeyboardFocus(KeyboardFocusChangedEventArgs e)
+			{
+				base.OnLostKeyboardFocus(e);
+				this.IsOpen = false;
 			}
 		}
 		
