@@ -30,6 +30,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Threading;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -54,14 +55,23 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					new IdentifierExpression (methodDeclaration.Name),
 					new MemberReferenceExpression (new TypeReferenceExpression (context.CreateShortType("System", "EventArgs")), "Empty")
 				));
-				script.InsertWithCursor(
+				var task = script.InsertWithCursor(
 					context.TranslateString("Create event invocator"),
 					Script.InsertPosition.After,
 					new AstNode[] { eventDeclaration, methodDeclaration }
-				).ContinueWith (delegate {
+				);
+
+				Action<Task> insertInvocation = delegate {
 					script.InsertBefore (property.Setter.Body.RBraceToken, stmt);
 					script.FormatText (stmt);
-				});
+				};
+
+				if (task.IsCompleted) {
+					insertInvocation (null);
+				} else {
+					task.ContinueWith (insertInvocation, TaskScheduler.FromCurrentSynchronizationContext ());
+				}
+
 			}, property.NameToken);
 		}
 
