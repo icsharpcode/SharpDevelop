@@ -786,7 +786,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 		public T[] ToArray()
 		{
 			T[] arr = new T[this.Length];
-			CopyTo(arr, 0);
+			this.root.CopyTo(0, arr, 0, arr.Length);
 			return arr;
 		}
 		
