@@ -30,7 +30,6 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using System.Threading;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeActions
 {
