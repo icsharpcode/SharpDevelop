@@ -13,8 +13,15 @@ using ICSharpCode.Reporting.Interfaces.Export;
 
 namespace ICSharpCode.Reporting.Items
 {
-	public class PrintableItem : ReportItem,IPrintableObject
+	public class PrintableItem : IPrintableObject
 	{
+		public string Name { get; set; }
+
+		public Point Location { get; set; }
+
+		public Size Size { get; set; }
+
+		
 		public virtual IExportColumn CreateExportColumn()
 		{
 			return null;

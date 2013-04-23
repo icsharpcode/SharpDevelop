@@ -8,6 +8,8 @@
  */
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Reporting.Arrange;
+using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
@@ -17,7 +19,7 @@ namespace ICSharpCode.Reporting.Items
 	/// <summary>
 	/// Description of ReportContainer.
 	/// </summary>
-	public class ReportContainer:ReportItem,IReportContainer
+	public class ReportContainer:PrintableItem,IReportContainer
 	{
 		public ReportContainer()
 		{
@@ -26,15 +28,23 @@ namespace ICSharpCode.Reporting.Items
 		
 		public List<IPrintableObject> Items {get;set;}
 		
-		
-		
-		public IExportContainer CreateExportColumn()
+		public override IExportColumn CreateExportColumn()
 		{
 			return new ExportContainer(){
 			Name = this.Name,
 			Size = this.Size,
 			Location = this.Location
 			};
+		}
+		
+		 IArrangeStrategy arrangeStrategy;
+		 
+		public IArrangeStrategy ArrangeStrategy {
+			get {if (arrangeStrategy == null) {
+		 			arrangeStrategy = new ContainerArrangeStrategy();
+			}
+		 		return arrangeStrategy; }
+			set { arrangeStrategy = value; }
 		}
 	}
 }

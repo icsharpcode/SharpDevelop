@@ -23,7 +23,10 @@ namespace ICSharpCode.Reporting.Interfaces
 	}
 	
 	
-	public interface IPrintableObject:IReportObject {
+	public interface IPrintableObject {
+		string Name{get;set;}
+		Size Size {get;set;}
+		Point Location {get;set;}
 		IExportColumn CreateExportColumn();
 	}
 	

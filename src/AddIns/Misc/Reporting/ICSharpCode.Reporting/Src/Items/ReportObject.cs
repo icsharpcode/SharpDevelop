@@ -18,10 +18,10 @@ namespace ICSharpCode.Reporting.Items
 	/// </summary>
 	
 	
-	
-	public class ReportItem : IReportObject
+	/*
+	public class ReportObject : IReportObject
 	{
-		public ReportItem()
+		public ReportObject()
 		{
 		}
 
@@ -34,7 +34,7 @@ namespace ICSharpCode.Reporting.Items
 
 		
 	}
-	
+	*/
 	
 
 }

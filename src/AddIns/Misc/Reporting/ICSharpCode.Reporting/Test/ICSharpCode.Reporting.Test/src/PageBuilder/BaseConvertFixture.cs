@@ -22,7 +22,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		
 		
 		[Test]
-		public void CurrentPageContainOneItem() {
+		public void CurrentPageContainFiveItems() {
 			reportCreator.BuildExportList();
 			var page = reportCreator.Pages[0];
 			Assert.That(page.ExportedItems.Count, Is.EqualTo(3));

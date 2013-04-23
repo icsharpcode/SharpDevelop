@@ -8,6 +8,8 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Interfaces.Export;
 
@@ -19,7 +21,7 @@ namespace ICSharpCode.Reporting.Interfaces
 	public interface IReportCreator
 	{
 		void BuildExportList ();
-		List<IPage> Pages {get;}
+		Collection<IPage> Pages {get;}
 		
 //		PagesCollection Pages{get;}
 //		event EventHandler<PageCreatedEventArgs> PageCreated;

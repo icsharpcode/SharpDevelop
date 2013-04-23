@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
+using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder;
@@ -22,7 +23,6 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 	{
 
 		private IReportCreator reportCreator;
-		
 		
 		[Test]
 		public void CanCreateFormsPageBuilder()
@@ -77,27 +77,34 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 			reportCreator.BuildExportList();
 			var pi = reportCreator.Pages[0].PageInfo;
 			Assert.That(pi.ReportName,Is.EqualTo("Report1"));
-			Console.WriteLine("----------------");
-			foreach (var page in reportCreator.Pages) {
-				ShowPage(page);
-			}
+//			Console.WriteLine("----------------");
+//			foreach (var page in reportCreator.Pages) {
+//				TestHelper.ShowDebug(page);
+//			}
 		}
 		
-		
-		void ShowPage( IExportContainer container)
+		/*
+		void ShowDebug(IExportContainer container)
 		{
+			var visitor = new DebugVisitor();
 			foreach (var item in container.ExportedItems) {
-				
 				if (item is IExportContainer) {
-					Console.WriteLine("DoContainer {0} - {1} - {2}",item.Name,item.Location,item.Size);
-					ShowPage(item as IExportContainer);
+					var a = item as IAcceptor;
+					if (a != null) {
+						Console.WriteLine("----");
+						a.Accept(visitor);
+					}
+					ShowDebug(item as IExportContainer);
 				} else {
-					Console.WriteLine("\tItem {0} - {1} - {2}",item.Name,item.Location,item.Size);
+					var b = item as IAcceptor;
+					if (b != null) {
+						b.Accept(visitor);
+						
+					}
 				}
-					
-				
 			}
 		}
+		*/
 		
 		#endregion
 		

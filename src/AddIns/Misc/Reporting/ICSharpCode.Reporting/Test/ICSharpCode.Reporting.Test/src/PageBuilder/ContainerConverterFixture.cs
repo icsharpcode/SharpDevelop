@@ -42,11 +42,13 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		
 		[Test]
 		public void LocationIsAdjusted() {
-			var pp = new Point(30,30);
-			var converter = new ContainerConverter(container,pp);
+			var location = new Point(30,30);
+			var converter = new ContainerConverter(container,location);
 			var result = converter.Convert();
-			Assert.That(result.Location,Is.EqualTo(pp));
+			Assert.That(result.Location,Is.EqualTo(location));
 		}
+		
+		
 		[TestFixtureSetUp]
 		public void Init()
 		{

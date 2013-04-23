@@ -8,6 +8,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 
 using ICSharpCode.Reporting.BaseClasses;
@@ -21,7 +22,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 	/// </summary>
 	public class BasePageBuilder:IReportCreator
 	{
-		private readonly object addLock = new object();
+//		private readonly object addLock = new object();
 		
 		public BasePageBuilder(IReportModel reportModel)
 		{
@@ -29,7 +30,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 				 throw new ArgumentNullException("reportModel");
 			}
 			ReportModel = reportModel;
-			Pages = new List<IPage>();
+			Pages = new Collection<IPage>();
 		}
 		
 		
@@ -67,7 +68,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		public  IPage CurrentPage {get; protected set;}
 		
-		public List<IPage> Pages {get; private set;}
+		public Collection<IPage> Pages {get; private set;}
 		
 	}
 }

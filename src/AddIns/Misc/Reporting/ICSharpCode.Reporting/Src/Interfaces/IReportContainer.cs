@@ -16,9 +16,10 @@ namespace ICSharpCode.Reporting.Interfaces
 	/// <summary>
 	/// Description of IReportContainer.
 	/// </summary>
-	public interface IReportContainer :IReportObject
+	public interface IReportContainer :IPrintableObject
 	{
-		 List<IPrintableObject> Items {get;set;}
-		 IExportContainer CreateExportColumn();
+		 List<IPrintableObject> Items {get;}
+//		 IExportContainer CreateExportColumn();
+//		  IExportColumn CreateExportColumn();
 	}
 }

@@ -23,23 +23,26 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 	/// </summary>
 	internal class ContainerConverter
 	{
-		private ExportColumnFactory factory;
+//		private ExportColumnFactory factory;
 	
-		public ContainerConverter(IReportContainer container,Point currentLocation )
+		public ContainerConverter(IReportContainer reportContainer,Point currentLocation )
 		{
-			Container = container;
+			Container = reportContainer;
 			CurrentLocation = currentLocation;
-			factory = new ExportColumnFactory();
+//			factory = new ExportColumnFactory();
 		}
 		
 		
 		public IExportContainer Convert() {
 			Console.WriteLine("Convert section for location {0}",CurrentLocation);
+			var strat = ((ReportContainer)Container).ArrangeStrategy;
+			strat.Arrange(Container);
+			
 			var exportContainer = (ExportContainer)Container.CreateExportColumn();
 			exportContainer.Location = CurrentLocation;
 			var itemsList = new List<IExportColumn>();
 			foreach (var element in Container.Items) {
-				var item = factory.CreateItem(element);
+				var item = ExportColumnFactory.CreateItem(element);
 				itemsList.Add(item);
 			}
 			exportContainer.ExportedItems.AddRange(itemsList);

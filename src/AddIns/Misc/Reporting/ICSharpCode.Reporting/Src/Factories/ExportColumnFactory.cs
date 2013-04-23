@@ -24,7 +24,7 @@ namespace ICSharpCode.Reporting.Factories
 		{
 		}
 		
-		public IExportColumn CreateItem (IPrintableObject item) {
+		public static IExportColumn CreateItem (IPrintableObject item) {
 			var export = item.CreateExportColumn();
 			return export;
 		}

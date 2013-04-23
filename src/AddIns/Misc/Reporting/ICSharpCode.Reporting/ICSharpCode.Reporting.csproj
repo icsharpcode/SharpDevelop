@@ -55,9 +55,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\Arrange\ArrangeStrategy.cs" />
     <Compile Include="Src\BaseClasses\Page.cs" />
     <Compile Include="Src\BaseClasses\PageInfo.cs" />
     <Compile Include="Src\Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\Exporter\DebugExporter.cs" />
+    <Compile Include="Src\Exporter\IAcceptor.cs" />
+    <Compile Include="Src\Exporter\IVisitor.cs" />
+    <Compile Include="Src\Exporter\Visitor.cs" />
     <Compile Include="Src\Factories\ExportColumnFactory.cs" />
     <Compile Include="Src\Factories\SectionFactory.cs" />
     <Compile Include="Src\Interfaces\Export\IExportColumn.cs" />
@@ -74,7 +79,7 @@
     <Compile Include="Src\Items\BaseTextItem.cs" />
     <Compile Include="Src\Items\PrintableItem.cs" />
     <Compile Include="Src\Items\ReportContainer.cs" />
-    <Compile Include="Src\Items\ReportItem.cs" />
+    <Compile Include="Src\Items\ReportObject.cs" />
     <Compile Include="Src\Items\ReportModel.cs" />
     <Compile Include="Src\Items\ReportSettings.cs" />
     <Compile Include="Src\PageBuilder\BasePageBuilder.cs" />
@@ -96,6 +101,8 @@
     <Folder Include="Src\Items" />
     <Folder Include="Src\BaseClasses" />
     <Folder Include="Src\Factories" />
+    <Folder Include="Src\Exporter" />
+    <Folder Include="Src\Arrange" />
     <Folder Include="Src\PageBuilder" />
     <Folder Include="Src\PageBuilder\Converter" />
     <Folder Include="Src\PageBuilder\ExportColumns" />

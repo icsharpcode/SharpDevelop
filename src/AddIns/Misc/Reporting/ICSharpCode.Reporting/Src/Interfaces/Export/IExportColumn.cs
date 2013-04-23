@@ -8,6 +8,7 @@
  */
 using System;
 using ICSharpCode.Reporting.BaseClasses;
+using ICSharpCode.Reporting.Exporter;
 
 namespace ICSharpCode.Reporting.Interfaces.Export
 {

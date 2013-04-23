@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace ICSharpCode.Reporting.Test.Model
 {
 	[TestFixture]
-	public class Report_TwoItemsFixture
+	public class ReportTwoItemsFixture
 	{
 		Stream stream;
 		

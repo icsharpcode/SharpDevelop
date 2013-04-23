@@ -9,6 +9,7 @@
 using System;
 using System.Drawing;
 using ICSharpCode.Reporting.BaseClasses;
+using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 
@@ -25,6 +26,5 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 		public Size Size {get;set;}
 		
 		public Point Location {get;set;}
-		
 	}
 }
