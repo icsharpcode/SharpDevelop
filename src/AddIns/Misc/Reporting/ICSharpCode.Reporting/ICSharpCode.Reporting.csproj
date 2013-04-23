@@ -79,7 +79,6 @@
     <Compile Include="Src\Items\BaseTextItem.cs" />
     <Compile Include="Src\Items\PrintableItem.cs" />
     <Compile Include="Src\Items\ReportContainer.cs" />
-    <Compile Include="Src\Items\ReportObject.cs" />
     <Compile Include="Src\Items\ReportModel.cs" />
     <Compile Include="Src\Items\ReportSettings.cs" />
     <Compile Include="Src\PageBuilder\BasePageBuilder.cs" />
