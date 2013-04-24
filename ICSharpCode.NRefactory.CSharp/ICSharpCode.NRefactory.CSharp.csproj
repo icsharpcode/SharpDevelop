@@ -537,6 +537,7 @@
     <Compile Include="Refactoring\CodeActions\RemoveFieldRefactoryActionRefactoringAction.cs" />
     <Compile Include="Refactoring\CodeIssues\ConvertToStaticMethodIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ParameterCanBeDemotedIssue\ParameterCanBeIEnumerableIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\DuplicateBodyMethodIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
