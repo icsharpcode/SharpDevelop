@@ -209,7 +209,7 @@ namespace ICSharpCode.PackageManagement
 			return IsMatchIgnoringCase(directoryName, "bin");
 		}
 		
-		bool FileExistsInProject(string path)
+		public bool FileExistsInProject(string path)
 		{
 			string fullPath = GetFullPath(path);
 			return project.IsFileInProject(fullPath);
@@ -299,6 +299,16 @@ namespace ICSharpCode.PackageManagement
 		public string ResolvePath(string path)
 		{
 			return path;
+		}
+		
+		public void AddImport(string targetPath, ProjectImportLocation location)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void RemoveImport(string targetPath)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

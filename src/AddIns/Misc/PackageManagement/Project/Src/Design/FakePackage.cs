@@ -178,5 +178,21 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			return SupportedFrameworks;
 		}
+		
+		List<PackageReferenceSet> FakePackageAssemblyReferences = 
+			new List<PackageReferenceSet>();
+		
+		public ICollection<PackageReferenceSet> PackageAssemblyReferences {
+			get { return FakePackageAssemblyReferences; }
+		}
+		
+		public void AddPackageReferences(params string[] names)
+		{
+			var frameworkName = new FrameworkName(".NET Framework, Version=4.0");
+			var packageReferenceSet = new PackageReferenceSet(frameworkName, names);
+			FakePackageAssemblyReferences.Add(packageReferenceSet);
+		}
+		
+		public Version MinClientVersion { get; set; }
 	}
 }

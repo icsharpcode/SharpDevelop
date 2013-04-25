@@ -54,6 +54,11 @@ namespace PackageManagement.Tests
 			projectSystem.FakeProjectService.AddDefaultCustomToolForFileName(fileName, customTool);
 		}
 		
+		void AddFile(string fileName)
+		{
+			projectSystem.AddFile(fileName, (Stream)null);
+		}
+		
 		[Test]
 		public void Root_NewInstanceCreated_ReturnsProjectDirectory()
 		{
@@ -467,7 +472,7 @@ namespace PackageManagement.Tests
 			CreateProjectSystem(project);
 			
 			string fileName = @"d:\projects\MyProject\src\NewFile.cs";
-			projectSystem.AddFile(fileName, null);
+			AddFile(fileName);
 			FileProjectItem fileItem = ProjectHelper.GetFile(project, fileName);
 			
 			FileProjectItem expectedFileItem = new FileProjectItem(project, ItemType.Compile);
@@ -484,7 +489,7 @@ namespace PackageManagement.Tests
 			CreateProjectSystem(project);
 			
 			string fileName = @"d:\projects\MyProject\src\NewFile.resx";
-			projectSystem.AddFile(fileName, null);
+			AddFile(fileName);
 			FileProjectItem fileItem = ProjectHelper.GetFile(project, fileName);
 			
 			FileProjectItem expectedFileItem = new FileProjectItem(project, ItemType.EmbeddedResource);
@@ -502,7 +507,7 @@ namespace PackageManagement.Tests
 			
 			string relativeFileName = @"src\NewFile.cs";
 			string fileName = @"d:\projects\MyProject\src\NewFile.cs";
-			projectSystem.AddFile(relativeFileName, null);
+			AddFile(relativeFileName);
 			FileProjectItem fileItem = ProjectHelper.GetFile(project, fileName);
 			
 			FileProjectItem expectedFileItem = new FileProjectItem(project, ItemType.Compile);
@@ -520,7 +525,7 @@ namespace PackageManagement.Tests
 			
 			string relativeFileName = @"NewFile.cs";
 			string fileName = @"d:\projects\MyProject\NewFile.cs";
-			projectSystem.AddFile(relativeFileName, null);
+			AddFile(relativeFileName);
 			FileProjectItem fileItem = ProjectHelper.GetFile(project, fileName);
 			
 			FileProjectItem expectedFileItem = new FileProjectItem(project, ItemType.Compile);
@@ -537,7 +542,7 @@ namespace PackageManagement.Tests
 			CreateProjectSystem(project);
 			
 			string fileName = @"d:\projects\MyProject\src\NewFile.cs";
-			projectSystem.AddFile(fileName, null);
+			AddFile(fileName);
 			
 			Assert.AreEqual(1, project.ItemsWhenSaved.Count);
 		}
@@ -549,7 +554,7 @@ namespace PackageManagement.Tests
 			CreateProjectSystem(project);
 			
 			string fileName = @"bin\NewFile.dll";
-			projectSystem.AddFile(fileName, null);
+			AddFile(fileName);
 			
 			FileProjectItem fileItem = ProjectHelper.GetFileFromInclude(project, fileName);
 			
@@ -563,7 +568,7 @@ namespace PackageManagement.Tests
 			CreateProjectSystem(project);
 			
 			string fileName = @"BIN\NewFile.dll";
-			projectSystem.AddFile(fileName, null);
+			AddFile(fileName);
 			
 			FileProjectItem fileItem = ProjectHelper.GetFileFromInclude(project, fileName);
 			
@@ -575,10 +580,10 @@ namespace PackageManagement.Tests
 		{
 			CreateTestProject(@"d:\projects\MyProject\MyProject.csproj");
 			project.ItemTypeToReturnFromGetDefaultItemType = ItemType.Compile;
-			CreateProjectSystem(project);			
+			CreateProjectSystem(project);
 			AddFileToProject(@"d:\projects\MyProject\src\NewFile.cs");
 			
-			projectSystem.AddFile(@"src\NewFile.cs", null);
+			AddFile(@"src\NewFile.cs");
 			
 			int projectItemsCount = project.Items.Count;
 			Assert.AreEqual(1, projectItemsCount);
@@ -591,7 +596,7 @@ namespace PackageManagement.Tests
 			project.Name = "MyTestProject";
 			CreateProjectSystem(project);
 			
-			projectSystem.AddFile(@"src\files\abc.cs", null);
+			AddFile(@"src\files\abc.cs");
 			
 			var expectedFileNameAndProjectName = new FileNameAndProjectName {
 				FileName = @"src\files\abc.cs",
@@ -609,7 +614,7 @@ namespace PackageManagement.Tests
 			AddFileToProject(@"src\files\abc.cs");
 			CreateProjectSystem(project);
 			
-			projectSystem.AddFile(@"src\files\abc.cs", null);
+			AddFile(@"src\files\abc.cs");
 			
 			var expectedFileNameAndProjectName = new FileNameAndProjectName {
 				FileName = @"src\files\abc.cs",
