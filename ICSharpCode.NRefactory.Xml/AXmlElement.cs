@@ -183,7 +183,7 @@ namespace ICSharpCode.NRefactory.Xml
 			var result = new Dictionary<string, string>();
 			if (scope == XmlNamespaceScope.All) {
 				result["xml"] = XmlNamespace;
-				result["xmlns"] = XmlnsNamespace;
+				//result["xmlns"] = XmlnsNamespace; xmlns should not be included in GetNamespacesInScope() results
 			}
 			for (AXmlElement current = this; current != null; current = current.Parent as AXmlElement) {
 				foreach (var attr in current.Attributes) {

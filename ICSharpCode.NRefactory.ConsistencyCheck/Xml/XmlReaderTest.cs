@@ -34,15 +34,16 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck.Xml
 	{
 		public static void Run(string fileName)
 		{
+			bool includeAttributes = true;
 			var textSource = new StringTextSource(File.ReadAllText(fileName));
 			using (var textReader = textSource.CreateReader()) {
 				using (var xmlReader = new XmlTextReader(textReader)) {
-					Run(xmlReader);
+					Run(xmlReader, includeAttributes);
 				}
 			}
 			var doc = new AXmlParser().Parse(textSource);
 			using (var xmlReader = doc.CreateReader()) {
-				Run(xmlReader);
+				Run(xmlReader, includeAttributes);
 			}
 			var xmlDocument = new XmlDocument();
 			xmlDocument.Load(doc.CreateReader());
@@ -62,7 +63,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck.Xml
 			"SchemaInfo", "BaseURI", "Settings"
 		};
 		
-		public static void Run(XmlReader reader)
+		public static void Run(XmlReader reader, bool includeAttributes, bool includeAttributeValues = true)
 		{
 			using (StreamWriter output = File.CreateText(Path.Combine(Program.TempPath, reader.GetType().Name + "-output.csv"))) {
 				var properties = typeof(XmlReader).GetProperties(BindingFlags.Public | BindingFlags.Instance)
@@ -71,6 +72,16 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck.Xml
 				output.WriteLine(CSV(properties.Select(p => p.Name)));
 				do {
 					output.WriteLine(CSV(properties.Select(p => ToString(p.GetValue(reader, null)))));
+					if (includeAttributes && reader.HasAttributes) {
+						for (int i = 0; i < reader.AttributeCount; i++) {
+							reader.MoveToAttribute(i);
+							output.WriteLine(CSV(properties.Select(p => ToString(p.GetValue(reader, null)))));
+							if (includeAttributeValues) {
+								reader.ReadAttributeValue();
+								output.WriteLine(CSV(properties.Select(p => ToString(p.GetValue(reader, null)))));
+							}
+						}
+					}
 				} while (reader.Read());
 				output.WriteLine(CSV(properties.Select(p => ToString(p.GetValue(reader, null)))));
 			}

@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Xml;
 using ICSharpCode.NRefactory.Editor;
 
@@ -33,6 +34,7 @@ namespace ICSharpCode.NRefactory.Xml
 		readonly XmlReaderSettings settings;
 		Func<int, TextLocation> offsetToTextLocation;
 		readonly XmlNameTable nameTable;
+		readonly XmlNamespaceManager nsManager;
 		ReadState readState = ReadState.Initial;
 		XmlNodeType elementNodeType = XmlNodeType.None;
 		IList<InternalAttribute> attributes;
@@ -45,6 +47,7 @@ namespace ICSharpCode.NRefactory.Xml
 			this.settings = settings ?? new XmlReaderSettings();
 			this.offsetToTextLocation = offsetToTextLocation;
 			this.nameTable = this.settings.NameTable ?? new NameTable();
+			this.nsManager = new XmlNamespaceManager(this.nameTable);
 			objectIterator.StopAtElementEnd = true;
 		}
 		
@@ -77,6 +80,7 @@ namespace ICSharpCode.NRefactory.Xml
 					readState = ReadState.Interactive;
 					return ReadCurrentPosition();
 				case ReadState.Interactive:
+					LeaveNode();
 					objectIterator.MoveInto();
 					return ReadCurrentPosition();
 				default:
@@ -96,8 +100,10 @@ namespace ICSharpCode.NRefactory.Xml
 					elementNodeType = XmlNodeType.None;
 					return false;
 				} else if (objectIterator.IsAtElementEnd) {
-					// Don't report EndElement for empty elements
-					if (!IsEmptyElement) {
+					if (IsEmptyElement) {
+						// Don't report EndElement for empty elements
+						nsManager.PopScope();
+					} else {
 						elementNodeType = XmlNodeType.EndElement;
 						return true;
 					}
@@ -105,8 +111,17 @@ namespace ICSharpCode.NRefactory.Xml
 					// element start
 					elementNodeType = XmlNodeType.Element;
 					InternalTag startTag = ((InternalTag)obj.NestedObjects[0]);
-					if (startTag.NestedObjects != null)
+					nsManager.PushScope();
+					if (startTag.NestedObjects != null) {
 						attributes = startTag.NestedObjects.OfType<InternalAttribute>().ToList();
+						for (int i = 0; i < attributes.Count; i++) {
+							var attr = attributes[i];
+							if (attr.Name.StartsWith("xmlns:", StringComparison.Ordinal))
+								nsManager.AddNamespace(AXmlObject.GetLocalName(attr.Name), attr.Value);
+							else if (attr.Name == "xmlns")
+								nsManager.AddNamespace(string.Empty, attr.Value);
+						}
+					}
 					return true;
 				} else if (obj is InternalText) {
 					InternalText text = (InternalText)obj;
@@ -123,6 +138,17 @@ namespace ICSharpCode.NRefactory.Xml
 					} else if (tag.IsComment && !settings.IgnoreComments) {
 						elementNodeType = XmlNodeType.Comment;
 						return true;
+					} else if (tag.IsProcessingInstruction && !settings.IgnoreProcessingInstructions) {
+						if (tag.Name == "xml") {
+							elementNodeType = XmlNodeType.XmlDeclaration;
+							attributes = tag.NestedObjects.OfType<InternalAttribute>().ToList();
+						} else {
+							elementNodeType = XmlNodeType.ProcessingInstruction;
+						}
+						return true;
+					} else if (tag.IsCData) {
+						elementNodeType = XmlNodeType.CDATA;
+						return true;
 					} else {
 						// TODO all other tags
 					}
@@ -133,10 +159,18 @@ namespace ICSharpCode.NRefactory.Xml
 			}
 		}
 		
+		void LeaveNode()
+		{
+			if (elementNodeType == XmlNodeType.EndElement) {
+				nsManager.PopScope();
+			}
+		}
+		
 		public override void Skip()
 		{
 			if (readState == ReadState.Interactive) {
 				MoveToElement();
+				LeaveNode();
 				objectIterator.MoveNext();
 				ReadCurrentPosition();
 			}
@@ -160,7 +194,9 @@ namespace ICSharpCode.NRefactory.Xml
 			get {
 				if (readState != ReadState.Interactive)
 					return string.Empty;
-				return LookupNamespace(this.Prefix);
+				if (attributeIndex >= 0 && !inAttributeValue && attributes[attributeIndex].Name == "xmlns")
+					return AXmlObject.XmlnsNamespace;
+				return LookupNamespace(this.Prefix) ?? string.Empty;
 			}
 		}
 		
@@ -173,14 +209,50 @@ namespace ICSharpCode.NRefactory.Xml
 						return string.Empty;
 					return nameTable.Add(AXmlObject.GetLocalName(attributes[attributeIndex].Name));
 				}
-				InternalElement element = objectIterator.CurrentObject as InternalElement;
-				return element != null ? nameTable.Add(element.LocalName) : string.Empty;
+				string result;
+				switch (elementNodeType) {
+					case XmlNodeType.Element:
+					case XmlNodeType.EndElement:
+						result = ((InternalElement)objectIterator.CurrentObject).LocalName;
+						break;
+					case XmlNodeType.XmlDeclaration:
+						result = "xml";
+						break;
+					default:
+						return string.Empty;
+				}
+				return nameTable.Add(result);
+			}
+		}
+		
+		public override string Name {
+			get {
+				if (readState != ReadState.Interactive)
+					return string.Empty;
+				if (attributeIndex >= 0) {
+					if (inAttributeValue)
+						return string.Empty;
+					return nameTable.Add(attributes[attributeIndex].Name);
+				}
+				string result;
+				switch (elementNodeType) {
+					case XmlNodeType.Element:
+					case XmlNodeType.EndElement:
+						result = ((InternalElement)objectIterator.CurrentObject).Name;
+						break;
+					case XmlNodeType.XmlDeclaration:
+						result = "xml";
+						break;
+					default:
+						return string.Empty;
+				}
+				return nameTable.Add(result);
 			}
 		}
 		
 		public override bool IsEmptyElement {
 			get {
-				if (readState != ReadState.Interactive)
+				if (readState != ReadState.Interactive || attributeIndex >= 0)
 					return false;
 				InternalElement element = objectIterator.CurrentObject as InternalElement;
 				return element != null && element.NestedObjects.Length == 1;
@@ -193,17 +265,51 @@ namespace ICSharpCode.NRefactory.Xml
 					return string.Empty;
 				if (attributeIndex >= 0)
 					return attributes[attributeIndex].Value;
-				InternalObject currentObject = objectIterator.CurrentObject;
-				InternalText text = currentObject as InternalText;
-				if (text == null && currentObject is InternalTag && currentObject.NestedObjects.Length == 1)
-					text = currentObject.NestedObjects[0] as InternalText;
-				return text != null ? text.Value : string.Empty;
+				switch (elementNodeType) {
+					case XmlNodeType.Text:
+					case XmlNodeType.Whitespace:
+						return ((InternalText)objectIterator.CurrentObject).Value;
+					case XmlNodeType.Comment:
+					case XmlNodeType.CDATA:
+						var nestedObjects = objectIterator.CurrentObject.NestedObjects;
+						if (nestedObjects.Length == 1)
+							return ((InternalText)nestedObjects[0]).Value;
+						else
+							return string.Empty;
+					case XmlNodeType.XmlDeclaration:
+						StringBuilder b = new StringBuilder();
+						foreach (var attr in objectIterator.CurrentObject.NestedObjects.OfType<InternalAttribute>()) {
+							if (b.Length > 0)
+								b.Append(' ');
+							b.Append(attr.Name);
+							b.Append('=');
+							b.Append('"');
+							b.Append(attr.Value);
+							b.Append('"');
+						}
+						return b.ToString();
+					default:
+						return string.Empty;
+				}
 			}
 		}
 		
 		public override bool HasValue {
 			get {
-				return !string.IsNullOrEmpty (Value);
+				if (readState != ReadState.Interactive)
+					return false;
+				if (attributeIndex >= 0)
+					return true;
+				switch (elementNodeType) {
+					case XmlNodeType.Text:
+					case XmlNodeType.Whitespace:
+					case XmlNodeType.Comment:
+					case XmlNodeType.XmlDeclaration:
+					case XmlNodeType.CDATA:
+						return true;
+					default:
+						return false;
+				}
 			}
 		}
 		
@@ -272,7 +378,7 @@ namespace ICSharpCode.NRefactory.Xml
 			if (attributes == null)
 				return -1;
 			for (int i = 0; i < attributes.Count; i++) {
-				if (AXmlObject.GetLocalName(attributes[i].Name) == name && LookupNamespace(AXmlObject.GetNamespacePrefix(attributes[i].Name)) == ns)
+				if (AXmlObject.GetLocalName(attributes[i].Name) == name && (LookupNamespace(AXmlObject.GetNamespacePrefix(attributes[i].Name)) ?? string.Empty) == ns)
 					return i;
 			}
 			return -1;
@@ -290,7 +396,7 @@ namespace ICSharpCode.NRefactory.Xml
 		
 		public override string LookupNamespace(string prefix)
 		{
-			return string.Empty; // TODO implement namespace lookup
+			return nsManager.LookupNamespace(prefix);
 		}
 		
 		public override string GetAttribute(int i)
@@ -315,7 +421,12 @@ namespace ICSharpCode.NRefactory.Xml
 		}
 		
 		public override int Depth {
-			get { return objectIterator.Depth; }
+			get {
+				if (attributeIndex < 0)
+					return objectIterator.Depth;
+				else
+					return objectIterator.Depth + (inAttributeValue ? 2 : 1);
+			}
 		}
 		
 		public override void Close()
