@@ -52,7 +52,7 @@ namespace ICSharpCode.XamlBinding
 			return ErrorResolveResult.UnknownError;
 		}
 		
-		internal ResolveResult ResolveAttribute(AXmlAttribute attribute, int offset, CancellationToken cancellationToken = default(CancellationToken))
+		internal ResolveResult ResolveAttribute(AXmlAttribute attribute, int offset = -1, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			IMember member = null, underlying = null;
 			IType type = null;
@@ -63,7 +63,7 @@ namespace ICSharpCode.XamlBinding
 				propertyName = propertyName.Substring(propertyName.IndexOf('.') + 1);
 				ITypeReference reference = XamlUnresolvedFile.CreateTypeReference(namespaceName, name);
 				type = reference.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
-				member = FindMember(type, propertyName); 
+				member = FindMember(type, propertyName);
 				if (member == null)
 					member = FindAttachedMember(type, propertyName, out underlying);
 			} else {
@@ -73,7 +73,7 @@ namespace ICSharpCode.XamlBinding
 			}
 			if (member == null)
 				return new UnknownMemberResolveResult(type, propertyName, EmptyList<IType>.Instance);
-			if (attribute.ValueSegment.Contains(offset, 1))
+			if (offset > -1 && attribute.ValueSegment.Contains(offset, 1))
 				return ResolveAttributeValue(member, attribute, cancellationToken);
 			if (underlying != null)
 				return new AttachedMemberResolveResult(new TypeResolveResult(underlying.DeclaringType), underlying, member);
@@ -118,10 +118,7 @@ namespace ICSharpCode.XamlBinding
 			IMember member = type.GetProperties(p => p.Name == propertyName).FirstOrDefault();
 			if (member != null)
 				return member;
-			member = type.GetEvents(e => e.Name == propertyName).FirstOrDefault();
-			if (member != null)
-				return member;
-			return null;
+			return type.GetEvents(e => e.Name == propertyName).FirstOrDefault();
 		}
 		
 		IMember FindAttachedMember(IType type, string propertyName, out IMember underlyingMember)
@@ -133,7 +130,7 @@ namespace ICSharpCode.XamlBinding
 			ITypeResolveContext localContext = new SimpleTypeResolveContext(type.GetDefinition());
 			if (underlyingMember != null)
 				return new DefaultUnresolvedProperty { Name = propertyName }
-					.CreateResolved(localContext);
+			.CreateResolved(localContext);
 			
 			underlyingMember = type
 				.GetMethods(m => m.IsPublic && m.IsStatic && m.Parameters.Count == 2
@@ -141,7 +138,7 @@ namespace ICSharpCode.XamlBinding
 				.FirstOrDefault();
 			if (underlyingMember != null)
 				return new DefaultUnresolvedEvent { Name = propertyName }
-					.CreateResolved(localContext);
+			.CreateResolved(localContext);
 			return null;
 		}
 		

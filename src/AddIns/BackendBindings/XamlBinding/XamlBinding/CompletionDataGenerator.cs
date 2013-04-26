@@ -690,8 +690,8 @@ namespace ICSharpCode.XamlBinding
 			IMethod invoker = td.GetMethods(method => method.Name == "Invoke").FirstOrDefault();
 			if (invoker != null && context.ActiveElement != null) {
 				var item = context.ActiveElement;
-				var resolver = new XamlResolver(compilation);
-				var mrr = resolver.ResolveExpression(context.Attribute.ToQualifiedName().FullXmlName, context) as MemberResolveResult;
+				var resolver = new XamlAstResolver(compilation, context.ParseInformation);
+				var mrr = resolver.ResolveAttribute(context.Attribute) as MemberResolveResult;
 				IEvent evt;
 				if (mrr == null || (evt = mrr.Member as IEvent) == null)
 					return EmptyList<ICompletionItem>.Instance;

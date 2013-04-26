@@ -80,18 +80,18 @@ namespace ICSharpCode.XamlBinding
 			IDocument document = null;
 			foreach (var tag in TreeTraversal.PreOrder<AXmlObject>(xmlDocument, node => node.Children).OfType<AXmlTag>().Where(t => t.IsComment)) {
 				int matchLength;
-				AXmlText comment = tag.Children.OfType<AXmlText>().First();
-				int index = comment.Value.IndexOfAny(TaskListTokens, 0, out matchLength);
+				string commentText = fileContent.GetText(tag.StartOffset, tag.Length);
+				int index = commentText.IndexOfAny(TaskListTokens, 0, out matchLength);
 				if (index > -1) {
 					if (document == null)
 						document = fileContent as IDocument ?? new ReadOnlyDocument(fileContent, parseInfo.FileName);
 					do {
-						TextLocation startLocation = document.GetLocation(comment.StartOffset + index);
-						int startOffset = index + comment.StartOffset;
-						int endOffset = Math.Min(document.GetLineByOffset(startOffset).EndOffset, comment.EndOffset);
+						TextLocation startLocation = document.GetLocation(tag.StartOffset + index);
+						int startOffset = index + tag.StartOffset;
+						int endOffset = Math.Min(document.GetLineByOffset(startOffset).EndOffset, tag.EndOffset);
 						string content = document.GetText(startOffset, endOffset - startOffset);
 						parseInfo.TagComments.Add(new TagComment(content.Substring(0, matchLength), new DomRegion(parseInfo.FileName, startLocation.Line, startLocation.Column), content.Substring(matchLength)));
-						index = comment.Value.IndexOfAny(TaskListTokens, endOffset - comment.StartOffset, out matchLength);
+						index = commentText.IndexOfAny(TaskListTokens, endOffset - tag.StartOffset, out matchLength);
 					} while (index > -1);
 				}
 			}

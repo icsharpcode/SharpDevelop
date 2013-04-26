@@ -54,7 +54,7 @@ namespace ICSharpCode.XamlBinding
 						if (endMarkerCount % 2 != 0) {
 							editor.Document.Insert(editor.Caret.Offset, ch.ToString());
 							editor.Caret.Offset--;
-							this.CtrlSpace(editor);
+							CtrlSpace(editor);
 							return CodeCompletionKeyPressResult.Completed;
 						}
 					}
@@ -85,8 +85,8 @@ namespace ICSharpCode.XamlBinding
 							}
 							break;
 						case XamlContextDescription.InMarkupExtension:
-//							if (DoMarkupExtensionCompletion(context))
-//								return CodeCompletionKeyPressResult.Completed;
+							if (DoMarkupExtensionCompletion(context))
+								return CodeCompletionKeyPressResult.Completed;
 							break;
 						case XamlContextDescription.InAttributeValue:
 							if (editor.SelectionLength != 0)
@@ -110,7 +110,7 @@ namespace ICSharpCode.XamlBinding
 							editor.Document.Insert(editor.Caret.Offset, "[]");
 						editor.Caret.Offset--;
 						
-						this.CtrlSpace(editor);
+						CtrlSpace(editor);
 						return CodeCompletionKeyPressResult.EatKey;
 					}
 					break;
@@ -147,7 +147,7 @@ namespace ICSharpCode.XamlBinding
 							editor.Caret.Offset++;
 						}
 						
-						this.CtrlSpace(editor);
+						CtrlSpace(editor);
 						return CodeCompletionKeyPressResult.EatKey;
 					} else {
 						DoMarkupExtensionCompletion(context);
@@ -161,7 +161,7 @@ namespace ICSharpCode.XamlBinding
 						string attributeName = (context.Attribute != null) ? context.Attribute.Name : string.Empty;
 						
 						if (!attributeName.StartsWith("xmlns", StringComparison.OrdinalIgnoreCase)) {
-							return this.CtrlSpace(editor, context)
+							return CtrlSpace(editor, context)
 								? CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion
 								: CodeCompletionKeyPressResult.None;
 						}
@@ -186,72 +186,38 @@ namespace ICSharpCode.XamlBinding
 		bool CtrlSpace(ITextEditor editor, XamlCompletionContext context)
 		{
 			if (context.Description == XamlContextDescription.InComment
-			    || context.Description == XamlContextDescription.InCData)
+			    || context.Description == XamlContextDescription.InCData
+			    || context.ActiveElement == null) {
 				return false;
-			if (context.ActiveElement != null) {
-				if (!XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset) && context.Description != XamlContextDescription.InAttributeValue) {
-					XamlCompletionItemList list = generator.CreateListForContext(context);
-					string starter = editor.GetWordBeforeCaretExtended().TrimStart('/');
-					if (context.Description != XamlContextDescription.None && !string.IsNullOrEmpty(starter)) {
-						if (starter.Contains("."))
-							list.PreselectionLength = starter.Length - starter.IndexOf('.') - 1;
-						else
-							list.PreselectionLength = starter.Length;
-					}
-					editor.ShowCompletionWindow(list);
-					return true;
-				} else {
-					// DO NOT USE CompletionDataHelper.CreateListForContext here!!! results in endless recursion!!!!
-					if (context.Attribute != null) {
-						if (!DoMarkupExtensionCompletion(context)) {
-							var completionList = new XamlCompletionItemList(context);
-							completionList.PreselectionLength = editor.GetWordBeforeCaretExtended().Length;
-							if ((context.ActiveElement.Name == "Setter" || context.ActiveElement.Name == "EventSetter") && (context.Attribute.Name == "Property" || context.Attribute.Name == "Value"))
-								DoSetterAndEventSetterCompletion(context, completionList);
-							else
-								if ((context.ActiveElement.Name.EndsWith("Trigger", StringComparison.Ordinal) || context.ActiveElement.Name == "Condition") && context.Attribute.Name == "Value")
-									DoTriggerCompletion(context, completionList);
-							else {
-								if (context.Attribute.Name == "xml:space") {
-									completionList.Items.AddRange(new[] {
-									                              	new XamlCompletionItem("preserve"),
-									                              	new XamlCompletionItem("default")
-									                              });
-								}
-								XamlAstResolver resolver = new XamlAstResolver(compilation, context.ParseInformation);
-								var mrr = resolver.ResolveAttribute(context.Attribute, editor.Document.GetOffset(editor.Caret.Location)) as MemberResolveResult;
-								if (mrr != null && mrr.Type.Kind != TypeKind.Unknown) {
-									completionList.Items.AddRange(generator.MemberCompletion(context, mrr.Type, string.Empty));
-									editor.ShowInsightWindow(generator.MemberInsight(mrr));
-									switch (mrr.Type.FullName) {
-										case "System.Windows.PropertyPath":
-											string start = editor.GetWordBeforeCaretExtended();
-											int index = start.LastIndexOfAny(PropertyPathTokenizer.ControlChars);
-											if (index + 1 < start.Length)
-												start = start.Substring(index + 1);
-											else
-												start = "";
-											completionList.PreselectionLength = start.Length;
-											break;
-										case "System.Windows.Media.FontFamily":
-											string text = context.ValueStartOffset > -1 ? context.RawAttributeValue.Substring(0, Math.Min(context.ValueStartOffset, context.RawAttributeValue.Length)) : "";
-											int lastComma = text.LastIndexOf(',');
-											completionList.PreselectionLength = lastComma == -1 ? context.ValueStartOffset : context.ValueStartOffset - lastComma - 1;
-											break;
-									}
-								}
-							}
-							completionList.SortItems();
-							if (context.Attribute.Prefix.Equals("xmlns", StringComparison.OrdinalIgnoreCase) || context.Attribute.Name.Equals("xmlns", StringComparison.OrdinalIgnoreCase))
-								completionList.Items.AddRange(generator.CreateListForXmlnsCompletion(compilation));
-							ICompletionListWindow window = editor.ShowCompletionWindow(completionList);
-							if ((context.Attribute.Prefix.Equals("xmlns", StringComparison.OrdinalIgnoreCase) || context.Attribute.Name.Equals("xmlns", StringComparison.OrdinalIgnoreCase)) && window != null)
-								window.Width = 400;
-							return completionList.Items.Any();
-						}
-						return true;
+			}
+			if (context.Description != XamlContextDescription.InAttributeValue) {
+				XamlCompletionItemList list = generator.CreateListForContext(context);
+				string starter = editor.GetWordBeforeCaretExtended().TrimStart('/');
+				if (context.Description != XamlContextDescription.None && !string.IsNullOrEmpty(starter)) {
+					if (starter.Contains(".")) {
+						list.PreselectionLength = starter.Length - starter.IndexOf('.') - 1;
+					} else {
+						list.PreselectionLength = starter.Length;
 					}
 				}
+				editor.ShowCompletionWindow(list);
+				return true;
+			}
+			// DO NOT USE generator.CreateListForContext here!!! results in endless recursion!!!!
+			if (context.Attribute != null) {
+				if (!DoMarkupExtensionCompletion(context)) {
+					var completionList = new XamlCompletionItemList(context);
+					completionList.PreselectionLength = editor.GetWordBeforeCaretExtended().Length;
+					if ((context.ActiveElement.Name == "Setter" || context.ActiveElement.Name == "EventSetter") && (context.Attribute.Name == "Property" || context.Attribute.Name == "Value")) {
+						DoSetterAndEventSetterCompletion(context, completionList);
+					} else if ((context.ActiveElement.Name.EndsWith("Trigger", StringComparison.Ordinal) || context.ActiveElement.Name == "Condition") && context.Attribute.Name == "Value") {
+						DoTriggerCompletion(context, completionList);
+					} else if (!DoAttributeCompletion(context, completionList)) {
+						DoXmlAttributeCompletion(context, completionList);
+					}
+					return completionList.Items.Any();
+				}
+				return true;
 			}
 			return false;
 		}
@@ -357,6 +323,58 @@ namespace ICSharpCode.XamlBinding
 			}
 		}
 
+		bool DoAttributeCompletion(XamlCompletionContext context, XamlCompletionItemList completionList)
+		{
+			XamlAstResolver resolver = new XamlAstResolver(compilation, context.ParseInformation);
+			ITextEditor editor = context.Editor;
+			var mrr = resolver.ResolveAttribute(context.Attribute) as MemberResolveResult;
+			if (mrr != null && mrr.Type.Kind != TypeKind.Unknown) {
+				completionList.Items.AddRange(generator.MemberCompletion(context, mrr.Type, string.Empty));
+				editor.ShowInsightWindow(generator.MemberInsight(mrr));
+				editor.ShowCompletionWindow(completionList);
+				switch (mrr.Type.FullName) {
+					case "System.Windows.PropertyPath":
+						string start = editor.GetWordBeforeCaretExtended();
+						int index = start.LastIndexOfAny(PropertyPathTokenizer.ControlChars);
+						if (index + 1 < start.Length) {
+							start = start.Substring(index + 1);
+						}
+						else {
+							start = "";
+						}
+						completionList.PreselectionLength = start.Length;
+						break;
+					case "System.Windows.Media.FontFamily":
+						string text = context.ValueStartOffset > -1 ? context.RawAttributeValue.Substring(0, Math.Min(context.ValueStartOffset, context.RawAttributeValue.Length)) : "";
+						int lastComma = text.LastIndexOf(',');
+						completionList.PreselectionLength = lastComma == -1 ? context.ValueStartOffset : context.ValueStartOffset - lastComma - 1;
+						break;
+				}
+			}
+			
+			return completionList.Items.Any();
+		}
+		
+		void DoXmlAttributeCompletion(XamlCompletionContext context, XamlCompletionItemList completionList)
+		{
+			if (context.Attribute.Name == "xml:space") {
+				completionList.Items.AddRange(new[] {
+				                              	new XamlCompletionItem("preserve"),
+				                              	new XamlCompletionItem("default")
+				                              });
+			}
+			
+			if (context.Attribute.Prefix.Equals("xmlns", StringComparison.OrdinalIgnoreCase) ||
+			    context.Attribute.Name.Equals("xmlns", StringComparison.OrdinalIgnoreCase)) {
+				completionList.Items.AddRange(generator.CreateListForXmlnsCompletion(compilation));
+				
+				ICompletionListWindow window = context.Editor.ShowCompletionWindow(completionList);
+				if (window != null) {
+					window.Width = 400;
+				}
+			}
+		}
+		
 		bool DoMarkupExtensionCompletion(XamlCompletionContext context)
 		{
 			if (context.Description == XamlContextDescription.InMarkupExtension && context.AttributeValue != null && !context.AttributeValue.IsString) {
