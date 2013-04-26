@@ -78,17 +78,6 @@ namespace ICSharpCode.XamlBinding
 			AXmlElement active = null;
 			AXmlElement parent = null;
 			
-			if (currentData.Parent is AXmlTag) {
-				AXmlTag tag = currentData.Parent as AXmlTag;
-				if (tag.IsStartOrEmptyTag)
-					description = XamlContextDescription.InTag;
-				else if (tag.IsComment)
-					description = XamlContextDescription.InComment;
-				else if (tag.IsCData)
-					description = XamlContextDescription.InCData;
-				active = tag.Parent as AXmlElement;
-			}
-			
 			if (currentData is AXmlAttribute) {
 				AXmlAttribute a = currentData as AXmlAttribute;
 				int valueStartOffset = a.ValueSegment.Offset + 1;
@@ -107,13 +96,14 @@ namespace ICSharpCode.XamlBinding
 						description = XamlContextDescription.InAttributeValue;
 				} else
 					description = XamlContextDescription.InTag;
-			}
-			
-			if (currentData is AXmlTag) {
+			} else if (currentData is AXmlTag) {
 				AXmlTag tag = currentData as AXmlTag;
-				if (tag.IsStartOrEmptyTag || tag.IsEndTag)
-					description = XamlContextDescription.AtTag;
-				else if (tag.IsComment)
+				if (tag.IsStartOrEmptyTag || tag.IsEndTag) {
+					if (tag.NameSegment.EndOffset < offset)
+						description = XamlContextDescription.InTag;
+					else
+						description = XamlContextDescription.AtTag;
+				} else if (tag.IsComment)
 					description = XamlContextDescription.InComment;
 				else if (tag.IsCData)
 					description = XamlContextDescription.InCData;

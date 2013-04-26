@@ -10,6 +10,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Windows.Media;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -54,7 +55,7 @@ namespace ICSharpCode.XamlBinding
 				case XamlContextDescription.None:
 					if (context.Forced) {
 						list.Items.AddRange(standardElements);
-						list.Items.AddRange(CreateElementList(context, false, false));
+						list.Items.AddRange(CreateElementList(context, false));
 						AddClosingTagCompletion(context, list, resolver);
 					}
 					break;
@@ -63,7 +64,7 @@ namespace ICSharpCode.XamlBinding
 						list.Items.AddRange(CreateAttributeList(context, false));
 					} else {
 						list.Items.AddRange(standardElements);
-						list.Items.AddRange(CreateElementList(context, false, false));
+						list.Items.AddRange(CreateElementList(context, false));
 						AddClosingTagCompletion(context, list, resolver);
 					}
 					break;
@@ -109,7 +110,7 @@ namespace ICSharpCode.XamlBinding
 			return list;
 		}
 		
-		public IList<ICompletionItem> CreateElementList(XamlCompletionContext context, bool classesOnly, bool includeAbstract)
+		public IList<ICompletionItem> CreateElementList(XamlCompletionContext context, bool includeAbstract)
 		{
 			if (context.ParseInformation == null)
 				return EmptyList<ICompletionItem>.Instance;
@@ -346,7 +347,7 @@ namespace ICSharpCode.XamlBinding
 				.OrderBy(item => item, new XmlnsComparer());
 		}
 		
-		
+		#region Member completion
 		public IEnumerable<IInsightItem> MemberInsight(MemberResolveResult result)
 		{
 			switch (result.Type.FullName) {
@@ -367,65 +368,6 @@ namespace ICSharpCode.XamlBinding
 			}
 		}
 		
-		public static string LookForTargetTypeValue(XamlCompletionContext context, out bool isExplicit, params string[] elementName) {
-			var ancestors = context.Ancestors;
-			
-			isExplicit = false;
-			
-			for (int i = 0; i < ancestors.Count; i++) {
-				if (ancestors[i].LocalName == "Style" && WpfXamlNamespaces.Contains(ancestors[i].Namespace)) {
-					isExplicit = true;
-					return ancestors[i].GetAttributeValue("TargetType") ?? string.Empty;
-				}
-				
-				if (ancestors[i].Name.EndsWithAny(elementName.Select(s => "." + s + "s"), StringComparison.Ordinal)
-				    && !ancestors[i].Name.StartsWith("Style.", StringComparison.Ordinal)) {
-					return ancestors[i].Name.Remove(ancestors[i].Name.IndexOf('.'));
-				}
-			}
-			
-			return null;
-		}
-		
-		public static string GetTypeNameFromTypeExtension(MarkupExtensionInfo info, XamlCompletionContext context)
-		{
-			IReturnType type = CompletionDataHelper.ResolveType(info.ExtensionType, context)
-				?? CompletionDataHelper.ResolveType(info.ExtensionType + "Extension", context);
-			
-			if (type == null || type.FullyQualifiedName != "System.Windows.Markup.TypeExtension")
-				return string.Empty;
-			
-			var item = info.PositionalArguments.FirstOrDefault();
-			if (item != null && item.IsString) {
-				return item.StringValue;
-			} else {
-				if (info.NamedArguments.TryGetValue("typename", out item)) {
-					if (item.IsString)
-						return item.StringValue;
-				}
-			}
-			
-			return string.Empty;
-		}
-		
-		static IType GetType(XamlCompletionContext context, out bool isExplicit)
-		{
-			AttributeValue value = MarkupExtensionParser.ParseValue(LookForTargetTypeValue(context, out isExplicit, "Trigger", "Setter") ?? string.Empty);
-			
-			IReturnType typeName = null;
-			string typeNameString = null;
-			
-			if (!value.IsString) {
-				typeNameString = GetTypeNameFromTypeExtension(value.ExtensionValue, context);
-				typeName = CompletionDataHelper.ResolveType(typeNameString, context);
-			} else {
-				typeNameString = value.StringValue;
-				typeName = CompletionDataHelper.ResolveType(value.StringValue, context);
-			}
-			
-			return typeName;
-		}
-
 		public IEnumerable<ICompletionItem> MemberCompletion(XamlCompletionContext context, IType type, string textPrefix = "")
 		{
 			ITextEditor editor = context.Editor;
@@ -446,14 +388,14 @@ namespace ICSharpCode.XamlBinding
 			
 			switch (definition.Kind) {
 				case TypeKind.Class:
-					IReturnType typeName;
+					IType typeName;
 					bool isExplicit, showFull = false;
 					switch (definition.FullName) {
 						case "System.String":
 							// return nothing
 							break;
 						case "System.Type":
-							foreach (var item in CreateElementList(context, true, true))
+							foreach (var item in CreateElementList(context, true))
 								yield return item;
 							break;
 						case "System.Windows.PropertyPath":
@@ -486,22 +428,22 @@ namespace ICSharpCode.XamlBinding
 							break;
 						case "System.Windows.Media.FontFamily":
 							foreach (var font in Fonts.SystemFontFamilies)
-								yield return new SpecialValueCompletionItem(font.FamilyNames.First().Value);
+								yield return new XamlCompletionItem(font.FamilyNames.First().Value) { Image = ClassBrowserIconService.Const };
 							break;
 						default:
 							if (context.Description == XamlContextDescription.InMarkupExtension) {
-								foreach (IField f in c.Fields)
+								foreach (IField f in definition.Fields)
 									yield return new XamlCompletionItem(textPrefix + f.Name, f);
-								foreach (IProperty p in c.Properties.Where(pr => pr.IsPublic && pr.IsStatic && pr.CanGet))
+								foreach (IProperty p in definition.GetProperties(pr => pr.IsPublic && pr.IsStatic && pr.CanGet))
 									yield return new XamlCompletionItem(textPrefix + p.Name, p);
 							}
 							break;
 					}
 					break;
 				case TypeKind.Enum:
-					foreach (IField f in c.Fields)
+					foreach (IField f in definition.Fields)
 						yield return new XamlCompletionItem(textPrefix + f.Name, f);
-					foreach (IProperty p in c.Properties.Where(pr => pr.IsPublic && pr.IsStatic && pr.CanGet))
+					foreach (IProperty p in definition.Properties.Where(pr => pr.IsPublic && pr.IsStatic && pr.CanGet))
 						yield return new XamlCompletionItem(textPrefix + p.Name, p);
 					break;
 				case TypeKind.Struct:
@@ -517,26 +459,263 @@ namespace ICSharpCode.XamlBinding
 					}
 					break;
 				case TypeKind.Delegate:
-					foreach (var item in CreateEventCompletion(context, c))
+					foreach (var item in CreateEventCompletion(context, definition))
 						yield return item;
 					break;
 			}
 			
-			var classes = c.ProjectContent.Classes.Where(
-				cla => (cla.FullyQualifiedName == c.FullyQualifiedName + "s" ||
-				        cla.FullyQualifiedName == c.FullyQualifiedName + "es"));
+			var classes = definition.ParentAssembly
+				.GetAllTypeDefinitions()
+				.Where(cla => cla.FullName == definition.FullName + "s" ||
+				       cla.FullName == definition.FullName + "es");
 			foreach (var coll in classes) {
 				foreach (var item in coll.Properties)
-					yield return new XamlCompletionItem(item.Name);
-				foreach (var item in coll.Fields.Where(f => f.IsPublic && f.IsStatic && f.ReturnType.FullyQualifiedName == c.FullyQualifiedName))
-					yield return new XamlCompletionItem(item.Name);
+					yield return new XamlCompletionItem(item);
+				foreach (var item in coll.Fields.Where(f => f.IsPublic && f.IsStatic && f.ReturnType.FullName == definition.FullName))
+					yield return new XamlCompletionItem(item);
+			}
+		}
+		#endregion
+		
+		#region Markup Extensions
+		public IEnumerable<IInsightItem> CreateMarkupExtensionInsight(XamlCompletionContext context)
+		{
+			var markup = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.ValueStartOffset);
+			var resolver = new XamlResolver(compilation);
+			var type = (resolver.ResolveExpression(markup.ExtensionType, context) ?? resolver.ResolveExpression(markup.ExtensionType + "Extension", context)).Type;
+			
+			if (type != null) {
+				var ctors = type
+					.GetMethods(m => m.IsPublic && m.IsConstructor && m.Parameters.Count >= markup.PositionalArguments.Count)
+					.OrderBy(m => m.Parameters.Count);
+				
+				foreach (var ctor in ctors)
+					yield return new MarkupExtensionInsightItem(ctor);
 			}
 		}
 		
-		static IList<ICompletionItem> CreatePropertyPathCompletion(XamlCompletionContext context)
+		public ICompletionItemList CreateMarkupExtensionCompletion(XamlCompletionContext context)
+		{
+			var list = new XamlCompletionItemList(context);
+			string visibleValue = context.RawAttributeValue.Substring(0, Utils.MinMax(context.ValueStartOffset, 0, context.RawAttributeValue.Length));
+			if (context.PressedKey == '=')
+				visibleValue += "=";
+			var markup = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.ValueStartOffset);
+			var resolver = new XamlResolver(compilation);
+			var type = (resolver.ResolveExpression(markup.ExtensionType, context) ?? resolver.ResolveExpression(markup.ExtensionType + "Extension", context)).Type;
+			
+			if (type == null) {
+				list.Items.AddRange(CreateListOfMarkupExtensions(context));
+				list.PreselectionLength = markup.ExtensionType.Length;
+			} else {
+				if (markup.NamedArguments.Count == 0) {
+					if (DoPositionalArgsCompletion(list, context, markup, type))
+						DoNamedArgsCompletion(list, context, type, markup);
+				} else
+					DoNamedArgsCompletion(list, context, type, markup);
+			}
+			
+			list.SortItems();
+			
+			return list;
+		}
+		
+		void DoNamedArgsCompletion(XamlCompletionItemList list, XamlCompletionContext context, IType type, MarkupExtensionInfo markup)
+		{
+			if (markup.NamedArguments.Count > 0 && !context.Editor.GetWordBeforeCaret().StartsWith(",", StringComparison.OrdinalIgnoreCase)) {
+				int lastStart = markup.NamedArguments.Max(i => i.Value.StartOffset);
+				var item = markup.NamedArguments.First(p => p.Value.StartOffset == lastStart);
+				
+				if (context.RawAttributeValue.EndsWith("=", StringComparison.OrdinalIgnoreCase) ||
+				    (item.Value.IsString && item.Value.StringValue.EndsWith(context.Editor.GetWordBeforeCaretExtended(), StringComparison.Ordinal))) {
+					var resolver = new XamlResolver(compilation);
+					MemberResolveResult mrr = resolver.ResolveExpression(item.Key, context) as MemberResolveResult;
+					if (mrr != null && mrr.Member != null && mrr.Member.ReturnType != null) {
+						IType memberType = mrr.Member.ReturnType;
+						list.Items.AddRange(MemberCompletion(context, memberType, string.Empty));
+					}
+					return;
+				}
+			}
+			
+			list.Items.AddRange(type.GetProperties().Where(p => p.CanSet && p.IsPublic).Select(p => new XamlCompletionItem(p.Name + "=", p)));
+		}
+
+		/// <remarks>returns true if elements from named args completion should be added afterwards.</remarks>
+		bool DoPositionalArgsCompletion(XamlCompletionItemList list, XamlCompletionContext context, MarkupExtensionInfo markup, IType type)
+		{
+			switch (type.FullName) {
+				case "System.Windows.Markup.ArrayExtension":
+				case "System.Windows.Markup.NullExtension":
+					// x:Null/x:Array does not need completion, ignore it
+					break;
+				case "System.Windows.Markup.StaticExtension":
+					if (context.AttributeValue.ExtensionValue.PositionalArguments.Count <= 1)
+						return DoStaticExtensionCompletion(list, context);
+					break;
+				case "System.Windows.Markup.TypeExtension":
+					if (context.AttributeValue.ExtensionValue.PositionalArguments.Count <= 1) {
+						list.Items.AddRange(GetClassesFromContext(context).FlattenToList());
+						AttributeValue selItem = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.ValueStartOffset)
+							.PositionalArguments.LastOrDefault();
+						string word = context.Editor.GetWordBeforeCaret().TrimEnd();
+						if (selItem != null && selItem.IsString && word == selItem.StringValue) {
+							list.PreselectionLength = selItem.StringValue.Length;
+						}
+					}
+					break;
+				default:
+					var ctors = type.GetMethods(m => m.IsPublic && m.IsConstructor && m.Parameters.Count >= markup.PositionalArguments.Count + 1);
+					if (context.Forced)
+						return true;
+					if (ctors.Any() || markup.PositionalArguments.Count == 0)
+						return false;
+					break;
+			}
+			
+			return true;
+		}
+		
+		bool DoStaticExtensionCompletion(XamlCompletionItemList list, XamlCompletionContext context)
+		{
+			AttributeValue selItem = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.ValueStartOffset)
+				.PositionalArguments.LastOrDefault();
+			var resolver = new XamlResolver(compilation);
+			if (context.PressedKey == '.') {
+				if (selItem != null && selItem.IsString) {
+					var rr = resolver.ResolveExpression(selItem.StringValue, context) as TypeResolveResult;
+					if (rr != null)
+						list.Items.AddRange(MemberCompletion(context, rr.Type, string.Empty));
+					return false;
+				}
+			} else {
+				if (selItem != null && selItem.IsString) {
+					int index = selItem.StringValue.IndexOf('.');
+					string s = (index > -1) ? selItem.StringValue.Substring(0, index) : selItem.StringValue;
+					var rr = resolver.ResolveExpression(s, context) as TypeResolveResult;
+					if (rr != null) {
+						list.Items.AddRange(MemberCompletion(context, rr.Type, (index == -1) ? "." : string.Empty));
+						
+						list.PreselectionLength = (index > -1) ? selItem.StringValue.Length - index - 1 : 0;
+						
+						return false;
+					} else
+						DoStaticTypeCompletion(selItem, list, context);
+				} else {
+					DoStaticTypeCompletion(selItem, list, context);
+				}
+			}
+			
+			return true;
+		}
+
+		void DoStaticTypeCompletion(AttributeValue selItem, XamlCompletionItemList list, XamlCompletionContext context)
+		{
+			var items = GetClassesFromContext(context);
+			foreach (var ns in items) {
+				string key = ns.Key;
+				if (!string.IsNullOrEmpty(key)) key += ":";
+				list.Items.AddRange(
+					ns.Value
+					.Where(c => c.Fields.Any(f => f.IsStatic) || c.Properties.Any(p => p.IsStatic))
+					.Select(c => new XamlCompletionItem(key + c.Name, c))
+				);
+			}
+			if (selItem != null && selItem.IsString) {
+				list.PreselectionLength = selItem.StringValue.Length;
+			}
+		}
+		
+		
+		public IEnumerable<ICompletionItem> CreateListOfMarkupExtensions(XamlCompletionContext context)
+		{
+			var markupExtensionType = compilation.FindType(typeof(System.Windows.Markup.MarkupExtension))
+				.GetDefinition();
+			if (markupExtensionType == null)
+				yield break;
+			string text;
+			foreach (var ns in GetClassesFromContext(context)) {
+				foreach (var definition in ns.Value.Where(td => td.IsDerivedFrom(markupExtensionType))) {
+					text = definition.Name;
+					if (text.EndsWith("Extension", StringComparison.Ordinal))
+						text = text.Remove(text.Length - "Extension".Length);
+					string prefix = ns.Key;
+					if (prefix.Length > 0) {
+						text = prefix + ":" + text;
+					}
+					yield return new XamlCompletionItem(text, definition);
+				}
+			}
+			
+			text = "Reference";
+			if (context.XamlNamespacePrefix != "") {
+				text = context.XamlNamespacePrefix + ":" + text;
+			}
+			yield return new XamlCompletionItem(text);
+		}
+
+		#endregion
+		
+		public IEnumerable<ICompletionItem> FindMatchingEventHandlers(XamlCompletionContext context, IEvent member, string targetName)
+		{
+			ITypeDefinition td = member.ReturnType.GetDefinition();
+			if (td == null) yield break;
+
+			IMethod delegateInvoker = td.GetMethods(m => m.Name == "Invoke").FirstOrDefault();
+			if (delegateInvoker == null) yield break;
+			
+			if (context.ParseInformation == null)
+				yield break;
+			
+			var file = context.ParseInformation.UnresolvedFile;
+			var loc = context.Editor.Caret.Location;
+			var unresolved = file.GetInnermostTypeDefinition(loc.Line, loc.Column);
+			if (unresolved == null)
+				yield break;
+			IType type = unresolved.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
+			foreach (IMethod method in type.GetMethods(m => m.Parameters.Count == delegateInvoker.Parameters.Count)) {
+				if (!method.ReturnType.Equals(delegateInvoker.ReturnType))
+					continue;
+				
+				if (method.Parameters.SequenceEqual(delegateInvoker.Parameters, new ParameterComparer())) {
+					yield return new XamlCompletionItem(method);
+				}
+			}
+			
+			yield return new NewEventCompletionItem(member, targetName);
+		}
+		
+		IEnumerable<ICompletionItem> CreateEventCompletion(XamlCompletionContext context, ITypeDefinition td)
+		{
+			IMethod invoker = td.GetMethods(method => method.Name == "Invoke").FirstOrDefault();
+			if (invoker != null && context.ActiveElement != null) {
+				var item = context.ActiveElement;
+				var resolver = new XamlResolver(compilation);
+				var mrr = resolver.ResolveExpression(context.Attribute.ToQualifiedName().FullXmlName, context) as MemberResolveResult;
+				IEvent evt;
+				if (mrr == null || (evt = mrr.Member as IEvent) == null)
+					return EmptyList<ICompletionItem>.Instance;
+				int offset = XmlEditor.XmlParser.GetActiveElementStartIndex(context.Editor.Document.Text, context.Editor.Caret.Offset);
+				
+				if (offset == -1)
+					return Enumerable.Empty<ICompletionItem>();
+				
+				var loc = context.Editor.Document.GetLocation(offset);
+				
+				string name = context.ActiveElement.GetAttributeValue("Name");
+				if (string.IsNullOrEmpty(name))
+					name = context.ActiveElement.GetAttributeValue(XamlConst.XamlNamespace, "Name");
+				
+				return FindMatchingEventHandlers(context, evt, (string.IsNullOrEmpty(name) ? item.Name : name));
+			}
+			
+			return EmptyList<ICompletionItem>.Instance;
+		}
+		
+		IList<ICompletionItem> CreatePropertyPathCompletion(XamlCompletionContext context)
 		{
 			bool isExplicit;
-			IReturnType typeName = GetType(context, out isExplicit);
+			IType typeName = GetType(context, out isExplicit);
 			IList<ICompletionItem> list = new List<ICompletionItem>();
 			
 			string value = context.ValueStartOffset > -1 ? context.RawAttributeValue.Substring(0, Math.Min(context.ValueStartOffset + 1, context.RawAttributeValue.Length)) : "";
@@ -549,7 +728,7 @@ namespace ICSharpCode.XamlBinding
 			int completionStart;
 			bool isAtDot = false;
 			
-			IReturnType propertyPathType = ResolvePropertyPath(segments, context, typeName, out completionStart);
+			IType propertyPathType = ResolvePropertyPath(segments, context, typeName, out completionStart);
 			if (completionStart < segments.Count) {
 				PropertyPathSegment seg = segments[completionStart];
 				switch (seg.Kind) {
@@ -578,6 +757,26 @@ namespace ICSharpCode.XamlBinding
 			}
 			
 			return list;
+		}
+		
+		IEnumerable<ICompletionItem> GetAllTypes(XamlCompletionContext context)
+		{
+			var items = GetClassesFromContext(context);
+			
+			foreach (var ns in items) {
+				foreach (var c in ns.Value) {
+					if (c.Kind == TypeKind.Class && !c.IsDerivedFrom(KnownTypeCode.Attribute))
+						yield return new XamlCompletionItem(ns.Key, c);
+				}
+			}
+		}
+		
+		IType GetType(XamlContext context, out bool isExplicit)
+		{
+			string targetTypeValue = Utils.LookForTargetTypeValue(context, out isExplicit, "Trigger", "Setter");
+			AttributeValue value = MarkupExtensionParser.ParseValue(targetTypeValue ?? string.Empty);
+			XamlResolver resolver = new XamlResolver(compilation);
+			return resolver.ResolveAttributeValue(context, value).Type;
 		}
 		
 		static IType ResolvePropertyPath(IList<PropertyPathSegment> segments, XamlCompletionContext context, IType parentType, out int lastIndex)

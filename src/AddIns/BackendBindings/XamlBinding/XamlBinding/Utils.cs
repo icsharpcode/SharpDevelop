@@ -130,5 +130,25 @@ namespace ICSharpCode.XamlBinding
 			
 			return tmp;
 		}
+		
+		public static string LookForTargetTypeValue(XamlContext context, out bool isExplicit, params string[] elementName) {
+			var ancestors = context.Ancestors;
+			
+			isExplicit = false;
+			
+			for (int i = 0; i < ancestors.Count; i++) {
+				if (ancestors[i].LocalName == "Style" && XamlConst.WpfXamlNamespaces.Contains(ancestors[i].Namespace)) {
+					isExplicit = true;
+					return ancestors[i].GetAttributeValue("TargetType") ?? string.Empty;
+				}
+				
+				if (ancestors[i].Name.EndsWithAny(elementName.Select(s => "." + s + "s"), StringComparison.Ordinal)
+				    && !ancestors[i].Name.StartsWith("Style.", StringComparison.Ordinal)) {
+					return ancestors[i].Name.Remove(ancestors[i].Name.IndexOf('.'));
+				}
+			}
+			
+			return null;
+		}
 	}
 }

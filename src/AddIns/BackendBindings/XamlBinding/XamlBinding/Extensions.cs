@@ -14,6 +14,7 @@ using System.Xml.Linq;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Xml;
 using ICSharpCode.SharpDevelop;
@@ -104,6 +105,26 @@ namespace ICSharpCode.XamlBinding
 			
 			foreach (var c in characters) {
 				if (thisValue.EndsWith(c.ToString(), comparison))
+					return true;
+			}
+			
+			return false;
+		}
+		
+		public static bool EndsWithAny(this string thisValue, IEnumerable<string> items, StringComparison comparison)
+		{
+			foreach (string item in items) {
+				if (thisValue.EndsWith(item, comparison))
+					return true;
+			}
+			
+			return false;
+		}
+		
+		public static bool EndsWithAny(this string thisValue, params char[] items)
+		{
+			foreach (char item in items) {
+				if (thisValue.EndsWith(item.ToString()))
 					return true;
 			}
 			
@@ -206,6 +227,115 @@ namespace ICSharpCode.XamlBinding
 			offset = Math.Min(offset, text.Length - 1);
 			
 			return text.Substring(startIndex, offset - startIndex + 1).Trim();
+		}
+		
+		public static IType Resolve(this PropertyPathSegment segment, XamlCompletionContext context, IType previousType)
+		{
+			if (segment.Kind == SegmentKind.SourceTraversal)
+				return previousType;
+			if (segment.Kind == SegmentKind.ControlChar)
+				return previousType;
+			
+			string content = segment.Content;
+			
+			if (segment.Kind == SegmentKind.AttachedProperty && content.StartsWith("(", StringComparison.Ordinal)) {
+				content = content.TrimStart('(');
+				if (content.Contains("."))
+					content = content.Remove(content.IndexOf('.'));
+			}
+			
+			ICompilation compilation = SD.ParserService.GetCompilationForFile(context.Editor.FileName);
+			XamlResolver resolver = new XamlResolver(compilation);
+			
+			ResolveResult rr = resolver.ResolveExpression(content, context);
+			IType type = rr.Type;
+
+			if (previousType != null) {
+				IMember member = previousType.GetMemberByName(content);
+				if (member != null)
+					type = member.ReturnType;
+			} else if (rr is MemberResolveResult) {
+				MemberResolveResult mrr = rr as MemberResolveResult;
+				if (mrr.Member != null)
+					type = mrr.Member.ReturnType;
+			}
+			return type;
+		}
+		
+		static IMember GetMemberByName(this IType type, string name)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			
+			IMember member = type.GetFields(m => m.Name == name).FirstOrDefault();
+			if (member == null) {
+				member = type.GetProperties(m => m.Name == name).FirstOrDefault();
+			}
+			
+			return member;
+		}
+		
+		public static IEnumerable<ICompletionItem> FlattenToList(this IDictionary<string, IEnumerable<ITypeDefinition>> data)
+		{
+			foreach (var item in data) {
+				foreach (var c in item.Value) {
+					string name = c.Name;
+					if (item.Key != "")
+						name = item.Key + ":" + name;
+					yield return new XamlCompletionItem(name, c);
+				}
+			}
+		}
+		
+		public static IEnumerable<ICompletionItem> GetDependencyProperties(this IType type, bool excludeSuffix, bool addType, bool requiresSetable, bool showFull)
+		{
+			foreach (var field in type.GetFields()) {
+				if (field.ReturnType.FullName != "System.Windows.DependencyProperty")
+					continue;
+				if (field.Name.Length <= "Property".Length || !field.Name.EndsWith("Property", StringComparison.Ordinal))
+					continue;
+				string fieldName = field.Name.Remove(field.Name.Length - "Property".Length);
+				IProperty property = type.GetProperties().FirstOrDefault(p => p.Name == fieldName);
+				if (property == null)
+					continue;
+				if (requiresSetable && !(property.CanSet && property.Setter.IsPublic))
+					continue;
+				
+				if (!excludeSuffix)
+					fieldName = field.Name;
+				
+				if (showFull) {
+					addType = false;
+					
+					fieldName = field.DeclaringType.Name + "." + fieldName;
+				}
+				
+				yield return new XamlLazyValueCompletionItem(field, fieldName, addType);
+			}
+		}
+		
+		public static IEnumerable<ICompletionItem> GetRoutedEvents(this IType type, bool excludeSuffix, bool addType, bool showFull)
+		{
+			foreach (var field in type.GetFields()) {
+				if (field.ReturnType.FullName != "System.Windows.RoutedEvent")
+					continue;
+				if (field.Name.Length <= "Event".Length || !field.Name.EndsWith("Event", StringComparison.Ordinal))
+					continue;
+				string fieldName = field.Name.Remove(field.Name.Length - "Event".Length);
+				if (!type.GetEvents().Any(p => p.Name == fieldName))
+					continue;
+				
+				if (!excludeSuffix)
+					fieldName = field.Name;
+				
+				if (showFull) {
+					addType = false;
+					
+					fieldName = field.DeclaringType.Name + "." + fieldName;
+				}
+				
+				yield return new XamlLazyValueCompletionItem(field, fieldName, addType);
+			}
 		}
 		
 		public static TKey GetKeyByValue<TKey, TValue>(this Dictionary<TKey, TValue> thisValue, TValue value)

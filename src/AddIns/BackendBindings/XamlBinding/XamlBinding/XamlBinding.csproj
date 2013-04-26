@@ -65,7 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttachedMemberResolveResult.cs" />
-    <Compile Include="CompletionData.cs" />
     <Compile Include="CompletionDataGenerator.cs" />
     <Compile Include="CompletionDataHelper.cs" />
     <Compile Include="XamlAstResolver.cs" />

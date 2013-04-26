@@ -3,13 +3,18 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.XamlBinding
 {
-	/*sealed class ParameterComparer : IEqualityComparer<IParameter> {
+	sealed class ParameterComparer : IEqualityComparer<IParameter> {
 		public bool Equals(IParameter x, IParameter y)
 		{
-			return x.Compare(y);
+			return (x.Type.ReflectionName == y.Type.ReflectionName)
+				&& (x.IsOut == y.IsOut)
+				&& (x.IsParams == y.IsParams)
+				&& (x.IsRef == y.IsRef)
+				&& (x.IsOptional == y.IsOptional);
 		}
 		
 		public int GetHashCode(IParameter obj)
@@ -44,5 +49,5 @@ namespace ICSharpCode.XamlBinding
 			else
 				return string.CompareOrdinal(x.Assembly, y.Assembly);
 		}
-	}*/
+	}
 }

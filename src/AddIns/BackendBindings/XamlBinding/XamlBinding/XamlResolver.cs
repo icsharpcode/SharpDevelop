@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.Remoting.Lifetime;
 using System.Threading;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp.Resolver;
@@ -28,6 +30,90 @@ namespace ICSharpCode.XamlBinding
 		public IType ResolveType(string @namespace, string type)
 		{
 			return XamlUnresolvedFile.CreateTypeReference(@namespace, type).Resolve(resolveContext);
+		}
+		
+		public ResolveResult ResolveExpression(string expression, XamlContext context)
+		{
+			string prefix, memberName;
+			string name = ParseName(expression, out prefix, out memberName);
+			string namespaceUrl;
+			if (prefix == "")
+				namespaceUrl = context.ActiveElement.Namespace;
+			else
+				namespaceUrl = context.ActiveElement.ResolvePrefix(prefix);
+			if (string.IsNullOrEmpty(memberName)) {
+				IType type = ResolveType(namespaceUrl, context.ActiveElement.LocalName);
+				IMember member = type.GetMembers(m => m.Name == name).FirstOrDefault();
+				if (member == null) {
+					type = ResolveType(namespaceUrl, name);
+					return new TypeResolveResult(type);
+				} else {
+					return new MemberResolveResult(new TypeResolveResult(type), member);
+				}
+			} else {
+				IType type = ResolveType(namespaceUrl, name);
+				IMember member = type.GetMembers(m => m.Name == memberName).FirstOrDefault();
+				if (member == null)
+					return new UnknownMemberResolveResult(type, memberName, EmptyList<IType>.Instance);
+				return new MemberResolveResult(new TypeResolveResult(type), member);
+			}
+		}
+		
+		public ResolveResult ResolveAttributeValue(XamlContext context, AttributeValue value)
+		{
+			string typeNameString = value.IsString
+				? value.StringValue
+				: GetTypeNameFromTypeExtension(value.ExtensionValue, context);
+			return ResolveExpression(typeNameString, context);
+		}
+		
+		public ResolveResult ResolveAttributeValue(XamlContext context, AttributeValue value, out string typeNameString)
+		{
+			typeNameString = value.IsString
+				? value.StringValue
+				: GetTypeNameFromTypeExtension(value.ExtensionValue, context);
+			return ResolveExpression(typeNameString, context);
+		}
+		
+		string GetTypeNameFromTypeExtension(MarkupExtensionInfo info, XamlContext context)
+		{
+			ResolveResult rr = ResolveExpression(info.ExtensionType, context)
+				?? ResolveExpression(info.ExtensionType + "Extension", context);
+			
+			IType type = rr.Type;
+			
+			if (type == null || type.FullName != "System.Windows.Markup.TypeExtension")
+				return string.Empty;
+			
+			var item = info.PositionalArguments.FirstOrDefault();
+			if (item != null && item.IsString)
+				return item.StringValue;
+			if (info.NamedArguments.TryGetValue("typename", out item)) {
+				if (item.IsString)
+					return item.StringValue;
+			}
+			
+			return string.Empty;
+		}
+		
+		string ParseName(string expression, out string prefix, out string member)
+		{
+			int colonPos = expression.IndexOf(':');
+			int prefixLength = colonPos;
+			if (colonPos > 0)
+				prefix = expression.Substring(0, colonPos);
+			else {
+				prefix = "";
+				prefixLength = 0;
+			}
+			int dotPos = expression.IndexOf('.');
+			if (dotPos >= 0)
+				member = expression.Substring(dotPos + 1);
+			else {
+				member = "";
+				dotPos = expression.Length;
+			}
+			return expression.Substring(colonPos + 1, dotPos - prefixLength - 1);
 		}
 	}
 }
