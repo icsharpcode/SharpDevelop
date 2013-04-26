@@ -19,6 +19,7 @@
 using System;
 using System.Globalization;
 using System.Xml;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.NRefactory.Xml
 {
@@ -32,16 +33,9 @@ namespace ICSharpCode.NRefactory.Xml
 		{
 		}
 		
-		/// <inheritdoc/>
-		public override XmlReader CreateReader()
+		internal override ObjectIterator CreateIteratorForReader()
 		{
-			return new AXmlReader(internalObject.NestedObjects);
-		}
-		
-		/// <inheritdoc/>
-		public override XmlReader CreateReader(Func<int, TextLocation> offsetToTextLocation)
-		{
-			return new AXmlReader(internalObject.NestedObjects, startOffset, offsetToTextLocation);
+			return new ObjectIterator(internalObject.NestedObjects, startOffset);
 		}
 		
 		/// <inheritdoc/>

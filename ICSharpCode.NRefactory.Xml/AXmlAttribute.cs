@@ -90,7 +90,7 @@ namespace ICSharpCode.NRefactory.Xml
 				
 				AXmlElement elem = this.ParentElement;
 				if (elem != null) {
-					return elem.ResolvePrefix(this.Prefix);
+					return elem.LookupNamespace(this.Prefix) ?? NoNamespace;
 				}
 				return NoNamespace; // Orphaned attribute
 			}

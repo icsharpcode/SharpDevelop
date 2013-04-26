@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.Xml
 	public abstract class AXmlObject : ISegment
 	{
 		/// <summary> Empty string.  The namespace used if there is no "xmlns" specified </summary>
-		public static readonly string NoNamespace = string.Empty;
+		internal static readonly string NoNamespace = string.Empty;
 		
 		/// <summary> Namespace for "xml:" prefix: "http://www.w3.org/XML/1998/namespace" </summary>
 		public static readonly string XmlNamespace = "http://www.w3.org/XML/1998/namespace";
@@ -54,17 +54,58 @@ namespace ICSharpCode.NRefactory.Xml
 		/// <summary>
 		/// Creates an XML reader that reads from this document.
 		/// </summary>
-		public virtual XmlReader CreateReader()
+		/// <remarks>
+		/// The reader will ignore comments and processing instructions; and will not have line information.
+		/// </remarks>
+		public XmlReader CreateReader()
 		{
-			return new AXmlReader(new[] { internalObject });
+			return new AXmlReader(CreateIteratorForReader());
 		}
 		
 		/// <summary>
 		/// Creates an XML reader that reads from this document.
 		/// </summary>
-		public virtual XmlReader CreateReader(Func<int, TextLocation> offsetToTextLocation)
+		/// <param name="settings">Reader settings.
+		/// Currently, only <c>IgnoreComments</c> is supported.</param>
+		/// <remarks>
+		/// The reader will not have line information.
+		/// </remarks>
+		public XmlReader CreateReader(XmlReaderSettings settings)
 		{
-			return new AXmlReader(new[] { internalObject }, startOffset, offsetToTextLocation);
+			return new AXmlReader(CreateIteratorForReader(), settings);
+		}
+		
+		/// <summary>
+		/// Creates an XML reader that reads from this document.
+		/// </summary>
+		/// <param name="settings">Reader settings.
+		/// Currently, only <c>IgnoreComments</c> is supported.</param>
+		/// <param name="document">
+		/// The document that was used to parse the XML. It is used to convert offsets to line information.
+		/// </param>
+		public XmlReader CreateReader(XmlReaderSettings settings, IDocument document)
+		{
+			if (document == null)
+				throw new ArgumentNullException("document");
+			return new AXmlReader(CreateIteratorForReader(), settings, document.GetLocation);
+		}
+		
+		/// <summary>
+		/// Creates an XML reader that reads from this document.
+		/// </summary>
+		/// <param name="settings">Reader settings.
+		/// Currently, only <c>IgnoreComments</c> is supported.</param>
+		/// <param name="offsetToTextLocation">
+		/// A function for converting offsets to line information.
+		/// </param>
+		public XmlReader CreateReader(XmlReaderSettings settings, Func<int, TextLocation> offsetToTextLocation)
+		{
+			return new AXmlReader(CreateIteratorForReader(), settings, offsetToTextLocation);
+		}
+		
+		internal virtual ObjectIterator CreateIteratorForReader()
+		{
+			return new ObjectIterator(new[] { internalObject }, startOffset);
 		}
 		
 		/// <summary>
@@ -100,7 +141,7 @@ namespace ICSharpCode.NRefactory.Xml
 		/// <summary>
 		/// Gets a child fully containg the given offset.
 		/// Goes recursively down the tree.
-		/// Specail case if at the end of attribute or text
+		/// Special case if at the end of attribute or text
 		/// </summary>
 		public AXmlObject GetChildAtOffset(int offset)
 		{

@@ -152,7 +152,7 @@ namespace ICSharpCode.NRefactory.Xml
 						});
 				} else {
 					// Mismatched name - the nesting isn't properly;
-					// clear the whole stack so that none of the currently open elements are closed as property-nested.
+					// clear the whole stack so that none of the currently open elements are closed as properly-nested.
 					elementNameStack.Clear();
 				}
 			}

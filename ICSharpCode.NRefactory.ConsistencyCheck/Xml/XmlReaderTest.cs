@@ -49,6 +49,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck.Xml
 			xmlDocument.Save(Path.Combine(Program.TempPath, "savedXmlDocument.xml"));
 			var xDocument = XDocument.Load(doc.CreateReader());
 			xDocument.Save(Path.Combine(Program.TempPath, "savedXDocument.xml"));
+			File.WriteAllText(Path.Combine(Program.TempPath, "inputDocument.xml"), textSource.Text);
 		}
 		
 		static string CSV(IEnumerable<string> input)
@@ -57,8 +58,8 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck.Xml
 		}
 		
 		static readonly string[] ignoredProperties = {
-			"NameTable", "CanResolveEntity", "CanReadBinaryContent", "CanReadValueChunk", "EOF", "ValueType",
-			"SchemaInfo", "IsDefault", "BaseURI", "Settings"
+			"NameTable", "CanResolveEntity", "CanReadBinaryContent", "CanReadValueChunk", "ValueType",
+			"SchemaInfo", "BaseURI", "Settings"
 		};
 		
 		public static void Run(XmlReader reader)

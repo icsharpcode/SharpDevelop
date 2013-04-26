@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.NRefactory.Xml
 {
@@ -29,18 +30,21 @@ namespace ICSharpCode.NRefactory.Xml
 	sealed class AXmlReader : XmlReader, IXmlLineInfo
 	{
 		readonly ObjectIterator objectIterator;
-		readonly Func<int, TextLocation> offsetToTextLocation;
-		readonly XmlNameTable nameTable = new NameTable();
+		readonly XmlReaderSettings settings;
+		Func<int, TextLocation> offsetToTextLocation;
+		readonly XmlNameTable nameTable;
 		ReadState readState = ReadState.Initial;
 		XmlNodeType elementNodeType = XmlNodeType.None;
 		IList<InternalAttribute> attributes;
 		int attributeIndex = -1;
 		bool inAttributeValue;
 		
-		internal AXmlReader(InternalObject[] objects, int startPosition = 0, Func<int, TextLocation> offsetToTextLocation = null)
+		internal AXmlReader(ObjectIterator objectIterator, XmlReaderSettings settings = null, Func<int, TextLocation> offsetToTextLocation = null)
 		{
+			this.objectIterator = objectIterator;
+			this.settings = settings ?? new XmlReaderSettings();
 			this.offsetToTextLocation = offsetToTextLocation;
-			objectIterator = new ObjectIterator(objects, startPosition);
+			this.nameTable = this.settings.NameTable ?? new NameTable();
 			objectIterator.StopAtElementEnd = true;
 		}
 		
@@ -51,6 +55,10 @@ namespace ICSharpCode.NRefactory.Xml
 		
 		public override ReadState ReadState {
 			get { return readState; }
+		}
+		
+		public override XmlReaderSettings Settings {
+			get { return settings; }
 		}
 		
 		public override bool ReadAttributeValue()
@@ -88,8 +96,11 @@ namespace ICSharpCode.NRefactory.Xml
 					elementNodeType = XmlNodeType.None;
 					return false;
 				} else if (objectIterator.IsAtElementEnd) {
-					elementNodeType = XmlNodeType.EndElement;
-					return true;
+					// Don't report EndElement for empty elements
+					if (!IsEmptyElement) {
+						elementNodeType = XmlNodeType.EndElement;
+						return true;
+					}
 				} else if (obj is InternalElement) {
 					// element start
 					elementNodeType = XmlNodeType.Element;
@@ -106,8 +117,15 @@ namespace ICSharpCode.NRefactory.Xml
 					}
 					return true;
 				} else if (obj is InternalTag) {
-					// start/end tags can be skipped as the parent InternalElement already handles them,
-					// TODO all other tags (xml decl, comments, ...)
+					InternalTag tag = (InternalTag)obj;
+					if (tag.IsStartOrEmptyTag || tag.IsEndTag) {
+						// start/end tags can be skipped as the parent InternalElement already handles them
+					} else if (tag.IsComment && !settings.IgnoreComments) {
+						elementNodeType = XmlNodeType.Comment;
+						return true;
+					} else {
+						// TODO all other tags
+					}
 				} else {
 					throw new NotSupportedException();
 				}
@@ -175,7 +193,10 @@ namespace ICSharpCode.NRefactory.Xml
 					return string.Empty;
 				if (attributeIndex >= 0)
 					return attributes[attributeIndex].Value;
-				InternalText text = objectIterator.CurrentObject as InternalText;
+				InternalObject currentObject = objectIterator.CurrentObject;
+				InternalText text = currentObject as InternalText;
+				if (text == null && currentObject is InternalTag && currentObject.NestedObjects.Length == 1)
+					text = currentObject.NestedObjects[0] as InternalText;
 				return text != null ? text.Value : string.Empty;
 			}
 		}
@@ -300,6 +321,7 @@ namespace ICSharpCode.NRefactory.Xml
 		public override void Close()
 		{
 			readState = ReadState.Closed;
+			offsetToTextLocation = null;
 		}
 		
 		public override string BaseURI {
