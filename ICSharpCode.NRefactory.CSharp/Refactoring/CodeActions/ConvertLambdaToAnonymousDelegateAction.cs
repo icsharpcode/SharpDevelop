@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				} else {
 					newBody = new BlockStatement {
 						Statements = {
-							new ExpressionStatement((Expression)node.Body.Clone())
+							new ReturnStatement((Expression)node.Body.Clone())
 						}
 					};
 				}
