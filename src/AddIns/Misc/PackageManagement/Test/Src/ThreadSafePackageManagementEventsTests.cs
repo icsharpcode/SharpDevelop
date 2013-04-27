@@ -453,5 +453,58 @@ namespace PackageManagement.Tests
 			
 			Assert.IsFalse(eventHandlerFired);
 		}
+		
+		[Test]
+		public void OnResolveFileConflict_NoInvokeRequired_NonThreadSafeOnResolveFileConflictMethodCalledWithMessage()
+		{
+			CreateEvents();
+			threadSafeEvents.OnResolveFileConflict("message");
+			
+			Assert.AreEqual("message", fakeEvents.MessagePassedToOnResolveFileConflict);
+		}
+		
+		[Test]
+		public void OnResolveFileConflict_NoInvokeRequired_ValueReturnedFromNonThreadSafeOnResolveFileConflict()
+		{
+			CreateEvents();
+			fakeEvents.FileConflictResolutionToReturn = FileConflictResolution.OverwriteAll;
+			FileConflictResolution result = threadSafeEvents.OnResolveFileConflict("message");
+			
+			Assert.AreEqual(FileConflictResolution.OverwriteAll, result);
+		}
+		
+		[Test]
+		public void OnResolveFileConflict_UnsafeEventFired_ThreadSafeEventFired()
+		{
+			CreateEventsWithRealPackageManagementEvents();
+			bool fired = false;
+			threadSafeEvents.ResolveFileConflict += (sender, e) => fired = true;
+			unsafeEvents.OnResolveFileConflict("message");
+			
+			Assert.IsTrue(fired);
+		}
+		
+		[Test]
+		public void ResolveFileConflict_UnsafeEventFired_ThreadSafeEventFired()
+		{
+			CreateEventsWithRealPackageManagementEvents();
+			bool fired = false;
+			threadSafeEvents.ResolveFileConflict += (sender, e) => fired = true;
+			unsafeEvents.OnResolveFileConflict("message");
+			
+			Assert.IsTrue(fired);
+		}
+		
+		[Test]
+		public void ResolveFileConflict_UnsafeEventFiredAfterEventHandlerRemoved_ThreadSafeEventIsNotFired()
+		{
+			CreateEventsWithRealPackageManagementEvents();
+			eventHandlerFired = false;
+			threadSafeEvents.ResolveFileConflict += OnEventHandlerFired;
+			threadSafeEvents.ResolveFileConflict -= OnEventHandlerFired;
+			unsafeEvents.OnResolveFileConflict("message");
+			
+			Assert.IsFalse(eventHandlerFired);
+		}
 	}
 }

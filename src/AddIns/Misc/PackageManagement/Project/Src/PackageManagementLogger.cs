@@ -22,7 +22,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public FileConflictResolution ResolveFileConflict(string message)
 		{
-			throw new NotImplementedException();
+			return packageManagementEvents.OnResolveFileConflict(message);
 		}
 	}
 }

@@ -36,5 +36,10 @@ namespace ICSharpCode.PackageManagement
 		{
 			WorkbenchSingleton.SafeThreadAsyncCall<A, B>(method, arg1, arg2);
 		}
+		
+		public R SafeThreadFunction<R>(Func<R> method)
+		{
+			return WorkbenchSingleton.SafeThreadFunction<R>(method);
+		}
 	}
 }

@@ -93,7 +93,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public FileConflictResolution ResolveFileConflict(string message)
 		{
-			throw new NotImplementedException();
+			return logger.ResolveFileConflict(message);
 		}
 	}
 }

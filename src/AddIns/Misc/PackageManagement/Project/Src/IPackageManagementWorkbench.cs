@@ -11,6 +11,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void SafeThreadAsyncCall<A>(Action<A> method, A arg1);
 		void SafeThreadAsyncCall<A, B>(Action<A, B> method, A arg1, B arg2);
+		R SafeThreadFunction<R>(Func<R> method);
 		void CreateConsolePad();
 	}
 }

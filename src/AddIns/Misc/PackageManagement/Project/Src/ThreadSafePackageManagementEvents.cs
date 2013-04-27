@@ -74,6 +74,11 @@ namespace ICSharpCode.PackageManagement
 			workbench.SafeThreadAsyncCall<A, B>(method, arg1, arg2);
 		}
 		
+		R SafeThreadFunction<R>(Func<R> method)
+		{
+			return workbench.SafeThreadFunction<R>(method);
+		}
+		
 		public event EventHandler PackageOperationsStarting;
 		
 		void RaisePackageOperationErrorEventIfHasSubscribers(object sender, PackageOperationExceptionEventArgs e)
@@ -183,6 +188,16 @@ namespace ICSharpCode.PackageManagement
 		public bool OnSelectProjects(IEnumerable<IPackageManagementSelectedProject> selectedProjects)
 		{
 			return unsafeEvents.OnSelectProjects(selectedProjects);
+		}
+		
+		public event EventHandler<ResolveFileConflictEventArgs> ResolveFileConflict {
+			add { unsafeEvents.ResolveFileConflict += value; }
+			remove { unsafeEvents.ResolveFileConflict -= value; }
+		}
+		
+		public FileConflictResolution OnResolveFileConflict(string message)
+		{
+			return unsafeEvents.OnResolveFileConflict(message);
 		}
 	}
 }

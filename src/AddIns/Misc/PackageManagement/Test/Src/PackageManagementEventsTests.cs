@@ -335,5 +335,57 @@ namespace PackageManagement.Tests
 			
 			Assert.IsTrue(result);
 		}
+		
+		[Test]
+		public void OnResolveFileConflict_OneEventSubscriber_SenderIsPackageEvents()
+		{
+			CreateEvents();
+			object eventSender = null;
+			events.ResolveFileConflict += (sender, e) => eventSender = sender;
+			events.OnResolveFileConflict("message");
+			
+			Assert.AreEqual(events, eventSender);
+		}
+		
+		[Test]
+		public void OnResolveFileConflict_OneEventSubscriber_MessageAddedToEventArgs()
+		{
+			CreateEvents();
+			ResolveFileConflictEventArgs eventArgs = null;
+			events.ResolveFileConflict += (sender, e) => eventArgs = e;
+			events.OnResolveFileConflict("message");
+			
+			Assert.AreEqual("message", eventArgs.Message);
+		}
+		
+		[Test]
+		public void OnResolveFileConflict_OneEventSubscriberWhichDoesNotChangeEventArgs_EventArgsHasFileConflictResolutionOfIgnore()
+		{
+			CreateEvents();
+			ResolveFileConflictEventArgs eventArgs = null;
+			events.ResolveFileConflict += (sender, e) => eventArgs = e;
+			events.OnResolveFileConflict("message");
+			
+			Assert.AreEqual(FileConflictResolution.Ignore, eventArgs.Resolution);
+		}
+		
+		[Test]
+		public void OnResolveFileConflict_OneEventSubscriberWhichChangesResolutionToOverwrite_ReturnsOverwrite()
+		{
+			CreateEvents();
+			events.ResolveFileConflict += (sender, e) => e.Resolution = FileConflictResolution.Overwrite;
+			FileConflictResolution resolution = events.OnResolveFileConflict("message");
+			
+			Assert.AreEqual(FileConflictResolution.Overwrite, resolution);
+		}
+		
+		[Test]
+		public void OnResolveFileConflict_NoEventSubscribers_ReturnsIgnoreAll()
+		{
+			CreateEvents();
+			FileConflictResolution resolution = events.OnResolveFileConflict("message");
+			
+			Assert.AreEqual(FileConflictResolution.IgnoreAll, resolution);
+		}
 	}
 }

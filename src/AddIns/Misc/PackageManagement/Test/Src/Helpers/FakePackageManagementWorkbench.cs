@@ -37,5 +37,13 @@ namespace PackageManagement.Tests.Helpers
 			Arg1PassedToSafeThreadAsyncCall = arg1;
 			Arg2PassedToSafeThreadAsyncCall = arg2;
 		}
+		
+		public bool IsSafeThreadFunctionCallMade;
+		
+		public R SafeThreadFunction<R>(Func<R> method)
+		{
+			IsSafeThreadFunctionCallMade = true;
+			return method();
+		}
 	}
 }
