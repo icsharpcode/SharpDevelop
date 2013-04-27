@@ -148,6 +148,11 @@
     <Compile Include="Src\EnvDTE\TextPoint.cs" />
     <Compile Include="Src\EnvDTE\Window.cs" />
     <Compile Include="Src\FileConflictResolver.cs" />
+    <Compile Include="Src\FileConflictView.xaml.cs">
+      <DependentUpon>FileConflictView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\FileConflictViewModel.cs" />
     <Compile Include="Src\IClassKindUpdater.cs" />
     <Compile Include="Src\IDocumentNamespaceCreator.cs" />
     <Compile Include="Src\IPackageExtensions.cs" />
@@ -226,6 +231,7 @@
     <Compile Include="Src\PackageManagementServiceProvider.cs" />
     <Compile Include="Src\ProjectBuilder.cs" />
     <Compile Include="Src\ResolveFileConflictEventArgs.cs" />
+    <Compile Include="Src\ServiceWithWorkbenchOwner.cs" />
     <Compile Include="Src\VirtualMethodUpdater.cs" />
     <Compile Include="Src\NewProjectsCreated.cs" />
     <Compile Include="Src\OpenMSBuildProjects.cs" />
@@ -480,6 +486,7 @@
     <Compile Include="Src\VisualStudio\VsSolution.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\FileConflictView.xaml" />
     <Page Include="Src\ManagePackagesView.xaml" />
     <Page Include="Src\LicenseAcceptanceView.xaml" />
     <Page Include="Src\PackageManagementOptionsView.xaml" />

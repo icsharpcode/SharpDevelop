@@ -7,38 +7,22 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class FileConflictResolver : IFileConflictResolver
+	public class FileConflictResolver : ServiceWithWorkbenchOwner, IFileConflictResolver
 	{
-		string[] buttons = new string[] { "Yes", "Yes to All", "No", "No to All" };
-		
-		const int YesButtonIndex = 0;
-		const int YesToAllButtonIndex = 1;
-		const int NoButtonIndex = 2;
-		const int NoToAllButtonIndex = 3;
-		
 		public FileConflictResolution ResolveFileConflict(string message)
 		{
-			int result = MessageService.ShowCustomDialog(
-				"File Conflict",
-				message,
-				NoButtonIndex, // "No" is default accept button.
-				-1,
-				buttons);
-			return MapResultToFileConflictResolution(result);
+			var viewModel = new FileConflictViewModel(message);
+			FileConflictView view = CreateFileConflictView(viewModel);
+			view.ShowDialog();
+			return viewModel.GetResolution();
 		}
 		
-		FileConflictResolution MapResultToFileConflictResolution(int result)
+		FileConflictView CreateFileConflictView(FileConflictViewModel viewModel)
 		{
-			switch (result) {
-				case YesButtonIndex:
-					return FileConflictResolution.Overwrite;
-				case YesToAllButtonIndex:
-					return FileConflictResolution.OverwriteAll;
-				case NoToAllButtonIndex:
-					return FileConflictResolution.IgnoreAll;
-				default:
-					return FileConflictResolution.Ignore;
-			}
+			var view = new FileConflictView();
+			view.ViewModel = viewModel;
+			view.Owner = Owner;
+			return view;
 		}
 	}
 }
