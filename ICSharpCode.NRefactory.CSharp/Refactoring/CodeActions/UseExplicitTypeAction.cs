@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				node = foreachStatement;
 			}
 			
-			if (!(!type.Equals(SpecialType.NullType) && !type.Equals(SpecialType.UnknownType))) {
+			if (!(!type.Equals(SpecialType.NullType) && !type.Equals(SpecialType.UnknownType) && type.Kind != TypeKind.Anonymous)) {
 				yield break;
 			}
 			yield return new CodeAction (context.TranslateString("Use explicit type"), script => {
