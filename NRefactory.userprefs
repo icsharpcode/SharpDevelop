@@ -1,0 +1,52 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="c:\Users\BasicLaptop\Desktop\NRefactory\ICSharpCode.NRefactory.GtkDemo\Main.cs">
+    <Files>
+      <File FileName="ICSharpCode.NRefactory.Tests\CSharp\CodeIssues\ConvertToStaticMethodIssueTests.cs" Line="50" Column="1" />
+      <File FileName="ICSharpCode.NRefactory.Tests\CSharp\CodeIssues\DuplicateBodyMethodIssueTests.cs" Line="60" Column="1" />
+      <File FileName="ICSharpCode.NRefactory.CSharp\Refactoring\CodeIssues\ConvertToStaticMethodIssue.cs" Line="117" Column="10" />
+      <File FileName="ICSharpCode.NRefactory.CSharp\Refactoring\CodeIssues\DuplicateBodyMethodIssue.cs" Line="54" Column="24" />
+      <File FileName="ICSharpCode.NRefactory.CSharp\Refactoring\CodeIssues\GatherVisitorBase.cs" Line="121" Column="4" />
+      <File FileName="c:\Users\BasicLaptop\Desktop\NRefactory\ICSharpCode.NRefactory.GtkDemo\Main.cs" Line="27" Column="7" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="ICSharpCode.NRefactory.CSharp" expanded="True">
+            <Node name="Refactoring" expanded="True">
+              <Node name="CodeActions" expanded="True" />
+              <Node name="CodeIssues" expanded="True" />
+            </Node>
+          </Node>
+          <Node name="ICSharpCode.NRefactory.GtkDemo" expanded="True">
+            <Node name="Main.cs" selected="True" />
+          </Node>
+          <Node name="ICSharpCode.NRefactory.Tests" expanded="True">
+            <Node name="CSharp" expanded="True">
+              <Node name="CodeActions" expanded="True" />
+              <Node name="CodeIssues" expanded="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="ClassPad">
+        <State expanded="True" selected="True" />
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+      <Pad Id="MonoDevelop.NUnit.TestPad">
+        <State expanded="True">
+          <Node name="ICSharpCode.NRefactory.Tests" selected="True" />
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="C:\Users\BasicLaptop\Desktop\NRefactory\ICSharpCode.NRefactory.CSharp\Refactoring\CodeIssues\DuplicateBodyMethodIssue.cs" line="101" column="1" />
+      <Breakpoint file="C:\Users\BasicLaptop\Desktop\NRefactory\ICSharpCode.NRefactory.CSharp\Refactoring\CodeIssues\DuplicateBodyMethodIssue.cs" line="137" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
