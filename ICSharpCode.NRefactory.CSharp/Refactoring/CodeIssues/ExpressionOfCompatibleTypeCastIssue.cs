@@ -30,11 +30,11 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription("Type cast expression of compatible type",
+/*	[IssueDescription("Type cast expression of compatible type",
 		Description = "Type cast expression of compatible type",
 		Category = IssueCategories.CodeQualityIssues,
 		Severity = Severity.Warning,
-		IssueMarker = IssueMarker.Underline)]
+		IssueMarker = IssueMarker.Underline)]*/
 	public class ExpressionOfCompatibleTypeCastIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)

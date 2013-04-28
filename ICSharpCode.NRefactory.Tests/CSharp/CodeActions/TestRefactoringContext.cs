@@ -92,28 +92,28 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			{
 				this.context = context;
 			}
-
-			public override void Link(Action continuation, params AstNode[] nodes)
+			
+			public override Task Link (params AstNode[] nodes)
 			{
 				// check that all links are valid.
 				foreach (var node in nodes) {
 					Assert.IsNotNull (GetSegment (node));
 				}
-				if (continuation != null)
-					continuation();
+				return new Task (() => {});
 			}
-
-			public override void InsertWithCursor(string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes, Action continuation)
+			
+			public override Task InsertWithCursor(string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
 			{
 				var entity = context.GetNode<EntityDeclaration>();
 				foreach (var node in nodes) {
 					InsertBefore(entity, node);
 				}
-				if (continuation != null)
-					continuation();
+				var tcs = new TaskCompletionSource<object> ();
+				tcs.SetResult (null);
+				return tcs.Task;
 			}
 
-			public override void InsertWithCursor(string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes, Action continuation)
+			public override Task InsertWithCursor (string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes)
 			{
 				var unit = context.RootNode;
 				var insertType = unit.GetNodeAt<TypeDeclaration> (parentType.Region.Begin);
@@ -128,8 +128,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 					}
 					output.RegisterTrackedSegments (this, startOffset);
 				}
-				if (continuation != null)
-					continuation();
+				var tcs = new TaskCompletionSource<object> ();
+				tcs.SetResult (null);
+				return tcs.Task;
 			}
 
 			void Rename (AstNode node, string newName)

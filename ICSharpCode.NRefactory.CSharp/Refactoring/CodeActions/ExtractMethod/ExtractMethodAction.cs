@@ -100,10 +100,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 					invocation.Arguments.Add(argumentExpression);
 				}
 
-				script.InsertWithCursor(context.TranslateString("Extract method"), Script.InsertPosition.Before, delegate {
+				var task = script.InsertWithCursor(context.TranslateString("Extract method"), Script.InsertPosition.Before, method);
+
+				Action<Task> replaceStatements = delegate {
 					script.Replace(expression, invocation);
 					script.Link(target, method.NameToken);
-				}, method);
+				};
+
+				if (task.IsCompleted) {
+					replaceStatements (null);
+				} else {
+					task.ContinueWith (replaceStatements, TaskScheduler.FromCurrentSynchronizationContext ());
+				}
 			}, expression);
 		}
 		
@@ -187,7 +195,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 					method.Parameters.Add(new ParameterDeclaration(context.CreateShortType(variable.Type), variable.Name, mod));
 					invocation.Arguments.Add(argumentExpression);
 				}
-				Action replaceStatements = delegate {
+				var task = script.InsertWithCursor(context.TranslateString("Extract method"), Script.InsertPosition.Before, method);
+				Action<Task> replaceStatements = delegate {
 					foreach (var node in statements.Skip (1)) {
 						if (node is NewLineNode)
 							continue;
@@ -212,7 +221,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 
 					script.Link(target, method.NameToken);
 				};
-				script.InsertWithCursor(context.TranslateString("Extract method"), Script.InsertPosition.Before, replaceStatements, method);
+
+				if (task.IsCompleted) {
+					replaceStatements (null);
+				} else {
+					task.ContinueWith (replaceStatements, TaskScheduler.FromCurrentSynchronizationContext ());
+				}
 			}, statements.First ().StartLocation, statements.Last ().EndLocation);
 		}
 	}

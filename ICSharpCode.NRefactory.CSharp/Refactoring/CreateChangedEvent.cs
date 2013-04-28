@@ -51,19 +51,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			yield return new CodeAction(context.TranslateString("Create changed event"), script => {
 				var eventDeclaration = CreateChangedEventDeclaration (context, property);
 				var methodDeclaration = CreateEventInvocatorAction.CreateEventInvocator (context, type, eventDeclaration, eventDeclaration.Variables.First (), resolvedType.GetDelegateInvokeMethod (), false);
-				script.InsertWithCursor(
+				var stmt = new ExpressionStatement (new InvocationExpression (
+					new IdentifierExpression (methodDeclaration.Name),
+					new MemberReferenceExpression (new TypeReferenceExpression (context.CreateShortType("System", "EventArgs")), "Empty")
+				));
+				var task = script.InsertWithCursor(
 					context.TranslateString("Create event invocator"),
 					Script.InsertPosition.After,
-					new AstNode[] { eventDeclaration, methodDeclaration },
-					delegate {
-						var stmt = new ExpressionStatement (new InvocationExpression (
-							new IdentifierExpression (methodDeclaration.Name),
-							new MemberReferenceExpression (new TypeReferenceExpression (context.CreateShortType("System", "EventArgs")), "Empty")
-						));
-						script.InsertBefore (property.Setter.Body.RBraceToken, stmt);
-						script.FormatText ((AstNode)property.Setter.Body);
-					}
+					new AstNode[] { eventDeclaration, methodDeclaration }
 				);
+
+				Action<Task> insertInvocation = delegate {
+					script.InsertBefore (property.Setter.Body.RBraceToken, stmt);
+					script.FormatText (stmt);
+				};
+
+				if (task.IsCompleted) {
+					insertInvocation (null);
+				} else {
+					task.ContinueWith (insertInvocation, TaskScheduler.FromCurrentSynchronizationContext ());
+				}
+
 			}, property.NameToken);
 		}
 
