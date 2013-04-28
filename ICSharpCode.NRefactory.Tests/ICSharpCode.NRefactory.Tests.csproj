@@ -109,7 +109,6 @@
     <Compile Include="CSharp\CodeActions\ConvertLambdaBodyExpressionToStatementTests.cs" />
     <Compile Include="CSharp\CodeActions\ConvertLambdaBodyStatementToExpressionTests.cs" />
     <Compile Include="CSharp\CodeActions\ConvertSwitchToIfTests.cs" />
-    <Compile Include="CSharp\CodeActions\ConvertToStaticMethodActionTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateCustomEventImplementationTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateOverloadWithoutParameterTests.cs" />
     <Compile Include="CSharp\CodeActions\ExtractAnonymousMethodTests.cs" />
@@ -410,6 +409,10 @@
     <Compile Include="CSharp\CodeIssues\RedundantConstructorTests.cs" />
     <Compile Include="CSharp\CodeIssues\PublicConstructorInAbstractClassIssueTest.cs" />
     <Compile Include="CSharp\CodeIssues\ExpressionOfCompatibleTypeCastIssueTests.cs" />
+    <Compile Include="CSharp\CodeActions\RemoveFieldRefactoryActionTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ConvertToStaticMethodIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\ParameterCanBeIEnumerableTests.cs" />
+    <Compile Include="CSharp\CodeIssues\DuplicateBodyMethodIssueTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">

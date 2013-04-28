@@ -95,6 +95,12 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 			Assert.AreEqual (1, issues.Count);
 			CheckFix (context, issues[0], output, fixIndex);
 		}
+
+		protected static void TestWrongContext<T> (string input)
+			where T : ICodeIssueProvider, new ()
+		{
+			Test<T>(input, 0);
+		}
 	}
 	
 }

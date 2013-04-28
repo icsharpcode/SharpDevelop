@@ -1,10 +1,10 @@
 //
-// ConvertToStaticMethodActionTests.cs
+// ConvertToStaticMethodIssue.cs
 //
 // Author:
-//      Ciprian Khlud <ciprian.mustiata@yahoo.com>
+//       Ciprian Khlud <ciprian.mustiata@yahoo.com>
 //
-// Copyright (c) 2013 Ciprian Khlud <ciprian.mustiata@yahoo.com>
+// Copyright (c) 2013 Ciprian Khlud
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,50 +23,53 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.CSharp.CodeActions {
-    [TestFixture]
-    public class ConvertToStaticMethodActionTests : ContextActionTestBase
-    {
-        [Test]
-        public void Test()
-        {
-            Test<ConvertToStaticMethodAction>(
-                @"class TestClass
+using NUnit.Framework;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+
+namespace ICSharpCode.NRefactory.CSharp.CodeIssues
+{
+	[TestFixture]
+	public class ConvertToStaticMethodIssueTests : InspectionActionTestBase
+	{
+		
+		[Test]
+		public void Test()
+		{
+			Test<ConvertToStaticMethodIssue>(
+				@"class TestClass
 {
 	void $Test ()
 	{
 		int a = 2;
 	}
 }",
-                @"class TestClass
+				@"class TestClass
 {
 	static void Test ()
 	{
 		int a = 2;
 	}
 }"
-                );
-        }
-        [Test]
-        public void TestWithVirtualFunction() {
-            
-            var input = @"class TestClass
+				);
+		}
+		[Test]
+		public void TestWithVirtualFunction() {
+			
+			var input = @"class TestClass
 {
 	public virtual void $Test ()
 	{
 		int a = 2;
 	}
-}"; 
-            TestWrongContext<ConvertToStaticMethodAction>(input);
-        }
-
-        [Test]
-        public void TestWithInterface() {
-            
-            var input = @"interface IBase {
+}";
+            TestWrongContext<ConvertToStaticMethodIssue>(input);
+		}
+		
+		[Test]
+		public void TestWithInterface() {
+			
+			var input = @"interface IBase {
     void Test();
 }
 class TestClass : IBase
@@ -76,20 +79,22 @@ class TestClass : IBase
 		int a = 2;
 	}
 }";
-            TestWrongContext<ConvertToStaticMethodAction>(input);
-        }
-        [Test]
-        public void TestWithStaticFunction()
-        {
-
-            var input = @"class TestClass
+            TestWrongContext<ConvertToStaticMethodIssue>(input);
+		}
+		[Test]
+		public void TestWithStaticFunction()
+		{
+			
+			var input = @"class TestClass
 {
 	static void $Test ()
 	{
 		int a = 2;
 	}
 }";
-            TestWrongContext<ConvertToStaticMethodAction>(input);
-        }
-    }
+            TestWrongContext<ConvertToStaticMethodIssue>(input);
+		}
+	
+	}
+    
 }

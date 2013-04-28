@@ -54,10 +54,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitAssignmentExpression(AssignmentExpression assignmentExpression)
 			{
-				base.VisitAssignmentExpression(assignmentExpression);
-
-				VisitTypeCastExpression(assignmentExpression, ctx.Resolve(assignmentExpression.Left).Type,
-				                        ctx.Resolve(assignmentExpression.Right).Type);
+                var rightExpressionType = ctx.Resolve(assignmentExpression.Right).Type;
+                if (rightExpressionType.Kind == TypeKind.Class)
+                    return;
+			    var leftExpressionType = ctx.Resolve(assignmentExpression.Left).Type;
+			    VisitTypeCastExpression(assignmentExpression, leftExpressionType,
+				                        rightExpressionType);
 			}
 
 			private AstType CreateShortType(AstNode node, IType fullType)

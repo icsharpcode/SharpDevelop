@@ -148,7 +148,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				TypeResolveCount += possibleTypes.Count;
 				var validTypes = 
 					(from type in possibleTypes
-					 where !tryResolve || TypeChangeResolvesCorrectly(parameter, rootResolutionNode, type)
+					 where !tryResolve || TypeChangeResolvesCorrectly(ctx, parameter, rootResolutionNode, type)
 					 select type).ToList();
 				if (validTypes.Any()) {
 					// don't demote an array to IList
@@ -165,24 +165,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			internal int MembersWithIssues = 0;
 			internal int MethodResolveCount = 0;
 
-			bool TypeChangeResolvesCorrectly(ParameterDeclaration parameter, AstNode rootNode, IType type)
-			{
-				MethodResolveCount++;
-				var resolver = ctx.GetResolverStateBefore(rootNode);
-				resolver = resolver.AddVariable(new DefaultParameter(type, parameter.Name));
-				var astResolver = new CSharpAstResolver(resolver, rootNode, ctx.UnresolvedFile);
-				var validator = new TypeChangeValidationNavigator();
-				astResolver.ApplyNavigator(validator, ctx.CancellationToken);
-				return !validator.FoundErrors;
-			}
-
 			IEnumerable<CodeAction> GetActions(ParameterDeclaration parameter, IEnumerable<IType> possibleTypes)
 			{
 				var csResolver = ctx.Resolver.GetResolverStateBefore(parameter);
 				var astBuilder = new TypeSystemAstBuilder(csResolver);
 				foreach (var type in possibleTypes) {
 					var localType = type;
-					var message = string.Format(ctx.TranslateString("Demote parameter to '{0}'"), type.FullName);
+					var message = String.Format(ctx.TranslateString("Demote parameter to '{0}'"), type.FullName);
 					yield return new CodeAction(message, script => {
 						script.Replace(parameter.Type, astBuilder.ConvertType(localType));
 					}, parameter.NameToken);
@@ -190,7 +179,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 
-		class TypeChangeValidationNavigator : IResolveVisitorNavigator
+	    public static bool TypeChangeResolvesCorrectly(BaseRefactoringContext ctx, ParameterDeclaration parameter, AstNode rootNode, IType type)
+	    {
+	        var resolver = ctx.GetResolverStateBefore(rootNode);
+	        resolver = resolver.AddVariable(new DefaultParameter(type, parameter.Name));
+	        var astResolver = new CSharpAstResolver(resolver, rootNode, ctx.UnresolvedFile);
+	        var validator = new TypeChangeValidationNavigator();
+	        astResolver.ApplyNavigator(validator, ctx.CancellationToken);
+	        return !validator.FoundErrors;
+	    }
+
+	    class TypeChangeValidationNavigator : IResolveVisitorNavigator
 		{
 			public bool FoundErrors { get; private set; }
 
