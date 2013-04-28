@@ -46,6 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
         {
             var visitor = new GatherVisitor(context);
             visitor.GetMethods();
+            visitor.ComputeConflicts();
             return visitor.GetIssues();
         }
 
@@ -62,15 +63,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
             }
 
 
-            string GetMethodDescriptor(MethodDeclaration methodDeclaration)
-            {
+            static string GetMethodDescriptor(MethodDeclaration methodDeclaration) {
                 var sb = new StringBuilder();
                 sb.Append(methodDeclaration.ReturnType);
                 sb.Append(";");
-                sb.Append(methodDeclaration.ReturnType.ToString());
-                sb.Append(";");
-                foreach (var parameter in methodDeclaration.Parameters)
-                {
+                foreach (var parameter in methodDeclaration.Parameters) {
                     sb.AppendFormat("{0}:{1};", parameter.Name, parameter.Type);
                 }
                 sb.Append(methodDeclaration.Modifiers);
@@ -82,7 +79,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
                 ctx.RootNode.AcceptVisitor(this);
             }
 
-            private void ComputeConflicts()
+            internal void ComputeConflicts()
             {
                 var dict = new Dictionary<string, List<MethodDeclaration>>();
                 foreach (var declaredMethod in DeclaredMethods)
@@ -96,6 +93,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
                     }
                     listMethods.Add(declaredMethod);
                 }
+                DeclaredMethods.Clear();
+
                 foreach (var list in dict.Values.Where(list => list.Count >= 2))
                 {
                     for (var i = 0; i < list.Count - 1; i++)
@@ -128,7 +127,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
                                                                          declaration =>
                                                                          GetArgumentExpression(declaration).Clone())));
                 statement.AcceptVisitor(_insertParenthesesVisitor);
-                script.Replace(secondMethod.Body, new BlockStatement { statement});
+                if(firstMethod.ReturnType.ToString()!="System.Void"){
+                    var returnStatement = new ReturnStatement(statement.Expression.Clone());
+
+                    script.Replace(secondMethod.Body, new BlockStatement { returnStatement });
+                }
+                else {
+                    script.Replace(secondMethod.Body, new BlockStatement { statement });
+                }
             }
 
             static Expression GetArgumentExpression(ParameterDeclaration parameter)
@@ -171,8 +177,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
                     if (parentType != _parentType)
                     {
                         ComputeConflicts();
-                        DeclaredMethods.Clear();
-
                         DeclaredMethods.Add(declaration); 
                         _parentType = parentType;
                         return;

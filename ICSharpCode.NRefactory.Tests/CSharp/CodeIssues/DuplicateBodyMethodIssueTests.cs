@@ -59,6 +59,34 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 "
                 );
 		}
+        [Test]
+        public void TestNonVoid()
+        {
+            Test<DuplicateBodyMethodIssue>(
+                @"class TestClass {
+	int Test ()
+	{
+		int a = 2;
+        return a;
+	}
+	int $Test2 () {
+        int a = 2;
+        return a;
+	}
+}",
+                @"class TestClass {
+	int Test ()
+	{
+		int a = 2;
+        return a;
+	}
+	int Test2 () {
+        return Test ();
+	}
+}
+"
+                );
+        }
 	}
     
 }
