@@ -372,6 +372,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public const int SOf  = sizeof(float);
 		public const int SOd  = sizeof(double);
 		public const int SObl = sizeof(bool);
-		public const int SOe  = sizeof(MyEnum);
+	    public static readonly unsafe int SOe = sizeof(MyEnum);
 	}
 }
