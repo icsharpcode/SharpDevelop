@@ -29,6 +29,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
+	
 	[TestFixture]
 	public class ConvertToStaticMethodIssueTests : InspectionActionTestBase
 	{

@@ -1258,7 +1258,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 
 		[Test]
-		public void ConstantFields()
+		public unsafe void ConstantFields()
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(ConstantFieldTest));
 			AssertConstantField<byte>(type, "Cb", 42);
