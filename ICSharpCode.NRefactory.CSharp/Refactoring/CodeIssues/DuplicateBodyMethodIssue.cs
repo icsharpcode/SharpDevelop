@@ -38,8 +38,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
                       IssueMarker = IssueMarker.Underline)]
     public class DuplicateBodyMethodIssue : ICodeIssueProvider
     {
-        private Dictionary<string, List<MethodDeclaration>> _dict;
-
         #region ICodeIssueProvider implementation
 
         public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
