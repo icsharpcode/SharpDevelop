@@ -1,28 +1,26 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Peter Forstmeier
- * Date: 18.04.2013
- * Time: 20:06
+ * Date: 28.04.2013
+ * Time: 18:01
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces.Export;
 
 namespace ICSharpCode.Reporting.Exporter
 {
 	/// <summary>
-	/// Description of DebugExporter.
+	/// Description of PrintExporter.
 	/// </summary>
-	public class DebugExporter:BaseExporter
+	public class PrintExporter:BaseExporter
 	{
 		private DebugVisitor visitor;
 		
-		public DebugExporter(Collection<IPage> pages):base(pages)
+		public PrintExporter(Collection<IPage> pages):base(pages)
 		{
 			visitor = new DebugVisitor();
 		}
@@ -35,9 +33,9 @@ namespace ICSharpCode.Reporting.Exporter
 		}
 		
 		
-		 void ShowDebug(IExportContainer container)
+		void ShowDebug(IExportContainer container)
 		{
-//			var visitor = new DebugVisitor();
+			var visitor = new DebugVisitor();
 			foreach (var item in container.ExportedItems) {
 				var exportContainer = item as IExportContainer;
 				var acceptor = item as IAcceptor;
@@ -55,6 +53,5 @@ namespace ICSharpCode.Reporting.Exporter
 				}
 			}
 		}
-		
 	}
 }

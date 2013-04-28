@@ -62,51 +62,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		
 		#endregion
 		
-		#region PageInfo
 		
-		[Test]
-		public void PageInfoPageNumberIsOne() {
-			reportCreator.BuildExportList();
-			var pageInfo = reportCreator.Pages[0].PageInfo;
-			Assert.That(pageInfo.PageNumber,Is.EqualTo(1));
-		}
-
-	
-		[Test]
-		public void PageInfoReportName() {
-			reportCreator.BuildExportList();
-			var pi = reportCreator.Pages[0].PageInfo;
-			Assert.That(pi.ReportName,Is.EqualTo("Report1"));
-//			Console.WriteLine("----------------");
-//			foreach (var page in reportCreator.Pages) {
-//				TestHelper.ShowDebug(page);
-//			}
-		}
-		
-		/*
-		void ShowDebug(IExportContainer container)
-		{
-			var visitor = new DebugVisitor();
-			foreach (var item in container.ExportedItems) {
-				if (item is IExportContainer) {
-					var a = item as IAcceptor;
-					if (a != null) {
-						Console.WriteLine("----");
-						a.Accept(visitor);
-					}
-					ShowDebug(item as IExportContainer);
-				} else {
-					var b = item as IAcceptor;
-					if (b != null) {
-						b.Accept(visitor);
-						
-					}
-				}
-			}
-		}
-		*/
-		
-		#endregion
 		
 		[SetUp]
 		public void LoadFromStream()

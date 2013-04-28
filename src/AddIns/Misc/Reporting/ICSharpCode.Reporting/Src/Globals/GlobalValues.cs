@@ -27,5 +27,16 @@ namespace ICSharpCode.Reporting.Globals
 				return DefaultReportName + ReportExtension;
 			}
 		}
+		
+		
+		public static Font DefaultFont
+		{
+			get {
+				return new Font("Microsoft Sans Serif",
+				               10,
+				               FontStyle.Regular,
+				               GraphicsUnit.Point);
+			}
+		}
 	}
 }

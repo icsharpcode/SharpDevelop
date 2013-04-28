@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Reporting.Exporter;
+using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces.Export;
 
 namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
@@ -20,12 +21,14 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 	{
 		public ExportContainer()
 		{
-			ExportedItems = new List<IExportColumn>();
+			exportedItems = new List<IExportColumn>();
 		}
 		
-		public  List<IExportColumn> ExportedItems {get;set;}
+		List<IExportColumn> exportedItems;
 		
-		
+		public List<IExportColumn> ExportedItems {
+			get { return exportedItems; }
+		}
 		
 		public void Accept(IVisitor visitor)
 		{

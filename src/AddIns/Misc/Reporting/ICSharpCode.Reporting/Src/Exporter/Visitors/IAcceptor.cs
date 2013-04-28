@@ -8,7 +8,7 @@
  */
 using System;
 
-namespace ICSharpCode.Reporting.Exporter
+namespace ICSharpCode.Reporting.Exporter.Visitors
 {
 	/// <summary>
 	/// Description of IAcceptor.

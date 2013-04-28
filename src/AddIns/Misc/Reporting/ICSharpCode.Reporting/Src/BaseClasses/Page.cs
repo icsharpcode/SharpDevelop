@@ -20,7 +20,6 @@ namespace ICSharpCode.Reporting.BaseClasses
 	/// </summary>
 	///
 	
-
 	public class Page:IPage
 	{
 		public Page(IPageInfo pageInfo,Size pageSize)
@@ -31,7 +30,7 @@ namespace ICSharpCode.Reporting.BaseClasses
 			PageInfo = pageInfo;
 			Name = "Page";
 			Size = pageSize;
-			ExportedItems = new List<IExportColumn>();
+			exportedItems = new List<IExportColumn>();
 		}
 		
 		public bool IsFirstPage {get;set;}
@@ -49,7 +48,11 @@ namespace ICSharpCode.Reporting.BaseClasses
 		public System.Drawing.Point Location {get;set;}
 			
 		
-		public List<IExportColumn> ExportedItems {get;set;}
+		public List<IExportColumn> exportedItems;
+		
+		public List<IExportColumn> ExportedItems {
+			get { return exportedItems; }
+		}
 		
 		
 		public IExportContainer CreateExportColumn()

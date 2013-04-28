@@ -23,13 +23,11 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 	/// </summary>
 	internal class ContainerConverter
 	{
-//		private ExportColumnFactory factory;
 	
 		public ContainerConverter(IReportContainer reportContainer,Point currentLocation )
 		{
 			Container = reportContainer;
 			CurrentLocation = currentLocation;
-//			factory = new ExportColumnFactory();
 		}
 		
 		

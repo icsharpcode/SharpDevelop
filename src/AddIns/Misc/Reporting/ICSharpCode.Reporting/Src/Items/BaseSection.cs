@@ -23,7 +23,7 @@ namespace ICSharpCode.Reporting.Items
 		
 		public BaseSection()
 		{
-			Items = new List<IPrintableObject>();
+//			Items = new List<IPrintableObject>();
 		}
 		
 		public BaseSection (string name) {

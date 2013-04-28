@@ -8,6 +8,7 @@
  */
 using System;
 using ICSharpCode.Reporting.Exporter;
+using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces.Export;
 
 namespace ICSharpCode.Reporting.Test

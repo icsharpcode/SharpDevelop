@@ -7,14 +7,24 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Drawing;
 using ICSharpCode.Reporting.Exporter;
+using ICSharpCode.Reporting.Exporter.Visitors;
+using ICSharpCode.Reporting.Interfaces.Export;
 
 namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 {
 	/// <summary>
 	/// Description of ExportText.
 	/// </summary>
-	public class ExportText:ExportColumn,IAcceptor
+	/// 
+	public interface IExportText : IExportColumn
+	{
+		 Font Font {get;set;}
+	}
+	
+	
+	public class ExportText:ExportColumn,IExportText,IAcceptor
 	{
 		public ExportText()
 		{
@@ -24,5 +34,8 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 		{
 			visitor.Visit(this);
 		}
+		
+		public Font Font {get;set;}
+		
 	}
 }

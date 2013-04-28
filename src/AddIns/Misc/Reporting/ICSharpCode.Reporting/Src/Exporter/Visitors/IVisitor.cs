@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
-namespace ICSharpCode.Reporting.Exporter
+namespace ICSharpCode.Reporting.Exporter.Visitors
 {
 	public interface IVisitor
 	{

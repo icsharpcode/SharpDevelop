@@ -59,12 +59,16 @@
     <Compile Include="Src\BaseClasses\Page.cs" />
     <Compile Include="Src\BaseClasses\PageInfo.cs" />
     <Compile Include="Src\Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\Exporter\BaseExporter.cs" />
     <Compile Include="Src\Exporter\DebugExporter.cs" />
-    <Compile Include="Src\Exporter\IAcceptor.cs" />
-    <Compile Include="Src\Exporter\IVisitor.cs" />
-    <Compile Include="Src\Exporter\Visitor.cs" />
+    <Compile Include="Src\Exporter\PrintExporter.cs" />
+    <Compile Include="Src\Exporter\Visitors\AbstractVisitor.cs" />
+    <Compile Include="Src\Exporter\Visitors\IAcceptor.cs" />
+    <Compile Include="Src\Exporter\Visitors\IVisitor.cs" />
+    <Compile Include="Src\Exporter\Visitors\DebugVisitor.cs" />
     <Compile Include="Src\Factories\ExportColumnFactory.cs" />
     <Compile Include="Src\Factories\SectionFactory.cs" />
+    <Compile Include="Src\Globals\CreateGraphics.cs" />
     <Compile Include="Src\Interfaces\Export\IExportColumn.cs" />
     <Compile Include="Src\Interfaces\Export\IExportContainer.cs" />
     <Compile Include="Src\Interfaces\Export\IPage.cs" />
@@ -92,6 +96,7 @@
     <Compile Include="Src\Xml\MycroParser.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Src\Exporter\Visitors" />
     <Folder Include="Src\Interfaces" />
     <Folder Include="Src\Globals" />
     <Folder Include="Src" />
