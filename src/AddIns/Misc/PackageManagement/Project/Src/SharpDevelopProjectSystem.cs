@@ -303,12 +303,28 @@ namespace ICSharpCode.PackageManagement
 		
 		public void AddImport(string targetPath, ProjectImportLocation location)
 		{
-			throw new NotImplementedException();
+			string relativeTargetPath = GetRelativePath(targetPath);
+			project.AddImportIfMissing(relativeTargetPath, location);
+			ReevaluateProjectIfNecessary();
+			projectService.Save(project);
+		}
+		
+		string GetRelativePath(string path)
+		{
+			return FileUtility.GetRelativePath(project.Directory, path);
 		}
 		
 		public void RemoveImport(string targetPath)
 		{
-			throw new NotImplementedException();
+			string relativeTargetPath = GetRelativePath(targetPath);
+			project.RemoveImport(relativeTargetPath);
+			ReevaluateProjectIfNecessary();
+			projectService.Save(project);
+		}
+		
+		protected virtual void ReevaluateProjectIfNecessary()
+		{
+			project.ReevaluateIfNecessary();
 		}
 	}
 }

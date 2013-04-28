@@ -335,7 +335,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		protected void ReevaluateIfNecessary()
+		public void ReevaluateIfNecessary()
 		{
 			using (var c = OpenCurrentConfiguration()) {
 				c.Project.ReevaluateIfNecessary();

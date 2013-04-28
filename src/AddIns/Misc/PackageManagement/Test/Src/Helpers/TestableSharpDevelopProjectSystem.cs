@@ -22,6 +22,7 @@ namespace PackageManagement.Tests.Helpers
 		public ReferenceAndProjectName ReferenceAndProjectNamePassedToLogAddedReferenceToProject;
 		public ReferenceAndProjectName ReferenceAndProjectNamePassedToLogRemovedReferenceFromProject;
 		public FileNameAndProjectName FileNameAndProjectNamePassedToLogAddedFileToProject;
+		public bool IsReevaluateProjectIfNecessaryCalled;
 		
 		public TestableSharpDevelopProjectSystem(MSBuildBasedProject project)
 			: this(
@@ -81,6 +82,11 @@ namespace PackageManagement.Tests.Helpers
 		{
 			FileNameAndProjectNamePassedToLogAddedFileToProject =
 				new FileNameAndProjectName(fileName, projectName);
+		}
+		
+		protected override void ReevaluateProjectIfNecessary()
+		{
+			IsReevaluateProjectIfNecessaryCalled = true;
 		}
 	}
 }

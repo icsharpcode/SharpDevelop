@@ -3,10 +3,13 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.Versioning;
 
 using ICSharpCode.PackageManagement;
 using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Build.Construction;
+using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 
@@ -57,6 +60,30 @@ namespace PackageManagement.Tests
 		void AddFile(string fileName)
 		{
 			projectSystem.AddFile(fileName, (Stream)null);
+		}
+		
+		void AssertLastMSBuildChildElementHasProjectAttributeValue(string expectedAttributeValue)
+		{
+			ProjectImportElement import = project.GetLastMSBuildChildElement();
+			Assert.AreEqual(expectedAttributeValue, import.Project);
+		}
+		
+		void AssertLastMSBuildChildHasCondition(string expectedCondition)
+		{
+			ProjectImportElement import = project.GetLastMSBuildChildElement();
+			Assert.AreEqual(expectedCondition, import.Condition);
+		}
+		
+		void AssertFirstMSBuildChildElementHasProjectAttributeValue(string expectedAttributeValue)
+		{
+			ProjectImportElement import = project.GetFirstMSBuildChildElement();
+			Assert.AreEqual(expectedAttributeValue, import.Project);
+		}
+		
+		void AssertFirstMSBuildChildHasCondition(string expectedCondition)
+		{
+			ProjectImportElement import = project.GetFirstMSBuildChildElement();
+			Assert.AreEqual(expectedCondition, import.Condition);
 		}
 		
 		[Test]
@@ -832,6 +859,181 @@ namespace PackageManagement.Tests
 			FileProjectItem fileItem = ProjectHelper.GetFile(project, path);
 			string customTool = fileItem.CustomTool;
 			Assert.AreEqual(String.Empty, customTool);
+		}
+		
+		[Test]
+		public void AddImport_FullImportFilePathAndBottomOfProject_PathRelativeToProjectAddedAsLastImportInProject()
+		{
+			CreateTestProject(@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem(project);
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			
+			projectSystem.AddImport(targetPath, ProjectImportLocation.Bottom);
+			
+			AssertLastMSBuildChildElementHasProjectAttributeValue(@"..\packages\Foo.0.1\build\Foo.targets");
+		}
+		
+		[Test]
+		public void AddImport_AddImportToBottomOfProject_ImportAddedWithConditionThatChecksForExistenceOfTargetsFile()
+		{
+			CreateTestProject(@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem(project);
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			
+			projectSystem.AddImport(targetPath, ProjectImportLocation.Bottom);
+			
+			AssertLastMSBuildChildHasCondition("Exists('..\\packages\\Foo.0.1\\build\\Foo.targets')");
+		}
+		
+		[Test]
+		public void AddImport_AddSameImportTwice_ImportOnlyAddedOnceToProject()
+		{
+			CreateTestProject(@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem(project);
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			projectSystem.AddImport(targetPath, ProjectImportLocation.Bottom);
+			
+			projectSystem.AddImport(targetPath, ProjectImportLocation.Bottom);
+			
+			Assert.AreEqual(1, project.GetImports().Count);
+		}
+		
+		[Test]
+		public void AddImport_AddSameImportTwiceButWithDifferentCase_ImportOnlyAddedOnceToProject()
+		{
+			CreateTestProject(@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem(project);
+			string targetPath1 = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			string targetPath2 = @"d:\projects\MyProject\packages\Foo.0.1\BUILD\FOO.TARGETS";
+			projectSystem.AddImport(targetPath1, ProjectImportLocation.Bottom);
+			
+			projectSystem.AddImport(targetPath2, ProjectImportLocation.Bottom);
+			
+			Assert.AreEqual(1, project.GetImports().Count);
+		}
+		
+		[Test]
+		public void AddImport_FullImportFilePathAndBottomOfProject_ProjectIsSaved()
+		{
+			CreateTestProject(@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem(project);
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			
+			projectSystem.AddImport(targetPath, ProjectImportLocation.Bottom);
+			
+			Assert.IsTrue(project.IsSaved);
+		}
+		
+		[Test]
+		public void AddImport_FullImportFilePathAndBottomOfProject_ProjectIsReevaluated()
+		{
+			CreateTestProject(@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem(project);
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			
+			projectSystem.AddImport(targetPath, ProjectImportLocation.Bottom);
+			
+			Assert.IsTrue(projectSystem.IsReevaluateProjectIfNecessaryCalled);
+		}
+		
+		[Test]
+		public void RemoveImport_ImportAlreadyAddedToBottomOfProject_ImportRemoved()
+		{
+			CreateTestProject(@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem(project);
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			projectSystem.AddImport(targetPath, ProjectImportLocation.Bottom);
+			
+			projectSystem.RemoveImport(targetPath);
+			
+			Assert.AreEqual(0, project.GetImports().Count);
+		}
+		
+		[Test]
+		public void RemoveImport_ImportAlreadyWithDifferentCaseAddedToBottomOfProject_ImportRemoved()
+		{
+			CreateTestProject(@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem(project);
+			string targetPath1 = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			projectSystem.AddImport(targetPath1, ProjectImportLocation.Bottom);
+			string targetPath2 = @"d:\projects\MyProject\packages\Foo.0.1\BUILD\FOO.TARGETS";
+			
+			projectSystem.RemoveImport(targetPath2);
+			
+			Assert.AreEqual(0, project.GetImports().Count);
+		}
+		
+		[Test]
+		public void RemoveImport_DifferentImportAdded_ExceptionNotThrown()
+		{
+			CreateTestProject(@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem(project);
+			string targetPath1 = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			projectSystem.AddImport(targetPath1, ProjectImportLocation.Bottom);
+			string targetPath2 = @"d:\projects\MyProject\packages\Bar.0.1\build\Bar.targets";
+			
+			Assert.DoesNotThrow(() => projectSystem.RemoveImport(targetPath2));
+			
+			Assert.AreEqual(1, project.GetImports().Count);
+		}
+		
+		[Test]
+		public void RemoveImport_NoImportsAdded_ProjectIsSaved()
+		{
+			CreateTestProject(@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem(project);
+			
+			projectSystem.RemoveImport("Unknown.targets");
+			
+			Assert.IsTrue(project.IsSaved);
+		}
+		
+		[Test]
+		public void RemoveImport_NoImportsAdded_ProjectIsReevaluated()
+		{
+			CreateTestProject(@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem(project);
+			
+			projectSystem.RemoveImport("Unknown.targets");
+			
+			Assert.IsTrue(projectSystem.IsReevaluateProjectIfNecessaryCalled);
+		}
+		
+		[Test]
+		public void AddImport_AddToTopOfProject_ImportAddedAsFirstChildElement()
+		{
+			CreateTestProject(@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem(project);
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			
+			projectSystem.AddImport(targetPath, ProjectImportLocation.Top);
+			
+			AssertFirstMSBuildChildElementHasProjectAttributeValue(@"..\packages\Foo.0.1\build\Foo.targets");
+		}
+		
+		[Test]
+		public void AddImport_AddImportToTopOfProject_ImportAddedWithConditionThatChecksForExistenceOfTargetsFile()
+		{
+			CreateTestProject(@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem(project);
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			
+			projectSystem.AddImport(targetPath, ProjectImportLocation.Top);
+			
+			AssertFirstMSBuildChildHasCondition("Exists('..\\packages\\Foo.0.1\\build\\Foo.targets')");
+		}
+		
+		[Test]
+		public void AddImport_AddToTopOfProjectTwice_ImportAddedOnlyOnce()
+		{
+			CreateTestProject(@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem(project);
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			projectSystem.AddImport(targetPath, ProjectImportLocation.Top);
+			
+			projectSystem.AddImport(targetPath, ProjectImportLocation.Top);
+			
+			Assert.AreEqual(1, project.GetImports().Count);
 		}
 	}
 }
