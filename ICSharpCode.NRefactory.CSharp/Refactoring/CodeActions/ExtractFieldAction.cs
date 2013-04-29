@@ -59,7 +59,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						extractedType = (AstType) type.Clone();
 					}
 
+					AstNode entityDeclarationNode = varInit.Parent;
+					while (!(entityDeclarationNode is EntityDeclaration)) {
+						entityDeclarationNode = entityDeclarationNode.Parent;
+					}
+					var entity = (EntityDeclaration) entityDeclarationNode;
+					bool isStatic = entity.HasModifier(Modifiers.Static);
+
 					FieldDeclaration field = new FieldDeclaration(){
+						Modifiers = isStatic ? Modifiers.Static : Modifiers.None,
 						ReturnType = extractedType,
 						Variables = { new VariableInitializer(name) }
 					};

@@ -143,6 +143,50 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		}
 
 		[Test]
+		public void TestConstructor ()
+		{
+			Test<ExtractFieldAction>(@"
+class TestClass
+{
+	TestClass () {
+		int $i = 0;
+	}
+}", @"
+class TestClass
+{
+	int i;
+	TestClass () {
+		i = 0;
+	}
+}");
+		}
+
+		[Test]
+		public void TestGetter ()
+		{
+			Test<ExtractFieldAction>(@"
+class TestClass
+{
+	int X {
+		get {
+			int $i = 0;
+			return i;
+		}
+	}
+}", @"
+class TestClass
+{
+	int i;
+	int X {
+		get {
+			i = 0;
+			return i;
+		}
+	}
+}");
+		}
+
+		[Test]
 		public void TestTypeInferenceDeclaration ()
 		{
 			Test<ExtractFieldAction> (@"
