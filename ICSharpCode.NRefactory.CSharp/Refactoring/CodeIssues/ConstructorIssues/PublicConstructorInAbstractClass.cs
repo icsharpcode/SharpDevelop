@@ -68,9 +68,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public override void VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
 			{
 				if (constructorDeclaration.HasModifier (Modifiers.Public)) {
-					AddIssue(constructorDeclaration.NameToken, ctx.TranslateString("Convert public to protected"), script => {
-						script.Replace(constructorDeclaration.ModifierTokens.First (t => t.Modifier == Modifiers.Public), new CSharpModifierToken(TextLocation.Empty, Modifiers.Protected));
-					});
+					AddIssue(constructorDeclaration.NameToken, ctx.TranslateString("Convert public to protected"), script =>
+                        script.Replace(constructorDeclaration.ModifierTokens.First (t => t.Modifier == Modifiers.Public), new CSharpModifierToken(TextLocation.Empty, Modifiers.Protected)));
 				}
 			}
 		}

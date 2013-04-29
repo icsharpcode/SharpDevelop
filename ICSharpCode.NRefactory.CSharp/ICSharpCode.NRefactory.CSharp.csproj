@@ -278,7 +278,6 @@
     <Compile Include="Refactoring\CodeActions\ConvertLambdaBodyExpressionToStatementAction.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertLambdaBodyStatementToExpressionAction.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertSwitchToIfAction.cs" />
-    <Compile Include="Refactoring\CodeActions\ConvertToStaticMethodAction.cs" />
     <Compile Include="Refactoring\CodeActions\CreateCustomEventImplementationAction.cs" />
     <Compile Include="Refactoring\CodeActions\CreateOverloadWithoutParameterAction.cs" />
     <Compile Include="Refactoring\CodeActions\JoinDeclarationAndAssignmentAction.cs" />
@@ -535,6 +534,9 @@
     <Compile Include="Refactoring\CodeIssues\RedundantBaseConstructorIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ConstructorIssues\RedudantConstructorIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ConstructorIssues\PublicConstructorInAbstractClass.cs" />
+    <Compile Include="Refactoring\CodeIssues\ConvertToStaticMethodIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\ParameterCanBeDemotedIssue\ParameterCanBeIEnumerableIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\DuplicateBodyMethodIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -543,16 +545,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
-  <ItemGroup>
-    <Folder Include="Completion\" />
-    <Folder Include="Refactoring\CodeIssues\" />
-    <Folder Include="Refactoring\CodeIssues\InconsistentNamingIssue\" />
-    <Folder Include="Refactoring\CodeActions\ExtractMethod\" />
-    <Folder Include="Refactoring\CodeActions\ConvertToInitializer\" />
-    <Folder Include="Refactoring\CodeIssues\FormatStringIssues\" />
-    <Folder Include="Refactoring\CodeIssues\CompilerErrors\" />
-    <Folder Include="Refactoring\CodeIssues\ConstructorIssues\" />
-  </ItemGroup>
+  <ItemGroup />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
