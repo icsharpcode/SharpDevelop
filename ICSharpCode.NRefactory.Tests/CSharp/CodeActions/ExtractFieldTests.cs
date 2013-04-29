@@ -145,7 +145,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test]
 		public void TestTypeInferenceDeclaration ()
 		{
-			Test<ExtractFieldAction>(@"
+			Test<ExtractFieldAction> (@"
 class TestClass
 {
 	void Test ()
@@ -166,7 +166,7 @@ class TestClass
 		[Test]
 		public void TestTypeInferenceAnonymousType ()
 		{
-			TestWrongContext<ExtractFieldAction>(@"
+			TestWrongContext<ExtractFieldAction> (@"
 class TestClass
 {
 	void Test ()
@@ -180,7 +180,7 @@ class TestClass
 		[Test]
 		public void TestTypeInferenceAnonymousArrayType ()
 		{
-			TestWrongContext<ExtractFieldAction>(@"
+			TestWrongContext<ExtractFieldAction> (@"
 class TestClass
 {
 	void Test ()
@@ -189,6 +189,27 @@ class TestClass
 	}
 }
 ");
+		}
+
+		[Test]
+		public void TestStaticField ()
+		{
+			Test<ExtractFieldAction> (@"
+class TestClass
+{
+	static void Test ()
+	{
+		int $i = 0;
+	}
+}", @"
+class TestClass
+{
+	static int i;
+	static void Test ()
+	{
+		i = 0;
+	}
+}");
 		}
 	}
 }
