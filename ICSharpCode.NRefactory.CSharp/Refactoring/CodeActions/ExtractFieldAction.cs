@@ -28,12 +28,15 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.PatternMatching;
 using Mono.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	[ContextAction("Extract field", Description = "Extracts a field from a local variable declaration.")]
 	public class ExtractFieldAction : ICodeActionProvider
 	{
+		static readonly AstType varType = new SimpleType ("var");
+
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
 			//TODO: implement variable assignment & ctor param
@@ -42,12 +45,22 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				AstType type = varInit.GetPrevNode() as AstType;
 				if (type == null) yield break;
 				if (varInit.Parent is FieldDeclaration) yield break;
-				if (CannotExtractField(varInit)) yield break;
+				if (CannotExtractField(context, varInit)) yield break;
 				
 				yield return new CodeAction(context.TranslateString("Assign to new field"), s=>{
 					var name = varInit.Name;
+
+					AstType extractedType;
+					if (type.IsMatch (varType)) {
+						IType resolvedType = context.Resolve(varInit.Initializer).Type;
+						extractedType = context.CreateShortType(resolvedType);
+					}
+					else {
+						extractedType = (AstType) type.Clone();
+					}
+
 					FieldDeclaration field = new FieldDeclaration(){
-						ReturnType = type.Clone(),
+						ReturnType = extractedType,
 						Variables = { new VariableInitializer(name) }
 					};
 					AstNode nodeToRemove = RemoveDeclaration(varInit) ? varInit.Parent : type;
@@ -83,10 +96,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return result.Variables.First ().Initializer.IsNull;
 		}
 		
-		static bool CannotExtractField (VariableInitializer varInit)
+		static bool CannotExtractField (RefactoringContext context, VariableInitializer varInit)
 		{
 			var result = varInit.Parent as VariableDeclarationStatement;
-			return result == null || result.Variables.Count != 1;
+			return result == null || result.Variables.Count != 1 || ContainsAnonymousType(context.Resolve(varInit.Initializer).Type);
+		}
+
+		static bool ContainsAnonymousType (IType type)
+		{
+			if (type.Kind == TypeKind.Anonymous)
+				return true;
+
+			var arrayType = type as ArrayType;
+			return arrayType != null && ContainsAnonymousType (arrayType.ElementType);
 		}
 	}
 }

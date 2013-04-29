@@ -141,6 +141,55 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"	}" + Environment.NewLine +
 				"}", result);
 		}
+
+		[Test]
+		public void TestTypeInferenceDeclaration ()
+		{
+			Test<ExtractFieldAction>(@"
+class TestClass
+{
+	void Test ()
+	{
+		var $i = 0;
+	}
+}", @"
+class TestClass
+{
+	int i;
+	void Test ()
+	{
+		i = 0;
+	}
+}");
+		}
+
+		[Test]
+		public void TestTypeInferenceAnonymousType ()
+		{
+			TestWrongContext<ExtractFieldAction>(@"
+class TestClass
+{
+	void Test ()
+	{
+		var $i = new { A = 1 };
+	}
+}
+");
+		}
+
+		[Test]
+		public void TestTypeInferenceAnonymousArrayType ()
+		{
+			TestWrongContext<ExtractFieldAction>(@"
+class TestClass
+{
+	void Test ()
+	{
+		var $i = new [] { new { A = 1 } };
+	}
+}
+");
+		}
 	}
 }
 
