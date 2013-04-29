@@ -49,9 +49,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (node.Body is BlockStatement) {
 					newBody = (BlockStatement)node.Body.Clone();
 				} else {
+					var expression = (Expression)node.Body.Clone();
+
+					Statement statement;
+					if (RequireReturnStatement(context, node)) {
+						statement = new ReturnStatement(expression);
+					}
+					else {
+						statement = new ExpressionStatement(expression);
+					}
+
 					newBody = new BlockStatement {
 						Statements = {
-							new ReturnStatement((Expression)node.Body.Clone())
+							statement
 						}
 					};
 				}
@@ -77,6 +87,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				result.Add (new ParameterDeclaration(type, name, modifier));
 			}
 			return result;
+		}
+
+		static bool RequireReturnStatement (RefactoringContext context, LambdaExpression lambda)
+		{
+			var type = LambdaHelper.GetLambdaReturnType (context, lambda);
+			return type != null && type.ReflectionName != "System.Void";
 		}
 	}
 }
