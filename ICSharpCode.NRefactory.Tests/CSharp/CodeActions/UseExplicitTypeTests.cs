@@ -73,6 +73,63 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	}
 }", result);
 		}
+
+		[Test()]
+		public void SimpleAnonymousTypeDeclaration ()
+		{
+			TestWrongContext<UseExplicitTypeAction>(@"class TestClass
+{
+	void Test()
+	{
+		$var aVar = new { A = 1 };
+	}
+}");
+		}
+
+		[Test()]
+		public void ForeachAnonymousTypeDeclaration ()
+		{
+			TestWrongContext<UseExplicitTypeAction>(@"class TestClass
+{
+	void Test()
+	{
+		var value = new { A = 1 };
+		foreach ($var k in new [] { value }) {
+		}
+	}
+}");
+		}
+
+		[Test()]
+		public void TestAnonymousArrayType ()
+		{
+			TestWrongContext<UseExplicitTypeAction>(@"class TestClass
+{
+	void Test()
+	{
+		var value = new [] { new { A = 1 } };
+		foreach ($var k in new [] { value }) {
+		}
+	}
+}");
+		}
+
+		[Test()]
+		public void TestAnonymousGenericType ()
+		{
+			TestWrongContext<UseExplicitTypeAction>(@"class TestClass
+{
+	T MakeList<T> (T value) { return new List<T> () { value }; }
+
+	void Test()
+	{
+		var value = new { A = 1 };
+		var list = MakeList (value);
+		foreach ($var k in list) {
+		}
+	}
+}");
+		}
 	}
 }
 
