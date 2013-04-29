@@ -167,7 +167,7 @@ class TestClass
 			Test<ExtractFieldAction>(@"
 class TestClass
 {
-	int X {
+	static int X {
 		get {
 			int $i = 0;
 			return i;
@@ -176,8 +176,8 @@ class TestClass
 }", @"
 class TestClass
 {
-	int i;
-	int X {
+	static int i;
+	static int X {
 		get {
 			i = 0;
 			return i;

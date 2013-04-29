@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					}
 
 					AstNode entityDeclarationNode = varInit.Parent;
-					while (!(entityDeclarationNode is EntityDeclaration)) {
+					while (!(entityDeclarationNode is EntityDeclaration) || (entityDeclarationNode is Accessor)) {
 						entityDeclarationNode = entityDeclarationNode.Parent;
 					}
 					var entity = (EntityDeclaration) entityDeclarationNode;
