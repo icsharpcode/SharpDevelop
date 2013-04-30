@@ -104,7 +104,11 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			
 			public override Task InsertWithCursor(string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
 			{
-				var entity = context.GetNode<EntityDeclaration>();
+				EntityDeclaration entity = context.GetNode<EntityDeclaration>();
+				if (entity is Accessor) {
+					entity = (EntityDeclaration) entity.Parent;
+				}
+
 				foreach (var node in nodes) {
 					InsertBefore(entity, node);
 				}
