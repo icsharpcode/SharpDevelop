@@ -10,6 +10,7 @@ using System;
 using System.Drawing;
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Exporter;
+using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.Converter;
@@ -22,11 +23,11 @@ namespace ICSharpCode.Reporting.PageBuilder
 	/// </summary>
 	public class FormPageBuilder:BasePageBuilder
 	{
-		
-//		private readonly object addLock = new object();
+		Graphics graphics;
 		
 		public FormPageBuilder(IReportModel reportModel):base(reportModel)
 		{
+			graphics = CreateGraphics.FromSize(reportModel.ReportSettings.PageSize);
 		}
 		
 		
@@ -41,7 +42,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		void BuildReportHeader()
 		{
 			if (Pages.Count == 0) {
-				var sc = new ContainerConverter(ReportModel.ReportHeader,CurrentLocation);
+				var sc = new ContainerConverter(graphics,ReportModel.ReportHeader,CurrentLocation);
 				var header =sc.Convert();
 				CurrentPage.ExportedItems.Add(header);
 				var r = new Rectangle(header.Location.X,header.Location.Y,header.Size.Width,header.Size.Height);
@@ -51,7 +52,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		void BuildPageHeader()
 		{
-			var sc = new ContainerConverter(ReportModel.PageHeader,CurrentLocation);
+			var sc = new ContainerConverter(graphics,ReportModel.PageHeader,CurrentLocation);
 			var header =sc.Convert();
 			CurrentPage.ExportedItems.Add(header);
 		}
@@ -68,7 +69,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
 			                            ReportModel.ReportSettings.PageSize.Height - ReportModel.ReportSettings.BottomMargin - ReportModel.PageFooter.Size.Height);
 				
-			var sc = new ContainerConverter(ReportModel.PageFooter,CurrentLocation);
+			var sc = new ContainerConverter(graphics,ReportModel.PageFooter,CurrentLocation);
 			var header =sc.Convert();
 			CurrentPage.ExportedItems.Add(header);
 		}
@@ -80,7 +81,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
 			                            ReportModel.ReportSettings.PageSize.Height - ReportModel.ReportSettings.BottomMargin - ReportModel.PageFooter.Size.Height);
 				
-			var sc = new ContainerConverter(ReportModel.ReportFooter,CurrentLocation);
+			var sc = new ContainerConverter(graphics,ReportModel.ReportFooter,CurrentLocation);
 			var header =sc.Convert();
 			CurrentPage.ExportedItems.Add(header);
 		}

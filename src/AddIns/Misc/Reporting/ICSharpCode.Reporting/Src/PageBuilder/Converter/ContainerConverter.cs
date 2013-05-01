@@ -23,9 +23,17 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 	/// </summary>
 	internal class ContainerConverter
 	{
-	
-		public ContainerConverter(IReportContainer reportContainer,Point currentLocation )
+	private Graphics graphics;
+		public ContainerConverter(Graphics graphics,IReportContainer reportContainer,Point currentLocation )
 		{
+			if (graphics == null) {
+				throw new ArgumentNullException("graphics");
+			}
+			if (reportContainer == null) {
+				throw new ArgumentNullException("reportContainer");
+			}
+			
+			this.graphics = graphics;
 			Container = reportContainer;
 			CurrentLocation = currentLocation;
 		}
@@ -33,13 +41,18 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 		
 		public IExportContainer Convert() {
 			Console.WriteLine("Convert section for location {0}",CurrentLocation);
-			var strat = ((ReportContainer)Container).ArrangeStrategy;
-			strat.Arrange(Container);
+			
+			// Arrange
+			var containerStrategy = Container.GetArrangeStrategy ();
+			containerStrategy.Arrange(Container,graphics);
 			
 			var exportContainer = (ExportContainer)Container.CreateExportColumn();
+			
 			exportContainer.Location = CurrentLocation;
 			var itemsList = new List<IExportColumn>();
 			foreach (var element in Container.Items) {
+				var textArrange = element.GetArrangeStrategy();
+				textArrange.Arrange(element,graphics);
 				var item = ExportColumnFactory.CreateItem(element);
 				itemsList.Add(item);
 			}

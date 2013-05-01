@@ -16,6 +16,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Reports.Addin.Commands;
 using ICSharpCode.Reports.Addin.Designer;
 using ICSharpCode.Reports.Addin.SecondaryViews;
+using ICSharpCode.Reports.Addin.SecondaryViews.TestView;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Exporter;
 using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
@@ -50,9 +51,9 @@ namespace ICSharpCode.Reports.Addin
 		private ReportDesignerUndoEngine undoEngine;
 		
 		private XmlView xmlView;
-		private ReportPreview preview;
+		private ReportPreview reportPreview;
 		private ReportViewerSecondaryView reportViewer;
-
+		private TestSecondaryView testView;
 		
 		#region Constructor
 		
@@ -89,15 +90,21 @@ namespace ICSharpCode.Reports.Addin
 		private void SetupSecondaryView ()
 		{
 			Console.WriteLine("SetupSecondaryView ()");
+			
 			xmlView = new XmlView(generator,this);
 			SecondaryViewContents.Add(xmlView);
-			preview = new ReportPreview(loader,this);
-			SecondaryViewContents.Add(preview);
+			
+			reportPreview = new ReportPreview(loader,this);
+			SecondaryViewContents.Add(reportPreview);
+			
 			reportViewer = new ReportViewerSecondaryView(loader,this);
 			SecondaryViewContents.Add(reportViewer);
 			
-			var p = new WPFReportPreview(loader,this);
-			SecondaryViewContents.Add(p);
+			var wpfViewer = new WPFReportPreview(loader,this);
+			SecondaryViewContents.Add(wpfViewer);
+			
+			testView = new TestSecondaryView(loader,this);
+			SecondaryViewContents.Add(testView);
 			
 		}
 		
@@ -273,7 +280,7 @@ namespace ICSharpCode.Reports.Addin
 		{
 			LoggingService.Info("StartReportExplorer ()");
 			ReportExplorerPad explorerPad = CheckReportExplorer();
-			WorkbenchSingleton.Workbench.GetPad(typeof(ReportExplorerPad)).BringPadToFront();
+			SD.Workbench.GetPad(typeof(ReportExplorerPad)).BringPadToFront();
 			explorerPad.AddContent(this.loader.ReportModel);
 			explorerPad.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(ReportExplorer_PropertyChanged);
 		}
@@ -293,7 +300,7 @@ namespace ICSharpCode.Reports.Addin
 		{
 			ReportExplorerPad p = ReportExplorerPad.Instance;
 			if (p == null) {
-				WorkbenchSingleton.Workbench.GetPad(typeof(ReportExplorerPad)).CreatePad();
+				SD.Workbench.GetPad(typeof(ReportExplorerPad)).CreatePad();
 			}
 			return ReportExplorerPad.Instance;
 		}
@@ -325,7 +332,8 @@ namespace ICSharpCode.Reports.Addin
 			if (shouldUpdateSelectableObjects) {
 				// update the property pad after the transaction is *really* finished
 				// (including updating the selection)
-				WorkbenchSingleton.SafeThreadAsyncCall(UpdatePropertyPad);
+//				WorkbenchSingleton.SafeThreadAsyncCall(UpdatePropertyPad);
+				SD.MainThread.InvokeAsync(null).FireAndForget();
 				shouldUpdateSelectableObjects = false;
 			}
 		}
@@ -729,8 +737,8 @@ namespace ICSharpCode.Reports.Addin
 				if (this.xmlView != null) {
 					this.xmlView.Dispose();
 				}
-				if (this.preview != null) {
-					this.preview.Dispose();
+				if (this.reportPreview != null) {
+					this.reportPreview.Dispose();
 				}
 				if (this.reportViewer != null) {
 					this.reportViewer.Dispose();

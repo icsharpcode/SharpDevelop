@@ -38,7 +38,6 @@ namespace ICSharpCode.Reporting
 				builder =  new FormPageBuilder(reportModel);
 			}
 			return builder;
-
 		}
 			
 		

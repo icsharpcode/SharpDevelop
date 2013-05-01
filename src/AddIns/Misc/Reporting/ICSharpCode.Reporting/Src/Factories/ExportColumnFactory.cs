@@ -18,7 +18,7 @@ namespace ICSharpCode.Reporting.Factories
 	/// <summary>
 	/// Description of ExportColumnFactory.
 	/// </summary>
-	public class ExportColumnFactory
+	internal class ExportColumnFactory
 	{
 		public ExportColumnFactory()
 		{

@@ -8,6 +8,7 @@
  */
 using System;
 using System.Drawing;
+using ICSharpCode.Reporting.Arrange;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
@@ -21,6 +22,7 @@ namespace ICSharpCode.Reporting.Items
 	public interface  ITextItem:IPrintableObject
 	{
 		Font Font {get;set;}
+		string Text {get;set;}
 	}
 	
 	public class BaseTextItem:PrintableItem,ITextItem
@@ -33,7 +35,9 @@ namespace ICSharpCode.Reporting.Items
 		
 		public Font Font {get;set;}
 		
+		public string Text {get;set;}
 		
+			
 		public override  IExportColumn CreateExportColumn()
 		{
 			var ex = new ExportText();
@@ -43,5 +47,12 @@ namespace ICSharpCode.Reporting.Items
 			ex.Font = Font;
 			return ex;
 		}
+		
+		public override ICSharpCode.Reporting.Arrange.IArrangeStrategy GetArrangeStrategy()
+		{
+			return new TextBasedArrangeStrategy();
+		}
+		
+		
 	}
 }

@@ -37,7 +37,6 @@ namespace ICSharpCode.Reporting.Exporter
 		
 		 void ShowDebug(IExportContainer container)
 		{
-//			var visitor = new DebugVisitor();
 			foreach (var item in container.ExportedItems) {
 				var exportContainer = item as IExportContainer;
 				var acceptor = item as IAcceptor;

@@ -8,6 +8,7 @@
  */
 using System;
 using System.Drawing;
+using ICSharpCode.Reporting.Arrange;
 using ICSharpCode.Reporting.Interfaces.Export;
 
 namespace ICSharpCode.Reporting.Interfaces
@@ -24,6 +25,7 @@ namespace ICSharpCode.Reporting.Interfaces
 	
 	public interface IPrintableObject:IReportObject {
 		IExportColumn CreateExportColumn();
+		IArrangeStrategy GetArrangeStrategy ();
 	}
 	
 }

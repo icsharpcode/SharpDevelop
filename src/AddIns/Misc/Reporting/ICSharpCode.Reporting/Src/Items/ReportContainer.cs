@@ -43,14 +43,19 @@ namespace ICSharpCode.Reporting.Items
 			};
 		}
 		
-		 IArrangeStrategy arrangeStrategy;
-		 
-		public IArrangeStrategy ArrangeStrategy {
-			get {if (arrangeStrategy == null) {
-		 			arrangeStrategy = new ContainerArrangeStrategy();
-			}
-		 		return arrangeStrategy; }
-			set { arrangeStrategy = value; }
+//		 IArrangeStrategy arrangeStrategy;
+//		 
+//		 public IArrangeStrategy ArrangeStrategy {
+//		 	get {if (arrangeStrategy == null) {
+//		 			arrangeStrategy = new ContainerArrangeStrategy();
+//		 		}
+//		 		return arrangeStrategy; }
+//		 	set { arrangeStrategy = value; }
+//		 }
+		
+		public override IArrangeStrategy GetArrangeStrategy()
+		{
+			return new ContainerArrangeStrategy();
 		}
 	}
 }

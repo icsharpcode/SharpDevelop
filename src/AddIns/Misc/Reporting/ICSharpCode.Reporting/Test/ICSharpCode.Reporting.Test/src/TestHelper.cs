@@ -53,27 +53,5 @@ namespace ICSharpCode.Reporting.Test
 				}
 			}
 		}
-		/*
-		public static void ShowDebug(IExportContainer container)
-		{
-			var visitor = new DebugVisitor();
-			foreach (var item in container.ExportedItems) {
-				if (item is IExportContainer) {
-					var a = item as IAcceptor;
-					if (a != null) {
-						Console.WriteLine("----");
-						a.Accept(visitor);
-					}
-					ShowDebug(item as IExportContainer);
-				} else {
-					var b = item as IAcceptor;
-					if (b != null) {
-						b.Accept(visitor);
-						
-					}
-				}
-			}
-		}
-		*/
 	}
 }

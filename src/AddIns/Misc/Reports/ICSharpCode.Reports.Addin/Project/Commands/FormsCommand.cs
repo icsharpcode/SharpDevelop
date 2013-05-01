@@ -32,7 +32,8 @@ namespace ICSharpCode.Reports.Addin.Commands
 		
 		protected static ReportDesignerView ReportDesigner {
 			get {
-				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+//				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+				IWorkbenchWindow window =SD.Workbench.ActiveWorkbenchWindow;
 				if (window == null) {
 					return null;
 				}

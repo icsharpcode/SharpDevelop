@@ -21,11 +21,11 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 	public class ContainerConverterFixture
 	{
 		private IReportContainer container;
-		
+		private Graphics graphics;
 		
 		[Test]
 		public void ConverterReturnExportContainer() {
-			var converter = new ContainerConverter(container,new Point(30,30));
+			var converter = new ContainerConverter(graphics,container,new Point(30,30));
 			var result = converter.Convert();
 			Assert.That(result,Is.InstanceOf(typeof(IExportContainer)));
 		}
@@ -34,7 +34,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		[Test]
 		public void ConverterReturnExportContainerwithTwoItems()
 		{
-			var converter = new ContainerConverter(container,new Point(30,30));
+			var converter = new ContainerConverter(graphics,container,new Point(30,30));
 			var result = converter.Convert();
 			Assert.That(result.ExportedItems.Count,Is.EqualTo(2));
 		}
@@ -43,7 +43,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		[Test]
 		public void LocationIsAdjusted() {
 			var location = new Point(30,30);
-			var converter = new ContainerConverter(container,location);
+			var converter = new ContainerConverter(graphics,container,location);
 			var result = converter.Convert();
 			Assert.That(result.Location,Is.EqualTo(location));
 		}
@@ -71,6 +71,9 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 			};
 			container.Items.Add(item1);
 			container.Items.Add(item2);
+			
+			Bitmap bitmap = new Bitmap(700,1000);
+			graphics = Graphics.FromImage(bitmap);
 		}
 	}
 }

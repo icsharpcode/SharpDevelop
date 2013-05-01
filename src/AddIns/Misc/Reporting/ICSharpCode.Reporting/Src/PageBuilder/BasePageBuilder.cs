@@ -22,7 +22,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 	/// </summary>
 	public class BasePageBuilder:IReportCreator
 	{
-//		private readonly object addLock = new object();
+
 		
 		public BasePageBuilder(IReportModel reportModel)
 		{

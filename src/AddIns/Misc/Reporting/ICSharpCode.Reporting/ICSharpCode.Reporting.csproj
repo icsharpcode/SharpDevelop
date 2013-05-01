@@ -55,7 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\Arrange\ArrangeStrategy.cs" />
+    <Compile Include="Src\Arrange\ContainerArrangeStrategy.cs" />
     <Compile Include="Src\BaseClasses\Page.cs" />
     <Compile Include="Src\BaseClasses\PageInfo.cs" />
     <Compile Include="Src\Configuration\AssemblyInfo.cs" />
@@ -69,6 +69,7 @@
     <Compile Include="Src\Factories\ExportColumnFactory.cs" />
     <Compile Include="Src\Factories\SectionFactory.cs" />
     <Compile Include="Src\Globals\CreateGraphics.cs" />
+    <Compile Include="Src\Globals\MeasurementService.cs" />
     <Compile Include="Src\Interfaces\Export\IExportColumn.cs" />
     <Compile Include="Src\Interfaces\Export\IExportContainer.cs" />
     <Compile Include="Src\Interfaces\Export\IPage.cs" />

@@ -76,7 +76,7 @@
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
                     <RTL>No</RTL>
-                    <Text>BaseTextItem2147483646</Text>
+                    <Text>TestText for Item in PageHeader</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
                     <ForeColor>Black</ForeColor>

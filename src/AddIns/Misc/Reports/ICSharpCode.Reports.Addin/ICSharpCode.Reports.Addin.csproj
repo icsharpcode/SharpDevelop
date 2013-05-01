@@ -255,8 +255,11 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Project\SecondaryViews\ReportPreview.cs" />
-    <Compile Include="Project\SecondaryViews\ReportViewerMessages.cs" />
+    <Compile Include="Project\SecondaryViews\ReportViewerMessages.cs">
+      <DependentUpon>ReportViewerSecondaryView.cs</DependentUpon>
+    </Compile>
     <Compile Include="Project\SecondaryViews\ReportViewerSecondaryView.cs" />
+    <Compile Include="Project\SecondaryViews\TestView\TestSecondaryView.cs" />
     <Compile Include="Project\SecondaryViews\WPFReportPreview.cs" />
     <Compile Include="Project\SecondaryViews\XmlView.cs" />
     <Compile Include="Project\Services\DefaultMemberRelationshipService.cs" />
@@ -361,6 +364,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Project\ReportItems\TypeProviders" />
+    <Folder Include="Project\SecondaryViews\TestView" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
