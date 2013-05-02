@@ -537,6 +537,8 @@
     <Compile Include="Refactoring\CodeIssues\ConvertToStaticMethodIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ParameterCanBeDemotedIssue\ParameterCanBeIEnumerableIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\DuplicateBodyMethodIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\DuplicateExpressionsInConditionsIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\DuplicateIfInIfChainIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
