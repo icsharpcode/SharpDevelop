@@ -413,6 +413,7 @@
     <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\ParameterCanBeIEnumerableTests.cs" />
     <Compile Include="CSharp\CodeIssues\DuplicateBodyMethodIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\DuplicateExpressionsInConditionsIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\DuplicateIfInIfChainIssueTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">

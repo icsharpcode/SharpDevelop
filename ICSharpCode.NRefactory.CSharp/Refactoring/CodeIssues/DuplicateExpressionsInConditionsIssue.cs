@@ -92,7 +92,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
                 }
             }
 
-		    private static void RemoveRedundantExpression(Script script, Expression expressionRight)
+		    private static void RemoveRedundantExpression(Script script, AstNode expressionRight)
 		    {
                 var parent = expressionRight.Parent as BinaryOperatorExpression;
                 if(parent==null) //should never happen!
@@ -118,6 +118,5 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		        return expressions;
 		    }
 		}
-	}
-	
+	}	
 }

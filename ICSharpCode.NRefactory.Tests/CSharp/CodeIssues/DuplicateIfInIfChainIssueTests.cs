@@ -1,5 +1,5 @@
 //
-// DuplicateExpressionsInConditionsIssueTests.cs
+// DuplicateIfInIfChainIssueTests.cs
 //
 // Author:
 //       Ciprian Khlud <ciprian.mustiata@yahoo.com>
@@ -24,14 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {	
 	[TestFixture]
-	public class DuplicateExpressionsInConditionsIssueTests : InspectionActionTestBase
+	public class DuplicateIfInIfChainIssueTests : InspectionActionTestBase
 	{
 		[Test]
 		public void TestSimple ()
@@ -41,7 +40,7 @@ class TestClass
 {
 	void TestMethod (int i)
 	{
-		var a = (i > 0) && (i > 0);
+		if(i > 0) {}else if (i > 0){}
 	}
 }";
 			var output = @"
@@ -49,10 +48,11 @@ class TestClass
 {
 	void TestMethod (int i)
 	{
-		var a = (i > 0);
+		if (i > 0) {
+        }
 	}
 }";
-			Test<DuplicateExpressionsInConditionsIssue> (input, output);
+            Test<DuplicateIfInIfChainIssue>(input, output);
 		}
 		
 		[Test]
@@ -63,7 +63,12 @@ class TestClass
 {
 	void TestMethod (int i)
 	{
-		var a = (i > 0) && (i % 2 == 0) && (i > 0);
+		if(i > 0) {
+		} else 
+		if (i % 2 == 0){
+		} else 
+		if (i > 0) {
+		}
 	}
 }";
 			var output = @"
@@ -71,10 +76,45 @@ class TestClass
 {
 	void TestMethod (int i)
 	{
-		var a = (i > 0) && (i % 2 == 0);
+		if(i > 0) {
+		} else if (i % 2 == 0) {
+		} 
 	}
 }";
-			Test<DuplicateExpressionsInConditionsIssue> (input, output);
+            Test<DuplicateIfInIfChainIssue>(input, output);
+		}
+
+		[Test]
+		public void TestComplexWithMoreBranches ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod (int i)
+	{
+		if(i > 0) {
+		} else 
+		if (i % 2 == 0){
+		} else 
+		if (i > 0) {
+		} else 
+		if (i > 1) {
 		}
 	}
+}";
+			var output = @"
+class TestClass
+{
+	void TestMethod (int i)
+	{
+		if(i > 0) {
+		} else if (i % 2 == 0) {
+		} else if (i > 1) {
+		} 
+	}
+}";
+			Test<DuplicateIfInIfChainIssue>(input, output);
+		}
+	}
+	
 }
