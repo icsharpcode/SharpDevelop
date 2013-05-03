@@ -43,7 +43,7 @@ class Test {
 	}";
 			
 			TestRefactoringContext context;
-			var issues = GetIssues(new StaticConstructorAccessModifierIssue(), input, out context);
+			var issues = GetIssues(new StaticConstructorAccessModifierIssue(), input, out context, true);
 			Assert.AreEqual(1, issues.Count);
 		}
 		
@@ -60,7 +60,7 @@ class Test {
 	{}
 	}";
 			TestRefactoringContext context;
-			var issues = GetIssues(new StaticConstructorAccessModifierIssue(), input, out context);
+			var issues = GetIssues(new StaticConstructorAccessModifierIssue(), input, out context, true);
 			Assert.AreEqual(1, issues.Count);
 		}
 
@@ -79,7 +79,7 @@ class Test {
 	}";
 			
 			TestRefactoringContext context;
-			var issues = GetIssues(new StaticConstructorAccessModifierIssue(), input, out context);
+			var issues = GetIssues(new StaticConstructorAccessModifierIssue(), input, out context, true);
 			Assert.AreEqual(0, issues.Count);
 		}
 	}
