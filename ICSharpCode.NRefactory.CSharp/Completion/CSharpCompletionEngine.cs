@@ -644,6 +644,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 						return null;
 					}
+					char prevCh = offset > 2 ? document.GetCharAt(offset - 2) : ';';
+					char nextCh = offset < document.TextLength ? document.GetCharAt(offset) : ' ';
+					const string allowedChars = ";,.[](){}+-*/%^?:&|~!<>=";
+
+					if ((!Char.IsWhiteSpace(nextCh) && allowedChars.IndexOf(nextCh) < 0) || !(Char.IsWhiteSpace(prevCh) || allowedChars.IndexOf(prevCh) >= 0)) {
+						if (!controlSpace)
+							return null;
+					}
+
 					if (IsInLinqContext(offset)) {
 						if (!controlSpace && !(char.IsLetter(completionChar) || completionChar == '_')) {
 							return null;
@@ -721,16 +730,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return keywordresult;
 					}
 
-					char prevCh = offset > 2 ? document.GetCharAt(offset - 2) : ';';
-					char nextCh = offset < document.TextLength ? document.GetCharAt(offset) : ' ';
-					const string allowedChars = ";,.[](){}+-*/%^?:&|~!<>=";
-
 					if ((!Char.IsWhiteSpace(nextCh) && allowedChars.IndexOf(nextCh) < 0) || !(Char.IsWhiteSpace(prevCh) || allowedChars.IndexOf(prevCh) >= 0)) {
 						if (controlSpace)
 							return DefaultControlSpaceItems(identifierStart);
-						return null;
 					}
-					
+
 					int prevTokenIndex = tokenIndex;
 					var prevToken2 = GetPreviousToken(ref prevTokenIndex, false);
 					if (prevToken2 == "delegate") {

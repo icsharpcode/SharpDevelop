@@ -6057,6 +6057,31 @@ class Test
 			});
 		}
 
+		/// <summary>
+		/// Bug 11906 - Intellisense choice injects full name on edit of existing name.
+		/// </summary>
+		[Test]
+		public void TestBug11906()
+		{
+			// The bug was caused by completion popping up in the middle of a word.
+			var provider = CreateProvider(@"using System;
+using System.Threading.Tasks;
+
+enum Test_Struct {
+	Some_Value1,
+	Some_Value2,
+	Some_Value3
+}
+
+public class Test
+{
+	public static void Main (string[] args)
+	{
+		Test_Struct v1 = Test_Struct.Some_$V$Value2;
+	}
+}");
+			Assert.IsTrue(provider == null || provider.Count == 0);
+		}
 
 	}
 }
