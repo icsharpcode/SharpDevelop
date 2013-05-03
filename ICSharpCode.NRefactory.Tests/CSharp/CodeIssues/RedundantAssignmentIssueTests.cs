@@ -461,5 +461,37 @@ class TestClass
 }";
             Test<RedundantAssignmentIssue>(input, 2, output, 0);
         }
+
+
+		/// <summary>
+		/// Bug 11795 - Use of regex in linq statement not being recognized. 
+		/// </summary>
+		[Test]
+		public void TestBug11795 ()
+		{
+			TestWrongContext<RedundantAssignmentIssue>(@"
+using System;
+using System.Text.RegularExpressions;
+using System.IO;
+using System.Linq;
+
+public class Test
+{
+	public void Demo ()
+	{
+		Regex pattern = new Regex (@""^.*\.(jpg|png)$"", RegexOptions.IgnoreCase);
+		string path = Path.Combine (""/"", ""speakers"");
+
+		Console.WriteLine (
+			from file in Directory.GetFiles (path)
+			where pattern.IsMatch (file)
+			select file
+			);
+	}
+
+}");
+
+		}
+
 	}
 }

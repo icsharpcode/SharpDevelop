@@ -106,7 +106,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						continue;
 
 					var parent = node.Parent;
-					while (!(parent == null || parent is Statement || parent is LambdaExpression))
+					while (!(parent == null || parent is Statement || parent is LambdaExpression || parent is QueryExpression))
 						parent = parent.Parent;
 					if (parent == null)
 						continue;
@@ -118,7 +118,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					}
 
 					while (parent != null && parent != rootStatement) {
-						if (parent is LambdaExpression || parent is AnonymousMethodExpression) {
+						if (parent is LambdaExpression || parent is AnonymousMethodExpression || parent is QueryExpression) {
 							usedInLambda = true;
 							break;
 						}
