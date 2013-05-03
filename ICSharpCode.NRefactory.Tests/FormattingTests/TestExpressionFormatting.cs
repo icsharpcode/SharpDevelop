@@ -134,6 +134,27 @@ class Test
 	}
 }");
 		}
+
+		[Test]
+		public void TestMemberReferenceFormatting ()
+		{
+			var policy = FormattingOptionsFactory.CreateMono ();
+			Test (policy, @"
+class Test
+{
+	void Init ()
+	{
+		System.   Console     .WriteLine ();
+	}
+}", @"
+class Test
+{
+	void Init ()
+	{
+		System.Console.WriteLine ();
+	}
+}");
+		}
 	}
 }
 

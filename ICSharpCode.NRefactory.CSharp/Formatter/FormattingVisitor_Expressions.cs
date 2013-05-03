@@ -553,7 +553,10 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression)
 		{
-			ForceSpacesAfter(memberReferenceExpression.DotToken, false);
+			var dot = memberReferenceExpression.DotToken;
+			if (dot.PrevSibling.EndLocation.Line == dot.StartLocation.Line)
+				ForceSpacesBefore(dot, false);
+			ForceSpacesAfter(dot, false);
 			base.VisitMemberReferenceExpression(memberReferenceExpression);
 		}
 	}
