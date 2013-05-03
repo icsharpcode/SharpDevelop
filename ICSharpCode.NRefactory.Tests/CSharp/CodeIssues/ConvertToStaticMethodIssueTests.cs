@@ -112,6 +112,52 @@ class TestClass
 }";
 			TestWrongContext<ConvertToStaticMethodIssue>(input);
 		}
+
+		[Test]
+		public void TestDoNotWarnOnEmptyMethod()
+		{
+
+			var input = @"using System;
+class TestClass
+{
+	public void $Test ()
+	{
+	}
+}";
+			TestWrongContext<ConvertToStaticMethodIssue>(input);
+		}
+
+		[Test]
+		public void TestDoNotWarnOnNotImplementedMethod()
+		{
+			var input = @"using System;
+class TestClass
+{
+	public void $Test ()
+	{
+		throw new NotImplementedExceptionIssue();
+	}
+}";
+			TestWrongContext<ConvertToStaticMethodIssue>(input);
+		}
+
+		[Ignore("Body analyzation is missing.")]
+		[Test]
+		public void TestPropertyAccess()
+		{
+			var input = @"using System;
+class TestClass
+{
+	public int Foo { get; set; }
+	public void $Test ()
+	{
+		System.Console.WriteLine (Foo);
+	}
+}";
+			TestWrongContext<ConvertToStaticMethodIssue>(input);
+		}
+
+
 	
 	}
     

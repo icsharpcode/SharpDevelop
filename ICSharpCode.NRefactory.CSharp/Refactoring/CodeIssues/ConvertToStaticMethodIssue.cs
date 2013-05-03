@@ -30,10 +30,10 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription("Make this method static",
-                      Description = "This method doesn't use any non static members so it can be made static",
-                      Severity = Severity.Hint,
-                      IssueMarker = IssueMarker.Underline)]
+//	[IssueDescription("Make this method static",
+//                      Description = "This method doesn't use any non static members so it can be made static",
+//                      Severity = Severity.Hint,
+//                      IssueMarker = IssueMarker.Underline)]
     public class ConvertToStaticMethodIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
@@ -43,8 +43,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		private class GatherVisitor : GatherVisitorBase<ConvertToStaticMethodIssue>
 		{
-			private bool initializerInvoked;
-			private ConstructorInitializer initializer;
+			bool initializerInvoked;
+			ConstructorInitializer initializer;
 
 			public GatherVisitor(BaseRefactoringContext context)
                 : base(context)
@@ -64,11 +64,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				    methodDeclaration.Attributes.Any())
 					return;
 
+				// skip empty methods
+				if (!methodDeclaration.Body.Statements.Any())
+					return;
+
+				if (methodDeclaration.Body.Statements.Count == 1) {
+					if (methodDeclaration.Body.Statements.First () is ThrowStatement)
+						return;
+				}
+					
 				var resolved = context.Resolve(methodDeclaration) as MemberResolveResult;
 				if (resolved == null)
 					return;
-				var isImplementingInterface = resolved.Member.ImplementedInterfaceMembers.Any();
 
+				var isImplementingInterface = resolved.Member.ImplementedInterfaceMembers.Any();
 				if (isImplementingInterface)
 					return;
 
@@ -77,7 +86,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				                     script => ExecuteScriptToFixStaticMethodIssue(script, context, methodDeclaration));
 			}
 
-			private static void ExecuteScriptToFixStaticMethodIssue(Script script,
+			static void ExecuteScriptToFixStaticMethodIssue(Script script,
 			                                                                 BaseRefactoringContext context, 
 			                                                                 AstNode methodDeclaration)
 			{
@@ -85,7 +94,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				clonedDeclaration.Modifiers |= Modifiers.Static;
 				script.Replace(methodDeclaration, clonedDeclaration);
 				var rr = context.Resolve(methodDeclaration) as MemberResolveResult;
-				var method = (IMethod)rr.Member;
+				//var method = (IMethod)rr.Member;
 				//method.ImplementedInterfaceMembers.Any(m => methodGroupResolveResult.Methods.Contains((IMethod)m));
 
 				script.DoGlobalOperationOn(rr.Member,
@@ -93,7 +102,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					DoStaticMethodGlobalOperation(fnode, fctx, rr, fscript); });
 			}
 
-			private static void DoStaticMethodGlobalOperation(AstNode fnode, RefactoringContext fctx, MemberResolveResult rr,
+			static void DoStaticMethodGlobalOperation(AstNode fnode, RefactoringContext fctx, MemberResolveResult rr,
 			                                                           Script fscript)
 			{
 				if (fnode is MemberReferenceExpression) {
