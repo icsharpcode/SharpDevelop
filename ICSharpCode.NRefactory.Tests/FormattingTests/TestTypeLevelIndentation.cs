@@ -38,8 +38,21 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		public void TestUsingDeclarations()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
-	
+
 			Test(policy, @"		using Foo;", @"using Foo;");
+		}
+
+		
+		[Test]
+		public void TestUsingDeclarationsWithHeader()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+
+			Test(policy, @"// THE SOFTWARE.
+
+using    Foo   ;", @"// THE SOFTWARE.
+
+using Foo;");
 		}
 
 		[Test]
