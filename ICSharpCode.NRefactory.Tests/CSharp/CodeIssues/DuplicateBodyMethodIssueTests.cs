@@ -23,13 +23,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
-	
+	[Ignore]
 	[TestFixture]
 	public class DuplicateBodyMethodIssueTests : InspectionActionTestBase
 	{
@@ -43,50 +42,54 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 	{
 		int a = 2;
 	}
-	void $Test2 () {
-        int a = 2;
+	void $Test2 ()
+	{
+		int a = 2;
 	}
 }",
-                @"class TestClass {
+				@"class TestClass {
 	void Test ()
 	{
 		int a = 2;
 	}
-	void Test2 () {
-        Test ();
+	void Test2 ()
+	{
+		Test ();
 	}
 }
 "
-                );
+			);
 		}
-        [Test]
+
+		[Test]
         public void TestNonVoid()
-        {
-            Test<DuplicateBodyMethodIssue>(
-                @"class TestClass {
+		{
+			Test<DuplicateBodyMethodIssue>(
+				@"class TestClass {
 	int Test ()
 	{
 		int a = 2;
-        return a;
+		return a;
 	}
-	int $Test2 () {
-        int a = 2;
-        return a;
+	int $Test2 ()
+	{
+		int a = 2;
+		return a;
 	}
 }",
-                @"class TestClass {
+				@"class TestClass {
 	int Test ()
 	{
 		int a = 2;
-        return a;
+		return a;
 	}
-	int Test2 () {
-        return Test ();
+	int Test2 ()
+	{
+		return Test ();
 	}
 }
 "
-                );
-        }
+			);
+		}
 	}
-    
 }
