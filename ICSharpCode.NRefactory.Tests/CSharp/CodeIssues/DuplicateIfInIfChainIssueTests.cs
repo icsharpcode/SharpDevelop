@@ -23,17 +23,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
-{	
+{
 	[TestFixture]
 	public class DuplicateIfInIfChainIssueTests : InspectionActionTestBase
 	{
 		[Test]
-		public void TestSimple ()
+		public void TestSimple()
 		{
 			var input = @"
 class TestClass
@@ -49,14 +48,14 @@ class TestClass
 	void TestMethod (int i)
 	{
 		if (i > 0) {
-        }
+		} 
 	}
 }";
-            Test<DuplicateIfInIfChainIssue>(input, output);
+			Test<DuplicateIfInIfChainIssue>(input, output);
 		}
-		
+
 		[Test]
-		public void Test ()
+		public void Test()
 		{
 			var input = @"
 class TestClass
@@ -81,11 +80,11 @@ class TestClass
 		} 
 	}
 }";
-            Test<DuplicateIfInIfChainIssue>(input, output);
+			Test<DuplicateIfInIfChainIssue>(input, output);
 		}
 
 		[Test]
-		public void TestComplexWithMoreBranches ()
+		public void TestComplexWithMoreBranches()
 		{
 			var input = @"
 class TestClass
@@ -110,11 +109,10 @@ class TestClass
 		if(i > 0) {
 		} else if (i % 2 == 0) {
 		} else if (i > 1) {
-		} 
+		}
 	}
 }";
 			Test<DuplicateIfInIfChainIssue>(input, output);
 		}
 	}
-	
 }
