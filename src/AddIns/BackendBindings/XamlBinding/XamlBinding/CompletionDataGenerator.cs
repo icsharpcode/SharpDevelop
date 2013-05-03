@@ -90,7 +90,8 @@ namespace ICSharpCode.XamlBinding
 						TextLocation loc = editor.Document.GetLocation(offset);
 						
 						XamlFullParseInformation info = context.ParseInformation;
-						TypeResolveResult trr = resolver.ResolveAtLocation(loc) as TypeResolveResult;
+						XamlResolver nameResolver = new XamlResolver(compilation);
+						TypeResolveResult trr = nameResolver.ResolveExpression(className, context) as TypeResolveResult;
 						ITypeDefinition typeClass = trr != null ? trr.Type.GetDefinition() : null;
 						
 						if (typeClass != null && typeClass.HasAttached(true, true))
@@ -831,7 +832,7 @@ namespace ICSharpCode.XamlBinding
 					string key = string.IsNullOrEmpty(ns.Key) ? "" : ns.Key + ":";
 					
 					foreach (ITypeDefinition td in ns.Value.GetContents(compilation)) {
-						if (td.Kind == TypeKind.Class)
+						if (td.Kind != TypeKind.Class)
 							continue;
 						if (td.HasAttached(properties, events))
 							result.Add(new XamlCompletionItem(td));

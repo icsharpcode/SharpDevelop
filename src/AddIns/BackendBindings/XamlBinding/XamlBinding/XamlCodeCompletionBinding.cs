@@ -78,7 +78,7 @@ namespace ICSharpCode.XamlBinding
 					switch (context.Description) {
 						case XamlContextDescription.AtTag:
 						case XamlContextDescription.InTag:
-							if (context.ActiveElement != null && !XmlParser.IsInsideAttributeValue(editor.Document.Text, editor.Caret.Offset)) {
+							if (context.ActiveElement != null) {
 								list = generator.CreateListForContext(context);
 								editor.ShowCompletionWindow(list);
 								return CodeCompletionKeyPressResult.Completed;

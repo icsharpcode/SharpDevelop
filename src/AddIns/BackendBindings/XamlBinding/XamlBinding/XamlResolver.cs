@@ -96,24 +96,22 @@ namespace ICSharpCode.XamlBinding
 			return string.Empty;
 		}
 		
-		string ParseName(string expression, out string prefix, out string member)
+		internal static string ParseName(string expression, out string prefix, out string member)
 		{
 			int colonPos = expression.IndexOf(':');
-			int prefixLength = colonPos;
 			if (colonPos > 0)
 				prefix = expression.Substring(0, colonPos);
-			else {
+			else
 				prefix = "";
-				prefixLength = 0;
-			}
+			expression = expression.Remove(0, colonPos + 1);
 			int dotPos = expression.IndexOf('.');
-			if (dotPos >= 0)
+			if (dotPos >= 0) {
 				member = expression.Substring(dotPos + 1);
-			else {
+				return expression.Remove(dotPos);
+			} else {
 				member = "";
-				dotPos = expression.Length;
+				return expression;
 			}
-			return expression.Substring(colonPos + 1, dotPos - prefixLength - 1);
 		}
 	}
 }
