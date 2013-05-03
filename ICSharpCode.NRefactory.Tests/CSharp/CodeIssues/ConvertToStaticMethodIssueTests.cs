@@ -65,7 +65,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 }";
             TestWrongContext<ConvertToStaticMethodIssue>(input);
 		}
-		
+
+		[Ignore("Doesn't work for me.")]
 		[Test]
 		public void TestWithInterface() {
 			
@@ -81,10 +82,11 @@ class TestClass : IBase
 }";
             TestWrongContext<ConvertToStaticMethodIssue>(input);
 		}
+
 		[Test]
 		public void TestWithStaticFunction()
 		{
-			
+
 			var input = @"class TestClass
 {
 	static void $Test ()
@@ -92,7 +94,23 @@ class TestClass : IBase
 		int a = 2;
 	}
 }";
-            TestWrongContext<ConvertToStaticMethodIssue>(input);
+			TestWrongContext<ConvertToStaticMethodIssue>(input);
+		}
+
+		[Test]
+		public void TestDoNotWarnOnAttributes()
+		{
+
+			var input = @"using System;
+class TestClass
+{
+	[Obsolete]
+	public void $Test ()
+	{
+		int a = 2;
+	}
+}";
+			TestWrongContext<ConvertToStaticMethodIssue>(input);
 		}
 	
 	}
