@@ -16,7 +16,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Reports.Addin.Commands;
 using ICSharpCode.Reports.Addin.Designer;
 using ICSharpCode.Reports.Addin.SecondaryViews;
-using ICSharpCode.Reports.Addin.SecondaryViews.TestView;
+
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Exporter;
 using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
@@ -53,7 +53,7 @@ namespace ICSharpCode.Reports.Addin
 		private XmlView xmlView;
 		private ReportPreview reportPreview;
 		private ReportViewerSecondaryView reportViewer;
-		private TestSecondaryView testView;
+		private TestWPFReportPreview testView;
 		
 		#region Constructor
 		
@@ -103,7 +103,7 @@ namespace ICSharpCode.Reports.Addin
 			var wpfViewer = new WPFReportPreview(loader,this);
 			SecondaryViewContents.Add(wpfViewer);
 			
-			testView = new TestSecondaryView(loader,this);
+			testView = new TestWPFReportPreview(loader,this);
 			SecondaryViewContents.Add(testView);
 			
 		}

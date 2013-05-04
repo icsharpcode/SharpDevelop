@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using ICSharpCode.Reporting.Xml;
 using ICSharpCode.Reports.Addin.Commands;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
@@ -43,6 +44,11 @@ namespace ICSharpCode.Reports.Addin.SecondaryViews
 		{
 			Pages.Clear();
 			ReportModel model = designerLoader.CreateRenderableModel();
+	//TODO change to designerLoader.CreateXmlModel();
+//			var xmDoc = designerLoader.CreateXmlModel();
+//			var modulLoader = new ModelLoader();
+//			ReportModel model = (ReportModel)modulLoader.Load(xmDoc.DocumentElement);
+			
 			var collectCmd = new CollectParametersCommand(model.ReportSettings);
 			collectCmd.Run();
 			switch (model.DataModel)

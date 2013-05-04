@@ -27,6 +27,7 @@ namespace ICSharpCode.Reporting.Exporter
 		
 		
 		public override void Run () {
+			Console.WriteLine("PrintExporter Run");
 			foreach (var page in Pages) {
 				ShowDebug(page);
 			}

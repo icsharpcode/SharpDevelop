@@ -17,7 +17,7 @@ namespace ICSharpCode.Reporting.Items
 	/// <summary>
 	/// Description of ReportModel.
 	/// </summary>
-	internal class ReportModel :IReportModel
+	public class ReportModel :IReportModel
 	{
 		
 		public ReportModel() {

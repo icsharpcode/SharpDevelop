@@ -29,6 +29,15 @@ namespace ICSharpCode.Reporting
 		{
 		}
 		
+		public IReportCreator ReportCreator (ReportModel reportModel) {
+			if (reportModel == null)
+				throw new ArgumentNullException("reportModel");
+			IReportCreator builder = null;
+			if (reportModel.ReportSettings.DataModel == GlobalEnums.PushPullModel.FormSheet) {
+				builder =  new FormPageBuilder(reportModel);
+			}
+			return builder;
+		}
 		
 		public IReportCreator ReportCreator (Stream stream)
 		{

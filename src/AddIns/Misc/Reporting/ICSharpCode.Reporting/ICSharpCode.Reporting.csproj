@@ -44,14 +44,26 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -66,6 +78,7 @@
     <Compile Include="Src\Exporter\Visitors\IAcceptor.cs" />
     <Compile Include="Src\Exporter\Visitors\IVisitor.cs" />
     <Compile Include="Src\Exporter\Visitors\DebugVisitor.cs" />
+    <Compile Include="Src\ExportRenderer\FixedDocumentRenderer.cs" />
     <Compile Include="Src\Factories\ExportColumnFactory.cs" />
     <Compile Include="Src\Factories\SectionFactory.cs" />
     <Compile Include="Src\Globals\CreateGraphics.cs" />
@@ -93,6 +106,11 @@
     <Compile Include="Src\PageBuilder\ExportColumns\ExportText.cs" />
     <Compile Include="Src\PageBuilder\FormPageBuilder.cs" />
     <Compile Include="Src\ReportingFactory.cs" />
+    <Compile Include="Src\Wpf\PreviewViewModel.cs" />
+    <Compile Include="Src\Wpf\WpfReportViewer\WpfReportViewer.xaml.cs">
+      <DependentUpon>WpfReportViewer.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Xml\ModelLoader.cs" />
     <Compile Include="Src\Xml\MycroParser.cs" />
   </ItemGroup>
@@ -108,10 +126,16 @@
     <Folder Include="Src\Factories" />
     <Folder Include="Src\Exporter" />
     <Folder Include="Src\Arrange" />
+    <Folder Include="Src\ExportRenderer" />
+    <Folder Include="Src\Wpf" />
     <Folder Include="Src\PageBuilder" />
     <Folder Include="Src\PageBuilder\Converter" />
     <Folder Include="Src\PageBuilder\ExportColumns" />
+    <Folder Include="Src\Wpf\WpfReportViewer" />
     <Folder Include="Src\Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Src\Wpf\WpfReportViewer\WpfReportViewer.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -97,6 +97,16 @@ namespace ICSharpCode.Reports.Addin
 			return m;
 		}
 		
+		public XmlDocument CreateXmlModel()
+		{
+			Console.WriteLine("ReportDesignerLoader:CreateXmlModel");
+			ReportModel m = new ReportModel();
+			generator.MergeFormChanges((System.CodeDom.CodeCompileUnit)null);
+			XmlDocument xmlDocument = new XmlDocument();
+			xmlDocument.LoadXml(generator.ViewContent.ReportFileContent);
+			return xmlDocument;
+		}
+		
 		#endregion
 		
 		#region Dispose

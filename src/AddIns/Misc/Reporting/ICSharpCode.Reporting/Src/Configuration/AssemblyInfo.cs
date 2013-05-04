@@ -11,3 +11,4 @@ using System.Security;
 [assembly: SecurityRules(SecurityRuleSet.Level1)]
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ICSharpCode.Reporting.Test")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ICSharpCode.Reports.Addin")]
