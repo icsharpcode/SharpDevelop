@@ -177,7 +177,7 @@ namespace PackageManagement.Tests
 			
 			viewModel.AddPackage();
 			
-			ProcessPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
+			IPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
 			
 			Assert.AreEqual(fakeInstallPackageAction, actionExecuted);
 		}
@@ -739,7 +739,7 @@ namespace PackageManagement.Tests
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			viewModel.RemovePackage();
 			
-			ProcessPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
+			IPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
 			
 			Assert.AreEqual(fakeUninstallPackageAction, actionExecuted);
 		}
@@ -902,7 +902,7 @@ namespace PackageManagement.Tests
 			
 			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
 			
-			List<ProcessPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
+			List<IPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
 			InstallPackageAction action = actions[0] as InstallPackageAction;
 			
 			Assert.AreEqual(1, actions.Count);
@@ -1111,7 +1111,7 @@ namespace PackageManagement.Tests
 			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
 			
 			InstallPackageAction expectedAction = FirstFakeSelectedProject.FakeInstallPackageAction;
-			List<ProcessPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
+			List<IPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
 			InstallPackageAction action = actions[0] as InstallPackageAction;
 			
 			Assert.AreEqual(1, actions.Count);
@@ -1224,12 +1224,12 @@ namespace PackageManagement.Tests
 			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
 			UserAcceptsProjectSelection();
 			fakePackageManagementEvents.ProjectsToSelect.Add("Project A");
+			
 			viewModel.ManagePackage();
 			
-			List<ProcessPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
-			ProcessPackageAction action = actions[0];
+			List<IPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
+			var action = actions[0] as ProcessPackageAction;
 			FakePackageManagementProject expectedProject = fakeSolution.FakeProjectsToReturnFromGetProject["Project A"];
-			
 			Assert.AreEqual(expectedProject, action.Project);
 		}
 		

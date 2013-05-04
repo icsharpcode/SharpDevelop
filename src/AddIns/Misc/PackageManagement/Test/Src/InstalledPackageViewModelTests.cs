@@ -235,7 +235,7 @@ namespace PackageManagement.Tests
 			viewModel.FakePackageManagementEvents.ProjectsToSelect.Add("UnknownProject");
 			viewModel.ManagePackage();
 			
-			List<ProcessPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
+			List<IPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
 			var firstAction = actions[0] as UninstallPackageAction;
 			var secondAction = actions[1] as UninstallPackageAction;
 			

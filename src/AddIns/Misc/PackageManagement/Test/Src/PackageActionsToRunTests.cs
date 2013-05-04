@@ -33,7 +33,7 @@ namespace PackageManagement.Tests
 		public void GetNextAction_NewInstance_ReturnsFalse()
 		{
 			CreateActions();
-			ProcessPackageAction action = null;
+			IPackageAction action = null;
 			bool result = actions.GetNextAction(out action);
 			
 			Assert.IsFalse(result);
@@ -45,7 +45,7 @@ namespace PackageManagement.Tests
 			CreateActions();
 			ProcessPackageAction expectedAction = AddAction();
 			
-			ProcessPackageAction action = null;
+			IPackageAction action = null;
 			actions.GetNextAction(out action);
 			
 			Assert.AreEqual(expectedAction, action);
@@ -57,7 +57,7 @@ namespace PackageManagement.Tests
 			CreateActions();
 			ProcessPackageAction expectedAction = AddAction();
 			
-			ProcessPackageAction action = null;
+			IPackageAction action = null;
 			bool result = actions.GetNextAction(out action);
 			
 			Assert.IsTrue(result);
@@ -67,8 +67,8 @@ namespace PackageManagement.Tests
 		public void GetNextAction_CalledTwiceWithOneActionAdded_ReturnsNullActionInOutParameterOnSecondCall()
 		{
 			CreateActions();
-			ProcessPackageAction expectedAction = AddAction();
-			ProcessPackageAction action = null;
+			IPackageAction expectedAction = AddAction();
+			IPackageAction action = null;
 			actions.GetNextAction(out action);
 			actions.GetNextAction(out action);
 			
@@ -79,9 +79,9 @@ namespace PackageManagement.Tests
 		public void GetNextAction_CalledTwiceWithOneActionAdded_ReturnsFalseOnSecondCall()
 		{
 			CreateActions();
-			ProcessPackageAction expectedAction = AddAction();
+			IPackageAction expectedAction = AddAction();
 			
-			ProcessPackageAction action = null;
+			IPackageAction action = null;
 			actions.GetNextAction(out action);
 			bool result = actions.GetNextAction(out action);
 			
@@ -93,8 +93,8 @@ namespace PackageManagement.Tests
 		{
 			CreateActions();
 			AddAction();
-			ProcessPackageAction expectedAction = AddAction();
-			ProcessPackageAction action = null;
+			IPackageAction expectedAction = AddAction();
+			IPackageAction action = null;
 			actions.GetNextAction(out action);
 			actions.GetNextAction(out action);
 			
@@ -106,8 +106,8 @@ namespace PackageManagement.Tests
 		{
 			CreateActions();
 			AddAction();
-			ProcessPackageAction expectedAction = AddAction();
-			ProcessPackageAction action = null;
+			IPackageAction expectedAction = AddAction();
+			IPackageAction action = null;
 			actions.GetNextAction(out action);
 			bool result = actions.GetNextAction(out action);
 			

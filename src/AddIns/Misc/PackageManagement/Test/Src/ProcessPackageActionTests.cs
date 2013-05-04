@@ -67,7 +67,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Execute_MethodCalled_RunPackageScriptsActionCreatedUsingPackageScriptRunner()
+		public void Execute_PackageScriptRunnerSet_RunPackageScriptsActionCreatedUsingPackageScriptRunner()
 		{
 			CreateAction();
 			var expectedRunner = new FakePackageScriptRunner();
@@ -80,7 +80,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Execute_MethodCalled_RunPackageScriptsActionCreatedUsingProject()
+		public void Execute_PackageScriptRunnerSet_RunPackageScriptsActionCreatedUsingProject()
 		{
 			CreateAction();
 			var expectedProject = new FakePackageManagementProject();
@@ -88,13 +88,13 @@ namespace PackageManagement.Tests
 			action.PackageScriptRunner = new FakePackageScriptRunner();
 			action.Execute();
 			
-			var actualProject = action.ProjectPassedToCreateRunPackageScriptsAction;
+			IPackageManagementProject actualProject = action.ProjectPassedToCreateRunPackageScriptsAction;
 			
 			Assert.AreEqual(expectedProject, actualProject);
 		}
 		
 		[Test]
-		public void Execute_MethodCalled_RunPackageScriptsActionIsDisposed()
+		public void Execute_PackageScriptRunnerSet_RunPackageScriptsActionIsDisposed()
 		{
 			CreateAction();
 			action.PackageScriptRunner = new FakePackageScriptRunner();
@@ -104,12 +104,25 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Execute_NullSession_RunPackageScriptsActionIsNotCreated()
+		public void Execute_NullPackageScriptRunner_RunPackageScriptsActionIsNotCreated()
 		{
 			CreateAction();
+			action.PackageScriptRunner = null;
+			
 			action.Execute();
 			
 			Assert.IsFalse(action.IsRunPackageScriptsActionCreated);
+		}
+		
+		[Test]
+		public void Execute_NullPackageScriptRunner_ActionIsExecuted()
+		{
+			CreateAction();
+			action.PackageScriptRunner = new FakePackageScriptRunner();
+			
+			action.Execute();
+			
+			Assert.IsTrue(action.IsExecuteCoreCalled);
 		}
 	}
 }

@@ -455,5 +455,23 @@ namespace PackageManagement.Tests
 			Assert.IsFalse(containsDisabledPackageSource);
 			Assert.IsTrue(containsEnabledPackageSource);
 		}
+		
+		[Test]
+		public void IsInstallAllPackagesEnabled_RepositoryHasTwoPackages_ReturnsFalse()
+		{
+			CreateViewModel();
+			var package1 = new FakePackage("Test", "0.1.0.0");
+			var package2 = new FakePackage("Test", "0.2.0.0");
+			var packages = new FakePackage[] {
+				package1, package2
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(packages);
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			bool enabled = viewModel.IsUpdateAllPackagesEnabled;
+			
+			Assert.IsFalse(enabled);
+		}
 	}
 }

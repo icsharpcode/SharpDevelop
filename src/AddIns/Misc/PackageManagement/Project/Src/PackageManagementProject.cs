@@ -131,5 +131,20 @@ namespace ICSharpCode.PackageManagement
 				.GetPackagesByDependencyOrder(projectManager.LocalRepository)
 				.Reverse();
 		}
+		
+		public void UpdatePackages(UpdatePackagesAction updateAction)
+		{
+			packageManager.UpdatePackages(updateAction);
+		}
+		
+		public UpdatePackagesAction CreateUpdatePackagesAction()
+		{
+			return new UpdatePackagesAction(this);
+		}
+		
+		public IEnumerable<PackageOperation> GetUpdatePackagesOperations(UpdatePackagesAction action)
+		{
+			return packageManager.GetUpdatePackageOperations(action);
+		}
 	}
 }

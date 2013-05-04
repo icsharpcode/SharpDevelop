@@ -156,8 +156,10 @@
     <Compile Include="Src\IClassKindUpdater.cs" />
     <Compile Include="Src\IDocumentNamespaceCreator.cs" />
     <Compile Include="Src\IPackageExtensions.cs" />
+    <Compile Include="Src\IPackageAction.cs" />
     <Compile Include="Src\IProjectBuilder.cs" />
     <Compile Include="Src\IProjectContentExtensions.cs" />
+    <Compile Include="Src\IUpdatePackageSettings.cs" />
     <Compile Include="Src\IVirtualMethodUpdater.cs" />
     <Compile Include="Src\IProjectBrowserUpdater.cs" />
     <Compile Include="Src\IRefactoringDocumentView.cs" />
@@ -230,8 +232,10 @@
     <Compile Include="Src\PackageLicenseViewModel.cs" />
     <Compile Include="Src\PackageManagementServiceProvider.cs" />
     <Compile Include="Src\ProjectBuilder.cs" />
+    <Compile Include="Src\ReducedPackageOperations.cs" />
     <Compile Include="Src\ResolveFileConflictEventArgs.cs" />
     <Compile Include="Src\ServiceWithWorkbenchOwner.cs" />
+    <Compile Include="Src\UpdatePackagesAction.cs" />
     <Compile Include="Src\VirtualMethodUpdater.cs" />
     <Compile Include="Src\NewProjectsCreated.cs" />
     <Compile Include="Src\OpenMSBuildProjects.cs" />

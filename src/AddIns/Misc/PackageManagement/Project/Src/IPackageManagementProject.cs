@@ -30,13 +30,16 @@ namespace ICSharpCode.PackageManagement
 		IEnumerable<IPackage> GetPackagesInReverseDependencyOrder();
 		
 		IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction);
+		IEnumerable<PackageOperation> GetUpdatePackagesOperations(UpdatePackagesAction action);
 		
 		void InstallPackage(IPackage package, InstallPackageAction installAction);
 		void UpdatePackage(IPackage package, UpdatePackageAction updateAction);
 		void UninstallPackage(IPackage package, UninstallPackageAction uninstallAction);
+		void UpdatePackages(UpdatePackagesAction action);
 		
 		InstallPackageAction CreateInstallPackageAction();
 		UninstallPackageAction CreateUninstallPackageAction();
 		UpdatePackageAction CreateUpdatePackageAction();
+		UpdatePackagesAction CreateUpdatePackagesAction();
 	}
 }

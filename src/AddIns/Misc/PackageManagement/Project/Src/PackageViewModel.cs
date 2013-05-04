@@ -402,7 +402,7 @@ namespace ICSharpCode.PackageManagement
 		void RunActionsIfAnyExist(IList<ProcessPackageAction> actions)
 		{
 			if (actions.Any()) {
-				actionRunner.Run(actions);			
+				actionRunner.Run(actions);
 			}
 		}
 		

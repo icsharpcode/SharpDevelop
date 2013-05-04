@@ -28,6 +28,7 @@ namespace PackageManagement.Tests
 		FakeInstallPackageAction fakeInstallAction;
 		FakeUninstallPackageAction fakeUninstallAction;
 		FakeUpdatePackageAction fakeUpdateAction;
+		UpdatePackagesAction updatePackagesAction;
 		
 		void CreateProject()
 		{
@@ -61,6 +62,11 @@ namespace PackageManagement.Tests
 		{
 			fakeUpdateAction = new FakeUpdatePackageAction(project);
 			return fakeUpdateAction;
+		}
+		
+		void CreateUpdatePackagesAction()
+		{
+			updatePackagesAction = new UpdatePackagesAction(project);
 		}
 		
 		[Test]
@@ -638,6 +644,41 @@ namespace PackageManagement.Tests
 			project.UpdatePackage(null, fakeUpdateAction);
 			
 			Assert.IsFalse(fakePackageManager.AllowPrereleaseVersionsPassedToInstallPackage);
+		}
+		
+		[Test]
+		public void UpdatePackages_ActionHasOperationsAndPackages_ActionPassedToPackageManager()
+		{
+			CreateProject();
+			CreateUpdatePackagesAction();
+			
+			project.UpdatePackages(updatePackagesAction);
+			
+			Assert.AreEqual(updatePackagesAction, fakePackageManager.UpdatePackagesActionsPassedToUpdatePackages);
+		}
+		
+		[Test]
+		public void GetUpdatePackagesOperations_ActionPassed_ActionPassedToPackageManager()
+		{
+			CreateProject();
+			CreateUpdatePackagesAction();
+			
+			project.GetUpdatePackagesOperations(updatePackagesAction);
+			
+			Assert.AreEqual(updatePackagesAction, fakePackageManager.UpdatePackagesActionsPassedToGetUpdatePackagesOperations);
+		}
+		
+		[Test]
+		public void GetUpdatePackagesOperations_ActionPassed_PackageOperationsReturned()
+		{
+			CreateProject();
+			CreateUpdatePackagesAction();
+			List<PackageOperation> expectedOperations = PackageOperationHelper.CreateListWithOneInstallOperationWithFile("readme.txt");
+			fakePackageManager.PackageOperationsToReturnFromGetUpdatePackageOperations = expectedOperations;
+			
+			IEnumerable<PackageOperation> operations = project.GetUpdatePackagesOperations(updatePackagesAction);
+			
+			CollectionAssert.AreEqual(expectedOperations, operations);
 		}
 	}
 }

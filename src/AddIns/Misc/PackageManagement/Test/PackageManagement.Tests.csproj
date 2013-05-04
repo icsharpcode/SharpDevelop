@@ -112,6 +112,7 @@
     <Compile Include="Src\Helpers\ClassHelper.cs" />
     <Compile Include="Src\Helpers\CodeElementsExtensions.cs" />
     <Compile Include="Src\Helpers\CompilationUnitHelper.cs" />
+    <Compile Include="Src\Helpers\ExceptionThrowingPackageActionRunner.cs" />
     <Compile Include="Src\Helpers\FakeCodeGenerator.cs" />
     <Compile Include="Src\Helpers\FieldHelper.cs" />
     <Compile Include="Src\Helpers\FakeSelectProjectsService.cs" />
@@ -120,6 +121,7 @@
     <Compile Include="Src\Helpers\FakeUpdatePackageActionsFactory.cs" />
     <Compile Include="Src\Helpers\MethodHelper.cs" />
     <Compile Include="Src\Helpers\MethodOrPropertyHelper.cs" />
+    <Compile Include="Src\Helpers\PackageOperationHelper.cs" />
     <Compile Include="Src\Helpers\ParameterHelper.cs" />
     <Compile Include="Src\Helpers\ProjectContentHelper.cs" />
     <Compile Include="Src\Helpers\PropertiesHelper.cs" />
@@ -131,6 +133,7 @@
     <Compile Include="Src\Helpers\TestablePackageFromRepository.cs" />
     <Compile Include="Src\Helpers\TestableProjectBehaviour.cs" />
     <Compile Include="Src\Helpers\TestableSelectedProjectsForUpdatedPackages.cs" />
+    <Compile Include="Src\Helpers\TestableUpdatePackagesAction.cs" />
     <Compile Include="Src\Helpers\TypeParameterHelper.cs" />
     <Compile Include="Src\Helpers\UsingHelper.cs" />
     <Compile Include="Src\Helpers\UsingScopeHelper.cs" />
@@ -195,6 +198,8 @@
     <Compile Include="Src\OpenMSBuildProjectsTests.cs" />
     <Compile Include="Src\PackageManagementServiceProviderTests.cs" />
     <Compile Include="Src\PackageViewModelOperationLoggerTests.cs" />
+    <Compile Include="Src\ReducedPackageOperationsTests.cs" />
+    <Compile Include="Src\UpdatePackagesActionTests.cs" />
     <Compile Include="Src\VirtualMethodUpdaterTests.cs" />
     <Compile Include="Src\NewProjectsCreatedTests.cs" />
     <Compile Include="Src\PackageActionRunnerTests.cs" />

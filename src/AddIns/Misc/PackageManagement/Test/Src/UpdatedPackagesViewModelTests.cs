@@ -2,6 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
@@ -18,6 +21,9 @@ namespace PackageManagement.Tests
 		FakeTaskFactory taskFactory;
 		FakeRegisteredPackageRepositories registeredPackageRepositories;
 		ExceptionThrowingPackageManagementSolution exceptionThrowingSolution;
+		FakePackageViewModelFactory packageViewModelFactory;
+		FakePackageManagementEvents fakePackageManagementEvents;
+		UpdatedPackageViewModelFactory updatedPackageViewModelFactory;
 		
 		void CreateViewModel()
 		{
@@ -42,11 +48,40 @@ namespace PackageManagement.Tests
 			CreateViewModel(solution, registeredPackageRepositories);
 		}
 		
+		void CreateViewModel(FakePackageActionRunner actionRunner)
+		{
+			CreateSolution();
+			CreateRegisteredPackageRepositories();
+			CreateViewModel(solution, registeredPackageRepositories, actionRunner);
+		}
+		
 		void CreateViewModel(FakePackageManagementSolution solution, FakeRegisteredPackageRepositories registeredPackageRepositories)
 		{
+			packageViewModelFactory = new FakePackageViewModelFactory { FakeSolution = solution };
+			CreateViewModel(solution, registeredPackageRepositories, packageViewModelFactory);
+		}
+		
+		void CreateViewModel(
+			FakePackageManagementSolution solution,
+			FakeRegisteredPackageRepositories registeredPackageRepositories,
+			FakePackageActionRunner actionRunner)
+		{
+			packageViewModelFactory = new FakePackageViewModelFactory {
+				FakeSolution = solution,
+				FakeActionRunner = actionRunner
+			};
+			CreateViewModel(solution, registeredPackageRepositories, packageViewModelFactory);
+		}
+		
+		void CreateViewModel(
+			FakePackageManagementSolution solution,
+			FakeRegisteredPackageRepositories registeredPackageRepositories,
+			FakePackageViewModelFactory packageViewModelFactory)
+		{
 			taskFactory = new FakeTaskFactory();
-			var packageViewModelFactory = new FakePackageViewModelFactory();
-			var updatedPackageViewModelFactory = new UpdatedPackageViewModelFactory(packageViewModelFactory);
+			this.packageViewModelFactory = packageViewModelFactory;
+			fakePackageManagementEvents = packageViewModelFactory.FakePackageManagementEvents;
+			updatedPackageViewModelFactory = new UpdatedPackageViewModelFactory(packageViewModelFactory);
 			viewModel = new UpdatedPackagesViewModel(
 				solution,
 				registeredPackageRepositories,
@@ -78,14 +113,24 @@ namespace PackageManagement.Tests
 
 		FakePackage AddPackageToLocalRepository(string version)
 		{
-			FakePackage package = FakePackage.CreatePackageWithVersion(version);
+			return AddPackageToLocalRepository("Test", version);
+		}
+		
+		FakePackage AddPackageToLocalRepository(string id, string version)
+		{
+			FakePackage package = FakePackage.CreatePackageWithVersion(id, version);
 			solution.FakeProjectToReturnFromGetProject.FakePackages.Add(package);
 			return package;
 		}
 		
 		FakePackage AddPackageToActiveRepository(string version)
 		{
-			return registeredPackageRepositories.AddFakePackageWithVersionToActiveRepository(version);
+			return AddPackageToActiveRepository("Test", version);
+		}
+		
+		FakePackage AddPackageToActiveRepository(string id, string version)
+		{
+			return registeredPackageRepositories.AddFakePackageWithVersionToActiveRepository(id, version);
 		}
 		
 		FakePackage AddPackageToSolution(string version)
@@ -116,6 +161,28 @@ namespace PackageManagement.Tests
 		{
 			registeredPackageRepositories.ClearPackageSources();
 			registeredPackageRepositories.AddPackageSources(sources);
+		}
+		
+		UpdatePackagesAction GetUpdatePackagesActionRun()
+		{
+			return packageViewModelFactory
+				.FakeActionRunner
+				.ActionPassedToRun as UpdatePackagesAction;
+		}
+		
+		void RunUpdateAllPackagesCommand()
+		{
+			viewModel.UpdateAllPackagesCommand.Execute(null);
+		}
+		
+		void ViewModelHasTwoPackagesThatCanBeUpdatedAfterReadingPackages()
+		{
+			AddPackageToLocalRepository("First", "1.0.0.0");
+			AddPackageToActiveRepository("First", "1.1.0.0");
+			AddPackageToLocalRepository("Second", "1.0.0.0");
+			AddPackageToActiveRepository("Second", "1.1.0.0");
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
 		}
 		
 		[Test]
@@ -258,6 +325,184 @@ namespace PackageManagement.Tests
 			CreateViewModel(registeredPackageRepositories);
 			
 			Assert.IsTrue(viewModel.ShowPackageSources);
+		}
+		
+		[Test]
+		public void ShowUpdateAllPackages_DefaultValue_ReturnsTrue()
+		{
+			CreateViewModel();
+			
+			bool result = viewModel.ShowUpdateAllPackages;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void IsUpdateAllPackagesEnabled_NoPackages_ReturnsFalse()
+		{
+			CreateViewModel();
+			
+			bool enabled = viewModel.IsUpdateAllPackagesEnabled;
+			
+			Assert.IsFalse(enabled);
+		}
+		
+		[Test]
+		public void IsUpdateAllPackagesEnabled_TwoNewerPackagesAvailable_ReturnsTrue()
+		{
+			CreateViewModel();
+			ViewModelHasTwoPackagesThatCanBeUpdatedAfterReadingPackages();
+			
+			bool enabled = viewModel.IsUpdateAllPackagesEnabled;
+			
+			Assert.IsTrue(enabled);
+		}
+		
+		[Test]
+		public void IsUpdateAllPackagesEnabled_OneNewerPackageAvailable_ReturnsFalse()
+		{
+			CreateViewModel();
+			AddPackageToLocalRepository("First", "1.0.0.0");
+			AddPackageToActiveRepository("First", "1.1.0.0");
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			bool enabled = viewModel.IsUpdateAllPackagesEnabled;
+			
+			Assert.IsFalse(enabled);
+		}
+		
+		[Test]
+		public void UpdateAllPackagesCommand_TwoPackagesToBeUpdated_BothPackagesUpdated()
+		{
+			CreateViewModel();
+			AddPackageToLocalRepository("First", "1.0.0.0");
+			FakePackage firstUpdatedPackage = AddPackageToActiveRepository("First", "1.1.0.0");
+			AddPackageToLocalRepository("Second", "1.0.0.0");
+			FakePackage secondUpdatedPackage = AddPackageToActiveRepository("Second", "1.1.0.0");
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			RunUpdateAllPackagesCommand();
+			
+			UpdatePackagesAction action = GetUpdatePackagesActionRun();
+			IPackage firstPackage = action.Packages.FirstOrDefault(p => p.Id == "First");
+			IPackage secondPackage = action.Packages.FirstOrDefault(p => p.Id == "Second");
+			Assert.AreEqual(firstUpdatedPackage, firstPackage);
+			Assert.AreEqual(secondUpdatedPackage, secondPackage);
+			Assert.AreEqual(2, action.Packages.Count());
+		}
+		
+		[Test]
+		public void UpdateAllPackagesCommand_ExceptionThrownWhenUpdatingAllPackages_ExceptionReported()
+		{
+			var actionRunner =  new ExceptionThrowingPackageActionRunner();
+			CreateViewModel(actionRunner);
+			ViewModelHasTwoPackagesThatCanBeUpdatedAfterReadingPackages();
+			var exception = new Exception("test");
+			actionRunner.ExceptionToThrow = exception;
+			
+			RunUpdateAllPackagesCommand();
+			
+			Assert.AreEqual(exception, packageViewModelFactory.FakePackageManagementEvents.ExceptionPassedToOnPackageOperationError);
+		}
+		
+		[Test]
+		public void UpdateAllPackagesCommand_ExceptionThrownWhenUpdatingAllPackages_ExceptionLogged()
+		{
+			var actionRunner =  new ExceptionThrowingPackageActionRunner();
+			CreateViewModel(actionRunner);
+			ViewModelHasTwoPackagesThatCanBeUpdatedAfterReadingPackages();
+			var exception = new Exception("Exception error message");
+			actionRunner.ExceptionToThrow = exception;
+			
+			RunUpdateAllPackagesCommand();
+			
+			string actualMessage = fakePackageManagementEvents.FormattedStringPassedToOnPackageOperationMessageLogged;
+			bool containsExceptionErrorMessage = actualMessage.Contains("Exception error message");
+			Assert.IsTrue(containsExceptionErrorMessage, actualMessage);
+			Assert.AreEqual(MessageLevel.Error, fakePackageManagementEvents.MessageLevelPassedToOnPackageOperationMessageLogged);
+		}
+		
+		[Test]
+		public void UpdateAllPackagesCommand_PackagesUpdated_ProjectCreatedUsingSourcePackageRepository()
+		{
+			CreateViewModel();
+			ViewModelHasTwoPackagesThatCanBeUpdatedAfterReadingPackages();
+			var package = viewModel.PackageViewModels[0].GetPackage() as IPackageFromRepository;
+			solution.RepositoryPassedToGetProject = null;
+			
+			RunUpdateAllPackagesCommand();
+			
+			Assert.AreEqual(package.Repository, solution.RepositoryPassedToGetProject);
+		}
+		
+		[Test]
+		public void UpdateAllPackagesCommand_PackagesUpdated_UpdatePackagesActionCreatedFromProject()
+		{
+			CreateViewModel();
+			ViewModelHasTwoPackagesThatCanBeUpdatedAfterReadingPackages();
+			
+			RunUpdateAllPackagesCommand();
+			
+			UpdatePackagesAction action = GetUpdatePackagesActionRun();
+			FakePackageManagementProject project = solution.FakeProjectToReturnFromGetProject;
+			UpdatePackagesAction expectedAction = project.UpdatePackagesActionsCreated.FirstOrDefault();
+			Assert.AreEqual(expectedAction, action);
+		}
+		
+		[Test]
+		public void UpdateAllPackagesCommand_CheckLoggerUsed_PackageViewModelLoggerUsedWhenResolvingPackageOperations()
+		{
+			CreateViewModel();
+			ViewModelHasTwoPackagesThatCanBeUpdatedAfterReadingPackages();
+			
+			RunUpdateAllPackagesCommand();
+			
+			ILogger expectedLogger = updatedPackageViewModelFactory.Logger;
+			ILogger actualLogger = solution.FakeProjectToReturnFromGetProject.Logger;
+			Assert.AreEqual(expectedLogger, actualLogger);
+		}
+		
+		[Test]
+		public void UpdateAllPackagesCommand_PackageOperations_CreatedFromProjectUsingPackagesAndUpdatePackagesAction()
+		{
+			CreateViewModel();
+			ViewModelHasTwoPackagesThatCanBeUpdatedAfterReadingPackages();
+			
+			RunUpdateAllPackagesCommand();
+			
+			UpdatePackagesAction action = GetUpdatePackagesActionRun();
+			FakePackageManagementProject project = solution.FakeProjectToReturnFromGetProject;
+			Assert.AreEqual(action, project.UpdatePackagesActionPassedToGetUpdatePackagesOperations);
+		}
+		
+		[Test]
+		public void UpdateAllPackagesCommand_PackageOperations_ActionHasPackageOperationsReturnedFromProject()
+		{
+			CreateViewModel();
+			ViewModelHasTwoPackagesThatCanBeUpdatedAfterReadingPackages();
+			FakePackageManagementProject project = solution.FakeProjectToReturnFromGetProject;
+			List<PackageOperation> operations = PackageOperationHelper.CreateListWithOneInstallOperationWithFile("readme.txt");
+			project.PackageOperationsToReturnFromGetUpdatePackagesOperations = operations;
+			
+			RunUpdateAllPackagesCommand();
+			
+			UpdatePackagesAction action = GetUpdatePackagesActionRun();
+			CollectionAssert.AreEqual(operations, action.Operations);
+		}
+		
+		[Test]
+		public void UpdateAllPackagesCommand_PackageOperations_PackagesUsedToDeterminePackageOperations()
+		{
+			CreateViewModel();
+			ViewModelHasTwoPackagesThatCanBeUpdatedAfterReadingPackages();
+			FakePackageManagementProject project = solution.FakeProjectToReturnFromGetProject;
+			List<FakePackage> expectedPackages = registeredPackageRepositories.FakeActiveRepository.FakePackages;
+			
+			RunUpdateAllPackagesCommand();
+			
+			CollectionAssert.AreEqual(expectedPackages, project.PackagesOnUpdatePackagesActionPassedToGetUpdatePackagesOperations);
 		}
 	}
 }

@@ -2,13 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
+using ICSharpCode.PackageManagement.Scripting;
 
 namespace ICSharpCode.PackageManagement
 {
-	public interface IPackageActionRunner
+	public interface IPackageAction
 	{
-		void Run(IPackageAction action);
-		void Run(IEnumerable<IPackageAction> actions);
+		void Execute();
+		bool HasPackageScriptsToRun();
+		IPackageScriptRunner PackageScriptRunner { get; set; }
 	}
 }

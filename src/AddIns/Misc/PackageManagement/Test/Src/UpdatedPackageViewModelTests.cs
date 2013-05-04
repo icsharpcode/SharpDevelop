@@ -38,7 +38,6 @@ namespace PackageManagement.Tests
 		FakeUpdatePackageAction FirstUpdatePackageActionCreated {
 			get { return fakeProject.FirstFakeUpdatePackageActionCreated; }
 		}
-
 		
 		void CreateFakeSolution()
 		{
@@ -106,7 +105,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.AddPackage();
 			
-			ProcessPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
+			IPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
 
 			Assert.AreEqual(FirstUpdatePackageActionCreated, actionExecuted);
 		}
@@ -120,10 +119,10 @@ namespace PackageManagement.Tests
 			viewModel.ManagePackage();
 			
 			FakePackage expectedPackage = viewModel.FakePackage;
-			List<ProcessPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
+			List<IPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
 			var updatePackageAction = actions[0] as UpdatePackageAction;
 			IPackage actualPackage = updatePackageAction.Package;
-						
+			
 			Assert.AreEqual(expectedPackage, actualPackage);
 		}
 	}

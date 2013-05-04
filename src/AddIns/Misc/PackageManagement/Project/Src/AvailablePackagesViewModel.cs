@@ -41,11 +41,6 @@ namespace ICSharpCode.PackageManagement
 			return repository.GetPackages().Where(package => package.IsLatestVersion);
 		}
 		
-		public IQueryable<IPackage> CallGetPackagesFromPackageSource()
-		{
-			return GetPackagesFromPackageSource();
-		}
-		
 		/// <summary>
 		/// Order packages by most downloaded first.
 		/// </summary>

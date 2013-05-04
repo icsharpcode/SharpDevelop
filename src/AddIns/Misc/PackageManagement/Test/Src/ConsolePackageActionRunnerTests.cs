@@ -78,17 +78,17 @@ namespace PackageManagement.Tests
 			fakeConsoleHost.IsRunning = false;
 		}
 		
-		ProcessPackageAction GetNextActionToRun()
+		IPackageAction GetNextActionToRun()
 		{
-			ProcessPackageAction action = null;
+			IPackageAction action = null;
 			actionsToRun.GetNextAction(out action);
 			return action;
 		}
 		
-		List<ProcessPackageAction> GetNextActionsToRun()
+		List<IPackageAction> GetNextActionsToRun()
 		{
-			var actions = new List<ProcessPackageAction>();
-			ProcessPackageAction action = null;
+			var actions = new List<IPackageAction>();
+			IPackageAction action = null;
 			while (actionsToRun.GetNextAction(out action)) {
 				actions.Add(action);
 			}
@@ -102,7 +102,7 @@ namespace PackageManagement.Tests
 			ConsoleHostIsRunning();
 			FakeInstallPackageAction expectedAction = RunInstallActionWithOneOperation();
 			
-			ProcessPackageAction actionAdded = GetNextActionToRun();
+			IPackageAction actionAdded = GetNextActionToRun();
 			
 			Assert.AreEqual(expectedAction, actionAdded);
 		}
@@ -188,7 +188,7 @@ namespace PackageManagement.Tests
 			ConsoleHostIsRunning();
 			List<FakeInstallPackageAction> expectedActions = RunTwoInstallActionsWithOneOperation();
 			
-			List<ProcessPackageAction> actionsAdded = GetNextActionsToRun();
+			List<IPackageAction> actionsAdded = GetNextActionsToRun();
 			
 			CollectionAssert.AreEqual(expectedActions, actionsAdded);
 		}

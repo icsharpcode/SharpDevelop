@@ -14,6 +14,7 @@ namespace ICSharpCode.PackageManagement
 		PackageManagementSelectedProjects selectedProjects;
 		UpdatedPackages updatedPackages;
 		string errorMessage = String.Empty;
+		ILogger logger;
 		
 		public UpdatedPackagesViewModel(
 			IPackageManagementSolution solution,
@@ -26,7 +27,9 @@ namespace ICSharpCode.PackageManagement
 				taskFactory)
 		{
 			this.selectedProjects = new PackageManagementSelectedProjects(solution);
+			this.logger = packageViewModelFactory.Logger;
 			ShowPackageSources = true;
+			ShowUpdateAllPackages = true;
 		}
 		
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
@@ -61,6 +64,27 @@ namespace ICSharpCode.PackageManagement
 		IQueryable<IPackage> GetUpdatedPackages()
 		{
 			return updatedPackages.GetUpdatedPackages().AsQueryable();
+		}
+		
+		protected override void TryUpdatingAllPackages()
+		{
+			IEnumerable<IPackageFromRepository> packages = GetPackagesFromViewModels();
+			IPackageRepository repository = packages.First().Repository;
+			IPackageManagementProject project = selectedProjects.GetSingleProjectSelected(repository);
+			project.Logger = logger;
+			
+			UpdatePackagesAction action = project.CreateUpdatePackagesAction();
+			action.AddPackages(packages);
+			
+			IEnumerable<PackageOperation> operations = project.GetUpdatePackagesOperations(action);
+			action.AddOperations(operations);
+			
+			ActionRunner.Run(action);
+		}
+		
+		IEnumerable<IPackageFromRepository> GetPackagesFromViewModels()
+		{
+			return PackageViewModels.Select(viewModel => viewModel.GetPackage() as IPackageFromRepository);
 		}
 	}
 }

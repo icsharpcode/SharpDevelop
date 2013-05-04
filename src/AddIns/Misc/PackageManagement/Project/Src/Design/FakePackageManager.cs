@@ -22,6 +22,8 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public IPackage PackagePassedToUninstallPackage;
 		
+		public UpdatePackagesAction UpdatePackagesActionsPassedToUpdatePackages;
+		
 		#pragma warning disable 67
 		public event EventHandler<PackageOperationEventArgs> PackageInstalled;
 		public event EventHandler<PackageOperationEventArgs> PackageInstalling;
@@ -157,6 +159,20 @@ namespace ICSharpCode.PackageManagement.Design
 		public void UninstallPackage(string packageId, SemanticVersion version, bool forceRemove, bool removeDependencies)
 		{
 			throw new NotImplementedException();
+		}
+		
+		public void UpdatePackages(UpdatePackagesAction updateAction)
+		{
+			UpdatePackagesActionsPassedToUpdatePackages = updateAction;
+		}
+		
+		public List<PackageOperation> PackageOperationsToReturnFromGetUpdatePackageOperations = new List<PackageOperation>();
+		public UpdatePackagesAction UpdatePackagesActionsPassedToGetUpdatePackagesOperations;
+		
+		public IEnumerable<PackageOperation> GetUpdatePackageOperations(UpdatePackagesAction updateAction)
+		{
+			UpdatePackagesActionsPassedToGetUpdatePackagesOperations = updateAction;
+			return PackageOperationsToReturnFromGetUpdatePackageOperations;
 		}
 	}
 }

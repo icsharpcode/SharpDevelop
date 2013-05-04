@@ -101,7 +101,7 @@ namespace ICSharpCode.PackageManagement.Design
 			var package = new FakePackage("MyPackage");
 			var operation = new FakePackageOperation(package, PackageAction.Uninstall);
 			FakeInstallOperations.Add(operation);
-			return operation;			
+			return operation;
 		}
 		
 		public FakePackageRepository FakeSourceRepository = new FakePackageRepository();
@@ -145,7 +145,7 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			return FakeUninstallPackageAction;
 		}
-				
+		
 		public UpdatePackageAction CreateUpdatePackageAction()
 		{
 			var action = new FakeUpdatePackageAction(this);
@@ -212,6 +212,33 @@ namespace ICSharpCode.PackageManagement.Design
 		public void AddFakePackageToSourceRepository(string packageId)
 		{
 			FakeSourceRepository.AddFakePackage(packageId);
+		}
+		
+		public void UpdatePackages(UpdatePackagesAction action)
+		{
+		}
+		
+		public List<UpdatePackagesAction> UpdatePackagesActionsCreated = 
+			new List<UpdatePackagesAction>();
+		
+		public UpdatePackagesAction CreateUpdatePackagesAction()
+		{
+			var action = new UpdatePackagesAction(this);
+			UpdatePackagesActionsCreated.Add(action);
+			return action;
+		}
+		
+		public UpdatePackagesAction UpdatePackagesActionPassedToGetUpdatePackagesOperations;
+		public List<IPackage> PackagesOnUpdatePackagesActionPassedToGetUpdatePackagesOperations;
+		public List<PackageOperation> PackageOperationsToReturnFromGetUpdatePackagesOperations =
+			new List<PackageOperation>();
+		
+		public IEnumerable<PackageOperation> GetUpdatePackagesOperations(UpdatePackagesAction action)
+		{
+			UpdatePackagesActionPassedToGetUpdatePackagesOperations = action;
+			PackagesOnUpdatePackagesActionPassedToGetUpdatePackagesOperations = 
+				action.Packages.ToList();
+			return PackageOperationsToReturnFromGetUpdatePackagesOperations;
 		}
 	}
 }

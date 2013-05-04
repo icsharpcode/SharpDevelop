@@ -125,9 +125,42 @@ namespace ICSharpCode.PackageManagement
 			UpdatePackageReference(package, updateAction);
 		}
 		
-		void UpdatePackageReference(IPackage package, UpdatePackageAction updateAction)
+		void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings)
 		{
-			ProjectManager.UpdatePackageReference(package.Id, package.Version, updateAction.UpdateDependencies, updateAction.AllowPrereleaseVersions);		
+			UpdatePackageReference(package, settings.UpdateDependencies, settings.AllowPrereleaseVersions);
+		}
+		
+		void UpdatePackageReference(IPackage package, bool updateDependencies, bool allowPrereleaseVersions)
+		{
+			ProjectManager.UpdatePackageReference(package.Id, package.Version, updateDependencies, allowPrereleaseVersions);
+		}
+		
+		public void UpdatePackages(UpdatePackagesAction updateAction)
+		{
+			foreach (PackageOperation operation in updateAction.Operations) {
+				Execute(operation);
+			}
+			foreach (IPackage package in updateAction.Packages) {
+				UpdatePackageReference(package, updateAction);
+			}
+		}
+		
+		public IEnumerable<PackageOperation> GetUpdatePackageOperations(UpdatePackagesAction updateAction)
+		{
+			IPackageOperationResolver resolver = CreateUpdatePackageOperationResolver(updateAction);
+			
+			var reducedOperations = new ReducedPackageOperations(resolver, updateAction.Packages);
+			reducedOperations.Reduce();
+			return reducedOperations.Operations;
+		}
+		
+		IPackageOperationResolver CreateUpdatePackageOperationResolver(UpdatePackagesAction updateAction)
+		{
+			return packageOperationResolverFactory.CreateUpdatePackageOperationResolver(
+				LocalRepository,
+				SourceRepository,
+				Logger,
+				updateAction);
 		}
 	}
 }

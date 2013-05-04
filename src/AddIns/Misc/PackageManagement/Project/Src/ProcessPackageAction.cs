@@ -8,7 +8,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public abstract class ProcessPackageAction
+	public abstract class ProcessPackageAction : IPackageAction
 	{
 		IPackageManagementEvents packageManagementEvents;
 		
@@ -107,7 +107,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void FindPackage()
 		{
-			Package =Project
+			Package = Project
 				.SourceRepository
 				.FindPackage(PackageId, PackageVersion, AllowPrereleaseVersions, allowUnlisted: true);
 		}
