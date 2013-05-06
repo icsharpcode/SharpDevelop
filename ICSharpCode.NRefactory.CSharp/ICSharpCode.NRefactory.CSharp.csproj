@@ -539,6 +539,7 @@
     <Compile Include="Refactoring\CodeIssues\DuplicateBodyMethodIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\DuplicateExpressionsInConditionsIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\DuplicateIfInIfChainIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\UseBlockInsteadColonIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
