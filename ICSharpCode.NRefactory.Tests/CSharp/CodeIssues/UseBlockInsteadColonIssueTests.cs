@@ -40,7 +40,7 @@ class TestClass
 {
 	void TestMethod (int i)
 	{
-		if(i > 0);
+		if (i > 0);
 	}
 }";
 			var output = @"
@@ -48,7 +48,8 @@ class TestClass
 {
 	void TestMethod (int i)
 	{
-		if(i > 0){}
+		if (i > 0) {
+        }
 	}
 }";
             Test<UseBlockInsteadColonIssue>(input, output);
@@ -61,7 +62,7 @@ class TestClass
 {
 	void TestMethod (int[] list)
 	{
-		foreach(var i in list);
+		foreach (var i in list);
 	}
 }";
             var output = @"
@@ -69,7 +70,8 @@ class TestClass
 {
 	void TestMethod (int[] list)
 	{
-		foreach(var i in list){}
+		foreach (var i in list) {
+        }
 	}
 }";
             Test<UseBlockInsteadColonIssue>(input, output);
