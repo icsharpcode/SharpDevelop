@@ -190,7 +190,7 @@ namespace ICSharpCode.XamlBinding
 			    || context.ActiveElement == null) {
 				return false;
 			}
-			if (context.Description != XamlContextDescription.InAttributeValue) {
+			if (!context.InAttributeValueOrMarkupExtension) {
 				XamlCompletionItemList list = generator.CreateListForContext(context);
 				string starter = editor.GetWordBeforeCaretExtended().TrimStart('/');
 				if (context.Description != XamlContextDescription.None && !string.IsNullOrEmpty(starter)) {
@@ -210,8 +210,10 @@ namespace ICSharpCode.XamlBinding
 					completionList.PreselectionLength = editor.GetWordBeforeCaretExtended().Length;
 					if ((context.ActiveElement.Name == "Setter" || context.ActiveElement.Name == "EventSetter") && (context.Attribute.Name == "Property" || context.Attribute.Name == "Value")) {
 						DoSetterAndEventSetterCompletion(context, completionList);
+						editor.ShowCompletionWindow(completionList);
 					} else if ((context.ActiveElement.Name.EndsWith("Trigger", StringComparison.Ordinal) || context.ActiveElement.Name == "Condition") && context.Attribute.Name == "Value") {
 						DoTriggerCompletion(context, completionList);
+						editor.ShowCompletionWindow(completionList);
 					} else if (!DoAttributeCompletion(context, completionList)) {
 						DoXmlAttributeCompletion(context, completionList);
 					}

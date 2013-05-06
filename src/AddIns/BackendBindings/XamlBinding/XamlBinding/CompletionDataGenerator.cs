@@ -72,10 +72,7 @@ namespace ICSharpCode.XamlBinding
 					string word = editor.GetWordBeforeCaretExtended();
 					
 					if (context.PressedKey == '.' || word.Contains(".")) {
-						string ns = "";
 						int pos = word.IndexOf(':');
-						if (pos > -1)
-							ns = word.Substring(0, pos);
 						
 						string element = word.Substring(pos + 1, word.Length - pos - 1);
 						string className = word;
@@ -95,7 +92,7 @@ namespace ICSharpCode.XamlBinding
 						ITypeDefinition typeClass = trr != null ? trr.Type.GetDefinition() : null;
 						
 						if (typeClass != null && typeClass.HasAttached(true, true))
-							list.Items.AddRange(GetListOfAttached(context, ns, typeClass, true, true));
+							list.Items.AddRange(GetListOfAttached(context, typeClass, true, true));
 					} else {
 						list.Items.AddRange(CreateAttributeList(context, true));
 						list.Items.AddRange(standardAttributes);
@@ -267,13 +264,13 @@ namespace ICSharpCode.XamlBinding
 				    && context.ParentElement.LocalName.StartsWith(lastElement.LocalName.TrimEnd('.'), StringComparison.OrdinalIgnoreCase)) {
 					AddAttributes(type, list, includeEvents);
 				}
-				AddAttachedProperties(lastElement.Prefix, type.GetDefinition(), list);
+				AddAttachedProperties(type.GetDefinition(), list);
 			} else {
 				if (type.Kind == TypeKind.Unknown) {
 					list.Add(new XamlCompletionItem(xKey + "Uid"));
 				} else {
 					AddAttributes(type, list, includeEvents);
-					list.AddRange(GetListOfAttached(context, null, null, includeEvents, true));
+					list.AddRange(GetListOfAttached(context, null, includeEvents, true));
 					list.AddRange(
 						XamlConst.XamlNamespaceAttributes
 						.Where(localName => XamlConst.IsAttributeAllowed(context.InRoot, localName))
@@ -498,14 +495,17 @@ namespace ICSharpCode.XamlBinding
 		public ICompletionItemList CreateMarkupExtensionCompletion(XamlCompletionContext context)
 		{
 			var list = new XamlCompletionItemList(context);
+			compilation = SD.ParserService.GetCompilationForFile(context.Editor.FileName);
 			string visibleValue = context.RawAttributeValue.Substring(0, Utils.MinMax(context.ValueStartOffset, 0, context.RawAttributeValue.Length));
 			if (context.PressedKey == '=')
 				visibleValue += "=";
 			var markup = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.ValueStartOffset);
 			var resolver = new XamlResolver(compilation);
-			var type = (resolver.ResolveExpression(markup.ExtensionType, context) ?? resolver.ResolveExpression(markup.ExtensionType + "Extension", context)).Type;
+			var type = resolver.ResolveExpression(markup.ExtensionType, context).Type;
+			if (type.Kind == TypeKind.Unknown)
+				type = resolver.ResolveExpression(markup.ExtensionType + "Extension", context).Type;
 			
-			if (type == null) {
+			if (type.Kind == TypeKind.Unknown) {
 				list.Items.AddRange(CreateListOfMarkupExtensions(context));
 				list.PreselectionLength = markup.ExtensionType.Length;
 			} else {
@@ -530,7 +530,7 @@ namespace ICSharpCode.XamlBinding
 				if (context.RawAttributeValue.EndsWith("=", StringComparison.OrdinalIgnoreCase) ||
 				    (item.Value.IsString && item.Value.StringValue.EndsWith(context.Editor.GetWordBeforeCaretExtended(), StringComparison.Ordinal))) {
 					var resolver = new XamlResolver(compilation);
-					MemberResolveResult mrr = resolver.ResolveExpression(item.Key, context) as MemberResolveResult;
+					MemberResolveResult mrr = resolver.ResolveAttributeValue(item.Key, context) as MemberResolveResult;
 					if (mrr != null && mrr.Member != null && mrr.Member.ReturnType != null) {
 						IType memberType = mrr.Member.ReturnType;
 						list.Items.AddRange(MemberCompletion(context, memberType, string.Empty));
@@ -584,7 +584,7 @@ namespace ICSharpCode.XamlBinding
 			var resolver = new XamlResolver(compilation);
 			if (context.PressedKey == '.') {
 				if (selItem != null && selItem.IsString) {
-					var rr = resolver.ResolveExpression(selItem.StringValue, context) as TypeResolveResult;
+					var rr = resolver.ResolveAttributeValue(selItem.StringValue, context) as TypeResolveResult;
 					if (rr != null)
 						list.Items.AddRange(MemberCompletion(context, rr.Type, string.Empty));
 					return false;
@@ -593,8 +593,8 @@ namespace ICSharpCode.XamlBinding
 				if (selItem != null && selItem.IsString) {
 					int index = selItem.StringValue.IndexOf('.');
 					string s = (index > -1) ? selItem.StringValue.Substring(0, index) : selItem.StringValue;
-					var rr = resolver.ResolveExpression(s, context) as TypeResolveResult;
-					if (rr != null) {
+					var rr = resolver.ResolveAttributeValue(s, context) as TypeResolveResult;
+					if (rr != null && rr.Type.Kind != TypeKind.Unknown) {
 						list.Items.AddRange(MemberCompletion(context, rr.Type, (index == -1) ? "." : string.Empty));
 						
 						list.PreselectionLength = (index > -1) ? selItem.StringValue.Length - index - 1 : 0;
@@ -816,16 +816,16 @@ namespace ICSharpCode.XamlBinding
 		}
 		
 		#region Attached Properties and Events
-		internal List<ICompletionItem> GetListOfAttached(XamlContext context, string prefix, ITypeDefinition attachedType, bool events, bool properties)
+		internal List<ICompletionItem> GetListOfAttached(XamlContext context, ITypeDefinition attachedType, bool events, bool properties)
 		{
 			List<ICompletionItem> result = new List<ICompletionItem>();
 			
 			if (attachedType != null) {
 				if (attachedType.Kind == TypeKind.Class && !attachedType.IsDerivedFrom(KnownTypeCode.Attribute)) {
 					if (properties)
-						AddAttachedProperties(prefix, attachedType, result);
+						AddAttachedProperties(attachedType, result);
 					if (events)
-						AddAttachedEvents(prefix, attachedType, result);
+						AddAttachedEvents(attachedType, result);
 				}
 			} else {
 				foreach (var ns in context.XmlnsDefinitions) {
@@ -843,13 +843,11 @@ namespace ICSharpCode.XamlBinding
 			return result;
 		}
 		
-		public static void AddAttachedProperties(string prefix, ITypeDefinition td, List<ICompletionItem> result)
+		public static void AddAttachedProperties(ITypeDefinition td, List<ICompletionItem> result)
 		{
 			var attachedProperties = td.Fields.Where(f => f.IsAttached(true, false));
 			var unresolvedType = td.Parts.First();
 			var resolveContext = new SimpleTypeResolveContext(td);
-			if (!string.IsNullOrEmpty(prefix))
-				prefix += ":";
 			
 			result.AddRange(
 				attachedProperties.Select(
@@ -857,27 +855,25 @@ namespace ICSharpCode.XamlBinding
 						string propertyName = property.Name.Remove(property.Name.Length - "Property".Length);
 						IUnresolvedProperty item = new DefaultUnresolvedProperty(unresolvedType, propertyName);
 						IMember entity = item.CreateResolved(resolveContext);
-						return new XamlCompletionItem(prefix + propertyName, entity);
+						return new XamlCompletionItem(propertyName, entity);
 					}
 				)
 			);
 		}
 		
-		static void AddAttachedEvents(string prefix, ITypeDefinition td, List<ICompletionItem> result)
+		static void AddAttachedEvents(ITypeDefinition td, List<ICompletionItem> result)
 		{
 			var attachedEvents = td.Fields.Where(f => f.IsAttached(false, true));
 			var unresolvedType = td.Parts.First();
 			var resolveContext = new SimpleTypeResolveContext(td);
-			if (!string.IsNullOrEmpty(prefix))
-				prefix += ":";
-			
+
 			result.AddRange(
 				attachedEvents.Select(
 					field => {
 						string eventName = GetEventNameFromField(field);
 						IUnresolvedEvent item = new DefaultUnresolvedEvent(unresolvedType, eventName);
 						IMember entity = item.CreateResolved(resolveContext);
-						return new XamlCompletionItem(prefix + eventName, entity);
+						return new XamlCompletionItem(eventName, entity);
 					}
 				)
 			);

@@ -38,6 +38,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public XamlParser()
 		{
+			TaskListTokens = EmptyList<string>.Instance;
 		}
 
 		public bool CanParse(string fileName)

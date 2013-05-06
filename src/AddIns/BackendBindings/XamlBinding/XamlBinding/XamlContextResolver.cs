@@ -85,7 +85,8 @@ namespace ICSharpCode.XamlBinding
 				attributeValue = a.Value;
 				value = MarkupExtensionParser.ParseValue(attributeValue);
 				
-				if (offset >= valueStartOffset && offset < a.EndOffset) {
+				if (offset >= valueStartOffset && (offset < a.EndOffset // if length is < 2 one quote is missing
+				                                   || (a.ValueSegment.Length <= 1 && offset <= a.EndOffset))) {
 					offsetFromValueStart = offset - valueStartOffset;
 					
 					description = XamlContextDescription.InAttributeValue;
@@ -96,6 +97,7 @@ namespace ICSharpCode.XamlBinding
 						description = XamlContextDescription.InAttributeValue;
 				} else
 					description = XamlContextDescription.InTag;
+				active = a.ParentElement;
 			} else if (currentData is AXmlTag) {
 				AXmlTag tag = currentData as AXmlTag;
 				if (tag.IsStartOrEmptyTag || tag.IsEndTag) {
@@ -146,7 +148,7 @@ namespace ICSharpCode.XamlBinding
 			if (binding == null)
 				throw new InvalidOperationException("Can only use ResolveCompletionContext with a XamlLanguageBinding.");
 			
-			var context = new XamlCompletionContext(ResolveContext(editor.FileName, editor.Document.CreateSnapshot(), editor.Caret.Offset)) {
+			var context = new XamlCompletionContext(ResolveContext(editor.FileName, editor.Document, editor.Caret.Offset)) {
 				PressedKey = typedValue,
 				Editor = editor
 			};
@@ -161,7 +163,7 @@ namespace ICSharpCode.XamlBinding
 			if (binding == null)
 				throw new InvalidOperationException("Can only use ResolveCompletionContext with a XamlLanguageBinding.");
 			
-			var context = new XamlCompletionContext(ResolveContext(editor.FileName, editor.Document.CreateSnapshot(), offset)) {
+			var context = new XamlCompletionContext(ResolveContext(editor.FileName, editor.Document, offset)) {
 				PressedKey = typedValue,
 				Editor = editor
 			};

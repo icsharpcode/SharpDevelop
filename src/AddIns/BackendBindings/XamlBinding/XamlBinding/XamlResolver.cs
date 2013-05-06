@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Remoting.Lifetime;
@@ -37,6 +38,7 @@ namespace ICSharpCode.XamlBinding
 			string prefix, memberName;
 			string name = ParseName(expression, out prefix, out memberName);
 			string namespaceUrl;
+			
 			if (prefix == "")
 				namespaceUrl = context.ActiveElement.Namespace;
 			else
@@ -75,14 +77,41 @@ namespace ICSharpCode.XamlBinding
 			return ResolveExpression(typeNameString, context);
 		}
 		
+		public ResolveResult ResolveAttributeValue(string expression, XamlContext context)
+		{
+			if (!context.InAttributeValueOrMarkupExtension)
+				return ErrorResolveResult.UnknownError;
+			if (context.AttributeValue.IsString)
+				return ResolveExpression(expression, context);
+			MarkupExtensionInfo info = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.ValueStartOffset);
+			object data = Utils.GetMarkupDataAtPosition(info, context.ValueStartOffset);
+			
+			IType extensionType = ResolveExpression(info.ExtensionType, context).Type;
+			if (extensionType.Kind == TypeKind.Unknown)
+				extensionType = ResolveExpression(info.ExtensionType + "Extension", context).Type;
+			
+			if (data is KeyValuePair<string, AttributeValue>) {
+				var kv = (KeyValuePair<string, AttributeValue>)data;
+				if (kv.Value.StartOffset >= context.ValueStartOffset) {
+					IProperty member = extensionType.GetProperties(p => p.Name == expression).FirstOrDefault();
+					if (member != null)
+						return new MemberResolveResult(new TypeResolveResult(extensionType), member);
+					return new UnknownMemberResolveResult(extensionType, expression, EmptyList<IType>.Instance);
+				} else {
+					
+				}
+			}
+			
+			return ResolveExpression(expression, context);
+		}
+		
 		string GetTypeNameFromTypeExtension(MarkupExtensionInfo info, XamlContext context)
 		{
-			ResolveResult rr = ResolveExpression(info.ExtensionType, context)
-				?? ResolveExpression(info.ExtensionType + "Extension", context);
+			IType type = ResolveExpression(info.ExtensionType, context).Type;
+			if (type.Kind == TypeKind.Unknown)
+				type = ResolveExpression(info.ExtensionType + "Extension", context).Type;
 			
-			IType type = rr.Type;
-			
-			if (type == null || type.FullName != "System.Windows.Markup.TypeExtension")
+			if (type.FullName != "System.Windows.Markup.TypeExtension")
 				return string.Empty;
 			
 			var item = info.PositionalArguments.FirstOrDefault();
