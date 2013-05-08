@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.Demo
 		{
 			if (obj == null)
 				return new TreeNode(prefix + "null");
-			if (obj is ResolveResult) {
+			if (obj is ResolveResult || (obj is Conversion && UseNodeForConversion((Conversion)obj))) {
 				TreeNode t = new TreeNode(prefix + obj.GetType().Name);
 				t.Tag = obj;
 				foreach (PropertyInfo p in obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)) {
@@ -67,6 +67,11 @@ namespace ICSharpCode.NRefactory.Demo
 			} else {
 				return new TreeNode(prefix + obj.ToString());
 			}
+		}
+		
+		bool UseNodeForConversion(Conversion conversion)
+		{
+			return conversion.IsMethodGroupConversion || conversion.IsUserDefined;
 		}
 		
 		TreeNode MakePropertyNode(string propertyName, Type propertyType, object propertyValue)
