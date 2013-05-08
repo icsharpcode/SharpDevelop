@@ -97,18 +97,18 @@ namespace ICSharpCode.NRefactory.Semantics
 			return new UserDefinedConv(isImplicit, operatorMethod, conversionBeforeUserDefinedOperator, conversionAfterUserDefinedOperator, isLifted, isAmbiguous);
 		}
 		
-		public static Conversion MethodGroupConversion(IMethod chosenMethod, bool isVirtualMethodLookup)
+		public static Conversion MethodGroupConversion(IMethod chosenMethod, bool isVirtualMethodLookup, bool isExtensionMethodGroupConversion)
 		{
 			if (chosenMethod == null)
 				throw new ArgumentNullException("chosenMethod");
-			return new MethodGroupConv(chosenMethod, isVirtualMethodLookup, isValid: true);
+			return new MethodGroupConv(chosenMethod, isVirtualMethodLookup, isExtensionMethodGroupConversion, isValid: true);
 		}
 		
-		public static Conversion InvalidMethodGroupConversion(IMethod chosenMethod, bool isVirtualMethodLookup)
+		public static Conversion InvalidMethodGroupConversion(IMethod chosenMethod, bool isVirtualMethodLookup, bool isExtensionMethodGroupConversion)
 		{
 			if (chosenMethod == null)
 				throw new ArgumentNullException("chosenMethod");
-			return new MethodGroupConv(chosenMethod, isVirtualMethodLookup, isValid: false);
+			return new MethodGroupConv(chosenMethod, isVirtualMethodLookup, isExtensionMethodGroupConversion, isValid: false);
 		}
 		#endregion
 		
@@ -346,12 +346,14 @@ namespace ICSharpCode.NRefactory.Semantics
 		{
 			readonly IMethod method;
 			readonly bool isVirtualMethodLookup;
+			readonly bool isExtensionMethodGroupConversion;
 			readonly bool isValid;
 			
-			public MethodGroupConv(IMethod method, bool isVirtualMethodLookup, bool isValid)
+			public MethodGroupConv(IMethod method, bool isVirtualMethodLookup, bool isExtensionMethodGroupConversion, bool isValid)
 			{
 				this.method = method;
 				this.isVirtualMethodLookup = isVirtualMethodLookup;
+				this.isExtensionMethodGroupConversion = isExtensionMethodGroupConversion;
 				this.isValid = isValid;
 			}
 			
@@ -371,6 +373,10 @@ namespace ICSharpCode.NRefactory.Semantics
 				get { return isVirtualMethodLookup; }
 			}
 			
+			public override bool IsExtensionMethodGroupConversion {
+				get { return isExtensionMethodGroupConversion; }
+			}
+
 			public override IMethod Method {
 				get { return method; }
 			}
@@ -518,6 +524,13 @@ namespace ICSharpCode.NRefactory.Semantics
 			get { return false; }
 		}
 		
+		/// <summary>
+		/// For method-group conversions, gets whether the conversion is a method group conversion of an extension method performed on an instance (eg. Func&lt;int&gt; f = myEnumerable.Single).
+		/// </summary>
+		public virtual bool IsExtensionMethodGroupConversion {
+			get { return false; }
+		}
+
 		/// <summary>
 		/// Gets whether this conversion is an anonymous function conversion.
 		/// </summary>
