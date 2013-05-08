@@ -97,18 +97,18 @@ namespace ICSharpCode.NRefactory.Semantics
 			return new UserDefinedConv(isImplicit, operatorMethod, conversionBeforeUserDefinedOperator, conversionAfterUserDefinedOperator, isLifted, isAmbiguous);
 		}
 		
-		public static Conversion MethodGroupConversion(IMethod chosenMethod, bool isVirtualMethodLookup, bool isExtensionMethodGroupConversion)
+		public static Conversion MethodGroupConversion(IMethod chosenMethod, bool isVirtualMethodLookup, bool delegateCapturesFirstArgument)
 		{
 			if (chosenMethod == null)
 				throw new ArgumentNullException("chosenMethod");
-			return new MethodGroupConv(chosenMethod, isVirtualMethodLookup, isExtensionMethodGroupConversion, isValid: true);
+			return new MethodGroupConv(chosenMethod, isVirtualMethodLookup, delegateCapturesFirstArgument, isValid: true);
 		}
 		
-		public static Conversion InvalidMethodGroupConversion(IMethod chosenMethod, bool isVirtualMethodLookup, bool isExtensionMethodGroupConversion)
+		public static Conversion InvalidMethodGroupConversion(IMethod chosenMethod, bool isVirtualMethodLookup, bool delegateCapturesFirstArgument)
 		{
 			if (chosenMethod == null)
 				throw new ArgumentNullException("chosenMethod");
-			return new MethodGroupConv(chosenMethod, isVirtualMethodLookup, isExtensionMethodGroupConversion, isValid: false);
+			return new MethodGroupConv(chosenMethod, isVirtualMethodLookup, delegateCapturesFirstArgument, isValid: false);
 		}
 		#endregion
 		
@@ -346,14 +346,14 @@ namespace ICSharpCode.NRefactory.Semantics
 		{
 			readonly IMethod method;
 			readonly bool isVirtualMethodLookup;
-			readonly bool isExtensionMethodGroupConversion;
+			readonly bool delegateCapturesFirstArgument;
 			readonly bool isValid;
 			
-			public MethodGroupConv(IMethod method, bool isVirtualMethodLookup, bool isExtensionMethodGroupConversion, bool isValid)
+			public MethodGroupConv(IMethod method, bool isVirtualMethodLookup, bool delegateCapturesFirstArgument, bool isValid)
 			{
 				this.method = method;
 				this.isVirtualMethodLookup = isVirtualMethodLookup;
-				this.isExtensionMethodGroupConversion = isExtensionMethodGroupConversion;
+				this.delegateCapturesFirstArgument = delegateCapturesFirstArgument;
 				this.isValid = isValid;
 			}
 			
@@ -373,8 +373,8 @@ namespace ICSharpCode.NRefactory.Semantics
 				get { return isVirtualMethodLookup; }
 			}
 			
-			public override bool IsExtensionMethodGroupConversion {
-				get { return isExtensionMethodGroupConversion; }
+			public override bool DelegateCapturesFirstArgument {
+				get { return delegateCapturesFirstArgument; }
 			}
 
 			public override IMethod Method {
@@ -525,9 +525,12 @@ namespace ICSharpCode.NRefactory.Semantics
 		}
 		
 		/// <summary>
-		/// For method-group conversions, gets whether the conversion is a method group conversion of an extension method performed on an instance (eg. Func&lt;int&gt; f = myEnumerable.Single).
+		/// For method-group conversions, gets whether the conversion captures the first argument.
+		/// 
+		/// For instance methods, this property always returns true for C# method-group conversions.
+		/// For static methods, this property returns true for method-group conversions of an extension method performed on an instance (eg. <c>Func&lt;int&gt; f = myEnumerable.Single</c>).
 		/// </summary>
-		public virtual bool IsExtensionMethodGroupConversion {
+		public virtual bool DelegateCapturesFirstArgument {
 			get { return false; }
 		}
 

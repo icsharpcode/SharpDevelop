@@ -1062,10 +1062,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				var thisRR = rr.TargetResult as ThisResolveResult;
 				bool isVirtual = method.IsOverridable && !(thisRR != null && thisRR.CausesNonVirtualInvocation);
 				bool isValid = !or.IsAmbiguous && IsDelegateCompatible(method, invoke, or.IsExtensionMethodInvocation);
+				bool delegateCapturesFirstArgument = or.IsExtensionMethodInvocation || !method.IsStatic;
 				if (isValid)
-					return Conversion.MethodGroupConversion(method, isVirtual, or.IsExtensionMethodInvocation);
+					return Conversion.MethodGroupConversion(method, isVirtual, delegateCapturesFirstArgument);
 				else
-					return Conversion.InvalidMethodGroupConversion(method, isVirtual, or.IsExtensionMethodInvocation);
+					return Conversion.InvalidMethodGroupConversion(method, isVirtual, delegateCapturesFirstArgument);
 			} else {
 				return Conversion.None;
 			}

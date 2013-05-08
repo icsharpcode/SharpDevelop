@@ -615,6 +615,25 @@ class Test {
 			var c = GetConversion(program);
 			Assert.IsTrue(c.IsValid);
 			Assert.IsTrue(c.IsMethodGroupConversion);
+			Assert.IsFalse(c.DelegateCapturesFirstArgument);
+			Assert.IsNotNull(c.Method);
+		}
+		
+		[Test]
+		public void MethodGroupConversion_Void_InstanceMethod()
+		{
+			string program = @"using System;
+delegate void D();
+class Test {
+	D d;
+	public void M() {
+		d = $M$;
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+			Assert.IsTrue(c.DelegateCapturesFirstArgument);
 			Assert.IsNotNull(c.Method);
 		}
 		
@@ -837,7 +856,7 @@ class Test {
 		{
 			string program = @"using System;
 static class Ext {
-	public void M(this string s, int x) {}
+	public static void M(this string s, int x) {}
 }
 class Test {
 	delegate void D(int a);
@@ -849,7 +868,7 @@ class Test {
 			var c = GetConversion(program);
 			Assert.IsTrue(c.IsValid);
 			Assert.IsTrue(c.IsMethodGroupConversion);
-			Assert.IsTrue(c.IsExtensionMethodGroupConversion);
+			Assert.IsTrue(c.DelegateCapturesFirstArgument);
 		}
 
 		[Test]
@@ -857,7 +876,7 @@ class Test {
 		{
 			string program = @"using System;
 static class Ext {
-	public void M(this string s, int x) {}
+	public static void M(this string s, int x) {}
 }
 class Test {
 	delegate void D(string s, int a);
@@ -868,7 +887,7 @@ class Test {
 			var c = GetConversion(program);
 			Assert.IsTrue(c.IsValid);
 			Assert.IsTrue(c.IsMethodGroupConversion);
-			Assert.IsFalse(c.IsExtensionMethodGroupConversion);
+			Assert.IsFalse(c.DelegateCapturesFirstArgument);
 		}
 
 		[Test]
