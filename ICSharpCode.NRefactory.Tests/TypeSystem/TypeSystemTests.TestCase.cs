@@ -160,15 +160,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		int GetNextAssembly(uint dwFlags);
 	}
 	
-	public class ConstantTest
-	{
-		public const int Answer = 42;
-		
-		public const StringComparison EnumFromAnotherAssembly = StringComparison.OrdinalIgnoreCase;
-		
-		public const string NullString = null;
-	}
-	
 	public class OuterGeneric<X>
 	{
 		public class Inner {
@@ -359,7 +350,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public const float Cf = 42;
 		public const decimal Cm = 42;
 		public const string S = "hello, world";
-
+		public const string NullString = null;
+		
+		public const MyEnum EnumFromThisAssembly = MyEnum.Second;
+		public const StringComparison EnumFromAnotherAssembly = StringComparison.OrdinalIgnoreCase;
+		
 		public const int SOsb = sizeof(sbyte);
 		public const int SOb  = sizeof(byte);
 		public const int SOs  = sizeof(short);
@@ -372,6 +367,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public const int SOf  = sizeof(float);
 		public const int SOd  = sizeof(double);
 		public const int SObl = sizeof(bool);
-	    public static readonly unsafe int SOe = sizeof(MyEnum);
+	    public const int SOe = sizeof(MyEnum);
 	}
 }

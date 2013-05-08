@@ -687,34 +687,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
-		public void ConstantAnswer()
-		{
-			ITypeDefinition type = GetTypeDefinition(typeof(ConstantTest));
-			IField answer = type.Fields.Single(f => f.Name == "Answer");
-			Assert.IsTrue(answer.IsConst);
-			Assert.IsTrue(answer.IsStatic);
-			Assert.AreEqual(42, answer.ConstantValue);
-		}
-		
-		[Test]
-		public void ConstantEnumFromAnotherAssembly()
-		{
-			ITypeDefinition type = GetTypeDefinition(typeof(ConstantTest));
-			IField answer = type.Fields.Single(f => f.Name == "EnumFromAnotherAssembly");
-			Assert.IsTrue(answer.IsConst);
-			Assert.AreEqual((int)StringComparison.OrdinalIgnoreCase, answer.ConstantValue);
-		}
-		
-		[Test]
-		public void ConstantNullString()
-		{
-			ITypeDefinition type = GetTypeDefinition(typeof(ConstantTest));
-			IField answer = type.Fields.Single(f => f.Name == "NullString");
-			Assert.IsTrue(answer.IsConst);
-			Assert.IsNull(answer.ConstantValue);
-		}
-		
-		[Test]
 		public void InnerClassInGenericClassIsReferencedUsingParameterizedType()
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(OuterGeneric<>));
@@ -1274,7 +1246,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			AssertConstantField<float>(type, "Cf", 42);
 			AssertConstantField<decimal>(type, "Cm", 42);
 			AssertConstantField<string>(type, "S", "hello, world");
-
+			AssertConstantField<string>(type, "NullString", null);
+		}
+		
+		[Test]
+		public void ConstantFieldsSizeOf()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ConstantFieldTest));
 			AssertConstantField<int>(type, "SOsb", sizeof(sbyte));
 			AssertConstantField<int>(type, "SOb", sizeof(byte));
 			AssertConstantField<int>(type, "SOs", sizeof(short));
@@ -1288,6 +1266,24 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			AssertConstantField<int>(type, "SOd", sizeof(double));
 			AssertConstantField<int>(type, "SObl", sizeof(bool));
 			AssertConstantField<int>(type, "SOe", sizeof(MyEnum));
+		}
+		
+		[Test]
+		public void ConstantEnumFromThisAssembly()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ConstantFieldTest));
+			IField field = type.Fields.Single(f => f.Name == "EnumFromThisAssembly");
+			Assert.IsTrue(field.IsConst);
+			Assert.AreEqual((int)MyEnum.Second, field.ConstantValue);
+		}
+		
+		[Test]
+		public void ConstantEnumFromAnotherAssembly()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ConstantFieldTest));
+			IField field = type.Fields.Single(f => f.Name == "EnumFromAnotherAssembly");
+			Assert.IsTrue(field.IsConst);
+			Assert.AreEqual((int)StringComparison.OrdinalIgnoreCase, field.ConstantValue);
 		}
 	}
 }
