@@ -247,7 +247,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
 			AstNode astNode = astBuilder.ConvertVariable(v);
-			return astNode.GetText().TrimEnd(';', '\r', '\n');
+			return astNode.ToString().TrimEnd(';', '\r', '\n');
 		}
 		
 		public string ConvertType(IType type)
@@ -257,7 +257,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
 			AstType astType = astBuilder.ConvertType(type);
-			return astType.GetText();
+			return astType.ToString();
 		}
 		
 		public void ConvertType(IType type, IOutputFormatter formatter, CSharpFormattingOptions formattingPolicy)

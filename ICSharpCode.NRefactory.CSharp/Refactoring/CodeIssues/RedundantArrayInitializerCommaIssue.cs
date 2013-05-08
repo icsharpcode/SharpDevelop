@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 
 				var commaToken = arrayInitializerExpression.RBraceToken.PrevSibling as CSharpTokenNode;
-				if (commaToken == null || commaToken.GetText () != ",")
+				if (commaToken == null || commaToken.ToString () != ",")
 					return;
 				string initializerType;
 				if (arrayInitializerExpression.Parent is ObjectCreateExpression) {

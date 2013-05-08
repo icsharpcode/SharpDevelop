@@ -79,7 +79,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.CSharp.GatherVisitorBase"/> class.
+		/// Initializes a new instance of the <see cref="GatherVisitorBase{T}"/> class.
 		/// </summary>
 		/// <param name='ctx'>
 		/// The refactoring context.

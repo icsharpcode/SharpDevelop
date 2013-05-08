@@ -958,7 +958,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (IsNull)
 				return "Null";
-			string text = GetText();
+			string text = ToString();
 			text = text.TrimEnd().Replace("\t", "").Replace(Environment.NewLine, " ");
 			if (text.Length > 100)
 				return text.Substring(0, 97) + "...";

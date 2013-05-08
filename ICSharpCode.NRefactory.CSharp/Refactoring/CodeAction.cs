@@ -73,6 +73,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// <param name='action'>
 		/// The code transformation.
 		/// </param>
+		/// <param name='astNode'>
+		/// A node that specifies the start/end positions for the code action.
+		/// </param>
 		public CodeAction (string description, Action<Script> action, AstNode astNode)
 		{
 			if (action == null)
@@ -96,6 +99,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// <param name='action'>
 		/// The code transformation.
 		/// </param>
+		/// <param name='start'>Start position for the code action.</param>
+		/// <param name='end'>End position for the code action.</param>
 		public CodeAction (string description, Action<Script> action, TextLocation start, TextLocation end)
 		{
 			if (action == null)

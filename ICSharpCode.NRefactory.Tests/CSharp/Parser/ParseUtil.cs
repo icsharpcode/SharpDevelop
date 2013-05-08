@@ -143,7 +143,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		
 		static string ToCSharp(AstNode node)
 		{
-			return node.GetText();
+			return node.ToString();
 		}
 	}
 }

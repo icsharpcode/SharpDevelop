@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 		}
 
 		private void AssertCorrect(AstNode actual, string expected) {
-			Assert.That(Regex.Replace(actual.GetText(), @"\s+", "").Replace("<>", ""), Is.EqualTo(Regex.Replace(expected, @"\s+", "")));
+			Assert.That(Regex.Replace(actual.ToString(), @"\s+", "").Replace("<>", ""), Is.EqualTo(Regex.Replace(expected, @"\s+", "")));
 		}
 
 		private void AssertLookupCorrect<T, U>(IEnumerable<KeyValuePair<T, U>> actual, IList<Tuple<TextLocation, AstNode>> expected) where T : AstNode where U : AstNode {

@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var newVarDecl = (VariableDeclarationStatement)varDecl.Clone();
 				newVarDecl.Role = BlockStatement.StatementRole;
 				
-				if (newVarDecl.Type.IsMatch(new SimpleType ("var"))) {
+				if (newVarDecl.Type.IsVar()) {
 					newVarDecl.Type = type;
 				}
 				

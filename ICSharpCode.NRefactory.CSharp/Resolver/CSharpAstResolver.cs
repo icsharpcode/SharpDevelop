@@ -166,7 +166,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				try {
 					ResolveResult rr = resolveVisitor.GetResolveResult(node);
 					if (rr == null)
-						Debug.Fail (node.GetType () + " resolved to null.", node.StartLocation + ":'" + node.GetText () + "'");
+						Debug.Fail (node.GetType () + " resolved to null.", node.StartLocation + ":'" + node.ToString () + "'");
 					return rr;
 				} finally {
 					resolveVisitor.cancellationToken = CancellationToken.None;

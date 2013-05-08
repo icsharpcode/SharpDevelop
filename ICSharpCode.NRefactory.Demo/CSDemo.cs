@@ -148,7 +148,7 @@ namespace ICSharpCode.NRefactory.Demo
 		
 		void CSharpGenerateCodeButtonClick(object sender, EventArgs e)
 		{
-			csharpCodeTextBox.Text = syntaxTree.GetText();
+			csharpCodeTextBox.Text = syntaxTree.ToString();
 		}
 		
 		int GetOffset(TextBox textBox, TextLocation location)

@@ -74,12 +74,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return arrayType != null && ContainsAnonymousType (arrayType.ElementType);
 		}
 
-		static readonly AstType varType = new SimpleType ("var");
-
 		static VariableDeclarationStatement GetVariableDeclarationStatement (RefactoringContext context)
 		{
 			var result = context.GetNode<VariableDeclarationStatement> ();
-			if (result != null && result.Variables.Count == 1 && !result.Variables.First ().Initializer.IsNull && result.Type.Contains (context.Location.Line, context.Location.Column) && result.Type.IsMatch (varType)) {
+			if (result != null && result.Variables.Count == 1 && !result.Variables.First ().Initializer.IsNull && result.Type.Contains (context.Location.Line, context.Location.Column) && result.Type.IsVar ()) {
 				if (context.Resolve (result.Variables.First ().Initializer) == null)
 					return null;
 				return result;
@@ -90,7 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		static ForeachStatement GetForeachStatement (RefactoringContext context)
 		{
 			var result = context.GetNode<ForeachStatement> ();
-			if (result != null && result.VariableType.Contains (context.Location) && result.VariableType.IsMatch (varType))
+			if (result != null && result.VariableType.Contains (context.Location) && result.VariableType.IsVar ())
 				return result;
 			return null;
 		}

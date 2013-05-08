@@ -43,9 +43,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		private class GatherVisitor : GatherVisitorBase<ConvertToStaticMethodIssue>
 		{
-			bool initializerInvoked;
-			ConstructorInitializer initializer;
-
 			public GatherVisitor(BaseRefactoringContext context)
                 : base(context)
 			{

@@ -256,7 +256,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
                     var varDecl = node.Parent as VariableDeclarationStatement;
 
                     var isDeclareStatement = varDecl != null;
-                    var isUsingVar = isDeclareStatement && (varDecl.Type.ToString() == "var");
+                    var isUsingVar = isDeclareStatement && varDecl.Type.IsVar();
 
                     var expressionType = ctx.Resolve(node).Type;
 

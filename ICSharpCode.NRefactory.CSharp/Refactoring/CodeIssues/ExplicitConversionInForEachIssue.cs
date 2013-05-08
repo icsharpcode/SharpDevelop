@@ -65,9 +65,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				AstType variableType = foreachStatement.VariableType;
 				string issueText = ctx.TranslateString("Collection element type '{0}' is not implicitly convertible to '{1}'");
 				string fixText = ctx.TranslateString("Use type '{0}'");
-				AddIssue(variableType, string.Format(issueText, elementType.GetText(), variableType.GetText()),
+				AddIssue(variableType, string.Format(issueText, elementType.ToString(), variableType.ToString()),
 				         new CodeAction(
-								string.Format(fixText, elementType.GetText()),
+								string.Format(fixText, elementType.ToString()),
 								script => script.Replace(variableType, elementType),
 								foreachStatement));
 			}

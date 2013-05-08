@@ -107,7 +107,7 @@ namespace ICSharpCode.NRefactory.GtkDemo
 
 		void CSharpGenerateCodeButtonClick(object sender, EventArgs e)
 		{
-			this.textview1.Buffer.Text = unit.GetText();
+			this.textview1.Buffer.Text = unit.ToString();
 		}
 		
 		void SelectionChanged (object sender, EventArgs e)

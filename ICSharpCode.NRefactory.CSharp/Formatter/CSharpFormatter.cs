@@ -90,7 +90,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.CSharp.CSharpFormatter"/> class.
 		/// </summary>
 		/// <param name="policy">The formatting policy to use.</param>
-		/// <param name="document">The text document to work upon.</param>
 		/// <param name="options">The text editor options (optional). Default is: TextEditorOptions.Default</param>
 		public CSharpFormatter(CSharpFormattingOptions policy, TextEditorOptions options = null)
 		{

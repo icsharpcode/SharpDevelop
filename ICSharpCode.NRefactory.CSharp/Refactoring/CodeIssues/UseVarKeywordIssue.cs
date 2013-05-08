@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (variableDeclarationStatement.Type is PrimitiveType) {
 					return;
 				}
-				if (variableDeclarationStatement.Type is SimpleType && ((SimpleType)variableDeclarationStatement.Type).Identifier == "var") { 
+				if (variableDeclarationStatement.Type.IsVar()) {
 					return;
 				}
 				if (variableDeclarationStatement.Variables.Count != 1) {

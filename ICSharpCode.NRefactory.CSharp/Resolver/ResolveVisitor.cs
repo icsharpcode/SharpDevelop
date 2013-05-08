@@ -2759,7 +2759,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			var compilation = resolver.Compilation;
 			ResolveResult expression = Resolve(foreachStatement.InExpression);
-			bool isImplicitlyTypedVariable = IsVar(foreachStatement.VariableType);
+			bool isImplicitlyTypedVariable = foreachStatement.VariableType.IsVar();
 			var memberLookup = resolver.CreateMemberLookup();
 			
 			IType collectionType, enumeratorType, elementType;
@@ -2934,7 +2934,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult IAstVisitor<ResolveResult>.VisitVariableDeclarationStatement(VariableDeclarationStatement variableDeclarationStatement)
 		{
 			bool isConst = (variableDeclarationStatement.Modifiers & Modifiers.Const) != 0;
-			if (!isConst && IsVar(variableDeclarationStatement.Type) && variableDeclarationStatement.Variables.Count == 1) {
+			if (!isConst && variableDeclarationStatement.Type.IsVar() && variableDeclarationStatement.Variables.Count == 1) {
 				VariableInitializer vi = variableDeclarationStatement.Variables.Single();
 				StoreCurrentState(variableDeclarationStatement.Type);
 				IType type = Resolve(vi.Initializer).Type;
@@ -3120,12 +3120,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Local Variable Type Inference
-		static bool IsVar(AstNode returnType)
-		{
-			SimpleType st = returnType as SimpleType;
-			return st != null && st.Identifier == "var" && st.TypeArguments.Count == 0;
-		}
-		
 		IVariable MakeVariable(IType type, Identifier variableName)
 		{
 			return new SimpleVariable(MakeRegion(variableName), type, variableName.Name);

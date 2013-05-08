@@ -188,7 +188,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		static TypeDeclaration CreateClassFromObjectCreation(RefactoringContext context, ObjectCreateExpression createExpression)
 		{
 			TypeDeclaration result;
-			string className = createExpression.Type.GetText();
+			string className = createExpression.Type.ToString();
 			if (!createExpression.Arguments.Any()) {
 				result = new TypeDeclaration { Name = className };
 			} else {

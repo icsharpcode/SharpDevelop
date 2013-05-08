@@ -2210,7 +2210,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var convertedParameter = builder.ConvertParameter(delegateMethod.Parameters [k]);
 				if (convertedParameter.ParameterModifier == ParameterModifier.Params)
 					convertedParameter.ParameterModifier = ParameterModifier.None;
-				sb.Append(convertedParameter.GetText(FormattingPolicy));
+				sb.Append(convertedParameter.ToString(FormattingPolicy));
 				sbWithoutTypes.Append(delegateMethod.Parameters [k].Name);
 			}
 			

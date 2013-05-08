@@ -126,6 +126,15 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		/// <summary>
+		/// Gets whether this type is a SimpleType "var".
+		/// </summary>
+		public bool IsVar()
+		{
+			SimpleType st = this as SimpleType;
+			return st != null && st.Identifier == "var" && st.TypeArguments.Count == 0;
+		}
+		
+		/// <summary>
 		/// Create an ITypeReference for this AstType.
 		/// Uses the context (ancestors of this node) to determine the correct <see cref="NameLookupMode"/>.
 		/// </summary>

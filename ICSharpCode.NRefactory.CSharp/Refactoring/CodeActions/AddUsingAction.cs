@@ -91,7 +91,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		CodeAction ReplaceWithFullTypeNameAction(RefactoringContext context, AstNode node, ITypeDefinition typeDefinition)
 		{
 			AstType astType = context.CreateShortType(typeDefinition);
-			string textWithoutGenerics = astType.GetText();
+			string textWithoutGenerics = astType.ToString();
 			foreach (var typeArg in node.GetChildrenByRole(Roles.TypeArgument)) {
 				astType.AddChild(typeArg.Clone(), Roles.TypeArgument);
 			}

@@ -58,7 +58,7 @@ class Foo
 			var passed = !constructor.HasModifier(Modifiers.Override);
 			if (!passed) {
 				Console.WriteLine("Expected:" + code);
-				Console.WriteLine("Was:" + unit.GetText());
+				Console.WriteLine("Was:" + unit);
 			}
 			Assert.IsTrue(passed);
 		}
@@ -83,7 +83,7 @@ class Stub
 			bool passed = method.Body.Statements.FirstOrDefault() is ReturnStatement;
 			if (!passed) {
 				Console.WriteLine("Expected:" + code);
-				Console.WriteLine("Was:" + unit.GetText());
+				Console.WriteLine("Was:" + unit);
 			}
 			Assert.IsTrue(passed);
 		}
@@ -108,7 +108,7 @@ class TestClass
 			bool passed = constructor.GetNodeAt<AttributeSection>(constructor.LParToken.StartLocation.Line, constructor.LParToken.StartLocation.Column + 1) != null;
 			if (!passed) {
 				Console.WriteLine("Expected:" + code);
-				Console.WriteLine("Was:" + unit.GetText());
+				Console.WriteLine("Was:" + unit);
 			}
 			Assert.IsTrue(passed);
 		}
@@ -137,7 +137,7 @@ class Foo
 			bool passed = !method.Body.IsNull;
 			if (!passed) {
 				Console.WriteLine("Expected:" + code);
-				Console.WriteLine("Was:" + unit.GetText());
+				Console.WriteLine("Was:" + unit);
 			}
 			Assert.IsTrue(passed);
 		}
@@ -164,10 +164,10 @@ class Foo
 	{
 		for (int i = 0; i < foo.bar;)
 	}
-}" == unit.GetText ().Trim ();
+}" == unit.ToString().Trim ();
 			if (!passed) {
 				Console.WriteLine("Expected:" + code);
-				Console.WriteLine("Was:" + unit.GetText());
+				Console.WriteLine("Was:" + unit);
 			}
 			Assert.IsTrue(passed);
 		}
@@ -196,7 +196,7 @@ class Foo
 			
 			if (!passed) {
 				Console.WriteLine("Expected:" + code);
-				Console.WriteLine("Was:" + unit.GetText());
+				Console.WriteLine("Was:" + unit);
 			}
 			Assert.IsTrue(passed);
 		}
@@ -222,7 +222,7 @@ class Foo
 			
 			if (!passed) {
 				Console.WriteLine("Expected:" + code);
-				Console.WriteLine("Was:" + unit.GetText());
+				Console.WriteLine("Was:" + unit);
 			}
 			Assert.IsTrue(passed);
 		}
@@ -248,7 +248,7 @@ class Foo
 			bool passed = !method.Body.IsNull;
 			if (!passed) {
 				Console.WriteLine("Expected:" + code);
-				Console.WriteLine("Was:" + unit.GetText());
+				Console.WriteLine("Was:" + unit);
 			}
 			Assert.IsTrue(passed);
 		}
@@ -275,7 +275,7 @@ class Foo
 			bool passed = method.Body.Statements.FirstOrDefault() is TryCatchStatement;
 			if (!passed) {
 				Console.WriteLine("Expected:" + code);
-				Console.WriteLine("Was:" + unit.GetText());
+				Console.WriteLine("Was:" + unit);
 			}
 			Assert.IsTrue(passed);
 		}
@@ -301,7 +301,7 @@ class Test
 ";
 			var unit = SyntaxTree.Parse(code);
 			
-			bool passed = unit.GetText().Trim() == @"using System;
+			bool passed = unit.ToString().Trim() == @"using System;
 class Test
 {
 	void Foo ()
@@ -312,7 +312,7 @@ class Test
 }";
 			if (!passed) {
 				Console.WriteLine("Expected:" + code);
-				Console.WriteLine("Was:" + unit.GetText());
+				Console.WriteLine("Was:" + unit);
 			}
 			Assert.IsTrue(passed);
 		}
@@ -340,7 +340,7 @@ class Foo
 			bool passed = !method.Body.IsNull;
 			if (!passed) {
 				Console.WriteLine("Expected:" + code);
-				Console.WriteLine("Was:" + unit.GetText());
+				Console.WriteLine("Was:" + unit);
 			}
 			Assert.IsTrue(passed);
 		}
@@ -361,7 +361,7 @@ class Foo
 }";
 			var unit = SyntaxTree.Parse(code);
 			
-			string text = unit.GetText().Trim();
+			string text = unit.ToString().Trim();
 			string expected = @"public class Bar
 {
 	public IEnumerable<Foo> GetFoos()
@@ -387,7 +387,7 @@ class Foo
 			bool passed = i == text.Length && j == expected.Length;
 			if (!passed) {
 				Console.WriteLine("Expected:" + expected);
-				Console.WriteLine("Was:" + unit.GetText());
+				Console.WriteLine("Was:" + unit);
 			}
 			Assert.IsTrue(passed);
 		}
@@ -418,7 +418,7 @@ class Foo
 			bool passed = stmt.Expression is ObjectCreateExpression;
 			if (!passed) {
 				Console.WriteLine("Expected:" + code);
-				Console.WriteLine("Was:" + unit.GetText());
+				Console.WriteLine("Was:" + unit);
 			}
 			Assert.IsTrue(passed);
 		}
@@ -439,7 +439,7 @@ class Foo
 			bool passed = method.Parameters.Count == 1;
 			if (!passed) {
 				Console.WriteLine("Expected:" + code);
-				Console.WriteLine("Was:" + unit.GetText());
+				Console.WriteLine("Was:" + unit);
 			}
 			Assert.IsTrue(passed);
 		}

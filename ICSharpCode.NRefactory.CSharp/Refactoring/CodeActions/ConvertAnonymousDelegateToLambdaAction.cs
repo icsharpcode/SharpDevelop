@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var parent = node.Parent;
 				while (!(parent is Statement))
 					parent = parent.Parent;
-				bool explicitLambda = parent is VariableDeclarationStatement && ((VariableDeclarationStatement)parent).Type.GetText() == "var";
+				bool explicitLambda = parent is VariableDeclarationStatement && ((VariableDeclarationStatement)parent).Type.IsVar();
 				var lambda = new LambdaExpression {	Body = node.Body.Clone() };
 				foreach (var parameter in node.Parameters) {
 					if (explicitLambda) {

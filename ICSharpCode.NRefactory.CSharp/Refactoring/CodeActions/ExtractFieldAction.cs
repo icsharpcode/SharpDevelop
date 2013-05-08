@@ -35,8 +35,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[ContextAction("Extract field", Description = "Extracts a field from a local variable declaration.")]
 	public class ExtractFieldAction : ICodeActionProvider
 	{
-		static readonly AstType varType = new SimpleType ("var");
-
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
 			//TODO: implement variable assignment & ctor param
@@ -51,7 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var name = varInit.Name;
 
 					AstType extractedType;
-					if (type.IsMatch (varType)) {
+					if (type.IsVar()) {
 						IType resolvedType = context.Resolve(varInit.Initializer).Type;
 						extractedType = context.CreateShortType(resolvedType);
 					}
