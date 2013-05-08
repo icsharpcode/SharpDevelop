@@ -3,38 +3,38 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
-    [TestFixture]
-    public class ExpressionOfCompatibleTypeCastIssueTests : InspectionActionTestBase
-    {
-        [Test]
-        public void TestConversion()
-        {
-            var input = @"
+	[TestFixture]
+	public class ExpressionOfCompatibleTypeCastIssueTests : InspectionActionTestBase
+	{
+		[Test]
+		public void TestConversion()
+		{
+			var input = @"
 class TestClass
 {
 enum Enum{ };
 	void TestMethod (Enum i)
 	{
 		int x;
-        x = i;
+		x = i;
 	}
 }";
-            var output = @"
+			var output = @"
 class TestClass
 {
 enum Enum{ };
 	void TestMethod (Enum i)
 	{
 		int x;
-        x = (Enum)i;
+		x = (int)i;
 	}
 }";
 			Test<ExpressionOfCompatibleTypeCastIssue>(input, output);
-        }
-        [Test]
-        public void TestClassConversion()
-        {
-            var input = @"
+		}
+		[Test]
+		public void TestClassConversion()
+		{
+			var input = @"
 class Base {}
 class Test: Base {}
 class TestClass
@@ -42,45 +42,41 @@ class TestClass
 	void TestMethod (Test i)
 	{
 		Base x;
-        x = i;
+		x = i;
 	}
 }";
 			Test<ExpressionOfCompatibleTypeCastIssue>(input, 0);
-        }
+		}
 
-        [Test]
-        public void TestConversionDoubleFloat()
-        {
-            var input = @"
+		[Test]
+		public void TestConversionDoubleFloat()
+		{
+			var input = @"
 class Foo
 {
 	void Bar () {
 		double c = 3.5;
-        float fc;
-        fc = c;
+		float fc;
+		fc = c;
 	}
 }";
-            var output = @"
+			var output = @"
 class Foo
 {
-	void Bar (){ 
+	void Bar () {
 		double c = 3.5;
-        float fc;
-        fc = (float)c;
+		float fc;
+		fc = (float)c;
 	}
 }";
-            //TODO:
-            //Test is failing as conversion seems to have a bug that
-            //considers that double is implicit convertible to float, 
-            //when should it be explicitly convertible to float
 
-            //Test<ExpressionOfCompatibleTypeCastIssue>(input, output);
-        }
+			Test<ExpressionOfCompatibleTypeCastIssue>(input, output);
+		}
 
-        [Test]
-        public void TestConversionEnumToInt()
-        {
-            var input = @"
+		[Test]
+		public void TestConversionEnumToInt()
+		{
+			var input = @"
 class Foo
 {
 	enum Enum { Zero }
@@ -90,33 +86,33 @@ class Foo
 		val = e;
 	}
 }";
-            var output = @"
+			var output = @"
 class Foo
 {
 	enum Enum { Zero }
 	void Bar () {
 		var e = Enum.Zero;
 		int val;
-		val = (Enum)e;
+		val = (int)e;
 	}
 }";
-            Test<ExpressionOfCompatibleTypeCastIssue>(input, output);
-        }
+			Test<ExpressionOfCompatibleTypeCastIssue>(input, output);
+		}
 
-        [Test]
-        public void TestConversionSameType()
-        {
-            var input = @"
+		[Test]
+		public void TestConversionSameType()
+		{
+			var input = @"
 class TestClass
 {
 	void TestMethod ()
 	{
 		int x =0;
-        int y = 1;
-        $x = i;
+		int y = 1;
+		$x = i;
 	}
 }";
-            Test<ExpressionOfCompatibleTypeCastIssue>(input, 0);
-        }
-    }
+			Test<ExpressionOfCompatibleTypeCastIssue>(input, 0);
+		}
+	}
 }

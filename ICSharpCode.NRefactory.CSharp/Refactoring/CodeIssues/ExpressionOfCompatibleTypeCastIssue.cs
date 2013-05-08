@@ -30,11 +30,11 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-/*	[IssueDescription("Type cast expression of compatible type",
-		Description = "Type cast expression of compatible type",
-		Category = IssueCategories.CodeQualityIssues,
-		Severity = Severity.Warning,
-		IssueMarker = IssueMarker.Underline)]*/
+	[IssueDescription("Type cast expression of compatible type",
+	                  Description = "Type cast expression of compatible type",
+	                  Category = IssueCategories.CodeQualityIssues,
+	                  Severity = Severity.Warning,
+	                  IssueMarker = IssueMarker.Underline)]
 	public class ExpressionOfCompatibleTypeCastIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
@@ -54,12 +54,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitAssignmentExpression(AssignmentExpression assignmentExpression)
 			{
-                var rightExpressionType = ctx.Resolve(assignmentExpression.Right).Type;
-                if (rightExpressionType.Kind == TypeKind.Class)
-                    return;
-			    var leftExpressionType = ctx.Resolve(assignmentExpression.Left).Type;
-			    VisitTypeCastExpression(assignmentExpression, leftExpressionType,
-				                        rightExpressionType);
+				var rightExpressionType = ctx.Resolve(assignmentExpression.Right).Type;
+				var leftExpressionType = ctx.Resolve(assignmentExpression.Left).Type;
+				VisitTypeCastExpression(assignmentExpression, rightExpressionType, leftExpressionType);
 			}
 
 			private AstType CreateShortType(AstNode node, IType fullType)
@@ -80,10 +77,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 				AddIssue(expression, string.Format(ctx.TranslateString("Cast to '{0}'"), castToType.Name),
 				         script => {
-					var right = expression.Right.Clone();
-					var castRight = right.CastTo(CreateShortType(expression, castToType));
-					script.Replace(expression.Right, castRight);
-				});
+				         	var right = expression.Right.Clone();
+				         	var castRight = right.CastTo(CreateShortType(expression, castToType));
+				         	script.Replace(expression.Right, castRight);
+				         });
 			}
 		}
 	}
