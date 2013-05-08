@@ -395,9 +395,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				KnownTypeCode result = this.knownTypeCode;
 				if (result == (KnownTypeCode)(-1)) {
 					result = KnownTypeCode.None;
+					ICompilation compilation = this.Compilation;
 					for (int i = 0; i < KnownTypeReference.KnownTypeCodeCount; i++) {
-						KnownTypeReference r = KnownTypeReference.Get((KnownTypeCode)i);
-						if (r != null && r.Resolve(parentContext) == this) {
+						if (compilation.FindType((KnownTypeCode)i) == this) {
 							result = (KnownTypeCode)i;
 							break;
 						}

@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <param name="allowProtectedAccess">
 		/// Whether protected access to instance members is allowed.
 		/// True if the type of the reference is derived from the current class.
-		/// Protected static members may be accessibe even if false is passed for this parameter.
+		/// Protected static members may be accessible even if false is passed for this parameter.
 		/// </param>
 		public bool IsAccessible(IEntity entity, bool allowProtectedAccess)
 		{
