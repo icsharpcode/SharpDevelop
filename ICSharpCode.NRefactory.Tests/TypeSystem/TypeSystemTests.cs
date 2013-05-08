@@ -1285,5 +1285,44 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.IsTrue(field.IsConst);
 			Assert.AreEqual((int)StringComparison.OrdinalIgnoreCase, field.ConstantValue);
 		}
+		
+		[Test]
+		public void ExplicitImplementation()
+		{
+			var type = GetTypeDefinition(typeof(ExplicitImplementationTests));
+			var itype = GetTypeDefinition(typeof(IExplicitImplementationTests));
+
+			var methods = type.GetMethods(m => m.Name == "M").ToList();
+			var imethod = itype.GetMethods(m => m.Name == "M").Single();
+			Assert.That(methods.Select(m => m.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(methods.SelectMany(m => m.ImplementedInterfaceMembers).Single(), imethod);
+
+			var properties = type.GetProperties(p => p.Name == "P").ToList();
+			var iproperty  = itype.GetProperties(m => m.Name == "P").Single();
+			Assert.That(properties.Select(p => p.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(properties.SelectMany(p => p.ImplementedInterfaceMembers).Single(), iproperty);
+			Assert.That(properties.Select(p => p.Getter.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(properties.SelectMany(p => p.Getter.ImplementedInterfaceMembers).Single(), iproperty.Getter);
+			Assert.That(properties.Select(p => p.Setter.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(properties.SelectMany(p => p.Setter.ImplementedInterfaceMembers).Single(), iproperty.Setter);
+
+			var indexers = type.GetProperties(p => p.Name == "Item").ToList();
+			var iindexer = itype.GetProperties(m => m.Name == "Item").Single();
+			Assert.That(indexers.Select(p => p.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(indexers.SelectMany(p => p.ImplementedInterfaceMembers).Single(), iindexer);
+			Assert.That(indexers.Select(p => p.Getter.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(indexers.SelectMany(p => p.Getter.ImplementedInterfaceMembers).Single(), iindexer.Getter);
+			Assert.That(indexers.Select(p => p.Setter.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(indexers.SelectMany(p => p.Setter.ImplementedInterfaceMembers).Single(), iindexer.Setter);
+
+			var events = type.GetEvents(e => e.Name == "E").ToList();
+			var ievent = itype.GetEvents(m => m.Name == "E").Single();
+			Assert.That(events.Select(e => e.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(events.SelectMany(e => e.ImplementedInterfaceMembers).Single(), ievent);
+			Assert.That(events.Select(e => e.AddAccessor.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(events.SelectMany(e => e.AddAccessor.ImplementedInterfaceMembers).Single(), ievent.AddAccessor);
+			Assert.That(events.Select(e => e.RemoveAccessor.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(events.SelectMany(e => e.RemoveAccessor.ImplementedInterfaceMembers).Single(), ievent.RemoveAccessor);
+		}
 	}
 }
