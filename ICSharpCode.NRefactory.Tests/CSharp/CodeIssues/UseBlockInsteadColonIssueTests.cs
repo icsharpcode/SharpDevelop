@@ -49,15 +49,15 @@ class TestClass
 	void TestMethod (int i)
 	{
 		if (i > 0) {
-        }
+		}
 	}
 }";
-            Test<UseBlockInsteadColonIssue>(input, output);
+			Test<UseBlockInsteadColonIssue>(input, output);
 		}
-        [Test]
-        public void TestForeach()
-        {
-            var input = @"
+		[Test]
+		public void TestForeach()
+		{
+			var input = @"
 class TestClass
 {
 	void TestMethod (int[] list)
@@ -65,17 +65,17 @@ class TestClass
 		foreach (var i in list);
 	}
 }";
-            var output = @"
+			var output = @"
 class TestClass
 {
 	void TestMethod (int[] list)
 	{
 		foreach (var i in list) {
-        }
+		}
 	}
 }";
-            Test<UseBlockInsteadColonIssue>(input, output);
-        }
+			Test<UseBlockInsteadColonIssue>(input, output);
+		}
 	}
 	
 }
