@@ -658,8 +658,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 			}
 			IMember member = entity as IMember;
-			if (member != null)
-				throw new NotImplementedException();
+			if (member != null) {
+				HashSet<IMember> visitedMembers = new HashSet<IMember>();
+				do {
+					member = member.MemberDefinition; // it's sufficient to look at the definitions
+					if (!visitedMembers.Add(member)) {
+						// abort if we seem to be in an infinite loop (cyclic inheritance)
+						break;
+					}
+					foreach (var attr in member.Attributes) {
+						if (attributeTypePredicate(attr.AttributeType))
+							yield return attr;
+					}
+				} while (member.IsOverride && (member = InheritanceHelper.GetBaseMember(member)) != null);
+			}
 			throw new NotSupportedException("Unknown entity type");
 		}
 		#endregion
