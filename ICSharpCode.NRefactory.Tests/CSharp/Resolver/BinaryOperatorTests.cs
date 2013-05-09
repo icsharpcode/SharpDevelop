@@ -511,6 +511,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		[Test]
+		public void ByteEnumSubtraction()
+		{
+			string program = @"enum E : byte {
+  A = 1,
+  B = 2
+}
+class Test {
+	const int $j = E.A - E.B$;
+}
+";
+			// result is 255 in C# 2.0 and later (was -1 in C# 1.x)
+			var rr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual(255, rr.ConstantValue);
+		}
+		
+		[Test]
 		public void UserDefinedNeedsLiftingDueToImplicitConversion()
 		{
 			string program = @"struct S {}

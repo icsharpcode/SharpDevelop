@@ -1274,7 +1274,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition type = GetTypeDefinition(typeof(ConstantFieldTest));
 			IField field = type.Fields.Single(f => f.Name == "EnumFromThisAssembly");
 			Assert.IsTrue(field.IsConst);
-			Assert.AreEqual((int)MyEnum.Second, field.ConstantValue);
+			Assert.AreEqual((short)MyEnum.Second, field.ConstantValue);
 		}
 		
 		[Test]
@@ -1284,6 +1284,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			IField field = type.Fields.Single(f => f.Name == "EnumFromAnotherAssembly");
 			Assert.IsTrue(field.IsConst);
 			Assert.AreEqual((int)StringComparison.OrdinalIgnoreCase, field.ConstantValue);
+		}
+		
+		[Test]
+		public void DefaultOfEnum()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ConstantFieldTest));
+			IField field = type.Fields.Single(f => f.Name == "DefaultOfEnum");
+			Assert.IsTrue(field.IsConst);
+			Assert.AreEqual((short)default(MyEnum), field.ConstantValue);
 		}
 		
 		[Test]

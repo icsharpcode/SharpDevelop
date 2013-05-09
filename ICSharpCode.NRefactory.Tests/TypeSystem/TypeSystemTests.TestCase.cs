@@ -354,6 +354,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		
 		public const MyEnum EnumFromThisAssembly = MyEnum.Second;
 		public const StringComparison EnumFromAnotherAssembly = StringComparison.OrdinalIgnoreCase;
+		public const MyEnum DefaultOfEnum = default(MyEnum);
 		
 		public const int SOsb = sizeof(sbyte);
 		public const int SOb  = sizeof(byte);
