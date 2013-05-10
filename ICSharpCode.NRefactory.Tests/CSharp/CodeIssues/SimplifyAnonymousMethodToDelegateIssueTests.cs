@@ -160,6 +160,43 @@ class Foo
 			var issues = GetIssues (new SimplifyAnonymousMethodToDelegateIssue (), input, out context);
 			Assert.AreEqual (0, issues.Count);
 		}
+
+		/// <summary>
+		/// Bug 12184 - Expression can be reduced to delegate fix can create ambiguity
+		/// </summary>
+		[Test]
+		public void TestBug12184 ()
+		{
+			var input = @"using System;
+using System.Threading.Tasks;
+
+class C
+{
+	public C GetResponse () { return null; }
+
+	public static void Foo ()
+	{
+		Task.Factory.StartNew (() => GetResponse());
+	}
+}";
+
+			TestRefactoringContext context;
+			var issues = GetIssues (new SimplifyAnonymousMethodToDelegateIssue (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+			CheckFix (context, issues, @"using System;
+using System.Threading.Tasks;
+
+class C
+{
+	public C GetResponse () { return null; }
+
+	public static void Foo ()
+	{
+		Task.Factory.StartNew ((Func<C>)GetResponse);
+	}
+}");
+
+		}
 	}
 }
 
