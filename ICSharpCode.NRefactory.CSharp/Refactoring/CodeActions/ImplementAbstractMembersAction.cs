@@ -84,10 +84,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			// Stub out non-implemented methods defined by @iface
 			foreach (var method in abstractType.GetMethods (d => !d.IsSynthetic  && d.IsAbstract)) {
 				alreadyImplemented = false;
-				
-				foreach (var cmet in implementingType.GetMethods ()) {
-					if (!cmet.IsAbstract && ImplementInterfaceAction.CompareMethods(method, cmet)) {
+
+				var allBaseTypes = method.DeclaringType.GetAllBaseTypes().ToList ();
+				foreach (var cmet in implementingType.GetMethods (d => !d.IsAbstract && d.Name == method.Name)) {
+					if (allBaseTypes.Contains(cmet.DeclaringType))
+						continue;
+					if (ImplementInterfaceAction.CompareMethods(method, cmet)) {
 						alreadyImplemented = true;
+						break;
 					}
 				}
 				if (!alreadyImplemented) 
