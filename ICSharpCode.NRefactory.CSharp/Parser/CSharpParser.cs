@@ -3182,7 +3182,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null) {
 					var r = AssignmentExpression.GetOperatorRole (result.Operator);
 					result.AddChild(new CSharpTokenNode(Convert(location [0]), r), r);
-				}	
+				}
 				if (compoundAssign.Source != null)
 					result.AddChild ((Expression)compoundAssign.Source.Accept (this), AssignmentExpression.RightRole);
 				return result;
@@ -3619,30 +3619,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			compilerSettings = args ?? new CompilerSettings();
 		}
 		
-		static AstNode GetOuterLeft (AstNode node)
-		{
-			var outerLeft = node;
-			while (outerLeft.FirstChild != null)
-				outerLeft = outerLeft.FirstChild;
-			return outerLeft;
-		}
-		
-		static AstNode NextLeaf (AstNode node)
-		{
-			if (node == null)
-				return null;
-			var next = node.NextSibling;
-			if (next == null)
-				return node.Parent;
-			return GetOuterLeft (next);
-		}
-		
 		void InsertComments (CompilerCompilationUnit top, ConversionVisitor conversionVisitor)
 		{
-			var leaf = GetOuterLeft (conversionVisitor.Unit);
+			AstNode insertionPoint = conversionVisitor.Unit.FirstChild;
 			for (int i = 0; i < top.SpecialsBag.Specials.Count; i++) {
 				var special = top.SpecialsBag.Specials [i];
 				AstNode newLeaf = null;
+				Role role = null;
+				bool isDocumentationComment = false;
 				var comment = special as SpecialsBag.Comment;
 				if (comment != null) {
 					// HACK: multiline documentation comment detection; better move this logic into the mcs tokenizer
@@ -3651,7 +3635,8 @@ namespace ICSharpCode.NRefactory.CSharp
 						&& comment.Content.StartsWith("*", StringComparison.Ordinal)
 						&& !comment.Content.StartsWith("**", StringComparison.Ordinal)
 					);
-					if (conversionVisitor.convertTypeSystemMode && !(comment.CommentType == SpecialsBag.CommentType.Documentation || isMultilineDocumentationComment))
+					isDocumentationComment = comment.CommentType == SpecialsBag.CommentType.Documentation || isMultilineDocumentationComment;
+					if (conversionVisitor.convertTypeSystemMode && !isDocumentationComment)
 						continue;
 					var type = isMultilineDocumentationComment ? CommentType.MultiLineDocumentation : (CommentType)comment.CommentType;
 					var start = new TextLocation (comment.Line, comment.Col);
@@ -3660,6 +3645,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						StartsLine = comment.StartsLine,
 						Content = isMultilineDocumentationComment ? comment.Content.Substring(1) : comment.Content
 					};
+					role = Roles.Comment;
 				} else if (!GenerateTypeSystemMode) {
 					var directive = special as SpecialsBag.PreProcessorDirective;
 					if (directive != null) {
@@ -3667,69 +3653,53 @@ namespace ICSharpCode.NRefactory.CSharp
 							Argument = directive.Arg,
 							Take = directive.Take
 						};
-					} else {
-						var newLine = special as SpecialsBag.NewLineToken;
-						if (newLine != null) {
-							if (newLine.NewLine == SpecialsBag.NewLine.Unix) {
-								newLeaf = new UnixNewLine (new TextLocation (newLine.Line, newLine.Col + 1));
-							} else {
-								newLeaf = new WindowsNewLine (new TextLocation (newLine.Line, newLine.Col + 1));
-							}
-						}
+						role = Roles.PreProcessorDirective;
 					}
 				}
-				if (newLeaf == null)
-					continue;
-				
-				while (true) {
-					var nextLeaf = NextLeaf (leaf);
-					// insert comment at begin
-					if (newLeaf.StartLocation < leaf.StartLocation) {
-						var node = leaf.Parent ?? conversionVisitor.Unit;
-						while (node.Parent != null && node.FirstChild == leaf) {
-							leaf = node;
-							node = node.Parent;
-						}
-						if (newLeaf is NewLineNode) {
-							node.InsertChildBefore (leaf, (NewLineNode)newLeaf, Roles.NewLine);
-						} else if (newLeaf is Comment) {
-							node.InsertChildBefore (leaf, (Comment)newLeaf, Roles.Comment);
-						} else {
-							node.InsertChildBefore (leaf, (PreProcessorDirective)newLeaf, Roles.PreProcessorDirective);
-						}
-						leaf = newLeaf;
-						break;
-					}
-					
-					// insert comment at the end
-					if (nextLeaf == null) {
-						var node = leaf.Parent ?? conversionVisitor.Unit;
-						if (newLeaf is NewLineNode) {
-							node.AddChild ((NewLineNode)newLeaf, Roles.NewLine);
-						} else if (newLeaf is Comment) {
-							node.AddChild ((Comment)newLeaf, Roles.Comment);
-						} else {
-							node.AddChild ((PreProcessorDirective)newLeaf, Roles.PreProcessorDirective);
-						}
-						leaf = newLeaf;
-						break;
-					}
-					
-					// comment is between 2 nodes
-					if (leaf.EndLocation <= newLeaf.StartLocation && newLeaf.StartLocation <= nextLeaf.StartLocation) {
-						var node = leaf.Parent ?? conversionVisitor.Unit;
-						if (newLeaf is NewLineNode) {
-							node.InsertChildAfter (leaf, (NewLineNode)newLeaf, Roles.NewLine);
-						} else if (newLeaf is Comment) {
-							node.InsertChildAfter (leaf, (Comment)newLeaf, Roles.Comment);
-						} else {
-							node.InsertChildAfter (leaf, (PreProcessorDirective)newLeaf, Roles.PreProcessorDirective);
-						}
-						leaf = newLeaf;
-						break;
-					}
-					leaf = nextLeaf;
+				if (newLeaf != null) {
+					InsertComment(ref insertionPoint, newLeaf, role, isDocumentationComment, conversionVisitor.Unit);
 				}
+			}
+			if (!GenerateTypeSystemMode) {
+				// We cannot insert newlines in the same loop as comments/preprocessor directives
+				// because they are not correctly ordered in the specials bag
+				insertionPoint = conversionVisitor.Unit.FirstChild;
+				for (int i = 0; i < top.SpecialsBag.Specials.Count; i++) {
+					var newLine = top.SpecialsBag.Specials[i] as SpecialsBag.NewLineToken;
+					if (newLine != null) {
+						AstNode newLeaf;
+						if (newLine.NewLine == SpecialsBag.NewLine.Unix) {
+							newLeaf = new UnixNewLine (new TextLocation (newLine.Line, newLine.Col + 1));
+						} else {
+							newLeaf = new WindowsNewLine (new TextLocation (newLine.Line, newLine.Col + 1));
+						}
+						InsertComment(ref insertionPoint, newLeaf, Roles.NewLine, false, conversionVisitor.Unit);
+					}
+				}
+			}
+		}
+		
+		void InsertComment(ref AstNode insertionPoint, AstNode newNode, Role role, bool isDocumentationComment, AstNode rootNode)
+		{
+			TextLocation insertAt = newNode.StartLocation;
+			// Advance insertionPoint to the first node that has a start location greater than insertAt
+			while (insertionPoint != null && insertionPoint.StartLocation < insertAt) {
+				// Enter the current node if insertAt is within
+				while (insertAt < insertionPoint.EndLocation && insertionPoint.FirstChild != null) {
+					insertionPoint = insertionPoint.FirstChild;
+				}
+				// Go to next node (insertionPoint.NextSibling if it exists; otherwise the next sibling of the parent node etc.)
+				insertionPoint = insertionPoint.GetNextNode();
+			}
+			// As a special case, XmlDoc gets inserted at the beginning of the entity declaration
+			if (isDocumentationComment && insertionPoint is EntityDeclaration && insertionPoint.FirstChild != null) {
+				insertionPoint = insertionPoint.FirstChild;
+			}
+			if (insertionPoint == null) {
+				// we're at the end of the compilation unit
+				rootNode.AddChildUnsafe(newNode, role);
+			} else {
+				insertionPoint.Parent.InsertChildBeforeUnsafe(insertionPoint, newNode, role);
 			}
 		}
 		
@@ -4008,7 +3978,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			// TODO: add support for parsing a part of a file
 			throw new NotImplementedException ();
 		}
-		*/
+		 */
 		
 		public DocumentationReference ParseDocumentationReference (string cref)
 		{

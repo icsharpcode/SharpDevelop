@@ -412,7 +412,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			InsertChildBeforeUnsafe (nextSibling, child, role);
 		}
 		
-		void InsertChildBeforeUnsafe (AstNode nextSibling, AstNode child, Role role)
+		internal void InsertChildBeforeUnsafe (AstNode nextSibling, AstNode child, Role role)
 		{
 			child.parent = this;
 			child.SetRole(role);

@@ -1179,32 +1179,32 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		{
 			if (this.SkipXmlDocumentation)
 				return;
-			List<string> documentation = null;
-			// traverse AST backwards until the next non-whitespace node
-			for (AstNode node = entityDeclaration.PrevSibling; node != null && node.NodeType == NodeType.Whitespace; node = node.PrevSibling) {
+			StringBuilder documentation = null;
+			// traverse children until the first non-whitespace node
+			for (AstNode node = entityDeclaration.FirstChild; node != null && node.NodeType == NodeType.Whitespace; node = node.NextSibling) {
 				Comment c = node as Comment;
 				if (c != null && c.IsDocumentation) {
 					if (documentation == null)
-						documentation = new List<string>();
+						documentation = new StringBuilder();
 					if (c.CommentType == CommentType.MultiLineDocumentation) {
-						documentation.Add(PrepareMultilineDocumentation(c.Content));
+						PrepareMultilineDocumentation(c.Content, documentation);
 					} else {
+						if (documentation.Length > 0)
+							documentation.AppendLine();
 						if (c.Content.Length > 0 && c.Content[0] == ' ')
-							documentation.Add(c.Content.Substring(1));
+							documentation.Append(c.Content.Substring(1));
 						else
-							documentation.Add(c.Content);
+							documentation.Append(c.Content);
 					}
 				}
 			}
 			if (documentation != null) {
-				documentation.Reverse(); // bring documentation in correct order
-				unresolvedFile.AddDocumentation(entity, string.Join(Environment.NewLine, documentation));
+				unresolvedFile.AddDocumentation(entity, documentation.ToString());
 			}
 		}
 		
-		string PrepareMultilineDocumentation(string content)
+		void PrepareMultilineDocumentation(string content, StringBuilder b)
 		{
-			StringBuilder b = new StringBuilder();
 			using (var reader = new StringReader(content)) {
 				string firstLine = reader.ReadLine();
 				// Add first line only if it's not empty:
@@ -1254,7 +1254,6 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					}
 				}
 			}
-			return b.ToString();
 		}
 		#endregion
 	}
