@@ -94,5 +94,23 @@ class TestClass
 	}
 }");
         }
+
+		[Ignore("Bug")]
+		[Test]
+		public void TestBug()
+		{
+			var input = @"
+using System;
+class TestClass
+{
+	void Write(int x = 34)
+	{
+		x = 5;
+		Console.WriteLine (x);
+	}
+}";
+			TestWrongContext <ParameterCanBeIEnumerableIssue> (input);
+		}
+
 	}
 }

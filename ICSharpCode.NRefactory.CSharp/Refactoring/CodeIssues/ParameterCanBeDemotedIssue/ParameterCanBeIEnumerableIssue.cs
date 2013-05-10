@@ -31,12 +31,12 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-
-	[IssueDescription("A parameter can IEnumerable/ICollection/IList<T>",
-	                  Description = "Finds parameters that can be demoted to a generic list.",
-	                  Category = IssueCategories.Opportunities,
-	                  Severity = Severity.Suggestion
-	                  )]
+// Does this even make sense ? We've a parameter can be demoted issue which does mostly the same.
+//	[IssueDescription("A parameter can IEnumerable/ICollection/IList<T>",
+//	                  Description = "Finds parameters that can be demoted to a generic list.",
+//	                  Category = IssueCategories.Opportunities,
+//	                  Severity = Severity.Suggestion
+//	                  )]
 	public class ParameterCanBeIEnumerableIssue : ICodeIssueProvider
 	{
 	    readonly bool tryResolve;
