@@ -946,6 +946,37 @@ if (b) {
 }");
 		}
 
+		
+		[Test]
+		public void TestElseWithPreprocessorDirective()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			Test (policy, @"class Test
+{
+	void TestMethod ()
+	{
+		if (true) {
+		}
+		#if true
+		else
+			Console.WriteLine ();
+				#endif
+	}
+}",
+@"class Test
+{
+	void TestMethod ()
+	{
+		if (true) {
+		}
+		#if true
+		else
+			Console.WriteLine ();
+		#endif
+	}
+}");
+		}
+
 		[Test]
 		public void TestElseOnNewLine()
 		{
