@@ -51,7 +51,6 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Test(policy, @"// THE SOFTWARE.
 
 using    Foo   ;", @"// THE SOFTWARE.
-
 using Foo;");
 		}
 

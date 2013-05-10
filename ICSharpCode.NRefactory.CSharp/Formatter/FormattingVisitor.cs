@@ -149,6 +149,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			do {
 				line--;
 			} while (line > 0 && IsSpacing(document.GetLineByNumber(line)));
+			if (line > 0 && !IsSpacing(document.GetLineByNumber(line)))
+			    line++;
 			int end = document.GetOffset(loc.Line, 1);
 			int start = document.GetOffset(line + 1, 1);
 			var sb = new StringBuilder ();
