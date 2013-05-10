@@ -176,34 +176,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		internal static IEnumerable<IType> GetValidTypes(CSharpAstResolver resolver, AstNode expr)
 		{
-			if (expr.Parent is IfElseStatement) {
-				var parent = ((IfElseStatement)expr.Parent);
-				if (parent.Condition == expr)
-					return new [] { resolver.Compilation.FindType (KnownTypeCode.Boolean) };
-			}
-
-			if (expr.Parent is WhileStatement) {
-				var parent = ((WhileStatement)expr.Parent);
-				if (parent.Condition == expr)
-					return new [] { resolver.Compilation.FindType (KnownTypeCode.Boolean) };
-			}
-
-			if (expr.Parent is ConditionalExpression) {
-				var parent = ((ConditionalExpression)expr.Parent);
-				if (parent.Condition == expr)
-					return new [] { resolver.Compilation.FindType (KnownTypeCode.Boolean) };
-			}
-
-			if (expr.Parent is DoWhileStatement) {
-				var parent = ((DoWhileStatement)expr.Parent);
-				if (parent.Condition == expr)
-					return new [] { resolver.Compilation.FindType (KnownTypeCode.Boolean) };
-			}
-
-			if (expr.Parent is ForStatement) {
-				var parent = ((ForStatement)expr.Parent);
-				if (parent.Condition == expr)
-					return new [] { resolver.Compilation.FindType (KnownTypeCode.Boolean) };
+			if (expr.Role == Roles.Condition) {
+				return new [] { resolver.Compilation.FindType (KnownTypeCode.Boolean) };
 			}
 
 			if (expr.Parent is DirectionExpression) {
