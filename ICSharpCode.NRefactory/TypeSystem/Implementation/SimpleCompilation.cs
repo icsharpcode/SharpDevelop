@@ -66,7 +66,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			assemblies.Add(this.mainAssembly);
 			List<IAssembly> referencedAssemblies = new List<IAssembly>();
 			foreach (var asmRef in assemblyReferences) {
-				IAssembly asm = asmRef.Resolve(context);
+				IAssembly asm;
+				try {
+					asm = asmRef.Resolve(context);
+				} catch (InvalidOperationException) {
+					throw new InvalidOperationException("Tried to initialize compilation with an invalid assembly reference. (Forgot to load the assembly reference ? - see CecilLoader)");
+				}
 				if (asm != null && !assemblies.Contains(asm))
 					assemblies.Add(asm);
 				if (asm != null && !referencedAssemblies.Contains(asm))
