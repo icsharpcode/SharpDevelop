@@ -570,6 +570,9 @@ namespace Mono.CSharp {
 		protected virtual void EmitHoistedParameters (EmitContext ec, List<HoistedParameter> hoisted)
 		{
 			foreach (HoistedParameter hp in hoisted) {
+				if (hp == null)
+					continue;
+
 				//
 				// Parameters could be proxied via local fields for value type storey
 				//
@@ -852,6 +855,8 @@ namespace Mono.CSharp {
 			}
 		}
 
+		public bool IsAssigned { get; set; }
+
 		public ParameterReference Parameter {
 			get {
 				return parameter;
@@ -1002,12 +1007,12 @@ namespace Mono.CSharp {
 					return delegate_type;
 
 				ec.Report.Error (835, loc, "Cannot convert `{0}' to an expression tree of non-delegate type `{1}'",
-					GetSignatureForError (), TypeManager.CSharpName (delegate_type));
+					GetSignatureForError (), delegate_type.GetSignatureForError ());
 				return null;
 			}
 
 			ec.Report.Error (1660, loc, "Cannot convert `{0}' to non-delegate type `{1}'",
-				      GetSignatureForError (), TypeManager.CSharpName (delegate_type));
+				      GetSignatureForError (), delegate_type.GetSignatureForError ());
 			return null;
 		}
 
@@ -1019,7 +1024,7 @@ namespace Mono.CSharp {
 			if (!ec.IsInProbingMode)
 				ec.Report.Error (1661, loc,
 					"Cannot convert `{0}' to delegate type `{1}' since there is a parameter mismatch",
-					GetSignatureForError (), TypeManager.CSharpName (delegate_type));
+					GetSignatureForError (), delegate_type.GetSignatureForError ());
 
 			return false;
 		}
@@ -1031,7 +1036,7 @@ namespace Mono.CSharp {
 					return false;
 				
 				ec.Report.Error (1593, loc, "Delegate `{0}' does not take `{1}' arguments",
-					      TypeManager.CSharpName (delegate_type), Parameters.Count.ToString ());
+					      delegate_type.GetSignatureForError (), Parameters.Count.ToString ());
 				return false;
 			}
 
@@ -1071,8 +1076,8 @@ namespace Mono.CSharp {
 					
 					ec.Report.Error (1678, loc, "Parameter `{0}' is declared as type `{1}' but should be `{2}'",
 						      (i+1).ToString (),
-						      TypeManager.CSharpName (Parameters.Types [i]),
-						      TypeManager.CSharpName (invoke_pd.Types [i]));
+						      Parameters.Types [i].GetSignatureForError (),
+						      invoke_pd.Types [i].GetSignatureForError ());
 					error = true;
 				}
 			}
@@ -1376,7 +1381,7 @@ namespace Mono.CSharp {
 					return null;
 				}
 
-				b = b.ConvertToAsyncTask (ec, ec.CurrentMemberDefinition.Parent.PartialContainer, p, return_type, loc);
+				b = b.ConvertToAsyncTask (ec, ec.CurrentMemberDefinition.Parent.PartialContainer, p, return_type, delegate_type, loc);
 			}
 
 			return CompatibleMethodFactory (return_type ?? InternalType.ErrorType, delegate_type, p, b);
@@ -1739,6 +1744,7 @@ namespace Mono.CSharp {
 				//
 				method = DoCreateMethodHost (ec);
 				method.Define ();
+				method.PrepareEmit ();
 			}
 
 			bool is_static = (method.ModFlags & Modifiers.STATIC) != 0;
@@ -1865,7 +1871,7 @@ namespace Mono.CSharp {
 
 		public override string GetSignatureForError ()
 		{
-			return TypeManager.CSharpName (type);
+			return type.GetSignatureForError ();
 		}
 	}
 
@@ -2004,7 +2010,7 @@ namespace Mono.CSharp {
 			}
 
 			var li_other = LocalVariable.CreateCompilerGenerated (CurrentType, equals_block, loc);
-			equals_block.AddStatement (new BlockVariableDeclaration (new TypeExpression (li_other.Type, loc), li_other));
+			equals_block.AddStatement (new BlockVariable (new TypeExpression (li_other.Type, loc), li_other));
 			var other_variable = new LocalVariableReference (li_other, loc);
 
 			MemberAccess system_collections_generic = new MemberAccess (new MemberAccess (
@@ -2087,6 +2093,7 @@ namespace Mono.CSharp {
 
 			equals.Block = equals_block;
 			equals.Define ();
+			equals.PrepareEmit ();
 			Members.Add (equals);
 
 			//
@@ -2116,7 +2123,7 @@ namespace Mono.CSharp {
 			hashcode_top.AddStatement (new Unchecked (hashcode_block, loc));
 
 			var li_hash = LocalVariable.CreateCompilerGenerated (Compiler.BuiltinTypes.Int, hashcode_top, loc);
-			hashcode_block.AddStatement (new BlockVariableDeclaration (new TypeExpression (li_hash.Type, loc), li_hash));
+			hashcode_block.AddStatement (new BlockVariable (new TypeExpression (li_hash.Type, loc), li_hash));
 			LocalVariableReference hash_variable_assign = new LocalVariableReference (li_hash, loc);
 			hashcode_block.AddStatement (new StatementExpression (
 				new SimpleAssign (hash_variable_assign, rs_hashcode)));
@@ -2141,6 +2148,7 @@ namespace Mono.CSharp {
 			hashcode_block.AddStatement (new Return (hash_variable, loc));
 			hashcode.Block = hashcode_top;
 			hashcode.Define ();
+			hashcode.PrepareEmit ();
 			Members.Add (hashcode);
 
 			//
@@ -2151,6 +2159,7 @@ namespace Mono.CSharp {
 			tostring_block.AddStatement (new Return (string_concat, loc));
 			tostring.Block = tostring_block;
 			tostring.Define ();
+			tostring.PrepareEmit ();
 			Members.Add (tostring);
 
 			return true;

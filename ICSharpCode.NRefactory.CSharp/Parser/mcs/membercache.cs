@@ -795,13 +795,14 @@ namespace Mono.CSharp {
 			while (true) {
 				foreach (var entry in abstract_type.MemberCache.member_hash) {
 					foreach (var name_entry in entry.Value) {
-						if ((name_entry.Modifiers & (Modifiers.ABSTRACT | Modifiers.OVERRIDE)) != Modifiers.ABSTRACT)
+						if ((name_entry.Modifiers & Modifiers.ABSTRACT) == 0)
 							continue;
 
-						if (name_entry.Kind != MemberKind.Method)
+						var ms = name_entry as MethodSpec;
+						if (ms == null)
 							continue;
 
-						abstract_methods.Add ((MethodSpec) name_entry);
+						abstract_methods.Add (ms);
 					}
 				}
 
@@ -1445,9 +1446,12 @@ namespace Mono.CSharp {
 									"A partial method declaration and partial method implementation must be both `static' or neither");
 							}
 
-							Report.SymbolRelatedToPreviousError (ce);
-							Report.Error (764, member.Location,
-								"A partial method declaration and partial method implementation must be both `unsafe' or neither");
+							if ((method_a.ModFlags & Modifiers.UNSAFE) != (method_b.ModFlags & Modifiers.UNSAFE)) {
+								Report.SymbolRelatedToPreviousError (ce);
+								Report.Error (764, member.Location,
+									"A partial method declaration and partial method implementation must be both `unsafe' or neither");
+							}
+
 							return false;
 						}
 

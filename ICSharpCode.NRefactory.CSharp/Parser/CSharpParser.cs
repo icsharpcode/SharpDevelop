@@ -213,9 +213,10 @@ namespace ICSharpCode.NRefactory.CSharp
 					
 					var memberType = new MemberType ();
 					memberType.AddChild (ConvertToType (ma.LeftExpression), MemberType.TargetRole);
-					if (!ma.DotLocation.IsNull)
-						memberType.AddChild (new CSharpTokenNode (Convert (ma.DotLocation), Roles.Dot), Roles.Dot);
-					
+					var loc = LocationsBag.GetLocations (memberType);
+					if (loc != null)
+						memberType.AddChild (new CSharpTokenNode (Convert (loc[0]), Roles.Dot), Roles.Dot);
+
 					memberType.MemberNameToken = Identifier.Create (ma.Name, Convert (ma.Location));
 					
 					AddTypeArguments (ma, memberType);
@@ -424,9 +425,9 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (newIdent.Name != "<invalid>") {
 						namespaceDecl.InsertChildBefore (insertPos, newIdent, Roles.Identifier);
 						insertPos = newIdent;
-						
-						if (!memberName.DotLocation.IsNull) {
-							var dotToken = new CSharpTokenNode (Convert (memberName.DotLocation), Roles.Dot);
+						var loc = LocationsBag.GetLocations (memberName);
+						if (loc != null) {
+							var dotToken = new CSharpTokenNode (Convert (loc[0]), Roles.Dot);
 							namespaceDecl.InsertChildBefore (insertPos, dotToken, Roles.Dot);
 							insertPos = dotToken;
 						}
@@ -483,9 +484,9 @@ namespace ICSharpCode.NRefactory.CSharp
 					var t = new MemberType ();
 //					t.IsDoubleColon = memberName.IsDoubleColon;
 					t.AddChild (ConvertImport (memberName.Left), MemberType.TargetRole);
-					
-					if (!memberName.DotLocation.IsNull)
-						t.AddChild (new CSharpTokenNode (Convert (memberName.DotLocation), Roles.Dot), Roles.Dot);
+					var loc = LocationsBag.GetLocations (memberName);
+					if (loc != null)
+						t.AddChild (new CSharpTokenNode (Convert (loc[0]), Roles.Dot), Roles.Dot);
 					
 					t.AddChild (Identifier.Create (memberName.Name, Convert (memberName.Location)), Roles.Identifier);
 					AddTypeArguments (t, memberName);
@@ -1368,7 +1369,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return null;
 			}
 			
-			public override object Visit (BlockVariableDeclaration blockVariableDeclaration)
+			public override object Visit (BlockVariable blockVariableDeclaration)
 			{
 				var result = new VariableDeclarationStatement ();
 				result.AddChild (ConvertToType (blockVariableDeclaration.TypeExpression), Roles.Type);
@@ -1405,7 +1406,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return result;
 			}
 			
-			public override object Visit (BlockConstantDeclaration blockVariableDeclaration)
+			public override object Visit (BlockConstant blockVariableDeclaration)
 			{
 				var result = new VariableDeclarationStatement ();
 				
@@ -2155,8 +2156,10 @@ namespace ICSharpCode.NRefactory.CSharp
 						var leftExpr = memberAccess.LeftExpression.Accept (this);
 						result.AddChild ((Expression)leftExpr, Roles.TargetExpression);
 					}
-					if (!memberAccess.DotLocation.IsNull) {
-						result.AddChild (new CSharpTokenNode (Convert (memberAccess.DotLocation), Roles.Dot), Roles.Dot);
+					var loc = LocationsBag.GetLocations (memberAccess);
+
+					if (loc != null) {
+						result.AddChild (new CSharpTokenNode (Convert (loc[0]), Roles.Dot), Roles.Dot);
 					}
 				}
 				

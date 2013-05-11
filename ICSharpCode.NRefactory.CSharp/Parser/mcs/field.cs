@@ -42,6 +42,11 @@ namespace Mono.CSharp
 		public Expression Initializer { get; private set; }
 
 		#endregion
+
+		public virtual FullNamedExpression GetFieldTypeExpression (FieldBase field)
+		{
+			return new TypeExpression (field.MemberType, Name.Location); 
+		}
 	}
 
 	//
@@ -407,9 +412,8 @@ namespace Mono.CSharp
 					"`{0}': Fixed size buffers type must be one of the following: bool, byte, short, int, long, char, sbyte, ushort, uint, ulong, float or double",
 					GetSignatureForError ());
 			} else if (declarators != null) {
-				var t = new TypeExpression (MemberType, TypeExpression.Location);
 				foreach (var d in declarators) {
-					var f = new FixedField (Parent, t, ModFlags, new MemberName (d.Name.Value, d.Name.Location), OptAttributes);
+					var f = new FixedField (Parent, d.GetFieldTypeExpression (this), ModFlags, new MemberName (d.Name.Value, d.Name.Location), OptAttributes);
 					f.initializer = d.Initializer;
 					((ConstInitializer) f.initializer).Name = d.Name.Value;
 					f.Define ();
@@ -486,7 +490,7 @@ namespace Mono.CSharp
 
 			if (buffer_size > int.MaxValue / type_size) {
 				Report.Error (1664, Location, "Fixed size buffer `{0}' of length `{1}' and type `{2}' exceeded 2^31 limit",
-					GetSignatureForError (), buffer_size.ToString (), TypeManager.CSharpName (MemberType));
+					GetSignatureForError (), buffer_size.ToString (), MemberType.GetSignatureForError ());
 				return;
 			}
 
@@ -645,8 +649,7 @@ namespace Mono.CSharp
 
 			if (declarators != null) {
 				foreach (var d in declarators) {
-					var t = new TypeExpression (MemberType, d.Name.Location);
-					var f = new Field (Parent, t, ModFlags, new MemberName (d.Name.Value, d.Name.Location), OptAttributes);
+					var f = new Field (Parent, d.GetFieldTypeExpression (this), ModFlags, new MemberName (d.Name.Value, d.Name.Location), OptAttributes);
 					if (d.Initializer != null)
 						f.initializer = d.Initializer;
 
@@ -668,7 +671,7 @@ namespace Mono.CSharp
 			if ((ModFlags & Modifiers.VOLATILE) != 0) {
 				if (!CanBeVolatile ()) {
 					Report.Error (677, Location, "`{0}': A volatile field cannot be of the type `{1}'",
-						GetSignatureForError (), TypeManager.CSharpName (MemberType));
+						GetSignatureForError (), MemberType.GetSignatureForError ());
 				}
 
 				if ((ModFlags & Modifiers.READONLY) != 0) {

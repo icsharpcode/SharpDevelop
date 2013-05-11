@@ -1,14 +1,14 @@
 //
-// attribute.cs: Attribute Handler
+// attribute.cs: Attributes handling
 //
 // Author: Ravi Pratap (ravi@ximian.com)
-//         Marek Safar (marek.safar@seznam.cz)
+//         Marek Safar (marek.safar@gmail.com)
 //
 // Dual licensed under the terms of the MIT X11 or GNU GPL
 //
 // Copyright 2001-2003 Ximian, Inc (http://www.ximian.com)
 // Copyright 2003-2008 Novell, Inc.
-// Copyright 2011 Xamarin Inc
+// Copyright 2011-2013 Xamarin Inc
 //
 
 using System;
@@ -264,7 +264,7 @@ namespace Mono.CSharp {
 		public void Error_AttributeEmitError (string inner)
 		{
 			Report.Error (647, Location, "Error during emitting `{0}' attribute. The reason is `{1}'",
-				      TypeManager.CSharpName (Type), inner);
+				      Type.GetSignatureForError (), inner);
 		}
 
 		public void Error_InvalidSecurityParent ()
@@ -367,7 +367,7 @@ namespace Mono.CSharp {
 		public string GetSignatureForError ()
 		{
 			if (Type != null)
-				return TypeManager.CSharpName (Type);
+				return Type.GetSignatureForError ();
 
 			return expression.GetSignatureForError ();
 		}
@@ -454,7 +454,7 @@ namespace Mono.CSharp {
 
 			ObsoleteAttribute obsolete_attr = Type.GetAttributeObsolete ();
 			if (obsolete_attr != null) {
-				AttributeTester.Report_ObsoleteMessage (obsolete_attr, TypeManager.CSharpName (Type), Location, Report);
+				AttributeTester.Report_ObsoleteMessage (obsolete_attr, Type.GetSignatureForError (), Location, Report);
 			}
 
 			ResolveContext rc = null;
@@ -1669,6 +1669,11 @@ namespace Mono.CSharp {
 		public readonly PredefinedDecimalAttribute DecimalConstant;
 		public readonly PredefinedAttribute StructLayout;
 		public readonly PredefinedAttribute FieldOffset;
+		public readonly PredefinedAttribute AssemblyProduct;
+		public readonly PredefinedAttribute AssemblyCompany;
+		public readonly PredefinedAttribute AssemblyDescription;
+		public readonly PredefinedAttribute AssemblyCopyright;
+		public readonly PredefinedAttribute AssemblyTrademark;
 		public readonly PredefinedAttribute CallerMemberNameAttribute;
 		public readonly PredefinedAttribute CallerLineNumberAttribute;
 		public readonly PredefinedAttribute CallerFilePathAttribute;
@@ -1722,6 +1727,11 @@ namespace Mono.CSharp {
 			DecimalConstant = new PredefinedDecimalAttribute (module, "System.Runtime.CompilerServices", "DecimalConstantAttribute");
 			StructLayout = new PredefinedAttribute (module, "System.Runtime.InteropServices", "StructLayoutAttribute");
 			FieldOffset = new PredefinedAttribute (module, "System.Runtime.InteropServices", "FieldOffsetAttribute");
+			AssemblyProduct = new PredefinedAttribute (module, "System.Reflection", "AssemblyProductAttribute");
+			AssemblyCompany = new PredefinedAttribute (module, "System.Reflection", "AssemblyCompanyAttribute");
+			AssemblyDescription = new PredefinedAttribute (module, "System.Reflection", "AssemblyDescriptionAttribute");
+			AssemblyCopyright = new PredefinedAttribute (module, "System.Reflection", "AssemblyCopyrightAttribute");
+			AssemblyTrademark = new PredefinedAttribute (module, "System.Reflection", "AssemblyTrademarkAttribute");
 
 			AsyncStateMachine = new PredefinedStateMachineAttribute (module, "System.Runtime.CompilerServices", "AsyncStateMachineAttribute");
 
@@ -1839,7 +1849,7 @@ namespace Mono.CSharp {
 			//
 			// Handle all parameter-less attributes as optional
 			//
-			if (!IsDefined)
+			if (!Define ())
 				return false;
 
 			ctor = (MethodSpec) MemberCache.FindMember (type, MemberFilter.Constructor (ParametersCompiled.EmptyReadOnlyParameters), BindingRestriction.DeclaredOnly);

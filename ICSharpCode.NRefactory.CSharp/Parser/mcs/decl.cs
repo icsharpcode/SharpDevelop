@@ -53,12 +53,6 @@ namespace Mono.CSharp {
 			: this (name, Location.Null)
 		{ }
 
-#if FULL_AST
-		public Location DotLocation {
-			get;
-			set;
-		}
-#endif
 		public MemberName (string name, Location loc)
 			: this (null, name, loc)
 		{ }
@@ -1279,6 +1273,11 @@ namespace Mono.CSharp {
 		ObsoleteAttribute GetAttributeObsolete ();
 		void SetIsAssigned ();
 		void SetIsUsed ();
+	}
+
+	public interface IMethodDefinition : IMemberDefinition
+	{
+		MethodBase Metadata { get; }
 	}
 
 	public interface IParametersMember : IInterfaceMemberSpec
