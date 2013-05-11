@@ -483,6 +483,16 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 			}
 		}
 
+		public class PragmaPreProcessorDirective : PreProcessorDirective
+		{
+			public bool Disalbe { get; set; }
+			public List<int> Codes = new List<int> ();
+
+			public PragmaPreProcessorDirective (int line, int col, int endLine, int endCol, Tokenizer.PreprocessorDirective cmd, string arg) : base (line, col, endLine, endCol, cmd, arg)
+			{
+			}
+		}
+
 		public class PreProcessorDirective : SpecialBase
 		{
 			public readonly int Line;
@@ -562,7 +572,25 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		{
 			if (inComment)
 				EndComment (startLine, startCol);
-			Specials.Add (new PreProcessorDirective (startLine, startCol, endLine, endColumn, cmd, arg));
+			Specials.Add (cmd == Tokenizer.PreprocessorDirective.Pragma ? new PragmaPreProcessorDirective (startLine, startCol, endLine, endColumn, cmd, arg) : new PreProcessorDirective (startLine, startCol, endLine, endColumn, cmd, arg));
+		}
+
+		[Conditional ("FULL_AST")]
+		public void SetPragmaDisable(bool disable)
+		{
+			var pragmaDirective = Specials [Specials.Count - 1] as PragmaPreProcessorDirective;
+			if (pragmaDirective == null)
+				return;
+			pragmaDirective.Disalbe = disable;
+		}
+
+		[Conditional ("FULL_AST")]
+		public void AddPragmaCode(int code)
+		{
+			var pragmaDirective = Specials [Specials.Count - 1] as PragmaPreProcessorDirective;
+			if (pragmaDirective == null)
+				return;
+			pragmaDirective.Codes.Add (code);
 		}
 
 		public enum NewLine { Unix, Windows }

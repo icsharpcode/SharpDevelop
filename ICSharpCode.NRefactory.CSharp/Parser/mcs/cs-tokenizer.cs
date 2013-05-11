@@ -2456,6 +2456,7 @@ namespace Mono.CSharp
 				//
 				if (length == pragma_warning_disable.Length) {
 					bool disable = IsTokenIdentifierEqual (pragma_warning_disable);
+					sbag.SetPragmaDisable (disable);
 					if (disable || IsTokenIdentifierEqual (pragma_warning_restore)) {
 						// skip over white space
 						while (c == ' ' || c == '\t')
@@ -2483,6 +2484,7 @@ namespace Mono.CSharp
 							do {
 								code = TokenizePragmaNumber (ref c);
 								if (code > 0) {
+									sbag.AddPragmaCode (code);
 									if (disable) {
 										Report.RegisterWarningRegion (loc).WarningDisable (loc, code, context.Report);
 									} else {
@@ -2821,6 +2823,7 @@ namespace Mono.CSharp
 					}
 
 					if ((state & TAKING) != 0) {
+						sbag.SkipIf ();
 						ifstack.Push (0);
 						return false;
 					}
@@ -2830,6 +2833,7 @@ namespace Mono.CSharp
 						return true;
 					}
 
+					sbag.SkipIf ();
 					ifstack.Push (state);
 					return false;
 				}
@@ -3609,6 +3613,7 @@ namespace Mono.CSharp
 						if (c == '#') {
 							if (ParsePreprocessingDirective (false))
 								break;
+							sbag.StartComment(SpecialsBag.CommentType.InactiveCode, false, line, 1);
 						}
 						sbag.PushCommentChar (c);
 						directive_expected = false;

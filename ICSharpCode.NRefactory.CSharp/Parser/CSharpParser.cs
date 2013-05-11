@@ -3650,13 +3650,22 @@ namespace ICSharpCode.NRefactory.CSharp
 					};
 					role = Roles.Comment;
 				} else if (!GenerateTypeSystemMode) {
-					var directive = special as SpecialsBag.PreProcessorDirective;
-					if (directive != null) {
-						newLeaf = new PreProcessorDirective ((ICSharpCode.NRefactory.CSharp.PreProcessorDirectiveType)((int)directive.Cmd & 0xF), new TextLocation (directive.Line, directive.Col), new TextLocation (directive.EndLine, directive.EndCol)) {
-							Argument = directive.Arg,
-							Take = directive.Take
-						};
+					var pragmaDirective = special as SpecialsBag.PragmaPreProcessorDirective;
+					if (pragmaDirective != null) {
+						var pragma = new PragmaWarningPreprocssorDirective(new TextLocation(pragmaDirective.Line, pragmaDirective.Col), new TextLocation(pragmaDirective.EndLine, pragmaDirective.EndCol));
+						pragma.Disable = pragmaDirective.Disalbe;
+						pragma.AddWarnings(pragmaDirective.Codes);
+						newLeaf = pragma;
 						role = Roles.PreProcessorDirective;
+					} else {
+						var directive = special as SpecialsBag.PreProcessorDirective;
+						if (directive != null) {
+							newLeaf = new PreProcessorDirective ((ICSharpCode.NRefactory.CSharp.PreProcessorDirectiveType)((int)directive.Cmd & 0xF), new TextLocation (directive.Line, directive.Col), new TextLocation (directive.EndLine, directive.EndCol)) {
+								Argument = directive.Arg,
+								Take = directive.Take
+							};
+							role = Roles.PreProcessorDirective;
+						}
 					}
 				}
 				if (newLeaf != null) {
@@ -3802,7 +3811,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 
 			conversionVisitor.Unit.FileName = fileName;
-			conversionVisitor.Unit.ConditionalSymbols = top.Conditionals.Concat (compilerSettings.ConditionalSymbols).ToArray ();
+			List<string> conditionals = new List<string>();
+			foreach (var settings in compilerSettings.ConditionalSymbols) {
+				if (top.Conditionals.ContainsKey(settings) && !top.Conditionals [settings])
+					continue;
+				conditionals.Add(settings);
+			}
+			foreach (var kv in top.Conditionals) {
+				if (!kv.Value || compilerSettings.ConditionalSymbols.Contains (kv.Key))
+					continue;
+				conditionals.Add(kv.Key);
+			}
+			conversionVisitor.Unit.ConditionalSymbols = conditionals;
 			return conversionVisitor.Unit;
 		}
 		

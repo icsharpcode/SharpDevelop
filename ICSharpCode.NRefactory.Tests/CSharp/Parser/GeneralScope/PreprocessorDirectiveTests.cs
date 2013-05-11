@@ -66,7 +66,6 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			Assert.AreEqual(new TextLocation(4, 8), pp.Last().EndLocation);
 		}
 		
-		[Ignore("Fixme!")]
 		[Test]
 		public void NestedInactiveIf()
 		{
@@ -94,7 +93,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			                	Roles.Comment,
 			                	Roles.PreProcessorDirective,
 			                	Roles.RBrace
-			                }, ns.Children.Select(c => c.Role).ToArray());
+			}, ns.Children.Where (c => !(c is NewLineNode)).Select(c => c.Role).ToArray());
 		}
 		
 		[Ignore("Fixme!")]
@@ -118,19 +117,19 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			                	Roles.Comment,
 			                	Roles.PreProcessorDirective,
 			                	Roles.RBrace
-			                }, ns.Children.Select(c => c.Role).ToArray());
+			}, ns.Children.Where (c => !(c is NewLineNode)).Select(c => c.Role).ToArray());
 			Assert.AreEqual(CommentType.SingleLine, ns.GetChildrenByRole(Roles.Comment).First().CommentType);
 			Assert.AreEqual(CommentType.InactiveCode, ns.GetChildrenByRole(Roles.Comment).Last().CommentType);
 		}
 		
-		[Ignore("Fixme!")]
 		[Test]
 		public void PragmaWarning()
 		{
 			string program = "#pragma warning disable 809";
-			var ppd = ParseUtilCSharp.ParseGlobal<PreProcessorDirective>(program);
+			var ppd = ParseUtilCSharp.ParseGlobal<PragmaWarningPreprocssorDirective>(program);
 			Assert.AreEqual(PreProcessorDirectiveType.Pragma, ppd.Type);
-			Assert.AreEqual("warning disable 809", ppd.Argument);
+			Assert.IsTrue(ppd.Disable);
+			Assert.IsTrue(ppd.WarningList.Contains (809));
 		}
 		
 		const string elifProgram = @"
@@ -141,20 +140,18 @@ class B { }
 #endif";
 		
 		[Test]
-		[Ignore("parser bug (missing comment node)")]
 		public void ElifBothFalse()
 		{
 			CSharpParser parser = new CSharpParser();
 			var syntaxTree = parser.Parse(elifProgram, "elif.cs");
 			Assert.IsFalse(parser.HasErrors);
-			
 			Assert.AreEqual(new Role[] {
 			                	Roles.PreProcessorDirective,
 			                	Roles.Comment,
 			                	Roles.PreProcessorDirective,
 			                	Roles.Comment,
 			                	Roles.PreProcessorDirective
-			                }, syntaxTree.Children.Select(c => c.Role).ToArray());
+			}, syntaxTree.Children.Where (c => !(c is NewLineNode)).Select(c => c.Role).ToArray());
 			var aaa = syntaxTree.GetChildrenByRole(Roles.PreProcessorDirective).ElementAt(0);
 			Assert.IsFalse(aaa.Take);
 			Assert.AreEqual(PreProcessorDirectiveType.If, aaa.Type);
@@ -167,7 +164,6 @@ class B { }
 		}
 		
 		[Test]
-		[Ignore("parser bug (bbb.Take is true, should be false)")]
 		public void ElifBothTrue()
 		{
 			CSharpParser parser = new CSharpParser();
@@ -181,7 +177,7 @@ class B { }
 			                	Roles.PreProcessorDirective,
 			                	Roles.Comment,
 			                	Roles.PreProcessorDirective
-			                }, syntaxTree.Children.Select(c => c.Role).ToArray());
+			}, syntaxTree.Children.Where (c => !(c is NewLineNode)).Select(c => c.Role).ToArray());
 			var aaa = syntaxTree.GetChildrenByRole(Roles.PreProcessorDirective).ElementAt(0);
 			Assert.IsTrue(aaa.Take);
 			Assert.AreEqual(PreProcessorDirectiveType.If, aaa.Type);
@@ -194,7 +190,6 @@ class B { }
 		}
 		
 		[Test]
-		[Ignore("parser bug (bbb.Take is true, should be false)")]
 		public void ElifFirstTaken()
 		{
 			CSharpParser parser = new CSharpParser();
@@ -208,7 +203,7 @@ class B { }
 			                	Roles.PreProcessorDirective,
 			                	Roles.Comment,
 			                	Roles.PreProcessorDirective
-			                }, syntaxTree.Children.Select(c => c.Role).ToArray());
+			}, syntaxTree.Children.Where (c => !(c is NewLineNode)).Select(c => c.Role).ToArray());
 			var aaa = syntaxTree.GetChildrenByRole(Roles.PreProcessorDirective).ElementAt(0);
 			Assert.IsTrue(aaa.Take);
 			Assert.AreEqual(PreProcessorDirectiveType.If, aaa.Type);
@@ -247,7 +242,6 @@ class B { }
 		}
 		
 		[Test]
-		[Ignore("parser bug (BBB is missing)")]
 		public void ConditionalSymbolTest()
 		{
 			const string program = @"// Test
