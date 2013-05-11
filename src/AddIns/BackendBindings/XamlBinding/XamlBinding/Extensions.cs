@@ -160,16 +160,6 @@ namespace ICSharpCode.XamlBinding
 			return items.Concat(addItems);
 		}
 		
-		public static QualifiedNameWithLocation ToQualifiedName(this AXmlAttribute thisValue)
-		{
-			return new QualifiedNameWithLocation(thisValue.LocalName, thisValue.Namespace, thisValue.Prefix, thisValue.StartOffset);
-		}
-		
-		public static QualifiedNameWithLocation ToQualifiedName(this AXmlElement thisValue)
-		{
-			return new QualifiedNameWithLocation(thisValue.LocalName, thisValue.Namespace, thisValue.Prefix, thisValue.StartOffset);
-		}
-		
 		public static string GetWordBeforeCaretExtended(this ITextEditor editor)
 		{
 			IDocumentLine line = editor.Document.GetLine(editor.Caret.Line);
