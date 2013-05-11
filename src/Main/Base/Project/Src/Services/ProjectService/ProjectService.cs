@@ -115,6 +115,32 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		/// <summary>
+		/// Returns a File Dialog filter that can be used to filter on all registered file formats
+		/// </summary>
+		public static string GetAllFilesFilter()
+		{
+			IEnumerable<FileFilterDescriptor> filters = GetFileFilters();
+			StringBuilder b = new StringBuilder(StringParser.Parse("${res:SharpDevelop.FileFilter.AllKnownFiles} (*.cs, *.vb, ...)|"));
+			bool first = true;
+			foreach (var filter in filters) {
+				string ext = filter.Extensions;
+				if (ext != "*.*" && ext.Length > 0) {
+					if (!first) {
+						b.Append(';');
+					} else {
+						first = false;
+					}
+					b.Append(ext);
+				}
+			}
+			foreach (var filter in filters) {
+				b.Append('|');
+				b.Append(filter.ToString());
+			}
+			return b.ToString();
+		}
+		
+		/// <summary>
 		/// Returns a File Dialog filter that can be used to filter on all registered project formats
 		/// </summary>
 		public static string GetAllProjectsFilter(object caller, bool includeSolutions)

@@ -218,31 +218,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 			using (OpenFileDialog fdiag  = new OpenFileDialog()) {
 				fdiag.AddExtension    = true;
 				
-				var fileFilters  = ProjectService.GetFileFilters();
-				fdiag.Filter     = String.Join("|", fileFilters);
-				bool foundFilter = false;
-				
-				// search filter like in the current open file
-				if (!foundFilter) {
-					IViewContent content = SD.Workbench.ActiveViewContent;
-					if (content != null) {
-						string extension = Path.GetExtension(content.PrimaryFileName);
-						if (string.IsNullOrEmpty(extension) == false) {
-							for (int i = 0; i < fileFilters.Count; ++i) {
-								if (fileFilters[i].ContainsExtension(extension)) {
-									fdiag.FilterIndex = i + 1;
-									foundFilter = true;
-									break;
-								}
-							}
-						}
-					}
-				}
-				
-				if (!foundFilter) {
-					fdiag.FilterIndex = fileFilters.Count;
-				}
-				
+				fdiag.Filter = ProjectService.GetAllFilesFilter();
+				fdiag.FilterIndex     = 0;
 				fdiag.Multiselect     = true;
 				fdiag.CheckFileExists = true;
 				
