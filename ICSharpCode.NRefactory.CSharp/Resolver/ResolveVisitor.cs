@@ -589,7 +589,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// Last using scope:
 					usingScope = new UsingScope(resolver.CurrentUsingScope.UnresolvedUsingScope, identifiers.Last().Name);
 					usingScope.Region = region;
-					var cv = new TypeSystemConvertVisitor(new CSharpUnresolvedFile(region.FileName ?? string.Empty), usingScope);
+					var cv = new TypeSystemConvertVisitor(new CSharpUnresolvedFile(), usingScope);
 					ApplyVisitorToUsings(cv, namespaceDeclaration.Children);
 					PushUsingScope(usingScope);
 				}

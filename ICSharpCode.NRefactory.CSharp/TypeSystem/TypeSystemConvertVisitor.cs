@@ -75,7 +75,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
-			this.unresolvedFile = new CSharpUnresolvedFile(fileName);
+			this.unresolvedFile = new CSharpUnresolvedFile();
+			this.unresolvedFile.FileName = fileName;
 			this.usingScope = unresolvedFile.RootUsingScope;
 		}
 		

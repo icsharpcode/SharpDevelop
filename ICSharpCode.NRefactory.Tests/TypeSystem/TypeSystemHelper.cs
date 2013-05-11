@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public static ICompilation CreateCompilation(params IUnresolvedTypeDefinition[] unresolvedTypeDefinitions)
 		{
-			var unresolvedFile = new CSharpUnresolvedFile("dummy.cs");
+			var unresolvedFile = new CSharpUnresolvedFile();
 			foreach (var typeDef in unresolvedTypeDefinitions)
 				unresolvedFile.TopLevelTypeDefinitions.Add(typeDef);
 			return CreateCompilation(unresolvedFile);
