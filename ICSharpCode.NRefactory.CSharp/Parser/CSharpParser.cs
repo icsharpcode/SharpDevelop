@@ -103,7 +103,9 @@ namespace ICSharpCode.NRefactory.CSharp
 						first = false;
 						if (mc.OptAttributes != null) {
 							foreach (var attr in mc.OptAttributes.Sections) {
-								unit.AddChild (ConvertAttributeSection (attr), SyntaxTree.MemberRole);
+								var section = ConvertAttributeSection(attr);
+								if (section !=	null)
+									unit.AddChild (section, SyntaxTree.MemberRole);
 							}
 						}
 					}
@@ -958,8 +960,9 @@ namespace ICSharpCode.NRefactory.CSharp
 					return;
 				foreach (var attr in attrs.Sections) {
 					var section = ConvertAttributeSection(attr);
-					if (section != null)
-						parent.AddChild (section, role);
+					if (section == null || section.AttributeTarget == "module" || section.AttributeTarget == "assembly")
+						continue;
+					parent.AddChild (section, role);
 				}
 			}
 
