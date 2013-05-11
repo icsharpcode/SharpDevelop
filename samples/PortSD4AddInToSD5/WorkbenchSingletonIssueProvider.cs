@@ -135,7 +135,8 @@ namespace PortSD4AddInToSD5
 								               	var newInvocation = (InvocationExpression)invocationExpression.Clone();
 								               	((MemberReferenceExpression)newInvocation.Target).MemberName = "InvokeAsyncAndForget";
 								               	script.Replace(invocationExpression.Parent.Parent, newInvocation);
-								               }));
+								               },
+								               ident));
 						}
 						break;
 				}
@@ -145,7 +146,7 @@ namespace PortSD4AddInToSD5
 		CodeIssue Issue(AstNode node, Action<Script> fix = null)
 		{
 			return new CodeIssue("WorkbenchSingleton is obsolete", node.StartLocation, node.EndLocation,
-			                     fix != null ? new CodeAction("Use SD5 API", fix) : null);
+			                     fix != null ? new CodeAction("Use SD5 API", fix, node) : null);
 		}
 	}
 }

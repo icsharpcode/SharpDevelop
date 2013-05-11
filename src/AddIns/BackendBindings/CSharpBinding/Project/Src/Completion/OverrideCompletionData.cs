@@ -93,7 +93,7 @@ namespace CSharpBinding.Completion
 					var segment = segmentDict[throwStatement];
 					context.Editor.Select(declarationBegin + segment.Offset, segment.Length);
 				}
-				CSharpFormatter.Format(context.Editor, declarationBegin, newText.Length, formattingOptions);
+				CSharpFormatterHelper.Format(context.Editor, declarationBegin, newText.Length, formattingOptions);
 			}
 		}
 		

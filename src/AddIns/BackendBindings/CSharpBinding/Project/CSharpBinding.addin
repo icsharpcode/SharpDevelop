@@ -139,8 +139,8 @@
 	</Path>
 	
 	<Path path = "/SharpDevelop/ViewContent/TextEditor/C#/IssueProviders">
-		<!--<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.AccessToDisposedClosureIssue" />
-		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.AccessToModifiedClosureIssue" />-->
+		<Class class = "CSharpBinding.Refactoring.CSharpSyntaxIssue" />
+		<Class class = "CSharpBinding.Refactoring.SDRedundantUsingIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.AssignmentMadeToSameVariableIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.BitwiseOperationOnNonFlagsEnumIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.CallToObjectEqualsViaBaseIssue" />
@@ -152,10 +152,13 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConstantConditionIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.CS0127ReturnMustNotBeFollowedByAnyExpression" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.DoubleNegationIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.DuplicateExpressionsInConditionsIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.DuplicateIfInIfChainIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ExceptionRethrowIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ExplicitConversionInForEachIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ExpressionIsAlwaysOfProvidedTypeIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ExpressionIsNeverOfProvidedTypeIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ExpressionOfCompatibleTypeCastIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ForControlVariableNotModifiedIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.FormatStringIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.IdenticalConditionalBranchIssue" />
@@ -167,44 +170,48 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.MethodNeverReturnsIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.MethodOverloadHidesOptionalParameterIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.MissingStringComparisonIssue" />
-		<!--<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.MultipleEnumerationIssue" />-->
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.NegativeRelationalExpressionIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.NoDefaultConstructorIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.NotImplementedExceptionIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.OptionalParameterCouldBeSkippedIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ParameterCanBeDemotedIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ParameterHidesMemberIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ParameterNotUsedIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ParameterOnlyAssignedIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.PublicConstructorInAbstractClassIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantArrayInitializerCommaIssue" />
-		<!--<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantAssignmentIssue" />-->
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantAttributeParenthesesIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantBaseConstructorIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantCaseLabelIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantCatchIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantConstructorIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantElseIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantFieldInitializerIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantInternalIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantNamespaceUsageIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantNullCheckIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantObjectCreationArgumentListIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantObjectOrCollectionInitializerIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantPrivateIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantThisIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantToStringIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantTypeCastIssue" />
-		<Class class = "CSharpBinding.Refactoring.SDRedundantUsingIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantWhereWithPredicateIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ReferenceEqualsCalledWithValueTypeIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ReferenceToStaticMemberViaDerivedTypeIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ResultOfAsyncCallShouldNotBeIgnoredIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.SimplifyAnonymousMethodToDelegateIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.StaticConstructorAccessModifierIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.StaticConstructorParameterIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.StaticFieldInGenericTypeIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.StringIsNullOrEmptyIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ThreadStaticOnInstanceFieldIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.TypeParameterNotUsedIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.UnreachableCodeIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseBlockInsteadColonIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseVarKeywordIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ValueParameterUnusedIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.VariableDeclaredInWideScopeIssue" />
-		<Class class = "CSharpBinding.Refactoring.CSharpSyntaxIssue" />
 	</Path>
 	
 	<Path path = "/SharpDevelop/ViewContent/TextEditor/C#/ContextActions">
@@ -232,6 +239,7 @@
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertSwitchToIfAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertToInitializerAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateBackingStoreAction" />
+		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateChangedEvent" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateClassDeclarationAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateConstructorDeclarationAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateCustomEventImplementationAction" />
@@ -261,6 +269,7 @@
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.IntroduceConstantAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.IntroduceFormatItemAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.InvertIfAction" />
+		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.InvertIfAndSimplify" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.IterateViaForeachAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.JoinDeclarationAndAssignmentAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.JoinStringAction" />
@@ -273,6 +282,8 @@
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.RemoveRedundantCatchTypeAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.RemoveRegionAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.ReplaceEmptyStringAction" />
+		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.SimplifyIfFlowAction" />
+		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.SimplifyIfInLoopsFlowAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.SortUsingsAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.SplitDeclarationAndAssignmentAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.SplitDeclarationListAction" />

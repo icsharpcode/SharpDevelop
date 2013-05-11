@@ -9,18 +9,17 @@ using ICSharpCode.SharpDevelop.Editor;
 
 namespace CSharpBinding.FormattingStrategy
 {
-	public class CSharpFormatter
+	public class CSharpFormatterHelper
 	{
 		/// <summary>
 		/// Formats the specified part of the document.
 		/// </summary>
 		public static void Format(ITextEditor editor, int offset, int length, CSharpFormattingOptions options)
 		{
-			var syntaxTree = new CSharpParser().Parse(editor.Document);
-			var fv = new AstFormattingVisitor(options, editor.Document, editor.ToEditorOptions());
-			fv.AddFormattingRegion(new DomRegion(editor.Document.GetLocation(offset), editor.Document.GetLocation(offset + length)));
-			syntaxTree.AcceptVisitor(fv);
-			fv.ApplyChanges(offset, length);
+			var formatter = new CSharpFormatter(options, editor.ToEditorOptions());
+			formatter.AddFormattingRegion(new DomRegion(editor.Document.GetLocation(offset), editor.Document.GetLocation(offset + length)));
+			var changes = formatter.AnalyzeFormatting(editor.Document, SyntaxTree.Parse(editor.Document));
+			changes.ApplyChanges(offset, length);
 		}
 	}
 }

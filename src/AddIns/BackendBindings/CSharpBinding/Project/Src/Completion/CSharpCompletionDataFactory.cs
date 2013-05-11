@@ -153,7 +153,12 @@ namespace CSharpBinding.Completion
 		{
 			return CreateMethodDataProvider(startOffset, accessibleIndexers);
 		}
-		
+
+		IParameterDataProvider IParameterCompletionDataFactory.CreateTypeParameterDataProvider(int startOffset, IEnumerable<IMethod> methods)
+		{
+			return null;
+		}
+
 		IParameterDataProvider IParameterCompletionDataFactory.CreateTypeParameterDataProvider(int startOffset, IEnumerable<IType> types)
 		{
 			return null;

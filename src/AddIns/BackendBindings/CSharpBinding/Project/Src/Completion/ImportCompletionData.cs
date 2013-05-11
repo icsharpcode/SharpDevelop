@@ -30,7 +30,7 @@ namespace CSharpBinding.Completion
 			this.Description = "using " + typeDef.Namespace + ";";
 			if (useFullName) {
 				var astBuilder = new TypeSystemAstBuilder(new CSharpResolver(contextAtCaret));
-				insertionText = astBuilder.ConvertType(typeDef).GetText();
+				insertionText = astBuilder.ConvertType(typeDef).ToString();
 			} else {
 				insertionText = typeDef.Name;
 				insertUsing = typeDef.Namespace;
