@@ -132,6 +132,49 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			Assert.IsTrue(ppd.WarningList.Contains (809));
 		}
 		
+		[Test, Ignore("mcs crashes because it tries to compute the full path to file.cs")]
+		public void PragmaChecksum()
+		{
+			string program = "#pragma checksum \"file.cs\" \"{3673e4ca-6098-4ec1-890f-8fceb2a794a2}\" \"{012345678AB}\"";
+			var ppd = ParseUtilCSharp.ParseGlobal<PreProcessorDirective>(program);
+			Assert.IsFalse(ppd is PragmaWarningPreprocssorDirective);
+			Assert.AreEqual(PreProcessorDirectiveType.Pragma, ppd.Type);
+			Assert.AreEqual("checksum \"file.cs\" \"{3673e4ca-6098-4ec1-890f-8fceb2a794a2}\" \"{012345678AB}\"", ppd.Argument);
+		}
+		
+		[Test, Ignore("mcs crashes because it tries to compute the full path to file.cs")]
+		public void LineWithFileName()
+		{
+			string program = "#line 200 \"otherfile.cs\"\nclass Test {}";
+			CSharpParser parser = new CSharpParser();
+			SyntaxTree syntaxTree = parser.Parse(program);
+			Assert.IsFalse(parser.HasErrors, string.Join(Environment.NewLine, parser.Errors.Select(e => e.Message)));
+			Assert.AreEqual(new Role[] {
+			                	Roles.PreProcessorDirective,
+			                	Roles.NewLine,
+			                	NamespaceDeclaration.MemberRole
+			}, syntaxTree.Children.Select(c => c.Role).ToArray());
+			Assert.AreEqual(new TextLocation(2, 1), syntaxTree.Members.Single().StartLocation);
+		}
+		
+		[Test, Ignore("ppd.Argument is missing")]
+		public void Line()
+		{
+			string program = "#line 200\nclass Test {}";
+			CSharpParser parser = new CSharpParser();
+			SyntaxTree syntaxTree = parser.Parse(program);
+			Assert.IsFalse(parser.HasErrors, string.Join(Environment.NewLine, parser.Errors.Select(e => e.Message)));
+			Assert.AreEqual(new Role[] {
+			                	Roles.PreProcessorDirective,
+			                	Roles.NewLine,
+			                	NamespaceDeclaration.MemberRole
+			}, syntaxTree.Children.Select(c => c.Role).ToArray());
+			Assert.AreEqual(new TextLocation(2, 1), syntaxTree.Members.Single().StartLocation);
+			var ppd = (PreProcessorDirective)syntaxTree.FirstChild;
+			Assert.AreEqual(PreProcessorDirectiveType.Line, ppd.Type);
+			Assert.AreEqual("200", ppd.Argument);
+		}
+		
 		const string elifProgram = @"
 #if AAA
 class A { }
