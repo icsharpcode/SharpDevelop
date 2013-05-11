@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -166,7 +166,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				try {
 					ResolveResult rr = resolveVisitor.GetResolveResult(node);
 					if (rr == null)
-						Debug.Fail (node.GetType () + " resolved to null.", node.StartLocation + ":'" + node.GetText () + "'");
+						Debug.Fail (node.GetType () + " resolved to null.", node.StartLocation + ":'" + node.ToString () + "'");
 					return rr;
 				} finally {
 					resolveVisitor.cancellationToken = CancellationToken.None;

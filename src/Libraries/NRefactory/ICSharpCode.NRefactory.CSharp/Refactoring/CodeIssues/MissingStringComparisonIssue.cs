@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context).GetIssues();
 		}
 		
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<MissingStringComparisonIssue>
 		{
 			public GatherVisitor(BaseRefactoringContext ctx) : base(ctx)
 			{
@@ -88,8 +88,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				AddIssue(invocationExpression.LParToken.StartLocation, invocationExpression.RParToken.EndLocation,
 				         mre.MemberName + "() call is missing StringComparison argument",
 				         new [] {
-				         	new CodeAction("Use ordinal comparison", script => AddArgument(script, invocationExpression, "Ordinal")),
-				         	new CodeAction("Use culture-aware comparison", script => AddArgument(script, invocationExpression, "CurrentCulture")),
+							new CodeAction("Use ordinal comparison", script => AddArgument(script, invocationExpression, "Ordinal"), invocationExpression),
+							new CodeAction("Use culture-aware comparison", script => AddArgument(script, invocationExpression, "CurrentCulture"), invocationExpression)
 				         });
 			}
 			

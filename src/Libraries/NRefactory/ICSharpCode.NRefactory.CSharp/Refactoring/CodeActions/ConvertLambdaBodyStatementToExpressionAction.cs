@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			
 			return new CodeAction (context.TranslateString ("Convert to lambda expression"),
-				script => script.Replace (blockStatement, expr.Clone ()));
+				script => script.Replace (blockStatement, expr.Clone ()), node);
 		}
 	}
 }

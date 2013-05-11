@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.Utils;
-using Mono.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -396,9 +395,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				KnownTypeCode result = this.knownTypeCode;
 				if (result == (KnownTypeCode)(-1)) {
 					result = KnownTypeCode.None;
+					ICompilation compilation = this.Compilation;
 					for (int i = 0; i < KnownTypeReference.KnownTypeCodeCount; i++) {
-						KnownTypeReference r = KnownTypeReference.Get((KnownTypeCode)i);
-						if (r != null && r.Resolve(parentContext) == this) {
+						if (compilation.FindType((KnownTypeCode)i) == this) {
 							result = (KnownTypeCode)i;
 							break;
 						}

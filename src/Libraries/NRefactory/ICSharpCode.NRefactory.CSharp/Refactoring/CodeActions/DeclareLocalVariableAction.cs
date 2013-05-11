@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					script.Replace(replaceNode, identifierExpression);
 					script.Link(varDecl.Variables.First().NameToken, identifierExpression);
 				}
-			});
+			}, expr);
 
 			if (visitor.Matches.Count > 1) {
 				yield return new CodeAction(string.Format(context.TranslateString("Declare local variable (replace '{0}' occurrences)"), visitor.Matches.Count), script => {
@@ -112,7 +112,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						script.Replace(visitor.Matches [i], identifierExpression);
 					}
 					script.Link(linkedNodes.ToArray ());
-				});
+				}, expr);
 			}
 		}
 

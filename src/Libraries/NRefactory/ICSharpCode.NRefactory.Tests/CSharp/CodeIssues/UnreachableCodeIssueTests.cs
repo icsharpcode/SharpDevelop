@@ -246,6 +246,7 @@ class TestClass
 			Test<UnreachableCodeIssue> (input, output, 0);
 		}
 
+	//	[Ignore("Got broken due ast new line nodes")]
 		[Test]
 		public void TestCommentCode ()
 		{

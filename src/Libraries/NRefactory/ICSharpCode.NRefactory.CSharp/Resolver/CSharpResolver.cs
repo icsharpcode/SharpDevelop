@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -2427,32 +2427,40 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public static object GetDefaultValue(IType type)
 		{
-			switch (ReflectionHelper.GetTypeCode(type)) {
-				case TypeCode.Boolean:
+			ITypeDefinition typeDef = type.GetDefinition();
+			if (typeDef == null)
+				return null;
+			if (typeDef.Kind == TypeKind.Enum) {
+				typeDef = typeDef.EnumUnderlyingType.GetDefinition();
+				if (typeDef == null)
+					return null;
+			}
+			switch (typeDef.KnownTypeCode) {
+				case KnownTypeCode.Boolean:
 					return false;
-				case TypeCode.Char:
+				case KnownTypeCode.Char:
 					return '\0';
-				case TypeCode.SByte:
+				case KnownTypeCode.SByte:
 					return (sbyte)0;
-				case TypeCode.Byte:
+				case KnownTypeCode.Byte:
 					return (byte)0;
-				case TypeCode.Int16:
+				case KnownTypeCode.Int16:
 					return (short)0;
-				case TypeCode.UInt16:
+				case KnownTypeCode.UInt16:
 					return (ushort)0;
-				case TypeCode.Int32:
+				case KnownTypeCode.Int32:
 					return 0;
-				case TypeCode.UInt32:
+				case KnownTypeCode.UInt32:
 					return 0U;
-				case TypeCode.Int64:
+				case KnownTypeCode.Int64:
 					return 0L;
-				case TypeCode.UInt64:
+				case KnownTypeCode.UInt64:
 					return 0UL;
-				case TypeCode.Single:
+				case KnownTypeCode.Single:
 					return 0f;
-				case TypeCode.Double:
+				case KnownTypeCode.Double:
 					return 0.0;
-				case TypeCode.Decimal:
+				case KnownTypeCode.Decimal:
 					return 0m;
 				default:
 					return null;

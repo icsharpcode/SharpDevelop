@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -687,34 +687,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
-		public void ConstantAnswer()
-		{
-			ITypeDefinition type = GetTypeDefinition(typeof(ConstantTest));
-			IField answer = type.Fields.Single(f => f.Name == "Answer");
-			Assert.IsTrue(answer.IsConst);
-			Assert.IsTrue(answer.IsStatic);
-			Assert.AreEqual(42, answer.ConstantValue);
-		}
-		
-		[Test]
-		public void ConstantEnumFromAnotherAssembly()
-		{
-			ITypeDefinition type = GetTypeDefinition(typeof(ConstantTest));
-			IField answer = type.Fields.Single(f => f.Name == "EnumFromAnotherAssembly");
-			Assert.IsTrue(answer.IsConst);
-			Assert.AreEqual((int)StringComparison.OrdinalIgnoreCase, answer.ConstantValue);
-		}
-		
-		[Test]
-		public void ConstantNullString()
-		{
-			ITypeDefinition type = GetTypeDefinition(typeof(ConstantTest));
-			IField answer = type.Fields.Single(f => f.Name == "NullString");
-			Assert.IsTrue(answer.IsConst);
-			Assert.IsNull(answer.ConstantValue);
-		}
-		
-		[Test]
 		public void InnerClassInGenericClassIsReferencedUsingParameterizedType()
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(OuterGeneric<>));
@@ -1258,7 +1230,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 
 		[Test]
-		public void ConstantFields()
+		public unsafe void ConstantFields()
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(ConstantFieldTest));
 			AssertConstantField<byte>(type, "Cb", 42);
@@ -1274,7 +1246,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			AssertConstantField<float>(type, "Cf", 42);
 			AssertConstantField<decimal>(type, "Cm", 42);
 			AssertConstantField<string>(type, "S", "hello, world");
-
+			AssertConstantField<string>(type, "NullString", null);
+		}
+		
+		[Test]
+		public void ConstantFieldsSizeOf()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ConstantFieldTest));
 			AssertConstantField<int>(type, "SOsb", sizeof(sbyte));
 			AssertConstantField<int>(type, "SOb", sizeof(byte));
 			AssertConstantField<int>(type, "SOs", sizeof(short));
@@ -1288,6 +1266,72 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			AssertConstantField<int>(type, "SOd", sizeof(double));
 			AssertConstantField<int>(type, "SObl", sizeof(bool));
 			AssertConstantField<int>(type, "SOe", sizeof(MyEnum));
+		}
+		
+		[Test]
+		public void ConstantEnumFromThisAssembly()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ConstantFieldTest));
+			IField field = type.Fields.Single(f => f.Name == "EnumFromThisAssembly");
+			Assert.IsTrue(field.IsConst);
+			Assert.AreEqual((short)MyEnum.Second, field.ConstantValue);
+		}
+		
+		[Test]
+		public void ConstantEnumFromAnotherAssembly()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ConstantFieldTest));
+			IField field = type.Fields.Single(f => f.Name == "EnumFromAnotherAssembly");
+			Assert.IsTrue(field.IsConst);
+			Assert.AreEqual((int)StringComparison.OrdinalIgnoreCase, field.ConstantValue);
+		}
+		
+		[Test]
+		public void DefaultOfEnum()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ConstantFieldTest));
+			IField field = type.Fields.Single(f => f.Name == "DefaultOfEnum");
+			Assert.IsTrue(field.IsConst);
+			Assert.AreEqual((short)default(MyEnum), field.ConstantValue);
+		}
+		
+		[Test]
+		public void ExplicitImplementation()
+		{
+			var type = GetTypeDefinition(typeof(ExplicitImplementationTests));
+			var itype = GetTypeDefinition(typeof(IExplicitImplementationTests));
+
+			var methods = type.GetMethods(m => m.Name == "M").ToList();
+			var imethod = itype.GetMethods(m => m.Name == "M").Single();
+			Assert.That(methods.Select(m => m.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(methods.SelectMany(m => m.ImplementedInterfaceMembers).Single(), imethod);
+
+			var properties = type.GetProperties(p => p.Name == "P").ToList();
+			var iproperty  = itype.GetProperties(m => m.Name == "P").Single();
+			Assert.That(properties.Select(p => p.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(properties.SelectMany(p => p.ImplementedInterfaceMembers).Single(), iproperty);
+			Assert.That(properties.Select(p => p.Getter.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(properties.SelectMany(p => p.Getter.ImplementedInterfaceMembers).Single(), iproperty.Getter);
+			Assert.That(properties.Select(p => p.Setter.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(properties.SelectMany(p => p.Setter.ImplementedInterfaceMembers).Single(), iproperty.Setter);
+
+			var indexers = type.GetProperties(p => p.Name == "Item").ToList();
+			var iindexer = itype.GetProperties(m => m.Name == "Item").Single();
+			Assert.That(indexers.Select(p => p.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(indexers.SelectMany(p => p.ImplementedInterfaceMembers).Single(), iindexer);
+			Assert.That(indexers.Select(p => p.Getter.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(indexers.SelectMany(p => p.Getter.ImplementedInterfaceMembers).Single(), iindexer.Getter);
+			Assert.That(indexers.Select(p => p.Setter.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(indexers.SelectMany(p => p.Setter.ImplementedInterfaceMembers).Single(), iindexer.Setter);
+
+			var events = type.GetEvents(e => e.Name == "E").ToList();
+			var ievent = itype.GetEvents(m => m.Name == "E").Single();
+			Assert.That(events.Select(e => e.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(events.SelectMany(e => e.ImplementedInterfaceMembers).Single(), ievent);
+			Assert.That(events.Select(e => e.AddAccessor.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(events.SelectMany(e => e.AddAccessor.ImplementedInterfaceMembers).Single(), ievent.AddAccessor);
+			Assert.That(events.Select(e => e.RemoveAccessor.ImplementedInterfaceMembers.Count).ToList(), Is.EquivalentTo(new[] { 0, 1 }));
+			Assert.AreEqual(events.SelectMany(e => e.RemoveAccessor.ImplementedInterfaceMembers).Single(), ievent.RemoveAccessor);
 		}
 	}
 }

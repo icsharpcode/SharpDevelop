@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Analysis;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -42,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor (context).GetIssues ();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<UnreachableCodeIssue>
 		{
 			HashSet<AstNode> unreachableNodes;
 
@@ -139,14 +140,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						return false;
 					if (collectedStatements.Contains (statement))
 						return true;
-					var prevEnd = statement.GetPrevNode ().EndLocation;
+					var prevEnd = statement.GetPrevNode (n => !(n is NewLineNode)).EndLocation;
 
 					// group multiple continuous statements into one issue
 					var start = statement.StartLocation;
 					collectedStatements.Add (statement);
 					visitor.unreachableNodes.Add (statement);
-					while (statement.NextSibling is Statement) {
-						statement = (Statement)statement.NextSibling;
+					while (statement.GetNextSibling (s => s is Statement) != null) {
+						statement = (Statement)statement.GetNextSibling (s => s is Statement);
 						collectedStatements.Add (statement);
 						visitor.unreachableNodes.Add (statement);
 					}
@@ -158,15 +159,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							var startOffset = script.GetCurrentOffset (prevEnd);
 							var endOffset = script.GetCurrentOffset (end);
 							script.RemoveText (startOffset, endOffset - startOffset);
-						});
-					var commentAction = new CodeAction (visitor.ctx.TranslateString ("Comment unreachable code"),
+						}, collectedStatements.First().StartLocation, collectedStatements.Last().EndLocation);
+					var commentAction = new CodeAction(visitor.ctx.TranslateString("Comment unreachable code"),
 						script =>
-						{
-							var startOffset = script.GetCurrentOffset (prevEnd);
-							script.InsertText (startOffset, Environment.NewLine + "/*");
-							var endOffset = script.GetCurrentOffset (end);
-							script.InsertText (endOffset, Environment.NewLine + "*/");
-						});
+					{
+						var startOffset = script.GetCurrentOffset(prevEnd);
+						script.InsertText(startOffset, Environment.NewLine + "/*");
+						var endOffset = script.GetCurrentOffset(end);
+						script.InsertText(endOffset, Environment.NewLine + "*/");
+					}, collectedStatements.First().StartLocation, collectedStatements.Last().EndLocation);
 					var actions = new [] { removeAction, commentAction };
 					visitor.AddIssue (start, end, visitor.ctx.TranslateString ("Code is unreachable"), actions);
 					return true;

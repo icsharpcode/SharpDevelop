@@ -116,7 +116,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					script.InsertBefore (foreachStatement, declarationStatement);
 				script.Replace (foreachStatement, forStatement);
 				script.Link (initializer.Variables.First ().NameToken, id1, id2, id3);
-			});
+			}, foreachStatement);
 		}
 		
 		static string GetCountProperty(IType type)

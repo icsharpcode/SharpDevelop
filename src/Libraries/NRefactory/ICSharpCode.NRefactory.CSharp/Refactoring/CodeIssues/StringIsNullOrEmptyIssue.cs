@@ -37,7 +37,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[IssueDescription("Use string.IsNullOrEmpty",
 	       Description = "Uses shorter string.IsNullOrEmpty call instead of a longer condition.",
 	       Category = IssueCategories.Improvements,
-	       Severity = Severity.Suggestion)]
+	       Severity = Severity.Suggestion,
+           ResharperDisableKeyword = "ReplaceWithStringIsNullOrEmpty")]
 	public class StringIsNullOrEmptyIssue : ICodeIssueProvider
 	{
 		static readonly Pattern pattern = new Choice {
@@ -107,7 +108,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context).GetIssues();
 		}
 		
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<StringIsNullOrEmptyIssue>
 		{
 			public GatherVisitor (BaseRefactoringContext ctx) : base (ctx)
 			{

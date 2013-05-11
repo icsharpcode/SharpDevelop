@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				yield return new CodeAction(context.TranslateString("Move declaration to outer scope"), script => {
 					script.Remove(variableDeclaration);
 					script.InsertBefore(entryNode, variableDeclaration.Clone());
-				});
+				}, variableDeclaration);
 			}
 		}
 
@@ -73,7 +73,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				script.Remove(declaration);
 				var outerDeclaration = new VariableDeclarationStatement(type, name, initializer.Initializer.Clone());
 				script.InsertBefore(insertAnchor, outerDeclaration);
-			});
+			}, declaration);
 		}
 
 		static CodeAction MoveDeclarationAction(RefactoringContext context, AstNode insertAnchor,
@@ -88,7 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				});
 				script.Remove(declarationStatement);
 				script.InsertBefore(insertAnchor, new VariableDeclarationStatement(type, name, Expression.Null));
-			});
+			}, declarationStatement);
 		}
 
 		bool HasDependency(RefactoringContext context, AstNode firstSearchNode, AstNode targetNode)

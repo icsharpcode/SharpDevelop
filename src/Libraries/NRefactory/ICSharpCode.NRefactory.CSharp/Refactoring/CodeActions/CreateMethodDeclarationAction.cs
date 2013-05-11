@@ -87,6 +87,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			yield return CreateAction(
 				context, 
+				invocation,
 				methodName, 
 				context.CreateShortType(invocationMethod.ReturnType),
 				invocationMethod.Parameters.Select(parameter => new ParameterDeclaration(context.CreateShortType(parameter.Type), parameter.Name) { 
@@ -119,6 +120,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			yield return CreateAction(
 				context, 
+				identifier,
 				methodName, 
 				context.CreateShortType(invocationMethod.ReturnType),
 				invocationMethod.Parameters.Select(parameter => new ParameterDeclaration(context.CreateShortType(parameter.Type), parameter.Name) { 
@@ -168,6 +170,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			yield return CreateAction(
 				context, 
+				invocation,
 				methodName, 
 				guessedType,
 				GenerateParameters(context, invocation.Arguments),
@@ -187,7 +190,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return ParameterModifier.None;
 		}
 
-		static CodeAction CreateAction(RefactoringContext context, string methodName, AstType returnType, IEnumerable<ParameterDeclaration> parameters, bool createInOtherType, bool isStatic, ResolveResult targetResolveResult)
+		static CodeAction CreateAction(RefactoringContext context, AstNode createFromNode, string methodName, AstType returnType, IEnumerable<ParameterDeclaration> parameters, bool createInOtherType, bool isStatic, ResolveResult targetResolveResult)
 		{
 			return new CodeAction(context.TranslateString("Create method"), script => {
 				var decl = new MethodDeclaration() {
@@ -215,7 +218,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 
 				script.InsertWithCursor(context.TranslateString("Create method"), Script.InsertPosition.Before, decl);
-			});
+			}, createFromNode);
 		}
 
 		public static IEnumerable<ParameterDeclaration> GenerateParameters(RefactoringContext context, IEnumerable<Expression> arguments)

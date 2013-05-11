@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor (context).GetIssues ();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<ConstantConditionIssue>
 		{
 			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)
@@ -101,7 +101,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var replaceExpr = value ? conditionalExpr.TrueExpression : conditionalExpr.FalseExpression;
 					action = new CodeAction (
 						string.Format (ctx.TranslateString ("Replace '?:' with '{0}' branch"), valueStr),
-						script => script.Replace (conditionalExpr, replaceExpr.Clone ()));
+						script => script.Replace (conditionalExpr, replaceExpr.Clone ()),
+						condition);
 				} else if (ifElseStatement != null) {
 					action = new CodeAction (
 						string.Format (ctx.TranslateString ("Replace 'if' with '{0}' branch"), valueStr),
@@ -124,11 +125,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							RemoveText (script, ifElseStatement.StartLocation, start);
 							RemoveText (script, end, ifElseStatement.EndLocation);
 							script.FormatText (ifElseStatement.Parent);
-						});
+						}, condition);
 				} else {
 					action = new CodeAction (
 						string.Format (ctx.TranslateString ("Replace expression with '{0}'"), valueStr),
-						script => script.Replace (condition, new PrimitiveExpression (value)));
+						script => script.Replace (condition, new PrimitiveExpression (value)), 
+						condition
+					);
 				}
 				AddIssue (condition, string.Format (ctx.TranslateString ("Condition is always '{0}'"), valueStr), 
 					new [] { action });

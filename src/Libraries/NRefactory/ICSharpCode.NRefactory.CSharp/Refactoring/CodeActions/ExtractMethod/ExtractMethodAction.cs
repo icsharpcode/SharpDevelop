@@ -52,9 +52,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 					yield break;
 				yield return codeAction;
 			}
-			
+
 			foreach (var node in selected) {
-				if (!(node is Statement) && !(node is Comment) && !(node is PreProcessorDirective))
+				if (!(node is Statement) && !(node is Comment) && !(node is NewLineNode) && !(node is PreProcessorDirective))
 					yield break;
 			}
 			var action = CreateFromStatements (context, new List<AstNode> (selected));
@@ -112,7 +112,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 				} else {
 					task.ContinueWith (replaceStatements, TaskScheduler.FromCurrentSynchronizationContext ());
 				}
-			});
+			}, expression);
 		}
 		
 		CodeAction CreateFromStatements(RefactoringContext context, List<AstNode> statements)
@@ -198,6 +198,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 				var task = script.InsertWithCursor(context.TranslateString("Extract method"), Script.InsertPosition.Before, method);
 				Action<Task> replaceStatements = delegate {
 					foreach (var node in statements.Skip (1)) {
+						if (node is NewLineNode)
+							continue;
 						script.Remove(node);
 					}
 					foreach (var variable in usedVariables) {
@@ -225,7 +227,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 				} else {
 					task.ContinueWith (replaceStatements, TaskScheduler.FromCurrentSynchronizationContext ());
 				}
-			});
+			}, statements.First ().StartLocation, statements.Last ().EndLocation);
 		}
 	}
 }

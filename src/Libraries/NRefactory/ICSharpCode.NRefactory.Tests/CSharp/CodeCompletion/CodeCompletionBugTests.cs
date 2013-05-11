@@ -209,8 +209,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 
 			public ICompletionData CreateTypeCompletionData (ICSharpCode.NRefactory.TypeSystem.IType type, bool fullName, bool isInAttributeContext)
 			{
-				string name = fullName ? builder.ConvertType(type).GetText() : type.Name; 
-				if (isInAttributeContext && name.EndsWith("Attribute") && name.Length > "Attribute".Length) {
+				string name = fullName ? builder.ConvertType(type).ToString() : type.Name; 
+				if (isInAttributeContext && name.EndsWith("Attribute", StringComparison.Ordinal) && name.Length > "Attribute".Length) {
 					name = name.Substring(0, name.Length - "Attribute".Length);
 				}
 				return new CompletionData (name);
@@ -218,7 +218,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 
 			public ICompletionData CreateMemberCompletionData(IType type, IEntity member)
 			{
-				string name = builder.ConvertType(type).GetText(); 
+				string name = builder.ConvertType(type).ToString(); 
 				return new EntityCompletionData (member, name + "."+ member.Name);
 			}
 
@@ -4768,12 +4768,11 @@ class MainClass
 			Assert.IsNotNull (provider.Find ("Math"), "'Math' not found.");
 		}
 		
-		[Ignore("Mcs bug")]
 		[Test]
 		public void TestConditionalExpression ()
 		{
 			CompletionDataList provider = CreateProvider (
-@"using System;
+				@"using System;
 
 class MainClass
 {
@@ -5264,7 +5263,6 @@ public class Test
 		/// <summary>
 		/// Bug 4624 - [AutoComplete] Attribute autocomplete inserts entire attribute class name. 
 		/// </summary>
-		[Ignore("MCS BUG")]
 		[Test]
 		public void TestBug4624()
 		{
@@ -6009,8 +6007,81 @@ public class Testing
 			});
 		}
 
+		/// <summary>
+		/// NullReferenceException when inserting space after 'in' modifier
+		/// </summary>
+		[Test]
+		public void TestCrashContravariantTypeParameter ()
+		{
+			CompletionDataList provider = CreateProvider (
+				@"public delegate void ModelCollectionChangedEventHandler<in$ $T>();
+");
+			Assert.AreEqual(0, provider.Count);
+		}
 
+		[Test]
+		public void TestSwitchCase ()
+		{
 
+			CombinedProviderTest(
+				@"using System;
+class Test
+{
+	public void Test (ConsoleColor color)
+	{
+		$switch (c$
+	}
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("color"));
+			});
+		}
+
+		[Test]
+		public void TestSwitchCaseCase ()
+		{
+
+			CombinedProviderTest(
+				@"using System;
+class Test
+{
+	public void Test (ConsoleColor color)
+	{
+		switch (color) {
+			$case $
+		}
+	}
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("ConsoleColor"));
+			});
+		}
+
+		/// <summary>
+		/// Bug 11906 - Intellisense choice injects full name on edit of existing name.
+		/// </summary>
+		[Test]
+		public void TestBug11906()
+		{
+			// The bug was caused by completion popping up in the middle of a word.
+			var provider = CreateProvider(@"using System;
+using System.Threading.Tasks;
+
+enum Test_Struct {
+	Some_Value1,
+	Some_Value2,
+	Some_Value3
+}
+
+public class Test
+{
+	public static void Main (string[] args)
+	{
+		Test_Struct v1 = Test_Struct.Some_$V$Value2;
+	}
+}");
+			Assert.IsTrue(provider == null || provider.Count == 0);
+		}
 
 	}
 }

@@ -24,17 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp;
 
 namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 {
-	[TestFixture()]
+	[TestFixture]
 	public class TestSpacingVisitor : TestBase
 	{
-		[Test()]
+		[Test]
 		public void TestFieldSpacesBeforeComma1()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -50,7 +48,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 }");
 		}
 
-		[Test()]
+		[Test]
 		public void TestFieldSpacesBeforeComma2 ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -66,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 }");
 		}
 
-		[Test()]
+		[Test]
 		public void TestFixedFieldSpacesBeforeComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -82,7 +80,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 }");
 		}
 
-		[Test()]
+		[Test]
 		public void TestConstFieldSpacesBeforeComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -98,7 +96,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 }");
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeMethodDeclarationParentheses ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -114,7 +112,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 }");
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeConstructorDeclarationParenthesesDestructorCase ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -145,7 +143,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Assert.AreEqual ("left " + op + " right", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestSpacesAroundMultiplicativeOperator ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -155,7 +153,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			TestBinaryOperator (policy, "/");
 		}
 
-		[Test()]
+		[Test]
 		public void TestSpacesAroundShiftOperator ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -164,7 +162,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			TestBinaryOperator (policy, ">>");
 		}
 
-		[Test()]
+		[Test]
 		public void TestSpacesAroundAdditiveOperator ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -174,7 +172,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			TestBinaryOperator (policy, "-");
 		}
 
-		[Test()]
+		[Test]
 		public void TestSpacesAroundBitwiseOperator ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -185,7 +183,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			TestBinaryOperator (policy, "^");
 		}
 
-		[Test()]
+		[Test]
 		public void TestSpacesAroundRelationalOperator ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -197,7 +195,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			TestBinaryOperator (policy, ">=");
 		}
 
-		[Test()]
+		[Test]
 		public void TestSpacesAroundEqualityOperator ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -207,7 +205,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			TestBinaryOperator (policy, "!=");
 		}
 
-		[Test()]
+		[Test]
 		public void TestSpacesAroundLogicalOperator ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -217,7 +215,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			TestBinaryOperator (policy, "||");
 		}
 
-		[Test()]
+		[Test]
 		public void TestConditionalOperator ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -253,7 +251,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Assert.AreEqual (@"true?trueexpr:falseexpr", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeMethodCallParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -285,7 +283,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Assert.AreEqual (@"MethodCall();", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinMethodCallParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -315,7 +313,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Assert.AreEqual (@"(true)", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeIfParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -332,7 +330,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Assert.AreEqual (@"if (true)", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinIfParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -349,7 +347,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Assert.AreEqual (@"( true )", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeWhileParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -366,7 +364,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Assert.AreEqual (@"while (true)", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinWhileParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -384,7 +382,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Assert.AreEqual (@"( true )", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeForParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -401,7 +399,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Assert.AreEqual (@"for (", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinForParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -418,7 +416,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Assert.AreEqual (@"( ;; )", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeForeachParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -435,7 +433,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Assert.AreEqual (@"foreach (var o in list)", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinForeachParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -452,7 +450,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Assert.AreEqual (@"( var o in list )", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeCatchParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -469,7 +467,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Assert.AreEqual (@"catch (Exception)", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinCatchParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -486,7 +484,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Assert.AreEqual (@"( Exception )", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeLockParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -503,7 +501,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Assert.AreEqual (@"lock (this)", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinLockParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -520,7 +518,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Assert.AreEqual (@"( this )", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestSpacesAfterForSemicolon ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -538,7 +536,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Assert.AreEqual (@"for (int i; true; i++)", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestSpacesBeforeForSemicolon ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -557,7 +555,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			Assert.AreEqual (@"for (int i ;true ;i++)", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestSpacesAfterTypecast ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -575,7 +573,7 @@ return (Test)null;
 			Assert.AreEqual (@"return (Test) null", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeUsingParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -592,7 +590,7 @@ return (Test)null;
 			Assert.AreEqual (@"using (", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinUsingParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -620,7 +618,7 @@ return (Test)null;
 			Assert.AreEqual ("left " + op + " right", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestAroundAssignmentSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -639,7 +637,7 @@ return (Test)null;
 			TestAssignmentOperator (policy, "^=");
 		}
 
-		[Test()]
+		[Test]
 		public void TestAroundAssignmentSpaceInDeclarations ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -656,7 +654,7 @@ return (Test)null;
 			Assert.AreEqual (@"left = right", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeSwitchParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -673,7 +671,7 @@ return (Test)null;
 			Assert.AreEqual (@"switch (", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinSwitchParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -690,7 +688,7 @@ return (Test)null;
 			Assert.AreEqual (@"( test )", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -707,7 +705,7 @@ return (Test)null;
 			Assert.AreEqual (@"( test )", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinMethodDeclarationParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -723,7 +721,7 @@ return (Test)null;
 			Assert.AreEqual (@"( int a )", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinCastParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -740,7 +738,7 @@ return (Test)null;
 			Assert.AreEqual (@"( int )", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinSizeOfParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -757,7 +755,7 @@ return (Test)null;
 			Assert.AreEqual (@"( int )", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeSizeOfParentheses ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -774,7 +772,7 @@ return (Test)null;
 			Assert.AreEqual (@"sizeof (", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinTypeOfParenthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -791,7 +789,7 @@ return (Test)null;
 			Assert.AreEqual (@"( int )", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeTypeOfParentheses ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -809,7 +807,7 @@ return (Test)null;
 			Assert.AreEqual (@"typeof (", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinCheckedExpressionParanthesesSpace ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -838,7 +836,7 @@ return (Test)null;
 			Assert.AreEqual (@"( a + b )", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestSpaceBeforeNewParentheses ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -855,7 +853,7 @@ return (Test)null;
 			Assert.AreEqual (@"new Test ();", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinNewParentheses ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -872,7 +870,7 @@ return (Test)null;
 			Assert.AreEqual (@"new Test ( 1 );", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestBetweenEmptyNewParentheses ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -889,7 +887,7 @@ return (Test)null;
 			Assert.AreEqual (@"new Test ( );", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeNewParameterComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -907,7 +905,7 @@ return (Test)null;
 			Assert.AreEqual (@"new Test (1 ,2);", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestAfterNewParameterComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -924,7 +922,7 @@ return (Test)null;
 			Assert.AreEqual (@"new Test (1, 2);", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestFieldDeclarationComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -952,7 +950,7 @@ return (Test)null;
 			Assert.AreEqual (@"int a,b,c;", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeMethodDeclarationParameterComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -973,7 +971,7 @@ return (Test)null;
 			Assert.AreEqual (@"(int a,int b,int c)", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestAfterMethodDeclarationParameterComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -994,7 +992,7 @@ return (Test)null;
 			Assert.AreEqual (@"(int a,int b,int c)", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestSpacesInLambdaExpression ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1011,7 +1009,7 @@ return (Test)null;
 			Assert.AreEqual (@"x => x != null", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeLocalVariableDeclarationComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1038,7 +1036,7 @@ return (Test)null;
 			Assert.AreEqual (@"int a,b,c;", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestLocalVariableDeclarationComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1066,7 +1064,7 @@ return (Test)null;
 			Assert.AreEqual (@"int a = 5,b = 6,c;", result.GetText (i1, i2 - i1));
 		}
 		
-		[Test()]
+		[Test]
 		public void TestLocalVariableWithGenerics ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1087,7 +1085,7 @@ return (Test)null;
 
 		#region Constructors
 		
-		[Test()]
+		[Test]
 		public void TestBeforeConstructorDeclarationParentheses ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1108,7 +1106,7 @@ return (Test)null;
 }"), result.Text);
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeConstructorDeclarationParameterComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1131,7 +1129,7 @@ return (Test)null;
 			Assert.AreEqual (@"(int a,int b,int c)", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestAfterConstructorDeclarationParameterComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1152,7 +1150,7 @@ return (Test)null;
 			Assert.AreEqual (@"(int a,int b,int c)", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinConstructorDeclarationParentheses ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1168,7 +1166,7 @@ return (Test)null;
 			Assert.AreEqual (@"( int a )", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestBetweenEmptyConstructorDeclarationParentheses ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1187,7 +1185,7 @@ return (Test)null;
 		#endregion
 		
 		#region Delegates
-		[Test()]
+		[Test]
 		public void TestBeforeDelegateDeclarationParentheses ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1198,7 +1196,7 @@ return (Test)null;
 			Assert.AreEqual (@"delegate void Test ();", result.Text);
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeDelegateDeclarationParenthesesComplex ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1209,7 +1207,7 @@ return (Test)null;
 			Assert.AreEqual (@"delegate void TestDelegate ();", result.Text);
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeDelegateDeclarationParameterComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1229,7 +1227,7 @@ return (Test)null;
 			Assert.AreEqual (@"(int a,int b,int c)", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestAfterDelegateDeclarationParameterComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1249,7 +1247,7 @@ return (Test)null;
 			Assert.AreEqual (@"(int a,int b,int c)", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinDelegateDeclarationParentheses ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1261,7 +1259,7 @@ return (Test)null;
 			Assert.AreEqual (@"( int a )", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestBetweenEmptyDelegateDeclarationParentheses ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1276,7 +1274,7 @@ return (Test)null;
 		#endregion
 		
 		#region Method invocations
-		[Test()]
+		[Test]
 		public void TestBeforeMethodCallParentheses ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1299,7 +1297,7 @@ return (Test)null;
 }"), result.Text);
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeMethodCallParameterComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1324,7 +1322,7 @@ return (Test)null;
 			Assert.AreEqual (@"(a,b,c)", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestAfterMethodCallParameterComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1349,7 +1347,7 @@ return (Test)null;
 			Assert.AreEqual (@"(a,b,c)", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinMethodCallParentheses ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1367,7 +1365,7 @@ return (Test)null;
 			Assert.AreEqual (@"( a )", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestBetweenEmptyMethodCallParentheses ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1388,7 +1386,7 @@ return (Test)null;
 		#endregion
 		
 		#region Indexer declarations
-		[Test()]
+		[Test]
 		public void TestBeforeIndexerDeclarationBracket ()
 		{
 			
@@ -1413,7 +1411,7 @@ return (Test)null;
 }"), result.Text);
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeIndexerDeclarationParameterComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1434,7 +1432,7 @@ return (Test)null;
 
 		}
 
-		[Test()]
+		[Test]
 		public void TestAfterIndexerDeclarationParameterComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1453,7 +1451,7 @@ return (Test)null;
 			Assert.AreEqual (@"[int a, int b]", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestWithinIndexerDeclarationBracket ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1476,14 +1474,15 @@ return (Test)null;
 
 		#region Brackets
 		
-		[Test()]
+		[Test]
 		public void TestSpacesWithinBrackets ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			policy.SpacesWithinBrackets = true;
 			policy.SpacesBeforeBrackets = false;
 			
-			var result = GetResult (policy, @"class Test {
+			var result = GetResult (policy, @"class Test
+{
 	void TestMe ()
 	{
 		this[0] = 5;
@@ -1500,7 +1499,7 @@ return (Test)null;
 			
 		}
 
-		[Test()]
+		[Test]
 		public void TestSpacesBeforeBrackets ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1524,7 +1523,7 @@ return (Test)null;
 			
 		}
 
-		[Test()]
+		[Test]
 		public void TestBeforeBracketComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1543,7 +1542,7 @@ return (Test)null;
 			Assert.AreEqual (@"[1 ,2 ,3]", result.GetText (i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestAfterBracketComma ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1563,13 +1562,14 @@ return (Test)null;
 
 		#endregion
 		
-		[Test()]
+		[Test]
 		public void TestSpacesBeforeArrayDeclarationBrackets ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			policy.SpaceBeforeArrayDeclarationBrackets = true;
 			
-			var result = GetResult (policy, @"class Test {
+			var result = GetResult (policy, @"class Test
+{
 	int[] a;
 	int[][] b;
 }");
@@ -1583,7 +1583,7 @@ return (Test)null;
 			
 		}
 
-		[Test()]
+		[Test]
 		public void TestRemoveWhitespacesBeforeSemicolon()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -1598,7 +1598,7 @@ return (Test)null;
 			Assert.AreEqual(@"Foo ();", result.GetText(i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestSpaceInNamedArgumentAfterDoubleColon()
 		{
 			var policy = FormattingOptionsFactory.CreateMono ();
@@ -1614,7 +1614,7 @@ return (Test)null;
 			Assert.AreEqual(@"Foo (bar: expr);", result.GetText(i1, i2 - i1));
 		}
 
-		[Test()]
+		[Test]
 		public void TestSpaceInNamedArgumentAfterDoubleColon2()
 		{
 			var policy = FormattingOptionsFactory.CreateMono ();

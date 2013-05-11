@@ -33,7 +33,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 	[TestFixture]
 	public class ParameterCanBeDemotedTests : InspectionActionTestBase
 	{
-		
 		[Test]
 		public void BasicTest()
 		{
@@ -337,6 +336,7 @@ class E : D, IC
 	void IC.Foo() {}
 }";
 		
+		[Ignore]
 		[Test]
 		public void FindsTopInterface()
 		{
@@ -567,6 +567,7 @@ class TestClass
 			Assert.AreEqual(0, issues.Count);
 		}
 		
+		[Ignore]
 		[Test]
 		public void AccountsForIndexers()
 		{
@@ -922,6 +923,31 @@ class User {
 	public string Name;
 }
 ", 0);
+		}
+
+		[Test]
+		public void TestMicrosoftSuppressMessage()
+		{
+			var input = @"
+class A
+{
+	public virtual void Foo() {}
+}
+class B : A
+{
+	public virtual void Bar() {}
+}
+class C
+{
+	[System.Diagnostics.CodeAnalysis.SuppressMessage(""Microsoft.Design"", ""CA1011:ConsiderPassingBaseTypesAsParameters"")]
+	void F(B b)
+	{
+		b.Foo();
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
 		}
 	}
 }

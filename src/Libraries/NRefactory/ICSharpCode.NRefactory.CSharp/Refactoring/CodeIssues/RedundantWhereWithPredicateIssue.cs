@@ -9,7 +9,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[IssueDescription("Any()/First()/etc. should be used with predicate and Where() removed",
 	                  Description= "Detects redundant Where() with predicate calls followed by Any().",
 	                  Category = IssueCategories.CodeQualityIssues,
-	                  Severity = Severity.Hint)]
+	                  Severity = Severity.Hint,
+                      ResharperDisableKeyword = "ReplaceWithSingleCallToAny")]
 	public class RedundantWhereWithPredicateIssue : ICodeIssueProvider
 	{
 		static readonly AstNode pattern =
@@ -26,7 +27,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context).GetIssues();
 		}
 		
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<RedundantWhereWithPredicateIssue>
 		{
 			public GatherVisitor (BaseRefactoringContext ctx) : base (ctx)
 			{

@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					} else {
 						script.Replace (node, asExpr);
 					}
-				});
+				}, node);
 			}
 			return null;
 		}

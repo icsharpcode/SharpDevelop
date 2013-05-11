@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor (context).GetIssues ();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<ExpressionIsAlwaysOfProvidedTypeIssue>
 		{
 			readonly CSharpConversions conversions;
 			public GatherVisitor (BaseRefactoringContext ctx)
@@ -63,9 +63,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (!IsValidReferenceOrBoxingConversion(type, providedType))
 					return;
 
-				var action = new CodeAction (ctx.TranslateString ("Compare with 'null'"), 
-					scrpit => scrpit.Replace (isExpression, new BinaryOperatorExpression (
-						isExpression.Expression.Clone (), BinaryOperatorType.InEquality, new PrimitiveExpression (null))));
+				var action = new CodeAction (
+					ctx.TranslateString ("Compare with 'null'"), 
+					script => script.Replace (isExpression, new BinaryOperatorExpression (
+						isExpression.Expression.Clone (), BinaryOperatorType.InEquality, new PrimitiveExpression (null))),
+					isExpression
+				);
 				AddIssue (isExpression, ctx.TranslateString ("Given expression is always of the provided type. " +
 					"Consider comparing with 'null' instead"), new [] { action });
 			}

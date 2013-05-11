@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -95,7 +95,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 	try { } catch { } finally { }
 	//Comment after
 }");
-			var children = stmt.Children.ToList();
+			var children = stmt.Children.Where (c => c.Role != Roles.NewLine).ToList();
 			Assert.That(children.Count, Is.EqualTo(5));
 			Assert.That(children[0].Role, Is.EqualTo(Roles.LBrace));
 			Assert.That(children[1].Role, Is.EqualTo(Roles.Comment));

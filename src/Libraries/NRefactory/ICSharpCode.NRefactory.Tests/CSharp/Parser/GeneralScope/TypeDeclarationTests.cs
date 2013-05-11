@@ -1,4 +1,4 @@
-// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
 			Assert.AreEqual(1, td.StartLocation.Line, "StartLocation.Y");
 			Assert.AreEqual(1, td.StartLocation.Column, "StartLocation.X");
-			TextLocation bodyStartLocation = td.GetChildByRole(Roles.LBrace).PrevSibling.EndLocation;
+			TextLocation bodyStartLocation = td.NameToken.EndLocation;
 			Assert.AreEqual(1, bodyStartLocation.Line, "BodyStartLocation.Y");
 			Assert.AreEqual(14, bodyStartLocation.Column, "BodyStartLocation.X");
 			Assert.AreEqual(3, td.EndLocation.Line, "EndLocation.Y");

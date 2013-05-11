@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			yield return new CodeAction (context.TranslateString("Remove region"), script => {
 				script.Remove (directive);
 				script.Remove (endDirective);
-			});
+			}, directive);
 		}
 		
 		class DirectiveSearcher : DepthFirstAstVisitor

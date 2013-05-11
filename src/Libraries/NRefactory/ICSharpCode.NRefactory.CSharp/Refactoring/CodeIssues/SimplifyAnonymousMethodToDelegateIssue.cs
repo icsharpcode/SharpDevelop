@@ -27,13 +27,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.PatternMatching;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	[IssueDescription("Simplify anonymous method to delegate",
 	                  Description = "Shows anonymous methods that can be simplified.",
 	                  Category = IssueCategories.CodeQualityIssues,
-	                  Severity = Severity.Warning)]
+	                  Severity = Severity.Warning,
+                      ResharperDisableKeyword = "ConvertClosureToMethodGroup")]
 	public class SimplifyAnonymousMethodToDelegateIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
@@ -41,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context).GetIssues();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<SimplifyAnonymousMethodToDelegateIssue>
 		{
 			public GatherVisitor (BaseRefactoringContext ctx) : base (ctx)
 			{
@@ -95,6 +98,22 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					i++;
 				}
 				AddIssue(expression, ctx.TranslateString("Expression can be reduced to delegate"), script =>  {
+					var validTypes = CreateFieldAction.GetValidTypes (ctx.Resolver, expression).ToList ();
+					if (validTypes.Any (t => t.FullName == "System.Func" && t.TypeParameterCount == 1 + parameters.Count) && validTypes.Any (t => t.FullName == "System.Action")) {
+						var rr = ctx.Resolve (invocation) as CSharpInvocationResolveResult;
+						if (rr != null && rr.Member.ReturnType.Kind != ICSharpCode.NRefactory.TypeSystem.TypeKind.Void) {
+							var builder = ctx.CreateTypeSytemAstBuilder (expression);
+							var type = builder.ConvertType(new TopLevelTypeName("System", "Func", 1));
+							var args = type is SimpleType ? ((SimpleType)type).TypeArguments : ((MemberType)type).TypeArguments;
+							args.Clear ();
+							foreach (var pde in parameters) {
+								args.Add (builder.ConvertType (ctx.Resolve (pde).Type));
+							}
+							args.Add (builder.ConvertType (rr.Member.ReturnType));
+							script.Replace(expression, new CastExpression (type, invocation.Target.Clone()));
+							return;
+						}
+					}
 					script.Replace(expression, invocation.Target.Clone());
 				});
 			}

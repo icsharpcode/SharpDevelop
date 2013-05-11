@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context).GetIssues();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<CS0127ReturnMustNotBeFollowedByAnyExpression>
 		{
 			string currentMethodName;
 
@@ -104,7 +104,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							ctx.TranslateString("Remove returned expression"),
 							script => {
 								script.Remove(returnStatement.Expression); 
-							}
+							},
+							returnStatement
 						)
 					);
 				}

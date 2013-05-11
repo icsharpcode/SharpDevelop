@@ -57,6 +57,7 @@ class TestClass
 }");
 		}
 		
+		[Ignore]
 		[Test]
 		public void InstanceFieldWithMultiAttributeSection()
 		{

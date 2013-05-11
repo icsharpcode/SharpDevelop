@@ -40,7 +40,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	       Description = "Use implicitly typed local variable decaration",
 	       Category = IssueCategories.Opportunities,
 	       Severity = Severity.Hint,
-	       IssueMarker = IssueMarker.None)]
+	       IssueMarker = IssueMarker.None,
+           ResharperDisableKeyword = "SuggestUseVarKeywordEvident")]
 	public class UseVarKeywordIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
@@ -48,13 +49,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context, this).GetIssues();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<UseVarKeywordIssue>
 		{
-//			readonly UseVarKeywordIssue inspector;
-			
-			public GatherVisitor (BaseRefactoringContext ctx, UseVarKeywordIssue inspector) : base (ctx)
+			public GatherVisitor (BaseRefactoringContext ctx, UseVarKeywordIssue issueProvider) : base (ctx, issueProvider)
 			{
-//				this.inspector = inspector;
 			}
 
 			public override void VisitVariableDeclarationStatement(VariableDeclarationStatement variableDeclarationStatement)
@@ -63,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (variableDeclarationStatement.Type is PrimitiveType) {
 					return;
 				}
-				if (variableDeclarationStatement.Type is SimpleType && ((SimpleType)variableDeclarationStatement.Type).Identifier == "var") { 
+				if (variableDeclarationStatement.Type.IsVar()) {
 					return;
 				}
 				if (variableDeclarationStatement.Variables.Count != 1) {

@@ -35,7 +35,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   Description = "Method with optional parameter is hidden by overload",
 					   Category = IssueCategories.CodeQualityIssues,
 					   Severity = Severity.Warning,
-					   IssueMarker = IssueMarker.Underline)]
+					   IssueMarker = IssueMarker.Underline,
+                       ResharperDisableKeyword = "MethodOverloadWithOptionalParameter")]
 	public class MethodOverloadHidesOptionalParameterIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
@@ -43,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor (context).GetIssues ();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<MethodOverloadHidesOptionalParameterIssue>
 		{
 			public GatherVisitor(BaseRefactoringContext ctx)
 				: base (ctx)

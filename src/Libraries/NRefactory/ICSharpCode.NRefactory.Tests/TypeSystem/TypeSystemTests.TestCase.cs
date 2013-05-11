@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -158,15 +158,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 	{
 		[PreserveSig()]
 		int GetNextAssembly(uint dwFlags);
-	}
-	
-	public class ConstantTest
-	{
-		public const int Answer = 42;
-		
-		public const StringComparison EnumFromAnotherAssembly = StringComparison.OrdinalIgnoreCase;
-		
-		public const string NullString = null;
 	}
 	
 	public class OuterGeneric<X>
@@ -359,7 +350,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public const float Cf = 42;
 		public const decimal Cm = 42;
 		public const string S = "hello, world";
-
+		public const string NullString = null;
+		
+		public const MyEnum EnumFromThisAssembly = MyEnum.Second;
+		public const StringComparison EnumFromAnotherAssembly = StringComparison.OrdinalIgnoreCase;
+		public const MyEnum DefaultOfEnum = default(MyEnum);
+		
 		public const int SOsb = sizeof(sbyte);
 		public const int SOb  = sizeof(byte);
 		public const int SOs  = sizeof(short);
@@ -372,6 +368,27 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public const int SOf  = sizeof(float);
 		public const int SOd  = sizeof(double);
 		public const int SObl = sizeof(bool);
-		public const int SOe  = sizeof(MyEnum);
+		public const int SOe = sizeof(MyEnum);
+	}
+
+	public interface IExplicitImplementationTests 
+	{
+		void M(int a);
+		int P { get; set; }
+		event Action E;
+		int this[int x] { get; set; }
+	}
+
+	public class ExplicitImplementationTests : IExplicitImplementationTests 
+	{
+		public void M(int a) {}
+		public int P { get; set; }
+		public event Action E;
+		public int this[int x] { get { return 0; } set {} }
+
+		void IExplicitImplementationTests.M(int a) {}
+		int IExplicitImplementationTests.P { get; set; }
+		event Action IExplicitImplementationTests.E { add {} remove {} }
+		int IExplicitImplementationTests.this[int x] { get { return 0; } set {} }
 	}
 }

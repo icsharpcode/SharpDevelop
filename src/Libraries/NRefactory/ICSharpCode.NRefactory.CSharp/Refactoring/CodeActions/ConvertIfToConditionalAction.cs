@@ -38,11 +38,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			if (!ifElseStatement.IfToken.Contains (context.Location))
 				return null;
-
 			var convertAssignment = GetConvertAssignmentAction (context, ifElseStatement);
 			if (convertAssignment != null)
 				return convertAssignment;
-
 			var convertReturn = GetConvertReturnAction (context, ifElseStatement);
 			return convertReturn;
 		}
@@ -101,7 +99,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var falseStatement = ifElseStatement.FalseStatement;
 			// try next statement if there is no FalseStatement
 			if (falseStatement.IsNull && findImplicitFalseStatement)
-				falseStatement = ifElseStatement.NextSibling as Statement;
+				falseStatement = ifElseStatement.GetNextSibling (n => n is Statement) as Statement;
 
 			var node2 = GetNode (falseStatement, extractor);
 			if (node2 == null)
@@ -118,7 +116,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					// remove implicit false statement
 					if (falseStatement != ifElseStatement.FalseStatement)
 						script.Remove (falseStatement);
-				});
+				}, 
+				ifElseStatement
+			);
 		}
 
 		static T GetNode<T> (Statement node, Func<Statement, T> extract)
@@ -131,7 +131,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var blockStatement = node as BlockStatement;
 			if (blockStatement != null && blockStatement.Statements.Count == 1)
 				return GetNode (blockStatement.Statements.First (), extract);
-
 			return null;
 		}
 	}

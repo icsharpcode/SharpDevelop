@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var newTarget = memberReference.Clone() as MemberReferenceExpression;
 				newTarget.Target = firstArgument.Clone();
 				script.Replace(invocation, new InvocationExpression(newTarget, newArgumentList));
-			});
+			}, invocation);
 		}
 
 		#endregion

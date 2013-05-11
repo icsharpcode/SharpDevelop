@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -97,18 +97,18 @@ namespace ICSharpCode.NRefactory.Semantics
 			return new UserDefinedConv(isImplicit, operatorMethod, conversionBeforeUserDefinedOperator, conversionAfterUserDefinedOperator, isLifted, isAmbiguous);
 		}
 		
-		public static Conversion MethodGroupConversion(IMethod chosenMethod, bool isVirtualMethodLookup)
+		public static Conversion MethodGroupConversion(IMethod chosenMethod, bool isVirtualMethodLookup, bool delegateCapturesFirstArgument)
 		{
 			if (chosenMethod == null)
 				throw new ArgumentNullException("chosenMethod");
-			return new MethodGroupConv(chosenMethod, isVirtualMethodLookup, isValid: true);
+			return new MethodGroupConv(chosenMethod, isVirtualMethodLookup, delegateCapturesFirstArgument, isValid: true);
 		}
 		
-		public static Conversion InvalidMethodGroupConversion(IMethod chosenMethod, bool isVirtualMethodLookup)
+		public static Conversion InvalidMethodGroupConversion(IMethod chosenMethod, bool isVirtualMethodLookup, bool delegateCapturesFirstArgument)
 		{
 			if (chosenMethod == null)
 				throw new ArgumentNullException("chosenMethod");
-			return new MethodGroupConv(chosenMethod, isVirtualMethodLookup, isValid: false);
+			return new MethodGroupConv(chosenMethod, isVirtualMethodLookup, delegateCapturesFirstArgument, isValid: false);
 		}
 		#endregion
 		
@@ -346,12 +346,14 @@ namespace ICSharpCode.NRefactory.Semantics
 		{
 			readonly IMethod method;
 			readonly bool isVirtualMethodLookup;
+			readonly bool delegateCapturesFirstArgument;
 			readonly bool isValid;
 			
-			public MethodGroupConv(IMethod method, bool isVirtualMethodLookup, bool isValid)
+			public MethodGroupConv(IMethod method, bool isVirtualMethodLookup, bool delegateCapturesFirstArgument, bool isValid)
 			{
 				this.method = method;
 				this.isVirtualMethodLookup = isVirtualMethodLookup;
+				this.delegateCapturesFirstArgument = delegateCapturesFirstArgument;
 				this.isValid = isValid;
 			}
 			
@@ -371,6 +373,10 @@ namespace ICSharpCode.NRefactory.Semantics
 				get { return isVirtualMethodLookup; }
 			}
 			
+			public override bool DelegateCapturesFirstArgument {
+				get { return delegateCapturesFirstArgument; }
+			}
+
 			public override IMethod Method {
 				get { return method; }
 			}
@@ -518,6 +524,16 @@ namespace ICSharpCode.NRefactory.Semantics
 			get { return false; }
 		}
 		
+		/// <summary>
+		/// For method-group conversions, gets whether the conversion captures the first argument.
+		/// 
+		/// For instance methods, this property always returns true for C# method-group conversions.
+		/// For static methods, this property returns true for method-group conversions of an extension method performed on an instance (eg. <c>Func&lt;int&gt; f = myEnumerable.Single</c>).
+		/// </summary>
+		public virtual bool DelegateCapturesFirstArgument {
+			get { return false; }
+		}
+
 		/// <summary>
 		/// Gets whether this conversion is an anonymous function conversion.
 		/// </summary>

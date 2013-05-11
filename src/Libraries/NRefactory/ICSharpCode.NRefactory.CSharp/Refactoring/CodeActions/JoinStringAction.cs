@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var start = context.GetOffset (left.EndLocation) - 1;
 				var end = context.GetOffset (right.StartLocation) + (isLeftVerbatim ? 2 : 1);
 				script.RemoveText (start, end - start);
-			});
+			}, node.OperatorToken);
 		}
 	}
 }

@@ -47,6 +47,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		IParameterDataProvider CreateIndexerParameterDataProvider (int startOffset, IType type, IEnumerable<IProperty> accessibleIndexers, AstNode resolvedNode);
 		
 		IParameterDataProvider CreateTypeParameterDataProvider (int startOffset, IEnumerable<IType> types);
+
+		IParameterDataProvider CreateTypeParameterDataProvider (int startOffset, IEnumerable<IMethod> methods);
 	}
 	
 }

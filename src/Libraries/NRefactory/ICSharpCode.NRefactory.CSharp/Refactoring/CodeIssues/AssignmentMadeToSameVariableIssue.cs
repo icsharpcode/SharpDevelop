@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor (context).GetIssues ();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<AssignmentMadeToSameVariableIssue>
 		{
 			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)
@@ -85,7 +85,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					action = script => script.Replace (assignmentExpression, assignmentExpression.Left.Clone ());
 				}
 				AddIssue (node, ctx.TranslateString ("CS1717:Assignment made to same variable"),
-					new [] { new CodeAction (ctx.TranslateString ("Remove assignment"), action) });
+					new [] { new CodeAction (ctx.TranslateString ("Remove assignment"), action, node) });
 			}
 
 			static bool AreEquivalent(ResolveResult first, ResolveResult second)

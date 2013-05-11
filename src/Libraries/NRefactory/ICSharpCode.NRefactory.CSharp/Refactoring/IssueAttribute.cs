@@ -1,4 +1,7 @@
 ﻿// 
+using System.Diagnostics.CodeAnalysis;
+
+
 // IssueAttribute.cs
 //  
 // Author:
@@ -35,7 +38,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		public string Description { get; set; }
 		
 		public string Category { get; set; }
-		
+
+		public string ResharperDisableKeyword { get; set; }
+		public string SuppressMessageCategory { get; set; }
+		public string SuppressMessageCheckId { get; set; }
+
 		public Severity Severity { get; set; }
 
 		public IssueMarker IssueMarker { get; set; }

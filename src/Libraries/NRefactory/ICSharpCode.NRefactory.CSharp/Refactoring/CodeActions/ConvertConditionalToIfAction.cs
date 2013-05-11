@@ -114,7 +114,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					foreach (var node in getReplacement (conditionalExpr))
 						script.InsertBefore (originalStatement, node);
 					script.Remove (originalStatement);
-				});
+			}, conditionalExpr);
 		}
 
 		static ConditionalExpression GetConditionalExpression (Expression expr)

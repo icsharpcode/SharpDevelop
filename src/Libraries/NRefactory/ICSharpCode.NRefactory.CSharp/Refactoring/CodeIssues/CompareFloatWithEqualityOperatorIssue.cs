@@ -34,7 +34,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   Description = "Comparison of floating point numbers with equality operator.",
 					   Category = IssueCategories.CodeQualityIssues,
 					   Severity = Severity.Warning,
-					   IssueMarker = IssueMarker.Underline)]
+					   IssueMarker = IssueMarker.Underline,
+                       ResharperDisableKeyword = "CompareOfFloatsByEqualityOperator")]
 	public class CompareFloatWithEqualityOperatorIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
@@ -42,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor (context).GetIssues ();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<CompareFloatWithEqualityOperatorIssue>
 		{
 			public GatherVisitor (BaseRefactoringContext ctx)
 				: base(ctx)

@@ -30,12 +30,13 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-//	[IssueDescription ("Access to modified closure variable",
-//					   Description = "Access to closure variable from anonymous method when the variable is modified " +
-//									 "externally",
-//					   Category = IssueCategories.CodeQualityIssues,
-//					   Severity = Severity.Warning,
-//					   IssueMarker = IssueMarker.Underline)]	
+    //[IssueDescription("Access to modified closure variable",
+    //                   Description = "Access to closure variable from anonymous method when the variable is modified " +
+    //                                 "externally",
+    //                   Category = IssueCategories.CodeQualityIssues,
+    //                   Severity = Severity.Warning,
+    //                   IssueMarker = IssueMarker.Underline,
+    //                   ResharperDisableKeyword = "AccessToModifiedClosure")]	
 	public class AccessToModifiedClosureIssue : AccessToClosureIssue
 	{
 		public AccessToModifiedClosureIssue ()
@@ -109,7 +110,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 				script.Link (textNodes.ToArray ());
 			};
-			yield return new CodeAction (context.TranslateString ("Copy to local variable"), action);
+			yield return new CodeAction (context.TranslateString ("Copy to local variable"), action, env.AstNode);
 		}
 	}
 }

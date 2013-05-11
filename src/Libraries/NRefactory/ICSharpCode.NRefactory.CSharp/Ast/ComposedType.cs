@@ -50,6 +50,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				SetChildByRole(NullableRole, value ? new CSharpTokenNode(TextLocation.Empty, null) : null);
 			}
 		}
+
+		public CSharpTokenNode NullableSpecifierToken {
+			get {
+				return GetChildByRole(NullableRole);
+			}
+		}
 		
 		public int PointerRank {
 			get {
@@ -72,6 +78,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public AstNodeCollection<ArraySpecifier> ArraySpecifiers {
 			get { return GetChildrenByRole (ArraySpecifierRole); }
+		}
+
+		public AstNodeCollection<CSharpTokenNode> PointerTokens {
+			get { return GetChildrenByRole (PointerRole); }
 		}
 		
 		public override void AcceptVisitor (IAstVisitor visitor)
@@ -96,8 +106,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				&& this.BaseType.DoMatch(o.BaseType, match)
 				&& this.ArraySpecifiers.DoMatch(o.ArraySpecifiers, match);
 		}
-		
-		public override string ToString()
+
+		public override string ToString(CSharpFormattingOptions formattingOptions)
 		{
 			StringBuilder b = new StringBuilder();
 			b.Append(this.BaseType.ToString());
@@ -210,8 +220,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			ArraySpecifier o = other as ArraySpecifier;
 			return o != null && this.Dimensions == o.Dimensions;
 		}
-		
-		public override string ToString()
+
+		public override string ToString(CSharpFormattingOptions formattingOptions)
 		{
 			return "[" + new string(',', this.Dimensions - 1) + "]";
 		}

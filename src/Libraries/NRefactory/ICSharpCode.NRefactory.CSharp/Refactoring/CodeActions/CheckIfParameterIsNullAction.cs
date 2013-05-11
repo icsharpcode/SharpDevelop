@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					TrueStatement = new ThrowStatement (new ObjectCreateExpression (context.CreateShortType("System", "ArgumentNullException"), new PrimitiveExpression (parameter.Name)))
 				};
 				script.AddTo(bodyStatement, statement);
-			});
+			}, parameter.NameToken);
 		}
 
 		static bool HasNullCheck (ParameterDeclaration parameter)

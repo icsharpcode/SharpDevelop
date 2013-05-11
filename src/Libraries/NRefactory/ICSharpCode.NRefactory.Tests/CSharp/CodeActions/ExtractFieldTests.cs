@@ -141,6 +141,120 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"	}" + Environment.NewLine +
 				"}", result);
 		}
+
+		[Test]
+		public void TestConstructor ()
+		{
+			Test<ExtractFieldAction>(@"
+class TestClass
+{
+	TestClass () {
+		int $i = 0;
+	}
+}", @"
+class TestClass
+{
+	int i;
+	TestClass () {
+		i = 0;
+	}
+}");
+		}
+
+		[Test]
+		public void TestGetter ()
+		{
+			Test<ExtractFieldAction>(@"
+class TestClass
+{
+	static int X {
+		get {
+			int $i = 0;
+			return i;
+		}
+	}
+}", @"
+class TestClass
+{
+	static int i;
+	static int X {
+		get {
+			i = 0;
+			return i;
+		}
+	}
+}");
+		}
+
+		[Test]
+		public void TestTypeInferenceDeclaration ()
+		{
+			Test<ExtractFieldAction> (@"
+class TestClass
+{
+	void Test ()
+	{
+		var $i = 0;
+	}
+}", @"
+class TestClass
+{
+	int i;
+	void Test ()
+	{
+		i = 0;
+	}
+}");
+		}
+
+		[Test]
+		public void TestTypeInferenceAnonymousType ()
+		{
+			TestWrongContext<ExtractFieldAction> (@"
+class TestClass
+{
+	void Test ()
+	{
+		var $i = new { A = 1 };
+	}
+}
+");
+		}
+
+		[Test]
+		public void TestTypeInferenceAnonymousArrayType ()
+		{
+			TestWrongContext<ExtractFieldAction> (@"
+class TestClass
+{
+	void Test ()
+	{
+		var $i = new [] { new { A = 1 } };
+	}
+}
+");
+		}
+
+		[Test]
+		public void TestStaticField ()
+		{
+			Test<ExtractFieldAction> (@"
+class TestClass
+{
+	static void Test ()
+	{
+		int $i = 0;
+	}
+}", @"
+class TestClass
+{
+	static int i;
+	static void Test ()
+	{
+		i = 0;
+	}
+}");
+		}
 	}
 }
 

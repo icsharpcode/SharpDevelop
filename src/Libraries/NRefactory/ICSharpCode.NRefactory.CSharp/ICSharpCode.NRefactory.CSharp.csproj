@@ -14,7 +14,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <SignAssembly>True</SignAssembly>
+    <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\ICSharpCode.NRefactory.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
@@ -200,7 +200,6 @@
     <Compile Include="Ast\TypeMembers\PropertyDeclaration.cs" />
     <Compile Include="Ast\TypeMembers\VariableInitializer.cs" />
     <Compile Include="CSharpProjectContent.cs" />
-    <Compile Include="Formatter\AstFormattingVisitor.cs" />
     <Compile Include="Formatter\CSharpFormattingOptions.cs" />
     <Compile Include="Formatter\Indent.cs" />
     <Compile Include="OutputVisitor\CodeDomConvertVisitor.cs" />
@@ -301,6 +300,7 @@
     <Compile Include="Refactoring\CodeIssues\DoubleNegationIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ExpressionIsAlwaysOfProvidedTypeIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ExpressionIsNeverOfProvidedTypeIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\ExpressionOfCompatibleTypeCastIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\MethodNeverReturnsIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\MethodOverloadHidesOptionalParameterIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\MissingStringComparisonIssue.cs" />
@@ -516,6 +516,30 @@
     <Compile Include="Refactoring\CodeIssues\SimplifyAnonymousMethodToDelegateIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\CompilerErrors\CS0127ReturnMustNotBeFollowedByAnyExpression.cs" />
     <Compile Include="Analysis\AbiComparer.cs" />
+    <Compile Include="Refactoring\CreateChangedEvent.cs" />
+    <Compile Include="Refactoring\CodeActions\SimplifyIfFlowAction.cs" />
+    <Compile Include="Refactoring\CodeActions\SimplifyIfInLoopsFlowAction.cs" />
+    <Compile Include="Refactoring\CodeIssues\NoDefaultConstructorIssue.cs" />
+    <Compile Include="Refactoring\CodeActions\InvertIfAndSimplify.cs" />
+    <Compile Include="Formatter\CSharpFormatter.cs" />
+    <Compile Include="Formatter\FormattingVisitor.cs" />
+    <Compile Include="Formatter\FormattingVisitor_TypeMembers.cs" />
+    <Compile Include="Formatter\FormattingVisitor_Global.cs" />
+    <Compile Include="Formatter\FormattingVisitor_Statements.cs" />
+    <Compile Include="Formatter\FormattingVisitor_Expressions.cs" />
+    <Compile Include="Formatter\FormattingChanges.cs" />
+    <Compile Include="Refactoring\CodeIssues\RedundantNullCheckIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\ConstructorIssues\StaticConstructorParameterIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\ConstructorIssues\StaticConstructorAccessModifierIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\RedundantBaseConstructorIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\ConstructorIssues\RedudantConstructorIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\ConstructorIssues\PublicConstructorInAbstractClass.cs" />
+    <Compile Include="Refactoring\CodeIssues\ConvertToStaticMethodIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\ParameterCanBeDemotedIssue\ParameterCanBeIEnumerableIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\DuplicateBodyMethodIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\DuplicateExpressionsInConditionsIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\DuplicateIfInIfChainIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\UseBlockInsteadColonIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -524,15 +548,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
-  <ItemGroup>
-    <Folder Include="Completion\" />
-    <Folder Include="Refactoring\CodeIssues\" />
-    <Folder Include="Refactoring\CodeIssues\InconsistentNamingIssue\" />
-    <Folder Include="Refactoring\CodeActions\ExtractMethod\" />
-    <Folder Include="Refactoring\CodeActions\ConvertToInitializer\" />
-    <Folder Include="Refactoring\CodeIssues\FormatStringIssues\" />
-    <Folder Include="Refactoring\CodeIssues\CompilerErrors\" />
-  </ItemGroup>
+  <ItemGroup />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

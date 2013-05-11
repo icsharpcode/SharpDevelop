@@ -33,7 +33,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[IssueDescription("A throw statement throws the caught exception by passing it explicitly",
 	                  Description = "Finds throws that throws the caught exception and therefore should be empty.",
 	                  Category = IssueCategories.CodeQualityIssues,
-	                  Severity = Severity.Warning)]
+	                  Severity = Severity.Warning,
+                      ResharperDisableKeyword = "PossibleIntendedRethrow")]
 	public class ExceptionRethrowIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
@@ -41,7 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context).GetIssues();
 		}
 		
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<ExceptionRethrowIssue>
 		{
 			public GatherVisitor(BaseRefactoringContext context) : base (context)
 			{
@@ -62,7 +63,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var title = ctx.TranslateString("The exception is rethrown with explicit usage of the variable");
 					var action = new CodeAction(ctx.TranslateString("Change to 'throw;'"), script => {
 						script.Replace(localThrowStatement, new ThrowStatement());
-					});
+					}, catchClause);
 					AddIssue(localThrowStatement, title, action);
 				}
 			}

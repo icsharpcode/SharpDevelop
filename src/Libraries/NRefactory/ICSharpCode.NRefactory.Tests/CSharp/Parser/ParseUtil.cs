@@ -1,4 +1,4 @@
-// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 				Console.WriteLine (error.Message);
 			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
 			
-			AstNode node = syntaxTree.Children.Single();
+			AstNode node = syntaxTree.Children.Single(c => c.Role != Roles.NewLine);
 			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(node.GetType()), String.Format("Parsed node was {0} instead of {1} ({2})", node.GetType(), type, node));
 			return (T)node;
@@ -143,7 +143,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		
 		static string ToCSharp(AstNode node)
 		{
-			return node.GetText();
+			return node.ToString();
 		}
 	}
 }

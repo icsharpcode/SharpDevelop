@@ -63,7 +63,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 					implicitImpl.Modifiers |= Modifiers.Public;
 					script.Replace (node, implicitImpl);
-				});
+				}, 
+			node.NameToken);
 		}
 	}
 }

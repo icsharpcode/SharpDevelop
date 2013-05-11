@@ -27,7 +27,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
-using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -43,6 +42,63 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			set;
 		}
 
+		public static MethodDeclaration CreateEventInvocator (RefactoringContext context, TypeDeclaration declaringType, EventDeclaration eventDeclaration, VariableInitializer initializer, IMethod invokeMethod, bool useExplictType)
+		{
+			bool hasSenderParam = false;
+			IEnumerable<IParameter> pars = invokeMethod.Parameters;
+			if (invokeMethod.Parameters.Any()) {
+				var first = invokeMethod.Parameters [0];
+				if (first.Name == "sender" /*&& first.Type == "System.Object"*/) {
+					hasSenderParam = true;
+					pars = invokeMethod.Parameters.Skip(1);
+				}
+			}
+			const string handlerName = "handler";
+
+			var arguments = new List<Expression>();
+			if (hasSenderParam)
+				arguments.Add(eventDeclaration.HasModifier (Modifiers.Static) ? (Expression)new PrimitiveExpression (null) : new ThisReferenceExpression());
+			bool useThisMemberReference = false;
+			foreach (var par in pars) {
+				arguments.Add(new IdentifierExpression(par.Name));
+				useThisMemberReference |= par.Name == initializer.Name;
+			}
+			var proposedHandlerName = GetNameProposal(initializer);
+			var modifiers = eventDeclaration.HasModifier(Modifiers.Static) ? Modifiers.Static : Modifiers.Protected | Modifiers.Virtual;
+			if (declaringType.HasModifier (Modifiers.Sealed)) {
+				modifiers = Modifiers.None;
+			}
+			var methodDeclaration = new MethodDeclaration {
+				Name = proposedHandlerName,
+				ReturnType = new PrimitiveType ("void"),
+				Modifiers = modifiers,
+				Body = new BlockStatement {
+					new VariableDeclarationStatement (
+						useExplictType ? eventDeclaration.ReturnType.Clone () : new PrimitiveType ("var"), handlerName, 
+						useThisMemberReference ? 
+						(Expression)new MemberReferenceExpression (new ThisReferenceExpression (), initializer.Name) 
+						: new IdentifierExpression (initializer.Name)
+						),
+					new IfElseStatement {
+						Condition = new BinaryOperatorExpression (new IdentifierExpression (handlerName), BinaryOperatorType.InEquality, new PrimitiveExpression (null)),
+						TrueStatement = new ExpressionStatement (new InvocationExpression (new IdentifierExpression (handlerName), arguments))
+					}
+				}
+			};
+
+			foreach (var par in pars) {
+				var typeName = context.CreateShortType(par.Type);
+				var decl = new ParameterDeclaration(typeName, par.Name);
+				methodDeclaration.Parameters.Add(decl);
+			}
+			return methodDeclaration;
+		}
+
+		static string GetNameProposal(VariableInitializer initializer)
+		{
+			return "On" + char.ToUpper(initializer.Name[0]) + initializer.Name.Substring(1);
+		}
+
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
 			VariableInitializer initializer;
@@ -51,8 +107,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				yield break;
 			}
 			var type = (TypeDeclaration)eventDeclaration.Parent;
-			var proposedHandlerName = "On" + char.ToUpper(initializer.Name [0]) + initializer.Name.Substring(1);
-			if (type.Members.Any(m => m is MethodDeclaration && ((MethodDeclaration)m).Name == proposedHandlerName)) {
+			var proposedHandlerName = GetNameProposal(initializer);
+			if (type.Members.Any(m => m is MethodDeclaration && m.Name == proposedHandlerName)) {
 				yield break;
 			}
 			var resolvedType = context.Resolve(eventDeclaration.ReturnType).Type;
@@ -64,61 +120,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				yield break;
 			}
 			yield return new CodeAction(context.TranslateString("Create event invocator"), script => {
-				bool hasSenderParam = false;
-				IEnumerable<IParameter> pars = invokeMethod.Parameters;
-				if (invokeMethod.Parameters.Any()) {
-					var first = invokeMethod.Parameters [0];
-					if (first.Name == "sender" /*&& first.Type == "System.Object"*/) {
-						hasSenderParam = true;
-						pars = invokeMethod.Parameters.Skip(1);
-					}
-				}
-				const string handlerName = "handler";
-						
-				var arguments = new List<Expression>();
-				if (hasSenderParam)
-					arguments.Add(eventDeclaration.HasModifier (Modifiers.Static) ? (Expression)new PrimitiveExpression (null) : new ThisReferenceExpression());
-				bool useThisMemberReference = false;
-				foreach (var par in pars) {
-					arguments.Add(new IdentifierExpression(par.Name));
-					useThisMemberReference |= par.Name == initializer.Name;
-				}
-
-				var methodDeclaration = new MethodDeclaration() {
-					Name = proposedHandlerName,
-					ReturnType = new PrimitiveType ("void"),
-					Modifiers = eventDeclaration.HasModifier (Modifiers.Static) ? Modifiers.Static : Modifiers.Protected | Modifiers.Virtual,
-					Body = new BlockStatement () {
-						new VariableDeclarationStatement (
-							UseExplictType ? eventDeclaration.ReturnType.Clone () : new PrimitiveType ("var"), handlerName, 
-								useThisMemberReference ? 
-									(Expression)new MemberReferenceExpression (new ThisReferenceExpression (), initializer.Name) 
-									: new IdentifierExpression (initializer.Name)
-							),
-						new IfElseStatement () {
-							Condition = new BinaryOperatorExpression (new IdentifierExpression (handlerName), BinaryOperatorType.InEquality, new PrimitiveExpression (null)),
-							TrueStatement = new ExpressionStatement (new InvocationExpression (new IdentifierExpression (handlerName), arguments))
-						}
-					}
-				};
-				
-				foreach (var par in pars) {
-					var typeName = context.CreateShortType(par.Type);
-					var decl = new ParameterDeclaration(typeName, par.Name);
-					methodDeclaration.Parameters.Add(decl);
-				}
-				
+				var methodDeclaration = CreateEventInvocator (context, type, eventDeclaration, initializer, invokeMethod, UseExplictType);
 				script.InsertWithCursor(
 					context.TranslateString("Create event invocator"),
 					Script.InsertPosition.After,
 					methodDeclaration
 				);
-			});
+			}, initializer);
 		}
-		
-			
-			
-		
+
 		static EventDeclaration GetEventDeclaration (RefactoringContext context, out VariableInitializer initializer)
 		{
 			var result = context.GetNode<EventDeclaration> ();

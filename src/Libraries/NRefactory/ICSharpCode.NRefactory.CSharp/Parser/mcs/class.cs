@@ -544,6 +544,7 @@ namespace Mono.CSharp
 
 		public int DynamicSitesCounter;
 		public int AnonymousMethodsCounter;
+		public int MethodGroupsCounter;
 
 		static readonly string[] attribute_targets = new string[] { "type" };
 
@@ -3545,7 +3546,9 @@ namespace Mono.CSharp
 		{
 			this.Parent = parent;
 			this.type_expr = type;
-			ModFlags = ModifiersExtensions.Check (allowed_mod, mod, def_mod, Location, Report);
+
+			if (name != MemberName.Null)
+				ModFlags = ModifiersExtensions.Check (allowed_mod, mod, def_mod, Location, Report);
 		}
 
 		#region Properties

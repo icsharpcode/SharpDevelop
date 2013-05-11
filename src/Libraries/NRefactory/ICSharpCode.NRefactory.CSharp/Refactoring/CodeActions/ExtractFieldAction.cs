@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.PatternMatching;
 using Mono.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -42,19 +43,37 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				AstType type = varInit.GetPrevNode() as AstType;
 				if (type == null) yield break;
 				if (varInit.Parent is FieldDeclaration) yield break;
-				if (CannotExtractField(varInit)) yield break;
+				if (CannotExtractField(context, varInit)) yield break;
 				
 				yield return new CodeAction(context.TranslateString("Assign to new field"), s=>{
 					var name = varInit.Name;
+
+					AstType extractedType;
+					if (type.IsVar()) {
+						IType resolvedType = context.Resolve(varInit.Initializer).Type;
+						extractedType = context.CreateShortType(resolvedType);
+					}
+					else {
+						extractedType = (AstType) type.Clone();
+					}
+
+					AstNode entityDeclarationNode = varInit.Parent;
+					while (!(entityDeclarationNode is EntityDeclaration) || (entityDeclarationNode is Accessor)) {
+						entityDeclarationNode = entityDeclarationNode.Parent;
+					}
+					var entity = (EntityDeclaration) entityDeclarationNode;
+					bool isStatic = entity.HasModifier(Modifiers.Static);
+
 					FieldDeclaration field = new FieldDeclaration(){
-						ReturnType = type.Clone(),
+						Modifiers = isStatic ? Modifiers.Static : Modifiers.None,
+						ReturnType = extractedType,
 						Variables = { new VariableInitializer(name) }
 					};
 					AstNode nodeToRemove = RemoveDeclaration(varInit) ? varInit.Parent : type;
 					s.Remove(nodeToRemove, true);
 					s.InsertWithCursor(context.TranslateString("Insert new field"),Script.InsertPosition.Before,field);
 					s.FormatText(varInit.Parent);
-				});
+				}, varInit);
 			}
 			
 			var idntf = context.GetNode<Identifier>();
@@ -74,7 +93,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				yield return new CodeAction(context.TranslateString("Assign to new field"), s=>{
 					s.InsertWithCursor(context.TranslateString("Insert new field"),Script.InsertPosition.Before,field);
 					s.AddTo(ctor.Body, statement);
-				});
+				}, paramDec);
 			}
 		}
 		
@@ -83,10 +102,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return result.Variables.First ().Initializer.IsNull;
 		}
 		
-		static bool CannotExtractField (VariableInitializer varInit)
+		static bool CannotExtractField (RefactoringContext context, VariableInitializer varInit)
 		{
 			var result = varInit.Parent as VariableDeclarationStatement;
-			return result == null || result.Variables.Count != 1;
+			return result == null || result.Variables.Count != 1 || ContainsAnonymousType(context.Resolve(varInit.Initializer).Type);
+		}
+
+		static bool ContainsAnonymousType (IType type)
+		{
+			if (type.Kind == TypeKind.Anonymous)
+				return true;
+
+			var arrayType = type as ArrayType;
+			return arrayType != null && ContainsAnonymousType (arrayType.ElementType);
 		}
 	}
 }

@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (invocationRR.IsExtensionMethodInvocation)
 				yield return new CodeAction(context.TranslateString("Convert to call to static method"), script => {
 					script.Replace(invocation, ToStaticMethodInvocation(invocation, memberReference, invocationRR));
-				});
+				}, invocation);
 		}
 
 		#endregion

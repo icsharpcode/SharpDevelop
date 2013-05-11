@@ -302,7 +302,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var visitor = new CSharpOutputVisitor (formatter, formattingOptions);
 			node.AcceptVisitor (visitor);
 			string text = stringWriter.ToString().TrimEnd();
-			
 			return new NodeOutput(text, formatter.NewSegments);
 		}
 		
@@ -384,7 +383,22 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public virtual void Rename(IVariable variable, string name = null)
 		{
 		}
-		
+
+		/// <summary>
+		/// Renames the specified namespace.
+		/// </summary>
+		/// <param name="ns">The namespace</param>
+		/// <param name='name'>
+		/// The new name, if null the user is prompted for a new name.
+		/// </param>
+		public virtual void Rename(INamespace ns, string name = null)
+		{
+		}
+
+		public virtual void DoGlobalOperationOn(IEntity entity, Action<RefactoringContext, Script, AstNode> callback, string operationDescripton = null)
+		{
+		}
+
 		public virtual void Dispose()
 		{
 			FormatText (nodesToFormat);

@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2009-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -152,7 +152,7 @@ namespace ICSharpCode.NRefactory.Xml
 						});
 				} else {
 					// Mismatched name - the nesting isn't properly;
-					// clear the whole stack so that none of the currently open elements are closed as property-nested.
+					// clear the whole stack so that none of the currently open elements are closed as properly-nested.
 					elementNameStack.Clear();
 				}
 			}

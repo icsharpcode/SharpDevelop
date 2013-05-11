@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						script.InsertBefore(declaration, statement);
 					}
 					script.Replace(variableInitializer.Initializer, finalExpression);
-				});
+				}, variableInitializer);
 			}
 			return null;
 		}
@@ -96,7 +96,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						script.InsertBefore(expressionStatement, statement);
 					}
 					script.Replace(assignmentExpression.Right, finalExpression);
-				});
+				}, assignmentExpression);
 			}
 			return null;
 		}

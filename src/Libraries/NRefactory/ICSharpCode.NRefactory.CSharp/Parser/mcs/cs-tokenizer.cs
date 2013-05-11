@@ -1843,9 +1843,11 @@ namespace Mono.CSharp
 			return x;
 		}
 
+		bool recordNewLine = true;
 		void advance_line (SpecialsBag.NewLine newLine)
 		{
-			sbag.AddNewLine (line, col, newLine);
+			if (recordNewLine)
+				sbag.AddNewLine (line, col, newLine);
 			line++;
 			ref_line++;
 			previous_col = col;
@@ -2870,7 +2872,8 @@ namespace Mono.CSharp
 				}
 			case PreprocessorDirective.Define:
 				if (any_token_seen){
-					Error_TokensSeen ();
+					if (caller_is_taking)
+						Error_TokensSeen ();
 					return caller_is_taking;
 				}
 				PreProcessDefinition (true, arg, caller_is_taking);
@@ -2878,7 +2881,8 @@ namespace Mono.CSharp
 
 			case PreprocessorDirective.Undef:
 				if (any_token_seen){
-					Error_TokensSeen ();
+					if (caller_is_taking)
+						Error_TokensSeen ();
 					return caller_is_taking;
 				}
 				PreProcessDefinition (false, arg, caller_is_taking);
@@ -2928,8 +2932,10 @@ namespace Mono.CSharp
 			int c;
 			int pos = 0;
 			Location start_location = Location;
-			if (quoted)
+			if (quoted) {
 				start_location = start_location - 1;
+				recordNewLine = false;
+			}
 
 #if FULL_AST
 			int reader_pos = reader.Position;
@@ -2971,7 +2977,7 @@ namespace Mono.CSharp
 						reader.ReadChars (reader_pos - 2, reader.Position - 1) :
 						reader.ReadChars (reader_pos - 1, reader.Position);
 #endif
-
+					recordNewLine = true;
 					return Token.LITERAL;
 				}
 
@@ -2989,6 +2995,7 @@ namespace Mono.CSharp
 						}
 
 						val = new StringLiteral (context.BuiltinTypes, new string (value_builder, 0, pos), start_location);
+						recordNewLine = true;
 						return Token.LITERAL;
 					}
 
@@ -2997,8 +3004,10 @@ namespace Mono.CSharp
 					++col;
 					int surrogate;
 					c = escape (c, out surrogate);
-					if (c == -1)
+					if (c == -1) {
+						recordNewLine = true;
 						return Token.ERROR;
+					}
 					if (surrogate != 0) {
 						if (pos == value_builder.Length)
 							Array.Resize (ref value_builder, pos * 2);
@@ -3008,6 +3017,7 @@ namespace Mono.CSharp
 					}
 				} else if (c == -1) {
 					Report.Error (1039, Location, "Unterminated string literal");
+					recordNewLine = true;
 					return Token.EOF;
 				} else {
 					++col;
@@ -3018,6 +3028,7 @@ namespace Mono.CSharp
 
 				value_builder[pos++] = (char) c;
 			}
+			recordNewLine = true;
 		}
 
 		private int consume_identifier (int s)
@@ -3450,8 +3461,10 @@ namespace Mono.CSharp
 						comments_seen = false;
 						continue;
 					} else if (d == '*'){
-						if (position_stack.Count == 0)
+						if (position_stack.Count == 0) {
 							sbag.StartComment (SpecialsBag.CommentType.Multi, startsLine, line, col);
+							recordNewLine = false;
+						}
 						get_char ();
 						bool docAppend = false;
 						if (doc_processing && peek_char () == '*') {
@@ -3460,6 +3473,7 @@ namespace Mono.CSharp
 							if (peek_char () == '/') {
 								ch = get_char ();
 								if (position_stack.Count == 0) {
+									recordNewLine = true;
 									sbag.EndComment (line, col + 1);
 								}
 								continue;
@@ -3483,8 +3497,10 @@ namespace Mono.CSharp
 						while ((d = get_char ()) != -1){
 							if (d == '*' && peek_char () == '/'){
 								get_char ();
-								if (position_stack.Count == 0)
+								if (position_stack.Count == 0) {
+									recordNewLine = true;
 									sbag.EndComment (line, col + 1);
+								}
 								comments_seen = true;
 								break;
 							} else {
@@ -3561,13 +3577,14 @@ namespace Mono.CSharp
 				
 				case '#':
 					if (tokens_seen || comments_seen) {
-						Eror_WrongPreprocessorLocation ();
+						Eror_WrongPreprocessorLocation();
 						return Token.ERROR;
 					}
-					
-					if (ParsePreprocessingDirective (true))
+				
+					if (ParsePreprocessingDirective(true))
 						continue;
-					sbag.StartComment (SpecialsBag.CommentType.InactiveCode, false, line, 1);
+					sbag.StartComment(SpecialsBag.CommentType.InactiveCode, false, line, 1);
+					recordNewLine = false;
 					bool directive_expected = false;
 					while ((c = get_char ()) != -1) {
 						if (col == 1) {
@@ -3594,6 +3611,7 @@ namespace Mono.CSharp
 						sbag.PushCommentChar (c);
 						directive_expected = false;
 					}
+					recordNewLine = true;
 					sbag.EndComment (line, col);
 					if (c != -1) {
 						tokens_seen = false;

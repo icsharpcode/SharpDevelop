@@ -166,6 +166,28 @@ class Foo {
 			Assert.AreEqual("\t\t", indent.ThisLineIndent);
 			Assert.AreEqual("\t\t   ", indent.NewLineIndent);
 		}
+		[Test]
+		public void TestThisLineIndentAfterCurlyBrace ()
+		{
+			var indent = CreateEngine(@"
+class Foo {
+	void Test ()
+	{
+	}$");
+			Assert.AreEqual("\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t", indent.NewLineIndent);
+		}
+
+		[Test]
+		public void TestThisLineIndentAfterCurlyBraceCase2 ()
+		{
+			var indent = CreateEngine(@"
+class Foo {
+	void Test ()
+	{}$");
+			Assert.AreEqual("\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t", indent.NewLineIndent);
+		}
 
 		[Test]
 		public void TestParametersCase2 ()

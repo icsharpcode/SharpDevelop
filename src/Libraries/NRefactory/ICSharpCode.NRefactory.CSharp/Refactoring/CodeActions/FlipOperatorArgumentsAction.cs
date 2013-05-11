@@ -40,10 +40,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 
 
-			yield return new CodeAction(string.Format(context.TranslateString("Flip '{0}' operator arguments"), binop.OperatorToken.GetText()), script => {
+			yield return new CodeAction(string.Format(context.TranslateString("Flip '{0}' operator arguments"), binop.OperatorToken.ToString()), script => {
 				script.Replace(binop.Left, binop.Right.Clone());
 				script.Replace(binop.Right, binop.Left.Clone());
-			});
+			}, binop.OperatorToken);
 		}
 		
 		public static BinaryOperatorExpression GetBinaryOperatorExpression (RefactoringContext context)

@@ -35,7 +35,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   Description = "Comparison of a boolean value with 'true' or 'false' constant.",
 					   Category = IssueCategories.Redundancies,
 					   Severity = Severity.Warning,
-					   IssueMarker = IssueMarker.Underline)]
+					   IssueMarker = IssueMarker.Underline,
+                       ResharperDisableKeyword = "RedundantBoolCompare")]
 	public class CompareBooleanWithTrueOrFalseIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
@@ -43,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor (context).GetIssues ();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<CompareBooleanWithTrueOrFalseIssue>
 		{
 			static readonly Pattern pattern = new Choice {
 				PatternHelper.CommutativeOperator(

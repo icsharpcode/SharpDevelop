@@ -56,5 +56,24 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 	}
 }");
 		}
+
+		[Test]
+		public void TestResharperDisableRestore ()
+		{
+			var input = @"class Foo
+{
+	void Bar (string str)
+	{
+		// ReSharper disable RedundantThisQualifier
+		this.Bar (str);
+		// ReSharper restore RedundantThisQualifier
+		this.Bar (str);
+	}
+}";
+
+			TestRefactoringContext context;
+			var issues = GetIssues (new RedundantThisIssue (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+		}
 	}
 }

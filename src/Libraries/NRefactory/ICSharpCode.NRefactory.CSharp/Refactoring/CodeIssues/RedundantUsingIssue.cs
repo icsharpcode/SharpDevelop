@@ -41,7 +41,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	                  Description = "Removes used declarations that are not required.",
 	                  Category = IssueCategories.Redundancies,
 	                  Severity = Severity.Hint,
-	                  IssueMarker = IssueMarker.GrayOut)]
+	                  IssueMarker = IssueMarker.GrayOut,
+	                  ResharperDisableKeyword = "RedundantUsingDirective"
+	)]
 	public class RedundantUsingIssue : ICodeIssueProvider
 	{
 		List<string> namespacesToKeep = new List<string>();
@@ -62,15 +64,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return visitor.FoundIssues;
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<RedundantUsingIssue>
 		{
-			readonly RedundantUsingIssue inspector;
 			Dictionary<UsingDeclaration, bool> isInUse = new Dictionary<UsingDeclaration, bool>();
 			Dictionary<string, UsingDeclaration> namespaceToUsingDecl = new Dictionary<string, UsingDeclaration>();
 			
-			public GatherVisitor (BaseRefactoringContext ctx, RedundantUsingIssue inspector) : base (ctx)
+			public GatherVisitor (BaseRefactoringContext ctx, RedundantUsingIssue issueProvider) : base (ctx, issueProvider)
 			{
-				this.inspector = inspector;
 			}
 
 			public void Collect()
@@ -89,9 +89,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public override void VisitUsingDeclaration(UsingDeclaration usingDeclaration)
 			{
 				base.VisitUsingDeclaration(usingDeclaration);
+				if (IsSuppressed(usingDeclaration.StartLocation))
+					return;
 				var nrr = ctx.Resolve(usingDeclaration.Import) as NamespaceResolveResult;
 				if (nrr != null) {
-					isInUse[usingDeclaration] = inspector.namespacesToKeep.Contains(nrr.NamespaceName);
+					isInUse[usingDeclaration] = IssueProvider.namespacesToKeep.Contains(nrr.NamespaceName);
 					namespaceToUsingDecl[nrr.NamespaceName] = usingDeclaration;
 				}
 			}

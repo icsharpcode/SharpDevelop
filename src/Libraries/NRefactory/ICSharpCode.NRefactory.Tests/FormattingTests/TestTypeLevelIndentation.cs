@@ -34,25 +34,35 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 	[TestFixture()]
 	public class TestTypeLevelIndentation : TestBase
 	{
-		[Test()]
+		[Test]
 		public void TestUsingDeclarations()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
-	
-			Test(policy, @"		using Foo;", @"using Foo;
-");
+
+			Test(policy, @"		using Foo;", @"using Foo;");
 		}
 
-		[Test()]
+		
+		[Test]
+		public void TestUsingDeclarationsWithHeader()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+
+			Test(policy, @"// THE SOFTWARE.
+
+using    Foo   ;", @"// THE SOFTWARE.
+using Foo;");
+		}
+
+		[Test]
 		public void TestUsingAliasDeclarations()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 	
-			Test(policy, @"		using Foo = Bar;", @"using Foo = Bar;
-");
+			Test(policy, @"		using Foo = Bar;", @"using Foo = Bar;");
 		}
 
-		[Test()]
+		[Test]
 		public void TestClassIndentation ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -63,7 +73,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 @"class Test {}");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestAttributeIndentation ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -78,7 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 class Test {}");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestClassIndentationInNamespaces ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -92,7 +102,7 @@ class Test {}");
 }");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestNoIndentationInNamespaces ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -107,7 +117,7 @@ class Test {}
 }");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestClassIndentationInNamespacesCase2 ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -137,7 +147,7 @@ namespace MonoDevelop.CSharp.Formatting
 }");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestIndentClassBody ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -163,7 +173,7 @@ Test a;
 }");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestIndentInterfaceBody ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -188,7 +198,7 @@ Test Foo ();
 }");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestIndentStructBody ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -213,7 +223,7 @@ Test Foo ();
 }");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestIndentEnumBody ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -238,7 +248,7 @@ A
 }");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestIndentMethodBody ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -281,7 +291,7 @@ A
 }");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestIndentMethodBodyOperatorCase ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -315,7 +325,7 @@ A
 }");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestIndentPropertyBody ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -348,7 +358,7 @@ set;
 }");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestIndentPropertyOneLine ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -367,7 +377,7 @@ set;
 }");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestIndentPropertyOneLineCase2 ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -386,7 +396,7 @@ set;
 }");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestIndentPropertyBodyIndexerCase ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -430,7 +440,7 @@ set {
 }");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestPropertyAlignment ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -463,7 +473,7 @@ set {
 		}
 
 		
-		[Test()]
+		[Test]
 		public void TestIndentNamespaceBody ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -486,7 +496,7 @@ class FooBar {}
 		}
 		
 		
-		[Test()]
+		[Test]
 		public void TestMethodIndentation ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -503,7 +513,7 @@ MyType TestMethod () {}
 }");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestPropertyIndentation ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -519,7 +529,7 @@ MyType TestMethod () {}
 }");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestPropertyIndentationCase2 ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -541,7 +551,7 @@ set;
 }");
 		}
 
-		[Test()]
+		[Test]
 		public void TestPropertyIndentationClosingBracketCorrection ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -556,7 +566,7 @@ set;
 	public int Prop { get; }
 }");
 		}
-		[Test()]
+		[Test]
 		public void TestPropertyIndentationClosingBracketCorrection2 ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();

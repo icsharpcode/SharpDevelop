@@ -83,14 +83,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 //			}
 
 			yield return new CodeAction(context.TranslateString("Create field"), script => {
-				var decl = new FieldDeclaration() {
+				var decl = new FieldDeclaration {
 					ReturnType = guessedType,
 					Variables = { new VariableInitializer(propertyName) }
 				};
 				if (isStatic)
 					decl.Modifiers |= Modifiers.Static;
 				script.InsertWithCursor(context.TranslateString("Create field"), Script.InsertPosition.Before, decl);
-			});
+			}, expr);
 
 		}
 
@@ -176,6 +176,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		internal static IEnumerable<IType> GetValidTypes(CSharpAstResolver resolver, AstNode expr)
 		{
+			if (expr.Role == Roles.Condition) {
+				return new [] { resolver.Compilation.FindType (KnownTypeCode.Boolean) };
+			}
+
 			if (expr.Parent is DirectionExpression) {
 				var parent = expr.Parent.Parent;
 				if (parent is InvocationExpression) {
@@ -186,14 +190,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			if (expr.Parent is ArrayInitializerExpression) {
 				if (expr is NamedExpression)
-					return new [] { resolver.Resolve(((NamedExpression)expr).Expression).Type };
+				return new [] { resolver.Resolve(((NamedExpression)expr).Expression).Type };
 
 				var aex = expr.Parent as ArrayInitializerExpression;
 				if (aex.IsSingleElement)
 					aex = aex.Parent as ArrayInitializerExpression;
 				var type = GetElementType(resolver, resolver.Resolve(aex.Parent).Type);
 				if (type.Kind != TypeKind.Unknown)
-					return new [] { type };
+				return new [] { type };
 			}
 
 			if (expr.Parent is ObjectCreateExpression) {

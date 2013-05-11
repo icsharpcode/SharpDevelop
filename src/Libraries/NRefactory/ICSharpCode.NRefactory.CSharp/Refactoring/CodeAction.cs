@@ -49,6 +49,22 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 
 		/// <summary>
+		/// Gets the action start location.
+		/// </summary>
+		public TextLocation Start {
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Gets the action end location.
+		/// </summary>
+		public TextLocation End {
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction"/> class.
 		/// </summary>
 		/// <param name='description'>
@@ -57,16 +73,44 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// <param name='action'>
 		/// The code transformation.
 		/// </param>
-		public CodeAction (string description, Action<Script> action)
+		/// <param name='astNode'>
+		/// A node that specifies the start/end positions for the code action.
+		/// </param>
+		public CodeAction (string description, Action<Script> action, AstNode astNode)
 		{
-			if (action == null) {
+			if (action == null)
 				throw new ArgumentNullException ("action");
-			}
-			if (description == null) {
+			if (description == null)
 				throw new ArgumentNullException ("description");
-			}
+			if (astNode == null)
+				throw new ArgumentNullException("astNode");
 			Description = description;
 			Run = action;
+			Start = astNode.StartLocation;
+			End = astNode.EndLocation;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction"/> class.
+		/// </summary>
+		/// <param name='description'>
+		/// The description.
+		/// </param>
+		/// <param name='action'>
+		/// The code transformation.
+		/// </param>
+		/// <param name='start'>Start position for the code action.</param>
+		/// <param name='end'>End position for the code action.</param>
+		public CodeAction (string description, Action<Script> action, TextLocation start, TextLocation end)
+		{
+			if (action == null)
+				throw new ArgumentNullException ("action");
+			if (description == null)
+				throw new ArgumentNullException ("description");
+			Description = description;
+			Run = action;
+			this.Start = start;
+			this.End = end;
 		}
 	}
 }

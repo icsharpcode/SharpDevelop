@@ -1,4 +1,4 @@
-// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			                	Roles.Comment,
 			                	Roles.PreProcessorDirective,
 			                	Roles.RBrace
-			                }, ns.Children.Select(c => c.Role).ToArray());
+							}, ns.Children.Where (c => c.Role != Roles.NewLine).Select(c => c.Role).ToArray());
 			
 			var pp = ns.GetChildrenByRole(Roles.PreProcessorDirective);
 			
@@ -234,7 +234,7 @@ class B { }
 			                	Roles.PreProcessorDirective,
 			                	NamespaceDeclaration.MemberRole,
 			                	Roles.PreProcessorDirective
-			                }, syntaxTree.Children.Select(c => c.Role).ToArray());
+							}, syntaxTree.Children.Where (c => c.Role != Roles.NewLine).Select(c => c.Role).ToArray());
 			var aaa = syntaxTree.GetChildrenByRole(Roles.PreProcessorDirective).ElementAt(0);
 			Assert.IsFalse(aaa.Take);
 			Assert.AreEqual(PreProcessorDirectiveType.If, aaa.Type);

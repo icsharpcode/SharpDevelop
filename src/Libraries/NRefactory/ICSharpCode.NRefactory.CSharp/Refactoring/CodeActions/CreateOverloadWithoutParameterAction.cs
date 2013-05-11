@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 					//if (node.ParameterModifier != ParameterModifier.Out)
 					//    script.Link (defaultExpr);
-				}); 
+				}, node.NameToken); 
 		}
 
 		static Expression GetArgumentExpression(ParameterDeclaration parameter)

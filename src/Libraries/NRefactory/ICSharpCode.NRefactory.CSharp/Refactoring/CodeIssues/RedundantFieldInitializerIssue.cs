@@ -34,7 +34,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						Description = "Initializing field with default value is redundant.",
 						Category = IssueCategories.Redundancies,
 						Severity = Severity.Hint,
-						IssueMarker = IssueMarker.GrayOut)]
+						IssueMarker = IssueMarker.GrayOut,
+                        ResharperDisableKeyword = "RedundantDefaultFieldInitializer")]
 	public class RedundantFieldInitializerIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
@@ -42,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor (context).GetIssues ();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<RedundantFieldInitializerIssue>
 		{
 			public GatherVisitor(BaseRefactoringContext ctx)
 				: base(ctx)

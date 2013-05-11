@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -508,6 +508,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				BinaryOperatorType.Subtract, MakeResult(typeof(DateTime)), MakeResult(typeof(DateTime?))));
 			AssertType(typeof(TimeSpan?), resolver.ResolveBinaryOperator(
 				BinaryOperatorType.Subtract, MakeResult(typeof(DateTime?)), MakeResult(typeof(DateTime?))));
+		}
+		
+		[Test]
+		public void ByteEnumSubtraction()
+		{
+			string program = @"enum E : byte {
+  A = 1,
+  B = 2
+}
+class Test {
+	const int $j = E.A - E.B$;
+}
+";
+			// result is 255 in C# 2.0 and later (was -1 in C# 1.x)
+			var rr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual(255, rr.ConstantValue);
 		}
 		
 		[Test]

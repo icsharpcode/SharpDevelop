@@ -34,7 +34,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[IssueDescription("Call to base.Equals resolves to Object.Equals, which is reference equality",
 	                  Description = "Finds potentially erroneous calls to Object.Equals.",
 	                  Category = IssueCategories.CodeQualityIssues,
-	                  Severity = Severity.Warning)]
+	                  Severity = Severity.Warning,
+                      ResharperDisableKeyword = "BaseObjectEqualsIsObjectEquals")]
 	public class CallToObjectEqualsViaBaseIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
@@ -42,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context).GetIssues();
 		}
 		
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<CallToObjectEqualsViaBaseIssue>
 		{
 			public GatherVisitor(BaseRefactoringContext context) : base (context)
 			{
@@ -73,11 +74,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var args = Enumerable.Concat(new [] { new ThisReferenceExpression() }, invocationExpression.Arguments.Select(arg => arg.Clone()));
 					var newInvocation = MakeInvocation("object.ReferenceEquals", args);
 					script.Replace(invocationExpression, newInvocation);
-				});
+				}, invocationExpression);
 				yield return new CodeAction(ctx.TranslateString("Remove 'base.'"), script => {
 					var newInvocation = MakeInvocation("Equals", invocationExpression.Arguments.Select(arg => arg.Clone()));
 					script.Replace(invocationExpression, newInvocation);
-				});
+				}, invocationExpression);
 			}
 
 			static InvocationExpression MakeInvocation(string memberName, IEnumerable<Expression> unClonedArguments)

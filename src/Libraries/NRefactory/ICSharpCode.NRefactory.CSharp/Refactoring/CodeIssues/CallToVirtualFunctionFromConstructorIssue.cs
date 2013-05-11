@@ -32,7 +32,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[IssueDescription("Constructors should not call virtual members",
 	                  Description = "Warns about calls to virtual member functions occuring in the constructor.",
 	                  Category = IssueCategories.CodeQualityIssues,
-	                  Severity = Severity.Warning)]
+	                  Severity = Severity.Warning,
+                      ResharperDisableKeyword = "DoNotCallOverridableMethodsInConstructor")]
 	public class CallToVirtualFunctionFromConstructorIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
@@ -42,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return gv.CallFinder.FoundIssues;
 		}
 		
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<CallToVirtualFunctionFromConstructorIssue>
 		{
 			internal readonly VirtualCallFinderVisitor CallFinder;
 
@@ -109,7 +110,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 
-		class VirtualCallFinderVisitor: GatherVisitorBase
+		class VirtualCallFinderVisitor: GatherVisitorBase<CallToVirtualFunctionFromConstructorIssue>
 		{
 			readonly BaseRefactoringContext context;
 

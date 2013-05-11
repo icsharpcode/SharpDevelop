@@ -33,12 +33,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   IssueMarker = IssueMarker.Underline)]
 	public class ParameterHidesMemberIssue : VariableHidesMemberIssue
 	{
-		internal override GatherVisitorBase GetGatherVisitor (BaseRefactoringContext context)
+		public override System.Collections.Generic.IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
-			return new GatherVisitor (context);
+			return new GatherVisitor (context).GetIssues ();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<ParameterHidesMemberIssue>
 		{
 			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)

@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				script.Rename((IEntity)field, newProperty.Name);
 				script.Remove (context.RootNode.GetNodeAt<FieldDeclaration> (field.Region.Begin));
 				script.Replace (property, newProperty);
-			});
+			}, property.NameToken);
 		}
 		
 //		void ReplaceBackingFieldReferences (MDRefactoringContext context, IField backingStore, PropertyDeclaration property)
@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 //
 		static readonly Version csharp3 = new Version(3, 0);
 		
-		static IField GetBackingField (RefactoringContext context)
+		internal static IField GetBackingField (RefactoringContext context)
 		{
 			var propertyDeclaration = context.GetNode<PropertyDeclaration> ();
 			// automatic properties always need getter & setter

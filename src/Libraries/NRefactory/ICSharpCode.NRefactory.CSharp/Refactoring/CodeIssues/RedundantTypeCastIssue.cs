@@ -36,7 +36,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						Description = "Redundant type cast.",
 						Category = IssueCategories.Redundancies,
 						Severity = Severity.Warning,
-						IssueMarker = IssueMarker.GrayOut)]
+						IssueMarker = IssueMarker.GrayOut,
+                        ResharperDisableKeyword = "RedundantCast")]
 	public class RedundantTypeCastIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
@@ -44,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor (context).GetIssues ();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<RedundantTypeCastIssue>
 		{
 			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)

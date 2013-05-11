@@ -33,11 +33,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public abstract class VariableHidesMemberIssue : ICodeIssueProvider
 	{
-		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
-		{
-			return GetGatherVisitor(context).GetIssues();
-		}
-
+		public abstract IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context);
+		
 		protected static bool HidesMember(BaseRefactoringContext ctx, AstNode node, string variableName)
 		{
 			var typeDecl = node.GetParent<TypeDeclaration>();
@@ -98,8 +95,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			return sourceAssembly.InternalsVisibleTo(targetAssembly);
 		}
-
-		internal abstract GatherVisitorBase GetGatherVisitor(BaseRefactoringContext context);
 
 	}
 }

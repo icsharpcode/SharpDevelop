@@ -89,6 +89,8 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			var syntaxTree = SyntaxTree.Parse (text, "a.cs");
 			if (syntaxTree.Errors.Count > 0) {
 				Console.WriteLine (text);
+				Console.WriteLine("---");
+				syntaxTree.Errors.ForEach (err => Console.WriteLine (err.Message));
 				Assert.Fail ("parse error.");
 			}
 			var project = new CSharpProjectContent().AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
@@ -319,8 +321,32 @@ class Class {
 		}
 
 
+		[Test]
+		public void TestVarColorUserTypeCase()
+		{
+			string code =@"class var {
+			$var aVar;
+			public static void Main ()
+			{
+				$var a = new $var ();
+			}
+		}
+";
+			TestColor (code, referenceTypeColor);
+		}
 
-
+		[Test]
+		public void TestVarColor()
+		{
+			TestColor (@"class MyClass {
+			public static void Main ()
+			{
+				$var a = 344;
+				foreach ($var b in new [] { 1,2, 3}) {}
+			}
+		}
+", varKeywordTypeColor);
+		}
 	}
 }
 

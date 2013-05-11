@@ -49,15 +49,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				} else {
 					script.Replace(foreachStmt.VariableType, new SimpleType ("var"));
 				}
-			});
+			}, (AstNode)varDecl ?? foreachStmt);
 		}
 		
-		static readonly AstType varType = new SimpleType ("var");
-
 		static VariableDeclarationStatement GetVariableDeclarationStatement (RefactoringContext context)
 		{
 			var result = context.GetNode<VariableDeclarationStatement> ();
-			if (result != null && result.Variables.Count == 1 && !result.Variables.First ().Initializer.IsNull && result.Type.Contains (context.Location) && !result.Type.IsMatch (varType))
+			if (result != null && result.Variables.Count == 1 && !result.Variables.First ().Initializer.IsNull && result.Type.Contains (context.Location) && !result.Type.IsVar ())
 				return result;
 			return null;
 		}
@@ -65,7 +63,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		static ForeachStatement GetForeachStatement (RefactoringContext context)
 		{
 			var result = context.GetNode<ForeachStatement> ();
-			if (result != null && result.VariableType.Contains (context.Location) && !result.VariableType.IsMatch (varType))
+			if (result != null && result.VariableType.Contains (context.Location) && !result.VariableType.IsVar ())
 				return result;
 			return null;
 		}

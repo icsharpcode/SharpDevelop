@@ -27,7 +27,6 @@ using System;
 using ICSharpCode.NRefactory.CSharp.CodeActions;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using NUnit.Framework;
-
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
 
@@ -110,6 +109,40 @@ class Foo
 class Foo<T>
 {
 	string Data;
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new StaticFieldInGenericTypeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+
+		[Test]
+		public void TestMicrosoftSuppressMessage()
+		{
+			var input = @"using System.Diagnostics.CodeAnalysis;
+
+class Foo<T>
+{
+	[SuppressMessage(""Microsoft.Design"", ""CA1000:DoNotDeclareStaticMembersOnGenericTypes"")]
+	static string Data;
+
+	static string OtherData;
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new StaticFieldInGenericTypeIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+		}
+		[Test]
+		public void TestAssemblyMicrosoftSuppressMessage()
+		{
+			var input = @"using System.Diagnostics.CodeAnalysis;
+
+[assembly:SuppressMessage(""Microsoft.Design"", ""CA1000:DoNotDeclareStaticMembersOnGenericTypes"")]
+
+class Foo<T>
+{
+	static string Data;
+
+	static string OtherData;
 }";
 			TestRefactoringContext context;
 			var issues = GetIssues(new StaticFieldInGenericTypeIssue(), input, out context);

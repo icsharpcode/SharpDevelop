@@ -38,18 +38,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
 			var varDecl = GetVariableDeclarationStatement(context);
+			AstNode node;
 			IType type;
 			if (varDecl != null) {
 				type = context.Resolve(varDecl.Variables.First().Initializer).Type;
+				node = varDecl;
 			} else {
 				var foreachStatement = GetForeachStatement(context);
 				if (foreachStatement == null) {
 					yield break;
 				}
 				type = context.Resolve(foreachStatement.VariableType).Type;
+				node = foreachStatement;
 			}
-			
-			if (!(!type.Equals(SpecialType.NullType) && !type.Equals(SpecialType.UnknownType))) {
+
+			if (!(!type.Equals(SpecialType.NullType) && !type.Equals(SpecialType.UnknownType) && !ContainsAnonymousType(type))) {
 				yield break;
 			}
 			yield return new CodeAction (context.TranslateString("Use explicit type"), script => {
@@ -59,15 +62,22 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var foreachStatement = GetForeachStatement (context);
 					script.Replace (foreachStatement.VariableType, context.CreateShortType (type));
 				}
-			});
+			}, node);
 		}
-		
-		static readonly AstType varType = new SimpleType ("var");
+
+		static bool ContainsAnonymousType (IType type)
+		{
+			if (type.Kind == TypeKind.Anonymous)
+				return true;
+
+			var arrayType = type as ArrayType;
+			return arrayType != null && ContainsAnonymousType (arrayType.ElementType);
+		}
 
 		static VariableDeclarationStatement GetVariableDeclarationStatement (RefactoringContext context)
 		{
 			var result = context.GetNode<VariableDeclarationStatement> ();
-			if (result != null && result.Variables.Count == 1 && !result.Variables.First ().Initializer.IsNull && result.Type.Contains (context.Location.Line, context.Location.Column) && result.Type.IsMatch (varType)) {
+			if (result != null && result.Variables.Count == 1 && !result.Variables.First ().Initializer.IsNull && result.Type.Contains (context.Location.Line, context.Location.Column) && result.Type.IsVar ()) {
 				if (context.Resolve (result.Variables.First ().Initializer) == null)
 					return null;
 				return result;
@@ -78,7 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		static ForeachStatement GetForeachStatement (RefactoringContext context)
 		{
 			var result = context.GetNode<ForeachStatement> ();
-			if (result != null && result.VariableType.Contains (context.Location) && result.VariableType.IsMatch (varType))
+			if (result != null && result.VariableType.Contains (context.Location) && result.VariableType.IsVar ())
 				return result;
 			return null;
 		}

@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context).GetIssues();
 		}
 		
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<IncorrectExceptionParameterOrderingIssue>
 		{
 			readonly BaseRefactoringContext context;
 			Dictionary<string, Func<int, int, bool>> rules;
@@ -90,7 +90,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					newOCE.Arguments.Add(secondParam.Clone());
 					newOCE.Arguments.Add(firstParam.Clone());
 					script.Replace(objectCreateExpression, newOCE);
-				});
+				}, objectCreateExpression);
 			}
 		}
 	}

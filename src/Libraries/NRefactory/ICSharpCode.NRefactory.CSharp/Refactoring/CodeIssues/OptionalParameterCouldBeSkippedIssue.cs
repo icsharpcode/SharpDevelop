@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context).GetIssues();
 		}
 		
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<OptionalParameterCouldBeSkippedIssue>
 		{
 			public GatherVisitor(BaseRefactoringContext context) : base (context)
 			{
@@ -90,7 +90,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						.Select(arg => arg.Clone());
 					var newInvocation = generateReplacement(node, newArgumentList);
 					script.Replace(node, newInvocation);
-				});
+				}, node);
 				var issueMessage = ctx.TranslateString("Argument is identical to the default value");
 				var lastPositionalArgument = redundantArguments.FirstOrDefault(expression => !(expression is NamedArgumentExpression));
 
@@ -107,7 +107,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 								.Select(arg => arg.Clone());
 							var newInvocation = generateReplacement(node, newArgumentList);
 							script.Replace(node, newInvocation);
-						}));
+						}, node));
 					} else {
 						var title = ctx.TranslateString("Remove this and the following positional arguments");
 						actions.Add(new CodeAction(title, script => {
@@ -116,7 +116,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 								.Select(arg => arg.Clone());
 							var newInvocation = generateReplacement(node, newArgumentList);
 							script.Replace(node, newInvocation);
-						}));
+						}, node));
 					}
 
 					AddIssue(localArgument, issueMessage, actions);

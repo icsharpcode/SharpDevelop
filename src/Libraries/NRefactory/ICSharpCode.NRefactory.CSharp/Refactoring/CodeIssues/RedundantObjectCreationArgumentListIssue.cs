@@ -32,7 +32,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   Description = "When object creation uses object or collection initializer, empty argument list is redundant.",
 					   Category = IssueCategories.Redundancies,
 					   Severity = Severity.Suggestion,
-					   IssueMarker = IssueMarker.GrayOut)]
+					   IssueMarker = IssueMarker.GrayOut,
+                       ResharperDisableKeyword = "RedundantEmptyObjectCreationArgumentList")]
 	public class RedundantObjectCreationArgumentListIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
@@ -40,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor (context).GetIssues ();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<RedundantObjectCreationArgumentListIssue>
 		{
 			public GatherVisitor( BaseRefactoringContext ctx)
 				: base (ctx)

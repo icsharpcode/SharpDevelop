@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				sb.Append(")");
 				
 				script.InsertText(context.GetOffset(anonymousMethodExpression.DelegateToken.EndLocation), sb.ToString());
-			});
+			}, anonymousMethodExpression);
 		}
 		
 		static AnonymousMethodExpression GetAnonymousMethodExpression (RefactoringContext context, out IType delegateType)

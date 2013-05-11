@@ -1,4 +1,4 @@
-// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -286,6 +286,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return new[] { scope };
 			}
 		}
+
+		public IList<IFindReferenceSearchScope> GetSearchScopes(INamespace ns)
+		{
+			if (ns == null)
+				throw new ArgumentNullException("ns");
+			return new[] { GetSearchScopeForNamespace(ns) };
+		}
+
 		#endregion
 		
 		#region GetInterestingFileNames
@@ -1309,6 +1317,64 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				var lrr = rr as TypeResolveResult;
 				return lrr != null && lrr.Type.Kind == TypeKind.TypeParameter && ((ITypeParameter)lrr.Type).Region == typeParameter.Region;
+			}
+		}
+		#endregion
+	
+		#region Find Namespace References
+		SearchScope GetSearchScopeForNamespace(INamespace ns)
+		{
+			var scope = new SearchScope (
+				delegate (ICompilation compilation) {
+				return new FindNamespaceNavigator (ns);
+			}
+			);
+			return scope;
+		}
+
+		sealed class FindNamespaceNavigator : FindReferenceNavigator
+		{
+			readonly INamespace ns;
+
+			public FindNamespaceNavigator (INamespace ns)
+			{
+				this.ns = ns;
+			}
+
+			internal override bool CanMatch(AstNode node)
+			{
+				var nsd = node as NamespaceDeclaration;
+				if (nsd != null && nsd.FullName.StartsWith(ns.FullName, StringComparison.Ordinal))
+					return true;
+
+				var ud = node as UsingDeclaration;
+				if (ud != null && ud.Namespace == ns.FullName)
+					return true;
+
+				var st = node as SimpleType;
+				if (st != null && st.Identifier == ns.Name)
+					return true;
+
+				var mt = node as MemberType;
+				if (mt != null && mt.MemberName == ns.Name)
+					return true;
+
+				var identifer = node as IdentifierExpression;
+				if (identifer != null && identifer.Identifier == ns.Name)
+					return true;
+
+				var mrr = node as MemberReferenceExpression;
+				if (mrr != null && mrr.MemberName == ns.Name)
+					return true;
+
+
+				return false;
+			}
+
+			internal override bool IsMatch(ResolveResult rr)
+			{
+				var nsrr = rr as NamespaceResolveResult;
+				return nsrr != null && nsrr.NamespaceName.StartsWith(ns.FullName, StringComparison.Ordinal);
 			}
 		}
 		#endregion

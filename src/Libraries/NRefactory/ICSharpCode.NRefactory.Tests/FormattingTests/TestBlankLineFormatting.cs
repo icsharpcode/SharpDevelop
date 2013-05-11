@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 	[TestFixture()]
 	public class TestBlankLineFormatting : TestBase
 	{
-		[Test()]
+		[Test]
 		public void TestBlankLinesAfterUsings ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -62,8 +62,7 @@ namespace Test
 }", FormattingMode.Intrusive);
 		}
 
-		[Ignore()]
-		[Test()]
+		[Test]
 		public void TestBlankLinesBeforeUsings ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -92,7 +91,7 @@ namespace Test
 }", FormattingMode.Intrusive);
 		}
 
-		[Test()]
+		[Test]
 		public void TestBlankLinesBeforeFirstDeclaration ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -123,7 +122,7 @@ namespace Test
 }", FormattingMode.Intrusive);
 		}
 
-		[Test()]
+		[Test]
 		public void TestBlankLinesBetweenTypes ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -171,7 +170,7 @@ namespace Test
 }", FormattingMode.Intrusive);
 		}
 
-		[Test()]
+		[Test]
 		public void TestBlankLinesBetweenFields ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -201,7 +200,7 @@ namespace Test
 }", FormattingMode.Intrusive);
 		}
 
-		[Test()]
+		[Test]
 		public void TestBlankLinesBetweenEventFields ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
@@ -232,7 +231,7 @@ namespace Test
 }", FormattingMode.Intrusive);
 		}
 
-		[Test()]
+		[Test]
 		public void TestBlankLinesBetweenMembers ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();

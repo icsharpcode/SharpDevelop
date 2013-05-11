@@ -34,7 +34,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   Description = "'?:' expression has identical true and false branches.",
 					   Category = IssueCategories.CodeQualityIssues,
 					   Severity = Severity.Warning,
-					   IssueMarker = IssueMarker.Underline)]
+					   IssueMarker = IssueMarker.Underline,
+                       ResharperDisableKeyword = "ConditionalTernaryEqualBranch")]
 	public class IdenticalConditionalBranchIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
@@ -42,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor (context).GetIssues ();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<IdenticalConditionalBranchIssue>
 		{
 			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)
@@ -56,7 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (!conditionalExpression.TrueExpression.Match (conditionalExpression.FalseExpression).Success)
 					return;
 				var action = new CodeAction (ctx.TranslateString ("Replace '?:' with branch"),
-					script => script.Replace (conditionalExpression, conditionalExpression.TrueExpression.Clone ()));
+					script => script.Replace (conditionalExpression, conditionalExpression.TrueExpression.Clone ()), conditionalExpression.QuestionMarkToken);
 				AddIssue (conditionalExpression, 
 					ctx.TranslateString ("'?:' expression has identical true and false branches"), new [] { action });
 			}

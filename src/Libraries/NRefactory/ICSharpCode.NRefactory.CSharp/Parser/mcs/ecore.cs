@@ -153,6 +153,35 @@ namespace Mono.CSharp {
 		}
 
 		//
+		// Used to workaround parser limitation where we cannot get
+		// start of statement expression location
+		//
+		public virtual Location StartLocation {
+			get {
+				return loc;
+			}
+		}
+
+		public virtual MethodGroupExpr CanReduceLambda (AnonymousMethodBody body)
+		{
+			//
+			// Return method-group expression when the expression can be used as
+			// lambda replacement. A good example is array sorting where instead of
+			// code like
+			//
+			//  Array.Sort (s, (a, b) => String.Compare (a, b));
+			//
+			// we can use method group directly
+			//
+			//  Array.Sort (s, String.Compare);
+			//
+			// Correct overload will be used because we do the reduction after
+			// best candidate was found.
+			//
+			return null;
+		}
+
+		//
 		// Returns true when the expression during Emit phase breaks stack
 		// by using await expression
 		//
@@ -1055,8 +1084,8 @@ namespace Mono.CSharp {
 	///   being that they would support an extra Emition interface that
 	///   does not leave a result on the stack.
 	/// </summary>
-	public abstract class ExpressionStatement : Expression {
-
+	public abstract class ExpressionStatement : Expression
+	{
 		public ExpressionStatement ResolveStatement (BlockContext ec)
 		{
 			Expression e = Resolve (ec);
@@ -3220,7 +3249,7 @@ namespace Mono.CSharp {
 	class ExtensionMethodGroupExpr : MethodGroupExpr, OverloadResolver.IErrorHandler
 	{
 		ExtensionMethodCandidates candidates;
-		public readonly Expression ExtensionExpression;
+		public Expression ExtensionExpression;
 
 		public ExtensionMethodGroupExpr (ExtensionMethodCandidates candidates, Expression extensionExpr, Location loc)
 			: base (candidates.Methods.Cast<MemberSpec>().ToList (), extensionExpr.Type, loc)
@@ -3263,6 +3292,10 @@ namespace Mono.CSharp {
 		{
 			if (arguments == null)
 				arguments = new Arguments (1);
+
+			ExtensionExpression = ExtensionExpression.Resolve (ec);
+			if (ExtensionExpression == null)
+				return null;
 
 			arguments.Insert (0, new Argument (ExtensionExpression, Argument.AType.ExtensionType));
 			var res = base.OverloadResolve (ec, ref arguments, ehandler ?? this, restr);
@@ -4527,17 +4560,18 @@ namespace Mono.CSharp {
 				// It can be applicable in expanded form (when not doing exact match like for delegates)
 				//
 				if (score != 0 && (p_mod & Parameter.Modifier.PARAMS) != 0 && (restrictions & Restrictions.CovariantDelegate) == 0) {
-					if (!params_expanded_form)
+					if (!params_expanded_form) {
 						pt = ((ElementTypeSpec) pt).Element;
+					}
 
 					if (score > 0)
 						score = IsArgumentCompatible (ec, a, Parameter.Modifier.NONE, pt);
 
-					if (score == 0) {
-						params_expanded_form = true;
-					} else if (score < 0) {
+					if (score < 0) {
 						params_expanded_form = true;
 						dynamicArgument = true;
+					} else if (score == 0 || arg_count > pd.Count) {
+						params_expanded_form = true;
 					}
 				}
 
@@ -5616,6 +5650,11 @@ namespace Mono.CSharp {
 		
 		override public Expression DoResolveLValue (ResolveContext ec, Expression right_side)
 		{
+			if (spec is FixedFieldSpec) {
+				// It could be much better error message but we want to be error compatible
+				Error_ValueAssignment (ec, right_side);
+			}
+
 			Expression e = DoResolve (ec, right_side);
 
 			if (e == null)
@@ -5933,6 +5972,21 @@ namespace Mono.CSharp {
 		}
 
 		#endregion
+
+		public override MethodGroupExpr CanReduceLambda (AnonymousMethodBody body)
+		{
+			if (best_candidate == null || !(best_candidate.IsStatic || InstanceExpression is This))
+				return null;
+
+			var args_count = arguments == null ? 0 : arguments.Count;
+			if (args_count != body.Parameters.Count && args_count == 0)
+				return null;
+
+			var mg = MethodGroupExpr.CreatePredefined (best_candidate.Get, DeclaringType, loc);
+			mg.InstanceExpression = InstanceExpression;
+
+			return mg;
+		}
 
 		public static PropertyExpr CreatePredefined (PropertySpec spec, Location loc)
 		{

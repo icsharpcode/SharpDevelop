@@ -33,7 +33,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[IssueDescription("The ThreadStatic attribute does nothing on instance fields",
 	                  Description = "Finds usages of ThreadStatic on instance fields.",
 	                  Category = IssueCategories.Notifications,
-	                  Severity = Severity.Warning)]
+	                  Severity = Severity.Warning,
+                      ResharperDisableKeyword = "ThreadStaticAtInstanceField")]
 	public class ThreadStaticOnInstanceFieldIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
@@ -41,7 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context).GetIssues();
 		}
 		
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<ThreadStaticOnInstanceFieldIssue>
 		{
 			ITypeDefinition threadStaticDefinition;
 
@@ -88,14 +89,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					} else {
 						script.Remove(attributeSection);
 					}
-				});
+				}, attribute);
 
 				var makeStaticMessage = ctx.TranslateString("Make the field static");
 				yield return new CodeAction(makeStaticMessage, script => {
 					var newDeclaration = (FieldDeclaration)fieldDeclaration.Clone();
 					newDeclaration.Modifiers |= Modifiers.Static;
 					script.Replace(fieldDeclaration, newDeclaration);
-				});
+				}, fieldDeclaration.NameToken);
 			}
 		}
 	}

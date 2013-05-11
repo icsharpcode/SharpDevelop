@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				script.Replace(ifStatement.TrueStatement, ifStatement.FalseStatement.Clone());
 				script.Replace(ifStatement.FalseStatement, ifStatement.TrueStatement.Clone());
 				script.FormatText(ifStatement);
-			});
+			}, ifStatement);
 		}
 		
 		static IfElseStatement GetIfElseStatement (RefactoringContext context)

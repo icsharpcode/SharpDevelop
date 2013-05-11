@@ -119,24 +119,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				&& MatchString(this.MemberName, o.MemberName) && this.Target.DoMatch(o.Target, match)
 				&& this.TypeArguments.DoMatch(o.TypeArguments, match);
 		}
-		
-		public override string ToString()
-		{
-			StringBuilder b = new StringBuilder();
-			b.Append(this.Target);
-			if (IsDoubleColon)
-				b.Append("::");
-			else
-				b.Append('.');
-			b.Append(this.MemberName);
-			if (this.TypeArguments.Any()) {
-				b.Append('<');
-				b.Append(string.Join(", ", this.TypeArguments));
-				b.Append('>');
-			}
-			return b.ToString();
-		}
-		
+
 		public override ITypeReference ToTypeReference(NameLookupMode lookupMode, InterningProvider interningProvider = null)
 		{
 			if (interningProvider == null)

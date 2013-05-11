@@ -41,14 +41,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			var assignmentPattern = new ExpressionStatement(
 				new AssignmentExpression (new IdentifierExpression (node.Name), new AnyNode ("value")));
-			var match = assignmentPattern.Match (variableDecl.NextSibling);
+			var nextSibling = variableDecl.GetNextSibling(n => n is Statement);
+			var match = assignmentPattern.Match(nextSibling);
 			if (!match.Success)
 				return null;
 
 			return new CodeAction (context.TranslateString ("Join local variable declaration and assignment"), script => {
 				var jointVariableDecl = new VariableDeclarationStatement (variableDecl.Type.Clone (),
 					node.Name, match.Get<Expression> ("value").First ().Clone ());
-				script.Replace (variableDecl.NextSibling, jointVariableDecl);
+				script.Replace (nextSibling, jointVariableDecl);
 				if (variableDecl.Variables.Count == 1) {
 					script.Remove (variableDecl);
 				} else {
@@ -57,7 +58,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						newVariableDecl.Variables.Add ((VariableInitializer) variable.Clone ());
 					script.Replace (variableDecl, newVariableDecl);
 				}
-			});
+			}, node.NameToken);
 		}
 	}
 }

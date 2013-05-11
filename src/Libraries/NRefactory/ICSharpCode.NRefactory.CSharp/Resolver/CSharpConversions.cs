@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -73,6 +73,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public TypePair(IType fromType, IType toType)
 			{
+				Debug.Assert(fromType != null && toType != null);
 				this.FromType = fromType;
 				this.ToType = toType;
 			}
@@ -84,9 +85,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public bool Equals(TypePair other)
 			{
-				if (this.FromType == null || this.ToType == null || other.FromType == null || other.ToType == null)
-					return false;
-				return this.FromType.Equals(other.FromType) && this.ToType.Equals(other.ToType);
+				return object.Equals(this.FromType, other.FromType) && object.Equals(this.ToType, other.ToType);
 			}
 			
 			public override int GetHashCode()
@@ -970,7 +969,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region AnonymousFunctionConversion
 		Conversion AnonymousFunctionConversion(ResolveResult resolveResult, IType toType)
 		{
-			// C# 4.0 spec §6.5 Anonymous function conversions
+			// C# 5.0 spec §6.5 Anonymous function conversions
 			LambdaResolveResult f = resolveResult as LambdaResolveResult;
 			if (f == null)
 				return Conversion.None;
@@ -1063,10 +1062,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				var thisRR = rr.TargetResult as ThisResolveResult;
 				bool isVirtual = method.IsOverridable && !(thisRR != null && thisRR.CausesNonVirtualInvocation);
 				bool isValid = !or.IsAmbiguous && IsDelegateCompatible(method, invoke, or.IsExtensionMethodInvocation);
+				bool delegateCapturesFirstArgument = or.IsExtensionMethodInvocation || !method.IsStatic;
 				if (isValid)
-					return Conversion.MethodGroupConversion(method, isVirtual);
+					return Conversion.MethodGroupConversion(method, isVirtual, delegateCapturesFirstArgument);
 				else
-					return Conversion.InvalidMethodGroupConversion(method, isVirtual);
+					return Conversion.InvalidMethodGroupConversion(method, isVirtual, delegateCapturesFirstArgument);
 			} else {
 				return Conversion.None;
 			}

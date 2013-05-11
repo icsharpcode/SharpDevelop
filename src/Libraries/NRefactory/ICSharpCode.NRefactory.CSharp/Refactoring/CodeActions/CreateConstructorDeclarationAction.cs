@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					resolveResult.Member.DeclaringTypeDefinition,
 					decl
 				);
-			});
+			}, createExpression);
 		}
 	}
 }

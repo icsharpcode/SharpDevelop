@@ -32,15 +32,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   Description = "Local variable has the same name as a member and hides it.",
 					   Category = IssueCategories.CodeQualityIssues,
 					   Severity = Severity.Suggestion,
-					   IssueMarker = IssueMarker.Underline)]
+					   IssueMarker = IssueMarker.Underline,
+                       ResharperDisableKeyword = "LocalVariableHidesMember")]
 	public class LocalVariableHidesMemberIssue : VariableHidesMemberIssue
 	{
-		internal override GatherVisitorBase GetGatherVisitor (BaseRefactoringContext context)
+		public override System.Collections.Generic.IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
-			return new GatherVisitor (context);
+			return new GatherVisitor (context).GetIssues ();
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<LocalVariableHidesMemberIssue>
 		{
 			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)

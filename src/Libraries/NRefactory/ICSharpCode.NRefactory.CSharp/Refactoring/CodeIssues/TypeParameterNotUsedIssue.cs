@@ -36,7 +36,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   Description = "Type parameter is never used.",
 					   Category = IssueCategories.Redundancies,
 					   Severity = Severity.Warning,
-					   IssueMarker = IssueMarker.GrayOut)]
+					   IssueMarker = IssueMarker.GrayOut,
+                       ResharperDisableKeyword = "UnusedTypeParameter")]
 	public class TypeParameterNotUsedIssue : ICodeIssueProvider
 	{
 		static FindReferences refFinder = new FindReferences ();
@@ -61,7 +62,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return found;
 		}
 
-		class GatherVisitor : GatherVisitorBase
+		class GatherVisitor : GatherVisitorBase<TypeParameterNotUsedIssue>
 		{
 			SyntaxTree unit;
 

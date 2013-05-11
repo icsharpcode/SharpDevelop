@@ -649,7 +649,6 @@ class C : S
 		/// <summary>
 		/// Bug 9910 - Completion not working in object initializer
 		/// </summary>
-		[Ignore("FIX ME !")]
 		[Test]
 		public void TestBug9910()
 		{
