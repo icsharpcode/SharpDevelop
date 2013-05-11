@@ -328,7 +328,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			AttributeSection ConvertAttributeSection (IEnumerable<Mono.CSharp.Attribute> optAttributes)
 			{
-
 				if (optAttributes == null)
 					return null;
 				AttributeSection result = new AttributeSection ();
@@ -357,6 +356,8 @@ namespace ICSharpCode.NRefactory.CSharp
 
 					attributeCount++;
 				}
+				if (attributeCount == 0)
+					return null;
 				// Left and right bracket + commas between the attributes
 				int locCount = 2 + attributeCount - 1;
 				// optional comma
@@ -956,7 +957,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (attrs == null)
 					return;
 				foreach (var attr in attrs.Sections) {
-					parent.AddChild (ConvertAttributeSection (attr), role);
+					var section = ConvertAttributeSection(attr);
+					if (section != null)
+						parent.AddChild (section, role);
 				}
 			}
 
