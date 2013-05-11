@@ -3700,7 +3700,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void InsertComment(ref AstNode insertionPoint, AstNode newNode, Role role, bool isDocumentationComment, AstNode rootNode)
 		{
 			TextLocation insertAt = newNode.StartLocation;
-			// Advance insertionPoint to the first node that has a start location greater than insertAt
+			// Advance insertionPoint to the first node that has a start location >= insertAt
 			while (insertionPoint != null && insertionPoint.StartLocation < insertAt) {
 				// Enter the current node if insertAt is within
 				while (insertAt < insertionPoint.EndLocation && insertionPoint.FirstChild != null) {

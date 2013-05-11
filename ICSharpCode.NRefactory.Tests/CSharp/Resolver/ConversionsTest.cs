@@ -1348,5 +1348,28 @@ class Test {
 			Assert.IsTrue(c.ConversionAfterUserDefinedOperator.IsNumericConversion);
 			Assert.IsTrue(c.ConversionAfterUserDefinedOperator.IsValid);
 		}
+		
+		[Test]
+		public void UserDefinedImplicitConversion_IsImplicit()
+		{
+			// Bug icsharpcode/NRefactory#183: conversions from constant expressions were incorrectly marked as explicit
+			string program = @"using System;
+	class Test {
+		void Hello(JsNumber3 x) {
+			Hello($7$);
+		}
+	}
+	public class JsNumber3 {
+		public static implicit operator JsNumber3(int d) {
+			return null;
+		}
+	}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsImplicit);
+			Assert.IsFalse(c.IsExplicit);
+			Assert.AreEqual(Conversion.IdentityConversion, c.ConversionBeforeUserDefinedOperator);
+			Assert.AreEqual(Conversion.IdentityConversion, c.ConversionAfterUserDefinedOperator);
+		}
 	}
 }
