@@ -47,6 +47,27 @@ namespace ICSharpCode.NRefactory.CSharp
 		Line = 12
 	}
 
+	public class LinePreprocssorDirective : PreProcessorDirective
+	{
+		public int LineNumber {
+			get;
+			set;
+		}
+
+		public string FileName {
+			get;
+			set;
+		}
+
+		public LinePreprocssorDirective(TextLocation startLocation, TextLocation endLocation) : base (PreProcessorDirectiveType.Line, startLocation, endLocation)
+		{
+		}
+
+		public LinePreprocssorDirective(string argument = null) : base (PreProcessorDirectiveType.Line, argument)
+		{
+		}
+	}
+
 	public class PragmaWarningPreprocssorDirective : PreProcessorDirective
 	{
 		public bool Disable {

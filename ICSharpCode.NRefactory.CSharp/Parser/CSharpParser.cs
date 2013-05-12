@@ -960,7 +960,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					return;
 				foreach (var attr in attrs.Sections) {
 					var section = ConvertAttributeSection(attr);
-					if (section == null || section.AttributeTarget == "module" || section.AttributeTarget == "assembly")
+					if (section == null)
 						continue;
 					parent.AddChild (section, role);
 				}
@@ -3663,16 +3663,29 @@ namespace ICSharpCode.NRefactory.CSharp
 						pragma.AddWarnings(pragmaDirective.Codes);
 						newLeaf = pragma;
 						role = Roles.PreProcessorDirective;
-					} else {
-						var directive = special as SpecialsBag.PreProcessorDirective;
-						if (directive != null) {
-							newLeaf = new PreProcessorDirective ((ICSharpCode.NRefactory.CSharp.PreProcessorDirectiveType)((int)directive.Cmd & 0xF), new TextLocation (directive.Line, directive.Col), new TextLocation (directive.EndLine, directive.EndCol)) {
-								Argument = directive.Arg,
-								Take = directive.Take
-							};
-							role = Roles.PreProcessorDirective;
-						}
+						goto end;
 					}
+
+					var lineDirective = special as SpecialsBag.LineProcessorDirective;
+					if (lineDirective != null) {
+						var pragma = new LinePreprocssorDirective(new TextLocation(lineDirective.Line, lineDirective.Col), new TextLocation(lineDirective.EndLine, lineDirective.EndCol));
+						pragma.LineNumber = lineDirective.LineNumber;
+						pragma.FileName = lineDirective.FileName;
+						newLeaf = pragma;
+						role = Roles.PreProcessorDirective;
+						goto end;
+					}
+
+					var directive = special as SpecialsBag.PreProcessorDirective;
+					if (directive != null) {
+						newLeaf = new PreProcessorDirective ((ICSharpCode.NRefactory.CSharp.PreProcessorDirectiveType)((int)directive.Cmd & 0xF), new TextLocation (directive.Line, directive.Col), new TextLocation (directive.EndLine, directive.EndCol)) {
+							Argument = directive.Arg,
+							Take = directive.Take
+						};
+						role = Roles.PreProcessorDirective;
+					}
+					end:
+						;
 				}
 				if (newLeaf != null) {
 					InsertComment(ref insertionPoint, newLeaf, role, isDocumentationComment, conversionVisitor.Unit);

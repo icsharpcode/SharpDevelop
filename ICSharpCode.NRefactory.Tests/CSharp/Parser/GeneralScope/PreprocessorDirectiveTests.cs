@@ -147,17 +147,22 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		{
 			string program = "#line 200 \"otherfile.cs\"\nclass Test {}";
 			CSharpParser parser = new CSharpParser();
-			SyntaxTree syntaxTree = parser.Parse(program);
+			SyntaxTree syntaxTree = parser.Parse(program, "/a.cs");
 			Assert.IsFalse(parser.HasErrors, string.Join(Environment.NewLine, parser.Errors.Select(e => e.Message)));
 			Assert.AreEqual(new Role[] {
 			                	Roles.PreProcessorDirective,
 			                	Roles.NewLine,
-			                	NamespaceDeclaration.MemberRole
+			                	SyntaxTree.MemberRole
 			}, syntaxTree.Children.Select(c => c.Role).ToArray());
 			Assert.AreEqual(new TextLocation(2, 1), syntaxTree.Members.Single().StartLocation);
+
+			var ppd = (LinePreprocssorDirective)syntaxTree.FirstChild;
+			Assert.AreEqual(PreProcessorDirectiveType.Line, ppd.Type);
+			Assert.AreEqual(200, ppd.LineNumber);
+			Assert.AreEqual("otherfile.cs", ppd.FileName);
 		}
 		
-		[Test, Ignore("ppd.Argument is missing")]
+		[Test]
 		public void Line()
 		{
 			string program = "#line 200\nclass Test {}";
@@ -170,9 +175,9 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			                	NamespaceDeclaration.MemberRole
 			}, syntaxTree.Children.Select(c => c.Role).ToArray());
 			Assert.AreEqual(new TextLocation(2, 1), syntaxTree.Members.Single().StartLocation);
-			var ppd = (PreProcessorDirective)syntaxTree.FirstChild;
+			var ppd = (LinePreprocssorDirective)syntaxTree.FirstChild;
 			Assert.AreEqual(PreProcessorDirectiveType.Line, ppd.Type);
-			Assert.AreEqual("200", ppd.Argument);
+			Assert.AreEqual(200, ppd.LineNumber);
 		}
 		
 		const string elifProgram = @"

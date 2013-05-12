@@ -2037,6 +2037,9 @@ namespace Mono.CSharp
 		bool PreProcessLine ()
 		{
 			Location loc = Location;
+			#if FULL_AST
+			var lineDirective = sbag.GetCurrentLineProcessorDirective();
+			#endif
 
 			int c;
 
@@ -2087,6 +2090,9 @@ namespace Mono.CSharp
 
 				return new_line != 0;
 			}
+			#if FULL_AST
+			lineDirective.LineNumber = new_line;
+			#endif
 
 			c = get_char ();
 			if (c == ' ') {
@@ -2113,6 +2119,9 @@ namespace Mono.CSharp
 			string new_file_name = null;
 			if (c == '"') {
 				new_file_name = TokenizeFileName (ref c);
+				#if FULL_AST
+				lineDirective.FileName = new_file_name;
+				#endif
 
 				// skip over white space
 				while (c == ' ' || c == '\t') {
