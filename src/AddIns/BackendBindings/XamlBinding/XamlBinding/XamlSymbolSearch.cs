@@ -35,10 +35,12 @@ namespace ICSharpCode.XamlBinding
 		
 		public XamlSymbolSearch(IProject project, IEntity entity)
 		{
-			this.entity = entity;
 			compilation = SD.ParserService.GetCompilation(project);
+			this.entity = compilation.Import(entity);
 			interestingFileNames = new List<FileName>();
-			foreach (var item in project.ParentSolution.Projects.SelectMany(p => p.Items).OfType<FileProjectItem>().Where(i => i.FileName.HasExtension(".xaml")))
+			if (this.entity == null)
+				return;
+			foreach (var item in project.Items.OfType<FileProjectItem>().Where(i => i.FileName.HasExtension(".xaml")))
 				interestingFileNames.Add(item.FileName);
 			workAmount = interestingFileNames.Count;
 			workAmountInverse = 1.0 / workAmount;

@@ -6111,6 +6111,9 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   <data name="SharpDevelop.FileFilter.AllFiles" xml:space="preserve">
     <value>All files (*.*)</value>
   </data>
+  <data name="SharpDevelop.FileFilter.AllKnownFiles" xml:space="preserve">
+    <value>All known file extensions</value>
+  </data>
   <data name="SharpDevelop.FileFilter.AssemblyFiles" xml:space="preserve">
     <value>Assembly Files (*.exe;*.dll)</value>
   </data>
