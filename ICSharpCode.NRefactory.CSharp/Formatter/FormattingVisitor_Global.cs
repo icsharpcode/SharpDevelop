@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Linq;
 
@@ -47,16 +46,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override void VisitSyntaxTree(SyntaxTree unit)
 		{
 			bool first = true;
-			VisitChildrenToFormat (unit, child => {
+			VisitChildrenToFormat(unit, child => {
 				if (first && (child is UsingDeclaration || child is UsingAliasDeclaration)) {
-					EnsureBlankLinesBefore (child, policy.BlankLinesBeforeUsings);
+					EnsureBlankLinesBefore(child, policy.BlankLinesBeforeUsings);
 					first = false;
 				}
 				if (NoWhitespacePredicate(child))
 					FixIndentation(child);
 				child.AcceptVisitor(this);
 				if (NoWhitespacePredicate(child))
-					EnsureNewLinesAfter(child, GetGlobalNewLinesFor (child));
+					EnsureNewLinesAfter(child, GetGlobalNewLinesFor(child));
 			});
 		}
 
@@ -79,9 +78,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				curIndent.Push(IndentType.Block);
 
 			bool first = true;
-			VisitChildrenToFormat (namespaceDeclaration, child => {
+			bool startFormat = false;
+			VisitChildrenToFormat(namespaceDeclaration, child => {
 				if (child.Role == Roles.LBrace) {
-					var next = child.GetNextSibling (NoWhitespacePredicate);
+					var next = child.GetNextSibling(NoWhitespacePredicate);
 					var blankLines = 1;
 					if (next is UsingDeclaration || next is UsingAliasDeclaration) {
 						blankLines += policy.BlankLinesBeforeUsings;
@@ -89,9 +89,14 @@ namespace ICSharpCode.NRefactory.CSharp
 						blankLines += policy.BlankLinesBeforeFirstDeclaration;
 					}
 					EnsureNewLinesAfter(child, blankLines);
+					startFormat = true;
 					return;
 				}
-				if (child.Role != NamespaceDeclaration.MemberRole)
+				if (child.Role == Roles.RBrace) {
+					startFormat = false;
+					return;
+				}
+				if (!startFormat || !NoWhitespacePredicate (child))
 					return;
 				if (first && (child is UsingDeclaration || child is UsingAliasDeclaration)) {
 					// TODO: policy.BlankLinesBeforeUsings
@@ -101,11 +106,11 @@ namespace ICSharpCode.NRefactory.CSharp
 					FixIndentationForceNewLine(child);
 				child.AcceptVisitor(this);
 				if (NoWhitespacePredicate(child))
-					EnsureNewLinesAfter(child, GetGlobalNewLinesFor (child));
+					EnsureNewLinesAfter(child, GetGlobalNewLinesFor(child));
 			});
 
 			if (policy.IndentNamespaceBody)
-				curIndent.Pop ();
+				curIndent.Pop();
 
 			FixClosingBrace(policy.NamespaceBraceStyle, namespaceDeclaration.RBraceToken);
 		}
@@ -113,16 +118,19 @@ namespace ICSharpCode.NRefactory.CSharp
 		void FixAttributes(EntityDeclaration entity)
 		{
 			if (entity.Attributes.Count > 0) {
-				AstNode n = null;;
+				AstNode n = null;
 				foreach (var attr in entity.Attributes.Skip (1)) {
 					FixIndentation(attr);
 					n = attr;
 				}
-				if (n != null)
-					FixIndentation(n.GetNextNode (NoWhitespacePredicate));
+				if (n != null) {
+					FixIndentation(n.GetNextNode(NoWhitespacePredicate));
+				} else {
+					FixIndentation(entity.Attributes.First().GetNextNode(NoWhitespacePredicate));
+				}
 			}
 		}
-	
+
 		public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
 		{
 			FixAttributes(typeDeclaration);
@@ -153,15 +161,23 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			if (indentBody)
 				curIndent.Push(IndentType.Block);
-
-			VisitChildrenToFormat (typeDeclaration, child => {
-				if (child.Role != Roles.TypeMemberRole)
+			bool startFormat = false;
+			VisitChildrenToFormat(typeDeclaration, child => {
+				if (child.Role == Roles.LBrace) {
+					startFormat = true;
+					return;
+				}
+				if (child.Role == Roles.RBrace) {
+					startFormat = false;
+					return;
+				}
+				if (!startFormat || !NoWhitespacePredicate (child))
 					return;
 				if (NoWhitespacePredicate(child))
 					FixIndentationForceNewLine(child);
-				child.AcceptVisitor (this);
+				child.AcceptVisitor(this);
 				if (NoWhitespacePredicate(child))
-					EnsureNewLinesAfter(child, GetTypeLevelNewLinesFor (child));
+					EnsureNewLinesAfter(child, GetTypeLevelNewLinesFor(child));
 			});
 
 			if (indentBody)
@@ -174,7 +190,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			var blankLines = 1;
 			var nextSibling = child.GetNextSibling(NoWhitespacePredicate);
-
+			if (child is PreProcessorDirective || child is Comment)
+				return 1;
 			if (child is EventDeclaration) {
 				if (nextSibling is EventDeclaration) {
 					blankLines += policy.BlankLinesBetweenEventFields;
@@ -198,7 +215,6 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			if (nextSibling.Role == Roles.TypeMemberRole)
 				blankLines += policy.BlankLinesBetweenMembers;
-
 			return blankLines;
 		}
 
@@ -216,7 +232,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			base.VisitDelegateDeclaration(delegateDeclaration);
 		}
-		
+
 		public override void VisitComment(Comment comment)
 		{
 			if (comment.StartsLine && !HadErrors && (!policy.KeepCommentsAtFirstColumn || comment.StartLocation.Column > 1))
