@@ -261,6 +261,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			FixAttributes(eventDeclaration);
 
+			foreach (var m in eventDeclaration.ModifierTokens) {
+				ForceSpacesAfter(m, true);
+			}
+
+			ForceSpacesBeforeRemoveNewLines(eventDeclaration.EventToken.GetNextSibling (NoWhitespacePredicate), true);
+			eventDeclaration.ReturnType.AcceptVisitor(this);
+			ForceSpacesAfter(eventDeclaration.ReturnType, true);
+			/*
 			var lastLoc = eventDeclaration.StartLocation;
 			curIndent.Push(IndentType.Block);
 			foreach (var initializer in eventDeclaration.Variables) {
@@ -271,6 +279,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				initializer.AcceptVisitor(this);
 			}
 			curIndent.Pop ();
+			*/
+			FixSemicolon(eventDeclaration.SemicolonToken);
 		}
 
 		
@@ -293,6 +303,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				initializer.AcceptVisitor(this);
 			}
+			FixSemicolon(fieldDeclaration.SemicolonToken);
 		}
 
 		public override void VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration)
@@ -311,6 +322,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				initializer.AcceptVisitor(this);
 			}
 			curIndent.Pop ();
+			FixSemicolon(fixedFieldDeclaration.SemicolonToken);
 		}
 
 		public override void VisitEnumMemberDeclaration(EnumMemberDeclaration enumMemberDeclaration)

@@ -71,7 +71,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole(Roles.Type, value); }
 		}
-		
+
+		public CSharpTokenNode SemicolonToken {
+			get { return GetChildByRole (Roles.Semicolon); }
+		}
+
 		internal static Modifiers GetModifiers(AstNode node)
 		{
 			Modifiers m = 0;

@@ -39,7 +39,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override EntityType EntityType {
 			get { return EntityType.Event; }
 		}
-		
+
+		public CSharpTokenNode EventToken {
+			get { return GetChildByRole (EventKeywordRole); }
+		}
+
 		public AstNodeCollection<VariableInitializer> Variables {
 			get { return GetChildrenByRole (Roles.Variable); }
 		}

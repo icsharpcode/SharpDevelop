@@ -676,6 +676,26 @@ set;
 		}
 
 		[Test]
+		public void TestEventField()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+
+			Test(policy, 
+@"class Test
+{
+	public   event 
+
+ EventHandler    TestMe           ;
+}",
+@"class Test
+{
+	public event EventHandler TestMe;
+}");
+
+		}
+
+
+		[Test]
 		public void TestIndentEventBody()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
