@@ -283,6 +283,46 @@ A
 		}
 
 		[Test]
+		public void TestIndentEnumBodyCase2()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			policy.IndentEnumBody = true;
+
+			Test(policy,
+			     @"enum Test
+{
+				A , 
+	B, 
+C
+}", @"enum Test
+{
+	A,
+	B,
+	C
+}");
+		}
+
+		[Test]
+		public void TestIndentEnumBodyCase3()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			policy.IndentEnumBody = true;
+
+			Test(policy,
+			     @"enum Test
+{
+				A = 3  + 5, 
+	B=5  , 
+C=5 <<       12
+}", @"enum Test
+{
+	A = 3 + 5,
+	B = 5,
+	C = 5 << 12
+}");
+		}
+
+		[Test]
 		public void TestIndentMethodBody()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();

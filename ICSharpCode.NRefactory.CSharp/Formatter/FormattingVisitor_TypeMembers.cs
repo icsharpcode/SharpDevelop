@@ -316,8 +316,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override void VisitEnumMemberDeclaration(EnumMemberDeclaration enumMemberDeclaration)
 		{
 			FixAttributes(enumMemberDeclaration);
-
-			base.VisitEnumMemberDeclaration(enumMemberDeclaration);
+			var initializer = enumMemberDeclaration.Initializer;
+			if (!initializer.IsNull) {
+				ForceSpacesAround(enumMemberDeclaration.AssignToken, policy.SpaceAroundAssignment);
+				initializer.AcceptVisitor (this);
+			}
 		}
 
 		public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)

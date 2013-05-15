@@ -36,7 +36,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override EntityType EntityType {
 			get { return EntityType.Field; }
 		}
-		
+
+		public CSharpTokenNode AssignToken {
+			get { return GetChildByRole (Roles.Assign); }
+		}
+
 		public Expression Initializer {
 			get { return GetChildByRole (InitializerRole); }
 			set { SetChildByRole (InitializerRole, value); }

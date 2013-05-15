@@ -173,10 +173,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				if (!startFormat || !NoWhitespacePredicate (child))
 					return;
+				if (child.Role == Roles.Comma) {
+					ForceSpacesBeforeRemoveNewLines (child, false);
+					EnsureNewLinesAfter(child, 1);
+					return;
+				} 
 				if (NoWhitespacePredicate(child))
 					FixIndentationForceNewLine(child);
 				child.AcceptVisitor(this);
-				if (NoWhitespacePredicate(child))
+				if (NoWhitespacePredicate(child) && child.GetNextSibling (NoWhitespacePredicate).Role != Roles.Comma)
 					EnsureNewLinesAfter(child, GetTypeLevelNewLinesFor(child));
 			});
 
