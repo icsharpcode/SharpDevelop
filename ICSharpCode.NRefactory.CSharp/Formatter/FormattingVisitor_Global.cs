@@ -115,8 +115,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			FixClosingBrace(policy.NamespaceBraceStyle, namespaceDeclaration.RBraceToken);
 		}
 
-		void FixAttributes(EntityDeclaration entity)
+		void FixAttributesAndDocComment(EntityDeclaration entity)
 		{
+			var node =entity.FirstChild;
+			while (node != null && node.Role == Roles.Comment) {
+				FixIndentation(node);
+				node = node.GetNextSibling(NoWhitespacePredicate);
+			}
 			if (entity.Attributes.Count > 0) {
 				AstNode n = null;
 				foreach (var attr in entity.Attributes.Skip (1)) {
@@ -133,7 +138,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
 		{
-			FixAttributes(typeDeclaration);
+			FixAttributesAndDocComment(typeDeclaration);
 			BraceStyle braceStyle;
 			bool indentBody = false;
 			switch (typeDeclaration.ClassType) {

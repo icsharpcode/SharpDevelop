@@ -208,6 +208,26 @@ Test a;
 		}
 
 		[Test]
+		public void TestDocCommentIndenting()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			Test(policy,
+			     @"class Test
+{
+		/// <summary>
+   /// Test
+              /// </summary>
+	Test a;
+}", @"class Test
+{
+	/// <summary>
+	/// Test
+	/// </summary>
+	Test a;
+}");
+		}
+
+		[Test]
 		public void TestIndentInterfaceBody()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
