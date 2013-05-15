@@ -11,7 +11,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Documents;
+using System.Windows.Markup;
 
+using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.ExportRenderer;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.Items;
@@ -24,22 +26,31 @@ namespace ICSharpCode.Reporting.WpfReportViewer
 	public class PreviewViewModel:INotifyPropertyChanged
 	{
 		
-		private IDocumentPaginatorSource document;
+		private FixedDocument document ;
 		
 		public PreviewViewModel(ReportSettings reportSettings, Collection<IPage> pages)
 		{
-			this.Pages = pages;
-			FixedDocumentRenderer renderer =  new FixedDocumentRenderer(reportSettings,Pages);
-			renderer.Start();
-			renderer.RenderOutput();
-			renderer.End();
-//			this.Document = renderer.Document;
+			if (pages == null)
+				throw new ArgumentNullException("pages");
+			if (reportSettings == null)
+				throw new ArgumentNullException("reportSettings");
+			Document = new FixedDocument();
+			var s = Document.DocumentPaginator.PageSize;
+			Document.DocumentPaginator.PageSize = new System.Windows.Size(reportSettings.PageSize.Width,reportSettings.PageSize.Height);
+			var wpfExporter = new WpfExporter(reportSettings,pages);
+			wpfExporter.Run();
+			var fixedPage = wpfExporter.FixedPage;
+			AddPageToDocument(Document,fixedPage);
 		}
 		
+		static void AddPageToDocument(FixedDocument fixedDocument,FixedPage page)
+		{
+			PageContent pageContent = new PageContent();
+			((IAddChild)pageContent).AddChild(page);
+			fixedDocument.Pages.Add(pageContent);
+		}
 		
-		public Collection<IPage> Pages {get;private set;}
-		
-		public IDocumentPaginatorSource Document
+		public FixedDocument Document
 		{
 			get {return document;}
 			set {

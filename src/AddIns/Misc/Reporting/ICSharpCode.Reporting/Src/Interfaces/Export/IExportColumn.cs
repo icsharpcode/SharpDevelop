@@ -7,6 +7,8 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Drawing;
+using ICSharpCode.Reporting.Arrange;
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Exporter;
 
@@ -17,5 +19,7 @@ namespace ICSharpCode.Reporting.Interfaces.Export
 	/// </summary>
 	public interface IExportColumn:IReportObject
 	{
+		IArrangeStrategy GetArrangeStrategy();
+		Size DesiredSize {get;set;}
 	}
 }

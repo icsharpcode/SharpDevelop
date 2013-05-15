@@ -260,7 +260,6 @@ namespace ICSharpCode.Reports.Core.WPF
 		TextBlock CreateTextBlock(ExportText exportText)
 		{
 			TextBlock textBlock = new TextBlock();
-
 			SetFont(textBlock, exportText.StyleDecorator);
 			textBlock.TextWrapping = TextWrapping.Wrap;
 			
@@ -330,6 +329,7 @@ namespace ICSharpCode.Reports.Core.WPF
 		void SetFont(TextBlock textBlock, TextStyleDecorator styleDecorator)
 		{
 			textBlock.FontFamily = new FontFamily(styleDecorator.Font.FontFamily.Name);
+			
 			var b = styleDecorator.Font.Size;
 			textBlock.FontSize = b * 96/72;
 			if (styleDecorator.Font.Bold) {

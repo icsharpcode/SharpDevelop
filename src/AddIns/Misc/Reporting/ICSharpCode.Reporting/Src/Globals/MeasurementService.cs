@@ -24,14 +24,16 @@ namespace ICSharpCode.Reporting.Globals
 		
 		public static Size Measure (ITextItem item,Graphics graphics) {
 			
-			
 			if (!String.IsNullOrEmpty(item.Text)) {
 				SizeF size = graphics.MeasureString(item.Text.TrimEnd(),
 				                                    item.Font,
 				                                    item.Size.Width);
 				var i = (int)size.Height/item.Font.Height;
-				Console.WriteLine("\t\tMeasure <{0}> - {1} - {2}",item.Text,item.Size,size);
-				return size.ToSize();
+				if (size.Height < item.Size.Height) {
+					return item.Size;
+				}
+//				Console.WriteLine("ret val {0}",new Size(item.Size.Width,(int)Math.Ceiling(size.Height)).ToString());
+				return new Size(item.Size.Width,(int)Math.Ceiling(size.Height));
 			}
 			
 			return item.Size;

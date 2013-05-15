@@ -23,6 +23,7 @@ namespace ICSharpCode.Reporting.Items
 	{
 		Font Font {get;set;}
 		string Text {get;set;}
+		
 	}
 	
 	public class BaseTextItem:PrintableItem,ITextItem
@@ -43,14 +44,18 @@ namespace ICSharpCode.Reporting.Items
 			var ex = new ExportText();
 			ex.Name = Name;
 			ex.Location = Location;
+			ex.ForeColor = ForeColor;
+			ex.BackColor = BackColor;
+			ex.FrameColor = FrameColor;
 			ex.Size = Size;
 			ex.Font = Font;
+			ex.Text = Text;
 			return ex;
 		}
 		
-		public override ICSharpCode.Reporting.Arrange.IArrangeStrategy GetArrangeStrategy()
+		public override ICSharpCode.Reporting.Arrange.IMeasurementStrategy MeasurementStrategy()
 		{
-			return new TextBasedArrangeStrategy();
+			return new TextBasedMeasurementStrategy();
 		}
 		
 		

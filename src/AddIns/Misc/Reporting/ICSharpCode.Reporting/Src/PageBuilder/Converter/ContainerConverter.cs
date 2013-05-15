@@ -13,7 +13,6 @@ using System.Drawing;
 using ICSharpCode.Reporting.Factories;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
-using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.PageBuilder.Converter
@@ -23,7 +22,8 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 	/// </summary>
 	internal class ContainerConverter
 	{
-	private Graphics graphics;
+		private Graphics graphics;
+		
 		public ContainerConverter(Graphics graphics,IReportContainer reportContainer,Point currentLocation )
 		{
 			if (graphics == null) {
@@ -40,21 +40,20 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 		
 		
 		public IExportContainer Convert() {
-			Console.WriteLine("Convert section for location {0}",CurrentLocation);
-			
-			// Arrange
-			var containerStrategy = Container.GetArrangeStrategy ();
-			containerStrategy.Arrange(Container,graphics);
-			
+			var containerStrategy = Container.MeasurementStrategy ();
 			var exportContainer = (ExportContainer)Container.CreateExportColumn();
-			
+	
 			exportContainer.Location = CurrentLocation;
+			exportContainer.DesiredSize = containerStrategy.Measure(Container,graphics);
+			
 			var itemsList = new List<IExportColumn>();
+			
 			foreach (var element in Container.Items) {
-				var textArrange = element.GetArrangeStrategy();
-				textArrange.Arrange(element,graphics);
 				var item = ExportColumnFactory.CreateItem(element);
+				var measureStrategy = element.MeasurementStrategy();
+				item.DesiredSize = measureStrategy.Measure(element,graphics);
 				itemsList.Add(item);
+				Console.WriteLine("Size {0} DesiredSize {1}",item.Size,item.DesiredSize);
 			}
 			exportContainer.ExportedItems.AddRange(itemsList);
 			return exportContainer;

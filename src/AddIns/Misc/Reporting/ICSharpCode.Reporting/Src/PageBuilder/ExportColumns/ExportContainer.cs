@@ -8,6 +8,7 @@
  */
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Reporting.Arrange;
 using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces.Export;
@@ -33,6 +34,11 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 		public void Accept(IVisitor visitor)
 		{
 			visitor.Visit(this);
+		}
+		
+		public override ICSharpCode.Reporting.Arrange.IArrangeStrategy GetArrangeStrategy()
+		{
+			return new ContainerArrangeStrategy();
 		}
 	}
 }

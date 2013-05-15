@@ -75,8 +75,8 @@ namespace ICSharpCode.Reports.Addin.SecondaryViews
 						var reportingFactory = new ReportingFactory();
 						reportCreator = reportingFactory.ReportCreator(model);
 						reportCreator.BuildExportList();
-						var pe = new PrintExporter(reportCreator.Pages);
-						pe.Run();
+//						var pe = new PrintExporter(reportCreator.Pages);
+//						pe.Run();
 						break;
 					}
 					

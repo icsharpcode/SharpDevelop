@@ -21,6 +21,7 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 	public interface IExportText : IExportColumn
 	{
 		 Font Font {get;set;}
+		 string Text {get;set;}
 	}
 	
 	
@@ -37,5 +38,8 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 		
 		public Font Font {get;set;}
 		
+		
+		public string Text {get;set;}
+			
 	}
 }

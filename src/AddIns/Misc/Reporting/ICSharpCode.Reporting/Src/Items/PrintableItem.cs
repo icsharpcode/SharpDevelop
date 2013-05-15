@@ -28,9 +28,17 @@ namespace ICSharpCode.Reporting.Items
 			return null;
 		}
 		
-		public virtual IArrangeStrategy GetArrangeStrategy ()
+		public virtual IMeasurementStrategy MeasurementStrategy ()
 		{
 			return null;
 		}
+		
+		public Color ForeColor {get;set;}
+			
+		
+		public Color BackColor {get;set;}
+			
+		
+		public Color FrameColor {get;set;}
 	}
 }

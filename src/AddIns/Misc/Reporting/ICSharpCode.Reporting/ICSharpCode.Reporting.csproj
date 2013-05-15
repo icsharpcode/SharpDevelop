@@ -55,6 +55,9 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Presentation">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
@@ -67,18 +70,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\Arrange\ContainerArrangeStrategy.cs" />
+    <Compile Include="Src\Arrange\ArrangeStrategy.cs" />
+    <Compile Include="Src\Arrange\MeasurementStrategy.cs" />
     <Compile Include="Src\BaseClasses\Page.cs" />
     <Compile Include="Src\BaseClasses\PageInfo.cs" />
     <Compile Include="Src\Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\Exporter\BaseExporter.cs" />
     <Compile Include="Src\Exporter\DebugExporter.cs" />
-    <Compile Include="Src\Exporter\PrintExporter.cs" />
+    <Compile Include="Src\Exporter\WpfExporter.cs" />
     <Compile Include="Src\Exporter\Visitors\AbstractVisitor.cs" />
     <Compile Include="Src\Exporter\Visitors\IAcceptor.cs" />
     <Compile Include="Src\Exporter\Visitors\IVisitor.cs" />
     <Compile Include="Src\Exporter\Visitors\DebugVisitor.cs" />
-    <Compile Include="Src\ExportRenderer\FixedDocumentRenderer.cs" />
+    <Compile Include="Src\Exporter\Visitors\WpfVisitor.cs" />
+    <Compile Include="Src\ExportRenderer\FixedDocumentCreator.cs" />
     <Compile Include="Src\Factories\ExportColumnFactory.cs" />
     <Compile Include="Src\Factories\SectionFactory.cs" />
     <Compile Include="Src\Globals\CreateGraphics.cs" />

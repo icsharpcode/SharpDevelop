@@ -45,6 +45,8 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 			var result = firstItem.ExportedItems[0];
 			Assert.That(result,Is.InstanceOf(typeof(ExportText)));
 		}
+		
+		
 		[SetUp]
 		public void LoadFromStream()
 		{

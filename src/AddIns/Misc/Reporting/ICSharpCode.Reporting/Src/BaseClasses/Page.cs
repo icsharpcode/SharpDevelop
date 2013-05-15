@@ -59,5 +59,46 @@ namespace ICSharpCode.Reporting.BaseClasses
 		{
 			throw new NotImplementedException();
 		}
+		
+		public ICSharpCode.Reporting.Arrange.IArrangeStrategy GetArrangeStrategy()
+		{
+			throw new NotImplementedException();
+		}
+		
+		public Size DesiredSize {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public Color ForeColor {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public Color BackColor {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public Color FrameColor {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

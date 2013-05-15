@@ -20,12 +20,15 @@ namespace ICSharpCode.Reporting.Interfaces
 		string Name{get;set;}
 		Size Size {get;set;}
 		Point Location {get;set;}
+		Color ForeColor {get;set;}
+		Color BackColor {get;set;}
+		Color FrameColor{get;set;}
 	}
 	
 	
 	public interface IPrintableObject:IReportObject {
 		IExportColumn CreateExportColumn();
-		IArrangeStrategy GetArrangeStrategy ();
+		IMeasurementStrategy MeasurementStrategy ();
 	}
 	
 }

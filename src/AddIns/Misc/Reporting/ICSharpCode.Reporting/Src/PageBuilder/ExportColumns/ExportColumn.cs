@@ -8,6 +8,7 @@
  */
 using System;
 using System.Drawing;
+using ICSharpCode.Reporting.Arrange;
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Interfaces;
@@ -26,5 +27,18 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 		public Size Size {get;set;}
 		
 		public Point Location {get;set;}
+		
+		public virtual IArrangeStrategy GetArrangeStrategy ()
+		{
+			return null;
+		}
+		
+		public Size DesiredSize {get;set;}
+		
+		public Color ForeColor {get;set;}
+		
+		public Color BackColor {get;set;}
+		
+		public Color FrameColor {get;set;}
 	}
 }
