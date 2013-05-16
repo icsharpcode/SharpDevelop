@@ -8,12 +8,15 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 using ICSharpCode.AvalonEdit.Snippets;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 {
@@ -212,16 +215,27 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 				return s => s.ToLower();
 			if ("toUpper".Equals(name, StringComparison.OrdinalIgnoreCase))
 				return s => s.ToUpper();
-			#warning Reimplement language-specific name conversion functions
-			/*
+			
+			ICodeGenerator generator = GetCodeGeneratorForFile(context.FileName);
+			if (generator == null) return null;
+			
 			if ("toFieldName".Equals(name, StringComparison.OrdinalIgnoreCase))
-				return s => context.Language.Properties.CodeGenerator.GetFieldName(s);
+				return s => generator.GetFieldName(s);
 			if ("toPropertyName".Equals(name, StringComparison.OrdinalIgnoreCase))
-				return s => context.Language.Properties.CodeGenerator.GetPropertyName(s);
+				return s => generator.GetPropertyName(s);
 			if ("toParameterName".Equals(name, StringComparison.OrdinalIgnoreCase))
-				return s => context.Language.Properties.CodeGenerator.GetParameterName(s);
-				*/
+				return s => generator.GetParameterName(s);
 			return null;
+		}
+		
+		static ICodeGenerator GetCodeGeneratorForFile(FileName fileName)
+		{
+			// ICodeGenerator depends on IProject (at least the C# version of it).
+			// TODO : what if file is not part of a project?
+			IProject project = SD.ProjectService.FindProjectContainingFile(fileName);
+			if (project == null)
+				return null;
+			return project.CodeGenerator;
 		}
 		
 		sealed class FunctionBoundElement : SnippetBoundElement

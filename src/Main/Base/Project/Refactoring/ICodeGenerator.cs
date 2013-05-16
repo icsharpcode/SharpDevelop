@@ -16,5 +16,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		void AddAssemblyAttribute(IAttribute attribute);
 		void AddReturnTypeAttribute(IMethod target, IAttribute attribute);
 		void InsertEventHandler(ITypeDefinition target, string name, IEvent eventDefinition, bool jumpTo);
+		
+		string GetPropertyName(string fieldName);
+		string GetParameterName(string fieldName);
+		string GetFieldName(string propertyName);
 	}
 }

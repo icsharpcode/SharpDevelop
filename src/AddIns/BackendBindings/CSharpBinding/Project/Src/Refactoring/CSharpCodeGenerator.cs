@@ -124,5 +124,40 @@ namespace CSharpBinding.Refactoring
 				script.InsertBefore(node, attr);
 			}
 		}
+		
+		public string GetPropertyName(string fieldName)
+		{
+			if (string.IsNullOrEmpty(fieldName))
+				return fieldName;
+			if (fieldName.StartsWith("_") && fieldName.Length > 1)
+				return Char.ToUpper(fieldName[1]) + fieldName.Substring(2);
+			else if (fieldName.StartsWith("m_") && fieldName.Length > 2)
+				return Char.ToUpper(fieldName[2]) + fieldName.Substring(3);
+			else
+				return Char.ToUpper(fieldName[0]) + fieldName.Substring(1);
+		}
+		
+		public string GetParameterName(string fieldName)
+		{
+			if (string.IsNullOrEmpty(fieldName))
+				return fieldName;
+			if (fieldName.StartsWith("_") && fieldName.Length > 1)
+				return Char.ToLower(fieldName[1]) + fieldName.Substring(2);
+			else if (fieldName.StartsWith("m_") && fieldName.Length > 2)
+				return Char.ToLower(fieldName[2]) + fieldName.Substring(3);
+			else
+				return Char.ToLower(fieldName[0]) + fieldName.Substring(1);
+		}
+		
+		public string GetFieldName(string propertyName)
+		{
+			if (string.IsNullOrEmpty(propertyName))
+				return propertyName;
+			string newName = Char.ToLower(propertyName[0]) + propertyName.Substring(1);
+			if (newName == propertyName)
+				return "_" + newName;
+			else
+				return newName;
+		}
 	}
 }
