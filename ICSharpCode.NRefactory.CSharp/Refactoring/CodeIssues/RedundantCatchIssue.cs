@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -122,17 +123,35 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				AddIssue(tryCatchStatement.TryBlock.EndLocation, lastCatch.EndLocation, removeTryCatchMessage, fixes);
 			}
 
-			bool IsRedundant(CatchClause catchClause)
+			static bool IsThrowsClause (CatchClause catchClause)
 			{
 				var firstStatement = catchClause.Body.Statements.FirstOrNullObject();
-				if (firstStatement.IsNull) {
+				if (firstStatement.IsNull)
 					return false;
-				}
 				var throwStatement = firstStatement as ThrowStatement;
-				if (throwStatement == null) {
+				if (throwStatement == null)
 					return false;
+				return true;
+			}
+
+			bool IsRedundant(CatchClause catchClause)
+			{
+				if (!IsThrowsClause (catchClause))
+					return false;
+
+				var type = ctx.Resolve (catchClause.Type).Type;
+				var n = catchClause.NextSibling;
+				while (n != null) {
+					var nextClause = n as CatchClause;
+					if (nextClause != null) {
+						if (nextClause.Type.IsNull && !IsThrowsClause(nextClause))
+							return false;
+						if (!IsThrowsClause(nextClause) && type.GetDefinition ().IsDerivedFrom (ctx.Resolve (nextClause.Type).Type.GetDefinition ()))
+							return false;
+					}
+					n = n.NextSibling;
 				}
-				return throwStatement.Expression.IsNull;
+				return true;
 			}
 		}
 	}
