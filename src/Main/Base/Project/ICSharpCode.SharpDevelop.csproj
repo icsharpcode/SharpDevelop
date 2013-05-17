@@ -525,7 +525,7 @@
     <Compile Include="Src\Services\LanguageBinding\ILanguageBinding.cs" />
     <Compile Include="Src\Services\LanguageBinding\LanguageBindingDoozer.cs" />
     <Compile Include="Src\Services\LanguageBinding\LanguageBindingService.cs" />
-    <Compile Include="Src\Services\Language\LanguageService.cs" />
+    <Compile Include="Src\Services\Language\UILanguageService.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WindowActiveEvaluator.cs" />
     <Compile Include="Src\Internal\Doozers\DefaultOptionPanelDescriptor.cs" />
     <Compile Include="Src\Internal\Doozers\OptionPanelDoozer.cs" />
@@ -545,7 +545,7 @@
     <Compile Include="Src\Services\ProjectBinding\ProjectBindingService.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\CombineOpenEvaluator.cs" />
     <Compile Include="Src\Services\ProjectBinding\ProjectBindingDoozer.cs" />
-    <Compile Include="Src\Services\Language\Language.cs" />
+    <Compile Include="Src\Services\Language\UILanguage.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ProjectActiveEvaluator.cs" />
     <Compile Include="Src\Services\AmbienceService\AmbienceService.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WindowOpenEvaluator.cs" />

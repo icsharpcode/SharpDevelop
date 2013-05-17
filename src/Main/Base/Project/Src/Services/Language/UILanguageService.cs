@@ -11,34 +11,34 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop
 {
-	public static class LanguageService
+	static class UILanguageService
 	{
 		static string languagePath = Path.Combine(PropertyService.DataDirectory, "resources", "languages");
 		
-		static ReadOnlyCollection<Language> languages = null;
+		static ReadOnlyCollection<UILanguage> languages = null;
 		
-		public static ReadOnlyCollection<Language> Languages {
+		public static ReadOnlyCollection<UILanguage> Languages {
 			get {
 				return languages;
 			}
 		}
 		
-		public static Language GetLanguage(string code)
+		public static UILanguage GetLanguage(string code)
 		{
-			foreach (Language l in languages) {
+			foreach (UILanguage l in languages) {
 				if (l.Code == code)
 					return l;
 			}
-			foreach (Language l in languages) {
+			foreach (UILanguage l in languages) {
 				if (l.Code.StartsWith(code, StringComparison.Ordinal))
 					return l;
 			}
 			return languages[0];
 		}
 		
-		static LanguageService()
+		static UILanguageService()
 		{
-			List<Language> languages = new List<Language>();
+			List<UILanguage> languages = new List<UILanguage>();
 			
 			XmlDocument doc = new XmlDocument();
 			doc.Load(Path.Combine(languagePath, "LanguageDefinition.xml"));
@@ -48,7 +48,7 @@ namespace ICSharpCode.SharpDevelop
 			foreach (XmlNode node in nodes) {
 				XmlElement el = node as XmlElement;
 				if (el != null) {
-					languages.Add(new Language(
+					languages.Add(new UILanguage(
 						el.Attributes["name"].InnerText,
 						el.Attributes["code"].InnerText,
 						Path.Combine(languagePath, el.Attributes["icon"].InnerText),
@@ -56,7 +56,7 @@ namespace ICSharpCode.SharpDevelop
 					));
 				}
 			}
-			LanguageService.languages = languages.AsReadOnly();
+			UILanguageService.languages = languages.AsReadOnly();
 		}
 		
 		/// <summary>

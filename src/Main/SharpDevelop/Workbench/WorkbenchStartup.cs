@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		{
 			SD.Services.AddService(typeof(IWorkbench), workbench);
 			
-			LanguageService.ValidateLanguage();
+			UILanguageService.ValidateLanguage();
 			
 			TaskService.Initialize();
 			Project.CustomToolsService.Initialize();

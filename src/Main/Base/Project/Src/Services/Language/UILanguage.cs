@@ -5,7 +5,7 @@ using System;
 
 namespace ICSharpCode.SharpDevelop
 {
-	public class Language
+	public class UILanguage
 	{
 		string name;
 		string code;
@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop
 			get { return isRightToLeft; }
 		}
 		
-		public Language(string name, string code, string imagePath, bool isRightToLeft)
+		public UILanguage(string name, string code, string imagePath, bool isRightToLeft)
 		{
 			this.name       = name;
 			this.code       = code;

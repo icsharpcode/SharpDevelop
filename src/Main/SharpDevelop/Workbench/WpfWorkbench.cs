@@ -222,7 +222,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		void UpdateFlowDirection()
 		{
-			Language language = LanguageService.GetLanguage(ResourceService.Language);
+			UILanguage language = UILanguageService.GetLanguage(ResourceService.Language);
 			Core.WinForms.RightToLeftConverter.IsRightToLeft = language.IsRightToLeft;
 			this.FlowDirection = language.IsRightToLeft ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
 			App.Current.Resources[GlobalStyles.FlowDirectionKey] = this.FlowDirection;
