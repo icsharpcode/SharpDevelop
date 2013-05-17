@@ -3,36 +3,29 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop
 {
 	public class DefaultLanguageBinding : ILanguageBinding
 	{
+		public static readonly DefaultLanguageBinding DefaultInstance = new DefaultLanguageBinding();
+		
 		public virtual IFormattingStrategy FormattingStrategy {
 			get {
-				return null;
+				return DefaultFormattingStrategy.DefaultInstance;
 			}
-		}
-		
-		/*
-		public virtual LanguageProperties Properties {
-			get {
-				return null;
-			}
-		}
-		*/
-		
-		public virtual void Attach(ITextEditor editor)
-		{
-		}
-		
-		public virtual void Detach()
-		{
 		}
 		
 		public virtual IBracketSearcher BracketSearcher {
 			get {
-				return null;
+				return DefaultBracketSearcher.DefaultInstance;
+			}
+		}
+		
+		public virtual ICodeGenerator CodeGenerator {
+			get {
+				return DefaultCodeGenerator.DefaultInstance;
 			}
 		}
 	}

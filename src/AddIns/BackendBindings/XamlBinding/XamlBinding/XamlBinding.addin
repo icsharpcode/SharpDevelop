@@ -43,10 +43,10 @@
 		<CodeCompletionBinding id = "XAML" extensions = ".xaml" class = "ICSharpCode.XamlBinding.XamlCodeCompletionBinding"/>
 	</Path>
 	
-	<Path name="/SharpDevelop/Workbench/LanguageBindings">
-		<LanguageBinding
+	<Path name="/SharpDevelop/ViewContent/TextEditor/Extensions">
+		<TextEditorExtension
 			id="XAML"
-			class="ICSharpCode.XamlBinding.XamlLanguageBinding"
+			class="ICSharpCode.XamlBinding.XamlTextEditorExtension"
 			extensions=".xaml" />
 	</Path>
 	

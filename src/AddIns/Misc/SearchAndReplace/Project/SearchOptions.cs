@@ -156,14 +156,13 @@ namespace SearchAndReplace
 		}
 	}
 	
-	public class SearchAndReplaceBinding : DefaultLanguageBinding
+	public class SearchAndReplaceTextEditorExtension : ITextEditorExtension
 	{
 		TextArea textArea;
 		SearchInputHandler handler;
 		
-		public override void Attach(ITextEditor editor)
+		public void Attach(ITextEditor editor)
 		{
-			base.Attach(editor);
 			textArea = editor.GetService(typeof(TextArea)) as TextArea;
 			if (textArea != null) {
 				handler = new SearchInputHandler(textArea);
@@ -180,9 +179,8 @@ namespace SearchAndReplace
 			SearchOptions.SearchMode = e.UseRegex ? SearchMode.RegEx : SearchMode.Normal;
 		}
 		
-		public override void Detach()
+		public void Detach()
 		{
-			base.Detach();
 			if (textArea != null) {
 				textArea.DefaultInputHandler.NestedInputHandlers.Remove(handler);
 				textArea = null;

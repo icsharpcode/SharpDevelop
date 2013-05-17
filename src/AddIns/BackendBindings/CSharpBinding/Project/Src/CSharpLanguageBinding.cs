@@ -25,21 +25,19 @@ namespace CSharpBinding
 			get { return new CSharpFormattingStrategy(); }
 		}
 		
-//		public override LanguageProperties Properties {
-//			get { return LanguageProperties.CSharp; }
-//		}
-//
 		public override IBracketSearcher BracketSearcher {
 			get { return new CSharpBracketSearcher(); }
 		}
-		
+	}
+	
+	public class CSharpTextEditorExtension : ITextEditorExtension
+	{
 		ITextEditor editor;
 		IssueManager inspectionManager;
 		IList<IContextActionProvider> contextActionProviders;
 		
-		public override void Attach(ITextEditor editor)
+		public void Attach(ITextEditor editor)
 		{
-			base.Attach(editor);
 			this.editor = editor;
 			inspectionManager = new IssueManager(editor);
 			//codeManipulation = new CodeManipulation(editor);
@@ -50,7 +48,7 @@ namespace CSharpBinding
 			}
 		}
 		
-		public override void Detach()
+		public void Detach()
 		{
 			//codeManipulation.Dispose();
 			if (inspectionManager != null) {
@@ -61,7 +59,6 @@ namespace CSharpBinding
 				editor.ContextActionProviders.RemoveAll(contextActionProviders.Contains);
 			}
 			this.editor = null;
-			base.Detach();
 		}
 	}
 }

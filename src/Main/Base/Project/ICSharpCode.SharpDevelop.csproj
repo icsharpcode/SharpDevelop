@@ -119,6 +119,7 @@
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
     <Compile Include="Editor\ITextEditor.cs" />
+    <Compile Include="Editor\ITextEditorExtension.cs" />
     <Compile Include="Editor\ITextMarker.cs" />
     <Compile Include="Editor\ITooltip.cs">
       <DependentUpon>ToolTipService.cs</DependentUpon>
@@ -520,7 +521,6 @@
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
     <Compile Include="Workbench\File\IFileService.cs" />
     <Compile Include="Workbench\File\OpenedFile.cs" />
-    <Compile Include="Src\Services\LanguageBinding\AggregatedLanguageBinding.cs" />
     <Compile Include="Src\Services\LanguageBinding\DefaultLanguageBinding.cs" />
     <Compile Include="Src\Services\LanguageBinding\ILanguageBinding.cs" />
     <Compile Include="Src\Services\LanguageBinding\LanguageBindingDoozer.cs" />

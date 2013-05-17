@@ -143,10 +143,10 @@ namespace ICSharpCode.XamlBinding
 		
 		public static XamlCompletionContext ResolveCompletionContext(ITextEditor editor, char typedValue)
 		{
-			var binding = editor.GetService(typeof(XamlLanguageBinding)) as XamlLanguageBinding;
+			var binding = editor.GetService(typeof(XamlTextEditorExtension)) as XamlTextEditorExtension;
 			
 			if (binding == null)
-				throw new InvalidOperationException("Can only use ResolveCompletionContext with a XamlLanguageBinding.");
+				throw new InvalidOperationException("Can only use ResolveCompletionContext with a XamlTextEditorExtension.");
 			
 			var context = new XamlCompletionContext(ResolveContext(editor.FileName, editor.Document, editor.Caret.Offset)) {
 				PressedKey = typedValue,
@@ -158,10 +158,10 @@ namespace ICSharpCode.XamlBinding
 		
 		public static XamlCompletionContext ResolveCompletionContext(ITextEditor editor, char typedValue, int offset)
 		{
-			var binding = editor.GetService(typeof(XamlLanguageBinding)) as XamlLanguageBinding;
+			var binding = editor.GetService(typeof(XamlTextEditorExtension)) as XamlTextEditorExtension;
 			
 			if (binding == null)
-				throw new InvalidOperationException("Can only use ResolveCompletionContext with a XamlLanguageBinding.");
+				throw new InvalidOperationException("Can only use ResolveCompletionContext with a XamlTextEditorExtension.");
 			
 			var context = new XamlCompletionContext(ResolveContext(editor.FileName, editor.Document, offset)) {
 				PressedKey = typedValue,

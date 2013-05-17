@@ -69,6 +69,13 @@
 			extensions=".cs" />
 	</Path>
 	
+	<Path name="/SharpDevelop/ViewContent/TextEditor/Extensions">
+		<TextEditorExtension
+			id="CSharp"
+			class="CSharpBinding.CSharpTextEditorExtension"
+			extensions=".cs" />
+	</Path>
+	
 	<Path name = "/SharpDevelop/ViewContent/AvalonEdit/SyntaxModes">
 		<SyntaxMode id="C#" name="C#" extensions=".cs" resource="CSharpBinding.Resources.CSharp-Semantic.xshd" />
 	</Path>

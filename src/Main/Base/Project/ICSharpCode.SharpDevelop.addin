@@ -41,6 +41,7 @@
 			<Doozer name="Pad" class="ICSharpCode.SharpDevelop.PadDoozer"/>
 			<Doozer name="ProjectBinding" class="ICSharpCode.SharpDevelop.ProjectBindingDoozer"/>
 			<Doozer name="LanguageBinding" class="ICSharpCode.SharpDevelop.LanguageBindingDoozer"/>
+			<Doozer name="TextEditorExtension" class="ICSharpCode.SharpDevelop.Editor.TextEditorExtensionDoozer"/>
 			<Doozer name="BrowserSchemeExtension" class="ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionDoozer"/>
 			<Doozer name="CodeCompletionBinding" class="ICSharpCode.SharpDevelop.Editor.CodeCompletion.CodeCompletionBindingDoozer"/>
 			<Doozer name="Debugger" class="ICSharpCode.SharpDevelop.Debugging.DebuggerDoozer"/>
@@ -81,6 +82,8 @@
 		         class="ICSharpCode.SharpDevelop.Project.BuildService"/>
 		<Service id="ICSharpCode.SharpDevelop.Project.IProjectService"
 		         class="ICSharpCode.SharpDevelop.Project.SDProjectService"/>
+		<Service id="ICSharpCode.SharpDevelop.ILanguageService"
+		         class="ICSharpCode.SharpDevelop.SDLanguageService"/>
 		<Service id="ICSharpCode.SharpDevelop.Project.IMSBuildEngine"
 		         class="ICSharpCode.SharpDevelop.Project.MSBuildEngine"/>
 		<Service id="ICSharpCode.SharpDevelop.Editor.Bookmarks.IBookmarkManager"

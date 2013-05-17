@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		public virtual ITextEditorOptions Options { get; private set; }
 		
 		public virtual ILanguageBinding Language {
-			get { return AggregatedLanguageBinding.NullLanguageBinding; }
+			get { return DefaultLanguageBinding.DefaultInstance; }
 		}
 		
 		sealed class CaretAdapter : ITextEditorCaret

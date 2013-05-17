@@ -408,7 +408,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				// remove secondary editor
 				this.Children.Remove(secondaryTextEditor);
 				this.Children.Remove(gridSplitter);
-				secondaryTextEditorAdapter.Language.Detach();
+				secondaryTextEditorAdapter.DetachExtensions();
 				DisposeTextEditor(secondaryTextEditor);
 				secondaryTextEditor = null;
 				secondaryTextEditorAdapter = null;
@@ -646,9 +646,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			SD.ParserService.ParseInformationUpdated -= ParserServiceParseInformationUpdated;
 			
 			if (primaryTextEditorAdapter.Language != null)
-				primaryTextEditorAdapter.Language.Detach();
+				primaryTextEditorAdapter.DetachExtensions();
 			if (secondaryTextEditorAdapter != null && secondaryTextEditorAdapter.Language != null)
-				secondaryTextEditorAdapter.Language.Detach();
+				secondaryTextEditorAdapter.DetachExtensions();
 			
 			if (errorPainter != null)
 				errorPainter.Dispose();

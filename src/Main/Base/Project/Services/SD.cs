@@ -230,6 +230,11 @@ namespace ICSharpCode.SharpDevelop
 			get { return GetRequiredService<IProjectService>(); }
 		}
 		
+		/// <inheritdoc see="ILanguageService"/>
+		public static ILanguageService LanguageService {
+			get { return GetRequiredService<ILanguageService>(); }
+		}
+		
 		/// <inheritdoc see="IUIService"/>
 		public static IUIService UIService {
 			get { return GetRequiredService<IUIService>(); }
