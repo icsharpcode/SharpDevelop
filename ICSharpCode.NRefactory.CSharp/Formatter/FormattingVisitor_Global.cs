@@ -80,6 +80,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			bool first = true;
 			bool startFormat = false;
 			VisitChildrenToFormat(namespaceDeclaration, child => {
+				if (first) {
+					startFormat = child.StartLocation > namespaceDeclaration.LBraceToken.StartLocation;
+				}
 				if (child.Role == Roles.LBrace) {
 					var next = child.GetNextSibling(NoWhitespacePredicate);
 					var blankLines = 1;
@@ -169,8 +172,13 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			if (indentBody)
 				curIndent.Push(IndentType.Block);
-			bool startFormat = false;
+			bool startFormat = true;
+			bool first = true;
 			VisitChildrenToFormat(typeDeclaration, child => {
+				if (first) {
+					startFormat = child.StartLocation > typeDeclaration.LBraceToken.StartLocation;
+					first = false;
+				}
 				if (child.Role == Roles.LBrace) {
 					startFormat = true;
 					return;
