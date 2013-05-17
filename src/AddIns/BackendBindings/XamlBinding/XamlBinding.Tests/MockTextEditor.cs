@@ -22,13 +22,13 @@ namespace ICSharpCode.XamlBinding.Tests
 	/// </summary>
 	public class MockTextEditor : AvalonEditTextEditorAdapter
 	{
-		XamlLanguageBinding langBinding;
+		XamlTextEditorExtension extension;
 		
 		public MockTextEditor()
 			: base(new TextEditor())
 		{
-			this.langBinding = new XamlLanguageBinding();
-			this.TextEditor.TextArea.TextView.Services.AddService(typeof(XamlLanguageBinding), langBinding);
+			this.extension = new XamlTextEditorExtension();
+			this.TextEditor.TextArea.TextView.Services.AddService(typeof(XamlTextEditorExtension), extension);
 		}
 		
 		public override FileName FileName {
@@ -51,12 +51,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		{
 			this.lastCompletionItemList = data;
 			return null;
-		}
-		
-		public override ICSharpCode.SharpDevelop.ILanguageBinding Language {
-			get {
-				return langBinding;
-			}
 		}
 		
 		IList<IInsightItem> lastInsightItemList = null;
