@@ -161,6 +161,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				default:
 					throw new InvalidOperationException("unsupported class type : " + typeDeclaration.ClassType);
 			}
+			
+			foreach (var constraint in typeDeclaration.Constraints)
+				constraint.AcceptVisitor (this);
 
 			FixOpenBrace(braceStyle, typeDeclaration.LBraceToken);
 
@@ -247,6 +250,21 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (comment.StartsLine && !HadErrors && (!policy.KeepCommentsAtFirstColumn || comment.StartLocation.Column > 1))
 				FixIndentation(comment);
+		}
+
+		public override void VisitConstraint(Constraint constraint)
+		{
+			VisitChildrenToFormat (constraint, node => {
+				if (node is AstType) {
+					node.AcceptVisitor (this);
+				} else if (node.Role == Roles.LPar) {
+					ForceSpacesBefore (node, false);
+					ForceSpacesAfter (node, false);
+				} else if (node.Role ==Roles.Comma) {
+					ForceSpacesBefore (node, false);
+					ForceSpacesAfter (node, true);
+				}
+			});
 		}
 	}
 }

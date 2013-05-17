@@ -261,9 +261,9 @@ namespace ICSharpCode.NRefactory.CSharp
 					switch (sce.Constraint) {
 						case SpecialConstraint.Class:
 							return new PrimitiveType ("class", Convert (sce.Location));
-						case SpecialConstraint.Struct:
+							case SpecialConstraint.Struct:
 							return new PrimitiveType ("struct", Convert (sce.Location));
-						case SpecialConstraint.Constructor:
+							case SpecialConstraint.Constructor:
 							return new PrimitiveType ("new", Convert (sce.Location));
 					}
 				}
@@ -2651,6 +2651,23 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (c.ConstraintExpressions != null) {
 						foreach (var expr in c.ConstraintExpressions) {
 							constraint.AddChild (ConvertToType (expr), Roles.BaseType);
+							if (expr is SpecialContraintExpr) {
+								var sce = (SpecialContraintExpr)expr;
+								switch (sce.Constraint) {
+									case SpecialConstraint.Class:
+										break;
+									case SpecialConstraint.Struct:
+										break;
+									case SpecialConstraint.Constructor:
+										var bl = LocationsBag.GetLocations (expr);
+										if (bl != null) {
+											constraint.AddChild (new CSharpTokenNode (Convert (bl[0]), Roles.LPar), Roles.LPar);
+											constraint.AddChild (new CSharpTokenNode (Convert (bl[1]), Roles.RPar), Roles.RPar);
+										}
+										break;
+								}
+							}
+
 							if (commaLocs != null && curComma < commaLocs.Count)
 								constraint.AddChild (new CSharpTokenNode (Convert (commaLocs [curComma++]), Roles.Comma), Roles.Comma);
 						}

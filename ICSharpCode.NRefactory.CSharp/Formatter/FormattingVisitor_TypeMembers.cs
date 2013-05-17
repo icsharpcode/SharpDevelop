@@ -347,6 +347,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				ForceSpacesAfter(methodDeclaration.LParToken, policy.SpaceBetweenEmptyMethodDeclarationParentheses);
 				ForceSpacesBefore(methodDeclaration.RParToken, policy.SpaceBetweenEmptyMethodDeclarationParentheses);
 			}
+			
+			foreach (var constraint in methodDeclaration.Constraints)
+				constraint.AcceptVisitor (this);
 
 			if (!methodDeclaration.Body.IsNull) {
 				FixOpenBrace(policy.MethodBraceStyle, methodDeclaration.Body.LBraceToken);
