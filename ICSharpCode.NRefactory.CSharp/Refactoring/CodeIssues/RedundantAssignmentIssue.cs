@@ -172,8 +172,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				private bool foundInvocations;
 				private string _varName;
 
-				public bool ContainsRefOrOut(VariableInitializer variableInitializer) 
-                {
+				public bool ContainsRefOrOut(VariableInitializer variableInitializer)
+				{
 					var node = variableInitializer.Parent.Parent;
 					foundInvocations = false;
 					_varName = variableInitializer.Name;
@@ -181,8 +181,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return foundInvocations;
 				}
 
-				protected override void VisitChildren(AstNode node) 
-                {
+				protected override void VisitChildren(AstNode node)
+				{
 					AstNode next;
 					for (var child = node.FirstChild; child != null && !foundInvocations; child = next) {
 						next = child.NextSibling;
@@ -213,36 +213,39 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 
-            class SearchAssignmentForVarVisitor : DepthFirstAstVisitor
-            {
-                bool _foundInvocations;
-                private VariableInitializer _variableInitializer;
+			class SearchAssignmentForVarVisitor : DepthFirstAstVisitor
+			{
+				bool _foundInvocations;
+				private VariableInitializer _variableInitializer;
 
-                public bool ContainsLaterAssignments(VariableInitializer variableInitializer) {
-                    _foundInvocations = false;
-                    _variableInitializer = variableInitializer;
-                    variableInitializer.Parent.Parent.AcceptVisitor(this);
-                    return _foundInvocations;
-                }
+				public bool ContainsLaterAssignments(VariableInitializer variableInitializer)
+				{
+					_foundInvocations = false;
+					_variableInitializer = variableInitializer;
+					variableInitializer.Parent.Parent.AcceptVisitor(this);
+					return _foundInvocations;
+				}
 
-                protected override void VisitChildren(AstNode node) {
-                    AstNode next;
-                    for (var child = node.FirstChild; child != null && !_foundInvocations; child = next) {
-                        next = child.NextSibling;
-                        child.AcceptVisitor(this);
-                    }
-                }
-                public override void VisitAssignmentExpression(AssignmentExpression assignmentExpression)
-                {
-                    if (_foundInvocations)
-                        return;
-                    base.VisitAssignmentExpression(assignmentExpression);
-                    if (assignmentExpression.Left.ToString() == _variableInitializer.Name
-                        && assignmentExpression.StartLocation > _variableInitializer.StartLocation) {
-                        _foundInvocations = true;
-                    }
-                }
-            }
+				protected override void VisitChildren(AstNode node)
+				{
+					AstNode next;
+					for (var child = node.FirstChild; child != null && !_foundInvocations; child = next) {
+						next = child.NextSibling;
+						child.AcceptVisitor(this);
+					}
+				}
+
+				public override void VisitAssignmentExpression(AssignmentExpression assignmentExpression)
+				{
+					if (_foundInvocations)
+						return;
+					base.VisitAssignmentExpression(assignmentExpression);
+					if (assignmentExpression.Left.ToString() == _variableInitializer.Name
+						&& assignmentExpression.StartLocation > _variableInitializer.StartLocation) {
+						_foundInvocations = true;
+					}
+				}
+			}
 
 			void AddIssue(AstNode node)
 			{
@@ -253,52 +256,61 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var containsInvocations =
 						new SearchInvocationsVisitor().ContainsInvocations(variableInitializer.Initializer);
 
-                    var varDecl = node.Parent as VariableDeclarationStatement;
+					var varDecl = node.Parent as VariableDeclarationStatement;
 
-                    var isDeclareStatement = varDecl != null;
-                    var isUsingVar = isDeclareStatement && varDecl.Type.IsVar();
+					var isDeclareStatement = varDecl != null;
+					var isUsingVar = isDeclareStatement && varDecl.Type.IsVar();
 
-                    var expressionType = ctx.Resolve(node).Type;
+					var expressionType = ctx.Resolve(node).Type;
 
-                    var containsLaterAssignments = false;
-                    if (isDeclareStatement) {
-                        //if it is used later, the redundant removal should remove the assignment 
-                        //but not the variable
-                        containsLaterAssignments =
-                            new SearchAssignmentForVarVisitor().ContainsLaterAssignments(variableInitializer);
-                    }
+					var containsLaterAssignments = false;
+					if (isDeclareStatement) {
+						//if it is used later, the redundant removal should remove the assignment 
+						//but not the variable
+						containsLaterAssignments = 
+							new SearchAssignmentForVarVisitor().ContainsLaterAssignments(variableInitializer);
+					}
 
-					AddIssue(variableInitializer.Initializer, title,
-					         script => {
+					AstNode grayOutNode;
+					var containsRefOrOut = new SearchRefOrOutVisitor().ContainsRefOrOut(variableInitializer);
+					if (containsInvocations && isDeclareStatement) {
+						grayOutNode = variableInitializer.AssignToken;
+					} else {
+						if (isDeclareStatement && !containsRefOrOut && !containsLaterAssignments) {
+							grayOutNode = variableInitializer.Parent;
+						} else {
+							grayOutNode = variableInitializer.Initializer;
+						}
+					}
+
+					AddIssue(grayOutNode, title, script => {
 						var variableNode = (VariableInitializer)node;
 						if (containsInvocations && isDeclareStatement) {
 							//add the column ';' that will be removed after the next line replacement
 							var expression = (InvocationExpression)variableNode.Initializer.Clone();
 							var invocation = new ExpressionStatement(expression);
-						    if(containsLaterAssignments && varDecl !=null) {
-                                var clonedDefinition = (VariableDeclarationStatement)varDecl.Clone();
+							if (containsLaterAssignments && varDecl != null) {
+								var clonedDefinition = (VariableDeclarationStatement)varDecl.Clone();
 
-                                var shortExpressionType = CreateShortType(ctx, expressionType, node);
-                                clonedDefinition.Type = shortExpressionType;
-						        var variableNodeClone = clonedDefinition.GetVariable(variableNode.Name);
-                                variableNodeClone.Initializer = null;
-                                script.InsertBefore(node.Parent, clonedDefinition);
-						    }
-						    script.Replace(node.Parent, invocation);
+								var shortExpressionType = CreateShortType(ctx, expressionType, node);
+								clonedDefinition.Type = shortExpressionType;
+								var variableNodeClone = clonedDefinition.GetVariable(variableNode.Name);
+								variableNodeClone.Initializer = null;
+								script.InsertBefore(node.Parent, clonedDefinition);
+							}
+							script.Replace(node.Parent, invocation);
 							return;
 						}
-						var containsRefOrOut =
-							new SearchRefOrOutVisitor().ContainsRefOrOut(variableInitializer);
-                        if (isDeclareStatement && !containsRefOrOut && !containsLaterAssignments) {
-                            script.Remove(node.Parent);
-                            return;
-                        }
+						if (isDeclareStatement && !containsRefOrOut && !containsLaterAssignments) {
+							script.Remove(node.Parent);
+							return;
+						}
 						var replacement = (VariableInitializer)variableNode.Clone();
 						replacement.Initializer = Expression.Null;
-                        if(isUsingVar) {
-                            var shortExpressionType = CreateShortType(ctx, expressionType, node);
-                            script.Replace(varDecl.Type, shortExpressionType);
-                        }
+						if (isUsingVar) {
+							var shortExpressionType = CreateShortType(ctx, expressionType, node);
+							script.Replace(varDecl.Type, shortExpressionType);
+						}
 						script.Replace(node, replacement);
 					});
 				}
@@ -314,14 +326,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 
-		    private static AstType CreateShortType(BaseRefactoringContext refactoringContext, IType expressionType, AstNode node) {
+			private static AstType CreateShortType(BaseRefactoringContext refactoringContext, IType expressionType, AstNode node)
+			{
 
-                var csResolver = refactoringContext.Resolver.GetResolverStateBefore(node);
-                var builder = new TypeSystemAstBuilder(csResolver);
-                return builder.ConvertType(expressionType);
-		    }
+				var csResolver = refactoringContext.Resolver.GetResolverStateBefore(node);
+				var builder = new TypeSystemAstBuilder(csResolver);
+				return builder.ConvertType(expressionType);
+			}
 
-		    static bool IsAssignment(AstNode node)
+			static bool IsAssignment(AstNode node)
 			{
 				if (node is VariableInitializer)
 					return true;
@@ -347,14 +360,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			enum NodeState
 			{
-				None
-,
-				UsageReachable
-,
-				UsageUnreachable
-,
-				Processing
-,
+				None,
+				UsageReachable,
+				UsageUnreachable,
+				Processing,
 			}
 
 			void ProcessNodes(VariableReferenceNode startNode)
