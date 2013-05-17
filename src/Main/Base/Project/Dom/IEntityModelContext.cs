@@ -61,14 +61,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public bool IsBetterPart(IUnresolvedTypeDefinition part1, IUnresolvedTypeDefinition part2)
 		{
+			return EntityModelContextUtils.IsBetterPart(part1, part2, primaryCodeFileExtension);
+		}
+	}
+	
+	public static class EntityModelContextUtils
+	{
+		public static bool IsBetterPart(IUnresolvedTypeDefinition part1, IUnresolvedTypeDefinition part2, string codeFileExtension)
+		{
 			IUnresolvedFile file1 = part1.UnresolvedFile;
 			IUnresolvedFile file2 = part2.UnresolvedFile;
 			if (file1 != null && file2 == null)
 				return true;
 			if (file1 == null)
 				return false;
-			bool file1HasExtension = file1.FileName.EndsWith(primaryCodeFileExtension, StringComparison.OrdinalIgnoreCase);
-			bool file2HasExtension = file2.FileName.EndsWith(primaryCodeFileExtension, StringComparison.OrdinalIgnoreCase);
+			bool file1HasExtension = file1.FileName.EndsWith(codeFileExtension, StringComparison.OrdinalIgnoreCase);
+			bool file2HasExtension = file2.FileName.EndsWith(codeFileExtension, StringComparison.OrdinalIgnoreCase);
 			if (file1HasExtension && !file2HasExtension)
 				return true;
 			if (!file1HasExtension && file2HasExtension)

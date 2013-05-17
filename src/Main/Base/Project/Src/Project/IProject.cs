@@ -300,9 +300,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		IAmbience GetAmbience();
 		
 		/// <summary>
-		/// Returns the ICodeGenerator implementation for this project.
+		/// Returns the ILanguageBinding implementation for this project.
 		/// </summary>
-		ICodeGenerator CodeGenerator { get; }
+		ILanguageBinding LanguageBinding { get; }
 		
 		/// <summary>
 		/// Prepares searching for references to the specified entity.

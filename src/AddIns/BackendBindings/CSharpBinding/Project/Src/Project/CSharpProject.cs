@@ -143,13 +143,13 @@ namespace CSharpBinding
 			return new CSharpCodeProvider();
 		}
 		
-		Refactoring.CSharpCodeGenerator generator;
+		ILanguageBinding language;
 		
-		public override ICSharpCode.SharpDevelop.Refactoring.ICodeGenerator CodeGenerator {
+		public override ILanguageBinding LanguageBinding {
 			get {
-				if (generator == null)
-					generator = new Refactoring.CSharpCodeGenerator(this);
-				return generator;
+				if (language == null)
+					language = SD.LanguageService.GetLanguageByName("CSharp");
+				return language;
 			}
 		}
 	}

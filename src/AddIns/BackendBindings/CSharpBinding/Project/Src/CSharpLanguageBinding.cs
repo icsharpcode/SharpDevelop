@@ -28,6 +28,10 @@ namespace CSharpBinding
 		public override IBracketSearcher BracketSearcher {
 			get { return new CSharpBracketSearcher(); }
 		}
+		
+		public override ICodeGenerator CodeGenerator {
+			get { return new CSharpCodeGenerator(); }
+		}
 	}
 	
 	public class CSharpTextEditorExtension : ITextEditorExtension

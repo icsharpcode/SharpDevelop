@@ -216,26 +216,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			if ("toUpper".Equals(name, StringComparison.OrdinalIgnoreCase))
 				return s => s.ToUpper();
 			
-			ICodeGenerator generator = GetCodeGeneratorForFile(context.FileName);
-			if (generator == null) return null;
-			
 			if ("toFieldName".Equals(name, StringComparison.OrdinalIgnoreCase))
-				return s => generator.GetFieldName(s);
+				return s => context.Language.CodeGenerator.GetFieldName(s);
 			if ("toPropertyName".Equals(name, StringComparison.OrdinalIgnoreCase))
-				return s => generator.GetPropertyName(s);
+				return s => context.Language.CodeGenerator.GetPropertyName(s);
 			if ("toParameterName".Equals(name, StringComparison.OrdinalIgnoreCase))
-				return s => generator.GetParameterName(s);
+				return s => context.Language.CodeGenerator.GetParameterName(s);
 			return null;
-		}
-		
-		static ICodeGenerator GetCodeGeneratorForFile(FileName fileName)
-		{
-			// ICodeGenerator depends on IProject (at least the C# version of it).
-			// TODO : what if file is not part of a project?
-			IProject project = SD.ProjectService.FindProjectContainingFile(fileName);
-			if (project == null)
-				return null;
-			return project.CodeGenerator;
 		}
 		
 		sealed class FunctionBoundElement : SnippetBoundElement

@@ -29,7 +29,7 @@ namespace ICSharpCode.CodeAnalysis
 				FxCopTaskTag tag = t.Tag as FxCopTaskTag;
 				if (tag == null)
 					continue;
-				ICodeGenerator gen = tag.Project.CodeGenerator;
+				ICodeGenerator gen = tag.Project.LanguageBinding.CodeGenerator;
 				ICompilation compilation;
 				if (t.FileName != null)
 					compilation = SD.ParserService.GetCompilationForFile(t.FileName);
@@ -38,7 +38,7 @@ namespace ICSharpCode.CodeAnalysis
 				IAttribute attribute = CreateSuppressAttribute(compilation, tag);
 				
 				if (tag.MemberName == null)
-					gen.AddAssemblyAttribute(attribute);
+					gen.AddAssemblyAttribute(tag.Project, attribute);
 				else
 					gen.AddAttribute(GetEntity(compilation, tag.TypeName, tag.MemberName), attribute);
 			}

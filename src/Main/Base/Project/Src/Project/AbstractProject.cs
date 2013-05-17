@@ -346,9 +346,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[Browsable(false)]
-		public virtual ICodeGenerator CodeGenerator {
+		public virtual ILanguageBinding LanguageBinding {
 			get {
-				throw new NotSupportedException("This project does not support code generation!");
+				return DefaultLanguageBinding.DefaultInstance;
 			}
 		}
 		

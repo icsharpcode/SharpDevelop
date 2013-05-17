@@ -28,28 +28,17 @@ namespace CSharpBinding.Refactoring
 	/// <summary>
 	/// Description of CSharpCodeGenerator.
 	/// </summary>
-	public class CSharpCodeGenerator : ICodeGenerator
+	public class CSharpCodeGenerator : DefaultCodeGenerator
 	{
-		IProject project;
-		ProjectEntityModelContext model;
-		
-		public CSharpCodeGenerator(IProject project)
-		{
-			if (project == null)
-				throw new ArgumentNullException("project");
-			this.project = project;
-			this.model = new ProjectEntityModelContext(project, ".cs");
-		}
-		
 		public void AddAttribute(IEntity target, IAttribute attribute)
 		{
 			AddAttribute(target.Region, attribute);
 		}
 		
-		public void AddAssemblyAttribute(IAttribute attribute)
+		public void AddAssemblyAttribute(IProject targetProject, IAttribute attribute)
 		{
 			// FIXME : will fail if there are no assembly attributes
-			ICompilation compilation = SD.ParserService.GetCompilation(project);
+			ICompilation compilation = SD.ParserService.GetCompilation(targetProject);
 			IAttribute target = compilation.MainAssembly.AssemblyAttributes.LastOrDefault();
 			if (target == null)
 				throw new InvalidOperationException("no assembly attributes found, cannot continue!");
@@ -66,10 +55,7 @@ namespace CSharpBinding.Refactoring
 			IUnresolvedTypeDefinition match = null;
 			
 			foreach (var part in target.Parts) {
-				string fileName = part.UnresolvedFile.FileName;
-				if (!".cs".Equals(Path.GetExtension(fileName), StringComparison.OrdinalIgnoreCase))
-					continue;
-				if (match == null || model.IsBetterPart(part, match))
+				if (match == null || EntityModelContextUtils.IsBetterPart(part, match, ".cs"))
 					match = part;
 			}
 			
@@ -123,41 +109,6 @@ namespace CSharpBinding.Refactoring
 				attr.Attributes.Add(builder.ConvertAttribute(attribute));
 				script.InsertBefore(node, attr);
 			}
-		}
-		
-		public string GetPropertyName(string fieldName)
-		{
-			if (string.IsNullOrEmpty(fieldName))
-				return fieldName;
-			if (fieldName.StartsWith("_") && fieldName.Length > 1)
-				return Char.ToUpper(fieldName[1]) + fieldName.Substring(2);
-			else if (fieldName.StartsWith("m_") && fieldName.Length > 2)
-				return Char.ToUpper(fieldName[2]) + fieldName.Substring(3);
-			else
-				return Char.ToUpper(fieldName[0]) + fieldName.Substring(1);
-		}
-		
-		public string GetParameterName(string fieldName)
-		{
-			if (string.IsNullOrEmpty(fieldName))
-				return fieldName;
-			if (fieldName.StartsWith("_") && fieldName.Length > 1)
-				return Char.ToLower(fieldName[1]) + fieldName.Substring(2);
-			else if (fieldName.StartsWith("m_") && fieldName.Length > 2)
-				return Char.ToLower(fieldName[2]) + fieldName.Substring(3);
-			else
-				return Char.ToLower(fieldName[0]) + fieldName.Substring(1);
-		}
-		
-		public string GetFieldName(string propertyName)
-		{
-			if (string.IsNullOrEmpty(propertyName))
-				return propertyName;
-			string newName = Char.ToLower(propertyName[0]) + propertyName.Substring(1);
-			if (newName == propertyName)
-				return "_" + newName;
-			else
-				return newName;
 		}
 	}
 }

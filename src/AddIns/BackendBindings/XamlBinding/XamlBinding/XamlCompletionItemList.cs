@@ -139,7 +139,7 @@ namespace ICSharpCode.XamlBinding
 			if (unresolved == null) return false;
 			var compilation = SD.ParserService.GetCompilationForFile(context.Editor.FileName);
 			var definition = unresolved.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
-			project.CodeGenerator.InsertEventHandler(definition, completionItem.HandlerName, completionItem.EventType, true);
+			project.LanguageBinding.CodeGenerator.InsertEventHandler(definition, completionItem.HandlerName, completionItem.EventType, true);
 			return true;
 		}
 	}
