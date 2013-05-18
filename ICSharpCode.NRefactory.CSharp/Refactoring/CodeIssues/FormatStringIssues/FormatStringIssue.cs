@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.Linq;
 using ICSharpCode.NRefactory.Utils;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {

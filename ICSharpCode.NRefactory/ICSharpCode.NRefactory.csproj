@@ -267,11 +267,14 @@
     <Compile Include="Utils\CompositeFormatStringParser\IFormatStringSegment.cs" />
     <Compile Include="Utils\CompositeFormatStringParser\IFormatStringError.cs" />
     <Compile Include="Completion\CompletionExtensionMethods.cs" />
+    <Compile Include="Refactoring\IssueMarker.cs" />
+    <Compile Include="Refactoring\Severity.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />
     <Folder Include="TypeSystem\" />
     <Folder Include="Utils\CompositeFormatStringParser\" />
+    <Folder Include="Refactoring\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\doc\Pattern Matching.html">

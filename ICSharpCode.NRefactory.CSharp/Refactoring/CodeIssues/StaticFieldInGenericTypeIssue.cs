@@ -1,7 +1,4 @@
 //
-using System.Diagnostics.CodeAnalysis;
-
-
 // StaticFieldInGenericTypeIssue.cs
 //
 // Author:
@@ -30,6 +27,8 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
+using ICSharpCode.NRefactory.Refactoring;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {

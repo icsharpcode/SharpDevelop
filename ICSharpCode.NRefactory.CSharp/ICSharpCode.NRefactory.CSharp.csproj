@@ -401,8 +401,6 @@
     <Compile Include="Refactoring\ContextActionAttribute.cs" />
     <Compile Include="Refactoring\IssueAttribute.cs" />
     <Compile Include="Refactoring\CodeIssues\IssueCategories.cs" />
-    <Compile Include="Refactoring\Severity.cs" />
-    <Compile Include="Refactoring\IssueMarker.cs" />
     <Compile Include="Refactoring\CodeIssues\GatherVisitorBase.cs" />
     <Compile Include="Refactoring\CodeIssues\ConditionalToNullCoalescingIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\NotImplementedExceptionIssue.cs" />
