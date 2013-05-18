@@ -81,7 +81,7 @@ namespace CSharpBinding.Refactoring
 			IViewContent viewContent = FileService.NewFile(newFileName, newCode.ToString());
 			viewContent.PrimaryFile.SaveToDisk(newFileName);
 			// now that the code is saved in the other file, remove it from the original document
-			RemoveExtractedNode();
+			RemoveExtractedNode(context, node);
 			
 			IProject project = (IProject)compilation.GetProject();
 			if (project != null) {
@@ -94,9 +94,12 @@ namespace CSharpBinding.Refactoring
 			}
 		}
 		
-		void RemoveExtractedNode()
+		void RemoveExtractedNode(EditorRefactoringContext context, EntityDeclaration node)
 		{
-			//throw new NotImplementedException();
+			IDocument document = context.Editor.Document;
+			int start = document.GetOffset(node.StartLocation);
+			int end   = document.GetOffset(node.EndLocation);
+			document.Remove(start, end - start);
 		}
 		
 		string CopyFileHeader(IDocument document, CSharpFullParseInformation info)
