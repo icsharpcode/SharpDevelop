@@ -31,6 +31,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public override void VisitTypeDeclaration(TypeDeclaration declaration)
 			{
 				var result = ctx.Resolve(declaration) as TypeResolveResult;
+				
+				// happens on invalid type declarations, we should not crash in that case...
+				if (result == null) return;
+				
 				var baseType = result.Type.DirectBaseTypes.FirstOrDefault(t => !t.IsKnownType(KnownTypeCode.Object) && t.Kind != TypeKind.Interface);
 
 				if (baseType != null)
