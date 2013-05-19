@@ -24,6 +24,9 @@ namespace ICSharpCode.Reporting.Globals
 		
 		public static Size Measure (ITextItem item,Graphics graphics) {
 			
+			if (!item.CanGrow) {
+				return item.Size;
+			}
 			if (!String.IsNullOrEmpty(item.Text)) {
 				SizeF size = graphics.MeasureString(item.Text.TrimEnd(),
 				                                    item.Font,
@@ -32,7 +35,6 @@ namespace ICSharpCode.Reporting.Globals
 				if (size.Height < item.Size.Height) {
 					return item.Size;
 				}
-//				Console.WriteLine("ret val {0}",new Size(item.Size.Width,(int)Math.Ceiling(size.Height)).ToString());
 				return new Size(item.Size.Width,(int)Math.Ceiling(size.Height));
 			}
 			

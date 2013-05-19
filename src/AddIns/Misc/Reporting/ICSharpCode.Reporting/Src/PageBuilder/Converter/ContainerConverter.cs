@@ -50,12 +50,19 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 			
 			foreach (var element in Container.Items) {
 				var item = ExportColumnFactory.CreateItem(element);
+				item.Parent = exportContainer;
 				var measureStrategy = element.MeasurementStrategy();
 				item.DesiredSize = measureStrategy.Measure(element,graphics);
+				
 				itemsList.Add(item);
 				Console.WriteLine("Size {0} DesiredSize {1}",item.Size,item.DesiredSize);
 			}
 			exportContainer.ExportedItems.AddRange(itemsList);
+			
+			Console.WriteLine("calling Container-Arrange");
+			var exportArrange = exportContainer.GetArrangeStrategy();
+			exportArrange.Arrange(exportContainer);
+			
 			return exportContainer;
 		}
 			

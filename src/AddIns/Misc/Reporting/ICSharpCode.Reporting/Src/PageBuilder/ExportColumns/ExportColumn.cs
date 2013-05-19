@@ -40,5 +40,8 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 		public Color BackColor {get;set;}
 		
 		public Color FrameColor {get;set;}
+		
+		public IExportColumn Parent {get;set;}
+			
 	}
 }

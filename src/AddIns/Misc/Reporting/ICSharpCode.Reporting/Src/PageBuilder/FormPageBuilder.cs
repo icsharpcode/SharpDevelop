@@ -35,15 +35,16 @@ namespace ICSharpCode.Reporting.PageBuilder
 		{
 			base.BuildExportList();
 			WritePages ();
-			BuildReportHeader();
+//			BuildReportHeader();
 		}
 		
 		
 		void BuildReportHeader()
 		{
 			if (Pages.Count == 0) {
-				var sc = new ContainerConverter(graphics,ReportModel.ReportHeader,CurrentLocation);
-				var header =sc.Convert();
+				var containerConverter = new ContainerConverter(graphics,ReportModel.ReportHeader,CurrentLocation);
+				var header = containerConverter.Convert();
+				header.Parent = CurrentPage;
 				CurrentPage.ExportedItems.Add(header);
 				var r = new Rectangle(header.Location.X,header.Location.Y,header.Size.Width,header.Size.Height);
 				CurrentLocation = new Point (ReportModel.ReportSettings.LeftMargin,r.Bottom + 5);
@@ -52,8 +53,9 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		void BuildPageHeader()
 		{
-			var sc = new ContainerConverter(graphics,ReportModel.PageHeader,CurrentLocation);
-			var header =sc.Convert();
+			var containerConverter = new ContainerConverter(graphics,ReportModel.PageHeader,CurrentLocation);
+			var header =containerConverter.Convert();
+			header.Parent = CurrentPage;
 			CurrentPage.ExportedItems.Add(header);
 		}
 		
@@ -69,8 +71,9 @@ namespace ICSharpCode.Reporting.PageBuilder
 			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
 			                            ReportModel.ReportSettings.PageSize.Height - ReportModel.ReportSettings.BottomMargin - ReportModel.PageFooter.Size.Height);
 				
-			var sc = new ContainerConverter(graphics,ReportModel.PageFooter,CurrentLocation);
-			var header =sc.Convert();
+			var containerConverter = new ContainerConverter(graphics,ReportModel.PageFooter,CurrentLocation);
+			var header =containerConverter.Convert();
+			header.Parent = CurrentPage;
 			CurrentPage.ExportedItems.Add(header);
 		}
 		
@@ -81,8 +84,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
 			                            ReportModel.ReportSettings.PageSize.Height - ReportModel.ReportSettings.BottomMargin - ReportModel.PageFooter.Size.Height);
 				
-			var sc = new ContainerConverter(graphics,ReportModel.ReportFooter,CurrentLocation);
-			var header =sc.Convert();
+			var containerConverter = new ContainerConverter(graphics,ReportModel.ReportFooter,CurrentLocation);
+			var header =containerConverter.Convert();
 			CurrentPage.ExportedItems.Add(header);
 		}
 		

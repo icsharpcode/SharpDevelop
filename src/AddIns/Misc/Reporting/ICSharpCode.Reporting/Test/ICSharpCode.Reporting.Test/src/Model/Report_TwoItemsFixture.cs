@@ -19,30 +19,25 @@ namespace ICSharpCode.Reporting.Test.Model
 	[TestFixture]
 	public class ReportTwoItemsFixture
 	{
-		Stream stream;
+
+		private ReportModel model;
 		
 		[Test]
 		public void LoadModelWithItems()
 		{
-			var rf = new ReportingFactory();
-			var model = rf.LoadReportModel(stream);
 			Assert.That(model,Is.Not.Null);
 		}
 		
 		
 		[Test]
 		public void ReportHeaderOneItem () {
-			var rf = new ReportingFactory();
-			var model = rf.LoadReportModel(stream);
 			var section = model.ReportHeader;
-				Assert.That(section.Items.Count,Is.EqualTo(1));
+			Assert.That(section.Items.Count,Is.EqualTo(1));
 		}
 		
 		
 		[Test]
 		public void PageHeaderOneItem () {
-			var rf = new ReportingFactory();
-			var model = rf.LoadReportModel(stream);
 			var section = model.ReportHeader;
 			Assert.That(section.Items.Count,Is.EqualTo(1));
 		}
@@ -50,27 +45,25 @@ namespace ICSharpCode.Reporting.Test.Model
 		
 		[Test]
 		public void ItemIsTextItem() {
-			var rf = new ReportingFactory();
-			var model = rf.LoadReportModel(stream);
 			var item = model.ReportHeader.Items[0];
 			Assert.That(item,Is.AssignableFrom(typeof(BaseTextItem)));
 		}
 		
-		
+
 		[Test]
 		public void IsLocationSet() {
-			var rf = new ReportingFactory();
-			var model = rf.LoadReportModel(stream);
 			var item = model.ReportHeader.Items[0];
 			Assert.That(item.Location,Is.Not.EqualTo(Point.Empty));                                   
 		}
 		
 		
 		[SetUp]
-		public void LoadFromStream()
+		public void LoadModelFromStream()
 		{
 			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
-			stream = asm.GetManifestResourceStream(TestHelper.RepWithTwoItems);
+			var stream = asm.GetManifestResourceStream(TestHelper.RepWithTwoItems);
+			var rf = new ReportingFactory();
+			model = rf.LoadReportModel(stream);
 		}	
 	}
 }

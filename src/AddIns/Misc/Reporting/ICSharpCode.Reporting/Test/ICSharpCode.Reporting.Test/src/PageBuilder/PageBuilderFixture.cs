@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
+using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
@@ -62,8 +63,16 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		
 		#endregion
 		
-		
-		
+		[Test]
+		public void ParentOfSectionsIsPage() {
+			reportCreator.BuildExportList();
+			var page = reportCreator.Pages[0];
+			foreach (var element in page.ExportedItems) {
+				Assert.That(element.Parent,Is.Not.Null);
+				Assert.That(element.Parent,Is.AssignableTo(typeof(IPage)));
+			}
+		}
+			
 		[SetUp]
 		public void LoadFromStream()
 		{

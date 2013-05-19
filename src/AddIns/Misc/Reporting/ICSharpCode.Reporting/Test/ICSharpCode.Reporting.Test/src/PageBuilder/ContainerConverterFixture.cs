@@ -12,7 +12,6 @@ using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.Converter;
-using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using NUnit.Framework;
 
 namespace ICSharpCode.Reporting.Test.PageBuilder
@@ -48,7 +47,16 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 			Assert.That(result.Location,Is.EqualTo(location));
 		}
 		
-		
+		[Test]
+		public void ParentInChildsIsSet () {
+			var converter = new ContainerConverter(graphics,container,container.Location);
+			var result = converter.Convert();
+			foreach (var element in result.ExportedItems) {
+				Assert.That(element.Parent,Is.Not.Null);
+			}
+		}
+			
+			
 		[TestFixtureSetUp]
 		public void Init()
 		{

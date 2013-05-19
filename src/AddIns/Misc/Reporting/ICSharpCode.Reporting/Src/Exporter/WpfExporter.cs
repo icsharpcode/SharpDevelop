@@ -80,8 +80,8 @@ namespace ICSharpCode.Reporting.Exporter
 //						canvas.Measure(size);
 //						canvas.Arrange(new Rect(new System.Windows.Point(exportContainer.Location.X,exportContainer.Location.Y),size ));
 //						canvas.UpdateLayout();
-						var exportArrange = exportContainer.GetArrangeStrategy();
-						exportArrange.Arrange(exportContainer);
+//						var exportArrange = exportContainer.GetArrangeStrategy();
+//						exportArrange.Arrange(exportContainer);
 					}
 //					InternalRun(item as IExportContainer);
 				} else {

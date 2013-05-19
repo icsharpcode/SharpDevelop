@@ -35,10 +35,9 @@ namespace ICSharpCode.Reporting.Items
 		
 		public Color ForeColor {get;set;}
 			
-		
 		public Color BackColor {get;set;}
 			
-		
 		public Color FrameColor {get;set;}
+		
 	}
 }

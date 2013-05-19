@@ -92,9 +92,20 @@ namespace ICSharpCode.Reporting.BaseClasses
 			}
 		}
 		
+		
 		public Color FrameColor {
 			get {
 				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		
+		public IExportColumn Parent {
+			get {
+				return null;
 			}
 			set {
 				throw new NotImplementedException();

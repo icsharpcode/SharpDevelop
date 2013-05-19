@@ -17,7 +17,8 @@ namespace ICSharpCode.Reporting.Items
 	/// <summary>
 	/// Description of BaseSection.
 	/// </summary>
-	public class BaseSection:ReportContainer,IReportContainer
+	
+public class BaseSection:ReportContainer,IReportContainer
 	{
 		#region Constructors
 		
