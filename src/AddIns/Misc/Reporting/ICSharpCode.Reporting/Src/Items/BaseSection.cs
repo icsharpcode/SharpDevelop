@@ -24,7 +24,6 @@ public class BaseSection:ReportContainer,IReportContainer
 		
 		public BaseSection()
 		{
-//			Items = new List<IPrintableObject>();
 		}
 		
 		public BaseSection (string name) {

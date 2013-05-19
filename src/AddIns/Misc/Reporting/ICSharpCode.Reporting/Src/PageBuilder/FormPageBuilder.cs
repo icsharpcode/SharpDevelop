@@ -54,7 +54,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		void BuildPageHeader()
 		{
 			var containerConverter = new ContainerConverter(graphics,ReportModel.PageHeader,CurrentLocation);
-			var header =containerConverter.Convert();
+			var header = containerConverter.Convert();
 			header.Parent = CurrentPage;
 			CurrentPage.ExportedItems.Add(header);
 		}

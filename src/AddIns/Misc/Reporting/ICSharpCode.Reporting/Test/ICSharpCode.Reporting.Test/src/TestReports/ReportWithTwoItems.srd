@@ -73,7 +73,7 @@
                     <Font>Microsoft Sans Serif, 10pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
-                    <CanGrow>False</CanGrow>
+                    <CanGrow>True</CanGrow>
                     <CanShrink>False</CanShrink>
                     <RTL>No</RTL>
                     <Text>TestText for Item in PageHeader</Text>

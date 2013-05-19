@@ -35,26 +35,21 @@ namespace ICSharpCode.Reporting.Arrange
 		{
 			if (exportColumn == null)
 				throw new ArgumentNullException("exportColumn");
-			var e = exportColumn as IExportContainer;
-			if ((e != null) && (e.ExportedItems.Count > 0)) {
-				
-				Console.WriteLine("Arrange  Container {0} ",e.Name);
-				Console.WriteLine("Container-Size {0}",e.Size);
-
+			var container = exportColumn as IExportContainer;
+			if ((container != null) && (container.ExportedItems.Count > 0)) {
 				BiggestRectangle = Rectangle.Empty;
 				
-				foreach (var element in e.ExportedItems) {
-					if (element.Size.Height > BiggestRectangle.Size.Height) {
-						BiggestRectangle = new Rectangle(element.Location,element.Size);
+				foreach (var item in container.ExportedItems) {
+					if (item.DesiredSize.Height > BiggestRectangle.Size.Height) {
+						BiggestRectangle = new Rectangle(new Point(container.Location.X + item.Location.X,
+						                                           container.Location.Y + item.Location.Y)
+						                                           ,item.DesiredSize);
 					}
 				}
 				if (!BiggestRectangle.IsEmpty) {
-					Console.WriteLine("BiggestRectangle {0}",BiggestRectangle.ToString());
-					var r = Rectangle.Union(new Rectangle(e.Location,e.Size),BiggestRectangle);
-					Console.WriteLine("Sorrounding {0}",r.ToString());
-					e.DesiredSize = new Size(e.Size.Width,BiggestRectangle.Bottom + 2);
-					Console.WriteLine("Container-Desired_siz {0}",e.DesiredSize);
-					Console.WriteLine("new rect {0}",new Rectangle(e.Location,e.DesiredSize));
+					var containerRectangle = new Rectangle(container.Location,container.Size);
+					var desiredRectangle = Rectangle.Union(containerRectangle,BiggestRectangle);
+					container.DesiredSize = new Size(container.Size.Width,desiredRectangle.Size.Height + 5);
 				}
 			}
 		}

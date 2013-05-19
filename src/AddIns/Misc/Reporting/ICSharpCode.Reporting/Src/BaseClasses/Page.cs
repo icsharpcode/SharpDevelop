@@ -20,7 +20,7 @@ namespace ICSharpCode.Reporting.BaseClasses
 	/// </summary>
 	///
 	
-	public class Page:IPage
+	public class Page:IExportContainer,IPage
 	{
 		public Page(IPageInfo pageInfo,Size pageSize)
 		{
