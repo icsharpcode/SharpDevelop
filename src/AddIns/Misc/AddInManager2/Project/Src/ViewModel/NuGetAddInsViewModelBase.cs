@@ -131,7 +131,6 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			{
 				IQueryable<IPackage> packages = GetAllPackages();
 				packages = OrderPackages(packages);
-				packages = FilterPackagesByStaticFilter(packages);
 				packages = FilterPackagesBySearchCriteria(packages);
 				TotalItems = packages.Count();
 				_allPackages = GetFilteredPackagesBeforePagingResults(packages);

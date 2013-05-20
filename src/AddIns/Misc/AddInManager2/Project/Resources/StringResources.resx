@@ -230,7 +230,7 @@ If you do not agree to the license terms click "I Decline".</value>
     <value>Source:</value>
   </data>
   <data name="AddInManager2.DefaultRepository" xml:space="preserve">
-    <value>Default Repository</value>
+    <value>SharpDevelop AddIn Repository</value>
   </data>
   <data name="AddInManager2.LicenseAcceptance.Title" xml:space="preserve">
     <value>License Agreements</value>

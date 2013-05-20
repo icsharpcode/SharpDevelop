@@ -118,7 +118,7 @@ namespace ICSharpCode.AddInManager2.Model
 			{
 				// If we don't have any repositories, so add the default one
 				PackageSource defaultPackageSource =
-					new PackageSource("https://nuget.org/api/v2", SD.ResourceService.GetString("AddInManager2.DefaultRepository"));
+					new PackageSource("http://www.myget.org/F/sharpdevelop/", SD.ResourceService.GetString("AddInManager2.DefaultRepository"));
 				_registeredPackageSources.Add(defaultPackageSource);
 				SavePackageSources();
 			}
