@@ -23,6 +23,9 @@ namespace ICSharpCode.AddInManager2.Model
 		
 		private IAddInManagerEvents _events;
 		private IAddInManagerSettings _settings;
+		
+		public const string DefaultRepositoryName = "SharpDevelop AddIn Repository";
+		public const string DefaultRepositorySource = "http://www.myget.org/F/sharpdevelop/";
 
 		public PackageRepositories(IAddInManagerEvents events, IAddInManagerSettings settings)
 		{
@@ -114,14 +117,8 @@ namespace ICSharpCode.AddInManager2.Model
 					}
 				}
 			}
-			else
-			{
-				// If we don't have any repositories, so add the default one
-				PackageSource defaultPackageSource =
-					new PackageSource("http://www.myget.org/F/sharpdevelop/", SD.ResourceService.GetString("AddInManager2.DefaultRepository"));
-				_registeredPackageSources.Add(defaultPackageSource);
-				SavePackageSources();
-			}
+			
+			AddDefaultRepository();
 			
 			// Send around the update
 			_events.OnPackageSourcesChanged(new EventArgs());
@@ -129,9 +126,29 @@ namespace ICSharpCode.AddInManager2.Model
 		
 		private void SavePackageSources()
 		{
+			AddDefaultRepository();
 			var savedRepositories = _registeredPackageSources.Select(ps => ps.Name + "=" + ps.Source);
 			_settings.PackageRepositories = savedRepositories.ToArray();
 			UpdateCurrentRepository();
+		}
+		
+		private void AddDefaultRepository()
+		{
+			var defaultPackageSource = (
+				from packageSource in _registeredPackageSources
+				where packageSource.Source == DefaultRepositorySource
+				select packageSource).SingleOrDefault();
+			if (defaultPackageSource == null)
+			{
+				string defaultRepositoryName =
+					SD.ResourceService.GetString("AddInManager2.DefaultRepository") ?? DefaultRepositoryName;
+				
+				// Default repository is not configured, add it
+				defaultPackageSource =
+					new PackageSource(DefaultRepositorySource, defaultRepositoryName);
+				_registeredPackageSources.Insert(0, defaultPackageSource);
+				SavePackageSources();
+			}
 		}
 		
 		private void UpdateCurrentRepository()

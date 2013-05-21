@@ -272,56 +272,56 @@ namespace ICSharpCode.AddInManager2.Tests
 			Assert.That(firstAddIn.Version, Is.EqualTo(_addIn2.Version), "Version of 1st AddIn");
 		}
 		
-		[Test]
-		public void FilteringOutNonSharpDevelopPackages()
-		{
-			CreateAddIns();
-			_addIn1.Enabled = true;
-			
-			// Package to be shown in repository
-			FakePackage fakePackage1 = new FakePackage()
-			{
-				Id = _addIn1.Manifest.PrimaryIdentity,
-				Version = new SemanticVersion(_addIn1.Version)
-			};
-			FakePackage fakePackage2 = new FakePackage()
-			{
-				Id = _addIn2.Manifest.PrimaryIdentity,
-				Version = new SemanticVersion(_addIn2.Version),
-				Tags = SharpDevelopAddInTag
-			};
-			
-			// List of NuGet repositories
-			List<PackageSource> registeredPackageSources = new List<PackageSource>();
-			registeredPackageSources.Add(new PackageSource("", "Test Repository"));
-			_services.FakeRepositories.RegisteredPackageSources = registeredPackageSources;
-			
-			List<IPackageRepository> registeredPackageRepositories = new List<IPackageRepository>();
-			FakeCorePackageRepository remoteRepository = new FakeCorePackageRepository();
-			remoteRepository.Source = registeredPackageSources[0].Source;
-			remoteRepository.ReturnedPackages = (new IPackage[] { fakePackage1, fakePackage2 }).AsQueryable();
-			_services.FakeRepositories.RegisteredPackageRepositories = registeredPackageRepositories;
-			
-			// PackageRepository service should return remoteRepository instance
-			_services.FakeRepositories.GetRepositoryFromSourceCallback = delegate(PackageSource packageSource)
-			{
-				return remoteRepository;
-			};
-			
-			FakeCorePackageRepository localRepository = new FakeCorePackageRepository();
-			_services.FakeNuGet.FakeCorePackageManager.LocalRepository = localRepository;
-			localRepository.ReturnedPackages = (new IPackage[] { }).AsQueryable();
-			
-			var viewModel = new AvailableAddInsViewModel(_services);
-			viewModel.ReadPackagesAndWaitForUpdate();
-			
-			Assert.That(viewModel.AddInPackages.Count, Is.EqualTo(1), "AddIn list must contain 1 item.");
-			
-			AddInPackageViewModelBase firstAddIn = viewModel.AddInPackages[0];
-			Assert.That(firstAddIn.Id, Is.EqualTo(_addIn2.Manifest.PrimaryIdentity), "Primary identity of 1st AddIn");
-			Assert.That(firstAddIn.Name, Is.EqualTo(_addIn2.Manifest.PrimaryIdentity), "Name of 1st AddIn");
-			Assert.That(firstAddIn.Version, Is.EqualTo(_addIn2.Version), "Version of 1st AddIn");
-		}
+//		[Test]
+//		public void FilteringOutNonSharpDevelopPackages()
+//		{
+//			CreateAddIns();
+//			_addIn1.Enabled = true;
+//			
+//			// Package to be shown in repository
+//			FakePackage fakePackage1 = new FakePackage()
+//			{
+//				Id = _addIn1.Manifest.PrimaryIdentity,
+//				Version = new SemanticVersion(_addIn1.Version)
+//			};
+//			FakePackage fakePackage2 = new FakePackage()
+//			{
+//				Id = _addIn2.Manifest.PrimaryIdentity,
+//				Version = new SemanticVersion(_addIn2.Version),
+//				Tags = SharpDevelopAddInTag
+//			};
+//			
+//			// List of NuGet repositories
+//			List<PackageSource> registeredPackageSources = new List<PackageSource>();
+//			registeredPackageSources.Add(new PackageSource("", "Test Repository"));
+//			_services.FakeRepositories.RegisteredPackageSources = registeredPackageSources;
+//			
+//			List<IPackageRepository> registeredPackageRepositories = new List<IPackageRepository>();
+//			FakeCorePackageRepository remoteRepository = new FakeCorePackageRepository();
+//			remoteRepository.Source = registeredPackageSources[0].Source;
+//			remoteRepository.ReturnedPackages = (new IPackage[] { fakePackage1, fakePackage2 }).AsQueryable();
+//			_services.FakeRepositories.RegisteredPackageRepositories = registeredPackageRepositories;
+//			
+//			// PackageRepository service should return remoteRepository instance
+//			_services.FakeRepositories.GetRepositoryFromSourceCallback = delegate(PackageSource packageSource)
+//			{
+//				return remoteRepository;
+//			};
+//			
+//			FakeCorePackageRepository localRepository = new FakeCorePackageRepository();
+//			_services.FakeNuGet.FakeCorePackageManager.LocalRepository = localRepository;
+//			localRepository.ReturnedPackages = (new IPackage[] { }).AsQueryable();
+//			
+//			var viewModel = new AvailableAddInsViewModel(_services);
+//			viewModel.ReadPackagesAndWaitForUpdate();
+//			
+//			Assert.That(viewModel.AddInPackages.Count, Is.EqualTo(1), "AddIn list must contain 1 item.");
+//			
+//			AddInPackageViewModelBase firstAddIn = viewModel.AddInPackages[0];
+//			Assert.That(firstAddIn.Id, Is.EqualTo(_addIn2.Manifest.PrimaryIdentity), "Primary identity of 1st AddIn");
+//			Assert.That(firstAddIn.Name, Is.EqualTo(_addIn2.Manifest.PrimaryIdentity), "Name of 1st AddIn");
+//			Assert.That(firstAddIn.Version, Is.EqualTo(_addIn2.Version), "Version of 1st AddIn");
+//		}
 		
 		[Test]
 		public void ShowInstallableAddInsWithPaging()
