@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
+using System.Linq;
 
 #if !STANDALONE
 using ICSharpCode.SharpDevelop;
@@ -40,6 +41,24 @@ namespace ICSharpCode.AddInManager
 					return true;
 			}
 			return false;
+		}
+	}
+	
+	public class AddInManager2NotInstalledConditionEvaluator : IConditionEvaluator
+	{
+		public bool IsValid(object caller, Condition condition)
+		{
+			#if !STANDALONE
+			AddIn addInManager2AddIn = SD.AddInTree.AddIns.Where(
+				a => ((a.Manifest != null) && (a.Manifest.PrimaryIdentity == "ICSharpCode.AddInManager2")))
+				.FirstOrDefault();
+			if (addInManager2AddIn != null)
+			{
+				return !addInManager2AddIn.Enabled;
+			}
+			#endif
+			
+			return true;
 		}
 	}
 	
