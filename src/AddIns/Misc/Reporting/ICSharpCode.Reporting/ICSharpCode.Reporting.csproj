@@ -72,9 +72,19 @@
   <ItemGroup>
     <Compile Include="Src\Arrange\ArrangeStrategy.cs" />
     <Compile Include="Src\Arrange\MeasurementStrategy.cs" />
+    <Compile Include="Src\BaseClasses\AbstractColumn.cs" />
     <Compile Include="Src\BaseClasses\Page.cs" />
     <Compile Include="Src\BaseClasses\PageInfo.cs" />
+    <Compile Include="Src\BaseClasses\SortColumn.cs" />
+    <Compile Include="Src\Collections.cs" />
     <Compile Include="Src\Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\DataManager\Listhandling\CollectionSource.cs" />
+    <Compile Include="Src\DataManager\Listhandling\IndexList.cs" />
+    <Compile Include="Src\DataSource\Comparer\BaseComparer.cs" />
+    <Compile Include="Src\DataSource\DataCollection.cs" />
+    <Compile Include="Src\DataSource\ExtendedPropertyDescriptor.cs" />
+    <Compile Include="Src\DataSource\ExtendedTypeDescriptor.cs" />
+    <Compile Include="Src\DataSource\PropertyTypeHash.cs" />
     <Compile Include="Src\Exporter\BaseExporter.cs" />
     <Compile Include="Src\Exporter\DebugExporter.cs" />
     <Compile Include="Src\Exporter\WpfExporter.cs" />
@@ -88,6 +98,7 @@
     <Compile Include="Src\Factories\SectionFactory.cs" />
     <Compile Include="Src\Globals\CreateGraphics.cs" />
     <Compile Include="Src\Globals\MeasurementService.cs" />
+    <Compile Include="Src\Interfaces\Data\IDataViewHandling.cs" />
     <Compile Include="Src\Interfaces\Export\IExportColumn.cs" />
     <Compile Include="Src\Interfaces\Export\IExportContainer.cs" />
     <Compile Include="Src\Interfaces\Export\IPage.cs" />
@@ -120,18 +131,23 @@
     <Compile Include="Src\Xml\MycroParser.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Src\DataSource\Comparer" />
     <Folder Include="Src\Exporter\Visitors" />
     <Folder Include="Src\Interfaces" />
     <Folder Include="Src\Globals" />
     <Folder Include="Src" />
     <Folder Include="Src" />
     <Folder Include="Src\Interfaces\Export" />
+    <Folder Include="Src\Interfaces\Data" />
     <Folder Include="Src\Items" />
     <Folder Include="Src\BaseClasses" />
     <Folder Include="Src\Factories" />
     <Folder Include="Src\Exporter" />
     <Folder Include="Src\Arrange" />
     <Folder Include="Src\ExportRenderer" />
+    <Folder Include="Src\DataSource" />
+    <Folder Include="Src\DataManager" />
+    <Folder Include="Src\DataManager\Listhandling" />
     <Folder Include="Src\Wpf" />
     <Folder Include="Src\PageBuilder" />
     <Folder Include="Src\PageBuilder\Converter" />

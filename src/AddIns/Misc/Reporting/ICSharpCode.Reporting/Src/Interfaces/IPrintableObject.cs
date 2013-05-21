@@ -23,12 +23,14 @@ namespace ICSharpCode.Reporting.Interfaces
 		Color ForeColor {get;set;}
 		Color BackColor {get;set;}
 		Color FrameColor{get;set;}
+		bool CanGrow {get;set;}
 	}
 	
 	
 	public interface IPrintableObject:IReportObject {
 		IExportColumn CreateExportColumn();
 		IMeasurementStrategy MeasurementStrategy ();
+		
 	}
 	
 }

@@ -23,7 +23,6 @@ namespace ICSharpCode.Reporting.Items
 	{
 		Font Font {get;set;}
 		string Text {get;set;}
-		bool CanGrow {get;set;}
 	}
 	
 	public class BaseTextItem:PrintableItem,ITextItem
@@ -38,8 +37,6 @@ namespace ICSharpCode.Reporting.Items
 		
 		public string Text {get;set;}
 		
-		public bool CanGrow {get;set;}
-		
 		public override  IExportColumn CreateExportColumn()
 		{
 			var ex = new ExportText();
@@ -51,6 +48,7 @@ namespace ICSharpCode.Reporting.Items
 			ex.Size = Size;
 			ex.Font = Font;
 			ex.Text = Text;
+			ex.CanGrow = CanGrow;
 			return ex;
 		}
 		

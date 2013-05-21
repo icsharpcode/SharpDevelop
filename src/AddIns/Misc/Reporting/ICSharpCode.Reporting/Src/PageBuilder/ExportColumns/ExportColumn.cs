@@ -43,5 +43,7 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 		
 		public IExportColumn Parent {get;set;}
 			
+		public bool CanGrow {get;set;}
+		
 	}
 }

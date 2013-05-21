@@ -39,7 +39,8 @@ namespace ICSharpCode.Reporting.Items
 			return new ExportContainer(){
 			Name = this.Name,
 			Size = this.Size,
-			Location = this.Location
+			Location = this.Location,
+			CanGrow = this.CanGrow,
 			};
 		}
 		

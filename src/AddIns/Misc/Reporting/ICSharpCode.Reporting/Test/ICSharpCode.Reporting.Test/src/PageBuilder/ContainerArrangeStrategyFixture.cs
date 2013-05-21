@@ -108,6 +108,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 				Location = new Point(80,10),
 				Size = new Size (20,70),
 				DesiredSize = new Size (20,70),
+				CanGrow = true,
 				Parent = container
 			};
 			return secondItem;

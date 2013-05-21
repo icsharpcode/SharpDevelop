@@ -39,5 +39,7 @@ namespace ICSharpCode.Reporting.Items
 			
 		public Color FrameColor {get;set;}
 		
+		public bool CanGrow {get;set;}
+		
 	}
 }

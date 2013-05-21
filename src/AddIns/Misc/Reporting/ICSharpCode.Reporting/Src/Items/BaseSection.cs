@@ -31,7 +31,5 @@ public class BaseSection:ReportContainer,IReportContainer
 		}
 	
 		#endregion
-		
-		
 	}
 }

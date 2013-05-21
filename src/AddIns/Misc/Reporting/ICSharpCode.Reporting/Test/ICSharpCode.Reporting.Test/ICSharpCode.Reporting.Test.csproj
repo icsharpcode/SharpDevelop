@@ -58,6 +58,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\DataSource\ContributorsList.cs" />
+    <Compile Include="src\DataSource\CollectionHandlingFixture.cs" />
     <Compile Include="src\Model\LoadPlainModelFixture.cs" />
     <Compile Include="src\Model\ReportModelFixture.cs" />
     <Compile Include="src\Model\ReportSettingsFixture.cs" />
@@ -75,6 +77,7 @@
   <ItemGroup>
     <Folder Include="src" />
     <Folder Include="src\Model" />
+    <Folder Include="src\DataSource" />
     <Folder Include="src\ReportItems" />
     <Folder Include="src\PageBuilder" />
     <Folder Include="src\TestReports" />

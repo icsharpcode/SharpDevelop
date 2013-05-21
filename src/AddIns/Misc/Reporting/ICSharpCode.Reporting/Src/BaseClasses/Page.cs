@@ -111,5 +111,9 @@ namespace ICSharpCode.Reporting.BaseClasses
 				throw new NotImplementedException();
 			}
 		}
+		
+		public bool CanGrow {get;set;}
+		
+		public bool CanShrink {get;set;}
 	}
 }
