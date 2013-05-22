@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 
-namespace ICSharpCode.Core.Services
+namespace ICSharpCode.Core.Implementation
 {
 	/// <summary>
 	/// IMessageService implementation that writes messages to a text writer.
@@ -19,6 +19,7 @@ namespace ICSharpCode.Core.Services
 			if (writer == null)
 				throw new ArgumentNullException("writer");
 			this.writer = writer;
+			this.DefaultMessageBoxTitle = this.ProductName = "SharpDevelop";
 		}
 		
 		public void ShowError(string message)
@@ -26,13 +27,23 @@ namespace ICSharpCode.Core.Services
 			writer.WriteLine(message);
 		}
 		
-		public void ShowException(Exception ex, string message)
+		public void ShowException(Exception ex, string message = null)
 		{
 			if (message != null) {
 				writer.WriteLine(message);
 			}
 			if (ex != null) {
 				writer.WriteLine(ex.ToString());
+			}
+		}
+		
+		public void ShowHandledException(Exception ex, string message = null)
+		{
+			if (message != null) {
+				writer.WriteLine(message);
+			}
+			if (ex != null) {
+				writer.WriteLine(ex.Message);
 			}
 		}
 		
@@ -64,19 +75,37 @@ namespace ICSharpCode.Core.Services
 			writer.WriteLine(caption + ": " + message);
 		}
 		
-		public void InformSaveError(string fileName, string message, string dialogName, Exception exceptionGot)
+		public void InformSaveError(FileName fileName, string message, string dialogName, Exception exceptionGot)
 		{
 			writer.WriteLine(dialogName + ": " + message + " (" + fileName + ")");
 			if (exceptionGot != null)
 				writer.WriteLine(exceptionGot.ToString());
 		}
 		
-		public ChooseSaveErrorResult ChooseSaveError(string fileName, string message, string dialogName, Exception exceptionGot, bool chooseLocationEnabled)
+		public ChooseSaveErrorResult ChooseSaveError(FileName fileName, string message, string dialogName, Exception exceptionGot, bool chooseLocationEnabled)
 		{
 			writer.WriteLine(dialogName + ": " + message + " (" + fileName + ")");
 			if (exceptionGot != null)
 				writer.WriteLine(exceptionGot.ToString());
 			return ChooseSaveErrorResult.Ignore;
 		}
+		
+		public void ShowErrorFormatted(string formatstring, params object[] formatitems)
+		{
+			writer.WriteLine(StringParser.Format(formatstring, formatitems));
+		}
+		
+		public void ShowWarningFormatted(string formatstring, params object[] formatitems)
+		{
+			writer.WriteLine(StringParser.Format(formatstring, formatitems));
+		}
+		
+		public void ShowMessageFormatted(string formatstring, string caption, params object[] formatitems)
+		{
+			writer.WriteLine(StringParser.Format(formatstring, formatitems));
+		}
+		
+		public string DefaultMessageBoxTitle { get; set; }
+		public string ProductName { get; set; }
 	}
 }

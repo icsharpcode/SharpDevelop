@@ -11,9 +11,8 @@ using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog;
 using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference;
-using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Project.Commands
 {
@@ -28,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 			LoggingService.Info("Show add reference dialog for " + project.FileName);
 			using (SelectReferenceDialog selDialog = new SelectReferenceDialog(project)) {
-				if (selDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+				if (selDialog.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 					foreach (ReferenceProjectItem reference in selDialog.ReferenceInformations) {
 						ProjectService.AddProjectItem(project, reference);
 					}
@@ -70,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						}
 						
 						// Update code completion.
-						ParserService.ParseFile(webReference.WebProxyFileName);
+						SD.ParserService.ParseFileAsync(FileName.Create(webReference.WebProxyFileName), parentProject: url.Project).FireAndForget();
 					}
 				} catch (WebException ex) {
 					MessageService.ShowException(ex, String.Format(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ProjectBrowser.RefreshWebReference.ReadServiceDescriptionError}"), url.UpdateFromURL));
@@ -92,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				} catch (WebException ex) {
 					if (protocol.IsAuthenticationRequired) {
 						using (UserCredentialsDialog dialog = new UserCredentialsDialog(url, protocol.GetAuthenticationHeader().AuthenticationType)) {
-							if (dialog.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+							if (dialog.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 								credential = dialog.Credential;
 							} else {
 								retry = false;
@@ -115,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (node != null && node.Project != null) {
 				using (AddWebReferenceDialog refDialog = new AddWebReferenceDialog(node.Project)) {
 					refDialog.NamespacePrefix = node.Project.RootNamespace;
-					if (refDialog.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+					if (refDialog.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 						// Do not overwrite existing web references.
 						refDialog.WebReference.Name = WebReference.GetReferenceName(refDialog.WebReference.WebReferencesDirectory, refDialog.WebReference.Name);
 						refDialog.WebReference.Save();
@@ -127,7 +126,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						AddWebReferenceToProjectBrowser(node, refDialog.WebReference);
 						
 						// Add proxy to code completion.
-						ParserService.ParseFile(refDialog.WebReference.WebProxyFileName);
+						SD.ParserService.ParseFileAsync(FileName.Create(refDialog.WebReference.WebProxyFileName)).FireAndForget();
 
 						node.Project.Save();
 					}
@@ -257,7 +256,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			var vm = new AddServiceReferenceViewModel(project);
 			var dialog = new AddServiceReferenceDialog();
 			dialog.DataContext = vm;
-			dialog.Owner = WorkbenchSingleton.MainWindow;
+			dialog.Owner = SD.Workbench.MainWindow;
 			if (dialog.ShowDialog() ?? true) {
 				vm.AddServiceReference();
 			}
@@ -272,7 +271,9 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (node != null) {
 				ReferenceProjectItem item = node.ReferenceProjectItem;
 				if (item != null) {
-					AssemblyParserService.RefreshProjectContentForReference(item);
+					#warning Reimplement RefreshReference
+					throw new NotImplementedException();
+					//AssemblyParserService.RefreshProjectContentForReference(item);
 				}
 			}
 		}

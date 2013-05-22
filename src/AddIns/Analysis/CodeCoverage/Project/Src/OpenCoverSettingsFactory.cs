@@ -3,6 +3,8 @@
 
 using System;
 using System.IO;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.CodeCoverage
@@ -17,14 +19,14 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		public OpenCoverSettingsFactory()
-			: this(new FileSystem())
+			: this(SD.FileSystem)
 		{
 		}
 		
 		public OpenCoverSettings CreateOpenCoverSettings(IProject project)
 		{
 			string fileName = OpenCoverSettings.GetFileName(project);
-			if (fileSystem.FileExists(fileName)) {
+			if (fileSystem.FileExists(FileName.Create(fileName))) {
 				return CreateOpenCoverSettingsFromFile(fileName);
 			}
 			return new OpenCoverSettings();
@@ -32,7 +34,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		OpenCoverSettings CreateOpenCoverSettingsFromFile(string fileName)
 		{
-			TextReader reader = fileSystem.CreateTextReader(fileName);
+			TextReader reader = fileSystem.OpenText(FileName.Create(fileName));
 			return new OpenCoverSettings(reader);
 		}
 	}

@@ -8,17 +8,13 @@ using System.Linq;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Bookmarks;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
 using ICSharpCode.SharpDevelop.Refactoring;
-
+/*
 namespace ICSharpCode.SharpDevelop.Editor.Commands
 {
 	/// <summary>
@@ -203,3 +199,4 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		}
 	}
 }
+*/

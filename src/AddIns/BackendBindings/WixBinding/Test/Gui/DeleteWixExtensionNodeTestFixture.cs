@@ -1,12 +1,15 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
+using Microsoft.Build.Evaluation;
 using NUnit.Framework;
 using System;
 using System.Windows.Forms;
+using Rhino.Mocks;
 using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Gui
@@ -25,13 +28,11 @@ namespace WixBinding.Tests.Gui
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			SD.InitializeForUnitTests();
 			WixBindingTestsHelper.InitMSBuildEngine();
 			
 			// create the project.
-			ProjectCreateInformation info = new ProjectCreateInformation();
-			info.Solution = new Solution(new MockProjectChangeWatcher());
-			info.ProjectName = "Test";
-			info.OutputProjectFileName = @"C:\Projects\Test\Test.wixproj";
+			ProjectCreateInformation info = new ProjectCreateInformation(MockSolution.Create(), new FileName(@"C:\Projects\Test\Test.wixproj"));
 
 			wixProject = new WixProjectWithOverriddenSave(info);
 			

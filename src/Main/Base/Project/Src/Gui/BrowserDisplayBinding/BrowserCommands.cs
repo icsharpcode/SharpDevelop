@@ -2,9 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
@@ -60,14 +61,21 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		}
 	}
 	
-	public class UrlComboBox : AbstractComboBoxCommand
+	public class UrlComboBoxBuilder : IMenuItemBuilder
 	{
-		protected override void OnOwnerChanged(EventArgs e)
+		public IEnumerable<object> BuildItems(Codon codon, object parameter)
 		{
-			base.OnOwnerChanged(e);
-			ToolBarComboBox toolbarItem = (ToolBarComboBox)base.ComboBox;
-			toolbarItem.ComboBox.Width *= 3;
-			((HtmlViewPane)toolbarItem.Caller).SetUrlComboBox(toolbarItem.ComboBox);
+			ToolStripComboBox toolbarItem = new ToolStripComboBox();
+			ComboBox comboBox = toolbarItem.ComboBox;
+			comboBox.Width *= 3;
+			comboBox.DropDownStyle = ComboBoxStyle.DropDown;
+			comboBox.Items.Clear();
+			foreach (string url in PropertyService.GetList<string>("Browser.URLBoxHistory"))
+				comboBox.Items.Add(url);
+			comboBox.AutoCompleteMode   = AutoCompleteMode.Suggest;
+			comboBox.AutoCompleteSource = AutoCompleteSource.HistoryList;
+			((HtmlViewPane)parameter).SetUrlBox(comboBox);
+			return new[] { toolbarItem };
 		}
 	}
 	
@@ -75,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 	{
 		public override void Run()
 		{
-			WorkbenchSingleton.Workbench.ShowView(new BrowserPane());
+			SD.Workbench.ShowView(new BrowserPane());
 		}
 	}
 }

@@ -20,21 +20,20 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		/// </summary>
 		public override void Run()
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			
-			if (provider == null)
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
+			if (editor == null)
 				return;
 			
 			int beginLine = 1;
-			int endLine = provider.TextEditor.Document.TotalNumberOfLines;
+			int endLine = editor.Document.LineCount;
 			
-			if (provider.TextEditor.SelectionLength != 0) {
-				beginLine = provider.TextEditor.Document.GetLineForOffset(provider.TextEditor.SelectionStart).LineNumber;
-				endLine = provider.TextEditor.Document.GetLineForOffset(provider.TextEditor.SelectionStart + provider.TextEditor.SelectionLength).LineNumber;
+			if (editor.SelectionLength != 0) {
+				beginLine = editor.Document.GetLineByOffset(editor.SelectionStart).LineNumber;
+				endLine = editor.Document.GetLineByOffset(editor.SelectionStart + editor.SelectionLength).LineNumber;
 			}
 			
-			using (provider.TextEditor.Document.OpenUndoGroup())
-				provider.TextEditor.Language.FormattingStrategy.IndentLines(provider.TextEditor, beginLine, endLine);
+			using (editor.Document.OpenUndoGroup())
+				editor.Language.FormattingStrategy.IndentLines(editor, beginLine, endLine);
 		}
 	}
 }

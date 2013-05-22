@@ -4,12 +4,12 @@
 #region Usings
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 using System.IO;
+using System.Linq;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Workbench;
 
 #endregion
 
@@ -17,7 +17,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 {
 	public class EDMDesignerDisplayBinding : IDisplayBinding
 	{
-		public bool CanCreateContentForFile(string fileName)
+		public bool CanCreateContentForFile(FileName fileName)
 		{
 			return true; // .addin file filters for *.edmx
 		}
@@ -31,12 +31,12 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 			}
 		}
 		
-		public bool IsPreferredBindingForFile(string fileName)
+		public bool IsPreferredBindingForFile(FileName fileName)
 		{
 			return true;
 		}
 		
-		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		public double AutoDetectFileContent(FileName fileName, Stream fileContent, string detectedMimeType)
 		{
 			return 1;
 		}

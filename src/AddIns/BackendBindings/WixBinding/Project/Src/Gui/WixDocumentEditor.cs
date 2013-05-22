@@ -2,10 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.IO;
 using System.Text;
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.WixBinding
@@ -53,10 +53,10 @@ namespace ICSharpCode.WixBinding
 			using (textEditor.Document.OpenUndoGroup()) {
 				
 				// Replace the original xml with the new xml and indent it.
-				int originalLineCount = document.TotalNumberOfLines;
+				int originalLineCount = document.LineCount;
 				int initialIndent = GetIndent(region.BeginLine);
 				document.Replace(segment.Offset, segment.Length, xml);
-				int addedLineCount = document.TotalNumberOfLines - originalLineCount;
+				int addedLineCount = document.LineCount - originalLineCount;
 				
 				// Indent the xml.
 				int insertedCharacterCount = IndentAllLinesTheSame(region.BeginLine + 1, region.EndLine + addedLineCount, initialIndent);
@@ -70,9 +70,9 @@ namespace ICSharpCode.WixBinding
 			}
 		}
 		
-		public void InsertIndented(Location location, string xml)
+		public void InsertIndented(TextLocation location, string xml)
 		{
-			InsertIndented(location.Y, location.X, xml);
+			InsertIndented(location.Line, location.Column, xml);
 		}
 		
 		/// <summary>
@@ -86,12 +86,12 @@ namespace ICSharpCode.WixBinding
 			using (textEditor.Document.OpenUndoGroup()) {
 
 				// Insert the xml and indent it.
-				IDocumentLine documentLine = document.GetLine(line);
+				IDocumentLine documentLine = document.GetLineByNumber(line);
 				int initialIndent = GetIndent(line);
 				int offset = documentLine.Offset + column - 1;
-				int originalLineCount = document.TotalNumberOfLines;
+				int originalLineCount = document.LineCount;
 				document.Insert(offset, xml);
-				int addedLineCount = document.TotalNumberOfLines - originalLineCount;
+				int addedLineCount = document.LineCount - originalLineCount;
 	
 				// Indent the xml.
 				int insertedCharacterCount = IndentLines(line, line + addedLineCount, initialIndent);
@@ -153,13 +153,13 @@ namespace ICSharpCode.WixBinding
 		
 		string GetLineAsString(int line)
 		{
-			IDocumentLine documentLine = document.GetLine(line);
-			return documentLine.Text;
+			IDocumentLine documentLine = document.GetLineByNumber(line);
+			return document.GetText(documentLine);
 		}
 		
 		int IndentLine(int line, int howManyIndents)
 		{
-			IDocumentLine documentLine = document.GetLine(line);
+			IDocumentLine documentLine = document.GetLineByNumber(line);
 			int offset = documentLine.Offset;
 			
 			string indentationString = GetIndentationString(howManyIndents);

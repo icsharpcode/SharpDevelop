@@ -6,7 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace AspNet.Mvc.Tests
 {
@@ -14,25 +17,19 @@ namespace AspNet.Mvc.Tests
 	public class MvcTextTemplateRepositoryTests
 	{
 		MvcTextTemplateRepository repository;
-		FakeFileSystem fakeFileSystem;
+		IFileSystem fakeFileSystem;
 		
 		void CreateRepositoryWithAspNetMvcAddInDirectory(string mvcAddInPath)
 		{
-			fakeFileSystem = new FakeFileSystem();
+			fakeFileSystem = MockRepository.GenerateStub<IFileSystem>();
 			repository = new MvcTextTemplateRepository(mvcAddInPath, fakeFileSystem);
 		}
 		
-		void AddTextTemplateToFolder(string path, string fileName)
+		void AddTextTemplatesToFolder(string path, params string[] fileNames)
 		{
-			string[] fileNames = new string[] {
-				fileName
-			};
-			AddTextTemplatesToFolder(path, fileNames);
-		}
-		
-		void AddTextTemplatesToFolder(string path, string[] fileNames)
-		{
-			fakeFileSystem.AddFakeFiles(path, "*.tt", fileNames);
+			DirectoryName templateFolder = DirectoryName.Create(path);
+			var templateFileNames = fileNames.Select(FileName.Create).ToArray();
+			fakeFileSystem.Stub(f => f.GetFiles(templateFolder, "*.tt")).Return(templateFileNames);
 		}
 		
 		[Test]
@@ -211,7 +208,7 @@ namespace AspNet.Mvc.Tests
 				@"C:\SD\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp";
 			string existingTemplateFileName = 
 				@"C:\SD\AddIns\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.tt";
-			AddTextTemplateToFolder(templateFolder, existingTemplateFileName);
+			AddTextTemplatesToFolder(templateFolder, existingTemplateFileName);
 			
 			var templateCriteria = new MvcTextTemplateCriteria() {
 				TemplateLanguage = MvcTextTemplateLanguage.CSharp,

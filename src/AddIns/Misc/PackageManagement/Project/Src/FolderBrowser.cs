@@ -3,6 +3,7 @@
 
 using System;
 using System.Windows.Forms;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement
@@ -12,7 +13,7 @@ namespace ICSharpCode.PackageManagement
 		public string SelectFolder()
 		{
 			using (var dialog = new FolderBrowserDialog()) {
-				IWin32Window owner = WorkbenchSingleton.MainWin32Window;
+				IWin32Window owner = SD.WinForms.MainWin32Window;
 				if (dialog.ShowDialog(owner) == DialogResult.OK) {
 					return dialog.SelectedPath;
 				}

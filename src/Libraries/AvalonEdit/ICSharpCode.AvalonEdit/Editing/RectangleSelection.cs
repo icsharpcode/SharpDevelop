@@ -13,6 +13,8 @@ using System.Windows.Media.TextFormatting;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {

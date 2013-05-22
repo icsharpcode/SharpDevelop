@@ -16,7 +16,7 @@ namespace UnitTesting.Tests.Utils
 		{
 		}
 		
-		public List<T> BuildItems<T>(string path, object caller)
+		public IReadOnlyList<T> BuildItems<T>(string path, object caller, bool throwOnNotFound)
 		{
 			object obj;
 			if (treeItems.TryGetValue(path, out obj)) {
@@ -28,6 +28,39 @@ namespace UnitTesting.Tests.Utils
 		public void AddItems<T>(string path, List<T> items)
 		{
 			treeItems.Add(path, items);
+		}
+		
+		public IReadOnlyList<AddIn> AddIns {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public System.Collections.Concurrent.ConcurrentDictionary<string, IDoozer> Doozers {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public System.Collections.Concurrent.ConcurrentDictionary<string, IConditionEvaluator> ConditionEvaluators {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public object BuildItem(string path, object caller)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object BuildItem(string path, object caller, IEnumerable<ICondition> additionalConditions)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public AddInTreeNode GetTreeNode(string path, bool throwOnNotFound)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

@@ -15,7 +15,7 @@
 	</Runtime>
 	
 	<!-- JavaScript parser -->
-	<Path name="/Workspace/Parser">
+	<Path name="/SharpDevelop/Parser">
 		<Parser
 			id="JavaScript"
 			supportedextensions=".js"

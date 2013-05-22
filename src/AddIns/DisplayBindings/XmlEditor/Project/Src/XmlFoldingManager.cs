@@ -4,9 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Threading;
+
 using ICSharpCode.AvalonEdit.Folding;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.XmlEditor
@@ -29,7 +31,7 @@ namespace ICSharpCode.XmlEditor
 		public XmlFoldingManager(ITextEditor textEditor, IFoldingManager foldingManager, IXmlFoldParser xmlFoldParser)
 		{
 			document = textEditor.Document;
-			document.Changed += DocumentChanged;
+			document.TextChanged += DocumentChanged;
 			
 			this.foldingManager = foldingManager;
 			this.xmlFoldParser = xmlFoldParser;
@@ -45,38 +47,33 @@ namespace ICSharpCode.XmlEditor
 			set { documentHasChangedSinceLastFoldUpdate = value; }
 		}
 		
-		public ITextBuffer CreateTextEditorSnapshot()
+		public ITextSource CreateTextEditorSnapshot()
 		{
 			return document.CreateSnapshot();
 		}
 		
 		public void Dispose()
 		{
-			document.Changed -= DocumentChanged;
+			document.TextChanged -= DocumentChanged;
 			foldingManager.Dispose();
 		}
 		
-		public IList<FoldingRegion> GetFolds(ITextBuffer textBuffer)
+		public IList<FoldingRegion> GetFolds(ITextSource textSource)
 		{
-			return xmlFoldParser.GetFolds(textBuffer);
+			return xmlFoldParser.GetFolds(textSource);
 		}
+
 		
 		public void UpdateFolds(IEnumerable<FoldingRegion> folds)
 		{
-			IList<NewFolding> newFolds = ConvertFoldRegionsToNewFolds(folds);
-			UpdateFolds(newFolds);			
-		}
-		
-		public void UpdateFolds(IEnumerable<NewFolding> folds)
-		{
 			int firstErrorOffset = NoFirstErrorOffset;
-			foldingManager.UpdateFoldings(folds, firstErrorOffset);
+			foldingManager.UpdateFoldings(ConvertFoldRegionsToNewFolds(folds), firstErrorOffset);
 		}
 		
 		public void UpdateFolds()
 		{
-			ITextBuffer textBuffer = CreateTextEditorSnapshot();
-			IList<FoldingRegion> folds = GetFolds(textBuffer);
+			ITextSource textSource = CreateTextEditorSnapshot();
+			IList<FoldingRegion> folds = GetFolds(textSource);
 			if (folds != null) {
 				UpdateFolds(folds);
 			}

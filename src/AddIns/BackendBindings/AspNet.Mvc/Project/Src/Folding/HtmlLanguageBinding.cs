@@ -8,13 +8,13 @@ using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AspNet.Mvc.Folding
 {
-	public class HtmlLanguageBinding : DefaultLanguageBinding
+	public class HtmlTextEditorExtension : ITextEditorExtension
 	{
 		ITextEditorWithParseInformationFoldingFactory textEditorFactory;
 		IFoldGeneratorFactory foldGeneratorFactory;
 		IFoldGenerator foldGenerator;
 		
-		public HtmlLanguageBinding(
+		public HtmlTextEditorExtension(
 			ITextEditorWithParseInformationFoldingFactory textEditorFactory,
 			IFoldGeneratorFactory foldGeneratorFactory)
 		{
@@ -22,15 +22,7 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 			this.foldGeneratorFactory = foldGeneratorFactory;
 		}
 		
-		public override IFormattingStrategy FormattingStrategy {
-			get { return new DefaultFormattingStrategy(); }
-		}
-		
-		public override LanguageProperties Properties {
-			get { return LanguageProperties.None; }
-		}
-		
-		public override void Attach(ITextEditor editor)
+		public void Attach(ITextEditor editor)
 		{
 			Attach(textEditorFactory.CreateTextEditor(editor));
 		}
@@ -40,7 +32,7 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 			foldGenerator = foldGeneratorFactory.CreateFoldGenerator(editor);
 		}
 		
-		public override void Detach()
+		public void Detach()
 		{
 			foldGenerator.Dispose();
 		}

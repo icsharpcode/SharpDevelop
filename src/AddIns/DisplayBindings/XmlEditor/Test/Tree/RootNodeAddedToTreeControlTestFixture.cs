@@ -4,7 +4,7 @@
 using System;
 using System.Windows.Forms;
 using System.Xml;
-
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;

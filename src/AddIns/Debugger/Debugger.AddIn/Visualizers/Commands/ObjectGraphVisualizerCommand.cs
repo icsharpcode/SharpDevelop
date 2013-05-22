@@ -8,6 +8,7 @@ using System.Linq;
 using Debugger.AddIn.TreeModel;
 using Debugger.AddIn.Visualizers.Graph;
 using Debugger.MetaData;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Debugging;
 using Debugger.AddIn.Visualizers.Utils;
 using ICSharpCode.SharpDevelop.Services;
@@ -16,14 +17,14 @@ namespace Debugger.AddIn.Visualizers
 {
 	public class ObjectGraphVisualizerDescriptor : IVisualizerDescriptor
 	{
-		public bool IsVisualizerAvailable(DebugType type)
+		public bool IsVisualizerAvailable(IType type)
 		{
 			return !type.IsAtomic() && !type.IsSystemDotObject();
 		}
 		
-		public IVisualizerCommand CreateVisualizerCommand(Expression expression)
+		public IVisualizerCommand CreateVisualizerCommand(string valueName, Func<Value> getValue)
 		{
-			return new ObjectGraphVisualizerCommand(expression);
+			return new ObjectGraphVisualizerCommand(valueName, getValue);
 		}
 	}
 	
@@ -32,8 +33,7 @@ namespace Debugger.AddIn.Visualizers
 	/// </summary>
 	public class ObjectGraphVisualizerCommand : ExpressionVisualizerCommand
 	{
-		public ObjectGraphVisualizerCommand(Expression expression)
-			:base(expression)
+		public ObjectGraphVisualizerCommand(string valueName, Func<Value> getValue) : base(valueName, getValue)
 		{
 		}
 		
@@ -44,10 +44,8 @@ namespace Debugger.AddIn.Visualizers
 		
 		public override void Execute()
 		{
-			if (this.Expression == null)
-				return;
 			var objectGraphWindow = ObjectGraphWindow.EnsureShown();
-			objectGraphWindow.ShownExpression = this.Expression;
+			objectGraphWindow.ShownExpression = new GraphExpression(this.ValueName, this.GetValue);
 		}
 	}
 }

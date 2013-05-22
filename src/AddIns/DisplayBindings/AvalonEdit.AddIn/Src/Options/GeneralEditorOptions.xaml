@@ -4,9 +4,7 @@
 	<StackPanel>
 		<GroupBox
 			Header="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.FontGroupBox}">
-			<winforms:WindowsFormsHost Height="112">
-				<gui:FontSelectionPanel x:Name="fontSelectionPanel" />
-			</winforms:WindowsFormsHost>
+			<gui:FontSelector x:Name="fontSelectionPanel" />
 		</GroupBox>
 		<GroupBox
 			Header="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.GeneralOptionsGroupBox}">

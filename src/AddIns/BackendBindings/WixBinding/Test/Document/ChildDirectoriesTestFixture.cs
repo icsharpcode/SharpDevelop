@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Resources;
 using System.Xml;
-
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using WixBinding.Tests.Utils;
@@ -29,6 +29,7 @@ namespace WixBinding.Tests.Document
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			SD.InitializeForUnitTests();
 			WixBindingTestsHelper.RegisterResourceStringsWithSharpDevelopResourceManager();
 			
 			WixDocument doc = new WixDocument();

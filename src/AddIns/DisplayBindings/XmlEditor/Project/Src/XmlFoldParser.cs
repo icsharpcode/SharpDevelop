@@ -7,8 +7,8 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using ICSharpCode.AvalonEdit.Folding;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.XmlEditor
@@ -28,12 +28,12 @@ namespace ICSharpCode.XmlEditor
 		public XmlFoldParser()
 			: this(XmlEditorService.XmlEditorOptions)
 		{
-		}				
+		}
 		
-		public IList<FoldingRegion> GetFolds(ITextBuffer textBuffer)
+		public IList<FoldingRegion> GetFolds(ITextSource textSource)
 		{
 			try {
-				GetFolds(textBuffer.CreateReader());
+				GetFolds(textSource.CreateReader());
 				return folds;
 			} catch (XmlException) {
 			}
@@ -52,7 +52,7 @@ namespace ICSharpCode.XmlEditor
 					case XmlNodeType.Element:
 						AddElementFoldToStackIfNotEmptyElement();
 						break;
-					
+						
 					case XmlNodeType.EndElement:
 						CreateElementFoldingRegionIfNotSingleLine();
 						break;
@@ -64,7 +64,7 @@ namespace ICSharpCode.XmlEditor
 			}
 			folds.Sort(CompareFoldingRegion);
 		}
-				
+		
 		void CreateXmlTextReaderWithNoNamespaceSupport(TextReader textReader)
 		{
 			reader = new XmlTextReader(textReader);
@@ -102,7 +102,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Creates a comment fold if the comment spans more than one line.
 		/// </summary>
-		/// <remarks>The text displayed when the comment is folded is the first 
+		/// <remarks>The text displayed when the comment is folded is the first
 		/// line of the comment.</remarks>
 		void CreateCommentFoldingRegionIfNotSingleLine()
 		{

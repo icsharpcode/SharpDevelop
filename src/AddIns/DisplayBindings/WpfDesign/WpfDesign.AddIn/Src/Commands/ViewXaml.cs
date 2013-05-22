@@ -3,7 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.WpfDesign.AddIn.Commands
 {
@@ -14,7 +14,7 @@ namespace ICSharpCode.WpfDesign.AddIn.Commands
 	{
 		public override void Run()
 		{
-			WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.SwitchView(0);
+			SD.Workbench.ActiveWorkbenchWindow.SwitchView(0);
 		}
 	}
 }

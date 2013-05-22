@@ -6,7 +6,9 @@ using System.Collections;
 using System.IO;
 using System.Resources;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
@@ -15,14 +17,14 @@ namespace ICSharpCode.FormsDesigner.Services
 	/// </summary>
 	public sealed class ProjectResourceInfo
 	{
-		readonly string resourceFile;
+		readonly FileName resourceFile;
 		readonly string resourceKey;
 		readonly object originalValue;
 		
 		/// <summary>
 		/// Gets the full file name of the resource file that contains the resource.
 		/// </summary>
-		public string ResourceFile {
+		public FileName ResourceFile {
 			get { return resourceFile; }
 		}
 		
@@ -48,7 +50,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		/// </summary>
 		/// <param name="resourceFile">The full name of the resource file that contains the resource.</param>
 		/// <param name="resourceKey">The resource key.</param>
-		public ProjectResourceInfo(string resourceFile, string resourceKey)
+		public ProjectResourceInfo(FileName resourceFile, string resourceKey)
 		{
 			if (resourceFile == null)
 				throw new ArgumentNullException("resourceFile");
@@ -59,7 +61,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			if (File.Exists(resourceFile)) {
 				
-				OpenedFile openedFile = FileService.GetOpenedFile(resourceFile);
+				OpenedFile openedFile = SD.FileService.GetOpenedFile(resourceFile);
 				Stream s;
 				if (openedFile != null) {
 					s = openedFile.OpenRead();

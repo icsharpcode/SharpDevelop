@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			using (WordCountDialog wcd = new WordCountDialog()) {
-				wcd.ShowDialog(WorkbenchSingleton.MainWin32Window);
+				wcd.ShowDialog(SD.WinForms.MainWin32Window);
 			}
 		}
 	}

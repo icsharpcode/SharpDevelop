@@ -7,6 +7,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 {
+	[Obsolete("XML Forms are obsolete")]
 	public abstract class BaseSharpDevelopForm : XmlForm
 	{
 //		public BaseSharpDevelopForm(string fileName) : base(fileName)

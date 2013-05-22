@@ -20,15 +20,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		IPackageManagementFileService fileService;
 		
 		public FileProjectItems(ProjectItem projectItem)
-			: this(projectItem, new PackageManagementFileService())
-		{
-		}
-		
-		public FileProjectItems(ProjectItem projectItem, IPackageManagementFileService fileService)
-			: base((Project)projectItem.ContainingProject, projectItem, fileService)
+			: base((Project)projectItem.ContainingProject, projectItem)
 		{
 			this.projectItem = projectItem;
-			this.fileService = fileService;
+			this.fileService = Project.FileService;
 		}
 		
 		protected override IEnumerable<global::EnvDTE.ProjectItem> GetProjectItems()

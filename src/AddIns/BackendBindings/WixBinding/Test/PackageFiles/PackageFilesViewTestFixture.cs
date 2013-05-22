@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Xml;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using WixBinding.Tests.Utils;
@@ -27,6 +28,7 @@ namespace WixBinding.Tests.PackageFiles
 		[SetUp]
 		public void Init()
 		{
+			SD.InitializeForUnitTests();
 			project = WixBindingTestsHelper.CreateEmptyWixProject();
 			mockWorkbench = new MockWorkbench();
 			mockPackageFilesControl = new MockWixPackageFilesControl();

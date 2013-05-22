@@ -32,27 +32,25 @@ namespace ICSharpCode.GitAddIn
 			AbstractProjectBrowserTreeNode.OnNewNode += TreeNodeCreated;
 		}
 		
-		void AddFile(string fileName)
+		async void AddFile(string fileName)
 		{
-			Git.Add(fileName,
-				exitcode => WorkbenchSingleton.SafeThreadAsyncCall(ClearStatusCacheAndEnqueueFile, fileName)
-			);
+			await Git.AddAsync(fileName);
+			ClearStatusCacheAndEnqueueFile(fileName);
 		}
 		
-		void RemoveFile(string fileName)
+		async void RemoveFile(string fileName)
 		{
 			if (GitStatusCache.GetFileStatus(fileName) == GitStatus.Added) {
-				Git.Remove(fileName, true,
-					exitcode => WorkbenchSingleton.SafeThreadAsyncCall(ClearStatusCacheAndEnqueueFile, fileName));
+				await Git.RemoveAsync(fileName, true);
+				ClearStatusCacheAndEnqueueFile(fileName);
 			}
 		}
 		
-		void RenameFile(string sourceFileName, string targetFileName)
+		async void RenameFile(string sourceFileName, string targetFileName)
 		{
-			Git.Add(targetFileName,
-				exitcode => WorkbenchSingleton.SafeThreadAsyncCall(RemoveFile, sourceFileName)
-			);
-			WorkbenchSingleton.SafeThreadAsyncCall(ClearStatusCacheAndEnqueueFile, targetFileName);
+			await Git.AddAsync(targetFileName);
+			ClearStatusCacheAndEnqueueFile(targetFileName);
+			RemoveFile(sourceFileName);
 		}
 		
 		void TreeNodeCreated(object sender, TreeViewEventArgs e)

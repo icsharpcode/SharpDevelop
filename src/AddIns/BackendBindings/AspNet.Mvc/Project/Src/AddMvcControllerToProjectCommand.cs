@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -20,7 +21,7 @@ namespace ICSharpCode.AspNet.Mvc
 		protected virtual IAddMvcItemToProjectView CreateView()
 		{
 			return new AddMvcControllerToProjectView() {
-				Owner = WorkbenchSingleton.MainWindow
+				Owner = SD.Workbench.MainWindow
 			};
 		}
 		

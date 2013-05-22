@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Reflection;
 
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.FormsDesigner
 {

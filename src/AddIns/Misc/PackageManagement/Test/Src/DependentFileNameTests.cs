@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -18,7 +20,7 @@ namespace PackageManagement.Tests
 		void CreateCSharpProject(string projectFileName)
 		{
 			project = ProjectHelper.CreateTestProject();
-			project.FileName = projectFileName;
+			project.FileName = new FileName(projectFileName);
 		}
 		
 		FileProjectItem AddFileToProject(string include)
@@ -29,6 +31,12 @@ namespace PackageManagement.Tests
 		void CreateDependentFile()
 		{
 			dependentFile = new DependentFile(project);
+		}
+		
+		[SetUp]
+		public void Init()
+		{
+			SD.InitializeForUnitTests();
 		}
 		
 		[Test]

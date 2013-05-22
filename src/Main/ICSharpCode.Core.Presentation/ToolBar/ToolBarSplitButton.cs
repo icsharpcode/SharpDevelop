@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -14,12 +15,11 @@ namespace ICSharpCode.Core.Presentation
 	/// </summary>
 	sealed class ToolBarSplitButton : SplitButton, IStatusUpdate
 	{
-		ICommand menuCommand;
 		object caller;
 		Codon codon;
-		IEnumerable<ICondition> conditions;
+		IReadOnlyCollection<ICondition> conditions;
 		
-		public ToolBarSplitButton(Codon codon, object caller, IList submenu, IEnumerable<ICondition> conditions)
+		public ToolBarSplitButton(Codon codon, object caller, IList submenu, IReadOnlyCollection<ICondition> conditions)
 		{
 			ToolTipService.SetShowOnDisabled(this, true);
 			
@@ -32,10 +32,8 @@ namespace ICSharpCode.Core.Presentation
 				this.Name = codon.Properties["name"];
 			}
 			
-			menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
-			menuCommand.Owner = this;
-			
-			this.Command = new CommandWrapper(codon, caller, menuCommand, conditions);
+			this.Command = CommandWrapper.CreateLazyCommand(codon, conditions);
+			this.CommandParameter = caller;
 			this.DropDownMenu = MenuService.CreateContextMenu(submenu);
 			
 			UpdateText();

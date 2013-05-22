@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using Microsoft.Win32;
 using MSHelpSystem.Core;
 using MSHelpSystem.Controls;
@@ -21,7 +22,7 @@ namespace MSHelpSystem.Commands
 		{
 			ICSharpCode.SharpDevelop.Gui.TaskView view = (TaskView)Owner;
 
-			foreach (Task t in new List<Task>(view.SelectedTasks)) {
+			foreach (var t in view.SelectedTasks.ToArray()) {
 				if (t.BuildError == null)
 					continue;
 
@@ -48,7 +49,7 @@ namespace MSHelpSystem.Commands
 		{
 			if (Help3Service.Config.ExternalHelp) DisplayHelp.Catalog();
 			else {
-				PadDescriptor toc = WorkbenchSingleton.Workbench.GetPad(typeof(Help3TocPad));
+				PadDescriptor toc = SD.Workbench.GetPad(typeof(Help3TocPad));
 				if (toc != null) toc.BringPadToFront();
 			}
 		}
@@ -58,7 +59,7 @@ namespace MSHelpSystem.Commands
 	{
 		public override void Run()
 		{
-			PadDescriptor search = WorkbenchSingleton.Workbench.GetPad(typeof(Help3SearchPad));
+			PadDescriptor search = SD.Workbench.GetPad(typeof(Help3SearchPad));
 			if (search != null) search.BringPadToFront();
 		}
 	}
@@ -68,8 +69,10 @@ namespace MSHelpSystem.Commands
 		public override void Run()
 		{
 			string path;
-			if (!RegistryService.GetRegistryValue(RegistryHive.LocalMachine, @"SOFTWARE\Microsoft\Help\v1.0",
-			                                      "AppRoot", RegistryValueKind.String, out path)) {
+			using (var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Help\v1.0")) {
+				path = key != null ? key.GetValue("AppRoot") as string : null;
+			}
+			if (string.IsNullOrEmpty(path)) {
 				MessageService.ShowError("${res:AddIns.HelpViewer.HLMNotFound}");
 				return;
 			}

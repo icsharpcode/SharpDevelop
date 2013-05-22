@@ -4,10 +4,10 @@
 using System;
 using System.IO;
 using System.Linq;
-
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.SharpDevelop.Gui;
@@ -21,21 +21,20 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 		/// </summary>
 		public override void Run()
 		{
-			ICodeEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ICodeEditorProvider;
-			
-			if (provider == null)
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
+			if (editor == null)
 				return;
 			
-			CodeSnippetGroup group = SnippetManager.Instance.FindGroup(Path.GetExtension(provider.TextEditor.FileName));
+			CodeSnippetGroup group = SnippetManager.Instance.FindGroup(Path.GetExtension(editor.FileName));
 			
 			if (group == null)
 				return;
 			
 			DefaultCompletionItemList list = new DefaultCompletionItemList();
 			
-			list.Items.AddRange(group.Snippets.Where(i => i.HasSelection).Select(item => item.CreateCompletionItem(provider.TextEditor)));
+			list.Items.AddRange(group.Snippets.Where(i => i.HasSelection).Select(item => item.CreateCompletionItem(editor)));
 			
-			new CodeSnippetCompletionWindow(provider.TextEditor, list).Show();
+			new CodeSnippetCompletionWindow(editor, list).Show();
 		}
 	}
 }

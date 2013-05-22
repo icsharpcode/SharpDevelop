@@ -11,9 +11,9 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	{
 		public override void Run()
 		{
-			ITextEditorProvider editorProvider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			if (editorProvider != null) {
-				Run(editorProvider.TextEditor, editorProvider.TextEditor.Caret.Offset);
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
+			if (editor != null) {
+				Run(editor, editor.Caret.Offset);
 			}
 		}
 		

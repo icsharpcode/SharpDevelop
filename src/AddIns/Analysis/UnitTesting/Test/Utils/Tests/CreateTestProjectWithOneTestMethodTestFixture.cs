@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -24,8 +23,8 @@ namespace UnitTesting.Tests.Utils.Tests
 			
 			if (testProject.TestClasses.Count > 0) {
 				testClass = testProject.TestClasses[0];
-				if (testClass.TestMembers.Count > 0) {
-					testMethod = testClass.TestMembers[0];
+				if (testClass.Members.Count > 0) {
+					testMethod = testClass.Members[0];
 				}
 			}	
 		}
@@ -66,7 +65,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		[Test]
 		public void TestClassHasOneTestMethod()
 		{
-			Assert.AreEqual(1, testClass.TestMembers.Count);
+			Assert.AreEqual(1, testClass.Members.Count);
 		}
 		
 		[Test]

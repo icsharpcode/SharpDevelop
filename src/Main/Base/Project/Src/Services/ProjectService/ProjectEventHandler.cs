@@ -5,8 +5,6 @@ using System;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public delegate void ProjectEventHandler(object sender, ProjectEventArgs e);
-	
 	public class ProjectEventArgs : EventArgs
 	{
 		IProject project;

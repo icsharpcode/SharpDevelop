@@ -13,9 +13,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			using (NewProjectDialog npdlg = new NewProjectDialog(true)) {
-				npdlg.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window);
-			}
+			SD.UIService.ShowNewProjectDialog(null);
 		}
 	}
 	
@@ -28,8 +26,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				fdiag.Filter          = ProjectService.GetAllProjectsFilter(this, true);
 				fdiag.Multiselect     = false;
 				fdiag.CheckFileExists = true;
-				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-					ProjectService.LoadSolutionOrProject(fdiag.FileName);
+				if (fdiag.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
+					SD.ProjectService.OpenSolutionOrProject(FileName.Create(fdiag.FileName));
 				}
 			}
 		}
@@ -39,12 +37,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			if (!ProjectService.IsClosingCanceled()) {
-				ProjectService.SaveSolutionPreferences();
-				if (WorkbenchSingleton.Workbench.CloseAllSolutionViews()) {
-					ProjectService.CloseSolution();
-				}
-			}
+			SD.ProjectService.CloseSolution();
 		}
 	}
 }

@@ -2,23 +2,25 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.CodeCoverage
 {
 	public class RunAllTestsWithCodeCoverageCommand : RunTestWithCodeCoverageCommand
 	{
-		public RunAllTestsWithCodeCoverageCommand()
-		{
-		}
-		
-		/// <summary>
-		/// Set Owner to null so all tests are run.
-		/// </summary>
 		public override void Run()
 		{
-			Owner = null;
-			base.Run();
+			ITestService testService = SD.GetRequiredService<ITestService>();
+			if (testService.OpenSolution != null) {
+				base.Run();
+			}
+		}
+		
+		protected override IEnumerable<ITest> GetTests(ITestService testService)
+		{
+			return new[] { testService.OpenSolution };
 		}
 	}
 }

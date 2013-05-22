@@ -31,11 +31,9 @@ namespace PackageManagement.Tests
 		
 		List<IProject> AddSolutionWithTwoProjectsToProjectService()
 		{
-			TestableProject project1 = ProjectHelper.CreateTestProject("Test1");
-			TestableProject project2 = ProjectHelper.CreateTestProject("Test2");
-			
-			Solution solution = project1.ParentSolution;
-			project2.Parent = solution;
+			ISolution solution = ProjectHelper.CreateSolution();
+			TestableProject project1 = ProjectHelper.CreateTestProject(solution, "Test1");
+			TestableProject project2 = ProjectHelper.CreateTestProject(solution, "Test2");
 			
 			fakeSolution.FakeMSBuildProjects.Add(project1);
 			fakeSolution.FakeMSBuildProjects.Add(project2);

@@ -2,8 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace XmlEditor.Tests.Utils
 {
@@ -22,6 +24,11 @@ namespace XmlEditor.Tests.Utils
 		public IDocument GetDocumentForFile(OpenedFile file)
 		{
 			throw new NotImplementedException();
+		}
+		
+		public override object GetService(Type serviceType)
+		{
+			return textEditor.GetService(serviceType);
 		}
 	}
 }

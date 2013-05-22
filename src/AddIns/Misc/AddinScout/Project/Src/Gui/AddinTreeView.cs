@@ -43,12 +43,12 @@ namespace AddInScout
 			
 			treeView.Nodes.Add(rootNode);
 			
-			for (int i = 0; i < AddInTree.AddIns.Count; i++) {
-				TreeNode newNode = new TreeNode(AddInTree.AddIns[i].Properties["name"]);
+			foreach (var addin in SD.AddInTree.AddIns) {
+				TreeNode newNode = new TreeNode(addin.Properties["name"]);
 				newNode.ImageIndex = 1;
 				newNode.SelectedImageIndex = 2;
-				newNode.Tag = AddInTree.AddIns[i];
-				GetExtensions(AddInTree.AddIns[i], newNode);
+				newNode.Tag = addin;
+				GetExtensions(addin, newNode);
 				rootNode.Nodes.Add(newNode);
 			}
 		}

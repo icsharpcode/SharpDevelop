@@ -59,11 +59,11 @@ namespace ICSharpCode.SharpDevelop.Widgets.MyersDiff
 	///
 	/// Example:
 	///
-	/// H E L L O W O R L D
-	/// ____
-	/// L \___
-	/// O \___
-	/// W \________
+    /// H E L L O W O R L D
+    ///   ____
+    /// L     \___
+    /// O         \___
+    /// W             \________
 	///
 	/// Since every D-path has exactly D horizontal or vertical elements, it can
 	/// only end on the diagonals -D, -D+2, ..., D-2, D.

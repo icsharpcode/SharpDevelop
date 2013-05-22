@@ -2,7 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
@@ -13,40 +14,47 @@ namespace UnitTesting.Tests.Project
 	/// Tests that the inner test class is removed when its TestFixture attribute is removed.
 	/// </summary>
 	[TestFixture]
-	public class InnerClassTestFixtureAttributeRemovedTestFixture : InnerClassTestFixtureBase
+	public class InnerClassTestFixtureAttributeRemovedTestFixture : NUnitTestProjectFixtureBase
 	{
-		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
-			base.InitBase();
-			
-			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
-			oldUnit.Classes.Add(outerClass);
-			
-			// Create new compilation unit with inner class that no longer has the TestFixture attribute.
-			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			MockClass newOuterClass = new MockClass(projectContent, "MyTests.A");
-			projectContent.Classes.Add(newOuterClass);
-			newUnit.Classes.Add(newOuterClass);
-			
-			// Create the inner test class.
-			MockClass newInnerClass = new MockClass(projectContent, "MyTests.A.InnerATest", "MyTests.A+InnerATest", outerClass);
-			newOuterClass.InnerClasses.Add(newInnerClass);
-		
-			// Update TestProject's parse info.
-			testProject.UpdateParseInfo(oldUnit, newUnit);			
+			base.SetUp();
+			AddCodeFile("test.cs", @"
+using NUnit.Framework;
+namespace MyTests {
+	class A {
+		[TestFixture]
+		class Inner {}
+	}
+}");
+			testProject.EnsureNestedTestsInitialized();
 		}
 		
 		[Test]
-		public void NoTestClasses()
+		public void RemoveAttribute_Leaves_No_TestClasses()
 		{
-			Assert.AreEqual(0, testProject.TestClasses.Count);
+			UpdateCodeFile("test.cs", @"
+using NUnit.Framework;
+namespace MyTests {
+	class A {
+		class Inner {}
+	}
+}");
+			Assert.AreEqual(0, testProject.NestedTests.Count);
 		}
 		
 		[Test]
-		public void InnerTestClassRemoved()
+		public void MoveAttributeToOuterClass()
 		{
-			Assert.IsFalse(testProject.TestClasses.Contains("MyTests.A+InnerATest"));
+			UpdateCodeFile("test.cs", @"
+using NUnit.Framework;
+namespace MyTests {
+	[TestFixture]
+	class A {
+		class Inner {}
+	}
+}");
+			Assert.IsEmpty(testProject.GetTestClass(new FullTypeName("MyTests.A")).NestedTests);
 		}
 	}
 }

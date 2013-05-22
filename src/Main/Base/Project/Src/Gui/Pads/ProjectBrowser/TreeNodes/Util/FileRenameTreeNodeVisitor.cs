@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override object Visit(DirectoryNode directoryNode, object data)
 		{
 			if (FileUtility.IsBaseDirectory(oldName, directoryNode.Directory)) {
-				directoryNode.Directory = FileUtility.RenameBaseDirectory(directoryNode.Directory, oldName, newName);
+				directoryNode.Directory = DirectoryName.Create(FileUtility.RenameBaseDirectory(directoryNode.Directory, oldName, newName));
 				directoryNode.AcceptChildren(this, data);
 			} else if (FileUtility.IsBaseDirectory(directoryNode.Directory, oldName)) {
 				directoryNode.AcceptChildren(this, data);

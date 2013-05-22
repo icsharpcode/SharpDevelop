@@ -11,6 +11,7 @@ using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 using NUnit.Framework;
+using Rhino.Mocks;
 using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests.Scripting
@@ -95,24 +96,22 @@ namespace PackageManagement.Tests.Scripting
 			return enabledPackageSource;
 		}
 		
-		Solution CreateViewModelWithOneProjectOpen()
+		ISolution CreateViewModelWithOneProjectOpen()
 		{
 			CreateConsoleHost();
-			Solution solution = CreateSolutionWithOneProject();
+			ISolution solution = CreateSolutionWithOneProject();
 			projectService = new FakePackageManagementProjectService();
 			projectService.OpenSolution = solution;
+			projectService.ProjectCollections.Add(solution.Projects);
 			CreateViewModel(consoleHost, projectService);
 			
 			return solution;
 		}
 		
-		Solution CreateSolutionWithOneProject()
+		ISolution CreateSolutionWithOneProject()
 		{
 			TestableProject project = ProjectHelper.CreateTestProject();
-			Solution solution = project.ParentSolution;
-			solution.AddFolder(project);
-			
-			return solution;
+			return project.ParentSolution;
 		}
 		
 		PackageSource AddOnePackageSourceAndRemoveAnyExistingPackageSources()
@@ -146,39 +145,41 @@ namespace PackageManagement.Tests.Scripting
 			viewModel.PropertyChanged += (sender, e) => propertiesChanged.Add(e.PropertyName);
 		}
 		
-		Solution CreateViewModelWithEmptySolutionOpen()
+		ISolution CreateViewModelWithEmptySolutionOpen()
 		{
 			CreateConsoleHost();
-			var solution = new Solution(new MockProjectChangeWatcher());
+			var solution = ProjectHelper.CreateSolution();
 			projectService = new FakePackageManagementProjectService();
 			projectService.OpenSolution = solution;
+			projectService.ProjectCollections.Add(solution.Projects);
 			CreateViewModel(consoleHost, projectService);
 			return solution;
 		}
 		
-		TestableProject AddProjectToSolution(Solution solution)
+		TestableProject AddProjectToSolution(ISolution solution)
 		{
-			var project = ProjectHelper.CreateTestProject();
-			solution.AddFolder(project);
+			var project = ProjectHelper.CreateTestProject(solution, "TestProject");
 			return project;
 		}
 		
 		void CloseSolution()
 		{
+			ISolution solution = projectService.OpenSolution;
 			projectService.OpenSolution = null;
-			projectService.FireSolutionClosedEvent();
+			projectService.ProjectCollections.Remove(solution.Projects);
+			projectService.FireSolutionClosedEvent(solution);
 		}
 		
-		void OpenSolution(Solution solution)
+		void OpenSolution(ISolution solution)
 		{
 			projectService.OpenSolution = solution;
-			projectService.FireSolutionLoadedEvent(solution);
+			projectService.ProjectCollections.Add(solution.Projects);
 		}
 		
-		IProject RemoveProjectFromSolution(Solution solution)
+		IProject RemoveProjectFromSolution(ISolution solution)
 		{
 			var project = solution.Projects.FirstOrDefault();
-			solution.RemoveFolder(project);
+			((ICollection<IProject>)solution.Projects).Remove(project);
 			return project;
 		}
 		
@@ -312,7 +313,7 @@ namespace PackageManagement.Tests.Scripting
 		{
 			CreateConsoleHost();
 			projectService = new FakePackageManagementProjectService();
-			var solution = new Solution(new MockProjectChangeWatcher());
+			var solution = ProjectHelper.CreateSolution();
 			projectService.OpenSolution = solution;
 
 			Assert.DoesNotThrow(() => CreateViewModel(consoleHost, projectService));
@@ -323,7 +324,6 @@ namespace PackageManagement.Tests.Scripting
 		{
 			var solution = CreateViewModelWithEmptySolutionOpen();
 			var project = AddProjectToSolution(solution);
-			projectService.FireProjectAddedEvent(project);
 			
 			var actualProjects = viewModel.Projects;
 			var expectedProjects = solution.Projects;
@@ -336,7 +336,6 @@ namespace PackageManagement.Tests.Scripting
 		{
 			var solution = CreateViewModelWithEmptySolutionOpen();
 			var project = AddProjectToSolution(solution);
-			projectService.FireProjectAddedEvent(project);
 			
 			var actualProject = viewModel.DefaultProject;
 			
@@ -396,7 +395,7 @@ namespace PackageManagement.Tests.Scripting
 			OpenSolution(solution);
 			
 			var actualProject = viewModel.DefaultProject;
-			var expectedProject = viewModel.Projects[0];
+			var expectedProject = viewModel.Projects.FirstOrDefault();
 			
 			Assert.AreEqual(expectedProject, actualProject);
 		}
@@ -419,7 +418,6 @@ namespace PackageManagement.Tests.Scripting
 		{
 			var solution = CreateViewModelWithOneProjectOpen();
 			var project = RemoveProjectFromSolution(solution);
-			projectService.FireSolutionFolderRemoved(project);
 			
 			var actualProjects = viewModel.Projects;
 			var expectedProjects = solution.Projects;
@@ -432,23 +430,10 @@ namespace PackageManagement.Tests.Scripting
 		{
 			var solution = CreateViewModelWithOneProjectOpen();
 			var project = RemoveProjectFromSolution(solution);
-			projectService.FireSolutionFolderRemoved(project);
 			
 			var actualProject = viewModel.DefaultProject;
 			
 			Assert.IsNull(actualProject);
-		}
-		
-		[Test]
-		public void Projects_SolutionFolderRemovedFromSolution_ProjectListIsUnchanged()
-		{
-			var solution = CreateViewModelWithOneProjectOpen();
-			var solutionFolder = new SolutionFolder("Test", "Location", "Guid");
-			projectService.FireSolutionFolderRemoved(solutionFolder);
-			
-			int count = viewModel.Projects.Count;
-			
-			Assert.AreEqual(1, count);
 		}
 		
 		[Test]

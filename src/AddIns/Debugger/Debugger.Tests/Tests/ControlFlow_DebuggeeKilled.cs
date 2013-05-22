@@ -42,11 +42,11 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="ControlFlow_DebuggeeKilled.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ControlFlow_DebuggeeKilled.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ControlFlow_DebuggeeKilled.cs:12,4-12,40</DebuggingPaused>
-    <ProcessExited />
+    <Paused>ControlFlow_DebuggeeKilled.cs:12,4-12,40</Paused>
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

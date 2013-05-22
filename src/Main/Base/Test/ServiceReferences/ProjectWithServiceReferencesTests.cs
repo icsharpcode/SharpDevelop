@@ -6,7 +6,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Tests.WebReferences;
@@ -17,7 +17,7 @@ using Rhino.Mocks;
 namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 {
 	[TestFixture]
-	public class ProjectWithServiceReferencesTests
+	public class ProjectWithServiceReferencesTests : SDTestFixtureBase
 	{
 		IProject fakeProject;
 		ProjectWithServiceReferences project;
@@ -45,12 +45,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		
 		void SetProjectDirectory(string directory)
 		{
-			fakeProject.Stub(p => p.Directory).Return(directory);			
-		}
-		
-		void SetProjectCodeDomProvider(LanguageProperties languageProperties)
-		{
-			fakeProject.Stub(p => p.LanguageProperties).Return(languageProperties);
+			fakeProject.Stub(p => p.Directory).Return(DirectoryName.Create(directory));
 		}
 		
 		ProjectItem GetFirstServiceReferenceFileInMSBuildProject(ServiceReferenceFileName fileName)
@@ -341,7 +336,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void AddAppConfigFile_ProjectHasNoAppConfig_ProjectItemAddedToProjectForAppConfig()
 		{
 			CreateProjectWithMSBuildProject();
-			msbuildProject.FileName = @"d:\projects\MyProject\myproject.csproj";
+			msbuildProject.FileName = FileName.Create(@"d:\projects\MyProject\myproject.csproj");
 			
 			project.AddAppConfigFile();
 			
@@ -397,7 +392,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void GetAppConfigFileName_ProjectHasNoAppConfig_DefaultAppConfigFileNameReturned()
 		{
 			CreateProjectWithMSBuildProject();
-			msbuildProject.FileName = @"d:\projects\MyProject\myproject.csproj";
+			msbuildProject.FileName = FileName.Create(@"d:\projects\MyProject\myproject.csproj");
 			
 			string fileName = project.GetAppConfigFileName();
 			
@@ -408,7 +403,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void GetAppConfigFileName_ProjectHasAppConfigInSubFolder_AppConfigFileNameReturned()
 		{
 			CreateProjectWithMSBuildProject();
-			msbuildProject.FileName = @"d:\projects\MyProject\myproject.csproj";
+			msbuildProject.FileName = FileName.Create(@"d:\projects\MyProject\myproject.csproj");
 			AddFileToMSBuildProject(@"SubFolder\app.config");
 			string fileName = project.GetAppConfigFileName();
 			

@@ -2,7 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace XmlEditor.Tests.Utils
 {
@@ -92,13 +95,13 @@ namespace XmlEditor.Tests.Utils
 			}
 		}
 		
-		public System.Collections.Generic.IList<ICSharpCode.SharpDevelop.OpenedFile> Files {
+		public IList<OpenedFile> Files {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public ICSharpCode.SharpDevelop.OpenedFile PrimaryFile {
+		public OpenedFile PrimaryFile {
 			get {
 				throw new NotImplementedException();
 			}
@@ -144,12 +147,12 @@ namespace XmlEditor.Tests.Utils
 			}
 		}
 		
-		public void Save(ICSharpCode.SharpDevelop.OpenedFile file, System.IO.Stream stream)
+		public void Save(OpenedFile file, System.IO.Stream stream)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public void Load(ICSharpCode.SharpDevelop.OpenedFile file, System.IO.Stream stream)
+		public void Load(OpenedFile file, System.IO.Stream stream)
 		{
 			throw new NotImplementedException();
 		}
@@ -159,22 +162,22 @@ namespace XmlEditor.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public bool SupportsSwitchFromThisWithoutSaveLoad(ICSharpCode.SharpDevelop.OpenedFile file, IViewContent newView)
+		public bool SupportsSwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public bool SupportsSwitchToThisWithoutSaveLoad(ICSharpCode.SharpDevelop.OpenedFile file, IViewContent oldView)
+		public bool SupportsSwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public void SwitchFromThisWithoutSaveLoad(ICSharpCode.SharpDevelop.OpenedFile file, IViewContent newView)
+		public void SwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public void SwitchToThisWithoutSaveLoad(ICSharpCode.SharpDevelop.OpenedFile file, IViewContent oldView)
+		public void SwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView)
 		{
 			throw new NotImplementedException();
 		}
@@ -184,7 +187,7 @@ namespace XmlEditor.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public object GetService(Type serviceType)
+		public virtual object GetService(Type serviceType)
 		{
 			return null;
 		}

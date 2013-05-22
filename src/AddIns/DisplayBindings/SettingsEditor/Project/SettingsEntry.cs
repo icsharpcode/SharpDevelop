@@ -33,14 +33,6 @@ namespace ICSharpCode.SettingsEditor
 		object value;
 		ISettingsEntryHost host;
 		
-		[Obsolete("This constructor is required by the DataGridView, but not used because we " +
-		          "use the BindingSourceAddingNew event. Use the overload specifying a host " +
-		          "argument instead!")]
-		public SettingsEntry()
-		{
-			throw new NotSupportedException();
-		}
-		
 		public SettingsEntry(ISettingsEntryHost host)
 		{
 			if (host == null)
@@ -155,6 +147,7 @@ namespace ICSharpCode.SettingsEditor
 				OnPropertyChanged(new PropertyChangedEventArgs("Name"));
 			}
 		}
+
 		
 		[Browsable(false)]
 		public string Provider {

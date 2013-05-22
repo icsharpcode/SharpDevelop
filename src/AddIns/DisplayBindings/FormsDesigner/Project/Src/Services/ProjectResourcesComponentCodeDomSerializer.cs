@@ -10,7 +10,6 @@ using System.IO;
 using System.Reflection;
 
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Visitors;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
@@ -244,11 +243,12 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		static string CodeStatementToString(CodeStatement statement)
 		{
-			CodeDomVerboseOutputGenerator outputGenerator = new CodeDomVerboseOutputGenerator();
-			using(StringWriter sw = new StringWriter(System.Globalization.CultureInfo.InvariantCulture)) {
-				outputGenerator.PublicGenerateCodeFromStatement(statement, sw, null);
-				return sw.ToString().TrimEnd();
-			}
+			throw new NotImplementedException();
+//			CodeDomVerboseOutputGenerator outputGenerator = new CodeDomVerboseOutputGenerator();
+//			using(StringWriter sw = new StringWriter(System.Globalization.CultureInfo.InvariantCulture)) {
+//				outputGenerator.PublicGenerateCodeFromStatement(statement, sw, null);
+//				return sw.ToString().TrimEnd();
+//			}
 		}
 	}
 }

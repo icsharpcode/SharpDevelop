@@ -2,10 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextTemplating;
 using NUnit.Framework;
+using Rhino.Mocks;
 using TextTemplating.Tests.Helpers;
 
 namespace TextTemplating.Tests
@@ -15,15 +18,27 @@ namespace TextTemplating.Tests
 	{
 		TextTemplatingAssemblyPathResolver resolver;
 		IProject project;
-		FakeAssemblyParserService fakeAssemblyParserService;
+		IGlobalAssemblyCacheService fakeGacService;
 		FakeTextTemplatingPathResolver fakePathResolver;
+		
+		[SetUp]
+		public void Init()
+		{
+			SD.InitializeForUnitTests();
+		}
+		
+		[TearDown]
+		public void TearDown()
+		{
+			SD.TearDownForUnitTests();
+		}
 		
 		void CreateResolver()
 		{
 			project = ProjectHelper.CreateProject();
-			fakeAssemblyParserService = new FakeAssemblyParserService();
+			fakeGacService = MockRepository.GenerateStub<IGlobalAssemblyCacheService>();
 			fakePathResolver = new FakeTextTemplatingPathResolver();
-			resolver = new TextTemplatingAssemblyPathResolver(project, fakeAssemblyParserService, fakePathResolver);
+			resolver = new TextTemplatingAssemblyPathResolver(project, fakeGacService, fakePathResolver);
 		}
 		
 		ReferenceProjectItem AddReferenceToProject(string referenceName)
@@ -32,26 +47,30 @@ namespace TextTemplating.Tests
 			ProjectService.AddProjectItem(project, projectItem);
 			return projectItem;
 		}
-
-		IProject GetProjectPassedToAssemblyParserService()
+		
+		void AddFileNameForGacReference(string fileName, string reference)
 		{
-			return ReferenceProjectItemPassedToGetReflectionProjectContentForReference.Project;
+			DomAssemblyName assemblyName = AddMatchingAssemblyNameForGacReference(reference);
+			fakeGacService
+				.Stub(gac => gac.FindAssemblyInNetGac(assemblyName))
+				.Return(new FileName(fileName));
 		}
 		
-		ReferenceProjectItem ReferenceProjectItemPassedToGetReflectionProjectContentForReference {
-			get { return fakeAssemblyParserService.ItemPassedToGetReflectionProjectContentForReference; }
-		}
-		
-		ItemType GetReferenceItemTypePassedToAssemblyParserService()
+		DomAssemblyName AddMatchingAssemblyNameForGacReference(string reference)
 		{
-			return ReferenceProjectItemPassedToGetReflectionProjectContentForReference.ItemType;
+			var assemblyName = new DomAssemblyName(reference);
+			var assemblyNameToReturn = new DomAssemblyName("GacReference");
+			fakeGacService
+				.Stub(gac => gac.FindBestMatchingAssemblyName(assemblyName))
+				.Return(assemblyNameToReturn);
+			
+			return assemblyNameToReturn;
 		}
 		
 		[Test]
 		public void ResolvePath_ProjectHasNoReferences_ReturnsAssemblyReferencePassedToMethod()
 		{
 			CreateResolver();
-			fakeAssemblyParserService.FakeReflectionProjectContent = null;
 			string result = resolver.ResolvePath("Test");
 			
 			Assert.AreEqual("Test", result);
@@ -89,7 +108,7 @@ namespace TextTemplating.Tests
 			CreateResolver();
 			ReferenceProjectItem reference = AddReferenceToProject("Test");
 			string expectedFileName = @"d:\projects\MyProject\lib\Test.dll";
-			reference.FileName = expectedFileName;
+			reference.FileName = FileName.Create(expectedFileName);
 			
 			string result = resolver.ResolvePath("Test");
 			
@@ -101,7 +120,7 @@ namespace TextTemplating.Tests
 		{
 			CreateResolver();
 			string expectedFileName = @"c:\Windows\System32\Gac\System.Data.dll";
-			fakeAssemblyParserService.FakeReflectionProjectContent.AssemblyLocation = expectedFileName;
+			AddFileNameForGacReference(expectedFileName, "System.Data");
 			
 			string result = resolver.ResolvePath("System.Data");
 			
@@ -109,40 +128,9 @@ namespace TextTemplating.Tests
 		}
 		
 		[Test]
-		public void ResolvePath_ProjectHasNoReferencesAndAssemblyReferenceInGac_ReferenceItemPassedToAssemblyParserServiceUsesProject()
-		{
-			CreateResolver();
-			string result = resolver.ResolvePath("System.Data");
-			IProject expectedProject = GetProjectPassedToAssemblyParserService();
-			
-			Assert.AreEqual(project, expectedProject);
-		}
-		
-		[Test]
-		public void ResolvePath_ProjectHasNoReferencesAndAssemblyReferenceInGac_ReferenceItemPassedToAssemblyParserServiceIsReference()
-		{
-			CreateResolver();
-			string result = resolver.ResolvePath("System.Data");
-			ItemType type = GetReferenceItemTypePassedToAssemblyParserService();
-			
-			Assert.AreEqual(ItemType.Reference, type);
-		}
-		
-		[Test]
-		public void ResolvePath_ProjectHasNoReferencesAndAssemblyReferenceInGac_ReferenceItemIncludePassedToAssemblyParserServiceIsAssemblyNameToResolvePath()
-		{
-			CreateResolver();
-			string result = resolver.ResolvePath("System.Data");
-			string referenceInclude = ReferenceProjectItemPassedToGetReflectionProjectContentForReference.Include;
-			
-			Assert.AreEqual("System.Data", referenceInclude);
-		}
-		
-		[Test]
 		public void ResolvePath_ProjectHasNoReferencesAndAssemblyReferenceNotFoundInGac_ReturnsAssemblyReferencePassedToMethod()
 		{
 			CreateResolver();
-			fakeAssemblyParserService.FakeReflectionProjectContent = null;
 			
 			string result = resolver.ResolvePath("System.Data");
 			
@@ -172,7 +160,18 @@ namespace TextTemplating.Tests
 			
 			string result = resolver.ResolvePath(path);
 			
-			Assert.IsFalse(fakeAssemblyParserService.IsGetReflectionProjectContentForReferenceCalled);
+			fakeGacService.AssertWasNotCalled(gac => gac.FindBestMatchingAssemblyName(Arg<DomAssemblyName>.Is.Anything));
+		}
+		
+		[Test]
+		public void ResolvePath_AssemblyReferenceInGacButNoFileNameFound_ReturnsAssemblyReferenceNamePassedToResolvePath()
+		{
+			CreateResolver();
+			AddMatchingAssemblyNameForGacReference("System.Data");
+			
+			string result = resolver.ResolvePath("System.Data");
+			
+			Assert.AreEqual("System.Data", result);
 		}
 	}
 }

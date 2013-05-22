@@ -3,11 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Scripting.Tests.Utils
 {
@@ -234,7 +233,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			}
 		}
 		
-		public object GetService(Type serviceType)
+		public virtual object GetService(Type serviceType)
 		{
 			return null;
 		}

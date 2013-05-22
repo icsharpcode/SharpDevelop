@@ -30,18 +30,15 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		{
 			base.LoadOptions();
 			CodeEditorOptions options = CodeEditorOptions.Instance;
-			fontSelectionPanel.CurrentFont = WinFormsResourceService.LoadFont(
-				options.FontFamily, (int)Math.Round(options.FontSize * 72.0 / 96.0));
+			fontSelectionPanel.SelectedFontName = options.FontFamily;
+			fontSelectionPanel.SelectedFontSize = SDFontSizeConverter.FromPoints(options.FontSize);
 		}
 		
 		public override bool SaveOptions()
 		{
 			CodeEditorOptions options = CodeEditorOptions.Instance;
-			var font = fontSelectionPanel.CurrentFont;
-			if (font != null) {
-				options.FontFamily = font.Name;
-				options.FontSize = Math.Round(font.Size * 96.0 / 72.0);
-			}
+			options.FontFamily = fontSelectionPanel.SelectedFontName;
+			options.FontSize = SDFontSizeConverter.ToPoints(fontSelectionPanel.SelectedFontSize);
 			return base.SaveOptions();
 		}
 	}

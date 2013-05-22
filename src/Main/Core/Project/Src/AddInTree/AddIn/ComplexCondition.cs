@@ -37,9 +37,9 @@ namespace ICSharpCode.Core
 			this.condition = condition;
 		}
 		
-		public bool IsValid(object owner)
+		public bool IsValid(object parameter)
 		{
-			return !condition.IsValid(owner);
+			return !condition.IsValid(parameter);
 		}
 		
 		public static ICondition Read(XmlReader reader)
@@ -84,10 +84,10 @@ namespace ICSharpCode.Core
 			this.conditions = conditions;
 		}
 		
-		public bool IsValid(object owner)
+		public bool IsValid(object parameter)
 		{
 			foreach (ICondition condition in conditions) {
-				if (!condition.IsValid(owner)) {
+				if (!condition.IsValid(parameter)) {
 					return false;
 				}
 			}
@@ -137,10 +137,10 @@ namespace ICSharpCode.Core
 			this.conditions = conditions;
 		}
 		
-		public bool IsValid(object owner)
+		public bool IsValid(object parameter)
 		{
 			foreach (ICondition condition in conditions) {
-				if (condition.IsValid(owner)) {
+				if (condition.IsValid(parameter)) {
 					return true;
 				}
 			}

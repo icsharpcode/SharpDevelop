@@ -3,13 +3,11 @@
 
 using System;
 using System.Text;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.PrettyPrinter;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.FormsDesigner
 {
+	/*
 	public class CSharpDesignerGenerator : AbstractDesignerGenerator
 	{
 		protected override DomRegion GetReplaceRegion(IDocument document, IMethod method)
@@ -108,5 +106,5 @@ namespace ICSharpCode.FormsDesigner
 			document.Insert(offset, gen.CreateEventHandler(eventType, eventMethodName, body, tabs));
 			lineNumber = line + gen.GetCursorLineAfterEventHandlerCreation();
 		}
-	}
+	}*/
 }

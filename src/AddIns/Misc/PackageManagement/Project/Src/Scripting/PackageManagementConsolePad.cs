@@ -3,7 +3,7 @@
 
 using System;
 using System.Windows.Threading;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.PackageManagement.Scripting
 {

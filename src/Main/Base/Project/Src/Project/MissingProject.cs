@@ -2,19 +2,17 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
 	public class MissingProject : AbstractProject
 	{
-		public MissingProject(string fileName, string title)
+		public MissingProject(ProjectLoadInformation information) : base(information)
 		{
-			Name     = title;
-			FileName = fileName;
-			TypeGuid = "{00000000-0000-0000-0000-000000000000}";
 		}
 		
-		public override bool ReadOnly {
+		public override bool IsReadOnly {
 			get {
 				// don't get the readonly flag from the project file - the project file does not exist.
 				return true;
@@ -33,6 +31,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override bool HasProjectType(Guid projectTypeGuid)
 		{
+			// Don't report true for this.TypeGuid
 			return false;
 		}
 	}

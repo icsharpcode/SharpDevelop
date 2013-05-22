@@ -8,9 +8,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 
@@ -93,7 +93,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			foreach (var view in textViews) {
 				view.Redraw(segment, DispatcherPriority.Normal);
 			}
+			if (RedrawRequested != null)
+				RedrawRequested(this, EventArgs.Empty);
 		}
+		
+		public event EventHandler RedrawRequested;
 		#endregion
 		
 		#region DocumentColorizingTransformer
@@ -116,6 +120,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						if (foregroundBrush != null) {
 							element.TextRunProperties.SetForegroundBrush(foregroundBrush);
 						}
+						Typeface tf = element.TextRunProperties.Typeface;
+						element.TextRunProperties.SetTypeface(new Typeface(
+							tf.FontFamily,
+							marker.FontStyle ?? tf.Style,
+							marker.FontWeight ?? tf.Weight,
+							tf.Stretch
+						));
 					}
 				);
 			}
@@ -157,30 +168,31 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						drawingContext.DrawGeometry(brush, null, geometry);
 					}
 				}
-				if (marker.MarkerType != TextMarkerType.None) {
+				if ((marker.MarkerTypes & (TextMarkerTypes.SquigglyUnderline | TextMarkerTypes.NormalUnderline)) != 0) {
 					foreach (Rect r in BackgroundGeometryBuilder.GetRectsForSegment(textView, marker)) {
 						Point startPoint = r.BottomLeft;
 						Point endPoint = r.BottomRight;
 						
 						Pen usedPen = new Pen(new SolidColorBrush(marker.MarkerColor), 1);
 						usedPen.Freeze();
-						switch (marker.MarkerType) {
-							case TextMarkerType.SquigglyUnderline:
-								double offset = 2.5;
-								
-								int count = Math.Max((int)((endPoint.X - startPoint.X) / offset) + 1, 4);
-								
-								StreamGeometry geometry = new StreamGeometry();
-								
-								using (StreamGeometryContext ctx = geometry.Open()) {
-									ctx.BeginFigure(startPoint, false, false);
-									ctx.PolyLineTo(CreatePoints(startPoint, endPoint, offset, count).ToArray(), true, false);
-								}
-								
-								geometry.Freeze();
-								
-								drawingContext.DrawGeometry(Brushes.Transparent, usedPen, geometry);
-								break;
+						if ((marker.MarkerTypes & TextMarkerTypes.SquigglyUnderline) != 0) {
+							double offset = 2.5;
+							
+							int count = Math.Max((int)((endPoint.X - startPoint.X) / offset) + 1, 4);
+							
+							StreamGeometry geometry = new StreamGeometry();
+							
+							using (StreamGeometryContext ctx = geometry.Open()) {
+								ctx.BeginFigure(startPoint, false, false);
+								ctx.PolyLineTo(CreatePoints(startPoint, endPoint, offset, count).ToArray(), true, false);
+							}
+							
+							geometry.Freeze();
+							
+							drawingContext.DrawGeometry(Brushes.Transparent, usedPen, geometry);
+						}
+						if ((marker.MarkerTypes & TextMarkerTypes.NormalUnderline) != 0) {
+							drawingContext.DrawLine(usedPen, startPoint, endPoint);
 						}
 					}
 				}
@@ -226,7 +238,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.service = service;
 			this.StartOffset = startOffset;
 			this.Length = length;
-			this.markerType = TextMarkerType.None;
+			this.markerTypes = TextMarkerTypes.None;
 		}
 		
 		public event EventHandler Deleted;
@@ -275,15 +287,39 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
+		FontWeight? fontWeight;
+		
+		public FontWeight? FontWeight {
+			get { return fontWeight; }
+			set {
+				if (fontWeight != value) {
+					fontWeight = value;
+					Redraw();
+				}
+			}
+		}
+		
+		FontStyle? fontStyle;
+		
+		public FontStyle? FontStyle {
+			get { return fontStyle; }
+			set {
+				if (fontStyle != value) {
+					fontStyle = value;
+					Redraw();
+				}
+			}
+		}
+		
 		public object Tag { get; set; }
 		
-		TextMarkerType markerType;
+		TextMarkerTypes markerTypes;
 		
-		public TextMarkerType MarkerType {
-			get { return markerType; }
+		public TextMarkerTypes MarkerTypes {
+			get { return markerTypes; }
 			set {
-				if (markerType != value) {
-					markerType = value;
+				if (markerTypes != value) {
+					markerTypes = value;
 					Redraw();
 				}
 			}

@@ -10,6 +10,7 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 	/// This interface is used to filter the values defined in the xml files.
 	/// It could be used for the localization of control texts.
 	/// </summary>
+	[Obsolete("XML Forms are obsolete")]
 	public class SharpDevelopStringValueFilter : IStringValueFilter
 	{
 		/// <summary>

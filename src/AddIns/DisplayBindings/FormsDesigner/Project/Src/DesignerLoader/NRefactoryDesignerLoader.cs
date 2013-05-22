@@ -8,7 +8,7 @@ using System.ComponentModel.Design.Serialization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-
+/*
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
@@ -340,4 +340,4 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 	}
-}
+}*/

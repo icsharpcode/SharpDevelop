@@ -109,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				ProjectItem p = (ProjectItem)component;
 				p.SetEvaluatedMetadata(Name, (string)value);
-				p.InformSetValue(this, component, value);
+				p.InformSetValue(this, value);
 				if (runCustomTool) {
 					FileProjectItem fpi = p as FileProjectItem;
 					if (fpi != null) {

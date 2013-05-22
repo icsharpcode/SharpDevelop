@@ -5,6 +5,7 @@ using System;
 using System.Windows;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 
@@ -34,7 +35,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// <inheritdoc />
 		public Point GetScreenPosition(int line, int column)
 		{
-			var positionInPixels =	 textView.PointToScreen(
+			var positionInPixels = textView.PointToScreen(
 				textView.GetVisualPosition(new TextViewPosition(line, column), VisualYPosition.LineBottom) - textView.ScrollOffset);
 			return positionInPixels.TransformFromDevice(textView);
 		}

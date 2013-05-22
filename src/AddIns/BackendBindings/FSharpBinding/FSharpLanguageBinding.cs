@@ -17,7 +17,7 @@ namespace FSharpBinding
 			return new FSharpProject(info);
 		}
 		
-		public IProject CreateProject(ICSharpCode.SharpDevelop.Internal.Templates.ProjectCreateInformation info)
+		public IProject CreateProject(ProjectCreateInformation info)
 		{
 			return new FSharpProject(info);
 		}

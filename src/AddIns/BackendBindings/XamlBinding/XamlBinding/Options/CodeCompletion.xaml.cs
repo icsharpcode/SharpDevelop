@@ -28,7 +28,7 @@ namespace ICSharpCode.XamlBinding.Options
 		public override bool SaveOptions()
 		{
 			if (base.SaveOptions()) {
-				XamlColorizer.RefreshAll();
+//				XamlColorizer.RefreshAll();
 				return true;
 			}
 			

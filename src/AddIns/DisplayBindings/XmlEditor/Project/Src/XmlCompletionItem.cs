@@ -80,7 +80,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public override int GetHashCode()
 		{
-			return base.GetHashCode();
+			return dataType.GetHashCode() ^ Text.GetHashCode();
 		}
 		
 		public override bool Equals(object obj)

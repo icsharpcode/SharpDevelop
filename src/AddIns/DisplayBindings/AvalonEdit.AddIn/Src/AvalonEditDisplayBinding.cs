@@ -5,12 +5,14 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -20,7 +22,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		internal static void RegisterAddInHighlightingDefinitions()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (!addInHighlightingDefinitionsRegistered) {
 				foreach (AddInTreeSyntaxMode syntaxMode in AddInTree.BuildItems<AddInTreeSyntaxMode>(SyntaxModeDoozer.Path, null, false)) {
 					syntaxMode.Register(HighlightingManager.Instance);
@@ -29,7 +31,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		public bool CanCreateContentForFile(string fileName)
+		public bool CanCreateContentForFile(FileName fileName)
 		{
 			return true;
 		}
@@ -39,7 +41,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return new AvalonEditViewContent(file);
 		}
 		
-		public bool IsPreferredBindingForFile(string fileName)
+		public bool IsPreferredBindingForFile(FileName fileName)
 		{
 			string extension = Path.GetExtension(fileName);
 			var fileFilter = ProjectService.GetFileFilters().FirstOrDefault(ff => ff.ContainsExtension(extension));
@@ -47,15 +49,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return fileFilter != null && fileFilter.MimeType.StartsWith("text/", StringComparison.OrdinalIgnoreCase);
 		}
 		
-		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		public double AutoDetectFileContent(FileName fileName, Stream fileContent, string detectedMimeType)
 		{
-			return detectedMimeType.StartsWith("text/") ? 0.5 : 0;
+			return detectedMimeType.StartsWith("text/", StringComparison.Ordinal) ? 0.5 : 0;
 		}
 	}
 	
 	public class ChooseEncodingDisplayBinding : IDisplayBinding
 	{
-		public bool CanCreateContentForFile(string fileName)
+		public bool CanCreateContentForFile(FileName fileName)
 		{
 			return true;
 		}
@@ -63,9 +65,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
 			ChooseEncodingDialog dlg = new ChooseEncodingDialog();
-			dlg.Owner = WorkbenchSingleton.MainWindow;
+			dlg.Owner = SD.Workbench.MainWindow;
 			using (Stream stream = file.OpenRead()) {
-				using (StreamReader reader = FileReader.OpenStream(stream, FileService.DefaultFileEncoding.GetEncoding())) {
+				using (StreamReader reader = FileReader.OpenStream(stream, SD.FileService.DefaultFileEncoding)) {
 					reader.Peek(); // force reader to auto-detect encoding
 					dlg.Encoding = reader.CurrentEncoding;
 				}
@@ -77,12 +79,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		public bool IsPreferredBindingForFile(string fileName)
+		public bool IsPreferredBindingForFile(FileName fileName)
 		{
 			return false;
 		}
 		
-		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		public double AutoDetectFileContent(FileName fileName, Stream fileContent, string detectedMimeType)
 		{
 			return double.NegativeInfinity;
 		}

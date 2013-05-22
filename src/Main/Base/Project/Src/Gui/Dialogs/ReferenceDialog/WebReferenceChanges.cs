@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 
-using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui

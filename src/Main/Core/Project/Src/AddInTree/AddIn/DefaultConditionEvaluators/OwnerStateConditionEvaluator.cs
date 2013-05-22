@@ -12,16 +12,16 @@ namespace ICSharpCode.Core
 	}
 	
 	/// <summary>
-	/// Condition evaluator that compares the state of the caller/owner with a specified value.
-	/// The caller/owner has to implement <see cref="IOwnerState"/>.
+	/// Condition evaluator that compares the state of the parameter with a specified value.
+	/// The parameter has to implement <see cref="IOwnerState"/>.
 	/// </summary>
 	public class OwnerStateConditionEvaluator : IConditionEvaluator
 	{
-		public bool IsValid(object caller, Condition condition)
+		public bool IsValid(object parameter, Condition condition)
 		{
-			if (caller is IOwnerState) {
+			if (parameter is IOwnerState) {
 				try {
-					System.Enum state         = ((IOwnerState)caller).InternalState;
+					System.Enum state         = ((IOwnerState)parameter).InternalState;
 					System.Enum conditionEnum = (System.Enum)Enum.Parse(state.GetType(), condition.Properties["ownerstate"]);
 					
 					int stateInt     = Int32.Parse(state.ToString("D"));

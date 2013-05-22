@@ -14,9 +14,10 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -216,7 +217,8 @@ namespace ICSharpCode.FormsDesigner.Gui
 			
 			ProjectResourceInfo selectedProjectResource = e.Argument as ProjectResourceInfo;
 			
-			IProjectContent projectContent = ParserService.GetProjectContent(this.project);
+			ICompilation compilation = SD.ParserService.GetCompilation(this.project);
+			var codeDomProvider = project.CreateCodeDomProvider();
 			
 			TreeNode root = new TreeNode(this.project.Name, 0, 0);
 			TreeNode preSelection = null;
@@ -236,7 +238,13 @@ namespace ICSharpCode.FormsDesigner.Gui
 				if (string.IsNullOrEmpty(namespaceName)) {
 					namespaceName = CustomToolsService.GetDefaultNamespace(item.Project, item.FileName);
 				}
-				IClass existingClass = projectContent.GetClass(namespaceName + "." + StronglyTypedResourceBuilder.VerifyResourceName(Path.GetFileNameWithoutExtension(item.FileName), projectContent.Language.CodeDomProvider), 0);
+				string className = item.FileName.GetFileNameWithoutExtension();
+				if (codeDomProvider != null) {
+					className = StronglyTypedResourceBuilder.VerifyResourceName(className, codeDomProvider);
+					if (className == null)
+						continue;
+				}
+				ITypeDefinition existingClass = compilation.FindType(new TopLevelTypeName(namespaceName, className)).GetDefinition();
 				if (existingClass != null) {
 					if (!ProjectResourceService.IsGeneratedResourceClass(existingClass)) {
 						continue;
@@ -368,16 +376,15 @@ namespace ICSharpCode.FormsDesigner.Gui
 			}
 		}
 		
-		Dictionary<string, object> GetResources(string fileName)
+		Dictionary<string, object> GetResources(FileName fileName)
 		{
 			Stream s = null;
-			WorkbenchSingleton.SafeThreadCall(
-				delegate {
-					OpenedFile file = FileService.GetOpenedFile(fileName);
-					if (file != null) {
-						s = file.OpenRead();
-					}
-				});
+			SD.MainThread.InvokeIfRequired(delegate {
+			                               	OpenedFile file = SD.FileService.GetOpenedFile(fileName);
+			                               	if (file != null) {
+			                               		s = file.OpenRead();
+			                               	}
+			                               });
 			if (s == null) {
 				s = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
 			}

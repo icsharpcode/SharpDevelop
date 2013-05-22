@@ -3,11 +3,11 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -23,12 +23,12 @@ using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Bookmarks;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Widgets.MyersDiff;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -37,6 +37,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// Integrates AvalonEdit with SharpDevelop.
 	/// Also provides support for Split-View (showing two AvalonEdit instances using the same TextDocument)
 	/// </summary>
+	[TextEditorService, ViewContentService]
 	public class CodeEditor : Grid, IDisposable
 	{
 		const string contextMenuPath = "/SharpDevelop/ViewContent/AvalonEdit/ContextMenu";
@@ -86,8 +87,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public event EventHandler DocumentChanged;
 		
+		[Obsolete("Use CodeEditor.Document instead; TextDocument now directly implements IDocument")]
 		public IDocument DocumentAdapter {
-			get { return primaryTextEditorAdapter.Document; }
+			get { return this.Document; }
 		}
 		
 		public ITextEditor PrimaryTextEditorAdapter {
@@ -109,6 +111,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			set {
 				if (fileName != value) {
 					fileName = value;
+					this.document.FileName = fileName;
 					
 					primaryTextEditorAdapter.FileNameChanged();
 					if (secondaryTextEditorAdapter != null)
@@ -120,10 +123,36 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						this.errorPainter.UpdateErrors();
 					}
 					if (changeWatcher != null) {
-						changeWatcher.Initialize(this.DocumentAdapter);
+						changeWatcher.Initialize(this.Document, value);
 					}
+					UpdateSyntaxHighlighting(value);
 					FetchParseInformation();
 				}
+			}
+		}
+		
+		void UpdateSyntaxHighlighting(FileName fileName)
+		{
+			var oldHighlighter = primaryTextEditor.GetService<IHighlighter>();
+			
+			var highlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
+			var highlighter = SD.EditorControlService.CreateHighlighter(document);
+
+			primaryTextEditor.SyntaxHighlighting = highlighting;
+			primaryTextEditor.TextArea.TextView.LineTransformers.RemoveAll(t => t is HighlightingColorizer);
+			primaryTextEditor.TextArea.TextView.LineTransformers.Insert(0, new HighlightingColorizer(highlighter));
+			primaryTextEditor.UpdateCustomizedHighlighting();
+
+			if (secondaryTextEditor != null) {
+				secondaryTextEditor.SyntaxHighlighting = highlighting;
+				secondaryTextEditor.TextArea.TextView.LineTransformers.RemoveAll(t => t is HighlightingColorizer);
+				secondaryTextEditor.TextArea.TextView.LineTransformers.Insert(0, new HighlightingColorizer(highlighter));
+				secondaryTextEditor.UpdateCustomizedHighlighting();
+			}
+			// Dispose the old highlighter; necessary to avoid memory leaks as
+			// semantic highlighters might attach to global parser events.
+			if (oldHighlighter != null) {
+				oldHighlighter.Dispose();
 			}
 		}
 		
@@ -141,13 +170,19 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			CodeEditorOptions.Instance.PropertyChanged += CodeEditorOptions_Instance_PropertyChanged;
 			CustomizedHighlightingColor.ActiveColorsChanged += CustomizedHighlightingColor_ActiveColorsChanged;
-			ParserService.ParseInformationUpdated += ParserServiceParseInformationUpdated;
+			SD.ParserService.ParseInformationUpdated += ParserServiceParseInformationUpdated;
 			
 			this.FlowDirection = FlowDirection.LeftToRight; // code editing is always left-to-right
 			this.document = new TextDocument();
+			var documentServiceContainer = document.GetRequiredService<IServiceContainer>();
 			this.CommandBindings.Add(new CommandBinding(SharpDevelopRoutedCommands.SplitView, OnSplitView));
+			
 			textMarkerService = new TextMarkerService(document);
+			documentServiceContainer.AddService(typeof(ITextMarkerService), textMarkerService);
+			
 			iconBarManager = new IconBarManager();
+			documentServiceContainer.AddService(typeof(IBookmarkMargin), iconBarManager);
+			
 			if (CodeEditorOptions.Instance.EnableChangeMarkerMargin) {
 				changeWatcher = new DefaultChangeWatcher();
 			}
@@ -177,7 +212,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			primaryTextEditor.UpdateCustomizedHighlighting();
 			if (secondaryTextEditor != null)
 				secondaryTextEditor.UpdateCustomizedHighlighting();
-			foreach (var bookmark in BookmarkManager.GetBookmarks(fileName).OfType<SDMarkerBookmark>())
+			foreach (var bookmark in SD.BookmarkManager.GetBookmarks(fileName).OfType<SDMarkerBookmark>())
 				bookmark.SetMarker();
 		}
 		
@@ -203,18 +238,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			textView.BackgroundRenderers.Add(textMarkerService);
 			textView.LineTransformers.Add(textMarkerService);
-			textView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
 			
 			textView.Services.AddService(typeof(IEditorUIService), new AvalonEditEditorUIService(textView));
 			
-			textView.Services.AddService(typeof(IBookmarkMargin), iconBarManager);
 			codeEditorView.TextArea.LeftMargins.Insert(0, new IconBarMargin(iconBarManager));
 			
 			if (changeWatcher != null) {
 				codeEditorView.TextArea.LeftMargins.Add(new ChangeMarkerMargin(changeWatcher));
 			}
-			
-			textView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(textView));
+			textView.Services.AddService(typeof(EnhancedScrollBar), new EnhancedScrollBar(codeEditorView, textMarkerService, changeWatcher));
 			
 			codeEditorView.TextArea.MouseRightButtonDown += TextAreaMouseRightButtonDown;
 			codeEditorView.TextArea.ContextMenuOpening += TextAreaContextMenuOpening;
@@ -236,6 +268,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			foreach (var d in textEditor.TextArea.LeftMargins.OfType<IDisposable>())
 				d.Dispose();
+			textEditor.TextArea.GetRequiredService<EnhancedScrollBar>().Dispose();
+			var highlighter = textEditor.TextArea.GetService<IHighlighter>();
+			if (highlighter != null)
+				highlighter.Dispose();
 			textEditor.Dispose();
 		}
 		
@@ -293,7 +329,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			} else {
 				// do encoding auto-detection
-				using (StreamReader reader = FileReader.OpenStream(stream, this.Encoding ?? FileService.DefaultFileEncoding.GetEncoding())) {
+				using (StreamReader reader = FileReader.OpenStream(stream, this.Encoding ?? SD.FileService.DefaultFileEncoding)) {
 					ReloadDocument(primaryTextEditor.Document, reader.ReadToEnd());
 					this.Encoding = reader.CurrentEncoding;
 				}
@@ -336,7 +372,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// don't use TextEditor.Save here because that would touch the Modified flag,
 			// but OpenedFile is already managing IsDirty
 			using (StreamWriter writer = new StreamWriter(stream, primaryTextEditor.Encoding ?? Encoding.UTF8)) {
-				writer.Write(primaryTextEditor.Text);
+				primaryTextEditor.Document.WriteTextTo(writer);
 			}
 		}
 		
@@ -372,7 +408,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				// remove secondary editor
 				this.Children.Remove(secondaryTextEditor);
 				this.Children.Remove(gridSplitter);
-				secondaryTextEditorAdapter.Language.Detach();
+				secondaryTextEditorAdapter.DetachExtensions();
 				DisposeTextEditor(secondaryTextEditor);
 				secondaryTextEditor = null;
 				secondaryTextEditorAdapter = null;
@@ -398,10 +434,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void HandleCaretPositionChange()
 		{
 			if (quickClassBrowser != null) {
-				quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditorAdapter.Caret.Position);
+				quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditor.TextArea.Caret.Location);
 			}
 			
-			CaretPositionChanged.RaiseEvent(this, EventArgs.Empty);
+			if (CaretPositionChanged != null)
+				CaretPositionChanged(this, EventArgs.Empty);
 		}
 		
 		volatile static ReadOnlyCollection<ICodeCompletionBinding> codeCompletionBindings;
@@ -409,7 +446,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public static ReadOnlyCollection<ICodeCompletionBinding> CodeCompletionBindings {
 			get {
 				if (codeCompletionBindings == null) {
-					codeCompletionBindings = AddInTree.BuildItems<ICodeCompletionBinding>("/AddIns/DefaultTextEditor/CodeCompletion", null, false).AsReadOnly();
+					codeCompletionBindings = AddInTree.BuildItems<ICodeCompletionBinding>("/SharpDevelop/ViewContent/TextEditor/CodeCompletion", null, false).AsReadOnly();
 				}
 				return codeCompletionBindings;
 			}
@@ -479,7 +516,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void TextAreaTextEntered(object sender, TextCompositionEventArgs e)
 		{
 			if (e.Text.Length > 0 && !e.Handled) {
-				ILanguageBinding languageBinding = GetAdapterFromSender(sender).Language;
+				var adapter = GetAdapterFromSender(sender);
+				ILanguageBinding languageBinding = adapter.Language;
 				if (languageBinding != null && languageBinding.FormattingStrategy != null) {
 					char c = e.Text[0];
 					// When entering a newline, AvalonEdit might use either "\r\n" or "\n", depending on
@@ -487,13 +525,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					// so that formatting strategies don't have to handle both cases.
 					if (c == '\r')
 						c = '\n';
-					languageBinding.FormattingStrategy.FormatLine(GetAdapterFromSender(sender), c);
+					languageBinding.FormattingStrategy.FormatLine(adapter, c);
 					
 					if (c == '\n') {
 						// Immediately parse on enter.
 						// This ensures we have up-to-date CC info about the method boundary when a user
 						// types near the end of a method.
-						ParserService.BeginParse(this.FileName, this.DocumentAdapter.CreateSnapshot());
+						SD.ParserService.ParseAsync(this.FileName, this.Document.CreateSnapshot()).FireAndForget();
+					} else {
+						if (e.Text.Length == 1) {
+							foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
+								if (cc.HandleKeyPressed(adapter, c))
+									break;
+							}
+						}
 					}
 				}
 			}
@@ -535,24 +580,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		public IHighlightingDefinition SyntaxHighlighting {
-			get { return primaryTextEditor.SyntaxHighlighting; }
-			set {
-				primaryTextEditor.SyntaxHighlighting = value;
-				primaryTextEditor.UpdateCustomizedHighlighting();
-				if (secondaryTextEditor != null) {
-					secondaryTextEditor.SyntaxHighlighting = value;
-					secondaryTextEditor.UpdateCustomizedHighlighting();
-				}
-			}
-		}
-		
 		void FetchParseInformation()
 		{
-			ParseInformation parseInfo = ParserService.GetExistingParseInformation(this.FileName);
+			ParseInformation parseInfo = SD.ParserService.GetCachedParseInformation(this.FileName);
 			if (parseInfo == null) {
 				// if parse info is not yet available, start parsing on background
-				ParserService.BeginParse(this.FileName, primaryTextEditorAdapter.Document);
+				SD.ParserService.ParseAsync(this.FileName, primaryTextEditorAdapter.Document).FireAndForget();
 				// we'll receive the result using the ParseInformationUpdated event
 			}
 			ParseInformationUpdated(parseInfo);
@@ -562,7 +595,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void ParserServiceParseInformationUpdated(object sender, ParseInformationEventArgs e)
 		{
-			if (e.FileName != this.FileName || !e.IsPrimaryParseInfoForFile)
+			if (e.FileName != this.FileName)
 				return;
 			this.VerifyAccess();
 			// When parse information is updated quickly in succession, only do a single update
@@ -584,15 +617,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (parseInfo != null && CodeEditorOptions.Instance.EnableQuickClassBrowser) {
 				// don't create quickClassBrowser for files that don't have any classes
 				// (but do keep the quickClassBrowser when the last class is removed from a file)
-				if (quickClassBrowser != null || parseInfo.CompilationUnit.Classes.Count > 0) {
+				if (quickClassBrowser != null || parseInfo.UnresolvedFile.TopLevelTypeDefinitions.Count > 0) {
 					if (quickClassBrowser == null) {
 						quickClassBrowser = new QuickClassBrowser();
 						quickClassBrowser.JumpAction = (line, col) => ActiveTextEditor.JumpTo(line, col);
 						SetRow(quickClassBrowser, 0);
 						this.Children.Add(quickClassBrowser);
 					}
-					quickClassBrowser.Update(parseInfo.CompilationUnit);
-					quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditorAdapter.Caret.Position);
+					quickClassBrowser.Update(parseInfo.UnresolvedFile);
+					quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditor.TextArea.Caret.Location);
 				}
 			} else {
 				if (quickClassBrowser != null) {
@@ -600,7 +633,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					quickClassBrowser = null;
 				}
 			}
-			iconBarManager.UpdateClassMemberBookmarks(parseInfo, document);
+			iconBarManager.UpdateClassMemberBookmarks(parseInfo != null ? parseInfo.UnresolvedFile : null, document);
 			primaryTextEditor.UpdateParseInformationForFolding(parseInfo);
 			if (secondaryTextEditor != null)
 				secondaryTextEditor.UpdateParseInformationForFolding(parseInfo);
@@ -610,12 +643,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			CodeEditorOptions.Instance.PropertyChanged -= CodeEditorOptions_Instance_PropertyChanged;
 			CustomizedHighlightingColor.ActiveColorsChanged -= CustomizedHighlightingColor_ActiveColorsChanged;
-			ParserService.ParseInformationUpdated -= ParserServiceParseInformationUpdated;
+			SD.ParserService.ParseInformationUpdated -= ParserServiceParseInformationUpdated;
 			
 			if (primaryTextEditorAdapter.Language != null)
-				primaryTextEditorAdapter.Language.Detach();
+				primaryTextEditorAdapter.DetachExtensions();
 			if (secondaryTextEditorAdapter != null && secondaryTextEditorAdapter.Language != null)
-				secondaryTextEditorAdapter.Language.Detach();
+				secondaryTextEditorAdapter.DetachExtensions();
 			
 			if (errorPainter != null)
 				errorPainter.Dispose();

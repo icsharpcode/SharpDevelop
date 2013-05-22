@@ -28,12 +28,5 @@ using NUnit.Framework;
 // numbers with the '*' character (the default):
 
 [assembly: AssemblyVersion("2.0.0.1")]
-
-// The following attributes specify the key for the sign of your assembly. See the
-// .NET Framework documentation for more information about signing.
-// This is not required, if you don't want signing let these attributes like they're.
-[assembly: AssemblyDelaySign(false)]
-[assembly: AssemblyKeyFile("")]
-
 // Run unit tests on STA thread.
 [assembly: RequiresSTA]

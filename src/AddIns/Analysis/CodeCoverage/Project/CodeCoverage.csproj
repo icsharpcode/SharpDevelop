@@ -15,11 +15,13 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <RunCodeAnalysis>False</RunCodeAnalysis>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\..\..\..\AddIns\Analysis\CodeCoverage\</OutputPath>
@@ -28,6 +30,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>..\..\..\..\..\AddIns\Analysis\CodeCoverage\</OutputPath>
@@ -36,6 +39,9 @@
     <DebugSymbols>false</DebugSymbols>
     <DebugType>None</DebugType>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <Prefer32Bit>False</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore">
@@ -81,6 +87,7 @@
     <Compile Include="Src\CodeCoveragePropertyTreeNode.cs" />
     <Compile Include="Src\CodeCoverageResults.cs" />
     <Compile Include="Src\CodeCoverageMethod.cs" />
+    <Compile Include="Src\CodeCoverageResultsReader.cs" />
     <Compile Include="Src\CodeCoverageSequencePoint.cs" />
     <Compile Include="Src\CodeCoverageTestRunner.cs" />
     <Compile Include="Src\CodeCoverageTestRunnerContext.cs" />
@@ -94,9 +101,7 @@
     <Compile Include="Src\CodeCoverageClassTreeNode.cs" />
     <Compile Include="Src\CodeCoverageNamespaceTreeNode.cs" />
     <Compile Include="Src\ICodeCoverageWithVisits.cs" />
-    <Compile Include="Src\FileSystem.cs" />
     <Compile Include="Src\ICodeCoverageTestRunnerFactory.cs" />
-    <Compile Include="Src\IFileSystem.cs" />
     <Compile Include="Src\OpenCoverApplication.cs" />
     <Compile Include="Src\OpenCoverSettings.cs" />
     <Compile Include="Src\OpenCoverSettingsFactory.cs" />
@@ -128,6 +133,11 @@
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -163,11 +173,6 @@
     <ProjectReference Include="..\..\UnitTesting\UnitTesting.csproj">
       <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
       <Name>UnitTesting</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

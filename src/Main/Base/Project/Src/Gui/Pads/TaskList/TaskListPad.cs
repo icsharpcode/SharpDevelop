@@ -7,10 +7,12 @@ using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -20,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		static TaskListPad instance;
 		Dictionary<string, bool> displayedTokens;
-		IClass oldClass;
+		IUnresolvedTypeDefinition oldClass;
 		int selectedScopeIndex = 0;
 		bool isInitialized = false;
 		
@@ -61,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.displayedTokens = new Dictionary<string, bool>();
 			
 			RedrawContent();
-			ResourceService.LanguageChanged += delegate { RedrawContent(); };
+			SD.ResourceService.LanguageChanged += delegate { RedrawContent(); };
 			
 			InitializeToolStrip();
 
@@ -70,21 +72,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 			TaskService.Removed += new TaskEventHandler(TaskServiceRemoved);
 			TaskService.InUpdateChanged += new EventHandler(TaskServiceInUpdateChanged);
 			
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged += new EventHandler(WorkbenchActiveViewContentChanged);
+			SD.Workbench.ActiveViewContentChanged += new EventHandler(WorkbenchActiveViewContentChanged);
 			
-			if (WorkbenchSingleton.Workbench.ActiveViewContent != null) {
+			if (SD.Workbench.ActiveViewContent != null) {
 				UpdateItems();
 				WorkbenchActiveViewContentChanged(null, null);
 			}
 			
-			ProjectService.SolutionLoaded += OnSolutionOpen;
-			ProjectService.SolutionClosed += OnSolutionClosed;
-			ProjectService.CurrentProjectChanged += ProjectServiceCurrentProjectChanged;
+			SD.ProjectService.SolutionOpened += OnSolutionOpen;
+			SD.ProjectService.SolutionClosed += OnSolutionClosed;
+			SD.ProjectService.CurrentProjectChanged += ProjectServiceCurrentProjectChanged;
 			
 			this.isInitialized = true;
 		}
 
-		void ProjectServiceCurrentProjectChanged(object sender, ProjectEventArgs e)
+		void ProjectServiceCurrentProjectChanged(object sender, EventArgs e)
 		{
 			if (isInitialized)
 				UpdateItems();
@@ -95,12 +97,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (isInitialized)
 				UpdateItems();
 			
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
 			
-			if (provider != null) {
+			if (editor != null) {
 				// ensure we don't attach multiple times to the same editor
-				provider.TextEditor.Caret.PositionChanged -= CaretPositionChanged;
-				provider.TextEditor.Caret.PositionChanged += CaretPositionChanged;
+				editor.Caret.LocationChanged -= CaretPositionChanged;
+				editor.Caret.LocationChanged += CaretPositionChanged;
 			}
 		}
 
@@ -108,11 +110,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (this.selectedScopeIndex > 2)
 			{
-				IClass current = GetCurrentClass();
+				var current = GetCurrentClass();
 				
 				if (oldClass == null) oldClass = current;
 				
-				if ((current != null) && (current.FullyQualifiedName != oldClass.FullyQualifiedName))
+				if ((current != null) && (current.ReflectionName != oldClass.ReflectionName))
 					UpdateItems();
 			}
 		}
@@ -129,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			contentPanel.Controls.Add(taskView);
 			
-			string[] tokens = ParserService.TaskListTokens;
+			IReadOnlyList<string> tokens = SD.ParserService.TaskListTokens;
 			
 			foreach (string token in tokens)
 			{
@@ -138,12 +140,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			
-			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/TaskList/Toolbar");
-			ShowTaskListTokenButton[] buttons = TaskListTokensBuilder.BuildItems(tokens);
+			toolStrip = SD.WinForms.ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/TaskList/Toolbar");
 			
-			foreach (ShowTaskListTokenButton button in buttons) {
-				toolStrip.Items.Add(new ToolBarSeparator());
-				toolStrip.Items.Add((ToolStripItem)button.Owner);
+			foreach (string token in tokens) {
+				toolStrip.Items.Add(new ToolStripSeparator());
+				toolStrip.Items.Add(new TaskListTokensToolbarCheckBox(token));
 			}
 			
 			toolStrip.Stretch   = true;
@@ -163,7 +164,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			this.taskView.ClearTasks();
 			
-			foreach (Task t in TaskService.CommentTasks) {
+			foreach (SDTask t in TaskService.CommentTasks) {
 				this.AddItem(t);
 			}
 			
@@ -171,7 +172,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.taskView.EndUpdate();
 		}
 		
-		void AddItem(Task item)
+		void AddItem(SDTask item)
 		{
 			foreach (KeyValuePair<string, bool> pair in displayedTokens) {
 				if (item.Description.StartsWith(pair.Key) && pair.Value && IsInScope(item))
@@ -179,10 +180,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		bool IsInScope(Task item)
+		bool IsInScope(SDTask item)
 		{
-			IClass current = GetCurrentClass();
-			IClass itemClass = GetCurrentClass(item);
+			var current = GetCurrentClass();
+			var itemClass = GetCurrentClass(item);
 			
 			switch (this.selectedScopeIndex) {
 				case 0:
@@ -199,10 +200,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return ProjectService.CurrentProject != null && ProjectService.CurrentProject.FindFile(item.FileName) != null;
 				case 2:
 					// All open documents
-					return WorkbenchSingleton.Workbench.ViewContentCollection.OfType<ITextEditorProvider>().Any(provider => item.FileName == provider.TextEditor.FileName);
+					return SD.Workbench.ViewContentCollection.Select(vc => vc.GetService<ITextEditor>()).Any(editor => editor != null && item.FileName == editor.FileName);
 				case 3:
 					// Document
-					return WorkbenchSingleton.Workbench.ActiveViewContent != null && WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName == FileName.Create(item.FileName);
+					return SD.Workbench.ActiveViewContent != null && SD.Workbench.ActiveViewContent.PrimaryFileName == item.FileName;
 				case 4:
 					// Namespace
 					return current != null && itemClass != null && current.Namespace == itemClass.Namespace;
@@ -214,16 +215,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return true;
 		}
 		
-		IClass GetCurrentClass()
+		IUnresolvedTypeDefinition GetCurrentClass()
 		{
-			if (WorkbenchSingleton.Workbench.ActiveViewContent == null)
+			if (SD.Workbench.ActiveViewContent == null)
 				return null;
 			
-			ParseInformation parseInfo = ParserService.GetParseInformation(WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName);
+			IUnresolvedFile parseInfo = SD.ParserService.GetExistingUnresolvedFile(SD.Workbench.ActiveViewContent.PrimaryFileName);
 			if (parseInfo != null) {
-				IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent as IPositionable;
+				IPositionable positionable = SD.Workbench.ActiveViewContent.GetService<IPositionable>();
 				if (positionable != null) {
-					IClass c = parseInfo.CompilationUnit.GetInnermostClass(positionable.Line, positionable.Column);
+					var c = parseInfo.GetInnermostTypeDefinition(positionable.Line, positionable.Column);
 					if (c != null) return c;
 				}
 			}
@@ -231,14 +232,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return null;
 		}
 		
-		IClass GetCurrentClass(Task item)
+		IUnresolvedTypeDefinition GetCurrentClass(SDTask item)
 		{
 			// Tasks are created by parsing, so the parse information for item.FileName should already be present.
 			// If they aren't, that's because the file might have been deleted/renamed in the meantime.
 			// We use GetExistingParseInformation to avoid trying to parse a file that might have been deleted/renamed.
-			ParseInformation parseInfo = ParserService.GetExistingParseInformation(item.FileName);
+			IUnresolvedFile parseInfo = SD.ParserService.GetExistingUnresolvedFile(item.FileName);
 			if (parseInfo != null) {
-				IClass c = parseInfo.CompilationUnit.GetInnermostClass(item.Line, item.Column);
+				var c = parseInfo.GetInnermostTypeDefinition(item.Line, item.Column);
 				if (c != null) return c;
 			}
 			

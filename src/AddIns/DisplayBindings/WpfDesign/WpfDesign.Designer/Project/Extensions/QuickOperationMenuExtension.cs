@@ -5,6 +5,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using ICSharpCode.SharpDevelop.Widgets;
 using ICSharpCode.WpfDesign.Designer.Controls;
 using ICSharpCode.WpfDesign.Extensions;
 using ICSharpCode.WpfDesign.Adorners;
@@ -30,13 +31,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			this.AddAdorners(placement, _menu);
 			
 			var kbs = this.ExtendedItem.Services.GetService(typeof (IKeyBindingService)) as IKeyBindingService;
-			var command = new DesignCommand(delegate
+			var command = new RelayCommand(delegate
 			                                {
 			                                	_menu.MainHeader.IsSubmenuOpen = true;
 			                                	_menu.MainHeader.Focus();
-			                                }, delegate
-			                                {
-			                                	return true;
 			                                });
 			_keyBinding=new KeyBinding(command, Key.Enter, ModifierKeys.Alt);
 			if (kbs != null)

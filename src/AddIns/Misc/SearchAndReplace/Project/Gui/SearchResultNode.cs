@@ -7,9 +7,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
-using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
@@ -56,13 +56,13 @@ namespace SearchAndReplace
 			LoggingService.Debug("Creating text for search result (" + location.Line + ", " + location.Column + ") ");
 			
 			TextBlock textBlock = new TextBlock();
+			textBlock.FontFamily = new FontFamily(SD.EditorControlService.GlobalOptions.FontFamily);
 			if (result.DefaultTextColor != null && !IsSelected) {
 				if (result.DefaultTextColor.Background != null)
 					textBlock.Background = result.DefaultTextColor.Background.GetBrush(null);
 				if (result.DefaultTextColor.Foreground != null)
 					textBlock.Foreground = result.DefaultTextColor.Foreground.GetBrush(null);
 			}
-			textBlock.FontFamily = new FontFamily(EditorControlService.GlobalOptions.FontFamily);
 
 			textBlock.Inlines.Add("(" + location.Line + ", " + location.Column + ")\t");
 			

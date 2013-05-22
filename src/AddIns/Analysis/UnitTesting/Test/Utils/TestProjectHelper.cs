@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 
@@ -45,7 +44,7 @@ namespace UnitTesting.Tests.Utils
 				c.Methods.Add(method);
 				
 				TestMember testMember = new TestMember(method);
-				testClass.TestMembers.Add(testMember);
+				testClass.Members.Add(testMember);
 			}
 			
 			c.Project.Name = "TestProject";

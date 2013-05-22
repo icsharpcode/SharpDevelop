@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Media;
 
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ICSharpCode.CodeCoverage
 {
@@ -71,9 +73,9 @@ namespace ICSharpCode.CodeCoverage
 		{
 			if (sequencePoint.Line <= 0 || sequencePoint.EndLine <= 0 || sequencePoint.Column <= 0 || sequencePoint.EndColumn <= 0) {
 				return false;
-			} else if (sequencePoint.Line > document.TotalNumberOfLines) {
+			} else if (sequencePoint.Line > document.LineCount) {
 				return false;
-			} else if (sequencePoint.EndLine > document.TotalNumberOfLines) {
+			} else if (sequencePoint.EndLine > document.LineCount) {
 				return false;
 			} else if (sequencePoint.Line == sequencePoint.EndLine && sequencePoint.Column > sequencePoint.EndColumn) {
 				return false;

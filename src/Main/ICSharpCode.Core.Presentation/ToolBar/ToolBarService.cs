@@ -31,12 +31,12 @@ namespace ICSharpCode.Core.Presentation
 		
 		static IList CreateToolBarItems(UIElement inputBindingOwner, IEnumerable descriptors)
 		{
-			ArrayList result = new ArrayList();
+			List<object> result = new List<object>();
 			foreach (ToolbarItemDescriptor descriptor in descriptors) {
 				object item = CreateToolBarItemFromDescriptor(inputBindingOwner, descriptor);
 				IMenuItemBuilder submenuBuilder = item as IMenuItemBuilder;
 				if (submenuBuilder != null) {
-					result.AddRange(submenuBuilder.BuildItems(descriptor.Codon, descriptor.Caller));
+					result.AddRange(submenuBuilder.BuildItems(descriptor.Codon, descriptor.Parameter));
 				} else {
 					result.Add(item);
 				}
@@ -47,7 +47,7 @@ namespace ICSharpCode.Core.Presentation
 		static object CreateToolBarItemFromDescriptor(UIElement inputBindingOwner, ToolbarItemDescriptor descriptor)
 		{
 			Codon codon = descriptor.Codon;
-			object caller = descriptor.Caller;
+			object caller = descriptor.Parameter;
 			string type = codon.Properties.Contains("type") ? codon.Properties["type"] : "Item";
 			
 			bool createCommand = codon.Properties["loadclasslazy"] == "false";
@@ -59,14 +59,6 @@ namespace ICSharpCode.Core.Presentation
 					return new ToolBarCheckBox(codon, caller, descriptor.Conditions);
 				case "Item":
 					return new ToolBarButton(inputBindingOwner, codon, caller, createCommand, descriptor.Conditions);
-				case "ComboBox":
-					return new ToolBarComboBox(codon, caller, descriptor.Conditions);
-				case "TextBox":
-					return "TextBox";
-					//return new ToolBarTextBox(codon, caller);
-				case "Label":
-					return "Label";
-					//return new ToolBarLabel(codon, caller);
 				case "DropDownButton":
 					return new ToolBarDropDownButton(
 						codon, caller, MenuService.CreateUnexpandedMenuItems(
@@ -78,9 +70,13 @@ namespace ICSharpCode.Core.Presentation
 							new MenuService.MenuCreateContext { ActivationMethod = "ToolbarDropDownMenu" },
 							descriptor.SubItems), descriptor.Conditions);
 				case "Builder":
+					return codon.AddIn.CreateObject(codon.Properties["class"]);
+				case "Custom":
 					object result = codon.AddIn.CreateObject(codon.Properties["class"]);
-					if (result is IToolBarItemBuilder)
-						((IToolBarItemBuilder)result).Initialize(inputBindingOwner, codon, caller);
+					if (result is ComboBox)
+						((ComboBox)result).SetResourceReference(FrameworkElement.StyleProperty, ToolBar.ComboBoxStyleKey);
+					if (result is ICustomToolBarItem)
+						((ICustomToolBarItem)result).Initialize(inputBindingOwner, codon, caller);
 					return result;
 				default:
 					throw new System.NotSupportedException("unsupported menu item type : " + type);
@@ -142,7 +138,8 @@ namespace ICSharpCode.Core.Presentation
 			bool isLabel = false;
 			if (codon.Properties.Contains("icon"))
 			{
-				image = PresentationResourceService.GetImage(StringParser.Parse(codon.Properties["icon"]));
+				image = new Image();
+				image.Source = PresentationResourceService.GetBitmapSource(StringParser.Parse(codon.Properties["icon"]));
 				image.Height = 16;
 				image.SetResourceReference(FrameworkElement.StyleProperty, ToolBarService.ImageStyleKey);
 				isImage = true;
@@ -167,24 +164,24 @@ namespace ICSharpCode.Core.Presentation
 			}
 			else
 				if (isImage)
-				{
-					result = image;
-				}
-				else
-					if (isLabel)
-					{
-						result = label;
-					}
-					else
-					{
-						result = codon.Id;
-					}
+			{
+				result = image;
+			}
+			else
+				if (isLabel)
+			{
+				result = label;
+			}
+			else
+			{
+				result = codon.Id;
+			}
 
 			return result;
 		}
 	}
 
-	public interface IToolBarItemBuilder
+	public interface ICustomToolBarItem
 	{
 		void Initialize(UIElement inputBindingOwner, Codon codon, object owner);
 	}

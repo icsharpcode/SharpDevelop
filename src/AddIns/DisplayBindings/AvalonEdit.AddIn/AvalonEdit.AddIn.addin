@@ -9,8 +9,11 @@
 	
 	<Runtime>
 		<Import assembly = ":ICSharpCode.AvalonEdit"/>
+		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 		<Import assembly = "ICSharpCode.AvalonEdit.AddIn.dll">
 			<Doozer name="SyntaxMode" class="ICSharpCode.AvalonEdit.AddIn.SyntaxModeDoozer"/>
+			<Doozer name="ContextActionOptionPanel" class="ICSharpCode.AvalonEdit.AddIn.ContextActions.ContextActionOptionPanelDoozer"/>
+			<Doozer name="Highlighter" class="ICSharpCode.AvalonEdit.AddIn.HighlighterDoozer"/>
 		</Import>
 	</Runtime>
 	
@@ -28,11 +31,18 @@
 		<Include id="DefaultEditor" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/ViewContent/TextEditor/EditorControlService">
-		<Class id="CodeEditorView" class="ICSharpCode.AvalonEdit.AddIn.AvalonEditorControlService"/>
+	<Path name = "/SharpDevelop/Services">
+		<Service id="ICSharpCode.SharpDevelop.Editor.IEditorControlService"
+		         class="ICSharpCode.AvalonEdit.AddIn.AvalonEditorControlService"/>
 	</Path>
 	
-	<!-- 
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/ToolTips">
+		<Class id = "DefaultTextMarkerToolTips"
+		       insertafter="DefaultDebuggerToolTips"
+		       class = "ICSharpCode.AvalonEdit.AddIn.TextMarkerToolTipProvider"/>
+	</Path>
+	
+	<!--
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
 		<Condition name = "WindowActive" activewindow="ICSharpCode.AvalonEdit.AddIn.ICodeEditorProvider">
 			<MenuItem id = "SaveWithEncoding"
@@ -133,6 +143,20 @@
 		</MenuItem>
 	</Path>
 	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Search">
+		<MenuItem id = "FindDerivedOrOverridesClasses"
+		          insertafter = "FindReferences"
+		          label = "${res:SharpDevelop.Refactoring.FindDerivedClassesOrOverridesCommand}"
+		          shortcut = "F6"
+		          icon="Icons.16x16.Class"
+		          class = "ICSharpCode.AvalonEdit.AddIn.ContextActions.FindDerivedClassesOrOverrides"/>
+		
+		<MenuItem id = "FindBaseClasses"
+		          label = "${res:SharpDevelop.Refactoring.FindBaseClassesCommand}"
+		          icon="Icons.16x16.Interface"
+		          class = "ICSharpCode.AvalonEdit.AddIn.ContextActions.FindBaseClasses"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">
 		<OptionPanel id = "CodeTemplates"
 		             label = "${res:Dialog.Options.CodeTemplatesText}"
@@ -162,5 +186,11 @@
 	<Path name = "/SharpDevelop/ViewContent/AvalonEdit/SnippetElementProviders">
 		<Class id="default" class="ICSharpCode.AvalonEdit.AddIn.Snippets.DefaultSnippetElementProvider" />
 		<Class id="anchor" class="ICSharpCode.AvalonEdit.AddIn.Snippets.AnchorSnippetElementProvider" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/ToolTips">
+		<Class id = "DefaultXmlDocToolTips"
+		       insertafter="DefaultDebuggerToolTips"
+		       class = "ICSharpCode.AvalonEdit.AddIn.XmlDoc.XmlDocTooltipProvider"/>
 	</Path>
 </AddIn>

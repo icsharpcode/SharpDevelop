@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace AspNet.Mvc.Tests
 {
 	[TestFixture]
-	public class IsMvcViewFolderSelectedConditionEvaluatorTests
+	public class IsMvcViewFolderSelectedConditionEvaluatorTests : MvcTestsBase
 	{
 		IsMvcViewFolderSelectedConditionEvaluator conditionEvaluator;
 		

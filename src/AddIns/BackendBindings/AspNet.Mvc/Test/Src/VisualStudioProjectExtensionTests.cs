@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace AspNet.Mvc.Tests
 {
 	[TestFixture]
-	public class VisualStudioProjectExtensionTests
+	public class VisualStudioProjectExtensionTests : MvcTestsBase
 	{
 		VisualStudioProjectExtension extension;
 		MSBuildBasedProject msbuildProject;

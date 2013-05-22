@@ -2,57 +2,37 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Editor.Search;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
 	/// A reference to a class or class member.
 	/// </summary>
-	public class Reference
+	public class Reference : SearchResultMatch
 	{
-		string fileName;
-		int offset, length;
-		string expression;
+		// TODO: this looks like a memory usage problem
+		// SearchResultMatch is kept alive for a long time (list of previous searches),
+		// but ResolveResult keeps the whole compilation alive
+		// We might have to split Reference/SearchResultMatch into separate instances
 		ResolveResult resolveResult;
 		
-		public Reference(string fileName, int offset, int length, string expression, ResolveResult resolveResult)
+		public Reference(DomRegion region, ResolveResult resolveResult, int offset, int length, HighlightedInlineBuilder builder, HighlightingColor defaultTextColor)
+			: base(FileName.Create(region.FileName), region.Begin, region.End, offset, length, builder, defaultTextColor)
 		{
-			this.fileName = fileName;
-			this.offset = offset;
-			this.length = length;
-			this.expression = expression;
+			if (region.IsEmpty)
+				throw new ArgumentException("Region must not be empty");
+			if (resolveResult == null)
+				throw new ArgumentNullException("resolveResult");
 			this.resolveResult = resolveResult;
 		}
 		
-		public string FileName {
-			get {
-				return fileName;
-			}
-		}
-		
-		public int Offset {
-			get {
-				return offset;
-			}
-		}
-		
-		public int Length {
-			get {
-				return length;
-			}
-		}
-		
-		public string Expression {
-			get {
-				return expression;
-			}
-		}
-		
 		public ResolveResult ResolveResult {
-			get {
-				return resolveResult;
-			}
+			get { return resolveResult; }
 		}
 	}
 }

@@ -2,7 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.Scripting
 {
@@ -26,8 +26,8 @@ namespace ICSharpCode.Scripting
 		void GetLineFromActiveTextEditor()
 		{
 			int lineNumber = activeTextEditor.Caret.Line;
-			IDocumentLine documentLine =  activeTextEditor.Document.GetLine(lineNumber);
-			lineFromActiveTextEditor = documentLine.Text;
+			IDocumentLine documentLine =  activeTextEditor.Document.GetLineByNumber(lineNumber);
+			lineFromActiveTextEditor = activeTextEditor.Document.GetText(documentLine);
 		}
 		
 		void AppendLineToScriptingConsole()

@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
-
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using NuGet;
 
@@ -17,7 +17,7 @@ namespace ICSharpCode.PackageManagement
 		public Window Owner {
 			get {
 				if (owner == null) {
-					owner = WorkbenchSingleton.MainWindow;
+					owner = SD.Workbench.MainWindow;
 				}
 				return owner;
 			}

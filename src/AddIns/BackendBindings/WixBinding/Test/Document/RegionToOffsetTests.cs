@@ -1,25 +1,23 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
+using System;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
-using System;
-using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Document
 {
 	[TestFixture]
 	public class RegionToOffsetTests
 	{
-		AvalonEditDocumentAdapter document;
+		TextDocument document;
 		
 		[SetUp]
 		public void Init()
 		{
-			document = new AvalonEditDocumentAdapter();
+			document = new TextDocument();
 		}
 		
 		[Test]

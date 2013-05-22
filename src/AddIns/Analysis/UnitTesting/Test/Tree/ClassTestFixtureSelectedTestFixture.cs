@@ -18,7 +18,6 @@ namespace UnitTesting.Tests.Tree
 		SelectedTests selectedTests;
 		List<IProject> projects;
 		MockCSharpProject project;
-		MockClass c;
 		
 		[SetUp]
 		public void Init()

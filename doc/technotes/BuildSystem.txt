@@ -20,4 +20,5 @@ projects which have no dependencies and are ready to be built, and projects whic
 The build engine calls StartBuild concurrently on up to buildOptions.ParallelBuild* projects which are ready. Whenever a project finishes building sucessfully,
 the engine checks whether this causes any other projects to become available to be built.
 If there are more projects available to be built than parallel builds are allowed, then the scheduling algorithm tries to maximize the amount of projects
-that are available by first picking those projects that cause the most other projects to become available.
+that are available in the future by first picking those projects that cause the most other projects to become available
+(have the most projects depending on them).

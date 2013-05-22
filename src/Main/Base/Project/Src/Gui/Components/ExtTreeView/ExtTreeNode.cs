@@ -6,10 +6,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
+	using TreeView = System.Windows.Forms.TreeView;
+	
 	public class ExtTreeNode : TreeNode, IDisposable, IClipboardHandler
 	{
 		string contextmenuAddinTreePath = null;
@@ -318,19 +320,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public static Font RegularMonospacedFont {
 			get {
-				return WinFormsResourceService.DefaultMonospacedFont;
+				return SD.WinForms.DefaultMonospacedFont;
 			}
 		}
 		public static Font BoldMonospacedFont {
 			get {
 				return boldMonospacedFont
-					?? (boldMonospacedFont = WinFormsResourceService.LoadDefaultMonospacedFont(FontStyle.Bold));
+					?? (boldMonospacedFont = SD.WinForms.LoadDefaultMonospacedFont(FontStyle.Bold));
 			}
 		}
 		public static Font ItalicMonospacedFont {
 			get {
 				return italicMonospacedFont
-					?? (italicMonospacedFont = WinFormsResourceService.LoadDefaultMonospacedFont(FontStyle.Italic));
+					?? (italicMonospacedFont = SD.WinForms.LoadDefaultMonospacedFont(FontStyle.Italic));
 			}
 		}
 		
@@ -343,35 +345,35 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static Font BoldDefaultFont {
 			get {
 				return boldDefaultFont
-					?? (boldDefaultFont = WinFormsResourceService.LoadFont(RegularDefaultFont, FontStyle.Bold));
+					?? (boldDefaultFont = SD.WinForms.LoadFont(RegularDefaultFont, FontStyle.Bold));
 			}
 		}
 		
 		public static Font ItalicDefaultFont {
 			get {
 				return italicDefaultFont
-					?? (italicDefaultFont = WinFormsResourceService.LoadFont(RegularDefaultFont, FontStyle.Italic));
+					?? (italicDefaultFont = SD.WinForms.LoadFont(RegularDefaultFont, FontStyle.Italic));
 			}
 		}
 		
 		public static Font RegularBigFont {
 			get {
 				return regularBigFont
-					?? (regularBigFont = WinFormsResourceService.LoadFont("Tahoma", 9));
+					?? (regularBigFont = SD.WinForms.LoadFont("Tahoma", 9));
 			}
 		}
 		
 		public static Font BoldBigFont {
 			get {
 				return boldBigFont
-					?? (boldBigFont = WinFormsResourceService.LoadFont("Tahoma", 9, FontStyle.Bold));
+					?? (boldBigFont = SD.WinForms.LoadFont("Tahoma", 9, FontStyle.Bold));
 			}
 		}
 		
 		public static Font ItalicBigFont {
 			get {
 				return italicBigFont
-					?? (italicBigFont = WinFormsResourceService.LoadFont("Tahoma", 9, FontStyle.Italic));
+					?? (italicBigFont = SD.WinForms.LoadFont("Tahoma", 9, FontStyle.Italic));
 			}
 		}
 		#endregion

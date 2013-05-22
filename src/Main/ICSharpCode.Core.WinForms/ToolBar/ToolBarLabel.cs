@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace ICSharpCode.Core.WinForms
 {
@@ -31,7 +32,6 @@ namespace ICSharpCode.Core.WinForms
 			if (codon.Properties.Contains("class"))
 			{
 				menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
-				menuCommand.Owner = this;
 			}
 
 			UpdateText();

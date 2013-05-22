@@ -40,7 +40,7 @@ namespace ICSharpCode.PackageManagement.VisualStudio
 		MSBuildBasedProject FindProject(string uniqueName)
 		{
 			return projectService
-				.GetOpenProjects()
+				.AllProjects
 				.SingleOrDefault(project => ProjectUniqueNameMatches(project, uniqueName)) as MSBuildBasedProject;
 		}
 		

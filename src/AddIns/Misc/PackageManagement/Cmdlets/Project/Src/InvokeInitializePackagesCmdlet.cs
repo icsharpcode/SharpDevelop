@@ -56,7 +56,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		IPackageInitializationScripts GetPackageInitializationScripts()
 		{
-			Solution solution = projectService.OpenSolution;
+			ISolution solution = projectService.OpenSolution;
 			return scriptsFactory.CreatePackageInitializationScripts(solution);
 		}
 	}

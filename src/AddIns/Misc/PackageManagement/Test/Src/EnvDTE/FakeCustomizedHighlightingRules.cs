@@ -12,7 +12,7 @@ namespace PackageManagement.Tests.EnvDTE
 	{
 		public List<CustomizedHighlightingColor> Colors = new List<CustomizedHighlightingColor>();
 		
-		public List<CustomizedHighlightingColor> LoadColors()
+		public IReadOnlyList<CustomizedHighlightingColor> LoadColors()
 		{
 			return Colors;
 		}

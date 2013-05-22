@@ -3,7 +3,6 @@
 
 using System;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 
@@ -12,7 +11,7 @@ namespace UnitTesting.Tests.Tree
 	[TestFixture]
 	public class TestResultFailureTaskTestFixture
 	{
-		Task task;
+		SDTask task;
 		
 		[SetUp]
 		public void Init()

@@ -20,6 +20,6 @@ using System.Windows;
 [assembly: AssemblyCulture("")]
 
 [assembly: ThemeInfo(
-    ResourceDictionaryLocation.SourceAssembly, //where theme specific resource dictionaries are located
+    ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located
     ResourceDictionaryLocation.SourceAssembly //where the generic resource dictionary is located
 )]

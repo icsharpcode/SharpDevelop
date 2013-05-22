@@ -2,6 +2,7 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
+using Debugger.AddIn.Visualizers.Graph;
 using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger.AddIn.Visualizers
@@ -24,7 +25,7 @@ namespace Debugger.AddIn.Visualizers
         /// <summary>
         /// Expression used for obtaining value of this property
         /// </summary>
-        public Expression Expression { get; set; }
+        public GraphExpression Expression { get; set; }
         
         /// <summary>
         /// Is this property of atomic type? (int, string, etc.)

@@ -88,7 +88,7 @@
 	</Path>
 	
 	<!-- Ruby parser -->
-	<Path name="/Workspace/Parser">
+	<Path name="/SharpDevelop/Parser">
 		<Parser id="Ruby"
 		        supportedextensions=".rb"
 		        projectfileextension=".rbproj"
@@ -111,7 +111,7 @@
 	</Path>
 	
 	<!-- The Ruby code completion binding -->
-	<!--	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+	<!--	<Path name = "/SharpDevelop/ViewContent/TextEditor/CodeCompletion">
 		<CodeCompletionBinding id="Ruby"
 			extensions=".rb"
 			class="ICSharpCode.RubyBinding.RubyCodeCompletionBinding"/>

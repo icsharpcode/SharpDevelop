@@ -5,16 +5,19 @@ using System;
 using System.Reflection;
 using ICSharpCode.Core.Tests.Utils;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace ICSharpCode.Core.Tests.Utils.Tests
 {
 	[TestFixture]
 	public class DerivedRuntimeTests
 	{
+		IAddInTree addInTree = MockRepository.GenerateStrictMock<IAddInTree>();
+		
 		[Test]
 		public void LoadAssemblyFromReturnsICSharpCoreTestsAssemblyForUnknownAssemblyFileName()
 		{
-			DerivedRuntime runtime = new DerivedRuntime("MyAddIn.dll", String.Empty);
+			DerivedRuntime runtime = new DerivedRuntime(addInTree, "MyAddIn.dll", String.Empty);
 			Assembly loadedAssembly = runtime.CallLoadAssemblyFrom("tests.dll");
 			
 			string expectedLoadedAssemblyName = "ICSharpCode.Core.Tests.dll";
@@ -24,7 +27,7 @@ namespace ICSharpCode.Core.Tests.Utils.Tests
 		[Test]
 		public void LoadAssemblyFromReturnsKnownAssemblyFromAssemblyFileNamesCollection()
 		{
-			DerivedRuntime runtime = new DerivedRuntime("MyAddIn.dll", String.Empty);
+			DerivedRuntime runtime = new DerivedRuntime(addInTree, "MyAddIn.dll", String.Empty);
 			runtime.AssemblyFileNames.Add("MyAddIn.dll", typeof(string).Assembly);
 			Assembly loadedAssembly = runtime.CallLoadAssemblyFrom(@"d:\projects\test\MyAddIn.dll");
 			
@@ -35,7 +38,7 @@ namespace ICSharpCode.Core.Tests.Utils.Tests
 		[Test]
 		public void LoadAssemblyReturnsICSharpCoreTestsAssemblyForUnknownAssemblyName()
 		{
-			DerivedRuntime runtime = new DerivedRuntime(":ICSharpCode.SharpDevelop", String.Empty);
+			DerivedRuntime runtime = new DerivedRuntime(addInTree, ":ICSharpCode.SharpDevelop", String.Empty);
 			Assembly loadedAssembly = runtime.CallLoadAssembly("Unknown");
 			
 			string expectedLoadedAssemblyName = "ICSharpCode.Core.Tests.dll";
@@ -45,7 +48,7 @@ namespace ICSharpCode.Core.Tests.Utils.Tests
 		[Test]
 		public void LoadAssemblyReturnsKnownAssemblyFromAssemblyNamesCollection()
 		{
-			DerivedRuntime runtime = new DerivedRuntime(":ICSharpCode.SharpDevelop", String.Empty);
+			DerivedRuntime runtime = new DerivedRuntime(addInTree, ":ICSharpCode.SharpDevelop", String.Empty);
 			runtime.AssemblyNames.Add("ICSharpCode.SharpDevelop", typeof(string).Assembly);
 			Assembly loadedAssembly = runtime.CallLoadAssembly("ICSharpCode.SharpDevelop");
 			
@@ -56,7 +59,7 @@ namespace ICSharpCode.Core.Tests.Utils.Tests
 		[Test]
 		public void LoadAssemblyThrowsPredefinedException()
 		{
-			DerivedRuntime runtime = new DerivedRuntime(":ICSharpCode.SharpDevelop", String.Empty);
+			DerivedRuntime runtime = new DerivedRuntime(addInTree, ":ICSharpCode.SharpDevelop", String.Empty);
 			ApplicationException expectedException = new ApplicationException("Test");
 			runtime.LoadAssemblyExceptionToThrow = expectedException;
 			
@@ -67,7 +70,7 @@ namespace ICSharpCode.Core.Tests.Utils.Tests
 		[Test]
 		public void LoadAssemblyFromThrowsPredefinedException()
 		{
-			DerivedRuntime runtime = new DerivedRuntime(":ICSharpCode.SharpDevelop", String.Empty);
+			DerivedRuntime runtime = new DerivedRuntime(addInTree, ":ICSharpCode.SharpDevelop", String.Empty);
 			ApplicationException expectedException = new ApplicationException("Test");
 			runtime.LoadAssemblyFromExceptionToThrow = expectedException;
 			

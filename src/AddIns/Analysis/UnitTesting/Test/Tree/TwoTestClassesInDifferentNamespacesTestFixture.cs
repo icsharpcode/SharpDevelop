@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;

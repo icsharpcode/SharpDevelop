@@ -13,7 +13,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -39,12 +39,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 
 		public string DefaultContextMenuAddInTreeEntry { get; set; }
 
-		public Task SelectedTask {
+		public SDTask SelectedTask {
 			get {
 				if (this.FocusedItem==null) {
 					return null;
 				}
-				return (Task)this.FocusedItem.Tag;
+				return (SDTask)this.FocusedItem.Tag;
 			}
 		}
 		
@@ -54,10 +54,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public IEnumerable<Task> SelectedTasks {
+		public IEnumerable<SDTask> SelectedTasks {
 			get {
 				foreach (ListViewItem item in this.SelectedItems) {
-					yield return (Task)item.Tag;
+					yield return (SDTask)item.Tag;
 				}
 			}
 		}
@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void CopySelectionToClipboard()
 		{
 			StringBuilder b = new StringBuilder();
-			foreach (Task t in this.SelectedTasks) {
+			foreach (SDTask t in this.SelectedTasks) {
 				if (b.Length > 0) b.AppendLine();
 				b.Append(t.Description);
 				if (!string.IsNullOrEmpty(t.FileName)) {
@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 			}
-			ClipboardWrapper.SetText(b.ToString());
+			SD.Clipboard.SetText(b.ToString());
 		}
 		
 		public void SelectAll()
@@ -122,10 +122,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			imglist.ColorDepth = ColorDepth.Depth32Bit;
 			// HACK: these images must be in the same order as the TaskType enumeration.
 			//       because of how the ListViewItem's ImageIndex is set in TaskView.AddTask();
-			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Error"));
-			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Warning"));
-			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Information"));
-			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Question"));
+			imglist.Images.Add(SD.ResourceService.GetBitmap("Icons.16x16.Error"));
+			imglist.Images.Add(SD.ResourceService.GetBitmap("Icons.16x16.Warning"));
+			imglist.Images.Add(SD.ResourceService.GetBitmap("Icons.16x16.Information"));
+			imglist.Images.Add(SD.ResourceService.GetBitmap("Icons.16x16.Question"));
 			// TODO: use reflection and a custom attribute on the TaskType enumeration to tie this ImageList to TaskType
 //			imglist.Images.Add(ResourceService.GetBitmap(Task.GetBitmapName(TaskType.Error)));
 //			imglist.Images.Add(ResourceService.GetBitmap(Task.GetBitmapName(TaskType.Warning)));
@@ -187,7 +187,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ListViewItem item = GetItemAt(e.X, e.Y);
 			if (item != currentListViewItem) {
 				if (item != null) {
-					Task task = (Task)item.Tag;
+					SDTask task = (SDTask)item.Tag;
 					string description = task.Description;
 					if (description != null) {
 						description = description.Replace("\t", "    ");
@@ -238,9 +238,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 					} else {
 						pos = PointToClient(new Point(x, y));
 					}
-					string entry = ((Task)this.SelectedItems[0].Tag).ContextMenuAddInTreeEntry;
+					string entry = ((SDTask)this.SelectedItems[0].Tag).ContextMenuAddInTreeEntry;
 					for (int i = 1; i < this.SelectedItems.Count; i++) {
-						string entry2 = ((Task)this.SelectedItems[i].Tag).ContextMenuAddInTreeEntry;
+						string entry2 = ((SDTask)this.SelectedItems[i].Tag).ContextMenuAddInTreeEntry;
 						if (entry2 != entry) {
 							entry = null;
 							break;
@@ -249,7 +249,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (entry == null)
 						entry = DefaultContextMenuAddInTreeEntry;
 					if (entry != null)
-						MenuService.ShowContextMenu(this, entry, this, pos.X, pos.Y);
+						SD.WinForms.MenuService.ShowContextMenu(this, entry, this, pos.X, pos.Y);
 				}
 			}
 			base.WndProc(ref m);
@@ -263,7 +263,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Items.Clear();
 		}
 		
-		public void AddTask(Task task)
+		public void AddTask(SDTask task)
 		{
 			string fileName = task.FileName;
 			string path     = task.FileName;
@@ -319,22 +319,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return FormattedDescription.Replace("\n", " ");
 		}
 		
-		public void RemoveTask(Task task)
+		public void RemoveTask(SDTask task)
 		{
 			for (int i = 0; i < Items.Count; ++i) {
-				if ((Task)Items[i].Tag == task) {
+				if ((SDTask)Items[i].Tag == task) {
 					Items.RemoveAt(i);
 					break;
 				}
 			}
 		}
 		
-		public void UpdateResults(IEnumerable<Task> taskSet)
+		public void UpdateResults(IEnumerable<SDTask> taskSet)
 		{
 			this.BeginUpdate();
 			this.ClearTasks();
 			
-			foreach (Task task in taskSet) {
+			foreach (SDTask task in taskSet) {
 				this.AddTask(task);
 			}
 			
@@ -393,7 +393,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			protected int CompareLineNumbers(ListViewItem a, ListViewItem b)
 			{
-				return ((Task)a.Tag).Line.CompareTo(((Task)b.Tag).Line);
+				return ((SDTask)a.Tag).Line.CompareTo(((SDTask)b.Tag).Line);
 			}
 
 			protected int CompareAsText(ListViewItem a, ListViewItem b, TaskViewCols col)

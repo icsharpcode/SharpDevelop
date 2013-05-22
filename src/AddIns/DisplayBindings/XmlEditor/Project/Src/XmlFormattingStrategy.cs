@@ -11,6 +11,8 @@ using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.XmlEditor
@@ -140,7 +142,7 @@ namespace ICSharpCode.XmlEditor
 						}
 						// set indentation of 'nextLine'
 						IDocumentLine line = document.GetLine(nextLine);
-						string lineText = line.Text;
+						string lineText = document.GetText(line);
 						
 						string newText;
 						// special case: opening tag has closing bracket on extra line: remove one indentation level
@@ -177,7 +179,7 @@ namespace ICSharpCode.XmlEditor
 							if (nextLine > end) break;
 							// set indentation of 'nextLine'
 							IDocumentLine line = document.GetLine(nextLine);
-							string newText = attribIndent + line.Text.Trim();
+							string newText = attribIndent + document.GetText(line).Trim();
 							document.SmartReplaceLine(line, newText);
 							nextLine++;
 						}

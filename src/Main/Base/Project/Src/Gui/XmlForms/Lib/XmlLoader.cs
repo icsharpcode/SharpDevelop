@@ -17,6 +17,7 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 	/// <summary>
 	/// This class is able to generate a GUI definition out of a XML file.
 	/// </summary>
+	[Obsolete("XML Forms are obsolete")]
 	public class XmlLoader
 	{
 		Dictionary<string, Control> controlDictionary = new Dictionary<string, Control>();

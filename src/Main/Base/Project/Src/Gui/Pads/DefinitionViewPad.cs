@@ -3,14 +3,18 @@
 
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms;
+
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -35,10 +39,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public DefinitionViewPad()
 		{
-			ctl = Editor.AvalonEdit.AvalonEditTextEditorAdapter.CreateAvalonEditInstance();
+			ctl = Editor.AvalonEditTextEditorAdapter.CreateAvalonEditInstance();
 			ctl.IsReadOnly = true;
 			ctl.MouseDoubleClick += OnDoubleClick;
-			ParserService.ParserUpdateStepFinished += OnParserUpdateStep;
+			throw new NotImplementedException();
+			//ParserService.ParserUpdateStepFinished += OnParserUpdateStep;
 			ctl.IsVisibleChanged += delegate { UpdateTick(null); };
 		}
 		
@@ -47,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public override void Dispose()
 		{
-			ParserService.ParserUpdateStepFinished -= OnParserUpdateStep;
+			//ParserService.ParserUpdateStepFinished -= OnParserUpdateStep;
 			ctl.Document = null;
 			base.Dispose();
 		}
@@ -69,65 +74,48 @@ namespace ICSharpCode.SharpDevelop.Gui
 			UpdateTick(e);
 		}
 		
-		void UpdateTick(ParserUpdateStepEventArgs e)
+		async void UpdateTick(ParserUpdateStepEventArgs e)
 		{
 			if (!ctl.IsVisible) return;
 			LoggingService.Debug("DefinitionViewPad.Update");
 			
-			ResolveResult res = ResolveAtCaret(e);
+			ResolveResult res = await ResolveAtCaretAsync(e);
 			if (res == null) return;
-			FilePosition pos = res.GetDefinitionPosition();
+			var pos = res.GetDefinitionRegion();
 			if (pos.IsEmpty) return;
 			OpenFile(pos);
 		}
 		
-		bool disableDefinitionView;
-		
-		ResolveResult ResolveAtCaret(ParserUpdateStepEventArgs e)
+		Task<ResolveResult> ResolveAtCaretAsync(ParserUpdateStepEventArgs e)
 		{
-			if (disableDefinitionView)
-				return null;
-			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (window == null) return null;
-			ITextEditorProvider provider = window.ActiveViewContent as ITextEditorProvider;
-			if (provider == null) return null;
-			ITextEditor editor = provider.TextEditor;
+			IWorkbenchWindow window = SD.Workbench.ActiveWorkbenchWindow;
+			if (window == null) 
+				return Task.FromResult<ResolveResult>(null);
+			IViewContent viewContent = window.ActiveViewContent;
+			if (viewContent == null) 
+				return Task.FromResult<ResolveResult>(null);
+			ITextEditor editor = viewContent.GetService<ITextEditor>();
+			if (editor == null)
+				return Task.FromResult<ResolveResult>(null);
 			
 			// e might be null when this is a manually triggered update
 			// don't resolve when an unrelated file was changed
-			if (e != null && editor.FileName != e.FileName) return null;
+			if (e != null && editor.FileName != e.FileName)
+				return Task.FromResult<ResolveResult>(null);
 			
-			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(editor.FileName);
-			if (expressionFinder == null) return null;
-			ITextEditorCaret caret = editor.Caret;
-			string content = (e == null) ? editor.Document.Text : e.Content.Text;
-			if (caret.Offset > content.Length) {
-				LoggingService.Debug("caret.Offset = " + caret.Offset + ", content.Length=" + content.Length);
-				return null;
-			}
-			try {
-				ExpressionResult expr = expressionFinder.FindFullExpression(content, caret.Offset);
-				if (expr.Expression == null) return null;
-				return ParserService.Resolve(expr, caret.Line, caret.Column, editor.FileName, content);
-			} catch (Exception ex) {
-				disableDefinitionView = true;
-				ctl.Visibility = Visibility.Collapsed;
-				MessageService.ShowException(ex, "Error resolving at " + caret.Line + "/" + caret.Column
-				                             + ". DefinitionViewPad is disabled until you restart SharpDevelop.");
-				return null;
-			}
+			return SD.ParserService.ResolveAsync(editor.FileName, editor.Caret.Location, editor.Document);
 		}
 		
-		FilePosition oldPosition;
+		DomRegion oldPosition;
 		string currentFileName;
 		
-		void OpenFile(FilePosition pos)
+		void OpenFile(DomRegion pos)
 		{
 			if (pos.Equals(oldPosition)) return;
 			oldPosition = pos;
 			if (pos.FileName != currentFileName)
 				LoadFile(pos.FileName);
-			ctl.TextArea.Caret.Location = new ICSharpCode.AvalonEdit.Document.TextLocation(pos.Line, pos.Column);
+			ctl.TextArea.Caret.Location = pos.Begin;
 			Rect r = ctl.TextArea.Caret.CalculateCaretRectangle();
 			if (!r.IsEmpty) {
 				ctl.ScrollToVerticalOffset(r.Top - 4);
@@ -140,19 +128,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		void LoadFile(string fileName)
 		{
-			// Get currently open text editor that matches the filename.
-			ITextEditor openTextEditor = null;
-			ITextEditorProvider provider = FileService.GetOpenFile(fileName) as ITextEditorProvider;
-			if (provider != null) {
-				openTextEditor = provider.TextEditor;
-			}
-			
 			// Load the text into the definition view's text editor.
-			if (openTextEditor != null) {
-				ctl.Text = openTextEditor.Document.Text;
-			} else {
-				ctl.Load(fileName);
-			}
+			ctl.Document = new TextDocument(SD.FileService.GetFileContent(fileName));
+			ctl.Document.FileName = fileName;
 			currentFileName = fileName;
 			ctl.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
 		}

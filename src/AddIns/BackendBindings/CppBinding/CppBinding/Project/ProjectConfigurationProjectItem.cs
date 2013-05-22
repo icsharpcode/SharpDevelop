@@ -8,6 +8,7 @@
  * Godzina: 18:52
  * 
  */
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.CppBinding.Project
@@ -26,11 +27,11 @@ namespace ICSharpCode.CppBinding.Project
 		/// Returns an empty string as a filename. 
 		/// Project configuration is specific to the whole project, not a specific item.
 		/// </summary>
-		public override string FileName
+		public override FileName FileName
 		{
 			get
 			{
-				return "";
+				return null;
 			}
 		}
 	}

@@ -30,9 +30,10 @@ namespace Debugger.AddIn.Tooltips
 			if (clickedCommand == null) {
 				throw new InvalidOperationException(
 					string.Format("{0} clicked, only instances of {1} must be present in {2}.",
-								  this.SelectedItem.GetType().ToString(), typeof(IVisualizerCommand).Name, typeof(VisualizerPicker).Name));
+								  this.SelectedItem.GetType().ToString(), 
+								  typeof(IVisualizerCommand).Name,
+								  typeof(VisualizerPicker).Name));
 			}
-
 			clickedCommand.Execute();
 			// Make no item selected, so that multiple selections of the same item always execute the command.
 			// This triggers VisualizerPicker_SelectionChanged again, which returns immediately.

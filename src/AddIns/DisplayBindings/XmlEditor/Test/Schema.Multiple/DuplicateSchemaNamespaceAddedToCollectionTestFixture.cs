@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using ICSharpCode.Core;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
@@ -58,14 +59,14 @@ namespace XmlEditor.Tests.Schema.Multiple
 				"</xs:schema>";
 
 			fooSchema = new XmlSchemaCompletion(new StringReader(xml));
-			fooSchema.FileName = "foo.xsd";
+			fooSchema.FileName = FileName.Create("foo.xsd");
 		}
 		
 		void CreateBarSchema()
 		{
 			string xml = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='bar' />";
 			barSchema = new XmlSchemaCompletion(new StringReader(xml));
-			barSchema.FileName = "bar.xsd";
+			barSchema.FileName = FileName.Create("bar.xsd");
 		}
 		
 		void CreateDuplicateFooSchema()
@@ -113,7 +114,7 @@ namespace XmlEditor.Tests.Schema.Multiple
 				"</xs:schema>";
 
 			duplicateFooSchema = new XmlSchemaCompletion(new StringReader(xml));
-			duplicateFooSchema.FileName = "duplicate-foo.xsd";
+			duplicateFooSchema.FileName = FileName.Create("duplicate-foo.xsd");
 		}
 		
 		[Test]
@@ -166,7 +167,7 @@ namespace XmlEditor.Tests.Schema.Multiple
 			path.AddElement(new QualifiedName("root", String.Empty));
 			
 			XmlSchemaCompletion defaultSchema = new XmlSchemaCompletion();
-			defaultSchema.FileName = "default.xsd";
+			defaultSchema.FileName = FileName.Create("default.xsd");
 			
 			XmlSchemaCompletionCollection foundSchemas = schemas.GetSchemas(path, defaultSchema);
 			
@@ -184,7 +185,7 @@ namespace XmlEditor.Tests.Schema.Multiple
 			
 			string xml = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='default-ns' />";
 			XmlSchemaCompletion defaultSchema = new XmlSchemaCompletion(new StringReader(xml));
-			defaultSchema.FileName = "default.xsd";
+			defaultSchema.FileName = FileName.Create("default.xsd");
 			
 			schemas.GetSchemas(path, defaultSchema);
 			

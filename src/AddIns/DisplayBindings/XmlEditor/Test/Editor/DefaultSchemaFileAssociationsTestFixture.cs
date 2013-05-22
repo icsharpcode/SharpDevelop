@@ -7,6 +7,7 @@ using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace XmlEditor.Tests.Editor
 {
@@ -26,7 +27,8 @@ namespace XmlEditor.Tests.Editor
 								"</AddIn>";
 
 			using (StringReader reader = new StringReader(addinXml)) {
-				AddIn addin = AddIn.Load(reader);
+				var addInTree = MockRepository.GenerateStrictMock<IAddInTree>();
+				AddIn addin = AddIn.Load(addInTree, reader);
 				
 				AddInTreeNode addinTreeNode = new AddInTreeNode();
 

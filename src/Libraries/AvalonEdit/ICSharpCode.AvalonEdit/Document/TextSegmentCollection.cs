@@ -1,7 +1,6 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.AvalonEdit.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,6 +8,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Document
 {
@@ -31,7 +32,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// </summary>
 	/// <remarks><inheritdoc cref="TextSegment"/></remarks>
 	/// <see cref="TextSegment"/>
-	public sealed class TextSegmentCollection<T> : ICollection<T>, ISegmentTree, IWeakEventListener where T : TextSegment
+	public sealed class TextSegmentCollection<T> : ICollection<T>, IReadOnlyCollection<T>, ISegmentTree, IWeakEventListener where T : TextSegment
 	{
 		// Implementation: this is basically a mixture of an augmented interval tree
 		// and the TextAnchorTree.

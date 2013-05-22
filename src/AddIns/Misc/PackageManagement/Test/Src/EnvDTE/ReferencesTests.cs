@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.EnvDTE;
@@ -54,7 +55,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateReferences();
 			references.Add("System.Data");
 			
-			var reference = msbuildProject.Items[0] as ReferenceProjectItem;
+			var reference = msbuildProject.Items.First() as ReferenceProjectItem;
 			string referenceName = reference.Name;
 			
 			Assert.AreEqual("System.Data", referenceName);
@@ -90,7 +91,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateReferences();
 			references.AddFromGAC("System.Data");
 			
-			var reference = msbuildProject.Items[0] as ReferenceProjectItem;
+			var reference = msbuildProject.Items.First() as ReferenceProjectItem;
 			string referenceName = reference.Name;
 			
 			Assert.AreEqual("System.Data", referenceName);

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.Core;
 using NUnit.Framework;
 using System;
 using System.IO;
@@ -9,7 +10,7 @@ using ICSharpCode.SharpDevelop.Project;
 namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 {
 	[TestFixture]
-	public class DirectoryNodeFactoryTests
+	public class DirectoryNodeFactoryTests : SDTestFixtureBase
 	{		
 		DirectoryNode appDesignerFolderNode;
 		DirectoryNode ordinaryFolderNode;
@@ -24,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		public void SetUpFixture()
 		{
 			MSBuildBasedProject project = WebReferenceTestHelper.CreateTestProject("C#");
-			project.FileName = Path.Combine(projectDirectory, "foo.csproj");
+			project.FileName = FileName.Create(Path.Combine(projectDirectory, "foo.csproj"));
 			project.AppDesignerFolder = "Properties";
 			
 			WebReferencesProjectItem webReferencesItem = new WebReferencesProjectItem(project);
@@ -55,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		[Test]
 		public void AppDesignerFolderNodeDirectory()
 		{
-			Assert.AreEqual(Path.Combine(projectDirectory, "Properties"), appDesignerFolderNode.Directory);
+			Assert.AreEqual(Path.Combine(projectDirectory, "Properties"), appDesignerFolderNode.Directory.ToString());
 		}
 		
 		[Test]
@@ -67,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		[Test]
 		public void OrdinaryFolderNodeDirectory()
 		{
-			Assert.AreEqual(Path.Combine(projectDirectory, "Test"), ordinaryFolderNode.Directory);
+			Assert.AreEqual(Path.Combine(projectDirectory, "Test"), ordinaryFolderNode.Directory.ToString());
 		}
 		
 		[Test]
@@ -91,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		[Test]
 		public void WebReferencesFolderNodeDirectory()
 		{
-			Assert.AreEqual(Path.Combine(projectDirectory, "Web References"), webReferencesFolderNode.Directory);
+			Assert.AreEqual(Path.Combine(projectDirectory, "Web References"), webReferencesFolderNode.Directory.ToString());
 		}
 
 		[Test]
@@ -109,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		[Test]
 		public void WebReferenceNodeDirectory()
 		{
-			Assert.AreEqual(Path.Combine(projectDirectory, "Web References\\localhost"), webReferenceNode.Directory);
+			Assert.AreEqual(Path.Combine(projectDirectory, "Web References\\localhost"), webReferenceNode.Directory.ToString());
 		}
 		
 		[Test]
@@ -151,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		[Test]
 		public void MissingOrdinaryFolderName()
 		{
-			Assert.AreEqual("c:\\projects\\test\\MissingFolder", missingOrdinaryFolderNode.Directory);
+			Assert.AreEqual("c:\\projects\\test\\MissingFolder", missingOrdinaryFolderNode.Directory.ToString());
 		}
 		
 		[Test]

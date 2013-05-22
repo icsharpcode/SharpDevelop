@@ -16,8 +16,9 @@
     <AssemblyOriginatorKeyFile>..\..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>False</Optimize>
@@ -71,6 +72,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="CustomWindowsFormsHost.cs" />
     <Compile Include="DragListener.cs" />
+    <Compile Include="ExtendedPopup.cs" />
     <Compile Include="ListViewSorting\AbstractListViewParseableColumnComparer.cs" />
     <Compile Include="ListViewSorting\AbstractListViewSubItemComparer.cs" />
     <Compile Include="ListViewSorting\ListViewIntegerParseColumnComparer.cs" />
@@ -129,6 +131,13 @@
   <ItemGroup>
     <Resource Include="Images\ZoomIn.png" />
     <Resource Include="Images\ZoomOut.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

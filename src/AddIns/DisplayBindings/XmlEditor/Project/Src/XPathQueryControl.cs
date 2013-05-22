@@ -111,7 +111,7 @@ namespace ICSharpCode.XmlEditor
 		
 		void SaveNamespaces(Properties properties)
 		{
-			properties.Set(NamespacesProperty, GetNamespaceStringArray());
+			properties.SetList(NamespacesProperty, GetNamespaceStringArray());
 		}
 		
 		void SaveNamespaceDataGridColumnWidths(Properties properties)
@@ -128,7 +128,7 @@ namespace ICSharpCode.XmlEditor
 		void SaveXPathQueryHistory(Properties properties)
 		{
 			properties.Set(XPathComboBoxTextProperty, XPathComboBox.Text);
-			properties.Set(XPathComboBoxItemsProperty, GetXPathHistory());
+			properties.SetList(XPathComboBoxItemsProperty, GetXPathHistory());
 		}
 		
 		/// <summary>
@@ -150,7 +150,7 @@ namespace ICSharpCode.XmlEditor
 		
 		void LoadNamespaces(Properties properties)
 		{
-			string[] namespaces = properties.Get(NamespacesProperty, new string[0]);
+			var namespaces = properties.GetList<string>(NamespacesProperty);
 			foreach (string ns in namespaces) {
 				XmlNamespace xmlNamespace = XmlNamespace.FromString(ns);
 				AddNamespace(xmlNamespace.Prefix, xmlNamespace.Name);
@@ -171,7 +171,7 @@ namespace ICSharpCode.XmlEditor
 		void LoadXPathQueryHistory(Properties properties)
 		{
 			XPathComboBox.Text = properties.Get(XPathComboBoxTextProperty, string.Empty);
-			string[] xpaths = properties.Get(XPathComboBoxItemsProperty, new string[0]);
+			var xpaths = properties.GetList<string>(XPathComboBoxItemsProperty);
 			foreach (string xpath in xpaths) {
 				xpathComboBox.Items.Add(xpath);
 			}
@@ -428,14 +428,14 @@ namespace ICSharpCode.XmlEditor
 				
 				// Clear previous XPath results.
 				ClearResults();
-				XPathNodeTextMarker marker = new XPathNodeTextMarker(xmlView.TextEditor.Document);
-				marker.RemoveMarkers();
+				XPathNodeTextMarker.RemoveMarkers(xmlView.TextEditor.Document);
 				
 				// Run XPath query.
 				XPathQuery query = new XPathQuery(xmlView.TextEditor, GetNamespaces());
 				XPathNodeMatch[] nodes = query.FindNodes(xpathComboBox.Text);
 				if (nodes.Length > 0) {
 					AddXPathResults(nodes);
+					XPathNodeTextMarker marker = new XPathNodeTextMarker(xmlView.TextEditor.Document);
 					marker.AddMarkers(nodes);
 				} else {
 					AddNoXPathResult();
@@ -594,9 +594,9 @@ namespace ICSharpCode.XmlEditor
 			if (view != null) {
 				ITextEditor editor = view.TextEditor;
 				if (editor == null) return;
-				int corLine = Math.Min(line + 1, editor.Document.TotalNumberOfLines - 1);
+				int corLine = Math.Min(line + 1, editor.Document.LineCount - 1);
 				editor.JumpTo(corLine, column + 1);
-				if (length > 0 && line < editor.Document.TotalNumberOfLines) {
+				if (length > 0 && line < editor.Document.LineCount) {
 					int offset = editor.Document.PositionToOffset(line + 1, column + 1);
 					editor.Select(offset, length);
 				}

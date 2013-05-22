@@ -212,7 +212,7 @@ namespace ICSharpCode.PackageManagement
 		bool FileExistsInProject(string path)
 		{
 			string fullPath = GetFullPath(path);
-			return project.IsFileInProject(fullPath);
+			return project.IsFileInProject(FileName.Create(fullPath));
 		}
 		
 		void AddFileToProject(string path)
@@ -226,7 +226,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			ItemType itemType = project.GetDefaultItemType(path);
 			var fileItem = new FileProjectItem(project, itemType);
-			fileItem.FileName = path;
+			fileItem.FileName = FileName.Create(path);
 			fileItem.CustomTool = projectService.GetDefaultCustomToolForFileName(fileItem);
 			return fileItem;
 		}

@@ -12,6 +12,7 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 	/// <summary>
 	/// Default implementation of the IObjectCreator interface.
 	/// </summary>
+	[Obsolete("XML Forms are obsolete")]
 	public class DefaultObjectCreator : IObjectCreator
 	{
 		public virtual Type GetType(string name)

@@ -5,9 +5,9 @@ using System;
 
 namespace ICSharpCode.AspNet.Mvc.Folding
 {
-	public class CSharpRazorLanguageBinding : HtmlLanguageBinding
+	public class CSharpRazorTextEditorExtension : HtmlTextEditorExtension
 	{
-		public CSharpRazorLanguageBinding()
+		public CSharpRazorTextEditorExtension()
 			: base(
 				new TextEditorWithParseInformationFoldingFactory(),
 				new RazorFoldGeneratorFactory(".cshtml"))

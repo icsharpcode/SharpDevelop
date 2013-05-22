@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.2.1.8805
+# SharpDevelop 4.3
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCoverage", "Project\CodeCoverage.csproj", "{08CE9972-283B-44F4-82FA-966F7DFA6B7A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCoverage.Tests", "Test\CodeCoverage.Tests.csproj", "{A5C0E8F8-9D04-46ED-91D6-1DEF1575313B}"
@@ -10,19 +10,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Core", "..\..\.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop", "..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj", "{2748AD25-9C63-4E12-877B-4DCE96FBED54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactory", "..\..\..\Libraries\NRefactory\Project\NRefactory.csproj", "{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting", "..\UnitTesting\UnitTesting.csproj", "{1F261725-6318-4434-A1B1-6C70CE4CD324}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.Widgets", "..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj", "{8035765F-D51F-4A0C-A746-2FD100E19419}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.Dom", "..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj", "{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.AvalonEdit", "..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj", "{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting.Tests", "..\UnitTesting\Test\UnitTesting.Tests.csproj", "{44A8DE09-CAB9-49D8-9CFC-5EB0A552F181}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvalonEdit.AddIn", "..\..\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj", "{0162E499-42D0-409B-AA25-EED21F75336B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory", "..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj", "{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.Tests", "..\..\..\Main\Base\Test\ICSharpCode.SharpDevelop.Tests.csproj", "{4980B743-B32F-4aba-AABD-45E2CAD3568D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,10 +46,6 @@ Global
 		{2748AD25-9C63-4E12-877B-4DCE96FBED54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2748AD25-9C63-4E12-877B-4DCE96FBED54}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2748AD25-9C63-4E12-877B-4DCE96FBED54}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F261725-6318-4434-A1B1-6C70CE4CD324}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F261725-6318-4434-A1B1-6C70CE4CD324}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1F261725-6318-4434-A1B1-6C70CE4CD324}.Release|Any CPU.Build.0 = Release|Any CPU
@@ -58,10 +54,6 @@ Global
 		{8035765F-D51F-4A0C-A746-2FD100E19419}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8035765F-D51F-4A0C-A746-2FD100E19419}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8035765F-D51F-4A0C-A746-2FD100E19419}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}.Release|Any CPU.Build.0 = Release|Any CPU
@@ -74,5 +66,13 @@ Global
 		{0162E499-42D0-409B-AA25-EED21F75336B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0162E499-42D0-409B-AA25-EED21F75336B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0162E499-42D0-409B-AA25-EED21F75336B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4980B743-B32F-4aba-AABD-45E2CAD3568D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4980B743-B32F-4aba-AABD-45E2CAD3568D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4980B743-B32F-4aba-AABD-45E2CAD3568D}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{4980B743-B32F-4aba-AABD-45E2CAD3568D}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 	EndGlobalSection
 EndGlobal

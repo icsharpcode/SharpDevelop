@@ -11,7 +11,7 @@ namespace ICSharpCode.FormsDesigner
 	{
 		DesignerLoader CreateLoader(IDesignerGenerator generator);
 	}
-	
+	/*
 	public class NRefactoryDesignerLoaderProvider : IDesignerLoaderProvider
 	{
 		readonly SupportedLanguage language;
@@ -25,5 +25,5 @@ namespace ICSharpCode.FormsDesigner
 		{
 			return new NRefactoryDesignerLoader(language, generator);
 		}
-	}
+	}*/
 }

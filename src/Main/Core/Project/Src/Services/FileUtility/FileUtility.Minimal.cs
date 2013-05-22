@@ -35,14 +35,19 @@ namespace ICSharpCode.Core
 			}
 			
 			char outputSeparator = isWeb ? '/' : System.IO.Path.DirectorySeparatorChar;
+			bool isRelative;
 			
 			StringBuilder result = new StringBuilder();
-			if (isWeb == false && fileName.StartsWith(@"\\") || fileName.StartsWith("//")) {
+			if (isWeb == false && fileName.StartsWith(@"\\", StringComparison.Ordinal) || fileName.StartsWith("//", StringComparison.Ordinal)) {
+				// UNC path
 				i = 2;
 				result.Append(outputSeparator);
+				isRelative = false;
 			} else {
 				i = 0;
+				isRelative = !isWeb && (fileName.Length < 2 || fileName[1] != ':');
 			}
+			int levelsBack = 0;
 			int segmentStartPos = i;
 			for (; i <= fileName.Length; i++) {
 				if (i == fileName.Length || fileName[i] == '/' || fileName[i] == '\\') {
@@ -50,8 +55,7 @@ namespace ICSharpCode.Core
 					switch (segmentLength) {
 						case 0:
 							// ignore empty segment (if not in web mode)
-							// On unix, don't ignore empty segment if i==0
-							if (isWeb || (i == 0 && Environment.OSVersion.Platform == PlatformID.Unix)) {
+							if (isWeb) {
 								result.Append(outputSeparator);
 							}
 							break;
@@ -69,6 +73,11 @@ namespace ICSharpCode.Core
 								for (j = result.Length - 1; j >= 0 && result[j] != outputSeparator; j--);
 								if (j > 0) {
 									result.Length = j;
+								} else if (isRelative) {
+									if (result.Length == 0)
+										levelsBack++;
+									else
+										result.Length = 0;
 								}
 								break;
 							} else {
@@ -84,12 +93,19 @@ namespace ICSharpCode.Core
 				}
 			}
 			if (isWeb == false) {
+				if (isRelative) {
+					for (int j = 0; j < levelsBack; j++) {
+						result.Insert(0, ".." + outputSeparator);
+					}
+				}
 				if (result.Length > 0 && result[result.Length - 1] == outputSeparator) {
 					result.Length -= 1;
 				}
 				if (result.Length == 2 && result[1] == ':') {
 					result.Append(outputSeparator);
 				}
+				if (result.Length == 0)
+					return ".";
 			}
 			return result.ToString();
 		}
@@ -105,10 +121,21 @@ namespace ICSharpCode.Core
 		{
 			if (baseDirectory == null || testDirectory == null)
 				return false;
-			baseDirectory = NormalizePath(baseDirectory) + Path.DirectorySeparatorChar;
-			testDirectory = NormalizePath(testDirectory) + Path.DirectorySeparatorChar;
+			baseDirectory = NormalizePath(baseDirectory);
+			if (baseDirectory == ".")
+				return !Path.IsPathRooted(testDirectory);
+			baseDirectory = AddTrailingSeparator(baseDirectory);
+			testDirectory = AddTrailingSeparator(NormalizePath(testDirectory));
 			
 			return testDirectory.StartsWith(baseDirectory, StringComparison.OrdinalIgnoreCase);
+		}
+		
+		static string AddTrailingSeparator(string input)
+		{
+			if (input[input.Length - 1] == Path.DirectorySeparatorChar)
+				return input;
+			else
+				return input + Path.DirectorySeparatorChar.ToString();
 		}
 	}
 }

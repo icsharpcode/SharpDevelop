@@ -1,10 +1,11 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -48,7 +49,7 @@ namespace ICSharpCode.XmlEditor
 					dialog.FilterIndex = 1;
 				}
 				
-				if (dialog.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+				if (dialog.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 					return dialog.FileName;
 				}
 			}

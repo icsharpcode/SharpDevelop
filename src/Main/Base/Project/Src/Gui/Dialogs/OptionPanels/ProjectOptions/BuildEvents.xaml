@@ -4,7 +4,7 @@
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
 	xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project"
-	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui"
+	xmlns:sd="clr-namespace:ICSharpCode.SharpDevelop"
 	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels">
 	<ScrollViewer
 		VerticalScrollBarVisibility="Auto">
@@ -27,7 +27,7 @@
 				<Label Content="{core:Localize Dialog.ProjectOptions.BuildEvents.RunPostBuild}" />
 				<DockPanel>
 					<optionpanels:StorageLocationPicker Location="{Binding RunPostBuildEvent.Location}" DockPanel.Dock="Left" />
-					<ComboBox gui:EnumBinding.EnumType="{x:Type project:RunPostBuildEvent}" SelectedValue="{Binding RunPostBuildEvent.Value}" />
+					<ComboBox sd:EnumBinding.EnumType="{x:Type project:RunPostBuildEvent}" SelectedValue="{Binding RunPostBuildEvent.Value}" />
 				</DockPanel>
 			</StackPanel>
 		</GroupBox>

@@ -2,14 +2,16 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.IconEditor
 {
 	public class IconDisplayBinding : IDisplayBinding
 	{
-		public bool CanCreateContentForFile(string fileName)
+		public bool CanCreateContentForFile(FileName fileName)
 		{
 			return true; // definition in .addin does extension-based filtering
 		}
@@ -19,12 +21,12 @@ namespace ICSharpCode.IconEditor
 			return new IconViewContent(file);
 		}
 		
-		public bool IsPreferredBindingForFile(string fileName)
+		public bool IsPreferredBindingForFile(FileName fileName)
 		{
 			return true;
 		}
 		
-		public double AutoDetectFileContent(string fileName, System.IO.Stream fileContent, string detectedMimeType)
+		public double AutoDetectFileContent(FileName fileName, System.IO.Stream fileContent, string detectedMimeType)
 		{
 			return 1;
 		}

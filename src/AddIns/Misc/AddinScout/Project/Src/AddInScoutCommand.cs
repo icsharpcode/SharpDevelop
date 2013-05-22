@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace AddInScout
@@ -12,7 +13,7 @@ namespace AddInScout
 		public override void Run() 
 		{
 			AddInScoutViewContent vw = new AddInScoutViewContent();
-			WorkbenchSingleton.Workbench.ShowView(vw);
+			SD.Workbench.ShowView(vw);
 		}
 	}
 }

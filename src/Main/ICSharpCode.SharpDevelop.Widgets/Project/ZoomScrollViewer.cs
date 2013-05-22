@@ -148,7 +148,7 @@ namespace ICSharpCode.SharpDevelop.Widgets
 		
 		internal static double RoundToOneIfClose(double val)
 		{
-			if (Math.Abs(val - 1.0) < 0.0001)
+			if (Math.Abs(val - 1.0) < 0.001)
 				return 1.0;
 			else
 				return val;

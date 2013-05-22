@@ -12,10 +12,10 @@ namespace PackageManagement.Tests.Helpers
 		public FakePackageInitializationScripts FakePackageInitializationScripts = 
 			new FakePackageInitializationScripts();
 		
-		public Solution SolutionPassedToCreatePackageInitializationScripts;
+		public ISolution SolutionPassedToCreatePackageInitializationScripts;
 		
 		public IPackageInitializationScripts CreatePackageInitializationScripts(
-			Solution solution)
+			ISolution solution)
 		{
 			SolutionPassedToCreatePackageInitializationScripts = solution;
 			return FakePackageInitializationScripts;

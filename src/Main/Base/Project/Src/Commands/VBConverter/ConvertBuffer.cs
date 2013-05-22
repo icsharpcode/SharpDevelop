@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+/* TODO: Reimplement C#<->VB converter
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.PrettyPrinter;
@@ -35,9 +35,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 				PreprocessingDirective.CSharpToVB(specials);
 				IAstVisitor v = new CSharpToVBNetConvertVisitor(ParserService.CurrentProjectContent,
 				                                                ParserService.GetParseInformation(content.PrimaryFileName));
-				v.VisitCompilationUnit(p.CompilationUnit, null);
+				v.VisitSyntaxTree(p.SyntaxTree, null);
 				using (SpecialNodesInserter.Install(specials, vbv)) {
-					vbv.VisitCompilationUnit(p.CompilationUnit, null);
+					vbv.VisitSyntaxTree(p.SyntaxTree, null);
 				}
 				
 				FileService.NewFile("Generated.vb", vbv.Text);
@@ -45,3 +45,4 @@ namespace ICSharpCode.SharpDevelop.Commands
 		}
 	}
 }
+*/

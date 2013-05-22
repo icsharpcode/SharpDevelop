@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using SD = ICSharpCode.SharpDevelop.Project;
 
@@ -11,7 +12,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class Solution : MarshalByRefObject, global::EnvDTE.Solution
 	{
 		IPackageManagementProjectService projectService;
-		SD.Solution solution;
+		SD.ISolution solution;
 		
 		public Solution(IPackageManagementProjectService projectService)
 		{
@@ -44,8 +45,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public global::EnvDTE.Projects Projects { get; private set; }
 		public global::EnvDTE.Globals Globals { get; private set; }
 		
-		internal IList<SD.ProjectSection> Sections {
-			get { return solution.Sections; }
+		internal ICollection<SD.SolutionSection> Sections {
+			get { return solution.GlobalSections; }
 		}
 		
 		internal void Save()
@@ -69,7 +70,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		internal Project GetStartupProject()
 		{
-			MSBuildBasedProject project = solution.Preferences.StartupProject as MSBuildBasedProject;
+			var project = solution.StartupProject as MSBuildBasedProject;
 			if (project != null) {
 				return new Project(project);
 			}
@@ -86,7 +87,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		internal SolutionConfiguration GetActiveConfiguration()
 		{
-			return new SolutionConfiguration(solution.Preferences);
+			return new SolutionConfiguration(solution);
 		}
 	}
 }

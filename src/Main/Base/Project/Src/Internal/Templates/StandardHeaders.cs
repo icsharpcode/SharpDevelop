@@ -8,7 +8,7 @@ using System.IO;
 using System.Xml;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop.Internal.Templates
+namespace ICSharpCode.SharpDevelop.Templates
 {
 	public class StandardHeader
 	{

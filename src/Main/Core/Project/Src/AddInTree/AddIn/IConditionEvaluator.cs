@@ -10,6 +10,6 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public interface IConditionEvaluator
 	{
-		bool IsValid(object owner, Condition condition);
+		bool IsValid(object parameter, Condition condition);
 	}
 }

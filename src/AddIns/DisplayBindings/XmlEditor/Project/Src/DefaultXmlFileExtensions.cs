@@ -11,7 +11,7 @@ namespace ICSharpCode.XmlEditor
 	{
 		public DefaultXmlFileExtensions()
 		{
-			AddInTreeNode node = AddInTree.GetTreeNode("/AddIns/DefaultTextEditor/CodeCompletion", false);
+			AddInTreeNode node = AddInTree.GetTreeNode("/SharpDevelop/ViewContent/TextEditor/CodeCompletion", false);
 			GetXmlFileExtensions(node);
 		}
 		

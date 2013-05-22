@@ -5116,7 +5116,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Текущий метод</value>
   </data>
   <data name="SharpDevelop.Refactoring.DeclaringType" xml:space="preserve">
-    <value>Текларирующий тип</value>
+    <value>Декларирующий тип</value>
   </data>
   <data name="SharpDevelop.Refactoring.ExpandAutomaticProperty" xml:space="preserve">
     <value>Развернуть автосвойство</value>

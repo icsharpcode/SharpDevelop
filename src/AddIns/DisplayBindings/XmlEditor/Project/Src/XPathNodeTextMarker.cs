@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Media;
 
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.XmlEditor
@@ -35,7 +36,7 @@ namespace ICSharpCode.XmlEditor
 		public void AddMarker(XPathNodeMatch node)
 		{
 			if (node.HasLineInfo() && node.Value.Length > 0) {
-				int offset = document.PositionToOffset(node.LineNumber + 1, node.LinePosition + 1);
+				int offset = document.GetOffset(node.LineNumber + 1, node.LinePosition + 1);
 				if (markerService != null) {
 					ITextMarker marker = markerService.Create(offset, node.Value.Length);
 					marker.Tag = typeof(XPathNodeTextMarker);
@@ -44,15 +45,18 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
-		public void RemoveMarkers()
+		/// <summary>
+		/// Removes all markers from the given view content or text editor.
+		/// </summary>
+		public static void RemoveMarkers(IServiceProvider serviceProvider)
 		{
-			ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+			ITextMarkerService markerService = serviceProvider.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			if (markerService != null) {
 				markerService.RemoveAll(IsXPathNodeTextMarker);
 			}
 		}
 		
-		bool IsXPathNodeTextMarker(ITextMarker marker)
+		static bool IsXPathNodeTextMarker(ITextMarker marker)
 		{
 			return (Type)marker.Tag == typeof(XPathNodeTextMarker);
 		}

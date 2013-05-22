@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.WixBinding
@@ -23,7 +24,7 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		public TextReader Create(string fileName)
 		{
-			return ParserService.GetParseableFileContent(fileName).CreateReader();
+			return SD.FileService.GetFileContent(new FileName(fileName)).CreateReader();
 		}
 	}
 }

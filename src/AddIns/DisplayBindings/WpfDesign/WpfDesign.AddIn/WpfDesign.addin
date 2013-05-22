@@ -1,7 +1,6 @@
 ﻿<AddIn name="WPF Designer AddIn" author="Daniel Grunwald" copyright="prj:///doc/copyright.txt" description="WPF Designer" addInManagerHidden="preinstalled">
 	<Manifest>
 		<Identity name="ICSharpCode.WpfDesigner" />
-		<Dependency addin="ICSharpCode.FormsDesigner" requirePreload="true" />
 	</Manifest>
 	<Runtime>
 		<Import assembly="ICSharpCode.WpfDesign.AddIn.dll">

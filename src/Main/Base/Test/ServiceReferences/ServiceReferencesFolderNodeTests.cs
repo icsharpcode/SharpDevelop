@@ -3,6 +3,7 @@
 
 using System;
 using Gui.Pads.ProjectBrowser.TreeNodes;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Tests.WebReferences;
 using NUnit.Framework;
@@ -10,7 +11,7 @@ using NUnit.Framework;
 namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 {
 	[TestFixture]
-	public class ServiceReferencesFolderNodeTests
+	public class ServiceReferencesFolderNodeTests : SDTestFixtureBase
 	{
 		MSBuildBasedProject project;
 		ServiceReferencesProjectItem projectItem;
@@ -41,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void Directory_ProjectItemHasServiceReferenceDirectory_ReturnsFullPathToServiceReferencesDirectory()
 		{
 			CreateServiceReferenceProjectItem();
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			project.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
 			projectItem.Include = @"Service References\";
 			CreateFolderNode();
 			

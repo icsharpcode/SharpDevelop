@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Commands
@@ -14,14 +15,16 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 	{
 		public override void Run()
 		{
-			IViewContent vc = WorkbenchSingleton.Workbench.ActiveViewContent;
-			ICodeEditorProvider cep = vc as ICodeEditorProvider;
-			if (cep != null) {
+			IViewContent vc = SD.Workbench.ActiveViewContent;
+			if (vc == null)
+				return;
+			var codeEditor = vc.GetService<CodeEditor>();
+			if (codeEditor != null) {
 				ChooseEncodingDialog dlg = new ChooseEncodingDialog();
-				dlg.Owner = WorkbenchSingleton.MainWindow;
-				dlg.Encoding = cep.CodeEditor.PrimaryTextEditor.Encoding;
+				dlg.Owner = SD.Workbench.MainWindow;
+				dlg.Encoding = codeEditor.PrimaryTextEditor.Encoding;
 				if (dlg.ShowDialog() == true) {
-					cep.CodeEditor.PrimaryTextEditor.Encoding = dlg.Encoding;
+					codeEditor.PrimaryTextEditor.Encoding = dlg.Encoding;
 					SharpDevelop.Commands.SaveFile.Save(vc.PrimaryFile);
 				}
 			}

@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 
@@ -18,8 +18,8 @@ namespace UnitTesting.Tests.Utils
 		ITestResultsMonitor testResultsMonitor;
 		UnitTestingOptions options;
 		IUnitTestDebuggerService debuggerService;
-		IUnitTestMessageService messageService;
-		IUnitTestFileService fileService = new MockFileService();
+		IMessageService messageService;
+		IFileSystem fileService = new MockFileService();
 
 		public MockNUnitTestFramework(IUnitTestProcessRunner processRunner,
 			ITestResultsMonitor testResultsMonitor, 
@@ -31,7 +31,7 @@ namespace UnitTesting.Tests.Utils
 		public MockNUnitTestFramework(IUnitTestDebuggerService debuggerService,
 			ITestResultsMonitor testResultsMonitor, 
 			UnitTestingOptions options,
-			IUnitTestMessageService messageService)
+			IMessageService messageService)
 			: this(debuggerService, null, testResultsMonitor, options, messageService)
 		{
 		}
@@ -40,7 +40,7 @@ namespace UnitTesting.Tests.Utils
 			IUnitTestProcessRunner processRunner,
 			ITestResultsMonitor testResultsMonitor, 
 			UnitTestingOptions options,
-			IUnitTestMessageService messageService)
+			IMessageService messageService)
 		{
 			this.debuggerService = debuggerService;
 			this.processRunner = processRunner;
@@ -54,11 +54,11 @@ namespace UnitTesting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public IEnumerable<TestMember> GetTestMembersFor(IClass @class) {
+		public IEnumerable<TestMember> GetTestMembersFor(ITypeDefinition @class) {
 			throw new NotImplementedException();
 		}
 		
-		public bool IsTestClass(IClass c)
+		public bool IsTestClass(ITypeDefinition c)
 		{
 			throw new NotImplementedException();
 		}

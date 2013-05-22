@@ -7,9 +7,9 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -83,7 +83,7 @@ namespace ICSharpCode.GitAddIn
 			// sleep a tiny bit to give main thread time to add more jobs to the queue
 			Thread.Sleep(100);
 			while (true) {
-				if (ICSharpCode.SharpDevelop.ParserService.LoadSolutionProjectsThreadRunning) {
+				if (SD.ParserService.LoadSolutionProjectsThread.IsRunning) {
 					// Run OverlayIconManager much more slowly while solution is being loaded.
 					// This prevents the disk from seeking too much
 					Thread.Sleep(100);
@@ -130,16 +130,16 @@ namespace ICSharpCode.GitAddIn
 				}
 			}
 			
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					Image image = GetImage(status);
-					if (image != null) {
-						node.Overlay = image;
-					} else if (node.Overlay != null && (node.Overlay.Tag as Type) == typeof(GitAddIn.OverlayIconManager)) {
-						// reset overlay to null only if the old overlay belongs to the OverlayIconManager
-						node.Overlay = null;
-					}
-				});
+			SD.MainThread.InvokeAsyncAndForget(delegate {
+				Image image = GetImage(status);
+				if (image != null) {
+					node.Overlay = image;
+				} else
+		if (node.Overlay != null && (node.Overlay.Tag as Type) == typeof(GitAddIn.OverlayIconManager)) {
+					// reset overlay to null only if the old overlay belongs to the OverlayIconManager
+					node.Overlay = null;
+				}
+			});
 		}
 		
 		public static Image GetImage(GitStatus status)

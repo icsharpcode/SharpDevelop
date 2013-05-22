@@ -149,17 +149,7 @@ namespace UnitTesting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public object GetTooltipControl(Location logicalPosition, string variable)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public bool CanSetInstructionPointer(string filename, int line, int column)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public bool SetInstructionPointer(string filename, int line, int column)
+		public bool SetInstructionPointer(string filename, int line, int column, bool dryRun)
 		{
 			throw new NotImplementedException();
 		}
@@ -171,5 +161,10 @@ namespace UnitTesting.Tests.Utils
 		
 		public bool BreakAtBeginning { get; set; }
 		public bool IsAttached { get; set; }
+		
+		public void HandleToolTipRequest(ICSharpCode.SharpDevelop.Editor.ToolTipRequestEventArgs e)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

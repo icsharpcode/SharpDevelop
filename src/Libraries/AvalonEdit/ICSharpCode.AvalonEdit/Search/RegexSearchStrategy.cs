@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Documents;
 
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Search
 {

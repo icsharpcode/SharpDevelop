@@ -11,20 +11,20 @@ namespace ICSharpCode.SharpDevelop
 	public class SolutionConfigurationEventArgs : EventArgs
 	{ 
 		string   configuration;
-		Solution solution;
+		ISolution solution;
 		
 		public string Configuration {
 			get {
 				return configuration;
 			}
 		}
-		public Solution Solution {
+		public ISolution Solution {
 			get {
 				return solution;
 			}
 		}
 		
-		public SolutionConfigurationEventArgs(Solution solution, string configuration)
+		public SolutionConfigurationEventArgs(ISolution solution, string configuration)
 		{
 			this.solution      = solution;
 			this.configuration = configuration;

@@ -13,10 +13,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+/*
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.Visitors;
-using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
@@ -36,18 +37,18 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public readonly bool IsDefinition;
 		/// <remarks>Can be null.</remarks>
 		public readonly IProjectContent ProjectContent;
-		public readonly ICompilationUnit CompilationUnit;
+		public readonly ISyntaxTree SyntaxTree;
 		
 		public RefactoringMenuContext(ITextEditor editor, ExpressionResult expressionResult,
 		                              ResolveResult resolveResult, bool isDefinition,
-		                              IProjectContent projectContent, ICompilationUnit compilationUnit)
+		                              IProjectContent projectContent, ISyntaxTree compilationUnit)
 		{
 			this.Editor = editor;
 			this.ExpressionResult = expressionResult;
 			this.ResolveResult = resolveResult;
 			this.IsDefinition = isDefinition;
 			this.ProjectContent = projectContent;
-			this.CompilationUnit = compilationUnit;
+			this.SyntaxTree = compilationUnit;
 		}
 	}
 	
@@ -108,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					// Include menu for the underlying expression of the
 					// indexer expression as well.
 					AddTopLevelItems(textEditor, expressionResult, true);
-				}*/
+				} * /
 			} else if (rr is TypeResolveResult) {
 				item = MakeItem(definitions, ((TypeResolveResult)rr).ResolvedClass);
 			} else if (rr is LocalResolveResult) {
@@ -116,8 +117,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				ParseInformation pi = ParserService.GetParseInformation(textEditor.FileName);
 				IProjectContent pc = null; 
 				if (pi != null)
-					pc = pi.CompilationUnit.ProjectContent;
-				RefactoringMenuContext context = new RefactoringMenuContext(textEditor, expressionResult, rr, isDefinition, pc, pi.CompilationUnit);
+					pc = pi.SyntaxTree.ProjectContent;
+				RefactoringMenuContext context = new RefactoringMenuContext(textEditor, expressionResult, rr, isDefinition, pc, pi.SyntaxTree);
 				item = MakeItem((LocalResolveResult)rr, context);
 				insertIndex = 0;	// Insert local variable menu item at the topmost position.
 			}
@@ -139,14 +140,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			MenuItem item = null;
 			int caretLine = textEditor.Caret.Line;
 			// Include menu for current class and method
-			ICompilationUnit cu = null;
+			ISyntaxTree cu = null;
 			IMember callingMember = null;
 			if (rr != null && rr.CallingMember != null) {
 				callingMember = rr.CallingMember;
 			} else {
 				ParseInformation parseInfo = ParserService.GetParseInformation(textEditor.FileName);
 				if (parseInfo != null) {
-					cu = parseInfo.CompilationUnit;
+					cu = parseInfo.SyntaxTree;
 					if (cu != null) {
 						IClass callingClass = cu.GetInnermostClass(caretLine, textEditor.Caret.Column);
 						callingMember = GetCallingMember(callingClass, caretLine, textEditor.Caret.Column);
@@ -185,7 +186,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			Debug.Assert(local == context.ResolveResult);
 			MenuItem item = MakeItemWithGoToDefinition(local.VariableName,
 			                                           local.IsParameter ? ClassBrowserIconService.Parameter : ClassBrowserIconService.LocalVariable,
-			                                           local.CallingClass.CompilationUnit,
+			                                           local.CallingClass.SyntaxTree,
 			                                           context.IsDefinition ? DomRegion.Empty : local.VariableDefinitionRegion);
 			string treePath = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/";
 			treePath += local.IsParameter ? "Parameter" : "LocalVariable";
@@ -200,7 +201,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (member == null) return null;
 			if (definitions.Contains(member.DotNetName)) return null;
 			definitions.Add(member.DotNetName);
-			MenuItem item = MakeItem(MemberNode.Create(member), member.DeclaringType.CompilationUnit, member.Region);
+			MenuItem item = MakeItem(MemberNode.Create(member), member.DeclaringType.SyntaxTree, member.Region);
 			MenuItem declaringType = MakeItem(null, member.DeclaringType);
 			if (declaringType != null) {
 				declaringType.Header = StringParser.Parse("${res:SharpDevelop.Refactoring.DeclaringType}: ") + declaringType.Header;
@@ -216,10 +217,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				if (definitions.Contains(c.DotNetName)) return null;
 				definitions.Add(c.DotNetName);
 			}
-			return MakeItem(new ClassNode((IProject)c.ProjectContent.Project, c), c.CompilationUnit, c.Region);
+			return MakeItem(new ClassNode((IProject)c.ProjectContent.Project, c), c.SyntaxTree, c.Region);
 		}
 		
-		MenuItem MakeItemWithGoToDefinition(string title, IImage image, ICompilationUnit cu, DomRegion region)
+		MenuItem MakeItemWithGoToDefinition(string title, IImage image, ISyntaxTree cu, DomRegion region)
 		{
 			MenuItem item = new MenuItem();
 			item.Header = title;
@@ -237,7 +238,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return item;
 		}
 		
-		MenuItem MakeItem(ExtTreeNode classBrowserTreeNode, ICompilationUnit cu, DomRegion region)
+		MenuItem MakeItem(ExtTreeNode classBrowserTreeNode, ISyntaxTree cu, DomRegion region)
 		{
 			MenuItem item = MakeItemWithGoToDefinition(classBrowserTreeNode.Text, ClassBrowserIconService.GetImageByIndex(classBrowserTreeNode.ImageIndex), cu, region);
 			foreach (object obj in MenuService.CreateMenuItems(null, classBrowserTreeNode, classBrowserTreeNode.ContextmenuAddinTreePath))
@@ -263,3 +264,4 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 	}
 }
+*/

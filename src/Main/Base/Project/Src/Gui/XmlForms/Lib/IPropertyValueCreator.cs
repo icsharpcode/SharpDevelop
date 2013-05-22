@@ -5,6 +5,7 @@ using System;
 
 namespace ICSharpCode.SharpDevelop.Gui.XmlForms 
 {
+	[Obsolete("XML Forms are obsolete")]
 	public interface IPropertyValueCreator
 	{
 		bool CanCreateValueForType(Type propertyType);

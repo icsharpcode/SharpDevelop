@@ -46,7 +46,7 @@ namespace SearchAndReplace
 		
 		public virtual object GetControl()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (resultsTreeViewInstance == null)
 				resultsTreeViewInstance = new ResultsTreeView();
 			rootNode.GroupResultsByFile(ResultsTreeView.GroupResultsByFile);
@@ -59,7 +59,7 @@ namespace SearchAndReplace
 		
 		public virtual IList GetToolbarItems()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			return GetDefaultToolbarItems();
 		}
 		

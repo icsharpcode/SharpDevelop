@@ -3,8 +3,10 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.WixBinding
 {
@@ -17,7 +19,7 @@ namespace ICSharpCode.WixBinding
 		IWorkbench workbench;
 		
 		public ViewSetupFilesCommand()
-			: this(new PackageFilesViewFactory(), WorkbenchSingleton.Workbench)
+			: this(new PackageFilesViewFactory(), SD.Workbench)
 		{
 		}
 		

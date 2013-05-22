@@ -8,7 +8,7 @@ using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.TextTemplating
 {
-	public class CompilerErrorTask : Task
+	public class CompilerErrorTask : SDTask
 	{
 		public CompilerErrorTask(CompilerError error)
 			: base(

@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
 {
-	sealed class CustomDialog : System.Windows.Forms.Form
+	public sealed class CustomDialog : System.Windows.Forms.Form
 	{
 		System.Windows.Forms.Label label;
 		System.Windows.Forms.Panel panel;

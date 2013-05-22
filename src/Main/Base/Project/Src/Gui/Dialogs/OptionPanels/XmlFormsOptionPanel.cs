@@ -10,6 +10,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
+	[Obsolete("XML Forms are obsolete")]
 	public class XmlFormsOptionPanel : BaseSharpDevelopUserControl, IOptionPanel
 	{
 		public object Owner { get; set; }

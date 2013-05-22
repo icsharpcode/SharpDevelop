@@ -2,32 +2,33 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AspNet.Mvc
 {
 	public class MvcClass : IMvcClass
 	{
-		IClass c;
+		ITypeDefinition type;
 		IMvcProject project;
 		
-		public MvcClass(IClass c, IMvcProject project)
+		public MvcClass(ITypeDefinition type, IMvcProject project)
 		{
-			this.c = c;
+			this.type = type;
 			this.project = project;
 		}
 		
 		public string FullName {
-			get { return c.FullyQualifiedName; }
+			get { return type.FullName; }
 		}
 		
 		public string Name {
-			get { return c.Name; }
+			get { return type.Name; }
 		}
 		
 		public string Namespace {
-			get { return c.Namespace; }
+			get { return type.Namespace; }
 		}
 		
 		public string BaseClassFullName {
@@ -36,26 +37,15 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		string GetBaseClassFullName()
 		{
-			IClass baseClass = c.BaseClass;
+			IType baseClass = type.DirectBaseTypes.Where(t => t.Kind == TypeKind.Class).FirstOrDefault();
 			if (baseClass != null) {
-				return baseClass.FullyQualifiedName;
+				return baseClass.FullName;
 			}
 			return String.Empty;
 		}
 		
 		public string AssemblyLocation {
-			get { return GetAssemblyLocation(); }
-		}
-		
-		string GetAssemblyLocation()
-		{
-			IProject project = GetProject();
-			return project.OutputAssemblyFullPath;
-		}
-		
-		IProject GetProject()
-		{
-			return c.ProjectContent.Project as IProject;
+			get { return this.project.OutputAssemblyFullPath; }
 		}
 		
 		public bool IsModelClass()

@@ -7,6 +7,7 @@ using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
+using Rhino.Mocks;
 using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests
@@ -17,14 +18,14 @@ namespace PackageManagement.Tests
 		SolutionPackageRepositoryPath repositoryPath;
 		IProject testProject;
 		PackageManagementOptions options;
-		Solution solution;
+		ISolution solution;
 		
 		void CreateSolutionPackageRepositoryPath()
 		{
 			repositoryPath = new SolutionPackageRepositoryPath(testProject, options);
 		}
 		
-		void CreateSolutionPackageRepositoryPath(Solution solution)
+		void CreateSolutionPackageRepositoryPath(ISolution solution)
 		{
 			repositoryPath = new SolutionPackageRepositoryPath(solution, options);
 		}
@@ -36,8 +37,10 @@ namespace PackageManagement.Tests
 		
 		void CreateSolution(string fileName)
 		{
-			solution = new Solution(new MockProjectChangeWatcher());
-			solution.FileName = fileName;
+			solution = MockRepository.GenerateStrictMock<ISolution>();
+			var file = FileName.Create(fileName);
+			solution.Stub(s => s.FileName).Return(file);
+			solution.Stub(s => s.Directory).Return(file.GetParentDirectory());
 		}
 		
 		void CreateOptions()
@@ -50,7 +53,7 @@ namespace PackageManagement.Tests
 		{
 			CreateOptions();
 			CreateTestProject();
-			testProject.ParentSolution.FileName = @"d:\projects\MyProject\MySolution.sln";
+			testProject.ParentSolution.Stub(s => s.Directory).Return(DirectoryName.Create(@"d:\projects\MyProject\"));
 			options.PackagesDirectory = "MyPackages";
 			CreateSolutionPackageRepositoryPath();
 			

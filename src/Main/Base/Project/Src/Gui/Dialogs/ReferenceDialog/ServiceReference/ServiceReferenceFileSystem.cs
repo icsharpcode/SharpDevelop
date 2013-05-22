@@ -6,7 +6,7 @@ using System.IO;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
-	public class ServiceReferenceFileSystem : IFileSystem
+	public class ServiceReferenceFileSystem : IServiceReferenceFileSystem
 	{
 		public void CreateDirectoryIfMissing(string path)
 		{

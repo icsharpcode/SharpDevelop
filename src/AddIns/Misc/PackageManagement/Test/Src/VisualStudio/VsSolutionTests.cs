@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.VisualStudio;
 using ICSharpCode.SharpDevelop.Project;
@@ -21,10 +22,9 @@ namespace PackageManagement.Tests.VisualStudio
 		
 		void CreateVsSolution(string solutionFileName = @"d:\projects\test\Test.sln")
 		{
-			var msbuildSolution = new Solution(new MockProjectChangeWatcher());
-			msbuildSolution.FileName = solutionFileName;
+			var helper = new SolutionHelper(solutionFileName);
 			fakeProjectService = new FakePackageManagementProjectService();
-			fakeProjectService.OpenSolution = msbuildSolution;
+			fakeProjectService.OpenSolution = helper.MSBuildSolution;
 			solution = new VsSolution(fakeProjectService);
 		}
 		
@@ -35,10 +35,9 @@ namespace PackageManagement.Tests.VisualStudio
 		
 		void AddProjectToMSBuildSolution(string fileName)
 		{
-			TestableProject project = ProjectHelper.CreateTestProject();
-			project.Parent = fakeProjectService.OpenSolution;
-			project.FileName = fileName;
-			fakeProjectService.AddFakeProject(project);
+			TestableProject project = ProjectHelper.CreateTestProject(fakeProjectService.OpenSolution, "Test", fileName);
+			project.SetProperty("ProjectTypeGuids", null);
+			fakeProjectService.AddProject(project);
 		}
 		
 		[Test]
@@ -100,7 +99,7 @@ namespace PackageManagement.Tests.VisualStudio
 			int result = project.GetAggregateProjectTypeGuids(out guids);
 			
 			Assert.AreEqual(VsConstants.S_OK, result);
-			Assert.AreEqual(ProjectTypeGuids.CSharp, guids);
+			Assert.AreEqual(ProjectTypeGuids.CSharp.ToString(), guids);
 		}
 		
 		[Test]

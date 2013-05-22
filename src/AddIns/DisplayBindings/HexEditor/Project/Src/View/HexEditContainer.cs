@@ -9,6 +9,7 @@ using HexEditor.Util;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace HexEditor.View
 {

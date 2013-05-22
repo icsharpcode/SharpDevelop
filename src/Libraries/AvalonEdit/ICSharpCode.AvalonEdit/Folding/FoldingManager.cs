@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
@@ -37,15 +36,6 @@ namespace ICSharpCode.AvalonEdit.Folding
 			this.foldings = new TextSegmentCollection<FoldingSection>();
 			document.VerifyAccess();
 			TextDocumentWeakEventManager.Changed.AddListener(document, this);
-		}
-		
-		/// <summary>
-		/// Creates a new FoldingManager instance.
-		/// </summary>
-		[Obsolete("Use the (TextDocument) constructor instead.")]
-		public FoldingManager(TextView textView, TextDocument document)
-			: this(document)
-		{
 		}
 		#endregion
 		

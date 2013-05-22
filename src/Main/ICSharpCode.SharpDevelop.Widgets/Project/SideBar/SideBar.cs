@@ -933,7 +933,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 			}
 		}
 		
-		public class SideTabCollection : ICollection<SideTab>, IEnumerable<SideTab>
+		public class SideTabCollection : ICollection<SideTab>, IReadOnlyCollection<SideTab>
 		{
 			List<SideTab> list = new List<SideTab>();
 			SideTab dragOverTab;

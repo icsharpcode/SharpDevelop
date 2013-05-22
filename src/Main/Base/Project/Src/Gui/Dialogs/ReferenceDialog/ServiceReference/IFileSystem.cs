@@ -5,7 +5,7 @@ using System;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
-	public interface IFileSystem
+	public interface IServiceReferenceFileSystem
 	{
 		void CreateDirectoryIfMissing(string path);
 		string CreateTempFile(string text);

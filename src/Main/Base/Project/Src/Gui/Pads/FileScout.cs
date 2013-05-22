@@ -9,8 +9,9 @@ using System.Resources;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -158,7 +159,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 			};
-			WorkbenchSingleton.SafeThreadAsyncCall(method);
+			SD.MainThread.InvokeAsyncAndForget(method);
 		}
 		
 		void fileChanged(object sender, FileSystemEventArgs e)
@@ -180,7 +181,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 			};
-			WorkbenchSingleton.SafeThreadAsyncCall(method);
+			SD.MainThread.InvokeAsyncAndForget(method);
 		}
 		
 		void fileCreated(object sender, FileSystemEventArgs e)
@@ -196,7 +197,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					// ignore IO errors
 				}
 			};
-			WorkbenchSingleton.SafeThreadAsyncCall(method);
+			SD.MainThread.InvokeAsyncAndForget(method);
 		}
 		
 		void fileRenamed(object sender, RenamedEventArgs e)
@@ -211,7 +212,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 			};
-			WorkbenchSingleton.SafeThreadAsyncCall(method);
+			SD.MainThread.InvokeAsyncAndForget(method);
 		}
 		
 		void renameFile(object sender, EventArgs e)
@@ -323,16 +324,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 	
 	public class FileScout : UserControl, IPadContent
 	{
-		public object Control {
+		object IPadContent.Control {
 			get {
 				return this;
 			}
 		}
 		
-		public object InitiallyFocusedControl {
+		object IPadContent.InitiallyFocusedControl {
 			get {
 				return null;
 			}
+		}
+		
+		object IServiceProvider.GetService(Type type)
+		{
+			return null;
 		}
 		
 		Splitter      splitter1     = new Splitter();
@@ -350,15 +356,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			filetree.AfterSelect += new TreeViewEventHandler(DirectorySelected);
 			ImageList imglist = new ImageList();
 			imglist.ColorDepth = ColorDepth.Depth32Bit;
-			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.ClosedFolderBitmap"));
-			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.OpenFolderBitmap"));
-			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.FLOPPY"));
-			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.DRIVE"));
-			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.CDROM"));
-			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.NETWORK"));
-			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Desktop"));
-			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.PersonalFiles"));
-			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.MyComputer"));
+			imglist.Images.Add(SD.ResourceService.GetBitmap("Icons.16x16.ClosedFolderBitmap"));
+			imglist.Images.Add(SD.ResourceService.GetBitmap("Icons.16x16.OpenFolderBitmap"));
+			imglist.Images.Add(SD.ResourceService.GetBitmap("Icons.16x16.FLOPPY"));
+			imglist.Images.Add(SD.ResourceService.GetBitmap("Icons.16x16.DRIVE"));
+			imglist.Images.Add(SD.ResourceService.GetBitmap("Icons.16x16.CDROM"));
+			imglist.Images.Add(SD.ResourceService.GetBitmap("Icons.16x16.NETWORK"));
+			imglist.Images.Add(SD.ResourceService.GetBitmap("Icons.16x16.Desktop"));
+			imglist.Images.Add(SD.ResourceService.GetBitmap("Icons.16x16.PersonalFiles"));
+			imglist.Images.Add(SD.ResourceService.GetBitmap("Icons.16x16.MyComputer"));
 			
 			filetree.ImageList = imglist;
 			
@@ -392,17 +398,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void FileSelected(object sender, EventArgs e)
 		{
 			foreach (FileList.FileListItem item in filelister.SelectedItems) {
-				IProjectLoader loader = ProjectService.GetProjectLoader(item.FullName);
-				if (loader != null) {
-					loader.Load(item.FullName);
-				} else {
-					FileService.OpenFile(item.FullName);
-				}
+				var fileName = FileName.Create(item.FullName);
+				if (SD.ProjectService.IsSolutionOrProjectFile(fileName))
+					SD.ProjectService.OpenSolutionOrProject(fileName);
+				else
+					FileService.OpenFile(fileName);
 			}
 		}
 	}
 	
-	sealed class ShellTree : TreeView
+	sealed class ShellTree : System.Windows.Forms.TreeView
 	{
 		public string NodePath {
 			get {

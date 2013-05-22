@@ -8,8 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Media;
 using System.Xml.Linq;
 
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Common;
@@ -19,13 +17,12 @@ using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL.Property;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL.Type;
 using ICSharpCode.Data.EDMDesigner.Core.IO;
-using ICSharpCode.Data.EDMDesigner.Core.UI.Helpers;
 using ICSharpCode.Data.EDMDesigner.Core.UI.UserControls;
 using ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.CSDLType;
 using ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 {

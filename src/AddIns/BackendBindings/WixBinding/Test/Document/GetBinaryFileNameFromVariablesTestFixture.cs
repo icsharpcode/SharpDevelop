@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using System;
@@ -20,6 +21,7 @@ namespace WixBinding.Tests.Document
 		[SetUp]
 		public void Init()
 		{
+			SD.InitializeForUnitTests();
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			project.SetProperty("DefineConstants", @"DATADIR=Bitmaps;");
 			document = new WixDocument(project);

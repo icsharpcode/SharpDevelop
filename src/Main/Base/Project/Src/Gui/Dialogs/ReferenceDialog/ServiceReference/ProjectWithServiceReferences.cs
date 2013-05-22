@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
@@ -70,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		void AddServiceReferenceFileToProject(ServiceReferenceFileName fileName)
 		{
 			var projectItem = new FileProjectItem(project, ItemType.Compile);
-			projectItem.FileName = fileName.Path;
+			projectItem.FileName = FileName.Create(fileName.Path);
 			projectItem.DependentUpon = "Reference.svcmap";
 			AddProjectItemToProject(projectItem);
 		}
@@ -169,16 +170,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			AddProjectItemToProject(item);
 		}
 		
-		string GetDefaultAppConfigFileName()
+		FileName GetDefaultAppConfigFileName()
 		{
-			return Path.Combine(project.Directory, "app.config");
+			return project.Directory.CombineFile("app.config");
 		}
 		
 		public IEnumerable<ReferenceProjectItem> GetReferences()
 		{
-			foreach (ReferenceProjectItem item in project.GetItemsOfType(ItemType.Reference)) {
-				yield return item;
-			}
+			return project.GetItemsOfType(ItemType.Reference).OfType<ReferenceProjectItem>();
 		}
 	}
 }

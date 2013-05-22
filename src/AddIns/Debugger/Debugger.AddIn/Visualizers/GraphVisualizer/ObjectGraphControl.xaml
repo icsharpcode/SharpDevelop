@@ -1,0 +1,52 @@
+﻿<UserControl x:Class="Debugger.AddIn.Visualizers.Graph.ObjectGraphControl"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dv="clr-namespace:Debugger.AddIn.Visualizers.Graph"
+    xmlns:controls="clr-namespace:Debugger.AddIn.Visualizers.Controls">
+	<Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Background="AliceBlue" VerticalAlignment="Top">
+
+            <StackPanel.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Margin" Value="0 0 8 0" />
+                </Style>
+                <Style TargetType="Button">
+                    <Setter Property="Margin" Value="8 0 0 0" />
+                    <Setter Property="Padding" Value="8 0 8 0" />
+                </Style>
+            </StackPanel.Resources>
+
+            <Border Margin="3" Padding="3">
+            	<StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center">Expression:</TextBlock>
+                    <TextBox Name="txtExpression" VerticalAlignment="Center" Width="100"></TextBox>
+            		<TextBlock Margin="12 0 6 0" VerticalAlignment="Center">Layout:</TextBlock>
+                    <ComboBox Name="cmbLayoutDirection" Width="120" ItemsSource="{Binding Path=EnumValues}" SelectedValue="{Binding Path=SelectedEnumValue}" SelectedValuePath="EnumValue" DisplayMemberPath="DisplayValue"></ComboBox>
+                	<TextBlock Margin="12 0 6 0" VerticalAlignment="Center">Zoom:</TextBlock>
+            		<Slider x:Name="zoomSlider" Width="100" Minimum="0.5" Maximum="1" Value="1"/>
+                </StackPanel>
+        		<StackPanel Orientation="Horizontal" Name="pnlError" Visibility="Collapsed" Margin="0 6 0 0">
+                    <TextBlock Margin="0 0 4 0" Name="lblError" FontStyle="Italic">Error: </TextBlock>
+                    <TextBlock Margin="0 0 0 0" Name="txtError" FontStyle="Italic"></TextBlock>
+                </StackPanel>
+				</StackPanel>
+            </Border>
+        </StackPanel>
+
+    	<controls:DragScrollViewer x:Name="scroller" Margin="0 4 0 0" Grid.Row="1" Grid.Column="0" Background="White" PreviewMouseWheel="Canvas_MouseWheel" 
+    		HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+       		<Canvas x:Name="canvas" Margin="4"
+    				HorizontalAlignment="Left" VerticalAlignment="Top">
+    			<Canvas.LayoutTransform>
+		            <ScaleTransform ScaleX="{Binding Path=Value, ElementName=zoomSlider}"
+		                            ScaleY="{Binding Path=Value, ElementName=zoomSlider}"/>
+		        </Canvas.LayoutTransform>
+	    	</Canvas>
+		</controls:DragScrollViewer>
+    </Grid>
+</UserControl>

@@ -14,14 +14,14 @@ namespace NUnit.ConsoleRunner
 	{
 		public ExtendedConsoleOptions(string[] args) : base(args) {}
 				
-		[Option(Description="File to receive test results as each test is run")]
-		public string results;
+		[Option(Description="Named pipe to receive test results as each test is run")]
+		public string pipe;
 		
-		public bool IsResults
+		public bool UsePipe
 		{
 			get 
 			{
-				return (results != null) && (results.Length != 0);
+				return !string.IsNullOrEmpty(pipe);
 			}
 		}				
 	}

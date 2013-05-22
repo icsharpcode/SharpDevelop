@@ -14,14 +14,15 @@
     <OutputPath>..\..\..\..\..\..\AddIns\DisplayBindings\WpfDesign\</OutputPath>
     <DocumentationFile>..\..\..\..\..\..\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\..\..\Main\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
     <RunCodeAnalysis>False</RunCodeAnalysis>
     <CodeAnalysisRules>-Microsoft.Performance#CA1800;-Microsoft.Performance#CA1810;-Microsoft.Performance#CA1822</CodeAnalysisRules>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -107,7 +108,6 @@
     <Compile Include="Controls\WindowClone.cs" />
     <Compile Include="Controls\ZoomControl.cs" />
     <Compile Include="Converters.cs" />
-    <Compile Include="DesignCommand.cs" />
     <Compile Include="DesignPanel.cs" />
     <Compile Include="DesignSurface.xaml.cs">
       <DependentUpon>DesignSurface.xaml</DependentUpon>

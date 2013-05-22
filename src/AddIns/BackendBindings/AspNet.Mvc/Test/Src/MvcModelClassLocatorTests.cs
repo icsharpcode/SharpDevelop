@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace AspNet.Mvc.Tests
 {
 	[TestFixture]
-	public class MvcModelClassLocatorTests
+	public class MvcModelClassLocatorTests : MvcTestsBase
 	{
 		MvcModelClassLocator locator;
 		FakeMvcProject fakeProject;

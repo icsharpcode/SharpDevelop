@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (project == null) {
 				return;
 			}
-			foreach (IViewContent viewContent in WorkbenchSingleton.Workbench.ViewContentCollection) {
+			foreach (IViewContent viewContent in SD.Workbench.ViewContentCollection) {
 				ProjectOptionsView projectOptions = viewContent as ProjectOptionsView;
 				if (projectOptions != null && projectOptions.Project == project) {
 					projectOptions.WorkbenchWindow.SelectWindow();
@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			try {
 				AddInTreeNode projectOptionsNode = AddInTree.GetTreeNode("/SharpDevelop/BackendBindings/ProjectOptions/" + project.Language);
 				ProjectOptionsView projectOptions = new ProjectOptionsView(projectOptionsNode, project);
-				WorkbenchSingleton.Workbench.ShowView(projectOptions);
+				SD.Workbench.ShowView(projectOptions);
 			} catch (TreePathNotFoundException) {
 				MessageService.ShowError("${res:Dialog.ProjectOptions.NoPanelsInstalledForProject}");
 			}
@@ -106,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					StringParser.Parse("${res:ProjectComponent.ContextMenu.GenerateDocumentation.SHFBNotFound}"),
 					"http://www.codeplex.com/SHFB/", null))
 				{
-					dlg.ShowDialog(WorkbenchSingleton.MainWin32Window);
+					dlg.ShowDialog(SD.WinForms.MainWin32Window);
 				}
 				return;
 			}

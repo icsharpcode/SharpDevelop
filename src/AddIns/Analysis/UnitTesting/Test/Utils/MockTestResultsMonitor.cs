@@ -19,7 +19,7 @@ namespace UnitTesting.Tests.Utils
 		{
 		}
 		
-		public event TestFinishedEventHandler TestFinished;
+		public event EventHandler<TestFinishedEventArgs> TestFinished;
 		
 		public long InitialFilePosition {
 			get { return filePosition; }

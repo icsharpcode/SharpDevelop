@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ICSharpCode.Data.EDMDesigner.Core</RootNamespace>
     <AssemblyName>ICSharpCode.Data.EDMDesigner.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>

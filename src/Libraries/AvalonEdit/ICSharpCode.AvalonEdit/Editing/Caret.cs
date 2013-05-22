@@ -8,10 +8,11 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
@@ -166,7 +167,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			InvalidateVisualColumn();
 			if (storedCaretOffset >= 0) {
-				int newCaretOffset = e.GetNewOffset(storedCaretOffset, AnchorMovementType.Default);
+				// If the caret is at the end of a selection, we don't expand the selection if something
+				// is inserted at the end. Thus we also need to keep the caret in front of the insertion.
+				AnchorMovementType caretMovementType;
+				if (!textArea.Selection.IsEmpty && storedCaretOffset == textArea.Selection.SurroundingSegment.EndOffset)
+					caretMovementType = AnchorMovementType.BeforeInsertion;
+				else
+					caretMovementType = AnchorMovementType.Default;
+				int newCaretOffset = e.GetNewOffset(storedCaretOffset, caretMovementType);
 				TextDocument document = textArea.Document;
 				if (document != null) {
 					// keep visual column

@@ -17,12 +17,8 @@ namespace ICSharpCode.Core.Tests.Utils
 		Dictionary<string, Assembly> assemblyFileNames = new Dictionary<string, Assembly>();
 		string errorMessageDisplayed;
 		
-		public DerivedRuntime(string assembly, string hintPath)
-			: this(assembly, hintPath, new List<AddIn>())
-		{
-		}
-		public DerivedRuntime(string assembly, string hintPath, IList<AddIn> addIns)
-			: base(assembly, hintPath, addIns)
+		public DerivedRuntime(IAddInTree addInTree, string assembly, string hintPath)
+			: base(addInTree, assembly, hintPath)
 		{
 		}
 		

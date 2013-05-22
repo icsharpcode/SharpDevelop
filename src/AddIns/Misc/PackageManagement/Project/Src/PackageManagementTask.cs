@@ -12,12 +12,12 @@ namespace ICSharpCode.PackageManagement
 		Task<TResult> task;
 		Action<ITask<TResult>> continueWith;
 		CancellationTokenSource cancellationTokenSource;
-			
+		
 		public PackageManagementTask(
 			Func<TResult> function,
 			Action<ITask<TResult>> continueWith)
 		{
-			this.continueWith = continueWith;			
+			this.continueWith = continueWith;
 			CreateTask(function);
 		}
 

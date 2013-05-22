@@ -4,11 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 {
@@ -128,7 +129,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			Controls.Add(webBrowser);
 			
 			if (showNavigation) {
-				toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/ViewContent/Browser/Toolbar");
+				toolStrip = SD.WinForms.ToolbarService.CreateToolStrip(this, "/SharpDevelop/ViewContent/Browser/Toolbar");
 				toolStrip.GripStyle = ToolStripGripStyle.Hidden;
 				Controls.Add(toolStrip);
 			}
@@ -137,21 +138,21 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		void NewWindow(object sender, NewWindowExtendedEventArgs e)
 		{
 			e.Cancel = true;
-			WorkbenchSingleton.Workbench.ShowView(new BrowserPane(e.Url));
+			SD.Workbench.ShowView(new BrowserPane(e.Url));
 		}
 		
 		void WebBrowserStatusTextChanged(object sender, EventArgs e)
 		{
-			IWorkbenchWindow workbench = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			IWorkbenchWindow workbench = SD.Workbench.ActiveWorkbenchWindow;
 			if (workbench == null) return;
 			BrowserPane browser = workbench.ActiveViewContent as BrowserPane;
 			if (browser == null) return;
 			if (browser.HtmlViewPane == this) {
-				WorkbenchSingleton.StatusBar.SetMessage(webBrowser.StatusText);
+				SD.StatusBar.SetMessage(webBrowser.StatusText);
 			}
 		}
 		
-		static List<SchemeExtensionDescriptor> descriptors;
+		static IReadOnlyList<SchemeExtensionDescriptor> descriptors;
 		
 		public static ISchemeExtension GetScheme(string name)
 		{
@@ -239,16 +240,6 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		
 		Control urlBox;
 		
-		public void SetUrlComboBox(ComboBox comboBox)
-		{
-			SetUrlBox(comboBox);
-			comboBox.DropDownStyle = ComboBoxStyle.DropDown;
-			comboBox.Items.Clear();
-			comboBox.Items.AddRange(PropertyService.Get("Browser.URLBoxHistory", new string[0]));
-			comboBox.AutoCompleteMode      = AutoCompleteMode.Suggest;
-			comboBox.AutoCompleteSource    = AutoCompleteSource.HistoryList;
-		}
-		
 		public void SetUrlBox(Control urlBox)
 		{
 			this.urlBox = urlBox;
@@ -276,7 +267,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 				comboBox.Items.Remove(text);
 				comboBox.Items.Insert(0, text);
 				// Add to URLBoxHistory:
-				string[] history = PropertyService.Get("Browser.URLBoxHistory", new string[0]);
+				string[] history = PropertyService.GetList<string>("Browser.URLBoxHistory").ToArray();
 				int pos = Array.IndexOf(history, text);
 				if (pos < 0 && history.Length >= 20) {
 					pos = history.Length - 1; // remove last entry and insert new at the beginning
@@ -292,7 +283,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 					}
 				}
 				history[0] = text;
-				PropertyService.Set("Browser.URLBoxHistory", history);
+				PropertyService.SetList("Browser.URLBoxHistory", history);
 			}
 		}
 		
@@ -320,11 +311,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 				urlBox.Text = url;
 			}
 			// Update toolbar:
-			foreach (object o in toolStrip.Items) {
-				IStatusUpdate up = o as IStatusUpdate;
-				if (up != null)
-					up.UpdateStatus();
-			}
+			SD.WinForms.ToolbarService.UpdateToolbar(toolStrip);
 		}
 	}
 }

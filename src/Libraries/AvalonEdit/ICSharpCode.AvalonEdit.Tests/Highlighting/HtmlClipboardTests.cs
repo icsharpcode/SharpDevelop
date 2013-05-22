@@ -17,7 +17,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		public HtmlClipboardTests()
 		{
 			document = new TextDocument("using System.Text;\n\tstring text = SomeMethod();");
-			highlighter = new DocumentHighlighter(document, HighlightingManager.Instance.GetDefinition("C#").MainRuleSet);
+			highlighter = new DocumentHighlighter(document, HighlightingManager.Instance.GetDefinition("C#"));
 		}
 		
 		[Test]

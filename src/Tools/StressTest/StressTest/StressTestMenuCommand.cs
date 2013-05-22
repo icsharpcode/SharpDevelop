@@ -8,7 +8,9 @@
 using System;
 using System.Linq;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace StressTest
 {
@@ -16,11 +18,11 @@ namespace StressTest
 	{
 		public override void Run()
 		{
-			StressTestViewContent vc = WorkbenchSingleton.Workbench.ViewContentCollection.OfType<StressTestViewContent>().FirstOrDefault();
+			StressTestViewContent vc = SD.Workbench.ViewContentCollection.OfType<StressTestViewContent>().FirstOrDefault();
 			if (vc != null)
 				vc.WorkbenchWindow.SelectWindow();
 			else
-				WorkbenchSingleton.Workbench.ShowView(new StressTestViewContent());
+				SD.Workbench.ShowView(new StressTestViewContent());
 		}
 	}
 	
