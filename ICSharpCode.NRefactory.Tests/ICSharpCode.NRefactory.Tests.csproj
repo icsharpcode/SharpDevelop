@@ -415,6 +415,7 @@
     <Compile Include="CSharp\CodeIssues\DuplicateExpressionsInConditionsIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\DuplicateIfInIfChainIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\UseBlockInsteadColonIssueTests.cs" />
+    <Compile Include="CSharp\AstTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">
