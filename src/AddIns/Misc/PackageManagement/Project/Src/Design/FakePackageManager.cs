@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using NuGet;
 
@@ -167,12 +168,30 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public List<PackageOperation> PackageOperationsToReturnFromGetUpdatePackageOperations = new List<PackageOperation>();
-		public UpdatePackagesAction UpdatePackagesActionsPassedToGetUpdatePackagesOperations;
+		public IUpdatePackageSettings SettingsPassedToGetUpdatePackageOperations;
+		public IEnumerable<IPackage> PackagesPassedToGetUpdatePackageOperations;
 		
-		public IEnumerable<PackageOperation> GetUpdatePackageOperations(UpdatePackagesAction updateAction)
+		public IEnumerable<PackageOperation> GetUpdatePackageOperations(IEnumerable<IPackage> packages, IUpdatePackageSettings settings)
 		{
-			UpdatePackagesActionsPassedToGetUpdatePackagesOperations = updateAction;
+			SettingsPassedToGetUpdatePackageOperations = settings;
+			PackagesPassedToGetUpdatePackageOperations = packages;
 			return PackageOperationsToReturnFromGetUpdatePackageOperations;
+		}
+		
+		public List<PackageOperation> PackageOperationsPassedToRunPackageOperations;
+		
+		public void RunPackageOperations(IEnumerable<PackageOperation> operations)
+		{
+			PackageOperationsPassedToRunPackageOperations = operations.ToList();
+		}
+		
+		public IPackage PackagePassedToUpdatePackageReference;
+		public IUpdatePackageSettings SettingsPassedToUpdatePackageReference;
+		
+		public void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings)
+		{
+			PackagePassedToUpdatePackageReference = package;
+			SettingsPassedToUpdatePackageReference = settings;
 		}
 	}
 }

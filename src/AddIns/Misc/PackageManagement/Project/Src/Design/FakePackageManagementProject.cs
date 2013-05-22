@@ -229,16 +229,32 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public UpdatePackagesAction UpdatePackagesActionPassedToGetUpdatePackagesOperations;
+		public IUpdatePackageSettings SettingsPassedToGetUpdatePackagesOperations;
 		public List<IPackage> PackagesOnUpdatePackagesActionPassedToGetUpdatePackagesOperations;
 		public List<PackageOperation> PackageOperationsToReturnFromGetUpdatePackagesOperations =
 			new List<PackageOperation>();
 		
-		public IEnumerable<PackageOperation> GetUpdatePackagesOperations(UpdatePackagesAction action)
+		public IEnumerable<PackageOperation> GetUpdatePackagesOperations(
+			IEnumerable<IPackage> packages,
+			IUpdatePackageSettings settings)
 		{
-			UpdatePackagesActionPassedToGetUpdatePackagesOperations = action;
-			PackagesOnUpdatePackagesActionPassedToGetUpdatePackagesOperations = 
-				action.Packages.ToList();
+			SettingsPassedToGetUpdatePackagesOperations = settings;
+			PackagesOnUpdatePackagesActionPassedToGetUpdatePackagesOperations = packages.ToList();
 			return PackageOperationsToReturnFromGetUpdatePackagesOperations;
+		}
+		
+		public void RunPackageOperations(IEnumerable<PackageOperation> expectedOperations)
+		{
+		}
+		
+		public bool HasOlderPackageInstalled(IPackage package)
+		{
+			return false;
+		}
+		
+		public void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

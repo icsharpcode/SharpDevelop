@@ -8,6 +8,7 @@ using System.Linq;
 using ICSharpCode.PackageManagement;
 using NuGet;
 using NUnit.Framework;
+using PackageManagement.Tests.Helpers;
 using Rhino.Mocks;
 
 namespace PackageManagement.Tests
@@ -36,10 +37,7 @@ namespace PackageManagement.Tests
 		
 		IPackage CreatePackage(string id, string version)
 		{
-			IPackage package = MockRepository.GenerateStub<IPackage>();
-			package.Stub(p => p.Id).Return(id);
-			package.Stub(p => p.Version).Return(new SemanticVersion(version));
-			return package;
+			return new TestPackageHelper(id, version).Package;
 		}
 		
 		PackageOperation AddInstallOperationForPackage(IPackage package)

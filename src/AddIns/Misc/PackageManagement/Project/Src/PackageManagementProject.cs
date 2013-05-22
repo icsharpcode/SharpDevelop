@@ -142,9 +142,26 @@ namespace ICSharpCode.PackageManagement
 			return new UpdatePackagesAction(this);
 		}
 		
-		public IEnumerable<PackageOperation> GetUpdatePackagesOperations(UpdatePackagesAction action)
+		public IEnumerable<PackageOperation> GetUpdatePackagesOperations(
+			IEnumerable<IPackage> packages,
+			IUpdatePackageSettings settings)
 		{
-			return packageManager.GetUpdatePackageOperations(action);
+			return packageManager.GetUpdatePackageOperations(packages, settings);
+		}
+		
+		public void RunPackageOperations(IEnumerable<PackageOperation> operations)
+		{
+			packageManager.RunPackageOperations(operations);
+		}
+		
+		public bool HasOlderPackageInstalled(IPackage package)
+		{
+			return projectManager.HasOlderPackageInstalled(package);
+		}
+		
+		public void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings)
+		{
+			packageManager.UpdatePackageReference(package, settings);
 		}
 	}
 }

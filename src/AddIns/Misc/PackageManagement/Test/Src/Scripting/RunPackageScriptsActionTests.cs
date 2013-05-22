@@ -18,7 +18,7 @@ namespace PackageManagement.Tests.Scripting
 		FakePackageManagementProject fakeProject;
 		FakePackageScriptFactory fakeScriptFactory;
 		FakePackageScriptRunner fakeScriptRunner;
-			
+		
 		void CreateAction()
 		{
 			fakeProject = new FakePackageManagementProject();

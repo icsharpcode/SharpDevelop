@@ -19,7 +19,7 @@ namespace PackageManagement.Tests
 		
 		void CreateAction()
 		{
-			CreateProject();
+			CreateSolution();
 			action = new TestableUpdatePackagesAction(project);
 		}
 		
@@ -29,7 +29,7 @@ namespace PackageManagement.Tests
 			action.AddOperations(operations);
 		}
 		
-		void CreateProject()
+		void CreateSolution()
 		{
 			project = MockRepository.GenerateStub<IPackageManagementProject>();
 		}
@@ -150,7 +150,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Execute_NullPackageScriptRunner_PackagesAreUpdated()
+		public void Execute_PackageScriptRunnerSet_PackagesAreUpdated()
 		{
 			CreateAction();
 			PackageOperation operation = CreateInstallOperationWithFile(@"tools\readme.txt");

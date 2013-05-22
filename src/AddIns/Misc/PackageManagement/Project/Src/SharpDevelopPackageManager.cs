@@ -66,9 +66,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public void InstallPackage(IPackage package, InstallPackageAction installAction)
 		{
-			foreach (PackageOperation operation in installAction.Operations) {
-				Execute(operation);
-			}
+			RunPackageOperations(installAction.Operations);
 			AddPackageReference(package, installAction.IgnoreDependencies, installAction.AllowPrereleaseVersions);
 		}
 		
@@ -119,13 +117,11 @@ namespace ICSharpCode.PackageManagement
 		
 		public void UpdatePackage(IPackage package, UpdatePackageAction updateAction)
 		{
-			foreach (PackageOperation operation in updateAction.Operations) {
-				Execute(operation);
-			}
+			RunPackageOperations(updateAction.Operations);
 			UpdatePackageReference(package, updateAction);
 		}
 		
-		void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings)
+		public void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings)
 		{
 			UpdatePackageReference(package, settings.UpdateDependencies, settings.AllowPrereleaseVersions);
 		}
@@ -137,30 +133,37 @@ namespace ICSharpCode.PackageManagement
 		
 		public void UpdatePackages(UpdatePackagesAction updateAction)
 		{
-			foreach (PackageOperation operation in updateAction.Operations) {
-				Execute(operation);
-			}
+			RunPackageOperations(updateAction.Operations);
 			foreach (IPackage package in updateAction.Packages) {
 				UpdatePackageReference(package, updateAction);
 			}
 		}
 		
-		public IEnumerable<PackageOperation> GetUpdatePackageOperations(UpdatePackagesAction updateAction)
+		public IEnumerable<PackageOperation> GetUpdatePackageOperations(
+			IEnumerable<IPackage> packages,
+			IUpdatePackageSettings settings)
 		{
-			IPackageOperationResolver resolver = CreateUpdatePackageOperationResolver(updateAction);
+			IPackageOperationResolver resolver = CreateUpdatePackageOperationResolver(settings);
 			
-			var reducedOperations = new ReducedPackageOperations(resolver, updateAction.Packages);
+			var reducedOperations = new ReducedPackageOperations(resolver, packages);
 			reducedOperations.Reduce();
 			return reducedOperations.Operations;
 		}
 		
-		IPackageOperationResolver CreateUpdatePackageOperationResolver(UpdatePackagesAction updateAction)
+		IPackageOperationResolver CreateUpdatePackageOperationResolver(IUpdatePackageSettings settings)
 		{
 			return packageOperationResolverFactory.CreateUpdatePackageOperationResolver(
 				LocalRepository,
 				SourceRepository,
 				Logger,
-				updateAction);
+				settings);
+		}
+		
+		public void RunPackageOperations(IEnumerable<PackageOperation> operations)
+		{
+			foreach (PackageOperation operation in operations) {
+				Execute(operation);
+			}
 		}
 	}
 }

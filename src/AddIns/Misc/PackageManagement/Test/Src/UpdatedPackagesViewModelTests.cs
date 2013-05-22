@@ -123,19 +123,15 @@ namespace PackageManagement.Tests
 			return package;
 		}
 		
-		FakePackage AddPackageToActiveRepository(string version)
-		{
-			return AddPackageToActiveRepository("Test", version);
-		}
-		
 		FakePackage AddPackageToActiveRepository(string id, string version)
 		{
 			return registeredPackageRepositories.AddFakePackageWithVersionToActiveRepository(id, version);
 		}
 		
-		FakePackage AddPackageToSolution(string version)
+		FakePackage AddPackageToSolution(string id, string version)
 		{
 			FakePackage package = FakePackage.CreatePackageWithVersion(version);
+			package.Id = id;
 			solution.FakeInstalledPackages.Add(package);
 			return package;
 		}
@@ -170,6 +166,13 @@ namespace PackageManagement.Tests
 				.ActionPassedToRun as UpdatePackagesAction;
 		}
 		
+		UpdateSolutionPackagesAction GetUpdateSolutionPackagesActionRun()
+		{
+			return packageViewModelFactory
+				.FakeActionRunner
+				.ActionPassedToRun as UpdateSolutionPackagesAction;
+		}
+		
 		void RunUpdateAllPackagesCommand()
 		{
 			viewModel.UpdateAllPackagesCommand.Execute(null);
@@ -185,12 +188,27 @@ namespace PackageManagement.Tests
 			CompleteReadPackagesTask();
 		}
 		
+		void ViewModelHasTwoPackagesInSolutionThatCanBeUpdatedAfterReadingPackages()
+		{
+			AddPackageToSolution("First", "1.0.0.0");
+			AddPackageToActiveRepository("First", "1.1.0.0");
+			AddPackageToSolution("Second", "1.0.0.0");
+			AddPackageToActiveRepository("Second", "1.1.0.0");
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+		}
+		
+		FakePackageManagementProject AddProjectToSolution()
+		{
+			return solution.AddFakeProject("MyProject");
+		}
+		
 		[Test]
 		public void ReadPackages_OneNewerPackageVersionAvailable_NewerPackageVersionDisplayed()
 		{
 			CreateViewModel();
-			AddPackageToLocalRepository("1.0.0.0");
-			FakePackage newerPackage = AddPackageToActiveRepository("1.1.0.0");
+			AddPackageToLocalRepository("Test", "1.0.0.0");
+			FakePackage newerPackage = AddPackageToActiveRepository("Test", "1.1.0.0");
 			
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
@@ -206,9 +224,9 @@ namespace PackageManagement.Tests
 		public void ReadPackages_TwoPackagesInSourceRepositoryAndOneNewerPackageVersionAvailable_NewerPackageVersionDisplayed()
 		{
 			CreateViewModel();
-			AddPackageToLocalRepository("1.0.0.0");
-			AddPackageToActiveRepository("1.0.0.0");
-			FakePackage newerPackage = AddPackageToActiveRepository("1.1.0.0");
+			AddPackageToLocalRepository("Test", "1.0.0.0");
+			AddPackageToActiveRepository("Test", "1.0.0.0");
+			FakePackage newerPackage = AddPackageToActiveRepository("Test", "1.1.0.0");
 			
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
@@ -224,8 +242,8 @@ namespace PackageManagement.Tests
 		public void ReadPackages_OneNewerPackageVersionAvailable_ProjectNotCreatedByBackgroundThread()
 		{
 			CreateViewModel();
-			AddPackageToLocalRepository("1.0.0.0");
-			FakePackage newerPackage = AddPackageToActiveRepository("1.1.0.0");
+			AddPackageToLocalRepository("Test", "1.0.0.0");
+			FakePackage newerPackage = AddPackageToActiveRepository("Test", "1.1.0.0");
 			
 			viewModel.ReadPackages();
 			
@@ -254,8 +272,8 @@ namespace PackageManagement.Tests
 			CreateSolution();
 			NoProjectsSelected();
 			CreateViewModel(solution);
-			AddPackageToSolution("1.0.0.0");
-			FakePackage newerPackage = AddPackageToActiveRepository("1.1.0.0");
+			AddPackageToSolution("Test", "1.0.0.0");
+			FakePackage newerPackage = AddPackageToActiveRepository("Test", "1.1.0.0");
 			
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
@@ -273,8 +291,8 @@ namespace PackageManagement.Tests
 			CreateSolution();
 			NoProjectsSelected();
 			CreateViewModel(solution);
-			AddPackageToSolution("1.0.0.0");
-			FakePackage newerPackage = AddPackageToActiveRepository("1.1.0.0");
+			AddPackageToSolution("Test", "1.0.0.0");
+			FakePackage newerPackage = AddPackageToActiveRepository("Test", "1.1.0.0");
 			
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
@@ -297,9 +315,8 @@ namespace PackageManagement.Tests
 		public void ReadPackages_PrereleasePackageVersionAvailable_NoUpdatesFound()
 		{
 			CreateViewModel();
-			
-			AddPackageToLocalRepository("1.0.0");
-			FakePackage newerPackage = AddPackageToActiveRepository("1.1.0-alpha");
+			AddPackageToLocalRepository("Test", "1.0.0");
+			FakePackage newerPackage = AddPackageToActiveRepository("Test", "1.1.0-alpha");
 			
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
@@ -474,7 +491,8 @@ namespace PackageManagement.Tests
 			
 			UpdatePackagesAction action = GetUpdatePackagesActionRun();
 			FakePackageManagementProject project = solution.FakeProjectToReturnFromGetProject;
-			Assert.AreEqual(action, project.UpdatePackagesActionPassedToGetUpdatePackagesOperations);
+			Assert.AreEqual(action, project.SettingsPassedToGetUpdatePackagesOperations);
+			Assert.AreEqual(action.Packages, project.PackagesOnUpdatePackagesActionPassedToGetUpdatePackagesOperations);
 		}
 		
 		[Test]
@@ -503,6 +521,133 @@ namespace PackageManagement.Tests
 			RunUpdateAllPackagesCommand();
 			
 			CollectionAssert.AreEqual(expectedPackages, project.PackagesOnUpdatePackagesActionPassedToGetUpdatePackagesOperations);
+		}
+		
+		[Test]
+		public void UpdateAllPackagesCommand_TwoProjectsAndPackagesUpdatedForSolution_UpdateAllPackagesInSolutionActionIsRun()
+		{
+			CreateSolution();
+			NoProjectsSelected();
+			FakePackageManagementProject project1 = AddProjectToSolution();
+			FakePackageManagementProject project2 = AddProjectToSolution();
+			CreateViewModel(solution);
+			ViewModelHasTwoPackagesInSolutionThatCanBeUpdatedAfterReadingPackages();
+			
+			RunUpdateAllPackagesCommand();
+			
+			UpdateSolutionPackagesAction action = GetUpdateSolutionPackagesActionRun();
+			Assert.IsNotNull(action);
+		}
+		
+		[Test]
+		public void UpdateAllPackagesCommand_TwoProjectsAndPackagesUpdatedForSolution_UpdateAllPackagesInSolutionActionRunHasSolutionSet()
+		{
+			CreateSolution();
+			NoProjectsSelected();
+			FakePackageManagementProject project1 = AddProjectToSolution();
+			FakePackageManagementProject project2 = AddProjectToSolution();
+			CreateViewModel(solution);
+			ViewModelHasTwoPackagesInSolutionThatCanBeUpdatedAfterReadingPackages();
+			
+			RunUpdateAllPackagesCommand();
+			
+			UpdateSolutionPackagesAction action = GetUpdateSolutionPackagesActionRun();
+			Assert.AreEqual(solution, action.Solution);
+		}
+		
+		[Test]
+		public void UpdateAllPackagesCommand_TwoProjectsAndPackagesUpdatedForSolution_UpdateAllPackagesInSolutionActionRunHasTwoPackages()
+		{
+			CreateSolution();
+			NoProjectsSelected();
+			FakePackageManagementProject project1 = AddProjectToSolution();
+			FakePackageManagementProject project2 = AddProjectToSolution();
+			CreateViewModel(solution);
+			AddPackageToSolution("First", "1.0.0.0");
+			FakePackage firstUpdatedPackage = AddPackageToActiveRepository("First", "1.1.0.0");
+			AddPackageToSolution("Second", "1.0.0.0");
+			FakePackage secondUpdatedPackage = AddPackageToActiveRepository("Second", "1.1.0.0");
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			RunUpdateAllPackagesCommand();
+			
+			UpdateSolutionPackagesAction action = GetUpdateSolutionPackagesActionRun();
+			IPackage firstPackage = action.Packages.FirstOrDefault(p => p.Id == "First");
+			IPackage secondPackage = action.Packages.FirstOrDefault(p => p.Id == "Second");
+			Assert.AreEqual(firstUpdatedPackage, firstPackage);
+			Assert.AreEqual(secondUpdatedPackage, secondPackage);
+			Assert.AreEqual(2, action.Packages.Count());
+		}
+		
+		[Test]
+		public void UpdateAllPackagesCommand_TwoProjectsAndPackagesUpdatedForSolution_ActionHasPackageOperations()
+		{
+			CreateSolution();
+			NoProjectsSelected();
+			FakePackageManagementProject project1 = AddProjectToSolution();
+			FakePackageManagementProject project2 = AddProjectToSolution();
+			CreateViewModel(solution);
+			ViewModelHasTwoPackagesInSolutionThatCanBeUpdatedAfterReadingPackages();
+			List<PackageOperation> operations = PackageOperationHelper.CreateListWithOneInstallOperationWithFile("readme.txt");
+			project1.PackageOperationsToReturnFromGetUpdatePackagesOperations = operations;
+			
+			RunUpdateAllPackagesCommand();
+			
+			UpdateSolutionPackagesAction action = GetUpdateSolutionPackagesActionRun();
+			CollectionAssert.AreEqual(operations, action.Operations);
+		}
+		
+		[Test]
+		public void UpdateAllPackagesCommand_TwoProjectsAndPackagesUpdatedForSolution_PackageOperationsDeterminedFromConfiguredPackageRepository()
+		{
+			CreateSolution();
+			NoProjectsSelected();
+			FakePackageManagementProject project1 = AddProjectToSolution();
+			FakePackageManagementProject project2 = AddProjectToSolution();
+			CreateViewModel(solution);
+			ViewModelHasTwoPackagesInSolutionThatCanBeUpdatedAfterReadingPackages();
+			List<PackageOperation> operations = PackageOperationHelper.CreateListWithOneInstallOperationWithFile("readme.txt");
+			project1.PackageOperationsToReturnFromGetUpdatePackagesOperations = operations;
+			IPackageFromRepository package = viewModel.PackageViewModels[0].GetPackage() as IPackageFromRepository;
+			
+			RunUpdateAllPackagesCommand();
+			
+			Assert.AreEqual(package.Repository, solution.SourceRepositoryPassedToGetProjects);
+		}
+		
+		[Test]
+		public void UpdateAllPackagesCommand_TwoProjectsAndPackagesUpdatedForSolution_LoggerSetWhenResolvingPackageOperations()
+		{
+			CreateSolution();
+			NoProjectsSelected();
+			FakePackageManagementProject project1 = AddProjectToSolution();
+			FakePackageManagementProject project2 = AddProjectToSolution();
+			CreateViewModel(solution);
+			ViewModelHasTwoPackagesInSolutionThatCanBeUpdatedAfterReadingPackages();
+			
+			RunUpdateAllPackagesCommand();
+			
+			ILogger expectedLogger = updatedPackageViewModelFactory.Logger;
+			ILogger actualLogger = project1.Logger;
+			Assert.AreEqual(expectedLogger, actualLogger);
+		}
+		
+		[Test]
+		public void UpdateAllPackagesCommand_TwoProjectsAndPackagesUpdatedForSolution_LoggerSetOnUpdateSolutionPackagesAction()
+		{
+			CreateSolution();
+			NoProjectsSelected();
+			FakePackageManagementProject project1 = AddProjectToSolution();
+			FakePackageManagementProject project2 = AddProjectToSolution();
+			CreateViewModel(solution);
+			ViewModelHasTwoPackagesInSolutionThatCanBeUpdatedAfterReadingPackages();
+			
+			RunUpdateAllPackagesCommand();
+			
+			ILogger expectedLogger = updatedPackageViewModelFactory.Logger;
+			UpdateSolutionPackagesAction action = GetUpdateSolutionPackagesActionRun();
+			Assert.AreEqual(expectedLogger, action.Logger);
 		}
 	}
 }

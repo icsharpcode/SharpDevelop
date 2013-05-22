@@ -885,7 +885,7 @@ namespace PackageManagement.Tests
 			FakePackage package = CreateFakePackage("Test", "1.1");
 			UpdatePackagesAction updateAction = CreateUpdatePackagesActionWithPackages(package);
 			
-			packageManager.GetUpdatePackageOperations(updateAction);
+			packageManager.GetUpdatePackageOperations(updateAction.Packages, updateAction);
 			
 			ILogger expectedLogger = packageManager.Logger;
 			ILogger actualLogger = fakePackageOperationResolverFactory.LoggerPassedToCreateUpdatePackageOperationResolver;
@@ -899,7 +899,7 @@ namespace PackageManagement.Tests
 			FakePackage package = CreateFakePackage("Test", "1.1");
 			UpdatePackagesAction updateAction = CreateUpdatePackagesActionWithPackages(package);
 			
-			packageManager.GetUpdatePackageOperations(updateAction);
+			packageManager.GetUpdatePackageOperations(updateAction.Packages, updateAction);
 			
 			IPackageRepository expectedRepository = packageManager.LocalRepository;
 			IPackageRepository actualRepository = fakePackageOperationResolverFactory.LocalRepositoryPassedToCreateUpdatePackageOperationsResolver;
@@ -913,7 +913,7 @@ namespace PackageManagement.Tests
 			FakePackage package = CreateFakePackage("Test", "1.1");
 			UpdatePackagesAction updateAction = CreateUpdatePackagesActionWithPackages(package);
 			
-			packageManager.GetUpdatePackageOperations(updateAction);
+			packageManager.GetUpdatePackageOperations(updateAction.Packages, updateAction);
 			
 			IPackageRepository expectedRepository = packageManager.SourceRepository;
 			IPackageRepository actualRepository = fakePackageOperationResolverFactory.SourceRepositoryPassedToCreateUpdatePackageOperationsResolver;
@@ -927,7 +927,7 @@ namespace PackageManagement.Tests
 			FakePackage package = CreateFakePackage("Test", "1.1");
 			UpdatePackagesAction updateAction = CreateUpdatePackagesActionWithPackages(package);
 			
-			packageManager.GetUpdatePackageOperations(updateAction);
+			packageManager.GetUpdatePackageOperations(updateAction.Packages, updateAction);
 			
 			IUpdatePackageSettings settings = fakePackageOperationResolverFactory.SettingsPassedToCreatePackageOperationResolver;
 			Assert.AreEqual(updateAction, settings);
@@ -944,11 +944,29 @@ namespace PackageManagement.Tests
 			PackageOperation operation2 = AddInstallOperationForPackage(package2);
 			UpdatePackagesAction updateAction = CreateUpdatePackagesActionWithPackages(package1, package2);
 			
-			List<PackageOperation> operations = packageManager.GetUpdatePackageOperations(updateAction).ToList();
+			List<PackageOperation> operations = packageManager.GetUpdatePackageOperations(updateAction.Packages, updateAction).ToList();
 			
 			Assert.AreEqual(2, operations.Count());
 			Assert.Contains(operation1, operations);
 			Assert.Contains(operation2, operations);
+		}
+		
+		[Test]
+		public void RunPackageOperations_TwoPackageOperations_BothPackagesInOperationsAddedToSharedRepository()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			PackageOperation operation1 = CreateOneInstallPackageOperation("First", "1.0");
+			PackageOperation operation2 = CreateOneInstallPackageOperation("Second", "1.0");
+			var operations = new PackageOperation[] { operation1, operation2 };
+			var expectedPackages = new FakePackage[] {
+				operation1.Package as FakePackage,
+				operation2.Package as FakePackage
+			};
+			
+			packageManager.RunPackageOperations(operations);
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, fakeSolutionSharedRepository.PackagesAdded);
 		}
 	}
 }

@@ -662,10 +662,13 @@ namespace PackageManagement.Tests
 		{
 			CreateProject();
 			CreateUpdatePackagesAction();
+			var expectedPackages = new FakePackage[] { new FakePackage("Test") };
+			updatePackagesAction.AddPackages(expectedPackages);
 			
-			project.GetUpdatePackagesOperations(updatePackagesAction);
+			project.GetUpdatePackagesOperations(updatePackagesAction.Packages, updatePackagesAction);
 			
-			Assert.AreEqual(updatePackagesAction, fakePackageManager.UpdatePackagesActionsPassedToGetUpdatePackagesOperations);
+			Assert.AreEqual(updatePackagesAction, fakePackageManager.SettingsPassedToGetUpdatePackageOperations);
+			Assert.AreEqual(expectedPackages, fakePackageManager.PackagesPassedToGetUpdatePackageOperations);
 		}
 		
 		[Test]
@@ -676,9 +679,70 @@ namespace PackageManagement.Tests
 			List<PackageOperation> expectedOperations = PackageOperationHelper.CreateListWithOneInstallOperationWithFile("readme.txt");
 			fakePackageManager.PackageOperationsToReturnFromGetUpdatePackageOperations = expectedOperations;
 			
-			IEnumerable<PackageOperation> operations = project.GetUpdatePackagesOperations(updatePackagesAction);
+			IEnumerable<PackageOperation> operations = project.GetUpdatePackagesOperations(updatePackagesAction.Packages, updatePackagesAction);
 			
 			CollectionAssert.AreEqual(expectedOperations, operations);
+		}
+		
+		[Test]
+		public void RunPackageOperations_OneOperation_PackageOperationsRunByPackageManager()
+		{
+			CreateProject();
+			CreateUpdatePackagesAction();
+			List<PackageOperation> expectedOperations = PackageOperationHelper.CreateListWithOneInstallOperationWithFile("readme.txt");
+			
+			project.RunPackageOperations(expectedOperations);
+			
+			CollectionAssert.AreEqual(expectedOperations, fakePackageManager.PackageOperationsPassedToRunPackageOperations);
+		}
+		
+		[Test]
+		public void HasOlderPackageInstalled_TestPackage_PackagePassedToProjectManager()
+		{
+			CreateProject();
+			CreateUpdatePackagesAction();
+			var expectedPackage = new FakePackage("Test");
+			
+			project.HasOlderPackageInstalled(expectedPackage);
+			
+			Assert.AreEqual(expectedPackage, fakeProjectManager.PackagePassedToHasOlderPackageInstalled);
+		}
+		
+		[Test]
+		public void HasOlderPackageInstalled_PackageIsInstalled_ReturnsTrue()
+		{
+			CreateProject();
+			fakeProjectManager.HasOlderPackageInstalledReturnValue = true;
+			var package = new FakePackage("Test");
+			
+			bool installed = project.HasOlderPackageInstalled(package);
+			
+			Assert.IsTrue(installed);
+		}
+		
+		[Test]
+		public void HasOlderPackageInstalled_PackageIsNotInstalled_ReturnsFalse()
+		{
+			CreateProject();
+			fakeProjectManager.HasOlderPackageInstalledReturnValue = false;
+			var package = new FakePackage("Test");
+			
+			bool installed = project.HasOlderPackageInstalled(package);
+			
+			Assert.IsFalse(installed);
+		}
+		
+		[Test]
+		public void UpdatePackageReference_PackageAndUpdateActionPassed_BothPassedToPackageManager()
+		{
+			CreateProject();
+			CreateUpdatePackagesAction();
+			var package = new FakePackage("Test");
+			
+			project.UpdatePackageReference(package, updatePackagesAction);
+			
+			Assert.AreEqual(package, fakePackageManager.PackagePassedToUpdatePackageReference);
+			Assert.AreEqual(updatePackagesAction, fakePackageManager.SettingsPassedToUpdatePackageReference);
 		}
 	}
 }

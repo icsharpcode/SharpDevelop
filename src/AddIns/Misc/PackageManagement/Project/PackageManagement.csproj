@@ -234,8 +234,10 @@
     <Compile Include="Src\ProjectBuilder.cs" />
     <Compile Include="Src\ReducedPackageOperations.cs" />
     <Compile Include="Src\ResolveFileConflictEventArgs.cs" />
+    <Compile Include="Src\Scripting\RunAllProjectPackageScriptsAction.cs" />
     <Compile Include="Src\ServiceWithWorkbenchOwner.cs" />
     <Compile Include="Src\UpdatePackagesAction.cs" />
+    <Compile Include="Src\UpdateSolutionPackagesAction.cs" />
     <Compile Include="Src\VirtualMethodUpdater.cs" />
     <Compile Include="Src\NewProjectsCreated.cs" />
     <Compile Include="Src\OpenMSBuildProjects.cs" />
