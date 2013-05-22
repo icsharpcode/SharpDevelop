@@ -25,6 +25,7 @@
     <RunCodeAnalysis>False</RunCodeAnalysis>
     <NoWin32Manifest>False</NoWin32Manifest>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <OutputPath>..\..\..\..\..\bin\UnitTests</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,7 +35,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <StartAction>Project</StartAction>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
-    <OutputPath>..\..\..\..\..\bin\UnitTests</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugSymbols>False</DebugSymbols>
@@ -42,7 +42,6 @@
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
-    <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <Prefer32Bit>False</Prefer32Bit>
@@ -108,6 +107,10 @@
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\SharpDevelop\SharpDevelop.csproj">
+      <Project>{1152B71B-3C05-4598-B20D-823B5D40559E}</Project>
+      <Name>SharpDevelop</Name>
     </ProjectReference>
     <ProjectReference Include="..\Project\AddInManager2.csproj">
       <Project>{60480c2f-f228-4d86-b98f-af75a7dcec34}</Project>
