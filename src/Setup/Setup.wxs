@@ -312,6 +312,10 @@
 				<ComponentRef Id="XmlEditorFiles"/>
 				<ComponentRef Id="AddInManagerFiles"/>
 				<ComponentRef Id="AddInManagerSharpZipLibDll"/>
+				<ComponentRef Id="AddInManager2Addin"/>
+				<ComponentRef Id="ICSharpCodeAddInManager2Dll"/>
+				<ComponentRef Id="AddInManager2ICSharpCodeSharpZipLibDll"/>
+				<ComponentRef Id="AddInManager2NuGetCoreDll"/>
 				<ComponentRef Id="AddInScoutFiles"/>
 				<ComponentRef Id="CodeAnalysisFiles"/>
 				<!--<ComponentRef Id="CodeQualityFiles"/>-->

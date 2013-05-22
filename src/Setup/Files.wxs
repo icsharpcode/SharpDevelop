@@ -847,7 +847,8 @@
 											</Component>
 										</Directory>
 									</Directory>
-								</Directory><!--
+								</Directory>
+								<!--
 								<Directory Id="CodeQualityFolder" Name="CodeQuality">
 									<Component Guid="E821D255-269F-44BB-992E-BC98B8349B1C" Id="CodeQualityFiles" DiskId="1">
 										<File Source="..\..\AddIns\Analysis\CodeQuality\ICSharpCode.CodeQuality.dll" Id="ICSharpCode.CodeQuality.dll" Name="ICSharpCode.CodeQuality.dll" Assembly=".net" AssemblyApplication="ICSharpCode.CodeQuality.dll" AssemblyManifest="ICSharpCode.CodeQuality.dll" KeyPath="yes" />
@@ -1275,7 +1276,8 @@
 										<File Source="..\..\AddIns\DisplayBindings\IconEditor\ICSharpCode.IconEditor.dll" Id="ICSharpCode.IconEditor.dll" Name="ICSharpCode.IconEditor.dll" Assembly=".net" AssemblyApplication="ICSharpCode.IconEditor.dll" AssemblyManifest="ICSharpCode.IconEditor.dll" KeyPath="yes" />
 										<File Source="..\..\AddIns\DisplayBindings\IconEditor\IconEditor.addin" Id="IconEditor.addin" Name="IconEditor.addin" />
 									</Component>
-								</Directory><!--
+								</Directory>
+								<!--
 								<Directory Id="ResourceEditorFolder" Name="ResourceEditor">
 									<Component Guid="010A8620-382C-477B-9330-51A8B6C48A7A" Id="ResourceEditorFiles" DiskId="1">
 										<File Source="..\..\AddIns\DisplayBindings\ResourceEditor\ResourceEditor.dll" Id="ResourceEditor.dll" Name="ResourceEditor.dll" Assembly=".net" AssemblyApplication="ResourceEditor.dll" AssemblyManifest="ResourceEditor.dll" KeyPath="yes" />
@@ -1565,6 +1567,20 @@
 											<File Id="VB.TextTemplate.xft" Name="VB.TextTemplate.xft" Source="..\..\AddIns\Misc\TextTemplating\Templates\VB.TextTemplate.xft" KeyPath="yes" />
 										</Component>
 									</Directory>
+								</Directory>
+								<Directory Id="AddInManager2" Name="AddInManager2">
+									<Component Id="AddInManager2Addin" Guid="EF503F73-B0F2-44FB-8404-97E8D143C7A6" DiskId="1">
+										<File Id="AddInManager2.addin" Name="AddInManager2.addin" Source="..\..\AddIns\Misc\AddInManager2\AddInManager2.addin" KeyPath="yes" />
+									</Component>
+									<Component Id="ICSharpCodeAddInManager2Dll" Guid="B7F54D98-D67D-483A-A65C-EBDFC17E4E04" DiskId="1">
+										<File Id="ICSharpCode.AddInManager2.dll" Name="ICSharpCode.AddInManager2.dll" Source="..\..\AddIns\Misc\AddInManager2\ICSharpCode.AddInManager2.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.AddInManager2.dll" AssemblyManifest="ICSharpCode.AddInManager2.dll" />
+									</Component>
+									<Component Id="AddInManager2ICSharpCodeSharpZipLibDll" Guid="328B9589-3120-48DC-8774-D99F293EE3E8" DiskId="1">
+										<File Id="AddInManager2.ICSharpCode.SharpZipLib.dll" Name="ICSharpCode.SharpZipLib.dll" Source="..\..\AddIns\Misc\AddInManager2\ICSharpCode.SharpZipLib.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="AddInManager2.ICSharpCode.SharpZipLib.dll" AssemblyManifest="AddInManager2.ICSharpCode.SharpZipLib.dll" />
+									</Component>
+									<Component Id="AddInManager2NuGetCoreDll" Guid="29F6AA62-469E-429D-B8F9-2E087093A1E9" DiskId="1">
+										<File Id="AddInManager2.NuGet.Core.dll" Name="NuGet.Core.dll" Source="..\..\AddIns\Misc\AddInManager2\NuGet.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="AddInManager2.NuGet.Core.dll" AssemblyManifest="AddInManager2.NuGet.Core.dll" />
+									</Component>
 								</Directory>
 							</Directory>
 							<Directory Id="VersionControlAddInsFolder" Name="VersionControl">
