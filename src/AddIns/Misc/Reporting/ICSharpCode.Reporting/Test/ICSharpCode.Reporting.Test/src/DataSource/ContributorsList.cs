@@ -66,43 +66,29 @@ namespace ICSharpCode.Reporting.Test.DataSource
 	}
 	
 	public class Contributor {
-		string last;
-		string first;
-		string job;
 		
 		int randomInt;
 		DateTime randomDate;
 		
-		public Contributor(string last, string first,string job,int randomInt,DateTime randomDate,string groupItem)
+		public Contributor(string lastname, string firstname,string job,int randomInt,DateTime randomDate,string groupItem)
 		{
-			this.last = last;
-			this.first = first;
-			this.job = job; 
+			this.Lastname = lastname;
+			this.Firstname = firstname;
+			this.Job = job; 
 			this.randomDate = randomDate;
 			this.randomInt = randomInt;
 			this.GroupItem = groupItem;
 		}
 		
 		
-		public string Last {
-			get {
-				return last;
-			}
+		public string Lastname {get;private set;}
 		
-		}
 		
-		public string First {
-			get {
-				return first;
-			}
+		public string Firstname {get;private set;}
 			
-		}
 		
-		public string Job {
-			get {
-				return job;
-			}
-		}
+		public string Job {get; private set;}
+		
 		
 		public int RandomInt {
 			get { return randomInt; }
@@ -115,18 +101,5 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		
 		public string GroupItem {get; set;}
 		
-		public MyDummyClass DummyClass {get;set;}
-		
-	}
-	
-	public class MyDummyClass
-	{
-		public MyDummyClass()
-		{
-			
-		}
-			
-		public string DummyString {get;set;}
-		public int DummyInt {get;set;}
 	}
 }

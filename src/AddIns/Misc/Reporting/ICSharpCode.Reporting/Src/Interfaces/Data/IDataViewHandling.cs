@@ -24,7 +24,7 @@ namespace ICSharpCode.Reporting.Interfaces.Data
 		
 //		void Group();
 		
-//		void Bind();
+		void Bind();
 		
 //		void Fill (int position,ReportItemCollection collection);
 		
@@ -42,7 +42,7 @@ namespace ICSharpCode.Reporting.Interfaces.Data
 	
 		int Count {get;}
 	
-// 		int CurrentPosition {get;set;}
+ 		int CurrentPosition {get;set;}
  		
 // 		IExpressionEvaluatorFacade ExpressionEvaluator {get;}
 	}

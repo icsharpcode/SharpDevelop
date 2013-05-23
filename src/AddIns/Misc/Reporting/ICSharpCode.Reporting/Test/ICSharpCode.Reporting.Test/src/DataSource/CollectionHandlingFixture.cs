@@ -8,6 +8,9 @@
  */
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+
+using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.DataManager.Listhandling;
 using ICSharpCode.Reporting.DataSource;
 using ICSharpCode.Reporting.Items;
@@ -39,15 +42,45 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		[Test]
 		public void AvailableFieldsEqualContibutorsPropertyCount() {
 			var collectionSource = new CollectionSource	(list,new ReportSettings());
-			Assert.That(collectionSource.AvailableFields.Count,Is.EqualTo(7));
+			Assert.That(collectionSource.AvailableFields.Count,Is.EqualTo(6));
 		}
 			
 			
+		[Test]
+		public void CreateUnsortedIndex() {
+			var collectionSource = new CollectionSource	(list,new ReportSettings());
+			collectionSource.Bind();
+			Assert.That(collectionSource.IndexList.Count,Is.EqualTo(collectionSource.Count));
+			Assert.That(collectionSource.IndexList.CurrentPosition,Is.EqualTo(-1));
+		}
 		
-//http://stackoverflow.com/questions/5378293/simplest-way-to-filter-generic-list		
-//http://stackoverflow.com/questions/5378293/simplest-way-to-filter-generic-list		
-//http://netmatze.wordpress.com/2012/06/21/implementing-a-generic-iequalitycomparer-and-icomparer-class/		
-//		http://blog.velir.com/index.php/2011/02/17/ilistt-sorting-a-better-way/
+		
+		[Test]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public void SortColumnNotExist() {
+			var rs = new ReportSettings();
+			rs.SortColumnsCollection.Add(new SortColumn("aa",ListSortDirection.Ascending));
+			var collectionSource = new CollectionSource	(list,rs);
+			collectionSource.Bind();
+			Assert.That(collectionSource.IndexList,Is.Not.Null);
+			Assert.That(collectionSource.IndexList.Count,Is.EqualTo(0));
+		}
+		
+		
+		[Test]
+		public void SortOneColumnAscending() {
+			var rs = new ReportSettings();
+			rs.SortColumnsCollection.Add(new SortColumn("Lastname",ListSortDirection.Ascending));
+			var collectionSource = new CollectionSource	(list,rs);
+			collectionSource.Bind();
+			string compare = collectionSource.IndexList[0].ObjectArray[0].ToString();
+			foreach (var element in collectionSource.IndexList) {
+				Console.WriteLine(element.ObjectArray[0].ToString());
+				Assert.That(compare,Is.LessThanOrEqualTo(element.ObjectArray[0].ToString()));
+				compare = element.ObjectArray[0].ToString();
+			}
+		}
+		
 		[SetUp]
 		public void CreateList() {
 			var contributorList = new ContributorsList();

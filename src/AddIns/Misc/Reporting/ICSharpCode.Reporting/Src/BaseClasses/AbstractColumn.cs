@@ -31,7 +31,7 @@ namespace ICSharpCode.Reporting.BaseClasses
 //		}
 		
 		public AbstractColumn(string columnName, Type dataType){
-			this.columnName = columnName;
+			this.ColumnName = columnName;
 			this.dataType = dataType;
 		}
 		

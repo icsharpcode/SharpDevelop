@@ -62,14 +62,14 @@ namespace ICSharpCode.Reporting
 		{
 		}
 		
-//		public new AbstractColumn Find (string columnName)
-//		{
-//			if (String.IsNullOrEmpty(columnName)) {
-//				throw new ArgumentNullException("columnName");
-//			}
-//			
-//			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
-//		}
+		public new AbstractColumn Find (string columnName)
+		{
+			if (String.IsNullOrEmpty(columnName)) {
+				throw new ArgumentNullException("columnName");
+			}
+			
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
+		}
 	
 		
 		public void AddRange (IEnumerable<SortColumn> items)

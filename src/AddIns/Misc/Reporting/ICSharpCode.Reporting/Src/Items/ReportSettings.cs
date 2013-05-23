@@ -50,7 +50,7 @@ namespace ICSharpCode.Reporting.Items
 //			
 //			this.availableFields = new AvailableFieldsCollection();
 //			this.groupingsCollection = new GroupColumnCollection();
-//			this.sortingCollection = new SortColumnCollection();
+			this.SortColumnsCollection = new SortColumnCollection();
 //			this.sqlParameters = new SqlParameterCollection();
 //			this.parameterCollection = new ParameterCollection();
 //			this.NoDataMessage = "No Data for this Report";
@@ -135,5 +135,8 @@ namespace ICSharpCode.Reporting.Items
 		
 //		[Browsable(true), Category("Base Settings")]
 		public GlobalEnums.ReportType ReportType {get;set;}
+		
+		public SortColumnCollection SortColumnsCollection {get;private set;}
+		
 	}
 }
