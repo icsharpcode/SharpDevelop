@@ -2,7 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
@@ -22,15 +23,12 @@ namespace WixBinding.Tests.Project
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			SD.InitializeForUnitTests();
 			wixNodeBuilder = new WixProjectNodeBuilder();
 			project = new MSBuildBasedProject(
-				new ProjectCreateInformation {
-					OutputProjectFileName = @"C:\Projects\Test\test.csproj",
-					Solution = new Solution(new MockProjectChangeWatcher()),
-					ProjectName = "test"
-				}
+				new ProjectCreateInformation(MockSolution.Create(), new FileName(@"C:\Projects\Test\test.csproj"))
 			);
-			project.IdGuid = "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF";
+			project.IdGuid = Guid.Parse("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
 		}
 		
 		[Test]

@@ -3,10 +3,11 @@
 
 using System;
 using System.Drawing;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 {
+	[Obsolete("XML Forms are obsolete")]
 	public class SharpDevelopPropertyValueCreator : IPropertyValueCreator
 	{
 		public bool CanCreateValueForType(Type propertyType)
@@ -18,11 +19,11 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 		{
 			
 			if (propertyType == typeof(Icon)) {
-				return WinFormsResourceService.GetIcon(valueString);
+				return SD.ResourceService.GetIcon(valueString);
 			}
 			
 			if (propertyType == typeof(Image)) {
-				return WinFormsResourceService.GetBitmap(valueString);
+				return SD.ResourceService.GetBitmap(valueString);
 			}
 			
 			return null;

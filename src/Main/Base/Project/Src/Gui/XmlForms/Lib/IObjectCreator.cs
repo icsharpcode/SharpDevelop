@@ -10,6 +10,7 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 	/// This interface is used to create the objects which are given by name in 
 	/// the xml definition.
 	/// </summary>
+	[Obsolete("XML Forms are obsolete")]
 	public interface IObjectCreator
 	{
 		/// <summary>

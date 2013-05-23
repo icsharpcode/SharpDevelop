@@ -6,7 +6,6 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -139,7 +138,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			
 			if (e.Button == MouseButtons.Right) {
-				MenuService.ShowContextMenu(this, contextMenuPath, this, e.X, e.Y);
+				SD.WinForms.MenuService.ShowContextMenu(this, contextMenuPath, this, e.X, e.Y);
 			}
 		}
 		
@@ -184,7 +183,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					internalState = internalState & ~(SidebarState.CanMoveItemDown);
 				}
 				
-				MenuService.ShowContextMenu(this, sideTabContextMenuPath, sideTabContent, e.X, e.Y);
+				SD.WinForms.MenuService.ShowContextMenu(this, sideTabContextMenuPath, sideTabContent, e.X, e.Y);
 			}
 		}
 		

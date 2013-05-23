@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace AspNet.Mvc.Tests
 {
 	[TestFixture]
-	public class MvcProjectTests
+	public class MvcProjectTests : MvcTestsBase
 	{
 		MvcProject project;
 		TestableProject testableProject;

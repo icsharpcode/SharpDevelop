@@ -6,9 +6,9 @@ using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
@@ -22,7 +22,7 @@ namespace XmlEditor.Tests.Tree
 	/// since their behaviour is the same.
 	/// </summary>
 	[TestFixture]
-	public class AddNewNodeDialogTestFixture
+	public class AddNewNodeDialogTestFixture : SDTestFixtureBase
 	{
 		DerivedAddXmlNodeDialog dialog;
 		ListBox namesListBox;
@@ -32,12 +32,6 @@ namespace XmlEditor.Tests.Tree
 		TextBox customNameTextBox;
 		Label customNameTextBoxLabel;
 		Panel bottomPanel;
-		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
-		{
-			PropertyService.InitializeServiceForUnitTests();
-		}
 		
 		[SetUp]
 		public void Init()

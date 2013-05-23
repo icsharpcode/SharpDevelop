@@ -5,6 +5,7 @@ using System;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
@@ -21,7 +22,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 
         public object GetDescription(DesignItemProperty property)
         {
-            IProjectContent pc = MyTypeFinder.GetProjectContent(file);
+        	#warning reimplement this!
+            /*IProjectContent pc = MyTypeFinder.GetProjectContent(file);
             if (pc != null) {
             	 // For attached Properties
                 if (property.DependencyFullName != null && property.Name.Contains(".")) {
@@ -39,7 +41,7 @@ namespace ICSharpCode.WpfDesign.AddIn
                             return CodeCompletionItem.ConvertDocumentation(m.Documentation);
                     }
                 }
-            }
+            }*/
             return null;
         }
     }

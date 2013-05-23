@@ -62,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		                   Description = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.FileName.Description}")]
 		[Browsable(true)]
 		[ReadOnly(true)]
-		public override string FileName {
+		public override FileName FileName {
 			get { return base.FileName; }
 			set { base.FileName = value; }
 		}

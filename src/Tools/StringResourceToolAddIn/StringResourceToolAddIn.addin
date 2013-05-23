@@ -10,7 +10,7 @@
 		<Import assembly = "StringResourceToolAddIn.dll"/>
 	</Runtime>
 	
-	<Path name = "/Workspace/Tools">
+	<Path name = "/SharpDevelop/Workbench/Tools">
 		<MenuItem id = "StringResourceToolAddInCommand1"
 		          label = "StringResourceToolAddIn"
 		          shortcut = "Control|Shift|R"

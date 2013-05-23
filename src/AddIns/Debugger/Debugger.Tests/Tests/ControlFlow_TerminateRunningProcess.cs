@@ -30,11 +30,11 @@ namespace Debugger.Tests {
 		{
 			for(int i = 0; i < 2; i++) {
 				StartTest();
-				process.SelectedStackFrame.StepOver();
+				this.CurrentStackFrame.StepOver();
 				process.Paused += delegate {
 					Assert.Fail("Should not have received any callbacks after Terminate");
 				};
-				process.SelectedStackFrame.AsyncStepOver();
+				this.CurrentStackFrame.AsyncStepOver();
 				ObjectDump("Log", "Calling terminate");
 				process.Terminate();
 			}
@@ -50,20 +50,20 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="ControlFlow_TerminateRunningProcess.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ControlFlow_TerminateRunningProcess.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ControlFlow_TerminateRunningProcess.cs:16,4-16,40</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_TerminateRunningProcess.cs:17,4-17,26</DebuggingPaused>
+    <Paused>ControlFlow_TerminateRunningProcess.cs:16,4-16,40</Paused>
+    <Paused>ControlFlow_TerminateRunningProcess.cs:17,4-17,26</Paused>
     <Log>Calling terminate</Log>
-    <ProcessExited />
-    <ProcessStarted />
+    <Exited />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ControlFlow_TerminateRunningProcess.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ControlFlow_TerminateRunningProcess.cs:16,4-16,40</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_TerminateRunningProcess.cs:17,4-17,26</DebuggingPaused>
+    <Paused>ControlFlow_TerminateRunningProcess.cs:16,4-16,40</Paused>
+    <Paused>ControlFlow_TerminateRunningProcess.cs:17,4-17,26</Paused>
     <Log>Calling terminate</Log>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

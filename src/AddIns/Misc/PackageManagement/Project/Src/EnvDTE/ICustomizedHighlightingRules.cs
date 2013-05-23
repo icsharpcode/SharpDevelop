@@ -9,7 +9,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public interface ICustomizedHighlightingRules
 	{
-		List<CustomizedHighlightingColor> LoadColors();
+		IReadOnlyList<CustomizedHighlightingColor> LoadColors();
 		void SaveColors(IEnumerable<CustomizedHighlightingColor> colors);
 	}
 }

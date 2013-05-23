@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.Core;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using System;
@@ -20,7 +21,7 @@ namespace XmlEditor.Tests.Schema
 			schemas = new XmlSchemaCompletionCollection();
 			XmlSchemaCompletion completionData = new XmlSchemaCompletion(ResourceManager.ReadXsdSchema());
 			expectedNamespace = completionData.NamespaceUri;
-			completionData.FileName = @"C:\Schemas\MySchema.xsd";
+			completionData.FileName = FileName.Create(@"C:\Schemas\MySchema.xsd");
 			schemas.Add(completionData);
 		}
 		

@@ -13,7 +13,7 @@
 		<Import assembly="AddInScout.dll"/>
 	</Runtime>
 	
-	<Path name = "/Workspace/Tools">
+	<Path name = "/SharpDevelop/Workbench/Tools">
 		<MenuItem id = "ShowAddInScout"
 		          label = "AddIn Scout"
 		          class = "AddInScout.AddInScoutCommand"/>

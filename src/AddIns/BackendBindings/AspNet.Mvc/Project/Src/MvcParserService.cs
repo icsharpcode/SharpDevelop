@@ -2,8 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.AspNet.Mvc
 {
@@ -11,13 +11,13 @@ namespace ICSharpCode.AspNet.Mvc
 	{
 		public IMvcProjectContent GetProjectContent(IMvcProject project)
 		{
-			IProjectContent projectContent = GetProjectContentFromParser(project);
-			return new MvcProjectContent(projectContent, project);
+			ICompilation compilation = GetProjectContentFromParser(project);
+			return new MvcProjectContent(compilation, project);
 		}
 		
-		IProjectContent GetProjectContentFromParser(IMvcProject mvcProject)
+		ICompilation GetProjectContentFromParser(IMvcProject mvcProject)
 		{
-			return ParserService.GetProjectContent(mvcProject.Project);
+			return SD.ParserService.GetCompilation(mvcProject.Project);
 		}
 	}
 }

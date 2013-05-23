@@ -1,15 +1,17 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using Microsoft.Build.Construction;
 using System;
 using System.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
+using Microsoft.Build.Construction;
+using Microsoft.Build.Evaluation;
 using NUnit.Framework;
+using Rhino.Mocks;
 using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Project
@@ -26,12 +28,10 @@ namespace WixBinding.Tests.Project
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			SD.InitializeForUnitTests();
 			WixBindingTestsHelper.InitMSBuildEngine();
 			
-			info = new ProjectCreateInformation();
-			info.Solution = new Solution(new MockProjectChangeWatcher());
-			info.ProjectName = "Test";
-			info.OutputProjectFileName = @"C:\Projects\Test\Test.wixproj";
+			info = new ProjectCreateInformation(MockSolution.Create(), new FileName(@"C:\Projects\Test\Test.wixproj"));
 			info.RootNamespace = "Test";
 
 			project = new WixProject(info);
@@ -107,7 +107,7 @@ namespace WixBinding.Tests.Project
 		[Test]
 		public void FileName()
 		{
-			Assert.AreEqual(info.OutputProjectFileName, project.FileName);
+			Assert.AreEqual(info.FileName, project.FileName);
 		}
 		
 		[Test]
@@ -123,21 +123,17 @@ namespace WixBinding.Tests.Project
 			Assert.IsNull(provider.GetValue("UnknownMSBuildProperty"));
 		}
 		
-		[Test]
-		public void ProjectLanguageProperties()
-		{
-			Assert.AreEqual(LanguageProperties.None, project.LanguageProperties);
-		}
-		
 		/// <summary>
 		/// Gets the MSBuild build property with the specified name from the WixProject.
 		/// </summary>
 		ProjectPropertyElement GetMSBuildProperty(string name)
 		{
-			foreach (ProjectPropertyGroupElement propertyGroup in project.MSBuildProjectFile.PropertyGroups) {
-				foreach (ProjectPropertyElement element in propertyGroup.Properties) {
-					if (element.Name == name) {
-						return element;
+			lock (project.SyncRoot) {
+				foreach (ProjectPropertyGroupElement propertyGroup in project.MSBuildProjectFile.PropertyGroups) {
+					foreach (ProjectPropertyElement element in propertyGroup.Properties) {
+						if (element.Name == name) {
+							return element;
+						}
 					}
 				}
 			}
@@ -150,10 +146,12 @@ namespace WixBinding.Tests.Project
 		ProjectPropertyElement GetLastMSBuildProperty(string name)
 		{
 			ProjectPropertyElement matchedElement = null;
-			foreach (ProjectPropertyGroupElement propertyGroup in project.MSBuildProjectFile.PropertyGroups) {
-				foreach (ProjectPropertyElement element in propertyGroup.Properties) {
-					if (element.Name == name) {
-						matchedElement = element;
+			lock (project.SyncRoot) {
+				foreach (ProjectPropertyGroupElement propertyGroup in project.MSBuildProjectFile.PropertyGroups) {
+					foreach (ProjectPropertyElement element in propertyGroup.Properties) {
+						if (element.Name == name) {
+							matchedElement = element;
+						}
 					}
 				}
 			}

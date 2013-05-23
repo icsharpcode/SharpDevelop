@@ -2,11 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using System.Collections.Generic;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
-using System.Collections.Generic;
 using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Project
@@ -62,6 +62,12 @@ namespace WixBinding.Tests.Project
 					throw new NotImplementedException();
 				}
 			}
+		}
+		
+		[TestFixtureSetUp]
+		public void SetUp()
+		{
+			SD.InitializeForUnitTests();
 		}
 		
 		[Test]

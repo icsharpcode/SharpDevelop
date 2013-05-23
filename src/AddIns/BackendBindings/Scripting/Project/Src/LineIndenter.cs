@@ -3,6 +3,7 @@
 
 using System;
 using System.Text;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.Scripting
@@ -48,8 +49,8 @@ namespace ICSharpCode.Scripting
 		void GetPreviousLine()
 		{
 			int lineNumber = line.LineNumber - 1;
-			previousLine = document.GetLine(lineNumber);
-			previousLineText = previousLine.Text.Trim();
+			previousLine = document.GetLineByNumber(lineNumber);
+			previousLineText = document.GetText(previousLine).Trim();
 		}
 		
 		protected string PreviousLine {
@@ -80,7 +81,7 @@ namespace ICSharpCode.Scripting
 		{
 			string previousLineIndentation = GetPreviousLineIndentation();
 			string indentation = GetNewLineIndentation(previousLineIndentation, increaseIndent);
-			string newLineText = indentation + line.Text;
+			string newLineText = indentation + document.GetText(line);
 			ReplaceLine(newLineText);
 		}
 		
@@ -91,8 +92,8 @@ namespace ICSharpCode.Scripting
 		
 		string GetIndentation(IDocumentLine documentLine)
 		{
-			StringBuilder whitespace = new StringBuilder();			
-			foreach (char ch in documentLine.Text) {
+			StringBuilder whitespace = new StringBuilder();
+			foreach (char ch in document.GetText(documentLine)) {
 				if (Char.IsWhiteSpace(ch)) {
 					whitespace.Append(ch);
 				} else {

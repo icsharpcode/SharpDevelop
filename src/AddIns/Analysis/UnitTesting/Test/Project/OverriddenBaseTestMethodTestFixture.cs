@@ -2,7 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
+using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
@@ -10,68 +11,46 @@ using UnitTesting.Tests.Utils;
 namespace UnitTesting.Tests.Project
 {
 	[TestFixture]
-	public class OverriddenBaseTestMethodTestFixture
+	public class OverriddenBaseTestMethodTestFixture : NUnitTestProjectFixtureBase
 	{
-		TestClass testClass;
-		MockClass c;
-		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
+		NUnitTestClass baseClass;
+		NUnitTestClass derivedClass;
+		List<string> derivedClassMethodNames;
 		
-		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
-			MockProjectContent projectContent = new MockProjectContent();
-			projectContent.Language = LanguageProperties.None;
+			base.SetUp();
 			
-			// Create the base test class.
-			MockClass baseClass = new MockClass(projectContent, "ICSharpCode.Tests.BaseClass");
-			
-			// Add a virtual method to base class.
-			MockMethod baseMethod = new MockMethod(baseClass, "VirtualTestMethod");
-			baseMethod.Attributes.Add(new MockAttribute("Test"));
-			baseMethod.Modifiers = ModifierEnum.Virtual;
-			baseClass.Methods.Add(baseMethod);
-			
-			// Add a second method that is virtual but will not be overriden.
-			baseMethod = new MockMethod(baseClass, "VirtualNonOverriddenTestMethod");
-			baseMethod.Attributes.Add(new MockAttribute("Test"));
-			baseMethod.Modifiers = ModifierEnum.Virtual;
-			baseClass.Methods.Add(baseMethod);
-			
-			// Create the derived test class.
-			c = new MockClass(projectContent, "ICSharpCode.Tests.DerivedClass");
-			c.Attributes.Add(new MockAttribute("TestFixture"));
-			projectContent.Classes.Add(c);
-			
-			// Create a new test method that overrides one of the base class methods.		
-			MockMethod method = new MockMethod(c, "VirtualTestMethod");
-			method.Attributes.Add(new MockAttribute("Test"));
-			method.Modifiers = ModifierEnum.Override;
-			c.Methods.Add(method);
-			
-			// Set derived class's base class.
-			c.AddBaseClass(baseClass);
-			
-			// Create TestClass.
-			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
-			testClass = new TestClass(c, testFrameworks);
+			AddCodeFileInNamespace("base.cs", @"
+class BaseClass {
+	[Test] public virtual void VirtualTestMethod() {}
+	[Test] public virtual void VirtualNonOverriddenTestMethod() {}
+}");
+			AddCodeFileInNamespace("derived.cs", @"
+class DerivedClass : BaseClass {
+	[Test] public override void VirtualTestMethod() {}
+}");
+			baseClass = testProject.NestedTests.Cast<NUnitTestClass>().Single(c => c.ClassName == "BaseClass");
+			derivedClass = testProject.NestedTests.Cast<NUnitTestClass>().Single(c => c.ClassName == "DerivedClass");
+			derivedClassMethodNames = derivedClass.NestedTests.Cast<NUnitTestMethod>().Select(m => m.MethodNameWithDeclaringTypeForInheritedTests).ToList();
 		}
 
 		[Test]
 		public void NonOverriddenVirtualBaseMethodExists()
 		{
-			Assert.IsTrue(testClass.TestMembers.Contains("BaseClass.VirtualNonOverriddenTestMethod"));
+			Assert.IsTrue(derivedClassMethodNames.Contains("BaseClass.VirtualNonOverriddenTestMethod"));
 		}
 
 		[Test]
 		public void VirtualBaseMethodDoesNotExistSinceItIsOverriddenInDerivedClass()
 		{
-			Assert.IsFalse(testClass.TestMembers.Contains("BaseClass.VirtualTestMethod"));
+			Assert.IsFalse(derivedClassMethodNames.Contains("BaseClass.VirtualTestMethod"));
 		}
 
 		[Test]
 		public void DerivedClassTestMethodExists()
 		{
-			Assert.IsTrue(testClass.TestMembers.Contains("VirtualTestMethod"));
+			Assert.IsTrue(derivedClassMethodNames.Contains("VirtualTestMethod"));
 		}
 	}
 }

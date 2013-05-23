@@ -15,6 +15,8 @@ using System.Xml;
 using HexEditor.Util;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 //using HexEditor.Commands;
 
@@ -1074,7 +1076,7 @@ namespace HexEditor
 		string GetText(byte[] bytes)
 		{
 			for (int i = 0; i < bytes.Length; i++) {
-				if (bytes[i] < 32) bytes[i] = 46;
+				if (bytes[i] < 32 || (bytes[i] >= 0x80 && bytes[i] < 0xA0)) bytes[i] = 46;
 			}
 
 			string text = this.Encoding.GetString(bytes);

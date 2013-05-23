@@ -14,9 +14,9 @@ namespace UnitTesting.Tests.Utils
 		bool started = false;
 		SelectedTests selectedTests;
 		
-		public event TestFinishedEventHandler TestFinished;
+		public event EventHandler<TestFinishedEventArgs> TestFinished;
 		public event EventHandler AllTestsFinished;
-		public event MessageReceivedEventHandler MessageReceived;
+		public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 		
 		public void Dispose()
 		{

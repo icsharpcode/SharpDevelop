@@ -8,12 +8,20 @@ using System;
 namespace Debugger.AddIn.Visualizers.Utils
 {
 	/// <summary>
-	/// Walks tree structure to produce flat list.
+	/// Anything that has recursive children. Used by <see cref="TreeFlattener">.
+	/// </summary>
+	public interface ITreeNode<T>
+	{
+		IEnumerable<T> Children { get; }
+	}
+	
+	/// <summary>
+	/// Transforms a tree structure into a flat list.
 	/// </summary>
 	public class TreeFlattener
 	{
 		/// <summary>
-		/// Flattens tree by preorder walk.
+		/// Flattens a tree by preorder walk.
 		/// Does not make copies of the nodes, just returns List of refences to nodes in original tree.
 		/// </summary>
 		public static List<T> Flatten<T>(T root) where T : ITreeNode<T>
@@ -22,34 +30,29 @@ namespace Debugger.AddIn.Visualizers.Utils
 		}
 		
 		/// <summary>
-		/// Flattens tree by preorder walk.
+		/// Flattens a tree by preorder walk.
 		/// Does not make copies of the nodes, just returns List of refences to nodes in original tree.
 		/// </summary>
 		/// <param name="root">Tree root.</param>
 		/// <param name="selectNode">Selector telling which nodes be processed.</param>
 		public static List<T> Flatten<T>(T root, Func<T, bool> selectNode) where T : ITreeNode<T>
 		{
-			if (root == null)
-				throw new ArgumentNullException("root");
-			
+			if (root == null) throw new ArgumentNullException("root");
 			List<T> flattened = new List<T>();
 			flattenRecursive(root, selectNode, flattened);
 			return flattened;
 		}
 		
 		/// <summary>
-		/// Flattens tree by preorder walk.
+		/// Flattens a tree by preorder walk.
 		/// Does not make copies of the nodes, just returns List of refences to nodes in original tree.
 		/// </summary>
 		/// <param name="root">Tree root.</param>
 		/// <param name="selectChildren">Selector telling which nodes should have children processed.</param>
 		public static List<T> FlattenSelectChildrenIf<T>(T root, Func<T, bool> selectChildren) where T : ITreeNode<T>
 		{
-			if (root == null)
-				throw new ArgumentNullException("root");
-			if (selectChildren == null)
-				throw new ArgumentNullException("selectChildren");
-			
+			if (root == null) throw new ArgumentNullException("root");
+			if (selectChildren == null) throw new ArgumentNullException("selectChildren");
 			List<T> flattened = new List<T>();
 			flattenSelectChildrenRecursive(root, selectChildren, flattened);
 			return flattened;
@@ -57,14 +60,10 @@ namespace Debugger.AddIn.Visualizers.Utils
 		
 		public static List<T> FlattenSelectChildrenIf<T>(IEnumerable<T> roots, Func<T, bool> selectChildren) where T : ITreeNode<T>
 		{
-			if (roots == null)
-				throw new ArgumentNullException("root");
-			if (selectChildren == null)
-				throw new ArgumentNullException("selectChildren");
-			
+			if (roots == null) throw new ArgumentNullException("root");
+			if (selectChildren == null) throw new ArgumentNullException("selectChildren");
 			List<T> flattened = new List<T>();
-			foreach (T root in roots)
-			{
+			foreach (T root in roots) {
 				flattenSelectChildrenRecursive(root, selectChildren, flattened);
 			}
 			return flattened;
@@ -72,11 +71,9 @@ namespace Debugger.AddIn.Visualizers.Utils
 		
 		private static void flattenRecursive<T>(T root, Func<T, bool> selectNode, IList<T> flattened) where T : ITreeNode<T>
 		{
-			if (selectNode(root))
-			{
+			if (selectNode(root)) {
 				flattened.Add(root);
-				foreach (T child in root.Children)
-				{
+				foreach (T child in root.Children) {
 					flattenRecursive(child, selectNode, flattened);
 				}
 			}
@@ -85,10 +82,8 @@ namespace Debugger.AddIn.Visualizers.Utils
 		private static void flattenSelectChildrenRecursive<T>(T root, Func<T, bool> selectChildren, IList<T> flattened) where T : ITreeNode<T>
 		{
 			flattened.Add(root);
-			if (selectChildren(root))
-			{
-				foreach (T child in root.Children)
-				{
+			if (selectChildren(root)) {
+				foreach (T child in root.Children) {
 					flattenSelectChildrenRecursive(child, selectChildren, flattened);
 				}
 			}

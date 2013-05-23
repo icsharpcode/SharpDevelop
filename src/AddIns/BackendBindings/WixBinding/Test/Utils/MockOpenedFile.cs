@@ -3,10 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace WixBinding.Tests.Utils
 {

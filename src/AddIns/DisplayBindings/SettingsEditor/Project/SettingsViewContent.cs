@@ -13,6 +13,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SettingsEditor
 {
@@ -27,17 +28,25 @@ namespace ICSharpCode.SettingsEditor
 		public SettingsViewContent(OpenedFile file) : base(file)
 		{
 			TryOpenAppConfig(false);
-			view.SelectionChanged += delegate {
-				propertyContainer.SelectedObjects = view.GetSelectedEntriesForPropertyGrid().ToArray();
-			};
-			view.SettingsChanged += delegate {
-				if (this.PrimaryFile != null)
-					this.PrimaryFile.MakeDirty();
-				if (appConfigFile != null)
-					appConfigFile.MakeDirty();
-			};
+		
 			this.UserContent = view;
+			
+			view.SelectionChanged += ((s,e) =>
+			                          {
+			                          	propertyContainer.SelectedObjects = view.GetSelectedEntriesForPropertyGrid().ToArray();
+			                          });
+			
+			
+			view.SettingsChanged += ((s,e) =>
+			                         {
+			                         	if (this.PrimaryFile != null)
+			                         		this.PrimaryFile.MakeDirty();
+			                         	if (appConfigFile != null)
+			                         		appConfigFile.MakeDirty();
+			                         });
+			                        
 		}
+		
 		
 		void TryOpenAppConfig(bool createIfNotExists)
 		{
@@ -45,12 +54,12 @@ namespace ICSharpCode.SettingsEditor
 				return;
 			if (ProjectService.OpenSolution == null)
 				return;
-			IProject p = ProjectService.OpenSolution.FindProjectContainingFile(this.PrimaryFileName);
+			IProject p = SD.ProjectService.FindProjectContainingFile(this.PrimaryFileName);
 			if (p == null)
 				return;
 			FileName appConfigFileName = CompilableProject.GetAppConfigFile(p, createIfNotExists);
 			if (appConfigFileName != null) {
-				appConfigFile = FileService.GetOrCreateOpenedFile(appConfigFileName);
+				appConfigFile = SD.FileService.GetOrCreateOpenedFile(appConfigFileName);
 				this.Files.Add(appConfigFile);
 				if (createIfNotExists)
 					appConfigFile.MakeDirty();
@@ -58,8 +67,11 @@ namespace ICSharpCode.SettingsEditor
 			}
 		}
 		
+		
 		protected override void LoadInternal(OpenedFile file, Stream stream)
 		{
+			Console.WriteLine ("LoadInternal");
+			
 			if (file == PrimaryFile) {
 				try {
 					XmlDocument doc = new XmlDocument();
@@ -72,9 +84,11 @@ namespace ICSharpCode.SettingsEditor
 				}
 			} else if (file == appConfigFile) {
 				appConfigStream = new MemoryStream();
-				stream.WriteTo(appConfigStream);
+				stream.CopyTo(appConfigStream);
 			}
+			
 		}
+		
 		
 		void ShowLoadError(string message)
 		{
@@ -116,11 +130,14 @@ namespace ICSharpCode.SettingsEditor
 					appConfigStream.WriteTo(stream);
 				}
 			}
+			
 		}
 		
 		#region Update app.config
 		void UpdateAppConfig(XDocument appConfigDoc)
 		{
+			Console.WriteLine("UpdateAppConfig(XDocument appConfigDoc)");
+			/*
 			var entries = view.GetAllEntries();
 			var userEntries = entries.Where(e => e.Scope == SettingScope.User);
 			var appEntries = entries.Where(e => e.Scope == SettingScope.Application);
@@ -146,6 +163,7 @@ namespace ICSharpCode.SettingsEditor
 			if (appSettings != null) {
 				UpdateSettings(appSettings, appEntries);
 			}
+			*/
 		}
 		
 		void RegisterAppConfigSection(XElement configSections, bool hasUserEntries, bool hasAppEntries)

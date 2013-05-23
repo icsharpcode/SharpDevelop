@@ -2,7 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -14,48 +15,51 @@ namespace UnitTesting.Tests.Project
 	/// Tests that the TestProject is correctly updated after the inner class name changes.
 	/// </summary>
 	[TestFixture]
-	public class InnerClassNameChangesTestFixture : InnerClassTestFixtureBase
+	public class InnerClassNameChangesTestFixture : NUnitTestProjectFixtureBase
 	{
-		[SetUp]
-		public void Init()
+		NUnitTestClass originalA;
+		
+		public override void SetUp()
 		{
-			base.InitBase();
-
-			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
-			oldUnit.Classes.Add(outerClass);
-			
-			// Create new compilation unit with extra class.
-			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			MockClass newOuterClass = new MockClass(projectContent, "MyTests.A");
-			projectContent.Classes.Add(newOuterClass);
-			newUnit.Classes.Add(newOuterClass);
-			
-			// Create the inner test class.
-			// Note the use of the DotNetName "MyTests.A+InnerTest".
-			MockClass newInnerClass = new MockClass(projectContent, "MyTests.A.InnerATestMod", "MyTests.A+InnerATestMod", outerClass);
-			newInnerClass.Attributes.Add(new MockAttribute("TestFixture"));
-			newOuterClass.InnerClasses.Add(newInnerClass);
-			
-			// Update TestProject's parse info.
-			testProject.UpdateParseInfo(oldUnit, newUnit);
+			base.SetUp();
+			AddCodeFile("test.cs", @"
+using NUnit.Framework;
+namespace MyTests {
+	class A {
+		class InnerTest {
+			[Test]
+			public void M() {}
 		}
-
-		[Test]
-		public void NewInnerClassAdded()
-		{
-			Assert.IsTrue(testProject.TestClasses.Contains("MyTests.A+InnerATestMod"));
+	}
+}
+");
+			
+			originalA = testProject.GetTestClass(new FullTypeName("MyTests.A"));
+			
+			UpdateCodeFile("test.cs", @"
+using NUnit.Framework;
+namespace MyTests {
+	class A {
+		class InnerTestMod {
+			[Test]
+			public void M() {}
+		}
+	}
+}
+");
 		}
 		
 		[Test]
-		public void OldInnerClassRemoved()
+		public void OuterClassNotChanged()
 		{
-			Assert.IsFalse(testProject.TestClasses.Contains("MyTests.A+InnerATest"));
+			Assert.IsNotNull(originalA);
+			Assert.AreSame(originalA, testProject.GetTestClass(new FullTypeName("MyTests.A")));
 		}
 		
 		[Test]
-		public void OneTestClassRemain()
+		public void InnerClassRenamed()
 		{
-			Assert.AreEqual(1, testProject.TestClasses.Count);
+			Assert.AreEqual("InnerTestMod", originalA.NestedTests.Single().DisplayName);
 		}
 	}
 }

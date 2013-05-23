@@ -1,0 +1,33 @@
+﻿<gui:OptionPanel x:Class="ICSharpCode.UnitTesting.UnitTestingOptionsPanel"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:local="clr-namespace:ICSharpCode.UnitTesting"
+                 xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+                 xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+                 xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<gui:OptionPanel.Resources>
+		<sd:NotBoolConverter x:Key="negator" />
+	</gui:OptionPanel.Resources>
+	<GroupBox Header="{sd:Localize ICSharpCode.NUnitPad.NUnitPadContent.PadName}">
+		<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
+			<CheckBox
+				IsChecked="{sd:OptionBinding local:UnitTestingOptions.Labels}"
+				Content="{sd:Localize ICSharpCode.UnitTesting.OptionsPanel.LabelEachTest}" />
+			<CheckBox
+				IsChecked="{sd:OptionBinding local:UnitTestingOptions.NoLogo, Converter={StaticResource negator}}"
+				Content="{sd:Localize ICSharpCode.UnitTesting.OptionsPanel.ShowLogo}" />
+			<CheckBox
+				IsChecked="{sd:OptionBinding local:UnitTestingOptions.NoDots, Converter={StaticResource negator}}"
+				Content="{sd:Localize ICSharpCode.UnitTesting.OptionsPanel.ShowProgress}" />
+			<CheckBox
+				IsChecked="{sd:OptionBinding local:UnitTestingOptions.NoShadow, Converter={StaticResource negator}}"
+				Content="{sd:Localize ICSharpCode.UnitTesting.OptionsPanel.ShadowCopy}" />
+			<CheckBox
+				IsChecked="{sd:OptionBinding local:UnitTestingOptions.NoThread, Converter={StaticResource negator}}"
+				Content="{sd:Localize ICSharpCode.UnitTesting.OptionsPanel.Thread}" />
+			<CheckBox
+				IsChecked="{sd:OptionBinding local:UnitTestingOptions.CreateXmlOutputFile}"
+				Content="{sd:Localize ICSharpCode.UnitTesting.OptionsPanel.CreateXmlOutputFile}" />
+		</widgets:StackPanelWithSpacing>
+	</GroupBox>
+</gui:OptionPanel>

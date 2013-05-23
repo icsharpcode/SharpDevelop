@@ -2,10 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
+using Rhino.Mocks;
 using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests.Scripting
@@ -39,8 +41,8 @@ namespace PackageManagement.Tests.Scripting
 		public void GetWorkingDirectory_SolutionOpen_ReturnsSolutionDirectory()
 		{
 			CreateWorkingDirectory();
-			var solution = new Solution(new MockProjectChangeWatcher());
-			solution.FileName = @"d:\projects\MyProject\myproject.sln";
+			var solution = MockRepository.GenerateStrictMock<ISolution>();
+			solution.Stub(s => s.Directory).Return(DirectoryName.Create(@"d:\projects\MyProject"));
 			fakeProjectService.OpenSolution = solution;
 			
 			string directory = workingDirectory.GetWorkingDirectory();

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
@@ -24,7 +25,7 @@ namespace ICSharpCode.PackageManagement
 			get { return ProjectService.CurrentProject; }
 		}
 		
-		public Solution OpenSolution {
+		public ISolution OpenSolution {
 			get { return ProjectService.OpenSolution; }
 		}
 		
@@ -32,88 +33,58 @@ namespace ICSharpCode.PackageManagement
 		
 		public void RefreshProjectBrowser()
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				WorkbenchSingleton.SafeThreadAsyncCall(RefreshProjectBrowser);
-			} else {
-				var refreshCommand = new RefreshProjectBrowser();
-				refreshCommand.Run();
-			}
+			SD.MainThread.InvokeAsyncAndForget(ProjectBrowserPad.RefreshViewAsync);
 		}
 		
-		public IEnumerable<IProject> GetOpenProjects()
+		void InvokeIfRequired(Action action)
 		{
-			Solution solution = OpenSolution;
-			if (solution != null) {
-				return solution.Projects;
-			}
-			return new IProject[0];
+			SD.MainThread.InvokeIfRequired(action);
+		}
+		
+		T InvokeIfRequired<T>(Func<T> callback)
+		{
+			return SD.MainThread.InvokeIfRequired(callback);
+		}
+		
+		public IModelCollection<IProject> AllProjects { 
+			get { return SD.ProjectService.AllProjects; }
 		}
 		
 		public void AddProjectItem(IProject project, ProjectItem item)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				Action<IProject, ProjectItem> action = AddProjectItem;
-				WorkbenchSingleton.SafeThreadCall<IProject, ProjectItem>(action, project, item);
-			} else {
-				ProjectService.AddProjectItem(project, item);
-			}
+			InvokeIfRequired(() => ProjectService.AddProjectItem(project, item));
 		}
 		
 		public void RemoveProjectItem(IProject project, ProjectItem item)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				Action<IProject, ProjectItem> action = RemoveProjectItem;
-				WorkbenchSingleton.SafeThreadCall<IProject, ProjectItem>(action, project, item);
-			} else {
-				ProjectService.RemoveProjectItem(project, item);
-			}
+			InvokeIfRequired(() => ProjectService.RemoveProjectItem(project, item));
 		}
 		
 		public void Save(IProject project)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				Action<IProject> action = Save;
-				WorkbenchSingleton.SafeThreadCall<IProject>(action, project);
-			} else {
-				project.Save();
-			}
+			InvokeIfRequired(() => project.Save());
 		}
 		
-		public void Save(Solution solution)
+		public void Save(ISolution solution)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				Action<Solution> action = Save;
-				WorkbenchSingleton.SafeThreadCall<Solution>(action, solution);
-			} else {
-				solution.Save();
-			}
+			InvokeIfRequired(() => solution.Save());
 		}
 		
-		public IProjectContent GetProjectContent(IProject project)
-		{
-			return ParserService.GetProjectContent(project);
+//		public IProjectContent GetProjectContent(IProject project)
+//		{
+//			return SD.ParserService.GetProjectContent(project);
+//		}
+		
+		public event EventHandler<SolutionEventArgs> SolutionClosed {
+			add { SD.ProjectService.SolutionClosed += value; }
+			remove { SD.ProjectService.SolutionClosed -= value; }
 		}
 		
-		public event ProjectEventHandler ProjectAdded {
-			add { ProjectService.ProjectAdded += value; }
-			remove { ProjectService.ProjectAdded -= value; }
+		public event EventHandler<SolutionEventArgs> SolutionOpened {
+			add { SD.ProjectService.SolutionOpened += value; }
+			remove { SD.ProjectService.SolutionOpened -= value; }
 		}
 	
-		public event EventHandler SolutionClosed {
-			add { ProjectService.SolutionClosed += value; }
-			remove { ProjectService.SolutionClosed -= value; }
-		}
-		
-		public event EventHandler<SolutionEventArgs> SolutionLoaded {
-			add { ProjectService.SolutionLoaded += value; }
-			remove { ProjectService.SolutionLoaded -= value; }
-		}
-		
-		public event SolutionFolderEventHandler SolutionFolderRemoved {
-			add { ProjectService.SolutionFolderRemoved += value; }
-			remove { ProjectService.SolutionFolderRemoved -= value; }
-		}
-		
 		public IProjectBrowserUpdater CreateProjectBrowserUpdater()
 		{
 			return new ThreadSafeProjectBrowserUpdater();

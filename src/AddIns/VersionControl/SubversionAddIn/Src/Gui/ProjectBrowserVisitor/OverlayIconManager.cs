@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Svn
@@ -139,7 +139,7 @@ namespace ICSharpCode.Svn
 			// sleep a tiny bit to give main thread time to add more jobs to the queue
 			Thread.Sleep(2);
 			while (true) {
-				if (ICSharpCode.SharpDevelop.ParserService.LoadSolutionProjectsThreadRunning) {
+				if (SD.ParserService.LoadSolutionProjectsThread.IsRunning) {
 					// Run OverlayIconManager much more slowly while solution is being loaded.
 					// This prevents the disk from seeking too much
 					Thread.Sleep(100);
@@ -184,10 +184,7 @@ namespace ICSharpCode.Svn
 						client = new SvnClientWrapper();
 					} catch (Exception ex) {
 						subversionDisabled = true;
-						SharpDevelop.Gui.WorkbenchSingleton.SafeThreadAsyncCall(
-							MessageService.ShowWarning,
-							"Error initializing Subversion library:\n" + ex.ToString()
-						);
+						SD.MainThread.InvokeAsyncAndForget(() => MessageService.ShowWarning("Error initializing Subversion library:\n" + ex.ToString()));
 						return StatusKind.None;
 					}
 				}
@@ -223,10 +220,9 @@ namespace ICSharpCode.Svn
 				}
 			}
 			
-			SharpDevelop.Gui.WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					node.Overlay = GetImage(status);
-				});
+			SD.MainThread.InvokeAsyncAndForget(delegate {
+				node.Overlay = GetImage(status);
+			});
 		}
 	}
 }

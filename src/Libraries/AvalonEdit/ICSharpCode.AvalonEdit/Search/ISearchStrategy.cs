@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Search
 {

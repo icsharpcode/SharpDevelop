@@ -2,15 +2,19 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.XamlBinding
 {
 	sealed class ParameterComparer : IEqualityComparer<IParameter> {
 		public bool Equals(IParameter x, IParameter y)
 		{
-			return x.Compare(y);
+			return (x.Type.ReflectionName == y.Type.ReflectionName)
+				&& (x.IsOut == y.IsOut)
+				&& (x.IsParams == y.IsParams)
+				&& (x.IsRef == y.IsRef)
+				&& (x.IsOptional == y.IsOptional);
 		}
 		
 		public int GetHashCode(IParameter obj)

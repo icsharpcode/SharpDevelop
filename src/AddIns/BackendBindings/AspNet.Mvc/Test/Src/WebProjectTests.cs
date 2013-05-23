@@ -7,10 +7,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
-
 using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using Rhino.Mocks;
@@ -18,7 +17,7 @@ using Rhino.Mocks;
 namespace AspNet.Mvc.Tests
 {
 	[TestFixture]
-	public class WebProjectTests
+	public class WebProjectTests : MvcTestsBase
 	{
 		MSBuildBasedProject msbuildProject;
 		WebProject webProject;
@@ -55,7 +54,8 @@ namespace AspNet.Mvc.Tests
 		{
 			var fileContentsBuilder = new StringBuilder();
 			var stringWriter = new StringWriter(fileContentsBuilder);
-			msbuildProject.MSBuildProjectFile.Save(stringWriter);
+			lock (msbuildProject.SyncRoot)
+				msbuildProject.MSBuildProjectFile.Save(stringWriter);
 			
 			return GetProjectExtensions(fileContentsBuilder.ToString());
 		}
@@ -289,7 +289,7 @@ namespace AspNet.Mvc.Tests
 		public void Directory_MSBuildProjectDirectoryIsSet_ReturnsMSBuildProjectDirectory()
 		{
 			CreateMSBuildProject();
-			msbuildProject.FileName = @"c:\projects\Test\test.csproj";
+			msbuildProject.FileName = new FileName(@"c:\projects\Test\test.csproj");
 			CreateWebProject(msbuildProject);
 			
 			string directory = webProject.Directory;

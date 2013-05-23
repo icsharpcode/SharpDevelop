@@ -72,8 +72,8 @@ namespace PackageManagement.Cmdlets.Tests
 			CreateCmdlet();
 			RunCmdlet();
 			
-			Solution expectedSolution = fakeProjectService.OpenSolution;
-			Solution actualSolution = scriptsFactory.SolutionPassedToCreatePackageInitializationScripts;
+			ISolution expectedSolution = fakeProjectService.OpenSolution;
+			ISolution actualSolution = scriptsFactory.SolutionPassedToCreatePackageInitializationScripts;
 			
 			Assert.AreEqual(expectedSolution, actualSolution);
 		}

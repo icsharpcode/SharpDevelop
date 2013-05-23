@@ -3,7 +3,9 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -21,7 +23,7 @@ namespace ICSharpCode.XmlEditor
 		
 		IClipboardHandler GetClipboardHandler()
 		{
-			return WorkbenchSingleton.Workbench.ActiveContent as IClipboardHandler;
+			return SD.Workbench.ActiveContent as IClipboardHandler;
 		}
 		
 		protected abstract bool GetEnabled(IClipboardHandler editable);

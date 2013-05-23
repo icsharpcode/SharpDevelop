@@ -8,8 +8,6 @@ using System.Runtime.CompilerServices;
 [assembly: CLSCompliant(true)]
 [assembly: StringFreezing()]
 
-[assembly: Dependency("System.Xml", LoadHint.Always)]
-
 [assembly: AssemblyTitle("ICSharpCode.Core")]
 [assembly: AssemblyDescription("The ICSharpCode Core containing the AddInTree and service Subsystem")]
 [assembly: AssemblyConfiguration("")]

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 
@@ -28,7 +29,7 @@ namespace XmlEditor.Tests.Utils.Tests
 		public void OneSchemaWithFileName()
 		{
 			XmlSchemaCompletion schema = new XmlSchemaCompletion();
-			schema.FileName = "a.xsd";
+			schema.FileName = FileName.Create("a.xsd");
 			schemas.Add(schema);
 			
 			string[] expectedFileNames = new string[] {"a.xsd"};
@@ -39,11 +40,11 @@ namespace XmlEditor.Tests.Utils.Tests
 		public void TwoSchemasWithFileName()
 		{
 			XmlSchemaCompletion schema = new XmlSchemaCompletion();
-			schema.FileName = "a.xsd";
+			schema.FileName = FileName.Create("a.xsd");
 			schemas.Add(schema);
 			
 			schema = new XmlSchemaCompletion();
-			schema.FileName = "b.xsd";
+			schema.FileName = FileName.Create("b.xsd");
 			schemas.Add(schema);
 			
 			string[] expectedFileNames = new string[] {"a.xsd", "b.xsd"};

@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.CodeCoverage
@@ -14,12 +15,12 @@ namespace ICSharpCode.CodeCoverage
 			FileName = GetCodeCoverageResultsFileName(project);
 		}
 		
-		public string FileName { get; private set; }
+		public FileName FileName { get; private set; }
 		
-		string GetCodeCoverageResultsFileName(IProject project)
+		FileName GetCodeCoverageResultsFileName(IProject project)
 		{
 			string  outputDirectory = GetOutputDirectory(project);
-			return Path.Combine(outputDirectory, "coverage.xml");
+			return FileName.Create(Path.Combine(outputDirectory, "coverage.xml"));
 		}
 		
 		string GetOutputDirectory(IProject project)

@@ -7,6 +7,7 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
+	[Obsolete("XML Forms are obsolete")]
 	public abstract class ConfigurationGuiBinding
 	{
 		ConfigurationGuiHelper helper;

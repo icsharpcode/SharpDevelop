@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Tests.WebReferences;
 using NUnit.Framework;
@@ -9,7 +10,7 @@ using NUnit.Framework;
 namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 {
 	[TestFixture]
-	public class ServiceReferencesProjectItemTests
+	public class ServiceReferencesProjectItemTests : SDTestFixtureBase
 	{
 		MSBuildBasedProject project;
 		ServiceReferencesProjectItem projectItem;
@@ -36,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void Directory_ProjectItemIncludePathEndsWithForwardSlash_ReturnsFullPathOfServiceReferencesFolder()
 		{
 			CreateProjectItem();
-			project.FileName = @"C:\Projects\MyProject\MyProject.csproj";
+			project.FileName = FileName.Create(@"C:\Projects\MyProject\MyProject.csproj");
 			projectItem.Include = @"Service References\";
 			
 			string directory = projectItem.Directory;
@@ -48,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void IsServiceReferencesFolder_FolderMatchesServiceReferencesFolder_ReturnsTrue()
 		{
 			CreateProjectItem();
-			project.FileName = @"C:\Projects\MyProject\MyProject.csproj";
+			project.FileName = FileName.Create(@"C:\Projects\MyProject\MyProject.csproj");
 			projectItem.Include = @"Service References\";
 			string folder = @"C:\Projects\MyProject\Service References";
 			
@@ -61,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void IsServiceReferencesFolder_FolderDoesNotMatcheServiceReferencesFolder_ReturnsFalse()
 		{
 			CreateProjectItem();
-			project.FileName = @"C:\Projects\MyProject\MyProject.csproj";
+			project.FileName = FileName.Create(@"C:\Projects\MyProject\MyProject.csproj");
 			projectItem.Include = @"Service References\";
 			string folder = @"d:\projects\MyProject\Test";
 			
@@ -74,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void IsServiceReferencesFolder_FolderMatchesServiceReferencesFolderButWithDifferentCase_ReturnsTrue()
 		{
 			CreateProjectItem();
-			project.FileName = @"C:\Projects\MyProject\MyProject.csproj";
+			project.FileName = FileName.Create(@"C:\Projects\MyProject\MyProject.csproj");
 			projectItem.Include = @"Service References\";
 			string folder = @"c:\projects\myproject\service references";
 			

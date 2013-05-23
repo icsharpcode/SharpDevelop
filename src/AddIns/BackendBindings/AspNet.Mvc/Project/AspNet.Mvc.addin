@@ -91,18 +91,18 @@
 			extensions="*.aspx"/>
 	</Path>
 	
-	<Path name="/SharpDevelop/Workbench/LanguageBindings">
-		<LanguageBinding
+	<Path name="/SharpDevelop/ViewContent/TextEditor/Extensions">
+		<TextEditorExtension
 			id="WebForms"
-			class="ICSharpCode.AspNet.Mvc.Folding.WebFormsLanguageBinding"
+			class="ICSharpCode.AspNet.Mvc.Folding.WebFormsTextEditorExtension"
 			extensions=".aspx;.ascx;.master;.html;.htm" />
-		<LanguageBinding
+		<TextEditorExtension
 			id="CSharp.Razor"
-			class="ICSharpCode.AspNet.Mvc.Folding.CSharpRazorLanguageBinding"
+			class="ICSharpCode.AspNet.Mvc.Folding.CSharpRazorTextEditorExtension"
 			extensions=".cshtml" />
-		<LanguageBinding
+		<TextEditorExtension
 			id="VisualBasic.Razor"
-			class="ICSharpCode.AspNet.Mvc.Folding.VisualBasicRazorLanguageBinding"
+			class="ICSharpCode.AspNet.Mvc.Folding.VisualBasicRazorTextEditorExtension"
 			extensions=".vbhtml" />
 	</Path>
 

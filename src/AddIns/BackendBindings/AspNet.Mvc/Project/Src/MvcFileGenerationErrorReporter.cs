@@ -17,7 +17,7 @@ namespace ICSharpCode.AspNet.Mvc
 			foreach (CompilerError error in errors) {
 				TaskService.Add(new CompilerErrorTask(error));
 			}
-			WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+			SD.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 		}
 	}
 }

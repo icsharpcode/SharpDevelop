@@ -129,8 +129,7 @@ namespace ICSharpCode.Build.Tasks
 						if (memberName.StartsWith("#"))
 							memberName = memberName.Substring(1);
 						// second, translate .ctor to #ctor
-						if (memberName.StartsWith(".ctor") || memberName.StartsWith(".cctor"))
-							memberName = "#" + memberName.Substring(1);
+						memberName = memberName.Replace('.', '#');
 					}
 					parent = parent.ParentNode;
 				}

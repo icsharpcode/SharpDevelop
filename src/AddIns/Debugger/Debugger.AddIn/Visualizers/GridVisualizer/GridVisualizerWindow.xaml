@@ -27,9 +27,6 @@
 			
 			<Border Margin="3" Padding="3">
 				<DockPanel>
-					<TextBlock VerticalAlignment="Center">Expression:</TextBlock>
-					<TextBox Name="txtExpression" VerticalAlignment="Center" Width="100"></TextBox>
-					<Button Name="btnInspect" Click="btnInspect_Click">Inspect</Button>
 					<ComboBox Name="cmbColumns" Style="{StaticResource styleColumnsComboBox}" Width="74" Height="20" HorizontalAlignment="Right">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>

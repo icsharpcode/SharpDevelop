@@ -10,32 +10,28 @@ using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class ShowOutputFromComboBox : AbstractComboBoxCommand
+	public class ShowOutputFromComboBox : ComboBox
 	{
-		ComboBox comboBox;
-		
-		protected override void OnOwnerChanged(EventArgs e)
+		public ShowOutputFromComboBox()
 		{
-			base.OnOwnerChanged(e);
-			comboBox = (ComboBox)base.ComboBox;
 			SetItems();
-			CompilerMessageView.Instance.MessageCategoryAdded         += new EventHandler(CompilerMessageViewMessageCategoryAdded);
-			CompilerMessageView.Instance.SelectedCategoryIndexChanged += new EventHandler(CompilerMessageViewSelectedCategoryIndexChanged);
-			comboBox.SelectedIndex = 0;
-			comboBox.SelectionChanged += new SelectionChangedEventHandler(ComboBoxSelectionChanged);
+			CompilerMessageView.Instance.MessageCategoryAdded         += CompilerMessageViewMessageCategoryAdded;
+			CompilerMessageView.Instance.SelectedCategoryIndexChanged += CompilerMessageViewSelectedCategoryIndexChanged;
+			this.SelectedIndex = 0;
 		}
 
 		void CompilerMessageViewSelectedCategoryIndexChanged(object sender, EventArgs e)
 		{
-			if (comboBox.SelectedIndex != CompilerMessageView.Instance.SelectedCategoryIndex) {
-				comboBox.SelectedIndex = CompilerMessageView.Instance.SelectedCategoryIndex;
+			if (this.SelectedIndex != CompilerMessageView.Instance.SelectedCategoryIndex) {
+				this.SelectedIndex = CompilerMessageView.Instance.SelectedCategoryIndex;
 			}
 		}
 		
-		void ComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+		protected override void OnSelectionChanged(SelectionChangedEventArgs e)
 		{
-			if (comboBox.SelectedIndex != CompilerMessageView.Instance.SelectedCategoryIndex) {
-				CompilerMessageView.Instance.SelectedCategoryIndex = comboBox.SelectedIndex;
+			base.OnSelectionChanged(e);
+			if (this.SelectedIndex != CompilerMessageView.Instance.SelectedCategoryIndex) {
+				CompilerMessageView.Instance.SelectedCategoryIndex = this.SelectedIndex;
 			}
 		}
 		
@@ -46,15 +42,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void SetItems()
 		{
-			comboBox.Items.Clear();
+			this.Items.Clear();
 			foreach (MessageViewCategory category in CompilerMessageView.Instance.MessageCategories) {
-				comboBox.Items.Add(StringParser.Parse(category.DisplayCategory));
+				this.Items.Add(StringParser.Parse(category.DisplayCategory));
 			}
-			comboBox.SelectedIndex = 0;
-		}
-		
-		public override void Run()
-		{
+			this.SelectedIndex = 0;
 		}
 	}
 	

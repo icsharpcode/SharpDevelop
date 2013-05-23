@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
-
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
@@ -17,7 +17,7 @@ namespace XmlEditor.Tests.Tree
 	/// Xml Tree (e.g. InsertElementBeforeCommand).
 	/// </summary>
 	[TestFixture]
-	public class MenuCommandsTestFixture
+	public class MenuCommandsTestFixture : SDTestFixtureBase
 	{
 		DerivedXmlTreeViewContainerControl treeViewContainer;
 		XmlDocument doc;

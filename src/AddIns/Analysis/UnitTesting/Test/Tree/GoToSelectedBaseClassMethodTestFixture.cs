@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
@@ -15,7 +14,6 @@ namespace UnitTesting.Tests.Tree
 		MockTestTreeView treeView;
 		GotoDefinitionCommand gotoDefinitionCommand;
 		MockFileService fileService;
-		MockMethod baseClassMethod;
 		
 		[SetUp]
 		public void Init()

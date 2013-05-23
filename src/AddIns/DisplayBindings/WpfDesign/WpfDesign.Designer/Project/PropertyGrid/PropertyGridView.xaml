@@ -232,9 +232,9 @@
 					<Setter TargetName="editorContainer"
 					        Property="Opacity"
 					        Value="0.5" />
-					<Setter TargetName="editorContainer"
+					<!--<Setter TargetName="editorContainer"
 					        Property="IsHitTestVisible"
-					        Value="False" />
+					        Value="False" />-->
 				</DataTrigger>
 			</DataTemplate.Triggers>
 		</DataTemplate>

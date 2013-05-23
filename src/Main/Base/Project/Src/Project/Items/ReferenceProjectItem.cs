@@ -6,10 +6,9 @@ using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Text;
-
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -170,36 +169,38 @@ namespace ICSharpCode.SharpDevelop.Project
 			set { redist = value; }
 		}
 		
-		string fullPath;
+		FileName fullPath;
 		
 		[ReadOnly(true)]
 		[Browsable(true)]
-		public override string FileName {
+		public override FileName FileName {
 			get {
 				if (fullPath != null) {
 					return fullPath;
 				}
 				
 				if (Project != null) {
-					string projectDir = Project.Directory;
+					DirectoryName projectDir = Project.Directory;
 					string hintPath = HintPath;
 					try {
 						if (hintPath != null && hintPath.Length > 0) {
-							return FileUtility.NormalizePath(Path.Combine(projectDir, hintPath));
+							return projectDir.CombineFile(hintPath);
 						}
-						string name = FileUtility.NormalizePath(Path.Combine(projectDir, Include));
+						FileName name = projectDir.CombineFile(Include);
 						if (File.Exists(name)) {
 							return name;
 						}
-						if (File.Exists(name + ".dll")) {
-							return name + ".dll";
+						name = projectDir.CombineFile(Include + ".dll");
+						if (File.Exists(name)) {
+							return name;
 						}
-						if (File.Exists(name + ".exe")) {
-							return name + ".exe";
+						name = projectDir.CombineFile(Include + ".exe");
+						if (File.Exists(name)) {
+							return name;
 						}
 					} catch {} // ignore errors when path is invalid
 				}
-				return Include;
+				return FileName.Create(Include);
 			}
 			set {
 				fullPath = value;

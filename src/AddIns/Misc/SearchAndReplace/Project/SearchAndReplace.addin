@@ -44,9 +44,9 @@
 		<Class id="DefaultSearchResultFactory" class="SearchAndReplace.DefaultSearchResultFactory"/>
 	</Path>
 	
-	<Path name="/SharpDevelop/Workbench/LanguageBindings">
-		<LanguageBinding
+	<Path name="/SharpDevelop/ViewContent/TextEditor/Extensions">
+		<TextEditorExtension
 			id="SearchAndReplace"
-			class="SearchAndReplace.SearchAndReplaceBinding" />
+			class="SearchAndReplace.SearchAndReplaceTextEditorExtension" />
 	</Path>
 </AddIn>

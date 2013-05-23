@@ -32,8 +32,7 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateSolution(string fileName)
 		{
-			solutionHelper = new SolutionHelper();
-			solutionHelper.MSBuildSolution.FileName = fileName;
+			solutionHelper = new SolutionHelper(fileName);
 			projects = (Projects)solutionHelper.Solution.Projects;
 		}
 		

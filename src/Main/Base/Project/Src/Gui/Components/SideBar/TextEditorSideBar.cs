@@ -4,9 +4,10 @@
 using System;
 using System.IO;
 using System.Xml;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Templates;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -19,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public static TextEditorSideBar Instance {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				if (instance == null) {
 					instance = new TextEditorSideBar();
 					instance.Initialize();
@@ -36,11 +37,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		private void Initialize()
 		{
-			foreach (TextTemplate template in TextTemplate.TextTemplates) {
+			foreach (TextTemplateGroup template in SD.Templates.TextTemplates) {
 				SideTab tab = new SideTab(this, template.Name);
 				tab.DisplayName = StringParser.Parse(tab.Name);
 				tab.CanSaved  = false;
-				foreach (TextTemplate.Entry entry in template.Entries)  {
+				foreach (TextTemplate entry in template.Entries)  {
 					tab.Items.Add(SideTabItemFactory.CreateSideTabItem(entry.Display, entry.Value));
 				}
 				tab.CanBeDeleted = tab.CanDragDrop = false;
@@ -97,8 +98,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			doc.LoadXml("<SideBarConfig version=\"1.0\"/>");
 			doc.DocumentElement.AppendChild(WriteConfig(doc));
 			
-			FileUtility.ObservedSave(new NamedFileOperationDelegate(doc.Save),
-			                         Path.Combine(PropertyService.ConfigDirectory, "SideBarConfig.xml"),
+			FileUtility.ObservedSave(fileName => doc.Save(fileName),
+			                         FileName.Create(Path.Combine(PropertyService.ConfigDirectory, "SideBarConfig.xml")),
 			                         FileErrorPolicy.ProvideAlternative);
 		}
 		

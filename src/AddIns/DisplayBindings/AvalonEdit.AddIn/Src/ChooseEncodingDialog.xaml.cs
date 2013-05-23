@@ -18,13 +18,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public ChooseEncodingDialog()
 		{
 			InitializeComponent();
-			encodingComboBox.ItemsSource = FileService.AllEncodings;
-			encodingComboBox.SelectedItem = FileService.DefaultFileEncoding;
+			encodingComboBox.ItemsSource = SD.FileService.AllEncodings;
+			encodingComboBox.SelectedItem = SD.FileService.DefaultFileEncodingInfo;
 		}
 		
 		public Encoding Encoding {
 			get { return ((EncodingInfo)encodingComboBox.SelectedItem).GetEncoding(); }
-			set { encodingComboBox.SelectedItem = FileService.AllEncodings.Single(e => e.CodePage == value.CodePage); }
+			set { encodingComboBox.SelectedItem = SD.FileService.AllEncodings.Single(e => e.CodePage == value.CodePage); }
 		}
 		
 		void okButton_Click(object sender, RoutedEventArgs e)

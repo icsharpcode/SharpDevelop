@@ -115,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			this.basePropertyDescriptor.ResetValue(component);
 			if (component is LocalizedObject) {
-				((LocalizedObject)component).InformSetValue(this, component, null);
+				((LocalizedObject)component).InformSetValue(this, null);
 			}
 		}
 
@@ -132,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				this.basePropertyDescriptor.SetValue(component, value);
 			}
 			if (component is LocalizedObject) {
-				((LocalizedObject)component).InformSetValue(this, component, value);
+				((LocalizedObject)component).InformSetValue(this, value);
 			}
 		}
 	}

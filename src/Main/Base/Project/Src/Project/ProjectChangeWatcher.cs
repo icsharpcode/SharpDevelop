@@ -3,10 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project.Commands;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -28,10 +30,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			this.fileName = fileName;
 			
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			activeWatchers.Add(this);
 			
-			WorkbenchSingleton.MainWindow.Activated += MainFormActivated;
+			SD.Workbench.MainWindow.Activated += MainFormActivated;
 		}
 		
 		public void Enable()
@@ -53,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Project
 
 		void SetWatcher()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 
 			if (watcher != null) {
 				watcher.EnableRaisingEvents = false;
@@ -72,8 +74,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			try {
 				if (watcher == null) {
 					watcher = new FileSystemWatcher();
-					if (WorkbenchSingleton.Workbench != null)
-						watcher.SynchronizingObject = WorkbenchSingleton.Workbench.SynchronizingObject;
+					watcher.SynchronizingObject = SD.MainThread.SynchronizingObject;
 					watcher.Changed += OnFileChangedEvent;
 					watcher.Created += OnFileChangedEvent;
 					watcher.Renamed += OnFileChangedEvent;
@@ -108,11 +109,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			LoggingService.Debug("Project file " + e.Name + " was changed externally: {1}" + e.ChangeType);
 			if (!wasChangedExternally) {
 				wasChangedExternally = true;
-				if (WorkbenchSingleton.Workbench.IsActiveWindow) {
+				if (SD.Workbench.IsActiveWindow) {
 					// delay reloading message a bit, prevents showing two messages
 					// when the file changes twice in quick succession; and prevents
 					// trying to reload the file while it is still being written
-					WorkbenchSingleton.CallLater(TimeSpan.FromSeconds(0.5), delegate { MainFormActivated(this, EventArgs.Empty); });
+					SD.MainThread.CallLater(TimeSpan.FromSeconds(0.5), delegate { MainFormActivated(this, EventArgs.Empty); });
 				}
 			}
 		}
@@ -136,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					showingMessageBox = false;
 					wasChangedExternally = false;
 					if (result == 0)
-						ProjectService.LoadSolution(ProjectService.OpenSolution.FileName);
+						SD.ProjectService.OpenSolutionOrProject(ProjectService.OpenSolution.FileName);
 					else if (result == 2)
 						new CloseSolution().Run();
 				} else {
@@ -149,9 +150,9 @@ namespace ICSharpCode.SharpDevelop.Project
 
 		public void Dispose()
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (!disposed) {
-				WorkbenchSingleton.MainWindow.Activated -= MainFormActivated;
+				SD.Workbench.MainWindow.Activated -= MainFormActivated;
 				activeWatchers.Remove(this);
 			}
 			if (watcher != null) {

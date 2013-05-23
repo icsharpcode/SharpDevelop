@@ -26,3 +26,6 @@ http://wiki.sharpdevelop.net/FeaturesWeSolicitHelpFor.ashx
 
 http://wiki.sharpdevelop.net/Wishlist.ashx
 
+++ TECH NOTES ++
+https://www.github.com/icsharpcode/SharpDevelop/tree/master/doc/technotes/
+(doc/technotes/ in source code download)

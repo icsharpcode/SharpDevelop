@@ -11,7 +11,7 @@ using Rhino.Mocks;
 namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 {
 	[TestFixture]
-	public class MSBuildBasedProjectTests
+	public class MSBuildBasedProjectTests : SDTestFixtureBase
 	{
 		MSBuildBasedProject project;
 		IProjectItemBackendStore backendStore;

@@ -2,8 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace WixBinding.Tests.Utils
 {

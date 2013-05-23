@@ -5,11 +5,12 @@ using System;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -26,20 +27,19 @@ namespace ICSharpCode.XamlBinding
 			
 			InitializeComponent();
 			
-			ParserService.ParseInformationUpdated += ParseInfoUpdated;
+			SD.ParserService.ParseInformationUpdated += ParseInfoUpdated;
 		}
 
 		void ParseInfoUpdated(object sender, ParseInformationEventArgs e)
 		{
 			if (this.editor == null || !FileUtility.IsEqualFileName(this.editor.FileName, e.FileName))
 				return;
-			if (!e.IsPrimaryParseInfoForFile)
-				return;
 			
-			var cu = e.NewCompilationUnit as XamlCompilationUnit;
-			
-			if (cu != null && cu.TreeRootNode != null)
-				UpdateTree(cu.TreeRootNode);
+			#warning Reimplement XAML outline
+//			var cu = e.NewSyntaxTree as XamlSyntaxTree;
+//			
+//			if (cu != null && cu.TreeRootNode != null)
+//				UpdateTree(cu.TreeRootNode);
 		}
 		
 		void UpdateTree(NodeWrapper root)
@@ -104,7 +104,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public void Dispose()
 		{
-			ParserService.ParseInformationUpdated -= ParseInfoUpdated;
+			SD.ParserService.ParseInformationUpdated -= ParseInfoUpdated;
 		}
 	}
 }

@@ -8,15 +8,10 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
@@ -28,8 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public TaskListXaml()
 		{
 			InitializeComponent();
-			string[] tokens = ParserService.TaskListTokens;
-			foreach (var token in tokens) {
+			foreach (var token in SD.ParserService.TaskListTokens) {
 				listView.Items.Add(token);
 			};
 		}
@@ -85,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 					tokens.Add(text);
 				}
 			}
-			ParserService.TaskListTokens = tokens.ToArray();
+			SD.ParserService.TaskListTokens = tokens.ToArray();
 			return true;
 		}
 	}

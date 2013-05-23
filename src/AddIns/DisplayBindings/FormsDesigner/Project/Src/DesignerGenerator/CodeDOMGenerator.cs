@@ -11,6 +11,7 @@ using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.FormsDesigner
 {
+	/*
 	/// <summary>
 	/// This class is able to generate a CodeDOM definition out of a XML file.
 	/// </summary>
@@ -18,15 +19,15 @@ namespace ICSharpCode.FormsDesigner
 	{
 		CodeDomProvider codeProvider;
 		
-		CodeDOMGeneratorUtility codeDOMGeneratorUtility = new CodeDOMGeneratorUtility();
+//		CodeDOMGeneratorUtility codeDOMGeneratorUtility = new CodeDOMGeneratorUtility();
 		string indentation;
 		
 		protected CodeDomProvider CodeDomProvider {
 			get { return codeProvider; }
 		}
-		protected CodeDOMGeneratorUtility CodeDOMGeneratorUtility {
-			get { return codeDOMGeneratorUtility; }
-		}
+//		protected CodeDOMGeneratorUtility CodeDOMGeneratorUtility {
+//			get { return codeDOMGeneratorUtility; }
+//		}
 		protected string Indentation {
 			get { return indentation; }
 		}
@@ -76,5 +77,5 @@ namespace ICSharpCode.FormsDesigner
 			
 		}
 		
-	}
+	}*/
 }

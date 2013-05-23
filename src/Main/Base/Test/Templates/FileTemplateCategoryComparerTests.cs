@@ -1,10 +1,11 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project.Dialogs;
+using ICSharpCode.SharpDevelop.Templates;
 using NUnit.Framework;
-using System;
 
 namespace ICSharpCode.SharpDevelop.Tests.Templates
 {

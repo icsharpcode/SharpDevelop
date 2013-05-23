@@ -8,6 +8,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// that it's a texteditor which could set the caret to a position inside
 	/// a file.
 	/// </summary>
+	[ViewContentService]
 	public interface IPositionable
 	{
 		/// <summary>

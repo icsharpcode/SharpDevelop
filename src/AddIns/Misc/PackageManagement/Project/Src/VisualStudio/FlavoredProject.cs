@@ -35,9 +35,9 @@ namespace Microsoft.VisualStudio.Shell.Flavor
 		{
 			var projectType = new ProjectType(project);
 			if (projectType.Type == ProjectType.CSharp) {
-				return ProjectTypeGuids.CSharp;
+				return ProjectTypeGuids.CSharp.ToString();
 			} else if (projectType.Type == ProjectType.VBNet) {
-				return ProjectTypeGuids.VBNet;
+				return ProjectTypeGuids.VBNet.ToString();
 			}
 			return String.Empty;
 		}

@@ -10,9 +10,11 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using System.Windows.Input;
+
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 #endregion
@@ -527,7 +529,7 @@ namespace ICSharpCode.Data.Core.UI
 		/// <param name="dispatcherToPause"></param>
 		public static void DoEvents(Dispatcher dispatcherToPause)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			dispatcherToPause.Invoke(DispatcherPriority.Background, new System.Action(() => { }));
 		}
 	}

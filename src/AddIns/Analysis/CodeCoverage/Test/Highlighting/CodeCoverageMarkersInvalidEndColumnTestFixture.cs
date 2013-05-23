@@ -1,13 +1,15 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Tests.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using ICSharpCode.CodeCoverage;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Tests.Utils;
 using NUnit.Framework;
 
 namespace ICSharpCode.CodeCoverage.Tests.Highlighting
@@ -21,8 +23,8 @@ namespace ICSharpCode.CodeCoverage.Tests.Highlighting
 		public void Init()
 		{
 			try {
-				string configFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "NCoverAddIn.Tests");
-				PropertyService.InitializeService(configFolder, Path.Combine(configFolder, "data"), "NCoverAddIn.Tests");
+				//string configFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "NCoverAddIn.Tests");
+				//PropertyService.InitializeService(configFolder, Path.Combine(configFolder, "data"), "NCoverAddIn.Tests");
 			} catch (Exception) {}
 			
 			IDocument document = MockTextMarkerService.CreateDocumentWithMockService();

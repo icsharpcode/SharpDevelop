@@ -2,10 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Diagnostics;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
 using WPF = System.Windows.Controls;
@@ -21,7 +21,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		public static WpfToolbox Instance {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				if (instance == null) {
 					instance = new WpfToolbox();
 				}

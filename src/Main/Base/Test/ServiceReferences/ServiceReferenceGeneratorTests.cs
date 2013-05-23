@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel.Description;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
@@ -20,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		IServiceReferenceMapGenerator fakeReferenceMapGenerator;
 		ServiceReferenceGenerator generator;
 		ServiceReferenceFileGenerator fileGenerator;
-		IFileSystem fakeFileSystem;
+		IServiceReferenceFileSystem fakeFileSystem;
 		ServiceReferenceGeneratorOptions options;
 		List<ReferenceProjectItem> projectReferences;
 		IActiveTextEditors fakeActiveTextEditors;
@@ -35,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			fakeProxyGenerator.Options = options;
 			fakeReferenceMapGenerator = MockRepository.GenerateStub<IServiceReferenceMapGenerator>();
 			fileGenerator = new ServiceReferenceFileGenerator(fakeProxyGenerator, fakeReferenceMapGenerator);
-			fakeFileSystem = MockRepository.GenerateStub<IFileSystem>();
+			fakeFileSystem = MockRepository.GenerateStub<IServiceReferenceFileSystem>();
 			fakeActiveTextEditors = MockRepository.GenerateStub<IActiveTextEditors>();
 			
 			generator = new ServiceReferenceGenerator(fakeProject, fileGenerator, fakeFileSystem, fakeActiveTextEditors);
@@ -130,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			IProject dummyProject = MockRepository.GenerateStub<IProject>();
 			dummyProject.Stub(p => p.SyncRoot).Return(new object());
 			var projectItem = new ReferenceProjectItem(dummyProject, reference);
-			projectItem.FileName = fileName;
+			projectItem.FileName = FileName.Create(fileName);
 			projectReferences.Add(projectItem);
 			return projectItem;
 		}

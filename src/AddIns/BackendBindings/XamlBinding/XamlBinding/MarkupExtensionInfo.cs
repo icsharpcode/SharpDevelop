@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.XmlEditor;
 using System.Text;
 

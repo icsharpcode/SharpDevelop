@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Windows.Input;
+using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
@@ -30,8 +31,8 @@ namespace ICSharpCode.WpfDesign.Designer
         /// </summary>
         public void Start()
         {
-            DesignCommand tabFocus = new DesignCommand(parameter => this.MoveFocusForward(_surface), parameter => CanMoveFocusForward(_surface));
-            DesignCommand shiftTabFocus = new DesignCommand(parameter => this.MoveFocusBack(_surface), parameter => this.CanMoveFocusBack(_surface));
+            var tabFocus = new RelayCommand(this.MoveFocusForward, this.CanMoveFocusForward);
+            var shiftTabFocus = new RelayCommand(this.MoveFocusBack, this.CanMoveFocusBack);
             _tabBinding = new KeyBinding(tabFocus, new KeyGesture(Key.Tab));
             _shiftTabBinding = new KeyBinding(shiftTabFocus, new KeyGesture(Key.Tab, ModifierKeys.Shift));
             IKeyBindingService kbs = _surface.DesignContext.Services.GetService(typeof(IKeyBindingService)) as IKeyBindingService;
@@ -58,9 +59,9 @@ namespace ICSharpCode.WpfDesign.Designer
         /// <summary>
         /// Moves the Foucus down the tree.
         /// </summary>        
-        void MoveFocusForward(object surface)
+        void MoveFocusForward()
         {
-            var designSurface = surface as DesignSurface;
+            var designSurface = _surface;
             if (designSurface != null) {
                 var context = designSurface.DesignContext;
                 ISelectionService selection=context.Services.Selection;
@@ -105,10 +106,9 @@ namespace ICSharpCode.WpfDesign.Designer
         /// <summary>
         /// Checks if focus navigation should be for down-the-tree be done.
         /// </summary>
-        /// <param name="surface">Design Surface</param>        
-        bool CanMoveFocusForward(object surface)
+        bool CanMoveFocusForward()
         {
-            var designSurface = surface as DesignSurface;
+            var designSurface = _surface;
             if (designSurface != null)
                 if (Keyboard.FocusedElement == designSurface._designPanel)
                     return true;
@@ -118,9 +118,9 @@ namespace ICSharpCode.WpfDesign.Designer
         /// <summary>
         /// Moves focus up-the-tree.
         /// </summary>        
-        void MoveFocusBack(object surface)
+        void MoveFocusBack()
         {
-            var designSurface = surface as DesignSurface;
+            var designSurface = _surface;
             if (designSurface != null) {
                 var context = designSurface.DesignContext;
                 ISelectionService selection = context.Services.Selection;
@@ -157,10 +157,9 @@ namespace ICSharpCode.WpfDesign.Designer
         /// <summary>
         /// Checks if focus navigation for the up-the-tree should be done.
         /// </summary>
-        /// <param name="surface">Design Surface</param>        
-        bool CanMoveFocusBack(object surface)
+        bool CanMoveFocusBack()
         {
-            var designSurface = surface as DesignSurface;
+            var designSurface = _surface;
             if (designSurface != null)
                 if (Keyboard.FocusedElement == designSurface._designPanel)
                     return true;

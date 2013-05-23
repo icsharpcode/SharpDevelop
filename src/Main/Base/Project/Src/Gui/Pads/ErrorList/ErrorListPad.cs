@@ -4,8 +4,9 @@
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -74,10 +75,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public ErrorListPad()
 		{
 			instance = this;
-			properties = PropertyService.Get("ErrorListPad", new Properties());
+			properties = PropertyService.NestedProperties("ErrorListPad");
 			
 			RedrawContent();
-			ResourceService.LanguageChanged += delegate { RedrawContent(); };
+			SD.ResourceService.LanguageChanged += delegate { RedrawContent(); };
 			
 			TaskService.Cleared += new EventHandler(TaskServiceCleared);
 			TaskService.Added   += new TaskEventHandler(TaskServiceAdded);
@@ -87,14 +88,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 					InternalShowResults();
 			};
 			
-			ProjectService.BuildFinished  += ProjectServiceEndBuild;
-			ProjectService.SolutionLoaded += OnSolutionOpen;
-			ProjectService.SolutionClosed += OnSolutionClosed;
+			SD.BuildService.BuildFinished += ProjectServiceEndBuild;
+			SD.ProjectService.SolutionOpened += OnSolutionOpen;
+			SD.ProjectService.SolutionClosed += OnSolutionClosed;
 			
 			taskView.CreateControl();
 			contentPanel.Controls.Add(taskView);
 			
-			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/ErrorList/Toolbar");
+			toolStrip = SD.WinForms.ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/ErrorList/Toolbar");
 			toolStrip.Stretch   = true;
 			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			
@@ -127,14 +128,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void ProjectServiceEndBuild(object sender, EventArgs e)
 		{
 			if (TaskService.TaskCount > 0 && ShowAfterBuild) {
-				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+				SD.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 			}
 			UpdateToolstripStatus();
 		}
 		
 		public BuildResults BuildResults = null;
 		
-		void AddTask(Task task)
+		void AddTask(SDTask task)
 		{
 			switch (task.TaskType) {
 				case TaskType.Warning:
@@ -186,8 +187,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void UpdateToolstripStatus()
 		{
-			ToolbarService.UpdateToolbar(toolStrip);
-			ToolbarService.UpdateToolbarText(toolStrip);
+			SD.WinForms.ToolbarService.UpdateToolbar(toolStrip);
+			SD.WinForms.ToolbarService.UpdateToolbarText(toolStrip);
 		}
 		
 		void InternalShowResults()
@@ -200,7 +201,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			taskView.BeginUpdate();
 			taskView.ClearTasks();
 			
-			foreach (Task task in TaskService.Tasks) {
+			foreach (SDTask task in TaskService.Tasks) {
 				AddTask(task);
 			}
 			

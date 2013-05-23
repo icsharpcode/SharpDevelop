@@ -16,7 +16,7 @@ namespace ICSharpCode.Core
 		AddIn       addIn;
 		string      name;
 		Properties  properties;
-		ICondition[] conditions;
+		IReadOnlyList<ICondition> conditions;
 		
 		public string Name {
 			get {
@@ -60,43 +60,32 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public ICondition[] Conditions {
+		public IReadOnlyList<ICondition> Conditions {
 			get {
 				return conditions;
 			}
 		}
 		
-		public Codon(AddIn addIn, string name, Properties properties, ICondition[] conditions)
+		public Codon(AddIn addIn, string name, Properties properties, IReadOnlyList<ICondition> conditions)
 		{
+			if (name == null)
+				throw new ArgumentNullException("name");
+			if (properties == null)
+				throw new ArgumentNullException("properties");
 			this.addIn      = addIn;
 			this.name       = name;
 			this.properties = properties;
 			this.conditions = conditions;
 		}
 		
-		[Obsolete("Use BuildItemArgs.Conditions instead")]
-		public ConditionFailedAction GetFailedAction(object caller)
-		{
-			return Condition.GetFailedAction(conditions, caller);
-		}
-		
-//
-//		public void BinarySerialize(BinaryWriter writer)
-//		{
-//			writer.Write(AddInTree.GetNameOffset(name));
-//			writer.Write(AddInTree.GetAddInOffset(addIn));
-//			properties.BinarySerialize(writer);
-//		}
-//
-		
 		internal object BuildItem(BuildItemArgs args)
 		{
 			IDoozer doozer;
-			if (!AddInTree.Doozers.TryGetValue(Name, out doozer))
+			if (!addIn.AddInTree.Doozers.TryGetValue(Name, out doozer))
 				throw new CoreException("Doozer " + Name + " not found! " + ToString());
 			
 			if (!doozer.HandleConditions) {
-				ConditionFailedAction action = Condition.GetFailedAction(args.Conditions, args.Caller);
+				ConditionFailedAction action = Condition.GetFailedAction(args.Conditions, args.Parameter);
 				if (action != ConditionFailedAction.Nothing) {
 					return null;
 				}

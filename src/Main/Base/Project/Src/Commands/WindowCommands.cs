@@ -11,12 +11,12 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null ||
-			   		WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count == 0) {
+			if (SD.Workbench.ActiveWorkbenchWindow == null ||
+			   		SD.Workbench.WorkbenchWindowCollection.Count == 0) {
 				return;
 			}
-			int index = WorkbenchSingleton.Workbench.WorkbenchWindowCollection.IndexOf(WorkbenchSingleton.Workbench.ActiveWorkbenchWindow);
-			WorkbenchSingleton.Workbench.WorkbenchWindowCollection[(index + 1) % WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count].SelectWindow();
+			int index = SD.Workbench.WorkbenchWindowCollection.IndexOf(SD.Workbench.ActiveWorkbenchWindow);
+			SD.Workbench.WorkbenchWindowCollection [(index + 1) % SD.Workbench.WorkbenchWindowCollection.Count].SelectWindow();
 		}
 	}
 	
@@ -24,12 +24,12 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null ||
-					WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count == 0) {
+			if (SD.Workbench.ActiveWorkbenchWindow == null ||
+					SD.Workbench.WorkbenchWindowCollection.Count == 0) {
 				return;
 			}
-			int index = WorkbenchSingleton.Workbench.WorkbenchWindowCollection.IndexOf(WorkbenchSingleton.Workbench.ActiveWorkbenchWindow);
-			WorkbenchSingleton.Workbench.WorkbenchWindowCollection[(index + WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count - 1) % WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count].SelectWindow();
+			int index = SD.Workbench.WorkbenchWindowCollection.IndexOf(SD.Workbench.ActiveWorkbenchWindow);
+			SD.Workbench.WorkbenchWindowCollection [(index + SD.Workbench.WorkbenchWindowCollection.Count - 1) % SD.Workbench.WorkbenchWindowCollection.Count].SelectWindow();
 		}
 	}
 	
@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			WorkbenchSingleton.Workbench.CloseAllViews();
+			SD.Workbench.CloseAllViews();
 		}
 	}
 	

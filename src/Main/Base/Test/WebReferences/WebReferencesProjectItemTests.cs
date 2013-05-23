@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
@@ -9,7 +10,7 @@ using System;
 namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 {
 	[TestFixture]
-	public class WebReferencesProjectItemTests
+	public class WebReferencesProjectItemTests : SDTestFixtureBase
 	{
 		MSBuildBasedProject project;
 		
@@ -30,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		public void IsWebReferencesFolder_FolderMatchesWebReferencesProjectItemFolder_ReturnsTrue()
 		{
 			CreateProject();
-			project.FileName = @"C:\projects\test\foo.csproj";
+			project.FileName = FileName.Create(@"C:\projects\test\foo.csproj");
 			AddWebReferencesToProject(@"Web References\");
 			
 			bool result = WebReferencesProjectItem.IsWebReferencesFolder(project, @"C:\projects\test\Web References");
@@ -42,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		public void IsWebReferencesFolder_FolderDoesNotMatchWebReferencesProjectItemFolder_ReturnsFalse()
 		{
 			CreateProject();
-			project.FileName = @"C:\projects\test\foo.csproj";
+			project.FileName = FileName.Create(@"C:\projects\test\foo.csproj");
 			AddWebReferencesToProject(@"Web References\");
 			
 			bool result = WebReferencesProjectItem.IsWebReferencesFolder(project, @"C:\projects\test\foo");

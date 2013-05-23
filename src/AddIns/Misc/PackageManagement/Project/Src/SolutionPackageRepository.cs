@@ -18,7 +18,7 @@ namespace ICSharpCode.PackageManagement
 		PhysicalFileSystem fileSystem;
 		ISharedPackageRepository repository;
 		
-		public SolutionPackageRepository(Solution solution)
+		public SolutionPackageRepository(ISolution solution)
 			: this(
 				solution,
 				new SharpDevelopPackageRepositoryFactory(),
@@ -27,7 +27,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public SolutionPackageRepository(
-			Solution solution,
+			ISolution solution,
 			ISharpDevelopPackageRepositoryFactory repositoryFactory,
 			PackageManagementOptions options)
 		{

@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.FormsDesigner
@@ -67,7 +68,7 @@ namespace ICSharpCode.FormsDesigner
 				return false;
 			}
 			
-			FormsDesignerViewContent formDesigner = WorkbenchSingleton.Workbench.ActiveContent as FormsDesignerViewContent;
+			FormsDesignerViewContent formDesigner = SD.Workbench.ActiveContent as FormsDesignerViewContent;
 			
 			if (formDesigner == null || formDesigner.Host == null) {
 				return false;

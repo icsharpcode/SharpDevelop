@@ -46,15 +46,15 @@ namespace Debugger.Tests {
 			
 			StartTest(); // 1 - Enter program
 			
-			argument = process.SelectedStackFrame.GetArgumentValue(0);
-			local = process.SelectedStackFrame.GetLocalVariableValue("local");
-			@class = process.SelectedStackFrame.GetThisValue().GetMemberValue("class");
+			argument = this.CurrentStackFrame.GetArgumentValue(0);
+			local = this.CurrentStackFrame.GetLocalVariableValue("local");
+			@class = this.CurrentStackFrame.GetThisValue(false).GetFieldValue("class");
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
 			
 			process.Continue(); // 2 - Go to the SubFunction
-			localInSubFunction = process.SelectedStackFrame.GetLocalVariableValue("localInSubFunction");
+			localInSubFunction = this.CurrentStackFrame.GetLocalVariableValue("localInSubFunction");
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
@@ -71,7 +71,7 @@ namespace Debugger.Tests {
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
 			ObjectDump("localInSubFunction", @localInSubFunction);
-			localInSubFunction = process.SelectedStackFrame.GetLocalVariableValue("localInSubFunction");
+			localInSubFunction = this.CurrentStackFrame.GetLocalVariableValue("localInSubFunction");
 			ObjectDump("localInSubFunction(new)", @localInSubFunction);
 			
 			process.Continue(); // 5 - Setp out of both functions
@@ -91,10 +91,10 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="StackFrame_VariablesLifetime.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>StackFrame_VariablesLifetime.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:21,4-21,40</DebuggingPaused>
+    <Paused>StackFrame_VariablesLifetime.cs:21,4-21,40</Paused>
     <argument>
       <Value
         PrimitiveValue="1"
@@ -110,7 +110,7 @@ namespace Debugger.Tests {
         PrimitiveValue="3"
         Type="System.Int32" />
     </_x0040_class>
-    <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:30,4-30,40</DebuggingPaused>
+    <Paused>StackFrame_VariablesLifetime.cs:30,4-30,40</Paused>
     <argument>
       <Value
         IsInvalid="True"
@@ -137,7 +137,7 @@ namespace Debugger.Tests {
         PrimitiveValue="4"
         Type="System.Int32" />
     </localInSubFunction>
-    <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:23,4-23,40</DebuggingPaused>
+    <Paused>StackFrame_VariablesLifetime.cs:23,4-23,40</Paused>
     <argument>
       <Value
         IsInvalid="True"
@@ -166,7 +166,7 @@ namespace Debugger.Tests {
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </localInSubFunction>
-    <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:30,4-30,40</DebuggingPaused>
+    <Paused>StackFrame_VariablesLifetime.cs:30,4-30,40</Paused>
     <argument>
       <Value
         IsInvalid="True"
@@ -200,7 +200,7 @@ namespace Debugger.Tests {
         PrimitiveValue="4"
         Type="System.Int32" />
     </localInSubFunction_x0028_new_x0029_>
-    <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:15,4-15,40</DebuggingPaused>
+    <Paused>StackFrame_VariablesLifetime.cs:15,4-15,40</Paused>
     <argument>
       <Value
         IsInvalid="True"
@@ -229,7 +229,7 @@ namespace Debugger.Tests {
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </localInSubFunction>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

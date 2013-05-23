@@ -94,7 +94,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		{
 			if (color == null)
 				throw new ArgumentNullException("color");
-			if (color.Foreground == null && color.FontStyle == null && color.FontWeight == null) {
+			if (color.Foreground == null && color.Background == null && color.FontStyle == null && color.FontWeight == null) {
 				// Optimization: don't split the HighlightingState when we're not changing
 				// any property. For example, the "Punctuation" color in C# is
 				// empty by default.

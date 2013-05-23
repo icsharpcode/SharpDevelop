@@ -44,7 +44,7 @@ namespace ICSharpCode.PackageManagement
 			get { return OpenSolution.FileName; }
 		}
 		
-		Solution OpenSolution {
+		ISolution OpenSolution {
 			get { return projectService.OpenSolution; }
 		}
 		
@@ -126,7 +126,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public IEnumerable<IProject> GetMSBuildProjects()
 		{
-			return projectService.GetOpenProjects();
+			return projectService.AllProjects;
 		}
 		
 		public bool IsOpen {
@@ -135,7 +135,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool HasMultipleProjects()
 		{
-			return projectService.GetOpenProjects().Count() > 1;
+			return projectService.AllProjects.Count > 1;
 		}
 		
 		public bool IsPackageInstalled(IPackage package)
@@ -169,7 +169,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public IEnumerable<IPackageManagementProject> GetProjects(IPackageRepository sourceRepository)
 		{
-			foreach (MSBuildBasedProject msbuildProject in GetMSBuildProjects()) {
+			foreach (MSBuildBasedProject msbuildProject in GetMSBuildProjects().OfType<MSBuildBasedProject>()) {
 				yield return projectFactory.CreateProject(sourceRepository, msbuildProject);
 			}
 		}

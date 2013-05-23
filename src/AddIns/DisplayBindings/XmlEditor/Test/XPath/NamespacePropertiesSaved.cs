@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
@@ -35,7 +36,7 @@ namespace XmlEditor.Tests.XPath
 				queryControl.NamespacesDataGridView.Rows.Add(new object[] {null, null});
 
 				Properties p = queryControl.CreateMemento();
-				actualNamespaces = p.Get("Namespaces", new string[0]);
+				actualNamespaces = p.GetList<string>("Namespaces").ToArray();
 			}
 		}
 		

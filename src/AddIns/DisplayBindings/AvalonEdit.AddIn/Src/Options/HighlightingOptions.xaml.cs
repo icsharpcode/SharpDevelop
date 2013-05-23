@@ -3,12 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
+using System.Collections.ObjectModel;
+using System.ComponentModel.Design;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -20,11 +19,10 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
 
@@ -46,13 +44,12 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			textMarkerService = new TextMarkerService(textEditor.Document);
 			textEditor.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
 			textEditor.TextArea.TextView.LineTransformers.Add(textMarkerService);
-			textEditor.TextArea.TextView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
+			textEditor.Document.GetRequiredService<IServiceContainer>().AddService(typeof(ITextMarkerService), textMarkerService);
 		}
 		
 		BracketHighlightRenderer bracketHighlighter;
 		FoldingManager foldingManager;
 		TextMarkerService textMarkerService;
-		ITextMarker marker;
 		List<CustomizedHighlightingColor> customizationList;
 		
 		public const string FoldingControls = "Folding controls";
@@ -167,20 +164,19 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		{
 			base.LoadOptions();
 			if (allSyntaxDefinitions == null) {
-				allSyntaxDefinitions = (
-					from name in typeof(HighlightingManager).Assembly.GetManifestResourceNames().AsParallel()
+				var builtins = from name in typeof(HighlightingManager).Assembly.GetManifestResourceNames().AsParallel()
 					where name.StartsWith(typeof(HighlightingManager).Namespace + ".Resources.", StringComparison.OrdinalIgnoreCase)
 					&& name.EndsWith(".xshd", StringComparison.OrdinalIgnoreCase)
-					select LoadBuiltinXshd(name)
-				).Concat(
-					ICSharpCode.Core.AddInTree.BuildItems<AddInTreeSyntaxMode>(SyntaxModeDoozer.Path, null, false).AsParallel()
-					.Select(m => m.LoadXshd())
-				)
-					//.Where(def => def.Elements.OfType<XshdColor>().Any(c => c.ExampleText != null))
+					select LoadBuiltinXshd(name);
+				var extended = ICSharpCode.Core.AddInTree.BuildItems<AddInTreeSyntaxMode>(SyntaxModeDoozer.Path, null, false)
+					.AsParallel()
+					.Select(m => m.LoadXshd());
+				allSyntaxDefinitions = extended.AsEnumerable().Concat(builtins)
+					.DistinctBy(def => def.Name)
 					.OrderBy(def => def.Name)
 					.ToList();
 			}
-			customizationList = CustomizedHighlightingColor.LoadColors();
+			customizationList = new List<CustomizedHighlightingColor>(CustomizedHighlightingColor.LoadColors());
 			
 			CreateDefaultEntries(null, out defaultText, defaultEntries);
 			
@@ -194,13 +190,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		
 		void LanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			listBox.Items.Clear();
+			listBox.ItemsSource = null;
 			XshdSyntaxDefinition xshd = (XshdSyntaxDefinition)languageComboBox.SelectedItem;
 			if (xshd != null) {
 				IHighlightingItem defaultText;
-				List<IHighlightingItem> list = new List<IHighlightingItem>();
+				ObservableCollection<IHighlightingItem> list = new ObservableCollection<IHighlightingItem>();
 				CreateDefaultEntries(languageComboBox.SelectedIndex == 0 ? null : xshd.Name, out defaultText, list);
-				listBox.Items.AddRange(list);
+				listBox.ItemsSource = list;
 				
 				if (languageComboBox.SelectedIndex > 0) {
 					// Create entries for all customizable colors in the syntax highlighting definition
@@ -215,7 +211,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 							if (namedColor.ExampleText != null) {
 								IHighlightingItem item = new NamedColorHighlightingItem(defaultText, namedColor) { ParentDefinition = def };
 								item = new CustomizedHighlightingItem(customizationList, item, xshd.Name);
-								listBox.Items.Add(item);
+								list.Add(item);
 								item.PropertyChanged += item_PropertyChanged;
 							}
 						}
@@ -283,7 +279,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		void CreateDefaultEntries(string language, out IHighlightingItem defaultText, IList<IHighlightingItem> items)
 		{
 			// Create entry for "default text/background"
-			defaultText = new SimpleHighlightingItem(CustomizableHighlightingColorizer.DefaultTextAndBackground, ta => ta.Document.Text = "Normal text") {
+			defaultText = new SimpleHighlightingItem(CustomizingHighlighter.DefaultTextAndBackground, ta => ta.Document.Text = "Normal text") {
 				Foreground = SystemColors.WindowTextColor,
 				Background = SystemColors.WindowColor
 			};
@@ -293,7 +289,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			
 			// Create entry for "Selected text"
 			IHighlightingItem selectedText = new SimpleHighlightingItem(
-				CustomizableHighlightingColorizer.SelectedText,
+				CustomizingHighlighter.SelectedText,
 				ta => {
 					ta.Document.Text = "Selected text";
 					ta.Selection = Selection.Create(ta, 0, 13);
@@ -308,7 +304,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			
 			// Create entry for "Non-printable characters"
 			IHighlightingItem nonPrintChars = new SimpleHighlightingItem(
-				CustomizableHighlightingColorizer.NonPrintableCharacters,
+				CustomizingHighlighter.NonPrintableCharacters,
 				ta => {
 					ta.Document.Text = "	    \r \r\n \n";
 				})
@@ -321,7 +317,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			
 			// Create entry for "Line numbers"
 			IHighlightingItem lineNumbers = new SimpleHighlightingItem(
-				CustomizableHighlightingColorizer.LineNumbers,
+				CustomizingHighlighter.LineNumbers,
 				ta => {
 					ta.Document.Text = "These are just" + Environment.NewLine +
 						"multiple" + Environment.NewLine +
@@ -406,7 +402,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			items.Add(foldingTextMarker);
 			
 			IHighlightingItem linkText = new SimpleHighlightingItem(
-				CustomizableHighlightingColorizer.LinkText,
+				CustomizingHighlighter.LinkText,
 				ta => {
 					ta.Document.Text = "http://icsharpcode.net" + Environment.NewLine + "me@example.com";
 				})
@@ -422,7 +418,11 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				ErrorPainter.ErrorColorName,
 				ta => {
 					ta.Document.Text = "some error";
-					marker = textMarkerService.Create(0, 5);
+					ITextMarker marker = textMarkerService.Create(0, 5);
+					marker.Tag = (Action<IHighlightingItem, ITextMarker>)delegate(IHighlightingItem item, ITextMarker m) {
+						m.MarkerTypes = TextMarkerTypes.SquigglyUnderline;
+						m.MarkerColor = item.Foreground;
+					};
 				})
 			{
 				Foreground = Colors.Red
@@ -435,7 +435,11 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				ErrorPainter.WarningColorName,
 				ta => {
 					ta.Document.Text = "some warning";
-					marker = textMarkerService.Create(0, 5);
+					ITextMarker marker = textMarkerService.Create(0, 5);
+					marker.Tag = (Action<IHighlightingItem, ITextMarker>)delegate(IHighlightingItem item, ITextMarker m) {
+						m.MarkerTypes = TextMarkerTypes.SquigglyUnderline;
+						m.MarkerColor = item.Foreground;
+					};
 				})
 			{
 				Foreground = Colors.Orange
@@ -448,7 +452,11 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				ErrorPainter.MessageColorName,
 				ta => {
 					ta.Document.Text = "some message";
-					marker = textMarkerService.Create(0, 5);
+					ITextMarker marker = textMarkerService.Create(0, 5);
+					marker.Tag = (Action<IHighlightingItem, ITextMarker>)delegate(IHighlightingItem item, ITextMarker m) {
+						m.MarkerTypes = TextMarkerTypes.SquigglyUnderline;
+						m.MarkerColor = item.Foreground;
+					};
 				})
 			{
 				Foreground = Colors.Blue
@@ -461,7 +469,11 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				BreakpointBookmark.BreakpointMarker,
 				ta => {
 					ta.Document.Text = "some code with a breakpoint";
-					marker = textMarkerService.Create(0, ta.Document.TextLength);
+					ITextMarker marker = textMarkerService.Create(0, ta.Document.TextLength);
+					marker.Tag = (Action<IHighlightingItem, ITextMarker>)delegate(IHighlightingItem item, ITextMarker m) {
+						m.BackgroundColor = item.Background;
+						m.ForegroundColor = item.Foreground;
+					};
 				})
 			{
 				Background = BreakpointBookmark.DefaultBackground,
@@ -475,7 +487,11 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				CurrentLineBookmark.Name,
 				ta => {
 					ta.Document.Text = "current statement line";
-					marker = textMarkerService.Create(0, ta.Document.TextLength);
+					ITextMarker marker = textMarkerService.Create(0, ta.Document.TextLength);
+					marker.Tag = (Action<IHighlightingItem, ITextMarker>)delegate(IHighlightingItem item, ITextMarker m) {
+						m.BackgroundColor = item.Background;
+						m.ForegroundColor = item.Foreground;
+					};
 				})
 			{
 				Background = CurrentLineBookmark.DefaultBackground,
@@ -486,7 +502,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			items.Add(currentStatementMarker);
 			
 			IHighlightingItem columnRuler = new SimpleHighlightingItem(
-				CustomizableHighlightingColorizer.ColumnRuler,
+				CustomizingHighlighter.ColumnRuler,
 				ta => {
 					ta.Document.Text = "some line with a lot of text";
 					ta.TextView.Options.ColumnRulerPosition = 15;
@@ -523,43 +539,36 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			UpdatePreview();
 		}
 		
-		CustomizableHighlightingColorizer colorizer;
+		HighlightingColorizer colorizer;
 		
 		void UpdatePreview()
 		{
 			XshdSyntaxDefinition xshd = (XshdSyntaxDefinition)languageComboBox.SelectedItem;
 			if (xshd != null) {
 				var customizationsForCurrentLanguage = customizationList.Where(c => c.Language == null || c.Language == xshd.Name);
-				CustomizableHighlightingColorizer.ApplyCustomizationsToDefaultElements(textEditor, customizationsForCurrentLanguage);
+				CustomizingHighlighter.ApplyCustomizationsToDefaultElements(textEditor, customizationsForCurrentLanguage);
 				ApplyToRendering(textEditor, customizationsForCurrentLanguage);
 				var item = (IHighlightingItem)listBox.SelectedItem;
 				TextView textView = textEditor.TextArea.TextView;
 				foldingManager.Clear();
 				textMarkerService.RemoveAll(m => true);
-				marker = null;
 				textView.LineTransformers.Remove(colorizer);
 				colorizer = null;
 				if (item != null) {
 					if (item.ParentDefinition != null) {
-						colorizer = new CustomizableHighlightingColorizer(item.ParentDefinition.MainRuleSet, customizationsForCurrentLanguage);
+						var highlighter = new CustomizingHighlighter(
+							new DocumentHighlighter(textView.Document, item.ParentDefinition),
+							customizationsForCurrentLanguage
+						);
+						colorizer = new HighlightingColorizer(highlighter);
 						textView.LineTransformers.Add(colorizer);
 					}
 					textEditor.Select(0, 0);
 					bracketHighlighter.SetHighlight(null);
 					item.ShowExample(textEditor.TextArea);
-					if (marker != null) {
-						switch (item.Name) {
-							case ErrorPainter.ErrorColorName:
-							case ErrorPainter.WarningColorName:
-							case ErrorPainter.MessageColorName:
-								marker.MarkerType = TextMarkerType.SquigglyUnderline;
-								marker.MarkerColor = item.Foreground;
-								break;
-							default:
-								marker.MarkerType = TextMarkerType.None;
-								marker.MarkerColor = Colors.Transparent;
-								break;
-						}
+					ITextMarker m = textMarkerService.TextMarkers.SingleOrDefault();
+					if (m != null && m.Tag != null) {
+						((Action<IHighlightingItem, ITextMarker>)m.Tag)(item, m);
 					}
 				}
 			}
@@ -695,7 +704,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{ "Keyword", "VBNET.Keywords" },
 			{ "Keyword", "VBNET.FunctionKeywords" },
 			{ "Keyword", "VBNET.ContextKeywords" },
-			{ "Line Numbers", CustomizableHighlightingColorizer.LineNumbers },
+			{ "Line Numbers", CustomizingHighlighter.LineNumbers },
 			{ "MarkerFormatDefinition/HighlightedReference", "" },
 			{ "Number", "C#.NumberLiteral" },
 			{ "Operator", "C#.Punctuation" },
@@ -704,7 +713,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{ "outlining.square", FoldingSelectedControls },
 			{ "outlining.verticalrule", "" },
 			{ "Plain Text", "" },
-			{ "Plain Text", CustomizableHighlightingColorizer.DefaultTextAndBackground },
+			{ "Plain Text", CustomizingHighlighter.DefaultTextAndBackground },
 			{ "Preprocessor Keyword", "" },
 			{ "Preprocessor Keyword", "C#.Preprocessor" },
 			{ "Razor Code", "" },
@@ -715,12 +724,12 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{ "Script Operator", "" },
 			{ "Script String", "" },
 			{ "Selected Text", "" },
-			{ "Selected Text", CustomizableHighlightingColorizer.SelectedText },
+			{ "Selected Text", CustomizingHighlighter.SelectedText },
 			{ "String", "VBNET.String" },
 			{ "String", "C#.String" },
 			{ "String(C# @ Verbatim)", "" },
 			{ "Syntax Error", "" },
-			{ "urlformat", CustomizableHighlightingColorizer.LinkText },
+			{ "urlformat", CustomizingHighlighter.LinkText },
 			{ "User Types", "" },
 			{ "User Types(Delegates)", "" },
 			{ "User Types(Enums)", "" },
@@ -751,7 +760,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{ "XML Name", "XML.XmlTag" },
 			{ "XML Name", "XML.XmlDeclaration" },
 			{ "XML Name", "XML.DocType" },
-			{ "XML Text", "XML." + CustomizableHighlightingColorizer.DefaultTextAndBackground },
+			{ "XML Text", "XML." + CustomizingHighlighter.DefaultTextAndBackground },
 		};
 		
 		Tuple<Color?, Color?, bool> ParseEntry(XElement element)
@@ -811,12 +820,12 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		void LoadSDSettings(XDocument document)
 		{
 			var version = document.Root.Attribute("version");
-			if (version != null && version.Value != Properties.CurrentVersion.ToString()) {
+			if (version != null && version.Value != Properties.FileVersion.ToString()) {
 				Core.MessageService.ShowError("Settings version not supported!");
 				return;
 			}
-			var p = Properties.Load(document.CreateReader());
-			customizationList = p.Get("CustomizedHighlightingRules", new List<CustomizedHighlightingColor>());
+			var p = Properties.Load(document.Root);
+			customizationList = p.GetList<CustomizedHighlightingColor>("CustomizedHighlightingRules").ToList();
 			LanguageComboBox_SelectionChanged(null, null);
 		}
 		#endregion
@@ -834,14 +843,10 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		void Save(string fileName)
 		{
 			Properties p = new Properties();
-			p.Set("CustomizedHighlightingRules", customizationList);
-			using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8)) {
-				writer.Formatting = Formatting.Indented;
-				writer.WriteStartElement("Properties");
-				writer.WriteAttributeString("version", Properties.CurrentVersion.ToString());
-				p.WriteProperties(writer);
-				writer.WriteEndElement();
-			}
+			p.SetList("CustomizedHighlightingRules", customizationList);
+			XElement root = p.Save();
+			root.SetAttributeValue("version", Properties.FileVersion.ToString());
+			new XDocument(root).Save(fileName);
 		}
 		
 		void ResetAllButtonClick(object sender, RoutedEventArgs e)

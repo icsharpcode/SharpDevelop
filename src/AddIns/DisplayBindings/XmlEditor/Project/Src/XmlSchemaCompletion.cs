@@ -2,13 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Linq;
 using System.IO;
-using System.Text;
+using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -24,7 +23,7 @@ namespace ICSharpCode.XmlEditor
 	public class XmlSchemaCompletion
 	{
 		XmlSchema schema;
-		string fileName = String.Empty;
+		FileName fileName;
 		bool readOnly;
 		XmlNamespace xmlNamespace = new XmlNamespace();
 		
@@ -67,7 +66,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			StreamReader reader = new StreamReader(fileName, true);
 			ReadSchema(baseUri, reader);
-			this.fileName = fileName;
+			this.fileName = FileName.Create(fileName);
 		}
 		
 		/// <summary>
@@ -89,7 +88,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets or sets the schema's file name.
 		/// </summary>
-		public string FileName {
+		public FileName FileName {
 			get { return fileName; }
 			set { fileName = value; }
 		}

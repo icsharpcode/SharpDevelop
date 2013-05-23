@@ -1,11 +1,13 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.WixBinding;
-using NUnit.Framework;
 using System;
 using System.IO;
 using System.Xml;
+
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.WixBinding;
+using NUnit.Framework;
 using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.PackageFiles
@@ -18,6 +20,7 @@ namespace WixBinding.Tests.PackageFiles
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			SD.InitializeForUnitTests();
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
 			p.Name = "MySetup";
 			view = new MockWixPackageFilesView();

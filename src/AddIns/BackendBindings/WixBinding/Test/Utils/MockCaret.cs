@@ -9,18 +9,18 @@ namespace WixBinding.Tests.Utils
 {
 	public class MockCaret : ITextEditorCaret
 	{
-		Location position = Location.Empty;
+		TextLocation location = TextLocation.Empty;
 		
 		public MockCaret()
 		{
 		}
 		
-		public event EventHandler PositionChanged;
+		public event EventHandler LocationChanged;
 		
-		protected virtual void OnPositionChanged(EventArgs e)
+		protected virtual void OnLocationChanged(EventArgs e)
 		{
-			if (PositionChanged != null) {
-				PositionChanged(this, e);
+			if (LocationChanged != null) {
+				LocationChanged(this, e);
 			}
 		}
 		
@@ -51,9 +51,9 @@ namespace WixBinding.Tests.Utils
 			}
 		}
 		
-		public Location Position {
-			get { return position; }
-			set { position = value; }
+		public TextLocation Location {
+			get { return location; }
+			set { location = value; }
 		}
 	}
 }

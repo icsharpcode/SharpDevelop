@@ -5,6 +5,7 @@ using System;
 using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace ICSharpCode.SharpDevelop.Tests.StringTagProvider
 {
@@ -12,14 +13,16 @@ namespace ICSharpCode.SharpDevelop.Tests.StringTagProvider
 	/// Tests the SharpDevelopStringTagProvider when there is no active project.
 	/// </summary>
 	[TestFixture]
-	public class NullProjectStringTagProviderTestFixture
+	public class NullProjectStringTagProviderTestFixture : SDTestFixtureBase
 	{
 		SharpDevelopStringTagProvider tagProvider;
 		
-		[SetUp]
-		public void Init()
+		public override void FixtureSetUp()
 		{
-			ProjectService.CurrentProject = null;
+			base.FixtureSetUp();
+			SD.Services.AddService(typeof(IProjectService), MockRepository.GenerateStrictMock<IProjectService>());
+			SD.ProjectService.Stub(s => s.CurrentProject).Return(null);
+			
 			tagProvider = new SharpDevelopStringTagProvider();
 		}
 		

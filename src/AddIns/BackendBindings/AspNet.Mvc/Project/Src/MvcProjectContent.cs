@@ -3,25 +3,25 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.AspNet.Mvc
 {
 	public class MvcProjectContent : IMvcProjectContent
 	{
-		IProjectContent projectContent;
+		ICompilation compilation;
 		IMvcProject project;
 		
-		public MvcProjectContent(IProjectContent projectContent, IMvcProject project)
+		public MvcProjectContent(ICompilation compilation, IMvcProject project)
 		{
-			this.projectContent = projectContent;
+			this.compilation = compilation;
 			this.project = project;
 		}
 		
 		public IEnumerable<IMvcClass> GetClasses()
 		{
-			foreach (IClass c in projectContent.Classes) {
-				yield return new MvcClass(c, project);
+			foreach (ITypeDefinition type in compilation.MainAssembly.TopLevelTypeDefinitions) {
+				yield return new MvcClass(type, project);
 			}
 		}
 	}

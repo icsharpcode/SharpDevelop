@@ -16,7 +16,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.workbench = new PackageManagementWorkbench();
 		}
 		
-		public List<CustomizedHighlightingColor> LoadColors()
+		public IReadOnlyList<CustomizedHighlightingColor> LoadColors()
 		{
 			return CustomizedHighlightingColor.LoadColors();
 		}

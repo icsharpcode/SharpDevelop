@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Flavor;
@@ -24,7 +25,8 @@ namespace PackageManagement.Tests.VisualStudio
 		void CreateMSBuildProject(string fileName)
 		{
 			msbuildProject = ProjectHelper.CreateTestProject();
-			msbuildProject.FileName = fileName;
+			msbuildProject.FileName = new FileName(fileName);
+			msbuildProject.SetProperty("ProjectTypeGuids", null);
 		}
 		
 		void AddProjectTypeGuidsToMSBuildProject(string guids)
@@ -42,7 +44,7 @@ namespace PackageManagement.Tests.VisualStudio
 			int result = project.GetAggregateProjectTypeGuids(out guids);
 			
 			Assert.AreEqual(VsConstants.S_OK, result);
-			Assert.AreEqual(ProjectTypeGuids.VBNet, guids);
+			Assert.AreEqual(ProjectTypeGuids.VBNet.ToString(), guids);
 		}
 		
 		[Test]

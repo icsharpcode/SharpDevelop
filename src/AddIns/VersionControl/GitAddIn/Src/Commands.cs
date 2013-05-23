@@ -1,16 +1,17 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.GitAddIn
 {
@@ -32,7 +33,7 @@ namespace ICSharpCode.GitAddIn
 				}
 				if (nodeFileName != null) {
 					List<OpenedFile> unsavedFiles = new List<OpenedFile>();
-					foreach (OpenedFile file in FileService.OpenedFiles) {
+					foreach (OpenedFile file in SD.FileService.OpenedFiles) {
 						if (file.IsDirty && !file.IsUntitled) {
 							if (string.IsNullOrEmpty(file.FileName)) continue;
 							if (FileUtility.IsUrl(file.FileName)) continue;
@@ -68,7 +69,7 @@ namespace ICSharpCode.GitAddIn
 		Action AfterCommand(string nodeFileName, AbstractProjectBrowserTreeNode node)
 		{
 			return delegate {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				// and then refresh the project browser:
 				GitStatusCache.ClearCachedStatus(nodeFileName);
 				OverlayIconManager.EnqueueRecursive(node);

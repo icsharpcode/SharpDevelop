@@ -4,10 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
+using Rhino.Mocks;
 using XmlEditor.Tests.Utils;
 
 namespace XmlEditor.Tests.Tree
@@ -26,8 +29,12 @@ namespace XmlEditor.Tests.Tree
 		List<TreeViewEventArgs> treeViewEventArgs;
 		
 		[SetUp]
-		public void SetUpFixture()
+		public void SetUp()
 		{
+			SD.InitializeForUnitTests();
+			SD.Services.AddStrictMockService<IWinFormsService>();
+			SD.WinForms.Stub(w => w.MenuService).Return(MockRepository.GenerateStub<IWinFormsMenuService>());
+			
 			treeViewEventArgs = new List<TreeViewEventArgs>();
 			treeView = new DerivedXmlTreeViewControl();
 			treeView.Height = 100;
@@ -36,12 +43,13 @@ namespace XmlEditor.Tests.Tree
 		}
 		
 		[TearDown]
-		public void TearDownFixture()
+		public void TearDown()
 		{
 			if (treeView != null) {
 				treeView.AfterSelect -= XmlTreeViewAfterSelect;
 				treeView.Dispose();
 			}
+			SD.TearDownForUnitTests();
 		}
 		
 		/// <summary>

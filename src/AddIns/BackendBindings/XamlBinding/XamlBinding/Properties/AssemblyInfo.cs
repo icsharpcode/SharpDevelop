@@ -5,4 +5,4 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 
 [assembly: AssemblyDescription("Provides XAML integration in code-completion")]
-[assembly: InternalsVisibleTo("XamlBinding.Tests")]
+[assembly: InternalsVisibleTo("ICSharpCode.XamlBinding.Tests")]

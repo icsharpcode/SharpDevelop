@@ -8,7 +8,6 @@ using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -188,7 +187,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (dataObject.GetDataPresent(typeof(FileNode))) {
 				// Dragging a file onto another creates a dependency.
 				// If we are in the same directory, allow moving only.
-				if (this.Project.ReadOnly)
+				if (this.Project.IsReadOnly)
 					return DragDropEffects.None;
 				FileNode other = (FileNode)dataObject.GetData(typeof(FileNode));
 				if (other == this || !(other.ProjectItem is FileProjectItem) || !(this.ProjectItem is FileProjectItem))
@@ -291,7 +290,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Copy()
 		{
-			ClipboardWrapper.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, false));
+			SD.Clipboard.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, false));
 		}
 		
 		public override bool EnableCut {
@@ -306,7 +305,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			ClipboardWrapper.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, true));
+			SD.Clipboard.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, true));
 		}
 		
 		

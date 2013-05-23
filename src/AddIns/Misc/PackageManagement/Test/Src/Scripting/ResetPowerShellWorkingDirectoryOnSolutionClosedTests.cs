@@ -37,7 +37,7 @@ namespace PackageManagement.Tests.Scripting
 		{
 			CreateReset();
 			fakeConsoleHost.IsRunning = true;
-			fakeProjectService.FireSolutionClosedEvent();
+			fakeProjectService.FireSolutionClosedEvent(fakeProjectService.OpenSolution);
 			
 			bool workingDirectoryUpdated = IsWorkingDirectoryUpdated();
 			
@@ -49,7 +49,7 @@ namespace PackageManagement.Tests.Scripting
 		{
 			CreateReset();
 			fakeConsoleHost.IsRunning = false;
-			fakeProjectService.FireSolutionClosedEvent();
+			fakeProjectService.FireSolutionClosedEvent(fakeProjectService.OpenSolution);
 			
 			bool workingDirectoryUpdated = IsWorkingDirectoryUpdated();
 			

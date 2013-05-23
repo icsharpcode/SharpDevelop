@@ -11,8 +11,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
@@ -37,7 +37,7 @@ namespace ICSharpCode.CppBinding.Project
 	
 		void SetOutputTypeCombo()
 		{
-			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(base.Project, base.Project.ActiveConfiguration, base.Project.ActivePlatform);
+			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(base.Project, base.Project.ActiveConfiguration);
 			string subsystem = group.GetElementMetadata("Link", "SubSystem");
 			string configurationType = base.Project.GetEvaluatedProperty("ConfigurationType");
 			OutputType validOutputType = ConfigurationTypeToOutputType(configurationType, subsystem);
@@ -61,7 +61,7 @@ namespace ICSharpCode.CppBinding.Project
 		void project_MinimumSolutionVersionChanged(object sender, EventArgs e)
 		{
 			// embedding manifests requires the project to target MSBuild 3.5 or higher
-			applicationManifestComboBox.IsEnabled = base.Project.MinimumSolutionVersion >= Solution.SolutionVersionVS2008;
+			applicationManifestComboBox.IsEnabled = base.Project.MinimumSolutionVersion >= SolutionFormatVersion.VS2008;
 		}
 		
 		
@@ -109,8 +109,8 @@ namespace ICSharpCode.CppBinding.Project
 		{
 			base.Initialize();
 			
-			foreach (IClass c in GetPossibleStartupObjects(base.Project)) {
-				startupObjectComboBox.Items.Add(c.FullyQualifiedName);
+			foreach (var c in GetPossibleStartupObjects(base.Project)) {
+				startupObjectComboBox.Items.Add(c.FullName);
 			}
 			
 			SetOutputTypeCombo();
@@ -171,8 +171,7 @@ namespace ICSharpCode.CppBinding.Project
 			OutputType outputType = values[this.outputTypeComboBox.SelectedIndex];
 			
 			string subsystem = OutputTypeToSubsystem(outputType);
-			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(base.Project,
-			                                                                  base.Project.ActiveConfiguration, base.Project.ActivePlatform);
+			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(base.Project, base.Project.ActiveConfiguration);
 			group.SetElementMetadata("Link", "SubSystem", subsystem);
 			
 			return OutputTypeToConfigurationType(outputType);
@@ -220,13 +219,13 @@ namespace ICSharpCode.CppBinding.Project
 		
 		#endregion
 		
-		public static IList<IClass> GetPossibleStartupObjects(IProject project)
+		public static IList<IUnresolvedTypeDefinition> GetPossibleStartupObjects(IProject project)
 		{
-			List<IClass> results = new List<IClass>();
-			IProjectContent pc = ParserService.GetProjectContent(project);
+			List<IUnresolvedTypeDefinition> results = new List<IUnresolvedTypeDefinition>();
+			IProjectContent pc = project.ProjectContent;
 			if (pc != null) {
-				foreach(IClass c in pc.Classes) {
-					foreach (IMethod m in c.Methods) {
+				foreach (var c in pc.TopLevelTypeDefinitions) {
+					foreach (var m in c.Methods) {
 						if (m.IsStatic && m.Name == "Main") {
 							results.Add(c);
 						}
@@ -330,7 +329,7 @@ namespace ICSharpCode.CppBinding.Project
 			string fileName = Path.Combine(project.Directory, rcFileName);
 			FileProjectItem rcFileItem = new FileProjectItem(project, project.GetDefaultItemType(fileName));
 			rcFileItem.Include = FileUtility.GetRelativePath(project.Directory, fileName);
-			((IProjectItemListProvider)project).AddProjectItem(rcFileItem);
+			ProjectService.AddProjectItem(project, rcFileItem);
 			return fileName;
 		}
 		
@@ -409,12 +408,12 @@ namespace ICSharpCode.CppBinding.Project
 						defaultManifest = r.ReadToEnd();
 					}
 				}
-				defaultManifest = defaultManifest.Replace("\t", EditorControlService.GlobalOptions.IndentationString);
+				defaultManifest = defaultManifest.Replace("\t", SD.EditorControlService.GlobalOptions.IndentationString);
 				File.WriteAllText(manifestFile, defaultManifest, System.Text.Encoding.UTF8);
 				FileService.FireFileCreated(manifestFile, false);
 			}
 			
-			if (!base.Project.IsFileInProject(manifestFile)) {
+			if (!base.Project.IsFileInProject(FileName.Create(manifestFile))) {
 				FileProjectItem newItem = new FileProjectItem(base.Project, ItemType.None);
 				newItem.Include = "app.manifest";
 				ProjectService.AddProjectItem(base.Project, newItem);

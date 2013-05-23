@@ -1,12 +1,14 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.WixBinding;
-using NUnit.Framework;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Xml;
+
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.WixBinding;
+using NUnit.Framework;
 using WixBinding;
 using WixBinding.Tests.Utils;
 
@@ -22,6 +24,7 @@ namespace WixBinding.Tests.DialogLoading
 		[Test]
 		public void CreateDialog()
 		{
+			SD.InitializeForUnitTests();
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			WixDocument doc = new WixDocument(project);
 			doc.LoadXml(GetWixXml());

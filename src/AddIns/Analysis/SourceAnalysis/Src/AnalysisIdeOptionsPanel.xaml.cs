@@ -98,7 +98,7 @@ namespace ICSharpCode.SourceAnalysis
 		
 		public static string StyleCopPath {
 			get {
-				return PropertyService.Get("SourceAnalysis.StyleCopPath");
+				return PropertyService.Get("SourceAnalysis.StyleCopPath", String.Empty);
 			}
 			set {
 				PropertyService.Set("SourceAnalysis.StyleCopPath", value);

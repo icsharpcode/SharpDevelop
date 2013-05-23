@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference	
@@ -20,9 +21,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		ITextEditor GetTextEditor(string fileName)
 		{
 			IViewContent viewContent = FileService.GetOpenFile(fileName);
-			var textEditorProvider = viewContent as ITextEditorProvider;
-			if (textEditorProvider != null) {
-				return textEditorProvider.TextEditor;
+			if (viewContent != null) {
+				return viewContent.GetService<ITextEditor>();
 			}
 			return null;
 		}

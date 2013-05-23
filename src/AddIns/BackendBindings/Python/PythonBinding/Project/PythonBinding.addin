@@ -94,7 +94,7 @@
 	</Path>
 	
 	<!-- Python parser -->
-	<Path name="/Workspace/Parser">
+	<Path name="/SharpDevelop/Parser">
 		<Parser id="Python"
 		        supportedextensions=".py"
 		        projectfileextension=".pyproj"
@@ -111,7 +111,7 @@
 	</Path>
 	
 	<!-- The Python code completion binding -->
-	<Path name="/AddIns/DefaultTextEditor/CodeCompletion">
+	<Path name="/SharpDevelop/ViewContent/TextEditor/CodeCompletion">
 		<CodeCompletionBinding id="Python"
 			extensions=".py"
 			class="ICSharpCode.PythonBinding.PythonCodeCompletionBinding"/>

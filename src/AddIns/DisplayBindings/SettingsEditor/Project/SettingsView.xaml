@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+	x:Class="ICSharpCode.SettingsEditor.SettingsView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:sd="clr-namespace:ICSharpCode.SharpDevelop;assembly=ICSharpCode.SharpDevelop"
+	xmlns:local="clr-namespace:ICSharpCode.SettingsEditor">
+
+	<Grid>
+		<DataGrid  Background="AliceBlue" x:Name="datagrid"
+		          AutoGenerateColumns="False"
+		          ItemsSource="{Binding Entries}"
+		          AddingNewItem="Datagrid_AddingNewItem"
+		          SelectionChanged="datagrid_SelectionChanged"
+		          CanUserAddRows="True"
+		          CanUserDeleteRows="True">
+			
+			<DataGrid.Columns>
+				
+				<DataGridTextColumn Header="Name " Width="200" Binding="{Binding Name}"></DataGridTextColumn>
+				
+				<DataGridTemplateColumn Header="Type" Width="150">
+					<DataGridTemplateColumn.CellEditingTemplate>
+						<DataTemplate>
+							<ComboBox 
+							          ItemsSource="{Binding TypeNames,UpdateSourceTrigger=PropertyChanged,
+							          RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+							          SelectedItem="{Binding Path=Type}">
+							</ComboBox>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellEditingTemplate>
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock  Text="{Binding Path=Type}" VerticalAlignment="Stretch" />
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				
+				<DataGridTemplateColumn Header="Scope" Width="150">
+					<DataGridTemplateColumn.CellEditingTemplate>
+						<DataTemplate>
+							<ComboBox 
+							          sd:EnumBinding.EnumType="{x:Type local:SettingScope}"
+							          SelectedValue="{Binding Path=Scope}">
+							</ComboBox>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellEditingTemplate>
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock  Text="{Binding Path=Scope}" />
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				
+				<DataGridTextColumn Header="Value" Width="*"
+					Binding="{Binding SerializedValue,UpdateSourceTrigger=PropertyChanged}">
+				</DataGridTextColumn>
+			
+			</DataGrid.Columns>
+		</DataGrid>
+	
+	</Grid>
+</UserControl>

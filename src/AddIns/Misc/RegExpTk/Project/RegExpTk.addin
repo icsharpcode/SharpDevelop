@@ -12,7 +12,7 @@
 		<Import assembly="RegExpTk.dll" />
 	</Runtime>
 	
-	<Path name = "/Workspace/Tools">
+	<Path name = "/SharpDevelop/Workbench/Tools">
 		<MenuItem id = "RegExpTk"
 		          label       = "${res:XML.MainMenu.ToolsMenu.RegularExpressionToolkit}"
 		          class       = "Plugins.RegExpTk.RegExpTkCommand"

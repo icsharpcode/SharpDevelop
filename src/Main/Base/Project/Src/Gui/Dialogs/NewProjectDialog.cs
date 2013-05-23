@@ -5,23 +5,26 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project.Commands;
+using ICSharpCode.SharpDevelop.WinForms;
 using Microsoft.Build.Exceptions;
 
 namespace ICSharpCode.SharpDevelop.Project.Dialogs
 {
-	public partial class NewProjectDialog : Form
+	using ICSharpCode.SharpDevelop.Templates;
+
+	internal partial class NewProjectDialog : Form
 	{
 		protected List<TemplateItem> alltemplates = new List<TemplateItem>();
 		protected List<Category> categories = new List<Category>();
+		internal ProjectTemplateResult result;
 		
 		// icon resource name => image index
-		protected Dictionary<string, int> icons = new Dictionary<string, int>();
+		protected Dictionary<IImage, int> icons = new Dictionary<IImage, int>();
 		
 		protected bool createNewSolution;
 		
@@ -30,13 +33,12 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			set { locationTextBox.Text = value; }
 		}
 		
-		public NewProjectDialog(bool createNewSolution)
+		public NewProjectDialog(bool createNewSolution, IEnumerable<ProjectTemplate> projectTemplates)
 		{
-			StandardHeader.SetHeaders();
 			this.createNewSolution = createNewSolution;
 			MyInitializeComponents();
 			
-			InitializeTemplates();
+			InitializeTemplates(projectTemplates);
 			InitializeView();
 			
 			locationTextBox.Text = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.DefaultPath", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SharpDevelop Projects"));
@@ -52,27 +54,25 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			imglist.ImageSize    = new Size(32, 32);
 			smalllist.ImageSize  = new Size(16, 16);
 			
-			smalllist.Images.Add(WinFormsResourceService.GetBitmap("Icons.32x32.EmptyProjectIcon"));
+			smalllist.Images.Add(SD.ResourceService.GetBitmap("Icons.32x32.EmptyProjectIcon"));
 			
-			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.32x32.EmptyProjectIcon"));
+			imglist.Images.Add(SD.ResourceService.GetBitmap("Icons.32x32.EmptyProjectIcon"));
 			
 			// load the icons and set their index from the image list in the hashtable
 			int i = 0;
-			Dictionary<string, int> tmp = new Dictionary<string, int>(icons);
 			
-			foreach (KeyValuePair<string, int> entry in icons) {
-				Bitmap bitmap = IconService.GetBitmap(entry.Key);
+			foreach (IImage icon in icons.Keys.ToArray()) {
+				Bitmap bitmap = icon.Bitmap;
 				if (bitmap != null) {
 					smalllist.Images.Add(bitmap);
 					imglist.Images.Add(bitmap);
-					tmp[entry.Key] = ++i;
+					icons[icon] = ++i;
 				} else {
-					LoggingService.Warn("NewProjectDialog: can't load bitmap " + entry.Key.ToString() + " using default");
+					LoggingService.Warn("NewProjectDialog: can't load bitmap " + icon + " using default");
 				}
 			}
 			
 			// set the correct imageindex for all templates
-			icons = tmp;
 			foreach (TemplateItem item in alltemplates) {
 				if (item.Template.Icon == null) {
 					item.ImageIndex = 0;
@@ -134,10 +134,10 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			return newsubcategory;
 		}
 		
-		protected virtual void InitializeTemplates()
+		protected virtual void InitializeTemplates(IEnumerable<ProjectTemplate> projectTemplates)
 		{
-			foreach (ProjectTemplate template in ProjectTemplate.ProjectTemplates) {
-				if (template.ProjectDescriptor == null && createNewSolution == false) {
+			foreach (ProjectTemplate template in projectTemplates) {
+				if (!template.IsVisible(SolutionFolder != null ? SolutionFolder.ParentSolution : null)) {
 					// Do not show solution template when added a new project to existing solution
 					continue;
 				}
@@ -145,12 +145,10 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				if (titem.Template.Icon != null) {
 					icons[titem.Template.Icon] = 0; // "create template icon"
 				}
-				if (template.NewProjectDialogVisible == true) {
-					Category cat = GetCategory(StringParser.Parse(titem.Template.Category), StringParser.Parse(titem.Template.Subcategory));
-					cat.Templates.Add(titem);
-					if (cat.Templates.Count == 1)
-						titem.Selected = true;
-				}
+				Category cat = GetCategory(StringParser.Parse(titem.Template.Category), StringParser.Parse(titem.Template.Subcategory));
+				cat.Templates.Add(titem);
+				if (cat.Templates.Count == 1)
+					titem.Selected = true;
 				alltemplates.Add(titem);
 			}
 		}
@@ -160,16 +158,13 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			targetFrameworkComboBox.SelectedIndexChanged -= TargetFrameworkComboBoxSelectedIndexChanged;
 			targetFrameworkComboBox.Items.Clear();
 			if (categoryTreeView.SelectedNode != null) {
-				foreach (TargetFramework fx in TargetFramework.TargetFrameworks) {
-					if (fx.DisplayName == null || !fx.IsAvailable())
-						continue;
-					foreach (TemplateItem item in ((Category)categoryTreeView.SelectedNode).Templates) {
-						if (item.Template.HasSupportedTargetFrameworks && item.Template.SupportsTargetFramework(fx)) {
-							targetFrameworkComboBox.Items.Add(fx);
-							break;
-						}
-					}
+				HashSet<TargetFramework> availableTargetFrameworks = new HashSet<TargetFramework>();
+				foreach (TemplateItem item in ((Category)categoryTreeView.SelectedNode).Templates) {
+					availableTargetFrameworks.UnionWith(item.Template.SupportedTargetFrameworks);
 				}
+				targetFrameworkComboBox.Items.AddRange(
+					availableTargetFrameworks.Where(fx => fx.DisplayName != null && fx.IsAvailable())
+					.OrderBy(fx => fx.Name).ToArray());
 			}
 			if (targetFrameworkComboBox.Items.Count > 0) {
 				targetFrameworkComboBox.Visible = true;
@@ -194,7 +189,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			if (categoryTreeView.SelectedNode != null) {
 				TargetFramework currentFramework = targetFrameworkComboBox.SelectedItem as TargetFramework;
 				foreach (TemplateItem item in ((Category)categoryTreeView.SelectedNode).Templates) {
-					if (currentFramework == null || item.Template.SupportsTargetFramework(currentFramework)) {
+					if (currentFramework == null || item.Template.SupportedTargetFrameworks.Contains(currentFramework) || !item.Template.SupportedTargetFrameworks.Any()) {
 						templateListView.Items.Add(item);
 					}
 				}
@@ -273,22 +268,20 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			templateListView.View = smallIconsRadioButton.Checked ? View.List : View.LargeIcon;
 		}
 		
-		public string NewProjectLocation;
-		public string NewSolutionLocation;
-		public ISolutionFolderNode SolutionFolderNode { get; set; }
+		public ISolutionFolder SolutionFolder;
 		
 		string CheckProjectName(string solution, string name, string location)
 		{
 			if (name.Length == 0 || !char.IsLetter(name[0]) && name[0] != '_') {
 				return "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.ProjectNameMustStartWithLetter}";
 			}
+			if (name.EndsWith(".", StringComparison.Ordinal)) {
+				return "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.ProjectNameMustNotEndWithDot}";
+			}
 			if (!FileUtility.IsValidDirectoryEntryName(solution)
 			    || !FileUtility.IsValidDirectoryEntryName(name))
 			{
 				return "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.IllegalProjectNameError}";
-			}
-			if (name.EndsWith(".")) {
-				return "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.ProjectNameMustNotEndWithDot}";
 			}
 			if (!FileUtility.IsValidPath(location) || !Path.IsPathRooted(location)) {
 				return "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.SpecifyValidLocation}";
@@ -300,7 +293,10 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		{
 			try {
 				CreateProject();
-			} catch (InvalidProjectFileException ex) {
+			} catch (ProjectLoadException ex) {
+				LoggingService.Error("Unable to create new project.", ex);
+				MessageService.ShowError(ex.Message);
+			} catch (IOException ex) {
 				LoggingService.Error("Unable to create new project.", ex);
 				MessageService.ShowError(ex.Message);
 			}
@@ -332,49 +328,40 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 					return;
 				}
 				
-				ProjectCreateInformation cinfo = new ProjectCreateInformation();
-				if (!createNewSolution) {
-					cinfo.Solution = ProjectService.OpenSolution;
-					cinfo.SolutionPath = Path.GetDirectoryName(cinfo.Solution.FileName);
-					cinfo.SolutionName = cinfo.Solution.Name;
-				} else {
-					cinfo.SolutionPath = NewSolutionDirectory;
-				}
+				ProjectTemplateOptions cinfo = new ProjectTemplateOptions();
 				
-				if (item.Template.HasSupportedTargetFrameworks) {
+				if (item.Template.SupportedTargetFrameworks.Any()) {
 					cinfo.TargetFramework = (TargetFramework)targetFrameworkComboBox.SelectedItem;
 					PropertyService.Set("Dialogs.NewProjectDialog.TargetFramework", cinfo.TargetFramework.Name);
 				}
 				
-				cinfo.ProjectBasePath = NewProjectDirectory;
-				cinfo.SolutionName    = solution;
+				cinfo.ProjectBasePath = DirectoryName.Create(NewProjectDirectory);
 				cinfo.ProjectName     = name;
 				
-				NewSolutionLocation = item.Template.CreateProject(cinfo);
-				if (NewSolutionLocation == null || NewSolutionLocation.Length == 0) {
-					return;
-				}
-				
-				NewProjectLocation = cinfo.createdProjects.Count > 0 ? cinfo.createdProjects[0].FileName : "";
 				if (createNewSolution) {
-					ProjectService.LoadSolution(NewSolutionLocation);
+					if (!SD.ProjectService.CloseSolution())
+						return;
+					result = item.Template.CreateAndOpenSolution(cinfo, NewSolutionDirectory, solution);
 				} else {
-					AddExistingProjectToSolution.AddProject(SolutionFolderNode, NewProjectLocation);
-					ProjectService.SaveSolution();
+					cinfo.Solution = SolutionFolder.ParentSolution;
+					cinfo.SolutionFolder = SolutionFolder;
+					result = item.Template.CreateProjects(cinfo);
+					cinfo.Solution.Save();
 				}
-				item.Template.RunOpenActions(cinfo);
 				
+				if (result != null)
+					item.Template.RunOpenActions(result);
+				
+				ProjectBrowserPad.RefreshViewAsync();
 				DialogResult = DialogResult.OK;
 			}
 		}
 		
 		void BrowseDirectories(object sender, EventArgs e)
 		{
-			using (FolderBrowserDialog fd = FileService.CreateFolderBrowserDialog("${res:Dialog.NewProject.SelectDirectoryForProject}", locationTextBox.Text)) {
-				if (fd.ShowDialog() == DialogResult.OK) {
-					locationTextBox.Text = fd.SelectedPath;
-				}
-			}
+			string path = SD.FileService.BrowseForFolder("${res:Dialog.NewProject.SelectDirectoryForProject}", locationTextBox.Text);
+			if (path != null)
+				locationTextBox.Text = path;
 		}
 		
 		// list view event handlers
@@ -402,7 +389,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				ctl.Text = StringParser.Parse(ctl.Text);
 			}
 			this.Text = StringParser.Parse(this.Text);
-			RightToLeftConverter.Convert(this);
+			SD.WinForms.ApplyRightToLeftConverter(this, recurse: false);
 			
 			ImageList imglist = new ImageList();
 			imglist.ColorDepth = ColorDepth.Depth32Bit;

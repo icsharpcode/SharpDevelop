@@ -19,8 +19,8 @@ namespace UpdateAssemblyInfo
 	// Updates the version numbers in the assembly information.
 	class MainClass
 	{
-		const string BaseCommit = "4b2d4a664466e1e784e6c5be367966c426d14ef8";
-		const int BaseCommitRev = 7999;
+		const string BaseCommit = "4ba2785f66bebeaa21c68cf4f6733fc19ddb0d9d";
+		const int BaseCommitRev = 0;
 		
 		const string globalAssemblyInfoTemplateFile = "src/Main/GlobalAssemblyInfo.template";
 		static readonly TemplateFile[] templateFiles = {
@@ -29,12 +29,8 @@ namespace UpdateAssemblyInfo
 				Output = "src/Main/GlobalAssemblyInfo.cs"
 			},
 			new TemplateFile {
-				Input = "src/Main/StartUp/Project/app.template.config",
-				Output = "src/Main/StartUp/Project/SharpDevelop.exe.config"
-			},
-			new TemplateFile {
-				Input = "src/Main/StartUp/Project/app.template.config",
-				Output = "src/Main/ICSharpCode.SharpDevelop.Sda/ICSharpCode.SharpDevelop.Sda.dll.config"
+				Input = "src/Main/SharpDevelop/app.template.config",
+				Output = "src/Main/SharpDevelop/app.config"
 			},
 			new TemplateFile {
 				Input = "src/Setup/SharpDevelop.Setup.wixproj.user.template",

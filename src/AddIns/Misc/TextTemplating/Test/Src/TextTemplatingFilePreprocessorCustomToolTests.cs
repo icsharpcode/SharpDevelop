@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using TextTemplating.Tests.Helpers;
@@ -12,6 +13,18 @@ namespace TextTemplating.Tests
 	public class TextTemplatingFilePreprocessorCustomToolTests
 	{
 		TestableTextTemplatingFilePreprocessorCustomTool customTool;
+		
+		[SetUp]
+		public void Init()
+		{
+			SD.InitializeForUnitTests();
+		}
+		
+		[TearDown]
+		public void TearDown()
+		{
+			SD.TearDownForUnitTests();
+		}
 		
 		void CreateCustomTool()
 		{

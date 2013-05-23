@@ -89,7 +89,7 @@ namespace ICSharpCode.SharpDevelop
 			if (loadInformation == null)
 				throw new ArgumentNullException("loadInformation");
 			
-			string location = FileUtility.NormalizePath(loadInformation.FileName);
+			var location = loadInformation.FileName;
 			string title = loadInformation.ProjectName;
 			IProgressMonitor progressMonitor = loadInformation.ProgressMonitor;
 			
@@ -98,8 +98,7 @@ namespace ICSharpCode.SharpDevelop
 			IProjectBinding binding = ProjectBindingService.GetBindingPerProjectFile(location);
 			IProject newProject;
 			if (!(binding != null && binding.HandlingMissingProject) && !File.Exists(location)) {
-				newProject = new MissingProject(location, title);
-				newProject.TypeGuid = loadInformation.TypeGuid;
+				newProject = new MissingProject(loadInformation);
 			} else {
 				if (binding != null) {
 					try {
@@ -107,14 +106,12 @@ namespace ICSharpCode.SharpDevelop
 					} catch (ProjectLoadException ex) {
 						LoggingService.Warn("Project load error", ex);
 						progressMonitor.ShowingDialog = true;
-						newProject = new UnknownProject(location, title, ex.Message, true);
-						newProject.TypeGuid = loadInformation.TypeGuid;
+						newProject = new UnknownProject(loadInformation, ex.Message, true);
 						progressMonitor.ShowingDialog = false;
 					} catch (UnauthorizedAccessException ex) {
 						LoggingService.Warn("Project load error", ex);
 						progressMonitor.ShowingDialog = true;
-						newProject = new UnknownProject(location, title, ex.Message, true);
-						newProject.TypeGuid = loadInformation.TypeGuid;
+						newProject = new UnknownProject(loadInformation, ex.Message, true);
 						progressMonitor.ShowingDialog = false;
 					}
 				} else {
@@ -122,11 +119,9 @@ namespace ICSharpCode.SharpDevelop
 					if (".proj".Equals(ext, StringComparison.OrdinalIgnoreCase)
 					    || ".build".Equals(ext, StringComparison.OrdinalIgnoreCase))
 					{
-						newProject = new MSBuildFileProject(location, title);
-						newProject.TypeGuid = loadInformation.TypeGuid;
+						newProject = new MSBuildFileProject(loadInformation);
 					} else {
-						newProject = new UnknownProject(location, title);
-						newProject.TypeGuid = loadInformation.TypeGuid;
+						newProject = new UnknownProject(loadInformation);
 					}
 				}
 			}

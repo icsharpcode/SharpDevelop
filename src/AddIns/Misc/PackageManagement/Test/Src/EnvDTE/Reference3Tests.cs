@@ -2,11 +2,15 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests.EnvDTE
 {
@@ -26,6 +30,8 @@ namespace PackageManagement.Tests.EnvDTE
 			referenceProjectItem = msbuildProject.AddReference(name);
 			fakeProjectService = project.FakeProjectService;
 			CreateReference(project, referenceProjectItem);
+			IWorkbench workbench = MockRepository.GenerateStub<IWorkbench>();
+			ICSharpCode.SharpDevelop.SD.Services.AddService(typeof(IWorkbench), workbench);
 		}
 		
 		void CreateReference(Project project, ReferenceProjectItem referenceProjectItem)
@@ -33,11 +39,16 @@ namespace PackageManagement.Tests.EnvDTE
 			reference = new Reference3(project, referenceProjectItem);
 		}
 		
-		TestableProject CreateProjectReference()
+		TestableProject CreateProjectReference(string parentProjectFileName, string referencedProjectFileName)
 		{
 			project = new TestableDTEProject();
 			msbuildProject = project.TestableProject;
+			msbuildProject.FileName = new FileName(parentProjectFileName);
 			TestableProject referencedProject = ProjectHelper.CreateTestProject();
+			referencedProject.FileName = new FileName(referencedProjectFileName);
+			((ICollection<IProject>)msbuildProject.ParentSolution.Projects).Add(referencedProject);
+			IWorkbench workbench = MockRepository.GenerateStub<IWorkbench>();
+			ICSharpCode.SharpDevelop.SD.Services.AddService(typeof(IWorkbench), workbench);
 			ProjectReferenceProjectItem referenceProjectItem = msbuildProject.AddProjectReference(referencedProject);
 			fakeProjectService = project.FakeProjectService;
 			CreateReference(project, referenceProjectItem);
@@ -90,8 +101,9 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void SourceProject_ReferenceIsProjectReference_ReturnsReferencedProject()
 		{
-			TestableProject referencedProject = CreateProjectReference();
-			referencedProject.FileName = @"d:\projects\referencedproject.csproj";
+			string parentProjectFileName = @"d:\projects\project.csproj";
+			string referencedProjectFileName = @"d:\projects\referencedproject.csproj";
+			TestableProject referencedProject = CreateProjectReference(parentProjectFileName, referencedProjectFileName);
 			
 			global::EnvDTE.Project project = reference.SourceProject;
 			
@@ -112,7 +124,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Path_SystemXmlReferenceInProjectReferences_ReturnsFullPathToSystemXml()
 		{
 			CreateReference("System.Xml");
-			referenceProjectItem.FileName = @"c:\Program Files\Microsoft\Reference Assemblies\v4\System.Xml.dll";
+			referenceProjectItem.FileName = FileName.Create(@"c:\Program Files\Microsoft\Reference Assemblies\v4\System.Xml.dll");
 			
 			string path = reference.Path;
 			

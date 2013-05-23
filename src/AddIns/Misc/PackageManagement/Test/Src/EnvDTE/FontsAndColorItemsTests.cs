@@ -25,7 +25,7 @@ namespace PackageManagement.Tests.EnvDTE
 		CustomizedHighlightingColor AddDefaultTextAndBackgroundColorToRules()
 		{
 			var highlightingColor = new CustomizedHighlightingColor();
-			highlightingColor.Name = CustomizableHighlightingColorizer.DefaultTextAndBackground;
+			highlightingColor.Name = CustomizingHighlighter.DefaultTextAndBackground;
 			
 			fakeHighlightingRules.Colors.Add(highlightingColor);
 			
@@ -104,7 +104,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CustomizedHighlightingColor color = 
 				fakeHighlightingRules
 					.ColorsSaved
-					.Find(c => c.Name == CustomizableHighlightingColorizer.DefaultTextAndBackground);
+					.Find(c => c.Name == CustomizingHighlighter.DefaultTextAndBackground);
 			
 			Assert.IsNotNull(color);
 		}

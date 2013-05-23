@@ -13,14 +13,19 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Designer;
+using ICSharpCode.SharpDevelop.Widgets;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.FormsDesigner.UndoRedo;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.FormsDesigner
@@ -65,7 +70,7 @@ namespace ICSharpCode.FormsDesigner
 			get { return this.sourceCodeStorage[this.PrimaryFile]; }
 		}
 		
-		public ITextBuffer PrimaryFileContent {
+		public ITextSource PrimaryFileContent {
 			get { return this.PrimaryFileDocument.CreateSnapshot(); }
 		}
 		
@@ -84,7 +89,7 @@ namespace ICSharpCode.FormsDesigner
 			set { this.DesignerCodeFileDocument.Text = value; }
 		}
 		
-		public ICSharpCode.SharpDevelop.Editor.IDocument GetDocumentForFile(OpenedFile file)
+		public IDocument GetDocumentForFile(OpenedFile file)
 		{
 			return this.sourceCodeStorage[file];
 		}
@@ -337,17 +342,13 @@ namespace ICSharpCode.FormsDesigner
 		
 		ProjectResourceService CreateProjectResourceService()
 		{
-			IProjectContent projectContent = GetProjectContentForFile();
-			return new ProjectResourceService(projectContent);
+			var project = GetProjectForFile();
+			return new ProjectResourceService(project);
 		}
 		
-		IProjectContent GetProjectContentForFile()
+		IProject GetProjectForFile()
 		{
-			ParseInformation parseInfo = ParserService.GetParseInformation(this.DesignerCodeFile.FileName);
-			if (parseInfo != null) {
-				return parseInfo.CompilationUnit.ProjectContent;
-			}
-			return DefaultProjectContent.DummyProjectContent;
+			return SD.ProjectService.FindProjectContainingFile(this.DesignerCodeFile.FileName);
 		}
 		
 		bool hasUnmergedChanges;
@@ -367,7 +368,7 @@ namespace ICSharpCode.FormsDesigner
 			if (shouldUpdateSelectableObjects) {
 				// update the property pad after the transaction is *really* finished
 				// (including updating the selection)
-				WorkbenchSingleton.SafeThreadAsyncCall(UpdatePropertyPad);
+				SD.MainThread.InvokeAsyncAndForget(UpdatePropertyPad);
 				shouldUpdateSelectableObjects = false;
 			}
 		}
@@ -531,28 +532,22 @@ namespace ICSharpCode.FormsDesigner
 
 		internal new Control UserContent {
 			get {
-				SDWindowsFormsHost host = base.UserContent as SDWindowsFormsHost;
+				CustomWindowsFormsHost host = base.UserContent as CustomWindowsFormsHost;
 				return host != null ? host.Child : null;
 			}
 			set {
-				SDWindowsFormsHost host = base.UserContent as SDWindowsFormsHost;
+				CustomWindowsFormsHost host = base.UserContent as CustomWindowsFormsHost;
 				if (value == null) {
 					base.UserContent = null;
 					if (host != null)
 						host.Dispose();
 					return;
 				}
-				if (host != null) {
-					if (host.IsDisposed) {
-						host = null;
-					} else if (host.Child == value) {
-						return;
-					}
+				if (host != null && host.Child == value) {
+					return;
 				}
 				if (host == null) {
-					host = new SDWindowsFormsHost(true);
-					host.ServiceObject = this;
-					host.DisposeChild = false;
+					host = SD.WinForms.CreateWindowsFormsHost(this, true);
 				}
 				host.Child = value;
 				base.UserContent = host;
@@ -656,9 +651,9 @@ namespace ICSharpCode.FormsDesigner
 		public void ShowSourceCode(int lineNumber)
 		{
 			ShowSourceCode();
-			ITextEditorProvider tecp = this.primaryViewContent as ITextEditorProvider;
-			if (tecp != null) {
-				tecp.TextEditor.JumpTo(lineNumber, 1);
+			ITextEditor editor = this.primaryViewContent.GetService<ITextEditor>();
+			if (editor != null) {
+				editor.JumpTo(lineNumber, 1);
 			}
 		}
 
@@ -729,10 +724,7 @@ namespace ICSharpCode.FormsDesigner
 				
 				this.UnloadDesigner();
 				
-				// null check is required to support running in unit test mode
-				if (WorkbenchSingleton.Workbench != null) {
-					this.IsActiveViewContentChanged -= this.IsActiveViewContentChangedHandler;
-				}
+				this.IsActiveViewContentChanged -= this.IsActiveViewContentChangedHandler;
 				
 				if (this.generator != null) {
 					this.generator.Detach();
@@ -941,11 +933,7 @@ namespace ICSharpCode.FormsDesigner
 		void FileServiceFileRemoving(object sender, FileCancelEventArgs e)
 		{
 			if (!e.Cancel) {
-				if (WorkbenchSingleton.InvokeRequired) {
-					WorkbenchSingleton.SafeThreadAsyncCall(this.CheckForDesignerCodeFileDeletion, e);
-				} else {
-					this.CheckForDesignerCodeFileDeletion(e);
-				}
+				this.CheckForDesignerCodeFileDeletion(e);
 			}
 		}
 

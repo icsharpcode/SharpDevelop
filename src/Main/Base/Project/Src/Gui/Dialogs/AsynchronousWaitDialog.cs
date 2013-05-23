@@ -288,6 +288,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			set { collector.ProgressMonitor.Progress = value; }
 		}
 		
+		void IProgress<double>.Report(double value)
+		{
+			this.Progress = value;
+		}
+		
 		/// <inheritdoc/>
 		public bool ShowingDialog {
 			get { return collector.ProgressMonitor.ShowingDialog; }
@@ -309,6 +314,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public IProgressMonitor CreateSubTask(double workAmount)
 		{
 			return collector.ProgressMonitor.CreateSubTask(workAmount);
+		}
+		
+		/// <inheritdoc/>
+		public IProgressMonitor CreateSubTask(double workAmount, CancellationToken cancellationToken)
+		{
+			return collector.ProgressMonitor.CreateSubTask(workAmount, cancellationToken);
 		}
 		
 		public void Dispose()

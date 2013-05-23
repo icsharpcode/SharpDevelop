@@ -19,6 +19,18 @@ namespace TextTemplating.Tests
 		FakeTextTemplatingHost templatingHost;
 		FakeTextTemplatingCustomToolContext customToolContext;
 		
+		[SetUp]
+		public void Init()
+		{
+			SD.InitializeForUnitTests();
+		}
+		
+		[TearDown]
+		public void TearDown()
+		{
+			SD.TearDownForUnitTests();
+		}
+		
 		TestableFileProjectItem ProcessTemplate(string fileName)
 		{
 			var projectFile = CreateGenerator(fileName);
@@ -98,7 +110,7 @@ namespace TextTemplating.Tests
 			templatingHost.ErrorsCollection.Add(new CompilerError());
 			generator.ProcessTemplate();
 			
-			Task task = customToolContext.FirstTaskAdded;
+			SDTask task = customToolContext.FirstTaskAdded;
 			
 			Assert.AreEqual(TaskType.Error, task.TaskType);
 		}
@@ -112,7 +124,7 @@ namespace TextTemplating.Tests
 			templatingHost.ErrorsCollection.Add(error);
 			generator.ProcessTemplate();
 			
-			Task task = customToolContext.FirstTaskAdded;
+			SDTask task = customToolContext.FirstTaskAdded;
 			
 			Assert.AreEqual("error text", task.Description);
 		}
@@ -125,7 +137,7 @@ namespace TextTemplating.Tests
 			templatingHost.ExceptionToThrowWhenProcessTemplateCalled = ex;
 			generator.ProcessTemplate();
 			
-			Task task = customToolContext.FirstTaskAdded;
+			SDTask task = customToolContext.FirstTaskAdded;
 			
 			Assert.AreEqual("invalid operation error", task.Description);
 		}
@@ -138,7 +150,7 @@ namespace TextTemplating.Tests
 			templatingHost.ExceptionToThrowWhenProcessTemplateCalled = ex;
 			generator.ProcessTemplate();
 			
-			Task task = customToolContext.FirstTaskAdded;
+			SDTask task = customToolContext.FirstTaskAdded;
 			var expectedFileName = new FileName(@"d:\a.tt");
 			
 			Assert.AreEqual(expectedFileName, task.FileName);
@@ -208,7 +220,7 @@ namespace TextTemplating.Tests
 			templatingHost.ExceptionToThrowWhenProcessTemplateCalled = ex;
 			generator.ProcessTemplate();
 			
-			Task task = customToolContext.FirstTaskAdded;
+			SDTask task = customToolContext.FirstTaskAdded;
 			
 			Assert.AreEqual("error", task.Description);
 		}

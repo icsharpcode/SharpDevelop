@@ -26,7 +26,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			foreach (IPackageScript script in GetScripts()) {
 				script.Run(session);
-			}			
+			}
 		}
 		
 		List<IPackageScript> GetScripts()

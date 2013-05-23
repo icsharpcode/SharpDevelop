@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.TextTemplating
 {
@@ -11,7 +12,7 @@ namespace ICSharpCode.TextTemplating
 	{
 		public IEnumerable<IAddIn> GetAddIns()
 		{
-			foreach (AddIn addIn in AddInTree.AddIns) {
+			foreach (AddIn addIn in SD.AddInTree.AddIns) {
 				yield return new TextTemplatingAddIn(addIn);
 			}
 		}

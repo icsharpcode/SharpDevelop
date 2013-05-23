@@ -49,7 +49,7 @@
 	</Path>
 	
 	<Path name="/SharpDevelop/BackendBindings/Templates">
-		<Directory id="TextTemplating" path="./Templates"/>
+		<TemplateFile id="TextTemplating" path="./Templates"/>
 	</Path>
 	
 	<!-- Defines service providers that will be used by the text templating host

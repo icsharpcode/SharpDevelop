@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Internal.ExternalTool
 				doc.DocumentElement.AppendChild(et.ToXmlElement(doc));
 			}
 			
-			FileUtility.ObservedSave(new NamedFileOperationDelegate(doc.Save), fileName, FileErrorPolicy.ProvideAlternative);
+			FileUtility.ObservedSave(fn => doc.Save(fn), FileName.Create(fileName), FileErrorPolicy.ProvideAlternative);
 		}
 		
 		/// <summary>

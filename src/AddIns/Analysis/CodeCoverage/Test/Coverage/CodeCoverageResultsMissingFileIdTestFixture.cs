@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace ICSharpCode.CodeCoverage.Tests.Coverage
 {
 	/// <summary>
-	/// PartCover does not always put a file id in the code
+	/// OpenCover does not always put a file id in the code
 	/// coverage report. This is typically for code that 
 	/// has no source code. It can also be for code that
 	/// is in a method that is not covered at all.

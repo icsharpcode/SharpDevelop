@@ -2,7 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement
@@ -16,22 +17,17 @@ namespace ICSharpCode.PackageManagement
 			this.line = line;
 		}
 		
+		T InvokeIfRequired<T>(Func<T> callback)
+		{
+			return SD.MainThread.InvokeIfRequired(callback);
+		}
+		
 		public int Offset {
-			get {
-				if (WorkbenchSingleton.InvokeRequired) {
-					return WorkbenchSingleton.SafeThreadFunction(() => Offset);
-				}
-				return line.Offset;
-			}
+			get { return InvokeIfRequired(() => line.Offset); }
 		}
 		
 		public int Length {
-			get {
-				if (WorkbenchSingleton.InvokeRequired) {
-					return WorkbenchSingleton.SafeThreadFunction(() => Length);
-				}
-				return line.Length;
-			}
+			get { return InvokeIfRequired(() => line.Length); }
 		}
 		
 		public int EndOffset {
@@ -58,12 +54,21 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		public string Text {
+		public IDocumentLine PreviousLine {
 			get {
-				if (WorkbenchSingleton.InvokeRequired) {
-					return WorkbenchSingleton.SafeThreadFunction(() => Text);
-				}
-				return line.Text;
+				throw new NotImplementedException();
+			}
+		}
+		
+		public IDocumentLine NextLine {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public bool IsDeleted {
+			get {
+				throw new NotImplementedException();
 			}
 		}
 	}

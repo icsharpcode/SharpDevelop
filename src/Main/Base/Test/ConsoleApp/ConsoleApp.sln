@@ -1,5 +1,7 @@
-﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.0.0.838
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 4.2.0.8695-Beta 2
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp", "ConsoleApp.csproj", "{2829F840-FF43-4EF6-A23D-C244C765092C}"
 EndProject
 Global

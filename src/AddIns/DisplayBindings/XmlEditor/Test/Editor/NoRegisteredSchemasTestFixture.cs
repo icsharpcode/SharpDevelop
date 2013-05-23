@@ -56,14 +56,5 @@ namespace XmlEditor.Tests.Editor
 			string[] expectedExtensions = new string[] { "*.xsd", "*.*" };
 			Assert.AreEqual(expectedExtensions, fileSystem.SearchedForFileExtensions);
 		}
-		
-		[Test]
-		public void AddingNewUserSchemaDoesNotCreateUserDefinedSchemaDirectory()
-		{
-			XmlSchemaCompletion schema = new XmlSchemaCompletion();
-			registeredXmlSchemas.AddUserSchema(schema);
-			
-			Assert.AreEqual(0, fileSystem.CreatedFolders.Count);
-		}
 	}
 }

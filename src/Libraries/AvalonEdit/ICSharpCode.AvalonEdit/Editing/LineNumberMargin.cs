@@ -79,7 +79,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				newTextView.VisualLinesChanged += TextViewVisualLinesChanged;
 				
 				// find the text area belonging to the new text view
-				textArea = newTextView.Services.GetService(typeof(TextArea)) as TextArea;
+				textArea = newTextView.GetService(typeof(TextArea)) as TextArea;
 			} else {
 				textArea = null;
 			}

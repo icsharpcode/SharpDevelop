@@ -668,6 +668,26 @@ namespace ICSharpCode.TreeView
 		
 		#endregion
 		
+		#region Model
+		/// <summary>
+		/// Gets the underlying model object.
+		/// </summary>
+		/// <remarks>
+		/// This property calls the virtual <see cref="GetModelObject"/> helper method.
+		/// I didn't make the property itself virtual because deriving classes
+		/// may wish to replace it with a more specific return type,
+		/// but C# doesn't support variance in override declarations.
+		/// </remarks>
+		public object Model {
+			get { return GetModel(); }
+		}
+		
+		protected virtual object GetModel()
+		{
+			return null;
+		}
+		#endregion
+		
 		/// <summary>
 		/// Gets called when the item is double-clicked.
 		/// </summary>

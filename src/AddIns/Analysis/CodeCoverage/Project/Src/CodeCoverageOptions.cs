@@ -27,7 +27,7 @@ namespace ICSharpCode.CodeCoverage
 
 		static CodeCoverageOptions()
 		{
-			properties = PropertyService.Get(OptionsProperty, new Properties());
+			properties = PropertyService.NestedProperties(OptionsProperty);
 		}
 
 		public static Properties Properties {

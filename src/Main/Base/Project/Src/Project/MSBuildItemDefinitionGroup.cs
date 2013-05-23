@@ -38,8 +38,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 
-		public MSBuildItemDefinitionGroup(MSBuildBasedProject project, string configuration, string platform) 
-			: this(project, MSBuildBasedProject.CreateCondition(configuration, platform))
+		public MSBuildItemDefinitionGroup(MSBuildBasedProject project, ConfigurationAndPlatform configuration)
+			: this(project, configuration.ToCondition())
 		{
 		}
 

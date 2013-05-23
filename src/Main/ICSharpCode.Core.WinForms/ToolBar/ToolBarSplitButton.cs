@@ -5,7 +5,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace ICSharpCode.Core.WinForms
 {
@@ -42,15 +44,12 @@ namespace ICSharpCode.Core.WinForms
 				imgButtonDisabled = imgButtonEnabled;
 			}
 			menuCommand = codon.AddIn.CreateObject(codon.Properties["class"]) as ICommand;
-			menuCommand.Owner = this;
 			UpdateStatus();
 			UpdateText();
 		}
 
 		void CreateDropDownItems()
 		{
-			ToolStripItem[] itemsToAdd = null;
-			
 			DropDownItems.Clear();
 			foreach (object item in subItems)
 			{
@@ -65,11 +64,8 @@ namespace ICSharpCode.Core.WinForms
 				}
 				else
 				{
-					ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
-					itemsToAdd = submenuBuilder.BuildSubmenu(codon, caller);
-					if (itemsToAdd!=null) {
-						DropDownItems.AddRange(itemsToAdd);
-					}
+					IMenuItemBuilder submenuBuilder = (IMenuItemBuilder)item;
+					DropDownItems.AddRange(submenuBuilder.BuildItems(codon, caller).Cast<ToolStripItem>().ToArray());
 				}
 			}
 		}
@@ -91,7 +87,7 @@ namespace ICSharpCode.Core.WinForms
 				return;
 			}
 			base.OnButtonClick(e);
-			menuCommand.Run();
+			menuCommand.Execute(caller);
 		}
 		
 		public override bool Enabled {
@@ -103,10 +99,10 @@ namespace ICSharpCode.Core.WinForms
 				
 				bool isEnabled = failedAction != ConditionFailedAction.Disable;
 				
-				if (menuCommand != null && menuCommand is IMenuCommand) {
+				if (menuCommand != null) {
 					
 					// menuCommand.IsEnabled is checked first so that it's get method can set dropDownEnabled as needed
-					isEnabled &= (((IMenuCommand)menuCommand).IsEnabled || dropDownEnabled);
+					isEnabled &= menuCommand.CanExecute(caller) || dropDownEnabled;
 				}
 				
 				return isEnabled;

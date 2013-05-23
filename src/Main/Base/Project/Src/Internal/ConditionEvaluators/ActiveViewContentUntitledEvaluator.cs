@@ -23,11 +23,11 @@ namespace ICSharpCode.SharpDevelop
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
-			if (WorkbenchSingleton.Workbench == null) {
+			if (SD.Workbench == null) {
 				return false;
 			}
 			
-			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+			IViewContent viewContent = SD.Workbench.ActiveViewContent;
 			if (viewContent == null || viewContent.PrimaryFile == null) {
 				return false;
 			}

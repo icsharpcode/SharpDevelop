@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 
+using ICSharpCode.SharpDevelop.Widgets;
 using ICSharpCode.AspNet.Mvc;
 
 namespace ICSharpCode.AspNet.Mvc
@@ -56,7 +57,7 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		void CreateCommands()
 		{
-			AddMvcControllerCommand = new DelegateCommand(param => AddMvcController(), param => CanAddMvcController());
+			AddMvcControllerCommand = new RelayCommand(AddMvcController, CanAddMvcController);
 		}
 		
 		public ICommand AddMvcControllerCommand { get; private set; }

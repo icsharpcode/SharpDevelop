@@ -31,16 +31,17 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 			}
 		}
 		
+		// TODO disable parse information folding?
 		public bool IsParseInformationFoldingEnabled {
 			get {
 				if (CodeEditorView != null) {
-					return !CodeEditorView.DisableParseInformationFolding;
+					//return !CodeEditorView.DisableParseInformationFolding;
 				}
 				return false;
 			}
 			set {
 				if (CodeEditorView != null) {
-					CodeEditorView.DisableParseInformationFolding = !value;
+					//CodeEditorView.DisableParseInformationFolding = !value;
 				}
 			}
 		}

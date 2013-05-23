@@ -19,17 +19,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			IProject project = owner as IProject ?? ProjectService.CurrentProject;
 			if (project == null)
 				return false;
-			// TODO: simplify this once HasProjectType() is part of IProject
-			AbstractProject p2 = project as AbstractProject;
-			if (p2 != null) {
-				return p2.HasProjectType(conditionGuid);
-			} else {
-				Guid projectGuid;
-				if (Guid.TryParse(project.TypeGuid, out projectGuid))
-					return conditionGuid == projectGuid;
-				else
-					return false;
-			}
+			return project.HasProjectType(conditionGuid);
 		}
 	}
 }

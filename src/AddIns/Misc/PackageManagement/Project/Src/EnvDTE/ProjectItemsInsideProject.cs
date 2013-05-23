@@ -15,10 +15,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	{
 		Project project;
 		Dictionary<string, string> directoriesIncluded = new Dictionary<string, string>();
+		IPackageManagementFileService fileService;
 		
-		public ProjectItemsInsideProject(Project project)
+		public ProjectItemsInsideProject(Project project, IPackageManagementFileService fileService)
 		{
 			this.project = project;
+			this.fileService = fileService;
 		}
 		
 		protected override IEnumerable<global::EnvDTE.ProjectItem> GetProjectItems()

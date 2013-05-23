@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.IconEditor
 {
@@ -38,12 +39,12 @@ namespace ICSharpCode.IconEditor
 			} catch (InvalidIconException ex) {
 				// call with a delay to work around a re-entrancy bug
 				// when closing a workbench window while it is getting activated
-				WorkbenchSingleton.SafeThreadAsyncCall(
-					delegate {
-						MessageService.ShowHandledException(ex);
-						if (WorkbenchWindow != null)
-							WorkbenchWindow.CloseWindow(true);
-					});
+				SD.MainThread.InvokeAsyncAndForget(delegate {
+					MessageService.ShowHandledException(ex);
+					if (WorkbenchWindow != null) {
+						WorkbenchWindow.CloseWindow(true);
+					}
+				});
 			}
 		}
 		

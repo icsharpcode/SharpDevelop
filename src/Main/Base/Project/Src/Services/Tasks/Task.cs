@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop
 		Comment,
 	}
 	
-	public class Task
+	public class SDTask
 	{
 		[Obsolete("Default path now depends on parent pad, use ErrorListPad.DefaultContextMenuAddInTreeEntry instead.")]
 		public const string DefaultContextMenuAddInTreeEntry = Gui.ErrorListPad.DefaultContextMenuAddInTreeEntry;
@@ -114,7 +114,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <param name="column">Task column (1-based), use 0 if no column is known</param>
 		/// <param name="line">Task line (1-based), use 0 if no line number is known</param>
 		/// <param name="type">Type of the task</param>
-		public Task(FileName fileName, string description, int column, int line, TaskType type)
+		public SDTask(FileName fileName, string description, int column, int line, TaskType type)
 		{
 			if (description == null)
 				throw new ArgumentNullException("description");
@@ -132,7 +132,7 @@ namespace ICSharpCode.SharpDevelop
 			TaskService.Remove(this);
 		}
 		
-		public Task(BuildError error)
+		public SDTask(BuildError error)
 		{
 			if (error == null)
 				throw new ArgumentNullException("error");

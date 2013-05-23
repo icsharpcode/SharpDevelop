@@ -8,7 +8,7 @@ using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 {
@@ -314,7 +314,7 @@ End Property${Caret}",
 		/// </summary>
 		public List<CodeSnippetGroup> LoadGroups()
 		{
-			var savedSnippets = PropertyService.Get("CodeSnippets", new List<CodeSnippetGroup>());
+			var savedSnippets = new List<CodeSnippetGroup>(PropertyService.GetList<CodeSnippetGroup>("CodeSnippets"));
 			
 			// HACK: clone all groups to ensure we use instances independent from the PropertyService
 			// this can be removed in SD5 where PropertyService.Get deserializes a new instance on every call.
@@ -388,7 +388,7 @@ End Property${Caret}",
 					modifiedGroups.Add(copy);
 				}
 				
-				PropertyService.Set("CodeSnippets", modifiedGroups);
+				PropertyService.SetList("CodeSnippets", modifiedGroups);
 			}
 		}
 		

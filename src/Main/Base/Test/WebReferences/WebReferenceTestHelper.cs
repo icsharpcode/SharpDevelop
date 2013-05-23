@@ -1,11 +1,12 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.NRefactory.TypeSystem;
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+using Rhino.Mocks;
 using ICSharpCode.SharpDevelop.Tests.Utils;
 
 namespace ICSharpCode.SharpDevelop.Tests.WebReferences
@@ -26,11 +27,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			bool readOnly = false;
 			
 			public TestProject(string languageName)
-				: base(new ProjectCreateInformation {
-				       	Solution = new Solution(new MockProjectChangeWatcher()),
-				       	ProjectName = "TestProject",
-				       	OutputProjectFileName = "c:\\temp\\TestProject.csproj"
-				       })
+				: base(new ProjectCreateInformation(MockSolution.Create(), FileName.Create("c:\\temp\\TestProject.csproj")))
 			{
 				this.languageName = languageName;
 			}
@@ -39,12 +36,8 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 				get { return languageName; }
 			}
 			
-			public override bool ReadOnly {
+			public override bool IsReadOnly {
 				get { return readOnly; }
-			}
-			
-			public override ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
-				get { return ICSharpCode.SharpDevelop.Dom.LanguageProperties.CSharp; }
 			}
 			
 			protected override ProjectBehavior CreateDefaultBehavior()

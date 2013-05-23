@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -82,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		static Point GetOwnerLocation(Window window)
 		{
-			var owner = window.Owner ?? WorkbenchSingleton.MainWindow;
+			var owner = window.Owner ?? SD.Workbench.MainWindow;
 			if (owner == null)
 				return new Point(0,0);
 			if (owner.WindowState == System.Windows.WindowState.Maximized) {
@@ -139,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		static Point GetDefaultLocation(Size formSize)
 		{
-			var mainWindow = WorkbenchSingleton.MainWindow;
+			var mainWindow = SD.Workbench.MainWindow;
 			Rect parent = new Rect(
 				mainWindow.Left, mainWindow.Top, mainWindow.Width, mainWindow.Height
 			);

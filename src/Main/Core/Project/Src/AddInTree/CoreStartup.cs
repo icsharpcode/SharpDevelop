@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.IO;
+using System.Windows.Input;
 
 namespace ICSharpCode.Core
 {
@@ -34,6 +36,7 @@ namespace ICSharpCode.Core
 		string configDirectory;
 		string dataDirectory;
 		string applicationName;
+		AddInTreeImpl addInTree;
 		
 		/// <summary>
 		/// Sets the name used for the properties (only name, without path or extension).
@@ -96,8 +99,6 @@ namespace ICSharpCode.Core
 				throw new ArgumentNullException("applicationName");
 			this.applicationName = applicationName;
 			propertiesName = applicationName + "Properties";
-			MessageService.DefaultMessageBoxTitle = applicationName;
-			MessageService.ProductName = applicationName;
 		}
 		
 		/// <summary>
@@ -170,20 +171,25 @@ namespace ICSharpCode.Core
 		/// Initializes the AddIn system.
 		/// This loads the AddIns that were added to the list,
 		/// then it executes the <see cref="ICommand">commands</see>
-		/// in <c>/Workspace/Autostart</c>.
+		/// in <c>/SharpDevelop/Autostart</c>.
 		/// </summary>
 		public void RunInitialization()
 		{
-			AddInTree.Load(addInFiles, disabledAddIns);
+			addInTree.Load(addInFiles, disabledAddIns);
+			
+			// perform service registration
+			var container = (IServiceContainer)ServiceSingleton.ServiceProvider.GetService(typeof(IServiceContainer));
+			if (container != null)
+				addInTree.BuildItems<object>("/SharpDevelop/Services", container, false);
 			
 			// run workspace autostart commands
 			LoggingService.Info("Running autostart commands...");
-			foreach (ICommand command in AddInTree.BuildItems<ICommand>("/Workspace/Autostart", null, false)) {
+			foreach (ICommand command in addInTree.BuildItems<ICommand>("/SharpDevelop/Autostart", null, false)) {
 				try {
-					command.Run();
+					command.Execute(null);
 				} catch (Exception ex) {
 					// allow startup to continue if some commands fail
-					MessageService.ShowException(ex);
+					ServiceSingleton.GetRequiredService<IMessageService>().ShowException(ex);
 				}
 			}
 		}
@@ -197,11 +203,19 @@ namespace ICSharpCode.Core
 			if (configDirectory == null)
 				configDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
 				                               applicationName);
-			PropertyService.InitializeService(configDirectory,
-			                                  dataDirectory ?? Path.Combine(FileUtility.ApplicationRootPath, "data"),
-			                                  propertiesName);
-			PropertyService.Load();
-			ResourceService.InitializeService(Path.Combine(PropertyService.DataDirectory, "resources"));
+			var container = ServiceSingleton.GetRequiredService<IServiceContainer>();
+			var propertyService = new PropertyServiceImpl(
+				DirectoryName.Create(configDirectory),
+				DirectoryName.Create(dataDirectory ?? Path.Combine(FileUtility.ApplicationRootPath, "data")),
+				propertiesName);
+			var applicationStateInfoService = new ApplicationStateInfoService();
+			addInTree = new AddInTreeImpl(applicationStateInfoService);
+			
+			container.AddService(typeof(IPropertyService), propertyService);
+			container.AddService(typeof(IResourceService), new ResourceServiceImpl(
+				Path.Combine(propertyService.DataDirectory, "resources"), propertyService));
+			container.AddService(typeof(IAddInTree), addInTree);
+			container.AddService(typeof(ApplicationStateInfoService), applicationStateInfoService);
 			StringParser.RegisterStringTagProvider(new AppNameProvider { appName = applicationName });
 		}
 		

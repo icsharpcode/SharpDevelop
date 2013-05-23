@@ -37,9 +37,9 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		
-		public string Guid {
+		public Guid Guid {
 			get {
-				return codon.Properties["guid"];
+				return Guid.Parse(codon.Properties["guid"]);
 			}
 		}
 		

@@ -22,20 +22,20 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public SelectCulturePanel()
 		{
 			InitializeComponent();
-			listView.ItemsSource = LanguageService.Languages;
+			listView.ItemsSource = UILanguageService.Languages;
 		}
 		
 		static readonly string langPropName = "CoreProperties.UILanguage";
 		
-		public static Language CurrentLanguage {
+		public static UILanguage CurrentLanguage {
 			get { return GetCulture(PropertyService.Get(langPropName, "en")); }
 			set { PropertyService.Set(langPropName, value.Code); }
 		}
 		
-		static Language GetCulture(string languageCode)
+		static UILanguage GetCulture(string languageCode)
 		{
-			return LanguageService.Languages.FirstOrDefault(x => x.Code.StartsWith(languageCode))
-				?? LanguageService.Languages.First(x => x.Code.StartsWith("en"));
+			return UILanguageService.Languages.FirstOrDefault(x => x.Code.StartsWith(languageCode))
+				?? UILanguageService.Languages.First(x => x.Code.StartsWith("en"));
 		}
 	}
 	

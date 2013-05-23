@@ -23,7 +23,7 @@ namespace PackageManagement.Tests.EnvDTE
 			solution = solutionHelper.Solution;
 		}
 		
-		SD.Solution OpenDifferentSolution()
+		SD.ISolution OpenDifferentSolution()
 		{
 			return solutionHelper.OpenDifferentSolution();
 		}

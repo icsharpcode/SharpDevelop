@@ -26,9 +26,11 @@ namespace Debugger.Tests {
 		{
 			StartTest();
 			
-			Assert.IsNotNull(process.SelectedStackFrame.CanSetIP("StackFrame_SetIP.cs", 12, 0));
-			Assert.IsNull(process.SelectedStackFrame.CanSetIP("StackFrame_SetIP.cs", 100, 0));
-			process.SelectedStackFrame.SetIP("StackFrame_SetIP.cs", 12, 0);
+			string filename = this.CurrentStackFrame.NextStatement.Filename;
+			
+			Assert.IsNotNull(this.CurrentStackFrame.SetIP(filename, 12, 0, true));
+			Assert.IsFalse(this.CurrentStackFrame.SetIP(filename, 100, 0, true));
+			this.CurrentStackFrame.SetIP(filename, 12, 0, false);
 			process.Continue();
 			Assert.AreEqual("1\r\n1\r\n", log);
 			
@@ -43,18 +45,17 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="StackFrame_SetIP.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>StackFrame_SetIP.exe (Has symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>1\r\n</LogMessage>
-    <DebuggingPaused>Break StackFrame_SetIP.cs:13,4-13,40</DebuggingPaused>
-    <DebuggingPaused>SetIP StackFrame_SetIP.cs:12,4-12,44</DebuggingPaused>
+    <Paused>StackFrame_SetIP.cs:13,4-13,40</Paused>
     <LogMessage>1\r\n</LogMessage>
-    <DebuggingPaused>Break StackFrame_SetIP.cs:13,4-13,40</DebuggingPaused>
-    <ProcessExited />
+    <Paused>StackFrame_SetIP.cs:13,4-13,40</Paused>
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

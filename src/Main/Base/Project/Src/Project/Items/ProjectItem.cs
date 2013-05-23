@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	public abstract class ProjectItem : LocalizedObject, IDisposable, ICloneable
 	{
 		IProject project;
-		volatile string fileNameCache;
+		volatile FileName fileNameCache;
 		bool treatIncludeAsLiteral;
 		
 		// either use: (bound mode)
@@ -414,15 +414,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// and the setter throws a NotSupportedException.
 		/// </summary>
 		[Browsable(false)]
-		public virtual string FileName {
+		public virtual FileName FileName {
 			get {
 				if (project == null) {
-					return this.Include;
+					return FileName.Create(this.Include);
 				}
-				string fileName = this.fileNameCache;
+				FileName fileName = this.fileNameCache;
 				if (fileName == null) {
 					lock (SyncRoot) {
-						fileName = FileUtility.NormalizePath(Path.Combine(project.Directory, this.Include));
+						fileName = project.Directory.CombineFile(this.Include);
 						fileNameCache = fileName;
 					}
 				}
@@ -462,9 +462,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public override void InformSetValue(PropertyDescriptor propertyDescriptor, object component, object value)
+		protected internal override void InformSetValue(PropertyDescriptor propertyDescriptor, object value)
 		{
-			base.InformSetValue(propertyDescriptor, component, value);
+			base.InformSetValue(propertyDescriptor, value);
 			if (project != null) {
 				project.Save();
 			}

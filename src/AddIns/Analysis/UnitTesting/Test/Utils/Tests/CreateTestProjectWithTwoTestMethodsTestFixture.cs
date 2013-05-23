@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
@@ -28,19 +27,19 @@ namespace UnitTesting.Tests.Utils.Tests
 		[Test]
 		public void TestProjectWithTwoTestMethodsHasTwoMethods()
 		{
-			Assert.AreEqual(2, testClass.TestMembers.Count);
+			Assert.AreEqual(2, testClass.Members.Count);
 		}
 		
 		[Test]
 		public void FirstTestMethodNameIsFoo()
 		{
-			Assert.AreEqual("Foo", testClass.TestMembers[0].Name);
+			Assert.AreEqual("Foo", testClass.Members[0].Name);
 		}
 		
 		[Test]
 		public void SecondTestMethodNameIsBar()
 		{
-			Assert.AreEqual("Bar", testClass.TestMembers[1].Name);
+			Assert.AreEqual("Bar", testClass.Members[1].Name);
 		}
 	}
 }

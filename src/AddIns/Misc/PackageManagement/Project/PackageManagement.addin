@@ -23,7 +23,7 @@
 				label="Manage Packages..."
 				insertafter="AddWebReference"
 				insertbefore="ShowServiceInBrowser"
-				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>		
+				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>
 		</Condition>
 	</Path>
 	
@@ -47,7 +47,7 @@
 				label="Manage Packages..."
 				insertafter="AddWebReference"
 				insertbefore="AddSeparator"
-				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>				
+				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>
 		</Condition>
 	</Path>
 	

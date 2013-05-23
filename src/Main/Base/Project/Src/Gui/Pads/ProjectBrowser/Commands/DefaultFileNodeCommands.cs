@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		/// </summary>
 		static void OpenWith(string fileName)
 		{
-			ICSharpCode.SharpDevelop.Commands.OpenFileWith.OpenFilesWith(new string[] { fileName });
+			SD.FileService.ShowOpenWithDialog(new [] { FileName.Create(fileName) });
 		}
 	}
 	
@@ -180,7 +180,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public static void OpenFolderInExplorer(string directory)
 		{
 			if (directory != null && Directory.Exists(directory)) {
-				Process.Start(directory);
+				// don't just Process.Start the directory; that causes problems when an .exe with the same name as the directory exists
+				Process.Start("explorer.exe", "\"" + directory + "\"");
 			}
 		}
 	}

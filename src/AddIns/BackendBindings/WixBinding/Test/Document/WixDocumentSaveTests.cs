@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Xml;
-
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using WixBinding.Tests.Utils;
@@ -22,6 +22,7 @@ namespace WixBinding.Tests.Document
 		[SetUp]
 		public void Init()
 		{
+			SD.InitializeForUnitTests();
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			document = new WixDocument(project, new DefaultFileLoader());
 			string xml = "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'><Product Name='MySetup'></Product></Wix>";

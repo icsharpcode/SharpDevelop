@@ -44,7 +44,7 @@
 
   <!--Template path -->
   <Path name = "/SharpDevelop/BackendBindings/Templates">
-    <Directory id = "Data" path = "./Templates/Files" />
+    <TemplateFile id = "Data" resourceNamespace = "ICSharpCode.Data.Addin.Templates" />
   </Path>
 
   <!-- Custom tools path-->

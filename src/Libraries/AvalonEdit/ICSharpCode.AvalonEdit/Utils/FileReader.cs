@@ -36,6 +36,22 @@ namespace ICSharpCode.AvalonEdit.Utils
 			}
 		}
 		
+		static bool IsASCIICompatible(Encoding encoding)
+		{
+			byte[] bytes = encoding.GetBytes("Az");
+			return bytes.Length == 2 && bytes[0] == 'A' && bytes[1] == 'z';
+		}
+		
+		static Encoding RemoveBOM(Encoding encoding)
+		{
+			switch (encoding.CodePage) {
+				case 65001: // UTF-8
+					return UTF8NoBOM;
+				default:
+					return encoding;
+			}
+		}
+		
 		/// <summary>
 		/// Reads the content of the given stream.
 		/// </summary>
@@ -125,6 +141,8 @@ namespace ICSharpCode.AvalonEdit.Utils
 			}
 		}
 		
+		static readonly Encoding UTF8NoBOM = new UTF8Encoding(false);
+		
 		static StreamReader AutoDetect(Stream fs, byte firstByte, byte secondByte, Encoding defaultEncoding)
 		{
 			int max = (int)Math.Min(fs.Length, 500000); // look at max. 500 KB
@@ -187,21 +205,20 @@ namespace ICSharpCode.AvalonEdit.Utils
 			fs.Position = 0;
 			switch (state) {
 				case ASCII:
+					return new StreamReader(fs, IsASCIICompatible(defaultEncoding) ? RemoveBOM(defaultEncoding) : Encoding.ASCII);
 				case Error:
-					// when the file seems to be ASCII or non-UTF8,
+					// When the file seems to be non-UTF8,
 					// we read it using the user-specified encoding so it is saved again
 					// using that encoding.
 					if (IsUnicode(defaultEncoding)) {
 						// the file is not Unicode, so don't read it using Unicode even if the
 						// user has choosen Unicode as the default encoding.
 						
-						// If we don't do this, SD will end up always adding a Byte Order Mark
-						// to ASCII files.
 						defaultEncoding = Encoding.Default; // use system encoding instead
 					}
-					return new StreamReader(fs, defaultEncoding);
+					return new StreamReader(fs, RemoveBOM(defaultEncoding));
 				default:
-					return new StreamReader(fs);
+					return new StreamReader(fs, UTF8NoBOM);
 			}
 		}
 	}

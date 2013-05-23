@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
@@ -24,7 +23,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		[Test]
 		public void IsTestMethodReturnsFalseByDefault()
 		{
-			MockMethod method = MockMethod.CreateMockMethodWithoutAnyAttributes();
+			MockMethod method = MockMethod.CreateResolvedMethod();
 			Assert.IsFalse(testFramework.IsTestMember(method));
 		}
 		
@@ -37,7 +36,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		[Test]
 		public void IsTestMethodCallRecorded()
 		{
-			MockMethod method = MockMethod.CreateMockMethodWithoutAnyAttributes();
+			MockMethod method = MockMethod.CreateResolvedMethod();
 			testFramework.IsTestMember(method);
 			Assert.AreEqual(method, testFramework.IsTestMemberParameterUsed);
 		}
@@ -45,7 +44,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		[Test]
 		public void IsTestMethodReturnsTrueIfMethodMatchesMethodPreviouslySpecified()
 		{
-			MockMethod method = MockMethod.CreateMockMethodWithoutAnyAttributes();
+			MockMethod method = MockMethod.CreateResolvedMethod();
 			testFramework.AddTestMember(method);
 			
 			Assert.IsTrue(testFramework.IsTestMember(method));
@@ -109,16 +108,6 @@ namespace UnitTesting.Tests.Utils.Tests
 			MockCSharpProject project = new MockCSharpProject();
 			testFramework.IsTestProject(project);
 			Assert.AreEqual(project, testFramework.IsTestProjectParameterUsed);
-		}
-		
-		[Test]
-		public void IsTestClassReturnsFalseAfterTestClassRemovedFromTestFramework()
-		{
-			MockClass c = new MockClass();
-			testFramework.AddTestClass(c);
-			testFramework.RemoveTestClass(c);
-			
-			Assert.IsFalse(testFramework.IsTestClass(c));
 		}
 		
 		[Test]

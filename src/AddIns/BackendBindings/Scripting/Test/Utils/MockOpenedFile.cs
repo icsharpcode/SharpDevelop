@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Scripting.Tests.Utils
 {

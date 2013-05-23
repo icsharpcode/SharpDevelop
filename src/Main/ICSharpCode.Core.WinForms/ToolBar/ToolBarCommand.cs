@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace ICSharpCode.Core.WinForms
 {
@@ -43,9 +44,8 @@ namespace ICSharpCode.Core.WinForms
 				menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
 			}
 			if (menuCommand != null) {
-				menuCommand.Owner = caller;
-				AnalyticsMonitorService.TrackFeature(menuCommand.GetType().FullName, "Toolbar");
-				menuCommand.Run();
+				ServiceSingleton.GetRequiredService<IAnalyticsMonitor>().TrackFeature(menuCommand.GetType().FullName, "Toolbar");
+				menuCommand.Execute(caller);
 			}
 		}
 		
@@ -55,8 +55,8 @@ namespace ICSharpCode.Core.WinForms
 				ConditionFailedAction failedAction = Condition.GetFailedAction(conditions, caller);
 				this.Visible = failedAction != ConditionFailedAction.Exclude;
 				bool isEnabled = failedAction != ConditionFailedAction.Disable;
-				if (isEnabled && menuCommand != null && menuCommand is IMenuCommand) {
-					isEnabled = ((IMenuCommand)menuCommand).IsEnabled;
+				if (isEnabled && menuCommand != null) {
+					isEnabled = menuCommand.CanExecute(caller);
 				}
 				this.Enabled = isEnabled;
 				

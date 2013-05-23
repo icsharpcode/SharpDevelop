@@ -3,21 +3,61 @@
 
 using System;
 using System.Linq;
+using System.Threading;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using System.IO;
+using Rhino.Mocks;
 
 namespace ICSharpCode.XamlBinding.Tests
 {
 	[TestFixture]
-	public class ResolveContextTests
+	[RequiresSTA]
+	public class ResolveContextTests : TextEditorBasedTests
 	{
+		void SetUpWithCode(FileName fileName, ITextSource textSource)
+		{
+			IProject project = MockRepository.GenerateStrictMock<IProject>();
+			var parseInfo = new XamlParser() { TaskListTokens = TaskListTokens }.Parse(fileName, textSource, true, project, CancellationToken.None);
+			
+			var pc = new CSharpProjectContent().AddOrUpdateFiles(parseInfo.UnresolvedFile);
+			pc = pc.AddAssemblyReferences(new[] { Corlib, PresentationCore, PresentationFramework, SystemXaml });
+			var compilation = pc.CreateCompilation();
+			SD.Services.AddService(typeof(IParserService), MockRepository.GenerateStrictMock<IParserService>());
+			
+			SD.ParserService.Stub(p => p.GetCachedParseInformation(fileName)).Return(parseInfo);
+			SD.ParserService.Stub(p => p.GetCompilation(project)).Return(compilation);
+			SD.ParserService.Stub(p => p.GetCompilationForFile(fileName)).Return(compilation);
+			SD.ParserService.Stub(p => p.Parse(fileName, textSource)).WhenCalled(
+				i => {
+					i.ReturnValue = new XamlParser() { TaskListTokens = TaskListTokens }.Parse(fileName, textSource, true, project, CancellationToken.None);
+				}).Return(parseInfo); // fake Return to make it work
+			SD.Services.AddService(typeof(IFileService), MockRepository.GenerateStrictMock<IFileService>());
+			IViewContent view = MockRepository.GenerateStrictMock<IViewContent>();
+			SD.FileService.Stub(f => f.OpenFile(fileName, false)).Return(view);
+		}
+		
+		XamlContext TestContext(string xaml, int offset)
+		{
+			var fileName = new FileName("test.xaml");
+			var textSource = new StringTextSource(xaml);
+			SetUpWithCode(fileName, textSource);
+			return XamlContextResolver.ResolveContext(fileName, textSource, offset);
+		}
+		
 		[Test]
 		public void ContextNoneDescriptionTest()
 		{
 			string xaml = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" />\n</Grid>";
 			int offset = "<Grid>\n".Length;
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual(XamlContextDescription.None, context.Description);
 		}
@@ -27,7 +67,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		{
 			string xaml = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" />\n</Grid>";
 			int offset = "<Grid>".Length;
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual(XamlContextDescription.None, context.Description);
 		}
@@ -37,7 +77,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		{
 			string xaml = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" />\n</Grid>";
 			int offset = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" />\n".Length;
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual(XamlContextDescription.None, context.Description);
 		}
@@ -47,7 +87,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		{
 			string xaml = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" />\n</Grid>";
 			int offset = "<G".Length;
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual(XamlContextDescription.AtTag, context.Description);
 		}
@@ -57,7 +97,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		{
 			string xaml = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" /> <\n</Grid>";
 			int offset = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" /> <".Length;
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual(XamlContextDescription.AtTag, context.Description);
 		}
@@ -67,7 +107,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		{
 			string xaml = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" />\n</Grid>";
 			int offset = "<Grid>\n".Length + 10;
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual(XamlContextDescription.AtTag, context.Description);
 		}
@@ -77,7 +117,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		{
 			string xaml = "<Grid>\n\t<\n</Grid>";
 			int offset = "<Grid>\n\t<".Length;
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual(XamlContextDescription.AtTag, context.Description);
 		}
@@ -87,7 +127,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		{
 			string xaml = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" />\n</Grid>";
 			int offset = "<Grid>\n".Length + 26;
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual(XamlContextDescription.InTag, context.Description);
 		}
@@ -114,7 +154,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		<StackPanel>
 			<RadioButton ".Length;
 			
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual(XamlContextDescription.InTag, context.Description);
 		}
@@ -142,7 +182,7 @@ namespace ICSharpCode.XamlBinding.Tests
 			<RadioButton
 		</Stack".Length;
 			
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual(XamlContextDescription.AtTag, context.Description);
 		}
@@ -153,7 +193,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		{
 			string xaml = "<Grid>\n\t<Grid.ColumnDefinitions />\n</Grid>";
 			int offset = "<Grid>\n".Length + 12;
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual("Grid.ColumnDefinitions", context.ActiveElement.Name);
 		}
@@ -163,7 +203,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		{
 			string xaml = File.ReadAllText("Test4.xaml");
 			int offset = 413;
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual(XamlContextDescription.AtTag, context.Description);
 		}
@@ -174,7 +214,7 @@ namespace ICSharpCode.XamlBinding.Tests
 			string xaml = "<Test attr=\"{Test}\" />";
 			int offset = "<Test attr=\"{Te".Length;
 			
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual(XamlContextDescription.InMarkupExtension, context.Description);
 		}
@@ -185,7 +225,7 @@ namespace ICSharpCode.XamlBinding.Tests
 			string xaml = "<Test attr=\"Test\" />";
 			int offset = "<Test attr=\"Te".Length;
 			
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual(XamlContextDescription.InAttributeValue, context.Description);
 		}
@@ -196,7 +236,7 @@ namespace ICSharpCode.XamlBinding.Tests
 			string xaml = "<Test attr=\"{}{Test}\" />";
 			int offset = "<Test attr=\"{}{Te".Length;
 			
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual(XamlContextDescription.InAttributeValue, context.Description);
 		}
@@ -207,7 +247,7 @@ namespace ICSharpCode.XamlBinding.Tests
 			string xaml = "<Test attr=\"Test />";
 			int offset = "<Test attr=\"Te".Length;
 			
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual(XamlContextDescription.InAttributeValue, context.Description);
 		}
@@ -218,7 +258,7 @@ namespace ICSharpCode.XamlBinding.Tests
 			string xaml = "<Test attr=\"Test />";
 			int offset = "<Test attr=\"".Length;
 			
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual(XamlContextDescription.InAttributeValue, context.Description);
 		}
@@ -228,7 +268,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		{
 			string xaml = File.ReadAllText("Test1.xaml");
 			int offset = 272;
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual("CheckBox", context.ActiveElement.Name);
 			Assert.AreEqual("Grid", context.ParentElement.Name);
@@ -239,7 +279,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		{
 			string xaml = File.ReadAllText("Test4.xaml");
 			int offset = 413;
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual("Grid", context.ActiveElement.Name);
 			Assert.AreEqual("Grid", context.ParentElement.Name);
@@ -250,7 +290,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		{
 			string xaml = File.ReadAllText("Test1.xaml");
 			int offset = 31;
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual("Window", context.ActiveElement.Name);
 			Assert.AreEqual(null, context.ParentElement);
@@ -261,7 +301,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		{
 			string xaml = File.ReadAllText("Test2.xaml");
 			int offset = 447;
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			Assert.AreEqual(1, context.IgnoredXmlns.Count);
 			Assert.AreEqual("d", context.IgnoredXmlns[0]);
@@ -272,7 +312,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		{
 			string xaml = File.ReadAllText("Test5.xaml");
 			int offset = 881;
-			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			XamlContext context = TestContext(xaml, offset);
 			
 			string[] ancestors = new string[] {
 				"DoubleAnimation", "Storyboard",
@@ -285,6 +325,25 @@ namespace ICSharpCode.XamlBinding.Tests
 			Assert.AreEqual("Storyboard", context.ParentElement.Name);
 			Assert.AreEqual(8, context.Ancestors.Count);
 			Assert.AreEqual(ancestors, context.Ancestors.Select(item => item.Name).ToArray());
+		}
+		
+		[Test]
+		public void InValueTestWithOpenValue()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width='";
+			string fileFooter = @"
+		<Button AllowDrop='True' Grid.Row='0' />
+	</Grid>
+</Window>";
+			
+			XamlContext context = TestContext(fileHeader + fileFooter, fileHeader.Length);
+			
+			Assert.AreEqual(XamlContextDescription.InAttributeValue, context.Description);
 		}
 	}
 }

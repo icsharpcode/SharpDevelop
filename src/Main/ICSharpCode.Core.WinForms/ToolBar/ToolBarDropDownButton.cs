@@ -4,7 +4,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace ICSharpCode.Core.WinForms
 {
@@ -32,7 +34,6 @@ namespace ICSharpCode.Core.WinForms
 			}
 			if (menuBuilder == null && codon.Properties.Contains("class")) {
 				menuBuilder = codon.AddIn.CreateObject(StringParser.Parse(codon.Properties["class"])) as ICommand;
-				menuBuilder.Owner = this;
 			}
 
 			UpdateStatus();
@@ -68,8 +69,8 @@ namespace ICSharpCode.Core.WinForms
 				}
 				else
 				{
-					ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
-					DropDownItems.AddRange(submenuBuilder.BuildSubmenu(codon, caller));
+					IMenuItemBuilder submenuBuilder = (IMenuItemBuilder)item;
+					DropDownItems.AddRange(submenuBuilder.BuildItems(codon, caller).Cast<ToolStripItem>().ToArray());
 				}
 			}
 		}

@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -155,8 +156,9 @@ namespace ICSharpCode.SharpDevelop
 		
 		public void CreatePad()
 		{
-			if (WorkbenchSingleton.InvokeRequired)
+			if (SD.MainThread.InvokeRequired) {
 				throw new InvalidOperationException("This action could trigger pad creation and is only valid on the main thread!");
+			}
 			if (!padContentCreated) {
 				padContentCreated = true;
 				try {
@@ -176,7 +178,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			CreatePad();
 			if (padContent == null) return;
-			WorkbenchSingleton.Workbench.WorkbenchLayout.ActivatePad(this);
+			SD.Workbench.ActivatePad(this);
 		}
 		
 		public override string ToString()

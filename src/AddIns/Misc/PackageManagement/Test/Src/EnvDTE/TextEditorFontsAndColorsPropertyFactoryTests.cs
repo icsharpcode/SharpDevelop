@@ -19,7 +19,7 @@ namespace PackageManagement.Tests.EnvDTE
 		void CreateProperties()
 		{
 			propertyFactory = new TextEditorFontsAndColorsPropertyFactory();
-			properties = new Properties(propertyFactory);			
+			properties = new Properties(propertyFactory);
 		}
 		
 		void AssertPropertiesContainProperty(string expectedPropertyName)

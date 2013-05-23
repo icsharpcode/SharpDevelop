@@ -3,8 +3,6 @@
 
 using System;
 using System.Text;
-using System.Windows.Input;
-using ICSharpCode.AvalonEdit.Document;
 
 namespace ICSharpCode.AvalonEdit.Snippets
 {

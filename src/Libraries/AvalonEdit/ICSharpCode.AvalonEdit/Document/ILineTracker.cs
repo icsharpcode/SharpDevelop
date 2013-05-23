@@ -51,5 +51,12 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// throw away their data and rebuild the document.
 		/// </summary>
 		void RebuildDocument();
+		
+		/// <summary>
+		/// Notifies the line tracker that a document change (a single change, not a change group) has completed.
+		/// This method gets called after the change has been performed, but before the <see cref="TextDocument.Changed"/> event
+		/// is raised.
+		/// </summary>
+		void ChangeComplete(DocumentChangeEventArgs e);
 	}
 }

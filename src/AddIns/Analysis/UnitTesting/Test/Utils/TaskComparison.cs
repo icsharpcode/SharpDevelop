@@ -10,12 +10,12 @@ namespace UnitTesting.Tests.Utils
 	public class TaskComparison
 	{
 		bool match;
-		Task lhs;
-		Task rhs;
+		SDTask lhs;
+		SDTask rhs;
 		string shortMismatchReason = String.Empty;
 		StringBuilder mismatchReason = new StringBuilder();
 		
-		public TaskComparison(Task lhs, Task rhs)
+		public TaskComparison(SDTask lhs, SDTask rhs)
 		{
 			this.lhs = lhs;
 			this.rhs = rhs;

@@ -5,7 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Project;
@@ -31,14 +31,14 @@ namespace PackageManagement.Tests.EnvDTE
 			project = new TestableDTEProject();
 			msbuildProject = project.TestableProject;
 			fakeFileService = project.FakeFileService;
-			msbuildProject.FileName = projectFileName;
+			msbuildProject.FileName = new FileName(projectFileName);
 			msbuildProject.AddFile(include);
 		}
 		
 		void CreateFileProjectItemsFromFileInProjectFolder(string include)
 		{
 			DTE.ProjectItem projectItem = (DTE.ProjectItem)project.ProjectItems.Item(include);
-			fileProjectItems = new DTE.FileProjectItems(projectItem, fakeFileService);
+			fileProjectItems = new DTE.FileProjectItems(projectItem);
 		}
 		
 		IProjectBrowserUpdater CreateProjectBrowserUpdater()

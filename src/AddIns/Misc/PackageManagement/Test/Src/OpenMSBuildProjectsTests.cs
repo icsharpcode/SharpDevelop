@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -16,13 +18,13 @@ namespace PackageManagement.Tests
 	{
 		OpenMSBuildProjects projects;
 		IPackageManagementProjectService fakeProjectService;
-		List<IProject> openProjects;
+		SimpleModelCollection<IProject> openProjects;
 		
 		void CreateOpenMSBuildProjects()
 		{
 			fakeProjectService = MockRepository.GenerateStub<IPackageManagementProjectService>();
-			openProjects = new List<IProject>();
-			fakeProjectService.Stub(service => service.GetOpenProjects()).Return(openProjects);
+			openProjects = new SimpleModelCollection<IProject>();
+			fakeProjectService.Stub(service => service.AllProjects).Return(openProjects);
 			
 			projects = new OpenMSBuildProjects(fakeProjectService);
 		}
@@ -37,7 +39,7 @@ namespace PackageManagement.Tests
 		TestableProject AddProjectWithFileName(string fileName)
 		{
 			TestableProject project = AddProjectWithShortName("Test");
-			project.FileName = fileName;
+			project.FileName = new FileName(fileName);
 			return project;
 		}
 		

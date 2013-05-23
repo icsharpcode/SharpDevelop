@@ -40,8 +40,8 @@ namespace AddInScout
 			
 			treeView.Nodes.Add(rootNode);
 			
-			for (int i = 0; i < AddInTree.AddIns.Count; i++) {
-				GetExtensions(AddInTree.AddIns[i], rootNode);
+			foreach (var addin in SD.AddInTree.AddIns) {
+				GetExtensions(addin, rootNode);
 			}
 		}
 		

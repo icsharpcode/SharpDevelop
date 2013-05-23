@@ -17,7 +17,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		public string GetWorkingDirectory()
 		{
-			Solution solution = projectService.OpenSolution;
+			ISolution solution = projectService.OpenSolution;
 			if (solution != null) {
 				return QuotedDirectory(solution.Directory);
 			}

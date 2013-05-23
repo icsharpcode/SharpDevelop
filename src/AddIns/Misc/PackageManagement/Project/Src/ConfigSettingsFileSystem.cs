@@ -15,7 +15,7 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
-		public static ConfigSettingsFileSystem CreateConfigSettingsFileSystem(Solution solution)
+		public static ConfigSettingsFileSystem CreateConfigSettingsFileSystem(ISolution solution)
 		{
 			string configSettingsFolder = Path.Combine(solution.Directory, ".nuget");
 			return new ConfigSettingsFileSystem(configSettingsFolder);

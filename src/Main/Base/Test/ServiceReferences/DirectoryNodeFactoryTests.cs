@@ -3,14 +3,16 @@
 
 using System;
 using Gui.Pads.ProjectBrowser.TreeNodes;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Tests.WebReferences;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 {
 	[TestFixture]
-	public class DirectoryNodeFactoryTests
+	public class DirectoryNodeFactoryTests : SDTestFixtureBase
 	{
 		MSBuildBasedProject project;
 		
@@ -79,14 +81,14 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			ServiceReferenceNode node =
 				DirectoryNodeFactory.CreateDirectoryNode(parentServiceReferencesFolderNode, project, directory) as ServiceReferenceNode;
 			
-			Assert.AreEqual("ServiceReference1", node.Directory);
+			Assert.AreEqual("ServiceReference1", node.Directory.ToString());
 		}
 		
 		[Test]
 		public void CreateDirectoryNode_ProjectHasServiceReferencesItemAndDirectoryMatchesServiceReferencesPath_CreatesServiceReferencesFolderNode()
 		{
 			CreateProject();
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			project.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
 			ServiceReferencesProjectItem projectItem = AddWCFMetadataProjectItemToProject();
 			projectItem.Include = @"Service References\";
 			
@@ -94,31 +96,31 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			ServiceReferencesFolderNode referencesNode = 
 				DirectoryNodeFactory.CreateDirectoryNode(null, project, directory) as ServiceReferencesFolderNode;
 			
-			Assert.AreEqual(directory, referencesNode.Directory);
+			Assert.AreEqual(directory, referencesNode.Directory.ToString());
 		}
 		
 		[Test]
 		public void CreateDirectoryNode_FileProjectItemThatEndsWithForwardSlash_DirectoryNodeCreatedWithForwardSlashRemoved()
 		{
 			CreateProject();
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			project.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
 			FileProjectItem projectItem = CreateFileProjectItem(@"MyFolder/");
 			
 			DirectoryNode node = DirectoryNodeFactory.CreateDirectoryNode(projectItem, FileNodeStatus.None);
 			
-			Assert.AreEqual(@"d:\projects\MyProject\MyFolder", node.Directory);
+			Assert.AreEqual(@"d:\projects\MyProject\MyFolder", node.Directory.ToString());
 		}
 		
 		[Test]
 		public void CreateDirectoryNode_FileProjectItemThatEndsWithBackSlash_DirectoryNodeCreatedWithBackSlashRemoved()
 		{
 			CreateProject();
-			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			project.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
 			FileProjectItem projectItem = CreateFileProjectItem(@"MyFolder\");
 			
 			DirectoryNode node = DirectoryNodeFactory.CreateDirectoryNode(projectItem, FileNodeStatus.None);
 			
-			Assert.AreEqual(@"d:\projects\MyProject\MyFolder", node.Directory);
+			Assert.AreEqual(@"d:\projects\MyProject\MyFolder", node.Directory.ToString());
 		}
 	}
 }

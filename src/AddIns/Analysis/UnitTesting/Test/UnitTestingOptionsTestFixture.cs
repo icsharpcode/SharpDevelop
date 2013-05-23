@@ -97,8 +97,8 @@ namespace UnitTesting.Tests
 		public void DefaultNoDots()
 		{
 			Assert.IsFalse(defaultOptions.NoDots);
-		}		
-
+		}
+		
 		[Test]
 		public void SetNoDots()
 		{
@@ -120,7 +120,7 @@ namespace UnitTesting.Tests
 		public void DefaultLabels()
 		{
 			Assert.IsFalse(defaultOptions.Labels);
-		}				
+		}
 		
 		[Test]
 		public void SetLabels()

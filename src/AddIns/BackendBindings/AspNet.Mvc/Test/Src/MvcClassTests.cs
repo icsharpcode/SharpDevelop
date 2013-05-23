@@ -2,19 +2,23 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace AspNet.Mvc.Tests
 {
 	[TestFixture]
-	public class MvcClassTests
+	public class MvcClassTests : MvcTestsBase
 	{
 		MvcClass mvcClass;
 		FakeMvcProject fakeProject;
-		FakeClass fakeClass;
+		ITypeDefinition fakeTypeDefinition;
+		List<IType> baseTypes;
 		
 		void CreateCSharpProject()
 		{
@@ -41,8 +45,17 @@ namespace AspNet.Mvc.Tests
 		
 		void CreateClass(string name, FakeMvcProject fakeProject)
 		{
-			fakeClass = new FakeClass(name);
-			mvcClass = new MvcClass(fakeClass, fakeProject);
+			fakeTypeDefinition = CreateFakeTypeDefinition(name);
+			mvcClass = new MvcClass(fakeTypeDefinition, fakeProject);
+		}
+		
+		ITypeDefinition CreateFakeTypeDefinition(string name)
+		{
+			var typeDefinition = MockRepository.GenerateStub<ITypeDefinition>();
+			typeDefinition.Stub(t => t.FullName).Return(name);
+			baseTypes = new List<IType>();
+			typeDefinition.Stub(t => t.DirectBaseTypes).Return(baseTypes);
+			return typeDefinition;
 		}
 		
 		void CreateClassWithVisualBasicProject(string name)
@@ -53,7 +66,10 @@ namespace AspNet.Mvc.Tests
 		
 		void AddBaseClass(string name)
 		{
-			fakeClass.AddBaseClass(name);
+			IType type = MockRepository.GenerateStub<IType>();
+			type.Stub(t => t.FullName).Return(name);
+			type.Stub(t => t.Kind).Return(TypeKind.Class);
+			baseTypes.Add(type);
 		}
 		
 		[Test]
@@ -69,6 +85,7 @@ namespace AspNet.Mvc.Tests
 		public void Namespace_ClassIsICSharpCodeTestClass_ReturnsICSharpCode()
 		{
 			CreateClass("ICSharpCode.TestClass");
+			fakeTypeDefinition.Stub(t => t.Namespace).Return("ICSharpCode");
 			string @namespace = mvcClass.Namespace;
 			
 			Assert.AreEqual("ICSharpCode", @namespace);
@@ -78,6 +95,7 @@ namespace AspNet.Mvc.Tests
 		public void Name_ClassIsICSharpCodeTestClass_ReturnsTestClass()
 		{
 			CreateClass("ICSharpCode.TestClass");
+			fakeTypeDefinition.Stub(t => t.Name).Return("TestClass");
 			string name = mvcClass.Name;
 			
 			Assert.AreEqual("TestClass", name);
@@ -107,7 +125,7 @@ namespace AspNet.Mvc.Tests
 		{
 			CreateClass("ICSharpCode.TestClass");
 			string expectedOutputAssemblyLocation = @"d:\test\bin\debug\test.dll";
-			fakeClass.TestableProject.SetOutputAssemblyFullPath(expectedOutputAssemblyLocation);
+			fakeProject.OutputAssemblyFullPath = expectedOutputAssemblyLocation;
 			
 			string assemblyLocation = mvcClass.AssemblyLocation;
 			

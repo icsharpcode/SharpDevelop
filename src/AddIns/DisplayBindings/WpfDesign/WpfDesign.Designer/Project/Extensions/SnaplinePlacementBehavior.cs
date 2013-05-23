@@ -167,6 +167,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var containerRect = new Rect(0, 0, ModelTools.GetWidth(ExtendedItem.View), ModelTools.GetHeight(ExtendedItem.View));
 			AddLines(containerRect, -Margin, false);
 
+            AddLines(containerRect, 0, false);
+
 			foreach (var item in ExtendedItem.ContentProperty.CollectionElements
 			         .Except(operation.PlacedItems.Select(f => f.Item)))
 			{

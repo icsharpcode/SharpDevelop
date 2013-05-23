@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace AspNet.Mvc.Tests
 {
 	[TestFixture]
-	public class IISExpressProcessStartInfoTests
+	public class IISExpressProcessStartInfoTests : MvcTestsBase
 	{
 		WebProject project;
 		TestableProject testableProject;

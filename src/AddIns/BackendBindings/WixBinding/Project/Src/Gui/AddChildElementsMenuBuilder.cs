@@ -11,11 +11,11 @@ using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.WixBinding
 {
-	public class AddChildElementsMenuBuilder : ISubmenuBuilder
+	public class AddChildElementsMenuBuilder : IMenuItemBuilder
 	{
-		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
+		public IEnumerable<object> BuildItems(Codon codon, object parameter)
 		{
-			StringCollection allowedChildElements = GetAllowedChildElements(owner);
+			StringCollection allowedChildElements = GetAllowedChildElements(parameter);
 			return CreateMenuItems(allowedChildElements);
 		}
 		

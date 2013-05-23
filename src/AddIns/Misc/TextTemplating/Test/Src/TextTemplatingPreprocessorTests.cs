@@ -21,6 +21,18 @@ namespace TextTemplating.Tests
 		FakeTextTemplatingHost templatingHost;
 		FakeTextTemplatingCustomToolContext customToolContext;
 		
+		[SetUp]
+		public void Init()
+		{
+			SD.InitializeForUnitTests();
+		}
+		
+		[TearDown]
+		public void TearDown()
+		{
+			SD.TearDownForUnitTests();
+		}
+		
 		TestableFileProjectItem PreprocessTemplate(string fileName)
 		{
 			var projectFile = CreatePreprocessor(fileName);
@@ -160,7 +172,7 @@ namespace TextTemplating.Tests
 			templatingHost.ErrorsCollection.Add(new CompilerError());
 			preprocessor.PreprocessTemplate();
 			
-			Task task = customToolContext.FirstTaskAdded;
+			SDTask task = customToolContext.FirstTaskAdded;
 			
 			Assert.AreEqual(TaskType.Error, task.TaskType);
 		}
@@ -174,7 +186,7 @@ namespace TextTemplating.Tests
 			templatingHost.ErrorsCollection.Add(error);
 			preprocessor.PreprocessTemplate();
 			
-			Task task = customToolContext.FirstTaskAdded;
+			SDTask task = customToolContext.FirstTaskAdded;
 			
 			Assert.AreEqual("error text", task.Description);
 		}
@@ -197,7 +209,7 @@ namespace TextTemplating.Tests
 			templatingHost.ExceptionToThrowWhenPreprocessTemplateCalled = ex;
 			preprocessor.PreprocessTemplate();
 			
-			Task task = customToolContext.FirstTaskAdded;
+			SDTask task = customToolContext.FirstTaskAdded;
 			
 			Assert.AreEqual("error", task.Description);
 		}
@@ -210,7 +222,7 @@ namespace TextTemplating.Tests
 			templatingHost.ExceptionToThrowWhenPreprocessTemplateCalled = ex;
 			preprocessor.PreprocessTemplate();
 			
-			Task task = customToolContext.FirstTaskAdded;
+			SDTask task = customToolContext.FirstTaskAdded;
 			var expectedFileName = new FileName(@"d:\a.tt");
 			
 			Assert.AreEqual(expectedFileName, task.FileName);
@@ -249,6 +261,29 @@ namespace TextTemplating.Tests
 			PreprocessTemplate(@"d:\class.tt");
 			
 			Assert.AreEqual("_class", templatingHost.ClassNamePassedToPreprocessTemplate);
+		}
+		
+		[Test]
+		public void PreprocessTemplate_ProjectHasNoCodeDomProvider_CSharpCodeDomProviderUsedByDefaultAndClassNameChangedToValidClassName()
+		{
+			TestableFileProjectItem projectFile = CreatePreprocessor(@"d:\class.tt");
+			projectFile.TestableProject.CodeDomProviderToReturn = null;
+			
+			preprocessor.PreprocessTemplate();
+			
+			Assert.AreEqual("_class", templatingHost.ClassNamePassedToPreprocessTemplate);
+		}
+		
+		[Test]
+		public void PreprocessTemplate_ProjectHasNoCodeDomProvider_WarningTaskAdded()
+		{
+			TestableFileProjectItem projectFile = CreatePreprocessor(@"d:\test.tt");
+			projectFile.TestableProject.CodeDomProviderToReturn = null;
+			
+			preprocessor.PreprocessTemplate();
+			
+			SDTask task = customToolContext.FirstTaskAdded;
+			Assert.AreEqual(TaskType.Warning, task.TaskType);
 		}
 	}
 }

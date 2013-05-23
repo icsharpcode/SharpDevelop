@@ -11,6 +11,7 @@ using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Options
 {
@@ -129,15 +130,32 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		
 		public void ShowExample(TextArea exampleTextArea)
 		{
-			exampleTextArea.Document.Text = StringParser.Parse(color.ExampleText, GetXshdProperties().ToArray());
+			string exampleText = StringParser.Parse(color.ExampleText, GetXshdProperties().ToArray());
+			int semanticHighlightStart = exampleText.IndexOf("#{#", StringComparison.OrdinalIgnoreCase);
+			int semanticHighlightEnd = exampleText.IndexOf("#}#", StringComparison.OrdinalIgnoreCase);
+			if (semanticHighlightStart > -1 && semanticHighlightEnd >= semanticHighlightStart + 3) {
+				semanticHighlightEnd -= 3;
+				exampleText = exampleText.Remove(semanticHighlightStart, 3).Remove(semanticHighlightEnd, 3);
+				ITextMarkerService svc = exampleTextArea.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+				exampleTextArea.Document.Text = exampleText;
+				if (svc != null) {
+					ITextMarker m = svc.Create(semanticHighlightStart, semanticHighlightEnd - semanticHighlightStart);
+					m.Tag = (Action<IHighlightingItem, ITextMarker>)(
+						(IHighlightingItem item, ITextMarker marker) => {
+							marker.BackgroundColor = item.Background;
+							marker.ForegroundColor = item.Foreground;
+							marker.FontStyle = item.Italic ? FontStyles.Italic : FontStyles.Normal;
+							marker.FontWeight = item.Bold ? FontWeights.Bold : FontWeights.Normal;
+						});
+				}
+			} else {
+				exampleTextArea.Document.Text = exampleText;
+			}
 		}
 		
 		IEnumerable<StringTagPair> GetXshdProperties()
 		{
-			IHighlightingDefinition2 def = ParentDefinition as IHighlightingDefinition2;
-			if (def == null)
-				yield break;
-			foreach (var p in def.Properties)
+			foreach (var p in ParentDefinition.Properties)
 				yield return new StringTagPair(p.Key, p.Value);
 		}
 		
