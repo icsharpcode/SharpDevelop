@@ -94,7 +94,8 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 			if (e.Property == BrushProperty) {
 				if (Brush != null) {
 					GradientStops = new BindingList<GradientStop>(Brush.GradientStops);
-					SelectedStop = GradientStops.FirstOrDefault();
+				    if (SelectedStop == null)
+				        SelectedStop = GradientStops.FirstOrDefault();
 				}
 				else {
 					GradientStops = null;
@@ -131,7 +132,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 				return;
 			}
 			stop.Offset = (oldOffset + e.HorizontalChange / strip.ActualWidth).Coerce(0, 1);
-		}
+		}	    
 	}
 
 	public class GradientItemsControl : Selector
