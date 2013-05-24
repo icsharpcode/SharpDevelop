@@ -814,5 +814,55 @@ int foo)
 	}
 }");
 		}
+		[Ignore("FIXME")]
+		[Test]
+		public void TestWrappingBug()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			Test(policy, @"class Test
+{
+	void TestMe ()
+	{
+		VantageErrorLog.Throw(Title: ""DexterHelper: WriteToDexter (WebEx)"",
+	                                  Method: ""WriteToDexter"", 
+                                	  Location: ""DX001"", 
+                                  Code: ""DX001"", 
+                            	      Message: string.Format(""DexterHelper: WriteToDexter{0}{1}{0}{2}"", 
+                                   VantageConstants.CRLF, 
+                        	           webex.Message,
+                    	               responseString), 
+                                  ex: new Exception(string.Format(""DexterHelper: WriteToDexter{0}{1}{0}{2}"", 
+                                            VantageConstants.CRLF, 
+                	                            webex.Message,
+                                            responseString)), 
+                                  TellUser: false, 
+                                  WriteToDatabase: true, 
+        	                          TellVantageSupport: true, 
+            	                      Rethrow: false);
+	}
+}",
+			     @"class Test
+{
+	void TestMe ()
+	{
+		VantageErrorLog.Throw (Title: ""DexterHelper: WriteToDexter (WebEx)"",
+		                       Method: ""WriteToDexter"", 
+		                       Location: ""DX001"", 
+		                       Code: ""DX001"", 
+		                       Message: string.Format (""DexterHelper: WriteToDexter{0}{1}{0}{2}"", 
+		                                               VantageConstants.CRLF, 
+		                                               webex.Message,
+		                                               responseString), 
+		                       ex: new Exception (string.Format (""DexterHelper: WriteToDexter{0}{1}{0}{2}"", 
+		                                                         VantageConstants.CRLF, 
+		                                                         webex.Message,
+		                                                         responseString)), 
+		                       TellUser: false, 
+		                       WriteToDatabase: true, 
+		                       TellVantageSupport: true, 
+		                       Rethrow: false);
+	}
+}");
+		}
 	}
 }
