@@ -19,6 +19,7 @@
 using System;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.Documentation
 {
@@ -60,7 +61,11 @@ namespace ICSharpCode.NRefactory.Documentation
 						return typeDef;
 				}
 			}
-			return null;
+			int idx = typeName.LastIndexOf('.');
+			if (idx < 0)
+				return new UnknownType("", typeName, typeParameterCount);
+			// give back a guessed namespace/type name
+			return  new UnknownType(typeName.Substring(0, idx), typeName.Substring(idx + 1), typeParameterCount);
 		}
 	}
 }
