@@ -101,10 +101,27 @@ class Test {
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
 			policy.ClassBraceStyle = BraceStyle.DoNotChange;
-			
+
 			Test(policy,
-			      @"			class Test {}",
-			      @"class Test {}");
+			     @"			class Test {}",
+			     @"class Test {}");
+		}
+
+		[Test]
+		public void TestClassIndentationWithDocComment()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			policy.ClassBraceStyle = BraceStyle.DoNotChange;
+
+			Test(policy,
+			     @"/// <summary>
+		/// olwcowcolwc
+		/// </summary>
+			class Test {}",
+			     @"/// <summary>
+/// olwcowcolwc
+/// </summary>
+class Test {}");
 		}
 
 		[Test]

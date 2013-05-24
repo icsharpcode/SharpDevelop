@@ -120,10 +120,10 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		void FixAttributesAndDocComment(EntityDeclaration entity)
 		{
-			var node =entity.FirstChild;
+			var node = entity.FirstChild;
 			while (node != null && node.Role == Roles.Comment) {
-				FixIndentation(node);
 				node = node.GetNextSibling(NoWhitespacePredicate);
+				FixIndentation(node);
 			}
 			if (entity.Attributes.Count > 0) {
 				AstNode n = null;
