@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -2198,6 +2198,30 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		#region Read Property
 
+		Accessibility MergePropertyAccessibility (Accessibility left, Accessibility right)
+		{
+			if (left == Accessibility.Public || right == Accessibility.Public)
+				return Accessibility.Public;
+
+			if (left == Accessibility.ProtectedOrInternal || right == Accessibility.ProtectedOrInternal)
+				return Accessibility.ProtectedOrInternal;
+
+			if (left == Accessibility.Protected && right == Accessibility.Internal || 
+			    left == Accessibility.Internal && right == Accessibility.Protected)
+				return Accessibility.ProtectedOrInternal;
+
+			if (left == Accessibility.Protected || right == Accessibility.Protected)
+				return Accessibility.Protected;
+
+			if (left == Accessibility.Internal || right == Accessibility.Internal)
+				return Accessibility.Internal;
+
+			if (left == Accessibility.ProtectedAndInternal || right == Accessibility.ProtectedAndInternal)
+				return Accessibility.ProtectedAndInternal;
+
+			return left;
+		}
+
 		[CLSCompliant(false)]
 		public IUnresolvedProperty ReadProperty(PropertyDefinition property, IUnresolvedTypeDefinition parentType, EntityType propertyType = EntityType.Property)
 		{
@@ -2208,6 +2232,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			DefaultUnresolvedProperty p = new DefaultUnresolvedProperty(parentType, property.Name);
 			p.EntityType = propertyType;
 			TranslateModifiers(property.GetMethod ?? property.SetMethod, p);
+			if (property.GetMethod != null && property.SetMethod != null)
+				p.Accessibility = MergePropertyAccessibility (GetAccessibility (property.GetMethod.Attributes), GetAccessibility (property.SetMethod.Attributes));
+
 			p.ReturnType = ReadTypeReference(property.PropertyType, typeAttributes: property);
 			
 			p.Getter = ReadMethod(property.GetMethod, parentType, EntityType.Accessor, p);

@@ -87,9 +87,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public int PropertyWithProtectedSetter { get; protected set; }
 		
 		public object PropertyWithPrivateSetter { get; private set; }
-		
+
 		public object PropertyWithoutSetter { get { return null; } }
-		
+
+		public object PropertyWithPrivateGetter { private get; set; }
+
 		public string this[int index] { get { return "Test"; } set {} }
 	}
 	

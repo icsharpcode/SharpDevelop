@@ -336,6 +336,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(Accessibility.Private, p.Setter.Accessibility);
 			Assert.IsTrue(p.Getter.HasBody);
 		}
+
+		[Test]
+		public void PropertyWithPrivateGetter()
+		{
+			var testClass = GetTypeDefinition(typeof(PropertyTest));
+			IProperty p = testClass.Properties.Single(pr => pr.Name == "PropertyWithPrivateGetter");
+			Assert.IsTrue(p.CanGet);
+			Assert.IsTrue(p.CanSet);
+			Assert.AreEqual(Accessibility.Public, p.Accessibility);
+			Assert.AreEqual(Accessibility.Private, p.Getter.Accessibility);
+			Assert.AreEqual(Accessibility.Public, p.Setter.Accessibility);
+			Assert.IsTrue(p.Getter.HasBody);
+		}
 		
 		[Test]
 		public void PropertyWithoutSetter()
