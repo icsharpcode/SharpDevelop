@@ -28,13 +28,17 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			return b.ToString();
 		}*/
 		
-		protected static IDocument GetResult(CSharpFormattingOptions policy, string input, FormattingMode mode = FormattingMode.Intrusive)
+		protected static IDocument GetResult(CSharpFormattingOptions policy, string input, FormattingMode mode = FormattingMode.Intrusive, TextEditorOptions options = null)
 		{
+			if (options == null) {
+				options = new TextEditorOptions();
+				options.EolMarker = "\n";
+				options.WrapLineLength = 80;
+			}
+
+
 			input = NormalizeNewlines(input);
 			var document = new StringBuilderDocument(input);
-			var options = new TextEditorOptions();
-			options.EolMarker = "\n";
-			options.WrapLineLength = 80;
 			var visitor = new CSharpFormatter (policy, options);
 			visitor.FormattingMode = mode;
 			var syntaxTree = new CSharpParser ().Parse (document, "test.cs");
@@ -43,10 +47,11 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			return document;
 		}
 		
-		protected static IDocument Test (CSharpFormattingOptions policy, string input, string expectedOutput, FormattingMode mode = FormattingMode.Intrusive)
+		protected static IDocument Test (CSharpFormattingOptions policy, string input, string expectedOutput, FormattingMode mode = FormattingMode.Intrusive, TextEditorOptions options = null)
 		{
 			expectedOutput = NormalizeNewlines(expectedOutput);
-			IDocument doc = GetResult(policy, input, mode);
+
+			IDocument doc = GetResult(policy, input, mode, options);
 			if (expectedOutput != doc.Text) {
 				Console.WriteLine ("expected:");
 				Console.WriteLine (expectedOutput);

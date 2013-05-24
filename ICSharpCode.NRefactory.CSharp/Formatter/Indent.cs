@@ -126,7 +126,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void Update()
 		{
 			if (options.TabsToSpaces) {
-				indentString = new string(' ', curIndent);
+				indentString = new string(' ', curIndent + ExtraSpaces);
 				return;
 			}
 			indentString = new string('\t', curIndent / options.TabSize) + new string(' ', curIndent % options.TabSize) + new string(' ', ExtraSpaces);

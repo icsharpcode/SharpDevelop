@@ -181,7 +181,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		Foo (1, 2, 3);
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	void TestMe ()
 	{
@@ -863,6 +863,37 @@ int foo)
 		                       Rethrow: false);
 	}
 }");
+		}
+
+
+		[Test]
+		public void TestWrappingWithSpaceIndent()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+
+			TextEditorOptions options = new TextEditorOptions();
+			options.IndentSize = options.TabSize = 2;
+			options.TabsToSpaces = true;
+			options.EolMarker = "\n";
+
+			Test(policy, @"class Test
+{
+  void TestMe ()
+  {
+    Foo (1, 
+    2,
+    3);
+  }
+}",
+			     @"class Test
+{
+  void TestMe ()
+  {
+    Foo (1, 
+         2,
+         3);
+  }
+}", FormattingMode.Intrusive, options);
 		}
 	}
 }
