@@ -62,7 +62,9 @@
     <None Include="ICSharpCode.Svn.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Compile Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.cs" />
+    <Compile Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.Designer.cs">
       <DependentUpon>InfoPanel.cs</DependentUpon>
     </Compile>

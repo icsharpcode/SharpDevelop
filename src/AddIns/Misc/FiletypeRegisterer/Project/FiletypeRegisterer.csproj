@@ -79,7 +79,9 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Src\RegisterFiletypesPanel.cs" />
+    <Compile Include="Src\RegisterFiletypesPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\RegisterFiletypesPanel.Designer.cs">
       <DependentUpon>RegisterFiletypesPanel.cs</DependentUpon>
     </Compile>
@@ -95,7 +97,6 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Folder Include="filetypes" />
     <Content Include="filetypes\addin.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

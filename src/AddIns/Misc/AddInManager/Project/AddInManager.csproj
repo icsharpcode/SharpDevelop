@@ -53,13 +53,19 @@
     </None>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\Commands.cs" />
-    <Compile Include="Src\ManagerForm.cs" />
+    <Compile Include="Src\ManagerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <EmbeddedResource Include="Src\ManagerForm.resx">
       <DependentUpon>ManagerForm.cs</DependentUpon>
     </EmbeddedResource>
-    <Compile Include="Src\AddInControl.cs" />
+    <Compile Include="Src\AddInControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\InstallableAddIn.cs" />
-    <Compile Include="Src\AboutForm.cs" />
+    <Compile Include="Src\AboutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <EmbeddedResource Include="Src\AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>

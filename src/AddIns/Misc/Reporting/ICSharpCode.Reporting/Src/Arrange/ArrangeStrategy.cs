@@ -43,13 +43,8 @@ namespace ICSharpCode.Reporting.Arrange
 				var resizeable = from resize in container.ExportedItems
 					where ((resize.CanGrow == true))
 					select resize;
-				
-				
-				if (resizeable.Count() > 0) {
-					
-					
-					
-					
+               
+				if (resizeable.Any()) {
 					if (!BiggestRectangle.IsEmpty) {
 						var containerRectangle = new Rectangle(container.Location,container.Size);
 						var desiredRectangle = Rectangle.Union(containerRectangle,BiggestRectangle);

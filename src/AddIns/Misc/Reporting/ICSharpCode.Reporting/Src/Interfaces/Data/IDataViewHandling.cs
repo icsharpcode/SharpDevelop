@@ -22,7 +22,7 @@ namespace ICSharpCode.Reporting.Interfaces.Data
 		
 		void Sort ();
 		
-//		void Group();
+		void Group();
 		
 		void Bind();
 		

@@ -78,15 +78,22 @@ namespace ICSharpCode.Reporting
 				this.Add(item);
 			}
 		}
+	}
+	
+	
+	public class GroupColumnCollection: SortColumnCollection
+	{
+		public GroupColumnCollection()
+		{
+		}
 		
-		
-		/// <summary>
-		/// The Culture is used for direct String Comparison
-		/// </summary>
-		
-//		public new static CultureInfo Culture
-//		{
-//			get { return CultureInfo.CurrentCulture;}
-//		}
+		public new AbstractColumn Find (string columnName)
+		{
+			if (String.IsNullOrEmpty(columnName)) {
+				throw new ArgumentNullException("columnName");
+			}
+			
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
+		}
 	}
 }

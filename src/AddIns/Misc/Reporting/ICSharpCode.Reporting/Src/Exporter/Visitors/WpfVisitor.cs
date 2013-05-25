@@ -24,7 +24,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 	/// </summary>
 	internal class WpfVisitor: AbstractVisitor
 	{
-		private FixedDocumentCreator documentCreator;
+		private readonly FixedDocumentCreator documentCreator;
 		private readonly  ReportSettings reportSettings;
 		
 		public WpfVisitor(ReportSettings reportSettings)

@@ -67,16 +67,14 @@ namespace ICSharpCode.Reporting.Test.DataSource
 	
 	public class Contributor {
 		
-		int randomInt;
-		DateTime randomDate;
-		
+	
 		public Contributor(string lastname, string firstname,string job,int randomInt,DateTime randomDate,string groupItem)
 		{
 			this.Lastname = lastname;
 			this.Firstname = firstname;
 			this.Job = job; 
-			this.randomDate = randomDate;
-			this.randomInt = randomInt;
+			this.RandomDate = randomDate;
+			this.RandomInt = randomInt;
 			this.GroupItem = groupItem;
 		}
 		
@@ -90,16 +88,13 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		public string Job {get; private set;}
 		
 		
-		public int RandomInt {
-			get { return randomInt; }
-		}
+		public int RandomInt {get; private set;}
 		
 		
-		public DateTime RandomDate {
-			get { return randomDate; }
-		}
+		public DateTime RandomDate {get;private set;}
+			
 		
-		public string GroupItem {get; set;}
+		public string GroupItem {get; private set;}
 		
 	}
 }

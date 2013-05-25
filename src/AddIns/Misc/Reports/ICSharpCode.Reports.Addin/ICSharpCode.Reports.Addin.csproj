@@ -185,7 +185,9 @@
     <Compile Include="Project\ReportItems\ErrorItem.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Project\ReportItems\GroupHeader.cs" />
+    <Compile Include="Project\ReportItems\GroupHeader.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Project\ReportItems\TypeProviders\AbstractItemTypeProvider.cs" />
     <Compile Include="Project\ReportItems\TypeProviders\CircleItemTypeProvider.cs" />
     <Compile Include="Project\ReportItems\TypeProviders\DataItemTypeProvider.cs" />
@@ -366,9 +368,6 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Project\ReportItems\TypeProviders" />
-    <Folder Include="Project\SecondaryViews\TestView" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

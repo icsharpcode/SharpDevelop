@@ -44,7 +44,21 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			var collectionSource = new CollectionSource	(list,new ReportSettings());
 			Assert.That(collectionSource.AvailableFields.Count,Is.EqualTo(6));
 		}
-			
+		
+		#region Grouping
+		
+		[Test]
+		public void GroupbyOneColumn () {
+			var rs = new ReportSettings();
+			rs.GroupColumnCollection.Add( new GroupColumn("GroupItem",1,ListSortDirection.Ascending));
+			var collectionSource = new CollectionSource	(list,rs);
+			collectionSource.Bind();
+		}
+		
+		#endregion
+		
+		#region Sort
+
 			
 		[Test]
 		public void CreateUnsortedIndex() {
@@ -75,11 +89,32 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			collectionSource.Bind();
 			string compare = collectionSource.IndexList[0].ObjectArray[0].ToString();
 			foreach (var element in collectionSource.IndexList) {
-				Console.WriteLine(element.ObjectArray[0].ToString());
+				string result = String.Format("{0} - {1}",element.ListIndex,element.ObjectArray[0]);
+				Console.WriteLine(result);
 				Assert.That(compare,Is.LessThanOrEqualTo(element.ObjectArray[0].ToString()));
 				compare = element.ObjectArray[0].ToString();
 			}
 		}
+		
+		
+		[Test]
+		public void SortTwoColumnsAscending() {
+			var rs = new ReportSettings();
+			rs.SortColumnsCollection.Add(new SortColumn("Lastname",ListSortDirection.Ascending));
+			rs.SortColumnsCollection.Add(new SortColumn("RandomInt",ListSortDirection.Ascending));
+			var collectionSource = new CollectionSource	(list,rs);
+			collectionSource.Bind();
+			string compare = collectionSource.IndexList[0].ObjectArray[0].ToString();
+			foreach (var element in collectionSource.IndexList) {
+				string result = String.Format("{0} - {1} - {2}",element.ListIndex,element.ObjectArray[0],element.ObjectArray[1].ToString());
+				Console.WriteLine(result);
+				Assert.That(compare,Is.LessThanOrEqualTo(element.ObjectArray[0].ToString()));
+				compare = element.ObjectArray[0].ToString();
+			}
+		}
+		
+		#endregion
+		
 		
 		[SetUp]
 		public void CreateList() {

@@ -55,7 +55,6 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		public Collection<AbstractColumn> AvailableFields {
 			get {
-//				base.AvailableFields.Clear();
 				var availableFields = new Collection<AbstractColumn>();
 				foreach (PropertyDescriptor p in this.listProperties){
 					availableFields.Add (new AbstractColumn(p.Name,p.PropertyType));
@@ -72,9 +71,118 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		public void Bind()
 		{
-			Sort();
+			if (reportSettings.GroupColumnCollection.Any()) {
+				this.Group();
+			} else {
+				this.Sort ();
+			}
 			Reset();
 		}
+		
+		#region Grouping
+		
+		public void Group()
+		{
+			var sortedList = this.BuildSortIndex (reportSettings.GroupColumnCollection);
+			IndexList = BuildGroup(sortedList);
+			
+//			ShowIndexList(gl);
+		}
+		
+		/*
+		private Dictionary<string,IndexList> BuildGroup (IndexList list) {
+			var dictionary = new Dictionary<string,IndexList>();
+			foreach (var element in list) {
+				string groupValue = ExtractValue (element);
+				if (!dictionary.ContainsKey(groupValue)) {
+					dictionary[groupValue] = new IndexList();
+				}
+				
+				dictionary[groupValue].Add(element);
+			}
+			foreach (var el in dictionary) {
+				Console.WriteLine (el.Key.ToString());
+			}
+				return dictionary;
+		}
+		 */
+		private IndexList BuildGroup (IndexList list)
+		{
+			string compareValue = String.Empty;
+			var idlist = new IndexList();
+//			GroupComparer groupComparer = null;
+			/*
+			foreach (BaseComparer element in list)
+			{
+				var groupValue = ExtractValue (element);
+			
+				if (compareValue != groupValue) {
+					groupComparer = CreateGroupHeader(element);
+					idlist.Add(groupComparer);
+				}
+				groupComparer.IndexList.Add(element);
+				compareValue = groupValue;
+			}
+			 */
+			
+			
+			GroupInternal(compareValue, ref idlist, list);
+
+			
+			ShowGrouping(ref idlist);
+//			ShowIndexList(IndexList);
+			return idlist;
+		}
+
+		void ShowGrouping(ref IndexList idlist)
+		{
+			Console.WriteLine("----ShowGrouping---");
+			foreach (GroupComparer el in idlist) {
+				Console.WriteLine("{0}", el.ToString());
+				if (el.IndexList.Any()) {
+					foreach (var element in el.IndexList) {
+						Console.WriteLine("--{0}", element.ToString());
+					}
+				}
+			}
+		}
+
+
+		void GroupInternal(string compareValue, ref IndexList idlist, IndexList list)
+		{
+			GroupComparer groupComparer = null;
+			foreach (BaseComparer element in list) {
+				var groupValue = ExtractValue(element);
+				if (compareValue != groupValue) {
+					groupComparer = CreateGroupHeader(element);
+					idlist.Add(groupComparer);
+				}
+				groupComparer.IndexList.Add(element);
+				compareValue = groupValue;
+			}
+		}
+		
+		
+		static string ExtractValue(BaseComparer element)
+		{
+//			string val = String.Empty;
+//			GroupColumn gc = element.ColumnCollection[0] as GroupColumn;
+//			if (gc !=  null) {
+//				val = element.ObjectArray[0].ToString();
+//			}
+//			return val;
+			return element.ObjectArray[0].ToString();
+		}
+		
+		
+		protected GroupComparer CreateGroupHeader (BaseComparer sc)
+		{
+			var gc = new GroupComparer(sc.ColumnCollection,sc.ListIndex,sc.ObjectArray);
+			gc.IndexList = new IndexList();
+			return gc;
+		}
+		
+		#endregion
 		
 		public void Sort()
 		{
@@ -100,6 +208,8 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		}
 		
 		public IndexList IndexList {get; private set;}
+		
+		
 		
 		
 		IndexList BuildSortIndex(SortColumnCollection sortColumnsCollection)
@@ -166,6 +276,8 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		}
 		
 		#endregion
+		
+		
 		private PropertyDescriptor[] BuildSortProperties (SortColumnCollection sortColumnCollection)
 		{
 			PropertyDescriptor[] sortProperties = new PropertyDescriptor[sortColumnCollection.Count];
@@ -225,5 +337,30 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 //			var i = bc.ListIndex;
 			return bc;
 		}
+		
+		
+		#region Debug Code
+		
+		protected  static void ShowIndexList (IndexList list)
+		{
+			
+			foreach (BaseComparer element in list) {
+				string s = String.Format("{0} ",element.ObjectArray[0]);
+				GroupComparer gc = element as GroupComparer;
+				if ( gc != null) {
+					s = s + "GroupHeader";
+					if (gc.IndexList != null) {
+						s = s + String.Format(" <{0}> Childs",gc.IndexList.Count);
+					}
+					System.Console.WriteLine(s);
+					foreach (BaseComparer c in gc.IndexList) {
+						Console.WriteLine("---- {0}",c.ObjectArray[0]);
+					}
+				}
+			}
+		}
+		
+		
+		#endregion
 	}
 }
