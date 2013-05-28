@@ -3,12 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
@@ -22,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// </summary>
 	public static class FindReferenceService
 	{
-		#region FindReferences
+//		#region FindReferences
 		static IEnumerable<IProject> GetProjectsThatCouldReferenceEntity(IEntity entity)
 		{
 			ISolution solution = ProjectService.OpenSolution;
@@ -96,6 +98,57 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				progressMonitor);
 		}
 		
+		public static Task FindReferencesToHierarchyAsync(IMember member, IProgressMonitor progressMonitor, Action<SearchedFile> callback)
+		{
+			if (member == null)
+				throw new ArgumentNullException("member");
+			if (progressMonitor == null)
+				throw new ArgumentNullException("progressMonitor");
+			if (callback == null)
+				throw new ArgumentNullException("callback");
+			return Task.WhenAll(FindAllMembers(member).Distinct().Select(m => FindReferencesAsync(m, progressMonitor, callback)));
+		}
+		
+		public static IEnumerable<IMember> FindAllMembers(IMember member)
+		{
+			yield return member;
+			foreach (var ancestor in InheritanceHelper.GetBaseMembers(member, true)) {
+				yield return ancestor;
+				// TODO : produces duplicates
+				foreach (var derived in FindDerivedMembers(ancestor))
+					yield return derived;
+			}
+			foreach (var derived in FindDerivedMembers(member))
+				yield return derived;
+		}
+		
+		static IEnumerable<IMember> FindDerivedMembers(IMember member)
+		{
+			ITypeDefinition definition = member.DeclaringTypeDefinition;
+			if (definition == null) yield break;
+			var tree = BuildDerivedTypesGraph(definition).ConvertToDerivedTypeTree();
+			var derivedMembers = TreeTraversal.PreOrder(tree, node => node.Children)
+				.Select(n => FindDerivedMember(member, n));
+			foreach (var otherMember in derivedMembers.Where(m => m != null))
+				yield return otherMember;
+		}
+		
+		static IMember FindDerivedMember(IMember member, ITreeNode<ITypeDefinition> node)
+		{
+//			if (endPoint != null && (node.Content.Equals(endPoint) || node.Content.GetAllBaseTypeDefinitions().Any(td => endPoint.Equals(td))))
+//				return null;
+			var importedMember = node.Content.Compilation.Import(member);
+			if (importedMember == null) return null;
+			return InheritanceHelper.GetDerivedMember(importedMember, node.Content);
+		}
+		
+		public static IObservable<SearchedFile> FindReferencesToHierarchy(IMember member, IProgressMonitor progressMonitor)
+		{
+			return ReactiveExtensions.CreateObservable<SearchedFile>(
+				(monitor, callback) => FindReferencesToHierarchyAsync(member, monitor, callback),
+				progressMonitor);
+		}
+		
 		/// <summary>
 		/// Finds references to a local variable.
 		/// </summary>
@@ -120,7 +173,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				(monitor, callback) => FindLocalReferencesAsync(variable, monitor).ContinueWith(t => callback(t.Result)),
 				progressMonitor);
 		}
-		#endregion
+//		#endregion
 		
 		#region FindDerivedTypes
 		/// <summary>
@@ -179,6 +232,26 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return node;
 			} else {
 				return new TypeGraphNode(baseType);
+			}
+		}
+		
+		/// <summary>
+		/// Builds a graph of type definitions.
+		/// </summary>
+		public static TypeGraphNode BuildFullTypeGraph(ITypeDefinition type)
+		{
+			if (type == null)
+				throw new ArgumentNullException("baseType");
+			var solutionSnapshot = GetSolutionSnapshot(type.Compilation);
+			var compilations = GetProjectsThatCouldReferenceEntity(type).Select(p => solutionSnapshot.GetCompilation(p));
+			var graph = BuildTypeInheritanceGraph(compilations);
+			TypeGraphNode node;
+			if (graph.TryGetValue(new AssemblyQualifiedTypeName(type), out node)) {
+				// only derived types were requested, so don't return the base types
+				// (this helps the GC to collect the unused parts of the graph more quickly)
+				return node;
+			} else {
+				return new TypeGraphNode(type);
 			}
 		}
 		

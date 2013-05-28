@@ -13,6 +13,20 @@ namespace ICSharpCode.SharpDevelop
 	public interface ILanguageBinding
 	{
 		/// <summary>
+		/// Gets the display name for the language.
+		/// </summary>
+		string Name {
+			get;
+		}
+		
+		/// <summary>
+		/// Gets the comparer used to compare two identifiers in this language.
+		/// </summary>
+		StringComparer IdentifierComparer {
+			get;
+		}
+		
+		/// <summary>
 		/// Provides access to the formatting strategy for this language.
 		/// </summary>
 		IFormattingStrategy FormattingStrategy { 
