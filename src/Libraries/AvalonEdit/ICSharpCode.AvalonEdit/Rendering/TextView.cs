@@ -1757,9 +1757,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			VisualLine line = GetVisualLineFromVisualTop(visualPosition.Y);
 			if (line == null)
 				return null;
-			int visualColumn = line.GetVisualColumn(visualPosition);
-			int documentOffset = line.GetRelativeOffset(visualColumn) + line.FirstDocumentLine.Offset;
-			return new TextViewPosition(document.GetLocation(documentOffset), visualColumn);
+			return line.GetTextViewPosition(visualPosition, Options.EnableVirtualSpace);
 		}
 		
 		/// <summary>
@@ -1777,9 +1775,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			VisualLine line = GetVisualLineFromVisualTop(visualPosition.Y);
 			if (line == null)
 				return null;
-			int visualColumn = line.GetVisualColumnFloor(visualPosition);
-			int documentOffset = line.GetRelativeOffset(visualColumn) + line.FirstDocumentLine.Offset;
-			return new TextViewPosition(document.GetLocation(documentOffset), visualColumn);
+			return line.GetTextViewPositionFloor(visualPosition, Options.EnableVirtualSpace);
 		}
 		#endregion
 		

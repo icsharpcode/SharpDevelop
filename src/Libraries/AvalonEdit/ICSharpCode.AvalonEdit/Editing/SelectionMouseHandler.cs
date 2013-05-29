@@ -166,9 +166,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (e.Data.GetDataPresent(DataFormats.UnicodeText, true)) {
 				e.Handled = true;
 				int visualColumn;
-				int offset = GetOffsetFromMousePosition(e.GetPosition(textArea.TextView), out visualColumn);
+				bool isAtEndOfLine;
+				int offset = GetOffsetFromMousePosition(e.GetPosition(textArea.TextView), out visualColumn, out isAtEndOfLine);
 				if (offset >= 0) {
-					textArea.Caret.Position = new TextViewPosition(textArea.Document.GetLocation(offset), visualColumn);
+					textArea.Caret.Position = new TextViewPosition(textArea.Document.GetLocation(offset), visualColumn) { IsAtEndOfLine = isAtEndOfLine };
 					textArea.Caret.DesiredXPos = double.NaN;
 					if (textArea.ReadOnlySectionProvider.CanInsert(offset)) {
 						if ((e.AllowedEffects & DragDropEffects.Move) == DragDropEffects.Move
@@ -359,7 +360,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 					Point p = e.GetPosition(textArea.TextView);
 					if (p.X >= 0 && p.Y >= 0 && p.X <= textArea.TextView.ActualWidth && p.Y <= textArea.TextView.ActualHeight) {
 						int visualColumn;
-						int offset = GetOffsetFromMousePosition(e, out visualColumn);
+						bool isAtEndOfLine;
+						int offset = GetOffsetFromMousePosition(e, out visualColumn, out isAtEndOfLine);
 						if (textArea.Selection.Contains(offset))
 							e.Cursor = Cursors.Arrow;
 						else
@@ -380,7 +382,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 				bool shift = (modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
 				if (enableTextDragDrop && e.ClickCount == 1 && !shift) {
 					int visualColumn;
-					int offset = GetOffsetFromMousePosition(e, out visualColumn);
+					bool isAtEndOfLine;
+					int offset = GetOffsetFromMousePosition(e, out visualColumn, out isAtEndOfLine);
 					if (textArea.Selection.Contains(offset)) {
 						if (textArea.CaptureMouse()) {
 							mode = SelectionMode.PossibleDragStart;
@@ -488,12 +491,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 			}
 		}
 		
-		int GetOffsetFromMousePosition(MouseEventArgs e, out int visualColumn)
+		int GetOffsetFromMousePosition(MouseEventArgs e, out int visualColumn, out bool isAtEndOfLine)
 		{
-			return GetOffsetFromMousePosition(e.GetPosition(textArea.TextView), out visualColumn);
+			return GetOffsetFromMousePosition(e.GetPosition(textArea.TextView), out visualColumn, out isAtEndOfLine);
 		}
 		
-		int GetOffsetFromMousePosition(Point positionRelativeToTextView, out int visualColumn)
+		int GetOffsetFromMousePosition(Point positionRelativeToTextView, out int visualColumn, out bool isAtEndOfLine)
 		{
 			visualColumn = 0;
 			TextView textView = textArea.TextView;
@@ -507,9 +510,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 				pos.Y = textView.DocumentHeight - ExtensionMethods.Epsilon;
 			VisualLine line = textView.GetVisualLineFromVisualTop(pos.Y);
 			if (line != null) {
-				visualColumn = line.GetVisualColumn(pos, textArea.Selection.EnableVirtualSpace);
+				visualColumn = line.GetVisualColumn(pos, textArea.Selection.EnableVirtualSpace, out isAtEndOfLine);
 				return line.GetRelativeOffset(visualColumn) + line.FirstDocumentLine.Offset;
 			}
+			isAtEndOfLine = false;
 			return -1;
 		}
 		
@@ -568,16 +572,19 @@ namespace ICSharpCode.AvalonEdit.Editing
 		void SetCaretOffsetToMousePosition(MouseEventArgs e, ISegment allowedSegment)
 		{
 			int visualColumn;
+			bool isAtEndOfLine;
 			int offset;
-			if (mode == SelectionMode.Rectangular)
+			if (mode == SelectionMode.Rectangular) {
 				offset = GetOffsetFromMousePositionFirstTextLineOnly(e.GetPosition(textArea.TextView), out visualColumn);
-			else
-				offset = GetOffsetFromMousePosition(e, out visualColumn);
+				isAtEndOfLine = true;
+			} else {
+				offset = GetOffsetFromMousePosition(e, out visualColumn, out isAtEndOfLine);
+			}
 			if (allowedSegment != null) {
 				offset = offset.CoerceValue(allowedSegment.Offset, allowedSegment.EndOffset);
 			}
 			if (offset >= 0) {
-				textArea.Caret.Position = new TextViewPosition(textArea.Document.GetLocation(offset), visualColumn);
+				textArea.Caret.Position = new TextViewPosition(textArea.Document.GetLocation(offset), visualColumn) { IsAtEndOfLine = isAtEndOfLine };
 				textArea.Caret.DesiredXPos = double.NaN;
 			}
 		}
