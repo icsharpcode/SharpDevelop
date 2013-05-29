@@ -343,17 +343,18 @@ namespace ICSharpCode.NRefactory.CSharp
 					yield break;
 			}
 
-			Stack<AstNode> descendStack = new Stack<AstNode>();
-			descendStack.Push(firstChild);
-			while (descendStack.Count > 0) {
-				AstNode cur = descendStack.Pop ();
-				while (cur != null) {
-					if (IsInsideRegion(region, cur))
-						yield return cur;
-					if (descendIntoChildren == null || descendIntoChildren(cur))
-						descendStack.Push(cur.firstChild);
-					cur = cur.nextSibling;
-				}
+			Stack<AstNode> nextStack = new Stack<AstNode>();
+			nextStack.Push(null);
+			AstNode pos = firstChild;
+			while (pos != null) {
+				if (pos.nextSibling != null)
+					nextStack.Push(pos.nextSibling);
+				if (IsInsideRegion(region, pos))
+					yield return pos;
+				if (pos.firstChild != null && (descendIntoChildren == null || descendIntoChildren(pos)))
+					pos = pos.firstChild;
+				else
+					pos = nextStack.Pop();
 			}
 		}
 		
