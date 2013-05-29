@@ -27,6 +27,7 @@ namespace ICSharpCode.AvalonEdit.Search
 	public class SearchPanel : Control
 	{
 		TextArea textArea;
+		SearchInputHandler handler;
 		TextDocument currentDocument;
 		SearchResultBackgroundRenderer renderer;
 		TextBox searchTextBox;
@@ -163,6 +164,7 @@ namespace ICSharpCode.AvalonEdit.Search
 		/// <summary>
 		/// Creates a new SearchPanel.
 		/// </summary>
+		[Obsolete("Use the Install method instead")]
 		public SearchPanel()
 		{
 		}
@@ -170,10 +172,50 @@ namespace ICSharpCode.AvalonEdit.Search
 		/// <summary>
 		/// Attaches this SearchPanel to a TextArea instance.
 		/// </summary>
+		[Obsolete("Use the Install method instead")]
 		public void Attach(TextArea textArea)
 		{
 			if (textArea == null)
 				throw new ArgumentNullException("textArea");
+			AttachInternal(textArea);
+		}
+		
+		/// <summary>
+		/// Creates a SearchPanel and installs it to the TextEditor's TextArea.
+		/// </summary>
+		/// <remarks>This is a convenience wrapper.</remarks>
+		public static SearchPanel Install(TextEditor editor)
+		{
+			if (editor == null)
+				throw new ArgumentNullException("editor");
+			return Install(editor.TextArea);
+		}
+		
+		/// <summary>
+		/// Creates a SearchPanel and installs it to the TextArea.
+		/// </summary>
+		public static SearchPanel Install(TextArea textArea)
+		{
+			if (textArea == null)
+				throw new ArgumentNullException("textArea");
+			SearchPanel panel = new SearchPanel();
+			panel.AttachInternal(textArea);
+			panel.handler = new SearchInputHandler(textArea, panel);
+			textArea.DefaultInputHandler.NestedInputHandlers.Add(panel.handler);
+			return panel;
+		}
+		
+		/// <summary>
+		/// Removes the SearchPanel from the TextArea.
+		/// </summary>
+		public void Uninstall()
+		{
+			CloseAndRemove();
+			textArea.DefaultInputHandler.NestedInputHandlers.Remove(handler);
+		}
+		
+		void AttachInternal(TextArea textArea)
+		{
 			this.textArea = textArea;
 			adorner = new SearchPanelAdorner(textArea, this);
 			DataContext = this;
@@ -361,6 +403,7 @@ namespace ICSharpCode.AvalonEdit.Search
 		/// <summary>
 		/// Closes the SearchPanel and removes it.
 		/// </summary>
+		[Obsolete("Use the Uninstall method instead!")]
 		public void CloseAndRemove()
 		{
 			Close();

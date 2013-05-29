@@ -159,17 +159,15 @@ namespace SearchAndReplace
 	
 	public class SearchAndReplaceBinding : DefaultLanguageBinding
 	{
-		TextArea textArea;
-		SearchInputHandler handler;
+		SearchPanel panel;
 		
 		public override void Attach(ITextEditor editor)
 		{
 			base.Attach(editor);
-			textArea = editor.GetService(typeof(TextArea)) as TextArea;
+			TextArea textArea = editor.GetService(typeof(TextArea)) as TextArea;
 			if (textArea != null) {
-				handler = new SearchInputHandler(textArea);
-				textArea.DefaultInputHandler.NestedInputHandlers.Add(handler);
-				handler.SearchOptionsChanged += SearchOptionsChanged;
+				panel = SearchPanel.Install(textArea);
+				panel.SearchOptionsChanged += SearchOptionsChanged;
 			}
 		}
 
@@ -184,10 +182,10 @@ namespace SearchAndReplace
 		public override void Detach()
 		{
 			base.Detach();
-			if (textArea != null) {
-				textArea.DefaultInputHandler.NestedInputHandlers.Remove(handler);
-				textArea = null;
-				handler = null;
+			if (panel != null) {
+				panel.SearchOptionsChanged -= SearchOptionsChanged;
+				panel.Uninstall();
+				panel = null;
 			}
 		}
 	}

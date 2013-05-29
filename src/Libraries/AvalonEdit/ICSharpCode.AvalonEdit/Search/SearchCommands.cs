@@ -53,12 +53,19 @@ namespace ICSharpCode.AvalonEdit.Search
 		/// <summary>
 		/// Creates a new SearchInputHandler and registers the search-related commands.
 		/// </summary>
+		[Obsolete("Use SearchPanel.Install instead")]
 		public SearchInputHandler(TextArea textArea)
 			: base(textArea)
 		{
 			RegisterCommands(this.CommandBindings);
-			panel = new SearchPanel();
-			panel.Attach(TextArea);
+			panel = SearchPanel.Install(textArea);
+		}
+		
+		internal SearchInputHandler(TextArea textArea, SearchPanel panel)
+			: base(textArea)
+		{
+			RegisterCommands(this.CommandBindings);
+			this.panel = panel;
 		}
 		
 		void RegisterCommands(ICollection<CommandBinding> commandBindings)
