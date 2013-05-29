@@ -58,16 +58,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			),
 			// str == "" || str == null
-			// str.Length == 0 || str == null
 			new BinaryOperatorExpression (
-				new Choice {
-					PatternHelper.CommutativeOperator (new AnyNode ("str"), BinaryOperatorType.Equality, new PrimitiveExpression ("")),
-					PatternHelper.CommutativeOperator (
-						new MemberReferenceExpression (new AnyNode ("str"), "Length"),
-						BinaryOperatorType.Equality,
-						new PrimitiveExpression (0)
-					)
-				},
+				PatternHelper.CommutativeOperator (new AnyNode ("str"), BinaryOperatorType.Equality, new PrimitiveExpression ("")),
 				BinaryOperatorType.ConditionalOr,
 				PatternHelper.CommutativeOperator(new Backreference ("str"), BinaryOperatorType.Equality, new NullReferenceExpression ())
 			)
@@ -76,6 +68,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		static readonly Pattern negPattern = new Choice {
 			// str != null && str != ""
 			// str != null && str.Length != 0
+			// str != null && str.Length > 0
 			new BinaryOperatorExpression (
 				PatternHelper.CommutativeOperator(new AnyNode ("str"), BinaryOperatorType.InEquality, new NullReferenceExpression ()),
 				BinaryOperatorType.ConditionalAnd,
@@ -85,20 +78,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						new MemberReferenceExpression (new Backreference ("str"), "Length"),
 						BinaryOperatorType.InEquality,
 						new PrimitiveExpression (0)
+					),
+					new BinaryOperatorExpression (
+						new MemberReferenceExpression (new Backreference ("str"), "Length"),
+						BinaryOperatorType.GreaterThan,
+						new PrimitiveExpression (0)
 					)
 				}
 			),
 			// str != "" && str != null
-			// str.Length != 0 && str != null
 			new BinaryOperatorExpression (
-				new Choice {
-					PatternHelper.CommutativeOperator (new AnyNode ("str"), BinaryOperatorType.InEquality, new PrimitiveExpression ("")),
-					PatternHelper.CommutativeOperator (
-						new MemberReferenceExpression (new AnyNode ("str"), "Length"),
-						BinaryOperatorType.InEquality,
-						new PrimitiveExpression (0)
-					)
-				},
+				PatternHelper.CommutativeOperator (new AnyNode ("str"), BinaryOperatorType.InEquality, new PrimitiveExpression ("")),
 				BinaryOperatorType.ConditionalAnd,
 				PatternHelper.CommutativeOperator(new Backreference ("str"), BinaryOperatorType.InEquality, new NullReferenceExpression ())
 			)
