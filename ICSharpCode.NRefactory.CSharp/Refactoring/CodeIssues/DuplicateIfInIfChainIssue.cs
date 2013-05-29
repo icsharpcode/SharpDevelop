@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor (context).GetIssues ();
 		}
 		
-		class GatherVisitor : GatherVisitorBase<IdenticalConditionalBranchIssue>
+		class GatherVisitor : GatherVisitorBase<DuplicateIfInIfChainIssue>
 		{
 			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)

@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context).GetIssues();
 		}
 
-		class GatherVisitor : GatherVisitorBase<RedundantAttributeParenthesesIssue>
+		class GatherVisitor : GatherVisitorBase<RedundantBaseConstructorIssue>
 		{
 			public GatherVisitor(BaseRefactoringContext ctx)
 				: base (ctx)

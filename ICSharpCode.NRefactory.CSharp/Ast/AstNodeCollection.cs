@@ -50,8 +50,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		public int Count {
 			get {
 				int count = 0;
+				uint roleIndex = role.Index;
 				for (AstNode cur = node.FirstChild; cur != null; cur = cur.NextSibling) {
-					if (cur.Role == role)
+					if (cur.RoleIndex == roleIndex)
 						count++;
 				}
 				return count;
@@ -107,7 +108,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public bool Contains(T element)
 		{
-			return element != null && element.Parent == node && element.Role == role;
+			return element != null && element.Parent == node && element.RoleIndex == role.Index;
 		}
 		
 		public bool Remove(T element)
@@ -163,13 +164,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public IEnumerator<T> GetEnumerator()
 		{
+			uint roleIndex = role.Index;
 			AstNode next;
 			for (AstNode cur = node.FirstChild; cur != null; cur = next) {
 				Debug.Assert(cur.Parent == node);
 				// Remember next before yielding cur.
 				// This allows removing/replacing nodes while iterating through the list.
 				next = cur.NextSibling;
-				if (cur.Role == role)
+				if (cur.RoleIndex == roleIndex)
 					yield return (T)cur;
 			}
 		}
@@ -214,13 +216,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// </summary>
 		public void AcceptVisitor(IAstVisitor visitor)
 		{
+			uint roleIndex = role.Index;
 			AstNode next;
 			for (AstNode cur = node.FirstChild; cur != null; cur = next) {
 				Debug.Assert(cur.Parent == node);
 				// Remember next before yielding cur.
 				// This allows removing/replacing nodes while iterating through the list.
 				next = cur.NextSibling;
-				if (cur.Role == role)
+				if (cur.RoleIndex == roleIndex)
 					cur.AcceptVisitor(visitor);
 			}
 		}

@@ -230,6 +230,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		internal uint RoleIndex {
+			get { return flags & roleIndexMask; }
+		}
+		
 		void SetRole(Role role)
 		{
 			flags = (flags & ~roleIndexMask) | role.Index;
@@ -293,14 +297,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		/// <summary>
-		/// Gets all descendants of this node (excluding this node itself).
+		/// Gets all descendants of this node (excluding this node itself) in pre-order.
 		/// </summary>
 		public IEnumerable<AstNode> Descendants {
 			get { return GetDescendantsImpl(false); }
 		}
 		
 		/// <summary>
-		/// Gets all descendants of this node (including this node itself).
+		/// Gets all descendants of this node (including this node itself) in pre-order.
 		/// </summary>
 		public IEnumerable<AstNode> DescendantsAndSelf {
 			get { return GetDescendantsImpl(true); }
@@ -347,6 +351,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			nextStack.Push(null);
 			AstNode pos = firstChild;
 			while (pos != null) {
+				// Remember next before yielding pos.
+				// This allows removing/replacing nodes while iterating through the list.
 				if (pos.nextSibling != null)
 					nextStack.Push(pos.nextSibling);
 				if (IsInsideRegion(region, pos))

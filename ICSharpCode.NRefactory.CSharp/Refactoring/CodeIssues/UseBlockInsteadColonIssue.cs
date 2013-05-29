@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor (context).GetIssues ();
 		}
 		
-		class GatherVisitor : GatherVisitorBase<IdenticalConditionalBranchIssue>
+		class GatherVisitor : GatherVisitorBase<UseBlockInsteadColonIssue>
 		{
 		    private readonly string _commandTitle;
 
