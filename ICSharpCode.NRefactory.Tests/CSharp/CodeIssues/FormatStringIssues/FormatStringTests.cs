@@ -71,6 +71,23 @@ class TestClass
 		}
 
 		[Test]
+		public void IgnoresCallWithUnknownNumberOfArguments()
+		{
+			var input = @"
+class TestClass
+{
+	string Bar(params object[] args)
+	{
+		return string.Format(""{1}"", args);
+	}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new FormatStringIssue (), input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
+
+		[Test]
 		public void FormatItemIndexOutOfRangeOfArguments()
 		{
 			var input = @"
@@ -79,6 +96,23 @@ class TestClass
 	void Foo()
 	{
 		string.Format(""{1}"", 1);
+	}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new FormatStringIssue (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+		}
+		
+		[Test]
+		public void FormatItemIndexOutOfRangeOfArguments_ExplicitArrayCreation()
+		{
+			var input = @"
+class TestClass
+{
+	void Foo()
+	{
+		string.Format(""{1}"", new object[] { 1 });
 	}
 }";
 			
@@ -130,6 +164,23 @@ class TestClass
 	void Foo()
 	{
 		string.Format(""{0}"", ""arg0"");
+	}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new FormatStringIssue (), input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
+
+		[Test]
+		public void IgnoresStringWithGoodArguments_ExplicitArrayCreation()
+		{
+			var input = @"
+class TestClass
+{
+	void Foo()
+	{
+		string.Format(""{1}"", new object[] { ""arg0"", ""arg1"" });
 	}
 }";
 			
