@@ -35,42 +35,43 @@ using ICSharpCode.NRefactory.Refactoring;
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	[IssueDescription("Redundant null check",
-					  Description = "When 'is' keyword is used, which implicitly check null.",
-					  Category = IssueCategories.Redundancies,
-					  Severity = Severity.Suggestion,
+	                  Description = "When 'is' keyword is used, which implicitly check null.",
+	                  Category = IssueCategories.Redundancies,
+	                  Severity = Severity.Suggestion,
 	                  ResharperDisableKeyword = "RedundantNullCheck",
-					  IssueMarker = IssueMarker.GrayOut)]
+	                  IssueMarker = IssueMarker.GrayOut)]
 	public class RedundantNullCheckIssue : ICodeIssueProvider
 	{
 		private static readonly Pattern pattern1
 			= new Choice {
-			//  x is Record && x!= null	 
+			//  a is Record && a != null
 			new BinaryOperatorExpression(
-				new IsExpression
-					{
+				PatternHelper.OptionalParentheses(
+					new IsExpression {
 						Expression = new AnyNode("a"),
 						Type = new AnyNode("t")
-					}, BinaryOperatorType.ConditionalAnd,
-				PatternHelper.CommutativeOperator(new Backreference("a"),
-													BinaryOperatorType.
-														InEquality,
-													new NullReferenceExpression
-														())
+					}),
+				BinaryOperatorType.ConditionalAnd,
+				PatternHelper.OptionalParentheses(
+					PatternHelper.CommutativeOperator(new Backreference("a"),
+					                                  BinaryOperatorType.InEquality,
+					                                  new NullReferenceExpression())
 				)
-		};
-		private static readonly Pattern pattern2
-		   = new Choice {
-			//  x != null && x is Record
+			),
+			//  a != null && a is Record
 			new BinaryOperatorExpression (
-				PatternHelper.CommutativeOperator (new AnyNode("a"), 
-														BinaryOperatorType.InEquality, 
-													new NullReferenceExpression())			
-				, BinaryOperatorType.ConditionalAnd,
-				new IsExpression {
-					Expression = new Backreference("a"),
-					Type = new AnyNode("t")
-				}
-			)	
+				PatternHelper.OptionalParentheses(
+					PatternHelper.CommutativeOperator(new AnyNode("a"),
+					                                  BinaryOperatorType.InEquality,
+					                                  new NullReferenceExpression())
+				),
+				BinaryOperatorType.ConditionalAnd,
+				PatternHelper.OptionalParentheses(
+					new IsExpression {
+						Expression = new Backreference("a"),
+						Type = new AnyNode("t")
+					})
+			)
 		};
 
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
@@ -91,18 +92,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				Match m1 = pattern1.Match(binaryOperatorExpression);
 				if (m1.Success) {
 					AddIssue(binaryOperatorExpression, ctx.TranslateString("Remove redundant IsNULL check"), script => {
-						Expression expr = binaryOperatorExpression.Left;
-						script.Replace(binaryOperatorExpression, expr);
-					});
-					return;
-				}
-
-				Match m2 = pattern2.Match(binaryOperatorExpression);
-				if (m2.Success) {
-					AddIssue(binaryOperatorExpression, ctx.TranslateString("Remove redundant IsNULL check"), script => {
-						Expression expr = binaryOperatorExpression.Right;
-						script.Replace(binaryOperatorExpression, expr);
-					});
+					         	var isExpr = m1.Get<AstType>("t").Single().Parent;
+					         	script.Replace(binaryOperatorExpression, isExpr);
+					         });
 					return;
 				}
 			}
