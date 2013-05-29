@@ -1739,7 +1739,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				int offset = documentLine.Offset + position.Column - 1;
 				visualColumn = visualLine.GetVisualColumn(offset - visualLine.FirstDocumentLine.Offset);
 			}
-			return visualLine.GetVisualPosition(visualColumn, yPositionMode);
+			return visualLine.GetVisualPosition(visualColumn, position.IsAtEndOfLine, yPositionMode);
 		}
 		
 		/// <summary>

@@ -411,6 +411,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			return new Point(xPos, yPos);
 		}
 		
+		internal Point GetVisualPosition(int visualColumn, bool isAtEndOfLine, VisualYPosition yPositionMode)
+		{
+			TextLine textLine = GetTextLine(visualColumn, isAtEndOfLine);
+			double xPos = GetTextLineVisualXPosition(textLine, visualColumn);
+			double yPos = GetTextLineVisualYPosition(textLine, yPositionMode);
+			return new Point(xPos, yPos);
+		}
+		
 		/// <summary>
 		/// Gets the distance to the left border of the text area of the specified visual column.
 		/// The visual column must belong to the specified text line.
