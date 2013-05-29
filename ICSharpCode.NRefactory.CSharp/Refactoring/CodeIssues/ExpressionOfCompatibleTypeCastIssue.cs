@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context).GetIssues();
 		}
 
-		class GatherVisitor : GatherVisitorBase<CastExpressionOfIncompatibleTypeIssue>
+		class GatherVisitor : GatherVisitorBase<ExpressionOfCompatibleTypeCastIssue>
 		{
 			readonly CSharpConversions conversion;
 
@@ -55,6 +55,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitAssignmentExpression(AssignmentExpression assignmentExpression)
 			{
+				base.VisitAssignmentExpression(assignmentExpression);
+				if (assignmentExpression.Operator != AssignmentOperatorType.Assign)
+					return;
 				var rightExpressionType = ctx.Resolve(assignmentExpression.Right).Type;
 				var leftExpressionType = ctx.Resolve(assignmentExpression.Left).Type;
 				VisitTypeCastExpression(assignmentExpression, rightExpressionType, leftExpressionType);

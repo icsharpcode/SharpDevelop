@@ -108,7 +108,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 
 			var ts = cu.ToTypeSystem();
 			var compilation = new CSharpProjectContent()
-				.UpdateProjectContent(null, ts)
+				.AddOrUpdateFiles(ts)
 				.AddAssemblyReferences(new[] { CecilLoaderTests.Mscorlib })
 				.CreateCompilation();
 			var type = ReflectionHelper.ParseReflectionName("C").Resolve(compilation).GetDefinition();
