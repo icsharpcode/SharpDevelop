@@ -207,10 +207,26 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		#region TrackAdorner
 		sealed class TrackAdorner : Adorner
 		{
+			static readonly StreamGeometry triangleGeometry = CreateTriangleGeometry();
+			
+			static StreamGeometry CreateTriangleGeometry()
+			{
+				var triangleGeometry = new StreamGeometry();
+				using (var ctx = triangleGeometry.Open()) {
+					const double triangleSize = 6.5;
+					const double right = (triangleSize * 0.866) / 2;
+					const double left = -right;
+					ctx.BeginFigure(new Point(left, triangleSize / 2), true, true);
+					ctx.LineTo(new Point(left, -triangleSize / 2), true, false);
+					ctx.LineTo(new Point(right, 0), true, false);
+				}
+				triangleGeometry.Freeze();
+				return triangleGeometry;
+			}
+			
 			readonly AdornerLayer adornerLayer;
 			readonly TextEditor editor;
 			readonly TextMarkerService textMarkerService;
-			readonly StreamGeometry triangleGeometry;
 			
 			public TrackAdorner(EnhancedScrollBar enhanchedScrollBar, AdornerLayer adornerLayer, UIElement adornedElement)
 				: base(adornedElement)
@@ -221,17 +237,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				
 				this.Cursor = Cursors.Hand;
 				this.ToolTip = string.Empty;
-				
-				triangleGeometry = new StreamGeometry();
-				using (var ctx = triangleGeometry.Open()) {
-					const double triangleSize = 6.5;
-					const double right = (triangleSize * 0.866) / 2;
-					const double left = -right;
-					ctx.BeginFigure(new Point(left, triangleSize / 2), true, true);
-					ctx.LineTo(new Point(left, -triangleSize / 2), true, false);
-					ctx.LineTo(new Point(right, 0), true, false);
-				}
-				triangleGeometry.Freeze();
 				
 				adornerLayer.Add(this);
 				textMarkerService.RedrawRequested += textMarkerService_RedrawRequested;

@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				IProject parentProject = this.Project;
 				if (parentProject == null)
 					return null;
-				var fileName = Core.FileName.Create(this.FileName);
+				var fileName = this.FileName;
 				foreach (var project in parentProject.ParentSolution.Projects) {
 					if (project.FileName == fileName)
 						return project;

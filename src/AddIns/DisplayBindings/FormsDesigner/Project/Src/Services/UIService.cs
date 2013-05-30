@@ -47,7 +47,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		#region Dialog functions
 		public IWin32Window GetDialogOwnerWindow()
 		{
-			return SD.Workbench.MainWin32Window;
+			return SD.WinForms.MainWin32Window;
 		}
 		
 		public DialogResult ShowDialog(Form form)

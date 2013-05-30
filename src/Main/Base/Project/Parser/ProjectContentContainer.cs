@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			List<FileName> filesToParse = new List<FileName>();
 			foreach (var file in project.Items.OfType<FileProjectItem>()) {
 				if (IsParseableFile(file)) {
-					var fileName = FileName.Create(file.FileName);
+					var fileName = file.FileName;
 					parserService.AddOwnerProject(fileName, project, startAsyncParse: false, isLinkedFile: file.IsLink);
 					filesToParse.Add(fileName);
 				}
@@ -377,7 +377,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				var filesToParse = (
 					from item in project.Items.OfType<FileProjectItem>()
 					where IsParseableFile(item)
-					select FileName.Create(item.FileName)
+					select item.FileName
 				).ToList();
 				SD.ParserService.LoadSolutionProjectsThread.AddJob(
 					monitor => {
@@ -480,7 +480,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 			FileProjectItem fileProjectItem = e.ProjectItem as FileProjectItem;
 			if (IsParseableFile(fileProjectItem)) {
-				var fileName = FileName.Create(e.ProjectItem.FileName);
+				var fileName = e.ProjectItem.FileName;
 				SD.ParserService.AddOwnerProject(fileName, project, startAsyncParse: true, isLinkedFile: fileProjectItem.IsLink);
 			}
 		}
@@ -500,7 +500,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			
 			FileProjectItem fileProjectItem = e.ProjectItem as FileProjectItem;
 			if (IsParseableFile(fileProjectItem)) {
-				SD.ParserService.RemoveOwnerProject(FileName.Create(e.ProjectItem.FileName), project);
+				SD.ParserService.RemoveOwnerProject(e.ProjectItem.FileName, project);
 			}
 		}
 		#endregion

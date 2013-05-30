@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (var resXFile in project.Items.OfType<FileProjectItem>().Where(f => ".resx".Equals(Path.GetExtension(f.FileName), StringComparison.OrdinalIgnoreCase))) {
 				using (var buffer = new MemoryStream()) {
 					using (var reader = new ResXResourceReader(resXFile.FileName) { UseResXDataNodes = true })
-					using (var writer = new ResXResourceWriter(buffer, t => ConvertTypeName(t, FileName.Create(resXFile.FileName), project))) {
+					using (var writer = new ResXResourceWriter(buffer, t => ConvertTypeName(t, resXFile.FileName, project))) {
 						foreach (DictionaryEntry entry in reader) {
 							writer.AddResource(entry.Key.ToString(), entry.Value);
 						}

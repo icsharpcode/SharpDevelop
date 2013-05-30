@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		
 		ProjectItem GetFirstServiceReferenceFileInMSBuildProject(ServiceReferenceFileName fileName)
 		{
-			return msbuildProject.Items.SingleOrDefault(item => item.FileName == fileName.Path);
+			return msbuildProject.Items.SingleOrDefault(item => item.FileName == FileName.Create(fileName.Path));
 		}
 		
 		ServiceReferencesProjectItem GetFirstWCFMetadataItemInMSBuildProject()
@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		
 		ProjectItem GetFileProjectItemInMSBuildProject(string fileName)
 		{
-			return msbuildProject.Items.SingleOrDefault(item => item.FileName == fileName);
+			return msbuildProject.Items.SingleOrDefault(item => item.FileName == FileName.Create(fileName));
 		}
 		
 		ServiceReferenceProjectItem GetFirstWCFMetadataStorageItemInMSBuildProject()
@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		
 		FileProjectItem GetFileFromMSBuildProject(string fileName)
 		{
-			return msbuildProject.Items.Single(item => item.FileName == fileName) as FileProjectItem;
+			return msbuildProject.Items.Single(item => item.FileName == FileName.Create(fileName)) as FileProjectItem;
 		}
 		
 		ReferenceProjectItem GetReferenceFromMSBuildProject(string name)
