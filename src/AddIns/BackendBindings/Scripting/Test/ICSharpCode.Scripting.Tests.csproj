@@ -3,7 +3,7 @@
   <PropertyGroup>
     <ProjectGuid>{85C09AD8-183B-403A-869A-7226646218A9}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.Scripting.Tests</RootNamespace>
     <AssemblyName>ICSharpCode.Scripting.Tests</AssemblyName>
@@ -15,7 +15,7 @@
     <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
     <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
