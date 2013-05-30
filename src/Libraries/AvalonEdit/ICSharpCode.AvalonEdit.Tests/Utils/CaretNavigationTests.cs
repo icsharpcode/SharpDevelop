@@ -113,5 +113,21 @@ namespace ICSharpCode.AvalonEdit.Utils
 			Assert.AreEqual(5, GetPrevCaretStop(c, 6, CaretPositioningMode.WordBorder));
 			Assert.AreEqual(1, GetPrevCaretStop(c, 5, CaretPositioningMode.WordBorder));
 		}
+		
+		[Test]
+		public void CombiningMark()
+		{
+			string str = " x͆ ";
+			Assert.AreEqual(3, GetNextCaretStop(str, 1, CaretPositioningMode.Normal));
+			Assert.AreEqual(1, GetPrevCaretStop(str, 3, CaretPositioningMode.Normal));
+		}
+		
+		[Test]
+		public void StackedCombiningMark()
+		{
+			string str = " x͆͆͆͆ ";
+			Assert.AreEqual(6, GetNextCaretStop(str, 1, CaretPositioningMode.Normal));
+			Assert.AreEqual(1, GetPrevCaretStop(str, 6, CaretPositioningMode.Normal));
+		}
 	}
 }
