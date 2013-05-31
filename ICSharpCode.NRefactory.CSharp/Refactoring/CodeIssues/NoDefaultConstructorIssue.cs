@@ -31,11 +31,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitTypeDeclaration(TypeDeclaration declaration)
 			{
+				base.VisitTypeDeclaration(declaration);
 				var result = ctx.Resolve(declaration) as TypeResolveResult;
+				if (result == null || result.IsError)
+					return;
 				var baseType = result.Type.DirectBaseTypes.FirstOrDefault(t => !t.IsKnownType(KnownTypeCode.Object) && t.Kind != TypeKind.Interface);
 
-				if (baseType != null)
-				{
+				if (baseType != null) {
 					var baseConstructor = baseType.GetConstructors(c => c.Parameters.Count == 0).FirstOrDefault();
 					var memberLookup = new MemberLookup(result.Type.GetDefinition(), ctx.Compilation.MainAssembly, false);
 
@@ -48,8 +50,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						}
 					}
 				}
-
-				base.VisitTypeDeclaration(declaration);
 			}
 
 			public override void VisitConstructorDeclaration(ConstructorDeclaration declaration)
