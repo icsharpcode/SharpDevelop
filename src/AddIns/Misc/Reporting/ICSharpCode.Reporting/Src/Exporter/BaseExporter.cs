@@ -29,8 +29,8 @@ namespace ICSharpCode.Reporting.Exporter
 		public virtual void Run () {
 			
 		}
-		
-		
-		public Collection<IPage> Pages {get; private set;}
+
+
+	    protected Collection<IPage> Pages {get; set;}
 	}
 }

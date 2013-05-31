@@ -16,19 +16,13 @@ namespace ICSharpCode.Reporting.BaseClasses
 	/// </summary>
 	public  class AbstractColumn
 	{
-		private string columnName;
 		private Type dataType;
 		private string dataTypeName;
 		
 		public AbstractColumn() {
 			this.dataType = typeof(System.String);
-			this.columnName = string.Empty;
 		}
 		
-//		public AbstractColumn(string columnName){
-//			this.columnName = columnName;
-//			this.dataType = typeof(System.String);
-//		}
 		
 		public AbstractColumn(string columnName, Type dataType){
 			this.ColumnName = columnName;

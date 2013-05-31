@@ -33,6 +33,7 @@ namespace ICSharpCode.Reporting.DataSource
 
 		public override object GetValue (object component)
 		{
+			var x = component.GetType();
 			if (!componentType.IsAssignableFrom(component.GetType())){
 				return null;
 			}

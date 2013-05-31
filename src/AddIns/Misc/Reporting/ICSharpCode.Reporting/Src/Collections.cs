@@ -13,6 +13,7 @@ using System.Globalization;
 using System.Linq;
 
 using ICSharpCode.Reporting.BaseClasses;
+using ICSharpCode.Reporting.Items;
 
 namespace ICSharpCode.Reporting
 {
@@ -96,4 +97,22 @@ namespace ICSharpCode.Reporting
 			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
 		}
 	}
+	
+	/*
+	public class ReportItemCollection : Collection<PrintableItem>
+	{
+		
+		// Trick to get the inner list as List<T> (InnerList always has that type because we only use
+		// the parameterless constructor on Collection<T>)
+		
+		private List<PrintableItem> InnerList {
+			get { return (List<PrintableItem>)base.Items; }
+		}
+		
+		private void Sort(IComparer<PrintableItem> comparer)
+		{
+			InnerList.Sort(comparer);
+		}
+	}
+	*/
 }

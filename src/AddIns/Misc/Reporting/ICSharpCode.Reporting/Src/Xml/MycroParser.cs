@@ -39,8 +39,8 @@ namespace ICSharpCode.Reporting.Xml
 		}
 
 		protected abstract Type GetTypeByName(string ns, string name);
-		
-		protected object ProcessNode(XmlNode node, object parent)
+
+	    private object ProcessNode(XmlNode node, object parent)
 		{
 			object ret=null;
 			if (node is XmlElement)
@@ -99,92 +99,90 @@ namespace ICSharpCode.Reporting.Xml
 
 		protected void ProcessChildProperties(XmlNode node, object parent)
 		{
-			Type t=parent.GetType();
+			var t=parent.GetType();
 
 			// children of a class must always be properties
 			foreach(XmlNode child in node.ChildNodes)
 			{
-				if (child is XmlElement)
-				{
-					string pname=child.LocalName;
-					PropertyInfo pi=t.GetProperty(pname);
+			    if (!(child is XmlElement)) continue;
+			    string pname=child.LocalName;
+			    var pi=t.GetProperty(pname);
 
-					if (pi==null)
-					{
-						// Special case--we're going to assume that the child is a class instance
-						// not associated with the parent object
+			    if (pi==null)
+			    {
+			        // Special case--we're going to assume that the child is a class instance
+			        // not associated with the parent object
 //						Trace.Fail("Unsupported property: "+pname);
-						System.Console.WriteLine("Unsupported property: "+pname);
-						continue;
-					}
+			        System.Console.WriteLine("Unsupported property: "+pname);
+			        continue;
+			    }
 
-					// a property can only have one child node unless it's a collection
-					foreach(XmlNode grandChild in child.ChildNodes)
-					{
-						if (grandChild is XmlText) {
-							SetPropertyToString(parent, pi, child.InnerText);
-							break;
-						}
-						else if (grandChild is XmlElement)
-						{
-							object propObject=pi.GetValue(parent, null);
-							object obj=ProcessNode(grandChild, propObject);
+			    // a property can only have one child node unless it's a collection
+			    foreach(XmlNode grandChild in child.ChildNodes)
+			    {
+			        if (grandChild is XmlText) {
+			            SetPropertyToString(parent, pi, child.InnerText);
+			            break;
+			        }
+			        else if (grandChild is XmlElement)
+			        {
+			            var propObject=pi.GetValue(parent, null);
+			            var obj=ProcessNode(grandChild, propObject);
 
-							// A null return is valid in cases where a class implementing the IMicroXaml interface
-							// might want to take care of managing the instance it creates itself.  See DataBinding
-							if (obj != null)
-							{
+			            // A null return is valid in cases where a class implementing the IMicroXaml interface
+			            // might want to take care of managing the instance it creates itself.  See DataBinding
+			            if (obj != null)
+			            {
 
-								// support for ICollection objects
-								if (propObject is ICollection)
-								{
-									MethodInfo mi=t.GetMethod("Add", new Type[] {obj.GetType()});
-									if (mi != null)
-									{
-										try
-										{
-											mi.Invoke(obj, new object[] {obj});
-										}
-										catch(Exception e)
-										{
-											Trace.Fail("Adding to collection failed:\r\n"+e.Message);
-										}
-									}
-									else if (propObject is IList)
-									{
-										try
-										{
-											((IList)propObject).Add(obj);
-										}
-										catch(Exception e)
-										{
-											Trace.Fail("List/Collection add failed:\r\n"+e.Message);
-										}
-									}
-								}
-								else if (!pi.CanWrite) {
-									Trace.Fail("Unsupported read-only property: "+pname);
-								}
-								else
-								{
-									// direct assignment if not a collection
-									try
-									{
-										pi.SetValue(parent, obj, null);
-									}
-									catch(Exception e)
-									{
-										Trace.Fail("Property setter for "+pname+" failed:\r\n"+e.Message);
-									}
-								}
-							}
-						}
-					}
-				}
+			                // support for ICollection objects
+			                if (propObject is ICollection)
+			                {
+			                    MethodInfo mi=t.GetMethod("Add", new Type[] {obj.GetType()});
+			                    if (mi != null)
+			                    {
+			                        try
+			                        {
+			                            mi.Invoke(obj, new object[] {obj});
+			                        }
+			                        catch(Exception e)
+			                        {
+			                            Trace.Fail("Adding to collection failed:\r\n"+e.Message);
+			                        }
+			                    }
+			                    else if (propObject is IList)
+			                    {
+			                        try
+			                        {
+			                            ((IList)propObject).Add(obj);
+			                        }
+			                        catch(Exception e)
+			                        {
+			                            Trace.Fail("List/Collection add failed:\r\n"+e.Message);
+			                        }
+			                    }
+			                }
+			                else if (!pi.CanWrite) {
+			                    Trace.Fail("Unsupported read-only property: "+pname);
+			                }
+			                else
+			                {
+			                    // direct assignment if not a collection
+			                    try
+			                    {
+			                        pi.SetValue(parent, obj, null);
+			                    }
+			                    catch(Exception e)
+			                    {
+			                        Trace.Fail("Property setter for "+pname+" failed:\r\n"+e.Message);
+			                    }
+			                }
+			            }
+			        }
+			    }
 			}
 		}
 
-		protected void ProcessAttributes(XmlNode node, object ret, Type type)
+	    private void ProcessAttributes(XmlNode node, object ret, Type type)
 		{
 			// process attributes
 			foreach(XmlAttribute attr in node.Attributes)
@@ -207,8 +205,8 @@ namespace ICSharpCode.Reporting.Xml
 				}
 			}
 		}
-		
-		void SetPropertyToString(object obj, PropertyInfo pi, string value)
+
+	    static void SetPropertyToString(object obj, PropertyInfo pi, string value)
 		{
 			Console.WriteLine("MP - SetPropertyToString {0} - {1}",pi.Name,value.ToString());
 			// it's string, so use a type converter.

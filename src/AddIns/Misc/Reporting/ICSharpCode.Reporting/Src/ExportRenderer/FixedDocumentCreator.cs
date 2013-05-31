@@ -63,7 +63,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		
 		public TextBlock CreateTextBlock(ExportText exportText)
 		{
-			TextBlock textBlock = new TextBlock();
+			var textBlock = new TextBlock();
 			textBlock.Text = exportText.Text;
 			textBlock.Foreground = ConvertBrush(exportText.ForeColor);
 			SetFont(textBlock,exportText);
@@ -135,7 +135,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		
 		void CreateStrikeout (TextBlock textBlock,ExportColumn exportColumn )
 		{
-			TextDecoration strikeOut = new TextDecoration();
+			var strikeOut = new TextDecoration();
 			strikeOut.Location = TextDecorationLocation.Strikethrough;
 
 			Pen p = CreateWpfPen(exportColumn);
@@ -147,7 +147,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		
 		void CreateUnderline(TextBlock textBlock,ExportColumn exportColumn)
 		{
-			TextDecoration underLine = new TextDecoration();
+			var underLine = new TextDecoration();
 			Pen p = CreateWpfPen(exportColumn);
 			underLine.Pen = p ;
 			underLine.PenThicknessUnit = TextDecorationUnit.FontRecommended;
@@ -157,7 +157,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		
 		Pen CreateWpfPen(ExportColumn exportColumn)
 		{
-			Pen myPen = new Pen();
+			var myPen = new Pen();
 			myPen.Brush = ConvertBrush(exportColumn.ForeColor);
 			myPen.Thickness = 1.5;
 			return myPen;

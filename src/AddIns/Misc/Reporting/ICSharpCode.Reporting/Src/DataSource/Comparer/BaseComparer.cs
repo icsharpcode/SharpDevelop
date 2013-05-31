@@ -7,6 +7,8 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.ObjectModel;
+using ICSharpCode.Reporting.BaseClasses;
 
 namespace ICSharpCode.Reporting.DataSource.Comparer
 {
@@ -18,13 +20,12 @@ namespace ICSharpCode.Reporting.DataSource.Comparer
 		private int listIndex;
 		private object[] objectArray;
 
-		ColumnCollection columnCollection;
 		/// <summary>
 		/// Default constructor - initializes all fields to default values
 		/// </summary>
 
-		public BaseComparer(ColumnCollection columnCollection , int listIndex, object[] values) {
-			this.columnCollection = columnCollection;
+		public BaseComparer(Collection<AbstractColumn> columnCollection , int listIndex, object[] values) {
+			this.ColumnCollection = columnCollection;
 			this.listIndex = listIndex;
 			this.objectArray = values;
 		}
@@ -85,10 +86,7 @@ namespace ICSharpCode.Reporting.DataSource.Comparer
 		}
 		
 
-		public ColumnCollection ColumnCollection {
-			get {
-				return columnCollection;
-			}
-		}
+		public Collection<AbstractColumn> ColumnCollection {get;private set;}
+			
 	}
 }

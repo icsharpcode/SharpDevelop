@@ -65,8 +65,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 		protected IReportModel ReportModel {get; private set;}
 		
 		protected Point CurrentLocation {get; set;}
-		
-		public  IPage CurrentPage {get; protected set;}
+
+	    protected IPage CurrentPage {get; set;}
 		
 		public Collection<IPage> Pages {get; private set;}
 		

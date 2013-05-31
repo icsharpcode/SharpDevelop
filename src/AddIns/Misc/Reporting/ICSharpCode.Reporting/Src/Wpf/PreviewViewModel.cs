@@ -45,7 +45,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer
 		
 		static void AddPageToDocument(FixedDocument fixedDocument,FixedPage page)
 		{
-			PageContent pageContent = new PageContent();
+			var pageContent = new PageContent();
 			((IAddChild)pageContent).AddChild(page);
 			fixedDocument.Pages.Add(pageContent);
 		}

@@ -107,9 +107,11 @@
     <Compile Include="Src\Interfaces\Export\IExportContainer.cs" />
     <Compile Include="Src\Interfaces\Export\IPage.cs" />
     <Compile Include="Src\Interfaces\Export\IPageInfo.cs" />
+    <Compile Include="Src\Interfaces\IDataItem.cs" />
     <Compile Include="Src\Interfaces\IPrintableObject.cs" />
     <Compile Include="Src\Interfaces\IReportContainer.cs" />
     <Compile Include="Src\Interfaces\IReportCreator.cs" />
+    <Compile Include="Src\Items\BaseDataItem.cs" />
     <Compile Include="Src\Items\BaseSection.cs" />
     <Compile Include="Src\Globals\GlobalEnums.cs" />
     <Compile Include="Src\Globals\GlobalValues.cs" />

@@ -54,17 +54,30 @@ namespace ICSharpCode.Reporting.Arrange
 			}
 		}
 		
-		private void FindBiggestRectangle (IExportContainer container) {
-			BiggestRectangle = Rectangle.Empty;
-			foreach (var item in container.ExportedItems) {
-				if (item.DesiredSize.Height > BiggestRectangle.Size.Height) {
-					BiggestRectangle = new Rectangle(new Point(container.Location.X + item.Location.X,
-					                                           container.Location.Y + item.Location.Y)
-					                                 ,item.DesiredSize);
-				}
-			}
+		private void FindBiggestRectangle (IExportContainer container)
+		{
+		    BiggestRectangle = Rectangle.Empty;
+            /*
+            foreach (var item in container.ExportedItems)
+            {
+                if (item.DesiredSize.Height > BiggestRectangle.Size.Height)
+                {
+                    BiggestRectangle = new Rectangle(new Point(container.Location.X + item.Location.X,
+                                                               container.Location.Y + item.Location.Y)
+                                                     , item.DesiredSize);
+                }
+            }
+            */
+		    foreach (var item in container.ExportedItems
+                .Where(item => item.DesiredSize.Height > BiggestRectangle.Size.Height))
+		    {
+		        BiggestRectangle = new Rectangle(new Point(container.Location.X + item.Location.X,
+		                                                   container.Location.Y + item.Location.Y)
+		                                         ,item.DesiredSize);
+		    }
 		}
-		public Rectangle BiggestRectangle {get; private set;}
+
+	    public Rectangle BiggestRectangle {get; private set;}
 	}
 	
 }

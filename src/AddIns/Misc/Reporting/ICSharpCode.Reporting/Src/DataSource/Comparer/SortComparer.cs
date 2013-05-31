@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 
@@ -19,7 +20,7 @@ namespace ICSharpCode.Reporting.DataSource.Comparer
 	/// </summary>
 	public class SortComparer : BaseComparer {
 		
-		public SortComparer(ColumnCollection owner, int listIndex, object[] values):base(owner,listIndex,values)
+		public SortComparer(Collection<AbstractColumn> owner, int listIndex, object[] values):base(owner,listIndex,values)
 		{
 		}
 		

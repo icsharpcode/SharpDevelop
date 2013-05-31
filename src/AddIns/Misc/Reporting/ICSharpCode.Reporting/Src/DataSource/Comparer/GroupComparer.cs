@@ -7,6 +7,8 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.ObjectModel;
+using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.DataManager.Listhandling;
 
 namespace ICSharpCode.Reporting.DataSource.Comparer
@@ -17,7 +19,7 @@ namespace ICSharpCode.Reporting.DataSource.Comparer
 	public  class GroupComparer :SortComparer
 	{
 		
-		public GroupComparer (ColumnCollection owner, int listIndex, object[] values):base(owner,listIndex,values)
+		public GroupComparer (Collection<AbstractColumn> owner, int listIndex, object[] values):base(owner,listIndex,values)
 		{
 			IndexList = new IndexList();
 		}

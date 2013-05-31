@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 
 namespace ICSharpCode.Reporting.DataSource
@@ -112,13 +113,12 @@ namespace ICSharpCode.Reporting.DataSource
 
 		public PropertyDescriptorCollection GetItemProperties(PropertyDescriptor[] listAccessors){
 			if (listAccessors != null && listAccessors.Length > 0){
-				Type t = this.elementType;
-				
-				for(int i = 0; i < listAccessors.Length; i++){
-					PropertyDescriptor pd = listAccessors[i];
-					t = (Type) PropertyTypeHash.Instance[t, pd.Name];
-				}
-				// if t is null an empty list will be generated
+				var t = this.elementType;
+
+			    t = listAccessors.Aggregate(t,
+                    (current, pd) => (Type) PropertyTypeHash.Instance[current, pd.Name]);
+
+			    // if t is null an empty list will be generated
 				return ExtendedTypeDescriptor.GetProperties(t);
 			}
 			return ExtendedTypeDescriptor.GetProperties(elementType);
@@ -143,7 +143,7 @@ namespace ICSharpCode.Reporting.DataSource
 			}
 			if (al == null && element == null)
 			{
-				PropertyInfo pi = parentType.GetProperty(propertyName);
+				var pi = parentType.GetProperty(propertyName);
 				if (pi != null)
 				{
 					object parentObject = null;
@@ -172,18 +172,20 @@ namespace ICSharpCode.Reporting.DataSource
 		
 		private static DataCollection<T> CheckForArrayList(object l)
 		{
-			IList list = l as IList;
+			var list = l as IList;
 			if (list == null)
 				return null;
 			if (list.GetType().FullName == "System.Collections.ArrayList+ReadOnlyArrayList")
 			{
-				FieldInfo fi = list.GetType().GetField("_list", BindingFlags.NonPublic | BindingFlags.Instance);
+				var fi = list.GetType().GetField("_list", BindingFlags.NonPublic | BindingFlags.Instance);
 				if (fi != null)
 				{
 					list = (IList) fi.GetValue(list);
 				}
 			}
+// ReSharper disable SuspiciousTypeConversion.Global
 			return list as DataCollection<T>;
+// ReSharper restore SuspiciousTypeConversion.Global
 		}
 		#endregion
 		

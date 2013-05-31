@@ -24,11 +24,7 @@ namespace ICSharpCode.Reporting.BaseClasses
 		{
 		}
 		
-		public SortColumn(string columnName,Type type ):this(columnName,ListSortDirection.Ascending,type,false)
-		{
-		}
-		
-		
+
 		public SortColumn(string columnName,ListSortDirection sortDirection)
 			:this(columnName,sortDirection,typeof(System.String),false){
 		}

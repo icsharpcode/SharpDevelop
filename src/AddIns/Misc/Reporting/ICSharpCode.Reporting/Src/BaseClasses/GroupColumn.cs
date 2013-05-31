@@ -31,8 +31,8 @@ namespace ICSharpCode.Reporting.BaseClasses
 		}
 		
 
-		public int GroupLevel {get;private set;
+		public int GroupLevel {get;private set;}
 	
-		}
+		
 	}
 }

@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-
+using System.Linq;
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.DataManager.Listhandling;
 using ICSharpCode.Reporting.DataSource;
@@ -31,6 +31,21 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			Assert.That(collectionSource,Is.Not.Null);
 		}
 		
+		[Test]
+		public void CurrentpositionShouldZeroAfterBind () {
+			var collectionSource = new CollectionSource	(list,new ReportSettings());
+			collectionSource.Bind();
+			Assert.That(collectionSource.CurrentPosition,Is.EqualTo(0));
+		}
+		
+		[Test]
+		public void CurrentPositionIsTwo () {
+			var collectionSource = new CollectionSource	(list,new ReportSettings());
+			collectionSource.Bind();
+			collectionSource.MoveNext();
+			collectionSource.MoveNext();
+			Assert.That(collectionSource.CurrentPosition,Is.EqualTo(2));
+		}
 		
 		[Test]
 		public void CollectionCountIsEqualToListCount() {
@@ -45,6 +60,21 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			Assert.That(collectionSource.AvailableFields.Count,Is.EqualTo(6));
 		}
 		
+		#region Fill
+		[Test]
+		public void justFill() {
+				var collectionSource = new CollectionSource	(list,new ReportSettings());
+				collectionSource.Bind();
+				var a = collectionSource.MoveNext();
+				collectionSource.Fill(new BaseDataItem() {
+				                      	ColumnName =  "Lastname"
+				                      });
+				
+				                  
+		}
+		#endregion
+		
+		
 		#region Grouping
 		
 		[Test]
@@ -55,6 +85,12 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			collectionSource.Bind();
 		}
 		
+		
+		[Test]
+		public void bla () {
+			var s = list.OrderBy(a => a.Lastname);
+			var x = s.GroupBy(y => y.GroupItem);
+		}
 		#endregion
 		
 		#region Sort
@@ -65,7 +101,7 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			var collectionSource = new CollectionSource	(list,new ReportSettings());
 			collectionSource.Bind();
 			Assert.That(collectionSource.IndexList.Count,Is.EqualTo(collectionSource.Count));
-			Assert.That(collectionSource.IndexList.CurrentPosition,Is.EqualTo(-1));
+			Assert.That(collectionSource.IndexList.CurrentPosition,Is.EqualTo(0));
 		}
 		
 		
