@@ -89,7 +89,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var setterField = ScanSetter (context, propertyDeclaration);
 			if (setterField == null)
 				return null;
-			if (getterField.Region != setterField.Region)
+			if (!getterField.Equals(setterField))
 				return null;
 			return getterField;
 		}

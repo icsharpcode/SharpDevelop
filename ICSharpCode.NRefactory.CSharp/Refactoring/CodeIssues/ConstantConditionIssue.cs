@@ -95,7 +95,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var value = (bool)resolveResult.ConstantValue;
 				var conditionalExpr = condition.Parent as ConditionalExpression;
 				var ifElseStatement = condition.Parent as IfElseStatement;
-				var valueStr = value.ToString ().ToLower ();
+				var valueStr = value.ToString ().ToLowerInvariant ();
 
 				CodeAction action;
 				if (conditionalExpr != null) {

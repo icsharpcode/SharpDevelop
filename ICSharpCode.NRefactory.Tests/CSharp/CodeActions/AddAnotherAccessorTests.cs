@@ -65,6 +65,37 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		}
 		
 		[Test]
+		public void TestAddSet_ReadOnlyField ()
+		{
+			string result = RunContextAction (
+				new AddAnotherAccessorAction (),
+				"class TestClass" + Environment.NewLine +
+				"{" + Environment.NewLine +
+				"	readonly int field;" + Environment.NewLine +
+				"	public int $Field {" + Environment.NewLine +
+				"		get {" + Environment.NewLine +
+				"			return field;" + Environment.NewLine +
+				"		}" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"}"
+			);
+			
+			Assert.AreEqual (
+				"class TestClass" + Environment.NewLine +
+				"{" + Environment.NewLine +
+				"	readonly int field;" + Environment.NewLine +
+				"	public int Field {" + Environment.NewLine +
+				"		get {" + Environment.NewLine +
+				"			return field;" + Environment.NewLine +
+				"		}" + Environment.NewLine +
+				"		set {" + Environment.NewLine +
+				"			throw new System.NotImplementedException ();" + Environment.NewLine +
+				"		}" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"}", result);
+		}
+		
+		[Test]
 		public void TestAddGet ()
 		{
 			string result = RunContextAction (

@@ -1356,7 +1356,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		CodeObject IAstVisitor<CodeObject>.VisitPreProcessorDirective (PreProcessorDirective preProcessorDirective)
 		{
-			return new CodeComment ("#" + preProcessorDirective.Type.ToString ().ToLower ());
+			return new CodeComment ("#" + preProcessorDirective.Type.ToString ().ToLowerInvariant ());
 		}
 		
 		CodeObject IAstVisitor<CodeObject>.VisitTypeParameterDeclaration(TypeParameterDeclaration typeParameterDeclaration)
