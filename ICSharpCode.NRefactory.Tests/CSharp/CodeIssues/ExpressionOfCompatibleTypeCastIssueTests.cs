@@ -135,5 +135,28 @@ class TestClass
 }";
 			Test<ExpressionOfCompatibleTypeCastIssue>(input, 0);
 		}
+
+		[Test]
+		public void TestImplicitOperator()
+		{
+			var input = @"
+struct Vector {
+  public static implicit operator Point(Vector v) { return new Point(); }
+}
+
+struct Point {
+	
+}
+
+class TestClass
+{
+	void TestMethod ()
+	{
+		Point p;
+		p = new Vector ();
+	}
+}";
+			Test<ExpressionOfCompatibleTypeCastIssue>(input, 0);
+		}
 	}
 }

@@ -78,6 +78,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				if (!foundConversion.IsExplicit)
 					return;
+				var implicitConversion = conversion.ImplicitConversion(exprType, castToType);
+				if (implicitConversion != Conversion.None)
+					return;
 
 				AddIssue(expression, string.Format(ctx.TranslateString("Cast to '{0}'"), castToType.Name),
 				         script => {
