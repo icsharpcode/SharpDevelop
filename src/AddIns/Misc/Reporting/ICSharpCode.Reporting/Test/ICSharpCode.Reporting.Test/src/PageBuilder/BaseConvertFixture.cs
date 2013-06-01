@@ -25,7 +25,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		public void CurrentPageContainFiveItems() {
 			reportCreator.BuildExportList();
 			var page = reportCreator.Pages[0];
-			Assert.That(page.ExportedItems.Count, Is.EqualTo(3));
+			Assert.That(page.ExportedItems.Count, Is.EqualTo(4));
 		}
 		
 		

@@ -8,6 +8,7 @@
  */
 using System;
 using System.Drawing;
+using System.Linq;
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Globals;
@@ -35,7 +36,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 		{
 			base.BuildExportList();
 			WritePages ();
-//			BuildReportHeader();
 		}
 		
 		
@@ -81,11 +81,14 @@ namespace ICSharpCode.Reporting.PageBuilder
 		void BuildReportFooter()
 		{
 			Console.WriteLine("FormPageBuilder - Build ReportFooter {0} - {1}",ReportModel.ReportSettings.PageSize.Height,ReportModel.ReportSettings.BottomMargin);
+//			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
+//			                            ReportModel.ReportSettings.PageSize.Height - ReportModel.ReportSettings.BottomMargin - ReportModel.PageFooter.Size.Height);
+			var x = CurrentPage.ExportedItems.Last();
 			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
-			                            ReportModel.ReportSettings.PageSize.Height - ReportModel.ReportSettings.BottomMargin - ReportModel.PageFooter.Size.Height);
-				
+			                            x.Location.Y + x.Size.Height + 1);
 			var containerConverter = new ContainerConverter(graphics,ReportModel.ReportFooter,CurrentLocation);
 			var header =containerConverter.Convert();
+			header.Parent = CurrentPage;
 			CurrentPage.ExportedItems.Add(header);
 		}
 		
@@ -98,7 +101,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			BuildPageHeader();
 			BuilDetail();
 			BuildPageFooter();
-//			BuildReportFooter();
+			BuildReportFooter();
 			base.AddPage(CurrentPage);
 		}
 		

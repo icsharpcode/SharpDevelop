@@ -29,7 +29,9 @@ namespace ICSharpCode.Reporting.Interfaces.Data
 //		void Fill (int position,ReportItemCollection collection);
 		
 		//rausnehmen
-		void Fill (IDataItem item);
+//		void Fill (IDataItem item);
+		
+		void Fill(ReportItemCollection collection);
 		
 		IndexList IndexList {get;}
 		

@@ -119,13 +119,30 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		}
 		
 		#region Fill
-	
+	/*
 		public void Fill(IDataItem item)
 		{
 
 //			PropertyInfo pi = itemType.GetProperty(item.ColumnName);
 //			var pi1 = pi.GetValue(Current);
 			
+			var p = listProperties.Find(item.ColumnName,true);
+			item.DBValue = p.GetValue(Current).ToString();
+			if (String.IsNullOrEmpty(item.DataType)) {
+				item.DataType = p.PropertyType.ToString();
+			}
+		}
+		*/
+		
+		public void Fill(ReportItemCollection collection)
+		{
+			foreach (IDataItem item in collection)
+            {
+                FillInternal(item);
+            }
+		}
+		
+		void FillInternal (IDataItem item) {
 			var p = listProperties.Find(item.ColumnName,true);
 			item.DBValue = p.GetValue(Current).ToString();
 			if (String.IsNullOrEmpty(item.DataType)) {

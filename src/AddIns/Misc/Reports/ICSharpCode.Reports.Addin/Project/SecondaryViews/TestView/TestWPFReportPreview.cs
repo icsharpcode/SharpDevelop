@@ -55,7 +55,7 @@ namespace ICSharpCode.Reports.Addin.SecondaryViews
 		
 		
 		public Collection<Page> Pages{get;private set;}
-	
+		
 		
 		protected override void LoadFromPrimary()
 		{
@@ -64,47 +64,13 @@ namespace ICSharpCode.Reports.Addin.SecondaryViews
 			var modulLoader = new ModelLoader();
 			ReportModel model = (ReportModel)modulLoader.Load(xmDoc.DocumentElement);
 			
-//			var collectCmd = new CollectParametersCommand(model.ReportSettings);
-//			collectCmd.Run();
-			IReportCreator reportCreator = null;
-			switch (model.ReportSettings.DataModel)
-			{
-					case GlobalEnums.PushPullModel.FormSheet :
-					{
-//						exportRunner.RunReport(model,(ReportParameters)null);
-						var reportingFactory = new ReportingFactory();
-						reportCreator = reportingFactory.ReportCreator(model);
-						reportCreator.BuildExportList();
-//						var pe = new PrintExporter(reportCreator.Pages);
-//						pe.Run();
-						break;
-					}
-					
-					case GlobalEnums.PushPullModel.PullData:
-					{
-//						exportRunner.RunReport(model,(ReportParameters)null);
-						break;
-					}
-					case GlobalEnums.PushPullModel.PushData:
-					{
-//						var cmd = new DataSetFromXsdCommand();
-//						cmd.Run();
-//						System.Data.DataSet ds = cmd.DataSet;
-//						exportRunner.RunReport(model,ds.Tables[0],(ReportParameters)null);
-						break;
-					}
-					
-//				default:
-//					throw new InvalidReportModelException();
-			}
+			var reportingFactory = new ReportingFactory();
+			var reportCreator = reportingFactory.ReportCreator(model);
+			reportCreator.BuildExportList();
 			
 			PreviewViewModel previewViewModel = new PreviewViewModel (model.ReportSettings,reportCreator.Pages);
-			                                                    
-			
 			viewer.SetBinding(previewViewModel);
-
 		}
-		
 		
 		protected override void SaveToPrimary()
 		{

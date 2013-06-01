@@ -98,7 +98,7 @@ namespace ICSharpCode.Reporting
 		}
 	}
 	
-	/*
+	
 	public class ReportItemCollection : Collection<PrintableItem>
 	{
 		
@@ -114,5 +114,4 @@ namespace ICSharpCode.Reporting
 			InnerList.Sort(comparer);
 		}
 	}
-	*/
 }

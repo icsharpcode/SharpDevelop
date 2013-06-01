@@ -32,14 +32,14 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 			var y = from s in x 
 				where s.GetType() == typeof(ExportContainer)
 				select s;
-			Assert.That(y.ToList().Count,Is.EqualTo(3));
+			Assert.That(y.ToList().Count,Is.EqualTo(4));
 			Console.WriteLine("-------ShowDebug---------");
 			var ex = new DebugExporter(reportCreator.Pages);
 			ex.Run();
 		}
 		
 		[Test]
-		public void SectionsInpageDoNotOverlap()
+		public void SectionsInPageDoNotOverlap()
 		{
 			Point p = Point.Empty;
 			reportCreator.BuildExportList();
@@ -48,6 +48,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 				foreach (var item in element.ExportedItems) {
 					if (! first) {
 						var p2 = new Point(item.Location.X,item.Location.Y);
+						Console.WriteLine("{0} - {1}",p2,item.Name);
 						Assert.That(p2.Y,Is.GreaterThan(p.Y));
 					} else {
 						first = false;

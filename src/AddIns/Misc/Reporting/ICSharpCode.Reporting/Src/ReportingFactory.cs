@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
+using ICSharpCode.Reporting.Factories;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
@@ -39,14 +40,17 @@ namespace ICSharpCode.Reporting
 			return builder;
 		}
 		
-		public IReportCreator ReportCreator (Stream stream)
+		internal IReportCreator ReportCreator (Stream stream)
 		{
 			IReportModel reportModel = LoadReportModel (stream);
 			IReportCreator builder = null;
-			if (reportModel.ReportSettings.DataModel == GlobalEnums.PushPullModel.FormSheet) {
-				builder =  new FormPageBuilder(reportModel);
-			}
+			builder = ReportCreatorFactory.ExporterFactory(reportModel);
 			return builder;
+		}
+		
+		object ExporterFactory(IReportModel reportModel)
+		{
+			throw new NotImplementedException();
 		}
 			
 		

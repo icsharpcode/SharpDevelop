@@ -61,17 +61,46 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		}
 		
 		#region Fill
+		
 		[Test]
-		public void justFill() {
-				var collectionSource = new CollectionSource	(list,new ReportSettings());
-				collectionSource.Bind();
-				var a = collectionSource.MoveNext();
-				collectionSource.Fill(new BaseDataItem() {
-				                      	ColumnName =  "Lastname"
-				                      });
-				
-				                  
+		public void TypeOfReportItemIsString () {
+			var ric = new ReportItemCollection(){
+				new BaseDataItem(){
+					ColumnName = "Lastname"
+						
+				},
+				new BaseDataItem(){
+					ColumnName = "Firstname"
+				}
+			};
+			var collectionSource = new CollectionSource	(list,new ReportSettings());
+			collectionSource.Bind();
+			collectionSource.Fill(ric);
+			foreach (BaseDataItem element in ric) {
+				Assert.That(element.DataType,Is.EqualTo("System.String"));
+			}
 		}
+		
+		
+		[Test]
+		public void FillReportItemCollection () {
+			var ric = new ReportItemCollection(){
+				new BaseDataItem(){
+					ColumnName = "Lastname"
+						
+				},
+				new BaseDataItem(){
+					ColumnName = "Firstname"
+				}
+			};
+			var collectionSource = new CollectionSource	(list,new ReportSettings());
+			collectionSource.Bind();
+			collectionSource.Fill(ric);
+			foreach (BaseDataItem element in ric) {
+				Assert.That(element.DBValue,Is.Not.EqualTo(String.Empty));
+			}
+		}
+		
 		#endregion
 		
 		
@@ -90,6 +119,12 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		public void bla () {
 			var s = list.OrderBy(a => a.Lastname);
 			var x = s.GroupBy(y => y.GroupItem);
+			foreach (var group in x) {
+				Console.WriteLine("{0} - {1}",group.Key,group.GetType().ToString());
+				foreach (var element in group) {
+					Console.WriteLine(element.Firstname);
+				}
+			}
 		}
 		#endregion
 		
