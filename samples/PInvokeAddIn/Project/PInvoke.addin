@@ -1,8 +1,7 @@
 <AddIn name        = "PInvoke Add-in"
        author      = "Matt Ward"
        copyright   = "prj:///doc/copyright.txt"
-       description = "PInvoke.Net integration for SharpDevelop."
-       addInManagerHidden = "preinstalled">
+       description = "PInvoke.Net integration for SharpDevelop.">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.PInvokeAddIn"/>
