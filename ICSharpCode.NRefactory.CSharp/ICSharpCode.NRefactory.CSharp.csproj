@@ -296,11 +296,11 @@
     <Compile Include="Refactoring\CodeIssues\CastExpressionOfIncompatibleTypeIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\CompareBooleanWithTrueOrFalseIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\CompareFloatWithEqualityOperatorIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\CompilerErrors\CS0029InvalidConversionIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ConstantConditionIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\DoubleNegationIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ExpressionIsAlwaysOfProvidedTypeIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ExpressionIsNeverOfProvidedTypeIssue.cs" />
-    <Compile Include="Refactoring\CodeIssues\ExpressionOfCompatibleTypeCastIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\MethodNeverReturnsIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\MethodOverloadHidesOptionalParameterIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\MissingStringComparisonIssue.cs" />

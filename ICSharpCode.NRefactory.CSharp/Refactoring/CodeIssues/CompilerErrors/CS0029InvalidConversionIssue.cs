@@ -23,6 +23,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
@@ -31,19 +33,24 @@ using ICSharpCode.NRefactory.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription("Type cast expression of compatible type",
-	                  Description = "Type cast expression of compatible type",
-	                  Category = IssueCategories.CodeQualityIssues,
-	                  Severity = Severity.Warning,
+	[IssueDescription("CS0029: Cannot implicitly convert type 'A' to 'B'.",
+	                  Description = "This error occurs when trying to assign a value of an incompatible type.",
+	                  Category = IssueCategories.CompilerErrors,
+	                  Severity = Severity.Error,
 	                  IssueMarker = IssueMarker.Underline)]
-	public class ExpressionOfCompatibleTypeCastIssue : ICodeIssueProvider
+	public class CS0029InvalidConversionIssue : ICodeIssueProvider
 	{
+		// This class handles both
+		// CS0029: Cannot implicitly convert type 'type' to 'type'
+		// and
+		// CS0266: Cannot implicitly convert type 'type1' to 'type2'. An explicit conversion exists (are you missing a cast?)
+		
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
 			return new GatherVisitor(context).GetIssues();
 		}
 
-		class GatherVisitor : GatherVisitorBase<ExpressionOfCompatibleTypeCastIssue>
+		class GatherVisitor : GatherVisitorBase<CS0029InvalidConversionIssue>
 		{
 			readonly CSharpConversions conversion;
 
@@ -53,13 +60,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				conversion = new CSharpConversions(ctx.Compilation);
 			}
 
+			// Currently, we only checks assignments
 			public override void VisitAssignmentExpression(AssignmentExpression assignmentExpression)
 			{
 				base.VisitAssignmentExpression(assignmentExpression);
 				if (assignmentExpression.Operator != AssignmentOperatorType.Assign)
 					return;
 				var variableType = ctx.Resolve(assignmentExpression.Left).Type;
-				VisitTypeCastExpression(variableType, assignmentExpression.Right);
+				VisitAssignment(variableType, assignmentExpression.Right);
 			}
 			
 			public override void VisitVariableInitializer(VariableInitializer variableInitializer)
@@ -67,17 +75,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				base.VisitVariableInitializer(variableInitializer);
 				if (!variableInitializer.Initializer.IsNull) {
 					var variableType = ctx.Resolve(variableInitializer).Type;
-					VisitTypeCastExpression(variableType, variableInitializer.Initializer);
+					VisitAssignment(variableType, variableInitializer.Initializer);
 				}
 			}
 			
-			private AstType CreateShortType(AstNode node, IType fullType)
-			{
-				var builder = ctx.CreateTypeSytemAstBuilder(node);
-				return builder.ConvertType(fullType);
-			}
-
-			void VisitTypeCastExpression(IType variableType, Expression expression)
+			void VisitAssignment(IType variableType, Expression expression)
 			{
 				if (variableType.Kind == TypeKind.Unknown)
 					return; // ignore error if the variable type is unknown
@@ -87,16 +89,30 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var rr = ctx.Resolve(expression);
 				if (rr.Type.Kind == TypeKind.Unknown)
 					return; // ignore error if expression type is unknown
-				var foundConversion = conversion.ExplicitConversion(rr, variableType);
-				if (!foundConversion.IsValid)
-					return; // there's an error, but we can't fix it by introducing a cast
 				
-				AddIssue(expression, string.Format(ctx.TranslateString("Cast to '{0}'"), variableType.Name),
-				         script => {
-				         	var right = expression.Clone();
-				         	var castRight = right.CastTo(CreateShortType(expression, variableType));
-				         	script.Replace(expression, castRight);
-				         });
+				var foundConversion = conversion.ExplicitConversion(rr, variableType);
+				
+				var builder = ctx.CreateTypeSytemAstBuilder(expression);
+				AstType variableTypeNode = builder.ConvertType(variableType);
+				AstType expressionTypeNode = builder.ConvertType(rr.Type);
+				
+				if (foundConversion.IsValid) {
+					// CS0266: An explicit conversion exists -> suggested fix is to insert the cast
+					string title = string.Format(ctx.TranslateString("Cannot implicitly convert type `{0}' to `{1}'. An explicit conversion exists (are you missing a cast?)"),
+					                             expressionTypeNode, variableTypeNode);
+					string fixTitle = string.Format(ctx.TranslateString("Cast to '{0}'"), variableTypeNode);
+					Action<Script> fixAction = script => {
+						var right = expression.Clone();
+						var castRight = right.CastTo(variableTypeNode);
+						script.Replace(expression, castRight);
+					};
+					AddIssue(expression, title, new CodeAction(fixTitle, fixAction, expression));
+				} else {
+					// CS0029: No explicit conversion -> Issue without suggested fix
+					string title = string.Format(ctx.TranslateString("Cannot implicitly convert type `{0}' to `{1}'"),
+					                             expressionTypeNode, variableTypeNode);
+					AddIssue(expression, title);
+				}
 			}
 		}
 	}

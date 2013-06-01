@@ -409,7 +409,7 @@
     <Compile Include="CSharp\CodeIssues\RedundantBaseConstructorIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantConstructorTests.cs" />
     <Compile Include="CSharp\CodeIssues\PublicConstructorInAbstractClassIssueTest.cs" />
-    <Compile Include="CSharp\CodeIssues\ExpressionOfCompatibleTypeCastIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\CS0029InvalidConversionIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ConvertToStaticMethodIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\ParameterCanBeIEnumerableTests.cs" />
     <Compile Include="CSharp\CodeIssues\DuplicateBodyMethodIssueTests.cs" />

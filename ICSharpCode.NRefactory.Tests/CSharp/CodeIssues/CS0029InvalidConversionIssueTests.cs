@@ -1,10 +1,12 @@
+using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using NUnit.Framework;
+using ICSharpCode.NRefactory.CSharp.CodeActions;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
 	[TestFixture]
-	public class ExpressionOfCompatibleTypeCastIssueTests : InspectionActionTestBase
+	public class CS0029InvalidConversionIssueTests : InspectionActionTestBase
 	{
 		[Test]
 		public void TestConversion()
@@ -29,7 +31,7 @@ enum Enum{ };
 		x = (int)i;
 	}
 }";
-			Test<ExpressionOfCompatibleTypeCastIssue>(input, output);
+			Test<CS0029InvalidConversionIssue>(input, output);
 		}
 		
 		[Test]
@@ -53,7 +55,7 @@ enum Enum{ };
 		int x = (int)i;
 	}
 }";
-			Test<ExpressionOfCompatibleTypeCastIssue>(input, output);
+			Test<CS0029InvalidConversionIssue>(input, output);
 		}
 		
 		[Test]
@@ -70,7 +72,7 @@ class TestClass
 		x = i;
 	}
 }";
-			Test<ExpressionOfCompatibleTypeCastIssue>(input, 0);
+			Test<CS0029InvalidConversionIssue>(input, 0);
 		}
 
 		[Test]
@@ -95,7 +97,7 @@ class Foo
 	}
 }";
 
-			Test<ExpressionOfCompatibleTypeCastIssue>(input, output);
+			Test<CS0029InvalidConversionIssue>(input, output);
 		}
 
 		[Test]
@@ -121,7 +123,7 @@ class Foo
 		val = (int)e;
 	}
 }";
-			Test<ExpressionOfCompatibleTypeCastIssue>(input, output);
+			Test<CS0029InvalidConversionIssue>(input, output);
 		}
 
 		[Test]
@@ -137,7 +139,7 @@ class TestClass
 		$x = i;
 	}
 }";
-			Test<ExpressionOfCompatibleTypeCastIssue>(input, 0);
+			Test<CS0029InvalidConversionIssue>(input, 0);
 		}
 		
 		[Test]
@@ -158,7 +160,7 @@ class TestClass
 		$p += new Vector();
 	}
 }";
-			Test<ExpressionOfCompatibleTypeCastIssue>(input, 0);
+			Test<CS0029InvalidConversionIssue>(input, 0);
 		}
 
 		[Test]
@@ -181,7 +183,7 @@ class TestClass
 		p = new Vector ();
 	}
 }";
-			Test<ExpressionOfCompatibleTypeCastIssue>(input, 0);
+			Test<CS0029InvalidConversionIssue>(input, 0);
 		}
 		
 		[Test]
@@ -196,7 +198,24 @@ class TestClass
 		c = 0;
 	}
 }";
-			Test<ExpressionOfCompatibleTypeCastIssue>(input, 0);
+			Test<CS0029InvalidConversionIssue>(input, 0);
+		}
+		
+		[Test]
+		public void AssignCustomClassToString()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		string x = this;
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues (new CS0029InvalidConversionIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			Assert.IsFalse(issues[0].Actions.Any());
 		}
 	}
 }
