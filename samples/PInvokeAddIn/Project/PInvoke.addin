@@ -28,11 +28,7 @@
 	</Path>
 	
 	<!-- Right click in text editor menu option -->
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
-		
-		<MenuItem id = "Separator4"
-		          type = "Separator"
-		          insertafter = "Options"/>
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
 		
 		<ComplexCondition action = "Disable">
 			<Or>
@@ -41,7 +37,7 @@
 			</Or>
 			<MenuItem id = "InsertPInvoke"
 			          label = "${res:ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesMenuLabel}"
-			          insertafter = "Separator4"
+			          insertbefore = "Comment"
 			          class ="ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesCommand"
 			/>
 		</ComplexCondition>
