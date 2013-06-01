@@ -174,22 +174,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		static void CollectSwitchSectionStatements (AstNodeCollection<Statement> result, RefactoringContext context, 
 												    Statement statement)
 		{
-			BlockStatement blockStatement;
-			if (statement is BlockStatement)
-				blockStatement = (BlockStatement)statement.Clone ();
+			BlockStatement blockStatement = statement as BlockStatement;
+			if (blockStatement != null)
+				result.AddRange(blockStatement.Statements.Select(s => s.Clone()));
 			else
-				blockStatement = new BlockStatement { statement.Clone () };
+				result.Add(statement.Clone());
 
-			var breackStatement = new BreakStatement ();
-			blockStatement.Add (breackStatement);
-			// check if break is needed
-			var reachabilityAnalysis = context.CreateReachabilityAnalysis (blockStatement);
-			if (!reachabilityAnalysis.IsReachable (breackStatement))
-				blockStatement.Statements.Remove (breackStatement);
-
-			var statements = blockStatement.Statements.ToArray ();
-			blockStatement.Statements.Clear ();
-			result.AddRange (statements);
+			// add 'break;' at end if necessary
+			var reachabilityAnalysis = context.CreateReachabilityAnalysis (statement);
+			if (reachabilityAnalysis.IsEndpointReachable(statement))
+				result.Add(new BreakStatement());
 		}
 	}
 }
