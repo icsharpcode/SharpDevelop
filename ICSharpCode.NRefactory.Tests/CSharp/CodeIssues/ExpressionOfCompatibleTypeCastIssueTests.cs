@@ -31,6 +31,31 @@ enum Enum{ };
 }";
 			Test<ExpressionOfCompatibleTypeCastIssue>(input, output);
 		}
+		
+		[Test]
+		public void TestConversionInInitializer()
+		{
+			var input = @"
+class TestClass
+{
+enum Enum{ };
+	void TestMethod (Enum i)
+	{
+		int x = i;
+	}
+}";
+			var output = @"
+class TestClass
+{
+enum Enum{ };
+	void TestMethod (Enum i)
+	{
+		int x = (int)i;
+	}
+}";
+			Test<ExpressionOfCompatibleTypeCastIssue>(input, output);
+		}
+		
 		[Test]
 		public void TestClassConversion()
 		{
@@ -154,6 +179,21 @@ class TestClass
 	{
 		Point p;
 		p = new Vector ();
+	}
+}";
+			Test<ExpressionOfCompatibleTypeCastIssue>(input, 0);
+		}
+		
+		[Test]
+		public void TestAssignZeroToEnum()
+		{
+			var input = @"using System;
+class TestClass
+{
+	void TestMethod ()
+	{
+		StringComparison c = 0;
+		c = 0;
 	}
 }";
 			Test<ExpressionOfCompatibleTypeCastIssue>(input, 0);

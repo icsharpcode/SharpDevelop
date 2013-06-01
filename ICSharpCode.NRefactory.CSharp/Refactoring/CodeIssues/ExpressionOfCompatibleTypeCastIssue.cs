@@ -58,35 +58,44 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				base.VisitAssignmentExpression(assignmentExpression);
 				if (assignmentExpression.Operator != AssignmentOperatorType.Assign)
 					return;
-				var rightExpressionType = ctx.Resolve(assignmentExpression.Right).Type;
-				var leftExpressionType = ctx.Resolve(assignmentExpression.Left).Type;
-				VisitTypeCastExpression(assignmentExpression, rightExpressionType, leftExpressionType);
+				var variableType = ctx.Resolve(assignmentExpression.Left).Type;
+				VisitTypeCastExpression(variableType, assignmentExpression.Right);
 			}
-
+			
+			public override void VisitVariableInitializer(VariableInitializer variableInitializer)
+			{
+				base.VisitVariableInitializer(variableInitializer);
+				if (!variableInitializer.Initializer.IsNull) {
+					var variableType = ctx.Resolve(variableInitializer).Type;
+					VisitTypeCastExpression(variableType, variableInitializer.Initializer);
+				}
+			}
+			
 			private AstType CreateShortType(AstNode node, IType fullType)
 			{
 				var builder = ctx.CreateTypeSytemAstBuilder(node);
 				return builder.ConvertType(fullType);
 			}
 
-			void VisitTypeCastExpression(AssignmentExpression expression, IType exprType, IType castToType)
+			void VisitTypeCastExpression(IType variableType, Expression expression)
 			{
-				if (exprType.Kind == TypeKind.Unknown || castToType.Kind == TypeKind.Unknown)
-					return;
-				var foundConversion = conversion.ExplicitConversion(exprType, castToType);
-				if (foundConversion == Conversion.None)
-					return;
-				if (!foundConversion.IsExplicit)
-					return;
-				var implicitConversion = conversion.ImplicitConversion(exprType, castToType);
-				if (implicitConversion != Conversion.None)
-					return;
-
-				AddIssue(expression, string.Format(ctx.TranslateString("Cast to '{0}'"), castToType.Name),
+				if (variableType.Kind == TypeKind.Unknown)
+					return; // ignore error if the variable type is unknown
+				if (ctx.GetConversion(expression).IsValid)
+					return; // don't complain if the code is valid
+				
+				var rr = ctx.Resolve(expression);
+				if (rr.Type.Kind == TypeKind.Unknown)
+					return; // ignore error if expression type is unknown
+				var foundConversion = conversion.ExplicitConversion(rr, variableType);
+				if (!foundConversion.IsValid)
+					return; // there's an error, but we can't fix it by introducing a cast
+				
+				AddIssue(expression, string.Format(ctx.TranslateString("Cast to '{0}'"), variableType.Name),
 				         script => {
-				         	var right = expression.Right.Clone();
-				         	var castRight = right.CastTo(CreateShortType(expression, castToType));
-				         	script.Replace(expression.Right, castRight);
+				         	var right = expression.Clone();
+				         	var castRight = right.CastTo(CreateShortType(expression, variableType));
+				         	script.Replace(expression, castRight);
 				         });
 			}
 		}
