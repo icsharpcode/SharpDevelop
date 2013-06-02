@@ -32,5 +32,15 @@ namespace PackageManagement.Tests.Helpers
 		{
 			Package.Stub(p => p.Version).Return(new SemanticVersion(version));
 		}
+		
+		public void IsLatestVersion()
+		{
+			Package.Stub(p => p.IsLatestVersion).Return(true);
+		}
+		
+		public void Listed()
+		{
+			Package.Stub(p => p.Listed).Return(true);
+		}
 	}
 }
