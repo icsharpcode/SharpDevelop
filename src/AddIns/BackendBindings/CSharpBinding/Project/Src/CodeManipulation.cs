@@ -3,16 +3,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 /*
+using System.Windows.Input;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.PatternMatching;
+//using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
-using Ast = ICSharpCode.NRefactory.Ast;
+//using Ast = ICSharpCode.NRefactory.Ast;
 
 namespace CSharpBinding
 {
@@ -100,8 +105,8 @@ namespace CSharpBinding
 
 		class Selection
 		{
-			public Location Start { get; set; }
-			public Location End { get; set; }
+			public TextLocation Start { get; set; }
+			public TextLocation End { get; set; }
 		}
 		
 		void CodeManipulationSelectionChanged(object sender, EventArgs e)
@@ -163,7 +168,7 @@ namespace CSharpBinding
 			string currentNodeText = editor.Document.GetText(statementSelection.Start, statementSelection.End);
 			SwapText(editor.Document, statementSelection.Start, statementSelection.End, swapSibling.StartLocation, swapSibling.EndLocation);
 			// Move caret to the start of moved statement
-			Location upperLocation = new Location[] {statementSelection.Start, swapSibling.StartLocation}.Min();
+			TextLocation upperLocation = new TextLocation[] {statementSelection.Start, swapSibling.StartLocation}.Min();
 			if (direction == MoveStatementDirection.Up)
 				editor.Caret.Position = upperLocation;
 			else {
