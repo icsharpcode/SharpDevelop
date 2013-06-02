@@ -68,35 +68,9 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override void TryUpdatingAllPackages()
 		{
-			if (selectedProjects.HasSingleProjectSelected()) {
-				IEnumerable<IPackageFromRepository> packages = GetPackagesFromViewModels();
-				IPackageRepository repository = packages.First().Repository;
-				IPackageManagementProject project = selectedProjects.GetSingleProjectSelected(repository);
-				project.Logger = logger;
-				
-				UpdatePackagesAction action = project.CreateUpdatePackagesAction();
-				action.AddPackages(packages);
-				
-				IEnumerable<PackageOperation> operations = project.GetUpdatePackagesOperations(packages, action);
-				action.AddOperations(operations);
-				
-				ActionRunner.Run(action);
-			} else {
-				IEnumerable<IPackageFromRepository> packages = GetPackagesFromViewModels();
-				IPackageRepository repository = packages.First().Repository;
-				
-				var action = new UpdateSolutionPackagesAction(selectedProjects.Solution);
-				action.Logger = logger;
-				action.AddPackages(packages);
-				
-				IPackageManagementProject project = selectedProjects.Solution.GetProjects(repository).First();
-				project.Logger = logger;
-				
-				IEnumerable<PackageOperation> operations = project.GetUpdatePackagesOperations(packages, action);
-				action.AddOperations(operations);
-				
-				ActionRunner.Run(action);
-			}
+			var factory = new UpdatePackagesActionFactory(logger);
+			IUpdatePackagesAction action = factory.CreateAction(selectedProjects, GetPackagesFromViewModels());
+			ActionRunner.Run(action);
 		}
 		
 		IEnumerable<IPackageFromRepository> GetPackagesFromViewModels()

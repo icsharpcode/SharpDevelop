@@ -8,7 +8,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class UpdatePackagesAction : IPackageAction, IUpdatePackageSettings
+	public class UpdatePackagesAction : IUpdatePackagesAction
 	{
 		List<IPackage> packages = new List<IPackage>();
 		List<PackageOperation> operations = new List<PackageOperation>();
@@ -32,6 +32,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool UpdateDependencies { get; set; }
 		public bool AllowPrereleaseVersions { get; set; }
+		public ILogger Logger { get; set; }
 		
 		public bool HasPackageScriptsToRun()
 		{
@@ -44,7 +45,7 @@ namespace ICSharpCode.PackageManagement
 			this.operations.AddRange(operations);
 		}
 		
-		public void AddPackages(IEnumerable<IPackage> packages)
+		public void AddPackages(IEnumerable<IPackageFromRepository> packages)
 		{
 			this.packages.AddRange(packages);
 		}

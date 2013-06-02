@@ -9,7 +9,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class UpdateSolutionPackagesAction : IPackageAction, IUpdatePackageSettings
+	public class UpdateSolutionPackagesAction : IUpdatePackagesAction
 	{
 		List<IPackageFromRepository> packages = new List<IPackageFromRepository>();
 		List<PackageOperation> operations = new List<PackageOperation>();

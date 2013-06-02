@@ -276,7 +276,7 @@ namespace PackageManagement.Tests
 			return new UpdatePackagesAction(new FakePackageManagementProject());
 		}
 		
-		UpdatePackagesAction CreateUpdatePackagesActionWithPackages(params IPackage[] packages)
+		UpdatePackagesAction CreateUpdatePackagesActionWithPackages(params IPackageFromRepository[] packages)
 		{
 			UpdatePackagesAction action = CreateUpdatePackagesAction();
 			action.AddPackages(packages);
@@ -938,8 +938,8 @@ namespace PackageManagement.Tests
 		{
 			CreatePackageManager();
 			CreateFakePackageResolverForUpdatePackageOperations();
-			IPackage package1 = CreateFakePackage("Test", "1.0");
-			IPackage package2 = CreateFakePackage("Test2", "1.0");
+			IPackageFromRepository package1 = CreateFakePackage("Test", "1.0");
+			IPackageFromRepository package2 = CreateFakePackage("Test2", "1.0");
 			PackageOperation operation1 = AddInstallOperationForPackage(package1);
 			PackageOperation operation2 = AddInstallOperationForPackage(package2);
 			UpdatePackagesAction updateAction = CreateUpdatePackagesActionWithPackages(package1, package2);

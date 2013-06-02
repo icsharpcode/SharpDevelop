@@ -155,6 +155,7 @@
     <Compile Include="Src\FileConflictViewModel.cs" />
     <Compile Include="Src\IClassKindUpdater.cs" />
     <Compile Include="Src\IDocumentNamespaceCreator.cs" />
+    <Compile Include="Src\IUpdatePackagesAction.cs" />
     <Compile Include="Src\IPackageExtensions.cs" />
     <Compile Include="Src\IPackageAction.cs" />
     <Compile Include="Src\IProjectBuilder.cs" />
@@ -237,6 +238,7 @@
     <Compile Include="Src\Scripting\RunAllProjectPackageScriptsAction.cs" />
     <Compile Include="Src\ServiceWithWorkbenchOwner.cs" />
     <Compile Include="Src\UpdatePackagesAction.cs" />
+    <Compile Include="Src\UpdatePackagesActionFactory.cs" />
     <Compile Include="Src\UpdateSolutionPackagesAction.cs" />
     <Compile Include="Src\VirtualMethodUpdater.cs" />
     <Compile Include="Src\NewProjectsCreated.cs" />
