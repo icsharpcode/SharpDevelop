@@ -187,15 +187,31 @@ namespace ICSharpCode.PackageManagement
 		public override void AddFile(string path, Stream stream)
 		{
 			PhysicalFileSystemAddFile(path, stream);
-			if (ShouldAddFileToProject(path)) {
-				AddFileToProject(path);
-			}
-			LogAddedFileToProject(path);
+			AddFileToProject(path);
+		}
+		
+		public override void AddFile(string path, Action<Stream> writeToStream)
+		{
+			PhysicalFileSystemAddFile(path, writeToStream);
+			AddFileToProject(path);
 		}
 		
 		protected virtual void PhysicalFileSystemAddFile(string path, Stream stream)
 		{
 			base.AddFile(path, stream);
+		}
+		
+		protected virtual void PhysicalFileSystemAddFile(string path, Action<Stream> writeToStream)
+		{
+			base.AddFile(path, writeToStream);
+		}
+		
+		void AddFileToProject(string path)
+		{
+			if (ShouldAddFileToProject(path)) {
+				AddFileProjectItemToProject(path);
+			}
+			LogAddedFileToProject(path);
 		}
 		
 		bool ShouldAddFileToProject(string path)
@@ -215,7 +231,7 @@ namespace ICSharpCode.PackageManagement
 			return project.IsFileInProject(fullPath);
 		}
 		
-		void AddFileToProject(string path)
+		void AddFileProjectItemToProject(string path)
 		{
 			FileProjectItem fileItem = CreateFileProjectItem(path);
 			projectService.AddProjectItem(project, fileItem);

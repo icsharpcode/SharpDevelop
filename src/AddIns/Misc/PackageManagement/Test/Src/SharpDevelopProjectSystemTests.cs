@@ -1035,5 +1035,37 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(1, project.GetImports().Count);
 		}
+		
+		[Test]
+		public void AddFile_NewFileAddedWithAction_AddsFileToFileSystem()
+		{
+			CreateTestProject();
+			CreateProjectSystem(project);
+			
+			string expectedPath = @"d:\temp\abc.cs";
+			Action<Stream> expectedAction = stream => { };
+			projectSystem.AddFile(expectedPath, expectedAction);
+			
+			Assert.AreEqual(expectedPath, projectSystem.PathPassedToPhysicalFileSystemAddFile);
+			Assert.AreEqual(expectedAction, projectSystem.ActionPassedToPhysicalFileSystemAddFile);
+		}
+		
+		[Test]
+		public void AddFile_NewFileAddedWithAction_AddsFileToProject()
+		{
+			CreateTestProject(@"d:\projects\MyProject\MyProject.csproj");
+			project.ItemTypeToReturnFromGetDefaultItemType = ItemType.Compile;
+			CreateProjectSystem(project);
+			
+			string fileName = @"d:\projects\MyProject\src\NewFile.cs";
+			Action<Stream> action = stream => { };
+			projectSystem.AddFile(fileName, action);
+			
+			FileProjectItem fileItem = ProjectHelper.GetFile(project, fileName);
+			FileProjectItem expectedFileItem = new FileProjectItem(project, ItemType.Compile);
+			expectedFileItem.FileName = fileName;
+			
+			FileProjectItemAssert.AreEqual(expectedFileItem, fileItem);
+		}
 	}
 }

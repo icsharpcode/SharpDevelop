@@ -13,6 +13,7 @@ namespace PackageManagement.Tests.Helpers
 	{
 		public string PathPassedToPhysicalFileSystemAddFile;
 		public Stream StreamPassedToPhysicalFileSystemAddFile;
+		public Action<Stream> ActionPassedToPhysicalFileSystemAddFile;
 		public FakeFileService FakeFileService;
 		public FakePackageManagementProjectService FakeProjectService;
 		public FakeLogger FakeLogger;
@@ -49,6 +50,12 @@ namespace PackageManagement.Tests.Helpers
 		{
 			PathPassedToPhysicalFileSystemAddFile = path;
 			StreamPassedToPhysicalFileSystemAddFile = stream;
+		}
+		
+		protected override void PhysicalFileSystemAddFile(string path, Action<Stream> writeToStream)
+		{
+			PathPassedToPhysicalFileSystemAddFile = path;
+			ActionPassedToPhysicalFileSystemAddFile = writeToStream;
 		}
 		
 		protected override void LogDeletedFile(string fileName)
