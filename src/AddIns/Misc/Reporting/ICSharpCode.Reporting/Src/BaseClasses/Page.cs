@@ -115,5 +115,11 @@ namespace ICSharpCode.Reporting.BaseClasses
 		public bool CanGrow {get;set;}
 		
 		public bool CanShrink {get;set;}
+		
+		public Rectangle DisplayRectangle {
+			get {
+				return new Rectangle(Location,Size);
+			}
+		}
 	}
 }

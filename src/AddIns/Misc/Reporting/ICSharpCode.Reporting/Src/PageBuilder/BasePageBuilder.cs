@@ -12,8 +12,10 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 
 using ICSharpCode.Reporting.BaseClasses;
+using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
+using ICSharpCode.Reporting.PageBuilder.Converter;
 
 namespace ICSharpCode.Reporting.PageBuilder
 {
@@ -22,7 +24,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 	/// </summary>
 	public class BasePageBuilder:IReportCreator
 	{
-
+		Graphics graphics;
 		
 		public BasePageBuilder(IReportModel reportModel)
 		{
@@ -31,6 +33,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			}
 			ReportModel = reportModel;
 			Pages = new Collection<IPage>();
+			graphics = CreateGraphics.FromSize(reportModel.ReportSettings.PageSize);
 		}
 		
 		
@@ -38,6 +41,21 @@ namespace ICSharpCode.Reporting.PageBuilder
 			var pi = CreatePageInfo();
 			return new Page(pi,ReportModel.ReportSettings.PageSize);
 		}
+		
+		protected IExportContainer CreateSection(IReportContainer section,Point location)
+		{
+			var containerConverter = new ContainerConverter(graphics, section, location);
+			var header = containerConverter.Convert();
+			return header;
+		}
+		
+		
+		protected void AddSectionToPage(IExportContainer header)
+		{
+			header.Parent = CurrentPage;
+			CurrentPage.ExportedItems.Add(header);
+		}
+		
 		
 		IPageInfo CreatePageInfo()
 		{

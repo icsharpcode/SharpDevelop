@@ -32,7 +32,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 			var y = from s in x 
 				where s.GetType() == typeof(ExportContainer)
 				select s;
-			Assert.That(y.ToList().Count,Is.EqualTo(4));
+			Assert.That(y.ToList().Count,Is.EqualTo(5));
 			Console.WriteLine("-------ShowDebug---------");
 			var ex = new DebugExporter(reportCreator.Pages);
 			ex.Run();
@@ -43,18 +43,13 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		{
 			Point p = Point.Empty;
 			reportCreator.BuildExportList();
-			foreach (IPage element in reportCreator.Pages) {
-				var first = true;
-				foreach (var item in element.ExportedItems) {
-					if (! first) {
-						var p2 = new Point(item.Location.X,item.Location.Y);
-						Console.WriteLine("{0} - {1}",p2,item.Name);
-						Assert.That(p2.Y,Is.GreaterThan(p.Y));
-					} else {
-						first = false;
-					}	
-					p = new Point(item.Location.X,item.Location.Y + item.Size.Height);
+			foreach (var item in reportCreator.Pages[0].ExportedItems) {
+				var p2 = new Point(item.Location.X,item.Location.Y);
+				Console.WriteLine("{0} - {1} - {2}- {3}",p2,item.Size.Height,item.Name,item.DisplayRectangle);
+				if (item.Name != "ReportFooter") {
+					Assert.That(p2.Y,Is.GreaterThan(p.Y),item.Name);
 				}
+				p = new Point(item.Location.X,item.Location.Y + item.Size.Height);
 			}
 		}
 		

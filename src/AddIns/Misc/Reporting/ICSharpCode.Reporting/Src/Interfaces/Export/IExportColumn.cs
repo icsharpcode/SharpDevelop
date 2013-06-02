@@ -22,5 +22,6 @@ namespace ICSharpCode.Reporting.Interfaces.Export
 		IArrangeStrategy GetArrangeStrategy();
 		Size DesiredSize {get;set;}
 		IExportColumn Parent {get;set;}
+		Rectangle DisplayRectangle {get;}
 	}
 }

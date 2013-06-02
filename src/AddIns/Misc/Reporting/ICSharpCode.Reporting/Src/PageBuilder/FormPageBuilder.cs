@@ -9,13 +9,10 @@
 using System;
 using System.Drawing;
 using System.Linq;
-using ICSharpCode.Reporting.BaseClasses;
-using ICSharpCode.Reporting.Exporter;
+
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
-using ICSharpCode.Reporting.PageBuilder.Converter;
-using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.PageBuilder
 {
@@ -24,11 +21,12 @@ namespace ICSharpCode.Reporting.PageBuilder
 	/// </summary>
 	public class FormPageBuilder:BasePageBuilder
 	{
-		Graphics graphics;
+		
+		Point detailStart;
 		
 		public FormPageBuilder(IReportModel reportModel):base(reportModel)
 		{
-			graphics = CreateGraphics.FromSize(reportModel.ReportSettings.PageSize);
+			
 		}
 		
 		
@@ -42,26 +40,27 @@ namespace ICSharpCode.Reporting.PageBuilder
 		void BuildReportHeader()
 		{
 			if (Pages.Count == 0) {
-				var containerConverter = new ContainerConverter(graphics,ReportModel.ReportHeader,CurrentLocation);
-				var header = containerConverter.Convert();
-				header.Parent = CurrentPage;
-				CurrentPage.ExportedItems.Add(header);
+				IExportContainer header = CreateSection(ReportModel.ReportHeader,CurrentLocation);
 				var r = new Rectangle(header.Location.X,header.Location.Y,header.Size.Width,header.Size.Height);
-				CurrentLocation = new Point (ReportModel.ReportSettings.LeftMargin,r.Bottom + 5);
+				CurrentLocation = new Point (ReportModel.ReportSettings.LeftMargin,r.Bottom + 1);
+				AddSectionToPage(header);
 			}
 		}
 		
 		void BuildPageHeader()
 		{
-			var containerConverter = new ContainerConverter(graphics,ReportModel.PageHeader,CurrentLocation);
-			var header = containerConverter.Convert();
-			header.Parent = CurrentPage;
-			CurrentPage.ExportedItems.Add(header);
+			IExportContainer header = CreateSection(ReportModel.PageHeader,CurrentLocation);
+			detailStart = new Point(ReportModel.ReportSettings.LeftMargin,header.Location.Y + header.Size.Height +1);
+			AddSectionToPage(header);
 		}
 		
 		void BuilDetail()
 		{
 			Console.WriteLine("FormPageBuilder - Build DetailSection {0} - {1} - {2}",ReportModel.ReportSettings.PageSize.Width,ReportModel.ReportSettings.LeftMargin,ReportModel.ReportSettings.RightMargin);
+			CurrentLocation = detailStart;
+			IExportContainer header = CreateSection(ReportModel.DetailSection,CurrentLocation);
+			header.Parent = CurrentPage;
+			CurrentPage.ExportedItems.Insert(2,header);
 		}
 		
 		
@@ -70,26 +69,21 @@ namespace ICSharpCode.Reporting.PageBuilder
 			Console.WriteLine("FormPageBuilder - Build PageFooter {0} - {1}",ReportModel.ReportSettings.PageSize.Height,ReportModel.ReportSettings.BottomMargin);
 			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
 			                            ReportModel.ReportSettings.PageSize.Height - ReportModel.ReportSettings.BottomMargin - ReportModel.PageFooter.Size.Height);
-				
-			var containerConverter = new ContainerConverter(graphics,ReportModel.PageFooter,CurrentLocation);
-			var header =containerConverter.Convert();
-			header.Parent = CurrentPage;
-			CurrentPage.ExportedItems.Add(header);
+			
+			IExportContainer header = CreateSection(ReportModel.PageFooter,CurrentLocation);	
+			AddSectionToPage(header);
 		}
-		
+
 		
 		void BuildReportFooter()
 		{
 			Console.WriteLine("FormPageBuilder - Build ReportFooter {0} - {1}",ReportModel.ReportSettings.PageSize.Height,ReportModel.ReportSettings.BottomMargin);
-//			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
-//			                            ReportModel.ReportSettings.PageSize.Height - ReportModel.ReportSettings.BottomMargin - ReportModel.PageFooter.Size.Height);
-			var x = CurrentPage.ExportedItems.Last();
+			var lastSection = CurrentPage.ExportedItems.Last();
 			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
-			                            x.Location.Y + x.Size.Height + 1);
-			var containerConverter = new ContainerConverter(graphics,ReportModel.ReportFooter,CurrentLocation);
-			var header =containerConverter.Convert();
-			header.Parent = CurrentPage;
-			CurrentPage.ExportedItems.Add(header);
+			                            lastSection.Location.Y - lastSection.Size.Height - 1);
+
+			IExportContainer header = CreateSection(ReportModel.ReportFooter,CurrentLocation);	
+			AddSectionToPage(header);
 		}
 		
 		
@@ -99,12 +93,13 @@ namespace ICSharpCode.Reporting.PageBuilder
 			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,ReportModel.ReportSettings.TopMargin);
 			this.BuildReportHeader();
 			BuildPageHeader();
-			BuilDetail();
 			BuildPageFooter();
+			BuilDetail();
 			BuildReportFooter();
 			base.AddPage(CurrentPage);
+			Console.WriteLine("------{0}---------",ReportModel.ReportSettings.PageSize);
 		}
 		
-	
+		
 	}
 }
