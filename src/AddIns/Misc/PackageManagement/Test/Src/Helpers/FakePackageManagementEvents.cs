@@ -18,6 +18,7 @@ namespace PackageManagement.Tests.Helpers
 		public event EventHandler<PackageOperationExceptionEventArgs> PackageOperationError;
 		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageInstalled;
 		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalled;
+		public event EventHandler<ParentPackagesOperationEventArgs> ParentPackagesUpdated;
 		public event EventHandler<PackageOperationMessageLoggedEventArgs> PackageOperationMessageLogged;
 		public event EventHandler<ResolveFileConflictEventArgs> ResolveFileConflict;
 		#pragma warning restore 0067
@@ -117,6 +118,13 @@ namespace PackageManagement.Tests.Helpers
 		{
 			MessagePassedToOnResolveFileConflict = message;
 			return FileConflictResolutionToReturn;
+		}
+		
+		public IEnumerable<IPackage> PackagesPassedToOnParentPackageUpdated;
+		
+		public void OnParentPackagesUpdated(IEnumerable<IPackage> packages)
+		{
+			PackagesPassedToOnParentPackageUpdated = packages;
 		}
 	}
 }

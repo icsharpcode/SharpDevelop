@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 using NUnit.Framework;
@@ -16,11 +17,13 @@ namespace PackageManagement.Tests
 	{
 		TestableUpdatePackagesAction action;
 		IPackageManagementProject project;
+		IPackageManagementEvents packageEvents;
 		
 		void CreateAction()
 		{
 			CreateSolution();
-			action = new TestableUpdatePackagesAction(project);
+			packageEvents = MockRepository.GenerateStub<IPackageManagementEvents>();
+			action = new TestableUpdatePackagesAction(project, packageEvents);
 		}
 		
 		void CreateActionWithOperations(params PackageOperation[] operations)
@@ -47,6 +50,13 @@ namespace PackageManagement.Tests
 		IPackageScriptRunner CreatePackageScriptRunner()
 		{
 			return MockRepository.GenerateStub<IPackageScriptRunner>();
+		}
+		
+		FakePackage AddPackageToAction(string id, string version)
+		{
+			var package = new FakePackage(id, version);
+			action.AddPackages(new FakePackage[] { package });
+			return package;
 		}
 		
 		[Test]
@@ -160,6 +170,17 @@ namespace PackageManagement.Tests
 			action.Execute();
 			
 			project.AssertWasCalled(p => p.UpdatePackages(action));
+		}
+		
+		[Test]
+		public void Execute_ActionHasOnePackage_ParentPackagesUpdatedEventIsFired()
+		{
+			CreateAction();
+			AddPackageToAction("Test", "1.0");
+			
+			action.Execute();
+			
+			packageEvents.AssertWasCalled(events => events.OnParentPackagesUpdated(action.Packages));
 		}
 	}
 }

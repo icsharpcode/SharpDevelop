@@ -12,14 +12,16 @@ namespace ICSharpCode.PackageManagement
 	public class UpdatePackagesActionFactory
 	{
 		ILogger logger;
+		IPackageManagementEvents packageManagementEvents;
 		bool singleProjectSelected;
 		IPackageManagementProject project;
 		PackageManagementSelectedProjects selectedProjects;
 		IEnumerable<IPackageFromRepository> packages;
 		
-		public UpdatePackagesActionFactory(ILogger logger)
+		public UpdatePackagesActionFactory(ILogger logger, IPackageManagementEvents packageManagementEvents)
 		{
 			this.logger = logger;
+			this.packageManagementEvents = packageManagementEvents;
 		}
 		
 		public IUpdatePackagesAction CreateAction(
@@ -52,7 +54,7 @@ namespace ICSharpCode.PackageManagement
 			if (singleProjectSelected) {
 				return project.CreateUpdatePackagesAction();
 			} else {
-				return new UpdateSolutionPackagesAction(selectedProjects.Solution);
+				return new UpdateSolutionPackagesAction(selectedProjects.Solution, packageManagementEvents);
 			}
 		}
 		

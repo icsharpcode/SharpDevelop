@@ -19,11 +19,13 @@ namespace PackageManagement.Tests
 		IPackageManagementSolution solution;
 		List<IPackageManagementProject> projects;
 		IPackageRepository sourceRepository;
+		IPackageManagementEvents packageEvents;
 		
 		void CreateAction()
 		{
 			CreateSolution();
-			action = new TestableUpdateSolutionPackagesAction(solution);
+			packageEvents = MockRepository.GenerateStub<IPackageManagementEvents>();
+			action = new TestableUpdateSolutionPackagesAction(solution, packageEvents);
 		}
 		
 		void CreateActionWithOperations(params PackageOperation[] operations)
@@ -306,6 +308,20 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(logger, project1.Logger);
 			Assert.AreEqual(logger, project2.Logger);
+		}
+		
+		[Test]
+		public void Execute_OneProjectThatHasOlderVersionOfPackageBeingUpdated_PackagesUpdatedEventIsFired()
+		{
+			PackageOperation operation = CreateInstallOperationWithFile(@"tools\readme.txt");
+			CreateActionWithOperations(operation);
+			IPackageFromRepository package = AddPackageToAction("Test", "1.0");
+			IPackageManagementProject project = AddProjectToSolution();
+			var expectedOperations = new PackageOperation[] { operation };
+			
+			action.Execute();
+			
+			packageEvents.AssertWasCalled(events => events.OnParentPackagesUpdated(action.Packages));
 		}
 	}
 }

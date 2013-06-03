@@ -14,8 +14,10 @@ namespace PackageManagement.Tests.Helpers
 		public IPackageManagementProject ProjectPassedToCreateRunPackageScriptsAction;
 		public RunPackageScriptsAction RunPackageScriptsAction;
 		
-		public TestableUpdatePackagesAction(IPackageManagementProject project)
-			: base(project)
+		public TestableUpdatePackagesAction(
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents)
+			: base(project, packageManagementEvents)
 		{
 		}
 		

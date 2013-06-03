@@ -90,5 +90,14 @@ namespace ICSharpCode.PackageManagement
 			}
 			return FileConflictResolution.IgnoreAll;
 		}
+		
+		public event EventHandler<ParentPackagesOperationEventArgs> ParentPackagesUpdated;
+		
+		public void OnParentPackagesUpdated(IEnumerable<IPackage> packages)
+		{
+			if (ParentPackagesUpdated != null) {
+				ParentPackagesUpdated(this, new ParentPackagesOperationEventArgs(packages));
+			}
+		}
 	}
 }

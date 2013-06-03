@@ -33,6 +33,7 @@ namespace ICSharpCode.PackageManagement
 			unsafeEvents.PackageOperationError += RaisePackageOperationErrorEventIfHasSubscribers;
 			unsafeEvents.ParentPackageInstalled += RaiseParentPackageInstalledEventIfHasSubscribers;
 			unsafeEvents.ParentPackageUninstalled += RaiseParentPackageUninstalledEventIfHasSubscribers;
+			unsafeEvents.ParentPackagesUpdated += RaiseParentPackagesUpdatedEventIfHasSubscribers;
 		}
 		
 		public void Dispose()
@@ -46,6 +47,7 @@ namespace ICSharpCode.PackageManagement
 			unsafeEvents.PackageOperationError -= RaisePackageOperationErrorEventIfHasSubscribers;
 			unsafeEvents.ParentPackageInstalled -= RaiseParentPackageInstalledEventIfHasSubscribers;
 			unsafeEvents.ParentPackageUninstalled -= RaiseParentPackageUninstalledEventIfHasSubscribers;
+			unsafeEvents.ParentPackagesUpdated -= RaiseParentPackagesUpdatedEventIfHasSubscribers;
 		}
 		
 		void RaisePackageOperationStartingEventIfHasSubscribers(object sender, EventArgs e)
@@ -198,6 +200,30 @@ namespace ICSharpCode.PackageManagement
 		public FileConflictResolution OnResolveFileConflict(string message)
 		{
 			return unsafeEvents.OnResolveFileConflict(message);
+		}
+		
+		public event EventHandler<ParentPackagesOperationEventArgs> ParentPackagesUpdated;
+		
+		public void OnParentPackagesUpdated(IEnumerable<IPackage> packages)
+		{
+			unsafeEvents.OnParentPackagesUpdated(packages);
+		}
+		
+		void RaiseParentPackagesUpdatedEventIfHasSubscribers(object sender, ParentPackagesOperationEventArgs e)
+		{
+			if (ParentPackagesUpdated != null) {
+				RaiseParentPackagesUpdatedEvent(sender, e);
+			}
+		}
+		
+		void RaiseParentPackagesUpdatedEvent(object sender, ParentPackagesOperationEventArgs e)
+		{
+			if (InvokeRequired) {
+				Action<object, ParentPackagesOperationEventArgs> action = RaiseParentPackagesUpdatedEvent;
+				SafeThreadAsyncCall(action, sender, e);
+			} else {
+				ParentPackagesUpdated(sender, e);
+			}
 		}
 	}
 }

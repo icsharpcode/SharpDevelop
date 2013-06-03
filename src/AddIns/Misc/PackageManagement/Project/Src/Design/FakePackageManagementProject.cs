@@ -223,7 +223,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public UpdatePackagesAction CreateUpdatePackagesAction()
 		{
-			var action = new UpdatePackagesAction(this);
+			var action = new UpdatePackagesAction(this, null);
 			UpdatePackagesActionsCreated.Add(action);
 			return action;
 		}

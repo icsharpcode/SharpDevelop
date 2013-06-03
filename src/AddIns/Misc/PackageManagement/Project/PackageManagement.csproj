@@ -232,6 +232,7 @@
     <Compile Include="Src\MSBuildBasedProjectExtensions.cs" />
     <Compile Include="Src\PackageLicenseViewModel.cs" />
     <Compile Include="Src\PackageManagementServiceProvider.cs" />
+    <Compile Include="Src\ParentPackagesOperationEventArgs.cs" />
     <Compile Include="Src\ProjectBuilder.cs" />
     <Compile Include="Src\ReducedPackageOperations.cs" />
     <Compile Include="Src\ResolveFileConflictEventArgs.cs" />

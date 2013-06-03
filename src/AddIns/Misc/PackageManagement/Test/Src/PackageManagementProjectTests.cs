@@ -66,7 +66,7 @@ namespace PackageManagement.Tests
 		
 		void CreateUpdatePackagesAction()
 		{
-			updatePackagesAction = new UpdatePackagesAction(project);
+			updatePackagesAction = new UpdatePackagesAction(project, null);
 		}
 		
 		[Test]

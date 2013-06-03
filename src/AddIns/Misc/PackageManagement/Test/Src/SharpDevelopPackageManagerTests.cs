@@ -273,7 +273,7 @@ namespace PackageManagement.Tests
 		
 		UpdatePackagesAction CreateUpdatePackagesAction()
 		{
-			return new UpdatePackagesAction(new FakePackageManagementProject());
+			return new UpdatePackagesAction(new FakePackageManagementProject(), null);
 		}
 		
 		UpdatePackagesAction CreateUpdatePackagesActionWithPackages(params IPackageFromRepository[] packages)

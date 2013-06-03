@@ -139,7 +139,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public UpdatePackagesAction CreateUpdatePackagesAction()
 		{
-			return new UpdatePackagesAction(this);
+			return new UpdatePackagesAction(this, packageManagementEvents);
 		}
 		
 		public IEnumerable<PackageOperation> GetUpdatePackagesOperations(
