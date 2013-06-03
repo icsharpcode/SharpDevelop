@@ -649,5 +649,16 @@ namespace PackageManagement.Tests
 			UpdateSolutionPackagesAction action = GetUpdateSolutionPackagesActionRun();
 			Assert.AreEqual(expectedLogger, action.Logger);
 		}
+		
+		[Test]
+		public void UpdateAllPackagesCommand_TwoPackagesBeingUpdated_PreviouslyLoggedMessagesAreCleared()
+		{
+			CreateViewModel();
+			ViewModelHasTwoPackagesThatCanBeUpdatedAfterReadingPackages();
+			
+			RunUpdateAllPackagesCommand();
+			
+			Assert.IsTrue(packageViewModelFactory.FakePackageManagementEvents.IsOnPackageOperationsStartingCalled);
+		}
 	}
 }
