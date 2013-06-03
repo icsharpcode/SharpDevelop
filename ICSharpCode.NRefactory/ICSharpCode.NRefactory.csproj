@@ -283,6 +283,7 @@
     <None Include="..\doc\XML Documentation.html">
       <Link>Documentation\XML Documentation.html</Link>
     </None>
+    <None Include="TypeSystem\IkvmLoader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
