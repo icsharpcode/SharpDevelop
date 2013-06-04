@@ -191,5 +191,38 @@ namespace PackageManagement.Tests
 		
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
 		}
+		
+		[Test]
+		public void PackageViewModels_PackagesUpdated_PackageViewModelsIsUpdated()
+		{
+			CreateViewModel();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			FakePackage package = AddPackageToProjectLocalRepository();
+			ClearReadPackagesTasks();
+			
+			packageManagementEvents.OnParentPackagesUpdated(new FakePackage[] { package });
+			CompleteReadPackagesTask();
+		
+			IPackage firstPackage = viewModel.PackageViewModels[0].GetPackage();
+			Assert.AreEqual(package, firstPackage);
+		}
+		
+		[Test]
+		public void PackageViewModels_PackagesUpdatedAfterViewModelIsDisposed_PackageViewModelsIsNotUpdated()
+		{
+			CreateViewModel();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			FakePackage package = AddPackageToProjectLocalRepository();
+			ClearReadPackagesTasks();
+			
+			viewModel.Dispose();
+			
+			packageManagementEvents.OnParentPackagesUpdated(new FakePackage[] { package });
+			CompleteReadPackagesTask();
+		
+			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
+		}
 	}
 }
