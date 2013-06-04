@@ -24,6 +24,7 @@ namespace PackageManagement.Tests
 		FakePackageViewModelFactory packageViewModelFactory;
 		FakePackageManagementEvents fakePackageManagementEvents;
 		UpdatedPackageViewModelFactory updatedPackageViewModelFactory;
+		PackageManagementEvents packageManagementEvents;
 		
 		void CreateViewModel()
 		{
@@ -59,6 +60,23 @@ namespace PackageManagement.Tests
 		{
 			packageViewModelFactory = new FakePackageViewModelFactory { FakeSolution = solution };
 			CreateViewModel(solution, registeredPackageRepositories, packageViewModelFactory);
+		}
+		
+		void CreateViewModelWithRealPackageManagementEvents()
+		{
+			CreateSolution();
+			CreateRegisteredPackageRepositories();
+			packageManagementEvents = new PackageManagementEvents();
+			var actionRunner = new FakePackageActionRunner();
+			var packageViewModelFactory = new PackageViewModelFactory(solution, packageManagementEvents, actionRunner);
+			updatedPackageViewModelFactory = new UpdatedPackageViewModelFactory(packageViewModelFactory);
+			taskFactory = new FakeTaskFactory();
+			
+			viewModel = new UpdatedPackagesViewModel(
+				solution,
+				registeredPackageRepositories,
+				updatedPackageViewModelFactory,
+				taskFactory);
 		}
 		
 		void CreateViewModel(
@@ -659,6 +677,43 @@ namespace PackageManagement.Tests
 			RunUpdateAllPackagesCommand();
 			
 			Assert.IsTrue(packageViewModelFactory.FakePackageManagementEvents.IsOnPackageOperationsStartingCalled);
+		}
+		
+		[Test]
+		public void PackageViewModels_PackagesUpdated_PackagesAreUpdatedInViewModelList()
+		{
+			CreateViewModelWithRealPackageManagementEvents();
+			AddPackageToLocalRepository("Test", "1.0.0.0");
+			FakePackage newerPackage = AddPackageToActiveRepository("Test", "1.1.0.0");
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			solution.FakeProjectToReturnFromGetProject.FakePackages.Clear();
+			AddPackageToLocalRepository("Second", "1.0.0.0");
+			AddPackageToLocalRepository("Test", "1.1.0.0");
+			FakePackage expectedPackage = AddPackageToActiveRepository("Second", "1.1.0.0");
+			var expectedPackages = new FakePackage[] { expectedPackage };
+			
+			packageManagementEvents.OnParentPackagesUpdated(new FakePackage[] { newerPackage });
+			CompleteReadPackagesTask();
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
+		
+		[Test]
+		public void PackageViewModels_PackagesUpdatedAfterViewModelIsDisposed_PackagesAreNotUpdatedInViewModelList()
+		{
+			CreateViewModelWithRealPackageManagementEvents();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			viewModel.Dispose();
+			AddPackageToLocalRepository("Test", "1.0.0.0");
+			FakePackage newerPackage = AddPackageToActiveRepository("Test", "1.1.0.0");
+			var expectedPackages = new FakePackage[] { newerPackage };
+			
+			packageManagementEvents.OnParentPackagesUpdated(new FakePackage[] { newerPackage });
+			CompleteReadPackagesTask();
+			
+			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
 		}
 	}
 }
