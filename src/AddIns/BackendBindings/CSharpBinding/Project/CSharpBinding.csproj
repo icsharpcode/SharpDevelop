@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\CodeManipulation.cs" />
     <Compile Include="Src\Completion\CSharpCompletionContext.cs" />
     <Compile Include="Src\Completion\CSharpInsightItem.cs" />
     <Compile Include="Src\Completion\CSharpMethodInsight.cs" />
@@ -104,7 +105,6 @@
       <SubType>Code</SubType>
     </Compile>
     <EmbeddedResource Include="Resources\MyNamespaceSupportForCSharp.cs" />
-    <Compile Include="Src\CodeManipulation.cs" />
     <Compile Include="Src\Completion\CompletionData.cs" />
     <Compile Include="Src\Completion\CSharpCompletionBinding.cs" />
     <Compile Include="Src\Completion\CSharpCompletionDataFactory.cs" />
