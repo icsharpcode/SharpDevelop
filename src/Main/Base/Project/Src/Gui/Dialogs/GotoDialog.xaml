@@ -15,6 +15,11 @@
 				</DataTrigger>
 			</Style.Triggers>
 		</Style>
+		
+		<Style x:Key="ListItemImageStyle" TargetType="{x:Type Image}">
+			<Setter Property="Width" Value="16" />
+			<Setter Property="Height" Value="16" />
+		</Style>
 	</Window.Resources>
 	
 	<Grid>
@@ -46,7 +51,7 @@
 			<ListBox.ItemTemplate>
 				<DataTemplate>
 					<StackPanel Orientation="Horizontal">
-						<Image Source="{Binding ImageSource}"/>
+						<Image Source="{Binding ImageSource}" Style="{StaticResource ListItemImageStyle}"/>
 						<TextBlock Text="{Binding Text}" Margin="4,0,0,0" Style="{StaticResource ListItemTextStyle}"/>
 					</StackPanel>
 				</DataTemplate>
