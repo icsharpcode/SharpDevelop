@@ -158,11 +158,15 @@ namespace CSharpBinding
 			if (swapIndex < 0 || swapIndex >= siblings.Count)
 				return;
 			AstNode swapSibling = siblings[swapIndex];
+			Selection swapSiblingSelection = ExtendSelectionToComments(editor.Document, swapSibling.StartLocation, swapSibling.EndLocation, commentsBlankLines);
+			if (swapSiblingSelection == null)
+				swapSiblingSelection = new Selection() { Start = swapSibling.StartLocation, End = swapSibling.EndLocation };
 			// Swap them
 			string currentNodeText = editor.Document.GetText(statementSelection.Start, statementSelection.End);
-			SwapText(editor.Document, statementSelection.Start, statementSelection.End, swapSibling.StartLocation, swapSibling.EndLocation);
+//			SwapText(editor.Document, statementSelection.Start, statementSelection.End, swapSibling.StartLocation, swapSibling.EndLocation);
+			SwapText(editor.Document, statementSelection.Start, statementSelection.End, swapSiblingSelection.Start, swapSiblingSelection.End);
 			// Move caret to the start of moved statement
-			TextLocation upperLocation = new TextLocation[] {statementSelection.Start, swapSibling.StartLocation}.Min();
+			TextLocation upperLocation = new TextLocation[] {statementSelection.Start, swapSiblingSelection.Start}.Min();
 			if (direction == MoveStatementDirection.Up)
 				editor.Caret.Location = upperLocation;
 			else {
