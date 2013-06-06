@@ -148,6 +148,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			currentAssembly.Location = assembly.Location;
 			currentAssembly.AssemblyAttributes.AddRange(assemblyAttributes);
 			currentAssembly.ModuleAttributes.AddRange(moduleAttributes);
+			// Register type forwarders:
+			foreach (var type in assembly.ManifestModule.__GetExportedTypes ()) {
+				if (type.Assembly != assembly) {
+					int typeParameterCount;
+					string ns = type.Namespace;
+					string name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(type.Name, out typeParameterCount);
+					ns = interningProvider.Intern(ns);
+					name = interningProvider.Intern(name);
+					var typeRef = new GetClassTypeReference(GetAssemblyReference(type.Assembly), ns, name, typeParameterCount);
+					typeRef = interningProvider.Intern(typeRef);
+					var key = new TopLevelTypeName(ns, name, typeParameterCount);
+					currentAssembly.AddTypeForwarder(key, typeRef);
+				}
+			}
 
 			// Create and register all types:
 			List<IKVM.Reflection.Type> ikvmTypeDefs = new List<IKVM.Reflection.Type>();
@@ -234,6 +248,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 //			while (type is OptionalModifierType || type is RequiredModifierType) {
 //				type = ((TypeSpecification)type).ElementType;
 //			}
+
 			if (type == null) {
 				return SpecialType.UnknownType;
 			}
@@ -260,7 +275,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 							type.GetElementType (),
 							typeAttributes, ref typeIndex),
 							type.GetArrayRank ()));
-			} else if (type.IsGenericType && !type.IsGenericTypeDefinition) {
+			} else if (type.IsConstructedGenericType) {
 				ITypeReference baseType = CreateTypeReference(type.GetGenericTypeDefinition(), typeAttributes, ref typeIndex);
 				var args = type.GetGenericArguments ();
 				ITypeReference[] para = new ITypeReference[args.Length];
@@ -269,30 +284,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					para[i] = CreateTypeReference(args [i], typeAttributes, ref typeIndex);
 				}
 				return interningProvider.Intern(new ParameterizedTypeReference(baseType, para));
-			} /*else if (type.IsGenericTypeDefinition) {
-				string ns = interningProvider.Intern(type.Namespace ?? string.Empty);
-				string name = type.Name;
-
-				ITypeReference baseType = null;
-				int typeParameterCount;
-				name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(name, out typeParameterCount);
-				name = interningProvider.Intern(name);
-				if (currentAssembly != null) {
-					IUnresolvedTypeDefinition c = currentAssembly.GetTypeDefinition(ns, name, typeParameterCount);
-					if (c != null)
-						baseType = c;
-				}
-				if (baseType == null)
-					baseType = interningProvider.Intern(new GetClassTypeReference(GetAssemblyReference(type.Assembly), ns, name, typeParameterCount));
-
-				var args = type.GetGenericArguments ();
-				ITypeReference[] para = new ITypeReference[args.Length];
-				for (int i = 0; i < para.Length; ++i) {
-					typeIndex++;
-					para[i] = CreateTypeReference(args [i], typeAttributes, ref typeIndex);
-				}
-				return interningProvider.Intern(new ParameterizedTypeReference(baseType, para));
-			}*/ else if (type.IsGenericParameter) {
+			} else if (type.IsGenericParameter) {
 				return TypeParameterReference.Create(type.DeclaringMethod != null ? EntityType.Method : EntityType.TypeDefinition, type.GenericParameterPosition);
 			} else if (type.IsNested) {
 				ITypeReference typeRef = CreateTypeReference(type.DeclaringType, typeAttributes, ref typeIndex);
@@ -338,8 +330,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				if (type.Name == "DynamicAttribute" && type.Namespace == "System.Runtime.CompilerServices") {
 					if (a.ConstructorArguments.Count == 1) {
 						var values = a.ConstructorArguments[0].Value as CustomAttributeTypedArgument[];
-						if (values != null && typeIndex < values.Length && values[typeIndex].Value is bool)
-							return (bool)values[typeIndex].Value;
+						if (values != null && typeIndex < values.Length && values[typeIndex].Value is bool) {
+							return (bool)values [typeIndex].Value;
+						}
 					}
 					return true;
 				}
@@ -354,11 +347,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 
 		void AddAttributes(Assembly assembly, IList<IUnresolvedAttribute> outputList)
 		{
-			if (assembly.FullName.Contains ("ICSharpCode.NRefactory.Tests")) {
-				Console.WriteLine ("attrs:" + assembly.GetCustomAttributesData ().Count ());
-				foreach (var a in assembly.GetCustomAttributesData ())
-					Console.WriteLine (a);
-			}
 			AddCustomAttributes(assembly.CustomAttributes, outputList);
 			AddSecurityAttributes(CustomAttributeData.__GetDeclarativeSecurity (assembly), outputList);
 
@@ -496,9 +484,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					}
 					if (charSet != CharSet.None)
 						dllImport.AddNamedFieldArgument("CharSet", CreateSimpleConstantValue(charSetTypeRef, (int)charSet));
-// TODO:
-//					if (!string.IsNullOrEmpty(info.EntryPoint) && info.EntryPoint != methodDefinition.Name)
-//						dllImport.AddNamedFieldArgument("EntryPoint", CreateSimpleConstantValue(KnownTypeReference.String, info.EntryPoint));
+
+					if (!string.IsNullOrEmpty(importName) && importName != methodDefinition.Name)
+						dllImport.AddNamedFieldArgument("EntryPoint", CreateSimpleConstantValue(KnownTypeReference.String, importName));
 
 					if (flags.HasFlag (ImplMapFlags.NoMangle))
 						dllImport.AddNamedFieldArgument("ExactSpelling", trueValue);
@@ -510,11 +498,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 
 					if (flags.HasFlag (ImplMapFlags.SupportsLastError))
 						dllImport.AddNamedFieldArgument("SetLastError", trueValue);
-// TODO:
-//					if (info.IsThrowOnUnmappableCharDisabled)
-//						dllImport.AddNamedFieldArgument("ThrowOnUnmappableChar", falseValue);
-//					if (info.IsThrowOnUnmappableCharEnabled)
-//						dllImport.AddNamedFieldArgument("ThrowOnUnmappableChar", trueValue);
+
+					if (flags.HasFlag (ImplMapFlags.CharMapErrorOff))
+						dllImport.AddNamedFieldArgument("ThrowOnUnmappableChar", falseValue);
+					if (flags.HasFlag (ImplMapFlags.CharMapErrorOn))
+						dllImport.AddNamedFieldArgument("ThrowOnUnmappableChar", trueValue);
 
 					attributes.Add(interningProvider.Intern(dllImport));
 				}
@@ -1501,7 +1489,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			// set base classes
 			if (typeDefinition.IsEnum) {
-				foreach (var enumField in typeDefinition.GetFields ()) {
+				foreach (var enumField in typeDefinition.GetFields (bindingFlags)) {
 					if (!enumField.IsStatic) {
 						baseTypes.Add(ReadTypeReference(enumField.FieldType));
 						break;
@@ -1717,7 +1705,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 			}
 
-			m.ReturnType = ReadTypeReference(method.ReturnType, typeAttributes: method.ReturnType.CustomAttributes);
+			m.ReturnType = ReadTypeReference(method.ReturnType, typeAttributes: method.ReturnParameter.CustomAttributes);
 
 			if (HasAnyAttributes(method))
 				AddAttributes(method, m.Attributes, m.ReturnTypeAttributes);
@@ -1950,8 +1938,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			f.Accessibility = GetAccessibility(field.Attributes);
 			f.IsReadOnly = field.IsInitOnly;
 			f.IsStatic = field.IsStatic;
-			f.ReturnType = ReadTypeReference(field.FieldType, typeAttributes: field.CustomAttributes);
 
+			f.ReturnType = ReadTypeReference(field.FieldType, typeAttributes: field.CustomAttributes);
 			if (field.Attributes.HasFlag (FieldAttributes.HasDefault)) {
 				f.ConstantValue = CreateSimpleConstantValue(f.ReturnType, field.GetRawConstantValue ());
 			}
