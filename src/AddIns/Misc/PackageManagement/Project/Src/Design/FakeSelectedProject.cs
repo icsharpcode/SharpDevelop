@@ -42,11 +42,6 @@ namespace ICSharpCode.PackageManagement.Design
 			return String.Format("Name: {0}, IsSelected: {1}, IsEnabled: {2}", Name, IsSelected, IsEnabled);
 		}
 		
-		public FakeInstallPackageAction FakeInstallPackageAction {
-			get { return FakeProject.FakeInstallPackageAction; }
-			set { FakeProject.FakeInstallPackageAction = value; }
-		}
-		
 		public IPackageManagementProject Project {
 			get { return FakeProject; }
 		}

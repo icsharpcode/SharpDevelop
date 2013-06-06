@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
@@ -223,6 +224,19 @@ namespace PackageManagement.Tests
 			CompleteReadPackagesTask();
 		
 			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
+		}
+		
+		[Test]
+		public void PackageViewModels_ChildViewModelParent_IsInstalledPackagesViewModel()
+		{
+			CreateViewModel();
+			FakePackage package = AddPackageToProjectLocalRepository();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+		
+			PackageViewModel childViewModel = viewModel.PackageViewModels.First();
+			IPackageViewModelParent parent = childViewModel.GetParent();
+			Assert.AreEqual(viewModel, parent);
 		}
 	}
 }

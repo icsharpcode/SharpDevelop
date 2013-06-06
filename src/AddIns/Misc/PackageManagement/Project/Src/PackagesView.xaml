@@ -319,6 +319,8 @@
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto"/>
 					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
 				</Grid.RowDefinitions>
 				<ComboBox 
 					Grid.Row="0"
@@ -353,12 +355,19 @@
 							Width="16"/>
 					</Hyperlink>
 				</TextBlock>
-				<Button
+				<CheckBox
 					Grid.Row="2"
+					Grid.ColumnSpan="2"
+					Margin="2"
+					Content="Include Prerelease"
+					Visibility="{Binding Path=ShowPrerelease, Converter={StaticResource BoolToVisibility}}"
+					IsChecked="{Binding Path=IncludePrerelease}"/>
+				<Button
+					Grid.Row="3"
 					Grid.Column="1"
 					Visibility="{Binding Path=IsUpdateAllPackagesEnabled, Converter={StaticResource BoolToVisibility}}"
 					Content="Update All"
-					Command="{Binding UpdateAllPackagesCommand}"/>
+					Command="{Binding Path=UpdateAllPackagesCommand}"/>
 			</Grid>
 			<ContentControl
 				Grid.Row="1"

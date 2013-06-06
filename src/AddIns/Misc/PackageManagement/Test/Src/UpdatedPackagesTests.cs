@@ -21,6 +21,7 @@ namespace PackageManagement.Tests
 		List<IPackage> installedPackages;
 		List<IPackage> sourceRepositoryPackages;
 		List<IPackage> packagesUsedWhenCheckingForUpdates;
+		bool includePreleaseUsedWhenCheckingForUpdates;
 		
 		[SetUp]
 		public void Init()
@@ -44,7 +45,10 @@ namespace PackageManagement.Tests
 					Arg<bool>.Is.Anything,
 					Arg<IEnumerable<FrameworkName>>.Is.Anything,
 					Arg<IEnumerable<IVersionSpec>>.Is.Anything))
-				.WhenCalled(call => packagesUsedWhenCheckingForUpdates.AddRange(call.Arguments[0] as IEnumerable<IPackage>))
+				.WhenCalled(call => {
+					includePreleaseUsedWhenCheckingForUpdates = (bool)call.Arguments[1];
+					packagesUsedWhenCheckingForUpdates.AddRange(call.Arguments[0] as IEnumerable<IPackage>);
+				 })
 				.Return(sourceRepositoryPackages.AsQueryable());
 			
 			updatedPackages = new UpdatedPackages(installedPackages.AsQueryable(), sourceRepository);
@@ -124,6 +128,28 @@ namespace PackageManagement.Tests
 			updatedPackages.GetUpdatedPackages();
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, packagesUsedWhenCheckingForUpdates);
+		}
+		
+		[Test]
+		public void GetUpdatedPackages_AllowPrereleaseIsTrue_PrereleasePackagesAllowedForUpdates()
+		{
+			AddInstalledPackage("Test", "1.0");
+			CreateUpdatedPackages();
+			
+			updatedPackages.GetUpdatedPackages(includePrerelease: true);
+			
+			Assert.IsTrue(includePreleaseUsedWhenCheckingForUpdates);
+		}
+		
+		[Test]
+		public void GetUpdatedPackages_AllowPrereleaseIsFalse_PrereleasePackagesNotAllowedForUpdates()
+		{
+			AddInstalledPackage("Test", "1.0");
+			CreateUpdatedPackages();
+			
+			updatedPackages.GetUpdatedPackages(includePrerelease: false);
+			
+			Assert.IsFalse(includePreleaseUsedWhenCheckingForUpdates);
 		}
 	}
 }

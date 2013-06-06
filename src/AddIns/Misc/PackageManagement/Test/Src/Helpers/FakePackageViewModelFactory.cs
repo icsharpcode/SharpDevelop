@@ -16,10 +16,11 @@ namespace PackageManagement.Tests.Helpers
 		public FakeLogger FakeLogger = new FakeLogger();
 		public FakePackageActionRunner FakeActionRunner = new FakePackageActionRunner();
 		
-		public PackageViewModel CreatePackageViewModel(IPackageFromRepository package)
+		public PackageViewModel CreatePackageViewModel(IPackageViewModelParent parent, IPackageFromRepository package)
 		{
 			SelectedProjects = new PackageManagementSelectedProjects(FakeSolution);
 			return new PackageViewModel(
+				parent,
 				package,
 				SelectedProjects,
 				FakePackageManagementEvents,

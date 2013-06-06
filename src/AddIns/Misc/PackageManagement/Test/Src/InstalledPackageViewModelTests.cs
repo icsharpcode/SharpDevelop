@@ -8,6 +8,7 @@ using ICSharpCode.PackageManagement.Design;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests
 {
@@ -24,7 +25,8 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModel()
 		{
-			viewModel = new TestableInstalledPackageViewModel();
+			IPackageViewModelParent parent = MockRepository.GenerateStub<IPackageViewModelParent>();
+			viewModel = new TestableInstalledPackageViewModel(parent);
 			fakeSolution = viewModel.FakeSolution;
 			fakeActionRunner = viewModel.FakeActionRunner;
 			fakePackage = viewModel.FakePackage;
@@ -135,7 +137,7 @@ namespace PackageManagement.Tests
 			GetPackageActionsForSelectedProjects();
 			
 			var action = packageActions[0] as InstallPackageAction;
-			InstallPackageAction expectedAction = FirstSelectedProject.FakeProject.FakeInstallPackageAction;
+			InstallPackageAction expectedAction = FirstSelectedProject.FakeProject.LastInstallPackageCreated;
 		
 			Assert.AreEqual(expectedAction, action);
 		}

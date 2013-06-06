@@ -13,7 +13,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public abstract class PackagesViewModel : ViewModelBase<PackagesViewModel>, IDisposable
+	public abstract class PackagesViewModel : ViewModelBase<PackagesViewModel>, IDisposable, IPackageViewModelParent
 	{
 		Pages pages = new Pages();
 		
@@ -22,7 +22,8 @@ namespace ICSharpCode.PackageManagement
 		ITaskFactory taskFactory;
 		IEnumerable<IPackage> allPackages;
 		ITask<PackagesForSelectedPageResult> task;
-
+		bool includePrerelease;
+		
 		public PackagesViewModel(
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
@@ -267,7 +268,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			var repository = registeredPackageRepositories.ActiveRepository;
 			var packageFromRepository = new PackageFromRepository(package, repository);
-			return packageViewModelFactory.CreatePackageViewModel(packageFromRepository);
+			return packageViewModelFactory.CreatePackageViewModel(this, packageFromRepository);
 		}
 		
 		public int SelectedPageNumber {
@@ -404,5 +405,18 @@ namespace ICSharpCode.PackageManagement
 		protected IPackageActionRunner ActionRunner {
 			get { return packageViewModelFactory.PackageActionRunner; }
 		}
+		
+		public bool IncludePrerelease {
+			get { return includePrerelease; }
+			set {
+				if (includePrerelease != value) {
+					includePrerelease = value;
+					ReadPackages();
+					OnPropertyChanged(null);
+				}
+			}
+		}
+		
+		public bool ShowPrerelease { get; set; }
 	}
 }

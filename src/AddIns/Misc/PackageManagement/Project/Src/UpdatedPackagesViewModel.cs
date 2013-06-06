@@ -35,6 +35,7 @@ namespace ICSharpCode.PackageManagement
 			
 			ShowPackageSources = true;
 			ShowUpdateAllPackages = true;
+			ShowPrerelease = true;
 		}
 		
 		void PackagesUpdated(object sender, EventArgs e)
@@ -78,7 +79,7 @@ namespace ICSharpCode.PackageManagement
 		
 		IQueryable<IPackage> GetUpdatedPackages()
 		{
-			return updatedPackages.GetUpdatedPackages().AsQueryable();
+			return updatedPackages.GetUpdatedPackages(IncludePrerelease).AsQueryable();
 		}
 		
 		protected override void TryUpdatingAllPackages()

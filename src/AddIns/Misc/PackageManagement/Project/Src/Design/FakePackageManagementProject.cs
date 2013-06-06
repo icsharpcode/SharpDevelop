@@ -26,7 +26,7 @@ namespace ICSharpCode.PackageManagement.Design
 			this.Name = name;
 		}
 		
-		public FakeInstallPackageAction FakeInstallPackageAction;
+		private FakeInstallPackageAction FakeInstallPackageAction;
 		public FakeUninstallPackageAction FakeUninstallPackageAction;
 		
 		public FakeUpdatePackageAction FirstFakeUpdatePackageActionCreated {
@@ -136,9 +136,12 @@ namespace ICSharpCode.PackageManagement.Design
 			IsUpdatePackageCalled = true;
 		}
 		
+		public FakeInstallPackageAction LastInstallPackageCreated;
+		
 		public virtual InstallPackageAction CreateInstallPackageAction()
 		{
-			return FakeInstallPackageAction;
+			LastInstallPackageCreated = new FakeInstallPackageAction(this);
+			return LastInstallPackageCreated;
 		}
 		
 		public virtual UninstallPackageAction CreateUninstallPackageAction()

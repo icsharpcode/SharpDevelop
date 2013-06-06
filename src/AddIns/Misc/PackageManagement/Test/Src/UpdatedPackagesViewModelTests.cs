@@ -343,6 +343,20 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void ReadPackages_PrereleasePackageVersionAvailableAndIncludePrereleaseIsTrue_UpdateFound()
+		{
+			CreateViewModel();
+			viewModel.IncludePrerelease = true;
+			AddPackageToLocalRepository("Test", "1.0.0");
+			FakePackage newerPackage = AddPackageToActiveRepository("Test", "1.1.0-alpha");
+			var expectedPackages = new FakePackage[] { newerPackage };
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
+		
+		[Test]
 		public void ShowSources_TwoPackageSources_ReturnsTrue()
 		{
 			CreateRegisteredPackageRepositories();
@@ -714,6 +728,30 @@ namespace PackageManagement.Tests
 			CompleteReadPackagesTask();
 			
 			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
+		}
+		
+		[Test]
+		public void ShowPrerelease_ByDefault_ReturnsTrue()
+		{
+			CreateViewModel();
+			
+			bool show = viewModel.ShowPrerelease;
+			
+			Assert.IsTrue(show);
+		}
+		
+		[Test]
+		public void PackageViewModels_ChildPackageViewModelParent_IsUpdatedPackagesViewModel()
+		{
+			CreateViewModel();
+			AddPackageToLocalRepository("Test", "1.0.0.0");
+			FakePackage newerPackage = AddPackageToActiveRepository("Test", "1.1.0.0");
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			PackageViewModel childViewModel = viewModel.PackageViewModels.First();
+			IPackageViewModelParent parent = childViewModel.GetParent();
+			Assert.AreEqual(viewModel, parent);
 		}
 	}
 }
