@@ -1,30 +1,25 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Peter Forstmeier
- * Date: 03.04.2013
- * Time: 20:21
+ * Date: 06.06.2013
+ * Time: 20:27
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Drawing;
-using System.Linq;
-
-using ICSharpCode.Reporting.Globals;
-using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.Interfaces.Export;
+using System.Collections.Generic;
+using ICSharpCode.Reporting.Items;
 
 namespace ICSharpCode.Reporting.PageBuilder
 {
 	/// <summary>
-	/// Description of FormPageBuilder.
+	/// Description of DataPageBuilder.
 	/// </summary>
-	public class FormPageBuilder:BasePageBuilder
+	public class DataPageBuilder:BasePageBuilder
 	{
-		
-		public FormPageBuilder(IReportModel reportModel):base(reportModel)
+		public DataPageBuilder(ReportModel reportModel, IEnumerable<object> list):base(reportModel)
 		{
-			
+			List = list;
 		}
 		
 		
@@ -33,7 +28,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 			base.BuildExportList();
 			WritePages ();
 		}
-		
 		
 		
 		void BuilDetail()
@@ -56,5 +50,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
+		
+		public IEnumerable<object> List {get; private set;}
 	}
 }

@@ -124,6 +124,7 @@
     <Compile Include="Src\Items\ReportSettings.cs" />
     <Compile Include="Src\PageBuilder\BasePageBuilder.cs" />
     <Compile Include="Src\PageBuilder\Converter\ContainerConverter.cs" />
+    <Compile Include="Src\PageBuilder\DataPageBuilder.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportColumn.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportContainer.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportText.cs" />

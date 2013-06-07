@@ -67,6 +67,7 @@
     <Compile Include="src\PageBuilder\ContainerArrangeStrategyFixture.cs" />
     <Compile Include="src\PageBuilder\BaseConvertFixture.cs" />
     <Compile Include="src\PageBuilder\ContainerConverterFixture.cs" />
+    <Compile Include="src\PageBuilder\DataPageBuilderFixture.cs" />
     <Compile Include="src\PageBuilder\PageBuilderFixture.cs" />
     <Compile Include="src\PageBuilder\PageFixture.cs" />
     <Compile Include="src\PageBuilder\PageLayoutFixture.cs" />

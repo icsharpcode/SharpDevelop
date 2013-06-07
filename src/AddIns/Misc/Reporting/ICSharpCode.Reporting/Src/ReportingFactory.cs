@@ -40,6 +40,9 @@ namespace ICSharpCode.Reporting
 			return builder;
 		}
 		
+		
+		
+		
 		internal IReportCreator ReportCreator (Stream stream)
 		{
 			IReportModel reportModel = LoadReportModel (stream);
