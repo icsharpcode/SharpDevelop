@@ -48,7 +48,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		readonly EntityType ownerType;
 		readonly int index;
-		
+
+		public int Index {
+			get {
+				return index;
+			}
+		}
+
 		public TypeParameterReference(EntityType ownerType, int index)
 		{
 			this.ownerType = ownerType;
