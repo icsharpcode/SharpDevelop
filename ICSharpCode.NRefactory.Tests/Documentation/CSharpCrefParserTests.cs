@@ -289,5 +289,19 @@ namespace ICSharpCode.NRefactory.Documentation
 					}
 				});
 		}
+
+		[Test]
+		public void TestParseTypeName()
+		{
+			var result = IdStringProvider.ParseTypeName("T:System.Collections.Generic.List{T}");
+			Assert.IsNotNull(result);
+			var pc = new CSharpProjectContent().AddAssemblyReferences(new[] { CecilLoaderTests.Mscorlib });
+
+			var type = result.Resolve(pc.CreateCompilation());
+
+			Assert.AreEqual("System.Collections.Generic.List", type.FullName);
+			Assert.AreEqual(1, type.TypeParameterCount);
+		}
+
 	}
 }

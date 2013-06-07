@@ -360,6 +360,7 @@ namespace ICSharpCode.NRefactory.Documentation
 				} while (typeName[pos] == ',');
 				if (typeName[pos] != '}')
 					throw new ReflectionNameParseException(pos, "Expected '}'");
+				pos++;
 			}
 			return shortTypeName;
 		}
