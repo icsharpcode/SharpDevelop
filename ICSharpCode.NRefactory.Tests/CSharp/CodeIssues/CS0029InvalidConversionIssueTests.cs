@@ -217,5 +217,25 @@ class TestClass
 			Assert.AreEqual(1, issues.Count);
 			Assert.IsFalse(issues[0].Actions.Any());
 		}
+
+		/// <summary>
+		/// Bug 12490 - Cast warnings with literals 
+		/// </summary>
+		[Test]
+		public void TestBug12490()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		uint t;
+		t = 6;
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues (new CS0029InvalidConversionIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
 	}
 }
