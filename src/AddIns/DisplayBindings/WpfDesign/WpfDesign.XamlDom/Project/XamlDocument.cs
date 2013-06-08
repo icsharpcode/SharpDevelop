@@ -165,9 +165,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (forProperty != null && hasStringConverter) {
 				return new XamlTextValue(this, c.ConvertToInvariantString(ctx, instance));
 			}
-			
-			
-			XmlElement xml = _xmlDoc.CreateElement(elementType.Name, GetNamespaceFor(elementType));
+
+            //Namspace fix for XAML Designer
+            //it's a hack, needs to be replace by a better Solution wich adds the Namspaces to the root Element!
+            var ns = GetNamespaceFor(elementType);
+            var prefix = "";
+            if (ns != "http://schemas.microsoft.com/winfx/2006/xaml/presentation")
+                prefix = "u";
+            XmlElement xml = _xmlDoc.CreateElement(prefix, elementType.Name, GetNamespaceFor(elementType));
 			
 			if (hasStringConverter) {
 				xml.InnerText = c.ConvertToInvariantString(instance);

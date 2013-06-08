@@ -98,6 +98,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public virtual bool CanEnterContainer(PlacementOperation operation)
 		{
+            //if (ExtendedItem.Component is UserControl && ExtendedItem.ComponentType != typeof(UserControl))
+            //    return false;
+
 			if (ExtendedItem.ContentProperty.IsCollection)
 				return CollectionSupport.CanCollectionAdd(ExtendedItem.ContentProperty.ReturnType,
 				                                          operation.PlacedItems.Select(p => p.Item.Component));

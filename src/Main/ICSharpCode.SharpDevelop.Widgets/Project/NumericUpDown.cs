@@ -112,7 +112,7 @@ namespace ICSharpCode.SharpDevelop.Widgets
 			upDrag.Completed += drag_Completed;
 
 			downDrag.Started += drag_Started;
-			downDrag.Changed += drag_Changed;			
+			downDrag.Changed += drag_Changed;
 			downDrag.Completed += drag_Completed;
 
 			Print();
@@ -213,41 +213,53 @@ namespace ICSharpCode.SharpDevelop.Widgets
 		protected override void OnPreviewKeyDown(KeyEventArgs e)
 		{
 			base.OnPreviewKeyDown(e);
-			if (e.Key == Key.Enter) {
-				double result;
-				if (double.TryParse(textBox.Text, out result)) {
-					SetValue(result);
-				}
-				else {
-					Print();
-				}
-				textBox.SelectAll();
-				e.Handled = true;
+			switch (e.Key) {
+				case Key.Enter:
+					SetInputValue();
+					textBox.SelectAll();
+					e.Handled = true;
+					break;
+				case Key.Up:
+					SmallUp();
+					e.Handled = true;
+					break;
+				case Key.Down:
+					SmallDown();
+					e.Handled = true;
+					break;
+				case Key.PageUp:
+					LargeUp();
+					e.Handled = true;
+					break;
+				case Key.PageDown:
+					LargeDown();
+					e.Handled = true;
+					break;
+//				case Key.Home:
+//					Maximize();
+//					e.Handled = true;
+//					break;
+//				case Key.End:
+//					Minimize();
+//					e.Handled = true;
+//					break;
 			}
-			else if (e.Key == Key.Up) {
-				SmallUp();
-				e.Handled = true;
+		}
+
+		void SetInputValue()
+		{
+			double result;
+			if (double.TryParse(textBox.Text, out result)) {
+				SetValue(result);
+			} else {
+				Print();
 			}
-			else if (e.Key == Key.Down) {
-				SmallDown();
-				e.Handled = true;
-			}
-			else if (e.Key == Key.PageUp) {
-				LargeUp();
-				e.Handled = true;
-			}
-			else if (e.Key == Key.PageDown) {
-				LargeDown();
-				e.Handled = true;
-			}
-			//else if (e.Key == Key.Home) {
-			//    Maximize();
-			//    e.Handled = true;
-			//}
-			//else if (e.Key == Key.End) {
-			//    Minimize();
-			//    e.Handled = true;
-			//}
+		}
+		
+		protected override void OnLostFocus(RoutedEventArgs e)
+		{
+			base.OnLostFocus(e);
+			SetInputValue();
 		}
 
 		//protected override void OnMouseWheel(MouseWheelEventArgs e)
@@ -286,7 +298,7 @@ namespace ICSharpCode.SharpDevelop.Widgets
 				Print();
 			}
 			else if (e.Property == SmallChangeProperty &&
-				ReadLocalValue(LargeChangeProperty) == DependencyProperty.UnsetValue) {
+			         ReadLocalValue(LargeChangeProperty) == DependencyProperty.UnsetValue) {
 				LargeChange = SmallChange * 10;
 			}
 		}

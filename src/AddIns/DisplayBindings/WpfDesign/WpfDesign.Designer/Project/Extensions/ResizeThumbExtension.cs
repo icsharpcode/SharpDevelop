@@ -133,7 +133,18 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (alignment.Horizontal == HorizontalAlignment.Right) dx = drag.Delta.X;
 			if (alignment.Vertical == VerticalAlignment.Top) dy = -drag.Delta.Y;
 			if (alignment.Vertical == VerticalAlignment.Bottom) dy = drag.Delta.Y;
-			
+
+            var designPanel = ExtendedItem.Services.DesignPanel as DesignPanel;
+            if (designPanel != null)
+            {
+                var zoom = designPanel.Parent as ZoomControl;
+                if (zoom != null)
+                {
+                    dx = dx * (1 / zoom.CurrentZoom);
+                    dy = dy * (1 / zoom.CurrentZoom);
+                }
+            }
+
 			var newWidth = Math.Max(0, oldSize.Width + dx);
 			var newHeight = Math.Max(0, oldSize.Height + dy);
 
