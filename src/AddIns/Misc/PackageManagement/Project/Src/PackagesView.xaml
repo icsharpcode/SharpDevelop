@@ -364,6 +364,7 @@
 				<Button
 					Grid.Row="3"
 					Grid.Column="1"
+					Margin="2"
 					Visibility="{Binding Path=IsUpdateAllPackagesEnabled, Converter={StaticResource BoolToVisibility}}"
 					Content="Update All"
 					Command="{Binding Path=UpdateAllPackagesCommand}"/>
