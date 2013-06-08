@@ -235,8 +235,14 @@
     <Compile Include="Src\PackageManagementServiceProvider.cs" />
     <Compile Include="Src\ParentPackagesOperationEventArgs.cs" />
     <Compile Include="Src\ProjectBuilder.cs" />
+    <Compile Include="Src\ProjectRootElementExtensions.cs" />
     <Compile Include="Src\ReducedPackageOperations.cs" />
     <Compile Include="Src\ResolveFileConflictEventArgs.cs" />
+    <Compile Include="Src\Scripting\GlobalMSBuildProjectCollection.cs" />
+    <Compile Include="Src\Scripting\IGlobalMSBuildProjectCollection.cs" />
+    <Compile Include="Src\Scripting\MSBuildProjectImportsMerger.cs" />
+    <Compile Include="Src\Scripting\MSBuildProjectImportsMergeResult.cs" />
+    <Compile Include="Src\Scripting\NullGlobalMSBuildProjectCollection.cs" />
     <Compile Include="Src\Scripting\RunAllProjectPackageScriptsAction.cs" />
     <Compile Include="Src\ServiceWithWorkbenchOwner.cs" />
     <Compile Include="Src\UpdatePackagesAction.cs" />

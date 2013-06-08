@@ -14,6 +14,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		IPackageScriptRunner scriptRunner;
 		List<IPackageManagementProject> projects;
 		IPackageScriptFactory scriptFactory;
+		IGlobalMSBuildProjectCollection projectCollection;
 		
 		List<EventHandler<PackageOperationEventArgs>> packageInstalledHandlers =
 			new List<EventHandler<PackageOperationEventArgs>>();
@@ -27,19 +28,22 @@ namespace ICSharpCode.PackageManagement.Scripting
 		public RunAllProjectPackageScriptsAction(
 			IPackageScriptRunner scriptRunner,
 			IEnumerable<IPackageManagementProject> projects)
-			: this(scriptRunner, projects, new PackageScriptFactory())
+			: this(scriptRunner, projects, new PackageScriptFactory(), new GlobalMSBuildProjectCollection())
 		{
 		}
 		
 		public RunAllProjectPackageScriptsAction(
 			IPackageScriptRunner scriptRunner,
 			IEnumerable<IPackageManagementProject> projects,
-			IPackageScriptFactory scriptFactory)
+			IPackageScriptFactory scriptFactory,
+			IGlobalMSBuildProjectCollection projectCollection)
 		{
 			this.scriptRunner = scriptRunner;
 			this.projects = projects.ToList();
 			this.scriptFactory = scriptFactory;
+			this.projectCollection = projectCollection;
 			
+			AddProjectsToGlobalCollection();
 			RegisterEvents();
 		}
 		
@@ -47,9 +51,17 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			IsDisposed = true;
 			UnregisterEvents();
+			projectCollection.Dispose();
 		}
 		
 		public bool IsDisposed { get; private set; }
+		
+		void AddProjectsToGlobalCollection()
+		{
+			foreach (IPackageManagementProject project in projects) {
+				projectCollection.AddProject(project);
+			}
+		}
 		
 		void RegisterEvents()
 		{

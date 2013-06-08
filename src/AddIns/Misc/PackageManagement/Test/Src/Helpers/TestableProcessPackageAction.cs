@@ -5,6 +5,7 @@ using System;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests.Helpers
 {
@@ -46,7 +47,11 @@ namespace PackageManagement.Tests.Helpers
 			IsRunPackageScriptsActionCreated = true;
 			ScriptRunnerPassedToCreateRunPackageScriptsAction = scriptRunner;
 			ProjectPassedToCreateRunPackageScriptsAction = project;
-			RunPackageScriptsAction = base.CreateRunPackageScriptsAction(scriptRunner, project);
+			RunPackageScriptsAction = new RunPackageScriptsAction(
+				project,
+				scriptRunner,
+				new PackageScriptFactory(),
+				MockRepository.GenerateStub<IGlobalMSBuildProjectCollection>());
 			return RunPackageScriptsAction;
 		}
 		

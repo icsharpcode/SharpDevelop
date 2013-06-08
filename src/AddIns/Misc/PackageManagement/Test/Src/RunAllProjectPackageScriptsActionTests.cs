@@ -20,6 +20,7 @@ namespace PackageManagement.Tests
 		List<IPackageManagementProject> projects;
 		IPackageScriptRunner scriptRunner;
 		IPackageScriptFactory scriptFactory;
+		IGlobalMSBuildProjectCollection msbuildProjectCollection;
 		
 		[SetUp]
 		public void Init()
@@ -36,7 +37,12 @@ namespace PackageManagement.Tests
 		{
 			scriptRunner = MockRepository.GenerateStub<IPackageScriptRunner>();
 			scriptFactory = MockRepository.GenerateStub<IPackageScriptFactory>();
-			action = new RunAllProjectPackageScriptsAction(scriptRunner, projects, scriptFactory);
+			msbuildProjectCollection = MockRepository.GenerateStub<IGlobalMSBuildProjectCollection>();
+			action = new RunAllProjectPackageScriptsAction(
+				scriptRunner,
+				projects,
+				scriptFactory,
+				msbuildProjectCollection);
 		}
 		
 		IPackageManagementProject AddProject()
@@ -334,6 +340,29 @@ namespace PackageManagement.Tests
 			FirePackageReferenceRemovedEvent(project, eventArgs);
 			
 			scriptRunner.AssertWasNotCalled(runner => runner.Run(uninstallScript));
+		}
+		
+		[Test]
+		public void Dispose_OneProject_GlobalMSBuildProjectsCollectionIsDisposed()
+		{
+			IPackageManagementProject project = AddProject();
+			CreateAction();
+			
+			action.Dispose();
+			
+			msbuildProjectCollection.AssertWasCalled(projectCollection => projectCollection.Dispose());
+		}
+		
+		[Test]
+		public void Constructor_TwoProjects_BothProjectsAddedToGlobalMSBuildProjectCollection()
+		{
+			IPackageManagementProject project1 = AddProject();
+			IPackageManagementProject project2 = AddProject();
+			
+			CreateAction();
+			
+			msbuildProjectCollection.AssertWasCalled(projectCollection => projectCollection.AddProject(project1));
+			msbuildProjectCollection.AssertWasCalled(projectCollection => projectCollection.AddProject(project2));
 		}
 	}
 }

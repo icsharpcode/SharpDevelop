@@ -30,7 +30,11 @@ namespace PackageManagement.Tests.Helpers
 			IsRunPackageScriptsActionCreated = true;
 			ScriptRunnerPassedToCreateRunPackageScriptsAction = scriptRunner;
 			ProjectsPassedToCreateRunPackageScriptsAction = projects.ToList();
-			RunPackageScriptsAction = base.CreateRunPackageScriptsAction(scriptRunner, projects);
+			RunPackageScriptsAction = new RunAllProjectPackageScriptsAction(
+				scriptRunner,
+				projects,
+				new PackageScriptFactory(),
+				new NullGlobalMSBuildProjectCollection());
 			return RunPackageScriptsAction;
 		}
 		

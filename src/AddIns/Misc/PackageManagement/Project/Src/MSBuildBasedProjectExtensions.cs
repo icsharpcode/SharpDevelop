@@ -75,10 +75,7 @@ namespace ICSharpCode.PackageManagement
 		
 		static ProjectImportElement FindImport(this MSBuildBasedProject project, string importedProjectFile)
 		{
-			return project
-				.MSBuildProjectFile
-				.Imports
-				.FirstOrDefault(import => String.Equals(import.Project, importedProjectFile, StringComparison.OrdinalIgnoreCase));
+			return project.MSBuildProjectFile.FindImport(importedProjectFile);
 		}
 	}
 }
