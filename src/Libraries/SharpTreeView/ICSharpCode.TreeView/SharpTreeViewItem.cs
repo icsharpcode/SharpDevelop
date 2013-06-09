@@ -40,9 +40,19 @@ namespace ICSharpCode.TreeView
 					break;
 				case Key.Escape:
 					Node.IsEditing = false;
-					break;
+					break;                
 			}
 		}
+
+        protected override void OnContextMenuOpening(ContextMenuEventArgs e)
+        {
+            ContextMenu = Node.GetContextMenu();
+        }
+
+        protected override void OnContextMenuClosing(ContextMenuEventArgs e)
+        {
+            ClearValue(ContextMenuProperty);
+        }
 
 		#region Mouse
 

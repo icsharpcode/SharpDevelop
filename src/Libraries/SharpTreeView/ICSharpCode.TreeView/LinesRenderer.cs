@@ -10,7 +10,7 @@ using System.Windows.Media;
 
 namespace ICSharpCode.TreeView
 {
-	class LinesRenderer : FrameworkElement
+	public class LinesRenderer : FrameworkElement
 	{
 		static LinesRenderer()
 		{
