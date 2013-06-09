@@ -245,6 +245,7 @@
     <Compile Include="Src\Scripting\NullGlobalMSBuildProjectCollection.cs" />
     <Compile Include="Src\Scripting\RunAllProjectPackageScriptsAction.cs" />
     <Compile Include="Src\ServiceWithWorkbenchOwner.cs" />
+    <Compile Include="Src\SharpDevelopCredentialProvider.cs" />
     <Compile Include="Src\UpdatePackagesAction.cs" />
     <Compile Include="Src\UpdatePackagesActionFactory.cs" />
     <Compile Include="Src\UpdateSolutionPackagesAction.cs" />
