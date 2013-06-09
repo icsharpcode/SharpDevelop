@@ -154,16 +154,79 @@ namespace CSharpBinding
 				return;
 			var siblings = currentStatement.Parent.Children.Where(c => (c.Role.GetType() == currentStatement.Role.GetType())).ToList();
 			int currentStatementPos = siblings.IndexOf(currentStatement);
+			
 			int swapIndex = currentStatementPos + (direction == MoveStatementDirection.Down ? 1 : -1);
 			if (swapIndex < 0 || swapIndex >= siblings.Count)
 				return;
 			AstNode swapSibling = siblings[swapIndex];
+			
+			// Expand selection to full line, if there is more than one statement in it, and set swapped sibling appropriately
+			AstNode tempSwapSibling = currentStatement;
+			int tempSwapIndex = currentStatementPos;
+			while ((tempSwapIndex == currentStatementPos) || (tempSwapSibling.StartLocation.Line == statementSelection.End.Line)) {
+				tempSwapIndex++;
+				if (tempSwapSibling.EndLocation > statementSelection.End)
+					statementSelection.End = tempSwapSibling.EndLocation;
+				if (tempSwapIndex >= siblings.Count) {
+					if (direction == MoveStatementDirection.Down)
+						return;
+					else
+						break;
+				}
+				tempSwapSibling = siblings[tempSwapIndex];
+				if (direction == MoveStatementDirection.Down) {
+					swapSibling = tempSwapSibling;
+					swapIndex = tempSwapIndex;
+				}
+			}
+			tempSwapSibling = currentStatement;
+			tempSwapIndex = currentStatementPos;
+			while ((tempSwapIndex == currentStatementPos) || (tempSwapSibling.EndLocation.Line == statementSelection.Start.Line)) {
+				tempSwapIndex--;
+				if (tempSwapSibling.StartLocation < statementSelection.Start)
+					statementSelection.Start = tempSwapSibling.StartLocation;
+				if (tempSwapIndex < 0) {
+					if (direction == MoveStatementDirection.Up)
+						return;
+					else
+						break;
+				}
+				tempSwapSibling = siblings[tempSwapIndex];
+				if (direction == MoveStatementDirection.Up) {
+					swapSibling = tempSwapSibling;
+					swapIndex = tempSwapIndex;
+				}
+			}
+			
 			Selection swapSiblingSelection = ExtendSelectionToComments(editor.Document, swapSibling.StartLocation, swapSibling.EndLocation, commentsBlankLines);
 			if (swapSiblingSelection == null)
 				swapSiblingSelection = new Selection() { Start = swapSibling.StartLocation, End = swapSibling.EndLocation };
+			
+			// Expand swapSiblingSelection, too, if there are > 1 statements in line
+			tempSwapSibling = swapSibling;
+			tempSwapIndex = swapIndex;
+			if (direction == MoveStatementDirection.Down) {
+				while ((tempSwapIndex == swapIndex) || (tempSwapSibling.StartLocation.Line == swapSiblingSelection.End.Line)) {
+					tempSwapIndex++;
+					if (tempSwapSibling.EndLocation > swapSiblingSelection.End)
+						swapSiblingSelection.End = tempSwapSibling.EndLocation;
+					if (tempSwapIndex >= siblings.Count)
+						break;
+					tempSwapSibling = siblings[tempSwapIndex];
+				}
+			} else if (direction == MoveStatementDirection.Up) {
+				while ((tempSwapIndex == swapIndex) || (tempSwapSibling.EndLocation.Line == swapSiblingSelection.Start.Line)) {
+					tempSwapIndex--;
+					if (tempSwapSibling.StartLocation < swapSiblingSelection.Start)
+						swapSiblingSelection.Start = tempSwapSibling.StartLocation;
+					if (tempSwapIndex < 0)
+						break;
+					tempSwapSibling = siblings[tempSwapIndex];
+				}
+			}
+			
 			// Swap them
 			string currentNodeText = editor.Document.GetText(statementSelection.Start, statementSelection.End);
-//			SwapText(editor.Document, statementSelection.Start, statementSelection.End, swapSibling.StartLocation, swapSibling.EndLocation);
 			SwapText(editor.Document, statementSelection.Start, statementSelection.End, swapSiblingSelection.Start, swapSiblingSelection.End);
 			// Move caret to the start of moved statement
 			TextLocation upperLocation = new TextLocation[] {statementSelection.Start, swapSiblingSelection.Start}.Min();
@@ -311,11 +374,11 @@ namespace CSharpBinding
 			if (lineComment == null) {
 				return null;
 			}
-			bool isWholeLineSelected = IsWhitespaceBetween(document, new TextLocation(selectionStart.Line, 1), selectionStart);
-			if (!isWholeLineSelected) {
-				// whole line must be selected before we add the comment
-				return null;
-			}
+//			bool isWholeLineSelected = IsWhitespaceBetween(document, new TextLocation(selectionStart.Line, 1), selectionStart);
+//			if (!isWholeLineSelected) {
+//				// whole line must be selected before we add the comment
+//				return null;
+//			}
 			int endPos = document.GetOffset(lineComment.EndLocation);
 			return new Selection { Start = selectionStart, End = document.GetLocation(endPos) };
 		}
