@@ -48,7 +48,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\..\Main\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -99,7 +99,9 @@
     <Compile Include="TreeTraversal.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ICSharpCode.SharpDevelop.snk" />
+    <None Include="..\..\..\Main\ICSharpCode.SharpDevelop.snk">
+      <Link>ICSharpCode.SharpDevelop.snk</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
