@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Globalization;
+using System.Threading.Tasks;
 using ICSharpCode.WpfDesign.PropertyGrid;
 using System.Windows.Threading;
 using System.Diagnostics;
@@ -41,7 +42,13 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		public ObservableCollection<Category> Categories { get; private set; }
 		public PropertyNodeCollection Events { get; private set; }
 
-		PropertyGridTab currentTab;
+	    private bool usePropertyCategories = false;
+	    public bool UsePropertyCategories
+	    {
+	        set { usePropertyCategories = value; Reload(); }
+	    }
+
+	    PropertyGridTab currentTab;
 
 		public PropertyGridTab CurrentTab {
 			get {
@@ -54,7 +61,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			}
 		}
 
-		string filter;
+        string filter;
 
 		public string Filter {
 			get {
@@ -142,18 +149,19 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		}
 
 		IEnumerable<DesignItem> selectedItems;
-
-		public IEnumerable<DesignItem> SelectedItems {
+	    
+	    public IEnumerable<DesignItem> SelectedItems {
 			get {
 				return selectedItems;
 			}
 			set {
 				selectedItems = value;
 				RaisePropertyChanged("SelectedItems");
-				Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(
-					delegate {
-						Reload();
-					}));
+                //Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(
+                //    delegate {
+                //        Reload();
+                //    }));
+			    Reload();
 			}
 		}
 
@@ -162,20 +170,23 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			Filter = null;
 		}
 
-		void Reload()
-		{
-			Clear();
-			
-			if (SelectedItems == null || SelectedItems.Count() == 0) return;
-			if (SelectedItems.Count() == 1) SingleItem = SelectedItems.First();
+	    private void Reload()
+	    {
+	        Clear();
 
-			foreach (var md in GetDescriptors()) {
-				if (PassesFilter(md.Name))
-					AddNode(md);
-			}
-		}
+	        if (SelectedItems == null || SelectedItems.Count() == 0) return;
+	        if (SelectedItems.Count() == 1) SingleItem = SelectedItems.First();
 
-		void Clear()
+	        var desc = GetDescriptors();
+
+	        foreach (var md in desc)
+	        {
+	            if (PassesFilter(md.Name))
+	                AddNode(md);
+	        }
+	    }
+
+	    void Clear()
 		{
 			foreach (var c in Categories) {
 				c.IsVisible = false;
@@ -191,8 +202,8 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			SingleItem = null;
 		}
 
-		List<MemberDescriptor> GetDescriptors()
-		{
+	    List<MemberDescriptor> GetDescriptors()
+		{        
 			List<MemberDescriptor> list = new List<MemberDescriptor>();
 
 			if (SelectedItems.Count() == 1) {
@@ -203,8 +214,8 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 					list.Add(d);
 				}
 			} else {
-				foreach (MemberDescriptor d in TypeHelper.GetCommonAvailableProperties(SelectedItems.Select(t => t.Component))) {
-					list.Add(d);
+                foreach (MemberDescriptor d in TypeHelper.GetCommonAvailableProperties(SelectedItems.Select(t => t.Component))) {
+                    list.Add(d);
 				}
 			}
 
@@ -228,7 +239,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		{
 			var designProperties = SelectedItems.Select(item => item.Properties[md.Name]).ToArray();
 			if (!Metadata.IsBrowsable(designProperties[0])) return;
-
+            
 			PropertyNode node;
 			if (nodeFromDescriptor.TryGetValue(md, out node)) {
 				node.Load(designProperties);
@@ -238,9 +249,24 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 				if (node.IsEvent) {
 					Events.AddSorted(node);
 				} else {
-					var cat = PickCategory(node);
-					cat.Properties.AddSorted(node);
-					node.Category = cat;
+				    if (!usePropertyCategories)
+				    {
+				        var cat = PickCategory(node);
+				        cat.Properties.AddSorted(node);
+				        node.Category = cat;
+				    }
+				    else
+				    {
+				        var cat = Categories.FirstOrDefault(x => x.Name == md.Category);
+                        if (cat == null)
+                        {
+                            cat = new Category(md.Category);
+                            cat.IsVisible = false;
+                            Categories.Add(cat);
+                        }
+                        cat.Properties.AddSorted(node);
+                        node.Category = cat;
+				    }
 				}
 				nodeFromDescriptor[md] = node;
 			}

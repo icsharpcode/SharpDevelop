@@ -122,24 +122,24 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			bool isLeft = itemBounds.Left < availableSpaceRect.Left + availableSpaceRect.Width / 4;
 			bool isRight = itemBounds.Right > availableSpaceRect.Right - availableSpaceRect.Width / 4;
-			if (isLeft && isRight)
+			//if (isLeft && isRight)
 				return HorizontalAlignment.Stretch;
-			else if (isRight)
+			/*else if (isRight)
 				return HorizontalAlignment.Right;
 			else
-				return HorizontalAlignment.Left;
+				return HorizontalAlignment.Left;*/
 		}
 		
 		static VerticalAlignment SuggestVerticalAlignment(Rect itemBounds, Rect availableSpaceRect)
 		{
 			bool isTop = itemBounds.Top < availableSpaceRect.Top + availableSpaceRect.Height / 4;
 			bool isBottom = itemBounds.Bottom > availableSpaceRect.Bottom - availableSpaceRect.Height / 4;
-			if (isTop && isBottom)
+			//if (isTop && isBottom)
 				return VerticalAlignment.Stretch;
-			else if (isBottom)
+			/*else if (isBottom)
 				return VerticalAlignment.Bottom;
 			else
-				return VerticalAlignment.Top;
+				return VerticalAlignment.Top;*/
 		}
 		
 		public override void EnterContainer(PlacementOperation operation)
@@ -160,7 +160,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		public override void SetPosition(PlacementInformation info)
 		{
-			base.SetPosition(info);
+			//base.SetPosition(info);
 			int leftColumnIndex = GetColumnIndex(info.Bounds.Left);
 			int rightColumnIndex = GetEndColumnIndex(info.Bounds.Right);
 			if (rightColumnIndex < leftColumnIndex) rightColumnIndex = leftColumnIndex;
@@ -191,7 +191,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 			info.Item.Properties[FrameworkElement.HorizontalAlignmentProperty].SetValue(ha);
 			info.Item.Properties[FrameworkElement.VerticalAlignmentProperty].SetValue(va);
-			
+		    if (ha == HorizontalAlignment.Stretch)
+		        info.Item.Properties[FrameworkElement.WidthProperty].Reset();
+            if (va == VerticalAlignment.Stretch)
+                info.Item.Properties[FrameworkElement.HeightProperty].Reset();
+
 			Thickness margin = new Thickness(0, 0, 0, 0);
 			if (ha == HorizontalAlignment.Left || ha == HorizontalAlignment.Stretch)
 				margin.Left = info.Bounds.Left - GetColumnOffset(leftColumnIndex);

@@ -98,6 +98,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\WpfDocumentError.xaml" />
+    <ProjectReference Include="..\..\..\..\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj">
+      <Project>{dde2a481-8271-4eac-a330-8fa6a38d13d1}</Project>
+      <Name>ICSharpCode.TreeView</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -152,9 +156,5 @@
     <Page Include="Src\ImageSourceEditor\ImageSourceEditor.xaml" />
     <Page Include="Src\ObjectEditor.xaml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Images" />
-    <Folder Include="Src\ImageSourceEditor" />
-    <Folder Include="Src\Commands" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

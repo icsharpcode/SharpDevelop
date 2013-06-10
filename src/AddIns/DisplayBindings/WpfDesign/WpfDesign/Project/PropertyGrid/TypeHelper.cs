@@ -65,21 +65,21 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 				yield return e;
 			}
 		}
-		
-		/// <summary>
+
+        /// <summary>
 		/// Gets available properties for an object, includes attached properties also.
 		/// </summary>		
 		public static IEnumerable<PropertyDescriptor> GetAvailableProperties(object element)
 		{
-			foreach(PropertyDescriptor p in TypeDescriptor.GetProperties(element)){
+            foreach(PropertyDescriptor p in TypeDescriptor.GetProperties(element)){
 				if (!p.IsBrowsable) continue;
 				if (p.IsReadOnly) continue;
 				if (p.Attributes.OfType<ObsoleteAttribute>().Count()!=0) continue;
 				yield return p;
 			}
 		}
-		
-		/// <summary>
+
+        /// <summary>
 		/// Gets common properties between <paramref name="elements"/>. Includes attached properties too.
 		/// </summary>
 		/// <param name="elements"></param>

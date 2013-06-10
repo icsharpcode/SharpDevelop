@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace ICSharpCode.WpfDesign.Designer
@@ -15,11 +16,11 @@ namespace ICSharpCode.WpfDesign.Designer
 		/* The Focus navigator do not involves the concept of Logical Focus or KeyBoard Focus
 		 * since nothing is getting focoused on the designer except for the DesignPanel. It just changes
 		 * the primary selection between the hierarchy of elements present on the designer. */
-		
+
         private readonly DesignSurface _surface;
         private KeyBinding _tabBinding;
         private KeyBinding _shiftTabBinding;
-        
+
         public FocusNavigator(DesignSurface surface)
         {
             this._surface=surface;

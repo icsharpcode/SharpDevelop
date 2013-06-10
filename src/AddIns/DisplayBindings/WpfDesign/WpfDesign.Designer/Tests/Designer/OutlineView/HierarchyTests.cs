@@ -37,7 +37,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer.OutlineView
 		public void VerifyButtonInOutline()
 		{
 			var button = _grid.ContentProperty.CollectionElements[0];
-			Assert.AreEqual(button, _outline.Children[0].DesignItem);
+			Assert.AreEqual(button, ((OutlineNode)_outline.Children[0]).DesignItem);
 		}
 
 		[Test]
@@ -46,8 +46,8 @@ namespace ICSharpCode.WpfDesign.Tests.Designer.OutlineView
 			var stackPanel = _grid.ContentProperty.CollectionElements[1];
 			var stackPanelButton = stackPanel.ContentProperty.CollectionElements[0];
 
-			Assert.AreEqual(stackPanel, _outline.Children[1].DesignItem);
-			Assert.AreEqual(stackPanelButton, _outline.Children[1].Children[0].DesignItem);
+			Assert.AreEqual(stackPanel, ((OutlineNode)_outline.Children[1]).DesignItem);
+			Assert.AreEqual(stackPanelButton, ((OutlineNode)_outline.Children[1].Children[0]).DesignItem);
 		}
 	}
 }

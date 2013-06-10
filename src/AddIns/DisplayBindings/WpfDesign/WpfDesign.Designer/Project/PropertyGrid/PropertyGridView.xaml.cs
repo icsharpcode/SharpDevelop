@@ -30,7 +30,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 
 			thumb.DragDelta += new DragDeltaEventHandler(thumb_DragDelta);
 		}
-
+       
 		static PropertyContextMenu propertyContextMenu = new PropertyContextMenu();
 
 		public PropertyGrid PropertyGrid { get; private set; }
@@ -52,12 +52,36 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			set { SetValue(SelectedItemsProperty, value); }
 		}
 
+        public bool ShowPropertiesEventsSelector
+        {
+            get { return (bool)GetValue(ShowPropertiesEventsSelectorProperty); }
+            set { SetValue(ShowPropertiesEventsSelectorProperty, value); }
+        }
+
+        public static readonly DependencyProperty ShowPropertiesEventsSelectorProperty =
+            DependencyProperty.Register("ShowPropertiesEventsSelector", typeof(bool), typeof(PropertyGridView), new PropertyMetadata(true));
+        
+        public bool UsePropertyCategories
+        {
+            get { return (bool)GetValue(UsePropertyCategoriesProperty); }
+            set { SetValue(UsePropertyCategoriesProperty, value); }
+        }
+
+        public static readonly DependencyProperty UsePropertyCategoriesProperty =
+            DependencyProperty.Register("UsePropertyCategories", typeof(bool), typeof(PropertyGridView), new PropertyMetadata(false));
+
+        
 		protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
 		{
 			base.OnPropertyChanged(e);
-			if (e.Property == SelectedItemsProperty) {
-				PropertyGrid.SelectedItems = SelectedItems;
+			if (e.Property == SelectedItemsProperty)
+			{
+			    PropertyGrid.SelectedItems = SelectedItems;
 			}
+            else if (e.Property == UsePropertyCategoriesProperty)
+            {
+                PropertyGrid.UsePropertyCategories = UsePropertyCategories;
+            }
 		}
 
 		protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
@@ -71,9 +95,9 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 
 			PropertyContextMenu contextMenu = new PropertyContextMenu();
 			contextMenu.DataContext = node;
-			contextMenu.Placement = PlacementMode.Bottom;
-			contextMenu.HorizontalOffset = -30;
-			contextMenu.PlacementTarget = row;
+			//contextMenu.Placement = PlacementMode.Bottom;
+			//contextMenu.HorizontalOffset = -30;
+			//contextMenu.PlacementTarget = row;
 			contextMenu.IsOpen = true;
 		}
 

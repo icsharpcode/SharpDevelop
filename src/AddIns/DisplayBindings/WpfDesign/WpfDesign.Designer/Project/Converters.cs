@@ -9,6 +9,7 @@ using System.Windows.Data;
 using System.Globalization;
 using System.Windows;
 using System.Collections;
+using System.Windows.Media;
 
 namespace ICSharpCode.WpfDesign.Designer.Converters
 {
@@ -126,6 +127,24 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 			throw new NotImplementedException();
 		}
 	}
+
+    public class BlackWhenTrue : IValueConverter
+    {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
+        public static readonly BlackWhenTrue Instance = new BlackWhenTrue();
+
+        private Brush black = new SolidColorBrush(Colors.Black);
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (bool)value ? black : null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
 	// Boxed int throw exception without converter (wpf bug?)
 	public class DummyConverter : IValueConverter

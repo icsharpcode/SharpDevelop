@@ -2,8 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Windows.Documents;
 using System.Windows.Markup;
+using System.Windows.Media;
 using System.Xml;
 
 namespace ICSharpCode.WpfDesign.XamlDom
@@ -165,19 +170,107 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (forProperty != null && hasStringConverter) {
 				return new XamlTextValue(this, c.ConvertToInvariantString(ctx, instance));
 			}
+
+            var ns = GetNamespaceFor(elementType);
+		    string prefix = "";
+            if (ns != XamlConstants.PresentationNamespace) 
+                prefix = GetNamespacePrefixForNamespace(ns);
+		    XmlElement xml;
+            xml = _xmlDoc.CreateElement(prefix, elementType.Name, GetNamespaceFor(elementType));
 			
-			
-			XmlElement xml = _xmlDoc.CreateElement(elementType.Name, GetNamespaceFor(elementType));
-			
-			if (hasStringConverter) {
-				xml.InnerText = c.ConvertToInvariantString(instance);
-			}
+            if (hasStringConverter) {
+                xml.InnerText = c.ConvertToInvariantString(instance);
+            }
+            else if (instance is Brush)
+            {
+                var s = new MemoryStream();
+                XamlWriter.Save(instance, s);
+                s.Seek(0, SeekOrigin.Begin);
+                XmlDocument doc = new XmlDocument();
+                doc.Load(s);
+                xml = (XmlElement)_xmlDoc.ImportNode(doc.DocumentElement, true);
+
+                var attLst = xml.Attributes.Cast<XmlAttribute>().ToList();
+                foreach (XmlAttribute att in attLst)
+                {
+                    if (att.Name.StartsWith(XamlConstants.Xmlns))
+                    {
+                        var rootAtt = doc.DocumentElement.GetAttributeNode(att.Name);
+                        if (rootAtt != null && rootAtt.Value == att.Value)
+                        {
+                            xml.Attributes.Remove(att);
+                        }
+                    }
+                }
+            }            
 			return new XamlObject(this, xml, elementType, instance);
 		}
 		
 		internal string GetNamespaceFor(Type type)
 		{
+		    if (type == typeof (DesignTimeProperties))
+                return XamlConstants.DesignTimeNamespace;
 			return _typeFinder.GetXmlNamespaceFor(type.Assembly, type.Namespace);
 		}
+
+	    internal string GetNamespacePrefixForNamespace(string ns)
+	    {
+	        //var attLst = _xmlDoc.DocumentElement.Attributes.Cast<XmlAttribute>().ToList();
+
+            foreach (XmlAttribute att in _xmlDoc.DocumentElement.Attributes)
+	        {
+	            if (att.Name.StartsWith(XamlConstants.Xmlns) && att.Value == ns)
+	            {
+	                //Remove "xmlns:"
+	                return att.Name.Substring(6);
+	            }
+	        }
+
+	        var rootPrefix = GetNewNamespacePrefix(ns);
+	        if (rootPrefix != null)
+	        {
+                var newRoot = _xmlDoc.DocumentElement.GetAttributeNode(rootPrefix);
+
+	            int i = 0;
+	            string oldPrefix = rootPrefix;
+	            while (newRoot != null && newRoot.Value != ns)
+	            {
+	                rootPrefix = oldPrefix + "_" + i;
+                    newRoot = _xmlDoc.DocumentElement.GetAttributeNode(rootPrefix);
+	            }
+
+	            if (newRoot == null)
+	            {
+	                newRoot = _xmlDoc.CreateAttribute(XamlConstants.Xmlns, rootPrefix, XamlConstants.XmlnsNamespace);
+	                newRoot.InnerText = ns;
+	                _rootElement.XmlElement.Attributes.Append(newRoot);
+	            }
+	        }
+	        return rootPrefix;
+	    }
+
+	    internal string GetNewNamespacePrefix(string ns)
+        {
+            string retVal = "";
+            if (ns.StartsWith("urn:") || ns.StartsWith("http://"))
+            {
+                retVal = ns.Replace("urn:", "")
+                    .Replace("http://", "")
+                    .Replace(":", "")
+                    .Replace("/", "_")
+                    .Replace("-", "_");
+            }
+            else if (ns.StartsWith("clr-namespace:"))
+            {
+                var idx = ns.IndexOf(';');
+
+                retVal = ns.Substring(0, idx).Replace("clr-namespace:", "");
+                idx = retVal.LastIndexOf(".");
+                if (idx > 0)
+                    retVal = retVal.Substring(idx + 1).Replace("-", "_");                
+            }
+
+            return retVal;
+        }
 	}
 }

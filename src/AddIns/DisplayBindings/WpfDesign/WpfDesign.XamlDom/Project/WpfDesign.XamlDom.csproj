@@ -21,7 +21,8 @@
     <DocumentationFile>..\..\..\..\..\..\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.XamlDom.xml</DocumentationFile>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SourceAnalysisOverrideSettingsFile>C:\Users\Daniel\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -69,6 +70,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CollectionElementsCollection.cs" />
     <Compile Include="CollectionSupport.cs" />
+    <Compile Include="DesignTimeProperties.cs" />
     <Compile Include="IXamlErrorSink.cs" />
     <Compile Include="MarkupExtensionParser.cs" />
     <Compile Include="MarkupExtensionPrinter.cs" />

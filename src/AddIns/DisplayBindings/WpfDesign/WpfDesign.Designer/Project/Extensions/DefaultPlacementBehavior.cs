@@ -71,11 +71,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			return new Rect(p, item.View.RenderSize);
 		}
 
-		public virtual void BeforeSetPosition(PlacementOperation operation)
-		{
-		}
+	    public virtual void BeforeSetPosition(PlacementOperation operation)
+	    {	        
+	    }
 
-		public virtual void SetPosition(PlacementInformation info)
+	    public virtual void SetPosition(PlacementInformation info)
 		{
 			ModelTools.Resize(info.Item, info.Bounds.Width, info.Bounds.Height);
 		}
@@ -87,18 +87,31 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public virtual void LeaveContainer(PlacementOperation operation)
 		{
-			if (ExtendedItem.ContentProperty.IsCollection) {
+            if (ExtendedItem.ContentProperty.IsCollection) {
 				foreach (var info in operation.PlacedItems) {
 					ExtendedItem.ContentProperty.CollectionElements.Remove(info.Item);
 				}
 			} else {
 				ExtendedItem.ContentProperty.Reset();
 			}
-		}
+		}	   
 
 		public virtual bool CanEnterContainer(PlacementOperation operation)
 		{
-			if (ExtendedItem.ContentProperty.IsCollection)
+            if (ExtendedItem.Component is Expander)
+            {
+                if (!((Expander) ExtendedItem.Component).IsExpanded)
+                {
+                    ((Expander) ExtendedItem.Component).IsExpanded = true;
+                }
+            }
+
+		    if (ExtendedItem.Component is UserControl && ExtendedItem.ComponentType != typeof(UserControl)) 
+                return false;
+            if (ExtendedItem.Component is ContentControl && ExtendedItem.ComponentType != typeof (ContentControl))
+                return false;
+            
+            if (ExtendedItem.ContentProperty.IsCollection)
 				return CollectionSupport.CanCollectionAdd(ExtendedItem.ContentProperty.ReturnType,
 				                                          operation.PlacedItems.Select(p => p.Item.Component));
 			if (ExtendedItem.View is ContentControl) {

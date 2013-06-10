@@ -37,6 +37,9 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="ICSharpCode.TreeView">
+      <HintPath>..\..\..\..\..\..\bin\ICSharpCode.TreeView.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -94,7 +97,5 @@
       <Name>WpfDesign.Designer</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Designer\OutlineView" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

@@ -109,14 +109,15 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	{
 		PropertyDescriptor _propertyDescriptor;
 		DependencyProperty dependencyProperty;
+	    DependencyPropertyDescriptor dependencyPropertyDescriptor;
 		
 		public XamlNormalPropertyInfo(PropertyDescriptor propertyDescriptor)
 		{
 			this._propertyDescriptor = propertyDescriptor;
-			var dpd = DependencyPropertyDescriptor.FromProperty(propertyDescriptor);
-			if (dpd != null) {
-				dependencyProperty = dpd.DependencyProperty;
-			}
+            dependencyPropertyDescriptor = DependencyPropertyDescriptor.FromProperty(propertyDescriptor);
+			if (dependencyPropertyDescriptor != null) {
+                dependencyProperty = dependencyPropertyDescriptor.DependencyProperty;
+			}            
 		}
 
 		public override DependencyProperty DependencyProperty {
@@ -129,8 +130,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			return _propertyDescriptor.GetValue(instance);
 		}
-		
-		public override void SetValue(object instance, object value)
+
+        public override void SetValue(object instance, object value)
 		{
 			_propertyDescriptor.SetValue(instance, value);
 		}
@@ -167,10 +168,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public override string Name {
 			get { return _propertyDescriptor.Name; }
 		}
-		
-		public override bool IsAttached {
-			get { return false; }
-		}
+
+        public override bool IsAttached {
+            get { return false; } //dependencyPropertyDescriptor != null && dependencyPropertyDescriptor.IsAttached; }
+        }
 		
 		public override bool IsCollection {
 			get {
