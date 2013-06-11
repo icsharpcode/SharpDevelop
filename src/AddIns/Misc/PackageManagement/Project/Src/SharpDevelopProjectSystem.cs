@@ -7,6 +7,7 @@ using System.IO;
 using System.Runtime.Versioning;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
@@ -112,7 +113,8 @@ namespace ICSharpCode.PackageManagement
 		{
 			string referenceName = GetReferenceName(name);
 			foreach (ReferenceProjectItem referenceProjectItem in project.GetItemsOfType(ItemType.Reference)) {
-				if (IsMatchIgnoringCase(referenceProjectItem.Include, referenceName)) {
+				var assemblyName = new DomAssemblyName(referenceProjectItem.Include);
+				if (IsMatchIgnoringCase(assemblyName.ShortName, referenceName)) {
 					return referenceProjectItem;
 				}
 			}

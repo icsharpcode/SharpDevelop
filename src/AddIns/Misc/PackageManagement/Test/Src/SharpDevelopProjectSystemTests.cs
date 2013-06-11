@@ -1067,5 +1067,34 @@ namespace PackageManagement.Tests
 			
 			FileProjectItemAssert.AreEqual(expectedFileItem, fileItem);
 		}
+		
+		[Test]
+		public void ReferenceExists_ReferenceIsInProjectButIncludesAssemblyVersion_ReturnsTrue()
+		{
+			CreateTestProject();
+			string include = "MyAssembly, Version=0.1.0.0, Culture=neutral, PublicKeyToken=8cc8392e8503e009";
+			ProjectHelper.AddReference(project, include);
+			CreateProjectSystem(project);
+			string fileName = @"D:\Projects\Test\myassembly.dll";
+			
+			bool result = projectSystem.ReferenceExists(fileName);
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void RemoveReference_ReferenceBeingRemovedHasFileExtensionAndProjectHasReferenceIncludingAssemblyVersion_ReferenceRemovedFromProject()
+		{
+			CreateTestProject();
+			string include = "nunit.framework, Version=2.6.2.0, Culture=neutral, PublicKeyToken=8cc8392e8503e009";
+			ProjectHelper.AddReference(project, include);
+			CreateProjectSystem(project);
+			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll";
+			
+			projectSystem.RemoveReference(fileName);
+			
+			ReferenceProjectItem referenceItem = ProjectHelper.GetReference(project, "nunit.framework");
+			Assert.IsNull(referenceItem);
+		}
 	}
 }
