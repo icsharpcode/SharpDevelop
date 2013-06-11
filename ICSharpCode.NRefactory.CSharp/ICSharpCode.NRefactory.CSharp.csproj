@@ -42,11 +42,13 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <OutputPath>..\bin\Release\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <OutputPath>..\bin\Debug\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Debug' ">
     <Optimize>False</Optimize>
@@ -59,6 +61,7 @@
     <DebugSymbols>True</DebugSymbols>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <OutputPath>..\bin\net_4_5_Debug\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Release' ">
     <Optimize>True</Optimize>
@@ -70,6 +73,7 @@
     <DebugType>none</DebugType>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <OutputPath>..\bin\net_4_5_Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
