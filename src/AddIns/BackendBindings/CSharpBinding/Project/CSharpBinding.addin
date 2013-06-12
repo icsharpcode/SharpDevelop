@@ -62,6 +62,16 @@
 		<CodeCompletionBinding id = "CSharp" extensions = ".cs" class = "CSharpBinding.Completion.CSharpCompletionBinding"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/BackendBindings/Templates">
+		<!-- The contents of the template categories is provided by the data/templates folder
+			in which SharpDevelop looks by default. We explicitly list the category only in order to assign
+			the sortOrder.
+		-->
+		<TemplateCategory id = "C#">
+			<TemplateCategory id = "${res:Templates.File.Categories.WindowsApplications}" sortOrder="10" />
+		</TemplateCategory>
+	</Path>
+	
 	<Path name="/SharpDevelop/Workbench/LanguageBindings">
 		<LanguageBinding
 			id="CSharp"

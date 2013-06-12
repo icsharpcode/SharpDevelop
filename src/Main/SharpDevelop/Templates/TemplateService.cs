@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.SharpDevelop.Templates
 {
@@ -38,14 +38,15 @@ namespace ICSharpCode.SharpDevelop.Templates
 		{
 			var items = SD.AddInTree.BuildItems<TemplateBase>(TemplatePath, this, false);
 			var categories = items.OfType<TemplateCategory>().ToList();
-			foreach (ICategory classicTemplate in items.Except(categories)) {
+			foreach (var classicTemplate in items.Except(categories)) {
 				// compatibility with the SD <=4.x way of adding templates:
 				// define category+subcategory in the .xft/.xpt file,
 				// and the category gets created automatically
-				var cat = GetOrCreateClassicCategory(categories, classicTemplate.Category);
-				if (!string.IsNullOrEmpty(classicTemplate.Subcategory))
-					cat = GetOrCreateClassicCategory(cat.Subcategories, classicTemplate.Subcategory);
-				cat.Templates.Add((TemplateBase)classicTemplate);
+				ICategory classicCategory = (ICategory)classicTemplate;
+				var cat = GetOrCreateClassicCategory(categories, classicCategory.Category);
+				if (!string.IsNullOrEmpty(classicCategory.Subcategory))
+					cat = GetOrCreateClassicCategory(cat.Subcategories, classicCategory.Subcategory);
+				cat.Templates.Add(classicTemplate);
 			}
 			return categories;
 		}

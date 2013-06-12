@@ -98,15 +98,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void InitializeTemplates(IEnumerable<TemplateCategory> templateCategories)
 		{
-			foreach (var templateCategory in templateCategories) {
-				categoryTreeView.Nodes.Add(CreateCategory(templateCategory));
+			foreach (var templateCategory in Sorted(templateCategories)) {
+				var cat = CreateCategory(templateCategory);
+				if (!cat.IsEmpty)
+					categoryTreeView.Nodes.Add(cat);
 			}
+		}
+		
+		IEnumerable<TemplateCategory> Sorted(IEnumerable<TemplateCategory> templateCategories)
+		{
+			return templateCategories.OrderByDescending(c => c.SortOrder).ThenBy(c => StringParser.Parse(c.DisplayName));
 		}
 		
 		Category CreateCategory(TemplateCategory templateCategory)
 		{
 			Category node = new NewFileDialog.Category(templateCategory.DisplayName);
-			foreach (var subcategory in templateCategory.Subcategories) {
+			foreach (var subcategory in Sorted(templateCategory.Subcategories)) {
 				var subnode = CreateCategory(subcategory);
 				if (!subnode.IsEmpty)
 					node.Nodes.Add(subnode);

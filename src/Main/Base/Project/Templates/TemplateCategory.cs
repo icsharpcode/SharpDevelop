@@ -16,6 +16,12 @@ namespace ICSharpCode.SharpDevelop.Templates
 		readonly string description;
 		readonly IImage icon;
 		
+		/// <summary>
+		/// An integer that is used for sorting; categories with higher values are listed first.
+		/// For equal values, the categories will be sorted by the display name.
+		/// </summary>
+		public int SortOrder { get; set; }
+		
 		public override string Name {
 			get { return name; }
 		}

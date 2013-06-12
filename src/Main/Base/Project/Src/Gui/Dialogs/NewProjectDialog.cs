@@ -89,17 +89,24 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		}
 		
 		
+		IEnumerable<TemplateCategory> Sorted(IEnumerable<TemplateCategory> templateCategories)
+		{
+			return templateCategories.OrderByDescending(c => c.SortOrder).ThenBy(c => StringParser.Parse(c.DisplayName));
+		}
+		
 		protected virtual void InitializeTemplates(IEnumerable<TemplateCategory> templateCategories)
 		{
-			foreach (var templateCategory in templateCategories) {
-				categoryTreeView.Nodes.Add(CreateCategory(templateCategory));
+			foreach (var templateCategory in Sorted(templateCategories)) {
+				var cat = CreateCategory(templateCategory);
+				if (!cat.IsEmpty)
+					categoryTreeView.Nodes.Add(cat);
 			}
 		}
 		
 		Category CreateCategory(TemplateCategory templateCategory)
 		{
 			Category node = new Category(templateCategory.DisplayName);
-			foreach (var subcategory in templateCategory.Subcategories) {
+			foreach (var subcategory in Sorted(templateCategory.Subcategories)) {
 				var subnode = CreateCategory(subcategory);
 				if (!subnode.IsEmpty)
 					node.Nodes.Add(subnode);
