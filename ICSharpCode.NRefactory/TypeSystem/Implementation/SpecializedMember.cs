@@ -177,6 +177,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return baseMember.SymbolKind; }
 		}
 		
+		[Obsolete("Use the SymbolKind property instead.")]
+		public EntityType EntityType {
+			get { return baseMember.EntityType; }
+		}
+		
 		public DomRegion Region {
 			get { return baseMember.Region; }
 		}

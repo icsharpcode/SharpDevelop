@@ -20,54 +20,44 @@ using System;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
-	public enum SymbolKind : byte
+	[Obsolete("Use SymbolKind instead")]
+	public enum EntityType : byte
 	{
-		None,
+		None = SymbolKind.None,
 		/// <seealso cref="ITypeDefinition"/>
-		TypeDefinition,
+		TypeDefinition = SymbolKind.TypeDefinition,
 		/// <seealso cref="IField"/>
-		Field,
+		Field = SymbolKind.Field,
 		/// <summary>
 		/// The symbol is a property, but not an indexer.
 		/// </summary>
 		/// <seealso cref="IProperty"/>
-		Property,
+		Property = SymbolKind.Property,
 		/// <summary>
 		/// The symbol is an indexer, not a regular property.
 		/// </summary>
 		/// <seealso cref="IProperty"/>
-		Indexer,
+		Indexer = SymbolKind.Indexer,
 		/// <seealso cref="IEvent"/>
-		Event,
+		Event = SymbolKind.Event,
 		/// <summary>
 		/// The symbol is a method which is not an operator/constructor/destructor or accessor.
 		/// </summary>
 		/// <seealso cref="IMethod"/>
-		Method,
+		Method = SymbolKind.Method,
 		/// <summary>
 		/// The symbol is a user-defined operator.
 		/// </summary>
 		/// <seealso cref="IMethod"/>
-		Operator,
+		Operator = SymbolKind.Operator,
 		/// <seealso cref="IMethod"/>
-		Constructor,
+		Constructor = SymbolKind.Constructor,
 		/// <seealso cref="IMethod"/>
-		Destructor,
+		Destructor = SymbolKind.Destructor,
 		/// <summary>
 		/// The accessor method for a property getter/setter or event add/remove.
 		/// </summary>
 		/// <seealso cref="IMethod"/>
-		Accessor,
-		/// <seealso cref="INamespace"/>
-		Namespace,
-		/// <summary>
-		/// The symbol is a variable, but not a parameter.
-		/// </summary>
-		/// <seealso cref="IVariable"/>
-		Variable,
-		/// <seealso cref="IParameter"/>
-		Parameter,
-		/// <seealso cref="ITypeParameter"/>
-		TypeParameter,
+		Accessor = SymbolKind.Accessor,
 	}
 }

@@ -96,6 +96,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	public interface IEntity : ISymbol, ICompilationProvider, INamedElement, IHasAccessibility
 	{
 		/// <summary>
+		/// Gets the entity type.
+		/// </summary>
+		[Obsolete("Use the SymbolKind property instead.")]
+		EntityType EntityType { get; }
+		
+		/// <summary>
 		/// Gets the short name of the entity.
 		/// </summary>
 		new string Name { get; }

@@ -151,6 +151,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return SymbolKind.Operator; }
 			}
 			
+			[Obsolete("Use the SymbolKind property instead.")]
+			EntityType IEntity.EntityType {
+				get { return EntityType.Operator; }
+			}
+			
 			DomRegion IEntity.Region {
 				get { return DomRegion.Empty; }
 			}

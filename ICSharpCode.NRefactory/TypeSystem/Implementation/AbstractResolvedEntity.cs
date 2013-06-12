@@ -45,6 +45,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return unresolved.SymbolKind; }
 		}
 		
+		[Obsolete("Use the SymbolKind property instead.")]
+		public EntityType EntityType {
+			get { return (EntityType)unresolved.SymbolKind; }
+		}
+		
 		public DomRegion Region {
 			get { return unresolved.Region; }
 		}

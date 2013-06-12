@@ -114,6 +114,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return parts[0].SymbolKind; }
 		}
 		
+		[Obsolete("Use the SymbolKind property instead.")]
+		public EntityType EntityType {
+			get { return (EntityType)parts[0].SymbolKind; }
+		}
+		
 		public virtual TypeKind Kind {
 			get { return parts[0].Kind; }
 		}
