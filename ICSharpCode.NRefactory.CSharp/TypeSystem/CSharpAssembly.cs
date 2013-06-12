@@ -268,8 +268,12 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				get { return fullName; }
 			}
 			
-			string INamespace.Name {
+			public string Name {
 				get { return name; }
+			}
+			
+			EntityType ISymbol.EntityType {
+				get { return EntityType.Namespace; }
 			}
 			
 			INamespace INamespace.ParentNamespace {

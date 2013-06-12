@@ -3145,6 +3145,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				this.name = name;
 			}
 			
+			public EntityType EntityType {
+				get { return EntityType.Variable; }
+			}
+			
 			public string Name {
 				get { return name; }
 			}

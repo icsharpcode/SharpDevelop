@@ -62,6 +62,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.variance = variance;
 		}
 		
+		EntityType ISymbol.EntityType {
+			get { return EntityType.TypeParameter; }
+		}
+		
 		public EntityType OwnerType {
 			get { return ownerType; }
 		}

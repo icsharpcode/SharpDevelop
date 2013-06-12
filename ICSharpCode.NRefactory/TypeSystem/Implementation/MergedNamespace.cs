@@ -91,6 +91,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+		public EntityType EntityType {
+			get { return EntityType.Namespace; }
+		}
+		
 		public ICompilation Compilation {
 			get { return compilation; }
 		}

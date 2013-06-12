@@ -228,6 +228,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				this.context = context;
 			}
 			
+			EntityType ISymbol.EntityType { get { return EntityType.Parameter; } }
 			public IType Type { get; internal set; }
 			public string Name { get; internal set; }
 			public DomRegion Region { get; internal set; }

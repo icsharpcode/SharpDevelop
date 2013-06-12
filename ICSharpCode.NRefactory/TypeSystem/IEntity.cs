@@ -93,12 +93,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Represents a resolved entity.
 	/// </summary>
-	public interface IEntity : ICompilationProvider, INamedElement, IHasAccessibility
+	public interface IEntity : ISymbol, ICompilationProvider, INamedElement, IHasAccessibility
 	{
 		/// <summary>
-		/// Gets the entity type.
+		/// Gets the short name of the entity.
 		/// </summary>
-		EntityType EntityType { get; }
+		new string Name { get; }
 		
 		/// <summary>
 		/// Gets the complete entity region (including header+body)

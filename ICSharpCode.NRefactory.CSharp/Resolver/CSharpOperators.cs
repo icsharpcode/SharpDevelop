@@ -147,7 +147,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return false; }
 			}
 			
-			EntityType IEntity.EntityType {
+			EntityType ISymbol.EntityType {
 				get { return EntityType.Operator; }
 			}
 			
@@ -243,7 +243,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return "operator"; }
 			}
 			
-			string INamedElement.Name {
+			public string Name {
 				get { return "operator"; }
 			}
 			

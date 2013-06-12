@@ -62,6 +62,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.defaultValue = defaultValue;
 		}
 		
+		EntityType ISymbol.EntityType {
+			get { return EntityType.Parameter; }
+		}
+		
 		public IList<IAttribute> Attributes {
 			get { return attributes; }
 		}

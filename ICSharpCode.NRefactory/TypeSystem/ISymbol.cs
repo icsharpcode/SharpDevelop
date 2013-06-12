@@ -21,34 +21,19 @@ using System;
 namespace ICSharpCode.NRefactory.TypeSystem
 {
 	/// <summary>
-	/// Represents a variable (name/type pair).
+	/// Interface for type system symbols.
 	/// </summary>
-	public interface IVariable : ISymbol
+	public interface ISymbol
 	{
 		/// <summary>
-		/// Gets the name of the variable.
+		/// This property returns an enum specifying which kind of symbol this is
+		/// (which derived interfaces of ISymbol are implemented)
 		/// </summary>
-		new string Name { get; }
+		EntityType EntityType { get; }
 		
 		/// <summary>
-		/// Gets the declaration region of the variable.
+		/// Gets the short name of the symbol.
 		/// </summary>
-		DomRegion Region { get; }
-		
-		/// <summary>
-		/// Gets the type of the variable.
-		/// </summary>
-		IType Type { get; }
-		
-		/// <summary>
-		/// Gets whether this variable is a constant (C#-like const).
-		/// </summary>
-		bool IsConst { get; }
-		
-		/// <summary>
-		/// If this field is a constant, retrieves the value.
-		/// For parameters, this is the default value.
-		/// </summary>
-		object ConstantValue { get; }
+		string Name { get; }
 	}
 }

@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Type parameter of a generic class/method.
 	/// </summary>
-	public interface ITypeParameter : IType
+	public interface ITypeParameter : IType, ISymbol
 	{
 		/// <summary>
 		/// Get the type of this type parameter's owner.
@@ -83,6 +83,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the index of the type parameter in the type parameter list of the owning method/class.
 		/// </summary>
 		int Index { get; }
+		
+		/// <summary>
+		/// Gets the name of the type parameter.
+		/// </summary>
+		new string Name { get; }
 		
 		/// <summary>
 		/// Gets the list of attributes declared on this type parameter.

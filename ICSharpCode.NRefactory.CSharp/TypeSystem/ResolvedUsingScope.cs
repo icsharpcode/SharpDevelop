@@ -162,8 +162,12 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				get { return NamespaceDeclaration.BuildQualifiedName(parentNamespace.FullName, name); }
 			}
 			
-			string INamespace.Name {
+			public string Name {
 				get { return name; }
+			}
+			
+			EntityType ISymbol.EntityType {
+				get { return EntityType.Namespace; }
 			}
 			
 			INamespace INamespace.ParentNamespace {

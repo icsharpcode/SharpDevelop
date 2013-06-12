@@ -126,6 +126,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.index = index;
 		}
 		
+		EntityType ISymbol.EntityType {
+			get { return EntityType.TypeParameter; }
+		}
+		
 		public override string Name {
 			get {
 				return (ownerType == EntityType.Method ? "!!" : "!") + index;

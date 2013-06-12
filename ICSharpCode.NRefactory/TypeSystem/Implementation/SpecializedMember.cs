@@ -405,6 +405,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				this.newType = newType;
 			}
 			
+			EntityType ISymbol.EntityType { get { return EntityType.Parameter; } }
+			
 			public IList<IAttribute> Attributes {
 				get { return originalParameter.Attributes; }
 			}
