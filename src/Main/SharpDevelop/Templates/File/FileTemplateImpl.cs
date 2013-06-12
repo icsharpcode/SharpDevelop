@@ -97,10 +97,16 @@ namespace ICSharpCode.SharpDevelop.Templates
 		}
 	}
 	
+	internal interface ICategory
+	{
+		string Category { get; }
+		string Subcategory { get; }
+	}
+	
 	/// <summary>
 	/// This class defines and holds the new file templates.
 	/// </summary>
-	internal class FileTemplateImpl : FileTemplate
+	internal class FileTemplateImpl : FileTemplate, ICategory
 	{
 		string author       = null;
 		string name         = null;
@@ -132,12 +138,17 @@ namespace ICSharpCode.SharpDevelop.Templates
 				return name;
 			}
 		}
-		public override string Category {
+		public override string DisplayName {
+			get {
+				return StringParser.Parse(name);
+			}
+		}
+		public string Category {
 			get {
 				return category;
 			}
 		}
-		public override string Subcategory {
+		public string Subcategory {
 			get {
 				return subcategory;
 			}

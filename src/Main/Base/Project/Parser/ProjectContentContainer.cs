@@ -174,6 +174,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				LoggingService.Warn(ex);
 				return null;
 			} catch (InvalidCastException ex) {
+				// can happen if serialized types are incompatible to expected types
 				LoggingService.Warn(ex);
 				return null;
 			} catch (FormatException ex) {

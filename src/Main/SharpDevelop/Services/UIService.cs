@@ -29,12 +29,12 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public FileTemplateResult ShowNewFileDialog(IProject project, DirectoryName directory, IEnumerable<FileTemplate> templates)
+		public FileTemplateResult ShowNewFileDialog(IProject project, DirectoryName directory, IEnumerable<TemplateCategory> templates)
 		{
 			#if DEBUG
 			SD.Templates.UpdateTemplates();
 			#endif
-			using (NewFileDialog nfd = new NewFileDialog(project, directory, templates ?? SD.Templates.FileTemplates)) {
+			using (NewFileDialog nfd = new NewFileDialog(project, directory, templates ?? SD.Templates.TemplateCategories)) {
 				if (nfd.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK)
 					return nfd.result;
 				else
@@ -42,12 +42,12 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public ProjectTemplateResult ShowNewProjectDialog(ISolutionFolder solutionFolder, IEnumerable<ProjectTemplate> templates)
+		public ProjectTemplateResult ShowNewProjectDialog(ISolutionFolder solutionFolder, IEnumerable<TemplateCategory> templates)
 		{
 			#if DEBUG
 			SD.Templates.UpdateTemplates();
 			#endif
-			using (NewProjectDialog npdlg = new NewProjectDialog(createNewSolution: solutionFolder == null, projectTemplates: templates ?? SD.Templates.ProjectTemplates)) {
+			using (NewProjectDialog npdlg = new NewProjectDialog(templates ?? SD.Templates.TemplateCategories, createNewSolution: solutionFolder == null)) {
 				npdlg.SolutionFolder = solutionFolder;
 				if (solutionFolder != null) {
 					npdlg.InitialProjectLocationDirectory = AddNewProjectToSolution.GetInitialDirectorySuggestion(solutionFolder);

@@ -17,7 +17,10 @@ namespace ICSharpCode.SharpDevelop.Templates
 	/// <attribute name="resourcePath" use="optional">
 	/// Namespace containing .xft and .xpt files as embedded resources.
 	/// </attribute>
-	/// <usage>Only in /SharpDevelop/BackendBindings/Templates</usage>
+	/// <attribute name="path" use="optional">
+	/// Path to directory containing .xft and .xpt files.
+	/// </attribute>
+	/// <usage>In the category subpaths of /SharpDevelop/BackendBindings/Templates</usage>
 	/// <returns>
 	/// The <see cref="TemplateBase"/> instance loaded from the template file.
 	/// </returns>

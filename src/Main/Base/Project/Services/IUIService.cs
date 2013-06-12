@@ -33,9 +33,9 @@ namespace ICSharpCode.SharpDevelop
 		/// <param name="directory">The target directory to which the new file should be saved.
 		/// May be <c>null</c> to create an untitled file.</param>
 		/// <param name="templates">The list of templates that are available in the dialog.
-		/// Pass <c>null</c> to use the default list (<see cref="ITemplateService.FileTemplates"/>)</param>
+		/// Pass <c>null</c> to use the default list (<see cref="ITemplateService.TemplateCategories"/>)</param>
 		/// <returns>Returns a <see cref="FileTemplateResult"/>; or null if no file was created.</returns>
-		FileTemplateResult ShowNewFileDialog(IProject project, DirectoryName directory, IEnumerable<FileTemplate> templates = null);
+		FileTemplateResult ShowNewFileDialog(IProject project, DirectoryName directory, IEnumerable<TemplateCategory> templates = null);
 		
 		/// <summary>
 		/// Show the 'New Project' dialog.
@@ -43,8 +43,8 @@ namespace ICSharpCode.SharpDevelop
 		/// <param name="solutionFolder">The parent solution folder to which the new project should be added.
 		/// May be <c>null</c> to create a new solution.</param>
 		/// <param name="templates">The list of templates that are available in the dialog.
-		/// Pass <c>null</c> to use the default list (<see cref="ITemplateService.ProjectTemplates"/>)</param>
+		/// Pass <c>null</c> to use the default list (<see cref="ITemplateService.TemplateCategories"/>)</param>
 		/// <returns>Returns a <see cref="ProjectTemplateResult"/>; or null if no project was created.</returns>
-		ProjectTemplateResult ShowNewProjectDialog(ISolutionFolder solutionFolder, IEnumerable<ProjectTemplate> templates = null);
+		ProjectTemplateResult ShowNewProjectDialog(ISolutionFolder solutionFolder, IEnumerable<TemplateCategory> templates = null);
 	}
 }

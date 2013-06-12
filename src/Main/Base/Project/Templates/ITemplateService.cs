@@ -12,17 +12,12 @@ namespace ICSharpCode.SharpDevelop.Templates
 	public interface ITemplateService
 	{
 		/// <summary>
-		/// Gets the list of file templates that are available in the 'new file' dialog.
+		/// Gets the list of template categories that are available in the 'new project' or 'new file' dialog.
 		/// </summary>
-		IEnumerable<FileTemplate> FileTemplates { get; }
+		IReadOnlyList<TemplateCategory> TemplateCategories { get; }
 		
 		/// <summary>
-		/// Gets the list of project templates that are available in the 'new project' dialog.
-		/// </summary>
-		IEnumerable<ProjectTemplate> ProjectTemplates { get; }
-		
-		/// <summary>
-		/// Reloads the <see cref="FileTemplates"/> and <see cref="ProjectTemplates"/>.
+		/// Reloads the <see cref="TemplateCategories"/>.
 		/// </summary>
 		void UpdateTemplates();
 		
@@ -35,6 +30,8 @@ namespace ICSharpCode.SharpDevelop.Templates
 		/// Loads a file template (.xft or .xpt file) from disk.
 		/// </summary>
 		/// <returns><see cref="FileTemplate"/> or <see cref="ProjectTemplate"/> instance.</returns>
+		/// <exception cref="TemplateLoadException">Invalid file format</exception>
+		/// <exception cref="IOException">Error reading the file</exception>
 		TemplateBase LoadTemplate(FileName fileName);
 		
 		/// <summary>
@@ -47,6 +44,8 @@ namespace ICSharpCode.SharpDevelop.Templates
 		/// The template will keep a reference to the file system instance and use it to create files/projects.
 		/// </param>
 		/// <returns><see cref="FileTemplate"/> or <see cref="ProjectTemplate"/> instance.</returns>
+		/// <exception cref="TemplateLoadException">Invalid file format</exception>
+		/// <exception cref="IOException">Error reading from the stream</exception>
 		TemplateBase LoadTemplate(Stream stream, IReadOnlyFileSystem fileSystem);
 	}
 }

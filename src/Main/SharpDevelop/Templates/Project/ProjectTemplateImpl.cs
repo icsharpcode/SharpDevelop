@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 	/// <summary>
 	/// This class defines and holds the new project templates.
 	/// </summary>
-	internal class ProjectTemplateImpl : ProjectTemplate
+	internal class ProjectTemplateImpl : ProjectTemplate, ICategory
 	{
 		string originator;
 		string created;
@@ -72,13 +72,18 @@ namespace ICSharpCode.SharpDevelop.Templates
 			}
 		}
 		
-		public override string Category {
+		public override string DisplayName {
+			get {
+				return StringParser.Parse(name);
+			}
+		}
+		public string Category {
 			get {
 				return category;
 			}
 		}
 		
-		public override string Subcategory {
+		public string Subcategory {
 			get {
 				return subcategory;
 			}

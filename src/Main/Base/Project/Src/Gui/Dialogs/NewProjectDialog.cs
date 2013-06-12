@@ -20,7 +20,6 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 	internal partial class NewProjectDialog : Form
 	{
 		protected List<TemplateItem> alltemplates = new List<TemplateItem>();
-		protected List<Category> categories = new List<Category>();
 		internal ProjectTemplateResult result;
 		
 		// icon resource name => image index
@@ -33,12 +32,12 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			set { locationTextBox.Text = value; }
 		}
 		
-		public NewProjectDialog(bool createNewSolution, IEnumerable<ProjectTemplate> projectTemplates)
+		public NewProjectDialog(IEnumerable<TemplateCategory> templateCategories, bool createNewSolution)
 		{
 			this.createNewSolution = createNewSolution;
 			MyInitializeComponents();
 			
-			InitializeTemplates(projectTemplates);
+			InitializeTemplates(templateCategories);
 			InitializeView();
 			
 			locationTextBox.Text = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.DefaultPath", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SharpDevelop Projects"));
@@ -84,59 +83,28 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			templateListView.LargeImageList = imglist;
 			templateListView.SmallImageList = smalllist;
 			
-			InsertCategories(null, categories);
-			categoryTreeView.TreeViewNodeSorter = new TemplateCategoryComparer();
-			categoryTreeView.Sort();
 			string initialSelectedCategory = StringParser.Parse("C#\\${res:Templates.File.Categories.WindowsApplications}");
 			TreeViewHelper.ApplyViewStateString(PropertyService.Get("Dialogs.NewProjectDialog.CategoryTreeState", ""), categoryTreeView);
 			categoryTreeView.SelectedNode = TreeViewHelper.GetNodeByPath(categoryTreeView, PropertyService.Get("Dialogs.NewProjectDialog.LastSelectedCategory", initialSelectedCategory));
 		}
 		
-		void InsertCategories(TreeNode node, IEnumerable<Category> catarray)
+		
+		protected virtual void InitializeTemplates(IEnumerable<TemplateCategory> templateCategories)
 		{
-			foreach (Category cat in catarray) {
-				if (node == null) {
-					categoryTreeView.Nodes.Add(cat);
-				} else {
-					node.Nodes.Add(cat);
-				}
-				InsertCategories(cat, cat.Categories);
+			foreach (var templateCategory in templateCategories) {
+				categoryTreeView.Nodes.Add(CreateCategory(templateCategory));
 			}
 		}
 		
-		protected Category GetCategory(string categoryname, string subcategoryname)
+		Category CreateCategory(TemplateCategory templateCategory)
 		{
-			foreach (Category category in categories) {
-				if (category.Text == categoryname) {
-					if (subcategoryname == null) {
-						return category;
-					} else {
-						return GetSubcategory(category, subcategoryname);
-					}
-				}
+			Category node = new Category(templateCategory.DisplayName);
+			foreach (var subcategory in templateCategory.Subcategories) {
+				var subnode = CreateCategory(subcategory);
+				if (!subnode.IsEmpty)
+					node.Nodes.Add(subnode);
 			}
-			Category newcategory = new Category(categoryname, TemplateCategorySortOrderFile.GetProjectCategorySortOrder(categoryname));
-			categories.Add(newcategory);
-			if (subcategoryname != null) {
-				return GetSubcategory(newcategory, subcategoryname);
-			}
-			return newcategory;
-		}
-		
-		Category GetSubcategory(Category parentCategory, string name)
-		{
-			foreach (Category subcategory in parentCategory.Categories) {
-				if (subcategory.Text == name)
-					return subcategory;
-			}
-			Category newsubcategory = new Category(name, TemplateCategorySortOrderFile.GetProjectCategorySortOrder(parentCategory.Name, name));
-			parentCategory.Categories.Add(newsubcategory);
-			return newsubcategory;
-		}
-		
-		protected virtual void InitializeTemplates(IEnumerable<ProjectTemplate> projectTemplates)
-		{
-			foreach (ProjectTemplate template in projectTemplates) {
+			foreach (var template in templateCategory.Templates.OfType<ProjectTemplate>()) {
 				if (!template.IsVisible(SolutionFolder != null ? SolutionFolder.ParentSolution : null)) {
 					// Do not show solution template when added a new project to existing solution
 					continue;
@@ -145,12 +113,10 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				if (titem.Template.Icon != null) {
 					icons[titem.Template.Icon] = 0; // "create template icon"
 				}
-				Category cat = GetCategory(StringParser.Parse(titem.Template.Category), StringParser.Parse(titem.Template.Subcategory));
-				cat.Templates.Add(titem);
-				if (cat.Templates.Count == 1)
-					titem.Selected = true;
 				alltemplates.Add(titem);
+				node.Templates.Add(titem);
 			}
+			return node;
 		}
 		
 		protected void CategoryChange(object sender, TreeViewEventArgs e)
@@ -443,40 +409,24 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		/// <summary>
 		///  Represents a category
 		/// </summary>
-		public class Category : TreeNode, ICategory
+		protected class Category : TreeNode
 		{
-			List<Category> categories = new List<Category>();
 			List<TemplateItem> templates  = new List<TemplateItem>();
-			int sortOrder = TemplateCategorySortOrderFile.UndefinedSortOrder;
 			
-			public Category(string name) : this(name, TemplateCategorySortOrderFile.UndefinedSortOrder)
-			{
-			}
-			
-			public Category(string name, int sortOrder) : base(StringParser.Parse(name))
+			public Category(string name) : base(StringParser.Parse(name))
 			{
 				this.Name = StringParser.Parse(name);
 				ImageIndex = 1;
-				this.sortOrder = sortOrder;
 			}
 			
-			public int SortOrder {
-				get {
-					return sortOrder;
-				}
-				set {
-					sortOrder = value;
-				}
-			}
-			public List<Category> Categories {
-				get {
-					return categories;
-				}
-			}
 			public List<TemplateItem> Templates {
 				get {
 					return templates;
 				}
+			}
+			
+			public bool IsEmpty {
+				get { return templates.Count == 0 && Nodes.Count == 0; }
 			}
 		}
 		
@@ -487,7 +437,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		{
 			ProjectTemplate template;
 			
-			public TemplateItem(ProjectTemplate template) : base(StringParser.Parse(template.Name))
+			public TemplateItem(ProjectTemplate template) : base(template.DisplayName)
 			{
 				this.template = template;
 				ImageIndex = 0;

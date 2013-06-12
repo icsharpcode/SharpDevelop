@@ -159,9 +159,6 @@
     <Compile Include="WebReferences\WebServicesReferenceExistsTests.cs" />
     <Compile Include="WebReferences\ProjectWebReferenceItemsTests.cs" />
     <Compile Include="WebReferences\WebReferenceChangesTest.cs" />
-    <Compile Include="Templates\ProjectTemplateCategoryComparerTests.cs" />
-    <Compile Include="Templates\CategorySortOrderTests.cs" />
-    <Compile Include="Templates\FileTemplateCategoryComparerTests.cs" />
     <Compile Include="WebReferences\HttpAuthenticationHeaderTests.cs" />
     <Compile Include="NavigationServiceTests\INavigationPointTextFixture.cs" />
     <Compile Include="NavigationServiceTests\TestNavigationPoint.cs" />

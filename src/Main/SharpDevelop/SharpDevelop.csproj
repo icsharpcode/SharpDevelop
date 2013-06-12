@@ -167,6 +167,7 @@
     <Compile Include="Templates\Project\ProjectDescriptor.cs" />
     <Compile Include="Templates\Project\ProjectTemplateImpl.cs" />
     <Compile Include="Templates\Project\SolutionDescriptor.cs" />
+    <Compile Include="Templates\TemplateCategoryDoozer.cs" />
     <Compile Include="Templates\TemplateFileDoozer.cs" />
     <Compile Include="Templates\TemplateService.cs" />
     <Compile Include="WinForms\SDWindowsFormsHost.cs" />

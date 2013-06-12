@@ -15,32 +15,49 @@ namespace ICSharpCode.SharpDevelop.Templates
 	{
 		const string TemplatePath = "/SharpDevelop/BackendBindings/Templates";
 		
-		Lazy<IReadOnlyList<TemplateBase>> projectAndFileTemplates;
+		Lazy<IReadOnlyList<TemplateCategory>> templateCategories;
 		Lazy<IReadOnlyList<TextTemplateGroup>> textTemplates;
 		
 		public TemplateService()
 		{
-			projectAndFileTemplates = new Lazy<IReadOnlyList<TemplateBase>>(LoadProjectAndFileTemplates);
+			templateCategories = new Lazy<IReadOnlyList<TemplateCategory>>(LoadProjectAndFileTemplates);
 			textTemplates = new Lazy<IReadOnlyList<TextTemplateGroup>>(LoadTextTemplates);
 		}
 		
-		public IEnumerable<FileTemplate> FileTemplates {
-			get { return projectAndFileTemplates.Value.OfType<FileTemplate>(); }
-		}
-		
-		public IEnumerable<ProjectTemplate> ProjectTemplates {
-			get { return projectAndFileTemplates.Value.OfType<ProjectTemplate>(); }
+		public IReadOnlyList<TemplateCategory> TemplateCategories {
+			get { return templateCategories.Value; }
 		}
 		
 		public void UpdateTemplates()
 		{
 			var newTemplates = LoadProjectAndFileTemplates();
-			projectAndFileTemplates = new Lazy<IReadOnlyList<TemplateBase>>(() => newTemplates);
+			templateCategories = new Lazy<IReadOnlyList<TemplateCategory>>(() => newTemplates);
 		}
 		
-		IReadOnlyList<TemplateBase> LoadProjectAndFileTemplates()
+		IReadOnlyList<TemplateCategory> LoadProjectAndFileTemplates()
 		{
-			return SD.AddInTree.BuildItems<TemplateBase>(TemplatePath, this, false);
+			var items = SD.AddInTree.BuildItems<TemplateBase>(TemplatePath, this, false);
+			var categories = items.OfType<TemplateCategory>().ToList();
+			foreach (ICategory classicTemplate in items.Except(categories)) {
+				// compatibility with the SD <=4.x way of adding templates:
+				// define category+subcategory in the .xft/.xpt file,
+				// and the category gets created automatically
+				var cat = GetOrCreateClassicCategory(categories, classicTemplate.Category);
+				if (!string.IsNullOrEmpty(classicTemplate.Subcategory))
+					cat = GetOrCreateClassicCategory(cat.Subcategories, classicTemplate.Subcategory);
+				cat.Templates.Add((TemplateBase)classicTemplate);
+			}
+			return categories;
+		}
+		
+		TemplateCategory GetOrCreateClassicCategory(IList<TemplateCategory> categories, string name)
+		{
+			var cat = categories.FirstOrDefault(c => c.Name == name);
+			if (cat == null) {
+				cat = new TemplateCategory(name);
+				categories.Add(cat);
+			}
+			return cat;
 		}
 		
 		public IEnumerable<TextTemplateGroup> TextTemplates {

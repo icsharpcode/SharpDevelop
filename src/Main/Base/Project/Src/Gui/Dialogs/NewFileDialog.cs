@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
@@ -17,6 +16,7 @@ using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Templates;
+using Microsoft.Build.Framework.XamlTypes;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -25,8 +25,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	internal class NewFileDialog : BaseSharpDevelopForm
 	{
-		ArrayList alltemplates = new ArrayList();
-		ArrayList categories   = new ArrayList();
+		List<TemplateItem> alltemplates = new List<TemplateItem>();
 		Dictionary<IImage, int> icons = new Dictionary<IImage, int>();
 		bool allowUntitledFiles;
 		IProject project;
@@ -34,14 +33,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		internal FileTemplateOptions options;
 		internal FileTemplateResult result;
 		
-		public NewFileDialog(IProject project, DirectoryName basePath, IEnumerable<FileTemplate> fileTemplates)
+		public NewFileDialog(IProject project, DirectoryName basePath, IEnumerable<TemplateCategory> templateCategories)
 		{
 			this.project = project;
 			this.basePath = basePath;
 			this.allowUntitledFiles = basePath == null;
 			try {
 				InitializeComponents();
-				InitializeTemplates(fileTemplates);
+				InitializeTemplates(templateCategories);
 				InitializeView();
 				
 				if (allowUntitledFiles)
@@ -90,11 +89,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			templateListView.LargeImageList = imglist;
 			templateListView.SmallImageList = smalllist;
 			
-			InsertCategories(null, categories);
-			
-			categoryTreeView.TreeViewNodeSorter = new TemplateCategoryComparer();
-			categoryTreeView.Sort();
-			
 			TreeViewHelper.ApplyViewStateString(PropertyService.Get("Dialogs.NewFileDialog.CategoryViewState", ""), categoryTreeView);
 			categoryTreeView.SelectedNode = TreeViewHelper.GetNodeByPath(categoryTreeView, PropertyService.Get("Dialogs.NewFileDialog.LastSelectedCategory", "C#"));
 		}
@@ -102,63 +96,32 @@ namespace ICSharpCode.SharpDevelop.Gui
 		ListView templateListView;
 		System.Windows.Forms.TreeView categoryTreeView;
 		
-		void InsertCategories(TreeNode node, ArrayList catarray)
+		void InitializeTemplates(IEnumerable<TemplateCategory> templateCategories)
 		{
-			foreach (Category cat in catarray) {
-				if (node == null) {
-					categoryTreeView.Nodes.Add(cat);
-				} else {
-					node.Nodes.Add(cat);
-				}
-				InsertCategories(cat, cat.Categories);
+			foreach (var templateCategory in templateCategories) {
+				categoryTreeView.Nodes.Add(CreateCategory(templateCategory));
 			}
 		}
 		
-		Category GetCategory(string categoryname, string subcategoryname)
+		Category CreateCategory(TemplateCategory templateCategory)
 		{
-			foreach (Category category in categories) {
-				if (category.Name == categoryname) {
-					if (subcategoryname == null) {
-						return category;
-					} else {
-						return GetSubcategory(category, subcategoryname);
-					}
-				}
+			Category node = new NewFileDialog.Category(templateCategory.DisplayName);
+			foreach (var subcategory in templateCategory.Subcategories) {
+				var subnode = CreateCategory(subcategory);
+				if (!subnode.IsEmpty)
+					node.Nodes.Add(subnode);
 			}
-			Category newcategory = new Category(categoryname, TemplateCategorySortOrderFile.GetFileCategorySortOrder(categoryname));
-			categories.Add(newcategory);
-			if (subcategoryname != null) {
-				return GetSubcategory(newcategory, subcategoryname);
-			}
-			return newcategory;
-		}
-		
-		Category GetSubcategory(Category parentCategory, string name)
-		{
-			foreach (Category subcategory in parentCategory.Categories) {
-				if (subcategory.Name == name)
-					return subcategory;
-			}
-			Category newsubcategory = new Category(name, TemplateCategorySortOrderFile.GetFileCategorySortOrder(parentCategory.Name, name));
-			parentCategory.Categories.Add(newsubcategory);
-			return newsubcategory;
-		}
-		
-		void InitializeTemplates(IEnumerable<FileTemplate> fileTemplates)
-		{
-			foreach (FileTemplate template in fileTemplates) {
+			foreach (var template in templateCategory.Templates.OfType<FileTemplate>()) {
+				if (!template.IsVisible(project))
+					continue;
 				TemplateItem titem = new TemplateItem(template);
 				if (titem.Template.Icon != null) {
 					icons[titem.Template.Icon] = 0; // "create template icon"
 				}
-				if (template.IsVisible(project)) {
-					Category cat = GetCategory(StringParser.Parse(titem.Template.Category), StringParser.Parse(titem.Template.Subcategory));
-					cat.Templates.Add(titem);
-					
-					cat.Selected = true;
-				}
 				alltemplates.Add(titem);
+				node.Templates.Add(titem);
 			}
+			return node;
 		}
 		
 		// tree view event handlers
@@ -344,42 +307,27 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		///  Represents a category
 		/// </summary>
-		public class Category : TreeNode, ICategory
+		class Category : TreeNode
 		{
-			ArrayList categories = new ArrayList();
-			ArrayList templates  = new ArrayList();
-			int sortOrder        = TemplateCategorySortOrderFile.UndefinedSortOrder;
+			List<TemplateItem> templates  = new List<TemplateItem>();
 			public bool Selected = false;
 			public bool HasSelectedTemplate = false;
 			
-			public Category(string name, int sortOrder) : base(StringParser.Parse(name))
+			public Category(string name) : base(StringParser.Parse(name))
 			{
 				this.Name = StringParser.Parse(name);
 				ImageIndex = 1;
-				this.sortOrder = sortOrder;
 			}
 			
-			public Category(string name) : this(name, TemplateCategorySortOrderFile.UndefinedSortOrder)
-			{
-			}
-			
-			public ArrayList Categories {
-				get {
-					return categories;
-				}
-			}
-			public ArrayList Templates {
+			public List<TemplateItem> Templates {
 				get {
 					return templates;
 				}
 			}
-			
-			public int SortOrder {
+
+			public bool IsEmpty {
 				get {
-					return sortOrder;
-				}
-				set {
-					sortOrder = value;
+					return templates.Count == 0 && Nodes.Count == 0;
 				}
 			}
 		}
@@ -391,7 +339,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			FileTemplate template;
 			
-			public TemplateItem(FileTemplate template) : base(StringParser.Parse(template.Name))
+			public TemplateItem(FileTemplate template) : base(template.DisplayName)
 			{
 				this.template = template;
 				ImageIndex    = 0;
