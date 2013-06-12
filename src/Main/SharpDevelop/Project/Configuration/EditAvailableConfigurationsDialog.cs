@@ -32,10 +32,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.configurable = configurable;
 			this.editPlatforms = editPlatforms;
 			if (editPlatforms) {
-				this.Text = StringParser.Parse("${res:Dialog.EditAvailableConfigurationsDialog.EditSolutionPlatforms}");
+				if (configurable is ISolution)
+					this.Text = StringParser.Parse("${res:Dialog.EditAvailableConfigurationsDialog.EditSolutionPlatforms}");
+				else
+					this.Text = StringParser.Parse("${res:Dialog.EditAvailableConfigurationsDialog.EditProjectPlatforms}");
 				this.editedCollection = configurable.PlatformNames;
 			} else {
-				this.Text = StringParser.Parse("${res:Dialog.EditAvailableConfigurationsDialog.EditSolutionConfigurations}");
+				if (configurable is ISolution)
+					this.Text = StringParser.Parse("${res:Dialog.EditAvailableConfigurationsDialog.EditSolutionConfigurations}");
+				else
+					this.Text = StringParser.Parse("${res:Dialog.EditAvailableConfigurationsDialog.EditProjectConfigurations}");
 				this.editedCollection = configurable.ConfigurationNames;
 			}
 			InitList();
