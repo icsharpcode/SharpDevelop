@@ -91,7 +91,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 					}
 				}
 			}
-			return new FlowDocumentTooltip(b.FlowDocument);
+			return new FlowDocumentTooltip(b.CreateFlowDocument());
 		}
 		
 		object CreateTooltip(IEntity entity)
@@ -109,7 +109,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 					b.AddDocumentationElement(child);
 				}
 			}
-			return new FlowDocumentTooltip(b.FlowDocument);
+			return new FlowDocumentTooltip(b.CreateFlowDocument());
 		}
 	}
 }

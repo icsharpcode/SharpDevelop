@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -48,8 +49,10 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 			this.ShowRemarks = true;
 		}
 		
-		public FlowDocument FlowDocument {
-			get { return flowDocument; }
+		public FlowDocument CreateFlowDocument()
+		{
+			FlushAddedText(true);
+			return flowDocument;
 		}
 		
 		public bool ShowExceptions { get; set; }
@@ -163,6 +166,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 				case "overloads":
 					// ignore children
 					break;
+				case "br":
+					AddLineBreak();
+					break;
 				default:
 					foreach (var child in element.Children)
 						AddDocumentationElement(child);
@@ -271,10 +277,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 		Inline ConvertReference(IEntity referencedEntity)
 		{
 			var h = new Hyperlink(new Run(ambience.ConvertEntity(referencedEntity)));
-			h.Click += delegate(object sender, RoutedEventArgs e) {
-				SharpDevelop.NavigationService.NavigateTo(referencedEntity);
-				e.Handled = true;
-			};
+			h.Click += CreateNavigateOnClickHandler(referencedEntity);
 			return h;
 		}
 		
@@ -309,10 +312,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 			if (referencedEntity != null) {
 				if (element.Children.Any()) {
 					Hyperlink link = new Hyperlink();
-					link.Click += delegate(object sender, RoutedEventArgs e) {
-						SharpDevelop.NavigationService.NavigateTo(referencedEntity);
-						e.Handled = true;
-					};
+					link.Click += CreateNavigateOnClickHandler(referencedEntity);
 					AddSpan(link, element.Children);
 				} else {
 					AddInline(ConvertReference(referencedEntity));
@@ -334,6 +334,20 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 			}
 		}
 		
+		RoutedEventHandler CreateNavigateOnClickHandler(IEntity referencedEntity)
+		{
+			// Don't let the anonymous method capture the referenced entity
+			// (we don't want to keep the whole compilation in memory)
+			// Use the IEntityModel instead.
+			var model = referencedEntity.GetModel();
+			return delegate(object sender, RoutedEventArgs e) {
+				IEntity resolvedEntity = model != null ? model.Resolve() : null;
+				if (resolvedEntity != null)
+					SharpDevelop.NavigationService.NavigateTo(resolvedEntity);
+				e.Handled = true;
+			};
+		}
+		
 		void AddSection(string title, IEnumerable<XmlDocumentationElement> children)
 		{
 			AddSection(new Run(title), children);
@@ -351,7 +365,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 		void AddSection(Inline title, Action addChildren)
 		{
 			var section = new Section();
-			blockCollection.Add(section);
+			AddBlock(section);
 			var oldBlockCollection = blockCollection;
 			try {
 				blockCollection = section.Blocks;
@@ -370,7 +384,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 		
 		void AddParagraph(Paragraph para, IEnumerable<XmlDocumentationElement> children)
 		{
-			blockCollection.Add(para);
+			AddBlock(para);
 			try {
 				inlineCollection = para.Inlines;
 				
@@ -414,25 +428,64 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 			blockCollection.Add(block);
 		}
 		
-		string addedText;
+		StringBuilder addedText = new StringBuilder();
+		bool ignoreWhitespace;
+		
+		public void AddLineBreak()
+		{
+			TrimEndOfAddedText();
+			addedText.AppendLine();
+			ignoreWhitespace = true;
+		}
 		
 		public void AddText(string textContent)
 		{
 			if (string.IsNullOrEmpty(textContent))
 				return;
-			if (inlineCollection == null && string.IsNullOrWhiteSpace(textContent))
-				return;
-			FlushAddedText(false);
-			addedText = textContent;
+			for (int i = 0; i < textContent.Length; i++) {
+				char c = textContent[i];
+				if (c == '\n' && IsEmptyLineBefore(textContent, i)) {
+					AddLineBreak(); // empty line -> line break
+				} else if (char.IsWhiteSpace(c)) {
+					// any whitespace sequence gets converted to a single space (like HTML)
+					if (!ignoreWhitespace) {
+						addedText.Append(' ');
+						ignoreWhitespace = true;
+					}
+				} else {
+					addedText.Append(c);
+					ignoreWhitespace = false;
+				}
+			}
 		}
 		
-		void FlushAddedText(bool trimEnd)
+		bool IsEmptyLineBefore(string text, int i)
 		{
-			if (addedText == null)
+			// Skip previous whitespace
+			do {
+				i--;
+			} while (i >= 0 && (text[i] == ' ' || text[i] == '\r'));
+			// Check if previous non-whitespace char is \n
+			return i >= 0 && text[i] == '\n';
+		}
+		
+		void TrimEndOfAddedText()
+		{
+			while (addedText.Length > 0 && addedText[addedText.Length - 1] == ' ') {
+				addedText.Length--;
+			}
+		}
+		
+		void FlushAddedText(bool trim)
+		{
+			if (trim) // trim end of current text element
+				TrimEndOfAddedText();
+			if (addedText.Length == 0)
 				return;
-			string text = addedText;
-			addedText = null;
-			AddInline(new Run(trimEnd ? text.TrimEnd() : text));
+			string text = addedText.ToString();
+			addedText.Length = 0;
+			AddInline(new Run(text));
+			ignoreWhitespace = trim; // trim start of next text element
 		}
 	}
 }
