@@ -22,23 +22,24 @@ using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.XamlBinding
 {
+	// TODO: add [Serializable] support for FastSerializer
+	// (SD code may require modifications so that addin assemblies
+	// can be found by the deserializer)
 	public sealed class XamlUnresolvedFile : IUnresolvedFile
 	{
 		FileName fileName;
-		AXmlDocument document;
 		List<Error> errors;
 		IUnresolvedTypeDefinition[] topLevel;
 		
-		XamlUnresolvedFile(FileName fileName, AXmlDocument document)
+		XamlUnresolvedFile(FileName fileName)
 		{
 			this.fileName = fileName;
-			this.document = document;
 			this.errors = new List<Error>();
 		}
 		
 		public static XamlUnresolvedFile Create(FileName fileName, ITextSource fileContent, AXmlDocument document)
 		{
-			XamlUnresolvedFile file = new XamlUnresolvedFile(fileName, document);
+			XamlUnresolvedFile file = new XamlUnresolvedFile(fileName);
 			
 			file.errors.AddRange(document.SyntaxErrors.Select(err => new Error(ErrorType.Error, err.Description)));
 			var visitor = new XamlDocumentVisitor(file, fileContent);
@@ -48,7 +49,6 @@ namespace ICSharpCode.XamlBinding
 			else
 				file.topLevel = new IUnresolvedTypeDefinition[0];
 			
-			file.lastWriteTime = DateTime.UtcNow;
 			return file;
 		}
 		
