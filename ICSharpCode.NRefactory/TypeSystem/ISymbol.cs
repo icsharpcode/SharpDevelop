@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// This property returns an enum specifying which kind of symbol this is
 		/// (which derived interfaces of ISymbol are implemented)
 		/// </summary>
-		EntityType EntityType { get; }
+		SymbolKind SymbolKind { get; }
 		
 		/// <summary>
 		/// Gets the short name of the symbol.

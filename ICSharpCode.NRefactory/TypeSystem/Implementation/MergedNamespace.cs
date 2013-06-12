@@ -91,8 +91,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public EntityType EntityType {
-			get { return EntityType.Namespace; }
+		public SymbolKind SymbolKind {
+			get { return SymbolKind.Namespace; }
 		}
 		
 		public ICompilation Compilation {

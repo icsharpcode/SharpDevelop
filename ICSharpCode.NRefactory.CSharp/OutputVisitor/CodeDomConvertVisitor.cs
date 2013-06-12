@@ -685,7 +685,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		CodeObject IAstVisitor<CodeObject>.VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration)
 		{
 			CodeTypeDelegate d = new CodeTypeDelegate(delegateDeclaration.Name);
-			d.Attributes = ConvertMemberAttributes(delegateDeclaration.Modifiers, EntityType.TypeDefinition);
+			d.Attributes = ConvertMemberAttributes(delegateDeclaration.Modifiers, SymbolKind.TypeDefinition);
 			d.CustomAttributes.AddRange(Convert(delegateDeclaration.Attributes));
 			d.ReturnType = Convert(delegateDeclaration.ReturnType);
 			d.Parameters.AddRange(Convert(delegateDeclaration.Parameters));
@@ -693,14 +693,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			return d;
 		}
 		
-		MemberAttributes ConvertMemberAttributes(Modifiers modifiers, EntityType entityType)
+		MemberAttributes ConvertMemberAttributes(Modifiers modifiers, SymbolKind symbolKind)
 		{
 			MemberAttributes a = 0;
 			if ((modifiers & Modifiers.Abstract) != 0)
 				a |= MemberAttributes.Abstract;
 			if ((modifiers & Modifiers.Sealed) != 0)
 				a |= MemberAttributes.Final;
-			if (entityType != EntityType.TypeDefinition && (modifiers & (Modifiers.Abstract | Modifiers.Override | Modifiers.Virtual)) == 0)
+			if (symbolKind != SymbolKind.TypeDefinition && (modifiers & (Modifiers.Abstract | Modifiers.Override | Modifiers.Virtual)) == 0)
 				a |= MemberAttributes.Final;
 			if ((modifiers & Modifiers.Static) != 0)
 				a |= MemberAttributes.Static;
@@ -748,7 +748,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			//bool isNestedType = typeStack.Count > 0;
 			CodeTypeDeclaration typeDecl = new CodeTypeDeclaration(typeDeclaration.Name);
-			typeDecl.Attributes = ConvertMemberAttributes(typeDeclaration.Modifiers, EntityType.TypeDefinition);
+			typeDecl.Attributes = ConvertMemberAttributes(typeDeclaration.Modifiers, SymbolKind.TypeDefinition);
 			typeDecl.CustomAttributes.AddRange(Convert(typeDeclaration.Attributes));
 			
 			switch (typeDeclaration.ClassType) {
@@ -1056,7 +1056,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		CodeObject IAstVisitor<CodeObject>.VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
 		{
 			CodeConstructor ctor = new CodeConstructor();
-			ctor.Attributes = ConvertMemberAttributes(constructorDeclaration.Modifiers, EntityType.Constructor);
+			ctor.Attributes = ConvertMemberAttributes(constructorDeclaration.Modifiers, SymbolKind.Constructor);
 			ctor.CustomAttributes.AddRange(Convert(constructorDeclaration.Attributes));
 			if (constructorDeclaration.Initializer.ConstructorInitializerType == ConstructorInitializerType.This) {
 				ctor.ChainedConstructorArgs.AddRange(Convert(constructorDeclaration.Initializer.Arguments));
@@ -1098,7 +1098,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				
 				CodeMemberEvent e = new CodeMemberEvent();
-				e.Attributes = ConvertMemberAttributes(eventDeclaration.Modifiers, EntityType.Event);
+				e.Attributes = ConvertMemberAttributes(eventDeclaration.Modifiers, SymbolKind.Event);
 				e.CustomAttributes.AddRange(Convert(eventDeclaration.Attributes));
 				e.Name = vi.Name;
 				e.Type = Convert(eventDeclaration.ReturnType);
@@ -1116,7 +1116,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			foreach (VariableInitializer vi in fieldDeclaration.Variables) {
 				CodeMemberField f = new CodeMemberField(Convert(fieldDeclaration.ReturnType), vi.Name);
-				f.Attributes = ConvertMemberAttributes(fieldDeclaration.Modifiers, EntityType.Field);
+				f.Attributes = ConvertMemberAttributes(fieldDeclaration.Modifiers, SymbolKind.Field);
 				f.CustomAttributes.AddRange(Convert(fieldDeclaration.Attributes));
 				f.InitExpression = ConvertVariableInitializer(vi.Initializer, fieldDeclaration.ReturnType);
 				AddTypeMember(f);
@@ -1127,7 +1127,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		CodeObject IAstVisitor<CodeObject>.VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration)
 		{
 			CodeMemberProperty p = new CodeMemberProperty();
-			p.Attributes = ConvertMemberAttributes(indexerDeclaration.Modifiers, EntityType.Indexer);
+			p.Attributes = ConvertMemberAttributes(indexerDeclaration.Modifiers, SymbolKind.Indexer);
 			p.CustomAttributes.AddRange(Convert(indexerDeclaration.Attributes));
 			p.Name = "Items";
 			p.PrivateImplementationType = Convert(indexerDeclaration.PrivateImplementationType);
@@ -1148,7 +1148,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		CodeObject IAstVisitor<CodeObject>.VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 		{
 			CodeMemberMethod m = new CodeMemberMethod();
-			m.Attributes = ConvertMemberAttributes(methodDeclaration.Modifiers, EntityType.Method);
+			m.Attributes = ConvertMemberAttributes(methodDeclaration.Modifiers, SymbolKind.Method);
 			
 			m.CustomAttributes.AddRange(Convert(methodDeclaration.Attributes.Where(a => a.AttributeTarget != "return")));
 			m.ReturnTypeCustomAttributes.AddRange(Convert(methodDeclaration.Attributes.Where(a => a.AttributeTarget == "return")));
@@ -1166,7 +1166,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		CodeObject IAstVisitor<CodeObject>.VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration)
 		{
 			CodeMemberMethod m = new CodeMemberMethod();
-			m.Attributes = ConvertMemberAttributes(operatorDeclaration.Modifiers, EntityType.Method);
+			m.Attributes = ConvertMemberAttributes(operatorDeclaration.Modifiers, SymbolKind.Method);
 			
 			m.CustomAttributes.AddRange(Convert(operatorDeclaration.Attributes.Where(a => a.AttributeTarget != "return")));
 			m.ReturnTypeCustomAttributes.AddRange(Convert(operatorDeclaration.Attributes.Where(a => a.AttributeTarget == "return")));
@@ -1208,7 +1208,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		CodeObject IAstVisitor<CodeObject>.VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
 		{
 			CodeMemberProperty p = new CodeMemberProperty();
-			p.Attributes = ConvertMemberAttributes(propertyDeclaration.Modifiers, EntityType.Property);
+			p.Attributes = ConvertMemberAttributes(propertyDeclaration.Modifiers, SymbolKind.Property);
 			p.CustomAttributes.AddRange(Convert(propertyDeclaration.Attributes));
 			p.Name = propertyDeclaration.Name;
 			p.PrivateImplementationType = Convert(propertyDeclaration.PrivateImplementationType);

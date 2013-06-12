@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				if (typeRef != null) {
 					types[i] = new DefaultUnresolvedTypeDefinition(typeRef.Namespace, typeRef.Name);
 					for (int j = 0; j < typeRef.TypeParameterCount; j++) {
-						types[i].TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, j));
+						types[i].TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, j));
 					}
 					AddTypeDefinition(types[i]);
 				}

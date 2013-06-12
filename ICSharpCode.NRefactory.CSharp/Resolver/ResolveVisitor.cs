@@ -653,20 +653,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Track CurrentMember
 		ResolveResult IAstVisitor<ResolveResult>.VisitFieldDeclaration(FieldDeclaration fieldDeclaration)
 		{
-			return VisitFieldOrEventDeclaration(fieldDeclaration, EntityType.Field);
+			return VisitFieldOrEventDeclaration(fieldDeclaration, SymbolKind.Field);
 		}
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration)
 		{
-			return VisitFieldOrEventDeclaration(fixedFieldDeclaration, EntityType.Field);
+			return VisitFieldOrEventDeclaration(fixedFieldDeclaration, SymbolKind.Field);
 		}
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitEventDeclaration(EventDeclaration eventDeclaration)
 		{
-			return VisitFieldOrEventDeclaration(eventDeclaration, EntityType.Event);
+			return VisitFieldOrEventDeclaration(eventDeclaration, SymbolKind.Event);
 		}
 		
-		ResolveResult VisitFieldOrEventDeclaration(EntityDeclaration fieldOrEventDeclaration, EntityType entityType)
+		ResolveResult VisitFieldOrEventDeclaration(EntityDeclaration fieldOrEventDeclaration, SymbolKind symbolKind)
 		{
 			//int initializerCount = fieldOrEventDeclaration.GetChildrenByRole(Roles.Variable).Count;
 			CSharpResolver oldResolver = resolver;
@@ -677,7 +677,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						member = GetMemberFromLocation(node);
 					} else {
 						string name = ((VariableInitializer)node).Name;
-						member = AbstractUnresolvedMember.Resolve(resolver.CurrentTypeResolveContext, entityType, name);
+						member = AbstractUnresolvedMember.Resolve(resolver.CurrentTypeResolveContext, symbolKind, name);
 					}
 					resolver = resolver.WithCurrentMember(member);
 					
@@ -797,15 +797,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					member = GetMemberFromLocation(memberDeclaration);
 				} else {
 					// Re-discover the method:
-					EntityType entityType = memberDeclaration.EntityType;
+					SymbolKind symbolKind = memberDeclaration.SymbolKind;
 					var parameterTypes = TypeSystemConvertVisitor.GetParameterTypes(memberDeclaration.GetChildrenByRole(Roles.Parameter), InterningProvider.Dummy);
-					if (entityType == EntityType.Constructor) {
+					if (symbolKind == SymbolKind.Constructor) {
 						string name = memberDeclaration.HasModifier(Modifiers.Static) ? ".cctor" : ".ctor";
 						member = AbstractUnresolvedMember.Resolve(
-							resolver.CurrentTypeResolveContext, entityType, name,
+							resolver.CurrentTypeResolveContext, symbolKind, name,
 							parameterTypeReferences: parameterTypes);
-					} else if (entityType == EntityType.Destructor) {
-						member = AbstractUnresolvedMember.Resolve(resolver.CurrentTypeResolveContext, entityType, "Finalize");
+					} else if (symbolKind == SymbolKind.Destructor) {
+						member = AbstractUnresolvedMember.Resolve(resolver.CurrentTypeResolveContext, symbolKind, "Finalize");
 					} else {
 						string[] typeParameterNames = memberDeclaration.GetChildrenByRole(Roles.TypeParameter).Select(tp => tp.Name).ToArray();
 						AstType explicitInterfaceAstType = memberDeclaration.GetChildByRole(EntityDeclaration.PrivateImplementationTypeRole);
@@ -814,7 +814,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							explicitInterfaceType = explicitInterfaceAstType.ToTypeReference();
 						}
 						member = AbstractUnresolvedMember.Resolve(
-							resolver.CurrentTypeResolveContext, entityType, memberDeclaration.Name,
+							resolver.CurrentTypeResolveContext, symbolKind, memberDeclaration.Name,
 							explicitInterfaceType, typeParameterNames, parameterTypes);
 					}
 				}
@@ -868,7 +868,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						explicitInterfaceType = explicitInterfaceAstType.ToTypeReference();
 					}
 					member = AbstractUnresolvedMember.Resolve(
-						resolver.CurrentTypeResolveContext, propertyOrIndexerDeclaration.EntityType, name,
+						resolver.CurrentTypeResolveContext, propertyOrIndexerDeclaration.SymbolKind, name,
 						explicitInterfaceType, parameterTypeReferences: parameterTypeReferences);
 				}
 				// We need to use the property as current member so that indexer parameters can be resolved correctly.
@@ -918,9 +918,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					string name = eventDeclaration.Name;
 					AstType explicitInterfaceAstType = eventDeclaration.PrivateImplementationType;
 					if (explicitInterfaceAstType.IsNull) {
-						member = AbstractUnresolvedMember.Resolve(resolver.CurrentTypeResolveContext, EntityType.Event, name);
+						member = AbstractUnresolvedMember.Resolve(resolver.CurrentTypeResolveContext, SymbolKind.Event, name);
 					} else {
-						member = AbstractUnresolvedMember.Resolve(resolver.CurrentTypeResolveContext, EntityType.Event, name,
+						member = AbstractUnresolvedMember.Resolve(resolver.CurrentTypeResolveContext, SymbolKind.Event, name,
 						                                          explicitInterfaceAstType.ToTypeReference());
 					}
 				}
@@ -1169,7 +1169,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						Name = "get_" + name,
 						Accessibility = Accessibility.Public,
 						ReturnType = returnTypeRef,
-						EntityType = EntityType.Accessor,
+						SymbolKind = SymbolKind.Accessor,
 						AccessorOwner = property
 					};
 					unresolvedProperties.Add(property);
@@ -3145,8 +3145,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				this.name = name;
 			}
 			
-			public EntityType EntityType {
-				get { return EntityType.Variable; }
+			public SymbolKind SymbolKind {
+				get { return SymbolKind.Variable; }
 			}
 			
 			public string Name {
@@ -3965,14 +3965,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IType conversionOperatorReturnType = ResolveType(documentationReference.ConversionOperatorReturnType);
 			IParameter[] parameters = documentationReference.Parameters.Select(ResolveXmlDocParameter).ToArray();
 			
-			if (documentationReference.EntityType == EntityType.TypeDefinition) {
+			if (documentationReference.SymbolKind == SymbolKind.TypeDefinition) {
 				if (declaringTypeDef != null)
 					return new TypeResolveResult(declaringTypeDef);
 				else
 					return errorResult;
 			}
 			
-			if (documentationReference.EntityType == EntityType.None) {
+			if (documentationReference.SymbolKind == SymbolKind.None) {
 				// might be a type, member or ctor
 				string memberName = documentationReference.MemberName;
 				ResolveResult rr;
@@ -4010,10 +4010,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// Indexer or operator
 			if (declaringTypeDef == null)
 				return errorResult;
-			if (documentationReference.EntityType == EntityType.Indexer) {
+			if (documentationReference.SymbolKind == SymbolKind.Indexer) {
 				var indexers = declaringTypeDef.Properties.Where(p => p.IsIndexer && !p.IsExplicitInterfaceImplementation);
 				return FindByParameters(indexers, parameters);
-			} else if (documentationReference.EntityType == EntityType.Operator) {
+			} else if (documentationReference.SymbolKind == SymbolKind.Operator) {
 				var opType = documentationReference.OperatorType;
 				string memberName = OperatorDeclaration.GetName(opType);
 				var methods = declaringTypeDef.Methods.Where(m => m.IsOperator && m.Name == memberName);

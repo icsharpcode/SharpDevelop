@@ -267,9 +267,9 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		#region IEntity implementation
 
-		public EntityType EntityType {
+		public SymbolKind SymbolKind {
 			get {
-				return baseMethod.EntityType;
+				return baseMethod.SymbolKind;
 			}
 		}
 

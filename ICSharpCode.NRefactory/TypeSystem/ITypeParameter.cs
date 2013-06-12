@@ -31,8 +31,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Get the type of this type parameter's owner.
 		/// </summary>
-		/// <returns>EntityType.TypeDefinition or EntityType.Method</returns>
-		EntityType OwnerType { get; }
+		/// <returns>SymbolKind.TypeDefinition or SymbolKind.Method</returns>
+		SymbolKind OwnerType { get; }
 		
 		/// <summary>
 		/// Gets the index of the type parameter in the type parameter list of the owning method/class.
@@ -65,8 +65,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Get the type of this type parameter's owner.
 		/// </summary>
-		/// <returns>EntityType.TypeDefinition or EntityType.Method</returns>
-		EntityType OwnerType { get; }
+		/// <returns>SymbolKind.TypeDefinition or SymbolKind.Method</returns>
+		SymbolKind OwnerType { get; }
 		
 		/// <summary>
 		/// Gets the owning method/class.

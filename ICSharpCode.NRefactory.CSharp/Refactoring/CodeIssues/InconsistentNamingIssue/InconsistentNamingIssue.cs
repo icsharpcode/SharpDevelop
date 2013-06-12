@@ -93,7 +93,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				
 				if (resolveResult is MemberResolveResult) {
 					var member = ((MemberResolveResult)resolveResult).Member;
-					if (member.EntityType == EntityType.Method && member.Attributes.Any(attr => attr.AttributeType.FullName == "NUnit.Framework.TestAttribute")) {
+					if (member.SymbolKind == SymbolKind.Method && member.Attributes.Any(attr => attr.AttributeType.FullName == "NUnit.Framework.TestAttribute")) {
 						if (CheckNamedResolveResult(resolveResult, node, AffectedEntity.TestMethod, identifier, accessibilty)) {
 							return;
 						}

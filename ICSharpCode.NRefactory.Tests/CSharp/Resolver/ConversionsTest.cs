@@ -257,9 +257,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void UnconstrainedTypeParameter()
 		{
-			ITypeParameter t = new DefaultTypeParameter(compilation, EntityType.TypeDefinition, 0, "T");
-			ITypeParameter t2 = new DefaultTypeParameter(compilation, EntityType.TypeDefinition, 1, "T2");
-			ITypeParameter tm = new DefaultTypeParameter(compilation, EntityType.Method, 0, "TM");
+			ITypeParameter t = new DefaultTypeParameter(compilation, SymbolKind.TypeDefinition, 0, "T");
+			ITypeParameter t2 = new DefaultTypeParameter(compilation, SymbolKind.TypeDefinition, 1, "T2");
+			ITypeParameter tm = new DefaultTypeParameter(compilation, SymbolKind.Method, 0, "TM");
 			
 			Assert.AreEqual(C.None, conversions.ImplicitConversion(SpecialType.NullType, t));
 			Assert.AreEqual(C.BoxingConversion, conversions.ImplicitConversion(t, compilation.FindType(KnownTypeCode.Object)));
@@ -276,7 +276,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void TypeParameterWithReferenceTypeConstraint()
 		{
-			ITypeParameter t = new DefaultTypeParameter(compilation, EntityType.TypeDefinition, 0, "T", hasReferenceTypeConstraint: true);
+			ITypeParameter t = new DefaultTypeParameter(compilation, SymbolKind.TypeDefinition, 0, "T", hasReferenceTypeConstraint: true);
 			
 			Assert.AreEqual(C.NullLiteralConversion, conversions.ImplicitConversion(SpecialType.NullType, t));
 			Assert.AreEqual(C.ImplicitReferenceConversion, conversions.ImplicitConversion(t, compilation.FindType(KnownTypeCode.Object)));
@@ -287,7 +287,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void TypeParameterWithValueTypeConstraint()
 		{
-			ITypeParameter t = new DefaultTypeParameter(compilation, EntityType.TypeDefinition, 0, "T", hasValueTypeConstraint: true);
+			ITypeParameter t = new DefaultTypeParameter(compilation, SymbolKind.TypeDefinition, 0, "T", hasValueTypeConstraint: true);
 			
 			Assert.AreEqual(C.None, conversions.ImplicitConversion(SpecialType.NullType, t));
 			Assert.AreEqual(C.BoxingConversion, conversions.ImplicitConversion(t, compilation.FindType(KnownTypeCode.Object)));
@@ -298,7 +298,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void TypeParameterWithClassConstraint()
 		{
-			ITypeParameter t = new DefaultTypeParameter(compilation, EntityType.TypeDefinition, 0, "T",
+			ITypeParameter t = new DefaultTypeParameter(compilation, SymbolKind.TypeDefinition, 0, "T",
 			                                            constraints: new[] { compilation.FindType(typeof(StringComparer)) });
 			
 			Assert.AreEqual(C.NullLiteralConversion,
@@ -320,7 +320,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void TypeParameterWithInterfaceConstraint()
 		{
-			ITypeParameter t = new DefaultTypeParameter(compilation, EntityType.TypeDefinition, 0, "T",
+			ITypeParameter t = new DefaultTypeParameter(compilation, SymbolKind.TypeDefinition, 0, "T",
 			                                            constraints: new [] { compilation.FindType(typeof(IList)) });
 			
 			Assert.AreEqual(C.None, conversions.ImplicitConversion(SpecialType.NullType, t));
@@ -500,13 +500,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			var b = new DefaultUnresolvedTypeDefinition(string.Empty, "B");
 			// interface A<in U>
 			a.Kind = TypeKind.Interface;
-			a.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 0, "U") { Variance = VarianceModifier.Contravariant });
+			a.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 0, "U") { Variance = VarianceModifier.Contravariant });
 			// interface B<X> : A<A<B<X>>> { }
-			b.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 0, "X"));
+			b.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 0, "X"));
 			b.BaseTypes.Add(new ParameterizedTypeReference(
 				a, new[] { new ParameterizedTypeReference(
 					a, new [] { new ParameterizedTypeReference(
-						b, new [] { new TypeParameterReference(EntityType.TypeDefinition, 0) }
+						b, new [] { new TypeParameterReference(SymbolKind.TypeDefinition, 0) }
 					) } ) }));
 			
 			ICompilation compilation = TypeSystemHelper.CreateCompilation(a, b);

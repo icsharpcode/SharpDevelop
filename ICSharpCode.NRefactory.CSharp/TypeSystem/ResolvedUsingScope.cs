@@ -166,8 +166,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				get { return name; }
 			}
 			
-			EntityType ISymbol.EntityType {
-				get { return EntityType.Namespace; }
+			SymbolKind ISymbol.SymbolKind {
+				get { return SymbolKind.Namespace; }
 			}
 			
 			INamespace INamespace.ParentNamespace {

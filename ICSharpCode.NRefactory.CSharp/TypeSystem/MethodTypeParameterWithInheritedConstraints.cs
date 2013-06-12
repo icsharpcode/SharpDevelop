@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 	public sealed class MethodTypeParameterWithInheritedConstraints : DefaultUnresolvedTypeParameter
 	{
 		public MethodTypeParameterWithInheritedConstraints(int index, string name)
-			: base(EntityType.Method, index, name)
+			: base(SymbolKind.Method, index, name)
 		{
 		}
 		

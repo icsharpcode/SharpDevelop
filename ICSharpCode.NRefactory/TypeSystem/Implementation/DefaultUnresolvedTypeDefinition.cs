@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public DefaultUnresolvedTypeDefinition()
 		{
-			this.EntityType = EntityType.TypeDefinition;
+			this.SymbolKind = SymbolKind.TypeDefinition;
 		}
 		
 		public DefaultUnresolvedTypeDefinition(string fullName)
@@ -54,21 +54,21 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				name = fullName;
 			}
 
-			this.EntityType = EntityType.TypeDefinition;
+			this.SymbolKind = SymbolKind.TypeDefinition;
 			this.namespaceName = namespaceName;
 			this.Name = name;
 		}
 		
 		public DefaultUnresolvedTypeDefinition(string namespaceName, string name)
 		{
-			this.EntityType = EntityType.TypeDefinition;
+			this.SymbolKind = SymbolKind.TypeDefinition;
 			this.namespaceName = namespaceName;
 			this.Name = name;
 		}
 		
 		public DefaultUnresolvedTypeDefinition(IUnresolvedTypeDefinition declaringTypeDefinition, string name)
 		{
-			this.EntityType = EntityType.TypeDefinition;
+			this.SymbolKind = SymbolKind.TypeDefinition;
 			this.DeclaringTypeDefinition = declaringTypeDefinition;
 			this.namespaceName = declaringTypeDefinition.Namespace;
 			this.Name = name;

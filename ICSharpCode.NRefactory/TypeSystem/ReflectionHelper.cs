@@ -95,9 +95,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return new ByReferenceTypeReference(ToTypeReference(type.GetElementType()));
 			} else if (type.IsGenericParameter) {
 				if (type.DeclaringMethod != null) {
-					return TypeParameterReference.Create(EntityType.Method, type.GenericParameterPosition);
+					return TypeParameterReference.Create(SymbolKind.Method, type.GenericParameterPosition);
 				} else {
-					return TypeParameterReference.Create(EntityType.TypeDefinition, type.GenericParameterPosition);
+					return TypeParameterReference.Create(SymbolKind.TypeDefinition, type.GenericParameterPosition);
 				}
 			} else if (type.DeclaringType != null) {
 				if (type == typeof(Dynamic))
@@ -249,11 +249,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					// method type parameter reference
 					pos++;
 					int index = ReadTypeParameterCount(reflectionTypeName, ref pos);
-					reference = TypeParameterReference.Create(EntityType.Method, index);
+					reference = TypeParameterReference.Create(SymbolKind.Method, index);
 				} else {
 					// class type parameter reference
 					int index = ReadTypeParameterCount(reflectionTypeName, ref pos);
-					reference = TypeParameterReference.Create(EntityType.TypeDefinition, index);
+					reference = TypeParameterReference.Create(SymbolKind.TypeDefinition, index);
 				}
 			} else {
 				// not a type parameter reference: read the actual type name

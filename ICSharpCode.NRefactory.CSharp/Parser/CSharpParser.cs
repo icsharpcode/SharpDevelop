@@ -3573,7 +3573,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				DocumentationReference result = new DocumentationReference();
 				if (doc.ParsedName != null) {
 					if (doc.ParsedName.Name == "<this>") {
-						result.EntityType = EntityType.Indexer;
+						result.SymbolKind = SymbolKind.Indexer;
 					} else {
 						result.MemberName = doc.ParsedName.Name;
 					}
@@ -3588,7 +3588,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						}
 					}
 				} else if (doc.ParsedBuiltinType != null) {
-					result.EntityType = EntityType.TypeDefinition;
+					result.SymbolKind = SymbolKind.TypeDefinition;
 					result.DeclaringType = ConvertToType(doc.ParsedBuiltinType);
 				}
 				if (doc.ParsedParameters != null) {
@@ -3596,7 +3596,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					result.Parameters.AddRange(doc.ParsedParameters.Select(ConvertXmlDocParameter));
 				}
 				if (doc.ParsedOperator != null) {
-					result.EntityType = EntityType.Operator;
+					result.SymbolKind = SymbolKind.Operator;
 					result.OperatorType = (OperatorType)doc.ParsedOperator;
 					if (result.OperatorType == OperatorType.Implicit || result.OperatorType == OperatorType.Explicit) {
 						var returnTypeParam = result.Parameters.LastOrNullObject();

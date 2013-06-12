@@ -173,8 +173,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return baseMember.IsOverridable; }
 		}
 		
-		public EntityType EntityType {
-			get { return baseMember.EntityType; }
+		public SymbolKind SymbolKind {
+			get { return baseMember.SymbolKind; }
 		}
 		
 		public DomRegion Region {
@@ -405,7 +405,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				this.newType = newType;
 			}
 			
-			EntityType ISymbol.EntityType { get { return EntityType.Parameter; } }
+			SymbolKind ISymbol.SymbolKind { get { return SymbolKind.Parameter; } }
 			
 			public IList<IAttribute> Attributes {
 				get { return originalParameter.Attributes; }

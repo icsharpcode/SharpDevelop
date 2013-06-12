@@ -32,10 +32,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		/// Creates a type parameter reference.
 		/// For common type parameter references, this method may return a shared instance.
 		/// </summary>
-		public static TypeParameterReference Create(EntityType ownerType, int index)
+		public static TypeParameterReference Create(SymbolKind ownerType, int index)
 		{
-			if (index >= 0 && index < 8 && (ownerType == EntityType.TypeDefinition || ownerType == EntityType.Method)) {
-				TypeParameterReference[] arr = (ownerType == EntityType.TypeDefinition) ? classTypeParameterReferences : methodTypeParameterReferences;
+			if (index >= 0 && index < 8 && (ownerType == SymbolKind.TypeDefinition || ownerType == SymbolKind.Method)) {
+				TypeParameterReference[] arr = (ownerType == SymbolKind.TypeDefinition) ? classTypeParameterReferences : methodTypeParameterReferences;
 				TypeParameterReference result = LazyInit.VolatileRead(ref arr[index]);
 				if (result == null) {
 					result = LazyInit.GetOrSet(ref arr[index], new TypeParameterReference(ownerType, index));
@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		readonly EntityType ownerType;
+		readonly SymbolKind ownerType;
 		readonly int index;
 
 		public int Index {
@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 
-		public TypeParameterReference(EntityType ownerType, int index)
+		public TypeParameterReference(SymbolKind ownerType, int index)
 		{
 			this.ownerType = ownerType;
 			this.index = index;
@@ -63,13 +63,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IType Resolve(ITypeResolveContext context)
 		{
-			if (ownerType == EntityType.Method) {
+			if (ownerType == SymbolKind.Method) {
 				IMethod method = context.CurrentMember as IMethod;
 				if (method != null && index < method.TypeParameters.Count) {
 					return method.TypeParameters[index];
 				}
 				return DummyTypeParameter.GetMethodTypeParameter(index);
-			} else if (ownerType == EntityType.TypeDefinition) {
+			} else if (ownerType == SymbolKind.TypeDefinition) {
 				ITypeDefinition typeDef = context.CurrentTypeDefinition;
 				if (typeDef != null && index < typeDef.TypeParameters.Count) {
 					return typeDef.TypeParameters[index];
@@ -82,7 +82,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public override string ToString()
 		{
-			if (ownerType == EntityType.Method)
+			if (ownerType == SymbolKind.Method)
 				return "!!" + index.ToString(CultureInfo.InvariantCulture);
 			else
 				return "!" + index.ToString(CultureInfo.InvariantCulture);

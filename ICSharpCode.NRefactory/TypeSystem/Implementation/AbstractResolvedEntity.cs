@@ -41,8 +41,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.Attributes = unresolved.Attributes.CreateResolvedAttributes(parentContext);
 		}
 		
-		public EntityType EntityType {
-			get { return unresolved.EntityType; }
+		public SymbolKind SymbolKind {
+			get { return unresolved.SymbolKind; }
 		}
 		
 		public DomRegion Region {
@@ -111,7 +111,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public override string ToString()
 		{
-			return "[" + this.EntityType.ToString() + " " + this.ReflectionName + "]";
+			return "[" + this.SymbolKind.ToString() + " " + this.ReflectionName + "]";
 		}
 	}
 }

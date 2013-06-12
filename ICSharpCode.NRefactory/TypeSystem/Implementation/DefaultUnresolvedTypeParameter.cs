@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		string name;
 		DomRegion region;
 		
-		EntityType ownerType;
+		SymbolKind ownerType;
 		VarianceModifier variance;
 		BitVector16 flags;
 		const ushort FlagFrozen                       = 0x0001;
@@ -57,14 +57,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			attributes = FreezableHelper.FreezeListAndElements(attributes);
 		}
 		
-		public DefaultUnresolvedTypeParameter(EntityType ownerType, int index, string name = null)
+		public DefaultUnresolvedTypeParameter(SymbolKind ownerType, int index, string name = null)
 		{
 			this.ownerType = ownerType;
 			this.index = index;
-			this.name = name ?? ((ownerType == EntityType.Method ? "!!" : "!") + index.ToString(CultureInfo.InvariantCulture));
+			this.name = name ?? ((ownerType == SymbolKind.Method ? "!!" : "!") + index.ToString(CultureInfo.InvariantCulture));
 		}
 		
-		public EntityType OwnerType {
+		public SymbolKind OwnerType {
 			get { return ownerType; }
 		}
 		
@@ -94,7 +94,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		string INamedElement.ReflectionName {
 			get {
-				if (ownerType == EntityType.Method)
+				if (ownerType == SymbolKind.Method)
 					return "``" + index.ToString(CultureInfo.InvariantCulture);
 				else
 					return "`" + index.ToString(CultureInfo.InvariantCulture);
@@ -176,9 +176,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual ITypeParameter CreateResolvedTypeParameter(ITypeResolveContext context)
 		{
 			IEntity owner = null;
-			if (this.OwnerType == EntityType.Method) {
+			if (this.OwnerType == SymbolKind.Method) {
 				owner = context.CurrentMember as IMethod;
-			} else if (this.OwnerType == EntityType.TypeDefinition) {
+			} else if (this.OwnerType == SymbolKind.TypeDefinition) {
 				owner = context.CurrentTypeDefinition;
 			}
 			if (owner == null)

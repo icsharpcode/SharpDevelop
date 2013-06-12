@@ -125,7 +125,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				for (int i = 0; i < this.typeParameters.Length; i++) {
 					if (i != typeParameters[i].Index)
 						throw new ArgumentException("Type parameter has wrong index");
-					if (typeParameters[i].OwnerType != EntityType.Method)
+					if (typeParameters[i].OwnerType != SymbolKind.Method)
 						throw new ArgumentException("Type parameter must be owned by a method");
 					this.typeParameters[i] = new TP(typeParameters[i]);
 				}

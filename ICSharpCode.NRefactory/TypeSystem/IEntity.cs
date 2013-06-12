@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets the entity type.
 		/// </summary>
-		EntityType EntityType { get; }
+		SymbolKind SymbolKind { get; }
 		
 		/// <summary>
 		/// Gets the complete entity region (including header+body)

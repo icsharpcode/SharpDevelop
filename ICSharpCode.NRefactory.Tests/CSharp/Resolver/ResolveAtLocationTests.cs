@@ -130,7 +130,7 @@ class A { public A() : ba$se() {} }");
 			var rr = ResolveAtLocation<CSharpInvocationResolveResult>(
 				"using System.Collections.Generic;" +
 				"public class A { int M(List<int> a) { return a$[1]; } }");
-			Assert.AreEqual(EntityType.Indexer, rr.Member.EntityType);
+			Assert.AreEqual(SymbolKind.Indexer, rr.Member.SymbolKind);
 		}
 
 		[Test]

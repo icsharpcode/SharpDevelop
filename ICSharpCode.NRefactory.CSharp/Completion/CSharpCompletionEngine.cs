@@ -317,14 +317,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					bool isProtectedAllowed = ctx.CurrentTypeDefinition != null && initializerType.GetDefinition() != null ? 
 						ctx.CurrentTypeDefinition.IsDerivedFrom(initializerType.GetDefinition()) : 
 							false;
-					foreach (var m in initializerType.GetMembers (m => m.EntityType == EntityType.Field)) {
+					foreach (var m in initializerType.GetMembers (m => m.SymbolKind == SymbolKind.Field)) {
 						var f = m as IField;
 						if (f != null && (f.IsReadOnly || f.IsConst))
 						    continue;
 						if (lookup.IsAccessible (m, isProtectedAllowed))
 							contextList.AddMember(m);
 					}
-					foreach (IProperty m in initializerType.GetMembers (m => m.EntityType == EntityType.Property)) {
+					foreach (IProperty m in initializerType.GetMembers (m => m.SymbolKind == SymbolKind.Property)) {
 						if (m.CanSet && lookup.IsAccessible (m.Setter, isProtectedAllowed))
 							contextList.AddMember(m);
 					}
@@ -1506,7 +1506,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize") {
 								continue;
 							}
-							if (member.EntityType == EntityType.Operator) {
+							if (member.SymbolKind == SymbolKind.Operator) {
 								continue;
 							}
 							if (member.IsExplicitInterfaceImplementation) {
@@ -2159,7 +2159,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		bool MatchDelegate(IType delegateType, IMethod method)
 		{
-			if (method.EntityType != EntityType.Method)
+			if (method.SymbolKind != SymbolKind.Method)
 				return false;
 			var delegateMethod = delegateType.GetDelegateInvokeMethod();
 			if (delegateMethod == null || delegateMethod.Parameters.Count != method.Parameters.Count) {
@@ -2608,7 +2608,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					result.AddMember(member);
 				}*/
 				foreach (var member in lookup.GetAccessibleMembers (resolveResult)) {
-					if (member.EntityType == EntityType.Indexer || member.EntityType == EntityType.Operator || member.EntityType == EntityType.Constructor || member.EntityType == EntityType.Destructor) {
+					if (member.SymbolKind == SymbolKind.Indexer || member.SymbolKind == SymbolKind.Operator || member.SymbolKind == SymbolKind.Constructor || member.SymbolKind == SymbolKind.Destructor) {
 						continue;
 					}
 					if (resolvedNode is BaseReferenceExpression && member.IsAbstract) {
@@ -2639,7 +2639,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize") {
 						continue;
 					}
-					if (member.EntityType == EntityType.Operator) {
+					if (member.SymbolKind == SymbolKind.Operator) {
 						continue;
 					}
 

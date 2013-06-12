@@ -60,13 +60,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (interfaceMember == null)
 				return null;
 			IEnumerable<IMember> members;
-			if (interfaceMember.EntityType == EntityType.Accessor) {
+			if (interfaceMember.SymbolKind == SymbolKind.Accessor) {
 				members = declaringType.GetAccessors(
 					m => m.IsExplicitInterfaceImplementation,
 					GetMemberOptions.IgnoreInheritedMembers);
 			} else {
 				members = declaringType.GetMembers(
-					m => m.EntityType == interfaceMember.EntityType && m.IsExplicitInterfaceImplementation,
+					m => m.SymbolKind == interfaceMember.SymbolKind && m.IsExplicitInterfaceImplementation,
 					GetMemberOptions.IgnoreInheritedMembers);
 			}
 			return members.FirstOrDefault(m => m.ImplementedInterfaceMembers.Count == 1 && interfaceMember.Equals(m.ImplementedInterfaceMembers[0]));

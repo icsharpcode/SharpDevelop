@@ -124,7 +124,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// For static members and type definitions, we do not require the qualifying reference
 			// to be derived from the current class (allowProtectedAccess).
-			if (entity.IsStatic || entity.EntityType == EntityType.TypeDefinition)
+			if (entity.IsStatic || entity.SymbolKind == SymbolKind.TypeDefinition)
 				allowProtectedAccess = true;
 			
 			for (var t = currentTypeDefinition; t != null; t = t.DeclaringTypeDefinition) {
@@ -338,8 +338,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			};
 			Predicate<IUnresolvedMember> memberFilter = delegate(IUnresolvedMember entity) {
 				// NOTE: Atm destructors can be looked up with 'Finalize'
-				return entity.EntityType != EntityType.Indexer &&
-				       entity.EntityType != EntityType.Operator && 
+				return entity.SymbolKind != SymbolKind.Indexer &&
+				       entity.SymbolKind != SymbolKind.Operator && 
 				       entity.Name == name;
 			};
 			
@@ -531,7 +531,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 								}
 							} else {
 								// If the member type matches, replace it with the override
-								if (lookupGroup.NonMethod != null && lookupGroup.NonMethod.EntityType == member.EntityType) {
+								if (lookupGroup.NonMethod != null && lookupGroup.NonMethod.SymbolKind == member.SymbolKind) {
 									lookupGroup.NonMethod = member;
 									replacedVirtualMemberWithOverride = true;
 									break;

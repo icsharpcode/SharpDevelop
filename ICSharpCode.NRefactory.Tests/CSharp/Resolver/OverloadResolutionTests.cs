@@ -177,28 +177,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			// static void Foo<T>(T? ignored = default(T?)) where T : struct
 			var m1 = MakeUnresolvedMethod();
-			m1.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.Method, 0, "T") { HasValueTypeConstraint = true });
+			m1.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.Method, 0, "T") { HasValueTypeConstraint = true });
 			m1.Parameters.Add(MakeOptionalParameter(
-				NullableType.Create(new TypeParameterReference(EntityType.Method, 0)),
+				NullableType.Create(new TypeParameterReference(SymbolKind.Method, 0)),
 				"ignored"
 			));
 			
 			// class ClassConstraint<T> where T : class {}
 			var classConstraint = new DefaultUnresolvedTypeDefinition(string.Empty, "ClassConstraint");
-			classConstraint.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 0, "T") { HasReferenceTypeConstraint = true });
+			classConstraint.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 0, "T") { HasReferenceTypeConstraint = true });
 			
 			// static void Foo<T>(ClassConstraint<T> ignored = default(ClassConstraint<T>))
 			// where T : class
 			var m2 = MakeUnresolvedMethod();
-			m2.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.Method, 0, "T") { HasReferenceTypeConstraint = true });
+			m2.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.Method, 0, "T") { HasReferenceTypeConstraint = true });
 			m2.Parameters.Add(MakeOptionalParameter(
-				new ParameterizedTypeReference(classConstraint, new[] { new TypeParameterReference(EntityType.Method, 0) }),
+				new ParameterizedTypeReference(classConstraint, new[] { new TypeParameterReference(SymbolKind.Method, 0) }),
 				"ignored"
 			));
 			
 			// static void Foo<T>()
 			var m3 = MakeUnresolvedMethod();
-			m3.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.Method, 0, "T"));
+			m3.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.Method, 0, "T"));
 			
 			ICompilation compilation = TypeSystemHelper.CreateCompilation(classConstraint);
 			var context = new SimpleTypeResolveContext(compilation.MainAssembly);

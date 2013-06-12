@@ -111,7 +111,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			if (x == y)
 				return true;
-			if (x == null || y == null || x.EntityType != y.EntityType || !nameComparer.Equals(x.Name, y.Name))
+			if (x == null || y == null || x.SymbolKind != y.SymbolKind || !nameComparer.Equals(x.Name, y.Name))
 				return false;
 			IParameterizedMember px = x as IParameterizedMember;
 			IParameterizedMember py = y as IParameterizedMember;
@@ -129,7 +129,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public int GetHashCode(IMember obj)
 		{
 			unchecked {
-				int hash = (int)obj.EntityType * 33 + nameComparer.GetHashCode(obj.Name);
+				int hash = (int)obj.SymbolKind * 33 + nameComparer.GetHashCode(obj.Name);
 				IParameterizedMember pm = obj as IParameterizedMember;
 				if (pm != null) {
 					hash *= 27;

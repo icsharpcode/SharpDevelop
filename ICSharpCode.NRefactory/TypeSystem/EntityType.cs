@@ -20,7 +20,7 @@ using System;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
-	public enum EntityType : byte
+	public enum SymbolKind : byte
 	{
 		None,
 		/// <seealso cref="ITypeDefinition"/>

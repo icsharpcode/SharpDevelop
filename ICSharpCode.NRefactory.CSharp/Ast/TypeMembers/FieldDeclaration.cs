@@ -32,8 +32,8 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class FieldDeclaration : EntityDeclaration
 	{
-		public override EntityType EntityType {
-			get { return EntityType.Field; }
+		public override SymbolKind SymbolKind {
+			get { return SymbolKind.Field; }
 		}
 		
 		public AstNodeCollection<VariableInitializer> Variables {

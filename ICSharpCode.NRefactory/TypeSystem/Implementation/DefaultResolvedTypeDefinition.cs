@@ -110,8 +110,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return parts; }
 		}
 		
-		public EntityType EntityType {
-			get { return parts[0].EntityType; }
+		public SymbolKind SymbolKind {
+			get { return parts[0].SymbolKind; }
 		}
 		
 		public virtual TypeKind Kind {
@@ -325,7 +325,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 			if (addDefaultConstructorIfRequired) {
 				TypeKind kind = this.Kind;
-				if (kind == TypeKind.Class && !this.IsStatic && !unresolvedMembers.Any(m => m.EntityType == EntityType.Constructor && !m.IsStatic)
+				if (kind == TypeKind.Class && !this.IsStatic && !unresolvedMembers.Any(m => m.SymbolKind == SymbolKind.Constructor && !m.IsStatic)
 				    || kind == TypeKind.Enum || kind == TypeKind.Struct)
 				{
 					contextPerMember.Add(parts[0].CreateResolveContext(parentContext).WithCurrentTypeDefinition(this));
@@ -344,7 +344,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get {
 				var members = GetMemberList();
 				for (int i = 0; i < members.unresolvedMembers.Length; i++) {
-					if (members.unresolvedMembers[i].EntityType == EntityType.Field)
+					if (members.unresolvedMembers[i].SymbolKind == SymbolKind.Field)
 						yield return (IField)members[i];
 				}
 			}
@@ -367,9 +367,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get {
 				var members = GetMemberList();
 				for (int i = 0; i < members.unresolvedMembers.Length; i++) {
-					switch (members.unresolvedMembers[i].EntityType) {
-						case EntityType.Property:
-						case EntityType.Indexer:
+					switch (members.unresolvedMembers[i].SymbolKind) {
+						case SymbolKind.Property:
+						case SymbolKind.Indexer:
 							yield return (IProperty)members[i];
 							break;
 					}
@@ -381,7 +381,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get {
 				var members = GetMemberList();
 				for (int i = 0; i < members.unresolvedMembers.Length; i++) {
-					if (members.unresolvedMembers[i].EntityType == EntityType.Event)
+					if (members.unresolvedMembers[i].SymbolKind == SymbolKind.Event)
 						yield return (IEvent)members[i];
 				}
 			}

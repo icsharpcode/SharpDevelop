@@ -403,8 +403,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					get { return ns.FullName; }
 				}
 				
-				EntityType ISymbol.EntityType {
-					get { return EntityType.Namespace; }
+				SymbolKind ISymbol.SymbolKind {
+					get { return SymbolKind.Namespace; }
 				}
 				
 				public string Name {

@@ -147,8 +147,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return false; }
 			}
 			
-			EntityType ISymbol.EntityType {
-				get { return EntityType.Operator; }
+			SymbolKind ISymbol.SymbolKind {
+				get { return SymbolKind.Operator; }
 			}
 			
 			DomRegion IEntity.Region {

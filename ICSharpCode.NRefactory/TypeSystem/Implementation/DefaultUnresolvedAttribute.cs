@@ -101,7 +101,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public void AddNamedFieldArgument(string fieldName, IConstantValue value)
 		{
 			this.NamedArguments.Add(new KeyValuePair<IMemberReference, IConstantValue>(
-				new DefaultMemberReference(EntityType.Field, attributeType, fieldName),
+				new DefaultMemberReference(SymbolKind.Field, attributeType, fieldName),
 				value
 			));
 		}
@@ -109,7 +109,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public void AddNamedPropertyArgument(string propertyName, IConstantValue value)
 		{
 			this.NamedArguments.Add(new KeyValuePair<IMemberReference, IConstantValue>(
-				new DefaultMemberReference(EntityType.Property, attributeType, propertyName),
+				new DefaultMemberReference(SymbolKind.Property, attributeType, propertyName),
 				value
 			));
 		}
