@@ -1,0 +1,35 @@
+﻿<gui:AbstractInlineRefactorDialog x:Class="CSharpBinding.Refactoring.OverrideEqualsGetHashCodeMethodsDialog"
+	Header="{sd:Localize AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods}"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:gui="clr-namespace:CSharpBinding.Refactoring"
+	xmlns:addin="clr-namespace:CSharpBinding.Refactoring"
+	xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<DockPanel Cursor="Arrow">
+		<widgets:UniformGridWithSpacing Columns="2" DockPanel.Dock="Bottom" Margin="3" HorizontalAlignment="Center">
+			<Button Content="{sd:Localize Global.OKButtonText}" Click="OKButtonClick" Style="{x:Static sd:GlobalStyles.ButtonStyle}" />
+			<Button Content="{sd:Localize Global.CancelButtonText}" Click="CancelButtonClick" Style="{x:Static sd:GlobalStyles.ButtonStyle}" />
+		</widgets:UniformGridWithSpacing>
+		<StackPanel Orientation="Vertical">
+			<!-- TODO : remove Visibilty="Collapsed" -->
+			<CheckBox
+				x:Name="addIEquatable"
+				Margin="3"
+				Visibility="Collapsed"
+				IsChecked="{sd:OptionBinding addin:Options.AddIEquatableInterface}" />
+			<CheckBox
+				x:Name="addOtherMethod"
+				Margin="3"
+				IsChecked="{sd:OptionBinding addin:Options.AddOtherMethod}" />
+			<CheckBox
+				Content="{sd:Localize AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOperatorOverloads}"
+				Margin="3"
+				IsChecked="{sd:OptionBinding addin:Options.AddOperatorOverloads}" />
+			<CheckBox
+				Content="{sd:Localize AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.SurroundWithRegion}"
+				Margin="3"
+				IsChecked="{sd:OptionBinding addin:Options.SurroundWithRegion}" />
+		</StackPanel>
+	</DockPanel>
+</gui:AbstractInlineRefactorDialog>

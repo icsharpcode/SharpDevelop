@@ -95,7 +95,10 @@ namespace CSharpBinding.Completion
 		
 		ICompletionData ICompletionDataFactory.CreateNewOverrideCompletionData(int declarationBegin, IUnresolvedTypeDefinition type, IMember m)
 		{
-			return new OverrideCompletionData(declarationBegin, m, contextAtCaret);
+			if ((m.EntityType == EntityType.Method) && (m.Name == "ToString"))
+				return new OverrideToStringCompletionData(declarationBegin, m, contextAtCaret);
+			else
+				return new OverrideCompletionData(declarationBegin, m, contextAtCaret);
 		}
 		
 		ICompletionData ICompletionDataFactory.CreateNewPartialCompletionData(int declarationBegin, IUnresolvedTypeDefinition type, IUnresolvedMember m)

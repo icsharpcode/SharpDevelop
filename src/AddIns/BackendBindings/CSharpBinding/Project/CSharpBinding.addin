@@ -155,6 +155,17 @@
 		          class="CSharpBinding.Refactoring.SearchForIssuesCommand"/>
 	</Path>
 	
+	<Path name="/SharpDevelop/ViewContent/TextEditor/OverrideCompletionHandler">
+		<Class id="toString" class="CSharpBinding.Refactoring.OverrideToStringMethodRefactoring" />
+<!--		<Class id="equalsAndGetHashCode" class="CSharpBinding.Refactoring.OverrideEqualsGetHashCodeMethodsRefactoring" />-->
+	</Path>
+	
+	<Path name="/SharpDevelop/ViewContent/TextEditor/SnippetElementProviders">
+		<Class id="ctor" class="CSharpBinding.Refactoring.InsertCtorSnippetRefactoring" />
+		<!--<Class id="switch" class="CSharpBinding.Refactoring.SwitchSnippetProvider" />
+		<Class id="propall" class="CSharpBinding.Refactoring.CreateProperties" />-->
+	</Path>
+	
 	<Path path = "/SharpDevelop/ViewContent/TextEditor/C#/IssueProviders">
 		<Class class = "CSharpBinding.Refactoring.CSharpSyntaxIssue" />
 		<Class class = "CSharpBinding.Refactoring.SDRedundantUsingIssue" />

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using System.Windows.Threading;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Gui;
@@ -113,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					// delay reloading message a bit, prevents showing two messages
 					// when the file changes twice in quick succession; and prevents
 					// trying to reload the file while it is still being written
-					SD.MainThread.CallLater(TimeSpan.FromSeconds(0.5), delegate { MainFormActivated(this, EventArgs.Empty); });
+					SD.MainThread.CallLater(TimeSpan.FromSeconds(0.5), delegate { MainFormActivated(); });
 				}
 			}
 		}
@@ -121,6 +122,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		static bool showingMessageBox;
 		
 		static void MainFormActivated(object sender, EventArgs e)
+		{
+			// delay the event so that we don't interrupt the user if he's trying to close SharpDevelop
+			SD.MainThread.InvokeAsyncAndForget(MainFormActivated, DispatcherPriority.Background);
+		}
+		
+		static void MainFormActivated()
 		{
 			if (wasChangedExternally && !showingMessageBox) {
 

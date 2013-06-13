@@ -67,16 +67,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\CodeManipulation.cs" />
     <Compile Include="Src\Completion\CSharpCompletionContext.cs" />
     <Compile Include="Src\Completion\CSharpInsightItem.cs" />
     <Compile Include="Src\Completion\CSharpMethodInsight.cs" />
     <Compile Include="Src\Completion\ImportCompletionData.cs" />
     <Compile Include="Src\Completion\OverrideCompletionData.cs" />
+    <Compile Include="Src\Completion\OverrideToStringCompletionData.cs" />
     <Compile Include="Src\Completion\SegmentTrackingOutputFormatter.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormatter.cs" />
     <Compile Include="Src\Parser\FoldingVisitor.cs" />
+    <Compile Include="Src\Refactoring\AbstractInlineRefactorDialog.cs" />
     <Compile Include="Src\Refactoring\CSharpCodeGenerator.cs" />
     <Compile Include="Src\Refactoring\CSharpSyntaxIssue.cs" />
+    <Compile Include="Src\Refactoring\FieldWrapper.cs" />
+    <Compile Include="Src\Refactoring\InlineRefactorSnippetElement.cs" />
+    <Compile Include="Src\Refactoring\InsertCtorDialog.xaml.cs">
+      <DependentUpon>InsertCtorDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Refactoring\InsertCtorSnippetRefactoring.cs" />
     <Compile Include="Src\Refactoring\InsertionPoint.cs" />
     <Compile Include="Src\Refactoring\IssueOptions.xaml.cs">
       <DependentUpon>IssueOptions.xaml</DependentUpon>
@@ -86,6 +95,10 @@
     <Compile Include="Src\Refactoring\IssueManager.cs" />
     <Compile Include="Src\Refactoring\IssueOptionsViewModel.cs" />
     <Compile Include="Src\Refactoring\MoveTypeToFileContextAction.cs" />
+    <Compile Include="Src\Refactoring\OverrideToStringMethodDialog.xaml.cs">
+      <DependentUpon>OverrideToStringMethodDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Refactoring\PropertyOrFieldWrapper.cs" />
     <Compile Include="Src\Refactoring\SDNamingConventionService.cs" />
     <Compile Include="Src\Refactoring\SDRedundantUsingIssue.cs" />
     <Compile Include="Src\Refactoring\EditorScript.cs" />
@@ -95,7 +108,6 @@
       <SubType>Code</SubType>
     </Compile>
     <EmbeddedResource Include="Resources\MyNamespaceSupportForCSharp.cs" />
-    <Compile Include="Src\CodeManipulation.cs" />
     <Compile Include="Src\Completion\CompletionData.cs" />
     <Compile Include="Src\Completion\CSharpCompletionBinding.cs" />
     <Compile Include="Src\Completion\CSharpCompletionDataFactory.cs" />
@@ -181,8 +193,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\Refactoring\InsertCtorDialog.xaml" />
     <Page Include="Src\Refactoring\IssueOptions.xaml" />
     <Page Include="Src\OptionPanels\BuildOptions.xaml" />
+    <Page Include="Src\Refactoring\OverrideToStringMethodDialog.xaml" />
     <Page Include="Src\Refactoring\SearchForIssuesDialog.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

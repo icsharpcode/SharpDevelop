@@ -87,6 +87,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return RootNode.GetNodeAt<T> (Location);
 		}
 		
+		public CSharpTypeResolveContext GetTypeResolveContext()
+		{
+			if (UnresolvedFile != null)
+				return UnresolvedFile.GetTypeResolveContext(Compilation, Location);
+			else
+				return null;
+		}
+		
 		#region Text stuff
 		public virtual TextEditorOptions TextEditorOptions {
 			get {

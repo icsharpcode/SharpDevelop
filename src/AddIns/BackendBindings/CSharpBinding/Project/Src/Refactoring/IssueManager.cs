@@ -51,6 +51,7 @@ namespace CSharpBinding.Refactoring
 				if (attributes.Length == 1) {
 					this.Attribute = (IssueDescriptionAttribute)attributes[0];
 					defaultSeverity = this.Attribute.Severity;
+					IsRedundancy = this.Attribute.Category == IssueCategories.Redundancies;
 				} else {
 					SD.Log.Warn("Issue provider without attribute: " + ProviderType);
 				}
@@ -59,6 +60,7 @@ namespace CSharpBinding.Refactoring
 			}
 			
 			public Severity CurrentSeverity { get; set; }
+			public bool IsRedundancy { get; set; }
 			
 			public IssueMarker MarkerType {
 				get { return Attribute != null ? Attribute.IssueMarker : IssueMarker.Underline; }
@@ -171,7 +173,8 @@ namespace CSharpBinding.Refactoring
 				Color color = GetColor(this.Severity);
 				color.A = 186;
 				marker.MarkerColor = color;
-				marker.MarkerTypes = TextMarkerTypes.ScrollBarRightTriangle;
+				if (!Provider.IsRedundancy)
+					marker.MarkerTypes = TextMarkerTypes.ScrollBarRightTriangle;
 				switch (Provider.MarkerType) {
 					case IssueMarker.Underline:
 						marker.MarkerTypes |= TextMarkerTypes.SquigglyUnderline;
