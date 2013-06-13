@@ -10,11 +10,12 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-
+using System.Linq;
 using ICSharpCode.Reporting.DataManager.Listhandling;
 using ICSharpCode.Reporting.Factories;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
+using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.PageBuilder.Converter
@@ -22,11 +23,15 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 	/// <summary>
 	/// Description of DataContainerConverter.
 	/// </summary>
-	internal class DataContainerConverter:IContainerConverter
+
+	internal class DataContainerConverter:ContainerConverter
 	{
-		private Graphics graphics;
-		private CollectionSource cs;
-		public DataContainerConverter(Graphics graphics, IReportContainer reportContainer, Point currentLocation,CollectionSource cs)
+		
+
+		private CollectionSource collectionSource;
+		
+		public DataContainerConverter(Graphics graphics, IReportContainer reportContainer,
+		                              Point currentLocation,CollectionSource collectionSource):base(graphics,reportContainer,currentLocation)
 		{
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
@@ -34,44 +39,30 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 			if (reportContainer == null) {
 				throw new ArgumentNullException("reportContainer");
 			}
-			
-			this.graphics = graphics;
-			Container = reportContainer;
-			CurrentLocation = currentLocation;
-this.cs = cs;
+			this.collectionSource = collectionSource;
 		}
 		
-		public IExportContainer Convert(){
-			var containerStrategy = Container.MeasurementStrategy();
-			var exportContainer = (ExportContainer)Container.CreateExportColumn();
-
-			exportContainer.Location = CurrentLocation;
-			exportContainer.DesiredSize = containerStrategy.Measure(Container, graphics);
-
-			var itemsList = new List<IExportColumn>();
-
-			foreach (var element in Container.Items) {
-				var item = ExportColumnFactory.CreateItem(element);
-				Console.WriteLine("Create {0}",item.ToString());
-				item.Parent = exportContainer;
-				Console.WriteLine("Fill element");
-				var measureStrategy = element.MeasurementStrategy();
-				item.DesiredSize = measureStrategy.Measure(element, graphics);
-
-				itemsList.Add(item);
-				Console.WriteLine("Size {0} DesiredSize {1}", item.Size, item.DesiredSize);
+		
+		public override IExportContainer Convert(){
+			if (collectionSource.Count == 0) {
+				return base.Convert();
 			}
-			exportContainer.ExportedItems.AddRange(itemsList);
-
-			Console.WriteLine("calling Container-Arrange");
-			var exportArrange = exportContainer.GetArrangeStrategy();
-			exportArrange.Arrange(exportContainer);
-
+	
+			var exportContainer = CreateExportContainer();
+			
+			do {
+				collectionSource.Fill(Container.Items);
+				Console.WriteLine(((BaseDataItem)Container.Items[0]).DBValue);
+				var itemsList = CreateConvertedList(exportContainer);
+				exportContainer.ExportedItems.AddRange(itemsList);
+			}
+			while (collectionSource.MoveNext());
+			
+//			Console.WriteLine("calling Container-Arrange");
+//			var exportArrange = exportContainer.GetArrangeStrategy();
+//			exportArrange.Arrange(exportContainer);
+			ArrangeContainer(exportContainer);
 			return exportContainer;
 		}
-		
-		internal IReportContainer Container { get; private set; }
-
-		internal Point CurrentLocation { get; private set; }
 	}
 }

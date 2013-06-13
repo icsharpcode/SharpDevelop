@@ -8,6 +8,7 @@
  */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 using ICSharpCode.Reporting.BaseClasses;
@@ -29,9 +30,10 @@ namespace ICSharpCode.Reporting.Interfaces.Data
 //		void Fill (int position,ReportItemCollection collection);
 		
 		//rausnehmen
-//		void Fill (IDataItem item);
+//		void Fill (List<IDataItem> items);
+		void Fill(List<IPrintableObject> collection);
 		
-		void Fill(ReportItemCollection collection);
+//		void Fill(ReportItemCollection collection);
 		
 		IndexList IndexList {get;}
 		

@@ -79,7 +79,7 @@ namespace ICSharpCode.Reporting.DataSource
 		}
 		
 		
-		public void AddRange(IList range)
+		public void AddRange(IEnumerable range)
 		{
 			foreach(T t in range) {
 				Add(t);

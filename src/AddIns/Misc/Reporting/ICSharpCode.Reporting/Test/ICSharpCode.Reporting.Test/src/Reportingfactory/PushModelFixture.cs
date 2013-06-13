@@ -10,7 +10,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Linq;
-
+using System.Collections.Generic;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.PageBuilder;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
@@ -47,23 +47,30 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 		}
 		
 		
+		[Test]
+		public void HandleEmptyList () {
+			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
+			var stream = asm.GetManifestResourceStream(TestHelper.ReportFromList);
+
+			var reportingFactory  = new ReportingFactory();
+			var model =  reportingFactory.LoadReportModel (stream);
+			reportCreator = new DataPageBuilder(model,typeof(string),new List<string>());
+			reportCreator.BuildExportList();
+			Assert.That(reportCreator.Pages[0].ExportedItems.Count,Is.EqualTo(5));
+		}
+		
 		[SetUp]
 		public void LoadFromStream()
 		{
 			var contributorList = new ContributorsList();
 			var list = contributorList.ContributorCollection;
 			
-			
-			
 			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
 			var stream = asm.GetManifestResourceStream(TestHelper.ReportFromList);
-			
-//			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
-//			var stream = asm.GetManifestResourceStream(TestHelper.RepWithTwoItems);
-//			
+
 			var reportingFactory  = new ReportingFactory();
 			var model =  reportingFactory.LoadReportModel (stream);
-			reportCreator = new DataPageBuilder(model,list);
+			reportCreator = new DataPageBuilder(model,typeof(Contributor),list);
 		}	
 	}
 }

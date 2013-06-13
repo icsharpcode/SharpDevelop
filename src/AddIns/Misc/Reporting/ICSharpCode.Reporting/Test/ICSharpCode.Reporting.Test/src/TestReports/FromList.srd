@@ -93,7 +93,7 @@
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
                     <ForeColor>Black</ForeColor>
-                    <ColumnName>First</ColumnName>
+                    <ColumnName>Firstname</ColumnName>
                     <Name>BaseDataItem1</Name>
                 </BaseDataItem>
             </Items>

@@ -26,7 +26,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		[Test]
 		public void CanInitDataPageBuilder()
 		{
-			var dpb = new DataPageBuilder (new ReportModel(),new System.Collections.Generic.List<string>());
+			var dpb = new DataPageBuilder (new ReportModel(),typeof(string),new System.Collections.Generic.List<string>());
 //			dpb.DataSource(new ReportModel(),new System.Collections.Generic.List<string>());
 			Assert.That(dpb,Is.Not.Null);
 		}
@@ -34,7 +34,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		
 		[Test]
 		public void DataSourceIsset() {
-			var dpb = new DataPageBuilder (new ReportModel(),new System.Collections.Generic.List<string>());
+			var dpb = new DataPageBuilder (new ReportModel(),typeof(string),new System.Collections.Generic.List<string>());
 			Assert.That(dpb.List,Is.Not.Null);
 		}
 		
@@ -47,13 +47,11 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		
 		
 		[Test]
-		[Ignore]
 		public void PageContainsFiveSections()
 		{
 			reportCreator.BuildExportList();
 			var exporteditems = reportCreator.Pages[0].ExportedItems;
 			var sections = from s in exporteditems
-				
 				where s.GetType() == typeof(ExportContainer)
 				select s;
 			Assert.That(sections.ToList().Count,Is.EqualTo(5));
@@ -71,7 +69,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 			var reportingFactory = new ReportingFactory();
 //			reportCreator = reportingFactory.ReportCreator(stream);
 			var model =  reportingFactory.LoadReportModel (stream);
-			reportCreator = new DataPageBuilder(model,new System.Collections.Generic.List<string>());
+			reportCreator = new DataPageBuilder(model,typeof(string),new System.Collections.Generic.List<string>());
 		}
 	}
 }

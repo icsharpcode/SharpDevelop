@@ -34,16 +34,11 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		private PropertyDescriptorCollection listProperties;
 		private DataCollection<object> baseList;
 		private ReportSettings reportSettings;
-		private Type itemType;
 		
-		public CollectionSource(IList list,ReportSettings reportSettings)
+		public CollectionSource(IEnumerable list, Type elementType, ReportSettings reportSettings)
 		{
-			
-			if (list.Count > 0) {
-				itemType = list[0].GetType();
-				this.baseList = new DataCollection <object>(itemType);
-				this.baseList.AddRange(list);
-			}
+			this.baseList = new DataCollection <object>(elementType);
+			this.baseList.AddRange(list);
 			this.reportSettings = reportSettings;
 			this.listProperties = this.baseList.GetItemProperties(null);
 			IndexList = new IndexList();
@@ -133,8 +128,8 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 			}
 		}
 		*/
-		
-		public void Fill(ReportItemCollection collection)
+
+		public void Fill(List<IPrintableObject> collection)
 		{
 			foreach (IDataItem item in collection)
             {
@@ -143,6 +138,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		}
 		
 		void FillInternal (IDataItem item) {
+			item.DBValue = String.Empty;
 			var p = listProperties.Find(item.ColumnName,true);
 			item.DBValue = p.GetValue(Current).ToString();
 			if (String.IsNullOrEmpty(item.DataType)) {

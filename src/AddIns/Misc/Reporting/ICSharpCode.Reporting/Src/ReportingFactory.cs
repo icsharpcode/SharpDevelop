@@ -49,11 +49,11 @@ namespace ICSharpCode.Reporting
 		}
 		
 		
-		internal IReportCreator ReportCreator (Stream stream,IList<object> list)
+		internal IReportCreator ReportCreator<T> (Stream stream,IList<T> list)
 		{
 			IReportModel reportModel = LoadReportModel (stream);
 			IReportCreator builder = null;
-			builder = new DataPageBuilder(reportModel,list);
+			builder = new DataPageBuilder(reportModel,typeof(T),list );
 			return builder;
 		}
 		

@@ -63,6 +63,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		
 		#endregion
 		
+		
 		[Test]
 		public void ParentOfSectionsIsPage() {
 			reportCreator.BuildExportList();
@@ -72,7 +73,8 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 				Assert.That(element.Parent,Is.AssignableTo(typeof(IPage)));
 			}
 		}
-			
+		
+		
 		[SetUp]
 		public void LoadFromStream()
 		{

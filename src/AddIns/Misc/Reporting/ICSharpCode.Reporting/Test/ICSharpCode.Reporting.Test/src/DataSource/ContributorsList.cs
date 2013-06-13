@@ -16,16 +16,16 @@ namespace ICSharpCode.Reporting.Test.DataSource
 	/// </summary>
 	public class ContributorsList
 	{
-		ContributorCollection contributorCollection;
+
 		
 		public ContributorsList()
 		{
-			this.contributorCollection = CreateContributorsList();
+			ContributorCollection = CreateContributorsList();
 		}
 		
-		public ContributorCollection ContributorCollection {
-			get { return contributorCollection; }
-		}
+		
+		public ContributorCollection ContributorCollection {get; private set;}
+		
 		
 		private ContributorCollection CreateContributorsList () {
 			

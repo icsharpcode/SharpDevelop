@@ -25,7 +25,7 @@ namespace ICSharpCode.Reporting.Items
 		public override  IExportColumn CreateExportColumn()
 		{
 			var exCol = (IExportText)base.CreateExportColumn();
-//			exCol.Text = "blabla";
+			exCol.Text = DBValue;
 			return exCol;
 		}
 	

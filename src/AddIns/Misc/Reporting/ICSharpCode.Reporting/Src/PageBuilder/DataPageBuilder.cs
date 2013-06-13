@@ -7,10 +7,9 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using ICSharpCode.Reporting.DataManager.Listhandling;
 using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.Converter;
 
 namespace ICSharpCode.Reporting.PageBuilder
@@ -20,9 +19,10 @@ namespace ICSharpCode.Reporting.PageBuilder
 	/// </summary>
 	public class DataPageBuilder:BasePageBuilder
 	{
-		public DataPageBuilder(IReportModel reportModel, IEnumerable<object> list):base(reportModel)
+		public DataPageBuilder(IReportModel reportModel, Type elementType,IEnumerable list):base(reportModel)
 		{
 			List = list;
+			ElementType = elementType;
 		}
 		
 		
@@ -35,15 +35,12 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		void BuilDetail()
 		{
-//			var cs = new CollectionSource(List,ReportModel.ReportSettings);
-//			cs.Bind();
-			Console.WriteLine("DataPageBuilder - Build DetailSection {0} - {1} - {2}",ReportModel.ReportSettings.PageSize.Width,ReportModel.ReportSettings.LeftMargin,ReportModel.ReportSettings.RightMargin);
+			var collectionSource = new CollectionSource(List,ElementType,ReportModel.ReportSettings);
+			collectionSource.Bind();
 			CurrentLocation = DetailStart;
-//			var dc = new DataContainerConverter(base.Graphics,ReportModel.DetailSection,CurrentLocation,cs);
-//			var detail = dc.Convert();
-//			var detail = CreateSection(ReportModel.DetailSection,CurrentLocation);
-//			detail.Parent = CurrentPage;
-//			CurrentPage.ExportedItems.Insert(2,detail);
+			var dc = new DataContainerConverter(base.Graphics,ReportModel.DetailSection,CurrentLocation,collectionSource);
+			var detail = dc.Convert();
+			CurrentPage.ExportedItems.Insert(2,detail);
 		}
 		
 		
@@ -52,9 +49,10 @@ namespace ICSharpCode.Reporting.PageBuilder
 			base.WritePages();
 			BuilDetail();
 			base.AddPage(CurrentPage);
-			Console.WriteLine("------{0}---------",ReportModel.ReportSettings.PageSize);
 		}
 		
-		public IEnumerable<object> List {get; private set;}
+		public IEnumerable List {get; private set;}
+		
+		public Type ElementType {get;private set;}
 	}
 }

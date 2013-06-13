@@ -22,8 +22,7 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 	/// </summary>
 	internal class ContainerConverter : IContainerConverter
 	{
-		private Graphics graphics;
-
+		
 		public ContainerConverter(Graphics graphics, IReportContainer reportContainer, Point currentLocation)
 		{
 			if (graphics == null) {
@@ -33,42 +32,69 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 				throw new ArgumentNullException("reportContainer");
 			}
 
-			this.graphics = graphics;
+			Graphics = graphics;
 			Container = reportContainer;
 			CurrentLocation = currentLocation;
 		}
 
 
-		public IExportContainer Convert()
+		public virtual IExportContainer Convert()
 		{
-			var containerStrategy = Container.MeasurementStrategy();
-			var exportContainer = (ExportContainer)Container.CreateExportColumn();
-
-			exportContainer.Location = CurrentLocation;
-			exportContainer.DesiredSize = containerStrategy.Measure(Container, graphics);
-
-			var itemsList = new List<IExportColumn>();
-
-			foreach (var element in Container.Items) {
-				var item = ExportColumnFactory.CreateItem(element);
-				item.Parent = exportContainer;
-				var measureStrategy = element.MeasurementStrategy();
-				item.DesiredSize = measureStrategy.Measure(element, graphics);
-
-				itemsList.Add(item);
-				Console.WriteLine("Size {0} DesiredSize {1}", item.Size, item.DesiredSize);
-			}
+			
+			var exportContainer = CreateExportContainer();
+			
+			var itemsList = CreateConvertedList(exportContainer);
+			
 			exportContainer.ExportedItems.AddRange(itemsList);
 
-			Console.WriteLine("calling Container-Arrange");
-			var exportArrange = exportContainer.GetArrangeStrategy();
-			exportArrange.Arrange(exportContainer);
+			
+			ArrangeContainer(exportContainer);
 
 			return exportContainer;
 		}
 
+	
+		protected ExportContainer CreateExportContainer()
+		{
+			var exportContainer = (ExportContainer)Container.CreateExportColumn();
+			exportContainer.Location = CurrentLocation;
+			exportContainer.DesiredSize = Measure(Container);
+			return exportContainer;
+		}
+
+		
+		protected List<IExportColumn> CreateConvertedList(ExportContainer exportContainer)
+		{
+			var itemsList = new List<IExportColumn>();
+			foreach (var element in Container.Items) {
+				var exportColumn = ExportColumnFactory.CreateItem(element);
+				exportColumn.Parent = exportContainer;
+				exportColumn.DesiredSize = Measure(element);
+				itemsList.Add(exportColumn);
+				Console.WriteLine("Size {0} DesiredSize {1}", exportColumn.Size, exportColumn.DesiredSize);
+			}
+			return itemsList;
+		}
+
+		
+		Size Measure(IPrintableObject element)
+		{
+			var measureStrategy = element.MeasurementStrategy();
+			return measureStrategy.Measure(element, Graphics);
+		}
+
+		protected void ArrangeContainer(ExportContainer exportContainer)
+		{
+			Console.WriteLine("calling Container-Arrange");
+			var exportArrange = exportContainer.GetArrangeStrategy();
+			exportArrange.Arrange(exportContainer);
+		}
+		
+		
 		internal IReportContainer Container { get; private set; }
 
 		internal Point CurrentLocation { get; private set; }
+		
+		internal Graphics Graphics {get;private set;}
 	}
 }
