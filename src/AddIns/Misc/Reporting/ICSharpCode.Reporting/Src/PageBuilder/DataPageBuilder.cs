@@ -8,7 +8,10 @@
  */
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Reporting.DataManager.Listhandling;
+using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
+using ICSharpCode.Reporting.PageBuilder.Converter;
 
 namespace ICSharpCode.Reporting.PageBuilder
 {
@@ -17,7 +20,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 	/// </summary>
 	public class DataPageBuilder:BasePageBuilder
 	{
-		public DataPageBuilder(ReportModel reportModel, IEnumerable<object> list):base(reportModel)
+		public DataPageBuilder(IReportModel reportModel, IEnumerable<object> list):base(reportModel)
 		{
 			List = list;
 		}
@@ -32,12 +35,15 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		void BuilDetail()
 		{
-			Console.WriteLine("FormPageBuilder - Build DetailSection {0} - {1} - {2}",ReportModel.ReportSettings.PageSize.Width,ReportModel.ReportSettings.LeftMargin,ReportModel.ReportSettings.RightMargin);
+//			var cs = new CollectionSource(List,ReportModel.ReportSettings);
+//			cs.Bind();
+			Console.WriteLine("DataPageBuilder - Build DetailSection {0} - {1} - {2}",ReportModel.ReportSettings.PageSize.Width,ReportModel.ReportSettings.LeftMargin,ReportModel.ReportSettings.RightMargin);
 			CurrentLocation = DetailStart;
-			
-			var detail = CreateSection(ReportModel.DetailSection,CurrentLocation);
-			detail.Parent = CurrentPage;
-			CurrentPage.ExportedItems.Insert(2,detail);
+//			var dc = new DataContainerConverter(base.Graphics,ReportModel.DetailSection,CurrentLocation,cs);
+//			var detail = dc.Convert();
+//			var detail = CreateSection(ReportModel.DetailSection,CurrentLocation);
+//			detail.Parent = CurrentPage;
+//			CurrentPage.ExportedItems.Insert(2,detail);
 		}
 		
 		
@@ -48,8 +54,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 			base.AddPage(CurrentPage);
 			Console.WriteLine("------{0}---------",ReportModel.ReportSettings.PageSize);
 		}
-		
-		
 		
 		public IEnumerable<object> List {get; private set;}
 	}

@@ -8,6 +8,8 @@
  */
 using System;
 using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.Reporting.Interfaces.Export;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Items
 {
@@ -19,6 +21,14 @@ namespace ICSharpCode.Reporting.Items
 		public BaseDataItem()
 		{
 		}
+		
+		public override  IExportColumn CreateExportColumn()
+		{
+			var exCol = (IExportText)base.CreateExportColumn();
+//			exCol.Text = "blabla";
+			return exCol;
+		}
+	
 		
 		public virtual string DBValue {get;set;}
 			

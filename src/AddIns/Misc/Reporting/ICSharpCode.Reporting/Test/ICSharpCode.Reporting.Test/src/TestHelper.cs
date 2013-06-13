@@ -20,15 +20,22 @@ namespace ICSharpCode.Reporting.Test
 	{
 		private const string nameSpace = "ICSharpCode.Reporting.Test.src.TestReports.";
 		private const string plainReportName = "PlainModel.srd";
-		private const string rr = "ReportWithTwoItems.srd";
+		private const string withTwoItems = "ReportWithTwoItems.srd";
+		private const string fromList = "FromList.srd";
 		
 		
 		public static string PlainReportFileName{
 			get{return nameSpace + plainReportName;}
 		}
 		
+		
 		public static string RepWithTwoItems {
-			get {return nameSpace + rr;}
+			get {return nameSpace + withTwoItems;}
+		}
+		
+		
+		public static string ReportFromList {
+			get {return nameSpace + fromList;}
 		}
 		
 		

@@ -35,7 +35,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		
 		void BuilDetail()
 		{
 			Console.WriteLine("FormPageBuilder - Build DetailSection {0} - {1} - {2}",ReportModel.ReportSettings.PageSize.Width,ReportModel.ReportSettings.LeftMargin,ReportModel.ReportSettings.RightMargin);
@@ -54,7 +53,5 @@ namespace ICSharpCode.Reporting.PageBuilder
 			base.AddPage(CurrentPage);
 			Console.WriteLine("------{0}---------",ReportModel.ReportSettings.PageSize);
 		}
-		
-		
 	}
 }

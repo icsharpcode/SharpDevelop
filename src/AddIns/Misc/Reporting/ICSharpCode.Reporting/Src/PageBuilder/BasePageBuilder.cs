@@ -25,8 +25,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 	/// </summary>
 	public class BasePageBuilder:IReportCreator
 	{
-		Graphics graphics;
-		
+
 		public BasePageBuilder(IReportModel reportModel)
 		{
 			if (reportModel == null) {
@@ -34,7 +33,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			}
 			ReportModel = reportModel;
 			Pages = new Collection<IPage>();
-			graphics = CreateGraphics.FromSize(reportModel.ReportSettings.PageSize);
+			Graphics = CreateGraphics.FromSize(reportModel.ReportSettings.PageSize);
 		}
 		
 		
@@ -67,7 +66,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		protected void BuildPageFooter()
 		{
-			Console.WriteLine("FormPageBuilder - Build PageFooter {0} - {1}",ReportModel.ReportSettings.PageSize.Height,ReportModel.ReportSettings.BottomMargin);
+			Console.WriteLine("Build PageFooter {0} - {1}",ReportModel.ReportSettings.PageSize.Height,ReportModel.ReportSettings.BottomMargin);
 			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
 			                            ReportModel.ReportSettings.PageSize.Height - ReportModel.ReportSettings.BottomMargin - ReportModel.PageFooter.Size.Height);
 			
@@ -78,7 +77,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		protected void BuildReportFooter()
 		{
-			Console.WriteLine("FormPageBuilder - Build ReportFooter {0} - {1}",ReportModel.ReportSettings.PageSize.Height,ReportModel.ReportSettings.BottomMargin);
+			Console.WriteLine("Build ReportFooter {0} - {1}",ReportModel.ReportSettings.PageSize.Height,ReportModel.ReportSettings.BottomMargin);
 			var lastSection = CurrentPage.ExportedItems.Last();
 			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
 			                            lastSection.Location.Y - lastSection.Size.Height - 1);
@@ -96,16 +95,13 @@ namespace ICSharpCode.Reporting.PageBuilder
 			this.BuildReportHeader();
 			BuildPageHeader();
 			BuildPageFooter();
-//			BuilDetail();
 			BuildReportFooter();
-//			base.AddPage(CurrentPage);
-//			Console.WriteLine("------{0}---------",ReportModel.ReportSettings.PageSize);
 		}
 		
 		
 		protected IExportContainer CreateSection(IReportContainer section,Point location)
 		{
-			var containerConverter = new ContainerConverter(graphics, section, location);
+			var containerConverter = new ContainerConverter(Graphics, section, location);
 			var header = containerConverter.Convert();
 			return header;
 		}
@@ -148,6 +144,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 	    protected IPage CurrentPage {get; set;}
 		
 	    protected Point DetailStart {get;private set;}
+	    
+	    protected Graphics Graphics {get;private set;}
 	    
 		public Collection<IPage> Pages {get; private set;}
 		

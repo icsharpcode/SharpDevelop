@@ -34,13 +34,10 @@ namespace ICSharpCode.Reporting
 			if (reportModel == null)
 				throw new ArgumentNullException("reportModel");
 			IReportCreator builder = null;
-			if (reportModel.ReportSettings.DataModel == GlobalEnums.PushPullModel.FormSheet) {
-				builder =  new FormPageBuilder(reportModel);
-			}
+
+			builder = ReportCreatorFactory.ExporterFactory(reportModel);
 			return builder;
 		}
-		
-		
 		
 		
 		internal IReportCreator ReportCreator (Stream stream)
@@ -51,12 +48,17 @@ namespace ICSharpCode.Reporting
 			return builder;
 		}
 		
-		object ExporterFactory(IReportModel reportModel)
-		{
-			throw new NotImplementedException();
-		}
-			
 		
+		internal IReportCreator ReportCreator (Stream stream,IList<object> list)
+		{
+			IReportModel reportModel = LoadReportModel (stream);
+			IReportCreator builder = null;
+			builder = new DataPageBuilder(reportModel,list);
+			return builder;
+		}
+		
+		
+
 		internal ReportModel LoadReportModel (Stream stream)
 		{
 			var doc = new XmlDocument();

@@ -70,8 +70,10 @@ namespace ICSharpCode.Reports.Addin
 				throw new ArgumentNullException("generator");
 			}
 			Console.WriteLine("ReportDesignerView");
+		
 			this.generator = generator;
 			this.generator.Attach(this);
+			
 			base.TabPageText = ResourceService.GetString("SharpReport.Design");
 			ReportingSideTabProvider.AddViewContent(this);
 		}
@@ -384,8 +386,8 @@ namespace ICSharpCode.Reports.Addin
 		{
 			Console.WriteLine("UpdatePropertyPad()");
 			if (IsFormsDesignerVisible && Host != null) {
-				propertyContainer.Host = Host;
-				propertyContainer.SelectableObjects = Host.Container.Components;
+				PropertyContainer.Host = Host;
+				PropertyContainer.SelectableObjects = Host.Container.Components;
 				ISelectionService selectionService = (ISelectionService)this.designSurface.GetService(typeof(ISelectionService));
 				if (selectionService != null) {
 					UpdatePropertyPadSelection(selectionService);
@@ -399,7 +401,7 @@ namespace ICSharpCode.Reports.Addin
 			ICollection selection = selectionService.GetSelectedComponents();
 			object[] selArray = new object[selection.Count];
 			selection.CopyTo(selArray, 0);
-			propertyContainer.SelectedObjects = selArray;
+			PropertyContainer.SelectedObjects = selArray;
 		}
 		
 		
@@ -407,7 +409,6 @@ namespace ICSharpCode.Reports.Addin
 		
 		#region IHasPropertyContainer impementation
 		
-//		PropertyContainer propertyContainer = new PropertyContainer();
 		PropertyContainer propertyContainer;
 		
 		public PropertyContainer PropertyContainer {

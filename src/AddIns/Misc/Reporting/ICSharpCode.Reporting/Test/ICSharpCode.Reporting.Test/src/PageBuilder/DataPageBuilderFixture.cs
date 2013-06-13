@@ -33,15 +33,31 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		
 		
 		[Test]
+		public void DataSourceIsset() {
+			var dpb = new DataPageBuilder (new ReportModel(),new System.Collections.Generic.List<string>());
+			Assert.That(dpb.List,Is.Not.Null);
+		}
+		
+		
+		[Test]
+		public void BuildExportPagesCountIsOne() {
+			reportCreator.BuildExportList();
+			Assert.That(reportCreator.Pages.Count,Is.EqualTo(1));
+		}
+		
+		
+		[Test]
+		[Ignore]
 		public void PageContainsFiveSections()
 		{
 			reportCreator.BuildExportList();
-			var x = reportCreator.Pages[0].ExportedItems;
-			var y = from s in x 
+			var exporteditems = reportCreator.Pages[0].ExportedItems;
+			var sections = from s in exporteditems
+				
 				where s.GetType() == typeof(ExportContainer)
 				select s;
-			Assert.That(y.ToList().Count,Is.EqualTo(5));
-			Console.WriteLine("-------ShowDebug---------");
+			Assert.That(sections.ToList().Count,Is.EqualTo(5));
+			Console.WriteLine("-------PageLayoutFixture:ShowDebug---------");
 			var ex = new DebugExporter(reportCreator.Pages);
 			ex.Run();
 		}
@@ -51,7 +67,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		public void LoadFromStream()
 		{
 			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
-			var stream = asm.GetManifestResourceStream(TestHelper.RepWithTwoItems);
+			var stream = asm.GetManifestResourceStream(TestHelper.ReportFromList);
 			var reportingFactory = new ReportingFactory();
 //			reportCreator = reportingFactory.ReportCreator(stream);
 			var model =  reportingFactory.LoadReportModel (stream);

@@ -66,6 +66,11 @@ namespace ICSharpCode.Reports.Addin.SecondaryViews
 			
 			var reportingFactory = new ReportingFactory();
 			var reportCreator = reportingFactory.ReportCreator(model);
+			if (reportCreator == null){
+				SD.MessageService.ShowWarning(String.Format("Cannot run {0} from Designer",
+				                                            GlobalEnums.PushPullModel.PushData.ToString()));
+				return;
+			}
 			reportCreator.BuildExportList();
 			
 			PreviewViewModel previewViewModel = new PreviewViewModel (model.ReportSettings,reportCreator.Pages);

@@ -60,18 +60,20 @@
   <ItemGroup>
     <Compile Include="src\DataSource\ContributorsList.cs" />
     <Compile Include="src\DataSource\CollectionHandlingFixture.cs" />
-    <Compile Include="src\Model\LoadPlainModelFixture.cs" />
     <Compile Include="src\Model\ReportModelFixture.cs" />
     <Compile Include="src\Model\ReportSettingsFixture.cs" />
+    <Compile Include="src\Model\Report_FromListFixture.cs" />
     <Compile Include="src\Model\Report_TwoItemsFixture.cs" />
     <Compile Include="src\PageBuilder\ContainerArrangeStrategyFixture.cs" />
     <Compile Include="src\PageBuilder\BaseConvertFixture.cs" />
     <Compile Include="src\PageBuilder\ContainerConverterFixture.cs" />
     <Compile Include="src\PageBuilder\DataPageBuilderFixture.cs" />
-    <Compile Include="src\PageBuilder\PageBuilderFixture.cs" />
+    <Compile Include="src\PageBuilder\FormBuilderFixture.cs" />
     <Compile Include="src\PageBuilder\PageFixture.cs" />
     <Compile Include="src\PageBuilder\PageLayoutFixture.cs" />
     <Compile Include="src\Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Reportingfactory\FormPageFixture.cs" />
+    <Compile Include="src\Reportingfactory\PushModelFixture.cs" />
     <Compile Include="src\ReportItems\TextItemFixture.cs" />
     <Compile Include="src\TestHelper.cs" />
   </ItemGroup>
@@ -79,6 +81,7 @@
     <Folder Include="src" />
     <Folder Include="src\Model" />
     <Folder Include="src\DataSource" />
+    <Folder Include="src\Reportingfactory" />
     <Folder Include="src\ReportItems" />
     <Folder Include="src\PageBuilder" />
     <Folder Include="src\TestReports" />
@@ -94,6 +97,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="src\TestReports\ReportWithTwoItems.srd" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="src\TestReports\FromList.srd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
