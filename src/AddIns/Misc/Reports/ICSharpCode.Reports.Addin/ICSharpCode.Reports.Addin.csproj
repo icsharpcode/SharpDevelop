@@ -261,8 +261,6 @@
       <DependentUpon>ReportViewerSecondaryView.cs</DependentUpon>
     </Compile>
     <Compile Include="Project\SecondaryViews\ReportViewerSecondaryView.cs" />
-    <Compile Include="Project\SecondaryViews\TestView\TestWPFReportPreview.cs" />
-    <Compile Include="Project\SecondaryViews\WPFReportPreview.cs" />
     <Compile Include="Project\SecondaryViews\XmlView.cs" />
     <Compile Include="Project\Services\DefaultMemberRelationshipService.cs" />
     <Compile Include="Project\Services\DefaultServiceContainer.cs" />
@@ -335,10 +333,6 @@
       <Project>{AFE34868-AFA1-4E1C-9450-47AB4BE329D5}</Project>
       <Name>ICSharpCode.Data.SQLServer</Name>
       <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Reporting\ICSharpCode.Reporting\ICSharpCode.Reporting.csproj">
-      <Project>{40CA84D4-ACFC-4646-9CDD-B87262D34093}</Project>
-      <Name>ICSharpCode.Reporting</Name>
     </ProjectReference>
     <ProjectReference Include="..\ICSharpCode.Reports.Core\ICSharpCode.Reports.Core.csproj">
       <Project>{4B2239FF-8FD6-431D-9D22-1B8049BA6917}</Project>
