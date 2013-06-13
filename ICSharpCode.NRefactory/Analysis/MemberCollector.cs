@@ -22,30 +22,11 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.Analysis
 {
-	public sealed class TypeGraphNode
+	public class MemberCollector
 	{
-		readonly ITypeDefinition typeDef;
-		readonly List<TypeGraphNode> baseTypes = new List<TypeGraphNode>();
-		readonly List<TypeGraphNode> derivedTypes = new List<TypeGraphNode>();
-		
-		/// <summary>
-		/// Creates a new unconnected type graph node.
-		/// </summary>
-		public TypeGraphNode(ITypeDefinition typeDef)
+		public static IEnumerable<IMember> GetRelatedMembers(TypeGraph g, IMember m, bool includeOverloads)
 		{
-			this.typeDef = typeDef;
-		}
-		
-		public ITypeDefinition TypeDefinition {
-			get { return typeDef; }
-		}
-		
-		public IList<TypeGraphNode> DerivedTypes {
-			get { return derivedTypes; }
-		}
-		
-		public IList<TypeGraphNode> BaseTypes {
-			get { return baseTypes; }
+			throw new NotImplementedException();
 		}
 	}
 }
