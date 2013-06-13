@@ -294,7 +294,7 @@ namespace ICSharpCode.Reports.Core {
 		}
 
 		
-		internal static ReportModel LoadReportModel (Stream stream) {
+		public static ReportModel LoadReportModel (Stream stream) {
 			if (stream == null) {
 				throw new ArgumentNullException("stream");
 			}

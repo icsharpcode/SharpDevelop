@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.CodeQuality.Gui
 {
