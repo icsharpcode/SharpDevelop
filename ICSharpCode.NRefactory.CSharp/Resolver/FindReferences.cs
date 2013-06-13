@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
@@ -220,16 +221,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region GetSearchScopes
-		public IList<IFindReferenceSearchScope> GetSearchScopes(IEntity entity)
+		public IList<IFindReferenceSearchScope> GetSearchScopes(ISymbol symbol)
 		{
+			if (symbol == null)
+				throw new ArgumentNullException("symbol");
+			switch (symbol.SymbolKind) {
+				case SymbolKind.Namespace:
+					return new[] { GetSearchScopeForNamespace((INamespace)symbol) };
+				case SymbolKind.TypeParameter:
+					return new[] { GetSearchScopeForTypeParameter((ITypeParameter)symbol) };
+					// TODO: IVariable etc.
+			}
+			IEntity entity = symbol as IEntity;
 			if (entity == null)
-				throw new ArgumentNullException("entity");
+				throw new NotSupportedException("Unsupported symbol type");
 			if (entity is IMember)
 				entity = NormalizeMember((IMember)entity);
 			Accessibility effectiveAccessibility = GetEffectiveAccessibility(entity);
-			ITypeDefinition topLevelTypeDefinition = entity.DeclaringTypeDefinition;
-			while (topLevelTypeDefinition != null && topLevelTypeDefinition.DeclaringTypeDefinition != null)
-				topLevelTypeDefinition = topLevelTypeDefinition.DeclaringTypeDefinition;
+			var topLevelTypeDefinition = GetTopLevelTypeDefinition(entity);
 			SearchScope scope;
 			SearchScope additionalScope = null;
 			switch (entity.SymbolKind) {
@@ -289,13 +298,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 
-		public IList<IFindReferenceSearchScope> GetSearchScopes(INamespace ns)
+		public IList<IFindReferenceSearchScope> GetSearchScopes(IEnumerable<ISymbol> symbols)
 		{
-			if (ns == null)
-				throw new ArgumentNullException("ns");
-			return new[] { GetSearchScopeForNamespace(ns) };
+			if (symbols == null)
+				throw new ArgumentNullException("symbols");
+			return symbols.SelectMany(GetSearchScopes).ToList();
 		}
-
+		
+		static ITypeDefinition GetTopLevelTypeDefinition(IEntity entity)
+		{
+			if (entity == null)
+				return null;
+			ITypeDefinition topLevelTypeDefinition = entity.DeclaringTypeDefinition;
+			while (topLevelTypeDefinition != null && topLevelTypeDefinition.DeclaringTypeDefinition != null)
+				topLevelTypeDefinition = topLevelTypeDefinition.DeclaringTypeDefinition;
+			return topLevelTypeDefinition;
+		}
 		#endregion
 		
 		#region GetInterestingFileNames
@@ -364,6 +382,36 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Finds all references in the given file.
 		/// </summary>
 		/// <param name="searchScope">The search scope for which to look.</param>
+		/// <param name="resolver">AST resolver for the file to search in.</param>
+		/// <param name="callback">Callback used to report the references that were found.</param>
+		/// <param name="cancellationToken">CancellationToken that may be used to cancel the operation.</param>
+		public void FindReferencesInFile(IFindReferenceSearchScope searchScope, CSharpAstResolver resolver,
+		                                 FoundReferenceCallback callback, CancellationToken cancellationToken)
+		{
+			if (resolver == null)
+				throw new ArgumentNullException("resolver");
+			FindReferencesInFile(searchScope, resolver.UnresolvedFile, (SyntaxTree)resolver.RootNode, resolver.Compilation, callback, cancellationToken);
+		}
+		
+		/// <summary>
+		/// Finds all references in the given file.
+		/// </summary>
+		/// <param name="searchScope">The search scopes for which to look.</param>
+		/// <param name="resolver">AST resolver for the file to search in.</param>
+		/// <param name="callback">Callback used to report the references that were found.</param>
+		/// <param name="cancellationToken">CancellationToken that may be used to cancel the operation.</param>
+		public void FindReferencesInFile(IList<IFindReferenceSearchScope> searchScopes, CSharpAstResolver resolver,
+		                                 FoundReferenceCallback callback, CancellationToken cancellationToken)
+		{
+			if (resolver == null)
+				throw new ArgumentNullException("resolver");
+			FindReferencesInFile(searchScopes, resolver.UnresolvedFile, (SyntaxTree)resolver.RootNode, resolver.Compilation, callback, cancellationToken);
+		}
+		
+		/// <summary>
+		/// Finds all references in the given file.
+		/// </summary>
+		/// <param name="searchScope">The search scope for which to look.</param>
 		/// <param name="unresolvedFile">The type system representation of the file being searched.</param>
 		/// <param name="syntaxTree">The syntax tree of the file being searched.</param>
 		/// <param name="compilation">The compilation for the project that contains the file.</param>
@@ -421,6 +469,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (frn != null)
 					frn.NavigatorDone(resolver, cancellationToken);
 			}
+		}
+		#endregion
+		
+		#region RenameReferencesInFile
+		public void RenameReferencesInFile(IList<IFindReferenceSearchScope> searchScopes, string newName, CSharpAstResolver resolver,
+		                                   Action<RenameCallbackArguments> callback, Action<Error> errorCallback, CancellationToken cancellationToken)
+		{
+			throw new NotImplementedException();
 		}
 		#endregion
 		
@@ -843,8 +899,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					var arr = rr as AwaitResolveResult;
 					if (arr != null) {
 						return IsMatch(arr.GetAwaiterInvocation)
-						    || (arr.GetResultMethod != null && findReferences.IsMemberMatch(method, arr.GetResultMethod, true))
-						    || (arr.OnCompletedMethod != null && findReferences.IsMemberMatch(method, arr.OnCompletedMethod, true));
+							|| (arr.GetResultMethod != null && findReferences.IsMemberMatch(method, arr.GetResultMethod, true))
+							|| (arr.OnCompletedMethod != null && findReferences.IsMemberMatch(method, arr.OnCompletedMethod, true));
 					}
 				}
 				var mrr = rr as MemberResolveResult;
@@ -1090,7 +1146,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal override bool IsMatch(ResolveResult rr)
 			{
 				ConversionResolveResult crr = rr as ConversionResolveResult;
-				return crr != null && crr.Conversion.IsUserDefined 
+				return crr != null && crr.Conversion.IsUserDefined
 					&& findReferences.IsMemberMatch(op, crr.Conversion.Method, crr.Conversion.IsVirtualMethodLookup);
 			}
 		}
@@ -1282,8 +1338,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <param name="compilation">The compilation.</param>
 		/// <param name="callback">Callback used to report the references that were found.</param>
 		/// <param name="cancellationToken">Cancellation token that may be used to cancel the operation.</param>
+		[Obsolete("Use GetSearchScopes(typeParameter) instead")]
 		public void FindTypeParameterReferences(IType typeParameter, CSharpUnresolvedFile unresolvedFile, SyntaxTree syntaxTree,
-		                                ICompilation compilation, FoundReferenceCallback callback, CancellationToken cancellationToken)
+		                                        ICompilation compilation, FoundReferenceCallback callback, CancellationToken cancellationToken)
 		{
 			if (typeParameter == null)
 				throw new ArgumentNullException("typeParameter");
@@ -1295,6 +1352,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			FindReferencesInFile(searchScope, unresolvedFile, syntaxTree, compilation, callback, cancellationToken);
 		}
 		
+		SearchScope GetSearchScopeForTypeParameter(ITypeParameter tp)
+		{
+			var searchScope = new SearchScope(c => new FindTypeParameterReferencesNavigator(tp));
+			var compilationProvider = tp as ICompilationProvider;
+			if (compilationProvider != null)
+				searchScope.declarationCompilation = compilationProvider.Compilation;
+			searchScope.topLevelTypeDefinition = GetTopLevelTypeDefinition(tp.Owner);
+			searchScope.accessibility = Accessibility.Private;
+			return searchScope;
+		}
+
 		class FindTypeParameterReferencesNavigator : FindReferenceNavigator
 		{
 			readonly ITypeParameter typeParameter;
@@ -1322,14 +1390,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		#endregion
-	
+		
 		#region Find Namespace References
 		SearchScope GetSearchScopeForNamespace(INamespace ns)
 		{
 			var scope = new SearchScope (
 				delegate (ICompilation compilation) {
-				return new FindNamespaceNavigator (ns);
-			}
+					return new FindNamespaceNavigator (ns);
+				}
 			);
 			return scope;
 		}

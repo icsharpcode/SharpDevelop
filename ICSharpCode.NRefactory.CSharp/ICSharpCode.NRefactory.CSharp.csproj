@@ -363,6 +363,7 @@
     <Compile Include="Resolver\NodeListResolveVisitorNavigator.cs" />
     <Compile Include="Resolver\OverloadResolution.cs" />
     <Compile Include="Resolver\OverloadResolutionErrors.cs" />
+    <Compile Include="Resolver\RenameCallbackArguments.cs" />
     <Compile Include="Resolver\ResolveAtLocation.cs" />
     <Compile Include="Resolver\ResolveVisitor.cs" />
     <Compile Include="Resolver\TypeInference.cs" />
