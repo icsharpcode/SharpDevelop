@@ -46,5 +46,13 @@ namespace ICSharpCode.SharpDevelop
 		ICodeGenerator CodeGenerator {
 			get;
 		}
+		
+		/// <summary>
+		/// Provides access to the <see cref="System.CodeDom.Compiler.CodeDomProvider" /> for this language.
+		/// Can be null, if not available.
+		/// </summary>
+		System.CodeDom.Compiler.CodeDomProvider CodeDomProvider {
+			get;
+		}
 	}
 }

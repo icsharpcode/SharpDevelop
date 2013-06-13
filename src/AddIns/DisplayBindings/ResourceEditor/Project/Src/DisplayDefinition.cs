@@ -10,13 +10,15 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ResourceEditor
 {
 	public class ResourceEditorDisplayBinding : IDisplayBinding
 	{
 		// IDisplayBinding interface
-		public bool CanCreateContentForFile(string fileName)
+		public bool CanCreateContentForFile(FileName fileName)
 		{
 			return true; // definition in .addin does extension-based filtering
 		}
@@ -26,12 +28,12 @@ namespace ResourceEditor
 			return new ResourceEditWrapper(file);
 		}
 		
-		public bool IsPreferredBindingForFile(string fileName)
+		public bool IsPreferredBindingForFile(FileName fileName)
 		{
 			return true;
 		}
 		
-		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		public double AutoDetectFileContent(FileName fileName, Stream fileContent, string detectedMimeType)
 		{
 			return 1;
 		}
@@ -146,7 +148,7 @@ namespace ResourceEditor
 				resourceEditor.ResourceList.Items.Remove(item);
 			}
 			resourceEditor.ResourceList.OnChanged();
-			ClipboardWrapper.SetDataObject(tmphash);
+			SD.Clipboard.SetDataObject(tmphash);
 		}
 		
 		public void Copy()
@@ -160,7 +162,7 @@ namespace ResourceEditor
 				object resourceValue = GetClonedResource(resourceEditor.ResourceList.Resources[item.Text].ResourceValue);
 				tmphash.Add(item.Text, resourceValue); // copy a clone to clipboard
 			}
-			ClipboardWrapper.SetDataObject(tmphash);
+			SD.Clipboard.SetDataObject(tmphash);
 		}
 		
 		public void Paste()
@@ -169,7 +171,7 @@ namespace ResourceEditor
 				return;
 			}
 			
-			IDataObject dob = ClipboardWrapper.GetDataObject();
+			IDataObject dob = Clipboard.GetDataObject();
 			if (dob == null)
 				return;
 			

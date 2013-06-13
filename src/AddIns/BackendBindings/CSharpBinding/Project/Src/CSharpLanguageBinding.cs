@@ -35,5 +35,9 @@ namespace CSharpBinding
 		public override ICodeGenerator CodeGenerator {
 			get { return new CSharpCodeGenerator(); }
 		}
+		
+		public override System.CodeDom.Compiler.CodeDomProvider CodeDomProvider {
+			get { return new Microsoft.CSharp.CSharpCodeProvider(); }
+		}
 	}
 }

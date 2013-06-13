@@ -2,8 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ResourceEditor
@@ -12,10 +13,10 @@ namespace ResourceEditor
 	{
 		public override void Run()
 		{
-			ResourceEditorControl editor = ((ResourceEditWrapper)WorkbenchSingleton.Workbench.ActiveViewContent).ResourceEditor;
+			ResourceEditorControl editor = ((ResourceEditWrapper)SD.Workbench.ActiveViewContent).ResourceEditor;
 			
 			if(editor.ResourceList.SelectedItems.Count > 0) {
-				ClipboardWrapper.SetText(editor.ResourceList.SelectedItems[0].Text);
+				Clipboard.SetText(editor.ResourceList.SelectedItems[0].Text);
 			}
 		}
 	}

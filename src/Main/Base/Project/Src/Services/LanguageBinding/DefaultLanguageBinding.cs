@@ -36,5 +36,11 @@ namespace ICSharpCode.SharpDevelop
 				return DefaultCodeGenerator.DefaultInstance;
 			}
 		}
+		
+		public virtual System.CodeDom.Compiler.CodeDomProvider CodeDomProvider {
+			get {
+				return null;
+			}
+		}
 	}
 }

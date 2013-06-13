@@ -129,7 +129,7 @@ namespace ResourceEditor
 			}
 		}
 		
-		public void LoadFile(string filename, Stream stream)
+		public void LoadFile(FileName filename, Stream stream)
 		{
 			resources.Clear();
 			metadata.Clear();
@@ -168,7 +168,7 @@ namespace ResourceEditor
 			InitializeListView();
 		}
 		
-		public void SaveFile(string filename, Stream stream)
+		public void SaveFile(FileName filename, Stream stream)
 		{
 			switch (Path.GetExtension(filename).ToLowerInvariant()) {
 					
