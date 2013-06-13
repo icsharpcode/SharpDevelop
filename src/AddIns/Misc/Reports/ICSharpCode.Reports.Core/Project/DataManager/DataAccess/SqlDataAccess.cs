@@ -3,9 +3,9 @@
 
 using System;
 using System.Data;
+using System.Data.SqlClient;
 using System.Globalization;
 
-using ICSharpCode.Reports.Core.Factories;
 using ICSharpCode.Reports.Core.Project.Interfaces;
 
 namespace ICSharpCode.Reports.Core.DataAccess
@@ -17,85 +17,43 @@ namespace ICSharpCode.Reports.Core.DataAccess
 	
 	public class SqlDataAccessStrategy:IDataAccessStrategy
 	{
-		private ConnectionObject  connectionObject;
 		private ReportSettings reportSettings;
 		
-		public SqlDataAccessStrategy(ReportSettings reportSettings,ConnectionObject connectionObject)
+		public SqlDataAccessStrategy(ReportSettings reportSettings)
 		{
 			if (reportSettings == null) {
 				throw new ArgumentNullException("reportSettings");
 			}
 			this.reportSettings = reportSettings;
-			if (connectionObject == null) {
-				this.connectionObject = ConnectionObjectFactory.BuildConnectionObject(reportSettings);
-			} else {
-				this.connectionObject = connectionObject;
-			}
 		}
 		
 		
-		public bool OpenConnection ()
+		public DataSet ReadData ()
 		{
-			CheckConnection();
-			return true;
-		}
-		
-		
-		private void CheckConnection()
-		{
-			if (this.connectionObject.Connection.State == ConnectionState.Open) {
-				this.connectionObject.Connection.Close();
-			}
-			this.connectionObject.Connection.Open();
-		}
-		
-		
-		public DataSet ReadData()
-		{
-			try {
-				if (this.connectionObject.Connection.State == ConnectionState.Closed) {
-					this.connectionObject.Connection.Open();
-				}
+			using (SqlConnection connection = new SqlConnection(this.reportSettings.ConnectionString)){
+				connection.Open();
 				
-				IDbCommand command = this.connectionObject.Connection.CreateCommand();
-				
-				if (String.IsNullOrEmpty(this.connectionObject.QueryString)) {
+				using (SqlCommand command = connection.CreateCommand()) {
 					command.CommandText = reportSettings.CommandText;
-				} else {
-					command.CommandText = this.connectionObject.QueryString;
-				}
-				
-				command.CommandType = reportSettings.CommandType;
-				// We have to check if there are parameters for this Query, if so
-				// add them to the command
-				
-				BuildQueryParameters(command,reportSettings.SqlParameters);
-				IDbDataAdapter adapter = connectionObject.CreateDataAdapter(command);
-				DataSet ds = new DataSet();
-				ds.Locale = CultureInfo.CurrentCulture;
-				adapter.Fill (ds);
-				return ds;
-				
-			} finally {
-				if (this.connectionObject.Connection.State == ConnectionState.Open) {
-					this.connectionObject.Connection.Close();
+					command.CommandType = reportSettings.CommandType;
+					BuildQueryParameters(command,reportSettings.SqlParameters);
+					using (SqlDataAdapter adapter = new SqlDataAdapter(command)){
+						DataSet ds = new DataSet();
+						ds.Locale = CultureInfo.CurrentCulture;
+						adapter.Fill (ds);
+						return ds;
+					}
 				}
 			}
 		}
 		
 		
-		private static void BuildQueryParameters (IDbCommand cmd,
-		                                         SqlParameterCollection parameterCollection)
-		{
+		private static void BuildQueryParameters (IDbCommand cmd,SqlParameterCollection parameterCollection){
+		                                         
 			if (parameterCollection != null && parameterCollection.Count > 0) {
-				
-				IDbDataParameter cmdPar = null;
-
 				foreach (SqlParameter par in  parameterCollection) {
-					cmdPar = cmd.CreateParameter();
+					var cmdPar = cmd.CreateParameter();
 					cmdPar.ParameterName = par.ParameterName;
-					Console.WriteLine("");
-					Console.WriteLine("BuildQueryParameters {0} - {1}",par.ParameterName,par.ParameterValue);
 					if (par.DataType != System.Data.DbType.Binary) {
 						cmdPar.DbType = par.DataType;
 						cmdPar.Value = par.ParameterValue;

@@ -22,6 +22,8 @@ namespace ICSharpCode.Reports.Core.Project.BaseClasses
 		{
 			switch (type.ToLower())
 			{
+				case "int":
+					return DbType.Int16;
 				case "int16":
 					return DbType.Int16;
 				case "int32":

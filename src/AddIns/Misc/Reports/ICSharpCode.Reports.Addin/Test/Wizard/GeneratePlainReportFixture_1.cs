@@ -17,14 +17,18 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 	[TestFixture]
 	public class GeneratePlainReportFixture
 	{
+		
 		[Test]
+		
 		public void GeneratePlainReport_1()
 		{
 			ReportModel model = ReportModel.Create();
-			Properties customizer = new Properties();
-			
-			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-			IReportGenerator generator = new GeneratePlainReport(model,customizer);
+
+			ReportStructure reportStructure = new ReportStructure()
+			{
+				ReportLayout = GlobalEnums.ReportLayout.ListLayout
+			};
+			IReportGenerator generator = new GeneratePlainReport(model,reportStructure);
 			generator.GenerateReport();
 			
 			XDocument doc1 = XDocument.Load(new XmlNodeReader (generator.XmlReport));
@@ -44,7 +48,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 			foreach (XElement a in sq)
 			{
 				Console.WriteLine (a.Name);
-		}
+			}
 			
 		}
 		
@@ -85,12 +89,15 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 		private XmlDocument CreateXmlFromModel ()
 		{
 			ReportModel model = ReportModel.Create();
-			Properties customizer = new Properties();
-			
-			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-			IReportGenerator generator = new GeneratePlainReport(model,customizer);
+			ReportStructure reportStructure = new ReportStructure()
+			{
+				ReportLayout = GlobalEnums.ReportLayout.ListLayout
+			};
+			IReportGenerator generator = new GeneratePlainReport(model,reportStructure);
 			generator.GenerateReport();
 			return generator.XmlReport;
 		}
+		
 	}
+	
 }

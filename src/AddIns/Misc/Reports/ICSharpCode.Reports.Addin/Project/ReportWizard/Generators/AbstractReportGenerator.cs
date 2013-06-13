@@ -24,38 +24,29 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	public interface IReportGenerator{
 		 void GenerateReport ();
 		 XmlDocument XmlReport {get;}
-		 MemoryStream Generated {
-		 	get;
-		 }
-		 Properties Properties{
-		 	get;
-		 }
+		 MemoryStream Generated {get;}
+		 ReportStructure ReportStructure {get;}
 	}
+	
 	
 	public abstract class AbstractReportGenerator : IReportGenerator
 	{
 		private StringWriter stringWriter;
-		
 		private ReportItemCollection reportItemCollection;
 		private AvailableFieldsCollection availableFieldsCollection;
 		private ParameterCollection parameterCollection;
-		
-		
 		private ColumnCollection groupColumnCollection;
 		
-		protected AbstractReportGenerator(ReportModel reportModel,Properties properties)
+		protected AbstractReportGenerator(ReportModel reportModel,ReportStructure reportStructure)
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
 			}
-
-			if (properties == null) {
-				throw new ArgumentNullException("customizer");
+			if (reportStructure == null) {
+				throw new ArgumentNullException("reportStructure");
 			}
 			this.ReportModel = reportModel;
-			this.Properties = properties;
-			ReportStructure = (ReportStructure)properties.Get("Generator");
-			
+			ReportStructure = reportStructure;
 			this.AvailableFieldsCollection.Clear();
 			this.ReportItemCollection.Clear();
 			this.GroupColumnCollection.Clear();
@@ -72,7 +63,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				this.GroupColumnCollection.AddRange(ReportModel.ReportSettings.GroupColumnsCollection);
 			}
 			if (ReportStructure.SqlQueryParameters.Count > 0) {
-				ReportModel.ReportSettings.ParameterCollection.AddRange(ReportStructure.SqlQueryParameters);
+				ReportModel.ReportSettings.SqlParameters.AddRange(ReportStructure.SqlQueryParameters);
 			}
 		}
 		
@@ -157,14 +148,11 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		#endregion
 		
-		protected ReportStructure ReportStructure {get;private set;}
+		public ReportStructure ReportStructure {get;private set;}
 		
 		public ReportModel ReportModel {get;private set;}
 	
-		
-		public Properties Properties {get; private set;}
-			
-		
+
 		protected ReportItemCollection ReportItemCollection {
 			get { if (this.reportItemCollection == null) {
 					this.reportItemCollection = new ReportItemCollection();

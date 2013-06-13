@@ -52,7 +52,9 @@
     <Compile Include="IconPanel.Designer.cs">
       <DependentUpon>IconPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="IconPanel.cs" />
+    <Compile Include="IconPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="PickFormatDialog.cs" />
     <Compile Include="PickFormatDialog.Designer.cs">
       <DependentUpon>PickFormatDialog.cs</DependentUpon>
@@ -61,7 +63,9 @@
     <Compile Include="EditorPanel.Designer.cs">
       <DependentUpon>EditorPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditorPanel.cs" />
+    <Compile Include="EditorPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <None Include="IconEditor.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

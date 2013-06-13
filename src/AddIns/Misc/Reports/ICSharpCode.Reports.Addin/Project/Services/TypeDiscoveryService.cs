@@ -38,11 +38,12 @@ namespace ICSharpCode.Reports.Addin
 			//allow to work designers like columns editor in datagridview
 			// Searching types can cause additional assemblies to be loaded, so we need to use
 			// ToArray to prevent an exception if the collection changes.
+			
 			foreach (Assembly asm in TypeResolutionService.DesignerAssemblies.ToArray()) {
 				if (excludeGlobalTypes) {
-					if (GacInterop.IsWithinGac(asm.Location)) {
-						continue;
-					}
+//					if (GacInterop.IsWithinGac(asm.Location)) {
+//						continue;
+//					}
 				}
 				AddDerivedTypes(baseType, asm, types);
 			}

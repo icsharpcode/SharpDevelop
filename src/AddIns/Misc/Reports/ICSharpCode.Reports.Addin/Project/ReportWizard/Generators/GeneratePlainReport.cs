@@ -15,16 +15,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	public class GeneratePlainReport:AbstractReportGenerator
 	{
 		
-		public GeneratePlainReport(ReportModel reportModel,Properties customizer):base(reportModel,customizer)
-		{
-			if (reportModel == null) {
-				throw new ArgumentNullException("reportModel");
-			}
-			
-			if (base.ReportModel.ReportSettings.DataModel != GlobalEnums.PushPullModel.FormSheet) {
-				throw new InvalidReportModelException();
-			}
-		}
+		public GeneratePlainReport(ReportModel reportModel,ReportStructure reportStructure):base(reportModel,reportStructure)
+		{}
 		
 		
 		public override void GenerateReport()

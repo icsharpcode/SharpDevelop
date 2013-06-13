@@ -12,6 +12,7 @@ using ICSharpCode.Reports.Core.Dialogs;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Reports.Addin.Commands
 {
@@ -23,23 +24,29 @@ namespace ICSharpCode.Reports.Addin.Commands
 		
 		public override void Run()
 		{
-			WorkbenchSingleton.Workbench.ShowView(SetupDesigner());
+			throw new NotImplementedException("StartViewCommand-Run");
+//			SD.Workbench.ShowView(SetupDesigner());
 		}
 		
+		/*
 		public static ReportDesignerView SetupDesigner ()
 		{
-			
+			throw new NotImplementedException("SetupDesigner");
 			ReportModel model = ReportModel.Create();
-			Properties customizer = new Properties();
-			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-			IReportGenerator generator = new GeneratePlainReport(model,customizer);
+			
+			var reportStructure = new ReportStructure()
+			{
+				ReportLayout = GlobalEnums.ReportLayout.ListLayout;
+			}
+			IReportGenerator generator = new GeneratePlainReport(model,reportStructure);
 			generator.GenerateReport();
 			
-			OpenedFile file = FileService.CreateUntitledOpenedFile(GlobalValues.PlainFileName,new byte[0]);
-			file.SetData(generator.Generated.ToArray());
-			return SetupDesigner(file);
+//			OpenedFile file = FileService.CreateUntitledOpenedFile(GlobalValues.PlainFileName,new byte[0]);
+//			file.SetData(generator.Generated.ToArray());
+//			return SetupDesigner(file);
+			return SetupDesigner(null);
 		}
-		
+		*/
 		
 		public static ReportDesignerView SetupDesigner (OpenedFile file)
 		{
@@ -56,27 +63,27 @@ namespace ICSharpCode.Reports.Addin.Commands
 	
 	public class CollectParametersCommand :AbstractCommand
 	{
-		ReportModel model;
+		ReportSettings reportSettings;
 		
-		public CollectParametersCommand (ReportModel model)
+		public CollectParametersCommand (ReportSettings reportSettings)
 		{
-			if (model == null) {
-				throw new ArgumentNullException("model");
+			if (reportSettings == null) {
+				throw new ArgumentNullException("ReportSettings");
 			}
-			this.model = model;
+			this.reportSettings = reportSettings;
 		}
 		
 		
 		public override void Run()
 		{
-			if (model.ReportSettings.SqlParameters.Count > 0) {
-				using (ParameterDialog paramDialog = new ParameterDialog(model.ReportSettings.SqlParameters))
+			if (reportSettings.SqlParameters.Count > 0) {
+				using (ParameterDialog paramDialog = new ParameterDialog(reportSettings.SqlParameters))
 				{
 					paramDialog.ShowDialog();
 					if (paramDialog.DialogResult == System.Windows.Forms.DialogResult.OK) {
 						foreach (SqlParameter bp in paramDialog.SqlParameterCollection)
 						{
-							var p = model.ReportSettings.SqlParameters.Find (bp.ParameterName);
+							var p = reportSettings.SqlParameters.Find (bp.ParameterName);
 							p.ParameterValue = bp.ParameterValue;
 						}
 					}

@@ -8,24 +8,27 @@ using ICSharpCode.Reports.Addin.ReportWizard;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Workbench;
 using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Addin.Test.Designer
 {
+	
 	[TestFixture]
+
 	public class ReportDesignerDisplayBindingTestFixture
 	{
-		DerivedReportDesignerDisplayBinding displayBinding;
-		MockViewContent viewContent;
+		ReportDesignerDisplayBinding displayBinding;
+//		MockViewContent viewContent;
 		//bool canAttachToDesignableClass;
 
 		
 		[SetUp]
 		public void SetUp()
 		{
-			displayBinding = new DerivedReportDesignerDisplayBinding();
-			viewContent = new MockViewContent();
-			viewContent.PrimaryFileName = FileName.Create("test.srd");
+			displayBinding = new ReportDesignerDisplayBinding();
+//			viewContent = new MockViewContent();
+//			viewContent.PrimaryFileName = FileName.Create("test.srd");
 //			viewContent.TextEditorControl.Text = "text content";
 //			parseInfo = new ParseInformation();
 //			displayBinding.ParseServiceParseInfoToReturn = parseInfo;
@@ -36,26 +39,36 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 		[Test]
 		public void CanCreateContentForFile()
 		{
-			Assert.IsTrue(displayBinding.CanCreateContentForFile("test.srd"));
+			ICSharpCode.Core.FileName filename = new FileName("test.srd");
+			Assert.IsTrue(displayBinding.CanCreateContentForFile(filename));
 		}
 		
 		
 		[Test]
+		public void IsPreferredBindingForFile()
+		{
+			ICSharpCode.Core.FileName filename = new FileName("test.srd");
+			Assert.IsTrue(displayBinding.IsPreferredBindingForFile(filename));
+		}
+		
+		
+		[Test]
+		[Ignore]
 		public void CanCreateContentFromFile ()
 		{
-//			ReportModel model = ReportModel.Create();
-//			Properties customizer = new Properties();
-//			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-//			IReportGenerator generator = new GeneratePlainReport(model,customizer);
-//			generator.GenerateReport();
-//			MockOpenedFile mof = new MockOpenedFile(GlobalValues.PlainFileName);
+			ReportModel model = ReportModel.Create();
+		ReportStructure reportStructure = new ReportStructure()
+			{
+				ReportLayout = GlobalEnums.ReportLayout.ListLayout
+			};
+			IReportGenerator generator = new GeneratePlainReport(model,reportStructure);
+			generator.GenerateReport();
+			MockOpenedFile mof = new MockOpenedFile(GlobalValues.PlainFileName);
 			OpenedFile file = new MockOpenedFile(GlobalValues.PlainFileName);
-//			file.SetData(generator.Generated.ToArray());
+			file.SetData(generator.Generated.ToArray());
 			
 			//ICSharpCode.SharpDevelop.Gui.IViewContent v = displayBinding.CreateContentForFile(new MockOpenedFile("test.srd"));
 			//Assert.IsNotNull(v,"View should not be 'null'");
 		}
-		
-		
 	}
 }

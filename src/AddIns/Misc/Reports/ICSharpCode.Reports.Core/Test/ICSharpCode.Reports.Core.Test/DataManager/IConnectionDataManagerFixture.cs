@@ -99,16 +99,16 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		}
 		
 		
-		[Test]
-		[ExpectedException(typeof(ArgumentException))]
-		public void ConstructorBadConnectionString ()
-		{
-			
-			ReportSettings rs = new ReportSettings();
-			rs.ConnectionString = "bad";
-			IDataAccessStrategy da = new MockDataAccessStrategy (rs);
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(rs,da);
-		}
+//		[Test]
+//		[ExpectedException(typeof(ArgumentException))]
+//		public void ConstructorBadConnectionString ()
+//		{
+//			
+//			ReportSettings rs = new ReportSettings();
+//			rs.ConnectionString = "bad";
+//			IDataAccessStrategy da = new MockDataAccessStrategy (rs);
+//			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(rs,da);
+//		}
 		
 		[Test]
 		public void CheckDataMember()

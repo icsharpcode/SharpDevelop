@@ -12,12 +12,12 @@
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <BaseAddress>125829120</BaseAddress>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <OutputPath>..\..\..\..\..\AddIns\Misc\SharpDevelopReports\</OutputPath>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <SourceAnalysisOverrideSettingsFile>"C:\Program Files\SharpDevelop\bin\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis"</SourceAnalysisOverrideSettingsFile>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -36,6 +36,8 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>False</Optimize>
@@ -46,6 +48,7 @@
     <StartAction>Project</StartAction>
     <StartProgram>..\..\..\..\..\bin\SharpDevelop.exe</StartProgram>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <Optimize>True</Optimize>
@@ -54,6 +57,9 @@
     <DebugType>None</DebugType>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <Prefer32Bit>False</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="itextsharp">
@@ -179,7 +185,9 @@
     <Compile Include="Project\ReportItems\ErrorItem.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Project\ReportItems\GroupHeader.cs" />
+    <Compile Include="Project\ReportItems\GroupHeader.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Project\ReportItems\TypeProviders\AbstractItemTypeProvider.cs" />
     <Compile Include="Project\ReportItems\TypeProviders\CircleItemTypeProvider.cs" />
     <Compile Include="Project\ReportItems\TypeProviders\DataItemTypeProvider.cs" />
@@ -249,8 +257,11 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Project\SecondaryViews\ReportPreview.cs" />
-    <Compile Include="Project\SecondaryViews\ReportViewerMessages.cs" />
+    <Compile Include="Project\SecondaryViews\ReportViewerMessages.cs">
+      <DependentUpon>ReportViewerSecondaryView.cs</DependentUpon>
+    </Compile>
     <Compile Include="Project\SecondaryViews\ReportViewerSecondaryView.cs" />
+    <Compile Include="Project\SecondaryViews\TestView\TestWPFReportPreview.cs" />
     <Compile Include="Project\SecondaryViews\WPFReportPreview.cs" />
     <Compile Include="Project\SecondaryViews\XmlView.cs" />
     <Compile Include="Project\Services\DefaultMemberRelationshipService.cs" />
@@ -325,6 +336,10 @@
       <Name>ICSharpCode.Data.SQLServer</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\Reporting\ICSharpCode.Reporting\ICSharpCode.Reporting.csproj">
+      <Project>{40CA84D4-ACFC-4646-9CDD-B87262D34093}</Project>
+      <Name>ICSharpCode.Reporting</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ICSharpCode.Reports.Core\ICSharpCode.Reports.Core.csproj">
       <Project>{4B2239FF-8FD6-431D-9D22-1B8049BA6917}</Project>
       <Name>ICSharpCode.Reports.Core</Name>
@@ -353,8 +368,6 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Project\ReportItems\TypeProviders" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

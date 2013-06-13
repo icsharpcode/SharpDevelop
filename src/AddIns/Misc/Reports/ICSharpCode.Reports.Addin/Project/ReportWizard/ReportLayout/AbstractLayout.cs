@@ -138,7 +138,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		#endregion
 		
 		
-		protected ReportItemCollection AddItemsToContainer ()
+		protected ReportItemCollection CreateItemsCollection ()
 		{
 			int locationX = GlobalValues.ControlMargins.Left;
 			

@@ -15,15 +15,11 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	internal class GeneratePullDataReport: AbstractReportGenerator
 	{
 		
-		
-		public GeneratePullDataReport(ReportModel reportModel,	                             
-		                              Properties properties):base(reportModel,properties)
-		                              	
+		public GeneratePullDataReport(ReportModel reportModel,ReportStructure reportStructure):base(reportModel,reportStructure)		                              		                             	                         
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
 			}
-
 			base.UpdateGenerator();
 			base.UpdateModel();
 			base.SqlQueryParameters.AddRange(base.ReportStructure.SqlQueryParameters);
@@ -36,8 +32,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			base.ReportModel.ReportSettings.ReportType = GlobalEnums.ReportType.DataReport;
 			base.ReportModel.ReportSettings.DataModel = GlobalEnums.PushPullModel.PullData;
 			base.GenerateReport();
-		
-			GlobalEnums.ReportLayout reportLayout = (GlobalEnums.ReportLayout)base.Properties.Get("ReportLayout");
+			GlobalEnums.ReportLayout reportLayout = ReportStructure.ReportLayout;
 			AbstractLayout layout = LayoutFactory.CreateGenerator(reportLayout,base.ReportModel,base.ReportItemCollection);
 			layout.CreateReportHeader();
 			layout.CreatePageHeader();

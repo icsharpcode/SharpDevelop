@@ -12,8 +12,9 @@
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <SourceAnalysisOverrideSettingsFile>C:\Users\Peter Forstmeier\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -54,7 +55,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Designer\DerivedReportDesignerDisplayBinding.cs" />
     <Compile Include="Designer\MockDesignerGenerator.cs" />
     <Compile Include="Designer\MockOpenedFile.cs" />
     <Compile Include="Designer\MockReportDesignerDisplayBinding.cs" />
@@ -67,7 +67,6 @@
     <Compile Include="Wizard\Generators\GenarateListReportFixture.cs" />
     <Compile Include="Wizard\Generators\GenerateFormsSheetReport.cs" />
     <Compile Include="Wizard\Generators\GenerateListWithGroupFixture.cs" />
-    <Compile Include="Wizard\Generators\GeneratePlainReportFixture_2.cs" />
     <Compile Include="Wizard\Generators\GenerateTableReportFixture.cs" />
     <Compile Include="Wizard\Generators\GenerateTableWithGrouping.cs" />
     <Compile Include="Wizard\Generators\GeneratorFactoryFixture.cs" />

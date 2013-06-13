@@ -25,7 +25,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		private System.Windows.Forms.TextBox txtPath;
 		
 		private ReportStructure reportStructure;
-		private Properties customizer;
+//		private Properties customizer;
 		private DataSet resultDataSet;
 		
 		public PushModelPanel()
@@ -84,13 +84,12 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		public override bool ReceiveDialogMessage(DialogMessage message)
 		{
-			if (customizer == null) {
-				customizer = (Properties)base.CustomizationObject;
-				reportStructure = (ReportStructure)customizer.Get("Generator");
-				base.NextWizardPanelID = "Layout";
-			}
 			
-			else if (message == DialogMessage.Activated) {
+			reportStructure = (ReportStructure)base.CustomizationObject;
+			base.NextWizardPanelID = "Layout";
+			
+			
+			if (message == DialogMessage.Activated) {
 				WriteResult();
 				base.EnableNext = true;
 			}

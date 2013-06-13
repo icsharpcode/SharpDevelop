@@ -9,15 +9,11 @@ using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Addin.Test.Wizard
 {
+	/*
 	[TestFixture]
 	public class ReportStructureFixture
 	{
-		[Test]
-		public void Constructore()
-		{
-			ReportStructure rs = new ReportStructure();
-			Assert.IsNotNull(rs,"ReportStructure should not be 'null'");
-		}
+		
 		
 		[Test]
 		public void FormSheetReport ()
@@ -57,4 +53,5 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 			return m;
 		}
 	}
+	*/
 }

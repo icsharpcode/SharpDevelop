@@ -14,6 +14,8 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 	/// <summary>
 	/// Description of ReportGenerationHelper.
 	/// </summary>
+	/// 
+
 	public class ReportGenerationHelper
 	{
 		public static ReportModel FormSheetModel()
@@ -43,26 +45,23 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 		public static ReportModel CreateModel (string reportName,bool createGrouping)
 		{
 			
-			ReportStructure structure = CreateReportStructure(reportName);
+			ReportStructure reportStructure = CreateReportStructure(reportName);
 			
 			AvailableFieldsCollection abstractColumns = new AvailableFieldsCollection();
 			AbstractColumn a1 = new AbstractColumn("Field1",typeof(System.String));
-			structure.AvailableFieldsCollection.Add(a1);
+			reportStructure.AvailableFieldsCollection.Add(a1);
 			
 			ICSharpCode.Reports.Core.BaseDataItem bri = new ICSharpCode.Reports.Core.BaseDataItem();
 			bri.Name ="Field1";
-			structure.ReportItemCollection.Add(bri);
+			reportStructure.ReportItemCollection.Add(bri);
 			
 			if (createGrouping) {
-				structure.Grouping = "group";
+				reportStructure.Grouping = "group";
 			}
 			
-			ReportModel m = structure.CreateAndFillReportModel();
-			ICSharpCode.Core.Properties customizer = new ICSharpCode.Core.Properties();
+			ReportModel m = reportStructure.CreateAndFillReportModel();
 			
-			customizer.Set("Generator", structure);
-			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-			IReportGenerator generator = new GeneratePushDataReport(m,customizer);
+			IReportGenerator generator = new GeneratePushDataReport(m,reportStructure);
 			generator.GenerateReport();
 			
 			ReportLoader rl = new ReportLoader();
@@ -87,4 +86,5 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 			return structure;
 		}
 	}
+
 }

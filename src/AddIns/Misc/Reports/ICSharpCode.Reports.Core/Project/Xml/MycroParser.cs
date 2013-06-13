@@ -48,6 +48,7 @@ namespace ICSharpCode.Reports.Core
 				
 //				Trace.Assert(t != null, "Type "+cname+" could not be determined.");
 //				Debug.WriteLine("Looking for " + cname + " and got " + t.FullName);
+				Console.WriteLine("Looking for " + cname + " and got " + t.FullName);
 				try
 				{
 					ret=Activator.CreateInstance(t);
@@ -200,6 +201,7 @@ namespace ICSharpCode.Reports.Core
 		
 		void SetPropertyToString(object obj, PropertyInfo pi, string value)
 		{
+			Console.WriteLine("MP - SetPropertyToString {0} - {1}",pi.Name,value.ToString());
 			// it's string, so use a type converter.
 			TypeConverter tc=TypeDescriptor.GetConverter(pi.PropertyType);
 			try

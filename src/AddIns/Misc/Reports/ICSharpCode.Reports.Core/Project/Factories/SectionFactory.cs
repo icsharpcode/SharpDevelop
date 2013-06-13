@@ -19,13 +19,13 @@ namespace ICSharpCode.Reports.Core
 		{
 			
 		}
-		public static BaseSection Create(string name) {
-			if (String.IsNullOrEmpty(name)) {
+		public static BaseSection Create(string sectionName) {
+			if (String.IsNullOrEmpty(sectionName)) {
 				String str = String.Format(System.Globalization.CultureInfo.CurrentCulture,
-				                           "<{0}>",name);
+				                           "<{0}>",sectionName);
 				throw new UnknownItemException(str);
 			}
-			return new BaseSection(name);
+			return new BaseSection(sectionName);
 		}
 		
 	}

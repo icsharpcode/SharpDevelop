@@ -9,9 +9,11 @@ using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 {
+	
 	[TestFixture]
 	public class GenerateListReportFixture
 	{
+		
 		private const string reportName = "ListBasedReport";
 		ReportModel reportModel;
 		
@@ -55,7 +57,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		#region Sort_Group
 		
 		[Test]
-		public void GroupColumCollection_Grouping_Should_Set()
+		public void CanAddGroupColumn()
 		{
 			ReportModel m = ReportGenerationHelper.CreateModel(reportName,false);
 			var rs = m.ReportSettings;
@@ -68,7 +70,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		
 
 		[Test]
-		public void SortColumCollection_Sorting_Should_Set()
+		public void CanAddSortColumn()
 		{
 			ReportModel m = ReportGenerationHelper.CreateModel(reportName,false);
 			var rs = m.ReportSettings;
@@ -130,7 +132,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		
 		
 		[Test]
-		public void Row_Should_Contain_Dataitems()
+		public void Row_Should_Contain_Items()
 		{
 			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.DetailSection;
 			ICSharpCode.Reports.Core.BaseRowItem dataRow = (ICSharpCode.Reports.Core.BaseRowItem)s.Items[0];

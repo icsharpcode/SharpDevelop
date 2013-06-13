@@ -15,8 +15,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	/// </summary>
 	public class GenerateFormSheetReport:GeneratePlainReport
 	{
-		public GenerateFormSheetReport(ReportModel reportModel,                              
-		                               Properties customizer):base(reportModel,customizer)
+		public GenerateFormSheetReport(ReportModel reportModel,ReportStructure reportStructure ):base(reportModel,reportStructure)                                                      
 		{
 		                             	
 			if (reportModel == null) {
@@ -34,7 +33,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			ListLayout layout = new ListLayout(base.ReportModel,null);
 			layout.CreateReportHeader();
 			layout.CreatePageFooter();
-//			base.AdjustAllNames();
 			base.WriteToXml();
 		}
 	}

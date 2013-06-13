@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-
+using ICSharpCode.SharpDevelop.Workbench;
 //Namespace adapted to 
 namespace ICSharpCode.Reports.Addin.Test.Designer
 {
@@ -18,7 +18,7 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 		{
 		}
 		
-		public MockOpenedFile(string fileName)
+		public MockOpenedFile(string fileName):base()
 		{
 			this.FileName = ICSharpCode.Core.FileName.Create(fileName);
 		}
@@ -29,6 +29,10 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 			}
 		}
 		
+		protected override void ChangeFileName(ICSharpCode.Core.FileName newValue)
+		{
+		
+		}
 		public override void RegisterView(IViewContent view)
 		{
 		}
@@ -39,9 +43,6 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 		
 		public override event EventHandler FileClosed { add {} remove {} }
 		
-//		public override bool IsDirty {
-//			get { return base.IsDirty; }
-//			set { base.IsDirty = value; }
-//		}
+
 	}
 }

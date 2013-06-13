@@ -7,6 +7,7 @@ using NUnit.Framework;
 namespace ICSharpCode.Reports.Addin.Test.Designer
 {
 	[TestFixture]
+	[Ignore]
 	public class MockReportDesignerDisplayBinding:ReportDesignerDisplayBinding
 	{
 		[Test]

@@ -9,7 +9,9 @@ namespace ICSharpCode.Reports.Core
 	{
 		protected override Type GetTypeByName(string ns, string name)
 		{
+			Console.WriteLine("BaseItemLoader - GetTypeByName {0}",name);
 			return typeof(BaseSection).Assembly.GetType(typeof(BaseSection).Namespace + "." + name);
 		}
 	}
 }
+ 

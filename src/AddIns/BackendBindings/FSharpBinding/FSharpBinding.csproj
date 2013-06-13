@@ -62,7 +62,9 @@
     <Compile Include="FSharpProject.cs" />
     <Compile Include="FSharpProjectNode.cs" />
     <Compile Include="FSharpProjectNodeBuilder.cs" />
-    <Compile Include="FsOptions.cs" />
+    <Compile Include="FsOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="ProjectHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Resources\FS-Mode.xshd" />
