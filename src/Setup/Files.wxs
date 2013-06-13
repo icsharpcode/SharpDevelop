@@ -476,7 +476,6 @@
 								<Directory Id="FileTemplatesFolder" Name="file">
 									<Directory Id="CSharpFileTemplatesFolder" Name="CSharp">
 										<Component Guid="6F4016F3-AAE0-465F-893B-AE694EA309C2" Id="CSharpFileTemplates" DiskId="1">
-											<File Source="..\..\data\templates\file\CSharp\FileCategorySortOrder.xml" Id="CSharpFileCategorySortOrder.xml" Name="FileCategorySortOrder.xml" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Empty.xft" Id="CSharp.Empty.xft" Name="CSharp.Empty.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.EmptyClass.xft" Id="CSharp.EmptyClass.xft" Name="CSharp.EmptyClass.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Exception.xft" Id="CSharp.Exception.xft" Name="CSharp.Exception.xft" />
@@ -576,7 +575,6 @@
 									</Directory>
 									<Directory Id="VBFileTemplatesFolder" Name="VB">
 										<Component Id="VBFileTemplates" Guid="F51E9F9D-F711-4124-90E6-C8CECD4E890C" DiskId="1">
-											<File Id="FileCategorySortOrder.xml" Name="FileCategorySortOrder.xml" Source="..\..\data\templates\file\VB\FileCategorySortOrder.xml" KeyPath="yes" />
 											<File Id="VB.Empty.xft" Name="VB.Empty.xft" Source="..\..\data\templates\file\VB\VB.Empty.xft" />
 											<File Id="VB.EmptyClass.xft" Name="VB.EmptyClass.xft" Source="..\..\data\templates\file\VB\VB.EmptyClass.xft" />
 											<File Id="VB.Exception.xft" Name="VB.Exception.xft" Source="..\..\data\templates\file\VB\VB.Exception.xft" />
@@ -652,7 +650,6 @@
 											<File Source="..\..\data\templates\project\CSharp\EmptyProject.xpt" Id="CSharpEmptyProject.xpt" Name="EmptyProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\FormsProject.xpt" Id="CSharpFormsProject.xpt" Name="FormsProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\Library.xpt" Name="Library.xpt" Id="CSharpLibrary.xpt" />
-											<File Source="..\..\data\templates\project\CSharp\ProjectCategorySortOrder.xml" Id="CSharpProjectCategorySortOrder.xml" Name="ProjectCategorySortOrder.xml" />
 											<File Source="..\..\data\templates\project\CSharp\Service.xpt" Name="Service.xpt" Id="CSharpService.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\SharedAddin.xpt" Id="CSharpSharedAddin.xpt" Name="SharedAddin.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\SharpDevelopAddin.xpt" Id="CSharpSharpDevelopAddin.xpt" Name="SharpDevelopAddin.xpt" />
@@ -716,7 +713,6 @@
 											<File Source="..\..\data\templates\project\VB\EmptyProject.xpt" Id="VBEmptyProject.xpt" Name="EmptyProject.xpt" />
 											<File Source="..\..\data\templates\project\VB\FormsProject.xpt" Id="VBFormsProject.xpt" Name="FormsProject.xpt" />
 											<File Source="..\..\data\templates\project\VB\Library.xpt" Name="Library.xpt" Id="VBLibrary.xpt" />
-											<File Source="..\..\data\templates\project\VB\ProjectCategorySortOrder.xml" Id="VBProjectCategorySortOrder.xml" Name="ProjectCategorySortOrder.xml" />
 											<File Source="..\..\data\templates\project\VB\Service.xpt" Name="Service.xpt" Id="VBService.xpt" />
 											<File Source="..\..\data\templates\project\VB\SharedAddin.xpt" Id="VBSharedAddin.xpt" Name="SharedAddin.xpt" />
 											<File Source="..\..\data\templates\project\VB\SharpDevelopAddin.xpt" Id="VBSharpDevelopAddin.xpt" Name="SharpDevelopAddin.xpt" />
