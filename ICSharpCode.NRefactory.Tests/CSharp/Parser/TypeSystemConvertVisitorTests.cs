@@ -100,7 +100,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			Assert.IsNull (field.ConstantValue);
 		}
 
-		[Test]
+		[Test, Ignore("mcs bug #12204")]
 		public void AssemblyAndModuleAttributesDoNotAppearOnTypes() 
 		{
 			var parser = new CSharpParser();
