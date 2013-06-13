@@ -436,7 +436,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			} else if (rr.IsCompileTimeConstant) {
 				return ConvertConstantValue(rr.Type, rr.ConstantValue);
 			} else {
-				return new EmptyExpression();
+				return new ErrorExpression();
 			}
 		}
 		

@@ -989,12 +989,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			EndNode(pointerReferenceExpression);
 		}
 		
-		public void VisitEmptyExpression(EmptyExpression emptyExpression)
-		{
-			StartNode(emptyExpression);
-			EndNode(emptyExpression);
-		}
-
 		#region VisitPrimitiveExpression
 		public void VisitPrimitiveExpression(PrimitiveExpression primitiveExpression)
 		{

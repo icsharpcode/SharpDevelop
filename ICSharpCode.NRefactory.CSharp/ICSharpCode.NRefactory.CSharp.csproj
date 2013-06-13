@@ -119,7 +119,6 @@
     <Compile Include="Ast\Expressions\ConditionalExpression.cs" />
     <Compile Include="Ast\Expressions\DefaultValueExpression.cs" />
     <Compile Include="Ast\Expressions\DirectionExpression.cs" />
-    <Compile Include="Ast\Expressions\EmptyExpression.cs" />
     <Compile Include="Ast\Expressions\Expression.cs" />
     <Compile Include="Ast\Expressions\IdentifierExpression.cs" />
     <Compile Include="Ast\Expressions\IndexerExpression.cs" />

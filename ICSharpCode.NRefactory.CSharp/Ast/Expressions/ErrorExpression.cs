@@ -43,6 +43,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
+		public string Error {
+			get;
+			private set;
+		}
+
 		public ErrorExpression ()
 		{
 		}
@@ -51,7 +56,18 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			this.location = location;
 		}
-		
+
+		public ErrorExpression (string error)
+		{
+			this.Error = error;
+		}
+
+		public ErrorExpression (string error, TextLocation location)
+		{
+			this.location = location;
+			this.Error = error;
+		}
+
 		public override void AcceptVisitor (IAstVisitor visitor)
 		{
 			// nothing

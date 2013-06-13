@@ -591,11 +591,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			return MakeSnippetExpression(uncheckedExpression);
 		}
 		
-		CodeObject IAstVisitor<CodeObject>.VisitEmptyExpression(EmptyExpression emptyExpression)
-		{
-			return null;
-		}
-		
 		CodeObject IAstVisitor<CodeObject>.VisitQueryExpression(QueryExpression queryExpression)
 		{
 			return MakeSnippetExpression(queryExpression);

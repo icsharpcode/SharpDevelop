@@ -362,10 +362,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 			}
 
-			public override void VisitEmptyExpression (EmptyExpression emptyExpression)
-			{
-			}
-
 			#endregion
 
 			public override void VisitAssignmentExpression (AssignmentExpression assignmentExpression)

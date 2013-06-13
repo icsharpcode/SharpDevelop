@@ -1434,11 +1434,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		ResolveResult IAstVisitor<ResolveResult>.VisitEmptyExpression(EmptyExpression emptyExpression)
-		{
-			return errorResult;
-		}
-		
 		ResolveResult IAstVisitor<ResolveResult>.VisitIndexerExpression(IndexerExpression indexerExpression)
 		{
 			if (resolverEnabled || NeedsResolvingDueToNamedArguments(indexerExpression)) {
