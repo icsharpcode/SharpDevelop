@@ -93,6 +93,7 @@
     <Compile Include="..\ICSharpCode.NRefactory\Properties\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Analysis\AbiComparerTests.cs" />
     <Compile Include="CSharp\Analysis\DefiniteAssignmentTests.cs" />
     <Compile Include="CSharp\AstStructureTests.cs" />
     <Compile Include="CSharp\CodeActions\AddUsing\AddUsingActionAlphabeticalTests.cs" />
@@ -396,7 +397,6 @@
     <Compile Include="CSharp\CodeIssues\SimplifyAnonymousMethodToDelegateIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\CS0127ReturnMustNotBeFollowedByAnyExpressionTests.cs" />
     <Compile Include="CSharp\Analysis\SemanticHighlightingTests.cs" />
-    <Compile Include="CSharp\Analysis\AbiComparerTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateChangedEventTests.cs" />
     <Compile Include="CSharp\CodeActions\SimplifyIfFlowTests.cs" />
     <Compile Include="CSharp\CodeActions\SimplifyIfFlowInLoopsTests.cs" />
@@ -439,7 +439,9 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Analysis" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>

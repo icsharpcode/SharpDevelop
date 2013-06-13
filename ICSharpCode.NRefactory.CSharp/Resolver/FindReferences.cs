@@ -72,6 +72,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public bool WholeVirtualSlot { get; set; }
 		
+		//public bool FindAllOverloads { get; set; }
+		
 		/// <summary>
 		/// Specifies whether to look for references in documentation comments.
 		/// This will find entity references in <c>cref</c> attributes and

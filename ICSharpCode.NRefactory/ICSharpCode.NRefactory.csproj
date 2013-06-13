@@ -82,6 +82,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analysis\AbiComparer.cs" />
+    <Compile Include="Analysis\TypeGraphNode.cs" />
     <Compile Include="Documentation\DocumentationComment.cs" />
     <Compile Include="Documentation\GetPotentiallyNestedClassTypeReference.cs" />
     <Compile Include="Documentation\IDocumentationProvider.cs" />
@@ -137,6 +139,7 @@
     <Compile Include="TypeSystem\Accessibility.cs" />
     <Compile Include="TypeSystem\AnonymousType.cs" />
     <Compile Include="TypeSystem\ArrayType.cs" />
+    <Compile Include="TypeSystem\AssemblyQualifiedTypeName.cs" />
     <Compile Include="TypeSystem\ByReferenceType.cs" />
     <Compile Include="TypeSystem\CecilLoader.cs" />
     <Compile Include="TypeSystem\ComHelper.cs" />
@@ -277,6 +280,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />
+    <Folder Include="Analysis" />
     <Folder Include="TypeSystem\" />
     <Folder Include="Utils\CompositeFormatStringParser\" />
     <Folder Include="Refactoring\" />
