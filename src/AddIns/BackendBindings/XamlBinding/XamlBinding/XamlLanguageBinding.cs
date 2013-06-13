@@ -13,7 +13,6 @@ namespace ICSharpCode.XamlBinding
 	/// <summary>
 	/// Description of XamlTextEditorExtension.
 	/// </summary>
-	[TextEditorService]
 	public class XamlTextEditorExtension : XmlEditor.XmlTextEditorExtension
 	{
 //		XamlColorizer colorizer;
@@ -64,5 +63,10 @@ namespace ICSharpCode.XamlBinding
 				textView.Services.RemoveService(typeof(XamlTextEditorExtension));
 			}
 		}
+	}
+	
+	public class XamlLanguageBinding : XmlEditor.XmlLanguageBinding
+	{
+		
 	}
 }

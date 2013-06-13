@@ -47,8 +47,9 @@ namespace ICSharpCode.XamlBinding
 				if (asmIndex >= 0) {
 					string asmName = name.Substring(asmIndex + ";assembly=".Length);
 					asm = compilation.ReferencedAssemblies.FirstOrDefault(a => a.AssemblyName == asmName) ?? compilation.MainAssembly;
+					name = name.Substring(0, asmIndex);
 				}
-				string[] parts = name.Substring(0, asmIndex).Split('.');
+				string[] parts = name.Split('.');
 				var @namespace = FindNamespace(asm, parts);
 				if (@namespace != null) yield return @namespace;
 			} else {
