@@ -54,8 +54,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get { return member; }
 		}
 		
-		public EntityType EntityType {
-			get { return member.EntityType; }
+		public SymbolKind SymbolKind {
+			get { return member.SymbolKind; }
 		}
 		
 		public DomRegion Region {

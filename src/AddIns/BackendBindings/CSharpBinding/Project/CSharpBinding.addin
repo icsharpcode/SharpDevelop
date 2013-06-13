@@ -167,6 +167,7 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.CompareFloatWithEqualityOperatorIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConditionalToNullCoalescingIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConstantConditionIssue" />
+		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.CS0029InvalidConversionIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.CS0127ReturnMustNotBeFollowedByAnyExpression" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.DoubleNegationIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.DuplicateExpressionsInConditionsIssue" />
@@ -175,7 +176,6 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ExplicitConversionInForEachIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ExpressionIsAlwaysOfProvidedTypeIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ExpressionIsNeverOfProvidedTypeIssue" />
-		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ExpressionOfCompatibleTypeCastIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ForControlVariableNotModifiedIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.FormatStringIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.IdenticalConditionalBranchIssue" />
@@ -228,7 +228,6 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseBlockInsteadColonIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseVarKeywordIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ValueParameterUnusedIssue" />
-		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.VariableDeclaredInWideScopeIssue" />
 	</Path>
 	
 	<Path path = "/SharpDevelop/ViewContent/TextEditor/C#/ContextActions">

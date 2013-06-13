@@ -74,9 +74,9 @@ namespace ICSharpCode.UnitTesting
 		{
 			if (c == null)
 				return null;
-			if (entity.EntityType == EntityType.TypeDefinition)
+			if (entity.SymbolKind == SymbolKind.TypeDefinition)
 				return c;
-			else if (entity.EntityType == EntityType.Method)
+			else if (entity.SymbolKind == SymbolKind.Method)
 				return c.FindTestMethod(entity.Name);
 			else
 				return null;

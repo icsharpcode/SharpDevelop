@@ -48,7 +48,7 @@ namespace CSharpBinding
 					if (parseInfo != null)
 						return parseInfo.GetResolver(compilation);
 					else
-						return new CSharpAstResolver(compilation, new SyntaxTree(), new CSharpUnresolvedFile(ec.FileName));
+						return new CSharpAstResolver(compilation, new SyntaxTree(), new CSharpUnresolvedFile { FileName = ec.FileName });
 				});
 		}
 	}

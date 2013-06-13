@@ -253,7 +253,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				AddAllMembersMatchingText(innerClass, text, inCurrentFile);
 			}
 			foreach (IUnresolvedMember m in c.Members) {
-				if (m.EntityType != EntityType.Constructor) {
+				if (m.SymbolKind != SymbolKind.Constructor) {
 					AddItemIfMatchText(text, m, ClassBrowserIconService.GetIcon(m), inCurrentFile);
 				}
 			}

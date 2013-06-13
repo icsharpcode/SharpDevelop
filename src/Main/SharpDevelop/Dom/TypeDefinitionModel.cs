@@ -151,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			static bool IsMatch(MemberModel memberModel, IUnresolvedMember newMember)
 			{
-				return memberModel.EntityType == newMember.EntityType && memberModel.Name == newMember.Name;
+				return memberModel.SymbolKind == newMember.SymbolKind && memberModel.Name == newMember.Name;
 			}
 			
 			ModelCollectionChangedEventHandler<MemberModel> collectionChanged;

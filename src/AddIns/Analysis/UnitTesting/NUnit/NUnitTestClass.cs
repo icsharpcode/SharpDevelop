@@ -174,7 +174,7 @@ namespace ICSharpCode.UnitTesting
 					newOrUpdatedNestedTests.Add(nestedTestClass);
 				}
 				// Get methods (not operators etc.)
-				foreach (IMethod method in typeDefinition.GetMethods(m => m.EntityType == EntityType.Method)) {
+				foreach (IMethod method in typeDefinition.GetMethods(m => m.SymbolKind == SymbolKind.Method)) {
 					if (!NUnitTestFramework.IsTestMethod(method))
 						continue;
 					

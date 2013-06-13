@@ -85,7 +85,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			public int CompareTo(EntityItem other)
 			{
-				int r = this.Entity.EntityType.CompareTo(other.Entity.EntityType);
+				int r = this.Entity.SymbolKind.CompareTo(other.Entity.SymbolKind);
 				if (r != 0)
 					return r;
 				r = string.Compare(text, other.text, StringComparison.OrdinalIgnoreCase);

@@ -64,7 +64,9 @@ namespace CSharpBinding.Tests
 		[Test]
 		public void AllAreRegisteredIssueProvidersHaveAttribute()
 		{
-			Assert.IsTrue(registeredIssueProviders.All(t => t.GetCustomAttribute<IssueDescriptionAttribute>() != null));
+			foreach (var t in registeredIssueProviders) {
+				Assert.IsNotNull(t.GetCustomAttribute<IssueDescriptionAttribute>(), t.FullName);
+			}
 		}
 		
 		[Test]

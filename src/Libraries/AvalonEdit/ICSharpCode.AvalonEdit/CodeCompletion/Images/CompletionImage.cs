@@ -121,10 +121,10 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		{
 			if (entity == null)
 				throw new ArgumentNullException("entity");
-			switch (entity.EntityType) {
-				case EntityType.TypeDefinition:
+			switch (entity.SymbolKind) {
+				case SymbolKind.TypeDefinition:
 					return GetCompletionImageForType(((ITypeDefinition)entity).Kind, entity.IsStatic);
-				case EntityType.Field:
+				case SymbolKind.Field:
 					IField field = (IField)entity;
 					if (field.IsConst) {
 						if (field.DeclaringTypeDefinition != null && field.DeclaringTypeDefinition.Kind == TypeKind.Enum)
@@ -133,19 +133,19 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 							return imageLiteral;
 					}
 					return field.IsReadOnly ? imageFieldReadOnly : imageField;
-				case EntityType.Method:
+				case SymbolKind.Method:
 					IMethod method = (IMethod)entity;
 					return method.IsOverridable ? imageVirtualMethod : imageMethod;
-				case EntityType.Property:
+				case SymbolKind.Property:
 					return imageProperty;
-				case EntityType.Indexer:
+				case SymbolKind.Indexer:
 					return imageIndexer;
-				case EntityType.Event:
+				case SymbolKind.Event:
 					return imageEvent;
-				case EntityType.Operator:
-				case EntityType.Destructor:
+				case SymbolKind.Operator:
+				case SymbolKind.Destructor:
 					return imageOperator;
-				case EntityType.Constructor:
+				case SymbolKind.Constructor:
 					return imageConstructor;
 				default:
 					return null;
@@ -160,10 +160,10 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		{
 			if (entity == null)
 				throw new ArgumentNullException("entity");
-			switch (entity.EntityType) {
-				case EntityType.TypeDefinition:
+			switch (entity.SymbolKind) {
+				case SymbolKind.TypeDefinition:
 					return GetCompletionImageForType(((IUnresolvedTypeDefinition)entity).Kind, entity.IsStatic);
-				case EntityType.Field:
+				case SymbolKind.Field:
 					IUnresolvedField field = (IUnresolvedField)entity;
 					if (field.IsConst) {
 						if (field.DeclaringTypeDefinition != null && field.DeclaringTypeDefinition.Kind == TypeKind.Enum)
@@ -172,19 +172,19 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 							return imageLiteral;
 					}
 					return field.IsReadOnly ? imageFieldReadOnly : imageField;
-				case EntityType.Method:
+				case SymbolKind.Method:
 					IUnresolvedMethod method = (IUnresolvedMethod)entity;
 					return method.IsOverridable ? imageVirtualMethod : imageMethod;
-				case EntityType.Property:
+				case SymbolKind.Property:
 					return imageProperty;
-				case EntityType.Indexer:
+				case SymbolKind.Indexer:
 					return imageIndexer;
-				case EntityType.Event:
+				case SymbolKind.Event:
 					return imageEvent;
-				case EntityType.Operator:
-				case EntityType.Destructor:
+				case SymbolKind.Operator:
+				case SymbolKind.Destructor:
 					return imageOperator;
-				case EntityType.Constructor:
+				case SymbolKind.Constructor:
 					return imageConstructor;
 				default:
 					return null;
