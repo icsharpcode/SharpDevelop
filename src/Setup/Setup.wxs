@@ -287,8 +287,7 @@
 				<ComponentRef Id="ExampleProjectTemplate"/>
 				<ComponentRef Id="ICSharpCode.SharpDevelop.addin"/>
 				<ComponentRef Id="CSharpBindingFiles"/>
-				<!--
-				<ComponentRef Id="VBNetBindingFiles"/>-->
+				<ComponentRef Id="VBNetBindingFiles"/>
 				<ComponentRef Id="WixBindingFiles"/>
 				<ComponentRef Id="WixUIMondoProjectTemplate"/>
 				<ComponentRef Id="WixUIMinimalProjectTemplate"/>
@@ -296,7 +295,7 @@
 				<ComponentRef Id="WixUIFeatureTreeProjectTemplate"/>
 				<!--<ComponentRef Id="FormsDesignerFiles"/>-->
 				<ComponentRef Id="IconEditorFiles"/>
-				<!--<ComponentRef Id="ResourceEditorFiles"/>-->
+				<ComponentRef Id="ResourceEditorFiles"/>
 				<ComponentRef Id="SettingsEditorFiles"/>
 				<!--<ComponentRef Id="ClassDiagramResources"/>
 				<ComponentRef Id="ClassDiagramAddInFiles"/>
@@ -318,7 +317,7 @@
 				<ComponentRef Id="AddInManager2NuGetCoreDll"/>
 				<ComponentRef Id="AddInScoutFiles"/>
 				<ComponentRef Id="CodeAnalysisFiles"/>
-				<!--<ComponentRef Id="CodeQualityFiles"/>-->
+				<ComponentRef Id="CodeQualityFiles"/>
 				<ComponentRef Id="CodeCoverageFiles"/>
 				<ComponentRef Id="DebuggerAddInFiles"/>
 				<ComponentRef Id="FiletypeIcons"/>
