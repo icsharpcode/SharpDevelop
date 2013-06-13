@@ -14,11 +14,12 @@ namespace CSharpBinding
 		ITextEditor editor;
 		IssueManager inspectionManager;
 		IList<IContextActionProvider> contextActionProviders;
+		CodeManipulation codeManipulation;
 		public void Attach(ITextEditor editor)
 		{
 			this.editor = editor;
 			inspectionManager = new IssueManager(editor);
-			//codeManipulation = new CodeManipulation(editor);
+			codeManipulation = new CodeManipulation(editor);
 			if (!editor.ContextActionProviders.IsReadOnly) {
 				contextActionProviders = AddInTree.BuildItems<IContextActionProvider>("/SharpDevelop/ViewContent/TextEditor/C#/ContextActions", null);
 				editor.ContextActionProviders.AddRange(contextActionProviders);
@@ -26,7 +27,7 @@ namespace CSharpBinding
 		}
 		public void Detach()
 		{
-			//codeManipulation.Dispose();
+			codeManipulation.Dispose();
 			if (inspectionManager != null) {
 				inspectionManager.Dispose();
 				inspectionManager = null;
