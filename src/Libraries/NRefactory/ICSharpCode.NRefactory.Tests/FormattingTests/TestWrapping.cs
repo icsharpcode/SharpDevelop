@@ -181,7 +181,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		Foo (1, 2, 3);
 	}
 }",
-@"class Test
+			     @"class Test
 {
 	void TestMe ()
 	{
@@ -813,6 +813,87 @@ int foo)
 	{
 	}
 }");
+		}
+		[Ignore("FIXME")]
+		[Test]
+		public void TestWrappingBug()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			Test(policy, @"class Test
+{
+	void TestMe ()
+	{
+		VantageErrorLog.Throw(Title: ""DexterHelper: WriteToDexter (WebEx)"",
+	                                  Method: ""WriteToDexter"", 
+                                	  Location: ""DX001"", 
+                                  Code: ""DX001"", 
+                            	      Message: string.Format(""DexterHelper: WriteToDexter{0}{1}{0}{2}"", 
+                                   VantageConstants.CRLF, 
+                        	           webex.Message,
+                    	               responseString), 
+                                  ex: new Exception(string.Format(""DexterHelper: WriteToDexter{0}{1}{0}{2}"", 
+                                            VantageConstants.CRLF, 
+                	                            webex.Message,
+                                            responseString)), 
+                                  TellUser: false, 
+                                  WriteToDatabase: true, 
+        	                          TellVantageSupport: true, 
+            	                      Rethrow: false);
+	}
+}",
+			     @"class Test
+{
+	void TestMe ()
+	{
+		VantageErrorLog.Throw (Title: ""DexterHelper: WriteToDexter (WebEx)"",
+		                       Method: ""WriteToDexter"", 
+		                       Location: ""DX001"", 
+		                       Code: ""DX001"", 
+		                       Message: string.Format (""DexterHelper: WriteToDexter{0}{1}{0}{2}"", 
+		                                               VantageConstants.CRLF, 
+		                                               webex.Message,
+		                                               responseString), 
+		                       ex: new Exception (string.Format (""DexterHelper: WriteToDexter{0}{1}{0}{2}"", 
+		                                                         VantageConstants.CRLF, 
+		                                                         webex.Message,
+		                                                         responseString)), 
+		                       TellUser: false, 
+		                       WriteToDatabase: true, 
+		                       TellVantageSupport: true, 
+		                       Rethrow: false);
+	}
+}");
+		}
+
+
+		[Test]
+		public void TestWrappingWithSpaceIndent()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+
+			TextEditorOptions options = new TextEditorOptions();
+			options.IndentSize = options.TabSize = 2;
+			options.TabsToSpaces = true;
+			options.EolMarker = "\n";
+
+			Test(policy, @"class Test
+{
+  void TestMe ()
+  {
+    Foo (1, 
+    2,
+    3);
+  }
+}",
+			     @"class Test
+{
+  void TestMe ()
+  {
+    Foo (1, 
+         2,
+         3);
+  }
+}", FormattingMode.Intrusive, options);
 		}
 	}
 }

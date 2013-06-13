@@ -147,6 +147,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return false; }
 			}
 			
+			SymbolKind ISymbol.SymbolKind {
+				get { return SymbolKind.Operator; }
+			}
+			
+			[Obsolete("Use the SymbolKind property instead.")]
 			EntityType IEntity.EntityType {
 				get { return EntityType.Operator; }
 			}
@@ -243,7 +248,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return "operator"; }
 			}
 			
-			string INamedElement.Name {
+			public string Name {
 				get { return "operator"; }
 			}
 			

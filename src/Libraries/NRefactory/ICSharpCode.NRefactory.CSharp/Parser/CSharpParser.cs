@@ -103,7 +103,9 @@ namespace ICSharpCode.NRefactory.CSharp
 						first = false;
 						if (mc.OptAttributes != null) {
 							foreach (var attr in mc.OptAttributes.Sections) {
-								unit.AddChild (ConvertAttributeSection (attr), SyntaxTree.MemberRole);
+								var section = ConvertAttributeSection(attr);
+								if (section !=	null)
+									unit.AddChild (section, SyntaxTree.MemberRole);
 							}
 						}
 					}
@@ -213,9 +215,10 @@ namespace ICSharpCode.NRefactory.CSharp
 					
 					var memberType = new MemberType ();
 					memberType.AddChild (ConvertToType (ma.LeftExpression), MemberType.TargetRole);
-					if (!ma.DotLocation.IsNull)
-						memberType.AddChild (new CSharpTokenNode (Convert (ma.DotLocation), Roles.Dot), Roles.Dot);
-					
+					var loc = LocationsBag.GetLocations (ma);
+					if (loc != null)
+						memberType.AddChild (new CSharpTokenNode (Convert (loc[0]), Roles.Dot), Roles.Dot);
+
 					memberType.MemberNameToken = Identifier.Create (ma.Name, Convert (ma.Location));
 					
 					AddTypeArguments (ma, memberType);
@@ -258,9 +261,9 @@ namespace ICSharpCode.NRefactory.CSharp
 					switch (sce.Constraint) {
 						case SpecialConstraint.Class:
 							return new PrimitiveType ("class", Convert (sce.Location));
-						case SpecialConstraint.Struct:
+							case SpecialConstraint.Struct:
 							return new PrimitiveType ("struct", Convert (sce.Location));
-						case SpecialConstraint.Constructor:
+							case SpecialConstraint.Constructor:
 							return new PrimitiveType ("new", Convert (sce.Location));
 					}
 				}
@@ -327,7 +330,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			AttributeSection ConvertAttributeSection (IEnumerable<Mono.CSharp.Attribute> optAttributes)
 			{
-
 				if (optAttributes == null)
 					return null;
 				AttributeSection result = new AttributeSection ();
@@ -356,6 +358,8 @@ namespace ICSharpCode.NRefactory.CSharp
 
 					attributeCount++;
 				}
+				if (attributeCount == 0)
+					return null;
 				// Left and right bracket + commas between the attributes
 				int locCount = 2 + attributeCount - 1;
 				// optional comma
@@ -424,9 +428,9 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (newIdent.Name != "<invalid>") {
 						namespaceDecl.InsertChildBefore (insertPos, newIdent, Roles.Identifier);
 						insertPos = newIdent;
-						
-						if (!memberName.DotLocation.IsNull) {
-							var dotToken = new CSharpTokenNode (Convert (memberName.DotLocation), Roles.Dot);
+						var loc = LocationsBag.GetLocations (memberName);
+						if (loc != null) {
+							var dotToken = new CSharpTokenNode (Convert (loc[0]), Roles.Dot);
 							namespaceDecl.InsertChildBefore (insertPos, dotToken, Roles.Dot);
 							insertPos = dotToken;
 						}
@@ -483,9 +487,9 @@ namespace ICSharpCode.NRefactory.CSharp
 					var t = new MemberType ();
 //					t.IsDoubleColon = memberName.IsDoubleColon;
 					t.AddChild (ConvertImport (memberName.Left), MemberType.TargetRole);
-					
-					if (!memberName.DotLocation.IsNull)
-						t.AddChild (new CSharpTokenNode (Convert (memberName.DotLocation), Roles.Dot), Roles.Dot);
+					var loc = LocationsBag.GetLocations (memberName);
+					if (loc != null)
+						t.AddChild (new CSharpTokenNode (Convert (loc[0]), Roles.Dot), Roles.Dot);
 					
 					t.AddChild (Identifier.Create (memberName.Name, Convert (memberName.Location)), Roles.Identifier);
 					AddTypeArguments (t, memberName);
@@ -955,7 +959,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (attrs == null)
 					return;
 				foreach (var attr in attrs.Sections) {
-					parent.AddChild (ConvertAttributeSection (attr), role);
+					var section = ConvertAttributeSection(attr);
+					if (section == null)
+						continue;
+					parent.AddChild (section, role);
 				}
 			}
 
@@ -1368,7 +1375,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return null;
 			}
 			
-			public override object Visit (BlockVariableDeclaration blockVariableDeclaration)
+			public override object Visit (BlockVariable blockVariableDeclaration)
 			{
 				var result = new VariableDeclarationStatement ();
 				result.AddChild (ConvertToType (blockVariableDeclaration.TypeExpression), Roles.Type);
@@ -1405,7 +1412,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return result;
 			}
 			
-			public override object Visit (BlockConstantDeclaration blockVariableDeclaration)
+			public override object Visit (BlockConstant blockVariableDeclaration)
 			{
 				var result = new VariableDeclarationStatement ();
 				
@@ -1459,11 +1466,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				return result;
 			}
 			
-			public override object Visit (Mono.CSharp.EmptyExpression emptyExpression)
-			{
-				return new ICSharpCode.NRefactory.CSharp.EmptyExpression (Convert (emptyExpression.Location));
-			}
-			
 			public override object Visit (Mono.CSharp.ErrorExpression emptyExpression)
 			{
 				return new ICSharpCode.NRefactory.CSharp.ErrorExpression (Convert (emptyExpression.Location));
@@ -1471,7 +1473,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (EmptyExpressionStatement emptyExpressionStatement)
 			{
-				return new EmptyExpression (Convert (emptyExpressionStatement.Location));
+				// Should never happen.
+				throw new NotSupportedException();
 			}
 			
 			public override object Visit (If ifStatement)
@@ -2155,8 +2158,10 @@ namespace ICSharpCode.NRefactory.CSharp
 						var leftExpr = memberAccess.LeftExpression.Accept (this);
 						result.AddChild ((Expression)leftExpr, Roles.TargetExpression);
 					}
-					if (!memberAccess.DotLocation.IsNull) {
-						result.AddChild (new CSharpTokenNode (Convert (memberAccess.DotLocation), Roles.Dot), Roles.Dot);
+					var loc = LocationsBag.GetLocations (memberAccess);
+
+					if (loc != null) {
+						result.AddChild (new CSharpTokenNode (Convert (loc[0]), Roles.Dot), Roles.Dot);
 					}
 				}
 				
@@ -2642,6 +2647,23 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (c.ConstraintExpressions != null) {
 						foreach (var expr in c.ConstraintExpressions) {
 							constraint.AddChild (ConvertToType (expr), Roles.BaseType);
+							if (expr is SpecialContraintExpr) {
+								var sce = (SpecialContraintExpr)expr;
+								switch (sce.Constraint) {
+									case SpecialConstraint.Class:
+										break;
+									case SpecialConstraint.Struct:
+										break;
+									case SpecialConstraint.Constructor:
+										var bl = LocationsBag.GetLocations (expr);
+										if (bl != null) {
+											constraint.AddChild (new CSharpTokenNode (Convert (bl[0]), Roles.LPar), Roles.LPar);
+											constraint.AddChild (new CSharpTokenNode (Convert (bl[1]), Roles.RPar), Roles.RPar);
+										}
+										break;
+								}
+							}
+
 							if (commaLocs != null && curComma < commaLocs.Count)
 								constraint.AddChild (new CSharpTokenNode (Convert (commaLocs [curComma++]), Roles.Comma), Roles.Comma);
 						}
@@ -3547,7 +3569,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				DocumentationReference result = new DocumentationReference();
 				if (doc.ParsedName != null) {
 					if (doc.ParsedName.Name == "<this>") {
-						result.EntityType = EntityType.Indexer;
+						result.SymbolKind = SymbolKind.Indexer;
 					} else {
 						result.MemberName = doc.ParsedName.Name;
 					}
@@ -3562,7 +3584,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						}
 					}
 				} else if (doc.ParsedBuiltinType != null) {
-					result.EntityType = EntityType.TypeDefinition;
+					result.SymbolKind = SymbolKind.TypeDefinition;
 					result.DeclaringType = ConvertToType(doc.ParsedBuiltinType);
 				}
 				if (doc.ParsedParameters != null) {
@@ -3570,7 +3592,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					result.Parameters.AddRange(doc.ParsedParameters.Select(ConvertXmlDocParameter));
 				}
 				if (doc.ParsedOperator != null) {
-					result.EntityType = EntityType.Operator;
+					result.SymbolKind = SymbolKind.Operator;
 					result.OperatorType = (OperatorType)doc.ParsedOperator;
 					if (result.OperatorType == OperatorType.Implicit || result.OperatorType == OperatorType.Explicit) {
 						var returnTypeParam = result.Parameters.LastOrNullObject();
@@ -3647,6 +3669,26 @@ namespace ICSharpCode.NRefactory.CSharp
 					};
 					role = Roles.Comment;
 				} else if (!GenerateTypeSystemMode) {
+					var pragmaDirective = special as SpecialsBag.PragmaPreProcessorDirective;
+					if (pragmaDirective != null) {
+						var pragma = new PragmaWarningPreprocssorDirective(new TextLocation(pragmaDirective.Line, pragmaDirective.Col), new TextLocation(pragmaDirective.EndLine, pragmaDirective.EndCol));
+						pragma.Disable = pragmaDirective.Disalbe;
+						pragma.AddWarnings(pragmaDirective.Codes);
+						newLeaf = pragma;
+						role = Roles.PreProcessorDirective;
+						goto end;
+					}
+
+					var lineDirective = special as SpecialsBag.LineProcessorDirective;
+					if (lineDirective != null) {
+						var pragma = new LinePreprocssorDirective(new TextLocation(lineDirective.Line, lineDirective.Col), new TextLocation(lineDirective.EndLine, lineDirective.EndCol));
+						pragma.LineNumber = lineDirective.LineNumber;
+						pragma.FileName = lineDirective.FileName;
+						newLeaf = pragma;
+						role = Roles.PreProcessorDirective;
+						goto end;
+					}
+
 					var directive = special as SpecialsBag.PreProcessorDirective;
 					if (directive != null) {
 						newLeaf = new PreProcessorDirective ((ICSharpCode.NRefactory.CSharp.PreProcessorDirectiveType)((int)directive.Cmd & 0xF), new TextLocation (directive.Line, directive.Col), new TextLocation (directive.EndLine, directive.EndCol)) {
@@ -3655,6 +3697,8 @@ namespace ICSharpCode.NRefactory.CSharp
 						};
 						role = Roles.PreProcessorDirective;
 					}
+					end:
+						;
 				}
 				if (newLeaf != null) {
 					InsertComment(ref insertionPoint, newLeaf, role, isDocumentationComment, conversionVisitor.Unit);
@@ -3682,7 +3726,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void InsertComment(ref AstNode insertionPoint, AstNode newNode, Role role, bool isDocumentationComment, AstNode rootNode)
 		{
 			TextLocation insertAt = newNode.StartLocation;
-			// Advance insertionPoint to the first node that has a start location greater than insertAt
+			// Advance insertionPoint to the first node that has a start location >= insertAt
 			while (insertionPoint != null && insertionPoint.StartLocation < insertAt) {
 				// Enter the current node if insertAt is within
 				while (insertAt < insertionPoint.EndLocation && insertionPoint.FirstChild != null) {
@@ -3799,7 +3843,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 
 			conversionVisitor.Unit.FileName = fileName;
-			conversionVisitor.Unit.ConditionalSymbols = top.Conditionals.Concat (compilerSettings.ConditionalSymbols).ToArray ();
+			List<string> conditionals = new List<string>();
+			foreach (var settings in compilerSettings.ConditionalSymbols) {
+				if (top.Conditionals.ContainsKey(settings) && !top.Conditionals [settings])
+					continue;
+				conditionals.Add(settings);
+			}
+			foreach (var kv in top.Conditionals) {
+				if (!kv.Value || compilerSettings.ConditionalSymbols.Contains (kv.Key))
+					continue;
+				conditionals.Add(kv.Key);
+			}
+			conversionVisitor.Unit.ConditionalSymbols = conditionals;
 			return conversionVisitor.Unit;
 		}
 		

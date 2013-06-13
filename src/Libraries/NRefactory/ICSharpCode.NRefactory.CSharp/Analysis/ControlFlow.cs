@@ -361,8 +361,8 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			
 			protected override ControlFlowNode VisitChildren(AstNode node, ControlFlowNode data)
 			{
-				// We have overrides for all possible expressions and should visit expressions only.
-				throw new NotImplementedException();
+				// We have overrides for all possible statements and should visit statements only.
+				throw new NotSupportedException();
 			}
 			
 			public override ControlFlowNode VisitBlockStatement(BlockStatement blockStatement, ControlFlowNode data)

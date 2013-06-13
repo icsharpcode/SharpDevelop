@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.Documentation
 			ParseUtilCSharp.AssertDocumentationReference(
 				"this",
 				new DocumentationReference {
-					EntityType = EntityType.Indexer
+					SymbolKind = SymbolKind.Indexer
 				});
 		}
 		
@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.Documentation
 			ParseUtilCSharp.AssertDocumentationReference(
 				"this[int]",
 				new DocumentationReference {
-					EntityType = EntityType.Indexer,
+					SymbolKind = SymbolKind.Indexer,
 					HasParameterList = true,
 					Parameters = { new ParameterDeclaration { Type = new PrimitiveType("int") } }
 				});
@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.Documentation
 			ParseUtilCSharp.AssertDocumentationReference(
 				"List{T}.this",
 				new DocumentationReference {
-					EntityType = EntityType.Indexer,
+					SymbolKind = SymbolKind.Indexer,
 					DeclaringType = new SimpleType("List", new SimpleType("T"))
 				});
 		}
@@ -101,7 +101,7 @@ namespace ICSharpCode.NRefactory.Documentation
 			ParseUtilCSharp.AssertDocumentationReference(
 				"int",
 				new DocumentationReference {
-					EntityType = EntityType.TypeDefinition,
+					SymbolKind = SymbolKind.TypeDefinition,
 					DeclaringType = new PrimitiveType("int")
 				});
 		}
@@ -211,7 +211,7 @@ namespace ICSharpCode.NRefactory.Documentation
 			ParseUtilCSharp.AssertDocumentationReference(
 				"operator +",
 				new DocumentationReference {
-					EntityType = EntityType.Operator,
+					SymbolKind = SymbolKind.Operator,
 					OperatorType = OperatorType.Addition
 				});
 		}
@@ -224,7 +224,7 @@ namespace ICSharpCode.NRefactory.Documentation
 				"Test.operator +",
 				new DocumentationReference {
 					DeclaringType = new SimpleType("Test"),
-					EntityType = EntityType.Operator,
+					SymbolKind = SymbolKind.Operator,
 					OperatorType = OperatorType.Addition
 				});
 		}
@@ -235,7 +235,7 @@ namespace ICSharpCode.NRefactory.Documentation
 			ParseUtilCSharp.AssertDocumentationReference(
 				"operator +(Test, int)",
 				new DocumentationReference {
-					EntityType = EntityType.Operator,
+					SymbolKind = SymbolKind.Operator,
 					OperatorType = OperatorType.Addition,
 					HasParameterList = true,
 					Parameters = {
@@ -250,7 +250,7 @@ namespace ICSharpCode.NRefactory.Documentation
 			ParseUtilCSharp.AssertDocumentationReference(
 				"implicit operator int",
 				new DocumentationReference {
-					EntityType = EntityType.Operator,
+					SymbolKind = SymbolKind.Operator,
 					OperatorType = OperatorType.Implicit,
 					ConversionOperatorReturnType = new PrimitiveType("int")
 				});
@@ -262,7 +262,7 @@ namespace ICSharpCode.NRefactory.Documentation
 			ParseUtilCSharp.AssertDocumentationReference(
 				"explicit operator int(Test)",
 				new DocumentationReference {
-					EntityType = EntityType.Operator,
+					SymbolKind = SymbolKind.Operator,
 					OperatorType = OperatorType.Explicit,
 					ConversionOperatorReturnType = new PrimitiveType("int"),
 					HasParameterList = true,
@@ -279,7 +279,7 @@ namespace ICSharpCode.NRefactory.Documentation
 			ParseUtilCSharp.AssertDocumentationReference(
 				"Test.explicit operator int(Test)",
 				new DocumentationReference {
-					EntityType = EntityType.Operator,
+					SymbolKind = SymbolKind.Operator,
 					OperatorType = OperatorType.Explicit,
 					DeclaringType = new SimpleType("Test"),
 					ConversionOperatorReturnType = new PrimitiveType("int"),
@@ -289,5 +289,19 @@ namespace ICSharpCode.NRefactory.Documentation
 					}
 				});
 		}
+
+		[Test]
+		public void TestParseTypeName()
+		{
+			var result = IdStringProvider.ParseTypeName("T:System.Collections.Generic.List{T}");
+			Assert.IsNotNull(result);
+			var pc = new CSharpProjectContent().AddAssemblyReferences(new[] { CecilLoaderTests.Mscorlib });
+
+			var type = result.Resolve(pc.CreateCompilation());
+
+			Assert.AreEqual("System.Collections.Generic.List", type.FullName);
+			Assert.AreEqual(1, type.TypeParameterCount);
+		}
+
 	}
 }

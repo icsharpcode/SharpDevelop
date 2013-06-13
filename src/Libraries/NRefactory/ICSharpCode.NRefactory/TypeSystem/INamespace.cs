@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Represents a resolved namespace.
 	/// </summary>
-	public interface INamespace : ICompilationProvider
+	public interface INamespace : ISymbol, ICompilationProvider
 	{
 		// No pointer back to unresolved namespace:
 		// multiple unresolved namespaces (from different assemblies) get
@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets the short name of this namespace (e.g. "Collections").
 		/// </summary>
-		string Name { get; }
+		new string Name { get; }
 		
 		/// <summary>
 		/// Gets the parent namespace.

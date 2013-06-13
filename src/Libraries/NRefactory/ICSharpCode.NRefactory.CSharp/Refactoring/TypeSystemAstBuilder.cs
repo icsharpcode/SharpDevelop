@@ -436,7 +436,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			} else if (rr.IsCompileTimeConstant) {
 				return ConvertConstantValue(rr.Type, rr.ConstantValue);
 			} else {
-				return new EmptyExpression();
+				return new ErrorExpression();
 			}
 		}
 		
@@ -486,27 +486,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			if (entity == null)
 				throw new ArgumentNullException("entity");
-			switch (entity.EntityType) {
-				case EntityType.TypeDefinition:
+			switch (entity.SymbolKind) {
+				case SymbolKind.TypeDefinition:
 					return ConvertTypeDefinition((ITypeDefinition)entity);
-				case EntityType.Field:
+				case SymbolKind.Field:
 					return ConvertField((IField)entity);
-				case EntityType.Property:
+				case SymbolKind.Property:
 					return ConvertProperty((IProperty)entity);
-				case EntityType.Indexer:
+				case SymbolKind.Indexer:
 					return ConvertIndexer((IProperty)entity);
-				case EntityType.Event:
+				case SymbolKind.Event:
 					return ConvertEvent((IEvent)entity);
-				case EntityType.Method:
+				case SymbolKind.Method:
 					return ConvertMethod((IMethod)entity);
-				case EntityType.Operator:
+				case SymbolKind.Operator:
 					return ConvertOperator((IMethod)entity);
-				case EntityType.Constructor:
+				case SymbolKind.Constructor:
 					return ConvertConstructor((IMethod)entity);
-				case EntityType.Destructor:
+				case SymbolKind.Destructor:
 					return ConvertDestructor((IMethod)entity);
 				default:
-					throw new ArgumentException("Invalid value for EntityType: " + entity.EntityType);
+					throw new ArgumentException("Invalid value for SymbolKind: " + entity.SymbolKind);
 			}
 		}
 		

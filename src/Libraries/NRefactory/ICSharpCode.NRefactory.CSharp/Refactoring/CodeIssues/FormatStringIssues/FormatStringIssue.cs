@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.Linq;
 using ICSharpCode.NRefactory.Utils;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -68,9 +69,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				Expression formatArgument;
 				IList<Expression> formatArguments;
-				TextLocation formatStart;
 				if (!FormatStringHelper.TryGetFormattingParameters(invocationResolveResult, invocationExpression,
-				                                                   out formatArgument, out formatStart, out formatArguments, null)) {
+				                                                   out formatArgument, out formatArguments, null)) {
 					return;
 				}
 				var primitiveArgument = formatArgument as PrimitiveExpression;
@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				var format = (string)primitiveArgument.Value;
 				var parsingResult = context.ParseFormatString(format);
-				CheckSegments(parsingResult.Segments, formatStart, formatArguments, invocationExpression);
+				CheckSegments(parsingResult.Segments, formatArgument.StartLocation, formatArguments, invocationExpression);
 			}
 
 			void CheckSegments(IList<IFormatStringSegment> segments, TextLocation formatStart, IList<Expression> formatArguments, AstNode anchor)

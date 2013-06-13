@@ -28,13 +28,14 @@ using System.Linq;
 using System;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription("The variable can be declared in a nested scope",
-	                   Description = "Highlights variables that can be declared in a nested scope.",
-	                   Category = IssueCategories.Opportunities,
-	                   Severity = Severity.Suggestion)]
+//	[IssueDescription("The variable can be declared in a nested scope",
+//	                   Description = "Highlights variables that can be declared in a nested scope.",
+//	                   Category = IssueCategories.Opportunities,
+//	                   Severity = Severity.Suggestion)]
 	public class VariableDeclaredInWideScopeIssue : ICodeIssueProvider
 	{
 		#region ICodeIssueProvider implementation

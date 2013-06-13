@@ -706,12 +706,19 @@ namespace Mono.CSharp {
 		public StatementErrorExpression (Expression expr)
 		{
 			this.expr = expr;
+			this.loc = expr.StartLocation;
 		}
 
 		public Expression Expr {
 			get {
 				return expr;
 			}
+		}
+
+		public override bool Resolve (BlockContext bc)
+		{
+			expr.Error_InvalidExpressionStatement (bc);
+			return true;
 		}
 
 		protected override void DoEmit (EmitContext ec)
@@ -903,9 +910,18 @@ namespace Mono.CSharp {
 							if (this is ContextualReturn)
 								return true;
 
-							ec.Report.Error (1997, loc,
-								"`{0}': A return keyword must not be followed by an expression when async method returns `Task'. Consider using `Task<T>' return type",
-								ec.GetSignatureForError ());
+							// Same error code as .NET but better error message
+							if (async_block.DelegateType != null) {
+								ec.Report.Error (1997, loc,
+									"`{0}': A return keyword must not be followed by an expression when async delegate returns `Task'. Consider using `Task<T>' return type",
+									async_block.DelegateType.GetSignatureForError ());
+							} else {
+								ec.Report.Error (1997, loc,
+									"`{0}': A return keyword must not be followed by an expression when async method returns `Task'. Consider using `Task<T>' return type",
+									ec.GetSignatureForError ());
+
+							}
+
 							return false;
 						}
 
@@ -1252,7 +1268,7 @@ namespace Mono.CSharp {
 				if (!Convert.ImplicitStandardConversionExists (c, type))
 					ec.Report.Warning (469, 2, loc,
 						"The `goto case' value is not implicitly convertible to type `{0}'",
-						TypeManager.CSharpName (type));
+						type.GetSignatureForError ());
 
 			}
 
@@ -1420,69 +1436,72 @@ namespace Mono.CSharp {
 		Location Location { get; }
 	}
 
-	public class BlockVariableDeclaration : Statement
+	public class BlockVariableDeclarator
 	{
-		public class Declarator
+		LocalVariable li;
+		Expression initializer;
+
+		public BlockVariableDeclarator (LocalVariable li, Expression initializer)
 		{
-			LocalVariable li;
-			Expression initializer;
+			if (li.Type != null)
+				throw new ArgumentException ("Expected null variable type");
 
-			public Declarator (LocalVariable li, Expression initializer)
-			{
-				if (li.Type != null)
-					throw new ArgumentException ("Expected null variable type");
-
-				this.li = li;
-				this.initializer = initializer;
-			}
-
-			public Declarator (Declarator clone, Expression initializer)
-			{
-				this.li = clone.li;
-				this.initializer = initializer;
-			}
-
-			#region Properties
-
-			public LocalVariable Variable {
-				get {
-					return li;
-				}
-			}
-
-			public Expression Initializer {
-				get {
-					return initializer;
-				}
-				set {
-					initializer = value;
-				}
-			}
-
-			#endregion
+			this.li = li;
+			this.initializer = initializer;
 		}
 
+		#region Properties
+
+		public LocalVariable Variable {
+			get {
+				return li;
+			}
+		}
+
+		public Expression Initializer {
+			get {
+				return initializer;
+			}
+			set {
+				initializer = value;
+			}
+		}
+
+		#endregion
+
+		public virtual BlockVariableDeclarator Clone (CloneContext cloneCtx)
+		{
+			var t = (BlockVariableDeclarator) MemberwiseClone ();
+			if (initializer != null)
+				t.initializer = initializer.Clone (cloneCtx);
+
+			return t;
+		}
+	}
+
+	public class BlockVariable : Statement
+	{
 		Expression initializer;
 		protected FullNamedExpression type_expr;
 		protected LocalVariable li;
-		protected List<Declarator> declarators;
+		protected List<BlockVariableDeclarator> declarators;
 		TypeSpec type;
 
-		public BlockVariableDeclaration (FullNamedExpression type, LocalVariable li)
+		public BlockVariable (FullNamedExpression type, LocalVariable li)
 		{
 			this.type_expr = type;
 			this.li = li;
 			this.loc = type_expr.Location;
 		}
 
-		protected BlockVariableDeclaration (LocalVariable li)
+		protected BlockVariable (LocalVariable li)
 		{
 			this.li = li;
 		}
 
 		#region Properties
 
-		public List<Declarator> Declarators {
+		public List<BlockVariableDeclarator> Declarators {
 			get {
 				return declarators;
 			}
@@ -1511,10 +1530,10 @@ namespace Mono.CSharp {
 
 		#endregion
 
-		public void AddDeclarator (Declarator decl)
+		public void AddDeclarator (BlockVariableDeclarator decl)
 		{
 			if (declarators == null)
-				declarators = new List<Declarator> ();
+				declarators = new List<BlockVariableDeclarator> ();
 
 			declarators.Add (decl);
 		}
@@ -1607,7 +1626,7 @@ namespace Mono.CSharp {
 			bool eval_global = bc.Module.Compiler.Settings.StatementMode && bc.CurrentBlock is ToplevelBlock;
 			if (eval_global) {
 				CreateEvaluatorVariable (bc, li);
-			} else {
+			} else if (type != InternalType.ErrorType) {
 				li.PrepareForFlowAnalysis (bc);
 			}
 
@@ -1621,7 +1640,7 @@ namespace Mono.CSharp {
 					d.Variable.Type = li.Type;
 					if (eval_global) {
 						CreateEvaluatorVariable (bc, d.Variable);
-					} else {
+					} else if (type != InternalType.ErrorType) {
 						d.Variable.PrepareForFlowAnalysis (bc);
 					}
 
@@ -1661,7 +1680,7 @@ namespace Mono.CSharp {
 
 		protected override void CloneTo (CloneContext clonectx, Statement target)
 		{
-			BlockVariableDeclaration t = (BlockVariableDeclaration) target;
+			BlockVariable t = (BlockVariable) target;
 
 			if (type_expr != null)
 				t.type_expr = (FullNamedExpression) type_expr.Clone (clonectx);
@@ -1672,7 +1691,7 @@ namespace Mono.CSharp {
 			if (declarators != null) {
 				t.declarators = null;
 				foreach (var d in declarators)
-					t.AddDeclarator (new Declarator (d, d.Initializer == null ? null : d.Initializer.Clone (clonectx)));
+					t.AddDeclarator (d.Clone (clonectx));
 			}
 		}
 
@@ -1682,9 +1701,9 @@ namespace Mono.CSharp {
 		}
 	}
 
-	public class BlockConstantDeclaration : BlockVariableDeclaration
+	public class BlockConstant : BlockVariable
 	{
-		public BlockConstantDeclaration (FullNamedExpression type, LocalVariable li)
+		public BlockConstant (FullNamedExpression type, LocalVariable li)
 			: base (type, li)
 		{
 		}
@@ -2059,7 +2078,8 @@ namespace Mono.CSharp {
 			HasAsyncModifier = 1 << 10,
 			Resolved = 1 << 11,
 			YieldBlock = 1 << 12,
-			AwaitBlock = 1 << 13
+			AwaitBlock = 1 << 13,
+			Iterator = 1 << 14
 		}
 
 		public Block Parent;
@@ -2646,6 +2666,7 @@ namespace Mono.CSharp {
 			}
 
 			storey.Define ();
+			storey.PrepareEmit ();
 			storey.Parent.PartialContainer.AddCompilerGeneratedClass (storey);
 		}
 
@@ -2664,6 +2685,8 @@ namespace Mono.CSharp {
 
 		public void RegisterIteratorYield ()
 		{
+			ParametersBlock.TopBlock.IsIterator = true;
+
 			var block = this;
 			while ((block.flags & Flags.YieldBlock) == 0) {
 				block.flags |= Flags.YieldBlock;
@@ -3112,7 +3135,7 @@ namespace Mono.CSharp {
 			return tlb;
 		}
 
-		public ParametersBlock ConvertToAsyncTask (IMemberContext context, TypeDefinition host, ParametersCompiled parameters, TypeSpec returnType, Location loc)
+		public ParametersBlock ConvertToAsyncTask (IMemberContext context, TypeDefinition host, ParametersCompiled parameters, TypeSpec returnType, TypeSpec delegateType, Location loc)
 		{
 			for (int i = 0; i < parameters.Count; i++) {
 				Parameter p = parameters[i];
@@ -3144,6 +3167,7 @@ namespace Mono.CSharp {
 			var block_type = host.Module.Compiler.BuiltinTypes.Void;
 			var initializer = new AsyncInitializer (this, host, block_type);
 			initializer.Type = block_type;
+			initializer.DelegateType = delegateType;
 
 			var stateMachine = new AsyncTaskStorey (this, context, initializer, returnType);
 
@@ -3207,7 +3231,10 @@ namespace Mono.CSharp {
 
 		public bool IsIterator {
 			get {
-				return HasYield;
+				return (flags & Flags.Iterator) != 0;
+			}
+			set {
+				flags = value ? flags | Flags.Iterator : flags & ~Flags.Iterator;
 			}
 		}
 
@@ -4110,10 +4137,13 @@ namespace Mono.CSharp {
 				new_expr = SwitchGoverningType (ec, unwrap);
 			}
 
-			if (new_expr == null){
-				ec.Report.Error (151, loc,
-					"A switch expression of type `{0}' cannot be converted to an integral type, bool, char, string, enum or nullable type",
-					TypeManager.CSharpName (Expr.Type));
+			if (new_expr == null) {
+				if (Expr.Type != InternalType.ErrorType) {
+					ec.Report.Error (151, loc,
+						"A switch expression of type `{0}' cannot be converted to an integral type, bool, char, string, enum or nullable type",
+						Expr.Type.GetSignatureForError ());
+				}
+
 				return false;
 			}
 
@@ -4512,6 +4542,7 @@ namespace Mono.CSharp {
 
 			if (finally_host != null) {
 				finally_host.Define ();
+				finally_host.PrepareEmit ();
 				finally_host.Emit ();
 
 				// Now it's safe to add, to close it properly and emit sequence points
@@ -5049,8 +5080,7 @@ namespace Mono.CSharp {
 			}
 		}
 
-
-		public class VariableDeclaration : BlockVariableDeclaration
+		public class VariableDeclaration : BlockVariable
 		{
 			public VariableDeclaration (FullNamedExpression type, LocalVariable li)
 				: base (type, li)
@@ -5175,7 +5205,7 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public BlockVariableDeclaration Variables {
+		public BlockVariable Variables {
 			get {
 				return decl;
 			}
@@ -5557,7 +5587,7 @@ namespace Mono.CSharp {
 
 	public class Using : TryFinallyBlock
 	{
-		public class VariableDeclaration : BlockVariableDeclaration
+		public class VariableDeclaration : BlockVariable
 		{
 			Statement dispose_call;
 
@@ -5734,7 +5764,7 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public BlockVariableDeclaration Variables {
+		public BlockVariable Variables {
 			get {
 				return decl;
 			}

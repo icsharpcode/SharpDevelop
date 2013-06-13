@@ -36,14 +36,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		static string[] parameterNames = { "format", "frmt", "fmt" };
 		
 		public static bool TryGetFormattingParameters(CSharpInvocationResolveResult invocationResolveResult, InvocationExpression invocationExpression,
-		                                     		  out Expression formatArgument, out TextLocation formatStart, out IList<Expression> arguments,
+		                                     		  out Expression formatArgument, out IList<Expression> arguments,
 		                                              Func<IParameter, Expression, bool> argumentFilter)
 		{
 			if (argumentFilter == null)
 				argumentFilter = (p, e) => true;
 
 			formatArgument = null;
-			formatStart = default(TextLocation);
 			arguments = new List<Expression>();
 			var argumentToParameterMap = invocationResolveResult.GetArgumentToParameterMap();
 			var resolvedParameters = invocationResolveResult.Member.Parameters;
@@ -51,15 +50,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			for (int i = 0; i < allArguments.Length; i++) {
 				var parameterIndex = argumentToParameterMap[i];
 				if (parameterIndex < 0 || parameterIndex >= resolvedParameters.Count) {
-					// No valid mapping for this parameter, skip it
+					// No valid mapping for this argument, skip it
 					continue;
 				}
 				var parameter = resolvedParameters[parameterIndex];
 				var argument = allArguments[i];
 				if (parameter.Type.IsKnownType(KnownTypeCode.String) && parameterNames.Contains(parameter.Name)) {
 					formatArgument = argument;
-					formatStart = argument.StartLocation;
-				} else if ((formatArgument != null || parameter.IsParams) && argumentFilter(parameter, argument)) {
+				} else if (formatArgument != null && parameter.IsParams && !invocationResolveResult.IsExpandedForm) {
+					var ace = argument as ArrayCreateExpression;
+					if (ace == null || ace.Initializer.IsNull)
+						return false;
+					foreach (var element in ace.Initializer.Elements) {
+						if (argumentFilter(parameter, element))
+							arguments.Add(argument);
+					}
+				} else if (formatArgument != null && argumentFilter(parameter, argument)) {
 					arguments.Add(argument);
 				}
 			}

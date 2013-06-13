@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) 2010-2013 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -397,7 +397,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return interningProvider.Intern(new ParameterizedTypeReference(baseType, para));
 			} else if (type is GenericParameter) {
 				GenericParameter typeGP = (GenericParameter)type;
-				return TypeParameterReference.Create(typeGP.Owner is MethodDefinition ? EntityType.Method : EntityType.TypeDefinition, typeGP.Position);
+				return TypeParameterReference.Create(typeGP.Owner is MethodDefinition ? SymbolKind.Method : SymbolKind.TypeDefinition, typeGP.Position);
 			} else if (type.IsNested) {
 				ITypeReference typeRef = CreateType(type.DeclaringType, typeAttributes, ref typeIndex);
 				int partTypeParameterCount;
@@ -1271,14 +1271,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			public KeyValuePair<IMember, ResolveResult> ReadNamedArg(IType attributeType)
 			{
-				EntityType memberType;
+				SymbolKind memberType;
 				var b = ReadByte();
 				switch (b) {
 					case 0x53:
-						memberType = EntityType.Field;
+						memberType = SymbolKind.Field;
 						break;
 					case 0x54:
-						memberType = EntityType.Property;
+						memberType = SymbolKind.Property;
 						break;
 					default:
 						throw new NotSupportedException(string.Format("Custom member type 0x{0:x} is not supported.", b));
@@ -1288,7 +1288,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				ResolveResult val = ReadFixedArg(type);
 				IMember member = null;
 				// Use last matching member, as GetMembers() returns members from base types first.
-				foreach (IMember m in attributeType.GetMembers(m => m.EntityType == memberType && m.Name == name)) {
+				foreach (IMember m in attributeType.GetMembers(m => m.SymbolKind == memberType && m.Name == name)) {
 					if (m.ReturnType.Equals(type))
 						member = m;
 				}
@@ -1543,7 +1543,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				if (typeDefinition.GenericParameters[i].Position != i)
 					throw new InvalidOperationException("g.Position != i");
 				typeParameters.Add(new DefaultUnresolvedTypeParameter(
-					EntityType.TypeDefinition, i, typeDefinition.GenericParameters[i].Name));
+					SymbolKind.TypeDefinition, i, typeDefinition.GenericParameters[i].Name));
 			}
 		}
 		
@@ -1698,12 +1698,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (typeDefinition.HasMethods) {
 				foreach (MethodDefinition method in typeDefinition.Methods) {
 					if (IsVisible(method.Attributes) && !IsAccessor(method.SemanticsAttributes)) {
-						EntityType type = EntityType.Method;
+						SymbolKind type = SymbolKind.Method;
 						if (method.IsSpecialName) {
 							if (method.IsConstructor)
-								type = EntityType.Constructor;
+								type = SymbolKind.Constructor;
 							else if (method.Name.StartsWith("op_", StringComparison.Ordinal))
-								type = EntityType.Operator;
+								type = SymbolKind.Operator;
 						}
 						members.Add(ReadMethod(method, td, type));
 					}
@@ -1727,14 +1727,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					bool getterVisible = property.GetMethod != null && IsVisible(property.GetMethod.Attributes);
 					bool setterVisible = property.SetMethod != null && IsVisible(property.SetMethod.Attributes);
 					if (getterVisible || setterVisible) {
-						EntityType type = EntityType.Property;
+						SymbolKind type = SymbolKind.Property;
 						if (property.HasParameters) {
 							// Try to detect indexer:
 							if (property.Name == defaultMemberName) {
-								type = EntityType.Indexer; // normal indexer
+								type = SymbolKind.Indexer; // normal indexer
 							} else if (property.Name.EndsWith(".Item", StringComparison.Ordinal) && (property.GetMethod ?? property.SetMethod).HasOverrides) {
 								// explicit interface implementation of indexer
-								type = EntityType.Indexer;
+								type = SymbolKind.Indexer;
 								// We can't really tell parameterized properties and indexers apart in this case without
 								// resolving the interface, so we rely on the "Item" naming convention instead.
 							}
@@ -1775,7 +1775,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			{
 				this.loader = loader;
 				this.cecilTypeDef = typeDefinition;
-				this.EntityType = EntityType.TypeDefinition;
+				this.SymbolKind = SymbolKind.TypeDefinition;
 				this.namespaceName = cecilTypeDef.Namespace;
 				this.Name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(cecilTypeDef.Name);
 				var tps = new List<IUnresolvedTypeParameter>();
@@ -1912,17 +1912,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		#region Read Method
 		[CLSCompliant(false)]
-		public IUnresolvedMethod ReadMethod(MethodDefinition method, IUnresolvedTypeDefinition parentType, EntityType methodType = EntityType.Method)
+		public IUnresolvedMethod ReadMethod(MethodDefinition method, IUnresolvedTypeDefinition parentType, SymbolKind methodType = SymbolKind.Method)
 		{
 			return ReadMethod(method, parentType, methodType, null);
 		}
 		
-		IUnresolvedMethod ReadMethod(MethodDefinition method, IUnresolvedTypeDefinition parentType, EntityType methodType, IUnresolvedMember accessorOwner)
+		IUnresolvedMethod ReadMethod(MethodDefinition method, IUnresolvedTypeDefinition parentType, SymbolKind methodType, IUnresolvedMember accessorOwner)
 		{
 			if (method == null)
 				return null;
 			DefaultUnresolvedMethod m = new DefaultUnresolvedMethod(parentType, method.Name);
-			m.EntityType = methodType;
+			m.SymbolKind = methodType;
 			m.AccessorOwner = accessorOwner;
 			m.HasBody = method.HasBody;
 			if (method.HasGenericParameters) {
@@ -1930,7 +1930,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					if (method.GenericParameters[i].Position != i)
 						throw new InvalidOperationException("g.Position != i");
 					m.TypeParameters.Add(new DefaultUnresolvedTypeParameter(
-						EntityType.Method, i, method.GenericParameters[i].Name));
+						SymbolKind.Method, i, method.GenericParameters[i].Name));
 				}
 				for (int i = 0; i < method.GenericParameters.Count; i++) {
 					var tp = (DefaultUnresolvedTypeParameter)m.TypeParameters[i];
@@ -1963,7 +1963,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				m.IsExplicitInterfaceImplementation = true;
 				foreach (var or in method.Overrides) {
 					m.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(
-						accessorOwner != null ? EntityType.Accessor : EntityType.Method,
+						accessorOwner != null ? SymbolKind.Accessor : SymbolKind.Method,
 						ReadTypeReference(or.DeclaringType),
 						or.Name, or.GenericParameters.Count, m.Parameters.Select(p => p.Type).ToList()));
 				}
@@ -2198,20 +2198,47 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		#region Read Property
 
+		Accessibility MergePropertyAccessibility (Accessibility left, Accessibility right)
+		{
+			if (left == Accessibility.Public || right == Accessibility.Public)
+				return Accessibility.Public;
+
+			if (left == Accessibility.ProtectedOrInternal || right == Accessibility.ProtectedOrInternal)
+				return Accessibility.ProtectedOrInternal;
+
+			if (left == Accessibility.Protected && right == Accessibility.Internal || 
+			    left == Accessibility.Internal && right == Accessibility.Protected)
+				return Accessibility.ProtectedOrInternal;
+
+			if (left == Accessibility.Protected || right == Accessibility.Protected)
+				return Accessibility.Protected;
+
+			if (left == Accessibility.Internal || right == Accessibility.Internal)
+				return Accessibility.Internal;
+
+			if (left == Accessibility.ProtectedAndInternal || right == Accessibility.ProtectedAndInternal)
+				return Accessibility.ProtectedAndInternal;
+
+			return left;
+		}
+
 		[CLSCompliant(false)]
-		public IUnresolvedProperty ReadProperty(PropertyDefinition property, IUnresolvedTypeDefinition parentType, EntityType propertyType = EntityType.Property)
+		public IUnresolvedProperty ReadProperty(PropertyDefinition property, IUnresolvedTypeDefinition parentType, SymbolKind propertyType = SymbolKind.Property)
 		{
 			if (property == null)
 				throw new ArgumentNullException("property");
 			if (parentType == null)
 				throw new ArgumentNullException("parentType");
 			DefaultUnresolvedProperty p = new DefaultUnresolvedProperty(parentType, property.Name);
-			p.EntityType = propertyType;
+			p.SymbolKind = propertyType;
 			TranslateModifiers(property.GetMethod ?? property.SetMethod, p);
+			if (property.GetMethod != null && property.SetMethod != null)
+				p.Accessibility = MergePropertyAccessibility (GetAccessibility (property.GetMethod.Attributes), GetAccessibility (property.SetMethod.Attributes));
+
 			p.ReturnType = ReadTypeReference(property.PropertyType, typeAttributes: property);
 			
-			p.Getter = ReadMethod(property.GetMethod, parentType, EntityType.Accessor, p);
-			p.Setter = ReadMethod(property.SetMethod, parentType, EntityType.Accessor, p);
+			p.Getter = ReadMethod(property.GetMethod, parentType, SymbolKind.Accessor, p);
+			p.Setter = ReadMethod(property.SetMethod, parentType, SymbolKind.Accessor, p);
 			
 			if (property.HasParameters) {
 				foreach (ParameterDefinition par in property.Parameters) {
@@ -2247,9 +2274,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			TranslateModifiers(ev.AddMethod, e);
 			e.ReturnType = ReadTypeReference(ev.EventType, typeAttributes: ev);
 			
-			e.AddAccessor    = ReadMethod(ev.AddMethod,    parentType, EntityType.Accessor, e);
-			e.RemoveAccessor = ReadMethod(ev.RemoveMethod, parentType, EntityType.Accessor, e);
-			e.InvokeAccessor = ReadMethod(ev.InvokeMethod, parentType, EntityType.Accessor, e);
+			e.AddAccessor    = ReadMethod(ev.AddMethod,    parentType, SymbolKind.Accessor, e);
+			e.RemoveAccessor = ReadMethod(ev.RemoveMethod, parentType, SymbolKind.Accessor, e);
+			e.InvokeAccessor = ReadMethod(ev.InvokeMethod, parentType, SymbolKind.Accessor, e);
 			
 			AddAttributes(ev, e);
 			

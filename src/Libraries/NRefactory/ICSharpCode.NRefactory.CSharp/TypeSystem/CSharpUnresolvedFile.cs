@@ -36,8 +36,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		// The 'FastSerializerVersion' attribute on CSharpUnresolvedFile must be incremented when fixing 
 		// bugs in the TypeSystemConvertVisitor
 		
-		readonly string fileName;
-		readonly UsingScope rootUsingScope;
+		string fileName = string.Empty;
+		readonly UsingScope rootUsingScope = new UsingScope();
 		IList<IUnresolvedTypeDefinition> topLevelTypeDefinitions = new List<IUnresolvedTypeDefinition>();
 		IList<IUnresolvedAttribute> assemblyAttributes = new List<IUnresolvedAttribute>();
 		IList<IUnresolvedAttribute> moduleAttributes = new List<IUnresolvedAttribute>();
@@ -55,26 +55,12 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			usingScopes = FreezableHelper.FreezeListAndElements(usingScopes);
 		}
 		
-		public CSharpUnresolvedFile(string fileName)
-		{
-			if (fileName == null)
-				throw new ArgumentNullException("fileName");
-			this.fileName = fileName;
-			this.rootUsingScope = new UsingScope();
-		}
-		
-		public CSharpUnresolvedFile(string fileName, UsingScope rootUsingScope)
-		{
-			if (fileName == null)
-				throw new ArgumentNullException("fileName");
-			if (rootUsingScope == null)
-				throw new ArgumentNullException("rootUsingScope");
-			this.fileName = fileName;
-			this.rootUsingScope = rootUsingScope;
-		}
-		
 		public string FileName {
 			get { return fileName; }
+			set {
+				FreezableHelper.ThrowIfFrozen(this);
+				fileName = value ?? string.Empty;
+			}
 		}
 		
 		DateTime? lastWriteTime;

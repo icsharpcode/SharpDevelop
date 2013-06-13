@@ -80,7 +80,7 @@ namespace Mono.CSharp
 
 			var session = new ParserSession () {
 				UseJayGlobalArrays = true,
-				LocatedTokens = new Tokenizer.LocatedToken[15000]
+				LocatedTokens = new LocatedToken[15000]
 			};
 
 			for (int i = 0; i < sources.Count; ++i) {
@@ -419,7 +419,7 @@ namespace Mono.CSharp
 		public ModuleContainer ModuleCompiled { get; set; }
 		public LocationsBag LocationsBag { get; set; }
 		public SpecialsBag SpecialsBag { get; set; }
-		public IEnumerable<string> Conditionals { get; set; }
+		public IDictionary<string, bool> Conditionals { get; set; }
 		public object LastYYValue { get; set; }
 	}
 

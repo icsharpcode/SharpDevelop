@@ -293,7 +293,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		#region IsInactiveConditional helper methods
 		bool IsInactiveConditionalMethod(IParameterizedMember member)
 		{
-			if (member.EntityType != EntityType.Method || member.ReturnType.Kind != TypeKind.Void)
+			if (member.SymbolKind != SymbolKind.Method || member.ReturnType.Kind != TypeKind.Void)
 				return false;
 			while (member.IsOverride) {
 				member = (IParameterizedMember)InheritanceHelper.GetBaseMember(member);
@@ -461,21 +461,21 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		
 		bool TryGetMemberColor(IMember member, out TColor color)
 		{
-			switch (member.EntityType) {
-				case EntityType.Field:
+			switch (member.SymbolKind) {
+				case SymbolKind.Field:
 					color = fieldAccessColor;
 					return true;
-				case EntityType.Property:
+				case SymbolKind.Property:
 					color = propertyAccessColor;
 					return true;
-				case EntityType.Event:
+				case SymbolKind.Event:
 					color = eventAccessColor;
 					return true;
-				case EntityType.Method:
+				case SymbolKind.Method:
 					color = methodCallColor;
 					return true;
-				case EntityType.Constructor:
-				case EntityType.Destructor:
+				case SymbolKind.Constructor:
+				case SymbolKind.Destructor:
 					return TryGetTypeHighlighting (member.DeclaringType.Kind, out color);
 				default:
 					color = default (TColor);

@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		public override void VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
 		{
-			FixAttributes(propertyDeclaration);
+			FixAttributesAndDocComment(propertyDeclaration);
 			bool oneLine = false;
 			bool fixClosingBrace = false;
 			switch (policy.PropertyFormatting) {
@@ -158,7 +158,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitAccessor(Accessor accessor)
 		{
-			FixAttributes(accessor);
+			FixAttributesAndDocComment(accessor);
 
 			base.VisitAccessor(accessor);
 		}
@@ -166,7 +166,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration)
 		{
-			FixAttributes(indexerDeclaration);
+			FixAttributesAndDocComment(indexerDeclaration);
 
 			ForceSpacesBefore(indexerDeclaration.LBracketToken, policy.SpaceBeforeIndexerDeclarationBracket);
 			ForceSpacesAfter(indexerDeclaration.LBracketToken, policy.SpaceWithinIndexerDeclarationBracket);
@@ -217,7 +217,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitCustomEventDeclaration(CustomEventDeclaration eventDeclaration)
 		{
-			FixAttributes(eventDeclaration);
+			FixAttributesAndDocComment(eventDeclaration);
 
 			FixOpenBrace(policy.EventBraceStyle, eventDeclaration.LBraceToken);
 			if (policy.IndentEventBody)
@@ -259,8 +259,16 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitEventDeclaration(EventDeclaration eventDeclaration)
 		{
-			FixAttributes(eventDeclaration);
+			FixAttributesAndDocComment(eventDeclaration);
 
+			foreach (var m in eventDeclaration.ModifierTokens) {
+				ForceSpacesAfter(m, true);
+			}
+
+			ForceSpacesBeforeRemoveNewLines(eventDeclaration.EventToken.GetNextSibling (NoWhitespacePredicate), true);
+			eventDeclaration.ReturnType.AcceptVisitor(this);
+			ForceSpacesAfter(eventDeclaration.ReturnType, true);
+			/*
 			var lastLoc = eventDeclaration.StartLocation;
 			curIndent.Push(IndentType.Block);
 			foreach (var initializer in eventDeclaration.Variables) {
@@ -271,19 +279,21 @@ namespace ICSharpCode.NRefactory.CSharp
 				initializer.AcceptVisitor(this);
 			}
 			curIndent.Pop ();
+			*/
+			FixSemicolon(eventDeclaration.SemicolonToken);
 		}
 
 		
 		public override void VisitFieldDeclaration(FieldDeclaration fieldDeclaration)
 		{
-			FixAttributes(fieldDeclaration);
+			FixAttributesAndDocComment(fieldDeclaration);
 
 			fieldDeclaration.ReturnType.AcceptVisitor(this);
 			ForceSpacesAfter(fieldDeclaration.ReturnType, true);
 
 			FormatCommas(fieldDeclaration, policy.SpaceBeforeFieldDeclarationComma, policy.SpaceAfterFieldDeclarationComma);
 
-			var lastLoc = fieldDeclaration.StartLocation;
+			var lastLoc = fieldDeclaration.ReturnType.StartLocation;
 			foreach (var initializer in fieldDeclaration.Variables) {
 				if (lastLoc.Line != initializer.StartLocation.Line) {
 					curIndent.Push(IndentType.Block);
@@ -293,11 +303,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				initializer.AcceptVisitor(this);
 			}
+			FixSemicolon(fieldDeclaration.SemicolonToken);
 		}
 
 		public override void VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration)
 		{
-			FixAttributes(fixedFieldDeclaration);
+			FixAttributesAndDocComment(fixedFieldDeclaration);
 
 			FormatCommas(fixedFieldDeclaration, policy.SpaceBeforeFieldDeclarationComma, policy.SpaceAfterFieldDeclarationComma);
 
@@ -311,18 +322,22 @@ namespace ICSharpCode.NRefactory.CSharp
 				initializer.AcceptVisitor(this);
 			}
 			curIndent.Pop ();
+			FixSemicolon(fixedFieldDeclaration.SemicolonToken);
 		}
 
 		public override void VisitEnumMemberDeclaration(EnumMemberDeclaration enumMemberDeclaration)
 		{
-			FixAttributes(enumMemberDeclaration);
-
-			base.VisitEnumMemberDeclaration(enumMemberDeclaration);
+			FixAttributesAndDocComment(enumMemberDeclaration);
+			var initializer = enumMemberDeclaration.Initializer;
+			if (!initializer.IsNull) {
+				ForceSpacesAround(enumMemberDeclaration.AssignToken, policy.SpaceAroundAssignment);
+				initializer.AcceptVisitor (this);
+			}
 		}
 
 		public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 		{
-			FixAttributes(methodDeclaration);
+			FixAttributesAndDocComment(methodDeclaration);
 
 			ForceSpacesBefore(methodDeclaration.LParToken, policy.SpaceBeforeMethodDeclarationParentheses);
 			if (methodDeclaration.Parameters.Any()) {
@@ -332,6 +347,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				ForceSpacesAfter(methodDeclaration.LParToken, policy.SpaceBetweenEmptyMethodDeclarationParentheses);
 				ForceSpacesBefore(methodDeclaration.RParToken, policy.SpaceBetweenEmptyMethodDeclarationParentheses);
 			}
+			
+			foreach (var constraint in methodDeclaration.Constraints)
+				constraint.AcceptVisitor (this);
 
 			if (!methodDeclaration.Body.IsNull) {
 				FixOpenBrace(policy.MethodBraceStyle, methodDeclaration.Body.LBraceToken);
@@ -342,7 +360,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration)
 		{
-			FixAttributes(operatorDeclaration);
+			FixAttributesAndDocComment(operatorDeclaration);
 
 			ForceSpacesBefore(operatorDeclaration.LParToken, policy.SpaceBeforeMethodDeclarationParentheses);
 			if (operatorDeclaration.Parameters.Any()) {
@@ -362,7 +380,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
 		{
-			FixAttributes(constructorDeclaration);
+			FixAttributesAndDocComment(constructorDeclaration);
 
 			ForceSpacesBefore(constructorDeclaration.LParToken, policy.SpaceBeforeConstructorDeclarationParentheses);
 			if (constructorDeclaration.Parameters.Any()) {
@@ -382,7 +400,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration)
 		{
-			FixAttributes(destructorDeclaration);
+			FixAttributesAndDocComment(destructorDeclaration);
 
 			CSharpTokenNode lParen = destructorDeclaration.LParToken;
 			ForceSpaceBefore(lParen, policy.SpaceBeforeConstructorDeclarationParentheses);

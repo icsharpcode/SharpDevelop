@@ -156,7 +156,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			return IsInside(location.Line, location.Column);
 		}
-		
+
+		public bool IntersectsWith (DomRegion region)
+		{
+			return region.Begin <= End && region.End >= Begin;
+		}
+
+		public bool OverlapsWith (DomRegion region)
+		{
+			var maxBegin = Begin > region.Begin ? Begin : region.Begin;
+			var minEnd = End < region.End ? End : region.End;
+			return maxBegin < minEnd;
+		}
+
 		public override string ToString()
 		{
 			return string.Format(

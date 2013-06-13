@@ -6083,5 +6083,22 @@ public class Test
 			Assert.IsTrue(provider == null || provider.Count == 0);
 		}
 
+		[Ignore("Parser bug")]
+		[Test]
+		public void TestBugWithLambdaParameter()
+		{
+			CombinedProviderTest(@"using System.Collections.Generic;
+
+		class C
+		{
+			public static void Main (string[] args)
+			{
+				List<string> list;
+				$list.Find(l => l.Name == l.Name ? l$
+			}
+		}", provider => {
+				Assert.IsNotNull(provider.Find("l"));
+			});
+		}
 	}
 }

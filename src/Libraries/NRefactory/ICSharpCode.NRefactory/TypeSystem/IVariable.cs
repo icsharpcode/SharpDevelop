@@ -23,12 +23,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Represents a variable (name/type pair).
 	/// </summary>
-	public interface IVariable
+	public interface IVariable : ISymbol
 	{
 		/// <summary>
 		/// Gets the name of the variable.
 		/// </summary>
-		string Name { get; }
+		new string Name { get; }
 		
 		/// <summary>
 		/// Gets the declaration region of the variable.

@@ -38,12 +38,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public DefaultUnresolvedEvent()
 		{
-			this.EntityType = EntityType.Event;
+			this.SymbolKind = SymbolKind.Event;
 		}
 		
 		public DefaultUnresolvedEvent(IUnresolvedTypeDefinition declaringType, string name)
 		{
-			this.EntityType = EntityType.Event;
+			this.SymbolKind = SymbolKind.Event;
 			this.DeclaringTypeDefinition = declaringType;
 			this.Name = name;
 			if (declaringType != null)

@@ -36,12 +36,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public DefaultUnresolvedField()
 		{
-			this.EntityType = EntityType.Field;
+			this.SymbolKind = SymbolKind.Field;
 		}
 		
 		public DefaultUnresolvedField(IUnresolvedTypeDefinition declaringType, string name)
 		{
-			this.EntityType = EntityType.Field;
+			this.SymbolKind = SymbolKind.Field;
 			this.DeclaringTypeDefinition = declaringType;
 			this.Name = name;
 			if (declaringType != null)

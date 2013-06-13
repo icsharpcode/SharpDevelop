@@ -226,6 +226,7 @@
     <Compile Include="CSharp\Parser\GeneralScope\AttributeSectionTests.cs" />
     <Compile Include="CSharp\Parser\ParseUtil.cs" />
     <Compile Include="CSharp\QueryExpressionExpanderTests.cs" />
+    <Compile Include="CSharp\Refactoring\RefactoringStructureTests.cs" />
     <Compile Include="CSharp\Refactoring\TypeSystemAstBuilderTests.cs" />
     <Compile Include="CSharp\Resolver\AnonymousTypeTests.cs" />
     <Compile Include="CSharp\Resolver\ArrayCreateTests.cs" />
@@ -408,13 +409,14 @@
     <Compile Include="CSharp\CodeIssues\RedundantBaseConstructorIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantConstructorTests.cs" />
     <Compile Include="CSharp\CodeIssues\PublicConstructorInAbstractClassIssueTest.cs" />
-    <Compile Include="CSharp\CodeIssues\ExpressionOfCompatibleTypeCastIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\CS0029InvalidConversionIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ConvertToStaticMethodIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\ParameterCanBeIEnumerableTests.cs" />
     <Compile Include="CSharp\CodeIssues\DuplicateBodyMethodIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\DuplicateExpressionsInConditionsIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\DuplicateIfInIfChainIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\UseBlockInsteadColonIssueTests.cs" />
+    <Compile Include="CSharp\AstTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">

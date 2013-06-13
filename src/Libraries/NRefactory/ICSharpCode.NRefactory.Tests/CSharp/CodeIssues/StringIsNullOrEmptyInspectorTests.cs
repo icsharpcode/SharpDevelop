@@ -438,12 +438,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		
 		[TestCase("str == null || str.Length == 0")]
 		[TestCase("str == null || 0 == str.Length")]
-		[TestCase("str.Length == 0 || str == null")]
-		[TestCase("0 == str.Length || str == null")]
 		[TestCase("null == str || str.Length == 0")]
 		[TestCase("null == str || 0 == str.Length")]
-		[TestCase("str.Length == 0 || null == str")]
-		[TestCase("0 == str.Length || null == str")]
 		public void TestInspectorCaseNL (string expression)
 		{
 			var input = @"class Foo
@@ -470,12 +466,10 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 	
 		[TestCase("str != null && str.Length != 0")]
 		[TestCase("str != null && 0 != str.Length")]
-		[TestCase("str.Length != 0 && str != null")]
-		[TestCase("0 != str.Length && str != null")]
+		[TestCase("str != null && str.Length > 0")]
 		[TestCase("null != str && str.Length != 0")]
 		[TestCase("null != str && 0 != str.Length")]
-		[TestCase("str.Length != 0 && null != str")]
-		[TestCase("0 != str.Length && null != str")]
+		[TestCase("null != str && str.Length > 0")]
 		public void TestInspectorCaseLN (string expression)
 		{
 			var input = @"class Foo

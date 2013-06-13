@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.PatternMatching;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -51,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
             SupportedOperators.Add(BinaryOperatorType.ConditionalOr);
         }
 		
-		class GatherVisitor : GatherVisitorBase<IdenticalConditionalBranchIssue>
+		class GatherVisitor : GatherVisitorBase<DuplicateExpressionsInConditionsIssue>
 		{
 			public GatherVisitor (BaseRefactoringContext ctx)
 				: base (ctx)

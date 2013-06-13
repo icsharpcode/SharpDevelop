@@ -91,6 +91,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+		public SymbolKind SymbolKind {
+			get { return SymbolKind.Namespace; }
+		}
+		
 		public ICompilation Compilation {
 			get { return compilation; }
 		}

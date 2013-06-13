@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory
 		{
 			this.index = (uint)Interlocked.Increment(ref nextRoleIndex);
 			if (this.index >= roles.Length)
-				throw new InvalidOperationException("");
+				throw new InvalidOperationException("Too many roles");
 			roles[this.index] = this;
 		}
 		

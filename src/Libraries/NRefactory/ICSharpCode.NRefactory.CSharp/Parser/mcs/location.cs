@@ -483,6 +483,26 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 			}
 		}
 
+		public class PragmaPreProcessorDirective : PreProcessorDirective
+		{
+			public bool Disalbe { get; set; }
+			public List<int> Codes = new List<int> ();
+
+			public PragmaPreProcessorDirective (int line, int col, int endLine, int endCol, Tokenizer.PreprocessorDirective cmd, string arg) : base (line, col, endLine, endCol, cmd, arg)
+			{
+			}
+		}
+
+		public class LineProcessorDirective : PreProcessorDirective
+		{
+			public int LineNumber { get; set; }
+			public string FileName { get; set; }
+
+			public LineProcessorDirective (int line, int col, int endLine, int endCol, Tokenizer.PreprocessorDirective cmd, string arg) : base (line, col, endLine, endCol, cmd, arg)
+			{
+			}
+		}
+
 		public class PreProcessorDirective : SpecialBase
 		{
 			public readonly int Line;
@@ -562,7 +582,40 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		{
 			if (inComment)
 				EndComment (startLine, startCol);
-			Specials.Add (new PreProcessorDirective (startLine, startCol, endLine, endColumn, cmd, arg));
+			switch (cmd) {
+			case Tokenizer.PreprocessorDirective.Pragma:
+				Specials.Add (new PragmaPreProcessorDirective (startLine, startCol, endLine, endColumn, cmd, arg));
+				break;
+			case Tokenizer.PreprocessorDirective.Line:
+				Specials.Add (new LineProcessorDirective (startLine, startCol, endLine, endColumn, cmd, arg));
+				break;
+			default:
+				Specials.Add (new PreProcessorDirective (startLine, startCol, endLine, endColumn, cmd, arg));
+				break;
+			}
+		}
+
+		[Conditional ("FULL_AST")]
+		public void SetPragmaDisable(bool disable)
+		{
+			var pragmaDirective = Specials [Specials.Count - 1] as PragmaPreProcessorDirective;
+			if (pragmaDirective == null)
+				return;
+			pragmaDirective.Disalbe = disable;
+		}
+
+		[Conditional ("FULL_AST")]
+		public void AddPragmaCode(int code)
+		{
+			var pragmaDirective = Specials [Specials.Count - 1] as PragmaPreProcessorDirective;
+			if (pragmaDirective == null)
+				return;
+			pragmaDirective.Codes.Add (code);
+		}
+
+		public LineProcessorDirective GetCurrentLineProcessorDirective()
+		{
+			return Specials [Specials.Count - 1] as LineProcessorDirective;
 		}
 
 		public enum NewLine { Unix, Windows }

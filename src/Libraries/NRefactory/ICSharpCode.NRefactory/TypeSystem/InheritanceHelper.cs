@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					continue;
 
 				IEnumerable<IMember> baseMembers;
-				if (member.EntityType == EntityType.Accessor) {
+				if (member.SymbolKind == SymbolKind.Accessor) {
 					baseMembers = baseType.GetAccessors(m => m.Name == member.Name && !m.IsExplicitInterfaceImplementation, GetMemberOptions.IgnoreInheritedMembers);
 				} else {
 					baseMembers = baseType.GetMembers(m => m.Name == member.Name && !m.IsExplicitInterfaceImplementation, GetMemberOptions.IgnoreInheritedMembers);

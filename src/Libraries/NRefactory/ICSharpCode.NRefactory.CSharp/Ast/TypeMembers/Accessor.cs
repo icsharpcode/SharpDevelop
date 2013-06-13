@@ -67,8 +67,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return NodeType.Unknown; }
 		}
 		
-		public override EntityType EntityType {
-			get { return EntityType.Method; }
+		public override SymbolKind SymbolKind {
+			get { return SymbolKind.Method; }
 		}
 		
 		/// <summary>

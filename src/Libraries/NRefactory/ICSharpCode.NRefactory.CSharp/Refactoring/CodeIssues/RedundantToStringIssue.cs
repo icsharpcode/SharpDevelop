@@ -30,6 +30,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -214,7 +215,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				Expression formatArgument;
 				IList<Expression> formatArguments;
-				TextLocation formatStart;
 				// Only check parameters that are of type object: String means it is neccessary, others
 				// means that there is another problem (ie no matching overload of the method).
 				Func<IParameter, Expression, bool> predicate = (parameter, argument) => {
@@ -228,7 +228,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return typeDefinition.IsKnownType(KnownTypeCode.Object);
 				};
 				if (FormatStringHelper.TryGetFormattingParameters(invocationResolveResult, invocationExpression,
-				                                                  out formatArgument, out formatStart, out formatArguments, predicate)) {
+				                                                  out formatArgument, out formatArguments, predicate)) {
 					foreach (var argument in formatArguments) {
 						CheckExpressionInAutoCallContext(argument);
 					}

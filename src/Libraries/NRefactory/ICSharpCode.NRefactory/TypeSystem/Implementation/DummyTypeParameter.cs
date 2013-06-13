@@ -24,20 +24,20 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	public sealed class DummyTypeParameter : AbstractType, ITypeParameter
 	{
-		static ITypeParameter[] methodTypeParameters = { new DummyTypeParameter(EntityType.Method, 0) };
-		static ITypeParameter[] classTypeParameters = { new DummyTypeParameter(EntityType.TypeDefinition, 0) };
+		static ITypeParameter[] methodTypeParameters = { new DummyTypeParameter(SymbolKind.Method, 0) };
+		static ITypeParameter[] classTypeParameters = { new DummyTypeParameter(SymbolKind.TypeDefinition, 0) };
 		
 		public static ITypeParameter GetMethodTypeParameter(int index)
 		{
-			return GetTypeParameter(ref methodTypeParameters, EntityType.Method, index);
+			return GetTypeParameter(ref methodTypeParameters, SymbolKind.Method, index);
 		}
 		
 		public static ITypeParameter GetClassTypeParameter(int index)
 		{
-			return GetTypeParameter(ref classTypeParameters, EntityType.TypeDefinition, index);
+			return GetTypeParameter(ref classTypeParameters, SymbolKind.TypeDefinition, index);
 		}
 		
-		static ITypeParameter GetTypeParameter(ref ITypeParameter[] typeParameters, EntityType entityType, int index)
+		static ITypeParameter GetTypeParameter(ref ITypeParameter[] typeParameters, SymbolKind symbolKind, int index)
 		{
 			ITypeParameter[] tps = typeParameters;
 			while (index >= tps.Length) {
@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				ITypeParameter[] newTps = new ITypeParameter[index + 1];
 				tps.CopyTo(newTps, 0);
 				for (int i = tps.Length; i < newTps.Length; i++) {
-					newTps[i] = new DummyTypeParameter(entityType, i);
+					newTps[i] = new DummyTypeParameter(symbolKind, i);
 				}
 				ITypeParameter[] oldTps = Interlocked.CompareExchange(ref typeParameters, newTps, tps);
 				if (oldTps == tps) {
@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			public override IType VisitTypeParameter(ITypeParameter type)
 			{
-				if (type.OwnerType == EntityType.Method) {
+				if (type.OwnerType == SymbolKind.Method) {
 					return DummyTypeParameter.GetMethodTypeParameter(type.Index);
 				} else {
 					return base.VisitTypeParameter(type);
@@ -76,7 +76,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			public override IType VisitTypeParameter(ITypeParameter type)
 			{
-				if (type.OwnerType == EntityType.TypeDefinition) {
+				if (type.OwnerType == SymbolKind.TypeDefinition) {
 					return DummyTypeParameter.GetClassTypeParameter(type.Index);
 				} else {
 					return base.VisitTypeParameter(type);
@@ -117,24 +117,28 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return type.AcceptVisitor(normalizeClassTypeParameters).AcceptVisitor(normalizeMethodTypeParameters);
 		}
 		
-		readonly EntityType ownerType;
+		readonly SymbolKind ownerType;
 		readonly int index;
 		
-		private DummyTypeParameter(EntityType ownerType, int index)
+		private DummyTypeParameter(SymbolKind ownerType, int index)
 		{
 			this.ownerType = ownerType;
 			this.index = index;
 		}
 		
+		SymbolKind ISymbol.SymbolKind {
+			get { return SymbolKind.TypeParameter; }
+		}
+		
 		public override string Name {
 			get {
-				return (ownerType == EntityType.Method ? "!!" : "!") + index;
+				return (ownerType == SymbolKind.Method ? "!!" : "!") + index;
 			}
 		}
 		
 		public override string ReflectionName {
 			get {
-				return (ownerType == EntityType.Method ? "``" : "`") + index;
+				return (ownerType == SymbolKind.Method ? "``" : "`") + index;
 			}
 		}
 		
@@ -169,7 +173,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return EmptyList<IAttribute>.Instance; }
 		}
 		
-		EntityType ITypeParameter.OwnerType {
+		SymbolKind ITypeParameter.OwnerType {
 			get { return ownerType; }
 		}
 		

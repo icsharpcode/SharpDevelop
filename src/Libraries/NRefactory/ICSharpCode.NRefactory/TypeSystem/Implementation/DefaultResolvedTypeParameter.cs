@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public DefaultTypeParameter(
-			ICompilation compilation, EntityType ownerType,
+			ICompilation compilation, SymbolKind ownerType,
 			int index, string name = null,
 			VarianceModifier variance = VarianceModifier.Invariant,
 			IList<IAttribute> attributes = null,
@@ -112,7 +112,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			base.FreezeInternal();
 		}
 		
-		public DefaultTypeParameter(EntityType ownerType, int index, string name)
+		public DefaultTypeParameter(SymbolKind ownerType, int index, string name)
 			: base(ownerType, index, name)
 		{
 		}

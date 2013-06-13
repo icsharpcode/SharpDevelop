@@ -276,16 +276,7 @@ namespace Mono.CSharp {
 
 		public Namespace AddNamespace (MemberName name)
 		{
-			Namespace ns_parent;
-			if (name.Left != null) {
-				if (parent != null)
-					ns_parent = parent.AddNamespace (name.Left);
-				else
-					ns_parent = AddNamespace (name.Left);
-			} else {
-				ns_parent = this;
-			}
-
+			var ns_parent = name.Left == null ? this : AddNamespace (name.Left);
 			return ns_parent.TryAddNamespace (name.Basename);
 		}
 
@@ -683,11 +674,9 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public IEnumerable<string> Conditionals {
+		public IDictionary<string, bool> Conditionals {
 			get {
-				if (conditionals == null)
-					return Enumerable.Empty<string> ();
-				return conditionals.Where (kv => kv.Value).Select (kv => kv.Key);
+				return conditionals ?? new Dictionary<string, bool> ();
 			}
 		}
 

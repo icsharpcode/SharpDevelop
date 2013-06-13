@@ -230,45 +230,45 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				topLevelTypeDefinition = topLevelTypeDefinition.DeclaringTypeDefinition;
 			SearchScope scope;
 			SearchScope additionalScope = null;
-			switch (entity.EntityType) {
-				case EntityType.TypeDefinition:
+			switch (entity.SymbolKind) {
+				case SymbolKind.TypeDefinition:
 					scope = FindTypeDefinitionReferences((ITypeDefinition)entity, this.FindTypeReferencesEvenIfAliased, out additionalScope);
 					break;
-				case EntityType.Field:
+				case SymbolKind.Field:
 					if (entity.DeclaringTypeDefinition != null && entity.DeclaringTypeDefinition.Kind == TypeKind.Enum)
 						scope = FindMemberReferences(entity, m => new FindEnumMemberReferences((IField)m));
 					else
 						scope = FindMemberReferences(entity, m => new FindFieldReferences((IField)m));
 					break;
-				case EntityType.Property:
+				case SymbolKind.Property:
 					scope = FindMemberReferences(entity, m => new FindPropertyReferences((IProperty)m));
 					if (entity.Name == "Current")
 						additionalScope = FindEnumeratorCurrentReferences((IProperty)entity);
 					else if (entity.Name == "IsCompleted")
 						additionalScope = FindAwaiterIsCompletedReferences((IProperty)entity);
 					break;
-				case EntityType.Event:
+				case SymbolKind.Event:
 					scope = FindMemberReferences(entity, m => new FindEventReferences((IEvent)m));
 					break;
-				case EntityType.Method:
+				case SymbolKind.Method:
 					scope = GetSearchScopeForMethod((IMethod)entity);
 					break;
-				case EntityType.Indexer:
+				case SymbolKind.Indexer:
 					scope = FindIndexerReferences((IProperty)entity);
 					break;
-				case EntityType.Operator:
+				case SymbolKind.Operator:
 					scope = GetSearchScopeForOperator((IMethod)entity);
 					break;
-				case EntityType.Constructor:
+				case SymbolKind.Constructor:
 					IMethod ctor = (IMethod)entity;
 					scope = FindObjectCreateReferences(ctor);
 					additionalScope = FindChainedConstructorReferences(ctor);
 					break;
-				case EntityType.Destructor:
+				case SymbolKind.Destructor:
 					scope = GetSearchScopeForDestructor((IMethod)entity);
 					break;
 				default:
-					throw new ArgumentException("Unknown entity type " + entity.EntityType);
+					throw new ArgumentException("Unknown entity type " + entity.SymbolKind);
 			}
 			if (scope.accessibility == Accessibility.None)
 				scope.accessibility = effectiveAccessibility;

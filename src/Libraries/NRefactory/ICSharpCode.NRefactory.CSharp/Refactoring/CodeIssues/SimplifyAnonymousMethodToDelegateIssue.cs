@@ -27,8 +27,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.PatternMatching;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -85,26 +87,28 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				if (!IsSimpleTarget (invocation.Target))
 					return;
-				var lambdaParameters = parameters.ToList();
-				if (lambdaParameters.Count != invocation.Arguments.Count)
+				var rr = ctx.Resolve (invocation) as CSharpInvocationResolveResult;
+				if (rr == null)
 					return;
-				int i = 0;
-				foreach (var param in invocation.Arguments) {
-					var id = param as IdentifierExpression;
-					if (id == null)
+				var lambdaParameters = parameters.ToList();
+				var arguments = rr.GetArgumentsForCall();
+				if (lambdaParameters.Count != arguments.Count)
+					return;
+				for (int i = 0; i < arguments.Count; i++) {
+					var arg = UnpackImplicitIdentityOrReferenceConversion(arguments[i]) as LocalResolveResult;
+					if (arg == null || arg.Variable.Name != lambdaParameters[i].Name)
 						return;
-					if (lambdaParameters[i].Name != id.Identifier)
-						return;
-					i++;
 				}
+				var returnConv = ctx.GetConversion(invocation);
+				if (returnConv.IsExplicit || !(returnConv.IsIdentityConversion || returnConv.IsReferenceConversion))
+					return;
 				AddIssue(expression, ctx.TranslateString("Expression can be reduced to delegate"), script =>  {
 					var validTypes = CreateFieldAction.GetValidTypes (ctx.Resolver, expression).ToList ();
 					if (validTypes.Any (t => t.FullName == "System.Func" && t.TypeParameterCount == 1 + parameters.Count) && validTypes.Any (t => t.FullName == "System.Action")) {
-						var rr = ctx.Resolve (invocation) as CSharpInvocationResolveResult;
-						if (rr != null && rr.Member.ReturnType.Kind != ICSharpCode.NRefactory.TypeSystem.TypeKind.Void) {
+						if (rr != null && rr.Member.ReturnType.Kind != TypeKind.Void) {
 							var builder = ctx.CreateTypeSytemAstBuilder (expression);
 							var type = builder.ConvertType(new TopLevelTypeName("System", "Func", 1));
-							var args = type is SimpleType ? ((SimpleType)type).TypeArguments : ((MemberType)type).TypeArguments;
+							var args = type.GetChildrenByRole(Roles.TypeArgument);
 							args.Clear ();
 							foreach (var pde in parameters) {
 								args.Add (builder.ConvertType (ctx.Resolve (pde).Type));
@@ -116,6 +120,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					}
 					script.Replace(expression, invocation.Target.Clone());
 				});
+			}
+			
+			static ResolveResult UnpackImplicitIdentityOrReferenceConversion(ResolveResult rr)
+			{
+				var crr = rr as ConversionResolveResult;
+				if (crr != null && crr.Conversion.IsImplicit && (crr.Conversion.IsIdentityConversion || crr.Conversion.IsReferenceConversion))
+					return crr.Input;
+				return rr;
 			}
 
 			public override void VisitLambdaExpression(LambdaExpression lambdaExpression)

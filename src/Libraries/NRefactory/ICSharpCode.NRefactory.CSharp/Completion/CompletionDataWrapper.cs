@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CompletionDataWrapper.cs
 //  
 // Author:
@@ -172,14 +172,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			List<ICompletionData> existingData;
 			data.TryGetValue (memberKey, out existingData);
 			if (existingData != null) {
-				if (member.EntityType == EntityType.Field || member.EntityType == EntityType.Property || member.EntityType == EntityType.Event)
+				if (member.SymbolKind == SymbolKind.Field || member.SymbolKind == SymbolKind.Property || member.SymbolKind == SymbolKind.Event)
 					return null;
 				var a = member as IEntity;
 				foreach (var d in existingData) {
 					if (!(d is IEntityCompletionData))
 						continue;
 					var b = ((IEntityCompletionData)d).Entity;
-					if (a == null || b == null || a.EntityType == b.EntityType) {
+					if (a == null || b == null || a.SymbolKind == b.SymbolKind) {
 						d.AddOverload (newData);
 						return d;
 					} 

@@ -73,7 +73,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			if (pdecl.Setter.IsNull && !pdecl.Getter.IsNull) {
 				var field = RemoveBackingStoreAction.ScanGetter (context, pdecl);
-				if (field != null) 
+				if (field != null && !field.IsReadOnly && !field.IsConst) 
 					return new ExpressionStatement (new AssignmentExpression (new IdentifierExpression (field.Name), AssignmentOperatorType.Assign, new IdentifierExpression ("value")));
 			}
 			

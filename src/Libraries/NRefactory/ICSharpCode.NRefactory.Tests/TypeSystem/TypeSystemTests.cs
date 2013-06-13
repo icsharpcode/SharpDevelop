@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(typeof(SimplePublicClass).FullName + ".Method", method.FullName);
 			Assert.AreSame(c, method.DeclaringType);
 			Assert.AreEqual(Accessibility.Public, method.Accessibility);
-			Assert.AreEqual(EntityType.Method, method.EntityType);
+			Assert.AreEqual(SymbolKind.Method, method.SymbolKind);
 			Assert.IsFalse(method.IsVirtual);
 			Assert.IsFalse(method.IsStatic);
 			Assert.AreEqual(0, method.Parameters.Count);
@@ -161,8 +161,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void TestClassTypeParameters()
 		{
 			var testClass = GetTypeDefinition(typeof(GenericClass<,>));
-			Assert.AreEqual(EntityType.TypeDefinition, testClass.TypeParameters[0].OwnerType);
-			Assert.AreEqual(EntityType.TypeDefinition, testClass.TypeParameters[1].OwnerType);
+			Assert.AreEqual(SymbolKind.TypeDefinition, testClass.TypeParameters[0].OwnerType);
+			Assert.AreEqual(SymbolKind.TypeDefinition, testClass.TypeParameters[1].OwnerType);
 			Assert.AreSame(testClass.TypeParameters[1], testClass.TypeParameters[0].DirectBaseTypes.First());
 		}
 		
@@ -174,8 +174,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			IMethod m = testClass.Methods.Single(me => me.Name == "TestMethod");
 			Assert.AreEqual("K", m.TypeParameters[0].Name);
 			Assert.AreEqual("V", m.TypeParameters[1].Name);
-			Assert.AreEqual(EntityType.Method, m.TypeParameters[0].OwnerType);
-			Assert.AreEqual(EntityType.Method, m.TypeParameters[1].OwnerType);
+			Assert.AreEqual(SymbolKind.Method, m.TypeParameters[0].OwnerType);
+			Assert.AreEqual(SymbolKind.Method, m.TypeParameters[1].OwnerType);
 			
 			Assert.AreEqual("System.IComparable`1[[``1]]", m.TypeParameters[0].DirectBaseTypes.First().ReflectionName);
 			Assert.AreSame(m.TypeParameters[0], m.TypeParameters[1].DirectBaseTypes.First());
@@ -188,7 +188,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			IMethod m = testClass.Methods.Single(me => me.Name == "GetIndex");
 			Assert.AreEqual("T", m.TypeParameters[0].Name);
-			Assert.AreEqual(EntityType.Method, m.TypeParameters[0].OwnerType);
+			Assert.AreEqual(SymbolKind.Method, m.TypeParameters[0].OwnerType);
 			Assert.AreSame(m, m.TypeParameters[0].Owner);
 			
 			ParameterizedType constraint = (ParameterizedType)m.TypeParameters[0].DirectBaseTypes.First();
@@ -210,7 +210,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			));
 			
 			Assert.AreEqual("T", m.TypeParameters[0].Name);
-			Assert.AreEqual(EntityType.Method, m.TypeParameters[0].OwnerType);
+			Assert.AreEqual(SymbolKind.Method, m.TypeParameters[0].OwnerType);
 			Assert.AreSame(m, m.TypeParameters[0].Owner);
 			
 			ParameterizedType constraint = (ParameterizedType)m.TypeParameters[0].DirectBaseTypes.First();
@@ -336,6 +336,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(Accessibility.Private, p.Setter.Accessibility);
 			Assert.IsTrue(p.Getter.HasBody);
 		}
+
+		[Test]
+		public void PropertyWithPrivateGetter()
+		{
+			var testClass = GetTypeDefinition(typeof(PropertyTest));
+			IProperty p = testClass.Properties.Single(pr => pr.Name == "PropertyWithPrivateGetter");
+			Assert.IsTrue(p.CanGet);
+			Assert.IsTrue(p.CanSet);
+			Assert.AreEqual(Accessibility.Public, p.Accessibility);
+			Assert.AreEqual(Accessibility.Private, p.Getter.Accessibility);
+			Assert.AreEqual(Accessibility.Public, p.Setter.Accessibility);
+			Assert.IsTrue(p.Getter.HasBody);
+		}
 		
 		[Test]
 		public void PropertyWithoutSetter()
@@ -364,7 +377,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var testClass = GetTypeDefinition(typeof(PropertyTest));
 			IProperty p = testClass.Properties.Single(pr => pr.IsIndexer);
 			Assert.IsTrue(p.CanGet);
-			Assert.AreEqual(EntityType.Accessor, p.Getter.EntityType);
+			Assert.AreEqual(SymbolKind.Accessor, p.Getter.SymbolKind);
 			Assert.AreEqual("get_Item", p.Getter.Name);
 			Assert.AreEqual(Accessibility.Public, p.Getter.Accessibility);
 			Assert.AreEqual(new[] { "index" }, p.Getter.Parameters.Select(x => x.Name).ToArray());
@@ -378,7 +391,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var testClass = GetTypeDefinition(typeof(PropertyTest));
 			IProperty p = testClass.Properties.Single(pr => pr.IsIndexer);
 			Assert.IsTrue(p.CanSet);
-			Assert.AreEqual(EntityType.Accessor, p.Setter.EntityType);
+			Assert.AreEqual(SymbolKind.Accessor, p.Setter.SymbolKind);
 			Assert.AreEqual("set_Item", p.Setter.Name);
 			Assert.AreEqual(Accessibility.Public, p.Setter.Accessibility);
 			Assert.AreEqual(new[] { "index", "value" }, p.Setter.Parameters.Select(x => x.Name).ToArray());
@@ -1039,7 +1052,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void ExplicitIndexerImplementationReturnsTheCorrectMembers() {
 			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsIndexersExplicitly));
 
-			Assert.That(type.Properties.All(p => p.EntityType == EntityType.Indexer));
+			Assert.That(type.Properties.All(p => p.SymbolKind == SymbolKind.Indexer));
 			Assert.That(type.Properties.All(p => p.ImplementedInterfaceMembers.Count == 1));
 			Assert.That(type.Properties.All(p => p.Getter.ImplementedInterfaceMembers.Count == 1));
 			Assert.That(type.Properties.All(p => p.Setter.ImplementedInterfaceMembers.Count == 1));

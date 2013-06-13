@@ -20,6 +20,44 @@ using System.Collections;
 
 namespace Mono.CSharp
 {
+	//
+	// This class has to be used by parser only, it reuses token
+	// details once a file is parsed
+	//
+	public class LocatedToken
+	{
+		public int row, column;
+		public string value;
+		public SourceFile file;
+
+		public LocatedToken ()
+		{
+		}
+
+		public LocatedToken (string value, Location loc)
+		{
+			this.value = value;
+			file = loc.SourceFile;
+			row = loc.Row;
+			column = loc.Column;
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("Token '{0}' at {1},{2}", Value, row, column);
+		}
+
+		public Location Location
+		{
+			get { return new Location (file, row, column); }
+		}
+
+		public string Value
+		{
+			get { return value; }
+		}
+	}
+
 	/// <summary>
 	///    Tokenizer for C# source code. 
 	/// </summary>
@@ -63,42 +101,6 @@ namespace Mono.CSharp
 					h = (h << 5) - h + obj [i];
 
 				return h;
-			}
-		}
-
-		//
-		// This class has to be used by parser only, it reuses token
-		// details after each file parse completion
-		//
-		public class LocatedToken
-		{
-			public int row, column;
-			public string value;
-			public SourceFile file;
-
-			public LocatedToken ()
-			{
-			}
-
-			public LocatedToken (string value, Location loc)
-			{
-				this.value = value;
-				file = loc.SourceFile;
-				row = loc.Row;
-				column = loc.Column;
-			}
-
-			public override string ToString ()
-			{
-				return string.Format ("Token '{0}' at {1},{2}", Value, row, column);
-			}
-			
-			public Location Location {
-				get { return new Location (file, row, column); }
-			}
-
-			public string Value {
-				get { return value; }
 			}
 		}
 
@@ -2035,6 +2037,9 @@ namespace Mono.CSharp
 		bool PreProcessLine ()
 		{
 			Location loc = Location;
+			#if FULL_AST
+			var lineDirective = sbag.GetCurrentLineProcessorDirective();
+			#endif
 
 			int c;
 
@@ -2085,6 +2090,9 @@ namespace Mono.CSharp
 
 				return new_line != 0;
 			}
+			#if FULL_AST
+			lineDirective.LineNumber = new_line;
+			#endif
 
 			c = get_char ();
 			if (c == ' ') {
@@ -2111,6 +2119,9 @@ namespace Mono.CSharp
 			string new_file_name = null;
 			if (c == '"') {
 				new_file_name = TokenizeFileName (ref c);
+				#if FULL_AST
+				lineDirective.FileName = new_file_name;
+				#endif
 
 				// skip over white space
 				while (c == ' ' || c == '\t') {
@@ -2454,6 +2465,7 @@ namespace Mono.CSharp
 				//
 				if (length == pragma_warning_disable.Length) {
 					bool disable = IsTokenIdentifierEqual (pragma_warning_disable);
+					sbag.SetPragmaDisable (disable);
 					if (disable || IsTokenIdentifierEqual (pragma_warning_restore)) {
 						// skip over white space
 						while (c == ' ' || c == '\t')
@@ -2481,6 +2493,7 @@ namespace Mono.CSharp
 							do {
 								code = TokenizePragmaNumber (ref c);
 								if (code > 0) {
+									sbag.AddPragmaCode (code);
 									if (disable) {
 										Report.RegisterWarningRegion (loc).WarningDisable (loc, code, context.Report);
 									} else {
@@ -2819,6 +2832,7 @@ namespace Mono.CSharp
 					}
 
 					if ((state & TAKING) != 0) {
+						sbag.SkipIf ();
 						ifstack.Push (0);
 						return false;
 					}
@@ -2828,6 +2842,7 @@ namespace Mono.CSharp
 						return true;
 					}
 
+					sbag.SkipIf ();
 					ifstack.Push (state);
 					return false;
 				}
@@ -3028,7 +3043,6 @@ namespace Mono.CSharp
 
 				value_builder[pos++] = (char) c;
 			}
-			recordNewLine = true;
 		}
 
 		private int consume_identifier (int s)
@@ -3607,6 +3621,7 @@ namespace Mono.CSharp
 						if (c == '#') {
 							if (ParsePreprocessingDirective (false))
 								break;
+							sbag.StartComment(SpecialsBag.CommentType.InactiveCode, false, line, 1);
 						}
 						sbag.PushCommentChar (c);
 						directive_expected = false;

@@ -30,6 +30,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {

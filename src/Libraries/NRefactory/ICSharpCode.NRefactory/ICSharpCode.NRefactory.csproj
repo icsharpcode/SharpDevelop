@@ -45,9 +45,11 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
+    <OutputPath>..\bin\Debug\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
+    <OutputPath>..\bin\Release\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Debug' ">
     <Optimize>False</Optimize>
@@ -60,6 +62,7 @@
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <OutputPath>..\bin\net_4_5_Debug\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Release' ">
     <Optimize>True</Optimize>
@@ -70,6 +73,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'net_4_5_Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <OutputPath>..\bin\net_4_5_Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -139,6 +143,7 @@
     <Compile Include="TypeSystem\DefaultSolutionSnapshot.cs" />
     <Compile Include="TypeSystem\DomRegion.cs" />
     <Compile Include="TypeSystem\EntityType.cs" />
+    <Compile Include="TypeSystem\ISymbol.cs" />
     <Compile Include="TypeSystem\TypeParameterSubstitution.cs" />
     <Compile Include="TypeSystem\TypeSystemExtensions.cs" />
     <Compile Include="TypeSystem\FullTypeName.cs" />
@@ -267,11 +272,14 @@
     <Compile Include="Utils\CompositeFormatStringParser\IFormatStringSegment.cs" />
     <Compile Include="Utils\CompositeFormatStringParser\IFormatStringError.cs" />
     <Compile Include="Completion\CompletionExtensionMethods.cs" />
+    <Compile Include="Refactoring\IssueMarker.cs" />
+    <Compile Include="Refactoring\Severity.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />
     <Folder Include="TypeSystem\" />
     <Folder Include="Utils\CompositeFormatStringParser\" />
+    <Folder Include="Refactoring\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\doc\Pattern Matching.html">
@@ -280,6 +288,7 @@
     <None Include="..\doc\XML Documentation.html">
       <Link>Documentation\XML Documentation.html</Link>
     </None>
+    <None Include="TypeSystem\IkvmLoader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

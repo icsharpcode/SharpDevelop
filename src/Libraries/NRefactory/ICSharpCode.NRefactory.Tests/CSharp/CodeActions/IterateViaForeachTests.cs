@@ -147,7 +147,7 @@ class TestClass
 		foreach (var c in s as IEnumerable<char>) {
 		}
 	}
-}", 0, true);
+}", 0, false);
 		}
 
 		[Test]

@@ -148,12 +148,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public override IType VisitTypeParameter(ITypeParameter type)
 		{
 			int index = type.Index;
-			if (classTypeArguments != null && type.OwnerType == EntityType.TypeDefinition) {
+			if (classTypeArguments != null && type.OwnerType == SymbolKind.TypeDefinition) {
 				if (index >= 0 && index < classTypeArguments.Count)
 					return classTypeArguments[index];
 				else
 					return SpecialType.UnknownType;
-			} else if (methodTypeArguments != null && type.OwnerType == EntityType.Method) {
+			} else if (methodTypeArguments != null && type.OwnerType == SymbolKind.Method) {
 				if (index >= 0 && index < methodTypeArguments.Count)
 					return methodTypeArguments[index];
 				else

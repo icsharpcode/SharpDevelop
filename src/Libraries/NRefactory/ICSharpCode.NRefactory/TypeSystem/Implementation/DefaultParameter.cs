@@ -62,6 +62,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.defaultValue = defaultValue;
 		}
 		
+		SymbolKind ISymbol.SymbolKind {
+			get { return SymbolKind.Parameter; }
+		}
+		
 		public IList<IAttribute> Attributes {
 			get { return attributes; }
 		}

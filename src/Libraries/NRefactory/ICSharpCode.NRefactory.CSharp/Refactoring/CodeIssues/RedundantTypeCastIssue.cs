@@ -29,6 +29,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -95,7 +96,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var rr = ctx.Resolve(memberRefExpr);
 					var memberResolveResult = rr as MemberResolveResult;
 					if (memberResolveResult != null) {
-						foreach (var member in exprType.GetMembers (m => m.EntityType == memberResolveResult.Member.EntityType)) {
+						foreach (var member in exprType.GetMembers (m => m.SymbolKind == memberResolveResult.Member.SymbolKind)) {
 							if (member.IsExplicitInterfaceImplementation && member.ImplementedInterfaceMembers.Contains (memberResolveResult.Member)) {
 								return true;
 							}

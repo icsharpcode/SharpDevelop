@@ -53,6 +53,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			foreach (Type type in typeof(AstNode).Assembly.GetExportedTypes()) {
 				if (type == typeof(CSharpModifierToken)) // CSharpModifierToken is the exception (though I'm not too happy about that)
 					continue;
+				if (typeof(PreProcessorDirective).IsAssignableFrom (type)) // another exception - is it useful or not ?
+					continue;
 				if (type.IsSubclassOf(typeof(AstNode))) {
 					Assert.IsTrue(type.BaseType.IsAbstract, type.FullName);
 				}

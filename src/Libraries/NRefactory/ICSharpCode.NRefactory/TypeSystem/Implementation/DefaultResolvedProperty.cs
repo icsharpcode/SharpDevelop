@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return new ExplicitInterfaceImplementationMemberReference(declTypeRef, ImplementedInterfaceMembers[0].ToMemberReference());
 			} else {
 				return new DefaultMemberReference(
-					this.EntityType, declTypeRef, this.Name, 0,
+					this.SymbolKind, declTypeRef, this.Name, 0,
 					this.Parameters.Select(p => p.Type.ToTypeReference()).ToList());
 			}
 		}

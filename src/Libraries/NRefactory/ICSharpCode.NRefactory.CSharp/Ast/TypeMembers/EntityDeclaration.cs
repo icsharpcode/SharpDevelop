@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return NodeType.Member; }
 		}
 		
-		public abstract NRefactory.TypeSystem.EntityType EntityType { get; }
+		public abstract NRefactory.TypeSystem.SymbolKind SymbolKind { get; }
 		
 		public AstNodeCollection<AttributeSection> Attributes {
 			get { return base.GetChildrenByRole (AttributeRole); }
@@ -71,7 +71,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole(Roles.Type, value); }
 		}
-		
+
+		public CSharpTokenNode SemicolonToken {
+			get { return GetChildByRole (Roles.Semicolon); }
+		}
+
 		internal static Modifiers GetModifiers(AstNode node)
 		{
 			Modifiers m = 0;

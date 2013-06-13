@@ -989,12 +989,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			EndNode(pointerReferenceExpression);
 		}
 		
-		public void VisitEmptyExpression(EmptyExpression emptyExpression)
-		{
-			StartNode(emptyExpression);
-			EndNode(emptyExpression);
-		}
-
 		#region VisitPrimitiveExpression
 		public void VisitPrimitiveExpression(PrimitiveExpression primitiveExpression)
 		{
@@ -2597,18 +2591,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			StartNode(documentationReference);
 			if (!documentationReference.DeclaringType.IsNull) {
 				documentationReference.DeclaringType.AcceptVisitor(this);
-				if (documentationReference.EntityType != EntityType.TypeDefinition) {
+				if (documentationReference.SymbolKind != SymbolKind.TypeDefinition) {
 					WriteToken(Roles.Dot);
 				}
 			}
-			switch (documentationReference.EntityType) {
-				case EntityType.TypeDefinition:
+			switch (documentationReference.SymbolKind) {
+				case SymbolKind.TypeDefinition:
 					// we already printed the DeclaringType
 					break;
-				case EntityType.Indexer:
+				case SymbolKind.Indexer:
 					WriteKeyword(IndexerDeclaration.ThisKeywordRole);
 					break;
-				case EntityType.Operator:
+				case SymbolKind.Operator:
 					var opType = documentationReference.OperatorType;
 					if (opType == OperatorType.Explicit) {
 						WriteKeyword(OperatorDeclaration.ExplicitRole);
@@ -2630,7 +2624,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			WriteTypeArguments(documentationReference.TypeArguments);
 			if (documentationReference.HasParameterList) {
 				Space(policy.SpaceBeforeMethodDeclarationParentheses);
-				if (documentationReference.EntityType == EntityType.Indexer) {
+				if (documentationReference.SymbolKind == SymbolKind.Indexer) {
 					WriteCommaSeparatedListInBrackets(documentationReference.Parameters, policy.SpaceWithinMethodDeclarationParentheses);
 				} else {
 					WriteCommaSeparatedListInParenthesis(documentationReference.Parameters, policy.SpaceWithinMethodDeclarationParentheses);

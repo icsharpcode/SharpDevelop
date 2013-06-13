@@ -652,7 +652,7 @@ namespace Mono.CSharp
 					new TypeExpression (base_class_imported, host.Location)
 				};
 
-				host.AddBasesForPart (baseclass_list);
+				host.SetBaseTypes (baseclass_list);
 
 				host.CreateContainer ();
 				host.DefineContainer ();
@@ -679,6 +679,7 @@ namespace Mono.CSharp
 			}
 
 			if (host != null){
+				host.PrepareEmit ();
 				host.EmitContainer ();
 			}
 			

@@ -58,7 +58,7 @@ class Test {
 			var rr = Resolve<MemberResolveResult>(program);
 			Assert.AreEqual(TypeKind.Anonymous, rr.Member.DeclaringType.Kind);
 			Assert.AreEqual("Item1", rr.Member.Name);
-			Assert.AreEqual(EntityType.Property, rr.Member.EntityType);
+			Assert.AreEqual(SymbolKind.Property, rr.Member.SymbolKind);
 			Assert.AreEqual("System.String", rr.Member.ReturnType.FullName);
 		}
 		
@@ -68,7 +68,7 @@ class Test {
 			string program = programStart + "var q = list1.Zip(list2, (a,b) => $new { a, b }$);" + programEnd;
 			var rr = Resolve<InvocationResolveResult>(program);
 			Assert.AreEqual(TypeKind.Anonymous, rr.Type.Kind);
-			Assert.AreEqual(EntityType.Constructor, rr.Member.EntityType);
+			Assert.AreEqual(SymbolKind.Constructor, rr.Member.SymbolKind);
 			Assert.AreEqual(rr.Type, rr.Member.DeclaringType);
 			Assert.AreEqual(0, rr.Arguments.Count);
 			Assert.AreEqual(2, rr.InitializerStatements.Count);

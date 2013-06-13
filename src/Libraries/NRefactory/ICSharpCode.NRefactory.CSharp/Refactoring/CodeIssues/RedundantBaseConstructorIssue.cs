@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -40,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new GatherVisitor(context).GetIssues();
 		}
 
-		class GatherVisitor : GatherVisitorBase<RedundantAttributeParenthesesIssue>
+		class GatherVisitor : GatherVisitorBase<RedundantBaseConstructorIssue>
 		{
 			public GatherVisitor(BaseRefactoringContext ctx)
 				: base (ctx)

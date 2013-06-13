@@ -42,11 +42,13 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <OutputPath>..\bin\Release\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <OutputPath>..\bin\Debug\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Debug' ">
     <Optimize>False</Optimize>
@@ -59,6 +61,7 @@
     <DebugSymbols>True</DebugSymbols>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <OutputPath>..\bin\net_4_5_Debug\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Release' ">
     <Optimize>True</Optimize>
@@ -70,6 +73,7 @@
     <DebugType>none</DebugType>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <OutputPath>..\bin\net_4_5_Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -115,7 +119,6 @@
     <Compile Include="Ast\Expressions\ConditionalExpression.cs" />
     <Compile Include="Ast\Expressions\DefaultValueExpression.cs" />
     <Compile Include="Ast\Expressions\DirectionExpression.cs" />
-    <Compile Include="Ast\Expressions\EmptyExpression.cs" />
     <Compile Include="Ast\Expressions\Expression.cs" />
     <Compile Include="Ast\Expressions\IdentifierExpression.cs" />
     <Compile Include="Ast\Expressions\IndexerExpression.cs" />
@@ -296,11 +299,11 @@
     <Compile Include="Refactoring\CodeIssues\CastExpressionOfIncompatibleTypeIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\CompareBooleanWithTrueOrFalseIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\CompareFloatWithEqualityOperatorIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\CompilerErrors\CS0029InvalidConversionIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ConstantConditionIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\DoubleNegationIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ExpressionIsAlwaysOfProvidedTypeIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ExpressionIsNeverOfProvidedTypeIssue.cs" />
-    <Compile Include="Refactoring\CodeIssues\ExpressionOfCompatibleTypeCastIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\MethodNeverReturnsIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\MethodOverloadHidesOptionalParameterIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\MissingStringComparisonIssue.cs" />
@@ -401,8 +404,6 @@
     <Compile Include="Refactoring\ContextActionAttribute.cs" />
     <Compile Include="Refactoring\IssueAttribute.cs" />
     <Compile Include="Refactoring\CodeIssues\IssueCategories.cs" />
-    <Compile Include="Refactoring\Severity.cs" />
-    <Compile Include="Refactoring\IssueMarker.cs" />
     <Compile Include="Refactoring\CodeIssues\GatherVisitorBase.cs" />
     <Compile Include="Refactoring\CodeIssues\ConditionalToNullCoalescingIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\NotImplementedExceptionIssue.cs" />

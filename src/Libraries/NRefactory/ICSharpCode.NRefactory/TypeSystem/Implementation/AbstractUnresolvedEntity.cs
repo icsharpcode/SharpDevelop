@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		internal RareFields rareFields;
 		
 		// 1 byte per enum + 2 bytes for flags
-		EntityType entityType;
+		SymbolKind symbolKind;
 		Accessibility accessibility;
 		internal BitVector16 flags;
 		
@@ -146,11 +146,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			FreezableHelper.ThrowIfFrozen(this);
 		}
 		
-		public EntityType EntityType {
-			get { return entityType; }
+		public SymbolKind SymbolKind {
+			get { return symbolKind; }
 			set {
 				ThrowIfFrozen();
-				entityType = value;
+				symbolKind = value;
 			}
 		}
 		

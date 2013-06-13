@@ -34,60 +34,97 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 	public class SimplifyAnonymousMethodToDelegateIssueTests : InspectionActionTestBase
 	{
 		[Test]
-		public void TestSimpleLambda ()
+		public void TestSimpleVoidLambda ()
 		{
-			var input = @"class Foo
+			var input = @"using System;
+class Foo
 {
 	void Bar (string str)
 	{
-		var action = $(foo, bar) => MyMethod (foo, bar);
+		Action<int, int> action = $(foo, bar) => MyMethod (foo, bar);
 	}
+	void MyMethod(int foo, int bar) {}
 }";
 			
 			TestRefactoringContext context;
 			var issues = GetIssues (new SimplifyAnonymousMethodToDelegateIssue (), input, out context);
 			Assert.AreEqual (1, issues.Count);
-			CheckFix (context, issues, @"class Foo
+			CheckFix (context, issues, @"using System;
+class Foo
 {
 	void Bar (string str)
 	{
-		var action = MyMethod;
+		Action<int, int> action = MyMethod;
 	}
+	void MyMethod(int foo, int bar) {}
+}");
+		}
+		
+		[Test]
+		public void TestSimpleBoolLambda ()
+		{
+			var input = @"using System;
+class Foo
+{
+	void Bar (string str)
+	{
+		Func<int, int, bool> action = $(foo, bar) => MyMethod (foo, bar);
+	}
+	bool MyMethod(int foo, int bar) {}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new SimplifyAnonymousMethodToDelegateIssue (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+			CheckFix (context, issues, @"using System;
+class Foo
+{
+	void Bar (string str)
+	{
+		Func<int, int, bool> action = MyMethod;
+	}
+	bool MyMethod(int foo, int bar) {}
 }");
 		}
 
 		[Test]
 		public void TestLambdaWithBody ()
 		{
-			var input = @"class Foo
+			var input = @"using System;
+class Foo
 {
 	void Bar (string str)
 	{
-		var action = $(foo, bar) => { return MyMethod (foo, bar); };
+		Action<int, int> action = $(foo, bar) => { return MyMethod (foo, bar); };
 	}
+	void MyMethod(int foo, int bar) {}
 }";
 			
 			TestRefactoringContext context;
 			var issues = GetIssues (new SimplifyAnonymousMethodToDelegateIssue (), input, out context);
 			Assert.AreEqual (1, issues.Count);
-			CheckFix (context, issues, @"class Foo
+			CheckFix (context, issues, @"using System;
+class Foo
 {
 	void Bar (string str)
 	{
-		var action = MyMethod;
+		Action<int, int> action = MyMethod;
 	}
+	void MyMethod(int foo, int bar) {}
 }");
 		}
 
 		[Test]
-		public void TestSimpleInvalidLambda ()
+		public void Lambda_SwapParameterOrder ()
 		{
-			var input = @"class Foo
+			var input = @"using System;
+class Foo
 {
 	void Bar (string str)
 	{
-		var action = $(foo, bar) => MyMethod (bar, foo);
+		Action<int, int> action = $(foo, bar) => MyMethod (bar, foo);
 	}
+	void MyMethod(int foo, int bar) {}
 }";
 			
 			TestRefactoringContext context;
@@ -98,26 +135,28 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		[Test]
 		public void TestSimpleAnonymousMethod ()
 		{
-			var input = @"class Foo
+			var input = @"using System;
+class Foo
 {
 	int MyMethod (int x, int y) { return x * y; }
 
 	void Bar (string str)
 	{
-		var action = $delegate(int foo, int bar) { return MyMethod (foo, bar); };
+		Func<int, int, int> action = $delegate(int foo, int bar) { return MyMethod (foo, bar); };
 	}
 }";
 			
 			TestRefactoringContext context;
 			var issues = GetIssues (new SimplifyAnonymousMethodToDelegateIssue (), input, out context);
 			Assert.AreEqual (1, issues.Count);
-			CheckFix (context, issues, @"class Foo
+			CheckFix (context, issues, @"using System;
+class Foo
 {
 	int MyMethod (int x, int y) { return x * y; }
 
 	void Bar (string str)
 	{
-		var action = MyMethod;
+		Func<int, int, int> action = MyMethod;
 	}
 }");
 		}
@@ -134,7 +173,7 @@ class Foo
 
 	void Bar (string str)
 	{
-		var action = $() => str.Where (c => c != 'a').ToArray ();
+		Func<char[]> action = $() => str.Where (c => c != 'a').ToArray ();
 	}
 }";
 			
@@ -144,15 +183,35 @@ class Foo
 		}
 
 		[Test]
-		public void TestComplexCase ()
+		public void CallInvolvesOptionalParameter ()
 		{
-			var input = @"class Foo
+			var input = @"using System;
+class Foo
 {
-	int MyMethod (int x, int y) { return x * y; }
+	int MyMethod (int x, int y = 1) { return x * y; }
 
 	void Bar (string str)
 	{
-		var action = $delegate(int foo, int bar) { return MyMethod (bar, foo); };
+		Func<int, int> action = $foo => MyMethod (foo);
+	}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new SimplifyAnonymousMethodToDelegateIssue (), input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
+
+		[Test]
+		public void CallExpandsParams ()
+		{
+			var input = @"using System;
+class Foo
+{
+	int MyMethod (params object[] args) { return 0; }
+
+	void Bar (string str)
+	{
+		Func<string, int> action = $foo => MyMethod (foo);
 	}
 }";
 			
@@ -196,6 +255,78 @@ class C
 	}
 }");
 
+		}
+		
+		[Test]
+		public void Return_ReferenceConversion ()
+		{
+			var input = @"using System;
+class Foo
+{
+	void Bar (string str)
+	{
+		Func<int, object> action = $foo => MyMethod(foo);
+	}
+	string MyMethod(int foo) {}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new SimplifyAnonymousMethodToDelegateIssue (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+		}
+		
+		[Test]
+		public void Return_BoxingConversion ()
+		{
+			var input = @"using System;
+class Foo
+{
+	void Bar (string str)
+	{
+		Func<int, object> action = $foo => MyMethod(foo);
+	}
+	bool MyMethod(int foo) {}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new SimplifyAnonymousMethodToDelegateIssue (), input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
+		
+		[Test]
+		public void Parameter_ReferenceConversion ()
+		{
+			var input = @"using System;
+class Foo
+{
+	void Bar (string str)
+	{
+		Action<string> action = $foo => MyMethod(foo);
+	}
+	void MyMethod(object foo) {}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new SimplifyAnonymousMethodToDelegateIssue (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+		}
+		
+		[Test]
+		public void Parameter_BoxingConversion ()
+		{
+			var input = @"using System;
+class Foo
+{
+	void Bar (string str)
+	{
+		Action<int> action = $foo => MyMethod(foo);
+	}
+	void MyMethod(object foo) {}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new SimplifyAnonymousMethodToDelegateIssue (), input, out context);
+			Assert.AreEqual (0, issues.Count);
 		}
 	}
 }

@@ -267,12 +267,19 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		#region IEntity implementation
 
+		public SymbolKind SymbolKind {
+			get {
+				return baseMethod.SymbolKind;
+			}
+		}
+
+		[Obsolete("Use the SymbolKind property instead.")]
 		public EntityType EntityType {
 			get {
 				return baseMethod.EntityType;
 			}
 		}
-
+		
 		public DomRegion Region {
 			get {
 				return baseMethod.Region;

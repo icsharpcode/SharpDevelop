@@ -241,7 +241,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return new ExplicitInterfaceImplementationMemberReference(declTypeRef, ImplementedInterfaceMembers[0].ToMemberReference());
 			} else {
 				return new DefaultMemberReference(
-					this.EntityType, declTypeRef, this.Name, this.TypeParameters.Count,
+					this.SymbolKind, declTypeRef, this.Name, this.TypeParameters.Count,
 					this.Parameters.Select(p => p.Type.ToTypeReference()).ToList());
 			}
 		}
@@ -259,7 +259,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public override string ToString()
 		{
 			StringBuilder b = new StringBuilder("[");
-			b.Append(this.EntityType);
+			b.Append(this.SymbolKind);
 			b.Append(' ');
 			if (this.DeclaringType.Kind != TypeKind.Unknown) {
 				b.Append(this.DeclaringType.ReflectionName);

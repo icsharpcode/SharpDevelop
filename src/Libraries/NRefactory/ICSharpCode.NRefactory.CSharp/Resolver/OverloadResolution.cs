@@ -887,7 +887,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// Wrap argument in ConversionResolveResult
 					IType parameterType = bestCandidate.ParameterTypes[parameterIndex];
 					if (parameterType.Kind != TypeKind.Unknown) {
-						if (arguments[i].IsCompileTimeConstant && conversions[i] != Conversion.None) {
+						if (arguments[i].IsCompileTimeConstant && conversions[i].IsValid && !conversions[i].IsUserDefined) {
 							argument = new CSharpResolver(compilation).WithCheckForOverflow(CheckForOverflow).ResolveCast(parameterType, argument);
 						} else {
 							argument = new ConversionResolveResult(parameterType, argument, conversions[i], CheckForOverflow);

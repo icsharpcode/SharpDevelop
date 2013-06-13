@@ -66,12 +66,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public DefaultUnresolvedMethod()
 		{
-			this.EntityType = EntityType.Method;
+			this.SymbolKind = SymbolKind.Method;
 		}
 		
 		public DefaultUnresolvedMethod(IUnresolvedTypeDefinition declaringType, string name)
 		{
-			this.EntityType = EntityType.Method;
+			this.SymbolKind = SymbolKind.Method;
 			this.DeclaringTypeDefinition = declaringType;
 			this.Name = name;
 			if (declaringType != null)
@@ -103,15 +103,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public bool IsConstructor {
-			get { return this.EntityType == EntityType.Constructor; }
+			get { return this.SymbolKind == SymbolKind.Constructor; }
 		}
 		
 		public bool IsDestructor {
-			get { return this.EntityType == EntityType.Destructor; }
+			get { return this.SymbolKind == SymbolKind.Destructor; }
 		}
 		
 		public bool IsOperator {
-			get { return this.EntityType == EntityType.Operator; }
+			get { return this.SymbolKind == SymbolKind.Operator; }
 		}
 		
 		public bool IsPartial {
@@ -183,7 +183,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public override string ToString()
 		{
 			StringBuilder b = new StringBuilder("[");
-			b.Append(EntityType.ToString());
+			b.Append(SymbolKind.ToString());
 			b.Append(' ');
 			if (DeclaringTypeDefinition != null) {
 				b.Append(DeclaringTypeDefinition.Name);
@@ -232,7 +232,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (this.IsExplicitInterfaceImplementation && this.ExplicitInterfaceImplementations.Count == 1)
 				interfaceTypeReference = this.ExplicitInterfaceImplementations[0].DeclaringTypeReference;
 			return Resolve(ExtendContextForType(context, this.DeclaringTypeDefinition),
-			               this.EntityType, this.Name, interfaceTypeReference,
+			               this.SymbolKind, this.Name, interfaceTypeReference,
 			               this.TypeParameters.Select(tp => tp.Name).ToList(),
 			               this.Parameters.Select(p => p.Type).ToList());
 		}
@@ -249,7 +249,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			DomRegion region = typeDefinition.Region;
 			region = new DomRegion(region.FileName, region.BeginLine, region.BeginColumn); // remove endline/endcolumn
 			return new DefaultUnresolvedMethod(typeDefinition, ".ctor") {
-				EntityType = EntityType.Constructor,
+				SymbolKind = SymbolKind.Constructor,
 				Accessibility = typeDefinition.IsAbstract ? Accessibility.Protected : Accessibility.Public,
 				IsSynthetic = true,
 				HasBody = true,
@@ -274,7 +274,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		static IUnresolvedMethod CreateDummyConstructor()
 		{
 			var m = new DefaultUnresolvedMethod {
-				EntityType = EntityType.Constructor,
+				SymbolKind = SymbolKind.Constructor,
 				Name = ".ctor",
 				Accessibility = Accessibility.Public,
 				IsSynthetic = true,

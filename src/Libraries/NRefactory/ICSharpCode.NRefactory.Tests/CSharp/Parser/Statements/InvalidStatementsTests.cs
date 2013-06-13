@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		[Test]
 		public void AsExpressionStatementPositions()
 		{
-			ExpressionStatement expr = ParseUtilCSharp.ParseStatement<ExpressionStatement>("\t\t\"\" as IEnumerable<char>;", true);
+			ExpressionStatement expr = ParseUtilCSharp.ParseStatement<ExpressionStatement>("\t\t\"\" as IEnumerable<char>;", false);
 			Assert.AreEqual(new TextLocation(1, 3), expr.StartLocation);
 			Assert.AreEqual(new TextLocation(1, 27), expr.EndLocation);
 		}

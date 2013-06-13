@@ -55,12 +55,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public DefaultUnresolvedProperty()
 		{
-			this.EntityType = EntityType.Property;
+			this.SymbolKind = SymbolKind.Property;
 		}
 		
 		public DefaultUnresolvedProperty(IUnresolvedTypeDefinition declaringType, string name)
 		{
-			this.EntityType = EntityType.Property;
+			this.SymbolKind = SymbolKind.Property;
 			this.DeclaringTypeDefinition = declaringType;
 			this.Name = name;
 			if (declaringType != null)
@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public bool IsIndexer {
-			get { return this.EntityType == EntityType.Indexer; }
+			get { return this.SymbolKind == SymbolKind.Indexer; }
 		}
 		
 		public IList<IUnresolvedParameter> Parameters {
@@ -114,7 +114,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (this.IsExplicitInterfaceImplementation && this.ExplicitInterfaceImplementations.Count == 1)
 				interfaceTypeReference = this.ExplicitInterfaceImplementations[0].DeclaringTypeReference;
 			return Resolve(ExtendContextForType(context, this.DeclaringTypeDefinition), 
-			               this.EntityType, this.Name, interfaceTypeReference,
+			               this.SymbolKind, this.Name, interfaceTypeReference,
 			               parameterTypeReferences: this.Parameters.Select(p => p.Type).ToList());
 		}
 		

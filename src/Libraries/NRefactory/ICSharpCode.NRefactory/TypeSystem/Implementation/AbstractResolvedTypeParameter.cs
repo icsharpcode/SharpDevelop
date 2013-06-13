@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	public abstract class AbstractTypeParameter : ITypeParameter, ICompilationProvider
 	{
 		readonly ICompilation compilation;
-		readonly EntityType ownerType;
+		readonly SymbolKind ownerType;
 		readonly IEntity owner;
 		readonly int index;
 		readonly string name;
@@ -41,28 +41,32 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				throw new ArgumentNullException("owner");
 			this.owner = owner;
 			this.compilation = owner.Compilation;
-			this.ownerType = owner.EntityType;
+			this.ownerType = owner.SymbolKind;
 			this.index = index;
-			this.name = name ?? ((this.OwnerType == EntityType.Method ? "!!" : "!") + index.ToString(CultureInfo.InvariantCulture));
+			this.name = name ?? ((this.OwnerType == SymbolKind.Method ? "!!" : "!") + index.ToString(CultureInfo.InvariantCulture));
 			this.attributes = attributes ?? EmptyList<IAttribute>.Instance;
 			this.region = region;
 			this.variance = variance;
 		}
 		
-		protected AbstractTypeParameter(ICompilation compilation, EntityType ownerType, int index, string name, VarianceModifier variance, IList<IAttribute> attributes, DomRegion region)
+		protected AbstractTypeParameter(ICompilation compilation, SymbolKind ownerType, int index, string name, VarianceModifier variance, IList<IAttribute> attributes, DomRegion region)
 		{
 			if (compilation == null)
 				throw new ArgumentNullException("compilation");
 			this.compilation = compilation;
 			this.ownerType = ownerType;
 			this.index = index;
-			this.name = name ?? ((this.OwnerType == EntityType.Method ? "!!" : "!") + index.ToString(CultureInfo.InvariantCulture));
+			this.name = name ?? ((this.OwnerType == SymbolKind.Method ? "!!" : "!") + index.ToString(CultureInfo.InvariantCulture));
 			this.attributes = attributes ?? EmptyList<IAttribute>.Instance;
 			this.region = region;
 			this.variance = variance;
 		}
 		
-		public EntityType OwnerType {
+		SymbolKind ISymbol.SymbolKind {
+			get { return SymbolKind.TypeParameter; }
+		}
+		
+		public SymbolKind OwnerType {
 			get { return ownerType; }
 		}
 		
@@ -232,7 +236,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public string ReflectionName {
 			get {
-				return (this.OwnerType == EntityType.Method ? "``" : "`") + index.ToString(CultureInfo.InvariantCulture);
+				return (this.OwnerType == SymbolKind.Method ? "``" : "`") + index.ToString(CultureInfo.InvariantCulture);
 			}
 		}
 		

@@ -82,11 +82,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			// class A<X> { class B<Y> { } }
 			DefaultUnresolvedTypeDefinition a = new DefaultUnresolvedTypeDefinition(string.Empty, "A");
-			a.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 0, "X"));
+			a.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 0, "X"));
 			
 			DefaultUnresolvedTypeDefinition b = new DefaultUnresolvedTypeDefinition(a, "B");
 			b.TypeParameters.Add(a.TypeParameters[0]);
-			b.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 1, "Y"));
+			b.TypeParameters.Add(new DefaultUnresolvedTypeParameter(SymbolKind.TypeDefinition, 1, "Y"));
 			
 			a.NestedTypes.Add(b);
 			

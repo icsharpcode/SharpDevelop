@@ -106,8 +106,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		public static readonly TokenRole ExplicitRole = new TokenRole ("explicit");
 		public static readonly TokenRole ImplicitRole = new TokenRole ("implicit");
 		
-		public override EntityType EntityType {
-			get { return EntityType.Operator; }
+		public override SymbolKind SymbolKind {
+			get { return SymbolKind.Operator; }
 		}
 		
 		OperatorType operatorType;

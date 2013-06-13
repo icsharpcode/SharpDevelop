@@ -173,6 +173,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return baseMember.IsOverridable; }
 		}
 		
+		public SymbolKind SymbolKind {
+			get { return baseMember.SymbolKind; }
+		}
+		
+		[Obsolete("Use the SymbolKind property instead.")]
 		public EntityType EntityType {
 			get { return baseMember.EntityType; }
 		}
@@ -404,6 +409,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					this.originalParameter = originalParameter;
 				this.newType = newType;
 			}
+			
+			SymbolKind ISymbol.SymbolKind { get { return SymbolKind.Parameter; } }
 			
 			public IList<IAttribute> Attributes {
 				get { return originalParameter.Attributes; }

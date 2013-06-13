@@ -59,8 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression);
 		void VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression);
 		void VisitUncheckedExpression(UncheckedExpression uncheckedExpression);
-		void VisitEmptyExpression (EmptyExpression emptyExpression);
-		
+
 		void VisitQueryExpression(QueryExpression queryExpression);
 		void VisitQueryContinuationClause(QueryContinuationClause queryContinuationClause);
 		void VisitQueryFromClause(QueryFromClause queryFromClause);
@@ -190,8 +189,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		S VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression);
 		S VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression);
 		S VisitUncheckedExpression(UncheckedExpression uncheckedExpression);
-		S VisitEmptyExpression (EmptyExpression emptyExpression);
-		
+
 		S VisitQueryExpression(QueryExpression queryExpression);
 		S VisitQueryContinuationClause(QueryContinuationClause queryContinuationClause);
 		S VisitQueryFromClause(QueryFromClause queryFromClause);
@@ -321,8 +319,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		S VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, T data);
 		S VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, T data);
 		S VisitUncheckedExpression(UncheckedExpression uncheckedExpression, T data);
-		S VisitEmptyExpression (EmptyExpression emptyExpression, T data);
-		
+
 		S VisitQueryExpression(QueryExpression queryExpression, T data);
 		S VisitQueryContinuationClause(QueryContinuationClause queryContinuationClause, T data);
 		S VisitQueryFromClause(QueryFromClause queryFromClause, T data);

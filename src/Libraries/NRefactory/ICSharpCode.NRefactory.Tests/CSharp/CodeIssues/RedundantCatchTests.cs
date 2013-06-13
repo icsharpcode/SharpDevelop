@@ -218,6 +218,79 @@ class A
 	}
 }");
 		}
+
+		/// <summary>
+		/// Bug 12273 - Incorrect redundant catch warning
+		/// </summary>
+		[Test]
+		public void TestBug12273()
+		{
+			var input = BaseInput + @"
+		try {
+			F ();
+		} catch (ArgumentOutOfRangeException) {
+			throw;
+		} catch (Exception e) {
+			Console.WriteLine (e);
+		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new RedundantCatchIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+
+			input = BaseInput + @"
+		try {
+			F ();
+		} catch (ArgumentOutOfRangeException) {
+			throw;
+		} catch (Exception e) {
+			throw;
+		}
+	}
+}";
+			issues = GetIssues(new RedundantCatchIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			CheckFix(context, issues, BaseInput + @"
+		F ();
+	}
+}");
+
+		}
+
+		/// <summary>
+		/// Bug 12273 - Incorrect redundant catch warning
+		/// </summary>
+		[Test]
+		public void TestBug12273Case2()
+		{
+			var input = BaseInput + @"
+		try {
+			F ();
+		} catch (ArgumentOutOfRangeException) {
+			throw;
+		} catch {
+			Console.WriteLine (""hello world"");
+		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new RedundantCatchIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+
+			input = BaseInput + @"
+		try {
+			F ();
+		} catch (ArgumentOutOfRangeException) {
+			throw;
+		} catch {
+			throw;
+		}
+	}
+}";
+			issues = GetIssues(new RedundantCatchIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+		}
 	}
 }
 

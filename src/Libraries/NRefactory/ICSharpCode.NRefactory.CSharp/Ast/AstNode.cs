@@ -230,6 +230,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		internal uint RoleIndex {
+			get { return flags & roleIndexMask; }
+		}
+		
 		void SetRole(Role role)
 		{
 			flags = (flags & ~roleIndexMask) | role.Index;
@@ -293,31 +297,67 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		/// <summary>
-		/// Gets all descendants of this node (excluding this node itself).
+		/// Gets all descendants of this node (excluding this node itself) in pre-order.
 		/// </summary>
 		public IEnumerable<AstNode> Descendants {
-			get { return GetDescendants(false); }
+			get { return GetDescendantsImpl(false); }
 		}
 		
 		/// <summary>
-		/// Gets all descendants of this node (including this node itself).
+		/// Gets all descendants of this node (including this node itself) in pre-order.
 		/// </summary>
 		public IEnumerable<AstNode> DescendantsAndSelf {
-			get { return GetDescendants(true); }
+			get { return GetDescendantsImpl(true); }
 		}
-		
-		IEnumerable<AstNode> GetDescendants(bool includeSelf)
+
+		static bool IsInsideRegion(DomRegion region, AstNode pos)
 		{
-			if (includeSelf)
-				yield return this;
+			if (region.IsEmpty)
+				return true;
+			var nodeRegion = pos.Region;
+			return region.IntersectsWith(nodeRegion) || region.OverlapsWith(nodeRegion);
+		}
+
+		public IEnumerable<AstNode> DescendantNodes (Func<AstNode, bool> descendIntoChildren = null)
+		{
+			return GetDescendantsImpl(false, new DomRegion (), descendIntoChildren);
+		}
+
+		public IEnumerable<AstNode> DescendantNodes (DomRegion region, Func<AstNode, bool> descendIntoChildren = null)
+		{
+			return GetDescendantsImpl(false, region, descendIntoChildren);
+		}
+
+		public IEnumerable<AstNode> DescendantNodesAndSelf (Func<AstNode, bool> descendIntoChildren = null)
+		{
+			return GetDescendantsImpl(true, new DomRegion (), descendIntoChildren);
+		}
+
+		public IEnumerable<AstNode> DescendantNodesAndSelf (DomRegion region, Func<AstNode, bool> descendIntoChildren = null)
+		{
+			return GetDescendantsImpl(true, region, descendIntoChildren);
+		}
+
+		IEnumerable<AstNode> GetDescendantsImpl(bool includeSelf, DomRegion region = new DomRegion (), Func<AstNode, bool> descendIntoChildren = null)
+		{
+			if (includeSelf) {
+				if (IsInsideRegion (region, this))
+					yield return this;
+				if (descendIntoChildren != null && !descendIntoChildren(this))
+					yield break;
+			}
+
 			Stack<AstNode> nextStack = new Stack<AstNode>();
 			nextStack.Push(null);
 			AstNode pos = firstChild;
 			while (pos != null) {
+				// Remember next before yielding pos.
+				// This allows removing/replacing nodes while iterating through the list.
 				if (pos.nextSibling != null)
 					nextStack.Push(pos.nextSibling);
-				yield return pos;
-				if (pos.firstChild != null)
+				if (IsInsideRegion(region, pos))
+					yield return pos;
+				if (pos.firstChild != null && (descendIntoChildren == null || descendIntoChildren(pos)))
 					pos = pos.firstChild;
 				else
 					pos = nextStack.Pop();

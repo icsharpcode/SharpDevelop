@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -44,6 +45,60 @@ namespace ICSharpCode.NRefactory.CSharp
 		Warning = 10,
 		Pragma = 11,
 		Line = 12
+	}
+
+	public class LinePreprocssorDirective : PreProcessorDirective
+	{
+		public int LineNumber {
+			get;
+			set;
+		}
+
+		public string FileName {
+			get;
+			set;
+		}
+
+		public LinePreprocssorDirective(TextLocation startLocation, TextLocation endLocation) : base (PreProcessorDirectiveType.Line, startLocation, endLocation)
+		{
+		}
+
+		public LinePreprocssorDirective(string argument = null) : base (PreProcessorDirectiveType.Line, argument)
+		{
+		}
+	}
+
+	public class PragmaWarningPreprocssorDirective : PreProcessorDirective
+	{
+		public bool Disable {
+			get;
+			set;
+		}
+
+		List<int> warningList = new List<int> ();
+		public IList<int> WarningList {
+			get {
+				return warningList;
+			}
+		}
+
+		public PragmaWarningPreprocssorDirective(TextLocation startLocation, TextLocation endLocation) : base (PreProcessorDirectiveType.Pragma, startLocation, endLocation)
+		{
+		}
+
+		public PragmaWarningPreprocssorDirective(string argument = null) : base (PreProcessorDirectiveType.Pragma, argument)
+		{
+		}
+
+		public void AddWarnings(IEnumerable<int> warningCodes)
+		{
+			warningList.AddRange(warningCodes);
+		}
+
+		public void AddWarnings(params int[] warningCodes)
+		{
+			warningList.AddRange(warningCodes);
+		}
 	}
 	
 	public class PreProcessorDirective : AstNode

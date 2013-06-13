@@ -30,7 +30,7 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory.CSharp.CodeActions
 {
 	[TestFixture]
-	public class ConvertIfToSwtichTests : ContextActionTestBase
+	public class ConvertIfToSwitchTests : ContextActionTestBase
 	{
 
 		[Test]
@@ -467,5 +467,40 @@ class TestClass
 }");
 		}
 	
+		[Test]
+		public void TestNestedIf ()
+		{
+			Test<ConvertIfToSwitchAction> (@"
+class TestClass
+{
+	void TestMethod (int a)
+	{
+		int b;
+		$if (a == 0) {
+			if (b == 0)
+				return;
+		} else if (a == 2 || a == 3) {
+			b = 2;
+		}
+	}
+}", @"
+class TestClass
+{
+	void TestMethod (int a)
+	{
+		int b;
+		switch (a) {
+		case 0:
+			if (b == 0)
+				return;
+			break;
+		case 2:
+		case 3:
+			b = 2;
+			break;
+		}
+	}
+}");
+		}
 	}
 }

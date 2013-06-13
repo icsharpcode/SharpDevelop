@@ -1,10 +1,10 @@
-﻿// 
-// EmptyExpression.cs
+// 
+// IssueMarker.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,55 +25,28 @@
 // THE SOFTWARE.
 using System;
 
-namespace ICSharpCode.NRefactory.CSharp
+namespace ICSharpCode.NRefactory.Refactoring
 {
 	/// <summary>
-	/// Type&lt;[EMPTY]&gt;
+	/// The issue marker is used to set how an issue should be marked inside the text editor.
 	/// </summary>
-	public class EmptyExpression : Expression
+	public enum IssueMarker
 	{
-		TextLocation location;
+		/// <summary>
+		/// The issue is not shown inside the text editor. (But in the task bar)
+		/// </summary>
+		None,
 
-		public override TextLocation StartLocation {
-			get {
-				return location;
-			}
-		}
-		
-		public override TextLocation EndLocation {
-			get {
-				return location;
-			}
-		}
+		/// <summary>
+		/// The region is marked as underline in the severity color.
+		/// </summary>
+		Underline,
 
-		public EmptyExpression ()
-		{
-		}
-
-		public EmptyExpression (TextLocation location)
-		{
-			this.location = location;
-		}
-		
-		public override void AcceptVisitor (IAstVisitor visitor)
-		{
-			visitor.VisitEmptyExpression (this);
-		}
-			
-		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
-		{
-			return visitor.VisitEmptyExpression (this);
-		}
-		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
-		{
-			return visitor.VisitEmptyExpression (this, data);
-		}
-
-		protected internal override bool DoMatch (AstNode other, PatternMatching.Match match)
-		{
-			var o = other as EmptyExpression;
-			return o != null;
-		}
+		/// <summary>
+		/// The text is grayed out.
+		/// </summary>
+		GrayOut
 	}
+
 }
+

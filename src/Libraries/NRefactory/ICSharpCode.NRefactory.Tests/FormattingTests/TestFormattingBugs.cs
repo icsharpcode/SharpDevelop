@@ -350,6 +350,32 @@ foo ();
 	}
 }");
 		}
+	
+
+		/// <summary>
+		/// Bug 12270 - Code formatter breaks new() constraints
+		/// </summary>
+		[Test]
+		public void TestBug12270()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+
+			Test(policy,
+@"class C
+{
+	public void Test<T> () where T : new  ()
+	{
+	}
+}",
+@"class C
+{
+	public void Test<T> () where T : new()
+	{
+	}
+}");
+		}
+
+
 	}
 }
 

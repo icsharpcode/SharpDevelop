@@ -36,5 +36,29 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				new BinaryOperatorExpression(expr2.Clone(), op, expr1.Clone())
 			};
 		}
+		
+		/// <summary>
+		/// Optionally allows parentheses around the given expression.
+		/// </summary>
+		public static Expression OptionalParentheses(Expression expr)
+		{
+			return new OptionalParenthesesPattern(expr);
+		}
+		
+		sealed class OptionalParenthesesPattern : Pattern
+		{
+			readonly INode child;
+			
+			public OptionalParenthesesPattern(INode child)
+			{
+				this.child = child;
+			}
+			
+			public override bool DoMatch(INode other, Match match)
+			{
+				INode unpacked = ParenthesizedExpression.UnpackParenthesizedExpression(other as Expression);
+				return child.DoMatch(unpacked, match);
+			}
+		}
 	}
 }

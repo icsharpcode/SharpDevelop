@@ -26,6 +26,7 @@
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
