@@ -112,8 +112,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
-
-			using (var universe = new Universe (UniverseOptions.DisablePseudoCustomAttributeRetrieval)) {
+		
+			using (var universe = new Universe (UniverseOptions.DisablePseudoCustomAttributeRetrieval | UniverseOptions.SupressReferenceTypeIdentityConversion)) {
 				universe.AssemblyResolve += delegate(object sender, IKVM.Reflection.ResolveEventArgs args) {
 					return universe.CreateMissingAssembly(args.Name);
 				};
@@ -254,7 +254,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (type == null) {
 				return SpecialType.UnknownType;
 			}
-
 			if (type.IsByRef) {
 				typeIndex++;
 				return interningProvider.Intern (
@@ -1491,7 +1490,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			// set base classes
 			if (typeDefinition.IsEnum) {
-				foreach (var enumField in typeDefinition.GetFields (bindingFlags)) {
+				foreach (var enumField in typeDefinition.__GetDeclaredFields ()) {
 					if (!enumField.IsStatic) {
 						baseTypes.Add(ReadTypeReference(enumField.FieldType));
 						break;
@@ -1501,7 +1500,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				if (typeDefinition.BaseType != null) {
 					baseTypes.Add(ReadTypeReference(typeDefinition.BaseType));
 				}
-				foreach (var iface in typeDefinition.GetInterfaces ()) {
+				foreach (var iface in typeDefinition.__GetDeclaredInterfaces ()) {
 					baseTypes.Add(ReadTypeReference(iface));
 				}
 			}
@@ -1509,7 +1508,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 
 		void InitNestedTypes(IKVM.Reflection.Type typeDefinition, IUnresolvedTypeDefinition declaringTypeDefinition, ICollection<IUnresolvedTypeDefinition> nestedTypes)
 		{
-			foreach (var nestedTypeDef in typeDefinition.GetNestedTypes (bindingFlags)) {
+			foreach (var nestedTypeDef in typeDefinition.__GetDeclaredTypes()) {
 				if (IncludeInternalMembers
 					|| nestedTypeDef.IsNestedPublic
 				    || nestedTypeDef.IsNestedFamily
@@ -1595,11 +1594,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return false;
 		}
 
-		static readonly BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly;
-
 		void InitMembers(IKVM.Reflection.Type typeDefinition, IUnresolvedTypeDefinition td, IList<IUnresolvedMember> members)
 		{
-			foreach (var method in typeDefinition.GetMethods (bindingFlags)) {
+			foreach (var method in typeDefinition.__GetDeclaredMethods ()) {
+				if (method.IsConstructor) {
+					if (IsVisible(method.Attributes)) {
+						SymbolKind type = SymbolKind.Constructor;
+						members.Add(ReadConstructor(method, td, type));
+					}
+					continue;
+				}
 				if (IsVisible(method.Attributes) && !IsAccessor(method)) {
 					SymbolKind type = SymbolKind.Method;
 					if (method.IsSpecialName) {
@@ -1610,15 +1614,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 			}
 
-			foreach (var method in typeDefinition.GetConstructors (bindingFlags)) {
-				if (IsVisible(method.Attributes)) {
-					SymbolKind type = SymbolKind.Constructor;
-					members.Add(ReadConstructor(method, td, type));
-				}
-			}
-
-
-			foreach (var field in typeDefinition.GetFields (bindingFlags)) {
+			foreach (var field in typeDefinition.__GetDeclaredFields ()) {
 				if (IsVisible(field.Attributes) && !field.IsSpecialName) {
 					members.Add(ReadField(field, td));
 				}
@@ -1631,7 +1627,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				defaultMemberName = defaultMemberAttribute.ConstructorArguments[0].Value as string;
 			}
 
-			foreach (var property in typeDefinition.GetProperties (bindingFlags)) {
+			foreach (var property in typeDefinition.__GetDeclaredProperties ()) {
 				bool getterVisible = property.GetMethod != null && IsVisible(property.GetMethod.Attributes);
 				bool setterVisible = property.SetMethod != null && IsVisible(property.SetMethod.Attributes);
 				if (getterVisible || setterVisible) {
@@ -1653,14 +1649,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 			}
 
-			foreach (var ev in typeDefinition.GetEvents (bindingFlags)) {
+			foreach (var ev in typeDefinition.__GetDeclaredEvents ()) {
 				if (ev.AddMethod != null && IsVisible(ev.AddMethod.Attributes)) {
 					members.Add(ReadEvent(ev, td));
 				}
 			}
 		}
 
-		static bool IsAccessor(MethodInfo methodInfo)
+		static bool IsAccessor(MethodBase methodInfo)
 		{
 			if (!methodInfo.IsSpecialName)
 				return false;
@@ -1677,9 +1673,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 
 		#region Read Method
 		[CLSCompliant(false)]
-		public IUnresolvedMethod ReadMethod(MethodInfo method, IUnresolvedTypeDefinition parentType, SymbolKind methodType = SymbolKind.Method)
+		public IUnresolvedMethod ReadMethod(MethodBase method, IUnresolvedTypeDefinition parentType, SymbolKind methodType = SymbolKind.Method)
 		{
-			return ReadMethod(method, parentType, methodType, null);
+			return ReadMethod((MethodInfo)method, parentType, methodType, null);
 		}
 
 		IUnresolvedMethod ReadMethod(MethodInfo method, IUnresolvedTypeDefinition parentType, SymbolKind methodType, IUnresolvedMember accessorOwner)
@@ -1689,7 +1685,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var m = new DefaultUnresolvedMethod(parentType, method.Name);
 			m.SymbolKind = methodType;
 			m.AccessorOwner = accessorOwner;
-			m.HasBody = method.GetMethodBody () != null;
+			m.HasBody = !method.DeclaringType.IsInterface && (method.GetMethodImplementationFlags () & MethodImplAttributes.CodeTypeMask) == MethodImplAttributes.IL;
 			var genericArguments = method.GetGenericArguments ();
 			if (genericArguments != null) {
 				for (int i = 0; i < genericArguments.Length; i++) {
@@ -1803,9 +1799,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 
 		#region Read Constructor
 		[CLSCompliant(false)]
-		public IUnresolvedMethod ReadConstructor(ConstructorInfo method, IUnresolvedTypeDefinition parentType, SymbolKind methodType = SymbolKind.Method)
+		public IUnresolvedMethod ReadConstructor(MethodBase method, IUnresolvedTypeDefinition parentType, SymbolKind methodType = SymbolKind.Method)
 		{
-			return ReadConstructor(method, parentType, methodType, null);
+			return ReadConstructor((ConstructorInfo)method, parentType, methodType, null);
 		}
 
 		IUnresolvedMethod ReadConstructor(ConstructorInfo method, IUnresolvedTypeDefinition parentType, SymbolKind methodType, IUnresolvedMember accessorOwner)
@@ -1815,7 +1811,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var m = new DefaultUnresolvedMethod(parentType, method.Name);
 			m.SymbolKind = methodType;
 			m.AccessorOwner = accessorOwner;
-			m.HasBody = method.GetMethodBody () != null;
+			m.HasBody = !method.DeclaringType.IsInterface && (method.GetMethodImplementationFlags () & MethodImplAttributes.CodeTypeMask) == MethodImplAttributes.IL;
 			var genericArguments = method.GetGenericArguments ();
 			if (genericArguments != null) {
 				for (int i = 0; i < genericArguments.Length; i++) {
@@ -1938,7 +1934,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			f.Accessibility = GetAccessibility(field.Attributes);
 			f.IsReadOnly = field.IsInitOnly;
 			f.IsStatic = field.IsStatic;
-
 			f.ReturnType = ReadTypeReference(field.FieldType, typeAttributes: field.CustomAttributes);
 
 			if (field.Attributes.HasFlag (FieldAttributes.HasDefault)) {
