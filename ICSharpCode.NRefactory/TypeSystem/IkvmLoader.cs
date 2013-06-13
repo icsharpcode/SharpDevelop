@@ -114,6 +114,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentNullException("fileName");
 
 			using (var universe = new Universe (UniverseOptions.DisablePseudoCustomAttributeRetrieval)) {
+				universe.AssemblyResolve += delegate(object sender, IKVM.Reflection.ResolveEventArgs args) {
+					return universe.CreateMissingAssembly(args.Name);
+				};
 				return LoadAssembly (universe.LoadFile (fileName));
 			}
 		}
