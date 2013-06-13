@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50630</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{BF38FB72-B380-4196-AF8C-95749D726C61}</ProjectGuid>
+    <ProjectGuid>{6D209CBB-D8C1-478A-BC30-D3FC87B7858F}</ProjectGuid>
     <AssemblyName>ICSharpCode.VBNetBinding</AssemblyName>
     <OutputTarget>Library</OutputTarget>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>False</NoStdLib>
     <NoConfig>False</NoConfig>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
     <OutputType>Library</OutputType>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
@@ -22,8 +22,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
     <RootNamespace>ICSharpCode.VBNetBinding</RootNamespace>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,6 +41,11 @@
     <DebugType>None</DebugType>
   </PropertyGroup>
   <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -54,49 +58,36 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.XML" />
-    <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\Extensions.cs" />
-    <Compile Include="Src\FormattingStrategy\VBStatement.cs" />
-    <Compile Include="Src\LanguageUtils.cs" />
-    <Compile Include="Src\OptionPanels\BuildOptions.xaml.cs">
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.vb">
+      <Link>Configuration\GlobalAssemblyInfo.vb</Link>
+    </Compile>
+    <Compile Include="CompareKind.vb" />
+    <Compile Include="Configuration\AssemblyInfo.vb" />
+    <Compile Include="OptionPanels\BuildOptions.xaml.vb">
       <DependentUpon>BuildOptions.xaml</DependentUpon>
-      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\OptionPanels\ProjectImports.xaml.cs">
-      <DependentUpon>ProjectImports.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Src\OptionPanels\TextEditorOptions.xaml.cs">
-      <DependentUpon>TextEditorOptions.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Src\VBNetBracketSearcher.cs" />
-    <Compile Include="Src\CompletionDataHelper.cs" />
-    <Compile Include="Src\VBNetCompletionItemList.cs" />
-    <Compile Include="Src\VBNetLanguageBinding.cs" />
-    <Compile Include="Src\VBNetProjectBinding.cs" />
-    <Compile Include="Src\FormattingStrategy\VBNetFormattingStrategy.cs" />
-    <Compile Include="Src\Parser\Parser.cs" />
-    <Compile Include="Src\Project\VBNetProject.cs" />
+    <Compile Include="VbcEncodingFixingLogger.vb" />
+    <Compile Include="VBNetProject.vb" />
+    <Compile Include="VBNetProjectBinding.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Readme.txt" />
     <None Include="VBNetBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Compile Include="Src\VBNetCompletionBinding.cs" />
-    <Compile Include="Src\MyNamespaceBuilder.cs" />
-    <Compile Include="Src\Project\CSharpToVBNetConverter.cs" />
-    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
-      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Src\VbcEncodingFixingLogger.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
+    <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -114,11 +105,6 @@
       <Name>ICSharpCode.Core.Presentation</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
@@ -126,9 +112,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\OptionPanels\BuildOptions.xaml" />
-    <Page Include="Src\OptionPanels\ProjectImports.xaml" />
-    <Page Include="Src\OptionPanels\TextEditorOptions.xaml" />
+    <Folder Include="OptionPanels" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <ItemGroup>
+    <Page Include="OptionPanels\BuildOptions.xaml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

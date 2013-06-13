@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <optionpanels:ProjectOptionPanel
-	x:Class="ICSharpCode.VBNetBinding.OptionPanels.ProjectImports"
+	x:Class="ProjectImports"
 	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels;assembly=ICSharpCode.SharpDevelop"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"

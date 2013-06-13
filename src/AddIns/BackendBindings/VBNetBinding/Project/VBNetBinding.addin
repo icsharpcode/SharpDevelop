@@ -11,13 +11,7 @@
 	<Runtime>
 		<Import assembly = "ICSharpCode.VBNetBinding.dll"/>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
-		<Import assembly = ":ICSharpCode.SharpDevelop.Dom"/>
 	</Runtime>
-
-	<Path name = "/SharpDevelop/Workbench/Ambiences">
-		<Class id    = "VBNet"
-		       class = "ICSharpCode.SharpDevelop.Dom.VBNet.VBNetAmbience"/>
-	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id = "VBNet"
@@ -46,27 +40,12 @@
 			taskname = "vbc"
 			class = "ICSharpCode.VBNetBinding.VbcEncodingFixingLogger"/>
 	</Path>
-	
-	<Path name = "/SharpDevelop/Parser">
-		<Parser id    = "VBNet" 
-			supportedextensions  = ".vb"
-			projectfileextension = ".vbproj"
-			class = "ICSharpCode.VBNetBinding.TParser"/>
-	</Path>
-	
-	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions/Convert">
-		<Condition name = "ProjectActive" activeproject="C#">
-			<MenuItem id = "CSharpToVBConverter"
-			          label = "${res:ICSharpCode.SharpDevelop.Commands.CharpConvertProjectToVB}"
-			          class = "ICSharpCode.VBNetBinding.CSharpToVBNetConverter"/>
-		</Condition>
-	</Path>
-	
-	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
+
+<!--	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
 		<OptionPanel id = "VBSpecificOptions"
 			             label = "${res:Dialog.Options.IDEOptions.TextEditor.VB.PanelName}"
 			             class = "ICSharpCode.VBNetBinding.OptionPanels.TextEditorOptions"/>
-	</Path>
+	</Path>-->
 	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/VBNet">
 		<OptionPanel id    = "Application"
@@ -93,19 +72,11 @@
 		             label = "${res:Dialog.ProjectOptions.DebugOptions}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
 		
-		<OptionPanel id    = "ProjectImports"
+	<!--	<OptionPanel id    = "ProjectImports"
 		             label = "${res:Dialog.ProjectOptions.ProjectImports}"
-		             class = "ICSharpCode.VBNetBinding.OptionPanels.ProjectImports"/>
+		             class = "ICSharpCode.VBNetBinding.OptionPanels.ProjectImports"/> -->
 		
 		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
-	</Path>
-
-	<Path name = "/SharpDevelop/ViewContent/TextEditor/CodeCompletion">
-		<CodeCompletionBinding id = "VBNet" extensions = ".vb" class = "ICSharpCode.VBNetBinding.VBNetCompletionBinding"/>
-	</Path>
-	
-	<Path name="/SharpDevelop/Workbench/LanguageBindings">
-		<LanguageBinding id="VBNet" class="ICSharpCode.VBNetBinding.VBNetLanguageBinding" extensions=".vb" />
 	</Path>
 	
 	<Path name = "/Workspace/Icons">

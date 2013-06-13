@@ -17,6 +17,7 @@ bin/
 /src/Main/ICSharpCode.SharpDevelop.Sda/ICSharpCode.SharpDevelop.Sda.dll.config
 /src/Main/SharpDevelop/app.config
 /src/Main/GlobalAssemblyInfo.cs
+/src/Main/GlobalAssemblyInfo.vb
 /src/AddIns/Misc/UsageDataCollector/UsageDataCollector.AddIn/AnalyticsMonitor.AppProperties.cs
 
 /src/AddIns/Misc/PackageManagement/Packages/AvalonEdit/lib

@@ -1,4 +1,4 @@
-﻿<gui:OptionPanel x:Class="ICSharpCode.VBNetBinding.OptionPanels.TextEditorOptions"
+﻿<gui:OptionPanel x:Class="TextEditorOptions"
                  xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
                  xmlns:addin="clr-namespace:ICSharpCode.VBNetBinding.OptionPanels"
                  xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
