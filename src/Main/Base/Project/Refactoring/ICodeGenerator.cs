@@ -2,10 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -24,95 +21,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		string GetPropertyName(string fieldName);
 		string GetParameterName(string fieldName);
 		string GetFieldName(string propertyName);
-		
-		/// <summary>
-		/// Determines whether the given identifier is valid in the language or can be used if escaped properly.
-		/// </summary>
-		bool IsValidIdentifier(string identifier);
-		
-		/// <summary>
-		/// Escapes the identifier if needed.
-		/// </summary>
-		string EscapeIdentifier(string identifier);
-		
-		/// <summary>
-		/// Returns whether the given string is a keyword or not.
-		/// </summary>
-		bool IsKeyword(string identifier, bool treatContextualKeywordsAsIdentifiers = true);
-		
-		void RenameSymbol(RenameReferenceContext context, string newName);
-		IEnumerable<Conflict> FindRenamingConflicts(Reference symbol, string newName);
-	}
-	
-	public abstract class Conflict
-	{
-		public IVariable ConflictingVariable { get; private set; }
-		public IEntity ConflictingEntity { get; private set; }
-		
-		// TODO : Please add something like ISymbol => (IVariable, IEntity)
-		public bool IsLocalConflict {
-			get {
-				return ConflictingVariable != null;
-			}
-		}
-		
-		public abstract bool IsSolvableConflict {
-			get;
-		}
-		
-		public abstract void Solve();
-		
-		protected Conflict()
-		{
-		}
-		
-		protected Conflict(IVariable variable)
-		{
-			this.ConflictingVariable = variable;
-		}
-		
-		protected Conflict(IEntity entity)
-		{
-			this.ConflictingEntity = entity;
-		}
-	}
-	
-	public class UnknownConflict : Conflict
-	{
-		public override bool IsSolvableConflict {
-			get {
-				return false;
-			}
-		}
-		
-		public override void Solve()
-		{
-			throw new NotSupportedException();
-		}
-	}
-	
-	public class RenameReferenceContext
-	{
-		public IReadOnlyList<Conflict> Conflicts { get; private set; }
-		public Reference RenameTarget { get; private set; }
-		
-		// TODO : Please add something like ISymbol => (IVariable, IEntity)
-		public IVariable OldVariable { get; set; }
-		public IEntity OldEntity { get; set; }
-		
-		public bool IsLocal {
-			get { return OldVariable != null; }
-		}
-		
-		public bool HasConflicts {
-			get { return Conflicts.Any(); }
-		}
-		
-		public RenameReferenceContext(Reference target, IList<Conflict> conflicts)
-		{
-			this.RenameTarget = target;
-			this.Conflicts = conflicts.AsReadOnly();
-		}
 	}
 	
 	public class DefaultCodeGenerator : ICodeGenerator
@@ -172,31 +80,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return "_" + newName;
 			else
 				return newName;
-		}
-		
-		public virtual bool IsValidIdentifier(string identifier)
-		{
-			return false;
-		}
-
-		public virtual string EscapeIdentifier(string identifier)
-		{
-			throw new NotSupportedException("Feature not supported!");
-		}
-		
-		public virtual bool IsKeyword(string identifier, bool treatContextualKeywordsAsIdentifiers = true)
-		{
-			return false;
-		}
-		
-		public virtual void RenameSymbol(RenameReferenceContext context, string newName)
-		{
-			throw new NotSupportedException("Feature not supported!");
-		}
-		
-		public virtual IEnumerable<Conflict> FindRenamingConflicts(Reference context, string newName)
-		{
-			throw new NotSupportedException("Feature not supported!");
 		}
 	}
 }

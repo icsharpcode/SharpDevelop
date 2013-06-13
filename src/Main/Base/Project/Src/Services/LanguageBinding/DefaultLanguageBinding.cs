@@ -11,14 +11,6 @@ namespace ICSharpCode.SharpDevelop
 	{
 		public static readonly DefaultLanguageBinding DefaultInstance = new DefaultLanguageBinding();
 		
-		public virtual string Name {
-			get { return ""; }
-		}
-		
-		public virtual StringComparer IdentifierComparer {
-			get { return StringComparer.Ordinal; }
-		}
-		
 		public virtual IFormattingStrategy FormattingStrategy {
 			get {
 				return DefaultFormattingStrategy.DefaultInstance;
