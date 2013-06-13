@@ -30,6 +30,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
+	#if !__MonoCS__
 	[TestFixture]
 	public class CodeDomConvertVisitorTests : ResolverTestBase
 	{
@@ -481,4 +482,5 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		#endregion
 	}
+#endif
 }
