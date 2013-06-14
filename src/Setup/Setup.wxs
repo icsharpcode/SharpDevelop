@@ -443,12 +443,12 @@
 				<ComponentRef Id="UsageDataCollectorAddin"/>
 				<ComponentRef Id="UsageDataCollectorDll"/>
 				
-				<!--<ComponentRef Id="SharpDevelopReportsEmptyReportFileTemplate"/>
+				<ComponentRef Id="SharpDevelopReportsEmptyReportFileTemplate"/>
 				<ComponentRef Id="ICSharpCodeReportDesignerAddin"/>
 				<ComponentRef Id="ICSharpCodeReportsAddinDll"/>
 				<ComponentRef Id="ICSharpCodeReportsCoreDll"/>
 				<ComponentRef Id="IronyDll"/>
-				<ComponentRef Id="ITextSharpDll"/>-->
+				<ComponentRef Id="ITextSharpDll"/>
 			
 				<ComponentRef Id="AboutNuGetCmdletsHelpTxt"/>
 				<ComponentRef Id="NuGetConsoleTypesDll"/>

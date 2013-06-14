@@ -1481,7 +1481,7 @@
 										<File Source="..\..\AddIns\Misc\UsageDataCollector\UsageDataCollector.xml" Name="UsageDataCollector.xml" Id="UsageDataCollector.xml" />
 									</Component>
 								</Directory>
-								<!--<Directory Id="SharpDevelopReports" Name="SharpDevelopReports">
+								<Directory Id="SharpDevelopReports" Name="SharpDevelopReports">
 									<Component Guid="9D0B24E0-6BE3-4E0A-AE50-DFF55BAE388F" Id="SharpDevelopReportsEmptyReportFileTemplate" DiskId="1">
 										<File Source="..\..\AddIns\Misc\SharpDevelopReports\EmptyReport.xft" Name="EmptyReport.xft" Id="SharpDevelopReportsEmptyReport.xft" KeyPath="yes" />
 									</Component>
@@ -1500,7 +1500,7 @@
 									<Component Guid="A105D4E4-2AF4-43BE-AA71-15F14DA4163B" Id="ITextSharpDll" DiskId="1">
 										<File Source="..\..\AddIns\Misc\SharpDevelopReports\itextsharp.dll" Name="itextsharp.dll" Id="itextsharp.dll" KeyPath="yes" />
 									</Component>
-								</Directory>-->
+								</Directory>
 								<Directory Id="PackageManagement" Name="PackageManagement">
 									<Component Id="NuGetCoreDll" Guid="AA347D26-712F-4BF7-BB74-517F6BFC563F" DiskId="1">
 										<File Id="NuGet.Core.dll" Name="NuGet.Core.dll" Source="..\..\AddIns\Misc\PackageManagement\NuGet.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="NuGet.Core.dll" AssemblyManifest="NuGet.Core.dll" />
