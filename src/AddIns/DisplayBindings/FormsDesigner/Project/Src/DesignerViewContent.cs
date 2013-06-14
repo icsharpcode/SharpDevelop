@@ -189,9 +189,9 @@ namespace ICSharpCode.FormsDesigner
 					this.sourceCodeStorage.LoadFile(file, stream);
 					
 					LoggingService.Debug("Forms designer: Determining designer source files for " + file.FileName);
-					IReadOnlyList<OpenedFile> sourceFiles = loaderProvider.GetSourceFiles(this);
-					OpenedFile newDesignerCodeFile = sourceFiles.FirstOrDefault();
-					if (newDesignerCodeFile == null) {
+					OpenedFile newDesignerCodeFile;
+					IReadOnlyList<OpenedFile> sourceFiles = loaderProvider.GetSourceFiles(this, out newDesignerCodeFile);
+					if (sourceFiles == null || newDesignerCodeFile == null) {
 						throw new FormsDesignerLoadException("The designer source files could not be determined.");
 					}
 					

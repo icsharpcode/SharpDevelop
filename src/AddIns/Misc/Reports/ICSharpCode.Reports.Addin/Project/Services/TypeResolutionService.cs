@@ -4,15 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
-using System.Diagnostics;
-using System.IO;
 using System.Reflection;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
-using Microsoft.Win32;
 
 namespace ICSharpCode.Reports.Addin
 {

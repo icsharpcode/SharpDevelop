@@ -78,6 +78,7 @@
     <Compile Include="Src\DesignerGenerator\CSharpDesignerGenerator.cs" />
     <Compile Include="Src\DesignerGenerator\IDesignerGenerator.cs" />
     <Compile Include="Src\DesignerLoader\AbstractCodeDomDesignerLoader.cs" />
+    <Compile Include="Src\DesignerLoader\CodeDOMVerboseOutputGenerator.cs" />
     <Compile Include="Src\DesignerLoader\NRefactoryDesignerLoader.cs" />
     <Compile Include="Src\DesignerSourceCodeStorage.cs" />
     <Compile Include="Src\Gui\ImageResourceEditorDialog.cs" />
@@ -96,7 +97,6 @@
       <DependentUpon>LocalizationModelOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\SecondaryDisplayBinding.cs" />
     <Compile Include="Src\DesignerViewContent.cs" />
     <Compile Include="Src\FormKeyHandler.cs" />
     <Compile Include="Src\Gui\AddComponentsDialog.cs">

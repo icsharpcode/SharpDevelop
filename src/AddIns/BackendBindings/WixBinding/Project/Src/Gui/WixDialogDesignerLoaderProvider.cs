@@ -17,8 +17,9 @@ namespace ICSharpCode.WixBinding
 			return new WixDialogDesignerLoader((IWixDialogDesigner)viewContent);
 		}
 
-		public IReadOnlyList<OpenedFile> GetSourceFiles(FormsDesignerViewContent viewContent)
+		public IReadOnlyList<OpenedFile> GetSourceFiles(FormsDesignerViewContent viewContent, out OpenedFile designerCodeFile)
 		{
+			designerCodeFile = viewContent.PrimaryFile;
 			return new[] { viewContent.PrimaryFile };
 		}
 	}

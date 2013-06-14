@@ -8,6 +8,7 @@
 		<Identity name = "ICSharpCode.CSharpBinding"/>
 		<!-- The AvalonEdit dependency is necessary for the context action option page -->
 		<Dependency addin = "ICSharpCode.AvalonEdit" />
+		<Dependency addin = "ICSharpCode.FormsDesigner" requirePreload = "true"/>
 	</Manifest>
 	
 	<Runtime>
@@ -320,5 +321,12 @@
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseStringFormatAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseVarKeywordAction" />
 		<Class class="CSharpBinding.Refactoring.MoveTypeToFileContextAction" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id    = "CSharpFormsDesigner"
+		                type  = "Secondary"
+		                class = "CSharpBinding.FormsDesigner.FormsDesignerSecondaryDisplayBinding"
+		                fileNamePattern = "\.cs$"/>
 	</Path>
 </AddIn>

@@ -15,23 +15,9 @@ namespace ICSharpCode.FormsDesigner
 		
 		/// <summary>
 		/// Gets the source files involved when designing.
-		/// The first file in the resulting list is the main code file.
 		/// </summary>
-		IReadOnlyList<OpenedFile> GetSourceFiles(FormsDesignerViewContent viewContent);
+		/// <param name="viewContent"></param>
+		/// <param name="designerCodeFile">The file that contains the InitializeComponents() implementation</param>
+		IReadOnlyList<OpenedFile> GetSourceFiles(FormsDesignerViewContent viewContent, out OpenedFile designerCodeFile);
 	}
-	/*
-	public class NRefactoryDesignerLoaderProvider : IDesignerLoaderProvider
-	{
-		readonly SupportedLanguage language;
-		
-		public NRefactoryDesignerLoaderProvider(SupportedLanguage language)
-		{
-			this.language = language;
-		}
-		
-		public DesignerLoader CreateLoader(IDesignerGenerator generator)
-		{
-			return new NRefactoryDesignerLoader(language, generator);
-		}
-	}*/
 }

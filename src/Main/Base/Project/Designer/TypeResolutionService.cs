@@ -3,17 +3,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Windows.Documents;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Win32;
 

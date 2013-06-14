@@ -144,7 +144,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return result.ToArray();
 		}
 		
-		CodeTypeReference Convert(IType type)
+		public CodeTypeReference Convert(IType type)
 		{
 			if (type.Kind == TypeKind.Array) {
 				ArrayType a = (ArrayType)type;

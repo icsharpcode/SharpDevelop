@@ -2,19 +2,15 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.IO;
 using System.Linq;
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory;
+using ICSharpCode.FormsDesigner;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Workbench;
 
-namespace ICSharpCode.FormsDesigner
+namespace CSharpBinding.FormsDesigner
 {
 	public class FormsDesignerSecondaryDisplayBinding : ISecondaryDisplayBinding
 	{
@@ -59,17 +55,19 @@ namespace ICSharpCode.FormsDesigner
 			return false;
 		}
 
+		public static bool IsDesignable(ITypeDefinition td)
+		{
+			return GetInitializeComponents(td) != null && BaseClassIsFormOrControl(td);
+		}
+		
 		public static bool IsDesignable(IUnresolvedFile parsedFile, ICompilation compilation)
 		{
 			if (parsedFile == null)
 				return false;
 			foreach (var utd in parsedFile.TopLevelTypeDefinitions) {
 				var td = utd.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
-				if (td != null) {
-					IMethod method = GetInitializeComponents(td);
-					if (method != null) {
-						return BaseClassIsFormOrControl(td);
-					}
+				if (IsDesignable(td)) {
+					return true;
 				}
 			}
 			return false;
@@ -77,58 +75,27 @@ namespace ICSharpCode.FormsDesigner
 		
 		public bool CanAttachTo(IViewContent viewContent)
 		{
-			if (viewContent is ITextEditorProvider) {
-				FileName fileName      = viewContent.PrimaryFileName;
-				if (fileName == null)
-					return false;
-				
-				ITextEditor textEditor = viewContent.GetService<ITextEditor>();
-				string fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
-				
-				switch (fileExtension) {
-					case ".cs":
-//					case ".vb":
-						var parsedFile = SD.ParserService.ParseFile(fileName, textEditor.Document);
-						var compilation = SD.ParserService.GetCompilationForFile(fileName);
-						if (IsDesignable(parsedFile, compilation))
-							return true;
-						break;
-				}
-			}
-			return false;
+			ITextEditor textEditor = viewContent.GetService<ITextEditor>();
+			if (textEditor == null)
+				return false;
+			FileName fileName = viewContent.PrimaryFileName;
+			if (fileName == null)
+				return false;
+			
+			var parsedFile = SD.ParserService.ParseFile(fileName, textEditor.Document);
+			var compilation = SD.ParserService.GetCompilationForFile(fileName);
+			return IsDesignable(parsedFile, compilation);
 		}
 		
 		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
 		{
-			return new IViewContent[0];
-			/*
 			if (viewContent.SecondaryViewContents.Any(c => c is FormsDesignerViewContent)) {
 				return new IViewContent[0];
 			}
 			
-			string fileExtension = String.Empty;
-			string fileName      = viewContent.PrimaryFileName;
-			
-			fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
-			
-			IDesignerLoaderProvider loader;
-			IDesignerGenerator generator;
-			
-			switch (fileExtension) {
-				case ".cs":
-//					loader    = new NRefactoryDesignerLoaderProvider(SupportedLanguage.CSharp);
-//					generator = new CSharpDesignerGenerator();
-					throw new NotImplementedException();
-					break;
-				case ".vb":
-					//loader    = new NRefactoryDesignerLoaderProvider(SupportedLanguage.VBNet);
-					//generator = new VBNetDesignerGenerator();
-					throw new NotImplementedException();
-					break;
-				default:
-					throw new ApplicationException("Cannot create content for " + fileExtension);
-			}
-			return new IViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator) }; */
+			return new IViewContent[] {
+				new FormsDesignerViewContent(viewContent, new CSharpDesignerLoaderProvider())
+			};
 		}
 	}
 }
