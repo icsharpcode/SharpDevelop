@@ -64,7 +64,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		[SetUp]
 		public void LoadFromStream()
 		{
-			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
+			Assembly asm = Assembly.GetExecutingAssembly();
 			var stream = asm.GetManifestResourceStream(TestHelper.RepWithTwoItems);
 			var reportingFactory = new ReportingFactory();
 			reportCreator = reportingFactory.ReportCreator(stream);

@@ -9,7 +9,6 @@
 using System;
 using System.Reflection;
 using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.PageBuilder;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using NUnit.Framework;
 
@@ -18,7 +17,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 	[TestFixture]
 	public class BaseConvertFixture
 	{
-		private IReportCreator reportCreator;
+		IReportCreator reportCreator;
 		
 		
 		[Test]
@@ -38,6 +37,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		
 		
 		[Test]
+		[IgnoreAttribute]
 		public void ExportContainerContainsExportText() {
 			reportCreator.BuildExportList();
 			var page = reportCreator.Pages[0];
@@ -50,7 +50,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		[SetUp]
 		public void LoadFromStream()
 		{
-			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
+			var asm = Assembly.GetExecutingAssembly();
 			var stream = asm.GetManifestResourceStream(TestHelper.RepWithTwoItems);
 			var reportingFactory = new ReportingFactory();
 			reportCreator = reportingFactory.ReportCreator(stream);

@@ -11,8 +11,8 @@ using System.IO;
 using System.Reflection;
 
 using ICSharpCode.Reporting.Globals;
-using ICSharpCode.Reporting.Test;
 using NUnit.Framework;
+using ICSharpCode.Reporting.Test;
 
 namespace ICSharpCode.Reporting.Test.Model
 {
@@ -51,7 +51,7 @@ namespace ICSharpCode.Reporting.Test.Model
 		{
 			var rf = new ReportingFactory();
 			var model = rf.LoadReportModel(stream);
-			Assert.That(model.ReportSettings.ReportName,Is.EqualTo(Globals.GlobalValues.DefaultReportName));
+			Assert.That(model.ReportSettings.ReportName,Is.EqualTo(GlobalValues.DefaultReportName));
 		}
 		
 		
@@ -76,7 +76,7 @@ namespace ICSharpCode.Reporting.Test.Model
 		[SetUp]
 		public void LoadFromStream()
 		{
-			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
+			var asm = Assembly.GetExecutingAssembly();
 			stream = asm.GetManifestResourceStream(TestHelper.PlainReportFileName);
 		}	
 	}

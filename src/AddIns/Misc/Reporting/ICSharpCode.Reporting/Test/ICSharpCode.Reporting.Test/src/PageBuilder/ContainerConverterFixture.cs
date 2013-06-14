@@ -8,11 +8,13 @@
  */
 using System;
 using System.Drawing;
+using ICSharpCode.Reporting.DataManager.Listhandling;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.Converter;
 using NUnit.Framework;
+using ICSharpCode.Reporting.Test.DataSource;
 
 namespace ICSharpCode.Reporting.Test.PageBuilder
 {
@@ -56,7 +58,16 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 			}
 		}
 			
-			
+		
+		[Test]
+		public void bla () {
+			var contributorList = new ContributorsList();
+			var list = contributorList.ContributorCollection;
+			var cs = new CollectionSource(list,typeof(Contributor),new ReportSettings());
+			var converter = new DataContainerConverter(graphics,container,container.Location,cs);
+			converter.Convert();
+		}
+		
 		[TestFixtureSetUp]
 		public void Init()
 		{

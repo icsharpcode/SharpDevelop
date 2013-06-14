@@ -7,7 +7,6 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
@@ -71,6 +70,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 			                            ReportModel.ReportSettings.PageSize.Height - ReportModel.ReportSettings.BottomMargin - ReportModel.PageFooter.Size.Height);
 			
 			var pageFooter = CreateSection(ReportModel.PageFooter,CurrentLocation);	
+			Console.WriteLine("pageFooterStartAt {0}",pageFooter.Location);
+			DetailEnds = new Point(pageFooter.Location.X,pageFooter.Location.Y -1);
 			AddSectionToPage(pageFooter);
 		}
 		
@@ -92,6 +93,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		{
 			CurrentPage = InitNewPage();
 			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,ReportModel.ReportSettings.TopMargin);
+			
 			this.BuildReportHeader();
 			BuildPageHeader();
 			BuildPageFooter();
@@ -143,7 +145,9 @@ namespace ICSharpCode.Reporting.PageBuilder
 
 	    protected IPage CurrentPage {get; set;}
 		
-	    protected Point DetailStart {get;private set;}
+	    internal Point DetailStart {get;private set;}
+	    
+	    internal Point DetailEnds {get; private set;}
 	    
 	    protected Graphics Graphics {get;private set;}
 	    

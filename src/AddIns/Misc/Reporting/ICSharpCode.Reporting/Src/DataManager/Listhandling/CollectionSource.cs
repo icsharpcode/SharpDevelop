@@ -361,11 +361,11 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		}
 		
 		
-		BaseComparer GetComparer(int position)
-		{
-			var bc = (BaseComparer)IndexList[position];
-			return bc;
-		}
+//		BaseComparer GetComparer(int position)
+//		{
+//			var bc = (BaseComparer)IndexList[position];
+//			return bc;
+//		}
 		
 		#endregion
 		

@@ -7,10 +7,8 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Drawing;
 using System.Linq;
 
-using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 
@@ -24,7 +22,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		public FormPageBuilder(IReportModel reportModel):base(reportModel)
 		{
-			
 		}
 		
 		
@@ -37,7 +34,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		void BuilDetail()
 		{
-			Console.WriteLine("FormPageBuilder - Build DetailSection {0} - {1} - {2}",ReportModel.ReportSettings.PageSize.Width,ReportModel.ReportSettings.LeftMargin,ReportModel.ReportSettings.RightMargin);
+			Console.WriteLine(" Build DetailSection {0} - {1}",DetailStart,DetailEnds);
 			CurrentLocation = DetailStart;
 			var detail = CreateSection(ReportModel.DetailSection,CurrentLocation);
 			detail.Parent = CurrentPage;

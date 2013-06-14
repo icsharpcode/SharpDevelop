@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using ICSharpCode.Reporting.Exporter;
@@ -37,34 +38,14 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 			var dpb = new DataPageBuilder (new ReportModel(),typeof(string),new System.Collections.Generic.List<string>());
 			Assert.That(dpb.List,Is.Not.Null);
 		}
-		
-		
-		[Test]
-		public void BuildExportPagesCountIsOne() {
-			reportCreator.BuildExportList();
-			Assert.That(reportCreator.Pages.Count,Is.EqualTo(1));
-		}
-		
-		
-		[Test]
-		public void PageContainsFiveSections()
-		{
-			reportCreator.BuildExportList();
-			var exporteditems = reportCreator.Pages[0].ExportedItems;
-			var sections = from s in exporteditems
-				where s.GetType() == typeof(ExportContainer)
-				select s;
-			Assert.That(sections.ToList().Count,Is.EqualTo(5));
-		}
-		
-		
+	
+			
 		[SetUp]
 		public void LoadFromStream()
 		{
 			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
 			var stream = asm.GetManifestResourceStream(TestHelper.ReportFromList);
 			var reportingFactory = new ReportingFactory();
-//			reportCreator = reportingFactory.ReportCreator(stream);
 			var model =  reportingFactory.LoadReportModel (stream);
 			reportCreator = new DataPageBuilder(model,typeof(string),new System.Collections.Generic.List<string>());
 		}

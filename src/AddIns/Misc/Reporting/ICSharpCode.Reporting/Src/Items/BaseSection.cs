@@ -29,7 +29,6 @@ public class BaseSection:ReportContainer,IReportContainer
 		public BaseSection (string name) {
 			Name = name;
 		}
-	
 		#endregion
 	}
 }

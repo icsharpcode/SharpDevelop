@@ -31,6 +31,6 @@ namespace ICSharpCode.Reporting.Exporter
 		}
 
 
-	    protected Collection<IPage> Pages {get; set;}
+	    protected Collection<IPage> Pages {get;private set;}
 	}
 }

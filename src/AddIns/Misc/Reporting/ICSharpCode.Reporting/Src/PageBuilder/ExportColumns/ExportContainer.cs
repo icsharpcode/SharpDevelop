@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Reporting.Arrange;
-using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces.Export;
 

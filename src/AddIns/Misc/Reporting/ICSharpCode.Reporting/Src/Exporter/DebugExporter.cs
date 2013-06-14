@@ -44,7 +44,7 @@ namespace ICSharpCode.Reporting.Exporter
 					if (acceptor != null) {
 						acceptor.Accept(visitor);
 					}
-					ShowDebug(item as IExportContainer);
+					ShowDebug(exportContainer);
 				} else {
 					if (acceptor != null) {
 						acceptor.Accept(visitor);

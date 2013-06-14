@@ -8,9 +8,14 @@
  */
 using System;
 using System.Collections;
+using System.Drawing;
+using System.Linq;
+
 using ICSharpCode.Reporting.DataManager.Listhandling;
 using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.Converter;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.PageBuilder
 {
@@ -33,13 +38,35 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		void BuilDetail()
+		void BuildDetail()
 		{
+			
+			Container = ReportModel.DetailSection;
 			var collectionSource = new CollectionSource(List,ElementType,ReportModel.ReportSettings);
-			collectionSource.Bind();
-			CurrentLocation = DetailStart;
-			var converter = new DataContainerConverter(base.Graphics,ReportModel.DetailSection,CurrentLocation,collectionSource);
-			var detail = converter.Convert();
+			IExportContainer detail = null;
+			if(collectionSource.Count > 0) {
+				collectionSource.Bind();
+				CurrentLocation = DetailStart;
+				
+				var converter = new DataContainerConverter(base.Graphics,ReportModel.DetailSection,
+				                                           CurrentLocation,
+				                                           collectionSource);
+				detail = (ExportContainer)Container.CreateExportColumn();
+				detail.Location = CurrentLocation;
+
+				var position = Point.Empty;
+				do {
+					collectionSource.Fill(Container.Items);
+					var r = converter.Convert(Container as ExportContainer,position);
+					detail.ExportedItems.AddRange(r);
+					position = new Point(Container.Location.Y,position.Y + Container.Size.Height);
+				}
+				while (collectionSource.MoveNext());
+				
+			} else {
+				detail = base.CreateSection(Container,CurrentLocation);
+				
+			}
 			CurrentPage.ExportedItems.Insert(2,detail);
 		}
 		
@@ -47,9 +74,11 @@ namespace ICSharpCode.Reporting.PageBuilder
 		protected override void WritePages()
 		{
 			base.WritePages();
-			BuilDetail();
+			BuildDetail();
 			base.AddPage(CurrentPage);
 		}
+		
+		internal IReportContainer Container { get; private set; }
 		
 		public IEnumerable List {get; private set;}
 		

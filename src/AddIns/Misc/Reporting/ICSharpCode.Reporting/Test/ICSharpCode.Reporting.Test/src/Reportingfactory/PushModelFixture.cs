@@ -16,8 +16,8 @@ using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.PageBuilder;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
-using ICSharpCode.Reporting.Test.DataSource;
 using NUnit.Framework;
+using ICSharpCode.Reporting.Test.DataSource;
 
 namespace ICSharpCode.Reporting.Test.Reportingfactory
 {
@@ -32,6 +32,18 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 		{
 			reportCreator.BuildExportList();
 			Assert.That(reportCreator.Pages.Count,Is.GreaterThan(0));
+		}
+		
+		
+		[Test]
+		public void PageContainsFiveSections()
+		{
+			reportCreator.BuildExportList();
+			var exporteditems = reportCreator.Pages[0].ExportedItems;
+			var sections = from s in exporteditems
+				where s.GetType() == typeof(ExportContainer)
+				select s;
+			Assert.That(sections.ToList().Count,Is.EqualTo(5));
 		}
 		
 		
@@ -53,7 +65,7 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 		
 		[Test]
 		public void HandleEmptyList () {
-			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
+			var asm = Assembly.GetExecutingAssembly();
 			var stream = asm.GetManifestResourceStream(TestHelper.ReportFromList);
 
 			var reportingFactory  = new ReportingFactory();
@@ -69,7 +81,7 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 			var contributorList = new ContributorsList();
 			var list = contributorList.ContributorCollection;
 			
-			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
+			var asm = Assembly.GetExecutingAssembly();
 			var stream = asm.GetManifestResourceStream(TestHelper.ReportFromList);
 
 			var reportingFactory  = new ReportingFactory();
