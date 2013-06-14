@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using ICSharpCode.AvalonEdit.Document;
 using CSharpBinding.Parser;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
@@ -99,7 +100,7 @@ namespace CSharpBinding
 				return;
 			ReadOnlyDocument document = null;
 			IHighlighter highlighter = null;
-			List<Reference> results = new List<Reference>();
+			List<SearchResultMatch> results = new List<SearchResultMatch>();
 			
 			// Grab the unresolved file matching the compilation version
 			// (this may differ from the version created by re-parsing the project)
@@ -125,7 +126,7 @@ namespace CSharpBinding
 					int length = document.GetOffset(node.EndLocation) - offset;
 					var builder = SearchResultsPad.CreateInlineBuilder(node.StartLocation, node.EndLocation, document, highlighter);
 					var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
-					results.Add(new Reference(region, result, offset, length, builder, defaultTextColor));
+					results.Add(new SearchResultMatch(fileName, node.StartLocation, node.EndLocation, offset, length, builder, defaultTextColor));
 				}, cancellationToken);
 			if (highlighter != null) {
 				highlighter.Dispose();
@@ -136,7 +137,93 @@ namespace CSharpBinding
 		
 		public Task RenameAsync(SymbolRenameArgs args, Action<PatchedFile> callback, Action<Error> errorCallback)
 		{
-			throw new NotImplementedException();
+			if (callback == null)
+				throw new ArgumentNullException("callback");
+			var cancellationToken = args.ProgressMonitor.CancellationToken;
+			return Task.Run(
+				() => {
+					bool isNameValid = true; // TODO : check name!
+					for (int i = 0; i < searchScopes.Count; i++) {
+						IFindReferenceSearchScope searchScope = searchScopes[i];
+						object progressLock = new object();
+						Parallel.ForEach(
+							interestingFileNames[i],
+							new ParallelOptions {
+								MaxDegreeOfParallelism = Environment.ProcessorCount,
+								CancellationToken = cancellationToken
+							},
+							delegate (string fileName) {
+								RenameReferencesInFile(args, searchScope, FileName.Create(fileName), callback, errorCallback, isNameValid, cancellationToken);
+								lock (progressLock)
+									args.ProgressMonitor.Progress += workAmountInverse;
+							});
+					}
+				}, cancellationToken
+			);
+		}
+		
+		void RenameReferencesInFile(SymbolRenameArgs args, IFindReferenceSearchScope searchScope, FileName fileName, Action<PatchedFile> callback, Action<Error> errorCallback, bool isNameValid, CancellationToken cancellationToken)
+		{
+			ITextSource textSource = args.ParseableFileContentFinder.Create(fileName);
+			if (textSource == null)
+				return;
+			if (searchScope.SearchTerm != null) {
+				if (textSource.IndexOf(searchScope.SearchTerm, 0, textSource.TextLength, StringComparison.Ordinal) < 0)
+					return;
+			}
+			
+			var parseInfo = SD.ParserService.Parse(fileName, textSource) as CSharpFullParseInformation;
+			if (parseInfo == null)
+				return;
+			ReadOnlyDocument document = null;
+			IHighlighter highlighter = null;
+			List<SearchResultMatch> results = new List<SearchResultMatch>();
+			
+			// Grab the unresolved file matching the compilation version
+			// (this may differ from the version created by re-parsing the project)
+			CSharpUnresolvedFile unresolvedFile = null;
+			IProjectContent pc = compilation.MainAssembly.UnresolvedAssembly as IProjectContent;
+			if (pc != null) {
+				unresolvedFile = pc.GetFile(fileName) as CSharpUnresolvedFile;
+			}
+			
+			CSharpAstResolver resolver = new CSharpAstResolver(compilation, parseInfo.SyntaxTree, unresolvedFile);
+			
+			fr.RenameReferencesInFile(
+				new[] { searchScope }, args.NewName, resolver,
+				delegate (RenameCallbackArguments callbackArgs) {
+					var node = callbackArgs.NodeToReplace;
+					if (document == null) {
+						document = new ReadOnlyDocument(textSource, fileName);
+						highlighter = SD.EditorControlService.CreateHighlighter(document);
+						highlighter.BeginHighlighting();
+					}
+					Identifier identifier = node.GetChildByRole(Roles.Identifier);
+					if (!identifier.IsNull)
+						node = identifier;
+					var region = new DomRegion(fileName, node.StartLocation, node.EndLocation);
+					int offset = document.GetOffset(node.StartLocation);
+					int length = document.GetOffset(node.EndLocation) - offset;
+					var builder = SearchResultsPad.CreateInlineBuilder(node.StartLocation, node.EndLocation, document, highlighter);
+					var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
+					results.Add(new SearchResultMatch(fileName, node.StartLocation, node.EndLocation, offset, length, builder, defaultTextColor));
+				},
+				errorCallback, cancellationToken);
+			if (highlighter != null) {
+				highlighter.Dispose();
+			}
+			if (results.Count > 0) {
+				if (!isNameValid) {
+					errorCallback(new Error(ErrorType.Error, string.Format("The name '{0}' is not valid in the current context!", args.NewName), 0, 0));
+					return;
+				}
+				IDocument changedDocument = new TextDocument(document);
+				var oldVersion = changedDocument.Version;
+				foreach (var result in results.OrderByDescending(m => m.StartOffset)) {
+					changedDocument.Replace(result.StartOffset, result.Length, args.NewName);
+				}
+				callback(new PatchedFile(fileName, results, oldVersion, changedDocument.Version));
+			}
 		}
 	}
 }

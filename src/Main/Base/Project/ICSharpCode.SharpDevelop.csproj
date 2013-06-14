@@ -735,7 +735,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Src\Services\RefactoringService\RefactoringService.cs" />
-    <Compile Include="Src\Services\RefactoringService\Reference.cs" />
     <Compile Include="Src\Services\ProjectService\ParseableFileContentFinder.cs" />
     <Compile Include="Src\Project\Items\ImportProjectItem.cs" />
     <Compile Include="Src\Services\Debugger\CurrentLineBookmark.cs" />

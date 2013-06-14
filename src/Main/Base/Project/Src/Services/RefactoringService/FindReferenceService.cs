@@ -12,6 +12,7 @@ using ICSharpCode.NRefactory.Analysis;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
@@ -109,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (progressMonitor == null)
 				throw new ArgumentNullException("progressMonitor");
 			var fileName = FileName.Create(variable.Region.FileName);
-			List<Reference> references = new List<Reference>();
+			List<SearchResultMatch> references = new List<SearchResultMatch>();
 			await SD.ParserService.FindLocalReferencesAsync(
 				fileName, variable,
 				r => { lock (references) references.Add(r); },
@@ -186,7 +187,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 		#endregion
 		
-		public static IReadOnlyList<Error> RenameSymbol(ISymbol symbol, IProgressMonitor progressMonitor)
+		public static async Task RenameSymbolAsync(ISymbol symbol, string newName, IProgressMonitor progressMonitor, Action<Error> errorCallback)
 		{
 			if (symbol == null)
 				throw new ArgumentNullException("symbol");
@@ -197,33 +198,49 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				progressMonitor.ShowingDialog = true;
 				MessageService.ShowMessage("${res:SharpDevelop.Refactoring.LoadSolutionProjectsThreadRunning}");
 				progressMonitor.ShowingDialog = false;
-				return EmptyList<Error>.Instance;
+				return;
 			}
 			double totalWorkAmount;
 			List<ISymbolSearch> symbolSearches = PrepareSymbolSearch(symbol, progressMonitor.CancellationToken, out totalWorkAmount);
 			double workDone = 0;
 			ParseableFileContentFinder parseableFileContentFinder = new ParseableFileContentFinder();
 			var errors = new List<Error>();
+			var changes = new List<PatchedFile>();
 			foreach (ISymbolSearch s in symbolSearches) {
 				progressMonitor.CancellationToken.ThrowIfCancellationRequested();
 				using (var childProgressMonitor = progressMonitor.CreateSubTask(s.WorkAmount / totalWorkAmount)) {
-					s.RenameAsync(new SymbolRenameArgs(childProgressMonitor, parseableFileContentFinder),
-					              ApplyChanges, error => errors.Add(error)).FireAndForget();
+					await s.RenameAsync(new SymbolRenameArgs(newName, childProgressMonitor, parseableFileContentFinder),
+					                    file => changes.Add(file), error => errors.Add(error));
 				}
 				
 				workDone += s.WorkAmount;
 				progressMonitor.Progress = workDone / totalWorkAmount;
 			}
-			return errors;
+			if (errors.Count == 0) {
+				foreach (var file in changes) {
+					ApplyChanges(file);
+				}
+			} else {
+				foreach (var error in errors) {
+					errorCallback(error);
+				}
+			}
+		}
+		
+		public static IObservable<Error> RenameSymbol(ISymbol symbol, string newName, IProgressMonitor progressMonitor)
+		{
+			return ReactiveExtensions.CreateObservable<Error>(
+				(monitor, callback) => RenameSymbolAsync(symbol, newName, monitor, callback),
+				progressMonitor);
 		}
 		
 		static void ApplyChanges(PatchedFile file)
 		{
 			var view = SD.FileService.OpenFile(file.FileName, false);
-			IDocument document = view.GetService(typeof(IDocument)) as IDocument;
-			if (document == null)
-				throw new InvalidOperationException("Document not found!");
-			file.Apply(document);
+			ITextEditor editor = view.GetService(typeof(ITextEditor)) as ITextEditor;
+			if (editor == null)
+				throw new InvalidOperationException("Editor/document not found!");
+			file.Apply(editor.Document);
 		}
 	}
 	
@@ -250,10 +267,15 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	
 	public class SymbolRenameArgs : SymbolSearchArgs
 	{
-		public SymbolRenameArgs(IProgressMonitor progressMonitor, ParseableFileContentFinder parseableFileContentFinder)
+		public SymbolRenameArgs(string newName, IProgressMonitor progressMonitor, ParseableFileContentFinder parseableFileContentFinder)
 			: base(progressMonitor, parseableFileContentFinder)
 		{
+			if (newName == null)
+				throw new ArgumentNullException("newName");
+			NewName = newName;
 		}
+		
+		public string NewName { get; private set; }
 	}
 	
 	public interface ISymbolSearch

@@ -156,26 +156,24 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 	
 	public class PatchedFile : SearchedFile
 	{
-		ITextSourceVersion result;
+		ITextSourceVersion oldVersion;
+		ITextSourceVersion newVersion;
 		
-		public PatchedFile(FileName fileName, IReadOnlyList<SearchResultMatch> matches, ITextSourceVersion result)
+		public PatchedFile(FileName fileName, IReadOnlyList<SearchResultMatch> matches, ITextSourceVersion oldVersion, ITextSourceVersion newVersion)
 			: base(fileName, matches)
 		{
-			if (result == null)
-				throw new ArgumentNullException("result");
-			this.result = result;
+			if (oldVersion == null)
+				throw new ArgumentNullException("oldVersion");
+			if (newVersion == null)
+				throw new ArgumentNullException("newVersion");
+			this.oldVersion = oldVersion;
+			this.newVersion = newVersion;
 		}
 		
 		public void Apply(IDocument document)
 		{
-			ITextSourceVersion oldVersion = document.Version;
-			if (oldVersion == null)
-				throw new InvalidOperationException("Document is unversioned, cannot apply changes!");
-			if (!result.BelongsToSameDocumentAs(oldVersion))
-				throw new InvalidOperationException("Patch does not belong to this document!");
-				
 			using (document.OpenUndoGroup()) {
-				var changes = oldVersion.GetChangesTo(result);
+				var changes = oldVersion.GetChangesTo(newVersion);
 				foreach (var change in changes)
 					document.Replace(change.Offset, change.RemovalLength, change.InsertedText);
 			}

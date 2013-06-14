@@ -12,6 +12,7 @@ using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -230,7 +231,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		                                 ITextSource fileContent = null, ICompilation compilation = null,
 		                                 CancellationToken cancellationToken = default(CancellationToken));
 		
-		Task FindLocalReferencesAsync(FileName fileName, IVariable variable, Action<Reference> callback,
+		Task FindLocalReferencesAsync(FileName fileName, IVariable variable, Action<SearchResultMatch> callback,
 		                              ITextSource fileContent = null, ICompilation compilation = null,
 		                              CancellationToken cancellationToken = default(CancellationToken));
 		#endregion

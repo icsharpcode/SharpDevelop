@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -154,6 +155,22 @@ namespace ICSharpCode.SharpDevelop
 			}
 			tag = error.Tag;
 			this.BuildError = error;
+		}
+		
+		public SDTask(Error error)
+		{
+			if (error == null)
+				throw new ArgumentNullException("error");
+			switch (error.ErrorType) {
+				case ErrorType.Error:
+					type = TaskType.Error;
+					break;
+				case ErrorType.Warning:
+					type = TaskType.Warning;
+					break;
+			}
+			description = error.Message;
+			//hasLocation = !error.Region.IsEmpty;
 		}
 		
 		public void JumpToPosition()

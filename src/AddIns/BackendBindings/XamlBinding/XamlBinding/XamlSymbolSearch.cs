@@ -87,7 +87,7 @@ namespace ICSharpCode.XamlBinding
 				return;
 			ReadOnlyDocument document = null;
 			IHighlighter highlighter = null;
-			List<Reference> results = new List<Reference>();
+			List<SearchResultMatch> results = new List<SearchResultMatch>();
 			XamlAstResolver resolver = new XamlAstResolver(compilation, parseInfo);
 			do {
 				if (document == null) {
@@ -100,7 +100,7 @@ namespace ICSharpCode.XamlBinding
 				if ((result is TypeResolveResult && ((TypeResolveResult)result).Type.Equals(entity)) || (result is MemberResolveResult && ((MemberResolveResult)result).Member.Equals(entity))) {
 					var region = new DomRegion(fileName, document.GetLocation(offset), document.GetLocation(offset + length));
 					var builder = SearchResultsPad.CreateInlineBuilder(region.Begin, region.End, document, highlighter);
-					results.Add(new Reference(region, result, offset, length, builder, highlighter.DefaultTextColor));
+					results.Add(new SearchResultMatch(fileName, document.GetLocation(offset), document.GetLocation(offset + length), offset, length, builder, highlighter.DefaultTextColor));
 				}
 				offset = textSource.IndexOf(entity.Name, offset + length, textSource.TextLength - offset - length, StringComparison.OrdinalIgnoreCase);
 			} while (offset > 0);
@@ -113,7 +113,8 @@ namespace ICSharpCode.XamlBinding
 		
 		public Task RenameAsync(SymbolRenameArgs args, Action<PatchedFile> callback, Action<Error> errorCallback)
 		{
-			throw new NotImplementedException();
+			// TODO implement Rename for XAML
+			return Task.Run(() => {});
 		}
 	}
 }

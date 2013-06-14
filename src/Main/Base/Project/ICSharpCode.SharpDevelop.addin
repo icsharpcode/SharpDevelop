@@ -1262,7 +1262,7 @@
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectCulturePanel"/>
 			<OptionPanel id    = "SelectStyle"
 			             label = "${res:Dialog.Options.IDEOptions.SelectVisualStyle.PanelName}"
-			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectStylePanel"/>		
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectStylePanel"/>
 			<OptionPanel id    = "LoadSave"
 			             label = "${res:Dialog.Options.IDEOptions.LoadSaveOptions.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.OptionPanels.LoadSaveOptions"/>
@@ -1296,7 +1296,7 @@
 		
 		<OptionPanel id    = "ToolsOptions"
 		             label = "${res:Dialog.Options.IDEOptions.ToolsOptionsText}">
-		
+			
 			<OptionPanel id    = "ExternalTools"
 			             label = "${res:Dialog.Options.ExternalToolsText}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ExternalToolPanel"/>
@@ -1840,6 +1840,11 @@
 			          shortcut = "F12"
 			          icon="Icons.16x16.SelectionArrow"
 			          class = "ICSharpCode.SharpDevelop.Editor.Commands.FindReferencesCommand"/>
+			
+			<MenuItem id = "Rename"
+			          label = "${res:SharpDevelop.Refactoring.RenameCommand}"
+			          shortcut="Ctrl+R"
+			          class = "ICSharpCode.SharpDevelop.Editor.Commands.RenameSymbolCommand"/>
 			
 			<MenuItem id = "GotoBrace"
 			          label = "${res:XML.MainMenu.SearchMenu.GotoBrace}"

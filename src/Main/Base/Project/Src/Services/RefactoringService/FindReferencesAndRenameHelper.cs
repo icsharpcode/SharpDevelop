@@ -337,7 +337,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		 */
 		
 		[Obsolete]
-		public static void ShowAsSearchResults(string title, List<Reference> list)
+		public static void ShowAsSearchResults(string title, List<SearchResultMatch> list)
 		{
 			if (list == null) return;
 			List<SearchResultMatch> results = new List<SearchResultMatch>(list.Count);
@@ -345,7 +345,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			ITextSource buffer = null;
 			FileName fileName = null;
 			IHighlighter highlighter = null;
-			foreach (Reference r in list) {
+			foreach (SearchResultMatch r in list) {
 				if (document == null || fileName != r.FileName) {
 					if (highlighter != null) {
 						highlighter.Dispose();

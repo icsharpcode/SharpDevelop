@@ -149,7 +149,7 @@ namespace CSharpBinding.Parser
 			return ResolveAtLocation.Resolve(compilation, csParseInfo.UnresolvedFile, csParseInfo.SyntaxTree, location, cancellationToken);
 		}
 		
-		public void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<Reference> callback, CancellationToken cancellationToken)
+		public void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<SearchResultMatch> callback, CancellationToken cancellationToken)
 		{
 			var csParseInfo = parseInfo as CSharpFullParseInformation;
 			if (csParseInfo == null)
@@ -171,7 +171,7 @@ namespace CSharpBinding.Parser
 					int length = document.GetOffset(node.EndLocation) - offset;
 					var builder = SearchResultsPad.CreateInlineBuilder(node.StartLocation, node.EndLocation, document, highlighter);
 					var defaultTextColor = highlighter != null ? highlighter.DefaultTextColor : null;
-					callback(new Reference(region, result, offset, length, builder, defaultTextColor));
+					callback(new SearchResultMatch(parseInfo.FileName, node.StartLocation, node.EndLocation, offset, length, builder, defaultTextColor));
 				}, cancellationToken);
 			
 			if (highlighter != null) {

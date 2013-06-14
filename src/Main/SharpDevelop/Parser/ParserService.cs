@@ -15,6 +15,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -308,7 +309,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				}, cancellationToken);
 		}
 		
-		public async Task FindLocalReferencesAsync(FileName fileName, IVariable variable, Action<Reference> callback, ITextSource fileContent, ICompilation compilation, CancellationToken cancellationToken)
+		public async Task FindLocalReferencesAsync(FileName fileName, IVariable variable, Action<SearchResultMatch> callback, ITextSource fileContent, ICompilation compilation, CancellationToken cancellationToken)
 		{
 			var entry = GetFileEntry(fileName, true);
 			if (entry.parser == null)

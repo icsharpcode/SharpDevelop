@@ -18,6 +18,7 @@ using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.NRefactory.Xml;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -104,7 +105,7 @@ namespace ICSharpCode.XamlBinding
 				.ResolveAtLocation(location, cancellationToken);
 		}
 		
-		public void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<Reference> callback, CancellationToken cancellationToken)
+		public void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<SearchResultMatch> callback, CancellationToken cancellationToken)
 		{
 			throw new NotImplementedException();
 		}
