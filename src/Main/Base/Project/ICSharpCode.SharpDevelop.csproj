@@ -108,7 +108,7 @@
     <Compile Include="Editor\Bookmarks\SDBookmark.cs" />
     <Compile Include="Editor\Bookmarks\SDMarkerBookmark.cs" />
     <Compile Include="Editor\DocumentServiceAttribute.cs" />
-    <Compile Include="Editor\DocumentUtilitites.cs" />
+    <Compile Include="Editor\DocumentUtilities.cs" />
     <Compile Include="Editor\IBracketSearcher.cs" />
     <Compile Include="Editor\IDocumentVersionProvider.cs" />
     <Compile Include="Editor\IEditorControlService.cs" />

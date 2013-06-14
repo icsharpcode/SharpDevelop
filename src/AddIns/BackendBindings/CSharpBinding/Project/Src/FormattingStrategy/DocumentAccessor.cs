@@ -75,7 +75,7 @@ namespace CSharpBinding.FormattingStrategy
 		public bool MoveNext()
 		{
 			if (lineDirty) {
-				DocumentUtilitites.SmartReplaceLine(doc, line, text);
+				DocumentUtilities.SmartReplaceLine(doc, line, text);
 				lineDirty = false;
 			}
 			++num;

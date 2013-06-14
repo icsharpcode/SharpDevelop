@@ -49,7 +49,7 @@ namespace CSharpBinding.Completion
 			);
 			
 			cce.FormattingPolicy = FormattingOptionsFactory.CreateSharpDevelop();
-			cce.EolMarker = DocumentUtilitites.GetLineTerminator(editor.Document, editor.Caret.Line);
+			cce.EolMarker = DocumentUtilities.GetLineTerminator(editor.Document, editor.Caret.Line);
 			cce.IndentString = editor.Options.IndentationString;
 			
 			int startPos, triggerWordLength;

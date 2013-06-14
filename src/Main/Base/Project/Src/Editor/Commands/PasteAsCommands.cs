@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		
 		protected string GetIndentation(IDocument document, int line)
 		{
-			return DocumentUtilitites.GetWhitespaceAfter(document, document.GetLineByNumber(line).Offset);
+			return DocumentUtilities.GetWhitespaceAfter(document, document.GetLineByNumber(line).Offset);
 		}
 	}
 	
@@ -56,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			IAmbience ambience = AmbienceService.GetCurrentAmbience();
 			int maxLineLength = editor.Options.VerticalRulerColumn - VisualIndentationLength(editor, indentation);
 			StringWriter insertedText = new StringWriter();
-			insertedText.NewLine = DocumentUtilitites.GetLineTerminator(editor.Document, editor.Caret.Line);
+			insertedText.NewLine = DocumentUtilities.GetLineTerminator(editor.Document, editor.Caret.Line);
 			using (StringReader reader = new StringReader(clipboardText)) {
 				string line;
 				while ((line = reader.ReadLine()) != null) {

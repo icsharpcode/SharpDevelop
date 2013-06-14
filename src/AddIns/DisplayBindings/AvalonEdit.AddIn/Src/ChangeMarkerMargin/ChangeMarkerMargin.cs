@@ -183,7 +183,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				startLine = 1;
 				string deletedText = changeWatcher.GetOldVersionFromLine(0, out zeroStartLine, out zeroAdded);
 				var docLine = editor.Document.GetLineByNumber(line);
-				string newLine = DocumentUtilitites.GetLineTerminator(changeWatcher.CurrentDocument, 1);
+				string newLine = DocumentUtilities.GetLineTerminator(changeWatcher.CurrentDocument, 1);
 				deletedText += newLine;
 				deletedText += editor.Document.GetText(docLine.Offset, docLine.Length);
 				if (oldText != null)
@@ -216,7 +216,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (currLineInfo.Change == ChangeType.Deleted && !(line == 1 && zeroLineInfo.Change == ChangeType.Deleted)) {
 					var docLine = editor.Document.GetLineByNumber(startLine);
 					if (docLine.DelimiterLength == 0)
-						oldText = DocumentUtilitites.GetLineTerminator(changeWatcher.CurrentDocument, startLine) + oldText;
+						oldText = DocumentUtilities.GetLineTerminator(changeWatcher.CurrentDocument, startLine) + oldText;
 					oldText = editor.Document.GetText(docLine.Offset, docLine.TotalLength) + oldText;
 				}
 				

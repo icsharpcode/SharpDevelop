@@ -48,9 +48,9 @@ namespace ICSharpCode.SharpDevelop.Editor
 			int lineNumber = line.LineNumber;
 			if (lineNumber > 1) {
 				IDocumentLine previousLine = document.GetLineByNumber(lineNumber - 1);
-				string indentation = DocumentUtilitites.GetWhitespaceAfter(document, previousLine.Offset);
+				string indentation = DocumentUtilities.GetWhitespaceAfter(document, previousLine.Offset);
 				// copy indentation to line
-				string newIndentation = DocumentUtilitites.GetWhitespaceAfter(document, line.Offset);
+				string newIndentation = DocumentUtilities.GetWhitespaceAfter(document, line.Offset);
 				document.Replace(line.Offset, newIndentation.Length, indentation);
 			}
 		}

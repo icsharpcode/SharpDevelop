@@ -64,7 +64,7 @@ namespace CSharpBinding.Refactoring
 		
 		void InsertNewLine (IDocument document, NewLineInsertion insertion, ref int offset)
 		{
-			string eolMarker = DocumentUtilitites.GetLineTerminator(document, 1);
+			string eolMarker = DocumentUtilities.GetLineTerminator(document, 1);
 			string str = null;
 			switch (insertion) {
 				case NewLineInsertion.Eol:
@@ -85,7 +85,7 @@ namespace CSharpBinding.Refactoring
 		{
 			int offset = document.GetOffset (Location);
 			using (var undo = document.OpenUndoGroup ()) {
-				text = DocumentUtilitites.NormalizeNewLines(text, document, Location.Line);
+				text = DocumentUtilities.NormalizeNewLines(text, document, Location.Line);
 				
 				var line = document.GetLineByOffset (offset);
 				int insertionOffset = line.Offset + Location.Column - 1;
@@ -196,7 +196,7 @@ namespace CSharpBinding.Refactoring
 			if (line == null)
 				return string.Empty;
 			else
-				return DocumentUtilitites.GetWhitespaceAfter(doc, line.Offset);
+				return DocumentUtilities.GetWhitespaceAfter(doc, line.Offset);
 		}
 		
 		static InsertionPoint GetInsertionPosition (IDocument doc, int line, int column)

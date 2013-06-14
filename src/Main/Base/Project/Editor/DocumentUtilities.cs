@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 	/// <summary>
 	/// Extension methods for ITextEditor and IDocument.
 	/// </summary>
-	public static class DocumentUtilitites
+	public static class DocumentUtilities
 	{
 		/// <summary>
 		/// Creates a new mutable document from the specified text buffer.

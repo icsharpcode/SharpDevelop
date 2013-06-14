@@ -179,7 +179,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			public void Execute(object parameter)
 			{
 				if (editor.SelectionLength == 0) {
-					int wordStart = DocumentUtilitites.FindPrevWordStart(editor.Adapter.Document, editor.CaretOffset);
+					int wordStart = DocumentUtilities.FindPrevWordStart(editor.Adapter.Document, editor.CaretOffset);
 					if (wordStart > 0) {
 						string word = editor.Adapter.Document.GetText(wordStart, editor.CaretOffset - wordStart);
 						CodeSnippet snippet = SnippetManager.Instance.FindSnippet(Path.GetExtension(editor.Adapter.FileName),

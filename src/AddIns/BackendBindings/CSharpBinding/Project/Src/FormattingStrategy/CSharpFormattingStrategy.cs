@@ -242,7 +242,7 @@ namespace CSharpBinding.FormattingStrategy
 		{
 			IDocumentLine curLine   = textArea.Document.GetLineByNumber(lineNr);
 			IDocumentLine lineAbove = lineNr > 1 ? textArea.Document.GetLineByNumber(lineNr - 1) : null;
-			string terminator = DocumentUtilitites.GetLineTerminator(textArea.Document, lineNr);
+			string terminator = DocumentUtilities.GetLineTerminator(textArea.Document, lineNr);
 			
 			string curLineText;
 			//// local string for curLine segment
@@ -250,7 +250,7 @@ namespace CSharpBinding.FormattingStrategy
 				curLineText = textArea.Document.GetText(curLine);
 				string lineAboveText = lineAbove == null ? "" : textArea.Document.GetText(lineAbove);
 				if (curLineText != null && curLineText.EndsWith("///") && (lineAboveText == null || !lineAboveText.Trim().StartsWith("///"))) {
-					string indentation = DocumentUtilitites.GetWhitespaceAfter(textArea.Document, curLine.Offset);
+					string indentation = DocumentUtilities.GetWhitespaceAfter(textArea.Document, curLine.Offset);
 					IUnresolvedEntity member = GetMemberAfter(textArea, lineNr);
 					if (member != null) {
 						StringBuilder sb = new StringBuilder();

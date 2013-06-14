@@ -221,7 +221,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				var startDocumentLine = baseDocument.GetLineByNumber(info.OldStartLineNumber + 1);
 				var endLine = baseDocument.GetLineByNumber(info.OldEndLineNumber);
 				
-				return TextUtilities.NormalizeNewLines(baseDocument.GetText(startDocumentLine.Offset, endLine.EndOffset - startDocumentLine.Offset), DocumentUtilitites.GetLineTerminator(document, newStartLine == 0 ? 1 : newStartLine));
+				return TextUtilities.NormalizeNewLines(baseDocument.GetText(startDocumentLine.Offset, endLine.EndOffset - startDocumentLine.Offset), DocumentUtilities.GetLineTerminator(document, newStartLine == 0 ? 1 : newStartLine));
 			}
 			
 			newStartLine = 0;
