@@ -54,9 +54,13 @@ namespace CSharpBinding.Refactoring
 				return null;
 			
 			var refactoringContext = SDRefactoringContext.Create(textEditor, CancellationToken.None);
-			var resolvedCurrent = current.Resolve(refactoringContext.Resolver.TypeResolveContext);
+			var typeResolveContext = refactoringContext.GetTypeResolveContext();
+			if (typeResolveContext == null) {
+				return null;
+			}
+			var resolvedCurrent = typeResolveContext.CurrentTypeDefinition;
 			
-			List<PropertyOrFieldWrapper> parameters = CreateCtorParams(current, resolvedCurrent).ToList();
+			List<PropertyOrFieldWrapper> parameters = CreateCtorParams(resolvedCurrent).ToList();
 			
 			if (!parameters.Any())
 				return null;
@@ -71,21 +75,21 @@ namespace CSharpBinding.Refactoring
 			return dialog;
 		}
 		
-		IEnumerable<PropertyOrFieldWrapper> CreateCtorParams(IUnresolvedTypeDefinition sourceType, IType resolvedSourceType)
+		IEnumerable<PropertyOrFieldWrapper> CreateCtorParams(IType sourceType)
 		{
 			int i = 0;
 			
-			foreach (var f in resolvedSourceType.GetFields().Where(field => !field.IsConst
-			                                                       && field.IsStatic == sourceType.IsStatic
-			                                                       && field.ReturnType != null)) {
+			foreach (var f in sourceType.GetFields().Where(field => !field.IsConst
+			                                               && field.IsStatic == sourceType.GetDefinition().IsStatic
+			                                               && field.ReturnType != null)) {
 				yield return new PropertyOrFieldWrapper(f) { Index = i };
 				i++;
 			}
 			
-			foreach (var p in resolvedSourceType.GetProperties().Where(prop => prop.CanSet && !prop.IsIndexer
-			                                                           && prop.IsAutoImplemented()
-			                                                           && prop.IsStatic == sourceType.IsStatic
-			                                                           && prop.ReturnType != null)) {
+			foreach (var p in sourceType.GetProperties().Where(prop => prop.CanSet && !prop.IsIndexer
+			                                                   && prop.IsAutoImplemented()
+			                                                   && prop.IsStatic == sourceType.GetDefinition().IsStatic
+			                                                   && prop.ReturnType != null)) {
 				yield return new PropertyOrFieldWrapper(p) { Index = i };
 				i++;
 			}
