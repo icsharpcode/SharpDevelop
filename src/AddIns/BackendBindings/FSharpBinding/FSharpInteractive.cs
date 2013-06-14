@@ -46,9 +46,8 @@ namespace FSharpBinding
 					fsiProcess.StartInfo.FileName = Path.Combine(path, "fsi.exe");
 					foundCompiler = true;
 				} else {
-					string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-					path = Path.Combine(programFiles, @"Microsoft F#\v4.0\Fsi.exe");
-					if (File.Exists(path)) {
+					path = FindFSharpInteractiveInProgramFilesFolder();
+					if (path != null) {
 						fsiProcess.StartInfo.FileName = path;
 						foundCompiler = true;
 					} else {
@@ -89,6 +88,22 @@ namespace FSharpBinding
 				};
 				StartFSharp();
 			}
+		}
+		
+		string FindFSharpInteractiveInProgramFilesFolder()
+		{
+			var fileNames = new string [] {
+				@"Microsoft SDKs\F#\3.0\Framework\v4.0\Fsi.exe",
+				@"Microsoft F#\v4.0\Fsi.exe"
+			};
+			return FindFirstMatchingFileInProgramFiles(fileNames);
+		}
+		
+		string FindFirstMatchingFileInProgramFiles(string[] fileNames)
+		{
+			string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+			return fileNames.Select(fileName => Path.Combine(programFiles, fileName))
+				.FirstOrDefault(fullPath => File.Exists(fullPath));
 		}
 		
 		void StartFSharp()
