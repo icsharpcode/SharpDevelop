@@ -312,7 +312,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <returns>
 		/// An object that can be used to perform the search; or null if this project does not support symbol searches.
 		/// </returns>
-		Refactoring.ISymbolSearch PrepareSymbolSearch(IEntity entity);
+		Refactoring.ISymbolSearch PrepareSymbolSearch(ISymbol entity);
 		
 		/// <summary>
 		/// Occurs whenever parse information for this project was updated. This event is raised on the main thread.

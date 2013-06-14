@@ -657,7 +657,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			return new DefaultAmbience();
 		}
 		
-		public virtual Refactoring.ISymbolSearch PrepareSymbolSearch(IEntity entity)
+		public virtual Refactoring.ISymbolSearch PrepareSymbolSearch(ISymbol entity)
 		{
 			return GetOrCreateBehavior().PrepareSymbolSearch(entity);
 		}

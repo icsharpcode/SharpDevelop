@@ -25,7 +25,7 @@ namespace ICSharpCode.XamlBinding
 			return base.GetDefaultItemType(fileName);
 		}
 		
-		public override ISymbolSearch PrepareSymbolSearch(IEntity entity)
+		public override ISymbolSearch PrepareSymbolSearch(ISymbol entity)
 		{
 			return CompositeSymbolSearch.Create(new XamlSymbolSearch(Project, entity), base.PrepareSymbolSearch(entity));
 		}

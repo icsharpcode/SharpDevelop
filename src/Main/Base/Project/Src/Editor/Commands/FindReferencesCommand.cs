@@ -25,4 +25,19 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			}
 		}
 	}
+	
+	/// <summary>
+	/// Runs the rename refactoring.
+	/// </summary>
+	public class RenameSymbolCommand : ResolveResultMenuCommand
+	{
+		public override void Run(ResolveResult symbol)
+		{
+			var entity = GetEntity(symbol);
+			if (entity != null) {
+				//FindReferenceService.RenameSymbol(entity, 
+			}
+			
+		}
+	}
 }

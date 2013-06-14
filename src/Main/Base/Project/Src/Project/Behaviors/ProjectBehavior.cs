@@ -139,7 +139,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				next.SavePreferences(preferences);
 		}
 		
-		public virtual Refactoring.ISymbolSearch PrepareSymbolSearch(IEntity entity)
+		public virtual Refactoring.ISymbolSearch PrepareSymbolSearch(ISymbol entity)
 		{
 			if (this.next != null)
 				return this.next.PrepareSymbolSearch(entity);

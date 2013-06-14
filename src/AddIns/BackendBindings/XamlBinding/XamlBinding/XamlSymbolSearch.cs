@@ -33,10 +33,10 @@ namespace ICSharpCode.XamlBinding
 		int workAmount;
 		double workAmountInverse;
 		
-		public XamlSymbolSearch(IProject project, IEntity entity)
+		public XamlSymbolSearch(IProject project, ISymbol entity)
 		{
 			compilation = SD.ParserService.GetCompilation(project);
-			this.entity = compilation.Import(entity);
+			this.entity = compilation.Import((IEntity)entity);
 			interestingFileNames = new List<FileName>();
 			if (this.entity == null)
 				return;
@@ -109,6 +109,11 @@ namespace ICSharpCode.XamlBinding
 			}
 			if (results.Count > 0)
 				callback(new SearchedFile(fileName, results));
+		}
+		
+		public Task RenameAsync(SymbolRenameArgs args, Action<PatchedFile> callback, Action<Error> errorCallback)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

@@ -135,14 +135,6 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		{
 			return match.ReplaceWith(pattern);
 		}
-
-
-
-
-
-
-
-
 	}
 	
 	public class SearchedFile
@@ -159,6 +151,34 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 				throw new ArgumentNullException("matches");
 			this.FileName = fileName;
 			this.Matches = matches;
+		}
+	}
+	
+	public class PatchedFile : SearchedFile
+	{
+		ITextSourceVersion result;
+		
+		public PatchedFile(FileName fileName, IReadOnlyList<SearchResultMatch> matches, ITextSourceVersion result)
+			: base(fileName, matches)
+		{
+			if (result == null)
+				throw new ArgumentNullException("result");
+			this.result = result;
+		}
+		
+		public void Apply(IDocument document)
+		{
+			ITextSourceVersion oldVersion = document.Version;
+			if (oldVersion == null)
+				throw new InvalidOperationException("Document is unversioned, cannot apply changes!");
+			if (!result.BelongsToSameDocumentAs(oldVersion))
+				throw new InvalidOperationException("Patch does not belong to this document!");
+				
+			using (document.OpenUndoGroup()) {
+				var changes = oldVersion.GetChangesTo(result);
+				foreach (var change in changes)
+					document.Replace(change.Offset, change.RemovalLength, change.InsertedText);
+			}
 		}
 	}
 }

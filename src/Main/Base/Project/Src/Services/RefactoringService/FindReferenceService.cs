@@ -7,7 +7,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Analysis;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop.Editor.Search;
@@ -24,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	public static class FindReferenceService
 	{
 		#region FindReferences
-		static IEnumerable<IProject> GetProjectsThatCouldReferenceEntity(IEntity entity)
+		static IEnumerable<IProject> GetProjectsThatCouldReferenceEntity(ISymbol entity)
 		{
 			ISolution solution = ProjectService.OpenSolution;
 			if (solution == null)
@@ -37,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
-		static List<ISymbolSearch> PrepareSymbolSearch(IEntity entity, CancellationToken cancellationToken, out double totalWorkAmount)
+		static List<ISymbolSearch> PrepareSymbolSearch(ISymbol entity, CancellationToken cancellationToken, out double totalWorkAmount)
 		{
 			totalWorkAmount = 0;
 			List<ISymbolSearch> symbolSearches = new List<ISymbolSearch>();
@@ -183,6 +185,46 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		#endregion
+		
+		public static IReadOnlyList<Error> RenameSymbol(ISymbol symbol, IProgressMonitor progressMonitor)
+		{
+			if (symbol == null)
+				throw new ArgumentNullException("symbol");
+			if (progressMonitor == null)
+				throw new ArgumentNullException("progressMonitor");
+			SD.MainThread.VerifyAccess();
+			if (SD.ParserService.LoadSolutionProjectsThread.IsRunning) {
+				progressMonitor.ShowingDialog = true;
+				MessageService.ShowMessage("${res:SharpDevelop.Refactoring.LoadSolutionProjectsThreadRunning}");
+				progressMonitor.ShowingDialog = false;
+				return EmptyList<Error>.Instance;
+			}
+			double totalWorkAmount;
+			List<ISymbolSearch> symbolSearches = PrepareSymbolSearch(symbol, progressMonitor.CancellationToken, out totalWorkAmount);
+			double workDone = 0;
+			ParseableFileContentFinder parseableFileContentFinder = new ParseableFileContentFinder();
+			var errors = new List<Error>();
+			foreach (ISymbolSearch s in symbolSearches) {
+				progressMonitor.CancellationToken.ThrowIfCancellationRequested();
+				using (var childProgressMonitor = progressMonitor.CreateSubTask(s.WorkAmount / totalWorkAmount)) {
+					s.RenameAsync(new SymbolRenameArgs(childProgressMonitor, parseableFileContentFinder),
+					              ApplyChanges, error => errors.Add(error)).FireAndForget();
+				}
+				
+				workDone += s.WorkAmount;
+				progressMonitor.Progress = workDone / totalWorkAmount;
+			}
+			return errors;
+		}
+		
+		static void ApplyChanges(PatchedFile file)
+		{
+			var view = SD.FileService.OpenFile(file.FileName, false);
+			IDocument document = view.GetService(typeof(IDocument)) as IDocument;
+			if (document == null)
+				throw new InvalidOperationException("Document not found!");
+			file.Apply(document);
+		}
 	}
 	
 	public class SymbolSearchArgs
@@ -206,11 +248,20 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 	}
 	
+	public class SymbolRenameArgs : SymbolSearchArgs
+	{
+		public SymbolRenameArgs(IProgressMonitor progressMonitor, ParseableFileContentFinder parseableFileContentFinder)
+			: base(progressMonitor, parseableFileContentFinder)
+		{
+		}
+	}
+	
 	public interface ISymbolSearch
 	{
 		double WorkAmount { get; }
 		
 		Task FindReferencesAsync(SymbolSearchArgs searchArguments, Action<SearchedFile> callback);
+		Task RenameAsync(SymbolRenameArgs renameArguments, Action<PatchedFile> callback, Action<Error> errorCallback);
 	}
 	
 	public sealed class CompositeSymbolSearch : ISymbolSearch
@@ -238,6 +289,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public Task FindReferencesAsync(SymbolSearchArgs searchArguments, Action<SearchedFile> callback)
 		{
 			return Task.WhenAll(symbolSearches.Select(s => s.FindReferencesAsync(searchArguments, callback)));
+		}
+		
+		public Task RenameAsync(SymbolRenameArgs renameArguments, Action<PatchedFile> callback, Action<Error> errorCallback)
+		{
+			return Task.WhenAll(symbolSearches.Select(s => s.RenameAsync(renameArguments, callback, errorCallback)));
 		}
 	}
 }

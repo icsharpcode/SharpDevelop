@@ -41,7 +41,7 @@ namespace CSharpBinding
 		int workAmount;
 		double workAmountInverse;
 		
-		public CSharpSymbolSearch(IProject project, IEntity entity)
+		public CSharpSymbolSearch(IProject project, ISymbol entity)
 		{
 			this.project = project;
 			searchScopes = fr.GetSearchScopes(entity);
@@ -132,6 +132,11 @@ namespace CSharpBinding
 			}
 			if (results.Count > 0)
 				callback(new SearchedFile(fileName, results));
+		}
+		
+		public Task RenameAsync(SymbolRenameArgs args, Action<PatchedFile> callback, Action<Error> errorCallback)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }
