@@ -12,6 +12,7 @@ using System.Linq;
 
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.DataManager.Listhandling;
+using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
 using NUnit.Framework;
 
@@ -62,9 +63,8 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		#region Fill
 		
 		[Test]
-		[Ignore]
 		public void TypeOfReportItemIsString () {
-			var ric = new ReportItemCollection(){
+			var ric = new System.Collections.Generic.List<IPrintableObject>(){
 				new BaseDataItem(){
 					ColumnName = "Lastname"
 						
@@ -75,7 +75,7 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			};
 			var collectionSource = new CollectionSource	(list,typeof(Contributor),new ReportSettings());
 			collectionSource.Bind();
-//			collectionSource.Fill(ric);
+			collectionSource.Fill(ric);
 			foreach (BaseDataItem element in ric) {
 				Assert.That(element.DataType,Is.EqualTo("System.String"));
 			}
@@ -83,9 +83,8 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		
 		
 		[Test]
-		[Ignore]
 		public void FillReportItemCollection () {
-			var ric = new ReportItemCollection(){
+			var ric = new System.Collections.Generic.List<IPrintableObject>(){
 				new BaseDataItem(){
 					ColumnName = "Lastname"
 						
@@ -96,7 +95,7 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			};
 			var collectionSource = new CollectionSource	(list,typeof(Contributor),new ReportSettings());
 			collectionSource.Bind();
-//			collectionSource.Fill(ric);
+			collectionSource.Fill(ric);
 			foreach (BaseDataItem element in ric) {
 				Assert.That(element.DBValue,Is.Not.EqualTo(String.Empty));
 			}
@@ -131,7 +130,6 @@ namespace ICSharpCode.Reporting.Test.DataSource
 		
 		#region Sort
 
-			
 		[Test]
 		public void CreateUnsortedIndex() {
 			var collectionSource = new CollectionSource	(list,typeof(Contributor),new ReportSettings());

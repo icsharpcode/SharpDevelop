@@ -53,10 +53,8 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 			var position = Point.Empty;
 			do {
 				collectionSource.Fill(Container.Items);
-//				Console.WriteLine(((BaseDataItem)Container.Items[0]).DBValue);
 				var itemsList = CreateConvertedList(exportContainer,position);
 				exportContainer.ExportedItems.AddRange(itemsList);
-//				CurrentLocation = new Point(CurrentLocation.X,CurrentLocation.Y + Container.Size.Height);
 				position = new Point(Container.Location.X,position.Y + Container.Size.Height);
 			}
 			while (collectionSource.MoveNext());

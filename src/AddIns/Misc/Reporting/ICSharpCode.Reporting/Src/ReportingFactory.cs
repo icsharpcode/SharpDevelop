@@ -30,15 +30,6 @@ namespace ICSharpCode.Reporting
 		{
 		}
 		
-		public IReportCreator ReportCreator (ReportModel reportModel) {
-			if (reportModel == null)
-				throw new ArgumentNullException("reportModel");
-			IReportCreator builder = null;
-
-			builder = ReportCreatorFactory.ExporterFactory(reportModel);
-			return builder;
-		}
-		
 		
 		public IReportCreator ReportCreator (Stream stream,Type listType,IEnumerable list)
 		{
@@ -49,16 +40,26 @@ namespace ICSharpCode.Reporting
 		}
 		
 		
-		internal IReportCreator ReportCreator (Stream stream)
-		{
-			IReportModel reportModel = LoadReportModel (stream);
+		internal IReportCreator ReportCreator (ReportModel reportModel) {
+			if (reportModel == null)
+				throw new ArgumentNullException("reportModel");
 			IReportCreator builder = null;
+			ReportModel = reportModel;
 			builder = ReportCreatorFactory.ExporterFactory(reportModel);
 			return builder;
 		}
 		
 		
-		public ReportModel LoadReportModel (Stream stream)
+		internal IReportCreator ReportCreator (Stream stream)
+		{
+			ReportModel = LoadReportModel (stream);
+			IReportCreator builder = null;
+			builder = ReportCreatorFactory.ExporterFactory(ReportModel);
+			return builder;
+		}
+		
+		
+		internal ReportModel LoadReportModel (Stream stream)
 		{
 			var doc = new XmlDocument();
 			doc.Load(stream);
