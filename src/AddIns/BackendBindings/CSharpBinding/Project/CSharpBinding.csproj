@@ -76,7 +76,6 @@
     <Compile Include="Src\Completion\OverrideEqualsGetHashCodeCompletionData.cs" />
     <Compile Include="Src\Completion\OverrideToStringCompletionData.cs" />
     <Compile Include="Src\Completion\SegmentTrackingOutputFormatter.cs" />
-    <Compile Include="Src\CSharpTextEditorExtension.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormatter.cs" />
     <Compile Include="Src\Parser\FoldingVisitor.cs" />
     <Compile Include="Src\Refactoring\AbstractInlineRefactorDialog.cs" />
@@ -99,7 +98,6 @@
     <Compile Include="Src\Refactoring\MoveTypeToFileContextAction.cs" />
     <Compile Include="Src\Refactoring\Options.cs" />
     <Compile Include="Src\Refactoring\RefactoringExtensions.cs" />
-    <Compile Include="Src\Refactoring\RenameContextAction.cs" />
     <Compile Include="Src\Refactoring\OverrideEqualsGetHashCodeMethodsDialog.xaml.cs">
       <DependentUpon>OverrideEqualsGetHashCodeMethodsDialog.xaml</DependentUpon>
     </Compile>
