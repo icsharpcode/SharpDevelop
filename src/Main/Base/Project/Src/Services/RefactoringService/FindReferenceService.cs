@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Analysis;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop.Editor.Search;
@@ -169,10 +170,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (baseType == null)
 				throw new ArgumentNullException("baseType");
 			var solutionSnapshot = GetSolutionSnapshot(baseType.Compilation);
-			var compilations = GetProjectsThatCouldReferenceEntity(baseType).Select(p => solutionSnapshot.GetCompilation(p));
-			var graph = BuildTypeInheritanceGraph(compilations);
-			TypeGraphNode node;
-			if (graph.TryGetValue(new AssemblyQualifiedTypeName(baseType), out node)) {
+			var assemblies = GetProjectsThatCouldReferenceEntity(baseType).Select(p => solutionSnapshot.GetCompilation(p).MainAssembly);
+			var graph = new TypeGraph(assemblies);
+			var node = graph.GetNode(baseType);
+			if (node != null) {
 				// only derived types were requested, so don't return the base types
 				// (this helps the GC to collect the unused parts of the graph more quickly)
 				node.BaseTypes.Clear();
@@ -180,40 +181,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			} else {
 				return new TypeGraphNode(baseType);
 			}
-		}
-		
-		/// <summary>
-		/// Builds a graph of all type definitions in the specified set of project contents.
-		/// </summary>
-		/// <remarks>The resulting graph may be cyclic if there are cyclic type definitions.</remarks>
-		static Dictionary<AssemblyQualifiedTypeName, TypeGraphNode> BuildTypeInheritanceGraph(IEnumerable<ICompilation> compilations)
-		{
-			if (compilations == null)
-				throw new ArgumentNullException("projectContents");
-			Dictionary<AssemblyQualifiedTypeName, TypeGraphNode> dict = new Dictionary<AssemblyQualifiedTypeName, TypeGraphNode>();
-			foreach (ICompilation compilation in compilations) {
-				foreach (ITypeDefinition typeDef in compilation.MainAssembly.GetAllTypeDefinitions()) {
-					// Overwrite previous entry - duplicates can occur if there are multiple versions of the
-					// same project loaded in the solution (e.g. separate .csprojs for separate target frameworks)
-					dict[new AssemblyQualifiedTypeName(typeDef)] = new TypeGraphNode(typeDef);
-				}
-			}
-			foreach (ICompilation compilation in compilations) {
-				foreach (ITypeDefinition typeDef in compilation.MainAssembly.GetAllTypeDefinitions()) {
-					TypeGraphNode typeNode = dict[new AssemblyQualifiedTypeName(typeDef)];
-					foreach (IType baseType in typeDef.DirectBaseTypes) {
-						ITypeDefinition baseTypeDef = baseType.GetDefinition();
-						if (baseTypeDef != null) {
-							TypeGraphNode baseTypeNode;
-							if (dict.TryGetValue(new AssemblyQualifiedTypeName(baseTypeDef), out baseTypeNode)) {
-								typeNode.BaseTypes.Add(baseTypeNode);
-								baseTypeNode.DerivedTypes.Add(typeNode);
-							}
-						}
-					}
-				}
-			}
-			return dict;
 		}
 		#endregion
 	}

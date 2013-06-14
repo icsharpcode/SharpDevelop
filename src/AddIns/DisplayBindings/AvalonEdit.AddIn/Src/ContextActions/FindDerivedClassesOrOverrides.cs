@@ -33,9 +33,15 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		}
 		
 		#region Derived Classes
+		static ITreeNode<ITypeDefinition> BuildDerivedTypesGraph(ITypeDefinition baseClass)
+		{
+			var rootNode = FindReferenceService.BuildDerivedTypesGraph(baseClass);
+			return TreeNode<ITypeDefinition>.FromGraph(rootNode, n => n.DerivedTypes, n => n.TypeDefinition);
+		}
+		
 		static ContextActionsPopup MakePopupWithDerivedClasses(ITypeDefinition baseClass)
 		{
-			var derivedClassesTree = FindReferenceService.BuildDerivedTypesGraph(baseClass).ConvertToDerivedTypeTree();
+			var derivedClassesTree = BuildDerivedTypesGraph(baseClass);
 			var popupViewModel = new ContextActionsViewModel();
 			popupViewModel.Title = MenuService.ConvertLabel(StringParser.Parse(
 				"${res:SharpDevelop.Refactoring.ClassesDerivingFrom}", new StringTagPair("Name", baseClass.Name)));
@@ -54,7 +60,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		#region Overrides
 		static ContextActionsPopup MakePopupWithOverrides(IMember member)
 		{
-			var derivedClassesTree = FindReferenceService.BuildDerivedTypesGraph(member.DeclaringTypeDefinition).ConvertToDerivedTypeTree();
+			var derivedClassesTree = BuildDerivedTypesGraph(member.DeclaringTypeDefinition);
 			var popupViewModel = new ContextActionsViewModel {
 				Title = MenuService.ConvertLabel(StringParser.Parse(
 					"${res:SharpDevelop.Refactoring.OverridesOf}",

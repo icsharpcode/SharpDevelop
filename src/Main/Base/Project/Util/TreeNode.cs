@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop
 		IEnumerable<ITreeNode<TContent>> Children { get; }
 	}
 	
-	sealed class TreeNode<TContent> : ITreeNode<TContent>
+	public sealed class TreeNode<TContent> : ITreeNode<TContent>
 	{
 		public TreeNode(TContent content)
 		{
