@@ -66,6 +66,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 		void MainWindowActivated(object sender, EventArgs e)
 		{
 			if (alreadyCalled) {
+				if (e.Name.EndsWith(".lock", StringComparison.OrdinalIgnoreCase))
+					return;
 				alreadyCalled = false;
 				// thread-safety: copy delegate reference into local variable
 				var actions = this.actions;
