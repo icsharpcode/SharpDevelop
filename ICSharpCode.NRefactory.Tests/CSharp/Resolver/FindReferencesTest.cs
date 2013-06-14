@@ -442,6 +442,7 @@ namespace Foo
 				sb.Append(ch);
 			}
 			Init(sb.ToString ());
+			findReferences.WholeVirtualSlot = true;
 			var doc = new ReadOnlyDocument(sb.ToString ());
 			var result = Rename(symbolName, "x", false);
 			Assert.AreEqual(offsets.Count, result.Count);

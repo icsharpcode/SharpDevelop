@@ -165,17 +165,21 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				Replace (node, new IdentifierExpression (newName));
 			}
 
-			public override void Rename (IEntity entity, string name)
+			public override void Rename (ISymbol symbol, string name)
 			{
+				if (symbol.SymbolKind == SymbolKind.Variable || symbol.SymbolKind == SymbolKind.Parameter) {
+					Rename(symbol as IVariable, name);
+					return;
+				}
 				FindReferences refFinder = new FindReferences ();
-				refFinder.FindReferencesInFile (refFinder.GetSearchScopes (entity), 
+				refFinder.FindReferencesInFile (refFinder.GetSearchScopes (symbol), 
 				                               context.UnresolvedFile, 
 				                               context.RootNode as SyntaxTree, 
 				                               context.Compilation, (n, r) => Rename (n, name), 
 				                               context.CancellationToken);
 			}
 
-			public override void Rename (IVariable variable, string name)
+			void Rename (IVariable variable, string name)
 			{
 				FindReferences refFinder = new FindReferences ();
 				refFinder.FindLocalReferences (variable, 
@@ -185,16 +189,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				                               context.CancellationToken);
 			}
 			
-			public override void RenameTypeParameter (IType type, string name = null)
-			{
-				FindReferences refFinder = new FindReferences ();
-				refFinder.FindTypeParameterReferences (type, 
-				                               context.UnresolvedFile, 
-				                               context.RootNode as SyntaxTree, 
-				                               context.Compilation, (n, r) => Rename (n, name), 
-				                               context.CancellationToken);
-			}
-		
 			public override void CreateNewType (AstNode newType, NewTypeContext context)
 			{
 				var output = OutputNode (0, newType, true);

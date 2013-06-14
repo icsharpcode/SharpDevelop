@@ -396,7 +396,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Finds all references in the given file.
 		/// </summary>
-		/// <param name="searchScope">The search scopes for which to look.</param>
+		/// <param name="searchScopes">The search scopes for which to look.</param>
 		/// <param name="resolver">AST resolver for the file to search in.</param>
 		/// <param name="callback">Callback used to report the references that were found.</param>
 		/// <param name="cancellationToken">CancellationToken that may be used to cancel the operation.</param>
@@ -530,7 +530,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void RenameReferencesInFile(IList<IFindReferenceSearchScope> searchScopes, string newName, CSharpAstResolver resolver,
 		                                   Action<RenameCallbackArguments> callback, Action<Error> errorCallback, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			WholeVirtualSlot = true;
 			FindReferencesInFile(
 				searchScopes, 
 				resolver, 
