@@ -389,7 +389,7 @@ namespace Foo
 	
 		#region Rename
 
-		ISymbol GetSymbol (string reflectionName)
+		internal static ISymbol GetSymbol (ICompilation compilation, string reflectionName)
 		{
 			Stack<ITypeDefinition> typeStack = new Stack<ITypeDefinition>(compilation.MainAssembly.TopLevelTypeDefinitions);
 			while (typeStack.Count > 0) {
@@ -408,7 +408,7 @@ namespace Foo
 
 		IList<AstNode> Rename(string fullyQualifiedName, string newName, bool includeOverloads)
 		{
-			var sym = GetSymbol(fullyQualifiedName);
+			var sym = GetSymbol(compilation, fullyQualifiedName);
 			Assert.NotNull(sym);
 			var graph = new TypeGraph(compilation.Assemblies);
 
