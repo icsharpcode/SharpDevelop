@@ -66,8 +66,6 @@ namespace ICSharpCode.SharpDevelop.Editor
 		void MainWindowActivated(object sender, EventArgs e)
 		{
 			if (alreadyCalled) {
-				if (e.Name.EndsWith(".lock", StringComparison.OrdinalIgnoreCase))
-					return;
 				alreadyCalled = false;
 				// thread-safety: copy delegate reference into local variable
 				var actions = this.actions;
@@ -81,6 +79,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 		void FileChanged(object sender, FileSystemEventArgs e)
 		{
 			if (!alreadyCalled) {
+				if (e.Name.EndsWith(".lock", StringComparison.OrdinalIgnoreCase))
+					return;
 				alreadyCalled = true;
 				LoggingService.Info(e.Name + " changed!" + e.ChangeType);
 				if (WorkbenchSingleton.Workbench.IsActiveWindow) {
