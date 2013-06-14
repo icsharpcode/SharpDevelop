@@ -39,7 +39,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 		{
 			Console.WriteLine("FormPageBuilder - Build DetailSection {0} - {1} - {2}",ReportModel.ReportSettings.PageSize.Width,ReportModel.ReportSettings.LeftMargin,ReportModel.ReportSettings.RightMargin);
 			CurrentLocation = DetailStart;
-			
 			var detail = CreateSection(ReportModel.DetailSection,CurrentLocation);
 			detail.Parent = CurrentPage;
 			CurrentPage.ExportedItems.Insert(2,detail);

@@ -55,9 +55,6 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 				where s.GetType() == typeof(ExportContainer)
 				select s;
 			Assert.That(sections.ToList().Count,Is.EqualTo(5));
-			Console.WriteLine("-------PageLayoutFixture:ShowDebug---------");
-			var ex = new DebugExporter(reportCreator.Pages);
-			ex.Run();
 		}
 		
 		

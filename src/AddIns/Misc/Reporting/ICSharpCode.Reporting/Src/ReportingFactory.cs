@@ -40,6 +40,15 @@ namespace ICSharpCode.Reporting
 		}
 		
 		
+		public IReportCreator ReportCreator (Stream stream,Type listType,IEnumerable list)
+		{
+			ReportModel = LoadReportModel (stream);
+			IReportCreator builder = null;
+			builder = new DataPageBuilder(ReportModel,listType,list );
+			return builder;
+		}
+		
+		
 		internal IReportCreator ReportCreator (Stream stream)
 		{
 			IReportModel reportModel = LoadReportModel (stream);
@@ -49,17 +58,7 @@ namespace ICSharpCode.Reporting
 		}
 		
 		
-		internal IReportCreator ReportCreator<T> (Stream stream,IList<T> list)
-		{
-			IReportModel reportModel = LoadReportModel (stream);
-			IReportCreator builder = null;
-			builder = new DataPageBuilder(reportModel,typeof(T),list );
-			return builder;
-		}
-		
-		
-
-		internal ReportModel LoadReportModel (Stream stream)
+		public ReportModel LoadReportModel (Stream stream)
 		{
 			var doc = new XmlDocument();
 			doc.Load(stream);
@@ -78,5 +77,7 @@ namespace ICSharpCode.Reporting
 			}
 			return model;
 		}
+		
+		public ReportModel ReportModel {get;private set;}
 	}
 }

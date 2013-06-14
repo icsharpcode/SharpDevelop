@@ -38,8 +38,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 			var collectionSource = new CollectionSource(List,ElementType,ReportModel.ReportSettings);
 			collectionSource.Bind();
 			CurrentLocation = DetailStart;
-			var dc = new DataContainerConverter(base.Graphics,ReportModel.DetailSection,CurrentLocation,collectionSource);
-			var detail = dc.Convert();
+			var converter = new DataContainerConverter(base.Graphics,ReportModel.DetailSection,CurrentLocation,collectionSource);
+			var detail = converter.Convert();
 			CurrentPage.ExportedItems.Insert(2,detail);
 		}
 		

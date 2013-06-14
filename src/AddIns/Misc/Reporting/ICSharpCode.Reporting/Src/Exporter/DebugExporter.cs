@@ -42,13 +42,11 @@ namespace ICSharpCode.Reporting.Exporter
 				var acceptor = item as IAcceptor;
 				if (exportContainer != null) {
 					if (acceptor != null) {
-//						Console.WriteLine("--container--");
 						acceptor.Accept(visitor);
 					}
 					ShowDebug(item as IExportContainer);
 				} else {
 					if (acceptor != null) {
-//						Console.WriteLine("..Item...");
 						acceptor.Accept(visitor);
 					}
 				}

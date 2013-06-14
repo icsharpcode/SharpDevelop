@@ -43,7 +43,7 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 			
 			var exportContainer = CreateExportContainer();
 			
-			var itemsList = CreateConvertedList(exportContainer);
+			var itemsList = CreateConvertedList(exportContainer,Point.Empty);
 			
 			exportContainer.ExportedItems.AddRange(itemsList);
 
@@ -63,12 +63,13 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 		}
 
 		
-		protected List<IExportColumn> CreateConvertedList(ExportContainer exportContainer)
+		protected List<IExportColumn> CreateConvertedList(ExportContainer exportContainer,Point position)
 		{
 			var itemsList = new List<IExportColumn>();
 			foreach (var element in Container.Items) {
 				var exportColumn = ExportColumnFactory.CreateItem(element);
 				exportColumn.Parent = exportContainer;
+				exportColumn.Location = new Point(element.Location.X,element.Location.Y + position.Y);
 				exportColumn.DesiredSize = Measure(element);
 				itemsList.Add(exportColumn);
 				Console.WriteLine("Size {0} DesiredSize {1}", exportColumn.Size, exportColumn.DesiredSize);
@@ -93,7 +94,7 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 		
 		internal IReportContainer Container { get; private set; }
 
-		internal Point CurrentLocation { get; private set; }
+		protected Point CurrentLocation { get;  set; }
 		
 		internal Graphics Graphics {get;private set;}
 	}

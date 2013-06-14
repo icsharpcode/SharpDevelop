@@ -42,14 +42,39 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 			this.collectionSource = collectionSource;
 		}
 		
-		
 		public override IExportContainer Convert(){
 			if (collectionSource.Count == 0) {
 				return base.Convert();
 			}
 	
 			var exportContainer = CreateExportContainer();
-			
+			Console.WriteLine("");
+			Console.WriteLine("start CurrentLocation {0}",CurrentLocation);
+			var position = Point.Empty;
+			do {
+				collectionSource.Fill(Container.Items);
+//				Console.WriteLine(((BaseDataItem)Container.Items[0]).DBValue);
+				var itemsList = CreateConvertedList(exportContainer,position);
+				exportContainer.ExportedItems.AddRange(itemsList);
+//				CurrentLocation = new Point(CurrentLocation.X,CurrentLocation.Y + Container.Size.Height);
+				position = new Point(Container.Location.X,position.Y + Container.Size.Height);
+			}
+			while (collectionSource.MoveNext());
+			Console.WriteLine("end CurrentLocation {0}",CurrentLocation);
+			Console.WriteLine("");
+			ArrangeContainer(exportContainer);
+			return exportContainer;
+		}
+		
+		/*
+		public override IExportContainer Convert(){
+			if (collectionSource.Count == 0) {
+				return base.Convert();
+			}
+	
+			var exportContainer = CreateExportContainer();
+			Console.WriteLine("");
+			Console.WriteLine("start CurrentLocation {0}",CurrentLocation);
 			do {
 				collectionSource.Fill(Container.Items);
 				Console.WriteLine(((BaseDataItem)Container.Items[0]).DBValue);
@@ -57,12 +82,11 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 				exportContainer.ExportedItems.AddRange(itemsList);
 			}
 			while (collectionSource.MoveNext());
-			
-//			Console.WriteLine("calling Container-Arrange");
-//			var exportArrange = exportContainer.GetArrangeStrategy();
-//			exportArrange.Arrange(exportContainer);
+			Console.WriteLine("end CurrentLocation {0}",CurrentLocation);
+			Console.WriteLine("");
 			ArrangeContainer(exportContainer);
 			return exportContainer;
 		}
+		*/
 	}
 }

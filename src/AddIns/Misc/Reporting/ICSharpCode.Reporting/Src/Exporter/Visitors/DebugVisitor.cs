@@ -29,7 +29,9 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public override void Visit(ExportContainer exportColumn)
 		{
-			Console.WriteLine("Visit ExportContainer {0} - {1} - {2}", exportColumn.Name,exportColumn.Size,exportColumn.Location);
+			Console.WriteLine("Start Container");
+			Console.WriteLine("Visit ExportContainer {0} - {1} - {2} - Items {3}",
+			                  exportColumn.Name,exportColumn.Size,exportColumn.Location,exportColumn.ExportedItems.Count);
 		}
 		
 		public override void Visit(ExportText exportColumn)
