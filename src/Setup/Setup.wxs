@@ -421,8 +421,9 @@
 				<ComponentRef Id="RubyBindingSdTestRunnerRb"/>
 				
 				<ComponentRef Id="FSharpBindingDll"/>
-				<ComponentRef Id="FSharpBindingAddin"/>	
-				<ComponentRef Id="FSharpConsoleProjectTemplate"/>	
+				<ComponentRef Id="FSharpBindingAddin"/>
+				<ComponentRef Id="FSharp2ConsoleProjectTemplate"/>
+				<ComponentRef Id="FSharp3ConsoleProjectTemplate"/>
 				<ComponentRef Id="FSharpEmptyClassTemplate"/>
 				
 				<ComponentRef Id="SharpDevelopSourceAnalysisTargets"/>
