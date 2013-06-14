@@ -1255,13 +1255,12 @@
 								-->
 							</Directory>
 							<Directory Id="DisplayBindingsFolder" Name="DisplayBindings">
-								<!--
 								<Directory Id="FormsDesignerFolder" Name="FormsDesigner">
 									<Component Guid="14E454AB-8F83-4FB3-9EDE-92B7D5333998" Id="FormsDesignerFiles" DiskId="1">
 										<File Source="..\..\AddIns\DisplayBindings\FormsDesigner\FormsDesigner.dll" Id="FormsDesigner.dll" Name="FormsDesigner.dll" Assembly=".net" AssemblyApplication="FormsDesigner.dll" AssemblyManifest="FormsDesigner.dll" KeyPath="yes" />
 										<File Source="..\..\AddIns\DisplayBindings\FormsDesigner\FormsDesigner.addin" Id="FormsDesigner.addin" Name="FormsDesigner.addin" />
 									</Component>
-								</Directory>-->
+								</Directory>
 								<Directory Id="IconEditorFolder" Name="IconEditor">
 									<Component Guid="A32C8CC1-705D-4BFF-B9CE-A4D867DD2EFA" Id="IconEditorFiles" DiskId="1">
 										<File Source="..\..\AddIns\DisplayBindings\IconEditor\ICSharpCode.IconEditor.dll" Id="ICSharpCode.IconEditor.dll" Name="ICSharpCode.IconEditor.dll" Assembly=".net" AssemblyApplication="ICSharpCode.IconEditor.dll" AssemblyManifest="ICSharpCode.IconEditor.dll" KeyPath="yes" />
