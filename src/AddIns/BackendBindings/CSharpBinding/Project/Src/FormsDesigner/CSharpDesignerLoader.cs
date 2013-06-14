@@ -16,6 +16,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using Microsoft.CSharp;
 using CSharpBinding.Parser;
+using CSharpBinding.Refactoring;
 
 namespace CSharpBinding.FormsDesigner
 {
@@ -27,11 +28,6 @@ namespace CSharpBinding.FormsDesigner
 		public CSharpDesignerLoader(ICSharpDesignerLoaderContext context)
 		{
 			this.context = context;
-		}
-		
-		protected override void Write(CodeCompileUnit unit)
-		{
-			throw new NotImplementedException();
 		}
 		
 		protected override CodeDomProvider CodeDomProvider {
@@ -46,8 +42,6 @@ namespace CSharpBinding.FormsDesigner
 		{
 			return base.IsReloadNeeded() || context.DesignerCodeFileDocument.Version.Equals(lastTextContentVersion);
 		}
-		
-		IUnresolvedTypeDefinition primaryPart;
 		
 		// Steps to load the designer:
 		// - Parse main file
@@ -65,17 +59,9 @@ namespace CSharpBinding.FormsDesigner
 			var compilation = context.GetCompilation();
 			
 			// Find designer class
-			ITypeDefinition designerClass = null;
-			IMethod initializeComponents = null;
-			foreach (var utd in primaryParseInfo.UnresolvedFile.TopLevelTypeDefinitions) {
-				var td = utd.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
-				if (td != null && FormsDesignerSecondaryDisplayBinding.IsDesignable(td)) {
-					primaryPart = utd;
-					designerClass = td;
-					initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(td);
-					break;
-				}
-			}
+			IUnresolvedTypeDefinition primaryPart;
+			ITypeDefinition designerClass = FormsDesignerSecondaryDisplayBinding.GetDesignableClass(primaryParseInfo.UnresolvedFile, compilation, out primaryPart);
+			IMethod initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(designerClass);
 			
 			if (initializeComponents == null) {
 				throw new FormsDesignerLoadException("The InitializeComponent method was not found. Designer cannot be loaded.");
@@ -134,6 +120,24 @@ namespace CSharpBinding.FormsDesigner
 			}
 			
 			return codeUnit;
+		}
+		
+		protected override void Write(CodeCompileUnit unit)
+		{
+			LoggingService.Info("DesignerLoader.Write called");
+			// output generated CodeDOM to the console :
+			#if DEBUG
+			if ((Control.ModifierKeys & Keys.Control) == Keys.Control) {
+				this.CodeDomProvider.GenerateCodeFromCompileUnit(unit, Console.Out, null);
+			}
+			#endif
+			try {
+				var generator = new CSharpDesignerGenerator(context);
+				generator.MergeFormChanges(unit);
+			} catch (Exception ex) {
+				SD.AnalyticsMonitor.TrackException(ex);
+				MessageService.ShowException(ex);
+			}
 		}
 	}
 }

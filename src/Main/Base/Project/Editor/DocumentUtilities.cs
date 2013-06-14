@@ -146,6 +146,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 			return char.IsLetterOrDigit(ch) || ch == '_';
 		}
 		
+		public static string GetIndentation(IDocument document, int line)
+		{
+			return DocumentUtilities.GetWhitespaceAfter(document, document.GetLineByNumber(line).Offset);
+		}
+		
 		/// <summary>
 		/// Gets all indentation starting at offset.
 		/// </summary>

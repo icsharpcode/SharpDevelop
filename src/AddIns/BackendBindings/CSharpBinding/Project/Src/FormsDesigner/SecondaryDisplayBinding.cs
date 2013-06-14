@@ -31,6 +31,8 @@ namespace CSharpBinding.FormsDesigner
 		
 		public static IMethod GetInitializeComponents(ITypeDefinition c)
 		{
+			if (c == null)
+				return null;
 			foreach (IMethod method in c.Methods) {
 				if (IsInitializeComponentsMethodName(method.Name) && method.Parameters.Count == 0) {
 					return method;
@@ -62,15 +64,23 @@ namespace CSharpBinding.FormsDesigner
 		
 		public static bool IsDesignable(IUnresolvedFile parsedFile, ICompilation compilation)
 		{
+			IUnresolvedTypeDefinition td;
+			return GetDesignableClass(parsedFile, compilation, out td) != null;
+		}
+		
+		public static ITypeDefinition GetDesignableClass(IUnresolvedFile parsedFile, ICompilation compilation, out IUnresolvedTypeDefinition primaryPart)
+		{
+			primaryPart = null;
 			if (parsedFile == null)
-				return false;
+				return null;
 			foreach (var utd in parsedFile.TopLevelTypeDefinitions) {
 				var td = utd.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
 				if (IsDesignable(td)) {
-					return true;
+					primaryPart = utd;
+					return td;
 				}
 			}
-			return false;
+			return null;
 		}
 		
 		public bool CanAttachTo(IViewContent viewContent)

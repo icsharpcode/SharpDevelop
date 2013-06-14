@@ -36,7 +36,7 @@ namespace CSharpBinding.Refactoring
 			return Create(editor.FileName, editor.Document, editor.Caret.Location, cancellationToken);
 		}
 		
-		public static SDRefactoringContext Create(FileName fileName, ITextSource textSource, TextLocation location, CancellationToken cancellationToken)
+		public static SDRefactoringContext Create(FileName fileName, ITextSource textSource, TextLocation location = default(TextLocation), CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var parseInfo = SD.ParserService.Parse(fileName, textSource, cancellationToken: cancellationToken) as CSharpFullParseInformation;
 			var compilation = SD.ParserService.GetCompilationForFile(fileName);

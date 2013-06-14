@@ -54,23 +54,5 @@ namespace CSharpBinding
 						return new CSharpAstResolver(compilation, new SyntaxTree(), new CSharpUnresolvedFile { FileName = ec.FileName });
 				});
 		}
-		
-		/// <summary>
-		/// Retrieves the declaration for the specified entity.
-		/// Returns null if the entity is not defined in C# source code.
-		/// </summary>
-		public static EntityDeclaration GetDeclaration(this IEntity entity, out CSharpFullParseInformation parseInfo)
-		{
-			if (entity == null || string.IsNullOrEmpty(entity.Region.FileName)) {
-				parseInfo = null;
-				return null;
-			}
-			parseInfo = SD.ParserService.Parse(FileName.Create(entity.Region.FileName),
-			                                   parentProject: entity.ParentAssembly.GetProject())
-				as CSharpFullParseInformation;
-			if (parseInfo == null)
-				return null;
-			return parseInfo.SyntaxTree.GetNodeAt<EntityDeclaration>(entity.Region.Begin);
-		}
 	}
 }

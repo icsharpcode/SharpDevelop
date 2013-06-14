@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -13,7 +14,7 @@ namespace CSharpBinding.FormsDesigner
 	class CSharpFormsDesignerLoaderContext : ICSharpDesignerLoaderContext
 	{
 		readonly FormsDesignerViewContent viewContent;
-		
+
 		public CSharpFormsDesignerLoaderContext(FormsDesignerViewContent viewContent)
 		{
 			this.viewContent = viewContent;
@@ -40,6 +41,15 @@ namespace CSharpBinding.FormsDesigner
 		public ICompilation GetCompilation()
 		{
 			return SD.ParserService.GetCompilationForFile(viewContent.PrimaryFileName);
+		}
+		
+		public IDocument GetDocument(FileName fileName)
+		{
+			foreach (var pair in viewContent.SourceFiles) {
+				if (pair.Key.FileName == fileName)
+					return pair.Value;
+			}
+			throw new InvalidOperationException("Designer file not found");
 		}
 	}
 }

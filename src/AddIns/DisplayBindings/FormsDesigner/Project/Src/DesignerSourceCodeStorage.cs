@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
@@ -73,7 +74,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			FileContent c;
 			if (!this.fileContents.TryGetValue(file, out c)) {
-				c = new FileContent();
+				c = new FileContent(file.FileName);
 				this.fileContents.Add(file, c);
 			}
 			c.LoadFrom(stream);
@@ -98,7 +99,7 @@ namespace ICSharpCode.FormsDesigner
 		/// </summary>
 		public void AddFile(OpenedFile file)
 		{
-			this.fileContents.Add(file, new FileContent());
+			this.fileContents.Add(file, new FileContent(file.FileName));
 		}
 		
 		/// <summary>
@@ -106,7 +107,7 @@ namespace ICSharpCode.FormsDesigner
 		/// </summary>
 		public void AddFile(OpenedFile file, Encoding encoding)
 		{
-			this.fileContents.Add(file, new FileContent(encoding));
+			this.fileContents.Add(file, new FileContent(file.FileName, encoding));
 		}
 		
 		/// <summary>
@@ -159,13 +160,13 @@ namespace ICSharpCode.FormsDesigner
 			readonly IDocument document;
 			readonly bool doNotLoad;
 			
-			public FileContent()
-				: this(SD.FileService.DefaultFileEncoding)
+			public FileContent(FileName fileName)
+				: this(fileName, SD.FileService.DefaultFileEncoding)
 			{
 			}
 			
-			public FileContent(Encoding encoding)
-				: this(new TextDocument(), encoding)
+			public FileContent(FileName fileName, Encoding encoding)
+				: this(new TextDocument { FileName = fileName }, encoding)
 			{
 			}
 			

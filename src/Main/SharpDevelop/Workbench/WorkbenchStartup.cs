@@ -11,6 +11,7 @@ using System.Windows.Interop;
 using System.Windows.Threading;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
@@ -51,6 +52,12 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			workbench.Initialize();
 			workbench.SetMemento(PropertyService.NestedProperties(workbenchMemento));
 			workbench.WorkbenchLayout = layout;
+			
+			var dlgMsgService = SD.MessageService as IDialogMessageService;
+			if (dlgMsgService != null) {
+				dlgMsgService.DialogSynchronizeInvoke = SD.MainThread.SynchronizingObject;
+				dlgMsgService.DialogOwner = workbench.MainWin32Window;
+			}
 			
 			var applicationStateInfoService = SD.GetService<ApplicationStateInfoService>();
 			if (applicationStateInfoService != null) {
