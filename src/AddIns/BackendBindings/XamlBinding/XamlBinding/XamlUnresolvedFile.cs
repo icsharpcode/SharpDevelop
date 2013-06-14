@@ -173,6 +173,7 @@ namespace ICSharpCode.XamlBinding
 				if (name != null && TypeDefinition != null) {
 					var field = new DefaultUnresolvedField(TypeDefinition, name);
 					field.Accessibility = Accessibility.Internal;
+					field.ReturnType = CreateTypeReference(element.Namespace, element.LocalName);
 					field.Region = new DomRegion(file.FileName, textDocument.GetLocation(element.StartOffset), textDocument.GetLocation(element.EndOffset));
 					if (modifier != null)
 						field.Accessibility = ParseAccessibility(modifier);
