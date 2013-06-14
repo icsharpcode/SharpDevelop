@@ -136,7 +136,7 @@ namespace CSharpBinding.Refactoring
 			
 			var line = editor.Document.GetLineByOffset(startAnchor.Offset);
 			
-			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset);
+			string indent = DocumentUtilities.GetWhitespaceAfter(editor.Document, line.Offset);
 			
 //			CodeGenerator generator = language.CodeGenerator;
 			
