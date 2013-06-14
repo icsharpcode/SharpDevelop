@@ -12,6 +12,7 @@ using ICSharpCode.NRefactory.Editor;
 
 namespace CSharpBinding.Parser
 {
+	// TODO: move this class + NewFolding to NRefactory
 	class FoldingVisitor : DepthFirstAstVisitor
 	{
 		internal List<NewFolding> foldings = new List<NewFolding> ();
@@ -30,6 +31,14 @@ namespace CSharpBinding.Parser
 			folding.IsDefinition = isDefinition;
 			foldings.Add(folding);
 			return folding;
+		}
+		
+		TextLocation GetEndOfPrev(AstNode node)
+		{
+			do {
+				node = node.GetPrevNode();
+			} while (node.NodeType == NodeType.Whitespace);
+			return node.EndLocation;
 		}
 		
 		#region usings
@@ -72,14 +81,14 @@ namespace CSharpBinding.Parser
 		public override void VisitTypeDeclaration (TypeDeclaration typeDeclaration)
 		{
 			if (!typeDeclaration.RBraceToken.IsNull)
-				AddFolding (typeDeclaration.LBraceToken.GetPrevNode ().EndLocation, typeDeclaration.RBraceToken.EndLocation);
+				AddFolding (GetEndOfPrev(typeDeclaration.LBraceToken), typeDeclaration.RBraceToken.EndLocation);
 			base.VisitTypeDeclaration (typeDeclaration);
 		}
 		
 		public override void VisitMethodDeclaration (MethodDeclaration methodDeclaration)
 		{
 			if (!methodDeclaration.Body.IsNull) {
-				AddFolding (methodDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation,
+				AddFolding (GetEndOfPrev(methodDeclaration.Body.LBraceToken),
 				            methodDeclaration.Body.RBraceToken.EndLocation, true);
 			}
 			base.VisitMethodDeclaration (methodDeclaration);
@@ -88,7 +97,7 @@ namespace CSharpBinding.Parser
 		public override void VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration)
 		{
 			if (!constructorDeclaration.Body.IsNull)
-				AddFolding (constructorDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation,
+				AddFolding (GetEndOfPrev(constructorDeclaration.Body.LBraceToken),
 				            constructorDeclaration.Body.RBraceToken.EndLocation, true);
 			base.VisitConstructorDeclaration (constructorDeclaration);
 		}
@@ -96,7 +105,7 @@ namespace CSharpBinding.Parser
 		public override void VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration)
 		{
 			if (!destructorDeclaration.Body.IsNull)
-				AddFolding (destructorDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation,
+				AddFolding (GetEndOfPrev(destructorDeclaration.Body.LBraceToken),
 				            destructorDeclaration.Body.RBraceToken.EndLocation, true);
 			base.VisitDestructorDeclaration (destructorDeclaration);
 		}
@@ -104,7 +113,7 @@ namespace CSharpBinding.Parser
 		public override void VisitOperatorDeclaration (OperatorDeclaration operatorDeclaration)
 		{
 			if (!operatorDeclaration.Body.IsNull)
-				AddFolding (operatorDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation,
+				AddFolding (GetEndOfPrev(operatorDeclaration.Body.LBraceToken),
 				            operatorDeclaration.Body.RBraceToken.EndLocation, true);
 			base.VisitOperatorDeclaration (operatorDeclaration);
 		}
@@ -112,7 +121,7 @@ namespace CSharpBinding.Parser
 		public override void VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration)
 		{
 			if (!propertyDeclaration.LBraceToken.IsNull)
-				AddFolding (propertyDeclaration.LBraceToken.GetPrevNode ().EndLocation,
+				AddFolding (GetEndOfPrev(propertyDeclaration.LBraceToken),
 				            propertyDeclaration.RBraceToken.EndLocation, true);
 			base.VisitPropertyDeclaration (propertyDeclaration);
 		}
@@ -120,7 +129,7 @@ namespace CSharpBinding.Parser
 		public override void VisitIndexerDeclaration (IndexerDeclaration indexerDeclaration)
 		{
 			if (!indexerDeclaration.LBraceToken.IsNull)
-				AddFolding (indexerDeclaration.LBraceToken.GetPrevNode ().EndLocation,
+				AddFolding (GetEndOfPrev(indexerDeclaration.LBraceToken),
 				            indexerDeclaration.RBraceToken.EndLocation, true);
 			base.VisitIndexerDeclaration (indexerDeclaration);
 		}
@@ -128,7 +137,7 @@ namespace CSharpBinding.Parser
 		public override void VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration)
 		{
 			if (!eventDeclaration.LBraceToken.IsNull)
-				AddFolding (eventDeclaration.LBraceToken.GetPrevNode ().EndLocation,
+				AddFolding (GetEndOfPrev(eventDeclaration.LBraceToken),
 				            eventDeclaration.RBraceToken.EndLocation, true);
 			base.VisitCustomEventDeclaration (eventDeclaration);
 		}
@@ -138,7 +147,7 @@ namespace CSharpBinding.Parser
 		public override void VisitSwitchStatement (SwitchStatement switchStatement)
 		{
 			if (!switchStatement.RBraceToken.IsNull)
-				AddFolding (switchStatement.LBraceToken.GetPrevNode ().EndLocation,
+				AddFolding (GetEndOfPrev(switchStatement.LBraceToken),
 				            switchStatement.RBraceToken.EndLocation);
 			base.VisitSwitchStatement (switchStatement);
 		}
@@ -146,7 +155,7 @@ namespace CSharpBinding.Parser
 		public override void VisitBlockStatement (BlockStatement blockStatement)
 		{
 			if (!(blockStatement.Parent is EntityDeclaration) && blockStatement.EndLocation.Line - blockStatement.StartLocation.Line > 2) {
-				AddFolding (blockStatement.GetPrevNode ().EndLocation, blockStatement.EndLocation);
+				AddFolding (GetEndOfPrev(blockStatement), blockStatement.EndLocation);
 			}
 
 			base.VisitBlockStatement (blockStatement);
