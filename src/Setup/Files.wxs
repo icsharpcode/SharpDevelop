@@ -1377,15 +1377,6 @@
 								</Component>
 							</Directory>
 							<Directory Id="MiscAddInsFolder" Name="Misc">
-								<Directory Id="AddInManagerFolder" Name="AddInManager">
-									<Component Guid="AA44E205-CCE8-46F3-B84B-D031BDB3570D" Id="AddInManagerSharpZipLibDll" DiskId="1">
-										<File Source="..\..\AddIns\Misc\AddInManager\ICSharpCode.SharpZipLib.dll" Id="ICSharpCode.SharpZipLib.dll" Name="ICSharpCode.SharpZipLib.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpZipLib.dll" AssemblyManifest="ICSharpCode.SharpZipLib.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="DCC79FDD-A759-4CEE-A62E-C715738ABB9A" Id="AddInManagerFiles" DiskId="1">
-										<File Source="..\..\AddIns\Misc\AddInManager\AddInManager.addin" Id="AddInManager.addin" Name="AddInManager.addin" />
-										<File Source="..\..\AddIns\Misc\AddInManager\ICSharpCode.AddInManager.dll" Id="ICSharpCode.AddInManager.dll" Name="ICSharpCode.AddInManager.dll" Assembly=".net" AssemblyApplication="ICSharpCode.AddInManager.dll" AssemblyManifest="ICSharpCode.AddInManager.dll" KeyPath="yes" />
-									</Component>
-								</Directory>
 								<Directory Id="AddInScoutFolder" Name="AddinScout">
 									<Component Guid="815D3708-5A0A-4B8E-BB72-66DF8E851917" Id="AddInScoutFiles" DiskId="1">
 										<File Source="..\..\AddIns\Misc\AddinScout\AddinScout.dll" Id="AddinScout.dll" Name="AddinScout.dll" Assembly=".net" AssemblyApplication="AddinScout.dll" AssemblyManifest="AddinScout.dll" KeyPath="yes" />
