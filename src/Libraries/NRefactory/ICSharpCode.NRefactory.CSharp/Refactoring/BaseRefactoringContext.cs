@@ -123,7 +123,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return resolver.GetConversion(expression, cancellationToken);
 		}
 		
-		public TypeSystemAstBuilder CreateTypeSytemAstBuilder(AstNode node)
+		public TypeSystemAstBuilder CreateTypeSystemAstBuilder(AstNode node)
 		{
 			var csResolver = resolver.GetResolverStateBefore(node);
 			return new TypeSystemAstBuilder(csResolver);

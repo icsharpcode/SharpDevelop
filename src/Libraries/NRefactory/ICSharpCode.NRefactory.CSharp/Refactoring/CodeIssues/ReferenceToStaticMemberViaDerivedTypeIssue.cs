@@ -104,7 +104,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			CodeAction GetAction(BaseRefactoringContext context, Expression targetExpression,
 			                                   IMember member)
 			{
-				var builder = context.CreateTypeSytemAstBuilder(targetExpression);
+				var builder = context.CreateTypeSystemAstBuilder(targetExpression);
 				var newType = builder.ConvertType(member.DeclaringType);
 				string description = string.Format("{0} '{1}'", context.TranslateString("Use base class"), newType.ToString());
 				return new CodeAction(description, script => {

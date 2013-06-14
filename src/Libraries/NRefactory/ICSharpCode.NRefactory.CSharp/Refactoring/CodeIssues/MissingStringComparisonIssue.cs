@@ -96,7 +96,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			void AddArgument(Script script, InvocationExpression invocationExpression, string stringComparison)
 			{
-				var astBuilder = ctx.CreateTypeSytemAstBuilder(invocationExpression);
+				var astBuilder = ctx.CreateTypeSystemAstBuilder(invocationExpression);
 				var newArgument = astBuilder.ConvertType(new TopLevelTypeName("System", "StringComparison")).Member(stringComparison);
 				var copy = (InvocationExpression)invocationExpression.Clone();
 				copy.Arguments.Add(newArgument);

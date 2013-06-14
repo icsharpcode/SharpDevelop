@@ -126,7 +126,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					AddIssue (binaryOperatorExpression, ctx.TranslateString ("Compare a difference with EPSILON"),
 						script => {
 							// Math.Abs(diff) op EPSILON
-							var builder = ctx.CreateTypeSytemAstBuilder(binaryOperatorExpression);
+							var builder = ctx.CreateTypeSystemAstBuilder(binaryOperatorExpression);
 							var diff = new BinaryOperatorExpression (binaryOperatorExpression.Left.Clone (),
 								BinaryOperatorType.Subtract, binaryOperatorExpression.Right.Clone ());
 							var abs = builder.ConvertType(new TopLevelTypeName("System", "Math")).Invoke("Abs", diff);

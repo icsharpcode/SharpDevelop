@@ -92,7 +92,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				
 				var foundConversion = conversion.ExplicitConversion(rr, variableType);
 				
-				var builder = ctx.CreateTypeSytemAstBuilder(expression);
+				var builder = ctx.CreateTypeSystemAstBuilder(expression);
 				AstType variableTypeNode = builder.ConvertType(variableType);
 				AstType expressionTypeNode = builder.ConvertType(rr.Type);
 				

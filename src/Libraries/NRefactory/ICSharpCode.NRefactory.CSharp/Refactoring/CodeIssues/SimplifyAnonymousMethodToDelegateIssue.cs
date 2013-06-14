@@ -106,7 +106,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var validTypes = CreateFieldAction.GetValidTypes (ctx.Resolver, expression).ToList ();
 					if (validTypes.Any (t => t.FullName == "System.Func" && t.TypeParameterCount == 1 + parameters.Count) && validTypes.Any (t => t.FullName == "System.Action")) {
 						if (rr != null && rr.Member.ReturnType.Kind != TypeKind.Void) {
-							var builder = ctx.CreateTypeSytemAstBuilder (expression);
+							var builder = ctx.CreateTypeSystemAstBuilder (expression);
 							var type = builder.ConvertType(new TopLevelTypeName("System", "Func", 1));
 							var args = type.GetChildrenByRole(Roles.TypeArgument);
 							args.Clear ();
