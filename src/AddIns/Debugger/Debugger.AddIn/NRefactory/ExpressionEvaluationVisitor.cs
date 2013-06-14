@@ -115,9 +115,12 @@ namespace Debugger.AddIn
 				throw new GetValueException("Member not found!");
 			Value target = null;
 			if (!importedMember.IsStatic) {
-				if (result.TargetResult == null)
+				if (importedMember.DeclaringType.Equals(context.MethodInfo.DeclaringType) && result.TargetResult == null)
+					target = context.GetThisValue(true);
+				else if (result.TargetResult == null)
 					throw new GetValueException("An object reference is required for the non-static field, method, or property '" + importedMember.FullName + "'");
-				target = Convert(result.TargetResult);
+				else
+					target = Convert(result.TargetResult);
 			}
 			if (!allowMethodInvoke && (importedMember is IMethod))
 				throw new InvalidOperationException("Method invocation not allowed in the current context!");
