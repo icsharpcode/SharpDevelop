@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Markup;
 
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces.Export;
@@ -35,31 +36,21 @@ namespace ICSharpCode.Reporting.Exporter
 			visitor = new WpfVisitor(reportSettings);
 		}
 		
-		
+
 		public override void Run () {
-			InitFixedPage();
+			Document = new FixedDocument();
+			
 			foreach (var page in Pages) {
-				InternalRun(page);
+				var fixedPage = InternalRun(page);
+				AddPageToDocument(Document,fixedPage);
 			}
 		}
+		
 
-		
-		void InitFixedPage()
+		FixedPage InternalRun(IExportContainer container)
 		{
-			fixedPage = new FixedPage();
-			fixedPage.Width = reportSettings.PageSize.Width;
-			fixedPage.Height = reportSettings.PageSize.Height;
-		}
-		
-		FixedPage fixedPage;
-		
-		public FixedPage FixedPage {
-			get { return fixedPage; }
-		}
-		
-		
-		void InternalRun(IExportContainer container)
-		{
+			
+			FixedPage fixedPage = CreateFixedPage();
 			Canvas canvas = null ;
 			foreach (var item in container.ExportedItems) {
 				var exportContainer = item as IExportContainer;
@@ -76,28 +67,39 @@ namespace ICSharpCode.Reporting.Exporter
 							Canvas.SetTop(ui, ((IExportColumn)element).Location.Y);
 							canvas.Children.Add(ui);
 						}
-//						var size = new Size(exportContainer.DesiredSize.Width,exportContainer.DesiredSize.Height);
-//						canvas.Measure(size);
-//						canvas.Arrange(new Rect(new System.Windows.Point(exportContainer.Location.X,exportContainer.Location.Y),size ));
-//						canvas.UpdateLayout();
-//						var exportArrange = exportContainer.GetArrangeStrategy();
-//						exportArrange.Arrange(exportContainer);
-					}
-//					InternalRun(item as IExportContainer);
-				} else {
-					if (acceptor != null) {
-						Console.WriteLine("..Item...");
-						acceptor.Accept(visitor);
-						var uiElement = visitor.UIElement;
-						if (canvas != null) {
-							Canvas.SetLeft(uiElement, item.Location.X - exportContainer.Location.X);
-							Canvas.SetTop(uiElement, item.Location.Y - exportContainer.Location.Y);
-							canvas.Children.Add(uiElement);
+					} else {
+						if (acceptor != null) {
+							acceptor.Accept(visitor);
+							var uiElement = visitor.UIElement;
+							if (canvas != null) {
+								Canvas.SetLeft(uiElement, item.Location.X - exportContainer.Location.X);
+								Canvas.SetTop(uiElement, item.Location.Y - exportContainer.Location.Y);
+								canvas.Children.Add(uiElement);
+							}
+							fixedPage.Children.Add(uiElement);
 						}
-						fixedPage.Children.Add(uiElement);
 					}
 				}
 			}
+			return fixedPage;
 		}
+
+		 FixedPage CreateFixedPage()
+		{
+			var fixedPage = new FixedPage();
+			fixedPage.Width = reportSettings.PageSize.Width;
+			fixedPage.Height = reportSettings.PageSize.Height;
+			return fixedPage;
+		}
+		
+		
+		static void AddPageToDocument(FixedDocument fixedDocument,FixedPage page)
+		{
+			PageContent pageContent = new PageContent();
+			((IAddChild)pageContent).AddChild(page);
+			fixedDocument.Pages.Add(pageContent);
+		}
+		
+		public FixedDocument Document {get;private set;}
 	}
 }

@@ -72,7 +72,7 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 				exportColumn.Location = new Point(element.Location.X,element.Location.Y + position.Y);
 				exportColumn.DesiredSize = Measure(element);
 				itemsList.Add(exportColumn);
-				Console.WriteLine("Size {0} DesiredSize {1}", exportColumn.Size, exportColumn.DesiredSize);
+//				Console.WriteLine("Size {0} DesiredSize {1}", exportColumn.Size, exportColumn.DesiredSize);
 			}
 			return itemsList;
 		}
@@ -86,7 +86,7 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 
 		protected void ArrangeContainer(ExportContainer exportContainer)
 		{
-			Console.WriteLine("calling Container-Arrange");
+//			Console.WriteLine("calling Container-Arrange");
 			var exportArrange = exportContainer.GetArrangeStrategy();
 			exportArrange.Arrange(exportContainer);
 		}

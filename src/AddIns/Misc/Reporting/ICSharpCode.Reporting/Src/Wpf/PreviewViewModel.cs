@@ -39,8 +39,9 @@ namespace ICSharpCode.Reporting.WpfReportViewer
 			Document.DocumentPaginator.PageSize = new System.Windows.Size(reportSettings.PageSize.Width,reportSettings.PageSize.Height);
 			var wpfExporter = new WpfExporter(reportSettings,pages);
 			wpfExporter.Run();
-			var fixedPage = wpfExporter.FixedPage;
-			AddPageToDocument(Document,fixedPage);
+//			var fixedPage = wpfExporter.FixedPage;
+//			AddPageToDocument(Document,fixedPage);
+			this.Document = wpfExporter.Document;
 		}
 		
 		static void AddPageToDocument(FixedDocument fixedDocument,FixedPage page)

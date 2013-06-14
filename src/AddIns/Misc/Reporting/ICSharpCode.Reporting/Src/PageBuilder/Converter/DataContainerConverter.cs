@@ -79,11 +79,11 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 		*/
 		
 		public List<IExportColumn>  Convert(ExportContainer container,Point position){
-			Console.WriteLine("");
-			Console.WriteLine("start CurrentLocation {0}",CurrentLocation);
+//			Console.WriteLine("");
+//			Console.WriteLine("start CurrentLocation {0}",CurrentLocation);
 			var itemsList = CreateConvertedList(container,position);
-			Console.WriteLine("end CurrentLocation {0}",CurrentLocation);
-			Console.WriteLine("");
+//			Console.WriteLine("end CurrentLocation {0}",CurrentLocation);
+//			Console.WriteLine("");
 			return itemsList;	
 		}
 	}

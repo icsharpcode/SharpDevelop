@@ -56,7 +56,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		protected void BuildPageHeader()
 		{
-			
 			var pageHeader = CreateSection(ReportModel.PageHeader,CurrentLocation);
 			DetailStart = new Point(ReportModel.ReportSettings.LeftMargin,pageHeader.Location.Y + pageHeader.Size.Height +1);
 			AddSectionToPage(pageHeader);
@@ -70,7 +69,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 			                            ReportModel.ReportSettings.PageSize.Height - ReportModel.ReportSettings.BottomMargin - ReportModel.PageFooter.Size.Height);
 			
 			var pageFooter = CreateSection(ReportModel.PageFooter,CurrentLocation);	
-			Console.WriteLine("pageFooterStartAt {0}",pageFooter.Location);
 			DetailEnds = new Point(pageFooter.Location.X,pageFooter.Location.Y -1);
 			AddSectionToPage(pageFooter);
 		}
@@ -89,17 +87,19 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		#endregion
 		
-		protected virtual void WritePages()
+		protected virtual IPage CreateNewPage()
 		{
-			CurrentPage = InitNewPage();
+			var page = InitNewPage();
 			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,ReportModel.ReportSettings.TopMargin);
-			
+			return page;
+		}
+		
+		protected void  WriteStandardSections() {
 			this.BuildReportHeader();
 			BuildPageHeader();
 			BuildPageFooter();
 			BuildReportFooter();
 		}
-		
 		
 		protected IExportContainer CreateSection(IReportContainer section,Point location)
 		{

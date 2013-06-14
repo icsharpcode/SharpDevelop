@@ -28,7 +28,10 @@ namespace ICSharpCode.Reporting.PageBuilder
 		public override void BuildExportList()
 		{
 			base.BuildExportList();
-			WritePages ();
+			CurrentPage = CreateNewPage ();
+			WriteStandardSections();
+			BuilDetail();
+			base.AddPage(CurrentPage);
 		}
 		
 		
@@ -42,12 +45,13 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		protected override void WritePages()
-		{
-			base.WritePages();
-			BuilDetail();
-			base.AddPage(CurrentPage);
-			Console.WriteLine("------{0}---------",ReportModel.ReportSettings.PageSize);
-		}
+//		protected override void CreatePage()
+//		{
+//			CurrentPage = base.CreatePage();
+////			WriteStandardSections();
+////			BuilDetail();
+////			base.AddPage(CurrentPage);
+//			Console.WriteLine("------{0}---------",ReportModel.ReportSettings.PageSize);
+//		}
 	}
 }

@@ -59,6 +59,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 			formPageBuilder.BuildExportList();
 			var page = formPageBuilder.Pages[0];
 			var pageFooter = page.ExportedItems[3];
+			var x = formPageBuilder.DetailEnds;
 				Assert.That(formPageBuilder.DetailEnds,
 			            Is.EqualTo(new Point(pageFooter.Location.X,
 			                                pageFooter.Location.Y - 1)));
