@@ -574,7 +574,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				}
 				
 				((ParserService)SD.ParserService).StopParserThread();
-				
+				((WpfWorkbench)SD.Workbench).WorkbenchLayout.StoreConfiguration();
 				restoreBoundsBeforeClosing = this.RestoreBounds;
 				
 				this.WorkbenchLayout = null;

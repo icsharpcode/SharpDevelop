@@ -124,6 +124,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			set {
 				SD.MainThread.VerifyAccess();
 				if (value != CurrentLayoutName) {
+					((WpfWorkbench)SD.Workbench).WorkbenchLayout.StoreConfiguration();
 					currentLayoutName = value;
 					((WpfWorkbench)SD.Workbench).WorkbenchLayout.LoadConfiguration();
 					OnLayoutChanged(EventArgs.Empty);
