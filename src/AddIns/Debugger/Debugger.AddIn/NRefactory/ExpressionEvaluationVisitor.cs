@@ -326,6 +326,8 @@ namespace Debugger.AddIn
 		
 		Value Visit(ConversionResolveResult result)
 		{
+			if (result.IsError)
+				throw new GetValueException("Cannot convert from '{0}' to '{1}'.", new CSharpAmbience().ConvertType(result.Input.Type), new CSharpAmbience().ConvertType(result.Type));
 			var val = Convert(result.Input);
 			if (result.Conversion.IsBoxingConversion)
 				return val;

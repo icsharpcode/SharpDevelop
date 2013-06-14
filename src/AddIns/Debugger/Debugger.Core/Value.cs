@@ -61,7 +61,8 @@ namespace Debugger
 		[Debugger.Tests.Ignore]
 		public ICorDebugReferenceValue CorReferenceValue {
 			get {
-				if (IsNull) throw new GetValueException("Value is null");
+				if (IsNull)
+					throw new GetValueException("Value is null");
 				
 				if (!(this.CorValue is ICorDebugReferenceValue))
 					throw new DebuggerException("Reference value expected");
@@ -73,7 +74,8 @@ namespace Debugger
 		[Debugger.Tests.Ignore]
 		public ICorDebugGenericValue CorGenericValue {
 			get {
-				if (IsNull) throw new GetValueException("Value is null");
+				if (IsNull)
+					throw new GetValueException("Value is null");
 				
 				ICorDebugValue corValue = this.CorValue;
 				// Dereference and unbox if necessary
@@ -90,7 +92,8 @@ namespace Debugger
 		[Debugger.Tests.Ignore]
 		public ICorDebugArrayValue CorArrayValue {
 			get {
-				if (IsNull) throw new GetValueException("Value is null");
+				if (IsNull)
+					throw new GetValueException("Value is null");
 				
 				if (this.Type.Kind != TypeKind.Array) throw new DebuggerException("Value is not an array");
 				
@@ -101,7 +104,8 @@ namespace Debugger
 		[Debugger.Tests.Ignore]
 		public ICorDebugObjectValue CorObjectValue {
 			get {
-				if (IsNull) throw new GetValueException("Value is null");
+				if (IsNull)
+					throw new GetValueException("Value is null");
 				
 				ICorDebugValue corValue = this.CorValue;
 				// Dereference and unbox if necessary
