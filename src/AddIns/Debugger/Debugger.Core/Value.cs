@@ -416,6 +416,16 @@ namespace Debugger
 				return GetPropertyValue(evalThread, objectInstance, (IProperty)memberInfo, arguments);
 			} else if (memberInfo is IMethod) {
 				return InvokeMethod(evalThread, objectInstance, (IMethod)memberInfo, arguments);
+			} else if (memberInfo is IEvent) { 
+				string name = memberInfo.Name;
+				IField f = memberInfo.DeclaringType.GetFields(m => m.Name == name, GetMemberOptions.None).FirstOrDefault();
+				if (f == null) {
+					name += "Event";
+					f = memberInfo.DeclaringType.GetFields(m => m.Name == name, GetMemberOptions.None).FirstOrDefault();
+				}
+				if (f == null)
+					throw new GetValueException("Cannot retrieve event value");
+				return GetFieldValue(evalThread, objectInstance, f);
 			}
 			throw new DebuggerException("Unknown member type: " + memberInfo.GetType());
 		}
@@ -424,7 +434,7 @@ namespace Debugger
 		{
 			Value val = GetFieldValue(evalThread, objectInstance, fieldInfo);
 			if (!newValue.Type.GetDefinition().IsDerivedFrom(fieldInfo.Type.GetDefinition()))
-				throw new GetValueException("Can not assign {0} to {1}", newValue.Type.FullName, fieldInfo.Type.FullName);
+				throw new GetValueException("Cannot assign {0} to {1}", newValue.Type.FullName, fieldInfo.Type.FullName);
 			val.SetValue(evalThread, newValue);
 		}
 		

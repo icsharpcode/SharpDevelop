@@ -464,7 +464,10 @@ namespace Debugger.AddIn
 		
 		string Visit(MemberResolveResult result)
 		{
-			return Print(result.TargetResult) + "." + result.Member.Name;
+			string text = Print(result.TargetResult);
+			if (!string.IsNullOrWhiteSpace(text))
+				text += ".";
+			return text + result.Member.Name;
 		}
 		
 		string Visit(OperatorResolveResult result)
