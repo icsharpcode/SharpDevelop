@@ -14,6 +14,7 @@ using ICSharpCode.FormsDesigner.Services;
 
 namespace ICSharpCode.FormsDesigner
 {
+	/*
 	/// <summary>
 	/// An abstract base class for CodeDOM designer loaders.
 	/// </summary>
@@ -172,4 +173,5 @@ namespace ICSharpCode.FormsDesigner
 			MessageService.ShowError(sb.ToString());
 		}
 	}
+	*/
 }

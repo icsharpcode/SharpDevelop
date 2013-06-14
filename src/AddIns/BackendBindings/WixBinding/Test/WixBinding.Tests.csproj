@@ -150,7 +150,6 @@
     <Compile Include="Project\WixProjectOutputTypeFileExtensionTests.cs" />
     <Compile Include="DialogLoading\SimpleDialogTestFixture.cs" />
     <Compile Include="DialogLoading\SimpleDialogUsingObjectCreatorTestFixture.cs" />
-    <Compile Include="Gui\LoaderProviderTests.cs" />
     <Compile Include="Gui\NoDialogIdSpecifiedForDesignerLoaderTestFixture.cs" />
     <Compile Include="Utils\MockDesignerLoaderHost.cs" />
     <Compile Include="Gui\DialogIdSpecifiedForDesignerLoaderTestFixture.cs" />
@@ -322,6 +321,10 @@
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
+      <Project>{9E951B9F-6AC2-4537-9D0B-0AE7C026D5A1}</Project>
+      <Name>FormsDesigner</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\DisplayBindings\XmlEditor\Project\XmlEditor.csproj">
       <Project>{DCA2703D-250A-463E-A68A-07ED105AE6BD}</Project>

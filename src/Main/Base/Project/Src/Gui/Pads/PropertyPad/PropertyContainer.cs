@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.ComponentModel.Design;
 using System.Windows.Forms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -40,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		internal PropertyContainer(bool createPadOnConstruction)
 		{
-			if (createPadOnConstruction && SD.Workbench != null) {
+			if (createPadOnConstruction) {
 				PadDescriptor desc = SD.Workbench.GetPad(typeof(PropertyPad));
 				if (desc != null) desc.CreatePad();
 			}

@@ -39,7 +39,6 @@ namespace ICSharpCode.FormsDesigner
 		readonly IViewContent primaryViewContent;
 		readonly IDesignerLoaderProvider loaderProvider;
 		DesignerLoader loader;
-		readonly IDesignerGenerator generator;
 		readonly ResourceStore resourceStore;
 		FormsDesignerUndoEngine undoEngine;
 		TypeResolutionService typeResolutionService;
@@ -132,17 +131,13 @@ namespace ICSharpCode.FormsDesigner
 			ICSharpCode.SharpDevelop.Debugging.DebuggerService.DebugStarting += this.DebugStarting;
 		}
 
-		public FormsDesignerViewContent(IViewContent primaryViewContent, IDesignerLoaderProvider loaderProvider, IDesignerGenerator generator)
+		public FormsDesignerViewContent(IViewContent primaryViewContent, IDesignerLoaderProvider loaderProvider)
 			: this(primaryViewContent)
 		{
 			if (loaderProvider == null)
 				throw new ArgumentNullException("loaderProvider");
-			if (generator == null)
-				throw new ArgumentNullException("generator");
 			
 			this.loaderProvider = loaderProvider;
-			this.generator = generator;
-			this.generator.Attach(this);
 			
 			this.Files.Add(this.primaryViewContent.PrimaryFile);
 		}
@@ -194,9 +189,9 @@ namespace ICSharpCode.FormsDesigner
 					this.sourceCodeStorage.LoadFile(file, stream);
 					
 					LoggingService.Debug("Forms designer: Determining designer source files for " + file.FileName);
-					OpenedFile newDesignerCodeFile;
-					IEnumerable<OpenedFile> sourceFiles = this.generator.GetSourceFiles(out newDesignerCodeFile);
-					if (sourceFiles == null || newDesignerCodeFile == null) {
+					IReadOnlyList<OpenedFile> sourceFiles = loaderProvider.GetSourceFiles(this);
+					OpenedFile newDesignerCodeFile = sourceFiles.FirstOrDefault();
+					if (newDesignerCodeFile == null) {
 						throw new FormsDesignerLoadException("The designer source files could not be determined.");
 					}
 					
@@ -294,9 +289,9 @@ namespace ICSharpCode.FormsDesigner
 			this.addedTypeDescriptionProviders.Add(typeof(Image), TypeDescriptor.AddAttributes(typeof(Image), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
 			this.addedTypeDescriptionProviders.Add(typeof(Icon), TypeDescriptor.AddAttributes(typeof(Icon), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
 			
-			if (generator.CodeDomProvider != null) {
-				serviceContainer.AddService(typeof(System.CodeDom.Compiler.CodeDomProvider), generator.CodeDomProvider);
-			}
+//			if (generator.CodeDomProvider != null) {
+//				serviceContainer.AddService(typeof(System.CodeDom.Compiler.CodeDomProvider), generator.CodeDomProvider);
+//			}
 			
 			designSurface = CreateDesignSurface(serviceContainer);
 			designSurface.Loading += this.DesignerLoading;
@@ -305,10 +300,8 @@ namespace ICSharpCode.FormsDesigner
 			designSurface.Unloading += this.DesignerUnloading;
 			
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(this, designSurface));
-			ICSharpCode.FormsDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormsDesigner.Services.EventBindingService(this, designSurface);
-			serviceContainer.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
 			
-			this.loader = loaderProvider.CreateLoader(generator);
+			this.loader = loaderProvider.CreateLoader(this);
 			designSurface.BeginLoad(this.loader);
 			
 			if (!designSurface.IsLoaded) {
@@ -378,16 +371,13 @@ namespace ICSharpCode.FormsDesigner
 			bool loading = this.loader != null && this.loader.Loading;
 			LoggingService.Debug("Forms designer: ComponentChanged: " + (e.Component == null ? "<null>" : e.Component.ToString()) + ", Member=" + (e.Member == null ? "<null>" : e.Member.Name) + ", OldValue=" + (e.OldValue == null ? "<null>" : e.OldValue.ToString()) + ", NewValue=" + (e.NewValue == null ? "<null>" : e.NewValue.ToString()) + "; Loading=" + loading + "; Unloading=" + this.unloading);
 			if (!loading && !unloading) {
-				try {
-					this.MakeDirty();
-					if (e.Component != null && e.Member != null && e.Member.Name == "Name" &&
-					    e.NewValue is string && !object.Equals(e.OldValue, e.NewValue)) {
-						// changing the name of the component
-						generator.NotifyComponentRenamed(e.Component, (string)e.NewValue, (string)e.OldValue);
-					}
-				} catch (Exception ex) {
-					MessageService.ShowException(ex);
-				}
+				this.MakeDirty();
+				#warning Reimplement designer component rename
+//					if (e.Component != null && e.Member != null && e.Member.Name == "Name" &&
+//					    e.NewValue is string && !object.Equals(e.OldValue, e.NewValue)) {
+//						// changing the name of the component
+//						generator.NotifyComponentRenamed(e.Component, (string)e.NewValue, (string)e.OldValue);
+//					}
 			}
 		}
 
@@ -657,6 +647,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 
+		/*
 		public void ShowSourceCode(IComponent component, EventDescriptor edesc, string eventMethodName)
 		{
 			int position;
@@ -675,6 +666,7 @@ namespace ICSharpCode.FormsDesigner
 		{
 			return generator.GetCompatibleMethods(edesc);
 		}
+		*/
 
 		void IsActiveViewContentChangedHandler(object sender, EventArgs e)
 		{
@@ -725,10 +717,6 @@ namespace ICSharpCode.FormsDesigner
 				this.UnloadDesigner();
 				
 				this.IsActiveViewContentChanged -= this.IsActiveViewContentChangedHandler;
-				
-				if (this.generator != null) {
-					this.generator.Detach();
-				}
 				
 				this.resourceStore.Dispose();
 				

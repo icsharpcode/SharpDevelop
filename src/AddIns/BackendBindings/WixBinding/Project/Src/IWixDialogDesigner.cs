@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.WixBinding
 {
@@ -28,5 +30,10 @@ namespace ICSharpCode.WixBinding
 		/// being designed.
 		/// </summary>
 		WixProject Project {get;}
+		
+		/// <summary>
+		/// Gets the text editor in the primary view content.
+		/// </summary>
+		ITextEditor PrimaryViewContentTextEditor { get; }
 	}
 }

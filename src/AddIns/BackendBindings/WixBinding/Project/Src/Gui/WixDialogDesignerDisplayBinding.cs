@@ -32,8 +32,7 @@ namespace ICSharpCode.WixBinding
 		
 		public IViewContent[] CreateSecondaryViewContent(IViewContent view)
 		{
-			//return new IViewContent[] {new WixDialogDesigner(view)};
-			return null;
+			return new IViewContent[] {new WixDialogDesigner(view)};
 		}
 		
 		bool IsViewTextEditorProvider(IViewContent view)
