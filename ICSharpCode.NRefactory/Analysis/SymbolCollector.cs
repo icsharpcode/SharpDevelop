@@ -30,6 +30,20 @@ namespace ICSharpCode.NRefactory.Analysis
 	/// </summary>
 	public class SymbolCollector
 	{
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="ICSharpCode.NRefactory.Analysis.SymbolCollector"/> should include overloads.
+		/// </summary>
+		/// <value><c>true</c> if overloads should be included; otherwise, <c>false</c>.</value>
+		public bool IncludeOverloads { 
+			get;
+			set;
+		}
+
+		public bool GroupForRenaming {
+			get;
+			set;
+		}
+
 		static IEnumerable<ISymbol> CollectTypeRelatedMembers (ITypeDefinition type)
 		{
 			yield return type;
@@ -72,7 +86,7 @@ namespace ICSharpCode.NRefactory.Analysis
 		/// <param name="g">The type graph.</param>
 		/// <param name="m">The symbol to search</param>
 		/// <param name="includeOverloads">If set to <c>true</c> overloads are included in the rename.</param>
-		public static IEnumerable<ISymbol> GetRelatedSymbols(TypeGraph g, ISymbol m, bool includeOverloads)
+		public IEnumerable<ISymbol> GetRelatedSymbols(TypeGraph g, ISymbol m)
 		{
 			switch (m.SymbolKind) {
 			case SymbolKind.TypeDefinition:
@@ -86,8 +100,20 @@ namespace ICSharpCode.NRefactory.Analysis
 				return new ISymbol[] { m };
 	
 			case SymbolKind.Constructor:
+				if (GroupForRenaming)
+					return GetRelatedSymbols (g, ((IMethod)m).DeclaringTypeDefinition);
+				List<ISymbol> constructorSymbols = new List<ISymbol> ();
+				if (IncludeOverloads) {
+					foreach (var m3 in CollectOverloads (g, (IMethod)m)) {
+						constructorSymbols.Add (m3);
+					}
+				}
+				return constructorSymbols;
+
 			case SymbolKind.Destructor:
-				return GetRelatedSymbols (g, ((IMethod)m).DeclaringTypeDefinition, includeOverloads);
+				if (GroupForRenaming)
+					return GetRelatedSymbols (g, ((IMethod)m).DeclaringTypeDefinition);
+				return new ISymbol[] { m };
 
 			case SymbolKind.Indexer:
 			case SymbolKind.Event:
@@ -99,7 +125,7 @@ namespace ICSharpCode.NRefactory.Analysis
 				List<ISymbol> symbols = new List<ISymbol> ();
 				if (method.ImplementedInterfaceMembers.Count > 0) {
 					foreach (var m2 in method.ImplementedInterfaceMembers) {
-						symbols.AddRange (GetRelatedSymbols (g, m2, includeOverloads));
+						symbols.AddRange (GetRelatedSymbols (g, m2));
 					}
 				} else {
 					symbols.Add (method);
@@ -114,9 +140,10 @@ namespace ICSharpCode.NRefactory.Analysis
 				}
 
 
-				if (includeOverloads) {
+				if (IncludeOverloads) {
+					IncludeOverloads = false;
 					foreach (var m3 in CollectOverloads (g, method)) {
-						symbols.AddRange (GetRelatedSymbols (g, m3, false));
+						symbols.AddRange (GetRelatedSymbols (g, m3));
 					}
 				}
 				return MakeUnique (symbols);

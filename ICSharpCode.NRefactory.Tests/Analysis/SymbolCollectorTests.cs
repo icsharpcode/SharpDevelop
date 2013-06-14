@@ -56,9 +56,12 @@ namespace ICSharpCode.NRefactory.Analysis
 			var compilation = TypeSystemHelper.CreateCompilation(unresolvedFile);
 
 			var symbol = FindReferencesTest.GetSymbol(compilation, memberName);
+			var col = new SymbolCollector();
+			col.IncludeOverloads = includeOverloads;
+			col.GroupForRenaming = true;
 
-			var result = SymbolCollector.GetRelatedSymbols (new TypeGraph (compilation.Assemblies),
-			                                   symbol, includeOverloads);
+			var result = col.GetRelatedSymbols (new TypeGraph (compilation.Assemblies),
+			                                   symbol);
 			if (offsets.Count != result.Count()) {
 				foreach (var a in result)
 					Console.WriteLine(a);

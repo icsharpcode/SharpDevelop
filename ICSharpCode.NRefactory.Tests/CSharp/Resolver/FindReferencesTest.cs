@@ -411,8 +411,10 @@ namespace Foo
 			var sym = GetSymbol(compilation, fullyQualifiedName);
 			Assert.NotNull(sym);
 			var graph = new TypeGraph(compilation.Assemblies);
-
-			var scopes = findReferences.GetSearchScopes(SymbolCollector.GetRelatedSymbols(graph, sym, includeOverloads));
+			var col = new SymbolCollector();
+			col.IncludeOverloads = includeOverloads;
+			col.GroupForRenaming = true;
+			var scopes = findReferences.GetSearchScopes(col.GetRelatedSymbols(graph, sym));
 			List<AstNode> result = new List<AstNode>();
 
 			findReferences.RenameReferencesInFile(
