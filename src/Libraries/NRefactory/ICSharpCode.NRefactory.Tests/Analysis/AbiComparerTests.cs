@@ -25,16 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using System.IO;
 using System.Linq;
-using System.Threading;
-using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp.CodeCompletion;
 
-namespace ICSharpCode.NRefactory.CSharp.Analysis
+namespace ICSharpCode.NRefactory.Analysis
 {
 	[TestFixture]
 	public class AbiComparerTests

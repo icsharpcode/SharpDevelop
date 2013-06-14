@@ -52,13 +52,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 
 		protected static bool FindUsage (BaseRefactoringContext context, SyntaxTree unit,
-										 ITypeParameter typaParameter, AstNode declaration)
+										 ITypeParameter typeParameter, AstNode declaration)
 		{
 			var found = false;
-			refFinder.FindTypeParameterReferences (typaParameter, context.UnresolvedFile, unit, context.Compilation,
+			var searchScopes = refFinder.GetSearchScopes(typeParameter);
+			refFinder.FindReferencesInFile(searchScopes, context.Resolver,
 				(node, resolveResult) =>
 				{
-					found = found || node != declaration;
+					if (node != declaration)
+						found = true;
 				}, context.CancellationToken);
 			return found;
 		}

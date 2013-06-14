@@ -42,6 +42,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				: base(ctx)
 			{
 			}
+
+			AstNode GetNodeToUnderline(Expression target)
+			{
+				if (target is IdentifierExpression)
+					return target;
+				if (target is MemberReferenceExpression)
+					return ((MemberReferenceExpression)target).MemberNameToken;
+				return target;
+			}
 			
 			public override void VisitExpressionStatement(ExpressionStatement expressionStatement)
 			{
@@ -51,7 +60,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				var rr = ctx.Resolve(invocation) as InvocationResolveResult;
 				if (rr != null && (rr.Type.IsKnownType(KnownTypeCode.Task) || rr.Type.IsKnownType(KnownTypeCode.TaskOfT))) {
-					AddIssue(invocation, ctx.TranslateString("Exceptions in async call will be silently ignored because the returned task is unused"));
+					AddIssue(GetNodeToUnderline (invocation.Target), ctx.TranslateString("Exceptions in async call will be silently ignored because the returned task is unused"));
 				}
 			}
 		}

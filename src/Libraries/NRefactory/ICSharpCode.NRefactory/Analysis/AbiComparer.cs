@@ -28,7 +28,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ICSharpCode.NRefactory.CSharp
+namespace ICSharpCode.NRefactory.Analysis
 {
 	/// <summary>
 	/// Used to check the compatibility state of two compilations.

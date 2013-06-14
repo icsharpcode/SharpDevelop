@@ -346,55 +346,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		
 		/// <summary>
-		/// Renames the specified entity.
+		/// Renames the specified symbol.
 		/// </summary>
-		/// <param name='entity'>
-		/// The Entity to rename
+		/// <param name='symbol'>
+		/// The symbol to rename
 		/// </param>
 		/// <param name='name'>
 		/// The new name, if null the user is prompted for a new name.
 		/// </param>
-		public virtual void Rename(IEntity entity, string name = null)
+		public virtual void Rename(ISymbol symbol, string name = null)
 		{
 		}
 		
-		/// <summary>
-		/// Renames the specified entity.
-		/// </summary>
-		/// <param name='type'>
-		/// The Entity to rename
-		/// </param>
-		/// <param name='name'>
-		/// The new name, if null the user is prompted for a new name.
-		/// </param>
-		public virtual void RenameTypeParameter (IType type, string name = null)
-		{
-		}
-		
-		/// <summary>
-		/// Renames the specified variable.
-		/// </summary>
-		/// <param name='variable'>
-		/// The Variable to rename
-		/// </param>
-		/// <param name='name'>
-		/// The new name, if null the user is prompted for a new name.
-		/// </param>
-		public virtual void Rename(IVariable variable, string name = null)
-		{
-		}
-
-		/// <summary>
-		/// Renames the specified namespace.
-		/// </summary>
-		/// <param name="ns">The namespace</param>
-		/// <param name='name'>
-		/// The new name, if null the user is prompted for a new name.
-		/// </param>
-		public virtual void Rename(INamespace ns, string name = null)
-		{
-		}
-
 		public virtual void DoGlobalOperationOn(IEntity entity, Action<RefactoringContext, Script, AstNode> callback, string operationDescripton = null)
 		{
 		}

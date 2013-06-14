@@ -2699,7 +2699,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						direction.AddChild ((Expression)arg.Expr.Accept (this), Roles.Expression);
 						newArg.AddChild (direction, Roles.Expression);
 					} else {
-						newArg.AddChild ((Expression)na.Expr.Accept (this), Roles.Expression);
+						newArg.AddChild (na.Expr != null ? (Expression)na.Expr.Accept (this) : new ErrorExpression ("Named argument expression parse error"), Roles.Expression);
 					}
 					return newArg;
 				}

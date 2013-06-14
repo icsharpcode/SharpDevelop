@@ -147,11 +147,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							if (resolveResult is MemberResolveResult) {
 								script.Rename(((MemberResolveResult)resolveResult).Member, n);
 							} else if (resolveResult is TypeResolveResult) {
-								var def = ((TypeResolveResult)resolveResult).Type.GetDefinition();
+								var def = resolveResult.Type.GetDefinition();
 								if (def != null) {
 									script.Rename(def, n);
-								} else {
-									script.RenameTypeParameter(((TypeResolveResult)resolveResult).Type, n);
+								} else if (resolveResult.Type.Kind == TypeKind.TypeParameter) {
+									script.Rename((ITypeParameter)resolveResult.Type, n);
 								}
 							} else if (resolveResult is LocalResolveResult) {
 								script.Rename(((LocalResolveResult)resolveResult).Variable, n);
@@ -169,11 +169,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 								if (resolveResult is MemberResolveResult) {
 									script.Rename(((MemberResolveResult)resolveResult).Member);
 								} else if (resolveResult is TypeResolveResult) {
-									var def = ((TypeResolveResult)resolveResult).Type.GetDefinition();
+									var def = resolveResult.Type.GetDefinition();
 									if (def != null) {
 										script.Rename(def);
-									} else {
-										script.RenameTypeParameter(((TypeResolveResult)resolveResult).Type);
+									} else if (resolveResult.Type.Kind == TypeKind.TypeParameter) {
+										script.Rename((ITypeParameter)resolveResult.Type);
 									}
 								} else if (resolveResult is LocalResolveResult) {
 									script.Rename(((LocalResolveResult)resolveResult).Variable);
