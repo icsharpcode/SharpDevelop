@@ -31,11 +31,12 @@ namespace ICSharpCode.Reporting.Exporter
 		public override void Run () {
 			foreach (var page in Pages) {
 				ShowDebug(page);
+				Console.WriteLine("-----------PageBreak---------");
 			}
 		}
 		
 		
-		 void ShowDebug(IExportContainer container)
+		void ShowDebug(IExportContainer container)
 		{
 			foreach (var item in container.ExportedItems) {
 				var exportContainer = item as IExportContainer;

@@ -37,21 +37,10 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		void BuilDetail()
 		{
-			Console.WriteLine(" Build DetailSection {0} - {1}",DetailStart,DetailEnds);
 			CurrentLocation = DetailStart;
 			var detail = CreateSection(ReportModel.DetailSection,CurrentLocation);
 			detail.Parent = CurrentPage;
 			CurrentPage.ExportedItems.Insert(2,detail);
 		}
-		
-		
-//		protected override void CreatePage()
-//		{
-//			CurrentPage = base.CreatePage();
-////			WriteStandardSections();
-////			BuilDetail();
-////			base.AddPage(CurrentPage);
-//			Console.WriteLine("------{0}---------",ReportModel.ReportSettings.PageSize);
-//		}
 	}
 }

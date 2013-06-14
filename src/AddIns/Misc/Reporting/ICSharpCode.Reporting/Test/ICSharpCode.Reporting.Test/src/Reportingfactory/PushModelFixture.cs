@@ -36,16 +36,25 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 		
 		
 		[Test]
-		public void PageContainsFiveSections()
+		public void FirstPageContains_4_Sections()
 		{
 			reportCreator.BuildExportList();
 			var exporteditems = reportCreator.Pages[0].ExportedItems;
 			var sections = from s in exporteditems
 				where s.GetType() == typeof(ExportContainer)
 				select s;
-			Assert.That(sections.ToList().Count,Is.EqualTo(5));
+			Assert.That(sections.ToList().Count,Is.EqualTo(4));
 		}
 		
+		public void LastPageContains_4_Sections()
+		{
+			reportCreator.BuildExportList();
+			var exporteditems = reportCreator.Pages[1].ExportedItems;
+			var sections = from s in exporteditems
+				where s.GetType() == typeof(ExportContainer)
+				select s;
+			Assert.That(sections.ToList().Count,Is.EqualTo(4));
+		}
 		
 		[Test]
 		public void DetailContainsOneDataItem() {
@@ -58,8 +67,8 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 			var result = section.ExportedItems[0];
 			Assert.That(result,Is.AssignableFrom(typeof(ExportText)));
 						Console.WriteLine("-------PageLayoutFixture:ShowDebug---------");
-//			var ex = new DebugExporter(reportCreator.Pages);
-//			ex.Run();
+			var ex = new DebugExporter(reportCreator.Pages);
+			ex.Run();
 		}
 		
 		

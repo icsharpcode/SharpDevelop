@@ -98,7 +98,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			this.BuildReportHeader();
 			BuildPageHeader();
 			BuildPageFooter();
-			BuildReportFooter();
+//			BuildReportFooter();
 		}
 		
 		protected IExportContainer CreateSection(IReportContainer section,Point location)

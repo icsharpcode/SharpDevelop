@@ -55,63 +55,66 @@ namespace ICSharpCode.Reporting.PageBuilder
 				                                           CurrentLocation,
 				                                           collectionSource);
 				
-				detail = CreateContainerForSection();
+				detail = CreateContainerForSection(DetailStart);
 
 				var position = Point.Empty;
 				do {
 					
 					collectionSource.Fill(Container.Items);
 					var r = converter.Convert(Container as ExportContainer,position);
-					if (ExeedPage(r)) {
+					if (PageFull(r)) {
 						detail.ExportedItems.AddRange(r);
 						CurrentPage.ExportedItems.Insert(2,detail);
 						Pages.Add(CurrentPage);
-//						CurrentLocation = DetailStart;
 						position = Point.Empty;
 						CurrentPage = CreateNewPage();
 						WriteStandardSections();
 						CurrentLocation = DetailStart;
-						detail = CreateContainerForSection();
+						detail = CreateContainerForSection(DetailStart);
 					} else {
 						detail.ExportedItems.AddRange(r);
 						position = new Point(Container.Location.Y,position.Y + Container.Size.Height);
 					}
-					
-					
-				}
-				while (collectionSource.MoveNext());
-				if (Pages.Count == 0) {
-					CurrentPage.ExportedItems.Insert(2,detail);
-				} else {
-					CurrentPage.ExportedItems.Insert(1,detail);
 				}
 				
-				var a = base.Pages;
+				while (collectionSource.MoveNext());
+				InsertDetailAtPosition(detail);
+				base.BuildReportFooter();
+				
 			} else {
-				detail = base.CreateSection(Container,CurrentLocation);
+				detail = CreateContainerForSection(DetailStart);
+				InsertDetailAtPosition(detail);
+				base.BuildReportFooter();
 			}
 		}
 
-		IExportContainer CreateContainerForSection( )
+		
+		IExportContainer CreateContainerForSection(Point location )
 		{
 			var detail = (ExportContainer)Container.CreateExportColumn();
-			detail.Location = CurrentLocation;
+			detail.Location = location;
 			return detail;
 		}
 		
 		
-		bool ExeedPage(System.Collections.Generic.List<IExportColumn> r)
+		bool PageFull(System.Collections.Generic.List<IExportColumn> column)
 		{
-			var rect = new Rectangle(r[0].Location,r[0].Size);
+			var rect = new Rectangle(column[0].Location,column[0].Size);
 			if (rect.Contains(new Point(100,500))) {
-				Console.WriteLine("PageBreak");
 				return true;
 			}
-			Console.WriteLine("contains {0} - {1}",rect,DetailEnds);
 			return false;
 		}
 		
 		
+		void InsertDetailAtPosition(IExportContainer container)
+		{
+			if (Pages.Count == 0) {
+				CurrentPage.ExportedItems.Insert(2, container);
+			} else {
+				CurrentPage.ExportedItems.Insert(1, container);
+			}
+		}
 		
 		internal IReportContainer Container { get; private set; }
 		

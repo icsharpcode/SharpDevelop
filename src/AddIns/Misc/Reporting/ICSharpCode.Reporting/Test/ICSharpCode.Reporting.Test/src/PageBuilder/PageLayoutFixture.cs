@@ -25,14 +25,14 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		private IReportCreator reportCreator;
 		
 		[Test]
-		public void PageContainsFiveSections()
+		public void FormsReportContains_4_Sections()
 		{
 			reportCreator.BuildExportList();
 			var x = reportCreator.Pages[0].ExportedItems;
 			var y = from s in x 
 				where s.GetType() == typeof(ExportContainer)
 				select s;
-			Assert.That(y.ToList().Count,Is.EqualTo(5));
+			Assert.That(y.ToList().Count,Is.EqualTo(4));
 			Console.WriteLine("-------PageLayoutFixture:ShowDebug---------");
 			var ex = new DebugExporter(reportCreator.Pages);
 			ex.Run();
