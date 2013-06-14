@@ -26,11 +26,11 @@ using CSharpBinding.Refactoring;
 namespace CSharpBinding.Completion
 {
 	/// <summary>
-	/// Item for 'override' completion of "GetHashCode()" methods.
+	/// Item for 'override' completion of "Equals()" and "GetHashCode()" methods.
 	/// </summary>
-	class OverrideGetHashCodeCompletionData : OverrideCompletionData
+	class OverrideEqualsGetHashCodeCompletionData : OverrideCompletionData
 	{
-		public OverrideGetHashCodeCompletionData(int declarationBegin, IMember m, CSharpTypeResolveContext contextAtCaret)
+		public OverrideEqualsGetHashCodeCompletionData(int declarationBegin, IMember m, CSharpTypeResolveContext contextAtCaret)
 			: base(declarationBegin, m, contextAtCaret)
 		{
 		}
@@ -55,7 +55,7 @@ namespace CSharpBinding.Completion
 			
 			if (!this.Entity.IsAbstract) {
 				// modify body to call the base method
-				if (this.Entity.EntityType == EntityType.Method) {
+				if (this.Entity.SymbolKind == SymbolKind.Method) {
 					var baseCall = new BaseReferenceExpression().Invoke(this.Entity.Name, new Expression[] { });
 					if (((IMethod)this.Entity).ReturnType.IsKnownType(KnownTypeCode.Void))
 						baseCallStatement = new ExpressionStatement(baseCall);
@@ -88,60 +88,26 @@ namespace CSharpBinding.Completion
 					return;
 				}
 				var resolvedCurrent = typeResolveContext.CurrentTypeDefinition;
-				var entities = FindFieldsAndProperties(resolvedCurrent).ToList();
-				if (entities.Any()) {
-					IEditorUIService uiService = context.Editor.GetService(typeof(IEditorUIService)) as IEditorUIService;
-					
-					ITextAnchor endAnchor = context.Editor.Document.CreateAnchor(context.Editor.Caret.Offset);
-					endAnchor.MovementType = AnchorMovementType.AfterInsertion;
-					
-					ITextAnchor startAnchor = context.Editor.Document.CreateAnchor(context.Editor.Caret.Offset);
-					startAnchor.MovementType = AnchorMovementType.BeforeInsertion;
-					
-					ITextAnchor insertionPos = context.Editor.Document.CreateAnchor(endAnchor.Offset);
-					insertionPos.MovementType = AnchorMovementType.BeforeInsertion;
+				IEditorUIService uiService = context.Editor.GetService(typeof(IEditorUIService)) as IEditorUIService;
+				
+				ITextAnchor endAnchor = context.Editor.Document.CreateAnchor(context.Editor.Caret.Offset);
+				endAnchor.MovementType = AnchorMovementType.AfterInsertion;
+				
+				ITextAnchor startAnchor = context.Editor.Document.CreateAnchor(context.Editor.Caret.Offset);
+				startAnchor.MovementType = AnchorMovementType.BeforeInsertion;
+				
+				ITextAnchor insertionPos = context.Editor.Document.CreateAnchor(endAnchor.Offset);
+				insertionPos.MovementType = AnchorMovementType.BeforeInsertion;
 
-					InsertionContext insertionContext = new InsertionContext(context.Editor.GetService(typeof(TextArea)) as TextArea, startAnchor.Offset);
-					
-//					AbstractInlineRefactorDialog dialog = new OverrideToStringMethodDialog(insertionContext, context.Editor, startAnchor, insertionPos, entities, baseCallStatement);
-//					dialog.Element = uiService.CreateInlineUIElement(insertionPos, dialog);
-					
-					insertionContext.RegisterActiveElement(new InlineRefactorSnippetElement(cxt => null, ""), dialog);
-					insertionContext.RaiseInsertionCompleted(EventArgs.Empty);
-				}
-				else {
-					if (baseCallStatement != null) {
-						// Add default base call
-						MethodDeclaration insertedOverrideMethod = refactoringContext.GetNode().PrevSibling as MethodDeclaration;
-						if (insertedOverrideMethod == null)
-						{
-							// We are not inside of a method declaration
-							return;
-						}
-						using (Script script = refactoringContext.StartScript()) {
-							script.AddTo(insertedOverrideMethod.Body, baseCallStatement);
-						}
-					}
-				}
-			}
-		}
-		
-		IEnumerable<PropertyOrFieldWrapper> FindFieldsAndProperties(IType sourceType)
-		{
-			int i = 0;
-			
-			foreach (var f in sourceType.GetFields().Where(field => !field.IsConst
-			                                               && field.IsStatic == sourceType.GetDefinition().IsStatic
-			                                               && field.ReturnType != null)) {
-				yield return new PropertyOrFieldWrapper(f) { Index = i };
-				i++;
-			}
-			
-			foreach (var p in sourceType.GetProperties().Where(prop => prop.CanGet && !prop.IsIndexer
-			                                                   && prop.IsStatic == sourceType.GetDefinition().IsStatic
-			                                                   && prop.ReturnType != null)) {
-				yield return new PropertyOrFieldWrapper(p) { Index = i };
-				i++;
+				InsertionContext insertionContext = new InsertionContext(context.Editor.GetService(typeof(TextArea)) as TextArea, startAnchor.Offset);
+				
+				var current = typeResolveContext.CurrentTypeDefinition;
+				AbstractInlineRefactorDialog dialog = new OverrideEqualsGetHashCodeMethodsDialog(insertionContext, context.Editor, startAnchor, endAnchor, insertionPos, current, Entity as IMethod, baseCallStatement);
+
+				dialog.Element = uiService.CreateInlineUIElement(insertionPos, dialog);
+				
+				insertionContext.RegisterActiveElement(new InlineRefactorSnippetElement(cxt => null, ""), dialog);
+				insertionContext.RaiseInsertionCompleted(EventArgs.Empty);
 			}
 		}
 	}

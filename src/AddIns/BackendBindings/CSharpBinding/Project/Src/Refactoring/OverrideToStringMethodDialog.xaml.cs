@@ -25,7 +25,6 @@ namespace CSharpBinding.Refactoring
 	{
 		AstNode baseCallNode;
 		string insertedCode;
-		ITextEditor editor;
 		
 		public OverrideToStringMethodDialog(InsertionContext context, ITextEditor editor, ITextAnchor startAnchor, ITextAnchor anchor, IList<PropertyOrFieldWrapper> fields, AstNode baseCallNode)
 			: base(context, editor, anchor)
@@ -34,7 +33,6 @@ namespace CSharpBinding.Refactoring
 			
 			this.baseCallNode = baseCallNode;
 			this.listBox.ItemsSource = fields;
-			this.editor = editor;
 			
 			listBox.SelectAll();
 		}
@@ -45,7 +43,7 @@ namespace CSharpBinding.Refactoring
 			PrimitiveExpression formatString = new PrimitiveExpression(GenerateFormatString(currentClass, editor.Language.CodeGenerator, fields));
 			List<Expression> param = new List<Expression>() { formatString };
 			ReturnStatement ret = new ReturnStatement(new InvocationExpression(
-				new MemberReferenceExpression(new TypeReferenceExpression(new SimpleType("System.String")), "Format"),
+				new MemberReferenceExpression(new TypeReferenceExpression(ConvertType(KnownTypeCode.String)), "Format"),
 				param.Concat(fields.Select(f => new IdentifierExpression(f))).ToList()
 			));
 			

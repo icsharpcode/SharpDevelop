@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,11 +10,9 @@ using System.Text;
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
 using Dom = ICSharpCode.SharpDevelop.Dom;
 
@@ -24,13 +23,13 @@ namespace CSharpBinding.Refactoring
 	/// </summary>
 	public partial class OverrideEqualsGetHashCodeMethodsDialog : AbstractInlineRefactorDialog
 	{
-		IType selectedClass;
+		ITypeDefinition selectedClass;
 		ITextAnchor startAnchor;
 		IMethod selectedMethod;
 		AstNode baseCallNode;
 		
 		public OverrideEqualsGetHashCodeMethodsDialog(InsertionContext context, ITextEditor editor, ITextAnchor startAnchor, ITextAnchor endAnchor,
-		                                              ITextAnchor insertionPosition, IType selectedClass, IMethod selectedMethod, AstNode baseCallNode)
+		                                              ITextAnchor insertionPosition, ITypeDefinition selectedClass, IMethod selectedMethod, AstNode baseCallNode)
 			: base(context, editor, insertionPosition)
 		{
 			if (selectedClass == null)
@@ -51,15 +50,19 @@ namespace CSharpBinding.Refactoring
 			
 			addOtherMethod.Content = StringParser.Parse("${res:AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOtherMethod}", new StringTagPair("otherMethod", otherMethod));
 			
-			addIEquatable.IsEnabled = !selectedClass.BaseTypes.Any(
+			addIEquatable.IsEnabled = !selectedClass.GetAllBaseTypes().Any(
 				type => {
-					if (!type.IsGenericReturnType)
+					if (!type.IsParameterized || (type.TypeParameterCount != 1))
 						return false;
-					var genericType = type.CastToGenericReturnType();
-					var boundTo = genericType.TypeParameter.BoundTo;
-					if (boundTo == null)
+					if (type.FullName != "System.IEquatable")
 						return false;
-					return boundTo.Name == selectedClass.Name;
+					return type.TypeArguments.First().FullName == selectedClass.FullName;
+					
+//					var genericType = type.CastToGenericReturnType();
+//					var boundTo = genericType.TypeParameter.BoundTo;
+//					if (boundTo == null)
+//						return false;
+//					return boundTo.Name == selectedClass.Name;
 				}
 			);
 		}
@@ -82,11 +85,11 @@ namespace CSharpBinding.Refactoring
 			return type != null
 				&& type.FullName != "System.Single"
 				&& type.FullName != "System.Double"
-				&& (!type.IsReferenceType
+				&& (!IsReferenceType(type)
 				    || type.FullName == "System.String");
 		}
 		
-		static Expression TestEquality(string other, IField field)
+		Expression TestEquality(string other, IField field)
 		{
 			if (CanCompareEqualityWithOperator(field.ReturnType)) {
 				return new BinaryOperatorExpression(new MemberReferenceExpression(new ThisReferenceExpression(), field.Name),
@@ -94,7 +97,7 @@ namespace CSharpBinding.Refactoring
 				                                    new MemberReferenceExpression(new IdentifierExpression(other), field.Name));
 			} else {
 				InvocationExpression ie = new InvocationExpression(
-					new MemberReferenceExpression(new TypeReferenceExpression(new TypeReference("System.Object", true)), "Equals")
+					new MemberReferenceExpression(new TypeReferenceExpression(ConvertType(KnownTypeCode.Object)), "Equals")
 				);
 				ie.Arguments.Add(new MemberReferenceExpression(new ThisReferenceExpression(), field.Name));
 				ie.Arguments.Add(new MemberReferenceExpression(new IdentifierExpression(other), field.Name));
@@ -102,7 +105,7 @@ namespace CSharpBinding.Refactoring
 			}
 		}
 		
-		static Expression TestEquality(string other, IProperty property)
+		Expression TestEquality(string other, IProperty property)
 		{
 			if (CanCompareEqualityWithOperator(property.ReturnType)) {
 				return new BinaryOperatorExpression(new MemberReferenceExpression(new ThisReferenceExpression(), property.Name),
@@ -110,12 +113,21 @@ namespace CSharpBinding.Refactoring
 				                                    new MemberReferenceExpression(new IdentifierExpression(other), property.Name));
 			} else {
 				InvocationExpression ie = new InvocationExpression(
-					new MemberReferenceExpression(new TypeReferenceExpression(new SimpleType("System.Object")), "Equals")
+					new MemberReferenceExpression(new TypeReferenceExpression(ConvertType(KnownTypeCode.Object)), "Equals")
 				);
 				ie.Arguments.Add(new MemberReferenceExpression(new ThisReferenceExpression(), property.Name));
 				ie.Arguments.Add(new MemberReferenceExpression(new IdentifierExpression(other), property.Name));
 				return ie;
 			}
+		}
+		
+		static bool IsReferenceType(IType type)
+		{
+			if (type.IsReferenceType.HasValue) {
+				return type.IsReferenceType.Value;
+			}
+			
+			return false;
 		}
 		
 		protected override string GenerateCode(ITypeDefinition currentClass)
@@ -126,8 +138,18 @@ namespace CSharpBinding.Refactoring
 			
 			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset);
 			
-			CodeGenerator generator = language.CodeGenerator;
+//			CodeGenerator generator = language.CodeGenerator;
 			
+			MethodDeclaration insertedOverrideMethod = refactoringContext.GetNode().PrevSibling as MethodDeclaration;
+			if (insertedOverrideMethod == null)
+			{
+				// We are not inside of a method declaration
+				return null;
+			}
+			
+			using (Script script = refactoringContext.StartScript()) {
+				NewLineNode nextNewLineNode = insertedOverrideMethod.NextSibling as NewLineNode;
+				
 //			if (Options.AddIEquatableInterface) {
 				// TODO : add IEquatable<T> to class
 //				IAmbience ambience = currentClass.CompilationUnit.Language.GetAmbience();
@@ -152,120 +174,132 @@ namespace CSharpBinding.Refactoring
 //
 //				editor.Document.Replace(startOffset, endOffset - startOffset, a);
 //			}
-			
-			if (Options.SurroundWithRegion) {
-				editor.Document.InsertNormalized(startAnchor.Offset, "#region Equals and GetHashCode implementation\n" + indent);
-			}
-			
-			string codeForMethodBody;
-			
-			if ("Equals".Equals(selectedMethod.Name, StringComparison.Ordinal)) {
-				IList<MethodDeclaration> equalsOverrides = CreateEqualsOverrides(currentClass);
-				MethodDeclaration defaultOverride = equalsOverrides.First();
-				equalsOverrides = equalsOverrides.Skip(1).ToList();
 				
-				StringBuilder builder = new StringBuilder();
-				
-				foreach (AbstractNode element in defaultOverride.Body.Children.OfType<AbstractNode>()) {
-					builder.Append(language.CodeGenerator.GenerateCode(element, indent + "\t"));
+				if (Options.SurroundWithRegion) {
+					script.InsertBefore(insertedOverrideMethod, new PreProcessorDirective(PreProcessorDirectiveType.Region, "Equals and GetHashCode implementation"));
 				}
 				
-				codeForMethodBody = builder.ToString().Trim();
-				
-				if (addOtherMethod.IsChecked == true) {
-					if (equalsOverrides.Any())
-						code.Append(indent + "\n" + string.Join("\n", equalsOverrides.Select(item => generator.GenerateCode(item, indent))));
-					code.Append(indent + "\n" + generator.GenerateCode(CreateGetHashCodeOverride(currentClass), indent));
+				if ("Equals".Equals(selectedMethod.Name, StringComparison.Ordinal)) {
+					IList<MethodDeclaration> equalsOverrides = CreateEqualsOverrides(currentClass);
+					MethodDeclaration defaultOverride = equalsOverrides.First();
+					equalsOverrides = equalsOverrides.Skip(1).ToList();
+					
+					// Insert children of default Equals method into
+					foreach (AstNode element in defaultOverride.Body.Children) {
+						script.AddTo(insertedOverrideMethod.Body, element.Clone());
+					}
+					
+					// Add other Equals() overrides after our main inserted method
+					if (addOtherMethod.IsChecked == true) {
+						if (equalsOverrides.Any()) {
+							foreach (var equalsMethod in equalsOverrides) {
+								AppendNewLine(script, insertedOverrideMethod, nextNewLineNode);
+								script.InsertAfter(insertedOverrideMethod, equalsMethod);
+							}
+						}
+						
+						AppendNewLine(script, insertedOverrideMethod, nextNewLineNode);
+						script.InsertAfter(insertedOverrideMethod, CreateGetHashCodeOverride(currentClass));
+					}
+				} else {
+					StringBuilder builder = new StringBuilder();
+					
+					foreach (AstNode element in CreateGetHashCodeOverride(currentClass).Body.Children) {
+						script.AddTo(insertedOverrideMethod.Body, element.Clone());
+					}
+					
+					if (addOtherMethod.IsChecked == true) {
+						foreach (var equalsMethod in CreateEqualsOverrides(currentClass)) {
+							AppendNewLine(script, insertedOverrideMethod, nextNewLineNode);
+							script.InsertAfter(insertedOverrideMethod, equalsMethod);
+						}
+					}
 				}
-			} else {
-				StringBuilder builder = new StringBuilder();
 				
-				foreach (AbstractNode element in CreateGetHashCodeOverride(currentClass).Body.Children.OfType<AbstractNode>()) {
-					builder.Append(language.CodeGenerator.GenerateCode(element, indent + "\t"));
-				}
-				
-				codeForMethodBody = builder.ToString().Trim();
-				
-				if (addOtherMethod.IsChecked == true)
-					code.Append(indent + "\n" + string.Join("\n", CreateEqualsOverrides(currentClass).Select(item => generator.GenerateCode(item, indent))));
-			}
-			
-			if (Options.AddOperatorOverloads) {
-				var checkStatements = new[] {
-					new IfElseStatement(
-						new InvocationExpression(
-							new IdentifierExpression("ReferenceEquals"),
-							new List<Expression>() { new IdentifierExpression("lhs"), new IdentifierExpression("rhs") }
-						),
-						new ReturnStatement(new PrimitiveExpression(true))
-					),
-					new IfElseStatement(
-						new BinaryOperatorExpression(
+				if (Options.AddOperatorOverloads) {
+					var checkStatements = new[] {
+						new IfElseStatement(
 							new InvocationExpression(
 								new IdentifierExpression("ReferenceEquals"),
-								new List<Expression>() { new IdentifierExpression("lhs"), new PrimitiveExpression(null) }
+								new List<Expression>() { new IdentifierExpression("lhs"), new IdentifierExpression("rhs") }
 							),
-							BinaryOperatorType.LogicalOr,
-							new InvocationExpression(
-								new IdentifierExpression("ReferenceEquals"),
-								new List<Expression>() { new IdentifierExpression("rhs"), new PrimitiveExpression(null) }
-							)
+							new ReturnStatement(new PrimitiveExpression(true))
 						),
-						new ReturnStatement(new PrimitiveExpression(false))
-					)
-				};
-				
-				BlockStatement equalsOpBody = new BlockStatement() {
-					Children = {
+						new IfElseStatement(
+							new BinaryOperatorExpression(
+								new InvocationExpression(
+									new IdentifierExpression("ReferenceEquals"),
+									new List<Expression>() { new IdentifierExpression("lhs"), new PrimitiveExpression(null) }
+								),
+								BinaryOperatorType.ConditionalOr,
+								new InvocationExpression(
+									new IdentifierExpression("ReferenceEquals"),
+									new List<Expression>() { new IdentifierExpression("rhs"), new PrimitiveExpression(null) }
+								)
+							),
+							new ReturnStatement(new PrimitiveExpression(false))
+						)
+					};
+					
+					BlockStatement equalsOpBody = new BlockStatement();
+					
+					if (currentClass.Kind == TypeKind.Class) {
+						foreach (var statement in checkStatements) {
+							equalsOpBody.Add(statement);
+						}
+					}
+					
+					equalsOpBody.Add(
 						new ReturnStatement(
 							new InvocationExpression(
 								new MemberReferenceExpression(new IdentifierExpression("lhs"), "Equals"),
 								new List<Expression>() { new IdentifierExpression("rhs") }
 							)
 						)
-					}
-				};
-				
-				if (currentClass.ClassType == Dom.ClassType.Class) {
-					equalsOpBody.Children.InsertRange(0, checkStatements);
-				}
+					);
 
-				BlockStatement notEqualsOpBody = new BlockStatement() {
-					Children = {
-						new ReturnStatement(
-							new UnaryOperatorExpression(
-								new ParenthesizedExpression(
-									new BinaryOperatorExpression(
-										new IdentifierExpression("lhs"),
-										BinaryOperatorType.Equality,
-										new IdentifierExpression("rhs")
-									)
-								),
-								UnaryOperatorType.Not
+					BlockStatement notEqualsOpBody = new BlockStatement();
+					notEqualsOpBody.Add(new ReturnStatement(
+						new UnaryOperatorExpression(
+							UnaryOperatorType.Not,
+							new ParenthesizedExpression(
+								new BinaryOperatorExpression(
+									new IdentifierExpression("lhs"),
+									BinaryOperatorType.Equality,
+									new IdentifierExpression("rhs")
+								)
 							)
 						)
-					}
-				};
+					)
+					                   );
+					
+					AppendNewLine(script, insertedOverrideMethod, nextNewLineNode);
+					script.InsertAfter(insertedOverrideMethod, CreateOperatorOverload(OperatorType.Equality, currentClass, equalsOpBody));
+					AppendNewLine(script, insertedOverrideMethod, nextNewLineNode);
+					script.InsertAfter(insertedOverrideMethod, CreateOperatorOverload(OperatorType.Inequality, currentClass, notEqualsOpBody));
+				}
 				
-				code.Append(indent + "\n" + generator.GenerateCode(CreateOperatorOverload(OverloadableOperatorType.Equality, currentClass, equalsOpBody), indent));
-				code.Append(indent + "\n" + generator.GenerateCode(CreateOperatorOverload(OverloadableOperatorType.InEquality, currentClass, notEqualsOpBody), indent));
+				if (Options.SurroundWithRegion) {
+					AppendNewLine(script, insertedOverrideMethod, nextNewLineNode);
+					script.InsertAfter(insertedOverrideMethod, new PreProcessorDirective(PreProcessorDirectiveType.Endregion));
+				}
 			}
 			
-			if (Options.SurroundWithRegion) {
-				code.AppendLine(indent + "#endregion");
-			}
-			
-			editor.Document.InsertNormalized(insertionEndAnchor.Offset, code.ToString());
-			
-			return codeForMethodBody;
+			return null;
+		}
+		
+		void AppendNewLine(Script script, AstNode afterNode, NewLineNode newLineNode)
+		{
+			if (newLineNode != null)
+				script.InsertAfter(afterNode, newLineNode.Clone());
 		}
 		
 		List<MethodDeclaration> CreateEqualsOverrides(IType currentClass)
 		{
 			List<MethodDeclaration> methods = new List<MethodDeclaration>();
 			
-			AstType boolReference = new SimpleType("System.Boolean");
-			AstType objectReference = new SimpleType("System.Object", true);
+			AstType boolReference = ConvertType(KnownTypeCode.Boolean);
+			AstType objectReference = ConvertType(KnownTypeCode.Object);
 			
 			MethodDeclaration method = new MethodDeclaration {
 				Name = "Equals",
@@ -275,22 +309,24 @@ namespace CSharpBinding.Refactoring
 			method.Parameters.Add(new ParameterDeclaration(objectReference, "obj"));
 			method.Body = new BlockStatement();
 			
-			AstType currentType = ConvertType(currentClass.DefaultReturnType);
-			
+			AstType currentType = ConvertType(currentClass);
 			Expression expr = null;
 			
-			if (currentClass.ClassType == Dom.ClassType.Struct) {
+			if (currentClass.Kind == TypeKind.Struct) {
 				// return obj is CurrentType && Equals((CurrentType)obj);
-				expr = new IsExpression(new IdentifierExpression("obj"), currentType);
+				expr = new IsExpression() {
+					Expression = new IdentifierExpression("obj"),
+					Type = currentType.Clone()
+				};
 				expr = new ParenthesizedExpression(expr);
 				expr = new BinaryOperatorExpression(
-					expr, BinaryOperatorType.LogicalAnd,
+					expr, BinaryOperatorType.ConditionalAnd,
 					new InvocationExpression(
 						new IdentifierExpression("Equals"),
 						new List<Expression> {
-							new CastExpression(currentType, new IdentifierExpression("obj"), CastType.Cast)
+							new CastExpression(currentType.Clone(), new IdentifierExpression("obj"))
 						}));
-				method.Body.AddChild(new ReturnStatement(expr));
+				method.Body.Add(new ReturnStatement(expr));
 				
 				methods.Add(method);
 				
@@ -298,141 +334,132 @@ namespace CSharpBinding.Refactoring
 				method = new MethodDeclaration {
 					Name = "Equals",
 					Modifiers = Modifiers.Public,
-					ReturnType = boolReference
+					ReturnType = boolReference.Clone()
 				};
 				method.Parameters.Add(new ParameterDeclaration(currentType, "other"));
 				method.Body = new BlockStatement();
 			} else {
-				method.Body.AddChild(new VariableDeclaration(
+				method.Body.Add(new VariableDeclarationStatement(
+					currentType.Clone(),
 					"other",
-					new CastExpression(currentType, new IdentifierExpression("obj")),
-					currentType));
-				method.Body.AddChild(new IfElseStatement(
+					new CastExpression(currentType.Clone(), new IdentifierExpression("obj"))));
+				method.Body.Add(new IfElseStatement(
 					new BinaryOperatorExpression(new IdentifierExpression("other"), BinaryOperatorType.Equality, new PrimitiveExpression(null, "null")),
 					new ReturnStatement(new PrimitiveExpression(false, "false"))));
-				
-//				expr = new BinaryOperatorExpression(new ThisReferenceExpression(),
-//				                                    BinaryOperatorType.ReferenceEquality,
-//				                                    new IdentifierExpression("obj"));
-//				method.Body.AddChild(new IfElseStatement(expr, new ReturnStatement(new PrimitiveExpression(true, "true"))));
 			}
 			
-			
 			expr = null;
-			foreach (IField field in currentClass.Fields) {
+			foreach (IField field in currentClass.GetFields()) {
 				if (field.IsStatic) continue;
 				
 				if (expr == null) {
 					expr = TestEquality("other", field);
 				} else {
-					expr = new BinaryOperatorExpression(expr, BinaryOperatorType.LogicalAnd,
+					expr = new BinaryOperatorExpression(expr, BinaryOperatorType.ConditionalAnd,
 					                                    TestEquality("other", field));
 				}
 			}
 			
-			foreach (IProperty property in currentClass.Properties) {
+			foreach (IProperty property in currentClass.GetProperties()) {
 				if (property.IsStatic || !property.IsAutoImplemented()) continue;
 				if (expr == null) {
 					expr = TestEquality("other", property);
 				} else {
-					expr = new BinaryOperatorExpression(expr, BinaryOperatorType.LogicalAnd,
+					expr = new BinaryOperatorExpression(expr, BinaryOperatorType.ConditionalAnd,
 					                                    TestEquality("other", property));
 				}
 			}
 			
-			method.Body.AddChild(new ReturnStatement(expr ?? new PrimitiveExpression(true, "true")));
+			method.Body.Add(new ReturnStatement(expr ?? new PrimitiveExpression(true, "true")));
 			
 			methods.Add(method);
 			
 			return methods;
 		}
 
-		MethodDeclaration CreateGetHashCodeOverride(IClass currentClass)
+		MethodDeclaration CreateGetHashCodeOverride(ITypeDefinition currentClass)
 		{
-			TypeReference intReference = new TypeReference("System.Int32", true);
-			VariableDeclaration hashCodeVar = new VariableDeclaration("hashCode", new PrimitiveExpression(0, "0"), intReference);
+			const string hashCodeVarName = "hashCode";
+			AstType intReference = ConvertType(KnownTypeCode.Int32);
+			VariableDeclarationStatement hashCodeVar = new VariableDeclarationStatement(intReference, hashCodeVarName, new PrimitiveExpression(0, "0"));
 			
+			// Create new method declaration (to insert after main inserted method)
 			MethodDeclaration getHashCodeMethod = new MethodDeclaration {
 				Name = "GetHashCode",
-				Modifier = Modifiers.Public | Modifiers.Override,
-				TypeReference = intReference,
+				Modifiers = Modifiers.Public | Modifiers.Override,
+				ReturnType = intReference.Clone(),
 				Body = new BlockStatement()
 			};
 			
-			getHashCodeMethod.Body.AddChild(new LocalVariableDeclaration(hashCodeVar));
+			getHashCodeMethod.Body.Add(hashCodeVar);
 			
 			if (currentClass.Fields.Any(f => !f.IsStatic) || currentClass.Properties.Any(p => !p.IsStatic && p.IsAutoImplemented())) {
-				bool usePrimeMultiplication = currentClass.ProjectContent.Language == LanguageProperties.CSharp;
-				BlockStatement hashCalculationBlock;
-				
-				if (usePrimeMultiplication) {
-					hashCalculationBlock = new BlockStatement();
-					getHashCodeMethod.Body.AddChild(new UncheckedStatement(hashCalculationBlock));
-				} else {
-					hashCalculationBlock = getHashCodeMethod.Body;
-				}
+				bool usePrimeMultiplication = true; // Always leave true for C#?
+				BlockStatement hashCalculationBlock = new BlockStatement();
+				getHashCodeMethod.Body.Add(new UncheckedStatement(hashCalculationBlock));
+//					hashCalculationBlock = getHashCodeMethod.Body;
 				
 				int fieldIndex = 0;
 				
 				foreach (IField field in currentClass.Fields) {
 					if (field.IsStatic) continue;
 					
-					AddToBlock(hashCodeVar, getHashCodeMethod, usePrimeMultiplication, hashCalculationBlock, ref fieldIndex, field);
+					AddToBlock(hashCodeVarName, usePrimeMultiplication, hashCalculationBlock, ref fieldIndex, field);
 				}
 				
 				foreach (IProperty property in currentClass.Properties) {
 					if (property.IsStatic || !property.IsAutoImplemented()) continue;
 					
-					AddToBlock(hashCodeVar, getHashCodeMethod, usePrimeMultiplication, hashCalculationBlock, ref fieldIndex, property);
+					AddToBlock(hashCodeVarName, usePrimeMultiplication, hashCalculationBlock, ref fieldIndex, property);
 				}
 			}
 			
-			getHashCodeMethod.Body.AddChild(new ReturnStatement(new IdentifierExpression(hashCodeVar.Name)));
+			getHashCodeMethod.Body.Add(new ReturnStatement(new IdentifierExpression(hashCodeVarName)));
 			return getHashCodeMethod;
 		}
-
-		void AddToBlock(VariableDeclaration hashCodeVar, MethodDeclaration getHashCodeMethod, bool usePrimeMultiplication, BlockStatement hashCalculationBlock, ref int fieldIndex, IField field)
+		
+		void AddToBlock(string hashCodeVarName, bool usePrimeMultiplication, BlockStatement hashCalculationBlock, ref int fieldIndex, IField field)
 		{
 			Expression expr = new InvocationExpression(new MemberReferenceExpression(new IdentifierExpression(field.Name), "GetHashCode"));
 			if (usePrimeMultiplication) {
 				int prime = largePrimes[fieldIndex++ % largePrimes.Length];
-				expr = new AssignmentExpression(new IdentifierExpression(hashCodeVar.Name), AssignmentOperatorType.Add, new BinaryOperatorExpression(new PrimitiveExpression(prime, prime.ToString()), BinaryOperatorType.Multiply, expr));
+				expr = new AssignmentExpression(new IdentifierExpression(hashCodeVarName), AssignmentOperatorType.Add, new BinaryOperatorExpression(new PrimitiveExpression(prime, prime.ToString()), BinaryOperatorType.Multiply, expr));
 			} else {
-				expr = new AssignmentExpression(new IdentifierExpression(hashCodeVar.Name), AssignmentOperatorType.ExclusiveOr, expr);
+				expr = new AssignmentExpression(new IdentifierExpression(hashCodeVarName), AssignmentOperatorType.ExclusiveOr, expr);
 			}
-			if (IsValueType(field.ReturnType)) {
-				hashCalculationBlock.AddChild(new ExpressionStatement(expr));
+			if (IsReferenceType(field.ReturnType)) {
+				hashCalculationBlock.Add(new IfElseStatement(new BinaryOperatorExpression(new IdentifierExpression(field.Name), BinaryOperatorType.InEquality, new PrimitiveExpression(null, "null")), new ExpressionStatement(expr)));
 			} else {
-				hashCalculationBlock.AddChild(new IfElseStatement(new BinaryOperatorExpression(new IdentifierExpression(field.Name), BinaryOperatorType.ReferenceInequality, new PrimitiveExpression(null, "null")), new ExpressionStatement(expr)));
+				hashCalculationBlock.Add(new ExpressionStatement(expr));
 			}
 		}
 		
-		void AddToBlock(VariableDeclaration hashCodeVar, MethodDeclaration getHashCodeMethod, bool usePrimeMultiplication, BlockStatement hashCalculationBlock, ref int fieldIndex, IProperty property)
+		void AddToBlock(string hashCodeVarName, bool usePrimeMultiplication, BlockStatement hashCalculationBlock, ref int fieldIndex, IProperty property)
 		{
 			Expression expr = new InvocationExpression(new MemberReferenceExpression(new IdentifierExpression(property.Name), "GetHashCode"));
 			if (usePrimeMultiplication) {
 				int prime = largePrimes[fieldIndex++ % largePrimes.Length];
-				expr = new AssignmentExpression(new IdentifierExpression(hashCodeVar.Name), AssignmentOperatorType.Add, new BinaryOperatorExpression(new PrimitiveExpression(prime, prime.ToString()), BinaryOperatorType.Multiply, expr));
+				expr = new AssignmentExpression(new IdentifierExpression(hashCodeVarName), AssignmentOperatorType.Add, new BinaryOperatorExpression(new PrimitiveExpression(prime, prime.ToString()), BinaryOperatorType.Multiply, expr));
 			} else {
-				expr = new AssignmentExpression(new IdentifierExpression(hashCodeVar.Name), AssignmentOperatorType.ExclusiveOr, expr);
+				expr = new AssignmentExpression(new IdentifierExpression(hashCodeVarName), AssignmentOperatorType.ExclusiveOr, expr);
 			}
-			if (IsValueType(property.ReturnType)) {
-				hashCalculationBlock.AddChild(new ExpressionStatement(expr));
+			if (IsReferenceType(property.ReturnType)) {
+				hashCalculationBlock.Add(new IfElseStatement(new BinaryOperatorExpression(new IdentifierExpression(property.Name), BinaryOperatorType.InEquality, new PrimitiveExpression(null, "null")), new ExpressionStatement(expr)));
 			} else {
-				hashCalculationBlock.AddChild(new IfElseStatement(new BinaryOperatorExpression(new IdentifierExpression(property.Name), BinaryOperatorType.ReferenceInequality, new PrimitiveExpression(null, "null")), new ExpressionStatement(expr)));
+				hashCalculationBlock.Add(new ExpressionStatement(expr));
 			}
 		}
 		
-		OperatorDeclaration CreateOperatorOverload(OverloadableOperatorType op, IClass currentClass, BlockStatement body)
+		OperatorDeclaration CreateOperatorOverload(OperatorType op, ITypeDefinition currentClass, BlockStatement body)
 		{
 			return new OperatorDeclaration() {
-				OverloadableOperator = op,
-				TypeReference = new TypeReference("System.Boolean", true),
+				OperatorType = op,
+				ReturnType = ConvertType(KnownTypeCode.Boolean),
 				Parameters = {
-					new ParameterDeclarationExpression(ConvertType(currentClass.DefaultReturnType), "lhs"),
-					new ParameterDeclarationExpression(ConvertType(currentClass.DefaultReturnType), "rhs")
+					new ParameterDeclaration(ConvertType(currentClass), "lhs"),
+					new ParameterDeclaration(ConvertType(currentClass), "rhs")
 				},
-				Modifier = Modifiers.Public | Modifiers.Static,
+				Modifiers = Modifiers.Public | Modifiers.Static,
 				Body = body
 			};
 		}
@@ -441,15 +468,28 @@ namespace CSharpBinding.Refactoring
 		{
 			base.CancelButtonClick(sender, e);
 			
-			editor.Document.Insert(anchor.Offset, baseCall);
-			editor.Select(anchor.Offset, baseCall.Length);
+//			editor.Document.Insert(anchor.Offset, baseCall);
+//			editor.Select(anchor.Offset, baseCall.Length);
+			
+			if (baseCallNode != null) {
+				// Insert at least the base call
+				MethodDeclaration insertedOverrideMethod = refactoringContext.GetNode().PrevSibling as MethodDeclaration;
+				if (insertedOverrideMethod == null)
+				{
+					// We are not inside of a method declaration
+					return;
+				}
+				using (Script script = refactoringContext.StartScript()) {
+					script.AddTo(insertedOverrideMethod.Body, baseCallNode);
+				}
+			}
 		}
 		
 		protected override void OKButtonClick(object sender, System.Windows.RoutedEventArgs e)
 		{
 			base.OKButtonClick(sender, e);
 			
-			editor.Caret.Offset = insertionEndAnchor.Offset;
+//			editor.Caret.Offset = insertionEndAnchor.Offset;
 		}
 	}
 }

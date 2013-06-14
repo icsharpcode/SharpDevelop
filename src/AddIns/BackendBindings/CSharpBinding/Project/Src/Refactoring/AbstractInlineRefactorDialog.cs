@@ -12,6 +12,7 @@ using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Parser;
@@ -91,6 +92,16 @@ namespace CSharpBinding.Refactoring
 				optionBindings = new List<OptionBinding>();
 			
 			optionBindings.Add(binding);
+		}
+		
+		protected AstType ConvertType(KnownTypeCode knownTypeCode)
+		{
+			IType type = refactoringContext.Compilation.FindType(knownTypeCode);
+			if (type != null)
+				return ConvertType(type);
+			
+			// Backup solution
+			return new SimpleType(KnownTypeReference.GetCSharpNameByTypeCode(knownTypeCode));
 		}
 		
 		protected AstType ConvertType(IType type)

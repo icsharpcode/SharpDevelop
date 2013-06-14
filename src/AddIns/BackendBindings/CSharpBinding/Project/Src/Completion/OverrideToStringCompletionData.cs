@@ -55,7 +55,7 @@ namespace CSharpBinding.Completion
 			
 			if (!this.Entity.IsAbstract) {
 				// modify body to call the base method
-				if (this.Entity.EntityType == EntityType.Method) {
+				if (this.Entity.SymbolKind == SymbolKind.Method) {
 					var baseCall = new BaseReferenceExpression().Invoke(this.Entity.Name, new Expression[] { });
 					if (((IMethod)this.Entity).ReturnType.IsKnownType(KnownTypeCode.Void))
 						baseCallStatement = new ExpressionStatement(baseCall);

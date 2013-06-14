@@ -95,10 +95,11 @@ namespace CSharpBinding.Completion
 		
 		ICompletionData ICompletionDataFactory.CreateNewOverrideCompletionData(int declarationBegin, IUnresolvedTypeDefinition type, IMember m)
 		{
-			if ((m.EntityType == EntityType.Method) && (m.Name == "ToString"))
+			if ((m.SymbolKind == SymbolKind.Method) && (m.Name == "ToString"))
 				return new OverrideToStringCompletionData(declarationBegin, m, contextAtCaret);
-			else if ((m.EntityType == EntityType.Method) && (m.Name == "GetHashCode"))
-				return new OverrideToStringCompletionData(declarationBegin, m, contextAtCaret);
+			else if ((m.SymbolKind == SymbolKind.Method) && ((m.Name == "GetHashCode")
+			                                                 || ((m.Name == "Equals") && ((((IMethod) m)).Parameters.Count == 1) && (((IMethod) m).Parameters.First().Type.FullName == "System.Object"))))
+				return new OverrideEqualsGetHashCodeCompletionData(declarationBegin, m, contextAtCaret);
 			else
 				return new OverrideCompletionData(declarationBegin, m, contextAtCaret);
 		}
