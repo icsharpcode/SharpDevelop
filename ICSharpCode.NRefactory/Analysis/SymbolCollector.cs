@@ -22,11 +22,11 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.Analysis
 {
-	public class MemberCollector
+	public class SymbolCollector
 	{
-		public static IEnumerable<IMember> GetRelatedMembers(TypeGraph g, IMember m, bool includeOverloads)
+		public static IEnumerable<ISymbol> GetRelatedSymbols(TypeGraph g, ISymbol m, bool includeOverloads)
 		{
-			throw new NotImplementedException();
+			yield return m;
 		}
 	}
 }

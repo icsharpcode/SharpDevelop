@@ -417,6 +417,7 @@
     <Compile Include="CSharp\CodeIssues\DuplicateIfInIfChainIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\UseBlockInsteadColonIssueTests.cs" />
     <Compile Include="CSharp\AstTests.cs" />
+    <Compile Include="Analysis\SymbolCollectorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">
@@ -438,9 +439,6 @@
       <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Analysis" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

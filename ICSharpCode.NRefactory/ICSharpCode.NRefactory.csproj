@@ -83,7 +83,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\AbiComparer.cs" />
-    <Compile Include="Analysis\MemberCollector.cs" />
     <Compile Include="Analysis\TypeGraph.cs" />
     <Compile Include="Analysis\TypeGraphNode.cs" />
     <Compile Include="Documentation\DocumentationComment.cs" />
@@ -279,10 +278,10 @@
     <Compile Include="Completion\CompletionExtensionMethods.cs" />
     <Compile Include="Refactoring\IssueMarker.cs" />
     <Compile Include="Refactoring\Severity.cs" />
+    <Compile Include="Analysis\SymbolCollector.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />
-    <Folder Include="Analysis" />
     <Folder Include="TypeSystem\" />
     <Folder Include="Utils\CompositeFormatStringParser\" />
     <Folder Include="Refactoring\" />
