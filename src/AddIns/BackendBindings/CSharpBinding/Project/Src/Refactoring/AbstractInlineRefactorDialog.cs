@@ -50,7 +50,7 @@ namespace CSharpBinding.Refactoring
 			Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(delegate { this.MoveFocus(new TraversalRequest(FocusNavigationDirection.First)); }));
 		}
 		
-		protected abstract string GenerateCode(IUnresolvedTypeDefinition currentClass);
+		protected abstract string GenerateCode(ITypeDefinition currentClass);
 		
 		protected virtual void OKButtonClick(object sender, RoutedEventArgs e)
 		{
@@ -62,7 +62,11 @@ namespace CSharpBinding.Refactoring
 			}
 			
 			if (parseInfo != null) {
-				IUnresolvedTypeDefinition current = parseInfo.UnresolvedFile.GetInnermostTypeDefinition(anchor.Line, anchor.Column);
+				var typeResolveContext = refactoringContext.GetTypeResolveContext();
+				if (typeResolveContext == null) {
+					return;
+				}
+				var current = typeResolveContext.CurrentTypeDefinition;
 				
 				using (editor.Document.OpenUndoGroup()) {
 					// GenerateCode could modify the document.

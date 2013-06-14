@@ -41,7 +41,7 @@ namespace CSharpBinding.Refactoring
 				Visibility = System.Windows.Visibility.Collapsed;
 		}
 		
-		protected override string GenerateCode(IUnresolvedTypeDefinition currentClass)
+		protected override string GenerateCode(ITypeDefinition currentClass)
 		{
 			List<PropertyOrFieldWrapper> filtered = this.varList.SelectedItems.OfType<PropertyOrFieldWrapper>()
 				.OrderBy(p => p.Index)

@@ -8,6 +8,9 @@ using System.Text;
 
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
@@ -21,13 +24,13 @@ namespace CSharpBinding.Refactoring
 	/// </summary>
 	public partial class OverrideEqualsGetHashCodeMethodsDialog : AbstractInlineRefactorDialog
 	{
-		IClass selectedClass;
+		IType selectedClass;
 		ITextAnchor startAnchor;
 		IMethod selectedMethod;
-		string baseCall;
+		AstNode baseCallNode;
 		
 		public OverrideEqualsGetHashCodeMethodsDialog(InsertionContext context, ITextEditor editor, ITextAnchor startAnchor, ITextAnchor endAnchor,
-		                                              ITextAnchor insertionPosition, IClass selectedClass, IMethod selectedMethod, string baseCall)
+		                                              ITextAnchor insertionPosition, IType selectedClass, IMethod selectedMethod, AstNode baseCallNode)
 			: base(context, editor, insertionPosition)
 		{
 			if (selectedClass == null)
@@ -39,7 +42,7 @@ namespace CSharpBinding.Refactoring
 			this.startAnchor = startAnchor;
 			this.insertionEndAnchor = endAnchor;
 			this.selectedMethod = selectedMethod;
-			this.baseCall = baseCall;
+			this.baseCallNode = baseCallNode;
 			
 			addIEquatable.Content = string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddInterface}"),
 			                                      "IEquatable<" + selectedClass.Name + ">");
@@ -72,23 +75,15 @@ namespace CSharpBinding.Refactoring
 			1000000483, 1000000513, 1000000531, 1000000579
 		};
 		
-		static bool IsValueType(IReturnType type)
-		{
-			IClass c = type.GetUnderlyingClass();
-			return c != null && (c.ClassType == Dom.ClassType.Struct || c.ClassType == Dom.ClassType.Enum);
-		}
-		
-		static bool CanCompareEqualityWithOperator(IReturnType type)
+		static bool CanCompareEqualityWithOperator(IType type)
 		{
 			// return true for value types except float and double
 			// return false for reference types except string.
-			IClass c = type.GetUnderlyingClass();
-			return c != null
-				&& c.FullyQualifiedName != "System.Single"
-				&& c.FullyQualifiedName != "System.Double"
-				&& (c.ClassType == Dom.ClassType.Struct
-				    || c.ClassType == Dom.ClassType.Enum
-				    || c.FullyQualifiedName == "System.String");
+			return type != null
+				&& type.FullName != "System.Single"
+				&& type.FullName != "System.Double"
+				&& (!type.IsReferenceType
+				    || type.FullName == "System.String");
 		}
 		
 		static Expression TestEquality(string other, IField field)
@@ -115,7 +110,7 @@ namespace CSharpBinding.Refactoring
 				                                    new MemberReferenceExpression(new IdentifierExpression(other), property.Name));
 			} else {
 				InvocationExpression ie = new InvocationExpression(
-					new MemberReferenceExpression(new TypeReferenceExpression(new TypeReference("System.Object", true)), "Equals")
+					new MemberReferenceExpression(new TypeReferenceExpression(new SimpleType("System.Object")), "Equals")
 				);
 				ie.Arguments.Add(new MemberReferenceExpression(new ThisReferenceExpression(), property.Name));
 				ie.Arguments.Add(new MemberReferenceExpression(new IdentifierExpression(other), property.Name));
@@ -123,17 +118,17 @@ namespace CSharpBinding.Refactoring
 			}
 		}
 		
-		protected override string GenerateCode(LanguageProperties language, IClass currentClass)
+		protected override string GenerateCode(ITypeDefinition currentClass)
 		{
 			StringBuilder code = new StringBuilder();
 			
-			var line = editor.Document.GetLineForOffset(startAnchor.Offset);
+			var line = editor.Document.GetLineByOffset(startAnchor.Offset);
 			
 			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset);
 			
 			CodeGenerator generator = language.CodeGenerator;
 			
-			if (Options.AddIEquatableInterface) {
+//			if (Options.AddIEquatableInterface) {
 				// TODO : add IEquatable<T> to class
 //				IAmbience ambience = currentClass.CompilationUnit.Language.GetAmbience();
 //
@@ -156,7 +151,7 @@ namespace CSharpBinding.Refactoring
 //				int endOffset = editor.Document.PositionToOffset(currentClass.BodyRegion.EndLine, currentClass.BodyRegion.EndColumn);
 //
 //				editor.Document.Replace(startOffset, endOffset - startOffset, a);
-			}
+//			}
 			
 			if (Options.SurroundWithRegion) {
 				editor.Document.InsertNormalized(startAnchor.Offset, "#region Equals and GetHashCode implementation\n" + indent);
@@ -265,28 +260,28 @@ namespace CSharpBinding.Refactoring
 			return codeForMethodBody;
 		}
 		
-		List<MethodDeclaration> CreateEqualsOverrides(IClass currentClass)
+		List<MethodDeclaration> CreateEqualsOverrides(IType currentClass)
 		{
 			List<MethodDeclaration> methods = new List<MethodDeclaration>();
 			
-			TypeReference boolReference = new TypeReference("System.Boolean", true);
-			TypeReference objectReference = new TypeReference("System.Object", true);
+			AstType boolReference = new SimpleType("System.Boolean");
+			AstType objectReference = new SimpleType("System.Object", true);
 			
 			MethodDeclaration method = new MethodDeclaration {
 				Name = "Equals",
-				Modifier = Modifiers.Public | Modifiers.Override,
-				TypeReference = boolReference
+				Modifiers = Modifiers.Public | Modifiers.Override,
+				ReturnType = boolReference
 			};
-			method.Parameters.Add(new ParameterDeclarationExpression(objectReference, "obj"));
+			method.Parameters.Add(new ParameterDeclaration(objectReference, "obj"));
 			method.Body = new BlockStatement();
 			
-			TypeReference currentType = ConvertType(currentClass.DefaultReturnType);
+			AstType currentType = ConvertType(currentClass.DefaultReturnType);
 			
 			Expression expr = null;
 			
 			if (currentClass.ClassType == Dom.ClassType.Struct) {
 				// return obj is CurrentType && Equals((CurrentType)obj);
-				expr = new TypeOfIsExpression(new IdentifierExpression("obj"), currentType);
+				expr = new IsExpression(new IdentifierExpression("obj"), currentType);
 				expr = new ParenthesizedExpression(expr);
 				expr = new BinaryOperatorExpression(
 					expr, BinaryOperatorType.LogicalAnd,
@@ -302,18 +297,18 @@ namespace CSharpBinding.Refactoring
 				// IEquatable implementation:
 				method = new MethodDeclaration {
 					Name = "Equals",
-					Modifier = Modifiers.Public,
-					TypeReference = boolReference
+					Modifiers = Modifiers.Public,
+					ReturnType = boolReference
 				};
-				method.Parameters.Add(new ParameterDeclarationExpression(currentType, "other"));
+				method.Parameters.Add(new ParameterDeclaration(currentType, "other"));
 				method.Body = new BlockStatement();
 			} else {
-				method.Body.AddChild(new LocalVariableDeclaration(new VariableDeclaration(
+				method.Body.AddChild(new VariableDeclaration(
 					"other",
-					new CastExpression(currentType, new IdentifierExpression("obj"), CastType.TryCast),
-					currentType)));
+					new CastExpression(currentType, new IdentifierExpression("obj")),
+					currentType));
 				method.Body.AddChild(new IfElseStatement(
-					new BinaryOperatorExpression(new IdentifierExpression("other"), BinaryOperatorType.ReferenceEquality, new PrimitiveExpression(null, "null")),
+					new BinaryOperatorExpression(new IdentifierExpression("other"), BinaryOperatorType.Equality, new PrimitiveExpression(null, "null")),
 					new ReturnStatement(new PrimitiveExpression(false, "false"))));
 				
 //				expr = new BinaryOperatorExpression(new ThisReferenceExpression(),

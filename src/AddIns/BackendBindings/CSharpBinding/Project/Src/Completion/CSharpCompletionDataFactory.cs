@@ -97,6 +97,8 @@ namespace CSharpBinding.Completion
 		{
 			if ((m.EntityType == EntityType.Method) && (m.Name == "ToString"))
 				return new OverrideToStringCompletionData(declarationBegin, m, contextAtCaret);
+			else if ((m.EntityType == EntityType.Method) && (m.Name == "GetHashCode"))
+				return new OverrideToStringCompletionData(declarationBegin, m, contextAtCaret);
 			else
 				return new OverrideCompletionData(declarationBegin, m, contextAtCaret);
 		}

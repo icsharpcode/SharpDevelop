@@ -39,7 +39,7 @@ namespace CSharpBinding.Refactoring
 			listBox.SelectAll();
 		}
 		
-		protected override string GenerateCode(IUnresolvedTypeDefinition currentClass)
+		protected override string GenerateCode(ITypeDefinition currentClass)
 		{
 			string[] fields = listBox.SelectedItems.OfType<PropertyOrFieldWrapper>().Select(f2 => f2.MemberName).ToArray();
 			PrimitiveExpression formatString = new PrimitiveExpression(GenerateFormatString(currentClass, editor.Language.CodeGenerator, fields));
@@ -66,7 +66,7 @@ namespace CSharpBinding.Refactoring
 			return null;
 		}
 		
-		string GenerateFormatString(IUnresolvedTypeDefinition currentClass, ICodeGenerator generator, string[] fields)
+		string GenerateFormatString(ITypeDefinition currentClass, ICodeGenerator generator, string[] fields)
 		{
 			string fieldsString = "";
 			

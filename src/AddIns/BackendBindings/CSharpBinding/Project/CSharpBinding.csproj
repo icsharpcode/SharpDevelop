@@ -73,6 +73,7 @@
     <Compile Include="Src\Completion\CSharpMethodInsight.cs" />
     <Compile Include="Src\Completion\ImportCompletionData.cs" />
     <Compile Include="Src\Completion\OverrideCompletionData.cs" />
+    <Compile Include="Src\Completion\OverrideGetHashCodeCompletionData.cs" />
     <Compile Include="Src\Completion\OverrideToStringCompletionData.cs" />
     <Compile Include="Src\Completion\SegmentTrackingOutputFormatter.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormatter.cs" />
@@ -95,6 +96,9 @@
     <Compile Include="Src\Refactoring\IssueManager.cs" />
     <Compile Include="Src\Refactoring\IssueOptionsViewModel.cs" />
     <Compile Include="Src\Refactoring\MoveTypeToFileContextAction.cs" />
+    <Compile Include="Src\Refactoring\OverrideEqualsGetHashCodeMethodsDialog.xaml.cs">
+      <DependentUpon>OverrideEqualsGetHashCodeMethodsDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Src\Refactoring\OverrideToStringMethodDialog.xaml.cs">
       <DependentUpon>OverrideToStringMethodDialog.xaml</DependentUpon>
     </Compile>
@@ -196,6 +200,7 @@
     <Page Include="Src\Refactoring\InsertCtorDialog.xaml" />
     <Page Include="Src\Refactoring\IssueOptions.xaml" />
     <Page Include="Src\OptionPanels\BuildOptions.xaml" />
+    <Page Include="Src\Refactoring\OverrideEqualsGetHashCodeMethodsDialog.xaml" />
     <Page Include="Src\Refactoring\OverrideToStringMethodDialog.xaml" />
     <Page Include="Src\Refactoring\SearchForIssuesDialog.xaml" />
   </ItemGroup>
