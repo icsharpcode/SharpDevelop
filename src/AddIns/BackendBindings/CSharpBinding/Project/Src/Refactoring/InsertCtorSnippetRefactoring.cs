@@ -83,6 +83,7 @@ namespace CSharpBinding.Refactoring
 			}
 			
 			foreach (var p in resolvedSourceType.GetProperties().Where(prop => prop.CanSet && !prop.IsIndexer
+			                                                           && prop.IsAutoImplemented()
 			                                                           && prop.IsStatic == sourceType.IsStatic
 			                                                           && prop.ReturnType != null)) {
 				yield return new PropertyOrFieldWrapper(p) { Index = i };

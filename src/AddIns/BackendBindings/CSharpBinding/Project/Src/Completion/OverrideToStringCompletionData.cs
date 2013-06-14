@@ -138,6 +138,7 @@ namespace CSharpBinding.Completion
 			}
 			
 			foreach (var p in sourceType.GetProperties().Where(prop => prop.CanGet && !prop.IsIndexer
+			                                                   && prop.IsAutoImplemented()
 			                                                   && prop.IsStatic == sourceType.GetDefinition().IsStatic
 			                                                   && prop.ReturnType != null)) {
 				yield return new PropertyOrFieldWrapper(p) { Index = i };
