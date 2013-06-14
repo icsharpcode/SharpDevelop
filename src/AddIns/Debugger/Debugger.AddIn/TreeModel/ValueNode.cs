@@ -152,7 +152,9 @@ namespace Debugger.AddIn.TreeModel
 				} else if (val.Type.FullName == typeof(char).FullName) {
 					fullValue = "'" + val.InvokeToString(WindowsDebugger.EvalThread).Replace("\n", "\\n").Replace("\t", "\\t").Replace("\r", "\\r").Replace("\0", "\\0").Replace("\b", "\\b").Replace("\a", "\\a").Replace("\f", "\\f").Replace("\v", "\\v").Replace("\"", "\\\"") + "'";
 				} else if ((val.Type.Kind == TypeKind.Class || val.Type.Kind == TypeKind.Struct)) {
-					fullValue = val.InvokeToString(WindowsDebugger.EvalThread);
+					fullValue = val.FormatByDebuggerDisplayAttribute(WindowsDebugger.EvalThread);
+					if (fullValue == null)
+						fullValue = val.InvokeToString(WindowsDebugger.EvalThread);
 				} else {
 					fullValue = val.AsString();
 				}

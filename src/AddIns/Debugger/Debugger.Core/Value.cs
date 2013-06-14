@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Debugger.Interop.CorDebug;
 using Debugger.MetaData;
 using System.Runtime.InteropServices;
@@ -396,7 +398,7 @@ namespace Debugger
 					throw new GetValueException("Null reference");
 				// Array.Length can be called
 				if (objectInstance.Type.Kind == TypeKind.Array)
-					return; 
+					return;
 				if (objectInstance.Type.GetDefinition() == null || !objectInstance.Type.GetDefinition().IsDerivedFrom(memberInfo.DeclaringType.GetDefinition()))
 					throw new GetValueException("Object is not of type " + memberInfo.DeclaringType.FullName);
 			}
@@ -420,7 +422,7 @@ namespace Debugger
 				return GetPropertyValue(evalThread, objectInstance, (IProperty)memberInfo, arguments);
 			} else if (memberInfo is IMethod) {
 				return InvokeMethod(evalThread, objectInstance, (IMethod)memberInfo, arguments);
-			} else if (memberInfo is IEvent) { 
+			} else if (memberInfo is IEvent) {
 				string name = memberInfo.Name;
 				IField f = memberInfo.DeclaringType.GetFields(m => m.Name == name, GetMemberOptions.None).FirstOrDefault();
 				if (f == null) {
@@ -554,6 +556,76 @@ namespace Debugger
 			arguments.CopyTo(allParams, 1);
 			
 			return Value.InvokeMethod(evalThread, objectInstance, propertyInfo.Setter, allParams);
+		}
+		
+		/// <summary>
+		/// Formats contents of this value according to format specified by <see cref="System.Diagnostics.DebuggerDisplayAttribute"/>.
+		/// </summary>
+		/// <param name="evalThread"></param>
+		/// <returns>Formatted value or <c>null</c>, if attribute is not set.</cJ></returns>
+		public string FormatByDebuggerDisplayAttribute(Thread evalThread)
+		{
+			if ((this.Type.Kind == TypeKind.Class)
+			    || (this.Type.Kind == TypeKind.Struct)
+			    || (this.Type.Kind == TypeKind.Enum)
+			    || (this.Type.Kind == TypeKind.Delegate)) {
+				
+				// Try to get the attribute
+				ITypeDefinition typeDef = this.type.GetDefinition();
+				if (typeDef != null) {
+					var debuggerDisplayAttribute = typeDef.GetAttribute(new TopLevelTypeName("System.Diagnostics.DebuggerDisplayAttribute"));
+					if (debuggerDisplayAttribute != null) {
+						var formatStringParameter = debuggerDisplayAttribute.PositionalArguments.ElementAtOrDefault(0);
+						if ((formatStringParameter != null) && (formatStringParameter.ConstantValue is string)) {
+							return FormatDebugValue(evalThread, (string) formatStringParameter.ConstantValue);
+						}
+					}
+				}
+			}
+			
+			return null;
+		}
+		
+		/// <summary>
+		/// Formats current Value according to the given format, specified by <see cref="System.Diagnostics.DebuggerDisplayAttribute"/>
+		/// </summary>
+		/// <param name="debugFormat">Format to use</param>
+		/// <returns>Formatted string.</returns>
+		string FormatDebugValue(Thread evalThread, string debugFormat)
+		{
+			StringBuilder formattedOutput = new StringBuilder();
+			StringBuilder currentFieldName = new StringBuilder();
+			bool insideFieldName = false;
+			for (int i = 0; i < debugFormat.Length; i++) {
+				char thisChar = debugFormat[i];
+				
+				if (thisChar == '{') {
+					insideFieldName = true;
+				} else if (thisChar == '}') {
+					// Insert contents of specified member, if we can find it, otherwise we display "?"
+					string memberValueStr = "?";
+					IMember member = this.type.GetMembers(
+						m => (m.Name == currentFieldName.ToString()) && ((m.SymbolKind == SymbolKind.Field) || (m.SymbolKind == SymbolKind.Property))
+					).FirstOrDefault();
+					if (member != null) {
+						Value memberValue = GetMemberValue(evalThread, member);
+						memberValueStr = memberValue.InvokeToString(evalThread);
+					}
+					
+					formattedOutput.Append(memberValueStr);
+					
+					insideFieldName = false;
+					currentFieldName.Clear();
+				} else {
+					if (insideFieldName) {
+						currentFieldName.Append(thisChar);
+					} else {
+						formattedOutput.Append(thisChar);
+					}
+				}
+			}
+			
+			return formattedOutput.ToString();
 		}
 		
 		/// <summary> Synchronously invoke the method </summary>
