@@ -119,6 +119,8 @@ namespace Debugger.AddIn
 					throw new GetValueException("An object reference is required for the non-static field, method, or property '" + importedMember.FullName + "'");
 				target = Convert(result.TargetResult);
 			}
+			if (!allowMethodInvoke && (importedMember is IMethod))
+				throw new InvalidOperationException("Method invocation not allowed in the current context!");
 			Value val = Value.GetMemberValue(evalThread, target, importedMember);
 			if (val == null)
 				throw new GetValueException("Member not found!");
@@ -482,7 +484,7 @@ namespace Debugger.AddIn
 		
 		string Visit(TypeResolveResult result)
 		{
-			throw new NotImplementedException();
+			return new CSharpAmbience().ConvertType(result.Type);
 		}
 		
 		string Visit(UnknownMemberResolveResult result)

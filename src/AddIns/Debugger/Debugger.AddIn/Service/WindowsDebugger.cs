@@ -625,11 +625,12 @@ namespace ICSharpCode.SharpDevelop.Services
 			var resolveResult = e.ResolveResult;
 			if (resolveResult == null)
 				return;
-			if (resolveResult is LocalResolveResult || resolveResult is MemberResolveResult || resolveResult is InvocationResolveResult) {
+			if (resolveResult is LocalResolveResult || resolveResult is MemberResolveResult) {
 				string text = string.Empty;
 				try {
 					text = new ResolveResultPrettyPrinter().Print(resolveResult);
-				} catch (NotImplementedException) {
+				} catch (NotImplementedException ex) {
+					SD.Log.Warn(ex);
 				}
 				Func<Value> getValue = delegate {
 					ExpressionEvaluationVisitor eval = new ExpressionEvaluationVisitor(CurrentStackFrame, EvalThread, CurrentStackFrame.AppDomain.Compilation);
@@ -638,7 +639,8 @@ namespace ICSharpCode.SharpDevelop.Services
 				try {
 					var rootNode = new ValueNode(ClassBrowserIconService.LocalVariable, text, getValue);
 					e.SetToolTip(new DebuggerTooltipControl(rootNode));
-				} catch (InvalidOperationException) {
+				} catch (InvalidOperationException ex) {
+					SD.Log.Warn(ex);
 				}
 			}
 		}
