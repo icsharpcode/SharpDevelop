@@ -272,7 +272,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			EntityItem item = membersComboBox.SelectedItem as EntityItem;
 			if (item != null) {
-				IMember member = item.Entity as IMember;
+				IUnresolvedMember member = item.Entity as IUnresolvedMember;
 				if (member != null && jumpOnSelectionChange) {
 					SD.AnalyticsMonitor.TrackFeature(GetType(), "JumpToMember");
 					JumpTo(item, member.Region);
