@@ -35,9 +35,14 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 			visitor.Visit(this);
 		}
 		
-		public override ICSharpCode.Reporting.Arrange.IArrangeStrategy GetArrangeStrategy()
+		public override IArrangeStrategy GetArrangeStrategy()
 		{
 			return new ContainerArrangeStrategy();
+		}
+		
+		public override IMeasurementStrategy MeasurementStrategy()
+		{
+			return new ContainerMeasurementStrategy();
 		}
 	}
 }

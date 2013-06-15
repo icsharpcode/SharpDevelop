@@ -29,8 +29,6 @@ namespace ICSharpCode.Reporting.Interfaces
 	
 	public interface IPrintableObject:IReportObject {
 		IExportColumn CreateExportColumn();
-		IMeasurementStrategy MeasurementStrategy ();
-		
 	}
 	
 }

@@ -68,9 +68,9 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 			var section = sections.ToList()[2] as ExportContainer;
 			var result = section.ExportedItems[0];
 			Assert.That(result,Is.AssignableFrom(typeof(ExportText)));
-						Console.WriteLine("-------PageLayoutFixture:ShowDebug---------");
-			var ex = new DebugExporter(reportCreator.Pages);
-			ex.Run();
+//						Console.WriteLine("-------PageLayoutFixture:ShowDebug---------");
+//			var ex = new DebugExporter(reportCreator.Pages);
+//			ex.Run();
 		}
 		
 		

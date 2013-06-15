@@ -8,7 +8,7 @@
  */
 using System;
 using System.Drawing;
-using ICSharpCode.Reporting.Items;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Globals
 {
@@ -22,7 +22,7 @@ namespace ICSharpCode.Reporting.Globals
 		{
 		}
 		
-		public static Size Measure (ITextItem item,Graphics graphics) {
+		public static Size Measure (IExportText item,Graphics graphics) {
 			
 			if (!item.CanGrow) {
 				return item.Size;

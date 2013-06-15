@@ -8,6 +8,7 @@
  */
 using System;
 using System.Drawing;
+using ICSharpCode.Reporting.Arrange;
 using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces.Export;
@@ -41,5 +42,9 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 		
 		public string Text {get;set;}
 			
+		public override ICSharpCode.Reporting.Arrange.IMeasurementStrategy MeasurementStrategy()
+		{
+			return new TextBasedMeasurementStrategy();
+		}
 	}
 }

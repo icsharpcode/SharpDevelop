@@ -60,11 +60,11 @@
   <ItemGroup>
     <Compile Include="src\DataSource\ContributorsList.cs" />
     <Compile Include="src\DataSource\CollectionHandlingFixture.cs" />
+    <Compile Include="src\MeasureArrange\ContainerArrangeStrategyFixture.cs" />
     <Compile Include="src\Model\ReportModelFixture.cs" />
     <Compile Include="src\Model\ReportSettingsFixture.cs" />
     <Compile Include="src\Model\Report_FromListFixture.cs" />
     <Compile Include="src\Model\Report_TwoItemsFixture.cs" />
-    <Compile Include="src\PageBuilder\ContainerArrangeStrategyFixture.cs" />
     <Compile Include="src\PageBuilder\BaseConvertFixture.cs" />
     <Compile Include="src\PageBuilder\ContainerConverterFixture.cs" />
     <Compile Include="src\PageBuilder\DataPageBuilderFixture.cs" />
@@ -81,6 +81,7 @@
     <Folder Include="src" />
     <Folder Include="src\Model" />
     <Folder Include="src\DataSource" />
+    <Folder Include="src\MeasureArrange" />
     <Folder Include="src\Reportingfactory" />
     <Folder Include="src\ReportItems" />
     <Folder Include="src\PageBuilder" />

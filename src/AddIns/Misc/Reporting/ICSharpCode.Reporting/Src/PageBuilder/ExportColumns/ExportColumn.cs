@@ -51,5 +51,10 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 				return new Rectangle(Location,Size);
 			}
 		}
+		
+		public virtual IMeasurementStrategy MeasurementStrategy()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

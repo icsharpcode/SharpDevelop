@@ -52,7 +52,7 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 		{
 			var exportContainer = (ExportContainer)Container.CreateExportColumn();
 			exportContainer.Location = CurrentLocation;
-			exportContainer.DesiredSize = Measure(Container);
+			exportContainer.DesiredSize = Measure(exportContainer);
 			return exportContainer;
 		}
 
@@ -64,14 +64,14 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 				var exportColumn = ExportColumnFactory.CreateItem(element);
 				exportColumn.Parent = exportContainer;
 				exportColumn.Location = new Point(element.Location.X,element.Location.Y + position.Y);
-				exportColumn.DesiredSize = Measure(element);
+				exportColumn.DesiredSize = Measure(exportColumn);
 				itemsList.Add(exportColumn);
 			}
 			return itemsList;
 		}
 
 		
-		Size Measure(IPrintableObject element)
+		Size Measure(IExportColumn element)
 		{
 			var measureStrategy = element.MeasurementStrategy();
 			return measureStrategy.Measure(element, Graphics);

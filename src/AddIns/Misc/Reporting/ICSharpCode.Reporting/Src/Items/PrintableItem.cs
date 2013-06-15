@@ -8,7 +8,6 @@
  */
 using System;
 using System.Drawing;
-using ICSharpCode.Reporting.Arrange;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 
@@ -24,11 +23,6 @@ namespace ICSharpCode.Reporting.Items
 
 		
 		public virtual IExportColumn CreateExportColumn()
-		{
-			return null;
-		}
-		
-		public virtual IMeasurementStrategy MeasurementStrategy ()
 		{
 			return null;
 		}

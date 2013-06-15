@@ -20,6 +20,7 @@ namespace ICSharpCode.Reporting.Interfaces.Export
 	public interface IExportColumn:IReportObject
 	{
 		IArrangeStrategy GetArrangeStrategy();
+		IMeasurementStrategy MeasurementStrategy ();
 		Size DesiredSize {get;set;}
 		IExportColumn Parent {get;set;}
 		Rectangle DisplayRectangle {get;}

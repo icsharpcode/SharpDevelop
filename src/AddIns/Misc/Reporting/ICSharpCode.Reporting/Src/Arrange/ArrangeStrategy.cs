@@ -39,7 +39,7 @@ namespace ICSharpCode.Reporting.Arrange
 			if ((container != null) && (container.ExportedItems.Count > 0)) {
 				
 				
-				FindBiggestRectangle(container);
+				BiggestRectangle = FindBiggestRectangle(container);
 				var resizeable = from resize in container.ExportedItems
 					where ((resize.CanGrow == true))
 					select resize;
@@ -54,27 +54,18 @@ namespace ICSharpCode.Reporting.Arrange
 			}
 		}
 		
-		private void FindBiggestRectangle (IExportContainer container)
+		private Rectangle FindBiggestRectangle (IExportContainer container)
 		{
-		    BiggestRectangle = Rectangle.Empty;
-            /*
-            foreach (var item in container.ExportedItems)
-            {
-                if (item.DesiredSize.Height > BiggestRectangle.Size.Height)
-                {
-                    BiggestRectangle = new Rectangle(new Point(container.Location.X + item.Location.X,
-                                                               container.Location.Y + item.Location.Y)
-                                                     , item.DesiredSize);
-                }
-            }
-            */
+		    var rect = Rectangle.Empty;
+          
 		    foreach (var item in container.ExportedItems
                 .Where(item => item.DesiredSize.Height > BiggestRectangle.Size.Height))
 		    {
-		        BiggestRectangle = new Rectangle(new Point(container.Location.X + item.Location.X,
+		        rect = new Rectangle(new Point(container.Location.X + item.Location.X,
 		                                                   container.Location.Y + item.Location.Y)
 		                                         ,item.DesiredSize);
 		    }
+           return rect;
 		}
 
 	    public Rectangle BiggestRectangle {get; private set;}

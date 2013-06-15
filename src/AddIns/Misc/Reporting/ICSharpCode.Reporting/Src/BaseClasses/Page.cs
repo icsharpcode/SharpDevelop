@@ -121,5 +121,10 @@ namespace ICSharpCode.Reporting.BaseClasses
 				return new Rectangle(Location,Size);
 			}
 		}
+		
+		public ICSharpCode.Reporting.Arrange.IMeasurementStrategy MeasurementStrategy()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

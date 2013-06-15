@@ -97,8 +97,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 		IExportContainer CreateContainerForSection(Point location )
 		{
 			var detail = (ExportContainer)Container.CreateExportColumn();
-//			var m = Container.MeasurementStrategy();
-//			detail.DesiredSize = m.Measure(Container,Graphics);
 			detail.Location = location;
 			return detail;
 		}

@@ -8,7 +8,6 @@
  */
 using System;
 using System.Drawing;
-using ICSharpCode.Reporting.Arrange;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
@@ -50,12 +49,6 @@ namespace ICSharpCode.Reporting.Items
 			ex.Text = Text;
 			ex.CanGrow = CanGrow;
 			return ex;
-		}
-		
-		public override ICSharpCode.Reporting.Arrange.IMeasurementStrategy MeasurementStrategy()
-		{
-			return new TextBasedMeasurementStrategy();
-		}
-			
+		}	
 	}
 }

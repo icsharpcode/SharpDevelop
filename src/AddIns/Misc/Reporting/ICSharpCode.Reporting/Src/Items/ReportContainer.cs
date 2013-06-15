@@ -8,8 +8,6 @@
  */
 using System;
 using System.Collections.Generic;
-using ICSharpCode.Reporting.Arrange;
-using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
@@ -44,12 +42,6 @@ namespace ICSharpCode.Reporting.Items
 			BackColor = this.BackColor,
 			DesiredSize = this.Size
 			};
-		}
-		
-		
-		public override IMeasurementStrategy MeasurementStrategy()
-		{
-			return new ContainerMeasurementStrategy();
 		}
 	}
 }
