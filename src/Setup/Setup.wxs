@@ -424,6 +424,8 @@
 				<ComponentRef Id="FSharpBindingAddin"/>
 				<ComponentRef Id="FSharp2ConsoleProjectTemplate"/>
 				<ComponentRef Id="FSharp3ConsoleProjectTemplate"/>
+				<ComponentRef Id="FSharp2LibraryProjectTemplate"/>
+				<ComponentRef Id="FSharp3LibraryProjectTemplate"/>
 				<ComponentRef Id="FSharpEmptyClassTemplate"/>
 				
 				<ComponentRef Id="SharpDevelopSourceAnalysisTargets"/>

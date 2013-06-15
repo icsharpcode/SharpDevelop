@@ -1123,6 +1123,12 @@
 										<Component Guid="27FCD513-F51E-4F49-8602-03E39067D662" Id="FSharp3ConsoleProjectTemplate" DiskId="1">
 											<File Source="..\..\AddIns\BackendBindings\FSharpBinding\Templates\FSharp3ConsoleProject.xpt" Name="FSharp3ConsoleProject.xpt" Id="FSharp.Templates.FSharp3ConsoleProject.xpt" KeyPath="yes" />
 										</Component>
+										<Component Id="FSharp2LibraryProjectTemplate" Guid="4664CE65-92F2-4175-BF98-E33189F3F37F" DiskId="1">
+											<File Id="FSharp2LibraryProject.xpt" Name="FSharp2LibraryProject.xpt" Source="..\..\AddIns\BackendBindings\FSharpBinding\Templates\FSharp2LibraryProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="FSharp3LibraryProjectTemplate" Guid="A2B26292-DD79-4D80-A219-0A699C4C30FC" DiskId="1">
+											<File Id="FSharp3LibraryProject.xpt" Name="FSharp3LibraryProject.xpt" Source="..\..\AddIns\BackendBindings\FSharpBinding\Templates\FSharp3LibraryProject.xpt" KeyPath="yes" />
+										</Component>
 									</Directory>
 								</Directory>
 								<Directory Id="RubyBinding" Name="RubyBinding">
