@@ -10,15 +10,17 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-using ICSharpCode.Reporting.Factories;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
-using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.PageBuilder.Converter
 {
 	internal interface IContainerConverter
 	{
-		IExportContainer Convert();
+		IExportContainer Convert(IReportContainer reportContainer);
+		List<IExportColumn> CreateConvertedList(IReportContainer reportContainer,IExportContainer exportContainer);
+		List<IExportColumn> CreateConvertedList(IReportContainer reportContainer,IExportContainer exportContainer,Point position);
+		Size Measure(IExportColumn element);
+		void ArrangeContainer(IExportContainer exportContainer);
 	}
 }

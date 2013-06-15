@@ -8,13 +8,11 @@
  */
 using System;
 using System.Drawing;
-using ICSharpCode.Reporting.DataManager.Listhandling;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.Converter;
 using NUnit.Framework;
-using ICSharpCode.Reporting.Test.DataSource;
 
 namespace ICSharpCode.Reporting.Test.PageBuilder
 {
@@ -26,8 +24,8 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		
 		[Test]
 		public void ConverterReturnExportContainer() {
-			var converter = new ContainerConverter(graphics,container,new Point(30,30));
-			var result = converter.Convert();
+			var converter = new ContainerConverter(graphics,new Point(30,30));
+			var result = converter.Convert(container);
 			Assert.That(result,Is.InstanceOf(typeof(IExportContainer)));
 		}
 		
@@ -35,8 +33,10 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		[Test]
 		public void ConverterReturnExportContainerwithTwoItems()
 		{
-			var converter = new ContainerConverter(graphics,container,new Point(30,30));
-			var result = converter.Convert();
+			var converter = new ContainerConverter(graphics,new Point(30,30));
+			var result = converter.Convert(container);
+			var list = converter.CreateConvertedList(container,result,new Point(30,30));
+			result.ExportedItems.AddRange(list);
 			Assert.That(result.ExportedItems.Count,Is.EqualTo(2));
 		}
 		
@@ -44,29 +44,20 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		[Test]
 		public void LocationIsAdjusted() {
 			var location = new Point(30,30);
-			var converter = new ContainerConverter(graphics,container,location);
-			var result = converter.Convert();
+			var converter = new ContainerConverter(graphics,location);
+			var result = converter.Convert(container);
 			Assert.That(result.Location,Is.EqualTo(location));
 		}
 		
 		[Test]
 		public void ParentInChildsIsSet () {
-			var converter = new ContainerConverter(graphics,container,container.Location);
-			var result = converter.Convert();
+			var converter = new ContainerConverter(graphics,container.Location);
+			var result = converter.Convert(container);
 			foreach (var element in result.ExportedItems) {
 				Assert.That(element.Parent,Is.Not.Null);
 			}
 		}
 			
-		
-		[Test]
-		public void bla () {
-			var contributorList = new ContributorsList();
-			var list = contributorList.ContributorCollection;
-			var cs = new CollectionSource(list,typeof(Contributor),new ReportSettings());
-			var converter = new DataContainerConverter(graphics,container,container.Location,cs);
-			converter.Convert();
-		}
 		
 		[TestFixtureSetUp]
 		public void Init()

@@ -22,63 +22,65 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 	/// </summary>
 	internal class ContainerConverter : IContainerConverter
 	{
-		
-		public ContainerConverter(Graphics graphics, IReportContainer reportContainer, Point currentLocation)
+		public ContainerConverter(Graphics graphics, Point currentLocation)
 		{
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
 			}
-			if (reportContainer == null) {
-				throw new ArgumentNullException("reportContainer");
-			}
-
 			Graphics = graphics;
-			Container = reportContainer;
 			CurrentLocation = currentLocation;
 		}
 
 
-		public virtual IExportContainer Convert()
+		public virtual IExportContainer Convert(IReportContainer reportContainer)
 		{
-			var exportContainer = CreateExportContainer();
-			var itemsList = CreateConvertedList(exportContainer,Point.Empty);
-			exportContainer.ExportedItems.AddRange(itemsList);
-			ArrangeContainer(exportContainer);
-			return exportContainer;
-		}
-
-	
-		protected ExportContainer CreateExportContainer()
-		{
-			var exportContainer = (ExportContainer)Container.CreateExportColumn();
+			Console.WriteLine();
+			Console.WriteLine("Convert {0}",reportContainer.Name);
+			var exportContainer = (ExportContainer)reportContainer.CreateExportColumn();
 			exportContainer.Location = CurrentLocation;
 			exportContainer.DesiredSize = Measure(exportContainer);
 			return exportContainer;
 		}
 
 		
-		protected List<IExportColumn> CreateConvertedList(IExportContainer exportContainer,Point position)
+		public List<IExportColumn> CreateConvertedList(IReportContainer reportContainer,IExportContainer exportContainer,Point position)
 		{
+			Console.WriteLine("CreateConvertedList {0}",reportContainer.Name);
 			var itemsList = new List<IExportColumn>();
-			foreach (var element in Container.Items) {
+			foreach (var element in reportContainer.Items) {
 				var exportColumn = ExportColumnFactory.CreateItem(element);
 				exportColumn.Parent = exportContainer;
 				exportColumn.Location = new Point(element.Location.X,element.Location.Y + position.Y);
-				exportColumn.DesiredSize = Measure(exportColumn);
 				itemsList.Add(exportColumn);
 			}
 			return itemsList;
 		}
 
-		
-		Size Measure(IExportColumn element)
+		public List<IExportColumn> CreateConvertedList(IReportContainer reportContainer,IExportContainer exportContainer)
 		{
+			Console.WriteLine("CreateConvertedList {0}",reportContainer.Name);
+			var itemsList = new List<IExportColumn>();
+			foreach (var element in reportContainer.Items) {
+				var exportColumn = ExportColumnFactory.CreateItem(element);
+				exportColumn.Parent = exportContainer;
+//				exportColumn.Location = new Point(element.Location.X,element.Location.Y + exportContainer.Location.Y);
+//				exportColumn.Location = new Point(element.Location.X,element.Location.Y + position.Y);
+//				exportColumn.DesiredSize = Measure(exportColumn);
+				itemsList.Add(exportColumn);
+			}
+			return itemsList;
+		}
+
+		public Size Measure(IExportColumn element)
+		{
+			Console.WriteLine("Measure {0}",element.Name);
 			var measureStrategy = element.MeasurementStrategy();
 			return measureStrategy.Measure(element, Graphics);
 		}
 
-		protected void ArrangeContainer(IExportContainer exportContainer)
+		public void ArrangeContainer(IExportContainer exportContainer)
 		{
+			Console.WriteLine("ArrangeContainer {0}",exportContainer.Name);
 			var exportArrange = exportContainer.GetArrangeStrategy();
 			exportArrange.Arrange(exportContainer);
 		}

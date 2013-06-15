@@ -33,7 +33,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		public override void BuildExportList()
 		{
-			var m = base.ReportModel;
 			base.BuildExportList();
 			CurrentPage = CreateNewPage ();
 			WriteStandardSections();
@@ -52,25 +51,22 @@ namespace ICSharpCode.Reporting.PageBuilder
 				collectionSource.Bind();
 				CurrentLocation = DetailStart;
 				
-				var converter = new DataContainerConverter(base.Graphics,ReportModel.DetailSection,
-				                                           CurrentLocation,
-				                                           collectionSource);
-				
+				var position = ResetPosition();
+				var converter = new ContainerConverter(base.Graphics, CurrentLocation);
+//				var converter = new ContainerConverter(base.Graphics, position);
 				detail = CreateContainerForSection(DetailStart);
 
-				var position = Point.Empty;
+				
 				do {
 					collectionSource.Fill(Container.Items);
-					var convertedItems = converter.Convert(detail,position);
+					var convertedItems = converter.CreateConvertedList(ReportModel.DetailSection,detail,position);
 					if (PageFull(convertedItems)) {
 						detail.ExportedItems.AddRange(convertedItems);
 						CurrentPage.ExportedItems.Insert(2,detail);
 						Pages.Add(CurrentPage);
-						var aa = detail.GetArrangeStrategy();
-						aa.Arrange(detail);
-						
-						
-						position = Point.Empty;
+						MeasureAndArrangeContainer(converter,detail);
+
+						position = ResetPosition();
 						CurrentPage = CreateNewPage();
 						WriteStandardSections();
 						CurrentLocation = DetailStart;
@@ -78,6 +74,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 						
 					} else {
 						detail.ExportedItems.AddRange(convertedItems);
+						MeasureAndArrangeContainer(converter,detail);
 						position = new Point(Container.Location.Y,position.Y + Container.Size.Height);
 					}
 				}
@@ -93,6 +90,15 @@ namespace ICSharpCode.Reporting.PageBuilder
 			}
 		}
 
+		Point ResetPosition () {
+			return Point.Empty;
+		}
+		void MeasureAndArrangeContainer(ContainerConverter converter,IExportContainer detail)
+		{
+			converter.Measure(detail);
+			converter.ArrangeContainer(detail);
+		}
+
 		
 		IExportContainer CreateContainerForSection(Point location )
 		{
@@ -102,9 +108,9 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		bool PageFull(System.Collections.Generic.List<IExportColumn> column)
+		bool PageFull(System.Collections.Generic.List<IExportColumn> columns)
 		{
-			var rect = new Rectangle(column[0].Location,column[0].Size);
+			var rect = new Rectangle(columns[0].Location,columns[0].Size);
 			if (rect.Contains(new Point(100,500))) {
 				return true;
 			}

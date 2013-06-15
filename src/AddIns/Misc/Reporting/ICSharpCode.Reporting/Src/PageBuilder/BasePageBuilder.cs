@@ -101,8 +101,12 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		protected IExportContainer CreateSection(IReportContainer container,Point location)
 		{
-			var containerConverter = new ContainerConverter(Graphics, container, location);
-			var convertedContainer = containerConverter.Convert();
+			var containerConverter = new ContainerConverter(Graphics, location);
+			var convertedContainer = containerConverter.Convert(container);
+			var list = containerConverter.CreateConvertedList(container,convertedContainer);
+			convertedContainer.ExportedItems.AddRange(list);
+			containerConverter.Measure(convertedContainer);
+			containerConverter.ArrangeContainer(convertedContainer);
 			return convertedContainer;
 		}
 		
