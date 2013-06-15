@@ -30,12 +30,12 @@ namespace CSharpBinding.Refactoring
 	/// </summary>
 	public class CSharpCodeGenerator : DefaultCodeGenerator
 	{
-		public void AddAttribute(IEntity target, IAttribute attribute)
+		public override void AddAttribute(IEntity target, IAttribute attribute)
 		{
 			AddAttribute(target.Region, attribute);
 		}
 		
-		public void AddAssemblyAttribute(IProject targetProject, IAttribute attribute)
+		public override void AddAssemblyAttribute(IProject targetProject, IAttribute attribute)
 		{
 			// FIXME : will fail if there are no assembly attributes
 			ICompilation compilation = SD.ParserService.GetCompilation(targetProject);
@@ -45,12 +45,12 @@ namespace CSharpBinding.Refactoring
 			AddAttribute(target.Region, attribute, "assembly");
 		}
 
-		public void AddReturnTypeAttribute(IMethod target, IAttribute attribute)
+		public override void AddReturnTypeAttribute(IMethod target, IAttribute attribute)
 		{
 			AddAttribute(target.Region, attribute, "return");
 		}
 		
-		public void InsertEventHandler(ITypeDefinition target, string name, IEvent eventDefinition, bool jumpTo)
+		public override void InsertEventHandler(ITypeDefinition target, string name, IEvent eventDefinition, bool jumpTo)
 		{
 			IUnresolvedTypeDefinition match = null;
 			
