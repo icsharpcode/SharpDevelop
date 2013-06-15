@@ -39,60 +39,14 @@ namespace CSharpBinding.Refactoring
 			if (uiService == null)
 				return null;
 			
-			ParseInformation parseInfo = SD.ParserService.GetCachedParseInformation(textEditor.FileName);
-			
-			if (parseInfo == null)
-				return null;
-			
-			// cannot use insertion position at this point, because it might not be
-			// valid, because we are still generating the elements.
-			// DOM is not updated
-			TextLocation loc = context.Document.GetLocation(context.StartPosition);
-			
-			IUnresolvedTypeDefinition current = parseInfo.UnresolvedFile.GetInnermostTypeDefinition(loc);
-			if (current == null)
-				return null;
-			
-			var refactoringContext = SDRefactoringContext.Create(textEditor, CancellationToken.None);
-			var typeResolveContext = refactoringContext.GetTypeResolveContext();
-			if (typeResolveContext == null) {
-				return null;
-			}
-			var resolvedCurrent = typeResolveContext.CurrentTypeDefinition;
-			
-			List<PropertyOrFieldWrapper> parameters = CreateCtorParams(resolvedCurrent).ToList();
-			
-			if (!parameters.Any())
-				return null;
-			
 			ITextAnchor anchor = textEditor.Document.CreateAnchor(context.InsertionPosition);
 			anchor.MovementType = AnchorMovementType.BeforeInsertion;
 			
-			InsertCtorDialog dialog = new InsertCtorDialog(context, textEditor, anchor, current, parameters);
+			InsertCtorDialog dialog = new InsertCtorDialog(context, textEditor, anchor);
 			
 			dialog.Element = uiService.CreateInlineUIElement(anchor, dialog);
 			
 			return dialog;
-		}
-		
-		IEnumerable<PropertyOrFieldWrapper> CreateCtorParams(IType sourceType)
-		{
-			int i = 0;
-			
-			foreach (var f in sourceType.GetFields().Where(field => !field.IsConst
-			                                               && field.IsStatic == sourceType.GetDefinition().IsStatic
-			                                               && field.ReturnType != null)) {
-				yield return new PropertyOrFieldWrapper(f) { Index = i };
-				i++;
-			}
-			
-			foreach (var p in sourceType.GetProperties().Where(prop => prop.CanSet && !prop.IsIndexer
-			                                                   && prop.IsAutoImplemented()
-			                                                   && prop.IsStatic == sourceType.GetDefinition().IsStatic
-			                                                   && prop.ReturnType != null)) {
-				yield return new PropertyOrFieldWrapper(p) { Index = i };
-				i++;
-			}
 		}
 	}
 }

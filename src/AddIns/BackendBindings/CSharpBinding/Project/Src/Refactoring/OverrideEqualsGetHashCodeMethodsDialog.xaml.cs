@@ -24,11 +24,10 @@ namespace CSharpBinding.Refactoring
 	public partial class OverrideEqualsGetHashCodeMethodsDialog : AbstractInlineRefactorDialog
 	{
 		ITypeDefinition selectedClass;
-		ITextAnchor startAnchor;
 		IMethod selectedMethod;
 		AstNode baseCallNode;
 		
-		public OverrideEqualsGetHashCodeMethodsDialog(InsertionContext context, ITextEditor editor, ITextAnchor startAnchor, ITextAnchor endAnchor,
+		public OverrideEqualsGetHashCodeMethodsDialog(InsertionContext context, ITextEditor editor, ITextAnchor endAnchor,
 		                                              ITextAnchor insertionPosition, ITypeDefinition selectedClass, IMethod selectedMethod, AstNode baseCallNode)
 			: base(context, editor, insertionPosition)
 		{
@@ -38,7 +37,6 @@ namespace CSharpBinding.Refactoring
 			InitializeComponent();
 			
 			this.selectedClass = selectedClass;
-			this.startAnchor = startAnchor;
 			this.insertionEndAnchor = endAnchor;
 			this.selectedMethod = selectedMethod;
 			this.baseCallNode = baseCallNode;
@@ -57,12 +55,6 @@ namespace CSharpBinding.Refactoring
 					if (type.FullName != "System.IEquatable")
 						return false;
 					return type.TypeArguments.First().FullName == selectedClass.FullName;
-					
-//					var genericType = type.CastToGenericReturnType();
-//					var boundTo = genericType.TypeParameter.BoundTo;
-//					if (boundTo == null)
-//						return false;
-//					return boundTo.Name == selectedClass.Name;
 				}
 			);
 		}
@@ -132,14 +124,6 @@ namespace CSharpBinding.Refactoring
 		
 		protected override string GenerateCode(ITypeDefinition currentClass)
 		{
-			StringBuilder code = new StringBuilder();
-			
-			var line = editor.Document.GetLineByOffset(startAnchor.Offset);
-			
-			string indent = DocumentUtilities.GetWhitespaceAfter(editor.Document, line.Offset);
-			
-//			CodeGenerator generator = language.CodeGenerator;
-			
 			MethodDeclaration insertedOverrideMethod = refactoringContext.GetNode().PrevSibling as MethodDeclaration;
 			if (insertedOverrideMethod == null)
 			{
@@ -286,12 +270,6 @@ namespace CSharpBinding.Refactoring
 			}
 			
 			return null;
-		}
-		
-		void AppendNewLine(Script script, AstNode afterNode, NewLineNode newLineNode)
-		{
-			if (newLineNode != null)
-				script.InsertAfter(afterNode, newLineNode.Clone());
 		}
 		
 		List<MethodDeclaration> CreateEqualsOverrides(IType currentClass)

@@ -24,9 +24,8 @@ namespace CSharpBinding.Refactoring
 	public partial class OverrideToStringMethodDialog : AbstractInlineRefactorDialog
 	{
 		AstNode baseCallNode;
-		string insertedCode;
 		
-		public OverrideToStringMethodDialog(InsertionContext context, ITextEditor editor, ITextAnchor startAnchor, ITextAnchor anchor, IList<PropertyOrFieldWrapper> fields, AstNode baseCallNode)
+		public OverrideToStringMethodDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor, IList<PropertyOrFieldWrapper> fields, AstNode baseCallNode)
 			: base(context, editor, anchor)
 		{
 			InitializeComponent();
@@ -56,8 +55,11 @@ namespace CSharpBinding.Refactoring
 				}
 				
 				using (Script script = refactoringContext.StartScript()) {
+					NewLineNode nextNewLineNode = insertedOverrideMethod.NextSibling as NewLineNode;
+					
 					// Find base method call and replace it by return statement
 					script.AddTo(insertedOverrideMethod.Body, ret);
+					AppendNewLine(script, insertedOverrideMethod, nextNewLineNode);
 				}
 			}
 			

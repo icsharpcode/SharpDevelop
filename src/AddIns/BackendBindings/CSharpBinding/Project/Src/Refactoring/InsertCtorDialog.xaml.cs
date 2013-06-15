@@ -7,12 +7,14 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.Snippets;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp.Resolver;
@@ -20,6 +22,7 @@ using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace CSharpBinding.Refactoring
 {
@@ -30,15 +33,49 @@ namespace CSharpBinding.Refactoring
 	{
 		IList<PropertyOrFieldWrapper> parameterList;
 		
-		public InsertCtorDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor, IUnresolvedTypeDefinition current, IList<PropertyOrFieldWrapper> possibleParameters)
+		public InsertCtorDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor)
 			: base(context, editor, anchor)
 		{
 			InitializeComponent();
 			
-			this.varList.ItemsSource = parameterList = possibleParameters;
+			Visibility = System.Windows.Visibility.Collapsed;
+		}
+		
+		protected override void Initialize()
+		{
+			base.Initialize();
 			
-			if (!parameterList.Any())
-				Visibility = System.Windows.Visibility.Collapsed;
+			var typeResolveContext = refactoringContext.GetTypeResolveContext();
+			if (typeResolveContext == null) {
+				return;
+			}
+			var resolvedCurrent = typeResolveContext.CurrentTypeDefinition;
+			
+			parameterList = CreateCtorParams(resolvedCurrent).ToList();
+			this.varList.ItemsSource = parameterList;
+			
+			if (parameterList.Any())
+				Visibility = System.Windows.Visibility.Visible;
+		}
+		
+		IEnumerable<PropertyOrFieldWrapper> CreateCtorParams(IType sourceType)
+		{
+			int i = 0;
+			
+			foreach (var f in sourceType.GetFields().Where(field => !field.IsConst
+			                                               && field.IsStatic == sourceType.GetDefinition().IsStatic
+			                                               && field.ReturnType != null)) {
+				yield return new PropertyOrFieldWrapper(f) { Index = i };
+				i++;
+			}
+			
+			foreach (var p in sourceType.GetProperties().Where(prop => prop.CanSet && !prop.IsIndexer
+			                                                   && prop.IsAutoImplemented()
+			                                                   && prop.IsStatic == sourceType.GetDefinition().IsStatic
+			                                                   && prop.ReturnType != null)) {
+				yield return new PropertyOrFieldWrapper(p) { Index = i };
+				i++;
+			}
 		}
 		
 		protected override string GenerateCode(ITypeDefinition currentClass)
@@ -46,8 +83,9 @@ namespace CSharpBinding.Refactoring
 			List<PropertyOrFieldWrapper> filtered = this.varList.SelectedItems.OfType<PropertyOrFieldWrapper>()
 				.OrderBy(p => p.Index)
 				.ToList();
-			
-			var insertedConstructor = refactoringContext.GetNode<ConstructorDeclaration>();
+
+			var test = refactoringContext.GetNode();
+			var insertedConstructor = refactoringContext.GetNode().PrevSibling as ConstructorDeclaration;
 			if (insertedConstructor == null)
 			{
 				// We are not inside of a constructor declaration

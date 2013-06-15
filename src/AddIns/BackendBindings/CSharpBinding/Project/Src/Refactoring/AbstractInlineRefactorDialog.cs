@@ -41,7 +41,6 @@ namespace CSharpBinding.Refactoring
 			this.anchor = insertionEndAnchor = anchor;
 			this.editor = editor;
 			this.insertionContext = context;
-			this.refactoringContext = SDRefactoringContext.Create(editor, CancellationToken.None);
 			
 			this.Background = SystemColors.ControlBrush;
 		}
@@ -51,29 +50,31 @@ namespace CSharpBinding.Refactoring
 			Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(delegate { this.MoveFocus(new TraversalRequest(FocusNavigationDirection.First)); }));
 		}
 		
+		protected void AppendNewLine(Script script, AstNode afterNode, NewLineNode newLineNode)
+		{
+			if (newLineNode != null)
+				script.InsertAfter(afterNode, newLineNode.Clone());
+		}
+		
 		protected abstract string GenerateCode(ITypeDefinition currentClass);
 		
 		protected virtual void OKButtonClick(object sender, RoutedEventArgs e)
 		{
-			ParseInformation parseInfo = SD.ParserService.GetCachedParseInformation(editor.FileName);
-			
 			if (optionBindings != null) {
 				foreach (OptionBinding binding in optionBindings)
 					binding.Save();
 			}
 			
-			if (parseInfo != null) {
-				var typeResolveContext = refactoringContext.GetTypeResolveContext();
-				if (typeResolveContext == null) {
-					return;
-				}
-				var current = typeResolveContext.CurrentTypeDefinition;
-				
-				using (editor.Document.OpenUndoGroup()) {
-					// GenerateCode could modify the document.
-					// So read anchor.Offset after code generation.
-					GenerateCode(current);
-				}
+			var typeResolveContext = refactoringContext.GetTypeResolveContext();
+			if (typeResolveContext == null) {
+				return;
+			}
+			var current = typeResolveContext.CurrentTypeDefinition;
+			
+			using (editor.Document.OpenUndoGroup()) {
+				// GenerateCode could modify the document.
+				// So read anchor.Offset after code generation.
+				GenerateCode(current);
 			}
 			
 			Deactivate();
@@ -122,8 +123,14 @@ namespace CSharpBinding.Refactoring
 			OnInsertionCompleted();
 		}
 		
+		protected virtual void Initialize()
+		{
+			this.refactoringContext = SDRefactoringContext.Create(editor, CancellationToken.None);
+		}
+		
 		protected virtual void OnInsertionCompleted()
 		{
+			Initialize();
 			FocusFirstElement();
 		}
 		

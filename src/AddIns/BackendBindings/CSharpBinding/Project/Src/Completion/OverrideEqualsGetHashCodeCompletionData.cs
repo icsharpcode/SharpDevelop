@@ -73,6 +73,9 @@ namespace CSharpBinding.Completion
 			var segmentDict = SegmentTrackingOutputFormatter.WriteNode(w, entityDeclaration, formattingOptions, context.Editor.Options);
 			
 			using (document.OpenUndoGroup()) {
+				InsertionContext insertionContext = new InsertionContext(context.Editor.GetService(typeof(TextArea)) as TextArea, declarationBegin);
+				insertionContext.InsertionPosition = context.Editor.Caret.Offset;
+				
 				string newText = w.ToString().TrimEnd();
 				document.Replace(declarationBegin, context.EndOffset - declarationBegin, newText);
 				var throwStatement = entityDeclaration.Descendants.FirstOrDefault(n => n is ThrowStatement);
@@ -99,10 +102,8 @@ namespace CSharpBinding.Completion
 				ITextAnchor insertionPos = context.Editor.Document.CreateAnchor(endAnchor.Offset);
 				insertionPos.MovementType = AnchorMovementType.BeforeInsertion;
 
-				InsertionContext insertionContext = new InsertionContext(context.Editor.GetService(typeof(TextArea)) as TextArea, startAnchor.Offset);
-				
 				var current = typeResolveContext.CurrentTypeDefinition;
-				AbstractInlineRefactorDialog dialog = new OverrideEqualsGetHashCodeMethodsDialog(insertionContext, context.Editor, startAnchor, endAnchor, insertionPos, current, Entity as IMethod, baseCallStatement);
+				AbstractInlineRefactorDialog dialog = new OverrideEqualsGetHashCodeMethodsDialog(insertionContext, context.Editor, endAnchor, insertionPos, current, Entity as IMethod, baseCallStatement);
 
 				dialog.Element = uiService.CreateInlineUIElement(insertionPos, dialog);
 				
