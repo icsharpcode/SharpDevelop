@@ -20,6 +20,7 @@ namespace ICSharpCode.Reporting.Test.MeasureArrange
 	public class ContainerArrangeStrategyFixture
 	{
 		Graphics graphics = CreateGraphics.FromSize (new Size(1000,1000));
+		
 		ContainerArrangeStrategy strategy;
 		
 		[Test]
@@ -40,66 +41,51 @@ namespace ICSharpCode.Reporting.Test.MeasureArrange
 			var containerRect = new Rectangle(container.Location,container.DesiredSize);
 			var itemRect = new Rectangle(container.ExportedItems[0].Location,container.ExportedItems[0].Size);
 			
-//			Console.WriteLine("{0} - {1} - {2} - {3}",containerRect,containerRect.Bottom,itemRect,itemRect.Bottom);
-			Assert.That(containerRect.Contains(itemRect));
-			
-		}
-			
-		
-		[Test]
-		[Ignore]
-		public void ItemAtTopBottomOfContainer() {
-			var container = CreateContainer();
-			container.ExportedItems[0].Location = new Point (container.Location.X,
-			                                         container.Location.Y + container.DesiredSize.Height - container.ExportedItems[0].Size.Height);
-			var mes = new ContainerMeasurementStrategy();
-			container.DesiredSize = mes.Measure(container,graphics);
-			strategy.Arrange(container);
-		
-			var containerRect = new Rectangle(container.Location,container.DesiredSize);
-			var itemRect = new Rectangle(container.ExportedItems[0].Location,container.ExportedItems[0].Size);
-			
-//			Console.WriteLine("{0} - {1} - {2} - {3}",containerRect,containerRect.Bottom,itemRect,itemRect.Bottom);
 			Assert.That(containerRect.Contains(itemRect));
 		}
-		
-		
-		[Test]
-		[Ignore]
-		public void FindBiggestRectangle () {
-			var container = CreateContainer();
-			var secondItem = CreateCanGrowText(container);
-			container.ExportedItems.Add(secondItem);
 			
-			strategy.Arrange(container);
-			var expected = new Rectangle(new Point(container.Location.X + secondItem.Location.X,
-			                                       container.Location.Y + secondItem.Location.Y),
-			                                       secondItem.Size);
-			Assert.That(strategy.BiggestRectangle,Is.EqualTo(expected));
-		}
 		
 		
 		[Test]
 		public void ContainerResizeIfItemCanGrow () {
-			var container = CreateContainer();
 			
-			container.ExportedItems.Add(CreateCanGrowText(container));
+			var container = CreateContainer();
+//			MakeCangGrow(container);
+			Measure(container);
+			strategy.Arrange(container);
 			strategy.Arrange(container);
 			var containerRect = new Rectangle(container.Location,container.DesiredSize);
-			var arrangeRect = new Rectangle(new Point(container.Location.X + strategy.BiggestRectangle.Left,
-			                                          strategy.BiggestRectangle.Top),
-			                                          strategy.BiggestRectangle.Size);
 			
-//			Console.WriteLine("{0} - {1} - {2} - {3}",containerRect,containerRect.Bottom,strategy.BiggestRectangle,strategy.BiggestRectangle.Bottom);
-			Assert.That(containerRect.Contains(arrangeRect));
-			Assert.That(containerRect.Bottom,Is.EqualTo(arrangeRect.Bottom + 5));
+			var child = container.ExportedItems[0];
+			var childLocation = new Point(containerRect.Left + child.Location.X,containerRect.Top + child.Location.Y);
+			var childRect = new Rectangle(childLocation,child.DesiredSize);
+
+			Assert.That(containerRect.Contains(childRect));
 		}
 		
+		
 		[Test]
-		[Ignore]
+		public void ContainerIs_5_Below_LargestItem() {
+			
+			var container = CreateContainer();
+			MakeCangGrow(container);
+			Measure(container);
+			strategy.Arrange(container);
+			
+			var containerRect = new Rectangle(container.Location,container.DesiredSize);
+			
+			var child = container.ExportedItems[0];
+			var childLocation = new Point(containerRect.Left + child.Location.X,containerRect.Top + child.Location.Y);
+			var childRect = new Rectangle(childLocation,child.DesiredSize);
+			Assert.That(containerRect.Bottom,Is.EqualTo(childRect.Bottom + 5));
+		}
+		
+		
+		[Test]
 		public void ResizedContainerExeed5Points() {
 			var container = CreateContainer();
-			container.ExportedItems.Add(CreateCanGrowText(container));
+			MakeCangGrow(container);
+			Measure(container);
 			strategy.Arrange(container);
 			var containerRect = new Rectangle(container.Location,container.DesiredSize);
 			var arrangeRect = new Rectangle(new Point(container.Location.X + strategy.BiggestRectangle.Left,
@@ -110,20 +96,21 @@ namespace ICSharpCode.Reporting.Test.MeasureArrange
 		}
 		
 		
-		private IExportText CreateCanGrowText(IExportContainer container) {
-			var secondItem =  new ExportText(){
-				Name = "Item1",
-				Location = new Point(80,10),
-				Size = new Size (20,70),
-				DesiredSize = new Size (20,70),
-				CanGrow = true,
-				Parent = container
-			};
-			return secondItem;
+		static void MakeCangGrow(IExportContainer container)
+		{
+			container.ExportedItems[0].Location = new Point(80, 10);
+			container.ExportedItems[0].Size = new Size(20, 70);
+			container.ExportedItems[0].CanGrow = true;
 		}
 		
 		
-		private IExportContainer CreateContainer () {
+		void Measure(IExportColumn container)
+		{
+			var mes = container.MeasurementStrategy();
+			mes.Measure(container, graphics);
+		}
+		
+		IExportContainer CreateContainer () {
 				
 			var container = new ExportContainer(){
 				Size = new Size (720,60),
@@ -139,7 +126,6 @@ namespace ICSharpCode.Reporting.Test.MeasureArrange
 			};
 			
 			container.ExportedItems.Add(item1);
-//			container.DesiredSize = container.Size;
 			return container;
 		}
 			

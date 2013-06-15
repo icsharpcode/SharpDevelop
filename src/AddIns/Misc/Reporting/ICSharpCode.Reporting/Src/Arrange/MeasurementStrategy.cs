@@ -23,11 +23,8 @@ namespace ICSharpCode.Reporting.Arrange
     }
 
 
-	internal class ContainerMeasurementStrategy:IMeasurementStrategy
+	class ContainerMeasurementStrategy:IMeasurementStrategy
 	{
-		public ContainerMeasurementStrategy()
-		{
-		}
 		
 		public Size Measure(IExportColumn exportColumn,Graphics graphics)
 		{
@@ -39,6 +36,7 @@ namespace ICSharpCode.Reporting.Arrange
 					element.DesiredSize = MeasurementService.Measure(tbi,graphics);
 				}
 			}
+			exportColumn.DesiredSize = exportColumn.Size;
 			return exportColumn.Size;
 		}
 	}

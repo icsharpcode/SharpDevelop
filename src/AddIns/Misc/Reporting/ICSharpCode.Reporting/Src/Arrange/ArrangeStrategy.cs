@@ -41,7 +41,7 @@ namespace ICSharpCode.Reporting.Arrange
 				
 				BiggestRectangle = FindBiggestRectangle(container);
 				var resizeable = from resize in container.ExportedItems
-					where ((resize.CanGrow == true))
+					where ((resize.CanGrow))
 					select resize;
                
 				if (resizeable.Any()) {
