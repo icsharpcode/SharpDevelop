@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -28,7 +29,17 @@ namespace CSharpBinding.Refactoring
 			if (property.IsAbstract)
 				return false;
 			
-			return property.CanGet && !property.Getter.HasBody && property.CanSet && !property.Setter.HasBody;
+			CSharpFullParseInformation parseInformation;
+			PropertyDeclaration propDeclaration = property.GetDeclaration(out parseInformation) as PropertyDeclaration;
+			if ((propDeclaration != null) && (propDeclaration.Getter != null) && (propDeclaration.Setter != null)) {
+				bool containsGetterBlock = propDeclaration.Getter.Children.Any(node => node is BlockStatement);
+				bool containsSetterBlock = propDeclaration.Setter.Children.Any(node => node is BlockStatement);
+				
+				// This property is only auto-generated, if it contains get; and set; without block statements!
+				return !containsGetterBlock && !containsSetterBlock;
+			}
+			
+			return false;
 		}
 		
 		/// <summary>
