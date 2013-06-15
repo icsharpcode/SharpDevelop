@@ -7,6 +7,7 @@ using ICSharpCode.FormsDesigner;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using CSharpBinding.Parser;
 
 namespace CSharpBinding.FormsDesigner
@@ -50,6 +51,11 @@ namespace CSharpBinding.FormsDesigner
 					return pair.Value;
 			}
 			throw new InvalidOperationException("Designer file not found");
+		}
+		
+		public void ShowSourceCode(int lineNumber = 0)
+		{
+			viewContent.ShowSourceCode(lineNumber);
 		}
 	}
 }

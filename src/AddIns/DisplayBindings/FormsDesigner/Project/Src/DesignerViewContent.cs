@@ -633,14 +633,9 @@ namespace ICSharpCode.FormsDesigner
 			this.DesignerCodeFile.IsDirty = isDirty;
 		}
 
-		public void ShowSourceCode()
+		public void ShowSourceCode(int lineNumber = 0)
 		{
 			this.WorkbenchWindow.ActiveViewContent = this.PrimaryViewContent;
-		}
-
-		public void ShowSourceCode(int lineNumber)
-		{
-			ShowSourceCode();
 			ITextEditor editor = this.primaryViewContent.GetService<ITextEditor>();
 			if (editor != null) {
 				editor.JumpTo(lineNumber, 1);

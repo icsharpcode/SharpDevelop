@@ -22,6 +22,8 @@ namespace CSharpBinding.FormsDesigner
 {
 	public class CSharpDesignerLoader : AbstractCodeDomDesignerLoader
 	{
+		IUnresolvedTypeDefinition primaryPart;
+
 		readonly CodeDomProvider codeDomProvider = new CSharpCodeProvider();
 		readonly ICSharpDesignerLoaderContext context;
 		
@@ -43,6 +45,18 @@ namespace CSharpBinding.FormsDesigner
 			return base.IsReloadNeeded() || context.DesignerCodeFileDocument.Version.Equals(lastTextContentVersion);
 		}
 		
+		protected override void Initialize()
+		{
+			base.Initialize();
+			
+			base.DesignerLoaderHost.AddService(typeof(System.ComponentModel.Design.IEventBindingService), new CSharpEventBindingService(context, base.DesignerLoaderHost, this));
+		}
+		
+		public ITypeDefinition GetPrimaryTypeDefinition()
+		{
+			return primaryPart.Resolve(new SimpleTypeResolveContext(context.GetCompilation().MainAssembly)).GetDefinition();
+		}
+		
 		// Steps to load the designer:
 		// - Parse main file
 		// - Find other files containing parts of the form
@@ -59,7 +73,6 @@ namespace CSharpBinding.FormsDesigner
 			var compilation = context.GetCompilation();
 			
 			// Find designer class
-			IUnresolvedTypeDefinition primaryPart;
 			ITypeDefinition designerClass = FormsDesignerSecondaryDisplayBinding.GetDesignableClass(primaryParseInfo.UnresolvedFile, compilation, out primaryPart);
 			IMethod initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(designerClass);
 			
@@ -115,7 +128,7 @@ namespace CSharpBinding.FormsDesigner
 			LoggingService.Debug("NRefactoryDesignerLoader.Parse() finished");
 			
 			if (!isFirstClassInFile) {
-				MessageService.ShowWarning("The form must be the first class in the file in order for form resources be compiled correctly.\n" +
+				MessageService.ShowWarning("The form must be the first class in the file in order for form resources to be compiled correctly.\n" +
 				                           "Please move other classes below the form class definition or move them to other files.");
 			}
 			

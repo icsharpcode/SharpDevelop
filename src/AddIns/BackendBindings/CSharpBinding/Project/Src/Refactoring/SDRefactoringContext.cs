@@ -33,7 +33,17 @@ namespace CSharpBinding.Refactoring
 		
 		public static SDRefactoringContext Create(ITextEditor editor, CancellationToken cancellationToken)
 		{
-			return Create(editor.FileName, editor.Document, editor.Caret.Location, cancellationToken);
+			var parseInfo = SD.ParserService.Parse(editor.FileName, editor.Document, cancellationToken: cancellationToken) as CSharpFullParseInformation;
+			var compilation = SD.ParserService.GetCompilationForFile(editor.FileName);
+			CSharpAstResolver resolver;
+			if (parseInfo != null) {
+				resolver = parseInfo.GetResolver(compilation);
+			} else {
+				// create dummy refactoring context
+				resolver = new CSharpAstResolver(compilation, new SyntaxTree());
+			}
+			var context = new SDRefactoringContext(editor, resolver, editor.Caret.Location, cancellationToken);
+			return context;
 		}
 		
 		public static SDRefactoringContext Create(FileName fileName, ITextSource textSource, TextLocation location = default(TextLocation), CancellationToken cancellationToken = default(CancellationToken))
@@ -63,8 +73,8 @@ namespace CSharpBinding.Refactoring
 			InitializeServices();
 		}
 		
-		public SDRefactoringContext(ITextEditor editor, CSharpAstResolver resolver, TextLocation location)
-			: base(resolver, CancellationToken.None)
+		public SDRefactoringContext(ITextEditor editor, CSharpAstResolver resolver, TextLocation location, CancellationToken cancellationToken = default(CancellationToken))
+			: base(resolver, cancellationToken)
 		{
 			this.resolver = resolver;
 			this.editor = editor;

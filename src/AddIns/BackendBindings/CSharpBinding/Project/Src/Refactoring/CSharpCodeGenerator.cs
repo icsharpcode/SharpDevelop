@@ -64,18 +64,20 @@ namespace CSharpBinding.Refactoring
 			var view = SD.FileService.OpenFile(new FileName(match.Region.FileName), jumpTo);
 			var editor = view.GetRequiredService<ITextEditor>();
 			var last = match.Members.LastOrDefault() ?? (IUnresolvedEntity)match;
-			var context = SDRefactoringContext.Create(editor.FileName, editor.Document, last.BodyRegion.End, CancellationToken.None);
+			editor.Caret.Location = last.BodyRegion.End;
+			var context = SDRefactoringContext.Create(editor, CancellationToken.None);
 			
 			var node = context.RootNode.GetNodeAt<EntityDeclaration>(last.Region.Begin);
 			var resolver = context.GetResolverStateAfter(node);
 			var builder = new TypeSystemAstBuilder(resolver);
 			var delegateDecl = builder.ConvertEntity(eventDefinition.ReturnType.GetDefinition()) as DelegateDeclaration;
 			if (delegateDecl == null) return;
+			var throwStmt = new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")));
 			var decl = new MethodDeclaration() {
 				ReturnType = delegateDecl.ReturnType.Clone(),
 				Name = name,
 				Body = new BlockStatement() {
-					new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
+					throwStmt
 				}
 			};
 			var param = delegateDecl.Parameters.Select(p => p.Clone()).OfType<ParameterDeclaration>().ToArray();
@@ -88,7 +90,9 @@ namespace CSharpBinding.Refactoring
 					// TODO InsertWithCursor not implemented!
 					//script.InsertWithCursor("Insert event handler", Script.InsertPosition.End, decl).RunSynchronously();
 				} else {
+					// TODO does not jump correctly...
 					script.InsertAfter(node, decl);
+					editor.JumpTo(throwStmt.StartLocation.Line, throwStmt.StartLocation.Column);
 				}
 			}
 		}
