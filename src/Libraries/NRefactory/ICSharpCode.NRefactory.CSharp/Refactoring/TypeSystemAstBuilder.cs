@@ -717,7 +717,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			foreach (IParameter p in method.Parameters) {
 				decl.Parameters.Add(ConvertParameter(p));
 			}
-			if (method.IsExtensionMethod && decl.Parameters.Any() && decl.Parameters.First().ParameterModifier == ParameterModifier.None)
+			if (method.IsExtensionMethod && method.ReducedFrom == null && decl.Parameters.Any() && decl.Parameters.First().ParameterModifier == ParameterModifier.None)
 				decl.Parameters.First().ParameterModifier = ParameterModifier.This;
 			
 			if (this.ShowTypeParameters && this.ShowTypeParameterConstraints && !method.IsOverride && !method.IsExplicitInterfaceImplementation) {
