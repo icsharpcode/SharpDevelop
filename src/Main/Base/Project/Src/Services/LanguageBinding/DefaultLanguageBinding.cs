@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel.Design;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
 
@@ -9,30 +10,54 @@ namespace ICSharpCode.SharpDevelop
 {
 	public class DefaultLanguageBinding : ILanguageBinding
 	{
-		public static readonly DefaultLanguageBinding DefaultInstance = new DefaultLanguageBinding();
+		public static readonly DefaultLanguageBinding DefaultInstance = new DefaultLanguageBinding(true);
 		
-		public virtual IFormattingStrategy FormattingStrategy {
-			get {
-				return DefaultFormattingStrategy.DefaultInstance;
+		protected readonly ServiceContainer container;
+		
+		DefaultLanguageBinding(bool isDefault)
+		{
+			if (isDefault) {
+				this.container = new ServiceContainer();
+				this.container.AddService(typeof(IFormattingStrategy), DefaultFormattingStrategy.DefaultInstance);
+				this.container.AddService(typeof(IBracketSearcher), DefaultBracketSearcher.DefaultInstance);
+				this.container.AddService(typeof(ICodeGenerator), DefaultCodeGenerator.DefaultInstance);
+			} else {
+				this.container = new ServiceContainer(DefaultInstance);
 			}
 		}
 		
-		public virtual IBracketSearcher BracketSearcher {
+		public DefaultLanguageBinding()
+			: this(false)
+		{
+		}
+		
+		public IFormattingStrategy FormattingStrategy {
 			get {
-				return DefaultBracketSearcher.DefaultInstance;
+				return this.GetService<IFormattingStrategy>();
 			}
 		}
 		
-		public virtual ICodeGenerator CodeGenerator {
+		public IBracketSearcher BracketSearcher {
 			get {
-				return DefaultCodeGenerator.DefaultInstance;
+				return this.GetService<IBracketSearcher>();
 			}
 		}
 		
-		public virtual System.CodeDom.Compiler.CodeDomProvider CodeDomProvider {
+		public ICodeGenerator CodeGenerator {
 			get {
-				return null;
+				return this.GetService<ICodeGenerator>();
 			}
+		}
+		
+		public System.CodeDom.Compiler.CodeDomProvider CodeDomProvider {
+			get {
+				return this.GetService<System.CodeDom.Compiler.CodeDomProvider>();
+			}
+		}
+		
+		public object GetService(Type serviceType)
+		{
+			return container.GetService(serviceType);
 		}
 	}
 }

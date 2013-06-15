@@ -21,20 +21,12 @@ namespace CSharpBinding
 	/// </summary>
 	public class CSharpLanguageBinding : DefaultLanguageBinding
 	{
-		public override IFormattingStrategy FormattingStrategy {
-			get { return new CSharpFormattingStrategy(); }
-		}
-		
-		public override IBracketSearcher BracketSearcher {
-			get { return new CSharpBracketSearcher(); }
-		}
-		
-		public override ICodeGenerator CodeGenerator {
-			get { return new CSharpCodeGenerator(); }
-		}
-		
-		public override System.CodeDom.Compiler.CodeDomProvider CodeDomProvider {
-			get { return new Microsoft.CSharp.CSharpCodeProvider(); }
+		public CSharpLanguageBinding()
+		{
+			this.container.AddService(typeof(IFormattingStrategy), new CSharpFormattingStrategy());
+			this.container.AddService(typeof(IBracketSearcher), new CSharpBracketSearcher());
+			this.container.AddService(typeof(ICodeGenerator), new CSharpCodeGenerator());
+			this.container.AddService(typeof(System.CodeDom.Compiler.CodeDomProvider), new Microsoft.CSharp.CSharpCodeProvider());
 		}
 	}
 	

@@ -10,8 +10,9 @@ namespace ICSharpCode.XmlEditor
 {
 	public class XmlLanguageBinding : DefaultLanguageBinding
 	{
-		public override IFormattingStrategy FormattingStrategy {
-			get { return new XmlFormattingStrategy(); }
+		public XmlLanguageBinding()
+		{
+			container.AddService(typeof(IFormattingStrategy), new XmlFormattingStrategy());
 		}
 	}
 	

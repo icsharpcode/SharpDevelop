@@ -10,7 +10,7 @@ namespace ICSharpCode.SharpDevelop
 	/// <summary>
 	/// Provides access to language specific features (independent of files).
 	/// </summary>
-	public interface ILanguageBinding
+	public interface ILanguageBinding : IServiceProvider
 	{
 		/// <summary>
 		/// Provides access to the formatting strategy for this language.
