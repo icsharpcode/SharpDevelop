@@ -19,6 +19,14 @@
 	<!-- Template Content -->
 	<Project language = "F#">
 	
+		<ProjectItems>
+			<Reference Include="FSharp.Core" />
+		</ProjectItems>
+		
+		<PropertyGroup>
+			<OutputType>Exe</OutputType>
+		</PropertyGroup>
+		
 		<Imports clear="True">
 			<Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" />
 		</Imports>
