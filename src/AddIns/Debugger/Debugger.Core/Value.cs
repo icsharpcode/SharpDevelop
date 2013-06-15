@@ -577,7 +577,9 @@ namespace Debugger
 					if (debuggerDisplayAttribute != null) {
 						var formatStringParameter = debuggerDisplayAttribute.PositionalArguments.ElementAtOrDefault(0);
 						if ((formatStringParameter != null) && (formatStringParameter.ConstantValue is string)) {
-							return FormatDebugValue(evalThread, (string) formatStringParameter.ConstantValue);
+							// Create a permanent version of this value
+							Value permanentValue = this.GetPermanentReference(evalThread);
+							return FormatDebugValue(evalThread, permanentValue, (string) formatStringParameter.ConstantValue);
 						}
 					}
 				}
@@ -587,41 +589,79 @@ namespace Debugger
 		}
 		
 		/// <summary>
-		/// Formats current Value according to the given format, specified by <see cref="System.Diagnostics.DebuggerDisplayAttribute"/>
+		/// Formats current Value according to the given format, specified by <see cref="System.Diagnostics.DebuggerDisplayAttribute"/>.
 		/// </summary>
 		/// <param name="debugFormat">Format to use</param>
 		/// <returns>Formatted string.</returns>
-		string FormatDebugValue(Thread evalThread, string debugFormat)
+		/// <remarks>
+		/// Not all possible expressions are supported, but only a simple set.
+		/// Otherwise we would have to support any C# expression.
+		/// </remarks>
+		static string FormatDebugValue(Thread evalThread, Value value, string debugFormat)
 		{
 			StringBuilder formattedOutput = new StringBuilder();
 			StringBuilder currentFieldName = new StringBuilder();
 			bool insideFieldName = false;
+			bool ignoringRestOfExpression = false;
+			bool insideMethodBrackets = false;
+			bool isMethodName = false;
+			bool escapeNextChar = false;
 			for (int i = 0; i < debugFormat.Length; i++) {
 				char thisChar = debugFormat[i];
 				
-				if (thisChar == '{') {
+				if (!escapeNextChar && (thisChar == '{')) {
 					insideFieldName = true;
-				} else if (thisChar == '}') {
+				} else if (!escapeNextChar && (thisChar == '}')) {
 					// Insert contents of specified member, if we can find it, otherwise we display "?"
 					string memberValueStr = "?";
-					IMember member = this.type.GetMembers(
-						m => (m.Name == currentFieldName.ToString()) && ((m.SymbolKind == SymbolKind.Field) || (m.SymbolKind == SymbolKind.Property))
-					).FirstOrDefault();
+					
+					// Decide if we want a method or field/property
+					Predicate<IUnresolvedMember> isNeededMember;
+					if (isMethodName) {
+						// We only support methods without parameters here!
+						isNeededMember = m => (m.Name == currentFieldName.ToString())
+							&& (m.SymbolKind == SymbolKind.Method)
+							&& (((IUnresolvedMethod) m).Parameters.Count == 0);
+					} else {
+						isNeededMember = m => (m.Name == currentFieldName.ToString())
+							&& ((m.SymbolKind == SymbolKind.Field) || (m.SymbolKind == SymbolKind.Property));
+					}
+					
+					IMember member = value.type.GetMembers(isNeededMember).FirstOrDefault();
 					if (member != null) {
-						Value memberValue = GetMemberValue(evalThread, member);
+						Value memberValue = value.GetMemberValue(evalThread, member);
 						memberValueStr = memberValue.InvokeToString(evalThread);
 					}
 					
 					formattedOutput.Append(memberValueStr);
 					
 					insideFieldName = false;
+					ignoringRestOfExpression = false;
+					insideMethodBrackets = false;
+					isMethodName = false;
 					currentFieldName.Clear();
+				} else if (!escapeNextChar && (thisChar == '\\')) {
+					// Next character will be escaped
+					escapeNextChar = true;
+				} else if (insideFieldName && (thisChar == '(')) {
+					insideMethodBrackets = true;
+				} else if ((thisChar == ')') && insideMethodBrackets) {
+					insideMethodBrackets = false;
+					isMethodName = true;
+					
+					// Everything following the brackets will be ignored
+					ignoringRestOfExpression = true;
+				} else if (insideFieldName && !Char.IsDigit(thisChar) && !Char.IsLetter(thisChar)) {
+					// Char seems not to belong to a field name, ignore everything from now on
+					ignoringRestOfExpression = true;
 				} else {
 					if (insideFieldName) {
-						currentFieldName.Append(thisChar);
+						if (!ignoringRestOfExpression)
+							currentFieldName.Append(thisChar);
 					} else {
 						formattedOutput.Append(thisChar);
 					}
+					escapeNextChar = false;
 				}
 			}
 			
