@@ -371,9 +371,6 @@
 			<MenuItem id    = "AddWebReference"
 			          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
-			<MenuItem id    = "ShowServiceInBrowser"
-			          label = "Show Service in Browser"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowServiceInBrowser"/>
 			<MenuItem id = "AddSeparator" type = "Separator"/>
 		</Condition>
 		
