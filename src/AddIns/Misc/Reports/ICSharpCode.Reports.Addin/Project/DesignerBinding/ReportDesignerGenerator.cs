@@ -96,6 +96,7 @@ namespace ICSharpCode.Reports.Addin
 			foreach (IComponent component in viewContent.Host.Container.Components) {
 				BaseSection b = component as BaseSection;
 				if (b != null) {
+					Console.WriteLine(b.BackColor.ToString());
 					rpd.Save(component,xml);
 				}
 			}

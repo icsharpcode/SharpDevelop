@@ -63,8 +63,8 @@ namespace ICSharpCode.Reporting
 		{
 			var doc = new XmlDocument();
 			doc.Load(stream);
-			var rm = LoadModel(doc);
-			return rm;
+			ReportModel = LoadModel(doc);
+			return ReportModel;
 		}
 		
 		static ReportModel LoadModel(XmlDocument doc)

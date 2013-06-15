@@ -32,39 +32,7 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		{
 			Assert.IsNotNull(reportCreator);
 		}
-		
-		[Test]
-		public void DetailStartIsSetToOneBelowPageHeader() {
-			var reportModel = new ReportModel();
-			foreach (GlobalEnums.ReportSection sec in Enum.GetValues(typeof(GlobalEnums.ReportSection))) {
-				reportModel.SectionCollection.Add (SectionFactory.Create(sec.ToString()));
-			}
-			var formPageBuilder = new FormPageBuilder(reportModel);
-			formPageBuilder.BuildExportList();
-			var page = formPageBuilder.Pages[0];
-			var pageHeader = page.ExportedItems[1];
-			Assert.That(formPageBuilder.DetailStart,
-			            Is.EqualTo(new Point(pageHeader.Location.X,
-			                                pageHeader.Location.Y + pageHeader.Size.Height + 1)));
-		}
-		
-		
-		[Test]
-		public void DetailEndsIsOneAbovePageFooter () {
-			var reportModel = new ReportModel();
-			foreach (GlobalEnums.ReportSection sec in Enum.GetValues(typeof(GlobalEnums.ReportSection))) {
-				reportModel.SectionCollection.Add (SectionFactory.Create(sec.ToString()));
-			}
-			var formPageBuilder = new FormPageBuilder(reportModel);
-			formPageBuilder.BuildExportList();
-			var page = formPageBuilder.Pages[0];
-			var pageFooter = page.ExportedItems[3];
-			var x = formPageBuilder.DetailEnds;
-				Assert.That(formPageBuilder.DetailEnds,
-			            Is.EqualTo(new Point(pageFooter.Location.X,
-			                                pageFooter.Location.Y - 1)));
-		}
-		
+
 		
 		#region Pages
 		

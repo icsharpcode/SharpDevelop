@@ -46,6 +46,8 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 			Assert.That(sections.ToList().Count,Is.EqualTo(4));
 		}
 		
+		
+		[Test]
 		public void LastPageContains_4_Sections()
 		{
 			reportCreator.BuildExportList();

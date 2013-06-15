@@ -72,7 +72,7 @@
         <BaseSection>
             <Location>50, 200</Location>
             <Size>727, 60</Size>
-            <BackColor>White</BackColor>
+            <BackColor>LightGray</BackColor>
             <SectionOffset>0</SectionOffset>
             <SectionMargin>0</SectionMargin>
             <DrawBorder>False</DrawBorder>
@@ -97,7 +97,7 @@
                     <Name>BaseDataItem1</Name>
                 </BaseDataItem>
             </Items>
-            <FrameColor>Black</FrameColor>
+            <FrameColor>LightGray</FrameColor>
             <Name>ReportDetail</Name>
         </BaseSection>
         <BaseSection>

@@ -7,10 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Collections.Generic;
 using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.Interfaces.Export;
-using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Items
 {
@@ -18,7 +15,7 @@ namespace ICSharpCode.Reporting.Items
 	/// Description of BaseSection.
 	/// </summary>
 	
-public class BaseSection:ReportContainer,IReportContainer
+	public class BaseSection:ReportContainer,IReportContainer
 	{
 		#region Constructors
 		
@@ -26,9 +23,6 @@ public class BaseSection:ReportContainer,IReportContainer
 		{
 		}
 		
-		public BaseSection (string name) {
-			Name = name;
-		}
 		#endregion
 	}
 }

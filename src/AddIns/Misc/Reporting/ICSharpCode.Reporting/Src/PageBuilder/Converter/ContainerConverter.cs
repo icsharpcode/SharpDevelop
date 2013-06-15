@@ -40,16 +40,10 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 
 		public virtual IExportContainer Convert()
 		{
-			
 			var exportContainer = CreateExportContainer();
-			
 			var itemsList = CreateConvertedList(exportContainer,Point.Empty);
-			
 			exportContainer.ExportedItems.AddRange(itemsList);
-
-			
 			ArrangeContainer(exportContainer);
-
 			return exportContainer;
 		}
 
@@ -63,7 +57,7 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 		}
 
 		
-		protected List<IExportColumn> CreateConvertedList(ExportContainer exportContainer,Point position)
+		protected List<IExportColumn> CreateConvertedList(IExportContainer exportContainer,Point position)
 		{
 			var itemsList = new List<IExportColumn>();
 			foreach (var element in Container.Items) {
@@ -72,7 +66,6 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 				exportColumn.Location = new Point(element.Location.X,element.Location.Y + position.Y);
 				exportColumn.DesiredSize = Measure(element);
 				itemsList.Add(exportColumn);
-//				Console.WriteLine("Size {0} DesiredSize {1}", exportColumn.Size, exportColumn.DesiredSize);
 			}
 			return itemsList;
 		}
@@ -84,9 +77,8 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 			return measureStrategy.Measure(element, Graphics);
 		}
 
-		protected void ArrangeContainer(ExportContainer exportContainer)
+		protected void ArrangeContainer(IExportContainer exportContainer)
 		{
-//			Console.WriteLine("calling Container-Arrange");
 			var exportArrange = exportContainer.GetArrangeStrategy();
 			exportArrange.Arrange(exportContainer);
 		}

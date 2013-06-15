@@ -16,7 +16,6 @@ using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using Brush = System.Windows.Media.Brush;
 using FontFamily = System.Windows.Media.FontFamily;
-using Image = System.Windows.Controls.Image;
 using Pen = System.Windows.Media.Pen;
 using Size = System.Windows.Size;
 
@@ -35,7 +34,6 @@ namespace ICSharpCode.Reporting.ExportRenderer
 			if (reportSettings == null)
 				throw new ArgumentNullException("reportSettings");
 			this.reportSettings = reportSettings;
-			Console.WriteLine("FixedDocumentCreator()");
 			brushConverter = new BrushConverter();
 		}
 		
@@ -43,15 +41,13 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		public  UIElement CreateContainer(ExportContainer container)
 		{
 //			http://tech.pro/tutorial/736/wpf-tutorial-creating-a-custom-panel-control
-			
+			Console.WriteLine();
+			Console.WriteLine("create container {0}",container.Name);
 			var canvas = CreateCanvas(container);
-//			canvas.Measure(new Size(reportSettings.PageSize.Width,reportSettings.PageSize.Height));
 			
 			var size = new Size(container.DesiredSize.Width,container.DesiredSize.Height);
 			
 			canvas.Measure(size);
-			
-//			canvas.Arrange(new Rect(new System.Windows.Point(),new Size(reportSettings.PageSize.Width,reportSettings.PageSize.Height) ));
 			
 			canvas.Arrange(new Rect(new System.Windows.Point(),size ));
 
@@ -82,8 +78,8 @@ namespace ICSharpCode.Reporting.ExportRenderer
 //			SetDimension(textBlock,exportText.StyleDecorator);
 //		    textBlock.Background = ConvertBrush(exportText.StyleDecorator.BackColor);
 //		    SetContendAlignment(textBlock,exportText.StyleDecorator);
-			SetPosition(textBlock,exportText);
-			SetDimension(textBlock,exportText);
+			
+			SetPositionAndSize(textBlock,exportText);
 			textBlock.Background = ConvertBrush(exportText.BackColor);
 			return textBlock;
 		}
@@ -92,21 +88,26 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		Canvas CreateCanvas(ExportContainer container)
 		{
 			var canvas = new Canvas();
-			SetDimension(canvas, container);
-			SetPosition(canvas,container);
-			canvas.Background = ConvertBrush(System.Drawing.Color.Red);
+			SetPositionAndSize(canvas,container);
+			canvas.Background = ConvertBrush(container.BackColor);
 			return canvas;
 		}
 		
+		void SetPositionAndSize(FrameworkElement element,ExportColumn column) {
+			SetPosition(element,column);
+			SetDimension(element,column);
+		}
 		
 		static void SetDimension (FrameworkElement element,ExportColumn exportColumn)
 		{
+			Console.WriteLine("set Demension to {0}",exportColumn.DesiredSize);
 			element.Width = exportColumn.DesiredSize.Width;
 			element.Height = exportColumn.DesiredSize.Height;
 		}
 		
 		
 		static void SetPosition (FrameworkElement element,ExportColumn exportColumn) {
+			Console.WriteLine("set Position to {0}",exportColumn.Location);
 			FixedPage.SetLeft(element,exportColumn.Location.X );
 			FixedPage.SetTop(element,exportColumn.Location.Y);
 		}
@@ -167,6 +168,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		Brush ConvertBrush(System.Drawing.Color color)
 		{
 			if (brushConverter.IsValid(color.Name)){
+				var r = brushConverter.ConvertFromString(color.Name) as SolidColorBrush;
 				return brushConverter.ConvertFromString(color.Name) as SolidColorBrush;
 			} else{
 				return brushConverter.ConvertFromString("Black") as SolidColorBrush;

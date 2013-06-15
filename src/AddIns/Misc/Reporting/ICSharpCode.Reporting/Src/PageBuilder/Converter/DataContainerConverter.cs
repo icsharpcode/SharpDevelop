@@ -40,50 +40,11 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 			}
 			this.collectionSource = collectionSource;
 		}
-		/*
-		public override IExportContainer Convert(){
-			if (collectionSource.Count == 0) {
-				return base.Convert();
-			}
-	
-			var exportContainer = CreateExportContainer();
-			Console.WriteLine("");
-			Console.WriteLine("start CurrentLocation {0}",CurrentLocation);
-			var position = Point.Empty;
-//			do {
-//				FitOnPage(position);
-//				collectionSource.Fill(Container.Items);
-				var itemsList = CreateConvertedList(exportContainer,position);
-				exportContainer.ExportedItems.AddRange(itemsList);
-				position = new Point(Container.Location.X,position.Y + Container.Size.Height);
-//			}
-//			while (collectionSource.MoveNext());
-			Console.WriteLine("end CurrentLocation {0}",CurrentLocation);
-			Console.WriteLine("");
-			ArrangeContainer(exportContainer);
-			return exportContainer;
-		}
-		*/
-		/*
-		public IExportContainer  aaaConvert(List<IPrintableObject>list,Point position){
-			var exportContainer = CreateExportContainer();
-			Console.WriteLine("");
-			Console.WriteLine("start CurrentLocation {0}",CurrentLocation);
-			var itemsList = CreateConvertedList(exportContainer,position);
-				exportContainer.ExportedItems.AddRange(itemsList);
-			Console.WriteLine("end CurrentLocation {0}",CurrentLocation);
-			Console.WriteLine("");
-			ArrangeContainer(exportContainer);
-			return exportContainer;	
-		}
-		*/
 		
-		public List<IExportColumn>  Convert(ExportContainer container,Point position){
-//			Console.WriteLine("");
-//			Console.WriteLine("start CurrentLocation {0}",CurrentLocation);
+		
+		public List<IExportColumn> Convert(IExportContainer container,Point position){
 			var itemsList = CreateConvertedList(container,position);
-//			Console.WriteLine("end CurrentLocation {0}",CurrentLocation);
-//			Console.WriteLine("");
+			ArrangeContainer(container);
 			return itemsList;	
 		}
 	}

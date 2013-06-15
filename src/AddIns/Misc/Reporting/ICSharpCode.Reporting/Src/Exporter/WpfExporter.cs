@@ -51,40 +51,36 @@ namespace ICSharpCode.Reporting.Exporter
 		{
 			
 			FixedPage fixedPage = CreateFixedPage();
-			Canvas canvas = null ;
+			Canvas parentCanvas = null ;
+			Console.WriteLine("page start");
 			foreach (var item in container.ExportedItems) {
 				var exportContainer = item as IExportContainer;
 				var acceptor = item as IAcceptor;
 				if (exportContainer != null) {
 					if (acceptor != null) {
 						acceptor.Accept(visitor);
-						canvas = (Canvas)visitor.UIElement;
-						fixedPage.Children.Add(canvas);
+						parentCanvas = (Canvas)visitor.UIElement;
+						fixedPage.Children.Add(parentCanvas);
+						
 						foreach (IAcceptor element in exportContainer.ExportedItems) {
 							element.Accept(visitor);
 							var ui = visitor.UIElement;
 							Canvas.SetLeft(ui,((IExportColumn)element).Location.X);
 							Canvas.SetTop(ui, ((IExportColumn)element).Location.Y);
-							canvas.Children.Add(ui);
+							parentCanvas.Children.Add(ui);
 						}
 					} else {
-						if (acceptor != null) {
-							acceptor.Accept(visitor);
-							var uiElement = visitor.UIElement;
-							if (canvas != null) {
-								Canvas.SetLeft(uiElement, item.Location.X - exportContainer.Location.X);
-								Canvas.SetTop(uiElement, item.Location.Y - exportContainer.Location.Y);
-								canvas.Children.Add(uiElement);
-							}
-							fixedPage.Children.Add(uiElement);
-						}
+						throw new NotSupportedException("item is not an IAcceptor");
 					}
 				}
 			}
+			Console.WriteLine("-------page end---");
 			return fixedPage;
 		}
 
-		 FixedPage CreateFixedPage()
+		
+		
+		FixedPage CreateFixedPage()
 		{
 			var fixedPage = new FixedPage();
 			fixedPage.Width = reportSettings.PageSize.Width;

@@ -41,6 +41,8 @@ namespace ICSharpCode.Reporting.Items
 			Size = this.Size,
 			Location = this.Location,
 			CanGrow = this.CanGrow,
+			BackColor = this.BackColor,
+			DesiredSize = this.Size
 			};
 		}
 		

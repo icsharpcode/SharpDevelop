@@ -33,6 +33,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		public override void BuildExportList()
 		{
+			var m = base.ReportModel;
 			base.BuildExportList();
 			CurrentPage = CreateNewPage ();
 			WriteStandardSections();
@@ -59,20 +60,24 @@ namespace ICSharpCode.Reporting.PageBuilder
 
 				var position = Point.Empty;
 				do {
-					
 					collectionSource.Fill(Container.Items);
-					var r = converter.Convert(Container as ExportContainer,position);
-					if (PageFull(r)) {
-						detail.ExportedItems.AddRange(r);
+					var convertedItems = converter.Convert(detail,position);
+					if (PageFull(convertedItems)) {
+						detail.ExportedItems.AddRange(convertedItems);
 						CurrentPage.ExportedItems.Insert(2,detail);
 						Pages.Add(CurrentPage);
+						var aa = detail.GetArrangeStrategy();
+						aa.Arrange(detail);
+						
+						
 						position = Point.Empty;
 						CurrentPage = CreateNewPage();
 						WriteStandardSections();
 						CurrentLocation = DetailStart;
 						detail = CreateContainerForSection(DetailStart);
+						
 					} else {
-						detail.ExportedItems.AddRange(r);
+						detail.ExportedItems.AddRange(convertedItems);
 						position = new Point(Container.Location.Y,position.Y + Container.Size.Height);
 					}
 				}
@@ -92,6 +97,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 		IExportContainer CreateContainerForSection(Point location )
 		{
 			var detail = (ExportContainer)Container.CreateExportColumn();
+//			var m = Container.MeasurementStrategy();
+//			detail.DesiredSize = m.Measure(Container,Graphics);
 			detail.Location = location;
 			return detail;
 		}

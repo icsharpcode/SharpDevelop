@@ -8,12 +8,7 @@
  */
 using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Media;
-
 using ICSharpCode.Reporting.ExportRenderer;
-using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
@@ -43,7 +38,8 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public override void Visit(ExportContainer exportColumn)
 		{
-//			Console.WriteLine("Wpf-Visit ExportContainer {0} - {1} - {2}", exportColumn.Name,exportColumn.Size,exportColumn.Location);
+//			Console.WriteLine("Wpf-Visit ExportContainer {0} - {1} - {2} - {3}", exportColumn.Name,exportColumn.Size,
+//			                  exportColumn.Location,exportColumn.BackColor);
 			var canvas = documentCreator.CreateContainer(exportColumn);
 			UIElement = canvas;
 		}
@@ -51,7 +47,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public override void Visit(ExportText exportColumn)
 		{
-//			Console.WriteLine("Wpf-Visit ExportText {0} - {1} - {2}", exportColumn.Name,exportColumn.Size,exportColumn.DesiredSize);
+			Console.WriteLine("Wpf-Visit ExportText {0} - {1} - {2}", exportColumn.Name,exportColumn.Size,exportColumn.DesiredSize);
 			var textBlock = documentCreator.CreateTextBlock(exportColumn);
 			UIElement = textBlock;
 		}

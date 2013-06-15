@@ -34,14 +34,20 @@ namespace ICSharpCode.Reporting.WpfReportViewer
 				throw new ArgumentNullException("pages");
 			if (reportSettings == null)
 				throw new ArgumentNullException("reportSettings");
-			Document = new FixedDocument();
-			var s = Document.DocumentPaginator.PageSize;
-			Document.DocumentPaginator.PageSize = new System.Windows.Size(reportSettings.PageSize.Width,reportSettings.PageSize.Height);
+			
+			Document = CreateFixedDocument(reportSettings);
+			
 			var wpfExporter = new WpfExporter(reportSettings,pages);
 			wpfExporter.Run();
-//			var fixedPage = wpfExporter.FixedPage;
-//			AddPageToDocument(Document,fixedPage);
-			this.Document = wpfExporter.Document;
+			this.document = wpfExporter.Document;
+		}
+
+		FixedDocument CreateFixedDocument(ReportSettings reportSettings)
+		{
+			var document = new FixedDocument();
+			var s = document.DocumentPaginator.PageSize;
+			document.DocumentPaginator.PageSize = new System.Windows.Size(reportSettings.PageSize.Width, reportSettings.PageSize.Height);
+		return document;
 		}
 		
 		static void AddPageToDocument(FixedDocument fixedDocument,FixedPage page)
@@ -57,7 +63,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer
 			set {
 				this.document = value;
 				OnNotifyPropertyChanged ("Document");
-				}	
+			}
 		}
 		
 		
