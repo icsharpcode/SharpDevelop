@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Documents;
@@ -426,8 +427,18 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
-				DocumentLine currentLine = textArea.Document.GetLineByNumber(textArea.Caret.Line);
-				textArea.Selection = Selection.Create(textArea, currentLine.Offset, currentLine.Offset + currentLine.TotalLength);
+				int firstLineIndex, lastLineIndex;
+				if (textArea.Selection.Length == 0) {
+					// There is no selection, simply delete current line
+					firstLineIndex = lastLineIndex = textArea.Caret.Line;
+				} else {
+					// There is a selection, remove all lines affected by it
+					firstLineIndex = textArea.Selection.StartPosition.Line;
+					lastLineIndex = textArea.Selection.EndPosition.Line;
+				}
+				DocumentLine startLine = textArea.Document.GetLineByNumber(firstLineIndex);
+				DocumentLine endLine = textArea.Document.GetLineByNumber(lastLineIndex);
+				textArea.Selection = Selection.Create(textArea, startLine.Offset, endLine.Offset + endLine.TotalLength);
 				textArea.RemoveSelectedText();
 				args.Handled = true;
 			}
