@@ -15,7 +15,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		string GetProjectKind(Project project)
 		{
-			string type = new ProjectType(project).Type;
+			string type = ProjectType.GetProjectType(project);
 			if (type == ProjectType.CSharp) {
 				return SD.ProjectTypeGuids.CSharp.ToString();
 			} else if (type == ProjectType.VBNet.ToString()) {

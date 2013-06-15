@@ -99,7 +99,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		string GetProjectType()
 		{
-			return new ProjectType(this).Type;
+			return ProjectType.GetProjectType(MSBuildProject);
 		}
 		
 		public virtual string Kind {

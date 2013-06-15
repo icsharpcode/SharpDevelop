@@ -58,6 +58,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get { return member.SymbolKind; }
 		}
 		
+		public Accessibility Accessibility {
+			get { return member.Accessibility; }
+			set { throw new NotImplementedException(); }
+		}
+		
 		public DomRegion Region {
 			get { return member.Region; }
 		}

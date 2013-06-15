@@ -20,6 +20,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 		string Name { get; }
 		
 		/// <summary>
+		/// Gets the symbol kind of the entity.
+		/// </summary>
+		SymbolKind SymbolKind { get; }
+		
+		/// <summary>
+		/// Gets/sets the accessibility of the entity.
+		/// </summary>
+		Accessibility Accessibility { get; set; }
+		
+		/// <summary>
 		/// Gets the parent project that contains this entity.
 		/// May return null if the entity is not part of a project.
 		/// </summary>

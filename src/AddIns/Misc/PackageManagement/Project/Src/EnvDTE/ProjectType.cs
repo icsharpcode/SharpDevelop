@@ -6,32 +6,22 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class ProjectType
+	public static class ProjectType
 	{
 		public static readonly string VBNet = "VB.NET";
 		public static readonly string CSharp = "C#";
 		
-		public ProjectType(Project project)
+		public static string GetProjectType(Project project)
 		{
-			this.Type = GetProjectType(project);
+			return GetProjectType(project.MSBuildProject);
 		}
 		
-		public ProjectType(MSBuildBasedProject project)
-			: this(new Project(project))
+		public static string GetProjectType(IProject project)
 		{
-		}
-		
-		string GetProjectType(Project project)
-		{
-			string extension = project.GetLowercaseFileExtension();
-			if (extension == ".csproj") {
-				return CSharp;
-			} else if (extension == ".vbproj") {
+			if (project.Language == "VB")
 				return VBNet;
-			}
-			return String.Empty;
+			else
+				return project.Language;
 		}
-		
-		public string Type { get; private set; }
 	}
 }

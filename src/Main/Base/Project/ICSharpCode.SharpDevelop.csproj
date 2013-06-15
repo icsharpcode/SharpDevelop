@@ -85,8 +85,12 @@
     <Compile Include="Designer\IDesignerTypeResolutionService.cs" />
     <Compile Include="Designer\TypeResolutionService.cs" />
     <Compile Include="Dom\IEntityModelContext.cs" />
+    <Compile Include="Dom\IEventModel.cs" />
+    <Compile Include="Dom\IFieldModel.cs" />
     <Compile Include="Dom\IMemberModel.cs" />
+    <Compile Include="Dom\IMethodModel.cs" />
     <Compile Include="Dom\IModelFactory.cs" />
+    <Compile Include="Dom\IPropertyModel.cs" />
     <Compile Include="Dom\ITypeDefinitionModel.cs" />
     <Compile Include="Dom\ITypeDefinitionModelCollection.cs" />
     <Compile Include="Dom\IEntityModel.cs" />

@@ -102,15 +102,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public static FileProjectItem GetFile(MSBuildBasedProject project, string fileName)
 		{
-			foreach (ProjectItem projectItem in project.Items) {
-				FileProjectItem fileItem = projectItem as FileProjectItem;
-				if (fileItem != null) {
-					if (fileItem.FileName == fileName) {
-						return fileItem;
-					}
-				}
-			}
-			return null;
+			return project.FindFile(FileName.Create(fileName));
 		}
 		
 		public static FileProjectItem GetFileFromInclude(TestableProject project, string include)

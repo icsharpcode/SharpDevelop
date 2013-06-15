@@ -22,7 +22,7 @@ namespace PackageManagement.Tests.EnvDTE
 		IPackageManagementProjectService fakeProjectService;
 		IPackageManagementFileService fakeFileService;
 		
-		void CreateProject(string fileName = @"d:\projects\MyProject\MyProject.csproj")
+		void CreateProject(string fileName = @"d:\projects\MyProject\MyProject.csproj", string language = "C#")
 		{
 			msbuildProject = ProjectHelper.CreateTestProject();
 			msbuildProject.FileName = new FileName(fileName);
@@ -86,7 +86,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void Type_ProjectIsCSharpProject_ReturnsCSharp()
 		{
-			CreateProject(@"c:\projects\myproject\test.csproj");
+			CreateProject(@"c:\projects\myproject\test.csproj", "C#");
 			
 			string projectType = project.Type;
 			

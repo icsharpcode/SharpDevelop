@@ -28,6 +28,20 @@ namespace PackageManagement.Tests.Helpers
 		{
 		}
 		
+		public override string Language {
+			get {
+				// HACK: unit tests only provide the file extension, but we now need the language
+				switch (this.FileName.GetExtension().ToLowerInvariant()) {
+					case ".csproj":
+						return "C#";
+					case ".vbproj":
+						return "VB";
+					default:
+						return string.Empty;
+				}
+			}
+		}
+		
 		public override bool IsStartable {
 			get { return isStartable; }
 		}

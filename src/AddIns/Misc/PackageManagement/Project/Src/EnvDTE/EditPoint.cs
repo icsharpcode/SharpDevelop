@@ -1,36 +1,37 @@
-﻿//// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-//// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-//
-//using System;
-//using ICSharpCode.SharpDevelop.Dom;
-//using ICSharpCode.SharpDevelop.Dom.Refactoring;
-//
-//namespace ICSharpCode.PackageManagement.EnvDTE
-//{
-//	public class EditPoint : TextPoint, global::EnvDTE.EditPoint
-//	{
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+using System;
+using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Dom;
+
+namespace ICSharpCode.PackageManagement.EnvDTE
+{
+	public class EditPoint : TextPoint, global::EnvDTE.EditPoint
+	{
 //		IRefactoringDocument document;
 //		IRefactoringDocumentView documentView;
-//		
-//		internal EditPoint(FilePosition filePosition, IDocumentLoader documentLoader)
-//			: base(filePosition, documentLoader)
-//		{
-//		}
-//		
-//		public void ReplaceText(object pointOrCount, string text, int flags)
-//		{
-//			ReplaceText((TextPoint)pointOrCount, text, (global::EnvDTE.vsEPReplaceTextOptions)flags);
-//		}
-//		
-//		void ReplaceText(TextPoint endPoint, string text, global::EnvDTE.vsEPReplaceTextOptions textFormatOptions)
-//		{
+		
+		internal EditPoint(string fileName, TextLocation location, IDocumentLoader documentLoader)
+			: base(fileName, location, documentLoader)
+		{
+		}
+		
+		public void ReplaceText(object pointOrCount, string text, int flags)
+		{
+			ReplaceText((TextPoint)pointOrCount, text, (global::EnvDTE.vsEPReplaceTextOptions)flags);
+		}
+		
+		void ReplaceText(TextPoint endPoint, string text, global::EnvDTE.vsEPReplaceTextOptions textFormatOptions)
+		{
+			throw new NotImplementedException();
 //			OpenDocument();
 //			int offset = GetStartOffset();
 //			int endOffset = GetEndOffset(endPoint);
 //			document.Replace(offset, endOffset - offset, text);
 //			IndentReplacedText(text);
-//		}
-//		
+		}
+		
 //		void OpenDocument()
 //		{
 //			documentView = DocumentLoader.LoadRefactoringDocumentView(FilePosition.FileName);
@@ -64,9 +65,9 @@
 //			return text.Split('\n').Length;
 //		}
 //		
-//		public void Insert(string text)
-//		{
-//			throw new NotImplementedException();
-//		}
-//	}
-//}
+		public void Insert(string text)
+		{
+			throw new NotImplementedException();
+		}
+	}
+}

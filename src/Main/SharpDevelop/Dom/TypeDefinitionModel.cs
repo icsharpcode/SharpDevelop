@@ -42,6 +42,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get { return context.Project; }
 		}
 		
+		public SymbolKind SymbolKind {
+			get { return SymbolKind.TypeDefinition; }
+		}
+		
+		public Accessibility Accessibility {
+			get { 
+				var td = Resolve();
+				if (td != null)
+					return td.Accessibility;
+				else
+					return Accessibility.None;
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public FullTypeName FullTypeName {
 			get { return fullTypeName; }
 		}
