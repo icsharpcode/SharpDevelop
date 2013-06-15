@@ -121,6 +121,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			DockPanel.SetDock(statusBar, Dock.Bottom);
 			dockPanel.Children.Insert(dockPanel.Children.Count - 2, statusBar);
 			
+			Core.WinForms.MenuService.ExecuteCommand = ExecuteCommand;
 			UpdateMenu();
 			
 			AddHandler(Hyperlink.RequestNavigateEvent, new RequestNavigateEventHandler(OnRequestNavigate));
@@ -138,6 +139,21 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			SD.ResourceService.LanguageChanged += OnLanguageChanged;
 			
 			SD.StatusBar.SetMessage("${res:MainWindow.StatusBar.ReadyMessage}");
+		}
+		
+		void ExecuteCommand(ICommand command, object caller)
+		{
+			ServiceSingleton.GetRequiredService<IAnalyticsMonitor>()
+				.TrackFeature(command.GetType().FullName, "Menu");
+			var routedCommand = command as System.Windows.Input.RoutedCommand;
+			if (routedCommand != null) {
+				var target = System.Windows.Input.FocusManager.GetFocusedElement(this);
+				if (routedCommand.CanExecute(caller, target))
+					routedCommand.Execute(caller, target);
+			} else {
+				if (command.CanExecute(caller))
+					command.Execute(caller);
+			}
 		}
 		
 		// keep a reference to the event handler to prevent it from being garbage collected
