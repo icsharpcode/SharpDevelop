@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.SharpDevelop.Editor.Dialogs;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
 
@@ -35,38 +36,44 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		public override void Run(ResolveResult symbol)
 		{
 			var entity = GetEntity(symbol);
-			
-			string title = "${res:SharpDevelop.Refactoring.Rename}";
-			string text = title; // TODO add proper text
-			if (entity != null) {
-				switch (entity.SymbolKind) {
-					case ICSharpCode.NRefactory.TypeSystem.SymbolKind.TypeDefinition:
-						text = "${res:SharpDevelop.Refactoring.RenameClassText}";
-						break;
-					default:
-						text = "${res:SharpDevelop.Refactoring.RenameMemberText}";
-						break;
-				}
-				
-				string newName = SD.MessageService.ShowInputBox(title, text, entity.Name);
-				if (newName != entity.Name) {
-					if (!CheckName(newName)) {
-						SD.MessageService.ShowError("The symbol cannot be renamed because its new name is invalid!");
-						return;
-					}
+			if (entity != null) {				
+				RenameSymbolDialog renameDialog = new RenameSymbolDialog(CheckName)
+				{
+					Owner = SD.Workbench.MainWindow,
+					OldSymbolName = entity.Name,
+					NewSymbolName = entity.Name
+				};
+				if ((bool) renameDialog.ShowDialog()) {
 					using (IProgressMonitor progressMonitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.Rename}"))
-						FindReferenceService.RenameSymbol(entity, newName, progressMonitor)
+						FindReferenceService.RenameSymbol(entity, renameDialog.NewSymbolName, progressMonitor)
 							.ObserveOnUIThread()
 							.Subscribe(error => SD.MessageService.ShowError(error.Message), ex => SD.MessageService.ShowException(ex), () => {});
 				}
 			}
-			
 		}
 		
 		bool CheckName(string name)
 		{
 			// TODO implement for current language!
-			return !string.IsNullOrWhiteSpace(name);
+			if (string.IsNullOrEmpty(name))
+				return false;
+			
+			for (int i = 0; i < name.Length; i++) {
+				char thisChar = name[i];
+				if (!Char.IsLetter(thisChar)
+				    && !Char.IsDigit(thisChar)
+				    && (thisChar != '_'))
+				    return false;
+			}
+			
+			return true;
+		}
+		
+		public override bool CanExecute(ResolveResult symbol)
+		{
+			if (symbol == null)
+				return false;
+			return !symbol.GetDefinitionRegion().IsEmpty;
 		}
 	}
 }

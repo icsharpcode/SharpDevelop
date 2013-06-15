@@ -202,6 +202,10 @@
     <Compile Include="Src\Editor\Commands\InsertGuidCommand.cs" />
     <Compile Include="Src\Editor\Commands\PasteAsCommands.cs" />
     <Compile Include="Src\Editor\Commands\ShowColorDialog.cs" />
+    <Compile Include="Src\Editor\Dialogs\RenameSymbolDialog.xaml.cs">
+      <DependentUpon>RenameSymbolDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Editor\IFormattingStrategy.cs" />
     <Compile Include="Editor\Search\ISearchResult.cs" />
     <Compile Include="Editor\Search\ISearchResultFactory.cs" />
@@ -806,11 +810,13 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Designer" />
+    <Folder Include="Src\Editor\Dialogs" />
     <Folder Include="Templates" />
     <Folder Include="Project\Configuration" />
     <Folder Include="Workbench\DisplayBinding" />
     <Page Include="Editor\Bookmarks\BookmarkPadContent.xaml" />
     <Page Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml" />
+    <Page Include="Src\Editor\Dialogs\RenameSymbolDialog.xaml" />
     <Page Include="Src\Gui\Components\FontSelector.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorDialog.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorXaml.xaml" />

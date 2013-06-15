@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Windows.Input;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Semantics;
@@ -21,15 +22,29 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	/// 
 	/// If the owner isn't one of the types above, the command operates on the caret position in the current editor.
 	/// </summary>
-	public abstract class ResolveResultMenuCommand : AbstractMenuCommand
+	public abstract class ResolveResultMenuCommand : ICommand
 	{
-		public abstract void Run(ResolveResult symbol);
-		
-		public override void Run()
+		public virtual event EventHandler CanExecuteChanged { add {} remove {} }
+
+		public bool CanExecute(object parameter)
 		{
 			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
-			ResolveResult resolveResult = GetResolveResult(editor, Owner);
+			ResolveResult resolveResult = GetResolveResult(editor, parameter);
+			return CanExecute(resolveResult);
+		}
+
+		public void Execute(object parameter)
+		{
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
+			ResolveResult resolveResult = GetResolveResult(editor, parameter);
 			Run(resolveResult);
+		}
+		
+		public abstract void Run(ResolveResult symbol);
+		
+		public virtual bool CanExecute(ResolveResult symbol)
+		{
+			return true;
 		}
 		
 		public static ResolveResult GetResolveResult(object owner)
