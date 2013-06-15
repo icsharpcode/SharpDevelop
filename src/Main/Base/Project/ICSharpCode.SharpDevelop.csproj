@@ -90,7 +90,9 @@
     <Compile Include="Dom\IMemberModel.cs" />
     <Compile Include="Dom\IMethodModel.cs" />
     <Compile Include="Dom\IModelFactory.cs" />
+    <Compile Include="Dom\INamespaceModel.cs" />
     <Compile Include="Dom\IPropertyModel.cs" />
+    <Compile Include="Dom\ISymbolModel.cs" />
     <Compile Include="Dom\ITypeDefinitionModel.cs" />
     <Compile Include="Dom\ITypeDefinitionModelCollection.cs" />
     <Compile Include="Dom\IEntityModel.cs" />

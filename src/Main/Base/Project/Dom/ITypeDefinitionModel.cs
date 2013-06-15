@@ -13,6 +13,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public interface ITypeDefinitionModel : IEntityModel
 	{
 		FullTypeName FullTypeName { get; }
+		string Namespace { get; }
+		TypeKind TypeKind { get; }
 		IModelCollection<ITypeDefinitionModel> NestedTypes { get; }
 		IModelCollection<IMemberModel> Members { get; }
 		
@@ -38,5 +40,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Either oldPart or newPart may be null when adding/removed a part.
 		/// </summary>
 		void Update(IUnresolvedTypeDefinition oldPart, IUnresolvedTypeDefinition newPart);
+		
+		IFieldModel AddField(Accessibility accessiblity, IType type, string name);
 	}
 }

@@ -15,8 +15,6 @@
 //	/// </summary>
 //	public class FileCodeModelCodeNamespace : CodeNamespace
 //	{
-//		FileCodeModelCodeNamespaceMembers members = new FileCodeModelCodeNamespaceMembers();
-//		
 //		public FileCodeModelCodeNamespace(IProjectContent projectContent, string namespaceName)
 //			: base(projectContent, namespaceName)
 //		{

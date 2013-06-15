@@ -11,20 +11,46 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class CodeElement : global::EnvDTE.CodeElementBase, global::EnvDTE.CodeElement
 	{
 		DTE dte;
-		IEntityModel entityModel;
+		protected readonly CodeModelContext context;
+		readonly ISymbolModel symbolModel;
 		
 		public CodeElement()
 		{
 		}
 		
-		public CodeElement(IEntityModel entityModel)
+		public CodeElement(CodeModelContext context, ISymbolModel symbolModel)
 		{
-			this.entityModel = entityModel;
-			this.Language = entityModel.ParentProject.GetCodeModelLanguage();
+			this.context = context;
+			this.symbolModel = symbolModel;
+			if (symbolModel.ParentProject != null)
+				this.Language = symbolModel.ParentProject.GetCodeModelLanguage();
+		}
+		
+		public static CodeElement CreateMember(CodeModelContext context, IMemberModel m)
+		{
+			switch (m.SymbolKind) {
+				case SymbolKind.Field:
+//					return new CodeVariable(m);
+					throw new NotImplementedException();
+				case SymbolKind.Property:
+				case SymbolKind.Indexer:
+//					return new CodeProperty2(m);
+					throw new NotImplementedException();
+				case SymbolKind.Event:
+					return null; // events are not supported in EnvDTE?
+				case SymbolKind.Method:
+				case SymbolKind.Operator:
+				case SymbolKind.Constructor:
+				case SymbolKind.Destructor:
+//					return new CodeFunction2(m);
+					throw new NotImplementedException();
+				default:
+					throw new NotSupportedException("Invalid value for SymbolKind");
+			}
 		}
 		
 		public virtual string Name {
-			get { return entityModel.Name; }
+			get { return symbolModel.Name; }
 		}
 		
 		public virtual string Language { get; protected set; }
@@ -40,7 +66,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return null;
 		}
 		
-		public virtual global::EnvDTE.vsCMInfoLocation InfoLocation { get; protected set; }
+		public virtual global::EnvDTE.vsCMInfoLocation InfoLocation {
+			get {
+				if (symbolModel != null && symbolModel.ParentProject == context)
+					return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject;
+				else
+					return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal;
+			}
+		}
 		
 		public virtual global::EnvDTE.DTE DTE {
 			get {

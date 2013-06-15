@@ -34,14 +34,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return new EditPoint(fileName, location, documentLoader);
 		}
 		
-		internal static TextPoint CreateStartPoint(DomRegion region, IDocumentLoader documentLoader)
+		internal static TextPoint CreateStartPoint(CodeModelContext context, DomRegion region)
 		{
-			return new TextPoint(region.FileName, region.Begin, documentLoader);
+			return new TextPoint(region.FileName, region.Begin, context.DocumentLoader);
 		}
 		
-		internal static TextPoint CreateEndPoint(DomRegion region, IDocumentLoader documentLoader)
+		internal static TextPoint CreateEndPoint(CodeModelContext context, DomRegion region)
 		{
-			return new TextPoint(region.FileName, region.End, documentLoader);
+			return new TextPoint(region.FileName, region.End, context.DocumentLoader);
 		}
 	}
 }

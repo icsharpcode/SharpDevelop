@@ -10,25 +10,29 @@ using ICSharpCode.SharpDevelop.Project;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>
-	/// An NRefactory entity as a model.
+	/// An NRefactory symbol as a model.
 	/// </summary>
-	public interface IEntityModel : ISymbolModel
+	public interface ISymbolModel : INotifyPropertyChanged
 	{
 		/// <summary>
-		/// Gets/sets the accessibility of the entity.
+		/// Gets the name of the entity.
 		/// </summary>
-		Accessibility Accessibility { get; set; }
+		string Name { get; }
 		
 		/// <summary>
-		/// Resolves the entity in the current solution snapshot.
-		/// Returns null if the entity could not be resolved.
+		/// Gets the symbol kind of the entity.
 		/// </summary>
-		IEntity Resolve();
+		SymbolKind SymbolKind { get; }
 		
 		/// <summary>
-		/// Resolves the entity in the specified solution snapshot.
-		/// Returns null if the entity could not be resolved.
+		/// Gets the parent project that contains this entity.
+		/// May return null if the entity is not part of a project.
 		/// </summary>
-		IEntity Resolve(ISolutionSnapshotWithProjectMapping solutionSnapshot);
+		IProject ParentProject { get; }
+		
+		/// <summary>
+		/// Gets the region where this entity is defined.
+		/// </summary>
+		DomRegion Region { get; }
 	}
 }

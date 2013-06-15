@@ -9,16 +9,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class CodeVariable : CodeElement, global::EnvDTE.CodeVariable
 	{
 		readonly IFieldModel field;
-		readonly IDocumentLoader documentLoader;
 		
 		public CodeVariable()
 		{
 		}
 		
-		public CodeVariable(IFieldModel field, IDocumentLoader documentLoader)
+		public CodeVariable(CodeModelContext context, IFieldModel field)
+			: base(context, field)
 		{
 			this.field = field;
-			this.documentLoader = documentLoader;
 		}
 		
 		public override global::EnvDTE.vsCMElement Kind {
@@ -32,12 +31,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public override global::EnvDTE.TextPoint GetStartPoint()
 		{
-			return TextPoint.CreateStartPoint(field.Region, documentLoader);
+			return TextPoint.CreateStartPoint(context, field.Region);
 		}
 		
 		public override global::EnvDTE.TextPoint GetEndPoint()
 		{
-			return TextPoint.CreateEndPoint(field.Region, documentLoader);
+			return TextPoint.CreateEndPoint(context, field.Region);
 		}
 	}
 }

@@ -46,6 +46,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get { return SymbolKind.TypeDefinition; }
 		}
 		
+		public TypeKind TypeKind {
+			get { return parts[0].Kind; }
+		}
+		
 		public Accessibility Accessibility {
 			get { 
 				var td = Resolve();
@@ -69,6 +73,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public string Name {
 			get { return fullTypeName.Name; }
+		}
+		
+		public string Namespace {
+			get { return fullTypeName.TopLevelTypeName.Namespace; }
 		}
 		
 		#region Resolve
@@ -307,5 +315,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		#endregion
+		
+		public IFieldModel AddField(Accessibility accessiblity, IType type, string name)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

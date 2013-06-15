@@ -5,22 +5,20 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeElementsList : MarshalByRefObject, global::EnvDTE.CodeElements
+	public class CodeElementsList<T> : MarshalByRefObject, global::EnvDTE.CodeElements, IList<T>
+		where T : global::EnvDTE.CodeElement
 	{
-		List<CodeElement> elements = new List<CodeElement>();
+		List<T> elements = new List<T>();
 		
 		public CodeElementsList()
 		{
 		}
 		
-		protected virtual void AddCodeElement(CodeElement element)
-		{
-			elements.Add(element);
-		}
-		
+		#region EnvDTE.CodeElements implementation
 		public int Count {
 			get { return elements.Count; }
 		}
@@ -30,22 +28,79 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return elements.GetEnumerator();
 		}
 		
-		public global::EnvDTE.CodeElement Item(object index)
+		global::EnvDTE.CodeElement global::EnvDTE.CodeElements.Item(object index)
 		{
 			if (index is int) {
-				return Item((int)index);
+				return GetItem((int)index);
 			}
-			return Item((string)index);
+			return GetItem((string)index);
 		}
 		
-		global::EnvDTE.CodeElement Item(int index)
+		global::EnvDTE.CodeElement GetItem(int index)
 		{
 			return elements[index - 1];
 		}
 		
-		global::EnvDTE.CodeElement Item(string name)
+		global::EnvDTE.CodeElement GetItem(string name)
 		{
 			return elements.Single(item => item.Name == name);
 		}
+		#endregion
+		
+		#region IList<T>
+		public T this[int index] {
+			get { return elements[index]; }
+			set { elements[index] = value; }
+		}
+		
+		bool ICollection<T>.IsReadOnly {
+			get { return false; }
+		}
+		
+		public int IndexOf(T item)
+		{
+			return elements.IndexOf(item);
+		}
+		
+		public void Insert(int index, T item)
+		{
+			elements.Insert(index, item);
+		}
+		
+		public void RemoveAt(int index)
+		{
+			elements.RemoveAt(index);
+		}
+		
+		public void Add(T item)
+		{
+			elements.Add(item);
+		}
+		
+		public void Clear()
+		{
+			elements.Clear();
+		}
+		
+		public bool Contains(T item)
+		{
+			return elements.Contains(item);
+		}
+		
+		public void CopyTo(T[] array, int arrayIndex)
+		{
+			elements.CopyTo(array, arrayIndex);
+		}
+		
+		public bool Remove(T item)
+		{
+			return elements.Remove(item);
+		}
+		
+		IEnumerator<T> IEnumerable<T>.GetEnumerator()
+		{
+			return elements.GetEnumerator();
+		}
+		#endregion
 	}
 }
