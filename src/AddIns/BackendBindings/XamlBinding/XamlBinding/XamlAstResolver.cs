@@ -56,9 +56,9 @@ namespace ICSharpCode.XamlBinding
 		{
 			IMember member = null, underlying = null;
 			IType type = null;
-			string namespaceName = string.IsNullOrEmpty(attribute.Namespace) ? attribute.ParentElement.Namespace : attribute.Namespace;
 			string propertyName = attribute.LocalName;
 			if (propertyName.Contains(".")) {
+				string namespaceName = string.IsNullOrEmpty(attribute.Namespace) ? attribute.ParentElement.LookupNamespace("") : attribute.Namespace;
 				string name = propertyName.Substring(0, propertyName.IndexOf('.'));
 				propertyName = propertyName.Substring(propertyName.IndexOf('.') + 1);
 				ITypeReference reference = XamlUnresolvedFile.CreateTypeReference(namespaceName, name);
@@ -67,7 +67,7 @@ namespace ICSharpCode.XamlBinding
 				if (member == null)
 					member = FindAttachedMember(type, propertyName, out underlying);
 			} else {
-				ITypeReference reference = XamlUnresolvedFile.CreateTypeReference(namespaceName, attribute.ParentElement.LocalName);
+				ITypeReference reference = XamlUnresolvedFile.CreateTypeReference(attribute.ParentElement.Namespace, attribute.ParentElement.LocalName);
 				type = reference.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
 				member = FindMember(type, propertyName);
 			}
@@ -127,18 +127,21 @@ namespace ICSharpCode.XamlBinding
 				.GetMethods(m => m.IsPublic && m.IsStatic && m.Parameters.Count == 1
 				            && m.Name == "Get" + propertyName)
 				.FirstOrDefault();
-			ITypeResolveContext localContext = new SimpleTypeResolveContext(type.GetDefinition());
-			if (underlyingMember != null)
-				return new DefaultUnresolvedProperty { Name = propertyName }
-			.CreateResolved(localContext);
-			
-			underlyingMember = type
-				.GetMethods(m => m.IsPublic && m.IsStatic && m.Parameters.Count == 2
-				            && m.Name == "Add" + propertyName + "Handler")
-				.FirstOrDefault();
-			if (underlyingMember != null)
-				return new DefaultUnresolvedEvent { Name = propertyName }
-			.CreateResolved(localContext);
+			var definition = type.GetDefinition();
+			if (definition != null) {
+				ITypeResolveContext localContext = new SimpleTypeResolveContext(definition);
+				if (underlyingMember != null)
+					return new DefaultUnresolvedProperty { Name = propertyName }
+				.CreateResolved(localContext);
+				
+				underlyingMember = type
+					.GetMethods(m => m.IsPublic && m.IsStatic && m.Parameters.Count == 2
+					            && m.Name == "Add" + propertyName + "Handler")
+					.FirstOrDefault();
+				if (underlyingMember != null)
+					return new DefaultUnresolvedEvent { Name = propertyName }
+				.CreateResolved(localContext);
+			}
 			return null;
 		}
 		
