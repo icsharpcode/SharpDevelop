@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor.Dialogs;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -36,35 +37,34 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		public override void Run(ResolveResult symbol)
 		{
 			var entity = GetEntity(symbol);
-			if (entity != null) {				
-				RenameSymbolDialog renameDialog = new RenameSymbolDialog(CheckName)
-				{
-					Owner = SD.Workbench.MainWindow,
-					OldSymbolName = entity.Name,
-					NewSymbolName = entity.Name
-				};
-				if ((bool) renameDialog.ShowDialog()) {
-					using (IProgressMonitor progressMonitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.Rename}"))
-						FindReferenceService.RenameSymbol(entity, renameDialog.NewSymbolName, progressMonitor)
-							.ObserveOnUIThread()
-							.Subscribe(error => SD.MessageService.ShowError(error.Message), ex => SD.MessageService.ShowException(ex), () => {});
+			if (entity != null) {
+				var project = entity.ParentAssembly.GetProject();
+				if (project != null) {
+					var languageBinding = project.LanguageBinding;
+					
+					RenameSymbolDialog renameDialog = new RenameSymbolDialog(name => CheckName(name, languageBinding))
+					{
+						Owner = SD.Workbench.MainWindow,
+						OldSymbolName = entity.Name,
+						NewSymbolName = entity.Name
+					};
+					if ((bool) renameDialog.ShowDialog()) {
+						using (IProgressMonitor progressMonitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.Rename}"))
+							FindReferenceService.RenameSymbol(entity, renameDialog.NewSymbolName, progressMonitor)
+								.ObserveOnUIThread()
+								.Subscribe(error => SD.MessageService.ShowError(error.Message), ex => SD.MessageService.ShowException(ex), () => {});
+					}
 				}
 			}
 		}
 		
-		bool CheckName(string name)
+		bool CheckName(string name, ILanguageBinding language)
 		{
-			// TODO implement for current language!
 			if (string.IsNullOrEmpty(name))
 				return false;
 			
-			for (int i = 0; i < name.Length; i++) {
-				char thisChar = name[i];
-				if (!Char.IsLetter(thisChar)
-				    && !Char.IsDigit(thisChar)
-				    && (thisChar != '_'))
-				    return false;
-			}
+			if ((language.CodeDomProvider == null) || !language.CodeDomProvider.IsValidIdentifier(name))
+				return false;
 			
 			return true;
 		}
