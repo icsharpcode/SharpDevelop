@@ -243,12 +243,11 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		static string CodeStatementToString(CodeStatement statement)
 		{
-			throw new NotImplementedException();
-//			CodeDomVerboseOutputGenerator outputGenerator = new CodeDomVerboseOutputGenerator();
-//			using(StringWriter sw = new StringWriter(System.Globalization.CultureInfo.InvariantCulture)) {
-//				outputGenerator.PublicGenerateCodeFromStatement(statement, sw, null);
-//				return sw.ToString().TrimEnd();
-//			}
+			CodeDomVerboseOutputGenerator outputGenerator = new CodeDomVerboseOutputGenerator();
+			using(StringWriter sw = new StringWriter(System.Globalization.CultureInfo.InvariantCulture)) {
+				outputGenerator.PublicGenerateCodeFromStatement(statement, sw, null);
+				return sw.ToString().TrimEnd();
+			}
 		}
 	}
 }
