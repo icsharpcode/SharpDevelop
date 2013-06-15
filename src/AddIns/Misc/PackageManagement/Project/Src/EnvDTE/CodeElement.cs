@@ -18,6 +18,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 		}
 		
+		public CodeElement(CodeModelContext context)
+		{
+			this.context = context;
+		}
+		
 		public CodeElement(CodeModelContext context, ISymbolModel symbolModel)
 		{
 			this.context = context;
@@ -86,6 +91,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual global::EnvDTE.vsCMElement Kind {
 			get { return global::EnvDTE.vsCMElement.vsCMElementOther; }
+		}
+		
+		protected bool IsInFilter(DomRegion region)
+		{
+			if (context.FilteredFileName == null)
+				return true;
+			return context.FilteredFileName == region.FileName;
 		}
 		
 		protected override bool GetIsDerivedFrom(string fullName)

@@ -51,15 +51,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		public Accessibility Accessibility {
-			get { 
+			get {
 				var td = Resolve();
 				if (td != null)
 					return td.Accessibility;
 				else
 					return Accessibility.None;
-			}
-			set {
-				throw new NotImplementedException();
 			}
 		}
 		
@@ -316,9 +313,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		#endregion
 		
-		public IFieldModel AddField(Accessibility accessiblity, IType type, string name)
-		{
-			throw new NotImplementedException();
+		public bool IsPartial {
+			get {
+				return parts.Count > 1; // TODO: check for partial modifier on single part
+			}
+		}
+		
+		public bool IsAbstract {
+			get { return parts.Any(p => p.IsAbstract); }
+		}
+		
+		public bool IsStatic {
+			get { return parts.Any(p => p.IsStatic); }
+		}
+		
+		public bool IsSealed {
+			get { return parts.Any(p => p.IsSealed); }
 		}
 	}
 }

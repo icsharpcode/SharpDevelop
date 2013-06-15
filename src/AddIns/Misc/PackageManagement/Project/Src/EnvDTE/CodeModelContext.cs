@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
@@ -10,5 +11,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	{
 		public IProject CurrentProject { get; set; }
 		public IDocumentLoader DocumentLoader { get; set; }
+		public CodeGenerator CodeGenerator { get; set; }
+		
+		/// <summary>
+		/// Specifies the file name if this code model context refers to
+		/// </summary>
+		public string FilteredFileName { get; set; }
+		
+		public CodeModelContext WithFilteredFileName(string fileName)
+		{
+			CodeModelContext newContext = (CodeModelContext)MemberwiseClone();
+			newContext.FilteredFileName = fileName;
+			return newContext;
+		}
 	}
 }

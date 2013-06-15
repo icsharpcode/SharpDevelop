@@ -172,7 +172,7 @@
     <Compile Include="Project\Project_TypeGuids.cs" />
     <Compile Include="Project\SolutionEventArgs.cs" />
     <Compile Include="Project\SolutionSection.cs" />
-    <Compile Include="Refactoring\ICodeGenerator.cs" />
+    <Compile Include="Refactoring\CodeGenerator.cs" />
     <Compile Include="Services\IClipboard.cs" />
     <Compile Include="Services\IFileSystem.cs" />
     <Compile Include="Services\IMessageLoop.cs" />

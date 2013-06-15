@@ -13,8 +13,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 		}
 		
-		public CodeAttribute2(IAttribute attribute)
-			: base(attribute)
+		public CodeAttribute2(CodeModelContext context, IAttribute attribute)
+			: base(context, attribute)
 		{
 		}
 		

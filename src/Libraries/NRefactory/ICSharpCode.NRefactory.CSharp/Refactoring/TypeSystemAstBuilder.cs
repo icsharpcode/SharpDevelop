@@ -841,7 +841,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		#endregion
 		
 		#region Convert Modifiers
-		static Modifiers ModifierFromAccessibility(Accessibility accessibility)
+		public static Modifiers ModifierFromAccessibility(Accessibility accessibility)
 		{
 			switch (accessibility) {
 				case Accessibility.Private:

@@ -94,5 +94,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return Resolve(solutionSnapshot);
 		}
 		#endregion
+		
+		public bool IsStatic {
+			get { return member.IsStatic; }
+		}
+		
+		public bool IsAbstract {
+			get { return member.IsAbstract; }
+		}
+		
+		public bool IsSealed {
+			get { return member.IsSealed; }
+		}
 	}
 }

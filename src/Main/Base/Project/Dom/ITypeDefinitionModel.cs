@@ -41,6 +41,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		void Update(IUnresolvedTypeDefinition oldPart, IUnresolvedTypeDefinition newPart);
 		
-		IFieldModel AddField(Accessibility accessiblity, IType type, string name);
+		bool IsPartial { get; }
 	}
 }

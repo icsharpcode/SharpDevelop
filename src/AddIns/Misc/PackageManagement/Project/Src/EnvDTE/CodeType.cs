@@ -24,7 +24,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			if (typeDef != null) {
 				var typeModel = typeDef.GetModel();
 				if (typeModel != null)
-					return Create(context, typeModel);
+					return Create(context.WithFilteredFileName(null), typeModel);
 			}
 			return null;
 		}
@@ -66,7 +66,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual global::EnvDTE.vsCMAccess Access {
 			get { return typeModel.Accessibility.ToAccess(); }
-			set { typeModel.Accessibility = value.ToAccessibility(); }
+			set { 
+				var td = typeModel.Resolve();
+				if (td != null) {
+					context.CodeGenerator.ChangeAccessibility(td, value.ToAccessibility());
+				}
+			}
 		}
 		
 		public virtual string FullName {
@@ -89,7 +94,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public virtual global::EnvDTE.CodeElements Members {
 			get {
 				if (members == null) {
-					members = typeModel.Members.Select(m => CreateMember(context, m)).AsCodeElements();
+					members = typeModel.Members
+						.Where(m => IsInFilter(m.Region))
+						.Select(m => CreateMember(context, m))
+						.AsCodeElements();
 				}
 				return members;
 			}
@@ -121,7 +129,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				var td = typeModel.Resolve();
 				if (td != null) {
 					foreach (var attr in td.Attributes) {
-						list.Add(new CodeAttribute2(attr));
+						if (IsInFilter(attr.Region))
+							list.Add(new CodeAttribute2(context, attr));
 					}
 				}
 				return list;
@@ -131,7 +140,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public virtual global::EnvDTE.CodeNamespace Namespace {
 			get {
 				throw new NotImplementedException();
-//				return new FileCodeModelCodeNamespace(currentProject, typeModel.Namespace);
+				// if (context.FilteredFileName != null)
+				//     ...
+				// else
+				//    return new CodeNamespace(context, typeModel.Namespace);
 			}
 		}
 		

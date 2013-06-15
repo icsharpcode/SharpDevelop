@@ -25,7 +25,7 @@ namespace CSharpBinding
 		{
 			this.container.AddService(typeof(IFormattingStrategy), new CSharpFormattingStrategy());
 			this.container.AddService(typeof(IBracketSearcher), new CSharpBracketSearcher());
-			this.container.AddService(typeof(ICodeGenerator), new CSharpCodeGenerator());
+			this.container.AddService(typeof(CodeGenerator), new CSharpCodeGenerator());
 			this.container.AddService(typeof(System.CodeDom.Compiler.CodeDomProvider), new Microsoft.CSharp.CSharpCodeProvider());
 		}
 	}

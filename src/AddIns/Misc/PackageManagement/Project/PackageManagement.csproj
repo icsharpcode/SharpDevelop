@@ -105,7 +105,6 @@
     <Compile Include="Src\EnvDTE\CodeInterface.cs" />
     <Compile Include="Src\EnvDTE\CodeModelContext.cs" />
     <Compile Include="Src\EnvDTE\CodeParameter2.cs" />
-    <Compile Include="Src\EnvDTE\CodeParameters.cs" />
     <Compile Include="Src\EnvDTE\CodeModel.cs" />
     <Compile Include="Src\EnvDTE\CodeNamespace.cs" />
     <Compile Include="Src\EnvDTE\CodeParameter.cs" />
@@ -130,8 +129,6 @@
     <Compile Include="Src\EnvDTE\ImplementedInterfacesOnClass.cs" />
     <Compile Include="Src\EnvDTE\IParameterExtensions.cs" />
     <Compile Include="Src\EnvDTE\IReturnTypeExtensions.cs" />
-    <Compile Include="Src\EnvDTE\NamespaceName.cs" />
-    <Compile Include="Src\EnvDTE\PartialClasses.cs" />
     <Compile Include="Src\EnvDTE\ProjectKind.cs" />
     <Compile Include="Src\EnvDTE\Projects.cs" />
     <Compile Include="Src\EnvDTE\Reference3.cs" />

@@ -66,7 +66,7 @@ namespace CSharpBinding.Refactoring
 			return null;
 		}
 		
-		string GenerateFormatString(ITypeDefinition currentClass, ICodeGenerator generator, string[] fields)
+		string GenerateFormatString(ITypeDefinition currentClass, CodeGenerator generator, string[] fields)
 		{
 			string fieldsString = "";
 			

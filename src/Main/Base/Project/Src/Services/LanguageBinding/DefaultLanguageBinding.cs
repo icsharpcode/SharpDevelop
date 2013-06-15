@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop
 				this.container = new ServiceContainer();
 				this.container.AddService(typeof(IFormattingStrategy), DefaultFormattingStrategy.DefaultInstance);
 				this.container.AddService(typeof(IBracketSearcher), DefaultBracketSearcher.DefaultInstance);
-				this.container.AddService(typeof(ICodeGenerator), DefaultCodeGenerator.DefaultInstance);
+				this.container.AddService(typeof(CodeGenerator), CodeGenerator.DummyCodeGenerator);
 			} else {
 				this.container = new ServiceContainer(DefaultInstance);
 			}
@@ -43,9 +43,9 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public ICodeGenerator CodeGenerator {
+		public CodeGenerator CodeGenerator {
 			get {
-				return this.GetService<ICodeGenerator>();
+				return this.GetService<CodeGenerator>();
 			}
 		}
 		

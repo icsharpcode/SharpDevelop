@@ -46,11 +46,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			if (td == null)
 				return null;
 			IType fieldType = td.Compilation.FindType(fieldTypeName);
-			IFieldModel field = typeModel.AddField(Access.ToAccessibility(), fieldType, name);
-			if (field != null)
-				return new CodeVariable(context, field);
-			else
-				return null;
+			context.CodeGenerator.AddField(td, Access.ToAccessibility(), fieldType, name);
+			var fieldModel = typeModel.Members.OfType<IFieldModel>().FirstOrDefault(f => f.Name == name);
+			if (fieldModel != null) {
+				return new CodeVariable(context, fieldModel);
+			}
+			return null;
 		}
 	}
 }

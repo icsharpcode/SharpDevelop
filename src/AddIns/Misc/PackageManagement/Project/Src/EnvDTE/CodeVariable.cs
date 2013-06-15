@@ -26,7 +26,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public global::EnvDTE.vsCMAccess Access {
 			get { return field.Accessibility.ToAccess(); }
-			set { field.Accessibility = value.ToAccessibility(); }
+			set {
+				var f = field.Resolve();
+				if (f != null) {
+					context.CodeGenerator.ChangeAccessibility(f, value.ToAccessibility());
+				}
+			}
 		}
 		
 		public override global::EnvDTE.TextPoint GetStartPoint()
