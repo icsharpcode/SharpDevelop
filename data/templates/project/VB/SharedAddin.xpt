@@ -22,7 +22,7 @@
 	</Actions>
 	
 	<!-- Template Content -->
-	<Project language = "VBNet">
+	<Project language="VB">
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Xml" />

@@ -18,7 +18,7 @@
 		<Open filename = "UserControl1.vb"/>
 	</Actions>
 
-	<Project language = "VBNet">
+	<Project language="VB">
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />

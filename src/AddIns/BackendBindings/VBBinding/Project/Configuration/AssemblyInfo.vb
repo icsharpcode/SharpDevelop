@@ -15,4 +15,4 @@ Imports System.Runtime.CompilerServices
 <Assembly: AssemblyConfiguration("")>
 <Assembly: AssemblyTrademark("")>
 <Assembly: AssemblyCulture("")>
-<Assembly: InternalsVisibleTo("ICSharpCode.VBNetBinding.Tests")>
+<Assembly: InternalsVisibleTo("ICSharpCode.VBBinding.Tests")>

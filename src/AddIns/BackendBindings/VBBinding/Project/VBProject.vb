@@ -13,7 +13,7 @@ Imports ICSharpCode.Core
 Imports ICSharpCode.SharpDevelop
 Imports ICSharpCode.SharpDevelop.Project
 
-Public Class VBNetProject
+Public Class VBProject
 	Inherits CompilableProject
 	
 	Protected Overrides Sub OnPropertyChanged(e As ProjectPropertyChangedEventArgs)
@@ -62,7 +62,7 @@ Public Class VBNetProject
 
 	Public Overrides ReadOnly Property Language() As String
 		Get
-			Return VBNetProjectBinding.LanguageName
+			Return VBProjectBinding.LanguageName
 		End Get
 	End Property
 	
@@ -137,7 +137,7 @@ End Class
 
 Public Class VBProjectBehavior
 	Inherits ProjectBehavior
-	Public Sub New(project As VBNetProject, Optional [next] As ProjectBehavior = Nothing)
+	Public Sub New(project As VBProject, Optional [next] As ProjectBehavior = Nothing)
 
 		MyBase.New(project, [next])
 	End Sub

@@ -19,7 +19,7 @@
 	</Actions>
 	
 	<!-- Template Content -->
-	<Project language="VBNet">
+	<Project language="VB">
 		<PropertyGroup>
 			<OutputType>WinExe</OutputType>
 			<AppDesignerFolder>Properties</AppDesignerFolder>

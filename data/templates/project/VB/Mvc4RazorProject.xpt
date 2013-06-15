@@ -20,7 +20,7 @@
 		<RunCommand path="/AddIns/PackageManagement/TemplateCommands/InstallPackages"/>
 	</Actions>
 
-	<Project language="VBNet">
+	<Project language="VB">
 		<ProjectItems>
 			<Reference Include="Microsoft.VisualBasic" />
 			<Reference Include="System" />

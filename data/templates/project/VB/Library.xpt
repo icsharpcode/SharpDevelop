@@ -17,7 +17,7 @@
 		<Open filename = "NewClass.vb"/>
 	</Actions>
 
-	<Project language="VBNet">
+	<Project language="VB">
 		<PropertyGroup>
 			<OutputType>Library</OutputType>
 			<AppDesignerFolder>Properties</AppDesignerFolder>

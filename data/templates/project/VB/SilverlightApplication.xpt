@@ -15,7 +15,7 @@
 		<Open filename = "MainPage.xaml"/>
 	</Actions>
 	
-	<Project language = "VBNet">
+	<Project language="VB">
 		
 		<ProjectItems>
 			<Reference Include="System.Windows" />

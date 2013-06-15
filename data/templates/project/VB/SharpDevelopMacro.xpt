@@ -19,7 +19,7 @@
 		<Open filename = "AddInWritingHelp.txt"/>
 	</Actions>
 	
-	<Project language="VBNet">
+	<Project language="VB">
 		<PropertyGroup>
 			<OutputType>Library</OutputType>
 			<OptionInfer>On</OptionInfer>

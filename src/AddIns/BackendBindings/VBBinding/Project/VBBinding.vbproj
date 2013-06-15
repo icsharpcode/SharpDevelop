@@ -6,7 +6,7 @@
     <ProductVersion>8.0.50630</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{6D209CBB-D8C1-478A-BC30-D3FC87B7858F}</ProjectGuid>
-    <AssemblyName>ICSharpCode.VBNetBinding</AssemblyName>
+    <AssemblyName>ICSharpCode.VBBinding</AssemblyName>
     <OutputTarget>Library</OutputTarget>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>False</NoStdLib>
@@ -21,22 +21,26 @@
     <BaseAddress>104857600</BaseAddress>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
-    <RootNamespace>ICSharpCode.VBNetBinding</RootNamespace>
+    <RootNamespace>ICSharpCode.VBBinding</RootNamespace>
     <TargetFrameworkProfile />
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <OptionStrict>Off</OptionStrict>
+    <OptionCompare>Binary</OptionCompare>
+    <OptionInfer>Off</OptionInfer>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\BackendBindings\VBBinding\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <OutputPath>..\..\..\..\..\AddIns\BackendBindings\VBNetBinding\</OutputPath>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <DebugType>Full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>false</DebugSymbols>
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <OutputPath>..\..\..\..\..\AddIns\BackendBindings\VBNetBinding\</OutputPath>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DebugType>None</DebugType>
   </PropertyGroup>
@@ -70,12 +74,12 @@
       <DependentUpon>BuildOptions.xaml</DependentUpon>
     </Compile>
     <Compile Include="VbcEncodingFixingLogger.vb" />
-    <Compile Include="VBNetProject.vb" />
-    <Compile Include="VBNetProjectBinding.vb" />
+    <Compile Include="VBProject.vb" />
+    <Compile Include="VBProjectBinding.vb" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Readme.txt" />
-    <None Include="VBNetBinding.addin">
+    <None Include="VBBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

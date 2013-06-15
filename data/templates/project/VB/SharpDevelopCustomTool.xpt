@@ -17,7 +17,7 @@
 		<Open filename = "AddInWritingHelp.txt"/>
 	</Actions>
 	
-	<Project language="VBNet">
+	<Project language="VB">
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />

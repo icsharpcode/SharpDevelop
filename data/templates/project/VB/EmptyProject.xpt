@@ -12,7 +12,7 @@
 		<SupportedTargetFrameworks>v2.0;v3.5Client</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
-	<Project language = "VBNet">
+	<Project language="VB">
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />

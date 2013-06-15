@@ -4,9 +4,9 @@
 Imports System.Xml
 Imports ICSharpCode.SharpDevelop.Project
 
-Public Class VBNetProjectBinding
+Public Class VBProjectBinding
 	Implements IProjectBinding
-	Public Const LanguageName As String = "VBNet"
+	Public Const LanguageName As String = "VB"
 
 	Public ReadOnly Property Language() As String Implements IProjectBinding.Language
 		Get
@@ -15,11 +15,11 @@ Public Class VBNetProjectBinding
 	End Property
 
 	Public Function LoadProject(info As ProjectLoadInformation) As IProject Implements IProjectBinding.LoadProject
-		Return New VBNetProject(info)
+		Return New VBProject(info)
 	End Function
 
 	Public Function CreateProject(info As ProjectCreateInformation) As IProject Implements IProjectBinding.CreateProject
-		Return New VBNetProject(info)
+		Return New VBProject(info)
 	End Function
 
 	Public ReadOnly Property HandlingMissingProject() As Boolean Implements IProjectBinding.HandlingMissingProject

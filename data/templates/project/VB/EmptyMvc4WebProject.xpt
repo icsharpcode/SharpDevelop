@@ -13,7 +13,7 @@
 		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 
-	<Project language="VBNet">
+	<Project language="VB">
 		<ProjectItems>
 			<Reference Include="Microsoft.VisualBasic" />
 			<Reference Include="System" />
