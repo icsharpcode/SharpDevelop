@@ -24,6 +24,7 @@ namespace CSharpBinding.Refactoring
 	public partial class OverrideToStringMethodDialog : AbstractInlineRefactorDialog
 	{
 		AstNode baseCallNode;
+		IList<PropertyOrFieldWrapper> parameterList;
 		
 		public OverrideToStringMethodDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor, IList<PropertyOrFieldWrapper> fields, AstNode baseCallNode)
 			: base(context, editor, anchor)
@@ -31,14 +32,17 @@ namespace CSharpBinding.Refactoring
 			InitializeComponent();
 			
 			this.baseCallNode = baseCallNode;
+			parameterList = fields;
 			this.listBox.ItemsSource = fields;
 			
-			listBox.SelectAll();
+			SelectAllChecked();
 		}
 		
 		protected override string GenerateCode(ITypeDefinition currentClass)
 		{
-			string[] fields = listBox.SelectedItems.OfType<PropertyOrFieldWrapper>().Select(f2 => f2.MemberName).ToArray();
+//			string[] fields = listBox.SelectedItems.OfType<PropertyOrFieldWrapper>().Select(f2 => f2.MemberName).ToArray();
+			string[] fields = parameterList.Where(f => f.IsIncluded).Select(f2 => f2.MemberName).ToArray();
+			
 			PrimitiveExpression formatString = new PrimitiveExpression(GenerateFormatString(currentClass, editor.Language.CodeGenerator, fields));
 			List<Expression> param = new List<Expression>() { formatString };
 			ReturnStatement ret = new ReturnStatement(new InvocationExpression(
@@ -48,8 +52,7 @@ namespace CSharpBinding.Refactoring
 			
 			if (baseCallNode != null) {
 				MethodDeclaration insertedOverrideMethod = refactoringContext.GetNode().PrevSibling as MethodDeclaration;
-				if (insertedOverrideMethod == null)
-				{
+				if (insertedOverrideMethod == null) {
 					// We are not inside of a method declaration
 					return null;
 				}
@@ -85,18 +88,32 @@ namespace CSharpBinding.Refactoring
 			return "[" + currentClass.Name + fieldsString + "]";
 		}
 		
+		void SelectAllChecked()
+		{
+			foreach (var param in parameterList) {
+				param.IsIncluded = true;
+			}
+		}
+		
 		void SelectAllChecked(object sender, System.Windows.RoutedEventArgs e)
 		{
-			listBox.SelectAll();
+			SelectAllChecked();
+		}
+		
+		void SelectAllUnchecked()
+		{
+			foreach (var param in parameterList) {
+				param.IsIncluded = false;
+			}
 		}
 		
 		void SelectAllUnchecked(object sender, System.Windows.RoutedEventArgs e)
 		{
-			listBox.UnselectAll();
+			SelectAllUnchecked();
 		}
 		
 		bool AllSelected {
-			get { return listBox.SelectedItems.Count == listBox.Items.Count; }
+			get { return parameterList.Count(p => p.IsIncluded) == parameterList.Count; }
 		}
 		
 		protected override void OnKeyDown(KeyEventArgs e)
@@ -105,9 +122,9 @@ namespace CSharpBinding.Refactoring
 			
 			if ((e.KeyboardDevice.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt && allAccessKey == e.SystemKey) {
 				if (AllSelected)
-					listBox.UnselectAll();
+					SelectAllUnchecked();
 				else
-					listBox.SelectAll();
+					SelectAllChecked();
 				e.Handled = true;
 			}
 			

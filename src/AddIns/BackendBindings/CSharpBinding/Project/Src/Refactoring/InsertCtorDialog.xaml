@@ -18,14 +18,21 @@
 		           Text="{sd:Localize AddIns.SharpRefactoring.InsertCtor.Description}"
 		           TextWrapping="Wrap" />
 		<ListView x:Name="varList" Grid.Row="1"
-		          SelectionMode="Multiple" KeyboardNavigation.TabNavigation="Cycle" 
-		          ItemContainerStyle="{x:Static sd:GlobalStyles.ListViewItemFocusHighlightStyle}" MaxHeight="300">
+		          KeyboardNavigation.TabNavigation="Cycle"
+		          MaxHeight="300">
 			<ListView.View>
 				<GridView>
 					<GridViewColumn Header="{sd:Localize AddIns.SharpRefactoring.InsertCtor.VariableLabel}">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
-								<CheckBox Content="{Binding Text}" IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type ListBoxItem}},Path=IsSelected}" />
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
+									<CheckBox Grid.Column="0" IsChecked="{Binding IsIncluded}" VerticalAlignment="Center" Margin="0,0,3,0" />
+									<TextBlock Grid.Column="1" Text="{Binding Text}" />
+								</Grid>
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
