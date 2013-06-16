@@ -450,11 +450,82 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				else
 					return new DefaultValueExpression(ConvertType(type));
 			} else if (type.Kind == TypeKind.Enum) {
-				return new CastExpression(ConvertType(type), ConvertConstantValue(type.GetDefinition().EnumUnderlyingType, constantValue));
+				return ConvertEnumValue(type, constantValue is long ? (long)constantValue : (long)((int)constantValue));
 			} else {
 				return new PrimitiveExpression(constantValue);
 			}
 		}
+		
+		bool IsFlagsEnum(ITypeDefinition type)
+		{
+			IType flagsAttributeType = type.Compilation.FindType(typeof(System.FlagsAttribute));
+			return type.GetAttribute(flagsAttributeType) != null;
+		}
+		
+		Expression ConvertEnumValue(IType type, long val)
+		{
+			ITypeDefinition enumDefinition = type.GetDefinition();
+			TypeCode enumBaseTypeCode = ReflectionHelper.GetTypeCode(enumDefinition.EnumUnderlyingType);
+			foreach (IField field in enumDefinition.Fields) {
+				if (field.IsConst && object.Equals(CSharpPrimitiveCast.Cast(TypeCode.Int64, field.ConstantValue, false), val))
+					return ConvertType(type).Member(field.Name);
+			}
+			if (IsFlagsEnum(enumDefinition)) {
+				long enumValue = val;
+				Expression expr = null;
+				long negatedEnumValue = ~val;
+				// limit negatedEnumValue to the appropriate range
+				switch (enumBaseTypeCode) {
+					case TypeCode.Byte:
+					case TypeCode.SByte:
+						negatedEnumValue &= byte.MaxValue;
+						break;
+					case TypeCode.Int16:
+					case TypeCode.UInt16:
+						negatedEnumValue &= ushort.MaxValue;
+						break;
+					case TypeCode.Int32:
+					case TypeCode.UInt32:
+						negatedEnumValue &= uint.MaxValue;
+						break;
+				}
+				Expression negatedExpr = null;
+				foreach (IField field in enumDefinition.Fields.Where(fld => fld.IsConst)) {
+					long fieldValue = (long)CSharpPrimitiveCast.Cast(TypeCode.Int64, field.ConstantValue, false);
+					if (fieldValue == 0)
+						continue;	// skip None enum value
+
+					if ((fieldValue & enumValue) == fieldValue) {
+						var fieldExpression = ConvertType(type).Member(field.Name);
+						if (expr == null)
+							expr = fieldExpression;
+						else
+							expr = new BinaryOperatorExpression(expr, BinaryOperatorType.BitwiseOr, fieldExpression);
+
+						enumValue &= ~fieldValue;
+					}
+					if ((fieldValue & negatedEnumValue) == fieldValue) {
+						var fieldExpression = ConvertType(type).Member(field.Name);
+						if (negatedExpr == null)
+							negatedExpr = fieldExpression;
+						else
+							negatedExpr = new BinaryOperatorExpression(negatedExpr, BinaryOperatorType.BitwiseOr, fieldExpression);
+
+						negatedEnumValue &= ~fieldValue;
+					}
+				}
+				if (enumValue == 0 && expr != null) {
+					if (!(negatedEnumValue == 0 && negatedExpr != null && negatedExpr.Descendants.Count() < expr.Descendants.Count())) {
+						return expr;
+					}
+				}
+				if (negatedEnumValue == 0 && negatedExpr != null) {
+					return new UnaryOperatorExpression(UnaryOperatorType.BitNot, negatedExpr);
+				}
+			}
+			return new PrimitiveExpression(CSharpPrimitiveCast.Cast(enumBaseTypeCode, val, false)).CastTo(ConvertType(type));
+		}
+		
 		#endregion
 		
 		#region Convert Parameter

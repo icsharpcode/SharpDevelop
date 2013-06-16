@@ -9,6 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 using Debugger.AddIn.Visualizers;
 using Debugger.MetaData;
 using ICSharpCode.Core;
@@ -147,14 +149,20 @@ namespace Debugger.AddIn.TreeModel
 					}
 				} else if (val.Type.Kind == TypeKind.Pointer) {
 					fullValue = String.Format("0x{0:X}", val.PointerAddress);
-				} else if (val.Type.FullName == typeof(string).FullName) {
+				} else if (val.Type.IsKnownType(KnownTypeCode.String)) {
 					fullValue = '"' + val.InvokeToString(WindowsDebugger.EvalThread).Replace("\n", "\\n").Replace("\t", "\\t").Replace("\r", "\\r").Replace("\0", "\\0").Replace("\b", "\\b").Replace("\a", "\\a").Replace("\f", "\\f").Replace("\v", "\\v").Replace("\"", "\\\"") + '"';
-				} else if (val.Type.FullName == typeof(char).FullName) {
+				} else if (val.Type.IsKnownType(KnownTypeCode.Char)) {
 					fullValue = "'" + val.InvokeToString(WindowsDebugger.EvalThread).Replace("\n", "\\n").Replace("\t", "\\t").Replace("\r", "\\r").Replace("\0", "\\0").Replace("\b", "\\b").Replace("\a", "\\a").Replace("\f", "\\f").Replace("\v", "\\v").Replace("\"", "\\\"") + "'";
 				} else if ((val.Type.Kind == TypeKind.Class || val.Type.Kind == TypeKind.Struct)) {
 					fullValue = val.FormatByDebuggerDisplayAttribute(WindowsDebugger.EvalThread);
 					if (fullValue == null)
 						fullValue = val.InvokeToString(WindowsDebugger.EvalThread);
+				} else if (val.Type.Kind == TypeKind.Enum) {
+					var primitiveValue = val.PrimitiveValue;
+					var builder = new TypeSystemAstBuilder();
+					builder.AlwaysUseShortTypeNames = true;
+					AstNode node = builder.ConvertConstantValue(val.Type, primitiveValue);
+					fullValue = node + "=" + primitiveValue;
 				} else {
 					fullValue = val.AsString();
 				}
