@@ -166,6 +166,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		/// <summary>
 		/// Gets whether this member is declared to be shadowing another member with the same name.
+		/// (C# 'new' keyword)
 		/// </summary>
 		bool IsShadowing { get; }
 		

@@ -330,5 +330,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public bool IsSealed {
 			get { return parts.Any(p => p.IsSealed); }
 		}
+		
+		public bool IsShadowing {
+			get { return parts.Any(p => p.IsShadowing); }
+		}
 	}
 }

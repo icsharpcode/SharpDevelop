@@ -127,7 +127,12 @@ namespace CSharpBinding.Refactoring
 				fieldDecl.Variables.Add(new VariableInitializer(name));
 				script.InsertWithCursor("Add field: " + name, Script.InsertPosition.End, fieldDecl);
 			}
-			base.AddField(declaringType, accessibility, fieldType, name);
+		}
+		
+		public override void ChangeAccessibility(IEntity entity, Accessibility newAccessiblity)
+		{
+			// TODO script.ChangeModifiers(...)
+			throw new NotImplementedException();
 		}
 	}
 }

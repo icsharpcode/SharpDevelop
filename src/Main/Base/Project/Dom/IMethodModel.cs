@@ -7,6 +7,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public interface IMethodModel : IMemberModel
 	{
-		
+		int TypeParameterCount { get; }
 	}
 }

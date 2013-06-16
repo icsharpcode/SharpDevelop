@@ -38,6 +38,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		bool IsSealed { get; }
 		
 		/// <summary>
+		/// Gets whether this member is declared to be shadowing another member with the same name.
+		/// (C# 'new' keyword)
+		/// </summary>
+		bool IsShadowing { get; }
+		
+		/// <summary>
 		/// Resolves the entity in the current solution snapshot.
 		/// Returns null if the entity could not be resolved.
 		/// </summary>

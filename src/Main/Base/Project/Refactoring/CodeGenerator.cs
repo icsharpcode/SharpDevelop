@@ -81,5 +81,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			throw new NotSupportedException("Feature not supported!");
 		}
+		
+		public virtual void MakeVirtual(IMember member)
+		{
+			throw new NotSupportedException("Feature not supported!");
+		}
 	}
 }

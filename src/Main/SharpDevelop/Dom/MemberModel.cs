@@ -106,5 +106,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public bool IsSealed {
 			get { return member.IsSealed; }
 		}
+		
+		public bool IsShadowing {
+			get { return member.IsShadowing; }
+		}
+		
+		public bool IsVirtual {
+			get { return member.IsVirtual; }
+		}
+		
+		public bool IsOverride {
+			get { return member.IsOverride; }
+		}
+		
+		public bool IsOverridable {
+			get { return member.IsOverridable; }
+		}
 	}
 }

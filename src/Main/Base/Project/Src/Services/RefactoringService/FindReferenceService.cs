@@ -209,8 +209,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			foreach (ISymbolSearch s in symbolSearches) {
 				progressMonitor.CancellationToken.ThrowIfCancellationRequested();
 				using (var childProgressMonitor = progressMonitor.CreateSubTask(s.WorkAmount / totalWorkAmount)) {
-					await s.RenameAsync(new SymbolRenameArgs(newName, childProgressMonitor, parseableFileContentFinder),
-					                    file => changes.Add(file), error => errors.Add(error));
+					var args = new SymbolRenameArgs(newName, childProgressMonitor, parseableFileContentFinder);
+					args.ProvideHighlightedLine = false;
+					await s.RenameAsync(args, file => changes.Add(file), error => errors.Add(error));
 				}
 				
 				workDone += s.WorkAmount;
@@ -252,6 +253,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			get { return this.ProgressMonitor.CancellationToken; }
 		}
 		
+		/// <summary>
+		/// Specifies whether the symbol search should pass a HighlightedInlineBuilder
+		/// for the matching line to the SearchResultMatch.
+		/// The default value is <c>true</c>.
+		/// </summary>
+		public bool ProvideHighlightedLine { get; set; }
+		
 		public ParseableFileContentFinder ParseableFileContentFinder { get; private set; }
 		
 		public SymbolSearchArgs(IProgressMonitor progressMonitor, ParseableFileContentFinder parseableFileContentFinder)
@@ -262,6 +270,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				throw new ArgumentNullException("parseableFileContentFinder");
 			this.ProgressMonitor = progressMonitor;
 			this.ParseableFileContentFinder = parseableFileContentFinder;
+			this.ProvideHighlightedLine = true;
 		}
 	}
 	
