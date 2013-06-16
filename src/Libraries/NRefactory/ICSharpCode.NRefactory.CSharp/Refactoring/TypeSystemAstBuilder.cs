@@ -410,8 +410,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			if (rr == null)
 				throw new ArgumentNullException("rr");
+			if (rr is ConversionResolveResult) {
+				// unpack ConversionResolveResult if necessary
+				// (e.g. a boxing conversion or string->object reference conversion)
+				rr = ((ConversionResolveResult)rr).Input;
+			}
+			
 			if (rr is TypeOfResolveResult) {
-				return new TypeOfExpression(ConvertType(((TypeOfResolveResult)rr).Type));
+				return new TypeOfExpression(ConvertType(rr.Type));
 			} else if (rr is ArrayCreateResolveResult) {
 				ArrayCreateResolveResult acrr = (ArrayCreateResolveResult)rr;
 				ArrayCreateExpression ace = new ArrayCreateExpression();

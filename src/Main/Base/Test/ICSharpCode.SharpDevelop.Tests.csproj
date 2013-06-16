@@ -82,8 +82,9 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CodeConverterTests.cs" />
-    <Compile Include="Dom\CSharpModelTests.cs" />
+    <Compile Include="Dom\CSharpModelTestBase.cs" />
     <Compile Include="Dom\ProjectEntityModelContextTests.cs" />
+    <Compile Include="Dom\TopLevelTypeModelsTests.cs" />
     <Compile Include="Dom\TreeNodeFactoryServiceTests.cs" />
     <Compile Include="ExceptionClassOverridesTestFixture.cs" />
     <Compile Include="GenerateOverrideMethodTests.cs" />
