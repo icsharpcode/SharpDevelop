@@ -22,7 +22,7 @@ namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 		public const string KeepLocalizationModelPropertyName = "FormsDesigner.DesignerOptions.KeepLocalizationModel";
 		
 		const CodeDomLocalizationModel DefaultLocalizationModelDefaultValue = CodeDomLocalizationModel.PropertyReflection;
-		const bool KeepLocalizationModelDefaultValue = false;
+		const bool KeepLocalizationModelDefaultValue = true;
 		
 		public LocalizationModelOptionsPanel()
 		{

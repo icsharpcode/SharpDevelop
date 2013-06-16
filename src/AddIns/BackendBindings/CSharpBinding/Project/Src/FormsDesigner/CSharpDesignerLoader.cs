@@ -4,6 +4,7 @@
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using System.ComponentModel.Design.Serialization;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
@@ -150,6 +151,58 @@ namespace CSharpBinding.FormsDesigner
 			} catch (Exception ex) {
 				SD.AnalyticsMonitor.TrackException(ex);
 				MessageService.ShowException(ex);
+			}
+		}
+		
+		protected override CodeDomLocalizationModel GetCurrentLocalizationModelFromDesignedFile()
+		{
+			SD.Log.Debug("CSharpDesignerLoader.GetCurrentLocalizationModelFromDesignedFile()");
+			
+			var primaryParseInfo = context.GetPrimaryFileParseInformation();
+			var compilation = context.GetCompilation();
+			
+			// Find designer class
+			ITypeDefinition designerClass = FormsDesignerSecondaryDisplayBinding.GetDesignableClass(primaryParseInfo.UnresolvedFile, compilation, out primaryPart);
+			IMethod initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(designerClass);
+			
+			if (initializeComponents == null) {
+				throw new FormsDesignerLoadException("The InitializeComponent method was not found. Designer cannot be loaded.");
+			}
+			
+			
+			CSharpFullParseInformation designerParseInfo;
+			var initializeComponentsDeclaration = initializeComponents.GetDeclaration(out designerParseInfo);
+			
+			FindLocalizationModelVisitor visitor = new FindLocalizationModelVisitor();
+			initializeComponentsDeclaration.AcceptVisitor(visitor);
+			if (visitor.Model != CodeDomLocalizationModel.None) {
+				return visitor.Model;
+			}
+
+			return CodeDomLocalizationModel.None;
+		}
+		
+		sealed class FindLocalizationModelVisitor : DepthFirstAstVisitor
+		{
+			CodeDomLocalizationModel model = CodeDomLocalizationModel.None;
+			
+			public CodeDomLocalizationModel Model {
+				get { return this.model; }
+			}
+			
+			public override void VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression)
+			{
+				if (this.model != CodeDomLocalizationModel.PropertyReflection) {
+					IdentifierExpression iex = memberReferenceExpression.Target as IdentifierExpression;
+					if (iex != null && iex.Identifier == "resources") {
+						if (memberReferenceExpression.MemberName == "ApplyResources") {
+							this.model = CodeDomLocalizationModel.PropertyReflection;
+						} else if (memberReferenceExpression.MemberName == "GetString") {
+							this.model = CodeDomLocalizationModel.PropertyAssignment;
+						}
+					}
+				}
+				base.VisitMemberReferenceExpression(memberReferenceExpression);
 			}
 		}
 	}
