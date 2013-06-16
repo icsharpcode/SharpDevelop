@@ -7,13 +7,13 @@ using System.Windows.Input;
 namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
-	/// Base class for simple ICommand implementation that always returns true from CanExecute.
+	/// Base class for ICommand implementations.
 	/// </summary>
 	public abstract class SimpleCommand : ICommand
 	{
-		event EventHandler ICommand.CanExecuteChanged { add {} remove {} }
+		public virtual event EventHandler CanExecuteChanged { add {} remove {} }
 		
-		bool ICommand.CanExecute(object parameter)
+		public virtual bool CanExecute(object parameter)
 		{
 			return true;
 		}

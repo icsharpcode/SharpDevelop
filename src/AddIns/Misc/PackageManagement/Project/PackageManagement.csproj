@@ -87,7 +87,6 @@
     <Compile Include="Src\Design\FakeProjectBuilder.cs" />
     <Compile Include="Src\Design\FakeSelectedProject.cs" />
     <Compile Include="Src\DocumentLoader.cs" />
-    <Compile Include="Src\DocumentNamespaceCreator.cs" />
     <Compile Include="Src\DomRegionExtensions.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute2.cs" />
@@ -99,8 +98,6 @@
     <Compile Include="Src\EnvDTE\CodeElementsList.cs" />
     <Compile Include="Src\EnvDTE\CodeFunction.cs" />
     <Compile Include="Src\EnvDTE\CodeFunction2.cs" />
-    <Compile Include="Src\EnvDTE\CodeGetterFunction.cs" />
-    <Compile Include="Src\EnvDTE\CodeGetterOrSetterFunction.cs" />
     <Compile Include="Src\EnvDTE\CodeImport.cs" />
     <Compile Include="Src\EnvDTE\CodeInterface.cs" />
     <Compile Include="Src\EnvDTE\CodeModelContext.cs" />
@@ -110,7 +107,6 @@
     <Compile Include="Src\EnvDTE\CodeParameter.cs" />
     <Compile Include="Src\EnvDTE\CodeProperty.cs" />
     <Compile Include="Src\EnvDTE\CodeProperty2.cs" />
-    <Compile Include="Src\EnvDTE\CodeSetterFunction.cs" />
     <Compile Include="Src\EnvDTE\CodeStruct.cs" />
     <Compile Include="Src\EnvDTE\CodeType.cs" />
     <Compile Include="Src\EnvDTE\CodeTypeRef.cs" />
@@ -145,7 +141,6 @@
     <Compile Include="Src\EnvDTE\TextPoint.cs" />
     <Compile Include="Src\EnvDTE\Window.cs" />
     <Compile Include="Src\IClassKindUpdater.cs" />
-    <Compile Include="Src\IDocumentNamespaceCreator.cs" />
     <Compile Include="Src\IPackageExtensions.cs" />
     <Compile Include="Src\IProjectBuilder.cs" />
     <Compile Include="Src\IProjectContentExtensions.cs" />
@@ -221,7 +216,6 @@
     <Compile Include="Src\PackageLicenseViewModel.cs" />
     <Compile Include="Src\PackageManagementServiceProvider.cs" />
     <Compile Include="Src\ProjectBuilder.cs" />
-    <Compile Include="Src\VirtualMethodUpdater.cs" />
     <Compile Include="Src\OpenMSBuildProjects.cs" />
     <Compile Include="Src\PackageActionRunner.cs" />
     <Compile Include="Src\PackageActionsToRun.cs" />

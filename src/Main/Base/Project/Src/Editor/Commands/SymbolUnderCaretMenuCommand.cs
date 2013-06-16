@@ -16,24 +16,24 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	/// <summary>
 	/// A menu command that operates on a <see cref="ResolveResult"/>.
 	/// 
-	/// Supports the following types as <see cref="Owner"/>:
+	/// Supports the following types as <c>parameter</c>:
 	/// - ResolveResult
 	/// - IEntityModel
 	/// 
-	/// If the owner isn't one of the types above, the command operates on the caret position in the current editor.
+	/// If the parameter isn't one of the types above, the command operates on the caret position in the current editor.
 	/// </summary>
 	public abstract class ResolveResultMenuCommand : ICommand
 	{
 		public virtual event EventHandler CanExecuteChanged { add {} remove {} }
 
-		public bool CanExecute(object parameter)
+		bool ICommand.CanExecute(object parameter)
 		{
 			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
 			ResolveResult resolveResult = GetResolveResult(editor, parameter);
 			return CanExecute(resolveResult);
 		}
 
-		public void Execute(object parameter)
+		void ICommand.Execute(object parameter)
 		{
 			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
 			ResolveResult resolveResult = GetResolveResult(editor, parameter);

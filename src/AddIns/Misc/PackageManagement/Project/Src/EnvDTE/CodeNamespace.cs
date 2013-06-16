@@ -9,12 +9,19 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeNamespace : CodeElement, global::EnvDTE.CodeNamespace
 	{
-		readonly INamespaceModel model;
+		readonly string fullName;
+		INamespaceModel model;
 		
 		public CodeNamespace(CodeModelContext context, INamespaceModel model)
 			: base(context, model)
 		{
 			this.model = model;
+		}
+		
+		public CodeNamespace(CodeModelContext context, string fullName)
+			: base(context)
+		{
+			this.fullName = fullName;
 		}
 		
 		public override global::EnvDTE.vsCMElement Kind {
@@ -26,14 +33,21 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public string FullName {
-			get { return model.FullName; }
+			get { return fullName; }
 		}
+		
+		CodeElementsList<CodeElement> members;
 		
 		public virtual global::EnvDTE.CodeElements Members {
 			get {
-				IModelCollection<CodeElement> namespaceMembers = model.ChildNamespaces.Select(ns => new CodeNamespace(context, ns));
-				IModelCollection<CodeElement> typeMembers = model.Types.Select(td => CodeType.Create(context, td));
-				return namespaceMembers.Concat(typeMembers).AsCodeElements();
+				if (members == null) {
+					if (model == null)
+						throw new NotSupportedException();
+					IModelCollection<CodeElement> namespaceMembers = model.ChildNamespaces.Select(ns => new CodeNamespace(context, ns));
+					IModelCollection<CodeElement> typeMembers = model.Types.Select(td => CodeType.Create(context, td));
+					members = namespaceMembers.Concat(typeMembers).AsCodeElements();
+				}
+				return members;
 			}
 		}
 	}

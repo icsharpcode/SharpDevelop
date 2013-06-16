@@ -35,8 +35,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			switch (m.SymbolKind) {
 				case SymbolKind.Field:
-//					return new CodeVariable(m);
-					throw new NotImplementedException();
+					return new CodeVariable(context, (IFieldModel)m);
 				case SymbolKind.Property:
 				case SymbolKind.Indexer:
 //					return new CodeProperty2(m);
@@ -47,8 +46,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				case SymbolKind.Operator:
 				case SymbolKind.Constructor:
 				case SymbolKind.Destructor:
-//					return new CodeFunction2(m);
-					throw new NotImplementedException();
+					return new CodeFunction2(context, (IMethodModel)m);
 				default:
 					throw new NotSupportedException("Invalid value for SymbolKind");
 			}
@@ -63,12 +61,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		// default is vsCMPart.vsCMPartWholeWithAttributes
 		public virtual global::EnvDTE.TextPoint GetStartPoint()
 		{
-			return null;
+			if (symbolModel != null)
+				return TextPoint.CreateStartPoint(context, symbolModel.Region);
+			else
+				return null;
 		}
 		
 		public virtual global::EnvDTE.TextPoint GetEndPoint()
 		{
-			return null;
+			if (symbolModel != null)
+				return TextPoint.CreateEndPoint(context, symbolModel.Region);
+			else
+				return null;
 		}
 		
 		public virtual global::EnvDTE.vsCMInfoLocation InfoLocation {
@@ -100,6 +104,19 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return context.FilteredFileName == region.FileName;
 		}
 		
+		protected CodeElementsList<CodeAttribute2> GetAttributes(IEntityModel entityModel)
+		{
+			var list = new CodeElementsList<CodeAttribute2>();
+			var td = entityModel.Resolve();
+			if (td != null) {
+				foreach (var attr in td.Attributes) {
+					if (IsInFilter(attr.Region))
+						list.Add(new CodeAttribute2(context, attr));
+				}
+			}
+			return list;
+		}
+
 		protected override bool GetIsDerivedFrom(string fullName)
 		{
 			return false;

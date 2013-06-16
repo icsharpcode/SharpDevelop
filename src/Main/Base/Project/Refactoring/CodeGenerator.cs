@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Project;
@@ -83,6 +84,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 		
 		public virtual void MakeVirtual(IMember member)
+		{
+			throw new NotSupportedException("Feature not supported!");
+		}
+		
+		public virtual void AddImport(FileName fileName, string namespaceName)
 		{
 			throw new NotSupportedException("Feature not supported!");
 		}

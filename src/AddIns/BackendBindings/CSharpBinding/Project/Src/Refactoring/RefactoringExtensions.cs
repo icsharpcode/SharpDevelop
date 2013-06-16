@@ -11,6 +11,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace CSharpBinding.Refactoring
 {
@@ -82,17 +83,21 @@ namespace CSharpBinding.Refactoring
 			} else {
 				region = entity.Region;
 			}
+			return CreateRefactoringContext(region, entity.ParentAssembly.GetProject());
+		}
+		
+		public static SDRefactoringContext CreateRefactoringContext(DomRegion region, IProject project = null)
+		{
 			var view = SD.FileService.OpenFile(new FileName(region.FileName), false);
 			if (view == null)
-				return null;
+				throw new NotSupportedException("Could not open " + region.FileName);
 			var editor = view.GetService<ITextEditor>();
 			if (editor == null)
-				return null;
-			var project = entity.ParentAssembly.GetProject();
+				throw new NotSupportedException("Could not find editor for " + region.FileName);
 			var fileName = FileName.Create(region.FileName);
 			var parseInfo = SD.ParserService.Parse(fileName, editor.Document, project) as CSharpFullParseInformation;
 			if (parseInfo == null)
-				return null;
+				throw new NotSupportedException("Could not C# parse info for " + region.FileName);
 			ICompilation compilation;
 			if (project != null)
 				compilation = SD.ParserService.GetCompilation(project);

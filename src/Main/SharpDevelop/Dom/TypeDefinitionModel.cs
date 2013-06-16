@@ -334,5 +334,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public bool IsShadowing {
 			get { return parts.Any(p => p.IsShadowing); }
 		}
+		
+		public IEnumerable<DomRegion> GetPartRegions()
+		{
+			return parts.Select(p => p.Region);
+		}
 	}
 }

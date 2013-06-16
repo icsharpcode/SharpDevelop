@@ -66,7 +66,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual global::EnvDTE.vsCMAccess Access {
 			get { return typeModel.Accessibility.ToAccess(); }
-			set { 
+			set {
 				var td = typeModel.Resolve();
 				if (td != null) {
 					context.CodeGenerator.ChangeAccessibility(td, value.ToAccessibility());
@@ -125,24 +125,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual global::EnvDTE.CodeElements Attributes {
 			get {
-				var list = new CodeElementsList<CodeAttribute2>();
-				var td = typeModel.Resolve();
-				if (td != null) {
-					foreach (var attr in td.Attributes) {
-						if (IsInFilter(attr.Region))
-							list.Add(new CodeAttribute2(context, attr));
-					}
-				}
-				return list;
+				return GetAttributes(typeModel);
 			}
 		}
 		
 		public virtual global::EnvDTE.CodeNamespace Namespace {
 			get {
-				throw new NotImplementedException();
-				// if (context.FilteredFileName != null)
-				//     ...
-				// else
+				if (context.FilteredFileName != null)
+					return new FileCodeModel2(context).GetNamespace(typeModel.Namespace);
+				else
+					throw new NotImplementedException();
 				//    return new CodeNamespace(context, typeModel.Namespace);
 			}
 		}

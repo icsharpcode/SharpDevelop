@@ -134,5 +134,15 @@ namespace CSharpBinding.Refactoring
 			// TODO script.ChangeModifiers(...)
 			throw new NotImplementedException();
 		}
+		
+		public override void AddImport(FileName fileName, string namespaceName)
+		{
+			var context = RefactoringExtensions.CreateRefactoringContext(new DomRegion(fileName, 0, 0));
+			var astBuilder = context.CreateTypeSystemAstBuilder();
+			using (var script = context.StartScript()) {
+				AstType ns = astBuilder.ConvertNamespace(namespaceName);
+				UsingHelper.InsertUsing(context, script, ns);
+			}
+		}
 	}
 }

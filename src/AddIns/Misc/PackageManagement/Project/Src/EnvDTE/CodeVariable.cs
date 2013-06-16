@@ -33,15 +33,5 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				}
 			}
 		}
-		
-		public override global::EnvDTE.TextPoint GetStartPoint()
-		{
-			return TextPoint.CreateStartPoint(context, field.Region);
-		}
-		
-		public override global::EnvDTE.TextPoint GetEndPoint()
-		{
-			return TextPoint.CreateEndPoint(context, field.Region);
-		}
 	}
 }
