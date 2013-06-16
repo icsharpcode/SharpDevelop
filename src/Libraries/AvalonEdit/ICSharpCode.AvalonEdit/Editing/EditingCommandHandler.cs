@@ -430,9 +430,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 					// There is no selection, simply delete current line
 					firstLineIndex = lastLineIndex = textArea.Caret.Line;
 				} else {
-					// There is a selection, remove all lines affected by it
-					firstLineIndex = textArea.Selection.StartPosition.Line;
-					lastLineIndex = textArea.Selection.EndPosition.Line;
+					// There is a selection, remove all lines affected by it (use Min/Max to be independent from selection direction)
+					firstLineIndex = Math.Min(textArea.Selection.StartPosition.Line, textArea.Selection.EndPosition.Line);
+					lastLineIndex = Math.Max(textArea.Selection.StartPosition.Line, textArea.Selection.EndPosition.Line);
 				}
 				DocumentLine startLine = textArea.Document.GetLineByNumber(firstLineIndex);
 				DocumentLine endLine = textArea.Document.GetLineByNumber(lastLineIndex);
