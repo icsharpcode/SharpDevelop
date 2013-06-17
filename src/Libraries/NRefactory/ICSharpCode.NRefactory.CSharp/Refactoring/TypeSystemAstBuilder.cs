@@ -456,7 +456,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				else
 					return new DefaultValueExpression(ConvertType(type));
 			} else if (type.Kind == TypeKind.Enum) {
-				return ConvertEnumValue(type, constantValue is long ? (long)constantValue : (long)((int)constantValue));
+				return ConvertEnumValue(type, (long)CSharpPrimitiveCast.Cast(TypeCode.Int64, constantValue, false));
 			} else {
 				return new PrimitiveExpression(constantValue);
 			}
