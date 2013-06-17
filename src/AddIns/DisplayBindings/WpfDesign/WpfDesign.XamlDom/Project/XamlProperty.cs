@@ -284,8 +284,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if (collectionElements.Count == 0 && this.PropertyName != this.ParentObject.ContentPropertyName) {
 					// we have to create the collection element
 					_propertyElement = parentObject.OwnerDocument.XmlDocument.CreateElement(
-						this.PropertyTargetType.Name + "." + this.PropertyName,
-						parentObject.OwnerDocument.GetNamespaceFor(this.PropertyTargetType)
+						ParentObject.ElementType.Name + "." + this.PropertyName,
+						parentObject.OwnerDocument.GetNamespaceFor(ParentObject.ElementType)
 					);
 					parentObject.XmlElement.AppendChild(_propertyElement);
 					collection = _propertyElement;
