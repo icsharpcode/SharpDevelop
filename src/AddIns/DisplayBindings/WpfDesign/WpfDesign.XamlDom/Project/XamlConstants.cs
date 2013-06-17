@@ -10,6 +10,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	/// </summary>
 	public static class XamlConstants
 	{
+		#region Namespaces
+		
 		/// <summary>
 		/// The namespace used to identify "xmlns".
 		/// Value: "http://www.w3.org/2000/xmlns/"
@@ -27,5 +29,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// Value: "http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		/// </summary>
 		public const string PresentationNamespace = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+		
+		#endregion
+		
+		#region Common property names
+		
+		/// <summary>
+		/// The name of the Resources property.
+		/// Value: "Resources"
+		/// </summary>
+		public const string ResourcesPropertyName = "Resources";
+		
+		#endregion
 	}
 }

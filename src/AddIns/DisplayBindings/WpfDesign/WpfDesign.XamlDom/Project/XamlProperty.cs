@@ -24,6 +24,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		CollectionElementsCollection collectionElements;
 		bool isCollection;
+		bool isResources;
 		
 		static readonly IList<XamlPropertyValue> emptyCollectionElementsArray = new XamlPropertyValue[0];
 		
@@ -49,6 +50,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (propertyInfo.IsCollection) {
 				isCollection = true;
 				collectionElements = new CollectionElementsCollection(this);
+				
+				if (propertyInfo.Name.Equals(XamlConstants.ResourcesPropertyName, StringComparison.Ordinal) &&
+				    propertyInfo.ReturnType == typeof(ResourceDictionary)) {
+					isResources = true;
+				}
 			}
 		}
 		
@@ -114,6 +120,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public XamlPropertyValue PropertyValue {
 			get { return propertyValue; }
 			set { SetPropertyValue(value); }
+		}
+		
+		/// <summary>
+		/// Gets if the property represents the FrameworkElement.Resources property that holds a locally-defined resource dictionary. 
+		/// </summary>
+		public bool IsResources {
+			get { return isResources; }
 		}
 		
 		/// <summary>
@@ -287,7 +300,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 						ParentObject.ElementType.Name + "." + this.PropertyName,
 						parentObject.OwnerDocument.GetNamespaceFor(ParentObject.ElementType)
 					);
-					parentObject.XmlElement.AppendChild(_propertyElement);
+
+					if (this.IsResources) {
+						parentObject.XmlElement.PrependChild(_propertyElement);
+					} else {
+						parentObject.XmlElement.AppendChild(_propertyElement);
+					}
+
 					collection = _propertyElement;
 				} else {
 					// this is the default collection
