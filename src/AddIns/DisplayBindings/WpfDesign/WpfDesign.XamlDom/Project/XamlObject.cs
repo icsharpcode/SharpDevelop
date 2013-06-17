@@ -32,10 +32,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			this.elementType = elementType;
 			this.instance = instance;
 
-			var contentAttrs = elementType.GetCustomAttributes(typeof(ContentPropertyAttribute), true) as ContentPropertyAttribute[];
-			if (contentAttrs != null && contentAttrs.Length > 0) {
-				this.contentPropertyName = contentAttrs[0].Name;
-			}
+			this.contentPropertyName = GetContentPropertyName(elementType);
 
 			ServiceProvider = new XamlObjectServiceProvider(this);
 			CreateWrapper();
@@ -128,6 +125,21 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 			
 			return newElement;
+		}
+		
+		/// <summary>
+		/// Gets the name of the content property for the specified element type, or null if not available.
+		/// </summary>
+		/// <param name="elementType">The element type to get the content property name for.</param>
+		/// <returns>The name of the content property for the specified element type, or null if not available.</returns>
+		internal static string GetContentPropertyName(Type elementType)
+		{
+			var contentAttrs = elementType.GetCustomAttributes(typeof(ContentPropertyAttribute), true) as ContentPropertyAttribute[];
+			if (contentAttrs != null && contentAttrs.Length > 0) {
+				return contentAttrs[0].Name;
+			}
+			
+			return null;
 		}
 		
 		internal override void AddNodeTo(XamlProperty property)

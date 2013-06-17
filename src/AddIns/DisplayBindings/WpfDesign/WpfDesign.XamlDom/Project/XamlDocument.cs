@@ -169,9 +169,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			
 			XmlElement xml = _xmlDoc.CreateElement(elementType.Name, GetNamespaceFor(elementType));
 			
-			if (hasStringConverter) {
+			if (hasStringConverter &&
+			    XamlObject.GetContentPropertyName(elementType) != null)
+			{
 				xml.InnerText = c.ConvertToInvariantString(instance);
 			}
+
 			return new XamlObject(this, xml, elementType, instance);
 		}
 		
