@@ -53,6 +53,11 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			set { this.Properties["Name"].SetValue(value); }
 		}
 		
+		public override string Key {
+			get { return XamlObject.GetXamlAttribute("Key"); }
+			set { XamlObject.SetXamlAttribute("Key", value); }
+		}
+		
 		#if EventHandlerDebugging
 		static int totalEventHandlerCount;
 		#endif

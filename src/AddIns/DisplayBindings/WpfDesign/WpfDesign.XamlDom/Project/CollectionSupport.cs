@@ -94,6 +94,21 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				CultureInfo.InvariantCulture);
 		}
 		
+		/// <summary>
+		/// Adds a value at the specified index in the collection. A return value indicates whether the Insert succeeded.
+		/// </summary>
+		/// <returns>True if the Insert succeeded, false if the collection type does not support Insert.</returns>
+		internal static bool TryInsert(Type collectionType, object collectionInstance, XamlPropertyValue newElement, int index)
+		{
+			try {
+				Insert(collectionType, collectionInstance, newElement, index);
+			} catch (MissingMethodException) {
+				return false;
+			}
+			
+			return true;
+		}
+		
 		static readonly Type[] RemoveAtParameters = { typeof(int) };
 		
 		/// <summary>
