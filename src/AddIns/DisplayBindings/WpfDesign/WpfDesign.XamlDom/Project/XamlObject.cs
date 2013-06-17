@@ -353,7 +353,16 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		internal string GetNameForMarkupExtension()
 		{
-			return XmlElement.Name;
+			string markupExtensionName = XmlElement.Name;
+			
+			// By convention a markup extension class name typically includes an "Extension" suffix.
+			// When you reference the markup extension in XAML the "Extension" suffix is optional.
+			// If present remove it to avoid bloating the XAML.
+			if (markupExtensionName.EndsWith("Extension", StringComparison.Ordinal)) {
+				markupExtensionName = markupExtensionName.Substring(0, markupExtensionName.Length - 9);
+			}
+			
+			return markupExtensionName;
 		}
 	}
 
