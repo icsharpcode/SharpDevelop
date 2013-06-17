@@ -12,6 +12,8 @@ namespace CSharpBinding.Refactoring
 {
 	public class PropertyOrFieldWrapper : INotifyPropertyChanged
 	{
+		bool isIncluded;
+		
 		/// <summary>
 		/// Underlying member. Always IField or IProperty.
 		/// </summary>
@@ -20,6 +22,8 @@ namespace CSharpBinding.Refactoring
 		
 		public PropertyOrFieldWrapper(IMember member)
 		{
+			isIncluded = false;
+			
 			if (member == null)
 				throw new ArgumentNullException("member");
 			if (!(member is IField || member is IProperty))
@@ -32,6 +36,17 @@ namespace CSharpBinding.Refactoring
 				| ConversionFlags.ShowModifiers
 				| ConversionFlags.ShowAccessibility;
 			this.text = ambience.ConvertEntity(member);
+		}
+		
+		public bool IsIncluded
+		{
+			get {
+				return isIncluded;
+			}
+			set {
+				isIncluded = value;
+				OnPropertyChanged("IsIncluded");
+			}
 		}
 		
 		public string MemberName {

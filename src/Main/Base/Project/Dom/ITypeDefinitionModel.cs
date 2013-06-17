@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Parser;
 
@@ -13,8 +14,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public interface ITypeDefinitionModel : IEntityModel
 	{
 		FullTypeName FullTypeName { get; }
+		string Namespace { get; }
+		TypeKind TypeKind { get; }
 		IModelCollection<ITypeDefinitionModel> NestedTypes { get; }
 		IModelCollection<IMemberModel> Members { get; }
+		
+		IEnumerable<DomRegion> GetPartRegions();
 		
 		/// <summary>
 		/// Resolves the type definition in the current solution snapshot.
@@ -38,5 +43,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Either oldPart or newPart may be null when adding/removed a part.
 		/// </summary>
 		void Update(IUnresolvedTypeDefinition oldPart, IUnresolvedTypeDefinition newPart);
+		
+		bool IsPartial { get; }
 	}
 }

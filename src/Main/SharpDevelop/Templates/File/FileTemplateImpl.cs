@@ -12,6 +12,7 @@ using System.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Templates
 {
@@ -432,20 +433,18 @@ namespace ICSharpCode.SharpDevelop.Templates
 					return null;
 				}
 			}
-			var createdFiles = new List<KeyValuePair<string, FileDescriptionTemplate>>();
 			ScriptRunner scriptRunner = new ScriptRunner();
 			foreach (FileDescriptionTemplate newFile in FileDescriptionTemplates) {
 				FileOperationResult opresult = FileUtility.ObservedSave(
 					() => {
 						string resultFile;
 						if (!String.IsNullOrEmpty(newFile.BinaryFileName)) {
-							resultFile = SaveFile(newFile, null, newFile.BinaryFileName);
+							resultFile = SaveFile(newFile, null, newFile.BinaryFileName, options);
 						} else {
-							resultFile = SaveFile(newFile, scriptRunner.CompileScript(this, newFile), null);
+							resultFile = SaveFile(newFile, scriptRunner.CompileScript(this, newFile), null, options);
 						}
 						if (resultFile != null) {
 							result.NewFiles.Add(FileName.Create(resultFile));
-							createdFiles.Add(new KeyValuePair<string, FileDescriptionTemplate>(resultFile, newFile));
 						}
 					}, FileName.Create(StringParser.Parse(newFile.Name))
 				);
@@ -454,14 +453,6 @@ namespace ICSharpCode.SharpDevelop.Templates
 			}
 			
 			if (project != null) {
-				foreach (KeyValuePair<string, FileDescriptionTemplate> createdFile in createdFiles) {
-					FileName fileName = FileName.Create(createdFile.Key);
-					ItemType type = project.GetDefaultItemType(fileName);
-					FileProjectItem newItem = new FileProjectItem(project, type);
-					newItem.FileName = fileName;
-					createdFile.Value.SetProjectItemProperties(newItem);
-					project.Items.Add(newItem);
-				}
 				project.Save();
 			}
 			
@@ -480,9 +471,9 @@ namespace ICSharpCode.SharpDevelop.Templates
 			return true;
 		}
 		
-		string SaveFile(FileDescriptionTemplate newfile, string content, string binaryFileName)
+		string SaveFile(FileDescriptionTemplate newFile, string content, string binaryFileName, FileTemplateOptions options)
 		{
-			string unresolvedFileName = StringParser.Parse(newfile.Name);
+			string unresolvedFileName = StringParser.Parse(newFile.Name);
 			// Parse twice so that tags used in included standard header are parsed
 			string parsedContent = StringParser.Parse(StringParser.Parse(content));
 			
@@ -502,28 +493,55 @@ namespace ICSharpCode.SharpDevelop.Templates
 				unresolvedFileName = unresolvedFileName.Substring(1);
 			}
 			
-			if (newfile.IsDependentFile && Path.IsPathRooted(unresolvedFileName)) {
-				Directory.CreateDirectory(Path.GetDirectoryName(unresolvedFileName));
+			var project = options.Project;
+			var fileName = FileName.Create(unresolvedFileName);
+			
+			if (newFile.IsDependentFile && Path.IsPathRooted(fileName)) {
+				Directory.CreateDirectory(Path.GetDirectoryName(fileName));
 				if (!String.IsNullOrEmpty(binaryFileName))
-					File.Copy(binaryFileName, unresolvedFileName);
+					File.Copy(binaryFileName, fileName);
 				else
-					File.WriteAllText(unresolvedFileName, parsedContent, SD.FileService.DefaultFileEncoding);
+					File.WriteAllText(fileName, parsedContent, SD.FileService.DefaultFileEncoding);
+				if (project != null)
+					AddTemplateFileToProject(project, newFile, fileName);
 			} else {
 				if (!String.IsNullOrEmpty(binaryFileName)) {
 					LoggingService.Warn("binary file was skipped");
 					return null;
 				}
-				IViewContent viewContent = FileService.NewFile(Path.GetFileName(unresolvedFileName), parsedContent);
-				if (viewContent == null) {
-					return null;
-				}
-				if (Path.IsPathRooted(unresolvedFileName)) {
-					Directory.CreateDirectory(Path.GetDirectoryName(unresolvedFileName));
-					viewContent.PrimaryFile.SaveToDisk(FileName.Create(unresolvedFileName));
+				var data = SD.FileService.DefaultFileEncoding.GetBytesWithPreamble(parsedContent);
+				OpenedFile file = null;
+				try {
+					if (Path.IsPathRooted(fileName)) {
+						file = SD.FileService.GetOrCreateOpenedFile(fileName);
+						file.SetData(data);
+						
+						Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+						file.SaveToDisk();
+						
+						if (project != null)
+							AddTemplateFileToProject(project, newFile, fileName);
+					} else {
+						file = SD.FileService.CreateUntitledOpenedFile(Path.GetFileName(fileName), data);
+					}
+					
+					SD.FileService.OpenFile(file.FileName);
+				} finally {
+					if (file != null)
+						file.CloseIfAllViewsClosed();
 				}
 			}
-			return unresolvedFileName;
+			
+			return fileName;
 		}
 		
+		static void AddTemplateFileToProject(IProject project, FileDescriptionTemplate newFile, FileName fileName)
+		{
+			ItemType type = project.GetDefaultItemType(fileName);
+			FileProjectItem newItem = new FileProjectItem(project, type);
+			newItem.FileName = fileName;
+			newFile.SetProjectItemProperties(newItem);
+			project.Items.Add(newItem);
+		}
 	}
 }

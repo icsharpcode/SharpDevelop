@@ -30,6 +30,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		#endregion
 		
+		#region Concat
+		public static IModelCollection<T> Concat<T>(this IModelCollection<T> input1, IModelCollection<T> input2)
+		{
+			return new ImmutableModelCollection<IModelCollection<T>>(new [] { input1, input2 }).SelectMany(c => c);
+		}
+		#endregion
+		
 		#region Where
 		public static IModelCollection<TSource> Where<TSource>(this IModelCollection<TSource> source, Func<TSource, bool> predicate)
 		{

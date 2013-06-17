@@ -32,8 +32,6 @@
 		<Button
 			Visibility="{Binding Path=HasPreviousPage, Converter={StaticResource BoolToVisibility}}"
 			Command="{Binding Path=ShowPreviousPageCommand}"
-			Background="Transparent"
-			BorderBrush="Transparent"
 			MinWidth="0"
 			Padding="0,2"
 			VerticalAlignment="Top">
@@ -44,7 +42,6 @@
 		<ListBox
 			VerticalAlignment="Top"
 			HorizontalAlignment="Center"
-			BorderBrush="Transparent"
 			ItemTemplate="{StaticResource PagedListTemplate}"
 			ItemsSource="{Binding Path=Pages}">
 			<ListBox.ItemsPanel>
@@ -56,8 +53,7 @@
 		<Button
 			Visibility="{Binding Path=HasNextPage, Converter={StaticResource BoolToVisibility}}"
 			Command="{Binding Path=ShowNextPageCommand}"
-			Background="Transparent"
-			BorderBrush="Transparent"
+			BorderThickness="0"
 			MinWidth="0"
 			Padding="0,2"
 			VerticalAlignment="Top">

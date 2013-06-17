@@ -289,9 +289,12 @@ namespace Debugger
 					if (this.IsNull) return null;
 					return ((ICorDebugStringValue)this.CorReferenceValue.Dereference()).GetString();
 				} else {
-					if (!this.Type.IsPrimitiveType())
+					var type = this.Type;
+					if (type.Kind == TypeKind.Enum)
+						type = type.GetDefinition().EnumUnderlyingType;
+					if (!type.IsPrimitiveType())
 						throw new DebuggerException("Value is not a primitive type");
-					return CorGenericValue.GetValue(this.Type.GetDefinition().KnownTypeCode);
+					return CorGenericValue.GetValue(type.GetDefinition().KnownTypeCode);
 				}
 			}
 		}

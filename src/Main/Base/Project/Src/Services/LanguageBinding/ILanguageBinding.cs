@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// Provides access to the code generator for this language.
 		/// </summary>
-		ICodeGenerator CodeGenerator {
+		CodeGenerator CodeGenerator {
 			get;
 		}
 		

@@ -13,7 +13,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.NRefactory.Editor;
 
@@ -426,8 +425,18 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
-				DocumentLine currentLine = textArea.Document.GetLineByNumber(textArea.Caret.Line);
-				textArea.Selection = Selection.Create(textArea, currentLine.Offset, currentLine.Offset + currentLine.TotalLength);
+				int firstLineIndex, lastLineIndex;
+				if (textArea.Selection.Length == 0) {
+					// There is no selection, simply delete current line
+					firstLineIndex = lastLineIndex = textArea.Caret.Line;
+				} else {
+					// There is a selection, remove all lines affected by it (use Min/Max to be independent from selection direction)
+					firstLineIndex = Math.Min(textArea.Selection.StartPosition.Line, textArea.Selection.EndPosition.Line);
+					lastLineIndex = Math.Max(textArea.Selection.StartPosition.Line, textArea.Selection.EndPosition.Line);
+				}
+				DocumentLine startLine = textArea.Document.GetLineByNumber(firstLineIndex);
+				DocumentLine endLine = textArea.Document.GetLineByNumber(lastLineIndex);
+				textArea.Selection = Selection.Create(textArea, startLine.Offset, endLine.Offset + endLine.TotalLength);
 				textArea.RemoveSelectedText();
 				args.Handled = true;
 			}

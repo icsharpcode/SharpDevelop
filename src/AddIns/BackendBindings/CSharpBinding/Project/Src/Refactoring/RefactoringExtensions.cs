@@ -3,11 +3,15 @@
 
 using System;
 using System.Linq;
+using CSharpBinding.Parser;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using CSharpBinding.Parser;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace CSharpBinding.Refactoring
 {
@@ -58,6 +62,49 @@ namespace CSharpBinding.Refactoring
 			if (parseInfo == null)
 				return null;
 			return parseInfo.SyntaxTree.GetNodeAt<EntityDeclaration>(entity.Region.Begin);
+		}
+		
+		
+		/// <summary>
+		/// Returns a refactoring context for the file that contains the entity.
+		/// This will open the file in the text editor if necessary.
+		/// </summary>
+		public static SDRefactoringContext CreateRefactoringContext(this IEntity entity)
+		{
+			var typeDef = entity as ITypeDefinition;
+			DomRegion region;
+			if (typeDef != null) {
+				IUnresolvedTypeDefinition bestPart = null;
+				foreach (var part in typeDef.Parts) {
+					if (bestPart == null || EntityModelContextUtils.IsBetterPart(part, bestPart, ".cs"))
+						bestPart = part;
+				}
+				region = bestPart.Region;
+			} else {
+				region = entity.Region;
+			}
+			return CreateRefactoringContext(region, entity.ParentAssembly.GetProject());
+		}
+		
+		public static SDRefactoringContext CreateRefactoringContext(DomRegion region, IProject project = null)
+		{
+			var view = SD.FileService.OpenFile(new FileName(region.FileName), false);
+			if (view == null)
+				throw new NotSupportedException("Could not open " + region.FileName);
+			var editor = view.GetService<ITextEditor>();
+			if (editor == null)
+				throw new NotSupportedException("Could not find editor for " + region.FileName);
+			var fileName = FileName.Create(region.FileName);
+			var parseInfo = SD.ParserService.Parse(fileName, editor.Document, project) as CSharpFullParseInformation;
+			if (parseInfo == null)
+				throw new NotSupportedException("Could not C# parse info for " + region.FileName);
+			ICompilation compilation;
+			if (project != null)
+				compilation = SD.ParserService.GetCompilation(project);
+			else
+				compilation = SD.ParserService.GetCompilationForFile(fileName);
+			var resolver = parseInfo.GetResolver(compilation);
+			return new SDRefactoringContext(editor, resolver, region.Begin);
 		}
 	}
 }

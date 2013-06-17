@@ -46,16 +46,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get { return SymbolKind.TypeDefinition; }
 		}
 		
+		public TypeKind TypeKind {
+			get { return parts[0].Kind; }
+		}
+		
 		public Accessibility Accessibility {
-			get { 
+			get {
 				var td = Resolve();
 				if (td != null)
 					return td.Accessibility;
 				else
 					return Accessibility.None;
-			}
-			set {
-				throw new NotImplementedException();
 			}
 		}
 		
@@ -69,6 +70,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public string Name {
 			get { return fullTypeName.Name; }
+		}
+		
+		public string Namespace {
+			get { return fullTypeName.TopLevelTypeName.Namespace; }
 		}
 		
 		#region Resolve
@@ -307,5 +312,32 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		#endregion
+		
+		public bool IsPartial {
+			get {
+				return parts.Count > 1; // TODO: check for partial modifier on single part
+			}
+		}
+		
+		public bool IsAbstract {
+			get { return parts.Any(p => p.IsAbstract); }
+		}
+		
+		public bool IsStatic {
+			get { return parts.Any(p => p.IsStatic); }
+		}
+		
+		public bool IsSealed {
+			get { return parts.Any(p => p.IsSealed); }
+		}
+		
+		public bool IsShadowing {
+			get { return parts.Any(p => p.IsShadowing); }
+		}
+		
+		public IEnumerable<DomRegion> GetPartRegions()
+		{
+			return parts.Select(p => p.Region);
+		}
 	}
 }

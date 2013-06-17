@@ -80,7 +80,8 @@ namespace CSharpBinding.Refactoring
 		
 		protected override string GenerateCode(ITypeDefinition currentClass)
 		{
-			List<PropertyOrFieldWrapper> filtered = this.varList.SelectedItems.OfType<PropertyOrFieldWrapper>()
+			List<PropertyOrFieldWrapper> filtered = parameterList
+				.Where(p => p.IsIncluded)
 				.OrderBy(p => p.Index)
 				.ToList();
 
@@ -209,9 +210,9 @@ namespace CSharpBinding.Refactoring
 			
 			if ((e.KeyboardDevice.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt && allAccessKey == e.SystemKey) {
 				if (AllSelected)
-					varList.UnselectAll();
+					SelectAllUnchecked();
 				else
-					varList.SelectAll();
+					SelectAllChecked();
 				e.Handled = true;
 			}
 			if ((e.KeyboardDevice.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt && upAccessKey == e.SystemKey) {
@@ -266,18 +267,32 @@ namespace CSharpBinding.Refactoring
 			);
 		}
 		
+		void SelectAllChecked()
+		{
+			foreach (var param in parameterList) {
+				param.IsIncluded = true;
+			}
+		}
+		
 		void SelectAllChecked(object sender, System.Windows.RoutedEventArgs e)
 		{
-			this.varList.SelectAll();
+			SelectAllChecked();
+		}
+		
+		void SelectAllUnchecked()
+		{
+			foreach (var param in parameterList) {
+				param.IsIncluded = false;
+			}
 		}
 		
 		void SelectAllUnchecked(object sender, System.Windows.RoutedEventArgs e)
 		{
-			this.varList.UnselectAll();
+			SelectAllUnchecked();
 		}
 		
 		bool AllSelected {
-			get { return varList.SelectedItems.Count == varList.Items.Count; }
+			get { return parameterList.Count(p => p.IsIncluded) == parameterList.Count; }
 		}
 		
 		protected override void CancelButtonClick(object sender, System.Windows.RoutedEventArgs e)

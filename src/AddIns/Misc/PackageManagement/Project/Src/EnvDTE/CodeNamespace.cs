@@ -1,47 +1,54 @@
-﻿//// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-//// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-//
-//using System;
-//using ICSharpCode.SharpDevelop.Dom;
-//
-//namespace ICSharpCode.PackageManagement.EnvDTE
-//{
-//	public class CodeNamespace : CodeElement, global::EnvDTE.CodeNamespace
-//	{
-//		NamespaceName namespaceName;
-//		IProjectContent projectContent;
-//		
-//		public CodeNamespace(IProjectContent projectContent, string qualifiedName)
-//			: this(projectContent, new NamespaceName(qualifiedName))
-//		{
-//		}
-//		
-//		public CodeNamespace(IProjectContent projectContent, NamespaceName namespaceName)
-//		{
-//			this.projectContent = projectContent;
-//			this.namespaceName = namespaceName;
-//			this.InfoLocation = global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal;
-//			this.Language = projectContent.GetCodeModelLanguage();
-//		}
-//		
-//		public override global::EnvDTE.vsCMElement Kind {
-//			get { return global::EnvDTE.vsCMElement.vsCMElementNamespace; }
-//		}
-//		
-//		internal NamespaceName NamespaceName {
-//			get { return namespaceName; }
-//		}
-//		
-//		public string FullName {
-//			get { return namespaceName.QualifiedName; }
-//		}
-//		
-//		public override string Name {
-//			get { return namespaceName.LastPart; }
-//		}
-//		
-//		public virtual global::EnvDTE.CodeElements Members {
-//			get { return new CodeElementsInNamespace(projectContent, namespaceName); }
-//		}
-//	}
-//}
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+using System;
+using System.Collections.Generic;
+using ICSharpCode.SharpDevelop.Dom;
+
+namespace ICSharpCode.PackageManagement.EnvDTE
+{
+	public class CodeNamespace : CodeElement, global::EnvDTE.CodeNamespace
+	{
+		readonly string fullName;
+		INamespaceModel model;
+		
+		public CodeNamespace(CodeModelContext context, INamespaceModel model)
+			: base(context, model)
+		{
+			this.model = model;
+		}
+		
+		public CodeNamespace(CodeModelContext context, string fullName)
+			: base(context)
+		{
+			this.fullName = fullName;
+		}
+		
+		public override global::EnvDTE.vsCMElement Kind {
+			get { return global::EnvDTE.vsCMElement.vsCMElementNamespace; }
+		}
+		
+		public override global::EnvDTE.vsCMInfoLocation InfoLocation {
+			get { return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal; }
+		}
+		
+		public string FullName {
+			get { return fullName; }
+		}
+		
+		CodeElementsList<CodeElement> members;
+		
+		public virtual global::EnvDTE.CodeElements Members {
+			get {
+				if (members == null) {
+					if (model == null)
+						throw new NotSupportedException();
+					IModelCollection<CodeElement> namespaceMembers = model.ChildNamespaces.Select(ns => new CodeNamespace(context, ns));
+					IModelCollection<CodeElement> typeMembers = model.Types.Select(td => CodeType.Create(context, td));
+					members = namespaceMembers.Concat(typeMembers).AsCodeElements();
+				}
+				return members;
+			}
+		}
+	}
+}

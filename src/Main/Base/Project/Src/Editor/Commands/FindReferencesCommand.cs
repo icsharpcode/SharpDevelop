@@ -4,6 +4,8 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor.Dialogs;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
 
@@ -35,38 +37,43 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		public override void Run(ResolveResult symbol)
 		{
 			var entity = GetEntity(symbol);
-			
-			string title = "${res:SharpDevelop.Refactoring.Rename}";
-			string text = title; // TODO add proper text
 			if (entity != null) {
-				switch (entity.SymbolKind) {
-					case ICSharpCode.NRefactory.TypeSystem.SymbolKind.TypeDefinition:
-						text = "${res:SharpDevelop.Refactoring.RenameClassText}";
-						break;
-					default:
-						text = "${res:SharpDevelop.Refactoring.RenameMemberText}";
-						break;
-				}
-				
-				string newName = SD.MessageService.ShowInputBox(title, text, entity.Name);
-				if (newName != entity.Name) {
-					if (!CheckName(newName)) {
-						SD.MessageService.ShowError("The symbol cannot be renamed because its new name is invalid!");
-						return;
+				var project = entity.ParentAssembly.GetProject();
+				if (project != null) {
+					var languageBinding = project.LanguageBinding;
+					
+					RenameSymbolDialog renameDialog = new RenameSymbolDialog(name => CheckName(name, languageBinding))
+					{
+						Owner = SD.Workbench.MainWindow,
+						OldSymbolName = entity.Name,
+						NewSymbolName = entity.Name
+					};
+					if ((bool) renameDialog.ShowDialog()) {
+						using (IProgressMonitor progressMonitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.Rename}"))
+							FindReferenceService.RenameSymbol(entity, renameDialog.NewSymbolName, progressMonitor)
+								.ObserveOnUIThread()
+								.Subscribe(error => SD.MessageService.ShowError(error.Message), ex => SD.MessageService.ShowException(ex), () => {});
 					}
-					using (IProgressMonitor progressMonitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.Rename}"))
-						FindReferenceService.RenameSymbol(entity, newName, progressMonitor)
-							.ObserveOnUIThread()
-							.Subscribe(error => SD.MessageService.ShowError(error.Message), ex => SD.MessageService.ShowException(ex), () => {});
 				}
 			}
-			
 		}
 		
-		bool CheckName(string name)
+		bool CheckName(string name, ILanguageBinding language)
 		{
-			// TODO implement for current language!
-			return !string.IsNullOrWhiteSpace(name);
+			if (string.IsNullOrEmpty(name))
+				return false;
+			
+			if ((language.CodeDomProvider == null) || !language.CodeDomProvider.IsValidIdentifier(name))
+				return false;
+			
+			return true;
+		}
+		
+		public override bool CanExecute(ResolveResult symbol)
+		{
+			if (symbol == null)
+				return false;
+			return !symbol.GetDefinitionRegion().IsEmpty;
 		}
 	}
 }

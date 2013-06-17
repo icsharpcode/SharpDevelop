@@ -94,5 +94,33 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return Resolve(solutionSnapshot);
 		}
 		#endregion
+		
+		public bool IsStatic {
+			get { return member.IsStatic; }
+		}
+		
+		public bool IsAbstract {
+			get { return member.IsAbstract; }
+		}
+		
+		public bool IsSealed {
+			get { return member.IsSealed; }
+		}
+		
+		public bool IsShadowing {
+			get { return member.IsShadowing; }
+		}
+		
+		public bool IsVirtual {
+			get { return member.IsVirtual; }
+		}
+		
+		public bool IsOverride {
+			get { return member.IsOverride; }
+		}
+		
+		public bool IsOverridable {
+			get { return member.IsOverridable; }
+		}
 	}
 }

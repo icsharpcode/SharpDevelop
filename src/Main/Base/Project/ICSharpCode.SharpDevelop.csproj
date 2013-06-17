@@ -90,7 +90,9 @@
     <Compile Include="Dom\IMemberModel.cs" />
     <Compile Include="Dom\IMethodModel.cs" />
     <Compile Include="Dom\IModelFactory.cs" />
+    <Compile Include="Dom\INamespaceModel.cs" />
     <Compile Include="Dom\IPropertyModel.cs" />
+    <Compile Include="Dom\ISymbolModel.cs" />
     <Compile Include="Dom\ITypeDefinitionModel.cs" />
     <Compile Include="Dom\ITypeDefinitionModelCollection.cs" />
     <Compile Include="Dom\IEntityModel.cs" />
@@ -170,7 +172,7 @@
     <Compile Include="Project\Project_TypeGuids.cs" />
     <Compile Include="Project\SolutionEventArgs.cs" />
     <Compile Include="Project\SolutionSection.cs" />
-    <Compile Include="Refactoring\ICodeGenerator.cs" />
+    <Compile Include="Refactoring\CodeGenerator.cs" />
     <Compile Include="Services\IClipboard.cs" />
     <Compile Include="Services\IFileSystem.cs" />
     <Compile Include="Services\IMessageLoop.cs" />
@@ -202,6 +204,10 @@
     <Compile Include="Src\Editor\Commands\InsertGuidCommand.cs" />
     <Compile Include="Src\Editor\Commands\PasteAsCommands.cs" />
     <Compile Include="Src\Editor\Commands\ShowColorDialog.cs" />
+    <Compile Include="Src\Editor\Dialogs\RenameSymbolDialog.xaml.cs">
+      <DependentUpon>RenameSymbolDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Editor\IFormattingStrategy.cs" />
     <Compile Include="Editor\Search\ISearchResult.cs" />
     <Compile Include="Editor\Search\ISearchResultFactory.cs" />
@@ -806,11 +812,13 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Designer" />
+    <Folder Include="Src\Editor\Dialogs" />
     <Folder Include="Templates" />
     <Folder Include="Project\Configuration" />
     <Folder Include="Workbench\DisplayBinding" />
     <Page Include="Editor\Bookmarks\BookmarkPadContent.xaml" />
     <Page Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml" />
+    <Page Include="Src\Editor\Dialogs\RenameSymbolDialog.xaml" />
     <Page Include="Src\Gui\Components\FontSelector.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorDialog.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorXaml.xaml" />

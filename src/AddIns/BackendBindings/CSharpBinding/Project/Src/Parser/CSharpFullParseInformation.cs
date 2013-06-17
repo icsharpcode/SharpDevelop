@@ -46,7 +46,7 @@ namespace CSharpBinding.Parser
 			// (caching in the parse information could prevent the compilation from being garbage-collected)
 			
 			// Also, don't cache CSharpAstResolvers for every file - doing so would require too much memory,
-			// and we rarely usually only need to access the same file several times.
+			// and we usually only need to access the same file several times.
 			// So we use a static key to get the resolver, and verify that it belongs to this parse information.
 			var resolver = compilation.CacheManager.GetShared(ResolverCacheKey) as CSharpAstResolver;
 			if (resolver == null || resolver.RootNode != syntaxTree || resolver.UnresolvedFile != UnresolvedFile) {

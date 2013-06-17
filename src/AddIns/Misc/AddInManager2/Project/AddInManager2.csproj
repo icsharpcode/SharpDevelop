@@ -193,8 +193,5 @@
       <DependentUpon>PagedResultsView.xaml</DependentUpon>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\StringResources.resx" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

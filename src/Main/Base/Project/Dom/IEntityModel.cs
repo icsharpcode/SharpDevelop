@@ -12,33 +12,36 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// <summary>
 	/// An NRefactory entity as a model.
 	/// </summary>
-	public interface IEntityModel : INotifyPropertyChanged
+	public interface IEntityModel : ISymbolModel
 	{
-		/// <summary>
-		/// Gets the name of the entity.
-		/// </summary>
-		string Name { get; }
-		
-		/// <summary>
-		/// Gets the symbol kind of the entity.
-		/// </summary>
-		SymbolKind SymbolKind { get; }
-		
 		/// <summary>
 		/// Gets/sets the accessibility of the entity.
 		/// </summary>
-		Accessibility Accessibility { get; set; }
+		Accessibility Accessibility { get; }
 		
 		/// <summary>
-		/// Gets the parent project that contains this entity.
-		/// May return null if the entity is not part of a project.
+		/// Gets whether this entity is static.
+		/// Returns true if either the 'static' or the 'const' modifier is set.
 		/// </summary>
-		IProject ParentProject { get; }
+		bool IsStatic { get; }
 		
 		/// <summary>
-		/// Gets the region where this entity is defined.
+		/// Returns whether this entity is abstract.
 		/// </summary>
-		DomRegion Region { get; }
+		/// <remarks>Static classes also count as abstract classes.</remarks>
+		bool IsAbstract { get; }
+		
+		/// <summary>
+		/// Returns whether this entity is sealed.
+		/// </summary>
+		/// <remarks>Static classes also count as sealed classes.</remarks>
+		bool IsSealed { get; }
+		
+		/// <summary>
+		/// Gets whether this member is declared to be shadowing another member with the same name.
+		/// (C# 'new' keyword)
+		/// </summary>
+		bool IsShadowing { get; }
 		
 		/// <summary>
 		/// Resolves the entity in the current solution snapshot.

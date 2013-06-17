@@ -28,5 +28,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Updates the member model with the specified new member.
 		/// </summary>
 		void Update(IUnresolvedMember newMember);
+		
+		/// <summary>
+		/// Gets if the member is virtual. Is true only if the "virtual" modifier was used, but non-virtual
+		/// members can be overridden, too; if they are abstract or overriding a method.
+		/// </summary>
+		bool IsVirtual { get; }
+		
+		/// <summary>
+		/// Gets whether this member is overriding another member.
+		/// </summary>
+		bool IsOverride { get; }
+		
+		/// <summary>
+		/// Gets if the member can be overridden. Returns true when the member is "abstract", "virtual" or "override" but not "sealed".
+		/// </summary>
+		bool IsOverridable { get; }
 	}
 }

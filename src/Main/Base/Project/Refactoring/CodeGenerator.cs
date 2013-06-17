@@ -2,30 +2,16 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
-	/// <summary>
-	/// Description of ICodeGenerator.
-	/// </summary>
-	public interface ICodeGenerator
+	public class CodeGenerator
 	{
-		void AddAttribute(IEntity target, IAttribute attribute);
-		void AddAssemblyAttribute(IProject targetProject, IAttribute attribute);
-		void AddReturnTypeAttribute(IMethod target, IAttribute attribute);
-		void InsertEventHandler(ITypeDefinition target, string name, IEvent eventDefinition, bool jumpTo);
-		
-		string GetPropertyName(string fieldName);
-		string GetParameterName(string fieldName);
-		string GetFieldName(string propertyName);
-	}
-	
-	public class DefaultCodeGenerator : ICodeGenerator
-	{
-		public static readonly DefaultCodeGenerator DefaultInstance = new DefaultCodeGenerator();
+		public static readonly CodeGenerator DummyCodeGenerator = new CodeGenerator();
 		
 		public virtual void AddAttribute(IEntity target, IAttribute attribute)
 		{
@@ -80,6 +66,31 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return "_" + newName;
 			else
 				return newName;
+		}
+		
+		public virtual void AddField(ITypeDefinition declaringType, Accessibility accessibility, IType fieldType, string name)
+		{
+			throw new NotSupportedException("Feature not supported!");
+		}
+		
+		public virtual void ChangeAccessibility(IEntity entity, Accessibility newAccessiblity)
+		{
+			throw new NotSupportedException("Feature not supported!");
+		}
+		
+		public virtual void MakePartial(ITypeDefinition td)
+		{
+			throw new NotSupportedException("Feature not supported!");
+		}
+		
+		public virtual void MakeVirtual(IMember member)
+		{
+			throw new NotSupportedException("Feature not supported!");
+		}
+		
+		public virtual void AddImport(FileName fileName, string namespaceName)
+		{
+			throw new NotSupportedException("Feature not supported!");
 		}
 	}
 }

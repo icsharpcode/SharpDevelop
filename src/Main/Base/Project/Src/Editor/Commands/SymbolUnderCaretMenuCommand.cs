@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Windows.Input;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Semantics;
@@ -15,21 +16,35 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	/// <summary>
 	/// A menu command that operates on a <see cref="ResolveResult"/>.
 	/// 
-	/// Supports the following types as <see cref="Owner"/>:
+	/// Supports the following types as <c>parameter</c>:
 	/// - ResolveResult
 	/// - IEntityModel
 	/// 
-	/// If the owner isn't one of the types above, the command operates on the caret position in the current editor.
+	/// If the parameter isn't one of the types above, the command operates on the caret position in the current editor.
 	/// </summary>
-	public abstract class ResolveResultMenuCommand : AbstractMenuCommand
+	public abstract class ResolveResultMenuCommand : ICommand
 	{
-		public abstract void Run(ResolveResult symbol);
-		
-		public override void Run()
+		public virtual event EventHandler CanExecuteChanged { add {} remove {} }
+
+		bool ICommand.CanExecute(object parameter)
 		{
 			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
-			ResolveResult resolveResult = GetResolveResult(editor, Owner);
+			ResolveResult resolveResult = GetResolveResult(editor, parameter);
+			return CanExecute(resolveResult);
+		}
+
+		void ICommand.Execute(object parameter)
+		{
+			ITextEditor editor = SD.GetActiveViewContentService<ITextEditor>();
+			ResolveResult resolveResult = GetResolveResult(editor, parameter);
 			Run(resolveResult);
+		}
+		
+		public abstract void Run(ResolveResult symbol);
+		
+		public virtual bool CanExecute(ResolveResult symbol)
+		{
+			return true;
 		}
 		
 		public static ResolveResult GetResolveResult(object owner)

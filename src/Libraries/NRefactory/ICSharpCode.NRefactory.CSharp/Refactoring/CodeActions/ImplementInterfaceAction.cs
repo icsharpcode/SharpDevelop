@@ -91,7 +91,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		static EntityDeclaration GenerateMemberImplementation(RefactoringContext context, IMember member, bool explicitImplementation)
 		{
-			var builder = context.CreateTypeSytemAstBuilder();
+			var builder = context.CreateTypeSystemAstBuilder();
 			builder.GenerateBody = true;
 			builder.ShowModifiers = false;
 			builder.ShowAccessibility = true;

@@ -39,6 +39,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return new FileProjectItems(this);
 		}
 		
+		internal static ProjectItem FindByEntity(IProject project, IEntityModel entity)
+		{
+			throw new NotImplementedException();
+		}
+		
 //		internal ProjectItem(MSBuildBasedProject project, IClass c)
 //			: this(new Project(project), project.FindFile(c.CompilationUnit.FileName))
 //		{

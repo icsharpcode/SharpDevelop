@@ -11,20 +11,49 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class CodeElement : global::EnvDTE.CodeElementBase, global::EnvDTE.CodeElement
 	{
 		DTE dte;
-		IEntityModel entityModel;
+		protected readonly CodeModelContext context;
+		readonly ISymbolModel symbolModel;
 		
 		public CodeElement()
 		{
 		}
 		
-		public CodeElement(IEntityModel entityModel)
+		public CodeElement(CodeModelContext context)
 		{
-			this.entityModel = entityModel;
-			this.Language = entityModel.ParentProject.GetCodeModelLanguage();
+			this.context = context;
+		}
+		
+		public CodeElement(CodeModelContext context, ISymbolModel symbolModel)
+		{
+			this.context = context;
+			this.symbolModel = symbolModel;
+			if (symbolModel.ParentProject != null)
+				this.Language = symbolModel.ParentProject.GetCodeModelLanguage();
+		}
+		
+		public static CodeElement CreateMember(CodeModelContext context, IMemberModel m)
+		{
+			switch (m.SymbolKind) {
+				case SymbolKind.Field:
+					return new CodeVariable(context, (IFieldModel)m);
+				case SymbolKind.Property:
+				case SymbolKind.Indexer:
+//					return new CodeProperty2(m);
+					throw new NotImplementedException();
+				case SymbolKind.Event:
+					return null; // events are not supported in EnvDTE?
+				case SymbolKind.Method:
+				case SymbolKind.Operator:
+				case SymbolKind.Constructor:
+				case SymbolKind.Destructor:
+					return new CodeFunction2(context, (IMethodModel)m);
+				default:
+					throw new NotSupportedException("Invalid value for SymbolKind");
+			}
 		}
 		
 		public virtual string Name {
-			get { return entityModel.Name; }
+			get { return symbolModel.Name; }
 		}
 		
 		public virtual string Language { get; protected set; }
@@ -32,15 +61,28 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		// default is vsCMPart.vsCMPartWholeWithAttributes
 		public virtual global::EnvDTE.TextPoint GetStartPoint()
 		{
-			return null;
+			if (symbolModel != null)
+				return TextPoint.CreateStartPoint(context, symbolModel.Region);
+			else
+				return null;
 		}
 		
 		public virtual global::EnvDTE.TextPoint GetEndPoint()
 		{
-			return null;
+			if (symbolModel != null)
+				return TextPoint.CreateEndPoint(context, symbolModel.Region);
+			else
+				return null;
 		}
 		
-		public virtual global::EnvDTE.vsCMInfoLocation InfoLocation { get; protected set; }
+		public virtual global::EnvDTE.vsCMInfoLocation InfoLocation {
+			get {
+				if (symbolModel != null && symbolModel.ParentProject == context)
+					return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationProject;
+				else
+					return global::EnvDTE.vsCMInfoLocation.vsCMInfoLocationExternal;
+			}
+		}
 		
 		public virtual global::EnvDTE.DTE DTE {
 			get {
@@ -55,6 +97,26 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return global::EnvDTE.vsCMElement.vsCMElementOther; }
 		}
 		
+		protected bool IsInFilter(DomRegion region)
+		{
+			if (context.FilteredFileName == null)
+				return true;
+			return context.FilteredFileName == region.FileName;
+		}
+		
+		protected CodeElementsList<CodeAttribute2> GetAttributes(IEntityModel entityModel)
+		{
+			var list = new CodeElementsList<CodeAttribute2>();
+			var td = entityModel.Resolve();
+			if (td != null) {
+				foreach (var attr in td.Attributes) {
+					if (IsInFilter(attr.Region))
+						list.Add(new CodeAttribute2(context, attr));
+				}
+			}
+			return list;
+		}
+
 		protected override bool GetIsDerivedFrom(string fullName)
 		{
 			return false;

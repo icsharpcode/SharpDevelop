@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Media.Animation;
+using CSharpBinding.Parser;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
@@ -28,7 +29,7 @@ namespace CSharpBinding.Refactoring
 	/// <summary>
 	/// Description of CSharpCodeGenerator.
 	/// </summary>
-	public class CSharpCodeGenerator : DefaultCodeGenerator
+	public class CSharpCodeGenerator : CodeGenerator
 	{
 		public override void AddAttribute(IEntity target, IAttribute attribute)
 		{
@@ -102,8 +103,7 @@ namespace CSharpBinding.Refactoring
 			var view = SD.FileService.OpenFile(new FileName(region.FileName), false);
 			var editor = view.GetRequiredService<ITextEditor>();
 			var context = SDRefactoringContext.Create(editor.FileName, editor.Document, region.Begin, CancellationToken.None);
-			var node = context.RootNode.GetNodeAt<AstNode>(region.Begin);
-			if (node is ICSharpCode.NRefactory.CSharp.Attribute) node = node.Parent;
+			var node = context.RootNode.GetNodeAt<EntityDeclaration>(region.Begin);
 			var resolver = context.GetResolverStateBefore(node);
 			var builder = new TypeSystemAstBuilder(resolver);
 			
@@ -112,6 +112,36 @@ namespace CSharpBinding.Refactoring
 				attr.AttributeTarget = target;
 				attr.Attributes.Add(builder.ConvertAttribute(attribute));
 				script.InsertBefore(node, attr);
+			}
+		}
+		
+		public override void AddField(ITypeDefinition declaringType, Accessibility accessibility, IType fieldType, string name)
+		{
+			SDRefactoringContext context = declaringType.CreateRefactoringContext();
+			var typeDecl = context.GetNode<TypeDeclaration>();
+			using (var script = context.StartScript()) {
+				var astBuilder = context.CreateTypeSystemAstBuilder(typeDecl.FirstChild);
+				var fieldDecl = new FieldDeclaration();
+				fieldDecl.Modifiers = TypeSystemAstBuilder.ModifierFromAccessibility(accessibility);
+				fieldDecl.ReturnType = astBuilder.ConvertType(context.Compilation.Import(fieldType));
+				fieldDecl.Variables.Add(new VariableInitializer(name));
+				script.InsertWithCursor("Add field: " + name, Script.InsertPosition.End, fieldDecl);
+			}
+		}
+		
+		public override void ChangeAccessibility(IEntity entity, Accessibility newAccessiblity)
+		{
+			// TODO script.ChangeModifiers(...)
+			throw new NotImplementedException();
+		}
+		
+		public override void AddImport(FileName fileName, string namespaceName)
+		{
+			var context = RefactoringExtensions.CreateRefactoringContext(new DomRegion(fileName, 0, 0));
+			var astBuilder = context.CreateTypeSystemAstBuilder();
+			using (var script = context.StartScript()) {
+				AstType ns = astBuilder.ConvertNamespace(namespaceName);
+				UsingHelper.InsertUsing(context, script, ns);
 			}
 		}
 	}

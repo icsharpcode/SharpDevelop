@@ -29,7 +29,7 @@ namespace ICSharpCode.CodeAnalysis
 				FxCopTaskTag tag = t.Tag as FxCopTaskTag;
 				if (tag == null)
 					continue;
-				ICodeGenerator gen = tag.Project.LanguageBinding.CodeGenerator;
+				CodeGenerator gen = tag.Project.LanguageBinding.CodeGenerator;
 				ICompilation compilation;
 				if (t.FileName != null)
 					compilation = SD.ParserService.GetCompilationForFile(t.FileName);

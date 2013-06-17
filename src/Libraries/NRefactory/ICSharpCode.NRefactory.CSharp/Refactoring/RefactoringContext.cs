@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		public abstract TextLocation Location { get; }
 		
-		public TypeSystemAstBuilder CreateTypeSytemAstBuilder()
+		public TypeSystemAstBuilder CreateTypeSystemAstBuilder()
 		{
 			var csResolver = Resolver.GetResolverStateBefore(GetNode());
 			return new TypeSystemAstBuilder(csResolver);
@@ -53,13 +53,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		public virtual AstType CreateShortType (IType fullType)
 		{
-			var builder = CreateTypeSytemAstBuilder();
+			var builder = CreateTypeSystemAstBuilder();
 			return builder.ConvertType(fullType);
 		}
 		
 		public virtual AstType CreateShortType(string ns, string name, int typeParameterCount = 0)
 		{
-			var builder = CreateTypeSytemAstBuilder();
+			var builder = CreateTypeSystemAstBuilder();
 			return builder.ConvertType(new TopLevelTypeName(ns, name, typeParameterCount));
 		}
 

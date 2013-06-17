@@ -5777,6 +5777,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
   <data name="SharpDevelop.FileFilter.AllFiles" xml:space="preserve">
     <value>Tüm dosyalar (*.*)</value>
   </data>
+  <data name="SharpDevelop.FileFilter.AllKnownFiles" xml:space="preserve">
+    <value>Bilinen tüm dosya uzantıları</value>
+  </data>
   <data name="SharpDevelop.FileFilter.AssemblyFiles" xml:space="preserve">
     <value>Çevirme dosyaları (*.exe, *.dll)</value>
   </data>
