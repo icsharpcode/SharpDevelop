@@ -34,7 +34,7 @@ namespace ICSharpCode.Core.Presentation
 			if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
 				KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);
 				MenuCommand.AddGestureToInputBindingOwner(inputBindingOwner, kg, this.Command, null);
-				this.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+				this.InputGestureText = MenuService.GetDisplayStringForShortcut(kg);
 			}
 		}
 

@@ -442,7 +442,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 						SD.Workbench.MainWindow.InputBindings.Add(
 							new System.Windows.Input.InputBinding(item.Command, kg)
 						);
-						item.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+						item.InputGestureText = MenuService.GetDisplayStringForShortcut(kg);
 					}
 					
 					list.Add(item);
