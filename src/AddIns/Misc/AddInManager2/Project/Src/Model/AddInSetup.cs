@@ -808,7 +808,20 @@ namespace ICSharpCode.AddInManager2.Model
 				}
 			}
 			
-			return addInVersion.CompareTo(nuGetPackage.Version.Version);
+			// Patch versions to have all 4 sub-numbers in both (workarounding bad NuGet Core behaviour with versions)
+			Version fixedAddInVersion = new Version(
+				(addInVersion.Major >= 0) ? addInVersion.Major : 0,
+				(addInVersion.Minor >= 0) ? addInVersion.Minor : 0,
+				(addInVersion.Build >= 0) ? addInVersion.Build : 0,
+				(addInVersion.Revision >= 0) ? addInVersion.Revision : 0);
+			Version nuGetVersion = nuGetPackage.Version.Version;
+			Version fixedNuGetVersion = new Version(
+				(nuGetVersion.Major >= 0) ? nuGetVersion.Major : 0,
+				(nuGetVersion.Minor >= 0) ? nuGetVersion.Minor : 0,
+				(nuGetVersion.Build >= 0) ? nuGetVersion.Build : 0,
+				(nuGetVersion.Revision >= 0) ? nuGetVersion.Revision : 0);
+			
+			return fixedAddInVersion.CompareTo(fixedNuGetVersion);
 		}
 		
 		public void RemoveUnreferencedNuGetPackages()
