@@ -20,6 +20,7 @@
 	<Project language = "F#">
 	
 		<ProjectItems>
+			<Reference Include="System" />
 			<Reference Include="FSharp.Core" />
 		</ProjectItems>
 		
