@@ -25,7 +25,7 @@ namespace ICSharpCode.AddInManager2.Model
 		private IAddInManagerSettings _settings;
 		
 		public const string DefaultRepositoryName = "SharpDevelop AddIn Repository";
-		public const string DefaultRepositorySource = "http://www.myget.org/F/sharpdevelop/";
+		public const string DefaultRepositorySource = "https://www.myget.org/F/sharpdevelop/";
 
 		public PackageRepositories(IAddInManagerEvents events, IAddInManagerSettings settings)
 		{
