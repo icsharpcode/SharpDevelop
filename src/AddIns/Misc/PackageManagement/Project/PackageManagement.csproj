@@ -238,7 +238,10 @@
     <Compile Include="Src\ProjectRootElementExtensions.cs" />
     <Compile Include="Src\ReducedPackageOperations.cs" />
     <Compile Include="Src\ResolveFileConflictEventArgs.cs" />
+    <Compile Include="Src\Scripting\ConsoleHostFileConflictResolver.cs" />
+    <Compile Include="Src\Scripting\FileConflictAction.cs" />
     <Compile Include="Src\Scripting\GlobalMSBuildProjectCollection.cs" />
+    <Compile Include="Src\Scripting\IConsoleHostFileConflictResolver.cs" />
     <Compile Include="Src\Scripting\IGlobalMSBuildProjectCollection.cs" />
     <Compile Include="Src\Scripting\MSBuildProjectImportsMerger.cs" />
     <Compile Include="Src\Scripting\MSBuildProjectImportsMergeResult.cs" />

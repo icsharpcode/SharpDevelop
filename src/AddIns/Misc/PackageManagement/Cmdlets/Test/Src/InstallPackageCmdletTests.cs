@@ -237,5 +237,59 @@ namespace PackageManagement.Cmdlets.Tests
 			IPackageScriptRunner scriptRunner = fakeProject.LastInstallPackageCreated.PackageScriptRunner;
 			Assert.AreEqual(cmdlet, scriptRunner);
 		}
+		
+		[Test]
+		public void ProcessRecord_FileConflictActionIsOverwrite_FileConflictResolverCreatedWithOverwriteAction()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			cmdlet.FileConflictAction = FileConflictAction.Overwrite;
+			
+			RunCmdlet();
+			
+			Assert.AreEqual(FileConflictAction.Overwrite, fakeConsoleHost.LastFileConflictActionUsedWhenCreatingResolver);
+		}
+		
+		[Test]
+		public void ProcessRecord_FileConflictActionIsIgnore_FileConflictResolverCreatedWithIgnoreAction()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			cmdlet.FileConflictAction = FileConflictAction.Ignore;
+			
+			RunCmdlet();
+			
+			Assert.AreEqual(FileConflictAction.Ignore, fakeConsoleHost.LastFileConflictActionUsedWhenCreatingResolver);
+		}
+		
+		[Test]
+		public void ProcessRecord_FileConflictActionNotSet_FileConflictResolverCreatedWithNoneFileConflictAction()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			
+			RunCmdlet();
+			
+			Assert.AreEqual(FileConflictAction.None, fakeConsoleHost.LastFileConflictActionUsedWhenCreatingResolver);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdSpecified_FileConflictResolverIsDisposed()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			
+			RunCmdlet();
+			
+			fakeConsoleHost.AssertFileConflictResolverIsDisposed();
+		}
 	}
 }
