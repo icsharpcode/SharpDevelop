@@ -25,6 +25,7 @@ namespace ResourceEditor
 		ColumnHeader name     = new ColumnHeader();
 		ColumnHeader type     = new ColumnHeader();
 		ColumnHeader content  = new ColumnHeader();
+		ColumnHeader comment  = new ColumnHeader();
 		
 		Dictionary<string, ResourceItem> resources = new Dictionary<string, ResourceItem>();
 		Dictionary<string, ResourceItem> metadata = new Dictionary<string, ResourceItem>();
@@ -78,7 +79,10 @@ namespace ResourceEditor
 			content.Text  = ResourceService.GetString("ResourceEditor.ResourceEdit.ContentColumn");
 			content.Width = 300;
 			
-			Columns.AddRange(new ColumnHeader[] {name, type, content});
+			comment.Text = ResourceService.GetString("ResourceEditor.ResourceEdit.CommentColumn");
+			comment.Width = 300;
+			
+			Columns.AddRange(new ColumnHeader[] {name, type, content, comment});
 			
 			FullRowSelect = true;
 			AutoArrange   = true;
@@ -108,6 +112,7 @@ namespace ResourceEditor
 			                                new IListViewItemComparer[] {
 			                                	textComparer,
 			                                	typeNameComparer,
+			                                	null,
 			                                	null
 			                                });
 			sorter.SortColumnIndex = 0;
@@ -219,6 +224,14 @@ namespace ResourceEditor
 			OnChanged();
 		}
 		
+		public void SetCommentValue(string resourceName, string commentValue)
+		{
+			ResourceItem item = ((ResourceItem)Resources[resourceName]);
+			item.Comment = commentValue;
+			SelectedItems[0].SubItems[3].Text = item.Comment;
+			OnChanged();
+		}
+		
 		public void OnChanged()
 		{
 			if (Changed != null) {
@@ -239,7 +252,7 @@ namespace ResourceEditor
 				string tmp  = item.ToString();
 				string type = item.ResourceValue == null ? "(Nothing/null)" : item.ResourceValue.GetType().FullName;
 				
-				ListViewItem lv = new ListViewItem(new String[] {item.Name, type, tmp}, item.ImageIndex);
+				ListViewItem lv = new ListViewItem(new String[] {item.Name, type, tmp, item.Comment}, item.ImageIndex);
 				Items.Add(lv);
 			}
 			
