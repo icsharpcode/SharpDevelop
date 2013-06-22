@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Drawing.Printing;
 using System.IO;
 using System.Resources;
@@ -136,16 +137,24 @@ namespace ResourceEditor
 			switch (Path.GetExtension(filename).ToLowerInvariant()) {
 				case ".resx":
 					ResXResourceReader rx = new ResXResourceReader(stream);
+					ITypeResolutionService typeResolver = null;
 					rx.BasePath = Path.GetDirectoryName(filename);
+					rx.UseResXDataNodes = true;
 					IDictionaryEnumerator n = rx.GetEnumerator();
-					while (n.MoveNext())
-						if (!resources.ContainsKey(n.Key.ToString()))
-						resources.Add(n.Key.ToString(), new ResourceItem(n.Key.ToString(), n.Value));
+					while (n.MoveNext()) {
+						if (!resources.ContainsKey(n.Key.ToString())) {
+							ResXDataNode node = (ResXDataNode)n.Value;
+							resources.Add(n.Key.ToString(), new ResourceItem(node.Name, node.GetValue(typeResolver), node.Comment));
+						}
+					}
 					
 					n = rx.GetMetadataEnumerator();
-					while (n.MoveNext())
-						if (!metadata.ContainsKey(n.Key.ToString()))
-						metadata.Add(n.Key.ToString(), new ResourceItem(n.Key.ToString(), n.Value));
+					while (n.MoveNext()) {
+						if (!metadata.ContainsKey(n.Key.ToString())) {
+							ResXDataNode node = (ResXDataNode)n.Value;
+							metadata.Add(n.Key.ToString(), new ResourceItem(node.Name, node.GetValue(typeResolver)));
+						}
+					}
 					
 					rx.Close();
 					break;
@@ -171,14 +180,13 @@ namespace ResourceEditor
 		public void SaveFile(FileName filename, Stream stream)
 		{
 			switch (Path.GetExtension(filename).ToLowerInvariant()) {
-					
-					// write XML resource
 				case ".resx":
+					// write XML resource
 					ResXResourceWriter rxw = new ResXResourceWriter(stream, t => ResXConverter.ConvertTypeName(t, filename));
 					foreach (KeyValuePair<string, ResourceItem> entry in resources) {
 						if (entry.Value != null) {
 							ResourceItem item = entry.Value;
-							rxw.AddResource(item.Name, item.ResourceValue);
+							rxw.AddResource(item.ToResXDataNode(t => ResXConverter.ConvertTypeName(t, filename)));
 						}
 					}
 					foreach (KeyValuePair<string, ResourceItem> entry in metadata) {
@@ -190,9 +198,8 @@ namespace ResourceEditor
 					rxw.Generate();
 					rxw.Close();
 					break;
-					
-					// write default resource
 				default:
+					// write default resource
 					ResourceWriter rw = new ResourceWriter(stream);
 					foreach (KeyValuePair<string, ResourceItem> entry in resources) {
 						ResourceItem item = (ResourceItem)entry.Value;
