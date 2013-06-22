@@ -45,11 +45,23 @@ namespace ICSharpCode.PackageManagement
 		
 		public void Execute()
 		{
-			BeforeExecute();
-			if (PackageScriptRunner != null) {
-				ExecuteWithScriptRunner();
-			} else {
-				ExecuteCore();
+			RunWithExceptionReporting(() => {
+				BeforeExecute();
+				if (PackageScriptRunner != null) {
+					ExecuteWithScriptRunner();
+				} else {
+					ExecuteCore();
+				}
+			});
+		}
+		
+		void RunWithExceptionReporting(Action action)
+		{
+			try {
+				action();
+			} catch (Exception ex) {
+				packageManagementEvents.OnPackageOperationError(ex);
+				throw;
 			}
 		}
 		

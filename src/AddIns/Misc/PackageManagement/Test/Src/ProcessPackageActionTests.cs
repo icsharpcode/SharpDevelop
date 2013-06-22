@@ -16,6 +16,7 @@ namespace PackageManagement.Tests
 	{
 		TestableProcessPackageAction action;
 		FakePackageManagementProject fakeProject;
+		ExceptionThrowingProcessPackageAction exceptionThrowingAction;
 		
 		void CreateAction()
 		{
@@ -28,6 +29,11 @@ namespace PackageManagement.Tests
 			var logger = new NullLogger();
 			action.Logger = logger;
 			return logger;
+		}
+		
+		void CreateActionWithExceptionThrownInExecuteCore()
+		{
+			exceptionThrowingAction = new ExceptionThrowingProcessPackageAction();
 		}
 		
 		[Test]
@@ -123,6 +129,31 @@ namespace PackageManagement.Tests
 			action.Execute();
 			
 			Assert.IsTrue(action.IsExecuteCoreCalled);
+		}
+		
+		[Test]
+		public void Execute_ExceptionThrownInExecuteCore_ErrorEventFired()
+		{
+			CreateActionWithExceptionThrownInExecuteCore();
+			var expectedException = new Exception("ExecuteCore error");
+			exceptionThrowingAction.ExceptionToThrowInExecuteCore = expectedException;
+			
+			Exception exception = Assert.Throws<Exception>(() => exceptionThrowingAction.Execute());
+			
+			Exception exceptionReported = exceptionThrowingAction.FakePackageManagementEvents.ExceptionPassedToOnPackageOperationError;
+			Assert.AreEqual(expectedException, exceptionReported);
+		}
+		
+		[Test]
+		public void Execute_ExceptionThrownInExecuteCore_ExceptionThrownByExecuteMethod()
+		{
+			CreateActionWithExceptionThrownInExecuteCore();
+			var expectedException = new Exception("Error");
+			exceptionThrowingAction.ExceptionToThrowInExecuteCore = expectedException;
+			
+			Exception exception = Assert.Throws<Exception>(() => exceptionThrowingAction.Execute());
+			
+			Assert.AreEqual(expectedException, exception);
 		}
 	}
 }

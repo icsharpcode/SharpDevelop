@@ -113,6 +113,7 @@
     <Compile Include="Src\Helpers\CodeElementsExtensions.cs" />
     <Compile Include="Src\Helpers\CompilationUnitHelper.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingPackageActionRunner.cs" />
+    <Compile Include="Src\Helpers\ExceptionThrowingProcessPackageAction.cs" />
     <Compile Include="Src\Helpers\FakeCodeGenerator.cs" />
     <Compile Include="Src\Helpers\FieldHelper.cs" />
     <Compile Include="Src\Helpers\FakeSelectProjectsService.cs" />
