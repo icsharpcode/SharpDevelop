@@ -5777,6 +5777,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="SharpDevelop.FileFilter.AllFiles" xml:space="preserve">
     <value>Todos los archivos (*.*)</value>
   </data>
+  <data name="SharpDevelop.FileFilter.AllKnownFiles" xml:space="preserve">
+    <value>Todas las extensiones de archivos conocidas</value>
+  </data>
   <data name="SharpDevelop.FileFilter.AssemblyFiles" xml:space="preserve">
     <value>Archivos de ensamblado (*.exe;*.dll)</value>
   </data>

@@ -1502,6 +1502,9 @@ Ad esempio: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.HighlightingEditor.NotSupportedMessage" xml:space="preserve">
     <value>Versione delle impostazioni non supportata!</value>
   </data>
+  <data name="Dialog.HighlightingEditor.OverwriteCustomizationsMessage" xml:space="preserve">
+    <value>Questo comando elimina tutte le personalizzazioni prima di importare i files selezionati. Continuare?</value>
+  </data>
   <data name="Dialog.HighlightingEditor.Properties.Value" xml:space="preserve">
     <value>Valore</value>
   </data>
@@ -1863,6 +1866,12 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Debugging</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.EnableDecompiler" xml:space="preserve">
+    <value>Attiva decompilatore</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.EnableEditAndContinue" xml:space="preserve">
+    <value>Attiva Modifica e Continua</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
     <value>Eccezioni</value>
   </data>
@@ -1892,6 +1901,12 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping.StepOverSingleLineProperties" xml:space="preserve">
     <value>Salta le proprietà su linea singola</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.SuppressJITOptimization" xml:space="preserve">
+    <value>Salta ottimizzazione JIT</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.SuppressNGENOptimization" xml:space="preserve">
+    <value>Salta ottimizzazione NGEN</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Symbols" xml:space="preserve">
     <value>Simboli</value>
@@ -2353,6 +2368,12 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.Any" xml:space="preserve">
     <value>Qualsiasi processore</value>
   </data>
+  <data name="Dialog.ProjectOptions.Build.TargetCPU.Any32" xml:space="preserve">
+    <value>Quasiasi processore (preferisci 32-bit)</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Build.TargetCPU.Any64" xml:space="preserve">
+    <value>Qualsiasi processore (preferisci 64-bit)</value>
+  </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.Itanium" xml:space="preserve">
     <value>Processore Intel 64-bit Itanium</value>
   </data>
@@ -2706,6 +2727,9 @@ Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che 
   </data>
   <data name="FormsDesigner.DesignTabPages.SourceTabPage" xml:space="preserve">
     <value>Sorgente</value>
+  </data>
+  <data name="Gloabl.Advanced" xml:space="preserve">
+    <value>Avanzate</value>
   </data>
   <data name="Global.AbortButtonText" xml:space="preserve">
     <value>Annulla</value>
@@ -4017,6 +4041,12 @@ Sono ammesse solo lettere, numeri, spazi, '.' o '_'.</value>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Culture.Description" xml:space="preserve">
     <value>La cultura supportata dal riferimento</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.EmbedInteropTypes" xml:space="preserve">
+    <value>Incorpora tipi COM</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.EmbedInteropTypes.Description" xml:space="preserve">
+    <value>Specifica quale tipi COM presenti nell'assembly referenziato devono essere incorportati nell'assembly di destinazione.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.LocalCopy" xml:space="preserve">
     <value>Copia locale</value>
   </data>
@@ -4037,6 +4067,9 @@ Sono ammesse solo lettere, numeri, spazi, '.' o '_'.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.ReferenceOutputAssembly" xml:space="preserve">
     <value>Referenzia assembly</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.ReferenceOutputAssembly.Description" xml:space="preserve">
+    <value>Se impostato a falso, questo riferimento implica solo una dipendenza nella sequenza di compilazione e non un riferimento all'assembly.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.SpecificVersion" xml:space="preserve">
     <value>Versione Specifica</value>
@@ -5400,6 +5433,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="PortableLibrary.CouldNotFindTools" xml:space="preserve">
     <value>Impossibile trovare gli strumenti per Libreria di Classi Portabile</value>
   </data>
+  <data name="PortableLibrary.PortableSubset" xml:space="preserve">
+    <value>Sottoinsieme Portabile .NET</value>
+  </data>
   <data name="PortableLibrary.SelectAtLeastTwoFrameworks" xml:space="preserve">
     <value>Selezionare almeno 2 frameworks.</value>
   </data>
@@ -6401,6 +6437,24 @@ SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è 
   <data name="Templates.File.NAnt.NAntBuildFile.Name" xml:space="preserve">
     <value>File di Build NAnt</value>
   </data>
+  <data name="Templates.File.PRISMViewAndViewModelUnity.Description" xml:space="preserve">
+    <value>Crea una Vista per un Modulo PRISM ed il relativo Modello</value>
+  </data>
+  <data name="Templates.File.PRISMViewAndViewModelUnity.Name" xml:space="preserve">
+    <value>Vista PRISM e Modello (Unity)</value>
+  </data>
+  <data name="Templates.File.PRISMViewModelUnity.Description" xml:space="preserve">
+    <value>Crea un modello per un Modulo PRISM</value>
+  </data>
+  <data name="Templates.File.PRISMViewModelUnity.Name" xml:space="preserve">
+    <value>Modello PRISM (Unity)</value>
+  </data>
+  <data name="Templates.File.PRISMViewUnity.Description" xml:space="preserve">
+    <value>Crea una Vista per un Modulo PRISM</value>
+  </data>
+  <data name="Templates.File.PRISMViewUnity.Name" xml:space="preserve">
+    <value>Vista PRISM (Unity)</value>
+  </data>
   <data name="Templates.File.Properties.AddIFDEFTest" xml:space="preserve">
     <value>Aggiunge '#if TEST ... #endif'</value>
   </data>
@@ -6670,6 +6724,24 @@ SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è 
   </data>
   <data name="Templates.Project.PortableLibrary.Name" xml:space="preserve">
     <value>Libreria di classi portabile</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationSmallUnity.Description" xml:space="preserve">
+    <value>Crea una piccola Applicazione Prism con Avvio e Infrastruttura</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationSmallUnity.Name" xml:space="preserve">
+    <value>Applicazione PRISM - piccola (Unity)</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationUnity.Description" xml:space="preserve">
+    <value>Crea una Applicazione PRISM con Avvio e Infrastruttura</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationUnity.Name" xml:space="preserve">
+    <value>Applicazione PRISM (Unity)</value>
+  </data>
+  <data name="Templates.Project.PRISMModuleUnity.Description" xml:space="preserve">
+    <value>Crea un Modulo PRISM con una Vista e relativo Modulo</value>
+  </data>
+  <data name="Templates.Project.PRISMModuleUnity.Name" xml:space="preserve">
+    <value>Modulo PRISM (Unity)</value>
   </data>
   <data name="Templates.Project.SetupProject.Description" xml:space="preserve">
     <value>Un progetto Windows Installer per creare file di installazione MSI.</value>

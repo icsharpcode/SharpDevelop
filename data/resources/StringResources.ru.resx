@@ -175,10 +175,10 @@
     <value>Вы не можете отключить Менеджер Плагинов. Он необходим для переподключения Плагинов!</value>
   </data>
   <data name="AddInManager.CannotInstallIntoApplicationDirectory" xml:space="preserve">
-    <value>Нельзя устанавливать плагины внутри папки ${ProductName}, так как они будут считаться предустановленными.</value>
+    <value>Нельзя устанавливать плагины внутри папки ${ProductName},поскольку они являются предустановленными по умолчанию.</value>
   </data>
   <data name="AddInManager.DescriptionCancelDeinstallation" xml:space="preserve">
-    <value>Отменяет удаление выделеных плагинов.</value>
+    <value>Отменяет деинсталляцию выделенных плагинов.</value>
   </data>
   <data name="AddInManager.DescriptionCancelInstall" xml:space="preserve">
     <value>Отменяет установку выделенных плагинов.</value>
@@ -228,6 +228,100 @@
   </data>
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Неизвестный формат файла:</value>
+  </data>
+  <data name="AddInManager2.AddInsView.InstallFromArchive" xml:space="preserve">
+    <value>Установить из архива...</value>
+  </data>
+  <data name="AddInManager2.AddInsView.Search" xml:space="preserve">
+    <value>Поиск:</value>
+  </data>
+  <data name="AddInManager2.AddInsView.ShowPreinstalledAddIns" xml:space="preserve">
+    <value>Показать предустановленные плагины</value>
+  </data>
+  <data name="AddInManager2.CannotRemoveAddInManager" xml:space="preserve">
+    <value>Вы не можете деинсталлировать Менеджер плагинов, поскольку он понадобится для инсталляции плагинов!</value>
+  </data>
+  <data name="AddInManager2.Details.CreatedBy" xml:space="preserve">
+    <value>Создатель:</value>
+  </data>
+  <data name="AddInManager2.Details.DownloadCount" xml:space="preserve">
+    <value>Загрузки:</value>
+  </data>
+  <data name="AddInManager2.Details.FileName" xml:space="preserve">
+    <value>Имя файла:</value>
+  </data>
+  <data name="AddInManager2.Details.InstalledVersion" xml:space="preserve">
+    <value>Установленная версия:</value>
+  </data>
+  <data name="AddInManager2.Details.LastUpdated" xml:space="preserve">
+    <value>Дата последнего обновления:</value>
+  </data>
+  <data name="AddInManager2.Details.MoreInformation" xml:space="preserve">
+    <value>Подробнее:</value>
+  </data>
+  <data name="AddInManager2.Details.NewVersion" xml:space="preserve">
+    <value>Новая версия:</value>
+  </data>
+  <data name="AddInManager2.Details.Rating" xml:space="preserve">
+    <value>Рейтинг:</value>
+  </data>
+  <data name="AddInManager2.Details.ReportAbuse" xml:space="preserve">
+    <value>Пожаловаться:</value>
+  </data>
+  <data name="AddInManager2.Details.Version" xml:space="preserve">
+    <value>Версия:</value>
+  </data>
+  <data name="AddInManager2.Details.ViewLicenseTerms" xml:space="preserve">
+    <value>Прочитать Пользовательское соглашение</value>
+  </data>
+  <data name="AddInManager2.InvalidPackage" xml:space="preserve">
+    <value>В выбранном объекте не содержится правильного SharpDevelop плагина.</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.AcceptButton" xml:space="preserve">
+    <value>Принять</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.DeclineButton" xml:space="preserve">
+    <value>Отказаться</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.Title" xml:space="preserve">
+    <value>Лицензионное соглашение</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Add" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.MoveDown" xml:space="preserve">
+    <value>Сместить вниз</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.MoveUp" xml:space="preserve">
+    <value>Сместить вверх</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Name" xml:space="preserve">
+    <value>Название:</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Remove" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Source" xml:space="preserve">
+    <value>Источник:</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Tree.AddIns" xml:space="preserve">
+    <value>Плагины</value>
+  </data>
+  <data name="AddInManager2.RemoveDependentWarning" xml:space="preserve">
+    <value>Следующие установленные плагины зависят от "{0}":
+
+{1}
+
+Они перестанут работать, если удалить данный плагин! Вы уверены, что хотите продолжить?</value>
+  </data>
+  <data name="AddInManager2.Views.Available" xml:space="preserve">
+    <value>Доступно</value>
+  </data>
+  <data name="AddInManager2.Views.Installed" xml:space="preserve">
+    <value>Установлено</value>
+  </data>
+  <data name="AddInManager2.Views.Updates" xml:space="preserve">
+    <value>Обновления</value>
   </data>
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Показать диаграмму классов</value>
@@ -1458,7 +1552,7 @@
     <value>Шаблоны файлов</value>
   </data>
   <data name="Dialog.NewProject.SearchReplace.SearchStringNotFound" xml:space="preserve">
-    <value>Строка не найдена</value>
+    <value>Введенная последовательность символов не найдена</value>
   </data>
   <data name="Dialog.NewProject.SearchReplace.SearchStringNotFound.Title" xml:space="preserve">
     <value>Не найдено</value>
@@ -3053,6 +3147,9 @@
   <data name="ICSharpCode.PythonBinding.SendSelectedTextToPythonConsole" xml:space="preserve">
     <value>Отправить в консоль Python</value>
   </data>
+  <data name="ICSharpCode.Refactoring.NoClassUnderCursorError" xml:space="preserve">
+    <value>В месте нахождения курсора не обнаружено определение типа.</value>
+  </data>
   <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
     <value>Отправить строку в консоль Ruby</value>
   </data>
@@ -3693,6 +3790,11 @@
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
     <value>Обновление проекта</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpdateOnLoadDueToMissingMSBuild" xml:space="preserve">
+    <value>Проект '${ProjectName}' ссылается на версию ${OldToolsVersion} MSBuild, но данная версия не установлена.
+Хотите ли вы обновить проект до версии ${NewToolsVersion} MSBuild?
+Данный проект не может бть открыт без процедуры ибновления.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
     <value>Это решение было создано с помощью предыдущей версии SharpDevelop.
@@ -4413,11 +4515,17 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.Modules.AddressColumn" xml:space="preserve">
     <value>Адрес</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Modules.DynamicModule" xml:space="preserve">
+    <value>(динамический)</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Modules.HasNoSymbols" xml:space="preserve">
     <value>Нет загруженных символов.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules.HasSymbols" xml:space="preserve">
     <value>Символы загружены.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Modules.InMemoryModule" xml:space="preserve">
+    <value>(в памяти)</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules.OrderColumn" xml:space="preserve">
     <value>Порядок</value>
@@ -5116,7 +5224,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Текущий метод</value>
   </data>
   <data name="SharpDevelop.Refactoring.DeclaringType" xml:space="preserve">
-    <value>Текларирующий тип</value>
+    <value>Декларирующий тип</value>
   </data>
   <data name="SharpDevelop.Refactoring.ExpandAutomaticProperty" xml:space="preserve">
     <value>Развернуть автосвойство</value>

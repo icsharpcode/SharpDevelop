@@ -2371,7 +2371,7 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
     <value>Tout processeur</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.Any32" xml:space="preserve">
-    <value>x86/x64 - préfère 64 bits</value>
+    <value>x86/x64 - préfère 32 bits</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.Any64" xml:space="preserve">
     <value>x86/x64 - préfère 64 bits</value>

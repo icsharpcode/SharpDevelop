@@ -1871,6 +1871,12 @@ Yeni dosyayı, ${CurrentProjectName} projesine eklemek istiyor musunuz?</value>
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Hata ayıklama</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.EnableDecompiler" xml:space="preserve">
+    <value>Tekrar derlemeyi etkinleştir</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.EnableEditAndContinue" xml:space="preserve">
+    <value>Düzenle ve Devam eti Etkinleştir</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
     <value>İstisnalar</value>
   </data>
@@ -1900,6 +1906,12 @@ Yeni dosyayı, ${CurrentProjectName} projesine eklemek istiyor musunuz?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping.StepOverSingleLineProperties" xml:space="preserve">
     <value>Tek satır özellikleri üzerinden Adımla</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.SuppressJITOptimization" xml:space="preserve">
+    <value>JIT optimizasyonunu engelle</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.SuppressNGENOptimization" xml:space="preserve">
+    <value>NGEN optimizasyonunu engelle</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Symbols" xml:space="preserve">
     <value>Semboller</value>
@@ -2719,6 +2731,9 @@ Ayrıca bir ayarı proje dosyası yerine kullanıcı dosyası(.user-file) içind
   </data>
   <data name="FormsDesigner.DesignTabPages.SourceTabPage" xml:space="preserve">
     <value>Kaynak</value>
+  </data>
+  <data name="Gloabl.Advanced" xml:space="preserve">
+    <value>Gelişmiş</value>
   </data>
   <data name="Global.AbortButtonText" xml:space="preserve">
     <value>Başarısız</value>
@@ -5761,6 +5776,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
   </data>
   <data name="SharpDevelop.FileFilter.AllFiles" xml:space="preserve">
     <value>Tüm dosyalar (*.*)</value>
+  </data>
+  <data name="SharpDevelop.FileFilter.AllKnownFiles" xml:space="preserve">
+    <value>Bilinen tüm dosya uzantıları</value>
   </data>
   <data name="SharpDevelop.FileFilter.AssemblyFiles" xml:space="preserve">
     <value>Çevirme dosyaları (*.exe, *.dll)</value>
