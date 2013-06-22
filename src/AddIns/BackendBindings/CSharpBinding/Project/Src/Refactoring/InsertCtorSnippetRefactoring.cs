@@ -2,16 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 using ICSharpCode.AvalonEdit.Snippets;
-using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Parser;
 using CSharpBinding.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
 

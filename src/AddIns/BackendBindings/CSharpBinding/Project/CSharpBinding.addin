@@ -158,8 +158,8 @@
 	
 	<Path name="/SharpDevelop/ViewContent/AvalonEdit/SnippetElementProviders">
 		<Class id="ctor" class="CSharpBinding.Refactoring.InsertCtorSnippetRefactoring" />
-		<!--<Class id="switch" class="CSharpBinding.Refactoring.SwitchSnippetProvider" />
-		<Class id="propall" class="CSharpBinding.Refactoring.CreateProperties" />-->
+		<Class id="propall" class="CSharpBinding.Refactoring.CreateProperties" />
+		<!--<Class id="switch" class="CSharpBinding.Refactoring.SwitchSnippetProvider" /> -->
 	</Path>
 	
 	<Path path = "/SharpDevelop/ViewContent/TextEditor/C#/IssueProviders">
