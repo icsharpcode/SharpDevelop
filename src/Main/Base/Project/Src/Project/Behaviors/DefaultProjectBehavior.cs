@@ -106,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(
-				System.Windows.Threading.DispatcherPriority.Background,
+				System.Windows.Threading.DispatcherPriority.Loaded,
 				new Action(
 					delegate {
 						NavigationService.SuspendLogging();

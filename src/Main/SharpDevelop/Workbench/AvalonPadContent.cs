@@ -83,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 					if (isFocused) {
 						IInputElement initialFocus = padInstance.InitiallyFocusedControl as IInputElement;
 						if (initialFocus != null) {
-							Dispatcher.BeginInvoke(DispatcherPriority.Input,
+							Dispatcher.BeginInvoke(DispatcherPriority.Loaded,
 							                       new Action(delegate { Keyboard.Focus(initialFocus); }));
 						}
 					}
