@@ -40,6 +40,7 @@ namespace ICSharpCode.PackageManagement
 		public void Run(IEnumerable<IPackageAction> actions)
 		{
 			CreateConsolePadIfConsoleHostIsNotRunning();
+			ShowConsolePad();
 			AddNewActionsToRun(actions);
 			InvokeProcessPackageActionsCmdlet();
 		}
@@ -49,6 +50,11 @@ namespace ICSharpCode.PackageManagement
 			if (!consoleHost.IsRunning) {
 				workbench.CreateConsolePad();
 			}
+		}
+		
+		void ShowConsolePad()
+		{
+			workbench.ShowConsolePad();
 		}
 		
 		void AddNewActionsToRun(IEnumerable<IPackageAction> actions)

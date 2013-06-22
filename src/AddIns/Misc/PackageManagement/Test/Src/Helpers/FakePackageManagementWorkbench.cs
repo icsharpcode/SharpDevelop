@@ -15,6 +15,13 @@ namespace PackageManagement.Tests.Helpers
 			IsCreateConsolePadCalled = true;
 		}
 		
+		public bool IsShowConsolePadCalled;
+		
+		public void ShowConsolePad()
+		{
+			IsShowConsolePadCalled = true;
+		}
+		
 		public bool InvokeRequiredReturnValue;
 		
 		public bool InvokeRequired {

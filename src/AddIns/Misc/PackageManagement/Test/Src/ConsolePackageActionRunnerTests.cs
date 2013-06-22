@@ -133,6 +133,18 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void Run_ConsoleHostIsNotRunning_ConsolePadIsBroughtToFront()
+		{
+			CreateRunner();
+			ConsoleHostIsNotRunning();
+			RunInstallActionWithOneOperation();
+			
+			bool shown = fakeWorkbench.IsShowConsolePadCalled;
+			
+			Assert.IsTrue(shown);
+		}
+		
+		[Test]
 		public void Run_ConsoleHostIsRunning_ConsolePadIsNotCreated()
 		{
 			CreateRunner();
@@ -142,6 +154,18 @@ namespace PackageManagement.Tests
 			bool created = fakeWorkbench.IsCreateConsolePadCalled;
 			
 			Assert.IsFalse(created);
+		}
+		
+		[Test]
+		public void Run_ConsoleHostIsRunning_ConsolePadIsBroughtToFront()
+		{
+			CreateRunner();
+			ConsoleHostIsRunning();
+			RunInstallActionWithOneOperation();
+			
+			bool shown = fakeWorkbench.IsShowConsolePadCalled;
+			
+			Assert.IsTrue(shown);
 		}
 		
 		[Test]
@@ -157,6 +181,18 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void Run_TwoActionsToRunAndConsoleHostIsNotRunning_ConsolePadIsBroughtToFront()
+		{
+			CreateRunner();
+			ConsoleHostIsNotRunning();
+			RunTwoInstallActionsWithOneOperation();
+			
+			bool shown = fakeWorkbench.IsShowConsolePadCalled;
+			
+			Assert.IsTrue(shown);
+		}
+		
+		[Test]
 		public void Run_TwoActionsToRunAndConsoleHostIsRunning_ConsolePadIsNotCreated()
 		{
 			CreateRunner();
@@ -166,6 +202,18 @@ namespace PackageManagement.Tests
 			bool created = fakeWorkbench.IsCreateConsolePadCalled;
 			
 			Assert.IsFalse(created);
+		}
+		
+		[Test]
+		public void Run_TwoActionsToRunAndConsoleHostIsRunning_ConsolePadIsBroughtToFront()
+		{
+			CreateRunner();
+			ConsoleHostIsRunning();
+			RunTwoInstallActionsWithOneOperation();
+			
+			bool shown = fakeWorkbench.IsShowConsolePadCalled;
+			
+			Assert.IsTrue(shown);
 		}
 		
 		[Test]
