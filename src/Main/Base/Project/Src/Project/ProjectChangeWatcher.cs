@@ -26,6 +26,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		FileSystemWatcher watcher;
 		string fileName;
 		bool enabled = true;
+		DateTime lastWriteTime;
 
 		public ProjectChangeWatcher(string fileName)
 		{
@@ -33,6 +34,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			SD.MainThread.VerifyAccess();
 			activeWatchers.Add(this);
+			UpdateLastWriteTime();
 			
 			SD.Workbench.MainWindow.Activated += MainFormActivated;
 		}
@@ -52,6 +54,26 @@ namespace ICSharpCode.SharpDevelop.Project
 		public void Rename(string newFileName)
 		{
 			fileName = newFileName;
+		}
+		
+		void UpdateLastWriteTime()
+		{
+			// Save current last write time attribute
+			FileInfo fileInfo = new FileInfo(fileName);
+			if (fileInfo != null) {
+				lastWriteTime = fileInfo.LastWriteTimeUtc;
+			}
+		}
+		
+		bool LastWriteTimeHasChanged()
+		{
+			// Save current last write time attribute
+			FileInfo fileInfo = new FileInfo(fileName);
+			if (fileInfo != null) {
+				return lastWriteTime != fileInfo.LastWriteTimeUtc;
+			}
+			
+			return true; // File doesn't exist anymore?
 		}
 
 		void SetWatcher()
@@ -107,7 +129,14 @@ namespace ICSharpCode.SharpDevelop.Project
 
 		void OnFileChangedEvent(object sender, FileSystemEventArgs e)
 		{
-			LoggingService.Debug("Project file " + e.Name + " was changed externally: {1}" + e.ChangeType);
+			// Last write time really has changed?
+			if (!LastWriteTimeHasChanged()) {
+				LoggingService.DebugFormatted("Attributes of project file {0} have been set externally ({1}), but no relevant changes detected.", e.Name, e.ChangeType);
+				return;
+			}
+			
+			LoggingService.DebugFormatted("Project file {0} was changed externally: {1}", e.Name, e.ChangeType);
+			UpdateLastWriteTime();
 			if (!wasChangedExternally) {
 				wasChangedExternally = true;
 				if (SD.Workbench.IsActiveWindow) {
