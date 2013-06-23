@@ -17,6 +17,7 @@ namespace CSharpBinding.Refactoring
 		/// </summary>
 		readonly IField field;
 		private string text;
+		bool isIncluded;
 		
 		public IField Field {
 			get { return field; }
@@ -36,6 +37,17 @@ namespace CSharpBinding.Refactoring
 				| ConversionFlags.ShowModifiers
 				| ConversionFlags.ShowAccessibility;
 			this.text = ambience.ConvertEntity(member);
+		}
+		
+		public bool IsIncluded
+		{
+			get {
+				return isIncluded;
+			}
+			set {
+				isIncluded = value;
+				OnPropertyChanged("IsIncluded");
+			}
 		}
 		
 		public string MemberName {

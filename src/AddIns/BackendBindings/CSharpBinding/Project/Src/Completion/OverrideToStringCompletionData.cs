@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,15 +9,12 @@ using System.Threading;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.SharpDevelop.Parser;
 using CSharpBinding.FormattingStrategy;
-using CSharpBinding.Parser;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using CSharpBinding.Refactoring;

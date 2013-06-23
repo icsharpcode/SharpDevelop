@@ -3,17 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Windows.Forms;
 
 using ICSharpCode.AvalonEdit.Snippets;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
-using SharpRefactoring.Gui;
 
 namespace CSharpBinding.Refactoring
 {
@@ -34,51 +28,27 @@ namespace CSharpBinding.Refactoring
 			if (textEditor == null)
 				return null;
 			
-			IEditorUIService uiService = textEditor.GetService(typeof(IEditorUIService)) as IEditorUIService;
-			
-			if (uiService == null)
-				return null;
-			
-			ParseInformation parseInfo = ParserService.GetParseInformation(textEditor.FileName);
-			
-			if (parseInfo == null)
-				return null;
-			
-			CodeGenerator generator = parseInfo.CompilationUnit.Language.CodeGenerator;
-			
-			// cannot use insertion position at this point, because it might not be
-			// valid, because we are still generating the elements.
-			// DOM is not updated
-			ICSharpCode.AvalonEdit.Document.TextLocation loc = context.Document.GetLocation(context.StartPosition);
-			
-			IClass current = parseInfo.CompilationUnit.GetInnermostClass(loc.Line, loc.Column);
-			
-			if (current == null)
-				return null;
-			
-			List<FieldWrapper> parameters = FindFields(current).Where(f => !current.Properties.Any(p => p.Name == f.PropertyName)).ToList();
-			
-			if (!parameters.Any())
-				return null;
-			
-			ITextAnchor anchor = textEditor.Document.CreateAnchor(context.InsertionPosition);
-			anchor.MovementType = AnchorMovementType.BeforeInsertion;
-			
-			CreatePropertiesDialog dialog = new CreatePropertiesDialog(context, textEditor, anchor, current, parameters);
-			
-			dialog.Element = uiService.CreateInlineUIElement(anchor, dialog);
-			
-			return dialog;
-		}
-		
-		static IEnumerable<FieldWrapper> FindFields(IClass sourceClass)
-		{
-			int i = 0;
-			
-			foreach (var f in sourceClass.Fields.Where(field => !field.IsConst
-			                                           && field.ReturnType != null)) {
-				yield return new FieldWrapper(f) { Index = i };
-				i++;
+			using (textEditor.Document.OpenUndoGroup()) {
+				IEditorUIService uiService = textEditor.GetService(typeof(IEditorUIService)) as IEditorUIService;
+				
+				if (uiService == null)
+					return null;
+				
+				ITextAnchor anchor = textEditor.Document.CreateAnchor(context.InsertionPosition);
+				anchor.MovementType = AnchorMovementType.AfterInsertion;
+				
+				// Since this snippet doesn't insert anything, fake insertion of 1 character to allow proper Ctrl+Z reaction
+				if (context.StartPosition == context.InsertionPosition) {
+					textEditor.Document.Insert(context.InsertionPosition, " ");
+					context.InsertionPosition++;
+				}
+				
+				CreatePropertiesDialog dialog = new CreatePropertiesDialog(context, textEditor, anchor);
+				
+				dialog.Element = uiService.CreateInlineUIElement(anchor, dialog);
+				
+				return dialog;
+				
 			}
 		}
 	}

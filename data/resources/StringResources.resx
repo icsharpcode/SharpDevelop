@@ -4852,6 +4852,9 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   <data name="ICSharpCode.WixBinding.WixNetFxExtensionTitle" xml:space="preserve">
     <value>.NET Framework Extension</value>
   </data>
+  <data name="ICSharpCode.WixBinding.WixNotInstalled" xml:space="preserve">
+    <value>WiX is not installed. Please download WiX from http://wixtoolset.org/</value>
+  </data>
   <data name="ICSharpCode.WixBinding.WixPackageFilesDiffControl.NoDiffFound" xml:space="preserve">
     <value>No difference found.</value>
     <comment>Message displayed in the Wix diff control to indicate that no differences between the files specified in the Wix setup document and the files on the file system were found.</comment>
@@ -6223,6 +6226,9 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   <data name="ResourceEditor.ResourceCodeGeneratorTool.CouldNotGenerateResourceProperty" xml:space="preserve">
     <value>Resource code generator: No resource property could be generated for resource '{0}'.</value>
   </data>
+  <data name="ResourceEditor.ResourceEdit.CommentColumn" xml:space="preserve">
+    <value>Comment</value>
+  </data>
   <data name="ResourceEditor.ResourceEdit.ContentColumn" xml:space="preserve">
     <value>Content</value>
   </data>
@@ -6235,6 +6241,12 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   <data name="ResourceEditor.ResourceEdit.ContextMenu.CopyResourceName" xml:space="preserve">
     <value>Copy resource name</value>
     <comment>Context menu item; copies the name of the currently selcted resource item to the clipboard</comment>
+  </data>
+  <data name="ResourceEditor.ResourceEdit.ContextMenu.EditComment" xml:space="preserve">
+    <value>Edit comment</value>
+  </data>
+  <data name="ResourceEditor.ResourceEdit.ContextMenu.EditCommentText" xml:space="preserve">
+    <value>Enter the new text for the resource comment:</value>
   </data>
   <data name="ResourceEditor.ResourceEdit.ContextMenu.Rename" xml:space="preserve">
     <value>&amp;Rename</value>

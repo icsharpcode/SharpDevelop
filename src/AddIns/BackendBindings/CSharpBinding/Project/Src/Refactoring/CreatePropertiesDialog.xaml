@@ -6,35 +6,6 @@
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	<Grid Cursor="Arrow" KeyboardNavigation.TabNavigation="Cycle">
-		<Grid.Resources>
-			<Style x:Key="ListViewItemFocusHighlight" TargetType="{x:Type ListViewItem}">
-			<!-- This style replaces the default ListViewItem template with one that highlights the focused item instead of the selected items -->
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="{x:Type ListViewItem}">
-						<Border Name="Bd"
-						        Background="{TemplateBinding Background}"
-						        BorderBrush="{TemplateBinding BorderBrush}"
-						        BorderThickness="{TemplateBinding BorderThickness}"
-						        Padding="{TemplateBinding Padding}"
-						        SnapsToDevicePixels="true">
-							<GridViewRowPresenter Content="{TemplateBinding Content}" Columns="{TemplateBinding GridView.ColumnCollection}"/>
-						</Border>
-						<ControlTemplate.Triggers>
-							<Trigger Property="IsKeyboardFocusWithin"
-							         Value="true">
-								<Setter TargetName="Bd"
-								        Property="Background"
-								        Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
-								<Setter Property="Foreground"
-								        Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
-							</Trigger>
-						</ControlTemplate.Triggers>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
-		</Grid.Resources>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="Auto" />
@@ -45,13 +16,20 @@
 		           Text="{sd:Localize AddIns.SharpRefactoring.CreateProperties.Description}"
 		           TextWrapping="Wrap" />
 		<CheckBox x:Name="implementInterface" Margin="3" Grid.Row="1" Content="{sd:Localize AddIns.SharpRefactoring.CreateProperties.Description.ImplementINotifyPropertyChanged}" />
-		<ListView x:Name="listBox" Grid.Row="2" SelectionMode="Multiple" KeyboardNavigation.TabNavigation="Cycle" ItemContainerStyle="{StaticResource ListViewItemFocusHighlight}" MaxHeight="300">
+		<ListView x:Name="listBox" Grid.Row="2" SelectionMode="Multiple" KeyboardNavigation.TabNavigation="Cycle" MaxHeight="300">
 			<ListView.View>
 				<GridView>
 					<GridViewColumn Header="{sd:Localize AddIns.SharpRefactoring.InsertCtor.VariableLabel}">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
-								<CheckBox Content="{Binding Text}" IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type ListBoxItem}},Path=IsSelected}" />
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
+									<CheckBox Grid.Column="0" IsChecked="{Binding IsIncluded}" VerticalAlignment="Center" Margin="0,0,3,0" />
+									<TextBlock Grid.Column="1" Text="{Binding Text}" />
+								</Grid>
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>

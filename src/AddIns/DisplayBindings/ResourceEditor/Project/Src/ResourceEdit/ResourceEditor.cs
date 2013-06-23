@@ -106,9 +106,6 @@ namespace ResourceEditor
 		void viewResourceChanged(object sender, ResourceEventArgs e)
 		{
 			resourceList.SetResourceValue(e.ResourceName, e.ResourceValue);
-			
-			
-			
 		}
 		
 		void showResource(ResourceItem item)

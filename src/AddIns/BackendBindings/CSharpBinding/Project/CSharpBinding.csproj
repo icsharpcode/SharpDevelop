@@ -87,6 +87,11 @@
     <Compile Include="Src\FormsDesigner\SecondaryDisplayBinding.cs" />
     <Compile Include="Src\Parser\FoldingVisitor.cs" />
     <Compile Include="Src\Refactoring\AbstractInlineRefactorDialog.cs" />
+    <Compile Include="Src\Refactoring\CreateProperties.cs" />
+    <Compile Include="Src\Refactoring\CreatePropertiesCommand.cs" />
+    <Compile Include="Src\Refactoring\CreatePropertiesDialog.xaml.cs">
+      <DependentUpon>CreatePropertiesDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Src\Refactoring\CSharpCodeGenerator.cs" />
     <Compile Include="Src\Refactoring\CSharpSyntaxIssue.cs" />
     <Compile Include="Src\Refactoring\FieldWrapper.cs" />
@@ -212,6 +217,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\Refactoring\CreatePropertiesDialog.xaml" />
     <Page Include="Src\Refactoring\InsertCtorDialog.xaml" />
     <Page Include="Src\Refactoring\IssueOptions.xaml" />
     <Page Include="Src\OptionPanels\BuildOptions.xaml" />
