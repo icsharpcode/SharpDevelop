@@ -6,8 +6,6 @@ using System.IO;
 
 using System.Windows.Threading;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Commands;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project.Commands;
 using ICSharpCode.SharpDevelop.Workbench;
 
@@ -60,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			// Save current last write time attribute
 			FileInfo fileInfo = new FileInfo(fileName);
-			if (fileInfo != null) {
+			if (fileInfo.Exists) {
 				lastWriteTime = fileInfo.LastWriteTimeUtc;
 			}
 		}
@@ -69,11 +67,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			// Save current last write time attribute
 			FileInfo fileInfo = new FileInfo(fileName);
-			if (fileInfo != null) {
+			if (fileInfo.Exists) {
 				return lastWriteTime != fileInfo.LastWriteTimeUtc;
 			}
-			
-			return true; // File doesn't exist anymore?
+
+			return true; // File might have been renamed/deleted?
 		}
 
 		void SetWatcher()
@@ -129,8 +127,8 @@ namespace ICSharpCode.SharpDevelop.Project
 
 		void OnFileChangedEvent(object sender, FileSystemEventArgs e)
 		{
-			// Last write time really has changed?
-			if (!LastWriteTimeHasChanged()) {
+			// Ignore this event, if LastWriteTime has changed to same value as before (= no real change in file)
+			if ((e.ChangeType == WatcherChangeTypes.Changed) && !LastWriteTimeHasChanged()) {
 				LoggingService.DebugFormatted("Attributes of project file {0} have been set externally ({1}), but no relevant changes detected.", e.Name, e.ChangeType);
 				return;
 			}
