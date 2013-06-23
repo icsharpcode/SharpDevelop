@@ -3,18 +3,21 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using CSharpBinding.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
 
@@ -124,6 +127,29 @@ namespace CSharpBinding.Refactoring
 		protected virtual void Initialize()
 		{
 			this.refactoringContext = SDRefactoringContext.Create(editor, CancellationToken.None);
+			
+			TextDocument textDocument = editor.Document as TextDocument;
+			if (textDocument != null) {
+				textDocument.UndoStack.PropertyChanged += UndoStackPropertyChanged;
+			}
+		}
+		
+		void UndoStackPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == "CanRedo") {
+				// Undo command has been triggered?
+				OnUndoTriggered();
+				
+				// Unregister from event, again
+				TextDocument textDocument = editor.Document as TextDocument;
+				if (textDocument != null) {
+					textDocument.UndoStack.PropertyChanged -= UndoStackPropertyChanged;
+				}
+			}
+		}
+		
+		protected virtual void OnUndoTriggered()
+		{
 		}
 		
 		protected virtual void OnInsertionCompleted()
@@ -139,6 +165,11 @@ namespace CSharpBinding.Refactoring
 				return;
 			}
 			
+			TextDocument textDocument = editor.Document as TextDocument;
+			if (textDocument != null) {
+				textDocument.UndoStack.PropertyChanged -= UndoStackPropertyChanged;
+			}
+			
 			if (e.Reason == DeactivateReason.ReturnPressed)
 				OKButtonClick(null, null);
 			
@@ -150,7 +181,7 @@ namespace CSharpBinding.Refactoring
 		
 		bool deactivated;
 
-		void Deactivate()
+		protected void Deactivate()
 		{
 			if (Element == null)
 				throw new InvalidOperationException("no IInlineUIElement set!");

@@ -35,13 +35,13 @@ namespace CSharpBinding.Refactoring
 					return null;
 				
 				ITextAnchor anchor = textEditor.Document.CreateAnchor(context.InsertionPosition);
-				anchor.MovementType = AnchorMovementType.AfterInsertion;
+				anchor.MovementType = AnchorMovementType.BeforeInsertion;
 				
 				// Since this snippet doesn't insert anything, fake insertion of 1 character to allow proper Ctrl+Z reaction
-				if (context.StartPosition == context.InsertionPosition) {
-					textEditor.Document.Insert(context.InsertionPosition, " ");
-					context.InsertionPosition++;
-				}
+//				if (context.StartPosition == context.InsertionPosition) {
+//					textEditor.Document.Insert(context.InsertionPosition, " ");
+//					context.InsertionPosition++;
+//				}
 				
 				CreatePropertiesDialog dialog = new CreatePropertiesDialog(context, textEditor, anchor);
 				
