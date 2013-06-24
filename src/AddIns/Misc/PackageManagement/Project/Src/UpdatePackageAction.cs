@@ -7,7 +7,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class UpdatePackageAction : ProcessPackageOperationsAction
+	public class UpdatePackageAction : ProcessPackageOperationsAction, IUpdatePackageSettings
 	{
 		public UpdatePackageAction(
 			IPackageManagementProject project,

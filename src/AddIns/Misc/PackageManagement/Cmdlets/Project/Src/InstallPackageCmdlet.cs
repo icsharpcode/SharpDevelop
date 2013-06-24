@@ -44,10 +44,20 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		[Parameter, Alias("Prerelease")]
 		public SwitchParameter IncludePrerelease { get; set; }
 		
+		[Parameter]
+		public FileConflictAction FileConflictAction { get; set; }
+		
 		protected override void ProcessRecord()
 		{
 			ThrowErrorIfProjectNotOpen();
-			InstallPackage();
+			using (IConsoleHostFileConflictResolver resolver = CreateFileConflictResolver()) {
+				InstallPackage();
+			}
+		}
+		
+		IConsoleHostFileConflictResolver CreateFileConflictResolver()
+		{
+			return ConsoleHost.CreateFileConflictResolver(FileConflictAction);
 		}
 		
 		void InstallPackage()

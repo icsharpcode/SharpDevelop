@@ -10,20 +10,8 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class LicenseAcceptanceService : ILicenseAcceptanceService
+	public class LicenseAcceptanceService : ServiceWithWorkbenchOwner, ILicenseAcceptanceService
 	{
-		Window owner;
-		
-		public Window Owner {
-			get {
-				if (owner == null) {
-					owner = WorkbenchSingleton.MainWindow;
-				}
-				return owner;
-			}
-			set { owner = value; }
-		}
-		
 		public bool AcceptLicenses(IEnumerable<IPackage> packages)
 		{
 			LicenseAcceptanceView view = CreateLicenseAcceptanceView(packages);

@@ -56,5 +56,20 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public bool IsBindingRedirectSupported { get; set; }
+		
+		public void AddImport(string targetPath, ProjectImportLocation location)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void RemoveImport(string targetPath)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public bool FileExistsInProject(string path)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
 	x:Class="ICSharpCode.PackageManagement.PackagesView"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
@@ -318,6 +318,8 @@
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto"/>
 					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
 				</Grid.RowDefinitions>
 				<ComboBox 
 					Grid.Row="0"
@@ -352,6 +354,20 @@
 							Width="16"/>
 					</Hyperlink>
 				</TextBlock>
+				<CheckBox
+					Grid.Row="2"
+					Grid.ColumnSpan="2"
+					Margin="2"
+					Content="Include Prerelease"
+					Visibility="{Binding Path=ShowPrerelease, Converter={StaticResource BoolToVisibility}}"
+					IsChecked="{Binding Path=IncludePrerelease}"/>
+				<Button
+					Grid.Row="3"
+					Grid.Column="1"
+					Margin="2"
+					Visibility="{Binding Path=IsUpdateAllPackagesEnabled, Converter={StaticResource BoolToVisibility}}"
+					Content="Update All"
+					Command="{Binding Path=UpdateAllPackagesCommand}"/>
 			</Grid>
 			<ContentControl
 				Grid.Row="1"

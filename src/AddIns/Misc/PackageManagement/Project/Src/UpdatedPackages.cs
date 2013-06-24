@@ -34,11 +34,12 @@ namespace ICSharpCode.PackageManagement
 		
 		public string SearchTerms { get; set; }
 		
-		public IEnumerable<IPackage> GetUpdatedPackages()
+		public IEnumerable<IPackage> GetUpdatedPackages(bool includePrerelease = false)
 		{
 			IQueryable<IPackage> localPackages = installedPackages;
 			localPackages = FilterPackages(localPackages);
-			return GetUpdatedPackages(sourceRepository, localPackages);
+			IEnumerable<IPackage> distinctLocalPackages = DistinctPackages(localPackages);
+			return GetUpdatedPackages(sourceRepository, distinctLocalPackages, includePrerelease);
 		}
 		
 		IQueryable<IPackage> GetInstalledPackages()
@@ -51,9 +52,25 @@ namespace ICSharpCode.PackageManagement
 			return localPackages.Find(SearchTerms);
 		}
 		
-		IEnumerable<IPackage> GetUpdatedPackages(IPackageRepository sourceRepository, IQueryable<IPackage> localPackages)
+		/// <summary>
+		/// If we have jQuery 1.6 and 1.7 then return just jquery 1.6
+		/// </summary>
+		IEnumerable<IPackage> DistinctPackages(IQueryable<IPackage> localPackages)
 		{
-			return sourceRepository.GetUpdates(localPackages, false, false);
+			List<IPackage> packages = localPackages.ToList();
+			if (packages.Any()) {
+				packages.Sort(PackageComparer.Version);
+				return packages.Distinct(PackageEqualityComparer.Id).ToList();
+			}
+			return packages;
+		}
+		
+		IEnumerable<IPackage> GetUpdatedPackages(
+			IPackageRepository sourceRepository,
+			IEnumerable<IPackage> localPackages,
+			bool includePrelease)
+		{
+			return sourceRepository.GetUpdates(localPackages, includePrelease, false);
 		}
 	}
 }

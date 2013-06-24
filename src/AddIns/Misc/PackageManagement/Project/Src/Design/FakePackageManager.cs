@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using NuGet;
 
@@ -21,6 +22,8 @@ namespace ICSharpCode.PackageManagement.Design
 		public bool AllowPrereleaseVersionsPassedToInstallPackage;
 		
 		public IPackage PackagePassedToUninstallPackage;
+		
+		public UpdatePackagesAction UpdatePackagesActionsPassedToUpdatePackages;
 		
 		#pragma warning disable 67
 		public event EventHandler<PackageOperationEventArgs> PackageInstalled;
@@ -157,6 +160,38 @@ namespace ICSharpCode.PackageManagement.Design
 		public void UninstallPackage(string packageId, SemanticVersion version, bool forceRemove, bool removeDependencies)
 		{
 			throw new NotImplementedException();
+		}
+		
+		public void UpdatePackages(UpdatePackagesAction updateAction)
+		{
+			UpdatePackagesActionsPassedToUpdatePackages = updateAction;
+		}
+		
+		public List<PackageOperation> PackageOperationsToReturnFromGetUpdatePackageOperations = new List<PackageOperation>();
+		public IUpdatePackageSettings SettingsPassedToGetUpdatePackageOperations;
+		public IEnumerable<IPackage> PackagesPassedToGetUpdatePackageOperations;
+		
+		public IEnumerable<PackageOperation> GetUpdatePackageOperations(IEnumerable<IPackage> packages, IUpdatePackageSettings settings)
+		{
+			SettingsPassedToGetUpdatePackageOperations = settings;
+			PackagesPassedToGetUpdatePackageOperations = packages;
+			return PackageOperationsToReturnFromGetUpdatePackageOperations;
+		}
+		
+		public List<PackageOperation> PackageOperationsPassedToRunPackageOperations;
+		
+		public void RunPackageOperations(IEnumerable<PackageOperation> operations)
+		{
+			PackageOperationsPassedToRunPackageOperations = operations.ToList();
+		}
+		
+		public IPackage PackagePassedToUpdatePackageReference;
+		public IUpdatePackageSettings SettingsPassedToUpdatePackageReference;
+		
+		public void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings)
+		{
+			PackagePassedToUpdatePackageReference = package;
+			SettingsPassedToUpdatePackageReference = settings;
 		}
 	}
 }

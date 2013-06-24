@@ -15,6 +15,13 @@ namespace PackageManagement.Tests.Helpers
 			IsCreateConsolePadCalled = true;
 		}
 		
+		public bool IsShowConsolePadCalled;
+		
+		public void ShowConsolePad()
+		{
+			IsShowConsolePadCalled = true;
+		}
+		
 		public bool InvokeRequiredReturnValue;
 		
 		public bool InvokeRequired {
@@ -36,6 +43,14 @@ namespace PackageManagement.Tests.Helpers
 			IsSafeThreadAsyncCallMade = true;
 			Arg1PassedToSafeThreadAsyncCall = arg1;
 			Arg2PassedToSafeThreadAsyncCall = arg2;
+		}
+		
+		public bool IsSafeThreadFunctionCallMade;
+		
+		public R SafeThreadFunction<R>(Func<R> method)
+		{
+			IsSafeThreadFunctionCallMade = true;
+			return method();
 		}
 	}
 }

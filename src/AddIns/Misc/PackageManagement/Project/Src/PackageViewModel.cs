@@ -22,14 +22,17 @@ namespace ICSharpCode.PackageManagement
 		IEnumerable<PackageOperation> packageOperations = new PackageOperation[0];
 		PackageViewModelOperationLogger logger;
 		IPackageActionRunner actionRunner;
+		IPackageViewModelParent parent;
 		
 		public PackageViewModel(
+			IPackageViewModelParent parent,
 			IPackageFromRepository package,
 			PackageManagementSelectedProjects selectedProjects,
 			IPackageManagementEvents packageManagementEvents,
 			IPackageActionRunner actionRunner,
 			ILogger logger)
 		{
+			this.parent = parent;
 			this.package = package;
 			this.selectedProjects = selectedProjects;
 			this.packageManagementEvents = packageManagementEvents;
@@ -37,6 +40,11 @@ namespace ICSharpCode.PackageManagement
 			this.logger = CreateLogger(logger);
 			
 			CreateCommands();
+		}
+		
+		public IPackageViewModelParent GetParent()
+		{
+			return parent;
 		}
 		
 		protected virtual PackageViewModelOperationLogger CreateLogger(ILogger logger)
@@ -170,7 +178,8 @@ namespace ICSharpCode.PackageManagement
 		{
 			IPackageManagementProject project = GetSingleProjectSelected();
 			project.Logger = logger;
-			var installAction = project.CreateInstallPackageAction();
+			InstallPackageAction installAction = project.CreateInstallPackageAction();
+			installAction.AllowPrereleaseVersions = parent.IncludePrerelease;
 			packageOperations = project.GetInstallPackageOperations(package, installAction);
 		}
 		
@@ -243,6 +252,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			IPackageManagementProject project = GetSingleProjectSelected();
 			ProcessPackageOperationsAction action = CreateInstallPackageAction(project);
+			action.AllowPrereleaseVersions = parent.IncludePrerelease;
 			action.Package = package;
 			action.Operations = packageOperations;
 			actionRunner.Run(action);
@@ -355,6 +365,7 @@ namespace ICSharpCode.PackageManagement
 			foreach (IPackageManagementSelectedProject selectedProject in selectedProjects) {
 				if (selectedProject.IsSelected) {
 					ProcessPackageAction action = CreateInstallPackageAction(selectedProject);
+					action.AllowPrereleaseVersions = parent.IncludePrerelease;
 					actions.Add(action);
 				}
 			}
@@ -402,7 +413,7 @@ namespace ICSharpCode.PackageManagement
 		void RunActionsIfAnyExist(IList<ProcessPackageAction> actions)
 		{
 			if (actions.Any()) {
-				actionRunner.Run(actions);			
+				actionRunner.Run(actions);
 			}
 		}
 		
@@ -410,7 +421,9 @@ namespace ICSharpCode.PackageManagement
 		{
 			IPackageManagementProject project = selectedProject.Project;
 			project.Logger = logger;
-			IEnumerable<PackageOperation> operations = project.GetInstallPackageOperations(package, project.CreateInstallPackageAction());
+			InstallPackageAction installAction = project.CreateInstallPackageAction();
+			installAction.AllowPrereleaseVersions = parent.IncludePrerelease;
+			IEnumerable<PackageOperation> operations = project.GetInstallPackageOperations(package, installAction);
 			return GetPackagesRequiringLicenseAcceptance(operations);
 		}
 		

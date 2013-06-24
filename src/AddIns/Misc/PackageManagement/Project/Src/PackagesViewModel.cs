@@ -13,7 +13,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public abstract class PackagesViewModel : ViewModelBase<PackagesViewModel>, IDisposable
+	public abstract class PackagesViewModel : ViewModelBase<PackagesViewModel>, IDisposable, IPackageViewModelParent
 	{
 		Pages pages = new Pages();
 		
@@ -22,7 +22,8 @@ namespace ICSharpCode.PackageManagement
 		ITaskFactory taskFactory;
 		IEnumerable<IPackage> allPackages;
 		ITask<PackagesForSelectedPageResult> task;
-
+		bool includePrerelease;
+		
 		public PackagesViewModel(
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageViewModelFactory packageViewModelFactory,
@@ -44,12 +45,14 @@ namespace ICSharpCode.PackageManagement
 			ShowPreviousPageCommand = new DelegateCommand(param => ShowPreviousPage());
 			ShowPageCommand = new DelegateCommand(param => ExecuteShowPageCommand(param));
 			SearchCommand = new DelegateCommand(param => Search());
+			UpdateAllPackagesCommand = new DelegateCommand(param => UpdateAllPackages());
 		}
 		
 		public ICommand ShowNextPageCommand { get; private set; }
 		public ICommand ShowPreviousPageCommand { get; private set; }
 		public ICommand ShowPageCommand { get; private set; }
 		public ICommand SearchCommand { get; private set; }
+		public ICommand UpdateAllPackagesCommand { get; private set; }
 		
 		public void Dispose()
 		{
@@ -265,7 +268,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			var repository = registeredPackageRepositories.ActiveRepository;
 			var packageFromRepository = new PackageFromRepository(package, repository);
-			return packageViewModelFactory.CreatePackageViewModel(packageFromRepository);
+			return packageViewModelFactory.CreatePackageViewModel(this, packageFromRepository);
 		}
 		
 		public int SelectedPageNumber {
@@ -281,7 +284,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public int PageSize {
 			get { return pages.PageSize; }
-			set { pages.PageSize = value;  }
+			set { pages.PageSize = value; }
 		}
 		
 		public bool IsPaged {
@@ -361,5 +364,59 @@ namespace ICSharpCode.PackageManagement
 				}
 			}
 		}
+		
+		public bool ShowUpdateAllPackages { get; set; }
+		
+		public bool IsUpdateAllPackagesEnabled {
+			get {
+				return ShowUpdateAllPackages && (TotalItems > 1);
+			}
+		}
+		
+		void UpdateAllPackages()
+		{
+			try {
+				packageViewModelFactory.PackageManagementEvents.OnPackageOperationsStarting();
+				TryUpdatingAllPackages();
+			} catch (Exception ex) {
+				ReportError(ex);
+				LogError(ex);
+			}
+		}
+		
+		void LogError(Exception ex)
+		{
+			packageViewModelFactory
+				.Logger
+				.Log(MessageLevel.Error, ex.ToString());
+		}
+		
+		void ReportError(Exception ex)
+		{
+			packageViewModelFactory
+				.PackageManagementEvents
+				.OnPackageOperationError(ex);
+		}
+		
+		protected virtual void TryUpdatingAllPackages()
+		{
+		}
+		
+		protected IPackageActionRunner ActionRunner {
+			get { return packageViewModelFactory.PackageActionRunner; }
+		}
+		
+		public bool IncludePrerelease {
+			get { return includePrerelease; }
+			set {
+				if (includePrerelease != value) {
+					includePrerelease = value;
+					ReadPackages();
+					OnPropertyChanged(null);
+				}
+			}
+		}
+		
+		public bool ShowPrerelease { get; set; }
 	}
 }

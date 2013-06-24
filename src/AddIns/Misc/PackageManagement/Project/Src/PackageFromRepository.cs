@@ -174,5 +174,13 @@ namespace ICSharpCode.PackageManagement
 		{
 			return package.ToString();
 		}
+		
+		public ICollection<PackageReferenceSet> PackageAssemblyReferences {
+			get { return package.PackageAssemblyReferences; }
+		}
+		
+		public Version MinClientVersion {
+			get { return package.MinClientVersion; }
+		}
 	}
 }

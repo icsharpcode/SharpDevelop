@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.PackageManagement.Scripting;
+using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -41,6 +42,17 @@ namespace ICSharpCode.PackageManagement
 			resetPowerShellWorkingDirectory = new ResetPowerShellWorkingDirectoryOnSolutionClosed(projectService, ConsoleHost);
 			var consolePackageActionRunner = new ConsolePackageActionRunner(ConsoleHost, packageActionsToRun);
 			packageActionRunner = new PackageActionRunner(consolePackageActionRunner, packageManagementEvents);
+			
+			InitializeCredentialProvider();
+		}
+		
+		static void InitializeCredentialProvider()
+		{
+			ISettings settings = Settings.LoadDefaultSettings(null);
+			var packageSourceProvider = new PackageSourceProvider(settings);
+			var credentialProvider = new SettingsCredentialProvider(new SharpDevelopCredentialProvider(), packageSourceProvider);
+			
+			HttpClient.DefaultCredentialProvider = credentialProvider;
 		}
 		
 		public static PackageManagementOptions Options {

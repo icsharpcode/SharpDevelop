@@ -31,7 +31,12 @@ namespace PackageManagement.Tests
 		{
 			packageManagementEvents.OnParentPackageUninstalled(new FakePackage("Test"));
 		}
-
+		
+		void RaiseOnParentPackagesUpdatedEvent()
+		{
+			packageManagementEvents.OnParentPackagesUpdated(new FakePackage[0]);
+		}
+		
 		[Test]
 		public void OnParentPackageInstalled_EventFires_ProjectBrowserIsRefreshed()
 		{
@@ -46,6 +51,16 @@ namespace PackageManagement.Tests
 		{
 			CreateProjectBrowserRefresher();
 			RaiseOnParentPackageUninstalledEvent();
+			
+			Assert.IsTrue(fakeProjectService.IsRefreshProjectBrowserCalled);
+		}
+		
+		[Test]
+		public void OnParentPackagesUpdated_EventFires_ProjectBrowserIsRefreshed()
+		{
+			CreateProjectBrowserRefresher();
+			
+			RaiseOnParentPackagesUpdatedEvent();
 			
 			Assert.IsTrue(fakeProjectService.IsRefreshProjectBrowserCalled);
 		}

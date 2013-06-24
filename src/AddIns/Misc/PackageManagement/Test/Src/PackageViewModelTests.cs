@@ -10,6 +10,7 @@ using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests
 {
@@ -22,11 +23,11 @@ namespace PackageManagement.Tests
 		FakePackageManagementEvents fakePackageManagementEvents;
 		ExceptionThrowingPackageManagementSolution exceptionThrowingSolution;
 		ExceptionThrowingPackageManagementProject exceptionThrowingProject;
-		FakeInstallPackageAction fakeInstallPackageAction;
 		FakeUninstallPackageAction fakeUninstallPackageAction;
 		FakeLogger fakeLogger;
 		FakePackageActionRunner fakeActionRunner;
 		List<FakeSelectedProject> fakeSelectedProjects;
+		IPackageViewModelParent viewModelParent;
 		
 		void CreateFakeSolution()
 		{
@@ -56,12 +57,12 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModel(FakePackageManagementSolution solution)
 		{
-			viewModel = new TestablePackageViewModel(solution);
+			viewModelParent = MockRepository.GenerateStub<IPackageViewModelParent>();
+			viewModel = new TestablePackageViewModel(viewModelParent, solution);
 			fakePackage = viewModel.FakePackage;
 			this.fakeSolution = solution;
 			fakePackageManagementEvents = viewModel.FakePackageManagementEvents;
 			fakeLogger = viewModel.FakeLogger;
-			fakeInstallPackageAction = solution.FakeProjectToReturnFromGetProject.FakeInstallPackageAction;
 			fakeUninstallPackageAction = solution.FakeProjectToReturnFromGetProject.FakeUninstallPackageAction;
 			fakeActionRunner = viewModel.FakeActionRunner;
 		}
@@ -147,6 +148,11 @@ namespace PackageManagement.Tests
 			get { return fakeSelectedProjects[1]; }
 		}
 		
+		void ParentAllowsPrereleasePackages()
+		{
+			viewModelParent.Stub(parent => parent.IncludePrerelease).Return(true);
+		}
+		
 		[Test]
 		public void AddPackageCommand_CommandExecuted_InstallsPackage()
 		{
@@ -154,8 +160,9 @@ namespace PackageManagement.Tests
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			
 			viewModel.AddPackageCommand.Execute(null);
-						
-			Assert.AreEqual(fakePackage, fakeInstallPackageAction.Package);
+			
+			IPackage package = fakeSolution.FakeProjectToReturnFromGetProject.LastInstallPackageCreated.Package;
+			Assert.AreEqual(fakePackage, package);
 		}
 		
 		[Test]
@@ -177,9 +184,9 @@ namespace PackageManagement.Tests
 			
 			viewModel.AddPackage();
 			
-			ProcessPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
-			
-			Assert.AreEqual(fakeInstallPackageAction, actionExecuted);
+			IPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
+			IPackageAction action = fakeSolution.FakeProjectToReturnFromGetProject.LastInstallPackageCreated;
+			Assert.AreEqual(action, actionExecuted);
 		}
 		
 		[Test]
@@ -193,7 +200,8 @@ namespace PackageManagement.Tests
 				new PackageOperation(fakePackage, PackageAction.Install)
 			};
 			
-			CollectionAssert.AreEqual(expectedOperations, fakeInstallPackageAction.Operations);
+			FakeInstallPackageAction action = fakeSolution.FakeProjectToReturnFromGetProject.LastInstallPackageCreated;
+			CollectionAssert.AreEqual(expectedOperations, action.Operations);
 		}
 		
 		[Test]
@@ -215,7 +223,8 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			IPackage packagePassedToInstallPackageWhenPropertyNameChanged = null;
 			viewModel.PropertyChanged += (sender, e) => {
-				packagePassedToInstallPackageWhenPropertyNameChanged = fakeInstallPackageAction.Package;
+				packagePassedToInstallPackageWhenPropertyNameChanged = 
+					fakeSolution.FakeProjectToReturnFromGetProject.LastInstallPackageCreated.Package;
 			};
 			viewModel.AddPackage();
 			
@@ -481,7 +490,8 @@ namespace PackageManagement.Tests
 			
 			viewModel.AddPackage();
 			
-			Assert.IsFalse(fakeInstallPackageAction.IsExecuteCalled);
+			FakeInstallPackageAction action = fakeSolution.FakeProjectToReturnFromGetProject.LastInstallPackageCreated;
+			Assert.IsFalse(action.IsExecuteCalled);
 		}
 		
 		[Test]
@@ -733,13 +743,28 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void AddPackage_ParentHasIncludePrereleaseSetToTrueWhenInstalling_PrereleaseVersionsAllowedWhenCheckingForPackageOperations()
+		{
+			CreateViewModel();
+			ParentAllowsPrereleasePackages();
+			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
+			viewModel.AddPackage();
+			
+			bool result = fakeSolution
+				.FakeProjectToReturnFromGetProject
+				.AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
 		public void RemovePackage_PackageRemovedSuccessfully_PackageIsRemoved()
 		{
 			CreateViewModel();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			viewModel.RemovePackage();
 			
-			ProcessPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
+			IPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
 			
 			Assert.AreEqual(fakeUninstallPackageAction, actionExecuted);
 		}
@@ -898,16 +923,46 @@ namespace PackageManagement.Tests
 			CreateTwoFakeSelectedProjects();
 			FakeSelectedProject project = fakeSelectedProjects[1];
 			project.IsSelected = true;
-			InstallPackageAction expectedAction = project.FakeInstallPackageAction;
 			
 			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
 			
-			List<ProcessPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
+			List<IPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
 			InstallPackageAction action = actions[0] as InstallPackageAction;
-			
+			InstallPackageAction expectedAction = project.FakeProject.LastInstallPackageCreated;
 			Assert.AreEqual(1, actions.Count);
 			Assert.AreEqual(fakePackage, action.Package);
 			Assert.AreEqual(expectedAction, action);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_ParentAllowsPrereleasePackagesAndOneProjectIsSelected_OneProjectIsInstalledAllowingPrereleasePackages()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			ParentAllowsPrereleasePackages();
+			FakeSelectedProject project = fakeSelectedProjects[1];
+			project.IsSelected = true;
+			
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			List<IPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
+			InstallPackageAction action = actions[0] as InstallPackageAction;
+			Assert.IsTrue(action.AllowPrereleaseVersions);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_ParentDoesNotAllowPrereleasePackagesAndOneProjectIsSelected_OneProjectIsInstalledNotAllowingPrereleasePackages()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			FakeSelectedProject project = fakeSelectedProjects[1];
+			project.IsSelected = true;
+			
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			List<IPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
+			InstallPackageAction action = actions[0] as InstallPackageAction;
+			Assert.IsFalse(action.AllowPrereleaseVersions);
 		}
 		
 		[Test]
@@ -984,6 +1039,25 @@ namespace PackageManagement.Tests
 			bool allowed = selectedProject.FakeProject.AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
 			
 			Assert.IsFalse(allowed);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_ParentAllowsPrereleasesAndFirstProjectIsSelectedAndPackageOperationRequiresLicenseAcceptance_PrereleaseVersionsAreAllowedInPackageOperations()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			FakeSelectedProject selectedProject = fakeSelectedProjects[0];
+			selectedProject.IsSelected = true;
+			FakePackageOperation operation = selectedProject.AddFakeInstallPackageOperation();
+			operation.FakePackage.RequireLicenseAcceptance = true;
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = false;
+			ParentAllowsPrereleasePackages();
+			
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			bool allowed = selectedProject.FakeProject.AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
+			
+			Assert.IsTrue(allowed);
 		}
 		
 		[Test]
@@ -1110,8 +1184,8 @@ namespace PackageManagement.Tests
 				
 			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
 			
-			InstallPackageAction expectedAction = FirstFakeSelectedProject.FakeInstallPackageAction;
-			List<ProcessPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
+			InstallPackageAction expectedAction = FirstFakeSelectedProject.FakeProject.LastInstallPackageCreated;
+			List<IPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
 			InstallPackageAction action = actions[0] as InstallPackageAction;
 			
 			Assert.AreEqual(1, actions.Count);
@@ -1224,12 +1298,12 @@ namespace PackageManagement.Tests
 			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
 			UserAcceptsProjectSelection();
 			fakePackageManagementEvents.ProjectsToSelect.Add("Project A");
+			
 			viewModel.ManagePackage();
 			
-			List<ProcessPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
-			ProcessPackageAction action = actions[0];
+			List<IPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
+			var action = actions[0] as ProcessPackageAction;
 			FakePackageManagementProject expectedProject = fakeSolution.FakeProjectsToReturnFromGetProject["Project A"];
-			
 			Assert.AreEqual(expectedProject, action.Project);
 		}
 		
@@ -1268,6 +1342,31 @@ namespace PackageManagement.Tests
 			string summary = viewModel.Summary;
 			
 			Assert.AreEqual("Expected description", summary);
+		}
+		
+		[Test]
+		public void AddPackage_ParentAllowsPrereleasePackages_PackageIsInstalledAllowingPrereleasePackages()
+		{
+			CreateViewModel();
+			ParentAllowsPrereleasePackages();
+			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
+			
+			viewModel.AddPackage();
+			
+			var action = fakeActionRunner.ActionPassedToRun as InstallPackageAction;
+			Assert.IsTrue(action.AllowPrereleaseVersions);
+		}
+		
+		[Test]
+		public void AddPackage_ParentDoesNotAllowPrereleasePackages_PackageIsInstalledNotAllowingPrereleasePackages()
+		{
+			CreateViewModel();
+			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
+			
+			viewModel.AddPackage();
+			
+			var action = fakeActionRunner.ActionPassedToRun as InstallPackageAction;
+			Assert.IsFalse(action.AllowPrereleaseVersions);
 		}
 	}
 }

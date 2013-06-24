@@ -13,5 +13,11 @@ namespace ICSharpCode.PackageManagement
 			IPackageRepository sourceRepository,
 			ILogger logger,
 			InstallPackageAction installAction);
+		
+		IPackageOperationResolver CreateUpdatePackageOperationResolver(
+			IPackageRepository localRepository,
+			IPackageRepository sourceRepository,
+			ILogger logger,
+			IUpdatePackageSettings settings);
 	}
 }

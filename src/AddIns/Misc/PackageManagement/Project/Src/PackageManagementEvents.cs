@@ -78,5 +78,26 @@ namespace ICSharpCode.PackageManagement
 			}
 			return true;
 		}
+		
+		public event EventHandler<ResolveFileConflictEventArgs> ResolveFileConflict;
+		
+		public FileConflictResolution OnResolveFileConflict(string message)
+		{
+			if (ResolveFileConflict != null) {
+				var eventArgs = new ResolveFileConflictEventArgs(message);
+				ResolveFileConflict(this, eventArgs);
+				return eventArgs.Resolution;
+			}
+			return FileConflictResolution.IgnoreAll;
+		}
+		
+		public event EventHandler<ParentPackagesOperationEventArgs> ParentPackagesUpdated;
+		
+		public void OnParentPackagesUpdated(IEnumerable<IPackage> packages)
+		{
+			if (ParentPackagesUpdated != null) {
+				ParentPackagesUpdated(this, new ParentPackagesOperationEventArgs(packages));
+			}
+		}
 	}
 }

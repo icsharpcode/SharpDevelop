@@ -147,11 +147,21 @@
     <Compile Include="Src\EnvDTE\TextDocument.cs" />
     <Compile Include="Src\EnvDTE\TextPoint.cs" />
     <Compile Include="Src\EnvDTE\Window.cs" />
+    <Compile Include="Src\FileConflictResolver.cs" />
+    <Compile Include="Src\FileConflictView.xaml.cs">
+      <DependentUpon>FileConflictView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\FileConflictViewModel.cs" />
     <Compile Include="Src\IClassKindUpdater.cs" />
     <Compile Include="Src\IDocumentNamespaceCreator.cs" />
+    <Compile Include="Src\IPackageViewModelParent.cs" />
+    <Compile Include="Src\IUpdatePackagesAction.cs" />
     <Compile Include="Src\IPackageExtensions.cs" />
+    <Compile Include="Src\IPackageAction.cs" />
     <Compile Include="Src\IProjectBuilder.cs" />
     <Compile Include="Src\IProjectContentExtensions.cs" />
+    <Compile Include="Src\IUpdatePackageSettings.cs" />
     <Compile Include="Src\IVirtualMethodUpdater.cs" />
     <Compile Include="Src\IProjectBrowserUpdater.cs" />
     <Compile Include="Src\IRefactoringDocumentView.cs" />
@@ -223,7 +233,25 @@
     <Compile Include="Src\MSBuildBasedProjectExtensions.cs" />
     <Compile Include="Src\PackageLicenseViewModel.cs" />
     <Compile Include="Src\PackageManagementServiceProvider.cs" />
+    <Compile Include="Src\ParentPackagesOperationEventArgs.cs" />
     <Compile Include="Src\ProjectBuilder.cs" />
+    <Compile Include="Src\ProjectRootElementExtensions.cs" />
+    <Compile Include="Src\ReducedPackageOperations.cs" />
+    <Compile Include="Src\ResolveFileConflictEventArgs.cs" />
+    <Compile Include="Src\Scripting\ConsoleHostFileConflictResolver.cs" />
+    <Compile Include="Src\Scripting\FileConflictAction.cs" />
+    <Compile Include="Src\Scripting\GlobalMSBuildProjectCollection.cs" />
+    <Compile Include="Src\Scripting\IConsoleHostFileConflictResolver.cs" />
+    <Compile Include="Src\Scripting\IGlobalMSBuildProjectCollection.cs" />
+    <Compile Include="Src\Scripting\MSBuildProjectImportsMerger.cs" />
+    <Compile Include="Src\Scripting\MSBuildProjectImportsMergeResult.cs" />
+    <Compile Include="Src\Scripting\NullGlobalMSBuildProjectCollection.cs" />
+    <Compile Include="Src\Scripting\RunAllProjectPackageScriptsAction.cs" />
+    <Compile Include="Src\ServiceWithWorkbenchOwner.cs" />
+    <Compile Include="Src\SharpDevelopCredentialProvider.cs" />
+    <Compile Include="Src\UpdatePackagesAction.cs" />
+    <Compile Include="Src\UpdatePackagesActionFactory.cs" />
+    <Compile Include="Src\UpdateSolutionPackagesAction.cs" />
     <Compile Include="Src\VirtualMethodUpdater.cs" />
     <Compile Include="Src\NewProjectsCreated.cs" />
     <Compile Include="Src\OpenMSBuildProjects.cs" />
@@ -478,6 +506,7 @@
     <Compile Include="Src\VisualStudio\VsSolution.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\FileConflictView.xaml" />
     <Page Include="Src\ManagePackagesView.xaml" />
     <Page Include="Src\LicenseAcceptanceView.xaml" />
     <Page Include="Src\PackageManagementOptionsView.xaml" />

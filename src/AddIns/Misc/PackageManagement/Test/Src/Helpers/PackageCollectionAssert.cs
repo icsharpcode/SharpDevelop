@@ -33,7 +33,7 @@ namespace PackageManagement.Tests.Helpers
 			var expectedPackagesAsList = new List<IPackage>(expectedPackages);
 			var actualPackagesAsList = new List<IPackage>(actualPackages);
 			
-			CollectionAssert.AreEqual(expectedPackagesAsList, actualPackagesAsList);		
+			CollectionAssert.AreEqual(expectedPackagesAsList, actualPackagesAsList);
 		}
 	}
 }
