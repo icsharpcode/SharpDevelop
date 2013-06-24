@@ -914,6 +914,13 @@ static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.Stat
 			              @"var xml = new XElement(""A"", ""\"""");");
 		}
 		
+
+        [Test]
+        public void LinqQueryWhereSelect()
+        {
+            TestStatement(@"Dim value = From value In values Where value = ""someValue"" Select value",
+                          @"var value = from value in values where value == ""someValue"" select value;");
+        }
 		[Test]
 		public void SD2_1500a()
 		{

@@ -3187,9 +3187,22 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			return selectClause.Projection.AcceptVisitor(this, data);
 		}
-		
-		public override object TrackedVisitQueryExpressionWhereClause(QueryExpressionWhereClause whereClause, object data)
+
+        public override object TrackedVisitQueryExpressionSelectVBClause(QueryExpressionSelectVBClause queryExpressionSelectVBClause, object data)
+        {
+            outputFormatter.Space();
+            outputFormatter.PrintToken(Tokens.Select);
+            outputFormatter.Space();
+            foreach (var v in queryExpressionSelectVBClause.Variables)
+            {
+                v.AcceptVisitor(this, data);
+            }
+            return null;
+        }
+
+	    public override object TrackedVisitQueryExpressionWhereClause(QueryExpressionWhereClause whereClause, object data)
 		{
+            outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Where);
 			outputFormatter.Space();
 			return whereClause.Condition.AcceptVisitor(this, data);
