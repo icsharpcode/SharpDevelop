@@ -28,7 +28,7 @@ internal static class RevisionClass
 {
 	public const string Major = "4";
 	public const string Minor = "3";
-	public const string Build = "1";
+	public const string Build = "2";
 	public const string Revision = "$INSERTREVISION$";
 	public const string VersionName = null;	// "" is not valid for no version name, you have to use null if you don't want a version name (eg "Beta 1")
 	
