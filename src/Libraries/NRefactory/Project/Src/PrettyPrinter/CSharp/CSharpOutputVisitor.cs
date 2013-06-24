@@ -2403,6 +2403,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 
         public override object TrackedVisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data)
         {
+            var parentAsAssignment = xmlMemberAccessExpression.Parent as AssignmentExpression;
+            var xmlMemberAccessExpressionOnLeftOfAssignment = parentAsAssignment != null && parentAsAssignment.Left == xmlMemberAccessExpression;
+
+            // only output identifier expression if we are not overriding assignment with method call
+            if(!(xmlMemberAccessExpression.AxisType == XmlAxisType.Attribute && xmlMemberAccessExpressionOnLeftOfAssignment))
                 xmlMemberAccessExpression.TargetObject.AcceptVisitor(this, data);
             
             switch (xmlMemberAccessExpression.AxisType)
@@ -2414,10 +2419,22 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
                     outputFormatter.PrintText("\")");
                     break;
                 case XmlAxisType.Attribute:
+                    if (!xmlMemberAccessExpressionOnLeftOfAssignment)
+                    {
                         outputFormatter.PrintToken(Tokens.Dot);
                         outputFormatter.PrintText("Attribute(\"");
                         outputFormatter.PrintText(xmlMemberAccessExpression.Identifier);
                         outputFormatter.PrintText("\").Value");
+                    }
+                    else
+                    {
+                        // we need to convert assignment to method call
+                        return AstBuilder.ExpressionBuilder.Call(
+                            xmlMemberAccessExpression.TargetObject, 
+                            "SetAttributeValue", 
+                            new PrimitiveExpression(xmlMemberAccessExpression.Identifier), 
+                            parentAsAssignment.Right);
+                    }
                     break;
                 case XmlAxisType.Descendents:
                     outputFormatter.PrintToken(Tokens.Dot);
@@ -2502,7 +2519,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
-			TrackVisit(assignmentExpression.Left, data);
+            var overrideExpression = TrackVisit(assignmentExpression.Left, data) as InvocationExpression;
+            if (overrideExpression != null)
+            {
+                TrackVisit(overrideExpression, data);
+                return null;
+            }
 			if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 				outputFormatter.Space();
 			}
