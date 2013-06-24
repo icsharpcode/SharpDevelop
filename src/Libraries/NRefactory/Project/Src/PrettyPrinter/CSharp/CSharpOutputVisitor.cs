@@ -2400,7 +2400,37 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}
-		
+
+        public override object TrackedVisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data)
+        {
+                xmlMemberAccessExpression.TargetObject.AcceptVisitor(this, data);
+            
+            switch (xmlMemberAccessExpression.AxisType)
+            {
+                case XmlAxisType.Element:
+                    outputFormatter.PrintToken(Tokens.Dot);
+                    outputFormatter.PrintText("Elements(\"");
+                    outputFormatter.PrintText(xmlMemberAccessExpression.Identifier);
+                    outputFormatter.PrintText("\")");
+                    break;
+                case XmlAxisType.Attribute:
+                        outputFormatter.PrintToken(Tokens.Dot);
+                        outputFormatter.PrintText("Attribute(\"");
+                        outputFormatter.PrintText(xmlMemberAccessExpression.Identifier);
+                        outputFormatter.PrintText("\").Value");
+                    break;
+                case XmlAxisType.Descendents:
+                    outputFormatter.PrintToken(Tokens.Dot);
+                    outputFormatter.PrintText("Descendants(\"");
+                    outputFormatter.PrintText(xmlMemberAccessExpression.Identifier);
+                    outputFormatter.PrintText("\")");
+                    break;
+                default:
+                    throw new Exception("Invalid value for XmlAxisType");
+            }
+            return null;
+        }
+
 		public override object TrackedVisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			outputFormatter.PrintIdentifier(identifierExpression.Identifier);

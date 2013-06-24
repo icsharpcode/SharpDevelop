@@ -916,6 +916,26 @@ static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.Stat
 		
 
         [Test]
+        public void XmlLINQDescendants()
+        {
+            TestStatement(@"Dim element = someXml...<somename>",
+                          @"var element = someXml.Descendants(""somename"");");
+        }
+        [Test]
+        public void XmlLINQElements()
+        {
+            TestStatement(@"Dim element = someXml.<somename>",
+                          @"var element = someXml.Elements(""somename"");");
+        }
+
+        [Test]
+        public void XmlLINQAttribute()
+        {
+            TestStatement(@"Dim value = someXml.@attr",
+                          @"var value = someXml.Attribute(""attr"").Value;");
+        }
+
+        [Test]
         public void LinqQueryWhereSelect()
         {
             TestStatement(@"Dim value = From value In values Where value = ""someValue"" Select value",
