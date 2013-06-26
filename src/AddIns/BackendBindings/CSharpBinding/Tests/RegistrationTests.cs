@@ -23,6 +23,7 @@ namespace CSharpBinding.Tests
 		Type[] exceptions = {
 			typeof(MultipleEnumerationIssue), // disabled due to https://github.com/icsharpcode/NRefactory/issues/123
 			typeof(RedundantAssignmentIssue), // disabled due to https://github.com/icsharpcode/NRefactory/issues/123
+			typeof(RedundantTypeCastIssue), // disabled due to plenty of false positives (e.g. when cast is necessary for overload resolution)
 		};
 		
 		Assembly NRCSharp = typeof(ICodeIssueProvider).Assembly;

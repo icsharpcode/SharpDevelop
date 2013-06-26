@@ -1,6 +1,7 @@
 SharpDevelop release process:
 
 [Christoph]:
+ * Ensure GlobalAssemblyInfo.template has the correct version number and no 'beta' marker
  * Update /doc/readme.rtf if necessary
  * Upload files from build server to SourceForge
  * For non-beta releases: Set new release as default on SourceForge

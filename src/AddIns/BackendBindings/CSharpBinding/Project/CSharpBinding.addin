@@ -219,7 +219,6 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantPrivateIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantThisIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantToStringIssue" />
-		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantTypeCastIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantWhereWithPredicateIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ReferenceEqualsCalledWithValueTypeIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ReferenceToStaticMemberViaDerivedTypeIssue" />
