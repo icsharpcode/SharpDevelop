@@ -58,7 +58,7 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 
 					if (runner != null) {
 						runner.RunFinished += delegate {
-							WorkbenchSingleton.SafeThreadCall(() => FileService.OpenFile(outputPath));
+							SD.MainThread.InvokeIfRequired(() => FileService.OpenFile(outputPath));
 						};
 						
 						runner.Run();

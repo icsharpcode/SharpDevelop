@@ -34,15 +34,14 @@ namespace ICSharpCode.Profiler.AddIn
 				if (!File.Exists(path))
 					return;
 				FileService.OpenFile(path);
-				if (!project.ReadOnly) {
+				if (!project.IsReadOnly) {
 					FileProjectItem file = new FileProjectItem(project, ItemType.Content, "ProfilingSessions\\" + Path.GetFileName(path));
 					ProjectService.AddProjectItem(project, file);
 					ProjectBrowserPad.RefreshViewAsync();
 					project.Save();
 				}
 			};
-			
-			WorkbenchSingleton.SafeThreadCall(updater);
+			SD.MainThread.InvokeIfRequired(updater);
 		}
 	}
 }

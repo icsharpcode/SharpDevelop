@@ -222,5 +222,14 @@ namespace ICSharpCode.UnitTesting
 			}
 			base.OnNestedTestsInitialized();
 		}
+		
+		public override IEnumerable<string> GetUnitTestNames()
+		{
+			foreach (var test in base.NestedTests) {
+				foreach (var name in test.ParentProject.GetUnitTestNames()) {
+					yield return name;
+				}
+			}
+		}
 	}
 }

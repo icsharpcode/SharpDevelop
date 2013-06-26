@@ -10,6 +10,7 @@ using ICSharpCode.Core.Presentation;
 using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Profiler.AddIn.Views
 {

@@ -95,5 +95,10 @@ namespace ICSharpCode.MachineSpecifications
 			IType type = compilation.MainAssembly.GetTypeDefinition(fullTypeName);
 			return type.GetDefinition();
 		}
+		
+		public override IEnumerable<string> GetUnitTestNames()
+		{
+			return NestedTestCollection.SelectMany(t => t.GetUnitTestNames());
+		}
 	}
 }

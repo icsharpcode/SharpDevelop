@@ -73,6 +73,15 @@ namespace ICSharpCode.UnitTesting
 				return Enumerable.Empty<ITest>();
 		}
 		
+		public override IEnumerable<string> GetUnitTestNames()
+		{
+			foreach (var project in changeListeners.Select(l => l.testProject)) {
+				foreach (var name in project.GetUnitTestNames()) {
+					yield return name;
+				}
+			}
+		}
+		
 		/// <summary>
 		/// Creates a TestProject for an IProject.
 		/// This class takes care of changes in the test framework and will recreate the testProject

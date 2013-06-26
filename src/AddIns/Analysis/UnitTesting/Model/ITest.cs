@@ -39,6 +39,11 @@ namespace ICSharpCode.UnitTesting
 		string DisplayName { get; }
 		
 		/// <summary>
+		/// Gets all the names of the unit tests contained in this node.
+		/// </summary>
+		IEnumerable<string> GetUnitTestNames();
+		
+		/// <summary>
 		/// Raised when the <see cref="Name"/> property changes.
 		/// </summary>
 		event EventHandler DisplayNameChanged;

@@ -52,7 +52,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 				}
 			}
 			
-			this.dummyTab.Header = new Image { Source = PresentationResourceService.GetImage("Icons.16x16.NewDocumentIcon").Source, Height = 16, Width = 16 };
+			this.dummyTab.Header = new Image { Source = SD.ResourceService.GetImage("Icons.16x16.NewDocumentIcon").ImageSource, Height = 16, Width = 16 };
 			
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.SelectAll, ExecuteSelectAll, CanExecuteSelectAll));
 			
@@ -104,16 +104,14 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		void UpdateErrorList(IEnumerable<CompilerError> errors)
 		{
 			Dispatcher.Invoke(
-				(Action)(
-					() => {
-						var tasks = errors.Select(error => new Task(null, error.ErrorText, error.Column, error.Line, (error.IsWarning) ? TaskType.Warning : TaskType.Error)).ToList();
-						if (tasks.Count > 0) {
-							WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
-							TaskService.ClearExceptCommentTasks();
-							TaskService.AddRange(tasks);
-						}
+				(Action)delegate {
+					List<SDTask> tasks = errors.Select(error => new SDTask(null, error.ErrorText, error.Column, error.Line, (error.IsWarning) ? TaskType.Warning : TaskType.Error)).ToList();
+					if (tasks.Count > 0) {
+						SD.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+						TaskService.ClearExceptCommentTasks();
+						TaskService.AddRange(tasks);
 					}
-				)
+				}
 			);
 		}
 		

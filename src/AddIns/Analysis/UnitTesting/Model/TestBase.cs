@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
@@ -21,6 +22,8 @@ namespace ICSharpCode.UnitTesting
 		public virtual event EventHandler DisplayNameChanged { add {} remove {} }
 		
 		public abstract ITestProject ParentProject { get; }
+		
+		public abstract IEnumerable<string> GetUnitTestNames();
 		
 		#region Result
 		TestResultType result;

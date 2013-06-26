@@ -135,5 +135,10 @@ namespace ICSharpCode.MachineSpecifications
 			return typeDefinition.Attributes.Any(
 				attribute => MSpecBehaviorsAttributeFQName.Equals(attribute.AttributeType.FullName));
 		}
+		
+		public override IEnumerable<string> GetUnitTestNames()
+		{
+			return NestedTestCollection.SelectMany(c => c.GetUnitTestNames());
+		}
 	}
 }
