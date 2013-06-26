@@ -20,7 +20,7 @@
 	<Project language="VBNet">
 		<PropertyGroup>
 			<OutputType>WinExe</OutputType>
-			<MonoTargetFrameworkVersion>v2.0</MonoTargetFrameworkVersion>
+			<MonoTargetFrameworkVersion>v4.0</MonoTargetFrameworkVersion>
 			<StartupObject>${StandardNamespace}.MainWindow</StartupObject>
 		</PropertyGroup>
 		

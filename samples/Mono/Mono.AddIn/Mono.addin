@@ -52,6 +52,7 @@
 				<Or>
 					<Condition name="CompareProjectProperty" property="MonoTargetFrameworkVersion" equals="v1.1"/>
 					<Condition name="CompareProjectProperty" property="MonoTargetFrameworkVersion" equals="v2.0"/>
+					<Condition name="CompareProjectProperty" property="MonoTargetFrameworkVersion" equals="v4.0"/>
 				</Or>
 				<Or>
 					<Condition name="ProjectActive" activeproject="C#"/>

@@ -1,4 +1,4 @@
-// SharpDevelop samples
+﻿// SharpDevelop samples
 // Copyright (c) 2006, AlphaSierraPapa
 // All rights reserved.
 //
@@ -29,11 +29,18 @@ using System;
 
 namespace Mono.Build.Tasks
 {
-	public enum TargetMonoFrameworkVersion
+	/// <summary>
+	/// MSBuild task for Mono's DMCS.
+	/// </summary>
+	public class Dmcs : MonoCSharpCompilerTask
 	{
-		Version11 = 0,
-		Version20 = 1,
-		Version40 = 2,
-		VersionLatest = 2
+		protected override string ToolName {
+			get { return "Dmcs.exe"; }
+		}
+		
+		protected override string GenerateFullPathToTool()
+		{
+			return MonoToolLocationHelper.GetPathToTool(ToolName);
+		}
 	}
 }

@@ -20,7 +20,7 @@
 	<Project language = "C#">
 		<PropertyGroup>
 			<OutputType>WinExe</OutputType>
-			<MonoTargetFrameworkVersion>v2.0</MonoTargetFrameworkVersion>
+			<MonoTargetFrameworkVersion>v4.0</MonoTargetFrameworkVersion>
 		</PropertyGroup>
 		
 		<Imports clear="True">

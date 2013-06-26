@@ -21,7 +21,7 @@
 	<Project language = "VBNet">
 		<PropertyGroup>
 			<OutputType>Exe</OutputType>
-			<MonoTargetFrameworkVersion>v2.0</MonoTargetFrameworkVersion>
+			<MonoTargetFrameworkVersion>v4.0</MonoTargetFrameworkVersion>
 		</PropertyGroup>
 		
 		<ProjectItems>
