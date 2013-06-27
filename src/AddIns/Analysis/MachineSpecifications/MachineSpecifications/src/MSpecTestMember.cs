@@ -68,10 +68,5 @@ namespace ICSharpCode.MachineSpecifications
 		{
 			return member.DeclaringTypeDefinition.FullName;
 		}
-		
-		public override System.Collections.Generic.IEnumerable<string> GetUnitTestNames()
-		{
-			yield return member.ReflectionName;
-		}
 	}
 }

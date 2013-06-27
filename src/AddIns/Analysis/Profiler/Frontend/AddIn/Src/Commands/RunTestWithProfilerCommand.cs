@@ -20,7 +20,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 			ITestService testService = SD.GetRequiredService<ITestService>();
 			IEnumerable<ITest> tests = TestableCondition.GetTests(testService.OpenSolution, Owner);
 			string path = tests.FirstOrDefault().ParentProject.Project.GetSessionFileName();
-			testService.RunTestsAsync(tests, new TestExecutionOptions { ProcessRunner = new ProfilerProcessRunner(new UnitTestWriter(new ProfilingDataSQLiteWriter(path), tests.SelectMany(t => t.GetUnitTestNames()).ToArray()), new ProfilerOptions()) }).FireAndForget();
+			testService.RunTestsAsync(tests, new TestExecutionOptions { ProcessRunner = new ProfilerProcessRunner(new ProfilingDataSQLiteWriter(path), new ProfilerOptions()) }).FireAndForget();
 		}
 	}
 }

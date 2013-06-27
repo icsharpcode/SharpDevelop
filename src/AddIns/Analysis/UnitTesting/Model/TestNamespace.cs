@@ -51,13 +51,5 @@ namespace ICSharpCode.UnitTesting
 			get { return base.NestedTestCollection; }
 		}
 		
-		public override IEnumerable<string> GetUnitTestNames()
-		{
-			foreach (var test in base.NestedTests) {
-				foreach (var name in test.ParentProject.GetUnitTestNames()) {
-					yield return name;
-				}
-			}
-		}
 	}
 }

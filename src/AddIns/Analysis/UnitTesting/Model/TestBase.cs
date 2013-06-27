@@ -23,8 +23,6 @@ namespace ICSharpCode.UnitTesting
 		
 		public abstract ITestProject ParentProject { get; }
 		
-		public abstract IEnumerable<string> GetUnitTestNames();
-		
 		#region Result
 		TestResultType result;
 		bool useCompositeResultsOfNestedTests;
