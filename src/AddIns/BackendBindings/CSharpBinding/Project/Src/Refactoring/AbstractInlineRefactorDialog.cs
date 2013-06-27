@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,7 +16,6 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop;
 using CSharpBinding.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
 
@@ -25,12 +23,44 @@ namespace CSharpBinding.Refactoring
 {
 	public abstract class AbstractInlineRefactorDialog : GroupBox, IOptionBindingContainer, IActiveElement
 	{
+		private class UndoableInlineDialogCreation : IUndoableOperation
+		{
+			private AbstractInlineRefactorDialog _dialog;
+			
+			public UndoableInlineDialogCreation(AbstractInlineRefactorDialog dialog)
+			{
+				_dialog = dialog;
+			}
+			
+			public void Reset()
+			{
+				// Remove dialog reference
+				_dialog = null;
+			}
+			
+			public void Undo()
+			{
+				if (_dialog != null) {
+					// Close the dialog
+					_dialog.Deactivate();
+					Reset();
+				}
+			}
+			
+			public void Redo()
+			{
+				// We don't react to Redo command here...
+			}
+		}
+		
 		protected ITextAnchor anchor;
 		protected ITextAnchor insertionEndAnchor;
 		protected ITextEditor editor;
 		
 		protected SDRefactoringContext refactoringContext;
 		protected InsertionContext insertionContext;
+		
+		private UndoableInlineDialogCreation undoableCreationOperation;
 		
 		public IInlineUIElement Element { get; set; }
 		
@@ -44,6 +74,16 @@ namespace CSharpBinding.Refactoring
 			this.insertionContext = context;
 			
 			this.Background = SystemColors.ControlBrush;
+			
+			undoableCreationOperation = new UndoableInlineDialogCreation(this);
+		}
+		
+		public IUndoableOperation UndoableCreationOperation
+		{
+			get
+			{
+				return undoableCreationOperation;
+			}
 		}
 		
 		protected virtual void FocusFirstElement()
@@ -127,29 +167,6 @@ namespace CSharpBinding.Refactoring
 		protected virtual void Initialize()
 		{
 			this.refactoringContext = SDRefactoringContext.Create(editor, CancellationToken.None);
-			
-			TextDocument textDocument = editor.Document as TextDocument;
-			if (textDocument != null) {
-				textDocument.UndoStack.PropertyChanged += UndoStackPropertyChanged;
-			}
-		}
-		
-		void UndoStackPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName == "CanRedo") {
-				// Undo command has been triggered?
-				OnUndoTriggered();
-				
-				// Unregister from event, again
-				TextDocument textDocument = editor.Document as TextDocument;
-				if (textDocument != null) {
-					textDocument.UndoStack.PropertyChanged -= UndoStackPropertyChanged;
-				}
-			}
-		}
-		
-		protected virtual void OnUndoTriggered()
-		{
 		}
 		
 		protected virtual void OnInsertionCompleted()
@@ -163,11 +180,6 @@ namespace CSharpBinding.Refactoring
 			if (e.Reason == DeactivateReason.Deleted) {
 				Deactivate();
 				return;
-			}
-			
-			TextDocument textDocument = editor.Document as TextDocument;
-			if (textDocument != null) {
-				textDocument.UndoStack.PropertyChanged -= UndoStackPropertyChanged;
 			}
 			
 			if (e.Reason == DeactivateReason.ReturnPressed)
@@ -190,6 +202,9 @@ namespace CSharpBinding.Refactoring
 			
 			deactivated = true;
 			Element.Remove();
+			
+			// Cut connection with UndoableInlineDialogCreation
+			undoableCreationOperation.Reset();
 			
 			insertionContext.Deactivate(null);
 		}

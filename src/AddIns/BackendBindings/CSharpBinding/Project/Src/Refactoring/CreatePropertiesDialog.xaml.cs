@@ -56,14 +56,6 @@ namespace CSharpBinding.Refactoring
 			SelectAllUnchecked();
 		}
 		
-		protected override void OnUndoTriggered()
-		{
-			base.OnUndoTriggered();
-			
-			// Close this dialog on Undo
-			Deactivate();
-		}
-		
 		static IEnumerable<FieldWrapper> FindFields(IType sourceClass)
 		{
 			int i = 0;
