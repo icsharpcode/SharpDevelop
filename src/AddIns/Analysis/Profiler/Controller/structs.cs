@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
@@ -126,7 +125,7 @@ namespace ICSharpCode.Profiler.Controller
 		public override bool Equals(object obj)
 		{
 			if (obj is TargetProcessPointer) {
-				return ((TargetProcessPointer)obj).pointer.Pointer == this.pointer.Pointer;
+				return ((TargetProcessPointer)obj).pointer.Pointer == pointer.Pointer;
 			}
 			
 			return false;

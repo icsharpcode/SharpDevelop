@@ -4,7 +4,6 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.Profiler.Controller;
-using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.Profiler.AddIn.OptionPanels

@@ -5,11 +5,9 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Profiler.AddIn.Commands

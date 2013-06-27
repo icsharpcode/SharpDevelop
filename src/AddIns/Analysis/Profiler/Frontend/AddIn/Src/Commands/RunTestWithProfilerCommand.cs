@@ -7,9 +7,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Profiler.Controller;
 using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
-using Mono.CSharp.Linq;
 
 namespace ICSharpCode.Profiler.AddIn.Commands
 {

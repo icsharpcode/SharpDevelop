@@ -8,7 +8,6 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Profiler.AddIn.Commands
 {
-	using ICSharpCode.Profiler.Controller;
 	
 	/// <summary>
 	/// Description of RunProject

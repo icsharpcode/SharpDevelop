@@ -91,7 +91,7 @@ namespace X64Converter
 			if (methodDeclaration.Name.EndsWith("32", StringComparison.Ordinal))
 				methodDeclaration.Name = methodDeclaration.Name.Replace("32", "64");
 			else {
-				if (!this.copyAllMembers)
+				if (!copyAllMembers)
 					methodDeclaration.Remove();
 			}
 			return base.VisitMethodDeclaration(methodDeclaration);
@@ -99,28 +99,28 @@ namespace X64Converter
 
 		public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
 		{
-			if (!this.copyAllMembers)
+			if (!copyAllMembers)
 				propertyDeclaration.Remove();
 			return base.VisitPropertyDeclaration(propertyDeclaration);
 		}
 
 		public override object VisitFieldDeclaration(FieldDeclaration fieldDeclaration)
 		{
-			if (!this.copyAllMembers)
+			if (!copyAllMembers)
 				fieldDeclaration.Remove();
 			return base.VisitFieldDeclaration(fieldDeclaration);
 		}
 
 		public override object VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
 		{
-			if (!this.copyAllMembers)
+			if (!copyAllMembers)
 				constructorDeclaration.Remove();
 			return base.VisitConstructorDeclaration(constructorDeclaration);
 		}
 
 		public override object VisitEventDeclaration(EventDeclaration eventDeclaration)
 		{
-			if (!this.copyAllMembers)
+			if (!copyAllMembers)
 				eventDeclaration.Remove();
 			return base.VisitEventDeclaration(eventDeclaration);
 		}
@@ -134,7 +134,7 @@ namespace X64Converter
 
 		public override object VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration)
 		{
-			if (!this.copyAllMembers)
+			if (!copyAllMembers)
 				destructorDeclaration.Remove();
 			return base.VisitDestructorDeclaration(destructorDeclaration);
 		}
@@ -142,7 +142,7 @@ namespace X64Converter
 		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration)
 		{
 			if (typeDeclaration.Name.EndsWith("32", StringComparison.Ordinal)) {
-				this.copyAllMembers = true;
+				copyAllMembers = true;
 				typeDeclaration.Name = typeDeclaration.Name.Replace("32", "64");
 			} else {
 				if (!typeDeclaration.Modifiers.HasFlag(Modifiers.Partial))
@@ -150,7 +150,7 @@ namespace X64Converter
 				else
 					typeDeclaration.Attributes.Clear();
 
-				this.copyAllMembers = false;
+				copyAllMembers = false;
 			}
 			return base.VisitTypeDeclaration(typeDeclaration);
 		}

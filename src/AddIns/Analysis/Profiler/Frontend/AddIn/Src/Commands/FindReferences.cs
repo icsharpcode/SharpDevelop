@@ -3,9 +3,7 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
 

@@ -3,9 +3,8 @@
 
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.Profiler.AddIn.Dialogs;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.Profiler.AddIn.Dialogs;
 
 namespace ICSharpCode.Profiler.AddIn.Commands
 {

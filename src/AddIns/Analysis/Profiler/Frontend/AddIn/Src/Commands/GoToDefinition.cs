@@ -6,7 +6,6 @@ using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.Profiler.AddIn.Commands
 {

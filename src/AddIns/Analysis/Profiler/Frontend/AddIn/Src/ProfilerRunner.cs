@@ -81,7 +81,7 @@ namespace ICSharpCode.Profiler.AddIn
 			try {
 				using (AsynchronousWaitDialog dlg = AsynchronousWaitDialog.ShowWaitDialog(StringParser.Parse("${res:AddIns.Profiler.Messages.PreparingForAnalysis}"), true)) {
 					profiler.Dispose();
-					SD.MainThread.InvokeAsyncAndForget(() => { controlWindow.AllowClose = true; this.controlWindow.Close(); });
+					SD.MainThread.InvokeAsyncAndForget(() => { controlWindow.AllowClose = true; controlWindow.Close(); });
 					if (database != null) {
 						database.WriteTo(writer, progress => {
 						                 	dlg.Progress = progress;
@@ -104,9 +104,9 @@ namespace ICSharpCode.Profiler.AddIn
 		public Process Run()
 		{
 			SD.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
-			this.controlWindow = new ProfilerControlWindow(this);
+			controlWindow = new ProfilerControlWindow(this);
 			Process p = profiler.Start();
-			this.controlWindow.Show();
+			controlWindow.Show();
 			return p;
 		}
 		
@@ -149,7 +149,7 @@ namespace ICSharpCode.Profiler.AddIn
 		}
 		
 		#region MessageView Management
-		static MessageViewCategory profileCategory = null;
+		static MessageViewCategory profileCategory;
 		
 		static void EnsureProfileCategory()
 		{

@@ -62,7 +62,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 
 		void TimeLineRangeChanged(object sender, RangeEventArgs e)
 		{
-			foreach (TabItem item in this.tabView.Items) {
+			foreach (TabItem item in tabView.Items) {
 				if (item != null && item.Content != null)
 					((QueryView)item.Content).SetRange(e.StartIndex, e.EndIndex);
 			}
@@ -76,9 +76,9 @@ namespace ICSharpCode.Profiler.AddIn.Views
 
 		void DoSelectAll()
 		{
-			if (this.timeLine.IsEnabled) {
-				this.timeLine.SelectedStartIndex = 0;
-				this.timeLine.SelectedEndIndex = this.timeLine.Provider.DataSets.Count - 1;
+			if (timeLine.IsEnabled) {
+				timeLine.SelectedStartIndex = 0;
+				timeLine.SelectedEndIndex = timeLine.Provider.DataSets.Count - 1;
 			}
 		}
 		
@@ -90,7 +90,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 
 		void CanDoSelectAll(CanExecuteRoutedEventArgs e)
 		{
-			e.CanExecute = this.timeLine.IsEnabled && this.timeLine.Provider.DataSets.Count > 0;
+			e.CanExecute = timeLine.IsEnabled && timeLine.Provider.DataSets.Count > 0;
 		}
 
 		void CloseButtonClick(object sender, RoutedEventArgs e)
@@ -157,8 +157,8 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			provider.SetProperty("tabs", tabs.CreateSeparatedString());
 			
 			List<string> queryHistory = new List<string>();
-			for (int i = 2; i < this.mnuQueryHistory.Items.Count; i++)
-				queryHistory.Add((this.mnuQueryHistory.Items[i] as MenuItem).Header.ToString() ?? string.Empty);
+			for (int i = 2; i < mnuQueryHistory.Items.Count; i++)
+				queryHistory.Add((mnuQueryHistory.Items[i] as MenuItem).Header.ToString() ?? string.Empty);
 			provider.SetProperty("queryHistory", queryHistory.CreateSeparatedString());
 		}
 
@@ -170,7 +170,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		TabItem CreateTab(string title, string query, bool switchToNewTab)
 		{
 			TabItem newTab = new TabItem();
-			Button closeButton = new Button { Style = this.Resources["CloseButton"] as Style };
+			Button closeButton = new Button { Style = Resources["CloseButton"] as Style };
 			TextBlock header = new TextBlock { Margin = new Thickness(0, 0, 4, 0), MaxWidth = 120, MinWidth = 40 };
 
 			newTab.Header = new StackPanel { Orientation = Orientation.Horizontal, Children = { header, closeButton } };
@@ -182,9 +182,9 @@ namespace ICSharpCode.Profiler.AddIn.Views
 
 			newTab.Content = view = new QueryView();
 
-			view.Provider = this.provider;
+			view.Provider = provider;
 			view.Reporter = new ErrorReporter(UpdateErrorList);
-			view.SetRange(this.timeLine.SelectedStartIndex, this.timeLine.SelectedEndIndex);
+			view.SetRange(timeLine.SelectedStartIndex, timeLine.SelectedEndIndex);
 			
 			view.CurrentQuery = query;
 			view.ShowQueryItems = true;

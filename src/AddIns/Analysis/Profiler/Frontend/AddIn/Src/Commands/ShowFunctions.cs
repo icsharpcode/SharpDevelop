@@ -2,15 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Controls;
 
 using ICSharpCode.Core;
-using ICSharpCode.Profiler.AddIn.Views;
-using ICSharpCode.Profiler.Controller;
 using ICSharpCode.Profiler.Controls;
-using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.Profiler.AddIn.Commands
 {
