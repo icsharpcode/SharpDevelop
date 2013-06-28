@@ -12,6 +12,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.TreeView;
 
 namespace CSharpBinding.Refactoring
@@ -21,12 +22,24 @@ namespace CSharpBinding.Refactoring
 	/// </summary>
 	internal partial class SearchForIssuesDialog : Window
 	{
+		static readonly string RememberSelectionListKey = typeof(SearchForIssuesDialog).FullName + ".SelectedIssues";
+		
 		public SearchForIssuesDialog()
 		{
 			InitializeComponent();
 			FixCheckBox_Unchecked(null, null);
 			treeView.Root = new RootTreeNode(IssueManager.IssueProviders);
 			searchInRBG.SelectedValue = SearchForIssuesTarget.WholeSolution;
+			LoadPreviousSelectionFromSettings();
+		}
+		
+		void LoadPreviousSelectionFromSettings()
+		{
+			var checkedNodes = SD.PropertyService.GetList<string>(RememberSelectionListKey);
+			foreach (BaseTreeNode node in treeView.Root.DescendantsAndSelf().OfType<BaseTreeNode>()) {
+				if (checkedNodes.Contains(node.Key))
+					node.IsChecked = true;
+			}
 		}
 		
 		public SearchForIssuesTarget Target {
@@ -64,7 +77,22 @@ namespace CSharpBinding.Refactoring
 			searchButton.Content = "Search and Fix";
 		}
 		
-		sealed class RootTreeNode : SharpTreeNode
+		void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			var checkedNodes = treeView.Root.DescendantsAndSelf()
+				.OfType<BaseTreeNode>()
+				.Where(n => n.IsChecked == true)
+				.Select(n => n.Key)
+				.ToArray();
+			SD.PropertyService.SetList(RememberSelectionListKey, checkedNodes);
+		}
+		
+		abstract class BaseTreeNode : SharpTreeNode
+		{
+			public abstract string Key { get; }
+		}
+		
+		sealed class RootTreeNode : BaseTreeNode
 		{
 			internal RootTreeNode(IEnumerable<IssueManager.IssueProvider> providers)
 			{
@@ -72,6 +100,10 @@ namespace CSharpBinding.Refactoring
 				                       .GroupBy(p => p.Attribute.Category, (key, g) => new CategoryTreeNode(key, g)));
 				this.IsChecked = false;
 				this.IsExpanded = true;
+			}
+			
+			public override string Key {
+				get { return "__AllIssues"; }
 			}
 			
 			public override object Text {
@@ -83,7 +115,7 @@ namespace CSharpBinding.Refactoring
 			}
 		}
 		
-		sealed class CategoryTreeNode : SharpTreeNode
+		sealed class CategoryTreeNode : BaseTreeNode
 		{
 			readonly string categoryName;
 			
@@ -92,6 +124,10 @@ namespace CSharpBinding.Refactoring
 				this.categoryName = categoryName;
 				this.Children.AddRange(providers.Select(p => new IssueTreeNode(p)));
 				this.IsExpanded = true;
+			}
+			
+			public override string Key {
+				get { return "Category." + categoryName; }
 			}
 			
 			public override object Text {
@@ -103,7 +139,7 @@ namespace CSharpBinding.Refactoring
 			}
 		}
 		
-		sealed class IssueTreeNode : SharpTreeNode
+		sealed class IssueTreeNode : BaseTreeNode
 		{
 			internal readonly IssueManager.IssueProvider Provider;
 			readonly IssueDescriptionAttribute attribute;
@@ -112,6 +148,10 @@ namespace CSharpBinding.Refactoring
 			{
 				this.Provider = provider;
 				this.attribute = provider.Attribute;
+			}
+			
+			public override string Key {
+				get { return "Issue." + Provider.ProviderType.FullName; }
 			}
 			
 			public override bool IsCheckable {
