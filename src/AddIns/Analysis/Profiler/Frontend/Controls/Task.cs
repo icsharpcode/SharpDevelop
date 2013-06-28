@@ -30,7 +30,7 @@ namespace ICSharpCode.Profiler.Controls
 		bool isComplete;
 		Action onCompleteActions;
 		
-		private Task(Action action)
+		Task(Action action)
 		{
 			this.action = action;
 		}

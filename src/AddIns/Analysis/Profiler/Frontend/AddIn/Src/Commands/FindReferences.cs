@@ -3,8 +3,7 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
 
@@ -22,7 +21,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 			if (selectedItem == null)
 				return;
 			
-			IClass c = GetClassFromName(selectedItem.FullyQualifiedClassName);
+			ITypeDefinition c = GetClassFromName(selectedItem.FullyQualifiedClassName);
 			
 			if (c == null)
 				return;
@@ -35,9 +34,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 			string memberName = member.DeclaringType.Name + "." + member.Name;
 			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}"))
 			{
-				FindReferencesAndRenameHelper.ShowAsSearchResults(
-					StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}", new StringTagPair("Name", memberName)),
-					RefactoringService.FindReferences(member, monitor));
+				FindReferencesAndRenameHelper.RunFindReferences(member);
 			}
 		}
 	}

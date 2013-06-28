@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -17,6 +18,8 @@ namespace ICSharpCode.UnitTesting
 		/// The default is <c>false</c>.
 		/// </summary>
 		public bool UseDebugger { get; set; }
+		
+		public IProcessRunner ProcessRunner { get; set; }
 		
 		/// <summary>
 		/// Modifies the ProcessStartInfo before the tests are run.

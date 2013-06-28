@@ -9,12 +9,12 @@ using System.Threading;
 namespace ICSharpCode.Profiler.Interprocess
 {
 	// aliases for WIN32 types
-	using WORD = System.Int16;
-	using DWORD = System.Int32;
-	using ULONG = System.UInt32;
-	using LPVOID = System.IntPtr;
-	using DWORD_PTR = System.IntPtr;
-	using HANDLE = System.IntPtr;
+	using WORD = Int16;
+	using DWORD = Int32;
+	using ULONG = UInt32;
+	using LPVOID = IntPtr;
+	using DWORD_PTR = IntPtr;
+	using HANDLE = IntPtr;
 	
 	/// <summary>
 	/// Represents a memory mapped file.

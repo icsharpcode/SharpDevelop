@@ -47,8 +47,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 		
 		/// <inheritdoc/>
 		public int ProcessorFrequency {
-			get { return this.targetWriter.ProcessorFrequency; }
-			set { this.targetWriter.ProcessorFrequency = value; }
+			get { return targetWriter.ProcessorFrequency; }
+			set { targetWriter.ProcessorFrequency = value; }
 		}
 		
 		/// <inheritdoc/>
@@ -62,13 +62,13 @@ namespace ICSharpCode.Profiler.Controller.Data
 			FindUnitTests(dataSet.RootNode, list);
 			
 			if (list.Count > 0) {
-				this.targetWriter.WriteDataSet(
+				targetWriter.WriteDataSet(
 					new UnitTestDataSet(new UnitTestRootCallTreeNode(list), dataSet.IsFirst)
 				);
 			} else {
 				// proposed fix for http://community.sharpdevelop.net/forums/t/10533.aspx
 				// discuss with Daniel
-				this.targetWriter.WriteDataSet(dataSet);
+				targetWriter.WriteDataSet(dataSet);
 			}
 		}
 		
@@ -90,32 +90,32 @@ namespace ICSharpCode.Profiler.Controller.Data
 		}
 		
 		/// <inheritdoc/>
-		public void WriteMappings(System.Collections.Generic.IEnumerable<NameMapping> mappings)
+		public void WriteMappings(IEnumerable<NameMapping> mappings)
 		{
-			this.targetWriter.WriteMappings(mappings);
+			targetWriter.WriteMappings(mappings);
 		}
 		
 		/// <inheritdoc/>
 		public void Close()
 		{
-			this.targetWriter.Close();
+			targetWriter.Close();
 		}
 		
 		/// <inheritdoc/>
 		public void WritePerformanceCounterData(IEnumerable<PerformanceCounterDescriptor> counters)
 		{
-			this.targetWriter.WritePerformanceCounterData(counters);
+			targetWriter.WritePerformanceCounterData(counters);
 		}
 		
 		/// <inheritdoc/>
 		public void WriteEventData(IEnumerable<EventDataEntry> events)
 		{
-			this.targetWriter.WriteEventData(events);
+			targetWriter.WriteEventData(events);
 		}
 		
 		/// <inheritdoc/>
 		public int DataSetCount {
-			get { return this.targetWriter.DataSetCount; }
+			get { return targetWriter.DataSetCount; }
 		}
 	}
 }

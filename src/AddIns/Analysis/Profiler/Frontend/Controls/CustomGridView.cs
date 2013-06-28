@@ -3,7 +3,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
@@ -41,7 +40,7 @@ namespace ICSharpCode.Profiler.Controls
 		
 		GridViewColumn primaryColumn;
 		
-		private GridViewColumn PrimaryColumn {
+		GridViewColumn PrimaryColumn {
 			get { return primaryColumn; }
 			set {
 				if (primaryColumn != value) {
@@ -153,7 +152,7 @@ namespace ICSharpCode.Profiler.Controls
 			}
 		}
 		
-		protected override System.Windows.Media.Visual GetVisualChild(int index)
+		protected override Visual GetVisualChild(int index)
 		{
 			return uiElements[index];
 		}
