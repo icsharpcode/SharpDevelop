@@ -52,7 +52,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public virtual int CallCount {
 			get {
-				return this.RawCallCount + (this.IsActiveAtStart ? 1 : 0);
+				return RawCallCount + (IsActiveAtStart ? 1 : 0);
 			}
 		}
 		
@@ -61,7 +61,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public virtual bool IsUserCode {
 			get {
-				return this.NameMapping.Id > 0;
+				return NameMapping.Id > 0;
 			}
 		}
 		
@@ -89,7 +89,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public string Name {
 			get {
-				NameMapping name = this.NameMapping;
+				NameMapping name = NameMapping;
 				return name != null ? name.Name : null;
 			}
 		}
@@ -99,7 +99,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public string ReturnType {
 			get {
-				NameMapping name = this.NameMapping;
+				NameMapping name = NameMapping;
 				return name != null ? name.ReturnType : null;
 			}
 		}
@@ -108,7 +108,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// Determines whether this node is a thread node.
 		/// </summary>
 		public virtual bool IsThread {
-			get { return this.Name.StartsWith("Thread#", StringComparison.Ordinal); }
+			get { return Name.StartsWith("Thread#", StringComparison.Ordinal); }
 		}
 		
 		/// <summary>
@@ -116,7 +116,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public virtual bool HasChildren {
 			get {
-				return this.Children.Any();
+				return Children.Any();
 			}
 		}
 		
@@ -125,7 +125,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public IList<string> Parameters {
 			get {
-				NameMapping name = this.NameMapping;
+				NameMapping name = NameMapping;
 				return name != null ? name.Parameters : NameMapping.EmptyParameterList;
 			}
 		}
@@ -183,7 +183,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			try {
 				if (includeSelf)
 					yield return this; // Descendants is reflexive
-				stack.Push(this.Children.GetEnumerator());
+				stack.Push(Children.GetEnumerator());
 				while (stack.Count > 0) {
 					IEnumerator<CallTreeNode> e = stack.Peek();
 					if (e.MoveNext()) {
@@ -220,7 +220,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		
 		IEnumerable<CallTreeNode> GetAncestors(bool includeSelf)
 		{
-			CallTreeNode n = includeSelf ? this : this.Parent;
+			CallTreeNode n = includeSelf ? this : Parent;
 			while (n != null) {
 				yield return n;
 				n = n.Parent;
@@ -256,11 +256,11 @@ namespace ICSharpCode.Profiler.Controller.Data
 		public virtual IEnumerable<NodePath> GetPath()
 		{
 			bool hasItems = false;
-			foreach (CallTreeNode caller in this.Callers) {
+			foreach (CallTreeNode caller in Callers) {
 				Debug.Print("caller: " + caller);
 				foreach (NodePath p in caller.GetPath()) {
 					hasItems = true;
-					yield return p.Append(this.NameMapping.Id);
+					yield return p.Append(NameMapping.Id);
 				}
 			}
 			
@@ -277,9 +277,9 @@ namespace ICSharpCode.Profiler.Controller.Data
 			if (relativeTo.Equals(this))
 				yield return NodePath.Empty;
 			else {
-				foreach (CallTreeNode caller in this.Callers) {
+				foreach (CallTreeNode caller in Callers) {
 					foreach (NodePath p in caller.GetPathRelativeTo(relativeTo))
-						yield return p.Append(this.NameMapping.Id);
+						yield return p.Append(NameMapping.Id);
 				}
 			}
 		}
@@ -301,7 +301,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return "[" + GetType().Name + " " + this.NameMapping.Id + " " + this.NameMapping.Name + "]";
+			return "[" + GetType().Name + " " + NameMapping.Id + " " + NameMapping.Name + "]";
 		}
 	}
 }

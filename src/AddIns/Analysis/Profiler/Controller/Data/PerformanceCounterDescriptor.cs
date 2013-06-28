@@ -130,7 +130,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public void Reset()
 		{
-			this.Values.Clear();
+			Values.Clear();
 		}
 		
 		/// <summary>
@@ -155,14 +155,14 @@ namespace ICSharpCode.Profiler.Controller.Data
 				return;
 			}
 			try {
-				this.Values.Add(counter.NextValue());
+				Values.Add(counter.NextValue());
 				#if DEBUG
 			} catch (Exception e) {
 				Console.WriteLine(e.ToString());
 				#else
 			} catch (Exception) {
 				#endif
-				this.Values.Add(defaultValue);
+				Values.Add(defaultValue);
 			}
 		}
 		

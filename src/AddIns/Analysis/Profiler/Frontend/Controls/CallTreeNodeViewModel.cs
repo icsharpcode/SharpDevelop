@@ -22,7 +22,7 @@ namespace ICSharpCode.Profiler.Controls
 
 		protected void OnPropertyChanged(string name)
 		{
-			if (this.PropertyChanged != null)
+			if (PropertyChanged != null)
 			{
 				PropertyChanged(this, new PropertyChangedEventArgs(name));
 			}
@@ -61,7 +61,7 @@ namespace ICSharpCode.Profiler.Controls
 		
 		void BringIntoView(CallTreeNodeViewModel item)
 		{
-			if (this.parent != null) {
+			if (parent != null) {
 				parent.BringIntoView(item);
 				return;
 			}
@@ -89,10 +89,10 @@ namespace ICSharpCode.Profiler.Controls
 		public virtual double TimePercentageOfParent
 		{
 			get {
-				if (this.parent == null)
+				if (parent == null)
 					return 1;
 				else
-					return (double)this.node.CpuCyclesSpent / (double)this.parent.node.CpuCyclesSpent;
+					return (double)node.CpuCyclesSpent / (double)parent.node.CpuCyclesSpent;
 			}
 		}
 		
@@ -168,7 +168,7 @@ namespace ICSharpCode.Profiler.Controls
 		public ReadOnlyCollection<string> Parameters
 		{
 			get {
-				return new ReadOnlyCollection<string>(this.node.Parameters);
+				return new ReadOnlyCollection<string>(node.Parameters);
 			}
 		}
 
@@ -196,15 +196,15 @@ namespace ICSharpCode.Profiler.Controls
 		public virtual ReadOnlyCollection<CallTreeNodeViewModel> Children {
 			get {
 				lock (this) {
-					if (this.children == null) {
+					if (children == null) {
 						
-						this.children = this.node.Children
+						children = node.Children
 							.Select(c => new CallTreeNodeViewModel(c, this))
 							.ToList()
 							.AsReadOnly();
 					}
 					
-					return this.children;
+					return children;
 				}
 			}
 		}
@@ -212,14 +212,14 @@ namespace ICSharpCode.Profiler.Controls
 		public virtual string Name
 		{
 			get {
-				return this.node.Name ?? string.Empty;
+				return node.Name ?? string.Empty;
 			}
 		}
 
 		public virtual string FullyQualifiedClassName
 		{
 			get {
-				string nodeName = this.node.Name;
+				string nodeName = node.Name;
 				if (string.IsNullOrEmpty(nodeName))
 					return null;
 				if (!nodeName.Contains("."))
@@ -234,7 +234,7 @@ namespace ICSharpCode.Profiler.Controls
 		public virtual string MethodName
 		{
 			get {
-				string nodeName = this.node.Name;
+				string nodeName = node.Name;
 				if (string.IsNullOrEmpty(nodeName))
 					return null;
 				if (!nodeName.Contains("."))
@@ -249,9 +249,9 @@ namespace ICSharpCode.Profiler.Controls
 		public virtual string ShortName
 		{
 			get {
-				string className = this.FullyQualifiedClassName;
+				string className = FullyQualifiedClassName;
 				if (className == null)
-					return this.Name;
+					return Name;
 				int index = className.LastIndexOf('.');
 				return className.Substring(index + 1) + "." + MethodName;
 			}
@@ -265,7 +265,7 @@ namespace ICSharpCode.Profiler.Controls
 				if (isExpanded != value) {
 					isExpanded = value;
 					OnPropertyChanged("IsExpanded");
-					this.IsExpandedChanged(new NodeEventArgs<CallTreeNodeViewModel>(this));
+					IsExpandedChanged(new NodeEventArgs<CallTreeNodeViewModel>(this));
 					
 					if (isExpanded) {
 						DeselectChildren(children);
@@ -285,7 +285,7 @@ namespace ICSharpCode.Profiler.Controls
 		
 		void IsExpandedChanged(NodeEventArgs<CallTreeNodeViewModel> e)
 		{
-			this.visibleElementCount = 1 + (IsExpanded ? Children.Sum(c => c.VisibleElementCount) : 0);
+			visibleElementCount = 1 + (IsExpanded ? Children.Sum(c => c.VisibleElementCount) : 0);
 			OnVisibleChildExpandedChanged(e);
 			
 			if (Parent != null && Parent.IsExpanded) {
@@ -318,7 +318,7 @@ namespace ICSharpCode.Profiler.Controls
 					//this.IsSelectedChanged(this);
 					
 					if (isSelected) {
-						CallTreeNodeViewModel node = this.Parent;
+						CallTreeNodeViewModel node = Parent;
 						while (node != null) {
 							node.IsExpanded = true;
 							node = node.Parent;
@@ -394,7 +394,7 @@ namespace ICSharpCode.Profiler.Controls
 		public virtual int VisibleElementCount
 		{
 			get {
-				return this.visibleElementCount;
+				return visibleElementCount;
 			}
 		}
 		

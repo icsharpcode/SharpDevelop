@@ -48,7 +48,7 @@ namespace ICSharpCode.Profiler.Interprocess
 		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
-			return this.Value.GetHashCode();
+			return Value.GetHashCode();
 		}
 		
 		/// <inheritdoc/>
@@ -62,7 +62,7 @@ namespace ICSharpCode.Profiler.Interprocess
 		/// </summary>
 		public bool Equals(AtomicBoolean other)
 		{
-			return this.Value == other.Value;
+			return Value == other.Value;
 		}
 		
 		/// <summary>

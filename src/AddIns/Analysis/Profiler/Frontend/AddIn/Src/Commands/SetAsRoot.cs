@@ -3,16 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Windows.Controls;
 
 using ICSharpCode.Core;
-using ICSharpCode.Profiler.AddIn.Views;
 using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.Profiler.Controller.Queries;
-using ICSharpCode.Profiler.Controls;
 
 namespace ICSharpCode.Profiler.AddIn.Commands
 {

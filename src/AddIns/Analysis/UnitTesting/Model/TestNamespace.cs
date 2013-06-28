@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace ICSharpCode.UnitTesting
@@ -49,5 +50,6 @@ namespace ICSharpCode.UnitTesting
 		public new TestCollection NestedTests {
 			get { return base.NestedTestCollection; }
 		}
+		
 	}
 }

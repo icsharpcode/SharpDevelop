@@ -2,12 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Media;
 
 namespace ICSharpCode.Profiler.Controls
@@ -18,8 +13,8 @@ namespace ICSharpCode.Profiler.Controls
 		{
 			base.OnRender(drawingContext);
 			
-			if (this.RenderSize.Height > 0 && this.RenderSize.Width > 0) {
-				drawingContext.DrawRectangle(new LinearGradientBrush(Colors.Red, Colors.Orange, 0), new Pen(Brushes.Black, 1), new Rect(new Point(0, 2), new Size(this.RenderSize.Width * this.Value, this.RenderSize.Height - 4)));
+			if (RenderSize.Height > 0 && RenderSize.Width > 0) {
+				drawingContext.DrawRectangle(new LinearGradientBrush(Colors.Red, Colors.Orange, 0), new Pen(Brushes.Black, 1), new Rect(new Point(0, 2), new Size(RenderSize.Width * Value, RenderSize.Height - 4)));
 			}
 		}
 		

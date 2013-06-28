@@ -5,9 +5,9 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.CSharp;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Profiler.AddIn.Commands
@@ -21,7 +21,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 		
 		public abstract override void Run();
 		
-		protected IMember GetMemberFromName(IClass c, string name, ReadOnlyCollection<string> parameters)
+		protected IMember GetMemberFromName(ITypeDefinition c, string name, ReadOnlyCollection<string> parameters)
 		{
 			if (name == null || c == null)
 				return null;
@@ -54,7 +54,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 				matchWithSameParameterCount = method;
 				bool isCorrect = true;
 				for (int i = 0; i < method.Parameters.Count; i++) {
-					if (parameters[i] != ambience.Convert(method.Parameters[i])) {
+					if (parameters[i] != ambience.ConvertVariable(method.Parameters[i])) {
 						isCorrect = false;
 						break;
 					}
@@ -67,20 +67,19 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 			return matchWithSameParameterCount ?? matchWithSameName;
 		}
 
-		protected IClass GetClassFromName(string name)
+		protected ITypeDefinition GetClassFromName(string name)
 		{
 			if (name == null)
 				return null;
 			if (ProjectService.OpenSolution == null)
 				return null;
 			
-			foreach (IProject project in ProjectService.OpenSolution.Projects) {
-				IProjectContent content = ParserService.GetProjectContent(project);
-				if (content != null) {
-					IClass c = content.GetClassByReflectionName(name, true);
-					if (c != null)
-						return c;
-				}
+			foreach (IProject project in SD.ProjectService.CurrentSolution.Projects) {
+				ICompilation compilation = SD.ParserService.GetCompilation(project);
+				IType type = compilation.FindType(new FullTypeName(name));
+				ITypeDefinition definition = type.GetDefinition();
+				if (definition != null)
+					return definition;
 			}
 
 			return null;

@@ -222,5 +222,6 @@ namespace ICSharpCode.UnitTesting
 			}
 			base.OnNestedTestsInitialized();
 		}
+		
 	}
 }

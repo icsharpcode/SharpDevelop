@@ -1,10 +1,9 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.Profiler.Controller.Data;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.Profiler.Controller.Data;
 
 namespace ICSharpCode.Profiler.Controller.Queries
 {
@@ -53,7 +52,7 @@ namespace ICSharpCode.Profiler.Controller.Queries
 		/// </summary>
 		public CallTreeNode GetNodeByPath(params int[] nameIds)
 		{
-			CallTreeNode node = this.Root;
+			CallTreeNode node = Root;
 			
 			for (int i = 1; i < nameIds.Length; i++) {
 				node = node.Children.FirstOrDefault(n => n.NameMapping.Id == nameIds[i]);

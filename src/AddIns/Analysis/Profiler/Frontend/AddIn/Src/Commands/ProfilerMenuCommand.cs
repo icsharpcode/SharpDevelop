@@ -5,12 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Shapes;
 
 using ICSharpCode.Core;
-using ICSharpCode.Profiler.AddIn.Views;
 using ICSharpCode.Profiler.Controls;
+using ICSharpCode.Profiler.AddIn.Views;
 
 namespace ICSharpCode.Profiler.AddIn.Commands
 {

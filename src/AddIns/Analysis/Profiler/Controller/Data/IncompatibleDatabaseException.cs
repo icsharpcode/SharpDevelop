@@ -54,8 +54,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 		{
 			base.GetObjectData(info, context);
 			if (info != null) {
-				info.AddValue("ExpectedVersion", this.ExpectedVersion, typeof(Version));
-				info.AddValue("ActualVersion", this.ActualVersion, typeof(Version));
+				info.AddValue("ExpectedVersion", ExpectedVersion, typeof(Version));
+				info.AddValue("ActualVersion", ActualVersion, typeof(Version));
 			}
 		}
 	}

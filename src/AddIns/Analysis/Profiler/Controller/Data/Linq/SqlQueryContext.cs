@@ -31,9 +31,9 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		
 		public void SetCurrent(CallTreeNodeSqlNameSet nameSet, SqlTableType table, bool hasIDList)
 		{
-			this.CurrentNameSet = nameSet;
-			this.CurrentTable = table;
-			this.HasIDList = hasIDList;
+			CurrentNameSet = nameSet;
+			CurrentTable = table;
+			HasIDList = hasIDList;
 		}
 		
 		SQLiteQueryProvider provider;

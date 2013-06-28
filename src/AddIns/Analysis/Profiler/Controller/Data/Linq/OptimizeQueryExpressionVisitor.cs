@@ -16,7 +16,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 	/// Nodes returned from 'Visit' can be assumed to be fully optimized (they won't contain any of the patterns
 	/// described in the SQLiteQueryProvider optimization documentation).
 	/// </summary>
-	sealed class OptimizeQueryExpressionVisitor : System.Linq.Expressions.ExpressionVisitor
+	sealed class OptimizeQueryExpressionVisitor : ExpressionVisitor
 	{
 		QueryNode Visit(QueryNode queryNode)
 		{
@@ -181,7 +181,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 	}
 	
 	
-	sealed class IsConditionSafeVisitor : System.Linq.Expressions.ExpressionVisitor
+	sealed class IsConditionSafeVisitor : ExpressionVisitor
 	{
 		public static bool Test(Expression ex, params MemberInfo[] safeMembers)
 		{

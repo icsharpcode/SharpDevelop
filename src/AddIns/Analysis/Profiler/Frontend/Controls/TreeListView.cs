@@ -2,19 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Linq;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ICSharpCode.Profiler.Controls
 {
@@ -22,12 +12,12 @@ namespace ICSharpCode.Profiler.Controls
 	{		
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
-			if (this.SelectedItem is CallTreeNodeViewModel) {
-				CallTreeNodeViewModel item = this.SelectedItem as CallTreeNodeViewModel;
+			if (SelectedItem is CallTreeNodeViewModel) {
+				CallTreeNodeViewModel item = SelectedItem as CallTreeNodeViewModel;
 				if (e.Key == Key.Right) {
 					if (item.IsExpanded) {
 						if (item.Children.Count > 0)
-							this.SelectedItem = item.Children.First();
+							SelectedItem = item.Children.First();
 					} else {
 						item.IsExpanded = true;
 					}
@@ -36,7 +26,7 @@ namespace ICSharpCode.Profiler.Controls
 					if (item.IsExpanded) {
 						item.IsExpanded = false;
 					} else {
-						this.SelectedItem = item.Parent;
+						SelectedItem = item.Parent;
 					}
 					e.Handled = true;
 				}

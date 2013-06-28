@@ -48,9 +48,9 @@ namespace ICSharpCode.Profiler.Controls
 		{
 			dispatcher.VerifyAccess();
 			
-			if (this.currentTask != null) {
-				this.currentTask.Cancel();
-				this.currentTask = null;
+			if (currentTask != null) {
+				currentTask.Cancel();
+				currentTask = null;
 			}
 		}
 
@@ -59,10 +59,10 @@ namespace ICSharpCode.Profiler.Controls
 			if (backgroundAction == null)
 				throw new ArgumentNullException("backgroundAction");
 			
-			this.Cancel();
+			Cancel();
 			
 			Task task = Task.Start(backgroundAction);
-			this.currentTask = task;
+			currentTask = task;
 			currentTask.RunWhenComplete(
 				dispatcher,
 				() => {
@@ -70,8 +70,8 @@ namespace ICSharpCode.Profiler.Controls
 					// want to raise completionAction if the task
 					// was successfully completed but another task
 					// was started before we received the completion callback.
-					if (this.currentTask == task) {
-						this.currentTask = null;
+					if (currentTask == task) {
+						currentTask = null;
 						if (completionAction != null)
 							completionAction();
 					} else {

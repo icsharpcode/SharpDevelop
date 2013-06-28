@@ -1,18 +1,15 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.Profiler.Controller.Data.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.SQLite;
-using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
-using ICSharpCode.Profiler.Interprocess;
+using ICSharpCode.Profiler.Controller.Data.Linq;
 
 namespace ICSharpCode.Profiler.Controller.Data
 {
@@ -142,7 +139,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <inheritdoc/>
 		public override void Close()
 		{
-			this.Dispose();
+			Dispose();
 		}
 		
 		/// <inheritdoc/>
@@ -182,7 +179,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <inheritdoc/>
 		public override ReadOnlyCollection<IProfilingDataSet> DataSets {
 			get {
-				if (this.dataSets == null) {
+				if (dataSets == null) {
 					List<IProfilingDataSet> list = new List<IProfilingDataSet>();
 					
 					SQLiteCommand cmd;
@@ -202,10 +199,10 @@ namespace ICSharpCode.Profiler.Controller.Data
 						}
 					}
 					
-					this.dataSets = new ReadOnlyCollection<IProfilingDataSet>(list);
+					dataSets = new ReadOnlyCollection<IProfilingDataSet>(list);
 				}
 				
-				return this.dataSets;
+				return dataSets;
 			}
 		}
 		
@@ -227,7 +224,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			
 			public CallTreeNode RootNode {
 				get {
-					return this.provider.GetRoot(ID, ID);
+					return provider.GetRoot(ID, ID);
 				}
 			}
 			
@@ -246,7 +243,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			rwLock.EnterWriteLock();
 			try {
 				if (!isDisposed)
-					this.connection.Close();
+					connection.Close();
 				
 				isDisposed = true;
 			} finally {
@@ -330,17 +327,17 @@ namespace ICSharpCode.Profiler.Controller.Data
 						throw new ProfilerException("processorfrequency was not found!");
 				}
 				
-				return this.processorFrequency;
+				return processorFrequency;
 			}
 		}
 		
 		/// <inheritdoc/>
 		public override IQueryable<CallTreeNode> GetFunctions(int startIndex, int endIndex)
 		{
-			if (startIndex < 0 || startIndex >= this.DataSets.Count)
+			if (startIndex < 0 || startIndex >= DataSets.Count)
 				throw new ArgumentOutOfRangeException("startIndex", startIndex, "Value must be between 0 and " + endIndex);
-			if (endIndex < startIndex || endIndex >= this.DataSets.Count)
-				throw new ArgumentOutOfRangeException("endIndex", endIndex, "Value must be between " + startIndex + " and " + (this.DataSets.Count - 1));
+			if (endIndex < startIndex || endIndex >= DataSets.Count)
+				throw new ArgumentOutOfRangeException("endIndex", endIndex, "Value must be between " + startIndex + " and " + (DataSets.Count - 1));
 			
 			SQLiteQueryProvider queryProvider = new SQLiteQueryProvider(this, startIndex, endIndex);
 			
@@ -478,15 +475,15 @@ namespace ICSharpCode.Profiler.Controller.Data
 		
 		LockObject LockAndCreateCommand(out SQLiteCommand cmd)
 		{
-			this.rwLock.EnterReadLock();
+			rwLock.EnterReadLock();
 			
 			if (isDisposed) {
-				this.rwLock.ExitReadLock();
+				rwLock.ExitReadLock();
 				throw new ObjectDisposedException("ProfilingDataSQLiteProvider", "The provider was already closed!");
 			}
 			
-			cmd = this.connection.CreateCommand();
-			return new LockObject(cmd, this.rwLock);
+			cmd = connection.CreateCommand();
+			return new LockObject(cmd, rwLock);
 		}
 		
 		struct LockObject : IDisposable

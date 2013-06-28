@@ -4,13 +4,13 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.Profiler.Controller;
-using ICSharpCode.Profiler.Controller.Data;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.Profiler.AddIn.OptionPanels
 {
 	public static class OptionWrapper
 	{
-		static Properties properties = PropertyService.Get("ProfilerOptions", new Properties());
+		static Properties properties = SD.PropertyService.Get("ProfilerOptions", new Properties());
 		
 		public static int SharedMemorySize {
 			get { return properties.Get("SharedMemorySize", ProfilerOptions.DefaultSharedMemorySize) / 1024 / 1024; }

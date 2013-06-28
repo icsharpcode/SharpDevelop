@@ -17,7 +17,7 @@ namespace ICSharpCode.UnitTesting
 		
 		public TestProcessRunnerBaseContext(TestExecutionOptions executionOptions)
 			: this(executionOptions,
-				new ProcessRunner(),
+				executionOptions.ProcessRunner ?? new ProcessRunner(),
 				new TestResultsReader(),
 				SD.FileSystem,
 				SD.MessageService)

@@ -82,12 +82,12 @@ namespace ICSharpCode.Profiler.Controller.Data
 
 		internal unsafe FunctionInfo* GetFunctionInfo(TargetProcessPointer ptr)
 		{
-			return (FunctionInfo*)this.TranslatePointer(ptr);
+			return (FunctionInfo*)TranslatePointer(ptr);
 		}
 		
 		internal unsafe FunctionInfo* GetRootFunctionInfo()
 		{
-			return GetFunctionInfo(this.nativeRootFuncInfoPosition);
+			return GetFunctionInfo(nativeRootFuncInfoPosition);
 		}
 		
 		/// <summary>
@@ -96,7 +96,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		public unsafe CallTreeNode RootNode {
 			get {
 				VerifyAccess();
-				if (this.is64Bit)
+				if (is64Bit)
 					return new UnmanagedCallTreeNode64(
 						this,
 						GetRootFunctionInfo(),

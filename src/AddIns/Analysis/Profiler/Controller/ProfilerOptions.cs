@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 using ICSharpCode.Profiler.Controller.Data;
@@ -41,7 +40,7 @@ namespace ICSharpCode.Profiler.Controller
 		/// Gets the performance counters selected for monitoring.
 		/// </summary>
 		public PerformanceCounterDescriptor[] Counters {
-			get { return this.counters; }
+			get { return counters; }
 		}
 		
 		/// <summary>

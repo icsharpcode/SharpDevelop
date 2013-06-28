@@ -7,6 +7,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Profiler.AddIn.Views
 {
@@ -24,7 +25,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			return true; // definition in .addin does extension-based filtering
 		}
 		
-		public ICSharpCode.SharpDevelop.Gui.IViewContent CreateContentForFile(OpenedFile file)
+		public IViewContent CreateContentForFile(OpenedFile file)
 		{
 			ProfilingDataSQLiteProvider provider;
 			try {
@@ -46,12 +47,17 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			return new WpfViewer(file, provider);
 		}
 		
-		public bool IsPreferredBindingForFile(string fileName)
+		public bool IsPreferredBindingForFile(FileName fileName)
 		{
 			return true;
 		}
 		
-		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		public bool CanCreateContentForFile(FileName fileName)
+		{
+			return fileName.GetExtension().Equals(".sdps", StringComparison.OrdinalIgnoreCase);
+		}
+		
+		public double AutoDetectFileContent(FileName fileName, Stream fileContent, string detectedMimeType)
 		{
 			return 1;
 		}
