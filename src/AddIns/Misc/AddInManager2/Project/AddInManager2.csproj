@@ -124,6 +124,7 @@
     <Compile Include="Src\Model\Model.cs" />
     <Compile Include="Src\Model\ReadPackagesResult.cs" />
     <Compile Include="Src\Model\SDAddInManagement.cs" />
+    <Compile Include="Src\UpdateNotifier.cs" />
     <Compile Include="Src\ViewModel\AddInManagerViewModel.cs" />
     <Compile Include="Src\ViewModel\AddInPackageViewModelBase.cs" />
     <Compile Include="Src\ViewModel\AddInsViewModelBase.cs" />

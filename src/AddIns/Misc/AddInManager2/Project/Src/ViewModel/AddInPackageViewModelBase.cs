@@ -6,10 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 using ICSharpCode.AddInManager2.Model;
-using NuGet;
 
 namespace ICSharpCode.AddInManager2.ViewModel
 {
+	/// <summary>
+	/// Base class for view models of AddIn list entries.
+	/// </summary>
 	public abstract class AddInPackageViewModelBase : Model<AddInPackageViewModelBase>, IAddInPackage
 	{
 		private DelegateCommand addPackageCommand;
@@ -21,13 +23,13 @@ namespace ICSharpCode.AddInManager2.ViewModel
 		private DelegateCommand cancelUninstallationCommand;
 		private DelegateCommand optionsCommand;
 
-		public AddInPackageViewModelBase()
+		protected AddInPackageViewModelBase()
 			: base()
 		{
 			CreateCommands();
 		}
 		
-		public AddInPackageViewModelBase(IAddInManagerServices services)
+		protected AddInPackageViewModelBase(IAddInManagerServices services)
 			: base(services)
 		{
 			CreateCommands();

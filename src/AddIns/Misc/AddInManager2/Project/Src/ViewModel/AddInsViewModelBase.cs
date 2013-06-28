@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Windows.Input;
@@ -72,7 +71,7 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			InstallFromArchiveCommand = new DelegateCommand(param => InstallFromArchive());
 		}
 		
-				private void OnAddInsListUpdated()
+		private void OnAddInsListUpdated()
 		{
 			if (AddInsListUpdated != null)
 			{

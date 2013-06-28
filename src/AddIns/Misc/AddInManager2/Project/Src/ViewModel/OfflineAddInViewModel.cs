@@ -12,6 +12,9 @@ using NuGet;
 
 namespace ICSharpCode.AddInManager2.ViewModel
 {
+	/// <summary>
+	/// View model representing an already installed real SharpDevelop AddIn.
+	/// </summary>
 	public class OfflineAddInsViewModel : AddInPackageViewModelBase
 	{
 		private AddIn _addIn;

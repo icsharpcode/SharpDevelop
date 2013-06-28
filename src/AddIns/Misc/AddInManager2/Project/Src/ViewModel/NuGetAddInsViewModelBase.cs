@@ -3,21 +3,22 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Windows.Input;
 using ICSharpCode.AddInManager2.Model;
-using ICSharpCode.SharpDevelop;
 using NuGet;
 
 namespace ICSharpCode.AddInManager2.ViewModel
 {
+	/// <summary>
+	/// Base class for view models displaying NuGet 
+	/// </summary>
 	public class NuGetAddInsViewModelBase : AddInsViewModelBase
 	{
 		private AddInManagerTask<ReadPackagesResult> _task;
 		private IEnumerable<IPackage> _allPackages;
+		
+		public event EventHandler PackageListDownloadEnded;
 		
 		public NuGetAddInsViewModelBase()
 			: base()
@@ -101,9 +102,9 @@ namespace ICSharpCode.AddInManager2.ViewModel
 			{
 				UpdatePackagesForSelectedPage(task.Result);
 			}
+			
 			base.OnPropertyChanged(null);
-			
-			
+			OnPackageListDownloadEnded();
 		}
 
 		private void UpdatePackagesForSelectedPage(ReadPackagesResult result)
@@ -227,6 +228,14 @@ namespace ICSharpCode.AddInManager2.ViewModel
 					StartReadPackagesTask();
 					base.OnPropertyChanged(null);
 				}
+			}
+		}
+		
+		private void OnPackageListDownloadEnded()
+		{
+			if (PackageListDownloadEnded != null)
+			{
+				PackageListDownloadEnded(this, new EventArgs());
 			}
 		}
 	}

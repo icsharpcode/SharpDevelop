@@ -3,19 +3,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Windows.Input;
 using ICSharpCode.AddInManager2.Model;
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using Microsoft.Win32;
 using NuGet;
 
 namespace ICSharpCode.AddInManager2.ViewModel
 {
+	/// <summary>
+	/// Model for view of installed SharpDevelop AddIns.
+	/// </summary>
 	public class InstalledAddInsViewModel : NuGetAddInsViewModelBase
 	{
 		public InstalledAddInsViewModel()

@@ -5,14 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 
 using ICSharpCode.AddInManager2.Model;
 using ICSharpCode.AddInManager2.View;
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 using NuGet;
 
 namespace ICSharpCode.AddInManager2.ViewModel
