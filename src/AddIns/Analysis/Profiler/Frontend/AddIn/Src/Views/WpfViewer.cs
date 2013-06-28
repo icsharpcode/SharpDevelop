@@ -1,19 +1,15 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.Core;
 using System;
 using System.IO;
-using System.Windows.Forms;
-using System.Windows.Forms.Integration;
-using ICSharpCode.Core.Presentation;
+using ICSharpCode.Core;
 using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Profiler.AddIn.Views
 {
-	using ICSharpCode.Profiler.Controller;
 	
 	/// <summary>
 	/// Description of the view content
@@ -66,7 +62,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		{
 			if (FileUtility.IsEqualFileName(e.FileName, file.FileName) ||
 			    FileUtility.IsBaseDirectory(e.FileName, file.FileName))
-				this.WorkbenchWindow.CloseWindow(true);
+				WorkbenchWindow.CloseWindow(true);
 		}
 
 		/// <summary>
@@ -74,8 +70,8 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		/// </summary>
 		public override void Dispose()
 		{
-			this.dataView.SaveUserState();
-			this.provider.Close();
+			dataView.SaveUserState();
+			provider.Close();
 			
 			FileService.FileRemoving -= FileServiceFileRemoving;
 			base.Dispose();

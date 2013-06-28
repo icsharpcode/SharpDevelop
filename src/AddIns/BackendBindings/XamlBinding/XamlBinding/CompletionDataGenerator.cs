@@ -148,8 +148,11 @@ namespace ICSharpCode.XamlBinding
 			
 			bool parentAdded = false;
 			var utd = file.GetInnermostTypeDefinition(editor.Caret.Location);
-			var rtd = utd.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
-			MemberLookup memberLookup = new MemberLookup(rtd, compilation.MainAssembly);
+			ITypeDefinition currentTypeDef = null;
+			if (utd != null) {
+				currentTypeDef = utd.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
+			}
+			MemberLookup memberLookup = new MemberLookup(currentTypeDef, compilation.MainAssembly);
 			
 			IList<ITypeDefinition> possibleTypesInCollection = EmptyList<ITypeDefinition>.Instance;
 			if (rt != null && Extensions.IsListType(rt)) {

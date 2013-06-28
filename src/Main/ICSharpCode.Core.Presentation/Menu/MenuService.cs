@@ -283,17 +283,14 @@ namespace ICSharpCode.Core.Presentation
 		/// <remarks>Only works with Windows.Forms.Keys. The WPF Key enum seems to be horribly distorted!</remarks>
 		public static string KeyToUnicode(WinForms.Keys key)
 		{
-			StringBuilder sb = new StringBuilder(255);
-			byte[] keyState  = new byte[255];
+			StringBuilder sb = new StringBuilder(256);
 			IntPtr hkl = GetKeyboardLayout(0);
-			
-			if (!GetKeyboardState(keyState)) return null;
 			
 			uint scanCode = MapVirtualKeyEx((uint)key, 0, hkl);
 			if (scanCode < 1) return null;
 			
 			ClearKeyboardBuffer(hkl);
-			int len = ToUnicodeEx((uint)key, scanCode, keyState, sb, sb.Capacity, 0, hkl);
+			int len = ToUnicodeEx((uint)key, scanCode, new byte[256], sb, sb.Capacity, 0, hkl);
 			if (len > 0)
 				return sb.ToString(0, len).ToUpper();
 			
@@ -307,7 +304,7 @@ namespace ICSharpCode.Core.Presentation
 			uint key = (uint)WinForms.Keys.Space;
 			int rc;
 			do {
-				rc = ToUnicodeEx(key, MapVirtualKeyEx(key, 0, hkl), new byte[255], sb, sb.Capacity, 0, hkl);
+				rc = ToUnicodeEx(key, MapVirtualKeyEx(key, 0, hkl), new byte[256], sb, sb.Capacity, 0, hkl);
 			} while(rc < 0);
 		}
 		
