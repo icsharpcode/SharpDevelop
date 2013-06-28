@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<Template originator="Mike Krueger">
+<Template originator   = "Mike Krueger"
+          lastModified = "28/06/2013">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
