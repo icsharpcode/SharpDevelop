@@ -89,7 +89,6 @@ namespace CSharpBinding.Refactoring
 					if (!hasOnPropertyChanged) {
 						var nodes = new List<AstNode>();
 						if (!currentClass.GetAllBaseTypeDefinitions().Any(bt => bt.FullName == "System.ComponentModel.INotifyPropertyChanged")) {
-//							int insertion = editor.Document.GetOffset(currentClass.BodyRegion.BeginLine, currentClass.BodyRegion.BeginColumn);
 							AstNode nodeBeforeClassBlock = currentClassDeclaration.LBraceToken;
 							if (nodeBeforeClassBlock.PrevSibling is NewLineNode) {
 								// There's a new line before the brace, insert before it!
@@ -99,7 +98,6 @@ namespace CSharpBinding.Refactoring
 							
 							AstType interfaceTypeNode = refactoringContext.CreateShortType("System.ComponentModel", "INotifyPropertyChanged", 0);
 							var directBaseTypes = currentClass.DirectBaseTypes.Where(t => t.FullName != "System.Object");
-//							if ((directBaseTypes != null) && (directBaseTypes.Count() > 0)) {
 							if (currentClassDeclaration.BaseTypes.Count > 0) {
 								script.InsertText(insertion, ", " + interfaceTypeNode.GetText() + " ");
 							} else {

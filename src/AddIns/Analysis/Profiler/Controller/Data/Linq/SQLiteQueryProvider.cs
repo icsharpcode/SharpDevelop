@@ -252,7 +252,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		}
 		
 		#region Convert Expression Tree To Query AST
-		sealed class ConvertToQueryAstVisitor : System.Linq.Expressions.ExpressionVisitor
+		sealed class ConvertToQueryAstVisitor : ExpressionVisitor
 		{
 			readonly QueryExecutionOptions options;
 			
@@ -573,7 +573,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		#endregion
 		
 		#region ExecuteAllQueriesVisitor
-		sealed class ExecuteAllQueriesVisitor : System.Linq.Expressions.ExpressionVisitor
+		sealed class ExecuteAllQueriesVisitor : ExpressionVisitor
 		{
 			readonly SQLiteQueryProvider sqliteProvider;
 			readonly QueryExecutionOptions options;

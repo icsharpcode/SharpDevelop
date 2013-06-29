@@ -3,15 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Data.SQLite;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 
-using ICSharpCode.Profiler.Interprocess;
-using System.Threading;
 
 namespace ICSharpCode.Profiler.Controller.Data
 {
@@ -60,13 +56,13 @@ namespace ICSharpCode.Profiler.Controller.Data
 			if (isDisposed)
 				return;
 			
-			using (SQLiteCommand cmd = this.connection.CreateCommand()) {
+			using (SQLiteCommand cmd = connection.CreateCommand()) {
 				// create index at the end (after inserting data), this is faster
 				cmd.CommandText = CallsAndFunctionsIndexDefs;
 				cmd.ExecuteNonQuery();
 			}
 			
-			this.Dispose();
+			Dispose();
 		}
 		
 		/// <summary>
@@ -75,11 +71,11 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public int ProcessorFrequency {
 			get {
-				return this.processorFrequency;
+				return processorFrequency;
 			}
 			set {
 				processorFrequency = value;
-				ProfilingDataSQLiteProvider.SetProperty(this.connection.CreateCommand(), "processorfrequency", value.ToString(CultureInfo.InvariantCulture));
+				ProfilingDataSQLiteProvider.SetProperty(connection.CreateCommand(), "processorfrequency", value.ToString(CultureInfo.InvariantCulture));
 			}
 		}
 		
@@ -91,8 +87,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 			if (dataSet == null)
 				throw new ArgumentNullException("dataSet");
 			
-			using (SQLiteTransaction transaction = this.connection.BeginTransaction()) {
-				SQLiteCommand cmd = this.connection.CreateCommand();
+			using (SQLiteTransaction transaction = connection.BeginTransaction()) {
+				SQLiteCommand cmd = connection.CreateCommand();
 				
 				if (dataSetCount == -1)
 					dataSetCount = 0;
@@ -106,7 +102,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 				
 				int dataSetStartId = functionInfoCount;
 				
-				using (SQLiteCommand loopCommand = this.connection.CreateCommand()) {
+				using (SQLiteCommand loopCommand = connection.CreateCommand()) {
 					CallTreeNode node = dataSet.RootNode;
 					
 					loopCommand.CommandText = "INSERT INTO Calls(id, endid, parentid, nameid, cpucyclesspent, cpucyclesspentself, isactiveatstart, callcount)" +
@@ -125,7 +121,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 					InsertCalls(loopCommand, node, -1, dataParams);
 				}
 				
-				using (SQLiteCommand functionsCommand = this.connection.CreateCommand()) {
+				using (SQLiteCommand functionsCommand = connection.CreateCommand()) {
 					functionsCommand.CommandText = string.Format(@"
 						INSERT INTO Functions
 						SELECT {0}, nameid, SUM(cpucyclesspent), SUM(cpucyclesspentself), SUM(isactiveatstart), SUM(callcount), MAX(id != endid)
@@ -201,7 +197,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			// NameMapping.Id <-> FunctionData.NameId 1:N
 			// FunctionData.ParentId <-> FunctionData.Id 1:N
 			
-			SQLiteCommand cmd = this.connection.CreateCommand();
+			SQLiteCommand cmd = connection.CreateCommand();
 			
 			cmd.CommandText = CallsAndFunctionsTableDefs + @"
 			
@@ -276,8 +272,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public void WriteMappings(IEnumerable<NameMapping> mappings)
 		{
-			using (SQLiteTransaction trans = this.connection.BeginTransaction()) {
-				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
+			using (SQLiteTransaction trans = connection.BeginTransaction()) {
+				using (SQLiteCommand cmd = connection.CreateCommand()) {
 					SQLiteParameter idParam = new SQLiteParameter("id");
 					SQLiteParameter retTParam = new SQLiteParameter("returntype");
 					SQLiteParameter nameParam = new SQLiteParameter("name");
@@ -307,7 +303,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		public void Dispose()
 		{
 			if (!isDisposed)
-				this.connection.Close();
+				connection.Close();
 			
 			isDisposed = true;
 		}
@@ -315,9 +311,9 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <inheritdoc/>
 		public void WritePerformanceCounterData(IEnumerable<PerformanceCounterDescriptor> counters)
 		{
-			using (SQLiteTransaction trans = this.connection.BeginTransaction()) {
-				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
-					using (SQLiteCommand cmd2 = this.connection.CreateCommand()) {
+			using (SQLiteTransaction trans = connection.BeginTransaction()) {
+				using (SQLiteCommand cmd = connection.CreateCommand()) {
+					using (SQLiteCommand cmd2 = connection.CreateCommand()) {
 
 						SQLiteParameter idParam = new SQLiteParameter("id");
 						SQLiteParameter nameParam = new SQLiteParameter("name");
@@ -368,8 +364,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <inheritdoc/>
 		public void WriteEventData(IEnumerable<EventDataEntry> events)
 		{
-			using (SQLiteTransaction trans = this.connection.BeginTransaction()) {
-				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
+			using (SQLiteTransaction trans = connection.BeginTransaction()) {
+				using (SQLiteCommand cmd = connection.CreateCommand()) {
 					SQLiteParameter dataSetParam = new SQLiteParameter("datasetid");
 					SQLiteParameter eventTypeParam = new SQLiteParameter("eventtype");
 					SQLiteParameter nameIdParam = new SQLiteParameter("nameid");
@@ -395,7 +391,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		
 		/// <inheritdoc/>
 		public int DataSetCount {
-			get { return this.dataSetCount; }
+			get { return dataSetCount; }
 		}
 	}
 }

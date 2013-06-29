@@ -12,7 +12,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 	/// </summary>
 	public class UnitTestRootCallTreeNode : CallTreeNode
 	{
-		List<CallTreeNode> unitTests = null;
+		List<CallTreeNode> unitTests;
 		
 		/// <summary>
 		/// Creates a new UnitTestRootCallTreeNode.
@@ -40,7 +40,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <inheritdoc/>
 		public override bool IsActiveAtStart {
 			get {
-				return (this.unitTests == null) ? false : this.unitTests.Any(test => test.IsActiveAtStart);
+				return (unitTests == null) ? false : unitTests.Any(test => test.IsActiveAtStart);
 			}
 		}
 		
@@ -66,7 +66,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		}
 		
 		/// <inheritdoc/>
-		public override CallTreeNode Merge(System.Collections.Generic.IEnumerable<CallTreeNode> nodes)
+		public override CallTreeNode Merge(IEnumerable<CallTreeNode> nodes)
 		{
 			// throw new ShouldNeverHappenException();
 			throw new NotSupportedException("Cannot merge a UnitTestRootCallTreeNode (should never be possible)");
@@ -75,7 +75,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
-			return (this.unitTests == null) ? 0 : this.unitTests.Aggregate(0, (sum, item) => sum ^= item.GetHashCode());
+			return (unitTests == null) ? 0 : unitTests.Aggregate(0, (sum, item) => sum ^= item.GetHashCode());
 		}
 		
 		/// <inheritdoc/>

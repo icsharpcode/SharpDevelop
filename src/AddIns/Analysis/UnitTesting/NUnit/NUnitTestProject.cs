@@ -26,8 +26,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			if (options.UseDebugger)
 				return new NUnitTestDebugger();
-			else
-				return new NUnitTestRunner(options);
+			return new NUnitTestRunner(options);
 		}
 		
 		protected override bool IsTestClass(ITypeDefinition typeDefinition)
@@ -142,5 +141,6 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		#endregion
+		
 	}
 }

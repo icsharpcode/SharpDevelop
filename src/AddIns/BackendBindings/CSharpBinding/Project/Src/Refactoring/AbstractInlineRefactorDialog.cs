@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.CSharp;
@@ -22,12 +23,44 @@ namespace CSharpBinding.Refactoring
 {
 	public abstract class AbstractInlineRefactorDialog : GroupBox, IOptionBindingContainer, IActiveElement
 	{
+		private class UndoableInlineDialogCreation : IUndoableOperation
+		{
+			private AbstractInlineRefactorDialog _dialog;
+			
+			public UndoableInlineDialogCreation(AbstractInlineRefactorDialog dialog)
+			{
+				_dialog = dialog;
+			}
+			
+			public void Reset()
+			{
+				// Remove dialog reference
+				_dialog = null;
+			}
+			
+			public void Undo()
+			{
+				if (_dialog != null) {
+					// Close the dialog
+					_dialog.Deactivate();
+					Reset();
+				}
+			}
+			
+			public void Redo()
+			{
+				// We don't react to Redo command here...
+			}
+		}
+		
 		protected ITextAnchor anchor;
 		protected ITextAnchor insertionEndAnchor;
 		protected ITextEditor editor;
 		
 		protected SDRefactoringContext refactoringContext;
 		protected InsertionContext insertionContext;
+		
+		private UndoableInlineDialogCreation undoableCreationOperation;
 		
 		public IInlineUIElement Element { get; set; }
 		
@@ -41,6 +74,16 @@ namespace CSharpBinding.Refactoring
 			this.insertionContext = context;
 			
 			this.Background = SystemColors.ControlBrush;
+			
+			undoableCreationOperation = new UndoableInlineDialogCreation(this);
+		}
+		
+		public IUndoableOperation UndoableCreationOperation
+		{
+			get
+			{
+				return undoableCreationOperation;
+			}
 		}
 		
 		protected virtual void FocusFirstElement()
@@ -150,7 +193,7 @@ namespace CSharpBinding.Refactoring
 		
 		bool deactivated;
 
-		void Deactivate()
+		protected void Deactivate()
 		{
 			if (Element == null)
 				throw new InvalidOperationException("no IInlineUIElement set!");
@@ -159,6 +202,9 @@ namespace CSharpBinding.Refactoring
 			
 			deactivated = true;
 			Element.Remove();
+			
+			// Cut connection with UndoableInlineDialogCreation
+			undoableCreationOperation.Reset();
 			
 			insertionContext.Deactivate(null);
 		}

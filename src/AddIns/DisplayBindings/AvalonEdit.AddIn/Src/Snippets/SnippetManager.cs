@@ -47,6 +47,18 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 						Keyword = "if"
 					},
 					new CodeSnippet {
+						Name = "ifnull",
+						Description = "if-null statement",
+						Text = "if (${condition} == null) {\n\t${Selection}\n}",
+						Keyword = "if"
+					},
+					new CodeSnippet {
+						Name = "ifnotnull",
+						Description = "if-not-null statement",
+						Text = "if (${condition} != null) {\n\t${Selection}\n}",
+						Keyword = "if"
+					},
+					new CodeSnippet {
 						Name = "ifelse",
 						Description = "if-else statement",
 						Text = "if (${condition}) {\n\t${Selection}\n} else {\n\t${Caret}\n}",
@@ -104,8 +116,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 					new CodeSnippet {
 						Name = "switch",
 						Description = "Switch statement",
-						// dynamic switch snippet (inserts switch body dependent on condition)
-						Text = "switch (${condition}) {\n\t${refactoring:switchbody}\n}",
+						Text = "switch (${condition}) {\n\t${Caret}\n}",
 						Keyword = "switch"
 					},
 					new CodeSnippet {

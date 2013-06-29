@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
@@ -35,17 +36,17 @@ namespace CSharpBinding.Refactoring
 					return null;
 				
 				ITextAnchor anchor = textEditor.Document.CreateAnchor(context.InsertionPosition);
-				anchor.MovementType = AnchorMovementType.AfterInsertion;
-				
-				// Since this snippet doesn't insert anything, fake insertion of 1 character to allow proper Ctrl+Z reaction
-				if (context.StartPosition == context.InsertionPosition) {
-					textEditor.Document.Insert(context.InsertionPosition, " ");
-					context.InsertionPosition++;
-				}
+				anchor.MovementType = AnchorMovementType.BeforeInsertion;
 				
 				CreatePropertiesDialog dialog = new CreatePropertiesDialog(context, textEditor, anchor);
 				
 				dialog.Element = uiService.CreateInlineUIElement(anchor, dialog);
+				
+				// Add creation of this inline dialog as undoable operation
+				TextDocument document = textEditor.Document as TextDocument;
+				if (document != null) {
+					document.UndoStack.Push(dialog.UndoableCreationOperation);
+				}
 				
 				return dialog;
 				
