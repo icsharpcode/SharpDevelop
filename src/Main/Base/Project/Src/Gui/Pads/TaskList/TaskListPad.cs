@@ -217,7 +217,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		IUnresolvedTypeDefinition GetCurrentClass()
 		{
-			if (SD.Workbench.ActiveViewContent == null)
+			if (SD.Workbench.ActiveViewContent == null || SD.Workbench.ActiveViewContent.PrimaryFileName == null)
 				return null;
 			
 			IUnresolvedFile parseInfo = SD.ParserService.GetExistingUnresolvedFile(SD.Workbench.ActiveViewContent.PrimaryFileName);
