@@ -14,8 +14,9 @@ namespace X64Converter
 	{
 		static int Main(string[] args)
 		{
-			File.Delete("conversion.log");
 			try {
+				File.Delete("conversion.log");
+				
 				List<string> map = new List<string>() {
 					"..\\Controller\\Profiler",
 					"..\\Controller\\Data\\UnmanagedCallTreeNode",
@@ -52,7 +53,11 @@ namespace X64Converter
 
 				return 0;
 			} catch (Exception e) {
-				File.WriteAllText("conversion.log", e.ToString());
+				try {
+					File.WriteAllText("conversion.log", e.ToString());
+				} catch (Exception) {
+					return -2;
+				}
 				return -1;
 			}
 		}
