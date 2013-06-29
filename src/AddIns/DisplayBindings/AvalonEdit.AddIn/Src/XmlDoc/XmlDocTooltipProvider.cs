@@ -71,7 +71,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 		object CreateTooltip(IType type)
 		{
 			var ambience = AmbienceService.GetCurrentAmbience();
-			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType;
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType | ConversionFlags.UseFullyQualifiedTypeNames;
 			string header;
 			if (type is ITypeDefinition)
 				header = ambience.ConvertEntity((ITypeDefinition)type);
@@ -97,7 +97,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 		object CreateTooltip(IEntity entity)
 		{
 			var ambience = AmbienceService.GetCurrentAmbience();
-			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType;
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowDeclaringType | ConversionFlags.UseFullyQualifiedTypeNames;
 			string header = ambience.ConvertEntity(entity);
 			var documentation = XmlDocumentationElement.Get(entity);
 			
