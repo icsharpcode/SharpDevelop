@@ -48,7 +48,7 @@ namespace ICSharpCode.PackageManagement
 		
 		static void InitializeCredentialProvider()
 		{
-			ISettings settings = Settings.LoadDefaultSettings(null);
+			ISettings settings = Settings.LoadDefaultSettings(null, null, null);
 			var packageSourceProvider = new PackageSourceProvider(settings);
 			var credentialProvider = new SettingsCredentialProvider(new SharpDevelopCredentialProvider(), packageSourceProvider);
 			

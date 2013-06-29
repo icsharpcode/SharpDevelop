@@ -192,5 +192,10 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			throw new NotImplementedException();
 		}
+		
+		public IList<SettingValue> GetSettingValues(string section, bool isPath)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

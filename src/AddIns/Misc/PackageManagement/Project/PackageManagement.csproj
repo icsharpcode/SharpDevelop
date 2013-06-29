@@ -37,6 +37,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build" />
+    <Reference Include="Microsoft.Web.XmlTransform">
+      <HintPath>..\RequiredLibraries\Microsoft.Web.XmlTransform.dll</HintPath>
+    </Reference>
     <Reference Include="NuGet.Console.Types">
       <HintPath>..\RequiredLibraries\NuGet.Console.Types.dll</HintPath>
     </Reference>
