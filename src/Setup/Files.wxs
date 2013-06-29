@@ -1678,6 +1678,9 @@
 									<Component Id="PackageManagementICSharpCodeSharpDevelopDomDll" Guid="70460742-D237-4742-B563-7127376C56CB" DiskId="1">
 										<File Id="PackageManagement.ICSharpCode.SharpDevelop.Dom.dll" Name="ICSharpCode.SharpDevelop.Dom.dll" Source="..\..\AddIns\Misc\PackageManagement\ICSharpCode.SharpDevelop.Dom.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="PackageManagement.ICSharpCode.SharpDevelop.Dom.dll" AssemblyManifest="PackageManagement.ICSharpCode.SharpDevelop.Dom.dll" />
 									</Component>
+									<Component Id="MicrosoftWebXmlTransformDll" Guid="0A82C51B-E2D1-4817-8704-2CB390B4E833" DiskId="1">
+										<File Id="Microsoft.Web.XmlTransform.dll" Name="Microsoft.Web.XmlTransform.dll" Source="..\..\AddIns\Misc\PackageManagement\Microsoft.Web.XmlTransform.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Web.XmlTransform.dll" AssemblyManifest="Microsoft.Web.XmlTransform.dll" />
+									</Component>
 								</Directory>
 								<Directory Id="TextTemplating" Name="TextTemplating">
 									<Component Id="MonoTextTemplatingDll" Guid="07BFBED7-FC7B-4CF3-BD00-DCA8E8E7C17B" DiskId="1">

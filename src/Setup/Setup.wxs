@@ -492,6 +492,7 @@
 				<ComponentRef Id="SharpDevelopEnvDteDll"/>
 				<ComponentRef Id="PackageManagementPowerShellDll"/>
 				<ComponentRef Id="PackageManagementICSharpCodeSharpDevelopDomDll"/>
+				<ComponentRef Id="MicrosoftWebXmlTransformDll"/>
 				<ComponentRef Id="JQuery172NuGetPackage"/>
 				<ComponentRef Id="Modernizr253NuGetPackage"/>
 			
