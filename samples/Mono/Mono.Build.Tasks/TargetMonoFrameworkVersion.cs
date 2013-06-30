@@ -33,6 +33,7 @@ namespace Mono.Build.Tasks
 	{
 		Version11 = 0,
 		Version20 = 1,
-		VersionLatest = 1
+		Version40 = 2,
+		VersionLatest = 2
 	}
 }

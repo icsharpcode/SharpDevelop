@@ -45,6 +45,7 @@ namespace Mono.Build.Tasks
 		static string monoFrameworkAssemblyPath = null;
 		static string monoFrameworkVersion11Path = null;
 		static string monoFrameworkVersion20Path = null;
+		static string monoFrameworkVersion40Path = null;
 		static bool monoInstalled;
 		static bool checkedForMonoInstallation;
 		
@@ -127,6 +128,8 @@ namespace Mono.Build.Tasks
 					return GetPathToMonoFrameworkVersion11();
 				case TargetMonoFrameworkVersion.Version20:
 					return GetPathToMonoFrameworkVersion20();
+				case TargetMonoFrameworkVersion.Version40:
+					return GetPathToMonoFrameworkVersion40();
 			}
 			return null;
 		}
@@ -175,6 +178,14 @@ namespace Mono.Build.Tasks
 				monoFrameworkVersion20Path = GetPathToMonoFramework(@"mono\2.0");
 			}
 			return monoFrameworkVersion20Path;
+		}
+		
+		static string GetPathToMonoFrameworkVersion40()
+		{
+			if (monoFrameworkVersion40Path == null) {
+				monoFrameworkVersion40Path = GetPathToMonoFramework(@"mono\4.0");
+			}
+			return monoFrameworkVersion40Path;
 		}
 		
 		static string GetPathToMonoFramework(string subFolder)
