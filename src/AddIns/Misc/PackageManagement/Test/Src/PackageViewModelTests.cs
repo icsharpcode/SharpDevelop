@@ -1391,5 +1391,63 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual("My Package Title", name);
 		}
+		
+		[Test]
+		public void GalleryUrl_PackageHasGalleryUrl_ReturnsUrl()
+		{
+			CreateViewModel();
+			var expectedUrl = new Uri("http://test.com/MyPackage");
+			fakePackage.GalleryUrl = expectedUrl;
+			
+			Uri url = viewModel.GalleryUrl;
+			
+			Assert.AreEqual(expectedUrl, url);
+		}
+		
+		[Test]
+		public void HasGalleryUrl_PackageHasGalleryUrl_ReturnsTrue()
+		{
+			CreateViewModel();
+			var expectedUrl = new Uri("http://test.com/MyPackage");
+			fakePackage.GalleryUrl = expectedUrl;
+			
+			bool result = viewModel.HasGalleryUrl;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void HasNoGalleryUrl_PackageHasNoGalleryUrl_ReturnsFalse()
+		{
+			CreateViewModel();
+			fakePackage.GalleryUrl = null;
+			
+			bool result = viewModel.HasGalleryUrl;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void HasNoGalleryUrl_PackageHasGalleryUrl_ReturnsFalse()
+		{
+			CreateViewModel();
+			var expectedUrl = new Uri("http://test.com/MyPackage");
+			fakePackage.GalleryUrl = expectedUrl;
+			
+			bool result = viewModel.HasNoGalleryUrl;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void IsGalleryUrlMissing_PackageHasNoGalleryUrl_ReturnsTrue()
+		{
+			CreateViewModel();
+			fakePackage.GalleryUrl = null;
+			
+			bool result = viewModel.HasNoGalleryUrl;
+			
+			Assert.IsTrue(result);
+		}
 	}
 }

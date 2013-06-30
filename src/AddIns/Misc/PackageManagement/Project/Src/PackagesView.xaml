@@ -164,6 +164,24 @@
 						Orientation="Horizontal"
 						Margin="0, 4">
 						<TextBlock
+							Text="Id:"
+							FontWeight="Bold"
+							Margin="0, 0, 4, 0"/>
+						<TextBlock Visibility="{Binding Path=HasGalleryUrl, Converter={StaticResource BoolToVisibility}}">
+							<Hyperlink
+								Command="{StaticResource OpenHyperlinkCommand}"
+								CommandParameter="{Binding Path=GalleryUrl}">
+								<TextBlock Text="{Binding Path=Id}"/>
+							</Hyperlink>
+						</TextBlock>
+						<TextBlock
+							Visibility="{Binding Path=HasNoGalleryUrl, Converter={StaticResource BoolToVisibility}}"
+							Text="{Binding Path=Id}"/>
+					</StackPanel>
+					<StackPanel
+						Orientation="Horizontal"
+						Margin="0, 4">
+						<TextBlock
 							Text="Version:"
 							FontWeight="Bold"
 							Margin="0, 0, 4, 0"/>
