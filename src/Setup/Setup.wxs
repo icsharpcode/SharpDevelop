@@ -411,14 +411,14 @@
 				<ComponentRef Id="AvalonEditAddInAddin"/>
 				<ComponentRef Id="ICSharpCodeAvalonEditAddInDll"/>
 				
-				<!--<ComponentRef Id="Hook32Dll"/>
+				<ComponentRef Id="Hook32Dll"/>
 				<ComponentRef Id="Hook64Dll"/>
 				<ComponentRef Id="ICSharpCodeProfilerAddInAddin"/>
 				<ComponentRef Id="ICSharpCodeProfilerAddInDll"/>
 				<ComponentRef Id="ICSharpCodeProfilerControllerDll"/>
 				<ComponentRef Id="ICSharpCodeProfilerControlsDll"/>
 				<ComponentRef Id="SystemDataSQLiteDll"/>
-				<ComponentRef Id="IQToolkitDll"/>-->
+				<ComponentRef Id="IQToolkitDll"/>
 				
 				<ComponentRef Id="CppBindingAddin"/>
 				<ComponentRef Id="CppBindingDll"/>

@@ -88,7 +88,7 @@ namespace CSharpBinding.Refactoring
 		
 		protected virtual void FocusFirstElement()
 		{
-			Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(delegate { this.MoveFocus(new TraversalRequest(FocusNavigationDirection.First)); }));
+			Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(delegate { this.MoveFocus(new TraversalRequest(FocusNavigationDirection.First)); }));
 		}
 		
 		protected void AppendNewLine(Script script, AstNode afterNode, NewLineNode newLineNode)

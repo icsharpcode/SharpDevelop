@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		internal static void SetFocus(ManagedContent m, Func<IInputElement> activeChildFunc, bool forceSetFocus = false)
 		{
 			m.Dispatcher.BeginInvoke(
-				DispatcherPriority.Input,
+				DispatcherPriority.Loaded,
 				new Action(
 					delegate {
 						// ensure that condition for FocusContent() is still fulfilled
