@@ -1368,5 +1368,28 @@ namespace PackageManagement.Tests
 			var action = fakeActionRunner.ActionPassedToRun as InstallPackageAction;
 			Assert.IsFalse(action.AllowPrereleaseVersions);
 		}
+		
+		[Test]
+		public void Name_PackageHasIdButNoTitle_ReturnsPackageId()
+		{
+			CreateViewModel();
+			fakePackage.Id = "MyPackage";
+			
+			string name = viewModel.Name;
+			
+			Assert.AreEqual("MyPackage", name);
+		}
+		
+		[Test]
+		public void Name_PackageHasIdAndTitle_ReturnsPackageId()
+		{
+			CreateViewModel();
+			fakePackage.Id = "MyPackage";
+			fakePackage.Title = "My Package Title";
+			
+			string name = viewModel.Name;
+			
+			Assert.AreEqual("My Package Title", name);
+		}
 	}
 }

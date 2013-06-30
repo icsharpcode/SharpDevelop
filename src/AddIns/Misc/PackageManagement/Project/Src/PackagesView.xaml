@@ -52,7 +52,7 @@
 					Grid.Column="1"
 					Margin="4, 0">
 					<TextBlock
-						Text="{Binding Path=Id}"
+						Text="{Binding Path=Name}"
 						FontWeight="Bold"/>
 					<TextBlock
 						Text="{Binding Path=Summary}"

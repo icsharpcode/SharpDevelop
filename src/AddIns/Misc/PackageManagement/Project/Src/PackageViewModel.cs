@@ -133,6 +133,10 @@ namespace ICSharpCode.PackageManagement
 			get { return package.Id; }
 		}
 		
+		public string Name {
+			get { return package.GetName(); }
+		}
+		
 		public Uri IconUrl {
 			get { return package.IconUrl; }
 		}
