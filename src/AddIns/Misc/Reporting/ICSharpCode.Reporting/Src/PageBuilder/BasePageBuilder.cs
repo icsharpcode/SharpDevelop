@@ -16,6 +16,7 @@ using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder.Converter;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.PageBuilder
 {
@@ -31,14 +32,14 @@ namespace ICSharpCode.Reporting.PageBuilder
 				 throw new ArgumentNullException("reportModel");
 			}
 			ReportModel = reportModel;
-			Pages = new Collection<IPage>();
+			Pages = new Collection<ExportPage>();
 			Graphics = CreateGraphics.FromSize(reportModel.ReportSettings.PageSize);
 		}
 		
 		
-		protected IPage InitNewPage(){
+		protected ExportPage InitNewPage(){
 			var pi = CreatePageInfo();
-			return new Page(pi,ReportModel.ReportSettings.PageSize);
+			return new ExportPage(pi,ReportModel.ReportSettings.PageSize);
 		}
 		
 		#region create Sections
@@ -85,17 +86,28 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		#endregion
 		
-		protected virtual IPage CreateNewPage()
+		protected virtual ExportPage CreateNewPage()
 		{
 			var page = InitNewPage();
 			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,ReportModel.ReportSettings.TopMargin);
 			return page;
 		}
 		
+		
 		protected void  WriteStandardSections() {
 			this.BuildReportHeader();
 			BuildPageHeader();
 			BuildPageFooter();
+		}
+		
+		
+		protected bool PageFull(System.Collections.Generic.List<IExportColumn> columns)
+		{
+			var rectToPrint = new Rectangle(columns[0].Location,columns[0].Size);
+			if (rectToPrint.Bottom > DetailEnds.Y) {
+				return  true;
+			}
+			return false;
 		}
 		
 		
@@ -128,7 +140,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 
-		protected virtual  void AddPage(IPage page) {
+		protected virtual  void AddPage(ExportPage page) {
 			if (Pages.Count == 0) {
 				page.IsFirstPage = true;
 			}
@@ -145,7 +157,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		protected Point CurrentLocation {get; set;}
 
-	    protected IPage CurrentPage {get; set;}
+	    protected ExportPage CurrentPage {get; set;}
 		
 	    internal Point DetailStart {get;private set;}
 	    
@@ -153,6 +165,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 	    
 	    protected Graphics Graphics {get;private set;}
 	    
-		public Collection<IPage> Pages {get; private set;}
+		public Collection<ExportPage> Pages {get; private set;}
 	}
 }

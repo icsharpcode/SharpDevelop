@@ -9,9 +9,6 @@
 using System;
 using System.Drawing;
 using ICSharpCode.Reporting.Arrange;
-using ICSharpCode.Reporting.BaseClasses;
-using ICSharpCode.Reporting.Exporter;
-using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 
 namespace ICSharpCode.Reporting.PageBuilder.ExportColumns

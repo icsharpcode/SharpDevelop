@@ -13,10 +13,12 @@ using System.Diagnostics;
 using System.Windows.Documents;
 using System.Windows.Markup;
 
+using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.ExportRenderer;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.Items;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.WpfReportViewer
 {
@@ -28,7 +30,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer
 		
 		private FixedDocument document ;
 		
-		public PreviewViewModel(ReportSettings reportSettings, Collection<IPage> pages)
+		public PreviewViewModel(ReportSettings reportSettings, Collection<ExportPage> pages)
 		{
 			if (pages == null)
 				throw new ArgumentNullException("pages");

@@ -30,11 +30,13 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 			documentCreator = new FixedDocumentCreator(reportSettings);
 		}
 		
-		public override void Visit(ExportColumn exportColumn)
-		{
-//			Console.WriteLine("Wpf-Visit ExportColumn {0} - {1} - {2}", exportColumn.Name,exportColumn.Size,exportColumn.Location);
-		}
 		
+		public override void Visit(ExportPage page)
+		{
+			Console.WriteLine("page visitor");
+			UIElement = documentCreator.CreateFixedPage(page);
+		}
+	
 		
 		public override void Visit(ExportContainer exportColumn)
 		{
@@ -52,6 +54,11 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 			UIElement = textBlock;
 		}
 		
+		
+		public override void Visit(ExportColumn exportColumn)
+		{
+//			Console.WriteLine("Wpf-Visit ExportColumn {0} - {1} - {2}", exportColumn.Name,exportColumn.Size,exportColumn.Location);
+		}
 		
 		public UIElement UIElement {get; private set;}
 		

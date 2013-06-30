@@ -7,7 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Collections.Generic;
+using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Exporter.Visitors
@@ -20,6 +20,13 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 	
 	public class DebugVisitor : AbstractVisitor
 	{
+		public override void Visit(ExportPage page)
+		{
+			Console.WriteLine("<Page> {0} - {1}  Items {2}",
+			                 page.Name,page.Location,page.BackColor);
+		}
+		
+		
 		public override void Visit(ExportColumn exportColumn)
 		{
 			Console.WriteLine("Visit ExportColumn {0} - {1} - {2}", exportColumn.Name,exportColumn.Size,exportColumn.Location);
@@ -29,15 +36,16 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public override void Visit(ExportContainer exportColumn)
 		{
-			Console.WriteLine("Start Container");
-			Console.WriteLine("Visit ExportContainer {0} - {1} - {2} - Items {3}",
-			                  exportColumn.Name,exportColumn.Size,exportColumn.Location,exportColumn.BackColor);
+			Console.WriteLine("<ExportContainer> {0} - {1}  Items {2}",
+			                  exportColumn.Name,exportColumn.Location,exportColumn.BackColor);
 		}
 		
 		public override void Visit(ExportText exportColumn)
 		{
-			Console.WriteLine("Visit ExportText {0} - {1} - {2}", exportColumn.Name,exportColumn.Size,exportColumn.Location);
+			Console.WriteLine("<ExportText> {0} - {1}", exportColumn.Text,exportColumn.Location);
 		}
+		
+		
 	}
 
 }

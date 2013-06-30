@@ -8,7 +8,6 @@
  */
 using System;
 using System.Collections.ObjectModel;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Markup;
@@ -25,10 +24,13 @@ namespace ICSharpCode.Reporting.Exporter
 	/// </summary>
 	public class WpfExporter:BaseExporter
 	{
+		
+
 		private WpfVisitor visitor;
 		private ReportSettings reportSettings;
+		FixedPage fixedPage;
 		
-		public WpfExporter(ReportSettings reportSettings,Collection<IPage> pages):base(pages)
+		public WpfExporter(ReportSettings reportSettings,Collection<ExportPage> pages):base(pages)
 		{
 			if (reportSettings == null)
 				throw new ArgumentNullException("reportSettings");
@@ -41,51 +43,137 @@ namespace ICSharpCode.Reporting.Exporter
 			Document = new FixedDocument();
 			
 			foreach (var page in Pages) {
-				var fixedPage = InternalRun(page);
+				InternalRun(page);
 				AddPageToDocument(Document,fixedPage);
 			}
 		}
 		
-
-		FixedPage InternalRun(IExportContainer container)
+		void InternalRun(ExportPage page)
 		{
+			page.Accept(visitor);
+			fixedPage = (FixedPage)visitor.UIElement;
+			foreach (var item in page.ExportedItems) {
+				ShowContainerRecursive_2(null,item);
+			}
+		}
+
+		void ShowContainerRecursive (string parentCanvas,IExportColumn item){
+			var exportContainer = item as IExportContainer;
+			string name = string.Empty;
 			
-			FixedPage fixedPage = CreateFixedPage();
-			Canvas parentCanvas = null ;
-			Console.WriteLine("page start");
-			foreach (var item in container.ExportedItems) {
-				var exportContainer = item as IExportContainer;
-				var acceptor = item as IAcceptor;
-				if (exportContainer != null) {
-					if (acceptor != null) {
-						acceptor.Accept(visitor);
-						parentCanvas = (Canvas)visitor.UIElement;
-						fixedPage.Children.Add(parentCanvas);
-						
-						foreach (IAcceptor element in exportContainer.ExportedItems) {
-							element.Accept(visitor);
-							var ui = visitor.UIElement;
-							Canvas.SetLeft(ui,((IExportColumn)element).Location.X);
-							Canvas.SetTop(ui, ((IExportColumn)element).Location.Y);
-							parentCanvas.Children.Add(ui);
-						}
-					} else {
-						throw new NotSupportedException("item is not an IAcceptor");
+			Console.WriteLine("perform {0}",parentCanvas);
+			
+			if (exportContainer != null) {
+				
+				if (exportContainer.Name =="ReportDetail") {
+					Console.WriteLine(item.Name);
+				}
+//
+				if (exportContainer.Name == "Row") {
+					Console.WriteLine(item.Name);
+				}
+				name = item.Name;
+//				var containerCanvas = CreateContainer(exportContainer);
+
+//				fixedPage.Children.Add(containerCanvas);
+//				Console.WriteLine(fixedPage.Children.Count);
+//				Console.WriteLine(containerCanvas.Children.Count);
+				
+				foreach (var element in exportContainer.ExportedItems) {
+					var el = element as IExportContainer;
+					if (el == null) {
+//						CreateSingleEntry(ref containerCanvas, element);
+//						Console.WriteLine(containerCanvas.Children.Count);
+						name = element.Name;
 					}
+					
+					ShowContainerRecursive(name,element);
 				}
 			}
-			Console.WriteLine("-------page end---");
-			return fixedPage;
+		}
+		
+		void ShowContainerRecursive_2(Canvas parentCanvas,IExportColumn item)
+		{
+			var exportContainer = item as IExportContainer;
+			
+			if (exportContainer != null) {
+				
+				if (exportContainer.Name =="ReportDetail") {
+					Console.WriteLine(item.Name);
+				}
+//
+				if (exportContainer.Name == "Row") {
+					Console.WriteLine("\t {0}",item.Name);
+				}
+				
+				foreach (var element in exportContainer.ExportedItems) {
+//					Console.WriteLine(element.Name);
+					var el = element as IExportContainer;
+					if (el == null) {
+						Console.WriteLine("\t\t {0}",element.Name);
+					}
+					ShowContainerRecursive_2(null,exportContainer.ExportedItems[0]);
+				}
+				
+			}
+			
+			
+		}
+		
+		
+		
+		void ShowContainerRecursive_1(Canvas parentCanvas,IExportColumn item)
+		{
+			var exportContainer = item as IExportContainer;
+			
+			if (exportContainer != null) {
+				
+				if (exportContainer.Name =="ReportDetail") {
+					Console.WriteLine(item.Name);
+				}
+//
+				if (exportContainer.Name == "Row") {
+					Console.WriteLine(item.Name);
+				}
+				
+				var containerCanvas = CreateContainer(exportContainer);
+
+				fixedPage.Children.Add(containerCanvas);
+				Console.WriteLine(fixedPage.Children.Count);
+				Console.WriteLine(containerCanvas.Children.Count);
+				
+				foreach (var element in exportContainer.ExportedItems) {
+					var el = element as IExportContainer;
+					if (el == null) {
+						CreateSingleEntry(ref containerCanvas, element);
+						Console.WriteLine(containerCanvas.Children.Count);
+					}
+					
+					ShowContainerRecursive_1(containerCanvas,element);
+				}
+			}
 		}
 
 		
-		
-		FixedPage CreateFixedPage()
+		Canvas CreateContainer(IExportContainer exportContainer)
 		{
-			var fixedPage = new FixedPage();
-			fixedPage.Width = reportSettings.PageSize.Width;
-			fixedPage.Height = reportSettings.PageSize.Height;
-			return fixedPage;
+			var containerAcceptor = exportContainer as IAcceptor;
+			containerAcceptor.Accept(visitor);
+			var containerCanvas = (Canvas)visitor.UIElement;
+			return containerCanvas;
+		}
+
+		
+		void CreateSingleEntry(ref Canvas canvas, IExportColumn element)
+		{
+			var v = element as IAcceptor;
+			v.Accept(visitor);
+			var c = visitor.UIElement;
+
+			CanvasHelper.SetLeft(c,element.Location.X);
+			CanvasHelper.SetTop(c,10);
+//			CanvasHelper.SetTop(c,element.Location.Y);
+			canvas.AddChild(c);
 		}
 		
 		
@@ -95,6 +183,7 @@ namespace ICSharpCode.Reporting.Exporter
 			((IAddChild)pageContent).AddChild(page);
 			fixedDocument.Pages.Add(pageContent);
 		}
+		
 		
 		public FixedDocument Document {get;private set;}
 	}

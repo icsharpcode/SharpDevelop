@@ -44,6 +44,9 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NUnit.Framework">
+      <HintPath>$(SharpDevelopBinPath)\Tools\NUnit\NUnit.Framework.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -74,7 +77,6 @@
     <Compile Include="Src\Arrange\MeasurementStrategy.cs" />
     <Compile Include="Src\BaseClasses\AbstractColumn.cs" />
     <Compile Include="Src\BaseClasses\GroupColumn.cs" />
-    <Compile Include="Src\BaseClasses\Page.cs" />
     <Compile Include="Src\BaseClasses\PageInfo.cs" />
     <Compile Include="Src\BaseClasses\SortColumn.cs" />
     <Compile Include="Src\Collections.cs" />
@@ -91,6 +93,8 @@
     <Compile Include="Src\DataSource\PropertyTypeHash.cs" />
     <Compile Include="Src\Exporter\BaseExporter.cs" />
     <Compile Include="Src\Exporter\DebugExporter.cs" />
+    <Compile Include="Src\Exporter\Visitors\CanvasExtension.cs" />
+    <Compile Include="Src\Exporter\Visitors\CanvasHelper.cs" />
     <Compile Include="Src\Exporter\WpfExporter.cs" />
     <Compile Include="Src\Exporter\Visitors\AbstractVisitor.cs" />
     <Compile Include="Src\Exporter\Visitors\IAcceptor.cs" />
@@ -128,6 +132,7 @@
     <Compile Include="Src\PageBuilder\ExportColumns\ExportColumn.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportContainer.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportText.cs" />
+    <Compile Include="Src\PageBuilder\ExportColumns\ExportPage.cs" />
     <Compile Include="Src\PageBuilder\FormPageBuilder.cs" />
     <Compile Include="Src\ReportingFactory.cs" />
     <Compile Include="Src\Wpf\PreviewViewModel.cs" />

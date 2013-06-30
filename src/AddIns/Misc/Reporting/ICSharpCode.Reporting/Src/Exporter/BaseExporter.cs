@@ -8,7 +8,7 @@
  */
 using System;
 using System.Collections.ObjectModel;
-using ICSharpCode.Reporting.Interfaces.Export;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Exporter
 {
@@ -17,7 +17,7 @@ namespace ICSharpCode.Reporting.Exporter
 	/// </summary>
 	public class BaseExporter
 	{
-		public BaseExporter(Collection<IPage> pages)
+		public BaseExporter(Collection<ExportPage> pages)
 		{
 			if (pages == null) {
 				throw new ArgumentException("pages");
@@ -31,6 +31,6 @@ namespace ICSharpCode.Reporting.Exporter
 		}
 
 
-	    protected Collection<IPage> Pages {get;private set;}
+	    protected Collection<ExportPage> Pages {get;private set;}
 	}
 }

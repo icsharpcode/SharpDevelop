@@ -40,21 +40,21 @@ namespace ICSharpCode.Reporting
 		}
 		
 		
+		public IReportCreator ReportCreator (Stream stream)
+		{
+			ReportModel = LoadReportModel (stream);
+			IReportCreator builder = null;
+			builder = ReportCreatorFactory.ExporterFactory(ReportModel);
+			return builder;
+		}
+		
+		
 		internal IReportCreator ReportCreator (ReportModel reportModel) {
 			if (reportModel == null)
 				throw new ArgumentNullException("reportModel");
 			IReportCreator builder = null;
 			ReportModel = reportModel;
 			builder = ReportCreatorFactory.ExporterFactory(reportModel);
-			return builder;
-		}
-		
-		
-		internal IReportCreator ReportCreator (Stream stream)
-		{
-			ReportModel = LoadReportModel (stream);
-			IReportCreator builder = null;
-			builder = ReportCreatorFactory.ExporterFactory(ReportModel);
 			return builder;
 		}
 		

@@ -14,10 +14,11 @@ using System.Reflection;
 
 using ICSharpCode.Reporting.Exporter;
 using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.PageBuilder;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
-using NUnit.Framework;
 using ICSharpCode.Reporting.Test.DataSource;
+using NUnit.Framework;
 
 namespace ICSharpCode.Reporting.Test.Reportingfactory
 {
@@ -44,19 +45,22 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 				where s.GetType() == typeof(ExportContainer)
 				select s;
 			Assert.That(sections.ToList().Count,Is.EqualTo(4));
+			var ex = new DebugExporter(reportCreator.Pages);
+			ex.Run();
 		}
 		
 		
 		[Test]
-		public void LastPageContains_4_Sections()
+		public void LastPageContains_3_Sections()
 		{
 			reportCreator.BuildExportList();
 			var exporteditems = reportCreator.Pages[1].ExportedItems;
 			var sections = from s in exporteditems
 				where s.GetType() == typeof(ExportContainer)
 				select s;
-			Assert.That(sections.ToList().Count,Is.EqualTo(4));
+			Assert.That(sections.ToList().Count,Is.EqualTo(3));
 		}
+	
 		
 		[Test]
 		public void DetailContainsOneDataItem() {
@@ -67,10 +71,17 @@ namespace ICSharpCode.Reporting.Test.Reportingfactory
 				select s;
 			var section = sections.ToList()[2] as ExportContainer;
 			var result = section.ExportedItems[0];
-			Assert.That(result,Is.AssignableFrom(typeof(ExportText)));
-//						Console.WriteLine("-------PageLayoutFixture:ShowDebug---------");
-//			var ex = new DebugExporter(reportCreator.Pages);
-//			ex.Run();
+			Assert.That(result,Is.AssignableFrom(typeof(ExportContainer)));
+		}
+		
+		[Test]
+		public void ParentOfSectionsIsPage() {
+			reportCreator.BuildExportList();
+			var page = reportCreator.Pages[0];
+			foreach (var element in page.ExportedItems) {
+				Assert.That(element.Parent,Is.Not.Null);
+				Assert.That(element.Parent,Is.AssignableTo(typeof(IPage)));
+			}
 		}
 		
 		

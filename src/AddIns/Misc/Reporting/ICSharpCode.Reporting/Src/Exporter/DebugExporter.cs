@@ -7,11 +7,11 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces.Export;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Exporter
 {
@@ -22,7 +22,7 @@ namespace ICSharpCode.Reporting.Exporter
 	{
 		private DebugVisitor visitor;
 		
-		public DebugExporter(Collection<IPage> pages):base(pages)
+		public DebugExporter(Collection<ExportPage> pages):base(pages)
 		{
 			visitor = new DebugVisitor();
 		}
@@ -30,14 +30,43 @@ namespace ICSharpCode.Reporting.Exporter
 		
 		public override void Run () {
 			foreach (var page in Pages) {
-				ShowDebug(page);
+				ShowDebug("--",page);
 				Console.WriteLine("-----------PageBreak---------");
 			}
 		}
-		
-		
-		void ShowDebug(IExportContainer container)
+		void ShowDebug(string header,IExportContainer container)
 		{
+			var leading = header;
+			Console.WriteLine();
+			Console.WriteLine("{0}{1}",leading,container.Name);
+			foreach (var item in container.ExportedItems) {
+				var exportContainer = item as IExportContainer;
+				var acceptor = item as IAcceptor;
+				if (exportContainer != null) {
+					if (exportContainer.ExportedItems.Count > 0) {
+						acceptor.Accept(visitor);
+						ShowDebug(leading = leading + "--",exportContainer);
+						leading = leading.Substring(0,leading.Length -2);
+					}
+				} else {
+					ShowSingleEntry(leading, acceptor);
+				}
+			}
+		}
+
+		
+		void ShowSingleEntry(string leading, IAcceptor acceptor)
+		{
+			if (acceptor != null) {
+				acceptor.Accept(visitor);
+				leading = leading.Substring(0, leading.Length - 2);
+			}
+		}
+		
+		void aaShowDebug(string leading,IExportContainer container)
+		{
+			Console.WriteLine();
+			Console.WriteLine("DebugExport for {0}{1}",leading,container.Name);
 			foreach (var item in container.ExportedItems) {
 				var exportContainer = item as IExportContainer;
 				var acceptor = item as IAcceptor;
@@ -45,10 +74,10 @@ namespace ICSharpCode.Reporting.Exporter
 					if (acceptor != null) {
 						acceptor.Accept(visitor);
 					}
-					ShowDebug(exportContainer);
+					ShowDebug(leading = leading + "--",exportContainer);
 				} else {
 					if (acceptor != null) {
-						acceptor.Accept(visitor);
+//						acceptor.Accept(visitor);
 					}
 				}
 			}

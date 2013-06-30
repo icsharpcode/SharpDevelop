@@ -17,6 +17,7 @@ using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.Items;
+using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using ICSharpCode.Reporting.WpfReportViewer;
 using ICSharpCode.Reporting.Xml;
 using ICSharpCode.SharpDevelop;
@@ -50,11 +51,11 @@ namespace ICSharpCode.Reports.Addin.SecondaryViews
 			this.designerLoader = loader;
 			viewer = new ICSharpCode.Reporting.WpfReportViewer.WpfReportViewer();
 			base.TabPageText = "TestWpf View";
-			Pages = new Collection<Page>();
+			Pages = new Collection<ExportPage>();
 		}
 		
 		
-		public Collection<Page> Pages{get;private set;}
+		public Collection<ExportPage> Pages{get;private set;}
 		
 		
 		protected override void LoadFromPrimary()

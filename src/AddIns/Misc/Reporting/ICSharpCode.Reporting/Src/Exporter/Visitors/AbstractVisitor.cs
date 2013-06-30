@@ -7,7 +7,6 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Collections.Generic;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Exporter.Visitors
@@ -17,8 +16,9 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 	/// </summary>
 	public abstract class AbstractVisitor : IVisitor
 	{
-		public abstract void Visit(ExportColumn exportColumn);
+		public abstract void Visit(ExportPage page);
 		public abstract void Visit(ExportContainer exportColumn);
 		public abstract void Visit(ExportText exportColumn);
+		public abstract void Visit(ExportColumn exportColumn);
 	}
 }

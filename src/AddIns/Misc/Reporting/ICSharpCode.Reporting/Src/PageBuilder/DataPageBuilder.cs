@@ -8,6 +8,7 @@
  */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -36,12 +37,13 @@ namespace ICSharpCode.Reporting.PageBuilder
 			base.BuildExportList();
 			CurrentPage = CreateNewPage ();
 			WriteStandardSections();
+			CurrentLocation = DetailStart;
 			BuildDetail();
 			base.AddPage(CurrentPage);
 		}
 		
 		
-		void BuildDetail()
+		void aaBuildDetail()
 		{
 			
 			Container = ReportModel.DetailSection;
@@ -89,14 +91,101 @@ namespace ICSharpCode.Reporting.PageBuilder
 				base.BuildReportFooter();
 			}
 		}
-
-		Point ResetPosition () {
-			return Point.Empty;
-		}
-		void MeasureAndArrangeContainer(ContainerConverter converter,IExportContainer detail)
+		
+		
+		void BuildDetail()
 		{
-			converter.Measure(detail);
-			converter.ArrangeContainer(detail);
+			
+			Container = ReportModel.DetailSection;
+			var collectionSource = new CollectionSource(List,ElementType,ReportModel.ReportSettings);
+			IExportContainer detail = null;
+			if(collectionSource.Count > 0) {
+				collectionSource.Bind();
+
+				var position = DetailStart;
+				var converter = new ContainerConverter(base.Graphics, CurrentLocation);
+				detail = CreateDetail(DetailStart);
+
+				do {
+					
+					var row = CreateContainerIfNotExist(Container,detail, position);
+					collectionSource.Fill(Container.Items);
+
+					var convertedItems	 =  converter.CreateConvertedList(ReportModel.DetailSection,row,position);
+					MeasureAndArrangeContainer(converter,row);
+					row.ExportedItems.AddRange(convertedItems);
+					if (PageFull(convertedItems)) {
+						InsertDetailAtPosition(detail);
+						Pages.Add(CurrentPage);
+						CurrentPage = CreateNewPage();
+						WriteStandardSections();
+						position = ResetPosition();
+						detail = CreateDetail(DetailStart);
+						CurrentLocation = DetailStart;
+						
+						row = CreateContainerIfNotExist(Container,detail,position);
+						var recreate =  converter.CreateConvertedList(ReportModel.DetailSection,row,position);
+						MeasureAndArrangeContainer(converter,row);
+						row.ExportedItems.AddRange(recreate);
+					}
+					detail.ExportedItems.Add(row);
+					position = new Point(Container.Location.Y,position.Y + Container.Size.Height);
+				}
+				
+				while (collectionSource.MoveNext());
+				InsertDetailAtPosition(detail);
+//				base.BuildReportFooter();
+				
+			} else {
+				detail = CreateContainerForSection(DetailStart);
+				InsertDetailAtPosition(detail);
+				base.BuildReportFooter();
+			}
+		}
+
+	
+		
+		IExportContainer CreateContainerIfNotExist(IReportContainer container, IExportContainer parent, Point position)
+		{
+//			if (container.Items[0] is IExportContainer) {
+//				return container.Items[0].CreateExportColumn() as IExportContainer;
+//			} else {
+//				var row = CreateContainerForSection(position);
+//				row.Name = "Row";
+//				row.Parent = parent;
+//				row.Location = new Point(50, position.Y);
+//				row.Size = new Size(400, 40);
+//				row.BackColor = Color.Green;
+//				return row;
+//			}
+			var row = CreateContainerForSection(position);
+				row.Name = "Row";
+				row.Parent = parent;
+				row.Location = new Point(50, position.Y);
+				row.Size = new Size(400, 40);
+				row.BackColor = Color.Green;
+				return row;
+		}
+
+		
+		IExportContainer CreateDetail(Point startLocation)
+		{
+			var detail = CreateContainerForSection(startLocation);
+			detail.Parent = CurrentPage;
+			return detail;
+		}
+
+		
+		
+		Point ResetPosition () {
+			return DetailStart;
+		}
+		
+		
+		void MeasureAndArrangeContainer(IContainerConverter converter,IExportContainer container)
+		{
+			converter.Measure(container);
+			converter.ArrangeContainer(container);
 		}
 
 		
@@ -108,16 +197,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		bool PageFull(System.Collections.Generic.List<IExportColumn> columns)
-		{
-			var rect = new Rectangle(columns[0].Location,columns[0].Size);
-			if (rect.Contains(new Point(100,500))) {
-				return true;
-			}
-			return false;
-		}
-		
-		
 		void InsertDetailAtPosition(IExportContainer container)
 		{
 			if (Pages.Count == 0) {
@@ -126,6 +205,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 				CurrentPage.ExportedItems.Insert(1, container);
 			}
 		}
+		
 		
 		internal IReportContainer Container { get; private set; }
 		

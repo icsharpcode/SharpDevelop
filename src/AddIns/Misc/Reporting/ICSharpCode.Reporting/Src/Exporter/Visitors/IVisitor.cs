@@ -7,13 +7,13 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Collections.Generic;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
 namespace ICSharpCode.Reporting.Exporter.Visitors
 {
 	public interface IVisitor
 	{
+		void Visit(ExportPage page);
 		void Visit(ExportColumn exportColumn);
 		void Visit(ExportContainer exportColumn);
 		void Visit(ExportText exportColumn);

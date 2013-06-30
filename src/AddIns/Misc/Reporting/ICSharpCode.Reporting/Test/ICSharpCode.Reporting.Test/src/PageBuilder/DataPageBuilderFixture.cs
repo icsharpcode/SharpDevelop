@@ -7,14 +7,12 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Drawing;
 using System.Linq;
 using System.Reflection;
-using ICSharpCode.Reporting.Exporter;
+
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder;
-using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using NUnit.Framework;
 
 namespace ICSharpCode.Reporting.Test.PageBuilder
@@ -34,12 +32,13 @@ namespace ICSharpCode.Reporting.Test.PageBuilder
 		
 		
 		[Test]
-		public void DataSourceIsset() {
+		public void DataSourceIsSet() {
 			var dpb = new DataPageBuilder (new ReportModel(),typeof(string),new System.Collections.Generic.List<string>());
 			Assert.That(dpb.List,Is.Not.Null);
 		}
 	
-			
+	
+		
 		[SetUp]
 		public void LoadFromStream()
 		{

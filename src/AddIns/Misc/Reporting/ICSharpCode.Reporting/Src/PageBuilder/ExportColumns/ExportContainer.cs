@@ -30,10 +30,7 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 			get { return exportedItems; }
 		}
 		
-		public void Accept(IVisitor visitor)
-		{
-			visitor.Visit(this);
-		}
+		
 		
 		public override IArrangeStrategy GetArrangeStrategy()
 		{
@@ -43,6 +40,11 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 		public override IMeasurementStrategy MeasurementStrategy()
 		{
 			return new ContainerMeasurementStrategy();
+		}
+		
+		public void Accept(IVisitor visitor)
+		{
+			visitor.Visit(this);
 		}
 	}
 }

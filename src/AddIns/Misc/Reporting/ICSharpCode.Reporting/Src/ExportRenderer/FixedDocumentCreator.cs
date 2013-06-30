@@ -12,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 
+using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using Brush = System.Windows.Media.Brush;
@@ -37,12 +38,19 @@ namespace ICSharpCode.Reporting.ExportRenderer
 			brushConverter = new BrushConverter();
 		}
 		
-		
+		public UIElement CreateFixedPage(ExportPage exportPage) {
+			var fixedPage = new FixedPage();
+			fixedPage.Width = exportPage.Size.Width;
+			fixedPage.Height = exportPage.Size.Height;
+			fixedPage.Background = ConvertBrush(System.Drawing.Color.Blue);
+			return fixedPage;
+		}
+			
 		public  UIElement CreateContainer(ExportContainer container)
 		{
 //			http://tech.pro/tutorial/736/wpf-tutorial-creating-a-custom-panel-control
 			Console.WriteLine();
-			Console.WriteLine("create container {0}",container.Name);
+			Console.WriteLine("create container {0} {1} {2}",container.Name,container.Location,container.Size);
 			var canvas = CreateCanvas(container);
 			
 			var size = new Size(container.DesiredSize.Width,container.DesiredSize.Height);
@@ -95,22 +103,21 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		
 		void SetPositionAndSize(FrameworkElement element,ExportColumn column) {
 			SetPosition(element,column);
-			SetDimension(element,column);
+			SetDimension(element,column);	
 		}
 		
 		static void SetDimension (FrameworkElement element,ExportColumn exportColumn)
 		{
-			Console.WriteLine("set Demension to {0}",exportColumn.DesiredSize);
 			element.Width = exportColumn.DesiredSize.Width;
 			element.Height = exportColumn.DesiredSize.Height;
 		}
 		
 		
 		static void SetPosition (FrameworkElement element,ExportColumn exportColumn) {
-			Console.WriteLine("set Position to {0}",exportColumn.Location);
 			FixedPage.SetLeft(element,exportColumn.Location.X );
 			FixedPage.SetTop(element,exportColumn.Location.Y);
 		}
+		
 		
 		void SetFont(TextBlock textBlock,ExportText exportText)
 		{
@@ -156,7 +163,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		}
 		
 		
-		Pen CreateWpfPen(ExportColumn exportColumn)
+		Pen CreateWpfPen(ICSharpCode.Reporting.Interfaces.IReportObject exportColumn)
 		{
 			var myPen = new Pen();
 			myPen.Brush = ConvertBrush(exportColumn.ForeColor);
@@ -168,7 +175,7 @@ namespace ICSharpCode.Reporting.ExportRenderer
 		Brush ConvertBrush(System.Drawing.Color color)
 		{
 			if (brushConverter.IsValid(color.Name)){
-				var r = brushConverter.ConvertFromString(color.Name) as SolidColorBrush;
+				Console.WriteLine(color.Name);
 				return brushConverter.ConvertFromString(color.Name) as SolidColorBrush;
 			} else{
 				return brushConverter.ConvertFromString("Black") as SolidColorBrush;

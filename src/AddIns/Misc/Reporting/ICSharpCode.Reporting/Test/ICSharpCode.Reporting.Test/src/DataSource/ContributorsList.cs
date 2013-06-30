@@ -37,8 +37,6 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			
 			list.Add(new Contributor("Christoph","Wille","Senior Project Wrangler",17,new DateTime(1960,12,8),"F"));
 			list.Add(new Contributor("Bernhard","Spuida","Senior Project Wrangler",25,new DateTime(1962,2,24),"D"));
-			
-			
 			list.Add(new Contributor("Daniel","Grunwald","Technical Lead",12,d1,"F"));
 			
 			list.Add(new Contributor("Matt","Ward","NUnit",7,d1,"F"));
@@ -48,15 +46,19 @@ namespace ICSharpCode.Reporting.Test.DataSource
 			list.Add(new Contributor("Alexander","Zeitler","SharpDevelop.Reports",3,d2,"D"));
 			list.Add(new Contributor("Markus","Palme","Prg.",6,d2,"R"));			
 			list.Add(new Contributor("Georg","Brandl","Prg.",5,d2,"R"));
+			
 			list.Add(new Contributor("Roman","Taranchenko","",2,d2,"U"));
 			list.Add(new Contributor("Denis","Erchoff","",13,d2,"U"));
-			
 			list.Add(new Contributor("Ifko","Kovacka","",31,d3,"A"));
+			
 			list.Add(new Contributor("Nathan","Allen","",5,d3,"A"));
 			list.Add(new Contributor("Dickon","Field","DBTools",10,d3,"U"));
-			
 			list.Add(new Contributor("Troy","Simpson","Prg.",9,d3,"C"));
+			
 			list.Add(new Contributor("David","Alpert","Prg.",6,d3,"C"));
+			list.Add(new Contributor("Mike","Krüger","Mono",9,d3,"C"));
+			list.Add(new Contributor("Andrea","Krüger","Mono",9,d3,"C"));
+			list.Add(new Contributor("Andreas","Weizel","Prg.",9,d3,"C"));
 			return list;
 		}
 	}
