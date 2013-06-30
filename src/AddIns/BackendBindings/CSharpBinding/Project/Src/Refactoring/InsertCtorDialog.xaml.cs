@@ -64,6 +64,7 @@ namespace CSharpBinding.Refactoring
 			
 			foreach (var f in sourceType.GetFields().Where(field => !field.IsConst
 			                                               && field.IsStatic == sourceType.GetDefinition().IsStatic
+			                                               && field.DeclaringType.FullName == sourceType.FullName
 			                                               && field.ReturnType != null)) {
 				yield return new PropertyOrFieldWrapper(f) { Index = i };
 				i++;
@@ -72,6 +73,7 @@ namespace CSharpBinding.Refactoring
 			foreach (var p in sourceType.GetProperties().Where(prop => prop.CanSet && !prop.IsIndexer
 			                                                   && prop.IsAutoImplemented()
 			                                                   && prop.IsStatic == sourceType.GetDefinition().IsStatic
+			                                                   && prop.DeclaringType.FullName == sourceType.FullName
 			                                                   && prop.ReturnType != null)) {
 				yield return new PropertyOrFieldWrapper(p) { Index = i };
 				i++;
